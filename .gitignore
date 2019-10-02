@@ -1,0 +1,10 @@
+moc
+obj
+rcc
+release
+Makefile
+.DS_Store
+QOpenHD.pro.user
+QOpenHD.pro.user*
+*.stash
+gstreamer-*
