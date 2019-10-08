@@ -2,19 +2,28 @@
 
 This is a companion app for the Open.HD drone platform, including digital FPV display in-app, along with support for changing ground station settings and gamepad/joystick support.
 
-The code is functional but very new, more of a technical preview than an alpha or beta in terms of features, but it should be stable.
+The code is functional but very new, more of a technical preview than an alpha or beta in terms of features, but it should still be *stable* in that it shouldn't crash or have weird glitchy behavior.
 
 ### State of the code
+----
+### ***There are bugs, but they'll all be fixed rapidly***.
 
-As of the `v0.1` tag, the app itself should run the same on every platform (I have not even tried to run it on Linux or Windows though, so there may be some build script changes needed first).
+For example: 
 
-However, things like RC and video rendering are inherently dependent on platform support to some extent. For example, iOS is never going to support USB connected joysticks or TX, but will support things like bluetooth gamepads. 
+* The downlink RSSI occasionally shows zero on some platforms
+* Video is horribly delayed on some (all?) Android devices
+* Some settings don't save properly (text fields + the "other" tab is all disabled)
+* Settings don't all load if there is RF interference or high CPU load (requires a one line change on the GroundPi side to fix)
 
-When used on the GroundPi, QOpenHD doesn't need to render video itself because `hello_video` is already rendering it "under" the app, just like the original OSD.
+Some of those are bugs on the GroundPi side (mostly code nobody has ever "exercised" before) or require small changes to the Open.HD image, others are just things I haven't fixed yet in the app.
+
+However, as of the `v0.1` tag the app itself should run the same on every platform. I have not even tried to run it on Linux or Windows though, so there may be some build script changes needed there.
+
+Things like RC and video rendering are inherently dependent on platform support to some extent. For example, iOS is never going to support USB connected joysticks or TX, but will support things like bluetooth gamepads if the GroundPi is 5.8Ghz (the interference is **horrible** and easily noticed if the GroundPi is 2.4Ghz, stick movements have huge lag). 
 
 | Feature | GroundPi | Windows | Mac | Linux | Android | iOS | 
 | --- | --- | --- | --- | --- | --- | --- |
-| Video | Yes | Untested | Yes | Untested | Partial acceleration | Yes |
+| Video | Yes | Untested | Yes | Untested | High Latency | Yes |
 | Settings | Partial | Partial | Partial | Partial | Partial | Partial |
 | RC | Yes | Disabled | Disabled | Disabled | Disabled | Disabled |
 | Backlight Control | N/A | N/A | N/A | N/A | N/A | Yes |
@@ -24,7 +33,7 @@ When used on the GroundPi, QOpenHD doesn't need to render video itself because `
 
 RC handling in the app is only disabled temporarily for safety, it will be supported everywhere once fully implemented and tested.
 
-Settings are only "partial" supported because there are some bugs on the GroundPi side (likely `RemoteSettings.py`) that affect certain settings. The values dont make it into the `openhd-settings-1.txt` file intact, and the GroundPi stops booting. I haven't had a chance to find and fix that yet, so only specific settings can be saved (the ones in the named tabs, not "other"). Otherwise settings basically works fine everywhere.
+Settings are only "partial" supported because there are some bugs on the GroundPi side (likely `RemoteSettings.py`) that affect certain settings. The values dont make it into the `openhd-settings-1.txt` file intact, which corrupts the file and causes the GroundPi to stop booting properly. I haven't had a chance to find and fix that yet, so only specific settings can be saved (the ones in the named tabs, not "other"). Otherwise settings basically works fine everywhere.
 
 ### Platforms
 
@@ -90,7 +99,7 @@ The build process is dependent on which platform you're building for, and can be
 
 This will be *far* less complicated once QtGStreamer is replaced.
 
-In general, you'll need Qt 5.13.1+ and the GStreamer development package, specifically version 1.14.4 or 1.16.0 (which seems to handle video packet corruption much better than 1.14.4 does).
+In general, you'll need Qt 5.13.1+ and the GStreamer development package, specifically version 1.16.0 (which seems to handle video packet corruption much better than 1.14.4 does).
 
 #### Mac
 
@@ -126,7 +135,7 @@ You can then open `QOpenHD.pro` using Qt Creator, build and run the app.
 
 4. Have the Qt Installer download Qt 5.13.1+ for Android 
 
-5. Download the [GStreamer development kit](https://gstreamer.freedesktop.org/download/) for Android (1.14.4 or 1.16.0)
+5. Download the [GStreamer development kit](https://gstreamer.freedesktop.org/download/) for Android 1.16.0
 
 6. Unzip the GStreamer archive inside the QOpenHD directory.
 
