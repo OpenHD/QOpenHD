@@ -93,7 +93,9 @@ Item {
                     height: parent.height
                     anchors.rightMargin: 12
                     anchors.right: parent.right
+                    // @disable-check M222
                     Component.onCompleted: checked = settings.value("enable_speech", true)
+                    // @disable-check M222
                     onCheckedChanged: settings.setValue("enable_speech", checked)
                 }
             }
