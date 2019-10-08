@@ -4,8 +4,8 @@ This is a companion app for the Open.HD drone platform, including digital FPV di
 
 The code is functional but very new, more of a technical preview than an alpha or beta in terms of features, but it should still be *stable* in that it shouldn't crash or have weird glitchy behavior.
 
-### State of the code
-----
+## State of the code
+
 ### ***There are bugs, but they'll all be fixed rapidly***.
 
 For example: 
@@ -37,13 +37,13 @@ RC handling in the app is only disabled temporarily for safety, it will be suppo
 
 Settings are only "partial" supported because there are some bugs on the GroundPi side (likely `RemoteSettings.py`) that affect certain settings. The values dont make it into the `openhd-settings-1.txt` file intact, which corrupts the file and causes the GroundPi to stop booting properly. I haven't had a chance to find and fix that yet, so only specific settings can be saved (the ones in the named tabs, not "other"). Otherwise settings basically works fine everywhere.
 
-### Platforms
+## Platforms
 
 The code is mostly C++ and uses the Qt framework, specifically QtQuick which is designed for portability and renders using OpenGL.
 
 This allows the same app to run on Windows, Mac, Linux, iOS, and Android, as well as directly on the GroundPi itself (either using the official touchscreen or an HDMI screen + mouse).
 
-### Code architecture
+## Code architecture
 
 The core is C++ (in `src`), and the UI is designed with QtQuick, which is a declarative UI framework. You can find the UI files in `qml`.
 
@@ -51,13 +51,15 @@ QtQuick is designed to be an MVC code architecture, and QOpenHD follows that pat
 
 There is a small amount of "glue" code in the QML layer, the language is basically Javascript but desigend to integrate with QML.
 
-### Widgets
+## Widgets
 
-There are currently a small number of simple OSD widgets in static locations on the upper and lower overlay bars. They can be enabled/disabled individually in settings, but not moved yet.
+There are currently a small number of simple OSD widgets in static locations on the upper and lower overlay bars. 
+
+They can be enabled/disabled individually in settings, but not moved yet.
 
 The widgets are going to be drag-and-drop in the near future, and will be presented on a grid so they can be placed anywhere on screen rather than only the upper and lower bars.
 
-### Telemetry
+## Telemetry
 
 The Open.HD telemetry is handled via UDP when the app is running on a phone or a computer, and via the same fifo the original OSD used when running on GroundPi.
 
@@ -65,7 +67,9 @@ For vehicle telemetry, only Mavlink is supported at the moment but only because 
 
 Some minor refactoring (turn `MavlinkTelemetry.cpp` into a subclass) is needed to support other telemetry protocols but there is otherwise no reason they can't work.
 
-### Settings
+## Settings
+
+![Ground Pi Radio Settings](https://raw.githubusercontent.com/infincia/QOpenHD/master/wiki/settings-radio.png)
 
 The app has a full touch interface for GroundPi settings, including radio frequency, video resolution and bitrate, the Wi-Fi and Ethernet hotspot settings, etc.
 
@@ -73,13 +77,13 @@ Some settings are treated specially and presented in a specific tab. This allows
 
 However *all* settings, including any new settings added to the GroundPi in the future, can be changed from the app. This does not require an app update, the new settings will simply show up in the "other" tab with a plain text editing field ensuring they can be changed no matter what the value is supposed to be. Just be careful not to break anything by entering the wrong value in those fields :)
 
-### RC
+## RC
 
 This is currently disabled via compiler flag to prevent anyone from using it and accidentally causing a flyaway or getting injured. The code is not yet finished and has a few bugs to resolve before it can be trusted.
 
 This is not an issue on the GroundPi because the ground station itself handles joysticks/RC rather than the QOpenHD app.
 
-### Video streaming
+## Video streaming
 
 On the GroundPi, the app is simply an overlay over `hello_video` just like the original OSD, so video should work exactly the same as it always has.
 
@@ -91,7 +95,7 @@ On Android there seem to be some hardware acceleration issues with the currently
 
 Hardware acceleration should be working fine on iOS and Mac.
 
-### Building
+## Building
 
 I am planning to provide binaries and GroundPi images so that building the app is not necessary, and to ensure that the correct versions of Qt and Gstreamer are available, however if you still want to build it yourself, you can.
 
