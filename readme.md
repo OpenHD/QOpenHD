@@ -1,5 +1,7 @@
 ## QOpenHD
 
+![OSD](https://raw.githubusercontent.com/infincia/QOpenHD/master/wiki/osd.jpg)
+
 This is a companion app for the Open.HD drone platform, including digital FPV display in-app, along with support for changing ground station settings and gamepad/joystick support.
 
 The code is functional but very new, more of a technical preview than an alpha or beta in terms of features, but it should still be *stable* in that it shouldn't crash or have weird glitchy behavior.
