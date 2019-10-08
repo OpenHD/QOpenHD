@@ -166,7 +166,10 @@ void MavlinkTelemetry::processMavlinkMessage(mavlink_message_t msg) {
             set_battery_voltage(tr("%1%2").arg(m_battery_voltage_raw, 3, 'f', 1, '0').arg("V"));
             set_battery_current(tr("%1%2").arg((double)sys_status.current_battery / 1000.0, 3, 'f', 1, '0').arg("A"));
 
-            int battery_percent = battery_voltage_to_percent(3, m_battery_voltage_raw);
+            QSettings settings;
+            auto battery_cells = settings.value("battery_cells", QVariant(3)).toInt();
+
+            int battery_percent = battery_voltage_to_percent(battery_cells, m_battery_voltage_raw);
             set_battery_percent(QString("%1%").arg(battery_percent));
             QString battery_gauge_glyph = battery_gauge_glyph_from_percentage(battery_percent);
             set_battery_gauge(battery_gauge_glyph);

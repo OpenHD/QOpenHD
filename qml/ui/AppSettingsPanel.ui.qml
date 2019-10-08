@@ -162,6 +162,43 @@ Item {
                     }
                 }
             }
+
+            Rectangle {
+                width: parent.width
+                height: 64
+                color: "#8cbfd7f3"
+                y: 128
+
+                Text {
+                    text: "Battery Cells"
+                    font.weight: Font.Bold
+                    font.pixelSize: 13
+                    anchors.leftMargin: 8
+                    verticalAlignment: Text.AlignVCenter
+                    width: 224
+                    height: parent.height
+                    anchors.left: parent.left
+                }
+
+                SpinBox {
+                    id: batteryCellspinBox
+                    height: parent.height
+                    width: 212
+                    font.pixelSize: 14
+                    anchors.right: parent.right
+                    from: 1
+                    to: 6
+                    stepSize: 1
+                    anchors.rightMargin: 0
+                    // @disable-check M222
+                    Component.onCompleted: value = settings.value("battery_cells", 3)
+                    // @disable-check M223
+                    onValueChanged: {
+                        // @disable-check M222
+                        settings.setValue("battery_cells", value)
+                    }
+                }
+            }
         }
 
 
