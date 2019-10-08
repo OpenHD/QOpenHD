@@ -97,6 +97,12 @@ int main(int argc, char *argv[]) {
 #endif
 
 
+#if defined(ENABLE_RC)
+    engine.rootContext()->setContextProperty("EnableRC", QVariant(true));
+#else
+    engine.rootContext()->setContextProperty("EnableRC", QVariant(false));
+#endif
+
     engine.load(QUrl(QLatin1String("qrc:/main.qml")));
     return app.exec();
 }

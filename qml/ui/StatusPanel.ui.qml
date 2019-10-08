@@ -85,6 +85,7 @@ GridLayout {
             }
         }
 
+        /*
         Rectangle {
             id: gamepadRow
             height: 32
@@ -117,5 +118,5 @@ GridLayout {
                 elide: Text.ElideRight
                 verticalAlignment: Text.AlignVCenter
             }
-        }
+        }*/
     }

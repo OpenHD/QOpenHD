@@ -82,6 +82,8 @@ DISTFILES += \
 
 
 
+#CONFIG += EnableRC
+
 
 iOSBuild {
     #QMAKE_INFO_PLIST    = Info.plist
@@ -141,18 +143,6 @@ EnableSpeech {
     QT += texttospeech
 }
 
-EnableGamepads {
-    message("EnableGamepads")
-    DEFINES += ENABLE_GAMEPADS
-    QT += gamepad
-}
-
-EnableJoysticks {
-    message("EnableJoysticks")
-    DEFINES += ENABLE_JOYSTICKS
-    include ($$PWD/QJoysticks/QJoysticks.pri)
-}
-
 EnableVideo {
     message("EnableVideo")
     DEFINES += ENABLE_VIDEO
@@ -170,6 +160,24 @@ EnableVideo {
         $$BASEDIR/src/VideoStreaming/VideoSurface.cc \
         $$BASEDIR/src/VideoStreaming/VideoStreaming.cc
 }
+
+EnableRC {
+    message("EnableRC")
+    DEFINES += ENABLE_RC
+
+    EnableGamepads {
+        message("EnableGamepads")
+        DEFINES += ENABLE_GAMEPADS
+        QT += gamepad
+    }
+
+    EnableJoysticks {
+        message("EnableJoysticks")
+        DEFINES += ENABLE_JOYSTICKS
+        include ($$PWD/QJoysticks/QJoysticks.pri)
+    }
+}
+
 
 installer {
     MacBuild {

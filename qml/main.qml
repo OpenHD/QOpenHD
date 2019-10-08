@@ -30,7 +30,9 @@ ApplicationWindow {
     onAfterSynchronizing: {
         if (!initialised) {
             messageHUD.pushMessage("Initializing", 1)
-            OpenHDRC.initRC;
+            if (EnableRC) {
+                OpenHDRC.initRC;
+            }
             upperOverlayBar.configure();
             lowerOverlayBar.configure();
             initialised = true;
