@@ -98,11 +98,11 @@ Item {
                 }
             }
 
-            Rectangle {
+            /*Rectangle {
                 width: parent.width
                 height: 64
                 color: "#00000000"
-                y: 64
+                y: 128
 
                 Text {
                     text: "Enable RC"
@@ -123,13 +123,13 @@ Item {
                     Component.onCompleted: checked = settings.value("enable_rc", false)
                     onCheckedChanged: settings.setValue("enable_rc", checked)
                 }
-            }
+            }*/
 
             Rectangle {
                 width: parent.width
                 height: 64
                 color: "#8cbfd7f3"
-                y: 128
+                y: 64
                 visible: OpenHDPi.is_raspberry_pi
 
                 Text {
