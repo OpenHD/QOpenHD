@@ -30,6 +30,8 @@ Things like RC and video rendering are inherently dependent on platform support 
 | Mavlink | Yes | Yes | Yes | Yes | Yes | Yes |
 | FRSky | No | No | No | No | No | No |
 | MSPv2 | No | No | No | No | No | No |
+| Voice Feedback | Yes | Yes | Yes | Yes | Yes | Yes |
+
 
 RC handling in the app is only disabled temporarily for safety, it will be supported everywhere once fully implemented and tested.
 
