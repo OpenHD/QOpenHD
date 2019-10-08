@@ -207,7 +207,7 @@ Rectangle {
             anchors.rightMargin: 2
             anchors.verticalCenter: parent.verticalCenter
             font.family: "Font Awesome 5 Free"
-            verticalAlignment: Text.AlignTop
+            verticalAlignment: Text.AlignVCenter
             font.pixelSize: 14
             horizontalAlignment: Text.AlignRight
             elide: Text.ElideRight
@@ -224,7 +224,7 @@ Rectangle {
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: temp_gnd.left
             anchors.rightMargin: 2
-            verticalAlignment: Text.AlignTop
+            verticalAlignment: Text.AlignVCenter
             font.pixelSize: 14
             horizontalAlignment: Text.AlignRight
             elide: Text.ElideRight
@@ -241,7 +241,7 @@ Rectangle {
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: parent.right
             anchors.rightMargin: 0
-            verticalAlignment: Text.AlignTop
+            verticalAlignment: Text.AlignVCenter
             font.pixelSize: 14
             horizontalAlignment: Text.AlignRight
             elide: Text.ElideRight
