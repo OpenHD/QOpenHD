@@ -366,6 +366,11 @@ void MavlinkTelemetry::set_satellites_visible(QString satellites_visible) {
     emit satellites_visible_changed(m_satellites_visible);
 }
 
+void MavlinkTelemetry::set_gps_hdop(QString gps_hdop) {
+    m_gps_hdop = gps_hdop;
+    emit gps_hdop_changed(m_gps_hdop);
+}
+
 void MavlinkTelemetry::set_last_heartbeat(QString last_heartbeat) {
     m_last_heartbeat = last_heartbeat;
     emit last_heartbeat_changed(m_last_heartbeat);

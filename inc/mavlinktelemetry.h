@@ -37,6 +37,9 @@ public:
     Q_PROPERTY(QString satellites_visible MEMBER m_satellites_visible WRITE set_satellites_visible NOTIFY satellites_visible_changed)
     void set_satellites_visible(QString satellites_visible);
 
+    Q_PROPERTY(QString gps_hdop MEMBER m_gps_hdop WRITE set_gps_hdop NOTIFY gps_hdop_changed)
+    void set_gps_hdop(QString gps_hdop);
+
     Q_PROPERTY(QString battery_percent MEMBER m_battery_percent WRITE set_battery_percent NOTIFY battery_percent_changed)
     void set_battery_percent(QString battery_percent);
 
@@ -68,6 +71,7 @@ signals:
     void battery_current_changed(QString battery_current);
     void battery_gauge_changed(QString battery_gauge);
     void satellites_visible_changed(QString satellites_visible);
+    void gps_hdop_changed(QString gps_hdop);
 
     void last_heartbeat_changed(QString last_heartbeat);
 
@@ -106,6 +110,7 @@ private:
     double m_battery_voltage_raw = 0.0;
     QString m_battery_gauge = "\uf091";
     QString m_satellites_visible = "0";
+    QString m_gps_hdop = "0.00";
 
     QString m_last_heartbeat = "N/A";
     qint64 last_heartbeat_timestamp;
