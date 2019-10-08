@@ -175,8 +175,8 @@ Rectangle {
             height: 24
             color: "#ffffff"
             text: "\uf0ac"
-            anchors.left: parent.left
-            anchors.leftMargin: 0
+            anchors.right: satellites_visible.left
+            anchors.rightMargin: 6
             font.family: "Font Awesome 5 Free"
             horizontalAlignment: Text.AlignRight
             verticalAlignment: Text.AlignVCenter
@@ -191,8 +191,8 @@ Rectangle {
             height: 24
             color: "#ffffff"
             text: MavlinkTelemetry.satellites_visible
-            anchors.left: satellite_icon.right
-            anchors.leftMargin: 0
+            anchors.right: gps_hdop.left
+            anchors.rightMargin: 2
             elide: Text.ElideRight
             clip: true
             verticalAlignment: Text.AlignVCenter
@@ -206,8 +206,8 @@ Rectangle {
             height: 24
             color: "#ffffff"
             text: qsTr("(0.60)")
-            anchors.left: satellites_visible.right
-            anchors.leftMargin: 2
+            anchors.right: parent.right
+            anchors.rightMargin: 0
             verticalAlignment: Text.AlignTop
             font.pixelSize: 10
             horizontalAlignment: Text.AlignLeft
