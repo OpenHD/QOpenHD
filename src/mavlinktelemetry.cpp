@@ -180,11 +180,11 @@ void MavlinkTelemetry::processMavlinkMessage(mavlink_message_t msg) {
         case MAVLINK_MSG_ID_PARAM_VALUE:
             break;
         case MAVLINK_MSG_ID_GPS_RAW_INT:
+            mavlink_gps_raw_int_t gps_status;
+            mavlink_msg_gps_raw_int_decode(&msg, &gps_status);
+            set_satellites_visible(tr("%1").arg(gps_status.satellites_visible));
             break;
         case MAVLINK_MSG_ID_GPS_STATUS: {
-            mavlink_gps_status_t gps_status;
-            mavlink_msg_gps_status_decode(&msg, &gps_status);
-            set_satellites_visible(tr("%1").arg(gps_status.satellites_visible));
             break;
         }
         case MAVLINK_MSG_ID_RAW_IMU:
