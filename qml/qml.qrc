@@ -1,0 +1,32 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>qtquickcontrols2.conf</file>
+        <file>materialdesignicons-webfont.ttf</file>
+        <file>Font Awesome 5 Brands-Regular-400.otf</file>
+        <file>Font Awesome 5 Free-Regular-400.otf</file>
+        <file>Font Awesome 5 Free-Solid-900.otf</file>
+        <file>ic.png</file>
+        <file>ui/LowerOverlayBar.qml</file>
+        <file>ui/LowerOverlayBarForm.ui.qml</file>
+        <file>ui/SettingsPopup.qml</file>
+        <file>ui/SettingsPopupForm.ui.qml</file>
+        <file>ui/UpperOverlayBar.qml</file>
+        <file>ui/UpperOverlayBarForm.ui.qml</file>
+        <file>ui/TextSettingDelegate.ui.qml</file>
+        <file>ui/StatusPanel.ui.qml</file>
+        <file>ui/SwitchSettingDelegate.ui.qml</file>
+        <file>ui/NumberSettingDelegate.ui.qml</file>
+        <file>ui/AppSettingsPanel.ui.qml</file>
+        <file>ui/GroundPiSettingsListView.ui.qml</file>
+        <file>ui/ChoiceSettingDelegate.ui.qml</file>
+        <file>ui/SettingsMap.qml</file>
+        <file>ui/RangeSettingDelegate.ui.qml</file>
+        <file>ui/GroundPiSettingsPanel.ui.qml</file>
+        <file>ui/AboutPanel.ui.qml</file>
+        <file>ui/MessageHUDForm.ui.qml</file>
+        <file>ui/MessageHUD.qml</file>
+        <file>ui/VideoPanel.qml</file>
+        <file>ui/MessageHUDRow.ui.qml</file>
+    </qresource>
+</RCC>

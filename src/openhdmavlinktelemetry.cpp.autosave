@@ -1,0 +1,255 @@
+#include "openhdmavlinktelemetry.h"
+
+#include <QtNetwork>
+
+#include <common/mavlink.h>
+#include <ardupilotmega/ardupilotmega.h>
+
+#include "util.h"
+
+OpenHDMavlinkTelemetry::OpenHDMavlinkTelemetry(QObject *parent): QObject(parent) {
+    qDebug() << "OpenHDMavlinkTelemetry::OpenHDMavlinkTelemetry()";
+    init();
+}
+
+void OpenHDMavlinkTelemetry::init() {
+    qDebug() << "OpenHDMavlinkTelemetry::init()";
+    
+    mavlinkSocket = new QUdpSocket(this);
+    mavlinkSocket->bind(QHostAddress::Any, 14550);
+    connect(mavlinkSocket, SIGNAL(readyRead()), this, SLOT(processMavlinkDatagrams()));
+}
+
+void OpenHDMavlinkTelemetry::processMavlinkDatagrams() {
+    QByteArray datagram;
+
+    while (mavlinkSocket->hasPendingDatagrams()) {
+        datagram.resize(int(mavlinkSocket->pendingDatagramSize()));
+        mavlinkSocket->readDatagram(datagram.data(), datagram.size());
+
+        mavlink_message_t msg;
+
+        typedef QByteArray::Iterator Iterator;
+        for (Iterator i = datagram.begin(); i != datagram.end(); i++) {
+            char c = *i;
+
+            uint8_t res = mavlink_parse_char(MAVLINK_COMM_0, (uint8_t)c, &msg, &r_mavlink_status);
+
+            if (res) {
+                //printf("Received message with ID %d, sequence: %d from component %d of system %d\n", msg.msgid, msg.seq, msg.compid, msg.sysid);
+
+                switch (msg.msgid) {
+                    case MAVLINK_MSG_ID_HEARTBEAT: {
+                        mavlink_heartbeat_t heartbeat;
+                        mavlink_msg_heartbeat_decode(&msg, &heartbeat);
+                        MAV_STATE state = (MAV_STATE)heartbeat.system_status;
+                        MAV_MODE_FLAG mode = (MAV_MODE_FLAG)heartbeat.base_mode;
+                        if (mode & MAV_MODE_FLAG_SAFETY_ARMED) {
+                            // armed
+                            set_armed(true);
+                        } else {
+                            set_armed(false);
+                        }
+                        auto custom_mode = heartbeat.custom_mode;
+
+                        auto uav_type = heartbeat.type;
+                        switch (uav_type) {
+                            case MAV_TYPE_GENERIC: {
+                                break;
+                            }
+                            case MAV_TYPE_FIXED_WING: {
+                                auto plane_mode = plane_mode_from_enum((PLANE_MODE)custom_mode);
+                                set_flight_mode(plane_mode);
+                                break;
+                            }
+                            case MAV_TYPE_GROUND_ROVER: {
+                                auto rover_mode = rover_mode_from_enum((ROVER_MODE)custom_mode);
+                                set_flight_mode(rover_mode);
+                                break;
+                            }
+                            case MAV_TYPE_COAXIAL:
+                            case MAV_TYPE_HELICOPTER:
+                            case MAV_TYPE_HEXAROTOR:
+                            case MAV_TYPE_OCTOROTOR:
+                            case MAV_TYPE_TRICOPTER:
+                            case MAV_TYPE_QUADROTOR: {
+                                auto copter_mode = copter_mode_from_enum((COPTER_MODE)custom_mode);
+                                set_flight_mode(copter_mode);
+                                break;
+                            }
+                            case MAV_TYPE_SURFACE_BOAT:
+                            case MAV_TYPE_SUBMARINE: {
+                                auto sub_mode = sub_mode_from_enum((SUB_MODE)custom_mode);
+                                set_flight_mode(sub_mode);
+                                break;
+                            }
+                            case MAV_TYPE_ANTENNA_TRACKER: {
+                                auto tracker_mode = tracker_mode_from_enum((TRACKER_MODE)custom_mode);
+                                //set_tracker_mode(tracker_mode);
+                                break;
+                            }
+                            default: {
+                                // do nothing
+                            }
+                        }
+                        break;
+                    }
+                    case MAVLINK_MSG_ID_SYS_STATUS: {
+                        mavlink_sys_status_t sys_status;
+                        mavlink_msg_sys_status_decode(&msg, &sys_status);
+
+                        set_battery_voltage_raw((double)sys_status.voltage_battery / 1000.0);
+                        set_battery_voltage(tr("%1%2").arg(m_battery_voltage_raw, 4, 'f', 1, '0').arg("V"));
+                        set_battery_current(tr("%1%2").arg((double)sys_status.current_battery / 1000.0, 5, 'f', 1, '0').arg("A"));
+
+                        if (m_battery_voltage_raw >= 12.6) {
+                            set_battery_gauge("\uf079"); // 100
+                        } else if (m_battery_voltage_raw >= 12.5) {
+                            set_battery_gauge("\uf082"); // 90
+                        } else if (m_battery_voltage_raw >= 12.3) {
+                            set_battery_gauge("\uf081"); // 80
+                        } else if (m_battery_voltage_raw >= 12.1) {
+                            set_battery_gauge("\uf080"); // 70
+                        } else if (m_battery_voltage_raw >= 11.7) {
+                            set_battery_gauge("\uf07f"); // 60
+                        } else if (m_battery_voltage_raw >= 11.5) {
+                            set_battery_gauge("\uf07e"); // 50
+                        } else if (m_battery_voltage_raw >= 11.3) {
+                            set_battery_gauge("\uf07d"); // 40
+                        } else if (m_battery_voltage_raw >= 11.2) {
+                            set_battery_gauge("\uf07c"); // 30
+                        } else if (m_battery_voltage_raw >= 11.1) {
+                            set_battery_gauge("\uf07b"); // 20
+                        } else if (m_battery_voltage_raw >= 10.9) {
+                            set_battery_gauge("\uf07a"); // 10
+                        } else {
+                            set_battery_gauge("\uf08e");
+                        }
+                        break;
+                    }
+                    case MAVLINK_MSG_ID_SYSTEM_TIME:
+                        break;
+                    case MAVLINK_MSG_ID_PARAM_VALUE:
+                        break;
+                    case MAVLINK_MSG_ID_GPS_RAW_INT:
+                        break;
+                    case MAVLINK_MSG_ID_GPS_STATUS: {
+                        mavlink_gps_status_t gps_status;
+                        mavlink_msg_gps_status_decode(&msg, &gps_status);
+                        set_satellites_visible(tr("%1").arg(gps_status.satellites_visible));
+                        break;
+                    }
+                    case MAVLINK_MSG_ID_RAW_IMU:
+                    case MAVLINK_MSG_ID_SCALED_PRESSURE:
+                    case MAVLINK_MSG_ID_ATTITUDE:
+                    case MAVLINK_MSG_ID_LOCAL_POSITION_NED:
+                        break;
+                    case MAVLINK_MSG_ID_GLOBAL_POSITION_INT: {
+                        mavlink_global_position_int_t global_position;
+                        mavlink_msg_global_position_int_decode(&msg, &global_position);
+
+                        set_homelat(tr("%1").arg((double)global_position.lat / 10000000.0, 2, 'f', 6, '1'));
+                        set_homelon(tr("%1").arg((double)global_position.lon / 10000000.0, 2, 'f', 6, '1'));
+
+                        break;
+                    }
+                    case MAVLINK_MSG_ID_SERVO_OUTPUT_RAW:
+                    case MAVLINK_MSG_ID_MISSION_CURRENT:
+                    case MAVLINK_MSG_ID_GPS_GLOBAL_ORIGIN:
+                    case MAVLINK_MSG_ID_NAV_CONTROLLER_OUTPUT:
+                        break;
+                    case MAVLINK_MSG_ID_RC_CHANNELS:
+                        mavlink_rc_channels_t rc_channels;
+                        mavlink_msg_rc_channels_decode(&msg, &rc_channels);
+                        qDebug() << "RC: " << rc_channels.chan1_raw
+                                           << rc_channels.chan2_raw
+                                           << rc_channels.chan3_raw
+                                           << rc_channels.chan4_raw
+                                           << rc_channels.chan5_raw
+                                           << rc_channels.chan6_raw
+                                           << rc_channels.chan7_raw
+                                           << rc_channels.chan8_raw
+                                           << rc_channels.chan9_raw
+                                           << rc_channels.chan10_raw;
+                        break;
+                    case MAVLINK_MSG_ID_VFR_HUD:
+                    case MAVLINK_MSG_ID_TIMESYNC:
+                        break;
+                    case MAVLINK_MSG_ID_POWER_STATUS:
+                    case MAVLINK_MSG_ID_TERRAIN_REPORT:
+                        break;
+                    case MAVLINK_MSG_ID_BATTERY_STATUS: {
+                        mavlink_battery_status_t battery_status;
+                        mavlink_msg_battery_status_decode(&msg, &battery_status);
+                        int total_voltage = 0;
+                        for (int cell = 0; cell < 10; cell++) {
+                            int cell_voltage  = battery_status.voltages[cell];
+                            if (cell_voltage != UINT16_MAX) {
+                                qDebug() << "Battery cell voltage " << cell << " :" << cell_voltage;
+
+                                total_voltage += cell_voltage;
+                            }
+                        }
+                        break;
+                    }
+                    case MAVLINK_MSG_ID_VIBRATION:
+                        break;
+                    case MAVLINK_MSG_ID_HOME_POSITION:
+                        break;
+                    default: {
+                        printf("Received unmatched message with ID %d, sequence: %d from component %d of system %d\n", msg.msgid, msg.seq, msg.compid, msg.sysid);
+                        break;
+                    }
+                }
+
+                emit mavlink_msg_received(msg);
+            }
+        }
+    }
+}
+
+
+void OpenHDMavlinkTelemetry::set_armed(bool armed) {
+    m_armed = armed;
+    emit armed_changed(m_armed);
+}
+
+void OpenHDMavlinkTelemetry::set_flight_mode(QString flight_mode) {
+    m_flight_mode = flight_mode;
+    emit flight_mode_changed(m_flight_mode);
+}
+
+void OpenHDMavlinkTelemetry::set_homelat(QString homelat) {
+    m_homelat = homelat;
+    emit homelat_changed(m_homelat);
+}
+
+void OpenHDMavlinkTelemetry::set_homelon(QString homelon) {
+    m_homelon = homelon;
+    emit homelon_changed(m_homelon);
+}
+
+void OpenHDMavlinkTelemetry::set_battery_voltage(QString battery_voltage) {
+    m_battery_voltage = battery_voltage;
+    emit battery_voltage_changed(m_battery_voltage);
+}
+
+void OpenHDMavlinkTelemetry::set_battery_voltage_raw(double battery_voltage_raw) {
+    m_battery_voltage_raw = battery_voltage_raw;
+    emit battery_voltage_raw_changed(m_battery_voltage_raw);
+}
+
+void OpenHDMavlinkTelemetry::set_battery_current(QString battery_current) {
+    m_battery_current = battery_current;
+    emit battery_current_changed(m_battery_current);
+}
+
+void OpenHDMavlinkTelemetry::set_battery_gauge(QString battery_gauge) {
+    m_battery_gauge = battery_gauge;
+    emit battery_gauge_changed(m_battery_gauge);
+}
+
+void OpenHDMavlinkTelemetry::set_satellites_visible(QString satellites_visible) {
+    m_satellites_visible = satellites_visible;
+    emit satellites_visible_changed(m_satellites_visible);
+}
