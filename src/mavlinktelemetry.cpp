@@ -183,6 +183,8 @@ void MavlinkTelemetry::processMavlinkMessage(mavlink_message_t msg) {
             mavlink_gps_raw_int_t gps_status;
             mavlink_msg_gps_raw_int_decode(&msg, &gps_status);
             set_satellites_visible(tr("%1").arg(gps_status.satellites_visible));
+            set_gps_hdop(tr("%1").arg((double)gps_status.eph / 100.0));
+
             break;
         case MAVLINK_MSG_ID_GPS_STATUS: {
             break;

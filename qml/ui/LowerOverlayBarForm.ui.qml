@@ -205,7 +205,7 @@ Rectangle {
             width: 48
             height: 24
             color: "#ffffff"
-            text: qsTr("(0.60)")
+            text: "(%1)".arg(MavlinkTelemetry.gps_hdop)
             anchors.right: parent.right
             anchors.rightMargin: 0
             verticalAlignment: Text.AlignTop
