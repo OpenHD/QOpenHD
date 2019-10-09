@@ -17,7 +17,7 @@ Rectangle {
     Text {
         id: title
         height: 48
-        color: "#b3ffffff"
+        color: "#eaffffff"
         text: qsTr("QOpenHD")
         anchors.top: parent.top
         anchors.topMargin: 8
