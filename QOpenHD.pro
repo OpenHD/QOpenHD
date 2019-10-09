@@ -85,14 +85,16 @@ DISTFILES += \
 
 
 iOSBuild {
-    #QMAKE_INFO_PLIST    = Info.plist
+    #QMAKE_INFO_PLIST    = ios/Info.plist
     ICON                = $${BASEDIR}/icons/macos.icns
-    #OTHER_FILES        += Info.plist
+    #DISTFILES        += ios/Info.plist
     LIBS += -framework VideoToolbox -framework AudioToolbox -framework CoreAudio
     CONFIG -= bitcode
     CONFIG += EnableGamepads
     CONFIG += EnableSpeech
     CONFIG += EnableVideo
+    #QMAKE_POST_LINK += /usr/libexec/PlistBuddy -c \"Set :CFBundleShortVersionString $$APPLE_BUILD\" $$DESTDIR/$${TARGET}.app/Contents/Info.plist
+    #QMAKE_POST_LINK += && /usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $$APPLE_BUILD\" $$DESTDIR/$${TARGET}.app/Contents/Info.plist
 }
 
 MacBuild {
