@@ -66,7 +66,6 @@ HEADERS += \
     inc/wifibroadcast.h
 
 DISTFILES += \
-    Info.plist \
     android/AndroidManifest.xml \
     android/build.gradle \
     android/gradle/wrapper/gradle-wrapper.jar \
@@ -97,15 +96,18 @@ iOSBuild {
 }
 
 MacBuild {
-    #QMAKE_INFO_PLIST = Info.plist
+    QMAKE_INFO_PLIST = mac/Info.plist
     ICON = $${BASEDIR}/icons/macos.icns
-    #OTHER_FILES += Info.plist
+    DISTFILES += mac/Info.plist
     LIBS += -framework ApplicationServices
     LIBS += -framework VideoToolbox
     CONFIG += EnableGamepads
     CONFIG += EnableJoysticks
     CONFIG += EnableSpeech
     CONFIG += EnableVideo
+
+    QMAKE_POST_LINK += /usr/libexec/PlistBuddy -c \"Set :CFBundleShortVersionString $$APPLE_BUILD\" $$DESTDIR/$${TARGET}.app/Contents/Info.plist
+    QMAKE_POST_LINK += && /usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $$APPLE_BUILD\" $$DESTDIR/$${TARGET}.app/Contents/Info.plist
 }
 
 LinuxBuild {
