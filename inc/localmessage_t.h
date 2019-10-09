@@ -7,7 +7,11 @@ extern "C" {
 typedef struct {
     uint8_t level;
     int message[1024];
-} __attribute__((packed)) localmessage_t;
+}
+#ifndef _MSC_VER
+__attribute__((packed))
+#endif
+localmessage_t;
 
 #ifdef __cplusplus
 }

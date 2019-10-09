@@ -24,7 +24,11 @@ struct rcdata_s {
     unsigned int chan8 : 11;
     unsigned int Is16  : 8;
     unsigned int switches : 16;
-} __attribute__ ((__packed__));
+}
+#ifndef _MSC_VER
+__attribute__((packed))
+#endif
+;
 static struct rcdata_s rcdata;
 
 static uint map(double input, double input_start, double input_end, uint16_t output_start, uint16_t output_end) {

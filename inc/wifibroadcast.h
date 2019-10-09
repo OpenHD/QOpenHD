@@ -13,7 +13,11 @@ typedef struct {
     int8_t current_signal_dbm;
     int8_t type; // 0 = Atheros, 1 = Ralink
     int8_t signal_good;
-} __attribute__((packed)) wifi_adapter_rx_status_forward_t;
+}
+#ifndef _MSC_VER
+__attribute__((packed))
+#endif
+wifi_adapter_rx_status_forward_t;
 
 typedef struct {
     uint32_t damaged_block_cnt; // number bad blocks video downstream
@@ -40,7 +44,11 @@ typedef struct {
     uint8_t temp_air; // CPU temperature Air Pi
     uint32_t wifi_adapter_cnt; // number of wifi adapters
     wifi_adapter_rx_status_forward_t adapter[6]; // same struct as in wifibroadcast lib.h
-} __attribute__((packed)) wifibroadcast_rx_status_forward_t;
+}
+#ifndef _MSC_VER
+__attribute__((packed))
+#endif
+wifibroadcast_rx_status_forward_t;
 
 
 #if defined(__rasp_pi__)
