@@ -1,15 +1,15 @@
 QOPENHD_VERSION = $$system(git describe --always --tags --abbrev=0 --dirty)
 
-MacBuild {
-    MAC_VERSION  = $$QOPENHD_VERSION
-    message("MAC_VERSION:" $$MAC_VERSION)
-    DEFINES += MAC_VERSION=\"\\\"$$MAC_VERSION\\\"\"
+MacBuild | iOSBuild {
+    APPLE_VERSION  = $$QOPENHD_VERSION
+    message("APPLE_VERSION:" $$APPLE_VERSION)
+    DEFINES += APPLE_VERSION=\"\\\"$$APPLE_VERSION\\\"\"
 
-    MAC_BUILD    = $$replace(QOPENHD_VERSION, "v", "")
-    MAC_BUILD    = $$replace(MAC_BUILD, "-dirty", "")
+    APPLE_BUILD    = $$replace(QOPENHD_VERSION, "v", "")
+    APPLE_BUILD    = $$replace(APPLE_BUILD, "-dirty", "")
 
-    DEFINES += MAC_BUILD=\"\\\"$$MAC_BUILD\\\"\"
-    message("MAC_BUILD:" $$MAC_BUILD)
+    DEFINES += APPLE_BUILD=\"\\\"$$APPLE_BUILD\\\"\"
+    message("APPLE_BUILD:" $$APPLE_BUILD)
 }
 
 DEFINES += QOPENHD_VERSION=\"\\\"$$QOPENHD_VERSION\\\"\"
