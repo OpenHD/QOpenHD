@@ -42,6 +42,14 @@ Item {
             font.pixelSize: 13
         }
 
+        TabButton {
+            text: qsTr("Screen")
+            width: implicitWidth
+            height: 48
+            font.pixelSize: 13
+            visible: OpenHDPi.is_raspberry_pi
+        }
+
         /*TabButton {
             text: qsTr("Joystick")
             width: implicitWidth
@@ -132,44 +140,6 @@ Item {
                 height: 64
                 color: "#8cbfd7f3"
                 y: 64
-                visible: OpenHDPi.is_raspberry_pi
-
-                Text {
-                    text: "Screen Brightness"
-                    font.weight: Font.Bold
-                    font.pixelSize: 13
-                    anchors.leftMargin: 8
-                    verticalAlignment: Text.AlignVCenter
-                    width: 224
-                    height: parent.height
-                    anchors.left: parent.left
-                }
-
-                SpinBox {
-                    id: spinBox
-                    height: parent.height
-                    width: 212
-                    font.pixelSize: 14
-                    anchors.right: parent.right
-                    from: 0
-                    to: 255
-                    stepSize: 5
-                    anchors.rightMargin: 0
-                    Component.onCompleted: value = OpenHDPi.brightness
-                    // @disable-check M223
-                    onValueChanged: {
-                        OpenHDPi.brightness = value
-                        // @disable-check M222
-                        settings.setValue("brightness", value)
-                    }
-                }
-            }
-
-            Rectangle {
-                width: parent.width
-                height: 64
-                color: "#8cbfd7f3"
-                y: 128
 
                 Text {
                     text: "Battery Cells"
@@ -513,6 +483,54 @@ Item {
         }
 
 
+        ScrollView {
+            id: screenView
+            width: parent.width
+            height: parent.height
+            contentHeight: 3 * 64
+
+            clip: true
+
+            visible: OpenHDPi.is_raspberry_pi
+
+            Rectangle {
+                width: parent.width
+                height: 64
+                color: "#8cbfd7f3"
+                y: 64
+                visible: OpenHDPi.is_raspberry_pi
+
+                Text {
+                    text: "Brightness"
+                    font.weight: Font.Bold
+                    font.pixelSize: 13
+                    anchors.leftMargin: 8
+                    verticalAlignment: Text.AlignVCenter
+                    width: 224
+                    height: parent.height
+                    anchors.left: parent.left
+                }
+
+                SpinBox {
+                    id: screenBrightnessSpinBox
+                    height: parent.height
+                    width: 212
+                    font.pixelSize: 14
+                    anchors.right: parent.right
+                    from: 0
+                    to: 255
+                    stepSize: 5
+                    anchors.rightMargin: 0
+                    Component.onCompleted: value = OpenHDPi.brightness
+                    // @disable-check M223
+                    onValueChanged: {
+                        OpenHDPi.brightness = value
+                        // @disable-check M222
+                        settings.setValue("brightness", value)
+                    }
+                }
+            }
+        }
 
         //Item {
         //    id: joystickTab
