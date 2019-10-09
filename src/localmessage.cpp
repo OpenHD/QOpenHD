@@ -1,9 +1,12 @@
 #include "localmessage.h"
 
+
+#if defined(__rasp_pi__)
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#endif
 
 #include <QThread>
 #include <QtConcurrent>
