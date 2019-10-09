@@ -10,6 +10,8 @@ CONFIG+=sdk_no_version_check
 
 include(platforms.pri)
 
+include(git.pri)
+
 CONFIG(debug, debug|release) {
     DESTDIR = $${OUT_PWD}/debug
 
