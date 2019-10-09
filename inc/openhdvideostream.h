@@ -3,8 +3,6 @@
 
 #include <QObject>
 
-#include <unistd.h>
-
 #if defined(ENABLE_VIDEO)
 #include "../src/VideoStreaming/VideoStreaming.h"
 #include "../src/VideoStreaming/VideoSurface.h"

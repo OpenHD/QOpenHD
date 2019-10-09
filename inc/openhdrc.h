@@ -15,8 +15,6 @@
 #include <QJoysticks.h>
 #endif
 
-#include <unistd.h>
-
 class QUdpSocket;
 
 class OpenHDRC: public QObject {

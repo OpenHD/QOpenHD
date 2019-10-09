@@ -4,8 +4,6 @@
 #include <QObject>
 #include <QtQuick>
 
-#include <unistd.h>
-
 #include "constants.h"
 
 class LocalMessage: public QObject {

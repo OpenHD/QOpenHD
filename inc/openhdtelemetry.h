@@ -4,8 +4,6 @@
 #include <QObject>
 #include <QtQuick>
 
-#include <unistd.h>
-
 #include "wifibroadcast.h"
 #include "constants.h"
 

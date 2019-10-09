@@ -7,8 +7,6 @@
 #include <QtTextToSpeech/QTextToSpeech>
 #endif
 
-#include <unistd.h>
-
 #include <common/mavlink.h>
 #include <ardupilotmega/ardupilotmega.h>
 #include "constants.h"
