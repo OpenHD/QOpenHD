@@ -26,8 +26,6 @@ CONFIG(debug, debug|release) {
         }
     }
     DESTDIR = $${OUT_PWD}/release
-
-    CONFIG += debug
     DEFINES += QMLJSDEBUGGER
     DEFINES += QGC_INSTALL_RELEASE
 }
