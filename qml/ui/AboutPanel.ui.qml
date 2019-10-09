@@ -22,7 +22,7 @@ Rectangle {
         anchors.top: parent.top
         anchors.topMargin: 8
         anchors.right: parent.right
-        anchors.rightMargin: 72
+        anchors.rightMargin: 247
         anchors.left: image.right
         anchors.leftMargin: 12
         verticalAlignment: Text.AlignTop
@@ -57,6 +57,19 @@ Rectangle {
         anchors.rightMargin: 24
         anchors.left: parent.left
         anchors.leftMargin: 24
+    }
+
+    Text {
+        id: qopenhd_version
+        width: 173
+        height: 14
+        color: "#b3ffffff"
+        text: QOPENHD_VERSION
+        anchors.left: title.left
+        anchors.leftMargin: 0
+        anchors.top: title.bottom
+        anchors.topMargin: 0
+        font.pixelSize: 12
     }
 }
 

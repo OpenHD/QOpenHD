@@ -103,6 +103,8 @@ int main(int argc, char *argv[]) {
     engine.rootContext()->setContextProperty("EnableRC", QVariant(false));
 #endif
 
+    engine.rootContext()->setContextProperty("QOPENHD_VERSION", QVariant(QOPENHD_VERSION));
+
     engine.load(QUrl(QLatin1String("qrc:/main.qml")));
     return app.exec();
 }
