@@ -1,5 +1,6 @@
 #include "wifibroadcast.h"
 
+#if defined(__rasp_pi__)
 #include <unistd.h>
 #include <sys/mman.h>
 #include <sys/stat.h>        /* For mode constants */
@@ -7,7 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#if defined(__rasp_pi__)
+
 /*
  * These are copied verbatim from Open.HD/telemetry.c to ensure the shared memory stuff works
  * exactly the same as the original OSD code
