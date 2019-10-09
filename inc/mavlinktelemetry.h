@@ -117,6 +117,6 @@ private:
 };
 
 
-QObject *mavlinkTelemetrySingletonProvider(QQmlEngine *engine, QJSEngine *scriptEngine) __attribute__((unused));
+QObject *mavlinkTelemetrySingletonProvider(QQmlEngine *engine, QJSEngine *scriptEngine);
 
 #endif

@@ -153,6 +153,6 @@ private:
 #endif
 };
 
-QObject *openHDTelemetrySingletonProvider(QQmlEngine *engine, QJSEngine *scriptEngine) __attribute__((unused));
+QObject *openHDTelemetrySingletonProvider(QQmlEngine *engine, QJSEngine *scriptEngine);
 
 #endif

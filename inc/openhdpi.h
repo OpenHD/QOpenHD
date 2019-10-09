@@ -45,6 +45,6 @@ signals:
      void undervolt_changed(bool undervolt);
 };
 
-QObject *openHDPiSingletonProvider(QQmlEngine *engine, QJSEngine *scriptEngine) __attribute__((unused));
+QObject *openHDPiSingletonProvider(QQmlEngine *engine, QJSEngine *scriptEngine);
 
 #endif // OPENHDPI_H
