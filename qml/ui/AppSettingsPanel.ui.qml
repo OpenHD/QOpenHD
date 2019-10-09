@@ -108,37 +108,10 @@ Item {
                 }
             }
 
-            /*Rectangle {
-                width: parent.width
-                height: 64
-                color: "#00000000"
-                y: 128
-
-                Text {
-                    text: "Enable RC"
-                    font.weight: Font.Bold
-                    font.pixelSize: 13
-                    anchors.leftMargin: 8
-                    verticalAlignment: Text.AlignVCenter
-                    width: 224
-                    height: parent.height
-                    anchors.left: parent.left
-                }
-
-                Switch {
-                    width: 32
-                    height: parent.height
-                    anchors.rightMargin: 12
-                    anchors.right: parent.right
-                    Component.onCompleted: checked = settings.value("enable_rc", false)
-                    onCheckedChanged: settings.setValue("enable_rc", checked)
-                }
-            }*/
-
             Rectangle {
                 width: parent.width
                 height: 64
-                color: "#8cbfd7f3"
+                color: "#00000000"
                 y: 64
 
                 Text {
@@ -169,6 +142,35 @@ Item {
                         // @disable-check M222
                         settings.setValue("battery_cells", value)
                     }
+                }
+            }
+
+
+            Rectangle {
+                width: parent.width
+                height: 64
+                color: "#8cbfd7f3"
+                y: 128
+                visible: EnableRC
+
+                Text {
+                    text: "Enable RC"
+                    font.weight: Font.Bold
+                    font.pixelSize: 13
+                    anchors.leftMargin: 8
+                    verticalAlignment: Text.AlignVCenter
+                    width: 224
+                    height: parent.height
+                    anchors.left: parent.left
+                }
+
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 12
+                    anchors.right: parent.right
+                    Component.onCompleted: checked = settings.value("enable_rc", false)
+                    onCheckedChanged: settings.setValue("enable_rc", checked)
                 }
             }
         }
