@@ -8,3 +8,6 @@ QOpenHD.pro.user
 QOpenHD.pro.user*
 *.stash
 gstreamer-*
+mac/include
+mac/lib
+mac/share
