@@ -134,7 +134,7 @@ static void printf_extension_log_func(GstDebugCategory * category,
 void initializeVideoStreaming(int &argc, char* argv[], char* logpath, char* debuglevel)
 {
 #if defined(QGC_GST_STREAMING)
-    #ifdef Q_OS_MAC
+    #ifdef __macos__
         #ifdef QGC_INSTALL_RELEASE
             QString currentDir = QCoreApplication::applicationDirPath();
             qgcputenv("GST_PLUGIN_SCANNER",           currentDir, "/../Frameworks/GStreamer.framework/Versions/1.0/libexec/gstreamer-1.0/gst-plugin-scanner");
