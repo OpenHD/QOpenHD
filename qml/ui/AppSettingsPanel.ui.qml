@@ -19,7 +19,7 @@ Item {
     height: 300
     TabBar {
         id: appSettingsBar
-        width: 504
+        width: parent.width
         height: 48
         anchors.right: parent.right
         anchors.rightMargin: 0
