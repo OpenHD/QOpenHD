@@ -75,6 +75,15 @@ int main(int argc, char *argv[]) {
 #endif
 #endif
 
+    /*qDebug() << "Checking codecs...";
+
+    GList *l;
+    GList *elements = gst_element_factory_list_get_elements(GST_ELEMENT_FACTORY_TYPE_ANY, GST_RANK_NONE);
+    for (l = elements; l; l = l->next) {
+      auto f = l->data;
+      qDebug() << "factory: %s" << GST_OBJECT_NAME(f);
+    }
+    qDebug() << "... done checking codecs";*/
 
     QFontDatabase::addApplicationFont(":/Font Awesome 5 Free-Solid-900.otf");
     //QFontDatabase::addApplicationFont(":/Font Awesome 5 Free-Regular-400.otf");
