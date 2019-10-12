@@ -39,6 +39,7 @@ Rectangle {
         ToolTip {
             parent: slider.handle
             visible: slider.pressed
+            // @disable-check M222
             text: "%1%2".arg(slider.value).arg(model.unit)
         }
     }

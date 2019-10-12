@@ -43,17 +43,24 @@ Rectangle {
         anchors.rightMargin: 8
 
 
+        // @disable-check M223
         Component.onCompleted: {
+            // @disable-check M223
             for (var i = 0; i < model.count; i++) {
+                // @disable-check M222
                 var choice = model.get(i);
+                // @disable-check M223
                 if (choice.value == value) {
                     currentIndex = i;
                 }
             }
         }
 
+        // @disable-check M223
         onActivated: {
+            // @disable-check M222
             listModel.setProperty(itemIndex, "value", choiceBox.model.get(index).value);
+            model.modified = true;
         }
 
         /*
@@ -64,6 +71,7 @@ Rectangle {
         delegate: ItemDelegate {
             id: itemDelegate
             width: parent.width
+            // @disable-check M222
             text: choiceBox.textRole ? (Array.isArray(choiceBox.model) ? modelData[choiceBox.textRole] : model[choiceBox.textRole]) : modelData
             font.weight: choiceBox.currentIndex === index ? Font.DemiBold : Font.Normal
             highlighted: choiceBox.highlightedIndex === index
