@@ -72,7 +72,6 @@ DISTFILES += \
     android/gradle/wrapper/gradle-wrapper.properties \
     android/gradlew \
     android/gradlew.bat \
-    android/res/drawable/splash.xml \
     android/res/drawable-hdpi/splashscreen.png \
     android/res/drawable-ldpi/splashscreen.png \
     android/res/drawable-mdpi/splashscreen.png \
