@@ -60,7 +60,7 @@ void MavlinkTelemetry::processMavlinkFifo() {
 
     FILE *fifoFP = fopen(MAVLINK_FIFO, "r");
     if (fifoFP == nullptr) {
-        sleep(1);
+        QThread::msleep(1000);
         return;
     }
 
@@ -71,7 +71,7 @@ void MavlinkTelemetry::processMavlinkFifo() {
             processMavlinkMessage(msg);
         }
     }
-    sleep(1);
+    QThread::msleep(1000);
     fclose(fifoFP);
 }
 #else
