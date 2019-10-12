@@ -87,15 +87,15 @@ This is not an issue on the GroundPi because the ground station itself handles j
 
 ## Video streaming
 
-On the GroundPi, the app is simply an overlay over `hello_video` just like the original OSD, so video should work exactly the same as it always has.
+On the GroundPi, the app is simply an overlay on `hello_video` just like the original OSD, so video should work exactly the same as it always has.
 
 On other platforms, QtGStreamer is used to decode and render the video stream using available hardware decoders and OpenGL. This is the same code that QGroundControl uses at the moment.
 
 The QtGStreamer code itself is very old and mostly unmaintained upstream, it is likely to be replaced very soon with another video component based on qmlglsink or one based on libavcodec + GL shader rendering that I have been working on.
 
-On Android there seem to be some hardware acceleration issues with the currently committed QtGStreamer code. QGroundControl has a newer version of it where they have implemented hardware acceleration on Android, but it didn't actually work on my test device (the androidmedia gstreamer plugin can't be loaded so the accelerated decoders are not avalable).
+On Android there seem to be some hardware acceleration issues with the currently committed QtGStreamer code. QGroundControl has a newer version of it where they have implemented hardware acceleration on Android, but it didn't actually work on my test device (the `androidmedia` GStreamer plugin can't be loaded, so the accelerated decoders are not avalable).
 
-Video should be working fine on iOS, Mac, Windows and Linux, as most machines can handle softare decoding without trouble (it works, it's just not efficient and wastes battery power).
+Video should be working fine on iOS, Mac, Windows and Linux, as most machines can handle software decoding without trouble (it works, it's just not efficient and wastes battery power).
 
 ## Building
 
@@ -103,11 +103,11 @@ I am planning to provide binaries and GroundPi images so that building the app i
 
 These are only a rough outline rather than exhaustive build steps (that would fill several pages and be very complciated to write and keep updated).
 
-The build process is dependent on which platform you're building for, and can be quite complicated and irritating when something doesn't work quite right or if you aren't fammiliar with all these development frameworks and toolchains.
+The build process is dependent on which platform you're building *on* and which platform you're building *for*. It can be quite complicated and irritating when something doesn't work right, or if you aren't familiar with all these development frameworks and toolchains.
 
 This will be *far* less complicated once QtGStreamer is replaced.
 
-In general, you'll need Qt 5.13.1+ and the GStreamer development package, specifically version 1.16.0 (which seems to handle video packet corruption much better than 1.14.4 does).
+In general, you'll need Qt 5.13.1+ and the GStreamer development package, specifically version 1.16.1 (which seems to handle video packet corruption much better than 1.14.4 does).
 
 #### Mac
 
@@ -129,7 +129,7 @@ I will update these instructions once I have a chance to try it.
 
 #### Linux
 
-Also untested, but you should only need to install Qt using the [Qt online installer](https://www.qt.io/download-qt-installer), and install `gcc`/`binutils`/etc, gstreamer-1.0, and related gstreamer development packages from your distribution repo.
+Also untested, but you should only need to install Qt either from your distribution repo (if the Qt version they provide is new enough), or using the [Qt online installer](https://www.qt.io/download-qt-installer). You also need to install `gcc`/`binutils`/etc, `gstreamer-1.0`, and related gstreamer development packages from your distribution repo. 
 
 You can then open `QOpenHD.pro` using Qt Creator, build and run the app.
 
@@ -137,13 +137,13 @@ You can then open `QOpenHD.pro` using Qt Creator, build and run the app.
 
 1. Install [Android Studio](https://developer.android.com/studio)
 
-2. Use Android Studio to install Android SDK level 29, along with the NDK and build toolchain.
+2. Use Android Studio to install Android SDK level 28, along with NDK r18b and build toolchain.
 
 3. Install Qt using the [Qt online installer](https://www.qt.io/download-qt-installer)
 
 4. Have the Qt Installer download Qt 5.13.1+ for Android 
 
-5. Download the [GStreamer development kit](https://gstreamer.freedesktop.org/download/) for Android 1.16.0
+5. Download the [GStreamer development kit](https://gstreamer.freedesktop.org/download/) for Android 1.16.1
 
 6. Unzip the GStreamer archive inside the QOpenHD directory.
 
