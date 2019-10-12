@@ -24,6 +24,7 @@ ApplicationWindow {
 
     Material.theme: Material.Light
     Material.accent: Material.Blue
+    visibility: UseFullscreen ? "FullScreen" : "AutomaticVisibility"
 
     property bool initialised: false
 

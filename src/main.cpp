@@ -106,6 +106,12 @@ int main(int argc, char *argv[]) {
     engine.rootContext()->setContextProperty("EnableRC", QVariant(false));
 #endif
 
+#if defined(__ios__) || defined(__android__)
+    engine.rootContext()->setContextProperty("UseFullscreen", QVariant(true));
+#else
+    engine.rootContext()->setContextProperty("UseFullscreen", QVariant(false));
+#endif
+
     engine.rootContext()->setContextProperty("QOPENHD_VERSION", QVariant(QOPENHD_VERSION));
 
     engine.load(QUrl(QLatin1String("qrc:/main.qml")));
