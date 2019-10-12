@@ -22,7 +22,9 @@ CONFIG(debug, debug|release) {
     CONFIG += force_debug_info
     !iOSBuild {
         !AndroidBuild {
-            CONFIG += ltcg
+            !RaspberryPiBuild {
+                CONFIG += ltcg
+            }
         }
     }
     DESTDIR = $${OUT_PWD}/release
