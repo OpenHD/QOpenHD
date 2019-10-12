@@ -100,12 +100,6 @@ DISTFILES += \
     icons/AppIcon.appiconset/iPhone-spotlight@2x.png \
     icons/AppIcon.appiconset/iPhone-spotlight@3x.png \
     icons/AppIcon.appiconset/iTunesArtwork@2x.png \
-    icons/LaunchImage-iOS7-Landscape.png \
-    icons/LaunchImage-iOS7-Landscape@2x.png \
-    icons/LaunchImage-iOS7-Landscape@3x.png \
-    icons/LaunchImage-iOS7-Landscape@4x.png \
-    icons/LaunchImage-iOS7-Landscape~iPad.png \
-    icons/LaunchImage-iOS7-Landscape~iPad@2x.png \
     qml/qtquickcontrols2.conf \
     qml/ui/qmldir
 
@@ -117,7 +111,9 @@ DISTFILES += \
 iOSBuild {
     QMAKE_INFO_PLIST    = ios/Info.plist
     ICON                = $${BASEDIR}/icons/macos.icns
-    DISTFILES        += ios/Info.plist
+    DISTFILES        += ios/Info.plist \
+                        icons/LaunchScreen.png \
+                        icons/LaunchScreen.storyboard
     LIBS += -framework VideoToolbox -framework AudioToolbox -framework CoreAudio
     CONFIG -= bitcode
     CONFIG += EnableGamepads
@@ -125,7 +121,7 @@ iOSBuild {
     CONFIG += EnableVideo
     #QMAKE_POST_LINK += /usr/libexec/PlistBuddy -c \"Set :CFBundleShortVersionString $$APPLE_BUILD\" $$DESTDIR/$${TARGET}.app/Contents/Info.plist
     #QMAKE_POST_LINK += && /usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $$APPLE_BUILD\" $$DESTDIR/$${TARGET}.app/Contents/Info.plist
-    app_launch_images.files = $$files($$PWD/icons/LaunchImage*.png)
+    app_launch_images.files = $$PWD/icons/LaunchScreen.png $$files($$PWD/icons/LaunchScreen.storyboard)
     QMAKE_BUNDLE_DATA += app_launch_images
 
     ios_icon.files = $$files($$PWD/icons/AppIcon.appiconset/*.png)
