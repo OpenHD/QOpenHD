@@ -32,6 +32,10 @@ Rectangle {
         width: 192
         height: 32
         Component.onCompleted: text = model.value
-        onTextChanged: model.value = text
+        // @disable-check M223
+        onTextChanged: {
+            model.value = text;
+            model.modified = true;
+        }
     }
 }

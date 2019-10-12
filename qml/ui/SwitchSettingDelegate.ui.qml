@@ -31,5 +31,6 @@ Rectangle {
         anchors.rightMargin: 12
         width: 32
         height: 32
+        onCheckedChanged: model.modified = true
     }
 }

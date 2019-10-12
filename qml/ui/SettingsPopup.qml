@@ -135,7 +135,8 @@ SettingsPopupForm {
                               "interval": interval,
                               "itemType": itemType,
                               "value": finalValue,
-                              "unit": unit});
+                              "unit": unit,
+                              "modified": false});
             }
 
             /*
@@ -183,6 +184,11 @@ SettingsPopupForm {
         function _process(model, mapping) {
             for(var index = 0; index < model.count; index++) {
                 var setting = model.get(index);
+                var modified = setting["modified"];
+                // skip saving any settings the user hasn't actually changed
+                if (!modified) {
+                    continue;
+                }
                 var key = setting["setting"];
                 var initialValue = setting["value"];
                 // by default we pass through the value as-is, only map to another type if needed
