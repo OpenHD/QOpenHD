@@ -100,6 +100,8 @@ iOSBuild {
     CONFIG += EnableVideo
     #QMAKE_POST_LINK += /usr/libexec/PlistBuddy -c \"Set :CFBundleShortVersionString $$APPLE_BUILD\" $$DESTDIR/$${TARGET}.app/Contents/Info.plist
     #QMAKE_POST_LINK += && /usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $$APPLE_BUILD\" $$DESTDIR/$${TARGET}.app/Contents/Info.plist
+    app_launch_images.files = $$files($$PWD/icons/LaunchImage*.png)
+    QMAKE_BUNDLE_DATA += app_launch_images
 }
 
 MacBuild {
