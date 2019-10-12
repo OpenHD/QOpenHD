@@ -4,6 +4,9 @@
 #include <QAbstractVideoSurface>
 #include <QDebug>
 #include <QFontDatabase>
+#if defined(__android__)
+#include <QtAndroidExtras/QtAndroid>
+#endif
 
 #include "constants.h"
 
@@ -106,5 +109,10 @@ int main(int argc, char *argv[]) {
     engine.rootContext()->setContextProperty("QOPENHD_VERSION", QVariant(QOPENHD_VERSION));
 
     engine.load(QUrl(QLatin1String("qrc:/main.qml")));
+
+#if defined(__android__)
+    QtAndroid::hideSplashScreen();
+#endif
+
     return app.exec();
 }

@@ -151,6 +151,7 @@ AndroidBuild {
     CONFIG += EnableJoysticks
     CONFIG += EnableSpeech
     CONFIG += EnableVideo
+    QT += androidextras
 }
 
 EnableSpeech {
