@@ -73,7 +73,12 @@ DISTFILES += \
     android/gradlew \
     android/gradlew.bat \
     android/res/drawable/splash.xml \
-    android/res/drawable/splashscreen.jpg \
+    android/res/drawable-hdpi/splashscreen.png \
+    android/res/drawable-ldpi/splashscreen.png \
+    android/res/drawable-mdpi/splashscreen.png \
+    android/res/drawable-xhdpi/splashscreen.png \
+    android/res/drawable-xxhdpi/splashscreen.png \
+    android/res/drawable-xxxhdpi/splashscreen.png \
     android/res/values/libs.xml \
     android/res/values/styles.xml \
     qml/qtquickcontrols2.conf \
