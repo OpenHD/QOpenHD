@@ -165,8 +165,8 @@ Rectangle {
         height: 24
         anchors.top: parent.top
         anchors.topMargin: 0
-        anchors.right: parent.right
-        anchors.rightMargin: 125
+        anchors.right: flight_timer.left
+        anchors.rightMargin: 6
 
         Text {
             id: satellite_icon
