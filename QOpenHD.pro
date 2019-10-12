@@ -95,9 +95,9 @@ DISTFILES += \
 
 
 iOSBuild {
-    #QMAKE_INFO_PLIST    = ios/Info.plist
+    QMAKE_INFO_PLIST    = ios/Info.plist
     ICON                = $${BASEDIR}/icons/macos.icns
-    #DISTFILES        += ios/Info.plist
+    DISTFILES        += ios/Info.plist
     LIBS += -framework VideoToolbox -framework AudioToolbox -framework CoreAudio
     CONFIG -= bitcode
     CONFIG += EnableGamepads
