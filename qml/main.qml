@@ -15,8 +15,8 @@ ApplicationWindow {
     visible: true
     width: 800
     height: 480
-    minimumHeight: 480
-    minimumWidth: 800
+    minimumHeight: 320
+    minimumWidth: 480
     title: qsTr("Open.HD")
     color: "#00000000"
 
