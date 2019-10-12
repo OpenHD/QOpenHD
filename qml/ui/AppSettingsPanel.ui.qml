@@ -499,7 +499,7 @@ Item {
                 width: parent.width
                 height: 64
                 color: "#8cbfd7f3"
-                y: 64
+                y: 0
 
                 Text {
                     text: "Brightness"
