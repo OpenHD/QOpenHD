@@ -6,9 +6,9 @@ import QtQuick 2.13
  * to make them more visible and easier to deal with.
  *
  * Any settings not listed in these mappings will still end up in the "other" tab, allowing graceful
- * fallback if new settings are added on the ground station. Any settings that are *removed* will
- * simply not show up anymore, preventing the app from being fragile and dependent on specific
- * versions of the ground station.
+ * fallback if new settings are added on the ground station. Any settings that are *removed* from the
+ * ground station will simply not show up anymore, even if there is a mapping for it, preventing
+ * the app from being fragile and dependent on specific versions of the ground station.
  *
  */
 Item {
