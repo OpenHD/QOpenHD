@@ -15,7 +15,7 @@ For example:
 * The downlink RSSI occasionally shows zero on some platforms
 * Video is horribly delayed on some (all?) Android devices
 * Some settings don't save properly (text fields may not save, the "other" tab is all disabled)
-* Settings don't all load if there is RF interference or high CPU load (requires a one line change on the GroundPi side to fix)
+* Settings don't all load if there is RF interference or high CPU load (requires a [one line change](https://github.com/infincia/QOpenHD/issues/8) on the GroundPi side to fix)
 
 Some of those are bugs on the GroundPi side (mostly code nobody has ever "exercised" before) or require small changes to the Open.HD image, others are just things I haven't fixed yet in the app.
 
