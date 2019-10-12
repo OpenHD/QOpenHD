@@ -169,7 +169,9 @@ Item {
                     height: parent.height
                     anchors.rightMargin: 12
                     anchors.right: parent.right
+                    // @disable-check M222
                     Component.onCompleted: checked = settings.value("enable_rc", false)
+                    // @disable-check M222
                     onCheckedChanged: settings.setValue("enable_rc", checked)
                 }
             }
@@ -208,7 +210,9 @@ Item {
                     height: parent.height
                     anchors.rightMargin: 12
                     anchors.right: parent.right
+                    // @disable-check M222
                     Component.onCompleted: checked = settings.value("show_downlink_rssi", true)
+                    // @disable-check M222
                     onCheckedChanged: settings.setValue("show_downlink_rssi", checked)
                 }
             }
@@ -235,7 +239,9 @@ Item {
                     height: parent.height
                     anchors.rightMargin: 12
                     anchors.right: parent.right
+                    // @disable-check M222
                     Component.onCompleted: checked = settings.value("show_uplink_rssi", true)
+                    // @disable-check M222
                     onCheckedChanged: settings.setValue("show_uplik_rssi", checked)
                 }
             }
@@ -262,7 +268,9 @@ Item {
                     height: parent.height
                     anchors.rightMargin: 12
                     anchors.right: parent.right
+                    // @disable-check M222
                     Component.onCompleted: checked = settings.value("show_bitrate", true)
+                    // @disable-check M222
                     onCheckedChanged: settings.setValue("show_bitrate", checked)
                 }
             }
@@ -289,7 +297,9 @@ Item {
                     height: parent.height
                     anchors.rightMargin: 12
                     anchors.right: parent.right
+                    // @disable-check M222
                     Component.onCompleted: checked = settings.value("show_gps", true)
+                    // @disable-check M222
                     onCheckedChanged: settings.setValue("show_gps", checked)
                 }
             }
@@ -316,7 +326,9 @@ Item {
                     height: parent.height
                     anchors.rightMargin: 12
                     anchors.right: parent.right
+                    // @disable-check M222
                     Component.onCompleted: checked = settings.value("show_home_distance", true)
+                    // @disable-check M222
                     onCheckedChanged: settings.setValue("show_home_distance", checked)
                 }
             }
@@ -343,7 +355,9 @@ Item {
                     height: parent.height
                     anchors.rightMargin: 12
                     anchors.right: parent.right
+                    // @disable-check M222
                     Component.onCompleted: checked = settings.value("show_flight_timer", true)
+                    // @disable-check M222
                     onCheckedChanged: settings.setValue("show_flight_timer", checked)
                 }
             }
@@ -370,7 +384,9 @@ Item {
                     height: parent.height
                     anchors.rightMargin: 12
                     anchors.right: parent.right
+                    // @disable-check M222
                     Component.onCompleted: checked = settings.value("show_flight_mode", true)
+                    // @disable-check M222
                     onCheckedChanged: settings.setValue("show_flight_mode", checked)
                 }
             }
@@ -397,7 +413,9 @@ Item {
                     height: parent.height
                     anchors.rightMargin: 12
                     anchors.right: parent.right
+                    // @disable-check M222
                     Component.onCompleted: checked = settings.value("show_ground_status", true)
+                    // @disable-check M222
                     onCheckedChanged: settings.setValue("show_ground_status", checked)
                 }
             }
@@ -424,7 +442,9 @@ Item {
                     height: parent.height
                     anchors.rightMargin: 12
                     anchors.right: parent.right
+                    // @disable-check M222
                     Component.onCompleted: checked = settings.value("show_air_status", true)
+                    // @disable-check M222
                     onCheckedChanged: settings.setValue("show_air_status", checked)
                 }
             }
@@ -451,7 +471,9 @@ Item {
                     height: parent.height
                     anchors.rightMargin: 12
                     anchors.right: parent.right
+                    // @disable-check M222
                     Component.onCompleted: checked = settings.value("show_air_battery", true)
+                    // @disable-check M222
                     onCheckedChanged: settings.setValue("show_air_battery", checked)
                 }
             }
@@ -478,7 +500,9 @@ Item {
                     height: parent.height
                     anchors.rightMargin: 12
                     anchors.right: parent.right
+                    // @disable-check M222
                     Component.onCompleted: checked = settings.value("show_log_onscreen", true)
+                    // @disable-check M222
                     onCheckedChanged: settings.setValue("show_log_onscreen", checked)
                 }
             }
