@@ -5,8 +5,6 @@ import QtQuick.Layouts 1.0
 import QtGraphicalEffects 1.12
 import Qt.labs.settings 1.0
 
-import QtQuick.Controls.Material 2.12
-
 import OpenHD 1.0
 
 import "./ui"
@@ -22,8 +20,6 @@ ApplicationWindow {
     title: qsTr("Open.HD")
     color: "#00000000"
 
-    Material.theme: Material.Light
-    Material.accent: Material.Blue
     visibility: UseFullscreen ? "FullScreen" : "AutomaticVisibility"
 
     property bool initialised: false
