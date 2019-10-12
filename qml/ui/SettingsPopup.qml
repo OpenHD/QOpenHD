@@ -219,7 +219,7 @@ SettingsPopupForm {
         _process(hotspotSettingsModel,   settingsMap.hotspotSettingsMap);
         _process(smartSyncSettingsModel, settingsMap.smartSyncSettingsMap);
 
-        //_process(otherSettingsModel, {});
+        _process(otherSettingsModel, {});
 
         // don't save back settings until the values and mappings are all tested properly
         openHDSettings.saveSettings(remoteSettings);
