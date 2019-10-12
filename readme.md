@@ -14,7 +14,7 @@ For example:
 
 * The downlink RSSI occasionally shows zero on some platforms
 * Video is horribly delayed on some (all?) Android devices
-* Some settings don't save properly (text fields + the "other" tab is all disabled)
+* Some settings don't save properly (text fields may not save, the "other" tab is all disabled)
 * Settings don't all load if there is RF interference or high CPU load (requires a one line change on the GroundPi side to fix)
 
 Some of those are bugs on the GroundPi side (mostly code nobody has ever "exercised" before) or require small changes to the Open.HD image, others are just things I haven't fixed yet in the app.
@@ -63,9 +63,9 @@ The widgets are going to be drag-and-drop in the near future, and will be presen
 
 ## Telemetry
 
-The Open.HD telemetry is handled via UDP when the app is running on a phone or a computer, and via the same fifo the original OSD used when running on GroundPi.
+The Open.HD telemetry is handled via UDP when the app is running on a phone or a computer, and via the same shared memory system used by the original OSD when running on GroundPi.
 
-For vehicle telemetry, only Mavlink is supported at the moment but only because it's what I use and can test with easily..
+For vehicle telemetry, only Mavlink is supported at the moment but only because it's what I use and can test with easily.
 
 Some minor refactoring (turn `MavlinkTelemetry.cpp` into a subclass) is needed to support other telemetry protocols but there is otherwise no reason they can't work.
 
@@ -91,11 +91,11 @@ On the GroundPi, the app is simply an overlay over `hello_video` just like the o
 
 On other platforms, QtGStreamer is used to decode and render the video stream using available hardware decoders and OpenGL. This is the same code that QGroundControl uses at the moment.
 
-The QtGStreamer code itself is very old and mostly unmaintained upstream, it is likely to be replaced very soon with another video component based on libavcodec + GL shader rendering that I have been working on.
+The QtGStreamer code itself is very old and mostly unmaintained upstream, it is likely to be replaced very soon with another video component based on qmlglsink or one based on libavcodec + GL shader rendering that I have been working on.
 
-On Android there seem to be some hardware acceleration issues with the currently committed QtGStreamer code. QGroundControl has a newer version of it where they have implemented hardware acceleration on Android, but it didn't actually work on my test device for some reason.
+On Android there seem to be some hardware acceleration issues with the currently committed QtGStreamer code. QGroundControl has a newer version of it where they have implemented hardware acceleration on Android, but it didn't actually work on my test device (the androidmedia gstreamer plugin can't be loaded so the accelerated decoders are not avalable).
 
-Hardware acceleration should be working fine on iOS and Mac.
+Video should be working fine on iOS, Mac, Windows and Linux, as most machines can handle softare decoding without trouble (it works, it's just not efficient and wastes battery power).
 
 ## Building
 
