@@ -81,6 +81,12 @@ DISTFILES += \
     android/res/drawable-xxxhdpi/splashscreen.png \
     android/res/values/libs.xml \
     android/res/values/styles.xml \
+    icons/LaunchImage-iOS7-Landscape.png \
+    icons/LaunchImage-iOS7-Landscape@2x.png \
+    icons/LaunchImage-iOS7-Landscape@3x.png \
+    icons/LaunchImage-iOS7-Landscape@4x.png \
+    icons/LaunchImage-iOS7-Landscape~iPad.png \
+    icons/LaunchImage-iOS7-Landscape~iPad@2x.png \
     qml/qtquickcontrols2.conf \
     qml/ui/qmldir
 
