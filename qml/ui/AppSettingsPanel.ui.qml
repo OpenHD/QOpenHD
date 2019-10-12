@@ -500,7 +500,6 @@ Item {
                 height: 64
                 color: "#8cbfd7f3"
                 y: 64
-                visible: OpenHDPi.is_raspberry_pi
 
                 Text {
                     text: "Brightness"
