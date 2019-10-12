@@ -23,7 +23,6 @@ Rectangle {
 
     TextField {
         anchors.right: parent.right
-        text: model.value
         font.pixelSize: 14
         topPadding: 0
         anchors.verticalCenter: parent.verticalCenter
@@ -32,5 +31,7 @@ Rectangle {
         anchors.rightMargin: 12
         width: 192
         height: 32
+        Component.onCompleted: text = model.value
+        onTextChanged: model.value = text
     }
 }
