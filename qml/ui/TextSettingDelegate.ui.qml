@@ -31,7 +31,11 @@ Rectangle {
         anchors.rightMargin: 12
         width: 192
         height: 32
-        Component.onCompleted: text = model.value
+        // @disable-check M223
+        Component.onCompleted: {
+            text = model.value
+            cursorPosition = 0
+        }
         // @disable-check M223
         onTextChanged: {
             model.value = text;
