@@ -80,6 +80,24 @@ DISTFILES += \
     android/res/drawable-xxxhdpi/splashscreen.png \
     android/res/values/libs.xml \
     android/res/values/styles.xml \
+    icons/AppIcon.appiconset/iPad-app.png \
+    icons/AppIcon.appiconset/iPad-app@2x.png \
+    icons/AppIcon.appiconset/iPad-notifications.png \
+    icons/AppIcon.appiconset/iPad-notifications@2x.png \
+    icons/AppIcon.appiconset/iPad-pro@2x.png \
+    icons/AppIcon.appiconset/iPad-settings.png \
+    icons/AppIcon.appiconset/iPad-settings@2x.png \
+    icons/AppIcon.appiconset/iPad-spotlight.png \
+    icons/AppIcon.appiconset/iPad-spotlight@2x.png \
+    icons/AppIcon.appiconset/iPhone-app@2x.png \
+    icons/AppIcon.appiconset/iPhone-app@3x.png \
+    icons/AppIcon.appiconset/iPhone-notifications@2x.png \
+    icons/AppIcon.appiconset/iPhone-notifications@3x.png \
+    icons/AppIcon.appiconset/iPhone-settings@2x.png \
+    icons/AppIcon.appiconset/iPhone-settings@3x.png \
+    icons/AppIcon.appiconset/iPhone-spotlight@2x.png \
+    icons/AppIcon.appiconset/iPhone-spotlight@3x.png \
+    icons/AppIcon.appiconset/iTunesArtwork@2x.png \
     icons/LaunchImage-iOS7-Landscape.png \
     icons/LaunchImage-iOS7-Landscape@2x.png \
     icons/LaunchImage-iOS7-Landscape@3x.png \
@@ -107,6 +125,9 @@ iOSBuild {
     #QMAKE_POST_LINK += && /usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $$APPLE_BUILD\" $$DESTDIR/$${TARGET}.app/Contents/Info.plist
     app_launch_images.files = $$files($$PWD/icons/LaunchImage*.png)
     QMAKE_BUNDLE_DATA += app_launch_images
+
+    ios_icon.files = $$files($$PWD/icons/AppIcon.appiconset/*.png)
+    QMAKE_BUNDLE_DATA += ios_icon
 }
 
 MacBuild {
