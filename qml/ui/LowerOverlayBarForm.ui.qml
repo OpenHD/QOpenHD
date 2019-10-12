@@ -218,7 +218,7 @@ Rectangle {
         id: home_distance
         x: 520
         y: 32
-        width: 120
+        width: 96
         height: 24
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 0
@@ -244,7 +244,7 @@ Rectangle {
 
         Text {
             id: home_distance_text
-            width: 85
+            width: 64
             height: 24
             color: "#ffffff"
             text: qsTr("00000ft")
@@ -260,7 +260,7 @@ Rectangle {
     Item {
         id: flight_timer
         x: 520
-        width: 120
+        width: 96
         height: 24
         anchors.top: parent.top
         anchors.topMargin: 0
@@ -270,7 +270,7 @@ Rectangle {
         Text {
             id: flight_timer_text
             y: 0
-            width: 85
+            width: 64
             height: 24
             color: "#ffffff"
             text: qsTr("0:00")
