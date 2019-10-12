@@ -1,0 +1,16 @@
+dist: bionic
+addons:
+  apt:
+    packages:
+      - qtcreator
+      - qt5-default
+      - libgstreamer1.0-0
+      - libgstreamer1.0-dev
+      - gstreamer1.0-plugins-bad
+      - gstreamer1.0-plugins-base
+      - gstreamer1.0-plugins-good
+      - gstreamer1.0-plugins-ugly
+      - build-essential
+    script:
+      - wget -c https://download.qt.io/official_releases/online_installers/qt-unified-linux-x64-online.run
+      - extract-qt-installer --list-packages qt-unified-linux-x64-online.run
