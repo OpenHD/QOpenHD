@@ -104,6 +104,33 @@ int start_logger(const char *app_name)
 }
 #endif
 
+
+
+static void printf_extension_log_func(GstDebugCategory * category,
+                                       GstDebugLevel level,
+                                       const gchar * file,
+                                       const gchar * function,
+                                       gint line,
+                                       GObject * object,
+                                       GstDebugMessage * message,
+                                       gpointer unused) {
+      const gchar *dbg_msg;
+
+      dbg_msg = gst_debug_message_get (message);
+
+      if (dbg_msg == NULL) {
+          return;
+      }
+
+      g_print ("%s\n", dbg_msg);
+
+      /* quick hack to still get stuff to show if GST_DEBUG is set */
+      if (g_getenv ("GST_DEBUG")) {
+        gst_debug_log_default (category, level, file, function, line, object,
+            message, unused);
+      }
+ }
+
 void initializeVideoStreaming(int &argc, char* argv[], char* logpath, char* debuglevel)
 {
 #if defined(QGC_GST_STREAMING)
@@ -136,7 +163,7 @@ void initializeVideoStreaming(int &argc, char* argv[], char* logpath, char* debu
                 qputenv("GST_DEBUG", debuglevel);
             }
             qputenv("GST_DEBUG_NO_COLOR", "1");
-            qputenv("GST_DEBUG_FILE", gstDebugFile.toUtf8());
+            qputenv("GST_DEBUG_FILE", "-");
             qputenv("GST_DEBUG_DUMP_DOT_DIR", logpath);
         }
         GError* error = nullptr;
@@ -168,6 +195,10 @@ void initializeVideoStreaming(int &argc, char* argv[], char* logpath, char* debu
 #endif
     qmlRegisterType<VideoItem>              ("QGroundControl.QgcQtGStreamer", 1, 0, "VideoItem");
     qmlRegisterUncreatableType<VideoSurface>("QGroundControl.QgcQtGStreamer", 1, 0, "VideoSurface", QStringLiteral("VideoSurface from QML is not supported"));
+
+    gst_debug_remove_log_function(gst_debug_log_default);
+    gst_debug_add_log_function (printf_extension_log_func, NULL, NULL);
+
 }
 
 void shutdownVideoStreaming()
