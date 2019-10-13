@@ -24,19 +24,14 @@ Things like RC and video rendering are inherently dependent on platform support 
 
 | Feature | GroundPi | Windows | Mac | Linux | Android | iOS | 
 | --- | --- | --- | --- | --- | --- | --- |
-| Video | Yes | Untested | Yes | Untested | High Latency | Yes |
-| Settings | Partial | Partial | Partial | Partial | Partial | Partial |
-| RC | Yes | Disabled | Disabled | Disabled | Disabled | Disabled |
+| Video | Yes | Untested | Yes | Untested | [High Latency](https://github.com/infincia/QOpenHD/issues/1) | Yes |
+| Settings | Yes | Yes | Yes | Yes | Yes | Yes |
+| RC | Yes | [Disabled](https://github.com/infincia/QOpenHD/issues/10) | [Disabled](https://github.com/infincia/QOpenHD/issues/10) | [Disabled](https://github.com/infincia/QOpenHD/issues/10) | [Disabled](https://github.com/infincia/QOpenHD/issues/10) | [Disabled](https://github.com/infincia/QOpenHD/issues/10) |
 | Backlight Control | N/A | N/A | N/A | N/A | N/A | Yes |
 | Mavlink | Yes | Yes | Yes | Yes | Yes | Yes |
 | FRSky | No | No | No | No | No | No |
 | MSPv2 | No | No | No | No | No | No |
 | Voice Feedback | Yes | Yes | Yes | Yes | Yes | Yes |
-
-
-RC handling in the app is only disabled temporarily for safety, it will be supported everywhere once fully implemented and tested.
-
-Settings are only "partial" supported because there are some bugs on the GroundPi side (likely `RemoteSettings.py`) that affect certain settings. The values dont make it into the `openhd-settings-1.txt` file intact, which corrupts the file and causes the GroundPi to stop booting properly. I haven't had a chance to find and fix that yet, so only specific settings can be saved (the ones in the named tabs, not "other"). Otherwise settings basically works fine everywhere.
 
 ## Platforms
 
