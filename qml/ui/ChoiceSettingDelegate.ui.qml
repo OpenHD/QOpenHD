@@ -60,7 +60,7 @@ Rectangle {
         onActivated: {
             // @disable-check M222
             listModel.setProperty(itemIndex, "value", choiceBox.model.get(index).value);
-            model.modified = true;
+            itemModel.modified = true;
         }
 
         /*
