@@ -15,6 +15,7 @@ Popup {
     property alias save: groundPiSettingsPanel.save
     property alias settings_popup: settings_popup
     property alias closeButton: closeButton
+    property alias rebootButton: rebootButton
 
     id: settings_popup
     parent: Overlay.overlay
@@ -150,6 +151,23 @@ Popup {
             verticalAlignment: Text.AlignVCenter
             color: mainStackLayout.currentIndex == 3 ? "#33aaff" : "#333333"
         }*/
+
+        Button {
+            id: rebootButton
+            y: 0
+            height: 48
+            leftPadding: 6
+            text: qsTr("Reboot")
+            anchors.bottom: closeButton.top
+            anchors.bottomMargin: 6
+            anchors.right: parent.right
+            anchors.rightMargin: 12
+            anchors.left: parent.left
+            anchors.leftMargin: 12
+            font.pixelSize: 13
+            enabled: !openHDSettings.busy
+            visible: OpenHDPi.is_raspberry_pi
+        }
 
         Button {
             id: closeButton
