@@ -1,5 +1,8 @@
 #include "mavlinktelemetry.h"
 #include <sys/stat.h>
+#include <sys/types.h>
+#include <fcntl.h>
+#include <unistd.h>
 
 #include <QtNetwork>
 #include <QThread>
@@ -56,25 +59,36 @@ void MavlinkTelemetry::restartFifo() {
 }
 
 void MavlinkTelemetry::processMavlinkFifo() {
+    uint8_t buf[4096];
 
-    int c;
     mavlink_message_t msg;
 
-    FILE *fifoFP = fopen(MAVLINK_FIFO, "r");
-    if (fifoFP == nullptr) {
+    int fifoFP = open(MAVLINK_FIFO, O_RDONLY);
+    if (fifoFP < 0) {
         QThread::msleep(1000);
         return;
     }
 
-    while((c = getc(fifoFP)) != EOF) {
-        uint8_t res = mavlink_parse_char(MAVLINK_COMM_0, (uint8_t)c, &msg, &r_mavlink_status);
+    while (true) {
+        int received = read(fifoFP, buf, sizeof(buf));
+        if (received < 0) {
+            qDebug() << "Mavlink fifo returned -1";
 
-        if (res) {
-            processMavlinkMessage(msg);
+            close(fifoFP);
+            QThread::msleep(1000);
+            return;
+        }
+        for (int i = 0; i < received; i++) {
+            uint8_t c = buf[i];
+            uint8_t res = mavlink_parse_char(MAVLINK_COMM_0, c, &msg, &r_mavlink_status);
+
+            if (res) {
+                processMavlinkMessage(msg);
+            }
         }
     }
     QThread::msleep(1000);
-    fclose(fifoFP);
+    close(fifoFP);
 }
 #else
 void MavlinkTelemetry::processMavlinkDatagrams() {
