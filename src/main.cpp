@@ -53,14 +53,6 @@ int main(int argc, char *argv[]) {
         QProcess p;
         p.start(program, arguments);
         p.waitForFinished();
-
-        // ensure the mavlink fifo exists before we continue
-        QString program2("/usr/bin/mkfifo");
-        QStringList arguments2;
-        arguments2 << MAVLINK_FIFO;
-        QProcess p2;
-        p2.start(program2, arguments2);
-        p2.waitForFinished();
     }
 
 
