@@ -51,15 +51,6 @@ OpenHDRC::OpenHDRC(QObject *parent): QObject(parent) {
 
 #if defined(ENABLE_SPEECH)
     m_speech = new QTextToSpeech(this);
-
-    auto m_voices = m_speech->availableVoices();
-        QVoice currentVoice = m_speech->voice();
-        foreach (const QVoice &voice, m_voices) {
-        if (voice.name() == "Nicky") {
-             m_speech->setVoice(voice);
-             break;
-        }
-    }
 #endif
 
     initRC();
