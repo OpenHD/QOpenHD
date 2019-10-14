@@ -329,6 +329,19 @@ void MavlinkTelemetry::processMavlinkMessage(mavlink_message_t msg) {
 
 
 void MavlinkTelemetry::set_armed(bool armed) {
+#if defined(ENABLE_SPEECH)
+    QSettings settings;
+    auto enable_speech = settings.value("enable_speech", QVariant(0));
+
+    if (enable_speech == 1) {
+        if (armed && !m_armed) {
+            m_speech->say("armed");
+        } else if (!armed && m_armed) {
+            m_speech->say("disarmed");
+        }
+    }
+#endif
+
     m_armed = armed;
     emit armed_changed(m_armed);
 }
