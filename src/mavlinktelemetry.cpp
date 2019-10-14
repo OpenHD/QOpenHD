@@ -56,24 +56,6 @@ void MavlinkTelemetry::restartFifo() {
 }
 
 void MavlinkTelemetry::processMavlinkFifo() {
-    struct stat buffer;
-    if (stat (MAVLINK_FIFO, &buffer) != 0) {
-        QFile file("/var/log/qopenhd.log");
-        if (!file.open(QIODevice::Append | QIODevice::Text)) {
-            qDebug() << "Can't write to /var/log/qopenhd.log";
-            QThread::msleep(1000);
-
-            return;
-        }
-        if (-1 == file.write("MAVLINK_FIFO doesn't exist yet, restarting...")) {
-            qDebug() << "Can't write to /var/log/qopenhd.log";
-            QThread::msleep(1000);
-            return;
-        }
-
-        QThread::msleep(1000);
-        return;
-    }
 
     int c;
     mavlink_message_t msg;
