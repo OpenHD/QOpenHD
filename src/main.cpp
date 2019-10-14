@@ -40,6 +40,7 @@ int main(int argc, char *argv[]) {
     QCoreApplication::setApplicationName("Open.HD");
 
 #if defined(__rasp_pi__)
+    qDebug() << "Initializing Pi";
     OpenHDPi pi;
     if (pi.is_raspberry_pi()) {
         // no way around this for the moment due to the way Settings works, hopefully won't
@@ -62,9 +63,11 @@ int main(int argc, char *argv[]) {
         auto brightness = settings.value("brightness", 100).toInt();
         pi.set_brightness(brightness);
     }
+    qDebug() << "Finished initializing Pi";
 #endif
 
 #if defined(ENABLE_VIDEO)
+    qDebug() << "Initializing video";
 #if defined(__ios__) || defined(__android__)
     initializeVideoStreaming(argc, argv, nullptr, nullptr);
 #else
@@ -128,6 +131,8 @@ int main(int argc, char *argv[]) {
 #if defined(__android__)
     QtAndroid::hideSplashScreen();
 #endif
+
+    qDebug() << "Running QML";
 
     return app.exec();
 }
