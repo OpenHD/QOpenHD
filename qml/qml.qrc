@@ -28,6 +28,7 @@
         <file>ui/widgets/MessageHUD.qml</file>
         <file>ui/VideoPanel.qml</file>
         <file>ui/widgets/MessageHUDRow.ui.qml</file>
+        <file>LICENSE_UI.txt</file>
         <file>ui/widgets/DownlinkRSSIWidget.qml</file>
         <file>ui/widgets/DownlinkRSSIWidgetForm.ui.qml</file>
         <file>ui/widgets/BitrateWidget.qml</file>
