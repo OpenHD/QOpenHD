@@ -35,6 +35,10 @@ Rectangle {
         anchors.verticalCenter: parent.verticalCenter
         anchors.right: parent.right
         anchors.rightMargin: 8
-        onValueChanged: model.modified = true
+        // @disable-check M223
+        onValueChanged: {
+            model.value = value
+            model.modified = true
+        }
     }
 }
