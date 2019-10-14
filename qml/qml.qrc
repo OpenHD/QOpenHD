@@ -13,15 +13,15 @@
         <file>ui/SettingsPopupForm.ui.qml</file>
         <file>ui/UpperOverlayBar.qml</file>
         <file>ui/UpperOverlayBarForm.ui.qml</file>
-        <file>ui/TextSettingDelegate.ui.qml</file>
+        <file>ui/delegates/TextSettingDelegate.ui.qml</file>
         <file>ui/StatusPanel.ui.qml</file>
-        <file>ui/SwitchSettingDelegate.ui.qml</file>
-        <file>ui/NumberSettingDelegate.ui.qml</file>
+        <file>ui/delegates/SwitchSettingDelegate.ui.qml</file>
+        <file>ui/delegates/NumberSettingDelegate.ui.qml</file>
         <file>ui/AppSettingsPanel.ui.qml</file>
         <file>ui/GroundPiSettingsListView.ui.qml</file>
-        <file>ui/ChoiceSettingDelegate.ui.qml</file>
+        <file>ui/delegates/ChoiceSettingDelegate.ui.qml</file>
         <file>ui/SettingsMap.qml</file>
-        <file>ui/RangeSettingDelegate.ui.qml</file>
+        <file>ui/delegates/RangeSettingDelegate.ui.qml</file>
         <file>ui/GroundPiSettingsPanel.ui.qml</file>
         <file>ui/AboutPanel.ui.qml</file>
         <file>ui/MessageHUDForm.ui.qml</file>

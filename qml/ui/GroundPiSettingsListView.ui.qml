@@ -30,17 +30,17 @@ ListView {
         source: {
             switch (itemType) {
                 case "bool":
-                    return "SwitchSettingDelegate.ui.qml"
+                    return "delegates/SwitchSettingDelegate.ui.qml"
                 case "text":
-                    return "TextSettingDelegate.ui.qml"
+                    return "delegates/TextSettingDelegate.ui.qml"
                 case "range":
-                    return "RangeSettingDelegate.ui.qml"
+                    return "delegates/RangeSettingDelegate.ui.qml"
                 case "number":
-                    return "NumberSettingDelegate.ui.qml"
+                    return "delegates/NumberSettingDelegate.ui.qml"
                 case "choice":
-                    return "ChoiceSettingDelegate.ui.qml"
+                    return "delegates/ChoiceSettingDelegate.ui.qml"
                 default:
-                    return "TextSettingDelegate.ui.qml"
+                    return "delegates/TextSettingDelegate.ui.qml"
             }
         }
     }
