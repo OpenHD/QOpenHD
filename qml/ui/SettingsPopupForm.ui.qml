@@ -75,7 +75,7 @@ Popup {
             anchors.rightMargin: 0
             anchors.left: parent.left
             anchors.leftMargin: 0
-            font.pixelSize: 13
+            font.pixelSize: 15
             horizontalAlignment: Text.AlignLeft
             verticalAlignment: Text.AlignVCenter
             color: mainStackLayout.currentIndex == 0 ? "#33aaff" : "#333333"
@@ -99,7 +99,7 @@ Popup {
             anchors.rightMargin: 0
             anchors.left: parent.left
             anchors.leftMargin: 0
-            font.pixelSize: 13
+            font.pixelSize: 15
             horizontalAlignment: Text.AlignLeft
             verticalAlignment: Text.AlignVCenter
             color: mainStackLayout.currentIndex == 1 ? "#33aaff" : "#333333"
@@ -123,7 +123,7 @@ Popup {
             anchors.rightMargin: 0
             anchors.left: parent.left
             anchors.leftMargin: 0
-            font.pixelSize: 13
+            font.pixelSize: 15
             horizontalAlignment: Text.AlignLeft
             verticalAlignment: Text.AlignVCenter
             color: mainStackLayout.currentIndex == 2 ? "#33aaff" : "#333333"
@@ -146,7 +146,7 @@ Popup {
             anchors.rightMargin: 0
             anchors.left: parent.left
             anchors.leftMargin: 0
-            font.pixelSize: 13
+            font.pixelSize: 15
             horizontalAlignment: Text.AlignLeft
             verticalAlignment: Text.AlignVCenter
             color: mainStackLayout.currentIndex == 3 ? "#33aaff" : "#333333"
