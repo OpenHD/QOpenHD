@@ -195,5 +195,15 @@ Item {
                          choiceValues: [{title: "5GHz", value: "a"},
                                         {title: "2.4GHz", value: "g"}]},
         "HOTSPOT_CHANNEL": {title: "Hotspot WiFi channel", itemType: "string"},
+
+
+        "HOTSPOT_TXPOWER": {title: "WiFi TX power",
+                            itemType: "choice",
+                            choiceValues: [{title: "1dBm", value: 100},
+                                           {title: "3dBm", value: 300},
+                                           {title: "9dBm", value: 900},
+                                           {title: "15dBm", value: 1500},
+                                           {title: "24dBm", value: 1800},
+                                           {title: "31dBm", value: 3100}]},
     })
 }
