@@ -35,18 +35,6 @@ Rectangle {
 
     height: 48
 
-    /*Button {
-        id: settingsButton
-
-
-        x: 8
-        y: 8
-        width: 42
-        height: 42
-        display: AbstractButton.IconOnly
-        z: 2.2
-    }*/
-
     Image {
         id: settingsButton
         x: 8
@@ -65,16 +53,6 @@ Rectangle {
             anchors.fill: parent
 
         }
-
-        /*background: Rectangle {
-                implicitWidth: 100
-                implicitHeight: 40
-                opacity: 1
-                border.color: "#ffffff"
-                color: "#00000000"
-                border.width: 1
-                radius: 4
-            }*/
     }
 
     Item {
