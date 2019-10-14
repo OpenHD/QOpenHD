@@ -38,6 +38,8 @@
         <file>ui/widgets/GroundStatusWidgetForm.ui.qml</file>
         <file>ui/widgets/AirStatusWidget.qml</file>
         <file>ui/widgets/AirStatusWidgetForm.ui.qml</file>
+        <file>ui/widgets/HorizonWidget.qml</file>
+        <file>ui/widgets/HorizonWidgetForm.ui.qml</file>
         <file>ui/widgets/AirBatteryWidget.qml</file>
         <file>ui/widgets/AirBatteryWidgetForm.ui.qml</file>
         <file>ui/widgets/FlightModeWidget.qml</file>
