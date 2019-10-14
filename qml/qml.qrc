@@ -28,5 +28,15 @@
         <file>ui/MessageHUD.qml</file>
         <file>ui/VideoPanel.qml</file>
         <file>ui/MessageHUDRow.ui.qml</file>
+        <file>ui/widgets/DownlinkRSSIWidget.qml</file>
+        <file>ui/widgets/DownlinkRSSIWidgetForm.ui.qml</file>
+        <file>ui/widgets/BitrateWidget.qml</file>
+        <file>ui/widgets/BitrateWidgetForm.ui.qml</file>
+        <file>ui/widgets/UplinkRSSIWidget.qml</file>
+        <file>ui/widgets/UplinkRSSIWidgetForm.ui.qml</file>
+        <file>ui/widgets/GroundStatusWidget.qml</file>
+        <file>ui/widgets/GroundStatusWidgetForm.ui.qml</file>
+        <file>ui/widgets/AirStatusWidget.qml</file>
+        <file>ui/widgets/AirStatusWidgetForm.ui.qml</file>
     </qresource>
 </RCC>
