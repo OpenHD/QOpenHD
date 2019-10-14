@@ -7,7 +7,7 @@ import Qt.labs.settings 1.0
 import OpenHD 1.0
 
 Item {    
-    id: airStatusWidget
+    id: airBatteryWidget
     width: 112
     height:24
 
