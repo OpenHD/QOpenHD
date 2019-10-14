@@ -28,6 +28,7 @@ bool OpenHDPi::is_raspberry_pi() {
 
 void OpenHDPi::set_mount_rw() {
 #if defined(__rasp_pi__)
+    qDebug() << "OpenHDPi::set_mount_rw()";
     QString program = "/bin/mount";
     QStringList arguments;
     arguments << "-o" << "remount,rw" << "/";
@@ -42,6 +43,7 @@ void OpenHDPi::set_mount_rw() {
 
 void OpenHDPi::set_mount_ro() {
 #if defined(__rasp_pi__)
+    qDebug() << "OpenHDPi::set_mount_ro()";
     QString program = "/bin/mount";
     QStringList arguments;
     arguments << "-o" << "remount,ro" << "/";
@@ -56,6 +58,7 @@ void OpenHDPi::set_mount_ro() {
 
 
 void OpenHDPi::set_brightness(int brightness) {
+    qDebug() << "OpenHDPi::set_brightness()";
     if (brightness > 255) brightness = 255;
     if (brightness < 0) brightness = 0;
     QFile file("/sys/devices/platform/rpi_backlight/backlight/rpi_backlight/brightness");
