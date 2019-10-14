@@ -36,6 +36,7 @@ void OpenHDPi::set_mount_rw() {
     }
     mountProcess = new QProcess(this);
     mountProcess->start(program, arguments);
+    mountProcess->waitForFinished();
 #endif
 }
 
@@ -49,6 +50,7 @@ void OpenHDPi::set_mount_ro() {
     }
     mountProcess = new QProcess(this);
     mountProcess->start(program, arguments);
+    mountProcess->waitForFinished();
 #endif
 }
 
