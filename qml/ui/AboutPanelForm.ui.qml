@@ -13,6 +13,7 @@ Rectangle {
     width: 504
     height: 300
     color: "#000000"
+    property alias license: license
 
     Text {
         id: title
