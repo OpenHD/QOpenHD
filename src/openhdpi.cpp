@@ -125,6 +125,24 @@ void OpenHDPi::update_ground() {
     emit undervolt_changed(m_undervolt);
 }
 
+void OpenHDPi::_reboot() {
+#if defined(__rasp_pi__)
+    qDebug() << "OpenHDPi::reboot()";
+    QThread::msleep(3000);
+    QString program = "/sbin/reboot";
+    QStringList arguments;
+    mountProcess = new QProcess(this);
+    mountProcess->start(program, arguments);
+    mountProcess->waitForFinished();
+#endif
+}
+
+void OpenHDPi::reboot() {
+#if defined(__rasp_pi__)
+    QFuture<void> rebootFuture = QtConcurrent::run(this, &OpenHDPi::_reboot);
+#endif
+}
+
 QObject *openHDPiSingletonProvider(QQmlEngine *engine, QJSEngine *scriptEngine) {
     Q_UNUSED(engine)
     Q_UNUSED(scriptEngine)

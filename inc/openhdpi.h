@@ -28,6 +28,8 @@ public:
 
     Q_INVOKABLE void update_ground();
 
+    Q_INVOKABLE void reboot();
+
     int ground_load;
     int ground_temp;
 
@@ -35,6 +37,7 @@ private:
 #if defined(__rasp_pi__)
     QProcess *mountProcess = nullptr;
 #endif
+    void _reboot();
 
     bool m_undervolt;
     long double a[4], b[4];
