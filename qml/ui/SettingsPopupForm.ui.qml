@@ -165,7 +165,6 @@ Popup {
             anchors.left: parent.left
             anchors.leftMargin: 12
             font.pixelSize: 13
-            enabled: !openHDSettings.busy
             visible: OpenHDPi.is_raspberry_pi
         }
 
@@ -182,7 +181,6 @@ Popup {
             anchors.left: parent.left
             anchors.leftMargin: 12
             font.pixelSize: 13
-            enabled: !openHDSettings.busy
         }
     }
 
