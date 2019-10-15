@@ -17,25 +17,6 @@ import "../ui" as Ui
 Item {
     width: 504
     height: 300
-
-    Settings {
-        property alias battery_cells: batteryCellspinBox.value
-        property alias enable_speech: enableSpeechSwitch.checked
-        property alias enable_rc: enableRCSwitch.checked
-        property alias show_downlink_rssi: showDownlinkRSSISwitch.checked
-        property alias show_uplink_rssi: showUplinkRSSISwitch.checked
-        property alias show_bitrate: showBitrateSwitch.checked
-        property alias show_gps: showGPSSwitch.checked
-        property alias show_home_distance: showHomeDistanceSwitch.checked
-        property alias show_flight_timer: showFlightTimerSwitch.checked
-
-        property alias show_flight_mode: showFlightModeSwitch.checked
-        property alias show_ground_status: showGroundStatusSwitch.checked
-        property alias show_air_status: showAirStatusSwitch.checked
-        property alias show_air_battery: showAirBatterySwitch.checked
-        property alias show_log_onscreen: showLogOnscreenSwitch.checked
-    }
-
     TabBar {
         id: appSettingsBar
         width: parent.width
@@ -116,11 +97,14 @@ Item {
                 }
 
                 Switch {
-                    id: enableSpeechSwitch
                     width: 32
                     height: parent.height
                     anchors.rightMargin: 12
                     anchors.right: parent.right
+                    // @disable-check M222
+                    Component.onCompleted: checked = settings.value("enable_speech", true)
+                    // @disable-check M222
+                    onCheckedChanged: settings.setValue("enable_speech", checked)
                 }
             }
 
@@ -151,6 +135,13 @@ Item {
                     to: 6
                     stepSize: 1
                     anchors.rightMargin: 0
+                    // @disable-check M222
+                    Component.onCompleted: value = settings.value("battery_cells", 3)
+                    // @disable-check M223
+                    onValueChanged: {
+                        // @disable-check M222
+                        settings.setValue("battery_cells", value)
+                    }
                 }
             }
 
@@ -174,11 +165,14 @@ Item {
                 }
 
                 Switch {
-                    id: enableRCSwitch
                     width: 32
                     height: parent.height
                     anchors.rightMargin: 12
                     anchors.right: parent.right
+                    // @disable-check M222
+                    Component.onCompleted: checked = settings.value("enable_rc", false)
+                    // @disable-check M222
+                    onCheckedChanged: settings.setValue("enable_rc", checked)
                 }
             }
         }
@@ -212,11 +206,14 @@ Item {
                 }
 
                 Switch {
-                    id: showDownlinkRSSISwitch
                     width: 32
                     height: parent.height
                     anchors.rightMargin: 12
                     anchors.right: parent.right
+                    // @disable-check M222
+                    Component.onCompleted: checked = settings.value("show_downlink_rssi", true)
+                    // @disable-check M222
+                    onCheckedChanged: settings.setValue("show_downlink_rssi", checked)
                 }
             }
 
@@ -238,11 +235,14 @@ Item {
                 }
 
                 Switch {
-                    id: showUplinkRSSISwitch
                     width: 32
                     height: parent.height
                     anchors.rightMargin: 12
                     anchors.right: parent.right
+                    // @disable-check M222
+                    Component.onCompleted: checked = settings.value("show_uplink_rssi", true)
+                    // @disable-check M222
+                    onCheckedChanged: settings.setValue("show_uplik_rssi", checked)
                 }
             }
 
@@ -264,11 +264,14 @@ Item {
                 }
 
                 Switch {
-                    id: showBitrateSwitch
                     width: 32
                     height: parent.height
                     anchors.rightMargin: 12
                     anchors.right: parent.right
+                    // @disable-check M222
+                    Component.onCompleted: checked = settings.value("show_bitrate", true)
+                    // @disable-check M222
+                    onCheckedChanged: settings.setValue("show_bitrate", checked)
                 }
             }
 
@@ -290,11 +293,14 @@ Item {
                 }
 
                 Switch {
-                    id: showGPSSwitch
                     width: 32
                     height: parent.height
                     anchors.rightMargin: 12
                     anchors.right: parent.right
+                    // @disable-check M222
+                    Component.onCompleted: checked = settings.value("show_gps", true)
+                    // @disable-check M222
+                    onCheckedChanged: settings.setValue("show_gps", checked)
                 }
             }
 
@@ -316,11 +322,14 @@ Item {
                 }
 
                 Switch {
-                    id: showHomeDistanceSwitch
                     width: 32
                     height: parent.height
                     anchors.rightMargin: 12
                     anchors.right: parent.right
+                    // @disable-check M222
+                    Component.onCompleted: checked = settings.value("show_home_distance", true)
+                    // @disable-check M222
+                    onCheckedChanged: settings.setValue("show_home_distance", checked)
                 }
             }
 
@@ -342,11 +351,14 @@ Item {
                 }
 
                 Switch {
-                    id: showFlightTimerSwitch
                     width: 36
                     height: parent.height
                     anchors.rightMargin: 12
                     anchors.right: parent.right
+                    // @disable-check M222
+                    Component.onCompleted: checked = settings.value("show_flight_timer", true)
+                    // @disable-check M222
+                    onCheckedChanged: settings.setValue("show_flight_timer", checked)
                 }
             }
 
@@ -368,11 +380,14 @@ Item {
                 }
 
                 Switch {
-                    id: showFlightModeSwitch
                     width: 32
                     height: parent.height
                     anchors.rightMargin: 12
                     anchors.right: parent.right
+                    // @disable-check M222
+                    Component.onCompleted: checked = settings.value("show_flight_mode", true)
+                    // @disable-check M222
+                    onCheckedChanged: settings.setValue("show_flight_mode", checked)
                 }
             }
 
@@ -394,11 +409,14 @@ Item {
                 }
 
                 Switch {
-                    id: showGroundStatusSwitch
                     width: 32
                     height: parent.height
                     anchors.rightMargin: 12
                     anchors.right: parent.right
+                    // @disable-check M222
+                    Component.onCompleted: checked = settings.value("show_ground_status", true)
+                    // @disable-check M222
+                    onCheckedChanged: settings.setValue("show_ground_status", checked)
                 }
             }
 
@@ -420,11 +438,14 @@ Item {
                 }
 
                 Switch {
-                    id: showAirStatusSwitch
                     width: 32
                     height: parent.height
                     anchors.rightMargin: 12
                     anchors.right: parent.right
+                    // @disable-check M222
+                    Component.onCompleted: checked = settings.value("show_air_status", true)
+                    // @disable-check M222
+                    onCheckedChanged: settings.setValue("show_air_status", checked)
                 }
             }
 
@@ -446,11 +467,14 @@ Item {
                 }
 
                 Switch {
-                    id: showAirBatterySwitch
                     width: 32
                     height: parent.height
                     anchors.rightMargin: 12
                     anchors.right: parent.right
+                    // @disable-check M222
+                    Component.onCompleted: checked = settings.value("show_air_battery", true)
+                    // @disable-check M222
+                    onCheckedChanged: settings.setValue("show_air_battery", checked)
                 }
             }
 
@@ -472,11 +496,14 @@ Item {
                 }
 
                 Switch {
-                    id: showLogOnscreenSwitch
                     width: 32
                     height: parent.height
                     anchors.rightMargin: 12
                     anchors.right: parent.right
+                    // @disable-check M222
+                    Component.onCompleted: checked = settings.value("show_log_onscreen", true)
+                    // @disable-check M222
+                    onCheckedChanged: settings.setValue("show_log_onscreen", checked)
                 }
             }
         }
