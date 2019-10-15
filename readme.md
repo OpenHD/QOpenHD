@@ -27,7 +27,7 @@ Things like RC and video rendering are inherently dependent on platform support 
 | Video | Yes | Untested | Yes | Untested | [High Latency](https://github.com/infincia/QOpenHD/issues/1) | Yes |
 | Settings | Yes | Yes | Yes | Yes | Yes | Yes |
 | RC | Yes | [Disabled](https://github.com/infincia/QOpenHD/issues/10) | [Disabled](https://github.com/infincia/QOpenHD/issues/10) | [Disabled](https://github.com/infincia/QOpenHD/issues/10) | [Disabled](https://github.com/infincia/QOpenHD/issues/10) | [Disabled](https://github.com/infincia/QOpenHD/issues/10) |
-| Backlight Control | N/A | N/A | N/A | N/A | N/A | Yes |
+| Backlight Control | Yes | N/A | N/A | N/A | N/A | N/A |
 | Mavlink | Yes | Yes | Yes | Yes | Yes | Yes |
 | FRSky | No | No | No | No | No | No |
 | MSPv2 | No | No | No | No | No | No |
