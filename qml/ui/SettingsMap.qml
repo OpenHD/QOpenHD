@@ -190,11 +190,11 @@ Item {
                          choiceValues: [{title: "Automatic", value: "auto"},
                                         {title: "Yes", value: "yes"},
                                         {title: "No", value: "no"}]},
-        "HOTSPOT_BAND": {title: "WiFi hotspot band",
+        "HOTSPOT_BAND": {title: "WiFi band",
                          itemType: "choice",
                          choiceValues: [{title: "5GHz", value: "a"},
                                         {title: "2.4GHz", value: "g"}]},
-        "HOTSPOT_CHANNEL": {title: "Hotspot WiFi channel", itemType: "string"},
+        "HOTSPOT_CHANNEL": {title: "WiFi channel", itemType: "string"},
 
 
         "HOTSPOT_TXPOWER": {title: "WiFi TX power",
