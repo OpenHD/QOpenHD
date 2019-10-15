@@ -205,5 +205,12 @@ Item {
                                            {title: "15dBm", value: 1500},
                                            {title: "24dBm", value: 1800},
                                            {title: "31dBm", value: 3100}]},
+
+        "HOTSPOT_TIMEOUT": {title: "WiFi disabled after",
+                            itemType: "choice",
+                            choiceValues: [{title: "Always on", value: 0},
+                                           {title: "60 seconds", value: 60},
+                                           {title: "5 minutes", value: 300},
+                                           {title: "30 minutes", value: 1800}]},
     })
 }
