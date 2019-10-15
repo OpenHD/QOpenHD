@@ -20,6 +20,27 @@ class MavlinkTelemetry: public QObject {
 public:
     explicit MavlinkTelemetry(QObject *parent = nullptr);
 
+    Q_PROPERTY(QString boot_time MEMBER m_boot_time WRITE set_boot_time NOTIFY boot_time_changed)
+    void set_boot_time(QString boot_time);
+
+    Q_PROPERTY(QString alt_rel MEMBER m_alt_rel WRITE set_alt_rel NOTIFY alt_rel_changed)
+    void set_alt_rel(QString alt_rel);
+
+    Q_PROPERTY(QString alt_msl MEMBER m_alt_msl WRITE set_alt_msl NOTIFY alt_msl_changed)
+    void set_alt_msl(QString alt_msl);
+
+    Q_PROPERTY(QString vx MEMBER m_vx WRITE set_vx NOTIFY vx_changed)
+    void set_vx(QString vx);
+
+    Q_PROPERTY(QString vy MEMBER m_vy WRITE set_vy NOTIFY vy_changed)
+    void set_vy(QString vy);
+
+    Q_PROPERTY(QString vz MEMBER m_vz WRITE set_vz NOTIFY vz_changed)
+    void set_vz(QString vz);
+
+    Q_PROPERTY(QString hdg MEMBER m_hdg WRITE set_hdg NOTIFY hdg_changed)
+    void set_hdg(QString hdg);
+
     Q_PROPERTY(bool armed MEMBER m_armed WRITE set_armed NOTIFY armed_changed)
     void set_armed(bool armed);
 
@@ -56,17 +77,19 @@ public:
     Q_PROPERTY(QString last_heartbeat MEMBER m_last_heartbeat WRITE set_last_heartbeat NOTIFY last_heartbeat_changed)
     void set_last_heartbeat(QString last_heartbeat);
 
-    Q_PROPERTY(double pitch_raw MEMBER m_pitch_raw WRITE set_pitch_raw NOTIFY pitch_raw_changed)
-    void set_pitch_raw(double pitch_raw);
-
-    Q_PROPERTY(double roll_raw MEMBER m_roll_raw WRITE set_roll_raw NOTIFY roll_raw_changed)
-    void set_roll_raw(double roll_raw);
-
-    Q_PROPERTY(double yaw_raw MEMBER m_yaw_raw WRITE set_yaw_raw NOTIFY pitch_raw_changed)
-    void set_yaw_raw(double yaw_raw);
-
 signals:
     void mavlink_msg_received(mavlink_message_t msg);
+
+    void boot_time_changed(QString boot_time);
+
+    void alt_rel_changed(QString alt_rel);
+    void alt_msl_changed(QString alt_msl);
+
+    void vx_changed(QString vx);
+    void vy_changed(QString vy);
+    void vz_changed(QString vz);
+
+    void hdg_changed(QString hdg);
 
     void armed_changed(bool armed);
     void flight_mode_changed(QString flight_mode);
@@ -81,10 +104,6 @@ signals:
     void gps_hdop_changed(QString gps_hdop);
 
     void last_heartbeat_changed(QString last_heartbeat);
-
-    void pitch_raw_changed(double pitch_raw);
-    void roll_raw_changed(double roll_raw);
-    void yaw_raw_changed(double yaw_raw);
 
     void messageReceived(QString message, int level);
 
@@ -111,6 +130,17 @@ private:
 #endif
     mavlink_status_t r_mavlink_status;
 
+    QString m_boot_time = "0";
+
+    QString m_alt_rel = "0";
+    QString m_alt_msl = "0";
+
+    QString m_vx = "0";
+    QString m_vy = "0";
+    QString m_vz = "0";
+
+    QString m_hdg = "360";
+
     bool m_armed = false;
     QString m_flight_mode = "Stabilize";
     QString m_homelat = "0.000000";
@@ -125,10 +155,6 @@ private:
 
     QString m_last_heartbeat = "N/A";
     qint64 last_heartbeat_timestamp;
-
-    double m_roll_raw = 0.0;
-    double m_yaw_raw = 0.0;
-    double m_pitch_raw = 0.0;
 };
 
 

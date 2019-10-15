@@ -66,6 +66,17 @@ public:
     void set_cts(bool cts);
 
 signals:
+    void boot_time_changed(QString boot_time);
+
+    void alt_rel_changed(QString alt_rel);
+    void alt_msl_changed(QString alt_msl);
+
+    void vx_changed(QString vx);
+    void vy_changed(QString vy);
+    void vz_changed(QString vz);
+
+    void hdg_changed(QString hdg);
+
     void armed_changed(bool armed);
     void flight_mode_changed(QString flight_mode);
 
