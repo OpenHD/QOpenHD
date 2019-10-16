@@ -77,6 +77,15 @@ public:
     Q_PROPERTY(QString last_heartbeat MEMBER m_last_heartbeat WRITE set_last_heartbeat NOTIFY last_heartbeat_changed)
     void set_last_heartbeat(QString last_heartbeat);
 
+    Q_PROPERTY(double pitch_raw MEMBER m_pitch_raw WRITE set_pitch_raw NOTIFY pitch_raw_changed)
+    void set_pitch_raw(double pitch_raw);
+
+    Q_PROPERTY(double roll_raw MEMBER m_roll_raw WRITE set_roll_raw NOTIFY roll_raw_changed)
+    void set_roll_raw(double roll_raw);
+
+    Q_PROPERTY(double yaw_raw MEMBER m_yaw_raw WRITE set_yaw_raw NOTIFY pitch_raw_changed)
+    void set_yaw_raw(double yaw_raw);
+
 signals:
     void mavlink_msg_received(mavlink_message_t msg);
 
@@ -104,6 +113,10 @@ signals:
     void gps_hdop_changed(QString gps_hdop);
 
     void last_heartbeat_changed(QString last_heartbeat);
+
+    void pitch_raw_changed(double pitch_raw);
+    void roll_raw_changed(double roll_raw);
+    void yaw_raw_changed(double yaw_raw);
 
     void messageReceived(QString message, int level);
 
@@ -155,6 +168,10 @@ private:
 
     QString m_last_heartbeat = "N/A";
     qint64 last_heartbeat_timestamp;
+
+    double m_roll_raw = 0.0;
+    double m_yaw_raw = 0.0;
+    double m_pitch_raw = 0.0;
 };
 
 

@@ -443,6 +443,21 @@ void MavlinkTelemetry::set_last_heartbeat(QString last_heartbeat) {
     emit last_heartbeat_changed(m_last_heartbeat);
 }
 
+void MavlinkTelemetry::set_pitch_raw(double pitch_raw) {
+    m_pitch_raw = pitch_raw;
+    emit pitch_raw_changed(m_pitch_raw);
+}
+
+void MavlinkTelemetry::set_roll_raw(double roll_raw) {
+    m_roll_raw = roll_raw;
+    emit roll_raw_changed(m_roll_raw);
+}
+
+void MavlinkTelemetry::set_yaw_raw(double yaw_raw) {
+    m_yaw_raw = yaw_raw;
+    emit yaw_raw_changed(m_yaw_raw);
+}
+
 QObject *mavlinkTelemetrySingletonProvider(QQmlEngine *engine, QJSEngine *scriptEngine) {
     Q_UNUSED(engine)
     Q_UNUSED(scriptEngine)
