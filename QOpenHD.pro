@@ -19,6 +19,7 @@ CONFIG(debug, debug|release) {
     DEFINES += QMLJSDEBUGGER
 } else:CONFIG(release, debug|release) {
     DEFINES += QT_NO_DEBUG
+    CONFIG += installer
     CONFIG += force_debug_info
     !iOSBuild {
         !AndroidBuild {
@@ -219,10 +220,14 @@ installer {
     MacBuild {
         DESTDIR_COPY_RESOURCE_LIST = $$DESTDIR/$${TARGET}.app/Contents/MacOS
         QMAKE_POST_LINK += && $${BASEDIR}/tools/prepare_gstreamer_framework.sh $${DESTDIR}/gstwork $${DESTDIR}/$${TARGET}.app $${TARGET}
-        QMAKE_POST_LINK += && mkdir -p $${DESTDIR}/package
-        QMAKE_POST_LINK += && cd $${DESTDIR} && $$dirname(QMAKE_QMAKE)/macdeployqt OpenHD.app -appstore-compliant -verbose=2 -qmldir=$${BASEDIR}/qml
-        QMAKE_POST_LINK += && cd $${OUT_PWD}
-        QMAKE_POST_LINK += && hdiutil create -verbose -stretch 3g -layout SPUD -srcfolder $${DESTDIR}/OpenHD.app -volname OpenHD $${DESTDIR}/package/OpenHD.dmg
+        QMAKE_POST_LINK += && cd $${DESTDIR}
+        QMAKE_POST_LINK += && $$dirname(QMAKE_QMAKE)/macdeployqt $${TARGET}.app -appstore-compliant -qmldir=$${BASEDIR}/qml
+        QMAKE_POST_LINK += && codesign --force --verify --sign \"${DEV_CERT}\" --keychain ${HOME}/Library/Keychains/login.keychain $${TARGET}.app --deep
+
+
+        QMAKE_POST_LINK += && hdiutil create $${TARGET}.dmg -volname $${TARGET} -fs HFS+ -srcfolder $${DESTDIR}/$${TARGET}.app
+        QMAKE_POST_LINK += && hdiutil convert $${TARGET}.dmg -format UDZO -o "$${TARGET}-$${QOPENHD_VERSION}.dmg"
+
     }
     WindowsBuild {
         QMAKE_POST_LINK += $$escape_expand(\\n) cd $$BASEDIR_WIN && $$quote("\"C:\\Program Files \(x86\)\\NSIS\\makensis.exe\"" /NOCD "\"/XOutFile $${DESTDIR_WIN}\\OpenHD-installer.exe\"" "$$BASEDIR_WIN\\deploy\\openhd_installer.nsi")
