@@ -207,6 +207,18 @@ void MavlinkTelemetry::processMavlinkMessage(mavlink_message_t msg) {
             set_homelat(tr("%1").arg((double)global_position.lat / 10000000.0, 2, 'f', 6, '1'));
             set_homelon(tr("%1").arg((double)global_position.lon / 10000000.0, 2, 'f', 6, '1'));
 
+            set_boot_time(tr("%1").arg(global_position.time_boot_ms));
+
+            set_alt_rel(tr("%1").arg(global_position.relative_alt/1000.0));
+            set_alt_msl(tr("%1").arg(global_position.alt/1000.0));
+
+            // FOR INAV heading does not /100
+            set_hdg(tr("%1").arg(global_position.hdg/100.0));
+
+            set_vx(tr("%1").arg(global_position.vx/100.0));
+            set_vy(tr("%1").arg(global_position.vy/100.0));
+            set_vz(tr("%1").arg(global_position.vz/100.0));
+
             break;
         }
         case MAVLINK_MSG_ID_RC_CHANNELS_RAW:
@@ -317,6 +329,40 @@ void MavlinkTelemetry::processMavlinkMessage(mavlink_message_t msg) {
     emit mavlink_msg_received(msg);
 }
 
+void MavlinkTelemetry::set_boot_time(QString boot_time) {
+    m_boot_time = boot_time;
+    emit boot_time_changed(m_boot_time);
+}
+
+void MavlinkTelemetry::set_alt_rel(QString alt_rel) {
+    m_alt_rel = alt_rel;
+    emit alt_rel_changed(m_alt_rel);
+}
+
+void MavlinkTelemetry::set_alt_msl(QString alt_msl) {
+    m_alt_msl = alt_msl;
+    emit alt_msl_changed(m_alt_msl);
+}
+
+void MavlinkTelemetry::set_vx(QString vx) {
+    m_vx = vx;
+    emit vx_changed(m_vx);
+}
+
+void MavlinkTelemetry::set_vy(QString vy) {
+    m_vy = vy;
+    emit vy_changed(m_vy);
+}
+
+void MavlinkTelemetry::set_vz(QString vz) {
+    m_vz = vz;
+    emit vz_changed(m_vz);
+}
+
+void MavlinkTelemetry::set_hdg(QString hdg) {
+    m_hdg = hdg;
+    emit hdg_changed(m_hdg);
+}
 
 void MavlinkTelemetry::set_armed(bool armed) {
 #if defined(ENABLE_SPEECH)
