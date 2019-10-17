@@ -284,7 +284,7 @@ Rectangle {
                          * and in the other checkbox below
                          */
                          // @disable-check M222
-                        var _hCenter = settings.value(vCenterIdentifier, defaultHCenter)
+                        var _hCenter = settings.value(hCenterIdentifier, defaultHCenter)
                          // @disable-check M223
                         if (_hCenter === "true" || _hCenter === 1 || _hCenter === true) {
                             checked = true;
