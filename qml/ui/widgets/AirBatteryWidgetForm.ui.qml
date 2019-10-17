@@ -61,7 +61,15 @@ BaseWidget {
             y: 8
             width: 36
             height: 48
-            color: MavlinkTelemetry.battery_voltage_raw < 11.2 ? (MavlinkTelemetry.battery_voltage_raw < 10.9 ? "#ff0000" : "#fbfd15") : "#ffffff"
+            // @disable-check M223
+            color: {
+                // todo: expose battery_voltage_to_percent to QML instead of using cell levels here
+                // @disable-check M222
+                var cells = settings.value("show_ground_status", true);
+                var cellVoltage = MavlinkTelemetry.battery_voltage_raw / cells;
+                // 20% warning, 15% critical
+                return cellVoltage < 3.73 ? (cellVoltage < 3.71 ? "#ff0000" : "#fbfd15") : "#ffffff"
+            }
             text: MavlinkTelemetry.battery_gauge
             anchors.left: parent.left
             anchors.leftMargin: 12
