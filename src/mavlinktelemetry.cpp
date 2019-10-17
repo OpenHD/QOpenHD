@@ -105,65 +105,64 @@ void MavlinkTelemetry::processMavlinkDatagrams() {
 
 void MavlinkTelemetry::processMavlinkMessage(mavlink_message_t msg) {
     switch (msg.msgid) {
-        case MAVLINK_MSG_ID_HEARTBEAT: {
-            mavlink_heartbeat_t heartbeat;
-            mavlink_msg_heartbeat_decode(&msg, &heartbeat);
-            //MAV_STATE state = (MAV_STATE)heartbeat.system_status;
-            MAV_MODE_FLAG mode = (MAV_MODE_FLAG)heartbeat.base_mode;
-            if (mode & MAV_MODE_FLAG_SAFETY_ARMED) {
-                // armed
-                set_armed(true);
-            } else {
-                set_armed(false);
-            }
-            auto custom_mode = heartbeat.custom_mode;
+            case MAVLINK_MSG_ID_HEARTBEAT: {
+                    mavlink_heartbeat_t heartbeat;
+                    mavlink_msg_heartbeat_decode(&msg, &heartbeat);
+                    //MAV_STATE state = (MAV_STATE)heartbeat.system_status;
+                    MAV_MODE_FLAG mode = (MAV_MODE_FLAG)heartbeat.base_mode;
 
-            auto uav_type = heartbeat.type;
-            switch (uav_type) {
-                case MAV_TYPE_GENERIC: {
-                    break;
-                }
-                case MAV_TYPE_FIXED_WING: {
-                    auto plane_mode = plane_mode_from_enum((PLANE_MODE)custom_mode);
-                    set_flight_mode(plane_mode);
-                    break;
-                }
-                case MAV_TYPE_GROUND_ROVER: {
-                    auto rover_mode = rover_mode_from_enum((ROVER_MODE)custom_mode);
-                    set_flight_mode(rover_mode);
-                    break;
-                }
-                case MAV_TYPE_COAXIAL:
-                case MAV_TYPE_HELICOPTER:
-                case MAV_TYPE_HEXAROTOR:
-                case MAV_TYPE_OCTOROTOR:
-                case MAV_TYPE_TRICOPTER:
-                case MAV_TYPE_QUADROTOR: {
-                    auto copter_mode = copter_mode_from_enum((COPTER_MODE)custom_mode);
-                    set_flight_mode(copter_mode);
-                    break;
-                }
-                case MAV_TYPE_SURFACE_BOAT:
-                case MAV_TYPE_SUBMARINE: {
-                    auto sub_mode = sub_mode_from_enum((SUB_MODE)custom_mode);
-                    set_flight_mode(sub_mode);
-                    break;
-                }
-                case MAV_TYPE_ANTENNA_TRACKER: {
-                    auto tracker_mode = tracker_mode_from_enum((TRACKER_MODE)custom_mode);
-                    //set_tracker_mode(tracker_mode);
-                    break;
-                }
-                default: {
-                    // do nothing
-                }
-            }
-            qint64 current_timestamp = QDateTime::currentMSecsSinceEpoch();
+                    if (mode & MAV_MODE_FLAG_SAFETY_ARMED) {
+                        // armed
+                        set_armed(true);
+                        } else {
+                        set_armed(false);
+                    }
 
-            set_last_heartbeat(QString(tr("%1s").arg(current_timestamp - last_heartbeat_timestamp)));
-            last_heartbeat_timestamp = current_timestamp;
-            break;
-        }
+                    auto custom_mode = heartbeat.custom_mode;
+
+                    auto uav_type = heartbeat.type;
+
+                    switch (uav_type) {
+                        case MAV_TYPE_GENERIC: {
+                        break;
+                        }
+                        case MAV_TYPE_FIXED_WING: {
+                            auto plane_mode = plane_mode_from_enum((PLANE_MODE)custom_mode);
+                            set_flight_mode(plane_mode);
+                        break;
+                        }
+                        case MAV_TYPE_GROUND_ROVER: {
+                            auto rover_mode = rover_mode_from_enum((ROVER_MODE)custom_mode);
+                            set_flight_mode(rover_mode);
+                        break;
+                        }
+                        case MAV_TYPE_QUADROTOR: {
+                            auto copter_mode = copter_mode_from_enum((COPTER_MODE)custom_mode);
+                            set_flight_mode(copter_mode);
+                        break;
+                        }
+                        case MAV_TYPE_SUBMARINE: {
+                            auto sub_mode = sub_mode_from_enum((SUB_MODE)custom_mode);
+                            set_flight_mode(sub_mode);
+                        break;
+                        }
+                        case MAV_TYPE_ANTENNA_TRACKER: {
+                            auto tracker_mode = tracker_mode_from_enum((TRACKER_MODE)custom_mode);
+                            //set_tracker_mode(tracker_mode);
+                        break;
+                        }
+                        default: {
+                            // do nothing
+                        }
+                    }
+
+                    qint64 current_timestamp = QDateTime::currentMSecsSinceEpoch();
+
+                    set_last_heartbeat(QString(tr("%1s").arg(current_timestamp - last_heartbeat_timestamp)));
+                    last_heartbeat_timestamp = current_timestamp;
+                    break;
+                }
+
         case MAVLINK_MSG_ID_SYS_STATUS: {
             mavlink_sys_status_t sys_status;
             mavlink_msg_sys_status_decode(&msg, &sys_status);
@@ -181,25 +180,43 @@ void MavlinkTelemetry::processMavlinkMessage(mavlink_message_t msg) {
             set_battery_gauge(battery_gauge_glyph);
             break;
         }
-        case MAVLINK_MSG_ID_SYSTEM_TIME:
+
+        case MAVLINK_MSG_ID_SYSTEM_TIME:{
             break;
-        case MAVLINK_MSG_ID_PARAM_VALUE:
+        }
+        case MAVLINK_MSG_ID_PARAM_VALUE:{
             break;
-        case MAVLINK_MSG_ID_GPS_RAW_INT:
+        }
+        case MAVLINK_MSG_ID_GPS_RAW_INT:{
             mavlink_gps_raw_int_t gps_status;
             mavlink_msg_gps_raw_int_decode(&msg, &gps_status);
             set_satellites_visible(tr("%1").arg(gps_status.satellites_visible));
             set_gps_hdop(tr("%1").arg((double)gps_status.eph / 100.0));
-
             break;
+        }
         case MAVLINK_MSG_ID_GPS_STATUS: {
             break;
         }
-        case MAVLINK_MSG_ID_RAW_IMU:
-        case MAVLINK_MSG_ID_SCALED_PRESSURE:
-        case MAVLINK_MSG_ID_ATTITUDE:
-        case MAVLINK_MSG_ID_LOCAL_POSITION_NED:
+        case MAVLINK_MSG_ID_RAW_IMU:{
             break;
+        }
+        case MAVLINK_MSG_ID_SCALED_PRESSURE:{
+            break;
+        }
+        case MAVLINK_MSG_ID_ATTITUDE:{
+            mavlink_attitude_t attitude;
+            mavlink_msg_attitude_decode (&msg, &attitude);
+
+            set_pitch_raw((float)attitude.pitch *57.2958);
+            qDebug() << "Pitch:" <<  attitude.pitch*57.2958;
+
+            set_roll_raw((float)attitude.roll *57.2958);
+            qDebug() << "Roll:" <<  attitude.roll*57.2958;
+            break;
+        }
+        case MAVLINK_MSG_ID_LOCAL_POSITION_NED:{
+            break;
+        }
         case MAVLINK_MSG_ID_GLOBAL_POSITION_INT: {
             mavlink_global_position_int_t global_position;
             mavlink_msg_global_position_int_decode(&msg, &global_position);
@@ -210,6 +227,7 @@ void MavlinkTelemetry::processMavlinkMessage(mavlink_message_t msg) {
             set_boot_time(tr("%1").arg(global_position.time_boot_ms));
 
             set_alt_rel(tr("%1").arg(global_position.relative_alt/1000.0));
+          //  qDebug() << "Altitude relative " << alt_rel;
             set_alt_msl(tr("%1").arg(global_position.alt/1000.0));
 
             // FOR INAV heading does not /100
@@ -221,14 +239,22 @@ void MavlinkTelemetry::processMavlinkMessage(mavlink_message_t msg) {
 
             break;
         }
-        case MAVLINK_MSG_ID_RC_CHANNELS_RAW:
+        case MAVLINK_MSG_ID_RC_CHANNELS_RAW:{
             break;
-        case MAVLINK_MSG_ID_SERVO_OUTPUT_RAW:
-        case MAVLINK_MSG_ID_MISSION_CURRENT:
-        case MAVLINK_MSG_ID_GPS_GLOBAL_ORIGIN:
-        case MAVLINK_MSG_ID_NAV_CONTROLLER_OUTPUT:
+        }
+        case MAVLINK_MSG_ID_SERVO_OUTPUT_RAW:{
             break;
-        case MAVLINK_MSG_ID_RC_CHANNELS:
+        }
+        case MAVLINK_MSG_ID_MISSION_CURRENT:{
+            break;
+        }
+        case MAVLINK_MSG_ID_GPS_GLOBAL_ORIGIN:{
+            break;
+        }
+        case MAVLINK_MSG_ID_NAV_CONTROLLER_OUTPUT:{
+            break;
+        }
+        case MAVLINK_MSG_ID_RC_CHANNELS:{
             mavlink_rc_channels_t rc_channels;
             mavlink_msg_rc_channels_decode(&msg, &rc_channels);
             /*qDebug() << "RC: " << rc_channels.chan1_raw
@@ -242,12 +268,23 @@ void MavlinkTelemetry::processMavlinkMessage(mavlink_message_t msg) {
                                            << rc_channels.chan9_raw
                                            << rc_channels.chan10_raw;*/
             break;
-        case MAVLINK_MSG_ID_VFR_HUD:
-        case MAVLINK_MSG_ID_TIMESYNC:
+        }
+        case MAVLINK_MSG_ID_VFR_HUD:{
+            mavlink_vfr_hud_t vfr_hud;
+            mavlink_msg_vfr_hud_decode (&msg, &vfr_hud);
+
+         //   set_throttle(tr("%1").arg(vfr_hud.throttle));
             break;
-        case MAVLINK_MSG_ID_POWER_STATUS:
-        case MAVLINK_MSG_ID_TERRAIN_REPORT:
+        }
+        case MAVLINK_MSG_ID_TIMESYNC:{
             break;
+        }
+        case MAVLINK_MSG_ID_POWER_STATUS:{
+            break;
+        }
+        case MAVLINK_MSG_ID_TERRAIN_REPORT:{
+            break;
+        }
         case MAVLINK_MSG_ID_BATTERY_STATUS: {
             mavlink_battery_status_t battery_status;
             mavlink_msg_battery_status_decode(&msg, &battery_status);
@@ -262,10 +299,12 @@ void MavlinkTelemetry::processMavlinkMessage(mavlink_message_t msg) {
             }
             break;
         }
-        case MAVLINK_MSG_ID_VIBRATION:
+        case MAVLINK_MSG_ID_VIBRATION:{
             break;
-        case MAVLINK_MSG_ID_HOME_POSITION:
+        }
+        case MAVLINK_MSG_ID_HOME_POSITION:{
             break;
+        }
         case MAVLINK_MSG_ID_STATUSTEXT: {
             mavlink_statustext_t statustext;
             mavlink_msg_statustext_decode(&msg, &statustext);
@@ -443,17 +482,17 @@ void MavlinkTelemetry::set_last_heartbeat(QString last_heartbeat) {
     emit last_heartbeat_changed(m_last_heartbeat);
 }
 
-void MavlinkTelemetry::set_pitch_raw(double pitch_raw) {
+void MavlinkTelemetry::set_pitch_raw(float pitch_raw) {
     m_pitch_raw = pitch_raw;
     emit pitch_raw_changed(m_pitch_raw);
 }
 
-void MavlinkTelemetry::set_roll_raw(double roll_raw) {
+void MavlinkTelemetry::set_roll_raw(float roll_raw) {
     m_roll_raw = roll_raw;
     emit roll_raw_changed(m_roll_raw);
 }
 
-void MavlinkTelemetry::set_yaw_raw(double yaw_raw) {
+void MavlinkTelemetry::set_yaw_raw(float yaw_raw) {
     m_yaw_raw = yaw_raw;
     emit yaw_raw_changed(m_yaw_raw);
 }
