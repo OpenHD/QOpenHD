@@ -12,7 +12,7 @@ Rectangle {
     height: 0
     anchors.centerIn: parent
     transformOrigin: Item.Center
-    rotation: MavlinkTelemetry.roll_raw
+    rotation: -MavlinkTelemetry.roll_raw
     transform: Translate {
         x: Item.Center
         y: MavlinkTelemetry.pitch_raw
