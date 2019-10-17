@@ -83,6 +83,11 @@ ApplicationWindow {
 
     }
 
+    HorizonWidget {
+        id: horizonWidget
+        anchors.centerIn: parent
+    }
+
     UpperOverlayBar {
         id: upperOverlayBar
         onSettingsButtonClicked: {
@@ -102,6 +107,7 @@ ApplicationWindow {
             upperOverlayBar.configure();
             lowerOverlayBar.configure();
             messageHUD.configure();
+            horizonWidget.configure();
         }
     }
 }
