@@ -233,7 +233,7 @@ SettingsPopupForm {
     rebootButton.onClicked: {
         settings_form.configure();
         settings_popup.close();
-        messageHUD.pushMessage("Rebooting...", 3);
+        //messageHUD.pushMessage("Rebooting...", 3);
         OpenHDPi.reboot();
     }
 
