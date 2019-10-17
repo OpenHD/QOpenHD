@@ -8,6 +8,7 @@ import OpenHD 1.0
 
 import "../ui" as Ui
 
+
 /*
  * This file should be refactored in a way that isn't so fragile and verbose. The rows are
  * all manually defined and every one of them has a manually vertical offset to position it
@@ -49,6 +50,7 @@ Item {
             font.pixelSize: 13
             visible: OpenHDPi.is_raspberry_pi
         }
+
 
         /*TabButton {
             text: qsTr("Joystick")
@@ -102,9 +104,11 @@ Item {
                     anchors.rightMargin: 12
                     anchors.right: parent.right
                     // @disable-check M222
-                    Component.onCompleted: checked = settings.value("enable_speech", true)
+                    Component.onCompleted: checked = settings.value(
+                                               "enable_speech", true)
                     // @disable-check M222
-                    onCheckedChanged: settings.setValue("enable_speech", checked)
+                    onCheckedChanged: settings.setValue("enable_speech",
+                                                        checked)
                 }
             }
 
@@ -136,7 +140,8 @@ Item {
                     stepSize: 1
                     anchors.rightMargin: 0
                     // @disable-check M222
-                    Component.onCompleted: value = settings.value("battery_cells", 3)
+                    Component.onCompleted: value = settings.value(
+                                               "battery_cells", 3)
                     // @disable-check M223
                     onValueChanged: {
                         // @disable-check M222
@@ -144,7 +149,6 @@ Item {
                     }
                 }
             }
-
 
             Rectangle {
                 width: parent.width
@@ -170,21 +174,19 @@ Item {
                     anchors.rightMargin: 12
                     anchors.right: parent.right
                     // @disable-check M222
-                    Component.onCompleted: checked = settings.value("enable_rc", false)
+                    Component.onCompleted: checked = settings.value(
+                                               "enable_rc", false)
                     // @disable-check M222
                     onCheckedChanged: settings.setValue("enable_rc", checked)
                 }
             }
         }
 
-
-
-
         ScrollView {
             id: widgetsView
             width: parent.width
             height: parent.height
-            contentHeight: 11 * 64
+            contentHeight: 12 * 64
 
             clip: true
 
@@ -211,9 +213,11 @@ Item {
                     anchors.rightMargin: 12
                     anchors.right: parent.right
                     // @disable-check M222
-                    Component.onCompleted: checked = settings.value("show_downlink_rssi", true)
+                    Component.onCompleted: checked = settings.value(
+                                               "show_downlink_rssi", true)
                     // @disable-check M222
-                    onCheckedChanged: settings.setValue("show_downlink_rssi", checked)
+                    onCheckedChanged: settings.setValue("show_downlink_rssi",
+                                                        checked)
                 }
             }
 
@@ -240,9 +244,11 @@ Item {
                     anchors.rightMargin: 12
                     anchors.right: parent.right
                     // @disable-check M222
-                    Component.onCompleted: checked = settings.value("show_uplink_rssi", true)
+                    Component.onCompleted: checked = settings.value(
+                                               "show_uplink_rssi", true)
                     // @disable-check M222
-                    onCheckedChanged: settings.setValue("show_uplik_rssi", checked)
+                    onCheckedChanged: settings.setValue("show_uplik_rssi",
+                                                        checked)
                 }
             }
 
@@ -269,7 +275,8 @@ Item {
                     anchors.rightMargin: 12
                     anchors.right: parent.right
                     // @disable-check M222
-                    Component.onCompleted: checked = settings.value("show_bitrate", true)
+                    Component.onCompleted: checked = settings.value(
+                                               "show_bitrate", true)
                     // @disable-check M222
                     onCheckedChanged: settings.setValue("show_bitrate", checked)
                 }
@@ -298,7 +305,8 @@ Item {
                     anchors.rightMargin: 12
                     anchors.right: parent.right
                     // @disable-check M222
-                    Component.onCompleted: checked = settings.value("show_gps", true)
+                    Component.onCompleted: checked = settings.value("show_gps",
+                                                                    true)
                     // @disable-check M222
                     onCheckedChanged: settings.setValue("show_gps", checked)
                 }
@@ -327,9 +335,11 @@ Item {
                     anchors.rightMargin: 12
                     anchors.right: parent.right
                     // @disable-check M222
-                    Component.onCompleted: checked = settings.value("show_home_distance", true)
+                    Component.onCompleted: checked = settings.value(
+                                               "show_home_distance", true)
                     // @disable-check M222
-                    onCheckedChanged: settings.setValue("show_home_distance", checked)
+                    onCheckedChanged: settings.setValue("show_home_distance",
+                                                        checked)
                 }
             }
 
@@ -356,9 +366,11 @@ Item {
                     anchors.rightMargin: 12
                     anchors.right: parent.right
                     // @disable-check M222
-                    Component.onCompleted: checked = settings.value("show_flight_timer", true)
+                    Component.onCompleted: checked = settings.value(
+                                               "show_flight_timer", true)
                     // @disable-check M222
-                    onCheckedChanged: settings.setValue("show_flight_timer", checked)
+                    onCheckedChanged: settings.setValue("show_flight_timer",
+                                                        checked)
                 }
             }
 
@@ -385,9 +397,11 @@ Item {
                     anchors.rightMargin: 12
                     anchors.right: parent.right
                     // @disable-check M222
-                    Component.onCompleted: checked = settings.value("show_flight_mode", true)
+                    Component.onCompleted: checked = settings.value(
+                                               "show_flight_mode", true)
                     // @disable-check M222
-                    onCheckedChanged: settings.setValue("show_flight_mode", checked)
+                    onCheckedChanged: settings.setValue("show_flight_mode",
+                                                        checked)
                 }
             }
 
@@ -414,9 +428,11 @@ Item {
                     anchors.rightMargin: 12
                     anchors.right: parent.right
                     // @disable-check M222
-                    Component.onCompleted: checked = settings.value("show_ground_status", true)
+                    Component.onCompleted: checked = settings.value(
+                                               "show_ground_status", true)
                     // @disable-check M222
-                    onCheckedChanged: settings.setValue("show_ground_status", checked)
+                    onCheckedChanged: settings.setValue("show_ground_status",
+                                                        checked)
                 }
             }
 
@@ -443,9 +459,11 @@ Item {
                     anchors.rightMargin: 12
                     anchors.right: parent.right
                     // @disable-check M222
-                    Component.onCompleted: checked = settings.value("show_air_status", true)
+                    Component.onCompleted: checked = settings.value(
+                                               "show_air_status", true)
                     // @disable-check M222
-                    onCheckedChanged: settings.setValue("show_air_status", checked)
+                    onCheckedChanged: settings.setValue("show_air_status",
+                                                        checked)
                 }
             }
 
@@ -472,16 +490,18 @@ Item {
                     anchors.rightMargin: 12
                     anchors.right: parent.right
                     // @disable-check M222
-                    Component.onCompleted: checked = settings.value("show_air_battery", true)
+                    Component.onCompleted: checked = settings.value(
+                                               "show_air_battery", true)
                     // @disable-check M222
-                    onCheckedChanged: settings.setValue("show_air_battery", checked)
+                    onCheckedChanged: settings.setValue("show_air_battery",
+                                                        checked)
                 }
             }
 
             Rectangle {
                 width: parent.width
                 height: 64
-                color: "#00000000"
+                color: "#8cbfd7f3"
                 y: 640
 
                 Text {
@@ -501,13 +521,45 @@ Item {
                     anchors.rightMargin: 12
                     anchors.right: parent.right
                     // @disable-check M222
-                    Component.onCompleted: checked = settings.value("show_log_onscreen", true)
+                    Component.onCompleted: checked = settings.value(
+                                               "show_log_onscreen", true)
                     // @disable-check M222
-                    onCheckedChanged: settings.setValue("show_log_onscreen", checked)
+                    onCheckedChanged: settings.setValue("show_log_onscreen",
+                                                        checked)
+                }
+            }
+
+            Rectangle {
+                width: parent.width
+                height: 64
+                color: "#00000000"
+                y: 704
+
+                Text {
+                    id: element
+                    text: "Show Horizon"
+                    font.weight: Font.Bold
+                    font.pixelSize: 13
+                    anchors.leftMargin: 8
+                    verticalAlignment: Text.AlignVCenter
+                    width: 224
+                    height: parent.height
+                    anchors.left: parent.left
+                }
+
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 12
+                    anchors.right: parent.right
+                    // @disable-check M222
+                    Component.onCompleted: checked = settings.value(
+                                               "show_horizon", true)
+                    // @disable-check M222
+                    onCheckedChanged: settings.setValue("show_horizon", checked)
                 }
             }
         }
-
 
         ScrollView {
             id: screenView
@@ -564,3 +616,10 @@ Item {
         //}
     }
 }
+
+/*##^##
+Designer {
+    D{i:14;invisible:true}D{i:15;invisible:true}
+}
+##^##*/
+
