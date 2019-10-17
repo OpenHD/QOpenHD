@@ -142,7 +142,7 @@ void OpenHDTelemetry::processOpenHDTelemetry(wifibroadcast_rx_status_forward_t t
     set_lost_packet_cnt(tr("%1 (%2%)").arg(l.toString(telemetry.lost_packet_cnt)).arg((int)lost_percent_visible));
 
     //ui.skipped_packet_cnt->setText(tr("%1").arg(rssi.skipped_zxpacket_cnt));
-    //ui.injection_fail_cnt->setText(tr("%1/").arg(rssi.injection_fail_cnt));
+    //ui.injection_fail_cnt->setText(tr("%1").arg(rssi.injection_fail_cnt));
     ////ui.received_packet_cnt->setText(tr("%1").arg(rssi.received_packet_cnt));
     set_kbitrate(tr("%1 %2").arg(telemetry.kbitrate/1024.0,  3, 'f', 1, '0').arg("Mbit"));
     set_kbitrate_measured(tr("%1 Mbit").arg(telemetry.kbitrate_measured/1024.0,  3, 'f', 1, '0'));
