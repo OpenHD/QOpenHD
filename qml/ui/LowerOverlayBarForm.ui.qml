@@ -9,12 +9,6 @@ import "./widgets"
 Rectangle {
     id: statusBar
 
-    property alias home_distance: home_distance
-    property alias flight_timer: flight_timer
-    property alias flight_mode: flight_mode
-    property alias air_battery: air_battery
-    property alias gps: gps
-
     width: 800
     color: "#8f000000"
 
@@ -27,60 +21,6 @@ Rectangle {
     z: 2.0
 
     height: 48
-
-    AirBatteryWidget {
-        id: air_battery
-        anchors.top: parent.top
-        anchors.topMargin: 0
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 0
-        anchors.left: parent.left
-        anchors.leftMargin: 0
-    }
-
-    FlightModeWidget {
-        id: flight_mode
-        anchors.horizontalCenterOffset: -24
-        anchors.top: parent.top
-        anchors.topMargin: 0
-        anchors.horizontalCenter: parent.horizontalCenter
-    }
-
-
-    LatLonWidget {
-        id: lat_lon
-        anchors.top: parent.top
-        anchors.topMargin: 0
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 0
-        anchors.left: parent.left
-        anchors.leftMargin: 200
-        visible: false
-    }
-
-    GPSWidget {
-        id: gps
-        anchors.top: parent.top
-        anchors.topMargin: 0
-        anchors.right: flight_timer.left
-        anchors.rightMargin: 6
-    }
-
-    HomeDistanceWidget {
-        id: home_distance
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 0
-        anchors.right: parent.right
-        anchors.rightMargin: 0
-    }
-
-    FlightTimerWidget {
-        id: flight_timer
-        anchors.top: parent.top
-        anchors.topMargin: 0
-        anchors.right: parent.right
-        anchors.rightMargin: 0
-    }
 }
 
 
