@@ -129,15 +129,17 @@ void OpenHDTelemetry::processOpenHDTelemetry(wifibroadcast_rx_status_forward_t t
             current_best = adapter.current_signal_dbm;
         }
     }
+    QLocale l = QLocale::system();
+
     set_downlink_rssi(tr("%1").arg(current_best));
 
     auto damaged_percent = (double)telemetry.damaged_block_cnt / (double)telemetry.received_packet_cnt * 100.0;
     auto damaged_percent_visible = std::isnan(damaged_percent) ? 0.0 : damaged_percent;
-    set_damaged_block_cnt(tr("%1 (%2%)/").arg(telemetry.damaged_block_cnt).arg((int)damaged_percent_visible));
+    set_damaged_block_cnt(tr("%1 (%2%)").arg(l.toString(telemetry.damaged_block_cnt)).arg((int)damaged_percent_visible));
 
     auto lost_percent = (double)telemetry.lost_packet_cnt / (double)telemetry.received_packet_cnt * 100.0;
     auto lost_percent_visible = std::isnan(lost_percent) ? 0.0 : lost_percent;
-    set_lost_packet_cnt(tr("%1 (%2%)").arg(telemetry.lost_packet_cnt).arg((int)lost_percent_visible));
+    set_lost_packet_cnt(tr("%1 (%2%)").arg(l.toString(telemetry.lost_packet_cnt)).arg((int)lost_percent_visible));
 
     //ui.skipped_packet_cnt->setText(tr("%1").arg(rssi.skipped_zxpacket_cnt));
     //ui.injection_fail_cnt->setText(tr("%1/").arg(rssi.injection_fail_cnt));
