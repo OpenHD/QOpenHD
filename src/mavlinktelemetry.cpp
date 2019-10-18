@@ -221,7 +221,9 @@ void MavlinkTelemetry::processMavlinkMessage(mavlink_message_t msg) {
             mavlink_msg_global_position_int_decode(&msg, &global_position);
 
             OpenHD::instance()->set_lat(tr("%1").arg((double)global_position.lat / 10000000.0, 2, 'f', 6, '1'));
+            OpenHD::instance()->set_lat_raw((double)global_position.lat / 10000000.0);
             OpenHD::instance()->set_lon(tr("%1").arg((double)global_position.lon / 10000000.0, 2, 'f', 6, '1'));
+            OpenHD::instance()->set_lon_raw((double)global_position.lon / 10000000.0);
 
             OpenHD::instance()->set_boot_time(tr("%1").arg(global_position.time_boot_ms));
 
@@ -304,7 +306,9 @@ void MavlinkTelemetry::processMavlinkMessage(mavlink_message_t msg) {
         case MAVLINK_MSG_ID_HOME_POSITION:{
             mavlink_home_position_t home_position;
             mavlink_msg_home_position_decode(&msg, &home_position);
+            OpenHD::instance()->set_homelat_raw((double)home_position.latitude / 10000000.0);
             OpenHD::instance()->set_homelat(tr("%1").arg((double)home_position.latitude / 10000000.0, 2, 'f', 6, '1'));
+            OpenHD::instance()->set_homelon_raw((double)home_position.longitude / 10000000.0);
             OpenHD::instance()->set_homelon(tr("%1").arg((double)home_position.longitude / 10000000.0, 2, 'f', 6, '1'));
             break;
         }
