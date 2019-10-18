@@ -155,6 +155,36 @@ Item {
                 height: 64
                 color: "#8cbfd7f3"
                 y: 128
+
+                Text {
+                    text: "Imperial units"
+                    font.weight: Font.Bold
+                    font.pixelSize: 13
+                    anchors.leftMargin: 8
+                    verticalAlignment: Text.AlignVCenter
+                    width: 224
+                    height: parent.height
+                    anchors.left: parent.left
+                }
+
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 12
+                    anchors.right: parent.right
+                    // @disable-check M222
+                    Component.onCompleted: checked = settings.value(
+                                               "enable_imperial", false)
+                    // @disable-check M222
+                    onCheckedChanged: settings.setValue("enable_imperial", checked)
+                }
+            }
+
+            Rectangle {
+                width: parent.width
+                height: 64
+                color: "#8cbfd7f3"
+                y: 192
                 visible: EnableRC
 
                 Text {
