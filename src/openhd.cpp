@@ -107,9 +107,19 @@ void OpenHD::set_homelat(QString homelat) {
     emit homelat_changed(m_homelat);
 }
 
+void OpenHD::set_homelat_raw(double homelat_raw) {
+    m_homelat_raw = homelat_raw;
+    emit homelat_raw_changed(m_homelat_raw);
+}
+
 void OpenHD::set_homelon(QString homelon) {
     m_homelon = homelon;
     emit homelon_changed(m_homelon);
+}
+
+void OpenHD::set_homelon_raw(double homelon_raw) {
+    m_homelon_raw = homelon_raw;
+    emit homelon_raw_changed(m_homelon_raw);
 }
 
 void OpenHD::set_lat(QString lat) {
@@ -117,9 +127,19 @@ void OpenHD::set_lat(QString lat) {
     emit lat_changed(m_lat);
 }
 
+void OpenHD::set_lat_raw(double lat_raw) {
+    m_lat_raw = lat_raw;
+    emit lat_raw_changed(m_lat_raw);
+}
+
 void OpenHD::set_lon(QString lon) {
     m_lon = lon;
     emit lon_changed(m_lon);
+}
+
+void OpenHD::set_lon_raw(double lon_raw) {
+    m_lon_raw = lon_raw;
+    emit lon_raw_changed(m_lon_raw);
 }
 
 void OpenHD::set_battery_percent(QString battery_percent) {
