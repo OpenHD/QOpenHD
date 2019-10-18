@@ -53,6 +53,12 @@ public:
     Q_PROPERTY(QString homelon MEMBER m_homelon WRITE set_homelon NOTIFY homelon_changed)
     void set_homelon(QString homelon);
 
+    Q_PROPERTY(QString lat MEMBER m_lat WRITE set_lat NOTIFY lat_changed)
+    void set_lat(QString lat);
+
+    Q_PROPERTY(QString lon MEMBER m_lon WRITE set_lon NOTIFY lon_changed)
+    void set_lon(QString lon);
+
     Q_PROPERTY(QString satellites_visible MEMBER m_satellites_visible WRITE set_satellites_visible NOTIFY satellites_visible_changed)
     void set_satellites_visible(QString satellites_visible);
 
@@ -145,6 +151,8 @@ signals:
     void flight_mode_changed(QString flight_mode);
     void homelat_changed(QString homelat);
     void homelon_changed(QString homelon);
+    void lat_changed(QString lat);
+    void lon_changed(QString lon);
     void battery_percent_changed(QString battery_percent);
     void battery_voltage_changed(QString battery_voltage);
     void battery_voltage_raw_changed(double battery_voltage);
@@ -195,6 +203,8 @@ private:
     QString m_flight_mode = "Stabilize";
     QString m_homelat = "0.000000";
     QString m_homelon = "0.000000";
+    QString m_lat = "0.000000";
+    QString m_lon = "0.000000";
     QString m_battery_percent = "0%";
     QString m_battery_current = "0.0a";
     QString m_battery_voltage = "0.0v";

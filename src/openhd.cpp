@@ -112,6 +112,16 @@ void OpenHD::set_homelon(QString homelon) {
     emit homelon_changed(m_homelon);
 }
 
+void OpenHD::set_lat(QString lat) {
+    m_lat = lat;
+    emit lat_changed(m_lat);
+}
+
+void OpenHD::set_lon(QString lon) {
+    m_lon = lon;
+    emit lon_changed(m_lon);
+}
+
 void OpenHD::set_battery_percent(QString battery_percent) {
     m_battery_percent = battery_percent;
     emit battery_percent_changed(m_battery_percent);
