@@ -55,6 +55,10 @@ ApplicationWindow {
         id: mavlinkTelemetry
     }
 
+    FrSkyTelemetry {
+        id: frskyTelemetry
+    }
+
     Loader {
         id: videoLoader
         anchors.left: parent.left

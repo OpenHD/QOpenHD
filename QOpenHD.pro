@@ -42,6 +42,7 @@ INCLUDEPATH += $$PWD/lib/mavlink_generated/common
 INCLUDEPATH += $$PWD/lib/mavlink_generated/ardupilotmega
 
 SOURCES += \
+    src/frskytelemetry.cpp \
     src/localmessage.cpp \
     src/main.cpp \
     src/mavlinktelemetry.cpp \
@@ -58,6 +59,7 @@ RESOURCES += qml/qml.qrc
 
 HEADERS += \
     inc/constants.h \
+    inc/frskytelemetry.h \
     inc/localmessage.h \
     inc/localmessage_t.h \
     inc/mavlinktelemetry.h \

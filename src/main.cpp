@@ -18,6 +18,7 @@
 #include "openhd.h"
 #include "mavlinktelemetry.h"
 #include "localmessage.h"
+#include "frskytelemetry.h"
 
 #if defined(ENABLE_VIDEO)
 #include "VideoStreaming/VideoStreaming.h"
@@ -96,6 +97,8 @@ int main(int argc, char *argv[]) {
     QFontDatabase::addApplicationFont(":/materialdesignicons-webfont.ttf");
     qmlRegisterType<OpenHDTelemetry>("OpenHD", 1, 0, "OpenHDTelemetry");
     qmlRegisterType<MavlinkTelemetry>("OpenHD", 1, 0, "MavlinkTelemetry");
+    qmlRegisterType<FrSkyTelemetry>("OpenHD", 1, 0, "FrSkyTelemetry");
+
     qmlRegisterSingletonType<OpenHDRC>("OpenHD", 1, 0, "OpenHDRC", openHDRCSingletonProvider);
     qmlRegisterSingletonType<OpenHDPi>("OpenHD", 1, 0, "OpenHDPi", openHDPiSingletonProvider);
     qmlRegisterSingletonType<LocalMessage>("OpenHD", 1, 0, "LocalMessage", localMessageSingletonProvider);
