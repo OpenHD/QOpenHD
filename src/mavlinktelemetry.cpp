@@ -238,6 +238,8 @@ void MavlinkTelemetry::processMavlinkMessage(mavlink_message_t msg) {
             OpenHD::instance()->set_vy(tr("%1").arg(global_position.vy/100.0));
             OpenHD::instance()->set_vz(tr("%1").arg(global_position.vz/100.0));
 
+            OpenHD::instance()->calculate_home_distance();
+
             break;
         }
         case MAVLINK_MSG_ID_RC_CHANNELS_RAW:{
@@ -310,6 +312,8 @@ void MavlinkTelemetry::processMavlinkMessage(mavlink_message_t msg) {
             OpenHD::instance()->set_homelat(tr("%1").arg((double)home_position.latitude / 10000000.0, 2, 'f', 6, '1'));
             OpenHD::instance()->set_homelon_raw((double)home_position.longitude / 10000000.0);
             OpenHD::instance()->set_homelon(tr("%1").arg((double)home_position.longitude / 10000000.0, 2, 'f', 6, '1'));
+
+            OpenHD::instance()->calculate_home_distance();
             break;
         }
         case MAVLINK_MSG_ID_STATUSTEXT: {
