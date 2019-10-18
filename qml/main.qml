@@ -59,6 +59,10 @@ ApplicationWindow {
         id: frskyTelemetry
     }
 
+    MSPTelemetry {
+        id: mspTelemetry
+    }
+
     Loader {
         id: videoLoader
         anchors.left: parent.left
