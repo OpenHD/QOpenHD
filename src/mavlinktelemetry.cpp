@@ -302,6 +302,10 @@ void MavlinkTelemetry::processMavlinkMessage(mavlink_message_t msg) {
             break;
         }
         case MAVLINK_MSG_ID_HOME_POSITION:{
+            mavlink_home_position_t home_position;
+            mavlink_msg_home_position_decode(&msg, &home_position);
+            OpenHD::instance()->set_lat(tr("%1").arg((double)home_position.latitude / 10000000.0, 2, 'f', 6, '1'));
+            OpenHD::instance()->set_lon(tr("%1").arg((double)home_position.longitude / 10000000.0, 2, 'f', 6, '1'));
             break;
         }
         case MAVLINK_MSG_ID_STATUSTEXT: {
