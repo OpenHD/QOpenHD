@@ -62,7 +62,19 @@ BaseWidget {
             width: 64
             height: 24
             color: "#ffffff"
-            text: qsTr("00000ft")
+            // @disable-check M222
+            text: {
+                var distance = OpenHD.home_distance;
+                var unit = "m";
+                var use_imperial = settings.value("enable_imperial", false);
+                // QML settings can return strings for booleans on some platforms so we check
+                if (use_imperial === true || use_imperial === 1 || use_imperial === "true") {
+                    unit = "ft";
+                    distance /= 3.28084;
+                }
+
+                return distance.toLocaleString(Qt.locale(), "f", 1) + unit
+            }
             elide: Text.ElideRight
             anchors.right: parent.right
             anchors.rightMargin: 8
