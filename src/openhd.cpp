@@ -1,5 +1,7 @@
 #include "openhd.h"
 
+#include <GeographicLib/Geodesic.hpp>
+#include <GeographicLib/Math.hpp>
 
 static OpenHD* _instance = new OpenHD();
 
@@ -122,6 +124,27 @@ void OpenHD::set_homelon_raw(double homelon_raw) {
     emit homelon_raw_changed(m_homelon_raw);
 }
 
+void OpenHD::calculate_home_distance() {
+    // if home lat/long are zero the calculation will be wrong so we skip it
+    if (m_armed && m_homelat_raw != 0.0 && m_homelon_raw != 0.0) {
+        GeographicLib::Math::real s12;
+        GeographicLib::Math::real azi1;
+        GeographicLib::Math::real azi2;
+
+        GeographicLib::Geodesic geod(GeographicLib::Constants::WGS84_a(), GeographicLib::Constants::WGS84_f());
+        geod.Inverse(m_homelat_raw, m_homelon_raw, m_lat_raw, m_lon_raw, s12, azi1, azi2);
+
+        // todo: this could be easily extended to save the azimuth as well, which gives us the direction
+        // home for free as a result of the calculation above.
+        set_home_distance(s12);
+    } else {
+        /*
+         * If the system isn't armed we don't want to calculate anything as the home position
+         * will be wrong or zero
+         */
+        set_home_distance(0.0);
+    }
+}
 
 void OpenHD::set_home_distance(double home_distance) {
     m_home_distance = home_distance;
