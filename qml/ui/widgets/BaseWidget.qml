@@ -145,9 +145,6 @@ BaseWidgetForm {
             _vCenter = false;
         }
 
-        console.log("%1 %2".arg(hCenterIdentifier).arg(_hCenter))
-        console.log("%1 %2".arg(vCenterIdentifier).arg(_vCenter))
-
         /*
          * Anchors have to be cleared before any of them can be set again. This is documented
          * at https://doc.qt.io/qt-5/qtquick-positioning-anchors.html#changing-anchors
@@ -195,14 +192,12 @@ BaseWidgetForm {
             }
         } else if (alignmentType === 3) {
             if (_vCenter) {
-                console.log("VCentering %1".arg(widgetIdentifier))
                 anchors.verticalCenter = parent.verticalCenter;
             } else {
                 anchors.bottom = parent.bottom;
                 anchors.bottomMargin = settings.value(yOffsetIdentifier, defaultYOffset);
             }
             if (_hCenter) {
-                console.log("HCentering %1".arg(widgetIdentifier))
                 anchors.horizontalCenter = parent.horizontalCenter;
             } else {
                 anchors.left = parent.left;
