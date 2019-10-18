@@ -41,6 +41,9 @@ INCLUDEPATH += $$PWD/lib/mavlink_generated
 INCLUDEPATH += $$PWD/lib/mavlink_generated/common
 INCLUDEPATH += $$PWD/lib/mavlink_generated/ardupilotmega
 
+INCLUDEPATH += $$PWD/lib/GeographicLib-1.50/include
+
+
 SOURCES += \
     src/frskytelemetry.cpp \
     src/localmessage.cpp \
@@ -113,6 +116,46 @@ DISTFILES += \
     qml/ui/qmldir
 
 
+
+SOURCES += \
+    lib/GeographicLib-1.50/src/Accumulator.cpp \
+    lib/GeographicLib-1.50/src/AlbersEqualArea.cpp \
+    lib/GeographicLib-1.50/src/AzimuthalEquidistant.cpp \
+    lib/GeographicLib-1.50/src/CassiniSoldner.cpp \
+    lib/GeographicLib-1.50/src/CircularEngine.cpp \
+    lib/GeographicLib-1.50/src/DMS.cpp \
+    lib/GeographicLib-1.50/src/Ellipsoid.cpp \
+    lib/GeographicLib-1.50/src/EllipticFunction.cpp \
+    lib/GeographicLib-1.50/src/GARS.cpp \
+    lib/GeographicLib-1.50/src/GeoCoords.cpp \
+    lib/GeographicLib-1.50/src/Geocentric.cpp \
+    lib/GeographicLib-1.50/src/Geodesic.cpp \
+    lib/GeographicLib-1.50/src/GeodesicExact.cpp \
+    lib/GeographicLib-1.50/src/GeodesicExactC4.cpp \
+    lib/GeographicLib-1.50/src/GeodesicLine.cpp \
+    lib/GeographicLib-1.50/src/GeodesicLineExact.cpp \
+    lib/GeographicLib-1.50/src/Geohash.cpp \
+    lib/GeographicLib-1.50/src/Geoid.cpp \
+    lib/GeographicLib-1.50/src/Georef.cpp \
+    lib/GeographicLib-1.50/src/Gnomonic.cpp \
+    lib/GeographicLib-1.50/src/GravityCircle.cpp \
+    lib/GeographicLib-1.50/src/GravityModel.cpp \
+    lib/GeographicLib-1.50/src/LambertConformalConic.cpp \
+    lib/GeographicLib-1.50/src/LocalCartesian.cpp \
+    lib/GeographicLib-1.50/src/MGRS.cpp \
+    lib/GeographicLib-1.50/src/MagneticCircle.cpp \
+    lib/GeographicLib-1.50/src/MagneticModel.cpp \
+    lib/GeographicLib-1.50/src/Math.cpp \
+    lib/GeographicLib-1.50/src/NormalGravity.cpp \
+    lib/GeographicLib-1.50/src/OSGB.cpp \
+    lib/GeographicLib-1.50/src/PolarStereographic.cpp \
+    lib/GeographicLib-1.50/src/PolygonArea.cpp \
+    lib/GeographicLib-1.50/src/Rhumb.cpp \
+    lib/GeographicLib-1.50/src/SphericalEngine.cpp \
+    lib/GeographicLib-1.50/src/TransverseMercator.cpp \
+    lib/GeographicLib-1.50/src/TransverseMercatorExact.cpp \
+    lib/GeographicLib-1.50/src/UTMUPS.cpp \
+    lib/GeographicLib-1.50/src/Utility.cpp
 
 #CONFIG += EnableRC
 
