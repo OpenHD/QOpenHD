@@ -24,10 +24,10 @@ BaseWidget {
         anchors.verticalCenter: parent.verticalCenter
 
         transformOrigin: Item.Center
-        rotation: -MavlinkTelemetry.roll_raw
+        rotation: -OpenHD.roll_raw
         transform: Translate {
             x: Item.Center
-            y: MavlinkTelemetry.pitch_raw
+            y: OpenHD.pitch_raw
         }
         antialiasing: true
 

@@ -47,6 +47,14 @@ ApplicationWindow {
         id: settings
     }
 
+    OpenHDTelemetry {
+        id: openHDTelemetry
+    }
+
+    MavlinkTelemetry {
+        id: mavlinkTelemetry
+    }
+
     Loader {
         id: videoLoader
         anchors.left: parent.left
@@ -58,7 +66,7 @@ ApplicationWindow {
     }
 
     Connections {
-        target: MavlinkTelemetry
+        target: OpenHD
         onMessageReceived: {
             hudOverlayGrid.messageHUD.pushMessage(message, level)
         }

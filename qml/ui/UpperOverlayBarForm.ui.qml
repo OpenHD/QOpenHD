@@ -18,7 +18,7 @@ Rectangle {
     width: 800
 
     // fixme: shouldnt exclusively depend on mavlink
-    color: MavlinkTelemetry.armed ? "#aeff3333" : "#8f000000"
+    color: OpenHD.armed ? "#aeff3333" : "#8f000000"
 
     anchors {
         top: parent.top

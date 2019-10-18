@@ -70,7 +70,7 @@ BaseWidget {
             width: 34
             height: 24
             color: "#ffffff"
-            text: OpenHDTelemetry.current_signal_joystick_uplink
+            text: OpenHD.current_signal_joystick_uplink
             anchors.right: uplink_dbm.left
             anchors.rightMargin: 2
             anchors.top: parent.top
@@ -90,7 +90,7 @@ BaseWidget {
             width: 64
             height: 24
             color: "#ffffff"
-            text: OpenHDTelemetry.lost_packet_cnt_rc
+            text: OpenHD.lost_packet_cnt_rc
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 0
             anchors.right: uplink_lost_packet_cnt_telemetry_up.left
@@ -111,7 +111,7 @@ BaseWidget {
             width: 64
             height: 24
             color: "#ffffff"
-            text: OpenHDTelemetry.lost_packet_cnt_telemetry_up
+            text: OpenHD.lost_packet_cnt_telemetry_up
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 0
             anchors.right: parent.right

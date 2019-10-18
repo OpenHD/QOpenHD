@@ -49,7 +49,7 @@ BaseWidget {
             width: 34
             height: 24
             color: "#ffffff"
-            text: OpenHDTelemetry.cpuload_air
+            text: OpenHD.cpuload_air
             anchors.right: temp_air.left
             anchors.rightMargin: 2
             anchors.verticalCenter: parent.verticalCenter
@@ -65,7 +65,7 @@ BaseWidget {
             width: 34
             height: 24
             color: "#ffffff"
-            text: OpenHDTelemetry.temp_air
+            text: OpenHD.temp_air
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: parent.right
             anchors.rightMargin: 0

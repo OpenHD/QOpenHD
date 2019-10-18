@@ -30,7 +30,7 @@ BaseWidget {
             width: 92
             height: 24
             color: "#ffffff"
-            text: MavlinkTelemetry.homelat
+            text: OpenHD.homelat
             horizontalAlignment: Text.AlignRight
             elide: Text.ElideRight
             verticalAlignment: Text.AlignVCenter
@@ -43,7 +43,7 @@ BaseWidget {
             width: 92
             height: 24
             color: "#ffffff"
-            text: MavlinkTelemetry.homelon
+            text: OpenHD.homelon
             horizontalAlignment: Text.AlignRight
             elide: Text.ElideRight
             verticalAlignment: Text.AlignVCenter

@@ -15,6 +15,7 @@
 #include "openhdrc.h"
 #include "openhdsettings.h"
 #include "openhdpi.h"
+#include "openhd.h"
 #include "mavlinktelemetry.h"
 #include "localmessage.h"
 
@@ -93,11 +94,12 @@ int main(int argc, char *argv[]) {
     //QFontDatabase::addApplicationFont(":/Font Awesome 5 Brands-Regular-400.otf");
 
     QFontDatabase::addApplicationFont(":/materialdesignicons-webfont.ttf");
-    qmlRegisterSingletonType<OpenHDTelemetry>("OpenHD", 1, 0, "OpenHDTelemetry", openHDTelemetrySingletonProvider);
-    qmlRegisterSingletonType<MavlinkTelemetry>("OpenHD", 1, 0, "MavlinkTelemetry", mavlinkTelemetrySingletonProvider);
+    qmlRegisterType<OpenHDTelemetry>("OpenHD", 1, 0, "OpenHDTelemetry");
+    qmlRegisterType<MavlinkTelemetry>("OpenHD", 1, 0, "MavlinkTelemetry");
     qmlRegisterSingletonType<OpenHDRC>("OpenHD", 1, 0, "OpenHDRC", openHDRCSingletonProvider);
     qmlRegisterSingletonType<OpenHDPi>("OpenHD", 1, 0, "OpenHDPi", openHDPiSingletonProvider);
     qmlRegisterSingletonType<LocalMessage>("OpenHD", 1, 0, "LocalMessage", localMessageSingletonProvider);
+    qmlRegisterSingletonType<OpenHD>("OpenHD", 1, 0, "OpenHD", openHDSingletonProvider);
 
     qmlRegisterType<OpenHDSettings>("OpenHD", 1,0, "OpenHDSettings");
     qmlRegisterType<OpenHDVideoStream>("OpenHD", 1,0, "OpenHDVideoStream");

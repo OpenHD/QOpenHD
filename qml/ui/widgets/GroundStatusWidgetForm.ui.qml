@@ -48,7 +48,7 @@ BaseWidget {
             width: 34
             height: 24
             color: "#ffffff"
-            text: OpenHDTelemetry.cpuload_gnd
+            text: OpenHD.cpuload_gnd
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: temp_gnd.left
             anchors.rightMargin: 2
@@ -65,7 +65,7 @@ BaseWidget {
             width: 34
             height: 24
             color: "#ffffff"
-            text: OpenHDTelemetry.temp_gnd
+            text: OpenHD.temp_gnd
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: parent.right
             anchors.rightMargin: 0

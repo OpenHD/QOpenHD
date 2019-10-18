@@ -26,19 +26,19 @@ BaseWidget {
             width: parent.width
             height: 24
             Text { text: "Lost:";  color: "white"; font.bold: true; anchors.left: parent.left }
-            Text { text: OpenHDTelemetry.lost_packet_cnt; color: "white"; font.bold: true; anchors.right: parent.right }
+            Text { text: OpenHD.lost_packet_cnt; color: "white"; font.bold: true; anchors.right: parent.right }
         }
         Item {
             width: parent.width
             height: 24
             Text { text: "Damaged:";  color: "white"; font.bold: true; anchors.left: parent.left }
-            Text { text: OpenHDTelemetry.damaged_block_cnt; color: "white"; font.bold: true; anchors.right: parent.right }
+            Text { text: OpenHD.damaged_block_cnt; color: "white"; font.bold: true; anchors.right: parent.right }
         }
         Item {
             width: parent.width
             height: 24
             Text { text: "CTS:";  color: "white"; font.bold: true; anchors.left: parent.left }
-            Text { text: OpenHDTelemetry.cts; color: "white"; font.bold: true; anchors.right: parent.right }
+            Text { text: OpenHD.cts; color: "white"; font.bold: true; anchors.right: parent.right }
         }
     }
 
@@ -88,7 +88,7 @@ BaseWidget {
             width: 34
             height: 24
             color: "#ffffff"
-            text: OpenHDTelemetry.downlink_rssi
+            text: OpenHD.downlink_rssi
             anchors.left: downlink_icon.right
             anchors.leftMargin: 0
             anchors.top: parent.top

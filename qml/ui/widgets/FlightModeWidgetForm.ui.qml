@@ -42,7 +42,7 @@ BaseWidget {
 
             height: 48
             color: "#ffffff"
-            text: MavlinkTelemetry.flight_mode
+            text: OpenHD.flight_mode
             anchors.verticalCenter: parent.verticalCenter
             anchors.horizontalCenter: parent.horizontalCenter
             verticalAlignment: Text.AlignVCenter

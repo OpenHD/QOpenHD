@@ -45,6 +45,7 @@ SOURCES += \
     src/localmessage.cpp \
     src/main.cpp \
     src/mavlinktelemetry.cpp \
+    src/openhd.cpp \
     src/openhdpi.cpp \
     src/openhdrc.cpp \
     src/openhdsettings.cpp \
@@ -60,6 +61,7 @@ HEADERS += \
     inc/localmessage.h \
     inc/localmessage_t.h \
     inc/mavlinktelemetry.h \
+    inc/openhd.h \
     inc/openhdpi.h \
     inc/openhdrc.h \
     inc/openhdsettings.h \

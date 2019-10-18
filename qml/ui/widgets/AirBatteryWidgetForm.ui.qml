@@ -25,13 +25,13 @@ BaseWidget {
             width: parent.width
             height: 24
             Text { text: "Voltage:";  color: "white"; font.bold: true; anchors.left: parent.left }
-            Text { text: MavlinkTelemetry.battery_voltage; color: "white"; font.bold: true; anchors.right: parent.right }
+            Text { text: OpenHD.battery_voltage; color: "white"; font.bold: true; anchors.right: parent.right }
         }
         Item {
             width: parent.width
             height: 24
             Text { text: "Current:";  color: "white"; font.bold: true; anchors.left: parent.left }
-            Text { text: MavlinkTelemetry.battery_current; color: "white"; font.bold: true; anchors.right: parent.right }
+            Text { text: OpenHD.battery_current; color: "white"; font.bold: true; anchors.right: parent.right }
         }
     }
 
@@ -45,7 +45,7 @@ BaseWidget {
             width: 48
             height: 24
             color: "#ffffff"
-            text: MavlinkTelemetry.battery_percent
+            text: OpenHD.battery_percent
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: batteryGauge.right
             anchors.leftMargin: 0
@@ -66,11 +66,11 @@ BaseWidget {
                 // todo: expose battery_voltage_to_percent to QML instead of using cell levels here
                 // @disable-check M222
                 var cells = settings.value("show_ground_status", true);
-                var cellVoltage = MavlinkTelemetry.battery_voltage_raw / cells;
+                var cellVoltage = OpenHD.battery_voltage_raw / cells;
                 // 20% warning, 15% critical
                 return cellVoltage < 3.73 ? (cellVoltage < 3.71 ? "#ff0000" : "#fbfd15") : "#ffffff"
             }
-            text: MavlinkTelemetry.battery_gauge
+            text: OpenHD.battery_gauge
             anchors.left: parent.left
             anchors.leftMargin: 12
             fontSizeMode: Text.VerticalFit

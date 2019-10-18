@@ -19,6 +19,22 @@ BaseWidget {
     defaultHCenter: false
     defaultVCenter: false
 
+    hasWidgetDetail: true
+    widgetDetailComponent: Column {
+        Item {
+            width: parent.width
+            height: 24
+            Text { text: "Lat:";  color: "white"; font.bold: true; anchors.left: parent.left }
+            Text { text: OpenHD.homelat; color: "white"; font.bold: true; anchors.right: parent.right }
+        }
+        Item {
+            width: parent.width
+            height: 24
+            Text { text: "Long:";  color: "white"; font.bold: true; anchors.left: parent.left }
+            Text { text: OpenHD.homelon; color: "white"; font.bold: true; anchors.right: parent.right }
+        }
+    }
+
     Item {
         id: widgetInner
 
@@ -46,7 +62,7 @@ BaseWidget {
             width: 20
             height: 24
             color: "#ffffff"
-            text: MavlinkTelemetry.satellites_visible
+            text: OpenHD.satellites_visible
             anchors.right: gps_hdop.left
             anchors.rightMargin: 2
             elide: Text.ElideRight
@@ -61,7 +77,7 @@ BaseWidget {
             width: 48
             height: 24
             color: "#ffffff"
-            text: "(%1)".arg(MavlinkTelemetry.gps_hdop)
+            text: "(%1)".arg(OpenHD.gps_hdop)
             anchors.right: parent.right
             anchors.rightMargin: 0
             verticalAlignment: Text.AlignTop
