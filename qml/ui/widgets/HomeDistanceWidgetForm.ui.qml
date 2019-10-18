@@ -19,6 +19,22 @@ BaseWidget {
     defaultHCenter: false
     defaultVCenter: false
 
+    hasWidgetDetail: true
+    widgetDetailComponent: Column {
+        Item {
+            width: parent.width
+            height: 24
+            Text { text: "Lat:";  color: "white"; font.bold: true; anchors.left: parent.left }
+            Text { text: OpenHD.homelat; color: "white"; font.bold: true; anchors.right: parent.right }
+        }
+        Item {
+            width: parent.width
+            height: 24
+            Text { text: "Long:";  color: "white"; font.bold: true; anchors.left: parent.left }
+            Text { text: OpenHD.homelon; color: "white"; font.bold: true; anchors.right: parent.right }
+        }
+    }
+
     Item {
         id: widgetInner
 
