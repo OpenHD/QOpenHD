@@ -19,6 +19,8 @@ public:
     void init();
 
     void telemetryMessage(QString message, int level);
+    Q_PROPERTY(double home_distance MEMBER m_home_distance WRITE set_home_distance NOTIFY home_distance_changed)
+    void set_home_distance(double home_distance);
 
     Q_PROPERTY(QString boot_time MEMBER m_boot_time WRITE set_boot_time NOTIFY boot_time_changed)
     void set_boot_time(QString boot_time);
@@ -169,6 +171,7 @@ signals:
     void lat_raw_changed(double lat_raw);
     void lon_changed(QString lon);
     void lon_raw_changed(double lon_raw);
+    void home_distance_changed(double home_distance);
     void battery_percent_changed(QString battery_percent);
     void battery_voltage_changed(QString battery_voltage);
     void battery_voltage_raw_changed(double battery_voltage);
@@ -225,6 +228,7 @@ private:
     double m_lat_raw = 0.0;
     QString m_lon = "0.000000";
     double m_lon_raw = 0.0;
+    double m_home_distance = 0.0;
     QString m_battery_percent = "0%";
     QString m_battery_current = "0.0a";
     QString m_battery_voltage = "0.0v";

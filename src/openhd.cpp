@@ -122,6 +122,12 @@ void OpenHD::set_homelon_raw(double homelon_raw) {
     emit homelon_raw_changed(m_homelon_raw);
 }
 
+
+void OpenHD::set_home_distance(double home_distance) {
+    m_home_distance = home_distance;
+    emit home_distance_changed(home_distance);
+}
+
 void OpenHD::set_lat(QString lat) {
     m_lat = lat;
     emit lat_changed(m_lat);
