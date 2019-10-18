@@ -22,6 +22,7 @@ Binaries are available in the [releases tab in GitHub](https://github.com/infinc
     * iPhone/iPad
     * Android
 * Mavlink telemetry (read-only at the moment)
+* Speech to announce warnings and telemetry messages
 
 ### Planned features
 
@@ -38,7 +39,7 @@ Binaries are available in the [releases tab in GitHub](https://github.com/infinc
 
 ### ***[There are bugs](https://github.com/infincia/QOpenHD/issues?q=is%3Aissue+is%3Aopen+label%3Abug)***.
 
-However, as of the `v0.1` tag the app itself should run the same on every platform. I have not even tried to run it on Linux or Windows though, so there may be some build script changes needed there.
+However, as of the `v0.2` tag the app itself should run the same on every platform. I have not even tried to run it on Windows yet, so there may be some build script changes needed there.
 
 Things like RC and video rendering are inherently dependent on platform support to some extent. For example, iOS is never going to support USB connected joysticks or TX, but will support things like bluetooth gamepads if the GroundPi is 5.8Ghz (the interference is **horrible** and easily noticed if the GroundPi is 2.4Ghz, stick movements have huge lag). 
 
@@ -53,21 +54,6 @@ Things like RC and video rendering are inherently dependent on platform support 
 | FRSky | No | No | No | No | No | No |
 | MSPv2 | No | No | No | No | No | No |
 | Voice Feedback | Yes | Yes | Yes | Yes | Yes | Yes |
-
-## Platforms
-
-The code is mostly C++ and uses the Qt framework, specifically QtQuick which is designed for portability and renders using OpenGL.
-
-This allows the same app to run on Windows, Mac, Linux, iOS, and Android, as well as directly on the GroundPi itself (either using the official touchscreen or an HDMI screen + mouse).
-
-## Code architecture
-
-The core is C++ (in `src`), and the UI is designed with QtQuick, which is an OpenGL accelerated, declarative UI framework. You can find the UI files in `qml`.
-
-QtQuick is designed to be an MVC code architecture, and QOpenHD follows that pattern for the most part. The UI layer is separated into declarative UI "forms" with a matching logic-only layer them, you can see that in the file names for most of the components (there will be a -Form.ui.qml for each one).
-
-There is a small amount of "glue" code in the QML layer, the language is basically Javascript but designed to integrate with QML. There is more of this in the QML layer than I would like at the moment but some of it can
-be moved down to C++ in the future.
 
 ## Drag-and-drop widgets
 
@@ -95,12 +81,6 @@ Only one widget can be unlocked at a time, to prevent accidentally moving the ot
 Widgets can all be completely enabled/disabled individually in settings, and some of them have settings of their
 own that can be accessed by tapping once on the widget to open the detail panel.
 
-## Telemetry
-
-The Open.HD telemetry is handled via UDP when the app is running on a phone or a computer, and via the same shared memory system used by the original OSD when running on GroundPi.
-
-For vehicle telemetry, only Mavlink is fully integrated at the moment, but [other protocols are being added](https://github.com/infincia/QOpenHD/issues/17).
-
 ## Settings
 
 ![Ground Pi Radio Settings](https://raw.githubusercontent.com/infincia/QOpenHD/master/wiki/settings-radio.png)
@@ -122,6 +102,22 @@ and therefore it works the same as it always has.
 
 On other platforms, RC is currently disabled via compiler flag to prevent anyone from using it and accidentally causing a flyaway or getting injured. The code is not yet finished and has a few bugs to resolve before it can be trusted.
 
+## Speech
+
+The app can announce warnings and errors, along with other telemetry messages from the drone, including arming errors and GPS glitch conditions.
+
+The speech system is part of Qt rather than custom made, however it doesn't work exactly the same on every platform. 
+
+Voices on Mac, iPhone/iPad, and Android sound quite natural, while the quality of the voices on Linux (including the GroundPi) depends on which speech backend was selected at build time.
+
+I haven't yet picked or even tested specific backends on Linux to ensure the voices sound natural, so they may sound robotic at the moment.
+
+## Telemetry
+
+The Open.HD telemetry is handled via UDP when the app is running on a phone or a computer, and via the same shared memory system used by the original OSD when running on GroundPi.
+
+For vehicle telemetry, only Mavlink is fully integrated at the moment, but [other protocols are being added](https://github.com/infincia/QOpenHD/issues/17).
+
 ## Video streaming
 
 On the GroundPi, the app is simply an overlay on `hello_video` just like the original OSD, so video should work exactly the same as it always has.
@@ -133,6 +129,21 @@ The QtGStreamer code itself is very old and mostly unmaintained upstream, it is 
 On Android there seem to be some hardware acceleration issues with the currently committed QtGStreamer code. QGroundControl has a newer version of it where they have implemented hardware acceleration on Android, but it didn't actually work on my test device (the `androidmedia` GStreamer plugin can't be loaded, so the accelerated decoders are not avalable).
 
 Video should be working fine on iOS, Mac, Windows and Linux, as most machines can handle software decoding without trouble (it works, it's just not efficient and wastes battery power).
+
+## Platforms
+
+The code is mostly C++ and uses the Qt framework, specifically QtQuick which is designed for portability and renders using OpenGL.
+
+This allows the same app to run on Windows, Mac, Linux, iOS, and Android, as well as directly on the GroundPi itself (either using the official touchscreen or an HDMI screen + mouse).
+
+## Code architecture
+
+The core is C++ (in `src`), and the UI is designed with QtQuick, which is an OpenGL accelerated, declarative UI framework. You can find the UI files in `qml`.
+
+QtQuick is designed to be an MVC code architecture, and QOpenHD follows that pattern for the most part. The UI layer is separated into declarative UI "forms" with a matching logic-only layer them, you can see that in the file names for most of the components (there will be a -Form.ui.qml for each one).
+
+There is a small amount of "glue" code in the QML layer, the language is basically Javascript but designed to integrate with QML. There is more of this in the QML layer than I would like at the moment but some of it can
+be moved down to C++ in the future.
 
 ## Building
 
