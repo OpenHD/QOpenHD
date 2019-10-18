@@ -20,6 +20,7 @@
 #include "localmessage.h"
 #include "frskytelemetry.h"
 #include "msptelemetry.h"
+#include "ltmtelemetry.h"
 
 #if defined(ENABLE_VIDEO)
 #include "VideoStreaming/VideoStreaming.h"
@@ -100,6 +101,7 @@ int main(int argc, char *argv[]) {
     qmlRegisterType<MavlinkTelemetry>("OpenHD", 1, 0, "MavlinkTelemetry");
     qmlRegisterType<FrSkyTelemetry>("OpenHD", 1, 0, "FrSkyTelemetry");
     qmlRegisterType<MSPTelemetry>("OpenHD", 1, 0, "MSPTelemetry");
+    qmlRegisterType<LTMTelemetry>("OpenHD", 1, 0, "LTMTelemetry");
 
     qmlRegisterSingletonType<OpenHDRC>("OpenHD", 1, 0, "OpenHDRC", openHDRCSingletonProvider);
     qmlRegisterSingletonType<OpenHDPi>("OpenHD", 1, 0, "OpenHDPi", openHDPiSingletonProvider);

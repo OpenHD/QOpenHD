@@ -44,6 +44,7 @@ INCLUDEPATH += $$PWD/lib/mavlink_generated/ardupilotmega
 SOURCES += \
     src/frskytelemetry.cpp \
     src/localmessage.cpp \
+    src/ltmtelemetry.cpp \
     src/main.cpp \
     src/mavlinktelemetry.cpp \
     src/msptelemetry.cpp \
@@ -63,6 +64,7 @@ HEADERS += \
     inc/frskytelemetry.h \
     inc/localmessage.h \
     inc/localmessage_t.h \
+    inc/ltmtelemetry.h \
     inc/mavlinktelemetry.h \
     inc/msptelemetry.h \
     inc/openhd.h \

@@ -63,6 +63,10 @@ ApplicationWindow {
         id: mspTelemetry
     }
 
+    LTMTelemetry {
+        id: ltmTelemetry
+    }
+
     Loader {
         id: videoLoader
         anchors.left: parent.left
