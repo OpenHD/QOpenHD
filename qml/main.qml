@@ -27,12 +27,13 @@ ApplicationWindow {
 
     onAfterSynchronizing: {
         if (!initialised) {
-            messageHUD.pushMessage("Initializing", 1)
+            hudOverlayGrid.messageHUD.pushMessage("Initializing", 1)
             if (EnableRC) {
                 OpenHDRC.initRC;
             }
             upperOverlayBar.configure();
             lowerOverlayBar.configure();
+            hudOverlayGrid.configure();
             initialised = true;
         }
     }
@@ -46,6 +47,26 @@ ApplicationWindow {
         id: settings
     }
 
+    OpenHDTelemetry {
+        id: openHDTelemetry
+    }
+
+    MavlinkTelemetry {
+        id: mavlinkTelemetry
+    }
+
+    FrSkyTelemetry {
+        id: frskyTelemetry
+    }
+
+    MSPTelemetry {
+        id: mspTelemetry
+    }
+
+    LTMTelemetry {
+        id: ltmTelemetry
+    }
+
     Loader {
         id: videoLoader
         anchors.left: parent.left
@@ -57,36 +78,20 @@ ApplicationWindow {
     }
 
     Connections {
-        target: MavlinkTelemetry
+        target: OpenHD
         onMessageReceived: {
-            messageHUD.pushMessage(message, level)
+            hudOverlayGrid.messageHUD.pushMessage(message, level)
         }
     }
 
     Connections {
         target: LocalMessage
         onMessageReceived: {
-            messageHUD.pushMessage(message, level)
+            hudOverlayGrid.messageHUD.pushMessage(message, level)
         }
     }
 
     // UI areas
-
-    MessageHUD {
-        id: messageHUD
-        anchors.bottom: lowerOverlayBar.top
-        anchors.bottomMargin: 4
-        anchors.left: parent.left
-        anchors.leftMargin: 6
-        anchors.right: parent.right
-        anchors.rightMargin: 6
-
-    }
-
-    HorizonWidget {
-        id: horizonWidget
-        anchors.centerIn: parent
-    }
 
     UpperOverlayBar {
         id: upperOverlayBar
@@ -95,6 +100,11 @@ ApplicationWindow {
         }
     }
 
+    HUDOverlayGrid {
+        id: hudOverlayGrid
+        anchors.fill: parent
+        z: 3.0
+    }
 
     LowerOverlayBar {
         id: lowerOverlayBar
@@ -106,8 +116,8 @@ ApplicationWindow {
         onConfigure: {
             upperOverlayBar.configure();
             lowerOverlayBar.configure();
-            messageHUD.configure();
-            horizonWidget.configure();
+            hudOverlayGrid.configure();
+            hudOverlayGrid.messageHUD.configure();
         }
     }
 }

@@ -11,6 +11,7 @@
 #include "constants.h"
 
 #include "openhdpi.h"
+#include "openhd.h"
 
 OpenHDTelemetry::OpenHDTelemetry(QObject *parent): QObject(parent) {
     qDebug() << "OpenHDTelemetry::OpenHDTelemetry()";
@@ -64,7 +65,7 @@ void OpenHDTelemetry::processSHM() {
             telemetry.adapter[wifi_adapter] = _adapter;
         }
 
-        set_air_undervolt(rx_status_sysair->undervolt);
+        OpenHD::instance()->set_air_undervolt(rx_status_sysair->undervolt);
 
         telemetry.current_signal_telemetry_uplink = rx_status_uplink->adapter[0].current_signal_dbm;
         telemetry.lost_packet_cnt_telemetry_up = rx_status_uplink->lost_packet_cnt;
@@ -77,7 +78,7 @@ void OpenHDTelemetry::processSHM() {
         telemetry.lost_packet_cnt_telemetry_down = rx_status_rc->tx_restart_cnt;
 
         // this has no equivalent coming through UDP so we set it directly here
-        set_cts(rx_status_sysair->cts);
+        OpenHD::instance()->set_cts(rx_status_sysair->cts);
 
         telemetry.kbitrate = rx_status->kbitrate;
         telemetry.kbitrate_measured = rx_status_sysair->bitrate_measured_kbit;
@@ -129,125 +130,43 @@ void OpenHDTelemetry::processOpenHDTelemetry(wifibroadcast_rx_status_forward_t t
             current_best = adapter.current_signal_dbm;
         }
     }
-    set_downlink_rssi(tr("%1").arg(current_best));
+    QLocale l = QLocale::system();
+
+    OpenHD::instance()->set_downlink_rssi(tr("%1").arg(current_best));
 
     auto damaged_percent = (double)telemetry.damaged_block_cnt / (double)telemetry.received_packet_cnt * 100.0;
     auto damaged_percent_visible = std::isnan(damaged_percent) ? 0.0 : damaged_percent;
-    set_damaged_block_cnt(tr("%1 (%2%)/").arg(telemetry.damaged_block_cnt).arg((int)damaged_percent_visible));
+    OpenHD::instance()->set_damaged_block_cnt(tr("%1 (%2%)").arg(l.toString(telemetry.damaged_block_cnt)).arg((int)damaged_percent_visible));
 
     auto lost_percent = (double)telemetry.lost_packet_cnt / (double)telemetry.received_packet_cnt * 100.0;
     auto lost_percent_visible = std::isnan(lost_percent) ? 0.0 : lost_percent;
-    set_lost_packet_cnt(tr("%1 (%2%)").arg(telemetry.lost_packet_cnt).arg((int)lost_percent_visible));
+    OpenHD::instance()->set_lost_packet_cnt(tr("%1 (%2%)").arg(l.toString(telemetry.lost_packet_cnt)).arg((int)lost_percent_visible));
 
     //ui.skipped_packet_cnt->setText(tr("%1").arg(rssi.skipped_zxpacket_cnt));
-    //ui.injection_fail_cnt->setText(tr("%1/").arg(rssi.injection_fail_cnt));
+    //ui.injection_fail_cnt->setText(tr("%1").arg(rssi.injection_fail_cnt));
     ////ui.received_packet_cnt->setText(tr("%1").arg(rssi.received_packet_cnt));
-    set_kbitrate(tr("%1 %2").arg(telemetry.kbitrate/1024.0,  3, 'f', 1, '0').arg("Mbit"));
-    set_kbitrate_measured(tr("(%1)").arg(telemetry.kbitrate_measured/1024.0,  3, 'f', 1, '0'));
-    set_kbitrate_set(tr("%1").arg(telemetry.kbitrate_set/1024.0,  3, 'f', 1, '0'));
+    OpenHD::instance()->set_kbitrate(tr("%1 Mbit").arg(telemetry.kbitrate/1024.0,  3, 'f', 1, '0'));
+    OpenHD::instance()->set_kbitrate_measured(tr("%1 Mbit").arg(telemetry.kbitrate_measured/1024.0,  3, 'f', 1, '0'));
+    OpenHD::instance()->set_kbitrate_set(tr("%1 Mbit").arg(telemetry.kbitrate_set/1024.0,  3, 'f', 1, '0'));
     ////ui.lost_packet_cnt_telemetry_up->setText(tr("%1").arg(rssi.lost_packet_cnt_telemetry_up));
     ////ui.lost_packet_cnt_telemetry_down->setText(tr("%1").arg(rssi.lost_packet_cnt_telemetry_down));
     ////ui.lost_packet_cnt_msp_up->setText(tr("%1").arg(rssi.lost_packet_cnt_msp_up));
     ////ui.lost_packet_cnt_msp_down->setText(tr("%1").arg(rssi.lost_packet_cnt_msp_down));
     ////ui.lost_packet_cnt_rc->setText(tr("%1").arg(telemetry.lost_packet_cnt_rc));
-    set_current_signal_joystick_uplink(tr("%1").arg(telemetry.current_signal_joystick_uplink));
+    OpenHD::instance()->set_current_signal_joystick_uplink(tr("%1").arg(telemetry.current_signal_joystick_uplink));
     //set_homelat(tr("%1").arg((double)rssi.HomeLat));
     //set_homelon(tr("%1").arg((double)rssi.HomeLon));
-    set_cpuload_gnd(tr("%1%").arg(telemetry.cpuload_gnd));
-    set_temp_gnd(tr("%1°").arg(telemetry.temp_gnd));
-    set_cpuload_air(tr("%1%").arg(telemetry.cpuload_air));
-    set_temp_air(tr("%1°").arg(telemetry.temp_air));
+    OpenHD::instance()->set_cpuload_gnd(tr("%1%").arg(telemetry.cpuload_gnd));
+    OpenHD::instance()->set_temp_gnd(tr("%1°").arg(telemetry.temp_gnd));
+    OpenHD::instance()->set_cpuload_air(tr("%1%").arg(telemetry.cpuload_air));
+    OpenHD::instance()->set_temp_air(tr("%1°").arg(telemetry.temp_air));
 
     qint64 current_timestamp = QDateTime::currentMSecsSinceEpoch();
     set_last_heartbeat(QString(tr("%1s").arg(current_timestamp - last_heartbeat_timestamp)));
-}
-
-void OpenHDTelemetry::set_downlink_rssi(QString downlink_rssi) {
-    m_downlink_rssi = downlink_rssi;
-    emit downlink_rssi_changed(m_downlink_rssi);
-}
-
-void OpenHDTelemetry::set_current_signal_joystick_uplink(QString current_signal_joystick_uplink) {
-    m_current_signal_joystick_uplink = current_signal_joystick_uplink;
-    emit current_signal_joystick_uplink_changed(m_current_signal_joystick_uplink);
-}
-
-void OpenHDTelemetry::set_lost_packet_cnt_rc(QString lost_packet_cnt_rc) {
-    m_lost_packet_cnt_rc = lost_packet_cnt_rc;
-    emit lost_packet_cnt_rc_changed(m_lost_packet_cnt_rc);
-}
-
-void OpenHDTelemetry::set_lost_packet_cnt_telemetry_up(QString lost_packet_cnt_telemetry_up) {
-    m_lost_packet_cnt_telemetry_up = lost_packet_cnt_telemetry_up;
-    emit lost_packet_cnt_telemetry_up_changed(m_lost_packet_cnt_telemetry_up);
-}
-
-void OpenHDTelemetry::set_kbitrate(QString kbitrate) {
-    m_kbitrate = kbitrate;
-    emit kbitrate_changed(m_kbitrate);
-}
-
-void OpenHDTelemetry::set_kbitrate_set(QString kbitrate_set) {
-    m_kbitrate_set = kbitrate_set;
-    emit kbitrate_set_changed(m_kbitrate_set);
-}
-
-void OpenHDTelemetry::set_kbitrate_measured(QString kbitrate_measured) {
-    m_kbitrate_measured = kbitrate_measured;
-    emit kbitrate_measured_changed(m_kbitrate_measured);
-}
-
-void OpenHDTelemetry::set_cpuload_gnd(QString cpuload_gnd) {
-    m_cpuload_gnd = cpuload_gnd;
-    emit cpuload_gnd_changed(m_cpuload_gnd);
-}
-
-void OpenHDTelemetry::set_cpuload_air(QString cpuload_air) {
-    m_cpuload_air = cpuload_air;
-    emit cpuload_air_changed(m_cpuload_air);
-}
-
-void OpenHDTelemetry::set_temp_gnd(QString temp_gnd) {
-    m_temp_gnd = temp_gnd;
-    emit temp_gnd_changed(m_temp_gnd);
-}
-
-void OpenHDTelemetry::set_temp_air(QString temp_air) {
-    m_temp_air = temp_air;
-    emit temp_air_changed(m_temp_air);
-}
-
-void OpenHDTelemetry::set_damaged_block_cnt(QString damaged_block_cnt) {
-    m_damaged_block_cnt = damaged_block_cnt;
-    emit damaged_block_cnt_changed(m_damaged_block_cnt);
-}
-
-void OpenHDTelemetry::set_lost_packet_cnt(QString lost_packet_cnt) {
-    m_lost_packet_cnt = lost_packet_cnt;
-    emit lost_packet_cnt_changed(m_lost_packet_cnt);
 }
 
 
 void OpenHDTelemetry::set_last_heartbeat(QString last_heartbeat) {
     m_last_heartbeat = last_heartbeat;
     emit last_heartbeat_changed(m_last_heartbeat);
-}
-
-
-void OpenHDTelemetry::set_air_undervolt(bool air_undervolt) {
-    m_air_undervolt = air_undervolt;
-    emit air_undervolt_changed(m_air_undervolt);
-}
-
-void OpenHDTelemetry::set_cts(bool cts) {
-    m_cts = cts;
-    emit cts_changed(m_cts);
-}
-
-QObject *openHDTelemetrySingletonProvider(QQmlEngine *engine, QJSEngine *scriptEngine) {
-    Q_UNUSED(engine)
-    Q_UNUSED(scriptEngine)
-
-    OpenHDTelemetry *s = new OpenHDTelemetry();
-    return s;
 }

@@ -36,7 +36,7 @@ MessageHUDForm {
          */
         messageListView.contentHeight = 24 * messageModel.count;
         messageListView.height = 24 * messageModel.count;
-        messageRect.height = 24 * messageModel.count;
+        messageWidget.height = 24 * messageModel.count;
     }
 
     Timer {
@@ -64,7 +64,7 @@ MessageHUDForm {
             }
             messageListView.contentHeight = 24 * messageModel.count;
             messageListView.height = 24 * messageModel.count;
-            messageRect.height = 24 * messageModel.count;
+            messageWidget.height = 24 * messageModel.count;
         }
     }
 

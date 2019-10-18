@@ -15,16 +15,10 @@ Rectangle {
     property alias settingsButton: settingsButton
     property alias settingsButtonMouseArea: settingsButtonMouseArea
 
-    property alias downlink: downlink
-    property alias uplink: uplink
-    property alias bitrate: bitrate
-    property alias air_status: air_status
-    property alias ground_status: ground_status
-
     width: 800
 
     // fixme: shouldnt exclusively depend on mavlink
-    color: MavlinkTelemetry.armed ? "#aeff3333" : "#8f000000"
+    color: OpenHD.armed ? "#aeff3333" : "#8f000000"
 
     anchors {
         top: parent.top
@@ -54,47 +48,6 @@ Rectangle {
             anchors.fill: parent
 
         }
-    }
-
-    BitrateWidget {
-        id: bitrate
-        anchors.left: settingsButton.right
-        anchors.leftMargin: 6
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 0
-    }
-
-    AirStatusWidget {
-        id: air_status
-        anchors.right: uplink.left
-        anchors.rightMargin: 0
-        anchors.top: parent.top
-        anchors.topMargin: 0
-    }
-
-    GroundStatusWidget {
-        id: ground_status
-        anchors.right: uplink.left
-        anchors.rightMargin: 0
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 0
-    }
-
-
-    DownlinkRSSIWidget {
-        id: downlink
-        anchors.left: settingsButton.right
-        anchors.leftMargin: 6
-
-    }
-
-
-    UplinkRSSIWidget {
-        id: uplink
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.right: parent.right
-        anchors.rightMargin: 0
-        anchors.top: parent.top
     }
 }
 

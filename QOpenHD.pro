@@ -41,10 +41,17 @@ INCLUDEPATH += $$PWD/lib/mavlink_generated
 INCLUDEPATH += $$PWD/lib/mavlink_generated/common
 INCLUDEPATH += $$PWD/lib/mavlink_generated/ardupilotmega
 
+INCLUDEPATH += $$PWD/lib/GeographicLib-1.50/include
+
+
 SOURCES += \
+    src/frskytelemetry.cpp \
     src/localmessage.cpp \
+    src/ltmtelemetry.cpp \
     src/main.cpp \
     src/mavlinktelemetry.cpp \
+    src/msptelemetry.cpp \
+    src/openhd.cpp \
     src/openhdpi.cpp \
     src/openhdrc.cpp \
     src/openhdsettings.cpp \
@@ -57,9 +64,13 @@ RESOURCES += qml/qml.qrc
 
 HEADERS += \
     inc/constants.h \
+    inc/frskytelemetry.h \
     inc/localmessage.h \
     inc/localmessage_t.h \
+    inc/ltmtelemetry.h \
     inc/mavlinktelemetry.h \
+    inc/msptelemetry.h \
+    inc/openhd.h \
     inc/openhdpi.h \
     inc/openhdrc.h \
     inc/openhdsettings.h \
@@ -105,6 +116,46 @@ DISTFILES += \
     qml/ui/qmldir
 
 
+
+SOURCES += \
+    lib/GeographicLib-1.50/src/Accumulator.cpp \
+    lib/GeographicLib-1.50/src/AlbersEqualArea.cpp \
+    lib/GeographicLib-1.50/src/AzimuthalEquidistant.cpp \
+    lib/GeographicLib-1.50/src/CassiniSoldner.cpp \
+    lib/GeographicLib-1.50/src/CircularEngine.cpp \
+    lib/GeographicLib-1.50/src/DMS.cpp \
+    lib/GeographicLib-1.50/src/Ellipsoid.cpp \
+    lib/GeographicLib-1.50/src/EllipticFunction.cpp \
+    lib/GeographicLib-1.50/src/GARS.cpp \
+    lib/GeographicLib-1.50/src/GeoCoords.cpp \
+    lib/GeographicLib-1.50/src/Geocentric.cpp \
+    lib/GeographicLib-1.50/src/Geodesic.cpp \
+    lib/GeographicLib-1.50/src/GeodesicExact.cpp \
+    lib/GeographicLib-1.50/src/GeodesicExactC4.cpp \
+    lib/GeographicLib-1.50/src/GeodesicLine.cpp \
+    lib/GeographicLib-1.50/src/GeodesicLineExact.cpp \
+    lib/GeographicLib-1.50/src/Geohash.cpp \
+    lib/GeographicLib-1.50/src/Geoid.cpp \
+    lib/GeographicLib-1.50/src/Georef.cpp \
+    lib/GeographicLib-1.50/src/Gnomonic.cpp \
+    lib/GeographicLib-1.50/src/GravityCircle.cpp \
+    lib/GeographicLib-1.50/src/GravityModel.cpp \
+    lib/GeographicLib-1.50/src/LambertConformalConic.cpp \
+    lib/GeographicLib-1.50/src/LocalCartesian.cpp \
+    lib/GeographicLib-1.50/src/MGRS.cpp \
+    lib/GeographicLib-1.50/src/MagneticCircle.cpp \
+    lib/GeographicLib-1.50/src/MagneticModel.cpp \
+    lib/GeographicLib-1.50/src/Math.cpp \
+    lib/GeographicLib-1.50/src/NormalGravity.cpp \
+    lib/GeographicLib-1.50/src/OSGB.cpp \
+    lib/GeographicLib-1.50/src/PolarStereographic.cpp \
+    lib/GeographicLib-1.50/src/PolygonArea.cpp \
+    lib/GeographicLib-1.50/src/Rhumb.cpp \
+    lib/GeographicLib-1.50/src/SphericalEngine.cpp \
+    lib/GeographicLib-1.50/src/TransverseMercator.cpp \
+    lib/GeographicLib-1.50/src/TransverseMercatorExact.cpp \
+    lib/GeographicLib-1.50/src/UTMUPS.cpp \
+    lib/GeographicLib-1.50/src/Utility.cpp
 
 #CONFIG += EnableRC
 
@@ -234,10 +285,10 @@ installer {
         OTHER_FILES += deploy/openhd_installer.nsi
     }
     AndroidBuild {
-        QMAKE_POST_LINK += && mkdir -p $${DESTDIR}/package
+        QMAKE_POST_LINK += mkdir -p $${DESTDIR}/package
         QMAKE_POST_LINK += && make install INSTALL_ROOT=$${DESTDIR}/android-build/
-        QMAKE_POST_LINK += && androiddeployqt --input android-libOpenHD.so-deployment-settings.json --output $${DESTDIR}/android-build --deployment bundled --gradle --sign $${BASEDIR}/android/android_release.keystore dagar --storepass $$(ANDROID_STOREPASS)
-        QMAKE_POST_LINK += && cp $${DESTDIR}/android-build/build/outputs/apk/android-build-release-signed.apk $${DESTDIR}/package/OpenHD-$$QOPENHD_VERSION.apk
+        QMAKE_POST_LINK += && androiddeployqt --input $${DESTDIR}/android-libQOpenHD.so-deployment-settings.json --output $${DESTDIR}/android-build --deployment bundled --gradle --sign $${HOME}/.android/android_release.keystore dagar --storepass $$(ANDROID_STOREPASS)
+        QMAKE_POST_LINK += && cp $${DESTDIR}/android-build/build/outputs/apk/android-build-release-signed.apk $${DESTDIR}/package/QOpenHD-$$QOPENHD_VERSION.apk
     }
 }
 
