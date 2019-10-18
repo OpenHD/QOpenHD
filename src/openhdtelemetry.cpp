@@ -65,7 +65,7 @@ void OpenHDTelemetry::processSHM() {
             telemetry.adapter[wifi_adapter] = _adapter;
         }
 
-        set_air_undervolt(rx_status_sysair->undervolt);
+        OpenHD::instance()->set_air_undervolt(rx_status_sysair->undervolt);
 
         telemetry.current_signal_telemetry_uplink = rx_status_uplink->adapter[0].current_signal_dbm;
         telemetry.lost_packet_cnt_telemetry_up = rx_status_uplink->lost_packet_cnt;
@@ -78,7 +78,7 @@ void OpenHDTelemetry::processSHM() {
         telemetry.lost_packet_cnt_telemetry_down = rx_status_rc->tx_restart_cnt;
 
         // this has no equivalent coming through UDP so we set it directly here
-        set_cts(rx_status_sysair->cts);
+        OpenHD::instance()->set_cts(rx_status_sysair->cts);
 
         telemetry.kbitrate = rx_status->kbitrate;
         telemetry.kbitrate_measured = rx_status_sysair->bitrate_measured_kbit;
