@@ -6,8 +6,6 @@ import Qt.labs.settings 1.0
 
 import OpenHD 1.0
 
-
-
 BaseWidget {
     id: fpvWidget
     width: 50
@@ -20,10 +18,12 @@ BaseWidget {
 
     Item {
         id: widgetInner
-        height: 50
-        width: 50
+        height: 40
+        anchors.left: parent.left
+        //so that fpv sits aligned in horizon must add margin
+        anchors.leftMargin: 9
+        width: 40
         anchors.verticalCenter: parent.verticalCenter
-        anchors.horizontalCenter: parent.horizontalCenter
 
         transformOrigin: Item.Center
         rotation: -OpenHD.roll_raw
@@ -35,7 +35,8 @@ BaseWidget {
 
         Image {
             id: image
-            height: 41
+            height: 35
+            width: 40
             anchors.right: parent.right
             anchors.left: parent.left
             antialiasing: true
@@ -44,6 +45,3 @@ BaseWidget {
         }
     }
 }
-
-
-
