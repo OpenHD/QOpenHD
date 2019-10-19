@@ -176,7 +176,8 @@ Item {
                     Component.onCompleted: checked = settings.value(
                                                "enable_imperial", false)
                     // @disable-check M222
-                    onCheckedChanged: settings.setValue("enable_imperial", checked)
+                    onCheckedChanged: settings.setValue("enable_imperial",
+                                                        checked)
                 }
             }
 
@@ -216,7 +217,8 @@ Item {
             id: widgetsView
             width: parent.width
             height: parent.height
-            contentHeight: 12 * 64
+        //must increment if adding more options
+            contentHeight: 13 * 64
 
             clip: true
 
@@ -566,7 +568,6 @@ Item {
                 y: 704
 
                 Text {
-                    id: element
                     text: "Show Horizon"
                     font.weight: Font.Bold
                     font.pixelSize: 13
@@ -587,6 +588,36 @@ Item {
                                                "show_horizon", true)
                     // @disable-check M222
                     onCheckedChanged: settings.setValue("show_horizon", checked)
+                }
+            }
+
+            Rectangle {
+                width: parent.width
+                height: 64
+                color: "#8cbfd7f3"
+                y: 768
+
+                Text {
+                    text: "Show Flight Path Vector"
+                    font.weight: Font.Bold
+                    font.pixelSize: 13
+                    anchors.leftMargin: 8
+                    verticalAlignment: Text.AlignVCenter
+                    width: 224
+                    height: parent.height
+                    anchors.left: parent.left
+                }
+
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 12
+                    anchors.right: parent.right
+                    // @disable-check M222
+                    Component.onCompleted: checked = settings.value("show_fpv",
+                                                                    true)
+                    // @disable-check M222
+                    onCheckedChanged: settings.setValue("show_fpv", checked)
                 }
             }
         }

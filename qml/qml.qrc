@@ -58,5 +58,8 @@
         <file>ui/HUDOverlayGridForm.ui.qml</file>
         <file>ui/widgets/BaseWidget.qml</file>
         <file>ui/widgets/BaseWidgetForm.ui.qml</file>
+        <file>ui/widgets/FpvWidget.qml</file>
+        <file>ui/widgets/FpvWidgetForm.ui.qml</file>
+        <file>ui/widgets/flight-path-vector.png</file>
     </qresource>
 </RCC>

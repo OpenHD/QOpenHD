@@ -6,7 +6,6 @@ import Qt.labs.settings 1.0
 
 import OpenHD 1.0
 
-
 BaseWidget {
     id: horizonWidget
     width: 250
@@ -16,6 +15,52 @@ BaseWidget {
 
     defaultHCenter: true
     defaultVCenter: true
+
+    hasWidgetDetail: true
+    widgetDetailComponent: Column {
+        Item {
+            width: parent.width
+            height: 24
+            Text {
+                text: "Invert Pitch"
+                color: "white"
+                font.bold: true
+                anchors.left: parent.left
+            }
+            Switch {
+                width: 32
+                height: parent.height
+                anchors.rightMargin: 12
+                anchors.right: parent.right
+                // @disable-check M222
+                Component.onCompleted: checked = settings.value("invert_pitch",
+                                                                true)
+                // @disable-check M222
+                onCheckedChanged: settings.setValue("invert_pitch", checked)
+            }
+        }
+        Item {
+            width: parent.width
+            height: 24
+            Text {
+                text: "Invert Roll"
+                color: "white"
+                font.bold: true
+                anchors.left: parent.left
+            }
+            Switch {
+                width: 32
+                height: parent.height
+                anchors.rightMargin: 12
+                anchors.right: parent.right
+                // @disable-check M222
+                Component.onCompleted: checked = settings.value("invert_roll",
+                                                                true)
+                // @disable-check M222
+                onCheckedChanged: settings.setValue("invert_roll", checked)
+            }
+        }
+    }
 
     Item {
         id: widgetInner

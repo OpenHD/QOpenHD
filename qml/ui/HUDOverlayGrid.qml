@@ -26,5 +26,6 @@ HUDOverlayGridForm {
         messageHUD.visible = settings.value("show_log_onscreen", true)
 
         horizonWidget.configure();
+        fpvWidget.configure();
     }
 }

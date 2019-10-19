@@ -234,9 +234,9 @@ void MavlinkTelemetry::processMavlinkMessage(mavlink_message_t msg) {
             // FOR INAV heading does not /100
             OpenHD::instance()->set_hdg(tr("%1").arg(global_position.hdg/100.0));
 
-            OpenHD::instance()->set_vx(tr("%1").arg(global_position.vx/100.0));
-            OpenHD::instance()->set_vy(tr("%1").arg(global_position.vy/100.0));
-            OpenHD::instance()->set_vz(tr("%1").arg(global_position.vz/100.0));
+            OpenHD::instance()->set_vx((int)(global_position.vx/100.0));
+            OpenHD::instance()->set_vy((int)(global_position.vy/100.0));
+            OpenHD::instance()->set_vz((int)(global_position.vz/100.0));
 
             OpenHD::instance()->calculate_home_distance();
 
