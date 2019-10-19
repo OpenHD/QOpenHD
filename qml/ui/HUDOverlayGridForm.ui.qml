@@ -27,6 +27,7 @@ Item {
     property alias messageHUD: messageHUD
 
     property alias horizonWidget: horizonWidget
+    property alias fpvWidget: fpvWidget
 
     MessageHUD {
         id: messageHUD
@@ -80,5 +81,9 @@ Item {
 
     HorizonWidget {
         id: horizonWidget
+    }
+
+    FpvWidget {
+        id: fpvWidget
     }
 }

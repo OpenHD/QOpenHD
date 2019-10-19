@@ -53,17 +53,17 @@ void OpenHD::set_alt_msl(QString alt_msl) {
     emit alt_msl_changed(m_alt_msl);
 }
 
-void OpenHD::set_vx(QString vx) {
+void OpenHD::set_vx(int vx) {
     m_vx = vx;
     emit vx_changed(m_vx);
 }
 
-void OpenHD::set_vy(QString vy) {
+void OpenHD::set_vy(int vy) {
     m_vy = vy;
     emit vy_changed(m_vy);
 }
 
-void OpenHD::set_vz(QString vz) {
+void OpenHD::set_vz(int vz) {
     m_vz = vz;
     emit vz_changed(m_vz);
 }

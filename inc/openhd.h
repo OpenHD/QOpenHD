@@ -31,14 +31,14 @@ public:
     Q_PROPERTY(QString alt_msl MEMBER m_alt_msl WRITE set_alt_msl NOTIFY alt_msl_changed)
     void set_alt_msl(QString alt_msl);
 
-    Q_PROPERTY(QString vx MEMBER m_vx WRITE set_vx NOTIFY vx_changed)
-    void set_vx(QString vx);
+    Q_PROPERTY(int vx MEMBER m_vx WRITE set_vx NOTIFY vx_changed)
+    void set_vx(int vx);
 
-    Q_PROPERTY(QString vy MEMBER m_vy WRITE set_vy NOTIFY vy_changed)
-    void set_vy(QString vy);
+    Q_PROPERTY(int vy MEMBER m_vy WRITE set_vy NOTIFY vy_changed)
+    void set_vy(int vy);
 
-    Q_PROPERTY(QString vz MEMBER m_vz WRITE set_vz NOTIFY vz_changed)
-    void set_vz(QString vz);
+    Q_PROPERTY(int vz MEMBER m_vz WRITE set_vz NOTIFY vz_changed)
+    void set_vz(int vz);
 
     Q_PROPERTY(QString hdg MEMBER m_hdg WRITE set_hdg NOTIFY hdg_changed)
     void set_hdg(QString hdg);
@@ -157,9 +157,9 @@ signals:
     void boot_time_changed(QString boot_time);
     void alt_rel_changed(QString alt_rel);
     void alt_msl_changed(QString alt_msl);
-    void vx_changed(QString vx);
-    void vy_changed(QString vy);
-    void vz_changed(QString vz);
+    void vx_changed(int vx);
+    void vy_changed(int vy);
+    void vz_changed(int vz);
     void hdg_changed(QString hdg);
     void armed_changed(bool armed);
     void flight_mode_changed(QString flight_mode);
@@ -212,9 +212,9 @@ private:
     QString m_alt_rel = "0";
     QString m_alt_msl = "0";
 
-    QString m_vx = "0";
-    QString m_vy = "0";
-    QString m_vz = "0";
+    int m_vx = 0;
+    int m_vy = 0;
+    int m_vz = 0;
 
     QString m_hdg = "360";
 
