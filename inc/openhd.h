@@ -19,6 +19,8 @@ public:
     void init();
 
     void telemetryMessage(QString message, int level);
+    void calculate_home_distance();
+
     Q_PROPERTY(double home_distance MEMBER m_home_distance WRITE set_home_distance NOTIFY home_distance_changed)
     void set_home_distance(double home_distance);
 
