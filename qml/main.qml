@@ -55,17 +55,17 @@ ApplicationWindow {
         id: mavlinkTelemetry
     }
 
-    FrSkyTelemetry {
-        id: frskyTelemetry
-    }
+    //FrSkyTelemetry {
+    //    id: frskyTelemetry
+    //}
 
-    MSPTelemetry {
-        id: mspTelemetry
-    }
+    //MSPTelemetry {
+    //    id: mspTelemetry
+    //}
 
-    LTMTelemetry {
-        id: ltmTelemetry
-    }
+    //LTMTelemetry {
+    //    id: ltmTelemetry
+    //}
 
     Loader {
         id: videoLoader
