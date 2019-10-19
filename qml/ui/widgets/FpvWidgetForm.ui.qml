@@ -19,9 +19,8 @@ BaseWidget {
     Item {
         id: widgetInner
         height: 40
-        anchors.left: parent.left
+        anchors.horizontalCenter: parent.horizontalCenter
         //so that fpv sits aligned in horizon must add margin
-        anchors.leftMargin: 9
         width: 40
         anchors.verticalCenter: parent.verticalCenter
 
@@ -33,15 +32,25 @@ BaseWidget {
         }
         antialiasing: true
 
-        Image {
-            id: image
-            height: 35
-            width: 40
-            anchors.right: parent.right
-            anchors.left: parent.left
-            antialiasing: true
-            fillMode: Image.PreserveAspectFit
-            source: "flight-path-vector.png"
+        Text {
+            id: fpv_glyph
+            y: 0
+            width: 24
+            height: 24
+            color: "#ffffff"
+            text: "\ue8ce"
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.verticalCenter: parent.verticalCenter
+            font.family: "osdicons.ttf"
+            verticalAlignment: Text.AlignVCenter
+            font.pixelSize: 14
         }
     }
 }
+
+/*##^##
+Designer {
+    D{i:3;anchors_height:24;anchors_width:24;anchors_y:0}
+}
+##^##*/
+
