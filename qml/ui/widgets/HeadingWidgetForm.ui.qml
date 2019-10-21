@@ -9,7 +9,7 @@ import OpenHD 1.0
 BaseWidget {
     id: headingWidget
     width: 30
-    height: 15
+    height: 20
 
     widgetIdentifier: "heading_widget"
 
@@ -46,19 +46,29 @@ BaseWidget {
         height: 15
         anchors.fill: parent
         //so that fpv sits aligned in horizon must add margin
-        width: 40
+        width: 30
+
+        Text {
+            id: hdg_text
+            color: "white"
+            text: qsTr(OpenHD.hdg)
+            bottomPadding: 3
+            leftPadding: 6
+            horizontalAlignment: Text.AlignHCenter
+        }
         antialiasing: true
 
-        Item {
-            id: hdgText
-            anchors.fill: parent
-
-            Text {
-                id: hdg_text
-                color: "white"
-                text: qsTr(OpenHD.hdg)
-            }
-            antialiasing: true
+        Text {
+            id: hdg_glyph
+            y: 0
+            width: 30
+            height: 18
+            color: "#ffffff"
+            text: "\ufdd8"
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.verticalCenter: parent.verticalCenter
+            font.family: "Font Awesome 5 Free-Solid-900.otf"
+            font.pixelSize: 14
         }
     }
 }

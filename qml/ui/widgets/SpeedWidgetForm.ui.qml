@@ -22,6 +22,7 @@ BaseWidget {
             height: 24
             Text {
                 text: "Toggle Airspeed/GPS"
+                horizontalAlignment: Text.AlignRight
                 color: "white"
                 font.bold: true
                 anchors.left: parent.left
@@ -45,9 +46,10 @@ BaseWidget {
         anchors.fill: parent
 
         Text {
-            id: alt_text
+            id: speed_text
             color: "white"
             text: qsTr(OpenHD.speed)
+            horizontalAlignment: Text.AlignRight
             anchors.right: parent.right
             anchors.rightMargin: 0
             bottomPadding: 2
