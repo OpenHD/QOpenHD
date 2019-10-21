@@ -217,8 +217,8 @@ Item {
             id: widgetsView
             width: parent.width
             height: parent.height
-        //must increment if adding more options
-            contentHeight: 13 * 64
+        //must increment if adding more options-------------->
+            contentHeight: 16 * 64
 
             clip: true
 
@@ -618,6 +618,96 @@ Item {
                                                                     true)
                     // @disable-check M222
                     onCheckedChanged: settings.setValue("show_fpv", checked)
+                }
+            }
+
+            Rectangle {
+                width: parent.width
+                height: 64
+                color: "#00000000"
+                y: 832
+
+                Text {
+                    text: "Show Altitude"
+                    font.weight: Font.Bold
+                    font.pixelSize: 13
+                    anchors.leftMargin: 8
+                    verticalAlignment: Text.AlignVCenter
+                    width: 224
+                    height: parent.height
+                    anchors.left: parent.left
+                }
+
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 12
+                    anchors.right: parent.right
+                    // @disable-check M222
+                    Component.onCompleted: checked = settings.value("show_altitude",
+                                                                    true)
+                    // @disable-check M222
+                    onCheckedChanged: settings.setValue("show_altitude", checked)
+                }
+            }
+
+            Rectangle {
+                width: parent.width
+                height: 64
+                color: "#8cbfd7f3"
+                y: 896
+
+                Text {
+                    text: "Show Speed"
+                    font.weight: Font.Bold
+                    font.pixelSize: 13
+                    anchors.leftMargin: 8
+                    verticalAlignment: Text.AlignVCenter
+                    width: 224
+                    height: parent.height
+                    anchors.left: parent.left
+                }
+
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 12
+                    anchors.right: parent.right
+                    // @disable-check M222
+                    Component.onCompleted: checked = settings.value("show_speed",
+                                                                    true)
+                    // @disable-check M222
+                    onCheckedChanged: settings.setValue("show_speed", checked)
+                }
+            }
+
+            Rectangle {
+                width: parent.width
+                height: 64
+                color: "#00000000"
+                y: 960
+
+                Text {
+                    text: "Show Heading"
+                    font.weight: Font.Bold
+                    font.pixelSize: 13
+                    anchors.leftMargin: 8
+                    verticalAlignment: Text.AlignVCenter
+                    width: 224
+                    height: parent.height
+                    anchors.left: parent.left
+                }
+
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 12
+                    anchors.right: parent.right
+                    // @disable-check M222
+                    Component.onCompleted: checked = settings.value("show_heading",
+                                                                    true)
+                    // @disable-check M222
+                    onCheckedChanged: settings.setValue("show_heading", checked)
                 }
             }
         }

@@ -62,5 +62,11 @@
         <file>ui/widgets/FpvWidgetForm.ui.qml</file>
         <file>ui/widgets/flight-path-vector.png</file>
         <file>osdicons.ttf</file>
+        <file>ui/widgets/HeadingWidget.qml</file>
+        <file>ui/widgets/HeadingWidgetForm.ui.qml</file>
+        <file>ui/widgets/SpeedWidget.qml</file>
+        <file>ui/widgets/AltitudeWidget.qml</file>
+        <file>ui/widgets/SpeedWidgetForm.ui.qml</file>
+        <file>ui/widgets/AltitudeWidgetForm.ui.qml</file>
     </qresource>
 </RCC>

@@ -75,6 +75,11 @@ void OpenHD::set_hdg(QString hdg) {
     emit hdg_changed(m_hdg);
 }
 
+void OpenHD::set_speed(QString speed) {
+    m_speed = speed;
+    emit speed_changed(m_speed);
+}
+
 void OpenHD::set_armed(bool armed) {
 #if defined(ENABLE_SPEECH)
     QSettings settings;

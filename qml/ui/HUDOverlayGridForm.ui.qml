@@ -8,10 +8,9 @@ import OpenHD 1.0
 
 import Qt.labs.settings 1.0
 
-import "./widgets";
+import "./widgets"
 
 Item {
-
 
     property alias home_distance: home_distance
     property alias flight_timer: flight_timer
@@ -29,6 +28,10 @@ Item {
     property alias horizonWidget: horizonWidget
     property alias fpvWidget: fpvWidget
 
+    property alias altitudeWidget: altitudeWidget
+    property alias speedWidget: speedWidget
+    property alias headingWidget: headingWidget
+
     MessageHUD {
         id: messageHUD
     }
@@ -40,7 +43,6 @@ Item {
     FlightModeWidget {
         id: flight_mode
     }
-
 
     LatLonWidget {
         id: lat_lon
@@ -86,4 +88,23 @@ Item {
     FpvWidget {
         id: fpvWidget
     }
+
+    AltitudeWidget {
+        id: altitudeWidget
+    }
+
+    SpeedWidget {
+        id: speedWidget
+    }
+
+    HeadingWidget {
+        id: headingWidget
+    }
 }
+
+/*##^##
+Designer {
+    D{i:0;autoSize:true;height:480;width:640}
+}
+##^##*/
+

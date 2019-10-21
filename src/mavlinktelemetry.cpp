@@ -277,6 +277,11 @@ void MavlinkTelemetry::processMavlinkMessage(mavlink_message_t msg) {
             mavlink_msg_vfr_hud_decode (&msg, &vfr_hud);
 
             //OpenHD::instance()->set_throttle(tr("%1").arg(vfr_hud.throttle));
+            //td->speed = mavlink_msg_vfr_hud_get_groundspeed(&msg)*3.6f;
+            //td->airspeed = mavlink_msg_vfr_hud_get_airspeed(&msg)*3.6f;
+            OpenHD::instance()->set_speed(tr("%1").arg(vfr_hud.groundspeed*3.6));
+                //  qDebug() << "Speed- ground " << speed;
+
             break;
         }
         case MAVLINK_MSG_ID_TIMESYNC:{

@@ -38,12 +38,18 @@ BaseWidget {
             width: 24
             height: 24
             color: "#ffffff"
-            text: "\ue8ce"
+            text: "\ufdd5"
+            bottomPadding: 17
+            leftPadding: 33
+            horizontalAlignment: Text.AlignHCenter
+            font.capitalization: Font.MixedCase
+            renderType: Text.QtRendering
+            textFormat: Text.AutoText
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.verticalCenter: parent.verticalCenter
-            font.family: "osdicons.ttf"
+            font.family: "Font Awesome 5 Free-Solid-900.otf"
             verticalAlignment: Text.AlignVCenter
-            font.pixelSize: 14
+            font.pixelSize: 24
         }
     }
 }
