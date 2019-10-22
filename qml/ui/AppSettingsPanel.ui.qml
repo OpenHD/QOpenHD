@@ -218,7 +218,7 @@ Item {
             width: parent.width
             height: parent.height
         //must increment if adding more options-------------->
-            contentHeight: 16 * 64
+            contentHeight: 17 * 64
 
             clip: true
 
@@ -708,6 +708,36 @@ Item {
                                                                     true)
                     // @disable-check M222
                     onCheckedChanged: settings.setValue("show_heading", checked)
+                }
+            }
+
+            Rectangle {
+                width: parent.width
+                height: 64
+                color: "#8cbfd7f3"
+                y: 1024
+
+                Text {
+                    text: "Show Second Altitude"
+                    font.weight: Font.Bold
+                    font.pixelSize: 13
+                    anchors.leftMargin: 8
+                    verticalAlignment: Text.AlignVCenter
+                    width: 224
+                    height: parent.height
+                    anchors.left: parent.left
+                }
+
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 12
+                    anchors.right: parent.right
+                    // @disable-check M222
+                    Component.onCompleted: checked = settings.value("show_second_alt",
+                                                                    true)
+                    // @disable-check M222
+                    onCheckedChanged: settings.setValue("show_second_alt", checked)
                 }
             }
         }

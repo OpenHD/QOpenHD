@@ -29,6 +29,7 @@ Item {
     property alias fpvWidget: fpvWidget
 
     property alias altitudeWidget: altitudeWidget
+    property alias altitudesecondWidget: altitudesecondWidget
     property alias speedWidget: speedWidget
     property alias headingWidget: headingWidget
 
@@ -91,6 +92,10 @@ Item {
 
     AltitudeWidget {
         id: altitudeWidget
+    }
+
+    AltitudeSecondWidget {
+        id: altitudesecondWidget
     }
 
     SpeedWidget {

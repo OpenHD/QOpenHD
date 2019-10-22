@@ -10,10 +10,12 @@ BaseWidget {
     id: altitudeWidget
     width: 40
     height: 25
+    defaultXOffset: 740
+    defaultVCenter: true
 
     widgetIdentifier: "altitude_widget"
 
-    defaultHCenter: true
+    defaultHCenter: false
 
     hasWidgetDetail: true
     widgetDetailComponent: Column {
@@ -21,7 +23,7 @@ BaseWidget {
             width: parent.width
             height: 24
             Text {
-                text: "Display Second Alt"
+                text: "Relative Or MSL"
                 color: "white"
                 font.bold: true
                 anchors.left: parent.left
@@ -32,31 +34,10 @@ BaseWidget {
                 anchors.rightMargin: 12
                 anchors.right: parent.right
                 // @disable-check M222
-                Component.onCompleted: checked = settings.value("second_alt",
+                Component.onCompleted: checked = settings.value("alt_msl_rel",
                                                                 true)
                 // @disable-check M222
-                onCheckedChanged: settings.setValue("second_alt", checked)
-            }
-        }
-        Item {
-            width: parent.width
-            height: 24
-            Text {
-                text: "Reverse Alt Values"
-                color: "white"
-                font.bold: true
-                anchors.left: parent.left
-            }
-            Switch {
-                width: 32
-                height: parent.height
-                anchors.rightMargin: 12
-                anchors.right: parent.right
-                // @disable-check M222
-                Component.onCompleted: checked = settings.value("reverse_alts",
-                                                                true)
-                // @disable-check M222
-                onCheckedChanged: settings.setValue("reverse_alts", checked)
+                onCheckedChanged: settings.setValue("alt_msl_rel", checked)
             }
         }
     }

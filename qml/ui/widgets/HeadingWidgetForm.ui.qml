@@ -10,11 +10,12 @@ BaseWidget {
     id: headingWidget
     width: 30
     height: 20
+    defaultYOffset: 50
 
     widgetIdentifier: "heading_widget"
 
     defaultHCenter: true
-    defaultVCenter: true
+    defaultVCenter: false
 
     hasWidgetDetail: true
     widgetDetailComponent: Column {
