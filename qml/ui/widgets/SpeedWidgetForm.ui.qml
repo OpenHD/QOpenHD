@@ -44,7 +44,7 @@ BaseWidget {
     }
 
     Item {
-        id: speed_Text
+        id: widgetInner
         anchors.fill: parent
 
         Text {
@@ -59,7 +59,7 @@ BaseWidget {
         }
 
         Text {
-            id: speed_glyph
+            id: widgetGlyph
             y: 0
             width: 40
             height: 18

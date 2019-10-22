@@ -43,7 +43,7 @@ BaseWidget {
     }
 
     Item {
-        id: altitude_Text
+        id: widgetInner
         anchors.fill: parent
 
         Text {
@@ -56,7 +56,7 @@ BaseWidget {
         }
 
         Text {
-            id: alt_glyph
+            id: widgetGlyph
             y: 0
             width: 40
             height: 18
