@@ -96,6 +96,8 @@ int main(int argc, char *argv[]) {
     //QFontDatabase::addApplicationFont(":/Font Awesome 5 Free-Regular-400.otf");
     //QFontDatabase::addApplicationFont(":/Font Awesome 5 Brands-Regular-400.otf");
 
+    QFontDatabase::addApplicationFont(":/osdicons.ttf");
+
     QFontDatabase::addApplicationFont(":/materialdesignicons-webfont.ttf");
     qmlRegisterType<OpenHDTelemetry>("OpenHD", 1, 0, "OpenHDTelemetry");
     qmlRegisterType<MavlinkTelemetry>("OpenHD", 1, 0, "MavlinkTelemetry");

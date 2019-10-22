@@ -45,6 +45,9 @@ public:
     Q_PROPERTY(QString hdg MEMBER m_hdg WRITE set_hdg NOTIFY hdg_changed)
     void set_hdg(QString hdg);
 
+    Q_PROPERTY(QString speed MEMBER m_speed WRITE set_speed NOTIFY speed_changed)
+    void set_speed(QString speed);
+
     Q_PROPERTY(bool armed MEMBER m_armed WRITE set_armed NOTIFY armed_changed)
     void set_armed(bool armed);
 
@@ -163,6 +166,7 @@ signals:
     void vy_changed(int vy);
     void vz_changed(int vz);
     void hdg_changed(QString hdg);
+    void speed_changed(QString speed);
     void armed_changed(bool armed);
     void flight_mode_changed(QString flight_mode);
     void homelat_changed(QString homelat);
@@ -219,6 +223,7 @@ private:
     int m_vz = 0;
 
     QString m_hdg = "360";
+    QString m_speed = "0";
 
     bool m_armed = false;
     QString m_flight_mode = "Stabilize";
