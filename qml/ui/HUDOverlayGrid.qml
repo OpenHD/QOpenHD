@@ -29,6 +29,7 @@ HUDOverlayGridForm {
         fpvWidget.configure();
         altitudeWidget.configure();
         speedWidget.configure();
+        altitudesecondWidget.configure();
         headingWidget.configure();
 
 

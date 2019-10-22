@@ -25,10 +25,11 @@ BaseWidget {
         anchors.verticalCenter: parent.verticalCenter
 
         transformOrigin: Item.Center
-        rotation: -OpenHD.roll_raw
+
         transform: Translate {
             x: OpenHD.vy
-            y: OpenHD.vz
+            //to get pitch relative to ahi add pitch in
+            y: OpenHD.vz + OpenHD.pitch_raw
         }
         antialiasing: true
 

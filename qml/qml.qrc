@@ -68,5 +68,7 @@
         <file>ui/widgets/AltitudeWidget.qml</file>
         <file>ui/widgets/SpeedWidgetForm.ui.qml</file>
         <file>ui/widgets/AltitudeWidgetForm.ui.qml</file>
+        <file>ui/widgets/AltitudeSecondWidget.qml</file>
+        <file>ui/widgets/AltitudeSecondWidgetForm.ui.qml</file>
     </qresource>
 </RCC>
