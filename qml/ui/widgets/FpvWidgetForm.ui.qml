@@ -34,7 +34,7 @@ BaseWidget {
         antialiasing: true
 
         Text {
-            id: fpv_glyph
+            id: widgetGlyph
             y: 0
             width: 24
             height: 24

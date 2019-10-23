@@ -60,7 +60,7 @@ BaseWidget {
         antialiasing: true
 
         Text {
-            id: hdg_glyph
+            id: widgetGlyph
             y: 0
             width: 30
             height: 18
