@@ -19,7 +19,10 @@ matrix:
     before_install:
     - brew install qt5
     - brew link qt5 --force
-    - brew install gstreamer
+    - curl -o gstreamer-1.0-1.16.1-x86_64.pkg https://gstreamer.freedesktop.org/data/pkg/osx/1.16.1/gstreamer-1.0-1.16.1-x86_64.pkg
+    - curl  -o gstreamer-1.0-devel-1.16.1-x86_64.pkg https://gstreamer.freedesktop.org/data/pkg/osx/1.16.1/gstreamer-1.0-devel-1.16.1-x86_64.pkg
+    - sudo installer -package gstreamer-1.0-1.16.1-x86_64.pkg -target /
+    - sudo installer -package gstreamer-1.0-devel-1.16.1-x86_64.pkg -target /
     script:
     - qmake -spec macx-xcode QOpenHD.pro
     - xcodebuild -list -project QOpenHD.xcodeproj
