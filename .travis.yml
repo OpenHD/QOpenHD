@@ -1,4 +1,7 @@
 language: cpp
+cache:
+  directories:
+    - $TRAVIS_BUILD_DIR/src/
 matrix:
   include:
   - os: linux
@@ -19,10 +22,11 @@ matrix:
     before_install:
     - brew install qt5
     - brew link qt5 --force
-    - curl -o gstreamer-1.0-1.16.1-x86_64.pkg https://gstreamer.freedesktop.org/data/pkg/osx/1.16.1/gstreamer-1.0-1.16.1-x86_64.pkg
-    - curl  -o gstreamer-1.0-devel-1.16.1-x86_64.pkg https://gstreamer.freedesktop.org/data/pkg/osx/1.16.1/gstreamer-1.0-devel-1.16.1-x86_64.pkg
-    - sudo installer -package gstreamer-1.0-1.16.1-x86_64.pkg -target /
-    - sudo installer -package gstreamer-1.0-devel-1.16.1-x86_64.pkg -target /
+    - mkdir -p src
+    - if ! [ -f ./src/gstreamer-1.0-1.16.1-x86_64.pkg ]; then travis_wait curl -o ./src/gstreamer-1.0-1.16.1-x86_64.pkg https://gstreamer.freedesktop.org/data/pkg/osx/1.16.1/gstreamer-1.0-1.16.1-x86_64.pkg; fi
+    - if ! [ -f ./src/gstreamer-1.0-devel-1.16.1-x86_64.pkg ]; then travis_wait curl -o ./src/gstreamer-1.0-devel-1.16.1-x86_64.pkg https://gstreamer.freedesktop.org/data/pkg/osx/1.16.1/gstreamer-1.0-devel-1.16.1-x86_64.pkg; fi
+    - sudo installer -package ./src/gstreamer-1.0-1.16.1-x86_64.pkg -target /
+    - sudo installer -package ./src/gstreamer-1.0-devel-1.16.1-x86_64.pkg -target /
     script:
     - qmake -spec macx-xcode QOpenHD.pro
     - xcodebuild -list -project QOpenHD.xcodeproj
@@ -32,8 +36,8 @@ matrix:
     - dir C:/Program\ Files\ \(x86\)/Windows\ Kits/10/bin/10.0.17134.0/x64
     - cmd.exe /C 'cd && "C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\VC\Auxiliary\Build\vcvarsall.bat"
       x86 && cd && cd "C:/Users/travis/build/infincia/QOpenHD" && dir'
-    - curl -vLO http://download.qt.io/official_releases/online_installers/qt-unified-windows-x86-online.exe
-    - "./qt-unified-windows-x86-online.exe --verbose --script qt-installer-windows.qs"
+    - if not exist "./src/qt-unified-windows-x86-online.exe" ( curl -o ./src/qt-unified-windows-x86-online.exe -v http://download.qt.io/official_releases/online_installers/qt-unified-windows-x86-online.exe )
+    - travis_wait "./src/qt-unified-windows-x86-online.exe --verbose --script qt-installer-windows.qs"
     - ls -la C:/Qt/5.13.1/msvc2017/bin/qtenv2.bat
     script:
     - cmd.exe /C 'cd && "C:\Qt\5.13.1\msvc2017\bin\qtenv2.bat" && cd && "C:\Program
