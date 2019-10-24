@@ -34,7 +34,7 @@ CONFIG(debug, debug|release) {
 }
 
 
-QT += qml quick multimedia concurrent opengl gui
+QT += qml quick concurrent opengl gui
 
 INCLUDEPATH += $$PWD/inc
 INCLUDEPATH += $$PWD/lib/mavlink_generated
