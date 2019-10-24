@@ -7,7 +7,7 @@ matrix:
     - sudo apt-get update -qq
     - sudo apt-get install devscripts build-essential lintian dh-make
     - sudo apt-get install qtdeclarative5-dev qt5-default libjack-jackd2-dev
-    - sudo apt-get install libgstreamer1.0-0 libgstreamer1.0-dev gstreamer1.0-plugins-base gstreamer1.0-plugins-good
+    - sudo apt-get install libgstreamer1.0-0 libgstreamer1.0-dev gstreamer1.0-gl gstreamer1.0-alsa gstreamer1.0-plugins-base libgstreamer-plugins-base1.0-dev gstreamer1.0-plugins-good libgstreamer-plugins-good1.0-dev
     compiler:
     - gcc
     script:
