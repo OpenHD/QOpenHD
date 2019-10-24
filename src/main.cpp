@@ -1,7 +1,6 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlComponent>
-#include <QAbstractVideoSurface>
 #include <QDebug>
 #include <QFontDatabase>
 #if defined(__android__)
