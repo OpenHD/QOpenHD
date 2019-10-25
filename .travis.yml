@@ -28,9 +28,8 @@ matrix:
     - sudo installer -package ./src/gstreamer-1.0-1.16.1-x86_64.pkg -target /
     - sudo installer -package ./src/gstreamer-1.0-devel-1.16.1-x86_64.pkg -target /
     script:
-    - qmake -spec macx-xcode QOpenHD.pro
-    - xcodebuild -list -project QOpenHD.xcodeproj
-    - xcodebuild -scheme QOpenHD build
+    - qmake QOpenHD.pro CONFIG+=release
+    - make -j5
   - os: windows
     before_install:
     - dir C:/Program\ Files\ \(x86\)/Windows\ Kits/10/bin/10.0.17134.0/x64
