@@ -2,6 +2,8 @@ import QtQuick 2.13
 import QtQuick.Controls 2.13
 import QtQuick.Layouts 1.13
 import QtGraphicalEffects 1.13
+import QtQuick.Shapes 1.0
+
 import Qt.labs.settings 1.0
 
 import OpenHD 1.0
@@ -50,25 +52,29 @@ BaseWidget {
             id: alt_text
             color: "white"
             text: qsTr(OpenHD.alt_rel)
-            topPadding: 2
-            bottomPadding: 2
             anchors.fill: parent
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
         }
 
-        Text {
-            id: widgetGlyph
-            y: 0
-            width: 40
-            height: 18
-            color: "#ffffff"
-            text: "\ufdd6"
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.verticalCenter: parent.verticalCenter
-            font.family: "Font Awesome 5 Free-Solid-900.otf"
-            font.pixelSize: 14
+        Shape {
+            id: outline
+            anchors.fill: parent
+            ShapePath {
+                strokeColor: "white"
+                strokeWidth: 1
+                strokeStyle: ShapePath.SolidLine
+                fillColor: "transparent"
+                startX: 0
+                startY: 12
+                PathLine { x: 0;                  y: 12 }
+                PathLine { x: 12;                 y: 0 }
+                PathLine { x: 58;                 y: 0 }
+                PathLine { x: 58;                 y: 24 }
+                PathLine { x: 12;                 y: 24 }
+                PathLine { x: 0;                  y: 12 }
+            }
         }
-
-        antialiasing: true
     }
 }
 
