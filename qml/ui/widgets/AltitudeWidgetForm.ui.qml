@@ -10,9 +10,11 @@ import OpenHD 1.0
 
 BaseWidget {
     id: altitudeWidget
-    width: 40
-    height: 25
-    defaultXOffset: 740
+    width: 64
+    height: 24
+    // resize with right side (technically top right, but it doesn't matter because VCenter is set)
+    defaultAlignment: 1
+    defaultXOffset: 20
     defaultVCenter: true
 
     widgetIdentifier: "altitude_widget"
