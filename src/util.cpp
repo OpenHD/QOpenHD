@@ -250,5 +250,11 @@ QString tracker_mode_from_enum(TRACKER_MODE mode) {
     return "Unknown";
 }
 
+uint map(double input, double input_start, double input_end, uint16_t output_start, uint16_t output_end) {
+    double input_range = input_end - input_start;
+    int output_range = output_end - output_start;
+
+    return (input - input_start)*output_range / input_range + output_start;
+}
 
 #endif // UTIL_CPP
