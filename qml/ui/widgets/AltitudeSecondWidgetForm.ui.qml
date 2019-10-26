@@ -10,10 +10,11 @@ BaseWidget {
     id: altitudesecondWidget
     width: 40
     height: 25
+    defaultAlignment: 2
     defaultHCenter: false
     defaultVCenter: false
-    defaultXOffset: 750
-    defaultYOffset: 400
+    defaultXOffset: 12
+    defaultYOffset: 64
     dragging: false
 
     widgetIdentifier: "altitude_second_widget"
