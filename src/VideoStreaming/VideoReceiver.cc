@@ -230,6 +230,7 @@ VideoReceiver::start()
     bool isRtsp     = _uri.contains("rtsp://") && !isTaisyncUSB;
     bool isTCP      = _uri.contains("tcp://")  && !isTaisyncUSB;
     bool isMPEGTS   = _uri.contains("mpegts://")  && !isTaisyncUSB;
+    bool isFile     = _uri.contains("file://")  && !isTaisyncUSB;
     bool isTestSrc  = _uri.contains("videotestsrc://")  && !isTaisyncUSB;
 
     if (!isTaisyncUSB && _uri.isEmpty()) {
@@ -274,6 +275,8 @@ VideoReceiver::start()
             dataSource = gst_element_factory_make("udpsrc", "udp-source");
         } else if(isTCP) {
             dataSource = gst_element_factory_make("tcpclientsrc", "tcpclient-source");
+        }  else if(isFile) {
+            dataSource = gst_element_factory_make("filesrc", "file-source");
         }  else if(isTestSrc) {
             dataSource = gst_element_factory_make("videotestsrc", "test-source");
         } else {
@@ -303,6 +306,9 @@ VideoReceiver::start()
         } else if(isMPEGTS) {
             QUrl url(_uri);
             g_object_set(static_cast<gpointer>(dataSource), "port", url.port(), nullptr);
+        } else if (isFile) {
+            QUrl url(_uri);
+            g_object_set(static_cast<gpointer>(dataSource), "location", qPrintable(url.path()), NULL);
         } else if (isTestSrc) {
 
         } else {
@@ -352,6 +358,8 @@ VideoReceiver::start()
 
         if(isTaisyncUSB) {
             gst_bin_add_many(GST_BIN(_pipeline), dataSource, parser, _tee, queue, decoder, queue1, _videoSink, nullptr);
+        } else if (isFile) {
+            gst_bin_add_many(GST_BIN(_pipeline), dataSource, parser, queue, decoder, queue1, _videoSink, nullptr);
         } else if (isTestSrc) {
             gst_bin_add_many(GST_BIN(_pipeline), dataSource, queue1, _videoSink, nullptr);
         } else {
@@ -363,6 +371,11 @@ VideoReceiver::start()
             // Link the pipeline in front of the tee
             if(!gst_element_link_many(dataSource, demux, parser, _tee, queue, decoder, queue1, _videoSink, nullptr)) {
                 qCritical() << "Unable to link UDP elements.";
+                break;
+            }
+        } else if (isFile) {
+            if(!gst_element_link_many(dataSource, parser, queue, decoder, queue1, _videoSink, nullptr)) {
+                qCritical() << "Unable to link FileSrc elements.";
                 break;
             }
         } else if (isTestSrc) {
