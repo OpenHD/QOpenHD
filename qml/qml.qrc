@@ -70,5 +70,7 @@
         <file>ui/widgets/AltitudeWidgetForm.ui.qml</file>
         <file>ui/widgets/AltitudeSecondWidget.qml</file>
         <file>ui/widgets/AltitudeSecondWidgetForm.ui.qml</file>
+        <file>ui/widgets/ThrottleWidget.qml</file>
+        <file>ui/widgets/ThrottleWidgetForm.ui.qml</file>
     </qresource>
 </RCC>
