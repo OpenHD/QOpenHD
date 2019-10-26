@@ -230,6 +230,7 @@ VideoReceiver::start()
     bool isRtsp     = _uri.contains("rtsp://") && !isTaisyncUSB;
     bool isTCP      = _uri.contains("tcp://")  && !isTaisyncUSB;
     bool isMPEGTS   = _uri.contains("mpegts://")  && !isTaisyncUSB;
+    bool isTestSrc  = _uri.contains("videotestsrc://")  && !isTaisyncUSB;
 
     if (!isTaisyncUSB && _uri.isEmpty()) {
         qCritical() << "VideoReceiver::start() failed because URI is not specified";
@@ -273,6 +274,8 @@ VideoReceiver::start()
             dataSource = gst_element_factory_make("udpsrc", "udp-source");
         } else if(isTCP) {
             dataSource = gst_element_factory_make("tcpclientsrc", "tcpclient-source");
+        }  else if(isTestSrc) {
+            dataSource = gst_element_factory_make("videotestsrc", "test-source");
         } else {
             dataSource = gst_element_factory_make("rtspsrc", "rtsp-source");
         }
@@ -300,6 +303,8 @@ VideoReceiver::start()
         } else if(isMPEGTS) {
             QUrl url(_uri);
             g_object_set(static_cast<gpointer>(dataSource), "port", url.port(), nullptr);
+        } else if (isTestSrc) {
+
         } else {
             g_object_set(static_cast<gpointer>(dataSource), "location", qPrintable(_uri), "latency", 17, "udp-reconnect", 1, "timeout", _udpReconnect_us, NULL);
         }
@@ -347,6 +352,8 @@ VideoReceiver::start()
 
         if(isTaisyncUSB) {
             gst_bin_add_many(GST_BIN(_pipeline), dataSource, parser, _tee, queue, decoder, queue1, _videoSink, nullptr);
+        } else if (isTestSrc) {
+            gst_bin_add_many(GST_BIN(_pipeline), dataSource, queue1, _videoSink, nullptr);
         } else {
             gst_bin_add_many(GST_BIN(_pipeline), dataSource, demux, parser, _tee, queue, decoder, queue1, _videoSink, nullptr);
         }
@@ -356,6 +363,11 @@ VideoReceiver::start()
             // Link the pipeline in front of the tee
             if(!gst_element_link_many(dataSource, demux, parser, _tee, queue, decoder, queue1, _videoSink, nullptr)) {
                 qCritical() << "Unable to link UDP elements.";
+                break;
+            }
+        } else if (isTestSrc) {
+            if(!gst_element_link_many(dataSource, queue1, _videoSink, nullptr)) {
+                qCritical() << "Unable to link VideoTestSrc elements.";
                 break;
             }
         } else if(isTaisyncUSB) {
