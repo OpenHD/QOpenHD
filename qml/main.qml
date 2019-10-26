@@ -10,6 +10,7 @@ import OpenHD 1.0
 import "./ui"
 import "./ui/widgets"
 
+import QGroundControl.QgcQtGStreamer 1.0
 
 ApplicationWindow {
     id: applicationWindow
@@ -35,6 +36,7 @@ ApplicationWindow {
             lowerOverlayBar.configure();
             hudOverlayGrid.configure();
             initialised = true;
+            stream.startVideo();
         }
     }
 
@@ -67,14 +69,16 @@ ApplicationWindow {
     //    id: ltmTelemetry
     //}
 
-    Loader {
-        id: videoLoader
+
+    VideoItem {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.top: parent.top
         anchors.bottom: parent.bottom
         anchors.fill: parent
-        source: EnableVideo ? "./ui/VideoPanel.qml" : ""
+        id: videoBackground
+        surface: stream.videoReceiver.videoSurface
+        z: 1.0
     }
 
     Connections {
@@ -91,6 +95,17 @@ ApplicationWindow {
         }
     }
 
+    OpenHDVideoStream {
+        id: stream
+        uri: {
+            if (OpenHDPi.is_raspberry_pi) {
+                return "file:///root/videofifo1";
+            } else {
+                var video_port = settings.value("video_port", 5600);
+                return "udp://0.0.0.0:%1".arg(video_port);
+            }
+        }
+    }
     // UI areas
 
     UpperOverlayBar {
