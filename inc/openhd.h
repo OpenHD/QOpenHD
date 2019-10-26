@@ -109,6 +109,10 @@ public:
     void set_yaw_raw(float yaw_raw);
 
 
+    Q_PROPERTY(double throttle MEMBER m_throttle WRITE set_throttle NOTIFY throttle_changed)
+    void set_throttle(double throttle);
+
+
     // openhd
 
     Q_PROPERTY(QString downlink_rssi MEMBER m_downlink_rssi WRITE set_downlink_rssi NOTIFY downlink_rssi_changed)
@@ -190,6 +194,9 @@ signals:
     void yaw_raw_changed(float yaw_raw);
     void messageReceived(QString message, int level);
 
+    void throttle_changed(double throttle);
+
+
     // openhd
     void downlink_rssi_changed(QString downlink_rssi);
     void current_signal_joystick_uplink_changed(QString current_signal_joystick_uplink);
@@ -269,6 +276,8 @@ private:
 
     bool m_air_undervolt = false;
     bool m_cts = false;
+
+    double m_throttle = 0;
 
 };
 

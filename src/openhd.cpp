@@ -226,6 +226,11 @@ void OpenHD::set_yaw_raw(float yaw_raw) {
     emit yaw_raw_changed(m_yaw_raw);
 }
 
+void OpenHD::set_throttle(double throttle) {
+    m_throttle = throttle;
+     emit throttle_changed(m_throttle);
+}
+
 void OpenHD::set_downlink_rssi(QString downlink_rssi) {
     m_downlink_rssi = downlink_rssi;
     emit downlink_rssi_changed(m_downlink_rssi);
