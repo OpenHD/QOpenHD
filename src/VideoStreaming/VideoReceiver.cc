@@ -346,10 +346,17 @@ VideoReceiver::start()
             break;
         }
 
+#if defined(__rasp_pi__)
+        if ((decoder = gst_element_factory_make("omxh264dec", "h264-decoder")) == nullptr) {
+            qCritical() << "VideoReceiver::start() failed. Error with gst_element_factory_make('omxh264dec')";
+            break;
+        }
+#else
         if ((decoder = gst_element_factory_make("avdec_h264", "h264-decoder")) == nullptr) {
             qCritical() << "VideoReceiver::start() failed. Error with gst_element_factory_make('avdec_h264')";
             break;
         }
+#endif
 
         if ((queue1 = gst_element_factory_make("queue", nullptr)) == nullptr) {
             qCritical() << "VideoReceiver::start() failed. Error with gst_element_factory_make('queue') [1]";
