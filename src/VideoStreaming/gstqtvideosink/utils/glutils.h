@@ -22,7 +22,7 @@
 #define QOpenGLFunctionsDef QOpenGLFunctions
 #endif
 
-#ifdef __rasp_pi2__
+#ifdef __rasp_pi__
 #include <QOpenGLFunctions_ES2>
 #define getQOpenGLFunctions() QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_ES2>()
 #define QOpenGLFunctionsDef QOpenGLFunctions_ES2
