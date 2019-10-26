@@ -105,6 +105,11 @@ Item {
     HeadingWidget {
         id: headingWidget
     }
+
+    ThrottleWidget {
+        id: throttleWidget
+        scale: 0.7
+    }
 }
 
 /*##^##
