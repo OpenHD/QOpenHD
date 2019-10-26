@@ -26,7 +26,6 @@
         <file>ui/AboutPanelForm.ui.qml</file>
         <file>ui/widgets/MessageHUDForm.ui.qml</file>
         <file>ui/widgets/MessageHUD.qml</file>
-        <file>ui/VideoPanel.qml</file>
         <file>ui/widgets/MessageHUDRow.ui.qml</file>
         <file>ui/AboutPanel.qml</file>
         <file>LICENSE_UI.txt</file>
