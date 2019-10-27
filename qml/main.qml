@@ -98,12 +98,12 @@ ApplicationWindow {
     OpenHDVideoStream {
         id: stream
         uri: {
-            if (OpenHDPi.is_raspberry_pi) {
-                return "file:///root/videofifo1";
-            } else {
+            //if (OpenHDPi.is_raspberry_pi) {
+            //    return "file:///root/videofifo1";
+            //} else {
                 var video_port = settings.value("video_port", 5600);
                 return "udp://0.0.0.0:%1".arg(video_port);
-            }
+            //}
         }
     }
     // UI areas
