@@ -58,20 +58,6 @@ BaseWidget {
             verticalAlignment: Text.AlignVCenter
         }
 
-        Text {
-            id: widgetGlyph
-            y: 0
-            width: 40
-            height: 18
-            color: "#ffffff"
-            text: "\ufdd7"
-            anchors.right: parent.right
-            anchors.rightMargin: -40
-            anchors.verticalCenter: parent.verticalCenter
-            font.family: "Font Awesome 5 Free-Solid-900.otf"
-            font.pixelSize: 14
-        }
-
         Shape {
             id: outline
             anchors.fill: parent
