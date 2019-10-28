@@ -18,7 +18,7 @@ BaseWidget {
     widgetIdentifier: "throttle_widget"
 
     defaultAlignment: 2
-    defaultXOffset: 42
+    defaultXOffset: 72
     defaultYOffset: 58
     defaultHCenter: false
     defaultVCenter: false
