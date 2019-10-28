@@ -280,7 +280,8 @@ void MavlinkTelemetry::processMavlinkMessage(mavlink_message_t msg) {
 
             //td->airspeed = mavlink_msg_vfr_hud_get_airspeed(&msg)*3.6f;
 
-            OpenHD::instance()->set_speed(tr("%1").arg(vfr_hud.groundspeed*3.6));
+            auto speed = vfr_hud.groundspeed*3.6;
+            OpenHD::instance()->set_speed(tr("%1").arg(speed, 1, 'f', 1, '0'));
                 //  qDebug() << "Speed- ground " << speed;
 
             break;
