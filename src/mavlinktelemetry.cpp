@@ -227,9 +227,9 @@ void MavlinkTelemetry::processMavlinkMessage(mavlink_message_t msg) {
 
             OpenHD::instance()->set_boot_time(tr("%1").arg(global_position.time_boot_ms));
 
-            OpenHD::instance()->set_alt_rel(tr("%1").arg(global_position.relative_alt/1000.0));
+            OpenHD::instance()->set_alt_rel(tr("%1").arg(global_position.relative_alt/1000.0, 1, 'f', 1, '0'));
           //  qDebug() << "Altitude relative " << alt_rel;
-            OpenHD::instance()->set_alt_msl(tr("%1").arg(global_position.alt/1000.0));
+            OpenHD::instance()->set_alt_msl(tr("%1").arg(global_position.alt/1000.0, 1, 'f', 1, '0'));
 
             // FOR INAV heading does not /100
             OpenHD::instance()->set_hdg(tr("%1").arg(global_position.hdg/100.0, 1, 'f', 0, '0'));
