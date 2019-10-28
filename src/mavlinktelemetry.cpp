@@ -232,7 +232,7 @@ void MavlinkTelemetry::processMavlinkMessage(mavlink_message_t msg) {
             OpenHD::instance()->set_alt_msl(tr("%1").arg(global_position.alt/1000.0));
 
             // FOR INAV heading does not /100
-            OpenHD::instance()->set_hdg(tr("%1").arg(global_position.hdg/100.0));
+            OpenHD::instance()->set_hdg(tr("%1").arg(global_position.hdg/100.0, 1, 'f', 0, '0'));
 
             OpenHD::instance()->set_vx((int)(global_position.vx/100.0));
             OpenHD::instance()->set_vy((int)(global_position.vy/100.0));
