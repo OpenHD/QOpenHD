@@ -21,7 +21,9 @@ void OpenHDVideoStream::init() {
 void OpenHDVideoStream::_start() {
 #if defined(ENABLE_VIDEO)
     qDebug() << "OpenHDVideoStream::_start()";
-    m_receiver.start();
+    if (!m_receiver.running()) {
+        m_receiver.start();
+    }
 #endif
 }
 
