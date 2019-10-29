@@ -33,10 +33,12 @@ signals:
 
 public slots:
     void startVideo();
+    void stopVideo();
 
 private:
     void init();
     void _start();
+    void _stop();
     QString m_uri;
 
 #if defined(ENABLE_VIDEO)
