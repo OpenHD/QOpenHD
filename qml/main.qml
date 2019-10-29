@@ -101,8 +101,8 @@ ApplicationWindow {
             //if (OpenHDPi.is_raspberry_pi) {
             //    return "file:///root/videofifo1";
             //} else {
-                var video_port = settings.value("video_port", 5600);
-                return "udp://0.0.0.0:%1".arg(video_port);
+                var main_video_port = settings.value("main_video_port", 5600);
+                return "udp://0.0.0.0:%1".arg(main_video_port);
             //}
         }
     }
