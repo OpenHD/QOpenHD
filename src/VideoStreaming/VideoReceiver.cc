@@ -264,6 +264,7 @@ VideoReceiver::start()
     GstElement*     queue       = nullptr;
     GstElement*     decoder     = nullptr;
     GstElement*     queue1      = nullptr;
+    GstElement*     capsfilter  = nullptr;
 
     do {
         if ((_pipeline = gst_pipeline_new("receiver")) == nullptr) {
@@ -310,6 +311,15 @@ VideoReceiver::start()
             QUrl url(_uri);
             g_object_set(static_cast<gpointer>(dataSource), "location", qPrintable(url.path()), NULL);
         } else if (isTestSrc) {
+            if((capsfilter = gst_element_factory_make("capsfilter", "capsfilter")) == nullptr)  {
+                qCritical() << "VideoReceiver::start() failed. Error with gst_element_factory_make('capsfilter')";
+                break;
+            }
+            if ((caps = gst_caps_from_string("video/x-raw,width=240,height=180,framerate=1/30")) == nullptr) {
+                qCritical() << "VideoReceiver::start() failed. Error with gst_caps_from_string()";
+                break;
+            }
+            g_object_set(static_cast<gpointer>(capsfilter), "caps", caps, nullptr);
 
         } else {
             g_object_set(static_cast<gpointer>(dataSource), "location", qPrintable(_uri), "latency", 17, "udp-reconnect", 1, "timeout", _udpReconnect_us, NULL);
@@ -368,7 +378,7 @@ VideoReceiver::start()
         } else if (isFile) {
             gst_bin_add_many(GST_BIN(_pipeline), dataSource, parser, queue, decoder, queue1, _videoSink, nullptr);
         } else if (isTestSrc) {
-            gst_bin_add_many(GST_BIN(_pipeline), dataSource, queue1, _videoSink, nullptr);
+            gst_bin_add_many(GST_BIN(_pipeline), dataSource, capsfilter, queue1, _videoSink, nullptr);
         } else {
             gst_bin_add_many(GST_BIN(_pipeline), dataSource, demux, parser, _tee, queue, decoder, queue1, _videoSink, nullptr);
         }
@@ -386,7 +396,7 @@ VideoReceiver::start()
                 break;
             }
         } else if (isTestSrc) {
-            if(!gst_element_link_many(dataSource, queue1, _videoSink, nullptr)) {
+            if(!gst_element_link_many(dataSource, capsfilter, queue1, _videoSink, nullptr)) {
                 qCritical() << "Unable to link VideoTestSrc elements.";
                 break;
             }
@@ -414,7 +424,7 @@ VideoReceiver::start()
             }
         }
 
-        dataSource = demux = parser = queue = decoder = queue1 = nullptr;
+        dataSource = capsfilter = demux = parser = queue = decoder = queue1 = nullptr;
 
         GstBus* bus = nullptr;
 
