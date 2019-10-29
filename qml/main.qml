@@ -106,6 +106,19 @@ ApplicationWindow {
             //}
         }
     }
+
+    OpenHDVideoStream {
+        id: pipVideoStream
+        uri: {
+            return "videotestsrc://";
+            //if (OpenHDPi.is_raspberry_pi) {
+            //    return "file:///root/videofifo1";
+            //} else {
+                var pip_video_port = settings.value("pip_video_port", 5601);
+                return "udp://0.0.0.0:%1".arg(pip_video_port);
+            //}
+        }
+    }
     // UI areas
 
     UpperOverlayBar {
