@@ -71,5 +71,7 @@
         <file>ui/widgets/AltitudeSecondWidgetForm.ui.qml</file>
         <file>ui/widgets/ThrottleWidget.qml</file>
         <file>ui/widgets/ThrottleWidgetForm.ui.qml</file>
+        <file>ui/widgets/PiPVideoWidget.qml</file>
+        <file>ui/widgets/PiPVideoWidgetForm.ui.qml</file>
     </qresource>
 </RCC>
