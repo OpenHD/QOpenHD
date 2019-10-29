@@ -11,8 +11,8 @@ import QGroundControl.QgcQtGStreamer 1.0
 
 BaseWidget {
     id: pipVideoWidget
-    width: 240
-    height: 180
+    width: 252
+    height: 192
 
     widgetIdentifier: "pip_video_widget"
 
@@ -27,7 +27,17 @@ BaseWidget {
     Item {
         id: widgetInner
 
-        anchors.fill: parent
+        anchors.left: parent.left
+        anchors.leftMargin: 6
+
+        anchors.right: parent.right
+        anchors.rightMargin: 6
+
+        anchors.top: parent.top
+        anchors.topMargin: 6
+
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 6
 
         VideoItem {
             anchors.fill: parent
