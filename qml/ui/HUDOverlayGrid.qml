@@ -25,6 +25,19 @@ HUDOverlayGridForm {
         gps.visible = settings.value("show_gps", true)
         messageHUD.visible = settings.value("show_log_onscreen", true)
 
+
+        var show_pip_video = settings.value("show_pip_video", false);
+        if (show_pip_video === true || show_pip_video === "true" || show_pip_video === 1) {
+            console.log("Enabled PiP");
+            //pipVideoStream.stopVideo();
+            pipVideoStream.startVideo();
+        } else {
+            pipVideoStream.stopVideo();
+        }
+
+        pipVideoWidget.visible = show_pip_video;
+
+
         horizonWidget.configure();
         fpvWidget.configure();
         altitudeWidget.configure();

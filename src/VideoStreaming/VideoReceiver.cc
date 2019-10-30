@@ -230,6 +230,8 @@ VideoReceiver::start()
     bool isRtsp     = _uri.contains("rtsp://") && !isTaisyncUSB;
     bool isTCP      = _uri.contains("tcp://")  && !isTaisyncUSB;
     bool isMPEGTS   = _uri.contains("mpegts://")  && !isTaisyncUSB;
+    bool isFile     = _uri.contains("file://")  && !isTaisyncUSB;
+    bool isTestSrc  = _uri.contains("videotestsrc://")  && !isTaisyncUSB;
 
     if (!isTaisyncUSB && _uri.isEmpty()) {
         qCritical() << "VideoReceiver::start() failed because URI is not specified";
@@ -262,6 +264,7 @@ VideoReceiver::start()
     GstElement*     queue       = nullptr;
     GstElement*     decoder     = nullptr;
     GstElement*     queue1      = nullptr;
+    GstElement*     capsfilter  = nullptr;
 
     do {
         if ((_pipeline = gst_pipeline_new("receiver")) == nullptr) {
@@ -273,6 +276,10 @@ VideoReceiver::start()
             dataSource = gst_element_factory_make("udpsrc", "udp-source");
         } else if(isTCP) {
             dataSource = gst_element_factory_make("tcpclientsrc", "tcpclient-source");
+        }  else if(isFile) {
+            dataSource = gst_element_factory_make("filesrc", "file-source");
+        }  else if(isTestSrc) {
+            dataSource = gst_element_factory_make("videotestsrc", "test-source");
         } else {
             dataSource = gst_element_factory_make("rtspsrc", "rtsp-source");
         }
@@ -300,6 +307,20 @@ VideoReceiver::start()
         } else if(isMPEGTS) {
             QUrl url(_uri);
             g_object_set(static_cast<gpointer>(dataSource), "port", url.port(), nullptr);
+        } else if (isFile) {
+            QUrl url(_uri);
+            g_object_set(static_cast<gpointer>(dataSource), "location", qPrintable(url.path()), NULL);
+        } else if (isTestSrc) {
+            if((capsfilter = gst_element_factory_make("capsfilter", "capsfilter")) == nullptr)  {
+                qCritical() << "VideoReceiver::start() failed. Error with gst_element_factory_make('capsfilter')";
+                break;
+            }
+            if ((caps = gst_caps_from_string("video/x-raw,width=240,height=180,framerate=1/30")) == nullptr) {
+                qCritical() << "VideoReceiver::start() failed. Error with gst_caps_from_string()";
+                break;
+            }
+            g_object_set(static_cast<gpointer>(capsfilter), "caps", caps, nullptr);
+
         } else {
             g_object_set(static_cast<gpointer>(dataSource), "location", qPrintable(_uri), "latency", 17, "udp-reconnect", 1, "timeout", _udpReconnect_us, NULL);
         }
@@ -335,10 +356,17 @@ VideoReceiver::start()
             break;
         }
 
+#if defined(__rasp_pi__)
+        if ((decoder = gst_element_factory_make("omxh264dec", "h264-decoder")) == nullptr) {
+            qCritical() << "VideoReceiver::start() failed. Error with gst_element_factory_make('omxh264dec')";
+            break;
+        }
+#else
         if ((decoder = gst_element_factory_make("avdec_h264", "h264-decoder")) == nullptr) {
             qCritical() << "VideoReceiver::start() failed. Error with gst_element_factory_make('avdec_h264')";
             break;
         }
+#endif
 
         if ((queue1 = gst_element_factory_make("queue", nullptr)) == nullptr) {
             qCritical() << "VideoReceiver::start() failed. Error with gst_element_factory_make('queue') [1]";
@@ -347,6 +375,10 @@ VideoReceiver::start()
 
         if(isTaisyncUSB) {
             gst_bin_add_many(GST_BIN(_pipeline), dataSource, parser, _tee, queue, decoder, queue1, _videoSink, nullptr);
+        } else if (isFile) {
+            gst_bin_add_many(GST_BIN(_pipeline), dataSource, parser, queue, decoder, queue1, _videoSink, nullptr);
+        } else if (isTestSrc) {
+            gst_bin_add_many(GST_BIN(_pipeline), dataSource, capsfilter, queue1, _videoSink, nullptr);
         } else {
             gst_bin_add_many(GST_BIN(_pipeline), dataSource, demux, parser, _tee, queue, decoder, queue1, _videoSink, nullptr);
         }
@@ -356,6 +388,16 @@ VideoReceiver::start()
             // Link the pipeline in front of the tee
             if(!gst_element_link_many(dataSource, demux, parser, _tee, queue, decoder, queue1, _videoSink, nullptr)) {
                 qCritical() << "Unable to link UDP elements.";
+                break;
+            }
+        } else if (isFile) {
+            if(!gst_element_link_many(dataSource, parser, queue, decoder, queue1, _videoSink, nullptr)) {
+                qCritical() << "Unable to link FileSrc elements.";
+                break;
+            }
+        } else if (isTestSrc) {
+            if(!gst_element_link_many(dataSource, capsfilter, queue1, _videoSink, nullptr)) {
+                qCritical() << "Unable to link VideoTestSrc elements.";
                 break;
             }
         } else if(isTaisyncUSB) {
@@ -382,7 +424,7 @@ VideoReceiver::start()
             }
         }
 
-        dataSource = demux = parser = queue = decoder = queue1 = nullptr;
+        dataSource = capsfilter = demux = parser = queue = decoder = queue1 = nullptr;
 
         GstBus* bus = nullptr;
 

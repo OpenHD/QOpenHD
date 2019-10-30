@@ -33,6 +33,8 @@ Item {
     property alias speedWidget: speedWidget
     property alias headingWidget: headingWidget
 
+    property alias pipVideoWidget: pipVideoWidget
+
     MessageHUD {
         id: messageHUD
     }
@@ -104,6 +106,15 @@ Item {
 
     HeadingWidget {
         id: headingWidget
+    }
+
+    ThrottleWidget {
+        id: throttleWidget
+        scale: 0.7
+    }
+
+    PiPVideoWidget {
+        id: pipVideoWidget
     }
 }
 

@@ -34,7 +34,7 @@ CONFIG(debug, debug|release) {
 }
 
 
-QT += qml quick multimedia concurrent opengl gui
+QT += qml quick concurrent opengl gui
 
 INCLUDEPATH += $$PWD/inc
 INCLUDEPATH += $$PWD/lib/mavlink_generated
@@ -190,9 +190,6 @@ MacBuild {
     CONFIG += EnableJoysticks
     CONFIG += EnableSpeech
     CONFIG += EnableVideo
-
-    QMAKE_POST_LINK += /usr/libexec/PlistBuddy -c \"Set :CFBundleShortVersionString $$APPLE_BUILD\" $$DESTDIR/$${TARGET}.app/Contents/Info.plist
-    QMAKE_POST_LINK += && /usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $$APPLE_BUILD\" $$DESTDIR/$${TARGET}.app/Contents/Info.plist
 }
 
 LinuxBuild {
@@ -208,6 +205,7 @@ RaspberryPiBuild {
     # handled by another process running on the ground station. We could
     # replace that at some point but for now it isn't necessary.
     message("RaspberryPiBuild - config")
+    CONFIG += EnableVideo
 }
 
 WindowsBuild {
@@ -270,9 +268,13 @@ EnableRC {
 installer {
     MacBuild {
         DESTDIR_COPY_RESOURCE_LIST = $$DESTDIR/$${TARGET}.app/Contents/MacOS
-        QMAKE_POST_LINK += && $${BASEDIR}/tools/prepare_gstreamer_framework.sh $${DESTDIR}/gstwork $${DESTDIR}/$${TARGET}.app $${TARGET}
+        QMAKE_POST_LINK += $${BASEDIR}/tools/prepare_gstreamer_framework.sh $${DESTDIR}/gstwork $${DESTDIR}/$${TARGET}.app $${TARGET}
         QMAKE_POST_LINK += && cd $${DESTDIR}
         QMAKE_POST_LINK += && $$dirname(QMAKE_QMAKE)/macdeployqt $${TARGET}.app -appstore-compliant -qmldir=$${BASEDIR}/qml
+
+        QMAKE_POST_LINK += && /usr/libexec/PlistBuddy -c \"Set :CFBundleShortVersionString $$APPLE_BUILD\" $$DESTDIR/$${TARGET}.app/Contents/Info.plist
+        QMAKE_POST_LINK += && /usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $$APPLE_BUILD\" $$DESTDIR/$${TARGET}.app/Contents/Info.plist
+
         QMAKE_POST_LINK += && codesign --force --verify --sign \"${DEV_CERT}\" --keychain ${HOME}/Library/Keychains/login.keychain $${TARGET}.app --deep
 
 
@@ -287,8 +289,8 @@ installer {
     AndroidBuild {
         QMAKE_POST_LINK += mkdir -p $${DESTDIR}/package
         QMAKE_POST_LINK += && make install INSTALL_ROOT=$${DESTDIR}/android-build/
-        QMAKE_POST_LINK += && androiddeployqt --input $${DESTDIR}/android-libQOpenHD.so-deployment-settings.json --output $${DESTDIR}/android-build --deployment bundled --gradle --sign $${HOME}/.android/android_release.keystore dagar --storepass $$(ANDROID_STOREPASS)
-        QMAKE_POST_LINK += && cp $${DESTDIR}/android-build/build/outputs/apk/android-build-release-signed.apk $${DESTDIR}/package/QOpenHD-$$QOPENHD_VERSION.apk
+        #QMAKE_POST_LINK += && androiddeployqt --input $${DESTDIR}/android-libQOpenHD.so-deployment-settings.json --output $${DESTDIR}/android-build --deployment bundled --gradle --sign $${HOME}/.android/android_release.keystore dagar --storepass $$(ANDROID_STOREPASS)
+        #QMAKE_POST_LINK += && cp $${DESTDIR}/android-build/build/outputs/apk/android-build-release-signed.apk $${DESTDIR}/package/QOpenHD-$$QOPENHD_VERSION.apk
     }
 }
 

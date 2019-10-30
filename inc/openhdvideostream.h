@@ -22,17 +22,24 @@ public:
     VideoReceiver* getVideoReceiver() { return &m_receiver; }
 #endif
 
+    Q_PROPERTY(QString uri MEMBER m_uri WRITE setUri NOTIFY uriChanged)
+    void setUri(QString uri);
+
 signals:
 #if defined(ENABLE_VIDEO)
     void videoReceiverChanged(VideoReceiver* videoReceiver);
 #endif
+    void uriChanged(QString uri);
+
 public slots:
     void startVideo();
+    void stopVideo();
 
 private:
     void init();
     void _start();
-    QString uri;
+    void _stop();
+    QString m_uri;
 
 #if defined(ENABLE_VIDEO)
     VideoReceiver m_receiver;

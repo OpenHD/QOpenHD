@@ -30,6 +30,12 @@ LinuxBuild {
         PKGCONFIG   += gstreamer-1.0  gstreamer-video-1.0
         CONFIG      += VideoEnabled
     }
+} else: RaspberryPiBuild {
+    CONFIG += link_pkgconfig
+    packagesExist(gstreamer-1.0) {
+        PKGCONFIG   += gstreamer-1.0  gstreamer-video-1.0
+        CONFIG      += VideoEnabled
+    }
 } else:MacBuild {
     #- gstreamer framework installed by the gstreamer devel installer
     GST_ROOT = /Library/Frameworks/GStreamer.framework

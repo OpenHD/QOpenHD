@@ -26,7 +26,6 @@
         <file>ui/AboutPanelForm.ui.qml</file>
         <file>ui/widgets/MessageHUDForm.ui.qml</file>
         <file>ui/widgets/MessageHUD.qml</file>
-        <file>ui/VideoPanel.qml</file>
         <file>ui/widgets/MessageHUDRow.ui.qml</file>
         <file>ui/AboutPanel.qml</file>
         <file>LICENSE_UI.txt</file>
@@ -70,5 +69,9 @@
         <file>ui/widgets/AltitudeWidgetForm.ui.qml</file>
         <file>ui/widgets/AltitudeSecondWidget.qml</file>
         <file>ui/widgets/AltitudeSecondWidgetForm.ui.qml</file>
+        <file>ui/widgets/ThrottleWidget.qml</file>
+        <file>ui/widgets/ThrottleWidgetForm.ui.qml</file>
+        <file>ui/widgets/PiPVideoWidget.qml</file>
+        <file>ui/widgets/PiPVideoWidgetForm.ui.qml</file>
     </qresource>
 </RCC>

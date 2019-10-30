@@ -44,6 +44,13 @@ Item {
         }
 
         TabButton {
+            text: qsTr("Video")
+            width: implicitWidth
+            height: 48
+            font.pixelSize: 13
+        }
+
+        TabButton {
             text: qsTr("Screen")
             width: implicitWidth
             height: 48
@@ -738,6 +745,121 @@ Item {
                                                                     true)
                     // @disable-check M222
                     onCheckedChanged: settings.setValue("show_second_alt", checked)
+                }
+            }
+        }
+
+        ScrollView {
+            id: videoView
+            width: parent.width
+            height: parent.height
+            contentHeight: 3 * 64
+
+            clip: true
+
+            Rectangle {
+                width: parent.width
+                height: 64
+                color: "#8cbfd7f3"
+                y: 0
+
+                Text {
+                    text: "Main video port"
+                    font.weight: Font.Bold
+                    font.pixelSize: 13
+                    anchors.leftMargin: 8
+                    verticalAlignment: Text.AlignVCenter
+                    width: 224
+                    height: parent.height
+                    anchors.left: parent.left
+                }
+
+                SpinBox {
+                    id: mainVideoPortSpinBox
+                    height: parent.height
+                    width: 212
+                    font.pixelSize: 14
+                    anchors.right: parent.right
+                    from: 5600
+                    to: 5610
+                    stepSize: 1
+                    anchors.rightMargin: 0
+                    // @disable-check M222
+                    Component.onCompleted: value = settings.value("main_video_port",
+                                                                  5600)
+                    // @disable-check M223
+                    onValueChanged: {
+                        // @disable-check M222
+                        settings.setValue("main_video_port", value)
+                    }
+                }
+            }
+
+            Rectangle {
+                width: parent.width
+                height: 64
+                color: "#00000000"
+                y: 64
+
+                Text {
+                    text: "Enable PiP"
+                    font.weight: Font.Bold
+                    font.pixelSize: 13
+                    anchors.leftMargin: 8
+                    verticalAlignment: Text.AlignVCenter
+                    width: 224
+                    height: parent.height
+                    anchors.left: parent.left
+                }
+
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 12
+                    anchors.right: parent.right
+                    // @disable-check M222
+                    Component.onCompleted: checked = settings.value("show_pip_video",
+                                                                    false)
+                    // @disable-check M222
+                    onCheckedChanged: settings.setValue("show_pip_video", checked)
+                }
+            }
+
+            Rectangle {
+                width: parent.width
+                height: 64
+                color: "#8cbfd7f3"
+                y: 128
+
+                Text {
+                    text: "PiP video port"
+                    font.weight: Font.Bold
+                    font.pixelSize: 13
+                    anchors.leftMargin: 8
+                    verticalAlignment: Text.AlignVCenter
+                    width: 224
+                    height: parent.height
+                    anchors.left: parent.left
+                }
+
+                SpinBox {
+                    id: pipVideoPortSpinBox
+                    height: parent.height
+                    width: 212
+                    font.pixelSize: 14
+                    anchors.right: parent.right
+                    from: 5600
+                    to: 5610
+                    stepSize: 1
+                    anchors.rightMargin: 0
+                    // @disable-check M222
+                    Component.onCompleted: value = settings.value("pip_video_port",
+                                                                  5601)
+                    // @disable-check M223
+                    onValueChanged: {
+                        // @disable-check M222
+                        settings.setValue("pip_video_port", value)
+                    }
                 }
             }
         }

@@ -3,13 +3,14 @@ import QtQuick.Controls 2.13
 import QtQuick.Layouts 1.13
 import QtGraphicalEffects 1.13
 import Qt.labs.settings 1.0
+import QtQuick.Shapes 1.0
 
 import OpenHD 1.0
 
 BaseWidget {
     id: headingWidget
-    width: 30
-    height: 20
+    width: 48
+    height: 24
     defaultYOffset: 50
 
     widgetIdentifier: "heading_widget"
@@ -44,32 +45,36 @@ BaseWidget {
 
     Item {
         id: widgetInner
-        height: 15
         anchors.fill: parent
-        //so that fpv sits aligned in horizon must add margin
-        width: 30
 
         Text {
             id: hdg_text
+            anchors.fill: parent
             color: "white"
             text: qsTr(OpenHD.hdg)
-            bottomPadding: 3
-            leftPadding: 6
             horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
         }
-        antialiasing: true
 
-        Text {
-            id: widgetGlyph
-            y: 0
-            width: 30
-            height: 18
-            color: "#ffffff"
-            text: "\ufdd8"
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.verticalCenter: parent.verticalCenter
-            font.family: "Font Awesome 5 Free-Solid-900.otf"
-            font.pixelSize: 14
+        Shape {
+            id: outline
+            anchors.fill: parent
+            ShapePath {
+                strokeColor: "white"
+                strokeWidth: 1
+                strokeStyle: ShapePath.SolidLine
+                fillColor: "transparent"
+                startX: 0
+                startY: 0
+                PathLine { x: 0;                  y: 0 }
+                PathLine { x: 48;                 y: 0 }
+                PathLine { x: 48;                 y: 24 }
+                PathLine { x: 32;                 y: 24 }
+                PathLine { x: 24;                 y: 32 }
+                PathLine { x: 16;                 y: 24 }
+                PathLine { x: 0;                  y: 24 }
+                PathLine { x: 0;                  y: 0 }
+            }
         }
     }
 }
