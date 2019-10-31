@@ -225,7 +225,7 @@ Item {
             width: parent.width
             height: parent.height
         //must increment if adding more options-------------->
-            contentHeight: 18 * 64
+            contentHeight: 19 * 64
 
             clip: true
 
@@ -777,6 +777,37 @@ Item {
                     onCheckedChanged: settings.setValue("show_arrow", checked)
                 }
             }
+
+            Rectangle {
+                width: parent.width
+                height: 64
+                color: "#8cbfd7f3"
+                y: 1148
+
+                Text {
+                    text: "Show Map"
+                    font.weight: Font.Bold
+                    font.pixelSize: 13
+                    anchors.leftMargin: 8
+                    verticalAlignment: Text.AlignVCenter
+                    width: 224
+                    height: parent.height
+                    anchors.left: parent.left
+                }
+
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 12
+                    anchors.right: parent.right
+                    // @disable-check M222
+                    Component.onCompleted: checked = settings.value("show_map",
+                                                                    true)
+                    // @disable-check M222
+                    onCheckedChanged: settings.setValue("show_map", checked)
+                }
+            }
+
 
 
         }

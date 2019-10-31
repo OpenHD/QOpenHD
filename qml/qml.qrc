@@ -75,5 +75,7 @@
         <file>ui/widgets/PiPVideoWidgetForm.ui.qml</file>
         <file>ui/widgets/ArrowWidget.qml</file>
         <file>ui/widgets/ArrowWidgetForm.qml</file>
+        <file>ui/widgets/MapWidget.qml</file>
+        <file>ui/widgets/MapWidgetForm.ui.qml</file>
     </qresource>
 </RCC>

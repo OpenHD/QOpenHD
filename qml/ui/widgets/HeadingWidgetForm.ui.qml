@@ -60,20 +60,45 @@ BaseWidget {
             id: outline
             anchors.fill: parent
             ShapePath {
+                capStyle: ShapePath.RoundCap
                 strokeColor: "white"
                 strokeWidth: 1
                 strokeStyle: ShapePath.SolidLine
                 fillColor: "transparent"
                 startX: 0
                 startY: 0
-                PathLine { x: 0;                  y: 0 }
-                PathLine { x: 48;                 y: 0 }
-                PathLine { x: 48;                 y: 24 }
-                PathLine { x: 32;                 y: 24 }
-                PathLine { x: 24;                 y: 32 }
-                PathLine { x: 16;                 y: 24 }
-                PathLine { x: 0;                  y: 24 }
-                PathLine { x: 0;                  y: 0 }
+                PathLine {
+                    x: 0
+                    y: 0
+                }
+                PathLine {
+                    x: 48
+                    y: 0
+                }
+                PathLine {
+                    x: 48
+                    y: 24
+                }
+                PathLine {
+                    x: 32
+                    y: 24
+                }
+                PathLine {
+                    x: 24
+                    y: 32
+                }
+                PathLine {
+                    x: 16
+                    y: 24
+                }
+                PathLine {
+                    x: 0
+                    y: 24
+                }
+                PathLine {
+                    x: 0
+                    y: 0
+                }
             }
         }
     }

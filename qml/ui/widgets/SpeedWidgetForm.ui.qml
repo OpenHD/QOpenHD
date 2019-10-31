@@ -25,7 +25,7 @@ BaseWidget {
             width: parent.width
             height: 24
             Text {
-                text: "Toggle Airspeed/GPS"
+                text: "Airspeed or GPS"
                 horizontalAlignment: Text.AlignRight
                 color: "white"
                 font.bold: true

@@ -11,7 +11,7 @@ BaseWidget {
     id: arrowWidget
     width: 24
     height: 24
-    defaultYOffset: 75
+    defaultYOffset: 85
 
     widgetIdentifier: "arrow_widget"
 
@@ -51,7 +51,10 @@ BaseWidget {
             id: arrow
             anchors.fill: parent
             antialiasing: true
+
+
             ShapePath {
+                capStyle: ShapePath.RoundCap
                 strokeColor: "black"
                 fillColor: "white"
                 strokeWidth: 1
