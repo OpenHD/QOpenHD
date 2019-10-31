@@ -40,5 +40,6 @@ Rectangle {
             model.value = value
             model.modified = true
         }
+        enabled: !model.blacklisted
     }
 }

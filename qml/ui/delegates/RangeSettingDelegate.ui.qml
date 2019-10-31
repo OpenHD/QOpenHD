@@ -43,5 +43,6 @@ Rectangle {
             // @disable-check M222
             text: "%1%2".arg(slider.value).arg(model.unit)
         }
+        enabled: !model.blacklisted
     }
 }
