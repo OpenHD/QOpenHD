@@ -51,5 +51,7 @@ void OpenHDVideoStream::stopVideo() {
 void OpenHDVideoStream::setUri(QString uri) {
     m_uri = uri;
     emit uriChanged(m_uri);
+    #if defined(ENABLE_VIDEO)
     m_receiver.setUri(m_uri);
+    #endif
 }
