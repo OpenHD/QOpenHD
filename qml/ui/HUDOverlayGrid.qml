@@ -44,6 +44,7 @@ HUDOverlayGridForm {
         speedWidget.configure();
         altitudesecondWidget.configure();
         headingWidget.configure();
+        arrowWidget.configure();
 
 
     }

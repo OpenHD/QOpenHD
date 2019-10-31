@@ -32,6 +32,7 @@ Item {
     property alias altitudesecondWidget: altitudesecondWidget
     property alias speedWidget: speedWidget
     property alias headingWidget: headingWidget
+    property alias arrowWidget: arrowWidget
 
     property alias pipVideoWidget: pipVideoWidget
 
@@ -106,6 +107,10 @@ Item {
 
     HeadingWidget {
         id: headingWidget
+    }
+
+    ArrowWidget {
+        id: arrowWidget
     }
 
     ThrottleWidget {
