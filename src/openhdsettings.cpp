@@ -65,7 +65,11 @@ void OpenHDSettings::_saveSettings(VMap remoteSettings) {
     set_busy(true);
     //emit savingSettingsStart();
     QUdpSocket *s = new QUdpSocket(this);
+#if defined(__rasp_pi__)
     s->connectToHost(SETTINGS_IP, SETTINGS_PORT);
+#else
+    s->connectToHost(groundAddress, SETTINGS_PORT);
+#endif
 
     QMapIterator<QString, QVariant> i(remoteSettings);
     while (i.hasNext()) {
@@ -101,7 +105,11 @@ void OpenHDSettings::fetchSettings() {
 
     QNetworkDatagram d(r);
     QUdpSocket *s = new QUdpSocket(this);
+#if defined(__rasp_pi__)
     s->connectToHost(SETTINGS_IP, SETTINGS_PORT);
+#else
+    s->connectToHost(groundAddress, SETTINGS_PORT);
+#endif
     s->writeDatagram(d);
 }
 
@@ -111,7 +119,8 @@ void OpenHDSettings::processDatagrams() {
 
     while (settingSocket->hasPendingDatagrams()) {
         datagram.resize(int(settingSocket->pendingDatagramSize()));
-        settingSocket->readDatagram(datagram.data(), datagram.size());
+
+        settingSocket->readDatagram(datagram.data(), datagram.size(), &groundAddress);
 
         if (datagram == "ConfigEnd=ConfigEnd") {
             timer.stop();
