@@ -75,6 +75,11 @@ void OpenHD::set_hdg(QString hdg) {
     emit hdg_changed(m_hdg);
 }
 
+void OpenHD::set_hdg_raw(double hdg_raw) {
+    m_hdg_raw = hdg_raw;
+    emit hdg_raw_changed(m_hdg_raw);
+}
+
 void OpenHD::set_speed(QString speed) {
     m_speed = speed;
     emit speed_changed(m_speed);
@@ -154,6 +159,29 @@ void OpenHD::calculate_home_distance() {
 void OpenHD::set_home_distance(double home_distance) {
     m_home_distance = home_distance;
     emit home_distance_changed(home_distance);
+}
+
+void OpenHD::calculate_home_course () {
+
+    double  dlon = (m_lon_raw-m_homelon_raw)*0.017453292519;
+    double lat1 = (m_homelat_raw)*0.017453292519;
+    double lat2 = (m_lat_raw)*0.017453292519;
+    double  a1 = sin(dlon) * cos(lat2);
+    double  a2 = sin(lat1) * cos(lat2) * cos(dlon);
+    a2 = cos(lat1) * sin(lat2) - a2;
+    a2 = atan2(a1, a2);
+    if (a2 < 0.0) a2 += M_PI*2;
+
+    set_home_course(180.0f / M_PI*(a2));
+}
+
+void OpenHD::set_home_course(double home_course) {
+    //so arrow points correct way it must be relative to heading
+    double rel_heading = home_course - m_hdg_raw;
+    if (rel_heading < 0) rel_heading += 360;
+    if (rel_heading >= 360) rel_heading -=360;
+    m_home_course = rel_heading;
+    emit home_course_changed(home_course);
 }
 
 void OpenHD::set_lat(QString lat) {
@@ -305,3 +333,4 @@ void OpenHD::set_cts(bool cts) {
     m_cts = cts;
     emit cts_changed(m_cts);
 }
+

@@ -73,5 +73,7 @@
         <file>ui/widgets/ThrottleWidgetForm.ui.qml</file>
         <file>ui/widgets/PiPVideoWidget.qml</file>
         <file>ui/widgets/PiPVideoWidgetForm.ui.qml</file>
+        <file>ui/widgets/ArrowWidget.qml</file>
+        <file>ui/widgets/ArrowWidgetForm.qml</file>
     </qresource>
 </RCC>

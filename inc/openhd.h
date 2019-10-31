@@ -20,9 +20,13 @@ public:
 
     void telemetryMessage(QString message, int level);
     void calculate_home_distance();
+    void calculate_home_course();
 
     Q_PROPERTY(double home_distance MEMBER m_home_distance WRITE set_home_distance NOTIFY home_distance_changed)
     void set_home_distance(double home_distance);
+
+    Q_PROPERTY(double home_course MEMBER m_home_course WRITE set_home_course NOTIFY home_course_changed)
+    void set_home_course(double home_course);
 
     Q_PROPERTY(QString boot_time MEMBER m_boot_time WRITE set_boot_time NOTIFY boot_time_changed)
     void set_boot_time(QString boot_time);
@@ -44,6 +48,9 @@ public:
 
     Q_PROPERTY(QString hdg MEMBER m_hdg WRITE set_hdg NOTIFY hdg_changed)
     void set_hdg(QString hdg);
+
+    Q_PROPERTY(double hdg_raw MEMBER m_hdg_raw WRITE set_hdg_raw NOTIFY hdg_raw_changed)
+    void set_hdg_raw(double hdg_raw);
 
     Q_PROPERTY(QString speed MEMBER m_speed WRITE set_speed NOTIFY speed_changed)
     void set_speed(QString speed);
@@ -170,6 +177,7 @@ signals:
     void vy_changed(int vy);
     void vz_changed(int vz);
     void hdg_changed(QString hdg);
+    void hdg_raw_changed(double hdg_raw);
     void speed_changed(QString speed);
     void armed_changed(bool armed);
     void flight_mode_changed(QString flight_mode);
@@ -182,6 +190,7 @@ signals:
     void lon_changed(QString lon);
     void lon_raw_changed(double lon_raw);
     void home_distance_changed(double home_distance);
+    void home_course_changed(double home_course);
     void battery_percent_changed(QString battery_percent);
     void battery_voltage_changed(QString battery_voltage);
     void battery_voltage_raw_changed(double battery_voltage);
@@ -230,6 +239,8 @@ private:
     int m_vz = 0;
 
     QString m_hdg = "360";
+    double m_hdg_raw=360.0;
+
     QString m_speed = "0";
 
     bool m_armed = false;
@@ -243,6 +254,7 @@ private:
     QString m_lon = "0.000000";
     double m_lon_raw = 0.0;
     double m_home_distance = 0.0;
+    double m_home_course = 0.0;
     QString m_battery_percent = "0%";
     QString m_battery_current = "0.0a";
     QString m_battery_voltage = "0.0v";
@@ -280,6 +292,8 @@ private:
     double m_throttle = 0;
 
 };
+
+
 
 QObject *openHDSingletonProvider(QQmlEngine *engine, QJSEngine *scriptEngine);
 
