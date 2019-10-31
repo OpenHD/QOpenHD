@@ -34,6 +34,8 @@ Item {
     property alias headingWidget: headingWidget
     property alias arrowWidget: arrowWidget
 
+    property alias mapWidget: mapWidget
+
     property alias pipVideoWidget: pipVideoWidget
 
     MessageHUD {
@@ -120,6 +122,10 @@ Item {
 
     PiPVideoWidget {
         id: pipVideoWidget
+    }
+
+    MapWidget {
+        id: mapWidget
     }
 }
 

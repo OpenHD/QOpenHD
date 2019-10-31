@@ -261,7 +261,7 @@ private:
     double m_battery_voltage_raw = 0.0;
     QString m_battery_gauge = "\uf091";
     QString m_satellites_visible = "0";
-    QString m_gps_hdop = "0.00";
+    QString m_gps_hdop = "99.00";
 
     float m_roll_raw = 0.0;
     float m_yaw_raw = 0.0;

@@ -48,6 +48,8 @@ HUDOverlayGridForm {
         headingWidget.configure();
         arrowWidget.configure();
 
+        mapWidget.configure();
+
 
     }
 }
