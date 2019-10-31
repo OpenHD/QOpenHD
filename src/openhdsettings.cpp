@@ -119,14 +119,24 @@ void OpenHDSettings::processDatagrams() {
             set_busy(false);
         } else {
             auto set = datagram.split('=');
-            auto key = set.first();
-            // remove ConfigResp from the beginning of each key
-            key.remove(0, 10);
+            auto key = set.first();         
             // eliminate any zero length keys coming from the server, which aren't real settings
             if (key.length() <= 0) {
                 return;
             }
-            auto val = set.last();
+            // remove ConfigResp from the beginning of each key
+            datagram.remove(0, 10);
+            /*
+             * Find the FIRST equals sign in the rest of the datagram. Everything
+             * before it is the key and everything after it is the value
+             */
+            auto split_location = datagram.indexOf("=");
+            // copy just the key, without the equals sign and without altering the datagram
+            key = datagram.mid(0, split_location);
+            // cut the entire key and the equals sign out of the datagram...
+            datagram.remove(0, split_location + 1);
+            // ... leaving just the value remaining in the datagram
+            auto val = datagram;
 
             m_allSettings.insert(QString(key), QVariant(val));
         }
