@@ -124,6 +124,12 @@ void OpenHDSettings::processDatagrams() {
             if (key.length() <= 0) {
                 return;
             }
+
+            // ignore non-settings messages
+            if (key.compare("GroundIP\n") == 0) {
+                continue;
+            }
+
             // remove ConfigResp from the beginning of each key
             datagram.remove(0, 10);
             /*
