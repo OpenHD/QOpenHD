@@ -25,7 +25,7 @@ HUDOverlayGridForm {
         gps.visible = settings.value("show_gps", true)
         messageHUD.visible = settings.value("show_log_onscreen", true)
 
-
+/*
         if (EnableVideo) {
             var show_pip_video = settings.value("show_pip_video", false);
             if (show_pip_video === true || show_pip_video === "true" || show_pip_video === 1) {
@@ -38,7 +38,7 @@ HUDOverlayGridForm {
 
             pipVideoWidget.visible = show_pip_video;
         }
-
+*/
 
         horizonWidget.configure();
         fpvWidget.configure();

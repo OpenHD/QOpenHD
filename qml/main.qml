@@ -110,7 +110,7 @@ ApplicationWindow {
         }
     }
 
-    OpenHDVideoStream {
+    /*OpenHDVideoStream {
         id: pipVideoStream
         uri: {
             return "videotestsrc://";
@@ -121,7 +121,7 @@ ApplicationWindow {
                 return "udp://0.0.0.0:%1".arg(pip_video_port);
             //}
         }
-    }
+    }*/
     // UI areas
 
     UpperOverlayBar {
