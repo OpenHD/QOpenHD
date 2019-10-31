@@ -48,6 +48,7 @@ Item {
             width: implicitWidth
             height: 48
             font.pixelSize: 13
+            visible: EnableVideo
         }
 
         TabButton {
@@ -756,6 +757,7 @@ Item {
             contentHeight: 3 * 64
 
             clip: true
+            visible: EnableVideo
 
             Rectangle {
                 width: parent.width
