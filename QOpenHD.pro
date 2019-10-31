@@ -232,20 +232,20 @@ EnableSpeech {
 EnableVideo {
     message("EnableVideo")
     DEFINES += ENABLE_VIDEO
-    include ($$PWD/src/VideoStreaming/VideoStreaming.pri)
-
-    HEADERS += \
-        $$BASEDIR/src/VideoStreaming/VideoItem.h \
-        $$BASEDIR/src/VideoStreaming/VideoReceiver.h \
-        $$BASEDIR/src/VideoStreaming/VideoSurface.h \
-        $$BASEDIR/src/VideoStreaming/VideoStreaming.h
-
-    SOURCES += \
-        $$BASEDIR/src/VideoStreaming/VideoItem.cc \
-        $$BASEDIR/src/VideoStreaming/VideoReceiver.cc \
-        $$BASEDIR/src/VideoStreaming/VideoSurface.cc \
-        $$BASEDIR/src/VideoStreaming/VideoStreaming.cc
 }
+
+include ($$PWD/src/VideoStreaming/VideoStreaming.pri)
+HEADERS += \
+    $$BASEDIR/src/VideoStreaming/VideoItem.h \
+    $$BASEDIR/src/VideoStreaming/VideoReceiver.h \
+    $$BASEDIR/src/VideoStreaming/VideoSurface.h \
+    $$BASEDIR/src/VideoStreaming/VideoStreaming.h
+
+SOURCES += \
+    $$BASEDIR/src/VideoStreaming/VideoItem.cc \
+    $$BASEDIR/src/VideoStreaming/VideoReceiver.cc \
+    $$BASEDIR/src/VideoStreaming/VideoSurface.cc \
+    $$BASEDIR/src/VideoStreaming/VideoStreaming.cc
 
 EnableRC {
     message("EnableRC")

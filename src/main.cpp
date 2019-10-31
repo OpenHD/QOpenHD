@@ -21,11 +21,9 @@
 #include "msptelemetry.h"
 #include "ltmtelemetry.h"
 
-#if defined(ENABLE_VIDEO)
 #include "VideoStreaming/VideoStreaming.h"
 #include "VideoStreaming/VideoSurface.h"
 #include "VideoStreaming/VideoReceiver.h"
-#endif
 
 // SDL hack
 #ifdef Q_OS_WIN
@@ -69,8 +67,7 @@ int main(int argc, char *argv[]) {
     qDebug() << "Finished initializing Pi";
 #endif
 
-#if defined(ENABLE_VIDEO)
-    qDebug() << "Initializing video";
+qDebug() << "Initializing video";
 #if defined(__ios__) || defined(__android__)
     initializeVideoStreaming(argc, argv, nullptr, nullptr);
 #else
@@ -78,7 +75,6 @@ int main(int argc, char *argv[]) {
     char gstLogLevel[] = "*:0";
     char gstLogPath[] = "/dev/null";
     initializeVideoStreaming(argc, argv, gstLogPath, gstLogLevel);
-#endif
 #endif
 
     /*qDebug() << "Checking codecs...";
