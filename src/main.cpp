@@ -69,7 +69,9 @@ int main(int argc, char *argv[]) {
 
 qDebug() << "Initializing video";
 #if defined(__ios__) || defined(__android__)
-    initializeVideoStreaming(argc, argv, nullptr, nullptr);
+char gstLogLevel[] = "*:3";
+char gstLogPath[] = "/sdcard";
+    initializeVideoStreaming(argc, argv, gstLogPath, gstLogLevel);
 #else
     // Initialize Video Streaming
     char gstLogLevel[] = "*:0";
