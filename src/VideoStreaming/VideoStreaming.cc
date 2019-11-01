@@ -168,7 +168,7 @@ void initializeVideoStreaming(int &argc, char* argv[], char* logpath, char* debu
                 qputenv("GST_DEBUG", debuglevel);
             }
             qputenv("GST_DEBUG_NO_COLOR", "1");
-            qputenv("GST_DEBUG_FILE", "-");
+            qputenv("GST_DEBUG_FILE", gstDebugFile.toStdString().c_str());
             qputenv("GST_DEBUG_DUMP_DOT_DIR", logpath);
         }
         GError* error = nullptr;
@@ -202,8 +202,8 @@ void initializeVideoStreaming(int &argc, char* argv[], char* logpath, char* debu
     qmlRegisterType<VideoItem>              ("QGroundControl.QgcQtGStreamer", 1, 0, "VideoItem");
     qmlRegisterUncreatableType<VideoSurface>("QGroundControl.QgcQtGStreamer", 1, 0, "VideoSurface", QStringLiteral("VideoSurface from QML is not supported"));
 
-    gst_debug_remove_log_function(gst_debug_log_default);
-    gst_debug_add_log_function (printf_extension_log_func, NULL, NULL);
+    //gst_debug_remove_log_function(gst_debug_log_default);
+    //gst_debug_add_log_function (printf_extension_log_func, NULL, NULL);
 
 }
 
