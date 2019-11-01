@@ -90,20 +90,15 @@ LinuxBuild {
         CONFIG          += VideoEnabled
 
         # We want to link these plugins statically
-        LIBS += -L$$GST_ROOT/lib/gstreamer-1.0 \
-            -lgstvideo-1.0 \
-            -lgstcoreelements \
-            -lgstudp \
-            -lgstrtp \
-            -lgstrtsp \
-            -lgstx264 \
-            -lgstlibav \
-            -lgstsdpelem \
-            -lgstvideoparsersbad \
-            -lgstrtpmanager \
-            -lgstisomp4 \
-            -lgstmatroska \
-            -lgstandroidmedia \
+        LIBS += -L$$GST_ROOT/lib/gstreamer-1.0
+
+        SHARED_LIB_FILES = $$files($$GST_ROOT/lib/gstreamer-1.0/*.a)
+        for(FILE, SHARED_LIB_FILES) {
+            BASENAME = $$basename(FILE)
+            BASENAME = $$replace(BASENAME,^lib,)
+
+            LIBS += -l$$replace(BASENAME,\.a,)
+        }
 
         # Rest of GStreamer dependencies
         LIBS += -L$$GST_ROOT/lib \
@@ -115,6 +110,7 @@ LinuxBuild {
             -lgstriff-1.0 -lgstcontroller-1.0 -lgstapp-1.0 \
             -lgstsdp-1.0 -lbz2 -lgobject-2.0 \
             -lgstphotography-1.0 -lgstgl-1.0 -lEGL \
+            -lgraphene-1.0 -lpng16 -ljpeg \
             -Wl,--export-dynamic -lgmodule-2.0 -pthread -lglib-2.0 -lorc-0.4 -liconv -lffi -lintl \
 
         INCLUDEPATH += \
