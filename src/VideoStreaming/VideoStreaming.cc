@@ -37,22 +37,220 @@
     GST_PLUGIN_STATIC_DECLARE(QGC_VIDEOSINK_PLUGIN);
     // The static plugins we use
 #if defined(__mobile__)
+
+    //#define GST_MOBILE_PLUGINS_GES
+    #define GST_MOBILE_PLUGINS_CORE
+    //#define GST_MOBILE_PLUGINS_CAPTURE
+    //#define GST_MOBILE_PLUGINS_CODECS_RESTRICTED
+    //#define GST_MOBILE_PLUGINS_ENCODING
+    //#define GST_MOBILE_PLUGINS_CODECS_GPL
+    //#define GST_MOBILE_PLUGINS_NET_RESTRICTED
+    #define GST_MOBILE_PLUGINS_SYS
+    //#define GST_MOBILE_PLUGINS_VIS
+    #define GST_MOBILE_PLUGINS_PLAYBACK
+    //#define GST_MOBILE_PLUGINS_EFFECTS
+    #define GST_MOBILE_PLUGINS_CODECS
+    //#define GST_MOBILE_PLUGINS_NET
+    #define GST_MOBILE_PLUGIN_X264
+    #define GST_MOBILE_PLUGIN_LIBAV
+    //#define GST_MOBILE_PLUGIN_ISOMP4
+    //#define GST_MOBILE_PLUGIN_VIDEOPARSERSBAD
+    //#define GST_MOBILE_PLUGIN_MATROSKA
+    //#define GST_MOBILE_GIO_MODULE_GNUTLS
+
+#define GST_MOBILE_PLUGIN_RTP
+#define GST_MOBILE_PLUGIN_UDP
+
+    #if defined(GST_MOBILE_PLUGIN_COREELEMENTS) || defined(GST_MOBILE_PLUGINS_CORE)
     GST_PLUGIN_STATIC_DECLARE(coreelements);
-    GST_PLUGIN_STATIC_DECLARE(libav);
-    GST_PLUGIN_STATIC_DECLARE(rtp);
-    GST_PLUGIN_STATIC_DECLARE(rtsp);
-    GST_PLUGIN_STATIC_DECLARE(udp);
-    GST_PLUGIN_STATIC_DECLARE(videoparsersbad);
+    #endif
+    #if defined(GST_MOBILE_PLUGIN_CORETRACERS) || defined(GST_MOBILE_PLUGINS_CORE)
+    GST_PLUGIN_STATIC_DECLARE(coretracers);
+    #endif
+    #if defined(GST_MOBILE_PLUGIN_ADDER) || defined(GST_MOBILE_PLUGINS_CORE)
+    GST_PLUGIN_STATIC_DECLARE(adder);
+    #endif
+    #if defined(GST_MOBILE_PLUGIN_APP) || defined(GST_MOBILE_PLUGINS_CORE)
+    GST_PLUGIN_STATIC_DECLARE(app);
+    #endif
+    #if defined(GST_MOBILE_PLUGIN_AUDIOCONVERT) || defined(GST_MOBILE_PLUGINS_CORE)
+    GST_PLUGIN_STATIC_DECLARE(audioconvert);
+    #endif
+    #if defined(GST_MOBILE_PLUGIN_AUDIOMIXER) || defined(GST_MOBILE_PLUGINS_CORE)
+    GST_PLUGIN_STATIC_DECLARE(audiomixer);
+    #endif
+    #if defined(GST_MOBILE_PLUGIN_AUDIORATE) || defined(GST_MOBILE_PLUGINS_CORE)
+    GST_PLUGIN_STATIC_DECLARE(audiorate);
+    #endif
+    #if defined(GST_MOBILE_PLUGIN_AUDIORESAMPLE) || defined(GST_MOBILE_PLUGINS_CORE)
+    GST_PLUGIN_STATIC_DECLARE(audioresample);
+    #endif
+    #if defined(GST_MOBILE_PLUGIN_AUDIOTESTSRC) || defined(GST_MOBILE_PLUGINS_CORE)
+    GST_PLUGIN_STATIC_DECLARE(audiotestsrc);
+    #endif
+    #if defined(GST_MOBILE_PLUGIN_GIO) || defined(GST_MOBILE_PLUGINS_CORE)
+    GST_PLUGIN_STATIC_DECLARE(gio);
+    #endif
+
+    #if defined(GST_MOBILE_PLUGIN_RAWPARSE) || defined(GST_MOBILE_PLUGINS_CORE)
+    GST_PLUGIN_STATIC_DECLARE(rawparse);
+    #endif
+    #if defined(GST_MOBILE_PLUGIN_TYPEFINDFUNCTIONS) || defined(GST_MOBILE_PLUGINS_CORE)
+    GST_PLUGIN_STATIC_DECLARE(typefindfunctions);
+    #endif
+    #if defined(GST_MOBILE_PLUGIN_VIDEOCONVERT) || defined(GST_MOBILE_PLUGINS_CORE)
+    GST_PLUGIN_STATIC_DECLARE(videoconvert);
+    #endif
+    #if defined(GST_MOBILE_PLUGIN_VIDEORATE) || defined(GST_MOBILE_PLUGINS_CORE)
+    GST_PLUGIN_STATIC_DECLARE(videorate);
+    #endif
+    #if defined(GST_MOBILE_PLUGIN_VIDEOSCALE) || defined(GST_MOBILE_PLUGINS_CORE)
+    GST_PLUGIN_STATIC_DECLARE(videoscale);
+    #endif
+    #if defined(GST_MOBILE_PLUGIN_VIDEOTESTSRC) || defined(GST_MOBILE_PLUGINS_CORE)
+    GST_PLUGIN_STATIC_DECLARE(videotestsrc);
+    #endif
+    #if defined(GST_MOBILE_PLUGIN_VOLUME) || defined(GST_MOBILE_PLUGINS_CORE)
+    GST_PLUGIN_STATIC_DECLARE(volume);
+    #endif
+    #if defined(GST_MOBILE_PLUGIN_AUTODETECT) || defined(GST_MOBILE_PLUGINS_CORE)
+    GST_PLUGIN_STATIC_DECLARE(autodetect);
+    #endif
+    #if defined(GST_MOBILE_PLUGIN_VIDEOFILTER) || defined(GST_MOBILE_PLUGINS_CORE)
+    GST_PLUGIN_STATIC_DECLARE(videofilter);
+    #endif
+
+    #if defined(GST_MOBILE_PLUGIN_MPEGPSDEMUX) || defined(GST_MOBILE_PLUGINS_CODECS_RESTRICTED)
+    GST_PLUGIN_STATIC_DECLARE(mpegpsdemux);
+    #endif
+    #if defined(GST_MOBILE_PLUGIN_MPEGPSMUX) || defined(GST_MOBILE_PLUGINS_CODECS_RESTRICTED)
+    GST_PLUGIN_STATIC_DECLARE(mpegpsmux);
+    #endif
+    #if defined(GST_MOBILE_PLUGIN_MPEGTSDEMUX) || defined(GST_MOBILE_PLUGINS_CODECS_RESTRICTED)
+    GST_PLUGIN_STATIC_DECLARE(mpegtsdemux);
+    #endif
+    #if defined(GST_MOBILE_PLUGIN_MPEGTSMUX) || defined(GST_MOBILE_PLUGINS_CODECS_RESTRICTED)
+    GST_PLUGIN_STATIC_DECLARE(mpegtsmux);
+    #endif
+
+    #if defined(GST_MOBILE_PLUGIN_X264) || defined(GST_MOBILE_PLUGINS_CODECS_RESTRICTED)
     GST_PLUGIN_STATIC_DECLARE(x264);
-    GST_PLUGIN_STATIC_DECLARE(rtpmanager);
-    GST_PLUGIN_STATIC_DECLARE(isomp4);
-    GST_PLUGIN_STATIC_DECLARE(matroska);
-#endif
+    #endif
+    #if defined(GST_MOBILE_PLUGIN_LIBAV) || defined(GST_MOBILE_PLUGINS_CODECS_RESTRICTED)
+    GST_PLUGIN_STATIC_DECLARE(libav);
+    #endif
 
-#if defined(__android__)
+    #if defined(GST_MOBILE_PLUGIN_OPENGL) || defined(GST_MOBILE_PLUGINS_SYS)
+    GST_PLUGIN_STATIC_DECLARE(opengl);
+    #endif
+
+    #if defined(__ios__)
+    #if defined(GST_MOBILE_PLUGIN_OSXAUDIO) || defined(GST_MOBILE_PLUGINS_SYS)
+    GST_PLUGIN_STATIC_DECLARE(osxaudio);
+    #endif
+    #if defined(GST_MOBILE_PLUGIN_APPLEMEDIA) || defined(GST_MOBILE_PLUGINS_SYS)
+    GST_PLUGIN_STATIC_DECLARE(applemedia);
+    #endif
+    #endif
+
+    #if defined(__android__)
+    #if defined(GST_MOBILE_PLUGIN_ANDROIDMEDIA) || defined(GST_MOBILE_PLUGINS_SYS)
     GST_PLUGIN_STATIC_DECLARE(androidmedia);
-#endif
+    #endif
+    #endif
 
+
+    #if defined(GST_MOBILE_PLUGIN_PLAYBACK) || defined(GST_MOBILE_PLUGINS_PLAYBACK)
+    GST_PLUGIN_STATIC_DECLARE(playback);
+    #endif
+    #if defined(GST_MOBILE_PLUGIN_ALPHA) || defined(GST_MOBILE_PLUGINS_EFFECTS)
+    GST_PLUGIN_STATIC_DECLARE(alpha);
+    #endif
+    #if defined(GST_MOBILE_PLUGIN_ALPHACOLOR) || defined(GST_MOBILE_PLUGINS_EFFECTS)
+    GST_PLUGIN_STATIC_DECLARE(alphacolor);
+    #endif
+
+    #if defined(GST_MOBILE_PLUGIN_DEBUG) || defined(GST_MOBILE_PLUGINS_EFFECTS)
+    GST_PLUGIN_STATIC_DECLARE(debug);
+    #endif
+
+    #if defined(GST_MOBILE_PLUGIN_SMPTE) || defined(GST_MOBILE_PLUGINS_EFFECTS)
+    GST_PLUGIN_STATIC_DECLARE(smpte);
+    #endif
+
+    #if defined(GST_MOBILE_PLUGIN_VIDEOBOX) || defined(GST_MOBILE_PLUGINS_EFFECTS)
+    GST_PLUGIN_STATIC_DECLARE(videobox);
+    #endif
+    #if defined(GST_MOBILE_PLUGIN_VIDEOCROP) || defined(GST_MOBILE_PLUGINS_EFFECTS)
+    GST_PLUGIN_STATIC_DECLARE(videocrop);
+    #endif
+    #if defined(GST_MOBILE_PLUGIN_VIDEOMIXER) || defined(GST_MOBILE_PLUGINS_EFFECTS)
+    GST_PLUGIN_STATIC_DECLARE(videomixer);
+    #endif
+
+    #if defined(GST_MOBILE_PLUGIN_DEBUGUTILSBAD) || defined(GST_MOBILE_PLUGINS_EFFECTS)
+    GST_PLUGIN_STATIC_DECLARE(debugutilsbad);
+    #endif
+
+    #if defined(GST_MOBILE_PLUGIN_COMPOSITOR) || defined(GST_MOBILE_PLUGINS_EFFECTS)
+    GST_PLUGIN_STATIC_DECLARE(compositor);
+    #endif
+
+
+    #if defined(GST_MOBILE_PLUGIN_AUDIOPARSERS) || defined(GST_MOBILE_PLUGINS_CODECS)
+    GST_PLUGIN_STATIC_DECLARE(audioparsers);
+    #endif
+    #if defined(GST_MOBILE_PLUGIN_AUPARSE) || defined(GST_MOBILE_PLUGINS_CODECS)
+    GST_PLUGIN_STATIC_DECLARE(auparse);
+    #endif
+
+
+    #if defined(GST_MOBILE_PLUGIN_ISOMP4) || defined(GST_MOBILE_PLUGINS_CODECS)
+    GST_PLUGIN_STATIC_DECLARE(isomp4);
+    #endif
+
+
+    #if defined(GST_MOBILE_PLUGIN_VIDEOPARSERSBAD) || defined(GST_MOBILE_PLUGINS_CODECS)
+    GST_PLUGIN_STATIC_DECLARE(videoparsersbad);
+    #endif
+
+    #if defined(GST_MOBILE_PLUGIN_TCP) || defined(GST_MOBILE_PLUGINS_NET)
+    GST_PLUGIN_STATIC_DECLARE(tcp);
+    #endif
+    #if defined(GST_MOBILE_PLUGIN_RTSP) || defined(GST_MOBILE_PLUGINS_NET)
+    GST_PLUGIN_STATIC_DECLARE(rtsp);
+    #endif
+    #if defined(GST_MOBILE_PLUGIN_RTP) || defined(GST_MOBILE_PLUGINS_NET)
+    GST_PLUGIN_STATIC_DECLARE(rtp);
+    #endif
+    #if defined(GST_MOBILE_PLUGIN_RTPMANAGER) || defined(GST_MOBILE_PLUGINS_NET)
+    GST_PLUGIN_STATIC_DECLARE(rtpmanager);
+    #endif
+    #if defined(GST_MOBILE_PLUGIN_SOUP) || defined(GST_MOBILE_PLUGINS_NET)
+    GST_PLUGIN_STATIC_DECLARE(soup);
+    #endif
+    #if defined(GST_MOBILE_PLUGIN_UDP) || defined(GST_MOBILE_PLUGINS_NET)
+    GST_PLUGIN_STATIC_DECLARE(udp);
+    #endif
+    #if defined(GST_MOBILE_PLUGIN_DTLS) || defined(GST_MOBILE_PLUGINS_NET)
+    GST_PLUGIN_STATIC_DECLARE(dtls);
+    #endif
+    #if defined(GST_MOBILE_PLUGIN_SDPELEM) || defined(GST_MOBILE_PLUGINS_NET)
+    GST_PLUGIN_STATIC_DECLARE(sdpelem);
+    #endif
+    #if defined(GST_MOBILE_PLUGIN_SRTP) || defined(GST_MOBILE_PLUGINS_NET)
+    GST_PLUGIN_STATIC_DECLARE(srtp);
+    #endif
+
+    #if defined(GST_MOBILE_PLUGIN_WEBRTC) || defined(GST_MOBILE_PLUGINS_NET)
+    GST_PLUGIN_STATIC_DECLARE(webrtc);
+    #endif
+
+    #if defined(GST_MOBILE_PLUGIN_RTSPCLIENTSINK) || defined(GST_MOBILE_PLUGINS_NET)
+    GST_PLUGIN_STATIC_DECLARE(rtspclientsink);
+    #endif
+
+#endif
     G_END_DECLS
 #endif
 
@@ -180,18 +378,199 @@ void initializeVideoStreaming(int &argc, char* argv[], char* logpath, char* debu
         // Our own plugin
         GST_PLUGIN_STATIC_REGISTER(QGC_VIDEOSINK_PLUGIN);
         // The static plugins we use
-    #if defined(__android__)
-        GST_PLUGIN_STATIC_REGISTER(coreelements);
-        GST_PLUGIN_STATIC_REGISTER(libav);
-        GST_PLUGIN_STATIC_REGISTER(rtp);
-        GST_PLUGIN_STATIC_REGISTER(rtsp);
-        GST_PLUGIN_STATIC_REGISTER(udp);
-        GST_PLUGIN_STATIC_REGISTER(videoparsersbad);
-        GST_PLUGIN_STATIC_REGISTER(x264);
-        GST_PLUGIN_STATIC_REGISTER(rtpmanager);
-        GST_PLUGIN_STATIC_REGISTER(isomp4);
-        GST_PLUGIN_STATIC_REGISTER(matroska);
-        GST_PLUGIN_STATIC_REGISTER(androidmedia);
+    #if defined(__mobile__)
+
+        #if defined(GST_MOBILE_PLUGIN_COREELEMENTS) || defined(GST_MOBILE_PLUGINS_CORE)
+                GST_PLUGIN_STATIC_REGISTER(coreelements);
+        #endif
+        #if defined(GST_MOBILE_PLUGIN_CORETRACERS) || defined(GST_MOBILE_PLUGINS_CORE)
+                GST_PLUGIN_STATIC_REGISTER(coretracers);
+        #endif
+        #if defined(GST_MOBILE_PLUGIN_ADDER) || defined(GST_MOBILE_PLUGINS_CORE)
+                GST_PLUGIN_STATIC_REGISTER(adder);
+        #endif
+        #if defined(GST_MOBILE_PLUGIN_APP) || defined(GST_MOBILE_PLUGINS_CORE)
+                GST_PLUGIN_STATIC_REGISTER(app);
+        #endif
+        #if defined(GST_MOBILE_PLUGIN_AUDIOCONVERT) || defined(GST_MOBILE_PLUGINS_CORE)
+                GST_PLUGIN_STATIC_REGISTER(audioconvert);
+        #endif
+        #if defined(GST_MOBILE_PLUGIN_AUDIOMIXER) || defined(GST_MOBILE_PLUGINS_CORE)
+                GST_PLUGIN_STATIC_REGISTER(audiomixer);
+        #endif
+        #if defined(GST_MOBILE_PLUGIN_AUDIORATE) || defined(GST_MOBILE_PLUGINS_CORE)
+                GST_PLUGIN_STATIC_REGISTER(audiorate);
+        #endif
+        #if defined(GST_MOBILE_PLUGIN_AUDIORESAMPLE) || defined(GST_MOBILE_PLUGINS_CORE)
+                GST_PLUGIN_STATIC_REGISTER(audioresample);
+        #endif
+        #if defined(GST_MOBILE_PLUGIN_AUDIOTESTSRC) || defined(GST_MOBILE_PLUGINS_CORE)
+                GST_PLUGIN_STATIC_REGISTER(audiotestsrc);
+        #endif
+        #if defined(GST_MOBILE_PLUGIN_GIO) || defined(GST_MOBILE_PLUGINS_CORE)
+                GST_PLUGIN_STATIC_REGISTER(gio);
+        #endif
+
+        #if defined(GST_MOBILE_PLUGIN_RAWPARSE) || defined(GST_MOBILE_PLUGINS_CORE)
+                GST_PLUGIN_STATIC_REGISTER(rawparse);
+        #endif
+        #if defined(GST_MOBILE_PLUGIN_TYPEFINDFUNCTIONS) || defined(GST_MOBILE_PLUGINS_CORE)
+                GST_PLUGIN_STATIC_REGISTER(typefindfunctions);
+        #endif
+        #if defined(GST_MOBILE_PLUGIN_VIDEOCONVERT) || defined(GST_MOBILE_PLUGINS_CORE)
+                GST_PLUGIN_STATIC_REGISTER(videoconvert);
+        #endif
+        #if defined(GST_MOBILE_PLUGIN_VIDEORATE) || defined(GST_MOBILE_PLUGINS_CORE)
+                GST_PLUGIN_STATIC_REGISTER(videorate);
+        #endif
+        #if defined(GST_MOBILE_PLUGIN_VIDEOSCALE) || defined(GST_MOBILE_PLUGINS_CORE)
+                GST_PLUGIN_STATIC_REGISTER(videoscale);
+        #endif
+        #if defined(GST_MOBILE_PLUGIN_VIDEOTESTSRC) || defined(GST_MOBILE_PLUGINS_CORE)
+                GST_PLUGIN_STATIC_REGISTER(videotestsrc);
+        #endif
+        #if defined(GST_MOBILE_PLUGIN_VOLUME) || defined(GST_MOBILE_PLUGINS_CORE)
+                GST_PLUGIN_STATIC_REGISTER(volume);
+        #endif
+        #if defined(GST_MOBILE_PLUGIN_AUTODETECT) || defined(GST_MOBILE_PLUGINS_CORE)
+                GST_PLUGIN_STATIC_REGISTER(autodetect);
+        #endif
+        #if defined(GST_MOBILE_PLUGIN_VIDEOFILTER) || defined(GST_MOBILE_PLUGINS_CORE)
+                GST_PLUGIN_STATIC_REGISTER(videofilter);
+        #endif
+
+        #if defined(GST_MOBILE_PLUGIN_MPEGPSDEMUX) || defined(GST_MOBILE_PLUGINS_CODECS_RESTRICTED)
+                GST_PLUGIN_STATIC_REGISTER(mpegpsdemux);
+        #endif
+        #if defined(GST_MOBILE_PLUGIN_MPEGPSMUX) || defined(GST_MOBILE_PLUGINS_CODECS_RESTRICTED)
+                GST_PLUGIN_STATIC_REGISTER(mpegpsmux);
+        #endif
+        #if defined(GST_MOBILE_PLUGIN_MPEGTSDEMUX) || defined(GST_MOBILE_PLUGINS_CODECS_RESTRICTED)
+                GST_PLUGIN_STATIC_REGISTER(mpegtsdemux);
+        #endif
+        #if defined(GST_MOBILE_PLUGIN_MPEGTSMUX) || defined(GST_MOBILE_PLUGINS_CODECS_RESTRICTED)
+                GST_PLUGIN_STATIC_REGISTER(mpegtsmux);
+        #endif
+
+        #if defined(GST_MOBILE_PLUGIN_X264) || defined(GST_MOBILE_PLUGINS_CODECS_RESTRICTED)
+                GST_PLUGIN_STATIC_REGISTER(x264);
+        #endif
+        #if defined(GST_MOBILE_PLUGIN_LIBAV) || defined(GST_MOBILE_PLUGINS_CODECS_RESTRICTED)
+                GST_PLUGIN_STATIC_REGISTER(libav);
+        #endif
+        #if defined(GST_MOBILE_PLUGIN_ENCODING) || defined(GST_MOBILE_PLUGINS_ENCODING)
+                GST_PLUGIN_STATIC_REGISTER(encoding);
+        #endif
+
+        #if defined(GST_MOBILE_PLUGIN_OPENGL) || defined(GST_MOBILE_PLUGINS_SYS)
+                GST_PLUGIN_STATIC_REGISTER(opengl);
+        #endif
+
+        #if defined(__ios__)
+        #if defined(GST_MOBILE_PLUGIN_OSXAUDIO) || defined(GST_MOBILE_PLUGINS_SYS)
+                GST_PLUGIN_STATIC_REGISTER(osxaudio);
+        #endif
+        #if defined(GST_MOBILE_PLUGIN_APPLEMEDIA) || defined(GST_MOBILE_PLUGINS_SYS)
+                GST_PLUGIN_STATIC_REGISTER(applemedia);
+        #endif
+        #endif
+
+        #if defined(__android__)
+        #if defined(GST_MOBILE_PLUGIN_ANDROIDMEDIA) || defined(GST_MOBILE_PLUGINS_SYS)
+                GST_PLUGIN_STATIC_REGISTER(androidmedia);
+        #endif
+        #endif
+
+
+        #if defined(GST_MOBILE_PLUGIN_PLAYBACK) || defined(GST_MOBILE_PLUGINS_PLAYBACK)
+                GST_PLUGIN_STATIC_REGISTER(playback);
+        #endif
+
+        #if defined(GST_MOBILE_PLUGIN_DEBUG) || defined(GST_MOBILE_PLUGINS_EFFECTS)
+                GST_PLUGIN_STATIC_REGISTER(debug);
+        #endif
+
+        #if defined(GST_MOBILE_PLUGIN_SMPTE) || defined(GST_MOBILE_PLUGINS_EFFECTS)
+                GST_PLUGIN_STATIC_REGISTER(smpte);
+        #endif
+
+        #if defined(GST_MOBILE_PLUGIN_VIDEOBOX) || defined(GST_MOBILE_PLUGINS_EFFECTS)
+                GST_PLUGIN_STATIC_REGISTER(videobox);
+        #endif
+        #if defined(GST_MOBILE_PLUGIN_VIDEOCROP) || defined(GST_MOBILE_PLUGINS_EFFECTS)
+                GST_PLUGIN_STATIC_REGISTER(videocrop);
+        #endif
+        #if defined(GST_MOBILE_PLUGIN_VIDEOMIXER) || defined(GST_MOBILE_PLUGINS_EFFECTS)
+                GST_PLUGIN_STATIC_REGISTER(videomixer);
+        #endif
+
+        #if defined(GST_MOBILE_PLUGIN_AUTOCONVERT) || defined(GST_MOBILE_PLUGINS_EFFECTS)
+                GST_PLUGIN_STATIC_REGISTER(autoconvert);
+        #endif
+
+        #if defined(GST_MOBILE_PLUGIN_COLOREFFECTS) || defined(GST_MOBILE_PLUGINS_EFFECTS)
+                GST_PLUGIN_STATIC_REGISTER(coloreffects);
+        #endif
+        #if defined(GST_MOBILE_PLUGIN_DEBUGUTILSBAD) || defined(GST_MOBILE_PLUGINS_EFFECTS)
+                GST_PLUGIN_STATIC_REGISTER(debugutilsbad);
+        #endif
+
+        #if defined(GST_MOBILE_PLUGIN_COMPOSITOR) || defined(GST_MOBILE_PLUGINS_EFFECTS)
+                GST_PLUGIN_STATIC_REGISTER(compositor);
+        #endif
+
+
+        #if defined(GST_MOBILE_PLUGIN_AUDIOPARSERS) || defined(GST_MOBILE_PLUGINS_CODECS)
+                GST_PLUGIN_STATIC_REGISTER(audioparsers);
+        #endif
+
+        #if defined(GST_MOBILE_PLUGIN_ISOMP4) || defined(GST_MOBILE_PLUGINS_CODECS)
+                GST_PLUGIN_STATIC_REGISTER(isomp4);
+        #endif
+
+        #if defined(GST_MOBILE_PLUGIN_VIDEOPARSERSBAD) || defined(GST_MOBILE_PLUGINS_CODECS)
+                GST_PLUGIN_STATIC_REGISTER(videoparsersbad);
+        #endif
+
+
+        #if defined(GST_MOBILE_PLUGIN_TCP) || defined(GST_MOBILE_PLUGINS_NET)
+                GST_PLUGIN_STATIC_REGISTER(tcp);
+        #endif
+        #if defined(GST_MOBILE_PLUGIN_RTSP) || defined(GST_MOBILE_PLUGINS_NET)
+                GST_PLUGIN_STATIC_REGISTER(rtsp);
+        #endif
+        #if defined(GST_MOBILE_PLUGIN_RTP) || defined(GST_MOBILE_PLUGINS_NET)
+                GST_PLUGIN_STATIC_REGISTER(rtp);
+        #endif
+        #if defined(GST_MOBILE_PLUGIN_RTPMANAGER) || defined(GST_MOBILE_PLUGINS_NET)
+                GST_PLUGIN_STATIC_REGISTER(rtpmanager);
+        #endif
+        #if defined(GST_MOBILE_PLUGIN_SOUP) || defined(GST_MOBILE_PLUGINS_NET)
+                GST_PLUGIN_STATIC_REGISTER(soup);
+        #endif
+        #if defined(GST_MOBILE_PLUGIN_UDP) || defined(GST_MOBILE_PLUGINS_NET)
+                GST_PLUGIN_STATIC_REGISTER(udp);
+        #endif
+        #if defined(GST_MOBILE_PLUGIN_DTLS) || defined(GST_MOBILE_PLUGINS_NET)
+                GST_PLUGIN_STATIC_REGISTER(dtls);
+        #endif
+        #if defined(GST_MOBILE_PLUGIN_SDPELEM) || defined(GST_MOBILE_PLUGINS_NET)
+                GST_PLUGIN_STATIC_REGISTER(sdpelem);
+        #endif
+        #if defined(GST_MOBILE_PLUGIN_SRTP) || defined(GST_MOBILE_PLUGINS_NET)
+                GST_PLUGIN_STATIC_REGISTER(srtp);
+        #endif
+        #if defined(GST_MOBILE_PLUGIN_WEBRTC) || defined(GST_MOBILE_PLUGINS_NET)
+                GST_PLUGIN_STATIC_REGISTER(webrtc);
+        #endif
+        #if defined(GST_MOBILE_PLUGIN_RTSPCLIENTSINK) || defined(GST_MOBILE_PLUGINS_NET)
+                GST_PLUGIN_STATIC_REGISTER(rtspclientsink);
+        #endif
+
+        #if defined(GST_MOBILE_GIO_MODULE_GNUTLS)
+                GST_G_IO_MODULE_LOAD(gnutls);
+        #endif
+
     #endif
 #else
     Q_UNUSED(argc);
