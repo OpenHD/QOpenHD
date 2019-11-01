@@ -18,7 +18,7 @@ public class OpenHDActivity extends QtActivity {
 
     public void onInit(int status) {}
 
-    public void jniOnLoad() {
+    public static void jniOnLoad() {
         nativeInit();
     }
 }
