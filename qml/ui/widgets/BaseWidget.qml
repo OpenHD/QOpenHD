@@ -17,6 +17,8 @@ BaseWidgetForm {
     property bool defaultHCenter: false
     property bool defaultVCenter: false
 
+    property int detailPanelFontPixels: 13
+
     property bool dragging: false
 
     property string alignmentIdentifier: "%1_align".arg(widgetIdentifier);

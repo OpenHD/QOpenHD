@@ -27,6 +27,7 @@ BaseWidget {
                 text: "Invert Arrow"
                 color: "white"
                 font.bold: true
+                font.pixelSize: detailPanelFontPixels;
                 anchors.left: parent.left
             }
             Switch {

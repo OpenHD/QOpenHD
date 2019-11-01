@@ -33,6 +33,7 @@ BaseWidget {
                 text: "Google or Bing"
                 color: "white"
                 font.bold: true
+                font.pixelSize: detailPanelFontPixels;
                 anchors.left: parent.left
             }
             Switch {

@@ -24,14 +24,14 @@ BaseWidget {
         Item {
             width: parent.width
             height: 24
-            Text { text: "Voltage:";  color: "white"; font.bold: true; anchors.left: parent.left }
-            Text { text: OpenHD.battery_voltage; color: "white"; font.bold: true; anchors.right: parent.right }
+            Text { text: "Voltage:";  color: "white"; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.left: parent.left }
+            Text { text: OpenHD.battery_voltage; color: "white"; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.right: parent.right }
         }
         Item {
             width: parent.width
             height: 24
-            Text { text: "Current:";  color: "white"; font.bold: true; anchors.left: parent.left }
-            Text { text: OpenHD.battery_current; color: "white"; font.bold: true; anchors.right: parent.right }
+            Text { text: "Current:";  color: "white"; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.left: parent.left }
+            Text { text: OpenHD.battery_current; color: "white"; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.right: parent.right }
         }
     }
 

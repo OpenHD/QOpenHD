@@ -25,14 +25,14 @@ BaseWidget {
         Item {
             width: parent.width
             height: 24
-            Text { text: "Measured:";  color: "white"; font.bold: true; anchors.left: parent.left }
-            Text { text: OpenHD.kbitrate_measured; color: "white"; font.bold: true; anchors.right: parent.right }
+            Text { text: "Measured:";  color: "white"; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.left: parent.left }
+            Text { text: OpenHD.kbitrate_measured; color: "white"; font.bold: true; font.pixelSize: detailPanelFontPixels;  anchors.right: parent.right }
         }
         Item {
             width: parent.width
             height: 24
-            Text { text: "Set:";  color: "white"; font.bold: true; anchors.left: parent.left }
-            Text { text: OpenHD.kbitrate_set; color: "white"; font.bold: true; anchors.right: parent.right }
+            Text { text: "Set:";  color: "white"; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.left: parent.left }
+            Text { text: OpenHD.kbitrate_set; color: "white"; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.right: parent.right }
         }
     }
 
