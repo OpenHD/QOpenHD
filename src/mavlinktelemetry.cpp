@@ -207,10 +207,10 @@ void MavlinkTelemetry::processMavlinkMessage(mavlink_message_t msg) {
             mavlink_msg_attitude_decode (&msg, &attitude);
 
             OpenHD::instance()->set_pitch_raw((float)attitude.pitch *57.2958);
-            qDebug() << "Pitch:" <<  attitude.pitch*57.2958;
+            //qDebug() << "Pitch:" <<  attitude.pitch*57.2958;
 
             OpenHD::instance()->set_roll_raw((float)attitude.roll *57.2958);
-            qDebug() << "Roll:" <<  attitude.roll*57.2958;
+            //qDebug() << "Roll:" <<  attitude.roll*57.2958;
             break;
         }
         case MAVLINK_MSG_ID_LOCAL_POSITION_NED:{
