@@ -94,6 +94,7 @@ DISTFILES += \
     android/res/drawable-xxxhdpi/splashscreen.png \
     android/res/values/libs.xml \
     android/res/values/styles.xml \
+    android/src/OpenHDActivity.java \
     icons/AppIcon.appiconset/iPad-app.png \
     icons/AppIcon.appiconset/iPad-app@2x.png \
     icons/AppIcon.appiconset/iPad-notifications.png \
@@ -221,6 +222,9 @@ AndroidBuild {
     CONFIG += EnableSpeech
     CONFIG += EnableVideo
     QT += androidextras
+
+    OTHER_FILES += \
+        $$PWD/android/src/org/openhd/OpenHDActivity.java
 }
 
 EnableSpeech {
