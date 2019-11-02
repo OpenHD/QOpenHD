@@ -142,7 +142,7 @@ void OpenHDSettings::processDatagrams() {
 
         settingSocket->readDatagram(datagram.data(), datagram.size(), &groundAddress);
 
-        if (datagram == "ConfigEnd=ConfigEnd") {
+        if (datagram == "ConfigRespConfigEnd=ConfigEnd") {
             timer.stop();
             emit allSettingsChanged(m_allSettings);
             set_busy(false);
