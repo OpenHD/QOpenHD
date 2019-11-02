@@ -29,7 +29,7 @@ BaseWidget {
             width: parent.width
             height: 24
             Text {
-                text: "MSL or Relative"
+                text: "Google or Bing"
                 color: "white"
                 font.bold: true
                 font.pixelSize: detailPanelFontPixels;
@@ -42,9 +42,32 @@ BaseWidget {
                 anchors.right: parent.right
                 // @disable-check M222
                 Component.onCompleted: checked = settings.value(
-                                           "second_alt_msl_rel", true)
+                                           "map_bing_google", true)
                 // @disable-check M222
-                onCheckedChanged: settings.setValue("second_alt_msl_rel",
+                onCheckedChanged: settings.setValue("map_bing_google",
+                                                    checked)
+            }
+        }
+        Item {
+            width: parent.width
+            height: 24
+            Text {
+                text: "Default Zoom"
+                color: "white"
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels;
+                anchors.left: parent.left
+            }
+            Switch {
+                width: 32
+                height: parent.height
+                anchors.rightMargin: 12
+                anchors.right: parent.right
+                // @disable-check M222
+                Component.onCompleted: checked = settings.value(
+                                           "map_zoom", true)
+                // @disable-check M222
+                onCheckedChanged: settings.setValue("map_zoom",
                                                     checked)
             }
         }
