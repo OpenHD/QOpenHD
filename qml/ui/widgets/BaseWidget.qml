@@ -59,6 +59,8 @@ BaseWidgetForm {
                 loadAlignment()
                 dragging = false
                 globalDragLock = false
+            } else if (hasWidgetPopup) {
+                widgetPopup.open()
             } else if (hasWidgetDetail) {
                 if (widgetDetail.visible) {
                     widgetDetail.close()
