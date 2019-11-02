@@ -12,6 +12,7 @@ import OpenHD 1.0
 SettingsPopupForm {
     id: settings_form
     signal configure()
+    signal localMessage(var message, var level)
 
     /*
      * These are models for the settings visible in each tab. They are dynamically generated at runtime
@@ -266,7 +267,7 @@ SettingsPopupForm {
         standardButtons: StandardButton.Yes | StandardButton.Cancel
         onYes: {
             openHDSettings.reboot();
-            //messageHUD.pushMessage("Rebooting...", 3);
+            localMessage("Rebooting...", 3);
             rebootDialog.close()
         }
         onRejected: {
