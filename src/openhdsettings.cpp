@@ -41,6 +41,26 @@ void OpenHDSettings::check() {
     }
 }
 
+void OpenHDSettings::reboot() {
+    if (m_busy) {
+        return;
+    }
+    set_busy(true);
+    QUdpSocket *s = new QUdpSocket(this);
+#if defined(__rasp_pi__)
+    s->connectToHost(SETTINGS_IP, SETTINGS_PORT);
+#else
+    s->connectToHost(groundAddress, SETTINGS_PORT);
+#endif
+
+    QByteArray r = QByteArray("RequestReboot");
+    QNetworkDatagram d(r);
+    s->writeDatagram(d);
+
+    set_busy(false);
+    qDebug() << "Rebooting";
+}
+
 void OpenHDSettings::_savingSettingsStart() {
     set_busy(true);
 }

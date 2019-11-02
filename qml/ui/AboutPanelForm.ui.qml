@@ -44,22 +44,6 @@ Rectangle {
         fillMode: Image.PreserveAspectFit
     }
 
-    TextArea {
-        id: license
-        text: qsTr("")
-        color: "#b3ffffff"
-        placeholderText: "GPL license here"
-        font.pointSize: 12
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 0
-        anchors.top: title.bottom
-        anchors.topMargin: 24
-        anchors.right: parent.right
-        anchors.rightMargin: 24
-        anchors.left: parent.left
-        anchors.leftMargin: 24
-    }
-
     Text {
         id: qopenhd_version
         width: 173
@@ -71,6 +55,49 @@ Rectangle {
         anchors.top: title.bottom
         anchors.topMargin: 0
         font.pixelSize: 12
+    }
+
+    Text {
+        id: gstreamer_version
+        width: 173
+        height: 14
+        color: "#b3ffffff"
+        text: "GStreamer " + OpenHD.gstreamer_version
+        anchors.left: title.left
+        anchors.leftMargin: 0
+        anchors.top: qopenhd_version.bottom
+        anchors.topMargin: 0
+        font.pixelSize: 12
+    }
+
+    Text {
+        id: qt_version
+        width: 173
+        height: 14
+        color: "#b3ffffff"
+        text: "Qt " + OpenHD.qt_version
+        anchors.left: title.left
+        anchors.leftMargin: 0
+        anchors.top: gstreamer_version.bottom
+        anchors.topMargin: 0
+        font.pixelSize: 12
+    }
+
+
+    TextArea {
+        id: license
+        text: qsTr("")
+        color: "#b3ffffff"
+        placeholderText: "GPL license here"
+        font.pointSize: 12
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 0
+        anchors.top: qt_version.bottom
+        anchors.topMargin: 24
+        anchors.right: parent.right
+        anchors.rightMargin: 24
+        anchors.left: parent.left
+        anchors.leftMargin: 24
     }
 }
 

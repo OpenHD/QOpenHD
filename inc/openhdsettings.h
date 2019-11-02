@@ -33,6 +33,8 @@ public:
 
     Q_INVOKABLE void saveSettings(VMap remoteSettings);
 
+    Q_INVOKABLE void reboot();
+
 signals:
     void allSettingsChanged(VMap allSettings);
     void busyChanged(bool busy);

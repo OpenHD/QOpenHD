@@ -193,6 +193,10 @@ BaseWidget {
                 }
 
                 anchors.topMargin: 0
+
+                onClicked: {
+                    map_popup.open()
+                }
             }
         }
     }

@@ -150,6 +150,9 @@ ApplicationWindow {
             hudOverlayGrid.configure();
             hudOverlayGrid.messageHUD.configure();
         }
+        onLocalMessage: {
+            hudOverlayGrid.messageHUD.pushMessage(message, level)
+        }
     }
 }
 

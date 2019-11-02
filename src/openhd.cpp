@@ -3,6 +3,9 @@
 #include <GeographicLib/Geodesic.hpp>
 #include <GeographicLib/Math.hpp>
 
+#include <gst/gst.h>
+
+
 static OpenHD* _instance = new OpenHD();
 
 OpenHD::OpenHD(QObject *parent): QObject(parent) {
@@ -26,7 +29,27 @@ OpenHD* OpenHD::instance() {
 
 
 void OpenHD::init() {
+    //emit gstreamer_version_changed();
+}
 
+QString OpenHD::get_gstreamer_version() {
+    guint major, minor, micro, nano;
+    gst_version(&major, &minor, &micro, &nano);
+    QString gst_ver = QString();
+    QTextStream s(&gst_ver);
+
+    s << major;
+    s << ".";
+    s << minor;
+    s << ".";
+    s << micro;
+
+    return gst_ver;
+}
+
+QString OpenHD::get_qt_version() {
+    QString qt_ver = qVersion();
+    return qt_ver;
 }
 
 void OpenHD::telemetryMessage(QString message, int level) {

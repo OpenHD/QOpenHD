@@ -4,6 +4,7 @@ import QtQuick.Dialogs 1.3
 import QtQuick.Layouts 1.13
 import QtQuick.Window 2.13
 import Qt.labs.settings 1.0
+import QtQuick.Dialogs 1.1
 
 import OpenHD 1.0
 
@@ -11,6 +12,7 @@ import OpenHD 1.0
 SettingsPopupForm {
     id: settings_form
     signal configure()
+    signal localMessage(var message, var level)
 
     /*
      * These are models for the settings visible in each tab. They are dynamically generated at runtime
@@ -241,8 +243,7 @@ SettingsPopupForm {
     rebootButton.onClicked: {
         settings_form.configure();
         settings_popup.close();
-        //messageHUD.pushMessage("Rebooting...", 3);
-        OpenHDPi.reboot();
+        rebootDialog.open()
     }
 
     closeButton.onClicked: {
@@ -255,6 +256,25 @@ SettingsPopupForm {
         settings.sync();
         settings_form.configure();
         settings_popup.close();
+    }
+
+
+    MessageDialog {
+        id: rebootDialog
+        title: qsTr("Reboot ground station?")
+        text: qsTr("This will immediately reboot the ground station!\n\nIf your drone is armed it may crash or enter failsafe mode.\n\nYou have been warned.")
+        icon: StandardIcon.Warning
+        standardButtons: StandardButton.Yes | StandardButton.Cancel
+        onYes: {
+            openHDSettings.reboot();
+            localMessage("Rebooting...", 3);
+            rebootDialog.close()
+        }
+        onRejected: {
+             rebootDialog.close()
+        }
+
+        Component.onCompleted: visible = false
     }
 }
 
