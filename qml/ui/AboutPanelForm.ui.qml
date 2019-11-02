@@ -72,6 +72,19 @@ Rectangle {
         anchors.topMargin: 0
         font.pixelSize: 12
     }
+
+    Text {
+        id: gstreamer_version
+        width: 173
+        height: 14
+        color: "#b3ffffff"
+        text: "GStreamer " + OpenHD.gstreamer_version
+        anchors.left: title.left
+        anchors.leftMargin: 0
+        anchors.top: qopenhd_version.bottom
+        anchors.topMargin: 0
+        font.pixelSize: 12
+    }
 }
 
 /*##^##
