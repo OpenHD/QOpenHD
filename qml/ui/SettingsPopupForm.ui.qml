@@ -165,7 +165,7 @@ Popup {
             anchors.left: parent.left
             anchors.leftMargin: 12
             font.pixelSize: 13
-            visible: OpenHDPi.is_raspberry_pi
+            enabled: !OpenHD.armed
         }
 
         Button {
