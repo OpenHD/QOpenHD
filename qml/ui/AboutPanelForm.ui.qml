@@ -85,6 +85,19 @@ Rectangle {
         anchors.topMargin: 0
         font.pixelSize: 12
     }
+
+    Text {
+        id: qt_version
+        width: 173
+        height: 14
+        color: "#b3ffffff"
+        text: "Qt " + OpenHD.qt_version
+        anchors.left: title.left
+        anchors.leftMargin: 0
+        anchors.top: gstreamer_version.bottom
+        anchors.topMargin: 0
+        font.pixelSize: 12
+    }
 }
 
 /*##^##
