@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QtQuick>
 
+
 #if defined(ENABLE_SPEECH)
 #include <QtTextToSpeech/QTextToSpeech>
 #endif
@@ -21,6 +22,10 @@ public:
     void telemetryMessage(QString message, int level);
     void calculate_home_distance();
     void calculate_home_course();
+
+
+    Q_PROPERTY(QString gstreamer_version READ get_gstreamer_version NOTIFY gstreamer_version_changed)
+    QString get_gstreamer_version();
 
     Q_PROPERTY(double home_distance MEMBER m_home_distance WRITE set_home_distance NOTIFY home_distance_changed)
     void set_home_distance(double home_distance);
@@ -169,6 +174,9 @@ public:
     void set_cts(bool cts);
 
 signals:
+    // system
+    void gstreamer_version_changed();
+
     // mavlink
     void boot_time_changed(QString boot_time);
     void alt_rel_changed(QString alt_rel);
