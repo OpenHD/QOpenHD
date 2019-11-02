@@ -47,6 +47,11 @@ QString OpenHD::get_gstreamer_version() {
     return gst_ver;
 }
 
+QString OpenHD::get_qt_version() {
+    QString qt_ver = qVersion();
+    return qt_ver;
+}
+
 void OpenHD::telemetryMessage(QString message, int level) {
     emit messageReceived(message, level);
 #if defined(ENABLE_SPEECH)

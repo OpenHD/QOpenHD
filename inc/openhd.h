@@ -27,6 +27,10 @@ public:
     Q_PROPERTY(QString gstreamer_version READ get_gstreamer_version NOTIFY gstreamer_version_changed)
     QString get_gstreamer_version();
 
+    Q_PROPERTY(QString qt_version READ get_qt_version NOTIFY qt_version_changed)
+    QString get_qt_version();
+
+
     Q_PROPERTY(double home_distance MEMBER m_home_distance WRITE set_home_distance NOTIFY home_distance_changed)
     void set_home_distance(double home_distance);
 
@@ -176,6 +180,7 @@ public:
 signals:
     // system
     void gstreamer_version_changed();
+    void qt_version_changed();
 
     // mavlink
     void boot_time_changed(QString boot_time);
