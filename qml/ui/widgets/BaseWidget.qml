@@ -17,6 +17,8 @@ BaseWidgetForm {
     property bool defaultHCenter: false
     property bool defaultVCenter: false
 
+    property int detailPanelFontPixels: 13
+
     property bool dragging: false
 
     property string alignmentIdentifier: "%1_align".arg(widgetIdentifier);
@@ -57,6 +59,8 @@ BaseWidgetForm {
                 loadAlignment()
                 dragging = false
                 globalDragLock = false
+            } else if (hasWidgetPopup) {
+                widgetPopup.open()
             } else if (hasWidgetDetail) {
                 if (widgetDetail.visible) {
                     widgetDetail.close()

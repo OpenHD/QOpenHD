@@ -79,30 +79,26 @@ LinuxBuild {
         QMAKE_POST_LINK += $$escape_expand(\\n) xcopy \"$$GST_ROOT_WIN\\lib\\gstreamer-1.0\\validate\\*.dll\" \"$$DESTDIR_WIN\\gstreamer-plugins\\validate\\\" /Y $$escape_expand(\\n)
     }
 } else:AndroidBuild {
-    #- gstreamer assumed to be installed in $$PWD/../../gstreamer-1.0-android-universal-1.16.1/armv7 (or x86)
+    #- gstreamer assumed to be installed in $$PWD/../../gstreamer-1.0-android-universal-1.14.4/armv7 (or x86)
     Androidx86Build {
-        GST_ROOT = $$PWD/../../gstreamer-1.0-android-universal-1.16.1/x86
+        GST_ROOT = $$PWD/../../gstreamer-1.0-android-universal-1.14.4/x86
     } else {
-        GST_ROOT = $$PWD/../../gstreamer-1.0-android-universal-1.16.1/armv7
+        GST_ROOT = $$PWD/../../gstreamer-1.0-android-universal-1.14.4/armv7
     }
     exists($$GST_ROOT) {
         QMAKE_CXXFLAGS  += -pthread
         CONFIG          += VideoEnabled
 
         # We want to link these plugins statically
-        LIBS += -L$$GST_ROOT/lib/gstreamer-1.0 \
-            -lgstvideo-1.0 \
-            -lgstcoreelements \
-            -lgstudp \
-            -lgstrtp \
-            -lgstrtsp \
-            -lgstx264 \
-            -lgstlibav \
-            -lgstsdpelem \
-            -lgstvideoparsersbad \
-            -lgstrtpmanager \
-            -lgstisomp4 \
-            -lgstmatroska \
+        LIBS += -L$$GST_ROOT/lib/gstreamer-1.0
+
+        SHARED_LIB_FILES = $$files($$GST_ROOT/lib/gstreamer-1.0/*.a)
+        for(FILE, SHARED_LIB_FILES) {
+            BASENAME = $$basename(FILE)
+            BASENAME = $$replace(BASENAME,^lib,)
+
+            LIBS += -l$$replace(BASENAME,\.a,)
+        }
 
         # Rest of GStreamer dependencies
         LIBS += -L$$GST_ROOT/lib \
@@ -113,6 +109,8 @@ LinuxBuild {
             -lgstvideo-1.0 -lavformat -lavcodec -lavutil -lx264 -lavfilter -lswresample \
             -lgstriff-1.0 -lgstcontroller-1.0 -lgstapp-1.0 \
             -lgstsdp-1.0 -lbz2 -lgobject-2.0 \
+            -lgstphotography-1.0 -lgstgl-1.0 -lEGL \
+            -lgraphene-1.0 -lpng16 -ljpeg \
             -Wl,--export-dynamic -lgmodule-2.0 -pthread -lglib-2.0 -lorc-0.4 -liconv -lffi -lintl \
 
         INCLUDEPATH += \

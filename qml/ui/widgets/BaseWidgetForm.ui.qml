@@ -25,6 +25,9 @@ Rectangle {
     property Item widgetDetailComponent: Item {}
     property bool hasWidgetDetail: false
 
+    property Popup widgetPopup: Popup {}
+    property bool hasWidgetPopup: false
+
     Popup {
         id: widgetDetail
 

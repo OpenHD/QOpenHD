@@ -27,6 +27,7 @@ BaseWidget {
                 text: "Toggle Inav"
                 color: "white"
                 font.bold: true
+                font.pixelSize: detailPanelFontPixels;
                 anchors.left: parent.left
             }
             Switch {

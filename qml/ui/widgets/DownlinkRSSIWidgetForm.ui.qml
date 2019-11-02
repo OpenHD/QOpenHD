@@ -25,20 +25,20 @@ BaseWidget {
         Item {
             width: parent.width
             height: 24
-            Text { text: "Lost:";  color: "white"; font.bold: true; anchors.left: parent.left }
-            Text { text: OpenHD.lost_packet_cnt; color: "white"; font.bold: true; anchors.right: parent.right }
+            Text { text: "Lost:";  color: "white"; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.left: parent.left }
+            Text { text: OpenHD.lost_packet_cnt; color: "white"; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.right: parent.right }
         }
         Item {
             width: parent.width
             height: 24
-            Text { text: "Damaged:";  color: "white"; font.bold: true; anchors.left: parent.left }
-            Text { text: OpenHD.damaged_block_cnt; color: "white"; font.bold: true; anchors.right: parent.right }
+            Text { text: "Damaged:";  color: "white"; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.left: parent.left }
+            Text { text: OpenHD.damaged_block_cnt; color: "white"; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.right: parent.right }
         }
         Item {
             width: parent.width
             height: 24
-            Text { text: "CTS:";  color: "white"; font.bold: true; anchors.left: parent.left }
-            Text { text: OpenHD.cts; color: "white"; font.bold: true; anchors.right: parent.right }
+            Text { text: "CTS:";  color: "white"; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.left: parent.left }
+            Text { text: OpenHD.cts; color: "white"; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.right: parent.right }
         }
     }
 

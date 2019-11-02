@@ -39,11 +39,11 @@ BaseWidget {
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 6
 
-        VideoItem {
+        /*VideoItem {
             anchors.fill: parent
             id: videoPiP
             surface: pipVideoStream.videoReceiver.videoSurface
             z: 1.0
-        }
+        }*/
     }
 }

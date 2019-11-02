@@ -36,5 +36,6 @@ Rectangle {
             model.value = checked
             model.modified = true
         }
+        enabled: !model.blacklisted
     }
 }

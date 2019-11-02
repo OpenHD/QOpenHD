@@ -265,6 +265,7 @@ VideoReceiver::start()
     GstElement*     decoder     = nullptr;
     GstElement*     queue1      = nullptr;
     GstElement*     capsfilter  = nullptr;
+    GstElement*     videoconvert = nullptr;
 
     do {
         if ((_pipeline = gst_pipeline_new("receiver")) == nullptr) {
@@ -367,6 +368,11 @@ VideoReceiver::start()
             break;
         }
 #endif
+
+        if ((videoconvert = gst_element_factory_make("videoconvert", "videoconvert")) == nullptr) {
+            qCritical() << "VideoReceiver::start() failed. Error with gst_element_factory_make('videoconvert')";
+            break;
+        }
 
         if ((queue1 = gst_element_factory_make("queue", nullptr)) == nullptr) {
             qCritical() << "VideoReceiver::start() failed. Error with gst_element_factory_make('queue') [1]";

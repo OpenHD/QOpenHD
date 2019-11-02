@@ -213,4 +213,8 @@ Item {
                                            {title: "5 minutes", value: 300},
                                            {title: "30 minutes", value: 1800}]},
     })
+
+    property var blacklistMap: ({
+    })
+
 }

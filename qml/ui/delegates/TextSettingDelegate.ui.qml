@@ -41,5 +41,6 @@ Rectangle {
             model.value = text;
             model.modified = true;
         }
+        enabled: !model.blacklisted
     }
 }

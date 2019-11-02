@@ -20,7 +20,7 @@ ApplicationWindow {
     minimumHeight: 320
     minimumWidth: 480
     title: qsTr("Open.HD")
-    color: "black"
+    color: EnableVideo ? "black" : "#00000000"
 
     visibility: UseFullscreen ? "FullScreen" : "AutomaticVisibility"
 
@@ -36,7 +36,9 @@ ApplicationWindow {
             lowerOverlayBar.configure();
             hudOverlayGrid.configure();
             initialised = true;
-            stream.startVideo();
+            if (EnableVideo) {
+                stream.startVideo();
+            }
         }
     }
 
@@ -79,6 +81,7 @@ ApplicationWindow {
         id: videoBackground
         surface: stream.videoReceiver.videoSurface
         z: 1.0
+        visible: EnableVideo
     }
 
     Connections {
@@ -107,7 +110,7 @@ ApplicationWindow {
         }
     }
 
-    OpenHDVideoStream {
+    /*OpenHDVideoStream {
         id: pipVideoStream
         uri: {
             return "videotestsrc://";
@@ -118,7 +121,7 @@ ApplicationWindow {
                 return "udp://0.0.0.0:%1".arg(pip_video_port);
             //}
         }
-    }
+    }*/
     // UI areas
 
     UpperOverlayBar {

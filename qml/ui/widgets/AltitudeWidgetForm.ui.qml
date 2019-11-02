@@ -30,6 +30,7 @@ BaseWidget {
                 text: "Relative Or MSL"
                 color: "white"
                 font.bold: true
+                font.pixelSize: detailPanelFontPixels;
                 anchors.left: parent.left
             }
             Switch {

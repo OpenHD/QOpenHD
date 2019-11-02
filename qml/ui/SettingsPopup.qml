@@ -96,7 +96,7 @@ SettingsPopupForm {
              * side of things.
              *
              */
-            function _process(setting, initialValue, model, mapping) {
+            function _process(setting, initialValue, model, mapping, blacklisted) {
                 var itemTitle = mapping[setting]["title"];
                 var itemType  = mapping[setting]["itemType"];
 
@@ -136,7 +136,8 @@ SettingsPopupForm {
                               "itemType": itemType,
                               "value": finalValue,
                               "unit": unit,
-                              "modified": false});
+                              "modified": false,
+                              "blacklisted": blacklisted});
             }
 
             /*
@@ -153,26 +154,33 @@ SettingsPopupForm {
                  * in a particular tab on the settings panel for organization and ease of use.
                  *
                  */
+
+                var blacklisted = false;
+                if (settingsMap.blacklistMap[setting] !== undefined) {
+                    blacklisted = true;
+                }
+
                 var initialValue = openHDSettings.allSettings[setting];
                 if (settingsMap.generalSettingsMap[setting] !== undefined) {
-                    _process(setting, initialValue, generalSettingsModel, settingsMap.generalSettingsMap);
+                    _process(setting, initialValue, generalSettingsModel, settingsMap.generalSettingsMap, blacklisted);
                 } else if (settingsMap.radioSettingsMap[setting] !== undefined) {
-                    _process(setting, initialValue, radioSettingsModel, settingsMap.radioSettingsMap);
+                    _process(setting, initialValue, radioSettingsModel, settingsMap.radioSettingsMap, blacklisted);
                 } else if (settingsMap.videoSettingsMap[setting] !== undefined) {
-                    _process(setting, initialValue, videoSettingsModel, settingsMap.videoSettingsMap);
+                    _process(setting, initialValue, videoSettingsModel, settingsMap.videoSettingsMap, blacklisted);
                 } else if (settingsMap.rcSettingsMap[setting] !== undefined) {
-                    _process(setting, initialValue, rcSettingsModel, settingsMap.rcSettingsMap);
+                    _process(setting, initialValue, rcSettingsModel, settingsMap.rcSettingsMap, blacklisted);
                 } else if (settingsMap.hotspotSettingsMap[setting] !== undefined) {
-                    _process(setting, initialValue, hotspotSettingsModel, settingsMap.hotspotSettingsMap);
+                    _process(setting, initialValue, hotspotSettingsModel, settingsMap.hotspotSettingsMap, blacklisted);
                 } else if (settingsMap.smartSyncSettingsMap[setting] !== undefined) {
-                    _process(setting, initialValue, smartSyncSettingsModel, settingsMap.smartSyncSettingsMap);
+                    _process(setting, initialValue, smartSyncSettingsModel, settingsMap.smartSyncSettingsMap, blacklisted);
                 } else {
                     // setting not found in any mapping so add it to the "other" tab as-is, no processing
                     // of any kind. This guarantees that newly added settings are never missing from the app.
                     otherSettingsModel.append({"title": setting,
                                                "setting": setting,
                                                "itemType": "string",
-                                               "value": String(openHDSettings.allSettings[setting])});
+                                               "value": String(openHDSettings.allSettings[setting]),
+                                               "blacklisted": blacklisted});
                 }
             }
         }

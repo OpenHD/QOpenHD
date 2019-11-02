@@ -58,6 +58,8 @@ private:
     void check();
 
     bool m_busy = false;
+
+    QHostAddress groundAddress;
 };
 
 

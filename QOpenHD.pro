@@ -94,6 +94,7 @@ DISTFILES += \
     android/res/drawable-xxxhdpi/splashscreen.png \
     android/res/values/libs.xml \
     android/res/values/styles.xml \
+    android/src/OpenHDActivity.java \
     icons/AppIcon.appiconset/iPad-app.png \
     icons/AppIcon.appiconset/iPad-app@2x.png \
     icons/AppIcon.appiconset/iPad-notifications.png \
@@ -205,7 +206,7 @@ RaspberryPiBuild {
     # handled by another process running on the ground station. We could
     # replace that at some point but for now it isn't necessary.
     message("RaspberryPiBuild - config")
-    CONFIG += EnableVideo
+    #CONFIG += EnableVideo
 }
 
 WindowsBuild {
@@ -221,6 +222,9 @@ AndroidBuild {
     CONFIG += EnableSpeech
     CONFIG += EnableVideo
     QT += androidextras
+
+    OTHER_FILES += \
+        $$PWD/android/src/org/openhd/OpenHDActivity.java
 }
 
 EnableSpeech {
@@ -232,20 +236,20 @@ EnableSpeech {
 EnableVideo {
     message("EnableVideo")
     DEFINES += ENABLE_VIDEO
-    include ($$PWD/src/VideoStreaming/VideoStreaming.pri)
-
-    HEADERS += \
-        $$BASEDIR/src/VideoStreaming/VideoItem.h \
-        $$BASEDIR/src/VideoStreaming/VideoReceiver.h \
-        $$BASEDIR/src/VideoStreaming/VideoSurface.h \
-        $$BASEDIR/src/VideoStreaming/VideoStreaming.h
-
-    SOURCES += \
-        $$BASEDIR/src/VideoStreaming/VideoItem.cc \
-        $$BASEDIR/src/VideoStreaming/VideoReceiver.cc \
-        $$BASEDIR/src/VideoStreaming/VideoSurface.cc \
-        $$BASEDIR/src/VideoStreaming/VideoStreaming.cc
 }
+
+include ($$PWD/src/VideoStreaming/VideoStreaming.pri)
+HEADERS += \
+    $$BASEDIR/src/VideoStreaming/VideoItem.h \
+    $$BASEDIR/src/VideoStreaming/VideoReceiver.h \
+    $$BASEDIR/src/VideoStreaming/VideoSurface.h \
+    $$BASEDIR/src/VideoStreaming/VideoStreaming.h
+
+SOURCES += \
+    $$BASEDIR/src/VideoStreaming/VideoItem.cc \
+    $$BASEDIR/src/VideoStreaming/VideoReceiver.cc \
+    $$BASEDIR/src/VideoStreaming/VideoSurface.cc \
+    $$BASEDIR/src/VideoStreaming/VideoStreaming.cc
 
 EnableRC {
     message("EnableRC")
