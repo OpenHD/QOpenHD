@@ -22,8 +22,56 @@ BaseWidget {
 
     widgetIdentifier: "map_widget"
 
-    hasWidgetDetail: false
-    hasWidgetPopup: true
+    hasWidgetDetail: true
+
+    widgetDetailComponent: Column {
+        Item {
+            width: parent.width
+            height: 24
+            Text {
+                text: "Google or Bing"
+                color: "white"
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels;
+                anchors.left: parent.left
+            }
+            Switch {
+                width: 32
+                height: parent.height
+                anchors.rightMargin: 12
+                anchors.right: parent.right
+                // @disable-check M222
+                Component.onCompleted: checked = settings.value(
+                                           "map_bing_google", true)
+                // @disable-check M222
+                onCheckedChanged: settings.setValue("map_bing_google",
+                                                    checked)
+            }
+        }
+        Item {
+            width: parent.width
+            height: 24
+            Text {
+                text: "Default Zoom"
+                color: "white"
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels;
+                anchors.left: parent.left
+            }
+            Switch {
+                width: 32
+                height: parent.height
+                anchors.rightMargin: 12
+                anchors.right: parent.right
+                // @disable-check M222
+                Component.onCompleted: checked = settings.value(
+                                           "map_zoom", true)
+                // @disable-check M222
+                onCheckedChanged: settings.setValue("map_zoom",
+                                                    checked)
+            }
+        }
+    }
 
     widgetPopup: Popup {
         id: map_popup
@@ -97,8 +145,8 @@ BaseWidget {
             Button {
                 id: close_button
 
-                width: 24
-                height: 24
+                width: 20
+                height: 20
                 flat: true
 
                 checkable: false
@@ -109,7 +157,7 @@ BaseWidget {
                     anchors.verticalCenter: parent.verticalCenter
                     font.family: "Font Awesome 5 Free-Solid-900.otf"
                     color: "black"
-                    text: "\uf30c"
+                    text: "\ue311"
                 }
 
                 onClicked: {
@@ -117,7 +165,7 @@ BaseWidget {
                     map_popup.close()
                 }
 
-                anchors.topMargin: 0
+
             }
         }
     }
@@ -177,8 +225,10 @@ BaseWidget {
             Button {
                 id: resize
 
-                width: 24
-                height: 24
+                width: 20
+                height: 20
+
+
                 flat: true
 
                 checkable: false
@@ -189,21 +239,14 @@ BaseWidget {
                     anchors.verticalCenter: parent.verticalCenter
                     font.family: "Font Awesome 5 Free-Solid-900.otf"
                     color: "black"
-                    text: "\uf30c"
+                    text: "\ue311"
                 }
-
-                anchors.topMargin: 0
 
                 onClicked: {
                     map_popup.open()
                 }
+
             }
         }
     }
 }
-
-/*##^##
-Designer {
-    D{i:0;invisible:true}
-}
-##^##*/
