@@ -240,6 +240,7 @@ void MavlinkTelemetry::processMavlinkMessage(mavlink_message_t msg) {
             OpenHD::instance()->set_vz((int)(global_position.vz/100.0));
 
             OpenHD::instance()->calculate_home_distance();
+            OpenHD::instance()->calculate_home_course();
 
             break;
         }

@@ -185,7 +185,6 @@ void OpenHD::set_home_distance(double home_distance) {
 }
 
 void OpenHD::calculate_home_course () {
-
     double  dlon = (m_lon_raw-m_homelon_raw)*0.017453292519;
     double lat1 = (m_homelat_raw)*0.017453292519;
     double lat2 = (m_lat_raw)*0.017453292519;
@@ -196,6 +195,7 @@ void OpenHD::calculate_home_course () {
     if (a2 < 0.0) a2 += M_PI*2;
 
     set_home_course(180.0f / M_PI*(a2));
+
 }
 
 void OpenHD::set_home_course(double home_course) {
