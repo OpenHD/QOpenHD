@@ -59,7 +59,6 @@
         <file>ui/widgets/BaseWidgetForm.ui.qml</file>
         <file>ui/widgets/FpvWidget.qml</file>
         <file>ui/widgets/FpvWidgetForm.ui.qml</file>
-        <file>ui/widgets/flight-path-vector.png</file>
         <file>osdicons.ttf</file>
         <file>ui/widgets/HeadingWidget.qml</file>
         <file>ui/widgets/HeadingWidgetForm.ui.qml</file>

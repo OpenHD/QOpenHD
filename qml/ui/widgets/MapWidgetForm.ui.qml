@@ -113,8 +113,11 @@ BaseWidget {
             copyrightsVisible: false
 
             plugin: mapPluginLarge
-            zoomLevel: 12
+            zoomLevel: 18
             gesture.enabled: false
+       //     activeMapType: MapType.SatelliteMapDay
+
+
 
             center {
                 latitude: OpenHD.lat_raw
@@ -174,10 +177,6 @@ BaseWidget {
         id: widgetInner
         anchors.fill: parent
 
-        PositionSource {
-            id: positionSource
-        }
-
         Plugin {
             id: mapPlugin
             name: "osm" // "mapboxgl", "esri", ...
@@ -192,11 +191,13 @@ BaseWidget {
             copyrightsVisible: false
             anchors.fill: parent
             plugin: mapPlugin
-            zoomLevel: 19
+            zoomLevel: 18
             gesture.enabled: false
+      //      activeMapType: MapType.SatelliteMapDay
 
-            center {
+            bearing : OpenHD.hdg_raw
 
+           center {
                 latitude: OpenHD.lat_raw
                 longitude: OpenHD.lon_raw
             }
