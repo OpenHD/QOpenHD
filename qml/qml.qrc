@@ -76,5 +76,7 @@
         <file>ui/widgets/ArrowWidgetForm.qml</file>
         <file>ui/widgets/MapWidget.qml</file>
         <file>ui/widgets/MapWidgetForm.ui.qml</file>
+        <file>ui/marker.png</file>
+        <file>ui/widgets/home_marker.png</file>
     </qresource>
 </RCC>
