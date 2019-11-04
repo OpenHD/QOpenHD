@@ -121,15 +121,16 @@ BaseWidget {
             }
 
             MapQuickItem {
-                id: homemarker
+                id: homemarkerLargeMap
                 anchorPoint.x: image.width / 2
                 anchorPoint.y: image.height
                 coordinate {
                     latitude: OpenHD.homelat_raw
                     longitude: OpenHD.homelon_raw
                 }
+
                 sourceItem: Image {
-                    id: image
+                    id: imageLargeMap
                     source: "home_marker.png"
                 }
             }
@@ -219,6 +220,22 @@ BaseWidget {
                 latitude: OpenHD.lat_raw
                 longitude: OpenHD.lon_raw
             }
+
+            MapQuickItem {
+                id: homemarkerSmallMap
+                anchorPoint.x: image.width / 2
+                anchorPoint.y: image.height
+                coordinate {
+                    latitude: OpenHD.homelat_raw
+                    longitude: OpenHD.homelon_raw
+                }
+
+                sourceItem: Image {
+                    id: imageSmallMap
+                    source: "home_marker.png"
+                }
+            }
+
 
             MapCircle {
                 center {

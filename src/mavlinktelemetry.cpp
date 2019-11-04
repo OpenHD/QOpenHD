@@ -304,7 +304,7 @@ void MavlinkTelemetry::processMavlinkMessage(mavlink_message_t msg) {
             for (int cell = 0; cell < 10; cell++) {
                 int cell_voltage  = battery_status.voltages[cell];
                 if (cell_voltage != UINT16_MAX) {
-                    qDebug() << "Battery cell voltage " << cell << " :" << cell_voltage;
+              //      qDebug() << "Battery cell voltage " << cell << " :" << cell_voltage;
 
                     total_voltage += cell_voltage;
                 }
