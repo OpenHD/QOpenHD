@@ -216,6 +216,9 @@ Item {
 
     // these settings wont show up at all
     property var blacklistMap: ({
+        // Settings from older OSD
+        "Imperial": {},
+        "Copter": {},
     })
 
     // these settings will simply be disabled and uneditable in the UI
