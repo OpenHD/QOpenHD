@@ -60,6 +60,7 @@ BaseWidget {
                 fillColor: "white"
                 strokeWidth: 1
                 strokeStyle: ShapePath.SolidLine
+
                 startX: 12
                 startY: 0
                 PathLine { x: 24;                 y: 12  }//right edge of arrow

@@ -32,7 +32,7 @@ BaseWidget {
                 text: "Google or Bing"
                 color: "white"
                 font.bold: true
-                font.pixelSize: detailPanelFontPixels;
+                font.pixelSize: detailPanelFontPixels
                 anchors.left: parent.left
             }
             Switch {
@@ -44,8 +44,7 @@ BaseWidget {
                 Component.onCompleted: checked = settings.value(
                                            "map_bing_google", true)
                 // @disable-check M222
-                onCheckedChanged: settings.setValue("map_bing_google",
-                                                    checked)
+                onCheckedChanged: settings.setValue("map_bing_google", checked)
             }
         }
         Item {
@@ -55,7 +54,7 @@ BaseWidget {
                 text: "Default Zoom"
                 color: "white"
                 font.bold: true
-                font.pixelSize: detailPanelFontPixels;
+                font.pixelSize: detailPanelFontPixels
                 anchors.left: parent.left
             }
             Switch {
@@ -64,11 +63,10 @@ BaseWidget {
                 anchors.rightMargin: 12
                 anchors.right: parent.right
                 // @disable-check M222
-                Component.onCompleted: checked = settings.value(
-                                           "map_zoom", true)
+                Component.onCompleted: checked = settings.value("map_zoom",
+                                                                true)
                 // @disable-check M222
-                onCheckedChanged: settings.setValue("map_zoom",
-                                                    checked)
+                onCheckedChanged: settings.setValue("map_zoom", checked)
             }
         }
     }
@@ -113,12 +111,26 @@ BaseWidget {
             copyrightsVisible: false
 
             plugin: mapPluginLarge
-            zoomLevel: 12
+            zoomLevel: 18
             gesture.enabled: false
 
+            //     activeMapType: MapType.SatelliteMapDay
             center {
                 latitude: OpenHD.lat_raw
                 longitude: OpenHD.lon_raw
+            }
+
+            MapQuickItem {
+                id: homemarker
+                anchorPoint.x: image.width / 2
+                anchorPoint.y: image.height
+                coordinate: QtPositioning.coordinate(OpenHD.homelat_raw,
+                                                     OpenHD.homelon_raw)
+
+                sourceItem: Image {
+                    id: image
+                    source: "home_marker.png"
+                }
             }
 
             MapCircle {
@@ -164,8 +176,6 @@ BaseWidget {
                     print("Map resize large clicked")
                     map_popup.close()
                 }
-
-
             }
         }
     }
@@ -173,10 +183,6 @@ BaseWidget {
     Item {
         id: widgetInner
         anchors.fill: parent
-
-        PositionSource {
-            id: positionSource
-        }
 
         Plugin {
             id: mapPlugin
@@ -192,11 +198,13 @@ BaseWidget {
             copyrightsVisible: false
             anchors.fill: parent
             plugin: mapPlugin
-            zoomLevel: 19
+            zoomLevel: 18
             gesture.enabled: false
 
-            center {
+            //      activeMapType: MapType.SatelliteMapDay
+            bearing: OpenHD.hdg_raw
 
+            center {
                 latitude: OpenHD.lat_raw
                 longitude: OpenHD.lon_raw
             }
@@ -228,7 +236,6 @@ BaseWidget {
                 width: 20
                 height: 20
 
-
                 flat: true
 
                 checkable: false
@@ -245,7 +252,6 @@ BaseWidget {
                 onClicked: {
                     map_popup.open()
                 }
-
             }
         }
     }

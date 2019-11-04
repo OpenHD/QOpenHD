@@ -16,6 +16,32 @@ BaseWidget {
     defaultHCenter: true
     defaultVCenter: true
 
+    hasWidgetDetail: true
+    widgetDetailComponent: Column {
+        Item {
+            width: parent.width
+            height: 24
+            Text {
+                text: "Sensitivity"
+                color: "white"
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels;
+                anchors.left: parent.left
+            }
+            Switch {
+                width: 32
+                height: parent.height
+                anchors.rightMargin: 12
+                anchors.right: parent.right
+                // @disable-check M222
+                Component.onCompleted: checked = settings.value("fpv_sensitivity",
+                                                                true)
+                // @disable-check M222
+                onCheckedChanged: settings.setValue("fpv_sensitivity", checked)
+            }
+        }
+    }
+
     Item {
         id: widgetInner
         height: 40
@@ -27,9 +53,9 @@ BaseWidget {
         transformOrigin: Item.Center
 
         transform: Translate {
-            x: OpenHD.vy
+            x: OpenHD.vy*20
             //to get pitch relative to ahi add pitch in
-            y: OpenHD.vz + OpenHD.pitch_raw
+            y: (OpenHD.vz*20)+ OpenHD.pitch_raw
         }
         antialiasing: true
 
