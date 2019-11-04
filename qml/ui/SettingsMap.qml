@@ -219,6 +219,8 @@ Item {
         // Settings from older OSD
         "Imperial": {},
         "Copter": {},
+        // Settings from joystick config file which can't be saved easily
+        "UPDATE_NTH_TIME": {},
     })
 
     // these settings will simply be disabled and uneditable in the UI
