@@ -41,7 +41,7 @@ Rectangle {
         anchors.verticalCenter: parent.verticalCenter
         anchors.right: parent.right
         anchors.rightMargin: 8
-        enabled: !itemModel.blacklisted
+        enabled: !itemModel.disabled
 
 
         // @disable-check M223

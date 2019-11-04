@@ -214,7 +214,12 @@ Item {
                                            {title: "30 minutes", value: 1800}]},
     })
 
+    // these settings wont show up at all
     property var blacklistMap: ({
     })
 
+    // these settings will simply be disabled and uneditable in the UI
+    property var disabledMap: ({
+
+    })
 }
