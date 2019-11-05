@@ -122,8 +122,8 @@ BaseWidget {
 
             MapQuickItem {
                 id: homemarkerLargeMap
-                anchorPoint.x: image.width / 2
-                anchorPoint.y: image.height
+                anchorPoint.x: imageLargeMap.width / 2
+                anchorPoint.y: imageLargeMap.height
                 coordinate {
                     latitude: OpenHD.homelat_raw
                     longitude: OpenHD.homelon_raw
@@ -223,8 +223,8 @@ BaseWidget {
 
             MapQuickItem {
                 id: homemarkerSmallMap
-                anchorPoint.x: image.width / 2
-                anchorPoint.y: image.height
+                anchorPoint.x: imageSmallMap.width / 2
+                anchorPoint.y: imageSmallMap.height
                 coordinate {
                     latitude: OpenHD.homelat_raw
                     longitude: OpenHD.homelon_raw
