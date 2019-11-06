@@ -109,7 +109,7 @@ BaseWidget {
         Map {
             anchors.fill: parent
             copyrightsVisible: false
-
+            id: maplarge
             plugin: mapPluginLarge
             zoomLevel: 18
             gesture.enabled: false
@@ -121,14 +121,16 @@ BaseWidget {
             }
 
             MapQuickItem {
-                id: homemarker
-                anchorPoint.x: image.width / 2
-                anchorPoint.y: image.height
-                coordinate: QtPositioning.coordinate(OpenHD.homelat_raw,
-                                                     OpenHD.homelon_raw)
+                id: homemarkerLargeMap
+                anchorPoint.x: imageLargeMap.width / 2
+                anchorPoint.y: imageLargeMap.height
+                coordinate {
+                    latitude: OpenHD.homelat_raw
+                    longitude: OpenHD.homelon_raw
+                }
 
                 sourceItem: Image {
-                    id: image
+                    id: imageLargeMap
                     source: "home_marker.png"
                 }
             }
@@ -153,6 +155,15 @@ BaseWidget {
                 border.width: 1
                 opacity: .75
             }
+
+//get coordinates on click... for future use
+            MouseArea{
+                    anchors.fill: parent
+                    onClicked: {
+                        var coord = maplarge.toCoordinate(Qt.point(mouse.x,mouse.y));
+                        console.log(coord.latitude, coord.longitude)
+                    }
+                }
 
             Button {
                 id: close_button
@@ -198,6 +209,7 @@ BaseWidget {
             copyrightsVisible: false
             anchors.fill: parent
             plugin: mapPlugin
+            id:mapsmall
             zoomLevel: 18
             gesture.enabled: false
 
@@ -208,6 +220,22 @@ BaseWidget {
                 latitude: OpenHD.lat_raw
                 longitude: OpenHD.lon_raw
             }
+
+            MapQuickItem {
+                id: homemarkerSmallMap
+                anchorPoint.x: imageSmallMap.width / 2
+                anchorPoint.y: imageSmallMap.height
+                coordinate {
+                    latitude: OpenHD.homelat_raw
+                    longitude: OpenHD.homelon_raw
+                }
+
+                sourceItem: Image {
+                    id: imageSmallMap
+                    source: "home_marker.png"
+                }
+            }
+
 
             MapCircle {
                 center {
