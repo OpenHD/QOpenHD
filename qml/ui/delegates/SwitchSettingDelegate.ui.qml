@@ -12,7 +12,7 @@ Rectangle {
     Text {
         text: model.title
         anchors.verticalCenter: parent.verticalCenter
-        anchors.leftMargin: 8
+        anchors.leftMargin: 12
         verticalAlignment: Text.AlignVCenter
         width: 192
         height: 32
