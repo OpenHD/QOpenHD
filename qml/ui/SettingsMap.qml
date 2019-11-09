@@ -193,7 +193,7 @@ Item {
                      upperLimit: 20,
                      interval: 1,
                      unit: ""},
-        "Thresh62": {title: "Clear Channel Assessment Thresh.",
+        "thresh62": {title: "Clear Channel Assessment Thresh.",
                  itemType: "number",
                  lowerLimit: 20,
                  upperLimit: 62,
