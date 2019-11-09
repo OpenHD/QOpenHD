@@ -154,6 +154,7 @@ Item {
                                     {title: "19.5Mbps", value: 4},
                                     {title: "24Mbps/26Mbps (MCS)", value: 5},
                                     {title: "36Mbps/39Mbps (MCS)", value: 6}]},
+        "txpower": {title: "TX power", itemType: "string"},
         "TxPowerAir": {title: "TX power (air)", itemType: "string"},
         "TxPowerGround": {title: "TX power (ground)", itemType: "string"},
         "UseLDPC": {title: "Use LDPC", itemType: "bool", trueValue: "Y", falseValue: "N"},
