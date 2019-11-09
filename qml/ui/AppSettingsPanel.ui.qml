@@ -109,7 +109,7 @@ Item {
                 Switch {
                     width: 32
                     height: parent.height
-                    anchors.rightMargin: 12
+                    anchors.rightMargin: 18
                     anchors.right: parent.right
                     // @disable-check M222
                     Component.onCompleted: checked = settings.value(
@@ -178,7 +178,7 @@ Item {
                 Switch {
                     width: 32
                     height: parent.height
-                    anchors.rightMargin: 12
+                    anchors.rightMargin: 18
                     anchors.right: parent.right
                     // @disable-check M222
                     Component.onCompleted: checked = settings.value(
@@ -210,7 +210,7 @@ Item {
                 Switch {
                     width: 32
                     height: parent.height
-                    anchors.rightMargin: 12
+                    anchors.rightMargin: 18
                     anchors.right: parent.right
                     // @disable-check M222
                     Component.onCompleted: checked = settings.value(
@@ -250,7 +250,7 @@ Item {
                 Switch {
                     width: 32
                     height: parent.height
-                    anchors.rightMargin: 12
+                    anchors.rightMargin: 18
                     anchors.right: parent.right
                     // @disable-check M222
                     Component.onCompleted: checked = settings.value(
@@ -281,7 +281,7 @@ Item {
                 Switch {
                     width: 32
                     height: parent.height
-                    anchors.rightMargin: 12
+                    anchors.rightMargin: 18
                     anchors.right: parent.right
                     // @disable-check M222
                     Component.onCompleted: checked = settings.value(
@@ -312,7 +312,7 @@ Item {
                 Switch {
                     width: 32
                     height: parent.height
-                    anchors.rightMargin: 12
+                    anchors.rightMargin: 18
                     anchors.right: parent.right
                     // @disable-check M222
                     Component.onCompleted: checked = settings.value(
@@ -342,7 +342,7 @@ Item {
                 Switch {
                     width: 32
                     height: parent.height
-                    anchors.rightMargin: 12
+                    anchors.rightMargin: 18
                     anchors.right: parent.right
                     // @disable-check M222
                     Component.onCompleted: checked = settings.value("show_gps",
@@ -372,7 +372,7 @@ Item {
                 Switch {
                     width: 32
                     height: parent.height
-                    anchors.rightMargin: 12
+                    anchors.rightMargin: 18
                     anchors.right: parent.right
                     // @disable-check M222
                     Component.onCompleted: checked = settings.value(
@@ -403,7 +403,7 @@ Item {
                 Switch {
                     width: 32
                     height: parent.height
-                    anchors.rightMargin: 12
+                    anchors.rightMargin: 18
                     anchors.right: parent.right
                     // @disable-check M222
                     Component.onCompleted: checked = settings.value(
@@ -434,7 +434,7 @@ Item {
                 Switch {
                     width: 32
                     height: parent.height
-                    anchors.rightMargin: 12
+                    anchors.rightMargin: 18
                     anchors.right: parent.right
                     // @disable-check M222
                     Component.onCompleted: checked = settings.value(
@@ -465,7 +465,7 @@ Item {
                 Switch {
                     width: 32
                     height: parent.height
-                    anchors.rightMargin: 12
+                    anchors.rightMargin: 18
                     anchors.right: parent.right
                     // @disable-check M222
                     Component.onCompleted: checked = settings.value(
@@ -496,7 +496,7 @@ Item {
                 Switch {
                     width: 32
                     height: parent.height
-                    anchors.rightMargin: 12
+                    anchors.rightMargin: 18
                     anchors.right: parent.right
                     // @disable-check M222
                     Component.onCompleted: checked = settings.value(
@@ -527,7 +527,7 @@ Item {
                 Switch {
                     width: 32
                     height: parent.height
-                    anchors.rightMargin: 12
+                    anchors.rightMargin: 18
                     anchors.right: parent.right
                     // @disable-check M222
                     Component.onCompleted: checked = settings.value(
@@ -558,7 +558,7 @@ Item {
                 Switch {
                     width: 32
                     height: parent.height
-                    anchors.rightMargin: 12
+                    anchors.rightMargin: 18
                     anchors.right: parent.right
                     // @disable-check M222
                     Component.onCompleted: checked = settings.value(
@@ -589,7 +589,7 @@ Item {
                 Switch {
                     width: 32
                     height: parent.height
-                    anchors.rightMargin: 12
+                    anchors.rightMargin: 18
                     anchors.right: parent.right
                     // @disable-check M222
                     Component.onCompleted: checked = settings.value(
@@ -619,7 +619,7 @@ Item {
                 Switch {
                     width: 32
                     height: parent.height
-                    anchors.rightMargin: 12
+                    anchors.rightMargin: 18
                     anchors.right: parent.right
                     // @disable-check M222
                     Component.onCompleted: checked = settings.value("show_fpv",
@@ -649,7 +649,7 @@ Item {
                 Switch {
                     width: 32
                     height: parent.height
-                    anchors.rightMargin: 12
+                    anchors.rightMargin: 18
                     anchors.right: parent.right
                     // @disable-check M222
                     Component.onCompleted: checked = settings.value("show_altitude",
@@ -679,7 +679,7 @@ Item {
                 Switch {
                     width: 32
                     height: parent.height
-                    anchors.rightMargin: 12
+                    anchors.rightMargin: 18
                     anchors.right: parent.right
                     // @disable-check M222
                     Component.onCompleted: checked = settings.value("show_speed",
@@ -709,7 +709,7 @@ Item {
                 Switch {
                     width: 32
                     height: parent.height
-                    anchors.rightMargin: 12
+                    anchors.rightMargin: 18
                     anchors.right: parent.right
                     // @disable-check M222
                     Component.onCompleted: checked = settings.value("show_heading",
@@ -739,7 +739,7 @@ Item {
                 Switch {
                     width: 32
                     height: parent.height
-                    anchors.rightMargin: 12
+                    anchors.rightMargin: 18
                     anchors.right: parent.right
                     // @disable-check M222
                     Component.onCompleted: checked = settings.value("show_second_alt",
@@ -769,7 +769,7 @@ Item {
                 Switch {
                     width: 32
                     height: parent.height
-                    anchors.rightMargin: 12
+                    anchors.rightMargin: 18
                     anchors.right: parent.right
                     // @disable-check M222
                     Component.onCompleted: checked = settings.value("show_arrow",
@@ -799,7 +799,7 @@ Item {
                 Switch {
                     width: 32
                     height: parent.height
-                    anchors.rightMargin: 12
+                    anchors.rightMargin: 18
                     anchors.right: parent.right
                     // @disable-check M222
                     Component.onCompleted: checked = settings.value("show_map",
@@ -880,7 +880,7 @@ Item {
                 Switch {
                     width: 32
                     height: parent.height
-                    anchors.rightMargin: 12
+                    anchors.rightMargin: 18
                     anchors.right: parent.right
                     // @disable-check M222
                     Component.onCompleted: checked = settings.value("show_pip_video",
