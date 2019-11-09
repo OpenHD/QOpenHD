@@ -40,7 +40,7 @@ Rectangle {
         font.pixelSize: 14
         anchors.verticalCenter: parent.verticalCenter
         anchors.right: parent.right
-        anchors.rightMargin: 8
+        anchors.rightMargin: 18
         enabled: !itemModel.disabled
 
 

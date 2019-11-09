@@ -34,7 +34,7 @@ Rectangle {
         value: model.value
         anchors.verticalCenter: parent.verticalCenter
         anchors.right: parent.right
-        anchors.rightMargin: 8
+        anchors.rightMargin: 18
         // @disable-check M223
         onValueChanged: {
             model.value = value

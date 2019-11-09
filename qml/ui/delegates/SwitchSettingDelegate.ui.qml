@@ -28,7 +28,7 @@ Rectangle {
         topPadding: 0
         anchors.verticalCenter: parent.verticalCenter
         bottomPadding: 0
-        anchors.rightMargin: 12
+        anchors.rightMargin: 22
         width: 32
         height: 32
         // @disable-check M223
