@@ -401,7 +401,7 @@ Item {
                 }
 
                 Switch {
-                    width: 36
+                    width: 32
                     height: parent.height
                     anchors.rightMargin: 12
                     anchors.right: parent.right
