@@ -177,6 +177,10 @@ public:
     Q_PROPERTY(bool cts MEMBER m_cts WRITE set_cts NOTIFY cts_changed)
     void set_cts(bool cts);
 
+
+    Q_PROPERTY(QString flight_time MEMBER m_flight_time WRITE set_flight_time NOTIFY flight_time_changed)
+    void set_flight_time(QString flight_time);
+
 signals:
     // system
     void gstreamer_version_changed();
@@ -235,11 +239,16 @@ signals:
     void lost_packet_cnt_changed(QString lost_packet_cnt);
     void air_undervolt_changed(bool air_undervolt);
     void cts_changed(bool cts);
+
+    void flight_time_changed(QString flight_time);
+
+
 private:
 #if defined(ENABLE_SPEECH)
     QTextToSpeech *m_speech;
 #endif
 
+    void updateFlightTimer();
 
     // mavlink
     QString m_boot_time = "0";
@@ -304,6 +313,11 @@ private:
 
     double m_throttle = 0;
 
+    QString m_flight_time = "00:00";
+
+
+    QTime flightTimeStart;
+    QTimer flightTimerCheck;
 };
 
 
