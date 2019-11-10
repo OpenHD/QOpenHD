@@ -259,7 +259,6 @@ SettingsPopupForm {
         writeRemoteSettings();
         settings.sync();
         settings_form.configure();
-        settings_popup.close();
     }
 
 
