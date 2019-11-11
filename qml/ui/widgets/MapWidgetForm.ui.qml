@@ -24,6 +24,7 @@ BaseWidget {
 
     hasWidgetDetail: true
 
+
     widgetDetailComponent: Column {
         Item {
             width: parent.width
@@ -96,14 +97,15 @@ BaseWidget {
 
         visible: false
 
+
+
+
         Plugin {
             id: mapPluginLarge
-            name: "osm" // "mapboxgl", "esri", ...
-            // specify plugin parameters if necessary
-            // PluginParameter {
-            //     name:
-            //     value:
-            // }
+            name: "mapboxgl" // "osm" , "mapboxgl", "esri", ...
+
+         //   PluginParameter { name: "here.app_id"; value: "****" }
+         //   PluginParameter { name: "here.token"; value: "*****" }
         }
 
         Map {
@@ -112,12 +114,16 @@ BaseWidget {
             id: maplarge
             plugin: mapPluginLarge
             zoomLevel: 18
-            gesture.enabled: false
+            // Enable pan, flick, and pinch gestures to zoom in and out
+            gesture.enabled: true
+            gesture.acceptedGestures: MapGestureArea.PanGesture | MapGestureArea.FlickGesture | MapGestureArea.PinchGesture | MapGestureArea.RotationGesture | MapGestureArea.TiltGesture
+            gesture.flickDeceleration: 3000
 
-            //     activeMapType: MapType.SatelliteMapDay
+
+            activeMapType: MapType.SatelliteMapDay
             center {
-                latitude: OpenHD.lat_raw
-                longitude: OpenHD.lon_raw
+                latitude: 55.0 //OpenHD.lat_raw
+                longitude: -6.0 //OpenHD.lon_raw
             }
 
             MapQuickItem {
@@ -188,8 +194,31 @@ BaseWidget {
                     map_popup.close()
                 }
             }
+
+            GroupBox{
+                title:"map types"
+                anchors {
+                            bottom: parent.bottom
+                            left: parent.left
+                            right: parent.right
+                        }
+
+                ComboBox{
+                    model:maplarge.supportedMapTypes
+                    textRole:"description"
+                    onCurrentIndexChanged: maplarge.activeMapType = maplarge.supportedMapTypes[currentIndex]
+                    }
+             }
+
         }
     }
+
+
+
+//// ------------------------- split between large map above and small map below------------
+
+
+
 
     Item {
         id: widgetInner
