@@ -134,6 +134,19 @@ Item {
 
 
     Rectangle {
+        color: "#4c000000"
+        width: parent.width
+        height: 1
+
+        anchors.left: parent.left
+        anchors.leftMargin: 0
+        anchors.right: parent.right
+        anchors.rightMargin: 0
+        anchors.bottom: button_background.top
+        anchors.bottomMargin: 0
+    }
+
+    Rectangle {
         id: button_background
         width: parent.width
         height: 64

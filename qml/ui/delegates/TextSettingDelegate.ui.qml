@@ -28,7 +28,7 @@ Rectangle {
         anchors.verticalCenter: parent.verticalCenter
         bottomPadding: 8
         horizontalAlignment: Text.AlignRight
-        anchors.rightMargin: 12
+        anchors.rightMargin: 18
         width: 192
         height: 32
         // @disable-check M223
@@ -41,6 +41,6 @@ Rectangle {
             model.value = text;
             model.modified = true;
         }
-        enabled: !model.blacklisted
+        enabled: !model.disabled
     }
 }

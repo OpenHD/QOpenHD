@@ -30,7 +30,7 @@ BaseWidget {
             width: 64
             height: 24
             color: "#ffffff"
-            text: qsTr("0:00")
+            text: OpenHD.flight_time
             elide: Text.ElideRight
             anchors.right: parent.right
             anchors.rightMargin: 8

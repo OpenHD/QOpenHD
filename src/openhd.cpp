@@ -63,6 +63,24 @@ void OpenHD::telemetryMessage(QString message, int level) {
 #endif
 }
 
+void OpenHD::updateFlightTimer() {
+    if (m_armed) {
+        // check elapsed time since arming and update the UI-visible flight_time property
+        int elapsed = flightTimeStart.elapsed() / 1000;
+        auto hours = elapsed / 3600;
+        auto minutes = (elapsed % 3600) / 60;
+        auto seconds = elapsed % 60;
+        QString s;
+        if (hours > 0) {
+            s = QTime(0,0,0,0).addSecs(elapsed).toString("hh:mm:ss");
+        } else {
+            s = QTime(0,0,0,0).addSecs(elapsed).toString("mm:ss");
+        }
+
+        set_flight_time(s);
+    }
+}
+
 void OpenHD::set_boot_time(QString boot_time) {
     m_boot_time = boot_time;
     emit boot_time_changed(m_boot_time);
@@ -121,6 +139,19 @@ void OpenHD::set_armed(bool armed) {
         }
     }
 #endif
+
+    if (armed && !m_armed) {
+        /*
+         * Restart the flight timer when the vehicle transitions to the armed state.
+         *
+         * In the updateFlightTimer() callback we skip updating the property if the
+         * vehicle is disarmed, causing it to appear to stop in the UI.
+         */
+        flightTimeStart.start();
+
+        connect(&flightTimerCheck, &QTimer::timeout, this, &OpenHD::updateFlightTimer);
+        flightTimerCheck.start(1000);
+    }
 
     m_armed = armed;
     emit armed_changed(m_armed);
@@ -360,3 +391,7 @@ void OpenHD::set_cts(bool cts) {
     emit cts_changed(m_cts);
 }
 
+void OpenHD::set_flight_time(QString flight_time) {
+    m_flight_time = flight_time;
+    emit flight_time_changed(m_flight_time);
+}

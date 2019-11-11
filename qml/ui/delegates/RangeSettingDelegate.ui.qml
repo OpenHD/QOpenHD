@@ -34,7 +34,7 @@ Rectangle {
         value: model.value
         anchors.verticalCenter: parent.verticalCenter
         anchors.right: parent.right
-        anchors.rightMargin: 8
+        anchors.rightMargin: 18
         onValueChanged: model.modified = true
 
         ToolTip {
@@ -43,6 +43,6 @@ Rectangle {
             // @disable-check M222
             text: "%1%2".arg(slider.value).arg(model.unit)
         }
-        enabled: !model.blacklisted
+        enabled: !model.disabled
     }
 }

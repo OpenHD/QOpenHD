@@ -12,7 +12,7 @@ Rectangle {
     Text {
         text: model.title
         anchors.verticalCenter: parent.verticalCenter
-        anchors.leftMargin: 8
+        anchors.leftMargin: 12
         verticalAlignment: Text.AlignVCenter
         width: 192
         height: 32
@@ -28,7 +28,7 @@ Rectangle {
         topPadding: 0
         anchors.verticalCenter: parent.verticalCenter
         bottomPadding: 0
-        anchors.rightMargin: 12
+        anchors.rightMargin: 22
         width: 32
         height: 32
         // @disable-check M223
@@ -36,6 +36,6 @@ Rectangle {
             model.value = checked
             model.modified = true
         }
-        enabled: !model.blacklisted
+        enabled: !model.disabled
     }
 }
