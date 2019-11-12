@@ -7,7 +7,7 @@ linux {
             message("Linux clang")
             QMAKE_CXXFLAGS += -Qunused-arguments -fcolor-diagnostics
         }
-    } else : linux-rasp-pi-g++ {
+    } else : linux-rpi-g++ {
         message("RaspberryPiBuild")
         CONFIG += RaspberryPiBuild
         DEFINES += __STDC_LIMIT_MACROS __rasp_pi__
