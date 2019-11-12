@@ -70,6 +70,21 @@ BaseWidget {
                 onCheckedChanged: settings.setValue("map_zoom", checked)
             }
         }
+        Item {
+            width: parent.width
+            height: 24
+            GroupBox{
+                height: parent.height
+                anchors.rightMargin: 12
+                anchors.right: parent.right
+                ComboBox{
+                    model:mapsmall.supportedMapTypes
+                    textRole:"description"
+                    onCurrentIndexChanged: mapsmall.activeMapType = mapsmall.supportedMapTypes[currentIndex],
+                    maplarge.activeMapType = maplarge.supportedMapTypes[currentIndex]
+                }
+            }
+        }
     }
 
     widgetPopup: Popup {
@@ -102,7 +117,7 @@ BaseWidget {
 
         Plugin {
             id: mapPluginLarge
-            name: "mapboxgl" // "osm" , "mapboxgl", "esri", ...
+            name: "osm" // "osm" , "mapboxgl", "esri", ...
 
          //   PluginParameter { name: "here.app_id"; value: "****" }
          //   PluginParameter { name: "here.token"; value: "*****" }
@@ -122,8 +137,8 @@ BaseWidget {
 
             activeMapType: MapType.SatelliteMapDay
             center {
-                latitude: 55.0 //OpenHD.lat_raw
-                longitude: -6.0 //OpenHD.lon_raw
+                latitude: OpenHD.lat_raw
+                longitude: OpenHD.lon_raw
             }
 
             MapQuickItem {
@@ -195,20 +210,7 @@ BaseWidget {
                 }
             }
 
-            GroupBox{
-                title:"map types"
-                anchors {
-                            bottom: parent.bottom
-                            left: parent.left
-                            right: parent.right
-                        }
 
-                ComboBox{
-                    model:maplarge.supportedMapTypes
-                    textRole:"description"
-                    onCurrentIndexChanged: maplarge.activeMapType = maplarge.supportedMapTypes[currentIndex]
-                    }
-             }
 
         }
     }
