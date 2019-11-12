@@ -12,7 +12,9 @@ class LocalMessage: public QObject {
 public:
     explicit LocalMessage(QObject *parent = nullptr);
 
+    static LocalMessage* instance();
 
+    void showMessage(QString message, int level);
 
 signals:
     void messageReceived(QString message, int level);

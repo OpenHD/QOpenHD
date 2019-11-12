@@ -17,10 +17,19 @@
 
 #include "localmessage_t.h"
 
+static LocalMessage* _instance = new LocalMessage();
+
+
 LocalMessage::LocalMessage(QObject *parent): QObject(parent) {
     qDebug() << "LocalMessage::LocalMessage()";
     init();
 }
+
+
+LocalMessage* LocalMessage::instance() {
+    return _instance;
+}
+
 
 void LocalMessage::init() {
     qDebug() << "LocalMessage::init()";
@@ -29,6 +38,9 @@ void LocalMessage::init() {
 #endif
 }
 
+void LocalMessage::showMessage(QString message, int level) {
+    emit messageReceived(message, level);
+}
 
 #if defined(__rasp_pi__)
 void LocalMessage::restartFifo() {
@@ -61,6 +73,5 @@ QObject *localMessageSingletonProvider(QQmlEngine *engine, QJSEngine *scriptEngi
     Q_UNUSED(engine)
     Q_UNUSED(scriptEngine)
 
-    LocalMessage *s = new LocalMessage();
-    return s;
+    return _instance;
 }
