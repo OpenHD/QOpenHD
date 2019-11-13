@@ -95,6 +95,8 @@ void OpenHDSettings::_saveSettings(VMap remoteSettings) {
     s->connectToHost(groundAddress, SETTINGS_PORT);
 #endif
 
+    settingsCount = remoteSettings.count();
+
     QMapIterator<QString, QVariant> i(remoteSettings);
     while (i.hasNext()) {
         i.next();
@@ -151,6 +153,8 @@ void OpenHDSettings::processDatagrams() {
             timer.stop();
             emit allSettingsChanged(m_allSettings);
             set_loading(false);
+        } else if (datagram.contains("SavedGround")) {
+            settingsCount -= 1;
         } else {
             auto set = datagram.split('=');
             auto key = set.first();         
