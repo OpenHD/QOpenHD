@@ -165,7 +165,7 @@ Popup {
             anchors.left: parent.left
             anchors.leftMargin: 12
             font.pixelSize: 13
-            enabled: !OpenHD.armed
+            enabled: !OpenHD.armed && !openHDSettings.saving
         }
 
         Button {
