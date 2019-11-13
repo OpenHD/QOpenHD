@@ -48,7 +48,8 @@ void OpenHDSettings::reboot() {
     set_busy(true);
     QUdpSocket *s = new QUdpSocket(this);
 #if defined(__rasp_pi__)
-    s->connectToHost(SETTINGS_IP, SETTINGS_PORT);
+    QProcess process;
+    process.start("/sbin/reboot");
 #else
     s->connectToHost(groundAddress, SETTINGS_PORT);
 #endif
