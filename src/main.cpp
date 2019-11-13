@@ -105,7 +105,6 @@ char gstLogPath[] = "/sdcard";
     qmlRegisterSingletonType<OpenHDRC>("OpenHD", 1, 0, "OpenHDRC", openHDRCSingletonProvider);
     qmlRegisterSingletonType<OpenHDPi>("OpenHD", 1, 0, "OpenHDPi", openHDPiSingletonProvider);
     qmlRegisterSingletonType<LocalMessage>("OpenHD", 1, 0, "LocalMessage", localMessageSingletonProvider);
-    qmlRegisterSingletonType<OpenHD>("OpenHD", 1, 0, "OpenHD", openHDSingletonProvider);
 
     qmlRegisterType<OpenHDSettings>("OpenHD", 1,0, "OpenHDSettings");
     qmlRegisterType<OpenHDVideoStream>("OpenHD", 1,0, "OpenHDVideoStream");
@@ -113,6 +112,9 @@ char gstLogPath[] = "/sdcard";
 
 
     QQmlApplicationEngine engine;
+
+    engine.rootContext()->setContextProperty("OpenHD", openhd);
+
 #if defined(ENABLE_VIDEO)
     engine.rootContext()->setContextProperty("EnableVideo", QVariant(true));
 #else

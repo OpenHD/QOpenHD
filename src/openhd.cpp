@@ -16,13 +16,6 @@ OpenHD::OpenHD(QObject *parent): QObject(parent) {
 
 }
 
-QObject *openHDSingletonProvider(QQmlEngine *engine, QJSEngine *scriptEngine) {
-    Q_UNUSED(engine)
-    Q_UNUSED(scriptEngine)
-
-    return _instance;
-}
-
 OpenHD* OpenHD::instance() {
     return _instance;
 }

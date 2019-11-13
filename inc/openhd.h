@@ -322,7 +322,4 @@ private:
 
 
 
-QObject *openHDSingletonProvider(QQmlEngine *engine, QJSEngine *scriptEngine);
-
-
 #endif // OPENHD_H
