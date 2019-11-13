@@ -141,9 +141,6 @@ void OpenHD::set_armed(bool armed) {
          * vehicle is disarmed, causing it to appear to stop in the UI.
          */
         flightTimeStart.start();
-
-        connect(&flightTimerCheck, &QTimer::timeout, this, &OpenHD::updateFlightTimer);
-        flightTimerCheck.start(1000);
     }
 
     m_armed = armed;

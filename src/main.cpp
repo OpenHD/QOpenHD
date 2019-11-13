@@ -110,6 +110,11 @@ char gstLogPath[] = "/sdcard";
     qmlRegisterType<OpenHDVideoStream>("OpenHD", 1,0, "OpenHDVideoStream");
 
 
+    auto openhd = OpenHD::instance();
+
+    QTimer timer;
+    QObject::connect(&timer, &QTimer::timeout, openhd, &OpenHD::updateFlightTimer);
+    timer.start(1000);
 
     QQmlApplicationEngine engine;
 

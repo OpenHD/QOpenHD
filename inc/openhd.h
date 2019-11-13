@@ -23,6 +23,9 @@ public:
     void calculate_home_distance();
     void calculate_home_course();
 
+    // public so that a QTimer can call it from main(), temporary fix due to some quirks with
+    // the way QTimer and QML singletons/context properties work
+    void updateFlightTimer();
 
     Q_PROPERTY(QString gstreamer_version READ get_gstreamer_version NOTIFY gstreamer_version_changed)
     QString get_gstreamer_version();
@@ -248,7 +251,6 @@ private:
     QTextToSpeech *m_speech;
 #endif
 
-    void updateFlightTimer();
 
     // mavlink
     QString m_boot_time = "0";
@@ -317,7 +319,6 @@ private:
 
 
     QTime flightTimeStart;
-    QTimer flightTimerCheck;
 };
 
 
