@@ -34,7 +34,7 @@ void OpenHDSettings::set_busy(bool busy) {
 void OpenHDSettings::check() {
     qint64 current = QDateTime::currentSecsSinceEpoch();
     //fallback in case the ground pi never sends back "ConfigEnd=ConfigEnd"
-    if (current - start > 10) {
+    if (current - start > 20) {
         timer.stop();
         emit allSettingsChanged(m_allSettings);
         set_busy(false);
