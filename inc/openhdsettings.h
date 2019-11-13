@@ -24,9 +24,11 @@ public:
 
     Q_PROPERTY(VMap allSettings MEMBER m_allSettings NOTIFY allSettingsChanged)
 
-    Q_PROPERTY(bool busy MEMBER m_busy WRITE set_busy NOTIFY busyChanged)
-    void set_busy(bool busy);
+    Q_PROPERTY(bool loading MEMBER m_loading WRITE set_loading NOTIFY loadingChanged)
+    void set_loading(bool loading);
 
+    Q_PROPERTY(bool saving MEMBER m_saving WRITE set_saving NOTIFY savingChanged)
+    void set_saving(bool saving);
 
     Q_INVOKABLE void fetchSettings();
     Q_INVOKABLE VMap getAllSettings();
@@ -37,7 +39,8 @@ public:
 
 signals:
     void allSettingsChanged(VMap allSettings);
-    void busyChanged(bool busy);
+    void loadingChanged(bool loading);
+    void savingChanged(bool saving);
     void savingSettingsStart();
     void savingSettingsFinish();
 
@@ -59,7 +62,8 @@ private:
     QTimer timer;
     void check();
 
-    bool m_busy = false;
+    bool m_loading = false;
+    bool m_saving = false;
 
     QHostAddress groundAddress;
 };

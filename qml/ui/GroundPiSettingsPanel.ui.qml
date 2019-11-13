@@ -180,7 +180,7 @@ Item {
                 id: save
                 text: qsTr("Save")
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                enabled: !openHDSettings.busy
+                enabled: !openHDSettings.loading && !openHDSettings.saving
                 Layout.columnSpan: 1
                 font.pixelSize: 13
             }
@@ -194,8 +194,8 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: button_row.left
             anchors.rightMargin: 0
-            running: openHDSettings.busy
-            visible: openHDSettings.busy
+            running: openHDSettings.loading || openHDSettings.saving
+            visible: openHDSettings.loading || openHDSettings.saving
         }
     }
 }

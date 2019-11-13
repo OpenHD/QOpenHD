@@ -26,9 +26,14 @@ void OpenHDSettings::initSettings() {
     connect(this, &OpenHDSettings::savingSettingsFinish, this, &OpenHDSettings::_savingSettingsFinish);
 }
 
-void OpenHDSettings::set_busy(bool busy) {
-    m_busy = busy;
-    emit busyChanged(m_busy);
+void OpenHDSettings::set_loading(bool loading) {
+    m_loading = loading;
+    emit loadingChanged(m_loading);
+}
+
+void OpenHDSettings::set_saving(bool saving) {
+    m_saving = saving;
+    emit savingChanged(m_saving);
 }
 
 void OpenHDSettings::check() {
@@ -37,15 +42,14 @@ void OpenHDSettings::check() {
     if (current - start > 20) {
         timer.stop();
         emit allSettingsChanged(m_allSettings);
-        set_busy(false);
+        set_loading(false);
     }
 }
 
 void OpenHDSettings::reboot() {
-    if (m_busy) {
+    if (m_saving) {
         return;
     }
-    set_busy(true);
     QUdpSocket *s = new QUdpSocket(this);
 #if defined(__rasp_pi__)
     QProcess process;
@@ -58,16 +62,15 @@ void OpenHDSettings::reboot() {
     QNetworkDatagram d(r);
     s->writeDatagram(d);
 
-    set_busy(false);
     qDebug() << "Rebooting";
 }
 
 void OpenHDSettings::_savingSettingsStart() {
-    set_busy(true);
+    set_saving(true);
 }
 
 void OpenHDSettings::_savingSettingsFinish() {
-    set_busy(false);
+    set_saving(false);
 }
 
 void OpenHDSettings::saveSettings(VMap remoteSettings) {
@@ -80,10 +83,10 @@ void OpenHDSettings::saveSettings(VMap remoteSettings) {
 }
 
 void OpenHDSettings::_saveSettings(VMap remoteSettings) {
-    if (m_busy) {
+    if (m_saving || m_loading) {
         return;
     }
-    set_busy(true);
+    set_saving(true);
     //emit savingSettingsStart();
     QUdpSocket *s = new QUdpSocket(this);
 #if defined(__rasp_pi__)
@@ -105,7 +108,8 @@ void OpenHDSettings::_saveSettings(VMap remoteSettings) {
 
         QThread::msleep(30);
     }
-    set_busy(false);
+    set_saving(false);
+
     //emit savingSettingsFinish();
 }
 
@@ -115,10 +119,10 @@ VMap OpenHDSettings::getAllSettings() {
 
 void OpenHDSettings::fetchSettings() {
     qDebug() << "OpenHDSettings::fetchSettings()";
-    if (m_busy) {
+    if (m_loading || m_saving) {
         return;
     }
-    set_busy(true);
+    set_loading(true);
     start = QDateTime::currentSecsSinceEpoch();
     timer.start(1000);
 
@@ -146,7 +150,7 @@ void OpenHDSettings::processDatagrams() {
         if (datagram == "ConfigRespConfigEnd=ConfigEnd") {
             timer.stop();
             emit allSettingsChanged(m_allSettings);
-            set_busy(false);
+            set_loading(false);
         } else {
             auto set = datagram.split('=');
             auto key = set.first();         
