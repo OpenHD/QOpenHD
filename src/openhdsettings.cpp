@@ -54,6 +54,7 @@ void OpenHDSettings::reboot() {
 #if defined(__rasp_pi__)
     QProcess process;
     process.start("/sbin/reboot");
+    process.waitForFinished();
 #else
     s->connectToHost(groundAddress, SETTINGS_PORT);
 #endif
