@@ -7,3 +7,6 @@
 [submodule "lib/qmsgpack"]
 	path = lib/qmsgpack
 	url = https://github.com/romixlab/qmsgpack.git
+[submodule "lib/qmdnsengine"]
+	path = lib/qmdnsengine
+	url = https://github.com/nitroshare/qmdnsengine.git
