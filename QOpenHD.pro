@@ -57,8 +57,7 @@ SOURCES += \
     src/openhdsettings.cpp \
     src/openhdtelemetry.cpp \
     src/openhdvideostream.cpp \
-    src/util.cpp \
-    src/wifibroadcast.cpp
+    src/util.cpp
 
 RESOURCES += qml/qml.qrc
 

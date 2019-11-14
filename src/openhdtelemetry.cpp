@@ -20,90 +20,18 @@ OpenHDTelemetry::OpenHDTelemetry(QObject *parent): QObject(parent) {
 
 void OpenHDTelemetry::init() {
     qDebug() << "OpenHDTelemetry::init()";
-#if defined(__rasp_pi__)
-    rx_status = telemetry_wbc_status_memory_open();
-    rx_status_uplink = telemetry_wbc_status_memory_open_uplink();
-    rx_status_rc = telemetry_wbc_status_memory_open_rc();
-    rx_status_osd = telemetry_wbc_status_memory_open_osd();
-    rx_status_sysair = telemetry_wbc_status_memory_open_sysair();
-    restartSHM();
-#else
     telemetrySocket = new QUdpSocket(this);
-    telemetrySocket->bind(QHostAddress::Any, 5154);
-    connect(telemetrySocket, &QUdpSocket::readyRead, this, &OpenHDTelemetry::processDatagrams);
-#endif
-}
 
 #if defined(__rasp_pi__)
-void OpenHDTelemetry::restartSHM() {
-    qDebug() << "OpenHDTelemetry::restartSHM()";
-    shmFuture = QtConcurrent::run(this, &OpenHDTelemetry::processSHM);
-    watcher.cancel();
-    disconnect(&watcher, &QFutureWatcherBase::finished, this, &OpenHDTelemetry::restartSHM);
-    connect(&watcher, &QFutureWatcherBase::finished, this, &OpenHDTelemetry::restartSHM);
-    watcher.setFuture(shmFuture);
-}
-
-void OpenHDTelemetry::processSHM() {
-    OpenHDPi p;
-
-    while (true) {
-        p.update_ground();
-
-        wifibroadcast_rx_status_forward_t telemetry;
-
-        telemetry.wifi_adapter_cnt = rx_status_osd->wifi_adapter_cnt; // number of wifi adapters
-
-        //wifi_adapter_rx_status_t adapter
-        for (uint wifi_adapter = 0; wifi_adapter < rx_status_osd->wifi_adapter_cnt; wifi_adapter++) {
-            wifi_adapter_rx_status_t adapter = rx_status_osd->adapter[wifi_adapter];
-            wifi_adapter_rx_status_forward_t _adapter;
-            _adapter.type = adapter.type;
-            _adapter.signal_good = (int8_t)adapter.signal_good;
-            _adapter.current_signal_dbm = adapter.current_signal_dbm;
-            _adapter.received_packet_cnt = adapter.received_packet_cnt;
-            telemetry.adapter[wifi_adapter] = _adapter;
-        }
-
-        OpenHD::instance()->set_air_undervolt(rx_status_sysair->undervolt);
-
-        telemetry.current_signal_telemetry_uplink = rx_status_uplink->adapter[0].current_signal_dbm;
-        telemetry.lost_packet_cnt_telemetry_up = rx_status_uplink->lost_packet_cnt;
-
-
-        telemetry.current_signal_joystick_uplink = rx_status_rc->adapter[0].current_signal_dbm;
-        telemetry.lost_packet_cnt_rc = rx_status_rc->lost_packet_cnt;
-
-        // todo: this is the wrong rvalue, find the right one
-        telemetry.lost_packet_cnt_telemetry_down = rx_status_rc->tx_restart_cnt;
-
-        // this has no equivalent coming through UDP so we set it directly here
-        OpenHD::instance()->set_cts(rx_status_sysair->cts);
-
-        telemetry.kbitrate = rx_status->kbitrate;
-        telemetry.kbitrate_measured = rx_status_sysair->bitrate_measured_kbit;
-        telemetry.kbitrate_set = rx_status_sysair->bitrate_kbit;
-        telemetry.skipped_packet_cnt = rx_status_sysair->skipped_fec_cnt;
-        telemetry.injection_fail_cnt = rx_status_sysair->injection_fail_cnt;
-
-        // not used and not provided over UDP either
-        //rx_status_sysair->injection_time_block;
-        telemetry.damaged_block_cnt = rx_status_osd->damaged_block_cnt;
-        telemetry.lost_packet_cnt = rx_status_osd->lost_packet_cnt;
-        telemetry.received_packet_cnt = rx_status_osd->received_packet_cnt;
-
-        telemetry.cpuload_air = rx_status_sysair->cpuload;
-        telemetry.temp_air = rx_status_sysair->temp;
-        telemetry.cpuload_gnd = p.ground_load;
-        telemetry.temp_gnd = p.ground_temp;
-        telemetry.HomeLat = 0.0;
-        telemetry.HomeLon = 0.0;
-
-        processOpenHDTelemetry(telemetry);
-        QThread::msleep(1000);
-    }
-}
+    telemetrySocket->bind(QHostAddress::Any, 5155);
 #else
+    telemetrySocket->bind(QHostAddress::Any, 5154);
+#endif
+    connect(telemetrySocket, &QUdpSocket::readyRead, this, &OpenHDTelemetry::processDatagrams);
+
+}
+
+
 void OpenHDTelemetry::processDatagrams() {
     QByteArray datagram;
     wifibroadcast_rx_status_forward_t telemetry;
@@ -118,7 +46,7 @@ void OpenHDTelemetry::processDatagrams() {
         }
     }
 }
-#endif
+
 
 void OpenHDTelemetry::processOpenHDTelemetry(wifibroadcast_rx_status_forward_t telemetry) {
     // find adapter with best signal. right now just uses the signal level, but should
