@@ -4,3 +4,6 @@
 [submodule "mavlink"]
 	path = mavlink
 	url = https://github.com/mavlink/mavlink.git
+[submodule "lib/qmsgpack"]
+	path = lib/qmsgpack
+	url = https://github.com/romixlab/qmsgpack.git
