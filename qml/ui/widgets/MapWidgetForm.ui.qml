@@ -24,6 +24,7 @@ BaseWidget {
 
     hasWidgetDetail: true
 
+
     widgetDetailComponent: Column {
         Item {
             width: parent.width
@@ -69,6 +70,21 @@ BaseWidget {
                 onCheckedChanged: settings.setValue("map_zoom", checked)
             }
         }
+        Item {
+            width: parent.width
+            height: 24
+            GroupBox{
+                height: parent.height
+                anchors.rightMargin: 12
+                anchors.right: parent.right
+                ComboBox{
+                    model:mapsmall.supportedMapTypes
+                    textRole:"description"
+                    onCurrentIndexChanged: mapsmall.activeMapType = mapsmall.supportedMapTypes[currentIndex],
+                    maplarge.activeMapType = maplarge.supportedMapTypes[currentIndex]
+                }
+            }
+        }
     }
 
     widgetPopup: Popup {
@@ -96,14 +112,15 @@ BaseWidget {
 
         visible: false
 
+
+
+
         Plugin {
             id: mapPluginLarge
-            name: "osm" // "mapboxgl", "esri", ...
-            // specify plugin parameters if necessary
-            // PluginParameter {
-            //     name:
-            //     value:
-            // }
+            name: "osm" // "osm" , "mapboxgl", "esri", ...
+
+         //   PluginParameter { name: "here.app_id"; value: "****" }
+         //   PluginParameter { name: "here.token"; value: "*****" }
         }
 
         Map {
@@ -112,9 +129,13 @@ BaseWidget {
             id: maplarge
             plugin: mapPluginLarge
             zoomLevel: 18
-            gesture.enabled: false
+            // Enable pan, flick, and pinch gestures to zoom in and out
+            gesture.enabled: true
+            gesture.acceptedGestures: MapGestureArea.PanGesture | MapGestureArea.FlickGesture | MapGestureArea.PinchGesture | MapGestureArea.RotationGesture | MapGestureArea.TiltGesture
+            gesture.flickDeceleration: 3000
 
-            //     activeMapType: MapType.SatelliteMapDay
+
+            activeMapType: MapType.SatelliteMapDay
             center {
                 latitude: OpenHD.lat_raw
                 longitude: OpenHD.lon_raw
@@ -188,8 +209,18 @@ BaseWidget {
                     map_popup.close()
                 }
             }
+
+
+
         }
     }
+
+
+
+//// ------------------------- split between large map above and small map below------------
+
+
+
 
     Item {
         id: widgetInner
