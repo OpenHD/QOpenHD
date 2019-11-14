@@ -32,7 +32,7 @@ Rectangle {
         id: widgetDetail
 
 
-        width: 196
+        width: 256
         // the alignment dropdown isn't necessary on the ground station so we hide it
         height: 164
 
