@@ -157,7 +157,7 @@ The build process is dependent on which platform you're building *on* and which 
 
 This will be less complicated once QtGStreamer is replaced.
 
-In general, you'll need Qt 5.13.1+ and the GStreamer development package, specifically version 1.16.1 (which seems to handle video packet corruption much better than 1.14.4 does).
+In general, you'll need Qt 5.13.1+ and the GStreamer development package, specifically version 1.14.4.
 
 #### Mac
 
@@ -197,7 +197,7 @@ You can then open `QOpenHD.pro` using Qt Creator, build and run the app.
 
 4. Have the Qt Installer download Qt 5.13.1+ for Android 
 
-5. Download the [GStreamer development kit](https://gstreamer.freedesktop.org/download/) for Android 1.16.1
+5. Download the [GStreamer development kit](https://gstreamer.freedesktop.org/download/) for Android 1.14.4
 
 6. Unzip the GStreamer archive inside the QOpenHD directory.
 
