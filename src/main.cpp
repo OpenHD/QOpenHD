@@ -21,6 +21,7 @@
 #include "msptelemetry.h"
 #include "ltmtelemetry.h"
 
+#include "qopenhdlink.h"
 #include "VideoStreaming/VideoStreaming.h"
 #include "VideoStreaming/VideoSurface.h"
 #include "VideoStreaming/VideoReceiver.h"
@@ -109,6 +110,7 @@ char gstLogPath[] = "/sdcard";
     qmlRegisterType<OpenHDSettings>("OpenHD", 1,0, "OpenHDSettings");
     qmlRegisterType<OpenHDVideoStream>("OpenHD", 1,0, "OpenHDVideoStream");
 
+    qmlRegisterType<QOpenHDLink>("OpenHD", 1,0, "QOpenHDLink");
 
     auto openhd = OpenHD::instance();
 

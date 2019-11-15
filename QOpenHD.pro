@@ -58,6 +58,7 @@ SOURCES += \
     src/openhdsettings.cpp \
     src/openhdtelemetry.cpp \
     src/openhdvideostream.cpp \
+    src/qopenhdlink.cpp \
     src/util.cpp
 
 RESOURCES += qml/qml.qrc
@@ -76,6 +77,7 @@ HEADERS += \
     inc/openhdsettings.h \
     inc/openhdtelemetry.h \
     inc/openhdvideostream.h \
+    inc/qopenhdlink.h \
     inc/util.h \
     inc/wifibroadcast.h \
     lib/json.hpp
