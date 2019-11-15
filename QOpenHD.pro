@@ -37,6 +37,7 @@ CONFIG(debug, debug|release) {
 QT += qml quick concurrent opengl gui
 
 INCLUDEPATH += $$PWD/inc
+INCLUDEPATH += $$PWD/lib
 INCLUDEPATH += $$PWD/lib/mavlink_generated
 INCLUDEPATH += $$PWD/lib/mavlink_generated/common
 INCLUDEPATH += $$PWD/lib/mavlink_generated/ardupilotmega
@@ -76,7 +77,8 @@ HEADERS += \
     inc/openhdtelemetry.h \
     inc/openhdvideostream.h \
     inc/util.h \
-    inc/wifibroadcast.h
+    inc/wifibroadcast.h \
+    lib/json.hpp
 
 DISTFILES += \
     android/AndroidManifest.xml \
