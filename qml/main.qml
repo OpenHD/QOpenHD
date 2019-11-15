@@ -51,6 +51,10 @@ ApplicationWindow {
         id: settings
     }
 
+    QOpenHDLink {
+        id: link
+    }
+
     OpenHDTelemetry {
         id: openHDTelemetry
     }
