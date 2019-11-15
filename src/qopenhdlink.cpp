@@ -35,7 +35,6 @@ void QOpenHDLink::init() {
 
 
 void QOpenHDLink::readyRead() {
-    qDebug() << "QOpenHDLink::readyRead()";
     QByteArray datagram;
 
     while (linkSocket->hasPendingDatagrams()) {
@@ -48,8 +47,6 @@ void QOpenHDLink::readyRead() {
 
 
 void QOpenHDLink::setWidgetLocation(QString widgetName, int alignment, int xOffset, int yOffset, bool hCenter, bool vCenter) {
-    qDebug() << "Sending widget location";
-
     nlohmann::json j = {
       {"cmd", "setWidgetLocation"},
       {"widgetName", widgetName.toStdString()},
