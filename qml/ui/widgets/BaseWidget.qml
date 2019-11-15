@@ -135,7 +135,10 @@ BaseWidgetForm {
         settings.setValue(xOffsetIdentifier, _xOffset);
         settings.setValue(yOffsetIdentifier, _yOffset);
 
+        var _hCenter = getHCenter();
+        var _vCenter = getVCenter();
 
+        link.setWidgetLocation(widgetIdentifier, alignmentType, _xOffset, _yOffset, _hCenter, _vCenter)
     }
 
     /*
