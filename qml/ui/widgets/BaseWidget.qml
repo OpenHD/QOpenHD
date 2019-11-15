@@ -108,7 +108,7 @@ BaseWidgetForm {
         }
     }
 
-    function saveAlignment() {
+    function calculateOffsets() {
         var _xOffset;
         var _yOffset;
 
@@ -130,6 +130,13 @@ BaseWidgetForm {
             _yOffset = parent.height - (y + height);
             break;
         }
+        return Qt.point(_xOffset, _yOffset);
+    }
+
+    function saveAlignment() {
+        var point = calculateOffsets();
+        var _xOffset = point.x;
+        var _yOffset = point.y;
 
         settings.setValue(alignmentIdentifier, alignmentType);
         settings.setValue(xOffsetIdentifier, _xOffset);
