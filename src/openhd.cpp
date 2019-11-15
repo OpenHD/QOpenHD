@@ -207,7 +207,7 @@ void OpenHD::set_home_distance(double home_distance) {
 
 void OpenHD::calculate_home_course () {
 
-    qDebug() << "Home RAW lat lon " << m_homelat_raw << " :" << m_homelon_raw;
+    //qDebug() << "Home RAW lat lon " << m_homelat_raw << " :" << m_homelon_raw;
 
     double  dlon = (m_lon_raw-m_homelon_raw)*0.017453292519;
     double lat1 = (m_homelat_raw)*0.017453292519;
