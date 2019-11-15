@@ -27,6 +27,15 @@ BaseWidgetForm {
     property string hCenterIdentifier: "%1_h_center".arg(widgetIdentifier);
     property string vCenterIdentifier: "%1_v_center".arg(widgetIdentifier);
 
+    Connections {
+        target: link
+        onWidgetLocation: {
+            if (widgetIdentifier === widgetName) {
+                setAlignment(alignment, xOffset, yOffset, hCenter, vCenter);
+            }
+        }
+    }
+
     Component.onCompleted: {
         loadAlignment();
     }
