@@ -170,7 +170,7 @@ iOSBuild {
     DISTFILES        += ios/Info.plist \
                         icons/LaunchScreen.png \
                         icons/LaunchScreen.storyboard
-    LIBS += -framework VideoToolbox -framework AudioToolbox -framework CoreAudio
+    LIBS += -framework VideoToolbox -framework AudioToolbox -framework CoreAudio -framework CoreVideo -framework CoreMedia
     CONFIG -= bitcode
     CONFIG += EnableGamepads
     CONFIG += EnableSpeech
