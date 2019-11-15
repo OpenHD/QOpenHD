@@ -56,6 +56,22 @@ BaseWidgetForm {
         ]
     }
 
+    Timer {
+        interval: 50;
+        running: dragging;
+        repeat: true
+        onTriggered: {
+            var point = calculateOffsets();
+            var _xOffset = point.x;
+            var _yOffset = point.y;
+
+            var _hCenter = getHCenter();
+            var _vCenter = getVCenter();
+
+            link.setWidgetLocation(widgetIdentifier, alignmentType, _xOffset, _yOffset, _hCenter, _vCenter)
+        }
+    }
+
     MouseArea {
         id: dragArea
         anchors.fill: parent
