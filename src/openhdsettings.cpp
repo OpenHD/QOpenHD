@@ -57,6 +57,7 @@ void OpenHDSettings::reboot() {
     process.waitForFinished();
 #else
     s->connectToHost(groundAddress, SETTINGS_PORT);
+    s->waitForConnected(5000);
 #endif
 
     QByteArray r = QByteArray("RequestReboot");
