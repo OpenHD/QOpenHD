@@ -139,6 +139,7 @@ void OpenHDSettings::fetchSettings() {
 #else
     s->connectToHost(groundAddress, SETTINGS_PORT);
 #endif
+    s->waitForConnected(5000);
     s->writeDatagram(d);
 }
 
