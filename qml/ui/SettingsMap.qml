@@ -201,7 +201,7 @@ Item {
                  unit: ""},
 
         "UseLDPC": {title: "Use LDPC", itemType: "bool", trueValue: "Y", falseValue: "N"},
-        "UseMCS": {title: "Use MCS", itemType: "bool", trueValue: "1", falseValue: "0"},
+        "UseMCS": {title: "Use MCS", itemType: "bool", trueValue: "Y", falseValue: "N"},
         "UseSTBC": {title: "Use STBC", itemType: "bool", trueValue: "Y", falseValue: "N"},
     })
 
