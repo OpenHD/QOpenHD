@@ -106,19 +106,18 @@ Popup {
         }
 
         Text {
-            id: aboutButton
+            id: statusButton
             y: 0
             width: parent.width
             height: 48
             anchors.top: groundPiSettingsButton.bottom
             leftPadding: 12
             MouseArea {
-                id: aboutButtonMouseArea
+                id: statusSettingsButtonMouseArea
                 anchors.fill: parent
                 onClicked: mainStackLayout.currentIndex = 2
             }
-            text: "About"
-            anchors.topMargin: 0
+            text: "Status"
             anchors.right: parent.right
             anchors.rightMargin: 0
             anchors.left: parent.left
@@ -129,19 +128,20 @@ Popup {
             color: mainStackLayout.currentIndex == 2 ? "#33aaff" : "#333333"
         }
 
-        /*Text {
-            id: statusButton
+        Text {
+            id: aboutButton
             y: 0
             width: parent.width
             height: 48
-            anchors.top: aboutButton.bottom
+            anchors.top: statusButton.bottom
             leftPadding: 12
             MouseArea {
-                id: settingsButtonMouseArea
+                id: aboutButtonMouseArea
                 anchors.fill: parent
                 onClicked: mainStackLayout.currentIndex = 3
             }
-            text: "Status"
+            text: "About"
+            anchors.topMargin: 0
             anchors.right: parent.right
             anchors.rightMargin: 0
             anchors.left: parent.left
@@ -150,7 +150,9 @@ Popup {
             horizontalAlignment: Text.AlignLeft
             verticalAlignment: Text.AlignVCenter
             color: mainStackLayout.currentIndex == 3 ? "#33aaff" : "#333333"
-        }*/
+        }
+
+
 
         Button {
             id: rebootButton
@@ -196,9 +198,6 @@ Popup {
         anchors.top: parent.top
         anchors.topMargin: 0
 
-        /*StatusPanel {
-            id: statusPanel
-        }*/
 
         AppSettingsPanel {
             id: appSettingsPanel
@@ -206,6 +205,10 @@ Popup {
 
         GroundPiSettingsPanel {
             id: groundPiSettingsPanel
+        }
+
+        StatusPanel {
+            id: statusPanel
         }
 
         AboutPanel {
