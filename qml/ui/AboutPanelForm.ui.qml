@@ -84,20 +84,19 @@ Rectangle {
     }
 
 
-    TextArea {
+    Text {
         id: license
-        text: qsTr("")
         color: "#b3ffffff"
-        placeholderText: "GPL license here"
+        text: "License: GPLv3"
+        onLinkActivated: {
+            Qt.openUrlExternally("https://github.com/infincia/QOpenHD/blob/master/LICENSE")
+        }
+
         font.pointSize: 12
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 0
         anchors.top: qt_version.bottom
-        anchors.topMargin: 24
-        anchors.right: parent.right
-        anchors.rightMargin: 24
-        anchors.left: parent.left
-        anchors.leftMargin: 24
+        anchors.topMargin: 0
+        anchors.left: title.left
+        anchors.leftMargin: 0
     }
 }
 
