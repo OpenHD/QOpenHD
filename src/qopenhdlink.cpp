@@ -29,7 +29,8 @@ void QOpenHDLink::init() {
     linkSocket = new QUdpSocket(this);
     linkSocket->bind(LINK_PORT);
 
-    connect(linkSocket, &QTcpSocket::readyRead, this, &QOpenHDLink::readyRead);
+    connect(linkSocket, &QUdpSocket::readyRead, this, &QOpenHDLink::readyRead);
+
 
 }
 
