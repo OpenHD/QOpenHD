@@ -11,3 +11,4 @@ gstreamer-*
 mac/include
 mac/lib
 mac/share
+cov-int
