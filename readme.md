@@ -138,6 +138,8 @@ This allows the same app to run on Windows, Mac, Linux, iOS, and Android, as wel
 
 ## Code architecture
 
+![System Diagram](https://raw.githubusercontent.com/infincia/QOpenHD/master/wiki/Untitled%20Diagram.png)
+
 The core is C++ (in `src`), and the UI is designed with QtQuick, which is an OpenGL accelerated, declarative UI framework. You can find the UI files in `qml`.
 
 QtQuick is designed to be an MVC code architecture, and QOpenHD follows that pattern for the most part. The UI layer is separated into declarative UI "forms" with a matching logic-only layer them, you can see that in the file names for most of the components (there will be a -Form.ui.qml for each one).
