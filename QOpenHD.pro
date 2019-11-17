@@ -241,18 +241,18 @@ EnableVideo {
     DEFINES += ENABLE_VIDEO
 }
 
-include ($$PWD/src/VideoStreaming/VideoStreaming.pri)
+include ($$PWD/lib/VideoStreaming/VideoStreaming.pri)
 HEADERS += \
-    $$BASEDIR/src/VideoStreaming/VideoItem.h \
-    $$BASEDIR/src/VideoStreaming/VideoReceiver.h \
-    $$BASEDIR/src/VideoStreaming/VideoSurface.h \
-    $$BASEDIR/src/VideoStreaming/VideoStreaming.h
+    $$BASEDIR/lib/VideoStreaming/VideoItem.h \
+    $$BASEDIR/lib/VideoStreaming/VideoReceiver.h \
+    $$BASEDIR/lib/VideoStreaming/VideoSurface.h \
+    $$BASEDIR/lib/VideoStreaming/VideoStreaming.h
 
 SOURCES += \
-    $$BASEDIR/src/VideoStreaming/VideoItem.cc \
-    $$BASEDIR/src/VideoStreaming/VideoReceiver.cc \
-    $$BASEDIR/src/VideoStreaming/VideoSurface.cc \
-    $$BASEDIR/src/VideoStreaming/VideoStreaming.cc
+    $$BASEDIR/lib/VideoStreaming/VideoItem.cc \
+    $$BASEDIR/lib/VideoStreaming/VideoReceiver.cc \
+    $$BASEDIR/lib/VideoStreaming/VideoSurface.cc \
+    $$BASEDIR/lib/VideoStreaming/VideoStreaming.cc
 
 EnableRC {
     message("EnableRC")
