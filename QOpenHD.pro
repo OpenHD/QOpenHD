@@ -189,7 +189,7 @@ MacBuild {
     ICON = $${BASEDIR}/icons/macos.icns
     DISTFILES += mac/Info.plist
     LIBS += -framework ApplicationServices
-    LIBS += -framework VideoToolbox
+    LIBS += -framework VideoToolbox -framework CoreVideo -framework CoreMedia
     CONFIG += EnableGamepads
     CONFIG += EnableJoysticks
     CONFIG += EnableSpeech
