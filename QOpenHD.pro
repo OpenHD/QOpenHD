@@ -182,6 +182,10 @@ iOSBuild {
 
     ios_icon.files = $$files($$PWD/icons/AppIcon.appiconset/*.png)
     QMAKE_BUNDLE_DATA += ios_icon
+
+    DEFINES += GST_GL_HAVE_WINDOW_EAGL=1
+    DEFINES += GST_GL_HAVE_PLATFORM_EAGL=1
+    DEFINES += HAVE_QT_IOS
 }
 
 MacBuild {
@@ -194,13 +198,23 @@ MacBuild {
     CONFIG += EnableJoysticks
     CONFIG += EnableSpeech
     CONFIG += EnableVideo
+
+    DEFINES += GST_GL_HAVE_WINDOW_COCOA=1
+    DEFINES += GST_GL_HAVE_PLATFORM_CGL=1
+    DEFINES += HAVE_QT_MAC
 }
 
 LinuxBuild {
+    QT += x11extras
     CONFIG += EnableGamepads
     CONFIG += EnableJoysticks
     CONFIG += EnableVideo
     message("LinuxBuild - config")
+
+    DEFINES += GST_GL_HAVE_WINDOW_X11=1
+    DEFINES += GST_GL_HAVE_PLATFORM_GLX=1
+    DEFINES += HAVE_QT_X11
+
 }
 
 RaspberryPiBuild {
@@ -210,6 +224,9 @@ RaspberryPiBuild {
     # replace that at some point but for now it isn't necessary.
     message("RaspberryPiBuild - config")
     #CONFIG += EnableVideo
+
+    DEFINES += GST_GL_HAVE_PLATFORM_EGL=1
+    DEFINES += HAVE_QT_EGLFS=1
 }
 
 WindowsBuild {
@@ -217,6 +234,9 @@ WindowsBuild {
     CONFIG += EnableJoysticks
     CONFIG += EnableSpeech
     CONFIG += EnableVideo
+    DEFINES += GST_GL_HAVE_WINDOW_WIN32=1
+    DEFINES += GST_GL_HAVE_PLATFORM_WGL=1
+    DEFINES += HAVE_QT_WIN32
 }
 
 AndroidBuild {
@@ -228,6 +248,10 @@ AndroidBuild {
 
     OTHER_FILES += \
         $$PWD/android/src/org/openhd/OpenHDActivity.java
+
+    DEFINES += GST_GL_HAVE_PLATFORM_EGL=1
+    DEFINES += GST_GL_HAVE_WINDOW_ANDROID=1
+    DEFINES += HAVE_QT_ANDROID
 }
 
 EnableSpeech {
