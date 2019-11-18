@@ -30,6 +30,7 @@ linux {
 
 win32 {
     CONFIG += WindowsBuild
+    DEFINES += __windows__
     DEFINES += __STDC_LIMIT_MACROS
 }
 
@@ -37,6 +38,7 @@ macx {
     message("MacBuild")
     CONFIG += MacBuild
     DEFINES += __macos__
+    DEFINES += __apple__
     CONFIG += x86_64
     CONFIG -= x86
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.12
@@ -48,6 +50,7 @@ ios {
     message("iOSBuild")
     CONFIG  += iOSBuild MobileBuild app_bundle
     DEFINES += __ios__
+    DEFINES += __apple__
     DEFINES += __mobile__
     QMAKE_IOS_DEPLOYMENT_TARGET = 12.1
     QMAKE_APPLE_TARGETED_DEVICE_FAMILY = 1,2
