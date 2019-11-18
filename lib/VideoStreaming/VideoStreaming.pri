@@ -189,7 +189,7 @@ VideoEnabled {
     }
 
 } else {
-    LinuxBuild|MacBuild|iOSBuild|WindowsBuild|AndroidBuild {
+    LinuxBuild|MacBuild|iOSBuild|WindowsBuild|AndroidBuild|RaspberryPiBuild {
         message("Skipping support for video streaming (GStreamer libraries not installed)")
         message("Installation instructions here: https://github.com/mavlink/qgroundcontrol/blob/master/src/VideoStreaming/README.md")
     } else {
