@@ -70,8 +70,6 @@
         <file>ui/widgets/AltitudeSecondWidgetForm.ui.qml</file>
         <file>ui/widgets/ThrottleWidget.qml</file>
         <file>ui/widgets/ThrottleWidgetForm.ui.qml</file>
-        <file>ui/widgets/PiPVideoWidget.qml</file>
-        <file>ui/widgets/PiPVideoWidgetForm.ui.qml</file>
         <file>ui/widgets/ArrowWidget.qml</file>
         <file>ui/widgets/ArrowWidgetForm.qml</file>
         <file>ui/widgets/MapWidget.qml</file>
@@ -79,5 +77,7 @@
         <file>ui/widgets/home_marker.png</file>
         <file>ui/StatusPanel.qml</file>
         <file>ui/delegates/BaseDelegate.ui.qml</file>
+        <file>ui/widgets/VideoWidget.qml</file>
+        <file>ui/widgets/VideoWidgetForm.ui.qml</file>
     </qresource>
 </RCC>

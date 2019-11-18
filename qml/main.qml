@@ -10,7 +10,7 @@ import OpenHD 1.0
 import "./ui"
 import "./ui/widgets"
 
-import QGroundControl.QgcQtGStreamer 1.0
+import org.freedesktop.gstreamer.GLVideoItem 1.0
 
 ApplicationWindow {
     id: applicationWindow
@@ -37,9 +37,19 @@ ApplicationWindow {
             hudOverlayGrid.configure();
             initialised = true;
             if (EnableVideo) {
-                stream.startVideo();
+                MainStream.startVideo();
+                PiPStream.startVideo();
             }
         }
+    }
+
+    // this is not used but must stay right here, it forces qmlglsink to completely
+    // initialize the rendering system early. Without this, the next GstGLVideoItem
+    // to be initialized, depending on the order they appear in the QML, will simply
+    // not work on desktop linux.
+    GstGLVideoItem {
+        id: dummyVideoItem
+        objectName: "dummyVideoItem"
     }
 
     /*
@@ -104,15 +114,12 @@ ApplicationWindow {
     //    id: ltmTelemetry
     //}
 
-
-    VideoItem {
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.top: parent.top
-        anchors.bottom: parent.bottom
-        anchors.fill: parent
-        id: videoBackground
-        surface: stream.videoReceiver.videoSurface
+    GstGLVideoItem {
+        id: mainVideoItem
+        objectName: "mainVideoItem"
+        anchors.centerIn: parent
+        width: parent.width
+        height: parent.height
         z: 1.0
         visible: EnableVideo
     }
@@ -131,30 +138,6 @@ ApplicationWindow {
         }
     }
 
-    OpenHDVideoStream {
-        id: stream
-        uri: {
-            //if (OpenHDPi.is_raspberry_pi) {
-            //    return "file:///root/videofifo1";
-            //} else {
-                var main_video_port = settings.value("main_video_port", 5600);
-                return "udp://0.0.0.0:%1".arg(main_video_port);
-            //}
-        }
-    }
-
-    /*OpenHDVideoStream {
-        id: pipVideoStream
-        uri: {
-            return "videotestsrc://";
-            //if (OpenHDPi.is_raspberry_pi) {
-            //    return "file:///root/videofifo1";
-            //} else {
-                var pip_video_port = settings.value("pip_video_port", 5601);
-                return "udp://0.0.0.0:%1".arg(pip_video_port);
-            //}
-        }
-    }*/
     // UI areas
 
     UpperOverlayBar {

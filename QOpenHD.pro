@@ -30,7 +30,6 @@ CONFIG(debug, debug|release) {
     }
     DESTDIR = $${OUT_PWD}/release
     DEFINES += QMLJSDEBUGGER
-    DEFINES += QGC_INSTALL_RELEASE
 }
 
 
@@ -98,6 +97,9 @@ DISTFILES += \
     android/res/values/libs.xml \
     android/res/values/styles.xml \
     android/src/OpenHDActivity.java \
+    android/src/org/freedesktop/gstreamer/androidmedia/GstAhcCallback.java \
+    android/src/org/freedesktop/gstreamer/androidmedia/GstAhsCallback.java \
+    android/src/org/freedesktop/gstreamer/androidmedia/GstAmcOnFrameAvailableListener.java \
     icons/AppIcon.appiconset/iPad-app.png \
     icons/AppIcon.appiconset/iPad-app@2x.png \
     icons/AppIcon.appiconset/iPad-notifications.png \
@@ -210,11 +212,6 @@ LinuxBuild {
     CONFIG += EnableJoysticks
     CONFIG += EnableVideo
     message("LinuxBuild - config")
-
-    DEFINES += GST_GL_HAVE_WINDOW_X11=1
-    DEFINES += GST_GL_HAVE_PLATFORM_GLX=1
-    DEFINES += HAVE_QT_X11
-
 }
 
 RaspberryPiBuild {
@@ -266,17 +263,6 @@ EnableVideo {
 }
 
 include ($$PWD/lib/VideoStreaming/VideoStreaming.pri)
-HEADERS += \
-    $$BASEDIR/lib/VideoStreaming/VideoItem.h \
-    $$BASEDIR/lib/VideoStreaming/VideoReceiver.h \
-    $$BASEDIR/lib/VideoStreaming/VideoSurface.h \
-    $$BASEDIR/lib/VideoStreaming/VideoStreaming.h
-
-SOURCES += \
-    $$BASEDIR/lib/VideoStreaming/VideoItem.cc \
-    $$BASEDIR/lib/VideoStreaming/VideoReceiver.cc \
-    $$BASEDIR/lib/VideoStreaming/VideoSurface.cc \
-    $$BASEDIR/lib/VideoStreaming/VideoStreaming.cc
 
 EnableRC {
     message("EnableRC")

@@ -120,8 +120,9 @@ Item {
         scale: 0.7
     }
 
-    PiPVideoWidget {
+    VideoWidget {
         id: pipVideoWidget
+        elementName: "pipVideoItem"
     }
 
     MapWidget {

@@ -2,8 +2,10 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
+
+
 void
-gst_ios_init (void)
+gst_ios_init (int argc, char* argv[])
 {
   GstPluginFeature *plugin;
   GstRegistry *reg;
@@ -36,14 +38,4 @@ gst_ios_init (void)
   g_free (ca_certificates);
     
   gst_init (NULL, NULL);
-
-  /* Lower the ranks of filesrc and giosrc so iosavassetsrc is
-   * tried first in gst_element_make_from_uri() for file:// */
-  reg = gst_registry_get();
-  plugin = gst_registry_lookup_feature(reg, "filesrc");
-  if (plugin)
-    gst_plugin_feature_set_rank(plugin, GST_RANK_SECONDARY);
-  plugin = gst_registry_lookup_feature(reg, "giosrc");
-  if (plugin)
-    gst_plugin_feature_set_rank(plugin, GST_RANK_SECONDARY-1);
 }

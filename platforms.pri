@@ -2,6 +2,7 @@ linux {
     linux-g++ | linux-g++-64 | linux-g++-32 | linux-clang {
         message("LinuxBuild")
         CONFIG += LinuxBuild
+        DEFINES += __desktoplinux__
         DEFINES += __STDC_LIMIT_MACROS
         linux-clang {
             message("Linux clang")

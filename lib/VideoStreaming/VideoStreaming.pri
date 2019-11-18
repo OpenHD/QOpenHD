@@ -27,14 +27,19 @@
 LinuxBuild {
     CONFIG += link_pkgconfig
     packagesExist(gstreamer-1.0) {
-        PKGCONFIG   += gstreamer-1.0  gstreamer-video-1.0
+        PKGCONFIG   += gstreamer-1.0  gstreamer-video-1.0 gstreamer-gl-1.0
         CONFIG      += VideoEnabled
     }
 } else: RaspberryPiBuild {
     CONFIG += link_pkgconfig
     packagesExist(gstreamer-1.0) {
-        PKGCONFIG   += gstreamer-1.0  gstreamer-video-1.0
+        PKGCONFIG   += gstreamer-1.0  gstreamer-video-1.0 gstreamer-gl-1.0
+
         CONFIG      += VideoEnabled
+        DEFINES += GST_USE_UNSTABLE_API
+        DEFINES += GST_LICENSE="gpl"
+        DEFINES += GST_PACKAGE_NAME="qmlgl"
+        DEFINES += PACKAGE_VERSION=1.14.4
     }
 } else:MacBuild {
     #- gstreamer framework installed by the gstreamer devel installer
@@ -111,8 +116,7 @@ LinuxBuild {
             -lgstvideo-1.0 -lavformat -lavcodec -lavutil -lx264 -lavfilter -lswresample \
             -lgstriff-1.0 -lgstcontroller-1.0 -lgstapp-1.0 \
             -lgstsdp-1.0 -lbz2 -lgobject-2.0 \
-            -lgstphotography-1.0 -lgstgl-1.0 -lEGL \
-            -lgraphene-1.0 -lpng16 -ljpeg \
+            -lgstgl-1.0  -lgraphene-1.0 -lpng16 -ljpeg -lgstphotography-1.0 -lEGL \
             -Wl,--export-dynamic -lgmodule-2.0 -pthread -lglib-2.0 -lorc-0.4 -liconv -lffi -lintl \
 
         INCLUDEPATH += \
@@ -127,67 +131,34 @@ VideoEnabled {
 
     message("Including support for video streaming")
 
-    DEFINES += \
-        QGC_GST_STREAMING \
-        GST_PLUGIN_BUILD_STATIC \
-        QTGLVIDEOSINK_NAME=qt5glvideosink \
-        QGC_VIDEOSINK_PLUGIN=qt5videosink
+    !LinuxBuild {
+        DEFINES += GST_PLUGIN_BUILD_STATIC
 
-    INCLUDEPATH += \
-        $$PWD/gstqtvideosink \
-        $$PWD/gstqtvideosink/delegates \
-        $$PWD/gstqtvideosink/painters \
-        $$PWD/gstqtvideosink/utils \
+        INCLUDEPATH += \
+            $$PWD/qmlgl
 
-    #-- QtGstreamer (gutted to our needs)
+        HEADERS += \
+            $$PWD/qmlgl/qtwindow.h \
+            $$PWD/qmlgl/gstqsgtexture.h \
+            $$PWD/qmlgl/gstqtgl.h \
+            $$PWD/qmlgl/gstqtglutility.h \ 
+            $$PWD/qmlgl/gstqtsink.h \
+            $$PWD/qmlgl/gstqtsrc.h \
+            $$PWD/qmlgl/qtitem.h
 
-    HEADERS += \
-        $$PWD/gstqtvideosink/delegates/basedelegate.h \
-        $$PWD/gstqtvideosink/delegates/qtquick2videosinkdelegate.h \
-        $$PWD/gstqtvideosink/delegates/qtvideosinkdelegate.h \
-        $$PWD/gstqtvideosink/delegates/qwidgetvideosinkdelegate.h \
-        $$PWD/gstqtvideosink/gstqtglvideosink.h \
-        $$PWD/gstqtvideosink/gstqtglvideosinkbase.h \
-        $$PWD/gstqtvideosink/gstqtquick2videosink.h \
-        $$PWD/gstqtvideosink/gstqtvideosink.h \
-        $$PWD/gstqtvideosink/gstqtvideosinkbase.h \
-        $$PWD/gstqtvideosink/gstqtvideosinkmarshal.h \
-        $$PWD/gstqtvideosink/gstqtvideosinkplugin.h \
-        $$PWD/gstqtvideosink/gstqwidgetvideosink.h \
-        $$PWD/gstqtvideosink/painters/abstractsurfacepainter.h \
-        $$PWD/gstqtvideosink/painters/genericsurfacepainter.h \
-        $$PWD/gstqtvideosink/painters/openglsurfacepainter.h \
-        $$PWD/gstqtvideosink/painters/videomaterial.h \
-        $$PWD/gstqtvideosink/painters/videonode.h \
-        $$PWD/gstqtvideosink/utils/bufferformat.h \
-        $$PWD/gstqtvideosink/utils/utils.h \
-        $$PWD/gstqtvideosink/utils/glutils.h \
-
-    SOURCES += \
-        $$PWD/gstqtvideosink/delegates/basedelegate.cpp \
-        $$PWD/gstqtvideosink/delegates/qtquick2videosinkdelegate.cpp \
-        $$PWD/gstqtvideosink/delegates/qtvideosinkdelegate.cpp \
-        $$PWD/gstqtvideosink/delegates/qwidgetvideosinkdelegate.cpp \
-        $$PWD/gstqtvideosink/gstqtglvideosink.cpp \
-        $$PWD/gstqtvideosink/gstqtglvideosinkbase.cpp \
-        $$PWD/gstqtvideosink/gstqtvideosinkmarshal.c \
-        $$PWD/gstqtvideosink/gstqtquick2videosink.cpp \
-        $$PWD/gstqtvideosink/gstqtvideosink.cpp \
-        $$PWD/gstqtvideosink/gstqtvideosinkbase.cpp \
-        $$PWD/gstqtvideosink/gstqtvideosinkplugin.cpp \
-        $$PWD/gstqtvideosink/gstqwidgetvideosink.cpp \
-        $$PWD/gstqtvideosink/painters/genericsurfacepainter.cpp \
-        $$PWD/gstqtvideosink/painters/openglsurfacepainter.cpp \
-        $$PWD/gstqtvideosink/painters/videomaterial.cpp \
-        $$PWD/gstqtvideosink/painters/videonode.cpp \
-        $$PWD/gstqtvideosink/utils/bufferformat.cpp \
-        $$PWD/gstqtvideosink/utils/utils.cpp \
+        SOURCES += \
+            $$PWD/qmlgl/gstplugin.cc \
+            $$PWD/qmlgl/gstqsgtexture.cc \
+            $$PWD/qmlgl/gstqtglutility.cc \
+            $$PWD/qmlgl/gstqtsink.cc \
+            $$PWD/qmlgl/gstqtsrc.cc \
+            $$PWD/qmlgl/qtitem.cc \
+            $$PWD/qmlgl/qtwindow.cc    
+    }
 
     iOSBuild {
         OBJECTIVE_SOURCES += \
-            $$PWD/ios/gst_ios_init.m
-        INCLUDEPATH += \
-            $$PWD/ios
+            $$PWD/../../src/gst_ios_init.m
     }
 
 } else {

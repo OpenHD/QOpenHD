@@ -6,15 +6,13 @@ import Qt.labs.settings 1.0
 
 import OpenHD 1.0
 
-import QGroundControl.QgcQtGStreamer 1.0
-
+import org.freedesktop.gstreamer.GLVideoItem 1.0
 
 BaseWidget {
-    id: pipVideoWidget
     width: 252
     height: 192
 
-    widgetIdentifier: "pip_video_widget"
+    widgetIdentifier: elementName + "_widget"
 
     defaultAlignment: 0
     defaultXOffset: 12
@@ -24,8 +22,10 @@ BaseWidget {
 
     hasWidgetDetail: false
 
-    Item {
+    Rectangle {
         id: widgetInner
+
+        color: "#ff000000"
 
         anchors.left: parent.left
         anchors.leftMargin: 6
@@ -39,11 +39,10 @@ BaseWidget {
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 6
 
-        /*VideoItem {
+        GstGLVideoItem {
+            id: videoElement
+            objectName: elementName
             anchors.fill: parent
-            id: videoPiP
-            surface: pipVideoStream.videoReceiver.videoSurface
-            z: 1.0
-        }*/
+        }
     }
 }

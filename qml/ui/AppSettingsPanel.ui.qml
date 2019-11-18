@@ -834,7 +834,7 @@ Item {
             id: videoView
             width: parent.width
             height: parent.height
-            contentHeight: 3 * rowHeight
+            contentHeight: 4 * rowHeight
 
             clip: true
             visible: EnableVideo
@@ -844,6 +844,35 @@ Item {
                 height: rowHeight
                 color: "#8cbfd7f3"
                 y: 0 * rowHeight
+
+                Text {
+                    text: "Use hardware video decoder"
+                    font.weight: Font.Bold
+                    font.pixelSize: 13
+                    anchors.leftMargin: 8
+                    verticalAlignment: Text.AlignVCenter
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: 224
+                    height: elementHeight
+                    anchors.left: parent.left
+                }
+
+                Switch {
+                    width: 32
+                    height: elementHeight
+                    anchors.rightMargin: 36
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    checked: settings.enable_hardware_video_decoder
+                    onCheckedChanged: settings.enable_hardware_video_decoder = checked
+                }
+            }
+
+            Rectangle {
+                width: parent.width
+                height: rowHeight
+                color: "#00000000"
+                y: 1 * rowHeight
 
                 Text {
                     text: "Main video port"
@@ -876,8 +905,8 @@ Item {
             Rectangle {
                 width: parent.width
                 height: rowHeight
-                color: "#00000000"
-                y: 1 * rowHeight
+                color: "#8cbfd7f3"
+                y: 2 * rowHeight
 
                 Text {
                     text: "Enable PiP"
@@ -905,8 +934,8 @@ Item {
             Rectangle {
                 width: parent.width
                 height: rowHeight
-                color: "#8cbfd7f3"
-                y: 2 * rowHeight
+                color: "#00000000"
+                y: 3 * rowHeight
 
                 Text {
                     text: "PiP video port"
