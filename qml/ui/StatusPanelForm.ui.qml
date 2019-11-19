@@ -44,7 +44,7 @@ Rectangle {
 
         Label {
             color: "black"
-            text: "last heartbeat: " + (OpenHDTelemetry.last_heartbeat !== undefined ? OpenHDTelemetry.last_heartbeat : "N/A")
+            text: "last heartbeat: " + (openHDTelemetry.last_heartbeat !== undefined ? openHDTelemetry.last_heartbeat : "N/A")
             font.pixelSize: 12
         }
     }
@@ -81,7 +81,7 @@ Rectangle {
 
         Label {
             color: "black"
-            text: "last heartbeat: " + (MavlinkTelemetry.last_heartbeat !== undefined ? MavlinkTelemetry.last_heartbeat : "N/A")
+            text: "last heartbeat: " + (mavlinkTelemetry.last_heartbeat !== undefined ? mavlinkTelemetry.last_heartbeat : "N/A")
             font.pixelSize: 12
         }
     }
