@@ -17,7 +17,7 @@ Item {
         "DEBUG": {title: "Enable debug mode", itemType: "bool", trueValue: "Y", falseValue: "N"},
         "QUIET": {title: "Enable quiet mode", itemType: "bool", trueValue: "Y", falseValue: "N"},
         "ENABLE_SCREENSHOTS": {title: "Enable OSD screenshots", itemType: "bool", trueValue: "Y", falseValue: "N"},
-        "DISPLAY_OSD": {title: "Display OSD", itemType: "bool", trueValue: "Y", falseValue: "N"},
+        "DISPLAY_OSD": {title: "Display OSD", info: "Controls whether the OSD is shown on the ground station display", itemType: "bool", trueValue: "Y", falseValue: "N"},
     })
 
     property var videoSettingsMap: ({
