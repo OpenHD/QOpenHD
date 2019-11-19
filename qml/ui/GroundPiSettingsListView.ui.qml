@@ -44,4 +44,29 @@ ListView {
             }
         }
     }
+
+    property int tempContentY: 0
+    property int ySizeFactor: 3
+
+    onAtYBeginningChanged: {
+        if (atYBeginning) {
+            tempContentY = contentY
+        }
+    }
+
+    // if tempContentY - contentY > 10*ySizeFactor refresh news
+    onContentYChanged: {
+        if (atYBeginning) {
+            if (Math.abs(tempContentY - contentY) > 10 * ySizeFactor) {
+                if (busyIndicator.running) {
+                    console.log("refreshing");
+                    return;
+                } else {
+                    console.log("refresh");
+                    openHDSettings.fetchSettings();
+                }
+            }
+        }
+    }
+
 }
