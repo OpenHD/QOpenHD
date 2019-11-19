@@ -61,6 +61,7 @@ Rectangle {
         id: openhd_version
         width: 173
         height: OpenHDPi.is_raspberry_pi ? 14 : 0
+        clip: true
         color: "#b3ffffff"
         text: "Open.HD " + OPENHD_VERSION
         anchors.left: title.left
@@ -74,6 +75,7 @@ Rectangle {
         id: builder_version
         width: 173
         height: OpenHDPi.is_raspberry_pi ? 14 : 0
+        clip: true
         color: "#b3ffffff"
         text: "Builder " + BUILDER_VERSION
         anchors.left: title.left
