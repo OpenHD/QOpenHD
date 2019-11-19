@@ -1,4 +1,4 @@
-import QtQuick 2.13
+import QtQuick 2.12
 
 /*
  * These are mappings for the raw settings key/value pairs provided by the ground station. We

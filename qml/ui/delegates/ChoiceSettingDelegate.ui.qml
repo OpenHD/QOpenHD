@@ -1,10 +1,10 @@
 // @disable-check M222
 // @disable-check M223
 
-import QtQuick 2.13
+import QtQuick 2.12
 
-import QtQuick.Layouts 1.13
-import QtQuick.Controls 2.13
+import QtQuick.Layouts 1.12
+import QtQuick.Controls 2.12
 
 BaseDelegate {
     // allow access to the index of the setting item within the ListModel within the onActivated
