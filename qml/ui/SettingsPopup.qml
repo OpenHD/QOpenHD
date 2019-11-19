@@ -100,6 +100,10 @@ SettingsPopupForm {
              */
             function _process(setting, initialValue, model, mapping, disabled) {
                 var itemTitle = mapping[setting]["title"];
+                var itemInfo = mapping[setting]["info"];
+                if (itemInfo === undefined) {
+                    itemInfo = "N/A";
+                }
                 var itemType  = mapping[setting]["itemType"];
 
                 // not all of these are used for each setting, they don't need to be defined in the
@@ -139,7 +143,8 @@ SettingsPopupForm {
                               "value": finalValue,
                               "unit": unit,
                               "modified": false,
-                              "disabled": disabled});
+                              "disabled": disabled,
+                              "info": itemInfo});
             }
 
             /*
@@ -186,7 +191,8 @@ SettingsPopupForm {
                                                "setting": setting,
                                                "itemType": "string",
                                                "value": String(openHDSettings.allSettings[setting]),
-                                               "disabled": disabled});
+                                               "disabled": disabled,
+                                               "info": "No additional information available, check the Open.HD wiki"});
                 }
             }
         }

@@ -78,5 +78,6 @@
         <file>ui/widgets/MapWidgetForm.ui.qml</file>
         <file>ui/widgets/home_marker.png</file>
         <file>ui/StatusPanel.qml</file>
+        <file>ui/delegates/BaseDelegate.ui.qml</file>
     </qresource>
 </RCC>
