@@ -59,10 +59,8 @@ ListView {
         if (atYBeginning) {
             if (Math.abs(tempContentY - contentY) > 10 * ySizeFactor) {
                 if (busyIndicator.running) {
-                    console.log("refreshing");
                     return;
                 } else {
-                    console.log("refresh");
                     openHDSettings.fetchSettings();
                 }
             }
