@@ -13,3 +13,5 @@ mac/lib
 mac/share
 cov-int
 debug
+.builder_version
+.openhd_version
