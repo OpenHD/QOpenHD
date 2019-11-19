@@ -143,10 +143,8 @@ char gstLogPath[] = "/sdcard";
 
     engine.rootContext()->setContextProperty("QOPENHD_VERSION", QVariant(QOPENHD_VERSION));
 
-#if defined(__rasp_pi__)
     engine.rootContext()->setContextProperty("OPENHD_VERSION", QVariant(OPENHD_VERSION));
     engine.rootContext()->setContextProperty("BUILDER_VERSION", QVariant(BUILDER_VERSION));
-#endif
 
     engine.load(QUrl(QLatin1String("qrc:/main.qml")));
 
