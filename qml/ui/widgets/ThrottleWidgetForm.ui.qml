@@ -23,7 +23,7 @@ BaseWidget {
     defaultHCenter: false
     defaultVCenter: false
 
-    hasWidgetDetail: true
+    hasWidgetDetail: false
     widgetDetailComponent: Column {
 
     }
