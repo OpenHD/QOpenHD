@@ -45,7 +45,7 @@ Item {
 
         TabButton {
             text: qsTr("Screen")
-            width: implicitWidth
+            width: OpenHDPi.is_raspberry_pi ? implicitWidth : 0
             height: 48
             font.pixelSize: 13
             visible: OpenHDPi.is_raspberry_pi
