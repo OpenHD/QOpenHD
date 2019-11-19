@@ -90,7 +90,11 @@ void OpenHDTelemetry::processOpenHDTelemetry(wifibroadcast_rx_status_forward_t t
     OpenHD::instance()->set_temp_air(tr("%1°").arg(telemetry.temp_air));
 
     qint64 current_timestamp = QDateTime::currentMSecsSinceEpoch();
-    set_last_heartbeat(QString(tr("%1s").arg(current_timestamp - last_heartbeat_timestamp)));
+
+    auto diff = (current_timestamp - last_heartbeat_timestamp) / 1024;
+
+    set_last_heartbeat(QString(tr("%1ms").arg(current_timestamp - last_heartbeat_timestamp)));
+    last_heartbeat_timestamp = current_timestamp;
 }
 
 
