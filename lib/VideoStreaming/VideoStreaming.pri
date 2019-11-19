@@ -82,6 +82,8 @@ LinuxBuild {
     #- gstreamer assumed to be installed in $$PWD/../../gstreamer-1.0-android-universal-1.14.4/armv7 (or x86)
     Androidx86Build {
         GST_ROOT = $$PWD/../../gstreamer-1.0-android-universal-1.14.4/x86
+    } AndroidARM64Build {
+        GST_ROOT = $$PWD/../../gstreamer-1.0-android-universal-1.14.4/arm64
     } else {
         GST_ROOT = $$PWD/../../gstreamer-1.0-android-universal-1.14.4/armv7
     }

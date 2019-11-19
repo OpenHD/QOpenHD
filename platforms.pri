@@ -23,6 +23,11 @@ linux {
             CONFIG += Androidx86Build
             DEFINES += __androidx86__
         }
+        equals(ANDROID_TARGET_ARCH, arm64-v8a)  {
+            message("AndroidARM64Build")
+            CONFIG += AndroidARM64Build
+            DEFINES += __androidarm64__
+        }
     } else {
         error("Compiler/platform not supported")
     }
