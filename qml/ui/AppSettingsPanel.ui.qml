@@ -53,7 +53,7 @@ Item {
 
         TabButton {
             text: qsTr("Video")
-            width: implicitWidth
+            width: EnableVideo ? implicitWidth : 0
             height: 48
             font.pixelSize: 13
             visible: EnableVideo
