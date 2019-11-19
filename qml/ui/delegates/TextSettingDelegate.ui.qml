@@ -13,7 +13,7 @@ BaseDelegate {
         anchors.verticalCenter: parent.verticalCenter
         bottomPadding: 8
         horizontalAlignment: Text.AlignRight
-        anchors.rightMargin: 18
+        anchors.rightMargin: 36
         width: 192
         height: 32
         // @disable-check M223
