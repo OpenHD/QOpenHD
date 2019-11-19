@@ -122,11 +122,13 @@ VMap OpenHDSettings::getAllSettings() {
 }
 
 void OpenHDSettings::fetchSettings() {
-    qDebug() << "OpenHDSettings::fetchSettings()";
     if (m_loading || m_saving) {
         return;
     }
     set_loading(true);
+
+    qDebug() << "OpenHDSettings::fetchSettings()";
+
     start = QDateTime::currentSecsSinceEpoch();
     timer.start(1000);
 
