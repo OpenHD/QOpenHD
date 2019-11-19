@@ -6,8 +6,6 @@ BaseDelegate {
 
     SpinBox {
         id: choiceBox
-        x: 382
-        y: 8
         width: 210
         height: 48
         font.pixelSize: 14

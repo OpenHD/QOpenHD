@@ -7,8 +7,6 @@ BaseDelegate {
 
     Slider {
         id: choiceBox
-        x: 382
-        y: 8
         width: 210
         height: 48
         from: 0

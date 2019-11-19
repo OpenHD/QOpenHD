@@ -13,8 +13,6 @@ BaseDelegate {
 
     ComboBox {
         id: valueElement
-        x: 382
-        y: 8
         textRole: "title"
         model: itemModel.choiceValues
         width: 212
@@ -22,7 +20,7 @@ BaseDelegate {
         font.pixelSize: 14
         anchors.verticalCenter: parent.verticalCenter
         anchors.right: parent.right
-        anchors.rightMargin: 18
+        anchors.rightMargin: 36
         enabled: !itemModel.disabled
 
 
