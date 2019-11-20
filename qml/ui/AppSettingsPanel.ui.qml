@@ -18,6 +18,10 @@ import "../ui" as Ui
 Item {
     width: 504
     height: 300
+
+    property int rowHeight: 64
+    property int elementHeight: 48
+
     TabBar {
         id: appSettingsBar
         width: parent.width
@@ -85,15 +89,15 @@ Item {
             id: generalView
             width: parent.width
             height: parent.height
-            contentHeight: 3 * 64
+            contentHeight: 3 * rowHeight
 
             clip: true
 
             Rectangle {
                 width: parent.width
-                height: 64
+                height: rowHeight
                 color: "#8cbfd7f3"
-                y: 0
+                y: 0 * rowHeight
 
                 Text {
                     text: "Enable Speech"
@@ -103,13 +107,13 @@ Item {
                     verticalAlignment: Text.AlignVCenter
                     anchors.verticalCenter: parent.verticalCenter
                     width: 224
-                    height: 48
+                    height: elementHeight
                     anchors.left: parent.left
                 }
 
                 Switch {
                     width: 32
-                    height: 48
+                    height: elementHeight
                     anchors.rightMargin: 36
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
@@ -124,9 +128,9 @@ Item {
 
             Rectangle {
                 width: parent.width
-                height: 64
+                height: rowHeight
                 color: "#00000000"
-                y: 64
+                y: 1 * rowHeight
 
                 Text {
                     text: "Battery Cells"
@@ -136,13 +140,13 @@ Item {
                     verticalAlignment: Text.AlignVCenter
                     anchors.verticalCenter: parent.verticalCenter
                     width: 224
-                    height: 48
+                    height: elementHeight
                     anchors.left: parent.left
                 }
 
                 SpinBox {
                     id: batteryCellspinBox
-                    height: 48
+                    height: elementHeight
                     width: 210
                     font.pixelSize: 14
                     anchors.right: parent.right
@@ -164,9 +168,9 @@ Item {
 
             Rectangle {
                 width: parent.width
-                height: 64
+                height: rowHeight
                 color: "#8cbfd7f3"
-                y: 128
+                y: 2 * rowHeight
 
                 Text {
                     text: "Imperial units"
@@ -176,13 +180,13 @@ Item {
                     verticalAlignment: Text.AlignVCenter
                     anchors.verticalCenter: parent.verticalCenter
                     width: 224
-                    height: 48
+                    height: elementHeight
                     anchors.left: parent.left
                 }
 
                 Switch {
                     width: 32
-                    height: 48
+                    height: elementHeight
                     anchors.rightMargin: 36
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
@@ -197,9 +201,9 @@ Item {
 
             Rectangle {
                 width: parent.width
-                height: 64
+                height: rowHeight
                 color: "#8cbfd7f3"
-                y: 192
+                y: 3 * rowHeight
                 visible: EnableRC
 
                 Text {
@@ -210,13 +214,13 @@ Item {
                     verticalAlignment: Text.AlignVCenter
                     anchors.verticalCenter: parent.verticalCenter
                     width: 224
-                    height: 48
+                    height: elementHeight
                     anchors.left: parent.left
                 }
 
                 Switch {
                     width: 32
-                    height: 48
+                    height: elementHeight
                     anchors.rightMargin: 36
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
@@ -234,15 +238,15 @@ Item {
             width: parent.width
             height: parent.height
         //must increment if adding more options-------------->
-            contentHeight: 19 * 64
+            contentHeight: 19 * rowHeight
 
             clip: true
 
             Rectangle {
                 width: parent.width
-                height: 64
+                height: rowHeight
                 color: "#8cbfd7f3"
-                y: 0
+                y: 0 * rowHeight
 
                 Text {
                     text: "Show Downlink RSSI"
@@ -252,13 +256,13 @@ Item {
                     verticalAlignment: Text.AlignVCenter
                     anchors.verticalCenter: parent.verticalCenter
                     width: 224
-                    height: 48
+                    height: elementHeight
                     anchors.left: parent.left
                 }
 
                 Switch {
                     width: 32
-                    height: 48
+                    height: elementHeight
                     anchors.rightMargin: 36
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
@@ -273,9 +277,9 @@ Item {
 
             Rectangle {
                 width: parent.width
-                height: 64
+                height: rowHeight
                 color: "#00000000"
-                y: 64
+                y: 1 * rowHeight
 
                 Text {
                     text: "Show Uplink RSSI"
@@ -285,13 +289,13 @@ Item {
                     verticalAlignment: Text.AlignVCenter
                     anchors.verticalCenter: parent.verticalCenter
                     width: 224
-                    height: 48
+                    height: elementHeight
                     anchors.left: parent.left
                 }
 
                 Switch {
                     width: 32
-                    height: 48
+                    height: elementHeight
                     anchors.rightMargin: 36
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
@@ -306,9 +310,9 @@ Item {
 
             Rectangle {
                 width: parent.width
-                height: 64
+                height: rowHeight
                 color: "#8cbfd7f3"
-                y: 128
+                y: 2 * rowHeight
 
                 Text {
                     text: "Show Bitrate"
@@ -318,13 +322,13 @@ Item {
                     verticalAlignment: Text.AlignVCenter
                     anchors.verticalCenter: parent.verticalCenter
                     width: 224
-                    height: 48
+                    height: elementHeight
                     anchors.left: parent.left
                 }
 
                 Switch {
                     width: 32
-                    height: 48
+                    height: elementHeight
                     anchors.rightMargin: 36
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
@@ -338,9 +342,9 @@ Item {
 
             Rectangle {
                 width: parent.width
-                height: 64
+                height: rowHeight
                 color: "#00000000"
-                y: 192
+                y: 3 * rowHeight
 
                 Text {
                     text: "Show GPS"
@@ -350,13 +354,13 @@ Item {
                     verticalAlignment: Text.AlignVCenter
                     anchors.verticalCenter: parent.verticalCenter
                     width: 224
-                    height: 48
+                    height: elementHeight
                     anchors.left: parent.left
                 }
 
                 Switch {
                     width: 32
-                    height: 48
+                    height: elementHeight
                     anchors.rightMargin: 36
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
@@ -370,9 +374,9 @@ Item {
 
             Rectangle {
                 width: parent.width
-                height: 64
+                height: rowHeight
                 color: "#8cbfd7f3"
-                y: 256
+                y: 4 * rowHeight
 
                 Text {
                     text: "Show Home Distance"
@@ -382,13 +386,13 @@ Item {
                     verticalAlignment: Text.AlignVCenter
                     anchors.verticalCenter: parent.verticalCenter
                     width: 224
-                    height: 48
+                    height: elementHeight
                     anchors.left: parent.left
                 }
 
                 Switch {
                     width: 32
-                    height: 48
+                    height: elementHeight
                     anchors.rightMargin: 36
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
@@ -403,9 +407,9 @@ Item {
 
             Rectangle {
                 width: parent.width
-                height: 64
+                height: rowHeight
                 color: "#00000000"
-                y: 320
+                y: 5 * rowHeight
 
                 Text {
                     text: "Show Flight Timer"
@@ -415,13 +419,13 @@ Item {
                     verticalAlignment: Text.AlignVCenter
                     anchors.verticalCenter: parent.verticalCenter
                     width: 224
-                    height: 48
+                    height: elementHeight
                     anchors.left: parent.left
                 }
 
                 Switch {
                     width: 32
-                    height: 48
+                    height: elementHeight
                     anchors.rightMargin: 36
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
@@ -436,9 +440,9 @@ Item {
 
             Rectangle {
                 width: parent.width
-                height: 64
+                height: rowHeight
                 color: "#8cbfd7f3"
-                y: 384
+                y: 6 * rowHeight
 
                 Text {
                     text: "Show Flight Mode"
@@ -448,13 +452,13 @@ Item {
                     verticalAlignment: Text.AlignVCenter
                     anchors.verticalCenter: parent.verticalCenter
                     width: 224
-                    height: 48
+                    height: elementHeight
                     anchors.left: parent.left
                 }
 
                 Switch {
                     width: 32
-                    height: 48
+                    height: elementHeight
                     anchors.rightMargin: 36
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
@@ -469,9 +473,9 @@ Item {
 
             Rectangle {
                 width: parent.width
-                height: 64
+                height: rowHeight
                 color: "#00000000"
-                y: 448
+                y: 7 * rowHeight
 
                 Text {
                     text: "Show Ground Status"
@@ -481,13 +485,13 @@ Item {
                     verticalAlignment: Text.AlignVCenter
                     anchors.verticalCenter: parent.verticalCenter
                     width: 224
-                    height: 48
+                    height: elementHeight
                     anchors.left: parent.left
                 }
 
                 Switch {
                     width: 32
-                    height: 48
+                    height: elementHeight
                     anchors.rightMargin: 36
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
@@ -502,9 +506,9 @@ Item {
 
             Rectangle {
                 width: parent.width
-                height: 64
+                height: rowHeight
                 color: "#8cbfd7f3"
-                y: 512
+                y: 8 * rowHeight
 
                 Text {
                     text: "Show Air Status"
@@ -514,13 +518,13 @@ Item {
                     verticalAlignment: Text.AlignVCenter
                     anchors.verticalCenter: parent.verticalCenter
                     width: 224
-                    height: 48
+                    height: elementHeight
                     anchors.left: parent.left
                 }
 
                 Switch {
                     width: 32
-                    height: 48
+                    height: elementHeight
                     anchors.rightMargin: 36
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
@@ -535,9 +539,9 @@ Item {
 
             Rectangle {
                 width: parent.width
-                height: 64
+                height: rowHeight
                 color: "#00000000"
-                y: 576
+                y: 9 * rowHeight
 
                 Text {
                     text: "Show Air Battery"
@@ -547,13 +551,13 @@ Item {
                     verticalAlignment: Text.AlignVCenter
                     anchors.verticalCenter: parent.verticalCenter
                     width: 224
-                    height: 48
+                    height: elementHeight
                     anchors.left: parent.left
                 }
 
                 Switch {
                     width: 32
-                    height: 48
+                    height: elementHeight
                     anchors.rightMargin: 36
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
@@ -568,9 +572,9 @@ Item {
 
             Rectangle {
                 width: parent.width
-                height: 64
+                height: rowHeight
                 color: "#8cbfd7f3"
-                y: 640
+                y: 10 * rowHeight
 
                 Text {
                     text: "Show log messages on-screen"
@@ -580,13 +584,13 @@ Item {
                     verticalAlignment: Text.AlignVCenter
                     anchors.verticalCenter: parent.verticalCenter
                     width: 224
-                    height: 48
+                    height: elementHeight
                     anchors.left: parent.left
                 }
 
                 Switch {
                     width: 32
-                    height: 48
+                    height: elementHeight
                     anchors.rightMargin: 36
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
@@ -601,9 +605,9 @@ Item {
 
             Rectangle {
                 width: parent.width
-                height: 64
+                height: rowHeight
                 color: "#00000000"
-                y: 704
+                y: 11 * rowHeight
 
                 Text {
                     text: "Show Horizon"
@@ -613,13 +617,13 @@ Item {
                     verticalAlignment: Text.AlignVCenter
                     anchors.verticalCenter: parent.verticalCenter
                     width: 224
-                    height: 48
+                    height: elementHeight
                     anchors.left: parent.left
                 }
 
                 Switch {
                     width: 32
-                    height: 48
+                    height: elementHeight
                     anchors.rightMargin: 36
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
@@ -633,9 +637,9 @@ Item {
 
             Rectangle {
                 width: parent.width
-                height: 64
+                height: rowHeight
                 color: "#8cbfd7f3"
-                y: 768
+                y: 12 * rowHeight
 
                 Text {
                     text: "Show Flight Path Vector"
@@ -645,13 +649,13 @@ Item {
                     verticalAlignment: Text.AlignVCenter
                     anchors.verticalCenter: parent.verticalCenter
                     width: 224
-                    height: 48
+                    height: elementHeight
                     anchors.left: parent.left
                 }
 
                 Switch {
                     width: 32
-                    height: 48
+                    height: elementHeight
                     anchors.rightMargin: 36
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
@@ -665,9 +669,9 @@ Item {
 
             Rectangle {
                 width: parent.width
-                height: 64
+                height: rowHeight
                 color: "#00000000"
-                y: 832
+                y: 13 * rowHeight
 
                 Text {
                     text: "Show Altitude"
@@ -677,13 +681,13 @@ Item {
                     verticalAlignment: Text.AlignVCenter
                     anchors.verticalCenter: parent.verticalCenter
                     width: 224
-                    height: 48
+                    height: elementHeight
                     anchors.left: parent.left
                 }
 
                 Switch {
                     width: 32
-                    height: 48
+                    height: elementHeight
                     anchors.rightMargin: 36
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
@@ -697,9 +701,9 @@ Item {
 
             Rectangle {
                 width: parent.width
-                height: 64
+                height: rowHeight
                 color: "#8cbfd7f3"
-                y: 896
+                y: 14 * rowHeight
 
                 Text {
                     text: "Show Speed"
@@ -709,13 +713,13 @@ Item {
                     verticalAlignment: Text.AlignVCenter
                     anchors.verticalCenter: parent.verticalCenter
                     width: 224
-                    height: 48
+                    height: elementHeight
                     anchors.left: parent.left
                 }
 
                 Switch {
                     width: 32
-                    height: 48
+                    height: elementHeight
                     anchors.rightMargin: 36
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
@@ -729,9 +733,9 @@ Item {
 
             Rectangle {
                 width: parent.width
-                height: 64
+                height: rowHeight
                 color: "#00000000"
-                y: 960
+                y: 15 * rowHeight
 
                 Text {
                     text: "Show Heading"
@@ -741,13 +745,13 @@ Item {
                     verticalAlignment: Text.AlignVCenter
                     anchors.verticalCenter: parent.verticalCenter
                     width: 224
-                    height: 48
+                    height: elementHeight
                     anchors.left: parent.left
                 }
 
                 Switch {
                     width: 32
-                    height: 48
+                    height: elementHeight
                     anchors.rightMargin: 36
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
@@ -761,9 +765,9 @@ Item {
 
             Rectangle {
                 width: parent.width
-                height: 64
+                height: rowHeight
                 color: "#8cbfd7f3"
-                y: 1024
+                y: 16 * rowHeight
 
                 Text {
                     text: "Show Second Altitude"
@@ -773,13 +777,13 @@ Item {
                     verticalAlignment: Text.AlignVCenter
                     anchors.verticalCenter: parent.verticalCenter
                     width: 224
-                    height: 48
+                    height: elementHeight
                     anchors.left: parent.left
                 }
 
                 Switch {
                     width: 32
-                    height: 48
+                    height: elementHeight
                     anchors.rightMargin: 36
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
@@ -793,9 +797,9 @@ Item {
 
             Rectangle {
                 width: parent.width
-                height: 64
+                height: rowHeight
                 color: "#00000000"
-                y: 1084
+                y: 17 * rowHeight
 
                 Text {
                     text: "Show Home Arrow"
@@ -805,13 +809,13 @@ Item {
                     verticalAlignment: Text.AlignVCenter
                     anchors.verticalCenter: parent.verticalCenter
                     width: 224
-                    height: 48
+                    height: elementHeight
                     anchors.left: parent.left
                 }
 
                 Switch {
                     width: 32
-                    height: 48
+                    height: elementHeight
                     anchors.rightMargin: 36
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
@@ -825,9 +829,9 @@ Item {
 
             Rectangle {
                 width: parent.width
-                height: 64
+                height: rowHeight
                 color: "#8cbfd7f3"
-                y: 1148
+                y: 18 * rowHeight
 
                 Text {
                     text: "Show Map"
@@ -837,13 +841,13 @@ Item {
                     verticalAlignment: Text.AlignVCenter
                     anchors.verticalCenter: parent.verticalCenter
                     width: 224
-                    height: 48
+                    height: elementHeight
                     anchors.left: parent.left
                 }
 
                 Switch {
                     width: 32
-                    height: 48
+                    height: elementHeight
                     anchors.rightMargin: 36
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
@@ -863,7 +867,7 @@ Item {
             id: screenView
             width: parent.width
             height: parent.height
-            contentHeight: 3 * 64
+            contentHeight: 1 * rowHeight
 
             clip: true
 
@@ -871,9 +875,9 @@ Item {
 
             Rectangle {
                 width: parent.width
-                height: 64
+                height: rowHeight
                 color: "#8cbfd7f3"
-                y: 0
+                y: 0 * rowHeight
 
                 Text {
                     text: "Brightness"
@@ -883,13 +887,13 @@ Item {
                     verticalAlignment: Text.AlignVCenter
                     anchors.verticalCenter: parent.verticalCenter
                     width: 224
-                    height: 48
+                    height: elementHeight
                     anchors.left: parent.left
                 }
 
                 SpinBox {
                     id: screenBrightnessSpinBox
-                    height: 48
+                    height: elementHeight
                     width: 210
                     font.pixelSize: 14
                     anchors.right: parent.right
@@ -913,16 +917,16 @@ Item {
             id: videoView
             width: parent.width
             height: parent.height
-            contentHeight: 3 * 64
+            contentHeight: 3 * rowHeight
 
             clip: true
             visible: EnableVideo
 
             Rectangle {
                 width: parent.width
-                height: 64
+                height: rowHeight
                 color: "#8cbfd7f3"
-                y: 0
+                y: 0 * rowHeight
 
                 Text {
                     text: "Main video port"
@@ -932,13 +936,13 @@ Item {
                     verticalAlignment: Text.AlignVCenter
                     anchors.verticalCenter: parent.verticalCenter
                     width: 224
-                    height: 48
+                    height: elementHeight
                     anchors.left: parent.left
                 }
 
                 SpinBox {
                     id: mainVideoPortSpinBox
-                    height: 48
+                    height: elementHeight
                     width: 210
                     font.pixelSize: 14
                     anchors.right: parent.right
@@ -960,9 +964,9 @@ Item {
 
             Rectangle {
                 width: parent.width
-                height: 64
+                height: rowHeight
                 color: "#00000000"
-                y: 64
+                y: 1 * rowHeight
 
                 Text {
                     text: "Enable PiP"
@@ -972,13 +976,13 @@ Item {
                     verticalAlignment: Text.AlignVCenter
                     anchors.verticalCenter: parent.verticalCenter
                     width: 224
-                    height: 48
+                    height: elementHeight
                     anchors.left: parent.left
                 }
 
                 Switch {
                     width: 32
-                    height: 48
+                    height: elementHeight
                     anchors.rightMargin: 36
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
@@ -992,9 +996,9 @@ Item {
 
             Rectangle {
                 width: parent.width
-                height: 64
+                height: rowHeight
                 color: "#8cbfd7f3"
-                y: 128
+                y: 2 * rowHeight
 
                 Text {
                     text: "PiP video port"
@@ -1004,13 +1008,13 @@ Item {
                     verticalAlignment: Text.AlignVCenter
                     anchors.verticalCenter: parent.verticalCenter
                     width: 224
-                    height: 48
+                    height: elementHeight
                     anchors.left: parent.left
                 }
 
                 SpinBox {
                     id: pipVideoPortSpinBox
-                    height: 48
+                    height: elementHeight
                     width: 210
                     font.pixelSize: 14
                     anchors.right: parent.right
