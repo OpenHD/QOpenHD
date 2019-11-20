@@ -6,7 +6,6 @@ AltitudeSecondWidgetForm {
 
     function configure() {
         console.log("AltitudeSecondWidget.configure()");
-        settings.sync();
         altitudesecondWidget.visible = settings.value("show_second_alt", true);
     }
 

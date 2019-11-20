@@ -6,7 +6,6 @@ MapWidgetForm {
 
     function configure() {
         console.log("MapWidget.configure()");
-        settings.sync();
         mapWidget.visible = settings.value("show_map", true);
     }
 

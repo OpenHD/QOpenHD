@@ -6,7 +6,6 @@ AltitudeWidgetForm {
 
     function configure() {
         console.log("AltitudeWidget.configure()");
-        settings.sync();
         altitudeWidget.visible = settings.value("show_altitude", true);
     }
 

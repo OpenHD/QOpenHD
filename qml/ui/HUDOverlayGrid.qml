@@ -10,7 +10,6 @@ HUDOverlayGridForm {
 
     function configure() {
         console.log("HUDOverlayGrid.configure()");
-        settings.sync();
 
         downlink.visible = settings.value("show_downlink_rssi", true);
         uplink.visible = settings.value("show_uplink_rssi", true);

@@ -70,7 +70,6 @@ MessageHUDForm {
 
     function configure() {
         console.log("MessageHUD.configure()");
-        settings.sync();
         messageHUD.visible = settings.value("show_log_onscreen", true);
     }
 }

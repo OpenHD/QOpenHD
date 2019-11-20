@@ -6,7 +6,6 @@ ArrowWidgetForm {
 
     function configure() {
         console.log("ArrowWidget.configure()");
-        settings.sync();
         arrowWidget.visible = settings.value("show_arrow", true);
     }
 

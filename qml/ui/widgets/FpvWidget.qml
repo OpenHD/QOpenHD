@@ -6,7 +6,6 @@ FpvWidgetForm {
 
     function configure() {
         console.log("FpvWidget.configure()");
-        settings.sync();
         fpvWidget.visible = settings.value("show_fpv", true);
     }
 

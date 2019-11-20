@@ -14,6 +14,5 @@ UpperOverlayBarForm {
 
     function configure() {
         console.log("UpperOverlayBar.configure()");
-        settings.sync();
     }
 }

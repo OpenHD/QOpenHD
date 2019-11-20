@@ -6,7 +6,6 @@ HeadingWidgetForm {
 
     function configure() {
         console.log("HeadingWidget.configure()");
-        settings.sync();
         headingWidget.visible = settings.value("show_heading", true);
     }
 

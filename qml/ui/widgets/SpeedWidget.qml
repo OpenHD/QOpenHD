@@ -6,7 +6,6 @@ SpeedWidgetForm {
 
     function configure() {
         console.log("SpeedWidget.configure()");
-        settings.sync();
         speedWidget.visible = settings.value("show_speed", true);
     }
 
