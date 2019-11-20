@@ -81,6 +81,36 @@ SettingsPopupForm {
         id: settingsMap
     }
 
+    Connections {
+        target: openHDSettings
+
+        onSavingSettingsStart: {
+            localMessage("saving ground settings...", 3);
+        }
+
+        onSavingSettingsFinished: {
+            localMessage("ground settings saved", 3);
+            showSavedCheckmark = true
+            savedTimer.start()
+        }
+
+        onSavingSettingsFailed: {
+            localMessage("%1 ground settings did not save!".arg(failCount), 4);
+            showSavedCheckmark = true
+        }
+    }
+
+    Timer {
+        id: savedTimer
+        running: false
+        interval: 5000
+        repeat: false
+        onTriggered: {
+            showSavedCheckmark = false
+        }
+
+    }
+
     /*Connections {
         target: openHDRC
         onSelectedGamepadChanged: {
@@ -290,15 +320,21 @@ SettingsPopupForm {
     }
 
     rebootButton.onClicked: {
+        savedTimer.stop()
+        showSavedCheckmark = false
         settings_popup.close();
         rebootDialog.open()
     }
 
     closeButton.onClicked: {
+        savedTimer.stop()
+        showSavedCheckmark = false
         settings_popup.close();
     }
 
     save.onClicked: {
+        savedTimer.stop()
+        showSavedCheckmark = false
         writeRemoteSettings();
     }
 
