@@ -49,6 +49,9 @@ ApplicationWindow {
      */
     Settings {
         id: settings
+        property int main_video_port: 5600
+        property int pip_video_port: 5601
+        property int battery_cells: 3
     }
 
     QOpenHDLink {

@@ -155,14 +155,8 @@ Item {
                     to: 6
                     stepSize: 1
                     anchors.rightMargin: 18
-                    // @disable-check M222
-                    Component.onCompleted: value = settings.value(
-                                               "battery_cells", 3)
-                    // @disable-check M223
-                    onValueChanged: {
-                        // @disable-check M222
-                        settings.setValue("battery_cells", value)
-                    }
+                    value: settings.battery_cells
+                    onValueChanged: settings.battery_cells = value
                 }
             }
 
@@ -951,14 +945,8 @@ Item {
                     to: 5610
                     stepSize: 1
                     anchors.rightMargin: 18
-                    // @disable-check M222
-                    Component.onCompleted: value = settings.value("main_video_port",
-                                                                  5600)
-                    // @disable-check M223
-                    onValueChanged: {
-                        // @disable-check M222
-                        settings.setValue("main_video_port", value)
-                    }
+                    value: settings.main_video_port
+                    onValueChanged: settings.main_video_port = value
                 }
             }
 
@@ -1023,14 +1011,8 @@ Item {
                     to: 5610
                     stepSize: 1
                     anchors.rightMargin: 18
-                    // @disable-check M222
-                    Component.onCompleted: value = settings.value("pip_video_port",
-                                                                  5601)
-                    // @disable-check M223
-                    onValueChanged: {
-                        // @disable-check M222
-                        settings.setValue("pip_video_port", value)
-                    }
+                    value: settings.pip_video_port
+                    onValueChanged: settings.pip_video_port = value
                 }
             }
         }
