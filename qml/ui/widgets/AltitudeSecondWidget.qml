@@ -5,7 +5,6 @@ import QtQuick.Layouts 1.12
 AltitudeSecondWidgetForm {
 
     function configure() {
-        console.log("AltitudeSecondWidget.configure()");
         altitudesecondWidget.visible = settings.value("show_second_alt", true);
     }
 

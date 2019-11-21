@@ -5,7 +5,6 @@ import QtQuick.Layouts 1.12
 HorizonWidgetForm {
 
     function configure() {
-        console.log("HorizonWidget.configure()");
         horizonWidget.visible = settings.value("show_horizon", true);
     }
 
