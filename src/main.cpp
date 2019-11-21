@@ -5,6 +5,12 @@
 #include <QFontDatabase>
 #if defined(__android__)
 #include <QtAndroidExtras/QtAndroid>
+const QVector<QString> permissions({"android.permission.INTERNET",
+                                    "android.permission.WRITE_EXTERNAL_STORAGE",
+                                    "android.permission.READ_EXTERNAL_STORAGE",
+
+                                    "android.permission.ACCESS_NETWORK_STATE",
+                                    "android.permission.ACCESS_FINE_LOCATION"});
 #endif
 
 #include "constants.h"
@@ -40,6 +46,19 @@ int main(int argc, char *argv[]) {
     QCoreApplication::setOrganizationName("Open.HD");
     QCoreApplication::setOrganizationDomain("open.hd");
     QCoreApplication::setApplicationName("Open.HD");
+
+#if defined(__android__)
+    for(const QString &permission : permissions) {
+        auto result = QtAndroid::checkPermission(permission);
+
+        if (result == QtAndroid::PermissionResult::Denied) {
+            auto resultHash = QtAndroid::requestPermissionsSync(QStringList({permission}));
+            if (resultHash[permission] == QtAndroid::PermissionResult::Denied) {
+                return 0;
+            }
+        }
+    }
+#endif
 
 #if defined(__rasp_pi__)
     qDebug() << "Initializing Pi";
