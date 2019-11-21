@@ -1,5 +1,5 @@
 import QtQuick 2.12
-import QtQuick.Controls 2.13
+import QtQuick.Controls 2.12
 import QtQuick.Controls.Styles 1.4
 import QtQuick.Layouts 1.0
 import QtGraphicalEffects 1.12
@@ -49,6 +49,13 @@ ApplicationWindow {
      */
     Settings {
         id: settings
+        property int main_video_port: 5600
+        property int pip_video_port: 5601
+        property int battery_cells: 3
+    }
+
+    QOpenHDLink {
+        id: link
     }
 
     OpenHDTelemetry {

@@ -1,4 +1,4 @@
-import QtQuick 2.13
+import QtQuick 2.12
 import Qt.labs.settings 1.0
 
 import OpenHD 1.0
@@ -10,7 +10,6 @@ HUDOverlayGridForm {
 
     function configure() {
         console.log("HUDOverlayGrid.configure()");
-        settings.sync();
 
         downlink.visible = settings.value("show_downlink_rssi", true);
         uplink.visible = settings.value("show_uplink_rssi", true);

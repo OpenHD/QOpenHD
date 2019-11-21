@@ -82,6 +82,8 @@ LinuxBuild {
     #- gstreamer assumed to be installed in $$PWD/../../gstreamer-1.0-android-universal-1.14.4/armv7 (or x86)
     Androidx86Build {
         GST_ROOT = $$PWD/../../gstreamer-1.0-android-universal-1.14.4/x86
+    } AndroidARM64Build {
+        GST_ROOT = $$PWD/../../gstreamer-1.0-android-universal-1.14.4/arm64
     } else {
         GST_ROOT = $$PWD/../../gstreamer-1.0-android-universal-1.14.4/armv7
     }
@@ -189,7 +191,7 @@ VideoEnabled {
     }
 
 } else {
-    LinuxBuild|MacBuild|iOSBuild|WindowsBuild|AndroidBuild {
+    LinuxBuild|MacBuild|iOSBuild|WindowsBuild|AndroidBuild|RaspberryPiBuild {
         message("Skipping support for video streaming (GStreamer libraries not installed)")
         message("Installation instructions here: https://github.com/mavlink/qgroundcontrol/blob/master/src/VideoStreaming/README.md")
     } else {

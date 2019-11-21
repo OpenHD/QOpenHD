@@ -1,6 +1,6 @@
-import QtQuick 2.13
-import QtQuick.Controls 2.13
-import QtQuick.Layouts 1.13
+import QtQuick 2.12
+import QtQuick.Controls 2.12
+import QtQuick.Layouts 1.12
 
 import Qt.labs.settings 1.0
 
@@ -44,4 +44,27 @@ ListView {
             }
         }
     }
+
+    property int tempContentY: 0
+    property int ySizeFactor: 3
+
+    onAtYBeginningChanged: {
+        if (atYBeginning) {
+            tempContentY = contentY
+        }
+    }
+
+    // if tempContentY - contentY > 10*ySizeFactor refresh news
+    onContentYChanged: {
+        if (atYBeginning) {
+            if (Math.abs(tempContentY - contentY) > 10 * ySizeFactor) {
+                if (busyIndicator.running) {
+                    return;
+                } else {
+                    openHDSettings.fetchSettings();
+                }
+            }
+        }
+    }
+
 }

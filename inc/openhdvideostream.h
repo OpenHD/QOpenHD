@@ -3,9 +3,9 @@
 
 #include <QObject>
 
-#include "../src/VideoStreaming/VideoStreaming.h"
-#include "../src/VideoStreaming/VideoSurface.h"
-#include "../src/VideoStreaming/VideoReceiver.h"
+#include "VideoStreaming/VideoStreaming.h"
+#include "VideoStreaming/VideoSurface.h"
+#include "VideoStreaming/VideoReceiver.h"
 
 class OpenHDVideoStream : public QObject
 {

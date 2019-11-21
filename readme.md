@@ -138,6 +138,8 @@ This allows the same app to run on Windows, Mac, Linux, iOS, and Android, as wel
 
 ## Code architecture
 
+![System Diagram](https://raw.githubusercontent.com/infincia/QOpenHD/master/wiki/Untitled%20Diagram.png)
+
 The core is C++ (in `src`), and the UI is designed with QtQuick, which is an OpenGL accelerated, declarative UI framework. You can find the UI files in `qml`.
 
 QtQuick is designed to be an MVC code architecture, and QOpenHD follows that pattern for the most part. The UI layer is separated into declarative UI "forms" with a matching logic-only layer them, you can see that in the file names for most of the components (there will be a -Form.ui.qml for each one).
@@ -157,7 +159,7 @@ The build process is dependent on which platform you're building *on* and which 
 
 This will be less complicated once QtGStreamer is replaced.
 
-In general, you'll need Qt 5.13.1+ and the GStreamer development package, specifically version 1.16.1 (which seems to handle video packet corruption much better than 1.14.4 does).
+In general, you'll need Qt 5.13.1+ and the GStreamer development package, specifically version 1.14.4.
 
 #### Mac
 
@@ -197,7 +199,7 @@ You can then open `QOpenHD.pro` using Qt Creator, build and run the app.
 
 4. Have the Qt Installer download Qt 5.13.1+ for Android 
 
-5. Download the [GStreamer development kit](https://gstreamer.freedesktop.org/download/) for Android 1.16.1
+5. Download the [GStreamer development kit](https://gstreamer.freedesktop.org/download/) for Android 1.14.4
 
 6. Unzip the GStreamer archive inside the QOpenHD directory.
 

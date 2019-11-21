@@ -1,6 +1,6 @@
-import QtQuick 2.13
-import QtQuick.Controls 2.13
-import QtQuick.Layouts 1.13
+import QtQuick 2.12
+import QtQuick.Controls 2.12
+import QtQuick.Layouts 1.12
 
 import Qt.labs.settings 1.0
 
@@ -18,6 +18,10 @@ import "../ui" as Ui
 Item {
     width: 504
     height: 300
+
+    property int rowHeight: 64
+    property int elementHeight: 48
+
     TabBar {
         id: appSettingsBar
         width: parent.width
@@ -44,19 +48,19 @@ Item {
         }
 
         TabButton {
-            text: qsTr("Video")
-            width: implicitWidth
-            height: 48
-            font.pixelSize: 13
-            visible: EnableVideo
-        }
-
-        TabButton {
             text: qsTr("Screen")
-            width: implicitWidth
+            width: OpenHDPi.is_raspberry_pi ? implicitWidth : 0
             height: 48
             font.pixelSize: 13
             visible: OpenHDPi.is_raspberry_pi
+        }
+
+        TabButton {
+            text: qsTr("Video")
+            width: EnableVideo ? implicitWidth : 0
+            height: 48
+            font.pixelSize: 13
+            visible: EnableVideo
         }
 
 
@@ -85,15 +89,15 @@ Item {
             id: generalView
             width: parent.width
             height: parent.height
-            contentHeight: 3 * 64
+            contentHeight: 3 * rowHeight
 
             clip: true
 
             Rectangle {
                 width: parent.width
-                height: 64
+                height: rowHeight
                 color: "#8cbfd7f3"
-                y: 0
+                y: 0 * rowHeight
 
                 Text {
                     text: "Enable Speech"
@@ -101,16 +105,18 @@ Item {
                     font.pixelSize: 13
                     anchors.leftMargin: 8
                     verticalAlignment: Text.AlignVCenter
+                    anchors.verticalCenter: parent.verticalCenter
                     width: 224
-                    height: parent.height
+                    height: elementHeight
                     anchors.left: parent.left
                 }
 
                 Switch {
                     width: 32
-                    height: parent.height
-                    anchors.rightMargin: 18
+                    height: elementHeight
+                    anchors.rightMargin: 36
                     anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
                     // @disable-check M222
                     Component.onCompleted: checked = settings.value(
                                                "enable_speech", true)
@@ -122,9 +128,9 @@ Item {
 
             Rectangle {
                 width: parent.width
-                height: 64
+                height: rowHeight
                 color: "#00000000"
-                y: 64
+                y: 1 * rowHeight
 
                 Text {
                     text: "Battery Cells"
@@ -132,37 +138,33 @@ Item {
                     font.pixelSize: 13
                     anchors.leftMargin: 8
                     verticalAlignment: Text.AlignVCenter
+                    anchors.verticalCenter: parent.verticalCenter
                     width: 224
-                    height: parent.height
+                    height: elementHeight
                     anchors.left: parent.left
                 }
 
                 SpinBox {
                     id: batteryCellspinBox
-                    height: parent.height
-                    width: 212
+                    height: elementHeight
+                    width: 210
                     font.pixelSize: 14
                     anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
                     from: 1
                     to: 6
                     stepSize: 1
-                    anchors.rightMargin: 0
-                    // @disable-check M222
-                    Component.onCompleted: value = settings.value(
-                                               "battery_cells", 3)
-                    // @disable-check M223
-                    onValueChanged: {
-                        // @disable-check M222
-                        settings.setValue("battery_cells", value)
-                    }
+                    anchors.rightMargin: 18
+                    value: settings.battery_cells
+                    onValueChanged: settings.battery_cells = value
                 }
             }
 
             Rectangle {
                 width: parent.width
-                height: 64
+                height: rowHeight
                 color: "#8cbfd7f3"
-                y: 128
+                y: 2 * rowHeight
 
                 Text {
                     text: "Imperial units"
@@ -170,16 +172,18 @@ Item {
                     font.pixelSize: 13
                     anchors.leftMargin: 8
                     verticalAlignment: Text.AlignVCenter
+                    anchors.verticalCenter: parent.verticalCenter
                     width: 224
-                    height: parent.height
+                    height: elementHeight
                     anchors.left: parent.left
                 }
 
                 Switch {
                     width: 32
-                    height: parent.height
-                    anchors.rightMargin: 18
+                    height: elementHeight
+                    anchors.rightMargin: 36
                     anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
                     // @disable-check M222
                     Component.onCompleted: checked = settings.value(
                                                "enable_imperial", false)
@@ -191,9 +195,9 @@ Item {
 
             Rectangle {
                 width: parent.width
-                height: 64
+                height: rowHeight
                 color: "#8cbfd7f3"
-                y: 192
+                y: 3 * rowHeight
                 visible: EnableRC
 
                 Text {
@@ -202,16 +206,18 @@ Item {
                     font.pixelSize: 13
                     anchors.leftMargin: 8
                     verticalAlignment: Text.AlignVCenter
+                    anchors.verticalCenter: parent.verticalCenter
                     width: 224
-                    height: parent.height
+                    height: elementHeight
                     anchors.left: parent.left
                 }
 
                 Switch {
                     width: 32
-                    height: parent.height
-                    anchors.rightMargin: 18
+                    height: elementHeight
+                    anchors.rightMargin: 36
                     anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
                     // @disable-check M222
                     Component.onCompleted: checked = settings.value(
                                                "enable_rc", false)
@@ -226,15 +232,15 @@ Item {
             width: parent.width
             height: parent.height
         //must increment if adding more options-------------->
-            contentHeight: 19 * 64
+            contentHeight: 19 * rowHeight
 
             clip: true
 
             Rectangle {
                 width: parent.width
-                height: 64
+                height: rowHeight
                 color: "#8cbfd7f3"
-                y: 0
+                y: 0 * rowHeight
 
                 Text {
                     text: "Show Downlink RSSI"
@@ -242,16 +248,18 @@ Item {
                     font.pixelSize: 13
                     anchors.leftMargin: 8
                     verticalAlignment: Text.AlignVCenter
+                    anchors.verticalCenter: parent.verticalCenter
                     width: 224
-                    height: parent.height
+                    height: elementHeight
                     anchors.left: parent.left
                 }
 
                 Switch {
                     width: 32
-                    height: parent.height
-                    anchors.rightMargin: 18
+                    height: elementHeight
+                    anchors.rightMargin: 36
                     anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
                     // @disable-check M222
                     Component.onCompleted: checked = settings.value(
                                                "show_downlink_rssi", true)
@@ -263,9 +271,9 @@ Item {
 
             Rectangle {
                 width: parent.width
-                height: 64
+                height: rowHeight
                 color: "#00000000"
-                y: 64
+                y: 1 * rowHeight
 
                 Text {
                     text: "Show Uplink RSSI"
@@ -273,16 +281,18 @@ Item {
                     font.pixelSize: 13
                     anchors.leftMargin: 8
                     verticalAlignment: Text.AlignVCenter
+                    anchors.verticalCenter: parent.verticalCenter
                     width: 224
-                    height: parent.height
+                    height: elementHeight
                     anchors.left: parent.left
                 }
 
                 Switch {
                     width: 32
-                    height: parent.height
-                    anchors.rightMargin: 18
+                    height: elementHeight
+                    anchors.rightMargin: 36
                     anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
                     // @disable-check M222
                     Component.onCompleted: checked = settings.value(
                                                "show_uplink_rssi", true)
@@ -294,9 +304,9 @@ Item {
 
             Rectangle {
                 width: parent.width
-                height: 64
+                height: rowHeight
                 color: "#8cbfd7f3"
-                y: 128
+                y: 2 * rowHeight
 
                 Text {
                     text: "Show Bitrate"
@@ -304,16 +314,18 @@ Item {
                     font.pixelSize: 13
                     anchors.leftMargin: 8
                     verticalAlignment: Text.AlignVCenter
+                    anchors.verticalCenter: parent.verticalCenter
                     width: 224
-                    height: parent.height
+                    height: elementHeight
                     anchors.left: parent.left
                 }
 
                 Switch {
                     width: 32
-                    height: parent.height
-                    anchors.rightMargin: 18
+                    height: elementHeight
+                    anchors.rightMargin: 36
                     anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
                     // @disable-check M222
                     Component.onCompleted: checked = settings.value(
                                                "show_bitrate", true)
@@ -324,9 +336,9 @@ Item {
 
             Rectangle {
                 width: parent.width
-                height: 64
+                height: rowHeight
                 color: "#00000000"
-                y: 192
+                y: 3 * rowHeight
 
                 Text {
                     text: "Show GPS"
@@ -334,16 +346,18 @@ Item {
                     font.pixelSize: 13
                     anchors.leftMargin: 8
                     verticalAlignment: Text.AlignVCenter
+                    anchors.verticalCenter: parent.verticalCenter
                     width: 224
-                    height: parent.height
+                    height: elementHeight
                     anchors.left: parent.left
                 }
 
                 Switch {
                     width: 32
-                    height: parent.height
-                    anchors.rightMargin: 18
+                    height: elementHeight
+                    anchors.rightMargin: 36
                     anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
                     // @disable-check M222
                     Component.onCompleted: checked = settings.value("show_gps",
                                                                     true)
@@ -354,9 +368,9 @@ Item {
 
             Rectangle {
                 width: parent.width
-                height: 64
+                height: rowHeight
                 color: "#8cbfd7f3"
-                y: 256
+                y: 4 * rowHeight
 
                 Text {
                     text: "Show Home Distance"
@@ -364,16 +378,18 @@ Item {
                     font.pixelSize: 13
                     anchors.leftMargin: 8
                     verticalAlignment: Text.AlignVCenter
+                    anchors.verticalCenter: parent.verticalCenter
                     width: 224
-                    height: parent.height
+                    height: elementHeight
                     anchors.left: parent.left
                 }
 
                 Switch {
                     width: 32
-                    height: parent.height
-                    anchors.rightMargin: 18
+                    height: elementHeight
+                    anchors.rightMargin: 36
                     anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
                     // @disable-check M222
                     Component.onCompleted: checked = settings.value(
                                                "show_home_distance", true)
@@ -385,9 +401,9 @@ Item {
 
             Rectangle {
                 width: parent.width
-                height: 64
+                height: rowHeight
                 color: "#00000000"
-                y: 320
+                y: 5 * rowHeight
 
                 Text {
                     text: "Show Flight Timer"
@@ -395,16 +411,18 @@ Item {
                     font.pixelSize: 13
                     anchors.leftMargin: 8
                     verticalAlignment: Text.AlignVCenter
+                    anchors.verticalCenter: parent.verticalCenter
                     width: 224
-                    height: parent.height
+                    height: elementHeight
                     anchors.left: parent.left
                 }
 
                 Switch {
                     width: 32
-                    height: parent.height
-                    anchors.rightMargin: 18
+                    height: elementHeight
+                    anchors.rightMargin: 36
                     anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
                     // @disable-check M222
                     Component.onCompleted: checked = settings.value(
                                                "show_flight_timer", true)
@@ -416,9 +434,9 @@ Item {
 
             Rectangle {
                 width: parent.width
-                height: 64
+                height: rowHeight
                 color: "#8cbfd7f3"
-                y: 384
+                y: 6 * rowHeight
 
                 Text {
                     text: "Show Flight Mode"
@@ -426,16 +444,18 @@ Item {
                     font.pixelSize: 13
                     anchors.leftMargin: 8
                     verticalAlignment: Text.AlignVCenter
+                    anchors.verticalCenter: parent.verticalCenter
                     width: 224
-                    height: parent.height
+                    height: elementHeight
                     anchors.left: parent.left
                 }
 
                 Switch {
                     width: 32
-                    height: parent.height
-                    anchors.rightMargin: 18
+                    height: elementHeight
+                    anchors.rightMargin: 36
                     anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
                     // @disable-check M222
                     Component.onCompleted: checked = settings.value(
                                                "show_flight_mode", true)
@@ -447,9 +467,9 @@ Item {
 
             Rectangle {
                 width: parent.width
-                height: 64
+                height: rowHeight
                 color: "#00000000"
-                y: 448
+                y: 7 * rowHeight
 
                 Text {
                     text: "Show Ground Status"
@@ -457,16 +477,18 @@ Item {
                     font.pixelSize: 13
                     anchors.leftMargin: 8
                     verticalAlignment: Text.AlignVCenter
+                    anchors.verticalCenter: parent.verticalCenter
                     width: 224
-                    height: parent.height
+                    height: elementHeight
                     anchors.left: parent.left
                 }
 
                 Switch {
                     width: 32
-                    height: parent.height
-                    anchors.rightMargin: 18
+                    height: elementHeight
+                    anchors.rightMargin: 36
                     anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
                     // @disable-check M222
                     Component.onCompleted: checked = settings.value(
                                                "show_ground_status", true)
@@ -478,9 +500,9 @@ Item {
 
             Rectangle {
                 width: parent.width
-                height: 64
+                height: rowHeight
                 color: "#8cbfd7f3"
-                y: 512
+                y: 8 * rowHeight
 
                 Text {
                     text: "Show Air Status"
@@ -488,16 +510,18 @@ Item {
                     font.pixelSize: 13
                     anchors.leftMargin: 8
                     verticalAlignment: Text.AlignVCenter
+                    anchors.verticalCenter: parent.verticalCenter
                     width: 224
-                    height: parent.height
+                    height: elementHeight
                     anchors.left: parent.left
                 }
 
                 Switch {
                     width: 32
-                    height: parent.height
-                    anchors.rightMargin: 18
+                    height: elementHeight
+                    anchors.rightMargin: 36
                     anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
                     // @disable-check M222
                     Component.onCompleted: checked = settings.value(
                                                "show_air_status", true)
@@ -509,9 +533,9 @@ Item {
 
             Rectangle {
                 width: parent.width
-                height: 64
+                height: rowHeight
                 color: "#00000000"
-                y: 576
+                y: 9 * rowHeight
 
                 Text {
                     text: "Show Air Battery"
@@ -519,16 +543,18 @@ Item {
                     font.pixelSize: 13
                     anchors.leftMargin: 8
                     verticalAlignment: Text.AlignVCenter
+                    anchors.verticalCenter: parent.verticalCenter
                     width: 224
-                    height: parent.height
+                    height: elementHeight
                     anchors.left: parent.left
                 }
 
                 Switch {
                     width: 32
-                    height: parent.height
-                    anchors.rightMargin: 18
+                    height: elementHeight
+                    anchors.rightMargin: 36
                     anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
                     // @disable-check M222
                     Component.onCompleted: checked = settings.value(
                                                "show_air_battery", true)
@@ -540,9 +566,9 @@ Item {
 
             Rectangle {
                 width: parent.width
-                height: 64
+                height: rowHeight
                 color: "#8cbfd7f3"
-                y: 640
+                y: 10 * rowHeight
 
                 Text {
                     text: "Show log messages on-screen"
@@ -550,16 +576,18 @@ Item {
                     font.pixelSize: 13
                     anchors.leftMargin: 8
                     verticalAlignment: Text.AlignVCenter
+                    anchors.verticalCenter: parent.verticalCenter
                     width: 224
-                    height: parent.height
+                    height: elementHeight
                     anchors.left: parent.left
                 }
 
                 Switch {
                     width: 32
-                    height: parent.height
-                    anchors.rightMargin: 18
+                    height: elementHeight
+                    anchors.rightMargin: 36
                     anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
                     // @disable-check M222
                     Component.onCompleted: checked = settings.value(
                                                "show_log_onscreen", true)
@@ -571,9 +599,9 @@ Item {
 
             Rectangle {
                 width: parent.width
-                height: 64
+                height: rowHeight
                 color: "#00000000"
-                y: 704
+                y: 11 * rowHeight
 
                 Text {
                     text: "Show Horizon"
@@ -581,16 +609,18 @@ Item {
                     font.pixelSize: 13
                     anchors.leftMargin: 8
                     verticalAlignment: Text.AlignVCenter
+                    anchors.verticalCenter: parent.verticalCenter
                     width: 224
-                    height: parent.height
+                    height: elementHeight
                     anchors.left: parent.left
                 }
 
                 Switch {
                     width: 32
-                    height: parent.height
-                    anchors.rightMargin: 18
+                    height: elementHeight
+                    anchors.rightMargin: 36
                     anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
                     // @disable-check M222
                     Component.onCompleted: checked = settings.value(
                                                "show_horizon", true)
@@ -601,9 +631,9 @@ Item {
 
             Rectangle {
                 width: parent.width
-                height: 64
+                height: rowHeight
                 color: "#8cbfd7f3"
-                y: 768
+                y: 12 * rowHeight
 
                 Text {
                     text: "Show Flight Path Vector"
@@ -611,16 +641,18 @@ Item {
                     font.pixelSize: 13
                     anchors.leftMargin: 8
                     verticalAlignment: Text.AlignVCenter
+                    anchors.verticalCenter: parent.verticalCenter
                     width: 224
-                    height: parent.height
+                    height: elementHeight
                     anchors.left: parent.left
                 }
 
                 Switch {
                     width: 32
-                    height: parent.height
-                    anchors.rightMargin: 18
+                    height: elementHeight
+                    anchors.rightMargin: 36
                     anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
                     // @disable-check M222
                     Component.onCompleted: checked = settings.value("show_fpv",
                                                                     true)
@@ -631,9 +663,9 @@ Item {
 
             Rectangle {
                 width: parent.width
-                height: 64
+                height: rowHeight
                 color: "#00000000"
-                y: 832
+                y: 13 * rowHeight
 
                 Text {
                     text: "Show Altitude"
@@ -641,16 +673,18 @@ Item {
                     font.pixelSize: 13
                     anchors.leftMargin: 8
                     verticalAlignment: Text.AlignVCenter
+                    anchors.verticalCenter: parent.verticalCenter
                     width: 224
-                    height: parent.height
+                    height: elementHeight
                     anchors.left: parent.left
                 }
 
                 Switch {
                     width: 32
-                    height: parent.height
-                    anchors.rightMargin: 18
+                    height: elementHeight
+                    anchors.rightMargin: 36
                     anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
                     // @disable-check M222
                     Component.onCompleted: checked = settings.value("show_altitude",
                                                                     true)
@@ -661,9 +695,9 @@ Item {
 
             Rectangle {
                 width: parent.width
-                height: 64
+                height: rowHeight
                 color: "#8cbfd7f3"
-                y: 896
+                y: 14 * rowHeight
 
                 Text {
                     text: "Show Speed"
@@ -671,16 +705,18 @@ Item {
                     font.pixelSize: 13
                     anchors.leftMargin: 8
                     verticalAlignment: Text.AlignVCenter
+                    anchors.verticalCenter: parent.verticalCenter
                     width: 224
-                    height: parent.height
+                    height: elementHeight
                     anchors.left: parent.left
                 }
 
                 Switch {
                     width: 32
-                    height: parent.height
-                    anchors.rightMargin: 18
+                    height: elementHeight
+                    anchors.rightMargin: 36
                     anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
                     // @disable-check M222
                     Component.onCompleted: checked = settings.value("show_speed",
                                                                     true)
@@ -691,9 +727,9 @@ Item {
 
             Rectangle {
                 width: parent.width
-                height: 64
+                height: rowHeight
                 color: "#00000000"
-                y: 960
+                y: 15 * rowHeight
 
                 Text {
                     text: "Show Heading"
@@ -701,16 +737,18 @@ Item {
                     font.pixelSize: 13
                     anchors.leftMargin: 8
                     verticalAlignment: Text.AlignVCenter
+                    anchors.verticalCenter: parent.verticalCenter
                     width: 224
-                    height: parent.height
+                    height: elementHeight
                     anchors.left: parent.left
                 }
 
                 Switch {
                     width: 32
-                    height: parent.height
-                    anchors.rightMargin: 18
+                    height: elementHeight
+                    anchors.rightMargin: 36
                     anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
                     // @disable-check M222
                     Component.onCompleted: checked = settings.value("show_heading",
                                                                     true)
@@ -721,9 +759,9 @@ Item {
 
             Rectangle {
                 width: parent.width
-                height: 64
+                height: rowHeight
                 color: "#8cbfd7f3"
-                y: 1024
+                y: 16 * rowHeight
 
                 Text {
                     text: "Show Second Altitude"
@@ -731,16 +769,18 @@ Item {
                     font.pixelSize: 13
                     anchors.leftMargin: 8
                     verticalAlignment: Text.AlignVCenter
+                    anchors.verticalCenter: parent.verticalCenter
                     width: 224
-                    height: parent.height
+                    height: elementHeight
                     anchors.left: parent.left
                 }
 
                 Switch {
                     width: 32
-                    height: parent.height
-                    anchors.rightMargin: 18
+                    height: elementHeight
+                    anchors.rightMargin: 36
                     anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
                     // @disable-check M222
                     Component.onCompleted: checked = settings.value("show_second_alt",
                                                                     true)
@@ -751,9 +791,9 @@ Item {
 
             Rectangle {
                 width: parent.width
-                height: 64
+                height: rowHeight
                 color: "#00000000"
-                y: 1084
+                y: 17 * rowHeight
 
                 Text {
                     text: "Show Home Arrow"
@@ -761,16 +801,18 @@ Item {
                     font.pixelSize: 13
                     anchors.leftMargin: 8
                     verticalAlignment: Text.AlignVCenter
+                    anchors.verticalCenter: parent.verticalCenter
                     width: 224
-                    height: parent.height
+                    height: elementHeight
                     anchors.left: parent.left
                 }
 
                 Switch {
                     width: 32
-                    height: parent.height
-                    anchors.rightMargin: 18
+                    height: elementHeight
+                    anchors.rightMargin: 36
                     anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
                     // @disable-check M222
                     Component.onCompleted: checked = settings.value("show_arrow",
                                                                     true)
@@ -781,9 +823,9 @@ Item {
 
             Rectangle {
                 width: parent.width
-                height: 64
+                height: rowHeight
                 color: "#8cbfd7f3"
-                y: 1148
+                y: 18 * rowHeight
 
                 Text {
                     text: "Show Map"
@@ -791,16 +833,18 @@ Item {
                     font.pixelSize: 13
                     anchors.leftMargin: 8
                     verticalAlignment: Text.AlignVCenter
+                    anchors.verticalCenter: parent.verticalCenter
                     width: 224
-                    height: parent.height
+                    height: elementHeight
                     anchors.left: parent.left
                 }
 
                 Switch {
                     width: 32
-                    height: parent.height
-                    anchors.rightMargin: 18
+                    height: elementHeight
+                    anchors.rightMargin: 36
                     anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
                     // @disable-check M222
                     Component.onCompleted: checked = settings.value("show_map",
                                                                     true)
@@ -814,19 +858,69 @@ Item {
         }
 
         ScrollView {
+            id: screenView
+            width: parent.width
+            height: parent.height
+            contentHeight: 1 * rowHeight
+
+            clip: true
+
+            visible: OpenHDPi.is_raspberry_pi
+
+            Rectangle {
+                width: parent.width
+                height: rowHeight
+                color: "#8cbfd7f3"
+                y: 0 * rowHeight
+
+                Text {
+                    text: "Brightness"
+                    font.weight: Font.Bold
+                    font.pixelSize: 13
+                    anchors.leftMargin: 8
+                    verticalAlignment: Text.AlignVCenter
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: 224
+                    height: elementHeight
+                    anchors.left: parent.left
+                }
+
+                SpinBox {
+                    id: screenBrightnessSpinBox
+                    height: elementHeight
+                    width: 210
+                    font.pixelSize: 14
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    from: 0
+                    to: 255
+                    stepSize: 5
+                    anchors.rightMargin: 18
+                    Component.onCompleted: value = OpenHDPi.brightness
+                    // @disable-check M223
+                    onValueChanged: {
+                        OpenHDPi.brightness = value
+                        // @disable-check M222
+                        settings.setValue("brightness", value)
+                    }
+                }
+            }
+        }
+
+        ScrollView {
             id: videoView
             width: parent.width
             height: parent.height
-            contentHeight: 3 * 64
+            contentHeight: 3 * rowHeight
 
             clip: true
             visible: EnableVideo
 
             Rectangle {
                 width: parent.width
-                height: 64
+                height: rowHeight
                 color: "#8cbfd7f3"
-                y: 0
+                y: 0 * rowHeight
 
                 Text {
                     text: "Main video port"
@@ -834,37 +928,33 @@ Item {
                     font.pixelSize: 13
                     anchors.leftMargin: 8
                     verticalAlignment: Text.AlignVCenter
+                    anchors.verticalCenter: parent.verticalCenter
                     width: 224
-                    height: parent.height
+                    height: elementHeight
                     anchors.left: parent.left
                 }
 
                 SpinBox {
                     id: mainVideoPortSpinBox
-                    height: parent.height
-                    width: 212
+                    height: elementHeight
+                    width: 210
                     font.pixelSize: 14
                     anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
                     from: 5600
                     to: 5610
                     stepSize: 1
-                    anchors.rightMargin: 0
-                    // @disable-check M222
-                    Component.onCompleted: value = settings.value("main_video_port",
-                                                                  5600)
-                    // @disable-check M223
-                    onValueChanged: {
-                        // @disable-check M222
-                        settings.setValue("main_video_port", value)
-                    }
+                    anchors.rightMargin: 18
+                    value: settings.main_video_port
+                    onValueChanged: settings.main_video_port = value
                 }
             }
 
             Rectangle {
                 width: parent.width
-                height: 64
+                height: rowHeight
                 color: "#00000000"
-                y: 64
+                y: 1 * rowHeight
 
                 Text {
                     text: "Enable PiP"
@@ -872,16 +962,18 @@ Item {
                     font.pixelSize: 13
                     anchors.leftMargin: 8
                     verticalAlignment: Text.AlignVCenter
+                    anchors.verticalCenter: parent.verticalCenter
                     width: 224
-                    height: parent.height
+                    height: elementHeight
                     anchors.left: parent.left
                 }
 
                 Switch {
                     width: 32
-                    height: parent.height
-                    anchors.rightMargin: 18
+                    height: elementHeight
+                    anchors.rightMargin: 36
                     anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
                     // @disable-check M222
                     Component.onCompleted: checked = settings.value("show_pip_video",
                                                                     false)
@@ -892,9 +984,9 @@ Item {
 
             Rectangle {
                 width: parent.width
-                height: 64
+                height: rowHeight
                 color: "#8cbfd7f3"
-                y: 128
+                y: 2 * rowHeight
 
                 Text {
                     text: "PiP video port"
@@ -902,77 +994,25 @@ Item {
                     font.pixelSize: 13
                     anchors.leftMargin: 8
                     verticalAlignment: Text.AlignVCenter
+                    anchors.verticalCenter: parent.verticalCenter
                     width: 224
-                    height: parent.height
+                    height: elementHeight
                     anchors.left: parent.left
                 }
 
                 SpinBox {
                     id: pipVideoPortSpinBox
-                    height: parent.height
-                    width: 212
+                    height: elementHeight
+                    width: 210
                     font.pixelSize: 14
                     anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
                     from: 5600
                     to: 5610
                     stepSize: 1
-                    anchors.rightMargin: 0
-                    // @disable-check M222
-                    Component.onCompleted: value = settings.value("pip_video_port",
-                                                                  5601)
-                    // @disable-check M223
-                    onValueChanged: {
-                        // @disable-check M222
-                        settings.setValue("pip_video_port", value)
-                    }
-                }
-            }
-        }
-
-        ScrollView {
-            id: screenView
-            width: parent.width
-            height: parent.height
-            contentHeight: 3 * 64
-
-            clip: true
-
-            visible: OpenHDPi.is_raspberry_pi
-
-            Rectangle {
-                width: parent.width
-                height: 64
-                color: "#8cbfd7f3"
-                y: 0
-
-                Text {
-                    text: "Brightness"
-                    font.weight: Font.Bold
-                    font.pixelSize: 13
-                    anchors.leftMargin: 8
-                    verticalAlignment: Text.AlignVCenter
-                    width: 224
-                    height: parent.height
-                    anchors.left: parent.left
-                }
-
-                SpinBox {
-                    id: screenBrightnessSpinBox
-                    height: parent.height
-                    width: 212
-                    font.pixelSize: 14
-                    anchors.right: parent.right
-                    from: 0
-                    to: 255
-                    stepSize: 5
-                    anchors.rightMargin: 0
-                    Component.onCompleted: value = OpenHDPi.brightness
-                    // @disable-check M223
-                    onValueChanged: {
-                        OpenHDPi.brightness = value
-                        // @disable-check M222
-                        settings.setValue("brightness", value)
-                    }
+                    anchors.rightMargin: 18
+                    value: settings.pip_video_port
+                    onValueChanged: settings.pip_video_port = value
                 }
             }
         }

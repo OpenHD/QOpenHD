@@ -1,6 +1,6 @@
-import QtQuick 2.13
-import QtQuick.Controls 2.13
-import QtQuick.Layouts 1.13
+import QtQuick 2.12
+import QtQuick.Controls 2.12
+import QtQuick.Layouts 1.12
 
 import Qt.labs.settings 1.0
 
@@ -180,7 +180,7 @@ Item {
                 id: save
                 text: qsTr("Save")
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                enabled: !openHDSettings.busy
+                enabled: !openHDSettings.loading && !openHDSettings.saving
                 Layout.columnSpan: 1
                 font.pixelSize: 13
             }
@@ -194,8 +194,8 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: button_row.left
             anchors.rightMargin: 0
-            running: openHDSettings.busy
-            visible: openHDSettings.busy
+            running: openHDSettings.loading || openHDSettings.saving
+            visible: openHDSettings.loading || openHDSettings.saving
         }
     }
 }

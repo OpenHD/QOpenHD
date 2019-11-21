@@ -1,7 +1,7 @@
-import QtQuick 2.13
-import QtQuick.Window 2.13
-import QtQuick.Layouts 1.13
-import QtQuick.Controls 2.13
+import QtQuick 2.12
+import QtQuick.Window 2.12
+import QtQuick.Layouts 1.12
+import QtQuick.Controls 2.12
 
 import OpenHD 1.0
 
@@ -32,7 +32,7 @@ Rectangle {
         id: widgetDetail
 
 
-        width: 196
+        width: 256
         // the alignment dropdown isn't necessary on the ground station so we hide it
         height: 164
 

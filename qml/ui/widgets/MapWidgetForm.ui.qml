@@ -1,14 +1,14 @@
-import QtQuick 2.13
-import QtQuick.Controls 2.13
-import QtQuick.Layouts 1.13
-import QtGraphicalEffects 1.13
+import QtQuick 2.12
+import QtQuick.Controls 2.12
+import QtQuick.Layouts 1.12
+import QtGraphicalEffects 1.12
 import QtQuick.Shapes 1.0
 
 import Qt.labs.settings 1.0
 
-import QtQuick.Window 2.13
-import QtLocation 5.13
-import QtPositioning 5.13
+import QtQuick.Window 2.12
+import QtLocation 5.12
+import QtPositioning 5.12
 
 import OpenHD 1.0
 
@@ -80,8 +80,10 @@ BaseWidget {
                 ComboBox{
                     model:mapsmall.supportedMapTypes
                     textRole:"description"
-                    onCurrentIndexChanged: mapsmall.activeMapType = mapsmall.supportedMapTypes[currentIndex],
-                    maplarge.activeMapType = maplarge.supportedMapTypes[currentIndex]
+                    onCurrentIndexChanged: {
+                        mapsmall.activeMapType = mapsmall.supportedMapTypes[currentIndex];
+                        maplarge.activeMapType = maplarge.supportedMapTypes[currentIndex];
+                    }
                 }
             }
         }

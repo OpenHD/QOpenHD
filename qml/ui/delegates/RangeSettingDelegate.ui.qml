@@ -1,31 +1,12 @@
-import QtQuick 2.13
+import QtQuick 2.12
 
-import QtQuick.Layouts 1.13
-import QtQuick.Controls 2.13
+import QtQuick.Layouts 1.12
+import QtQuick.Controls 2.12
 
-Rectangle {
-    id: rectangle
-    width: 504
-    height: 64
-    color: index % 2 == 0 ? "#8cbfd7f3" : "white"
-
-
-    Text {
-        text: model.title
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.leftMargin: 12
-        verticalAlignment: Text.AlignVCenter
-        width: 192
-        height: 32
-        font.bold: true
-        font.pixelSize: 13
-        anchors.left: parent.left
-    }
+BaseDelegate {
 
     Slider {
-        id: slider
-        x: 382
-        y: 8
+        id: choiceBox
         width: 210
         height: 48
         from: 0
@@ -38,10 +19,10 @@ Rectangle {
         onValueChanged: model.modified = true
 
         ToolTip {
-            parent: slider.handle
-            visible: slider.pressed
+            parent: valueElement.handle
+            visible: valueElement.pressed
             // @disable-check M222
-            text: "%1%2".arg(slider.value).arg(model.unit)
+            text: "%1%2".arg(valueElement.value).arg(model.unit)
         }
         enabled: !model.disabled
     }

@@ -1,7 +1,7 @@
-import QtQuick 2.13
-import QtQuick.Window 2.13
-import QtQuick.Layouts 1.13
-import QtQuick.Controls 2.13
+import QtQuick 2.12
+import QtQuick.Window 2.12
+import QtQuick.Layouts 1.12
+import QtQuick.Controls 2.12
 import Qt.labs.settings 1.0
 
 BaseWidgetForm {
@@ -27,6 +27,15 @@ BaseWidgetForm {
     property string hCenterIdentifier: "%1_h_center".arg(widgetIdentifier);
     property string vCenterIdentifier: "%1_v_center".arg(widgetIdentifier);
 
+    Connections {
+        target: link
+        onWidgetLocation: {
+            if (widgetIdentifier === widgetName) {
+                setAlignment(alignment, xOffset, yOffset, hCenter, vCenter);
+            }
+        }
+    }
+
     Component.onCompleted: {
         loadAlignment();
     }
@@ -45,6 +54,22 @@ BaseWidgetForm {
             RotationAnimator { target: widgetInner; from: 0; to: -2; duration: 200 * 0.4 },
             RotationAnimator { target: widgetInner; from: -2; to: 0; duration: 200 * 0.4 }
         ]
+    }
+
+    Timer {
+        interval: 50;
+        running: dragging;
+        repeat: true
+        onTriggered: {
+            var point = calculateOffsets();
+            var _xOffset = point.x;
+            var _yOffset = point.y;
+
+            var _hCenter = getHCenter();
+            var _vCenter = getVCenter();
+
+            link.setWidgetLocation(widgetIdentifier, alignmentType, _xOffset, _yOffset, _hCenter, _vCenter)
+        }
     }
 
     MouseArea {
@@ -99,7 +124,7 @@ BaseWidgetForm {
         }
     }
 
-    function saveAlignment() {
+    function calculateOffsets() {
         var _xOffset;
         var _yOffset;
 
@@ -121,34 +146,62 @@ BaseWidgetForm {
             _yOffset = parent.height - (y + height);
             break;
         }
+        return Qt.point(_xOffset, _yOffset);
+    }
+
+    function saveAlignment() {
+        var point = calculateOffsets();
+        var _xOffset = point.x;
+        var _yOffset = point.y;
 
         settings.setValue(alignmentIdentifier, alignmentType);
         settings.setValue(xOffsetIdentifier, _xOffset);
         settings.setValue(yOffsetIdentifier, _yOffset);
+
+        var _hCenter = getHCenter();
+        var _vCenter = getVCenter();
+
+        link.setWidgetLocation(widgetIdentifier, alignmentType, _xOffset, _yOffset, _hCenter, _vCenter)
     }
 
-    function loadAlignment() {
-        alignmentType = settings.value(alignmentIdentifier, defaultAlignment);
-
-        /*
-         * This is completely absurd and shouldn't be necessary, but here we are...
-         *
-         * For some reason, this returns strings on Linux and booleans on every other platform.
-         */
+    /*
+     * This is completely absurd and shouldn't be necessary, but here we are...
+     *
+     * For some reason, this returns strings on Linux and booleans on every other platform.
+     */
+    function getHCenter() {
         var _hCenter = settings.value(hCenterIdentifier, defaultHCenter);
         if (_hCenter === "true" || _hCenter === 1 || _hCenter === true) {
             _hCenter = true;
         } else {
             _hCenter = false;
         }
+        return _hCenter;
+    }
 
+    function getVCenter() {
         var _vCenter = settings.value(vCenterIdentifier, defaultVCenter);
         if (_vCenter === "true" || _vCenter === 1 || _vCenter === true) {
             _vCenter = true;
         } else {
             _vCenter = false;
         }
+        return _vCenter;
+    }
 
+    function loadAlignment() {
+        alignmentType = settings.value(alignmentIdentifier, defaultAlignment);
+
+        var _hCenter = getHCenter();
+        var _vCenter = getVCenter();
+
+        var xOffset = settings.value(xOffsetIdentifier, defaultXOffset);
+        var yOffset = settings.value(yOffsetIdentifier, defaultYOffset);
+
+        setAlignment(alignmentType, xOffset, yOffset, _hCenter, _vCenter);
+    }
+
+    function setAlignment(alignmentType, xOffset, yOffset, hCenter, vCenter) {
         /*
          * Anchors have to be cleared before any of them can be set again. This is documented
          * at https://doc.qt.io/qt-5/qtquick-positioning-anchors.html#changing-anchors
@@ -156,56 +209,56 @@ BaseWidgetForm {
         resetAnchors();
 
         if (alignmentType === 0) {
-            if (_vCenter) {
+            if (vCenter) {
                 anchors.verticalCenter = parent.verticalCenter;
             } else {
                 anchors.top = parent.top;
-                anchors.topMargin = settings.value(yOffsetIdentifier, defaultYOffset);
+                anchors.topMargin = yOffset;
             }
-            if (_hCenter) {
+            if (hCenter) {
                 anchors.horizontalCenter = parent.horizontalCenter;
             } else {
                 anchors.left = parent.left;
-                anchors.leftMargin = settings.value(xOffsetIdentifier, defaultXOffset);
+                anchors.leftMargin = xOffset;
             }
         } else if (alignmentType === 1) {
-            if (_vCenter) {
+            if (vCenter) {
                 anchors.verticalCenter = parent.verticalCenter;
             } else {
                 anchors.top = parent.top;
-                anchors.topMargin = settings.value(yOffsetIdentifier, defaultYOffset);
+                anchors.topMargin = yOffset;
             }
-            if (_hCenter) {
+            if (hCenter) {
                 anchors.horizontalCenter = parent.horizontalCenter;
             } else {
                 anchors.right = parent.right;
-                anchors.rightMargin = settings.value(xOffsetIdentifier, defaultXOffset);
+                anchors.rightMargin = xOffset;
             }
         } else if (alignmentType === 2) {
-            if (_vCenter) {
+            if (vCenter) {
                 anchors.verticalCenter = parent.verticalCenter;
             } else {
                 anchors.bottom = parent.bottom;
-                anchors.bottomMargin = settings.value(yOffsetIdentifier, defaultYOffset);
+                anchors.bottomMargin = yOffset;
             }
-            if (_hCenter) {
+            if (hCenter) {
                 anchors.horizontalCenter = parent.horizontalCenter;
             } else {
                 anchors.right = parent.right;
-                anchors.rightMargin = settings.value(xOffsetIdentifier, defaultXOffset);
+                anchors.rightMargin = xOffset;
             }
         } else if (alignmentType === 3) {
-            if (_vCenter) {
+            if (vCenter) {
                 anchors.verticalCenter = parent.verticalCenter;
             } else {
                 anchors.bottom = parent.bottom;
-                anchors.bottomMargin = settings.value(yOffsetIdentifier, defaultYOffset);
+                anchors.bottomMargin = yOffset;
             }
-            if (_hCenter) {
+            if (hCenter) {
                 anchors.horizontalCenter = parent.horizontalCenter;
             } else {
                 anchors.left = parent.left;
-                anchors.leftMargin = settings.value(xOffsetIdentifier, defaultXOffset);
+                anchors.leftMargin = xOffset;
             }
         }
     }

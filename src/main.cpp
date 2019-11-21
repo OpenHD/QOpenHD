@@ -5,6 +5,12 @@
 #include <QFontDatabase>
 #if defined(__android__)
 #include <QtAndroidExtras/QtAndroid>
+const QVector<QString> permissions({"android.permission.INTERNET",
+                                    "android.permission.WRITE_EXTERNAL_STORAGE",
+                                    "android.permission.READ_EXTERNAL_STORAGE",
+
+                                    "android.permission.ACCESS_NETWORK_STATE",
+                                    "android.permission.ACCESS_FINE_LOCATION"});
 #endif
 
 #include "constants.h"
@@ -21,6 +27,7 @@
 #include "msptelemetry.h"
 #include "ltmtelemetry.h"
 
+#include "qopenhdlink.h"
 #include "VideoStreaming/VideoStreaming.h"
 #include "VideoStreaming/VideoSurface.h"
 #include "VideoStreaming/VideoReceiver.h"
@@ -39,6 +46,19 @@ int main(int argc, char *argv[]) {
     QCoreApplication::setOrganizationName("Open.HD");
     QCoreApplication::setOrganizationDomain("open.hd");
     QCoreApplication::setApplicationName("Open.HD");
+
+#if defined(__android__)
+    for(const QString &permission : permissions) {
+        auto result = QtAndroid::checkPermission(permission);
+
+        if (result == QtAndroid::PermissionResult::Denied) {
+            auto resultHash = QtAndroid::requestPermissionsSync(QStringList({permission}));
+            if (resultHash[permission] == QtAndroid::PermissionResult::Denied) {
+                return 0;
+            }
+        }
+    }
+#endif
 
 #if defined(__rasp_pi__)
     qDebug() << "Initializing Pi";
@@ -105,14 +125,22 @@ char gstLogPath[] = "/sdcard";
     qmlRegisterSingletonType<OpenHDRC>("OpenHD", 1, 0, "OpenHDRC", openHDRCSingletonProvider);
     qmlRegisterSingletonType<OpenHDPi>("OpenHD", 1, 0, "OpenHDPi", openHDPiSingletonProvider);
     qmlRegisterSingletonType<LocalMessage>("OpenHD", 1, 0, "LocalMessage", localMessageSingletonProvider);
-    qmlRegisterSingletonType<OpenHD>("OpenHD", 1, 0, "OpenHD", openHDSingletonProvider);
 
     qmlRegisterType<OpenHDSettings>("OpenHD", 1,0, "OpenHDSettings");
     qmlRegisterType<OpenHDVideoStream>("OpenHD", 1,0, "OpenHDVideoStream");
 
+    qmlRegisterType<QOpenHDLink>("OpenHD", 1,0, "QOpenHDLink");
 
+    auto openhd = OpenHD::instance();
+
+    QTimer timer;
+    QObject::connect(&timer, &QTimer::timeout, openhd, &OpenHD::updateFlightTimer);
+    timer.start(1000);
 
     QQmlApplicationEngine engine;
+
+    engine.rootContext()->setContextProperty("OpenHD", openhd);
+
 #if defined(ENABLE_VIDEO)
     engine.rootContext()->setContextProperty("EnableVideo", QVariant(true));
 #else
@@ -133,6 +161,9 @@ char gstLogPath[] = "/sdcard";
 #endif
 
     engine.rootContext()->setContextProperty("QOPENHD_VERSION", QVariant(QOPENHD_VERSION));
+
+    engine.rootContext()->setContextProperty("OPENHD_VERSION", QVariant(OPENHD_VERSION));
+    engine.rootContext()->setContextProperty("BUILDER_VERSION", QVariant(BUILDER_VERSION));
 
     engine.load(QUrl(QLatin1String("qrc:/main.qml")));
 

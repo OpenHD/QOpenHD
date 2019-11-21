@@ -1,38 +1,18 @@
 // @disable-check M222
 // @disable-check M223
 
-import QtQuick 2.13
+import QtQuick 2.12
 
-import QtQuick.Layouts 1.13
-import QtQuick.Controls 2.13
+import QtQuick.Layouts 1.12
+import QtQuick.Controls 2.12
 
-Rectangle {
-    id: rectangle
-    width: 504
-    height: 64
-    color: index % 2 == 0 ? "#8cbfd7f3" : "white"
-
-
+BaseDelegate {
     // allow access to the index of the setting item within the ListModel within the onActivated
     // signal, which has its own "index" argument
     property var itemIndex: index
 
-    Text {
-        text: title
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.leftMargin: 12
-        verticalAlignment: Text.AlignVCenter
-        width: 192
-        height: 32
-        font.bold: true
-        font.pixelSize: 13
-        anchors.left: parent.left
-    }
-
     ComboBox {
-        id: choiceBox
-        x: 382
-        y: 8
+        id: valueElement
         textRole: "title"
         model: itemModel.choiceValues
         width: 212
@@ -40,7 +20,7 @@ Rectangle {
         font.pixelSize: 14
         anchors.verticalCenter: parent.verticalCenter
         anchors.right: parent.right
-        anchors.rightMargin: 18
+        anchors.rightMargin: 36
         enabled: !itemModel.disabled
 
 
@@ -60,7 +40,7 @@ Rectangle {
         // @disable-check M223
         onActivated: {
             // @disable-check M222
-            listModel.setProperty(itemIndex, "value", choiceBox.model.get(index).value);
+            listModel.setProperty(itemIndex, "value", valueElement.model.get(index).value);
             itemModel.modified = true;
         }
 
@@ -73,10 +53,10 @@ Rectangle {
             id: itemDelegate
             width: parent.width
             // @disable-check M222
-            text: choiceBox.textRole ? (Array.isArray(choiceBox.model) ? modelData[choiceBox.textRole] : model[choiceBox.textRole]) : modelData
-            font.weight: choiceBox.currentIndex === index ? Font.DemiBold : Font.Normal
-            highlighted: choiceBox.highlightedIndex === index
-            hoverEnabled: choiceBox.hoverEnabled
+            text: valueElement.textRole ? (Array.isArray(valueElement.model) ? modelData[valueElement.textRole] : model[valueElement.textRole]) : modelData
+            font.weight: valueElement.currentIndex === index ? Font.DemiBold : Font.Normal
+            highlighted: valueElement.highlightedIndex === index
+            hoverEnabled: valueElement.hoverEnabled
 
             contentItem: Label {
                 text: itemDelegate.text
@@ -88,31 +68,31 @@ Rectangle {
         }
 
         contentItem: TextField {
-            leftPadding: !choiceBox.mirrored ? 12 : choiceBox.editable && activeFocus ? 3 : 1
-            rightPadding: choiceBox.mirrored ? 12 : choiceBox.editable && activeFocus ? 3 : 1
-            topPadding: 6 - choiceBox.padding
-            bottomPadding: 6 - choiceBox.padding
+            leftPadding: !valueElement.mirrored ? 12 : valueElement.editable && activeFocus ? 3 : 1
+            rightPadding: valueElement.mirrored ? 12 : valueElement.editable && activeFocus ? 3 : 1
+            topPadding: 6 - valueElement.padding
+            bottomPadding: 6 - valueElement.padding
 
-            text: choiceBox.editable ? choiceBox.editText : choiceBox.displayText
+            text: valueElement.editable ? valueElement.editText : valueElement.displayText
 
-            enabled: choiceBox.editable
-            autoScroll: choiceBox.editable
-            readOnly: choiceBox.down
-            inputMethodHints: choiceBox.inputMethodHints
-            validator: choiceBox.validator
+            enabled: valueElement.editable
+            autoScroll: valueElement.editable
+            readOnly: valueElement.down
+            inputMethodHints: valueElement.inputMethodHints
+            validator: valueElement.validator
 
-            font: choiceBox.font
-            color: choiceBox.editable ? choiceBox.palette.text : choiceBox.palette.buttonText
-            selectionColor: choiceBox.palette.highlight
-            selectedTextColor: choiceBox.palette.highlightedText
+            font: valueElement.font
+            color: valueElement.editable ? valueElement.palette.text : valueElement.palette.buttonText
+            selectionColor: valueElement.palette.highlight
+            selectedTextColor: valueElement.palette.highlightedText
             verticalAlignment: Text.AlignVCenter
             horizontalAlignment: Text.AlignRight
 
             background: Rectangle {
-                visible: choiceBox.enabled && choiceBox.editable && !choiceBox.flat
+                visible: valueElement.enabled && valueElement.editable && !valueElement.flat
                 border.width: parent && parent.activeFocus ? 2 : 1
-                border.color: parent && parent.activeFocus ? choiceBox.palette.highlight : choiceBox.palette.button
-                color: choiceBox.palette.base
+                border.color: parent && parent.activeFocus ? valueElement.palette.highlight : valueElement.palette.button
+                color: valueElement.palette.base
             }
         }
     }

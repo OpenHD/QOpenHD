@@ -1,6 +1,6 @@
-import QtQuick 2.13
-import QtQuick.Controls 2.13
-import QtQuick.Layouts 1.13
+import QtQuick 2.12
+import QtQuick.Controls 2.12
+import QtQuick.Layouts 1.12
 
 import Qt.labs.settings 1.0
 
@@ -58,6 +58,34 @@ Rectangle {
     }
 
     Text {
+        id: openhd_version
+        width: 173
+        height: OpenHDPi.is_raspberry_pi ? 14 : 0
+        clip: true
+        color: "#b3ffffff"
+        text: "Open.HD " + OPENHD_VERSION
+        anchors.left: title.left
+        anchors.leftMargin: 0
+        anchors.top: qopenhd_version.bottom
+        anchors.topMargin: 0
+        font.pixelSize: 12
+    }
+
+    Text {
+        id: builder_version
+        width: 173
+        height: OpenHDPi.is_raspberry_pi ? 14 : 0
+        clip: true
+        color: "#b3ffffff"
+        text: "Builder " + BUILDER_VERSION
+        anchors.left: title.left
+        anchors.leftMargin: 0
+        anchors.top: openhd_version.bottom
+        anchors.topMargin: 0
+        font.pixelSize: 12
+    }
+
+    Text {
         id: gstreamer_version
         width: 173
         height: 14
@@ -65,7 +93,7 @@ Rectangle {
         text: "GStreamer " + OpenHD.gstreamer_version
         anchors.left: title.left
         anchors.leftMargin: 0
-        anchors.top: qopenhd_version.bottom
+        anchors.top: builder_version.bottom
         anchors.topMargin: 0
         font.pixelSize: 12
     }
@@ -84,20 +112,19 @@ Rectangle {
     }
 
 
-    TextArea {
+    Text {
         id: license
-        text: qsTr("")
         color: "#b3ffffff"
-        placeholderText: "GPL license here"
+        text: "License: GPLv3"
+        onLinkActivated: {
+            Qt.openUrlExternally("https://github.com/infincia/QOpenHD/blob/master/LICENSE")
+        }
+
         font.pointSize: 12
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 0
         anchors.top: qt_version.bottom
-        anchors.topMargin: 24
-        anchors.right: parent.right
-        anchors.rightMargin: 24
-        anchors.left: parent.left
-        anchors.leftMargin: 24
+        anchors.topMargin: 0
+        anchors.left: title.left
+        anchors.leftMargin: 0
     }
 }
 

@@ -1,0 +1,25 @@
+name: qopenhd
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: install-dependencies
+      run: |
+        sudo apt-get update -qq
+        sudo apt-get install devscripts build-essential lintian dh-make
+        sudo apt-get install qtdeclarative5-dev qt5-default libjack-jackd2-dev
+        sudo apt-get install libgstreamer1.0-0 libgstreamer1.0-dev gstreamer1.0-gl gstreamer1.0-alsa gstreamer1.0-plugins-base libgstreamer-plugins-base1.0-dev gstreamer1.0-plugins-good libgstreamer-plugins-good1.0-dev
+    - name: build
+      run: |
+        qmake QOpenHD.pro CONFIG+=release
+        make
+    - name: upload-artifacts
+      uses: actions/upload-artifact@v1.0.0
+      with:
+        name: QOpenHD
+        path: release

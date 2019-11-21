@@ -1,4 +1,4 @@
-import QtQuick 2.13
+import QtQuick 2.12
 
 /*
  * These are mappings for the raw settings key/value pairs provided by the ground station. We
@@ -17,7 +17,7 @@ Item {
         "DEBUG": {title: "Enable debug mode", itemType: "bool", trueValue: "Y", falseValue: "N"},
         "QUIET": {title: "Enable quiet mode", itemType: "bool", trueValue: "Y", falseValue: "N"},
         "ENABLE_SCREENSHOTS": {title: "Enable OSD screenshots", itemType: "bool", trueValue: "Y", falseValue: "N"},
-        "DISPLAY_OSD": {title: "Display OSD", itemType: "bool", trueValue: "Y", falseValue: "N"},
+        "DISPLAY_OSD": {title: "Display OSD", info: "Controls whether the OSD is shown on the ground station display", itemType: "bool", trueValue: "Y", falseValue: "N"},
     })
 
     property var videoSettingsMap: ({
@@ -232,8 +232,8 @@ Item {
         "WIFI_HOTSPOT": {title: "Enable WiFi hotspot",
                          itemType: "choice",
                          choiceValues: [{title: "Automatic", value: "auto"},
-                                        {title: "Yes", value: "yes"},
-                                        {title: "No", value: "no"}]},
+                                        {title: "Yes", value: "Y"},
+                                        {title: "No", value: "N"}]},
         "HOTSPOT_BAND": {title: "WiFi band",
                          itemType: "choice",
                          choiceValues: [{title: "5GHz", value: "a"},

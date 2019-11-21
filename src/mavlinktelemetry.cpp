@@ -156,7 +156,9 @@ void MavlinkTelemetry::processMavlinkMessage(mavlink_message_t msg) {
 
                     qint64 current_timestamp = QDateTime::currentMSecsSinceEpoch();
 
-                    set_last_heartbeat(QString(tr("%1s").arg(current_timestamp - last_heartbeat_timestamp)));
+                    auto diff = (current_timestamp - last_heartbeat_timestamp) / 1000;
+
+                    set_last_heartbeat(QString(tr("%1ms").arg(current_timestamp - last_heartbeat_timestamp)));
                     last_heartbeat_timestamp = current_timestamp;
                     break;
                 }

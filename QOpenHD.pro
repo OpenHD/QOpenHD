@@ -1,5 +1,5 @@
 !equals(QT_MAJOR_VERSION, 5) | !greaterThan(QT_MINOR_VERSION, 6) {
-    error("Unsupported Qt version, 5.7+ is required")
+    error("Unsupported Qt version, 5.12+ is required")
 }
 
 BASEDIR = $$IN_PWD
@@ -37,6 +37,7 @@ CONFIG(debug, debug|release) {
 QT += qml quick concurrent opengl gui
 
 INCLUDEPATH += $$PWD/inc
+INCLUDEPATH += $$PWD/lib
 INCLUDEPATH += $$PWD/lib/mavlink_generated
 INCLUDEPATH += $$PWD/lib/mavlink_generated/common
 INCLUDEPATH += $$PWD/lib/mavlink_generated/ardupilotmega
@@ -57,8 +58,8 @@ SOURCES += \
     src/openhdsettings.cpp \
     src/openhdtelemetry.cpp \
     src/openhdvideostream.cpp \
-    src/util.cpp \
-    src/wifibroadcast.cpp
+    src/qopenhdlink.cpp \
+    src/util.cpp
 
 RESOURCES += qml/qml.qrc
 
@@ -76,8 +77,10 @@ HEADERS += \
     inc/openhdsettings.h \
     inc/openhdtelemetry.h \
     inc/openhdvideostream.h \
+    inc/qopenhdlink.h \
     inc/util.h \
-    inc/wifibroadcast.h
+    inc/wifibroadcast.h \
+    lib/json.hpp
 
 DISTFILES += \
     android/AndroidManifest.xml \
@@ -167,7 +170,7 @@ iOSBuild {
     DISTFILES        += ios/Info.plist \
                         icons/LaunchScreen.png \
                         icons/LaunchScreen.storyboard
-    LIBS += -framework VideoToolbox -framework AudioToolbox -framework CoreAudio
+    LIBS += -framework VideoToolbox -framework AudioToolbox -framework CoreAudio -framework CoreVideo -framework CoreMedia
     CONFIG -= bitcode
     CONFIG += EnableGamepads
     CONFIG += EnableSpeech
@@ -179,6 +182,10 @@ iOSBuild {
 
     ios_icon.files = $$files($$PWD/icons/AppIcon.appiconset/*.png)
     QMAKE_BUNDLE_DATA += ios_icon
+
+    DEFINES += GST_GL_HAVE_WINDOW_EAGL=1
+    DEFINES += GST_GL_HAVE_PLATFORM_EAGL=1
+    DEFINES += HAVE_QT_IOS
 }
 
 MacBuild {
@@ -186,18 +193,28 @@ MacBuild {
     ICON = $${BASEDIR}/icons/macos.icns
     DISTFILES += mac/Info.plist
     LIBS += -framework ApplicationServices
-    LIBS += -framework VideoToolbox
+    LIBS += -framework VideoToolbox -framework CoreVideo -framework CoreMedia
     CONFIG += EnableGamepads
     CONFIG += EnableJoysticks
     CONFIG += EnableSpeech
     CONFIG += EnableVideo
+
+    DEFINES += GST_GL_HAVE_WINDOW_COCOA=1
+    DEFINES += GST_GL_HAVE_PLATFORM_CGL=1
+    DEFINES += HAVE_QT_MAC
 }
 
 LinuxBuild {
+    QT += x11extras
     CONFIG += EnableGamepads
     CONFIG += EnableJoysticks
     CONFIG += EnableVideo
     message("LinuxBuild - config")
+
+    DEFINES += GST_GL_HAVE_WINDOW_X11=1
+    DEFINES += GST_GL_HAVE_PLATFORM_GLX=1
+    DEFINES += HAVE_QT_X11
+
 }
 
 RaspberryPiBuild {
@@ -207,6 +224,9 @@ RaspberryPiBuild {
     # replace that at some point but for now it isn't necessary.
     message("RaspberryPiBuild - config")
     #CONFIG += EnableVideo
+
+    DEFINES += GST_GL_HAVE_PLATFORM_EGL=1
+    DEFINES += HAVE_QT_EGLFS=1
 }
 
 WindowsBuild {
@@ -214,6 +234,9 @@ WindowsBuild {
     CONFIG += EnableJoysticks
     CONFIG += EnableSpeech
     CONFIG += EnableVideo
+    DEFINES += GST_GL_HAVE_WINDOW_WIN32=1
+    DEFINES += GST_GL_HAVE_PLATFORM_WGL=1
+    DEFINES += HAVE_QT_WIN32
 }
 
 AndroidBuild {
@@ -225,6 +248,10 @@ AndroidBuild {
 
     OTHER_FILES += \
         $$PWD/android/src/org/openhd/OpenHDActivity.java
+
+    DEFINES += GST_GL_HAVE_PLATFORM_EGL=1
+    DEFINES += GST_GL_HAVE_WINDOW_ANDROID=1
+    DEFINES += HAVE_QT_ANDROID
 }
 
 EnableSpeech {
@@ -238,18 +265,18 @@ EnableVideo {
     DEFINES += ENABLE_VIDEO
 }
 
-include ($$PWD/src/VideoStreaming/VideoStreaming.pri)
+include ($$PWD/lib/VideoStreaming/VideoStreaming.pri)
 HEADERS += \
-    $$BASEDIR/src/VideoStreaming/VideoItem.h \
-    $$BASEDIR/src/VideoStreaming/VideoReceiver.h \
-    $$BASEDIR/src/VideoStreaming/VideoSurface.h \
-    $$BASEDIR/src/VideoStreaming/VideoStreaming.h
+    $$BASEDIR/lib/VideoStreaming/VideoItem.h \
+    $$BASEDIR/lib/VideoStreaming/VideoReceiver.h \
+    $$BASEDIR/lib/VideoStreaming/VideoSurface.h \
+    $$BASEDIR/lib/VideoStreaming/VideoStreaming.h
 
 SOURCES += \
-    $$BASEDIR/src/VideoStreaming/VideoItem.cc \
-    $$BASEDIR/src/VideoStreaming/VideoReceiver.cc \
-    $$BASEDIR/src/VideoStreaming/VideoSurface.cc \
-    $$BASEDIR/src/VideoStreaming/VideoStreaming.cc
+    $$BASEDIR/lib/VideoStreaming/VideoItem.cc \
+    $$BASEDIR/lib/VideoStreaming/VideoReceiver.cc \
+    $$BASEDIR/lib/VideoStreaming/VideoSurface.cc \
+    $$BASEDIR/lib/VideoStreaming/VideoStreaming.cc
 
 EnableRC {
     message("EnableRC")
@@ -301,6 +328,11 @@ installer {
 
 
 contains(ANDROID_TARGET_ARCH,armeabi-v7a) {
+    ANDROID_PACKAGE_SOURCE_DIR = \
+        $$PWD/android
+}
+
+contains(ANDROID_TARGET_ARCH,arm64-v8a) {
     ANDROID_PACKAGE_SOURCE_DIR = \
         $$PWD/android
 }

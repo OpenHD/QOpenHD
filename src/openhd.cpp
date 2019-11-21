@@ -16,13 +16,6 @@ OpenHD::OpenHD(QObject *parent): QObject(parent) {
 
 }
 
-QObject *openHDSingletonProvider(QQmlEngine *engine, QJSEngine *scriptEngine) {
-    Q_UNUSED(engine)
-    Q_UNUSED(scriptEngine)
-
-    return _instance;
-}
-
 OpenHD* OpenHD::instance() {
     return _instance;
 }
@@ -148,9 +141,6 @@ void OpenHD::set_armed(bool armed) {
          * vehicle is disarmed, causing it to appear to stop in the UI.
          */
         flightTimeStart.start();
-
-        connect(&flightTimerCheck, &QTimer::timeout, this, &OpenHD::updateFlightTimer);
-        flightTimerCheck.start(1000);
     }
 
     m_armed = armed;
@@ -217,7 +207,7 @@ void OpenHD::set_home_distance(double home_distance) {
 
 void OpenHD::calculate_home_course () {
 
-    qDebug() << "Home RAW lat lon " << m_homelat_raw << " :" << m_homelon_raw;
+    //qDebug() << "Home RAW lat lon " << m_homelat_raw << " :" << m_homelon_raw;
 
     double  dlon = (m_lon_raw-m_homelon_raw)*0.017453292519;
     double lat1 = (m_homelat_raw)*0.017453292519;

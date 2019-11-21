@@ -23,10 +23,10 @@ matrix:
     - brew install qt5
     - brew link qt5 --force
     - mkdir -p src
-    - if ! [ -f ./src/gstreamer-1.0-1.16.1-x86_64.pkg ]; then travis_wait curl -o ./src/gstreamer-1.0-1.16.1-x86_64.pkg https://gstreamer.freedesktop.org/data/pkg/osx/1.16.1/gstreamer-1.0-1.16.1-x86_64.pkg; fi
-    - if ! [ -f ./src/gstreamer-1.0-devel-1.16.1-x86_64.pkg ]; then travis_wait curl -o ./src/gstreamer-1.0-devel-1.16.1-x86_64.pkg https://gstreamer.freedesktop.org/data/pkg/osx/1.16.1/gstreamer-1.0-devel-1.16.1-x86_64.pkg; fi
-    - sudo installer -package ./src/gstreamer-1.0-1.16.1-x86_64.pkg -target /
-    - sudo installer -package ./src/gstreamer-1.0-devel-1.16.1-x86_64.pkg -target /
+    - if ! [ -f ./src/gstreamer-1.0-1.14.4-x86_64.pkg ]; then travis_wait curl -o ./src/gstreamer-1.0-1.14.4-x86_64.pkg https://gstreamer.freedesktop.org/data/pkg/osx/1.16.1/gstreamer-1.0-1.14.4-x86_64.pkg; fi
+    - if ! [ -f ./src/gstreamer-1.0-devel-1.14.4-x86_64.pkg ]; then travis_wait curl -o ./src/gstreamer-1.0-devel-1.14.4-x86_64.pkg https://gstreamer.freedesktop.org/data/pkg/osx/1.16.1/gstreamer-1.0-devel-1.14.4-x86_64.pkg; fi
+    - sudo installer -package ./src/gstreamer-1.0-1.14.4-x86_64.pkg -target /
+    - sudo installer -package ./src/gstreamer-1.0-devel-1.14.4-x86_64.pkg -target /
     script:
     - qmake QOpenHD.pro CONFIG+=release
     - make -j5

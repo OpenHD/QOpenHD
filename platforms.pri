@@ -7,7 +7,7 @@ linux {
             message("Linux clang")
             QMAKE_CXXFLAGS += -Qunused-arguments -fcolor-diagnostics
         }
-    } else : linux-rasp-pi-g++ {
+    } else : linux-rpi-g++ {
         message("RaspberryPiBuild")
         CONFIG += RaspberryPiBuild
         DEFINES += __STDC_LIMIT_MACROS __rasp_pi__
@@ -23,6 +23,11 @@ linux {
             CONFIG += Androidx86Build
             DEFINES += __androidx86__
         }
+        equals(ANDROID_TARGET_ARCH, arm64-v8a)  {
+            message("AndroidARM64Build")
+            CONFIG += AndroidARM64Build
+            DEFINES += __androidarm64__
+        }
     } else {
         error("Compiler/platform not supported")
     }
@@ -30,6 +35,7 @@ linux {
 
 win32 {
     CONFIG += WindowsBuild
+    DEFINES += __windows__
     DEFINES += __STDC_LIMIT_MACROS
 }
 
@@ -37,6 +43,7 @@ macx {
     message("MacBuild")
     CONFIG += MacBuild
     DEFINES += __macos__
+    DEFINES += __apple__
     CONFIG += x86_64
     CONFIG -= x86
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.12
@@ -48,6 +55,7 @@ ios {
     message("iOSBuild")
     CONFIG  += iOSBuild MobileBuild app_bundle
     DEFINES += __ios__
+    DEFINES += __apple__
     DEFINES += __mobile__
     QMAKE_IOS_DEPLOYMENT_TARGET = 12.1
     QMAKE_APPLE_TARGETED_DEVICE_FAMILY = 1,2
