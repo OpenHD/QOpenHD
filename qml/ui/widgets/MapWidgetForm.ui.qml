@@ -80,8 +80,10 @@ BaseWidget {
                 ComboBox{
                     model:mapsmall.supportedMapTypes
                     textRole:"description"
-                    onCurrentIndexChanged: mapsmall.activeMapType = mapsmall.supportedMapTypes[currentIndex],
-                    maplarge.activeMapType = maplarge.supportedMapTypes[currentIndex]
+                    onCurrentIndexChanged: {
+                        mapsmall.activeMapType = mapsmall.supportedMapTypes[currentIndex];
+                        maplarge.activeMapType = maplarge.supportedMapTypes[currentIndex];
+                    }
                 }
             }
         }
