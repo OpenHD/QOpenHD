@@ -88,6 +88,7 @@ ApplicationWindow {
         property bool show_second_alt: true
         property bool show_arrow: true
         property bool show_map: true
+        property bool show_throttle: true
     }
 
     QOpenHDLink {

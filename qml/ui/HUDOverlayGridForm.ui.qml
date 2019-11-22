@@ -36,6 +36,8 @@ Item {
 
     property alias mapWidget: mapWidget
 
+    property alias throttleWidget: throttleWidget
+
     property alias pipVideoWidget: pipVideoWidget
 
     MessageHUD {

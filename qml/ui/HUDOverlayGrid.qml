@@ -25,6 +25,8 @@ HUDOverlayGridForm {
         messageHUD.visible = settings.value("show_log_onscreen", true)
         pipVideoWidget.visible = settings.value("show_pip_video", false)
 
+        throttleWidget.visible = settings.value("show_throttle", true)
+
         horizonWidget.configure();
         fpvWidget.configure();
         altitudeWidget.configure();

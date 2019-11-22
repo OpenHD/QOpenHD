@@ -221,7 +221,7 @@ Item {
             width: parent.width
             height: parent.height
         //must increment if adding more options-------------->
-            contentHeight: 19 * rowHeight
+            contentHeight: 20 * rowHeight
 
             clip: true
 
@@ -776,7 +776,34 @@ Item {
                 }
             }
 
+            Rectangle {
+                width: parent.width
+                height: rowHeight
+                color: "#00000000"
+                y: 19 * rowHeight
 
+                Text {
+                    text: "Show throttle"
+                    font.weight: Font.Bold
+                    font.pixelSize: 13
+                    anchors.leftMargin: 8
+                    verticalAlignment: Text.AlignVCenter
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: 224
+                    height: elementHeight
+                    anchors.left: parent.left
+                }
+
+                Switch {
+                    width: 32
+                    height: elementHeight
+                    anchors.rightMargin: 36
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    checked: settings.show_throttle
+                    onCheckedChanged: settings.show_throttle = checked
+                }
+            }
 
         }
 
