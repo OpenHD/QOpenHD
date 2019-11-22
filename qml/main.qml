@@ -52,6 +52,32 @@ ApplicationWindow {
         property int main_video_port: 5600
         property int pip_video_port: 5601
         property int battery_cells: 3
+        property bool show_pip_video: false
+        property bool enable_hardware_video_decoder: true
+
+        property bool enable_speech: true
+        property bool enable_imperial: false
+        property bool enable_rc: false
+
+        property bool show_downlink_rssi: true
+        property bool show_uplink_rssi: true
+        property bool show_bitrate: true
+        property bool show_air_battery: true
+        property bool show_gps: true
+        property bool show_home_distance: true
+        property bool show_flight_timer: true
+        property bool show_flight_mode: true
+        property bool show_ground_status: true
+        property bool show_air_status: true
+        property bool show_log_onscreen: true
+        property bool show_horizon: true
+        property bool show_fpv: true
+        property bool show_altitude: true
+        property bool show_speed: true
+        property bool show_heading: true
+        property bool show_second_alt: true
+        property bool show_arrow: true
+        property bool show_map: true
     }
 
     QOpenHDLink {

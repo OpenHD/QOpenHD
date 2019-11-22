@@ -117,12 +117,8 @@ Item {
                     anchors.rightMargin: 36
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    // @disable-check M222
-                    Component.onCompleted: checked = settings.value(
-                                               "enable_speech", true)
-                    // @disable-check M222
-                    onCheckedChanged: settings.setValue("enable_speech",
-                                                        checked)
+                    checked: settings.enable_speech
+                    onCheckedChanged: settings.enable_speech = checked
                 }
             }
 
@@ -184,12 +180,8 @@ Item {
                     anchors.rightMargin: 36
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    // @disable-check M222
-                    Component.onCompleted: checked = settings.value(
-                                               "enable_imperial", false)
-                    // @disable-check M222
-                    onCheckedChanged: settings.setValue("enable_imperial",
-                                                        checked)
+                    checked: settings.enable_imperial
+                    onCheckedChanged: settings.enable_imperial = checked
                 }
             }
 
@@ -218,11 +210,8 @@ Item {
                     anchors.rightMargin: 36
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    // @disable-check M222
-                    Component.onCompleted: checked = settings.value(
-                                               "enable_rc", false)
-                    // @disable-check M222
-                    onCheckedChanged: settings.setValue("enable_rc", checked)
+                    checked: settings.enable_rc
+                    onCheckedChanged: settings.enable_rc = checked
                 }
             }
         }
@@ -260,12 +249,8 @@ Item {
                     anchors.rightMargin: 36
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    // @disable-check M222
-                    Component.onCompleted: checked = settings.value(
-                                               "show_downlink_rssi", true)
-                    // @disable-check M222
-                    onCheckedChanged: settings.setValue("show_downlink_rssi",
-                                                        checked)
+                    checked: settings.show_downlink_rssi
+                    onCheckedChanged: settings.show_downlink_rssi = checked
                 }
             }
 
@@ -293,12 +278,8 @@ Item {
                     anchors.rightMargin: 36
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    // @disable-check M222
-                    Component.onCompleted: checked = settings.value(
-                                               "show_uplink_rssi", true)
-                    // @disable-check M222
-                    onCheckedChanged: settings.setValue("show_uplik_rssi",
-                                                        checked)
+                    checked: settings.show_uplink_rssi
+                    onCheckedChanged: settings.show_uplink_rssi = checked
                 }
             }
 
@@ -326,11 +307,8 @@ Item {
                     anchors.rightMargin: 36
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    // @disable-check M222
-                    Component.onCompleted: checked = settings.value(
-                                               "show_bitrate", true)
-                    // @disable-check M222
-                    onCheckedChanged: settings.setValue("show_bitrate", checked)
+                    checked: settings.show_bitrate
+                    onCheckedChanged: settings.show_bitrate = checked
                 }
             }
 
@@ -358,11 +336,8 @@ Item {
                     anchors.rightMargin: 36
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    // @disable-check M222
-                    Component.onCompleted: checked = settings.value("show_gps",
-                                                                    true)
-                    // @disable-check M222
-                    onCheckedChanged: settings.setValue("show_gps", checked)
+                    checked: settings.show_gps
+                    onCheckedChanged: settings.show_gps = checked
                 }
             }
 
@@ -390,12 +365,8 @@ Item {
                     anchors.rightMargin: 36
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    // @disable-check M222
-                    Component.onCompleted: checked = settings.value(
-                                               "show_home_distance", true)
-                    // @disable-check M222
-                    onCheckedChanged: settings.setValue("show_home_distance",
-                                                        checked)
+                    checked: settings.show_home_distance
+                    onCheckedChanged: settings.show_home_distance = checked
                 }
             }
 
@@ -423,12 +394,8 @@ Item {
                     anchors.rightMargin: 36
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    // @disable-check M222
-                    Component.onCompleted: checked = settings.value(
-                                               "show_flight_timer", true)
-                    // @disable-check M222
-                    onCheckedChanged: settings.setValue("show_flight_timer",
-                                                        checked)
+                    checked: settings.show_flight_timer
+                    onCheckedChanged: settings.show_flight_timer = checked
                 }
             }
 
@@ -456,12 +423,8 @@ Item {
                     anchors.rightMargin: 36
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    // @disable-check M222
-                    Component.onCompleted: checked = settings.value(
-                                               "show_flight_mode", true)
-                    // @disable-check M222
-                    onCheckedChanged: settings.setValue("show_flight_mode",
-                                                        checked)
+                    checked: settings.show_flight_mode
+                    onCheckedChanged: settings.show_flight_mode = checked
                 }
             }
 
@@ -489,12 +452,8 @@ Item {
                     anchors.rightMargin: 36
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    // @disable-check M222
-                    Component.onCompleted: checked = settings.value(
-                                               "show_ground_status", true)
-                    // @disable-check M222
-                    onCheckedChanged: settings.setValue("show_ground_status",
-                                                        checked)
+                    checked: settings.show_ground_status
+                    onCheckedChanged: settings.show_ground_status = checked
                 }
             }
 
@@ -522,12 +481,8 @@ Item {
                     anchors.rightMargin: 36
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    // @disable-check M222
-                    Component.onCompleted: checked = settings.value(
-                                               "show_air_status", true)
-                    // @disable-check M222
-                    onCheckedChanged: settings.setValue("show_air_status",
-                                                        checked)
+                    checked: settings.show_air_status
+                    onCheckedChanged: settings.show_air_status = checked
                 }
             }
 
@@ -555,12 +510,8 @@ Item {
                     anchors.rightMargin: 36
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    // @disable-check M222
-                    Component.onCompleted: checked = settings.value(
-                                               "show_air_battery", true)
-                    // @disable-check M222
-                    onCheckedChanged: settings.setValue("show_air_battery",
-                                                        checked)
+                    checked: settings.show_air_battery
+                    onCheckedChanged: settings.show_air_battery = checked
                 }
             }
 
@@ -588,12 +539,8 @@ Item {
                     anchors.rightMargin: 36
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    // @disable-check M222
-                    Component.onCompleted: checked = settings.value(
-                                               "show_log_onscreen", true)
-                    // @disable-check M222
-                    onCheckedChanged: settings.setValue("show_log_onscreen",
-                                                        checked)
+                    checked: settings.show_log_onscreen
+                    onCheckedChanged: settings.show_log_onscreen = checked
                 }
             }
 
@@ -621,11 +568,8 @@ Item {
                     anchors.rightMargin: 36
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    // @disable-check M222
-                    Component.onCompleted: checked = settings.value(
-                                               "show_horizon", true)
-                    // @disable-check M222
-                    onCheckedChanged: settings.setValue("show_horizon", checked)
+                    checked: settings.show_horizon
+                    onCheckedChanged: settings.show_horizon = checked
                 }
             }
 
@@ -653,11 +597,8 @@ Item {
                     anchors.rightMargin: 36
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    // @disable-check M222
-                    Component.onCompleted: checked = settings.value("show_fpv",
-                                                                    true)
-                    // @disable-check M222
-                    onCheckedChanged: settings.setValue("show_fpv", checked)
+                    checked: settings.show_fpv
+                    onCheckedChanged: settings.show_fpv = checked
                 }
             }
 
@@ -685,11 +626,8 @@ Item {
                     anchors.rightMargin: 36
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    // @disable-check M222
-                    Component.onCompleted: checked = settings.value("show_altitude",
-                                                                    true)
-                    // @disable-check M222
-                    onCheckedChanged: settings.setValue("show_altitude", checked)
+                    checked: settings.show_altitude
+                    onCheckedChanged: settings.show_altitude = checked
                 }
             }
 
@@ -717,11 +655,8 @@ Item {
                     anchors.rightMargin: 36
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    // @disable-check M222
-                    Component.onCompleted: checked = settings.value("show_speed",
-                                                                    true)
-                    // @disable-check M222
-                    onCheckedChanged: settings.setValue("show_speed", checked)
+                    checked: settings.show_speed
+                    onCheckedChanged: settings.show_speed = checked
                 }
             }
 
@@ -749,11 +684,8 @@ Item {
                     anchors.rightMargin: 36
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    // @disable-check M222
-                    Component.onCompleted: checked = settings.value("show_heading",
-                                                                    true)
-                    // @disable-check M222
-                    onCheckedChanged: settings.setValue("show_heading", checked)
+                    checked: settings.show_heading
+                    onCheckedChanged: settings.show_heading = checked
                 }
             }
 
@@ -781,11 +713,8 @@ Item {
                     anchors.rightMargin: 36
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    // @disable-check M222
-                    Component.onCompleted: checked = settings.value("show_second_alt",
-                                                                    true)
-                    // @disable-check M222
-                    onCheckedChanged: settings.setValue("show_second_alt", checked)
+                    checked: settings.show_second_alt
+                    onCheckedChanged: settings.show_second_alt = checked
                 }
             }
 
@@ -813,11 +742,8 @@ Item {
                     anchors.rightMargin: 36
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    // @disable-check M222
-                    Component.onCompleted: checked = settings.value("show_arrow",
-                                                                    true)
-                    // @disable-check M222
-                    onCheckedChanged: settings.setValue("show_arrow", checked)
+                    checked: settings.show_arrow
+                    onCheckedChanged: settings.show_arrow = checked
                 }
             }
 
@@ -845,11 +771,8 @@ Item {
                     anchors.rightMargin: 36
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    // @disable-check M222
-                    Component.onCompleted: checked = settings.value("show_map",
-                                                                    true)
-                    // @disable-check M222
-                    onCheckedChanged: settings.setValue("show_map", checked)
+                    checked: settings.show_map
+                    onCheckedChanged: settings.show_map = checked
                 }
             }
 
@@ -974,11 +897,8 @@ Item {
                     anchors.rightMargin: 36
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    // @disable-check M222
-                    Component.onCompleted: checked = settings.value("show_pip_video",
-                                                                    false)
-                    // @disable-check M222
-                    onCheckedChanged: settings.setValue("show_pip_video", checked)
+                    checked: settings.show_pip_video
+                    onCheckedChanged: settings.show_pip_video = checked
                 }
             }
 
