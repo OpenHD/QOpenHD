@@ -11,8 +11,4 @@ UpperOverlayBarForm {
     settingsButtonMouseArea.onClicked: {
         upperOverlayBar.settingsButtonClicked();
     }
-
-    function configure() {
-        console.log("UpperOverlayBar.configure()");
-    }
 }

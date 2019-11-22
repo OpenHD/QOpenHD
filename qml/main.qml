@@ -32,8 +32,6 @@ ApplicationWindow {
             if (EnableRC) {
                 OpenHDRC.initRC;
             }
-            upperOverlayBar.configure();
-            lowerOverlayBar.configure();
             initialised = true;
             if (EnableVideo) {
                 MainStream.startVideo();
@@ -161,8 +159,6 @@ ApplicationWindow {
     SettingsPopup {
         id: settings_panel
         onConfigure: {
-            upperOverlayBar.configure();
-            lowerOverlayBar.configure();
         }
         onLocalMessage: {
             hudOverlayGrid.messageHUD.pushMessage(message, level)

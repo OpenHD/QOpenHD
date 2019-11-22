@@ -5,9 +5,4 @@ import Qt.labs.settings 1.0
 
 LowerOverlayBarForm {
     id: lowerOverlayBar
-
-    function configure() {
-        console.log("LowerOverlayBar.configure()");
-    }
-
 }
