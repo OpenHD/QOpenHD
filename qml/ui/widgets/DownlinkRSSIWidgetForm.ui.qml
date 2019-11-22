@@ -11,6 +11,8 @@ BaseWidget {
     width: 92
     height:24
 
+    visible: settings.show_downlink_rssi
+
     widgetIdentifier: "downlink_rssi_widget"
 
     defaultAlignment: 0

@@ -17,6 +17,8 @@ BaseWidget {
     defaultXOffset: 20
     defaultVCenter: true
 
+    visible: settings.show_altitude
+
     widgetIdentifier: "altitude_widget"
 
     defaultHCenter: false

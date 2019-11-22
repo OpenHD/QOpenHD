@@ -11,6 +11,8 @@ BaseWidget {
     width: 96
     height: 24
 
+    visible: settings.show_flight_timer
+
     widgetIdentifier: "flight_timer_widget"
 
     defaultAlignment: 2

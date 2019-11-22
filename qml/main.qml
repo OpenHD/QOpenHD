@@ -34,7 +34,6 @@ ApplicationWindow {
             }
             upperOverlayBar.configure();
             lowerOverlayBar.configure();
-            hudOverlayGrid.configure();
             initialised = true;
             if (EnableVideo) {
                 MainStream.startVideo();
@@ -164,8 +163,6 @@ ApplicationWindow {
         onConfigure: {
             upperOverlayBar.configure();
             lowerOverlayBar.configure();
-            hudOverlayGrid.configure();
-            hudOverlayGrid.messageHUD.configure();
         }
         onLocalMessage: {
             hudOverlayGrid.messageHUD.pushMessage(message, level)

@@ -4,8 +4,4 @@ import QtQuick.Layouts 1.12
 
 AltitudeWidgetForm {
 
-    function configure() {
-        altitudeWidget.visible = settings.value("show_altitude", true);
-    }
-
 }

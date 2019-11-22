@@ -11,6 +11,8 @@ BaseWidget {
     width: 112
     height: 24
 
+    visible: settings.show_air_status
+
     widgetIdentifier: "air_status_widget"
 
     defaultAlignment: 1

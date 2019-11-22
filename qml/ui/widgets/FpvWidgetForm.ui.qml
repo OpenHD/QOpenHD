@@ -11,6 +11,8 @@ BaseWidget {
     width: 50
     height: 50
 
+    visible: settings.show_fpv
+
     widgetIdentifier: "fpv_widget"
 
     defaultHCenter: true

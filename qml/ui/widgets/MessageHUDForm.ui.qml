@@ -15,6 +15,8 @@ BaseWidget {
     width: 480
     height: 72
 
+    visible: settings.show_log_onscreen
+
     widgetIdentifier: "message_hud_widget"
 
     defaultAlignment: 3

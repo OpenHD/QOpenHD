@@ -15,6 +15,8 @@ BaseWidget {
     width: 96
     height: 68
 
+    visible: settings.show_throttle
+
     widgetIdentifier: "throttle_widget"
 
     defaultAlignment: 2

@@ -12,6 +12,8 @@ BaseWidget {
     width: 252
     height: 192
 
+    visible: settings.show_pip_video
+
     widgetIdentifier: elementName + "_widget"
 
     defaultAlignment: 0

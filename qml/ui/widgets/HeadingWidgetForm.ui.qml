@@ -11,6 +11,9 @@ BaseWidget {
     id: headingWidget
     width: 48
     height: 24
+
+    visible: settings.show_heading
+
     defaultYOffset: 50
 
     widgetIdentifier: "heading_widget"

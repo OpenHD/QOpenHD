@@ -11,6 +11,8 @@ BaseWidget {
     width: 112
     height: 24
 
+    visible: settings.show_ground_status
+
     widgetIdentifier: "ground_status_widget"
 
     defaultAlignment: 1

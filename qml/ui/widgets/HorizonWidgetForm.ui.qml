@@ -11,6 +11,8 @@ BaseWidget {
     width: 250
     height: 48
 
+    visible: settings.show_horizon
+
     widgetIdentifier: "horizon_widget"
 
     defaultHCenter: true

@@ -16,6 +16,9 @@ BaseWidget {
     id: mapWidget
     width: 100
     height: 100
+
+    visible: settings.show_map
+
     defaultAlignment: 1
     defaultXOffset: 12
     defaultYOffset: 48

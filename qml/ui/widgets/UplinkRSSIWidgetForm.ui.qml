@@ -11,6 +11,8 @@ BaseWidget {
     width: 92
     height:24
 
+    visible: settings.show_uplink_rssi
+
     widgetIdentifier: "uplink_rssi_widget"
 
     defaultAlignment: 1

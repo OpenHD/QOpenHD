@@ -11,6 +11,8 @@ BaseWidget {
     width: 212
     height: 48
 
+    visible: settings.show_flight_mode
+
     widgetIdentifier: "flight_mode_widget"
 
     defaultAlignment: 3

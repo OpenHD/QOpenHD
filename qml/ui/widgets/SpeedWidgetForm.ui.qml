@@ -12,6 +12,9 @@ BaseWidget {
     id: speedWidget
     width: 64
     height: 24
+
+    visible: settings.show_speed
+
     defaultXOffset: 20
     defaultVCenter: true
 

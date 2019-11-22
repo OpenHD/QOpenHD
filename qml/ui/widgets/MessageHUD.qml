@@ -67,9 +67,4 @@ MessageHUDForm {
             messageWidget.height = 24 * messageModel.count;
         }
     }
-
-    function configure() {
-        console.log("MessageHUD.configure()");
-        messageHUD.visible = settings.value("show_log_onscreen", true);
-    }
 }

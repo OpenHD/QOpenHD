@@ -11,6 +11,8 @@ BaseWidget {
     width: 104
     height: 24
 
+    visible: settings.show_bitrate
+
     widgetIdentifier: "bitrate_widget"
 
     defaultAlignment: 0

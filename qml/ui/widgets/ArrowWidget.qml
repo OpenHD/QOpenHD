@@ -4,8 +4,4 @@ import QtQuick.Layouts 1.12
 
 ArrowWidgetForm {
 
-    function configure() {
-        arrowWidget.visible = settings.value("show_arrow", true);
-    }
-
 }
