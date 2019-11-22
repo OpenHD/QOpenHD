@@ -158,8 +158,6 @@ ApplicationWindow {
 
     SettingsPopup {
         id: settings_panel
-        onConfigure: {
-        }
         onLocalMessage: {
             hudOverlayGrid.messageHUD.pushMessage(message, level)
         }

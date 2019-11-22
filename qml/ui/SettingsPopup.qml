@@ -11,7 +11,6 @@ import OpenHD 1.0
 
 SettingsPopupForm {
     id: settings_form
-    signal configure()
     signal localMessage(var message, var level)
 
     /*
@@ -251,19 +250,16 @@ SettingsPopupForm {
     }
 
     rebootButton.onClicked: {
-        settings_form.configure();
         settings_popup.close();
         rebootDialog.open()
     }
 
     closeButton.onClicked: {
-        settings_form.configure();
         settings_popup.close();
     }
 
     save.onClicked: {
         writeRemoteSettings();
-        settings_form.configure();
     }
 
 
