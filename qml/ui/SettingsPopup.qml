@@ -263,7 +263,6 @@ SettingsPopupForm {
 
     save.onClicked: {
         writeRemoteSettings();
-        settings.sync();
         settings_form.configure();
     }
 
