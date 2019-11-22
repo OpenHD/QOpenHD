@@ -52,11 +52,6 @@ Item {
         id: flight_mode
     }
 
-    LatLonWidget {
-        id: lat_lon
-        visible: false
-    }
-
     GPSWidget {
         id: gps
     }

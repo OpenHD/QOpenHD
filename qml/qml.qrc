@@ -45,8 +45,6 @@
         <file>ui/widgets/AirBatteryWidgetForm.ui.qml</file>
         <file>ui/widgets/FlightModeWidget.qml</file>
         <file>ui/widgets/FlightModeWidgetForm.ui.qml</file>
-        <file>ui/widgets/LatLonWidget.qml</file>
-        <file>ui/widgets/LatLonWidgetForm.ui.qml</file>
         <file>ui/widgets/GPSWidget.qml</file>
         <file>ui/widgets/GPSWidgetForm.ui.qml</file>
         <file>ui/widgets/HomeDistanceWidget.qml</file>
