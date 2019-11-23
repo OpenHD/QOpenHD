@@ -146,8 +146,10 @@ G_PASTE(g_io_module_, G_PASTE(name, _load_static)) ()
 #define GST_MOBILE_PLUGIN_RTPMANAGER
 #endif
 
+#if defined(ENABLE_VIDEO)
 #ifndef __desktoplinux__
 GST_PLUGIN_STATIC_DECLARE(qmlgl);
+#endif
 #endif
 
 #if defined(GST_MOBILE_PLUGIN_COREELEMENTS) || defined(GST_MOBILE_PLUGINS_CORE)
@@ -476,8 +478,10 @@ OpenHDVideoStream::OpenHDVideoStream(int &argc, char *argv[], QObject * parent):
 
     //gst_debug_remove_log_function(gst_debug_log_default);
     //gst_debug_add_log_function(printf_extension_log_func, nullptr, nullptr);
+#if defined(ENABLE_VIDEO)
 #ifndef __desktoplinux__
     GST_PLUGIN_STATIC_REGISTER(qmlgl);
+#endif
 #endif
 
     #if defined(GST_MOBILE_PLUGIN_COREELEMENTS) || defined(GST_MOBILE_PLUGINS_CORE)
