@@ -77,5 +77,7 @@
         <file>ui/delegates/BaseDelegate.ui.qml</file>
         <file>ui/widgets/VideoWidget.qml</file>
         <file>ui/widgets/VideoWidgetForm.ui.qml</file>
+        <file>DummyVideoItem.qml</file>
+        <file>MainVideoItem.qml</file>
     </qresource>
 </RCC>

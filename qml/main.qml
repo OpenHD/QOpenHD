@@ -10,7 +10,6 @@ import OpenHD 1.0
 import "./ui"
 import "./ui/widgets"
 
-import org.freedesktop.gstreamer.GLVideoItem 1.0
 
 ApplicationWindow {
     id: applicationWindow
@@ -44,9 +43,8 @@ ApplicationWindow {
     // initialize the rendering system early. Without this, the next GstGLVideoItem
     // to be initialized, depending on the order they appear in the QML, will simply
     // not work on desktop linux.
-    GstGLVideoItem {
-        id: dummyVideoItem
-        objectName: "dummyVideoItem"
+    Loader {
+        source: EnableVideo ? "DummyVideoItem.qml" : ""
     }
 
     /*
@@ -112,14 +110,12 @@ ApplicationWindow {
     //    id: ltmTelemetry
     //}
 
-    GstGLVideoItem {
-        id: mainVideoItem
-        objectName: "mainVideoItem"
+    Loader {
         anchors.centerIn: parent
         width: parent.width
         height: parent.height
         z: 1.0
-        visible: EnableVideo
+        source: EnableVideo ? "MainVideoItem.qml" : ""
     }
 
     Connections {
