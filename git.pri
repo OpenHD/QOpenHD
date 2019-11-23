@@ -17,7 +17,7 @@ WindowsBuild {
     DEFINES += OPENHD_VERSION=""
 }
 
-LinuxBuild | iOSBuild | MacBuild | AndroidBuild {
+LinuxBuild | iOSBuild | MacBuild | AndroidBuild | RaspberryPiBuild {
     BUILDER_VERSION = $$system(cat .builder_version)
     DEFINES += BUILDER_VERSION=\"\\\"$$BUILDER_VERSION\\\"\"
     message("BUILDER_VERSION:" $$BUILDER_VERSION)
