@@ -370,7 +370,6 @@ static void printf_extension_log_func(GstDebugCategory * category,
  }
 
 
-#if defined(ENABLE_VIDEO)
 class SetPlaying : public QRunnable {
 public:
     SetPlaying(GstElement *);
@@ -399,7 +398,6 @@ SetPlaying::run() {
         gst_element_set_state (this->m_pipeline, GST_STATE_PLAYING);
     }
 }
-#endif
 
 
 OpenHDVideoStream::OpenHDVideoStream(int &argc, char *argv[], QObject * parent): QObject(parent), timer(new QTimer) {
