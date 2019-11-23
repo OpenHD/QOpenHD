@@ -131,29 +131,32 @@ VideoEnabled {
 
     message("Including support for video streaming")
 
+
     !LinuxBuild {
-        DEFINES += GST_PLUGIN_BUILD_STATIC
+        !RaspberryPiBuild {
+            DEFINES += GST_PLUGIN_BUILD_STATIC
 
-        INCLUDEPATH += \
-            $$PWD/qmlgl
+            INCLUDEPATH += \
+                $$PWD/qmlgl
 
-        HEADERS += \
-            $$PWD/qmlgl/qtwindow.h \
-            $$PWD/qmlgl/gstqsgtexture.h \
-            $$PWD/qmlgl/gstqtgl.h \
-            $$PWD/qmlgl/gstqtglutility.h \ 
-            $$PWD/qmlgl/gstqtsink.h \
-            $$PWD/qmlgl/gstqtsrc.h \
-            $$PWD/qmlgl/qtitem.h
+            HEADERS += \
+                $$PWD/qmlgl/qtwindow.h \
+                $$PWD/qmlgl/gstqsgtexture.h \
+                $$PWD/qmlgl/gstqtgl.h \
+                $$PWD/qmlgl/gstqtglutility.h \
+                $$PWD/qmlgl/gstqtsink.h \
+                $$PWD/qmlgl/gstqtsrc.h \
+                $$PWD/qmlgl/qtitem.h
 
-        SOURCES += \
-            $$PWD/qmlgl/gstplugin.cc \
-            $$PWD/qmlgl/gstqsgtexture.cc \
-            $$PWD/qmlgl/gstqtglutility.cc \
-            $$PWD/qmlgl/gstqtsink.cc \
-            $$PWD/qmlgl/gstqtsrc.cc \
-            $$PWD/qmlgl/qtitem.cc \
-            $$PWD/qmlgl/qtwindow.cc    
+            SOURCES += \
+                $$PWD/qmlgl/gstplugin.cc \
+                $$PWD/qmlgl/gstqsgtexture.cc \
+                $$PWD/qmlgl/gstqtglutility.cc \
+                $$PWD/qmlgl/gstqtsink.cc \
+                $$PWD/qmlgl/gstqtsrc.cc \
+                $$PWD/qmlgl/qtitem.cc \
+                $$PWD/qmlgl/qtwindow.cc
+        }
     }
 
     iOSBuild {
