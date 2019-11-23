@@ -58,8 +58,18 @@ LinuxBuild {
     exists($$GST_ROOT) {
         CONFIG      += VideoEnabled
 
-        LIBS        += -L$$GST_ROOT/lib -lopengl32 -lgstreamer-1.0 -lgstvideo-1.0 -lgstbase-1.0 -lgstgl-1.0
-        LIBS        += -lglib-2.0 -lintl -lgobject-2.0
+        LIBS        += -L$$GST_ROOT/lib -lopengl32
+
+        LIBS += -lgstfft-1.0  \
+                -lgstnet-1.0 -lgio-2.0 \
+                -lgstaudio-1.0 -lgstcodecparsers-1.0 -lgstbase-1.0 \
+                -lgstreamer-1.0 -lgstrtp-1.0 -lgstpbutils-1.0 -lgstrtsp-1.0 -lgsttag-1.0 \
+                -lgstvideo-1.0 -lavformat -lavcodec -lavutil -lx264 -lavfilter -lswresample \
+                -lgstriff-1.0 -lgstcontroller-1.0 -lgstapp-1.0 \
+                -lgstsdp-1.0 -lbz2 -lgobject-2.0 \
+                -lgstgl-1.0  -lgraphene-1.0 -lpng16 -ljpeg -lgstphotography-1.0 \
+                -lgmodule-2.0 -lglib-2.0 -lorc-0.4 -lffi -lintl
+
 
         INCLUDEPATH += \
             $$GST_ROOT/include/gstreamer-1.0 \
