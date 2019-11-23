@@ -2,7 +2,9 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <fcntl.h>
+#ifndef __windows__
 #include <unistd.h>
+#endif
 
 #include <QtNetwork>
 #include <QThread>
