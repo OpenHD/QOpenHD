@@ -34,12 +34,7 @@ LinuxBuild {
     CONFIG += link_pkgconfig
     packagesExist(gstreamer-1.0) {
         PKGCONFIG   += gstreamer-1.0  gstreamer-video-1.0 gstreamer-gl-1.0
-
         CONFIG      += VideoEnabled
-        DEFINES += GST_USE_UNSTABLE_API
-        DEFINES += GST_LICENSE="gpl"
-        DEFINES += GST_PACKAGE_NAME="qmlgl"
-        DEFINES += PACKAGE_VERSION=1.14.4
     }
 } else:MacBuild {
     #- gstreamer framework installed by the gstreamer devel installer
