@@ -166,7 +166,9 @@ int main(int argc, char *argv[]) {
 #endif
 
     const int retval = app.exec();
+#if defined(ENABLE_VIDEO)
     stream->stopVideo();
     stream2->stopVideo();
+#endif
     return retval;
 }
