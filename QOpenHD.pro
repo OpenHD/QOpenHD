@@ -234,6 +234,8 @@ WindowsBuild {
     DEFINES += GST_GL_HAVE_WINDOW_WIN32=1
     DEFINES += GST_GL_HAVE_PLATFORM_WGL=1
     DEFINES += HAVE_QT_WIN32
+
+    INCLUDEPATH += $$PWD/win/include
 }
 
 AndroidBuild {
