@@ -1,6 +1,3 @@
-// @disable-check M222
-// @disable-check M223
-
 import QtQuick 2.13
 
 import QtQuick.Layouts 1.13
