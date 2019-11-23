@@ -204,7 +204,7 @@ BaseWidget {
                 Text {
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.verticalCenter: parent.verticalCenter
-                    font.family: "Font Awesome 5 Free-Solid-900.otf"
+                    font.family: "Font Awesome 5 Free"
                     color: "black"
                     text: "\ue311"
                 }
@@ -308,7 +308,7 @@ BaseWidget {
                 Text {
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.verticalCenter: parent.verticalCenter
-                    font.family: "Font Awesome 5 Free-Solid-900.otf"
+                    font.family: "Font Awesome 5 Free"
                     color: "black"
                     text: "\ue311"
                 }

@@ -76,7 +76,7 @@ BaseWidget {
             textFormat: Text.AutoText
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.verticalCenter: parent.verticalCenter
-            font.family: "Font Awesome 5 Free-Solid-900.otf"
+            font.family: "Font Awesome 5 Free"
             verticalAlignment: Text.AlignVCenter
             font.pixelSize: 24
         }
