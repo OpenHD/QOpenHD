@@ -18,6 +18,8 @@ Item {
         "QUIET": {title: "Enable quiet mode", itemType: "bool", trueValue: "Y", falseValue: "N"},
         "ENABLE_SCREENSHOTS": {title: "Enable OSD screenshots", itemType: "bool", trueValue: "Y", falseValue: "N"},
         "DISPLAY_OSD": {title: "Display OSD", info: "Controls whether the OSD is shown on the ground station display", itemType: "bool", trueValue: "Y", falseValue: "N"},
+        "ENABLE_QOPENHD": {title: "Use QOpenHD as OSD", info: "Select between QOpenHD and the older OSD. If disabled, you must edit the config file to enable QOpenHD again.", itemType: "bool", trueValue: "Y", falseValue: "N"},
+
     })
 
     property var videoSettingsMap: ({
