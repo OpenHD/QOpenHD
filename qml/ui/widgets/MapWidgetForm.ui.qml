@@ -142,9 +142,11 @@ BaseWidget {
 
             activeMapType: MapType.SatelliteMapDay
             center {
-                latitude: OpenHD.lat_raw
-                longitude: OpenHD.lon_raw
+                latitude: followDrone ? OpenHD.lat_raw : 9000
+                longitude: followDrone ? OpenHD.lon_raw : 9000
             }
+
+            property bool followDrone: true
 
             MapQuickItem {
                 id: homemarkerLargeMap
@@ -191,27 +193,101 @@ BaseWidget {
                     }
                 }
 
-            Button {
-                id: close_button
+            Rectangle {
+                anchors.top: parent.top
+                anchors.topMargin: 6
+                anchors.left: parent.left
+                anchors.leftMargin: 6
 
-                width: 20
-                height: 20
-                flat: true
+                radius: 12
+                color: "#8f000000"
 
-                checkable: false
+                height: 144
+                width: 48
+                clip: true
 
-                //     display: AbstractButton.IconOnly
-                Text {
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    font.family: "Font Awesome 5 Free"
-                    color: "black"
-                    text: "\ue311"
+                Button {
+                    id: close_button
+
+                    width: parent.width
+                    height: 48
+                    anchors.top: parent.top
+                    anchors.topMargin: 0
+                    anchors.left: parent.left
+                    anchors.leftMargin: 0
+                    flat: true
+
+                    checkable: false
+
+                    //     display: AbstractButton.IconOnly
+                    Text {
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        font.family: "Font Awesome 5 Free"
+                        color: "white"
+                        text: "\uf065"
+                        font.pixelSize: 20
+                    }
+
+                    onClicked: {
+                        print("Map resize large clicked")
+                        map_popup.close()
+                    }
                 }
 
-                onClicked: {
-                    print("Map resize large clicked")
-                    map_popup.close()
+                Button {
+                    id: search_button
+
+                    width: parent.width
+                    height: 48
+                    anchors.top: parent.top
+                    anchors.topMargin: 48
+                    anchors.left: parent.left
+                    anchors.leftMargin: 0
+                    flat: true
+
+                    checkable: false
+
+                    Text {
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        font.family: "Font Awesome 5 Free"
+                        color: "white"
+                        text: "\uf002"
+                        font.pixelSize: 20
+                    }
+
+                    onClicked: {
+                        print("Map search clicked")
+                    }
+                }
+
+                Button {
+                    id: follow_button
+
+                    width: parent.width
+                    height: 48
+                    anchors.top: parent.top
+                    anchors.topMargin: 96
+                    anchors.left: parent.left
+                    anchors.leftMargin: 0
+                    flat: true
+
+                    checkable: false
+
+                    Text {
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        font.family: "Font Awesome 5 Free"
+                        color: maplarge.followDrone ? "#ff00aeef" : "white"
+                        text: "\uf05b"
+                        font.pixelSize: 20
+                    }
+
+                    onClicked: {
+                        print("Follow toggle clicked")
+                        maplarge.followDrone = !maplarge.followDrone
+                    }
                 }
             }
 
