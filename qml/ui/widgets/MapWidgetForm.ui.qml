@@ -310,7 +310,7 @@ BaseWidget {
                     anchors.verticalCenter: parent.verticalCenter
                     font.family: "Font Awesome 5 Free"
                     color: "black"
-                    text: "\ue311"
+                    text: "\uf065"
                     font.pixelSize: 16
                 }
 
