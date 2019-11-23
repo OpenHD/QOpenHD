@@ -297,8 +297,8 @@ BaseWidget {
             Button {
                 id: resize
 
-                width: 20
-                height: 20
+                width: 32
+                height: 32
 
                 flat: true
 
@@ -311,6 +311,7 @@ BaseWidget {
                     font.family: "Font Awesome 5 Free"
                     color: "black"
                     text: "\ue311"
+                    font.pixelSize: 16
                 }
 
                 onClicked: {
