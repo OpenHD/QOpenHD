@@ -58,7 +58,7 @@ LinuxBuild {
     exists($$GST_ROOT) {
         CONFIG      += VideoEnabled
 
-        LIBS        += -L$$GST_ROOT/lib -lgstreamer-1.0 -lgstvideo-1.0 -lgstbase-1.0 -lgstgl-1.0
+        LIBS        += -L$$GST_ROOT/lib -lopengl32 -lgstreamer-1.0 -lgstvideo-1.0 -lgstbase-1.0 -lgstgl-1.0
         LIBS        += -lglib-2.0 -lintl -lgobject-2.0
 
         INCLUDEPATH += \
