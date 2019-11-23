@@ -10,10 +10,11 @@ BaseDelegate {
         anchors.right: parent.right
         font.pixelSize: 14
         topPadding: 0
-        anchors.verticalCenter: parent.verticalCenter
         bottomPadding: 8
         horizontalAlignment: Text.AlignRight
         anchors.rightMargin: 36
+        anchors.top: parent.top
+        anchors.topMargin: 12
         width: 192
         height: 32
         // @disable-check M223

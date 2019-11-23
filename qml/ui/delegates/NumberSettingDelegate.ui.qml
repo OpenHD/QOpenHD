@@ -13,9 +13,10 @@ BaseDelegate {
         to: 100
         stepSize: 1
         value: model.value
-        anchors.verticalCenter: parent.verticalCenter
         anchors.right: parent.right
         anchors.rightMargin: 18
+        anchors.top: parent.top
+        anchors.topMargin: 8
         // @disable-check M223
         onValueChanged: {
             model.value = value

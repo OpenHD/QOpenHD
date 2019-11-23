@@ -15,9 +15,11 @@ BaseDelegate {
         width: 212
         height: 40
         font.pixelSize: 14
-        anchors.verticalCenter: parent.verticalCenter
+
         anchors.right: parent.right
         anchors.rightMargin: 36
+        anchors.top: parent.top
+        anchors.topMargin: 12
         enabled: !itemModel.disabled
 
 
