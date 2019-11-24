@@ -42,8 +42,8 @@ Section
 
 doinstall:
   SetOutPath $INSTDIR
-  ExecWait '$TEMP\vc_redist.x64.exe /passive /norestart'
-  Delete "$TEMP\vc_redist.x64.exe"
+  ExecWait '$TEMP\vc_redist.x86.exe /passive /norestart'
+  Delete "$TEMP\vc_redist.x86.exe"
 
   File /r /x ${EXENAME}.pdb /x ${EXENAME}.lib /x ${EXENAME}.exp ${DESTDIR}\*.*
 
