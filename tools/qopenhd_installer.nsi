@@ -28,10 +28,6 @@ SetCompressor /SOLID /FINAL lzma
 
 
 Section
-  ${IfNot} ${RunningX64}
-    MessageBox MB_OK|MB_ICONEXCLAMATION "QOpenHD requires a 64-bit Windows system."
-    Abort
-  ${EndIf}
 
   ReadRegStr $R0 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}" "UninstallString"
   StrCmp $R0 "" doinstall
