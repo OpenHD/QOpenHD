@@ -22,6 +22,10 @@
 #include "config.h"
 #endif
 
+#ifndef GL_OES_EGL_image
+typedef void* GLeglImageOES;
+#endif
+
 #include <vector>
 #include <stdio.h>
 
