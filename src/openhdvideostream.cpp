@@ -7,6 +7,8 @@
 
 #include <gst/gst.h>
 
+#include "localmessage.h"
+
 #if defined(__android__)
 #include <jni.h>
 #include <QAndroidJniEnvironment>
@@ -759,10 +761,20 @@ void OpenHDVideoStream::_start() {
 
     QQuickItem *videoItem;
     QQuickWindow *rootObject;
-    rootObject = static_cast<QQuickWindow *>(m_engine->rootObjects().first());
+    auto rootObjects = m_engine->rootObjects();
+    if (rootObjects.length() < 1) {
+        qDebug() << "Failed to obtain root object list!";
+        LocalMessage::instance()->showMessage("Could not start video stream (E1)", 2);
+        return;
+    }
+    rootObject = static_cast<QQuickWindow *>(rootObjects.first());
     videoItem = rootObject->findChild<QQuickItem *>(m_elementName.toUtf8());
     qDebug() << "Setting element on " << m_elementName;
-    g_assert(videoItem);
+    if (videoItem == nullptr) {
+        qDebug() << "Failed to obtain video item pointer for " << m_elementName;
+        LocalMessage::instance()->showMessage("Could not start video stream (E2)", 2);
+        return;
+    }
     g_object_set(qmlglsink, "widget", videoItem, NULL);
 
 
