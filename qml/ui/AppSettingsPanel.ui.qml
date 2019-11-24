@@ -934,6 +934,7 @@ Item {
                 height: rowHeight
                 color: "#8cbfd7f3"
                 y: 2 * rowHeight
+                visible: EnablePiP
 
                 Text {
                     text: "Enable PiP"
@@ -963,6 +964,7 @@ Item {
                 height: rowHeight
                 color: "#00000000"
                 y: 3 * rowHeight
+                visible: EnablePiP
 
                 Text {
                     text: "PiP video port"

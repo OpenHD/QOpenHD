@@ -4,5 +4,5 @@ import QtQuick.Layouts 1.12
 
 Loader {
     property string elementName
-    source: EnableVideo ? "VideoWidgetForm.ui.qml" : ""
+    source: (EnableVideo && EnablePiP) ? "VideoWidgetForm.ui.qml" : ""
 }

@@ -177,6 +177,7 @@ iOSBuild {
     CONFIG += EnableGamepads
     CONFIG += EnableSpeech
     CONFIG += EnableVideo
+    CONFIG += EnablePiP
     #QMAKE_POST_LINK += /usr/libexec/PlistBuddy -c \"Set :CFBundleShortVersionString $$APPLE_BUILD\" $$DESTDIR/$${TARGET}.app/Contents/Info.plist
     #QMAKE_POST_LINK += && /usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $$APPLE_BUILD\" $$DESTDIR/$${TARGET}.app/Contents/Info.plist
     app_launch_images.files = $$PWD/icons/LaunchScreen.png $$files($$PWD/icons/LaunchScreen.storyboard)
@@ -200,6 +201,7 @@ MacBuild {
     CONFIG += EnableJoysticks
     CONFIG += EnableSpeech
     CONFIG += EnableVideo
+    CONFIG += EnablePiP
 
     DEFINES += GST_GL_HAVE_WINDOW_COCOA=1
     DEFINES += GST_GL_HAVE_PLATFORM_CGL=1
@@ -211,6 +213,8 @@ LinuxBuild {
     CONFIG += EnableGamepads
     CONFIG += EnableJoysticks
     CONFIG += EnableVideo
+    CONFIG += EnablePiP
+
     message("LinuxBuild - config")
 }
 
@@ -221,6 +225,7 @@ RaspberryPiBuild {
     # replace that at some point but for now it isn't necessary.
     message("RaspberryPiBuild - config")
     #CONFIG += EnableVideo
+    #CONFIG +- EnablePiP
 
     DEFINES += GST_GL_HAVE_PLATFORM_EGL=1
     DEFINES += HAVE_QT_EGLFS=1
@@ -231,6 +236,8 @@ WindowsBuild {
     CONFIG += EnableJoysticks
     CONFIG += EnableSpeech
     CONFIG += EnableVideo
+    #CONFIG +- EnablePiP
+
     DEFINES += GST_GL_HAVE_WINDOW_WIN32=1
     DEFINES += GST_GL_HAVE_PLATFORM_WGL=1
     DEFINES += HAVE_QT_WIN32
@@ -243,6 +250,8 @@ AndroidBuild {
     CONFIG += EnableJoysticks
     CONFIG += EnableSpeech
     CONFIG += EnableVideo
+    CONFIG += EnablePiP
+
     QT += androidextras
 
     OTHER_FILES += \
@@ -262,6 +271,11 @@ EnableSpeech {
 EnableVideo {
     message("EnableVideo")
     DEFINES += ENABLE_VIDEO
+}
+
+EnablePiP {
+    message("EnablePiP")
+    DEFINES += ENABLE_PIP
 }
 
 include ($$PWD/lib/VideoStreaming/VideoStreaming.pri)

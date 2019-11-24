@@ -118,7 +118,9 @@ int main(int argc, char *argv[]) {
 
 #if defined(ENABLE_VIDEO)
     OpenHDVideoStream* stream = new OpenHDVideoStream(argc, argv);
+#if defined(ENABLE_PIP)
     OpenHDVideoStream* stream2 = new OpenHDVideoStream(argc, argv);
+#endif
 #endif
 
     QQmlApplicationEngine engine;
@@ -128,8 +130,12 @@ int main(int argc, char *argv[]) {
 #if defined(ENABLE_VIDEO)
     engine.rootContext()->setContextProperty("EnableVideo", QVariant(true));
     engine.rootContext()->setContextProperty("MainStream", stream);
+#if defined(ENABLE_PIP)
+    engine.rootContext()->setContextProperty("EnablePiP", QVariant(true));
     engine.rootContext()->setContextProperty("PiPStream", stream2);
-
+#else
+    engine.rootContext()->setContextProperty("EnablePiP", QVariant(false));
+#endif
 #else
     engine.rootContext()->setContextProperty("EnableVideo", QVariant(false));
 #endif
@@ -162,13 +168,17 @@ int main(int argc, char *argv[]) {
 
 #if defined(ENABLE_VIDEO)
     stream->init(&engine, StreamTypeMain);
+#if defined(ENABLE_PIP)
     stream2->init(&engine, StreamTypePiP);
+#endif
 #endif
 
     const int retval = app.exec();
 #if defined(ENABLE_VIDEO)
     stream->stopVideo();
+#if defined(ENABLE_PIP)
     stream2->stopVideo();
+#endif
 #endif
     return retval;
 }

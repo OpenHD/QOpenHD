@@ -34,7 +34,9 @@ ApplicationWindow {
             initialised = true;
             if (EnableVideo) {
                 MainStream.startVideo();
-                PiPStream.startVideo();
+                if (EnablePiP) {
+                    PiPStream.startVideo();
+                }
             }
         }
     }
