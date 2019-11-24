@@ -46,7 +46,7 @@ ApplicationWindow {
     // to be initialized, depending on the order they appear in the QML, will simply
     // not work on desktop linux.
     Loader {
-        source: EnableVideo ? "DummyVideoItem.qml" : ""
+        source:  (EnableVideo && EnablePiP)  ? "DummyVideoItem.qml" : ""
     }
 
     /*
