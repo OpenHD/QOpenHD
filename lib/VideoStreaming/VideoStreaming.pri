@@ -81,12 +81,8 @@ LinuxBuild {
         GST_ROOT_WIN = $$replace(GST_ROOT, "/", "\\")
 
         # Copy main GStreamer runtime files
-        QMAKE_POST_LINK += $$escape_expand(\\n) xcopy \"$$GST_ROOT_WIN\\bin\*.dll\" \"$$DESTDIR_WIN\" /S/Y $$escape_expand(\\n)
-        QMAKE_POST_LINK += $$escape_expand(\\n) xcopy \"$$GST_ROOT_WIN\\bin\*.\" \"$$DESTDIR_WIN\" /S/Y $$escape_expand(\\n)
-
-        # Copy GStreamer plugins
-        QMAKE_POST_LINK += $$escape_expand(\\n) xcopy \"$$GST_ROOT_WIN\\lib\\gstreamer-1.0\\*.dll\" \"$$DESTDIR_WIN\\gstreamer-plugins\\\" /Y $$escape_expand(\\n)
-    }
+        QMAKE_POST_LINK +=$${PWD}/../../win_deploy_gstreamer.cmd \"$$DESTDIR_WIN\" $$escape_expand(\\n)
+   }
 } else:AndroidBuild {
     #- gstreamer assumed to be installed in $$PWD/../../gstreamer-1.0-android-universal-1.14.4/armv7 (or x86)
     Androidx86Build {
