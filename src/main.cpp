@@ -153,6 +153,12 @@ int main(int argc, char *argv[]) {
     engine.rootContext()->setContextProperty("UseFullscreen", QVariant(false));
 #endif
 
+#if defined(ENABLE_LINK)
+    engine.rootContext()->setContextProperty("EnableLink", QVariant(true));
+#else
+    engine.rootContext()->setContextProperty("EnableLink", QVariant(false));
+#endif
+
     engine.rootContext()->setContextProperty("QOPENHD_VERSION", QVariant(QOPENHD_VERSION));
 
     engine.rootContext()->setContextProperty("OPENHD_VERSION", QVariant(OPENHD_VERSION));

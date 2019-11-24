@@ -78,8 +78,7 @@ HEADERS += \
     inc/openhdvideostream.h \
     inc/qopenhdlink.h \
     inc/util.h \
-    inc/wifibroadcast.h \
-    lib/json.hpp
+    inc/wifibroadcast.h
 
 DISTFILES += \
     android/AndroidManifest.xml \
@@ -178,6 +177,8 @@ iOSBuild {
     CONFIG += EnableSpeech
     CONFIG += EnableVideo
     CONFIG += EnablePiP
+    CONFIG += EnableLink
+
     #QMAKE_POST_LINK += /usr/libexec/PlistBuddy -c \"Set :CFBundleShortVersionString $$APPLE_BUILD\" $$DESTDIR/$${TARGET}.app/Contents/Info.plist
     #QMAKE_POST_LINK += && /usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $$APPLE_BUILD\" $$DESTDIR/$${TARGET}.app/Contents/Info.plist
     app_launch_images.files = $$PWD/icons/LaunchScreen.png $$files($$PWD/icons/LaunchScreen.storyboard)
@@ -202,6 +203,7 @@ MacBuild {
     CONFIG += EnableSpeech
     CONFIG += EnableVideo
     CONFIG += EnablePiP
+    #CONFIG += EnableLink
 
     DEFINES += GST_GL_HAVE_WINDOW_COCOA=1
     DEFINES += GST_GL_HAVE_PLATFORM_CGL=1
@@ -214,6 +216,7 @@ LinuxBuild {
     CONFIG += EnableJoysticks
     CONFIG += EnableVideo
     CONFIG += EnablePiP
+    CONFIG += EnableLink
 
     message("LinuxBuild - config")
 }
@@ -226,6 +229,7 @@ RaspberryPiBuild {
     message("RaspberryPiBuild - config")
     #CONFIG += EnableVideo
     #CONFIG +- EnablePiP
+    CONFIG += EnableLink
 
     DEFINES += GST_GL_HAVE_PLATFORM_EGL=1
     DEFINES += HAVE_QT_EGLFS=1
@@ -237,6 +241,7 @@ WindowsBuild {
     CONFIG += EnableSpeech
     CONFIG += EnableVideo
     #CONFIG +- EnablePiP
+    CONFIG += EnableLink
 
     DEFINES += GST_GL_HAVE_WINDOW_WIN32=1
     DEFINES += GST_GL_HAVE_PLATFORM_WGL=1
@@ -251,6 +256,7 @@ AndroidBuild {
     CONFIG += EnableSpeech
     CONFIG += EnableVideo
     CONFIG += EnablePiP
+    CONFIG += EnableLink
 
     QT += androidextras
 
@@ -276,6 +282,12 @@ EnableVideo {
 EnablePiP {
     message("EnablePiP")
     DEFINES += ENABLE_PIP
+}
+
+EnableLink {
+    message("EnableLink")
+    DEFINES += ENABLE_LINK
+    HEADERS += lib/json.hpp
 }
 
 include ($$PWD/lib/VideoStreaming/VideoStreaming.pri)
