@@ -61,6 +61,14 @@ BaseWidget {
         }
         antialiasing: true
 
+        Glow {
+            anchors.fill: widgetGlyph
+            radius: 4
+            samples: 17
+            color: "black"
+            source: widgetGlyph
+        }
+
         Text {
             id: widgetGlyph
             y: 0

@@ -30,6 +30,14 @@ BaseWidget {
 
     }
 
+    Glow {
+        anchors.fill: widgetInner
+        radius: 3
+        samples: 17
+        color: "black"
+        source: widgetInner
+    }
+
     Item {
         id: widgetInner
 

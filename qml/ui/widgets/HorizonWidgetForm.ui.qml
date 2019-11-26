@@ -80,6 +80,7 @@ BaseWidget {
         antialiasing: true
 
         Rectangle {
+            id: left_line
             width: 100
             height: 2
             anchors.left: parent.left
@@ -87,12 +88,29 @@ BaseWidget {
             color: "white"
         }
 
+        Glow {
+            anchors.fill: left_line
+            radius: 4
+            samples: 17
+            color: "black"
+            source: left_line
+        }
+
         Rectangle {
+            id: right_line
             width: 100
             height: 2
             anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
             color: "white"
+        }
+
+        Glow {
+            anchors.fill: right_line
+            radius: 4
+            samples: 17
+            color: "black"
+            source: right_line
         }
     }
 }
