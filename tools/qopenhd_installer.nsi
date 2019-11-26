@@ -8,6 +8,8 @@
 Name "${APPNAME}"
 Var StartMenuFolder
 
+RequestExecutionLevel admin
+
 InstallDir "$PROGRAMFILES\${APPNAME}"
 
 SetCompressor /SOLID /FINAL lzma
