@@ -67,6 +67,25 @@ void OpenHDSettings::reboot() {
     qDebug() << "Rebooting";
 }
 
+void OpenHDSettings::shutdown() {
+    if (m_saving) {
+        return;
+    }
+#if defined(__rasp_pi__)
+    QProcess process;
+    process.start("/sbin/shutdown -h -P now");
+    process.waitForFinished();
+#else
+    QUdpSocket *s = new QUdpSocket(this);
+    s->connectToHost(groundAddress, SETTINGS_PORT);
+    s->waitForConnected(5000);
+    QByteArray r = QByteArray("RequestShutdown");
+    QNetworkDatagram d(r);
+    s->writeDatagram(d);
+#endif
+}
+
+
 void OpenHDSettings::_savingSettingsStart() {
     set_saving(true);
 }

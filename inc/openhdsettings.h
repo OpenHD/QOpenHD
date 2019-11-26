@@ -37,6 +37,8 @@ public:
 
     Q_INVOKABLE void reboot();
 
+    Q_INVOKABLE void shutdown();
+
 signals:
     void allSettingsChanged(VMap allSettings);
     void loadingChanged(bool loading);
