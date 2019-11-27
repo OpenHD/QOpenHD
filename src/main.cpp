@@ -29,6 +29,8 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 
 #include "qopenhdlink.h"
 
+#include "util.h"
+
 #if defined(ENABLE_VIDEO)
 #include <gst/gst.h>
 #endif
@@ -50,6 +52,8 @@ int main(int argc, char *argv[]) {
     QCoreApplication::setApplicationName("Open.HD");
 
 #if defined(__android__)
+    keep_screen_on(true);
+
     for(const QString &permission : permissions) {
         auto result = QtAndroid::checkPermission(permission);
 
