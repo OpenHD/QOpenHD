@@ -14,7 +14,7 @@ BaseDelegate {
         stepSize: 1
         value: model.value
         anchors.right: parent.right
-        anchors.rightMargin: 18
+        anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
         anchors.top: parent.top
         anchors.topMargin: 8
         onValueChanged: model.modified = true

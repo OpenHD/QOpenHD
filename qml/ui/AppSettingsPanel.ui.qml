@@ -114,7 +114,7 @@ Item {
                 Switch {
                     width: 32
                     height: elementHeight
-                    anchors.rightMargin: 36
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
                     checked: settings.enable_speech
@@ -150,7 +150,8 @@ Item {
                     from: 1
                     to: 6
                     stepSize: 1
-                    anchors.rightMargin: 18
+                    anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
+
                     value: settings.battery_cells
                     onValueChanged: settings.battery_cells = value
                 }
@@ -177,7 +178,8 @@ Item {
                 Switch {
                     width: 32
                     height: elementHeight
-                    anchors.rightMargin: 36
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
                     checked: settings.enable_imperial
@@ -207,7 +209,8 @@ Item {
                 Switch {
                     width: 32
                     height: elementHeight
-                    anchors.rightMargin: 36
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
                     checked: settings.enable_rc
@@ -246,7 +249,8 @@ Item {
                 Switch {
                     width: 32
                     height: elementHeight
-                    anchors.rightMargin: 36
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
                     checked: settings.show_downlink_rssi
@@ -275,7 +279,8 @@ Item {
                 Switch {
                     width: 32
                     height: elementHeight
-                    anchors.rightMargin: 36
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
                     checked: settings.show_uplink_rssi
@@ -304,7 +309,8 @@ Item {
                 Switch {
                     width: 32
                     height: elementHeight
-                    anchors.rightMargin: 36
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
                     checked: settings.show_bitrate
@@ -333,7 +339,8 @@ Item {
                 Switch {
                     width: 32
                     height: elementHeight
-                    anchors.rightMargin: 36
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
                     checked: settings.show_gps
@@ -362,7 +369,8 @@ Item {
                 Switch {
                     width: 32
                     height: elementHeight
-                    anchors.rightMargin: 36
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
                     checked: settings.show_home_distance
@@ -391,7 +399,8 @@ Item {
                 Switch {
                     width: 32
                     height: elementHeight
-                    anchors.rightMargin: 36
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
                     checked: settings.show_flight_timer
@@ -420,7 +429,8 @@ Item {
                 Switch {
                     width: 32
                     height: elementHeight
-                    anchors.rightMargin: 36
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
                     checked: settings.show_flight_mode
@@ -449,7 +459,8 @@ Item {
                 Switch {
                     width: 32
                     height: elementHeight
-                    anchors.rightMargin: 36
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
                     checked: settings.show_ground_status
@@ -478,7 +489,8 @@ Item {
                 Switch {
                     width: 32
                     height: elementHeight
-                    anchors.rightMargin: 36
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
                     checked: settings.show_air_status
@@ -507,7 +519,8 @@ Item {
                 Switch {
                     width: 32
                     height: elementHeight
-                    anchors.rightMargin: 36
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
                     checked: settings.show_air_battery
@@ -536,7 +549,8 @@ Item {
                 Switch {
                     width: 32
                     height: elementHeight
-                    anchors.rightMargin: 36
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
                     checked: settings.show_log_onscreen
@@ -565,7 +579,8 @@ Item {
                 Switch {
                     width: 32
                     height: elementHeight
-                    anchors.rightMargin: 36
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
                     checked: settings.show_horizon
@@ -594,7 +609,8 @@ Item {
                 Switch {
                     width: 32
                     height: elementHeight
-                    anchors.rightMargin: 36
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
                     checked: settings.show_fpv
@@ -623,7 +639,8 @@ Item {
                 Switch {
                     width: 32
                     height: elementHeight
-                    anchors.rightMargin: 36
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
                     checked: settings.show_altitude
@@ -652,7 +669,8 @@ Item {
                 Switch {
                     width: 32
                     height: elementHeight
-                    anchors.rightMargin: 36
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
                     checked: settings.show_speed
@@ -681,7 +699,8 @@ Item {
                 Switch {
                     width: 32
                     height: elementHeight
-                    anchors.rightMargin: 36
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
                     checked: settings.show_heading
@@ -710,7 +729,8 @@ Item {
                 Switch {
                     width: 32
                     height: elementHeight
-                    anchors.rightMargin: 36
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
                     checked: settings.show_second_alt
@@ -739,7 +759,8 @@ Item {
                 Switch {
                     width: 32
                     height: elementHeight
-                    anchors.rightMargin: 36
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
                     checked: settings.show_arrow
@@ -768,7 +789,8 @@ Item {
                 Switch {
                     width: 32
                     height: elementHeight
-                    anchors.rightMargin: 36
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
                     checked: settings.show_map
@@ -797,7 +819,8 @@ Item {
                 Switch {
                     width: 32
                     height: elementHeight
-                    anchors.rightMargin: 36
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
                     checked: settings.show_throttle
@@ -845,7 +868,8 @@ Item {
                     from: 0
                     to: 255
                     stepSize: 5
-                    anchors.rightMargin: 18
+                    anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
+
                     Component.onCompleted: value = OpenHDPi.brightness
                     // @disable-check M223
                     onValueChanged: {
@@ -887,7 +911,8 @@ Item {
                 Switch {
                     width: 32
                     height: elementHeight
-                    anchors.rightMargin: 36
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
                     checked: settings.enable_hardware_video_decoder
@@ -923,7 +948,8 @@ Item {
                     from: 5600
                     to: 5610
                     stepSize: 1
-                    anchors.rightMargin: 18
+                    anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
+
                     value: settings.main_video_port
                     onValueChanged: settings.main_video_port = value
                 }
@@ -951,7 +977,8 @@ Item {
                 Switch {
                     width: 32
                     height: elementHeight
-                    anchors.rightMargin: 36
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
                     checked: settings.show_pip_video
@@ -988,7 +1015,8 @@ Item {
                     from: 5600
                     to: 5610
                     stepSize: 1
-                    anchors.rightMargin: 18
+                    anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
+
                     value: settings.pip_video_port
                     onValueChanged: settings.pip_video_port = value
                 }

@@ -12,7 +12,7 @@ BaseDelegate {
         topPadding: 0
         bottomPadding: 8
         horizontalAlignment: Text.AlignRight
-        anchors.rightMargin: 36
+        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36;
         anchors.top: parent.top
         anchors.topMargin: 12
         width: 192

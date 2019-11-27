@@ -17,7 +17,7 @@ BaseDelegate {
         font.pixelSize: 14
 
         anchors.right: parent.right
-        anchors.rightMargin: 36
+        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
         anchors.top: parent.top
         anchors.topMargin: 12
         enabled: !itemModel.disabled
