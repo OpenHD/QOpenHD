@@ -11,6 +11,8 @@ BaseWidget {
     width: 96
     height: 48
 
+    visible: settings.show_air_battery
+
     widgetIdentifier: "air_battery_widget"
 
     defaultAlignment: 3

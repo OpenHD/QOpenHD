@@ -4,8 +4,4 @@ import QtQuick.Layouts 1.12
 
 MapWidgetForm {
 
-    function configure() {
-        mapWidget.visible = settings.value("show_map", true);
-    }
-
 }

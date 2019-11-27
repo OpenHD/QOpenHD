@@ -11,6 +11,8 @@ BaseWidget {
     width: 96
     height: 24
 
+    visible: settings.show_gps
+
     widgetIdentifier: "gps_widget"
 
     defaultAlignment: 2

@@ -11,9 +11,10 @@ BaseDelegate {
         checked: model.value
         font.pixelSize: 16
         topPadding: 0
-        anchors.verticalCenter: parent.verticalCenter
         bottomPadding: 0
-        anchors.rightMargin: 36
+        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+        anchors.top: parent.top
+        anchors.topMargin: 12
         width: 32
         height: 32
         // @disable-check M223

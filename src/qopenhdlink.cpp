@@ -8,7 +8,9 @@
 
 #include "constants.h"
 
+#if defined(ENABLE_LINK)
 #include <lib/json.hpp>
+#endif
 
 #define LINK_PORT 6000
 
@@ -24,18 +26,19 @@ QOpenHDLink::QOpenHDLink(QObject *parent):
 
 
 void QOpenHDLink::init() {
+#if defined(ENABLE_LINK)
     qDebug() << "QOpenHDLink::init()";
 
     linkSocket = new QUdpSocket(this);
     linkSocket->bind(LINK_PORT);
 
     connect(linkSocket, &QUdpSocket::readyRead, this, &QOpenHDLink::readyRead);
-
-
+#endif
 }
 
 
 void QOpenHDLink::readyRead() {
+#if defined(ENABLE_LINK)
     QByteArray datagram;
 
     while (linkSocket->hasPendingDatagrams()) {
@@ -44,10 +47,12 @@ void QOpenHDLink::readyRead() {
         linkSocket->readDatagram(datagram.data(), datagram.size());
         processCommand(datagram);
     }
+#endif
 }
 
 
 void QOpenHDLink::setWidgetLocation(QString widgetName, int alignment, int xOffset, int yOffset, bool hCenter, bool vCenter) {
+#if defined(ENABLE_LINK)
     nlohmann::json j = {
       {"cmd", "setWidgetLocation"},
       {"widgetName", widgetName.toStdString()},
@@ -64,10 +69,12 @@ void QOpenHDLink::setWidgetLocation(QString widgetName, int alignment, int xOffs
         linkSocket->connectToHost("192.168.2.1", LINK_PORT);
     }
     linkSocket->writeDatagram(buf);
+#endif
 }
 
 
 void QOpenHDLink::processCommand(QByteArray buffer) {
+#if defined(ENABLE_LINK)
     try {
         auto commandData = nlohmann::json::parse(buffer);
         if (commandData.count("cmd") == 1) {
@@ -82,10 +89,12 @@ void QOpenHDLink::processCommand(QByteArray buffer) {
         // we may consider show warning messages in the local message panel though
         qDebug() << "exception: " << e.what();
     }
+#endif
 }
 
 
 void QOpenHDLink::processSetWidgetLocation(nlohmann::json commandData) {
+#if defined(ENABLE_LINK)
     std::string widgetName = commandData["widgetName"];
 
     int alignment = commandData["alignment"];
@@ -95,4 +104,5 @@ void QOpenHDLink::processSetWidgetLocation(nlohmann::json commandData) {
     bool vCenter = commandData["vCenter"];
 
     emit widgetLocation(QString(widgetName.c_str()), alignment, xOffset, yOffset, hCenter, vCenter);
+#endif
 }

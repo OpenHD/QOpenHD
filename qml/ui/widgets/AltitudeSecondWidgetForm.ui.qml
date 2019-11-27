@@ -17,6 +17,8 @@ BaseWidget {
     defaultYOffset: 64
     dragging: false
 
+    visible: settings.show_second_alt
+
     widgetIdentifier: "altitude_second_widget"
 
     hasWidgetDetail: true
@@ -46,6 +48,14 @@ BaseWidget {
         }
     }
 
+    Glow {
+        anchors.fill: widgetInner
+        radius: 3
+        samples: 17
+        color: "black"
+        source: widgetInner
+    }
+
     Item {
         id: widgetInner
         anchors.fill: parent
@@ -71,7 +81,7 @@ BaseWidget {
             anchors.leftMargin: 0
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.verticalCenter: parent.verticalCenter
-            font.family: "Font Awesome 5 Free-Solid-900.otf"
+            font.family: "Font Awesome 5 Free"
             font.pixelSize: 14
         }
 

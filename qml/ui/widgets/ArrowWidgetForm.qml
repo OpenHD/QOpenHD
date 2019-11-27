@@ -13,6 +13,8 @@ BaseWidget {
     height: 24
     defaultYOffset: 85
 
+    visible: settings.show_arrow
+
     widgetIdentifier: "arrow_widget"
 
     defaultHCenter: true

@@ -45,8 +45,6 @@
         <file>ui/widgets/AirBatteryWidgetForm.ui.qml</file>
         <file>ui/widgets/FlightModeWidget.qml</file>
         <file>ui/widgets/FlightModeWidgetForm.ui.qml</file>
-        <file>ui/widgets/LatLonWidget.qml</file>
-        <file>ui/widgets/LatLonWidgetForm.ui.qml</file>
         <file>ui/widgets/GPSWidget.qml</file>
         <file>ui/widgets/GPSWidgetForm.ui.qml</file>
         <file>ui/widgets/HomeDistanceWidget.qml</file>
@@ -70,8 +68,6 @@
         <file>ui/widgets/AltitudeSecondWidgetForm.ui.qml</file>
         <file>ui/widgets/ThrottleWidget.qml</file>
         <file>ui/widgets/ThrottleWidgetForm.ui.qml</file>
-        <file>ui/widgets/PiPVideoWidget.qml</file>
-        <file>ui/widgets/PiPVideoWidgetForm.ui.qml</file>
         <file>ui/widgets/ArrowWidget.qml</file>
         <file>ui/widgets/ArrowWidgetForm.qml</file>
         <file>ui/widgets/MapWidget.qml</file>
@@ -79,5 +75,11 @@
         <file>ui/widgets/home_marker.png</file>
         <file>ui/StatusPanel.qml</file>
         <file>ui/delegates/BaseDelegate.ui.qml</file>
+        <file>ui/widgets/VideoWidget.qml</file>
+        <file>ui/widgets/VideoWidgetForm.ui.qml</file>
+        <file>DummyVideoItem.qml</file>
+        <file>MainVideoItem.qml</file>
+        <file>ui/elements/SlideSwitchForm.ui.qml</file>
+        <file>ui/elements/SlideSwitch.qml</file>
     </qresource>
 </RCC>

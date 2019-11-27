@@ -36,6 +36,8 @@ Item {
 
     property alias mapWidget: mapWidget
 
+    property alias throttleWidget: throttleWidget
+
     property alias pipVideoWidget: pipVideoWidget
 
     MessageHUD {
@@ -48,11 +50,6 @@ Item {
 
     FlightModeWidget {
         id: flight_mode
-    }
-
-    LatLonWidget {
-        id: lat_lon
-        visible: false
     }
 
     GPSWidget {
@@ -120,8 +117,9 @@ Item {
         scale: 0.7
     }
 
-    PiPVideoWidget {
+    VideoWidget {
         id: pipVideoWidget
+        elementName: "pipVideoItem"
     }
 
     MapWidget {

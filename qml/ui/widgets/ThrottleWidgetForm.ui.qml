@@ -15,6 +15,8 @@ BaseWidget {
     width: 96
     height: 68
 
+    visible: settings.show_throttle
+
     widgetIdentifier: "throttle_widget"
 
     defaultAlignment: 2
@@ -26,6 +28,14 @@ BaseWidget {
     hasWidgetDetail: false
     widgetDetailComponent: Column {
 
+    }
+
+    Glow {
+        anchors.fill: widgetInner
+        radius: 3
+        samples: 17
+        color: "black"
+        source: widgetInner
     }
 
     Item {

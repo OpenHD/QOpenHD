@@ -4,8 +4,4 @@ import QtQuick.Layouts 1.12
 
 FpvWidgetForm {
 
-    function configure() {
-        fpvWidget.visible = settings.value("show_fpv", true);
-    }
-
 }

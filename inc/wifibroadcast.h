@@ -8,17 +8,25 @@
 extern "C" {
 #endif
 
+#ifdef _MSC_VER
+#pragma pack(push,1)
+#endif
 typedef struct {
     uint32_t received_packet_cnt;
     int8_t current_signal_dbm;
     int8_t type; // 0 = Atheros, 1 = Ralink
     int8_t signal_good;
 }
-#ifndef _MSC_VER
+#ifdef _MSC_VER
+#pragma pack(pop)
+#else
 __attribute__((packed))
 #endif
 wifi_adapter_rx_status_forward_t;
 
+#ifdef _MSC_VER
+#pragma pack(push,1)
+#endif
 typedef struct {
     uint32_t damaged_block_cnt; // number bad blocks video downstream
     uint32_t lost_packet_cnt; // lost packets video downstream
@@ -45,7 +53,9 @@ typedef struct {
     uint32_t wifi_adapter_cnt; // number of wifi adapters
     wifi_adapter_rx_status_forward_t adapter[6]; // same struct as in wifibroadcast lib.h
 }
-#ifndef _MSC_VER
+#ifdef _MSC_VER
+#pragma pack(pop)
+#else
 __attribute__((packed))
 #endif
 wifibroadcast_rx_status_forward_t;

@@ -28,9 +28,10 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "ltmtelemetry.h"
 
 #include "qopenhdlink.h"
-#include "VideoStreaming/VideoStreaming.h"
-#include "VideoStreaming/VideoSurface.h"
-#include "VideoStreaming/VideoReceiver.h"
+
+#if defined(ENABLE_VIDEO)
+#include <gst/gst.h>
+#endif
 
 // SDL hack
 #ifdef Q_OS_WIN
@@ -38,6 +39,7 @@ const QVector<QString> permissions({"android.permission.INTERNET",
         #undef main
     #endif
 #endif
+
 
 int main(int argc, char *argv[]) {
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
@@ -87,28 +89,6 @@ int main(int argc, char *argv[]) {
     qDebug() << "Finished initializing Pi";
 #endif
 
-qDebug() << "Initializing video";
-#if defined(__ios__) || defined(__android__)
-char gstLogLevel[] = "*:3";
-char gstLogPath[] = "/sdcard";
-    initializeVideoStreaming(argc, argv, gstLogPath, gstLogLevel);
-#else
-    // Initialize Video Streaming
-    char gstLogLevel[] = "*:0";
-    char gstLogPath[] = "/dev/null";
-    initializeVideoStreaming(argc, argv, gstLogPath, gstLogLevel);
-#endif
-
-    /*qDebug() << "Checking codecs...";
-
-    GList *l;
-    GList *elements = gst_element_factory_list_get_elements(GST_ELEMENT_FACTORY_TYPE_ANY, GST_RANK_NONE);
-    for (l = elements; l; l = l->next) {
-      auto f = l->data;
-      qDebug() << "factory: %s" << GST_OBJECT_NAME(f);
-    }
-    qDebug() << "... done checking codecs";*/
-
     QFontDatabase::addApplicationFont(":/Font Awesome 5 Free-Solid-900.otf");
     //QFontDatabase::addApplicationFont(":/Font Awesome 5 Free-Regular-400.otf");
     //QFontDatabase::addApplicationFont(":/Font Awesome 5 Brands-Regular-400.otf");
@@ -127,7 +107,6 @@ char gstLogPath[] = "/sdcard";
     qmlRegisterSingletonType<LocalMessage>("OpenHD", 1, 0, "LocalMessage", localMessageSingletonProvider);
 
     qmlRegisterType<OpenHDSettings>("OpenHD", 1,0, "OpenHDSettings");
-    qmlRegisterType<OpenHDVideoStream>("OpenHD", 1,0, "OpenHDVideoStream");
 
     qmlRegisterType<QOpenHDLink>("OpenHD", 1,0, "QOpenHDLink");
 
@@ -137,12 +116,26 @@ char gstLogPath[] = "/sdcard";
     QObject::connect(&timer, &QTimer::timeout, openhd, &OpenHD::updateFlightTimer);
     timer.start(1000);
 
+#if defined(ENABLE_VIDEO)
+    OpenHDVideoStream* stream = new OpenHDVideoStream(argc, argv);
+#if defined(ENABLE_PIP)
+    OpenHDVideoStream* stream2 = new OpenHDVideoStream(argc, argv);
+#endif
+#endif
+
     QQmlApplicationEngine engine;
 
     engine.rootContext()->setContextProperty("OpenHD", openhd);
 
 #if defined(ENABLE_VIDEO)
     engine.rootContext()->setContextProperty("EnableVideo", QVariant(true));
+    engine.rootContext()->setContextProperty("MainStream", stream);
+#if defined(ENABLE_PIP)
+    engine.rootContext()->setContextProperty("EnablePiP", QVariant(true));
+    engine.rootContext()->setContextProperty("PiPStream", stream2);
+#else
+    engine.rootContext()->setContextProperty("EnablePiP", QVariant(false));
+#endif
 #else
     engine.rootContext()->setContextProperty("EnableVideo", QVariant(false));
 #endif
@@ -160,6 +153,12 @@ char gstLogPath[] = "/sdcard";
     engine.rootContext()->setContextProperty("UseFullscreen", QVariant(false));
 #endif
 
+#if defined(ENABLE_LINK)
+    engine.rootContext()->setContextProperty("EnableLink", QVariant(true));
+#else
+    engine.rootContext()->setContextProperty("EnableLink", QVariant(false));
+#endif
+
     engine.rootContext()->setContextProperty("QOPENHD_VERSION", QVariant(QOPENHD_VERSION));
 
     engine.rootContext()->setContextProperty("OPENHD_VERSION", QVariant(OPENHD_VERSION));
@@ -173,5 +172,19 @@ char gstLogPath[] = "/sdcard";
 
     qDebug() << "Running QML";
 
-    return app.exec();
+#if defined(ENABLE_VIDEO)
+    stream->init(&engine, StreamTypeMain);
+#if defined(ENABLE_PIP)
+    stream2->init(&engine, StreamTypePiP);
+#endif
+#endif
+
+    const int retval = app.exec();
+#if defined(ENABLE_VIDEO)
+    stream->stopVideo();
+#if defined(ENABLE_PIP)
+    stream2->stopVideo();
+#endif
+#endif
+    return retval;
 }

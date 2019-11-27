@@ -1,6 +1,3 @@
-// @disable-check M222
-// @disable-check M223
-
 import QtQuick 2.12
 
 import QtQuick.Layouts 1.12
@@ -18,9 +15,11 @@ BaseDelegate {
         width: 212
         height: 40
         font.pixelSize: 14
-        anchors.verticalCenter: parent.verticalCenter
+
         anchors.right: parent.right
-        anchors.rightMargin: 36
+        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+        anchors.top: parent.top
+        anchors.topMargin: 12
         enabled: !itemModel.disabled
 
 

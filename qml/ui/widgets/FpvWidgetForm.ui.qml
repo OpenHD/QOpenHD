@@ -11,6 +11,8 @@ BaseWidget {
     width: 50
     height: 50
 
+    visible: settings.show_fpv
+
     widgetIdentifier: "fpv_widget"
 
     defaultHCenter: true
@@ -59,6 +61,14 @@ BaseWidget {
         }
         antialiasing: true
 
+        Glow {
+            anchors.fill: widgetGlyph
+            radius: 4
+            samples: 17
+            color: "black"
+            source: widgetGlyph
+        }
+
         Text {
             id: widgetGlyph
             y: 0
@@ -74,7 +84,7 @@ BaseWidget {
             textFormat: Text.AutoText
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.verticalCenter: parent.verticalCenter
-            font.family: "Font Awesome 5 Free-Solid-900.otf"
+            font.family: "Font Awesome 5 Free"
             verticalAlignment: Text.AlignVCenter
             font.pixelSize: 24
         }

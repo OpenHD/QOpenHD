@@ -10,7 +10,6 @@ import OpenHD 1.0
 import "./ui"
 import "./ui/widgets"
 
-import QGroundControl.QgcQtGStreamer 1.0
 
 ApplicationWindow {
     id: applicationWindow
@@ -32,14 +31,22 @@ ApplicationWindow {
             if (EnableRC) {
                 OpenHDRC.initRC;
             }
-            upperOverlayBar.configure();
-            lowerOverlayBar.configure();
-            hudOverlayGrid.configure();
             initialised = true;
             if (EnableVideo) {
-                stream.startVideo();
+                MainStream.startVideo();
+                if (EnablePiP) {
+                    PiPStream.startVideo();
+                }
             }
         }
+    }
+
+    // this is not used but must stay right here, it forces qmlglsink to completely
+    // initialize the rendering system early. Without this, the next GstGLVideoItem
+    // to be initialized, depending on the order they appear in the QML, will simply
+    // not work on desktop linux.
+    Loader {
+        source:  (EnableVideo && EnablePiP)  ? "DummyVideoItem.qml" : ""
     }
 
     /*
@@ -52,6 +59,33 @@ ApplicationWindow {
         property int main_video_port: 5600
         property int pip_video_port: 5601
         property int battery_cells: 3
+        property bool show_pip_video: false
+        property bool enable_hardware_video_decoder: true
+
+        property bool enable_speech: true
+        property bool enable_imperial: false
+        property bool enable_rc: false
+
+        property bool show_downlink_rssi: true
+        property bool show_uplink_rssi: true
+        property bool show_bitrate: true
+        property bool show_air_battery: true
+        property bool show_gps: true
+        property bool show_home_distance: true
+        property bool show_flight_timer: true
+        property bool show_flight_mode: true
+        property bool show_ground_status: true
+        property bool show_air_status: true
+        property bool show_log_onscreen: true
+        property bool show_horizon: true
+        property bool show_fpv: true
+        property bool show_altitude: true
+        property bool show_speed: true
+        property bool show_heading: true
+        property bool show_second_alt: true
+        property bool show_arrow: true
+        property bool show_map: true
+        property bool show_throttle: true
     }
 
     QOpenHDLink {
@@ -78,17 +112,12 @@ ApplicationWindow {
     //    id: ltmTelemetry
     //}
 
-
-    VideoItem {
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.top: parent.top
-        anchors.bottom: parent.bottom
-        anchors.fill: parent
-        id: videoBackground
-        surface: stream.videoReceiver.videoSurface
+    Loader {
+        anchors.centerIn: parent
+        width: parent.width
+        height: parent.height
         z: 1.0
-        visible: EnableVideo
+        source: EnableVideo ? "MainVideoItem.qml" : ""
     }
 
     Connections {
@@ -105,30 +134,6 @@ ApplicationWindow {
         }
     }
 
-    OpenHDVideoStream {
-        id: stream
-        uri: {
-            //if (OpenHDPi.is_raspberry_pi) {
-            //    return "file:///root/videofifo1";
-            //} else {
-                var main_video_port = settings.value("main_video_port", 5600);
-                return "udp://0.0.0.0:%1".arg(main_video_port);
-            //}
-        }
-    }
-
-    /*OpenHDVideoStream {
-        id: pipVideoStream
-        uri: {
-            return "videotestsrc://";
-            //if (OpenHDPi.is_raspberry_pi) {
-            //    return "file:///root/videofifo1";
-            //} else {
-                var pip_video_port = settings.value("pip_video_port", 5601);
-                return "udp://0.0.0.0:%1".arg(pip_video_port);
-            //}
-        }
-    }*/
     // UI areas
 
     UpperOverlayBar {
@@ -151,12 +156,6 @@ ApplicationWindow {
 
     SettingsPopup {
         id: settings_panel
-        onConfigure: {
-            upperOverlayBar.configure();
-            lowerOverlayBar.configure();
-            hudOverlayGrid.configure();
-            hudOverlayGrid.messageHUD.configure();
-        }
         onLocalMessage: {
             hudOverlayGrid.messageHUD.pushMessage(message, level)
         }

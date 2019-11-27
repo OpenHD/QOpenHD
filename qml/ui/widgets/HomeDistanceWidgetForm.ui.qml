@@ -11,6 +11,8 @@ BaseWidget {
     width: 96
     height: 24
 
+    visible: settings.show_home_distance
+
     widgetIdentifier: "home_distance_widget"
 
     defaultAlignment: 2

@@ -3,39 +3,51 @@
 
 #include <QObject>
 
-#include "VideoStreaming/VideoStreaming.h"
-#include "VideoStreaming/VideoSurface.h"
-#include "VideoStreaming/VideoReceiver.h"
+#include <QtQml>
+#include <gst/gst.h>
+
+enum StreamType {
+    StreamTypeMain,
+    StreamTypePiP
+};
 
 class OpenHDVideoStream : public QObject
 {
     Q_OBJECT
 
 public:
-    OpenHDVideoStream(QObject *parent = nullptr);
+    OpenHDVideoStream(int &argc, char *argv[], QObject *parent = nullptr);
     virtual ~OpenHDVideoStream();
-
-    Q_PROPERTY(VideoReceiver* videoReceiver READ getVideoReceiver NOTIFY videoReceiverChanged)
-    VideoReceiver* getVideoReceiver() { return &m_receiver; }
-
-    Q_PROPERTY(QString uri MEMBER m_uri WRITE setUri NOTIFY uriChanged)
-    void setUri(QString uri);
-
-signals:
-    void videoReceiverChanged(VideoReceiver* videoReceiver);
-    void uriChanged(QString uri);
+    void init(QQmlApplicationEngine * engine, enum StreamType stream_type);
 
 public slots:
     void startVideo();
     void stopVideo();
 
 private:
-    void init();
     void _start();
     void _stop();
-    QString m_uri;
+    QString m_elementName;
 
-    VideoReceiver m_receiver;
+    void _timer() ;
+
+    QQmlApplicationEngine *m_engine;
+    GstElement * m_pipeline;
+    bool firstRun = true;
+
+    bool m_enable_videotest = false;
+    bool m_enable_hardware_video_decoder = true;
+
+    bool m_enable_pip_video = false;
+
+    enum StreamType m_stream_type;
+
+    int m_video_port = 0;
+
+    int main_default_port = 5600;
+    int pip_default_port = 5601;
+
+    QTimer* timer = nullptr;
 };
 
 #endif // OpenHDVideoStream_H

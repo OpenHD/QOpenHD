@@ -114,15 +114,11 @@ Item {
                 Switch {
                     width: 32
                     height: elementHeight
-                    anchors.rightMargin: 36
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    // @disable-check M222
-                    Component.onCompleted: checked = settings.value(
-                                               "enable_speech", true)
-                    // @disable-check M222
-                    onCheckedChanged: settings.setValue("enable_speech",
-                                                        checked)
+                    checked: settings.enable_speech
+                    onCheckedChanged: settings.enable_speech = checked
                 }
             }
 
@@ -154,7 +150,8 @@ Item {
                     from: 1
                     to: 6
                     stepSize: 1
-                    anchors.rightMargin: 18
+                    anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
+
                     value: settings.battery_cells
                     onValueChanged: settings.battery_cells = value
                 }
@@ -181,15 +178,12 @@ Item {
                 Switch {
                     width: 32
                     height: elementHeight
-                    anchors.rightMargin: 36
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    // @disable-check M222
-                    Component.onCompleted: checked = settings.value(
-                                               "enable_imperial", false)
-                    // @disable-check M222
-                    onCheckedChanged: settings.setValue("enable_imperial",
-                                                        checked)
+                    checked: settings.enable_imperial
+                    onCheckedChanged: settings.enable_imperial = checked
                 }
             }
 
@@ -215,14 +209,12 @@ Item {
                 Switch {
                     width: 32
                     height: elementHeight
-                    anchors.rightMargin: 36
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    // @disable-check M222
-                    Component.onCompleted: checked = settings.value(
-                                               "enable_rc", false)
-                    // @disable-check M222
-                    onCheckedChanged: settings.setValue("enable_rc", checked)
+                    checked: settings.enable_rc
+                    onCheckedChanged: settings.enable_rc = checked
                 }
             }
         }
@@ -232,7 +224,7 @@ Item {
             width: parent.width
             height: parent.height
         //must increment if adding more options-------------->
-            contentHeight: 19 * rowHeight
+            contentHeight: 20 * rowHeight
 
             clip: true
 
@@ -257,15 +249,12 @@ Item {
                 Switch {
                     width: 32
                     height: elementHeight
-                    anchors.rightMargin: 36
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    // @disable-check M222
-                    Component.onCompleted: checked = settings.value(
-                                               "show_downlink_rssi", true)
-                    // @disable-check M222
-                    onCheckedChanged: settings.setValue("show_downlink_rssi",
-                                                        checked)
+                    checked: settings.show_downlink_rssi
+                    onCheckedChanged: settings.show_downlink_rssi = checked
                 }
             }
 
@@ -290,15 +279,12 @@ Item {
                 Switch {
                     width: 32
                     height: elementHeight
-                    anchors.rightMargin: 36
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    // @disable-check M222
-                    Component.onCompleted: checked = settings.value(
-                                               "show_uplink_rssi", true)
-                    // @disable-check M222
-                    onCheckedChanged: settings.setValue("show_uplik_rssi",
-                                                        checked)
+                    checked: settings.show_uplink_rssi
+                    onCheckedChanged: settings.show_uplink_rssi = checked
                 }
             }
 
@@ -323,14 +309,12 @@ Item {
                 Switch {
                     width: 32
                     height: elementHeight
-                    anchors.rightMargin: 36
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    // @disable-check M222
-                    Component.onCompleted: checked = settings.value(
-                                               "show_bitrate", true)
-                    // @disable-check M222
-                    onCheckedChanged: settings.setValue("show_bitrate", checked)
+                    checked: settings.show_bitrate
+                    onCheckedChanged: settings.show_bitrate = checked
                 }
             }
 
@@ -355,14 +339,12 @@ Item {
                 Switch {
                     width: 32
                     height: elementHeight
-                    anchors.rightMargin: 36
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    // @disable-check M222
-                    Component.onCompleted: checked = settings.value("show_gps",
-                                                                    true)
-                    // @disable-check M222
-                    onCheckedChanged: settings.setValue("show_gps", checked)
+                    checked: settings.show_gps
+                    onCheckedChanged: settings.show_gps = checked
                 }
             }
 
@@ -387,15 +369,12 @@ Item {
                 Switch {
                     width: 32
                     height: elementHeight
-                    anchors.rightMargin: 36
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    // @disable-check M222
-                    Component.onCompleted: checked = settings.value(
-                                               "show_home_distance", true)
-                    // @disable-check M222
-                    onCheckedChanged: settings.setValue("show_home_distance",
-                                                        checked)
+                    checked: settings.show_home_distance
+                    onCheckedChanged: settings.show_home_distance = checked
                 }
             }
 
@@ -420,15 +399,12 @@ Item {
                 Switch {
                     width: 32
                     height: elementHeight
-                    anchors.rightMargin: 36
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    // @disable-check M222
-                    Component.onCompleted: checked = settings.value(
-                                               "show_flight_timer", true)
-                    // @disable-check M222
-                    onCheckedChanged: settings.setValue("show_flight_timer",
-                                                        checked)
+                    checked: settings.show_flight_timer
+                    onCheckedChanged: settings.show_flight_timer = checked
                 }
             }
 
@@ -453,15 +429,12 @@ Item {
                 Switch {
                     width: 32
                     height: elementHeight
-                    anchors.rightMargin: 36
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    // @disable-check M222
-                    Component.onCompleted: checked = settings.value(
-                                               "show_flight_mode", true)
-                    // @disable-check M222
-                    onCheckedChanged: settings.setValue("show_flight_mode",
-                                                        checked)
+                    checked: settings.show_flight_mode
+                    onCheckedChanged: settings.show_flight_mode = checked
                 }
             }
 
@@ -486,15 +459,12 @@ Item {
                 Switch {
                     width: 32
                     height: elementHeight
-                    anchors.rightMargin: 36
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    // @disable-check M222
-                    Component.onCompleted: checked = settings.value(
-                                               "show_ground_status", true)
-                    // @disable-check M222
-                    onCheckedChanged: settings.setValue("show_ground_status",
-                                                        checked)
+                    checked: settings.show_ground_status
+                    onCheckedChanged: settings.show_ground_status = checked
                 }
             }
 
@@ -519,15 +489,12 @@ Item {
                 Switch {
                     width: 32
                     height: elementHeight
-                    anchors.rightMargin: 36
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    // @disable-check M222
-                    Component.onCompleted: checked = settings.value(
-                                               "show_air_status", true)
-                    // @disable-check M222
-                    onCheckedChanged: settings.setValue("show_air_status",
-                                                        checked)
+                    checked: settings.show_air_status
+                    onCheckedChanged: settings.show_air_status = checked
                 }
             }
 
@@ -552,15 +519,12 @@ Item {
                 Switch {
                     width: 32
                     height: elementHeight
-                    anchors.rightMargin: 36
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    // @disable-check M222
-                    Component.onCompleted: checked = settings.value(
-                                               "show_air_battery", true)
-                    // @disable-check M222
-                    onCheckedChanged: settings.setValue("show_air_battery",
-                                                        checked)
+                    checked: settings.show_air_battery
+                    onCheckedChanged: settings.show_air_battery = checked
                 }
             }
 
@@ -585,15 +549,12 @@ Item {
                 Switch {
                     width: 32
                     height: elementHeight
-                    anchors.rightMargin: 36
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    // @disable-check M222
-                    Component.onCompleted: checked = settings.value(
-                                               "show_log_onscreen", true)
-                    // @disable-check M222
-                    onCheckedChanged: settings.setValue("show_log_onscreen",
-                                                        checked)
+                    checked: settings.show_log_onscreen
+                    onCheckedChanged: settings.show_log_onscreen = checked
                 }
             }
 
@@ -618,14 +579,12 @@ Item {
                 Switch {
                     width: 32
                     height: elementHeight
-                    anchors.rightMargin: 36
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    // @disable-check M222
-                    Component.onCompleted: checked = settings.value(
-                                               "show_horizon", true)
-                    // @disable-check M222
-                    onCheckedChanged: settings.setValue("show_horizon", checked)
+                    checked: settings.show_horizon
+                    onCheckedChanged: settings.show_horizon = checked
                 }
             }
 
@@ -650,14 +609,12 @@ Item {
                 Switch {
                     width: 32
                     height: elementHeight
-                    anchors.rightMargin: 36
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    // @disable-check M222
-                    Component.onCompleted: checked = settings.value("show_fpv",
-                                                                    true)
-                    // @disable-check M222
-                    onCheckedChanged: settings.setValue("show_fpv", checked)
+                    checked: settings.show_fpv
+                    onCheckedChanged: settings.show_fpv = checked
                 }
             }
 
@@ -682,14 +639,12 @@ Item {
                 Switch {
                     width: 32
                     height: elementHeight
-                    anchors.rightMargin: 36
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    // @disable-check M222
-                    Component.onCompleted: checked = settings.value("show_altitude",
-                                                                    true)
-                    // @disable-check M222
-                    onCheckedChanged: settings.setValue("show_altitude", checked)
+                    checked: settings.show_altitude
+                    onCheckedChanged: settings.show_altitude = checked
                 }
             }
 
@@ -714,14 +669,12 @@ Item {
                 Switch {
                     width: 32
                     height: elementHeight
-                    anchors.rightMargin: 36
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    // @disable-check M222
-                    Component.onCompleted: checked = settings.value("show_speed",
-                                                                    true)
-                    // @disable-check M222
-                    onCheckedChanged: settings.setValue("show_speed", checked)
+                    checked: settings.show_speed
+                    onCheckedChanged: settings.show_speed = checked
                 }
             }
 
@@ -746,14 +699,12 @@ Item {
                 Switch {
                     width: 32
                     height: elementHeight
-                    anchors.rightMargin: 36
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    // @disable-check M222
-                    Component.onCompleted: checked = settings.value("show_heading",
-                                                                    true)
-                    // @disable-check M222
-                    onCheckedChanged: settings.setValue("show_heading", checked)
+                    checked: settings.show_heading
+                    onCheckedChanged: settings.show_heading = checked
                 }
             }
 
@@ -778,14 +729,12 @@ Item {
                 Switch {
                     width: 32
                     height: elementHeight
-                    anchors.rightMargin: 36
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    // @disable-check M222
-                    Component.onCompleted: checked = settings.value("show_second_alt",
-                                                                    true)
-                    // @disable-check M222
-                    onCheckedChanged: settings.setValue("show_second_alt", checked)
+                    checked: settings.show_second_alt
+                    onCheckedChanged: settings.show_second_alt = checked
                 }
             }
 
@@ -810,14 +759,12 @@ Item {
                 Switch {
                     width: 32
                     height: elementHeight
-                    anchors.rightMargin: 36
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    // @disable-check M222
-                    Component.onCompleted: checked = settings.value("show_arrow",
-                                                                    true)
-                    // @disable-check M222
-                    onCheckedChanged: settings.setValue("show_arrow", checked)
+                    checked: settings.show_arrow
+                    onCheckedChanged: settings.show_arrow = checked
                 }
             }
 
@@ -842,18 +789,44 @@ Item {
                 Switch {
                     width: 32
                     height: elementHeight
-                    anchors.rightMargin: 36
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    // @disable-check M222
-                    Component.onCompleted: checked = settings.value("show_map",
-                                                                    true)
-                    // @disable-check M222
-                    onCheckedChanged: settings.setValue("show_map", checked)
+                    checked: settings.show_map
+                    onCheckedChanged: settings.show_map = checked
                 }
             }
 
+            Rectangle {
+                width: parent.width
+                height: rowHeight
+                color: "#00000000"
+                y: 19 * rowHeight
 
+                Text {
+                    text: "Show throttle"
+                    font.weight: Font.Bold
+                    font.pixelSize: 13
+                    anchors.leftMargin: 8
+                    verticalAlignment: Text.AlignVCenter
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: 224
+                    height: elementHeight
+                    anchors.left: parent.left
+                }
+
+                Switch {
+                    width: 32
+                    height: elementHeight
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    checked: settings.show_throttle
+                    onCheckedChanged: settings.show_throttle = checked
+                }
+            }
 
         }
 
@@ -895,7 +868,8 @@ Item {
                     from: 0
                     to: 255
                     stepSize: 5
-                    anchors.rightMargin: 18
+                    anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
+
                     Component.onCompleted: value = OpenHDPi.brightness
                     // @disable-check M223
                     onValueChanged: {
@@ -911,7 +885,7 @@ Item {
             id: videoView
             width: parent.width
             height: parent.height
-            contentHeight: 3 * rowHeight
+            contentHeight: 4 * rowHeight
 
             clip: true
             visible: EnableVideo
@@ -921,6 +895,36 @@ Item {
                 height: rowHeight
                 color: "#8cbfd7f3"
                 y: 0 * rowHeight
+
+                Text {
+                    text: "Use hardware video decoder"
+                    font.weight: Font.Bold
+                    font.pixelSize: 13
+                    anchors.leftMargin: 8
+                    verticalAlignment: Text.AlignVCenter
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: 224
+                    height: elementHeight
+                    anchors.left: parent.left
+                }
+
+                Switch {
+                    width: 32
+                    height: elementHeight
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    checked: settings.enable_hardware_video_decoder
+                    onCheckedChanged: settings.enable_hardware_video_decoder = checked
+                }
+            }
+
+            Rectangle {
+                width: parent.width
+                height: rowHeight
+                color: "#00000000"
+                y: 1 * rowHeight
 
                 Text {
                     text: "Main video port"
@@ -944,7 +948,8 @@ Item {
                     from: 5600
                     to: 5610
                     stepSize: 1
-                    anchors.rightMargin: 18
+                    anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
+
                     value: settings.main_video_port
                     onValueChanged: settings.main_video_port = value
                 }
@@ -953,8 +958,9 @@ Item {
             Rectangle {
                 width: parent.width
                 height: rowHeight
-                color: "#00000000"
-                y: 1 * rowHeight
+                color: "#8cbfd7f3"
+                y: 2 * rowHeight
+                visible: EnablePiP
 
                 Text {
                     text: "Enable PiP"
@@ -971,22 +977,21 @@ Item {
                 Switch {
                     width: 32
                     height: elementHeight
-                    anchors.rightMargin: 36
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    // @disable-check M222
-                    Component.onCompleted: checked = settings.value("show_pip_video",
-                                                                    false)
-                    // @disable-check M222
-                    onCheckedChanged: settings.setValue("show_pip_video", checked)
+                    checked: settings.show_pip_video
+                    onCheckedChanged: settings.show_pip_video = checked
                 }
             }
 
             Rectangle {
                 width: parent.width
                 height: rowHeight
-                color: "#8cbfd7f3"
-                y: 2 * rowHeight
+                color: "#00000000"
+                y: 3 * rowHeight
+                visible: EnablePiP
 
                 Text {
                     text: "PiP video port"
@@ -1010,7 +1015,8 @@ Item {
                     from: 5600
                     to: 5610
                     stepSize: 1
-                    anchors.rightMargin: 18
+                    anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
+
                     value: settings.pip_video_port
                     onValueChanged: settings.pip_video_port = value
                 }

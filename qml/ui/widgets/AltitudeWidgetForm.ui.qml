@@ -17,6 +17,8 @@ BaseWidget {
     defaultXOffset: 20
     defaultVCenter: true
 
+    visible: settings.show_altitude
+
     widgetIdentifier: "altitude_widget"
 
     defaultHCenter: false
@@ -45,6 +47,14 @@ BaseWidget {
                 onCheckedChanged: settings.setValue("alt_msl_rel", checked)
             }
         }
+    }
+
+    Glow {
+        anchors.fill: widgetInner
+        radius: 3
+        samples: 17
+        color: "black"
+        source: widgetInner
     }
 
     Item {

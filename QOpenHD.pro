@@ -30,7 +30,6 @@ CONFIG(debug, debug|release) {
     }
     DESTDIR = $${OUT_PWD}/release
     DEFINES += QMLJSDEBUGGER
-    DEFINES += QGC_INSTALL_RELEASE
 }
 
 
@@ -79,8 +78,7 @@ HEADERS += \
     inc/openhdvideostream.h \
     inc/qopenhdlink.h \
     inc/util.h \
-    inc/wifibroadcast.h \
-    lib/json.hpp
+    inc/wifibroadcast.h
 
 DISTFILES += \
     android/AndroidManifest.xml \
@@ -98,6 +96,9 @@ DISTFILES += \
     android/res/values/libs.xml \
     android/res/values/styles.xml \
     android/src/OpenHDActivity.java \
+    android/src/org/freedesktop/gstreamer/androidmedia/GstAhcCallback.java \
+    android/src/org/freedesktop/gstreamer/androidmedia/GstAhsCallback.java \
+    android/src/org/freedesktop/gstreamer/androidmedia/GstAmcOnFrameAvailableListener.java \
     icons/AppIcon.appiconset/iPad-app.png \
     icons/AppIcon.appiconset/iPad-app@2x.png \
     icons/AppIcon.appiconset/iPad-notifications.png \
@@ -175,6 +176,9 @@ iOSBuild {
     CONFIG += EnableGamepads
     CONFIG += EnableSpeech
     CONFIG += EnableVideo
+    CONFIG += EnablePiP
+    CONFIG += EnableLink
+
     #QMAKE_POST_LINK += /usr/libexec/PlistBuddy -c \"Set :CFBundleShortVersionString $$APPLE_BUILD\" $$DESTDIR/$${TARGET}.app/Contents/Info.plist
     #QMAKE_POST_LINK += && /usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $$APPLE_BUILD\" $$DESTDIR/$${TARGET}.app/Contents/Info.plist
     app_launch_images.files = $$PWD/icons/LaunchScreen.png $$files($$PWD/icons/LaunchScreen.storyboard)
@@ -198,6 +202,8 @@ MacBuild {
     CONFIG += EnableJoysticks
     CONFIG += EnableSpeech
     CONFIG += EnableVideo
+    CONFIG += EnablePiP
+    #CONFIG += EnableLink
 
     DEFINES += GST_GL_HAVE_WINDOW_COCOA=1
     DEFINES += GST_GL_HAVE_PLATFORM_CGL=1
@@ -209,12 +215,10 @@ LinuxBuild {
     CONFIG += EnableGamepads
     CONFIG += EnableJoysticks
     CONFIG += EnableVideo
+    CONFIG += EnablePiP
+    CONFIG += EnableLink
+
     message("LinuxBuild - config")
-
-    DEFINES += GST_GL_HAVE_WINDOW_X11=1
-    DEFINES += GST_GL_HAVE_PLATFORM_GLX=1
-    DEFINES += HAVE_QT_X11
-
 }
 
 RaspberryPiBuild {
@@ -224,6 +228,8 @@ RaspberryPiBuild {
     # replace that at some point but for now it isn't necessary.
     message("RaspberryPiBuild - config")
     #CONFIG += EnableVideo
+    #CONFIG +- EnablePiP
+    CONFIG += EnableLink
 
     DEFINES += GST_GL_HAVE_PLATFORM_EGL=1
     DEFINES += HAVE_QT_EGLFS=1
@@ -234,9 +240,14 @@ WindowsBuild {
     CONFIG += EnableJoysticks
     CONFIG += EnableSpeech
     CONFIG += EnableVideo
+    #CONFIG +- EnablePiP
+    CONFIG += EnableLink
+
     DEFINES += GST_GL_HAVE_WINDOW_WIN32=1
     DEFINES += GST_GL_HAVE_PLATFORM_WGL=1
     DEFINES += HAVE_QT_WIN32
+
+    INCLUDEPATH += $$PWD/win/include
 }
 
 AndroidBuild {
@@ -244,6 +255,9 @@ AndroidBuild {
     CONFIG += EnableJoysticks
     CONFIG += EnableSpeech
     CONFIG += EnableVideo
+    CONFIG += EnablePiP
+    CONFIG += EnableLink
+
     QT += androidextras
 
     OTHER_FILES += \
@@ -265,18 +279,18 @@ EnableVideo {
     DEFINES += ENABLE_VIDEO
 }
 
-include ($$PWD/lib/VideoStreaming/VideoStreaming.pri)
-HEADERS += \
-    $$BASEDIR/lib/VideoStreaming/VideoItem.h \
-    $$BASEDIR/lib/VideoStreaming/VideoReceiver.h \
-    $$BASEDIR/lib/VideoStreaming/VideoSurface.h \
-    $$BASEDIR/lib/VideoStreaming/VideoStreaming.h
+EnablePiP {
+    message("EnablePiP")
+    DEFINES += ENABLE_PIP
+}
 
-SOURCES += \
-    $$BASEDIR/lib/VideoStreaming/VideoItem.cc \
-    $$BASEDIR/lib/VideoStreaming/VideoReceiver.cc \
-    $$BASEDIR/lib/VideoStreaming/VideoSurface.cc \
-    $$BASEDIR/lib/VideoStreaming/VideoStreaming.cc
+EnableLink {
+    message("EnableLink")
+    DEFINES += ENABLE_LINK
+    HEADERS += lib/json.hpp
+}
+
+include ($$PWD/lib/VideoStreaming/VideoStreaming.pri)
 
 EnableRC {
     message("EnableRC")
@@ -314,8 +328,15 @@ installer {
 
     }
     WindowsBuild {
-        QMAKE_POST_LINK += $$escape_expand(\\n) cd $$BASEDIR_WIN && $$quote("\"C:\\Program Files \(x86\)\\NSIS\\makensis.exe\"" /NOCD "\"/XOutFile $${DESTDIR_WIN}\\OpenHD-installer.exe\"" "$$BASEDIR_WIN\\deploy\\openhd_installer.nsi")
-        OTHER_FILES += deploy/openhd_installer.nsi
+        OTHER_FILES += tools/qopenhd_installer.nsi
+        QMAKE_POST_LINK += c:\Qt\5.13.1\msvc2017\bin\windeployqt.exe --qmldir $${PWD}/qml \"$${DESTDIR_WIN}\\QOpenHD.exe\"
+
+        #QMAKE_POST_LINK += && $$escape_expand(\\n) $$QMAKE_COPY \"C:\\Windows\\System32\\msvcp140.dll\"  \"$$DESTDIR_WIN\"
+        #QMAKE_POST_LINK += && $$escape_expand(\\n) $$QMAKE_COPY \"C:\\Windows\\System32\\msvcr140.dll\"  \"$$DESTDIR_WIN\"
+        #QMAKE_POST_LINK += && $$escape_expand(\\n) $$QMAKE_COPY \"C:\\Windows\\System32\\msvcruntime140.dll\"  \"$$DESTDIR_WIN\"
+
+        QMAKE_POST_LINK += $$escape_expand(\\n) cd $$BASEDIR_WIN && $$quote("\"C:\\Program Files \(x86\)\\NSIS\\makensis.exe\"" /DINSTALLER_ICON="\"$${PWD}\icons\openhd.ico\"" /DHEADER_BITMAP="\"$${PWD}\icons\LaunchScreen.png\"" /DAPPNAME="\"QOpenHD\"" /DEXENAME="\"$${TARGET}\"" /DORGNAME="\"Open.HD\"" /DDESTDIR=$${DESTDIR} /NOCD "\"/XOutFile $${DESTDIR_WIN}\\QOpenHD-$${QOPENHD_VERSION}.exe\"" "$$PWD/tools/qopenhd_installer.nsi")
+
     }
     AndroidBuild {
         QMAKE_POST_LINK += mkdir -p $${DESTDIR}/package

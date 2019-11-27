@@ -10,7 +10,10 @@ import OpenHD 1.0
 BaseWidget {
     id: headingWidget
     width: 48
-    height: 24
+    height: 48
+
+    visible: settings.show_heading
+
     defaultYOffset: 50
 
     widgetIdentifier: "heading_widget"
@@ -44,13 +47,25 @@ BaseWidget {
         }
     }
 
+    Glow {
+        anchors.fill: widgetInner
+        radius: 3
+        samples: 17
+        color: "black"
+        source: widgetInner
+    }
+
     Item {
         id: widgetInner
         anchors.fill: parent
 
         Text {
             id: hdg_text
-            anchors.fill: parent
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: parent.height - 24
             color: "white"
             text: qsTr(OpenHD.hdg)
             horizontalAlignment: Text.AlignHCenter

@@ -12,13 +12,20 @@ MacBuild | iOSBuild {
     message("APPLE_BUILD:" $$APPLE_BUILD)
 }
 
-BUILDER_VERSION = $$system(cat .builder_version)
-DEFINES += BUILDER_VERSION=\"\\\"$$BUILDER_VERSION\\\"\"
-message("BUILDER_VERSION:" $$BUILDER_VERSION)
+WindowsBuild {
+    DEFINES += BUILDER_VERSION=""
+    DEFINES += OPENHD_VERSION=""
+}
 
-OPENHD_VERSION = $$system(cat .openhd_version)
-DEFINES += OPENHD_VERSION=\"\\\"$$OPENHD_VERSION\\\"\"
-message("OPENHD_VERSION:" $$OPENHD_VERSION)
+LinuxBuild | iOSBuild | MacBuild | AndroidBuild | RaspberryPiBuild {
+    BUILDER_VERSION = $$system(cat .builder_version)
+    DEFINES += BUILDER_VERSION=\"\\\"$$BUILDER_VERSION\\\"\"
+    message("BUILDER_VERSION:" $$BUILDER_VERSION)
+
+    OPENHD_VERSION = $$system(cat .openhd_version)
+    DEFINES += OPENHD_VERSION=\"\\\"$$OPENHD_VERSION\\\"\"
+    message("OPENHD_VERSION:" $$OPENHD_VERSION)
+}
 
 
 DEFINES += QOPENHD_VERSION=\"\\\"$$QOPENHD_VERSION\\\"\"
