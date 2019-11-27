@@ -17,4 +17,8 @@ QString tracker_mode_from_enum(TRACKER_MODE mode);
 
 uint map(double input, double input_start, double input_end, uint16_t output_start, uint16_t output_end);
 
+#if defined(__android__)
+void keep_screen_on(bool on);
+#endif
+
 #endif // UTIL_H
