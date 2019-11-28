@@ -104,6 +104,15 @@ void MavlinkTelemetry::processMavlinkDatagrams() {
 #endif
 
 void MavlinkTelemetry::processMavlinkMessage(mavlink_message_t msg) {
+    /* QGC sends its own heartbeats with compid 0 (fixed)
+     * and sysid 255 (configurable). We want to ignore these
+     * because they cause UI glitches like the flight mode
+     * appearing to change and the armed status flipping back
+     * and forth.
+     */
+    if (msg.compid != 1) {
+        return;
+    }
     switch (msg.msgid) {
             case MAVLINK_MSG_ID_HEARTBEAT: {
                     mavlink_heartbeat_t heartbeat;
