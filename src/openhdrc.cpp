@@ -61,8 +61,9 @@ void OpenHDRC::channelTrigger() {
     emit channelUpdate(m_rc1, m_rc2, m_rc3, m_rc4, m_rc5, m_rc6, m_rc7, m_rc8, m_rc9, m_rc10);
 #if defined(ENABLE_RC)
     QSettings settings;
-    auto enable_rc = settings.value("enable_rc", QVariant::Int);
-    if (enable_rc == 1) {
+    auto enable_rc = settings.value("enable_rc", false).toBool();
+
+    if (enable_rc) {
         QByteArray rcChannels(BUFLEN, 0);
 
         rcChannels[0] = m_rc1 & 0xFF;
