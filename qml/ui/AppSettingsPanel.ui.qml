@@ -190,7 +190,7 @@ Item {
             Rectangle {
                 width: parent.width
                 height: rowHeight
-                color: "#8cbfd7f3"
+                color: "#00000000"
                 y: 3 * rowHeight
                 visible: EnableRC
 
