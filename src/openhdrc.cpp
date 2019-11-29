@@ -14,24 +14,6 @@
 #define BUFLEN 21
 #define PORT 5565 // UDP port for OpenHD RC
 
-struct rcdata_s {
-    unsigned int chan1 : 11;
-    unsigned int chan2 : 11;
-    unsigned int chan3 : 11;
-    unsigned int chan4 : 11;
-    unsigned int chan5 : 11;
-    unsigned int chan6 : 11;
-    unsigned int chan7 : 11;
-    unsigned int chan8 : 11;
-    unsigned int Is16  : 8;
-    unsigned int switches : 16;
-}
-#ifndef _MSC_VER
-__attribute__((packed))
-#endif
-;
-static struct rcdata_s rcdata;
-
 
 OpenHDRC::OpenHDRC(QObject *parent): QObject(parent) {
     rcSocket = new QUdpSocket(this);
@@ -81,21 +63,45 @@ void OpenHDRC::channelTrigger() {
     QSettings settings;
     auto enable_rc = settings.value("enable_rc", QVariant::Int);
     if (enable_rc == 1) {
-        QNetworkDatagram d;
-        rcdata.chan1 = m_rc1;
-        rcdata.chan2 = m_rc2;
-        rcdata.chan3 = m_rc3;
-        rcdata.chan4 = m_rc4;
-        rcdata.chan5 = m_rc5;
-        rcdata.chan6 = m_rc6;
-        rcdata.chan7 = m_rc7;
-        rcdata.chan8 = m_rc8;
-        rcdata.Is16  = 0;
-        rcdata.switches = 0;
-        QByteArray rcChannels;
-        rcChannels.resize(sizeof(rcdata));
-        memcpy(rcChannels.data(), &rcdata, sizeof(rcdata));
-        rcSocket->writeDatagram(d);
+        QByteArray rcChannels(BUFLEN, 0);
+
+        rcChannels[0] = m_rc1 & 0xFF;
+        rcChannels[1] = (m_rc1 >> 8) & 0xFF;
+
+        rcChannels[2] = m_rc2 & 0xFF;
+        rcChannels[3] = (m_rc2 >> 8) & 0xFF;
+
+        rcChannels[4] = m_rc3 & 0xFF;
+        rcChannels[5] = (m_rc3 >> 8) & 0xFF;
+
+        rcChannels[6] = m_rc4 & 0xFF;
+        rcChannels[7] = (m_rc4 >> 8) & 0xFF;
+
+        rcChannels[8] = m_rc5 & 0xFF;
+        rcChannels[9] = (m_rc5 >> 8) & 0xFF;
+
+        rcChannels[10] = m_rc6 & 0xFF;
+        rcChannels[11] = (m_rc6 >> 8) & 0xFF;
+
+        rcChannels[12] = m_rc7 & 0xFF;
+        rcChannels[13] = (m_rc7 >> 8) & 0xFF;
+
+        rcChannels[14] = m_rc8 & 0xFF;
+        rcChannels[15] = (m_rc8 >> 8) & 0xFF;
+
+        rcChannels[16] = seqno;
+        rcChannels[17] = 0;
+
+        // is16
+        rcChannels[18] = 0;
+
+        // these would be the buttons, disabled for now.
+        rcChannels[19] = 1;
+        rcChannels[20] = 1;
+
+        rcSocket->write(rcChannels, rcChannels.length());
+
+        seqno++;
     }
 #endif
 }
