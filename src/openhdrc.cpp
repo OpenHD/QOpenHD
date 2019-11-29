@@ -41,6 +41,8 @@ OpenHDRC::OpenHDRC(QObject *parent): QObject(parent) {
 #else
     rcSocket->connectToHost("192.168.2.1", PORT);
 #endif
+    rcSocket->waitForConnected();
+
     connect(rcSocket, &QUdpSocket::readyRead, this, &OpenHDRC::processRCDatagrams);
 
 #if defined(ENABLE_SPEECH)
