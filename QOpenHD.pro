@@ -162,8 +162,6 @@ SOURCES += \
     lib/GeographicLib-1.50/src/UTMUPS.cpp \
     lib/GeographicLib-1.50/src/Utility.cpp
 
-#CONFIG += EnableRC
-
 
 iOSBuild {
     QMAKE_INFO_PLIST    = ios/Info.plist
