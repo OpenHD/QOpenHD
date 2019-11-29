@@ -247,6 +247,51 @@ void OpenHDRC::axisChanged(const int js, const int axis, const qreal value) {
     Q_UNUSED(axis)
 
     qDebug() << "OpenHDRC::axisChanged()";
+    switch (axis) {
+        case 0:
+        set_rc1(map(value, -1, 1, 1000, 2000));
+        break;
+
+        case 1:
+        set_rc2(map(value, -1, 1, 1000, 2000));
+        break;
+
+        case 2:
+        set_rc3(map(value, -1, 1, 1000, 2000));
+        break;
+
+        case 3:
+        set_rc4(map(value, -1, 1, 1000, 2000));
+        break;
+
+        case 4:
+        set_rc5(map(value, -1, 1, 1000, 2000));
+        break;
+
+        case 5:
+        set_rc6(map(value, -1, 1, 1000, 2000));
+        break;
+
+        case 6:
+        set_rc7(map(value, -1, 1, 1000, 2000));
+        break;
+
+        case 7:
+        set_rc8(map(value, -1, 1, 1000, 2000));
+        break;
+
+        case 8:
+        set_rc9(map(value, -1, 1, 1000, 2000));
+        break;
+
+        case 9:
+        set_rc10(map(value, -1, 1, 1000, 2000));
+        break;
+
+        default:
+        break;
+    }
+
     qDebug() << "Axis " << axis << ": " << value;
 }
 
