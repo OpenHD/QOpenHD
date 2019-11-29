@@ -255,7 +255,7 @@ void OpenHDRC::connectedChanged(bool value) {
 
     QSettings settings;
 
-#if defined(SPEECH)
+#if defined(ENABLE_SPEECH)
     auto enable_speech = settings.value("enable_speech", QVariant(0));
     if (value && enable_speech == 1) {
         m_speech->say("Game pad connected");
