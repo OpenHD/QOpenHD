@@ -198,6 +198,7 @@ MacBuild {
     DISTFILES += mac/Info.plist
     LIBS += -framework ApplicationServices
     LIBS += -framework VideoToolbox -framework CoreVideo -framework CoreMedia
+    CONFIG += EnableRC
     #CONFIG += EnableGamepads
     CONFIG += EnableJoysticks
     CONFIG += EnableSpeech
