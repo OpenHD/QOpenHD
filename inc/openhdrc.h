@@ -166,6 +166,8 @@ private:
     QTextToSpeech *m_speech;
 #endif
 
+    uint8_t  seqno = 0;
+
     uint m_rc1 = 1500;
     uint m_rc2 = 1500;
     uint m_rc3 = 1500;
