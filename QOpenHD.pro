@@ -204,7 +204,7 @@ MacBuild {
     CONFIG += EnableSpeech
     CONFIG += EnableVideo
     CONFIG += EnablePiP
-    #CONFIG += EnableLink
+    CONFIG += EnableLink
 
     DEFINES += GST_GL_HAVE_WINDOW_COCOA=1
     DEFINES += GST_GL_HAVE_PLATFORM_CGL=1
