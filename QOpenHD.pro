@@ -173,7 +173,7 @@ iOSBuild {
                         icons/LaunchScreen.storyboard
     LIBS += -framework VideoToolbox -framework AudioToolbox -framework CoreAudio -framework CoreVideo -framework CoreMedia
     CONFIG -= bitcode
-    CONFIG += EnableGamepads
+    #CONFIG += EnableGamepads
     CONFIG += EnableSpeech
     CONFIG += EnableVideo
     CONFIG += EnablePiP
@@ -198,7 +198,7 @@ MacBuild {
     DISTFILES += mac/Info.plist
     LIBS += -framework ApplicationServices
     LIBS += -framework VideoToolbox -framework CoreVideo -framework CoreMedia
-    CONFIG += EnableGamepads
+    #CONFIG += EnableGamepads
     CONFIG += EnableJoysticks
     CONFIG += EnableSpeech
     CONFIG += EnableVideo
@@ -212,7 +212,7 @@ MacBuild {
 
 LinuxBuild {
     QT += x11extras
-    CONFIG += EnableGamepads
+    #CONFIG += EnableGamepads
     CONFIG += EnableJoysticks
     CONFIG += EnableVideo
     CONFIG += EnablePiP
@@ -236,7 +236,7 @@ RaspberryPiBuild {
 }
 
 WindowsBuild {
-    CONFIG += EnableGamepads
+    #CONFIG += EnableGamepads
     CONFIG += EnableJoysticks
     CONFIG += EnableSpeech
     CONFIG += EnableVideo
@@ -251,7 +251,7 @@ WindowsBuild {
 }
 
 AndroidBuild {
-    CONFIG += EnableGamepads
+    #CONFIG += EnableGamepads
     CONFIG += EnableJoysticks
     CONFIG += EnableSpeech
     CONFIG += EnableVideo
