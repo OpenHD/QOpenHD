@@ -72,6 +72,22 @@ void QOpenHDLink::setWidgetLocation(QString widgetName, int alignment, int xOffs
 #endif
 }
 
+void QOpenHDLink::setWidgetEnabled(QString widgetName, bool enabled) {
+#if defined(ENABLE_LINK)
+    nlohmann::json j = {
+      {"cmd", "setWidgetEnabled"},
+      {"widgetName", widgetName.toStdString()},
+      {"enabled", enabled}
+    };
+
+    std::string serialized_string = j.dump();
+    auto buf = QByteArray(serialized_string.c_str());
+    if (linkSocket->state() != QUdpSocket::ConnectedState) {
+        linkSocket->connectToHost("192.168.2.1", LINK_PORT);
+    }
+    linkSocket->writeDatagram(buf);
+#endif
+}
 
 void QOpenHDLink::processCommand(QByteArray buffer) {
 #if defined(ENABLE_LINK)
@@ -82,6 +98,10 @@ void QOpenHDLink::processCommand(QByteArray buffer) {
 
             if (cmd == "setWidgetLocation") {
                 processSetWidgetLocation(commandData);
+            }
+
+            if (cmd == "setWidgetEnabled") {
+                processSetWidgetEnabled(commandData);
             }
         }
     } catch (std::exception &e) {
@@ -104,5 +124,15 @@ void QOpenHDLink::processSetWidgetLocation(nlohmann::json commandData) {
     bool vCenter = commandData["vCenter"];
 
     emit widgetLocation(QString(widgetName.c_str()), alignment, xOffset, yOffset, hCenter, vCenter);
+#endif
+}
+
+void QOpenHDLink::processSetWidgetEnabled(nlohmann::json commandData) {
+#if defined(ENABLE_LINK)
+    std::string widgetName = commandData["widgetName"];
+
+    bool enabled = commandData["enabled"];
+
+    emit widgetEnabled(QString(widgetName.c_str()), enabled);
 #endif
 }
