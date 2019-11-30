@@ -553,8 +553,8 @@ Item {
 
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    checked: settings.show_log_onscreen
-                    onCheckedChanged: settings.show_log_onscreen = checked
+                    checked: settings.show_message_hud
+                    onCheckedChanged: settings.show_message_hud = checked
                 }
             }
 
@@ -733,8 +733,8 @@ Item {
 
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    checked: settings.show_second_alt
-                    onCheckedChanged: settings.show_second_alt = checked
+                    checked: settings.show_altitude_second
+                    onCheckedChanged: settings.show_altitude_second = checked
                 }
             }
 

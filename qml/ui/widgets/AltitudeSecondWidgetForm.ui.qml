@@ -17,7 +17,7 @@ BaseWidget {
     defaultYOffset: 64
     dragging: false
 
-    visible: settings.show_second_alt
+    visible: settings.show_altitude_second
 
     widgetIdentifier: "altitude_second_widget"
 

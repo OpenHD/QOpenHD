@@ -76,13 +76,13 @@ ApplicationWindow {
         property bool show_flight_mode: true
         property bool show_ground_status: true
         property bool show_air_status: true
-        property bool show_log_onscreen: true
+        property bool show_message_hud: true
         property bool show_horizon: true
         property bool show_fpv: true
         property bool show_altitude: true
         property bool show_speed: true
         property bool show_heading: true
-        property bool show_second_alt: true
+        property bool show_altitude_second: true
         property bool show_arrow: true
         property bool show_map: true
         property bool show_throttle: true

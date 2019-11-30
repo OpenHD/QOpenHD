@@ -14,7 +14,7 @@ BaseWidget {
 
     visible: settings.show_pip_video
 
-    widgetIdentifier: elementName + "_widget"
+    widgetIdentifier: "pip_video_widget"
 
     defaultAlignment: 0
     defaultXOffset: 12
@@ -43,7 +43,7 @@ BaseWidget {
 
         GstGLVideoItem {
             id: videoElement
-            objectName: elementName
+            objectName: "pipVideoItem"
             anchors.fill: parent
         }
     }
