@@ -885,7 +885,7 @@ Item {
             id: videoView
             width: parent.width
             height: parent.height
-            contentHeight: 4 * rowHeight
+            contentHeight: 5 * rowHeight
 
             clip: true
             visible: EnableVideo
@@ -927,6 +927,36 @@ Item {
                 y: 1 * rowHeight
 
                 Text {
+                    text: "Stream is RTP"
+                    font.weight: Font.Bold
+                    font.pixelSize: 13
+                    anchors.leftMargin: 8
+                    verticalAlignment: Text.AlignVCenter
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: 224
+                    height: elementHeight
+                    anchors.left: parent.left
+                }
+
+                Switch {
+                    width: 32
+                    height: elementHeight
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    checked: settings.enable_rtp
+                    onCheckedChanged: settings.enable_rtp = checked
+                }
+            }
+
+            Rectangle {
+                width: parent.width
+                height: rowHeight
+                color: "#8cbfd7f3"
+                y: 2 * rowHeight
+
+                Text {
                     text: "Main video port"
                     font.weight: Font.Bold
                     font.pixelSize: 13
@@ -958,8 +988,8 @@ Item {
             Rectangle {
                 width: parent.width
                 height: rowHeight
-                color: "#8cbfd7f3"
-                y: 2 * rowHeight
+                color: "#00000000"
+                y: 3 * rowHeight
                 visible: EnablePiP
 
                 Text {
@@ -989,8 +1019,8 @@ Item {
             Rectangle {
                 width: parent.width
                 height: rowHeight
-                color: "#00000000"
-                y: 3 * rowHeight
+                color: "#8cbfd7f3"
+                y: 4 * rowHeight
                 visible: EnablePiP
 
                 Text {
