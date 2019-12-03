@@ -746,20 +746,18 @@ void OpenHDVideoStream::_start() {
         }
         s << "queue max-size-buffers=0 max-size-time=0 max-size-bytes=0 !";
 
-        if (m_enable_hardware_video_decoder) {
-            qDebug() << "Using hardware decoder";
+        if (m_enable_software_video_decoder) {
+            qDebug() << "Forcing software decoder";
+            s << "h264parse !";
+            s << "avdec_h264 !";
+        } else {
+            qDebug() << "Using hardware decoder, fallback to software if unavailable";
             s << "h264parse !";
             #if defined(__rasp_pi__)
             s << "omxh264dec !";
             #else
             s << "decodebin3 !";
             #endif
-            //s << "amcviddec-omxqcomvideodecoderavc !";
-            //s << "amcviddec-omxmtkvideodecoderavc !";
-        } else {
-            qDebug() << "Using software decoder";
-            s << "h264parse !";
-            s << "avdec_h264 !";
         }
     }
     s << "queue max-size-buffers=0 max-size-time=0 max-size-bytes=0 !";
@@ -819,7 +817,7 @@ void OpenHDVideoStream::_timer() {
     }
     QSettings settings;
     auto _enable_videotest = settings.value("enable_videotest", false).toBool();
-    auto _enable_hardware_video_decoder = settings.value("enable_hardware_video_decoder", true).toBool();
+    auto _enable_software_video_decoder = settings.value("enable_software_video_decoder", false).toBool();
     auto _enable_rtp = settings.value("enable_rtp", true).toBool();
 
     auto _show_pip_video = settings.value("show_pip_video", false).toBool();
@@ -829,22 +827,22 @@ void OpenHDVideoStream::_timer() {
 
 
     if (m_stream_type == StreamTypeMain) {
-        if (_enable_videotest != m_enable_videotest || _enable_hardware_video_decoder != m_enable_hardware_video_decoder || _main_video_port != m_video_port || _enable_rtp != m_enable_rtp) {
+        if (_enable_videotest != m_enable_videotest || _enable_software_video_decoder != m_enable_software_video_decoder || _main_video_port != m_video_port || _enable_rtp != m_enable_rtp) {
             qDebug() << "Restarting main stream";
             stopVideo();
             m_enable_videotest = _enable_videotest;
-            m_enable_hardware_video_decoder = _enable_hardware_video_decoder;
+            m_enable_software_video_decoder = _enable_software_video_decoder;
             m_enable_rtp = _enable_rtp;
 
             m_video_port = _main_video_port;
             startVideo();
         }
     } else if (m_stream_type == StreamTypePiP) {
-        if (m_enable_pip_video != _show_pip_video || _enable_videotest != m_enable_videotest || _enable_hardware_video_decoder != m_enable_hardware_video_decoder || _pip_video_port != m_video_port || _enable_rtp != m_enable_rtp) {
+        if (m_enable_pip_video != _show_pip_video || _enable_videotest != m_enable_videotest || _enable_software_video_decoder != m_enable_software_video_decoder || _pip_video_port != m_video_port || _enable_rtp != m_enable_rtp) {
             qDebug() << "Restarting PiP stream";
             stopVideo();
             m_enable_videotest = _enable_videotest;
-            m_enable_hardware_video_decoder = _enable_hardware_video_decoder;
+            m_enable_software_video_decoder = _enable_software_video_decoder;
             m_enable_rtp = _enable_rtp;
 
             m_video_port = _pip_video_port;

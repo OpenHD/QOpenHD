@@ -897,7 +897,7 @@ Item {
                 y: 0 * rowHeight
 
                 Text {
-                    text: "Use hardware video decoder"
+                    text: "Always use software video decoder"
                     font.weight: Font.Bold
                     font.pixelSize: 13
                     anchors.leftMargin: 8
@@ -915,8 +915,8 @@ Item {
 
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    checked: settings.enable_hardware_video_decoder
-                    onCheckedChanged: settings.enable_hardware_video_decoder = checked
+                    checked: settings.enable_software_video_decoder
+                    onCheckedChanged: settings.enable_software_video_decoder = checked
                 }
             }
 

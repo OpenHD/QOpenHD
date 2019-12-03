@@ -60,7 +60,7 @@ ApplicationWindow {
         property int pip_video_port: 5601
         property int battery_cells: 3
         property bool show_pip_video: false
-        property bool enable_hardware_video_decoder: true
+        property bool enable_software_video_decoder: false
         property bool enable_rtp: true
 
         property bool enable_speech: true
