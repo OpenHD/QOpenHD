@@ -19,7 +19,7 @@ ApplicationWindow {
     minimumHeight: 320
     minimumWidth: 480
     title: qsTr("Open.HD")
-    color: EnableVideo ? "black" : "#00000000"
+    color: EnableMainVideo ? "black" : "#00000000"
 
     visibility: UseFullscreen ? "FullScreen" : "AutomaticVisibility"
 
@@ -32,11 +32,11 @@ ApplicationWindow {
                 OpenHDRC.initRC;
             }
             initialised = true;
-            if (EnableVideo) {
+            if (EnableMainVideo) {
                 MainStream.startVideo();
-                if (EnablePiP) {
-                    PiPStream.startVideo();
-                }
+            }
+            if (EnablePiP) {
+                PiPStream.startVideo();
             }
         }
     }
@@ -46,7 +46,7 @@ ApplicationWindow {
     // to be initialized, depending on the order they appear in the QML, will simply
     // not work on desktop linux.
     Loader {
-        source:  (EnableVideo && EnablePiP)  ? "DummyVideoItem.qml" : ""
+        source:  (EnableMainVideo && EnablePiP)  ? "DummyVideoItem.qml" : ""
     }
 
     /*
@@ -60,7 +60,8 @@ ApplicationWindow {
         property int pip_video_port: 5601
         property int battery_cells: 3
         property bool show_pip_video: false
-        property bool enable_hardware_video_decoder: true
+        property bool enable_software_video_decoder: false
+        property bool enable_rtp: true
 
         property bool enable_speech: true
         property bool enable_imperial: false
@@ -76,13 +77,13 @@ ApplicationWindow {
         property bool show_flight_mode: true
         property bool show_ground_status: true
         property bool show_air_status: true
-        property bool show_log_onscreen: true
+        property bool show_message_hud: true
         property bool show_horizon: true
         property bool show_fpv: true
         property bool show_altitude: true
         property bool show_speed: true
         property bool show_heading: true
-        property bool show_second_alt: true
+        property bool show_altitude_second: true
         property bool show_arrow: true
         property bool show_map: true
         property bool show_throttle: true
@@ -117,7 +118,7 @@ ApplicationWindow {
         width: parent.width
         height: parent.height
         z: 1.0
-        source: EnableVideo ? "MainVideoItem.qml" : ""
+        source: EnableMainVideo ? "MainVideoItem.qml" : ""
     }
 
     Connections {

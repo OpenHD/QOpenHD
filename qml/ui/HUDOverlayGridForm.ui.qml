@@ -119,7 +119,6 @@ Item {
 
     VideoWidget {
         id: pipVideoWidget
-        elementName: "pipVideoItem"
     }
 
     MapWidget {

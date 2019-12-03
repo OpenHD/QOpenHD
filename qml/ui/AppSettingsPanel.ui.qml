@@ -57,10 +57,10 @@ Item {
 
         TabButton {
             text: qsTr("Video")
-            width: EnableVideo ? implicitWidth : 0
+            width: (EnableMainVideo || EnablePiP) ? implicitWidth : 0
             height: 48
             font.pixelSize: 13
-            visible: EnableVideo
+            visible: (EnableMainVideo || EnablePiP)
         }
 
 
@@ -190,7 +190,7 @@ Item {
             Rectangle {
                 width: parent.width
                 height: rowHeight
-                color: "#8cbfd7f3"
+                color: "#00000000"
                 y: 3 * rowHeight
                 visible: EnableRC
 
@@ -553,8 +553,8 @@ Item {
 
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    checked: settings.show_log_onscreen
-                    onCheckedChanged: settings.show_log_onscreen = checked
+                    checked: settings.show_message_hud
+                    onCheckedChanged: settings.show_message_hud = checked
                 }
             }
 
@@ -733,8 +733,8 @@ Item {
 
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    checked: settings.show_second_alt
-                    onCheckedChanged: settings.show_second_alt = checked
+                    checked: settings.show_altitude_second
+                    onCheckedChanged: settings.show_altitude_second = checked
                 }
             }
 
@@ -885,10 +885,10 @@ Item {
             id: videoView
             width: parent.width
             height: parent.height
-            contentHeight: 4 * rowHeight
+            contentHeight: 5 * rowHeight
 
             clip: true
-            visible: EnableVideo
+            visible: EnableMainVideo || EnablePiP
 
             Rectangle {
                 width: parent.width
@@ -897,7 +897,7 @@ Item {
                 y: 0 * rowHeight
 
                 Text {
-                    text: "Use hardware video decoder"
+                    text: "Always use software video decoder"
                     font.weight: Font.Bold
                     font.pixelSize: 13
                     anchors.leftMargin: 8
@@ -915,8 +915,8 @@ Item {
 
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    checked: settings.enable_hardware_video_decoder
-                    onCheckedChanged: settings.enable_hardware_video_decoder = checked
+                    checked: settings.enable_software_video_decoder
+                    onCheckedChanged: settings.enable_software_video_decoder = checked
                 }
             }
 
@@ -925,6 +925,36 @@ Item {
                 height: rowHeight
                 color: "#00000000"
                 y: 1 * rowHeight
+
+                Text {
+                    text: "Stream is RTP"
+                    font.weight: Font.Bold
+                    font.pixelSize: 13
+                    anchors.leftMargin: 8
+                    verticalAlignment: Text.AlignVCenter
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: 224
+                    height: elementHeight
+                    anchors.left: parent.left
+                }
+
+                Switch {
+                    width: 32
+                    height: elementHeight
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    checked: settings.enable_rtp
+                    onCheckedChanged: settings.enable_rtp = checked
+                }
+            }
+
+            Rectangle {
+                width: parent.width
+                height: rowHeight
+                color: "#8cbfd7f3"
+                y: 2 * rowHeight
 
                 Text {
                     text: "Main video port"
@@ -958,8 +988,8 @@ Item {
             Rectangle {
                 width: parent.width
                 height: rowHeight
-                color: "#8cbfd7f3"
-                y: 2 * rowHeight
+                color: "#00000000"
+                y: 3 * rowHeight
                 visible: EnablePiP
 
                 Text {
@@ -989,8 +1019,8 @@ Item {
             Rectangle {
                 width: parent.width
                 height: rowHeight
-                color: "#00000000"
-                y: 3 * rowHeight
+                color: "#8cbfd7f3"
+                y: 4 * rowHeight
                 visible: EnablePiP
 
                 Text {

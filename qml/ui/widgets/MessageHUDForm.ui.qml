@@ -15,7 +15,7 @@ BaseWidget {
     width: 480
     height: 72
 
-    visible: settings.show_log_onscreen
+    visible: settings.show_message_hud
 
     widgetIdentifier: "message_hud_widget"
 

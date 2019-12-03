@@ -47,9 +47,8 @@ doinstall:
 
   File /r /x ${EXENAME}.pdb /x ${EXENAME}.lib /x ${EXENAME}.exp ${DESTDIR}\*.*
   
-  File "vcredist_x86.exe" 	
-  ExecWait '$DESTDIR\vc_redist.x86.exe /passive /norestart'
-  Delete "$DESTDIR\vc_redist.x86.exe"
+  ExecWait '$INSTDIR\vc_redist.x86.exe /passive /norestart'
+  Delete "$INSTDIR\vc_redist.x86.exe"
 
   WriteUninstaller $INSTDIR\${EXENAME}-Uninstall.exe
   WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}" "DisplayName" "${APPNAME}"

@@ -162,8 +162,6 @@ SOURCES += \
     lib/GeographicLib-1.50/src/UTMUPS.cpp \
     lib/GeographicLib-1.50/src/Utility.cpp
 
-#CONFIG += EnableRC
-
 
 iOSBuild {
     QMAKE_INFO_PLIST    = ios/Info.plist
@@ -173,9 +171,9 @@ iOSBuild {
                         icons/LaunchScreen.storyboard
     LIBS += -framework VideoToolbox -framework AudioToolbox -framework CoreAudio -framework CoreVideo -framework CoreMedia
     CONFIG -= bitcode
-    CONFIG += EnableGamepads
+    #CONFIG += EnableGamepads
     CONFIG += EnableSpeech
-    CONFIG += EnableVideo
+    CONFIG += EnableMainVideo
     CONFIG += EnablePiP
     CONFIG += EnableLink
 
@@ -198,12 +196,12 @@ MacBuild {
     DISTFILES += mac/Info.plist
     LIBS += -framework ApplicationServices
     LIBS += -framework VideoToolbox -framework CoreVideo -framework CoreMedia
-    CONFIG += EnableGamepads
+    #CONFIG += EnableGamepads
     CONFIG += EnableJoysticks
     CONFIG += EnableSpeech
-    CONFIG += EnableVideo
+    CONFIG += EnableMainVideo
     CONFIG += EnablePiP
-    #CONFIG += EnableLink
+    CONFIG += EnableLink
 
     DEFINES += GST_GL_HAVE_WINDOW_COCOA=1
     DEFINES += GST_GL_HAVE_PLATFORM_CGL=1
@@ -212,9 +210,9 @@ MacBuild {
 
 LinuxBuild {
     QT += x11extras
-    CONFIG += EnableGamepads
+    #CONFIG += EnableGamepads
     CONFIG += EnableJoysticks
-    CONFIG += EnableVideo
+    CONFIG += EnableMainVideo
     CONFIG += EnablePiP
     CONFIG += EnableLink
 
@@ -227,19 +225,16 @@ RaspberryPiBuild {
     # handled by another process running on the ground station. We could
     # replace that at some point but for now it isn't necessary.
     message("RaspberryPiBuild - config")
-    #CONFIG += EnableVideo
-    #CONFIG +- EnablePiP
+    CONFIG += EnableMainVideo
+    CONFIG += EnablePiP
     CONFIG += EnableLink
-
-    DEFINES += GST_GL_HAVE_PLATFORM_EGL=1
-    DEFINES += HAVE_QT_EGLFS=1
 }
 
 WindowsBuild {
-    CONFIG += EnableGamepads
+    #CONFIG += EnableGamepads
     CONFIG += EnableJoysticks
     CONFIG += EnableSpeech
-    CONFIG += EnableVideo
+    CONFIG += EnableMainVideo
     #CONFIG +- EnablePiP
     CONFIG += EnableLink
 
@@ -251,10 +246,10 @@ WindowsBuild {
 }
 
 AndroidBuild {
-    CONFIG += EnableGamepads
+    #CONFIG += EnableGamepads
     CONFIG += EnableJoysticks
     CONFIG += EnableSpeech
-    CONFIG += EnableVideo
+    CONFIG += EnableMainVideo
     CONFIG += EnablePiP
     CONFIG += EnableLink
 
@@ -274,9 +269,9 @@ EnableSpeech {
     QT += texttospeech
 }
 
-EnableVideo {
-    message("EnableVideo")
-    DEFINES += ENABLE_VIDEO
+EnableMainVideo {
+    message("EnableMainVideo")
+    DEFINES += ENABLE_MAIN_VIDEO
 }
 
 EnablePiP {
@@ -328,8 +323,12 @@ installer {
 
     }
     WindowsBuild {
+        DESTDIR_WIN = $$replace(DESTDIR, "/", "\\")
+
         OTHER_FILES += tools/qopenhd_installer.nsi
-        QMAKE_POST_LINK += c:\Qt\5.13.1\msvc2017\bin\windeployqt.exe --qmldir $${PWD}/qml \"$${DESTDIR_WIN}\\QOpenHD.exe\"
+        QMAKE_POST_LINK +=$${PWD}/win_deploy_sdl.cmd \"$$DESTDIR_WIN\" \"$$PWD\QJoysticks\lib\SDL\bin\windows\msvc\x86\" $$escape_expand(\\n)
+
+        QMAKE_POST_LINK += $$escape_expand(\\n) c:\Qt\5.13.1\msvc2017\bin\windeployqt.exe --qmldir $${PWD}/qml \"$${DESTDIR_WIN}\\QOpenHD.exe\"
 
         #QMAKE_POST_LINK += && $$escape_expand(\\n) $$QMAKE_COPY \"C:\\Windows\\System32\\msvcp140.dll\"  \"$$DESTDIR_WIN\"
         #QMAKE_POST_LINK += && $$escape_expand(\\n) $$QMAKE_COPY \"C:\\Windows\\System32\\msvcr140.dll\"  \"$$DESTDIR_WIN\"

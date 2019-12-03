@@ -3,6 +3,11 @@
 
 #include "util.h"
 
+#if defined(__android__)
+#include <QtAndroidExtras/QtAndroid>
+#include <QAndroidJniEnvironment>
+#endif
+
 int battery_voltage_to_percent(int cells, double voltage) {
     double cell_voltage = voltage / static_cast<double>(cells);
 
@@ -256,5 +261,29 @@ uint map(double input, double input_start, double input_end, uint16_t output_sta
 
     return (input - input_start)*output_range / input_range + output_start;
 }
+
+#if defined(__android__)
+void keep_screen_on(bool on) {
+    QtAndroid::runOnAndroidThread([on] {
+        QAndroidJniObject activity = QtAndroid::androidActivity();
+        if (activity.isValid()) {
+            QAndroidJniObject window = activity.callObjectMethod("getWindow", "()Landroid/view/Window;");
+
+            if (window.isValid()) {
+                const int FLAG_KEEP_SCREEN_ON = 128;
+                if (on) {
+                    window.callMethod<void>("addFlags", "(I)V", FLAG_KEEP_SCREEN_ON);
+                } else {
+                    window.callMethod<void>("clearFlags", "(I)V", FLAG_KEEP_SCREEN_ON);
+                }
+            }
+        }
+        QAndroidJniEnvironment env;
+        if (env->ExceptionCheck()) {
+            env->ExceptionClear();
+        }
+    });
+}
+#endif
 
 #endif // UTIL_CPP

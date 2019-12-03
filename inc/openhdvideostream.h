@@ -36,7 +36,8 @@ private:
     bool firstRun = true;
 
     bool m_enable_videotest = false;
-    bool m_enable_hardware_video_decoder = true;
+    bool m_enable_software_video_decoder = false;
+    bool m_enable_rtp = true;
 
     bool m_enable_pip_video = false;
 
