@@ -711,6 +711,8 @@ void OpenHDVideoStream::init(QQmlApplicationEngine* engine = nullptr, enum Strea
     } else {
         m_video_port = settings.value("pip_video_port", 5601).toInt();
     }
+    m_enable_rtp = settings.value("enable_rtp", true).toBool();
+
 
     QObject::connect(timer, &QTimer::timeout, this, &OpenHDVideoStream::_timer);
     timer->start(1000);
