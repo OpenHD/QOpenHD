@@ -738,7 +738,7 @@ void OpenHDVideoStream::_start() {
         } else {
             s << QString("udpsrc port=%1 !").arg(m_video_port);
         }
-        //s << "queue max-size-buffers=0 max-size-time=0 max-size-bytes=0 !";
+        s << "queue max-size-buffers=0 max-size-time=0 max-size-bytes=0 !";
 
         if (m_enable_hardware_video_decoder) {
             qDebug() << "Using hardware decoder";
@@ -756,7 +756,7 @@ void OpenHDVideoStream::_start() {
             s << "avdec_h264 !";
         }
     }
-    //s << "queue max-size-buffers=0 max-size-time=0 max-size-bytes=0 !";
+    s << "queue max-size-buffers=0 max-size-time=0 max-size-bytes=0 !";
 
     s << "glupload ! glcolorconvert !";
     s << "qmlglsink name=qmlglsink sync=false";
