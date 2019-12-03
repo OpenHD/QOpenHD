@@ -31,7 +31,7 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 
 #include "util.h"
 
-#if defined(ENABLE_VIDEO)
+#if defined(ENABLE_MAIN_VIDEO) || defined(ENABLE_PIP)
 #include <gst/gst.h>
 #endif
 
@@ -120,28 +120,30 @@ int main(int argc, char *argv[]) {
     QObject::connect(&timer, &QTimer::timeout, openhd, &OpenHD::updateFlightTimer);
     timer.start(1000);
 
-#if defined(ENABLE_VIDEO)
+#if defined(ENABLE_MAIN_VIDEO)
     OpenHDVideoStream* stream = new OpenHDVideoStream(argc, argv);
+#endif
 #if defined(ENABLE_PIP)
     OpenHDVideoStream* stream2 = new OpenHDVideoStream(argc, argv);
 #endif
-#endif
+
 
     QQmlApplicationEngine engine;
 
     engine.rootContext()->setContextProperty("OpenHD", openhd);
 
-#if defined(ENABLE_VIDEO)
-    engine.rootContext()->setContextProperty("EnableVideo", QVariant(true));
+#if defined(ENABLE_MAIN_VIDEO)
+    engine.rootContext()->setContextProperty("EnableMainVideo", QVariant(true));
     engine.rootContext()->setContextProperty("MainStream", stream);
+#else
+    engine.rootContext()->setContextProperty("EnableMainVideo", QVariant(false));
+#endif
+
 #if defined(ENABLE_PIP)
     engine.rootContext()->setContextProperty("EnablePiP", QVariant(true));
     engine.rootContext()->setContextProperty("PiPStream", stream2);
 #else
     engine.rootContext()->setContextProperty("EnablePiP", QVariant(false));
-#endif
-#else
-    engine.rootContext()->setContextProperty("EnableVideo", QVariant(false));
 #endif
 
 
@@ -176,19 +178,20 @@ int main(int argc, char *argv[]) {
 
     qDebug() << "Running QML";
 
-#if defined(ENABLE_VIDEO)
+#if defined(ENABLE_MAIN_VIDEO)
     stream->init(&engine, StreamTypeMain);
+#endif
 #if defined(ENABLE_PIP)
     stream2->init(&engine, StreamTypePiP);
 #endif
-#endif
 
     const int retval = app.exec();
-#if defined(ENABLE_VIDEO)
+#if defined(ENABLE_MAIN_VIDEO)
     stream->stopVideo();
+#endif
+
 #if defined(ENABLE_PIP)
     stream2->stopVideo();
-#endif
 #endif
     return retval;
 }

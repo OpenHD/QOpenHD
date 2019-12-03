@@ -19,7 +19,7 @@ ApplicationWindow {
     minimumHeight: 320
     minimumWidth: 480
     title: qsTr("Open.HD")
-    color: EnableVideo ? "black" : "#00000000"
+    color: EnableMainVideo ? "black" : "#00000000"
 
     visibility: UseFullscreen ? "FullScreen" : "AutomaticVisibility"
 
@@ -32,11 +32,11 @@ ApplicationWindow {
                 OpenHDRC.initRC;
             }
             initialised = true;
-            if (EnableVideo) {
+            if (EnableMainVideo) {
                 MainStream.startVideo();
-                if (EnablePiP) {
-                    PiPStream.startVideo();
-                }
+            }
+            if (EnablePiP) {
+                PiPStream.startVideo();
             }
         }
     }
@@ -46,7 +46,7 @@ ApplicationWindow {
     // to be initialized, depending on the order they appear in the QML, will simply
     // not work on desktop linux.
     Loader {
-        source:  (EnableVideo && EnablePiP)  ? "DummyVideoItem.qml" : ""
+        source:  (EnableMainVideo && EnablePiP)  ? "DummyVideoItem.qml" : ""
     }
 
     /*
@@ -118,7 +118,7 @@ ApplicationWindow {
         width: parent.width
         height: parent.height
         z: 1.0
-        source: EnableVideo ? "MainVideoItem.qml" : ""
+        source: EnableMainVideo ? "MainVideoItem.qml" : ""
     }
 
     Connections {

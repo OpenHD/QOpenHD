@@ -173,7 +173,7 @@ iOSBuild {
     CONFIG -= bitcode
     #CONFIG += EnableGamepads
     CONFIG += EnableSpeech
-    CONFIG += EnableVideo
+    CONFIG += EnableMainVideo
     CONFIG += EnablePiP
     CONFIG += EnableLink
 
@@ -199,7 +199,7 @@ MacBuild {
     #CONFIG += EnableGamepads
     CONFIG += EnableJoysticks
     CONFIG += EnableSpeech
-    CONFIG += EnableVideo
+    CONFIG += EnableMainVideo
     CONFIG += EnablePiP
     CONFIG += EnableLink
 
@@ -212,7 +212,7 @@ LinuxBuild {
     QT += x11extras
     #CONFIG += EnableGamepads
     CONFIG += EnableJoysticks
-    CONFIG += EnableVideo
+    CONFIG += EnableMainVideo
     CONFIG += EnablePiP
     CONFIG += EnableLink
 
@@ -225,7 +225,7 @@ RaspberryPiBuild {
     # handled by another process running on the ground station. We could
     # replace that at some point but for now it isn't necessary.
     message("RaspberryPiBuild - config")
-    CONFIG += EnableVideo
+    CONFIG += EnableMainVideo
     CONFIG += EnablePiP
     CONFIG += EnableLink
 }
@@ -234,7 +234,7 @@ WindowsBuild {
     #CONFIG += EnableGamepads
     CONFIG += EnableJoysticks
     CONFIG += EnableSpeech
-    CONFIG += EnableVideo
+    CONFIG += EnableMainVideo
     #CONFIG +- EnablePiP
     CONFIG += EnableLink
 
@@ -249,7 +249,7 @@ AndroidBuild {
     #CONFIG += EnableGamepads
     CONFIG += EnableJoysticks
     CONFIG += EnableSpeech
-    CONFIG += EnableVideo
+    CONFIG += EnableMainVideo
     CONFIG += EnablePiP
     CONFIG += EnableLink
 
@@ -269,9 +269,9 @@ EnableSpeech {
     QT += texttospeech
 }
 
-EnableVideo {
-    message("EnableVideo")
-    DEFINES += ENABLE_VIDEO
+EnableMainVideo {
+    message("EnableMainVideo")
+    DEFINES += ENABLE_MAIN_VIDEO
 }
 
 EnablePiP {

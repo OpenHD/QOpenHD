@@ -57,10 +57,10 @@ Item {
 
         TabButton {
             text: qsTr("Video")
-            width: EnableVideo ? implicitWidth : 0
+            width: (EnableMainVideo || EnablePiP) ? implicitWidth : 0
             height: 48
             font.pixelSize: 13
-            visible: EnableVideo
+            visible: (EnableMainVideo || EnablePiP)
         }
 
 
@@ -888,7 +888,7 @@ Item {
             contentHeight: 5 * rowHeight
 
             clip: true
-            visible: EnableVideo
+            visible: EnableMainVideo || EnablePiP
 
             Rectangle {
                 width: parent.width

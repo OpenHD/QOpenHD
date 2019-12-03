@@ -148,7 +148,7 @@ G_PASTE(g_io_module_, G_PASTE(name, _load_static)) ()
 #define GST_MOBILE_PLUGIN_RTPMANAGER
 #endif
 
-#if defined(ENABLE_VIDEO)
+#if defined(ENABLE_MAIN_VIDEO) || defined(ENABLE_PIP)
 #ifndef __desktoplinux__
 #ifndef __rasp_pi__
 GST_PLUGIN_STATIC_DECLARE(qmlgl);
@@ -410,7 +410,7 @@ OpenHDVideoStream::OpenHDVideoStream(int &argc, char *argv[], QObject * parent):
     qDebug() << "OpenHDVideoStream::OpenHDVideoStream()";
 
 #ifdef __macos__
-    #ifdef ENABLE_VIDEO
+    #if defined(ENABLE_MAIN_VIDEO) || defined(ENABLE_PIP)
         #ifdef RELEASE_BUILD
             QString currentDir = QCoreApplication::applicationDirPath();
             putenv("GST_PLUGIN_SCANNER",           currentDir, "/../Frameworks/GStreamer.framework/Versions/1.0/libexec/gstreamer-1.0/gst-plugin-scanner");
@@ -482,7 +482,7 @@ OpenHDVideoStream::OpenHDVideoStream(int &argc, char *argv[], QObject * parent):
 
     //gst_debug_remove_log_function(gst_debug_log_default);
     //gst_debug_add_log_function(printf_extension_log_func, nullptr, nullptr);
-#if defined(ENABLE_VIDEO)
+#if defined(ENABLE_MAIN_VIDEO) || defined(ENABLE_PIP)
 #ifndef __desktoplinux__
 #ifndef __rasp_pi__
     GST_PLUGIN_STATIC_REGISTER(qmlgl);
@@ -855,13 +855,13 @@ void OpenHDVideoStream::_timer() {
 }
 
 void OpenHDVideoStream::startVideo() {
-#if defined(ENABLE_VIDEO)
+#if defined(ENABLE_MAIN_VIDEO) || defined(ENABLE_PIP)
     QFuture<void> future = QtConcurrent::run(this, &OpenHDVideoStream::_start);
 #endif
 }
 
 void OpenHDVideoStream::_stop() {
-#if defined(ENABLE_VIDEO)
+#if defined(ENABLE_MAIN_VIDEO) || defined(ENABLE_PIP)
     qDebug() << "OpenHDVideoStream::_stop()";
 
     if (m_pipeline != nullptr) {
@@ -872,7 +872,7 @@ void OpenHDVideoStream::_stop() {
 }
 
 void OpenHDVideoStream::stopVideo() {
-#if defined(ENABLE_VIDEO)
+#if defined(ENABLE_MAIN_VIDEO) || defined(ENABLE_PIP)
     QFuture<void> future = QtConcurrent::run(this, &OpenHDVideoStream::_stop);
 #endif
 }
