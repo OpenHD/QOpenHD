@@ -228,9 +228,6 @@ RaspberryPiBuild {
     CONFIG += EnableVideo
     CONFIG += EnablePiP
     CONFIG += EnableLink
-
-    DEFINES += GST_GL_HAVE_PLATFORM_EGL=1
-    DEFINES += HAVE_QT_EGLFS=1
 }
 
 WindowsBuild {
