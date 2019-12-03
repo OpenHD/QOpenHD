@@ -743,7 +743,11 @@ void OpenHDVideoStream::_start() {
         if (m_enable_hardware_video_decoder) {
             qDebug() << "Using hardware decoder";
             s << "h264parse !";
+            #if defined(__rasp_pi__)
+            s << "omxh264dec !";
+            #else
             s << "decodebin3 !";
+            #endif
             //s << "amcviddec-omxqcomvideodecoderavc !";
             //s << "amcviddec-omxmtkvideodecoderavc !";
         } else {
