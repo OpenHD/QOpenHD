@@ -97,6 +97,18 @@ Item {
                            itemType: "choice",
                            choiceValues: [{title: "RTP", value: "rtp"},
                                           {title: "Raw", value: "raw"}]},
+        "VIDEO_UDP_PORT": {title: "Main video port",
+                           itemType: "number",
+                           lowerLimit: 5600,
+                           upperLimit: 5610,
+                           interval: 1,
+                           unit: ""},
+        "VIDEO_UDP_PORT2": {title: "Secondary video port",
+                           itemType: "number",
+                           lowerLimit: 5600,
+                           upperLimit: 5610,
+                           interval: 1,
+                           unit: ""},
     })
 
     property var radioSettingsMap: ({
