@@ -186,6 +186,4 @@ private:
 
 };
 
-QObject *openHDRCSingletonProvider(QQmlEngine *engine, QJSEngine *scriptEngine);
-
 #endif //RC_H

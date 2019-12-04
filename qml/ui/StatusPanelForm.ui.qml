@@ -113,7 +113,7 @@ Rectangle {
                 id: gamepadValue
                 width: 128
                 height: parent.height
-                text: OpenHDRC.selectedGamepadName !== undefined ? OpenHDRC.selectedGamepadName : "N/A"
+                text: openHDRC.selectedGamepadName !== undefined ? openHDRC.selectedGamepadName : "N/A"
                 horizontalAlignment: Text.AlignRight
                 anchors.rightMargin: 12
                 anchors.right: parent.right

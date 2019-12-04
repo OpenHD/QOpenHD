@@ -105,8 +105,8 @@ int main(int argc, char *argv[]) {
     qmlRegisterType<FrSkyTelemetry>("OpenHD", 1, 0, "FrSkyTelemetry");
     qmlRegisterType<MSPTelemetry>("OpenHD", 1, 0, "MSPTelemetry");
     qmlRegisterType<LTMTelemetry>("OpenHD", 1, 0, "LTMTelemetry");
+    qmlRegisterType<OpenHDRC>("OpenHD", 1, 0, "OpenHDRC");
 
-    qmlRegisterSingletonType<OpenHDRC>("OpenHD", 1, 0, "OpenHDRC", openHDRCSingletonProvider);
     qmlRegisterSingletonType<OpenHDPi>("OpenHD", 1, 0, "OpenHDPi", openHDPiSingletonProvider);
     qmlRegisterSingletonType<LocalMessage>("OpenHD", 1, 0, "LocalMessage", localMessageSingletonProvider);
 

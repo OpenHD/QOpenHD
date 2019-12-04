@@ -28,9 +28,7 @@ ApplicationWindow {
     onAfterSynchronizing: {
         if (!initialised) {
             hudOverlayGrid.messageHUD.pushMessage("Initializing", 1)
-            if (EnableRC) {
-                OpenHDRC.initRC;
-            }
+
             initialised = true;
             if (EnableMainVideo) {
                 MainStream.startVideo();
@@ -87,6 +85,10 @@ ApplicationWindow {
         property bool show_arrow: true
         property bool show_map: true
         property bool show_throttle: true
+    }
+
+    OpenHDRC {
+        id: openHDRC
     }
 
     QOpenHDLink {

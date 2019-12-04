@@ -420,11 +420,3 @@ void OpenHDRC::buttonGuideChanged(bool value) {
     Q_UNUSED(value)
 
 }
-
-QObject *openHDRCSingletonProvider(QQmlEngine *engine, QJSEngine *scriptEngine) {
-    Q_UNUSED(engine)
-    Q_UNUSED(scriptEngine)
-
-    OpenHDRC *s = new OpenHDRC();
-    return s;
-}

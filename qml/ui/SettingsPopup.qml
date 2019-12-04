@@ -59,7 +59,7 @@ SettingsPopupForm {
     }
 
     /*Connections {
-        target: OpenHDRC
+        target: openHDRC
         onSelectedGamepadChanged: {
             console.log("onSelectedGamepadChanged %1".arg(selectedGamepad));
         }
