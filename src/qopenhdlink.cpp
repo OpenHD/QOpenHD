@@ -76,7 +76,7 @@ void QOpenHDLink::setWidgetLocation(QString widgetName, int alignment, int xOffs
     std::string serialized_string = j.dump();
     auto buf = QByteArray(serialized_string.c_str());
     if (linkSocket->state() != QUdpSocket::ConnectedState) {
-        linkSocket->connectToHost("192.168.2.1", LINK_PORT);
+        linkSocket->connectToHost(groundAddress, LINK_PORT);
     }
     linkSocket->writeDatagram(buf);
 #endif
@@ -93,7 +93,7 @@ void QOpenHDLink::setWidgetEnabled(QString widgetName, bool enabled) {
     std::string serialized_string = j.dump();
     auto buf = QByteArray(serialized_string.c_str());
     if (linkSocket->state() != QUdpSocket::ConnectedState) {
-        linkSocket->connectToHost("192.168.2.1", LINK_PORT);
+        linkSocket->connectToHost(groundAddress, LINK_PORT);
     }
     linkSocket->writeDatagram(buf);
 #endif
