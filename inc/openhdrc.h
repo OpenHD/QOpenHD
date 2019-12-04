@@ -25,6 +25,9 @@ public:
 
     void initRC();
 
+    Q_INVOKABLE void setGroundIP(QHostAddress address);
+
+
 #if defined(ENABLE_GAMEPADS)
     Q_PROPERTY(int connectedGamepad MEMBER m_selectedGamepad WRITE set_selectedGamepad NOTIFY selectedGamepadChanged)
     void set_selectedGamepad(int selectedGamepad);
@@ -146,6 +149,8 @@ private slots:
 
 private:
     QUdpSocket *rcSocket = nullptr;
+
+    QHostAddress groundAddress;
 
 #if defined(ENABLE_GAMEPADS)
     QList<int> m_connectedGamepads;

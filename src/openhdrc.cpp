@@ -57,6 +57,17 @@ void OpenHDRC::initRC() {
 
 }
 
+
+void OpenHDRC::setGroundIP(QHostAddress address) {
+    bool reconnect = (groundAddress != address);
+    groundAddress = address;
+    if (reconnect) {
+        rcSocket->connectToHost(groundAddress, PORT);
+        rcSocket->waitForConnected();
+    }
+}
+
+
 void OpenHDRC::channelTrigger() {
     emit channelUpdate(m_rc1, m_rc2, m_rc3, m_rc4, m_rc5, m_rc6, m_rc7, m_rc8, m_rc9, m_rc10);
 #if defined(ENABLE_RC)
