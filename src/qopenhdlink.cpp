@@ -37,6 +37,16 @@ void QOpenHDLink::init() {
 }
 
 
+void QOpenHDLink::setGroundIP(QHostAddress address) {
+    bool reconnect = (groundAddress != address);
+    groundAddress = address;
+    if (reconnect) {
+        linkSocket->connectToHost(groundAddress, LINK_PORT);
+        linkSocket->waitForConnected();
+    }
+}
+
+
 void QOpenHDLink::readyRead() {
 #if defined(ENABLE_LINK)
     QByteArray datagram;
