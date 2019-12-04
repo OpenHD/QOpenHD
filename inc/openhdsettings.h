@@ -46,6 +46,8 @@ signals:
     void savingSettingsStart();
     void savingSettingsFinish();
 
+    void groundStationIPUpdated(QHostAddress address);
+
 public slots:
     void processDatagrams();
 
