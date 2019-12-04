@@ -99,6 +99,13 @@ ApplicationWindow {
         id: openHDSettings
     }
 
+    Connections {
+        target: openHDSettings
+        onGroundStationIPUpdated: {
+            link.setGroundIP(address)
+        }
+    }
+
     OpenHDTelemetry {
         id: openHDTelemetry
     }
