@@ -110,7 +110,7 @@ void MavlinkTelemetry::processMavlinkMessage(mavlink_message_t msg) {
      * appearing to change and the armed status flipping back
      * and forth.
      */
-    if (msg.compid != 1 && msg.compid != 250) {
+    if (msg.compid != MAV_COMP_ID_AUTOPILOT1 && msg.compid != MAV_COMP_ID_SYSTEM_CONTROL) {
         return;
     }
     switch (msg.msgid) {
