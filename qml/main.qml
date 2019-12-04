@@ -95,6 +95,10 @@ ApplicationWindow {
         id: link
     }
 
+    OpenHDSettings {
+        id: openHDSettings
+    }
+
     OpenHDTelemetry {
         id: openHDTelemetry
     }

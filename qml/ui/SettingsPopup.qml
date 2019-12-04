@@ -72,8 +72,8 @@ SettingsPopupForm {
      * Remote OpenHD settings on the ground station
      *
      */
-    OpenHDSettings {
-        id: openHDSettings
+    Connections {
+        target: openHDSettings
 
         onAllSettingsChanged: {
             /*
