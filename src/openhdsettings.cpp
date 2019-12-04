@@ -168,7 +168,13 @@ void OpenHDSettings::processDatagrams() {
     while (settingSocket->hasPendingDatagrams()) {
         datagram.resize(int(settingSocket->pendingDatagramSize()));
 
+        QHostAddress lastGroundAddress = groundAddress;
+
         settingSocket->readDatagram(datagram.data(), datagram.size(), &groundAddress);
+
+        if (lastGroundAddress != groundAddress) {
+            emit groundStationIPUpdated(groundAddress);
+        }
 
         if (datagram == "ConfigRespConfigEnd=ConfigEnd") {
             timer.stop();
