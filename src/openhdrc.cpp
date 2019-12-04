@@ -18,12 +18,6 @@
 OpenHDRC::OpenHDRC(QObject *parent): QObject(parent) {
     rcSocket = new QUdpSocket(this);
     rcSocket->bind(QHostAddress::Any);
-#if defined (__rasp_pi__)
-    rcSocket->connectToHost("127.0.0.1", PORT);
-#else
-    rcSocket->connectToHost("192.168.2.1", PORT);
-#endif
-    rcSocket->waitForConnected();
 
     connect(rcSocket, &QUdpSocket::readyRead, this, &OpenHDRC::processRCDatagrams);
 
