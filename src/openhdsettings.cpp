@@ -39,7 +39,7 @@ void OpenHDSettings::set_saving(bool saving) {
 void OpenHDSettings::check() {
     qint64 current = QDateTime::currentSecsSinceEpoch();
     //fallback in case the ground pi never sends back "ConfigEnd=ConfigEnd"
-    if (current - start > 20) {
+    if (current - start > 30) {
         timer.stop();
         emit allSettingsChanged(m_allSettings);
         set_loading(false);
