@@ -19,7 +19,7 @@ void OpenHDSettings::initSettings() {
     settingSocket->bind(QHostAddress::Any, 5115);
     connect(settingSocket, SIGNAL(readyRead()), this, SLOT(processDatagrams()));
 
-    connect(&timer, &QTimer::timeout, this, &OpenHDSettings::check);
+    connect(&timer, &QTimer::timeout, this, &OpenHDSettings::checkSettingsLoadTimeout);
 
     // internal signal from background thread
     connect(this, &OpenHDSettings::savingSettingsStart, this, &OpenHDSettings::_savingSettingsStart);
@@ -36,7 +36,7 @@ void OpenHDSettings::set_saving(bool saving) {
     emit savingChanged(m_saving);
 }
 
-void OpenHDSettings::check() {
+void OpenHDSettings::checkSettingsLoadTimeout() {
     qint64 current = QDateTime::currentSecsSinceEpoch();
     //fallback in case the ground pi never sends back "ConfigEnd=ConfigEnd"
     if (current - start > 30) {

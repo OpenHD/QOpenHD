@@ -64,7 +64,8 @@ private:
     VMap m_allSettings;
     qint64 start = 0;
     QTimer timer;
-    void check();
+    void checkSettingsLoadTimeout();
+
 
     // used to keep track of how many settings need to be saved so we can compare it to
     // the number of save confirmations we get back from the ground side
