@@ -103,6 +103,7 @@ ApplicationWindow {
         target: openHDSettings
         onGroundStationIPUpdated: {
             link.setGroundIP(address)
+            openHDRC.setGroundIP(address)
         }
     }
 
