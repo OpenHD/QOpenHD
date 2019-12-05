@@ -104,6 +104,7 @@ ApplicationWindow {
         onGroundStationIPUpdated: {
             link.setGroundIP(address)
             openHDRC.setGroundIP(address)
+            mavlinkTelemetry.setGroundIP(address)
         }
     }
 
