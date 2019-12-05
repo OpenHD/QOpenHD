@@ -40,6 +40,15 @@ void MavlinkTelemetry::init() {
 }
 
 
+void MavlinkTelemetry::setGroundIP(QString address) {
+    bool reconnect = (groundAddress != address);
+    groundAddress = address;
+    if (reconnect) {
+        mavlinkSocket->connectToHost(groundAddress, MAVLINK_PORT);
+        mavlinkSocket->waitForConnected();
+    }
+}
+
 #if defined(__rasp_pi__)
 void MavlinkTelemetry::restartFifo() {
     qDebug() << "MavlinkTelemetry::restartFifo()";
