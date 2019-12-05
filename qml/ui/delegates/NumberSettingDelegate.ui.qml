@@ -9,8 +9,8 @@ BaseDelegate {
         width: 210
         height: 48
         font.pixelSize: 14
-        from: 0
-        to: 100
+        from: model.lowerLimit
+        to: model.upperLimit
         stepSize: 1
         value: model.value
         anchors.right: parent.right
