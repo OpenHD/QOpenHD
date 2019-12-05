@@ -170,7 +170,7 @@ void OpenHDSettings::processDatagrams() {
 
         settingSocket->readDatagram(datagram.data(), datagram.size(), &groundAddress);
 
-        emit groundStationIPUpdated(groundAddress);
+        emit groundStationIPUpdated(groundAddress.toString());
 
         if (datagram == "ConfigRespConfigEnd=ConfigEnd") {
             timer.stop();

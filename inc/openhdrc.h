@@ -25,7 +25,7 @@ public:
 
     void initRC();
 
-    Q_INVOKABLE void setGroundIP(QHostAddress address);
+    Q_INVOKABLE void setGroundIP(QString address);
 
 
 #if defined(ENABLE_GAMEPADS)
@@ -150,7 +150,7 @@ private slots:
 private:
     QUdpSocket *rcSocket = nullptr;
 
-    QHostAddress groundAddress;
+    QString groundAddress;
 
 #if defined(ENABLE_GAMEPADS)
     QList<int> m_connectedGamepads;

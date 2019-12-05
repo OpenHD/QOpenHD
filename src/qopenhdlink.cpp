@@ -37,7 +37,7 @@ void QOpenHDLink::init() {
 }
 
 
-void QOpenHDLink::setGroundIP(QHostAddress address) {
+void QOpenHDLink::setGroundIP(QString address) {
     bool reconnect = (groundAddress != address);
     groundAddress = address;
     if (reconnect) {

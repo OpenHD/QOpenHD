@@ -52,7 +52,7 @@ void OpenHDRC::initRC() {
 }
 
 
-void OpenHDRC::setGroundIP(QHostAddress address) {
+void OpenHDRC::setGroundIP(QString address) {
     bool reconnect = (groundAddress != address);
     groundAddress = address;
     if (reconnect) {
