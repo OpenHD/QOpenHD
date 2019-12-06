@@ -19,6 +19,29 @@ SettingsPopupForm {
      *
      */
 
+
+    property double lastSettingsLoad: 0
+
+    Timer {
+        interval: 1000;
+        running: true;
+        repeat: true
+        onTriggered: {
+            if (!openHDSettings.ground_available) {
+                return;
+            }
+
+            var currentTime = (new Date).getTime();
+            if (currentTime - lastSettingsLoad > 60000) {
+                if (!settings_popup.opened) {
+                    lastSettingsLoad = currentTime;
+                    console.log("Settings panel not open, triggering load");
+                    openHDSettings.fetchSettings();
+                }
+            }
+        }
+    }
+
     ListModel {
         dynamicRoles: true
         id: generalSettingsModel
