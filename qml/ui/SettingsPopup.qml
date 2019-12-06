@@ -155,6 +155,9 @@ SettingsPopupForm {
                 } else {
                     finalValue = initialValue;
                 }
+
+                configureWithSetting(setting, finalValue);
+
                 model.append({"title": itemTitle,
                               "setting": setting,
                               "choiceValues": choiceValues,
@@ -217,6 +220,20 @@ SettingsPopupForm {
                                                "info": "No additional information available, check the Open.HD wiki"});
                 }
             }
+        }
+    }
+
+    function configureWithSetting(key, value) {
+        if (key === "FORWARD_STREAM") {
+            settings.enable_rtp = (value === "rtp");
+        }
+
+        if (key === "VIDEO_UDP_PORT") {
+            settings.main_video_port = value;
+        }
+
+        if (key === "VIDEO_UDP_PORT2") {
+            settings.pip_video_port = value;
         }
     }
 
