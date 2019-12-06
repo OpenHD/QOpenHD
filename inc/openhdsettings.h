@@ -39,6 +39,9 @@ public:
 
     Q_INVOKABLE void shutdown();
 
+    Q_PROPERTY(bool ground_available MEMBER m_ground_available WRITE set_ground_available NOTIFY ground_available_changed)
+    void set_ground_available(bool ground_available);
+
 signals:
     void allSettingsChanged(VMap allSettings);
     void loadingChanged(bool loading);
@@ -47,6 +50,8 @@ signals:
     void savingSettingsFinish();
 
     void groundStationIPUpdated(QString address);
+
+    void ground_available_changed(bool ground_available);
 
 public slots:
     void processDatagrams();
@@ -60,6 +65,8 @@ private:
     void init();
     void _saveSettings(VMap remoteSettings);
     QUdpSocket *settingSocket = nullptr;
+
+    bool m_ground_available = false;
 
     VMap m_allSettings;
     qint64 start = 0;

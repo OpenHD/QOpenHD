@@ -26,6 +26,11 @@ void OpenHDSettings::initSettings() {
     connect(this, &OpenHDSettings::savingSettingsFinish, this, &OpenHDSettings::_savingSettingsFinish);
 }
 
+void OpenHDSettings::set_ground_available(bool ground_available) {
+    m_ground_available = ground_available;
+    emit ground_available_changed(m_ground_available);
+}
+
 void OpenHDSettings::set_loading(bool loading) {
     m_loading = loading;
     emit loadingChanged(m_loading);
@@ -171,6 +176,7 @@ void OpenHDSettings::processDatagrams() {
         settingSocket->readDatagram(datagram.data(), datagram.size(), &groundAddress);
 
         emit groundStationIPUpdated(groundAddress.toString());
+        set_ground_available(true);
 
         if (datagram == "ConfigRespConfigEnd=ConfigEnd") {
             timer.stop();
