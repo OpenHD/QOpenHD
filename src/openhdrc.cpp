@@ -105,7 +105,7 @@ void OpenHDRC::channelTrigger() {
         rcChannels[19] = 1;
         rcChannels[20] = 1;
 
-        rcSocket->write(rcChannels, rcChannels.length());
+        rcSocket->writeDatagram(rcChannels, rcChannels.length(), QHostAddress(groundAddress), PORT);
 
         seqno++;
     }

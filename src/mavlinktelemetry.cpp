@@ -44,12 +44,7 @@ void MavlinkTelemetry::setGroundIP(QString address) {
 #if defined(__rasp_pi__)
 
 #else
-    bool reconnect = (groundAddress != address);
     groundAddress = address;
-    if (reconnect) {
-        mavlinkSocket->connectToHost(groundAddress, MAVLINK_PORT);
-        mavlinkSocket->waitForConnected();
-    }
 #endif
 }
 

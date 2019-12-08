@@ -60,12 +60,9 @@ void OpenHDSettings::reboot() {
     process.start("/sbin/reboot");
     process.waitForFinished();
 #else
-    QUdpSocket *s = new QUdpSocket(this);
-    s->connectToHost(groundAddress, SETTINGS_PORT);
-    s->waitForConnected(5000);
     QByteArray r = QByteArray("RequestReboot");
-    QNetworkDatagram d(r);
-    s->writeDatagram(d);
+    settingSocket->writeDatagram(r, QHostAddress(groundAddress), SETTINGS_PORT);
+
 #endif
 }
 
@@ -78,12 +75,8 @@ void OpenHDSettings::shutdown() {
     process.start("/sbin/shutdown -h -P now");
     process.waitForFinished();
 #else
-    QUdpSocket *s = new QUdpSocket(this);
-    s->connectToHost(groundAddress, SETTINGS_PORT);
-    s->waitForConnected(5000);
     QByteArray r = QByteArray("RequestShutdown");
-    QNetworkDatagram d(r);
-    s->writeDatagram(d);
+    settingSocket->writeDatagram(r, QHostAddress(groundAddress), SETTINGS_PORT);
 #endif
 }
 
@@ -111,12 +104,6 @@ void OpenHDSettings::_saveSettings(VMap remoteSettings) {
     }
     set_saving(true);
     //emit savingSettingsStart();
-    QUdpSocket *s = new QUdpSocket(this);
-#if defined(__rasp_pi__)
-    s->connectToHost(SETTINGS_IP, SETTINGS_PORT);
-#else
-    s->connectToHost(groundAddress, SETTINGS_PORT);
-#endif
 
     settingsCount = remoteSettings.count();
 
@@ -128,8 +115,7 @@ void OpenHDSettings::_saveSettings(VMap remoteSettings) {
         r.append(i.key());
         r.append('=');
         r.append(i.value().toString());
-        QNetworkDatagram d(r);
-        s->writeDatagram(d);
+        settingSocket->writeDatagram(r, QHostAddress(groundAddress), SETTINGS_PORT);
 
         QThread::msleep(30);
     }
@@ -154,16 +140,8 @@ void OpenHDSettings::fetchSettings() {
     timer.start(1000);
 
     QByteArray r = QByteArray("RequestAllSettings");
-
     QNetworkDatagram d(r);
-    QUdpSocket *s = new QUdpSocket(this);
-#if defined(__rasp_pi__)
-    s->connectToHost(SETTINGS_IP, SETTINGS_PORT);
-#else
-    s->connectToHost(groundAddress, SETTINGS_PORT);
-#endif
-    s->waitForConnected(5000);
-    s->writeDatagram(d);
+    settingSocket->writeDatagram(r, QHostAddress(groundAddress), SETTINGS_PORT);
 }
 
 
