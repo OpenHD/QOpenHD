@@ -225,7 +225,7 @@ RaspberryPiBuild {
     # handled by another process running on the ground station. We could
     # replace that at some point but for now it isn't necessary.
     message("RaspberryPiBuild - config")
-    CONFIG += EnableMainVideo
+    #CONFIG += EnableMainVideo
     CONFIG += EnablePiP
     CONFIG += EnableLink
 }
