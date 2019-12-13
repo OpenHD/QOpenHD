@@ -43,8 +43,8 @@ matrix:
     - sudo installer -package ./src/gstreamer-1.0-1.14.4-x86_64.pkg -target /
     - sudo installer -package ./src/gstreamer-1.0-devel-1.14.4-x86_64.pkg -target /
     script:
-    - qmake QOpenHD.pro CONFIG+=release
-    - make -j5
+    - travis_wait qmake QOpenHD.pro CONFIG+=release
+    - travis_wait make -j5
   - os: windows
     before_install:
     - dir C:/Program\ Files\ \(x86\)/Windows\ Kits/10/bin/10.0.17134.0/x64
