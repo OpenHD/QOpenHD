@@ -23,8 +23,8 @@ matrix:
     - brew install qt5
     - brew link qt5 --force
     - mkdir -p src
-    - if ! [ -f ./src/gstreamer-1.0-1.14.4-x86_64.pkg ]; then travis_wait curl -v -o ./src/gstreamer-1.0-1.14.4-x86_64.pkg https://gstreamer.freedesktop.org/data/pkg/osx/1.16.1/gstreamer-1.0-1.14.4-x86_64.pkg; fi
-    - if ! [ -f ./src/gstreamer-1.0-devel-1.14.4-x86_64.pkg ]; then travis_wait curl -v -o ./src/gstreamer-1.0-devel-1.14.4-x86_64.pkg https://gstreamer.freedesktop.org/data/pkg/osx/1.16.1/gstreamer-1.0-devel-1.14.4-x86_64.pkg; fi
+    - if ! [ -f ./src/gstreamer-1.0-1.14.4-x86_64.pkg ]; then travis_wait curl -v -o ./src/gstreamer-1.0-1.14.4-x86_64.pkg https://gstreamer.freedesktop.org/data/pkg/osx/1.14.4/gstreamer-1.0-1.14.4-x86_64.pkg; fi
+    - if ! [ -f ./src/gstreamer-1.0-devel-1.14.4-x86_64.pkg ]; then travis_wait curl -v -o ./src/gstreamer-1.0-devel-1.14.4-x86_64.pkg https://gstreamer.freedesktop.org/data/pkg/osx/1.14.4/gstreamer-1.0-devel-1.14.4-x86_64.pkg; fi
     - echo "Cached source dir:"
     - ls -l ./src/
     - echo "Installing GStreamer"
