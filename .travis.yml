@@ -1,4 +1,8 @@
 language: cpp
+env:
+  global:
+      - DEVELOPER_ID_CERTIFICATE_P12="deploy/developer-id.p12"
+
 cache:
   directories:
     - $TRAVIS_BUILD_DIR/src/
@@ -20,6 +24,14 @@ matrix:
   - os: osx
     osx_image:  xcode11.2
     before_install:
+    - openssl aes-256-cbc -K $encrypted_9ef4f27e2944_key -iv $encrypted_9ef4f27e2944_iv -in deploy/developer-id.p12.enc -out ${DEVELOPER_ID_CERTIFICATE_P12} -d
+    - export KEYCHAIN=build.keychain;
+    - security create-keychain -p openhd ${KEYCHAIN}
+    - security default-keychain -s ${KEYCHAIN}
+    - security unlock-keychain -p openhd ${KEYCHAIN}
+    - security set-keychain-settings -t 3600 -u $KEYCHAIN
+    - security import ${DEVELOPER_ID_CERTIFICATE_P12} -k ${KEYCHAIN} -P "" -T /usr/bin/codesign
+
     - brew install qt5
     - brew link qt5 --force
     - mkdir -p src
