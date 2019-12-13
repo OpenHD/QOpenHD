@@ -54,7 +54,7 @@ matrix:
     - 7z x /tmp/travis-wait-enhanced.zip -y -o/usr/bin/ travis-wait-enhanced.exe -r
     - travis-wait-enhanced --version
     - curl -vLO http://download.qt.io/official_releases/online_installers/qt-unified-windows-x86-online.exe
-    - travis-wait-enhanced ./qt-unified-windows-x86-online.exe --verbose --script qt-installer-windows.qs
+    - travis-wait-enhanced "./qt-unified-windows-x86-online.exe --verbose --script qt-installer-windows.qs"
     - ls -la C:/Qt/5.12.5/msvc2017/bin/qtenv2.bat
     script:
     - cmd.exe /C 'cd && "C:\Qt\5.12.5\msvc2017\bin\qtenv2.bat" && cd && "C:\Program
