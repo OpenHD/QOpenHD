@@ -1,89 +1,91 @@
-/*
- * Qt Installer script for a non-interactive installation of Qt5 on Windows.
- */
+// Emacs mode hint: -*- mode: JavaScript -*-
+// https://stackoverflow.com/questions/25105269/silent-install-qt-run-installer-on-ubuntu-server
+// https://github.com/wireshark/wireshark/blob/master/tools/qt-installer-windows.qs
 
-// jshint strict:false
-/* globals QInstaller, QMessageBox, buttons, gui, installer, console */
-
-// Run with:
-// .\qt-unified-windows-x86-3.0.4-online.exe --verbose --script tools\qt-installer-windows.qs
-
-// Look for Name elements in
-// https://download.qt.io/online/qtsdkrepository/windows_x86/desktop/qt5_5123/Updates.xml
-// Unfortunately it is not possible to disable deps like qt.tools.qtcreator
 var INSTALL_COMPONENTS = [
-    "qt.qt5.5125.win32_msvc2017"
+    "qt.qt5.5125.win32_msvc2017",
+    "qt.tools.ifw.31"
 ];
 
 function Controller() {
-    // Continue on installing to an existing (possibly empty) directory.
-    installer.setMessageBoxAutomaticAnswer("OverwriteTargetDirectory", QMessageBox.Yes);
-    // Continue at "SHOW FINISHED PAGE"
+    installer.autoRejectMessageBoxes();
     installer.installationFinished.connect(function() {
-        console.log("installationFinished");
         gui.clickButton(buttons.NextButton);
-    });
+    })
 }
 
 Controller.prototype.WelcomePageCallback = function() {
-    console.log("Step: " + gui.currentPageWidget());
-    // At least for 3.0.4 immediately clicking Next fails, so wait a bit.
-    // https://github.com/benlau/qtci/commit/85cb986b66af4807a928c70e13d82d00dc26ebf0
-    gui.clickButton(buttons.NextButton, 1000);
-};
+    // click delay here because the next button is initially disabled for ~1 second
+    gui.clickButton(buttons.NextButton, 3000);
+}
 
 Controller.prototype.CredentialsPageCallback = function() {
-    console.log("Step: " + gui.currentPageWidget());
     gui.clickButton(buttons.NextButton);
-};
+}
 
 Controller.prototype.IntroductionPageCallback = function() {
-    console.log("Step: " + gui.currentPageWidget());
     gui.clickButton(buttons.NextButton);
-};
+}
 
-Controller.prototype.TargetDirectoryPageCallback = function() {
-    console.log("Step: " + gui.currentPageWidget());
+Controller.prototype.DynamicTelemetryPluginFormCallback = function() {
+    gui.currentPageWidget().TelemetryPluginForm.statisticGroupBox.disableStatisticRadioButton.setChecked(true);
+    gui.clickButton(buttons.NextButton);
+
+    //for(var key in widget.TelemetryPluginForm.statisticGroupBox){
+    //    console.log(key);
+    //}
+}
+
+Controller.prototype.TargetDirectoryPageCallback = function()
+{
     // Keep default at "C:\Qt".
     //gui.currentPageWidget().TargetDirectoryLineEdit.setText("E:\\Qt");
+    //gui.currentPageWidget().TargetDirectoryLineEdit.setText(installer.value("HomeDir") + "/Qt");
     gui.clickButton(buttons.NextButton);
-};
+}
 
 Controller.prototype.ComponentSelectionPageCallback = function() {
-    console.log("Step: " + gui.currentPageWidget());
-    var page = gui.currentPageWidget();
-    page.deselectAll();
+
+    // https://doc-snapshots.qt.io/qtifw-3.1/noninteractive.html
+    var page = gui.pageWidgetByObjectName("ComponentSelectionPage");
+
+    var archiveCheckBox = gui.findChild(page, "Archive");
+    var latestCheckBox = gui.findChild(page, "Latest releases");
+    var fetchButton = gui.findChild(page, "FetchCategoryButton");
+
+    archiveCheckBox.click();
+    latestCheckBox.click();
+    fetchButton.click();
+
+    var widget = gui.currentPageWidget();
+
+    widget.deselectAll();
+
     for (var i = 0; i < INSTALL_COMPONENTS.length; i++) {
-        page.selectComponent(INSTALL_COMPONENTS[i]);
+        widget.selectComponent(INSTALL_COMPONENTS[i]);
     }
+
     gui.clickButton(buttons.NextButton);
-};
+}
 
 Controller.prototype.LicenseAgreementPageCallback = function() {
-    console.log("Step: " + gui.currentPageWidget());
     gui.currentPageWidget().AcceptLicenseRadioButton.setChecked(true);
     gui.clickButton(buttons.NextButton);
-};
+}
 
 Controller.prototype.StartMenuDirectoryPageCallback = function() {
-    console.log("Step: " + gui.currentPageWidget());
     gui.clickButton(buttons.NextButton);
-};
+}
 
-Controller.prototype.ReadyForInstallationPageCallback = function() {
-    console.log("Step: " + gui.currentPageWidget());
+Controller.prototype.ReadyForInstallationPageCallback = function()
+{
     gui.clickButton(buttons.NextButton);
-};
+}
 
 Controller.prototype.FinishedPageCallback = function() {
-    console.log("Step: " + gui.currentPageWidget());
-    // TODO somehow the installer crashes after this step.
-    // https://stackoverflow.com/questions/25105269/silent-install-qt-run-installer-on-ubuntu-server
-    var checkBoxForm = gui.currentPageWidget().LaunchQtCreatorCheckBoxForm;
-    if (checkBoxForm && checkBoxForm.launchQtCreatorCheckBox) {
-        checkBoxForm.launchQtCreatorCheckBox.checked = false;
-    }
+var checkBoxForm = gui.currentPageWidget().LaunchQtCreatorCheckBoxForm;
+if (checkBoxForm && checkBoxForm.launchQtCreatorCheckBox) {
+    checkBoxForm.launchQtCreatorCheckBox.checked = false;
+}
     gui.clickButton(buttons.FinishButton);
-};
-
-// vim: set ft=javascript:
+}
