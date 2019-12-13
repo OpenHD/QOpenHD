@@ -23,8 +23,8 @@ matrix:
     - brew install qt5
     - brew link qt5 --force
     - mkdir -p src
-    - if ! [ -f ./src/gstreamer-1.0-1.14.4-x86_64.pkg ]; then travis_wait curl -o ./src/gstreamer-1.0-1.14.4-x86_64.pkg https://gstreamer.freedesktop.org/data/pkg/osx/1.16.1/gstreamer-1.0-1.14.4-x86_64.pkg; fi
-    - if ! [ -f ./src/gstreamer-1.0-devel-1.14.4-x86_64.pkg ]; then travis_wait curl -o ./src/gstreamer-1.0-devel-1.14.4-x86_64.pkg https://gstreamer.freedesktop.org/data/pkg/osx/1.16.1/gstreamer-1.0-devel-1.14.4-x86_64.pkg; fi
+    - if ! [ -f ./src/gstreamer-1.0-1.14.4-x86_64.pkg ]; then travis_wait curl -v -o ./src/gstreamer-1.0-1.14.4-x86_64.pkg https://gstreamer.freedesktop.org/data/pkg/osx/1.16.1/gstreamer-1.0-1.14.4-x86_64.pkg; fi
+    - if ! [ -f ./src/gstreamer-1.0-devel-1.14.4-x86_64.pkg ]; then travis_wait curl -v -o ./src/gstreamer-1.0-devel-1.14.4-x86_64.pkg https://gstreamer.freedesktop.org/data/pkg/osx/1.16.1/gstreamer-1.0-devel-1.14.4-x86_64.pkg; fi
     - echo "Cached source dir:"
     - ls -l ./src/
     - echo "Installing GStreamer"
@@ -38,7 +38,7 @@ matrix:
     - dir C:/Program\ Files\ \(x86\)/Windows\ Kits/10/bin/10.0.17134.0/x64
     - cmd.exe /C 'cd && "C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\VC\Auxiliary\Build\vcvarsall.bat"
       x86 && cd && cd "C:/Users/travis/build/infincia/QOpenHD" && dir'
-    - if ! [ -f ./src/qt-unified-windows-x86-online.exe ]; then  curl -o ./src/qt-unified-windows-x86-online.exe -Lv http://download.qt.io/official_releases/online_installers/qt-unified-windows-x86-online.exe; fi
+    - if ! [ -f ./src/qt-unified-windows-x86-online.exe ]; then  curl -v -o ./src/qt-unified-windows-x86-online.exe -Lv http://download.qt.io/official_releases/online_installers/qt-unified-windows-x86-online.exe; fi
     - "./src/qt-unified-windows-x86-online.exe --verbose --script qt-installer-windows.qs"
     - ls -la C:/Qt/5.13.1/msvc2017/bin/qtenv2.bat
     script:
