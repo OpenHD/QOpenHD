@@ -51,7 +51,7 @@ matrix:
     - cmd.exe /C 'cd && "C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\VC\Auxiliary\Build\vcvarsall.bat"
       x86 && cd && cd "C:/Users/travis/build/infincia/QOpenHD" && dir'
     - if ! [ -f ./src/qt-unified-windows-x86-online.exe ]; then  curl -v -o ./src/qt-unified-windows-x86-online.exe -Lv http://download.qt.io/official_releases/online_installers/qt-unified-windows-x86-online.exe; fi
-    - "./src/qt-unified-windows-x86-online.exe --verbose --script qt-installer-windows.qs"
+    - travis_wait "./src/qt-unified-windows-x86-online.exe --verbose --script qt-installer-windows.qs"
     - ls -la C:/Qt/5.13.1/msvc2017/bin/qtenv2.bat
     script:
     - cmd.exe /C 'cd && "C:\Qt\5.13.1\msvc2017\bin\qtenv2.bat" && cd && "C:\Program
