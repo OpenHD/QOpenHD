@@ -50,8 +50,11 @@ matrix:
     - dir C:/Program\ Files\ \(x86\)/Windows\ Kits/10/bin/10.0.17134.0/x64
     - cmd.exe /C 'cd && "C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\VC\Auxiliary\Build\vcvarsall.bat"
       x86 && cd && cd "C:/Users/travis/build/infincia/QOpenHD" && dir'
+    - curl -LfsS -o /tmp/travis-wait-enhanced.zip "https://github.com/crazy-max/travis-wait-enhanced/releases/download/v1.1.0/travis-wait-enhanced_1.1.0_windows_x86_64.zip"
+    - 7z x /tmp/travis-wait-enhanced.zip -y -o/usr/bin/ travis-wait-enhanced.exe -r
+    - travis-wait-enhanced --version
     - curl -vLO http://download.qt.io/official_releases/online_installers/qt-unified-windows-x86-online.exe
-    - "./qt-unified-windows-x86-online.exe --verbose --script qt-installer-windows.qs"
+    - travis-wait-enhanced ./qt-unified-windows-x86-online.exe --verbose --script qt-installer-windows.qs
     - ls -la C:/Qt/5.12.5/msvc2017/bin/qtenv2.bat
     script:
     - cmd.exe /C 'cd && "C:\Qt\5.12.5\msvc2017\bin\qtenv2.bat" && cd && "C:\Program
