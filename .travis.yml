@@ -25,6 +25,9 @@ matrix:
     - mkdir -p src
     - if ! [ -f ./src/gstreamer-1.0-1.14.4-x86_64.pkg ]; then travis_wait curl -o ./src/gstreamer-1.0-1.14.4-x86_64.pkg https://gstreamer.freedesktop.org/data/pkg/osx/1.16.1/gstreamer-1.0-1.14.4-x86_64.pkg; fi
     - if ! [ -f ./src/gstreamer-1.0-devel-1.14.4-x86_64.pkg ]; then travis_wait curl -o ./src/gstreamer-1.0-devel-1.14.4-x86_64.pkg https://gstreamer.freedesktop.org/data/pkg/osx/1.16.1/gstreamer-1.0-devel-1.14.4-x86_64.pkg; fi
+    - echo "Cached source dir:"
+    - ls -l ./src/
+    - echo "Installing GStreamer"
     - sudo installer -package ./src/gstreamer-1.0-1.14.4-x86_64.pkg -target /
     - sudo installer -package ./src/gstreamer-1.0-devel-1.14.4-x86_64.pkg -target /
     script:
