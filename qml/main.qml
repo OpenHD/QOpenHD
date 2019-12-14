@@ -28,9 +28,7 @@ ApplicationWindow {
     onAfterSynchronizing: {
         if (!initialised) {
             hudOverlayGrid.messageHUD.pushMessage("Initializing", 1)
-            if (EnableRC) {
-                OpenHDRC.initRC;
-            }
+
             initialised = true;
             if (EnableMainVideo) {
                 MainStream.startVideo();
@@ -89,8 +87,25 @@ ApplicationWindow {
         property bool show_throttle: true
     }
 
+    OpenHDRC {
+        id: openHDRC
+    }
+
     QOpenHDLink {
         id: link
+    }
+
+    OpenHDSettings {
+        id: openHDSettings
+    }
+
+    Connections {
+        target: openHDSettings
+        onGroundStationIPUpdated: {
+            link.setGroundIP(address)
+            openHDRC.setGroundIP(address)
+            mavlinkTelemetry.setGroundIP(address)
+        }
     }
 
     OpenHDTelemetry {

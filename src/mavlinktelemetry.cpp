@@ -20,10 +20,11 @@
 
 #include "openhd.h"
 
+#define MAVLINK_PORT 14550
+
 MavlinkTelemetry::MavlinkTelemetry(QObject *parent): QObject(parent) {
     qDebug() << "MavlinkTelemetry::MavlinkTelemetry()";
     init();
-
 }
 
 void MavlinkTelemetry::init() {
@@ -32,11 +33,19 @@ void MavlinkTelemetry::init() {
     restartFifo();
 #else
     mavlinkSocket = new QUdpSocket(this);
-    mavlinkSocket->bind(QHostAddress::Any, 14550);
+    mavlinkSocket->bind(QHostAddress::Any, MAVLINK_PORT);
     connect(mavlinkSocket, &QUdpSocket::readyRead, this, &MavlinkTelemetry::processMavlinkDatagrams);
 #endif
 }
 
+
+void MavlinkTelemetry::setGroundIP(QString address) {
+#if defined(__rasp_pi__)
+
+#else
+    groundAddress = address;
+#endif
+}
 
 #if defined(__rasp_pi__)
 void MavlinkTelemetry::restartFifo() {
@@ -110,7 +119,7 @@ void MavlinkTelemetry::processMavlinkMessage(mavlink_message_t msg) {
      * appearing to change and the armed status flipping back
      * and forth.
      */
-    if (msg.compid != 1 && msg.compid != 250) {
+    if (msg.compid != MAV_COMP_ID_AUTOPILOT1 && msg.compid != MAV_COMP_ID_SYSTEM_CONTROL) {
         return;
     }
     switch (msg.msgid) {
@@ -123,7 +132,7 @@ void MavlinkTelemetry::processMavlinkMessage(mavlink_message_t msg) {
                     if (mode & MAV_MODE_FLAG_SAFETY_ARMED) {
                         // armed
                         OpenHD::instance()->set_armed(true);
-                        } else {
+                    } else {
                         OpenHD::instance()->set_armed(false);
                     }
 
@@ -133,32 +142,32 @@ void MavlinkTelemetry::processMavlinkMessage(mavlink_message_t msg) {
 
                     switch (uav_type) {
                         case MAV_TYPE_GENERIC: {
-                        break;
+                            break;
                         }
                         case MAV_TYPE_FIXED_WING: {
                             auto plane_mode = plane_mode_from_enum((PLANE_MODE)custom_mode);
                             OpenHD::instance()->set_flight_mode(plane_mode);
-                        break;
+                            break;
                         }
                         case MAV_TYPE_GROUND_ROVER: {
                             auto rover_mode = rover_mode_from_enum((ROVER_MODE)custom_mode);
                             OpenHD::instance()->set_flight_mode(rover_mode);
-                        break;
+                            break;
                         }
                         case MAV_TYPE_QUADROTOR: {
                             auto copter_mode = copter_mode_from_enum((COPTER_MODE)custom_mode);
                             OpenHD::instance()->set_flight_mode(copter_mode);
-                        break;
+                            break;
                         }
                         case MAV_TYPE_SUBMARINE: {
                             auto sub_mode = sub_mode_from_enum((SUB_MODE)custom_mode);
                             OpenHD::instance()->set_flight_mode(sub_mode);
-                        break;
+                            break;
                         }
                         case MAV_TYPE_ANTENNA_TRACKER: {
                             auto tracker_mode = tracker_mode_from_enum((TRACKER_MODE)custom_mode);
                             //OpenHD::instance()->set_tracker_mode(tracker_mode);
-                        break;
+                            break;
                         }
                         default: {
                             // do nothing
@@ -241,7 +250,7 @@ void MavlinkTelemetry::processMavlinkMessage(mavlink_message_t msg) {
             OpenHD::instance()->set_boot_time(tr("%1").arg(global_position.time_boot_ms));
 
             OpenHD::instance()->set_alt_rel(tr("%1").arg(global_position.relative_alt/1000.0, 1, 'f', 0, '0'));
-          //  qDebug() << "Altitude relative " << alt_rel;
+            // qDebug() << "Altitude relative " << alt_rel;
             OpenHD::instance()->set_alt_msl(tr("%1").arg(global_position.alt/1000.0, 1, 'f', 0, '0'));
 
             // FOR INAV heading does not /100
@@ -276,15 +285,15 @@ void MavlinkTelemetry::processMavlinkMessage(mavlink_message_t msg) {
             mavlink_rc_channels_t rc_channels;
             mavlink_msg_rc_channels_decode(&msg, &rc_channels);
             /*qDebug() << "RC: " << rc_channels.chan1_raw
-                                           << rc_channels.chan2_raw
-                                           << rc_channels.chan3_raw
-                                           << rc_channels.chan4_raw
-                                           << rc_channels.chan5_raw
-                                           << rc_channels.chan6_raw
-                                           << rc_channels.chan7_raw
-                                           << rc_channels.chan8_raw
-                                           << rc_channels.chan9_raw
-                                           << rc_channels.chan10_raw;*/
+                                 << rc_channels.chan2_raw
+                                 << rc_channels.chan3_raw
+                                 << rc_channels.chan4_raw
+                                 << rc_channels.chan5_raw
+                                 << rc_channels.chan6_raw
+                                 << rc_channels.chan7_raw
+                                 << rc_channels.chan8_raw
+                                 << rc_channels.chan9_raw
+                                 << rc_channels.chan10_raw;*/
             break;
         }
         case MAVLINK_MSG_ID_VFR_HUD:{
@@ -297,7 +306,7 @@ void MavlinkTelemetry::processMavlinkMessage(mavlink_message_t msg) {
 
             auto speed = vfr_hud.groundspeed*3.6;
             OpenHD::instance()->set_speed(tr("%1").arg(speed, 1, 'f', 0, '0'));
-                //  qDebug() << "Speed- ground " << speed;
+            // qDebug() << "Speed- ground " << speed;
 
             break;
         }
@@ -317,8 +326,7 @@ void MavlinkTelemetry::processMavlinkMessage(mavlink_message_t msg) {
             for (int cell = 0; cell < 10; cell++) {
                 int cell_voltage  = battery_status.voltages[cell];
                 if (cell_voltage != UINT16_MAX) {
-              //      qDebug() << "Battery cell voltage " << cell << " :" << cell_voltage;
-
+                    // qDebug() << "Battery cell voltage " << cell << " :" << cell_voltage;
                     total_voltage += cell_voltage;
                 }
             }

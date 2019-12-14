@@ -25,6 +25,9 @@ public:
 
     void initRC();
 
+    Q_INVOKABLE void setGroundIP(QString address);
+
+
 #if defined(ENABLE_GAMEPADS)
     Q_PROPERTY(int connectedGamepad MEMBER m_selectedGamepad WRITE set_selectedGamepad NOTIFY selectedGamepadChanged)
     void set_selectedGamepad(int selectedGamepad);
@@ -147,6 +150,8 @@ private slots:
 private:
     QUdpSocket *rcSocket = nullptr;
 
+    QString groundAddress;
+
 #if defined(ENABLE_GAMEPADS)
     QList<int> m_connectedGamepads;
     int m_selectedGamepad = -1;
@@ -180,7 +185,5 @@ private:
     uint m_rc10 = 1500;
 
 };
-
-QObject *openHDRCSingletonProvider(QQmlEngine *engine, QJSEngine *scriptEngine);
 
 #endif //RC_H

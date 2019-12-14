@@ -92,6 +92,23 @@ Item {
         "EXTRAPARAMS":     {title: "Extra parameters",
                             info: "Blank",
                             itemType: "string"},
+        "FORWARD_STREAM": {title: "Hotspot video format",
+                           info: "Hotspot video can either be RTP encapsulated, or \"raw\" h264. RTP is recommended, as it helps the receiver prevent video distortion caused by minor RF interference. This setting must match on the receiver.",
+                           itemType: "choice",
+                           choiceValues: [{title: "RTP", value: "rtp"},
+                                          {title: "Raw", value: "raw"}]},
+        "VIDEO_UDP_PORT": {title: "Main video port",
+                           itemType: "number",
+                           lowerLimit: 5600,
+                           upperLimit: 5610,
+                           interval: 1,
+                           unit: ""},
+        "VIDEO_UDP_PORT2": {title: "Secondary video port",
+                           itemType: "number",
+                           lowerLimit: 5600,
+                           upperLimit: 5610,
+                           interval: 1,
+                           unit: ""},
     })
 
     property var radioSettingsMap: ({

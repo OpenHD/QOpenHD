@@ -22,6 +22,8 @@ public:
     Q_PROPERTY(QString last_heartbeat MEMBER m_last_heartbeat WRITE set_last_heartbeat NOTIFY last_heartbeat_changed)
     void set_last_heartbeat(QString last_heartbeat);
 
+    Q_INVOKABLE void setGroundIP(QString address);
+
 signals:
     void last_heartbeat_changed(QString last_heartbeat);
 
@@ -38,6 +40,7 @@ private slots:
 private:
     void init();
 
+    QString groundAddress;
 
 #if defined(__rasp_pi__)
     QFuture<void> fifoFuture;

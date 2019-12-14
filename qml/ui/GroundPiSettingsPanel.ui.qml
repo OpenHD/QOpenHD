@@ -8,6 +8,8 @@ import OpenHD 1.0
 
 Item {
     property alias save: save
+    property alias showSavedCheckmark: savedCheckmark.visible
+
     Layout.fillHeight: true
     Layout.fillWidth: true
 
@@ -196,6 +198,38 @@ Item {
             anchors.rightMargin: 0
             running: openHDSettings.loading || openHDSettings.saving
             visible: openHDSettings.loading || openHDSettings.saving
+        }
+
+        Item {
+            id: savedCheckmark
+            visible: false
+
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.right: button_row.left
+            anchors.rightMargin: 0
+
+            Text {
+                id: savedText
+                text: "saved"
+                font.pixelSize: 20
+                height: parent.height
+                anchors.right: savedIcon.left
+                anchors.rightMargin: 12
+                horizontalAlignment: Text.AlignRight
+                verticalAlignment: Text.AlignVCenter
+            }
+
+            Text {
+                id: savedIcon
+                text: "\uf00c"
+                font.family: "Font Awesome 5 Free"
+                font.pixelSize: 20
+                height: parent.height
+                anchors.right: parent.right
+                anchors.rightMargin: 0
+                horizontalAlignment: Text.AlignRight
+                verticalAlignment: Text.AlignVCenter
+            }
         }
     }
 }

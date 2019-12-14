@@ -18,12 +18,6 @@
 OpenHDRC::OpenHDRC(QObject *parent): QObject(parent) {
     rcSocket = new QUdpSocket(this);
     rcSocket->bind(QHostAddress::Any);
-#if defined (__rasp_pi__)
-    rcSocket->connectToHost("127.0.0.1", PORT);
-#else
-    rcSocket->connectToHost("192.168.2.1", PORT);
-#endif
-    rcSocket->waitForConnected();
 
     connect(rcSocket, &QUdpSocket::readyRead, this, &OpenHDRC::processRCDatagrams);
 
@@ -56,6 +50,17 @@ void OpenHDRC::initRC() {
     timer->start(15); // about 60Hz
 
 }
+
+
+void OpenHDRC::setGroundIP(QString address) {
+    bool reconnect = (groundAddress != address);
+    groundAddress = address;
+    if (reconnect) {
+        rcSocket->connectToHost(groundAddress, PORT);
+        rcSocket->waitForConnected();
+    }
+}
+
 
 void OpenHDRC::channelTrigger() {
     emit channelUpdate(m_rc1, m_rc2, m_rc3, m_rc4, m_rc5, m_rc6, m_rc7, m_rc8, m_rc9, m_rc10);
@@ -100,7 +105,7 @@ void OpenHDRC::channelTrigger() {
         rcChannels[19] = 1;
         rcChannels[20] = 1;
 
-        rcSocket->write(rcChannels, rcChannels.length());
+        rcSocket->writeDatagram(rcChannels, rcChannels.length(), QHostAddress(groundAddress), PORT);
 
         seqno++;
     }
@@ -408,12 +413,4 @@ void OpenHDRC::buttonCenterChanged(bool value) {
 void OpenHDRC::buttonGuideChanged(bool value) {
     Q_UNUSED(value)
 
-}
-
-QObject *openHDRCSingletonProvider(QQmlEngine *engine, QJSEngine *scriptEngine) {
-    Q_UNUSED(engine)
-    Q_UNUSED(scriptEngine)
-
-    OpenHDRC *s = new OpenHDRC();
-    return s;
 }

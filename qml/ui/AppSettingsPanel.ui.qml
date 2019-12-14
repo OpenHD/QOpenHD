@@ -925,71 +925,6 @@ Item {
                 height: rowHeight
                 color: "#00000000"
                 y: 1 * rowHeight
-
-                Text {
-                    text: "Stream is RTP"
-                    font.weight: Font.Bold
-                    font.pixelSize: 13
-                    anchors.leftMargin: 8
-                    verticalAlignment: Text.AlignVCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: 224
-                    height: elementHeight
-                    anchors.left: parent.left
-                }
-
-                Switch {
-                    width: 32
-                    height: elementHeight
-                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    checked: settings.enable_rtp
-                    onCheckedChanged: settings.enable_rtp = checked
-                }
-            }
-
-            Rectangle {
-                width: parent.width
-                height: rowHeight
-                color: "#8cbfd7f3"
-                y: 2 * rowHeight
-
-                Text {
-                    text: "Main video port"
-                    font.weight: Font.Bold
-                    font.pixelSize: 13
-                    anchors.leftMargin: 8
-                    verticalAlignment: Text.AlignVCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: 224
-                    height: elementHeight
-                    anchors.left: parent.left
-                }
-
-                SpinBox {
-                    id: mainVideoPortSpinBox
-                    height: elementHeight
-                    width: 210
-                    font.pixelSize: 14
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    from: 5600
-                    to: 5610
-                    stepSize: 1
-                    anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
-
-                    value: settings.main_video_port
-                    onValueChanged: settings.main_video_port = value
-                }
-            }
-
-            Rectangle {
-                width: parent.width
-                height: rowHeight
-                color: "#00000000"
-                y: 3 * rowHeight
                 visible: EnablePiP
 
                 Text {
@@ -1013,42 +948,6 @@ Item {
                     anchors.verticalCenter: parent.verticalCenter
                     checked: settings.show_pip_video
                     onCheckedChanged: settings.show_pip_video = checked
-                }
-            }
-
-            Rectangle {
-                width: parent.width
-                height: rowHeight
-                color: "#8cbfd7f3"
-                y: 4 * rowHeight
-                visible: EnablePiP
-
-                Text {
-                    text: "PiP video port"
-                    font.weight: Font.Bold
-                    font.pixelSize: 13
-                    anchors.leftMargin: 8
-                    verticalAlignment: Text.AlignVCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: 224
-                    height: elementHeight
-                    anchors.left: parent.left
-                }
-
-                SpinBox {
-                    id: pipVideoPortSpinBox
-                    height: elementHeight
-                    width: 210
-                    font.pixelSize: 14
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    from: 5600
-                    to: 5610
-                    stepSize: 1
-                    anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
-
-                    value: settings.pip_video_port
-                    onValueChanged: settings.pip_video_port = value
                 }
             }
         }

@@ -1,12 +1,13 @@
 [submodule "QJoysticks"]
 	path = QJoysticks
 	url = https://github.com/alex-spataru/QJoysticks.git
-[submodule "mavlink"]
-	path = mavlink
-	url = https://github.com/mavlink/mavlink.git
 [submodule "lib/qmsgpack"]
 	path = lib/qmsgpack
 	url = https://github.com/romixlab/qmsgpack.git
 [submodule "lib/qmdnsengine"]
 	path = lib/qmdnsengine
 	url = https://github.com/nitroshare/qmdnsengine.git
+[submodule "mavlink"]
+	path = mavlink
+	url = https://github.com/infincia/mavlink.git
+	branch = qopenhd

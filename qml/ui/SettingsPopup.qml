@@ -19,6 +19,29 @@ SettingsPopupForm {
      *
      */
 
+
+    property double lastSettingsLoad: 0
+
+    Timer {
+        interval: 1000;
+        running: true;
+        repeat: true
+        onTriggered: {
+            if (!openHDSettings.ground_available) {
+                return;
+            }
+
+            var currentTime = (new Date).getTime();
+            if (currentTime - lastSettingsLoad > 60000) {
+                if (!settings_popup.opened) {
+                    lastSettingsLoad = currentTime;
+                    console.log("Settings panel not open, triggering load");
+                    openHDSettings.fetchSettings();
+                }
+            }
+        }
+    }
+
     ListModel {
         dynamicRoles: true
         id: generalSettingsModel
@@ -58,8 +81,38 @@ SettingsPopupForm {
         id: settingsMap
     }
 
+    Connections {
+        target: openHDSettings
+
+        onSavingSettingsStart: {
+            localMessage("saving ground settings...", 3);
+        }
+
+        onSavingSettingsFinished: {
+            localMessage("ground settings saved", 3);
+            showSavedCheckmark = true
+            savedTimer.start()
+        }
+
+        onSavingSettingsFailed: {
+            localMessage("%1 ground settings did not save!".arg(failCount), 4);
+            showSavedCheckmark = true
+        }
+    }
+
+    Timer {
+        id: savedTimer
+        running: false
+        interval: 5000
+        repeat: false
+        onTriggered: {
+            showSavedCheckmark = false
+        }
+
+    }
+
     /*Connections {
-        target: OpenHDRC
+        target: openHDRC
         onSelectedGamepadChanged: {
             console.log("onSelectedGamepadChanged %1".arg(selectedGamepad));
         }
@@ -72,8 +125,8 @@ SettingsPopupForm {
      * Remote OpenHD settings on the ground station
      *
      */
-    OpenHDSettings {
-        id: openHDSettings
+    Connections {
+        target: openHDSettings
 
         onAllSettingsChanged: {
             /*
@@ -132,6 +185,9 @@ SettingsPopupForm {
                 } else {
                     finalValue = initialValue;
                 }
+
+                configureWithSetting(setting, finalValue);
+
                 model.append({"title": itemTitle,
                               "setting": setting,
                               "choiceValues": choiceValues,
@@ -197,6 +253,20 @@ SettingsPopupForm {
         }
     }
 
+    function configureWithSetting(key, value) {
+        if (key === "FORWARD_STREAM") {
+            settings.enable_rtp = (value === "rtp");
+        }
+
+        if (key === "VIDEO_UDP_PORT") {
+            settings.main_video_port = value;
+        }
+
+        if (key === "VIDEO_UDP_PORT2") {
+            settings.pip_video_port = value;
+        }
+    }
+
     function writeRemoteSettings() {
         var remoteSettings = {};
 
@@ -250,15 +320,21 @@ SettingsPopupForm {
     }
 
     rebootButton.onClicked: {
+        savedTimer.stop()
+        showSavedCheckmark = false
         settings_popup.close();
         rebootDialog.open()
     }
 
     closeButton.onClicked: {
+        savedTimer.stop()
+        showSavedCheckmark = false
         settings_popup.close();
     }
 
     save.onClicked: {
+        savedTimer.stop()
+        showSavedCheckmark = false
         writeRemoteSettings();
     }
 

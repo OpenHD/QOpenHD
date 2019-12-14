@@ -19,6 +19,9 @@ public:
     Q_INVOKABLE void setWidgetLocation(QString widgetName, int alignment, int xOffset, int yOffset, bool hCenter, bool vCenter);
     Q_INVOKABLE void setWidgetEnabled(QString widgetName, bool enabled);
 
+    Q_INVOKABLE void setGroundIP(QString address);
+
+
 signals:
     void widgetLocation(QString widgetName, int alignment, int xOffset, int yOffset, bool hCenter, bool vCenter);
     void widgetEnabled(QString widgetName, bool enabled);
@@ -28,6 +31,8 @@ private slots:
 
 private:
     void init();
+
+    QString groundAddress;
 
     void processCommand(QByteArray buffer);
     void processSetWidgetLocation(nlohmann::json command);
