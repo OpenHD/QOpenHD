@@ -5,7 +5,7 @@ env:
 
 cache:
   directories:
-    - $TRAVIS_BUILD_DIR/src/
+    - $TRAVIS_BUILD_DIR/cache/
 matrix:
   include:
   - os: linux
@@ -34,14 +34,14 @@ matrix:
 
     - brew install qt5
     - brew link qt5 --force
-    - mkdir -p src
-    - if ! [ -f ./src/gstreamer-1.0-1.14.4-x86_64.pkg ]; then travis_wait curl -v -o ./src/gstreamer-1.0-1.14.4-x86_64.pkg https://gstreamer.freedesktop.org/data/pkg/osx/1.14.4/gstreamer-1.0-1.14.4-x86_64.pkg; fi
-    - if ! [ -f ./src/gstreamer-1.0-devel-1.14.4-x86_64.pkg ]; then travis_wait curl -v -o ./src/gstreamer-1.0-devel-1.14.4-x86_64.pkg https://gstreamer.freedesktop.org/data/pkg/osx/1.14.4/gstreamer-1.0-devel-1.14.4-x86_64.pkg; fi
+    - mkdir -p cache
+    - if ! [ -f ./cache/gstreamer-1.0-1.14.4-x86_64.pkg ]; then travis_wait curl -v -o ./cache/gstreamer-1.0-1.14.4-x86_64.pkg https://gstreamer.freedesktop.org/data/pkg/osx/1.14.4/gstreamer-1.0-1.14.4-x86_64.pkg; fi
+    - if ! [ -f ./cache/gstreamer-1.0-devel-1.14.4-x86_64.pkg ]; then travis_wait curl -v -o ./cache/gstreamer-1.0-devel-1.14.4-x86_64.pkg https://gstreamer.freedesktop.org/data/pkg/osx/1.14.4/gstreamer-1.0-devel-1.14.4-x86_64.pkg; fi
     - echo "Cached source dir:"
-    - ls -l ./src/
+    - ls -l ./cache/
     - echo "Installing GStreamer"
-    - sudo installer -package ./src/gstreamer-1.0-1.14.4-x86_64.pkg -target /
-    - sudo installer -package ./src/gstreamer-1.0-devel-1.14.4-x86_64.pkg -target /
+    - sudo installer -package ./cache/gstreamer-1.0-1.14.4-x86_64.pkg -target /
+    - sudo installer -package ./cache/gstreamer-1.0-devel-1.14.4-x86_64.pkg -target /
     script:
     - travis_wait qmake QOpenHD.pro CONFIG+=release
     - travis_wait make -j5
@@ -53,12 +53,13 @@ matrix:
     - curl -LfsS -o /tmp/travis-wait-enhanced.zip "https://github.com/crazy-max/travis-wait-enhanced/releases/download/v1.1.0/travis-wait-enhanced_1.1.0_windows_x86_64.zip"
     - 7z x /tmp/travis-wait-enhanced.zip -y -o/usr/bin/ travis-wait-enhanced.exe -r
     - travis-wait-enhanced --version
-    - if ! [ -f ./src/gstreamer-1.0-x86-1.14.4.msi ]; then curl -LfsS -o gstreamer-1.0-x86-1.14.4.msi https://gstreamer.freedesktop.org/data/pkg/windows/1.14.4/gstreamer-1.0-x86-1.14.4.msi; fi
-    - if ! [ -f ./src/gstreamer-1.0-devel-x86-1.14.4.msi ]; then curl -LfsS -o gstreamer-1.0-devel-x86-1.14.4.msi https://gstreamer.freedesktop.org/data/pkg/windows/1.14.4/gstreamer-1.0-devel-x86-1.14.4.msi; fi
+    - mkdir -p cache
+    - if ! [ -f ./cache/gstreamer-1.0-x86-1.14.4.msi ]; then curl -LfsS -o ./cache/gstreamer-1.0-x86-1.14.4.msi https://gstreamer.freedesktop.org/data/pkg/windows/1.14.4/gstreamer-1.0-x86-1.14.4.msi; fi
+    - if ! [ -f ./cache/gstreamer-1.0-devel-x86-1.14.4.msi ]; then curl -LfsS -o ./cache/gstreamer-1.0-devel-x86-1.14.4.msi https://gstreamer.freedesktop.org/data/pkg/windows/1.14.4/gstreamer-1.0-devel-x86-1.14.4.msi; fi
     - echo "Cached source dir:"
-    - ls -l ./src/
-    - travis-wait-enhanced -- msiexec /passive INSTALLDIR=C:\GStreamer /i ./src/gstreamer-1.0-x86-1.14.4.msi
-    - travis-wait-enhanced -- msiexec /passive INSTALLDIR=C:\GStreamer /i ./src/gstreamer-1.0-devel-x86-1.14.4.msi
+    - ls -l ./cache/
+    - travis-wait-enhanced -- msiexec /passive INSTALLDIR=C:\GStreamer /i ./cache/gstreamer-1.0-x86-1.14.4.msi
+    - travis-wait-enhanced -- msiexec /passive INSTALLDIR=C:\GStreamer /i ./cache/gstreamer-1.0-devel-x86-1.14.4.msi
     - curl -vLO http://download.qt.io/official_releases/online_installers/qt-unified-windows-x86-online.exe
     - travis-wait-enhanced install_qt.bat
     - ls -la C:/Qt/5.12.5/msvc2017/bin/qtenv2.bat
