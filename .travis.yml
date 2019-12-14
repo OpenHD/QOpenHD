@@ -58,8 +58,8 @@ matrix:
     - if ! [ -f ./cache/gstreamer-1.0-devel-x86-1.14.4.msi ]; then curl -LfsS -o ./cache/gstreamer-1.0-devel-x86-1.14.4.msi https://gstreamer.freedesktop.org/data/pkg/windows/1.14.4/gstreamer-1.0-devel-x86-1.14.4.msi; fi
     - echo "Cached source dir:"
     - ls -l ./cache/
-    - travis-wait-enhanced -- msiexec /passive INSTALLDIR=C:\GStreamer /i ./cache/gstreamer-1.0-x86-1.14.4.msi
-    - travis-wait-enhanced -- msiexec /passive INSTALLDIR=C:\GStreamer /i ./cache/gstreamer-1.0-devel-x86-1.14.4.msi
+    - msiexec /passive INSTALLDIR=C:\GStreamer /l* /n /i ./cache/gstreamer-1.0-x86-1.14.4.msi
+    - msiexec /passive INSTALLDIR=C:\GStreamer /l* /n /i ./cache/gstreamer-1.0-devel-x86-1.14.4.msi
     - curl -vLO http://download.qt.io/official_releases/online_installers/qt-unified-windows-x86-online.exe
     - travis-wait-enhanced install_qt.bat
     - ls -la C:/Qt/5.12.5/msvc2017/bin/qtenv2.bat
