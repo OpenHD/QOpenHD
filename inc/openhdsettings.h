@@ -86,7 +86,7 @@ private:
     bool m_loading = false;
     bool m_saving = false;
 
-    QHostAddress groundAddress;
+    QString groundAddress;
 };
 
 
