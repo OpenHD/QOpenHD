@@ -52,6 +52,8 @@ private:
     mavlink_status_t r_mavlink_status;
 
     QString m_last_heartbeat = "N/A";
+    qint64 m_last_heartbeat_raw = -1;
+
     qint64 last_heartbeat_timestamp;
 
 };

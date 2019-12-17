@@ -118,6 +118,10 @@ void MavlinkTelemetry::processMavlinkDatagrams() {
 
 void MavlinkTelemetry::stateLoop() {
 
+    qint64 current_timestamp = QDateTime::currentMSecsSinceEpoch();
+    m_last_heartbeat_raw = current_timestamp - last_heartbeat_timestamp;
+    set_last_heartbeat(QString(tr("%1ms").arg(m_last_heartbeat_raw)));
+
 }
 
 
@@ -184,10 +188,6 @@ void MavlinkTelemetry::processMavlinkMessage(mavlink_message_t msg) {
                     }
 
                     qint64 current_timestamp = QDateTime::currentMSecsSinceEpoch();
-
-                    auto diff = (current_timestamp - last_heartbeat_timestamp) / 1000;
-
-                    set_last_heartbeat(QString(tr("%1ms").arg(current_timestamp - last_heartbeat_timestamp)));
                     last_heartbeat_timestamp = current_timestamp;
                     break;
                 }
