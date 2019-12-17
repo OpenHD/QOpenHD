@@ -14,6 +14,15 @@
 
 class QUdpSocket;
 
+
+typedef enum MavlinkState {
+    MavlinkStateDisconnected,
+    MavlinkStateConnected,
+    MavlinkStateGetParameters,
+    MavlinkStateIdle
+} MavlinkState;
+
+
 class MavlinkTelemetry: public QObject {
     Q_OBJECT
 
