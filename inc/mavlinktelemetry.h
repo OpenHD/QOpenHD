@@ -39,6 +39,7 @@ private slots:
 
 private:
     void init();
+    void stateLoop();
 
     QString groundAddress;
 

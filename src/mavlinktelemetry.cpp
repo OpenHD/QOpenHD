@@ -36,6 +36,10 @@ void MavlinkTelemetry::init() {
     mavlinkSocket->bind(QHostAddress::Any, MAVLINK_LOCAL_PORT);
     connect(mavlinkSocket, &QUdpSocket::readyRead, this, &MavlinkTelemetry::processMavlinkDatagrams);
 #endif
+
+    QTimer *stateTimer = new QTimer(this);
+    QObject::connect(stateTimer, &QTimer::timeout, this, &MavlinkTelemetry::stateLoop);
+    stateTimer->start(200);
 }
 
 
@@ -111,6 +115,11 @@ void MavlinkTelemetry::processMavlinkDatagrams() {
     }
 }
 #endif
+
+void MavlinkTelemetry::stateLoop() {
+
+}
+
 
 void MavlinkTelemetry::processMavlinkMessage(mavlink_message_t msg) {
     /* QGC sends its own heartbeats with compid 0 (fixed)
