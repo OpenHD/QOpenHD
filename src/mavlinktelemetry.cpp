@@ -37,9 +37,7 @@ void MavlinkTelemetry::init() {
     connect(mavlinkSocket, &QUdpSocket::readyRead, this, &MavlinkTelemetry::processMavlinkDatagrams);
 #endif
 
-    QTimer *stateTimer = new QTimer(this);
-    QObject::connect(stateTimer, &QTimer::timeout, this, &MavlinkTelemetry::stateLoop);
-    stateTimer->start(200);
+    QFuture<void> future = QtConcurrent::run(this, &MavlinkTelemetry::stateLoop);
 }
 
 
@@ -150,10 +148,13 @@ bool MavlinkTelemetry::isConnectionLost() {
 
 void MavlinkTelemetry::stateLoop() {
 
-    qint64 current_timestamp = QDateTime::currentMSecsSinceEpoch();
-    m_last_heartbeat_raw = current_timestamp - last_heartbeat_timestamp;
-    set_last_heartbeat(QString(tr("%1ms").arg(m_last_heartbeat_raw)));
+    while (true) {
+        qint64 current_timestamp = QDateTime::currentMSecsSinceEpoch();
+        m_last_heartbeat_raw = current_timestamp - last_heartbeat_timestamp;
+        set_last_heartbeat(QString(tr("%1ms").arg(m_last_heartbeat_raw)));
 
+        QThread::msleep(200);
+    }
 }
 
 
