@@ -20,7 +20,7 @@
 
 #include "openhd.h"
 
-#define MAVLINK_PORT 14550
+#define MAVLINK_LOCAL_PORT 14550
 
 MavlinkTelemetry::MavlinkTelemetry(QObject *parent): QObject(parent) {
     qDebug() << "MavlinkTelemetry::MavlinkTelemetry()";
@@ -33,7 +33,7 @@ void MavlinkTelemetry::init() {
     restartFifo();
 #else
     mavlinkSocket = new QUdpSocket(this);
-    mavlinkSocket->bind(QHostAddress::Any, MAVLINK_PORT);
+    mavlinkSocket->bind(QHostAddress::Any, MAVLINK_LOCAL_PORT);
     connect(mavlinkSocket, &QUdpSocket::readyRead, this, &MavlinkTelemetry::processMavlinkDatagrams);
 #endif
 }
