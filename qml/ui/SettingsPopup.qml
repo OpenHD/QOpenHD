@@ -85,11 +85,11 @@ SettingsPopupForm {
         target: openHDSettings
 
         onSavingSettingsStart: {
-            localMessage("saving ground settings...", 3);
+            localMessage("saving ground settings...", 2);
         }
 
         onSavingSettingsFinished: {
-            localMessage("ground settings saved", 3);
+            localMessage("ground settings saved", 2);
             showSavedCheckmark = true
             savedTimer.start()
         }
