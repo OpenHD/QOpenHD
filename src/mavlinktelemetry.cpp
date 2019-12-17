@@ -126,6 +126,18 @@ VMap MavlinkTelemetry::getAllParameters() {
 }
 
 
+void MavlinkTelemetry::fetchParameters() {
+    qDebug() << "MavlinkTelemetry::fetchParameters()";
+    mavlink_message_t msg;
+    mavlink_msg_param_request_list_pack(255, MAV_COMP_ID_MISSIONPLANNER, &msg, 1, MAV_COMP_ID_AUTOPILOT1);
+
+    uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
+    int len = mavlink_msg_to_send_buffer(buffer, &msg);
+
+    mavlinkSocket->writeDatagram((char*)buffer, len, QHostAddress(groundAddress), groundPort);
+}
+
+
 bool MavlinkTelemetry::isConnectionLost() {
     // we want to know if a heartbeat has been received (not -1, the default)
     // but not in the last 5 seconds.

@@ -37,6 +37,8 @@ public:
 
     Q_INVOKABLE void setGroundIP(QString address);
 
+    Q_INVOKABLE void fetchParameters();
+
 signals:
     void last_heartbeat_changed(QString last_heartbeat);
     void allParametersChanged(VMap allParameters);
