@@ -42,6 +42,7 @@ private:
     void stateLoop();
 
     QString groundAddress;
+    quint16 groundPort = 14550;
 
 #if defined(__rasp_pi__)
     QFuture<void> fifoFuture;

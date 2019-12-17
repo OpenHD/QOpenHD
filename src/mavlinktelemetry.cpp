@@ -99,7 +99,10 @@ void MavlinkTelemetry::processMavlinkDatagrams() {
 
     while (mavlinkSocket->hasPendingDatagrams()) {
         datagram.resize(int(mavlinkSocket->pendingDatagramSize()));
-        mavlinkSocket->readDatagram(datagram.data(), datagram.size());
+        QHostAddress _groundAddress;
+        quint16 _groundPort;
+        mavlinkSocket->readDatagram(datagram.data(), datagram.size(), &_groundAddress, &_groundPort);
+        groundPort = _groundPort;
         typedef QByteArray::Iterator Iterator;
         mavlink_message_t msg;
 
