@@ -40,6 +40,7 @@ private slots:
 private:
     void init();
     void stateLoop();
+    bool isConnectionLost();
 
     QString groundAddress;
     quint16 groundPort = 14550;

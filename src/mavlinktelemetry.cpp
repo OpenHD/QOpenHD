@@ -119,6 +119,16 @@ void MavlinkTelemetry::processMavlinkDatagrams() {
 }
 #endif
 
+bool MavlinkTelemetry::isConnectionLost() {
+    // we want to know if a heartbeat has been received (not -1, the default)
+    // but not in the last 5 seconds.
+    if (m_last_heartbeat_raw > -1 && m_last_heartbeat_raw < 5000) {
+        return false;
+    }
+    return true;
+}
+
+
 void MavlinkTelemetry::stateLoop() {
 
     qint64 current_timestamp = QDateTime::currentMSecsSinceEpoch();
