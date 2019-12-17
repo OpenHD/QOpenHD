@@ -47,7 +47,7 @@ void OpenHDSettings::checkSettingsLoadTimeout() {
     if (current - loadStart > 30) {
         loadTimer.stop();
         set_loading(false);
-        emit allSettingsChanged(m_allSettings);
+        emit allSettingsChanged();
     }
 }
 
@@ -183,7 +183,7 @@ void OpenHDSettings::processDatagrams() {
 
         if (datagram == "ConfigRespConfigEnd=ConfigEnd") {
             loadTimer.stop();
-            emit allSettingsChanged(m_allSettings);
+            emit allSettingsChanged();
             set_loading(false);
         } else if (datagram.contains("SavedGround")) {
             settingsCount -= 1;

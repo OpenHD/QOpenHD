@@ -29,7 +29,6 @@ class MavlinkTelemetry: public QObject {
 public:
     explicit MavlinkTelemetry(QObject *parent = nullptr);
 
-    Q_PROPERTY(VMap allParameters MEMBER m_allParameters NOTIFY allParametersChanged)
     Q_INVOKABLE VMap getAllParameters();
 
     Q_PROPERTY(QString last_heartbeat MEMBER m_last_heartbeat WRITE set_last_heartbeat NOTIFY last_heartbeat_changed)
@@ -41,7 +40,7 @@ public:
 
 signals:
     void last_heartbeat_changed(QString last_heartbeat);
-    void allParametersChanged(VMap allParameters);
+    void allParametersChanged();
 
 
 private slots:

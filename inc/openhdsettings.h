@@ -20,8 +20,6 @@ public:
     explicit OpenHDSettings(QObject *parent = nullptr);
     void initSettings();
 
-    Q_PROPERTY(VMap allSettings MEMBER m_allSettings NOTIFY allSettingsChanged)
-
     Q_PROPERTY(bool loading MEMBER m_loading WRITE set_loading NOTIFY loadingChanged)
     void set_loading(bool loading);
 
@@ -41,7 +39,7 @@ public:
     void set_ground_available(bool ground_available);
 
 signals:
-    void allSettingsChanged(VMap allSettings);
+    void allSettingsChanged();
     void loadingChanged(bool loading);
     void savingChanged(bool saving);
     void savedChanged(bool saved);
