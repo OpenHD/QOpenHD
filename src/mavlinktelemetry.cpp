@@ -149,11 +149,12 @@ bool MavlinkTelemetry::isConnectionLost() {
 void MavlinkTelemetry::stateLoop() {
 
     while (true) {
+        QThread::msleep(200);
+
         qint64 current_timestamp = QDateTime::currentMSecsSinceEpoch();
         m_last_heartbeat_raw = current_timestamp - last_heartbeat_timestamp;
         set_last_heartbeat(QString(tr("%1ms").arg(m_last_heartbeat_raw)));
 
-        QThread::msleep(200);
     }
 }
 
