@@ -119,6 +119,13 @@ void MavlinkTelemetry::processMavlinkDatagrams() {
 }
 #endif
 
+
+
+VMap MavlinkTelemetry::getAllParameters() {
+    return m_allParameters;
+}
+
+
 bool MavlinkTelemetry::isConnectionLost() {
     // we want to know if a heartbeat has been received (not -1, the default)
     // but not in the last 5 seconds.

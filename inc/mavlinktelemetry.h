@@ -9,6 +9,8 @@
 #include <ardupilotmega/ardupilotmega.h>
 #include "constants.h"
 
+#include "util.h"
+
 
 class QUdpSocket;
 
@@ -18,6 +20,8 @@ class MavlinkTelemetry: public QObject {
 public:
     explicit MavlinkTelemetry(QObject *parent = nullptr);
 
+    Q_PROPERTY(VMap allParameters MEMBER m_allParameters NOTIFY allParametersChanged)
+    Q_INVOKABLE VMap getAllParameters();
 
     Q_PROPERTY(QString last_heartbeat MEMBER m_last_heartbeat WRITE set_last_heartbeat NOTIFY last_heartbeat_changed)
     void set_last_heartbeat(QString last_heartbeat);
@@ -26,6 +30,7 @@ public:
 
 signals:
     void last_heartbeat_changed(QString last_heartbeat);
+    void allParametersChanged(VMap allParameters);
 
 
 private slots:
@@ -44,6 +49,8 @@ private:
 
     QString groundAddress;
     quint16 groundPort = 14550;
+
+    VMap m_allParameters;
 
 #if defined(__rasp_pi__)
     QFuture<void> fifoFuture;
