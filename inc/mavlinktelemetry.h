@@ -44,12 +44,8 @@ signals:
 
 
 private slots:
-#if defined(__rasp_pi__)
-    void processMavlinkFifo();
-    void restartFifo();
-#else
     void processMavlinkDatagrams();
-#endif
+
     void processMavlinkMessage(mavlink_message_t msg);
 
 private:
@@ -73,12 +69,8 @@ private:
 
     qint64 initialConnectTimer;
 
-#if defined(__rasp_pi__)
-    QFuture<void> fifoFuture;
-    QFutureWatcher<void> watcher;
-#else
     QUdpSocket *mavlinkSocket = nullptr;
-#endif
+
     mavlink_status_t r_mavlink_status;
 
     QString m_last_heartbeat = "N/A";

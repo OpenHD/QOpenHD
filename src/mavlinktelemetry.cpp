@@ -31,69 +31,20 @@ MavlinkTelemetry::MavlinkTelemetry(QObject *parent): QObject(parent), m_ground_a
 
 void MavlinkTelemetry::init() {
     qDebug() << "MavlinkTelemetry::init()";
-#if defined(__rasp_pi__)
-    restartFifo();
-#else
+
     mavlinkSocket = new QUdpSocket(this);
     mavlinkSocket->bind(QHostAddress::Any, MAVLINK_LOCAL_PORT);
     connect(mavlinkSocket, &QUdpSocket::readyRead, this, &MavlinkTelemetry::processMavlinkDatagrams);
-#endif
 
     QFuture<void> future = QtConcurrent::run(this, &MavlinkTelemetry::stateLoop);
 }
 
 
 void MavlinkTelemetry::setGroundIP(QString address) {
-#if defined(__rasp_pi__)
-
-#else
     groundAddress = address;
-#endif
 }
 
-#if defined(__rasp_pi__)
-void MavlinkTelemetry::restartFifo() {
-    qDebug() << "MavlinkTelemetry::restartFifo()";
-    fifoFuture = QtConcurrent::run(this, &MavlinkTelemetry::processMavlinkFifo);
-    watcher.cancel();
-    disconnect(&watcher, &QFutureWatcherBase::finished, this, &MavlinkTelemetry::restartFifo);
-    connect(&watcher, &QFutureWatcherBase::finished, this, &MavlinkTelemetry::restartFifo);
-    watcher.setFuture(fifoFuture);
-}
 
-void MavlinkTelemetry::processMavlinkFifo() {
-    uint8_t buf[4096];
-
-    mavlink_message_t msg;
-
-    int fifoFP = open(MAVLINK_FIFO, O_RDONLY);
-    if (fifoFP < 0) {
-        QThread::msleep(1000);
-        return;
-    }
-
-    while (true) {
-        int received = read(fifoFP, buf, sizeof(buf));
-        if (received < 0) {
-            qDebug() << "Mavlink fifo returned -1";
-
-            close(fifoFP);
-            QThread::msleep(1000);
-            return;
-        }
-        for (int i = 0; i < received; i++) {
-            uint8_t c = buf[i];
-            uint8_t res = mavlink_parse_char(MAVLINK_COMM_0, c, &msg, &r_mavlink_status);
-
-            if (res) {
-                processMavlinkMessage(msg);
-            }
-        }
-    }
-    QThread::msleep(1000);
-    close(fifoFP);
-}
-#else
 void MavlinkTelemetry::processMavlinkDatagrams() {
     QByteArray datagram;
 
@@ -119,8 +70,6 @@ void MavlinkTelemetry::processMavlinkDatagrams() {
         }
     }
 }
-#endif
-
 
 
 VMap MavlinkTelemetry::getAllParameters() {
