@@ -81,5 +81,6 @@
         <file>MainVideoItem.qml</file>
         <file>ui/elements/SlideSwitchForm.ui.qml</file>
         <file>ui/elements/SlideSwitch.qml</file>
+        <file>ui/ArdupilotParameterMap.qml</file>
     </qresource>
 </RCC>
