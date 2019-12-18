@@ -7,7 +7,6 @@
 #include "localmessage.h"
 
 #define SETTINGS_PORT 1011
-#define SETTINGS_IP "192.168.2.1"
 
 OpenHDSettings::OpenHDSettings(QObject *parent) : QObject(parent) {
     qDebug() << "OpenHDSettings::OpenHDSettings()";
