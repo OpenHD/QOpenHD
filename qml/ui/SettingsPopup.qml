@@ -215,7 +215,9 @@ SettingsPopupForm {
              * side (in openhdsettings.cpp)
              *
              */
-            for (var setting in openHDSettings.allSettings) {
+            var allSettings = openHDSettings.getAllSettings();
+
+            for (var setting in allSettings) {
                 /*
                  * Here we distribute the incoming settings key/value pairs to the ListModel for each tab.
                  *
@@ -234,7 +236,7 @@ SettingsPopupForm {
                     disabled = true;
                 }
 
-                var initialValue = openHDSettings.allSettings[setting];
+                var initialValue = allSettings[setting];
                 if (settingsMap.generalSettingsMap[setting] !== undefined) {
                     _process(setting, initialValue, generalSettingsModel, settingsMap.generalSettingsMap, disabled);
                 } else if (settingsMap.radioSettingsMap[setting] !== undefined) {
@@ -253,7 +255,7 @@ SettingsPopupForm {
                     otherSettingsModel.append({"title": setting,
                                                "setting": setting,
                                                "itemType": "string",
-                                               "value": String(openHDSettings.allSettings[setting]),
+                                               "value": String(allSettings[setting]),
                                                "disabled": disabled,
                                                "info": "No additional information available, check the Open.HD wiki"});
                 }
