@@ -82,6 +82,14 @@ SettingsPopupForm {
     }
 
     Connections {
+        target: mavlinkTelemetry
+
+        onAllParametersChanged: {
+            localMessage("Received drone parameters", 2);
+        }
+    }
+
+    Connections {
         target: openHDSettings
 
         onSavingSettingsStart: {

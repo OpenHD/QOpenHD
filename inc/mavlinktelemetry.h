@@ -56,11 +56,22 @@ private:
     void init();
     void stateLoop();
     bool isConnectionLost();
+    void resetParamVars();
 
     QString groundAddress;
     quint16 groundPort = 14550;
 
     VMap m_allParameters;
+
+    MavlinkState state = MavlinkStateDisconnected;
+
+    std::atomic<bool> m_ground_available;
+    uint16_t parameterCount = 0;
+    uint16_t parameterIndex = 0;
+
+    qint64 parameterLastReceivedTime;
+
+    qint64 initialConnectTimer;
 
 #if defined(__rasp_pi__)
     QFuture<void> fifoFuture;
@@ -74,6 +85,8 @@ private:
     qint64 m_last_heartbeat_raw = -1;
 
     qint64 last_heartbeat_timestamp;
+
+    QMutex stateLock;
 
 };
 

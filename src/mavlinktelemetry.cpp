@@ -20,9 +20,11 @@
 
 #include "openhd.h"
 
+#include "localmessage.h"
+
 #define MAVLINK_LOCAL_PORT 14550
 
-MavlinkTelemetry::MavlinkTelemetry(QObject *parent): QObject(parent) {
+MavlinkTelemetry::MavlinkTelemetry(QObject *parent): QObject(parent), m_ground_available(false) {
     qDebug() << "MavlinkTelemetry::MavlinkTelemetry()";
     init();
 }
@@ -96,6 +98,8 @@ void MavlinkTelemetry::processMavlinkDatagrams() {
     QByteArray datagram;
 
     while (mavlinkSocket->hasPendingDatagrams()) {
+        m_ground_available = true;
+
         datagram.resize(int(mavlinkSocket->pendingDatagramSize()));
         QHostAddress _groundAddress;
         quint16 _groundPort;
@@ -145,16 +149,94 @@ bool MavlinkTelemetry::isConnectionLost() {
     return true;
 }
 
+void MavlinkTelemetry::resetParamVars() {
+    m_allParameters.clear();
+    parameterCount = 0;
+    parameterIndex = 0;
+    initialConnectTimer = -1;
+    // give the MavlinkStateGetParameters state a chance to receive a parameter
+    // before timing out
+    parameterLastReceivedTime = QDateTime::currentMSecsSinceEpoch();
+}
+
 
 void MavlinkTelemetry::stateLoop() {
 
+    resetParamVars();
+
     while (true) {
         QThread::msleep(200);
+
+        QMutexLocker locker(&stateLock);
 
         qint64 current_timestamp = QDateTime::currentMSecsSinceEpoch();
         m_last_heartbeat_raw = current_timestamp - last_heartbeat_timestamp;
         set_last_heartbeat(QString(tr("%1ms").arg(m_last_heartbeat_raw)));
 
+        switch (state) {
+            case MavlinkStateDisconnected: {
+                if (m_ground_available) {
+                    state = MavlinkStateConnected;
+                }
+
+                continue;
+            }
+            case MavlinkStateConnected: {
+                if (initialConnectTimer == -1) {
+                    initialConnectTimer = QDateTime::currentMSecsSinceEpoch();
+                } else if (current_timestamp - initialConnectTimer < 5000) {
+                    state = MavlinkStateGetParameters;
+                    resetParamVars();
+                    fetchParameters();
+                    LocalMessage::instance()->showMessage("Connecting to drone", 2);
+                }
+
+                continue;
+            }
+            case MavlinkStateGetParameters: {
+                qint64 currentTime = QDateTime::currentMSecsSinceEpoch();
+
+                if (isConnectionLost()) {
+                    resetParamVars();
+                    m_ground_available = false;
+                    state = MavlinkStateDisconnected;
+                    LocalMessage::instance()->showMessage("Connection to drone lost (E1)", 4);
+
+                    continue;
+                }
+
+                if ((parameterCount != 0) && parameterIndex == (parameterCount - 1)) {
+                    emit allParametersChanged();
+                    state = MavlinkStateIdle;
+
+                    continue;
+                }
+
+
+                if (currentTime - parameterLastReceivedTime > 7000) {
+                    resetParamVars();
+                    m_ground_available = false;
+                    state = MavlinkStateDisconnected;
+                    LocalMessage::instance()->showMessage("Connection to drone lost (E2)", 4);
+
+                    continue;
+                }
+
+                continue;
+            }
+            case MavlinkStateIdle: {
+                if (isConnectionLost()) {
+                    resetParamVars();
+                    m_ground_available = false;
+                    state = MavlinkStateDisconnected;
+                    LocalMessage::instance()->showMessage("Connection to drone lost (E3)", 4);
+
+                    continue;
+                }
+
+                break;
+            }
+        }
     }
 }
 
@@ -222,6 +304,8 @@ void MavlinkTelemetry::processMavlinkMessage(mavlink_message_t msg) {
                     }
 
                     qint64 current_timestamp = QDateTime::currentMSecsSinceEpoch();
+                    QMutexLocker locker(&stateLock);
+
                     last_heartbeat_timestamp = current_timestamp;
                     break;
                 }
@@ -249,6 +333,17 @@ void MavlinkTelemetry::processMavlinkMessage(mavlink_message_t msg) {
             break;
         }
         case MAVLINK_MSG_ID_PARAM_VALUE:{
+            QMutexLocker locker(&stateLock);
+
+            mavlink_param_value_t param;
+            mavlink_msg_param_value_decode(&msg, &param);
+
+            parameterCount = param.param_count;
+            parameterIndex = param.param_index;
+
+            parameterLastReceivedTime = QDateTime::currentMSecsSinceEpoch();
+
+            m_allParameters.insert(QString(param.param_id), QVariant(param.param_value));
             break;
         }
         case MAVLINK_MSG_ID_GPS_RAW_INT:{
