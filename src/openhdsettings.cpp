@@ -115,13 +115,6 @@ void OpenHDSettings::_saveSettings(VMap remoteSettings) {
 
     emit savingSettingsStart();
 
-    QUdpSocket *s = new QUdpSocket(this);
-#if defined(__rasp_pi__)
-    s->connectToHost(SETTINGS_IP, SETTINGS_PORT);
-#else
-    s->connectToHost(groundAddress, SETTINGS_PORT);
-#endif
-
     settingsCount = remoteSettings.count();
     saveStart = QDateTime::currentSecsSinceEpoch();
     saveTimer.start(1000);
