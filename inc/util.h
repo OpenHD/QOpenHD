@@ -8,9 +8,6 @@
 #include <common/mavlink.h>
 #include <ardupilotmega/ardupilotmega.h>
 
-typedef QMap<QString, QVariant> VMap;
-
-Q_DECLARE_METATYPE(VMap);
 
 int battery_voltage_to_percent(int cells, double voltage);
 QString battery_gauge_glyph_from_percentage(int percent);
