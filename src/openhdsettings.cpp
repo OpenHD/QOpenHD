@@ -97,7 +97,7 @@ void OpenHDSettings::shutdown() {
 }
 
 
-void OpenHDSettings::saveSettings(VMap remoteSettings) {
+void OpenHDSettings::saveSettings(QVariantMap remoteSettings) {
     qDebug() << "OpenHDSettings::saveSettings()";
 
     // run the real network calls in the background. needs some minor changes to avoid threading related
@@ -106,7 +106,7 @@ void OpenHDSettings::saveSettings(VMap remoteSettings) {
     _saveSettings(remoteSettings);
 }
 
-void OpenHDSettings::_saveSettings(VMap remoteSettings) {
+void OpenHDSettings::_saveSettings(QVariantMap remoteSettings) {
     if (m_saving || m_loading) {
         return;
     }
@@ -132,7 +132,7 @@ void OpenHDSettings::_saveSettings(VMap remoteSettings) {
     }
 }
 
-VMap OpenHDSettings::getAllSettings() {
+QVariantMap OpenHDSettings::getAllSettings() {
     return m_allSettings;
 }
 

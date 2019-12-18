@@ -72,7 +72,7 @@ void MavlinkTelemetry::processMavlinkDatagrams() {
 }
 
 
-VMap MavlinkTelemetry::getAllParameters() {
+QVariantMap MavlinkTelemetry::getAllParameters() {
     return m_allParameters;
 }
 

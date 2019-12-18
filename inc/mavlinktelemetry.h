@@ -29,7 +29,7 @@ class MavlinkTelemetry: public QObject {
 public:
     explicit MavlinkTelemetry(QObject *parent = nullptr);
 
-    Q_INVOKABLE VMap getAllParameters();
+    Q_INVOKABLE QVariantMap getAllParameters();
 
     Q_PROPERTY(QString last_heartbeat MEMBER m_last_heartbeat WRITE set_last_heartbeat NOTIFY last_heartbeat_changed)
     void set_last_heartbeat(QString last_heartbeat);
@@ -57,7 +57,7 @@ private:
     QString groundAddress;
     quint16 groundPort = 14550;
 
-    VMap m_allParameters;
+    QVariantMap m_allParameters;
 
     MavlinkState state = MavlinkStateDisconnected;
 

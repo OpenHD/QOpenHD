@@ -27,9 +27,9 @@ public:
     void set_saving(bool saving);
 
     Q_INVOKABLE void fetchSettings();
-    Q_INVOKABLE VMap getAllSettings();
+    Q_INVOKABLE QVariantMap getAllSettings();
 
-    Q_INVOKABLE void saveSettings(VMap remoteSettings);
+    Q_INVOKABLE void saveSettings(QVariantMap remoteSettings);
 
     Q_INVOKABLE void reboot();
 
@@ -57,13 +57,13 @@ public slots:
 
 private:
     void init();
-    void _saveSettings(VMap remoteSettings);
+    void _saveSettings(QVariantMap remoteSettings);
 
     QUdpSocket *settingSocket = nullptr;
 
     bool m_ground_available = false;
 
-    VMap m_allSettings;
+    QVariantMap m_allSettings;
 
     qint64 loadStart = 0;
 
