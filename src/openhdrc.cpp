@@ -53,12 +53,7 @@ void OpenHDRC::initRC() {
 
 
 void OpenHDRC::setGroundIP(QString address) {
-    bool reconnect = (groundAddress != address);
     groundAddress = address;
-    if (reconnect) {
-        rcSocket->connectToHost(groundAddress, PORT);
-        rcSocket->waitForConnected();
-    }
 }
 
 
