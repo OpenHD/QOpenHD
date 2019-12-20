@@ -149,10 +149,8 @@ G_PASTE(g_io_module_, G_PASTE(name, _load_static)) ()
 #endif
 
 #if defined(ENABLE_MAIN_VIDEO) || defined(ENABLE_PIP)
-#ifndef __desktoplinux__
 #ifndef __rasp_pi__
 GST_PLUGIN_STATIC_DECLARE(qmlgl);
-#endif
 #endif
 #endif
 
@@ -483,10 +481,8 @@ OpenHDVideoStream::OpenHDVideoStream(int &argc, char *argv[], QObject * parent):
     //gst_debug_remove_log_function(gst_debug_log_default);
     //gst_debug_add_log_function(printf_extension_log_func, nullptr, nullptr);
 #if defined(ENABLE_MAIN_VIDEO) || defined(ENABLE_PIP)
-#ifndef __desktoplinux__
 #ifndef __rasp_pi__
     GST_PLUGIN_STATIC_REGISTER(qmlgl);
-#endif
 #endif
 #endif
 
