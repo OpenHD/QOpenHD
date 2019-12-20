@@ -271,7 +271,7 @@ void MavlinkTelemetry::processMavlinkMessage(mavlink_message_t msg) {
             QSettings settings;
             auto battery_cells = settings.value("battery_cells", QVariant(3)).toInt();
 
-            int battery_percent = battery_voltage_to_percent(battery_cells, battery_voltage_raw);
+            int battery_percent = lipo_battery_voltage_to_percent(battery_cells, battery_voltage_raw);
             OpenHD::instance()->set_battery_percent(QString("%1%").arg(battery_percent));
             QString battery_gauge_glyph = battery_gauge_glyph_from_percentage(battery_percent);
             OpenHD::instance()->set_battery_gauge(battery_gauge_glyph);

@@ -9,7 +9,7 @@
 #include <ardupilotmega/ardupilotmega.h>
 
 
-int battery_voltage_to_percent(int cells, double voltage);
+int lipo_battery_voltage_to_percent(int cells, double voltage);
 QString battery_gauge_glyph_from_percentage(int percent);
 
 QString sub_mode_from_enum(SUB_MODE mode);
