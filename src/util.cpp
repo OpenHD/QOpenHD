@@ -56,6 +56,56 @@ int lipo_battery_voltage_to_percent(int cells, double voltage) {
     }
 }
 
+
+int lifepo4_battery_voltage_to_percent(int cells, double voltage) {
+    double cell_voltage = voltage / static_cast<double>(cells);
+
+    if (cell_voltage >= 3.40) {
+        return 100;
+    } else if (cell_voltage >= 3.20) {
+        return 95;
+    } else if (cell_voltage >= 3.19) {
+        return 90;
+    } else if (cell_voltage >= 3.18) {
+        return 85;
+    } else if (cell_voltage >= 3.17) {
+        return 80;
+    } else if (cell_voltage >= 3.16) {
+        return 75;
+    } else if (cell_voltage >= 3.15) {
+        return 70;
+    } else if (cell_voltage >= 3.14) {
+        return 65;
+    } else if (cell_voltage >= 3.13) {
+        return 60;
+    } else if (cell_voltage >= 3.12) {
+        return 55;
+    } else if (cell_voltage >= 3.11) {
+        return 50;
+    } else if (cell_voltage >= 3.10) {
+        return 45;
+    } else if (cell_voltage >= 3.09) {
+        return 40;
+    } else if (cell_voltage >= 3.08) {
+        return 35;
+    } else if (cell_voltage >= 3.07) {
+        return 30;
+    } else if (cell_voltage >= 3.06) {
+        return 25;
+    } else if (cell_voltage >= 3.05) {
+        return 20;
+    } else if (cell_voltage >= 3.04) {
+        return 15;
+    } else if (cell_voltage >= 3.03) {
+        return 10;
+    } else if (cell_voltage >= 3.02) {
+        return 5;
+    } else {
+        return 0;
+    }
+}
+
+
 QString battery_gauge_glyph_from_percentage(int percent) {
     // these are Material Design Icon codepoints from the battery gauge icon set
     switch (percent) {
