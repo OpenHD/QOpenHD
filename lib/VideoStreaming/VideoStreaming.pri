@@ -132,6 +132,7 @@ VideoEnabled {
     message("Including support for video streaming")
 
 
+    !LinuxBuild {
         !RaspberryPiBuild {
             DEFINES += GST_PLUGIN_BUILD_STATIC
 
@@ -156,6 +157,7 @@ VideoEnabled {
                 $$PWD/qmlgl/qtitem.cc \
                 $$PWD/qmlgl/qtwindow.cc
         }
+    }
 
     iOSBuild {
         OBJECTIVE_SOURCES += \
