@@ -187,7 +187,7 @@ If installing Qt from a package manager on Ubuntu, this would be `apt install qt
 
 2. If using the Qt online installer, have it download Qt 5.13.1+ for Linux 
 
-3. Install GStreamer development packages from the package manager. On Ubuntu this would be `apt install gstreamer1.0-gl libgstreamer1.0-dev libgstreamer-plugins-good1.0-dev libgstreamer-plugins-base1.0-dev gstreamer1.0-plugins-ugly`. Those should pull in any others that are needed as well.
+3. Install GStreamer development packages from the package manager. On Ubuntu this would be `apt install gstreamer1.0-gl libgstreamer1.0-dev libgstreamer-plugins-good1.0-dev gstreamer1.0-plugins-good libgstreamer-plugins-base1.0-dev gstreamer1.0-plugins-base libgstreamer-plugins-bad1.0-dev gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly gstreamer1.0-qt`. Those should pull in any others that are needed as well.
 
 You can then open `QOpenHD.pro` using Qt Creator, build and run the app.
 
