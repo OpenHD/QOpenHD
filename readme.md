@@ -89,7 +89,10 @@ own that can be accessed by tapping once on the widget to open the detail panel.
 
 ## Settings
 
-![Ground Pi Radio Settings](https://raw.githubusercontent.com/OpenHD/QOpenHD/master/wiki/settings-radio.png)
+![Ground Pi Radio Settings](https://raw.githubusercontent.com/OpenHD/QOpenHD/master/wiki/settings-radio.jpg)
+
+![Ground Pi Hotspot Settings](https://raw.githubusercontent.com/OpenHD/QOpenHD/master/wiki/settings-hotspot.jpg)
+
 
 The app has a full touch interface for GroundPi settings, including radio frequency, video resolution and bitrate, the Wi-Fi and Ethernet hotspot settings, etc.
 
