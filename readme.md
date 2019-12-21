@@ -1,18 +1,19 @@
 ## QOpenHD
 
-![OSD](https://raw.githubusercontent.com/infincia/QOpenHD/master/wiki/osd.jpg)
+![OSD](https://raw.githubusercontent.com/OpenHD/QOpenHD/master/wiki/osd.jpg)
 
 This is a companion app for the Open.HD drone platform.
 
-The code is functional but very new, more of a technical preview than an alpha or beta in terms of features, but it should still be *stable* in that it shouldn't crash or have weird glitchy behavior.
+Note: the screenshots here are very outdated at the moment.
 
-Binaries are available in the [releases tab in GitHub](https://github.com/infincia/QOpenHD/releases/latest). 
+Binaries are available in the [releases tab in GitHub](https://github.com/OpenHD/QOpenHD/releases/latest). 
 
 ### Features
 
 * Live digital video stream in-app
 * Drag and drop OSD widgets (if you've ever moved apps around on an iPhone/Android, it's exactly like that)
 * Tap OSD widgets to bring up popup detail panels with more infomation
+* Picture-in-picture support for the drone 2nd camera (if one is being used)
 * Full control over all GroundPi settings from inside the app
 * OpenGL hardware accelerated UI on every platform
     * GroundPi (using touchscreen or HDMI output+mouse)
@@ -23,11 +24,13 @@ Binaries are available in the [releases tab in GitHub](https://github.com/infinc
     * Android
 * Mavlink telemetry (read-only at the moment)
 * Speech to announce warnings and telemetry messages
+* Full video decode acceleration
+    * Not yet enabled on Windows
 
 ### Planned features
 
-* Full video decode acceleration (present in code but not enabled yet due to GStreamer quirks)
 * Fully localized and translated UI
+* Resizable widgets (mostly matters for the PiP camera view)
 * LTM/MSPv2/FrSky telemetry
 * Mavlink commands
     * Arm/disarm
@@ -37,29 +40,30 @@ Binaries are available in the [releases tab in GitHub](https://github.com/infinc
 
 ## State of the code
 
-### ***[There are bugs](https://github.com/infincia/QOpenHD/issues?q=is%3Aissue+is%3Aopen+label%3Abug)***.
+### ***[There are bugs](https://github.com/OpenHD/QOpenHD/issues?q=is%3Aissue+is%3Aopen+label%3Abug)***.
 
-However, as of the `v0.2` tag the app itself should run the same on every platform. I have not even tried to run it on Windows yet, so there may be some build script changes needed there.
+However, the app itself should run the same on every platform with the exception of hardware video decode and PiP on Windows.
 
-Things like RC and video rendering are inherently dependent on platform support to some extent. For example, iOS is never going to support USB connected joysticks or TX, but will support things like bluetooth gamepads if the GroundPi is 5.8Ghz (the interference is **horrible** and easily noticed if the GroundPi is 2.4Ghz, stick movements have huge lag). 
+Things like RC and video rendering are inherently dependent on platform support to some extent. For example, iOS is never going to support USB connected joysticks or TX, but will support things like bluetooth gamepads if the GroundPi is 5.8Ghz (otherwise the interference is **horrible** in some cases and may not be reliable, please test carefully). 
 
 | Feature | GroundPi | Windows | Mac | Linux | Android | iOS | 
 | --- | --- | --- | --- | --- | --- | --- |
-| Video | Yes | Untested | Yes | Untested | [High Latency](https://github.com/infincia/QOpenHD/issues/1) | Yes |
+| Video | Yes | Yes (no hardware accel) | Yes | Yes | Yes | Yes |
 | Settings | Yes | Yes | Yes | Yes | Yes | Yes |
-| RC | Yes | [Disabled](https://github.com/infincia/QOpenHD/issues/10) | [Disabled](https://github.com/infincia/QOpenHD/issues/10) | [Disabled](https://github.com/infincia/QOpenHD/issues/10) | [Disabled](https://github.com/infincia/QOpenHD/issues/10) | [Disabled](https://github.com/infincia/QOpenHD/issues/10) |
+| PiP 2nd cam | Yes | No | Yes | Yes | Yes | Yes |
+| RC | Yes | [Disabled](https://github.com/OpenHD/QOpenHD/issues/10) | [Disabled](https://github.com/OpenHD/QOpenHD/issues/10) | [Disabled](https://github.com/OpenHD/QOpenHD/issues/10) | [Disabled](https://github.com/OpenHD/QOpenHD/issues/10) | [Disabled](https://github.com/OpenHD/QOpenHD/issues/10) |
 | Backlight Control | Yes | N/A | N/A | N/A | N/A | N/A |
 | Mavlink | Yes | Yes | Yes | Yes | Yes | Yes |
 | LTM | No | No | No | No | No | No |
 | FRSky | No | No | No | No | No | No |
 | MSPv2 | No | No | No | No | No | No |
-| Voice Feedback | Yes | Yes | Yes | Yes | Yes | Yes |
+| Voice Feedback | Untested | Untested | Untested | Untested | Untested | Untested |
 
 ## Drag-and-drop widgets
 
-![Ground Pi Radio Settings](https://raw.githubusercontent.com/infincia/QOpenHD/master/wiki/dragdrop-adjustment.jpg)
+![Ground Pi Radio Settings](https://raw.githubusercontent.com/OpenHD/QOpenHD/master/wiki/dragdrop-adjustment.jpg)
 
-The OSD widgets can all be dragged around the screen and position wherever you like. They will stay where you put them after a reboot.
+The OSD widgets can all be dragged around the screen and positioned wherever you like. They will stay where you put them after a reboot.
 
 To move them around:
 
@@ -83,7 +87,7 @@ own that can be accessed by tapping once on the widget to open the detail panel.
 
 ## Settings
 
-![Ground Pi Radio Settings](https://raw.githubusercontent.com/infincia/QOpenHD/master/wiki/settings-radio.png)
+![Ground Pi Radio Settings](https://raw.githubusercontent.com/OpenHD/QOpenHD/master/wiki/settings-radio.png)
 
 The app has a full touch interface for GroundPi settings, including radio frequency, video resolution and bitrate, the Wi-Fi and Ethernet hotspot settings, etc.
 
@@ -114,21 +118,17 @@ I haven't yet picked or even tested specific backends on Linux to ensure the voi
 
 ## Telemetry
 
-The Open.HD telemetry is handled via UDP when the app is running on a phone or a computer, and via the same shared memory system used by the original OSD when running on GroundPi.
+The Open.HD telemetry should display the same information that the original Open.HD OSD does, including the RF RSSI, air/ground temperature and CPU load, video bitrate, etc, regardless of where the app is running.
 
-For vehicle telemetry, only Mavlink is fully integrated at the moment, but [other protocols are being added](https://github.com/infincia/QOpenHD/issues/17).
+For vehicle telemetry, only Mavlink is fully integrated at the moment, but [other protocols are being added](https://github.com/OpenHD/QOpenHD/issues/17).
 
 ## Video streaming
 
-On the GroundPi, the app is simply an overlay on `hello_video` just like the original OSD, so video should work exactly the same as it always has.
+On the GroundPi, the app is simply an overlay on `hello_video` just like the original OSD, so video should work exactly the same as it always has, though there is an additional PiP overlay available for the 2nd camera if one is being used.
 
-On other platforms, `QtGStreamer` is used to decode and render the video stream using available hardware decoders and OpenGL. This is the same code that QGroundControl uses at the moment.
+On other platforms, GStreamer and `qmlglsink` are used to render the video stream using available hardware decoders and OpenGL.
 
-The QtGStreamer code itself is very old and mostly unmaintained upstream, it is likely to be replaced very soon with another video component based on qmlglsink or one based on libavcodec + GL shader rendering that I have been working on.
-
-On Android there seem to be some hardware acceleration issues with the currently committed QtGStreamer code. QGroundControl has a newer version of it where they have implemented hardware acceleration on Android, but it didn't actually work on my test device (the `androidmedia` GStreamer plugin can't be loaded, so the accelerated decoders are not avalable).
-
-Video should be working fine on iOS, Mac, Windows and Linux, as most machines can handle software decoding without trouble (it works, it's just not efficient and wastes battery power).
+Video should be working on Windows but is currently not hardware accelerated.
 
 ## Platforms
 
@@ -138,7 +138,7 @@ This allows the same app to run on Windows, Mac, Linux, iOS, and Android, as wel
 
 ## Code architecture
 
-![System Diagram](https://raw.githubusercontent.com/infincia/QOpenHD/master/wiki/Untitled%20Diagram.png)
+![System Diagram](https://raw.githubusercontent.com/OpenHD/QOpenHD/master/wiki/Untitled%20Diagram.png)
 
 The core is C++ (in `src`), and the UI is designed with QtQuick, which is an OpenGL accelerated, declarative UI framework. You can find the UI files in `qml`.
 
@@ -149,15 +149,13 @@ be moved down to C++ in the future.
 
 ## Building
 
-Binaries and GroundPi images are available in the [releases tab in GitHub](https://github.com/infincia/QOpenHD/releases/latest).
+Binaries and GroundPi images are available in the [releases tab in GitHub](https://github.com/OpenHD/QOpenHD/releases/latest).
 
 However if you still want to build it yourself, you can.
 
 These are only a rough outline rather than exhaustive build steps (that would fill several pages and be very complciated to write and keep updated).
 
 The build process is dependent on which platform you're building *on* and which platform you're building *for*. It can be quite complicated and irritating when something doesn't work right, or if you aren't familiar with all these development frameworks and toolchains.
-
-This will be less complicated once QtGStreamer is replaced.
 
 In general, you'll need Qt 5.13.1+ and the GStreamer development package, specifically version 1.14.4.
 
@@ -175,9 +173,15 @@ Once you have those installed you can open `QOpenHD.pro` with Qt Creator, build 
 
 #### Windows
 
-I haven't tried building on Windows yet, but it should be largely identical to the Mac instructions, except you'll need Visual Studio rather than Xcode, and building code on Windows can be complex if you aren't familiar with the process.
+1. Install Visual Studio 2017 (free)
 
-I will update these instructions once I have a chance to try it.
+2. Install Qt using the [Qt online installer](https://www.qt.io/download-qt-installer)
+
+3. Have the Qt Installer download Qt 5.13.1+ and Qt Creator
+
+4. Download the [GStreamer development kit](https://gstreamer.freedesktop.org/download/) for Windows, both the Runtime and Development packages. You *must use* the 32-bit MinGW packages, NOT the one labeled MSVC.
+
+Once you have those installed you can open `QOpenHD.pro` with Qt Creator, build and run it.
 
 #### Linux
 
@@ -195,27 +199,27 @@ You can then open `QOpenHD.pro` using Qt Creator, build and run the app.
 
 1. Install [Android Studio](https://developer.android.com/studio)
 
-2. Use Android Studio to install Android SDK level 28, along with NDK r18b and build toolchain.
+2. Use Android Studio to install Android SDK level 28, along with NDK r18b and the associated build toolchain.
 
 3. Install Qt using the [Qt online installer](https://www.qt.io/download-qt-installer)
 
-4. Have the Qt Installer download Qt 5.13.1+ for Android 
+4. Have the Qt Installer download Qt 5.13.1+ *for Android*, not for the OS you're building on.
 
 5. Download the [GStreamer development kit](https://gstreamer.freedesktop.org/download/) for Android 1.14.4
 
-6. Unzip the GStreamer archive inside the QOpenHD directory.
+6. Unzip the GStreamer archive inside the QOpenHD directory, you should end up with a directory called `gstreamer-1.0-android-universal-1.14.4` in there.
 
-You can then open `QOpenHD.pro` using Qt Creator and set up the Android kit (left side of the Projects tab), build and run the app on your device.
+You can then open `QOpenHD.pro` using Qt Creator and set up the Android kit (left side, click the Projects tab), build and run the app on your device.
 
-I have never tried to run it on a simulator, I doubt it would work very well (particularly GStreamer).
+I have never tried to run it on the Android simulator, I doubt it would work very well (particularly GStreamer).
 
 #### GroundPi
 
-Building GroundPi images with QOpenHD integrated is handled by the [Open.HD image builder](https://github.com/infincia/Open.HD_Image_Builder) as it is very complicated to get right. It requires a specific set of packages to be preinstalled on the image, and requires building Qt from source to enable `eglfs`. 
+Building GroundPi images with QOpenHD integrated is handled by the [Open.HD image builder](https://github.com/OpenHD/Open.HD_Image_Builder) as it is very complicated to get right. It requires a specific set of packages to be preinstalled on the image, and requires building Qt from source to enable `eglfs`. 
 
-Prebuild images are available on the [releases tab in GitHub](https://github.com/infincia/QOpenHD/releases/latest). 
+Prebuild SD card images are available on the [releases tab in GitHub](https://github.com/OpenHD/QOpenHD/releases/latest). 
 
-For the GroundPi, you want to download the `*.img.xz` file.
+For the GroundPi, you want to download the `*.img.xz` or `*.img.gz` file (whichever is provided).
 
 To write it to the MicroSD card, use [Etcher](https://www.balena.io/etcher/) or, if you're familiar with the command line, `dd` or `cat` (both work, `cat` is more "correct").
 
