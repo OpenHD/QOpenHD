@@ -2,6 +2,8 @@
 
 ![OSD](https://raw.githubusercontent.com/OpenHD/QOpenHD/master/wiki/osd.jpg)
 
+![OSD2](https://raw.githubusercontent.com/OpenHD/QOpenHD/master/wiki/osd2.jpg)
+
 This is a companion app for the Open.HD drone platform.
 
 Note: the screenshots here are very outdated at the moment.
