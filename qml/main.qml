@@ -60,6 +60,7 @@ ApplicationWindow {
         property bool show_pip_video: false
         property bool enable_software_video_decoder: false
         property bool enable_rtp: true
+        property bool hide_watermark: false
 
         property bool enable_speech: true
         property bool enable_imperial: false
