@@ -15,3 +15,4 @@ cov-int
 debug
 .builder_version
 .openhd_version
+.qmake.stash
