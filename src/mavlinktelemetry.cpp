@@ -44,6 +44,15 @@ void MavlinkTelemetry::setGroundIP(QString address) {
     groundAddress = address;
 }
 
+void MavlinkTelemetry::set_loading(bool loading) {
+    m_loading = loading;
+    emit loadingChanged(m_loading);
+}
+
+void MavlinkTelemetry::set_saving(bool saving) {
+    m_saving = saving;
+    emit savingChanged(m_saving);
+}
 
 void MavlinkTelemetry::processMavlinkDatagrams() {
     QByteArray datagram;

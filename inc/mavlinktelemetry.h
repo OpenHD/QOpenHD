@@ -31,6 +31,12 @@ public:
 
     Q_INVOKABLE QVariantMap getAllParameters();
 
+    Q_PROPERTY(bool loading MEMBER m_loading WRITE set_loading NOTIFY loadingChanged)
+    void set_loading(bool loading);
+
+    Q_PROPERTY(bool saving MEMBER m_saving WRITE set_saving NOTIFY savingChanged)
+    void set_saving(bool saving);
+
     Q_PROPERTY(QString last_heartbeat MEMBER m_last_heartbeat WRITE set_last_heartbeat NOTIFY last_heartbeat_changed)
     void set_last_heartbeat(QString last_heartbeat);
 
@@ -42,6 +48,8 @@ signals:
     void last_heartbeat_changed(QString last_heartbeat);
     void allParametersChanged();
 
+    void loadingChanged(bool loading);
+    void savingChanged(bool saving);
 
 private slots:
     void processMavlinkDatagrams();
@@ -80,6 +88,8 @@ private:
 
     QMutex stateLock;
 
+    bool m_loading = false;
+    bool m_saving = false;
 };
 
 #endif
