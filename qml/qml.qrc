@@ -22,7 +22,7 @@
         <file>ui/delegates/ChoiceSettingDelegate.ui.qml</file>
         <file>ui/SettingsMap.qml</file>
         <file>ui/delegates/RangeSettingDelegate.ui.qml</file>
-        <file>ui/GroundPiSettingsPanel.ui.qml</file>
+        <file>ui/GroundPiSettingsPanelForm.ui.qml</file>
         <file>ui/AboutPanelForm.ui.qml</file>
         <file>ui/widgets/MessageHUDForm.ui.qml</file>
         <file>ui/widgets/MessageHUD.qml</file>
@@ -83,5 +83,6 @@
         <file>ui/elements/SlideSwitch.qml</file>
         <file>ui/ArdupilotParameterMap.qml</file>
         <file>ui/ArducopterParametersMap.qml</file>
+        <file>ui/GroundPiSettingsPanel.qml</file>
     </qresource>
 </RCC>
