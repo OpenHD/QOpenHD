@@ -82,7 +82,6 @@
         <file>ui/elements/SlideSwitchForm.ui.qml</file>
         <file>ui/elements/SlideSwitch.qml</file>
         <file>ui/ArdupilotParameterMap.qml</file>
-        <file>ui/ArducopterParametersMap.qml</file>
         <file>ui/GroundPiSettingsPanel.qml</file>
     </qresource>
 </RCC>
