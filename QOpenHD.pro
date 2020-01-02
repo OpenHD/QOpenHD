@@ -54,6 +54,7 @@ SOURCES += \
     src/msptelemetry.cpp \
     src/openhd.cpp \
     src/openhdpi.cpp \
+    src/openhdpower.cpp \
     src/openhdrc.cpp \
     src/openhdsettings.cpp \
     src/openhdtelemetry.cpp \
@@ -73,6 +74,7 @@ HEADERS += \
     inc/msptelemetry.h \
     inc/openhd.h \
     inc/openhdpi.h \
+    inc/openhdpower.h \
     inc/openhdrc.h \
     inc/openhdsettings.h \
     inc/openhdtelemetry.h \
@@ -230,6 +232,8 @@ RaspberryPiBuild {
     #CONFIG += EnableMainVideo
     CONFIG += EnablePiP
     CONFIG += EnableLink
+    CONFIG += EnableLifepoweredPi
+    CONFIG += EnableINA2XX
 }
 
 WindowsBuild {
@@ -306,6 +310,20 @@ EnableRC {
     }
 }
 
+
+EnableLifepoweredPi {
+    message("EnableLifepoweredPi")
+    DEFINES += ENABLE_LIFEPOWERED_PI
+
+    INCLUDEPATH += /home/pi/LiFePO4wered-Pi
+    LIBS += -L/usr/local/lib -llifepo4wered
+}
+
+
+EnableINA2XX {
+    message("EnableINA2XX")
+    DEFINES += ENABLE_INA2XX
+}
 
 installer {
     MacBuild {

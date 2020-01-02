@@ -29,6 +29,8 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 
 #include "qopenhdlink.h"
 
+#include "openhdpower.h"
+
 #include "util.h"
 
 #if defined(ENABLE_MAIN_VIDEO) || defined(ENABLE_PIP)
@@ -113,6 +115,8 @@ int main(int argc, char *argv[]) {
     qmlRegisterType<OpenHDSettings>("OpenHD", 1,0, "OpenHDSettings");
 
     qmlRegisterType<QOpenHDLink>("OpenHD", 1,0, "QOpenHDLink");
+
+    qmlRegisterType<OpenHDPower>("OpenHD", 1,0, "OpenHDPower");
 
     auto openhd = OpenHD::instance();
 
