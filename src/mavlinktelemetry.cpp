@@ -133,6 +133,8 @@ void MavlinkTelemetry::stateLoop() {
 
         switch (state) {
             case MavlinkStateDisconnected: {
+                set_loading(false);
+                set_saving(false);
                 if (m_ground_available) {
                     state = MavlinkStateConnected;
                 }
@@ -152,6 +154,8 @@ void MavlinkTelemetry::stateLoop() {
                 continue;
             }
             case MavlinkStateGetParameters: {
+                set_loading(true);
+                set_saving(false);
                 qint64 currentTime = QDateTime::currentMSecsSinceEpoch();
 
                 if (isConnectionLost()) {
@@ -183,6 +187,8 @@ void MavlinkTelemetry::stateLoop() {
                 continue;
             }
             case MavlinkStateIdle: {
+                set_loading(false);
+
                 if (isConnectionLost()) {
                     resetParamVars();
                     m_ground_available = false;
