@@ -45,6 +45,7 @@ INCLUDEPATH += $$PWD/lib/GeographicLib-1.50/include
 
 
 SOURCES += \
+    lib/ina2xx.c \
     src/frskytelemetry.cpp \
     src/localmessage.cpp \
     src/ltmtelemetry.cpp \
@@ -78,7 +79,8 @@ HEADERS += \
     inc/openhdvideostream.h \
     inc/qopenhdlink.h \
     inc/util.h \
-    inc/wifibroadcast.h
+    inc/wifibroadcast.h \
+    lib/ina2xx.h
 
 DISTFILES += \
     android/AndroidManifest.xml \
