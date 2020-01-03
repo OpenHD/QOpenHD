@@ -6,18 +6,6 @@
 #include <QProcess>
 #include <QProcessEnvironment>
 
-typedef enum OpenHDPowerProvider {
-    OpenHDPowerProviderNone,
-    #if defined(ENABLE_LIFEPOWERED_PI)
-    OpenHDPowerProviderLiFePO4weredPi,
-    #endif
-    #if defined(ENABLE_INA2XX)
-    OpenHDPowerProviderINA2XX,
-    #endif
-} OpenHDPowerProvider;
-
-
-
 
 class OpenHDPower : public QObject {
     Q_OBJECT
@@ -67,8 +55,6 @@ public:
 
 private:
     void update();
-
-    OpenHDPowerProvider m_provider;
 
     QString m_battery_percent = "0%";
     QString m_battery_gauge = "\uf091";

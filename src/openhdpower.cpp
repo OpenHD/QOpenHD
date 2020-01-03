@@ -8,18 +8,6 @@
 
 #include "util.h"
 
-#if defined(ENABLE_LIFEPOWERED_PI)
-extern "C" {
-#include <lifepo4wered-data.h>
-}
-#endif
-
-#if defined(ENABLE_INA2XX)
-extern "C" {
-    #include "ina2xx.h"
-}
-#endif
-
 OpenHDPower::OpenHDPower(QObject *parent) : QObject(parent) {
     qDebug() << "OpenHDPower::OpenHDPower()";
     init();
@@ -28,10 +16,6 @@ OpenHDPower::OpenHDPower(QObject *parent) : QObject(parent) {
 
 void OpenHDPower::init() {
     qDebug() << "OpenHDPower::init()";
-
-    #if defined(ENABLE_LIFEPOWERED_PI)
-    m_provider = OpenHDPowerProviderLiFePO4weredPi;
-    #endif
 
     auto timer = new QTimer(this);
     timer->setSingleShot(false);
@@ -42,53 +26,6 @@ void OpenHDPower::init() {
 
 void OpenHDPower::update() {
     qDebug() << "OpenHDPower::update()";
-    switch (m_provider) {
-    case OpenHDPowerProviderNone: {
-        break;
-    }
-    #if defined(ENABLE_LIFEPOWERED_PI)
-    case OpenHDPowerProviderLiFePO4weredPi: {
-        qDebug() << "Getting LiFePO4weredPi data";
-        auto vin = (float)read_lifepo4wered(VIN) / 1000.0;
-        set_vin_raw(vin);
-        auto vout = (float)read_lifepo4wered(VOUT) / 1000.0;
-        set_vout_raw(vout);
-        auto iout = (float)read_lifepo4wered(IOUT) / 1000.0;
-        set_iout_raw(iout);
-        auto vbat = (float)read_lifepo4wered(VBAT) / 1000.0;
-        set_vbat_raw(vbat);
-
-        auto battery_cells = 1; //settings.value("battery_cells", QVariant(3)).toInt();
-
-        int battery_percent = lifepo4_battery_voltage_to_percent(battery_cells, vbat);
-        set_battery_percent(QString("%1%").arg(battery_percent));
-        QString battery_gauge_glyph = battery_gauge_glyph_from_percentage(battery_percent);
-        set_battery_gauge(battery_gauge_glyph);
-
-        set_vbat_is_lifepo4(true);
-        break;
-    }
-    #endif
-    #if defined(ENABLE_INA2XX)
-    case OpenHDPowerProviderINA2XX: {
-        qDebug() << "Getting INA2XX data";
-        if (!ina2xx_initialized) {
-            ina2xx_initialized = true;
-            ina2xx_init();
-            QThread::msleep(50);
-        }
-        ina2xx_data data;
-        get_ina2xx_data(&data);
-        set_vin_raw(data.vin);
-        set_iout_raw(data.iout);
-        set_vout_raw(-1);
-        set_vbat_raw(-1);
-
-        set_vbat_is_lifepo4(false);
-        break;
-    }
-    #endif
-    }
 }
 
 void OpenHDPower::set_vin(QString vin) {
@@ -138,6 +75,14 @@ void OpenHDPower::set_vbat_raw(float vbat_raw) {
     m_vbat_raw = vbat_raw;
     emit vbat_raw_changed(m_vbat_raw);
     set_vbat(tr("%1%2").arg(vbat_raw, 3, 'f', 2, '0').arg("V"));
+
+
+    auto battery_cells = 1; //settings.value("battery_cells", QVariant(3)).toInt();
+
+    int battery_percent = lifepo4_battery_voltage_to_percent(battery_cells, m_vbat_raw);
+    set_battery_percent(QString("%1%").arg(battery_percent));
+    QString battery_gauge_glyph = battery_gauge_glyph_from_percentage(battery_percent);
+    set_battery_gauge(battery_gauge_glyph);
 }
 
 

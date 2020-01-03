@@ -45,7 +45,6 @@ INCLUDEPATH += $$PWD/lib/GeographicLib-1.50/include
 
 
 SOURCES += \
-    lib/ina2xx.c \
     src/frskytelemetry.cpp \
     src/localmessage.cpp \
     src/ltmtelemetry.cpp \
@@ -81,8 +80,7 @@ HEADERS += \
     inc/openhdvideostream.h \
     inc/qopenhdlink.h \
     inc/util.h \
-    inc/wifibroadcast.h \
-    lib/ina2xx.h
+    inc/wifibroadcast.h
 
 DISTFILES += \
     android/AndroidManifest.xml \
@@ -232,8 +230,6 @@ RaspberryPiBuild {
     #CONFIG += EnableMainVideo
     CONFIG += EnablePiP
     CONFIG += EnableLink
-    CONFIG += EnableLifepoweredPi
-    CONFIG += EnableINA2XX
 }
 
 WindowsBuild {
@@ -310,20 +306,6 @@ EnableRC {
     }
 }
 
-
-EnableLifepoweredPi {
-    message("EnableLifepoweredPi")
-    DEFINES += ENABLE_LIFEPOWERED_PI
-
-    INCLUDEPATH += /home/pi/LiFePO4wered-Pi
-    LIBS += -L/usr/local/lib -llifepo4wered
-}
-
-
-EnableINA2XX {
-    message("EnableINA2XX")
-    DEFINES += ENABLE_INA2XX
-}
 
 installer {
     MacBuild {
