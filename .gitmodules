@@ -7,3 +7,6 @@
 [submodule "lib/qmdnsengine"]
 	path = lib/qmdnsengine
 	url = https://github.com/nitroshare/qmdnsengine.git
+[submodule "lib/mavlink"]
+	path = lib/mavlink
+	url = https://github.com/infincia/mavlink.git
