@@ -8,9 +8,16 @@
 
 #include "util.h"
 
+static OpenHDPower* _instance = new OpenHDPower();
+
+
 OpenHDPower::OpenHDPower(QObject *parent) : QObject(parent) {
     qDebug() << "OpenHDPower::OpenHDPower()";
     init();
+}
+
+OpenHDPower* OpenHDPower::instance() {
+    return _instance;
 }
 
 

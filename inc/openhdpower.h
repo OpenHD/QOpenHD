@@ -13,6 +13,7 @@ class OpenHDPower : public QObject {
 public:
     explicit OpenHDPower(QObject *parent = nullptr);
     void init();
+    static OpenHDPower* instance();
 
     Q_PROPERTY(QString battery_percent MEMBER m_battery_percent WRITE set_battery_percent NOTIFY battery_percent_changed)
     void set_battery_percent(QString battery_percent);
