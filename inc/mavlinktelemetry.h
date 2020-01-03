@@ -5,8 +5,7 @@
 #include <QtQuick>
 
 
-#include <common/mavlink.h>
-#include <ardupilotmega/ardupilotmega.h>
+#include <openhd/mavlink.h>
 #include "constants.h"
 
 #include "util.h"

@@ -12,8 +12,7 @@
 #include <QFutureWatcher>
 #include <QFuture>
 
-#include <common/mavlink.h>
-#include <ardupilotmega/ardupilotmega.h>
+#include <openhd/mavlink.h>
 
 #include "util.h"
 #include "constants.h"

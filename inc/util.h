@@ -5,8 +5,7 @@
 #include <QMap>
 #include <QVariant>
 
-#include <common/mavlink.h>
-#include <ardupilotmega/ardupilotmega.h>
+#include <openhd/mavlink.h>
 
 
 int lipo_battery_voltage_to_percent(int cells, double voltage);
