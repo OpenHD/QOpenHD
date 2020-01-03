@@ -18,6 +18,7 @@
 #include "constants.h"
 
 #include "openhd.h"
+#include "openhdpower.h"
 
 #include "localmessage.h"
 
@@ -486,6 +487,18 @@ void MavlinkTelemetry::processMavlinkMessage(mavlink_message_t msg) {
             }
 
             OpenHD::instance()->messageReceived(statustext.text, level);
+            break;
+        }
+        case MAVLINK_MSG_ID_OPENHD_GROUND_POWER: {
+            mavlink_openhd_ground_power_t ground_power;
+            mavlink_msg_openhd_ground_power_decode(&msg, &ground_power);
+            qDebug() << "MAVLINK_MSG_ID_OPENHD_GROUND_POWER";
+
+            OpenHDPower::instance()->set_vin_raw(ground_power.vin);
+            OpenHDPower::instance()->set_vout_raw(ground_power.vout);
+            OpenHDPower::instance()->set_vbat_raw(ground_power.vbat);
+            OpenHDPower::instance()->set_iout_raw(ground_power.iout);
+
             break;
         }
         default: {
