@@ -116,9 +116,9 @@ int main(int argc, char *argv[]) {
 
     qmlRegisterType<QOpenHDLink>("OpenHD", 1,0, "QOpenHDLink");
 
-    qmlRegisterType<OpenHDPower>("OpenHD", 1,0, "OpenHDPower");
-
     auto openhd = OpenHD::instance();
+
+    auto openhdpower = OpenHDPower::instance();
 
     QTimer timer;
     QObject::connect(&timer, &QTimer::timeout, openhd, &OpenHD::updateFlightTimer);
@@ -135,6 +135,8 @@ int main(int argc, char *argv[]) {
     QQmlApplicationEngine engine;
 
     engine.rootContext()->setContextProperty("OpenHD", openhd);
+
+    engine.rootContext()->setContextProperty("OpenHDPower", openhdpower);
 
 #if defined(ENABLE_MAIN_VIDEO)
     engine.rootContext()->setContextProperty("EnableMainVideo", QVariant(true));
