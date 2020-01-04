@@ -281,7 +281,7 @@ void MavlinkTelemetry::processMavlinkMessage(mavlink_message_t msg) {
             auto battery_voltage_raw = (double)sys_status.voltage_battery / 1000.0;
             OpenHD::instance()->set_battery_voltage_raw(battery_voltage_raw);
             OpenHD::instance()->set_battery_voltage(tr("%1%2").arg(battery_voltage_raw, 3, 'f', 1, '0').arg("V"));
-            OpenHD::instance()->set_battery_current(tr("%1%2").arg((double)sys_status.current_battery / 1000.0, 3, 'f', 1, '0').arg("A"));
+            OpenHD::instance()->set_battery_current(tr("%1%2").arg((double)sys_status.current_battery / 100.0, 3, 'f', 1, '0').arg("A"));
 
             QSettings settings;
             auto battery_cells = settings.value("battery_cells", QVariant(3)).toInt();
