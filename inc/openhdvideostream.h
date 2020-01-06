@@ -20,6 +20,11 @@ public:
     virtual ~OpenHDVideoStream();
     void init(QQmlApplicationEngine * engine, enum StreamType stream_type);
 
+    qint64 lastDataTimeout = 0;
+
+signals:
+    void videoRunning(bool running);
+
 public slots:
     void startVideo();
     void stopVideo();

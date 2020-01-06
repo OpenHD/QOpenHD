@@ -744,6 +744,10 @@ static gboolean PipelineCb(GstBus *bus, GstMessage *msg, gpointer data) {
             break;
         }
         case GST_MESSAGE_ELEMENT:{
+            auto m = QString(gst_structure_get_name(gst_message_get_structure(msg)));
+            if (m == "GstUDPSrcTimeout") {
+                instance->lastDataTimeout = QDateTime::currentMSecsSinceEpoch();
+            }
             break;
         }
         case GST_MESSAGE_LATENCY: {
@@ -781,11 +785,11 @@ void OpenHDVideoStream::_start() {
         qDebug() << "Listening on port" << m_video_port;
 
         if (m_enable_rtp) {
-            s << QString("udpsrc port=%1 caps=\"application/x-rtp, media=(string)video, clock-rate=(int)90000, encoding-name=(string)H264\" !").arg(m_video_port);
+            s << QString("udpsrc port=%1 caps=\"application/x-rtp, media=(string)video, clock-rate=(int)90000, encoding-name=(string)H264\" timeout=1000000000 !").arg(m_video_port);
             s << "rtpjitterbuffer !";
             s << "rtph264depay ! ";
         } else {
-            s << QString("udpsrc port=%1 !").arg(m_video_port);
+            s << QString("udpsrc port=%1 timeout=1000000000 !").arg(m_video_port);
         }
         s << "queue max-size-buffers=0 max-size-time=0 max-size-bytes=0 !";
 
@@ -901,6 +905,14 @@ void OpenHDVideoStream::_timer() {
                 startVideo();
             }
         }
+    }
+
+    auto currentTime = QDateTime::currentMSecsSinceEpoch();
+
+    if (currentTime - lastDataTimeout < 1500) {
+        emit videoRunning(false);
+    } else {
+        emit videoRunning(true);
     }
 }
 
