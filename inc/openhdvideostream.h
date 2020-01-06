@@ -54,6 +54,8 @@ private:
     int pip_default_port = 5601;
 
     QTimer* timer = nullptr;
+
+    GMainLoop *mainLoop = nullptr;
 };
 
 #endif // OpenHDVideoStream_H

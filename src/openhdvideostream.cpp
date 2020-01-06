@@ -857,6 +857,9 @@ void OpenHDVideoStream::_start() {
     } else {
         gst_element_set_state (m_pipeline, GST_STATE_PLAYING);
     }
+
+    mainLoop = g_main_loop_new(nullptr, FALSE);
+    g_main_loop_run(mainLoop);
 }
 
 /*
@@ -930,6 +933,7 @@ void OpenHDVideoStream::_stop() {
     if (m_pipeline != nullptr) {
         gst_element_set_state (m_pipeline, GST_STATE_NULL);
         //gst_object_unref (m_pipeline);
+        g_main_loop_quit(mainLoop);
     }
 #endif
 }
