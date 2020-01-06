@@ -858,6 +858,9 @@ void OpenHDVideoStream::_start() {
         gst_element_set_state (m_pipeline, GST_STATE_PLAYING);
     }
 
+    lastDataTimeout = QDateTime::currentMSecsSinceEpoch();
+    emit videoRunning(false);
+
     mainLoop = g_main_loop_new(nullptr, FALSE);
     g_main_loop_run(mainLoop);
 }
