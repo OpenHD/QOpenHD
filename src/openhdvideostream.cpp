@@ -910,7 +910,7 @@ void OpenHDVideoStream::_timer() {
 
     auto currentTime = QDateTime::currentMSecsSinceEpoch();
 
-    if (currentTime - lastDataTimeout < 1500) {
+    if (currentTime - lastDataTimeout < 2500) {
         emit videoRunning(false);
     } else {
         emit videoRunning(true);
