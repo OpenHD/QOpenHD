@@ -720,6 +720,49 @@ void OpenHDVideoStream::init(QQmlApplicationEngine* engine = nullptr, enum Strea
     qDebug() << "OpenHDVideoStream::init()";
 }
 
+
+static gboolean PipelineCb(GstBus *bus, GstMessage *msg, gpointer data) {
+    auto instance = static_cast<OpenHDVideoStream*>(data);
+
+    switch (GST_MESSAGE_TYPE(msg)){
+    case GST_MESSAGE_EOS:{
+            break;
+        }
+        case GST_MESSAGE_ERROR:{
+            break;
+        }
+        case GST_MESSAGE_WARNING:{
+            break;
+        }
+        case GST_MESSAGE_INFO:{
+            break;
+        }
+        case GST_MESSAGE_TAG:{
+            break;
+        }
+        case GST_MESSAGE_BUFFERING:{
+            break;
+        }
+        case GST_MESSAGE_ELEMENT:{
+            break;
+        }
+        case GST_MESSAGE_LATENCY: {
+            break;
+        }
+        case GST_MESSAGE_QOS: {
+            break;
+        }
+        case GST_MESSAGE_UNKNOWN: {
+            break;
+        }
+        default: {
+            break;
+        }
+    }
+
+    return TRUE;
+}
+
 void OpenHDVideoStream::_start() {
     qDebug() << "OpenHDVideoStream::_start()";
 
@@ -770,6 +813,13 @@ void OpenHDVideoStream::_start() {
         qDebug() << "gst_parse_launch error: " << error->message;
     }
     GstElement *qmlglsink = gst_bin_get_by_name(GST_BIN(m_pipeline), "qmlglsink");
+
+
+    GstBus *bus = gst_pipeline_get_bus (GST_PIPELINE(m_pipeline));
+
+    gst_bus_add_signal_watch(bus);
+    g_signal_connect(bus, "message", (GCallback)PipelineCb, this);
+
 
     QQuickItem *videoItem;
     QQuickWindow *rootObject;
