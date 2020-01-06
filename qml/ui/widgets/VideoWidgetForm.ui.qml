@@ -12,7 +12,7 @@ BaseWidget {
     width: 252
     height: 192
 
-    visible: settings.show_pip_video
+    visible: settings.show_pip_video && isRunning
 
     widgetIdentifier: "pip_video_widget"
 

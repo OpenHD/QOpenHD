@@ -4,6 +4,7 @@ import QtQuick.Layouts 1.12
 
 Loader {
     source: EnablePiP ? "VideoWidgetForm.ui.qml" : ""
+    property bool isRunning: false;
 
     Connections {
         target: PiPStream
@@ -13,6 +14,8 @@ Loader {
             } else {
                 //console.log("PiP stream lost");
             }
+
+            isRunning = running;
         }
     }
 }
