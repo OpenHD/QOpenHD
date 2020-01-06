@@ -713,6 +713,7 @@ void OpenHDVideoStream::init(QQmlApplicationEngine* engine = nullptr, enum Strea
     }
     m_enable_rtp = settings.value("enable_rtp", true).toBool();
 
+    lastDataTimeout = QDateTime::currentMSecsSinceEpoch();
 
     QObject::connect(timer, &QTimer::timeout, this, &OpenHDVideoStream::_timer);
     timer->start(1000);
