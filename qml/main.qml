@@ -151,6 +151,17 @@ ApplicationWindow {
         }
     }
 
+    Connections {
+        target: MainStream
+        onVideoRunning: {
+            if (running) {
+                //console.log("Main stream running");
+            } else {
+                //console.log("Main stream lost");
+            }
+        }
+    }
+
     // UI areas
 
     UpperOverlayBar {
