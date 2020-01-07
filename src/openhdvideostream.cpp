@@ -785,7 +785,7 @@ void OpenHDVideoStream::_start() {
     } else {
         qDebug() << "Listening on port" << m_video_port;
 
-        if (m_enable_rtp) {
+        if (m_enable_rtp || m_stream_type == StreamTypePiP) {
             s << QString("udpsrc port=%1 caps=\"application/x-rtp, media=(string)video, clock-rate=(int)90000, encoding-name=(string)H264\" timeout=1000000000 !").arg(m_video_port);
             s << "rtpjitterbuffer !";
             s << "rtph264depay ! ";
