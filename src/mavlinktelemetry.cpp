@@ -36,7 +36,9 @@ void MavlinkTelemetry::init() {
     mavlinkSocket->bind(QHostAddress::Any, MAVLINK_LOCAL_PORT);
     connect(mavlinkSocket, &QUdpSocket::readyRead, this, &MavlinkTelemetry::processMavlinkDatagrams);
 
-    QFuture<void> future = QtConcurrent::run(this, &MavlinkTelemetry::stateLoop);
+    connect(&m_stateLoopTimer, &QTimer::timeout, this, &MavlinkTelemetry::stateLoop);
+    resetParamVars();
+    m_stateLoopTimer.start(200);
 }
 
 
@@ -119,87 +121,68 @@ void MavlinkTelemetry::resetParamVars() {
 
 
 void MavlinkTelemetry::stateLoop() {
+    QMutexLocker locker(&stateLock);
 
-    resetParamVars();
+    qint64 current_timestamp = QDateTime::currentMSecsSinceEpoch();
+    m_last_heartbeat_raw = current_timestamp - last_heartbeat_timestamp;
+    set_last_heartbeat(QString(tr("%1ms").arg(m_last_heartbeat_raw)));
 
-    while (true) {
-        QThread::msleep(200);
-
-        QMutexLocker locker(&stateLock);
-
-        qint64 current_timestamp = QDateTime::currentMSecsSinceEpoch();
-        m_last_heartbeat_raw = current_timestamp - last_heartbeat_timestamp;
-        set_last_heartbeat(QString(tr("%1ms").arg(m_last_heartbeat_raw)));
-
-        switch (state) {
-            case MavlinkStateDisconnected: {
-                set_loading(false);
-                set_saving(false);
-                if (m_ground_available) {
-                    state = MavlinkStateConnected;
-                }
-
-                continue;
+    switch (state) {
+        case MavlinkStateDisconnected: {
+            set_loading(false);
+            set_saving(false);
+            if (m_ground_available) {
+                state = MavlinkStateConnected;
             }
-            case MavlinkStateConnected: {
-                if (initialConnectTimer == -1) {
-                    initialConnectTimer = QDateTime::currentMSecsSinceEpoch();
-                } else if (current_timestamp - initialConnectTimer < 5000) {
-                    state = MavlinkStateGetParameters;
-                    resetParamVars();
-                    fetchParameters();
-                    LocalMessage::instance()->showMessage("Connecting to drone", 2);
-                }
-
-                continue;
+            break;
+        }
+        case MavlinkStateConnected: {
+            if (initialConnectTimer == -1) {
+                initialConnectTimer = QDateTime::currentMSecsSinceEpoch();
+            } else if (current_timestamp - initialConnectTimer < 5000) {
+                state = MavlinkStateGetParameters;
+                resetParamVars();
+                fetchParameters();
+                LocalMessage::instance()->showMessage("Connecting to drone", 2);
             }
-            case MavlinkStateGetParameters: {
-                set_loading(true);
-                set_saving(false);
-                qint64 currentTime = QDateTime::currentMSecsSinceEpoch();
+            break;
+        }
+        case MavlinkStateGetParameters: {
+            set_loading(true);
+            set_saving(false);
+            qint64 currentTime = QDateTime::currentMSecsSinceEpoch();
 
-                if (isConnectionLost()) {
-                    resetParamVars();
-                    m_ground_available = false;
-                    state = MavlinkStateDisconnected;
-                    LocalMessage::instance()->showMessage("Connection to drone lost (E1)", 4);
-
-                    continue;
-                }
-
-                if ((parameterCount != 0) && parameterIndex == (parameterCount - 1)) {
-                    emit allParametersChanged();
-                    state = MavlinkStateIdle;
-
-                    continue;
-                }
-
-
-                if (currentTime - parameterLastReceivedTime > 7000) {
-                    resetParamVars();
-                    m_ground_available = false;
-                    state = MavlinkStateDisconnected;
-                    LocalMessage::instance()->showMessage("Connection to drone lost (E2)", 4);
-
-                    continue;
-                }
-
-                continue;
+            if (isConnectionLost()) {
+                resetParamVars();
+                m_ground_available = false;
+                state = MavlinkStateDisconnected;
+                LocalMessage::instance()->showMessage("Connection to drone lost (E1)", 4);
             }
-            case MavlinkStateIdle: {
-                set_loading(false);
 
-                if (isConnectionLost()) {
-                    resetParamVars();
-                    m_ground_available = false;
-                    state = MavlinkStateDisconnected;
-                    LocalMessage::instance()->showMessage("Connection to drone lost (E3)", 4);
-
-                    continue;
-                }
-
-                break;
+            if ((parameterCount != 0) && parameterIndex == (parameterCount - 1)) {
+                emit allParametersChanged();
+                state = MavlinkStateIdle;
             }
+
+            if (currentTime - parameterLastReceivedTime > 7000) {
+                resetParamVars();
+                m_ground_available = false;
+                state = MavlinkStateDisconnected;
+                LocalMessage::instance()->showMessage("Connection to drone lost (E2)", 4);
+            }
+            break;
+        }
+        case MavlinkStateIdle: {
+            set_loading(false);
+
+            if (isConnectionLost()) {
+                resetParamVars();
+                m_ground_available = false;
+                state = MavlinkStateDisconnected;
+                LocalMessage::instance()->showMessage("Connection to drone lost (E3)", 4);
+            }
+
+            break;
         }
     }
 }
