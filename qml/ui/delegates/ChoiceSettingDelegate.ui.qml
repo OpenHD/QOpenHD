@@ -40,7 +40,6 @@ BaseDelegate {
         onActivated: {
             // @disable-check M222
             listModel.setProperty(itemIndex, "value", valueElement.model.get(index).value);
-            itemModel.modified = true;
         }
 
         /*

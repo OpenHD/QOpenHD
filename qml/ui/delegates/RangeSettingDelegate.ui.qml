@@ -17,7 +17,6 @@ BaseDelegate {
         anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
         anchors.top: parent.top
         anchors.topMargin: 8
-        onValueChanged: model.modified = true
 
         ToolTip {
             parent: valueElement.handle

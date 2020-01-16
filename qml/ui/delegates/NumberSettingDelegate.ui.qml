@@ -20,7 +20,6 @@ BaseDelegate {
         // @disable-check M223
         onValueChanged: {
             model.value = value
-            model.modified = true
         }
         enabled: !model.disabled
     }

@@ -183,9 +183,9 @@ GroundPiSettingsPanelForm {
                               "upperLimit": upperLimit,
                               "interval": interval,
                               "itemType": itemType,
+                              "originalValue": finalValue,
                               "value": finalValue,
                               "unit": unit,
-                              "modified": false,
                               "disabled": disabled,
                               "info": itemInfo});
             }
@@ -236,6 +236,7 @@ GroundPiSettingsPanelForm {
                                                "setting": setting,
                                                "itemType": "string",
                                                "value": String(allSettings[setting]),
+                                               "originalValue": String(allSettings[setting]),
                                                "disabled": disabled,
                                                "info": "No additional information available, check the Open.HD wiki"});
                 }
@@ -263,15 +264,23 @@ GroundPiSettingsPanelForm {
         function _process(model, mapping) {
             for(var index = 0; index < model.count; index++) {
                 var setting = model.get(index);
-                var modified = setting["modified"];
-                // skip saving any settings the user hasn't actually changed
-                if (!modified) {
+
+                var key = setting["setting"];
+                var originalValue = setting["originalValue"];
+                var newValue = setting["value"];
+
+                 // skip saving any settings the user hasn't actually changed
+                if (originalValue === newValue) {
                     continue;
                 }
-                var key = setting["setting"];
-                var initialValue = setting["value"];
+                // Update the originalValue in the model itself.
+
+                // This is a quick hack, a better solution would be to only update the originalValue
+                // property once the setting actually saves
+                model.get(index).originalValue = newValue;
+
                 // by default we pass through the value as-is, only map to another type if needed
-                var finalValue = initialValue;
+                var finalValue = newValue;
 
                 // map bool values back to their expected representation for each setting, because
                 // it's not the same for all of them
@@ -281,7 +290,7 @@ GroundPiSettingsPanelForm {
                     var falseValue = mapping[setting.setting]["falseValue"];
 
                     if (itemType === "bool") {
-                        if (initialValue) {
+                        if (newValue) {
                             finalValue = trueValue;
                         } else {
                             finalValue = falseValue;
