@@ -309,7 +309,6 @@ GroundPiSettingsPanelForm {
 
         _process(otherSettingsModel, {});
 
-        // don't save back settings until the values and mappings are all tested properly
         openHDSettings.saveSettings(remoteSettings);
     }
 
