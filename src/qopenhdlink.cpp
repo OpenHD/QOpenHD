@@ -58,6 +58,7 @@ void QOpenHDLink::readyRead() {
 
 void QOpenHDLink::setWidgetLocation(QString widgetName, int alignment, int xOffset, int yOffset, bool hCenter, bool vCenter) {
 #if defined(ENABLE_LINK)
+#if !defined(__rasp_pi__)
     nlohmann::json j = {
       {"cmd", "setWidgetLocation"},
       {"widgetName", widgetName.toStdString()},
@@ -71,6 +72,7 @@ void QOpenHDLink::setWidgetLocation(QString widgetName, int alignment, int xOffs
     std::string serialized_string = j.dump();
     auto buf = QByteArray(serialized_string.c_str());
     linkSocket->writeDatagram(buf, QHostAddress(groundAddress), LINK_PORT);
+#endif
 #endif
 }
 

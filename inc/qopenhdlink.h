@@ -32,7 +32,7 @@ private slots:
 private:
     void init();
 
-    QString groundAddress;
+    QString groundAddress = "192.168.2.1";
 
     void processCommand(QByteArray buffer);
     void processSetWidgetLocation(nlohmann::json command);
