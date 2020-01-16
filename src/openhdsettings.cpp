@@ -110,6 +110,11 @@ void OpenHDSettings::_saveSettings(QVariantMap remoteSettings) {
     if (m_saving || m_loading) {
         return;
     }
+    // shortcut if there aren't any modified settings
+    if (remoteSettings.size() == 0) {
+        emit savingSettingsFinished();
+        return;
+    }
     set_saving(true);
 
     emit savingSettingsStart();
