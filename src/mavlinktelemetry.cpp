@@ -125,7 +125,11 @@ void MavlinkTelemetry::stateLoop() {
 
     qint64 current_timestamp = QDateTime::currentMSecsSinceEpoch();
     m_last_heartbeat_raw = current_timestamp - last_heartbeat_timestamp;
-    set_last_heartbeat(QString(tr("%1ms").arg(m_last_heartbeat_raw)));
+    if (m_last_heartbeat_raw < 0 || m_last_heartbeat_raw > 300000) {
+        set_last_heartbeat(tr("N/A"));
+    } else {
+        set_last_heartbeat(QString(tr("%1ms").arg(m_last_heartbeat_raw)));
+    }
 
     switch (state) {
         case MavlinkStateDisconnected: {
