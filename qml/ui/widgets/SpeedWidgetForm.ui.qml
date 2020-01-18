@@ -65,7 +65,7 @@ BaseWidget {
             anchors.fill: parent
             id: speed_text
             color: "white"
-            text: qsTr(OpenHD.speed)
+            text: Number(OpenHD.speed).toLocaleString(Qt.locale(), 'f', 0);
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
         }

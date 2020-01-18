@@ -27,13 +27,25 @@ BaseWidget {
             width: parent.width
             height: 24
             Text { text: "Lat:";  color: "white"; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.left: parent.left }
-            Text { text: OpenHD.lat; color: "white"; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.right: parent.right }
+            Text {
+                text: Number(OpenHD.lat).toLocaleString(Qt.locale(), 'f', 6);
+                color: "white";
+                font.bold: true;
+                font.pixelSize: detailPanelFontPixels;
+                anchors.right: parent.right
+            }
         }
         Item {
             width: parent.width
             height: 24
             Text { text: "Long:";  color: "white"; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.left: parent.left }
-            Text { text: OpenHD.lon; color: "white"; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.right: parent.right }
+            Text {
+                text: Number(OpenHD.lon).toLocaleString(Qt.locale(), 'f', 6);
+                color: "white";
+                font.bold: true;
+                font.pixelSize: detailPanelFontPixels;
+                anchors.right: parent.right
+            }
         }
     }
 
@@ -79,7 +91,7 @@ BaseWidget {
             width: 48
             height: 24
             color: "#ffffff"
-            text: "(%1)".arg(OpenHD.gps_hdop)
+            text: qsTr("%L1").arg(OpenHD.gps_hdop)
             anchors.right: parent.right
             anchors.rightMargin: 0
             verticalAlignment: Text.AlignTop

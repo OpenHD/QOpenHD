@@ -27,13 +27,25 @@ BaseWidget {
             width: parent.width
             height: 24
             Text { text: "Voltage:";  color: "white"; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.left: parent.left }
-            Text { text: OpenHD.battery_voltage; color: "white"; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.right: parent.right }
+            Text {
+                text: Number(OpenHD.battery_voltage/1000.0).toLocaleString(Qt.locale(), 'f', 1) + "V";
+                color: "white";
+                font.bold: true;
+                font.pixelSize: detailPanelFontPixels;
+                anchors.right: parent.right
+            }
         }
         Item {
             width: parent.width
             height: 24
             Text { text: "Current:";  color: "white"; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.left: parent.left }
-            Text { text: OpenHD.battery_current; color: "white"; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.right: parent.right }
+            Text {
+                text: Number(OpenHD.battery_current/100.0).toLocaleString(Qt.locale(), 'f', 1) + "A";
+                color: "white";
+                font.bold: true;
+                font.pixelSize: detailPanelFontPixels;
+                anchors.right: parent.right
+            }
         }
     }
 
@@ -47,7 +59,7 @@ BaseWidget {
             width: 48
             height: 24
             color: "#ffffff"
-            text: OpenHD.battery_percent
+            text: qsTr("%L1%").arg(OpenHD.battery_percent)
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: batteryGauge.right
             anchors.leftMargin: 0
@@ -68,7 +80,7 @@ BaseWidget {
                 // todo: expose battery_voltage_to_percent to QML instead of using cell levels here
                 // @disable-check M222
                 var cells = settings.value("show_ground_status", true);
-                var cellVoltage = OpenHD.battery_voltage_raw / cells;
+                var cellVoltage = OpenHD.battery_voltage / cells;
                 // 20% warning, 15% critical
                 return cellVoltage < 3.73 ? (cellVoltage < 3.71 ? "#ff0000" : "#fbfd15") : "#ffffff"
             }

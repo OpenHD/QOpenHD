@@ -67,7 +67,7 @@ BaseWidget {
             anchors.bottom: parent.bottom
             anchors.bottomMargin: parent.height - 24
             color: "white"
-            text: qsTr(OpenHD.hdg)
+            text: Number(OpenHD.hdg).toLocaleString(Qt.locale(), 'f', 0);
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
         }

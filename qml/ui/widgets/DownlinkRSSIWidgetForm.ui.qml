@@ -28,13 +28,25 @@ BaseWidget {
             width: parent.width
             height: 24
             Text { text: "Lost:";  color: "white"; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.left: parent.left }
-            Text { text: OpenHD.lost_packet_cnt; color: "white"; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.right: parent.right }
+            Text {
+                text: Number(OpenHD.lost_packet_cnt).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" (%L1%)").arg(OpenHD.lost_packet_percent);
+                color: "white";
+                font.bold: true;
+                font.pixelSize: detailPanelFontPixels;
+                anchors.right: parent.right
+            }
         }
         Item {
             width: parent.width
             height: 24
             Text { text: "Damaged:";  color: "white"; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.left: parent.left }
-            Text { text: OpenHD.damaged_block_cnt; color: "white"; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.right: parent.right }
+            Text {
+                text: Number(OpenHD.damaged_block_cnt).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" (%L1%)").arg(OpenHD.damaged_block_percent);
+                color: "white";
+                font.bold: true;
+                font.pixelSize: detailPanelFontPixels;
+                anchors.right: parent.right
+            }
         }
         Item {
             width: parent.width

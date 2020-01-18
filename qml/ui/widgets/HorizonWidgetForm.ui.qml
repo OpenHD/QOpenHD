@@ -72,10 +72,10 @@ BaseWidget {
         anchors.verticalCenter: parent.verticalCenter
 
         transformOrigin: Item.Center
-        rotation: -OpenHD.roll_raw
+        rotation: -OpenHD.roll
         transform: Translate {
             x: Item.Center
-            y: OpenHD.pitch_raw
+            y: OpenHD.pitch
         }
         antialiasing: true
 

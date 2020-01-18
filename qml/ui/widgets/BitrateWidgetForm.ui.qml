@@ -28,13 +28,25 @@ BaseWidget {
             width: parent.width
             height: 24
             Text { text: "Measured:";  color: "white"; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.left: parent.left }
-            Text { text: OpenHD.kbitrate_measured; color: "white"; font.bold: true; font.pixelSize: detailPanelFontPixels;  anchors.right: parent.right }
+            Text {
+                text: Number(OpenHD.kbitrate_measured/1024.0).toLocaleString(Qt.locale(), 'f', 1) + " Mbit";
+                color: "white";
+                font.bold: true;
+                font.pixelSize: detailPanelFontPixels;
+                anchors.right: parent.right
+            }
         }
         Item {
             width: parent.width
             height: 24
             Text { text: "Set:";  color: "white"; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.left: parent.left }
-            Text { text: OpenHD.kbitrate_set; color: "white"; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.right: parent.right }
+            Text {
+                text: Number(OpenHD.kbitrate_set/1024.0).toLocaleString(Qt.locale(), 'f', 1) + " Mbit";
+                color: "white";
+                font.bold: true;
+                font.pixelSize: detailPanelFontPixels;
+                anchors.right: parent.right
+            }
         }
     }
 
@@ -49,7 +61,7 @@ BaseWidget {
             width: 84
             height: 24
             color: "#ffffff"
-            text: OpenHD.kbitrate
+            text: Number(OpenHD.kbitrate/1024.0).toLocaleString(Qt.locale(), 'f', 1) + " Mbit";
             anchors.verticalCenterOffset: 0
             anchors.left: camera_icon.right
             anchors.leftMargin: 6

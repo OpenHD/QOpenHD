@@ -51,7 +51,7 @@ BaseWidget {
             width: 34
             height: 24
             color: "#ffffff"
-            text: OpenHD.cpuload_air
+            text: Number(OpenHD.cpuload_air).toLocaleString(Qt.locale(), 'f', 0) + "%";
             anchors.right: temp_air.left
             anchors.rightMargin: 2
             anchors.verticalCenter: parent.verticalCenter
@@ -67,7 +67,7 @@ BaseWidget {
             width: 34
             height: 24
             color: "#ffffff"
-            text: OpenHD.temp_air
+            text: Number(OpenHD.temp_air).toLocaleString(Qt.locale(), 'f', 0) + "°";
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: parent.right
             anchors.rightMargin: 0

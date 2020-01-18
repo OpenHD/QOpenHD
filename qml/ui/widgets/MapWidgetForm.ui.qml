@@ -142,8 +142,8 @@ BaseWidget {
 
             activeMapType: MapType.SatelliteMapDay
             center {
-                latitude: followDrone ? OpenHD.lat_raw : 9000
-                longitude: followDrone ? OpenHD.lon_raw : 9000
+                latitude: followDrone ? OpenHD.lat : 9000
+                longitude: followDrone ? OpenHD.lon : 9000
             }
 
             property bool followDrone: true
@@ -153,8 +153,8 @@ BaseWidget {
                 anchorPoint.x: imageLargeMap.width / 2
                 anchorPoint.y: imageLargeMap.height
                 coordinate {
-                    latitude: OpenHD.homelat_raw
-                    longitude: OpenHD.homelon_raw
+                    latitude: OpenHD.homelat
+                    longitude: OpenHD.homelon
                 }
 
                 sourceItem: Image {
@@ -165,8 +165,8 @@ BaseWidget {
 
             MapCircle {
                 center {
-                    latitude: OpenHD.lat_raw
-                    longitude: OpenHD.lon_raw
+                    latitude: OpenHD.lat
+                    longitude: OpenHD.lon
                 }
                 radius: OpenHD.gps_hdop
                 color: 'red'
@@ -175,8 +175,8 @@ BaseWidget {
 
             MapCircle {
                 center {
-                    latitude: OpenHD.lat_raw
-                    longitude: OpenHD.lon_raw
+                    latitude: OpenHD.lat
+                    longitude: OpenHD.lon
                 }
                 radius: 1
                 color: 'blue'
@@ -326,11 +326,11 @@ BaseWidget {
             gesture.enabled: false
 
             //      activeMapType: MapType.SatelliteMapDay
-            bearing: OpenHD.hdg_raw
+            bearing: OpenHD.hdg
 
             center {
-                latitude: OpenHD.lat_raw
-                longitude: OpenHD.lon_raw
+                latitude: OpenHD.lat
+                longitude: OpenHD.lon
             }
 
             MapQuickItem {
@@ -338,8 +338,8 @@ BaseWidget {
                 anchorPoint.x: imageSmallMap.width / 2
                 anchorPoint.y: imageSmallMap.height
                 coordinate {
-                    latitude: OpenHD.homelat_raw
-                    longitude: OpenHD.homelon_raw
+                    latitude: OpenHD.homelat
+                    longitude: OpenHD.homelon
                 }
 
                 sourceItem: Image {
@@ -351,8 +351,8 @@ BaseWidget {
 
             MapCircle {
                 center {
-                    latitude: OpenHD.lat_raw
-                    longitude: OpenHD.lon_raw
+                    latitude: OpenHD.lat
+                    longitude: OpenHD.lon
                 }
                 radius: OpenHD.gps_hdop
                 color: 'red'
@@ -361,8 +361,8 @@ BaseWidget {
 
             MapCircle {
                 center {
-                    latitude: OpenHD.lat_raw
-                    longitude: OpenHD.lon_raw
+                    latitude: OpenHD.lat
+                    longitude: OpenHD.lon
                 }
                 radius: 1
                 color: 'blue'

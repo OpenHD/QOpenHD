@@ -63,7 +63,7 @@ BaseWidget {
         Text {
             id: second_alt_text
             color: "white"
-            text: qsTr(OpenHD.alt_msl)
+            text: Number(OpenHD.alt_msl).toLocaleString(Qt.locale(), 'f', 0);
             horizontalAlignment: Text.AlignRight
             topPadding: 2
             bottomPadding: 2

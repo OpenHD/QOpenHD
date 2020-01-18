@@ -265,16 +265,15 @@ void MavlinkTelemetry::processMavlinkMessage(mavlink_message_t msg) {
             mavlink_sys_status_t sys_status;
             mavlink_msg_sys_status_decode(&msg, &sys_status);
 
-            auto battery_voltage_raw = (double)sys_status.voltage_battery / 1000.0;
-            OpenHD::instance()->set_battery_voltage_raw(battery_voltage_raw);
-            OpenHD::instance()->set_battery_voltage(tr("%1%2").arg(battery_voltage_raw, 3, 'f', 1, '0').arg("V"));
-            OpenHD::instance()->set_battery_current(tr("%1%2").arg((double)sys_status.current_battery / 100.0, 3, 'f', 1, '0').arg("A"));
+            auto battery_voltage = (double)sys_status.voltage_battery / 1000.0;
+            OpenHD::instance()->set_battery_voltage(battery_voltage);
+            OpenHD::instance()->set_battery_current(sys_status.current_battery);
 
             QSettings settings;
             auto battery_cells = settings.value("battery_cells", QVariant(3)).toInt();
 
-            int battery_percent = lipo_battery_voltage_to_percent(battery_cells, battery_voltage_raw);
-            OpenHD::instance()->set_battery_percent(QString("%1%").arg(battery_percent));
+            int battery_percent = lipo_battery_voltage_to_percent(battery_cells, battery_voltage);
+            OpenHD::instance()->set_battery_percent(battery_percent);
             QString battery_gauge_glyph = battery_gauge_glyph_from_percentage(battery_percent);
             OpenHD::instance()->set_battery_gauge(battery_gauge_glyph);
             break;
@@ -300,8 +299,8 @@ void MavlinkTelemetry::processMavlinkMessage(mavlink_message_t msg) {
         case MAVLINK_MSG_ID_GPS_RAW_INT:{
             mavlink_gps_raw_int_t gps_status;
             mavlink_msg_gps_raw_int_decode(&msg, &gps_status);
-            OpenHD::instance()->set_satellites_visible(tr("%1").arg(gps_status.satellites_visible));
-            OpenHD::instance()->set_gps_hdop(tr("%1").arg((double)gps_status.eph / 100.0));
+            OpenHD::instance()->set_satellites_visible(gps_status.satellites_visible);
+            OpenHD::instance()->set_gps_hdop(gps_status.eph / 100.0);
             break;
         }
         case MAVLINK_MSG_ID_GPS_STATUS: {
@@ -317,10 +316,10 @@ void MavlinkTelemetry::processMavlinkMessage(mavlink_message_t msg) {
             mavlink_attitude_t attitude;
             mavlink_msg_attitude_decode (&msg, &attitude);
 
-            OpenHD::instance()->set_pitch_raw((float)attitude.pitch *57.2958);
+            OpenHD::instance()->set_pitch((float)attitude.pitch *57.2958);
             //qDebug() << "Pitch:" <<  attitude.pitch*57.2958;
 
-            OpenHD::instance()->set_roll_raw((float)attitude.roll *57.2958);
+            OpenHD::instance()->set_roll((float)attitude.roll *57.2958);
             //qDebug() << "Roll:" <<  attitude.roll*57.2958;
             break;
         }
@@ -331,20 +330,17 @@ void MavlinkTelemetry::processMavlinkMessage(mavlink_message_t msg) {
             mavlink_global_position_int_t global_position;
             mavlink_msg_global_position_int_decode(&msg, &global_position);
 
-            OpenHD::instance()->set_lat(tr("%1").arg((double)global_position.lat / 10000000.0, 2, 'f', 6, '1'));
-            OpenHD::instance()->set_lat_raw((double)global_position.lat / 10000000.0);
-            OpenHD::instance()->set_lon(tr("%1").arg((double)global_position.lon / 10000000.0, 2, 'f', 6, '1'));
-            OpenHD::instance()->set_lon_raw((double)global_position.lon / 10000000.0);
+            OpenHD::instance()->set_lat((double)global_position.lat / 10000000.0);
+            OpenHD::instance()->set_lon((double)global_position.lon / 10000000.0);
 
-            OpenHD::instance()->set_boot_time(tr("%1").arg(global_position.time_boot_ms));
+            OpenHD::instance()->set_boot_time(global_position.time_boot_ms);
 
-            OpenHD::instance()->set_alt_rel(tr("%1").arg(global_position.relative_alt/1000.0, 1, 'f', 0, '0'));
+            OpenHD::instance()->set_alt_rel(global_position.relative_alt/1000.0);
             // qDebug() << "Altitude relative " << alt_rel;
-            OpenHD::instance()->set_alt_msl(tr("%1").arg(global_position.alt/1000.0, 1, 'f', 0, '0'));
+            OpenHD::instance()->set_alt_msl(global_position.alt/1000.0);
 
             // FOR INAV heading does not /100
-            OpenHD::instance()->set_hdg(tr("%1").arg(global_position.hdg/100.0, 1, 'f', 0, '0'));
-            OpenHD::instance()->set_hdg_raw((double)global_position.hdg / 100.0);
+            OpenHD::instance()->set_hdg((double)global_position.hdg / 100.0);
 
             OpenHD::instance()->set_vx((int)(global_position.vx/100.0));
             OpenHD::instance()->set_vy((int)(global_position.vy/100.0));
@@ -394,7 +390,7 @@ void MavlinkTelemetry::processMavlinkMessage(mavlink_message_t msg) {
             //td->airspeed = mavlink_msg_vfr_hud_get_airspeed(&msg)*3.6f;
 
             auto speed = vfr_hud.groundspeed*3.6;
-            OpenHD::instance()->set_speed(tr("%1").arg(speed, 1, 'f', 0, '0'));
+            OpenHD::instance()->set_speed(speed);
             // qDebug() << "Speed- ground " << speed;
 
             break;
@@ -427,10 +423,8 @@ void MavlinkTelemetry::processMavlinkMessage(mavlink_message_t msg) {
         case MAVLINK_MSG_ID_HOME_POSITION:{
             mavlink_home_position_t home_position;
             mavlink_msg_home_position_decode(&msg, &home_position);
-            OpenHD::instance()->set_homelat_raw((double)home_position.latitude / 10000000.0);
-            OpenHD::instance()->set_homelat(tr("%1").arg((double)home_position.latitude / 10000000.0, 2, 'f', 6, '1'));
-            OpenHD::instance()->set_homelon_raw((double)home_position.longitude / 10000000.0);
-            OpenHD::instance()->set_homelon(tr("%1").arg((double)home_position.longitude / 10000000.0, 2, 'f', 6, '1'));
+            OpenHD::instance()->set_homelat((double)home_position.latitude / 10000000.0);
+            OpenHD::instance()->set_homelon((double)home_position.longitude / 10000000.0);
 
             OpenHD::instance()->calculate_home_distance();
             break;

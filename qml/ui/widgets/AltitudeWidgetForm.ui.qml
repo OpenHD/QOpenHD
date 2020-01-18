@@ -64,7 +64,7 @@ BaseWidget {
         Text {
             id: alt_text
             color: "white"
-            text: qsTr(OpenHD.alt_rel)
+            text: Number(OpenHD.alt_rel).toLocaleString(Qt.locale(), 'f', 0);
             anchors.fill: parent
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
