@@ -84,7 +84,7 @@ ApplicationWindow {
         property bool show_heading: true
         property bool show_altitude_second: true
         property bool show_arrow: true
-        property bool show_map: true
+        property bool show_map: false
         property bool show_throttle: true
     }
 
