@@ -792,7 +792,7 @@ void OpenHDVideoStream::_start() {
         } else {
             s << QString("udpsrc port=%1 timeout=1000000000 !").arg(m_video_port);
         }
-        s << "queue max-size-buffers=0 max-size-time=0 max-size-bytes=0 !";
+        s << "queue !";
 
         if (m_enable_software_video_decoder) {
             qDebug() << "Forcing software decoder";
@@ -808,7 +808,7 @@ void OpenHDVideoStream::_start() {
             #endif
         }
     }
-    s << "queue max-size-buffers=0 max-size-time=0 max-size-bytes=0 !";
+    s << "queue !";
 
     s << "glupload ! glcolorconvert !";
     s << "qmlglsink name=qmlglsink sync=false";
