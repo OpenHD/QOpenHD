@@ -28,14 +28,7 @@ ApplicationWindow {
     onAfterSynchronizing: {
         if (!initialised) {
             hudOverlayGrid.messageHUD.pushMessage("Initializing", 1)
-
             initialised = true;
-            if (EnableMainVideo) {
-                MainStream.startVideo();
-            }
-            if (EnablePiP) {
-                PiPStream.startVideo();
-            }
         }
     }
 

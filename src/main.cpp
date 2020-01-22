@@ -186,9 +186,11 @@ int main(int argc, char *argv[]) {
 
 #if defined(ENABLE_MAIN_VIDEO)
     stream->init(&engine, StreamTypeMain);
+    stream->startVideo();
 #endif
 #if defined(ENABLE_PIP)
     stream2->init(&engine, StreamTypePiP);
+    stream2->startVideo();
 #endif
 
     const int retval = app.exec();
