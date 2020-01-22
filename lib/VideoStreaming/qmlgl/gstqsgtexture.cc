@@ -51,6 +51,7 @@ GstQSGTexture::GstQSGTexture ()
 
   gst_video_info_init (&this->v_info);
   this->buffer_ = NULL;
+  this->previous_buffer_ = NULL;
   this->qt_context_ = NULL;
   this->sync_buffer_ = gst_buffer_new ();
   this->dummy_tex_id_ = 0;
@@ -59,6 +60,7 @@ GstQSGTexture::GstQSGTexture ()
 GstQSGTexture::~GstQSGTexture ()
 {
   gst_buffer_replace (&this->buffer_, NULL);
+  gst_buffer_replace (&this->previous_buffer_, NULL);
   gst_buffer_replace (&this->sync_buffer_, NULL);
   if (this->dummy_tex_id_ && QOpenGLContext::currentContext ()) {
     QOpenGLContext::currentContext ()->functions ()->glDeleteTextures (1,
@@ -80,6 +82,12 @@ gboolean
 GstQSGTexture::setBuffer (GstBuffer * buffer)
 {
   GST_LOG ("%p setBuffer %" GST_PTR_FORMAT, this, buffer);
+
+  /* Retain the current buffer for one frame to prevent
+   * releasing the buffer while it is being drawn */
+  gst_buffer_replace (&this->previous_buffer_, this->buffer_);
+
+
   /* FIXME: update more state here */
   if (!gst_buffer_replace (&this->buffer_, buffer))
     return FALSE;

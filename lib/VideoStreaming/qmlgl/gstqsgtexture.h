@@ -48,6 +48,7 @@ public:
 
 private:
     GstBuffer * buffer_;
+    GstBuffer * previous_buffer_;
     GstBuffer * sync_buffer_;
     GstGLContext * qt_context_;
     GstMemory * mem_;
