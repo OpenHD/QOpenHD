@@ -85,5 +85,6 @@
         <file>ui/GroundPiSettingsPanel.qml</file>
         <file>ui/widgets/GroundPowerWidget.qml</file>
         <file>ui/widgets/GroundPowerWidgetForm.ui.qml</file>
+        <file>ui/PresetMap.qml</file>
     </qresource>
 </RCC>
