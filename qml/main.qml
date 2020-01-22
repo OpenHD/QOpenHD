@@ -25,7 +25,7 @@ ApplicationWindow {
 
     property bool initialised: false
 
-    onAfterSynchronizing: {
+    Component.onCompleted: {
         if (!initialised) {
             hudOverlayGrid.messageHUD.pushMessage("Initializing", 1)
             initialised = true;
