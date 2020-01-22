@@ -293,7 +293,13 @@ Item {
     })
 
     property var rcSettingsMap: ({
-
+        "ChannelIPCamera":             {title: "Channel for camera switching",
+                                        info: "This sets the RC channel that will be used to enable/disable the 2nd camera stream. If you need to configure a 2nd camera, use the Presets tab.",
+                                        itemType: "number",
+                                        lowerLimit: 5,
+                                        upperLimit: 16,
+                                        interval: 1,
+                                        unit: ""},
     })
 
 
