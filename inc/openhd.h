@@ -23,6 +23,9 @@ public:
     void calculate_home_distance();
     void calculate_home_course();
 
+    void setWifiAdapters(QList<QVariantMap> adapters);
+
+
     // public so that a QTimer can call it from main(), temporary fix due to some quirks with
     // the way QTimer and QML singletons/context properties work
     void updateFlightTimer();
@@ -182,10 +185,25 @@ public:
     Q_PROPERTY(QString flight_time MEMBER m_flight_time WRITE set_flight_time NOTIFY flight_time_changed)
     void set_flight_time(QString flight_time);
 
+
+    Q_PROPERTY(QVariantMap wifi_adapter0 MEMBER m_wifi_adapter0 NOTIFY wifi_adapter0_changed)
+    Q_PROPERTY(QVariantMap wifi_adapter1 MEMBER m_wifi_adapter1 NOTIFY wifi_adapter1_changed)
+    Q_PROPERTY(QVariantMap wifi_adapter2 MEMBER m_wifi_adapter2 NOTIFY wifi_adapter2_changed)
+    Q_PROPERTY(QVariantMap wifi_adapter3 MEMBER m_wifi_adapter3 NOTIFY wifi_adapter3_changed)
+    Q_PROPERTY(QVariantMap wifi_adapter4 MEMBER m_wifi_adapter4 NOTIFY wifi_adapter4_changed)
+    Q_PROPERTY(QVariantMap wifi_adapter5 MEMBER m_wifi_adapter5 NOTIFY wifi_adapter5_changed)
+
 signals:
     // system
     void gstreamer_version_changed();
     void qt_version_changed();
+
+    void wifi_adapter0_changed(QVariantMap wifi_adapter);
+    void wifi_adapter1_changed(QVariantMap wifi_adapter);
+    void wifi_adapter2_changed(QVariantMap wifi_adapter);
+    void wifi_adapter3_changed(QVariantMap wifi_adapter);
+    void wifi_adapter4_changed(QVariantMap wifi_adapter);
+    void wifi_adapter5_changed(QVariantMap wifi_adapter);
 
     // mavlink
     void boot_time_changed(int boot_time);
@@ -318,6 +336,12 @@ private:
 
     QString m_flight_time = "00:00";
 
+    QVariantMap m_wifi_adapter0;
+    QVariantMap m_wifi_adapter1;
+    QVariantMap m_wifi_adapter2;
+    QVariantMap m_wifi_adapter3;
+    QVariantMap m_wifi_adapter4;
+    QVariantMap m_wifi_adapter5;
 
     QTime flightTimeStart;
 };

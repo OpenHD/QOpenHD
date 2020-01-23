@@ -45,6 +45,34 @@ QString OpenHD::get_qt_version() {
     return qt_ver;
 }
 
+void OpenHD::setWifiAdapters(QList<QVariantMap> adapters) {
+    if (adapters.length() == 0) return;
+
+    m_wifi_adapter0 = adapters[0];
+    emit wifi_adapter0_changed(m_wifi_adapter0);
+    if (adapters.length() == 1) return;
+
+    m_wifi_adapter1 = adapters[1];
+    emit wifi_adapter1_changed(m_wifi_adapter1);
+    if (adapters.length() == 2) return;
+
+    m_wifi_adapter2 = adapters[2];
+    emit wifi_adapter2_changed(m_wifi_adapter2);
+    if (adapters.length() == 3) return;
+
+    m_wifi_adapter3 = adapters[3];
+    emit wifi_adapter3_changed(m_wifi_adapter3);
+    if (adapters.length() == 4) return;
+
+    m_wifi_adapter4 = adapters[4];
+    emit wifi_adapter4_changed(m_wifi_adapter4);
+    if (adapters.length() == 5) return;
+
+    m_wifi_adapter5 = adapters[5];
+    emit wifi_adapter5_changed(m_wifi_adapter5);
+    if (adapters.length() == 6) return;
+}
+
 void OpenHD::telemetryMessage(QString message, int level) {
     emit messageReceived(message, level);
 #if defined(ENABLE_SPEECH)
