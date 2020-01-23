@@ -105,6 +105,7 @@ GroundPiSettingsPanelForm {
 
         onSavingSettingsFailed: {
             localMessage("%1 ground settings did not save!".arg(failCount), 4);
+            // todo: show failure message instead
             showSavedCheckmark = true
         }
     }
