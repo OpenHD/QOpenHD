@@ -23,6 +23,9 @@ BaseWidget {
 
 
     hasWidgetDetail: true
+    widgetDetailWidth: 256
+    widgetDetailHeight: 320
+
     widgetDetailComponent: Column {
         Connections {
             target: OpenHD
