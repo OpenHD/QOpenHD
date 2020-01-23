@@ -48,6 +48,32 @@ BaseWidget {
                 anchors.right: parent.right
             }
         }
+
+        Item {
+            width: parent.width
+            height: 24
+            Text { text: "Skipped packets:";  color: "white"; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.left: parent.left }
+            Text {
+                text: Number(OpenHD.skipped_packet_cnt).toLocaleString(Qt.locale(), 'f', 0);
+                color: "white";
+                font.bold: true;
+                font.pixelSize: detailPanelFontPixels;
+                anchors.right: parent.right
+            }
+        }
+
+        Item {
+            width: parent.width
+            height: 24
+            Text { text: "Injection failed:";  color: "white"; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.left: parent.left }
+            Text {
+                text: Number(OpenHD.injection_fail_cnt).toLocaleString(Qt.locale(), 'f', 0);
+                color: "white";
+                font.bold: true;
+                font.pixelSize: detailPanelFontPixels;
+                anchors.right: parent.right
+            }
+        }
     }
 
 
