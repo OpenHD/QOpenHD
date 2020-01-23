@@ -24,6 +24,122 @@ BaseWidget {
 
     hasWidgetDetail: true
     widgetDetailComponent: Column {
+        Connections {
+            target: OpenHD
+            onWifi_adapter0_changed: {
+                card0text.text = Number(wifi_adapter.current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
+                card0.visible = true;
+            }
+            onWifi_adapter1_changed: {
+                card1text.text = Number(wifi_adapter.current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
+                card1.visible = true;
+            }
+            onWifi_adapter2_changed: {
+                card2text.text = Number(wifi_adapter.current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
+                card2.visible = true;
+            }
+            onWifi_adapter3_changed: {
+                card3text.text = Number(wifi_adapter.current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
+                card3.visible = true;
+            }
+            onWifi_adapter4_changed: {
+                card4text.text = Number(wifi_adapter.current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
+                card4.visible = true;
+            }
+            onWifi_adapter5_changed: {
+                card5text.text = Number(wifi_adapter.current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
+                card5.visible = true;
+            }
+        }
+        Item {
+            id: card0
+            visible: false
+            width: parent.width
+            height: 24
+            Text { text: "Card 1:";  color: "white"; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.left: parent.left }
+            Text {
+                id: card0text
+                color: "white";
+                font.bold: true;
+                font.pixelSize: detailPanelFontPixels;
+                anchors.right: parent.right
+            }
+        }
+        Item {
+            id: card1
+            visible: false
+            width: parent.width
+            height: 24
+            Text { text: "Card 2:";  color: "white"; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.left: parent.left }
+            Text {
+                id: card1text
+                color: "white";
+                font.bold: true;
+                font.pixelSize: detailPanelFontPixels;
+                anchors.right: parent.right
+            }
+        }
+
+        Item {
+            id: card2
+            visible: false
+            width: parent.width
+            height: 24
+            Text { text: "Card 3:";  color: "white"; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.left: parent.left }
+            Text {
+                id: card2text
+                color: "white";
+                font.bold: true;
+                font.pixelSize: detailPanelFontPixels;
+                anchors.right: parent.right
+            }
+        }
+
+        Item {
+            id: card3
+            visible: false
+            width: parent.width
+            height: 24
+            Text { text: "Card 4:";  color: "white"; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.left: parent.left }
+            Text {
+                id: card3text
+                color: "white";
+                font.bold: true;
+                font.pixelSize: detailPanelFontPixels;
+                anchors.right: parent.right
+            }
+        }
+
+        Item {
+            id: card4
+            visible: false
+            width: parent.width
+            height: 24
+            Text { text: "Card 5:";  color: "white"; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.left: parent.left }
+            Text {
+                id: card4text
+                color: "white";
+                font.bold: true;
+                font.pixelSize: detailPanelFontPixels;
+                anchors.right: parent.right
+            }
+        }
+
+        Item {
+            id: card5
+            visible: false
+            width: parent.width
+            height: 24
+            Text { text: "Card 6:";  color: "white"; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.left: parent.left }
+            Text {
+                id: card5text
+                color: "white";
+                font.bold: true;
+                font.pixelSize: detailPanelFontPixels;
+                anchors.right: parent.right
+            }
+        }
+
         Item {
             width: parent.width
             height: 24
