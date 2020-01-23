@@ -174,6 +174,7 @@ GroundPiSettingsPanelForm {
             generalSettingsModel.clear();
             radioSettingsModel.clear();
             videoSettingsModel.clear();
+            rcSettingsModel.clear();
             hotspotSettingsModel.clear();
             smartSyncSettingsModel.clear();
             otherSettingsModel.clear();
