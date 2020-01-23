@@ -128,6 +128,16 @@ public:
     Q_PROPERTY(unsigned int lost_packet_cnt_telemetry_up MEMBER m_lost_packet_cnt_telemetry_up WRITE set_lost_packet_cnt_telemetry_up NOTIFY lost_packet_cnt_telemetry_up_changed)
     void set_lost_packet_cnt_telemetry_up(unsigned int lost_packet_cnt);
 
+
+
+    Q_PROPERTY(unsigned int skipped_packet_cnt MEMBER m_skipped_packet_cnt WRITE set_skipped_packet_cnt NOTIFY skipped_packet_cnt_changed)
+    void set_skipped_packet_cnt(unsigned int skipped_packet_cnt);
+
+    Q_PROPERTY(unsigned int injection_fail_cnt MEMBER m_injection_fail_cnt WRITE set_injection_fail_cnt NOTIFY injection_fail_cnt_changed)
+    void set_injection_fail_cnt(unsigned int injection_fail_cnt);
+
+
+
     Q_PROPERTY(double kbitrate MEMBER m_kbitrate WRITE set_kbitrate NOTIFY kbitrate_changed)
     void set_kbitrate(double kbitrate);
 
@@ -213,6 +223,10 @@ signals:
     void current_signal_joystick_uplink_changed(int current_signal_joystick_uplink);
     void lost_packet_cnt_rc_changed(unsigned int lost_packet_cnt_rc);
     void lost_packet_cnt_telemetry_up_changed(unsigned int lost_packet_cnt_telemetry_up);
+
+    void skipped_packet_cnt_changed(unsigned int skipped_packet_cnt);
+    void injection_fail_cnt_changed(unsigned int injection_fail_cnt);
+
     void kbitrate_changed(double kbitrate);
     void kbitrate_set_changed(double kbitrate_set);
     void kbitrate_measured_changed(double kbitrate_measured);
@@ -275,6 +289,9 @@ private:
     int m_current_signal_joystick_uplink = -127;
     unsigned int m_lost_packet_cnt_rc = 0;
     unsigned int m_lost_packet_cnt_telemetry_up = 0;
+
+    unsigned int m_skipped_packet_cnt = 0;
+    unsigned int m_injection_fail_cnt = 0;
 
     double m_kbitrate = 0.0;
     double m_kbitrate_measured = 0.0;

@@ -296,6 +296,16 @@ void OpenHD::set_lost_packet_cnt_telemetry_up(unsigned int lost_packet_cnt_telem
     emit lost_packet_cnt_telemetry_up_changed(m_lost_packet_cnt_telemetry_up);
 }
 
+void OpenHD::set_skipped_packet_cnt(unsigned int skipped_packet_cnt) {
+    m_skipped_packet_cnt = skipped_packet_cnt;
+    emit skipped_packet_cnt_changed(skipped_packet_cnt);
+}
+
+void OpenHD::set_injection_fail_cnt(unsigned int injection_fail_cnt) {
+    m_injection_fail_cnt = injection_fail_cnt;
+    emit injection_fail_cnt_changed(m_injection_fail_cnt);
+}
+
 void OpenHD::set_kbitrate(double kbitrate) {
     m_kbitrate = kbitrate;
     emit kbitrate_changed(m_kbitrate);
