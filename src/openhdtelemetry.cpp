@@ -89,8 +89,9 @@ void OpenHDTelemetry::processOpenHDTelemetry(wifibroadcast_rx_status_forward_t t
     OpenHD::instance()->set_lost_packet_cnt(telemetry.lost_packet_cnt);
     OpenHD::instance()->set_lost_packet_percent((int)lost_percent_visible);
 
-    //ui.skipped_packet_cnt->setText(tr("%1").arg(rssi.skipped_zxpacket_cnt));
-    //ui.injection_fail_cnt->setText(tr("%1").arg(rssi.injection_fail_cnt));
+    OpenHD::instance()->set_skipped_packet_cnt(telemetry.skipped_packet_cnt);
+    OpenHD::instance()->set_injection_fail_cnt(telemetry.injection_fail_cnt);
+
     ////ui.received_packet_cnt->setText(tr("%1").arg(rssi.received_packet_cnt));
     OpenHD::instance()->set_kbitrate(telemetry.kbitrate);
     OpenHD::instance()->set_kbitrate_measured(telemetry.kbitrate_measured);
