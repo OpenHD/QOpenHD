@@ -8,8 +8,11 @@ import OpenHD 1.0
 
 GroundPiSettingsPanelForm {
     property double lastSettingsLoad: 0
+    property bool requireReboot: false
 
     save.onClicked: {
+        requireReboot = false;
+
         savedTimer.stop()
         showSavedCheckmark = false
         writeRemoteSettings();
@@ -101,6 +104,9 @@ GroundPiSettingsPanelForm {
             localMessage("ground settings saved", 2);
             showSavedCheckmark = true
             savedTimer.start()
+            if (requireReboot) {
+                // display reboot message and send message to ground to trigger single smartsync at next boot
+            }
         }
 
         onSavingSettingsFailed: {
