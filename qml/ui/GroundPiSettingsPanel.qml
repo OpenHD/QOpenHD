@@ -8,10 +8,16 @@ import OpenHD 1.0
 
 GroundPiSettingsPanelForm {
     property double lastSettingsLoad: 0
+    property var pendingPreset: ({})
     property bool requireReboot: false
 
     save.onClicked: {
         requireReboot = false;
+
+        if (isPreset) {
+            configurePreset();
+            requireReboot = true;
+        }
 
         savedTimer.stop()
         showSavedCheckmark = false
@@ -113,6 +119,42 @@ GroundPiSettingsPanelForm {
             localMessage("%1 ground settings did not save!".arg(failCount), 4);
             // todo: show failure message instead
             showSavedCheckmark = true
+        }
+    }
+
+    function configurePreset() {
+        for (var setting in pendingPreset) {
+            var value = pendingPreset[setting];
+
+            var model = undefined;
+
+            if (settingsMap.generalSettingsMap[setting] !== undefined) {
+                model = generalSettingsModel;
+            } else if (settingsMap.radioSettingsMap[setting] !== undefined) {
+                model = radioSettingsModel;
+            } else if (settingsMap.videoSettingsMap[setting] !== undefined) {
+                model = videoSettingsModel;
+            } else if (settingsMap.rcSettingsMap[setting] !== undefined) {
+                model = rcSettingsModel;
+            } else if (settingsMap.hotspotSettingsMap[setting] !== undefined) {
+                model = hotspotSettingsModel;
+            } else if (settingsMap.smartSyncSettingsMap[setting] !== undefined) {
+                model = smartSyncSettingsModel;
+            } else {
+                model = otherSettingsModel;
+            }
+
+            if (model !== undefined) {
+                for(var index = 0; index < model.count; index++) {
+                    var item = model.get(index);
+                    var modelSetting = item['setting'];
+                    if (modelSetting != setting) {
+                        continue;
+                    }
+
+                    model.get(index).value = value;
+                }
+            }
         }
     }
 

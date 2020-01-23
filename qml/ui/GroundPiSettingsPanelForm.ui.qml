@@ -9,6 +9,7 @@ import OpenHD 1.0
 Item {
     property alias save: save
     property alias showSavedCheckmark: savedCheckmark.visible
+    property bool isPreset: groundPiSettings.currentIndex == 0
 
     Layout.fillHeight: true
     Layout.fillWidth: true
@@ -23,6 +24,13 @@ Item {
         anchors.top: parent.top
         clip: true
 
+        TabButton {
+            y: 0
+            text: qsTr("Presets")
+            width: implicitWidth
+            height: 48
+            font.pixelSize: 13
+        }
         TabButton {
             y: 0
             text: qsTr("General")
@@ -81,6 +89,12 @@ Item {
 
 
         currentIndex: groundPiSettingsBar.currentIndex
+
+        GroundPiSettingsPresetView {
+            id: presetTab
+            width: parent.width
+            height: parent.height
+        }
 
         GroundPiSettingsListView {
             id: generalTab
@@ -179,7 +193,7 @@ Item {
 
             Button {
                 id: save
-                text: qsTr("Save")
+                text: groundPiSettingsBar.currentIndex == 0 ? qsTr("Apply preset") : qsTr("Save")
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                 enabled: !openHDSettings.loading && !openHDSettings.saving
                 Layout.columnSpan: 1
