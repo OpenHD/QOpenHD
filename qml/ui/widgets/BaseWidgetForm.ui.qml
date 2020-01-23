@@ -24,6 +24,8 @@ Rectangle {
     // detail popover
     property Item widgetDetailComponent: Item {}
     property bool hasWidgetDetail: false
+    property int widgetDetailWidth: 256
+    property int widgetDetailHeight: 164
 
     property Popup widgetPopup: Popup {}
     property bool hasWidgetPopup: false
@@ -32,9 +34,9 @@ Rectangle {
         id: widgetDetail
 
 
-        width: 256
+        width: widgetDetailWidth
         // the alignment dropdown isn't necessary on the ground station so we hide it
-        height: 164
+        height: widgetDetailHeight
 
         background: Rectangle {
             color: "#8a000000"
