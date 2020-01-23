@@ -15,7 +15,6 @@ Item {
 
     TabBar {
         id: groundPiSettingsBar
-        width: parent.width
         height: 48
         anchors.right: parent.right
         anchors.rightMargin: 0
