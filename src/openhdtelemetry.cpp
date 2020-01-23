@@ -29,6 +29,8 @@ void OpenHDTelemetry::init() {
 #endif
     connect(telemetrySocket, &QUdpSocket::readyRead, this, &OpenHDTelemetry::processDatagrams);
 
+    connect(&m_stateLoopTimer, &QTimer::timeout, this, &OpenHDTelemetry::stateLoop);
+    m_stateLoopTimer.start(200);
 }
 
 
@@ -46,6 +48,21 @@ void OpenHDTelemetry::processDatagrams() {
         }
     }
 }
+
+
+
+void OpenHDTelemetry::stateLoop() {
+    QMutexLocker locker(&stateLock);
+
+    qint64 current_timestamp = QDateTime::currentMSecsSinceEpoch();
+    m_last_heartbeat_raw = current_timestamp - last_heartbeat_timestamp;
+    if (m_last_heartbeat_raw < 0 || m_last_heartbeat_raw > 300000) {
+        set_last_heartbeat(tr("N/A"));
+    } else {
+        set_last_heartbeat(QString(tr("%1ms").arg(m_last_heartbeat_raw)));
+    }
+}
+
 
 
 void OpenHDTelemetry::processOpenHDTelemetry(wifibroadcast_rx_status_forward_t telemetry) {
@@ -94,10 +111,8 @@ void OpenHDTelemetry::processOpenHDTelemetry(wifibroadcast_rx_status_forward_t t
     OpenHD::instance()->set_temp_air(telemetry.temp_air);
 
     qint64 current_timestamp = QDateTime::currentMSecsSinceEpoch();
+    QMutexLocker locker(&stateLock);
 
-    auto diff = (current_timestamp - last_heartbeat_timestamp) / 1024;
-
-    set_last_heartbeat(QString(tr("%1ms").arg(current_timestamp - last_heartbeat_timestamp)));
     last_heartbeat_timestamp = current_timestamp;
 }
 

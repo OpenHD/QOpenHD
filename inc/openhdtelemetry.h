@@ -28,10 +28,16 @@ private slots:
     void processOpenHDTelemetry(wifibroadcast_rx_status_forward_t telemetry);
 private:
     void init();
+    void stateLoop();
 
     QUdpSocket *telemetrySocket = nullptr;
 
+    QMutex stateLock;
+    QTimer m_stateLoopTimer;
+
     QString m_last_heartbeat = "N/A";
+    qint64 m_last_heartbeat_raw = -1;
+
     qint64 last_heartbeat_timestamp;
 };
 
