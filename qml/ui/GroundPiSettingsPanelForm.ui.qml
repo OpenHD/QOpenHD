@@ -21,7 +21,7 @@ Item {
         anchors.left: parent.left
         anchors.leftMargin: 0
         anchors.top: parent.top
-
+        clip: true
 
         TabButton {
             y: 0
