@@ -68,7 +68,7 @@ void OpenHDTelemetry::stateLoop() {
 void OpenHDTelemetry::processOpenHDTelemetry(wifibroadcast_rx_status_forward_t telemetry) {
     // find adapter with best signal. right now just uses the signal level, but should
     // also store the index in a property so it can be highlighted in the adapter list popup
-    int current_best = 0;
+    int current_best = -127;
 
     QList<QVariantMap> wifiAdapters;
 
@@ -81,7 +81,7 @@ void OpenHDTelemetry::processOpenHDTelemetry(wifibroadcast_rx_status_forward_t t
         wifiAdapter.insert("signal_good", QVariant(adapter.signal_good));
         wifiAdapters.append(wifiAdapter);
 
-        if (adapter.current_signal_dbm < current_best) {
+        if (adapter.current_signal_dbm > current_best) {
             current_best = adapter.current_signal_dbm;
         }
     }
