@@ -240,7 +240,7 @@ BaseWidget {
             width: 34
             height: 24
             color: "#ffffff"
-            text: OpenHD.downlink_rssi
+            text: OpenHD.downlink_rssi == -127 ? qsTr("N/A") : OpenHD.downlink_rssi
             anchors.left: downlink_icon.right
             anchors.leftMargin: 0
             anchors.top: parent.top
