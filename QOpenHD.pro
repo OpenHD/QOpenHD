@@ -68,6 +68,7 @@ HEADERS += \
     inc/localmessage_t.h \
     inc/ltmtelemetry.h \
     inc/mavlinktelemetry.h \
+    inc/migration.hpp \
     inc/msptelemetry.h \
     inc/openhd.h \
     inc/openhdpi.h \
