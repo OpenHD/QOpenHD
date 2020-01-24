@@ -3,6 +3,7 @@ import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
 import QtGraphicalEffects 1.12
 import Qt.labs.settings 1.0
+import QtQuick.Shapes 1.0
 
 import OpenHD 1.0
 
@@ -140,6 +141,24 @@ BaseWidget {
                 font.bold: true;
                 font.pixelSize: detailPanelFontPixels;
                 anchors.right: parent.right
+            }
+        }
+
+
+        Shape {
+            id: line
+            height: 24
+            width: parent.width
+
+            ShapePath {
+                strokeColor: "white"
+                strokeWidth: 2
+                strokeStyle: ShapePath.SolidLine
+                fillColor: "transparent"
+                startX: 0
+                startY: 12
+                PathLine { x: 0;          y: 12 }
+                PathLine { x: line.width; y: 12 }
             }
         }
 
