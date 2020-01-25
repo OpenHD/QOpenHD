@@ -141,6 +141,26 @@ Rectangle {
                 checked: uplinkRSSIAxis.visible
                 onCheckedChanged: uplinkRSSIAxis.visible = checked
             }
+
+            ColoredCheckbox {
+                padding: 0
+                Layout.row: 0
+                Layout.column: 4
+                text: "Injection Fail"
+                boxColor: injectionFailAxis.color
+                checked: injectionFailAxis.visible
+                onCheckedChanged: injectionFailAxis.visible = checked
+            }
+
+            ColoredCheckbox {
+                padding: 0
+                Layout.row: 1
+                Layout.column: 4
+                text: "Skipped Packets"
+                boxColor: skippedPacketAxis.color
+                checked: skippedPacketAxis.visible
+                onCheckedChanged: skippedPacketAxis.visible = checked
+            }
         //}
     }
 
@@ -167,6 +187,12 @@ Rectangle {
 
         property int damagedBlocksLast: 0
         property int damagedBlocksMax: 0
+
+        property int injectionFailLast: 0
+        property int injectionFailMax: 0
+
+        property int skippedPacketsLast: 0
+        property int skippedPacketsMax: 0
 
         ValueAxis {
             id: valueAxis
@@ -283,6 +309,27 @@ Rectangle {
             useOpenGL: true
         }
 
+
+        LineSeries {
+            id: injectionFailAxis
+            name: "Injection Fail"
+            axisX: valueAxis
+            axisY: countYAxis
+            color: "teal"
+            width: 2
+            useOpenGL: true
+        }
+
+        LineSeries {
+            id: skippedPacketAxis
+            name: "Skipped packets"
+            axisX: valueAxis
+            axisY: countYAxis
+            color: "violet"
+            width: 2
+            useOpenGL: true
+        }
+
         Connections {
             target: OpenHD
 
@@ -298,6 +345,18 @@ Rectangle {
                     damagedBlockAxis.append(chart.chartData, damagedBlocksDifference);
                 }
                 chart.damagedBlocksLast = OpenHD.damaged_block_cnt;
+
+                if (chart.injectionFailLast != 0) {
+                    var injectionFailDifference = OpenHD.injection_fail_cnt - chart.injectionFailLast;
+                    injectionFailAxis.append(chart.chartData, injectionFailDifference);
+                }
+                chart.injectionFailLast = OpenHD.injection_fail_cnt;
+
+                if (chart.skippedPacketsLast != 0) {
+                    var skippedPacketDifference = OpenHD.skipped_packet_cnt - chart.skippedPacketsLast;
+                    skippedPacketAxis.append(chart.chartData, skippedPacketDifference);
+                }
+                chart.skippedPacketsLast = OpenHD.skipped_packet_cnt;
 
                 airCPUAxis.append(chart.chartData, OpenHD.cpuload_air);
                 gndCPUAxis.append(chart.chartData, OpenHD.cpuload_gnd);
@@ -322,6 +381,9 @@ Rectangle {
 
                     downlinkRSSIAxis.remove(1);
                     uplinkRSSIAxis.remove(1);
+
+                    injectionFailAxis.remove(1);
+                    skippedPacketAxis.remove(1);
                 }
             }
         }
