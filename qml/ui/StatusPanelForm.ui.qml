@@ -121,6 +121,26 @@ Rectangle {
                 checked: damagedBlockAxis.visible
                 onCheckedChanged: damagedBlockAxis.visible = checked
             }
+
+            ColoredCheckbox {
+                padding: 0
+                Layout.row: 1
+                Layout.column: 3
+                text: "Downlink RSSI"
+                boxColor: downlinkRSSIAxis.color
+                checked: downlinkRSSIAxis.visible
+                onCheckedChanged: downlinkRSSIAxis.visible = checked
+            }
+
+            ColoredCheckbox {
+                padding: 0
+                Layout.row: 0
+                Layout.column: 3
+                text: "Uplink RSSI"
+                boxColor: uplinkRSSIAxis.color
+                checked: uplinkRSSIAxis.visible
+                onCheckedChanged: uplinkRSSIAxis.visible = checked
+            }
         //}
     }
 
@@ -153,6 +173,15 @@ Rectangle {
             min: 0
             max: 300
             labelsVisible: false
+            color: "black"
+        }
+
+        ValueAxis {
+            id: dbYAxis
+            min: -90
+            max: 0
+            labelFormat: "%d dB"
+            tickCount: 11
             color: "black"
         }
 
@@ -234,6 +263,26 @@ Rectangle {
             useOpenGL: true
         }
 
+        LineSeries {
+            id: downlinkRSSIAxis
+            name: "Downlink RSSI"
+            axisX: valueAxis
+            axisY: dbYAxis
+            color: "lime"
+            width: 2
+            useOpenGL: true
+        }
+
+        LineSeries {
+            id: uplinkRSSIAxis
+            name: "Uplink RSSI"
+            axisX: valueAxis
+            axisY: dbYAxis
+            color: "tan"
+            width: 2
+            useOpenGL: true
+        }
+
         Connections {
             target: OpenHD
 
@@ -254,6 +303,8 @@ Rectangle {
                 gndCPUAxis.append(chart.chartData, OpenHD.cpuload_gnd);
                 airTempAxis.append(chart.chartData, OpenHD.temp_air);
                 gndTempAxis.append(chart.chartData, OpenHD.temp_gnd);
+                downlinkRSSIAxis.append(chart.chartData, OpenHD.downlink_rssi);
+                uplinkRSSIAxis.append(chart.chartData, OpenHD.current_signal_joystick_uplink);
 
                 chart.chartData++;
 
@@ -268,6 +319,9 @@ Rectangle {
                     gndCPUAxis.remove(1);
                     airTempAxis.remove(1);
                     gndTempAxis.remove(1);
+
+                    downlinkRSSIAxis.remove(1);
+                    uplinkRSSIAxis.remove(1);
                 }
             }
         }
