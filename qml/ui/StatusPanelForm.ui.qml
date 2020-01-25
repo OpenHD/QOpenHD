@@ -85,40 +85,4 @@ Rectangle {
             font.pixelSize: 12
         }
     }
-
-
-    /*
-        Rectangle {
-            id: gamepadRow
-            height: 32
-            Layout.leftMargin: 0
-            width: parent.width
-
-            Layout.fillWidth: true
-            Layout.rowSpan: 1
-            Layout.columnSpan: 8
-
-            Text {
-                id: gamepadText
-                width: 192
-                height: parent.height
-                font.bold: true
-                text: qsTr("Connected gamepad:")
-                anchors.left: parent.left
-                anchors.leftMargin: 12
-                verticalAlignment: Text.AlignVCenter
-            }
-
-            Text {
-                id: gamepadValue
-                width: 128
-                height: parent.height
-                text: openHDRC.selectedGamepadName !== undefined ? openHDRC.selectedGamepadName : "N/A"
-                horizontalAlignment: Text.AlignRight
-                anchors.rightMargin: 12
-                anchors.right: parent.right
-                elide: Text.ElideRight
-                verticalAlignment: Text.AlignVCenter
-            }
-        }*/
 }
