@@ -1,4 +1,4 @@
-#include <QGuiApplication>
+#include <QApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlComponent>
 #include <QDebug>
@@ -47,7 +47,7 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 
 int main(int argc, char *argv[]) {
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-    QGuiApplication app(argc, argv);
+    QApplication app(argc, argv);
 
     QCoreApplication::setOrganizationName("Open.HD");
     QCoreApplication::setOrganizationDomain("open.hd");
