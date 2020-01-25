@@ -87,5 +87,7 @@
         <file>ui/widgets/GroundPowerWidgetForm.ui.qml</file>
         <file>ui/GroundPiSettingsPresetView.ui.qml</file>
         <file>ui/PresetMap.qml</file>
+        <file>ui/elements/ColoredCheckboxForm.ui.qml</file>
+        <file>ui/elements/ColoredCheckbox.qml</file>
     </qresource>
 </RCC>
