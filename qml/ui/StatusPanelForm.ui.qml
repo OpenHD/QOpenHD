@@ -161,12 +161,23 @@ Rectangle {
                 checked: skippedPacketAxis.visible
                 onCheckedChanged: skippedPacketAxis.visible = checked
             }
+
+            ColoredCheckbox {
+                padding: 0
+                Layout.row: 2
+                Layout.column: 0
+                text: "Bitrate"
+                boxColor: bitrateAxis.color
+                checked: bitrateAxis.visible
+                onCheckedChanged: bitrateAxis.visible = checked
+            }
         //}
     }
 
     ChartView {
         id: chart
         legend.visible: false
+        visible: settings_panel.visible
 
         anchors {
             top: topRow.bottom
@@ -330,6 +341,17 @@ Rectangle {
             useOpenGL: true
         }
 
+        LineSeries {
+            id: bitrateAxis
+            name: "Bitrate"
+
+            axisX: valueAxis
+            axisY: countYAxis
+            color: "blue"
+            width: 2
+            useOpenGL: true
+        }
+
         Connections {
             target: OpenHD
 
@@ -365,6 +387,8 @@ Rectangle {
                 downlinkRSSIAxis.append(chart.chartData, OpenHD.downlink_rssi);
                 uplinkRSSIAxis.append(chart.chartData, OpenHD.current_signal_joystick_uplink);
 
+                bitrateAxis.append(chart.chartData, OpenHD.kbitrate / 1024);
+
                 chart.chartData++;
 
                 if (chart.chartData > 300) {
@@ -384,6 +408,8 @@ Rectangle {
 
                     injectionFailAxis.remove(1);
                     skippedPacketAxis.remove(1);
+
+                    bitrateAxis.remove(1);
                 }
             }
         }
