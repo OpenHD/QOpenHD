@@ -28,7 +28,7 @@ BaseWidget {
             height: 24
             Text { text: "Voltage:";  color: "white"; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.left: parent.left }
             Text {
-                text: Number(OpenHD.battery_voltage/1000.0).toLocaleString(Qt.locale(), 'f', 1) + "V";
+                text: Number(OpenHD.battery_voltage).toLocaleString(Qt.locale(), 'f', 1) + "V";
                 color: "white";
                 font.bold: true;
                 font.pixelSize: detailPanelFontPixels;
