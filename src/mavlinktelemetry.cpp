@@ -147,7 +147,7 @@ void MavlinkTelemetry::stateLoop() {
                 state = MavlinkStateGetParameters;
                 resetParamVars();
                 fetchParameters();
-                LocalMessage::instance()->showMessage("Connecting to drone", 2);
+                LocalMessage::instance()->showMessage("Connecting to drone", 0);
             }
             break;
         }
@@ -160,7 +160,7 @@ void MavlinkTelemetry::stateLoop() {
                 resetParamVars();
                 m_ground_available = false;
                 state = MavlinkStateDisconnected;
-                LocalMessage::instance()->showMessage("Connection to drone lost (E1)", 4);
+                LocalMessage::instance()->showMessage("Connection to drone lost (E1)", 0);
             }
 
             if ((parameterCount != 0) && parameterIndex == (parameterCount - 1)) {
@@ -172,7 +172,7 @@ void MavlinkTelemetry::stateLoop() {
                 resetParamVars();
                 m_ground_available = false;
                 state = MavlinkStateDisconnected;
-                LocalMessage::instance()->showMessage("Connection to drone lost (E2)", 4);
+                LocalMessage::instance()->showMessage("Connection to drone lost (E2)", 0);
             }
             break;
         }
@@ -183,7 +183,7 @@ void MavlinkTelemetry::stateLoop() {
                 resetParamVars();
                 m_ground_available = false;
                 state = MavlinkStateDisconnected;
-                LocalMessage::instance()->showMessage("Connection to drone lost (E3)", 4);
+                LocalMessage::instance()->showMessage("Connection to drone lost (E3)", 0);
             }
 
             break;
