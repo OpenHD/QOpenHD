@@ -62,6 +62,7 @@ SOURCES += \
 RESOURCES += qml/qml.qrc
 
 HEADERS += \
+    inc/sharedqueue.h \
     inc/constants.h \
     inc/frskytelemetry.h \
     inc/localmessage.h \
