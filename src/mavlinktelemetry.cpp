@@ -26,11 +26,10 @@
 
 MavlinkTelemetry::MavlinkTelemetry(QObject *parent): QObject(parent), m_ground_available(false) {
     qDebug() << "MavlinkTelemetry::MavlinkTelemetry()";
-    init();
 }
 
-void MavlinkTelemetry::init() {
-    qDebug() << "MavlinkTelemetry::init()";
+void MavlinkTelemetry::onStarted() {
+    qDebug() << "MavlinkTelemetry::onStarted()";
 
     mavlinkSocket = new QUdpSocket(this);
     mavlinkSocket->bind(QHostAddress::Any, MAVLINK_LOCAL_PORT);

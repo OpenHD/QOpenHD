@@ -50,13 +50,15 @@ signals:
     void loadingChanged(bool loading);
     void savingChanged(bool saving);
 
+public slots:
+    void onStarted();
+
 private slots:
     void processMavlinkDatagrams();
 
     void processMavlinkMessage(mavlink_message_t msg);
 
 private:
-    void init();
     void stateLoop();
     bool isConnectionLost();
     void resetParamVars();

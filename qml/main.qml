@@ -98,12 +98,8 @@ ApplicationWindow {
         onGroundStationIPUpdated: {
             link.setGroundIP(address)
             openHDRC.setGroundIP(address)
-            mavlinkTelemetry.setGroundIP(address)
+            MavlinkTelemetry.setGroundIP(address)
         }
-    }
-
-    MavlinkTelemetry {
-        id: mavlinkTelemetry
     }
 
     //FrSkyTelemetry {

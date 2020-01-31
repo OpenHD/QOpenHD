@@ -32,7 +32,7 @@ Rectangle {
     Label {
         id: mavLabel
         color: "black"
-        text: "Last mavlink heartbeat: " + (mavlinkTelemetry.last_heartbeat !== undefined ? mavlinkTelemetry.last_heartbeat : "N/A")
+        text: "Last mavlink heartbeat: " + (MavlinkTelemetry.last_heartbeat !== undefined ? MavlinkTelemetry.last_heartbeat : "N/A")
         font.pixelSize: 12
         anchors.bottom: parent.bottom
         anchors.right: parent.right

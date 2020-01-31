@@ -102,7 +102,6 @@ int main(int argc, char *argv[]) {
     QFontDatabase::addApplicationFont(":/osdicons.ttf");
 
     QFontDatabase::addApplicationFont(":/materialdesignicons-webfont.ttf");
-    qmlRegisterType<MavlinkTelemetry>("OpenHD", 1, 0, "MavlinkTelemetry");
     qmlRegisterType<FrSkyTelemetry>("OpenHD", 1, 0, "FrSkyTelemetry");
     qmlRegisterType<MSPTelemetry>("OpenHD", 1, 0, "MSPTelemetry");
     qmlRegisterType<LTMTelemetry>("OpenHD", 1, 0, "LTMTelemetry");
@@ -132,6 +131,13 @@ int main(int argc, char *argv[]) {
 
 
     QQmlApplicationEngine engine;
+    auto mavlinkTelemetry = new MavlinkTelemetry;
+    engine.rootContext()->setContextProperty("MavlinkTelemetry", mavlinkTelemetry);
+    QThread *mavlinkThread = new QThread();
+    QObject::connect(mavlinkThread, &QThread::started, mavlinkTelemetry, &MavlinkTelemetry::onStarted);
+    mavlinkTelemetry->moveToThread(mavlinkThread);
+    mavlinkThread->start();
+
 
     auto openhdTelemetry = new OpenHDTelemetry;
     engine.rootContext()->setContextProperty("OpenHDTelemetry", openhdTelemetry);
