@@ -25,9 +25,12 @@
 #define MAVLINK_LOCAL_PORT 14550
 
 
-static MavlinkTelemetry* _instance = new MavlinkTelemetry();
+static MavlinkTelemetry* _instance = nullptr;
 
 MavlinkTelemetry* MavlinkTelemetry::instance() {
+    if (_instance == nullptr) {
+        _instance = new MavlinkTelemetry();
+    }
     return _instance;
 }
 
