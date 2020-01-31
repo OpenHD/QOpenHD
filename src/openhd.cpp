@@ -9,7 +9,14 @@
 #include <gst/gst.h>
 
 
-static OpenHD* _instance = new OpenHD();
+static OpenHD* _instance = nullptr;
+
+OpenHD* OpenHD::instance() {
+    if (_instance == nullptr) {
+        _instance = new OpenHD();
+    }
+    return _instance;
+}
 
 OpenHD::OpenHD(QObject *parent): QObject(parent) {
 
@@ -27,11 +34,6 @@ OpenHD::OpenHD(QObject *parent): QObject(parent) {
     auto openhd = OpenHDTelemetry::instance();
     connect(openhd, &OpenHDTelemetry::last_heartbeat_changed, this, &OpenHD::set_last_openhd_heartbeat);
 }
-
-OpenHD* OpenHD::instance() {
-    return _instance;
-}
-
 
 void OpenHD::init() {
     //emit gstreamer_version_changed();
