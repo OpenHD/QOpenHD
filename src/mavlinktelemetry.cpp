@@ -121,8 +121,6 @@ void MavlinkTelemetry::resetParamVars() {
 
 
 void MavlinkTelemetry::stateLoop() {
-    QMutexLocker locker(&stateLock);
-
     qint64 current_timestamp = QDateTime::currentMSecsSinceEpoch();
     m_last_heartbeat_raw = current_timestamp - last_heartbeat_timestamp;
     if (m_last_heartbeat_raw < 0 || m_last_heartbeat_raw > 300000) {
@@ -255,7 +253,6 @@ void MavlinkTelemetry::processMavlinkMessage(mavlink_message_t msg) {
                     }
 
                     qint64 current_timestamp = QDateTime::currentMSecsSinceEpoch();
-                    QMutexLocker locker(&stateLock);
 
                     last_heartbeat_timestamp = current_timestamp;
                     break;
@@ -283,8 +280,6 @@ void MavlinkTelemetry::processMavlinkMessage(mavlink_message_t msg) {
             break;
         }
         case MAVLINK_MSG_ID_PARAM_VALUE:{
-            QMutexLocker locker(&stateLock);
-
             mavlink_param_value_t param;
             mavlink_msg_param_value_decode(&msg, &param);
 

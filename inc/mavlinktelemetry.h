@@ -85,7 +85,6 @@ private:
 
     qint64 last_heartbeat_timestamp;
 
-    QMutex stateLock;
     QTimer m_stateLoopTimer;
 
     bool m_loading = false;

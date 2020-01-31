@@ -32,7 +32,6 @@ private:
 
     QUdpSocket *telemetrySocket = nullptr;
 
-    QMutex stateLock;
     QTimer m_stateLoopTimer;
 
     QString m_last_heartbeat = "N/A";
