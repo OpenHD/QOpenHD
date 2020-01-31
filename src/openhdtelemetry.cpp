@@ -14,9 +14,12 @@
 #include "openhd.h"
 
 
-static OpenHDTelemetry* _instance = new OpenHDTelemetry();
+static OpenHDTelemetry* _instance = nullptr;
 
 OpenHDTelemetry* OpenHDTelemetry::instance() {
+    if (_instance == nullptr) {
+        _instance = new OpenHDTelemetry();
+    }
     return _instance;
 }
 
