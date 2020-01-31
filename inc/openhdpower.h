@@ -12,7 +12,6 @@ class OpenHDPower : public QObject {
 
 public:
     explicit OpenHDPower(QObject *parent = nullptr);
-    void init();
     static OpenHDPower* instance();
 
     Q_PROPERTY(QString battery_percent MEMBER m_battery_percent WRITE set_battery_percent NOTIFY battery_percent_changed)
@@ -55,8 +54,6 @@ public:
     void set_vbat_is_lifepo4(bool vbat_is_lifepo4);
 
 private:
-    void update();
-
     QString m_battery_percent = "0%";
     QString m_battery_gauge = "\uf091";
 

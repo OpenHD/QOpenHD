@@ -13,27 +13,12 @@ static OpenHDPower* _instance = new OpenHDPower();
 
 OpenHDPower::OpenHDPower(QObject *parent) : QObject(parent) {
     qDebug() << "OpenHDPower::OpenHDPower()";
-    init();
 }
 
 OpenHDPower* OpenHDPower::instance() {
     return _instance;
 }
 
-
-void OpenHDPower::init() {
-    qDebug() << "OpenHDPower::init()";
-
-    auto timer = new QTimer(this);
-    timer->setSingleShot(false);
-    connect(timer, &QTimer::timeout, this, &OpenHDPower::update);
-    timer->start(1000);
-}
-
-
-void OpenHDPower::update() {
-    qDebug() << "OpenHDPower::update()";
-}
 
 void OpenHDPower::set_vin(QString vin) {
     m_vin = vin;
@@ -107,13 +92,4 @@ void OpenHDPower::set_battery_percent(QString battery_percent) {
 void OpenHDPower::set_battery_gauge(QString battery_gauge) {
     m_battery_gauge = battery_gauge;
     emit battery_gauge_changed(m_battery_gauge);
-}
-
-
-QObject *openHDPowerSingletonProvider(QQmlEngine *engine, QJSEngine *scriptEngine) {
-    Q_UNUSED(engine)
-    Q_UNUSED(scriptEngine)
-
-    OpenHDPower *s = new OpenHDPower();
-    return s;
 }
