@@ -131,7 +131,7 @@ int main(int argc, char *argv[]) {
 
 
     QQmlApplicationEngine engine;
-    auto mavlinkTelemetry = new MavlinkTelemetry;
+    auto mavlinkTelemetry = MavlinkTelemetry::instance();
     engine.rootContext()->setContextProperty("MavlinkTelemetry", mavlinkTelemetry);
     QThread *mavlinkThread = new QThread();
     QObject::connect(mavlinkThread, &QThread::started, mavlinkTelemetry, &MavlinkTelemetry::onStarted);

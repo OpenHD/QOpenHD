@@ -24,6 +24,13 @@
 
 #define MAVLINK_LOCAL_PORT 14550
 
+
+static MavlinkTelemetry* _instance = new MavlinkTelemetry();
+
+MavlinkTelemetry* MavlinkTelemetry::instance() {
+    return _instance;
+}
+
 MavlinkTelemetry::MavlinkTelemetry(QObject *parent): QObject(parent), m_ground_available(false) {
     qDebug() << "MavlinkTelemetry::MavlinkTelemetry()";
 }

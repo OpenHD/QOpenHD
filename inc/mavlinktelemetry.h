@@ -27,6 +27,7 @@ class MavlinkTelemetry: public QObject {
 
 public:
     explicit MavlinkTelemetry(QObject *parent = nullptr);
+    static MavlinkTelemetry* instance();
 
     Q_INVOKABLE QVariantMap getAllParameters();
 
