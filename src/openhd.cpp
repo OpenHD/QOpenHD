@@ -14,6 +14,10 @@ OpenHD::OpenHD(QObject *parent): QObject(parent) {
     m_speech = new QTextToSpeech(this);
 #endif
 
+    timer = new QTimer(this);
+    QObject::connect(timer, &QTimer::timeout, this, &OpenHD::updateFlightTimer);
+    timer->start(1000);
+
 }
 
 OpenHD* OpenHD::instance() {

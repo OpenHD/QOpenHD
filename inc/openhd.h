@@ -344,6 +344,8 @@ private:
     QVariantMap m_wifi_adapter5;
 
     QTime flightTimeStart;
+
+    QTimer* timer = nullptr;
 };
 
 

@@ -118,10 +118,6 @@ int main(int argc, char *argv[]) {
 
     auto openhdpower = OpenHDPower::instance();
 
-    QTimer timer;
-    QObject::connect(&timer, &QTimer::timeout, openhd, &OpenHD::updateFlightTimer);
-    timer.start(1000);
-
 #if defined(ENABLE_MAIN_VIDEO)
     OpenHDVideoStream* stream = new OpenHDVideoStream(argc, argv);
 #endif
