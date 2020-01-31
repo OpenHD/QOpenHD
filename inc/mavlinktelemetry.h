@@ -37,15 +37,15 @@ public:
     Q_PROPERTY(bool saving MEMBER m_saving WRITE set_saving NOTIFY savingChanged)
     void set_saving(bool saving);
 
-    Q_PROPERTY(QString last_heartbeat MEMBER m_last_heartbeat WRITE set_last_heartbeat NOTIFY last_heartbeat_changed)
-    void set_last_heartbeat(QString last_heartbeat);
+    Q_PROPERTY(qint64 last_heartbeat MEMBER m_last_heartbeat WRITE set_last_heartbeat NOTIFY last_heartbeat_changed)
+    void set_last_heartbeat(qint64 last_heartbeat);
 
     Q_INVOKABLE void setGroundIP(QString address);
 
     Q_INVOKABLE void fetchParameters();
 
 signals:
-    void last_heartbeat_changed(QString last_heartbeat);
+    void last_heartbeat_changed(qint64 last_heartbeat);
     void allParametersChanged();
 
     void loadingChanged(bool loading);
@@ -83,10 +83,9 @@ private:
 
     mavlink_status_t r_mavlink_status;
 
-    QString m_last_heartbeat = "N/A";
-    qint64 m_last_heartbeat_raw = -1;
+    qint64 m_last_heartbeat = -1;
 
-    qint64 last_heartbeat_timestamp;
+    qint64 last_heartbeat_timestamp = 0;
 
     QTimer* timer = nullptr;
 

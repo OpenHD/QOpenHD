@@ -60,12 +60,7 @@ void OpenHDTelemetry::processDatagrams() {
 
 void OpenHDTelemetry::stateLoop() {
     qint64 current_timestamp = QDateTime::currentMSecsSinceEpoch();
-    m_last_heartbeat_raw = current_timestamp - last_heartbeat_timestamp;
-    if (m_last_heartbeat_raw < 0 || m_last_heartbeat_raw > 300000) {
-        set_last_heartbeat(tr("N/A"));
-    } else {
-        set_last_heartbeat(QString(tr("%1ms").arg(m_last_heartbeat_raw)));
-    }
+    set_last_heartbeat(current_timestamp - last_heartbeat_timestamp);
 }
 
 
@@ -135,7 +130,7 @@ void OpenHDTelemetry::processOpenHDTelemetry(wifibroadcast_rx_status_forward_t t
 }
 
 
-void OpenHDTelemetry::set_last_heartbeat(QString last_heartbeat) {
+void OpenHDTelemetry::set_last_heartbeat(qint64 last_heartbeat) {
     m_last_heartbeat = last_heartbeat;
     emit last_heartbeat_changed(m_last_heartbeat);
 }

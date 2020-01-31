@@ -1,5 +1,8 @@
 #include "openhd.h"
 
+#include "mavlinktelemetry.h"
+#include "openhdtelemetry.h"
+
 #include <GeographicLib/Geodesic.hpp>
 #include <GeographicLib/Math.hpp>
 
@@ -18,6 +21,11 @@ OpenHD::OpenHD(QObject *parent): QObject(parent) {
     QObject::connect(timer, &QTimer::timeout, this, &OpenHD::updateFlightTimer);
     timer->start(1000);
 
+    auto mavlink = MavlinkTelemetry::instance();
+    connect(mavlink, &MavlinkTelemetry::last_heartbeat_changed, this, &OpenHD::set_last_telemetry_heartbeat);
+
+    auto openhd = OpenHDTelemetry::instance();
+    connect(openhd, &OpenHDTelemetry::last_heartbeat_changed, this, &OpenHD::set_last_openhd_heartbeat);
 }
 
 OpenHD* OpenHD::instance() {

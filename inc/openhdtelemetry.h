@@ -17,11 +17,11 @@ public:
     static OpenHDTelemetry* instance();
 
 
-    Q_PROPERTY(QString last_heartbeat MEMBER m_last_heartbeat WRITE set_last_heartbeat NOTIFY last_heartbeat_changed)
-    void set_last_heartbeat(QString last_heartbeat);
+    Q_PROPERTY(qint64 last_heartbeat MEMBER m_last_heartbeat WRITE set_last_heartbeat NOTIFY last_heartbeat_changed)
+    void set_last_heartbeat(qint64 last_heartbeat);
 
 signals:
-    void last_heartbeat_changed(QString last_heartbeat);
+    void last_heartbeat_changed(qint64 last_heartbeat);
 
 public slots:
     void onStarted();
@@ -37,10 +37,9 @@ private:
 
     QTimer* timer = nullptr;
 
-    QString m_last_heartbeat = "N/A";
-    qint64 m_last_heartbeat_raw = -1;
+    qint64 m_last_heartbeat = -1;
 
-    qint64 last_heartbeat_timestamp;
+    qint64 last_heartbeat_timestamp = 0;
 };
 
 #endif
