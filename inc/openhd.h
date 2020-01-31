@@ -186,6 +186,13 @@ public:
     void set_flight_time(QString flight_time);
 
 
+    Q_PROPERTY(qint64 last_openhd_heartbeat MEMBER m_last_openhd_heartbeat WRITE set_last_openhd_heartbeat NOTIFY last_openhd_heartbeat_changed)
+    void set_last_openhd_heartbeat(qint64 last_openhd_heartbeat);
+
+    Q_PROPERTY(qint64 last_telemetry_heartbeat MEMBER m_last_telemetry_heartbeat WRITE set_last_telemetry_heartbeat NOTIFY last_telemetry_heartbeat_changed)
+    void set_last_telemetry_heartbeat(qint64 last_telemetry_heartbeat);
+
+
     Q_PROPERTY(QVariantMap wifi_adapter0 MEMBER m_wifi_adapter0 NOTIFY wifi_adapter0_changed)
     Q_PROPERTY(QVariantMap wifi_adapter1 MEMBER m_wifi_adapter1 NOTIFY wifi_adapter1_changed)
     Q_PROPERTY(QVariantMap wifi_adapter2 MEMBER m_wifi_adapter2 NOTIFY wifi_adapter2_changed)
@@ -261,6 +268,9 @@ signals:
 
     void flight_time_changed(QString flight_time);
 
+    void last_openhd_heartbeat_changed(qint64 last_openhd_heartbeat);
+
+    void last_telemetry_heartbeat_changed(qint64 last_telemetry_heartbeat);
 
 private:
 #if defined(ENABLE_SPEECH)
@@ -335,6 +345,9 @@ private:
     double m_throttle = 0;
 
     QString m_flight_time = "00:00";
+
+    qint64 m_last_openhd_heartbeat = -1;
+    qint64 m_last_telemetry_heartbeat = -1;
 
     QVariantMap m_wifi_adapter0;
     QVariantMap m_wifi_adapter1;

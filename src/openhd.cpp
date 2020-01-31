@@ -407,3 +407,14 @@ void OpenHD::set_flight_time(QString flight_time) {
     m_flight_time = flight_time;
     emit flight_time_changed(m_flight_time);
 }
+
+void OpenHD::set_last_openhd_heartbeat(qint64 last_openhd_heartbeat) {
+    m_last_openhd_heartbeat = last_openhd_heartbeat;
+    emit last_openhd_heartbeat_changed(m_last_openhd_heartbeat);
+}
+
+void OpenHD::set_last_telemetry_heartbeat(qint64 last_telemetry_heartbeat) {
+    m_last_telemetry_heartbeat = last_telemetry_heartbeat;
+    emit last_telemetry_heartbeat_changed(m_last_telemetry_heartbeat);
+}
+
