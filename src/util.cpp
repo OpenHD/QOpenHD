@@ -260,6 +260,8 @@ QString plane_mode_from_enum(PLANE_MODE mode) {
             return "RTL";
        case PLANE_MODE_LOITER:
             return "Loiter";
+       case PLANE_MODE_TAKEOFF:
+            return "Takeoff";
        case PLANE_MODE_AVOID_ADSB:
             return "Avoid ADSB";
        case PLANE_MODE_GUIDED:
