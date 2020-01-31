@@ -85,7 +85,7 @@ private:
 
     qint64 last_heartbeat_timestamp;
 
-    QTimer m_stateLoopTimer;
+    QTimer* timer = nullptr;
 
     bool m_loading = false;
     bool m_saving = false;

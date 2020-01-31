@@ -29,8 +29,9 @@ void OpenHDTelemetry::init() {
 #endif
     connect(telemetrySocket, &QUdpSocket::readyRead, this, &OpenHDTelemetry::processDatagrams);
 
-    connect(&m_stateLoopTimer, &QTimer::timeout, this, &OpenHDTelemetry::stateLoop);
-    m_stateLoopTimer.start(200);
+    timer = new QTimer(this);
+    connect(timer, &QTimer::timeout, this, &OpenHDTelemetry::stateLoop);
+    timer->start(200);
 }
 
 

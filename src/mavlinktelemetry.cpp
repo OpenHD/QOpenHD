@@ -36,9 +36,10 @@ void MavlinkTelemetry::init() {
     mavlinkSocket->bind(QHostAddress::Any, MAVLINK_LOCAL_PORT);
     connect(mavlinkSocket, &QUdpSocket::readyRead, this, &MavlinkTelemetry::processMavlinkDatagrams);
 
-    connect(&m_stateLoopTimer, &QTimer::timeout, this, &MavlinkTelemetry::stateLoop);
+    timer = new QTimer(this);
+    connect(timer, &QTimer::timeout, this, &MavlinkTelemetry::stateLoop);
     resetParamVars();
-    m_stateLoopTimer.start(200);
+    timer->start(200);
 }
 
 

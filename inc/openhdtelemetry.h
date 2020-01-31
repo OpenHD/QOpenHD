@@ -32,7 +32,7 @@ private:
 
     QUdpSocket *telemetrySocket = nullptr;
 
-    QTimer m_stateLoopTimer;
+    QTimer* timer = nullptr;
 
     QString m_last_heartbeat = "N/A";
     qint64 m_last_heartbeat_raw = -1;
