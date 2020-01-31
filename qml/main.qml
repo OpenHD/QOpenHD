@@ -102,10 +102,6 @@ ApplicationWindow {
         }
     }
 
-    OpenHDTelemetry {
-        id: openHDTelemetry
-    }
-
     MavlinkTelemetry {
         id: mavlinkTelemetry
     }

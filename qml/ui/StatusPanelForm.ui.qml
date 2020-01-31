@@ -19,7 +19,7 @@ Rectangle {
     Label {
         id: ohdLabel
         color: "black"
-        text: "Last openhd telemetry: " + (openHDTelemetry.last_heartbeat !== undefined ? openHDTelemetry.last_heartbeat : "N/A")
+        text: "Last openhd telemetry: " + (OpenHDTelemetry.last_heartbeat !== undefined ? OpenHDTelemetry.last_heartbeat : "N/A")
         font.pixelSize: 12
         anchors.bottom: parent.bottom
         anchors.left: parent.left

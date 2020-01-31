@@ -15,11 +15,10 @@
 
 OpenHDTelemetry::OpenHDTelemetry(QObject *parent): QObject(parent) {
     qDebug() << "OpenHDTelemetry::OpenHDTelemetry()";
-    init();
 }
 
-void OpenHDTelemetry::init() {
-    qDebug() << "OpenHDTelemetry::init()";
+void OpenHDTelemetry::onStarted() {
+    qDebug() << "OpenHDTelemetry::onStarted()";
     telemetrySocket = new QUdpSocket(this);
 
 #if defined(__rasp_pi__)

@@ -22,12 +22,14 @@ public:
 signals:
     void last_heartbeat_changed(QString last_heartbeat);
 
+public slots:
+    void onStarted();
+
 private slots:
     void processDatagrams();
 
     void processOpenHDTelemetry(wifibroadcast_rx_status_forward_t telemetry);
 private:
-    void init();
     void stateLoop();
 
     QUdpSocket *telemetrySocket = nullptr;
