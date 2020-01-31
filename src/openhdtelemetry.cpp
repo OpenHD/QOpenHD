@@ -13,6 +13,13 @@
 #include "openhdpi.h"
 #include "openhd.h"
 
+
+static OpenHDTelemetry* _instance = new OpenHDTelemetry();
+
+OpenHDTelemetry* OpenHDTelemetry::instance() {
+    return _instance;
+}
+
 OpenHDTelemetry::OpenHDTelemetry(QObject *parent): QObject(parent) {
     qDebug() << "OpenHDTelemetry::OpenHDTelemetry()";
 }

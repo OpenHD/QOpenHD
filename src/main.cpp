@@ -139,7 +139,7 @@ int main(int argc, char *argv[]) {
     mavlinkThread->start();
 
 
-    auto openhdTelemetry = new OpenHDTelemetry;
+    auto openhdTelemetry = OpenHDTelemetry::instance();
     engine.rootContext()->setContextProperty("OpenHDTelemetry", openhdTelemetry);
     QThread *telemetryThread = new QThread();
     QObject::connect(telemetryThread, &QThread::started, openhdTelemetry, &OpenHDTelemetry::onStarted);

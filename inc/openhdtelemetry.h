@@ -14,6 +14,7 @@ class OpenHDTelemetry: public QObject {
 
 public:
     explicit OpenHDTelemetry(QObject *parent = nullptr);
+    static OpenHDTelemetry* instance();
 
 
     Q_PROPERTY(QString last_heartbeat MEMBER m_last_heartbeat WRITE set_last_heartbeat NOTIFY last_heartbeat_changed)
