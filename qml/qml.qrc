@@ -89,5 +89,6 @@
         <file>ui/PresetMap.qml</file>
         <file>ui/elements/ColoredCheckboxForm.ui.qml</file>
         <file>ui/elements/ColoredCheckbox.qml</file>
+        <file>ui/FrequencyItem.qml</file>
     </qresource>
 </RCC>
