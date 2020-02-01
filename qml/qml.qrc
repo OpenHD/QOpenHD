@@ -89,6 +89,8 @@
         <file>ui/PresetMap.qml</file>
         <file>ui/elements/ColoredCheckboxForm.ui.qml</file>
         <file>ui/elements/ColoredCheckbox.qml</file>
+        <file>MainVideoAndroid.qml</file>
         <file>ui/FrequencyItem.qml</file>
+        <file>ui/widgets/VideoWidgetAndroidForm.ui.qml</file>
     </qresource>
 </RCC>
