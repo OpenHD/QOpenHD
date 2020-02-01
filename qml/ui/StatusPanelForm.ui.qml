@@ -177,7 +177,6 @@ Rectangle {
     ChartView {
         id: chart
         legend.visible: false
-        visible: settings_panel.visible
 
         anchors {
             top: topRow.bottom
