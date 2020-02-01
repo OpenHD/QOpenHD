@@ -352,10 +352,12 @@ Rectangle {
             useOpenGL: true
         }
 
-        Connections {
-            target: OpenHD
-
-            onLost_packet_cnt_changed: {
+        Timer {
+            id: chartTimer
+            running: true
+            interval: 1000
+            repeat: true
+            onTriggered: {
                 if (chart.lostPacketsLast != 0) {
                     var lostPacketsDifference = OpenHD.lost_packet_cnt - chart.lostPacketsLast;
                     lostPacketAxis.append(chart.chartData, lostPacketsDifference);
