@@ -258,7 +258,7 @@ AndroidBuild {
     CONFIG += EnableMainVideo
     CONFIG += EnablePiP
     CONFIG += EnableLink
-    CONFIG += EnableGStreamer
+    CONFIG += EnableVideoRender
     EnableGStreamer {
         OTHER_FILES += \
             $$PWD/android/src/org/openhd/OpenHDActivity.java
