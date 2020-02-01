@@ -122,6 +122,45 @@ int main(int argc, char *argv[]) {
 
     qmlRegisterType<QOpenHDLink>("OpenHD", 1,0, "QOpenHDLink");
 
+
+    QQmlApplicationEngine engine;
+
+#if defined(__android__)
+    engine.rootContext()->setContextProperty("IsAndroid", QVariant(true));
+#else
+    engine.rootContext()->setContextProperty("IsAndroid", QVariant(false));
+#endif
+
+#if defined(__ios__)
+    engine.rootContext()->setContextProperty("IsiOS", QVariant(true));
+#else
+    engine.rootContext()->setContextProperty("IsiOS", QVariant(false));
+#endif
+
+#if defined(__windows__)
+    engine.rootContext()->setContextProperty("IsWindows", QVariant(true));
+#else
+    engine.rootContext()->setContextProperty("IsWindows", QVariant(false));
+#endif
+
+#if defined(__desktoplinux__)
+    engine.rootContext()->setContextProperty("IsDesktopLinux", QVariant(true));
+#else
+    engine.rootContext()->setContextProperty("IsDesktopLinux", QVariant(false));
+#endif
+
+#if defined(__macos__)
+    engine.rootContext()->setContextProperty("IsMac", QVariant(true));
+#else
+    engine.rootContext()->setContextProperty("IsMac", QVariant(false));
+#endif
+
+#if defined(__rasp_pi__)
+    engine.rootContext()->setContextProperty("IsRaspPi", QVariant(true));
+#else
+    engine.rootContext()->setContextProperty("IsRaspPi", QVariant(false));
+#endif
+
     auto openhd = OpenHD::instance();
 
     auto openhdpower = OpenHDPower::instance();
@@ -139,7 +178,6 @@ engine.rootContext()->setContextProperty("EnableGStreamer", QVariant(false));
 #endif
 
 
-    QQmlApplicationEngine engine;
     auto mavlinkTelemetry = MavlinkTelemetry::instance();
     engine.rootContext()->setContextProperty("MavlinkTelemetry", mavlinkTelemetry);
     QThread *mavlinkThread = new QThread();
