@@ -6,8 +6,9 @@
 #include <GeographicLib/Geodesic.hpp>
 #include <GeographicLib/Math.hpp>
 
+#if defined(ENABLE_GSTREAMER)
 #include <gst/gst.h>
-
+#endif
 
 static OpenHD* _instance = nullptr;
 
@@ -40,6 +41,7 @@ void OpenHD::init() {
 }
 
 QString OpenHD::get_gstreamer_version() {
+#if defined(ENABLE_GSTREAMER)
     guint major, minor, micro, nano;
     gst_version(&major, &minor, &micro, &nano);
     QString gst_ver = QString();
@@ -52,6 +54,9 @@ QString OpenHD::get_gstreamer_version() {
     s << micro;
 
     return gst_ver;
+#else
+    return "N/A";
+#endif
 }
 
 QString OpenHD::get_qt_version() {

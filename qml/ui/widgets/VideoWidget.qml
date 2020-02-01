@@ -3,7 +3,13 @@ import QtQuick.Window 2.12
 import QtQuick.Layouts 1.12
 
 Loader {
-    source: EnablePiP ? "VideoWidgetForm.ui.qml" : ""
+    source: {
+        if (EnableGStreamer && EnablePiP) {
+            return "VideoWidgetForm.ui.qml"
+        }
+
+        return ""
+    }
     property bool isRunning: false;
 
     Connections {

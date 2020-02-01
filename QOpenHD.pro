@@ -56,7 +56,6 @@ SOURCES += \
     src/openhdrc.cpp \
     src/openhdsettings.cpp \
     src/openhdtelemetry.cpp \
-    src/openhdvideostream.cpp \
     src/qopenhdlink.cpp \
     src/util.cpp
 
@@ -79,7 +78,6 @@ HEADERS += \
     inc/openhdrc.h \
     inc/openhdsettings.h \
     inc/openhdtelemetry.h \
-    inc/openhdvideostream.h \
     inc/qopenhdlink.h \
     inc/util.h \
     inc/wifibroadcast.h
@@ -179,6 +177,7 @@ iOSBuild {
     CONFIG += EnableSpeech
     CONFIG += EnableMainVideo
     CONFIG += EnablePiP
+    CONFIG += EnableGStreamer
     CONFIG += EnableLink
 
     #QMAKE_POST_LINK += /usr/libexec/PlistBuddy -c \"Set :CFBundleShortVersionString $$APPLE_BUILD\" $$DESTDIR/$${TARGET}.app/Contents/Info.plist
@@ -205,6 +204,7 @@ MacBuild {
     CONFIG += EnableSpeech
     CONFIG += EnableMainVideo
     CONFIG += EnablePiP
+    CONFIG += EnableGStreamer
     CONFIG += EnableLink
 
     DEFINES += GST_GL_HAVE_WINDOW_COCOA=1
@@ -218,6 +218,7 @@ LinuxBuild {
     CONFIG += EnableJoysticks
     CONFIG += EnableMainVideo
     CONFIG += EnablePiP
+    CONFIG += EnableGStreamer
     CONFIG += EnableLink
 
     message("LinuxBuild - config")
@@ -241,6 +242,7 @@ WindowsBuild {
     CONFIG += EnableMainVideo
     #CONFIG +- EnablePiP
     CONFIG += EnableLink
+    CONFIG += EnableGStreamer
 
     DEFINES += GST_GL_HAVE_WINDOW_WIN32=1
     DEFINES += GST_GL_HAVE_PLATFORM_WGL=1
@@ -256,15 +258,18 @@ AndroidBuild {
     CONFIG += EnableMainVideo
     CONFIG += EnablePiP
     CONFIG += EnableLink
+    CONFIG += EnableGStreamer
+    EnableGStreamer {
+        OTHER_FILES += \
+            $$PWD/android/src/org/openhd/OpenHDActivity.java
+
+        DEFINES += GST_GL_HAVE_PLATFORM_EGL=1
+        DEFINES += GST_GL_HAVE_WINDOW_ANDROID=1
+        DEFINES += HAVE_QT_ANDROID
+    }
+
 
     QT += androidextras
-
-    OTHER_FILES += \
-        $$PWD/android/src/org/openhd/OpenHDActivity.java
-
-    DEFINES += GST_GL_HAVE_PLATFORM_EGL=1
-    DEFINES += GST_GL_HAVE_WINDOW_ANDROID=1
-    DEFINES += HAVE_QT_ANDROID
 }
 
 EnableSpeech {
@@ -278,6 +283,18 @@ EnableMainVideo {
     DEFINES += ENABLE_MAIN_VIDEO
 }
 
+EnableGStreamer {
+    DEFINES += ENABLE_GSTREAMER
+
+    SOURCES += \
+        src/openhdvideostream.cpp
+
+    HEADERS += \
+        inc/openhdvideostream.h
+
+    include ($$PWD/lib/VideoStreaming/VideoStreaming.pri)
+}
+
 EnablePiP {
     message("EnablePiP")
     DEFINES += ENABLE_PIP
@@ -289,7 +306,6 @@ EnableLink {
     HEADERS += lib/json.hpp
 }
 
-include ($$PWD/lib/VideoStreaming/VideoStreaming.pri)
 
 EnableRC {
     message("EnableRC")

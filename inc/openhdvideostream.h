@@ -1,3 +1,5 @@
+#if defined(ENABLE_GSTREAMER)
+
 #ifndef OpenHDVideoStream_H
 #define OpenHDVideoStream_H
 
@@ -59,3 +61,5 @@ private:
 };
 
 #endif // OpenHDVideoStream_H
+
+#endif

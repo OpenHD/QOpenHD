@@ -37,7 +37,7 @@ ApplicationWindow {
     // to be initialized, depending on the order they appear in the QML, will simply
     // not work on desktop linux.
     Loader {
-        source:  (EnableMainVideo && EnablePiP)  ? "DummyVideoItem.qml" : ""
+        source: (EnableGStreamer && EnableMainVideo && EnablePiP)  ? "DummyVideoItem.qml" : ""
     }
 
     /*
@@ -115,11 +115,14 @@ ApplicationWindow {
     //}
 
     Loader {
-        anchors.centerIn: parent
-        width: parent.width
-        height: parent.height
-        z: 1.0
-        source: EnableMainVideo ? "MainVideoItem.qml" : ""
+        anchors.fill: parent
+        z: 1.1
+        source: {
+            if (EnableGStreamer && EnableMainVideo) {
+                return "MainVideoItem.qml";
+            }
+            return ""
+        }
     }
 
     Connections {

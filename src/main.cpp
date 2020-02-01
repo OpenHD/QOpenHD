@@ -15,7 +15,7 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 
 #include "constants.h"
 
-#include "openhdvideostream.h"
+
 #include "openhdtelemetry.h"
 #include "openhdrc.h"
 #include "openhdsettings.h"
@@ -31,9 +31,17 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 
 #include "openhdpower.h"
 
+#if defined(ENABLE_GSTREAMER)
+
+#include "openhdvideostream.h"
+
+#else
+
+
+#endif
 #include "util.h"
 
-#if defined(ENABLE_MAIN_VIDEO) || defined(ENABLE_PIP)
+#if defined(ENABLE_GSTREAMER)
 #include <gst/gst.h>
 #endif
 
@@ -118,11 +126,16 @@ int main(int argc, char *argv[]) {
 
     auto openhdpower = OpenHDPower::instance();
 
+#if defined(ENABLE_GSTREAMER)
+engine.rootContext()->setContextProperty("EnableGStreamer", QVariant(true));
 #if defined(ENABLE_MAIN_VIDEO)
-    OpenHDVideoStream* stream = new OpenHDVideoStream(argc, argv);
+    OpenHDVideoStream* mainVideo = new OpenHDVideoStream(argc, argv);
 #endif
 #if defined(ENABLE_PIP)
-    OpenHDVideoStream* stream2 = new OpenHDVideoStream(argc, argv);
+    OpenHDVideoStream* pipVideo = new OpenHDVideoStream(argc, argv);
+#endif
+#else
+engine.rootContext()->setContextProperty("EnableGStreamer", QVariant(false));
 #endif
 
 
@@ -149,14 +162,18 @@ int main(int argc, char *argv[]) {
 
 #if defined(ENABLE_MAIN_VIDEO)
     engine.rootContext()->setContextProperty("EnableMainVideo", QVariant(true));
-    engine.rootContext()->setContextProperty("MainStream", stream);
+    #if defined(ENABLE_GSTREAMER)
+    engine.rootContext()->setContextProperty("MainStream", mainVideo);
+    #endif
 #else
     engine.rootContext()->setContextProperty("EnableMainVideo", QVariant(false));
 #endif
 
 #if defined(ENABLE_PIP)
     engine.rootContext()->setContextProperty("EnablePiP", QVariant(true));
-    engine.rootContext()->setContextProperty("PiPStream", stream2);
+    #if defined(ENABLE_GSTREAMER)
+    engine.rootContext()->setContextProperty("PiPStream", pipVideo);
+    #endif
 #else
     engine.rootContext()->setContextProperty("EnablePiP", QVariant(false));
 #endif
@@ -193,22 +210,27 @@ int main(int argc, char *argv[]) {
 
     qDebug() << "Running QML";
 
+#if defined(ENABLE_GSTREAMER)
 #if defined(ENABLE_MAIN_VIDEO)
-    stream->init(&engine, StreamTypeMain);
-    stream->startVideo();
+    mainVideo->init(&engine, StreamTypeMain);
+    mainVideo->startVideo();
 #endif
 #if defined(ENABLE_PIP)
-    stream2->init(&engine, StreamTypePiP);
-    stream2->startVideo();
+    pipVideo->init(&engine, StreamTypePiP);
+    pipVideo->startVideo();
+#endif
+#else
 #endif
 
     const int retval = app.exec();
-#if defined(ENABLE_MAIN_VIDEO)
-    stream->stopVideo();
-#endif
 
+#if defined(ENABLE_GSTREAMER)
+#if defined(ENABLE_MAIN_VIDEO)
+    mainVideo->stopVideo();
+#endif
 #if defined(ENABLE_PIP)
-    stream2->stopVideo();
+    pipVideo->stopVideo();
+#endif
 #endif
     return retval;
 }

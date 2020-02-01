@@ -1,3 +1,5 @@
+#if defined(ENABLE_GSTREAMER)
+
 #include "openhdvideostream.h"
 
 #include "constants.h"
@@ -910,3 +912,4 @@ void OpenHDVideoStream::stopVideo() {
 }
 
 
+#endif

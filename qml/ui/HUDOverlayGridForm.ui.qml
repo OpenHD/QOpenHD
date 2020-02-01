@@ -38,8 +38,6 @@ Item {
 
     property alias throttleWidget: throttleWidget
 
-    property alias pipVideoWidget: pipVideoWidget
-
     MessageHUD {
         id: messageHUD
     }
@@ -117,8 +115,12 @@ Item {
         scale: 0.7
     }
 
-    VideoWidget {
-        id: pipVideoWidget
+    Loader {
+        anchors.centerIn: parent
+        width: parent.width
+        height: parent.height
+        z: 1.0
+        source: (EnableGStreamer && EnablePiP) ? "./widgets/VideoWidget.qml" : ""
     }
 
     MapWidget {
