@@ -117,7 +117,7 @@ Item {
 
     Loader {
         z: 1.0
-        source: (EnableGStreamer && EnablePiP) ? "./widgets/VideoWidget.qml" : ""
+        source: EnablePiP ? "./widgets/VideoWidget.qml" : ""
     }
 
     MapWidget {
