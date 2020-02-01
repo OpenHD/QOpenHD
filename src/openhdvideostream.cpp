@@ -11,6 +11,8 @@
 
 #include "localmessage.h"
 
+#include "openhd.h"
+
 #if defined(__android__)
 #include <jni.h>
 #include <QAndroidJniEnvironment>
@@ -823,7 +825,8 @@ void OpenHDVideoStream::_start() {
     }
 
     lastDataTimeout = QDateTime::currentMSecsSinceEpoch();
-    emit videoRunning(false);
+    OpenHD::instance()->set_main_video_running(false);
+    OpenHD::instance()->set_pip_video_running(false);
 
     mainLoop = g_main_loop_new(nullptr, FALSE);
     g_main_loop_run(mainLoop);
@@ -881,9 +884,17 @@ void OpenHDVideoStream::_timer() {
     auto currentTime = QDateTime::currentMSecsSinceEpoch();
 
     if (currentTime - lastDataTimeout < 2500) {
-        emit videoRunning(false);
+        if (m_stream_type == StreamTypeMain) {
+            OpenHD::instance()->set_main_video_running(false);
+        } else {
+            OpenHD::instance()->set_pip_video_running(false);
+        }
     } else {
-        emit videoRunning(true);
+        if (m_stream_type == StreamTypeMain) {
+            OpenHD::instance()->set_main_video_running(true);
+        } else {
+            OpenHD::instance()->set_pip_video_running(true);
+        }
     }
 }
 

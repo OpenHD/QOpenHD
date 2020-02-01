@@ -10,18 +10,5 @@ Loader {
 
         return ""
     }
-    property bool isRunning: false;
-
-    Connections {
-        target: PiPStream
-        onVideoRunning: {
-            if (running) {
-                //console.log("PiP stream running");
-            } else {
-                //console.log("PiP stream lost");
-            }
-
-            isRunning = running;
-        }
-    }
+    property bool isRunning: OpenHD.pip_video_running
 }
