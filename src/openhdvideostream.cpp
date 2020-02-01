@@ -53,41 +53,6 @@ static void gst_android_init(JNIEnv* env, jobject context) {
     _class_loader = env->NewGlobalRef(class_loader);
 }
 
-/*
-static const char kJniClassName[] {"org/openhd/OpenHDActivity"};
-
-void setNativeMethods(void)
-{
-    JNINativeMethod javaMethods[] {
-        {"nativeInit", "()V", reinterpret_cast<void *>(gst_android_init)}
-    };
-
-    QAndroidJniEnvironment jniEnv;
-    if (jniEnv->ExceptionCheck()) {
-        jniEnv->ExceptionDescribe();
-        jniEnv->ExceptionClear();
-    }
-
-    jclass objectClass = jniEnv->FindClass(kJniClassName);
-    if(!objectClass) {
-        qWarning() << "Couldn't find class:" << kJniClassName;
-        return;
-    }
-
-    jint val = jniEnv->RegisterNatives(objectClass, javaMethods, sizeof(javaMethods) / sizeof(javaMethods[0]));
-
-    if (val < 0) {
-        qWarning() << "Error registering methods: " << val;
-    } else {
-        qDebug() << "Main Native Functions Registered";
-    }
-
-    if (jniEnv->ExceptionCheck()) {
-        jniEnv->ExceptionDescribe();
-        jniEnv->ExceptionClear();
-    }
-}*/
-
 jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     Q_UNUSED(reserved);
 
@@ -95,9 +60,6 @@ jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     if (vm->GetEnv(reinterpret_cast<void**>(&env), JNI_VERSION_1_6) != JNI_OK) {
         return -1;
     }
-
-    //setNativeMethods();
-    //QAndroidJniObject::callStaticMethod<void>(kJniClassName, "jniOnLoad");
 
     gst_amc_jni_set_java_vm(vm);
     return JNI_VERSION_1_6;
