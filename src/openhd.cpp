@@ -433,3 +433,12 @@ void OpenHD::set_last_telemetry_heartbeat(qint64 last_telemetry_heartbeat) {
     emit last_telemetry_heartbeat_changed(m_last_telemetry_heartbeat);
 }
 
+void OpenHD::set_main_video_running(bool main_video_running) {
+    m_main_video_running = main_video_running;
+    emit main_video_running_changed(m_main_video_running);
+}
+
+void OpenHD::set_pip_video_running(bool pip_video_running) {
+    m_pip_video_running = pip_video_running;
+    emit pip_video_running_changed(m_pip_video_running);
+}

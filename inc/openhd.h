@@ -193,6 +193,14 @@ public:
     void set_last_telemetry_heartbeat(qint64 last_telemetry_heartbeat);
 
 
+    Q_PROPERTY(bool main_video_running MEMBER m_main_video_running WRITE set_main_video_running NOTIFY main_video_running_changed)
+    void set_main_video_running(bool main_video_running);
+
+
+    Q_PROPERTY(bool pip_video_running MEMBER m_pip_video_running WRITE set_pip_video_running NOTIFY pip_video_running_changed)
+    void set_pip_video_running(bool pip_video_running);
+
+
     Q_PROPERTY(QVariantMap wifi_adapter0 MEMBER m_wifi_adapter0 NOTIFY wifi_adapter0_changed)
     Q_PROPERTY(QVariantMap wifi_adapter1 MEMBER m_wifi_adapter1 NOTIFY wifi_adapter1_changed)
     Q_PROPERTY(QVariantMap wifi_adapter2 MEMBER m_wifi_adapter2 NOTIFY wifi_adapter2_changed)
@@ -272,6 +280,9 @@ signals:
 
     void last_telemetry_heartbeat_changed(qint64 last_telemetry_heartbeat);
 
+    void main_video_running_changed(bool main_video_running);
+    void pip_video_running_changed(bool pip_video_running);
+
 private:
 #if defined(ENABLE_SPEECH)
     QTextToSpeech *m_speech;
@@ -348,6 +359,9 @@ private:
 
     qint64 m_last_openhd_heartbeat = -1;
     qint64 m_last_telemetry_heartbeat = -1;
+
+    bool m_main_video_running = false;
+    bool m_pip_video_running = false;
 
     QVariantMap m_wifi_adapter0;
     QVariantMap m_wifi_adapter1;
