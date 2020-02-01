@@ -116,9 +116,6 @@ Item {
     }
 
     Loader {
-        anchors.centerIn: parent
-        width: parent.width
-        height: parent.height
         z: 1.0
         source: (EnableGStreamer && EnablePiP) ? "./widgets/VideoWidget.qml" : ""
     }
