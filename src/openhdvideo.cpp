@@ -96,7 +96,20 @@ void OpenHDVideo::reconfigure() {
         m_socket->close();
         m_socket->bind(QHostAddress::Any, m_video_port);
     }
-    m_enable_rtp = settings.value("enable_rtp", true).toBool();
+
+    auto enable_rtp = settings.value("enable_rtp", true).toBool();
+    if (m_enable_rtp != enable_rtp) {
+        m_socket->close();
+        tempBuffer.clear();
+        rtpBuffer.clear();
+        sentSPS = false;
+        //haveSPS = false;
+        sentPPS = false;
+        //havePPS = false;
+        sentIDR = false;
+        m_enable_rtp = enable_rtp;
+        m_socket->bind(QHostAddress::Any, m_video_port);
+    }
 }
 
 void OpenHDVideo::startVideo() {
