@@ -36,7 +36,7 @@ using namespace std::chrono;
 
 OpenHDAndroidVideo::OpenHDAndroidVideo(enum OpenHDStreamType stream_type): OpenHDVideo(stream_type) {
     qDebug() << "OpenHDAndroidVideo::OpenHDAndroidVideo()";
-    connect(this, &OpenHDAndroidVideo::configure, this, &OpenHDAndroidVideo::androidConfigure, Qt::QueuedConnection);
+    connect(this, &OpenHDAndroidVideo::configure, this, &OpenHDAndroidVideo::androidConfigure, Qt::DirectConnection);
 }
 
 OpenHDAndroidVideo::~OpenHDAndroidVideo() {
