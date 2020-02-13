@@ -442,3 +442,8 @@ void OpenHD::set_pip_video_running(bool pip_video_running) {
     m_pip_video_running = pip_video_running;
     emit pip_video_running_changed(m_pip_video_running);
 }
+
+void OpenHD::set_lte_video_running(bool lte_video_running) {
+    m_lte_video_running = lte_video_running;
+    emit lte_video_running_changed(m_lte_video_running);
+}

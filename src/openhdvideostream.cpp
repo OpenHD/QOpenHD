@@ -679,6 +679,8 @@ void OpenHDVideoStream::init(QQmlApplicationEngine* engine = nullptr, enum Strea
     }
     m_enable_rtp = settings.value("enable_rtp", true).toBool();
 
+    m_enable_lte_video = settings.value("enable_lte_video", false).toBool();
+
     lastDataTimeout = QDateTime::currentMSecsSinceEpoch();
 
     QObject::connect(timer, &QTimer::timeout, this, &OpenHDVideoStream::_timer);
@@ -848,20 +850,26 @@ void OpenHDVideoStream::_timer() {
     auto _enable_software_video_decoder = settings.value("enable_software_video_decoder", false).toBool();
     auto _enable_rtp = settings.value("enable_rtp", true).toBool();
 
+    auto _enable_lte_video = settings.value("enable_lte_video", false).toBool();
+
     auto _show_pip_video = settings.value("show_pip_video", false).toBool();
 
     auto _main_video_port = settings.value("main_video_port", main_default_port).toInt();
+    if (m_enable_lte_video) {
+        _main_video_port = 8000;
+    }
+
     auto _pip_video_port = settings.value("pip_video_port", pip_default_port).toInt();
 
 
     if (m_stream_type == StreamTypeMain) {
-        if (_enable_videotest != m_enable_videotest || _enable_software_video_decoder != m_enable_software_video_decoder || _main_video_port != m_video_port || _enable_rtp != m_enable_rtp) {
+        if (_enable_videotest != m_enable_videotest || _enable_software_video_decoder != m_enable_software_video_decoder || _main_video_port != m_video_port || _enable_rtp != m_enable_rtp || _enable_lte_video != m_enable_lte_video) {
             qDebug() << "Restarting main stream";
             stopVideo();
             m_enable_videotest = _enable_videotest;
             m_enable_software_video_decoder = _enable_software_video_decoder;
             m_enable_rtp = _enable_rtp;
-
+            m_enable_lte_video= _enable_lte_video;
             m_video_port = _main_video_port;
             startVideo();
         }

@@ -196,6 +196,9 @@ public:
     Q_PROPERTY(bool main_video_running MEMBER m_main_video_running WRITE set_main_video_running NOTIFY main_video_running_changed)
     void set_main_video_running(bool main_video_running);
 
+    Q_PROPERTY(bool lte_video_running MEMBER m_lte_video_running WRITE set_lte_video_running NOTIFY lte_video_running_changed)
+    void set_lte_video_running(bool lte_video_running);
+
 
     Q_PROPERTY(bool pip_video_running MEMBER m_pip_video_running WRITE set_pip_video_running NOTIFY pip_video_running_changed)
     void set_pip_video_running(bool pip_video_running);
@@ -283,6 +286,8 @@ signals:
     void main_video_running_changed(bool main_video_running);
     void pip_video_running_changed(bool pip_video_running);
 
+    void lte_video_running_changed(bool lte_video_running);
+
 private:
 #if defined(ENABLE_SPEECH)
     QTextToSpeech *m_speech;
@@ -362,6 +367,7 @@ private:
 
     bool m_main_video_running = false;
     bool m_pip_video_running = false;
+    bool m_lte_video_running = false;
 
     QVariantMap m_wifi_adapter0;
     QVariantMap m_wifi_adapter1;
