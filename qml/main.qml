@@ -47,8 +47,8 @@ ApplicationWindow {
      */
     Settings {
         id: settings
-        property int main_video_port: 8000
-        property int pip_video_port: 8000
+        property int main_video_port: 5600
+        property int pip_video_port: 5601
         property int lte_video_port: 8000
         property int battery_cells: 3
         property bool show_pip_video: false
