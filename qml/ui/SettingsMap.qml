@@ -290,6 +290,11 @@ Item {
                                             itemType: "bool",
                                             trueValue: "Y",
                                             falseValue: "N"},
+        "LTE":                             {title: "Use LTE",
+                                            info: "Experimental! Send video data from air via LTE",
+                                            itemType: "bool",
+                                            trueValue: "Y",
+                                            falseValue: "N"},
     })
 
     property var rcSettingsMap: ({

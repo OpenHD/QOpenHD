@@ -47,12 +47,14 @@ ApplicationWindow {
      */
     Settings {
         id: settings
-        property int main_video_port: 5600
-        property int pip_video_port: 5601
+        property int main_video_port: 8000
+        property int pip_video_port: 8000
+        property int lte_video_port: 8000
         property int battery_cells: 3
         property bool show_pip_video: false
         property bool enable_software_video_decoder: false
         property bool enable_rtp: true
+        property bool enable_lte_video: false
         property bool hide_watermark: false
 
         property bool enable_speech: true

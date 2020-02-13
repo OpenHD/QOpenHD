@@ -45,8 +45,8 @@ private:
     bool m_enable_videotest = false;
     bool m_enable_software_video_decoder = false;
     bool m_enable_rtp = true;
-
     bool m_enable_pip_video = false;
+    bool m_enable_lte_video = false;
 
     enum StreamType m_stream_type;
 
@@ -54,6 +54,7 @@ private:
 
     int main_default_port = 5600;
     int pip_default_port = 5601;
+    int lte_default_port = 8000;
 
     QTimer* timer = nullptr;
 
