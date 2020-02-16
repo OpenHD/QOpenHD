@@ -46,7 +46,7 @@ ListView {
     }
 
     property int tempContentY: 0
-    property int ySizeFactor: 3
+    property int ySizeFactor: 18
 
     onAtYBeginningChanged: {
         if (atYBeginning) {
