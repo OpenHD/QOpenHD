@@ -61,6 +61,8 @@ ApplicationWindow {
         property bool enable_imperial: false
         property bool enable_rc: false
 
+        property int log_level: 3
+
         property bool show_downlink_rssi: true
         property bool show_uplink_rssi: true
         property bool show_bitrate: true
@@ -130,14 +132,18 @@ ApplicationWindow {
     Connections {
         target: OpenHD
         onMessageReceived: {
-            hudOverlayGrid.messageHUD.pushMessage(message, level)
+            if (level >= settings.log_level) {
+                hudOverlayGrid.messageHUD.pushMessage(message, level)
+            }
         }
     }
 
     Connections {
         target: LocalMessage
         onMessageReceived: {
-            hudOverlayGrid.messageHUD.pushMessage(message, level)
+            if (level >= settings.log_level) {
+                hudOverlayGrid.messageHUD.pushMessage(message, level)
+            }
         }
     }
 
