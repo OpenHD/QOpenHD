@@ -80,6 +80,7 @@ ApplicationWindow {
         property bool show_altitude_second: true
         property bool show_arrow: true
         property bool show_map: false
+        property int map_small_zoom: 18
         property bool show_throttle: true
     }
 

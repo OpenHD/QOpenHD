@@ -43,12 +43,13 @@ BaseWidget {
                       id:zoomSlider
                       orientation: Qt.Horizontal
                       from: 1
-                      value:18
+                      value:settings.map_small_zoom
                       to: 30
                       stepSize: 1
 
                       onValueChanged: {
                           mapsmall.zoomLevel = zoomSlider.value
+                          settings.map_small_zoom = zoomSlider.value
                       }
             }
         }
