@@ -37,11 +37,8 @@ BaseWidget {
                 height: parent.height
                 anchors.rightMargin: 12
                 anchors.right: parent.right
-                // @disable-check M222
-                Component.onCompleted: checked = settings.value("inav_heading",
-                                                                true)
-                // @disable-check M222
-                onCheckedChanged: settings.setValue("inav_heading", checked)
+                checked: settings.arrow_invert
+                onCheckedChanged: settings.arrow_invert = checked
             }
         }
     }
@@ -74,7 +71,11 @@ BaseWidget {
                 PathLine { x: 12;                  y: 0  }//back to start
             }
 
-            transform: Rotation { origin.x: 12; origin.y: 12; angle: OpenHD.home_course }
+            transform: Rotation {
+                origin.x: 12;
+                origin.y: 12;
+                angle: settings.arrow_invert ? OpenHD.home_course-180 : OpenHD.home_course
+            }
         }
 
     }
