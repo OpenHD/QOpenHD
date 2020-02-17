@@ -81,6 +81,7 @@ ApplicationWindow {
         property bool show_speed: true
         property bool speed_airspeed_gps: false
         property bool show_heading: true
+        property bool heading_inav: false
         property bool show_altitude_second: true
         property bool altitude_second_msl_rel: false
         property bool show_arrow: true

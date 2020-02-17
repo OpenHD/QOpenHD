@@ -308,7 +308,7 @@ private:
     int m_vy = 0;
     int m_vz = 0;
 
-    double m_hdg = 360.0;
+    double m_hdg = 000.0;
 
     int m_speed = 0;
     int m_airspeed = 0;

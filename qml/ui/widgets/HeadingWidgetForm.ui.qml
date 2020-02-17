@@ -38,11 +38,8 @@ BaseWidget {
                 height: parent.height
                 anchors.rightMargin: 12
                 anchors.right: parent.right
-                // @disable-check M222
-                Component.onCompleted: checked = settings.value("inav_heading",
-                                                                true)
-                // @disable-check M222
-                onCheckedChanged: settings.setValue("inav_heading", checked)
+                checked: settings.heading_inav
+                onCheckedChanged: settings.heading_inav = checked
             }
         }
     }
@@ -67,7 +64,7 @@ BaseWidget {
             anchors.bottom: parent.bottom
             anchors.bottomMargin: parent.height - 24
             color: "white"
-            text: Number(OpenHD.hdg).toLocaleString(Qt.locale(), 'f', 0);
+            text: Number(settings.heading_inav ? OpenHD.hdg*100 : OpenHD.hdg).toLocaleString(Qt.locale(), 'f', 0);
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
         }
