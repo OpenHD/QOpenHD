@@ -75,6 +75,7 @@ ApplicationWindow {
         property bool show_horizon: true
         property bool show_fpv: true
         property bool show_altitude: true
+        property bool altitude_rel_msl: false
         property bool show_speed: true
         property bool show_heading: true
         property bool show_altitude_second: true

@@ -40,11 +40,8 @@ BaseWidget {
                 height: parent.height
                 anchors.rightMargin: 12
                 anchors.right: parent.right
-                // @disable-check M222
-                Component.onCompleted: checked = settings.value("alt_msl_rel",
-                                                                true)
-                // @disable-check M222
-                onCheckedChanged: settings.setValue("alt_msl_rel", checked)
+                checked: settings.altitude_rel_msl
+                onCheckedChanged: settings.altitude_rel_msl = checked
             }
         }
     }
@@ -64,7 +61,7 @@ BaseWidget {
         Text {
             id: alt_text
             color: "white"
-            text: Number(OpenHD.alt_rel).toLocaleString(Qt.locale(), 'f', 0);
+            text: Number(settings.altitude_rel_msl ? OpenHD.alt_msl : OpenHD.alt_rel ).toLocaleString(Qt.locale(), 'f', 0);
             anchors.fill: parent
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
