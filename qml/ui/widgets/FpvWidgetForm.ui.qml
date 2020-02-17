@@ -30,16 +30,17 @@ BaseWidget {
                 font.pixelSize: detailPanelFontPixels;
                 anchors.left: parent.left
             }
-            Switch {
-                width: 32
-                height: parent.height
-                anchors.rightMargin: 12
-                anchors.right: parent.right
-                // @disable-check M222
-                Component.onCompleted: checked = settings.value("fpv_sensitivity",
-                                                                true)
-                // @disable-check M222
-                onCheckedChanged: settings.setValue("fpv_sensitivity", checked)
+            Slider {
+                      id:fpvSlider
+                      orientation: Qt.Horizontal
+                      from: 1
+                      value:settings.fpv_sensitivity
+                      to: 20
+                      stepSize: 1
+
+                      onValueChanged: {
+                          settings.fpv_sensitivity = fpvSlider.value
+                      }
             }
         }
     }
@@ -55,9 +56,9 @@ BaseWidget {
         transformOrigin: Item.Center
 
         transform: Translate {
-            x: OpenHD.vy*20
+            x: OpenHD.vy*settings.fpv_sensitivity
             //to get pitch relative to ahi add pitch in
-            y: (OpenHD.vz*20)+ OpenHD.pitch_raw
+            y: (OpenHD.vz*settings.fpv_sensitivity)+ OpenHD.pitch_raw
         }
         antialiasing: true
 
