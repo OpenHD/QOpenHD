@@ -61,7 +61,7 @@ BaseWidget {
         Text {
             id: alt_text
             color: "white"
-            text: Number(settings.altitude_rel_msl ? OpenHD.alt_msl : OpenHD.alt_rel ).toLocaleString(Qt.locale(), 'f', 0);
+            text: Number(settings.altitude_rel_msl ? OpenHD.alt_msl : OpenHD.alt_rel).toLocaleString(Qt.locale(), 'f', 0);
             anchors.fill: parent
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
