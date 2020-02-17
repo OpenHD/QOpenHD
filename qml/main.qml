@@ -46,7 +46,7 @@ ApplicationWindow {
      *
      */
     Settings {
-        id: settings
+        id: settings      
         property int main_video_port: 8000
         property int pip_video_port: 8000
         property int lte_video_port: 8000
@@ -60,6 +60,10 @@ ApplicationWindow {
         property bool enable_speech: true
         property bool enable_imperial: false
         property bool enable_rc: false
+
+        property string color_shape: "white"
+        property string color_text: "white"
+        property string color_glow: "black"
 
         property bool show_downlink_rssi: true
         property bool show_uplink_rssi: true

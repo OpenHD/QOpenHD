@@ -27,7 +27,7 @@ BaseWidget {
                 text: "Invert Pitch"
                 color: "white"
                 font.bold: true
-                font.pixelSize: detailPanelFontPixels;
+                font.pixelSize: detailPanelFontPixels
                 anchors.left: parent.left
             }
             Switch {
@@ -67,16 +67,16 @@ BaseWidget {
                 anchors.left: parent.left
             }
             Slider {
-                      id:horizon_size_Slider
-                      orientation: Qt.Horizontal
-                      from: 225
-                      value:settings.horizon_size
-                      to: 450
-                      stepSize: 1
+                id: horizon_size_Slider
+                orientation: Qt.Horizontal
+                from: 225
+                value: settings.horizon_size
+                to: 450
+                stepSize: 1
 
-                      onValueChanged: {
-                          settings.horizon_size = horizon_size_Slider.value
-                      }
+                onValueChanged: {
+                    settings.horizon_size = horizon_size_Slider.value
+                }
             }
         }
     }
@@ -88,7 +88,7 @@ BaseWidget {
         anchors.verticalCenter: parent.verticalCenter
 
         transformOrigin: Item.Center
-        rotation: settings.horizon_invert_roll ?  OpenHD.roll : -OpenHD.roll
+        rotation: settings.horizon_invert_roll ? OpenHD.roll : -OpenHD.roll
         transform: Translate {
             x: Item.Center
             y: settings.horizon_invert_pitch ? -OpenHD.pitch : OpenHD.pitch
@@ -97,35 +97,35 @@ BaseWidget {
 
         Rectangle {
             id: left_line
-            width: (settings.horizon_size/2)-25
+            width: (settings.horizon_size / 2) - 25
             height: 2
             anchors.left: parent.left
             anchors.verticalCenter: parent.verticalCenter
-            color: "white"
+            color: settings.color_shape
         }
 
         Glow {
             anchors.fill: left_line
             radius: 4
             samples: 17
-            color: "black"
+            color: settings.color_glow
             source: left_line
         }
 
         Rectangle {
             id: right_line
-            width: (settings.horizon_size/2)-25
+            width: (settings.horizon_size / 2) - 25
             height: 2
             anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
-            color: "white"
+            color: settings.color_shape
         }
 
         Glow {
             anchors.fill: right_line
             radius: 4
             samples: 17
-            color: "black"
+            color: settings.color_glow
             source: right_line
         }
     }

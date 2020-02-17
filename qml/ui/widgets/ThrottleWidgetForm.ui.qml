@@ -26,15 +26,13 @@ BaseWidget {
     defaultVCenter: false
 
     hasWidgetDetail: false
-    widgetDetailComponent: Column {
-
-    }
+    widgetDetailComponent: Column {}
 
     Glow {
         anchors.fill: widgetInner
         radius: 3
         samples: 17
-        color: "black"
+        color: settings.color_glow
         source: widgetInner
     }
 
@@ -47,7 +45,7 @@ BaseWidget {
             y: 0
             width: 24
             height: 18
-            color: "#ffffff"
+            color: settings.color_text
             text: OpenHD.throttle
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.bottom: parent.bottom
@@ -67,14 +65,16 @@ BaseWidget {
                 id: throttleShape
 
                 fillColor: "transparent"
-                strokeColor: "white"
+                strokeColor: settings.color_shape
                 strokeWidth: 9
                 capStyle: ShapePath.RoundCap
 
                 PathAngleArc {
                     id: throttleArc
-                    centerX: 48; centerY: 48
-                    radiusX: 32; radiusY: 32
+                    centerX: 48
+                    centerY: 48
+                    radiusX: 32
+                    radiusY: 32
                     startAngle: -180
                 }
             }
@@ -85,7 +85,7 @@ BaseWidget {
             y: 0
             width: parent.width
             height: 14
-            color: "#ffffff"
+            color: settings.color_text
             text: qsTr("throttle")
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 0

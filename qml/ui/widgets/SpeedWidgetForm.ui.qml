@@ -32,7 +32,7 @@ BaseWidget {
                 horizontalAlignment: Text.AlignRight
                 color: "white"
                 font.bold: true
-                font.pixelSize: detailPanelFontPixels;
+                font.pixelSize: detailPanelFontPixels
                 anchors.left: parent.left
             }
             Switch {
@@ -50,7 +50,7 @@ BaseWidget {
         anchors.fill: widgetInner
         radius: 3
         samples: 17
-        color: "black"
+        color: settings.color_glow
         source: widgetInner
     }
 
@@ -61,8 +61,10 @@ BaseWidget {
         Text {
             anchors.fill: parent
             id: speed_text
-            color: "white"
-            text: Number(settings.speed_airspeed_gps ? OpenHD.airspeed : OpenHD.speed).toLocaleString(Qt.locale(), 'f', 0);
+            color: settings.color_text
+            text: Number(
+                      settings.speed_airspeed_gps ? OpenHD.airspeed : OpenHD.speed).toLocaleString(
+                      Qt.locale(), 'f', 0)
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
         }
@@ -72,26 +74,40 @@ BaseWidget {
             anchors.fill: parent
             rotation: 180
             ShapePath {
-                strokeColor: "white"
+                strokeColor: settings.color_shape
                 strokeWidth: 1
                 strokeStyle: ShapePath.SolidLine
                 fillColor: "transparent"
                 startX: 0
                 startY: 12
-                PathLine { x: 0;                  y: 12 }
-                PathLine { x: 12;                 y: 0 }
-                PathLine { x: 58;                 y: 0 }
-                PathLine { x: 58;                 y: 24 }
-                PathLine { x: 12;                 y: 24 }
-                PathLine { x: 0;                  y: 12 }
+                PathLine {
+                    x: 0
+                    y: 12
+                }
+                PathLine {
+                    x: 12
+                    y: 0
+                }
+                PathLine {
+                    x: 58
+                    y: 0
+                }
+                PathLine {
+                    x: 58
+                    y: 24
+                }
+                PathLine {
+                    x: 12
+                    y: 24
+                }
+                PathLine {
+                    x: 0
+                    y: 12
+                }
             }
         }
     }
 }
 
-/*##^##
-Designer {
-    D{i:5;anchors_height:15;anchors_width:30}
-}
-##^##*/
+
 

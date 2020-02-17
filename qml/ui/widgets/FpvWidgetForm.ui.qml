@@ -27,20 +27,20 @@ BaseWidget {
                 text: "Sensitivity"
                 color: "white"
                 font.bold: true
-                font.pixelSize: detailPanelFontPixels;
+                font.pixelSize: detailPanelFontPixels
                 anchors.left: parent.left
             }
             Slider {
-                      id:fpvSlider
-                      orientation: Qt.Horizontal
-                      from: 1
-                      value:settings.fpv_sensitivity
-                      to: 20
-                      stepSize: 1
+                id: fpvSlider
+                orientation: Qt.Horizontal
+                from: 1
+                value: settings.fpv_sensitivity
+                to: 20
+                stepSize: 1
 
-                      onValueChanged: {
-                          settings.fpv_sensitivity = fpvSlider.value
-                      }
+                onValueChanged: {
+                    settings.fpv_sensitivity = fpvSlider.value
+                }
             }
         }
     }
@@ -56,9 +56,9 @@ BaseWidget {
         transformOrigin: Item.Center
 
         transform: Translate {
-            x: OpenHD.vy*settings.fpv_sensitivity
+            x: OpenHD.vy * settings.fpv_sensitivity
             //to get pitch relative to ahi add pitch in
-            y: (OpenHD.vz*settings.fpv_sensitivity)+ OpenHD.pitch_raw
+            y: (OpenHD.vz * settings.fpv_sensitivity) + OpenHD.pitch_raw
         }
         antialiasing: true
 
@@ -66,7 +66,7 @@ BaseWidget {
             anchors.fill: widgetGlyph
             radius: 4
             samples: 17
-            color: "black"
+            color: settings.color_glow
             source: widgetGlyph
         }
 
@@ -75,7 +75,7 @@ BaseWidget {
             y: 0
             width: 24
             height: 24
-            color: "#ffffff"
+            color: settings.color_shape
             text: "\ufdd5"
             bottomPadding: 17
             leftPadding: 33
@@ -92,9 +92,5 @@ BaseWidget {
     }
 }
 
-/*##^##
-Designer {
-    D{i:3;anchors_height:24;anchors_width:24;anchors_y:0}
-}
-##^##*/
+
 

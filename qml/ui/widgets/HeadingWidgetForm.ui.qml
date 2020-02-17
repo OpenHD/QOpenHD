@@ -30,7 +30,7 @@ BaseWidget {
                 text: "Toggle Inav"
                 color: "white"
                 font.bold: true
-                font.pixelSize: detailPanelFontPixels;
+                font.pixelSize: detailPanelFontPixels
                 anchors.left: parent.left
             }
             Switch {
@@ -48,7 +48,7 @@ BaseWidget {
         anchors.fill: widgetInner
         radius: 3
         samples: 17
-        color: "black"
+        color: settings.color_glow
         source: widgetInner
     }
 
@@ -63,8 +63,10 @@ BaseWidget {
             anchors.right: parent.right
             anchors.bottom: parent.bottom
             anchors.bottomMargin: parent.height - 24
-            color: "white"
-            text: Number(settings.heading_inav ? OpenHD.hdg*100 : OpenHD.hdg).toLocaleString(Qt.locale(), 'f', 0);
+            color: settings.color_text
+            text: Number(
+                      settings.heading_inav ? OpenHD.hdg * 100 : OpenHD.hdg).toLocaleString(
+                      Qt.locale(), 'f', 0)
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
         }
@@ -74,7 +76,7 @@ BaseWidget {
             anchors.fill: parent
             ShapePath {
                 capStyle: ShapePath.RoundCap
-                strokeColor: "white"
+                strokeColor: settings.color_shape
                 strokeWidth: 1
                 strokeStyle: ShapePath.SolidLine
                 fillColor: "transparent"

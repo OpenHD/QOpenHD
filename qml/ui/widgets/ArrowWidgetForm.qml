@@ -55,8 +55,8 @@ BaseWidget {
 
             ShapePath {
                 capStyle: ShapePath.RoundCap
-                strokeColor: "black"
-                fillColor: "white"
+                strokeColor: settings.color_glow
+                fillColor: settings.color_shape
                 strokeWidth: 1
                 strokeStyle: ShapePath.SolidLine
 

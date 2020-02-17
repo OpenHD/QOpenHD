@@ -32,7 +32,7 @@ BaseWidget {
                 text: "Relative Or MSL"
                 color: "white"
                 font.bold: true
-                font.pixelSize: detailPanelFontPixels;
+                font.pixelSize: detailPanelFontPixels
                 anchors.left: parent.left
             }
             Switch {
@@ -50,7 +50,7 @@ BaseWidget {
         anchors.fill: widgetInner
         radius: 3
         samples: 17
-        color: "black"
+        color: settings.color_glow
         source: widgetInner
     }
 
@@ -60,8 +60,10 @@ BaseWidget {
 
         Text {
             id: alt_text
-            color: "white"
-            text: Number(settings.altitude_rel_msl ? OpenHD.alt_msl : OpenHD.alt_rel).toLocaleString(Qt.locale(), 'f', 0);
+            color: settings.color_text
+            text: Number(
+                      settings.altitude_rel_msl ? OpenHD.alt_msl : OpenHD.alt_rel).toLocaleString(
+                      Qt.locale(), 'f', 0)
             anchors.fill: parent
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
@@ -71,26 +73,40 @@ BaseWidget {
             id: outline
             anchors.fill: parent
             ShapePath {
-                strokeColor: "white"
+                strokeColor: settings.color_shape
                 strokeWidth: 1
                 strokeStyle: ShapePath.SolidLine
                 fillColor: "transparent"
                 startX: 0
                 startY: 12
-                PathLine { x: 0;                  y: 12 }
-                PathLine { x: 12;                 y: 0 }
-                PathLine { x: 58;                 y: 0 }
-                PathLine { x: 58;                 y: 24 }
-                PathLine { x: 12;                 y: 24 }
-                PathLine { x: 0;                  y: 12 }
+                PathLine {
+                    x: 0
+                    y: 12
+                }
+                PathLine {
+                    x: 12
+                    y: 0
+                }
+                PathLine {
+                    x: 58
+                    y: 0
+                }
+                PathLine {
+                    x: 58
+                    y: 24
+                }
+                PathLine {
+                    x: 12
+                    y: 24
+                }
+                PathLine {
+                    x: 0
+                    y: 12
+                }
             }
         }
     }
 }
 
-/*##^##
-Designer {
-    D{i:0;invisible:true}
-}
-##^##*/
+
 

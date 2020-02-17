@@ -30,7 +30,7 @@ BaseWidget {
                 text: "MSL or Relative"
                 color: "white"
                 font.bold: true
-                font.pixelSize: detailPanelFontPixels;
+                font.pixelSize: detailPanelFontPixels
                 anchors.left: parent.left
             }
             Switch {
@@ -48,7 +48,7 @@ BaseWidget {
         anchors.fill: widgetInner
         radius: 3
         samples: 17
-        color: "black"
+        color: settings.color_glow
         source: widgetInner
     }
 
@@ -58,8 +58,10 @@ BaseWidget {
 
         Text {
             id: second_alt_text
-            color: "white"
-            text: Number(settings.altitude_second_msl_rel ? OpenHD.alt_rel : OpenHD.alt_msl).toLocaleString(Qt.locale(), 'f', 0);
+            color: settings.color_text
+            text: Number(
+                      settings.altitude_second_msl_rel ? OpenHD.alt_rel : OpenHD.alt_msl).toLocaleString(
+                      Qt.locale(), 'f', 0)
             horizontalAlignment: Text.AlignRight
             topPadding: 2
             bottomPadding: 2
@@ -71,7 +73,7 @@ BaseWidget {
             y: 0
             width: 40
             height: 18
-            color: "#ffffff"
+            color: settings.color_shape
             text: "\u21a8"
             anchors.left: parent.left
             anchors.leftMargin: 0
@@ -85,9 +87,5 @@ BaseWidget {
     }
 }
 
-/*##^##
-Designer {
-    D{i:0;invisible:true}
-}
-##^##*/
+
 
