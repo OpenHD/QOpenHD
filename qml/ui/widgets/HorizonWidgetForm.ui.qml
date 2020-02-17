@@ -66,7 +66,7 @@ BaseWidget {
         anchors.verticalCenter: parent.verticalCenter
 
         transformOrigin: Item.Center
-        rotation: settings.horizon_invert_roll ?  -OpenHD.roll : -OpenHD.roll
+        rotation: settings.horizon_invert_roll ?  OpenHD.roll : -OpenHD.roll
         transform: Translate {
             x: Item.Center
             y: settings.horizon_invert_pitch ? -OpenHD.pitch : OpenHD.pitch
