@@ -40,11 +40,8 @@ BaseWidget {
                 height: parent.height
                 anchors.rightMargin: 12
                 anchors.right: parent.right
-                // @disable-check M222
-                Component.onCompleted: checked = settings.value("airpeed_gps",
-                                                                true)
-                // @disable-check M222
-                onCheckedChanged: settings.setValue("airspeed_gps", checked)
+                checked: settings.speed_airspeed_gps
+                onCheckedChanged: settings.speed_airspeed_gps = checked
             }
         }
     }
@@ -65,7 +62,7 @@ BaseWidget {
             anchors.fill: parent
             id: speed_text
             color: "white"
-            text: Number(OpenHD.speed).toLocaleString(Qt.locale(), 'f', 0);
+            text: Number(settings.speed_airspeed_gps ? OpenHD.airspeed : OpenHD.speed).toLocaleString(Qt.locale(), 'f', 0);
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
         }

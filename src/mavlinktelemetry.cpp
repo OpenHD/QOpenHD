@@ -387,7 +387,7 @@ void MavlinkTelemetry::processMavlinkMessage(mavlink_message_t msg) {
 
             OpenHD::instance()->set_throttle(vfr_hud.throttle);
 
-            //td->airspeed = mavlink_msg_vfr_hud_get_airspeed(&msg)*3.6f;
+            auto airspeed = vfr_hud.airspeed*3.6;
 
             auto speed = vfr_hud.groundspeed*3.6;
             OpenHD::instance()->set_speed(speed);
