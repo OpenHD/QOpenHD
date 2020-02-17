@@ -75,6 +75,7 @@ ApplicationWindow {
         property bool show_horizon: true
         property bool horizon_invert_pitch: false
         property bool horizon_invert_roll: false
+        property int horizon_size: 250
         property bool show_fpv: true
         property int fpv_sensitivity: 5
         property bool show_altitude: true

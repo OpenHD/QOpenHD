@@ -8,7 +8,7 @@ import OpenHD 1.0
 
 BaseWidget {
     id: horizonWidget
-    width: 250
+    width: settings.horizon_size
     height: 48
 
     visible: settings.show_horizon
@@ -57,6 +57,28 @@ BaseWidget {
                 onCheckedChanged: settings.horizon_invert_roll = checked
             }
         }
+        Item {
+            width: parent.width
+            height: 24
+            Text {
+                text: "Size"
+                color: "white"
+                font.bold: true
+                anchors.left: parent.left
+            }
+            Slider {
+                      id:horizon_size_Slider
+                      orientation: Qt.Horizontal
+                      from: 225
+                      value:settings.horizon_size
+                      to: 450
+                      stepSize: 1
+
+                      onValueChanged: {
+                          settings.horizon_size = horizon_size_Slider.value
+                      }
+            }
+        }
     }
 
     Item {
@@ -75,7 +97,7 @@ BaseWidget {
 
         Rectangle {
             id: left_line
-            width: 100
+            width: (settings.horizon_size/2)-25
             height: 2
             anchors.left: parent.left
             anchors.verticalCenter: parent.verticalCenter
@@ -92,7 +114,7 @@ BaseWidget {
 
         Rectangle {
             id: right_line
-            width: 100
+            width: (settings.horizon_size/2)-25
             height: 2
             anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
