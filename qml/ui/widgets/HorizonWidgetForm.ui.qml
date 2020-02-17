@@ -35,11 +35,8 @@ BaseWidget {
                 height: parent.height
                 anchors.rightMargin: 12
                 anchors.right: parent.right
-                // @disable-check M222
-                Component.onCompleted: checked = settings.value("invert_pitch",
-                                                                true)
-                // @disable-check M222
-                onCheckedChanged: settings.setValue("invert_pitch", checked)
+                checked: settings.horizon_invert_pitch
+                onCheckedChanged: settings.horizon_invert_pitch = checked
             }
         }
         Item {
@@ -56,11 +53,8 @@ BaseWidget {
                 height: parent.height
                 anchors.rightMargin: 12
                 anchors.right: parent.right
-                // @disable-check M222
-                Component.onCompleted: checked = settings.value("invert_roll",
-                                                                true)
-                // @disable-check M222
-                onCheckedChanged: settings.setValue("invert_roll", checked)
+                checked: settings.horizon_invert_roll
+                onCheckedChanged: settings.horizon_invert_roll = checked
             }
         }
     }
@@ -72,10 +66,10 @@ BaseWidget {
         anchors.verticalCenter: parent.verticalCenter
 
         transformOrigin: Item.Center
-        rotation: -OpenHD.roll
+        rotation: settings.horizon_invert_roll ?  -OpenHD.roll : -OpenHD.roll
         transform: Translate {
             x: Item.Center
-            y: OpenHD.pitch
+            y: settings.horizon_invert_pitch ? -OpenHD.pitch : OpenHD.pitch
         }
         antialiasing: true
 
