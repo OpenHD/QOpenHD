@@ -73,6 +73,8 @@ ApplicationWindow {
         property bool show_air_status: true
         property bool show_message_hud: true
         property bool show_horizon: true
+        property bool horizon_invert_pitch: false
+        property bool horizon_invert_roll: false
         property bool show_fpv: true
         property bool show_altitude: true
         property bool altitude_rel_msl: false
