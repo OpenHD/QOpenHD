@@ -264,7 +264,12 @@ Item {
                             ListElement { text: "Black"; color: "black" }
                             ListElement { text: "White"; color: "white" }
                             ListElement { text: "Green"; color: "green" }
+                            ListElement { text: "Drk Green"; color: "darkGreen" }
                             ListElement { text: "Yellow"; color: "yellow" }
+                            ListElement { text: "Drk Yellow"; color: "darkYellow" }
+                            ListElement { text: "Grey"; color: "grey" }
+                            ListElement { text: "Lgt Grey"; color: "lightGrey" }
+                            ListElement { text: "Drk Grey"; color: "darkGrey" }
                         }
                         textRole: "text"
                         onCurrentIndexChanged: {
@@ -302,7 +307,12 @@ Item {
                             ListElement { text: "Black"; color: "black" }
                             ListElement { text: "White"; color: "white" }
                             ListElement { text: "Green"; color: "green" }
+                            ListElement { text: "Drk Green"; color: "darkGreen" }
                             ListElement { text: "Yellow"; color: "yellow" }
+                            ListElement { text: "Drk Yellow"; color: "darkYellow" }
+                            ListElement { text: "Grey"; color: "grey" }
+                            ListElement { text: "Lgt Grey"; color: "lightGrey" }
+                            ListElement { text: "Drk Grey"; color: "darkGrey" }
                         }
                         textRole: "text"
                         onCurrentIndexChanged: {
@@ -340,7 +350,12 @@ Item {
                             ListElement { text: "Black"; color: "black" }
                             ListElement { text: "White"; color: "white" }
                             ListElement { text: "Green"; color: "green" }
+                            ListElement { text: "Drk Green"; color: "darkGreen" }
                             ListElement { text: "Yellow"; color: "yellow" }
+                            ListElement { text: "Drk Yellow"; color: "darkYellow" }
+                            ListElement { text: "Grey"; color: "grey" }
+                            ListElement { text: "Lgt Grey"; color: "lightGrey" }
+                            ListElement { text: "Drk Grey"; color: "darkGrey" }
                         }
                         textRole: "text"
                         onCurrentIndexChanged: {
