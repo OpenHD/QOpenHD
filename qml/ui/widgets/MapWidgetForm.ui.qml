@@ -14,8 +14,8 @@ import OpenHD 1.0
 
 BaseWidget {
     id: mapWidget
-    width: 100
-    height: 100
+    width: 200
+    height: 135
 
     visible: settings.show_map
 
