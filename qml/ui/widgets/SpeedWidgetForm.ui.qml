@@ -44,6 +44,29 @@ BaseWidget {
                 onCheckedChanged: settings.speed_airspeed_gps = checked
             }
         }
+        Item {
+            width: parent.width
+            height: 24
+            Text {
+                text: "Opacity"
+                color: "white"
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+            }
+            Slider {
+                id: speed_opacity_Slider
+                orientation: Qt.Horizontal
+                from: .1
+                value: settings.speed_opacity
+                to: 1
+                stepSize: .1
+
+                onValueChanged: {
+                    settings.speed_opacity = speed_opacity_Slider.value
+                }
+            }
+        }
     }
 
     Glow {
@@ -51,6 +74,7 @@ BaseWidget {
         radius: 3
         samples: 17
         color: settings.color_glow
+        opacity: settings.speed_opacity
         source: widgetInner
     }
 
@@ -62,6 +86,7 @@ BaseWidget {
             anchors.fill: parent
             id: speed_text
             color: settings.color_text
+            opacity: settings.speed_opacity
             text: Number(
                       settings.speed_airspeed_gps ? OpenHD.airspeed : OpenHD.speed).toLocaleString(
                       Qt.locale(), 'f', 0)
@@ -73,6 +98,7 @@ BaseWidget {
             id: outline
             anchors.fill: parent
             rotation: 180
+            opacity: settings.speed_opacity
             ShapePath {
                 strokeColor: settings.color_shape
                 strokeWidth: 1

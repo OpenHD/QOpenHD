@@ -42,6 +42,29 @@ BaseWidget {
                 onCheckedChanged: settings.altitude_second_msl_rel = checked
             }
         }
+        Item {
+            width: parent.width
+            height: 24
+            Text {
+                text: "Opacity"
+                color: "white"
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+            }
+            Slider {
+                id: altitude_second_opacity_Slider
+                orientation: Qt.Horizontal
+                from: .1
+                value: settings.altitude_second_opacity
+                to: 1
+                stepSize: .1
+
+                onValueChanged: {
+                    settings.altitude_second_opacity = altitude_second_opacity_Slider.value
+                }
+            }
+        }
     }
 
     Glow {
@@ -49,6 +72,7 @@ BaseWidget {
         radius: 3
         samples: 17
         color: settings.color_glow
+        opacity: settings.altitude_second_opacity
         source: widgetInner
     }
 
@@ -59,6 +83,7 @@ BaseWidget {
         Text {
             id: second_alt_text
             color: settings.color_text
+            opacity: settings.altitude_second_opacity
             text: Number(
                       settings.altitude_second_msl_rel ? OpenHD.alt_rel : OpenHD.alt_msl).toLocaleString(
                       Qt.locale(), 'f', 0)
@@ -74,6 +99,7 @@ BaseWidget {
             width: 40
             height: 18
             color: settings.color_shape
+            opacity: settings.altitude_second_opacity
             text: "\u21a8"
             anchors.left: parent.left
             anchors.leftMargin: 0

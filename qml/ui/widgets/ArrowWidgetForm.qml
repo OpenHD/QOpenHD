@@ -41,6 +41,29 @@ BaseWidget {
                 onCheckedChanged: settings.arrow_invert = checked
             }
         }
+        Item {
+            width: parent.width
+            height: 24
+            Text {
+                text: "Opacity"
+                color: "white"
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+            }
+            Slider {
+                id: arrow_opacity_Slider
+                orientation: Qt.Horizontal
+                from: .1
+                value: settings.arrow_opacity
+                to: 1
+                stepSize: .1
+
+                onValueChanged: {
+                    settings.arrow_opacity = arrow_opacity_Slider.value
+                }
+            }
+        }
     }
 
     Item {
@@ -51,7 +74,7 @@ BaseWidget {
             id: arrow
             anchors.fill: parent
             antialiasing: true
-
+            opacity: settings.arrow_opacity
 
             ShapePath {
                 capStyle: ShapePath.RoundCap

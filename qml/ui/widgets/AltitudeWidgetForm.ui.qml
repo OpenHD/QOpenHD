@@ -44,6 +44,29 @@ BaseWidget {
                 onCheckedChanged: settings.altitude_rel_msl = checked
             }
         }
+        Item {
+            width: parent.width
+            height: 24
+            Text {
+                text: "Opacity"
+                color: "white"
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+            }
+            Slider {
+                id: altitude_opacity_Slider
+                orientation: Qt.Horizontal
+                from: .1
+                value: settings.altitude_opacity
+                to: 1
+                stepSize: .1
+
+                onValueChanged: {
+                    settings.altitude_opacity = altitude_opacity_Slider.value
+                }
+            }
+        }
     }
 
     Glow {
@@ -51,6 +74,7 @@ BaseWidget {
         radius: 3
         samples: 17
         color: settings.color_glow
+        opacity: settings.altitude_opacity
         source: widgetInner
     }
 
@@ -61,6 +85,7 @@ BaseWidget {
         Text {
             id: alt_text
             color: settings.color_text
+            opacity: settings.altitude_opacity
             text: Number(
                       settings.altitude_rel_msl ? OpenHD.alt_msl : OpenHD.alt_rel).toLocaleString(
                       Qt.locale(), 'f', 0)
@@ -72,8 +97,9 @@ BaseWidget {
         Shape {
             id: outline
             anchors.fill: parent
+            opacity: settings.altitude_opacity
             ShapePath {
-                strokeColor: settings.color_shape
+                strokeColor: settings.color_shape               
                 strokeWidth: 1
                 strokeStyle: ShapePath.SolidLine
                 fillColor: "transparent"

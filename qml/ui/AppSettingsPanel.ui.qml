@@ -253,7 +253,6 @@ Item {
                     }
 
                     ComboBox {
-                        width: elementWidth
                         height: elementHeight
                         anchors.right: parent.right
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -296,7 +295,6 @@ Item {
                     }
 
                     ComboBox {
-                        width: elementWidth
                         height: elementHeight
                         anchors.right: parent.right
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -339,7 +337,6 @@ Item {
                     }
 
                     ComboBox {
-                        width: elementWidth
                         height: elementHeight
                         anchors.right: parent.right
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36

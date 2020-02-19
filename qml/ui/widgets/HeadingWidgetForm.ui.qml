@@ -42,6 +42,29 @@ BaseWidget {
                 onCheckedChanged: settings.heading_inav = checked
             }
         }
+        Item {
+            width: parent.width
+            height: 24
+            Text {
+                text: "Opacity"
+                color: "white"
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+            }
+            Slider {
+                id: heading_opacity_Slider
+                orientation: Qt.Horizontal
+                from: .1
+                value: settings.heading_opacity
+                to: 1
+                stepSize: .1
+
+                onValueChanged: {
+                    settings.heading_opacity = heading_opacity_Slider.value
+                }
+            }
+        }
     }
 
     Glow {
@@ -49,6 +72,7 @@ BaseWidget {
         radius: 3
         samples: 17
         color: settings.color_glow
+        opacity: settings.heading_opacity
         source: widgetInner
     }
 
@@ -64,6 +88,7 @@ BaseWidget {
             anchors.bottom: parent.bottom
             anchors.bottomMargin: parent.height - 24
             color: settings.color_text
+            opacity: settings.heading_opacity
             text: Number(
                       settings.heading_inav ? OpenHD.hdg * 100 : OpenHD.hdg).toLocaleString(
                       Qt.locale(), 'f', 0)
@@ -74,6 +99,7 @@ BaseWidget {
         Shape {
             id: outline
             anchors.fill: parent
+            opacity: settings.heading_opacity
             ShapePath {
                 capStyle: ShapePath.RoundCap
                 strokeColor: settings.color_shape

@@ -61,6 +61,29 @@ BaseWidget {
             width: parent.width
             height: 24
             Text {
+                text: "Opacity"
+                color: "white"
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+            }
+            Slider {
+                id: horizon_opacity_Slider
+                orientation: Qt.Horizontal
+                from: .1
+                value: settings.horizon_opacity
+                to: 1
+                stepSize: .1
+
+                onValueChanged: {
+                    settings.horizon_opacity = horizon_opacity_Slider.value
+                }
+            }
+        }
+        Item {
+            width: parent.width
+            height: 24
+            Text {
                 text: "Size"
                 color: "white"
                 font.bold: true
@@ -102,6 +125,7 @@ BaseWidget {
             anchors.left: parent.left
             anchors.verticalCenter: parent.verticalCenter
             color: settings.color_shape
+            opacity: settings.horizon_opacity
         }
 
         Glow {
@@ -109,6 +133,7 @@ BaseWidget {
             radius: 4
             samples: 17
             color: settings.color_glow
+            opacity: settings.horizon_opacity
             source: left_line
         }
 
@@ -119,6 +144,7 @@ BaseWidget {
             anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
             color: settings.color_shape
+            opacity: settings.horizon_opacity
         }
 
         Glow {
@@ -126,6 +152,7 @@ BaseWidget {
             radius: 4
             samples: 17
             color: settings.color_glow
+            opacity: settings.horizon_opacity
             source: right_line
         }
     }
