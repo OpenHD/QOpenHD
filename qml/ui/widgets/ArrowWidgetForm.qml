@@ -37,11 +37,31 @@ BaseWidget {
                 height: parent.height
                 anchors.rightMargin: 12
                 anchors.right: parent.right
-                // @disable-check M222
-                Component.onCompleted: checked = settings.value("inav_heading",
-                                                                true)
-                // @disable-check M222
-                onCheckedChanged: settings.setValue("inav_heading", checked)
+                checked: settings.arrow_invert
+                onCheckedChanged: settings.arrow_invert = checked
+            }
+        }
+        Item {
+            width: parent.width
+            height: 24
+            Text {
+                text: "Opacity"
+                color: "white"
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+            }
+            Slider {
+                id: arrow_opacity_Slider
+                orientation: Qt.Horizontal
+                from: .1
+                value: settings.arrow_opacity
+                to: 1
+                stepSize: .1
+
+                onValueChanged: {
+                    settings.arrow_opacity = arrow_opacity_Slider.value
+                }
             }
         }
     }
@@ -54,12 +74,12 @@ BaseWidget {
             id: arrow
             anchors.fill: parent
             antialiasing: true
-
+            opacity: settings.arrow_opacity
 
             ShapePath {
                 capStyle: ShapePath.RoundCap
-                strokeColor: "black"
-                fillColor: "white"
+                strokeColor: settings.color_glow
+                fillColor: settings.color_shape
                 strokeWidth: 1
                 strokeStyle: ShapePath.SolidLine
 
@@ -74,7 +94,11 @@ BaseWidget {
                 PathLine { x: 12;                  y: 0  }//back to start
             }
 
-            transform: Rotation { origin.x: 12; origin.y: 12; angle: OpenHD.home_course }
+            transform: Rotation {
+                origin.x: 12;
+                origin.y: 12;
+                angle: settings.arrow_invert ? OpenHD.home_course-180 : OpenHD.home_course
+            }
         }
 
     }

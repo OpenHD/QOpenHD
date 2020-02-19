@@ -22,13 +22,38 @@ BaseWidget {
     defaultHCenter: false
     defaultVCenter: false
 
-    hasWidgetDetail: false
+    hasWidgetDetail: true
+    widgetDetailComponent: Column {
+        Item {
+            width: parent.width
+            height: 24
+            Text {
+                text: "Opacity"
+                color: "white"
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+            }
+            Slider {
+                id: pip_video_opacity_Slider
+                orientation: Qt.Horizontal
+                from: .1
+                value: settings.pip_video_opacity
+                to: 1
+                stepSize: .1
+
+                onValueChanged: {
+                    settings.pip_video_opacity = pip_video_opacity_Slider.value
+                }
+            }
+        }
+    }
 
     Rectangle {
         id: widgetInner
 
-        color: "#ff000000"
-
+        color: settings.color_text
+        opacity: settings.pip_video_opacity
         anchors.left: parent.left
         anchors.leftMargin: 6
 

@@ -27,19 +27,43 @@ BaseWidget {
                 text: "Sensitivity"
                 color: "white"
                 font.bold: true
-                font.pixelSize: detailPanelFontPixels;
+                font.pixelSize: detailPanelFontPixels
                 anchors.left: parent.left
             }
-            Switch {
-                width: 32
-                height: parent.height
-                anchors.rightMargin: 12
-                anchors.right: parent.right
-                // @disable-check M222
-                Component.onCompleted: checked = settings.value("fpv_sensitivity",
-                                                                true)
-                // @disable-check M222
-                onCheckedChanged: settings.setValue("fpv_sensitivity", checked)
+            Slider {
+                id: fpvSlider
+                orientation: Qt.Horizontal
+                from: 1
+                value: settings.fpv_sensitivity
+                to: 20
+                stepSize: 1
+
+                onValueChanged: {
+                    settings.fpv_sensitivity = fpvSlider.value
+                }
+            }
+        }
+        Item {
+            width: parent.width
+            height: 24
+            Text {
+                text: "Opacity"
+                color: "white"
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+            }
+            Slider {
+                id: fpv_opacity_Slider
+                orientation: Qt.Horizontal
+                from: .1
+                value: settings.fpv_opacity
+                to: 1
+                stepSize: .1
+
+                onValueChanged: {
+                    settings.fpv_opacity = fpv_opacity_Slider.value
+                }
             }
         }
     }
@@ -55,9 +79,9 @@ BaseWidget {
         transformOrigin: Item.Center
 
         transform: Translate {
-            x: OpenHD.vy*20
+            x: OpenHD.vy * settings.fpv_sensitivity
             //to get pitch relative to ahi add pitch in
-            y: (OpenHD.vz*20)+ OpenHD.pitch_raw
+            y: (OpenHD.vz * settings.fpv_sensitivity) + OpenHD.pitch
         }
         antialiasing: true
 
@@ -65,16 +89,17 @@ BaseWidget {
             anchors.fill: widgetGlyph
             radius: 4
             samples: 17
-            color: "black"
+            color: settings.color_glow
+            opacity: settings.fpv_opacity
             source: widgetGlyph
         }
 
         Text {
             id: widgetGlyph
-            y: 0
             width: 24
             height: 24
-            color: "#ffffff"
+            color: settings.color_shape
+            opacity: settings.fpv_opacity
             text: "\ufdd5"
             bottomPadding: 17
             leftPadding: 33
@@ -91,9 +116,5 @@ BaseWidget {
     }
 }
 
-/*##^##
-Designer {
-    D{i:3;anchors_height:24;anchors_width:24;anchors_y:0}
-}
-##^##*/
+
 

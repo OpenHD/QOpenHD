@@ -30,7 +30,7 @@ BaseWidget {
                 text: "Toggle Inav"
                 color: "white"
                 font.bold: true
-                font.pixelSize: detailPanelFontPixels;
+                font.pixelSize: detailPanelFontPixels
                 anchors.left: parent.left
             }
             Switch {
@@ -38,11 +38,31 @@ BaseWidget {
                 height: parent.height
                 anchors.rightMargin: 12
                 anchors.right: parent.right
-                // @disable-check M222
-                Component.onCompleted: checked = settings.value("inav_heading",
-                                                                true)
-                // @disable-check M222
-                onCheckedChanged: settings.setValue("inav_heading", checked)
+                checked: settings.heading_inav
+                onCheckedChanged: settings.heading_inav = checked
+            }
+        }
+        Item {
+            width: parent.width
+            height: 24
+            Text {
+                text: "Opacity"
+                color: "white"
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+            }
+            Slider {
+                id: heading_opacity_Slider
+                orientation: Qt.Horizontal
+                from: .1
+                value: settings.heading_opacity
+                to: 1
+                stepSize: .1
+
+                onValueChanged: {
+                    settings.heading_opacity = heading_opacity_Slider.value
+                }
             }
         }
     }
@@ -51,7 +71,8 @@ BaseWidget {
         anchors.fill: widgetInner
         radius: 3
         samples: 17
-        color: "black"
+        color: settings.color_glow
+        opacity: settings.heading_opacity
         source: widgetInner
     }
 
@@ -66,8 +87,11 @@ BaseWidget {
             anchors.right: parent.right
             anchors.bottom: parent.bottom
             anchors.bottomMargin: parent.height - 24
-            color: "white"
-            text: Number(OpenHD.hdg).toLocaleString(Qt.locale(), 'f', 0);
+            color: settings.color_text
+            opacity: settings.heading_opacity
+            text: Number(
+                      settings.heading_inav ? OpenHD.hdg * 100 : OpenHD.hdg).toLocaleString(
+                      Qt.locale(), 'f', 0)
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
         }
@@ -75,9 +99,10 @@ BaseWidget {
         Shape {
             id: outline
             anchors.fill: parent
+            opacity: settings.heading_opacity
             ShapePath {
                 capStyle: ShapePath.RoundCap
-                strokeColor: "white"
+                strokeColor: settings.color_shape
                 strokeWidth: 1
                 strokeStyle: ShapePath.SolidLine
                 fillColor: "transparent"

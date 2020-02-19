@@ -51,6 +51,29 @@ BaseWidget {
             Text { text: "Voltage bat:";  color: "white"; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.left: parent.left }
             Text { text: OpenHDPower.vbat; color: "white"; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.right: parent.right }
         }
+        Item {
+            width: parent.width
+            height: 24
+            Text {
+                text: "Opacity"
+                color: "white"
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+            }
+            Slider {
+                id: ground_power_opacity_Slider
+                orientation: Qt.Horizontal
+                from: .1
+                value: settings.ground_power_opacity
+                to: 1
+                stepSize: .1
+
+                onValueChanged: {
+                    settings.ground_power_opacity = ground_power_opacity_Slider.value
+                }
+            }
+        }
     }
 
     Item {
@@ -62,7 +85,8 @@ BaseWidget {
             y: 0
             width: 48
             height: 24
-            color: "#ffffff"
+            color: settings.color_text
+            opacity: settings.ground_power_opacity
             text: OpenHDPower.battery_percent
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: batteryGauge.right
@@ -86,6 +110,7 @@ BaseWidget {
                 // 20% warning, 15% critical
                 return cellVoltage < 3.15 ? (cellVoltage < 3.00 ? "#ff0000" : "#fbfd15") : "#ffffff"
             }
+            opacity: settings.ground_power_opacity
             text: OpenHDPower.battery_gauge
             anchors.left: parent.left
             anchors.leftMargin: 12

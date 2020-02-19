@@ -102,8 +102,8 @@ Item {
                     width: parent.width
                     height: rowHeight
                     color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-                    //color: "#8cbfd7f3"
 
+                    //color: "#8cbfd7f3"
                     Text {
                         text: "Enable Speech"
                         font.weight: Font.Bold
@@ -234,6 +234,132 @@ Item {
                 id: widgetColumn
                 spacing: 0
                 width: parent.width
+
+                Rectangle {
+                    width: parent.width
+                    height: rowHeight
+                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+
+                    Text {
+                        text: "Shape Color"
+                        font.weight: Font.Bold
+                        font.pixelSize: 13
+                        anchors.leftMargin: 8
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 224
+                        height: elementHeight
+                        anchors.left: parent.left
+                    }
+
+                    ComboBox {
+                        height: elementHeight
+                        anchors.right: parent.right
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.horizontalCenter: parent.horizonatalCenter
+                        model: ListModel {
+                            id: color_shape
+                            ListElement { text: "Black"; color: "black" }
+                            ListElement { text: "White"; color: "white" }
+                            ListElement { text: "Green"; color: "green" }
+                            ListElement { text: "Drk Green"; color: "darkGreen" }
+                            ListElement { text: "Yellow"; color: "yellow" }
+                            ListElement { text: "Drk Yellow"; color: "darkYellow" }
+                            ListElement { text: "Grey"; color: "grey" }
+                            ListElement { text: "Lgt Grey"; color: "lightGrey" }
+                            ListElement { text: "Drk Grey"; color: "darkGrey" }
+                        }
+                        textRole: "text"
+                        onCurrentIndexChanged: {
+                                settings.color_shape = color_shape.get(currentIndex).color
+                        }
+                    }
+                }
+
+                Rectangle {
+                    width: parent.width
+                    height: rowHeight
+                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+
+                    Text {
+                        text: "Glow Color"
+                        font.weight: Font.Bold
+                        font.pixelSize: 13
+                        anchors.leftMargin: 8
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 224
+                        height: elementHeight
+                        anchors.left: parent.left
+                    }
+
+                    ComboBox {
+                        height: elementHeight
+                        anchors.right: parent.right
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.horizontalCenter: parent.horizonatalCenter
+                        model: ListModel {
+                            id: color_glow
+                            ListElement { text: "Black"; color: "black" }
+                            ListElement { text: "White"; color: "white" }
+                            ListElement { text: "Green"; color: "green" }
+                            ListElement { text: "Drk Green"; color: "darkGreen" }
+                            ListElement { text: "Yellow"; color: "yellow" }
+                            ListElement { text: "Drk Yellow"; color: "darkYellow" }
+                            ListElement { text: "Grey"; color: "grey" }
+                            ListElement { text: "Lgt Grey"; color: "lightGrey" }
+                            ListElement { text: "Drk Grey"; color: "darkGrey" }
+                        }
+                        textRole: "text"
+                        onCurrentIndexChanged: {
+                                settings.color_glow = color_glow.get(currentIndex).color
+                        }
+                    }
+                }
+
+                Rectangle {
+                    width: parent.width
+                    height: rowHeight
+                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+
+                    Text {
+                        text: "Text Color"
+                        font.weight: Font.Bold
+                        font.pixelSize: 13
+                        anchors.leftMargin: 8
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 224
+                        height: elementHeight
+                        anchors.left: parent.left
+                    }
+
+                    ComboBox {
+                        height: elementHeight
+                        anchors.right: parent.right
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.horizontalCenter: parent.horizonatalCenter
+                        model: ListModel {
+                            id: color_text
+                            ListElement { text: "Black"; color: "black" }
+                            ListElement { text: "White"; color: "white" }
+                            ListElement { text: "Green"; color: "green" }
+                            ListElement { text: "Drk Green"; color: "darkGreen" }
+                            ListElement { text: "Yellow"; color: "yellow" }
+                            ListElement { text: "Drk Yellow"; color: "darkYellow" }
+                            ListElement { text: "Grey"; color: "grey" }
+                            ListElement { text: "Lgt Grey"; color: "lightGrey" }
+                            ListElement { text: "Drk Grey"; color: "darkGrey" }
+                        }
+                        textRole: "text"
+                        onCurrentIndexChanged: {
+                                settings.color_text = color_text.get(currentIndex).color
+                        }
+                    }
+                }
 
                 Rectangle {
                     width: parent.width
@@ -815,7 +941,6 @@ Item {
                     }
                 }
             }
-
         }
 
         ScrollView {
@@ -952,7 +1077,6 @@ Item {
                     height: rowHeight
                     color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
-
                     Text {
                         text: "Enable LTE"
                         font.weight: Font.Bold
@@ -976,7 +1100,6 @@ Item {
                         onCheckedChanged: settings.enable_lte_video = checked
                     }
                 }
-
 
                 Rectangle {
                     width: parent.width
@@ -1017,10 +1140,3 @@ Item {
         //}
     }
 }
-
-/*##^##
-Designer {
-    D{i:14;invisible:true}D{i:15;invisible:true}
-}
-##^##*/
-

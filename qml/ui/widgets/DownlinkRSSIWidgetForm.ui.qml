@@ -192,6 +192,29 @@ BaseWidget {
             Text { text: "CTS:";  color: "white"; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.left: parent.left }
             Text { text: OpenHD.cts; color: "white"; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.right: parent.right }
         }
+        Item {
+            width: parent.width
+            height: 24
+            Text {
+                text: "Opacity"
+                color: "white"
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+            }
+            Slider {
+                id: downlink_rssi_opacity_Slider
+                orientation: Qt.Horizontal
+                from: .1
+                value: settings.downlink_rssi_opacity
+                to: 1
+                stepSize: .1
+
+                onValueChanged: {
+                    settings.downlink_rssi_opacity = downlink_rssi_opacity_Slider.value
+                }
+            }
+        }
     }
 
     Item {
@@ -204,7 +227,8 @@ BaseWidget {
             y: 0
             width: 24
             height: 24
-            color: "#ffffff"
+            color: settings.color_shape
+            opacity: settings.downlink_rssi_opacity
             text: "\uf381"
             anchors.left: parent.left
             anchors.leftMargin: 0
@@ -221,7 +245,8 @@ BaseWidget {
             id: primary_radio_dbm
             width: 32
             height: 24
-            color: "#ffffff"
+            color: settings.color_text
+            opacity: settings.downlink_rssi_opacity
             text: "dBm"
             anchors.left: downlink_rssi.right
             anchors.leftMargin: 2
@@ -239,7 +264,8 @@ BaseWidget {
             id: downlink_rssi
             width: 34
             height: 24
-            color: "#ffffff"
+            color: settings.color_text
+            opacity: settings.downlink_rssi_opacity
             text: OpenHD.downlink_rssi == -127 ? qsTr("N/A") : OpenHD.downlink_rssi
             anchors.left: downlink_icon.right
             anchors.leftMargin: 0

@@ -32,7 +32,7 @@ BaseWidget {
                 horizontalAlignment: Text.AlignRight
                 color: "white"
                 font.bold: true
-                font.pixelSize: detailPanelFontPixels;
+                font.pixelSize: detailPanelFontPixels
                 anchors.left: parent.left
             }
             Switch {
@@ -40,11 +40,31 @@ BaseWidget {
                 height: parent.height
                 anchors.rightMargin: 12
                 anchors.right: parent.right
-                // @disable-check M222
-                Component.onCompleted: checked = settings.value("airpeed_gps",
-                                                                true)
-                // @disable-check M222
-                onCheckedChanged: settings.setValue("airspeed_gps", checked)
+                checked: settings.speed_airspeed_gps
+                onCheckedChanged: settings.speed_airspeed_gps = checked
+            }
+        }
+        Item {
+            width: parent.width
+            height: 24
+            Text {
+                text: "Opacity"
+                color: "white"
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+            }
+            Slider {
+                id: speed_opacity_Slider
+                orientation: Qt.Horizontal
+                from: .1
+                value: settings.speed_opacity
+                to: 1
+                stepSize: .1
+
+                onValueChanged: {
+                    settings.speed_opacity = speed_opacity_Slider.value
+                }
             }
         }
     }
@@ -53,7 +73,8 @@ BaseWidget {
         anchors.fill: widgetInner
         radius: 3
         samples: 17
-        color: "black"
+        color: settings.color_glow
+        opacity: settings.speed_opacity
         source: widgetInner
     }
 
@@ -64,8 +85,11 @@ BaseWidget {
         Text {
             anchors.fill: parent
             id: speed_text
-            color: "white"
-            text: Number(OpenHD.speed).toLocaleString(Qt.locale(), 'f', 0);
+            color: settings.color_text
+            opacity: settings.speed_opacity
+            text: Number(
+                      settings.speed_airspeed_gps ? OpenHD.airspeed : OpenHD.speed).toLocaleString(
+                      Qt.locale(), 'f', 0)
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
         }
@@ -74,27 +98,42 @@ BaseWidget {
             id: outline
             anchors.fill: parent
             rotation: 180
+            opacity: settings.speed_opacity
             ShapePath {
-                strokeColor: "white"
+                strokeColor: settings.color_shape
                 strokeWidth: 1
                 strokeStyle: ShapePath.SolidLine
                 fillColor: "transparent"
                 startX: 0
                 startY: 12
-                PathLine { x: 0;                  y: 12 }
-                PathLine { x: 12;                 y: 0 }
-                PathLine { x: 58;                 y: 0 }
-                PathLine { x: 58;                 y: 24 }
-                PathLine { x: 12;                 y: 24 }
-                PathLine { x: 0;                  y: 12 }
+                PathLine {
+                    x: 0
+                    y: 12
+                }
+                PathLine {
+                    x: 12
+                    y: 0
+                }
+                PathLine {
+                    x: 58
+                    y: 0
+                }
+                PathLine {
+                    x: 58
+                    y: 24
+                }
+                PathLine {
+                    x: 12
+                    y: 24
+                }
+                PathLine {
+                    x: 0
+                    y: 12
+                }
             }
         }
     }
 }
 
-/*##^##
-Designer {
-    D{i:5;anchors_height:15;anchors_width:30}
-}
-##^##*/
+
 

@@ -21,6 +21,33 @@ BaseWidget {
     defaultHCenter: false
     defaultVCenter: false
 
+    hasWidgetDetail: true
+    widgetDetailComponent: Column {
+        Item {
+            width: parent.width
+            height: 24
+            Text {
+                text: "Opacity"
+                color: "white"
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+            }
+            Slider {
+                id: ground_status_opacity_Slider
+                orientation: Qt.Horizontal
+                from: .1
+                value: settings.ground_status_opacity
+                to: 1
+                stepSize: .1
+
+                onValueChanged: {
+                    settings.ground_status_opacity = ground_status_opacity_Slider.value
+                }
+            }
+        }
+    }
+
     Item {
         id: widgetInner
 
@@ -31,7 +58,8 @@ BaseWidget {
             y: 0
             width: 24
             height: 24
-            color: "#ffffff"
+            color: settings.color_shape
+            opacity: settings.ground_status_opacity
             text: "\uf2db"
             anchors.right: cpuload_gnd.left
             anchors.rightMargin: 2
@@ -49,7 +77,8 @@ BaseWidget {
             y: 0
             width: 34
             height: 24
-            color: "#ffffff"
+            color: settings.color_text
+            opacity: settings.ground_status_opacity
             text: Number(OpenHD.cpuload_gnd).toLocaleString(Qt.locale(), 'f', 0) + "%";
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: temp_gnd.left
@@ -66,7 +95,8 @@ BaseWidget {
             y: 0
             width: 34
             height: 24
-            color: "#ffffff"
+            color: settings.color_text
+            opacity: settings.ground_status_opacity
             text: Number(OpenHD.temp_gnd).toLocaleString(Qt.locale(), 'f', 0) + "°";
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: parent.right

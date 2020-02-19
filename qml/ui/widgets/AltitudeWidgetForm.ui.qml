@@ -32,7 +32,7 @@ BaseWidget {
                 text: "Relative Or MSL"
                 color: "white"
                 font.bold: true
-                font.pixelSize: detailPanelFontPixels;
+                font.pixelSize: detailPanelFontPixels
                 anchors.left: parent.left
             }
             Switch {
@@ -40,11 +40,31 @@ BaseWidget {
                 height: parent.height
                 anchors.rightMargin: 12
                 anchors.right: parent.right
-                // @disable-check M222
-                Component.onCompleted: checked = settings.value("alt_msl_rel",
-                                                                true)
-                // @disable-check M222
-                onCheckedChanged: settings.setValue("alt_msl_rel", checked)
+                checked: settings.altitude_rel_msl
+                onCheckedChanged: settings.altitude_rel_msl = checked
+            }
+        }
+        Item {
+            width: parent.width
+            height: 24
+            Text {
+                text: "Opacity"
+                color: "white"
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+            }
+            Slider {
+                id: altitude_opacity_Slider
+                orientation: Qt.Horizontal
+                from: .1
+                value: settings.altitude_opacity
+                to: 1
+                stepSize: .1
+
+                onValueChanged: {
+                    settings.altitude_opacity = altitude_opacity_Slider.value
+                }
             }
         }
     }
@@ -53,7 +73,8 @@ BaseWidget {
         anchors.fill: widgetInner
         radius: 3
         samples: 17
-        color: "black"
+        color: settings.color_glow
+        opacity: settings.altitude_opacity
         source: widgetInner
     }
 
@@ -63,8 +84,11 @@ BaseWidget {
 
         Text {
             id: alt_text
-            color: "white"
-            text: Number(OpenHD.alt_rel).toLocaleString(Qt.locale(), 'f', 0);
+            color: settings.color_text
+            opacity: settings.altitude_opacity
+            text: Number(
+                      settings.altitude_rel_msl ? OpenHD.alt_msl : OpenHD.alt_rel).toLocaleString(
+                      Qt.locale(), 'f', 0)
             anchors.fill: parent
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
@@ -73,27 +97,42 @@ BaseWidget {
         Shape {
             id: outline
             anchors.fill: parent
+            opacity: settings.altitude_opacity
             ShapePath {
-                strokeColor: "white"
+                strokeColor: settings.color_shape               
                 strokeWidth: 1
                 strokeStyle: ShapePath.SolidLine
                 fillColor: "transparent"
                 startX: 0
                 startY: 12
-                PathLine { x: 0;                  y: 12 }
-                PathLine { x: 12;                 y: 0 }
-                PathLine { x: 58;                 y: 0 }
-                PathLine { x: 58;                 y: 24 }
-                PathLine { x: 12;                 y: 24 }
-                PathLine { x: 0;                  y: 12 }
+                PathLine {
+                    x: 0
+                    y: 12
+                }
+                PathLine {
+                    x: 12
+                    y: 0
+                }
+                PathLine {
+                    x: 58
+                    y: 0
+                }
+                PathLine {
+                    x: 58
+                    y: 24
+                }
+                PathLine {
+                    x: 12
+                    y: 24
+                }
+                PathLine {
+                    x: 0
+                    y: 12
+                }
             }
         }
     }
 }
 
-/*##^##
-Designer {
-    D{i:0;invisible:true}
-}
-##^##*/
+
 

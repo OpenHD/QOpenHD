@@ -51,7 +51,10 @@ ApplicationWindow {
         property int pip_video_port: 5601
         property int lte_video_port: 8000
         property int battery_cells: 3
+
         property bool show_pip_video: false
+        property double pip_video_opacity: 1
+
         property bool enable_software_video_decoder: false
         property bool enable_rtp: true
         property bool enable_lte_video: false
@@ -61,28 +64,82 @@ ApplicationWindow {
         property bool enable_imperial: false
         property bool enable_rc: false
 
+        property string color_shape: "white"
+        property string color_text: "white"
+        property string color_glow: "black"
+
+        property double ground_power_opacity: 1
+        
         property int log_level: 3
 
         property bool show_downlink_rssi: true
+        property double downlink_rssi_opacity: 1
+
         property bool show_uplink_rssi: true
+        property double uplink_rssi_opacity: 1
+
         property bool show_bitrate: true
+        property double bitrate_opacity: 1
+
         property bool show_air_battery: true
+        property double air_battery_opacity: 1
+
         property bool show_gps: true
+        property double gps_opacity: 1
+
         property bool show_home_distance: true
+        property double home_distance_opacity: 1
+
         property bool show_flight_timer: true
+        property double flight_timer_opacity: 1
+
         property bool show_flight_mode: true
+        property double flight_mode_opacity: 1
+
         property bool show_ground_status: true
+        property double ground_status_opacity: 1
+
         property bool show_air_status: true
+        property double air_status_opacity: 1
+
         property bool show_message_hud: true
+        property double message_hud_opacity: 1
+
         property bool show_horizon: true
+        property bool horizon_invert_pitch: false
+        property bool horizon_invert_roll: false
+        property int horizon_size: 250
+        property double horizon_opacity: 1
+
         property bool show_fpv: true
-        property bool show_altitude: true
+        property int fpv_sensitivity: 5
+        property double fpv_opacity: 1
+
         property bool show_speed: true
+        property bool speed_airspeed_gps: false
+        property double speed_opacity: 1
+
         property bool show_heading: true
+        property bool heading_inav: false
+        property double heading_opacity: 1
+
+        property bool show_altitude: true
+        property bool altitude_rel_msl: false
+        property double altitude_opacity: 1
+
         property bool show_altitude_second: true
+        property bool altitude_second_msl_rel: false
+        property double altitude_second_opacity: 1
+
         property bool show_arrow: true
+        property bool arrow_invert: false
+        property double arrow_opacity: 1
+
         property bool show_map: false
+        property int map_small_zoom: 18
+
         property bool show_throttle: true
+        property double throttle_opacity: 1
     }
 
     OpenHDRC {

@@ -27,65 +27,52 @@ BaseWidget {
 
     hasWidgetDetail: true
 
-
     widgetDetailComponent: Column {
+
         Item {
             width: parent.width
             height: 24
             Text {
-                text: "Google or Bing"
+                text: "Zoom"
                 color: "white"
                 font.bold: true
                 font.pixelSize: detailPanelFontPixels
                 anchors.left: parent.left
             }
-            Switch {
-                width: 32
-                height: parent.height
-                anchors.rightMargin: 12
-                anchors.right: parent.right
-                // @disable-check M222
-                Component.onCompleted: checked = settings.value(
-                                           "map_bing_google", true)
-                // @disable-check M222
-                onCheckedChanged: settings.setValue("map_bing_google", checked)
+            Slider {
+                      id:zoomSlider
+                      orientation: Qt.Horizontal
+                      from: 1
+                      value:settings.map_small_zoom
+                      to: 30
+                      stepSize: 1
+
+                      onValueChanged: {
+                          mapsmall.zoomLevel = zoomSlider.value
+                          settings.map_small_zoom = zoomSlider.value
+                      }
             }
         }
         Item {
             width: parent.width
             height: 24
             Text {
-                text: "Default Zoom"
+                text: "Base Map"
                 color: "white"
                 font.bold: true
                 font.pixelSize: detailPanelFontPixels
                 anchors.left: parent.left
             }
-            Switch {
-                width: 32
+            GroupBox {
                 height: parent.height
                 anchors.rightMargin: 12
                 anchors.right: parent.right
-                // @disable-check M222
-                Component.onCompleted: checked = settings.value("map_zoom",
-                                                                true)
-                // @disable-check M222
-                onCheckedChanged: settings.setValue("map_zoom", checked)
-            }
-        }
-        Item {
-            width: parent.width
-            height: 24
-            GroupBox{
-                height: parent.height
-                anchors.rightMargin: 12
-                anchors.right: parent.right
-                ComboBox{
-                    model:mapsmall.supportedMapTypes
-                    textRole:"description"
+                ComboBox {
+                    model: mapsmall.supportedMapTypes
+                    textRole: "description"
                     onCurrentIndexChanged: {
-                        mapsmall.activeMapType = mapsmall.supportedMapTypes[currentIndex];
-                        maplarge.activeMapType = maplarge.supportedMapTypes[currentIndex];
+                        mapsmall.activeMapType = mapsmall.supportedMapTypes[currentIndex]
+                        maplarge.activeMapType = maplarge.supportedMapTypes[currentIndex]
                     }
                 }
             }
@@ -117,15 +104,12 @@ BaseWidget {
 
         visible: false
 
-
-
-
         Plugin {
             id: mapPluginLarge
             name: "osm" // "osm" , "mapboxgl", "esri", ...
 
-         //   PluginParameter { name: "here.app_id"; value: "****" }
-         //   PluginParameter { name: "here.token"; value: "*****" }
+            //   PluginParameter { name: "here.app_id"; value: "****" }
+            //   PluginParameter { name: "here.token"; value: "*****" }
         }
 
         Map {
@@ -136,9 +120,10 @@ BaseWidget {
             zoomLevel: 18
             // Enable pan, flick, and pinch gestures to zoom in and out
             gesture.enabled: true
-            gesture.acceptedGestures: MapGestureArea.PanGesture | MapGestureArea.FlickGesture | MapGestureArea.PinchGesture | MapGestureArea.RotationGesture | MapGestureArea.TiltGesture
+            gesture.acceptedGestures: MapGestureArea.PanGesture | MapGestureArea.FlickGesture
+                                      | MapGestureArea.PinchGesture
+                                      | MapGestureArea.RotationGesture | MapGestureArea.TiltGesture
             gesture.flickDeceleration: 3000
-
 
             activeMapType: MapType.SatelliteMapDay
             center {
@@ -184,14 +169,15 @@ BaseWidget {
                 opacity: .75
             }
 
-//get coordinates on click... for future use
-            MouseArea{
-                    anchors.fill: parent
-                    onClicked: {
-                        var coord = maplarge.toCoordinate(Qt.point(mouse.x,mouse.y));
-                        console.log(coord.latitude, coord.longitude)
-                    }
+            //get coordinates on click... for future use
+            MouseArea {
+                anchors.fill: parent
+                onClicked: {
+                    var coord = maplarge.toCoordinate(Qt.point(mouse.x,
+                                                               mouse.y))
+                    console.log(coord.latitude, coord.longitude)
                 }
+            }
 
             Rectangle {
                 anchors.top: parent.top
@@ -290,19 +276,10 @@ BaseWidget {
                     }
                 }
             }
-
-
-
         }
     }
 
-
-
-//// ------------------------- split between large map above and small map below------------
-
-
-
-
+    //// ------------------------- split between large map above and small map below------------
     Item {
         id: widgetInner
         anchors.fill: parent
@@ -321,11 +298,11 @@ BaseWidget {
             copyrightsVisible: false
             anchors.fill: parent
             plugin: mapPlugin
-            id:mapsmall
-            zoomLevel: 18
+            id: mapsmall
+            //  zoomLevel: 18
             gesture.enabled: false
 
-            //      activeMapType: MapType.SatelliteMapDay
+            //  activeMapType: MapType.SatelliteMapDay
             bearing: OpenHD.hdg
 
             center {
@@ -347,7 +324,6 @@ BaseWidget {
                     source: "home_marker.png"
                 }
             }
-
 
             MapCircle {
                 center {

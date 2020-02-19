@@ -161,6 +161,11 @@ void OpenHD::set_speed(int speed) {
     emit speed_changed(m_speed);
 }
 
+void OpenHD::set_airspeed(int airspeed) {
+    m_airspeed = airspeed;
+    emit speed_changed(m_airspeed);
+}
+
 void OpenHD::set_armed(bool armed) {
 #if defined(ENABLE_SPEECH)
     QSettings settings;

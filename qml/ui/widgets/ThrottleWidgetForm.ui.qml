@@ -25,29 +25,52 @@ BaseWidget {
     defaultHCenter: false
     defaultVCenter: false
 
-    hasWidgetDetail: false
+    hasWidgetDetail: true
     widgetDetailComponent: Column {
+        Item {
+            width: parent.width
+            height: 24
+            Text {
+                text: "Opacity"
+                color: "white"
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+            }
+            Slider {
+                id: throttle_opacity_Slider
+                orientation: Qt.Horizontal
+                from: .1
+                value: settings.throttle_opacity
+                to: 1
+                stepSize: .1
 
+                onValueChanged: {
+                    settings.throttle_opacity = throttle_opacity_Slider.value
+                }
+            }
+        }
     }
 
     Glow {
         anchors.fill: widgetInner
         radius: 3
         samples: 17
-        color: "black"
+        color: settings.color_glow
+        opacity: settings.throttle_opacity
         source: widgetInner
     }
 
     Item {
         id: widgetInner
-
         anchors.fill: parent
+        opacity: settings.throttle_opacity
         Text {
             id: throttle_percent
             y: 0
             width: 24
             height: 18
-            color: "#ffffff"
+            color: settings.color_text
             text: OpenHD.throttle
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.bottom: parent.bottom
@@ -60,21 +83,23 @@ BaseWidget {
         Shape {
             id: throttleGauge
             anchors.fill: parent
-
+            opacity: settings.throttle_opacity
             scale: 1.0
 
             ShapePath {
                 id: throttleShape
 
                 fillColor: "transparent"
-                strokeColor: "white"
+                strokeColor: settings.color_shape
                 strokeWidth: 9
                 capStyle: ShapePath.RoundCap
 
                 PathAngleArc {
                     id: throttleArc
-                    centerX: 48; centerY: 48
-                    radiusX: 32; radiusY: 32
+                    centerX: 48
+                    centerY: 48
+                    radiusX: 32
+                    radiusY: 32
                     startAngle: -180
                 }
             }
@@ -85,7 +110,8 @@ BaseWidget {
             y: 0
             width: parent.width
             height: 14
-            color: "#ffffff"
+            color: settings.color_text
+            opacity: settings.throttle_opacity
             text: qsTr("throttle")
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 0
