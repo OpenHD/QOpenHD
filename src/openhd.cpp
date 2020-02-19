@@ -163,7 +163,7 @@ void OpenHD::set_speed(int speed) {
 
 void OpenHD::set_airspeed(int airspeed) {
     m_airspeed = airspeed;
-    emit speed_changed(m_airspeed);
+    emit airspeed_changed(m_airspeed);
 }
 
 void OpenHD::set_armed(bool armed) {
