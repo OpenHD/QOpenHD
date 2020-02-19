@@ -25,21 +25,46 @@ BaseWidget {
     defaultHCenter: false
     defaultVCenter: false
 
-    hasWidgetDetail: false
-    widgetDetailComponent: Column {}
+    hasWidgetDetail: true
+    widgetDetailComponent: Column {
+        Item {
+            width: parent.width
+            height: 24
+            Text {
+                text: "Opacity"
+                color: "white"
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+            }
+            Slider {
+                id: throttle_opacity_Slider
+                orientation: Qt.Horizontal
+                from: .1
+                value: settings.throttle_opacity
+                to: 1
+                stepSize: .1
+
+                onValueChanged: {
+                    settings.throttle_opacity = throttle_opacity_Slider.value
+                }
+            }
+        }
+    }
 
     Glow {
         anchors.fill: widgetInner
         radius: 3
         samples: 17
         color: settings.color_glow
+        opacity: settings.throttle_opacity
         source: widgetInner
     }
 
     Item {
         id: widgetInner
-
         anchors.fill: parent
+        opacity: settings.throttle_opacity
         Text {
             id: throttle_percent
             y: 0
@@ -58,7 +83,7 @@ BaseWidget {
         Shape {
             id: throttleGauge
             anchors.fill: parent
-
+            opacity: settings.throttle_opacity
             scale: 1.0
 
             ShapePath {
@@ -86,6 +111,7 @@ BaseWidget {
             width: parent.width
             height: 14
             color: settings.color_text
+            opacity: settings.throttle_opacity
             text: qsTr("throttle")
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 0

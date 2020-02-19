@@ -66,16 +66,37 @@ ApplicationWindow {
         property string color_glow: "black"
 
         property bool show_downlink_rssi: true
+        property double downlink_rssi_opacity: 1
+
         property bool show_uplink_rssi: true
+        property double uplink_rssi_opacity: 1
+
         property bool show_bitrate: true
+        property double bitrate_opacity: 1
+
         property bool show_air_battery: true
+        property double air_battery_opacity: 1
+
         property bool show_gps: true
+        property double gps_opacity: 1
+
         property bool show_home_distance: true
+        property double home_distance_opacity: 1
+
         property bool show_flight_timer: true
+        property double flight_timer_opacity: 1
+
         property bool show_flight_mode: true
+        property double flight_mode_opacity: 1
+
         property bool show_ground_status: true
+        property double ground_status_opacity: 1
+
         property bool show_air_status: true
+        property double air_status_opacity: 1
+
         property bool show_message_hud: true
+        property double message_hud_opacity: 1
 
         property bool show_horizon: true
         property bool horizon_invert_pitch: false
@@ -111,7 +132,7 @@ ApplicationWindow {
         property int map_small_zoom: 18
 
         property bool show_throttle: true
-//        property double throttle_opacity: 1
+        property double throttle_opacity: 1
     }
 
     OpenHDRC {
