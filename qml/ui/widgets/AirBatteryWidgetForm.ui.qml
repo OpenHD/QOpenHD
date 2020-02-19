@@ -106,7 +106,7 @@ BaseWidget {
                 var cells = settings.value("show_ground_status", true);
                 var cellVoltage = OpenHD.battery_voltage / cells;
                 // 20% warning, 15% critical
-                return cellVoltage < 3.73 ? (cellVoltage < 3.71 ? "#ff0000" : "#fbfd15") : "#ffffff"
+                return cellVoltage < 3.73 ? (cellVoltage < 3.71 ? "#ff0000" : "#fbfd15") :  settings.color_shape
             }
             opacity: settings.air_battery_opacity
             text: OpenHD.battery_gauge
