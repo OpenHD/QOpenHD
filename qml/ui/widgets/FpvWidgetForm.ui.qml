@@ -58,7 +58,7 @@ BaseWidget {
         transform: Translate {
             x: OpenHD.vy * settings.fpv_sensitivity
             //to get pitch relative to ahi add pitch in
-            y: (OpenHD.vz * settings.fpv_sensitivity) + OpenHD.pitch_raw
+            y: (OpenHD.vz * settings.fpv_sensitivity) + OpenHD.pitch
         }
         antialiasing: true
 
@@ -72,7 +72,6 @@ BaseWidget {
 
         Text {
             id: widgetGlyph
-            y: 0
             width: 24
             height: 24
             color: settings.color_shape
