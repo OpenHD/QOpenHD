@@ -26,6 +26,8 @@ BaseWidget {
     widgetIdentifier: "map_widget"
 
     hasWidgetDetail: true
+    widgetDetailWidth: 420
+    widgetDetailHeight: 200
 
     widgetDetailComponent: Column {
 
