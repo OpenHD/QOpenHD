@@ -43,6 +43,29 @@ BaseWidget {
                 }
             }
         }
+        Item {
+            width: parent.width
+            height: 24
+            Text {
+                text: "Opacity"
+                color: "white"
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+            }
+            Slider {
+                id: fpv_opacity_Slider
+                orientation: Qt.Horizontal
+                from: .1
+                value: settings.fpv_opacity
+                to: 1
+                stepSize: .1
+
+                onValueChanged: {
+                    settings.fpv_opacity = fpv_opacity_Slider.value
+                }
+            }
+        }
     }
 
     Item {
@@ -67,6 +90,7 @@ BaseWidget {
             radius: 4
             samples: 17
             color: settings.color_glow
+            opacity: settings.fpv_opacity
             source: widgetGlyph
         }
 
@@ -75,6 +99,7 @@ BaseWidget {
             width: 24
             height: 24
             color: settings.color_shape
+            opacity: settings.fpv_opacity
             text: "\ufdd5"
             bottomPadding: 17
             leftPadding: 33
