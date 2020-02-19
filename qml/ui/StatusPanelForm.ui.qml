@@ -24,7 +24,7 @@ Rectangle {
         anchors.bottom: parent.bottom
         anchors.left: parent.left
         anchors.bottomMargin: 12
-        anchors.leftMargin: 12
+        anchors.leftMargin: 24
 
         z: 1.1
     }
@@ -37,32 +37,44 @@ Rectangle {
         anchors.bottom: parent.bottom
         anchors.right: parent.right
         anchors.bottomMargin: 12
-        anchors.rightMargin: 12
+        anchors.rightMargin: 142
 
         z: 1.1
     }
 
+    ScrollView {
+        id: legend
+        width: 118
+        contentHeight: legendColumn.height
+        leftPadding: 0
+        rightPadding: 0
+        topPadding: 12
+        clip: true
+        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+        ScrollBar.vertical.policy: ScrollBar.AlwaysOff
 
-    GridLayout {
-        id: topRow
-        columnSpacing: 0
-        rowSpacing: 0
+        property int fontSize: 14
 
         anchors {
             top: parent.top
-            topMargin: 6
-            left: parent.left
-            leftMargin: 12
+            topMargin: 0
             right: parent.right
-            rightMargin: 12
+            rightMargin: 0
+            bottom: parent.bottom
+            bottomMargin: 0
         }
 
-        //Column {
+        Column {
+            id: legendColumn
+            width: legend.width
+            spacing: 12
+
             ColoredCheckbox {
                 padding: 0
                 Layout.row: 0
                 Layout.column: 0
                 text: "Air CPU"
+                font.pixelSize: legend.fontSize
                 boxColor: airCPUAxis.color
                 checked: airCPUAxis.visible
                 onCheckedChanged: airCPUAxis.visible = checked
@@ -73,19 +85,18 @@ Rectangle {
                 Layout.row: 0
                 Layout.column: 1
                 text: "Air Temp"
+                font.pixelSize: legend.fontSize
                 boxColor: airTempAxis.color
                 checked: airTempAxis.visible
                 onCheckedChanged: airTempAxis.visible = checked
             }
 
-        //}
-
-        //Column {
             ColoredCheckbox {
                 padding: 0
                 Layout.row: 0
                 Layout.column: 2
-                text: "Ground CPU"
+                text: "Gnd CPU"
+                font.pixelSize: legend.fontSize
                 boxColor: gndCPUAxis.color
                 checked: gndCPUAxis.visible
                 onCheckedChanged: gndCPUAxis.visible = checked
@@ -94,19 +105,19 @@ Rectangle {
                 padding: 0
                 Layout.row: 1
                 Layout.column: 0
-                text: "Ground Temp"
+                text: "Gnd Temp"
+                font.pixelSize: legend.fontSize
                 boxColor: gndTempAxis.color
                 checked: gndTempAxis.visible
                 onCheckedChanged: gndTempAxis.visible = checked
             }
-        //}
 
-        //Column {
             ColoredCheckbox {
                 padding: 0
                 Layout.row: 1
                 Layout.column: 1
-                text: "Lost Packets"
+                text: "Lost Pkt"
+                font.pixelSize: legend.fontSize
                 boxColor: lostPacketAxis.color
                 checked: lostPacketAxis.visible
                 onCheckedChanged: lostPacketAxis.visible = checked
@@ -116,7 +127,8 @@ Rectangle {
                 padding: 0
                 Layout.row: 1
                 Layout.column: 2
-                text: "Damaged Blocks"
+                text: "Damage Blk"
+                font.pixelSize: legend.fontSize
                 boxColor: damagedBlockAxis.color
                 checked: damagedBlockAxis.visible
                 onCheckedChanged: damagedBlockAxis.visible = checked
@@ -126,7 +138,8 @@ Rectangle {
                 padding: 0
                 Layout.row: 1
                 Layout.column: 3
-                text: "Downlink RSSI"
+                text: "Down RSSI"
+                font.pixelSize: legend.fontSize
                 boxColor: downlinkRSSIAxis.color
                 checked: downlinkRSSIAxis.visible
                 onCheckedChanged: downlinkRSSIAxis.visible = checked
@@ -136,7 +149,8 @@ Rectangle {
                 padding: 0
                 Layout.row: 0
                 Layout.column: 3
-                text: "Uplink RSSI"
+                text: "Up RSSI"
+                font.pixelSize: legend.fontSize
                 boxColor: uplinkRSSIAxis.color
                 checked: uplinkRSSIAxis.visible
                 onCheckedChanged: uplinkRSSIAxis.visible = checked
@@ -146,7 +160,8 @@ Rectangle {
                 padding: 0
                 Layout.row: 0
                 Layout.column: 4
-                text: "Injection Fail"
+                text: "Inj. Fail"
+                font.pixelSize: legend.fontSize
                 boxColor: injectionFailAxis.color
                 checked: injectionFailAxis.visible
                 onCheckedChanged: injectionFailAxis.visible = checked
@@ -156,7 +171,8 @@ Rectangle {
                 padding: 0
                 Layout.row: 1
                 Layout.column: 4
-                text: "Skipped Packets"
+                text: "Skip Pkt"
+                font.pixelSize: legend.fontSize
                 boxColor: skippedPacketAxis.color
                 checked: skippedPacketAxis.visible
                 onCheckedChanged: skippedPacketAxis.visible = checked
@@ -167,23 +183,30 @@ Rectangle {
                 Layout.row: 2
                 Layout.column: 0
                 text: "Bitrate"
+                font.pixelSize: legend.fontSize
                 boxColor: bitrateAxis.color
                 checked: bitrateAxis.visible
                 onCheckedChanged: bitrateAxis.visible = checked
             }
-        //}
+
+        }
     }
 
     ChartView {
         id: chart
         legend.visible: false
 
+        backgroundColor: "#00000000"
+
         anchors {
-            top: topRow.bottom
-            topMargin: 0
+            top: parent.top
+            topMargin: -12
             left: parent.left
-            right: parent.right
+            leftMargin: -18
+            right: legend.left
+            rightMargin: -18
             bottom: parent.bottom
+            bottomMargin: -12
         }
 
         antialiasing: true
@@ -222,15 +245,6 @@ Rectangle {
         }
 
         ValueAxis {
-            id: tempYAxis
-            min: 0
-            max: 100
-            labelFormat: "%d&deg;C"
-            tickCount: 11
-            color: "black"
-        }
-
-        ValueAxis {
             id: countYAxis
             min: 0
             max: 100
@@ -263,7 +277,7 @@ Rectangle {
             id: gndTempAxis
             name: "Ground Temp"
             axisX: valueAxis
-            axisYRight: tempYAxis
+            axisY: countYAxis
             color: "red"
             width: 2
             useOpenGL: true
@@ -273,7 +287,7 @@ Rectangle {
             id: airTempAxis
             name: "Air Temp"
             axisX: valueAxis
-            axisYRight: tempYAxis
+            axisYRight: countYAxis
             color: "orange"
             width: 2
             useOpenGL: true
@@ -303,7 +317,7 @@ Rectangle {
             id: downlinkRSSIAxis
             name: "Downlink RSSI"
             axisX: valueAxis
-            axisY: dbYAxis
+            axisYRight: dbYAxis
             color: "lime"
             width: 2
             useOpenGL: true
@@ -313,7 +327,7 @@ Rectangle {
             id: uplinkRSSIAxis
             name: "Uplink RSSI"
             axisX: valueAxis
-            axisY: dbYAxis
+            axisYRight: dbYAxis
             color: "tan"
             width: 2
             useOpenGL: true

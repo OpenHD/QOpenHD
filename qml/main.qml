@@ -46,9 +46,9 @@ ApplicationWindow {
      *
      */
     Settings {
-        id: settings      
-        property int main_video_port: 8000
-        property int pip_video_port: 8000
+        id: settings
+        property int main_video_port: 5600
+        property int pip_video_port: 5601
         property int lte_video_port: 8000
         property int battery_cells: 3
 
@@ -69,6 +69,8 @@ ApplicationWindow {
         property string color_glow: "black"
 
         property double ground_power_opacity: 1
+        
+        property int log_level: 3
 
         property bool show_downlink_rssi: true
         property double downlink_rssi_opacity: 1
@@ -187,14 +189,18 @@ ApplicationWindow {
     Connections {
         target: OpenHD
         onMessageReceived: {
-            hudOverlayGrid.messageHUD.pushMessage(message, level)
+            if (level >= settings.log_level) {
+                hudOverlayGrid.messageHUD.pushMessage(message, level)
+            }
         }
     }
 
     Connections {
         target: LocalMessage
         onMessageReceived: {
-            hudOverlayGrid.messageHUD.pushMessage(message, level)
+            if (level >= settings.log_level) {
+                hudOverlayGrid.messageHUD.pushMessage(message, level)
+            }
         }
     }
 
