@@ -30,54 +30,69 @@ BaseWidget {
     widgetDetailHeight: 200
 
     widgetDetailComponent: Column {
-
         Item {
             width: parent.width
-            height: 24
+            height: 48
+
             Text {
+                id: zoomTitle
+                height: parent.height
                 text: "Zoom"
                 color: "white"
                 font.bold: true
                 font.pixelSize: detailPanelFontPixels
                 anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
             }
-            Slider {
-                      id:zoomSlider
-                      orientation: Qt.Horizontal
-                      from: 1
-                      value:settings.map_small_zoom
-                      to: 30
-                      stepSize: 1
 
-                      onValueChanged: {
-                          mapsmall.zoomLevel = zoomSlider.value
-                          settings.map_small_zoom = zoomSlider.value
-                      }
+            Slider {
+                id: zoomSlider
+                orientation: Qt.Horizontal
+                from: 1
+                value: settings.map_small_zoom
+                to: 30
+                stepSize: 1
+                anchors.rightMargin: 12
+                anchors.right: parent.right
+                anchors.leftMargin: 12
+                anchors.left: zoomTitle.right
+
+                onValueChanged: {
+                    mapsmall.zoomLevel = zoomSlider.value
+                    settings.map_small_zoom = zoomSlider.value
+                }
             }
         }
+
         Item {
             width: parent.width
-            height: 24
+            height: 48
+
             Text {
+                id: baseMapTitle
+                height: parent.height
                 text: "Base Map"
                 color: "white"
                 font.bold: true
                 font.pixelSize: detailPanelFontPixels
                 anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
             }
-            GroupBox {
+
+            ComboBox {
                 height: parent.height
                 anchors.rightMargin: 12
                 anchors.right: parent.right
-                ComboBox {
-                    model: mapsmall.supportedMapTypes
-                    textRole: "description"
-                    onCurrentIndexChanged: {
-                        mapsmall.activeMapType = mapsmall.supportedMapTypes[currentIndex]
-                        maplarge.activeMapType = maplarge.supportedMapTypes[currentIndex]
-                    }
+                anchors.leftMargin: 12
+                anchors.left: baseMapTitle.right
+                model: mapsmall.supportedMapTypes
+                textRole: "description"
+                onCurrentIndexChanged: {
+                    mapsmall.activeMapType = mapsmall.supportedMapTypes[currentIndex]
+                    maplarge.activeMapType = maplarge.supportedMapTypes[currentIndex]
                 }
             }
+
         }
     }
 
