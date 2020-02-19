@@ -51,7 +51,10 @@ ApplicationWindow {
         property int pip_video_port: 8000
         property int lte_video_port: 8000
         property int battery_cells: 3
+
         property bool show_pip_video: false
+        property double pip_video_opacity: 1
+
         property bool enable_software_video_decoder: false
         property bool enable_rtp: true
         property bool enable_lte_video: false

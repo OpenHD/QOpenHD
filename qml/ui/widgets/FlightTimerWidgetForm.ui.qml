@@ -75,7 +75,7 @@ BaseWidget {
             y: 0
             width: 24
             height: 24
-            color: settings.flight_timer_opacity
+            color: settings.color_shape
             opacity: settings.flight_timer_opacity
             text: "\uf017"
             font.family: "Font Awesome 5 Free"
