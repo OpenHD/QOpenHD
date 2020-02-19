@@ -35,6 +35,29 @@ BaseWidget {
             Text { text: "Long:";  color: "white"; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.left: parent.left }
             Text { text: OpenHD.homelon; color: "white"; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.right: parent.right }
         }
+        Item {
+            width: parent.width
+            height: 24
+            Text {
+                text: "Opacity"
+                color: "white"
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+            }
+            Slider {
+                id: home_distance_opacity_Slider
+                orientation: Qt.Horizontal
+                from: .1
+                value: settings.home_distance_opacity
+                to: 1
+                stepSize: .1
+
+                onValueChanged: {
+                    settings.home_distance_opacity = home_distance_opacity_Slider.value
+                }
+            }
+        }
     }
 
     Item {
@@ -48,7 +71,8 @@ BaseWidget {
 
             width: 24
             height: 24
-            color: "#ffffff"
+            color: settings.color_shape
+            opacity: settings.home_distance_opacity
             text: "\uf015"
             anchors.right: home_distance_text.left
             anchors.rightMargin: 6
@@ -63,7 +87,8 @@ BaseWidget {
             id: home_distance_text
             width: 64
             height: 24
-            color: "#ffffff"
+            color: settings.color_text
+            opacity: settings.home_distance_opacity
             // @disable-check M222
             text: {
                 var distance = OpenHD.home_distance;

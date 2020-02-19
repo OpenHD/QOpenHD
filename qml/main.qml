@@ -65,6 +65,8 @@ ApplicationWindow {
         property string color_text: "white"
         property string color_glow: "black"
 
+        property double ground_power_opacity: 1
+
         property bool show_downlink_rssi: true
         property double downlink_rssi_opacity: 1
 

@@ -47,6 +47,29 @@ BaseWidget {
                 anchors.right: parent.right
             }
         }
+        Item {
+            width: parent.width
+            height: 24
+            Text {
+                text: "Opacity"
+                color: "white"
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+            }
+            Slider {
+                id: gps_opacity_Slider
+                orientation: Qt.Horizontal
+                from: .1
+                value: settings.gps_opacity
+                to: 1
+                stepSize: .1
+
+                onValueChanged: {
+                    settings.gps_opacity = gps_opacity_Slider.value
+                }
+            }
+        }
     }
 
     Item {
@@ -59,7 +82,8 @@ BaseWidget {
             y: 0
             width: 24
             height: 24
-            color: "#ffffff"
+            color: settings.color_shape
+            opacity: settings.gps_opacity
             text: "\uf0ac"
             anchors.right: satellites_visible.left
             anchors.rightMargin: 6
@@ -75,7 +99,8 @@ BaseWidget {
             y: 0
             width: 20
             height: 24
-            color: "#ffffff"
+            color: settings.color_text
+            opacity: settings.gps_opacity
             text: OpenHD.satellites_visible
             anchors.right: gps_hdop.left
             anchors.rightMargin: 2
@@ -90,7 +115,8 @@ BaseWidget {
             id: gps_hdop
             width: 48
             height: 24
-            color: "#ffffff"
+            color: settings.color_text
+            opacity: settings.gps_opacity
             text: qsTr("%L1").arg(OpenHD.gps_hdop)
             anchors.right: parent.right
             anchors.rightMargin: 0

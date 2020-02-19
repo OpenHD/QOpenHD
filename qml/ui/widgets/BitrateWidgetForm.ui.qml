@@ -74,6 +74,29 @@ BaseWidget {
                 anchors.right: parent.right
             }
         }
+        Item {
+            width: parent.width
+            height: 24
+            Text {
+                text: "Opacity"
+                color: "white"
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+            }
+            Slider {
+                id: bitrate_opacity_Slider
+                orientation: Qt.Horizontal
+                from: .1
+                value: settings.bitrate_opacity
+                to: 1
+                stepSize: .1
+
+                onValueChanged: {
+                    settings.bitrate_opacity = bitrate_opacity_Slider.value
+                }
+            }
+        }
     }
 
 
@@ -86,7 +109,8 @@ BaseWidget {
             y: 0
             width: 84
             height: 24
-            color: "#ffffff"
+            color: settings.color_text
+            opacity: settings.bitrate_opacity
             text: Number(OpenHD.kbitrate/1024.0).toLocaleString(Qt.locale(), 'f', 1) + " Mbit";
             anchors.verticalCenterOffset: 0
             anchors.left: camera_icon.right
@@ -105,7 +129,8 @@ BaseWidget {
             y: 0
             width: 24
             height: 24
-            color: "#ffffff"
+            color: settings.color_shape
+            opacity: settings.bitrate_opacity
             text: "\uf03d"
             anchors.left: parent.left
             anchors.leftMargin: 0

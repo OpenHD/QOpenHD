@@ -47,6 +47,29 @@ BaseWidget {
                 anchors.right: parent.right
             }
         }
+        Item {
+            width: parent.width
+            height: 24
+            Text {
+                text: "Opacity"
+                color: "white"
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+            }
+            Slider {
+                id: air_battery_opacity_Slider
+                orientation: Qt.Horizontal
+                from: .1
+                value: settings.air_battery_opacity
+                to: 1
+                stepSize: .1
+
+                onValueChanged: {
+                    settings.air_battery_opacity = air_battery_opacity_Slider.value
+                }
+            }
+        }
     }
 
     Item {
@@ -58,7 +81,8 @@ BaseWidget {
             y: 0
             width: 48
             height: 24
-            color: "#ffffff"
+            color: settings.color_text
+            opacity: settings.air_battery_opacity
             text: qsTr("%L1%").arg(OpenHD.battery_percent)
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: batteryGauge.right
@@ -84,6 +108,7 @@ BaseWidget {
                 // 20% warning, 15% critical
                 return cellVoltage < 3.73 ? (cellVoltage < 3.71 ? "#ff0000" : "#fbfd15") : "#ffffff"
             }
+            opacity: settings.air_battery_opacity
             text: OpenHD.battery_gauge
             anchors.left: parent.left
             anchors.leftMargin: 12
