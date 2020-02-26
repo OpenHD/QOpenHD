@@ -66,7 +66,7 @@ Item {
         "VIDEO_FECS":      {title: "FECs",
                             info: "Blocklength, Blocks, and fec are tightly connected. For better range reduce FEC to 2",
                             itemType: "number",
-                            lowerLimit: 1,
+                            lowerLimit: 0,
                             upperLimit: 20,
                             interval: 1,
                             unit: ""},
