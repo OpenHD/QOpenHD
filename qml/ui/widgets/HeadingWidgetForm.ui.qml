@@ -65,6 +65,29 @@ BaseWidget {
                 }
             }
         }
+        Item {
+            width: parent.width
+            height: 24
+            Text {
+                text: "Size"
+                color: "white"
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+            }
+            Slider {
+                id: heading_size_Slider
+                orientation: Qt.Horizontal
+                from: .7
+                value: settings.heading_size
+                to: 3
+                stepSize: .1
+
+                onValueChanged: {
+                    settings.heading_size = heading_size_Slider.value
+                }
+            }
+        }
     }
 
     Glow {
@@ -89,6 +112,7 @@ BaseWidget {
             anchors.bottomMargin: parent.height - 24
             color: settings.color_text
             opacity: settings.heading_opacity
+            transform: Scale { origin.x: 24; origin.y: 24; xScale: settings.heading_size ; yScale: settings.heading_size}
             text: Number(
                       settings.heading_inav ? OpenHD.hdg * 100 : OpenHD.hdg).toLocaleString(
                       Qt.locale(), 'f', 0)
@@ -100,6 +124,7 @@ BaseWidget {
             id: outline
             anchors.fill: parent
             opacity: settings.heading_opacity
+            transform: Scale { origin.x: 24; origin.y: 24; xScale: settings.heading_size ; yScale: settings.heading_size}
             ShapePath {
                 capStyle: ShapePath.RoundCap
                 strokeColor: settings.color_shape
