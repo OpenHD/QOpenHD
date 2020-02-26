@@ -9,16 +9,18 @@ typedef struct __mavlink_openhd_air_telemetry_t {
  uint32_t lost_packet_cnt; /*<  lost_packet_cnt*/
  uint32_t skipped_packet_cnt; /*<  skipped_packet_cnt*/
  uint32_t injection_fail_cnt; /*<  injection_fail_cnt*/
+ uint8_t target_system; /*<  system id of the requesting system*/
+ uint8_t target_component; /*<  component id of the requesting component*/
  uint8_t current_signal_dbm; /*<  current_signal_dbm*/
 }) mavlink_openhd_air_telemetry_t;
 
-#define MAVLINK_MSG_ID_OPENHD_AIR_TELEMETRY_LEN 17
-#define MAVLINK_MSG_ID_OPENHD_AIR_TELEMETRY_MIN_LEN 17
-#define MAVLINK_MSG_ID_1211_LEN 17
-#define MAVLINK_MSG_ID_1211_MIN_LEN 17
+#define MAVLINK_MSG_ID_OPENHD_AIR_TELEMETRY_LEN 19
+#define MAVLINK_MSG_ID_OPENHD_AIR_TELEMETRY_MIN_LEN 19
+#define MAVLINK_MSG_ID_1211_LEN 19
+#define MAVLINK_MSG_ID_1211_MIN_LEN 19
 
-#define MAVLINK_MSG_ID_OPENHD_AIR_TELEMETRY_CRC 70
-#define MAVLINK_MSG_ID_1211_CRC 70
+#define MAVLINK_MSG_ID_OPENHD_AIR_TELEMETRY_CRC 138
+#define MAVLINK_MSG_ID_1211_CRC 138
 
 
 
@@ -26,23 +28,27 @@ typedef struct __mavlink_openhd_air_telemetry_t {
 #define MAVLINK_MESSAGE_INFO_OPENHD_AIR_TELEMETRY { \
     1211, \
     "OPENHD_AIR_TELEMETRY", \
-    5, \
-    {  { "damaged_block_cnt", NULL, MAVLINK_TYPE_UINT32_T, 0, 0, offsetof(mavlink_openhd_air_telemetry_t, damaged_block_cnt) }, \
+    7, \
+    {  { "target_system", NULL, MAVLINK_TYPE_UINT8_T, 0, 16, offsetof(mavlink_openhd_air_telemetry_t, target_system) }, \
+         { "target_component", NULL, MAVLINK_TYPE_UINT8_T, 0, 17, offsetof(mavlink_openhd_air_telemetry_t, target_component) }, \
+         { "damaged_block_cnt", NULL, MAVLINK_TYPE_UINT32_T, 0, 0, offsetof(mavlink_openhd_air_telemetry_t, damaged_block_cnt) }, \
          { "lost_packet_cnt", NULL, MAVLINK_TYPE_UINT32_T, 0, 4, offsetof(mavlink_openhd_air_telemetry_t, lost_packet_cnt) }, \
          { "skipped_packet_cnt", NULL, MAVLINK_TYPE_UINT32_T, 0, 8, offsetof(mavlink_openhd_air_telemetry_t, skipped_packet_cnt) }, \
          { "injection_fail_cnt", NULL, MAVLINK_TYPE_UINT32_T, 0, 12, offsetof(mavlink_openhd_air_telemetry_t, injection_fail_cnt) }, \
-         { "current_signal_dbm", NULL, MAVLINK_TYPE_UINT8_T, 0, 16, offsetof(mavlink_openhd_air_telemetry_t, current_signal_dbm) }, \
+         { "current_signal_dbm", NULL, MAVLINK_TYPE_UINT8_T, 0, 18, offsetof(mavlink_openhd_air_telemetry_t, current_signal_dbm) }, \
          } \
 }
 #else
 #define MAVLINK_MESSAGE_INFO_OPENHD_AIR_TELEMETRY { \
     "OPENHD_AIR_TELEMETRY", \
-    5, \
-    {  { "damaged_block_cnt", NULL, MAVLINK_TYPE_UINT32_T, 0, 0, offsetof(mavlink_openhd_air_telemetry_t, damaged_block_cnt) }, \
+    7, \
+    {  { "target_system", NULL, MAVLINK_TYPE_UINT8_T, 0, 16, offsetof(mavlink_openhd_air_telemetry_t, target_system) }, \
+         { "target_component", NULL, MAVLINK_TYPE_UINT8_T, 0, 17, offsetof(mavlink_openhd_air_telemetry_t, target_component) }, \
+         { "damaged_block_cnt", NULL, MAVLINK_TYPE_UINT32_T, 0, 0, offsetof(mavlink_openhd_air_telemetry_t, damaged_block_cnt) }, \
          { "lost_packet_cnt", NULL, MAVLINK_TYPE_UINT32_T, 0, 4, offsetof(mavlink_openhd_air_telemetry_t, lost_packet_cnt) }, \
          { "skipped_packet_cnt", NULL, MAVLINK_TYPE_UINT32_T, 0, 8, offsetof(mavlink_openhd_air_telemetry_t, skipped_packet_cnt) }, \
          { "injection_fail_cnt", NULL, MAVLINK_TYPE_UINT32_T, 0, 12, offsetof(mavlink_openhd_air_telemetry_t, injection_fail_cnt) }, \
-         { "current_signal_dbm", NULL, MAVLINK_TYPE_UINT8_T, 0, 16, offsetof(mavlink_openhd_air_telemetry_t, current_signal_dbm) }, \
+         { "current_signal_dbm", NULL, MAVLINK_TYPE_UINT8_T, 0, 18, offsetof(mavlink_openhd_air_telemetry_t, current_signal_dbm) }, \
          } \
 }
 #endif
@@ -53,6 +59,8 @@ typedef struct __mavlink_openhd_air_telemetry_t {
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param msg The MAVLink message to compress the data into
  *
+ * @param target_system  system id of the requesting system
+ * @param target_component  component id of the requesting component
  * @param damaged_block_cnt  damaged_block_cnt
  * @param lost_packet_cnt  lost_packet_cnt
  * @param skipped_packet_cnt  skipped_packet_cnt
@@ -61,7 +69,7 @@ typedef struct __mavlink_openhd_air_telemetry_t {
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_openhd_air_telemetry_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
-                               uint32_t damaged_block_cnt, uint32_t lost_packet_cnt, uint32_t skipped_packet_cnt, uint32_t injection_fail_cnt, uint8_t current_signal_dbm)
+                               uint8_t target_system, uint8_t target_component, uint32_t damaged_block_cnt, uint32_t lost_packet_cnt, uint32_t skipped_packet_cnt, uint32_t injection_fail_cnt, uint8_t current_signal_dbm)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_OPENHD_AIR_TELEMETRY_LEN];
@@ -69,7 +77,9 @@ static inline uint16_t mavlink_msg_openhd_air_telemetry_pack(uint8_t system_id, 
     _mav_put_uint32_t(buf, 4, lost_packet_cnt);
     _mav_put_uint32_t(buf, 8, skipped_packet_cnt);
     _mav_put_uint32_t(buf, 12, injection_fail_cnt);
-    _mav_put_uint8_t(buf, 16, current_signal_dbm);
+    _mav_put_uint8_t(buf, 16, target_system);
+    _mav_put_uint8_t(buf, 17, target_component);
+    _mav_put_uint8_t(buf, 18, current_signal_dbm);
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_OPENHD_AIR_TELEMETRY_LEN);
 #else
@@ -78,6 +88,8 @@ static inline uint16_t mavlink_msg_openhd_air_telemetry_pack(uint8_t system_id, 
     packet.lost_packet_cnt = lost_packet_cnt;
     packet.skipped_packet_cnt = skipped_packet_cnt;
     packet.injection_fail_cnt = injection_fail_cnt;
+    packet.target_system = target_system;
+    packet.target_component = target_component;
     packet.current_signal_dbm = current_signal_dbm;
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_OPENHD_AIR_TELEMETRY_LEN);
@@ -93,6 +105,8 @@ static inline uint16_t mavlink_msg_openhd_air_telemetry_pack(uint8_t system_id, 
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param chan The MAVLink channel this message will be sent over
  * @param msg The MAVLink message to compress the data into
+ * @param target_system  system id of the requesting system
+ * @param target_component  component id of the requesting component
  * @param damaged_block_cnt  damaged_block_cnt
  * @param lost_packet_cnt  lost_packet_cnt
  * @param skipped_packet_cnt  skipped_packet_cnt
@@ -102,7 +116,7 @@ static inline uint16_t mavlink_msg_openhd_air_telemetry_pack(uint8_t system_id, 
  */
 static inline uint16_t mavlink_msg_openhd_air_telemetry_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
                                mavlink_message_t* msg,
-                                   uint32_t damaged_block_cnt,uint32_t lost_packet_cnt,uint32_t skipped_packet_cnt,uint32_t injection_fail_cnt,uint8_t current_signal_dbm)
+                                   uint8_t target_system,uint8_t target_component,uint32_t damaged_block_cnt,uint32_t lost_packet_cnt,uint32_t skipped_packet_cnt,uint32_t injection_fail_cnt,uint8_t current_signal_dbm)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_OPENHD_AIR_TELEMETRY_LEN];
@@ -110,7 +124,9 @@ static inline uint16_t mavlink_msg_openhd_air_telemetry_pack_chan(uint8_t system
     _mav_put_uint32_t(buf, 4, lost_packet_cnt);
     _mav_put_uint32_t(buf, 8, skipped_packet_cnt);
     _mav_put_uint32_t(buf, 12, injection_fail_cnt);
-    _mav_put_uint8_t(buf, 16, current_signal_dbm);
+    _mav_put_uint8_t(buf, 16, target_system);
+    _mav_put_uint8_t(buf, 17, target_component);
+    _mav_put_uint8_t(buf, 18, current_signal_dbm);
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_OPENHD_AIR_TELEMETRY_LEN);
 #else
@@ -119,6 +135,8 @@ static inline uint16_t mavlink_msg_openhd_air_telemetry_pack_chan(uint8_t system
     packet.lost_packet_cnt = lost_packet_cnt;
     packet.skipped_packet_cnt = skipped_packet_cnt;
     packet.injection_fail_cnt = injection_fail_cnt;
+    packet.target_system = target_system;
+    packet.target_component = target_component;
     packet.current_signal_dbm = current_signal_dbm;
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_OPENHD_AIR_TELEMETRY_LEN);
@@ -138,7 +156,7 @@ static inline uint16_t mavlink_msg_openhd_air_telemetry_pack_chan(uint8_t system
  */
 static inline uint16_t mavlink_msg_openhd_air_telemetry_encode(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, const mavlink_openhd_air_telemetry_t* openhd_air_telemetry)
 {
-    return mavlink_msg_openhd_air_telemetry_pack(system_id, component_id, msg, openhd_air_telemetry->damaged_block_cnt, openhd_air_telemetry->lost_packet_cnt, openhd_air_telemetry->skipped_packet_cnt, openhd_air_telemetry->injection_fail_cnt, openhd_air_telemetry->current_signal_dbm);
+    return mavlink_msg_openhd_air_telemetry_pack(system_id, component_id, msg, openhd_air_telemetry->target_system, openhd_air_telemetry->target_component, openhd_air_telemetry->damaged_block_cnt, openhd_air_telemetry->lost_packet_cnt, openhd_air_telemetry->skipped_packet_cnt, openhd_air_telemetry->injection_fail_cnt, openhd_air_telemetry->current_signal_dbm);
 }
 
 /**
@@ -152,13 +170,15 @@ static inline uint16_t mavlink_msg_openhd_air_telemetry_encode(uint8_t system_id
  */
 static inline uint16_t mavlink_msg_openhd_air_telemetry_encode_chan(uint8_t system_id, uint8_t component_id, uint8_t chan, mavlink_message_t* msg, const mavlink_openhd_air_telemetry_t* openhd_air_telemetry)
 {
-    return mavlink_msg_openhd_air_telemetry_pack_chan(system_id, component_id, chan, msg, openhd_air_telemetry->damaged_block_cnt, openhd_air_telemetry->lost_packet_cnt, openhd_air_telemetry->skipped_packet_cnt, openhd_air_telemetry->injection_fail_cnt, openhd_air_telemetry->current_signal_dbm);
+    return mavlink_msg_openhd_air_telemetry_pack_chan(system_id, component_id, chan, msg, openhd_air_telemetry->target_system, openhd_air_telemetry->target_component, openhd_air_telemetry->damaged_block_cnt, openhd_air_telemetry->lost_packet_cnt, openhd_air_telemetry->skipped_packet_cnt, openhd_air_telemetry->injection_fail_cnt, openhd_air_telemetry->current_signal_dbm);
 }
 
 /**
  * @brief Send a openhd_air_telemetry message
  * @param chan MAVLink channel to send the message
  *
+ * @param target_system  system id of the requesting system
+ * @param target_component  component id of the requesting component
  * @param damaged_block_cnt  damaged_block_cnt
  * @param lost_packet_cnt  lost_packet_cnt
  * @param skipped_packet_cnt  skipped_packet_cnt
@@ -167,7 +187,7 @@ static inline uint16_t mavlink_msg_openhd_air_telemetry_encode_chan(uint8_t syst
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
-static inline void mavlink_msg_openhd_air_telemetry_send(mavlink_channel_t chan, uint32_t damaged_block_cnt, uint32_t lost_packet_cnt, uint32_t skipped_packet_cnt, uint32_t injection_fail_cnt, uint8_t current_signal_dbm)
+static inline void mavlink_msg_openhd_air_telemetry_send(mavlink_channel_t chan, uint8_t target_system, uint8_t target_component, uint32_t damaged_block_cnt, uint32_t lost_packet_cnt, uint32_t skipped_packet_cnt, uint32_t injection_fail_cnt, uint8_t current_signal_dbm)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_OPENHD_AIR_TELEMETRY_LEN];
@@ -175,7 +195,9 @@ static inline void mavlink_msg_openhd_air_telemetry_send(mavlink_channel_t chan,
     _mav_put_uint32_t(buf, 4, lost_packet_cnt);
     _mav_put_uint32_t(buf, 8, skipped_packet_cnt);
     _mav_put_uint32_t(buf, 12, injection_fail_cnt);
-    _mav_put_uint8_t(buf, 16, current_signal_dbm);
+    _mav_put_uint8_t(buf, 16, target_system);
+    _mav_put_uint8_t(buf, 17, target_component);
+    _mav_put_uint8_t(buf, 18, current_signal_dbm);
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_OPENHD_AIR_TELEMETRY, buf, MAVLINK_MSG_ID_OPENHD_AIR_TELEMETRY_MIN_LEN, MAVLINK_MSG_ID_OPENHD_AIR_TELEMETRY_LEN, MAVLINK_MSG_ID_OPENHD_AIR_TELEMETRY_CRC);
 #else
@@ -184,6 +206,8 @@ static inline void mavlink_msg_openhd_air_telemetry_send(mavlink_channel_t chan,
     packet.lost_packet_cnt = lost_packet_cnt;
     packet.skipped_packet_cnt = skipped_packet_cnt;
     packet.injection_fail_cnt = injection_fail_cnt;
+    packet.target_system = target_system;
+    packet.target_component = target_component;
     packet.current_signal_dbm = current_signal_dbm;
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_OPENHD_AIR_TELEMETRY, (const char *)&packet, MAVLINK_MSG_ID_OPENHD_AIR_TELEMETRY_MIN_LEN, MAVLINK_MSG_ID_OPENHD_AIR_TELEMETRY_LEN, MAVLINK_MSG_ID_OPENHD_AIR_TELEMETRY_CRC);
@@ -198,7 +222,7 @@ static inline void mavlink_msg_openhd_air_telemetry_send(mavlink_channel_t chan,
 static inline void mavlink_msg_openhd_air_telemetry_send_struct(mavlink_channel_t chan, const mavlink_openhd_air_telemetry_t* openhd_air_telemetry)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
-    mavlink_msg_openhd_air_telemetry_send(chan, openhd_air_telemetry->damaged_block_cnt, openhd_air_telemetry->lost_packet_cnt, openhd_air_telemetry->skipped_packet_cnt, openhd_air_telemetry->injection_fail_cnt, openhd_air_telemetry->current_signal_dbm);
+    mavlink_msg_openhd_air_telemetry_send(chan, openhd_air_telemetry->target_system, openhd_air_telemetry->target_component, openhd_air_telemetry->damaged_block_cnt, openhd_air_telemetry->lost_packet_cnt, openhd_air_telemetry->skipped_packet_cnt, openhd_air_telemetry->injection_fail_cnt, openhd_air_telemetry->current_signal_dbm);
 #else
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_OPENHD_AIR_TELEMETRY, (const char *)openhd_air_telemetry, MAVLINK_MSG_ID_OPENHD_AIR_TELEMETRY_MIN_LEN, MAVLINK_MSG_ID_OPENHD_AIR_TELEMETRY_LEN, MAVLINK_MSG_ID_OPENHD_AIR_TELEMETRY_CRC);
 #endif
@@ -212,7 +236,7 @@ static inline void mavlink_msg_openhd_air_telemetry_send_struct(mavlink_channel_
   is usually the receive buffer for the channel, and allows a reply to an
   incoming message with minimum stack space usage.
  */
-static inline void mavlink_msg_openhd_air_telemetry_send_buf(mavlink_message_t *msgbuf, mavlink_channel_t chan,  uint32_t damaged_block_cnt, uint32_t lost_packet_cnt, uint32_t skipped_packet_cnt, uint32_t injection_fail_cnt, uint8_t current_signal_dbm)
+static inline void mavlink_msg_openhd_air_telemetry_send_buf(mavlink_message_t *msgbuf, mavlink_channel_t chan,  uint8_t target_system, uint8_t target_component, uint32_t damaged_block_cnt, uint32_t lost_packet_cnt, uint32_t skipped_packet_cnt, uint32_t injection_fail_cnt, uint8_t current_signal_dbm)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char *buf = (char *)msgbuf;
@@ -220,7 +244,9 @@ static inline void mavlink_msg_openhd_air_telemetry_send_buf(mavlink_message_t *
     _mav_put_uint32_t(buf, 4, lost_packet_cnt);
     _mav_put_uint32_t(buf, 8, skipped_packet_cnt);
     _mav_put_uint32_t(buf, 12, injection_fail_cnt);
-    _mav_put_uint8_t(buf, 16, current_signal_dbm);
+    _mav_put_uint8_t(buf, 16, target_system);
+    _mav_put_uint8_t(buf, 17, target_component);
+    _mav_put_uint8_t(buf, 18, current_signal_dbm);
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_OPENHD_AIR_TELEMETRY, buf, MAVLINK_MSG_ID_OPENHD_AIR_TELEMETRY_MIN_LEN, MAVLINK_MSG_ID_OPENHD_AIR_TELEMETRY_LEN, MAVLINK_MSG_ID_OPENHD_AIR_TELEMETRY_CRC);
 #else
@@ -229,6 +255,8 @@ static inline void mavlink_msg_openhd_air_telemetry_send_buf(mavlink_message_t *
     packet->lost_packet_cnt = lost_packet_cnt;
     packet->skipped_packet_cnt = skipped_packet_cnt;
     packet->injection_fail_cnt = injection_fail_cnt;
+    packet->target_system = target_system;
+    packet->target_component = target_component;
     packet->current_signal_dbm = current_signal_dbm;
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_OPENHD_AIR_TELEMETRY, (const char *)packet, MAVLINK_MSG_ID_OPENHD_AIR_TELEMETRY_MIN_LEN, MAVLINK_MSG_ID_OPENHD_AIR_TELEMETRY_LEN, MAVLINK_MSG_ID_OPENHD_AIR_TELEMETRY_CRC);
@@ -240,6 +268,26 @@ static inline void mavlink_msg_openhd_air_telemetry_send_buf(mavlink_message_t *
 
 // MESSAGE OPENHD_AIR_TELEMETRY UNPACKING
 
+
+/**
+ * @brief Get field target_system from openhd_air_telemetry message
+ *
+ * @return  system id of the requesting system
+ */
+static inline uint8_t mavlink_msg_openhd_air_telemetry_get_target_system(const mavlink_message_t* msg)
+{
+    return _MAV_RETURN_uint8_t(msg,  16);
+}
+
+/**
+ * @brief Get field target_component from openhd_air_telemetry message
+ *
+ * @return  component id of the requesting component
+ */
+static inline uint8_t mavlink_msg_openhd_air_telemetry_get_target_component(const mavlink_message_t* msg)
+{
+    return _MAV_RETURN_uint8_t(msg,  17);
+}
 
 /**
  * @brief Get field damaged_block_cnt from openhd_air_telemetry message
@@ -288,7 +336,7 @@ static inline uint32_t mavlink_msg_openhd_air_telemetry_get_injection_fail_cnt(c
  */
 static inline uint8_t mavlink_msg_openhd_air_telemetry_get_current_signal_dbm(const mavlink_message_t* msg)
 {
-    return _MAV_RETURN_uint8_t(msg,  16);
+    return _MAV_RETURN_uint8_t(msg,  18);
 }
 
 /**
@@ -304,6 +352,8 @@ static inline void mavlink_msg_openhd_air_telemetry_decode(const mavlink_message
     openhd_air_telemetry->lost_packet_cnt = mavlink_msg_openhd_air_telemetry_get_lost_packet_cnt(msg);
     openhd_air_telemetry->skipped_packet_cnt = mavlink_msg_openhd_air_telemetry_get_skipped_packet_cnt(msg);
     openhd_air_telemetry->injection_fail_cnt = mavlink_msg_openhd_air_telemetry_get_injection_fail_cnt(msg);
+    openhd_air_telemetry->target_system = mavlink_msg_openhd_air_telemetry_get_target_system(msg);
+    openhd_air_telemetry->target_component = mavlink_msg_openhd_air_telemetry_get_target_component(msg);
     openhd_air_telemetry->current_signal_dbm = mavlink_msg_openhd_air_telemetry_get_current_signal_dbm(msg);
 #else
         uint8_t len = msg->len < MAVLINK_MSG_ID_OPENHD_AIR_TELEMETRY_LEN? msg->len : MAVLINK_MSG_ID_OPENHD_AIR_TELEMETRY_LEN;
