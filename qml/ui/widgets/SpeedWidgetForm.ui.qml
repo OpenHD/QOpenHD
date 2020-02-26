@@ -67,6 +67,29 @@ BaseWidget {
                 }
             }
         }
+        Item {
+            width: parent.width
+            height: 24
+            Text {
+                text: "Size"
+                color: "white"
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+            }
+            Slider {
+                id: speed_size_Slider
+                orientation: Qt.Horizontal
+                from: .7
+                value: settings.speed_size
+                to: 3
+                stepSize: .1
+
+                onValueChanged: {
+                    settings.speed_size = speed_size_Slider.value
+                }
+            }
+        }
     }
 
     Glow {
@@ -87,6 +110,7 @@ BaseWidget {
             id: speed_text
             color: settings.color_text
             opacity: settings.speed_opacity
+            transform: Scale { origin.x: 12; origin.y: 12; xScale: settings.speed_size ; yScale: settings.speed_size}
             text: Number(
                       settings.speed_airspeed_gps ? OpenHD.airspeed : OpenHD.speed).toLocaleString(
                       Qt.locale(), 'f', 0)
@@ -98,6 +122,7 @@ BaseWidget {
             id: outline
             anchors.fill: parent
             rotation: 180
+            transform: Scale { origin.x: 12; origin.y: 12; xScale: settings.speed_size ; yScale: settings.speed_size}
             opacity: settings.speed_opacity
             ShapePath {
                 strokeColor: settings.color_shape
