@@ -67,6 +67,29 @@ BaseWidget {
                 }
             }
         }
+        Item {
+            width: parent.width
+            height: 24
+            Text {
+                text: "Size"
+                color: "white"
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+            }
+            Slider {
+                id: altitude_size_Slider
+                orientation: Qt.Horizontal
+                from: .7
+                value: settings.altitude_size
+                to: 3
+                stepSize: .1
+
+                onValueChanged: {
+                    settings.altitude_size = altitude_size_Slider.value
+                }
+            }
+        }
     }
 
     Glow {
@@ -86,6 +109,7 @@ BaseWidget {
             id: alt_text
             color: settings.color_text
             opacity: settings.altitude_opacity
+            transform: Scale { origin.x: 12; origin.y: 12; xScale: settings.altitude_size ; yScale: settings.altitude_size}
             text: Number(
                       settings.altitude_rel_msl ? OpenHD.alt_msl : OpenHD.alt_rel).toLocaleString(
                       Qt.locale(), 'f', 0)
@@ -98,6 +122,7 @@ BaseWidget {
             id: outline
             anchors.fill: parent
             opacity: settings.altitude_opacity
+            transform: Scale { origin.x: 12; origin.y: 12; xScale: settings.altitude_size ; yScale: settings.altitude_size}
             ShapePath {
                 strokeColor: settings.color_shape               
                 strokeWidth: 1
