@@ -179,6 +179,7 @@ iOSBuild {
     CONFIG += EnablePiP
     CONFIG += EnableGStreamer
     CONFIG += EnableLink
+    #CONFIG += EnableCharts
 
     #QMAKE_POST_LINK += /usr/libexec/PlistBuddy -c \"Set :CFBundleShortVersionString $$APPLE_BUILD\" $$DESTDIR/$${TARGET}.app/Contents/Info.plist
     #QMAKE_POST_LINK += && /usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $$APPLE_BUILD\" $$DESTDIR/$${TARGET}.app/Contents/Info.plist
@@ -206,6 +207,7 @@ MacBuild {
     CONFIG += EnablePiP
     CONFIG += EnableGStreamer
     CONFIG += EnableLink
+    #CONFIG += EnableCharts
 
     DEFINES += GST_GL_HAVE_WINDOW_COCOA=1
     DEFINES += GST_GL_HAVE_PLATFORM_CGL=1
@@ -220,6 +222,7 @@ LinuxBuild {
     CONFIG += EnablePiP
     CONFIG += EnableGStreamer
     CONFIG += EnableLink
+    #CONFIG += EnableCharts
 
     message("LinuxBuild - config")
 }
@@ -233,6 +236,7 @@ RaspberryPiBuild {
     #CONFIG += EnableMainVideo
     CONFIG += EnablePiP
     CONFIG += EnableLink
+    #CONFIG += EnableCharts
 }
 
 WindowsBuild {
@@ -243,6 +247,7 @@ WindowsBuild {
     #CONFIG +- EnablePiP
     CONFIG += EnableLink
     CONFIG += EnableGStreamer
+    #CONFIG += EnableCharts
 
     DEFINES += GST_GL_HAVE_WINDOW_WIN32=1
     DEFINES += GST_GL_HAVE_PLATFORM_WGL=1
@@ -259,6 +264,7 @@ AndroidBuild {
     CONFIG += EnablePiP
     CONFIG += EnableLink
     CONFIG += EnableGStreamer
+    #CONFIG += EnableCharts
     EnableGStreamer {
         OTHER_FILES += \
             $$PWD/android/src/org/openhd/OpenHDActivity.java
@@ -270,6 +276,12 @@ AndroidBuild {
 
 
     QT += androidextras
+}
+
+EnableCharts {
+    message("EnableCharts")
+    DEFINES += ENABLE_CHARTS
+    QT += texttospeech
 }
 
 EnableSpeech {

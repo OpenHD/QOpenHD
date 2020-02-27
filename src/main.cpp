@@ -216,6 +216,11 @@ engine.rootContext()->setContextProperty("EnableGStreamer", QVariant(false));
     engine.rootContext()->setContextProperty("EnablePiP", QVariant(false));
 #endif
 
+#if defined(ENABLE_CHARTS)
+    engine.rootContext()->setContextProperty("EnableCharts", QVariant(true));
+#else
+    engine.rootContext()->setContextProperty("EnableCharts", QVariant(false));
+#endif
 
 #if defined(ENABLE_RC)
     engine.rootContext()->setContextProperty("EnableRC", QVariant(true));
