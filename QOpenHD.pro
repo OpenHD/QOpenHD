@@ -48,6 +48,7 @@ SOURCES += \
     src/localmessage.cpp \
     src/ltmtelemetry.cpp \
     src/main.cpp \
+    src/mavlinkbase.cpp \
     src/mavlinktelemetry.cpp \
     src/msptelemetry.cpp \
     src/openhd.cpp \
@@ -63,6 +64,7 @@ RESOURCES += qml/qml.qrc
 
 HEADERS += \
     inc/FPS.h \
+    inc/mavlinkbase.h \
     inc/sharedqueue.h \
     inc/constants.h \
     inc/frskytelemetry.h \
