@@ -51,19 +51,27 @@ BaseWidget {
             width: parent.width
             height: 24
             Text {
+                id: opacityTitle
                 text: "Opacity"
                 color: "white"
+                height: parent.height
                 font.bold: true
                 font.pixelSize: detailPanelFontPixels
                 anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
             }
             Slider {
                 id: air_battery_opacity_Slider
                 orientation: Qt.Horizontal
+                height: parent.height
                 from: .1
                 value: settings.air_battery_opacity
                 to: 1
                 stepSize: .1
+                anchors.rightMargin: 12
+                anchors.right: parent.right
+                anchors.leftMargin: 12
+                anchors.left: opacityTitle.right
 
                 onValueChanged: {
                     settings.air_battery_opacity = air_battery_opacity_Slider.value
