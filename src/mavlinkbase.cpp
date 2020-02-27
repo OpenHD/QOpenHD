@@ -71,15 +71,22 @@ void MavlinkBase::reconnectTCP() {
 }
 
 void MavlinkBase::setGroundIP(QString address) {
+    bool reconnect = false;
+    if (groundAddress != address) {
+        reconnect = true;
+    }
+
     groundAddress = address;
 
-    switch (m_mavlink_type) {
-        case MavlinkTypeTCP: {
-            reconnectTCP();
-            break;
-        }
-        default: {
-            break;
+    if (reconnect) {
+        switch (m_mavlink_type) {
+            case MavlinkTypeTCP: {
+                reconnectTCP();
+                break;
+            }
+            default: {
+                break;
+            }
         }
     }
 }
