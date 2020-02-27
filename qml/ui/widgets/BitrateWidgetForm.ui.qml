@@ -2,6 +2,8 @@ import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
 import QtGraphicalEffects 1.12
+import QtQuick.Shapes 1.0
+
 import Qt.labs.settings 1.0
 
 import OpenHD 1.0
@@ -23,7 +25,7 @@ BaseWidget {
 
 
     hasWidgetDetail: true
-    widgetDetailHeight: 192
+    widgetDetailHeight: 224
     widgetDetailComponent: Column {
         Item {
             width: parent.width
@@ -113,6 +115,22 @@ BaseWidget {
                 font.pixelSize: detailPanelFontPixels;
                 anchors.right: parent.right
                 verticalAlignment: Text.AlignVCenter
+            }
+        }
+        Shape {
+            id: line
+            height: 32
+            width: parent.width
+
+            ShapePath {
+                strokeColor: "white"
+                strokeWidth: 2
+                strokeStyle: ShapePath.SolidLine
+                fillColor: "transparent"
+                startX: 0
+                startY: line.height / 2
+                PathLine { x: 0;          y: line.height / 2 }
+                PathLine { x: line.width; y: line.height / 2 }
             }
         }
         Item {
