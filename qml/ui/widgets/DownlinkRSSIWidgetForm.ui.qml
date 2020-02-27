@@ -216,9 +216,9 @@ BaseWidget {
                 strokeStyle: ShapePath.SolidLine
                 fillColor: "transparent"
                 startX: 0
-                startY: 12
-                PathLine { x: 0;          y: 12 }
-                PathLine { x: line.width; y: 12 }
+                startY: line.height / 2
+                PathLine { x: 0;          y: line.height / 2 }
+                PathLine { x: line.width; y: line.height / 2 }
             }
         }
 
@@ -300,9 +300,9 @@ BaseWidget {
                 strokeStyle: ShapePath.SolidLine
                 fillColor: "transparent"
                 startX: 0
-                startY: 12
-                PathLine { x: 0;           y: 12 }
-                PathLine { x: line2.width; y: 12 }
+                startY: line2.height / 2
+                PathLine { x: 0;           y: line2.height / 2 }
+                PathLine { x: line2.width; y: line2.height / 2 }
             }
         }
         Item {
