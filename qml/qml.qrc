@@ -90,5 +90,7 @@
         <file>ui/elements/ColoredCheckboxForm.ui.qml</file>
         <file>ui/elements/ColoredCheckbox.qml</file>
         <file>ui/FrequencyItem.qml</file>
+        <file>ui/elements/StatusChart.qml</file>
+        <file>ui/elements/StatusChartForm.ui.qml</file>
     </qresource>
 </RCC>
