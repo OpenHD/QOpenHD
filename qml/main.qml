@@ -140,6 +140,8 @@ ApplicationWindow {
 
         property bool show_throttle: true
         property double throttle_opacity: 1
+
+        property bool show_gpio: false
     }
 
     OpenHDRC {

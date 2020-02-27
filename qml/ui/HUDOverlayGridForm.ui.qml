@@ -123,6 +123,10 @@ Item {
     MapWidget {
         id: mapWidget
     }
+
+    GPIOWidget {
+        id: gpioWidget
+    }
 }
 
 /*##^##
