@@ -230,6 +230,18 @@ public:
     Q_PROPERTY(QVariantMap wifi_adapter4 MEMBER m_wifi_adapter4 NOTIFY wifi_adapter4_changed)
     Q_PROPERTY(QVariantMap wifi_adapter5 MEMBER m_wifi_adapter5 NOTIFY wifi_adapter5_changed)
 
+    Q_PROPERTY(double ground_vin MEMBER m_ground_vin WRITE set_ground_vin NOTIFY ground_vin_changed)
+    void set_ground_vin(double ground_vin);
+
+    Q_PROPERTY(double ground_vout MEMBER m_ground_vout WRITE set_ground_vout NOTIFY ground_vout_changed)
+    void set_ground_vout(double ground_vout);
+
+    Q_PROPERTY(double ground_vbat MEMBER m_ground_vbat WRITE set_ground_vbat NOTIFY ground_vbat_changed)
+    void set_ground_vbat(double ground_vbat);
+
+    Q_PROPERTY(double ground_iout MEMBER m_ground_iout WRITE set_ground_iout NOTIFY ground_iout_changed)
+    void set_ground_iout(double ground_iout);
+
 signals:
     // system
     void gstreamer_version_changed();
@@ -313,6 +325,16 @@ signals:
 
     void ground_gpio_changed(QList<int> ground_gpio);
     void air_gpio_changed(QList<int> air_gpio);
+
+    void air_reboot();
+    void air_shutdown();
+    void ground_reboot();
+    void ground_shutdown();
+
+    void ground_vin_changed(double ground_vin);
+    void ground_vout_changed(double ground_vout);
+    void ground_vbat_changed(double ground_vbat);
+    void ground_iout_changed(double ground_iout);
 
 private:
 #if defined(ENABLE_SPEECH)
@@ -409,6 +431,11 @@ private:
     QList<int> m_air_gpio;
 
     QTimer* timer = nullptr;
+
+    double m_ground_vin = 0.0;
+    double m_ground_vout = 0.0;
+    double m_ground_vbat = 0.0;
+    double m_ground_iout = 0.0;
 };
 
 

@@ -466,3 +466,22 @@ void OpenHD::set_air_gpio(QList<int> air_gpio){
     emit air_gpio_changed(m_air_gpio);
 }
 
+void OpenHD::set_ground_vin(double ground_vin) {
+    m_ground_vin = ground_vin;
+    emit ground_vin_changed(m_ground_vin);
+}
+
+void OpenHD::set_ground_vout(double ground_vout) {
+    m_ground_vout = ground_vout;
+    emit ground_vout_changed(m_ground_vout);
+}
+
+void OpenHD::set_ground_vbat(double ground_vbat) {
+    m_ground_vbat = ground_vbat;
+    emit ground_vbat_changed(m_ground_vbat);
+}
+
+void OpenHD::set_ground_iout(double ground_iout) {
+    m_ground_iout = ground_iout;
+    emit ground_iout_changed(m_ground_iout);
+}
