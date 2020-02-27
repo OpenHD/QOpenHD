@@ -330,7 +330,7 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             break;
         }
         default: {
-            printf("Received unmatched message with ID %d, sequence: %d from component %d of system %d\n", msg.msgid, msg.seq, msg.compid, msg.sysid);
+            printf("MavlinkTelemetry received unmatched message with ID %d, sequence: %d from component %d of system %d\n", msg.msgid, msg.seq, msg.compid, msg.sysid);
             break;
         }
     }
