@@ -32,7 +32,7 @@ BaseWidget {
     widgetDetailComponent: Column {
         Item {
             width: parent.width
-            height: 48
+            height: 32
 
             Text {
                 id: zoomTitle
@@ -54,8 +54,9 @@ BaseWidget {
                 stepSize: 1
                 anchors.rightMargin: 0
                 anchors.right: parent.right
-                anchors.leftMargin: 12
+                anchors.leftMargin: 32
                 anchors.left: zoomTitle.right
+                height: parent.height
 
                 onValueChanged: {
                     mapsmall.zoomLevel = zoomSlider.value
@@ -66,7 +67,7 @@ BaseWidget {
 
         Item {
             width: parent.width
-            height: 48
+            height: 32
 
             Text {
                 id: baseMapTitle

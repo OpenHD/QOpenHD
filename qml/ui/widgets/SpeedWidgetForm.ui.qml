@@ -26,7 +26,7 @@ BaseWidget {
     widgetDetailComponent: Column {
         Item {
             width: parent.width
-            height: 24
+            height: 32
             Text {
                 id: opacityTitle
                 text: "Opacity"
@@ -56,7 +56,7 @@ BaseWidget {
         }
         Item {
             width: parent.width
-            height: 24
+            height: 32
             Text {
                 text: "Airspeed (off) / GPS (on)"
                 horizontalAlignment: Text.AlignRight

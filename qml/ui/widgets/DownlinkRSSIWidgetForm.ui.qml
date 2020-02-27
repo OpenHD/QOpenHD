@@ -59,28 +59,48 @@ BaseWidget {
             id: card0
             visible: false
             width: parent.width
-            height: 24
-            Text { text: "Card 1:";  color: "white"; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.left: parent.left }
+            height: 32
+            Text {
+                text: "Card 1:"
+                color: "white"
+                font.bold: true
+                height: parent.height
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
             Text {
                 id: card0text
                 color: "white";
                 font.bold: true;
+                height: parent.height
                 font.pixelSize: detailPanelFontPixels;
                 anchors.right: parent.right
+                verticalAlignment: Text.AlignVCenter
             }
         }
         Item {
             id: card1
             visible: false
             width: parent.width
-            height: 24
-            Text { text: "Card 2:";  color: "white"; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.left: parent.left }
+            height: 32
+            Text {
+                text: "Card 2:"
+                color: "white"
+                font.bold: true
+                height: parent.height;
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
             Text {
                 id: card1text
                 color: "white";
                 font.bold: true;
+                height: parent.height
                 font.pixelSize: detailPanelFontPixels;
                 anchors.right: parent.right
+                verticalAlignment: Text.AlignVCenter
             }
         }
 
@@ -89,13 +109,23 @@ BaseWidget {
             visible: false
             width: parent.width
             height: 24
-            Text { text: "Card 3:";  color: "white"; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.left: parent.left }
+            Text {
+                text: "Card 3:"
+                color: "white"
+                font.bold: true
+                height: parent.height;
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
             Text {
                 id: card2text
                 color: "white";
                 font.bold: true;
+                height: parent.height;
                 font.pixelSize: detailPanelFontPixels;
                 anchors.right: parent.right
+                verticalAlignment: Text.AlignVCenter
             }
         }
 
@@ -104,13 +134,23 @@ BaseWidget {
             visible: false
             width: parent.width
             height: 24
-            Text { text: "Card 4:";  color: "white"; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.left: parent.left }
+            Text {
+                text: "Card 4:"
+                color: "white"
+                font.bold: true
+                height: parent.height
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
             Text {
                 id: card3text
                 color: "white";
                 font.bold: true;
+                height: parent.height;
                 font.pixelSize: detailPanelFontPixels;
                 anchors.right: parent.right
+                verticalAlignment: Text.AlignVCenter
             }
         }
 
@@ -119,13 +159,23 @@ BaseWidget {
             visible: false
             width: parent.width
             height: 24
-            Text { text: "Card 5:";  color: "white"; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.left: parent.left }
+            Text {
+                text: "Card 5:"
+                color: "white"
+                font.bold: true
+                height: parent.height
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
             Text {
                 id: card4text
                 color: "white";
                 font.bold: true;
+                height: parent.height;
                 font.pixelSize: detailPanelFontPixels;
                 anchors.right: parent.right
+                verticalAlignment: Text.AlignVCenter
             }
         }
 
@@ -134,20 +184,30 @@ BaseWidget {
             visible: false
             width: parent.width
             height: 24
-            Text { text: "Card 6:";  color: "white"; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.left: parent.left }
+            Text {
+                text: "Card 6:"
+                color: "white"
+                font.bold: true
+                height: parent.height
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
             Text {
                 id: card5text
                 color: "white";
                 font.bold: true;
+                height: parent.height
                 font.pixelSize: detailPanelFontPixels;
                 anchors.right: parent.right
+                verticalAlignment: Text.AlignVCenter
             }
         }
 
 
         Shape {
             id: line
-            height: 24
+            height: 32
             width: parent.width
 
             ShapePath {
@@ -164,37 +224,73 @@ BaseWidget {
 
         Item {
             width: parent.width
-            height: 24
-            Text { text: "Lost:";  color: "white"; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.left: parent.left }
+            height: 32
+            Text {
+                text: "Lost:"
+                color: "white"
+                font.bold: true
+                height: parent.height
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
             Text {
                 text: Number(OpenHD.lost_packet_cnt).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" (%L1%)").arg(OpenHD.lost_packet_percent);
                 color: "white";
                 font.bold: true;
+                height: parent.height
                 font.pixelSize: detailPanelFontPixels;
                 anchors.right: parent.right
+                verticalAlignment: Text.AlignVCenter
             }
         }
         Item {
             width: parent.width
             height: 24
-            Text { text: "Damaged:";  color: "white"; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.left: parent.left }
+            Text {
+                text: "Damaged:"
+                color: "white"
+                font.bold: true
+                height: parent.height
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
             Text {
                 text: Number(OpenHD.damaged_block_cnt).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" (%L1%)").arg(OpenHD.damaged_block_percent);
                 color: "white";
                 font.bold: true;
+                height: parent.height
                 font.pixelSize: detailPanelFontPixels;
                 anchors.right: parent.right
+                verticalAlignment: Text.AlignVCenter
             }
         }
         Item {
             width: parent.width
             height: 24
-            Text { text: "CTS:";  color: "white"; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.left: parent.left }
-            Text { text: OpenHD.cts; color: "white"; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.right: parent.right }
+            Text {
+                text: "CTS:"
+                color: "white"
+                font.bold: true
+                height: parent.height
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
+            Text {
+                text: OpenHD.cts
+                color: "white"
+                font.bold: true
+                height: parent.height
+                font.pixelSize: detailPanelFontPixels
+                anchors.right: parent.right
+                verticalAlignment: Text.AlignVCenter
+            }
         }
         Item {
             width: parent.width
-            height: 24
+            height: 32
             Text {
                 id: opacityTitle
                 text: "Opacity"

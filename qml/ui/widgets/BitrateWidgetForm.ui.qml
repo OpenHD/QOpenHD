@@ -23,60 +23,101 @@ BaseWidget {
 
 
     hasWidgetDetail: true
+    widgetDetailHeight: 192
     widgetDetailComponent: Column {
         Item {
             width: parent.width
-            height: 24
-            Text { text: "Measured:";  color: "white"; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.left: parent.left }
+            height: 32
+            Text {
+                text: "Measured:"
+                color: "white"
+                font.bold: true
+                height: parent.height
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
             Text {
                 text: Number(OpenHD.kbitrate_measured/1024.0).toLocaleString(Qt.locale(), 'f', 1) + " Mbit";
                 color: "white";
                 font.bold: true;
+                height: parent.height
                 font.pixelSize: detailPanelFontPixels;
                 anchors.right: parent.right
+                verticalAlignment: Text.AlignVCenter
             }
         }
         Item {
             width: parent.width
-            height: 24
-            Text { text: "Set:";  color: "white"; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.left: parent.left }
+            height: 32
+            Text {
+                text: "Set:"
+                color: "white"
+                font.bold: true
+                height: parent.height
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
             Text {
                 text: Number(OpenHD.kbitrate_set/1024.0).toLocaleString(Qt.locale(), 'f', 1) + " Mbit";
                 color: "white";
                 font.bold: true;
+                height: parent.height
                 font.pixelSize: detailPanelFontPixels;
                 anchors.right: parent.right
+                verticalAlignment: Text.AlignVCenter
             }
         }
 
         Item {
             width: parent.width
-            height: 24
-            Text { text: "Skipped packets:";  color: "white"; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.left: parent.left }
+            height: 32
+            Text {
+                text: "Skipped packets:"
+                color: "white"
+                font.bold: true
+                height: parent.height
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
             Text {
                 text: Number(OpenHD.skipped_packet_cnt).toLocaleString(Qt.locale(), 'f', 0);
                 color: "white";
                 font.bold: true;
+                height: parent.height
                 font.pixelSize: detailPanelFontPixels;
                 anchors.right: parent.right
+                verticalAlignment: Text.AlignVCenter
             }
         }
 
         Item {
             width: parent.width
-            height: 24
-            Text { text: "Injection failed:";  color: "white"; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.left: parent.left }
+            height: 32
+            Text {
+                text: "Injection failed:"
+                color: "white"
+                font.bold: true
+                height: parent.height
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
             Text {
                 text: Number(OpenHD.injection_fail_cnt).toLocaleString(Qt.locale(), 'f', 0);
                 color: "white";
                 font.bold: true;
+                height: parent.height
                 font.pixelSize: detailPanelFontPixels;
                 anchors.right: parent.right
+                verticalAlignment: Text.AlignVCenter
             }
         }
         Item {
             width: parent.width
-            height: 24
+            height: 32
             Text {
                 id: opacityTitle
                 text: "Opacity"

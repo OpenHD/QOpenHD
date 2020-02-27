@@ -27,7 +27,7 @@ BaseWidget {
     defaultVCenter: false
 
     widgetDetailWidth: 120
-    widgetDetailHeight: 264
+    widgetDetailHeight: 320
 
     hasWidgetDetail: true
 
@@ -58,7 +58,7 @@ BaseWidget {
         ColoredCheckbox {
             id: gpio1
             width: parent.width
-            height: 24
+            height: 32
             text: "GPIO5"
             boxColor: "white"
             textColor: "white"
@@ -70,7 +70,7 @@ BaseWidget {
         ColoredCheckbox {
             id: gpio2
             width: parent.width
-            height: 24
+            height: 32
             text: "GPIO6"
             boxColor: "white"
             textColor: "white"
@@ -82,7 +82,7 @@ BaseWidget {
         ColoredCheckbox {
             id: gpio3
             width: parent.width
-            height: 24
+            height: 32
             text: "GPIO12"
             boxColor: "white"
             textColor: "white"
@@ -94,7 +94,7 @@ BaseWidget {
         ColoredCheckbox {
             id: gpio4
             width: parent.width
-            height: 24
+            height: 32
             text: "GPIO13"
             boxColor: "white"
             textColor: "white"
@@ -106,7 +106,7 @@ BaseWidget {
         ColoredCheckbox {
             id: gpio5
             width: parent.width
-            height: 24
+            height: 32
             text: "GPIO16"
             boxColor: "white"
             textColor: "white"
@@ -118,7 +118,7 @@ BaseWidget {
         ColoredCheckbox {
             id: gpio6
             width: parent.width
-            height: 24
+            height: 32
             text: "GPIO19"
             boxColor: "white"
             textColor: "white"
@@ -130,7 +130,7 @@ BaseWidget {
         ColoredCheckbox {
             id: gpio7
             width: parent.width
-            height: 24
+            height: 32
             text: "GPIO26"
             boxColor: "white"
             textColor: "white"
@@ -142,7 +142,7 @@ BaseWidget {
         ColoredCheckbox {
             id: gpio8
             width: parent.width
-            height: 24
+            height: 32
             text: "GPIO32"
             boxColor: "white"
             textColor: "white"

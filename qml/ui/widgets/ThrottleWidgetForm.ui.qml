@@ -29,7 +29,7 @@ BaseWidget {
     widgetDetailComponent: Column {
         Item {
             width: parent.width
-            height: 24
+            height: 32
             Text {
                 id: opacityTitle
                 text: "Opacity"

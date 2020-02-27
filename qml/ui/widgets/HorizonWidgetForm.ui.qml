@@ -22,7 +22,7 @@ BaseWidget {
     widgetDetailComponent: Column {
         Item {
             width: parent.width
-            height: 24
+            height: 32
             Text {
                 id: opacityTitle
                 text: "Opacity"
@@ -52,7 +52,7 @@ BaseWidget {
         }
         Item {
             width: parent.width
-            height: 24
+            height: 32
             Text {
                 id: sizeTitle
                 text: "Size"
@@ -82,7 +82,7 @@ BaseWidget {
         }
         Item {
             width: parent.width
-            height: 24
+            height: 32
             Text {
                 text: "Invert Pitch"
                 color: "white"
@@ -103,7 +103,7 @@ BaseWidget {
         }
         Item {
             width: parent.width
-            height: 24
+            height: 32
             Text {
                 id: invertTitle
                 text: "Invert Roll"

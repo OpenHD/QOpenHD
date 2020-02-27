@@ -24,28 +24,7 @@ BaseWidget {
     widgetDetailComponent: Column {
         Item {
             width: parent.width
-            height: 48
-            Text {
-                text: "Invert Arrow"
-                color: "white"
-                height: parent.height
-                font.bold: true
-                font.pixelSize: detailPanelFontPixels;
-                anchors.left: parent.left
-                verticalAlignment: Text.AlignVCenter
-            }
-            Switch {
-                width: 32
-                height: parent.height
-                anchors.rightMargin: 12
-                anchors.right: parent.right
-                checked: settings.arrow_invert
-                onCheckedChanged: settings.arrow_invert = checked
-            }
-        }
-        Item {
-            width: parent.width
-            height: 24
+            height: 32
             Text {
                 id: opacityTitle
                 text: "Opacity"
@@ -71,6 +50,27 @@ BaseWidget {
                 onValueChanged: {
                     settings.arrow_opacity = arrow_opacity_Slider.value
                 }
+            }
+        }
+        Item {
+            width: parent.width
+            height: 32
+            Text {
+                text: "Invert Arrow"
+                color: "white"
+                height: parent.height
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels;
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
+            Switch {
+                width: 32
+                height: parent.height
+                anchors.rightMargin: 12
+                anchors.right: parent.right
+                checked: settings.arrow_invert
+                onCheckedChanged: settings.arrow_invert = checked
             }
         }
     }

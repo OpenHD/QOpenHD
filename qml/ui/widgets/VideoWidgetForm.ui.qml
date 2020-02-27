@@ -26,7 +26,7 @@ BaseWidget {
     widgetDetailComponent: Column {
         Item {
             width: parent.width
-            height: 24
+            height: 32
             Text {
                 id:opacityTitle
                 text: "Opacity"
@@ -47,8 +47,7 @@ BaseWidget {
                 height: parent.height
                 anchors.rightMargin: 0
                 anchors.right: parent.right
-                anchors.leftMargin: 12
-                anchors.left: opacityTitle.right
+                width: parent.width - 96
 
                 onValueChanged: {
                     settings.pip_video_opacity = pip_video_opacity_Slider.value
