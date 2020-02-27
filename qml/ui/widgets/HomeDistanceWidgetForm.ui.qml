@@ -28,13 +28,13 @@ BaseWidget {
             width: parent.width
             height: 32
             Text { text: "Lat:";  color: "white"; height: parent.height; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.left: parent.left; verticalAlignment: Text.AlignVCenter }
-            Text { text: OpenHD.homelat; color: "white"; height: parent.height; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.right: parent.right; verticalAlignment: Text.AlignVCenter }
+            Text { text: Number(OpenHD.homelat).toLocaleString(Qt.locale(), 'f', 6); color: "white"; height: parent.height; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.right: parent.right; verticalAlignment: Text.AlignVCenter }
         }
         Item {
             width: parent.width
             height: 32
             Text { text: "Long:";  color: "white"; height: parent.height; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.left: parent.left; verticalAlignment: Text.AlignVCenter }
-            Text { text: OpenHD.homelon; color: "white"; height: parent.height; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.right: parent.right; verticalAlignment: Text.AlignVCenter }
+            Text { text: Number(OpenHD.homelat).toLocaleString(Qt.locale(), 'f', 6); color: "white"; height: parent.height; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.right: parent.right; verticalAlignment: Text.AlignVCenter }
         }
 
         Shape {
