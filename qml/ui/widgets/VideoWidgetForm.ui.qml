@@ -28,11 +28,14 @@ BaseWidget {
             width: parent.width
             height: 24
             Text {
+                id:opacityTitle
                 text: "Opacity"
                 color: "white"
+                height: parent.height
                 font.bold: true
                 font.pixelSize: detailPanelFontPixels
                 anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
             }
             Slider {
                 id: pip_video_opacity_Slider
@@ -41,6 +44,11 @@ BaseWidget {
                 value: settings.pip_video_opacity
                 to: 1
                 stepSize: .1
+                height: parent.height
+                anchors.rightMargin: 0
+                anchors.right: parent.right
+                anchors.leftMargin: 12
+                anchors.left: opacityTitle.right
 
                 onValueChanged: {
                     settings.pip_video_opacity = pip_video_opacity_Slider.value

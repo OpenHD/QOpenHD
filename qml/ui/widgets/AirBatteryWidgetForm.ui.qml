@@ -68,10 +68,9 @@ BaseWidget {
                 value: settings.air_battery_opacity
                 to: 1
                 stepSize: .1
-                anchors.rightMargin: 12
+                anchors.rightMargin: 0
                 anchors.right: parent.right
-                anchors.leftMargin: 12
-                anchors.left: opacityTitle.right
+                width: parent.width - 96
 
                 onValueChanged: {
                     settings.air_battery_opacity = air_battery_opacity_Slider.value

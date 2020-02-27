@@ -28,31 +28,14 @@ BaseWidget {
             width: parent.width
             height: 24
             Text {
-                text: "Airspeed or GPS"
-                horizontalAlignment: Text.AlignRight
-                color: "white"
-                font.bold: true
-                font.pixelSize: detailPanelFontPixels
-                anchors.left: parent.left
-            }
-            Switch {
-                width: 32
-                height: parent.height
-                anchors.rightMargin: 12
-                anchors.right: parent.right
-                checked: settings.speed_airspeed_gps
-                onCheckedChanged: settings.speed_airspeed_gps = checked
-            }
-        }
-        Item {
-            width: parent.width
-            height: 24
-            Text {
+                id: opacityTitle
                 text: "Opacity"
                 color: "white"
+                height: parent.height
                 font.bold: true
                 font.pixelSize: detailPanelFontPixels
                 anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
             }
             Slider {
                 id: speed_opacity_Slider
@@ -61,10 +44,36 @@ BaseWidget {
                 value: settings.speed_opacity
                 to: 1
                 stepSize: .1
+                height: parent.height
+                anchors.rightMargin: 0
+                anchors.right: parent.right
+                width: parent.width - 96
 
                 onValueChanged: {
                     settings.speed_opacity = speed_opacity_Slider.value
                 }
+            }
+        }
+        Item {
+            width: parent.width
+            height: 24
+            Text {
+                text: "Airspeed (off) / GPS (on)"
+                horizontalAlignment: Text.AlignRight
+                color: "white"
+                height: parent.height
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
+            Switch {
+                width: 32
+                height: parent.height
+                anchors.rightMargin: 12
+                anchors.right: parent.right
+                checked: settings.speed_airspeed_gps
+                onCheckedChanged: settings.speed_airspeed_gps = checked
             }
         }
     }

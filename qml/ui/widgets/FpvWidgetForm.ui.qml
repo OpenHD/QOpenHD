@@ -24,11 +24,14 @@ BaseWidget {
             width: parent.width
             height: 24
             Text {
+                id: sensitivityTitle
                 text: "Sensitivity"
                 color: "white"
+                height: parent.height
                 font.bold: true
                 font.pixelSize: detailPanelFontPixels
                 anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
             }
             Slider {
                 id: fpvSlider
@@ -37,6 +40,10 @@ BaseWidget {
                 value: settings.fpv_sensitivity
                 to: 20
                 stepSize: 1
+                height: parent.height
+                anchors.rightMargin: 0
+                anchors.right: parent.right
+                width: parent.width - 96
 
                 onValueChanged: {
                     settings.fpv_sensitivity = fpvSlider.value
@@ -47,11 +54,14 @@ BaseWidget {
             width: parent.width
             height: 24
             Text {
+                id: opacityTitle
                 text: "Opacity"
                 color: "white"
+                height: parent.height
                 font.bold: true
                 font.pixelSize: detailPanelFontPixels
                 anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
             }
             Slider {
                 id: fpv_opacity_Slider
@@ -60,6 +70,10 @@ BaseWidget {
                 value: settings.fpv_opacity
                 to: 1
                 stepSize: .1
+                height: parent.height
+                anchors.rightMargin: 0
+                anchors.right: parent.right
+                width: parent.width - 96
 
                 onValueChanged: {
                     settings.fpv_opacity = fpv_opacity_Slider.value

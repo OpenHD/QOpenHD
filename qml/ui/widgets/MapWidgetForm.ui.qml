@@ -52,7 +52,7 @@ BaseWidget {
                 value: settings.map_small_zoom
                 to: 30
                 stepSize: 1
-                anchors.rightMargin: 12
+                anchors.rightMargin: 0
                 anchors.right: parent.right
                 anchors.leftMargin: 12
                 anchors.left: zoomTitle.right
@@ -81,7 +81,7 @@ BaseWidget {
 
             ComboBox {
                 height: parent.height
-                anchors.rightMargin: 12
+                anchors.rightMargin: 0
                 anchors.right: parent.right
                 anchors.leftMargin: 12
                 anchors.left: baseMapTitle.right

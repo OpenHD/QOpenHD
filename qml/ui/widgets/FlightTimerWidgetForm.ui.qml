@@ -27,11 +27,14 @@ BaseWidget {
             width: parent.width
             height: 24
             Text {
+                id: opacityTitle
                 text: "Opacity"
                 color: "white"
+                height: parent.height
                 font.bold: true
                 font.pixelSize: detailPanelFontPixels
                 anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
             }
             Slider {
                 id: flight_timer_opacity_Slider
@@ -40,6 +43,10 @@ BaseWidget {
                 value: settings.flight_timer_opacity
                 to: 1
                 stepSize: .1
+                height: parent.height
+                anchors.rightMargin: 0
+                anchors.right: parent.right
+                width: parent.width - 96
 
                 onValueChanged: {
                     settings.flight_timer_opacity = flight_timer_opacity_Slider.value

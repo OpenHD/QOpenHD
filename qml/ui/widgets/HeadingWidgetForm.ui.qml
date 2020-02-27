@@ -27,30 +27,14 @@ BaseWidget {
             width: parent.width
             height: 24
             Text {
-                text: "Toggle Inav"
-                color: "white"
-                font.bold: true
-                font.pixelSize: detailPanelFontPixels
-                anchors.left: parent.left
-            }
-            Switch {
-                width: 32
-                height: parent.height
-                anchors.rightMargin: 12
-                anchors.right: parent.right
-                checked: settings.heading_inav
-                onCheckedChanged: settings.heading_inav = checked
-            }
-        }
-        Item {
-            width: parent.width
-            height: 24
-            Text {
+                id: opacityTitle
                 text: "Opacity"
                 color: "white"
+                height: parent.height
                 font.bold: true
                 font.pixelSize: detailPanelFontPixels
                 anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
             }
             Slider {
                 id: heading_opacity_Slider
@@ -59,10 +43,35 @@ BaseWidget {
                 value: settings.heading_opacity
                 to: 1
                 stepSize: .1
+                height: parent.height
+                anchors.rightMargin: 0
+                anchors.right: parent.right
+                width: parent.width - 96
 
                 onValueChanged: {
                     settings.heading_opacity = heading_opacity_Slider.value
                 }
+            }
+        }
+        Item {
+            width: parent.width
+            height: 24
+            Text {
+                text: "Ardupilot (off) / iNav (on)"
+                color: "white"
+                height: parent.height
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
+            Switch {
+                width: 32
+                height: parent.height
+                anchors.rightMargin: 12
+                anchors.right: parent.right
+                checked: settings.heading_inav
+                onCheckedChanged: settings.heading_inav = checked
             }
         }
     }

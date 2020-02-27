@@ -24,11 +24,73 @@ BaseWidget {
             width: parent.width
             height: 24
             Text {
-                text: "Invert Pitch"
+                id: opacityTitle
+                text: "Opacity"
                 color: "white"
+                height: parent.height
                 font.bold: true
                 font.pixelSize: detailPanelFontPixels
                 anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
+            Slider {
+                id: horizon_opacity_Slider
+                orientation: Qt.Horizontal
+                from: .1
+                value: settings.horizon_opacity
+                to: 1
+                stepSize: .1
+                height: parent.height
+                anchors.rightMargin: 0
+                anchors.right: parent.right
+                width: parent.width - 96
+
+                onValueChanged: {
+                    settings.horizon_opacity = horizon_opacity_Slider.value
+                }
+            }
+        }
+        Item {
+            width: parent.width
+            height: 24
+            Text {
+                id: sizeTitle
+                text: "Size"
+                color: "white"
+                height: parent.height
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
+            Slider {
+                id: horizon_size_Slider
+                orientation: Qt.Horizontal
+                from: 225
+                value: settings.horizon_size
+                to: 450
+                stepSize: 1
+                height: parent.height
+                anchors.rightMargin: 0
+                anchors.right: parent.right
+                width: parent.width - 96
+
+                onValueChanged: {
+                    settings.horizon_size = horizon_size_Slider.value
+                }
+            }
+        }
+        Item {
+            width: parent.width
+            height: 24
+            Text {
+                text: "Invert Pitch"
+                color: "white"
+                height: parent.height
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
             }
             Switch {
                 width: 32
@@ -43,10 +105,14 @@ BaseWidget {
             width: parent.width
             height: 24
             Text {
+                id: invertTitle
                 text: "Invert Roll"
                 color: "white"
+                height: parent.height
                 font.bold: true
+                font.pixelSize: detailPanelFontPixels
                 anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
             }
             Switch {
                 width: 32
@@ -55,51 +121,6 @@ BaseWidget {
                 anchors.right: parent.right
                 checked: settings.horizon_invert_roll
                 onCheckedChanged: settings.horizon_invert_roll = checked
-            }
-        }
-        Item {
-            width: parent.width
-            height: 24
-            Text {
-                text: "Opacity"
-                color: "white"
-                font.bold: true
-                font.pixelSize: detailPanelFontPixels
-                anchors.left: parent.left
-            }
-            Slider {
-                id: horizon_opacity_Slider
-                orientation: Qt.Horizontal
-                from: .1
-                value: settings.horizon_opacity
-                to: 1
-                stepSize: .1
-
-                onValueChanged: {
-                    settings.horizon_opacity = horizon_opacity_Slider.value
-                }
-            }
-        }
-        Item {
-            width: parent.width
-            height: 24
-            Text {
-                text: "Size"
-                color: "white"
-                font.bold: true
-                anchors.left: parent.left
-            }
-            Slider {
-                id: horizon_size_Slider
-                orientation: Qt.Horizontal
-                from: 225
-                value: settings.horizon_size
-                to: 450
-                stepSize: 1
-
-                onValueChanged: {
-                    settings.horizon_size = horizon_size_Slider.value
-                }
             }
         }
     }

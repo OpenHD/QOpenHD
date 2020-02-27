@@ -27,11 +27,45 @@ BaseWidget {
             width: parent.width
             height: 24
             Text {
-                text: "MSL or Relative"
+                id: opacityTitle
+                text: "Opacity"
                 color: "white"
+                height: parent.height
                 font.bold: true
                 font.pixelSize: detailPanelFontPixels
                 anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
+            Slider {
+                id: altitude_second_opacity_Slider
+                orientation: Qt.Horizontal
+                height: parent.height
+                from: .1
+                value: settings.altitude_second_opacity
+                to: 1
+                stepSize: .1
+                anchors.rightMargin: 0
+                anchors.right: parent.right
+                width: parent.width - 96
+
+
+                onValueChanged: {
+                    settings.altitude_second_opacity = altitude_second_opacity_Slider.value
+                }
+            }
+        }
+        Item {
+            width: parent.width
+            height: 24
+            Text {
+                id: mslTitle
+                text: "Relative (off) / MSL (on)"
+                color: "white"
+                height: parent.height
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
             }
             Switch {
                 width: 32
@@ -40,29 +74,6 @@ BaseWidget {
                 anchors.right: parent.right
                 checked: settings.altitude_second_msl_rel
                 onCheckedChanged: settings.altitude_second_msl_rel = checked
-            }
-        }
-        Item {
-            width: parent.width
-            height: 24
-            Text {
-                text: "Opacity"
-                color: "white"
-                font.bold: true
-                font.pixelSize: detailPanelFontPixels
-                anchors.left: parent.left
-            }
-            Slider {
-                id: altitude_second_opacity_Slider
-                orientation: Qt.Horizontal
-                from: .1
-                value: settings.altitude_second_opacity
-                to: 1
-                stepSize: .1
-
-                onValueChanged: {
-                    settings.altitude_second_opacity = altitude_second_opacity_Slider.value
-                }
             }
         }
     }
@@ -85,7 +96,7 @@ BaseWidget {
             color: settings.color_text
             opacity: settings.altitude_second_opacity
             text: Number(
-                      settings.altitude_second_msl_rel ? OpenHD.alt_rel : OpenHD.alt_msl).toLocaleString(
+                      settings.altitude_second_msl_rel ? OpenHD.alt_msl : OpenHD.alt_rel).toLocaleString(
                       Qt.locale(), 'f', 0)
             horizontalAlignment: Text.AlignRight
             topPadding: 2
