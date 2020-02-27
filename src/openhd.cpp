@@ -25,6 +25,9 @@ OpenHD::OpenHD(QObject *parent): QObject(parent) {
     m_speech = new QTextToSpeech(this);
 #endif
 
+    set_ground_gpio({-1, -1, -1, -1, -1, -1, -1, -1});
+    set_air_gpio({-1, -1, -1, -1, -1, -1, -1, -1});
+
     timer = new QTimer(this);
     QObject::connect(timer, &QTimer::timeout, this, &OpenHD::updateFlightTimer);
     timer->start(1000);
@@ -452,3 +455,14 @@ void OpenHD::set_lte_video_running(bool lte_video_running) {
     m_lte_video_running = lte_video_running;
     emit lte_video_running_changed(m_lte_video_running);
 }
+
+void OpenHD::set_ground_gpio(QList<int> ground_gpio){
+    m_ground_gpio = ground_gpio;
+    emit ground_gpio_changed(m_ground_gpio);
+}
+
+void OpenHD::set_air_gpio(QList<int> air_gpio){
+    m_air_gpio = air_gpio;
+    emit air_gpio_changed(m_air_gpio);
+}
+

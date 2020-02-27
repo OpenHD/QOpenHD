@@ -25,6 +25,16 @@ public:
 
     void setWifiAdapters(QList<QVariantMap> adapters);
 
+    Q_INVOKABLE void setGroundGPIO(int pin, bool state) {
+        m_ground_gpio[pin] = state ? 1 : 0;
+        emit save_ground_gpio(m_ground_gpio);
+    }
+
+    Q_INVOKABLE void setAirGPIO(int pin, bool state) {
+        m_air_gpio[pin] = state ? 1 : 0;
+        emit save_air_gpio(m_air_gpio);
+    }
+
 
     // public so that a QTimer can call it from main(), temporary fix due to some quirks with
     // the way QTimer and QML singletons/context properties work
@@ -207,6 +217,12 @@ public:
     void set_pip_video_running(bool pip_video_running);
 
 
+    Q_PROPERTY(QList<int> ground_gpio MEMBER m_ground_gpio WRITE set_ground_gpio NOTIFY ground_gpio_changed)
+    void set_ground_gpio(QList<int> ground_gpio);
+
+    Q_PROPERTY(QList<int> air_gpio MEMBER m_air_gpio WRITE set_air_gpio NOTIFY air_gpio_changed)
+    void set_air_gpio(QList<int> air_gpio);
+
     Q_PROPERTY(QVariantMap wifi_adapter0 MEMBER m_wifi_adapter0 NOTIFY wifi_adapter0_changed)
     Q_PROPERTY(QVariantMap wifi_adapter1 MEMBER m_wifi_adapter1 NOTIFY wifi_adapter1_changed)
     Q_PROPERTY(QVariantMap wifi_adapter2 MEMBER m_wifi_adapter2 NOTIFY wifi_adapter2_changed)
@@ -218,6 +234,9 @@ signals:
     // system
     void gstreamer_version_changed();
     void qt_version_changed();
+
+    void save_ground_gpio(QList<int> ground_gpio);
+    void save_air_gpio(QList<int> air_gpio);
 
     void wifi_adapter0_changed(QVariantMap wifi_adapter);
     void wifi_adapter1_changed(QVariantMap wifi_adapter);
@@ -291,6 +310,9 @@ signals:
     void pip_video_running_changed(bool pip_video_running);
 
     void lte_video_running_changed(bool lte_video_running);
+
+    void ground_gpio_changed(QList<int> ground_gpio);
+    void air_gpio_changed(QList<int> air_gpio);
 
 private:
 #if defined(ENABLE_SPEECH)
@@ -382,6 +404,9 @@ private:
     QVariantMap m_wifi_adapter5;
 
     QTime flightTimeStart;
+
+    QList<int> m_ground_gpio;
+    QList<int> m_air_gpio;
 
     QTimer* timer = nullptr;
 };
