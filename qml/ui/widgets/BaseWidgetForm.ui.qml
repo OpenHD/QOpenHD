@@ -35,7 +35,6 @@ Rectangle {
 
 
         width: widgetDetailWidth
-        // the alignment dropdown isn't necessary on the ground station so we hide it
         height: widgetDetailHeight
 
         background: Rectangle {
