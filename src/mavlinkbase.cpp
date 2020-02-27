@@ -61,6 +61,10 @@ void MavlinkBase::onTCPDisconnected() {
 }
 
 void MavlinkBase::reconnectTCP() {
+    if (((QTcpSocket*)mavlinkSocket)->state() == QAbstractSocket::ConnectedState) {
+        ((QTcpSocket*)mavlinkSocket)->disconnectFromHost();
+    }
+
     if (((QTcpSocket*)mavlinkSocket)->state() == QAbstractSocket::UnconnectedState) {
         ((QTcpSocket*)mavlinkSocket)->connectToHost(groundAddress, groundTCPPort);
     }
