@@ -9,8 +9,8 @@ import OpenHD 1.0
 
 BaseWidget {
     id: arrowWidget
-    width: 24
-    height: 24
+    width: 64
+    height: 48
     defaultYOffset: 85
 
     visible: settings.show_arrow
@@ -92,15 +92,15 @@ BaseWidget {
                 strokeWidth: 1
                 strokeStyle: ShapePath.SolidLine
 
-                startX: 12
+                startX: 32
                 startY: 0
-                PathLine { x: 24;                 y: 12  }//right edge of arrow
-                PathLine { x: 18;                 y: 12  }//inner right edge
-                PathLine { x: 18;                 y: 24 }//bottom right edge
-                PathLine { x: 6;                  y: 24 }//bottom left edge
-                PathLine { x: 6;                  y: 12  }//inner left edge
-                PathLine { x: 0;                  y: 12  }//outer left
-                PathLine { x: 12;                  y: 0  }//back to start
+                PathLine { x: 44;                 y: 12  }//right edge of arrow
+                PathLine { x: 38;                 y: 12  }//inner right edge
+                PathLine { x: 38;                 y: 24 }//bottom right edge
+                PathLine { x: 26;                  y: 24 }//bottom left edge
+                PathLine { x: 26;                  y: 12  }//inner left edge
+                PathLine { x: 20;                  y: 12  }//outer left
+                PathLine { x: 32;                  y: 0  }//back to start
             }
 
             transform: Rotation {
