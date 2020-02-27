@@ -3,6 +3,7 @@ import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
 import QtGraphicalEffects 1.12
 import Qt.labs.settings 1.0
+import QtQuick.Shapes 1.0
 
 import OpenHD 1.0
 
@@ -35,6 +36,24 @@ BaseWidget {
             Text { text: "Long:";  color: "white"; height: parent.height; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.left: parent.left; verticalAlignment: Text.AlignVCenter }
             Text { text: OpenHD.homelon; color: "white"; height: parent.height; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.right: parent.right; verticalAlignment: Text.AlignVCenter }
         }
+
+        Shape {
+            id: line
+            height: 32
+            width: parent.width
+
+            ShapePath {
+                strokeColor: "white"
+                strokeWidth: 2
+                strokeStyle: ShapePath.SolidLine
+                fillColor: "transparent"
+                startX: 0
+                startY: line.height / 2
+                PathLine { x: 0;          y: line.height / 2 }
+                PathLine { x: line.width; y: line.height / 2 }
+            }
+        }
+
         Item {
             width: parent.width
             height: 32
