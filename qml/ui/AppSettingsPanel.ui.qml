@@ -271,6 +271,18 @@ Item {
                             ListElement { text: "Drk Grey"; color: "darkGrey" }
                         }
                         textRole: "text"
+                        // @disable-check M223
+                        Component.onCompleted: {
+                            // @disable-check M223
+                            for (var i = 0; i < model.count; i++) {
+                                // @disable-check M222
+                                var choice = model.get(i);
+                                // @disable-check M223
+                                if (choice.color == settings.color_shape) {
+                                    currentIndex = i;
+                                }
+                            }
+                        }
                         onCurrentIndexChanged: {
                                 settings.color_shape = color_shape.get(currentIndex).color
                         }
@@ -313,6 +325,18 @@ Item {
                             ListElement { text: "Drk Grey"; color: "darkGrey" }
                         }
                         textRole: "text"
+                        // @disable-check M223
+                        Component.onCompleted: {
+                            // @disable-check M223
+                            for (var i = 0; i < model.count; i++) {
+                                // @disable-check M222
+                                var choice = model.get(i);
+                                // @disable-check M223
+                                if (choice.color == settings.color_glow) {
+                                    currentIndex = i;
+                                }
+                            }
+                        }
                         onCurrentIndexChanged: {
                                 settings.color_glow = color_glow.get(currentIndex).color
                         }
@@ -355,6 +379,18 @@ Item {
                             ListElement { text: "Drk Grey"; color: "darkGrey" }
                         }
                         textRole: "text"
+                        // @disable-check M223
+                        Component.onCompleted: {
+                            // @disable-check M223
+                            for (var i = 0; i < model.count; i++) {
+                                // @disable-check M222
+                                var choice = model.get(i);
+                                // @disable-check M223
+                                if (choice.color == settings.color_text) {
+                                    currentIndex = i;
+                                }
+                            }
+                        }
                         onCurrentIndexChanged: {
                                 settings.color_text = color_text.get(currentIndex).color
                         }
