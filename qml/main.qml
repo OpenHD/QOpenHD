@@ -162,6 +162,8 @@ ApplicationWindow {
             link.setGroundIP(address)
             openHDRC.setGroundIP(address)
             MavlinkTelemetry.setGroundIP(address)
+            AirGPIOMicroservice.setGroundIP(address)
+            GroundPowerMicroservice.setGroundIP(address)
         }
     }
 
