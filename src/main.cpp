@@ -29,7 +29,8 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 
 #include "qopenhdlink.h"
 
-#include "openhdpower.h"
+#include "powermicroservice.h"
+
 #include "gpiomicroservice.h"
 
 
@@ -165,8 +166,6 @@ int main(int argc, char *argv[]) {
 
     auto openhd = OpenHD::instance();
 
-    auto openhdpower = OpenHDPower::instance();
-
 #if defined(ENABLE_GSTREAMER)
 engine.rootContext()->setContextProperty("EnableGStreamer", QVariant(true));
 #if defined(ENABLE_MAIN_VIDEO)
@@ -202,10 +201,15 @@ engine.rootContext()->setContextProperty("EnableGStreamer", QVariant(false));
     airGPIOMicroservice->moveToThread(airGPIOThread);
     airGPIOThread->start();
 
+    auto groundPowerMicroservice = new PowerMicroservice(nullptr, MicroserviceTargetGround, MavlinkTypeTCP);
+    engine.rootContext()->setContextProperty("GroundPowerMicroservice", groundPowerMicroservice);
+    QThread *groundPowerThread = new QThread();
+    QObject::connect(groundPowerThread, &QThread::started, groundPowerMicroservice, &PowerMicroservice::onStarted);
+    groundPowerMicroservice->moveToThread(groundPowerThread);
+    groundPowerThread->start();
 
     engine.rootContext()->setContextProperty("OpenHD", openhd);
 
-    engine.rootContext()->setContextProperty("OpenHDPower", openhdpower);
 
 #if defined(ENABLE_MAIN_VIDEO)
     engine.rootContext()->setContextProperty("EnableMainVideo", QVariant(true));

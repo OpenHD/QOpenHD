@@ -18,7 +18,7 @@
 #include "constants.h"
 
 #include "openhd.h"
-#include "openhdpower.h"
+#include "powermicroservice.h"
 
 #include "localmessage.h"
 
