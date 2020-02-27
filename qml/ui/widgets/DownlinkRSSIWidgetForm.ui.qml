@@ -246,7 +246,7 @@ BaseWidget {
         }
         Item {
             width: parent.width
-            height: 24
+            height: 32
             Text {
                 text: "Damaged:"
                 color: "white"
@@ -268,7 +268,7 @@ BaseWidget {
         }
         Item {
             width: parent.width
-            height: 24
+            height: 32
             Text {
                 text: "CTS:"
                 color: "white"
