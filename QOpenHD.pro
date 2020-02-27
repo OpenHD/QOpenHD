@@ -45,6 +45,7 @@ INCLUDEPATH += $$PWD/lib/GeographicLib-1.50/include
 SOURCES += \
     src/FPS.cpp \
     src/frskytelemetry.cpp \
+    src/gpiomicroservice.cpp \
     src/localmessage.cpp \
     src/ltmtelemetry.cpp \
     src/main.cpp \
@@ -64,6 +65,7 @@ RESOURCES += qml/qml.qrc
 
 HEADERS += \
     inc/FPS.h \
+    inc/gpiomicroservice.h \
     inc/mavlinkbase.h \
     inc/sharedqueue.h \
     inc/constants.h \

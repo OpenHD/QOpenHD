@@ -30,6 +30,8 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "qopenhdlink.h"
 
 #include "openhdpower.h"
+#include "gpiomicroservice.h"
+
 
 #if defined(ENABLE_GSTREAMER)
 
@@ -192,6 +194,13 @@ engine.rootContext()->setContextProperty("EnableGStreamer", QVariant(false));
     QObject::connect(telemetryThread, &QThread::started, openhdTelemetry, &OpenHDTelemetry::onStarted);
     openhdTelemetry->moveToThread(telemetryThread);
     telemetryThread->start();
+
+    auto airGPIOMicroservice = new GPIOMicroservice(nullptr, MicroserviceTargetAir, MavlinkTypeTCP);
+    engine.rootContext()->setContextProperty("AirGPIOMicroservice", airGPIOMicroservice);
+    QThread *airGPIOThread = new QThread();
+    QObject::connect(airGPIOThread, &QThread::started, airGPIOMicroservice, &GPIOMicroservice::onStarted);
+    airGPIOMicroservice->moveToThread(airGPIOThread);
+    airGPIOThread->start();
 
 
     engine.rootContext()->setContextProperty("OpenHD", openhd);
