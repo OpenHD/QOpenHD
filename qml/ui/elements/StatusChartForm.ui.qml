@@ -7,6 +7,7 @@ import QtCharts 2.3
 Item {
     ScrollView {
         id: legend
+        z: 1.1
         width: 118
         contentHeight: legendColumn.height
         leftPadding: 0
@@ -40,6 +41,7 @@ Item {
                 font.pixelSize: legend.fontSize
                 boxColor: airCPUAxis.color
                 checked: airCPUAxis.visible
+                unknownState: false
                 onCheckedChanged: airCPUAxis.visible = checked
             }
 
@@ -51,6 +53,7 @@ Item {
                 font.pixelSize: legend.fontSize
                 boxColor: airTempAxis.color
                 checked: airTempAxis.visible
+                unknownState: false
                 onCheckedChanged: airTempAxis.visible = checked
             }
 
@@ -62,6 +65,7 @@ Item {
                 font.pixelSize: legend.fontSize
                 boxColor: gndCPUAxis.color
                 checked: gndCPUAxis.visible
+                unknownState: false
                 onCheckedChanged: gndCPUAxis.visible = checked
             }
             ColoredCheckbox {
@@ -72,6 +76,7 @@ Item {
                 font.pixelSize: legend.fontSize
                 boxColor: gndTempAxis.color
                 checked: gndTempAxis.visible
+                unknownState: false
                 onCheckedChanged: gndTempAxis.visible = checked
             }
 
@@ -83,6 +88,7 @@ Item {
                 font.pixelSize: legend.fontSize
                 boxColor: lostPacketAxis.color
                 checked: lostPacketAxis.visible
+                unknownState: false
                 onCheckedChanged: lostPacketAxis.visible = checked
             }
 
@@ -94,6 +100,7 @@ Item {
                 font.pixelSize: legend.fontSize
                 boxColor: damagedBlockAxis.color
                 checked: damagedBlockAxis.visible
+                unknownState: false
                 onCheckedChanged: damagedBlockAxis.visible = checked
             }
 
@@ -105,6 +112,7 @@ Item {
                 font.pixelSize: legend.fontSize
                 boxColor: downlinkRSSIAxis.color
                 checked: downlinkRSSIAxis.visible
+                unknownState: false
                 onCheckedChanged: downlinkRSSIAxis.visible = checked
             }
 
@@ -116,6 +124,7 @@ Item {
                 font.pixelSize: legend.fontSize
                 boxColor: uplinkRSSIAxis.color
                 checked: uplinkRSSIAxis.visible
+                unknownState: false
                 onCheckedChanged: uplinkRSSIAxis.visible = checked
             }
 
@@ -127,6 +136,7 @@ Item {
                 font.pixelSize: legend.fontSize
                 boxColor: injectionFailAxis.color
                 checked: injectionFailAxis.visible
+                unknownState: false
                 onCheckedChanged: injectionFailAxis.visible = checked
             }
 
@@ -138,6 +148,7 @@ Item {
                 font.pixelSize: legend.fontSize
                 boxColor: skippedPacketAxis.color
                 checked: skippedPacketAxis.visible
+                unknownState: false
                 onCheckedChanged: skippedPacketAxis.visible = checked
             }
 
@@ -149,6 +160,7 @@ Item {
                 font.pixelSize: legend.fontSize
                 boxColor: bitrateAxis.color
                 checked: bitrateAxis.visible
+                unknownState: false
                 onCheckedChanged: bitrateAxis.visible = checked
             }
 

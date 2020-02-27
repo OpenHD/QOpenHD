@@ -18,12 +18,9 @@
 #include "constants.h"
 
 #include "openhd.h"
-#include "openhdpower.h"
+#include "powermicroservice.h"
 
 #include "localmessage.h"
-
-#define MAVLINK_LOCAL_PORT 14550
-
 
 static MavlinkTelemetry* _instance = nullptr;
 
@@ -34,16 +31,20 @@ MavlinkTelemetry* MavlinkTelemetry::instance() {
     return _instance;
 }
 
-MavlinkTelemetry::MavlinkTelemetry(QObject *parent): QObject(parent), m_ground_available(false) {
+MavlinkTelemetry::MavlinkTelemetry(QObject *parent): MavlinkBase(parent) {
     qDebug() << "MavlinkTelemetry::MavlinkTelemetry()";
+    targetSysID = 1;
+    targetCompID = MAV_COMP_ID_AUTOPILOT1;
+    localPort = 14550;
+
+    connect(this, &MavlinkTelemetry::setup, this, &MavlinkTelemetry::onSetup);
+
 }
 
-void MavlinkTelemetry::onStarted() {
-    qDebug() << "MavlinkTelemetry::onStarted()";
+void MavlinkTelemetry::onSetup() {
+    qDebug() << "MavlinkTelemetry::onSetup()";
 
-    mavlinkSocket = new QUdpSocket(this);
-    mavlinkSocket->bind(QHostAddress::Any, MAVLINK_LOCAL_PORT);
-    connect(mavlinkSocket, &QUdpSocket::readyRead, this, &MavlinkTelemetry::processMavlinkDatagrams);
+    connect(this, &MavlinkTelemetry::processMavlinkMessage, this, &MavlinkTelemetry::onProcessMavlinkMessage);
 
     timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, &MavlinkTelemetry::stateLoop);
@@ -52,150 +53,7 @@ void MavlinkTelemetry::onStarted() {
 }
 
 
-void MavlinkTelemetry::setGroundIP(QString address) {
-    groundAddress = address;
-}
-
-void MavlinkTelemetry::set_loading(bool loading) {
-    m_loading = loading;
-    emit loadingChanged(m_loading);
-}
-
-void MavlinkTelemetry::set_saving(bool saving) {
-    m_saving = saving;
-    emit savingChanged(m_saving);
-}
-
-void MavlinkTelemetry::processMavlinkDatagrams() {
-    QByteArray datagram;
-
-    while (mavlinkSocket->hasPendingDatagrams()) {
-        m_ground_available = true;
-
-        datagram.resize(int(mavlinkSocket->pendingDatagramSize()));
-        QHostAddress _groundAddress;
-        quint16 _groundPort;
-        mavlinkSocket->readDatagram(datagram.data(), datagram.size(), &_groundAddress, &_groundPort);
-        groundPort = _groundPort;
-        typedef QByteArray::Iterator Iterator;
-        mavlink_message_t msg;
-
-        for (Iterator i = datagram.begin(); i != datagram.end(); i++) {
-            char c = *i;
-
-            uint8_t res = mavlink_parse_char(MAVLINK_COMM_0, (uint8_t)c, &msg, &r_mavlink_status);
-
-            if (res) {
-                processMavlinkMessage(msg);
-            }
-        }
-    }
-}
-
-
-QVariantMap MavlinkTelemetry::getAllParameters() {
-    return m_allParameters;
-}
-
-
-void MavlinkTelemetry::fetchParameters() {
-    qDebug() << "MavlinkTelemetry::fetchParameters()";
-    mavlink_message_t msg;
-    mavlink_msg_param_request_list_pack(255, MAV_COMP_ID_MISSIONPLANNER, &msg, 1, MAV_COMP_ID_AUTOPILOT1);
-
-    uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
-    int len = mavlink_msg_to_send_buffer(buffer, &msg);
-
-    mavlinkSocket->writeDatagram((char*)buffer, len, QHostAddress(groundAddress), groundPort);
-}
-
-
-bool MavlinkTelemetry::isConnectionLost() {
-    // we want to know if a heartbeat has been received (not -1, the default)
-    // but not in the last 5 seconds.
-    if (m_last_heartbeat > -1 && m_last_heartbeat < 5000) {
-        return false;
-    }
-    return true;
-}
-
-void MavlinkTelemetry::resetParamVars() {
-    m_allParameters.clear();
-    parameterCount = 0;
-    parameterIndex = 0;
-    initialConnectTimer = -1;
-    // give the MavlinkStateGetParameters state a chance to receive a parameter
-    // before timing out
-    parameterLastReceivedTime = QDateTime::currentMSecsSinceEpoch();
-}
-
-
-void MavlinkTelemetry::stateLoop() {
-    qint64 current_timestamp = QDateTime::currentMSecsSinceEpoch();
-    set_last_heartbeat(current_timestamp - last_heartbeat_timestamp);
-
-    switch (state) {
-        case MavlinkStateDisconnected: {
-            set_loading(false);
-            set_saving(false);
-            if (m_ground_available) {
-                state = MavlinkStateConnected;
-            }
-            break;
-        }
-        case MavlinkStateConnected: {
-            if (initialConnectTimer == -1) {
-                initialConnectTimer = QDateTime::currentMSecsSinceEpoch();
-            } else if (current_timestamp - initialConnectTimer < 5000) {
-                state = MavlinkStateGetParameters;
-                resetParamVars();
-                fetchParameters();
-                LocalMessage::instance()->showMessage("Connecting to drone", 0);
-            }
-            break;
-        }
-        case MavlinkStateGetParameters: {
-            set_loading(true);
-            set_saving(false);
-            qint64 currentTime = QDateTime::currentMSecsSinceEpoch();
-
-            if (isConnectionLost()) {
-                resetParamVars();
-                m_ground_available = false;
-                state = MavlinkStateDisconnected;
-                LocalMessage::instance()->showMessage("Connection to drone lost (E1)", 0);
-            }
-
-            if ((parameterCount != 0) && parameterIndex == (parameterCount - 1)) {
-                emit allParametersChanged();
-                state = MavlinkStateIdle;
-            }
-
-            if (currentTime - parameterLastReceivedTime > 7000) {
-                resetParamVars();
-                m_ground_available = false;
-                state = MavlinkStateDisconnected;
-                LocalMessage::instance()->showMessage("Connection to drone lost (E2)", 0);
-            }
-            break;
-        }
-        case MavlinkStateIdle: {
-            set_loading(false);
-
-            if (isConnectionLost()) {
-                resetParamVars();
-                m_ground_available = false;
-                state = MavlinkStateDisconnected;
-                LocalMessage::instance()->showMessage("Connection to drone lost (E3)", 0);
-            }
-
-            break;
-        }
-    }
-}
-
-
-void MavlinkTelemetry::processMavlinkMessage(mavlink_message_t msg) {
+void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
     /* QGC sends its own heartbeats with compid 0 (fixed)
      * and sysid 255 (configurable). We want to ignore these
      * because they cause UI glitches like the flight mode
@@ -471,26 +329,10 @@ void MavlinkTelemetry::processMavlinkMessage(mavlink_message_t msg) {
             OpenHD::instance()->messageReceived(statustext.text, level);
             break;
         }
-        case MAVLINK_MSG_ID_OPENHD_GROUND_POWER: {
-            mavlink_openhd_ground_power_t ground_power;
-            mavlink_msg_openhd_ground_power_decode(&msg, &ground_power);
-            qDebug() << "MAVLINK_MSG_ID_OPENHD_GROUND_POWER";
-
-            OpenHDPower::instance()->set_vin_raw(ground_power.vin);
-            OpenHDPower::instance()->set_vout_raw(ground_power.vout);
-            OpenHDPower::instance()->set_vbat_raw(ground_power.vbat);
-            OpenHDPower::instance()->set_iout_raw(ground_power.iout);
-
-            break;
-        }
         default: {
-            printf("Received unmatched message with ID %d, sequence: %d from component %d of system %d\n", msg.msgid, msg.seq, msg.compid, msg.sysid);
+            printf("MavlinkTelemetry received unmatched message with ID %d, sequence: %d from component %d of system %d\n", msg.msgid, msg.seq, msg.compid, msg.sysid);
             break;
         }
     }
 }
 
-void MavlinkTelemetry::set_last_heartbeat(qint64 last_heartbeat) {
-    m_last_heartbeat = last_heartbeat;
-    emit last_heartbeat_changed(m_last_heartbeat);
-}

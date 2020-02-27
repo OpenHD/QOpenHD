@@ -25,6 +25,16 @@ public:
 
     void setWifiAdapters(QList<QVariantMap> adapters);
 
+    Q_INVOKABLE void setGroundGPIO(int pin, bool state) {
+        m_ground_gpio[pin] = state ? 1 : 0;
+        emit save_ground_gpio(m_ground_gpio);
+    }
+
+    Q_INVOKABLE void setAirGPIO(int pin, bool state) {
+        m_air_gpio[pin] = state ? 1 : 0;
+        emit save_air_gpio(m_air_gpio);
+    }
+
 
     // public so that a QTimer can call it from main(), temporary fix due to some quirks with
     // the way QTimer and QML singletons/context properties work
@@ -207,6 +217,12 @@ public:
     void set_pip_video_running(bool pip_video_running);
 
 
+    Q_PROPERTY(QList<int> ground_gpio MEMBER m_ground_gpio WRITE set_ground_gpio NOTIFY ground_gpio_changed)
+    void set_ground_gpio(QList<int> ground_gpio);
+
+    Q_PROPERTY(QList<int> air_gpio MEMBER m_air_gpio WRITE set_air_gpio NOTIFY air_gpio_changed)
+    void set_air_gpio(QList<int> air_gpio);
+
     Q_PROPERTY(QVariantMap wifi_adapter0 MEMBER m_wifi_adapter0 NOTIFY wifi_adapter0_changed)
     Q_PROPERTY(QVariantMap wifi_adapter1 MEMBER m_wifi_adapter1 NOTIFY wifi_adapter1_changed)
     Q_PROPERTY(QVariantMap wifi_adapter2 MEMBER m_wifi_adapter2 NOTIFY wifi_adapter2_changed)
@@ -214,10 +230,25 @@ public:
     Q_PROPERTY(QVariantMap wifi_adapter4 MEMBER m_wifi_adapter4 NOTIFY wifi_adapter4_changed)
     Q_PROPERTY(QVariantMap wifi_adapter5 MEMBER m_wifi_adapter5 NOTIFY wifi_adapter5_changed)
 
+    Q_PROPERTY(double ground_vin MEMBER m_ground_vin WRITE set_ground_vin NOTIFY ground_vin_changed)
+    void set_ground_vin(double ground_vin);
+
+    Q_PROPERTY(double ground_vout MEMBER m_ground_vout WRITE set_ground_vout NOTIFY ground_vout_changed)
+    void set_ground_vout(double ground_vout);
+
+    Q_PROPERTY(double ground_vbat MEMBER m_ground_vbat WRITE set_ground_vbat NOTIFY ground_vbat_changed)
+    void set_ground_vbat(double ground_vbat);
+
+    Q_PROPERTY(double ground_iout MEMBER m_ground_iout WRITE set_ground_iout NOTIFY ground_iout_changed)
+    void set_ground_iout(double ground_iout);
+
 signals:
     // system
     void gstreamer_version_changed();
     void qt_version_changed();
+
+    void save_ground_gpio(QList<int> ground_gpio);
+    void save_air_gpio(QList<int> air_gpio);
 
     void wifi_adapter0_changed(QVariantMap wifi_adapter);
     void wifi_adapter1_changed(QVariantMap wifi_adapter);
@@ -291,6 +322,19 @@ signals:
     void pip_video_running_changed(bool pip_video_running);
 
     void lte_video_running_changed(bool lte_video_running);
+
+    void ground_gpio_changed(QList<int> ground_gpio);
+    void air_gpio_changed(QList<int> air_gpio);
+
+    void air_reboot();
+    void air_shutdown();
+    void ground_reboot();
+    void ground_shutdown();
+
+    void ground_vin_changed(double ground_vin);
+    void ground_vout_changed(double ground_vout);
+    void ground_vbat_changed(double ground_vbat);
+    void ground_iout_changed(double ground_iout);
 
 private:
 #if defined(ENABLE_SPEECH)
@@ -383,7 +427,15 @@ private:
 
     QTime flightTimeStart;
 
+    QList<int> m_ground_gpio;
+    QList<int> m_air_gpio;
+
     QTimer* timer = nullptr;
+
+    double m_ground_vin = 0.0;
+    double m_ground_vout = 0.0;
+    double m_ground_vbat = 0.0;
+    double m_ground_iout = 0.0;
 };
 
 

@@ -45,17 +45,19 @@ INCLUDEPATH += $$PWD/lib/GeographicLib-1.50/include
 SOURCES += \
     src/FPS.cpp \
     src/frskytelemetry.cpp \
+    src/gpiomicroservice.cpp \
     src/localmessage.cpp \
     src/ltmtelemetry.cpp \
     src/main.cpp \
+    src/mavlinkbase.cpp \
     src/mavlinktelemetry.cpp \
     src/msptelemetry.cpp \
     src/openhd.cpp \
     src/openhdpi.cpp \
-    src/openhdpower.cpp \
     src/openhdrc.cpp \
     src/openhdsettings.cpp \
     src/openhdtelemetry.cpp \
+    src/powermicroservice.cpp \
     src/qopenhdlink.cpp \
     src/util.cpp
 
@@ -63,6 +65,9 @@ RESOURCES += qml/qml.qrc
 
 HEADERS += \
     inc/FPS.h \
+    inc/gpiomicroservice.h \
+    inc/mavlinkbase.h \
+    inc/powermicroservice.h \
     inc/sharedqueue.h \
     inc/constants.h \
     inc/frskytelemetry.h \
@@ -74,7 +79,6 @@ HEADERS += \
     inc/msptelemetry.h \
     inc/openhd.h \
     inc/openhdpi.h \
-    inc/openhdpower.h \
     inc/openhdrc.h \
     inc/openhdsettings.h \
     inc/openhdtelemetry.h \

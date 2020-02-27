@@ -92,5 +92,7 @@
         <file>ui/FrequencyItem.qml</file>
         <file>ui/elements/StatusChart.qml</file>
         <file>ui/elements/StatusChartForm.ui.qml</file>
+        <file>ui/widgets/GPIOWidget.qml</file>
+        <file>ui/widgets/GPIOWidgetForm.ui.qml</file>
     </qresource>
 </RCC>
