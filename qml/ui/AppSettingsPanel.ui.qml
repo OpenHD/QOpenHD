@@ -260,8 +260,8 @@ Item {
                         anchors.horizontalCenter: parent.horizonatalCenter
                         model: ListModel {
                             id: color_shape
-                            ListElement { text: "Black"; color: "black" }
                             ListElement { text: "White"; color: "white" }
+                            ListElement { text: "Black"; color: "black" }
                             ListElement { text: "Green"; color: "green" }
                             ListElement { text: "Drk Green"; color: "darkGreen" }
                             ListElement { text: "Yellow"; color: "yellow" }
@@ -368,8 +368,8 @@ Item {
                         anchors.horizontalCenter: parent.horizonatalCenter
                         model: ListModel {
                             id: color_text
-                            ListElement { text: "Black"; color: "black" }
                             ListElement { text: "White"; color: "white" }
+                            ListElement { text: "Black"; color: "black" }
                             ListElement { text: "Green"; color: "green" }
                             ListElement { text: "Drk Green"; color: "darkGreen" }
                             ListElement { text: "Yellow"; color: "yellow" }
