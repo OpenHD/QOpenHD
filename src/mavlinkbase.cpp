@@ -368,6 +368,7 @@ void MavlinkBase::commandStateLoop() {
             m_current_command.reset();
             emit commandFailed();
             m_command_state = MavlinkCommandStateReady;
+            LocalMessage::instance()->showMessage("Mavlink command failed", 5);
             break;
         }
     }
