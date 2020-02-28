@@ -12,8 +12,8 @@ import "../elements"
 
 BaseWidget {
     id: gpioWidget
-    width: 48
-    height: 48
+    width: 64
+    height: 64
 
     visible: settings.show_gpio
 
@@ -21,8 +21,8 @@ BaseWidget {
 
     defaultAlignment: 0
 
-    defaultXOffset: 6
-    defaultYOffset: 56
+    defaultXOffset: 0
+    defaultYOffset: 48
     defaultHCenter: false
     defaultVCenter: false
 
@@ -159,15 +159,14 @@ BaseWidget {
 
         Text {
             id: gpioIcon
-            width: 48
-            height: 48
+            width: 64
+            height: 64
             text: "G"
             color: "white"
             anchors.left: parent.left
             anchors.leftMargin: 12
             fontSizeMode: Text.VerticalFit
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.fill: parent
             clip: true
             elide: Text.ElideMiddle
             font.family: "Material Design Icons"
