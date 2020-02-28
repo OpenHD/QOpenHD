@@ -79,6 +79,19 @@ void GPIOMicroservice::onProcessMavlinkMessage(mavlink_message_t msg) {
             mavlink_msg_heartbeat_decode(&msg, &heartbeat);
             break;
         }
+        case MAVLINK_MSG_ID_SYSTEM_TIME:{
+            mavlink_system_time_t sys_time;
+            mavlink_msg_system_time_decode(&msg, &sys_time);
+            uint64_t time_unix_usec = sys_time.time_unix_usec;
+            uint32_t time_boot_ms = sys_time.time_boot_ms;
+
+            uint64_t boot_time = time_unix_usec - time_boot_ms;
+            if (boot_time != m_last_boot) {
+                m_last_boot = boot_time;
+            }
+
+            break;
+        }
         case MAVLINK_MSG_ID_OPENHD_GPIO_STATE: {
             mavlink_openhd_gpio_state_t gpio_state;
             mavlink_msg_openhd_gpio_state_decode(&msg, &gpio_state);

@@ -152,6 +152,9 @@ protected:
 
     QTimer* timer = nullptr;
     QTimer* tcpReconnectTimer = nullptr;
+
+    uint64_t m_last_boot = 0;
+
 };
 
 #endif
