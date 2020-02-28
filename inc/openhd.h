@@ -220,8 +220,14 @@ public:
     Q_PROPERTY(QList<int> ground_gpio MEMBER m_ground_gpio WRITE set_ground_gpio NOTIFY ground_gpio_changed)
     void set_ground_gpio(QList<int> ground_gpio);
 
+    Q_PROPERTY(bool ground_gpio_busy MEMBER m_ground_gpio_busy WRITE set_ground_gpio_busy NOTIFY ground_gpio_busy_changed)
+    void set_ground_gpio_busy(bool ground_gpio_busy);
+
     Q_PROPERTY(QList<int> air_gpio MEMBER m_air_gpio WRITE set_air_gpio NOTIFY air_gpio_changed)
     void set_air_gpio(QList<int> air_gpio);
+
+    Q_PROPERTY(bool air_gpio_busy MEMBER m_air_gpio_busy WRITE set_air_gpio_busy NOTIFY air_gpio_busy_changed)
+    void set_air_gpio_busy(bool air_gpio_busy);
 
     Q_PROPERTY(QVariantMap wifi_adapter0 MEMBER m_wifi_adapter0 NOTIFY wifi_adapter0_changed)
     Q_PROPERTY(QVariantMap wifi_adapter1 MEMBER m_wifi_adapter1 NOTIFY wifi_adapter1_changed)
@@ -249,6 +255,9 @@ signals:
 
     void save_ground_gpio(QList<int> ground_gpio);
     void save_air_gpio(QList<int> air_gpio);
+
+    void ground_gpio_busy_changed(bool ground_gpio_busy);
+    void air_gpio_busy_changed(bool air_gpio_busy);
 
     void wifi_adapter0_changed(QVariantMap wifi_adapter);
     void wifi_adapter1_changed(QVariantMap wifi_adapter);
@@ -429,6 +438,9 @@ private:
 
     QList<int> m_ground_gpio;
     QList<int> m_air_gpio;
+
+    bool m_ground_gpio_busy = false;
+    bool m_air_gpio_busy = false;
 
     QTimer* timer = nullptr;
 

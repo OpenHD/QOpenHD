@@ -466,6 +466,16 @@ void OpenHD::set_air_gpio(QList<int> air_gpio){
     emit air_gpio_changed(m_air_gpio);
 }
 
+void OpenHD::set_ground_gpio_busy(bool ground_gpio_busy){
+    m_ground_gpio_busy = ground_gpio_busy;
+    emit ground_gpio_busy_changed(ground_gpio_busy);
+}
+
+void OpenHD::set_air_gpio_busy(bool air_gpio_busy){
+    m_air_gpio_busy = air_gpio_busy;
+    emit air_gpio_busy_changed(air_gpio_busy);
+}
+
 void OpenHD::set_ground_vin(double ground_vin) {
     m_ground_vin = ground_vin;
     emit ground_vin_changed(m_ground_vin);
