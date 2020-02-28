@@ -63,13 +63,10 @@ void GPIOMicroservice::onSaveGPIO(QList<int> gpio) {
         pins |= (gpio[i] & 1) << i;
     }
 
-    mavlink_message_t msg;
-    mavlink_msg_command_long_pack(255, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID, targetCompID, OPENHD_CMD_SET_GPIOS, 0, pins, 0, 0, 0, 0, 0, 0);
-
-    uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
-    int len = mavlink_msg_to_send_buffer(buffer, &msg);
-
-    sendData((char*)buffer, len);
+    LongMavlinkCommand command;
+    command.command_id = OPENHD_CMD_SET_GPIOS;
+    command.param1 = pins;
+    send_command(command);
 }
 
 
