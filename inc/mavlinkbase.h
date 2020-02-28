@@ -31,6 +31,39 @@ typedef enum MavlinkState {
     MavlinkStateIdle
 } MavlinkState;
 
+class MavlinkCommand  {
+public:
+    bool is_long_cmd = false;
+    uint16_t command_id = 0;
+    uint8_t retry_count = 0;
+};
+
+class LongMavlinkCommand: public MavlinkCommand  {
+public:
+    uint8_t confirmation = 0;
+    float param1 = 0;
+    float param2 = 0;
+    float param3 = 0;
+    float param4 = 0;
+    float param5 = 0;
+    float param6 = 0;
+    float param7 = 0;
+};
+
+class IntMavlinkCommand: public MavlinkCommand  {
+public:
+    uint8_t frame = 0;
+    uint8_t current = 0;
+    uint8_t autocontinue = 0;
+    float param1 = 0;
+    float param2 = 0;
+    float param3 = 0;
+    float param4 = 0;
+    int   param5 = 0;
+    int   param6 = 0;
+    float param7 = 0;
+};
+
 class MavlinkBase: public QObject {
     Q_OBJECT
 
