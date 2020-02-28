@@ -53,6 +53,7 @@ BaseWidget {
         Item {
             width: parent.width
             height: 32
+            visible: false
             Text {
                 id: sizeTitle
                 text: "Size"
