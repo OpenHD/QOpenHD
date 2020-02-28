@@ -49,6 +49,10 @@ void MavlinkBase::onStarted() {
         }
     }
 
+    m_command_timer = new QTimer(this);
+    connect(m_command_timer, &QTimer::timeout, this, &MavlinkBase::commandStateLoop);
+    m_command_timer->start(200);
+
     emit setup();
 }
 
@@ -253,7 +257,24 @@ void MavlinkBase::processData(QByteArray data) {
             uint8_t res = mavlink_parse_char(MAVLINK_COMM_0, (uint8_t)c, &msg, &r_mavlink_status);
 
             if (res) {
-                emit processMavlinkMessage(msg);
+                // process ack messages in the base class, subclasses will receive a signal
+                // to indicate success or failure
+                if (msg.msgid == MAVLINK_MSG_ID_COMMAND_ACK) {
+                    mavlink_command_ack_t ack;
+                    mavlink_msg_command_ack_decode(&msg, &ack);
+                    switch (ack.result) {
+                        case MAV_CMD_ACK_OK: {
+                            m_command_state = MavlinkCommandStateDone;
+                            break;
+                        }
+                        default: {
+                            m_command_state = MavlinkCommandStateFailed;
+                            break;
+                        }
+                    }
+                } else {
+                    emit processMavlinkMessage(msg);
+                }
             }
         }
 }
@@ -262,4 +283,92 @@ void MavlinkBase::processData(QByteArray data) {
 void MavlinkBase::set_last_heartbeat(qint64 last_heartbeat) {
     m_last_heartbeat = last_heartbeat;
     emit last_heartbeat_changed(m_last_heartbeat);
+}
+
+
+/*
+ * This is the entry point for sending mavlink commands to any component, including flight
+ * controllers and microservices.
+ *
+ * We accept a MavlinkCommand subclass with the fields set according to the type of command
+ * being sent, and then we switch the state machine running in commandStateLoop() to the
+ * sending state.
+ *
+ * The state machine then takes care of waiting for a command acknowledgement, and if one
+ * is not received within the timeout, the command is resent up to 5 times.
+ *
+ * Subclasses are responsible for connecting a slot to the commandDone and commandFailed
+ * signals to further handle the result.
+ *
+ */
+void MavlinkBase::send_command(MavlinkCommand command) {
+    m_current_command.reset(new MavlinkCommand(command));
+    m_command_state = MavlinkCommandStateSend;
+}
+
+
+void MavlinkBase::commandStateLoop() {
+    switch (m_command_state) {
+        case MavlinkCommandStateReady: {
+            // do nothing, no command being sent
+            break;
+        }
+        case MavlinkCommandStateSend: {
+            mavlink_message_t msg;
+            m_command_sent_timestamp = QDateTime::currentMSecsSinceEpoch();
+
+            if (m_current_command->is_long_cmd) {
+                auto p = std::static_pointer_cast<LongMavlinkCommand>(m_current_command);
+                mavlink_msg_command_long_pack(255, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID, targetCompID, p->command_id, p->confirmation, p->param1, p->param2, p->param3, p->param4, p->param5, p->param6, p->param7);
+            } else {
+                auto p = std::static_pointer_cast<IntMavlinkCommand>(m_current_command);
+                mavlink_msg_command_int_pack(255, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID, targetCompID, p->frame, p->command_id, p->current, p->autocontinue, p->param1, p->param2, p->param3, p->param4, p->param5, p->param6, p->param7);
+            }
+            uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
+            int len = mavlink_msg_to_send_buffer(buffer, &msg);
+
+            sendData((char*)buffer, len);
+
+            // now wait for ack
+            m_command_state = MavlinkCommandStateWaitACK;
+
+            break;
+        }
+        case MavlinkCommandStateWaitACK: {
+            qint64 current_timestamp = QDateTime::currentMSecsSinceEpoch();
+            auto elapsed = current_timestamp - m_command_sent_timestamp;
+
+            if (elapsed > 200) {
+                // no ack in 200ms, cancel or resend
+                if (m_current_command->retry_count >= 5) {
+                    m_command_state = MavlinkCommandStateFailed;
+                    m_current_command.reset();
+                    return;
+                }
+                m_current_command->retry_count = m_current_command->retry_count + 1;
+                if (m_current_command->is_long_cmd) {
+                    // incremement the confirmation parameter according to the Mavlink command
+                    // documentation
+                    auto p = std::static_pointer_cast<LongMavlinkCommand>(m_current_command);
+                    p->confirmation = p->confirmation + 1;
+                } else {
+                    auto p = std::static_pointer_cast<IntMavlinkCommand>(m_current_command);
+                }
+                m_command_state = MavlinkCommandStateSend;
+            }
+            break;
+        }
+        case MavlinkCommandStateDone: {
+            m_current_command.reset();
+            emit commandDone();
+            m_command_state = MavlinkCommandStateReady;
+            break;
+        }
+        case MavlinkCommandStateFailed: {
+            m_current_command.reset();
+            emit commandFailed();
+            m_command_state = MavlinkCommandStateReady;
+            break;
+        }
+    }
 }

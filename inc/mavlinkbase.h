@@ -31,6 +31,14 @@ typedef enum MavlinkState {
     MavlinkStateIdle
 } MavlinkState;
 
+typedef enum MavlinkCommandState {
+    MavlinkCommandStateReady,
+    MavlinkCommandStateSend,
+    MavlinkCommandStateWaitACK,
+    MavlinkCommandStateDone,
+    MavlinkCommandStateFailed
+} MavlinkCommandState;
+
 class MavlinkCommand  {
 public:
     bool is_long_cmd = false;
@@ -97,6 +105,9 @@ signals:
     void loadingChanged(bool loading);
     void savingChanged(bool saving);
 
+    void commandDone();
+    void commandFailed();
+
 public slots:
     void onStarted();
 
@@ -110,16 +121,19 @@ protected slots:
 
 protected:
     void stateLoop();
+    void commandStateLoop();
     bool isConnectionLost();
     void resetParamVars();
     void processData(QByteArray data);
     void sendData(char* data, int len);
+    void send_command(MavlinkCommand command);
 
     void reconnectTCP();
 
     QVariantMap m_allParameters;
 
     MavlinkState state = MavlinkStateDisconnected;
+    MavlinkCommandState m_command_state = MavlinkCommandStateReady;
 
     uint16_t parameterCount = 0;
     uint16_t parameterIndex = 0;
@@ -151,10 +165,14 @@ protected:
     qint64 last_heartbeat_timestamp = 0;
 
     QTimer* timer = nullptr;
+    QTimer* m_command_timer = nullptr;
     QTimer* tcpReconnectTimer = nullptr;
 
     uint64_t m_last_boot = 0;
 
+    uint64_t m_command_sent_timestamp = 0;
+
+    std::shared_ptr<MavlinkCommand> m_current_command;
 };
 
 #endif
