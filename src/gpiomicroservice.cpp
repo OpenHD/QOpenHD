@@ -50,6 +50,10 @@ void GPIOMicroservice::onSetup() {
     qDebug() << "GPIOMicroservice::onSetup()";
 
     connect(this, &GPIOMicroservice::processMavlinkMessage, this, &GPIOMicroservice::onProcessMavlinkMessage);
+
+    connect(this, &MavlinkBase::commandDone, this, &GPIOMicroservice::onCommandDone);
+    connect(this, &MavlinkBase::commandFailed, this, &GPIOMicroservice::onCommandFailed);
+
 }
 
 
@@ -86,8 +90,24 @@ void GPIOMicroservice::onProcessMavlinkMessage(mavlink_message_t msg) {
             uint32_t time_boot_ms = sys_time.time_boot_ms;
 
             uint64_t boot_time = time_unix_usec - time_boot_ms;
+            // if the boot time of the service at the other end of the link has changed,
+            // we need to re-fetch the GPIO state
             if (boot_time != m_last_boot) {
                 m_last_boot = boot_time;
+                switch (m_target) {
+                    case MicroserviceTargetNone:
+                        break;
+                    case MicroserviceTargetAir:
+                        OpenHD::instance()->set_air_gpio_busy(true);
+                        break;
+                    case MicroserviceTargetGround:
+                        OpenHD::instance()->set_air_gpio_busy(true);
+                        break;
+                }
+
+                LongMavlinkCommand command;
+                command.command_id = OPENHD_CMD_GET_GPIOS;
+                send_command(command);
             }
 
             break;
@@ -125,3 +145,29 @@ void GPIOMicroservice::onProcessMavlinkMessage(mavlink_message_t msg) {
     }
 }
 
+void GPIOMicroservice::onCommandDone() {
+    switch (m_target) {
+        case MicroserviceTargetNone:
+            break;
+        case MicroserviceTargetAir:
+            OpenHD::instance()->set_air_gpio_busy(false);
+            break;
+        case MicroserviceTargetGround:
+            OpenHD::instance()->set_air_gpio_busy(false);
+            break;
+    }
+}
+
+void GPIOMicroservice::onCommandFailed() {
+    switch (m_target) {
+        case MicroserviceTargetNone:
+            break;
+        case MicroserviceTargetAir:
+            OpenHD::instance()->set_air_gpio_busy(false);
+            break;
+        case MicroserviceTargetGround:
+            OpenHD::instance()->set_air_gpio_busy(false);
+            break;
+    }
+    m_last_boot = 0;
+}

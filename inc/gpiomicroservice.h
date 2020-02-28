@@ -30,6 +30,9 @@ public slots:
 private slots:
     void onProcessMavlinkMessage(mavlink_message_t msg);
 
+    void onCommandDone();
+    void onCommandFailed();
+
 private:
     MicroserviceTarget m_target;
 };
