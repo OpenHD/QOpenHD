@@ -89,6 +89,8 @@ public:
 
     Q_INVOKABLE void fetchParameters();
 
+    void sendHeartbeat();
+
 
     Q_PROPERTY(qint64 last_heartbeat MEMBER m_last_heartbeat WRITE set_last_heartbeat NOTIFY last_heartbeat_changed)
     void set_last_heartbeat(qint64 last_heartbeat);
@@ -165,6 +167,8 @@ protected:
     qint64 last_heartbeat_timestamp = 0;
 
     QTimer* timer = nullptr;
+    QTimer* m_heartbeat_timer = nullptr;
+
     QTimer* m_command_timer = nullptr;
     QTimer* tcpReconnectTimer = nullptr;
 

@@ -53,6 +53,11 @@ void MavlinkBase::onStarted() {
     connect(m_command_timer, &QTimer::timeout, this, &MavlinkBase::commandStateLoop);
     m_command_timer->start(200);
 
+
+    m_heartbeat_timer = new QTimer(this);
+    connect(m_heartbeat_timer, &QTimer::timeout, this, &MavlinkBase::sendHeartbeat);
+    m_heartbeat_timer->start(5000);
+
     emit setup();
 }
 
@@ -135,6 +140,19 @@ void MavlinkBase::fetchParameters() {
     qDebug() << "MavlinkBase::fetchParameters()";
     mavlink_message_t msg;
     mavlink_msg_param_request_list_pack(255, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID, targetCompID);
+
+    uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
+    int len = mavlink_msg_to_send_buffer(buffer, &msg);
+
+    sendData((char*)buffer, len);
+}
+
+
+void MavlinkBase::sendHeartbeat() {
+    qDebug() << "MavlinkBase::sendHeartbeat()";
+    mavlink_message_t msg;
+
+    mavlink_msg_heartbeat_pack(255, MAV_COMP_ID_MISSIONPLANNER, &msg, MAV_TYPE_GCS, MAV_AUTOPILOT_GENERIC, 0, 0, 0);
 
     uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
     int len = mavlink_msg_to_send_buffer(buffer, &msg);
