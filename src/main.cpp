@@ -178,12 +178,26 @@ engine.rootContext()->setContextProperty("EnableGStreamer", QVariant(true));
 engine.rootContext()->setContextProperty("EnableGStreamer", QVariant(false));
 #endif
 
+    auto openHDSettings = new OpenHDSettings();
+    engine.rootContext()->setContextProperty("openHDSettings", openHDSettings);
+
+
+    auto openHDRC = new OpenHDRC();
+    QObject::connect(openHDSettings, &OpenHDSettings::groundStationIPUpdated, openHDRC, &OpenHDRC::setGroundIP, Qt::QueuedConnection);
+    engine.rootContext()->setContextProperty("openHDRC", openHDRC);
+
+
+    auto link = new QOpenHDLink();
+    QObject::connect(openHDSettings, &OpenHDSettings::groundStationIPUpdated, link, &QOpenHDLink::setGroundIP, Qt::QueuedConnection);
+    engine.rootContext()->setContextProperty("link", link);
+
 
     auto mavlinkTelemetry = MavlinkTelemetry::instance();
     engine.rootContext()->setContextProperty("MavlinkTelemetry", mavlinkTelemetry);
     QThread *mavlinkThread = new QThread();
     QObject::connect(mavlinkThread, &QThread::started, mavlinkTelemetry, &MavlinkTelemetry::onStarted);
     mavlinkTelemetry->moveToThread(mavlinkThread);
+    QObject::connect(openHDSettings, &OpenHDSettings::groundStationIPUpdated, mavlinkTelemetry, &MavlinkTelemetry::setGroundIP, Qt::QueuedConnection);
     mavlinkThread->start();
 
 
@@ -199,6 +213,7 @@ engine.rootContext()->setContextProperty("EnableGStreamer", QVariant(false));
     QThread *airGPIOThread = new QThread();
     QObject::connect(airGPIOThread, &QThread::started, airGPIOMicroservice, &GPIOMicroservice::onStarted);
     airGPIOMicroservice->moveToThread(airGPIOThread);
+    QObject::connect(openHDSettings, &OpenHDSettings::groundStationIPUpdated, airGPIOMicroservice, &GPIOMicroservice::setGroundIP, Qt::QueuedConnection);
     airGPIOThread->start();
 
     auto groundPowerMicroservice = new PowerMicroservice(nullptr, MicroserviceTargetGround, MavlinkTypeTCP);
@@ -206,6 +221,7 @@ engine.rootContext()->setContextProperty("EnableGStreamer", QVariant(false));
     QThread *groundPowerThread = new QThread();
     QObject::connect(groundPowerThread, &QThread::started, groundPowerMicroservice, &PowerMicroservice::onStarted);
     groundPowerMicroservice->moveToThread(groundPowerThread);
+    QObject::connect(openHDSettings, &OpenHDSettings::groundStationIPUpdated, groundPowerMicroservice, &PowerMicroservice::setGroundIP, Qt::QueuedConnection);
     groundPowerThread->start();
 
     engine.rootContext()->setContextProperty("OpenHD", openhd);

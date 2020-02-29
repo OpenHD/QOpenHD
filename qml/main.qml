@@ -144,29 +144,6 @@ ApplicationWindow {
         property bool show_gpio: false
     }
 
-    OpenHDRC {
-        id: openHDRC
-    }
-
-    QOpenHDLink {
-        id: link
-    }
-
-    OpenHDSettings {
-        id: openHDSettings
-    }
-
-    Connections {
-        target: openHDSettings
-        onGroundStationIPUpdated: {
-            link.setGroundIP(address)
-            openHDRC.setGroundIP(address)
-            MavlinkTelemetry.setGroundIP(address)
-            AirGPIOMicroservice.setGroundIP(address)
-            GroundPowerMicroservice.setGroundIP(address)
-        }
-    }
-
     //FrSkyTelemetry {
     //    id: frskyTelemetry
     //}
