@@ -83,10 +83,8 @@ void GPIOMicroservice::onProcessMavlinkMessage(mavlink_message_t msg) {
         case MAVLINK_MSG_ID_SYSTEM_TIME:{
             mavlink_system_time_t sys_time;
             mavlink_msg_system_time_decode(&msg, &sys_time);
-            uint64_t time_unix_usec = sys_time.time_unix_usec;
-            uint32_t time_boot_ms = sys_time.time_boot_ms;
+            uint32_t boot_time = sys_time.time_boot_ms;
 
-            uint64_t boot_time = time_unix_usec - time_boot_ms;
             // if the boot time of the service at the other end of the link has changed,
             // we need to re-fetch the GPIO state
             if (boot_time != m_last_boot) {
