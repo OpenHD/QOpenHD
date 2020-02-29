@@ -150,7 +150,7 @@ protected:
     quint8 targetCompID;
     quint16 localPort = 14550;
 
-    QString groundAddress = "192.168.2.1";
+    QString groundAddress;
     quint16 groundUDPPort = 14550;
     quint16 groundTCPPort = 5761;
 
