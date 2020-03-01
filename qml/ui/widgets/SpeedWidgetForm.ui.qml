@@ -58,6 +58,36 @@ BaseWidget {
             width: parent.width
             height: 32
             Text {
+                id: sizeTitle
+                text: "Size"
+                color: "white"
+                height: parent.height
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
+            Slider {
+                id: speed_size_Slider
+                orientation: Qt.Horizontal
+                from: .7
+                value: settings.speed_size
+                to: 3
+                stepSize: .1
+                height: parent.height
+                anchors.rightMargin: 0
+                anchors.right: parent.right
+                width: parent.width - 96
+
+                onValueChanged: {
+                    settings.speed_size = speed_size_Slider.value
+                }
+            }
+        }
+        Item {
+            width: parent.width
+            height: 32
+            Text {
                 text: "Airspeed (off) / GPS (on)"
                 horizontalAlignment: Text.AlignRight
                 color: "white"
@@ -96,6 +126,7 @@ BaseWidget {
             id: speed_text
             color: settings.color_text
             opacity: settings.speed_opacity
+            transform: Scale { origin.x: 12; origin.y: 12; xScale: settings.speed_size ; yScale: settings.speed_size}
             text: Number(
                       settings.speed_airspeed_gps ? OpenHD.airspeed : OpenHD.speed).toLocaleString(
                       Qt.locale(), 'f', 0)
@@ -108,6 +139,7 @@ BaseWidget {
             anchors.fill: parent
             rotation: 180
             opacity: settings.speed_opacity
+            transform: Scale { origin.x: 12; origin.y: 12; xScale: settings.speed_size ; yScale: settings.speed_size}
             ShapePath {
                 strokeColor: settings.color_shape
                 strokeWidth: 1

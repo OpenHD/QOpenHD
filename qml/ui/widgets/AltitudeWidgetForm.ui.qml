@@ -59,6 +59,36 @@ BaseWidget {
             width: parent.width
             height: 32
             Text {
+                id: sizeTitle
+                text: "Size"
+                color: "white"
+                height: parent.height
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
+            Slider {
+                id: altitude_size_Slider
+                orientation: Qt.Horizontal
+                from: .7
+                value: settings.altitude_size
+                to: 3
+                stepSize: .1
+                height: parent.height
+                anchors.rightMargin: 0
+                anchors.right: parent.right
+                width: parent.width - 96
+
+                onValueChanged: {
+                    settings.altitude_size = altitude_size_Slider.value
+                }
+            }
+        }
+        Item {
+            width: parent.width
+            height: 32
+            Text {
                 text: "Relative (off) / MSL (on)"
                 color: "white"
                 height: parent.height
@@ -95,6 +125,7 @@ BaseWidget {
             id: alt_text
             color: settings.color_text
             opacity: settings.altitude_opacity
+            transform: Scale { origin.x: 12; origin.y: 12; xScale: settings.altitude_size ; yScale: settings.altitude_size}
             text: Number(
                       settings.altitude_rel_msl ? OpenHD.alt_msl : OpenHD.alt_rel).toLocaleString(
                       Qt.locale(), 'f', 0)
@@ -107,6 +138,7 @@ BaseWidget {
             id: outline
             anchors.fill: parent
             opacity: settings.altitude_opacity
+            transform: Scale { origin.x: 12; origin.y: 12; xScale: settings.altitude_size ; yScale: settings.altitude_size}
             ShapePath {
                 strokeColor: settings.color_shape               
                 strokeWidth: 1
