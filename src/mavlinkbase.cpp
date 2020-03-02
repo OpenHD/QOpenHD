@@ -73,9 +73,6 @@ void MavlinkBase::reconnectTCP() {
     if (groundAddress.isEmpty()) {
         return;
     }
-    if (((QTcpSocket*)mavlinkSocket)->state() == QAbstractSocket::ConnectedState) {
-        ((QTcpSocket*)mavlinkSocket)->disconnectFromHost();
-    }
 
     if (((QTcpSocket*)mavlinkSocket)->state() == QAbstractSocket::UnconnectedState) {
         ((QTcpSocket*)mavlinkSocket)->connectToHost(groundAddress, groundTCPPort);
@@ -93,7 +90,9 @@ void MavlinkBase::setGroundIP(QString address) {
     if (reconnect) {
         switch (m_mavlink_type) {
             case MavlinkTypeTCP: {
-                reconnectTCP();
+                if (((QTcpSocket*)mavlinkSocket)->state() == QAbstractSocket::ConnectedState) {
+                    ((QTcpSocket*)mavlinkSocket)->disconnectFromHost();
+                }
                 break;
             }
             default: {
