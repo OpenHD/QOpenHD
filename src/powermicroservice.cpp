@@ -47,14 +47,14 @@ void PowerMicroservice::onSetup() {
 
 
 void PowerMicroservice::onShutdown() {
-    LongMavlinkCommand command;
+    MavlinkCommand command(true);
     command.command_id = OPENHD_CMD_POWER_SHUTDOWN;
     send_command(command);
 }
 
 
 void PowerMicroservice::onReboot() {
-    LongMavlinkCommand command;
+    MavlinkCommand command(true);
     command.command_id = OPENHD_CMD_POWER_REBOOT;
     send_command(command);
 }
