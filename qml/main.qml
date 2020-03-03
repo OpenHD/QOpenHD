@@ -140,6 +140,7 @@ ApplicationWindow {
 
         property bool show_map: false
         property int map_small_zoom: 18
+        property double map_opacity: 1
 
         property bool show_throttle: true
         property double throttle_opacity: 1

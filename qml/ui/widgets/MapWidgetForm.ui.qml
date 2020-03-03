@@ -64,7 +64,36 @@ BaseWidget {
                 }
             }
         }
+        Item {
+            width: parent.width
+            height: 32
+            Text {
+                id: opacityTitle
+                text: "Opacity"
+                color: "white"
+                height: parent.height
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
+            Slider {
+                id: map_opacity_Slider
+                orientation: Qt.Horizontal
+                from: .1
+                value: settings.map_opacity
+                to: 1
+                stepSize: .1
+                height: parent.height
+                anchors.rightMargin: 0
+                anchors.right: parent.right
+                width: parent.width - 96
 
+                onValueChanged: {
+                    settings.map_opacity = map_opacity_Slider.value
+                }
+            }
+        }
         Item {
             width: parent.width
             height: 32
@@ -302,14 +331,20 @@ BaseWidget {
         id: widgetInner
         anchors.fill: parent
 
+opacity: settings.map_opacity
+
         Plugin {
-            id: mapPlugin
-            name: "osm" // "mapboxgl", "esri", ...
-            // specify plugin parameters if necessary
-            // PluginParameter {
-            //     name:
-            //     value:
-            // }
+            id: mapPlugin 
+            name: "osm"
+
+            PluginParameter {
+                name: "osm.mapping.custom.host"
+                value: "qrc:/YourTileDir/"
+            }
+            PluginParameter {
+                name: "osm.mapping.providersrepository.disabled"
+                value: true
+            }
         }
 
         Map {
@@ -317,11 +352,23 @@ BaseWidget {
             anchors.fill: parent
             plugin: mapPlugin
             id: mapsmall
-            //  zoomLevel: 18
-            gesture.enabled: false
 
-            //  activeMapType: MapType.SatelliteMapDay
+            gesture.enabled: false
             bearing: OpenHD.hdg
+
+            PositionSource {
+                id: positionSource
+                updateInterval: 5000
+                active: true
+
+                onPositionChanged: {
+                    if (OpenHD.lat == 0.0 && OpenHD.lon == 0.0){
+                        var coord = positionSource.position.coordinate;
+                        OpenHD.lat= coord.latitude;
+                        OpenHD.lon= coord.longitude;
+                    }
+                }
+            }
 
             center {
                 latitude: OpenHD.lat
