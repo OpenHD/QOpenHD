@@ -358,7 +358,7 @@ opacity: settings.map_opacity
 
             PositionSource {
                 id: positionSource
-                updateInterval: 5000
+                updateInterval: 10000
                 active: true
 
                 onPositionChanged: {
