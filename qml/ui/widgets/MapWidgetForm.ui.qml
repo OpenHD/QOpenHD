@@ -97,6 +97,27 @@ BaseWidget {
         Item {
             width: parent.width
             height: 32
+            Text {
+                text: "Orient to Drone / North"
+                color: "white"
+                height: parent.height
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
+            Switch {
+                width: 32
+                height: parent.height
+                anchors.rightMargin: 12
+                anchors.right: parent.right
+                checked: settings.map_orientation
+                onCheckedChanged: settings.map_orientation = checked
+            }
+        }
+        Item {
+            width: parent.width
+            height: 32
 
             Text {
                 id: baseMapTitle
@@ -354,7 +375,7 @@ opacity: settings.map_opacity
             id: mapsmall
 
             gesture.enabled: false
-            bearing: OpenHD.hdg
+            bearing: settings.map_orientation ? 360 : OpenHD.hdg
 
             PositionSource {
                 id: positionSource
