@@ -14,6 +14,20 @@ import OpenHD 1.0
 
 BaseWidget {
     id: mapWidget
+
+    property string hostingKey: "Mcduh8eccczGrChh4JqP"
+
+    Plugin {
+        id: mapPlugin
+        name: "mapboxgl"
+
+        PluginParameter {
+            name: "mapboxgl.mapping.additional_style_urls"
+            value: "https://maps.tilehosting.com/styles/streets/style.json?key="
+                   + hostingKey
+        }
+    }
+
     width: 200
     height: 135
 
@@ -172,20 +186,12 @@ BaseWidget {
 
         visible: false
 
-        Plugin {
-            id: mapPluginLarge
-            name: "osm" // "osm" , "mapboxgl", "esri", ...
-
-            //   PluginParameter { name: "here.app_id"; value: "****" }
-            //   PluginParameter { name: "here.token"; value: "*****" }
-        }
-
         Map {
-            anchors.fill: parent
-            copyrightsVisible: false
             id: maplarge
-            plugin: mapPluginLarge
-            zoomLevel: 18
+            anchors.fill: parent
+            copyrightsVisible: false           
+            plugin: mapPlugin
+            zoomLevel: 15
             // Enable pan, flick, and pinch gestures to zoom in and out
             gesture.enabled: true
             gesture.acceptedGestures: MapGestureArea.PanGesture | MapGestureArea.FlickGesture
@@ -193,7 +199,8 @@ BaseWidget {
                                       | MapGestureArea.RotationGesture | MapGestureArea.TiltGesture
             gesture.flickDeceleration: 3000
 
-            activeMapType: MapType.SatelliteMapDay
+          //  activeMapType: MapType.SatelliteMapDay
+
             center {
                 latitude: followDrone ? OpenHD.lat : 9000
                 longitude: followDrone ? OpenHD.lon : 9000
@@ -351,28 +358,13 @@ BaseWidget {
     Item {
         id: widgetInner
         anchors.fill: parent
-
-opacity: settings.map_opacity
-
-        Plugin {
-            id: mapPlugin 
-            name: "osm"
-
-            PluginParameter {
-                name: "osm.mapping.custom.host"
-                value: "qrc:/YourTileDir/"
-            }
-            PluginParameter {
-                name: "osm.mapping.providersrepository.disabled"
-                value: true
-            }
-        }
+        opacity: settings.map_opacity
 
         Map {
+            id: mapsmall
             copyrightsVisible: false
             anchors.fill: parent
             plugin: mapPlugin
-            id: mapsmall
 
             gesture.enabled: false
             bearing: settings.map_orientation ? 360 : OpenHD.hdg
