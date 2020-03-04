@@ -104,7 +104,7 @@ BaseWidget {
             }
 
             transform: Rotation {
-                origin.x: 12;
+                origin.x: 32;
                 origin.y: 12;
                 angle: settings.arrow_invert ? OpenHD.home_course-180 : OpenHD.home_course
             }
