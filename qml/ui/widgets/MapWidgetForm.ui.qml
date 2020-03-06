@@ -26,6 +26,13 @@ BaseWidget {
             value: "https://maps.tilehosting.com/styles/streets/style.json?key="
                    + hostingKey
         }
+
+        PluginParameter {
+            name: "mapboxgl.mapping.cache.size"
+            value: "500000"
+        }
+
+
     }
 
     width: 200
@@ -127,6 +134,27 @@ BaseWidget {
                 anchors.right: parent.right
                 checked: settings.map_orientation
                 onCheckedChanged: settings.map_orientation = checked
+            }
+        }
+        Item {
+            width: parent.width
+            height: 32
+            Text {
+                text: "Map shape Square / Round"
+                color: "white"
+                height: parent.height
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
+            Switch {
+                width: 32
+                height: parent.height
+                anchors.rightMargin: 12
+                anchors.right: parent.right
+                checked: settings.map_shape_circle
+                onCheckedChanged: settings.map_shape_circle = checked
             }
         }
         Item {
@@ -358,7 +386,7 @@ BaseWidget {
     Item {
         id: widgetInner
         anchors.fill: parent
-        opacity: settings.map_opacity
+        opacity: settings.map_shape_circle ? 0 : settings.map_opacity
 
         Map {
             id: mapsmall
@@ -431,7 +459,6 @@ BaseWidget {
                 height: 32
 
                 flat: true
-
                 checkable: false
 
                 //     display: AbstractButton.IconOnly
@@ -449,5 +476,26 @@ BaseWidget {
                 }
             }
         }
+    }
+
+    Item {
+        id: mask
+        anchors.fill: widgetInner
+        visible: false
+
+        Rectangle {
+            anchors.centerIn: parent
+            width: parent.width<parent.height?parent.width:parent.height
+            height: width
+            color: "red"
+            radius: width*0.5
+        }
+    }
+
+    OpacityMask {
+        anchors.fill: widgetInner
+        source: widgetInner
+        maskSource: mask
+        opacity: settings.map_shape_circle ? settings.map_opacity : 0
     }
 }
