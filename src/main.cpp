@@ -38,10 +38,16 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 
 #include "openhdvideostream.h"
 
-#else
-
-
 #endif
+
+#if defined(ENABLE_VIDEO_RENDER)
+#include "openhdvideo.h"
+#if defined(__rasp_pi__)
+#include "openhdmmalvideo.h"
+#include "openhdmmalrender.h"
+#endif
+#endif
+
 #include "util.h"
 
 #if defined(ENABLE_GSTREAMER)
@@ -125,6 +131,12 @@ int main(int argc, char *argv[]) {
 
     qmlRegisterType<QOpenHDLink>("OpenHD", 1,0, "QOpenHDLink");
 
+#if defined(ENABLE_VIDEO_RENDER)
+#if defined(__rasp_pi__)
+    qmlRegisterType<OpenHDMMALVideo>("OpenHD", 1, 0, "OpenHDMMALVideo");
+    qmlRegisterType<OpenHDMMALRender>("OpenHD", 1, 0, "OpenHDMMALRender");
+#endif
+#endif
 
     QQmlApplicationEngine engine;
 
@@ -168,14 +180,28 @@ int main(int argc, char *argv[]) {
 
 #if defined(ENABLE_GSTREAMER)
 engine.rootContext()->setContextProperty("EnableGStreamer", QVariant(true));
+engine.rootContext()->setContextProperty("EnableVideoRender", QVariant(false));
 #if defined(ENABLE_MAIN_VIDEO)
     OpenHDVideoStream* mainVideo = new OpenHDVideoStream(argc, argv);
 #endif
 #if defined(ENABLE_PIP)
     OpenHDVideoStream* pipVideo = new OpenHDVideoStream(argc, argv);
 #endif
-#else
+#endif
+
+#if defined(ENABLE_VIDEO_RENDER)
 engine.rootContext()->setContextProperty("EnableGStreamer", QVariant(false));
+engine.rootContext()->setContextProperty("EnableVideoRender", QVariant(true));
+
+#if defined(__rasp_pi__)
+#if defined(ENABLE_MAIN_VIDEO)
+OpenHDMMALVideo *mainVideo = new OpenHDMMALVideo(OpenHDStreamTypeMain);
+#endif
+#if defined(ENABLE_PIP)
+OpenHDMMALVideo *pipVideo = new OpenHDMMALVideo(OpenHDStreamTypePiP);
+#endif
+#endif
+
 #endif
 
     auto openHDSettings = new OpenHDSettings();
@@ -229,18 +255,14 @@ engine.rootContext()->setContextProperty("EnableGStreamer", QVariant(false));
 
 #if defined(ENABLE_MAIN_VIDEO)
     engine.rootContext()->setContextProperty("EnableMainVideo", QVariant(true));
-    #if defined(ENABLE_GSTREAMER)
     engine.rootContext()->setContextProperty("MainStream", mainVideo);
-    #endif
 #else
     engine.rootContext()->setContextProperty("EnableMainVideo", QVariant(false));
 #endif
 
 #if defined(ENABLE_PIP)
     engine.rootContext()->setContextProperty("EnablePiP", QVariant(true));
-    #if defined(ENABLE_GSTREAMER)
     engine.rootContext()->setContextProperty("PiPStream", pipVideo);
-    #endif
 #else
     engine.rootContext()->setContextProperty("EnablePiP", QVariant(false));
 #endif
@@ -291,12 +313,46 @@ engine.rootContext()->setContextProperty("EnableGStreamer", QVariant(false));
     pipVideo->init(&engine, StreamTypePiP);
     pipVideo->startVideo();
 #endif
-#else
+#endif
+
+#if defined(ENABLE_VIDEO_RENDER)
+    auto rootObjects = engine.rootObjects();
+    QQuickWindow *rootObject = static_cast<QQuickWindow *>(rootObjects.first());
+    QThread *mainVideoThread = new QThread();
+    mainVideoThread->setObjectName("mainVideoThread");
+    QThread *pipVideoThread = new QThread();
+    pipVideoThread->setObjectName("pipVideoThread");
+
+
+#if defined(__rasp_pi__)
+#if defined(ENABLE_MAIN_VIDEO)
+    QQuickItem *mainRenderer = rootObject->findChild<QQuickItem *>("mainMMALSurface");
+    mainVideo->setVideoOut((OpenHDMMALRender*)mainRenderer);
+    QObject::connect(mainVideoThread, &QThread::started, mainVideo, &OpenHDMMALVideo::onStarted);
+#endif
+
+#if defined(ENABLE_PIP)
+    QQuickItem *pipRenderer = rootObject->findChild<QQuickItem *>("pipMMALSurface");
+    pipVideo->setVideoOut((OpenHDMMALRender*)pipRenderer);
+    QObject::connect(pipVideoThread, &QThread::started, pipVideo, &OpenHDMMALVideo::onStarted);
+#endif
+#endif
+
+#if defined(ENABLE_MAIN_VIDEO)
+    mainVideo->moveToThread(mainVideoThread);
+    mainVideoThread->start();
+#endif
+
+#if defined(ENABLE_PIP)
+    pipVideo->moveToThread(pipVideoThread);
+    pipVideoThread->start();
+#endif
+
 #endif
 
     const int retval = app.exec();
 
-#if defined(ENABLE_GSTREAMER)
+#if defined(ENABLE_GSTREAMER) || defined(ENABLE_VIDEO_RENDER)
 #if defined(ENABLE_MAIN_VIDEO)
     mainVideo->stopVideo();
 #endif

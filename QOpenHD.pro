@@ -241,6 +241,21 @@ RaspberryPiBuild {
     CONFIG += EnablePiP
     CONFIG += EnableLink
     #CONFIG += EnableCharts
+
+    CONFIG += EnableVideoRender
+
+    EnableVideoRender {
+        LIBS += -L/usr/lib/arm-linux-gnueabihf -L/opt/vc/lib/ -lbcm_host -lmmal -lmmal_util -lmmal_components -lmmal_core -lmmal_vc_client -lvcos -lvcsm -lvchostif -lvchiq_arm
+        QT += multimedia
+
+        INCLUDEPATH += /opt/vc/include
+
+        HEADERS += \
+            inc/openhdmmalvideo.h
+
+        SOURCES += \
+            src/openhdmmalvideo.cpp
+    }
 }
 
 WindowsBuild {
@@ -309,6 +324,20 @@ EnableGStreamer {
         inc/openhdvideostream.h
 
     include ($$PWD/lib/VideoStreaming/VideoStreaming.pri)
+}
+
+EnableVideoRender {
+    message("EnableVideoRender")
+
+    DEFINES += ENABLE_VIDEO_RENDER
+
+    HEADERS += \
+        inc/openhdvideo.h \
+        inc/openhdmmalrender.h
+
+    SOURCES += \
+        src/openhdvideo.cpp \
+        src/openhdmmalrender.cpp
 }
 
 EnablePiP {

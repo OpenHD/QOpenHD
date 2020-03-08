@@ -8,6 +8,11 @@ Loader {
             return "VideoWidgetForm.ui.qml"
         }
 
+
+        if (IsRaspPi && EnableVideoRender && EnablePiP) {
+            return "VideoWidgetMMALForm.ui.qml"
+        }
+
         return ""
     }
     property bool isRunning: OpenHD.pip_video_running
