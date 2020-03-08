@@ -47,7 +47,8 @@ BaseWidget {
 
     widgetIdentifier: "map_widget"
 
-    hasWidgetDetail: true
+    // false so that detail is triggered by button
+    hasWidgetDetail: false
     widgetDetailWidth: 420
     widgetDetailHeight: 200
 
@@ -432,6 +433,13 @@ BaseWidget {
                 }
             }
 
+            MouseArea {
+                anchors.fill: parent
+                onClicked: {
+                    map_popup.open()
+                }
+            }
+
             center {
                 latitude: OpenHD.lat
                 longitude: OpenHD.lon
@@ -480,10 +488,10 @@ BaseWidget {
 
 
                         startX: 0; startY: 0 //tip
-                        PathLine { x: 10;                 y: 17  }//right bottom
-                        PathLine { x: 0;                 y: 13  }//middle bottom
-                        PathLine { x: -10;                 y: 17  }//left bottom
-                        PathLine { x: 0;                 y: 0 }//back to start
+                        PathLine { x: 10;               y: 17  }//right bottom
+                        PathLine { x: 0;                y: 13  }//middle bottom
+                        PathLine { x: -10;              y: 17  }//left bottom
+                        PathLine { x: 0;                y: 0 }//back to start
                     }
                     transform: Rotation {
                         origin.x: 0;
@@ -494,7 +502,7 @@ BaseWidget {
             }
 
             Button {
-                id: resize
+                id: showDetail
 
                 width: 32
                 height: 32
@@ -510,13 +518,13 @@ BaseWidget {
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.verticalCenter: parent.verticalCenter
                     font.family: "Font Awesome 5 Free"
-                    color: "black"
-                    text: "\uf065"
+                    color: "darkGrey"
+                    text: "\uf013"
                     font.pixelSize: 16
                 }
 
                 onClicked: {
-                    map_popup.open()
+                    widgetDetail.open()
                 }
             }
         }
