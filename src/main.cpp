@@ -38,10 +38,12 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 
 #include "openhdvideostream.h"
 
-#else
-
-
 #endif
+
+#if defined(ENABLE_VIDEO_RENDER)
+#include "openhdvideo.h"
+#endif
+
 #include "util.h"
 
 #if defined(ENABLE_GSTREAMER)
@@ -168,14 +170,19 @@ int main(int argc, char *argv[]) {
 
 #if defined(ENABLE_GSTREAMER)
 engine.rootContext()->setContextProperty("EnableGStreamer", QVariant(true));
+engine.rootContext()->setContextProperty("EnableVideoRender", QVariant(false));
 #if defined(ENABLE_MAIN_VIDEO)
     OpenHDVideoStream* mainVideo = new OpenHDVideoStream(argc, argv);
 #endif
 #if defined(ENABLE_PIP)
     OpenHDVideoStream* pipVideo = new OpenHDVideoStream(argc, argv);
 #endif
-#else
+#endif
+
+#if defined(ENABLE_VIDEO_RENDER)
 engine.rootContext()->setContextProperty("EnableGStreamer", QVariant(false));
+engine.rootContext()->setContextProperty("EnableVideoRender", QVariant(true));
+
 #endif
 
     auto openHDSettings = new OpenHDSettings();
@@ -229,18 +236,14 @@ engine.rootContext()->setContextProperty("EnableGStreamer", QVariant(false));
 
 #if defined(ENABLE_MAIN_VIDEO)
     engine.rootContext()->setContextProperty("EnableMainVideo", QVariant(true));
-    #if defined(ENABLE_GSTREAMER)
     engine.rootContext()->setContextProperty("MainStream", mainVideo);
-    #endif
 #else
     engine.rootContext()->setContextProperty("EnableMainVideo", QVariant(false));
 #endif
 
 #if defined(ENABLE_PIP)
     engine.rootContext()->setContextProperty("EnablePiP", QVariant(true));
-    #if defined(ENABLE_GSTREAMER)
     engine.rootContext()->setContextProperty("PiPStream", pipVideo);
-    #endif
 #else
     engine.rootContext()->setContextProperty("EnablePiP", QVariant(false));
 #endif
@@ -291,12 +294,32 @@ engine.rootContext()->setContextProperty("EnableGStreamer", QVariant(false));
     pipVideo->init(&engine, StreamTypePiP);
     pipVideo->startVideo();
 #endif
-#else
+#endif
+
+#if defined(ENABLE_VIDEO_RENDER)
+    auto rootObjects = engine.rootObjects();
+    QQuickWindow *rootObject = static_cast<QQuickWindow *>(rootObjects.first());
+    QThread *mainVideoThread = new QThread();
+    mainVideoThread->setObjectName("mainVideoThread");
+    QThread *pipVideoThread = new QThread();
+    pipVideoThread->setObjectName("pipVideoThread");
+
+
+#if defined(ENABLE_MAIN_VIDEO)
+    mainVideo->moveToThread(mainVideoThread);
+    mainVideoThread->start();
+#endif
+
+#if defined(ENABLE_PIP)
+    pipVideo->moveToThread(pipVideoThread);
+    pipVideoThread->start();
+#endif
+
 #endif
 
     const int retval = app.exec();
 
-#if defined(ENABLE_GSTREAMER)
+#if defined(ENABLE_GSTREAMER) || defined(ENABLE_VIDEO_RENDER)
 #if defined(ENABLE_MAIN_VIDEO)
     mainVideo->stopVideo();
 #endif

@@ -311,6 +311,20 @@ EnableGStreamer {
     include ($$PWD/lib/VideoStreaming/VideoStreaming.pri)
 }
 
+EnableVideoRender {
+    message("EnableVideoRender")
+
+    DEFINES += ENABLE_VIDEO_RENDER
+
+    HEADERS += \
+        inc/openhdvideo.h \
+        inc/openhdmmalrender.h
+
+    SOURCES += \
+        src/openhdvideo.cpp \
+        src/openhdmmalrender.cpp
+}
+
 EnablePiP {
     message("EnablePiP")
     DEFINES += ENABLE_PIP
