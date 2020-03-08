@@ -17,6 +17,7 @@ BaseWidget {
 
     property string hostingKey: "Mcduh8eccczGrChh4JqP"
 
+    //----------------------- Map Plugin for both Large and Small Map
     Plugin {
         id: mapPlugin
         name: "mapboxgl"
@@ -497,6 +498,9 @@ BaseWidget {
 
                 width: 32
                 height: 32
+
+                anchors.bottom: parent.bottom
+                anchors.horizontalCenter: parent.horizontalCenter
 
                 flat: true
                 checkable: false
