@@ -15,6 +15,8 @@ import OpenHD 1.0
 BaseWidget {
     id: mapWidget
 
+    property double userLat: 0.0
+    property double userLon: 0.0
     property string hostingKey: "Mcduh8eccczGrChh4JqP"
 
     //----------------------- Map Plugin for both Large and Small Map
@@ -231,9 +233,9 @@ BaseWidget {
 
           //  activeMapType: MapType.SatelliteMapDay
 
-            center {
-                latitude: followDrone ? OpenHD.lat : 9000
-                longitude: followDrone ? OpenHD.lon : 9000
+            center {                
+                latitude: OpenHD.lat == 0.0 ? userLat : followDrone ? OpenHD.lat : 9000
+                longitude: OpenHD.lon == 0.0 ? userLon : followDrone ? OpenHD.lon : 9000
             }
 
             property bool followDrone: true
@@ -425,12 +427,14 @@ BaseWidget {
                 active: true
 
                 onPositionChanged: {
-                    if (OpenHD.lat == 0.0 && OpenHD.lon == 0.0){
-                        var coord = positionSource.position.coordinate;
-                        OpenHD.lat= coord.latitude;
-                        OpenHD.lon= coord.longitude;
-                    }
+                    userLat = position.coordinate.latitude
+                    userLon = position.coordinate.longitude
                 }
+            }
+
+            center {
+                latitude: OpenHD.lat == 0.0 ? userLat : OpenHD.lat
+                longitude: OpenHD.lon == 0.0 ? userLon : OpenHD.lon
             }
 
             MouseArea {
@@ -438,11 +442,6 @@ BaseWidget {
                 onClicked: {
                     map_popup.open()
                 }
-            }
-
-            center {
-                latitude: OpenHD.lat
-                longitude: OpenHD.lon
             }
 
             MapQuickItem {
