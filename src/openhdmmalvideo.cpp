@@ -197,7 +197,7 @@ void OpenHDMMALVideo::mmalConfigure() {
     /*
      * Don't infer timestamps from the framerate
      */
-    m_status = mmal_port_parameter_set_boolean(decoder->output[0], MMAL_PARAMETER_VIDEO_INTERPOLATE_TIMESTAMPS, MMAL_FALSE);
+    m_status = mmal_port_parameter_set_boolean(m_decoder->output[0], MMAL_PARAMETER_VIDEO_INTERPOLATE_TIMESTAMPS, MMAL_FALSE);
     if (m_status != MMAL_SUCCESS) {
         qDebug() << "Failed to disable timestamp interpolation on output port";
         return;
