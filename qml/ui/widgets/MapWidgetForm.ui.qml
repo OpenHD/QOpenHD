@@ -261,15 +261,35 @@ BaseWidget {
                 opacity: .3
             }
 
-            MapCircle {
-                center {
-                    latitude: OpenHD.lat
-                    longitude: OpenHD.lon
+            MapQuickItem {
+                id: dronemarkerLargeMap
+                coordinate: QtPositioning.coordinate(OpenHD.lat, OpenHD.lon)
+                anchorPoint.x : 0
+                anchorPoint.y : 0
+
+                sourceItem: Shape {
+                    anchors.fill: parent
+
+                    ShapePath {
+                        capStyle: ShapePath.RoundCap
+                        strokeColor: "darkBlue"
+                        fillColor: "blue"
+                        strokeWidth: 1
+                        strokeStyle: ShapePath.SolidLine
+
+
+                        startX: 0; startY: 0 //tip
+                        PathLine { x: 10;                 y: 17  }//right bottom
+                        PathLine { x: 0;                 y: 13  }//middle bottom
+                        PathLine { x: -10;                 y: 17  }//left bottom
+                        PathLine { x: 0;                 y: 0 }//back to start
+                    }
+                    transform: Rotation {
+                        origin.x: 0;
+                        origin.y: 0;
+                        angle: OpenHD.hdg
+                    }
                 }
-                radius: 1
-                color: 'blue'
-                border.width: 1
-                opacity: .75
             }
 
             //get coordinates on click... for future use
@@ -441,15 +461,35 @@ BaseWidget {
                 opacity: .3
             }
 
-            MapCircle {
-                center {
-                    latitude: OpenHD.lat
-                    longitude: OpenHD.lon
+            MapQuickItem {
+                id: dronemarkerSmallMap
+                coordinate: QtPositioning.coordinate(OpenHD.lat, OpenHD.lon)
+                anchorPoint.x : 0
+                anchorPoint.y : 0
+
+                sourceItem: Shape {
+                    anchors.fill: parent
+
+                    ShapePath {
+                        capStyle: ShapePath.RoundCap
+                        strokeColor: "darkBlue"
+                        fillColor: "blue"
+                        strokeWidth: 1
+                        strokeStyle: ShapePath.SolidLine
+
+
+                        startX: 0; startY: 0 //tip
+                        PathLine { x: 10;                 y: 17  }//right bottom
+                        PathLine { x: 0;                 y: 13  }//middle bottom
+                        PathLine { x: -10;                 y: 17  }//left bottom
+                        PathLine { x: 0;                 y: 0 }//back to start
+                    }
+                    transform: Rotation {
+                        origin.x: 0;
+                        origin.y: 0;
+                        angle: settings.map_orientation ? OpenHD.hdg : 0
+                    }
                 }
-                radius: 1
-                color: 'blue'
-                border.width: 1
-                opacity: .75
             }
 
             Button {
