@@ -94,5 +94,7 @@
         <file>ui/elements/StatusChartForm.ui.qml</file>
         <file>ui/widgets/GPIOWidget.qml</file>
         <file>ui/widgets/GPIOWidgetForm.ui.qml</file>
+        <file>MainVideoMMAL.qml</file>
+        <file>ui/widgets/VideoWidgetMMALForm.ui.qml</file>
     </qresource>
 </RCC>

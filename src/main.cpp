@@ -42,6 +42,10 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 
 #if defined(ENABLE_VIDEO_RENDER)
 #include "openhdvideo.h"
+#if defined(__rasp_pi__)
+#include "openhdmmalvideo.h"
+#include "openhdmmalrender.h"
+#endif
 #endif
 
 #include "util.h"
@@ -127,6 +131,12 @@ int main(int argc, char *argv[]) {
 
     qmlRegisterType<QOpenHDLink>("OpenHD", 1,0, "QOpenHDLink");
 
+#if defined(ENABLE_VIDEO_RENDER)
+#if defined(__rasp_pi__)
+    qmlRegisterType<OpenHDMMALVideo>("OpenHD", 1, 0, "OpenHDMMALVideo");
+    qmlRegisterType<OpenHDMMALRender>("OpenHD", 1, 0, "OpenHDMMALRender");
+#endif
+#endif
 
     QQmlApplicationEngine engine;
 
@@ -182,6 +192,15 @@ engine.rootContext()->setContextProperty("EnableVideoRender", QVariant(false));
 #if defined(ENABLE_VIDEO_RENDER)
 engine.rootContext()->setContextProperty("EnableGStreamer", QVariant(false));
 engine.rootContext()->setContextProperty("EnableVideoRender", QVariant(true));
+
+#if defined(__rasp_pi__)
+#if defined(ENABLE_MAIN_VIDEO)
+OpenHDMMALVideo *mainVideo = new OpenHDMMALVideo(OpenHDStreamTypeMain);
+#endif
+#if defined(ENABLE_PIP)
+OpenHDMMALVideo *pipVideo = new OpenHDMMALVideo(OpenHDStreamTypePiP);
+#endif
+#endif
 
 #endif
 
@@ -304,6 +323,20 @@ engine.rootContext()->setContextProperty("EnableVideoRender", QVariant(true));
     QThread *pipVideoThread = new QThread();
     pipVideoThread->setObjectName("pipVideoThread");
 
+
+#if defined(__rasp_pi__)
+#if defined(ENABLE_MAIN_VIDEO)
+    QQuickItem *mainRenderer = rootObject->findChild<QQuickItem *>("mainMMALSurface");
+    mainVideo->setVideoOut((OpenHDMMALRender*)mainRenderer);
+    QObject::connect(mainVideoThread, &QThread::started, mainVideo, &OpenHDMMALVideo::onStarted);
+#endif
+
+#if defined(ENABLE_PIP)
+    QQuickItem *pipRenderer = rootObject->findChild<QQuickItem *>("pipMMALSurface");
+    pipVideo->setVideoOut((OpenHDMMALRender*)pipRenderer);
+    QObject::connect(pipVideoThread, &QThread::started, pipVideo, &OpenHDMMALVideo::onStarted);
+#endif
+#endif
 
 #if defined(ENABLE_MAIN_VIDEO)
     mainVideo->moveToThread(mainVideoThread);
