@@ -9,6 +9,8 @@
 
 #include "sharedqueue.h"
 
+#include "h264bitstream/h264_stream.h"
+
 enum OpenHDStreamType {
     OpenHDStreamTypeMain,
     OpenHDStreamTypePiP

@@ -13,8 +13,8 @@
 #include "openhd.h"
 
 
+#include "h264bitstream/h264_stream.h"
 
-int find_nal_unit(uint8_t* buf, int size, int* nal_start, int* nal_end);
 
 
 OpenHDVideo::OpenHDVideo(enum OpenHDStreamType stream_type): QObject(), m_stream_type(stream_type) {
@@ -405,51 +405,6 @@ void OpenHDVideo::processNAL(QByteArray nalUnit) {
     if (isConfigured) {
         lastDataReceived = QDateTime::currentMSecsSinceEpoch();
     }
-}
-
-
-/*
- * From h264bitstream
- *
- * https://github.com/aizvorski/h264bitstream
- *
- */
-int find_nal_unit(uint8_t* buf, int size, int* nal_start, int* nal_end) {
-    *nal_start = 0;
-    *nal_end = 0;
-
-    int i = 0;
-    while ((buf[i] != 0 || buf[i+1] != 0 || buf[i+2] != 0x01) &&
-           (buf[i] != 0 || buf[i+1] != 0 || buf[i+2] != 0 || buf[i+3] != 0x01)) {
-        i++; // skip leading zero
-        if (i+4 >= size) { return 0; } // did not find nal start
-    }
-
-    if  (buf[i] != 0 || buf[i+1] != 0 || buf[i+2] != 0x01) {
-        i++;
-    }
-
-    if  (buf[i] != 0 || buf[i+1] != 0 || buf[i+2] != 0x01) {
-        /* error, should never happen */
-        return 0;
-    }
-    i+= 3;
-
-    *nal_start = i;
-
-    while ((buf[i] != 0 || buf[i+1] != 0 || buf[i+2] != 0) &&
-           (buf[i] != 0 || buf[i+1] != 0 || buf[i+2] != 0x01)) {
-        i++;
-        // FIXME the next line fails when reading a nal that ends exactly at the end of the data
-        if (i + 3 >= size) {
-            *nal_end = size;
-            return -1;
-        }
-        // did not find nal end, stream ended first
-    }
-
-    *nal_end = i;
-    return (*nal_end - *nal_start);
 }
 
 #endif
