@@ -156,7 +156,7 @@ void OpenHDMMALVideo::mmalConfigure() {
     format_in->encoding = MMAL_ENCODING_H264;
     format_in->es->video.width = VCOS_ALIGN_UP(width, 32);
     format_in->es->video.height = VCOS_ALIGN_UP(height, 16);
-    format_in->es->video.frame_rate.num = 30;
+    format_in->es->video.frame_rate.num = fps;
     format_in->es->video.frame_rate.den = 1;
     format_in->es->video.par.num = 1;
     format_in->es->video.par.den = 1;

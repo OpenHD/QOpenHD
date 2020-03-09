@@ -20,6 +20,8 @@
 OpenHDVideo::OpenHDVideo(enum OpenHDStreamType stream_type): QObject(), m_stream_type(stream_type) {
     qDebug() << "OpenHDVideo::OpenHDVideo()";
 
+    h264_stream = h264_new();
+
     sps = (uint8_t*)malloc(sizeof(uint8_t)*1024);
     pps = (uint8_t*)malloc(sizeof(uint8_t)*1024);
 }
@@ -300,6 +302,8 @@ void OpenHDVideo::processNAL(QByteArray nalUnit) {
     //auto nal_ref_idc = (nalUnit[0] >> 5) & 0x3;
     auto nal_unit_type = nalUnit[0] & 0x1F;
 
+    read_nal_unit(h264_stream, (uint8_t*)nalUnit.data(), nalUnit.length());
+
     switch (nal_unit_type) {
         case NAL_UNIT_TYPE_UNSPECIFIED: {
             break;
@@ -336,19 +340,23 @@ void OpenHDVideo::processNAL(QByteArray nalUnit) {
                 sps_len = extraData.size();
                 memcpy(sps, extraData.data(), extraData.size());
 
-                //int vui_present = h->sps->vui_parameters_present_flag;
-                //if (vui_present) {
+                int vui_present = h264_stream->sps->vui_parameters_present_flag;
+                if (vui_present) {
+                    width = h264_stream->sps->vui.sar_width;
+                    height = h264_stream->sps->vui.sar_height;
 
-                    width = 1280;//h->sps->vui.sar_width;
-                    height = 720;//h->sps->vui.sar_height;
-
-                    /*if (h->sps->vui.timing_info_present_flag) {
-                        auto num_units_in_tick = h->sps->vui.num_units_in_tick;
-                        auto time_scale = h->sps->vui.time_scale;
+                    if (h264_stream->sps->vui.timing_info_present_flag) {
+                        auto num_units_in_tick = h264_stream->sps->vui.num_units_in_tick;
+                        auto time_scale = h264_stream->sps->vui.time_scale;
                         fps = time_scale / num_units_in_tick;
-                    }*/
-                    fps = 30;
-                //}
+                    } else {
+                        fps = 30;
+                    }
+                } else {
+                    // nothing else we can do but guess
+                    width = 1280;
+                    height = 720;
+                }
                 haveSPS = true;
             }
             if (isConfigured) {

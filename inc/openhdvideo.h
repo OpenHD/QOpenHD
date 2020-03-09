@@ -79,6 +79,8 @@ protected:
     int pip_default_port = 5601;
 
 
+    h264_stream_t* h264_stream = nullptr;
+
     QTimer* timer = nullptr;
 
     QUdpSocket *m_socket;
