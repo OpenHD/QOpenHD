@@ -426,7 +426,7 @@ BaseWidget {
 
             PositionSource {
                 id: positionSource
-                updateInterval: 10000
+                updateInterval: 5000
                 active: true
 
                 onPositionChanged: {
