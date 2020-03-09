@@ -36,12 +36,6 @@ void OpenHDMMALRender::setVideoSurface(QAbstractVideoSurface *surface) {
     }
 
     m_surface = surface;
-    setFormat(1280, 720, QVideoFrame::PixelFormat::Format_YUV420P);
-
-    if (m_surface && m_format.isValid()) {
-        m_format = m_surface->nearestFormat(m_format);
-        m_surface->start(m_format);
-    }
 }
 
 void OpenHDMMALRender::setFormat(int width, int heigth, QVideoFrame::PixelFormat i_format) {
