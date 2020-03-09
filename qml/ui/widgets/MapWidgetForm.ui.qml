@@ -184,12 +184,13 @@ BaseWidget {
                 anchors.left: baseMapTitle.right
                 model: mapsmall.supportedMapTypes
                 textRole: "description"
+                currentIndex : 5 //Satellite
+
                 onCurrentIndexChanged: {
                     mapsmall.activeMapType = mapsmall.supportedMapTypes[currentIndex]
                     maplarge.activeMapType = maplarge.supportedMapTypes[currentIndex]
                 }
             }
-
         }
     }
 
@@ -231,7 +232,7 @@ BaseWidget {
                                       | MapGestureArea.RotationGesture | MapGestureArea.TiltGesture
             gesture.flickDeceleration: 3000
 
-          //  activeMapType: MapType.SatelliteMapDay
+            activeMapType: supportedMapTypes[5] //Satellite for mapbox gl
 
             center {                
                 latitude: OpenHD.lat == 0.0 ? userLat : followDrone ? OpenHD.lat : 9000
@@ -417,6 +418,8 @@ BaseWidget {
             copyrightsVisible: false
             anchors.fill: parent
             plugin: mapPlugin
+
+            activeMapType: supportedMapTypes[5] //Satellite for mapbox gl
 
             gesture.enabled: false
             bearing: settings.map_orientation ? 360 : OpenHD.hdg
