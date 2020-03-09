@@ -40,7 +40,7 @@ Rectangle {
         fillMode: Image.PreserveAspectFit
         z: 2.2
 
-        source: "../ic.png"
+        source: "../ic128.png"
         anchors.leftMargin: 8
         anchors.topMargin: 8
         MouseArea {
