@@ -2,6 +2,7 @@ import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
 import QtGraphicalEffects 1.12
+import QtMultimedia 5.12
 import Qt.labs.settings 1.0
 
 import OpenHD 1.0
@@ -39,11 +40,16 @@ BaseWidget {
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 6
 
-        OpenHDMMALRender {
+        VideoOutput {
+            id: display
+            objectName: "pipMMALDisplay"
+            source: pipMMALSurface
             anchors.fill: parent
 
-            id: pipMMALSurface
-            objectName: "pipMMALSurface"
+            OpenHDMMALRender {
+                id: pipMMALSurface
+                objectName: "pipMMALSurface"
+            }
         }
     }
 }
