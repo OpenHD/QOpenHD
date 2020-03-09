@@ -18,7 +18,7 @@ void OpenHDMMALRender::paintFrame(uint8_t *buffer_data, size_t buffer_length) {
     QSize s = m_format.frameSize();
     auto stride = s.width();
 
-    QVideoFrame f(buffer_length, s, stride, QVideoFrame::PixelFormat::Format_YUV420P);
+    QVideoFrame f(buffer_length, s, stride, m_format.pixelFormat());
     f.map(QAbstractVideoBuffer::MapMode::WriteOnly);
     memcpy(f.bits(), buffer_data, buffer_length);
     f.unmap();
