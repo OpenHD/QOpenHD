@@ -31,7 +31,7 @@ OpenHDMMALRender::~OpenHDMMALRender() {
 }
 
 void OpenHDMMALRender::setVideoSurface(QAbstractVideoSurface *surface) {
-    if (m_surface && m_surface != surface  && m_surface->isActive()) {
+    if (m_surface && m_surface != surface && m_surface->isActive()) {
         m_surface->stop();
     }
 
