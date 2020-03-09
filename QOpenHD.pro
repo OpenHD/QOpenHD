@@ -43,6 +43,10 @@ INCLUDEPATH += $$PWD/lib/GeographicLib-1.50/include
 
 
 SOURCES += \
+    lib/h264bitstream/h264_avcc.c \
+    lib/h264bitstream/h264_nal.c \
+    lib/h264bitstream/h264_sei.c \
+    lib/h264bitstream/h264_stream.c \
     src/FPS.cpp \
     src/frskytelemetry.cpp \
     src/gpiomicroservice.cpp \
@@ -84,7 +88,11 @@ HEADERS += \
     inc/openhdtelemetry.h \
     inc/qopenhdlink.h \
     inc/util.h \
-    inc/wifibroadcast.h
+    inc/wifibroadcast.h \
+    lib/h264bitstream/bs.h \
+    lib/h264bitstream/h264_avcc.h \
+    lib/h264bitstream/h264_sei.h \
+    lib/h264bitstream/h264_stream.h
 
 DISTFILES += \
     android/AndroidManifest.xml \
@@ -241,6 +249,21 @@ RaspberryPiBuild {
     CONFIG += EnablePiP
     CONFIG += EnableLink
     #CONFIG += EnableCharts
+
+    CONFIG += EnableVideoRender
+
+    EnableVideoRender {
+        LIBS += -L/usr/lib/arm-linux-gnueabihf -L/opt/vc/lib/ -lbcm_host -lmmal -lmmal_util -lmmal_components -lmmal_core -lmmal_vc_client -lvcos -lvcsm -lvchostif -lvchiq_arm
+        QT += multimedia
+
+        INCLUDEPATH += /opt/vc/include
+
+        HEADERS += \
+            inc/openhdmmalvideo.h
+
+        SOURCES += \
+            src/openhdmmalvideo.cpp
+    }
 }
 
 WindowsBuild {
@@ -309,6 +332,20 @@ EnableGStreamer {
         inc/openhdvideostream.h
 
     include ($$PWD/lib/VideoStreaming/VideoStreaming.pri)
+}
+
+EnableVideoRender {
+    message("EnableVideoRender")
+
+    DEFINES += ENABLE_VIDEO_RENDER
+
+    HEADERS += \
+        inc/openhdvideo.h \
+        inc/openhdmmalrender.h
+
+    SOURCES += \
+        src/openhdvideo.cpp \
+        src/openhdmmalrender.cpp
 }
 
 EnablePiP {

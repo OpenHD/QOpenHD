@@ -41,36 +41,33 @@ typedef enum MavlinkCommandState {
 
 class MavlinkCommand  {
 public:
-    bool is_long_cmd = false;
+    MavlinkCommand(bool is_long_cmd) : m_is_long_cmd(is_long_cmd) {}
+    bool m_is_long_cmd;
     uint16_t command_id = 0;
     uint8_t retry_count = 0;
+
+    uint8_t long_confirmation = 0;
+    float long_param1 = 0;
+    float long_param2 = 0;
+    float long_param3 = 0;
+    float long_param4 = 0;
+    float long_param5 = 0;
+    float long_param6 = 0;
+    float long_param7 = 0;
+
+
+    uint8_t int_frame = 0;
+    uint8_t int_current = 0;
+    uint8_t int_autocontinue = 0;
+    float int_param1 = 0;
+    float int_param2 = 0;
+    float int_param3 = 0;
+    float int_param4 = 0;
+    int   int_param5 = 0;
+    int   int_param6 = 0;
+    float int_param7 = 0;
 };
 
-class LongMavlinkCommand: public MavlinkCommand  {
-public:
-    uint8_t confirmation = 0;
-    float param1 = 0;
-    float param2 = 0;
-    float param3 = 0;
-    float param4 = 0;
-    float param5 = 0;
-    float param6 = 0;
-    float param7 = 0;
-};
-
-class IntMavlinkCommand: public MavlinkCommand  {
-public:
-    uint8_t frame = 0;
-    uint8_t current = 0;
-    uint8_t autocontinue = 0;
-    float param1 = 0;
-    float param2 = 0;
-    float param3 = 0;
-    float param4 = 0;
-    int   param5 = 0;
-    int   param6 = 0;
-    float param7 = 0;
-};
 
 class MavlinkBase: public QObject {
     Q_OBJECT

@@ -73,9 +73,6 @@ void MavlinkBase::reconnectTCP() {
     if (groundAddress.isEmpty()) {
         return;
     }
-    if (((QTcpSocket*)mavlinkSocket)->state() == QAbstractSocket::ConnectedState) {
-        ((QTcpSocket*)mavlinkSocket)->disconnectFromHost();
-    }
 
     if (((QTcpSocket*)mavlinkSocket)->state() == QAbstractSocket::UnconnectedState) {
         ((QTcpSocket*)mavlinkSocket)->connectToHost(groundAddress, groundTCPPort);
@@ -93,7 +90,9 @@ void MavlinkBase::setGroundIP(QString address) {
     if (reconnect) {
         switch (m_mavlink_type) {
             case MavlinkTypeTCP: {
-                reconnectTCP();
+                if (((QTcpSocket*)mavlinkSocket)->state() == QAbstractSocket::ConnectedState) {
+                    ((QTcpSocket*)mavlinkSocket)->disconnectFromHost();
+                }
                 break;
             }
             default: {
@@ -338,12 +337,10 @@ void MavlinkBase::commandStateLoop() {
             mavlink_message_t msg;
             m_command_sent_timestamp = QDateTime::currentMSecsSinceEpoch();
 
-            if (m_current_command->is_long_cmd) {
-                auto p = std::static_pointer_cast<LongMavlinkCommand>(m_current_command);
-                mavlink_msg_command_long_pack(255, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID, targetCompID, p->command_id, p->confirmation, p->param1, p->param2, p->param3, p->param4, p->param5, p->param6, p->param7);
+            if (m_current_command->m_is_long_cmd) {
+                mavlink_msg_command_long_pack(255, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID, targetCompID, m_current_command->command_id, m_current_command->long_confirmation, m_current_command->long_param1, m_current_command->long_param2, m_current_command->long_param3, m_current_command->long_param4, m_current_command->long_param5, m_current_command->long_param6, m_current_command->long_param7);
             } else {
-                auto p = std::static_pointer_cast<IntMavlinkCommand>(m_current_command);
-                mavlink_msg_command_int_pack(255, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID, targetCompID, p->frame, p->command_id, p->current, p->autocontinue, p->param1, p->param2, p->param3, p->param4, p->param5, p->param6, p->param7);
+                mavlink_msg_command_int_pack(255, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID, targetCompID, m_current_command->int_frame, m_current_command->command_id, m_current_command->int_current, m_current_command->int_autocontinue, m_current_command->int_param1, m_current_command->int_param2, m_current_command->int_param3, m_current_command->int_param4, m_current_command->int_param5, m_current_command->int_param6, m_current_command->int_param7);
             }
             uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
             int len = mavlink_msg_to_send_buffer(buffer, &msg);
@@ -367,13 +364,10 @@ void MavlinkBase::commandStateLoop() {
                     return;
                 }
                 m_current_command->retry_count = m_current_command->retry_count + 1;
-                if (m_current_command->is_long_cmd) {
+                if (m_current_command->m_is_long_cmd) {
                     // incremement the confirmation parameter according to the Mavlink command
                     // documentation
-                    auto p = std::static_pointer_cast<LongMavlinkCommand>(m_current_command);
-                    p->confirmation = p->confirmation + 1;
-                } else {
-                    auto p = std::static_pointer_cast<IntMavlinkCommand>(m_current_command);
+                    m_current_command->long_confirmation = m_current_command->long_confirmation + 1;
                 }
                 m_command_state = MavlinkCommandStateSend;
             }

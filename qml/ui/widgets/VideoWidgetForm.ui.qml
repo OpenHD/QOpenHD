@@ -59,7 +59,7 @@ BaseWidget {
     Rectangle {
         id: widgetInner
 
-        color: settings.color_text
+        color: "black"
         opacity: settings.pip_video_opacity
         anchors.left: parent.left
         anchors.leftMargin: 6

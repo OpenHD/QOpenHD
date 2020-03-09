@@ -63,9 +63,9 @@ void GPIOMicroservice::onSaveGPIO(QList<int> gpio) {
         pins |= (gpio[i] & 1) << i;
     }
 
-    LongMavlinkCommand command;
+    MavlinkCommand command(true);
     command.command_id = OPENHD_CMD_SET_GPIOS;
-    command.param1 = pins;
+    command.long_param1 = static_cast<float>(pins);
     send_command(command);
 }
 
@@ -100,7 +100,7 @@ void GPIOMicroservice::onProcessMavlinkMessage(mavlink_message_t msg) {
                         break;
                 }
 
-                LongMavlinkCommand command;
+                MavlinkCommand command(true);
                 command.command_id = OPENHD_CMD_GET_GPIOS;
                 send_command(command);
             }
