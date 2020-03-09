@@ -269,7 +269,7 @@ void OpenHDMMALVideo::mmalConfigure() {
      * so we add some extra margin on top of that.
      */
     m_decoder->output[0]->buffer_num = 30;
-    m_decoder->output[0]->buffer_size = 4096 * 1024;
+    m_decoder->output[0]->buffer_size = m_decoder->output[0]->buffer_size_recommended;
     m_pool_out = mmal_port_pool_create(m_decoder->output[0],
                                        m_decoder->output[0]->buffer_num,
                                        m_decoder->output[0]->buffer_size);
