@@ -340,11 +340,17 @@ void OpenHDVideo::processNAL(QByteArray nalUnit) {
                 sps_len = extraData.size();
                 memcpy(sps, extraData.data(), extraData.size());
 
+                if (h264_stream->sps->frame_cropping_flag) {
+                    width = ((h264_stream->sps->pic_width_in_mbs_minus1 + 1) * 16) - h264_stream->sps->frame_crop_left_offset * 2 - h264_stream->sps->frame_crop_right_offset * 2;
+                    height = ((2 - h264_stream->sps->frame_mbs_only_flag)* (h264_stream->sps->pic_height_in_map_units_minus1 + 1) * 16) - (h264_stream->sps->frame_crop_top_offset * 2) - (h264_stream->sps->frame_crop_bottom_offset * 2);
+                }
+                else {
+                    width = ((h264_stream->sps->pic_width_in_mbs_minus1 + 1) * 16);
+                    height = ((2 - h264_stream->sps->frame_mbs_only_flag) * (h264_stream->sps->pic_height_in_map_units_minus1 + 1) * 16);
+                }
+
                 int vui_present = h264_stream->sps->vui_parameters_present_flag;
                 if (vui_present) {
-                    width = h264_stream->sps->vui.sar_width;
-                    height = h264_stream->sps->vui.sar_height;
-
                     if (h264_stream->sps->vui.timing_info_present_flag) {
                         auto num_units_in_tick = h264_stream->sps->vui.num_units_in_tick;
                         auto time_scale = h264_stream->sps->vui.time_scale;
@@ -352,10 +358,6 @@ void OpenHDVideo::processNAL(QByteArray nalUnit) {
                     } else {
                         fps = 30;
                     }
-                } else {
-                    // nothing else we can do but guess
-                    width = 1280;
-                    height = 720;
                 }
                 haveSPS = true;
             }
