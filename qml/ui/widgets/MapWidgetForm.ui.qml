@@ -14,6 +14,30 @@ import OpenHD 1.0
 
 BaseWidget {
     id: mapWidget
+
+    property double userLat: 0.0
+    property double userLon: 0.0
+    property string hostingKey: "Mcduh8eccczGrChh4JqP"
+
+    //----------------------- Map Plugin for both Large and Small Map
+    Plugin {
+        id: mapPlugin
+        name: "mapboxgl"
+
+        PluginParameter {
+            name: "mapboxgl.mapping.additional_style_urls"
+            value: "https://maps.tilehosting.com/styles/streets/style.json?key="
+                   + hostingKey
+        }
+
+        PluginParameter {
+            name: "mapboxgl.mapping.cache.size"
+            value: "500000"
+        }
+
+
+    }
+
     width: 200
     height: 135
 
@@ -25,7 +49,8 @@ BaseWidget {
 
     widgetIdentifier: "map_widget"
 
-    hasWidgetDetail: true
+    // false so that detail is triggered by button
+    hasWidgetDetail: false
     widgetDetailWidth: 420
     widgetDetailHeight: 200
 
@@ -64,7 +89,78 @@ BaseWidget {
                 }
             }
         }
+        Item {
+            width: parent.width
+            height: 32
+            Text {
+                id: opacityTitle
+                text: "Opacity"
+                color: "white"
+                height: parent.height
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
+            Slider {
+                id: map_opacity_Slider
+                orientation: Qt.Horizontal
+                from: .1
+                value: settings.map_opacity
+                to: 1
+                stepSize: .1
+                height: parent.height
+                anchors.rightMargin: 0
+                anchors.right: parent.right
+                width: parent.width - 96
 
+                onValueChanged: {
+                    settings.map_opacity = map_opacity_Slider.value
+                }
+            }
+        }
+        Item {
+            width: parent.width
+            height: 32
+            Text {
+                text: "Orient to Drone / North"
+                color: "white"
+                height: parent.height
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
+            Switch {
+                width: 32
+                height: parent.height
+                anchors.rightMargin: 12
+                anchors.right: parent.right
+                checked: settings.map_orientation
+                onCheckedChanged: settings.map_orientation = checked
+            }
+        }
+        Item {
+            width: parent.width
+            height: 32
+            Text {
+                text: "Map shape Square / Round"
+                color: "white"
+                height: parent.height
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
+            Switch {
+                width: 32
+                height: parent.height
+                anchors.rightMargin: 12
+                anchors.right: parent.right
+                checked: settings.map_shape_circle
+                onCheckedChanged: settings.map_shape_circle = checked
+            }
+        }
         Item {
             width: parent.width
             height: 32
@@ -88,12 +184,13 @@ BaseWidget {
                 anchors.left: baseMapTitle.right
                 model: mapsmall.supportedMapTypes
                 textRole: "description"
+                currentIndex : 5 //Satellite
+
                 onCurrentIndexChanged: {
                     mapsmall.activeMapType = mapsmall.supportedMapTypes[currentIndex]
                     maplarge.activeMapType = maplarge.supportedMapTypes[currentIndex]
                 }
             }
-
         }
     }
 
@@ -122,20 +219,12 @@ BaseWidget {
 
         visible: false
 
-        Plugin {
-            id: mapPluginLarge
-            name: "osm" // "osm" , "mapboxgl", "esri", ...
-
-            //   PluginParameter { name: "here.app_id"; value: "****" }
-            //   PluginParameter { name: "here.token"; value: "*****" }
-        }
-
         Map {
-            anchors.fill: parent
-            copyrightsVisible: false
             id: maplarge
-            plugin: mapPluginLarge
-            zoomLevel: 18
+            anchors.fill: parent
+            copyrightsVisible: false           
+            plugin: mapPlugin
+            zoomLevel: 15
             // Enable pan, flick, and pinch gestures to zoom in and out
             gesture.enabled: true
             gesture.acceptedGestures: MapGestureArea.PanGesture | MapGestureArea.FlickGesture
@@ -143,10 +232,11 @@ BaseWidget {
                                       | MapGestureArea.RotationGesture | MapGestureArea.TiltGesture
             gesture.flickDeceleration: 3000
 
-            activeMapType: MapType.SatelliteMapDay
-            center {
-                latitude: followDrone ? OpenHD.lat : 9000
-                longitude: followDrone ? OpenHD.lon : 9000
+            activeMapType: supportedMapTypes[5] //Satellite for mapbox gl
+
+            center {                
+                latitude: OpenHD.lat == 0.0 ? userLat : followDrone ? OpenHD.lat : 9000
+                longitude: OpenHD.lon == 0.0 ? userLon : followDrone ? OpenHD.lon : 9000
             }
 
             property bool followDrone: true
@@ -176,15 +266,35 @@ BaseWidget {
                 opacity: .3
             }
 
-            MapCircle {
-                center {
-                    latitude: OpenHD.lat
-                    longitude: OpenHD.lon
+            MapQuickItem {
+                id: dronemarkerLargeMap
+                coordinate: QtPositioning.coordinate(OpenHD.lat, OpenHD.lon)
+                anchorPoint.x : 0
+                anchorPoint.y : 0
+
+                sourceItem: Shape {
+                    anchors.fill: parent
+
+                    ShapePath {
+                        capStyle: ShapePath.RoundCap
+                        strokeColor: "darkBlue"
+                        fillColor: "blue"
+                        strokeWidth: 1
+                        strokeStyle: ShapePath.SolidLine
+
+
+                        startX: 0; startY: 0 //tip
+                        PathLine { x: 10;                 y: 17  }//right bottom
+                        PathLine { x: 0;                 y: 13  }//middle bottom
+                        PathLine { x: -10;                 y: 17  }//left bottom
+                        PathLine { x: 0;                 y: 0 }//back to start
+                    }
+                    transform: Rotation {
+                        origin.x: 0;
+                        origin.y: 0;
+                        angle: OpenHD.hdg
+                    }
                 }
-                radius: 1
-                color: 'blue'
-                border.width: 1
-                opacity: .75
             }
 
             //get coordinates on click... for future use
@@ -301,31 +411,40 @@ BaseWidget {
     Item {
         id: widgetInner
         anchors.fill: parent
-
-        Plugin {
-            id: mapPlugin
-            name: "osm" // "mapboxgl", "esri", ...
-            // specify plugin parameters if necessary
-            // PluginParameter {
-            //     name:
-            //     value:
-            // }
-        }
+        opacity: settings.map_shape_circle ? 0 : settings.map_opacity
 
         Map {
+            id: mapsmall
             copyrightsVisible: false
             anchors.fill: parent
             plugin: mapPlugin
-            id: mapsmall
-            //  zoomLevel: 18
-            gesture.enabled: false
 
-            //  activeMapType: MapType.SatelliteMapDay
-            bearing: OpenHD.hdg
+            activeMapType: supportedMapTypes[5] //Satellite for mapbox gl
+
+            gesture.enabled: false
+            bearing: settings.map_orientation ? 360 : OpenHD.hdg
+
+            PositionSource {
+                id: positionSource
+                updateInterval: 5000
+                active: true
+
+                onPositionChanged: {
+                    userLat = position.coordinate.latitude
+                    userLon = position.coordinate.longitude
+                }
+            }
 
             center {
-                latitude: OpenHD.lat
-                longitude: OpenHD.lon
+                latitude: OpenHD.lat == 0.0 ? userLat : OpenHD.lat
+                longitude: OpenHD.lon == 0.0 ? userLon : OpenHD.lon
+            }
+
+            MouseArea {
+                anchors.fill: parent
+                onClicked: {
+                    map_popup.open()
+                }
             }
 
             MapQuickItem {
@@ -353,25 +472,47 @@ BaseWidget {
                 opacity: .3
             }
 
-            MapCircle {
-                center {
-                    latitude: OpenHD.lat
-                    longitude: OpenHD.lon
+            MapQuickItem {
+                id: dronemarkerSmallMap
+                coordinate: QtPositioning.coordinate(OpenHD.lat, OpenHD.lon)
+                anchorPoint.x : 0
+                anchorPoint.y : 0
+
+                sourceItem: Shape {
+                    anchors.fill: parent
+
+                    ShapePath {
+                        capStyle: ShapePath.RoundCap
+                        strokeColor: "darkBlue"
+                        fillColor: "blue"
+                        strokeWidth: 1
+                        strokeStyle: ShapePath.SolidLine
+
+
+                        startX: 0; startY: 0 //tip
+                        PathLine { x: 10;               y: 17  }//right bottom
+                        PathLine { x: 0;                y: 13  }//middle bottom
+                        PathLine { x: -10;              y: 17  }//left bottom
+                        PathLine { x: 0;                y: 0 }//back to start
+                    }
+                    transform: Rotation {
+                        origin.x: 0;
+                        origin.y: 0;
+                        angle: settings.map_orientation ? OpenHD.hdg : 0
+                    }
                 }
-                radius: 1
-                color: 'blue'
-                border.width: 1
-                opacity: .75
             }
 
             Button {
-                id: resize
+                id: showDetail
 
                 width: 32
                 height: 32
 
-                flat: true
+                anchors.bottom: parent.bottom
+                anchors.horizontalCenter: parent.horizontalCenter
 
+                flat: true
                 checkable: false
 
                 //     display: AbstractButton.IconOnly
@@ -379,15 +520,36 @@ BaseWidget {
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.verticalCenter: parent.verticalCenter
                     font.family: "Font Awesome 5 Free"
-                    color: "black"
-                    text: "\uf065"
+                    color: "darkGrey"
+                    text: "\uf013"
                     font.pixelSize: 16
                 }
 
                 onClicked: {
-                    map_popup.open()
+                    widgetDetail.open()
                 }
             }
         }
+    }
+
+    Item {
+        id: mask
+        anchors.fill: widgetInner
+        visible: false
+
+        Rectangle {
+            anchors.centerIn: parent
+            width: parent.width<parent.height?parent.width:parent.height
+            height: width
+            color: "red"
+            radius: width*0.5
+        }
+    }
+
+    OpacityMask {
+        anchors.fill: widgetInner
+        source: widgetInner
+        maskSource: mask
+        opacity: settings.map_shape_circle ? settings.map_opacity : 0
     }
 }

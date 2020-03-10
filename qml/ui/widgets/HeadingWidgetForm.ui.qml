@@ -57,6 +57,36 @@ BaseWidget {
             width: parent.width
             height: 32
             Text {
+                id: sizeTitle
+                text: "Size"
+                color: "white"
+                height: parent.height
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
+            Slider {
+                id: heading_size_Slider
+                orientation: Qt.Horizontal
+                from: .7
+                value: settings.heading_size
+                to: 3
+                stepSize: .1
+                height: parent.height
+                anchors.rightMargin: 0
+                anchors.right: parent.right
+                width: parent.width - 96
+
+                onValueChanged: {
+                    settings.heading_size = heading_size_Slider.value
+                }
+            }
+        }
+        Item {
+            width: parent.width
+            height: 32
+            Text {
                 text: "Ardupilot (off) / iNav (on)"
                 color: "white"
                 height: parent.height
@@ -98,6 +128,7 @@ BaseWidget {
             anchors.bottomMargin: parent.height - 24
             color: settings.color_text
             opacity: settings.heading_opacity
+            transform: Scale { origin.x: 24; origin.y: 24; xScale: settings.heading_size ; yScale: settings.heading_size}
             text: Number(
                       settings.heading_inav ? OpenHD.hdg * 100 : OpenHD.hdg).toLocaleString(
                       Qt.locale(), 'f', 0)
@@ -109,6 +140,7 @@ BaseWidget {
             id: outline
             anchors.fill: parent
             opacity: settings.heading_opacity
+            transform: Scale { origin.x: 24; origin.y: 24; xScale: settings.heading_size ; yScale: settings.heading_size}
             ShapePath {
                 capStyle: ShapePath.RoundCap
                 strokeColor: settings.color_shape

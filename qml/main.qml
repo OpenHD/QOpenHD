@@ -118,14 +118,17 @@ ApplicationWindow {
         property bool show_speed: true
         property bool speed_airspeed_gps: false
         property double speed_opacity: 1
+        property double speed_size: 1
 
         property bool show_heading: true
         property bool heading_inav: false
         property double heading_opacity: 1
+        property double heading_size: 1
 
         property bool show_altitude: true
         property bool altitude_rel_msl: false
         property double altitude_opacity: 1
+        property double altitude_size: 1
 
         property bool show_altitude_second: true
         property bool altitude_second_msl_rel: false
@@ -137,6 +140,9 @@ ApplicationWindow {
 
         property bool show_map: false
         property int map_small_zoom: 18
+        property double map_opacity: 1
+        property bool map_orientation: false
+        property bool map_shape_circle: false
 
         property bool show_throttle: true
         property double throttle_opacity: 1
