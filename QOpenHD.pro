@@ -113,24 +113,6 @@ DISTFILES += \
     android/src/org/freedesktop/gstreamer/androidmedia/GstAhcCallback.java \
     android/src/org/freedesktop/gstreamer/androidmedia/GstAhsCallback.java \
     android/src/org/freedesktop/gstreamer/androidmedia/GstAmcOnFrameAvailableListener.java \
-    icons/AppIcon.appiconset/iPad-app.png \
-    icons/AppIcon.appiconset/iPad-app@2x.png \
-    icons/AppIcon.appiconset/iPad-notifications.png \
-    icons/AppIcon.appiconset/iPad-notifications@2x.png \
-    icons/AppIcon.appiconset/iPad-pro@2x.png \
-    icons/AppIcon.appiconset/iPad-settings.png \
-    icons/AppIcon.appiconset/iPad-settings@2x.png \
-    icons/AppIcon.appiconset/iPad-spotlight.png \
-    icons/AppIcon.appiconset/iPad-spotlight@2x.png \
-    icons/AppIcon.appiconset/iPhone-app@2x.png \
-    icons/AppIcon.appiconset/iPhone-app@3x.png \
-    icons/AppIcon.appiconset/iPhone-notifications@2x.png \
-    icons/AppIcon.appiconset/iPhone-notifications@3x.png \
-    icons/AppIcon.appiconset/iPhone-settings@2x.png \
-    icons/AppIcon.appiconset/iPhone-settings@3x.png \
-    icons/AppIcon.appiconset/iPhone-spotlight@2x.png \
-    icons/AppIcon.appiconset/iPhone-spotlight@3x.png \
-    icons/AppIcon.appiconset/iTunesArtwork@2x.png \
     qml/qtquickcontrols2.conf \
     qml/ui/qmldir
 
@@ -198,8 +180,7 @@ iOSBuild {
     app_launch_images.files = $$PWD/icons/LaunchScreen.png $$files($$PWD/icons/LaunchScreen.storyboard)
     QMAKE_BUNDLE_DATA += app_launch_images
 
-    ios_icon.files = $$files($$PWD/icons/AppIcon.appiconset/*.png)
-    QMAKE_BUNDLE_DATA += ios_icon
+    QMAKE_ASSET_CATALOGS += $$PWD/icons/ios/Assets.xcassets
 
     DEFINES += GST_GL_HAVE_WINDOW_EAGL=1
     DEFINES += GST_GL_HAVE_PLATFORM_EAGL=1
