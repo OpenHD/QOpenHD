@@ -11,6 +11,7 @@ BaseWidgetForm {
 
     property string widgetIdentifier
 
+    property bool useDragHandle: false
     property int defaultAlignment: 0
     property int defaultXOffset: 0
     property int defaultYOffset: 0
@@ -72,56 +73,89 @@ BaseWidgetForm {
         }
     }
 
-    MouseArea {
-        id: dragArea
-        anchors.fill: parent
-
-        onClicked: {
-            if (dragging) {
-                drag.target = null
-                widgetControls.close()
-                saveAlignment()
-                loadAlignment()
-                dragging = false
-                globalDragLock = false
-            } else if (hasWidgetPopup) {
-                widgetPopup.open()
-            } else if (hasWidgetDetail) {
-                if (widgetDetail.visible) {
-                    widgetDetail.close()
-                } else {
-                    if (globalDragLock) {
-                        return;
-                    }
-                    widgetDetail.open()
-                }
-            }
-        }
-
-        onPressAndHold: {
-            if (!dragging) {
+    function _onClicked(drag) {
+        if (dragging) {
+            drag.target = null
+            widgetControls.close()
+            saveAlignment()
+            loadAlignment()
+            dragging = false
+            globalDragLock = false
+        } else if (hasWidgetPopup) {
+            widgetPopup.open()
+        } else if (hasWidgetDetail) {
+            if (widgetDetail.visible) {
+                widgetDetail.close()
+            } else {
                 if (globalDragLock) {
                     return;
                 }
-                globalDragLock = true
-                dragging = true
-                /*
+                widgetDetail.open()
+            }
+        }
+    }
+
+    function _onPressAndHold(drag) {
+        if (!dragging) {
+            if (globalDragLock) {
+                return;
+            }
+            globalDragLock = true
+            dragging = true
+            /*
                  * Unlock the element anchors so it can be dragged. They'll be enabled
                  * again when the widget is done being moved, if the selected alignment
                  * type requires them.
                  */
-                resetAnchors()
-                drag.target = parent
-                widgetControls.open()
-            } else {
-                drag.target = null
-                widgetControls.close()
-                saveAlignment()
-                loadAlignment()
-                dragging = false
-                globalDragLock = false
+            resetAnchors()
+            drag.target = widgetBase
+            widgetControls.open()
+        } else {
+            drag.target = null
+            widgetControls.close()
+            saveAlignment()
+            loadAlignment()
+            dragging = false
+            globalDragLock = false
+        }
+    }
+
+
+    Text {
+        id: dragHandle
+        color: "white"
+        text: "\uf256"
+        font.family: "Font Awesome 5 Free"
+        z: 2.0
+        visible: useDragHandle
+        enabled: useDragHandle
+        width: 24
+        height: 24
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        MouseArea {
+            id: dragHandleMouseArea
+            z: 3.0
+            enabled: useDragHandle
+            anchors.fill: parent
+            onClicked: {
+                _onClicked(drag)
+            }
+            onPressAndHold: {
+                _onPressAndHold(drag)
             }
         }
+    }
+
+
+    MouseArea {
+        id: dragArea
+
+        anchors.fill: parent
+
+        onClicked: { _onClicked(drag) }
+
+        onPressAndHold: { _onPressAndHold(drag) }
     }
 
     function calculateOffsets() {
