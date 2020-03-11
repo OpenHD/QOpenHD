@@ -31,7 +31,7 @@ BaseWidgetForm {
         target: link
         onWidgetLocation: {
             if (widgetIdentifier === widgetName) {
-                setAlignment(alignment, xOffset, yOffset, hCenter, vCenter);
+                setAlignment(alignment, xOffset, yOffset, hCenter, vCenter, false);
             }
         }
     }
@@ -198,17 +198,26 @@ BaseWidgetForm {
         var xOffset = settings.value(xOffsetIdentifier, defaultXOffset);
         var yOffset = settings.value(yOffsetIdentifier, defaultYOffset);
 
-        setAlignment(alignmentType, xOffset, yOffset, _hCenter, _vCenter);
+        setAlignment(alignmentType, xOffset, yOffset, _hCenter, _vCenter, false);
     }
 
-    function setAlignment(alignmentType, xOffset, yOffset, hCenter, vCenter) {
+    function setAlignment(alignmentType, xOffset, yOffset, hCenter, vCenter, full) {
         /*
          * Anchors have to be cleared before any of them can be set again. This is documented
          * at https://doc.qt.io/qt-5/qtquick-positioning-anchors.html#changing-anchors
          */
         resetAnchors();
 
-        if (alignmentType === 0) {
+        if (full) {
+            anchors.top = parent.top;
+            anchors.topMargin = yOffset;
+            anchors.bottom = parent.bottom;
+            anchors.bottomMargin = yOffset;
+            anchors.left = parent.left;
+            anchors.leftMargin = xOffset;
+            anchors.right = parent.right;
+            anchors.rightMargin = xOffset;
+        } else if (alignmentType === 0) {
             if (vCenter) {
                 anchors.verticalCenter = parent.verticalCenter;
             } else {
