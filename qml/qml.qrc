@@ -97,5 +97,6 @@
         <file>MainVideoMMAL.qml</file>
         <file>ui/widgets/VideoWidgetMMALForm.ui.qml</file>
         <file>ic128.png</file>
+        <file>ui/elements/MapComponent.qml</file>
     </qresource>
 </RCC>

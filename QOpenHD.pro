@@ -34,7 +34,7 @@ CONFIG(debug, debug|release) {
 
 
 QT += qml quick concurrent opengl gui
-QT += positioning location
+QT += positioning location sensors
 
 QT_FOR_CONFIG += location-private
 qtConfig(geoservices_mapboxgl): QT += sql opengl
