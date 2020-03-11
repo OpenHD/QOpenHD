@@ -71,6 +71,8 @@ void OpenHDVideo::onStarted() {
  * if necessary, such as hiding the PiP element when the stream has stopped.
  */
 void OpenHDVideo::reconfigure() {
+    bool restart = false;
+
     auto currentTime = QDateTime::currentMSecsSinceEpoch();
 
     if (currentTime - lastDataReceived < 2500) {
@@ -95,12 +97,16 @@ void OpenHDVideo::reconfigure() {
         m_video_port = settings.value("pip_video_port", 5601).toInt();
     }
     if (m_video_port != m_socket->localPort()) {
-        m_socket->close();
-        m_socket->bind(QHostAddress::Any, m_video_port);
+        restart = true;
     }
 
     auto enable_rtp = settings.value("enable_rtp", true).toBool();
     if (m_enable_rtp != enable_rtp) {
+        m_enable_rtp = enable_rtp;
+        restart = true;
+    }
+
+    if (restart) {
         m_socket->close();
         stop();
         tempBuffer.clear();
@@ -110,8 +116,6 @@ void OpenHDVideo::reconfigure() {
         sentPPS = false;
         havePPS = false;
         sentIDR = false;
-
-        m_enable_rtp = enable_rtp;
         m_socket->bind(QHostAddress::Any, m_video_port);
     }
 }
