@@ -172,6 +172,13 @@ ApplicationWindow {
             if (IsRaspPi && EnableVideoRender && EnableMainVideo) {
                 return "MainVideoMMAL.qml";
             }
+
+            if (IsMac && EnableVideoRender && EnableMainVideo) {
+                return "MainVideoMMAL.qml";
+            }
+            if (IsiOS && EnableVideoRender && EnableMainVideo) {
+                return "MainVideoMMAL.qml";
+            }
             return ""
         }
     }

@@ -7,6 +7,10 @@
 #include <QAbstractVideoSurface>
 #include <QVideoSurfaceFormat>
 
+#if defined(__apple__)
+#include <VideoToolbox/VideoToolbox.h>
+#endif
+
 class OpenHDMMALRender : public QQuickItem {
     Q_OBJECT
 public:
@@ -16,6 +20,9 @@ public:
     Q_PROPERTY(QAbstractVideoSurface *videoSurface READ videoSurface WRITE setVideoSurface)
 
     void paintFrame(uint8_t *buffer_data, size_t buffer_length);
+    #if defined(__apple__)
+    void paintFrame(CVImageBufferRef imageBuffer);
+    #endif
 
     QAbstractVideoSurface* videoSurface() const { return m_surface; }
 

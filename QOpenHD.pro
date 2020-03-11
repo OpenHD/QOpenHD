@@ -176,7 +176,7 @@ iOSBuild {
     CONFIG += EnableSpeech
     CONFIG += EnableMainVideo
     CONFIG += EnablePiP
-    CONFIG += EnableGStreamer
+    CONFIG += EnableVideoRender
     CONFIG += EnableLink
     #CONFIG += EnableCharts
 
@@ -187,9 +187,15 @@ iOSBuild {
 
     QMAKE_ASSET_CATALOGS += $$PWD/icons/ios/Assets.xcassets
 
-    DEFINES += GST_GL_HAVE_WINDOW_EAGL=1
-    DEFINES += GST_GL_HAVE_PLATFORM_EAGL=1
-    DEFINES += HAVE_QT_IOS
+    EnableVideoRender {
+        QT += multimedia
+
+        HEADERS += \
+            inc/openhdapplevideo.h
+
+        SOURCES += \
+            src/openhdapplevideo.cpp
+    }
 }
 
 MacBuild {
@@ -203,13 +209,19 @@ MacBuild {
     CONFIG += EnableSpeech
     CONFIG += EnableMainVideo
     CONFIG += EnablePiP
-    CONFIG += EnableGStreamer
+    CONFIG += EnableVideoRender
     CONFIG += EnableLink
     #CONFIG += EnableCharts
 
-    DEFINES += GST_GL_HAVE_WINDOW_COCOA=1
-    DEFINES += GST_GL_HAVE_PLATFORM_CGL=1
-    DEFINES += HAVE_QT_MAC
+    EnableVideoRender {
+        QT += multimedia
+
+        HEADERS += \
+            inc/openhdapplevideo.h
+
+        SOURCES += \
+            src/openhdapplevideo.cpp
+    }
 }
 
 LinuxBuild {
@@ -367,8 +379,9 @@ EnableRC {
 installer {
     MacBuild {
         DESTDIR_COPY_RESOURCE_LIST = $$DESTDIR/$${TARGET}.app/Contents/MacOS
-        QMAKE_POST_LINK += $${BASEDIR}/tools/prepare_gstreamer_framework.sh $${DESTDIR}/gstwork $${DESTDIR}/$${TARGET}.app $${TARGET}
-        QMAKE_POST_LINK += && cd $${DESTDIR}
+
+        QMAKE_POST_LINK += cd $${DESTDIR}
+
         QMAKE_POST_LINK += && $$dirname(QMAKE_QMAKE)/macdeployqt $${TARGET}.app -appstore-compliant -qmldir=$${BASEDIR}/qml
 
         QMAKE_POST_LINK += && /usr/libexec/PlistBuddy -c \"Set :CFBundleShortVersionString $$APPLE_BUILD\" $$DESTDIR/$${TARGET}.app/Contents/Info.plist
