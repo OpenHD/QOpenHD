@@ -354,11 +354,10 @@ BaseWidget {
                             value: settings.map_zoom
                             to: 30
                             stepSize: 1
+                            height: parent.height
                             anchors.rightMargin: 0
                             anchors.right: parent.right
-                            anchors.leftMargin: 32
-                            anchors.left: zoomTitle.right
-                            height: parent.height
+                            width: parent.width - 96
 
                             onValueChanged: {
                                 settings.map_zoom = zoomSlider.value
