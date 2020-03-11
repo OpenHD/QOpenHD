@@ -34,6 +34,11 @@ CONFIG(debug, debug|release) {
 
 
 QT += qml quick concurrent opengl gui
+QT += positioning location
+
+QT_FOR_CONFIG += location-private
+qtConfig(geoservices_mapboxgl): QT += sql opengl
+qtConfig(geoservices_osm): QT += concurrent
 
 INCLUDEPATH += $$PWD/inc
 INCLUDEPATH += $$PWD/lib
