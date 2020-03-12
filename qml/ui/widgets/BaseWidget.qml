@@ -22,6 +22,8 @@ BaseWidgetForm {
 
     property bool dragging: false
 
+    property bool isFullScreen: false
+
     property string alignmentIdentifier: "%1_align".arg(widgetIdentifier);
     property string xOffsetIdentifier: "%1_x_offset".arg(widgetIdentifier);
     property string yOffsetIdentifier: "%1_y_offset".arg(widgetIdentifier);
@@ -127,8 +129,8 @@ BaseWidgetForm {
         text: "\uf256"
         font.family: "Font Awesome 5 Free"
         z: 2.0
-        visible: useDragHandle
-        enabled: useDragHandle
+        visible: useDragHandle && !isFullScreen
+        enabled: useDragHandle && !isFullScreen
         width: 24
         height: 24
         anchors.right: parent.right
@@ -241,6 +243,7 @@ BaseWidgetForm {
          * at https://doc.qt.io/qt-5/qtquick-positioning-anchors.html#changing-anchors
          */
         resetAnchors();
+        isFullScreen = full;
 
         if (full) {
             anchors.top = parent.top;
