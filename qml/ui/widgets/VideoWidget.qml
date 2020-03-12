@@ -13,6 +13,13 @@ Loader {
             return "VideoWidgetMMALForm.ui.qml"
         }
 
+        if (IsMac && EnableVideoRender && EnablePiP) {
+            return "VideoWidgetMMALForm.ui.qml"
+        }
+
+        if (IsiOS && EnableVideoRender && EnablePiP) {
+            return "VideoWidgetMMALForm.ui.qml"
+        }
         return ""
     }
     property bool isRunning: OpenHD.pip_video_running

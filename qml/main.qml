@@ -139,15 +139,19 @@ ApplicationWindow {
         property double arrow_opacity: 1
 
         property bool show_map: false
-        property int map_small_zoom: 18
+
         property double map_opacity: 1
         property bool map_orientation: false
         property bool map_shape_circle: false
+
+        property int map_zoom: 18
 
         property bool show_throttle: true
         property double throttle_opacity: 1
 
         property bool show_gpio: false
+        property int selected_map_provider: 0
+        property int selected_map_variant: 0
     }
 
     //FrSkyTelemetry {
@@ -170,6 +174,13 @@ ApplicationWindow {
                 return "MainVideoItem.qml";
             }
             if (IsRaspPi && EnableVideoRender && EnableMainVideo) {
+                return "MainVideoMMAL.qml";
+            }
+
+            if (IsMac && EnableVideoRender && EnableMainVideo) {
+                return "MainVideoMMAL.qml";
+            }
+            if (IsiOS && EnableVideoRender && EnableMainVideo) {
                 return "MainVideoMMAL.qml";
             }
             return ""

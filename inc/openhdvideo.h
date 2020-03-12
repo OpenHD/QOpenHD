@@ -91,6 +91,8 @@ protected:
     QByteArray rtpBuffer;
     size_t rtpData = 0;
 
+    bool restartStream = false;
+
     bool haveSPS = false;
     bool havePPS = false;
     bool isStart = true;

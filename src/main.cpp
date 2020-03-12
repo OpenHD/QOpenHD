@@ -46,6 +46,10 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "openhdmmalvideo.h"
 #include "openhdmmalrender.h"
 #endif
+#if defined(__apple__)
+#include "openhdapplevideo.h"
+#include "openhdmmalrender.h"
+#endif
 #endif
 
 #include "util.h"
@@ -136,6 +140,10 @@ int main(int argc, char *argv[]) {
     qmlRegisterType<OpenHDMMALVideo>("OpenHD", 1, 0, "OpenHDMMALVideo");
     qmlRegisterType<OpenHDMMALRender>("OpenHD", 1, 0, "OpenHDMMALRender");
 #endif
+#if defined(__apple__)
+    qmlRegisterType<OpenHDAppleVideo>("OpenHD", 1, 0, "OpenHDAppleVideo");
+    qmlRegisterType<OpenHDMMALRender>("OpenHD", 1, 0, "OpenHDMMALRender");
+#endif
 #endif
 
     QQmlApplicationEngine engine;
@@ -201,6 +209,16 @@ OpenHDMMALVideo *mainVideo = new OpenHDMMALVideo(OpenHDStreamTypeMain);
 OpenHDMMALVideo *pipVideo = new OpenHDMMALVideo(OpenHDStreamTypePiP);
 #endif
 #endif
+
+#if defined(__apple__)
+#if defined(ENABLE_MAIN_VIDEO)
+OpenHDAppleVideo *mainVideo = new OpenHDAppleVideo(OpenHDStreamTypeMain);
+#endif
+#if defined(ENABLE_PIP)
+OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
+#endif
+#endif
+
 
 #endif
 
@@ -337,6 +355,22 @@ OpenHDMMALVideo *pipVideo = new OpenHDMMALVideo(OpenHDStreamTypePiP);
     QObject::connect(pipVideoThread, &QThread::started, pipVideo, &OpenHDMMALVideo::onStarted);
 #endif
 #endif
+
+
+#if defined(__apple__)
+#if defined(ENABLE_MAIN_VIDEO)
+    QQuickItem *mainRenderer = rootObject->findChild<QQuickItem *>("mainMMALSurface");
+    mainVideo->setVideoOut((OpenHDMMALRender*)mainRenderer);
+    QObject::connect(mainVideoThread, &QThread::started, mainVideo, &OpenHDAppleVideo::onStarted);
+#endif
+
+#if defined(ENABLE_PIP)
+    QQuickItem *pipRenderer = rootObject->findChild<QQuickItem *>("pipMMALSurface");
+    pipVideo->setVideoOut((OpenHDMMALRender*)pipRenderer);
+    QObject::connect(pipVideoThread, &QThread::started, pipVideo, &OpenHDAppleVideo::onStarted);
+#endif
+#endif
+
 
 #if defined(ENABLE_MAIN_VIDEO)
     mainVideo->moveToThread(mainVideoThread);

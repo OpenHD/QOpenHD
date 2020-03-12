@@ -30,6 +30,16 @@ Rectangle {
     property Popup widgetPopup: Popup {}
     property bool hasWidgetPopup: false
 
+
+    Behavior on width {
+        NumberAnimation { duration: 200 }
+    }
+
+
+    Behavior on height {
+        NumberAnimation { duration: 200 }
+    }
+
     Popup {
         id: widgetDetail
 

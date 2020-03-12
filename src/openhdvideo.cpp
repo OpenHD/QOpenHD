@@ -95,12 +95,17 @@ void OpenHDVideo::reconfigure() {
         m_video_port = settings.value("pip_video_port", 5601).toInt();
     }
     if (m_video_port != m_socket->localPort()) {
-        m_socket->close();
-        m_socket->bind(QHostAddress::Any, m_video_port);
+        restartStream = true;
     }
 
     auto enable_rtp = settings.value("enable_rtp", true).toBool();
     if (m_enable_rtp != enable_rtp) {
+        m_enable_rtp = enable_rtp;
+        restartStream = true;
+    }
+
+    if (restartStream) {
+        restartStream = false;
         m_socket->close();
         stop();
         tempBuffer.clear();
@@ -110,8 +115,6 @@ void OpenHDVideo::reconfigure() {
         sentPPS = false;
         havePPS = false;
         sentIDR = false;
-
-        m_enable_rtp = enable_rtp;
         m_socket->bind(QHostAddress::Any, m_video_port);
     }
 }
@@ -332,6 +335,39 @@ void OpenHDVideo::processNAL(QByteArray nalUnit) {
             break;
         }
         case NAL_UNIT_TYPE_SPS: {
+            auto new_width = 0;
+            auto new_height = 0;
+            auto new_fps = 0;
+
+            if (h264_stream->sps->frame_cropping_flag) {
+                new_width = ((h264_stream->sps->pic_width_in_mbs_minus1 + 1) * 16) - h264_stream->sps->frame_crop_left_offset * 2 - h264_stream->sps->frame_crop_right_offset * 2;
+                new_height = ((2 - h264_stream->sps->frame_mbs_only_flag)* (h264_stream->sps->pic_height_in_map_units_minus1 + 1) * 16) - (h264_stream->sps->frame_crop_top_offset * 2) - (h264_stream->sps->frame_crop_bottom_offset * 2);
+            }
+            else {
+                new_width = ((h264_stream->sps->pic_width_in_mbs_minus1 + 1) * 16);
+                new_height = ((2 - h264_stream->sps->frame_mbs_only_flag) * (h264_stream->sps->pic_height_in_map_units_minus1 + 1) * 16);
+            }
+
+            int vui_present = h264_stream->sps->vui_parameters_present_flag;
+            if (vui_present) {
+                if (h264_stream->sps->vui.timing_info_present_flag) {
+                    auto num_units_in_tick = h264_stream->sps->vui.num_units_in_tick;
+                    auto time_scale = h264_stream->sps->vui.time_scale;
+                    new_fps = time_scale / num_units_in_tick;
+                } else {
+                    new_fps = 30;
+                }
+            }
+
+            if (new_height != height || new_width != width || new_fps != fps) {
+                height = new_height;
+                width = new_width;
+                fps = new_fps;
+                if (!isStart) {
+                    restartStream = true;
+                }
+            }
+
             if (!haveSPS) {
                 QByteArray extraData;
                 extraData.append(NAL_HEADER, 4);
@@ -339,26 +375,6 @@ void OpenHDVideo::processNAL(QByteArray nalUnit) {
 
                 sps_len = extraData.size();
                 memcpy(sps, extraData.data(), extraData.size());
-
-                if (h264_stream->sps->frame_cropping_flag) {
-                    width = ((h264_stream->sps->pic_width_in_mbs_minus1 + 1) * 16) - h264_stream->sps->frame_crop_left_offset * 2 - h264_stream->sps->frame_crop_right_offset * 2;
-                    height = ((2 - h264_stream->sps->frame_mbs_only_flag)* (h264_stream->sps->pic_height_in_map_units_minus1 + 1) * 16) - (h264_stream->sps->frame_crop_top_offset * 2) - (h264_stream->sps->frame_crop_bottom_offset * 2);
-                }
-                else {
-                    width = ((h264_stream->sps->pic_width_in_mbs_minus1 + 1) * 16);
-                    height = ((2 - h264_stream->sps->frame_mbs_only_flag) * (h264_stream->sps->pic_height_in_map_units_minus1 + 1) * 16);
-                }
-
-                int vui_present = h264_stream->sps->vui_parameters_present_flag;
-                if (vui_present) {
-                    if (h264_stream->sps->vui.timing_info_present_flag) {
-                        auto num_units_in_tick = h264_stream->sps->vui.num_units_in_tick;
-                        auto time_scale = h264_stream->sps->vui.time_scale;
-                        fps = time_scale / num_units_in_tick;
-                    } else {
-                        fps = 30;
-                    }
-                }
                 haveSPS = true;
             }
             if (isConfigured) {
