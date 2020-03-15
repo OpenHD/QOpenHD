@@ -256,7 +256,7 @@ void OpenHDMMALVideo::mmalConfigure() {
      * need to be a bit larger for higher bitrates.
      */
     m_decoder->input[0]->buffer_num = 15;
-    m_decoder->input[0]->buffer_size = 512 * 1024;
+    m_decoder->input[0]->buffer_size = 768 * 1024;
     m_pool_in = mmal_port_pool_create(m_decoder->input[0],
                                        m_decoder->input[0]->buffer_num,
                                        m_decoder->input[0]->buffer_size);
