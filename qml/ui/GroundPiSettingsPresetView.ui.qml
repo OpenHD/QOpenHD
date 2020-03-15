@@ -99,6 +99,7 @@ ScrollView {
             height: 160
             title: qsTr("Changes that will be applied:")
             padding: 0
+            clip: true
 
             ScrollView {
                 id: changesView
