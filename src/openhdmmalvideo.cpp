@@ -388,6 +388,9 @@ void OpenHDMMALVideo::renderLoop() {
                     uint8_t *dummyFrame = (uint8_t*)malloc(sizeof(char) * frameSize);
                     memset(dummyFrame, 0, (size_t)frameSize);
                     m_videoOut->paintFrame(dummyFrame, (size_t)frameSize);
+                    m_videoOut->paintFrame(dummyFrame, (size_t)frameSize);
+                    m_videoOut->paintFrame(dummyFrame, (size_t)frameSize);
+                    m_videoOut->paintFrame(dummyFrame, (size_t)frameSize);
                     free(dummyFrame);
                 }
                 if (buffer->cmd == MMAL_EVENT_FORMAT_CHANGED) {
