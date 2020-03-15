@@ -373,10 +373,6 @@ void OpenHDMMALVideo::renderLoop() {
     MMAL_BUFFER_HEADER_T *buffer;
 
     while (true) {
-        if (!isConfigured) {
-            return;
-        }
-
         vcos_semaphore_wait(&m_context.out_semaphore);
 
 
