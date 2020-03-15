@@ -255,7 +255,7 @@ void OpenHDMMALVideo::mmalConfigure() {
      * largest NAL unit we will likely feed to the decoder, 512KB seems ok in testing but may
      * need to be a bit larger for higher bitrates.
      */
-    m_decoder->input[0]->buffer_num = 30;
+    m_decoder->input[0]->buffer_num = 15;
     m_decoder->input[0]->buffer_size = 512 * 1024;
     m_pool_in = mmal_port_pool_create(m_decoder->input[0],
                                        m_decoder->input[0]->buffer_num,
@@ -271,8 +271,8 @@ void OpenHDMMALVideo::mmalConfigure() {
      * can't decode anything much larger than 1080p, but a single 1080p YUV420 frame is about 3.2MB
      * so we add some extra margin on top of that.
      */
-    m_decoder->output[0]->buffer_num = 30;
-    m_decoder->output[0]->buffer_size = m_decoder->output[0]->buffer_size_recommended;
+    m_decoder->output[0]->buffer_num = 15;
+    m_decoder->output[0]->buffer_size = 3500000;
     m_pool_out = mmal_port_pool_create(m_decoder->output[0],
                                        m_decoder->output[0]->buffer_num,
                                        m_decoder->output[0]->buffer_size);
