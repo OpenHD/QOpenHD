@@ -374,6 +374,7 @@ void OpenHDMMALVideo::processFrame(QByteArray &nal) {
 void OpenHDMMALVideo::renderLoop() {
 
     MMAL_BUFFER_HEADER_T *buffer;
+    MMAL_STATUS_T status = MMAL_EINVAL;
 
     while (true) {
         vcos_semaphore_wait(&m_context.out_semaphore);
@@ -381,19 +382,54 @@ void OpenHDMMALVideo::renderLoop() {
 
         /* Get decoded frame */
         while ((buffer = mmal_queue_get(m_context.queue)) != NULL) {
-            if (m_videoOut) {
-                m_videoOut->paintFrame(buffer->data, buffer->length);
-            }
-            m_frames = m_frames + 1;
-            qint64 current_timestamp = QDateTime::currentMSecsSinceEpoch();
-            auto elapsed = current_timestamp - m_last_time;
-            if (elapsed > 5000) {
-                auto fps = m_frames / (elapsed / 1000.0);
-                m_last_time = current_timestamp;
-                m_frames = 0;
-            }
+            if (buffer->cmd) {
+                if (m_videoOut) {
+                    double frameSize = 1920 * 1080 * 1.5;
+                    uint8_t *dummyFrame = (uint8_t*)malloc(sizeof(char) * frameSize);
+                    memset(dummyFrame, 0, (size_t)frameSize);
+                    m_videoOut->paintFrame(dummyFrame, (size_t)frameSize);
+                    free(dummyFrame);
+                }
+                if (buffer->cmd == MMAL_EVENT_FORMAT_CHANGED) {
+                    MMAL_EVENT_FORMAT_CHANGED_T *event = mmal_event_format_changed_get(buffer);
+                    //Assume we can't reuse the buffers, so have to disable, destroy
+                    //pool, create new pool, enable port, feed in buffers.
+                    status = mmal_port_disable(m_decoder->output[0]);
 
-            mmal_buffer_header_release(buffer);
+                    //Clear the queue of all buffers
+                    while(mmal_queue_length(m_pool_out->queue) != m_pool_out->headers_num) {
+                        MMAL_BUFFER_HEADER_T *buf;
+                        vcos_semaphore_wait(&m_context.out_semaphore);
+                        buf = mmal_queue_get(m_context.queue);
+                        mmal_buffer_header_release(buf);
+                    }
+
+                    mmal_port_pool_destroy(m_decoder->output[0], m_pool_out);
+                    status = mmal_format_full_copy(m_decoder->output[0]->format, event->format);
+                    status = mmal_port_format_commit(m_decoder->output[0]);
+
+                    m_pool_out = mmal_port_pool_create(m_decoder->output[0],
+                            m_decoder->output[0]->buffer_num,
+                            m_decoder->output[0]->buffer_size);
+
+                    status = mmal_port_enable(m_decoder->output[0], output_callback);
+                    m_videoOut->setFormat(event->format->es->video.width, event->format->es->video.height, QVideoFrame::PixelFormat::Format_YUV420P);
+                }
+                mmal_buffer_header_release(buffer);
+            } else {
+                // buffer is released by the renderer when it finishes with the frame
+                if (m_videoOut) {
+                    m_videoOut->paintFrame(buffer);
+                }
+                m_frames = m_frames + 1;
+                qint64 current_timestamp = QDateTime::currentMSecsSinceEpoch();
+                auto elapsed = current_timestamp - m_last_time;
+                if (elapsed > 5000) {
+                    auto fps = m_frames / (elapsed / 1000.0);
+                    m_last_time = current_timestamp;
+                    m_frames = 0;
+                }
+            }
         }
 
         /* Send empty buffers to the output port of the decoder */
