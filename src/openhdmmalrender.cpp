@@ -129,6 +129,89 @@ private:
 };
 #endif
 
+
+#if defined(__rasp_pi__)
+#include "interface/mmal/mmal.h"
+
+class MMALPixelBufferVideoBuffer : public QAbstractPlanarVideoBuffer
+{
+public:
+    MMALPixelBufferVideoBuffer(MMAL_BUFFER_HEADER_T *buffer, int width, int height): QAbstractPlanarVideoBuffer(NoHandle), m_buffer(buffer), m_mode(NotMapped), m_width(width), m_height(height) {
+
+    }
+
+    ~MMALPixelBufferVideoBuffer() {
+        mmal_buffer_header_release(m_buffer);
+    }
+
+    MapMode mapMode() const {
+        return m_mode;
+    }
+
+    int map(QAbstractVideoBuffer::MapMode mode, int *numBytes, int bytesPerLine[4], uchar *data[4]) {
+        const size_t nPlanes = m_buffer->type->video.planes;
+
+        if (!nPlanes) {
+            data[0] = map(mode, numBytes, bytesPerLine);
+            return data[0] ? 1 : 0;
+        }
+
+        if (mode != QAbstractVideoBuffer::NotMapped && m_mode == QAbstractVideoBuffer::NotMapped) {
+            if (numBytes)
+                *numBytes = m_buffer->length;
+
+            if (bytesPerLine) {
+                bytesPerLine[0] = m_buffer->type->video.pitch[0];
+                bytesPerLine[1] = m_buffer->type->video.pitch[1];
+                bytesPerLine[2] = m_buffer->type->video.pitch[2];
+            }
+
+            if (data) {
+                data[0] = static_cast<uchar*>(m_buffer->data + m_buffer->type->video.offset[0]);
+                data[1] = static_cast<uchar*>(m_buffer->data + m_buffer->type->video.offset[1]);
+                data[2] = static_cast<uchar*>(m_buffer->data + m_buffer->type->video.offset[2]);
+            }
+
+            m_mode = mode;
+        }
+
+        return nPlanes;
+    }
+
+    uchar *map(MapMode mode, int *numBytes, int *bytesPerLine) {
+        if (mode != NotMapped && m_mode == NotMapped) {
+            if (numBytes) {
+                *numBytes = m_buffer->length;
+            }
+
+            if (bytesPerLine) {
+                *bytesPerLine = m_buffer->length / m_height;
+            }
+
+            m_mode = mode;
+
+            return (uchar*)m_buffer->data;
+        } else {
+            return nullptr;
+        }
+    }
+
+    void unmap() {
+        if (m_mode != NotMapped) {
+            m_mode = NotMapped;
+        }
+    }
+
+private:
+    MMAL_BUFFER_HEADER_T *m_buffer = nullptr;
+    MapMode m_mode = NotMapped;
+    int m_width = 0;
+    int m_height = 0;
+};
+#endif
+
+
+
 OpenHDMMALRender::OpenHDMMALRender(QQuickItem *parent): QQuickItem(parent) {
     QObject::connect(this, &OpenHDMMALRender::newFrameAvailable, this, &OpenHDMMALRender::onNewVideoContentReceived, Qt::QueuedConnection);
 }
@@ -158,6 +241,17 @@ void OpenHDMMALRender::paintFrame(CVImageBufferRef imageBuffer) {
 
     QAbstractVideoBuffer *buffer = new CVPixelBufferVideoBuffer(imageBuffer);
     QVideoFrame f(buffer, QSize(width, height), format);
+    emit newFrameAvailable(f);
+}
+#endif
+
+#if defined(__rasp_pi__)
+void OpenHDMMALRender::paintFrame(MMAL_BUFFER_HEADER_T *buffer) {
+    int width = m_format.frameWidth();
+    int height = m_format.frameHeight();
+
+    QAbstractVideoBuffer *b = new MMALPixelBufferVideoBuffer(buffer, width, height);
+    QVideoFrame f(b, QSize(width, height), QVideoFrame::PixelFormat::Format_YUV420P);
     emit newFrameAvailable(f);
 }
 #endif

@@ -11,6 +11,10 @@
 #include <VideoToolbox/VideoToolbox.h>
 #endif
 
+#if defined(__rasp_pi__)
+#include "interface/mmal/mmal.h"
+#endif
+
 class OpenHDMMALRender : public QQuickItem {
     Q_OBJECT
 public:
@@ -22,6 +26,10 @@ public:
     void paintFrame(uint8_t *buffer_data, size_t buffer_length);
     #if defined(__apple__)
     void paintFrame(CVImageBufferRef imageBuffer);
+    #endif
+
+    #if defined(__rasp_pi__)
+    void paintFrame(MMAL_BUFFER_HEADER_T *buffer);
     #endif
 
     QAbstractVideoSurface* videoSurface() const { return m_surface; }

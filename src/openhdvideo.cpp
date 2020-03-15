@@ -71,6 +71,8 @@ void OpenHDVideo::onStarted() {
  * if necessary, such as hiding the PiP element when the stream has stopped.
  */
 void OpenHDVideo::reconfigure() {
+    bool restart = false;
+
     auto currentTime = QDateTime::currentMSecsSinceEpoch();
 
     if (currentTime - lastDataReceived < 2500) {
@@ -95,17 +97,16 @@ void OpenHDVideo::reconfigure() {
         m_video_port = settings.value("pip_video_port", 5601).toInt();
     }
     if (m_video_port != m_socket->localPort()) {
-        restartStream = true;
+        restart = true;
     }
 
     auto enable_rtp = settings.value("enable_rtp", true).toBool();
     if (m_enable_rtp != enable_rtp) {
         m_enable_rtp = enable_rtp;
-        restartStream = true;
+        restart = true;
     }
 
-    if (restartStream) {
-        restartStream = false;
+    if (restart) {
         m_socket->close();
         stop();
         tempBuffer.clear();
@@ -115,6 +116,7 @@ void OpenHDVideo::reconfigure() {
         sentPPS = false;
         havePPS = false;
         sentIDR = false;
+        isStart = true;
         m_socket->bind(QHostAddress::Any, m_video_port);
     }
 }
@@ -363,9 +365,6 @@ void OpenHDVideo::processNAL(QByteArray nalUnit) {
                 height = new_height;
                 width = new_width;
                 fps = new_fps;
-                if (!isStart) {
-                    restartStream = true;
-                }
             }
 
             if (!haveSPS) {
@@ -382,7 +381,7 @@ void OpenHDVideo::processNAL(QByteArray nalUnit) {
                 _n.append(NAL_HEADER, 4);
                 _n.append(nalUnit);
 
-                //processFrame(_n);
+                processFrame(_n);
                 //nalQueue.push_back(_n);
 
                 sentSPS = true;
@@ -404,7 +403,7 @@ void OpenHDVideo::processNAL(QByteArray nalUnit) {
                 _n.append(NAL_HEADER, 4);
                 _n.append(nalUnit);
 
-                //processFrame(_n);
+                processFrame(_n);
                 //nalQueue.push_back(_n);
 
                 sentPPS = true;
