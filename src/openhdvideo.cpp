@@ -115,6 +115,7 @@ void OpenHDVideo::reconfigure() {
         sentPPS = false;
         havePPS = false;
         sentIDR = false;
+        isStart = true;
         m_socket->bind(QHostAddress::Any, m_video_port);
     }
 }
