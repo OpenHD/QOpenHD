@@ -74,8 +74,8 @@ BaseWidget {
         anchors.bottomMargin: 6
 
         GstGLVideoItem {
-            id: videoElement
-            objectName: "pipVideoItem"
+            id: pipVideoGStreamer
+            objectName: "pipVideoGStreamer"
             anchors.fill: parent
         }
     }

@@ -37,7 +37,7 @@ ApplicationWindow {
     // to be initialized, depending on the order they appear in the QML, will simply
     // not work on desktop linux.
     Loader {
-        source: (EnableGStreamer && EnableMainVideo && EnablePiP)  ? "DummyVideoItem.qml" : ""
+        source: (EnableGStreamer && EnableMainVideo && EnablePiP)  ? "DummyVideoGStreamer.qml" : ""
     }
 
     /*
@@ -171,7 +171,7 @@ ApplicationWindow {
         z: 1.1
         source: {
             if (EnableGStreamer && EnableMainVideo) {
-                return "MainVideoItem.qml";
+                return "MainVideoGStreamer.qml";
             }
             if (IsRaspPi && EnableVideoRender && EnableMainVideo) {
                 return "MainVideoRender.qml";

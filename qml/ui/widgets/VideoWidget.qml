@@ -5,7 +5,7 @@ import QtQuick.Layouts 1.12
 Loader {
     source: {
         if (EnableGStreamer && EnablePiP) {
-            return "VideoWidgetForm.ui.qml"
+            return "VideoWidgetGStreamerForm.ui.qml"
         }
 
 
