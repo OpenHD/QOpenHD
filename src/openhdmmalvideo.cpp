@@ -79,7 +79,6 @@ void OpenHDMMALVideo::stop() {
        mmal_port_disable(m_decoder->input[0]);
        mmal_port_disable(m_decoder->output[0]);
        mmal_component_disable(m_decoder);
-       mmal_component_destroy(m_decoder);
    }
 
    if (m_pool_in) {
@@ -88,6 +87,10 @@ void OpenHDMMALVideo::stop() {
 
    if (m_pool_out) {
        mmal_port_pool_destroy(m_decoder->output[0], m_pool_out);
+   }
+
+   if (m_decoder) {
+       mmal_component_destroy(m_decoder);
    }
 
    if (m_context.queue) {
