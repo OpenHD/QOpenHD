@@ -44,11 +44,11 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "openhdvideo.h"
 #if defined(__rasp_pi__)
 #include "openhdmmalvideo.h"
-#include "openhdmmalrender.h"
+#include "openhdrender.h"
 #endif
 #if defined(__apple__)
 #include "openhdapplevideo.h"
-#include "openhdmmalrender.h"
+#include "openhdrender.h"
 #endif
 #endif
 
@@ -138,11 +138,11 @@ int main(int argc, char *argv[]) {
 #if defined(ENABLE_VIDEO_RENDER)
 #if defined(__rasp_pi__)
     qmlRegisterType<OpenHDMMALVideo>("OpenHD", 1, 0, "OpenHDMMALVideo");
-    qmlRegisterType<OpenHDMMALRender>("OpenHD", 1, 0, "OpenHDMMALRender");
+    qmlRegisterType<OpenHDRender>("OpenHD", 1, 0, "OpenHDRender");
 #endif
 #if defined(__apple__)
     qmlRegisterType<OpenHDAppleVideo>("OpenHD", 1, 0, "OpenHDAppleVideo");
-    qmlRegisterType<OpenHDMMALRender>("OpenHD", 1, 0, "OpenHDMMALRender");
+    qmlRegisterType<OpenHDRender>("OpenHD", 1, 0, "OpenHDRender");
 #endif
 #endif
 
@@ -344,14 +344,14 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
 
 #if defined(__rasp_pi__)
 #if defined(ENABLE_MAIN_VIDEO)
-    QQuickItem *mainRenderer = rootObject->findChild<QQuickItem *>("mainMMALSurface");
-    mainVideo->setVideoOut((OpenHDMMALRender*)mainRenderer);
+    QQuickItem *mainRenderer = rootObject->findChild<QQuickItem *>("mainSurface");
+    mainVideo->setVideoOut((OpenHDRender*)mainRenderer);
     QObject::connect(mainVideoThread, &QThread::started, mainVideo, &OpenHDMMALVideo::onStarted);
 #endif
 
 #if defined(ENABLE_PIP)
-    QQuickItem *pipRenderer = rootObject->findChild<QQuickItem *>("pipMMALSurface");
-    pipVideo->setVideoOut((OpenHDMMALRender*)pipRenderer);
+    QQuickItem *pipRenderer = rootObject->findChild<QQuickItem *>("pipSurface");
+    pipVideo->setVideoOut((OpenHDRender*)pipRenderer);
     QObject::connect(pipVideoThread, &QThread::started, pipVideo, &OpenHDMMALVideo::onStarted);
 #endif
 #endif
@@ -359,14 +359,14 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
 
 #if defined(__apple__)
 #if defined(ENABLE_MAIN_VIDEO)
-    QQuickItem *mainRenderer = rootObject->findChild<QQuickItem *>("mainMMALSurface");
-    mainVideo->setVideoOut((OpenHDMMALRender*)mainRenderer);
+    QQuickItem *mainRenderer = rootObject->findChild<QQuickItem *>("mainSurface");
+    mainVideo->setVideoOut((OpenHDRender*)mainRenderer);
     QObject::connect(mainVideoThread, &QThread::started, mainVideo, &OpenHDAppleVideo::onStarted);
 #endif
 
 #if defined(ENABLE_PIP)
-    QQuickItem *pipRenderer = rootObject->findChild<QQuickItem *>("pipMMALSurface");
-    pipVideo->setVideoOut((OpenHDMMALRender*)pipRenderer);
+    QQuickItem *pipRenderer = rootObject->findChild<QQuickItem *>("pipSurface");
+    pipVideo->setVideoOut((OpenHDRender*)pipRenderer);
     QObject::connect(pipVideoThread, &QThread::started, pipVideo, &OpenHDAppleVideo::onStarted);
 #endif
 #endif

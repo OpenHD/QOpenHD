@@ -64,6 +64,7 @@ SOURCES += \
     src/openhd.cpp \
     src/openhdpi.cpp \
     src/openhdrc.cpp \
+    src/openhdrender.cpp \
     src/openhdsettings.cpp \
     src/openhdtelemetry.cpp \
     src/powermicroservice.cpp \
@@ -76,6 +77,7 @@ HEADERS += \
     inc/FPS.h \
     inc/gpiomicroservice.h \
     inc/mavlinkbase.h \
+    inc/openhdrender.h \
     inc/powermicroservice.h \
     inc/sharedqueue.h \
     inc/constants.h \
@@ -338,12 +340,10 @@ EnableVideoRender {
     DEFINES += ENABLE_VIDEO_RENDER
 
     HEADERS += \
-        inc/openhdvideo.h \
-        inc/openhdmmalrender.h
+        inc/openhdvideo.h
 
     SOURCES += \
-        src/openhdvideo.cpp \
-        src/openhdmmalrender.cpp
+        src/openhdvideo.cpp
 }
 
 EnablePiP {

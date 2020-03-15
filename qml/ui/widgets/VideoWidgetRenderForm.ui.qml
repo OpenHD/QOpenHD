@@ -42,13 +42,13 @@ BaseWidget {
 
         VideoOutput {
             id: display
-            objectName: "pipMMALDisplay"
-            source: pipMMALSurface
+            objectName: "pipDisplay"
+            source: pipSurface
             anchors.fill: parent
 
-            OpenHDMMALRender {
-                id: pipMMALSurface
-                objectName: "pipMMALSurface"
+            OpenHDRender {
+                id: pipSurface
+                objectName: "pipSurface"
             }
         }
     }

@@ -1,6 +1,6 @@
 #if defined(ENABLE_VIDEO_RENDER)
 
-#include "openhdmmalrender.h"
+#include "openhdrender.h"
 
 #include <QQuickWindow>
 #include <QApplication>
@@ -212,11 +212,11 @@ private:
 
 
 
-OpenHDMMALRender::OpenHDMMALRender(QQuickItem *parent): QQuickItem(parent) {
-    QObject::connect(this, &OpenHDMMALRender::newFrameAvailable, this, &OpenHDMMALRender::onNewVideoContentReceived, Qt::QueuedConnection);
+OpenHDRender::OpenHDRender(QQuickItem *parent): QQuickItem(parent) {
+    QObject::connect(this, &OpenHDRender::newFrameAvailable, this, &OpenHDRender::onNewVideoContentReceived, Qt::QueuedConnection);
 }
 
-void OpenHDMMALRender::paintFrame(uint8_t *buffer_data, size_t buffer_length) {
+void OpenHDRender::paintFrame(uint8_t *buffer_data, size_t buffer_length) {
     if (buffer_length < 1024) {
         return;
     }
@@ -233,7 +233,7 @@ void OpenHDMMALRender::paintFrame(uint8_t *buffer_data, size_t buffer_length) {
 }
 
 #if defined(__apple__)
-void OpenHDMMALRender::paintFrame(CVImageBufferRef imageBuffer) {
+void OpenHDRender::paintFrame(CVImageBufferRef imageBuffer) {
     int width = CVPixelBufferGetWidth(imageBuffer);
     int height = CVPixelBufferGetHeight(imageBuffer);
 
@@ -246,7 +246,7 @@ void OpenHDMMALRender::paintFrame(CVImageBufferRef imageBuffer) {
 #endif
 
 #if defined(__rasp_pi__)
-void OpenHDMMALRender::paintFrame(MMAL_BUFFER_HEADER_T *buffer) {
+void OpenHDRender::paintFrame(MMAL_BUFFER_HEADER_T *buffer) {
     int width = m_format.frameWidth();
     int height = m_format.frameHeight();
 
@@ -256,11 +256,11 @@ void OpenHDMMALRender::paintFrame(MMAL_BUFFER_HEADER_T *buffer) {
 }
 #endif
 
-OpenHDMMALRender::~OpenHDMMALRender() {
+OpenHDRender::~OpenHDRender() {
 
 }
 
-void OpenHDMMALRender::setVideoSurface(QAbstractVideoSurface *surface) {
+void OpenHDRender::setVideoSurface(QAbstractVideoSurface *surface) {
     if (m_surface && m_surface != surface && m_surface->isActive()) {
         m_surface->stop();
     }
@@ -268,7 +268,7 @@ void OpenHDMMALRender::setVideoSurface(QAbstractVideoSurface *surface) {
     m_surface = surface;
 }
 
-void OpenHDMMALRender::setFormat(int width, int heigth, QVideoFrame::PixelFormat i_format) {
+void OpenHDRender::setFormat(int width, int heigth, QVideoFrame::PixelFormat i_format) {
     QSize size(width, heigth);
     QVideoSurfaceFormat format(size, i_format);
 
@@ -281,7 +281,7 @@ void OpenHDMMALRender::setFormat(int width, int heigth, QVideoFrame::PixelFormat
     }
 }
 
-void OpenHDMMALRender::onNewVideoContentReceived(const QVideoFrame &frame) {
+void OpenHDRender::onNewVideoContentReceived(const QVideoFrame &frame) {
     if (m_surface) {
         m_surface->present(frame);
     }

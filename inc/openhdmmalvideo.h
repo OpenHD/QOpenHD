@@ -9,7 +9,7 @@
 #include <QtQml>
 
 #include "openhdvideo.h"
-#include "openhdmmalrender.h"
+#include "openhdrender.h"
 
 #include "bcm_host.h"
 #include "interface/mmal/mmal.h"
@@ -25,14 +25,14 @@ struct CONTEXT_T {
 class OpenHDMMALVideo : public OpenHDVideo
 {
     Q_OBJECT
-    Q_PROPERTY(OpenHDMMALRender *videoOut READ videoOut WRITE setVideoOut NOTIFY videoOutChanged)
+    Q_PROPERTY(OpenHDRender *videoOut READ videoOut WRITE setVideoOut NOTIFY videoOutChanged)
 
 public:
     OpenHDMMALVideo(enum OpenHDStreamType stream_type = OpenHDStreamTypeMain);
     virtual ~OpenHDMMALVideo() override;
 
-    OpenHDMMALRender *videoOut() const;
-    Q_INVOKABLE void setVideoOut(OpenHDMMALRender *videoOut);
+    OpenHDRender *videoOut() const;
+    Q_INVOKABLE void setVideoOut(OpenHDRender *videoOut);
 
 
     void start() override;
@@ -56,7 +56,7 @@ private:
     MMAL_POOL_T *m_pool_in = 0;
     MMAL_POOL_T *m_pool_out = 0;
 
-    QPointer<OpenHDMMALRender> m_videoOut;
+    QPointer<OpenHDRender> m_videoOut;
 
     quint64 m_last_time = 0;
     quint64 m_frames = 0;

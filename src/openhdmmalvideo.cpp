@@ -8,7 +8,7 @@
 #include <QFuture>
 
 #include "openhdmmalvideo.h"
-#include "openhdmmalrender.h"
+#include "openhdrender.h"
 #include "constants.h"
 #include "localmessage.h"
 
@@ -102,12 +102,12 @@ void OpenHDMMALVideo::stop() {
 }
 
 
-OpenHDMMALRender* OpenHDMMALVideo::videoOut() const {
+OpenHDRender* OpenHDMMALVideo::videoOut() const {
     return m_videoOut;
 }
 
 
-void OpenHDMMALVideo::setVideoOut(OpenHDMMALRender *videoOut) {
+void OpenHDMMALVideo::setVideoOut(OpenHDRender *videoOut) {
     qDebug() << "OpenHDMMALVideo::setVideoOut(" << videoOut << ")";
 
     if (m_videoOut == videoOut) {
