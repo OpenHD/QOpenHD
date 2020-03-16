@@ -176,7 +176,7 @@ iOSBuild {
     CONFIG += EnableSpeech
     CONFIG += EnableMainVideo
     CONFIG += EnablePiP
-    CONFIG += EnableVideoRender
+    CONFIG += EnableGStreamer
     CONFIG += EnableLink
     #CONFIG += EnableCharts
 
