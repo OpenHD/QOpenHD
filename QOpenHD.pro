@@ -385,8 +385,14 @@ EnableRC {
 installer {
     MacBuild {
         DESTDIR_COPY_RESOURCE_LIST = $$DESTDIR/$${TARGET}.app/Contents/MacOS
+        EnableGStreamer {
+            QMAKE_POST_LINK += $${BASEDIR}/tools/prepare_gstreamer_framework.sh $${DESTDIR}/gstwork $${DESTDIR}/$${TARGET}.app $${TARGET}
+            QMAKE_POST_LINK += && cd $${DESTDIR}
+        }
 
-        QMAKE_POST_LINK += cd $${DESTDIR}
+        EnableRender {
+            QMAKE_POST_LINK += cd $${DESTDIR}
+        }
 
         QMAKE_POST_LINK += && $$dirname(QMAKE_QMAKE)/macdeployqt $${TARGET}.app -appstore-compliant -qmldir=$${BASEDIR}/qml
 
