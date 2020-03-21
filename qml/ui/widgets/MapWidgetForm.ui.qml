@@ -28,6 +28,8 @@ BaseWidget {
 
     hasWidgetDetail: false
 
+    z: mapExpanded ? 2.0 : 1.0
+
     ListModel {
         id: pluginModel
 
@@ -130,7 +132,7 @@ BaseWidget {
 
         Rectangle {
             id: sidebar_wrapper
-            z: 2.0
+            z: 2.1
 
             anchors.top: parent.top
             anchors.topMargin: mapExpanded ? 6 : 0
