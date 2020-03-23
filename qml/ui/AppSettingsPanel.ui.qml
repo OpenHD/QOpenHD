@@ -1029,6 +1029,57 @@ Item {
                     color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
                     Text {
+                        text: "Screen Scale"
+                        font.weight: Font.Bold
+                        font.pixelSize: 13
+                        anchors.leftMargin: 8
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 224
+                        height: elementHeight
+                        anchors.left: parent.left
+                    }
+
+                    Text {
+                        text: Number(settings.global_scale).toLocaleString(Qt.locale(), 'f', 1) + "x";
+                        font.pixelSize: 16
+                        anchors.right: screenScaleSpinBox.left
+                        anchors.rightMargin: 12
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 32
+                        height: elementHeight
+
+                    }
+
+                    Slider {
+                        id: screenScaleSpinBox
+                        height: elementHeight
+                        width: 210
+                        font.pixelSize: 14
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        to : 2.0
+                        from : 1.0
+
+                        anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
+                        value: settings.global_scale
+
+                        // @disable-check M223
+                        onValueChanged: {
+                            // @disable-check M222
+                            settings.global_scale = value
+                        }
+                    }
+                }
+
+                Rectangle {
+                    width: parent.width
+                    height: rowHeight
+                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                    visible: OpenHDPi.is_raspberry_pi
+
+                    Text {
                         text: "Brightness"
                         font.weight: Font.Bold
                         font.pixelSize: 13
