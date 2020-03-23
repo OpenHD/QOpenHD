@@ -12,8 +12,8 @@ import "../ui/elements"
 
 Rectangle {
     id: element2
-    width: 504
-    height: 300
+    Layout.fillHeight: true
+    Layout.fillWidth: true
 
     Label {
         id: ohdLabel

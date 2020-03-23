@@ -16,8 +16,8 @@ import "../ui" as Ui
  *
  */
 Item {
-    width: 504
-    height: 300
+    Layout.fillHeight: true
+    Layout.fillWidth: true
 
     property int rowHeight: 64
     property int elementHeight: 48
