@@ -10,7 +10,7 @@ import "../ui" as Ui
 
 import "../ui/elements"
 
-Rectangle {
+Item {
     id: element2
     Layout.fillHeight: true
     Layout.fillWidth: true
