@@ -284,6 +284,33 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             }
             break;
         }
+        case MAVLINK_MSG_ID_SENSOR_OFFSETS: {
+            break;
+        }
+        case MAVLINK_MSG_ID_MEMINFO: {
+            break;
+        }
+        case MAVLINK_MSG_ID_MOUNT_STATUS: {
+            break;
+        }
+        case MAVLINK_MSG_ID_AHRS: {
+            break;
+        }
+        case MAVLINK_MSG_ID_HWSTATUS: {
+            break;
+        }
+        case MAVLINK_MSG_ID_AHRS2: {
+            break;
+        }
+        case MAVLINK_MSG_ID_AHRS3: {
+            break;
+        }
+        case MAVLINK_MSG_ID_MAG_CAL_REPORT: {
+            break;
+        }
+        case MAVLINK_MSG_ID_EKF_STATUS_REPORT: {
+            break;
+        }
         case MAVLINK_MSG_ID_VIBRATION:{
             break;
         }
@@ -335,6 +362,9 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             }
 
             OpenHD::instance()->messageReceived(statustext.text, level);
+            break;
+        }
+        case MAVLINK_MSG_ID_ESC_TELEMETRY_1_TO_4: {
             break;
         }
         default: {
