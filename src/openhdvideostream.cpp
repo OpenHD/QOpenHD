@@ -662,10 +662,10 @@ void OpenHDVideoStream::init(QQmlApplicationEngine* engine = nullptr, enum Strea
     m_stream_type = stream_type;
     switch (m_stream_type) {
         case StreamTypeMain:
-            m_elementName = "mainVideoItem";
+            m_elementName = "mainVideoGStreamer";
             break;
         case StreamTypePiP:
-            m_elementName = "pipVideoItem";
+            m_elementName = "pipVideoGStreamer";
             break;
     }
 

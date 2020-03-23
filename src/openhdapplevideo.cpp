@@ -8,7 +8,7 @@
 #include <QFuture>
 
 #include "openhdapplevideo.h"
-#include "openhdmmalrender.h"
+#include "openhdrender.h"
 #include "constants.h"
 #include "localmessage.h"
 
@@ -65,12 +65,12 @@ void OpenHDAppleVideo::stop() {
 }
 
 
-OpenHDMMALRender* OpenHDAppleVideo::videoOut() const {
+OpenHDRender* OpenHDAppleVideo::videoOut() const {
     return m_videoOut;
 }
 
 
-void OpenHDAppleVideo::setVideoOut(OpenHDMMALRender *videoOut) {
+void OpenHDAppleVideo::setVideoOut(OpenHDRender *videoOut) {
     qDebug() << "OpenHDAppleVideo::setVideoOut(" << videoOut << ")";
 
     if (m_videoOut == videoOut) {

@@ -5,20 +5,20 @@ import QtQuick.Layouts 1.12
 Loader {
     source: {
         if (EnableGStreamer && EnablePiP) {
-            return "VideoWidgetForm.ui.qml"
+            return "VideoWidgetGStreamerForm.ui.qml"
         }
 
 
         if (IsRaspPi && EnableVideoRender && EnablePiP) {
-            return "VideoWidgetMMALForm.ui.qml"
+            return "VideoWidgetRenderForm.ui.qml"
         }
 
         if (IsMac && EnableVideoRender && EnablePiP) {
-            return "VideoWidgetMMALForm.ui.qml"
+            return "VideoWidgetRenderForm.ui.qml"
         }
 
         if (IsiOS && EnableVideoRender && EnablePiP) {
-            return "VideoWidgetMMALForm.ui.qml"
+            return "VideoWidgetRenderForm.ui.qml"
         }
         return ""
     }

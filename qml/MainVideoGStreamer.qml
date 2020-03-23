@@ -5,8 +5,8 @@ import org.freedesktop.gstreamer.GLVideoItem 1.0;
 
 GstGLVideoItem {
     anchors.fill: parent
-    id: mainVideoItem
-    objectName: "mainVideoItem"
+    id: mainVideoGStreamer
+    objectName: "mainVideoGStreamer"
 
     Text {
         id: watermark

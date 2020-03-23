@@ -116,7 +116,6 @@ Item {
     }
 
     Loader {
-        z: 1.0
         source: EnablePiP ? "./widgets/VideoWidget.qml" : ""
     }
 

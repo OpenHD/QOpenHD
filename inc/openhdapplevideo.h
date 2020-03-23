@@ -9,21 +9,21 @@
 #include <QtQml>
 
 #include "openhdvideo.h"
-#include "openhdmmalrender.h"
+#include "openhdrender.h"
 
 #include <VideoToolbox/VideoToolbox.h>
 
 class OpenHDAppleVideo : public OpenHDVideo
 {
     Q_OBJECT
-    Q_PROPERTY(OpenHDMMALRender *videoOut READ videoOut WRITE setVideoOut NOTIFY videoOutChanged)
+    Q_PROPERTY(OpenHDRender *videoOut READ videoOut WRITE setVideoOut NOTIFY videoOutChanged)
 
 public:
     OpenHDAppleVideo(enum OpenHDStreamType stream_type = OpenHDStreamTypeMain);
     virtual ~OpenHDAppleVideo() override;
 
-    OpenHDMMALRender *videoOut() const;
-    Q_INVOKABLE void setVideoOut(OpenHDMMALRender *videoOut);
+    OpenHDRender *videoOut() const;
+    Q_INVOKABLE void setVideoOut(OpenHDRender *videoOut);
 
 
     void start() override;
@@ -40,7 +40,7 @@ signals:
     void videoOutChanged();
 
 protected:
-    QPointer<OpenHDMMALRender> m_videoOut;
+    QPointer<OpenHDRender> m_videoOut;
 
 private:
     quint64 m_last_time = 0;

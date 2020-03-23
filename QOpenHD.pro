@@ -34,7 +34,7 @@ CONFIG(debug, debug|release) {
 
 
 QT += qml quick concurrent opengl gui
-QT += positioning location sensors
+QT += positioning location
 
 QT_FOR_CONFIG += location-private
 qtConfig(geoservices_mapboxgl): QT += sql opengl
@@ -176,7 +176,7 @@ iOSBuild {
     CONFIG += EnableSpeech
     CONFIG += EnableMainVideo
     CONFIG += EnablePiP
-    CONFIG += EnableVideoRender
+    CONFIG += EnableGStreamer
     CONFIG += EnableLink
     #CONFIG += EnableCharts
 
@@ -195,6 +195,12 @@ iOSBuild {
 
         SOURCES += \
             src/openhdapplevideo.cpp
+    }
+
+    EnableGStreamer {
+        DEFINES += GST_GL_HAVE_WINDOW_EAGL=1
+        DEFINES += GST_GL_HAVE_PLATFORM_EAGL=1
+        DEFINES += HAVE_QT_IOS
     }
 }
 
@@ -339,11 +345,11 @@ EnableVideoRender {
 
     HEADERS += \
         inc/openhdvideo.h \
-        inc/openhdmmalrender.h
+        inc/openhdrender.h
 
     SOURCES += \
         src/openhdvideo.cpp \
-        src/openhdmmalrender.cpp
+        src/openhdrender.cpp
 }
 
 EnablePiP {

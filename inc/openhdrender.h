@@ -1,7 +1,7 @@
 #if defined(ENABLE_VIDEO_RENDER)
 
-#ifndef OpenHDMMALRender_H
-#define OpenHDMMALRender_H
+#ifndef OpenHDRender_H
+#define OpenHDRender_H
 
 #include <QQuickItem>
 #include <QAbstractVideoSurface>
@@ -11,17 +11,25 @@
 #include <VideoToolbox/VideoToolbox.h>
 #endif
 
-class OpenHDMMALRender : public QQuickItem {
+#if defined(__rasp_pi__)
+#include "interface/mmal/mmal.h"
+#endif
+
+class OpenHDRender : public QQuickItem {
     Q_OBJECT
 public:
-    OpenHDMMALRender(QQuickItem *parent = nullptr);
-    ~OpenHDMMALRender() override;
+    OpenHDRender(QQuickItem *parent = nullptr);
+    ~OpenHDRender() override;
 
     Q_PROPERTY(QAbstractVideoSurface *videoSurface READ videoSurface WRITE setVideoSurface)
 
     void paintFrame(uint8_t *buffer_data, size_t buffer_length);
     #if defined(__apple__)
     void paintFrame(CVImageBufferRef imageBuffer);
+    #endif
+
+    #if defined(__rasp_pi__)
+    void paintFrame(MMAL_BUFFER_HEADER_T *buffer);
     #endif
 
     QAbstractVideoSurface* videoSurface() const { return m_surface; }
@@ -42,6 +50,6 @@ public slots:
     void onNewVideoContentReceived(const QVideoFrame &frame);
 };
 
-#endif // OpenHDMMALRender_H
+#endif // OpenHDRender_H
 
 #endif
