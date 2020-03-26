@@ -10,7 +10,30 @@ Rectangle {
     id: statusBar
 
     width: 800
-    color: "#8f000000"
+    color: getBarColor()
+
+    function getBarColor() {
+        var barColor = settings.bar_behavior
+        switch (barColor) {
+            case "none": {
+                barColor= "#00000000"
+                break;
+            }
+            case "disappear": {
+                barColor= OpenHD.armed ? "#00000000" : "#8f000000"
+                break;
+            }
+            case "red": {
+                barColor= OpenHD.armed ? "#aeff3333" : "#8f000000"
+                break;
+            }
+            case "black": {
+                barColor= "#8f000000"
+                break;
+            }
+        }
+        return barColor
+    }
 
     anchors {
         bottom: parent.bottom
