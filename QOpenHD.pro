@@ -390,7 +390,7 @@ installer {
             QMAKE_POST_LINK += && cd $${DESTDIR}
         }
 
-        EnableRender {
+        EnableVideoRender {
             QMAKE_POST_LINK += cd $${DESTDIR}
         }
 
