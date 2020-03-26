@@ -80,7 +80,7 @@ BaseWidget {
             height: 48
             color: settings.color_text
             opacity: settings.flight_mode_opacity
-            text: OpenHD.flight_mode
+            text: OpenHD.armed ? "["+OpenHD.flight_mode+"]" : OpenHD.flight_mode
             anchors.verticalCenter: parent.verticalCenter
             anchors.horizontalCenter: parent.horizontalCenter
             verticalAlignment: Text.AlignVCenter
