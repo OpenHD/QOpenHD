@@ -17,7 +17,6 @@ Rectangle {
 
     width: 800
 
-    // fixme: shouldnt exclusively depend on mavlink
     color: OpenHD.armed ? "#aeff3333" : "#8f000000"
 
     anchors {
