@@ -229,6 +229,7 @@ ApplicationWindow {
 
     SettingsPopup {
         id: settings_panel
+        visible: false
         onLocalMessage: {
             hudOverlayGrid.messageHUD.pushMessage(message, level)
         }
