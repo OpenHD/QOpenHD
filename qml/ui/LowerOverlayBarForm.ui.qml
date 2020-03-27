@@ -18,7 +18,7 @@ Rectangle {
         right: parent.right
     }
 
-    z: 2.0
+    z: 1.0
 
     height: 48
 }
