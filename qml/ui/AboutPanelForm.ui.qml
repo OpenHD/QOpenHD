@@ -10,8 +10,8 @@ import "../ui" as Ui
 
 Rectangle {
     id: element2
-    width: 504
-    height: 300
+    Layout.fillHeight: true
+    Layout.fillWidth: true
     color: "#000000"
     property alias license: license
 

@@ -10,10 +10,10 @@ import "../ui" as Ui
 
 import "../ui/elements"
 
-Rectangle {
+Item {
     id: element2
-    width: 504
-    height: 300
+    Layout.fillHeight: true
+    Layout.fillWidth: true
 
     Label {
         id: ohdLabel

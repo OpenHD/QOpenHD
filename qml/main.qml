@@ -47,6 +47,8 @@ ApplicationWindow {
      */
     Settings {
         id: settings
+        property double global_scale: 1.0
+
         property int main_video_port: 5600
         property int pip_video_port: 5601
         property int lte_video_port: 8000
@@ -229,6 +231,7 @@ ApplicationWindow {
 
     SettingsPopup {
         id: settings_panel
+        visible: false
         onLocalMessage: {
             hudOverlayGrid.messageHUD.pushMessage(message, level)
         }

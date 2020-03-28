@@ -25,16 +25,16 @@ SettingsPopupForm {
 
     function openSettings() {
         openHDSettings.fetchSettings();
-        settings_panel.settings_popup.open();
+        visible = true
     }
 
     rebootButton.onClicked: {
-        settings_popup.close();
+        visible = false
         rebootDialog.open()
     }
 
     closeButton.onClicked: {
-        settings_popup.close();
+        visible = false
     }
 
 

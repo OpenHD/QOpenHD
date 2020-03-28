@@ -11,33 +11,16 @@ import OpenHD 1.0
 
 import "../ui" as Ui
 
-Popup {
+Rectangle {
     property alias settings_popup: settings_popup
     property alias closeButton: closeButton
     property alias rebootButton: rebootButton
 
     id: settings_popup
-    parent: Overlay.overlay
 
-    x: Math.round((Overlay.overlay.width - width) / 2)
-    y: Math.round((Overlay.overlay.height - height) / 2)
+    anchors.fill: parent
 
-    width: applicationWindow.width
-    height: applicationWindow.height
-
-
-    padding: 0
-    rightPadding: 0
-    bottomPadding: 0
-    leftPadding: 0
-    topPadding: 0
-    margins: 0
-    rightMargin: 0
-    bottomMargin: 0
-    leftMargin: 0
-    topMargin: 0
-    modal: true
-    clip: true
+    z: 4.0
 
     Rectangle {
         id: sidebar

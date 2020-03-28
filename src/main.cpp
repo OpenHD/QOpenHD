@@ -68,11 +68,21 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 
 int main(int argc, char *argv[]) {
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-    QApplication app(argc, argv);
 
     QCoreApplication::setOrganizationName("Open.HD");
     QCoreApplication::setOrganizationDomain("open.hd");
     QCoreApplication::setApplicationName("Open.HD");
+
+    QSettings settings;
+
+    double global_scale = settings.value("global_scale", 1.0).toDouble();
+
+    std::string global_scale_s = std::to_string(global_scale);
+    QByteArray scaleAsQByteArray(global_scale_s.c_str(), global_scale_s.length());
+    qputenv("QT_SCALE_FACTOR", scaleAsQByteArray);
+
+    QApplication app(argc, argv);
+
 
 #if defined(__android__)
     keep_screen_on(true);
@@ -107,7 +117,6 @@ int main(int argc, char *argv[]) {
     }
 
 
-    QSettings settings;
     // set persistent brightness level at startup
     if (pi.is_raspberry_pi()) {
         auto brightness = settings.value("brightness", 100).toInt();
