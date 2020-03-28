@@ -70,8 +70,6 @@ ApplicationWindow {
         property string color_text: "white"
         property string color_glow: "black"
 
-        property string bar_behavior: "disappear"
-
         property double ground_power_opacity: 1
         
         property int log_level: 3

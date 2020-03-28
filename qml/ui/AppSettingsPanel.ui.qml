@@ -402,55 +402,6 @@ Item {
                     color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
                     Text {
-                        text: "Top and Bottom Bar Behavior"
-                        font.weight: Font.Bold
-                        font.pixelSize: 13
-                        anchors.leftMargin: 8
-                        verticalAlignment: Text.AlignVCenter
-                        anchors.verticalCenter: parent.verticalCenter
-                        width: 224
-                        height: elementHeight
-                        anchors.left: parent.left
-                    }
-
-                    ComboBox {
-                        height: elementHeight
-                        anchors.right: parent.right
-                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-                        anchors.verticalCenter: parent.verticalCenter
-                        anchors.horizontalCenter: parent.horizonatalCenter
-                        model: ListModel {
-                            id: bar_behavior
-                            ListElement { text: "None" ; behavior: "none" }
-                            ListElement { text: "Disappear upon Arm" ; behavior: "disappear" }
-                            ListElement { text: "Red upon Arm" ; behavior: "red" }
-                            ListElement { text: "Always Black" ; behavior: "black" }
-                        }
-                        textRole: "text"
-                        // @disable-check M223
-                        Component.onCompleted: {
-                            // @disable-check M223
-                            for (var i = 0; i < model.count; i++) {
-                                // @disable-check M222
-                                var choice = model.get(i);
-                                // @disable-check M223
-                                if (choice.behavior == settings.bar_bavior) {
-                                    currentIndex = i;
-                                }
-                            }
-                        }
-                        onCurrentIndexChanged: {
-                                settings.bar_behavior = bar_behavior.get(currentIndex).behavior
-                        }
-                    }
-                }
-
-                Rectangle {
-                    width: parent.width
-                    height: rowHeight
-                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                    Text {
                         text: "Show Downlink RSSI"
                         font.weight: Font.Bold
                         font.pixelSize: 13
