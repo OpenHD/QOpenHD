@@ -314,6 +314,15 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
         case MAVLINK_MSG_ID_VIBRATION:{
             break;
         }
+        case MAVLINK_MSG_ID_SCALED_IMU2:{
+            break;
+        }
+        case MAVLINK_MSG_ID_SCALED_IMU3:{
+            break;
+        }
+        case MAVLINK_MSG_ID_SIMSTATE:{
+            break;
+        }
         case MAVLINK_MSG_ID_HOME_POSITION:{
             mavlink_home_position_t home_position;
             mavlink_msg_home_position_decode(&msg, &home_position);
