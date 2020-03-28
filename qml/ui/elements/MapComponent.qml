@@ -44,14 +44,28 @@ Map {
     }
 
     MapCircle {
-        center {
-            latitude: OpenHD.lat
-            longitude: OpenHD.lon
+                    center {
+                        latitude: OpenHD.lat
+                        longitude: OpenHD.lon
+                    }
+                    radius: OpenHD.gps_hdop
+                    color: 'red'
+                    opacity: .3
+                }
+
+    MapQuickItem {
+        id: homemarkerSmallMap
+        anchorPoint.x: imageSmallMap.width / 2
+        anchorPoint.y: imageSmallMap.height
+        coordinate {
+            latitude: OpenHD.homelat
+            longitude: OpenHD.homelon
         }
-        radius: 1
-        color: 'blue'
-        border.width: 1
-        opacity: .75
+
+        sourceItem: Image {
+            id: imageSmallMap
+            source: "/ui/marker.png"
+        }
     }
 
     //get coordinates on click... for future use
