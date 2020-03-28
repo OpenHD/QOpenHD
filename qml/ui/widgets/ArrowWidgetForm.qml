@@ -56,7 +56,7 @@ BaseWidget {
             width: parent.width
             height: 32
             Text {
-                text: "Invert Arrow"
+                text: "Invert Arrow (off) / (on)"
                 color: "white"
                 height: parent.height
                 font.bold: true
@@ -106,7 +106,7 @@ BaseWidget {
             transform: Rotation {
                 origin.x: 32;
                 origin.y: 12;
-                angle: settings.arrow_invert ? OpenHD.home_course-180 : OpenHD.home_course
+                angle: settings.arrow_invert ? OpenHD.home_course : OpenHD.home_course-180
             }
         }
 
