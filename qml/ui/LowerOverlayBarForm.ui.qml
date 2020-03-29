@@ -10,17 +10,57 @@ Rectangle {
     id: statusBar
 
     width: 800
-    color: "#8f000000"
+    height: 48
+
+    z: 1.0
+
+    Component.onCompleted: {
+        getLowerBarColor()
+    }
+
+    function getLowerBarColor() {
+        var barColor = settings.bar_behavior
+        switch (barColor) {
+            case "none": {
+                statusBar.color= "#00000000"
+                break;
+            }
+            case "disappear": {
+                statusBar.color= OpenHD.armed ? "#00000000" : "#8f000000"
+                break;
+            }
+            case "red": {
+                statusBar.color= OpenHD.armed ? "#aeff3333" : "#8f000000"
+                break;
+            }
+            case "black": {
+                statusBar.color= "#8f000000"
+                break;
+            }
+        }
+    }
+
+    Connections{
+        target:settings
+        onBar_behaviorChanged: {
+            //console.log("onbar behavior changed!");
+            getLowerBarColor()
+        }
+    }
+
+    Connections{
+        target:OpenHD
+        onArmedChanged: {
+            console.log("onbar behavior changed!");
+            getLowerBarColor()
+        }
+    }
 
     anchors {
         bottom: parent.bottom
         left: parent.left
         right: parent.right
-    }
-
-    z: 1.0
-
-    height: 48
+    }   
 }
 
 
