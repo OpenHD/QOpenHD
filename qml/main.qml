@@ -234,6 +234,14 @@ ApplicationWindow {
             hudOverlayGrid.messageHUD.pushMessage(message, level)
         }
     }
+
+    Shortcut {
+        sequence: "Ctrl+F12"
+        onActivated: {
+            OpenHDPi.activate_console()
+            OpenHDPi.stop_app()
+        }
+    }
 }
 
 /*##^##
