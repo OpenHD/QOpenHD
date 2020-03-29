@@ -23,6 +23,7 @@ public:
 
     Q_PROPERTY(bool undervolt MEMBER m_undervolt NOTIFY undervolt_changed)
 
+    Q_INVOKABLE void stop_app();
     Q_INVOKABLE void set_mount_rw();
     Q_INVOKABLE void set_mount_ro();
 

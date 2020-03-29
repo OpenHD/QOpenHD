@@ -25,6 +25,17 @@ bool OpenHDPi::is_raspberry_pi() {
 #endif
 }
 
+void OpenHDPi::stop_app() {
+#if defined(__rasp_pi__)
+    qDebug() << "OpenHDPi::stop_app()";
+    QString program = "/bin/systemctl";
+    QStringList arguments;
+    arguments << "stop" << "qopenhd";
+    QProcess *process = new QProcess(this);
+    process->start(program, arguments);
+    process->waitForFinished();
+#endif
+}
 
 void OpenHDPi::set_mount_rw() {
 #if defined(__rasp_pi__)
