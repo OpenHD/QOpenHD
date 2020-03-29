@@ -25,6 +25,18 @@ bool OpenHDPi::is_raspberry_pi() {
 #endif
 }
 
+void OpenHDPi::activate_console() {
+#if defined(__rasp_pi__)
+    qDebug() << "OpenHDPi::activate_console()";
+    QString program = "/bin/chvt";
+    QStringList arguments;
+    arguments << "12";
+    QProcess *process = new QProcess(this);
+    process->start(program, arguments);
+    process->waitForFinished();
+#endif
+}
+
 void OpenHDPi::stop_app() {
 #if defined(__rasp_pi__)
     qDebug() << "OpenHDPi::stop_app()";
