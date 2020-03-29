@@ -64,7 +64,7 @@ Map {
 
         sourceItem: Image {
             id: imageSmallMap
-            source: "/ui/marker.png"
+            source: "/homemarker.png"
         }
     }
 
