@@ -51,7 +51,7 @@ Rectangle {
     Connections{
         target:OpenHD
         onArmedChanged: {
-            console.log("onbar behavior changed!");
+            //console.log("onbar behavior changed!");
             getLowerBarColor()
         }
     }
