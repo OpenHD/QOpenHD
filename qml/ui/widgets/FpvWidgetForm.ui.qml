@@ -24,6 +24,27 @@ BaseWidget {
             width: parent.width
             height: 32
             Text {
+                text: "Dynamic (off) / (on)"
+                color: "white"
+                height: parent.height
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels;
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
+            Switch {
+                width: 32
+                height: parent.height
+                anchors.rightMargin: 12
+                anchors.right: parent.right
+                checked: settings.fpv_dynamic
+                onCheckedChanged: settings.fpv_dynamic = checked
+            }
+        }
+        Item {
+            width: parent.width
+            height: 32            
+            Text {
                 id: sensitivityTitle
                 text: "Sensitivity"
                 color: "white"
@@ -146,11 +167,11 @@ BaseWidget {
             transformOrigin: Item.Center
             transform: Translate {
 
-                x: getLateralSpeed()
+                x: settings.fpv_dynamic ? getLateralSpeed() : 0
 
                 //to get pitch relative to ahi add pitch in
-                y: settings.horizon_invert_pitch ? (-OpenHD.vz * settings.fpv_sensitivity) - OpenHD.pitch :
-                                               (OpenHD.vz * settings.fpv_sensitivity) + OpenHD.pitch
+                y: settings.fpv_dynamic ? (settings.horizon_invert_pitch ? (-OpenHD.vz * settings.fpv_sensitivity) - OpenHD.pitch :
+                                               (OpenHD.vz * settings.fpv_sensitivity) + OpenHD.pitch) : 0
              }
 
 

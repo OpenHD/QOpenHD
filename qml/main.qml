@@ -19,7 +19,7 @@ ApplicationWindow {
     minimumHeight: 320
     minimumWidth: 480
     title: qsTr("Open.HD")
-    color: EnableMainVideo ? "black" : "#00000000"
+    color: EnableMainVideo ? "transparent" : "#00000000"
 
     visibility: UseFullscreen ? "FullScreen" : "AutomaticVisibility"
 
@@ -70,6 +70,8 @@ ApplicationWindow {
         property string color_text: "white"
         property string color_glow: "black"
 
+        property string bar_behavior: "red"
+
         property double ground_power_opacity: 1
         
         property int log_level: 3
@@ -114,6 +116,7 @@ ApplicationWindow {
         property double horizon_opacity: 1
 
         property bool show_fpv: true
+        property bool fpv_dynamic: true
         property int fpv_sensitivity: 5
         property double fpv_opacity: 1
 
