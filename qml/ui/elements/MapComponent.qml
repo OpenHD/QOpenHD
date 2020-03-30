@@ -12,7 +12,8 @@ Map {
     zoomLevel: settings.map_zoom
 
     // Enable pan, flick, and pinch gestures to zoom in and out
-    gesture.enabled: true
+    //gesture is false because openhd starts with small map up
+    gesture.enabled: false
     gesture.acceptedGestures: MapGestureArea.PanGesture | MapGestureArea.FlickGesture | MapGestureArea.PinchGesture | MapGestureArea.RotationGesture | MapGestureArea.TiltGesture
     gesture.flickDeceleration: 3000
 
@@ -75,6 +76,7 @@ Map {
             var coord = map.toCoordinate(Qt.point(mouse.x,
                                                   mouse.y))
             console.log(coord.latitude, coord.longitude)
+            configureLargeMap()
         }
     }
 

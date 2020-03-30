@@ -26,7 +26,7 @@ BaseWidget {
 
     widgetIdentifier: "map_widget"
 
-    hasWidgetDetail: false
+    hasWidgetDetail: mapExpanded ? true : false
 
     z: mapExpanded ? 2.0 : 1.0
 
@@ -74,6 +74,145 @@ BaseWidget {
         configure();
     }
 
+    function configureLargeMap(){
+        if (mapExpanded==false){
+            resetAnchors();
+            setAlignment(0, 0, 48, false, false, true);
+            map.gesture.enabled=true
+            mapExpanded = !mapExpanded;
+        }
+    }
+
+    function configureSmallMap(){
+        resetAnchors();
+        mapWidget.width = 200;
+        mapWidget.height = 135;
+        mapWidget.map
+        loadAlignment();
+        followDrone = true;
+        settingsVisible = false;
+        map.gesture.enabled=false
+        mapExpanded = !mapExpanded;
+    }
+
+    function launchPopup(){
+        mapWidget.hasWidgetDetail=true
+        widgetDetail.open()
+    }
+
+//----------------------------- Widget Detail (popup options)------------------------
+    widgetDetailComponent: Column {
+            Item {
+                width: parent.width
+                height: 32
+
+                Text {
+                    id: mini_zoomTitle
+                    height: parent.height
+                    text: "Zoom"
+                    color: "white"
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+
+                Slider {
+                    id: mini_zoomSlider
+                    orientation: Qt.Horizontal
+                    from: 1
+                    value: settings.map_zoom
+                    to: 30
+                    stepSize: 1
+                    anchors.rightMargin: 0
+                    anchors.right: parent.right
+                    anchors.leftMargin: 32
+                    anchors.left: mini_zoomTitle.right
+                    height: parent.height
+
+                    onValueChanged: {
+                        map.zoomLevel = mini_zoomSlider.value
+                        settings.map_zoom = mini_zoomSlider.value
+                    }
+                }
+            }
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    id: mini_opacityTitle
+                    text: "Opacity"
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Slider {
+                    id: mini_opacity_Slider
+                    orientation: Qt.Horizontal
+                    from: .1
+                    value: settings.map_opacity
+                    to: 1
+                    stepSize: .1
+                    height: parent.height
+                    anchors.rightMargin: 0
+                    anchors.right: parent.right
+                    width: parent.width - 96
+
+                    onValueChanged: {
+                        settings.map_opacity = mini_opacity_Slider.value
+                    }
+                }
+            }
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: "Orient to Drone / North"
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 12
+                    anchors.right: parent.right
+                    checked: settings.map_orientation
+                    onCheckedChanged: settings.map_orientation = checked
+                }
+            }
+            /*
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: "Map shape Square / Round"
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 12
+                    anchors.right: parent.right
+                    checked: settings.map_shape_circle
+                    onCheckedChanged: settings.map_shape_circle = checked
+                }
+            }
+            */
+        }
+
+//----------------------------- Widget Inner ----------------------------------------
 
     Item {
         id: widgetInner
@@ -130,6 +269,11 @@ BaseWidget {
             }
         }*/
 
+
+
+
+ //----------------------------- Expanded map Sidebar Menu----------------------------
+
         Rectangle {
             id: sidebar_wrapper
             z: 2.1
@@ -172,22 +316,19 @@ BaseWidget {
                     anchors.verticalCenter: parent.verticalCenter
                     font.family: "Font Awesome 5 Free"
                     color: "white"
-                    text: mapExpanded ? "\uf057" : "\uf31e"
+                    text: mapExpanded ? "\uf057" : "\uf085"
                     font.pixelSize: 20
                 }
 
                 onClicked: {
                     if (mapExpanded) {
-                        resetAnchors();
-                        mapWidget.width = 200;
-                        mapWidget.height = 135;
-                        loadAlignment();
-                        settingsVisible = false;
+                         console.log("X button clicked");
+                        configureSmallMap()
+
                     } else {
-                        resetAnchors();
-                        setAlignment(0, 0, 48, false, false, true);
+                        console.log("gear button clicked");
+                        launchPopup()
                     }
-                    mapExpanded = !mapExpanded;
                 }
             }
 
@@ -423,53 +564,35 @@ BaseWidget {
                             onCheckedChanged: settings.map_orientation = checked
                         }
                     }
-
-                    /*Item {
-                        width: parent.width
-                        height: 32
-
-                        Text {
-                            text: "Use round map"
-                            color: "white"
-                            height: parent.height
-                            font.bold: true
-                            font.pixelSize: detailPanelFontPixels
-                            anchors.left: parent.left
-                            verticalAlignment: Text.AlignVCenter
-                        }
-
-                        Switch {
-                            width: 32
-                            height: parent.height
-                            anchors.rightMargin: 12
-                            anchors.right: parent.right
-                            checked: settings.map_shape_circle
-                            onCheckedChanged: settings.map_shape_circle = checked
-                        }
-                    }*/
                 }
             }
         }
     }
+    /*
+    Item {
+            id: mask
+            anchors.fill: widgetInner
+            visible: true
+            z:0
+            Rectangle {
+                anchors.centerIn: parent
+                width: parent.width<parent.height?parent.width:parent.height
+                height: width
+                color: "red"
+                radius: width*0.5
 
-    /*Item {
-        id: mask
-        anchors.fill: widgetInner
-        visible: false
-
-        Rectangle {
-            anchors.centerIn: parent
-            width: parent.width<parent.height?parent.width:parent.height
-            height: width
-            color: "red"
-            radius: width*0.5
+            }
         }
-    }
 
-    OpacityMask {
-        anchors.fill: widgetInner
-        source: widgetInner
-        maskSource: mask
-        opacity: settings.map_shape_circle ? settings.map_opacity : 0
-    }*/
+        OpacityMask {
+            anchors.fill: widgetInner
+            source: widgetInner
+            maskSource: mask
+            opacity: settings.map_shape_circle ? settings.map_opacity : 0
+            z:0
+        }
+        */
 }
+
+
+
