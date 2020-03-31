@@ -70,7 +70,6 @@
         <file>ui/widgets/ArrowWidgetForm.qml</file>
         <file>ui/widgets/MapWidget.qml</file>
         <file>ui/widgets/MapWidgetForm.ui.qml</file>
-        <file>ui/widgets/home_marker.png</file>
         <file>ui/StatusPanel.qml</file>
         <file>ui/delegates/BaseDelegate.ui.qml</file>
         <file>ui/widgets/VideoWidget.qml</file>
@@ -97,5 +96,9 @@
         <file>ic128.png</file>
         <file>ui/elements/MapComponent.qml</file>
         <file>homemarker.png</file>
+        <file>ui/widgets/FlightDistanceWidgetForm.ui.qml</file>
+        <file>ui/widgets/FlightDistanceWidget.qml</file>
+        <file>ui/widgets/FlightMahWidgetForm.ui.qml</file>
+        <file>ui/widgets/FlightMahWidget.qml</file>
     </qresource>
 </RCC>

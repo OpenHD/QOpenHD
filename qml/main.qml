@@ -19,7 +19,7 @@ ApplicationWindow {
     minimumHeight: 320
     minimumWidth: 480
     title: qsTr("Open.HD")
-    color: EnableMainVideo ? "transparent" : "#00000000"
+    color: EnableMainVideo ? "black" : "#00000000"
 
     visibility: UseFullscreen ? "FullScreen" : "AutomaticVisibility"
 
@@ -99,6 +99,12 @@ ApplicationWindow {
 
         property bool show_flight_mode: true
         property double flight_mode_opacity: 1
+
+        property bool show_flight_distance: true
+        property double distance_opacity: 1
+
+        property bool show_flight_mah: true
+        property double mah_opacity: 1
 
         property bool show_ground_status: true
         property double ground_status_opacity: 1

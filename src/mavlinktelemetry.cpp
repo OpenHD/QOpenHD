@@ -127,7 +127,9 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
 
             auto battery_voltage = (double)sys_status.voltage_battery / 1000.0;
             OpenHD::instance()->set_battery_voltage(battery_voltage);
+
             OpenHD::instance()->set_battery_current(sys_status.current_battery);
+            OpenHD::instance()->updateFlightMah();
 
             QSettings settings;
             auto battery_cells = settings.value("battery_cells", QVariant(3)).toInt();
@@ -220,6 +222,8 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
 
             OpenHD::instance()->calculate_home_distance();
             OpenHD::instance()->calculate_home_course();
+
+            OpenHD::instance()->updateFlightDistance();
 
             break;
         }
