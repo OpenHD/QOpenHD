@@ -14,8 +14,8 @@ Item {
 
     property alias home_distance: home_distance
     property alias flight_timer: flight_timer
-//    property alias flight_distance: flight_distance
-//    property alias flight_mah: flight_mah
+    property alias flight_distance: flight_distance
+    property alias flight_mah: flight_mah
     property alias flight_mode: flight_mode
     property alias air_battery: air_battery
     property alias gps: gps
