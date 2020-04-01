@@ -160,6 +160,9 @@ ApplicationWindow {
         property bool show_throttle: true
         property double throttle_opacity: 1
 
+        property bool show_control: true
+        property double control_opacity: 1
+
         property bool show_gpio: false
         property int selected_map_provider: 0
         property int selected_map_variant: 0

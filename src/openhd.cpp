@@ -356,6 +356,26 @@ void OpenHD::set_throttle(double throttle) {
      emit throttle_changed(m_throttle);
 }
 
+void OpenHD::set_control_pitch(int control_pitch) {
+    m_control_pitch = control_pitch;
+     emit control_pitch_changed(m_control_pitch);
+}
+
+void OpenHD::set_control_roll(int control_roll) {
+    m_control_roll = control_roll;
+     emit control_roll_changed(m_control_roll);
+}
+
+void OpenHD::set_control_yaw(int control_yaw) {
+    m_control_yaw = control_yaw;
+     emit control_yaw_changed(m_control_yaw);
+}
+
+void OpenHD::set_control_throttle(int control_throttle) {
+    m_control_throttle = control_throttle;
+     emit control_throttle_changed(m_control_throttle);
+}
+
 void OpenHD::set_downlink_rssi(int downlink_rssi) {
     m_downlink_rssi = downlink_rssi;
     emit downlink_rssi_changed(m_downlink_rssi);

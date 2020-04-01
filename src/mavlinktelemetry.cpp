@@ -245,6 +245,12 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
         case MAVLINK_MSG_ID_RC_CHANNELS:{
             mavlink_rc_channels_t rc_channels;
             mavlink_msg_rc_channels_decode(&msg, &rc_channels);
+
+            OpenHD::instance()->set_control_pitch(rc_channels.chan2_raw);
+            OpenHD::instance()->set_control_roll(rc_channels.chan1_raw);
+            OpenHD::instance()->set_control_throttle(rc_channels.chan3_raw);
+            OpenHD::instance()->set_control_yaw(rc_channels.chan4_raw);
+
             /*qDebug() << "RC: " << rc_channels.chan1_raw
                                  << rc_channels.chan2_raw
                                  << rc_channels.chan3_raw

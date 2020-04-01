@@ -128,9 +128,20 @@ public:
     Q_PROPERTY(float yaw MEMBER m_yaw WRITE set_yaw NOTIFY pitch_changed)
     void set_yaw(float yaw);
 
-
     Q_PROPERTY(double throttle MEMBER m_throttle WRITE set_throttle NOTIFY throttle_changed)
     void set_throttle(double throttle);
+
+    Q_PROPERTY(int control_pitch MEMBER m_control_pitch WRITE set_control_pitch NOTIFY control_pitch_changed)
+    void set_control_pitch(int control_pitch);
+
+    Q_PROPERTY(int control_roll MEMBER m_control_roll WRITE set_control_roll NOTIFY control_roll_changed)
+    void set_control_roll(int control_roll);
+
+    Q_PROPERTY(int control_yaw MEMBER m_control_yaw WRITE set_control_yaw NOTIFY control_yaw_changed)
+    void set_control_yaw(int control_yaw);
+
+    Q_PROPERTY(int control_throttle MEMBER m_control_throttle WRITE set_control_throttle NOTIFY control_throttle_changed)
+    void set_control_throttle(int control_throttle);
 
 
     // openhd
@@ -305,6 +316,11 @@ signals:
 
     void throttle_changed(double throttle);
 
+    void control_pitch_changed(int control_pitch);
+    void control_roll_changed(int control_roll);
+    void control_yaw_changed(int control_yaw);
+    void control_throttle_changed(int control_throttle);
+
 
     // openhd
     void downlink_rssi_changed(int downlink_rssi);
@@ -397,6 +413,13 @@ private:
     float m_yaw = 0.0;
     float m_pitch = 0.0;
 
+    double m_throttle = 0;
+
+    int m_control_pitch = 0;
+    int m_control_roll = 0;
+    int m_control_yaw = 0;
+    int m_control_throttle = 0;
+
     // openhd
 
     int m_downlink_rssi = -127;
@@ -428,7 +451,7 @@ private:
     bool m_air_undervolt = false;
     bool m_cts = false;
 
-    double m_throttle = 0;
+
 
     QString m_flight_time = "00:00";
 

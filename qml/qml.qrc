@@ -100,5 +100,7 @@
         <file>ui/widgets/FlightDistanceWidget.qml</file>
         <file>ui/widgets/FlightMahWidgetForm.ui.qml</file>
         <file>ui/widgets/FlightMahWidget.qml</file>
+        <file>ui/widgets/ControlWidgetForm.ui.qml</file>
+        <file>ui/widgets/ControlWidget.qml</file>
     </qresource>
 </RCC>

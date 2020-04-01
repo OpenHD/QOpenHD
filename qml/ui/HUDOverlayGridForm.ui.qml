@@ -40,6 +40,8 @@ Item {
 
     property alias throttleWidget: throttleWidget
 
+    property alias controlWidget: controlWidget
+
     MessageHUD {
         id: messageHUD
     }
@@ -123,6 +125,11 @@ Item {
     ThrottleWidget {
         id: throttleWidget
         scale: 0.7
+    }
+
+    ControlWidget {
+        id: controlWidget
+     //   scale: 0.7
     }
 
     Loader {
