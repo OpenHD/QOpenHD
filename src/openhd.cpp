@@ -2,6 +2,7 @@
 
 #include "mavlinktelemetry.h"
 #include "openhdtelemetry.h"
+#include "localmessage.h"
 
 #include <GeographicLib/Geodesic.hpp>
 #include <GeographicLib/Math.hpp>
@@ -216,6 +217,10 @@ void OpenHD::set_armed(bool armed) {
          * vehicle is disarmed, causing it to appear to stop in the UI.
          */
         flightTimeStart.start();
+
+        if(armed==true && m_homelat == 0.0 && m_homelon == 0.0){
+            LocalMessage::instance()->showMessage("No Home Position in OpenHD", 3);
+        }
     }
 
     m_armed = armed;
