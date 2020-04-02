@@ -11,8 +11,9 @@ Map {
     copyrightsVisible: false
     zoomLevel: settings.map_zoom
 
-    // Enable pan, flick, and pinch gestures to zoom in and out
-    //gesture is false because openhd starts with small map up
+    /* Enable pan, flick, and pinch gestures to zoom in and out
+       gesture is false because openhd starts with small map up
+    */
     gesture.enabled: false
     gesture.acceptedGestures: MapGestureArea.PanGesture | MapGestureArea.FlickGesture | MapGestureArea.PinchGesture | MapGestureArea.RotationGesture | MapGestureArea.TiltGesture
     gesture.flickDeceleration: 3000

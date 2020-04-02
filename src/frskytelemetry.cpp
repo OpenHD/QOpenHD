@@ -64,9 +64,9 @@ void FrSkyTelemetry::processFrSkyFifo() {
             return;
         }
         for (int i = 0; i < received; i++) {
-            //if (res) {
-            //    processFrSkyMessage(msg);
-            //}
+            /*if (res) {
+                  processFrSkyMessage(msg);
+              }*/
         }
     }
     QThread::msleep(1000);
@@ -82,9 +82,9 @@ void FrSkyTelemetry::processFrSkyDatagrams() {
         typedef QByteArray::Iterator Iterator;
 
         for (Iterator i = datagram.begin(); i != datagram.end(); i++) {            
-            //if (res) {
-            //    processFrSkyMessage(msg);
-            //}
+            /*if (res) {
+                  processFrSkyMessage(msg);
+              }*/
         }
     }
 }

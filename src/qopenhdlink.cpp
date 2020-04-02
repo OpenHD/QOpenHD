@@ -106,8 +106,8 @@ void QOpenHDLink::processCommand(QByteArray buffer) {
             }
         }
     } catch (std::exception &e) {
-        // not much we can do about it but we definitely don't want a crash here,
-        // we may consider show warning messages in the local message panel though
+        /* not much we can do about it but we definitely don't want a crash here,
+           we may consider show warning messages in the local message panel though */
         qDebug() << "exception: " << e.what();
     }
 #endif

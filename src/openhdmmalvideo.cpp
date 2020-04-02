@@ -395,8 +395,8 @@ void OpenHDMMALVideo::renderLoop() {
                 }
                 if (buffer->cmd == MMAL_EVENT_FORMAT_CHANGED) {
                     MMAL_EVENT_FORMAT_CHANGED_T *event = mmal_event_format_changed_get(buffer);
-                    //Assume we can't reuse the buffers, so have to disable, destroy
-                    //pool, create new pool, enable port, feed in buffers.
+                    /*Assume we can't reuse the buffers, so have to disable, destroy
+                      pool, create new pool, enable port, feed in buffers.*/
                     status = mmal_port_disable(m_decoder->output[0]);
 
                     //Clear the queue of all buffers

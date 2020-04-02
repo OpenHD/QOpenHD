@@ -53,8 +53,8 @@ void OpenHDSettings::checkSettingsLoadTimeout() {
 
 void OpenHDSettings::checkSettingsSaveTimeout() {
     qint64 current = QDateTime::currentSecsSinceEpoch();
-    //fallback in case the ground pi never sends back "SavedGround" for all
-    // the settings we saved
+    /*fallback in case the ground pi never sends back "SavedGround" for all
+       the settings we saved*/
     if (current - saveStart > 30) {
         saveTimer.stop();
         set_saving(false);
@@ -100,9 +100,10 @@ void OpenHDSettings::shutdown() {
 void OpenHDSettings::saveSettings(QVariantMap remoteSettings) {
     qDebug() << "OpenHDSettings::saveSettings()";
 
-    // run the real network calls in the background. needs some minor changes to avoid threading related
-    // errors
-    //QFuture<void> future = QtConcurrent::run(this, &OpenHDSettings::_saveSettings, remoteSettings);
+    /* run the real network calls in the background. needs some minor changes to avoid threading related
+       errors
+      QFuture<void> future = QtConcurrent::run(this, &OpenHDSettings::_saveSettings, remoteSettings);
+      */
     _saveSettings(remoteSettings);
 }
 

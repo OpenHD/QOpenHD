@@ -253,8 +253,9 @@ void OpenHD::calculate_home_distance() {
         GeographicLib::Geodesic geod(GeographicLib::Constants::WGS84_a(), GeographicLib::Constants::WGS84_f());
         geod.Inverse(m_homelat, m_homelon, m_lat, m_lon, s12, azi1, azi2);
 
-        // todo: this could be easily extended to save the azimuth as well, which gives us the direction
-        // home for free as a result of the calculation above.
+        /* todo: this could be easily extended to save the azimuth as well, which gives us the direction
+           home for free as a result of the calculation above.
+        */
         set_home_distance(s12);
     } else {
         /*

@@ -104,9 +104,9 @@ BaseWidget {
     }
 
     function getLateralSpeed() {
-            //this function can be leveraged later to determine wind direction/speed
+            /*this function can be leveraged later to determine wind direction/speed
 
-            //magnitude of our motion vector
+              magnitude of our motion vector */
             var resultant_magnitude = Math.sqrt(OpenHD.vx * OpenHD.vx + OpenHD.vy * OpenHD.vy);
 
             //direction of motion vector in radians then converted to degree

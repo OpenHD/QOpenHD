@@ -196,8 +196,9 @@ GroundPiSettingsPanelForm {
                 }
                 var itemType  = mapping[setting]["itemType"];
 
-                // not all of these are used for each setting, they don't need to be defined in the
-                // mapping if they aren't needed as the QML component will simply not attempt to use them
+                /* not all of these are used for each setting, they don't need to be defined in the
+                   mapping if they aren't needed as the QML component will simply not attempt to use them
+                */
                 var trueValue    = mapping[setting]["trueValue"];
                 var falseValue   = mapping[setting]["falseValue"];
                 var choiceValues = mapping[setting]["choiceValues"];
@@ -208,8 +209,9 @@ GroundPiSettingsPanelForm {
 
                 var finalValue;
 
-                // these all need to be mapped because the values coming from the C++ side
-                // are of type 'QVariant', not actual types that can be worked with
+                /* these all need to be mapped because the values coming from the C++ side
+                   are of type 'QVariant', not actual types that can be worked with
+                */
                 if (itemType === "bool") {
                     finalValue = (initialValue == trueValue) ? true : false;
                 } else if (itemType === "choice") {
@@ -280,8 +282,9 @@ GroundPiSettingsPanelForm {
                 } else if (settingsMap.smartSyncSettingsMap[setting] !== undefined) {
                     _process(setting, initialValue, smartSyncSettingsModel, settingsMap.smartSyncSettingsMap, disabled);
                 } else {
-                    // setting not found in any mapping so add it to the "other" tab as-is, no processing
-                    // of any kind. This guarantees that newly added settings are never missing from the app.
+                    /* setting not found in any mapping so add it to the "other" tab as-is, no processing
+                       of any kind. This guarantees that newly added settings are never missing from the app.
+                       */
                     otherSettingsModel.append({"title": setting,
                                                "setting": setting,
                                                "itemType": "string",
@@ -323,17 +326,19 @@ GroundPiSettingsPanelForm {
                 if (originalValue === newValue) {
                     continue;
                 }
-                // Update the originalValue in the model itself.
+                /* Update the originalValue in the model itself.
 
-                // This is a quick hack, a better solution would be to only update the originalValue
-                // property once the setting actually saves
+                   This is a quick hack, a better solution would be to only update the originalValue
+                   property once the setting actually saves
+                */
                 model.get(index).originalValue = newValue;
 
                 // by default we pass through the value as-is, only map to another type if needed
                 var finalValue = newValue;
 
-                // map bool values back to their expected representation for each setting, because
-                // it's not the same for all of them
+                /* map bool values back to their expected representation for each setting, because
+                   it's not the same for all of them
+                */
                 if (mapping !== undefined && mapping[setting.setting] !== undefined) {
                     var itemType   = mapping[setting.setting]["itemType"];
                     var trueValue  = mapping[setting.setting]["trueValue"];

@@ -161,8 +161,8 @@ void MavlinkBase::sendHeartbeat() {
 
 
 bool MavlinkBase::isConnectionLost() {
-    // we want to know if a heartbeat has been received (not -1, the default)
-    // but not in the last 5 seconds.
+    /* we want to know if a heartbeat has been received (not -1, the default)
+       but not in the last 5 seconds.*/
     if (m_last_heartbeat > -1 && m_last_heartbeat < 5000) {
         return false;
     }
@@ -174,8 +174,8 @@ void MavlinkBase::resetParamVars() {
     parameterCount = 0;
     parameterIndex = 0;
     initialConnectTimer = -1;
-    // give the MavlinkStateGetParameters state a chance to receive a parameter
-    // before timing out
+    /* give the MavlinkStateGetParameters state a chance to receive a parameter
+       before timing out */
     parameterLastReceivedTime = QDateTime::currentMSecsSinceEpoch();
 }
 
@@ -277,8 +277,8 @@ void MavlinkBase::processData(QByteArray data) {
             uint8_t res = mavlink_parse_char(MAVLINK_COMM_0, (uint8_t)c, &msg, &r_mavlink_status);
 
             if (res) {
-                // process ack messages in the base class, subclasses will receive a signal
-                // to indicate success or failure
+                /* process ack messages in the base class, subclasses will receive a signal
+                   to indicate success or failure */
                 if (msg.msgid == MAVLINK_MSG_ID_COMMAND_ACK) {
                     mavlink_command_ack_t ack;
                     mavlink_msg_command_ack_decode(&msg, &ack);
@@ -365,8 +365,8 @@ void MavlinkBase::commandStateLoop() {
                 }
                 m_current_command->retry_count = m_current_command->retry_count + 1;
                 if (m_current_command->m_is_long_cmd) {
-                    // incremement the confirmation parameter according to the Mavlink command
-                    // documentation
+                    /* incremement the confirmation parameter according to the Mavlink command
+                       documentation */
                     m_current_command->long_confirmation = m_current_command->long_confirmation + 1;
                 }
                 m_command_state = MavlinkCommandStateSend;

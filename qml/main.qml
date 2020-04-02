@@ -32,10 +32,10 @@ ApplicationWindow {
         }
     }
 
-    // this is not used but must stay right here, it forces qmlglsink to completely
-    // initialize the rendering system early. Without this, the next GstGLVideoItem
-    // to be initialized, depending on the order they appear in the QML, will simply
-    // not work on desktop linux.
+    /* this is not used but must stay right here, it forces qmlglsink to completely
+       initialize the rendering system early. Without this, the next GstGLVideoItem
+       to be initialized, depending on the order they appear in the QML, will simply
+       not work on desktop linux. */
     Loader {
         source: (EnableGStreamer && EnableMainVideo && EnablePiP)  ? "DummyVideoGStreamer.qml" : ""
     }
@@ -168,17 +168,17 @@ ApplicationWindow {
         property int selected_map_variant: 0
     }
 
-    //FrSkyTelemetry {
-    //    id: frskyTelemetry
-    //}
+    /*FrSkyTelemetry {
+          id: frskyTelemetry
+      }
 
-    //MSPTelemetry {
-    //    id: mspTelemetry
-    //}
+      MSPTelemetry {
+          id: mspTelemetry
+      }
 
-    //LTMTelemetry {
-    //    id: ltmTelemetry
-    //}
+      LTMTelemetry {
+          id: ltmTelemetry
+      } */
 
     Loader {
         anchors.fill: parent

@@ -1384,10 +1384,10 @@ Item {
             }
         }
 
-        //Item {
-        //    id: joystickTab
-        //    width: parent.width
-        //    height: parent.height
-        //}
+        /*Item {
+              id: joystickTab
+              width: parent.width
+              height: parent.height
+          }*/
     }
 }

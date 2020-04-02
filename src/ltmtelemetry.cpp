@@ -64,9 +64,9 @@ void LTMTelemetry::processLTMFifo() {
             return;
         }
         for (int i = 0; i < received; i++) {
-            //if (res) {
-            //    processLTMMessage(msg);
-            //}
+            /* if (res) {
+                  processLTMMessage(msg);
+              } */
         }
     }
     QThread::msleep(1000);
@@ -82,9 +82,9 @@ void LTMTelemetry::processLTMDatagrams() {
         typedef QByteArray::Iterator Iterator;
 
         for (Iterator i = datagram.begin(); i != datagram.end(); i++) {            
-            //if (res) {
-            //    processLTMMessage(msg);
-            //}
+            /*if (res) {
+                  processLTMMessage(msg);
+              } */
         }
     }
 }

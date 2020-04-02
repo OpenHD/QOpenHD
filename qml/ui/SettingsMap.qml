@@ -446,9 +446,10 @@ Item {
         "Copter": {},
         // Settings from joystick config file which can't be saved easily
         "UPDATE_NTH_TIME": {},
-        // txpower settings, may need to be unblacklisted and added to one
-        // of the maps but can't be saved yet due to the way RemoteSettings.py works
-        // on the ground station
+        /* txpower settings, may need to be unblacklisted and added to one
+           of the maps but can't be saved yet due to the way RemoteSettings.py works
+           on the ground station
+        */
         "txpowerA": {},
         "txpowerR": {},
     })

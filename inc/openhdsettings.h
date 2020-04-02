@@ -77,8 +77,8 @@ private:
 
     QTimer savedTimer;
 
-    // used to keep track of how many settings need to be saved so we can compare it to
-    // the number of save confirmations we get back from the ground side
+    /* used to keep track of how many settings need to be saved so we can compare it to
+       the number of save confirmations we get back from the ground side */
     int settingsCount = 0;
 
     bool m_loading = false;

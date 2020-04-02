@@ -64,9 +64,9 @@ void MSPTelemetry::processMSPFifo() {
             return;
         }
         for (int i = 0; i < received; i++) {
-            //if (res) {
-            //    processMSPMessage(msg);
-            //}
+            /*if (res) {
+                  processMSPMessage(msg);
+              }*/
         }
     }
     QThread::msleep(1000);
@@ -82,9 +82,9 @@ void MSPTelemetry::processMSPDatagrams() {
         typedef QByteArray::Iterator Iterator;
 
         for (Iterator i = datagram.begin(); i != datagram.end(); i++) {            
-            //if (res) {
-            //    processMSPMessage(msg);
-            //}
+            /*if (res) {
+                  processMSPMessage(msg);
+              }*/
         }
     }
 }

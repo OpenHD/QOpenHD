@@ -36,8 +36,8 @@ public:
     }
 
 
-    // public so that a QTimer can call it from main(), temporary fix due to some quirks with
-    // the way QTimer and QML singletons/context properties work
+    /* public so that a QTimer can call it from main(), temporary fix due to some quirks with
+       the way QTimer and QML singletons/context properties work */
     void updateFlightTimer();
 
     void updateFlightDistance();

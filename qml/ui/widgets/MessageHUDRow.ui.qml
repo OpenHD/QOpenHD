@@ -57,10 +57,10 @@ Item {
         font.bold: true
         opacity: 0.9 //model.timeout
 
-        // @disable-check M224
-        //Behavior on opacity {
-        //    NumberAnimation { duration: 1000 }
-        //}
+        /* @disable-check M224
+          Behavior on opacity {
+              NumberAnimation { duration: 1000 }
+          } */
     }
 
     Text {
@@ -79,10 +79,10 @@ Item {
         leftPadding: 6
         rightPadding: 0
 
-        // @disable-check M224
-        //Behavior on opacity {
-        //    NumberAnimation { duration: 1000 }
-        //}
+        /* @disable-check M224
+          Behavior on opacity {
+              NumberAnimation { duration: 1000 }
+          }*/
 
 
     }
