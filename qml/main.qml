@@ -164,9 +164,9 @@ ApplicationWindow {
     //    id: mspTelemetry
     //}
 
-    //LTMTelemetry {
-    //    id: ltmTelemetry
-    //}
+    LTMTelemetry {
+        id: ltmTelemetry
+    }
 
     VectorTelemetry {
         id: vectorTelemetry

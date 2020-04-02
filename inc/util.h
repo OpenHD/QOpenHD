@@ -20,6 +20,8 @@ QString tracker_mode_from_enum(TRACKER_MODE mode);
 
 QString vot_mode_from_telemetry(uint8_t mode);
 
+QString ltm_mode_from_telem(int mode);
+
 uint map(double input, double input_start, double input_end, uint16_t output_start, uint16_t output_end);
 
 #if defined(__android__)

@@ -343,6 +343,55 @@ QString vot_mode_from_telemetry(uint8_t mode) {
             return "WAYPOINT";
         case 16:
             return "MAX";
+        default:
+            return "Unknown";
+    }
+    return "Unknown";
+}
+
+
+QString ltm_mode_from_telem(int mode) {
+    switch (mode) {
+        case 0:
+            return "Manual";
+        case 1:
+            return "Rate";
+        case 2:
+            return "Angle";
+        case 3:
+            return "Horizon";
+        case 4:
+            return "Acro";
+        case 5:
+            return "Stabilized 1";
+        case 6:
+            return "Stabilized 2";
+        case 7:
+            return "Stabilized 3";
+        case 8:
+            return "Alt Hold";
+        case 9:
+            return "GPS Hold";
+        case 10:
+            return "Waypoints";
+        case 11:
+            return "Head Free";
+        case 12:
+            return "Circle";
+        case 13:
+            return "RTH";
+        case 14:
+            return "Follow Me";
+        case 15:
+            return "Land";
+        case 16:
+            return "Fly By Wire A";
+        case 17:
+            return "Fly By Wire B";
+        case 18:
+            return "Cruise";
+        default:
+            return "Unknown";
     }
     return "Unknown";
 }
