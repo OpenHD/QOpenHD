@@ -164,6 +164,10 @@ ApplicationWindow {
     //    id: mspTelemetry
     //}
 
+    SmartportTelemetry {
+        id: smartportTelemetry
+    }
+
     LTMTelemetry {
         id: ltmTelemetry
     }

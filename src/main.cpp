@@ -27,6 +27,7 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "msptelemetry.h"
 #include "ltmtelemetry.h"
 #include "vectortelemetry.h"
+#include "smartporttelemetry.h"
 
 #include "qopenhdlink.h"
 
@@ -137,6 +138,7 @@ int main(int argc, char *argv[]) {
     qmlRegisterType<MSPTelemetry>("OpenHD", 1, 0, "MSPTelemetry");
     qmlRegisterType<LTMTelemetry>("OpenHD", 1, 0, "LTMTelemetry");
     qmlRegisterType<VectorTelemetry>("OpenHD", 1, 0, "VectorTelemetry");
+    qmlRegisterType<SmartportTelemetry>("OpenHD", 1, 0, "SmartportTelemetry");
 
     qmlRegisterType<OpenHDRC>("OpenHD", 1, 0, "OpenHDRC");
 
