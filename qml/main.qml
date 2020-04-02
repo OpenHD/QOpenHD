@@ -156,9 +156,9 @@ ApplicationWindow {
         property int selected_map_variant: 0
     }
 
-    //FrSkyTelemetry {
-    //    id: frskyTelemetry
-    //}
+    FrSkyTelemetry {
+        id: frskyTelemetry
+    }
 
     //MSPTelemetry {
     //    id: mspTelemetry
