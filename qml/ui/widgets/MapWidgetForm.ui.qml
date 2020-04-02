@@ -131,7 +131,6 @@ BaseWidget {
                     height: parent.height
 
                     onValueChanged: {
-                        map.zoomLevel = mini_zoomSlider.value
                         settings.map_zoom = mini_zoomSlider.value
                     }
                 }
