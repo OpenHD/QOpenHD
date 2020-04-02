@@ -307,6 +307,47 @@ QString tracker_mode_from_enum(TRACKER_MODE mode) {
     return "Unknown";
 }
 
+QString vot_mode_from_telemetry(uint8_t mode) {
+    switch (mode) {
+        case 0:
+            return "2D";
+        case 1:
+            return "2DAH";
+        case 2:
+            return "2DHH";
+        case 3:
+            return "2DAHH";
+        case 4:
+            return "LOITER";
+        case 5:
+            return "3D";
+        case 6:
+            return "3DHH";
+        case 7:
+            return "RTH";
+        case 8:
+            return "LAND";
+        case 9:
+            return "CART";
+        case 10:
+            return "CARTLOI";
+        case 11:
+            return "POLAR";
+        case 12:
+            return "POLARLOI";
+        case 13:
+            return "CENTERSTICK";
+        case 14:
+            return "OFF";
+        case 15:
+            return "WAYPOINT";
+        case 16:
+            return "MAX";
+    }
+    return "Unknown";
+}
+
+
 uint map(double input, double input_start, double input_end, uint16_t output_start, uint16_t output_end) {
     double input_range = input_end - input_start;
     int output_range = output_end - output_start;

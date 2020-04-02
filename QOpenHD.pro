@@ -68,7 +68,8 @@ SOURCES += \
     src/openhdtelemetry.cpp \
     src/powermicroservice.cpp \
     src/qopenhdlink.cpp \
-    src/util.cpp
+    src/util.cpp \
+    src/vectortelemetry.cpp
 
 RESOURCES += qml/qml.qrc
 
@@ -93,6 +94,7 @@ HEADERS += \
     inc/openhdtelemetry.h \
     inc/qopenhdlink.h \
     inc/util.h \
+    inc/vectortelemetry.h \
     inc/wifibroadcast.h \
     lib/h264bitstream/bs.h \
     lib/h264bitstream/h264_avcc.h \

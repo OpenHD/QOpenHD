@@ -168,6 +168,10 @@ ApplicationWindow {
     //    id: ltmTelemetry
     //}
 
+    VectorTelemetry {
+        id: vectorTelemetry
+    }
+
     Loader {
         anchors.fill: parent
         z: 1.1
