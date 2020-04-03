@@ -126,6 +126,7 @@ BaseWidget {
             id: speed_text
             color: settings.color_text
             opacity: settings.speed_opacity
+            font.pixelSize: 14
             transform: Scale { origin.x: 12; origin.y: 12; xScale: settings.speed_size ; yScale: settings.speed_size}
             text: Number(
                       settings.speed_airspeed_gps ? OpenHD.airspeed : OpenHD.speed).toLocaleString(
