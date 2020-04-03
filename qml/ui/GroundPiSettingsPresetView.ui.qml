@@ -111,6 +111,7 @@ ScrollView {
                     id: changesText
                     wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                     padding: 12
+                    font.pixelSize: 12
                 }
             }
         }
