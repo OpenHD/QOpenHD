@@ -15,8 +15,11 @@ BaseWidget {
 
     widgetIdentifier: "control_widget"
 
-    defaultHCenter: true
-    defaultVCenter: true
+    defaultAlignment: 1
+    defaultXOffset: 128
+    defaultYOffset: 128
+    defaultHCenter: false
+    defaultVCenter: false
 
     hasWidgetDetail: true
     widgetDetailComponent: Column {
@@ -34,7 +37,7 @@ BaseWidget {
                 verticalAlignment: Text.AlignVCenter
             }
             Slider {
-                id: control_opacity_Slider
+                id: controlOpacitySlider
                 orientation: Qt.Horizontal
                 from: .1
                 value: settings.control_opacity
@@ -46,8 +49,30 @@ BaseWidget {
                 width: parent.width - 96
 
                 onValueChanged: {
-                    settings.control_opacity = control_opacity_Slider.value
+                    settings.control_opacity = controlOpacitySlider.value
                 }
+            }
+        }
+        Item {
+            width: parent.width
+            height: 32
+            Text {
+                id: displaySwitcher
+                text: "Controls: Two / One"
+                color: "white"
+                height: parent.height
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
+            Switch {
+                width: 32
+                height: parent.height
+                anchors.rightMargin: 12
+                anchors.right: parent.right
+                checked: settings.control_version
+                onCheckedChanged: settings.control_version = checked
             }
         }
     }
@@ -61,96 +86,196 @@ BaseWidget {
 
         antialiasing: true
 
-        Rectangle {
-            id: left_control
-            anchors.centerIn: parent
-            width: (parent.width<parent.height?parent.width:parent.height)*.1
-            height: width
-            color: settings.color_shape
-            radius: width*0.5
+/*------------------------------ Single Circle Version start------------------
+        this could all be simplified and condensed with either or type of logic. However
+        might add a 3rd type of display version then the either or logic would have to
+        be undone...
+*/
+        Item {
+            id: singleCircle
+            height: parent.height
+            width: parent.width
+            anchors.verticalCenter: parent.verticalCenter
 
-            visible: {
-                if (OpenHD.control_throttle < 1000){
-                    console.log("Throttle control < 1000");
-                    left_control.visible=false;
-                }else {
-                     left_control.visible=true;
+            visible: settings.control_version ? true : false
+
+            Rectangle {
+                id: circle
+                anchors.centerIn: singleCircle
+                width: parent.width<parent.height?parent.width:parent.height
+                height: width
+                color: "transparent"
+                radius: width*0.5
+
+                border.color: settings.color_shape
+                border.width: 1
+            }
+
+            Rectangle {
+                id: left_control
+                anchors.centerIn: singleCircle
+                width: (parent.width<parent.height?parent.width:parent.height)*.1
+                height: width
+                color: settings.color_shape
+                radius: width*0.5
+
+                visible: {
+                    if (OpenHD.control_throttle < 1000){
+                        console.log("Throttle control < 1000");
+                        left_control.visible=false;
+                    }else {
+                         left_control.visible=true;
+                    }
                 }
+
+                transformOrigin: Item.Center
+
+                transform: Translate {
+                    x: (OpenHD.control_yaw-1500)/10
+                    y: ((OpenHD.control_throttle-2000)/10)*-1 -50
+                }
+
             }
 
-            transformOrigin: Item.Center
+            Rectangle {
+                id: right_control
+                anchors.centerIn: singleCircle
+                width: (parent.width<parent.height?parent.width:parent.height)*.1
+                height: width
+                color: settings.color_shape
+                radius: width*0.5
 
-            transform: Translate {
-                x: (OpenHD.control_yaw-1500)/10
-                y: ((OpenHD.control_throttle-2000)/10)*-1 -50
+                visible: {
+                    if (OpenHD.control_throttle < 1000){
+                        console.log("Throttle control < 1000");
+                        right_control.visible=false;
+                    }else {
+                         right_control.visible=true;
+                    }
+                }
+
+                transformOrigin: Item.Center
+
+                transform: Translate {
+                    x: (OpenHD.control_roll-1500)/10
+                    y: (OpenHD.control_pitch-1500)/10
+                }
+
             }
-
         }
 
-        Rectangle {
-            id: circle
-            anchors.centerIn: parent
-            width: parent.width<parent.height?parent.width:parent.height
-            height: width
-            color: "transparent"
-            radius: width*0.5
+//------------------------------ Double Circle Version start------------------
 
-            border.color: settings.color_shape
-            border.width: 1
-        }
+        Item {
+            id: doubleCircle
+            height: parent.height
+            width: parent.width
+            anchors.verticalCenter: parent.verticalCenter
 
-        Rectangle {
-            id: right_control
-            anchors.centerIn: parent
-            width: (parent.width<parent.height?parent.width:parent.height)*.1
-            height: width
-            color: settings.color_shape
-            radius: width*0.5
+            visible: settings.control_version ? false : true
 
-            visible: {
-                if (OpenHD.control_throttle < 1000){
-                    console.log("Throttle control < 1000");
-                    right_control.visible=false;
-                }else {
-                     right_control.visible=true;
+            Rectangle {
+                id: leftCircle
+
+            //    anchors.right: rightCircle.left
+                width: (parent.width<parent.height?parent.width:parent.height)/2
+                height: width
+                color: "transparent"
+                radius: width*0.5
+
+
+                border.color: settings.color_shape
+                border.width: .5
+            }
+
+            Rectangle {
+                id: rightCircle
+
+                anchors.left: leftCircle.right
+                anchors.leftMargin: 5
+                width: (parent.width<parent.height?parent.width:parent.height)/2
+                height: width
+                color: "transparent"
+                radius: width*0.5
+
+                border.color: settings.color_shape
+                border.width: .5
+            }
+
+            Rectangle {
+                id: left_control_double
+                anchors.centerIn: leftCircle
+                width: (parent.width<parent.height?parent.width:parent.height)*.1
+                height: width
+                color: settings.color_shape
+                radius: width*0.5
+
+                visible: {
+                    if (OpenHD.control_throttle < 1000){
+                        console.log("Throttle control < 1000");
+                        left_control.visible=false;
+                    }else {
+                         left_control.visible=true;
+                    }
                 }
+
+                transformOrigin: Item.Center
+
+                transform: Translate {
+                    x: ((OpenHD.control_yaw-1500)/10)/2
+                    y: (((OpenHD.control_throttle-2000)/10)*-1 -50)/2
+                }
+
             }
 
-            transformOrigin: Item.Center
+            Rectangle {
+                id: right_control_double
+                anchors.centerIn: rightCircle
+                width: (parent.width<parent.height?parent.width:parent.height)*.1
+                height: width
+                color: settings.color_shape
+                radius: width*0.5
 
-            transform: Translate {
-                x: (OpenHD.control_roll-1500)/10
-                y: (OpenHD.control_pitch-1500)/10
+                visible: {
+                    if (OpenHD.control_throttle < 1000){
+                        console.log("Throttle control < 1000");
+                        right_control.visible=false;
+                    }else {
+                         right_control.visible=true;
+                    }
+                }
+
+                transformOrigin: Item.Center
+
+                transform: Translate {
+                    x: ((OpenHD.control_roll-1500)/10)/2
+                    y: ((OpenHD.control_pitch-1500)/10)/2
+                }
+
             }
-
         }
 
         Glow {
-            anchors.fill: left_control
-            radius: 4
+            anchors.fill: doubleCircle
+            visible: settings.control_version ? false : true
+            radius: 2
             samples: 17
             color: settings.color_glow
             opacity: settings.control_opacity
-            source: left_control
+            source: doubleCircle
         }
 
         Glow {
-            anchors.fill: circle
-            radius: 4
+            anchors.fill: singleCircle
+            visible: settings.control_version ? true : false
+            radius: 3
             samples: 17
             color: settings.color_glow
             opacity: settings.control_opacity
             source: circle
         }
 
-        Glow {
-            anchors.fill: right_control
-            radius: 4
-            samples: 17
-            color: settings.color_glow
-            opacity: settings.control_opacity
-            source: right_control
-        }
+
 
     }
 }

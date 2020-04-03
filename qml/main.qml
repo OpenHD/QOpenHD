@@ -162,6 +162,7 @@ ApplicationWindow {
 
         property bool show_control: true
         property double control_opacity: 1
+        property bool control_version: true
 
         property bool show_gpio: false
         property int selected_map_provider: 0
