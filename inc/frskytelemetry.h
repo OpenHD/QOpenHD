@@ -31,12 +31,7 @@ signals:
 
 
 private slots:
-#if defined(__rasp_pi__)
-    void processFrSkyFifo();
-    void restartFifo();
-#else
     void processFrSkyDatagrams();
-#endif
 
 private:
     void init();
@@ -46,12 +41,7 @@ private:
 
     void processFrSkyMessage();
 
-#if defined(__rasp_pi__)
-    QFuture<void> fifoFuture;
-    QFutureWatcher<void> watcher;
-#else
     QUdpSocket *frskySocket = nullptr;
-#endif
 
     QString m_last_heartbeat = "N/A";
     qint64 last_heartbeat_timestamp;

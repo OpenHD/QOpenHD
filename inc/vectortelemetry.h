@@ -33,12 +33,7 @@ signals:
 
 
 private slots:
-#if defined(__rasp_pi__)
-    void processVectorFifo();
-    void restartFifo();
-#else
     void processVectorDatagrams();
-#endif
 
 private:
     void init();
@@ -55,12 +50,7 @@ private:
 
     void processVectorMessage();
 
-#if defined(__rasp_pi__)
-    QFuture<void> fifoFuture;
-    QFutureWatcher<void> watcher;
-#else
     QUdpSocket *vectorSocket = nullptr;
-#endif
 
     QString m_last_heartbeat = "N/A";
     qint64 last_heartbeat_timestamp;

@@ -50,12 +50,7 @@ signals:
 
 
 private slots:
-#if defined(__rasp_pi__)
-    void processLTMFifo();
-    void restartFifo();
-#else
     void processLTMDatagrams();
-#endif
 
 private:
     void init();
