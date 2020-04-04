@@ -43,7 +43,17 @@ Item {
 
     Loader {
         z: 1.0
-        anchors.fill: parent
+        anchors {
+            top: parent.top
+            topMargin: 0
+            left: parent.left
+            leftMargin: 0
+            right: parent.right
+            rightMargin: 0
+            bottom: parent.bottom
+            bottomMargin: 12
+        }
+
         source: EnableCharts ? "./elements/StatusChart.qml" : ""
     }
 }
