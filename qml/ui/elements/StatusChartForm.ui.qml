@@ -208,6 +208,7 @@ Item {
             max: 300
             labelsVisible: false
             color: "black"
+            labelsFont: Qt.font({pixelSize: 12})
         }
 
         ValueAxis {
@@ -217,6 +218,7 @@ Item {
             labelFormat: "%d dB"
             tickCount: 11
             color: "black"
+            labelsFont: Qt.font({pixelSize: 12})
         }
 
         ValueAxis {
@@ -226,6 +228,7 @@ Item {
             tickCount: 11
             labelFormat: "%d"
             color: "black"
+            labelsFont: Qt.font({pixelSize: 12})
         }
 
         LineSeries {
