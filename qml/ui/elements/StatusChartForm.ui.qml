@@ -238,7 +238,7 @@ Item {
             axisY: countYAxis
             color: "green"
             width: 2
-            useOpenGL: true
+            //useOpenGL: true
         }
 
         LineSeries {
@@ -248,7 +248,7 @@ Item {
             axisY: countYAxis
             color: "blue"
             width: 2
-            useOpenGL: true
+            //useOpenGL: true
         }
 
         LineSeries {
@@ -258,7 +258,7 @@ Item {
             axisY: countYAxis
             color: "red"
             width: 2
-            useOpenGL: true
+            //useOpenGL: true
         }
 
         LineSeries {
@@ -268,7 +268,7 @@ Item {
             axisYRight: countYAxis
             color: "orange"
             width: 2
-            useOpenGL: true
+            //useOpenGL: true
         }
 
         LineSeries {
@@ -278,7 +278,7 @@ Item {
             axisY: countYAxis
             color: "purple"
             width: 2
-            useOpenGL: true
+            //useOpenGL: true
         }
 
         LineSeries {
@@ -288,7 +288,7 @@ Item {
             axisY: countYAxis
             color: "brown"
             width: 2
-            useOpenGL: true
+            //useOpenGL: true
         }
 
         LineSeries {
@@ -298,7 +298,7 @@ Item {
             axisYRight: dbYAxis
             color: "lime"
             width: 2
-            useOpenGL: true
+            //useOpenGL: true
         }
 
         LineSeries {
@@ -308,7 +308,7 @@ Item {
             axisYRight: dbYAxis
             color: "tan"
             width: 2
-            useOpenGL: true
+            //useOpenGL: true
         }
 
 
@@ -319,7 +319,7 @@ Item {
             axisY: countYAxis
             color: "teal"
             width: 2
-            useOpenGL: true
+            //useOpenGL: true
         }
 
         LineSeries {
@@ -329,7 +329,7 @@ Item {
             axisY: countYAxis
             color: "violet"
             width: 2
-            useOpenGL: true
+            //useOpenGL: true
         }
 
         LineSeries {
@@ -340,7 +340,7 @@ Item {
             axisY: countYAxis
             color: "blue"
             width: 2
-            useOpenGL: true
+            //useOpenGL: true
         }
 
         Timer {
