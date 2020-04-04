@@ -170,6 +170,7 @@ Item {
     ChartView {
         id: chart
         legend.visible: false
+        visible: settings_panel.visible
 
         backgroundColor: "#00000000"
 
