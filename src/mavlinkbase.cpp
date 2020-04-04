@@ -27,7 +27,8 @@ MavlinkBase::MavlinkBase(QObject *parent,  MavlinkType mavlink_type): QObject(pa
 }
 
 void MavlinkBase::onStarted() {
-    qDebug() << "MavlinkBase::onStarted(" << localPort << ")";
+    auto type = m_mavlink_type == MavlinkTypeTCP ? "TCP" : "UDP";
+    qDebug() << "MavlinkBase::onStarted(" << type << ")";
 
     switch (m_mavlink_type) {
         case MavlinkTypeUDP: {
