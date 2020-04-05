@@ -93,12 +93,17 @@ ScrollView {
             width: parent.width - 48
         }
 
-        GroupBox {
+        Text {
+            id: changesTitle
+            text: qsTr("Changes that will be applied:")
+        }
+
+        Rectangle {
             id: changes
             width: parent.width - 48
             height: 160
-            title: qsTr("Changes that will be applied:")
-            padding: 0
+            border.color: "black"
+            border.width: 1
             clip: true
 
             ScrollView {
