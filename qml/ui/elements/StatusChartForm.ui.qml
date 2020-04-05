@@ -214,7 +214,7 @@ Item {
 
         ValueAxis {
             id: dbYAxis
-            min: -90
+            min: -128
             max: 0
             labelFormat: "%d dB"
             tickCount: 11
