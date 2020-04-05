@@ -21,12 +21,43 @@ BaseWidget {
     defaultHCenter: false
     defaultVCenter: false
 
-    hasWidgetDetail: false
+    hasWidgetDetail: true
 
-    Rectangle {
+    widgetDetailComponent: Column {
+        Item {
+            width: parent.width
+            height: 32
+            Text {
+                id:opacityTitle
+                text: "Opacity"
+                color: "white"
+                height: parent.height
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
+            Slider {
+                id: pip_video_opacity_Slider
+                orientation: Qt.Horizontal
+                from: .1
+                value: settings.pip_video_opacity
+                to: 1
+                stepSize: .1
+                height: parent.height
+                anchors.rightMargin: 0
+                anchors.right: parent.right
+                width: parent.width - 96
+
+                onValueChanged: {
+                    settings.pip_video_opacity = pip_video_opacity_Slider.value
+                }
+            }
+        }
+    }
+
+    Item {
         id: widgetInner
-
-        color: "#ff000000"
 
         anchors.left: parent.left
         anchors.leftMargin: 6
@@ -45,6 +76,7 @@ BaseWidget {
             objectName: "pipDisplay"
             source: pipSurface
             anchors.fill: parent
+            opacity: settings.pip_video_opacity
 
             OpenHDRender {
                 id: pipSurface
