@@ -56,10 +56,9 @@ BaseWidget {
         }
     }
 
-    Rectangle {
+    Item {
         id: widgetInner
 
-        color: "black"
         anchors.left: parent.left
         anchors.leftMargin: 6
 
