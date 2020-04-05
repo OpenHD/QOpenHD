@@ -60,7 +60,6 @@ BaseWidget {
         id: widgetInner
 
         color: "black"
-        opacity: settings.pip_video_opacity
         anchors.left: parent.left
         anchors.leftMargin: 6
 
@@ -77,6 +76,7 @@ BaseWidget {
             id: pipVideoGStreamer
             objectName: "pipVideoGStreamer"
             anchors.fill: parent
+            opacity: settings.pip_video_opacity
         }
     }
 }
