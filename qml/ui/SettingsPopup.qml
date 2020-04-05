@@ -80,7 +80,7 @@ SettingsPopupForm {
 
             Text {
                 id: detailTextArea
-                text: qsTr("If your drone is armed it may crash or enter failsafe mode.\n\nYou have been warned.")
+                text: qsTr("If your drone is armed it may crash or enter failsafe mode")
                 wrapMode: Text.WordWrap
                 font.pixelSize: 14
                 anchors.top: parent.top
