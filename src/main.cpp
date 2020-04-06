@@ -282,6 +282,11 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
     QObject::connect(openHDSettings, &OpenHDSettings::groundStationIPUpdated, groundPowerMicroservice, &PowerMicroservice::setGroundIP, Qt::QueuedConnection);
     groundPowerThread->start();
 
+#if defined(__rasp_pi__)
+    emit openHDSettings->groundStationIPUpdated("127.0.0.1");
+    openHDSettings->set_ground_available(true);
+#endif
+
     engine.rootContext()->setContextProperty("OpenHD", openhd);
 
 
