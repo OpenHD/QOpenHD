@@ -15,8 +15,9 @@ BaseWidget {
 
     widgetIdentifier: "flight_mah_widget"
 
-    defaultAlignment: 2
-    defaultXOffset: 75
+
+    defaultAlignment: 3
+    defaultXOffset: 110
     defaultYOffset: 0
     defaultHCenter: false
     defaultVCenter: false
