@@ -16,8 +16,8 @@ BaseWidget {
     widgetIdentifier: "control_widget"
 
     defaultAlignment: 1
-    defaultXOffset: 128
-    defaultYOffset: 128
+    defaultXOffset: 20
+    defaultYOffset: 50
     defaultHCenter: false
     defaultVCenter: false
 
