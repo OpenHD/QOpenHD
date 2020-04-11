@@ -19,11 +19,7 @@
 
 MSPTelemetry::MSPTelemetry(QObject *parent): QObject(parent) {
     qDebug() << "MSPTelemetry::MSPTelemetry()";
-    init();
-}
 
-void MSPTelemetry::init() {
-    qDebug() << "MSPTelemetry::init()";
     mspSocket = new QUdpSocket(this);
     mspSocket->bind(QHostAddress::Any, 14550);
     connect(mspSocket, &QUdpSocket::readyRead, this, &MSPTelemetry::processMSPDatagrams);

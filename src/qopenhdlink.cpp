@@ -20,15 +20,7 @@ QOpenHDLink::QOpenHDLink(QObject *parent):
     {
     qDebug() << "QOpenHDLink::QOpenHDLink()";
 
-    init();
-}
-
-
-
-void QOpenHDLink::init() {
 #if defined(ENABLE_LINK)
-    qDebug() << "QOpenHDLink::init()";
-
     linkSocket = new QUdpSocket(this);
     linkSocket->bind(LINK_PORT);
 

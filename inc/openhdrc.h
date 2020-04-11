@@ -23,8 +23,6 @@ class OpenHDRC: public QObject {
 public:
     explicit OpenHDRC(QObject *parent = nullptr);
 
-    void initRC();
-
     Q_INVOKABLE void setGroundIP(QString address);
 
 

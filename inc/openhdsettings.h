@@ -18,7 +18,6 @@ class OpenHDSettings : public QObject {
     Q_OBJECT
 public:
     explicit OpenHDSettings(QObject *parent = nullptr);
-    void initSettings();
 
     Q_PROPERTY(bool loading MEMBER m_loading WRITE set_loading NOTIFY loadingChanged)
     void set_loading(bool loading);

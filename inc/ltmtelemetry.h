@@ -53,7 +53,6 @@ private slots:
     void processLTMDatagrams();
 
 private:
-    void init();
     int ltm_read(uint8_t *buf, int buflen);
     uint8_t ltmread_u8();
     uint16_t ltmread_u16();

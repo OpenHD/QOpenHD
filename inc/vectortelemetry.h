@@ -36,8 +36,6 @@ private slots:
     void processVectorDatagrams();
 
 private:
-    void init();
-
     uint8_t votread_u8();
     uint16_t votread_u16();
     uint16_t votbread_u16();

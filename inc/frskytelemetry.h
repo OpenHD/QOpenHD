@@ -34,8 +34,6 @@ private slots:
     void processFrSkyDatagrams();
 
 private:
-    void init();
-
     void frsky_interpret_packet();
     void frsky_parse_buffer(uint8_t *buf, int buflen);
 

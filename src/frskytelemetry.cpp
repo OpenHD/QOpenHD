@@ -60,12 +60,7 @@
 
 FrSkyTelemetry::FrSkyTelemetry(QObject *parent): QObject(parent) {
     qDebug() << "FrSkyTelemetry::FrSkyTelemetry()";
-    init();
-}
 
-
-void FrSkyTelemetry::init() {
-    qDebug() << "FrSkyTelemetry::init()";
     frskySocket = new QUdpSocket(this);
     frskySocket->bind(QHostAddress::Any, 5002);
     connect(frskySocket, &QUdpSocket::readyRead, this, &FrSkyTelemetry::processFrSkyDatagrams);

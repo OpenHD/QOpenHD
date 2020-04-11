@@ -39,9 +39,6 @@ OpenHD::OpenHD(QObject *parent): QObject(parent) {
     connect(openhd, &OpenHDTelemetry::last_heartbeat_changed, this, &OpenHD::set_last_openhd_heartbeat);
 }
 
-void OpenHD::init() {
-    //emit gstreamer_version_changed();
-}
 
 QString OpenHD::get_gstreamer_version() {
 #if defined(ENABLE_GSTREAMER)

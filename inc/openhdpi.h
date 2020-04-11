@@ -11,7 +11,6 @@ class OpenHDPi : public QObject {
 
 public:
     explicit OpenHDPi(QObject *parent = nullptr);
-    void init();
 
     Q_PROPERTY(bool is_raspberry_pi READ is_raspberry_pi NOTIFY is_raspberry_pi_changed)
     bool is_raspberry_pi();

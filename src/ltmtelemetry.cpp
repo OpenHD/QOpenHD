@@ -37,12 +37,7 @@
 
 LTMTelemetry::LTMTelemetry(QObject *parent): QObject(parent) {
     qDebug() << "LTMTelemetry::LTMTelemetry()";
-    init();
 
-}
-
-void LTMTelemetry::init() {
-    qDebug() << "LTMTelemetry::init()";
     ltmSocket = new QUdpSocket(this);
     ltmSocket->bind(QHostAddress::Any, 5001);
     connect(ltmSocket, &QUdpSocket::readyRead, this, &LTMTelemetry::processLTMDatagrams);

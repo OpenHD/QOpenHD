@@ -9,13 +9,8 @@
 
 OpenHDPi::OpenHDPi(QObject *parent) : QObject(parent) {
     qDebug() << "OpenHDPi::OpenHDPi()";
-    init();
 }
 
-
-void OpenHDPi::init() {
-    qDebug() << "OpenHDPi::init()";
-}
 
 bool OpenHDPi::is_raspberry_pi() {
 #if defined (__rasp_pi__)

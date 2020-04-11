@@ -92,12 +92,7 @@ typedef struct {
 
 VectorTelemetry::VectorTelemetry(QObject *parent): QObject(parent) {
     qDebug() << "VectorTelemetry::VectorTelemetry()";
-    init();
 
-}
-
-void VectorTelemetry::init() {
-    qDebug() << "VectorTelemetry::init()";
     vectorSocket = new QUdpSocket(this);
     // port defined in global_functions.sh on ground
     vectorSocket->bind(QHostAddress::Any, 5011);

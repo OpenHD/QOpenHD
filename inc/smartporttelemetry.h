@@ -43,7 +43,6 @@ private slots:
     void processSmartportDatagrams();
 
 private:
-    void init();
     void smartport_read(uint8_t *buf, int buflen);
     uint8_t u8CheckCrcSPORT(uint8_t *t);
 

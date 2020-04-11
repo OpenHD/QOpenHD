@@ -27,9 +27,6 @@ private slots:
     void processMSPDatagrams();
 
 private:
-    void init();
-
-
     void processMSPMessage();
 
     QUdpSocket *mspSocket = nullptr;

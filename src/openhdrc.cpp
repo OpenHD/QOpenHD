@@ -30,11 +30,6 @@ OpenHDRC::OpenHDRC(QObject *parent): QObject(parent) {
     m_speech = new QTextToSpeech(this);
 #endif
 
-    initRC();
-}
-
-void OpenHDRC::initRC() {
-    qDebug() << "OpenHDRC::initRC()";
 
 #if defined(ENABLE_GAMEPADS)
     qDebug() << "OpenHDRC: using QGamepad";

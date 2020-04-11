@@ -10,12 +10,6 @@
 
 OpenHDSettings::OpenHDSettings(QObject *parent) : QObject(parent) {
     qDebug() << "OpenHDSettings::OpenHDSettings()";
-    initSettings();
-}
-
-
-void OpenHDSettings::initSettings() {
-    qDebug() << "OpenHDSettings::initSettings()";
 
     #if defined(__rasp_pi__)
     groundAddress = "127.0.0.1";

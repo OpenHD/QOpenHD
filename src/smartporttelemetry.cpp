@@ -57,12 +57,7 @@
 
 SmartportTelemetry::SmartportTelemetry(QObject *parent): QObject(parent) {
     qDebug() << "SmartportTelemetry::SmartportTelemetry()";
-    init();
-}
 
-
-void SmartportTelemetry::init() {
-    qDebug() << "SmartportTelemetry::init()";
     smartportSocket = new QUdpSocket(this);
     smartportSocket->bind(QHostAddress::Any, 5010);
     connect(smartportSocket, &QUdpSocket::readyRead, this, &SmartportTelemetry::processSmartportDatagrams);
