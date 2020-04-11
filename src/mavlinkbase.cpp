@@ -149,7 +149,6 @@ void MavlinkBase::fetchParameters() {
 
 
 void MavlinkBase::sendHeartbeat() {
-    qDebug() << "MavlinkBase::sendHeartbeat()";
     mavlink_message_t msg;
 
     mavlink_msg_heartbeat_pack(255, MAV_COMP_ID_MISSIONPLANNER, &msg, MAV_TYPE_GCS, MAV_AUTOPILOT_INVALID, 0, 0, 0);
