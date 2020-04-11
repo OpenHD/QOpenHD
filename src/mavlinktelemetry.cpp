@@ -37,6 +37,10 @@ MavlinkTelemetry::MavlinkTelemetry(QObject *parent): MavlinkBase(parent) {
     targetCompID = MAV_COMP_ID_AUTOPILOT1;
     localPort = 14550;
 
+    #if defined(__rasp_pi__)
+    groundAddress = "127.0.0.1";
+    #endif
+
     connect(this, &MavlinkTelemetry::setup, this, &MavlinkTelemetry::onSetup);
 
 }
