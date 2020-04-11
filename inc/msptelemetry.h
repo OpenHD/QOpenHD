@@ -24,12 +24,7 @@ signals:
 
 
 private slots:
-#if defined(__rasp_pi__)
-    void processMSPFifo();
-    void restartFifo();
-#else
     void processMSPDatagrams();
-#endif
 
 private:
     void init();
@@ -37,12 +32,7 @@ private:
 
     void processMSPMessage();
 
-#if defined(__rasp_pi__)
-    QFuture<void> fifoFuture;
-    QFutureWatcher<void> watcher;
-#else
     QUdpSocket *mspSocket = nullptr;
-#endif
 
     QString m_last_heartbeat = "N/A";
     qint64 last_heartbeat_timestamp;
