@@ -78,6 +78,7 @@ void QOpenHDLink::setWidgetLocation(QString widgetName, int alignment, int xOffs
 
 void QOpenHDLink::setWidgetEnabled(QString widgetName, bool enabled) {
 #if defined(ENABLE_LINK)
+#if !defined(__rasp_pi__)
     nlohmann::json j = {
       {"cmd", "setWidgetEnabled"},
       {"widgetName", widgetName.toStdString()},
@@ -87,6 +88,7 @@ void QOpenHDLink::setWidgetEnabled(QString widgetName, bool enabled) {
     std::string serialized_string = j.dump();
     auto buf = QByteArray(serialized_string.c_str());
     linkSocket->writeDatagram(buf, QHostAddress(groundAddress), LINK_PORT);
+#endif
 #endif
 }
 
