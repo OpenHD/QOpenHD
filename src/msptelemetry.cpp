@@ -35,9 +35,9 @@ void MSPTelemetry::processMSPDatagrams() {
         typedef QByteArray::Iterator Iterator;
 
         for (Iterator i = datagram.begin(); i != datagram.end(); i++) {            
-            //if (res) {
-            //    processMSPMessage(msg);
-            //}
+            /*if (res) {
+                  processMSPMessage(msg);
+              }*/
         }
     }
 }

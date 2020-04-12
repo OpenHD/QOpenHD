@@ -67,7 +67,7 @@ BaseWidget {
             height: 24
             color: settings.color_shape
             opacity: settings.ground_status_opacity
-            text: "\uf2db"
+            text: "\uF2DA"
             anchors.right: cpuload_gnd.left
             anchors.rightMargin: 2
             anchors.verticalCenter: parent.verticalCenter

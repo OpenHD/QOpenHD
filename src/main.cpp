@@ -105,8 +105,8 @@ int main(int argc, char *argv[]) {
     qDebug() << "Initializing Pi";
     OpenHDPi pi;
     if (pi.is_raspberry_pi()) {
-        // no way around this for the moment due to the way Settings works, hopefully won't
-        // be needed forever though
+        /* no way around this for the moment due to the way Settings works, hopefully won't
+           be needed forever though */
         pi.set_mount_rw();
 
         // ensure the local message fifo exists before we continue
@@ -128,8 +128,8 @@ int main(int argc, char *argv[]) {
 #endif
 
     QFontDatabase::addApplicationFont(":/Font Awesome 5 Free-Solid-900.otf");
-    //QFontDatabase::addApplicationFont(":/Font Awesome 5 Free-Regular-400.otf");
-    //QFontDatabase::addApplicationFont(":/Font Awesome 5 Brands-Regular-400.otf");
+    /*QFontDatabase::addApplicationFont(":/Font Awesome 5 Free-Regular-400.otf");
+      QFontDatabase::addApplicationFont(":/Font Awesome 5 Brands-Regular-400.otf");*/
 
     QFontDatabase::addApplicationFont(":/osdicons.ttf");
 

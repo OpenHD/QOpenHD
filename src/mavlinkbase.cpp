@@ -161,8 +161,8 @@ void MavlinkBase::sendHeartbeat() {
 
 
 bool MavlinkBase::isConnectionLost() {
-    // we want to know if a heartbeat has been received (not -1, the default)
-    // but not in the last 5 seconds.
+    /* we want to know if a heartbeat has been received (not -1, the default)
+       but not in the last 5 seconds.*/
     if (m_last_heartbeat > -1 && m_last_heartbeat < 5000) {
         return false;
     }
@@ -174,8 +174,8 @@ void MavlinkBase::resetParamVars() {
     parameterCount = 0;
     parameterIndex = 0;
     initialConnectTimer = -1;
-    // give the MavlinkStateGetParameters state a chance to receive a parameter
-    // before timing out
+    /* give the MavlinkStateGetParameters state a chance to receive a parameter
+       before timing out */
     parameterLastReceivedTime = QDateTime::currentMSecsSinceEpoch();
 }
 
@@ -365,8 +365,8 @@ void MavlinkBase::commandStateLoop() {
                 }
                 m_current_command->retry_count = m_current_command->retry_count + 1;
                 if (m_current_command->m_is_long_cmd) {
-                    // incremement the confirmation parameter according to the Mavlink command
-                    // documentation
+                    /* incremement the confirmation parameter according to the Mavlink command
+                       documentation */
                     m_current_command->long_confirmation = m_current_command->long_confirmation + 1;
                 }
                 m_command_state = MavlinkCommandStateSend;

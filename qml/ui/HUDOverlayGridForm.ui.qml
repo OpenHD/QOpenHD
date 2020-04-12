@@ -14,6 +14,8 @@ Item {
 
     property alias home_distance: home_distance
     property alias flight_timer: flight_timer
+    property alias flight_distance: flight_distance
+    property alias flight_mah: flight_mah
     property alias flight_mode: flight_mode
     property alias air_battery: air_battery
     property alias gps: gps
@@ -38,6 +40,8 @@ Item {
 
     property alias throttleWidget: throttleWidget
 
+    property alias controlWidget: controlWidget
+
     MessageHUD {
         id: messageHUD
     }
@@ -61,6 +65,14 @@ Item {
     FlightTimerWidget {
         id: flight_timer
     }
+
+    FlightDistanceWidget {
+            id: flight_distance
+        }
+
+    FlightMahWidget {
+            id: flight_mah
+        }
 
     BitrateWidget {
         id: bitrate
@@ -113,6 +125,11 @@ Item {
     ThrottleWidget {
         id: throttleWidget
         scale: 0.7
+    }
+
+    ControlWidget {
+        id: controlWidget
+     //   scale: 0.7
     }
 
     Loader {

@@ -41,8 +41,8 @@ MapWidgetForm {
                 if (variant) {
                     map.activeMapType = variant;
                 } else {
-                    // variant wasn't found in this provider so we must reset the setting and load
-                    // the default variant
+                    /* variant wasn't found in this provider so we must reset the setting and load
+                       the default variant */
                     settings.selected_map_variant = 0;
                     map.activeMapType = map.supportedMapTypes[settings.selected_map_variant];
                 }
@@ -70,4 +70,6 @@ MapWidgetForm {
 
         return myArray
     }*/
+
+
 }

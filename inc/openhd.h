@@ -34,9 +34,12 @@ public:
     }
 
 
-    // public so that a QTimer can call it from main(), temporary fix due to some quirks with
-    // the way QTimer and QML singletons/context properties work
+    /* public so that a QTimer can call it from main(), temporary fix due to some quirks with
+       the way QTimer and QML singletons/context properties work */
     void updateFlightTimer();
+
+    void updateFlightDistance();
+    void updateFlightMah();
 
     Q_PROPERTY(QString gstreamer_version READ get_gstreamer_version NOTIFY gstreamer_version_changed)
     QString get_gstreamer_version();
@@ -123,9 +126,20 @@ public:
     Q_PROPERTY(float yaw MEMBER m_yaw WRITE set_yaw NOTIFY pitch_changed)
     void set_yaw(float yaw);
 
-
     Q_PROPERTY(double throttle MEMBER m_throttle WRITE set_throttle NOTIFY throttle_changed)
     void set_throttle(double throttle);
+
+    Q_PROPERTY(int control_pitch MEMBER m_control_pitch WRITE set_control_pitch NOTIFY control_pitch_changed)
+    void set_control_pitch(int control_pitch);
+
+    Q_PROPERTY(int control_roll MEMBER m_control_roll WRITE set_control_roll NOTIFY control_roll_changed)
+    void set_control_roll(int control_roll);
+
+    Q_PROPERTY(int control_yaw MEMBER m_control_yaw WRITE set_control_yaw NOTIFY control_yaw_changed)
+    void set_control_yaw(int control_yaw);
+
+    Q_PROPERTY(int control_throttle MEMBER m_control_throttle WRITE set_control_throttle NOTIFY control_throttle_changed)
+    void set_control_throttle(int control_throttle);
 
 
     // openhd
@@ -196,6 +210,11 @@ public:
     Q_PROPERTY(QString flight_time MEMBER m_flight_time WRITE set_flight_time NOTIFY flight_time_changed)
     void set_flight_time(QString flight_time);
 
+    Q_PROPERTY(double flight_distance MEMBER m_flight_distance WRITE set_flight_distance NOTIFY flight_distance_changed)
+    void set_flight_distance(double flight_distance);
+
+    Q_PROPERTY(double flight_mah MEMBER m_flight_mah WRITE set_flight_mah NOTIFY flight_mah_changed)
+    void set_flight_mah(double flight_mah);
 
     Q_PROPERTY(qint64 last_openhd_heartbeat MEMBER m_last_openhd_heartbeat WRITE set_last_openhd_heartbeat NOTIFY last_openhd_heartbeat_changed)
     void set_last_openhd_heartbeat(qint64 last_openhd_heartbeat);
@@ -295,6 +314,11 @@ signals:
 
     void throttle_changed(double throttle);
 
+    void control_pitch_changed(int control_pitch);
+    void control_roll_changed(int control_roll);
+    void control_yaw_changed(int control_yaw);
+    void control_throttle_changed(int control_throttle);
+
 
     // openhd
     void downlink_rssi_changed(int downlink_rssi);
@@ -320,6 +344,10 @@ signals:
     void cts_changed(bool cts);
 
     void flight_time_changed(QString flight_time);
+
+    void flight_distance_changed(double flight_distance);
+
+    void flight_mah_changed(int flight_mah);
 
     void last_openhd_heartbeat_changed(qint64 last_openhd_heartbeat);
 
@@ -383,6 +411,13 @@ private:
     float m_yaw = 0.0;
     float m_pitch = 0.0;
 
+    double m_throttle = 0;
+
+    int m_control_pitch = 0;
+    int m_control_roll = 0;
+    int m_control_yaw = 0;
+    int m_control_throttle = 0;
+
     // openhd
 
     int m_downlink_rssi = -127;
@@ -414,9 +449,17 @@ private:
     bool m_air_undervolt = false;
     bool m_cts = false;
 
-    double m_throttle = 0;
+
 
     QString m_flight_time = "00:00";
+
+    double m_flight_distance = 0.0;
+    qint64 flightDistanceLastTime= 0;
+    long total_dist= 0;
+
+    int m_flight_mah = 0;
+    qint64 flightMahLastTime= 0;
+    double total_mah= 0;
 
     qint64 m_last_openhd_heartbeat = -1;
     qint64 m_last_telemetry_heartbeat = -1;

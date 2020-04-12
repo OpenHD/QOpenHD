@@ -20,8 +20,9 @@ Rectangle {
     property alias widgetDetail: widgetDetail
     property alias alignmentType: choiceBox.currentIndex
 
-    // intended to be overriden by widgets, anything in this item will show up inside the
-    // detail popover
+    /* intended to be overriden by widgets, anything in this item will show up inside the
+       detail popover
+    */
     property Item widgetDetailComponent: Item {}
     property bool hasWidgetDetail: false
     property int widgetDetailWidth: 256

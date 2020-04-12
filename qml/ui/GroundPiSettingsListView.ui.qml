@@ -12,9 +12,9 @@ ListView {
     Layout.fillWidth: true
 
 
-    // this little hack is necessary because inside the delegate's context, "model" means the
-    // individual item in the list rather than the entire ListModel, which the delegate needs
-    // access to in order to set changed values in reaction to UI events
+    /* this little hack is necessary because inside the delegate's context, "model" means the
+       individual item in the list rather than the entire ListModel, which the delegate needs
+       access to in order to set changed values in reaction to UI events */
     property var currentModel: model
 
     delegate: Loader {
@@ -23,8 +23,8 @@ ListView {
 
         property var listModel: currentModel
         property var itemModel: model
-        //property var choiceValues: model.choiceValues
-        //property var value: model.value
+        /*property var choiceValues: model.choiceValues
+          property var value: model.value*/
         property var index: model.index
         // @disable-check M223
         source: {

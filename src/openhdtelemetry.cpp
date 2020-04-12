@@ -69,8 +69,8 @@ void OpenHDTelemetry::stateLoop() {
 
 
 void OpenHDTelemetry::processOpenHDTelemetry(wifibroadcast_rx_status_forward_t telemetry) {
-    // find adapter with best signal. right now just uses the signal level, but should
-    // also store the index in a property so it can be highlighted in the adapter list popup
+    /* find adapter with best signal. right now just uses the signal level, but should
+       also store the index in a property so it can be highlighted in the adapter list popup */
     int current_best = -127;
 
     QList<QVariantMap> wifiAdapters;
@@ -118,8 +118,8 @@ void OpenHDTelemetry::processOpenHDTelemetry(wifibroadcast_rx_status_forward_t t
     ////ui.lost_packet_cnt_msp_down->setText(tr("%1").arg(rssi.lost_packet_cnt_msp_down));
     ////ui.lost_packet_cnt_rc->setText(tr("%1").arg(telemetry.lost_packet_cnt_rc));
     OpenHD::instance()->set_current_signal_joystick_uplink(telemetry.current_signal_joystick_uplink);
-    //set_homelat(tr("%1").arg((double)rssi.HomeLat));
-    //set_homelon(tr("%1").arg((double)rssi.HomeLon));
+    /*set_homelat(tr("%1").arg((double)rssi.HomeLat));
+      set_homelon(tr("%1").arg((double)rssi.HomeLon));*/
     OpenHD::instance()->set_cpuload_gnd(telemetry.cpuload_gnd);
 
     OpenHD::instance()->set_temp_gnd(telemetry.temp_gnd);

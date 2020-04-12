@@ -11,8 +11,10 @@ Map {
     copyrightsVisible: false
     zoomLevel: settings.map_zoom
 
-    // Enable pan, flick, and pinch gestures to zoom in and out
-    gesture.enabled: true
+    /* Enable pan, flick, and pinch gestures to zoom in and out
+       gesture is false because openhd starts with small map up
+    */
+    gesture.enabled: false
     gesture.acceptedGestures: MapGestureArea.PanGesture | MapGestureArea.FlickGesture | MapGestureArea.PinchGesture | MapGestureArea.RotationGesture | MapGestureArea.TiltGesture
     gesture.flickDeceleration: 3000
 
@@ -44,14 +46,28 @@ Map {
     }
 
     MapCircle {
-        center {
-            latitude: OpenHD.lat
-            longitude: OpenHD.lon
+                    center {
+                        latitude: OpenHD.lat
+                        longitude: OpenHD.lon
+                    }
+                    radius: OpenHD.gps_hdop
+                    color: 'red'
+                    opacity: .3
+                }
+
+    MapQuickItem {
+        id: homemarkerSmallMap
+        anchorPoint.x: imageSmallMap.width / 2
+        anchorPoint.y: imageSmallMap.height
+        coordinate {
+            latitude: OpenHD.homelat
+            longitude: OpenHD.homelon
         }
-        radius: 1
-        color: 'blue'
-        border.width: 1
-        opacity: .75
+
+        sourceItem: Image {
+            id: imageSmallMap
+            source: "/homemarker.png"
+        }
     }
 
     //get coordinates on click... for future use
@@ -61,6 +77,7 @@ Map {
             var coord = map.toCoordinate(Qt.point(mouse.x,
                                                   mouse.y))
             console.log(coord.latitude, coord.longitude)
+            configureLargeMap()
         }
     }
 

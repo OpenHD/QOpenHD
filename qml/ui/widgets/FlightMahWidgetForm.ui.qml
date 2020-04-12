@@ -7,19 +7,23 @@ import Qt.labs.settings 1.0
 import OpenHD 1.0
 
 BaseWidget {
-    id: flightModeWidget
-    width: 212
-    height: 48
+    id: flightMahWidget
+    width: 96
+    height: 24
 
-    visible: settings.show_flight_mode
+    visible: settings.show_flight_mah
 
-    widgetIdentifier: "flight_mode_widget"
+    widgetIdentifier: "flight_mah_widget"
+
 
     defaultAlignment: 3
-    defaultHCenter: true
+    defaultXOffset: 110
+    defaultYOffset: 0
+    defaultHCenter: false
     defaultVCenter: false
 
     hasWidgetDetail: true
+
     widgetDetailComponent: Column {
         Item {
             width: parent.width
@@ -35,10 +39,10 @@ BaseWidget {
                 verticalAlignment: Text.AlignVCenter
             }
             Slider {
-                id: flight_mode_opacity_Slider
+                id: mah_opacity_Slider
                 orientation: Qt.Horizontal
                 from: .1
-                value: settings.flight_mode_opacity
+                value: settings.mah_opacity
                 to: 1
                 stepSize: .1
                 height: parent.height
@@ -47,7 +51,7 @@ BaseWidget {
                 width: parent.width - 96
 
                 onValueChanged: {
-                    settings.flight_mode_opacity = flight_mode_opacity_Slider.value
+                    settings.mah_opacity = mah_opacity_Slider.value
                 }
             }
         }
@@ -59,33 +63,39 @@ BaseWidget {
         anchors.fill: parent
 
         Text {
-            id: flight_mode_icon
+            id: home_icon
+            x: 0
+
             width: 24
-            height: 48
+            height: 24
+            clip: true
             color: settings.color_shape
-            opacity: settings.flight_mode_opacity
-            text: "\uf072"
-            anchors.right: flight_mode_text.left
+            opacity: settings.mah_opacity
+            text: "\uE162"
+            anchors.right: flight_mah_text.left
             anchors.rightMargin: 6
-            anchors.verticalCenter: parent.verticalCenter
-            font.family: "Font Awesome 5 Free"
-            horizontalAlignment: Text.AlignRight
             verticalAlignment: Text.AlignVCenter
-            font.pixelSize: 20
+            font.family: "Font Awesome 5 Free"
+            styleColor: "#f7f7f7"
+            font.pixelSize: 15
+            horizontalAlignment: Text.AlignRight
         }
 
         Text {
-            id: flight_mode_text
+            id: flight_mah_text
+            width: 68
+            height: 24
+            clip: true
 
-            height: 48
             color: settings.color_text
-            opacity: settings.flight_mode_opacity
-            text: OpenHD.armed ? "["+OpenHD.flight_mode+"]" : OpenHD.flight_mode
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.horizontalCenter: parent.horizontalCenter
+            opacity: settings.mah_opacity
+
+            text: OpenHD.flight_mah+"mAh"
+            anchors.right: parent.right
+            anchors.rightMargin: 0
             verticalAlignment: Text.AlignVCenter
-            font.pixelSize: 24
-            elide: Text.ElideRight
+            font.pixelSize: 16
+            horizontalAlignment: Text.AlignLeft
         }
     }
 }

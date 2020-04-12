@@ -32,10 +32,10 @@ ApplicationWindow {
         }
     }
 
-    // this is not used but must stay right here, it forces qmlglsink to completely
-    // initialize the rendering system early. Without this, the next GstGLVideoItem
-    // to be initialized, depending on the order they appear in the QML, will simply
-    // not work on desktop linux.
+    /* this is not used but must stay right here, it forces qmlglsink to completely
+       initialize the rendering system early. Without this, the next GstGLVideoItem
+       to be initialized, depending on the order they appear in the QML, will simply
+       not work on desktop linux. */
     Loader {
         source: (EnableGStreamer && EnableMainVideo && EnablePiP)  ? "DummyVideoGStreamer.qml" : ""
     }
@@ -70,6 +70,8 @@ ApplicationWindow {
         property string color_text: "white"
         property string color_glow: "black"
 
+        property string bar_behavior: "red"
+
         property double ground_power_opacity: 1
         
         property int log_level: 3
@@ -98,6 +100,12 @@ ApplicationWindow {
         property bool show_flight_mode: true
         property double flight_mode_opacity: 1
 
+        property bool show_flight_distance: true
+        property double distance_opacity: 1
+
+        property bool show_flight_mah: true
+        property double mah_opacity: 1
+
         property bool show_ground_status: true
         property double ground_status_opacity: 1
 
@@ -114,6 +122,7 @@ ApplicationWindow {
         property double horizon_opacity: 1
 
         property bool show_fpv: true
+        property bool fpv_dynamic: true
         property int fpv_sensitivity: 5
         property double fpv_opacity: 1
 
@@ -151,10 +160,15 @@ ApplicationWindow {
         property bool show_throttle: true
         property double throttle_opacity: 1
 
+        property bool show_control: true
+        property double control_opacity: 1
+        property bool control_version: true
+
         property bool show_gpio: false
         property int selected_map_provider: 0
         property int selected_map_variant: 0
     }
+
 
     FrSkyTelemetry {
         id: frskyTelemetry

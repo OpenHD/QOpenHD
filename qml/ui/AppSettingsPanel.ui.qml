@@ -402,6 +402,56 @@ Item {
                     color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
                     Text {
+                        text: "Horizonatal Bars Behavior"
+                        font.weight: Font.Bold
+                        font.pixelSize: 13
+                        anchors.leftMargin: 8
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 224
+                        height: elementHeight
+                        anchors.left: parent.left
+                    }
+
+                    ComboBox {
+                        height: elementHeight
+                        anchors.right: parent.right
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.horizontalCenter: parent.horizonatalCenter
+                        model: ListModel {
+                            id: bar_behavior
+                            ListElement { text: "None" ; behavior: "none" }
+                            ListElement { text: "Black" ; behavior: "black" }
+                            ListElement { text: "Arm/None" ; behavior: "disappear" }
+                            ListElement { text: "Arm/Red" ; behavior: "red" }
+
+                        }
+                        textRole: "text"
+                        // @disable-check M223
+                        Component.onCompleted: {
+                            // @disable-check M223
+                            for (var i = 0; i < model.count; i++) {
+                                // @disable-check M222
+                                var choice = model.get(i);
+                                // @disable-check M223
+                                if (choice.behavior == settings.bar_bavior) {
+                                    currentIndex = i;
+                                }
+                            }
+                        }
+                        onCurrentIndexChanged: {
+                                settings.bar_behavior = bar_behavior.get(currentIndex).behavior
+                        }
+                    }
+                }
+
+                Rectangle {
+                    width: parent.width
+                    height: rowHeight
+                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+
+                    Text {
                         text: "Show Downlink RSSI"
                         font.weight: Font.Bold
                         font.pixelSize: 13
@@ -692,6 +742,64 @@ Item {
                     color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
                     Text {
+                        text: "Show mAh"
+                        font.weight: Font.Bold
+                        font.pixelSize: 13
+                        anchors.leftMargin: 8
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 224
+                        height: elementHeight
+                        anchors.left: parent.left
+                    }
+
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.show_flight_mah
+                        onCheckedChanged: settings.show_flight_mah = checked
+                    }
+                }
+
+                Rectangle {
+                    width: parent.width
+                    height: rowHeight
+                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+
+                    Text {
+                        text: "Show Total Flight Distance"
+                        font.weight: Font.Bold
+                        font.pixelSize: 13
+                        anchors.leftMargin: 8
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 224
+                        height: elementHeight
+                        anchors.left: parent.left
+                    }
+
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.show_flight_distance
+                        onCheckedChanged: settings.show_flight_distance = checked
+                    }
+                }
+
+                Rectangle {
+                    width: parent.width
+                    height: rowHeight
+                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+
+                    Text {
                         text: "Show log messages on-screen"
                         font.weight: Font.Bold
                         font.pixelSize: 13
@@ -953,7 +1061,7 @@ Item {
                     color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
                     Text {
-                        text: "Show throttle"
+                        text: "Show Throttle"
                         font.weight: Font.Bold
                         font.pixelSize: 13
                         anchors.leftMargin: 8
@@ -973,6 +1081,35 @@ Item {
                         anchors.verticalCenter: parent.verticalCenter
                         checked: settings.show_throttle
                         onCheckedChanged: settings.show_throttle = checked
+                    }
+                }
+
+                Rectangle {
+                    width: parent.width
+                    height: rowHeight
+                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+
+                    Text {
+                        text: "Show Control Inputs"
+                        font.weight: Font.Bold
+                        font.pixelSize: 13
+                        anchors.leftMargin: 8
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 224
+                        height: elementHeight
+                        anchors.left: parent.left
+                    }
+
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.show_control
+                        onCheckedChanged: settings.show_control = checked
                     }
                 }
 
@@ -1247,10 +1384,10 @@ Item {
             }
         }
 
-        //Item {
-        //    id: joystickTab
-        //    width: parent.width
-        //    height: parent.height
-        //}
+        /*Item {
+              id: joystickTab
+              width: parent.width
+              height: parent.height
+          }*/
     }
 }

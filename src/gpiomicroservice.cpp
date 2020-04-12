@@ -89,8 +89,8 @@ void GPIOMicroservice::onProcessMavlinkMessage(mavlink_message_t msg) {
             mavlink_msg_system_time_decode(&msg, &sys_time);
             uint32_t boot_time = sys_time.time_boot_ms;
 
-            // if the boot time of the service at the other end of the link has changed,
-            // we need to re-fetch the GPIO state
+            /* if the boot time of the service at the other end of the link has changed,
+               we need to re-fetch the GPIO state */
             if (boot_time != m_last_boot) {
                 m_last_boot = boot_time;
                 switch (m_target) {

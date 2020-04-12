@@ -2,12 +2,14 @@
 
 #include "mavlinktelemetry.h"
 #include "openhdtelemetry.h"
+#include "localmessage.h"
 
 #include <GeographicLib/Geodesic.hpp>
 #include <GeographicLib/Math.hpp>
 
 #if defined(ENABLE_GSTREAMER)
 #include <gst/gst.h>
+#include<QDebug>
 #endif
 
 static OpenHD* _instance = nullptr;
@@ -116,9 +118,33 @@ void OpenHD::updateFlightTimer() {
         } else {
             s = QTime(0,0,0,0).addSecs(elapsed).toString("mm:ss");
         }
-
         set_flight_time(s);
     }
+}
+
+void OpenHD::updateFlightDistance() {
+    auto elapsed = flightTimeStart.elapsed();
+    auto time = elapsed / 3600;
+    auto time_diff = time - flightDistanceLastTime;
+    flightDistanceLastTime = time;
+
+    auto added_distance =  m_speed * time_diff;
+    total_dist = total_dist + added_distance;
+
+    set_flight_distance( total_dist);
+}
+
+void OpenHD::updateFlightMah() {
+    auto elapsed = flightTimeStart.elapsed();
+    auto time = elapsed / 3600;
+    auto time_diff = time - flightMahLastTime;
+    flightMahLastTime = time;
+
+    //m_battery_current is 1 decimals to the right
+    auto added_mah=(m_battery_current/100) * time_diff;
+    total_mah = total_mah + added_mah;
+
+    set_flight_mah( total_mah );
 }
 
 void OpenHD::set_boot_time(int boot_time) {
@@ -188,6 +214,10 @@ void OpenHD::set_armed(bool armed) {
          * vehicle is disarmed, causing it to appear to stop in the UI.
          */
         flightTimeStart.start();
+
+        if(armed==true && m_homelat == 0.0 && m_homelon == 0.0){
+            LocalMessage::instance()->showMessage("No Home Position in OpenHD", 3);
+        }
     }
 
     m_armed = armed;
@@ -225,8 +255,9 @@ void OpenHD::calculate_home_distance() {
         GeographicLib::Geodesic geod(GeographicLib::Constants::WGS84_a(), GeographicLib::Constants::WGS84_f());
         geod.Inverse(m_homelat, m_homelon, m_lat, m_lon, s12, azi1, azi2);
 
-        // todo: this could be easily extended to save the azimuth as well, which gives us the direction
-        // home for free as a result of the calculation above.
+        /* todo: this could be easily extended to save the azimuth as well, which gives us the direction
+           home for free as a result of the calculation above.
+        */
         set_home_distance(s12);
     } else {
         /*
@@ -328,6 +359,26 @@ void OpenHD::set_throttle(double throttle) {
      emit throttle_changed(m_throttle);
 }
 
+void OpenHD::set_control_pitch(int control_pitch) {
+    m_control_pitch = control_pitch;
+     emit control_pitch_changed(m_control_pitch);
+}
+
+void OpenHD::set_control_roll(int control_roll) {
+    m_control_roll = control_roll;
+     emit control_roll_changed(m_control_roll);
+}
+
+void OpenHD::set_control_yaw(int control_yaw) {
+    m_control_yaw = control_yaw;
+     emit control_yaw_changed(m_control_yaw);
+}
+
+void OpenHD::set_control_throttle(int control_throttle) {
+    m_control_throttle = control_throttle;
+     emit control_throttle_changed(m_control_throttle);
+}
+
 void OpenHD::set_downlink_rssi(int downlink_rssi) {
     m_downlink_rssi = downlink_rssi;
     emit downlink_rssi_changed(m_downlink_rssi);
@@ -426,6 +477,16 @@ void OpenHD::set_cts(bool cts) {
 void OpenHD::set_flight_time(QString flight_time) {
     m_flight_time = flight_time;
     emit flight_time_changed(m_flight_time);
+}
+
+void OpenHD::set_flight_distance(double flight_distance) {
+    m_flight_distance = flight_distance;
+    emit flight_distance_changed(m_flight_distance);
+}
+
+void OpenHD::set_flight_mah(double flight_mah) {
+    m_flight_mah = flight_mah;
+    emit flight_mah_changed(m_flight_mah);
 }
 
 void OpenHD::set_last_openhd_heartbeat(qint64 last_openhd_heartbeat) {

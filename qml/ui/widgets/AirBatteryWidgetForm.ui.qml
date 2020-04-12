@@ -128,8 +128,9 @@ BaseWidget {
             height: 48
             // @disable-check M223
             color: {
-                // todo: expose battery_voltage_to_percent to QML instead of using cell levels here
-                // @disable-check M222
+                /* todo: expose battery_voltage_to_percent to QML instead of using cell levels here
+                   @disable-check M222
+                */
                 var cells = settings.value("show_ground_status", true);
                 var cellVoltage = OpenHD.battery_voltage / cells;
                 // 20% warning, 15% critical

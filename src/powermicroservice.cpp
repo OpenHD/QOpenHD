@@ -104,11 +104,11 @@ void PowerMicroservice::onProcessMavlinkMessage(mavlink_message_t msg) {
 
             auto battery_cells = 1; //settings.value("battery_cells", QVariant(3)).toInt();
 
-            //int battery_percent = lifepo4_battery_voltage_to_percent(battery_cells, m_vbat_raw);
-            //set_battery_percent(QString("%1%").arg(battery_percent));
-            //QString battery_gauge_glyph = battery_gauge_glyph_from_percentage(battery_percent);
-            //set_battery_gauge(battery_gauge_glyph);
-
+            /*int battery_percent = lifepo4_battery_voltage_to_percent(battery_cells, m_vbat_raw);
+              set_battery_percent(QString("%1%").arg(battery_percent));
+              QString battery_gauge_glyph = battery_gauge_glyph_from_percentage(battery_percent);
+              set_battery_gauge(battery_gauge_glyph);
+            */
             break;
         }
         default: {

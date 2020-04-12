@@ -131,7 +131,9 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
 
             auto battery_voltage = (double)sys_status.voltage_battery / 1000.0;
             OpenHD::instance()->set_battery_voltage(battery_voltage);
+
             OpenHD::instance()->set_battery_current(sys_status.current_battery);
+            OpenHD::instance()->updateFlightMah();
 
             QSettings settings;
             auto battery_cells = settings.value("battery_cells", QVariant(3)).toInt();
@@ -210,14 +212,22 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             OpenHD::instance()->set_alt_msl(global_position.alt/1000.0);
 
             // FOR INAV heading does not /100
-            OpenHD::instance()->set_hdg((double)global_position.hdg / 100.0);
-
+            QSettings settings;
+            auto _heading_inav = settings.value("heading_inav", false).toBool();
+            if(_heading_inav==true){
+                OpenHD::instance()->set_hdg((double)global_position.hdg);
+            }
+            else{
+                OpenHD::instance()->set_hdg((double)global_position.hdg / 100.0);
+            }
             OpenHD::instance()->set_vx((int)(global_position.vx/100.0));
             OpenHD::instance()->set_vy((int)(global_position.vy/100.0));
             OpenHD::instance()->set_vz((int)(global_position.vz/100.0));
 
             OpenHD::instance()->calculate_home_distance();
             OpenHD::instance()->calculate_home_course();
+
+            OpenHD::instance()->updateFlightDistance();
 
             break;
         }
@@ -239,6 +249,12 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
         case MAVLINK_MSG_ID_RC_CHANNELS:{
             mavlink_rc_channels_t rc_channels;
             mavlink_msg_rc_channels_decode(&msg, &rc_channels);
+
+            OpenHD::instance()->set_control_pitch(rc_channels.chan2_raw);
+            OpenHD::instance()->set_control_roll(rc_channels.chan1_raw);
+            OpenHD::instance()->set_control_throttle(rc_channels.chan3_raw);
+            OpenHD::instance()->set_control_yaw(rc_channels.chan4_raw);
+
             /*qDebug() << "RC: " << rc_channels.chan1_raw
                                  << rc_channels.chan2_raw
                                  << rc_channels.chan3_raw
@@ -316,6 +332,15 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             break;
         }
         case MAVLINK_MSG_ID_VIBRATION:{
+            break;
+        }
+        case MAVLINK_MSG_ID_SCALED_IMU2:{
+            break;
+        }
+        case MAVLINK_MSG_ID_SCALED_IMU3:{
+            break;
+        }
+        case MAVLINK_MSG_ID_SIMSTATE:{
             break;
         }
         case MAVLINK_MSG_ID_HOME_POSITION:{

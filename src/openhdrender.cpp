@@ -12,9 +12,9 @@
 // copied from Qt source to avoid pulling in an objc++ header
 QVideoFrame::PixelFormat QtPixelFormatFromCVFormat(OSType avPixelFormat)
 {
-    // BGRA <-> ARGB "swap" is intentional:
-    // to work correctly with GL_RGBA, color swap shaders
-    // (in QSG node renderer etc.).
+    /* BGRA <-> ARGB "swap" is intentional:
+       to work correctly with GL_RGBA, color swap shaders
+       (in QSG node renderer etc.). */
     switch (avPixelFormat) {
     case kCVPixelFormatType_32ARGB:
         return QVideoFrame::Format_BGRA32;

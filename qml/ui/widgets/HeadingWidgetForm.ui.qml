@@ -130,9 +130,7 @@ BaseWidget {
             opacity: settings.heading_opacity
             font.pixelSize: 14
             transform: Scale { origin.x: 24; origin.y: 24; xScale: settings.heading_size ; yScale: settings.heading_size}
-            text: Number(
-                      settings.heading_inav ? OpenHD.hdg * 100 : OpenHD.hdg).toLocaleString(
-                      Qt.locale(), 'f', 0)
+            text: Number(OpenHD.hdg).toLocaleString( Qt.locale(), 'f', 0)
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
         }
