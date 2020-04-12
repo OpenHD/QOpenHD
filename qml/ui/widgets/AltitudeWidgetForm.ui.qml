@@ -125,6 +125,7 @@ BaseWidget {
             id: alt_text
             color: settings.color_text
             opacity: settings.altitude_opacity
+            font.pixelSize: 14
             transform: Scale { origin.x: 12; origin.y: 12; xScale: settings.altitude_size ; yScale: settings.altitude_size}
             text: Number(
                       settings.altitude_rel_msl ? OpenHD.alt_msl : OpenHD.alt_rel).toLocaleString(

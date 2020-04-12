@@ -143,14 +143,14 @@ BaseWidget {
         Text {
             id: satellites_visible
             y: 0
-            width: 20
+            width: 24
             height: 24
             color: settings.color_text
             opacity: settings.gps_opacity
             text: OpenHD.satellites_visible
             anchors.right: gps_hdop.left
             anchors.rightMargin: 2
-            elide: Text.ElideRight
+            elide: Text.ElideNone
             clip: true
             verticalAlignment: Text.AlignVCenter
             horizontalAlignment: Text.AlignRight

@@ -20,6 +20,10 @@ PowerMicroservice::PowerMicroservice(QObject *parent, MicroserviceTarget target,
     targetCompID = MAV_COMP_ID_USER1;
     localPort = 14551;
 
+    #if defined(__rasp_pi__)
+    groundAddress = "127.0.0.1";
+    #endif
+
     switch (m_target) {
         case MicroserviceTargetNone:
         targetSysID = 0;
@@ -47,13 +51,21 @@ void PowerMicroservice::onSetup() {
 
 
 void PowerMicroservice::onShutdown() {
+    shutdown();
+}
+
+
+void PowerMicroservice::onReboot() {
+    reboot();
+}
+
+void PowerMicroservice::shutdown() {
     MavlinkCommand command(true);
     command.command_id = OPENHD_CMD_POWER_SHUTDOWN;
     send_command(command);
 }
 
-
-void PowerMicroservice::onReboot() {
+void PowerMicroservice::reboot() {
     MavlinkCommand command(true);
     command.command_id = OPENHD_CMD_POWER_REBOOT;
     send_command(command);

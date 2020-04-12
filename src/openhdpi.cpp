@@ -9,13 +9,8 @@
 
 OpenHDPi::OpenHDPi(QObject *parent) : QObject(parent) {
     qDebug() << "OpenHDPi::OpenHDPi()";
-    init();
 }
 
-
-void OpenHDPi::init() {
-    qDebug() << "OpenHDPi::init()";
-}
 
 bool OpenHDPi::is_raspberry_pi() {
 #if defined (__rasp_pi__)
@@ -25,6 +20,29 @@ bool OpenHDPi::is_raspberry_pi() {
 #endif
 }
 
+void OpenHDPi::activate_console() {
+#if defined(__rasp_pi__)
+    qDebug() << "OpenHDPi::activate_console()";
+    QString program = "/bin/chvt";
+    QStringList arguments;
+    arguments << "12";
+    QProcess *process = new QProcess(this);
+    process->start(program, arguments);
+    process->waitForFinished();
+#endif
+}
+
+void OpenHDPi::stop_app() {
+#if defined(__rasp_pi__)
+    qDebug() << "OpenHDPi::stop_app()";
+    QString program = "/bin/systemctl";
+    QStringList arguments;
+    arguments << "stop" << "qopenhd";
+    QProcess *process = new QProcess(this);
+    process->start(program, arguments);
+    process->waitForFinished();
+#endif
+}
 
 void OpenHDPi::set_mount_rw() {
 #if defined(__rasp_pi__)

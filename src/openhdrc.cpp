@@ -16,6 +16,11 @@
 
 
 OpenHDRC::OpenHDRC(QObject *parent): QObject(parent) {
+
+    #if defined(__rasp_pi__)
+    groundAddress = "127.0.0.1";
+    #endif
+
     rcSocket = new QUdpSocket(this);
     rcSocket->bind(QHostAddress::Any);
 
@@ -25,11 +30,6 @@ OpenHDRC::OpenHDRC(QObject *parent): QObject(parent) {
     m_speech = new QTextToSpeech(this);
 #endif
 
-    initRC();
-}
-
-void OpenHDRC::initRC() {
-    qDebug() << "OpenHDRC::initRC()";
 
 #if defined(ENABLE_GAMEPADS)
     qDebug() << "OpenHDRC: using QGamepad";

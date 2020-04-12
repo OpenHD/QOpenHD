@@ -27,8 +27,8 @@ OpenHD::OpenHD(QObject *parent): QObject(parent) {
     m_speech = new QTextToSpeech(this);
 #endif
 
-    set_ground_gpio({-1, -1, -1, -1, -1, -1, -1, -1});
-    set_air_gpio({-1, -1, -1, -1, -1, -1, -1, -1});
+    set_ground_gpio({0, 0, 0, 0, 0, 0, 0, 0});
+    set_air_gpio({0, 0, 0, 0, 0, 0, 0, 0});
 
     timer = new QTimer(this);
     QObject::connect(timer, &QTimer::timeout, this, &OpenHD::updateFlightTimer);
@@ -41,9 +41,6 @@ OpenHD::OpenHD(QObject *parent): QObject(parent) {
     connect(openhd, &OpenHDTelemetry::last_heartbeat_changed, this, &OpenHD::set_last_openhd_heartbeat);
 }
 
-void OpenHD::init() {
-    //emit gstreamer_version_changed();
-}
 
 QString OpenHD::get_gstreamer_version() {
 #if defined(ENABLE_GSTREAMER)

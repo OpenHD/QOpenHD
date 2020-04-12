@@ -307,6 +307,96 @@ QString tracker_mode_from_enum(TRACKER_MODE mode) {
     return "Unknown";
 }
 
+QString vot_mode_from_telemetry(uint8_t mode) {
+    switch (mode) {
+        case 0:
+            return "2D";
+        case 1:
+            return "2DAH";
+        case 2:
+            return "2DHH";
+        case 3:
+            return "2DAHH";
+        case 4:
+            return "LOITER";
+        case 5:
+            return "3D";
+        case 6:
+            return "3DHH";
+        case 7:
+            return "RTH";
+        case 8:
+            return "LAND";
+        case 9:
+            return "CART";
+        case 10:
+            return "CARTLOI";
+        case 11:
+            return "POLAR";
+        case 12:
+            return "POLARLOI";
+        case 13:
+            return "CENTERSTICK";
+        case 14:
+            return "OFF";
+        case 15:
+            return "WAYPOINT";
+        case 16:
+            return "MAX";
+        default:
+            return "Unknown";
+    }
+    return "Unknown";
+}
+
+
+QString ltm_mode_from_telem(int mode) {
+    switch (mode) {
+        case 0:
+            return "Manual";
+        case 1:
+            return "Rate";
+        case 2:
+            return "Angle";
+        case 3:
+            return "Horizon";
+        case 4:
+            return "Acro";
+        case 5:
+            return "Stabilized 1";
+        case 6:
+            return "Stabilized 2";
+        case 7:
+            return "Stabilized 3";
+        case 8:
+            return "Alt Hold";
+        case 9:
+            return "GPS Hold";
+        case 10:
+            return "Waypoints";
+        case 11:
+            return "Head Free";
+        case 12:
+            return "Circle";
+        case 13:
+            return "RTH";
+        case 14:
+            return "Follow Me";
+        case 15:
+            return "Land";
+        case 16:
+            return "Fly By Wire A";
+        case 17:
+            return "Fly By Wire B";
+        case 18:
+            return "Cruise";
+        default:
+            return "Unknown";
+    }
+    return "Unknown";
+}
+
+
 uint map(double input, double input_start, double input_end, uint16_t output_start, uint16_t output_end) {
     double input_range = input_end - input_start;
     int output_range = output_end - output_start;

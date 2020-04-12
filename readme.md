@@ -222,15 +222,4 @@ I have never tried to run it on the Android simulator, I doubt it would work ver
 
 Building GroundPi images with QOpenHD integrated is handled by the [Open.HD image builder](https://github.com/OpenHD/Open.HD_Image_Builder) as it is very complicated to get right. It requires a specific set of packages to be preinstalled on the image, and requires building Qt from source to enable `eglfs`. 
 
-Prebuild SD card images are available on the [releases tab in GitHub](https://github.com/OpenHD/QOpenHD/releases/latest). 
-
-For the GroundPi, you want to download the `*.img.xz` or `*.img.gz` file (whichever is provided).
-
-To write it to the MicroSD card, use [Etcher](https://www.balena.io/etcher/) or, if you're familiar with the command line, `dd` or `cat` (both work, `cat` is more "correct").
-
-**Note**: these images are only tested on the GroundPi at the moment, they should work on the AirPi too but I have not tried it. 
-
-The images do respect the setting that disables the OSD, but do not currently disable QOpenHD when running on the air side. In practice it may not matter as QOpenHD only uses 30-40MB of memory and barely uses the CPU unless
-the settings area is open and the list is being scrolled.
-
-
+Prebuild SD card images are available on the [releases tab in GitHub](https://github.com/OpenHD/OpenHD/releases/latest). 

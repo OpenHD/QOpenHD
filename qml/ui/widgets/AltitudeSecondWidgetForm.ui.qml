@@ -95,6 +95,7 @@ BaseWidget {
             id: second_alt_text
             color: settings.color_text
             opacity: settings.altitude_second_opacity
+            font.pixelSize: 14
             text: Number(
                       settings.altitude_second_msl_rel ? OpenHD.alt_msl : OpenHD.alt_rel).toLocaleString(
                       Qt.locale(), 'f', 0)

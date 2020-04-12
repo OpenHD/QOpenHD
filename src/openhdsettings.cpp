@@ -10,12 +10,12 @@
 
 OpenHDSettings::OpenHDSettings(QObject *parent) : QObject(parent) {
     qDebug() << "OpenHDSettings::OpenHDSettings()";
-    initSettings();
-}
 
+    #if defined(__rasp_pi__)
+    groundAddress = "127.0.0.1";
+    set_ground_available(true);
+    #endif
 
-void OpenHDSettings::initSettings() {
-    qDebug() << "OpenHDSettings::initSettings()";
     settingSocket = new QUdpSocket(this);
     settingSocket->bind(QHostAddress::Any, 5115);
     connect(settingSocket, SIGNAL(readyRead()), this, SLOT(processDatagrams()));

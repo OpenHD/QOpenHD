@@ -17,8 +17,6 @@ public:
     explicit OpenHD(QObject *parent = nullptr);
     static OpenHD* instance();
 
-    void init();
-
     void telemetryMessage(QString message, int level);
     void calculate_home_distance();
     void calculate_home_course();

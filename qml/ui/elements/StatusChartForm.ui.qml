@@ -170,6 +170,7 @@ Item {
     ChartView {
         id: chart
         legend.visible: false
+        visible: settings_panel.visible
 
         backgroundColor: "#00000000"
 
@@ -208,15 +209,17 @@ Item {
             max: 300
             labelsVisible: false
             color: "black"
+            labelsFont: Qt.font({pixelSize: 12})
         }
 
         ValueAxis {
             id: dbYAxis
-            min: -90
+            min: -128
             max: 0
             labelFormat: "%d dB"
             tickCount: 11
             color: "black"
+            labelsFont: Qt.font({pixelSize: 12})
         }
 
         ValueAxis {
@@ -226,6 +229,7 @@ Item {
             tickCount: 11
             labelFormat: "%d"
             color: "black"
+            labelsFont: Qt.font({pixelSize: 12})
         }
 
         LineSeries {

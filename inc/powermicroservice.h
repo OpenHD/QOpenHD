@@ -21,6 +21,10 @@ class PowerMicroservice : public MavlinkBase {
 public:
     explicit PowerMicroservice(QObject *parent = nullptr, MicroserviceTarget target = MicroserviceTargetNone, MavlinkType mavlink_type = MavlinkTypeUDP);
 
+
+    Q_INVOKABLE void reboot();
+    Q_INVOKABLE void shutdown();
+
 public slots:
     void onSetup();
     void onShutdown();

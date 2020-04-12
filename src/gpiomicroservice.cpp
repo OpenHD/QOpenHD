@@ -29,6 +29,10 @@ GPIOMicroservice::GPIOMicroservice(QObject *parent, MicroserviceTarget target, M
     targetCompID = MAV_COMP_ID_USER2;
     localPort = 14551;
 
+    #if defined(__rasp_pi__)
+    groundAddress = "127.0.0.1";
+    #endif
+
     switch (m_target) {
         case MicroserviceTargetNone:
         targetSysID = 0;

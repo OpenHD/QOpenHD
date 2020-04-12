@@ -30,8 +30,6 @@ private slots:
     void readyRead();
 
 private:
-    void init();
-
     QString groundAddress = "192.168.2.1";
 
     void processCommand(QByteArray buffer);

@@ -169,21 +169,30 @@ ApplicationWindow {
         property int selected_map_variant: 0
     }
 
-    /*FrSkyTelemetry {
-          id: frskyTelemetry
-      }
 
-      MSPTelemetry {
-          id: mspTelemetry
-      }
+    FrSkyTelemetry {
+        id: frskyTelemetry
+    }
 
-      LTMTelemetry {
-          id: ltmTelemetry
-      } */
+    //MSPTelemetry {
+    //    id: mspTelemetry
+    //}
+
+    SmartportTelemetry {
+        id: smartportTelemetry
+    }
+
+    LTMTelemetry {
+        id: ltmTelemetry
+    }
+
+    VectorTelemetry {
+        id: vectorTelemetry
+    }
 
     Loader {
         anchors.fill: parent
-        z: 1.1
+        z: 1.0
         source: {
             if (EnableGStreamer && EnableMainVideo) {
                 return "MainVideoGStreamer.qml";
@@ -245,6 +254,14 @@ ApplicationWindow {
         visible: false
         onLocalMessage: {
             hudOverlayGrid.messageHUD.pushMessage(message, level)
+        }
+    }
+
+    Shortcut {
+        sequence: "Ctrl+F12"
+        onActivated: {
+            OpenHDPi.activate_console()
+            OpenHDPi.stop_app()
         }
     }
 }

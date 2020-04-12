@@ -27,7 +27,8 @@ MavlinkBase::MavlinkBase(QObject *parent,  MavlinkType mavlink_type): QObject(pa
 }
 
 void MavlinkBase::onStarted() {
-    qDebug() << "MavlinkBase::onStarted(" << localPort << ")";
+    auto type = m_mavlink_type == MavlinkTypeTCP ? "TCP" : "UDP";
+    qDebug() << "MavlinkBase::onStarted(" << type << ")";
 
     switch (m_mavlink_type) {
         case MavlinkTypeUDP: {
@@ -148,10 +149,9 @@ void MavlinkBase::fetchParameters() {
 
 
 void MavlinkBase::sendHeartbeat() {
-    qDebug() << "MavlinkBase::sendHeartbeat()";
     mavlink_message_t msg;
 
-    mavlink_msg_heartbeat_pack(255, MAV_COMP_ID_MISSIONPLANNER, &msg, MAV_TYPE_GCS, MAV_AUTOPILOT_GENERIC, 0, 0, 0);
+    mavlink_msg_heartbeat_pack(255, MAV_COMP_ID_MISSIONPLANNER, &msg, MAV_TYPE_GCS, MAV_AUTOPILOT_INVALID, 0, 0, 0);
 
     uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
     int len = mavlink_msg_to_send_buffer(buffer, &msg);
@@ -268,35 +268,35 @@ void MavlinkBase::processMavlinkUDPDatagrams() {
 
 
 void MavlinkBase::processData(QByteArray data) {
-        typedef QByteArray::Iterator Iterator;
-        mavlink_message_t msg;
+    typedef QByteArray::Iterator Iterator;
+    mavlink_message_t msg;
 
-        for (Iterator i = data.begin(); i != data.end(); i++) {
-            char c = *i;
+    for (Iterator i = data.begin(); i != data.end(); i++) {
+        char c = *i;
 
-            uint8_t res = mavlink_parse_char(MAVLINK_COMM_0, (uint8_t)c, &msg, &r_mavlink_status);
+        uint8_t res = mavlink_parse_char(MAVLINK_COMM_0, (uint8_t)c, &msg, &r_mavlink_status);
 
-            if (res) {
-                /* process ack messages in the base class, subclasses will receive a signal
-                   to indicate success or failure */
-                if (msg.msgid == MAVLINK_MSG_ID_COMMAND_ACK) {
-                    mavlink_command_ack_t ack;
-                    mavlink_msg_command_ack_decode(&msg, &ack);
-                    switch (ack.result) {
-                        case MAV_CMD_ACK_OK: {
-                            m_command_state = MavlinkCommandStateDone;
-                            break;
-                        }
-                        default: {
-                            m_command_state = MavlinkCommandStateFailed;
-                            break;
-                        }
+        if (res) {
+            // process ack messages in the base class, subclasses will receive a signal
+            // to indicate success or failure
+            if (msg.msgid == MAVLINK_MSG_ID_COMMAND_ACK) {
+                mavlink_command_ack_t ack;
+                mavlink_msg_command_ack_decode(&msg, &ack);
+                switch (ack.result) {
+                    case MAV_CMD_ACK_OK: {
+                        m_command_state = MavlinkCommandStateDone;
+                        break;
                     }
-                } else {
-                    emit processMavlinkMessage(msg);
+                    default: {
+                        m_command_state = MavlinkCommandStateFailed;
+                        break;
+                    }
                 }
+            } else {
+                emit processMavlinkMessage(msg);
             }
         }
+    }
 }
 
 

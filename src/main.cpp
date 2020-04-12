@@ -26,6 +26,8 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "frskytelemetry.h"
 #include "msptelemetry.h"
 #include "ltmtelemetry.h"
+#include "vectortelemetry.h"
+#include "smartporttelemetry.h"
 
 #include "qopenhdlink.h"
 
@@ -135,6 +137,9 @@ int main(int argc, char *argv[]) {
     qmlRegisterType<FrSkyTelemetry>("OpenHD", 1, 0, "FrSkyTelemetry");
     qmlRegisterType<MSPTelemetry>("OpenHD", 1, 0, "MSPTelemetry");
     qmlRegisterType<LTMTelemetry>("OpenHD", 1, 0, "LTMTelemetry");
+    qmlRegisterType<VectorTelemetry>("OpenHD", 1, 0, "VectorTelemetry");
+    qmlRegisterType<SmartportTelemetry>("OpenHD", 1, 0, "SmartportTelemetry");
+
     qmlRegisterType<OpenHDRC>("OpenHD", 1, 0, "OpenHDRC");
 
     qmlRegisterSingletonType<OpenHDPi>("OpenHD", 1, 0, "OpenHDPi", openHDPiSingletonProvider);
@@ -248,6 +253,7 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
     auto mavlinkTelemetry = MavlinkTelemetry::instance();
     engine.rootContext()->setContextProperty("MavlinkTelemetry", mavlinkTelemetry);
     QThread *mavlinkThread = new QThread();
+    mavlinkThread->setObjectName("mavlinkTelemetryThread");
     QObject::connect(mavlinkThread, &QThread::started, mavlinkTelemetry, &MavlinkTelemetry::onStarted);
     mavlinkTelemetry->moveToThread(mavlinkThread);
     QObject::connect(openHDSettings, &OpenHDSettings::groundStationIPUpdated, mavlinkTelemetry, &MavlinkTelemetry::setGroundIP, Qt::QueuedConnection);
@@ -257,6 +263,7 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
     auto openhdTelemetry = OpenHDTelemetry::instance();
     engine.rootContext()->setContextProperty("OpenHDTelemetry", openhdTelemetry);
     QThread *telemetryThread = new QThread();
+    telemetryThread->setObjectName("openhdTelemetryThread");
     QObject::connect(telemetryThread, &QThread::started, openhdTelemetry, &OpenHDTelemetry::onStarted);
     openhdTelemetry->moveToThread(telemetryThread);
     telemetryThread->start();
@@ -264,6 +271,7 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
     auto airGPIOMicroservice = new GPIOMicroservice(nullptr, MicroserviceTargetAir, MavlinkTypeTCP);
     engine.rootContext()->setContextProperty("AirGPIOMicroservice", airGPIOMicroservice);
     QThread *airGPIOThread = new QThread();
+    airGPIOThread->setObjectName("airGPIOThread");
     QObject::connect(airGPIOThread, &QThread::started, airGPIOMicroservice, &GPIOMicroservice::onStarted);
     airGPIOMicroservice->moveToThread(airGPIOThread);
     QObject::connect(openHDSettings, &OpenHDSettings::groundStationIPUpdated, airGPIOMicroservice, &GPIOMicroservice::setGroundIP, Qt::QueuedConnection);
@@ -272,10 +280,12 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
     auto groundPowerMicroservice = new PowerMicroservice(nullptr, MicroserviceTargetGround, MavlinkTypeTCP);
     engine.rootContext()->setContextProperty("GroundPowerMicroservice", groundPowerMicroservice);
     QThread *groundPowerThread = new QThread();
+    groundPowerThread->setObjectName("groundPowerThread");
     QObject::connect(groundPowerThread, &QThread::started, groundPowerMicroservice, &PowerMicroservice::onStarted);
     groundPowerMicroservice->moveToThread(groundPowerThread);
     QObject::connect(openHDSettings, &OpenHDSettings::groundStationIPUpdated, groundPowerMicroservice, &PowerMicroservice::setGroundIP, Qt::QueuedConnection);
     groundPowerThread->start();
+
 
     engine.rootContext()->setContextProperty("OpenHD", openhd);
 

@@ -11,7 +11,6 @@ class OpenHDPi : public QObject {
 
 public:
     explicit OpenHDPi(QObject *parent = nullptr);
-    void init();
 
     Q_PROPERTY(bool is_raspberry_pi READ is_raspberry_pi NOTIFY is_raspberry_pi_changed)
     bool is_raspberry_pi();
@@ -23,6 +22,8 @@ public:
 
     Q_PROPERTY(bool undervolt MEMBER m_undervolt NOTIFY undervolt_changed)
 
+    Q_INVOKABLE void activate_console();
+    Q_INVOKABLE void stop_app();
     Q_INVOKABLE void set_mount_rw();
     Q_INVOKABLE void set_mount_ro();
 
