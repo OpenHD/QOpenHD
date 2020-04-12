@@ -160,7 +160,7 @@ ApplicationWindow {
         property bool show_throttle: true
         property double throttle_opacity: 1
 
-        property bool show_control: true
+        property bool show_control: false
         property double control_opacity: 1
         property bool control_version: true
 
