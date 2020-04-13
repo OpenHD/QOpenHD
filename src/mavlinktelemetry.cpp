@@ -165,7 +165,18 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
 
             parameterLastReceivedTime = QDateTime::currentMSecsSinceEpoch();
 
-            m_allParameters.insert(QString(param.param_id), QVariant(param.param_value));
+            QByteArray param_id(param.param_id, 16);
+            /*
+             * If there's no null in the param_id array, the mavlink docs say it has to be exactly 16 characters,
+             * so we add a null to the end and then continue. This guarantees that QString below will always find
+             * a null terminator.
+             *
+             */
+            if (!param_id.contains('\0')) {
+               param_id.append('\0');
+            }
+
+            m_allParameters.insert(QString(param_id.data()), QVariant(param.param_value));
             break;
         }
         case MAVLINK_MSG_ID_GPS_RAW_INT:{
