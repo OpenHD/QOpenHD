@@ -359,6 +359,36 @@ void OpenHD::set_throttle(double throttle) {
      emit throttle_changed(m_throttle);
 }
 
+void OpenHD::set_vibration_x(float vibration_x) {
+    m_vibration_x= vibration_x;
+     emit vibration_x_changed(m_vibration_x);
+}
+
+void OpenHD::set_vibration_y(float vibration_y) {
+    m_vibration_y= vibration_y;
+     emit vibration_y_changed(m_vibration_y);
+}
+
+void OpenHD::set_vibration_z(float vibration_z) {
+    m_vibration_z= vibration_z;
+     emit vibration_z_changed(m_vibration_z);
+}
+
+void OpenHD::set_clipping_x(float clipping_x) {
+    m_clipping_x= clipping_x;
+     emit clipping_x_changed(m_clipping_x);
+}
+
+void OpenHD::set_clipping_y(float clipping_y) {
+    m_clipping_y= clipping_y;
+     emit clipping_y_changed(m_clipping_y);
+}
+
+void OpenHD::set_clipping_z(float clipping_z) {
+    m_clipping_z= clipping_z;
+     emit clipping_z_changed(m_clipping_z);
+}
+
 void OpenHD::set_control_pitch(int control_pitch) {
     m_control_pitch = control_pitch;
      emit control_pitch_changed(m_control_pitch);

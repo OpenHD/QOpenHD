@@ -102,5 +102,7 @@
         <file>ui/widgets/FlightMahWidget.qml</file>
         <file>ui/widgets/ControlWidgetForm.ui.qml</file>
         <file>ui/widgets/ControlWidget.qml</file>
+        <file>ui/widgets/VibrationWidget.qml</file>
+        <file>ui/widgets/VibrationWidgetForm.ui.qml</file>
     </qresource>
 </RCC>
