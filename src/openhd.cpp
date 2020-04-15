@@ -389,6 +389,11 @@ void OpenHD::set_clipping_z(float clipping_z) {
      emit clipping_z_changed(m_clipping_z);
 }
 
+void OpenHD::set_vsi(float vsi) {
+    m_vsi= vsi;
+     emit vsi_changed(m_vsi);
+}
+
 void OpenHD::set_control_pitch(int control_pitch) {
     m_control_pitch = control_pitch;
      emit control_pitch_changed(m_control_pitch);

@@ -42,6 +42,10 @@ Item {
 
     property alias controlWidget: controlWidget
 
+    property alias vibrationWidget: vibrationWidget
+
+    property alias vsiWidget: vsiWidget
+
     MessageHUD {
         id: messageHUD
     }
@@ -146,6 +150,10 @@ Item {
 
     VibrationWidget {
         id: vibrationWidget
+    }
+
+    VsiWidget {
+        id: vsiWidget
     }
 }
 
