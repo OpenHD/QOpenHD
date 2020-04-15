@@ -170,6 +170,10 @@ ApplicationWindow {
 
         property bool show_vibration: false
         property double vibration_opacity: 1
+
+        property bool show_vsi: true
+        property double vsi_opacity: 1
+        property int vsi_max: 20
     }
 
 

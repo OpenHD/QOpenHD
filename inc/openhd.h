@@ -159,6 +159,9 @@ public:
     Q_PROPERTY(float clipping_z MEMBER m_clipping_z WRITE set_clipping_z NOTIFY clipping_z_changed)
     void set_clipping_z(float clipping_z);
 
+    Q_PROPERTY(float vsi MEMBER m_vsi WRITE set_vsi NOTIFY vsi_changed)
+    void set_vsi(float vsi);
+
 
     // openhd
 
@@ -345,6 +348,8 @@ signals:
     void clipping_y_changed(float clipping_y);
     void clipping_z_changed(float clipping_z);
 
+    void vsi_changed(float vsi);
+
     // openhd
     void downlink_rssi_changed(int downlink_rssi);
     void current_signal_joystick_uplink_changed(int current_signal_joystick_uplink);
@@ -450,6 +455,8 @@ private:
     float m_clipping_x = 0.0;
     float m_clipping_y = 0.0;
     float m_clipping_z = 0.0;
+
+    float m_vsi = 0.0;
 
     // openhd
 

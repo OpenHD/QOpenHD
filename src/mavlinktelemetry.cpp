@@ -280,6 +280,10 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             OpenHD::instance()->set_speed(speed);
             // qDebug() << "Speed- ground " << speed;
 
+            auto vsi = vfr_hud.climb;
+            OpenHD::instance()->set_vsi(vsi);
+            // qDebug() << "VSI- " << vsi;
+
             break;
         }
         case MAVLINK_MSG_ID_TIMESYNC:{
