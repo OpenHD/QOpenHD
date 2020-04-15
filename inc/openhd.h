@@ -141,6 +141,24 @@ public:
     Q_PROPERTY(int control_throttle MEMBER m_control_throttle WRITE set_control_throttle NOTIFY control_throttle_changed)
     void set_control_throttle(int control_throttle);
 
+    Q_PROPERTY(float vibration_x MEMBER m_vibration_x WRITE set_vibration_x NOTIFY vibration_x_changed)
+    void set_vibration_x(float vibration_x);
+
+    Q_PROPERTY(float vibration_y MEMBER m_vibration_y WRITE set_vibration_y NOTIFY vibration_y_changed)
+    void set_vibration_y(float vibration_y);
+
+    Q_PROPERTY(float vibration_z MEMBER m_vibration_z WRITE set_vibration_z NOTIFY vibration_z_changed)
+    void set_vibration_z(float vibration_z);
+
+    Q_PROPERTY(float clipping_x MEMBER m_clipping_x WRITE set_clipping_x NOTIFY clipping_x_changed)
+    void set_clipping_x(float clipping_x);
+
+    Q_PROPERTY(float clipping_y MEMBER m_clipping_y WRITE set_clipping_y NOTIFY clipping_y_changed)
+    void set_clipping_y(float clipping_y);
+
+    Q_PROPERTY(float clipping_z MEMBER m_clipping_z WRITE set_clipping_z NOTIFY clipping_z_changed)
+    void set_clipping_z(float clipping_z);
+
 
     // openhd
 
@@ -319,6 +337,13 @@ signals:
     void control_yaw_changed(int control_yaw);
     void control_throttle_changed(int control_throttle);
 
+    void vibration_x_changed(float vibration_x);
+    void vibration_y_changed(float vibration_y);
+    void vibration_z_changed(float vibration_z);
+
+    void clipping_x_changed(float clipping_x);
+    void clipping_y_changed(float clipping_y);
+    void clipping_z_changed(float clipping_z);
 
     // openhd
     void downlink_rssi_changed(int downlink_rssi);
@@ -417,6 +442,14 @@ private:
     int m_control_roll = 0;
     int m_control_yaw = 0;
     int m_control_throttle = 0;
+
+    float m_vibration_x = 0.0;
+    float m_vibration_y = 0.0;
+    float m_vibration_z = 0.0;
+
+    float m_clipping_x = 0.0;
+    float m_clipping_y = 0.0;
+    float m_clipping_z = 0.0;
 
     // openhd
 

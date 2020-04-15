@@ -167,6 +167,9 @@ ApplicationWindow {
         property bool show_gpio: false
         property int selected_map_provider: 0
         property int selected_map_variant: 0
+
+        property bool show_vibration: false
+        property double vibration_opacity: 1
     }
 
 

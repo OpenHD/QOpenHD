@@ -343,6 +343,16 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             break;
         }
         case MAVLINK_MSG_ID_VIBRATION:{
+        mavlink_vibration_t vibration;
+        mavlink_msg_vibration_decode (&msg, &vibration);
+
+        OpenHD::instance()->set_vibration_x(vibration.vibration_x);
+        OpenHD::instance()->set_vibration_y(vibration.vibration_y);
+        OpenHD::instance()->set_vibration_z(vibration.vibration_z);
+
+        OpenHD::instance()->set_clipping_x(vibration.clipping_0);
+        OpenHD::instance()->set_clipping_y(vibration.clipping_1);
+        OpenHD::instance()->set_clipping_z(vibration.clipping_2);
             break;
         }
         case MAVLINK_MSG_ID_SCALED_IMU2:{

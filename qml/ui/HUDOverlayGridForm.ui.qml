@@ -143,6 +143,10 @@ Item {
     GPIOWidget {
         id: gpioWidget
     }
+
+    VibrationWidget {
+        id: vibrationWidget
+    }
 }
 
 /*##^##
