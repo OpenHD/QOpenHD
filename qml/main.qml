@@ -140,6 +140,7 @@ ApplicationWindow {
         property bool altitude_rel_msl: false
         property double altitude_opacity: 1
         property double altitude_size: 1
+        property bool show_altitude_ladder: true
 
         property bool show_altitude_second: true
         property bool altitude_second_msl_rel: false
