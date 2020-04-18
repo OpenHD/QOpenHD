@@ -106,6 +106,27 @@ BaseWidget {
                 onCheckedChanged: settings.speed_airspeed_gps = checked
             }
         }
+        Item {
+            width: parent.width
+            height: 32
+            Text {
+                text: "Ladder (off) / (on)"
+                color: "white"
+                height: parent.height
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
+            Switch {
+                width: 32
+                height: parent.height
+                anchors.rightMargin: 12
+                anchors.right: parent.right
+                checked: settings.show_speed_ladder
+                onCheckedChanged: settings.show_speed_ladder = checked
+            }
+        }
     }
 
     Glow {
@@ -120,12 +141,96 @@ BaseWidget {
     Item {
         id: widgetInner
         anchors.fill: parent
+        opacity: settings.speed_opacity
+
+        //-----------------------ladder start---------------
+        Item {
+            id: speedLadder
+
+            anchors.verticalCenter: parent
+            anchors.right: parent.right
+            anchors.rightMargin: 20 //tweak ladder left or right
+
+            transform: Scale { origin.x: -33; origin.y: 12; xScale: settings.speed_size ; yScale: settings.speed_size}
+
+            Connections{
+                target:OpenHD
+                onSpeedChanged: { // if user selects msl it is part of same mavlink msg
+                    canvasSpeedLadder.requestPaint()
+                }
+            }
+
+            Canvas {
+                id: canvasSpeedLadder
+                anchors.centerIn: parent
+                width: 50
+                height: 300
+                clip: false
+
+                onPaint: { // @disable-check M223
+                    var ctx = getContext("2d"); // @disable-check M222
+                    ctx.reset(); // @disable-check M222
+
+                    if (settings.show_speed_ladder === false){
+                        return; // to stop it from painting per user selection
+                    }
+
+                    ctx.fillStyle = settings.color_shape;
+                    //cant get a good approximation of glow via canvas
+                    //ctx.strokeStyle = settings.color_glow;
+                    //ctx.lineWidth = .5;
+                    ctx.font = "bold 11px sans-serif";
+
+                    var speed=settings.speed_airspeed_gps ? OpenHD.airspeed : OpenHD.speed;
+
+                    var x = 32; // ticks right/left position
+                    var y_position= height/2+11; // ladder center up/down..tweak
+                    var x_label = 10; // ladder labels right/left position
+
+                    var range = 100; // speed range range of display, i.e. lowest and highest number on the ladder
+                    var ratio_speed = height / range;
+
+                    var k;
+                    var y;
+
+                    for (k = (speed - range / 2); k <= speed + range / 2; k++) {    // @disable-check M223
+                        y =  y_position + ((k - speed) * ratio_speed)*-1;
+                        if (k % 10 == 0) {                                      // @disable-check M223
+                            if (k >= 0) {                                       // @disable-check M223
+                                /// big ticks
+                                ctx.rect(x, y, 12, 3);
+                                ctx.fill();                                     // @disable-check M222
+                                //ctx.stroke();
+                                if (k>speed+5 || k<speed-5){                        // @disable-check M223
+                                    // text
+                                    ctx.fillText(k, x_label, y+6);              // @disable-check M222
+                                }
+                            }
+                            if (k < 0) {                                        // @disable-check M223
+                                //start position speed (squares) below "0"
+                                ctx.rect(x, y-15, 15, 15);
+                                ctx.fill();                                     // @disable-check M222
+                                //ctx.stroke();
+                            }
+                        }
+                        else if ((k % 5 == 0) && (k > 0)){                      // @disable-check M223
+                            //little ticks
+                            ctx.rect(x, y, 7, 2);
+                            ctx.fill(); // @disable-check M222
+                            //ctx.stroke();
+                        }
+                    }
+                }
+            }
+        }
+        //-----------------------ladder end---------------
+
+
 
         Text {
             anchors.fill: parent
             id: speed_text
-            color: settings.color_text
-            opacity: settings.speed_opacity
+            color: settings.color_text           
             font.pixelSize: 14
             transform: Scale { origin.x: 12; origin.y: 12; xScale: settings.speed_size ; yScale: settings.speed_size}
             text: Number(
@@ -139,7 +244,6 @@ BaseWidget {
             id: outline
             anchors.fill: parent
             rotation: 180
-            opacity: settings.speed_opacity
             transform: Scale { origin.x: 12; origin.y: 12; xScale: settings.speed_size ; yScale: settings.speed_size}
             ShapePath {
                 strokeColor: settings.color_shape

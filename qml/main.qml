@@ -130,6 +130,7 @@ ApplicationWindow {
         property bool speed_airspeed_gps: false
         property double speed_opacity: 1
         property double speed_size: 1
+        property bool show_speed_ladder: true
 
         property bool show_heading: true
         property bool heading_inav: false
