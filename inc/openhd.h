@@ -72,8 +72,8 @@ public:
     Q_PROPERTY(int vz MEMBER m_vz WRITE set_vz NOTIFY vz_changed)
     void set_vz(int vz);
 
-    Q_PROPERTY(double hdg MEMBER m_hdg WRITE set_hdg NOTIFY hdg_changed)
-    void set_hdg(double hdg);
+    Q_PROPERTY(int hdg MEMBER m_hdg WRITE set_hdg NOTIFY hdg_changed)
+    void set_hdg(int hdg);
 
     Q_PROPERTY(int speed MEMBER m_speed WRITE set_speed NOTIFY speed_changed)
     void set_speed(int speed);
@@ -311,7 +311,7 @@ signals:
     void vx_changed(int vx);
     void vy_changed(int vy);
     void vz_changed(int vz);
-    void hdg_changed(double hdg);
+    void hdg_changed(int hdg);
     void speed_changed(int speed);
     void airspeed_changed(int airspeed);
     void armed_changed(bool armed);
@@ -417,7 +417,7 @@ private:
     int m_vy = 0;
     int m_vz = 0;
 
-    double m_hdg = 000.0;
+    int m_hdg = 000;
 
     int m_speed = 0;
     int m_airspeed = 0;

@@ -215,10 +215,10 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             QSettings settings;
             auto _heading_inav = settings.value("heading_inav", false).toBool();
             if(_heading_inav==true){
-                OpenHD::instance()->set_hdg((double)global_position.hdg);
+                OpenHD::instance()->set_hdg(global_position.hdg);
             }
             else{
-                OpenHD::instance()->set_hdg((double)global_position.hdg / 100.0);
+                OpenHD::instance()->set_hdg(global_position.hdg / 100);
             }
             OpenHD::instance()->set_vx((int)(global_position.vx/100.0));
             OpenHD::instance()->set_vy((int)(global_position.vy/100.0));
