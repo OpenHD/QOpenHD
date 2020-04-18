@@ -151,7 +151,6 @@ BaseWidget {
         Item {
             id: altLadder
 
-            anchors.verticalCenter: parent
             anchors.left: parent.left
             anchors.leftMargin: 20 //tweak ladder left or right
 

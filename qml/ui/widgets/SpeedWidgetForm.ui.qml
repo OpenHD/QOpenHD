@@ -147,7 +147,6 @@ BaseWidget {
         Item {
             id: speedLadder
 
-            anchors.verticalCenter: parent
             anchors.right: parent.right
             anchors.rightMargin: 20 //tweak ladder left or right
 
