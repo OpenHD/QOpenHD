@@ -205,7 +205,7 @@ BaseWidget {
                                 ctx.fill();                                     // @disable-check M222
                                 //ctx.stroke();
                                 if (k>alt+5 || k<alt-5){                        // @disable-check M223
-                                    // text
+                                    // text for label
                                     ctx.fillText(k, x_label, y+6);              // @disable-check M222
                                 }
                             }
