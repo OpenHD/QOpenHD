@@ -214,7 +214,7 @@ BaseWidget {
                         }
                         else if ((k % 5 == 0) && (k > 0)){                      // @disable-check M223
                             //little ticks
-                            ctx.rect(x, y, 7, 2);
+                            ctx.rect(x+5, y, 7, 2);
                             ctx.fill(); // @disable-check M222
                             //ctx.stroke();
                         }
