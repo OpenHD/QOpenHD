@@ -185,13 +185,6 @@ BaseWidget {
                     //ctx.lineWidth = .5;
                     ctx.font = "bold 11px sans-serif";
 
-                    function getWidth(pos_x_percent) {                      // @disable-check M222
-                                        return (width * 0.01 * pos_x_percent);
-                                    }
-                    function getHeight(pos_y_percent) {                     // @disable-check M222
-                                        return (height * 0.01 * pos_y_percent);
-                                    }
-
                     var alt=settings.altitude_rel_msl ? OpenHD.alt_msl : OpenHD.alt_rel;
 
                     var x = 6; // ticks right/left position
