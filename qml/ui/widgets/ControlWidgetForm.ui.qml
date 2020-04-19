@@ -116,7 +116,7 @@ BaseWidget {
                 anchors.centerIn: singleCircle
                 width: (parent.width<parent.height?parent.width:parent.height)*.1
                 height: width
-                color: settings.color_shape
+                color: settings.color_text
                 radius: width*0.5
 
                 visible: {
@@ -142,7 +142,7 @@ BaseWidget {
                 anchors.centerIn: singleCircle
                 width: (parent.width<parent.height?parent.width:parent.height)*.1
                 height: width
-                color: settings.color_shape
+                color: settings.color_text
                 radius: width*0.5
 
                 visible: {
@@ -207,7 +207,7 @@ BaseWidget {
                 anchors.centerIn: leftCircle
                 width: (parent.width<parent.height?parent.width:parent.height)*.1
                 height: width
-                color: settings.color_shape
+                color: settings.color_text
                 radius: width*0.5
 
                 visible: {
@@ -233,7 +233,7 @@ BaseWidget {
                 anchors.centerIn: rightCircle
                 width: (parent.width<parent.height?parent.width:parent.height)*.1
                 height: width
-                color: settings.color_shape
+                color: settings.color_text
                 radius: width*0.5
 
                 visible: {

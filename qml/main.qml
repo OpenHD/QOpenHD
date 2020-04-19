@@ -130,16 +130,19 @@ ApplicationWindow {
         property bool speed_airspeed_gps: false
         property double speed_opacity: 1
         property double speed_size: 1
+        property bool show_speed_ladder: true
 
         property bool show_heading: true
         property bool heading_inav: false
         property double heading_opacity: 1
         property double heading_size: 1
+        property bool show_heading_ladder: true
 
         property bool show_altitude: true
         property bool altitude_rel_msl: false
         property double altitude_opacity: 1
         property double altitude_size: 1
+        property bool show_altitude_ladder: true
 
         property bool show_altitude_second: true
         property bool altitude_second_msl_rel: false

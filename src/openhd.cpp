@@ -177,7 +177,7 @@ void OpenHD::set_vz(int vz) {
     emit vz_changed(m_vz);
 }
 
-void OpenHD::set_hdg(double hdg) {
+void OpenHD::set_hdg(int hdg) {
     m_hdg = hdg;
     emit hdg_changed(m_hdg);
 }
