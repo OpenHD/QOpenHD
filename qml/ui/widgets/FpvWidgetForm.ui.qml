@@ -153,7 +153,7 @@ BaseWidget {
         width: 40
         anchors.verticalCenter: parent.verticalCenter
 
-        rotation: settings.horizon_invert_roll ? OpenHD.roll : -OpenHD.roll
+        rotation: settings.fpv_dynamic ? (settings.horizon_invert_roll ? OpenHD.roll : -OpenHD.roll) : 0
 
         //had to add another item to compensate for rotation above
         Item {
