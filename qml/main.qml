@@ -139,6 +139,7 @@ ApplicationWindow {
         property double heading_opacity: 1
         property double heading_size: 1
         property bool show_heading_ladder: true
+        property bool heading_ladder_text: true //true:letters/false:numbers
 
         property bool show_altitude: true
         property bool altitude_rel_msl: false

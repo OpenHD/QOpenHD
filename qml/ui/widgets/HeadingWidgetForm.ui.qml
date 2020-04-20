@@ -125,6 +125,27 @@ BaseWidget {
                 onCheckedChanged: settings.show_heading_ladder = checked
             }
         }
+        Item {
+            width: parent.width
+            height: 32
+            Text {
+                text: "(Numbers) / (Letters)"
+                color: "white"
+                height: parent.height
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
+            Switch {
+                width: 32
+                height: parent.height
+                anchors.rightMargin: 12
+                anchors.right: parent.right
+                checked: settings.heading_ladder_text
+                onCheckedChanged: settings.heading_ladder_text = checked
+            }
+        }
     }
 
     Glow {
@@ -222,35 +243,43 @@ BaseWidget {
                             switch (j) {
                                 case 0:
                                     draw_text = true;
-                                    compass_direction = qsTr("N") ;
+                                    compass_direction = settings.heading_ladder_text ?
+                                                qsTr("N") : (j);
                                 break;
                                 case 45:
                                     draw_text = true;
-                                    compass_direction = qsTr("NE") ;
+                                    compass_direction = settings.heading_ladder_text ?
+                                                qsTr("NE") : (j);
                                 break;
                                 case 90:
                                     draw_text = true;
-                                    compass_direction = qsTr("E") ;
+                                    compass_direction = settings.heading_ladder_text ?
+                                            qsTr("E") : (j);
                                 break;
                                 case 135:
                                     draw_text = true;
-                                    compass_direction = qsTr("SW") ;
+                                    compass_direction = settings.heading_ladder_text ?
+                                                qsTr("SW") : (j);
                                 break;
                                 case 180:
                                     draw_text = true;
-                                    compass_direction = qsTr("S") ;
+                                    compass_direction = settings.heading_ladder_text ?
+                                                qsTr("S") : (j);
                                 break;
                                 case 225:
                                     draw_text = true;
-                                    compass_direction = qsTr("SW") ;
+                                    compass_direction = settings.heading_ladder_text ?
+                                                qsTr("SW") : (j);
                                 break;
                                 case 270:
                                     draw_text = true;
-                                    compass_direction = qsTr("W") ;
+                                    compass_direction = settings.heading_ladder_text ?
+                                                qsTr("W") : (j);
                                 break;
                                 case 315:
                                     draw_text = true;
-                                    compass_direction = qsTr("NW") ;
+                                    compass_direction = settings.heading_ladder_text ?
+                                                qsTr("NW") : (j);
                                 break;
                             }
                             if (draw_text === true) {
