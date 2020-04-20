@@ -176,6 +176,7 @@ BaseWidget {
                     //ctx.strokeStyle = settings.color_glow;
                     //ctx.lineWidth = 1;
                     ctx.font = "bold 11px sans-serif";
+                    ctx.textAlign = "center";
 
 
 
@@ -223,21 +224,37 @@ BaseWidget {
                                     draw_text = true;
                                     compass_direction = qsTr("N") ;
                                 break;
+                                case 45:
+                                    draw_text = true;
+                                    compass_direction = qsTr("NE") ;
+                                break;
                                 case 90:
                                     draw_text = true;
                                     compass_direction = qsTr("E") ;
+                                break;
+                                case 135:
+                                    draw_text = true;
+                                    compass_direction = qsTr("SW") ;
                                 break;
                                 case 180:
                                     draw_text = true;
                                     compass_direction = qsTr("S") ;
                                 break;
+                                case 225:
+                                    draw_text = true;
+                                    compass_direction = qsTr("SW") ;
+                                break;
                                 case 270:
                                     draw_text = true;
                                     compass_direction = qsTr("W") ;
                                 break;
+                                case 315:
+                                    draw_text = true;
+                                    compass_direction = qsTr("NW") ;
+                                break;
                             }
                             if (draw_text === true) {
-                                ctx.fillText(compass_direction, x-3, y_label);
+                                ctx.fillText(compass_direction, x, y_label);
                                 draw_text = false;
                             }
                             /*  if (j == home_heading) {
