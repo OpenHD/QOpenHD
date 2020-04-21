@@ -22,128 +22,139 @@ BaseWidget {
     defaultVCenter: false
 
     hasWidgetDetail: true
-    widgetDetailComponent: Column {
-        Item {
-            width: parent.width
-            height: 32
-            Text {
-                id: opacityTitle
-                text: "Opacity"
-                color: "white"
-                height: parent.height
-                font.bold: true
-                font.pixelSize: detailPanelFontPixels
-                anchors.left: parent.left
-                verticalAlignment: Text.AlignVCenter
-            }
-            Slider {
-                id: heading_opacity_Slider
-                orientation: Qt.Horizontal
-                from: .1
-                value: settings.heading_opacity
-                to: 1
-                stepSize: .1
-                height: parent.height
-                anchors.rightMargin: 0
-                anchors.right: parent.right
-                width: parent.width - 96
+    widgetDetailComponent: ScrollView{
 
-                onValueChanged: {
-                    settings.heading_opacity = heading_opacity_Slider.value
+        contentHeight: headingSettingsColumn.height
+        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+        clip: true
+
+        ColumnLayout{
+            id: headingSettingsColumn
+            spacing:6
+            clip: true
+
+            Item {
+                width: 230
+                height: 32
+                Text {
+                    id: opacityText
+                    text: "Opacity"
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Slider {
+                    id: heading_opacity_Slider
+                    orientation: Qt.Horizontal
+                    from: .1
+                    value: settings.heading_opacity
+                    to: 1
+                    stepSize: .1
+                    height: parent.height
+                    anchors.rightMargin: 5
+                    anchors.right: parent.right
+                    width: parent.width-96
+
+                    onValueChanged: {
+                        settings.heading_opacity = heading_opacity_Slider.value
+                    }
                 }
             }
-        }
-        Item {
-            width: parent.width
-            height: 32
-            Text {
-                id: sizeTitle
-                text: "Size"
-                color: "white"
-                height: parent.height
-                font.bold: true
-                font.pixelSize: detailPanelFontPixels
-                anchors.left: parent.left
-                verticalAlignment: Text.AlignVCenter
-            }
-            Slider {
-                id: heading_size_Slider
-                orientation: Qt.Horizontal
-                from: .7
-                value: settings.heading_size
-                to: 3
-                stepSize: .1
-                height: parent.height
-                anchors.rightMargin: 0
-                anchors.right: parent.right
-                width: parent.width - 96
+            Item {
+                width: 230
+                height: 32
+                Text {
+                    id: sizeText
+                    text: "Size"
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Slider {
+                    id: heading_size_Slider
+                    orientation: Qt.Horizontal
+                    from: .7
+                    value: settings.heading_size
+                    to: 3
+                    stepSize: .1
+                    height: parent.height
+                    anchors.rightMargin: 5
+                    anchors.right: parent.right
+                    width: parent.width-96
 
-                onValueChanged: {
-                    settings.heading_size = heading_size_Slider.value
+                    onValueChanged: {
+                        settings.heading_size = heading_size_Slider.value
+                    }
                 }
             }
-        }
-        Item {
-            width: parent.width
-            height: 32
-            Text {
-                text: "Ardupilot (off) / iNav (on)"
-                color: "white"
-                height: parent.height
-                font.bold: true
-                font.pixelSize: detailPanelFontPixels
-                anchors.left: parent.left
-                verticalAlignment: Text.AlignVCenter
+            Item {
+                width: 230
+                height: 32
+                Text {
+                    text: "Ardupilot (off) / iNav (on)"
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 12
+                    anchors.right: parent.right
+                    checked: settings.heading_inav
+                    onCheckedChanged: settings.heading_inav = checked
+                }
             }
-            Switch {
-                width: 32
-                height: parent.height
-                anchors.rightMargin: 12
-                anchors.right: parent.right
-                checked: settings.heading_inav
-                onCheckedChanged: settings.heading_inav = checked
+            Item {
+                width: 230
+                height: 32
+                Text {
+                    text: "Ladder (off) / (on)"
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 12
+                    anchors.right: parent.right
+                    checked: settings.show_heading_ladder
+                    onCheckedChanged: settings.show_heading_ladder = checked
+                }
             }
-        }
-        Item {
-            width: parent.width
-            height: 32
-            Text {
-                text: "Ladder (off) / (on)"
-                color: "white"
-                height: parent.height
-                font.bold: true
-                font.pixelSize: detailPanelFontPixels
-                anchors.left: parent.left
-                verticalAlignment: Text.AlignVCenter
-            }
-            Switch {
-                width: 32
-                height: parent.height
-                anchors.rightMargin: 12
-                anchors.right: parent.right
-                checked: settings.show_heading_ladder
-                onCheckedChanged: settings.show_heading_ladder = checked
-            }
-        }
-        Item {
-            width: parent.width
-            height: 32
-            Text {
-                text: "(Numbers) / (Letters)"
-                color: "white"
-                height: parent.height
-                font.bold: true
-                font.pixelSize: detailPanelFontPixels
-                anchors.left: parent.left
-                verticalAlignment: Text.AlignVCenter
-            }
-            Switch {
-                width: 32
-                height: parent.height
-                anchors.rightMargin: 12
-                anchors.right: parent.right
-                checked: settings.heading_ladder_text
-                onCheckedChanged: settings.heading_ladder_text = checked
+            Item {
+                width: 230
+                height: 32
+                Text {
+                    text: "(Numbers) / (Letters)"
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 12
+                    anchors.right: parent.right
+                    checked: settings.heading_ladder_text
+                    onCheckedChanged: settings.heading_ladder_text = checked
+                }
             }
         }
     }
@@ -236,7 +247,7 @@ BaseWidget {
                             continue;
                         }
 
-                        if (x < width/2-26 || x > width/2+26){  // dont draw thru compass
+                        if (x < width/2-26 || x > width/2+31){  // dont draw thru compass
                             j = i;
                             if (j < 0) j += 360;
                             if (j >= 360) j -= 360;
