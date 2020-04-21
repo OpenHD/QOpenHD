@@ -32,12 +32,12 @@ BaseWidget {
 
         contentHeight: altitudeSettingsColumn.height
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
-        clip: false
+        clip: true
 
         ColumnLayout{
             id: altitudeSettingsColumn
             spacing:0
-            clip: false
+            clip: true
             Item {
                 width: 240
                 height: 32
