@@ -30,7 +30,7 @@ BaseWidget {
 
         ColumnLayout{
             id: headingSettingsColumn
-            spacing:6
+            spacing:0
             clip: true
 
             Item {
