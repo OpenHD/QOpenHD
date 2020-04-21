@@ -225,4 +225,6 @@ int LTMTelemetry::ltm_read(uint8_t *buf, int buflen) {
             else LTMserialBuffer[LTMreceiverIndex++]=c;
         }
     }
+
+    return 0;
 }
