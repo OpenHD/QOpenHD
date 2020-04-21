@@ -184,6 +184,8 @@ void MavlinkBase::stateLoop() {
     qint64 current_timestamp = QDateTime::currentMSecsSinceEpoch();
     set_last_heartbeat(current_timestamp - last_heartbeat_timestamp);
 
+    return;
+
     switch (state) {
         case MavlinkStateDisconnected: {
             set_loading(false);
