@@ -23,108 +23,118 @@ BaseWidget {
     defaultHCenter: false
 
     hasWidgetDetail: true
-    widgetDetailComponent: Column {
-        Item {
-            width: parent.width
-            height: 32
-            Text {
-                id: opacityTitle
-                text: "Opacity"
-                color: "white"
-                height: parent.height
-                font.bold: true
-                font.pixelSize: detailPanelFontPixels
-                anchors.left: parent.left
-                verticalAlignment: Text.AlignVCenter
-            }
-            Slider {
-                id: speed_opacity_Slider
-                orientation: Qt.Horizontal
-                from: .1
-                value: settings.speed_opacity
-                to: 1
-                stepSize: .1
-                height: parent.height
-                anchors.rightMargin: 0
-                anchors.right: parent.right
-                width: parent.width - 96
+    widgetDetailComponent: ScrollView{
 
-                onValueChanged: {
-                    settings.speed_opacity = speed_opacity_Slider.value
+        contentHeight: speedSettingsColumn.height
+        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+        clip: true
+
+        ColumnLayout{
+            id: speedSettingsColumn
+            spacing:0
+            clip: true
+            Item {
+                width: 240
+                height: 32
+                Text {
+                    id: opacityTitle
+                    text: "Opacity"
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Slider {
+                    id: speed_opacity_Slider
+                    orientation: Qt.Horizontal
+                    from: .1
+                    value: settings.speed_opacity
+                    to: 1
+                    stepSize: .1
+                    height: parent.height
+                    anchors.rightMargin: 5
+                    anchors.right: parent.right
+                    width: parent.width - 96
+
+                    onValueChanged: {
+                        settings.speed_opacity = speed_opacity_Slider.value
+                    }
                 }
             }
-        }
-        Item {
-            width: parent.width
-            height: 32
-            Text {
-                id: sizeTitle
-                text: "Size"
-                color: "white"
-                height: parent.height
-                font.bold: true
-                font.pixelSize: detailPanelFontPixels
-                anchors.left: parent.left
-                verticalAlignment: Text.AlignVCenter
-            }
-            Slider {
-                id: speed_size_Slider
-                orientation: Qt.Horizontal
-                from: .7
-                value: settings.speed_size
-                to: 3
-                stepSize: .1
-                height: parent.height
-                anchors.rightMargin: 0
-                anchors.right: parent.right
-                width: parent.width - 96
+            Item {
+                width: 240
+                height: 32
+                Text {
+                    id: sizeTitle
+                    text: "Size"
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Slider {
+                    id: speed_size_Slider
+                    orientation: Qt.Horizontal
+                    from: .7
+                    value: settings.speed_size
+                    to: 3
+                    stepSize: .1
+                    height: parent.height
+                    anchors.rightMargin: 5
+                    anchors.right: parent.right
+                    width: parent.width - 96
 
-                onValueChanged: {
-                    settings.speed_size = speed_size_Slider.value
+                    onValueChanged: {
+                        settings.speed_size = speed_size_Slider.value
+                    }
                 }
             }
-        }
-        Item {
-            width: parent.width
-            height: 32
-            Text {
-                text: "Airspeed (off) / GPS (on)"
-                horizontalAlignment: Text.AlignRight
-                color: "white"
-                height: parent.height
-                font.bold: true
-                font.pixelSize: detailPanelFontPixels
-                anchors.left: parent.left
-                verticalAlignment: Text.AlignVCenter
+            Item {
+                width: 240
+                height: 32
+                Text {
+                    text: "Airspeed / GPS"
+                    horizontalAlignment: Text.AlignRight
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 12
+                    anchors.right: parent.right
+                    checked: settings.speed_airspeed_gps
+                    onCheckedChanged: settings.speed_airspeed_gps = checked
+                }
             }
-            Switch {
-                width: 32
-                height: parent.height
-                anchors.rightMargin: 12
-                anchors.right: parent.right
-                checked: settings.speed_airspeed_gps
-                onCheckedChanged: settings.speed_airspeed_gps = checked
-            }
-        }
-        Item {
-            width: parent.width
-            height: 32
-            Text {
-                text: "Ladder (off) / (on)"
-                color: "white"
-                height: parent.height
-                font.bold: true
-                font.pixelSize: detailPanelFontPixels
-                anchors.left: parent.left
-                verticalAlignment: Text.AlignVCenter
-            }
-            Switch {
-                width: 32
-                height: parent.height
-                anchors.rightMargin: 12
-                anchors.right: parent.right
-                checked: settings.show_speed_ladder
-                onCheckedChanged: settings.show_speed_ladder = checked
+            Item {
+                width: 240
+                height: 32
+                Text {
+                    text: "Ladder (off)/(on)"
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 12
+                    anchors.right: parent.right
+                    checked: settings.show_speed_ladder
+                    onCheckedChanged: settings.show_speed_ladder = checked
+                }
             }
         }
     }
