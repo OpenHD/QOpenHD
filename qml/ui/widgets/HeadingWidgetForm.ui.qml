@@ -270,7 +270,7 @@ BaseWidget {
                                 case 135:
                                     draw_text = true;
                                     compass_direction = settings.heading_ladder_text ?
-                                                qsTr("SW") : (j);
+                                                qsTr("SE") : (j);
                                 break;
                                 case 180:
                                     draw_text = true;
