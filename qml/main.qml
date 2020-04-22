@@ -133,6 +133,7 @@ ApplicationWindow {
         property double speed_opacity: 1
         property double speed_size: 1
         property bool show_speed_ladder: true
+        property int speed_range: 100
 
         property bool show_heading: true
         property bool heading_inav: false
