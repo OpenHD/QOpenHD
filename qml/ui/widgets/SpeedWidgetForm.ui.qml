@@ -165,6 +165,35 @@ BaseWidget {
                     }
                 }
             }
+            Item {
+                width: 240
+                height: 32
+                Text {
+                    text: "Minimum"
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Slider {
+                    id: speed_minimum_Slider
+                    orientation: Qt.Horizontal
+                    from: 0
+                    value: settings.speed_minimum
+                    to: 50
+                    stepSize: 10
+                    height: parent.height
+                    anchors.rightMargin: 5
+                    anchors.right: parent.right
+                    width: parent.width - 96
+
+                    onValueChanged: { // @disable-check M223
+                        settings.speed_minimum = speed_minimum_Slider.value
+                    }
+                }
+            }
         }
     }
 
@@ -244,14 +273,14 @@ BaseWidget {
                                     ctx.fillText(k, x_label, y+6);              // @disable-check M222
                                 }
                             }
-                            if (k < 0) {                                        // @disable-check M223
+                            if (k < settings.speed_minimum) {                                        // @disable-check M223
                                 //start position speed (squares) below "0"
-                                ctx.rect(x, y-15, 15, 15);
+                                ctx.rect(x, y-12, 15, 15);
                                 ctx.fill();                                     // @disable-check M222
                                 //ctx.stroke();
                             }
                         }
-                        else if ((k % 5 == 0) && (k > 0)){                      // @disable-check M223
+                        else if ((k % 5 == 0) && (k > settings.speed_minimum)){                      // @disable-check M223
                             //little ticks
                             ctx.rect(x+5, y, 7, 2);
                             ctx.fill(); // @disable-check M222
