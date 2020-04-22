@@ -140,6 +140,35 @@ BaseWidget {
                     onCheckedChanged: settings.show_altitude_ladder = checked
                 }
             }
+            Item {
+                width: 240
+                height: 32
+                Text {
+                    text: "Range"
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Slider {
+                    id: altitude_range_Slider
+                    orientation: Qt.Horizontal
+                    from: 40
+                    value: settings.altitude_range
+                    to: 150
+                    stepSize: 10
+                    height: parent.height
+                    anchors.rightMargin: 5
+                    anchors.right: parent.right
+                    width: parent.width - 96
+
+                    onValueChanged: { // @disable-check M223
+                        settings.altitude_range = altitude_range_Slider.value
+                    }
+                }
+            }
         }
     }
 
@@ -200,7 +229,7 @@ BaseWidget {
                     var y_position= height/2+11; // ladder center up/down..tweak
                     var x_label = 25; // ladder labels right/left position
 
-                    var range = 100; // alt range range of display, i.e. lowest and highest number on the ladder
+                    var range = settings.altitude_range; // alt range range of display, i.e. lowest and highest number on the ladder
                     var ratio_alt = height / range;
 
                     var k;
