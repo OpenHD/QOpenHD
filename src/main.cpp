@@ -281,12 +281,13 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
 
     auto groundPowerMicroservice = new PowerMicroservice(nullptr, MicroserviceTargetGround, MavlinkTypeTCP);
     engine.rootContext()->setContextProperty("GroundPowerMicroservice", groundPowerMicroservice);
-    QThread *groundPowerThread = new QThread();
-    groundPowerThread->setObjectName("groundPowerThread");
-    QObject::connect(groundPowerThread, &QThread::started, groundPowerMicroservice, &PowerMicroservice::onStarted);
-    groundPowerMicroservice->moveToThread(groundPowerThread);
+    //QThread *groundPowerThread = new QThread();
+    //groundPowerThread->setObjectName("groundPowerThread");
+    //QObject::connect(groundPowerThread, &QThread::started, groundPowerMicroservice, &PowerMicroservice::onStarted);
+    //groundPowerMicroservice->moveToThread(groundPowerThread);
     QObject::connect(openHDSettings, &OpenHDSettings::groundStationIPUpdated, groundPowerMicroservice, &PowerMicroservice::setGroundIP, Qt::QueuedConnection);
-    groundPowerThread->start();
+    //groundPowerThread->start();
+    groundPowerMicroservice->onStarted();
 
 
     engine.rootContext()->setContextProperty("OpenHD", openhd);
