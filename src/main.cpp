@@ -262,11 +262,12 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
 
     auto openhdTelemetry = OpenHDTelemetry::instance();
     engine.rootContext()->setContextProperty("OpenHDTelemetry", openhdTelemetry);
-    QThread *telemetryThread = new QThread();
-    telemetryThread->setObjectName("openhdTelemetryThread");
-    QObject::connect(telemetryThread, &QThread::started, openhdTelemetry, &OpenHDTelemetry::onStarted);
-    openhdTelemetry->moveToThread(telemetryThread);
-    telemetryThread->start();
+    //QThread *telemetryThread = new QThread();
+    //telemetryThread->setObjectName("openhdTelemetryThread");
+    //QObject::connect(telemetryThread, &QThread::started, openhdTelemetry, &OpenHDTelemetry::onStarted);
+    //openhdTelemetry->moveToThread(telemetryThread);
+    //telemetryThread->start();
+    openhdTelemetry->onStarted();
 
     auto airGPIOMicroservice = new GPIOMicroservice(nullptr, MicroserviceTargetAir, MavlinkTypeTCP);
     engine.rootContext()->setContextProperty("AirGPIOMicroservice", airGPIOMicroservice);
