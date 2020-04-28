@@ -111,16 +111,39 @@ Rectangle {
         }
 
         Text {
-            id: aboutButton
+            id: chartsButton
             y: 0
             width: parent.width
             height: 48
             anchors.top: statusButton.bottom
             leftPadding: 12
             MouseArea {
-                id: aboutButtonMouseArea
+                id: chartsSettingsButtonMouseArea
                 anchors.fill: parent
                 onClicked: mainStackLayout.currentIndex = 3
+            }
+            text: "Charts"
+            anchors.right: parent.right
+            anchors.rightMargin: 0
+            anchors.left: parent.left
+            anchors.leftMargin: 0
+            font.pixelSize: 15
+            horizontalAlignment: Text.AlignLeft
+            verticalAlignment: Text.AlignVCenter
+            color: mainStackLayout.currentIndex == 3 ? "#33aaff" : "#333333"
+        }
+
+        Text {
+            id: aboutButton
+            y: 0
+            width: parent.width
+            height: 48
+            anchors.top: chartsButton.bottom
+            leftPadding: 12
+            MouseArea {
+                id: aboutButtonMouseArea
+                anchors.fill: parent
+                onClicked: mainStackLayout.currentIndex = 4
             }
             text: "About"
             anchors.topMargin: 0
@@ -131,7 +154,7 @@ Rectangle {
             font.pixelSize: 15
             horizontalAlignment: Text.AlignLeft
             verticalAlignment: Text.AlignVCenter
-            color: mainStackLayout.currentIndex == 3 ? "#33aaff" : "#333333"
+            color: mainStackLayout.currentIndex == 4 ? "#33aaff" : "#333333"
         }
 
 
@@ -191,6 +214,10 @@ Rectangle {
 
         StatusPanel {
             id: statusPanel
+        }
+
+        ChartsPanel {
+            id: chartsPanel
         }
 
         AboutPanel {

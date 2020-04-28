@@ -40,20 +40,4 @@ Item {
 
         z: 1.1
     }
-
-    Loader {
-        z: 1.0
-        anchors {
-            top: parent.top
-            topMargin: 0
-            left: parent.left
-            leftMargin: 0
-            right: parent.right
-            rightMargin: 0
-            bottom: parent.bottom
-            bottomMargin: 12
-        }
-
-        source: EnableCharts ? "./elements/StatusChart.qml" : ""
-    }
 }
