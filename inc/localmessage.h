@@ -19,19 +19,8 @@ public:
 signals:
     void messageReceived(QString message, int level);
 
-private slots:
-#if defined(__rasp_pi__)
-    void processMessageFifo();
-    void restartFifo();
-#endif
-
 private:
     void init();
-
-#if defined(__rasp_pi__)
-    QFuture<void> fifoFuture;
-    QFutureWatcher<void> watcher;
-#endif
 };
 
 
