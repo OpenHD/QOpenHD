@@ -15,6 +15,38 @@ Item {
     Layout.fillHeight: true
     Layout.fillWidth: true
 
+    Text {
+        text: "OpenHD Status Log"
+        font.pixelSize: 16
+        font.bold: true
+        color: "#515151"
+
+        anchors.top: parent.top
+        anchors.topMargin: 12
+        anchors.left: parent.left
+        anchors.leftMargin: 24
+    }
+
+    Rectangle {
+        color: "#ff2a2a2a"
+        border.width: 1
+        border.color: "white"
+        clip: true
+
+        anchors.top: parent.top
+        anchors.topMargin: 48
+        anchors.left: parent.left
+        anchors.leftMargin: 24
+        anchors.right: parent.right
+        anchors.rightMargin: 24
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 36
+
+        StatusView {
+            anchors.fill: parent
+        }
+    }
+
     Label {
         id: ohdLabel
         color: "black"
