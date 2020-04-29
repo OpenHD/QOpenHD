@@ -37,19 +37,6 @@ Item {
 
     ListModel {
         id: messageModel
-
-        ListElement { message: "Initializing WiFi";         level: 5; sysid: 254 }
-        ListElement { message: "Checking SmartSync GPIO";   level: 5; sysid: 254 }
-        ListElement { message: "Using profile 2";           level: 5; sysid: 254 }
-        ListElement { message: "Begin SmartSync";           level: 5; sysid: 254 }
-        ListElement { message: "Begin SmartSync";           level: 5; sysid: 253 }
-        ListElement { message: "Transferring settings file";level: 5; sysid: 254 }
-        ListElement { message: "Settings file received";    level: 5; sysid: 253 }
-        ListElement { message: "Reconfiguring WiFi";        level: 5; sysid: 253 }
-        ListElement { message: "Starting Hotspot";          level: 5; sysid: 254 }
-        ListElement { message: "Error: hotspot band 5.8 not available on this hardware"; level: 3; sysid: 254 }
-        ListElement { message: "Starting OSD";              level: 5; sysid: 254 }
-        ListElement { message: "Starting video stream";     level: 5; sysid: 253 }
     }
 
 
