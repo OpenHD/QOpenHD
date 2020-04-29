@@ -16,3 +16,4 @@ debug
 .builder_version
 .openhd_version
 .qmake.stash
+build-*
