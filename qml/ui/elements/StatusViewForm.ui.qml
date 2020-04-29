@@ -21,7 +21,7 @@ Item {
         target: GroundStatusMicroservice
         onStatusMessage: {
             console.log("Received ground message: " + message + ":" + sysid + ":" + level)
-            messageModel.append({ "sysid": sysid, "message": message })
+            messageModel.append({ "sysid": sysid, "message": message, "level": level })
         }
     }
 
@@ -30,7 +30,7 @@ Item {
         target: AirStatusMicroservice
         onStatusMessage: {
             console.log("Received air message: " + message + ":" + sysid + ":" + level)
-            messageModel.append({ "sysid": sysid, "message": message })
+            messageModel.append({ "sysid": sysid, "message": message, "level": level })
         }
     }
 
