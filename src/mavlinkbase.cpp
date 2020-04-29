@@ -18,8 +18,6 @@
 #include "constants.h"
 
 
-#include "localmessage.h"
-
 MavlinkBase::MavlinkBase(QObject *parent,  MavlinkType mavlink_type): QObject(parent), m_ground_available(false), m_mavlink_type(mavlink_type) {
     qDebug() << "MavlinkBase::MavlinkBase()";
 }
@@ -379,7 +377,6 @@ void MavlinkBase::commandStateLoop() {
             m_current_command.reset();
             emit commandFailed();
             m_command_state = MavlinkCommandStateReady;
-            LocalMessage::instance()->showMessage("Mavlink command failed", 5);
             break;
         }
     }
