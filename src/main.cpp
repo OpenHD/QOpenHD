@@ -35,6 +35,7 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 
 #include "gpiomicroservice.h"
 
+#include "statusmicroservice.h"
 
 #if defined(ENABLE_GSTREAMER)
 
@@ -288,6 +289,16 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
     QObject::connect(openHDSettings, &OpenHDSettings::groundStationIPUpdated, groundPowerMicroservice, &PowerMicroservice::setGroundIP, Qt::QueuedConnection);
     //groundPowerThread->start();
     groundPowerMicroservice->onStarted();
+
+    auto groundStatusMicroservice = new StatusMicroservice(nullptr, MicroserviceTargetGround, MavlinkTypeTCP);
+    engine.rootContext()->setContextProperty("GroundStatusMicroservice", groundStatusMicroservice);
+    QObject::connect(openHDSettings, &OpenHDSettings::groundStationIPUpdated, groundStatusMicroservice, &StatusMicroservice::setGroundIP, Qt::QueuedConnection);
+    groundStatusMicroservice->onStarted();
+
+    auto airStatusMicroservice = new StatusMicroservice(nullptr, MicroserviceTargetAir, MavlinkTypeTCP);
+    engine.rootContext()->setContextProperty("AirStatusMicroservice", airStatusMicroservice);
+    QObject::connect(openHDSettings, &OpenHDSettings::groundStationIPUpdated, airStatusMicroservice, &StatusMicroservice::setGroundIP, Qt::QueuedConnection);
+    airStatusMicroservice->onStarted();
 
 
     engine.rootContext()->setContextProperty("OpenHD", openhd);
