@@ -63,7 +63,7 @@ Rectangle {
         height: OpenHDPi.is_raspberry_pi ? 14 : 0
         clip: true
         color: "#b3ffffff"
-        text: "Open.HD " + OPENHD_VERSION
+        text: "Ground: " + GroundStatusMicroservice.openHDVersion
         anchors.left: title.left
         anchors.leftMargin: 0
         anchors.top: qopenhd_version.bottom
@@ -77,7 +77,7 @@ Rectangle {
         height: OpenHDPi.is_raspberry_pi ? 14 : 0
         clip: true
         color: "#b3ffffff"
-        text: "Builder " + BUILDER_VERSION
+        text: "Air: " + AirStatusMicroservice.openHDVersion
         anchors.left: title.left
         anchors.leftMargin: 0
         anchors.top: openhd_version.bottom
