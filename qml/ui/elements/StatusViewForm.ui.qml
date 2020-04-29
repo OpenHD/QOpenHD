@@ -6,6 +6,8 @@ import QtQuick.Layouts 1.12
 
 Item {
     ListView {
+        id: messageList
+
         model: messageModel
 
         anchors.fill: parent
@@ -14,6 +16,10 @@ Item {
         bottomMargin: 12
 
         delegate: messageDelegate
+
+        Component.onCompleted: {
+            messageList.positionViewAtEnd()
+        }
     }
 
 
@@ -22,6 +28,7 @@ Item {
         onStatusMessage: {
             console.log("Received ground message: " + message + ":" + sysid + ":" + level)
             messageModel.append({ "sysid": sysid, "message": message, "level": level })
+            messageList.positionViewAtEnd()
         }
     }
 
