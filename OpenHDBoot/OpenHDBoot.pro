@@ -1,7 +1,20 @@
+!equals(QT_MAJOR_VERSION, 5) | !greaterThan(QT_MINOR_VERSION, 12) {
+    error("Unsupported Qt version, 5.12+ is required")
+}
+
+BASEDIR = $$IN_PWD
+
+LANGUAGE = C++
+CONFIG += c++11
+CONFIG+=sdk_no_version_check
+
+include($$PWD/../platforms.pri)
+
+include($$PWD/../git.pri)
+
+
 QT += quick concurrent opengl gui
 
-
-CONFIG += c++11
 
 # The following define makes your compiler emit warnings if you use
 # any Qt feature that has been marked deprecated (the exact warnings
