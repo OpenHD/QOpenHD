@@ -108,5 +108,7 @@
         <file>ui/widgets/VsiWidget.qml</file>
         <file>ui/ChartsPanel.qml</file>
         <file>ui/ChartsPanelForm.ui.qml</file>
+        <file>ui/elements/StatusView.qml</file>
+        <file>ui/elements/StatusViewForm.ui.qml</file>
     </qresource>
 </RCC>
