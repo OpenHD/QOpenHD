@@ -185,7 +185,7 @@ ApplicationWindow {
         property double vsi_opacity: 1
         property int vsi_max: 20
 
-        property bool show_wind: true
+        property bool show_wind: false
         property double wind_opacity: 1
         //tumbler value had to be split into two values.. dirty fix
         property double wind_tumbler_decimal: 5

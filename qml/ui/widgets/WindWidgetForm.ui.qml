@@ -18,8 +18,9 @@ BaseWidget {
 
     widgetIdentifier: "wind_widget"
 
-    defaultHCenter: false
-    defaultVCenter: false
+    defaultAlignment: 3
+    defaultXOffset: 100
+    defaultYOffset: 100
 
     hasWidgetDetail: true
     widgetDetailComponent: Column {
