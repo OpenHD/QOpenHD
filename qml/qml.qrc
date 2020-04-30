@@ -106,5 +106,7 @@
         <file>ui/widgets/VibrationWidgetForm.ui.qml</file>
         <file>ui/widgets/VsiWidgetForm.ui.qml</file>
         <file>ui/widgets/VsiWidget.qml</file>
+        <file>ui/widgets/WindWidget.qml</file>
+        <file>ui/widgets/WindWidgetForm.ui.qml</file>
     </qresource>
 </RCC>

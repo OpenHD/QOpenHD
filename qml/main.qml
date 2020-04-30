@@ -184,6 +184,14 @@ ApplicationWindow {
         property bool show_vsi: true
         property double vsi_opacity: 1
         property int vsi_max: 20
+
+        property bool show_wind: true
+        property double wind_opacity: 1
+        //tumbler value had to be split into two values.. dirty fix
+        property double wind_tumbler_decimal: 5
+        property double wind_tumbler_tens: 13
+        property double wind_max_quad_speed: wind_tumbler_tens+(wind_tumbler_decimal*.1)
+
     }
 
 
