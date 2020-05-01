@@ -17,10 +17,6 @@
 #include "util.h"
 #include "constants.h"
 
-#include "openhd.h"
-#include "powermicroservice.h"
-
-#include "localmessage.h"
 
 MavlinkBase::MavlinkBase(QObject *parent,  MavlinkType mavlink_type): QObject(parent), m_ground_available(false), m_mavlink_type(mavlink_type) {
     qDebug() << "MavlinkBase::MavlinkBase()";
@@ -184,6 +180,8 @@ void MavlinkBase::stateLoop() {
     qint64 current_timestamp = QDateTime::currentMSecsSinceEpoch();
     set_last_heartbeat(current_timestamp - last_heartbeat_timestamp);
 
+    return;
+
     switch (state) {
         case MavlinkStateDisconnected: {
             set_loading(false);
@@ -200,7 +198,6 @@ void MavlinkBase::stateLoop() {
                 state = MavlinkStateGetParameters;
                 resetParamVars();
                 fetchParameters();
-                //LocalMessage::instance()->showMessage("Connecting to drone", 0);
             }
             break;
         }
@@ -213,7 +210,6 @@ void MavlinkBase::stateLoop() {
                 resetParamVars();
                 m_ground_available = false;
                 state = MavlinkStateDisconnected;
-                //LocalMessage::instance()->showMessage("Connection to drone lost (E1)", 0);
             }
 
             if ((parameterCount != 0) && parameterIndex == (parameterCount - 1)) {
@@ -225,7 +221,6 @@ void MavlinkBase::stateLoop() {
                 resetParamVars();
                 m_ground_available = false;
                 state = MavlinkStateDisconnected;
-                //LocalMessage::instance()->showMessage("Connection to drone lost (E2)", 0);
             }
             break;
         }
@@ -236,7 +231,6 @@ void MavlinkBase::stateLoop() {
                 resetParamVars();
                 m_ground_available = false;
                 state = MavlinkStateDisconnected;
-                //LocalMessage::instance()->showMessage("Connection to drone lost (E3)", 0);
             }
 
             break;
@@ -383,7 +377,6 @@ void MavlinkBase::commandStateLoop() {
             m_current_command.reset();
             emit commandFailed();
             m_command_state = MavlinkCommandStateReady;
-            LocalMessage::instance()->showMessage("Mavlink command failed", 5);
             break;
         }
     }

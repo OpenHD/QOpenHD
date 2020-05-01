@@ -69,6 +69,7 @@ SOURCES += \
     src/powermicroservice.cpp \
     src/qopenhdlink.cpp \
     src/smartporttelemetry.cpp \
+    src/statusmicroservice.cpp \
     src/util.cpp \
     src/vectortelemetry.cpp
 
@@ -95,6 +96,7 @@ HEADERS += \
     inc/openhdtelemetry.h \
     inc/qopenhdlink.h \
     inc/smartporttelemetry.h \
+    inc/statusmicroservice.h \
     inc/util.h \
     inc/vectortelemetry.h \
     inc/wifibroadcast.h \
@@ -316,7 +318,7 @@ AndroidBuild {
 EnableCharts {
     message("EnableCharts")
     DEFINES += ENABLE_CHARTS
-    QT += texttospeech
+    QT += charts
 }
 
 EnableSpeech {
@@ -423,7 +425,7 @@ installer {
         OTHER_FILES += tools/qopenhd_installer.nsi
         QMAKE_POST_LINK +=$${PWD}/win_deploy_sdl.cmd \"$$DESTDIR_WIN\" \"$$PWD\QJoysticks\lib\SDL\bin\windows\msvc\x86\" $$escape_expand(\\n)
 
-        QMAKE_POST_LINK += $$escape_expand(\\n) c:\Qt\5.13.1\msvc2017\bin\windeployqt.exe --qmldir $${PWD}/qml \"$${DESTDIR_WIN}\\QOpenHD.exe\"
+        QMAKE_POST_LINK += $$escape_expand(\\n) c:\Qt\5.14.2\msvc2017\bin\windeployqt.exe --qmldir $${PWD}/qml \"$${DESTDIR_WIN}\\QOpenHD.exe\"
 
         #QMAKE_POST_LINK += && $$escape_expand(\\n) $$QMAKE_COPY \"C:\\Windows\\System32\\msvcp140.dll\"  \"$$DESTDIR_WIN\"
         #QMAKE_POST_LINK += && $$escape_expand(\\n) $$QMAKE_COPY \"C:\\Windows\\System32\\msvcr140.dll\"  \"$$DESTDIR_WIN\"

@@ -76,7 +76,7 @@ void LTMTelemetry::processLTMMessage() {
         auto sats = (ltm_satsfix >> 2) & 0xFF;
         OpenHD::instance()->set_satellites_visible(sats);
 
-        //auto fix = ltm_satsfix & 0b00000011;
+        auto fix = ltm_satsfix & 0b00000011;
     } else if (LTMcmd == LIGHTTELEMETRY_AFRAME)  {
         auto pitch = (int16_t)ltmread_u16();
         OpenHD::instance()->set_pitch(pitch);
@@ -86,11 +86,11 @@ void LTMTelemetry::processLTMMessage() {
         if (heading < 0 ) heading = heading + 360; //convert from -180/180 to 0/360°
         OpenHD::instance()->set_hdg(heading);
     } else if (LTMcmd == LIGHTTELEMETRY_OFRAME)  {
-        //auto ltm_home_latitude = (double)((int32_t)ltmread_u32())/10000000;
-        //auto ltm_home_longitude = (double)((int32_t)ltmread_u32())/10000000;
-        //auto ltm_home_altitude = (float)((int32_t)ltmread_u32())/100.0f;
-        //auto ltm_osdon = ltmread_u8();
-        //auto ltm_homefix = ltmread_u8();
+        auto ltm_home_latitude = (double)((int32_t)ltmread_u32())/10000000;
+        auto ltm_home_longitude = (double)((int32_t)ltmread_u32())/10000000;
+        auto ltm_home_altitude = (float)((int32_t)ltmread_u32())/100.0f;
+        auto ltm_osdon = ltmread_u8();
+        auto ltm_homefix = ltmread_u8();
     } else if (LTMcmd == LIGHTTELEMETRY_XFRAME)  {
         //HDOP 		uint16 HDOP * 100
         //hw status 	uint8
@@ -107,7 +107,7 @@ void LTMTelemetry::processLTMMessage() {
         //Status 			uchar
 
         auto battery_voltage = (float)ltmread_u16()/1000.0f;
-        //td->mah = (float)ltmread_u16()/1000.0f;
+        auto mah = (float)ltmread_u16()/1000.0f;
         OpenHD::instance()->set_battery_voltage(battery_voltage);
 
         // no current provided?
@@ -120,7 +120,7 @@ void LTMTelemetry::processLTMMessage() {
         QString battery_gauge_glyph = battery_gauge_glyph_from_percentage(battery_percent);
         OpenHD::instance()->set_battery_gauge(battery_gauge_glyph);
 
-        //td->rssi = ltmread_u8();
+        auto rssi = ltmread_u8();
 
         uint8_t uav_airspeedms = ltmread_u8();
         auto airspeed = (float)(uav_airspeedms * 3.6f); // convert to kmh
@@ -130,7 +130,7 @@ void LTMTelemetry::processLTMMessage() {
         auto armed = ltm_armfsmode & 0b00000001;
         OpenHD::instance()->set_armed(armed);
 
-        //td->ltm_failsafe = (ltm_armfsmode >> 1) & 0b00000001;
+        auto ltm_failsafe = (ltm_armfsmode >> 1) & 0b00000001;
 
         auto _flightmode = (ltm_armfsmode >> 2) & 0b00111111;
         auto flightmode = ltm_mode_from_telem(_flightmode);
@@ -225,4 +225,6 @@ int LTMTelemetry::ltm_read(uint8_t *buf, int buflen) {
             else LTMserialBuffer[LTMreceiverIndex++]=c;
         }
     }
+
+    return 0;
 }
