@@ -318,7 +318,7 @@ AndroidBuild {
 EnableCharts {
     message("EnableCharts")
     DEFINES += ENABLE_CHARTS
-    QT += texttospeech
+    QT += charts
 }
 
 EnableSpeech {
