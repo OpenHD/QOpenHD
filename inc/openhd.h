@@ -33,13 +33,13 @@ public:
         emit save_air_gpio(m_air_gpio);
     }
 
-
     /* public so that a QTimer can call it from main(), temporary fix due to some quirks with
        the way QTimer and QML singletons/context properties work */
     void updateFlightTimer();
 
     void updateFlightDistance();
     void updateFlightMah();
+    void updateWind();
 
     Q_PROPERTY(QString gstreamer_version READ get_gstreamer_version NOTIFY gstreamer_version_changed)
     QString get_gstreamer_version();
@@ -117,14 +117,14 @@ public:
     Q_PROPERTY(QString battery_gauge MEMBER m_battery_gauge WRITE set_battery_gauge NOTIFY battery_gauge_changed)
     void set_battery_gauge(QString battery_gauge);
 
-    Q_PROPERTY(float pitch MEMBER m_pitch WRITE set_pitch NOTIFY pitch_changed)
-    void set_pitch(float pitch);
+    Q_PROPERTY(double pitch MEMBER m_pitch WRITE set_pitch NOTIFY pitch_changed)
+    void set_pitch(double pitch);
 
-    Q_PROPERTY(float roll MEMBER m_roll WRITE set_roll NOTIFY roll_changed)
-    void set_roll(float roll);
+    Q_PROPERTY(double roll MEMBER m_roll WRITE set_roll NOTIFY roll_changed)
+    void set_roll(double roll);
 
-    Q_PROPERTY(float yaw MEMBER m_yaw WRITE set_yaw NOTIFY pitch_changed)
-    void set_yaw(float yaw);
+    Q_PROPERTY(double yaw MEMBER m_yaw WRITE set_yaw NOTIFY pitch_changed)
+    void set_yaw(double yaw);
 
     Q_PROPERTY(double throttle MEMBER m_throttle WRITE set_throttle NOTIFY throttle_changed)
     void set_throttle(double throttle);
@@ -161,6 +161,12 @@ public:
 
     Q_PROPERTY(float vsi MEMBER m_vsi WRITE set_vsi NOTIFY vsi_changed)
     void set_vsi(float vsi);
+
+    Q_PROPERTY(double wind_speed MEMBER m_wind_speed WRITE set_wind_speed NOTIFY wind_speed_changed)
+    void set_wind_speed(double wind_speed);
+
+    Q_PROPERTY(double wind_direction MEMBER m_wind_direction WRITE set_wind_direction NOTIFY wind_direction_changed)
+    void set_wind_direction(double wind_direction);
 
 
     // openhd
@@ -328,9 +334,9 @@ signals:
     void battery_gauge_changed(QString battery_gauge);
     void satellites_visible_changed(int satellites_visible);
     void gps_hdop_changed(double gps_hdop);
-    void pitch_changed(float pitch);
-    void roll_changed(float roll);
-    void yaw_changed(float yaw);
+    void pitch_changed(double pitch);
+    void roll_changed(double roll);
+    void yaw_changed(double yaw);
     void messageReceived(QString message, int level);
 
     void throttle_changed(double throttle);
@@ -349,6 +355,9 @@ signals:
     void clipping_z_changed(float clipping_z);
 
     void vsi_changed(float vsi);
+
+    void wind_speed_changed(double wind_speed);
+    void wind_direction_changed(double wind_direction);
 
     // openhd
     void downlink_rssi_changed(int downlink_rssi);
@@ -413,9 +422,9 @@ private:
     int m_alt_rel = 0;
     int m_alt_msl = 0;
 
-    int m_vx = 0;
-    int m_vy = 0;
-    int m_vz = 0;
+    double m_vx = 0;
+    double m_vy = 0;
+    double m_vz = 0;
 
     int m_hdg = 000;
 
@@ -437,9 +446,9 @@ private:
     int m_satellites_visible = 0;
     double m_gps_hdop = 99.00;
 
-    float m_roll = 0.0;
-    float m_yaw = 0.0;
-    float m_pitch = 0.0;
+    double m_roll = 0.0;
+    double m_yaw = 0.0;
+    double m_pitch = 0.0;
 
     double m_throttle = 0;
 
@@ -457,6 +466,10 @@ private:
     float m_clipping_z = 0.0;
 
     float m_vsi = 0.0;
+
+    double m_wind_direction = 0.0;
+    double m_wind_speed = 0.0;
+    double speed_last_time = 0.0;
 
     // openhd
 

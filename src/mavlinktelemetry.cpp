@@ -199,10 +199,10 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             mavlink_attitude_t attitude;
             mavlink_msg_attitude_decode (&msg, &attitude);
 
-            OpenHD::instance()->set_pitch((float)attitude.pitch *57.2958);
+            OpenHD::instance()->set_pitch((double)attitude.pitch *57.2958);
             //qDebug() << "Pitch:" <<  attitude.pitch*57.2958;
 
-            OpenHD::instance()->set_roll((float)attitude.roll *57.2958);
+            OpenHD::instance()->set_roll((double)attitude.roll *57.2958);
             //qDebug() << "Roll:" <<  attitude.roll*57.2958;
             break;
         }
@@ -231,14 +231,16 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             else{
                 OpenHD::instance()->set_hdg(global_position.hdg / 100);
             }
-            OpenHD::instance()->set_vx((int)(global_position.vx/100.0));
-            OpenHD::instance()->set_vy((int)(global_position.vy/100.0));
-            OpenHD::instance()->set_vz((int)(global_position.vz/100.0));
+            OpenHD::instance()->set_vx((double)(global_position.vx/100.0));
+            OpenHD::instance()->set_vy((double)(global_position.vy/100.0));
+            OpenHD::instance()->set_vz((double)(global_position.vz/100.0));
 
             OpenHD::instance()->calculate_home_distance();
             OpenHD::instance()->calculate_home_course();
 
             OpenHD::instance()->updateFlightDistance();
+
+            OpenHD::instance()->updateWind();
 
             break;
         }

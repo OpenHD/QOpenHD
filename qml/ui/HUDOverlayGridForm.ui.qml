@@ -46,6 +46,8 @@ Item {
 
     property alias vsiWidget: vsiWidget
 
+    property alias windWidget: windWidget
+
     MessageHUD {
         id: messageHUD
     }
@@ -154,6 +156,10 @@ Item {
 
     VsiWidget {
         id: vsiWidget
+    }
+
+    WindWidget {
+        id: windWidget
     }
 }
 

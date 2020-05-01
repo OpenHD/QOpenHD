@@ -5,7 +5,7 @@
 #include "localmessage.h"
 
 #include <GeographicLib/Geodesic.hpp>
-#include <GeographicLib/Math.hpp>
+
 
 #if defined(ENABLE_GSTREAMER)
 #include <gst/gst.h>
@@ -339,17 +339,17 @@ void OpenHD::set_gps_hdop(double gps_hdop) {
     emit gps_hdop_changed(m_gps_hdop);
 }
 
-void OpenHD::set_pitch(float pitch) {
+void OpenHD::set_pitch(double pitch) {
     m_pitch = pitch;
     emit pitch_changed(m_pitch);
 }
 
-void OpenHD::set_roll(float roll) {
+void OpenHD::set_roll(double roll) {
     m_roll = roll;
     emit roll_changed(m_roll);
 }
 
-void OpenHD::set_yaw(float yaw) {
+void OpenHD::set_yaw(double yaw) {
     m_yaw = yaw;
     emit yaw_changed(m_yaw);
 }
@@ -392,6 +392,16 @@ void OpenHD::set_clipping_z(float clipping_z) {
 void OpenHD::set_vsi(float vsi) {
     m_vsi= vsi;
      emit vsi_changed(m_vsi);
+}
+
+void OpenHD::set_wind_speed(double wind_speed) {
+    m_wind_speed= wind_speed;
+     emit wind_speed_changed(m_wind_speed);
+}
+
+void OpenHD::set_wind_direction(double wind_direction) {
+    m_wind_direction= wind_direction;
+     emit wind_direction_changed(m_wind_direction);
 }
 
 void OpenHD::set_control_pitch(int control_pitch) {
@@ -588,3 +598,169 @@ void OpenHD::set_ground_iout(double ground_iout) {
     m_ground_iout = ground_iout;
     emit ground_iout_changed(m_ground_iout);
 }
+
+void OpenHD::updateWind() {
+
+    if (m_vsi < 1 && m_vsi > -1){
+        // we are level, so a 2d vector is possible
+
+        QSettings settings;
+        auto max_speed = settings.value("wind_max_quad_speed", QVariant(3)).toDouble();
+
+        //qDebug() << "WIND----" << max_speed;
+        auto max_tilt=45;
+
+        auto perf_ratio=max_speed/max_tilt;
+
+        //find total tilt by adding our pitch and roll angles
+        auto tilt_angle = sqrt(m_pitch * m_pitch + m_roll * m_roll);
+
+        auto expected_course = atan2 (m_pitch , m_roll)*(180/M_PI);
+
+        //the raw output tilt direction is +1 +180 from right cw left
+        //the raw output tilt direction is -1 -180 from right ccw left
+
+        //convert this to compass degree
+        if (expected_course < 0.0){
+            expected_course += 360.0;
+        }
+        //reorient so 0 is front of vehicle
+        expected_course=expected_course - 270;
+        if (expected_course < 0.0){
+            expected_course += 360.0;
+        }
+
+        //change this tilt direction so it is global rather than local
+        expected_course=expected_course + m_hdg;
+        if (expected_course < 0.0){
+            expected_course += 360.0;
+        }
+        if (expected_course > 360.0){
+            expected_course -= 360.0;
+        }
+
+        //get actual course
+        auto actual_course = atan2 (m_vy , m_vx)*(180/M_PI);
+        //converted from degrees to a compass heading
+        if (actual_course < 0.0){
+            actual_course += 360.0;
+        }
+
+        // get expected speed
+        auto expected_speed= tilt_angle*perf_ratio;
+
+        //get actual speed
+        auto actual_speed = sqrt(m_vx * m_vx + m_vy * m_vy);
+
+        auto course_diff_rad= (actual_course* (M_PI/180)) - (expected_course* (M_PI/180));
+
+        auto course_diff= course_diff_rad * 180 / M_PI;
+        if (course_diff > 180){
+            course_diff=(360-course_diff)*-1;
+        }
+
+        //qDebug() << "WIND: expected crs " << expected_course;
+        //qDebug() << "WIND: actual crs " << actual_course;
+        //qDebug() << "WIND crs diff="<< course_diff;
+
+        //have 2 cases to solve...
+        // one in in pos hold so gs<1 or some value.. could also be control input
+        // other is while moving
+
+        if (actual_speed < 1){
+            //we are in pos hold
+
+            auto speed_diff= expected_speed - actual_speed;
+            //qDebug() << "WIND in poshold: speed="<< speed_diff << "dir=" << course_diff*-1;
+
+            set_wind_speed(speed_diff);
+            set_wind_direction(course_diff*-1);
+        }
+
+        if (actual_speed > 1){
+            //we are in motion
+
+            auto speed_diff=speed_last_time-actual_speed;
+            if (speed_diff<0)speed_diff=speed_diff*-1;
+
+            if (speed_diff < .5 ){
+
+                // below interferes with poshold wind dir..so its here
+                if (course_diff < -180){
+                    course_diff=(360+course_diff);
+                }
+
+                //find speed
+                auto wind_speed = sqrt ((actual_speed*actual_speed +
+                                         expected_speed*expected_speed) - ((2*(actual_speed*expected_speed))*cos(course_diff_rad)));
+
+                //complete the triangle by getting the angles
+                auto wind_angle_a= acos(((wind_speed*wind_speed + actual_speed*actual_speed
+                                          - expected_speed*expected_speed)/(2*wind_speed*actual_speed)));
+
+                //convert radians to degrees
+                wind_angle_a= wind_angle_a * 180 / M_PI;
+
+                auto pos_course_diff=course_diff;
+                if (pos_course_diff < 0){
+                    pos_course_diff=pos_course_diff*-1;
+                }
+
+                auto wind_angle_b = 180-(wind_angle_a+pos_course_diff);
+
+                auto wind_direction=0.0;
+
+                //get exterior angles to make life easier
+                auto wind_angle_b_ext=0.0;
+
+                wind_angle_b_ext = 360 - wind_angle_b;
+
+                // this could be shortened to 2 cases but for easier understanding left it at 4
+                if (actual_speed <= expected_speed ){ //headwind
+                    if (course_diff >= 0){
+                        //qDebug() << "WIND left headwind";
+
+                        wind_direction = expected_course + 180 - wind_angle_b;
+
+                    }
+                    else {
+                        //qDebug() << "WIND right headwind";
+
+                        wind_direction = expected_course + wind_angle_b+180;
+
+                    }
+                }
+                else if (actual_speed > expected_speed){ // tailwind
+                    if (course_diff >= 0){
+                        //qDebug() << "WIND left tailwind";
+
+                        wind_direction = expected_course + wind_angle_b;
+                    }
+                    else{
+                        //qDebug() << "WIND right tailwind";
+
+                        wind_direction = expected_course + 180 - wind_angle_b;
+                    }
+                }
+                //make wind from a heading not a vector
+                wind_direction=wind_direction-180;
+
+                if (wind_direction < 0) wind_direction += 360;
+                if (wind_direction >= 360) wind_direction -= 360;
+
+                //qDebug() << "WIND expected speed="<< expected_speed;
+                //qDebug() << "WIND angleA= " << wind_angle_a;
+                //qDebug() << "WIND angleB= " << wind_angle_b;
+                //qDebug() << "WIND in motion: dir= "<< wind_direction;
+
+                set_wind_speed(wind_speed);
+                set_wind_direction(wind_direction);
+
+            }
+
+            speed_last_time=actual_speed;
+
+        }
+    }
+}
+

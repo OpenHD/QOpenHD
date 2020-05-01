@@ -28,107 +28,146 @@ BaseWidget {
     defaultHCenter: false
 
     hasWidgetDetail: true
-    widgetDetailComponent: Column {
-        Item {
-            width: parent.width
-            height: 32
-            Text {
-                id: opacityTitle
-                text: "Opacity"
-                color: "white"
-                height: parent.height
-                font.bold: true
-                font.pixelSize: detailPanelFontPixels
-                anchors.left: parent.left
-                verticalAlignment: Text.AlignVCenter
-            }
-            Slider {
-                id: altitude_opacity_Slider
-                orientation: Qt.Horizontal
-                from: .1
-                value: settings.altitude_opacity
-                to: 1
-                stepSize: .1
-                height: parent.height
-                anchors.rightMargin: 0
-                anchors.right: parent.right
-                width: parent.width - 96
+    widgetDetailComponent: ScrollView{
 
-                onValueChanged: { // @disable-check M223
-                    settings.altitude_opacity = altitude_opacity_Slider.value
+        contentHeight: altitudeSettingsColumn.height
+        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+        clip: true
+
+        ColumnLayout{
+            id: altitudeSettingsColumn
+            spacing:0
+            clip: true
+            Item {
+                width: 240
+                height: 32
+                Text {
+                    id: opacityTitle
+                    text: "Opacity"
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Slider {
+                    id: altitude_opacity_Slider
+                    orientation: Qt.Horizontal
+                    from: .1
+                    value: settings.altitude_opacity
+                    to: 1
+                    stepSize: .1
+                    height: parent.height
+                    anchors.rightMargin: 5
+                    anchors.right: parent.right
+                    width: parent.width - 96
+
+                    onValueChanged: { // @disable-check M223
+                        settings.altitude_opacity = altitude_opacity_Slider.value
+                    }
                 }
             }
-        }
-        Item {
-            width: parent.width
-            height: 32
-            Text {
-                id: sizeTitle
-                text: "Size"
-                color: "white"
-                height: parent.height
-                font.bold: true
-                font.pixelSize: detailPanelFontPixels
-                anchors.left: parent.left
-                verticalAlignment: Text.AlignVCenter
-            }
-            Slider {
-                id: altitude_size_Slider
-                orientation: Qt.Horizontal
-                from: .7
-                value: settings.altitude_size
-                to: 3
-                stepSize: .1
-                height: parent.height
-                anchors.rightMargin: 0
-                anchors.right: parent.right
-                width: parent.width - 96
+            Item {
+                width: 240
+                height: 32
+                Text {
+                    id: sizeTitle
+                    text: "Size"
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Slider {
+                    id: altitude_size_Slider
+                    orientation: Qt.Horizontal
+                    from: .7
+                    value: settings.altitude_size
+                    to: 3
+                    stepSize: .1
+                    height: parent.height
+                    anchors.rightMargin: 5
+                    anchors.right: parent.right
+                    width: parent.width - 96
 
-                onValueChanged: { // @disable-check M223
-                    settings.altitude_size = altitude_size_Slider.value
+                    onValueChanged: { // @disable-check M223
+                        settings.altitude_size = altitude_size_Slider.value
+                    }
                 }
             }
-        }
-        Item {
-            width: parent.width
-            height: 32
-            Text {
-                text: "Relative (off) / MSL (on)"
-                color: "white"
-                height: parent.height
-                font.bold: true
-                font.pixelSize: detailPanelFontPixels
-                anchors.left: parent.left
-                verticalAlignment: Text.AlignVCenter
+            Item {
+                width: 240
+                height: 32
+                Text {
+                    text: "Relative / MSL"
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 12
+                    anchors.right: parent.right
+                    checked: settings.altitude_rel_msl
+                    onCheckedChanged: settings.altitude_rel_msl = checked
+                }
             }
-            Switch {
-                width: 32
-                height: parent.height
-                anchors.rightMargin: 12
-                anchors.right: parent.right
-                checked: settings.altitude_rel_msl
-                onCheckedChanged: settings.altitude_rel_msl = checked
+            Item {
+                width: 240
+                height: 32
+                Text {
+                    text: "Ladder (off/on)"
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 12
+                    anchors.right: parent.right
+                    checked: settings.show_altitude_ladder
+                    onCheckedChanged: settings.show_altitude_ladder = checked
+                }
             }
-        }
-        Item {
-            width: parent.width
-            height: 32
-            Text {
-                text: "Ladder (off) / (on)"
-                color: "white"
-                height: parent.height
-                font.bold: true
-                font.pixelSize: detailPanelFontPixels
-                anchors.left: parent.left
-                verticalAlignment: Text.AlignVCenter
-            }
-            Switch {
-                width: 32
-                height: parent.height
-                anchors.rightMargin: 12
-                anchors.right: parent.right
-                checked: settings.show_altitude_ladder
-                onCheckedChanged: settings.show_altitude_ladder = checked
+            Item {
+                width: 240
+                height: 32
+                Text {
+                    text: "Range"
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Slider {
+                    id: altitude_range_Slider
+                    orientation: Qt.Horizontal
+                    from: 40
+                    value: settings.altitude_range
+                    to: 150
+                    stepSize: 10
+                    height: parent.height
+                    anchors.rightMargin: 5
+                    anchors.right: parent.right
+                    width: parent.width - 96
+
+                    onValueChanged: { // @disable-check M223
+                        settings.altitude_range = altitude_range_Slider.value
+                    }
+                }
             }
         }
     }
@@ -190,7 +229,7 @@ BaseWidget {
                     var y_position= height/2+11; // ladder center up/down..tweak
                     var x_label = 25; // ladder labels right/left position
 
-                    var range = 100; // alt range range of display, i.e. lowest and highest number on the ladder
+                    var range = settings.altitude_range; // alt range range of display, i.e. lowest and highest number on the ladder
                     var ratio_alt = height / range;
 
                     var k;

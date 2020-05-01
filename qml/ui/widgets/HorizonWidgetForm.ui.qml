@@ -19,158 +19,169 @@ BaseWidget {
     defaultVCenter: true
 
     hasWidgetDetail: true
-    widgetDetailComponent: Column {
-        Item {
-            width: parent.width
-            height: 32
-            Text {
-                text: "Opacity"
-                color: "white"
-                height: parent.height
-                font.bold: true
-                font.pixelSize: detailPanelFontPixels
-                anchors.left: parent.left
-                verticalAlignment: Text.AlignVCenter
-            }
-            Slider {
-                id: horizon_opacity_Slider
-                orientation: Qt.Horizontal
-                from: .1
-                value: settings.horizon_opacity
-                to: 1
-                stepSize: .1
-                height: parent.height
-                anchors.rightMargin: 0
-                anchors.right: parent.right
-                width: parent.width - 96
+    widgetDetailComponent: ScrollView{
 
-                onValueChanged: {
-                    settings.horizon_opacity = horizon_opacity_Slider.value
+        contentHeight: horizonSettingsColumn.height
+        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+        clip: true
+
+        ColumnLayout{
+            id: horizonSettingsColumn
+            spacing:0
+            clip: true
+
+            Item {
+                width: 230
+                height: 32
+                Text {
+                    text: "Opacity"
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Slider {
+                    id: horizon_opacity_Slider
+                    orientation: Qt.Horizontal
+                    from: .1
+                    value: settings.horizon_opacity
+                    to: 1
+                    stepSize: .1
+                    height: parent.height
+                    anchors.rightMargin: 5
+                    anchors.right: parent.right
+                    width: parent.width - 96
+
+                    onValueChanged: {
+                        settings.horizon_opacity = horizon_opacity_Slider.value
+                    }
                 }
             }
-        }
-        Item {
-            width: parent.width
-            height: 32
-            visible: false
-            Text {
-                text: "Size"
-                color: "white"
-                height: parent.height
-                font.bold: true
-                font.pixelSize: detailPanelFontPixels
-                anchors.left: parent.left
-                verticalAlignment: Text.AlignVCenter
-            }
-            Slider {
-                id: horizon_size_Slider
-                orientation: Qt.Horizontal
-                from: 225
-                value: settings.horizon_size
-                to: 450
-                stepSize: 1
-                height: parent.height
-                anchors.rightMargin: 0
-                anchors.right: parent.right
-                width: parent.width - 96
+            Item {
+                width: 230
+                height: 32
+                visible: false
+                Text {
+                    text: "Size"
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Slider {
+                    id: horizon_size_Slider
+                    orientation: Qt.Horizontal
+                    from: 225
+                    value: settings.horizon_size
+                    to: 450
+                    stepSize: 1
+                    height: parent.height
+                    anchors.rightMargin: 5
+                    anchors.right: parent.right
+                    width: parent.width - 96
 
-                onValueChanged: {
-                    settings.horizon_size = horizon_size_Slider.value
+                    onValueChanged: {
+                        settings.horizon_size = horizon_size_Slider.value
+                    }
                 }
             }
-        }
-        Item {
-            width: parent.width
-            height: 32
-            Text {
-                text: "Invert Pitch"
-                color: "white"
-                height: parent.height
-                font.bold: true
-                font.pixelSize: detailPanelFontPixels
-                anchors.left: parent.left
-                verticalAlignment: Text.AlignVCenter
-            }
-            Switch {
-                width: 32
-                height: parent.height
-                anchors.rightMargin: 12
-                anchors.right: parent.right
-                checked: settings.horizon_invert_pitch
-                onCheckedChanged: settings.horizon_invert_pitch = checked
-            }
-        }
-        Item {
-            width: parent.width
-            height: 32
-            Text {
-                id: invertTitle
-                text: "Invert Roll"
-                color: "white"
-                height: parent.height
-                font.bold: true
-                font.pixelSize: detailPanelFontPixels
-                anchors.left: parent.left
-                verticalAlignment: Text.AlignVCenter
-            }
-            Switch {
-                width: 32
-                height: parent.height
-                anchors.rightMargin: 12
-                anchors.right: parent.right
-                checked: settings.horizon_invert_roll
-                onCheckedChanged: settings.horizon_invert_roll = checked
-            }
-        }
-        Item {
-            width: parent.width
-            height: 32
-            visible: true
-            Text {
-                text: "Spacing"
-                color: "white"
-                height: parent.height
-                font.bold: true
-                font.pixelSize: detailPanelFontPixels
-                anchors.left: parent.left
-                verticalAlignment: Text.AlignVCenter
-            }
-            Slider {
-                id: horizon_spacing_Slider
-                orientation: Qt.Horizontal
-                from: 1
-                value: settings.horizon_ladder_spacing
-                to: 20
-                stepSize: 1
-                height: parent.height
-                anchors.rightMargin: 0
-                anchors.right: parent.right
-                width: parent.width - 96
-
-                onValueChanged: {
-                    settings.horizon_ladder_spacing = horizon_spacing_Slider.value
+            Item {
+                width: 230
+                height: 32
+                Text {
+                    text: "Invert Pitch"
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 12
+                    anchors.right: parent.right
+                    checked: settings.horizon_invert_pitch
+                    onCheckedChanged: settings.horizon_invert_pitch = checked
                 }
             }
-        }
-        Item {
-            width: parent.width
-            height: 32
-            Text {
-                text: "Show Ladder"
-                color: "white"
-                height: parent.height
-                font.bold: true
-                font.pixelSize: detailPanelFontPixels
-                anchors.left: parent.left
-                verticalAlignment: Text.AlignVCenter
+            Item {
+                width: 230
+                height: 32
+                Text {
+                    id: invertTitle
+                    text: "Invert Roll"
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 12
+                    anchors.right: parent.right
+                    checked: settings.horizon_invert_roll
+                    onCheckedChanged: settings.horizon_invert_roll = checked
+                }
             }
-            Switch {
-                width: 32
-                height: parent.height
-                anchors.rightMargin: 12
-                anchors.right: parent.right
-                checked: settings.show_horizon_ladder
-                onCheckedChanged: settings.show_horizon_ladder = checked
+            Item {
+                width: 230
+                height: 32
+                visible: true
+                Text {
+                    text: "Spacing"
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Slider {
+                    id: horizon_spacing_Slider
+                    orientation: Qt.Horizontal
+                    from: 1
+                    value: settings.horizon_ladder_spacing
+                    to: 20
+                    stepSize: 1
+                    height: parent.height
+                    anchors.rightMargin: 5
+                    anchors.right: parent.right
+                    width: parent.width - 96
+
+                    onValueChanged: {
+                        settings.horizon_ladder_spacing = horizon_spacing_Slider.value
+                    }
+                }
+            }
+            Item {
+                width: 230
+                height: 32
+                Text {
+                    text: "Show Ladder"
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 12
+                    anchors.right: parent.right
+                    checked: settings.show_horizon_ladder
+                    onCheckedChanged: settings.show_horizon_ladder = checked
+                }
             }
         }
     }
@@ -205,6 +216,7 @@ BaseWidget {
         }
 
         transformOrigin: Item.Center
+
         rotation: settings.horizon_invert_roll ? OpenHD.roll : -OpenHD.roll
         transform: Translate {
             x: Item.Center

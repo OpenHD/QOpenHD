@@ -133,18 +133,23 @@ ApplicationWindow {
         property double speed_opacity: 1
         property double speed_size: 1
         property bool show_speed_ladder: true
+        property int speed_range: 100
+        property int speed_minimum: 0
 
         property bool show_heading: true
         property bool heading_inav: false
         property double heading_opacity: 1
         property double heading_size: 1
         property bool show_heading_ladder: true
+        property bool heading_ladder_text: true //true:letters/false:numbers
 
         property bool show_altitude: true
         property bool altitude_rel_msl: false
         property double altitude_opacity: 1
         property double altitude_size: 1
         property bool show_altitude_ladder: true
+        property int altitude_range: 100
+
 
         property bool show_altitude_second: true
         property bool altitude_second_msl_rel: false
@@ -179,6 +184,14 @@ ApplicationWindow {
         property bool show_vsi: true
         property double vsi_opacity: 1
         property int vsi_max: 20
+
+        property bool show_wind: false
+        property double wind_opacity: 1
+        //tumbler value had to be split into two values.. dirty fix
+        property double wind_tumbler_decimal: 5
+        property double wind_tumbler_tens: 13
+        property double wind_max_quad_speed: wind_tumbler_tens+(wind_tumbler_decimal*.1)
+
     }
 
 
