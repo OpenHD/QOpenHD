@@ -38,6 +38,7 @@ Item {
         onStatusMessage: {
             messageModel.append({ "sysid": sysid, "message": message, "level": level })
             listModelSort(messageModel, (a, b) => a.timestamp > b.timestamp)
+            messageList.positionViewAtEnd()
         }
     }
 
