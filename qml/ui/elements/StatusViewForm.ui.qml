@@ -26,7 +26,6 @@ Item {
     Connections {
         target: GroundStatusMicroservice
         onStatusMessage: {
-            console.log("Received ground message: " + message + ":" + sysid + ":" + level)
             messageModel.append({ "sysid": sysid, "message": message, "level": level })
             listModelSort(messageModel, (a, b) => a.timestamp > b.timestamp)
             messageList.positionViewAtEnd()
@@ -37,7 +36,6 @@ Item {
     Connections {
         target: AirStatusMicroservice
         onStatusMessage: {
-            console.log("Received air message: " + message + ":" + sysid + ":" + level)
             messageModel.append({ "sysid": sysid, "message": message, "level": level })
             listModelSort(messageModel, (a, b) => a.timestamp > b.timestamp)
         }

@@ -64,15 +64,11 @@ void StatusMicroservice::onProcessMavlinkMessage(mavlink_message_t msg) {
     }
     switch (msg.msgid) {
         case MAVLINK_MSG_ID_HEARTBEAT: {
-            qDebug() << "StatusMicroservice::MAVLINK_MSG_ID_HEARTBEAT";
-
             mavlink_heartbeat_t heartbeat;
             mavlink_msg_heartbeat_decode(&msg, &heartbeat);
             break;
         }
         case MAVLINK_MSG_ID_SYSTEM_TIME:{
-            qDebug() << "StatusMicroservice::MAVLINK_MSG_ID_SYSTEM_TIME";
-
             mavlink_system_time_t sys_time;
             mavlink_msg_system_time_decode(&msg, &sys_time);
             uint32_t boot_time = sys_time.time_boot_ms;
@@ -88,8 +84,6 @@ void StatusMicroservice::onProcessMavlinkMessage(mavlink_message_t msg) {
             break;
         }
         case MAVLINK_MSG_ID_OPENHD_VERSION_MESSAGE: {
-            qDebug() << "StatusMicroservice::MAVLINK_MSG_ID_OPENHD_VERSION";
-
             mavlink_openhd_version_message_t version_message;
             mavlink_msg_openhd_version_message_decode(&msg, &version_message);
 
@@ -113,8 +107,6 @@ void StatusMicroservice::onProcessMavlinkMessage(mavlink_message_t msg) {
             break;
         }
         case MAVLINK_MSG_ID_OPENHD_STATUS_MESSAGE: {
-            qDebug() << "StatusMicroservice::MAVLINK_MSG_ID_OPENHD_STATUS_MESSAGE";
-
             mavlink_openhd_status_message_t status_message;
             mavlink_msg_openhd_status_message_decode(&msg, &status_message);
 
