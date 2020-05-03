@@ -34,11 +34,13 @@ SOURCES += \
         main.cpp \
         $$PWD/../src/MavlinkBase.cpp \
         $$PWD/../src/statusmicroservice.cpp \
+        $$PWD/../src/statuslogmodel.cpp \
         smartsync.cpp
 
 HEADERS += \
     $$PWD/../inc/mavlinkbase.h \
     $$PWD/../inc/statusmicroservice.h \
+    $$PWD/../inc/statuslogmodel.h \
     smartsync.h
 
 RESOURCES += qml.qrc
