@@ -44,4 +44,4 @@ private:
     QString m_openHDVersion = "N/A";
 };
 
-#endif // STATUSRMICROSERVICE_H
+#endif // STATUSMICROSERVICE_H
