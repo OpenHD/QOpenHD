@@ -60,7 +60,7 @@ Rectangle {
     Text {
         id: openhd_version
         width: 173
-        height: OpenHDPi.is_raspberry_pi ? 14 : 0
+        height: 14
         clip: true
         color: "#b3ffffff"
         text: "Ground: " + GroundStatusMicroservice.openHDVersion
@@ -74,7 +74,7 @@ Rectangle {
     Text {
         id: builder_version
         width: 173
-        height: OpenHDPi.is_raspberry_pi ? 14 : 0
+        height: 14
         clip: true
         color: "#b3ffffff"
         text: "Air: " + AirStatusMicroservice.openHDVersion
