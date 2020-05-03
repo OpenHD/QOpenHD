@@ -69,6 +69,7 @@ SOURCES += \
     src/powermicroservice.cpp \
     src/qopenhdlink.cpp \
     src/smartporttelemetry.cpp \
+    src/statuslogmodel.cpp \
     src/statusmicroservice.cpp \
     src/util.cpp \
     src/vectortelemetry.cpp
@@ -96,6 +97,7 @@ HEADERS += \
     inc/openhdtelemetry.h \
     inc/qopenhdlink.h \
     inc/smartporttelemetry.h \
+    inc/statuslogmodel.h \
     inc/statusmicroservice.h \
     inc/util.h \
     inc/vectortelemetry.h \

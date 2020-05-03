@@ -8,7 +8,7 @@ Item {
     ListView {
         id: messageList
 
-        model: messageModel
+        model: StatusLogModel
 
         anchors.fill: parent
 
@@ -18,26 +18,6 @@ Item {
         delegate: messageDelegate
 
         Component.onCompleted: {
-            messageList.positionViewAtEnd()
-        }
-    }
-
-
-    Connections {
-        target: GroundStatusMicroservice
-        onStatusMessage: {
-            messageModel.append({ "sysid": sysid, "message": message, "level": level })
-            listModelSort(messageModel, (a, b) => a.timestamp > b.timestamp)
-            messageList.positionViewAtEnd()
-        }
-    }
-
-
-    Connections {
-        target: AirStatusMicroservice
-        onStatusMessage: {
-            messageModel.append({ "sysid": sysid, "message": message, "level": level })
-            listModelSort(messageModel, (a, b) => a.timestamp > b.timestamp)
             messageList.positionViewAtEnd()
         }
     }
@@ -65,21 +45,21 @@ Item {
                 anchors.bottom: parent.bottom
                 width: 56
                 color: {
-                    if (level == 0) {
+                    if (severity == 0) {
                         return "#fa0000";
-                    } else if (level == 1) {
+                    } else if (severity == 1) {
                         return "#fa0000";
-                    } else if (level == 2) {
+                    } else if (severity == 2) {
                         return "#fa0000";
-                    } else if (level == 3) {
+                    } else if (severity == 3) {
                         return "#fa0000";
-                    } else if (level == 4) {
+                    } else if (severity == 4) {
                         return "#fffa00";
-                    } else if (level == 5) {
+                    } else if (severity == 5) {
                         return "#00ea00";
-                    } else if (level == 6) {
+                    } else if (severity == 6) {
                         return "#00ea00";
-                    } else if (level == 7) {
+                    } else if (severity == 7) {
                         return "#0000ea";
                     }
 
@@ -100,24 +80,4 @@ Item {
             }
         }
     }
-
-    function listModelSort(listModel, compareFunction) {
-        let indexes = [ ...Array(listModel.count).keys() ]
-
-        indexes.sort((a, b) => compareFunction(listModel.get(a), listModel.get(b)))
-
-        let sorted = 0
-
-        while (sorted < indexes.length && sorted === indexes[sorted]) sorted++
-
-        if (sorted === indexes.length) return
-
-        for (let i = sorted; i < indexes.length; i++) {
-            listModel.move(indexes[i], listModel.count - 1, 1)
-            listModel.insert(indexes[i], { })
-        }
-
-        listModel.remove(sorted, indexes.length - sorted)
-    }
-
 }

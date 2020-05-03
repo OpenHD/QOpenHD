@@ -42,16 +42,6 @@ void StatusMicroservice::onSetup() {
 }
 
 
-QList<StatusMessage> StatusMicroservice::getAllMessages() {
-    return m_messages;
-}
-
-
-void StatusMicroservice::resetMessages() {
-    m_messages.clear();
-}
-
-
 void StatusMicroservice::setOpenHDVersion(QString openHDVersion) {
     m_openHDVersion = openHDVersion;
     emit openHDVersionChanged(m_openHDVersion);
@@ -95,11 +85,9 @@ void StatusMicroservice::onProcessMavlinkMessage(mavlink_message_t msg) {
             setOpenHDVersion(openhd_version);
 
             /*
-             * Now that the initial state is loaded, reset the message list and load all known
+             * Now that the initial state is loaded, load all known
              * messages from the service on the air or ground
              */
-            resetMessages();
-
             MavlinkCommand c(true);
             c.command_id = OPENHD_CMD_GET_STATUS_MESSAGES;
             send_command(c);
@@ -114,12 +102,10 @@ void StatusMicroservice::onProcessMavlinkMessage(mavlink_message_t msg) {
             t.sysid = msg.sysid;
             t.compid = msg.compid;
             t.message = status_message.text;
-            t.severity = static_cast<MAV_SEVERITY>(status_message.severity);
+            t.severity = status_message.severity;
             t.timestamp = status_message.timestamp;
 
-            m_messages.append(t);
-
-            std::sort(m_messages.begin(), m_messages.end(), [](const StatusMessage a, const StatusMessage b) -> bool { return a.timestamp < b.timestamp; });
+            StatusLogModel::instance()->addMessage(t);
 
             emit statusMessage(msg.sysid, status_message.text, status_message.severity, status_message.timestamp);
 
@@ -131,3 +117,4 @@ void StatusMicroservice::onProcessMavlinkMessage(mavlink_message_t msg) {
         }
     }
 }
+
