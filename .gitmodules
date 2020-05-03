@@ -10,3 +10,6 @@
 [submodule "lib/mavlink"]
 	path = lib/mavlink
 	url = https://github.com/infincia/mavlink.git
+[submodule "lib/SortFilterProxyModel"]
+	path = lib/SortFilterProxyModel
+	url = https://github.com/oKcerG/SortFilterProxyModel.git
