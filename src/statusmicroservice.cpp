@@ -65,6 +65,7 @@ void StatusMicroservice::onProcessMavlinkMessage(mavlink_message_t msg) {
 
             if (boot_time != m_last_boot) {
                 m_last_boot = boot_time;
+                m_last_timestamp = 0;
 
                 MavlinkCommand c(true);
                 c.command_id = OPENHD_CMD_GET_VERSION;
@@ -105,9 +106,11 @@ void StatusMicroservice::onProcessMavlinkMessage(mavlink_message_t msg) {
             t.severity = status_message.severity;
             t.timestamp = status_message.timestamp;
 
-            StatusLogModel::instance()->addMessage(t);
-
-            emit statusMessage(msg.sysid, status_message.text, status_message.severity, status_message.timestamp);
+            if (t.timestamp > m_last_timestamp) {
+                m_last_timestamp = t.timestamp;
+                StatusLogModel::instance()->addMessage(t);
+                emit statusMessage(msg.sysid, status_message.text, status_message.severity, status_message.timestamp);
+            }
 
             break;
         }

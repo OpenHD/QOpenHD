@@ -41,6 +41,8 @@ private slots:
 private:
     MicroserviceTarget m_target;
 
+    uint64_t m_last_timestamp = 0;
+
     QString m_openHDVersion = "N/A";
 };
 
