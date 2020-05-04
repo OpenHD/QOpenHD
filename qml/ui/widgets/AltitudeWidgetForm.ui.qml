@@ -18,7 +18,7 @@ BaseWidget {
     height: 24
     // resize with right side (technically top right, but it doesn't matter because VCenter is set)
     defaultAlignment: 1
-    defaultXOffset: 20
+    defaultXOffset: 40
     defaultVCenter: true
 
     visible: settings.show_altitude
