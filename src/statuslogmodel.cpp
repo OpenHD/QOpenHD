@@ -17,8 +17,6 @@ StatusLogModel::StatusLogModel(QObject *parent) {
 
 
 void StatusLogModel::addMessage(StatusMessage message) {
-    qDebug() << "StatusLogModel::addMessage()";
-
     beginInsertRows(QModelIndex(), rowCount(), rowCount());
     m_messages.append(message);
     endInsertRows();
@@ -26,8 +24,6 @@ void StatusLogModel::addMessage(StatusMessage message) {
 
 
 int StatusLogModel::rowCount(const QModelIndex & parent) const {
-    qDebug() << "StatusLogModel::rowCount()";
-
     Q_UNUSED(parent)
     return m_messages.count();
 }
@@ -40,8 +36,6 @@ int StatusLogModel::columnCount(const QModelIndex &parent) const {
 
 
 QHash<int, QByteArray> StatusLogModel::roleNames() const {
-    qDebug() << "StatusLogModel::roleNames()";
-
     QHash<int, QByteArray> roles;
 
     roles[0] = "message";
@@ -55,7 +49,6 @@ QHash<int, QByteArray> StatusLogModel::roleNames() const {
 
 
 QVariant StatusLogModel::data(const QModelIndex &index, int role) const {
-    qDebug() << "StatusLogModel::data()";
 
     if (index.row() < 0 || index.row() >= m_messages.size()) {
         return QVariant();
