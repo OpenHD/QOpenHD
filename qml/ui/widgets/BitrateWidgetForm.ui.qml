@@ -25,7 +25,8 @@ BaseWidget {
 
 
     hasWidgetDetail: true
-    widgetDetailHeight: 224
+    widgetDetailWidth: 256
+    widgetDetailHeight: 280
     widgetDetailComponent: Column {
         Item {
             width: parent.width
@@ -163,6 +164,27 @@ BaseWidget {
                 }
             }
         }
+        Item {
+            width: parent.width
+            height: 32
+            Text {
+                text: "Show all data (No) / (Yes)"
+                color: "white"
+                height: parent.height
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels;
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
+            Switch {
+                width: 32
+                height: parent.height
+                anchors.rightMargin: 12
+                anchors.right: parent.right
+                checked: settings.bitrate_showall
+                onCheckedChanged: settings.bitrate_showall = checked
+            }
+        }
     }
 
 
@@ -170,13 +192,14 @@ BaseWidget {
         id: widgetInner
 
         anchors.fill: parent
+        opacity: settings.bitrate_opacity
+
         Text {
             id: kbitrate
             y: 0
             width: 84
             height: 24
             color: settings.color_text
-            opacity: settings.bitrate_opacity
             text: Number(OpenHD.kbitrate/1024.0).toLocaleString(Qt.locale(), 'f', 1) + " Mbit";
             anchors.verticalCenterOffset: 0
             anchors.left: camera_icon.right
@@ -196,7 +219,6 @@ BaseWidget {
             width: 24
             height: 24
             color: settings.color_shape
-            opacity: settings.bitrate_opacity
             text: "\uf03d"
             anchors.left: parent.left
             anchors.leftMargin: 0
@@ -205,6 +227,34 @@ BaseWidget {
             styleColor: "#f7f7f7"
             font.pixelSize: 16
             horizontalAlignment: Text.AlignRight
+        }
+
+        Text {
+            id:skipped_text
+            visible: settings.bitrate_showall ? true : false
+            text:Number(OpenHD.skipped_packet_cnt).toLocaleString(Qt.locale(), 'f', 0)+" Skipped";
+            color: settings.color_text
+            anchors.top: kbitrate.bottom
+            anchors.left: parent.left
+            verticalAlignment: Text.AlignVCenter
+            font.pixelSize: 14
+            horizontalAlignment: Text.AlignLeft
+            wrapMode: Text.NoWrap
+            elide: Text.ElideRight
+        }
+
+        Text {
+            id:failed_text
+            visible: settings.bitrate_showall ? true : false
+            text:Number(OpenHD.injection_fail_cnt).toLocaleString(Qt.locale(), 'f', 0)+" Failed";
+            color: settings.color_text
+            anchors.top: skipped_text.bottom
+            anchors.left: parent.left
+            verticalAlignment: Text.AlignVCenter
+            font.pixelSize: 14
+            horizontalAlignment: Text.AlignLeft
+            wrapMode: Text.NoWrap
+            elide: Text.ElideRight
         }
     }
 }

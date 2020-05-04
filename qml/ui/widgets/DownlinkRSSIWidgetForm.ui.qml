@@ -33,26 +33,38 @@ BaseWidget {
             onWifi_adapter0_changed: {
                 card0text.text = Number(wifi_adapter.current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
                 card0.visible = true;
+                card0textlower.text = Number(wifi_adapter.current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
+                card0textlower.visible = true;
             }
             onWifi_adapter1_changed: {
                 card1text.text = Number(wifi_adapter.current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
                 card1.visible = true;
+                card1textlower.text = Number(wifi_adapter.current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
+                card1textlower.visible = true;
             }
             onWifi_adapter2_changed: {
                 card2text.text = Number(wifi_adapter.current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
                 card2.visible = true;
+                card2textlower.text = Number(wifi_adapter.current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
+                card2textlower.visible = true;
             }
             onWifi_adapter3_changed: {
                 card3text.text = Number(wifi_adapter.current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
                 card3.visible = true;
+                card3textlower.text = Number(wifi_adapter.current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
+                card3textlower.visible = true;
             }
             onWifi_adapter4_changed: {
                 card4text.text = Number(wifi_adapter.current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
                 card4.visible = true;
+                card4textlower.text = Number(wifi_adapter.current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
+                card4textlower.visible = true;
             }
             onWifi_adapter5_changed: {
                 card5text.text = Number(wifi_adapter.current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
                 card5.visible = true;
+                card5textlower.text = Number(wifi_adapter.current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
+                card5textlower.visible = true;
             }
         }
         Item {
@@ -424,13 +436,10 @@ BaseWidget {
         Text {
             id:lost_text
             visible: settings.downlink_rssi_showall ? true : false
-            text: "Lost:"+Number(OpenHD.lost_packet_cnt).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" (%L1%)").arg(OpenHD.lost_packet_percent);
+            text: Number(OpenHD.lost_packet_cnt).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" (%L1%)").arg(OpenHD.lost_packet_percent)+" Lost";
             color: settings.color_text
-            height: parent.height
-            anchors.top: parent.top
-            anchors.topMargin: 0
-            anchors.left: primary_radio_dbm.right
-            leftPadding: 5
+            anchors.top: downlink_rssi.bottom
+            anchors.left: parent.left
             verticalAlignment: Text.AlignVCenter
             font.pixelSize: 14
             horizontalAlignment: Text.AlignLeft
@@ -440,13 +449,82 @@ BaseWidget {
         Text {
             id:damaged_text
             visible: settings.downlink_rssi_showall ? true : false
-            text: "Damaged:"+Number(OpenHD.damaged_block_cnt).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" (%L1%)").arg(OpenHD.damaged_block_percent);
+            text: Number(OpenHD.damaged_block_cnt).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" (%L1%)").arg(OpenHD.damaged_block_percent)+" Damaged";
             color: settings.color_text
-            height: parent.height
-            anchors.top: parent.top
-            anchors.topMargin: 0
-            anchors.left: lost_text.right
-            leftPadding: 5
+            anchors.top: lost_text.bottom
+            anchors.left: parent.left
+            verticalAlignment: Text.AlignVCenter
+            font.pixelSize: 14
+            horizontalAlignment: Text.AlignLeft
+            wrapMode: Text.NoWrap
+            elide: Text.ElideRight
+        }
+        Text {
+            id: card0textlower
+            color: settings.color_text
+            anchors.top: damaged_text.bottom
+            visible: false
+            anchors.left: parent.left
+            verticalAlignment: Text.AlignVCenter
+            font.pixelSize: 14
+            horizontalAlignment: Text.AlignLeft
+            wrapMode: Text.NoWrap
+            elide: Text.ElideRight
+        }
+        Text {
+            id: card1textlower
+            color: settings.color_text
+            anchors.top: card0textlower.bottom
+            visible: false
+            anchors.left: parent.left
+            verticalAlignment: Text.AlignVCenter
+            font.pixelSize: 14
+            horizontalAlignment: Text.AlignLeft
+            wrapMode: Text.NoWrap
+            elide: Text.ElideRight
+        }
+        Text {
+            id: card2textlower
+            color: settings.color_text
+            anchors.top: card1textlower.bottom
+            visible: false
+            anchors.left: parent.left
+            verticalAlignment: Text.AlignVCenter
+            font.pixelSize: 14
+            horizontalAlignment: Text.AlignLeft
+            wrapMode: Text.NoWrap
+            elide: Text.ElideRight
+        }
+        Text {
+            id: card3textlower
+            color: settings.color_text
+            anchors.top: card2textlower.bottom
+            visible: false
+            anchors.left: parent.left
+            verticalAlignment: Text.AlignVCenter
+            font.pixelSize: 14
+            horizontalAlignment: Text.AlignLeft
+            wrapMode: Text.NoWrap
+            elide: Text.ElideRight
+        }
+        Text {
+            id: card4textlower
+            color: settings.color_text
+            anchors.top: card3textlower.bottom
+            visible: false
+            anchors.left: parent.left
+            verticalAlignment: Text.AlignVCenter
+            font.pixelSize: 14
+            horizontalAlignment: Text.AlignLeft
+            wrapMode: Text.NoWrap
+            elide: Text.ElideRight
+        }
+        Text {
+            id: card5textlower
+            color: settings.color_text
+            anchors.top: card4textlower.bottom
+            visible: false
+            anchors.left: parent.left
             verticalAlignment: Text.AlignVCenter
             font.pixelSize: 14
             horizontalAlignment: Text.AlignLeft

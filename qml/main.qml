@@ -85,6 +85,7 @@ ApplicationWindow {
 
         property bool show_bitrate: true
         property double bitrate_opacity: 1
+        property bool bitrate_showall: false
 
         property bool show_air_battery: true
         property double air_battery_opacity: 1
