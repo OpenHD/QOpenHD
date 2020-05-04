@@ -106,7 +106,7 @@ void StatusMicroservice::onProcessMavlinkMessage(mavlink_message_t msg) {
             t.severity = status_message.severity;
             t.timestamp = status_message.timestamp;
 
-            if (t.timestamp > m_last_timestamp) {
+            if (m_last_boot != 0 && t.timestamp > m_last_timestamp) {
                 m_last_timestamp = t.timestamp;
                 StatusLogModel::instance()->addMessage(t);
                 emit statusMessage(msg.sysid, status_message.text, status_message.severity, status_message.timestamp);
