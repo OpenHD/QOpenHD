@@ -335,6 +335,27 @@ BaseWidget {
                 }
             }
         }
+        Item {
+            width: parent.width
+            height: 32
+            Text {
+                text: "Show all data (No) / (Yes)"
+                color: "white"
+                height: parent.height
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels;
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
+            Switch {
+                width: 32
+                height: parent.height
+                anchors.rightMargin: 12
+                anchors.right: parent.right
+                checked: settings.downlink_rssi_showall
+                onCheckedChanged: settings.downlink_rssi_showall = checked
+            }
+        }
     }
 
     Item {
@@ -342,13 +363,15 @@ BaseWidget {
 
         anchors.fill: parent
 
+        opacity: settings.downlink_rssi_opacity
+
         Text {
             id: downlink_icon
             y: 0
             width: 24
             height: 24
             color: settings.color_shape
-            opacity: settings.downlink_rssi_opacity
+
             text: "\uf381"
             anchors.left: parent.left
             anchors.leftMargin: 0
@@ -366,7 +389,7 @@ BaseWidget {
             width: 32
             height: 24
             color: settings.color_text
-            opacity: settings.downlink_rssi_opacity
+
             text: "dBm"
             anchors.left: downlink_rssi.right
             anchors.leftMargin: 2
@@ -385,7 +408,7 @@ BaseWidget {
             width: 34
             height: 24
             color: settings.color_text
-            opacity: settings.downlink_rssi_opacity
+
             text: OpenHD.downlink_rssi == -127 ? qsTr("N/A") : OpenHD.downlink_rssi
             anchors.left: downlink_icon.right
             anchors.leftMargin: 0
@@ -397,6 +420,38 @@ BaseWidget {
             wrapMode: Text.NoWrap
             elide: Text.ElideRight
             clip: true
+        }
+        Text {
+            id:lost_text
+            visible: settings.downlink_rssi_showall ? true : false
+            text: "Lost:"+Number(OpenHD.lost_packet_cnt).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" (%L1%)").arg(OpenHD.lost_packet_percent);
+            color: settings.color_text
+            height: parent.height
+            anchors.top: parent.top
+            anchors.topMargin: 0
+            anchors.left: primary_radio_dbm.right
+            leftPadding: 5
+            verticalAlignment: Text.AlignVCenter
+            font.pixelSize: 14
+            horizontalAlignment: Text.AlignLeft
+            wrapMode: Text.NoWrap
+            elide: Text.ElideRight
+        }
+        Text {
+            id:damaged_text
+            visible: settings.downlink_rssi_showall ? true : false
+            text: "Damaged:"+Number(OpenHD.damaged_block_cnt).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" (%L1%)").arg(OpenHD.damaged_block_percent);
+            color: settings.color_text
+            height: parent.height
+            anchors.top: parent.top
+            anchors.topMargin: 0
+            anchors.left: lost_text.right
+            leftPadding: 5
+            verticalAlignment: Text.AlignVCenter
+            font.pixelSize: 14
+            horizontalAlignment: Text.AlignLeft
+            wrapMode: Text.NoWrap
+            elide: Text.ElideRight
         }
     }
 }

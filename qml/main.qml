@@ -78,6 +78,7 @@ ApplicationWindow {
 
         property bool show_downlink_rssi: true
         property double downlink_rssi_opacity: 1
+        property bool downlink_rssi_showall: false
 
         property bool show_uplink_rssi: true
         property double uplink_rssi_opacity: 1
@@ -87,7 +88,7 @@ ApplicationWindow {
 
         property bool show_air_battery: true
         property double air_battery_opacity: 1
-        property bool air_battery_showall: true
+        property bool air_battery_showall: false
 
         property bool show_gps: true
         property double gps_opacity: 1
