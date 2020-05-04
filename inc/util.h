@@ -28,4 +28,6 @@ uint map(double input, double input_start, double input_end, uint16_t output_sta
 void keep_screen_on(bool on);
 #endif
 
+int default_mavlink_sysid();
+
 #endif // UTIL_H
