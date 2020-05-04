@@ -87,6 +87,7 @@ ApplicationWindow {
 
         property bool show_air_battery: true
         property double air_battery_opacity: 1
+        property bool air_battery_showall: true
 
         property bool show_gps: true
         property double gps_opacity: 1
@@ -149,7 +150,6 @@ ApplicationWindow {
         property double altitude_size: 1
         property bool show_altitude_ladder: true
         property int altitude_range: 100
-
 
         property bool show_altitude_second: true
         property bool altitude_second_msl_rel: false
