@@ -17,7 +17,8 @@
 PowerMicroservice::PowerMicroservice(QObject *parent, MicroserviceTarget target, MavlinkType mavlink_type): MavlinkBase(parent, mavlink_type), m_target(target) {
     qDebug() << "PowerMicroservice::PowerMicroservice()";
 
-    targetCompID = MAV_COMP_ID_USER1;
+    targetCompID1 = MAV_COMP_ID_USER1;
+    targetCompID2 = targetCompID1;
     localPort = 14551;
 
     #if defined(__rasp_pi__)
@@ -73,9 +74,6 @@ void PowerMicroservice::reboot() {
 
 
 void PowerMicroservice::onProcessMavlinkMessage(mavlink_message_t msg) {
-    if (msg.compid != targetCompID || msg.sysid != targetSysID) {
-        return;
-    }
     switch (msg.msgid) {
         case MAVLINK_MSG_ID_HEARTBEAT: {
             mavlink_heartbeat_t heartbeat;

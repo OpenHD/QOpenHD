@@ -34,7 +34,9 @@ MavlinkTelemetry* MavlinkTelemetry::instance() {
 MavlinkTelemetry::MavlinkTelemetry(QObject *parent): MavlinkBase(parent) {
     qDebug() << "MavlinkTelemetry::MavlinkTelemetry()";
     targetSysID = 1;
-    targetCompID = MAV_COMP_ID_AUTOPILOT1;
+    targetCompID1 = MAV_COMP_ID_AUTOPILOT1;
+    targetCompID2 = MAV_COMP_ID_SYSTEM_CONTROL;
+
     localPort = 14550;
 
     #if defined(__rasp_pi__)
@@ -57,16 +59,7 @@ void MavlinkTelemetry::onSetup() {
 }
 
 
-void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
-    /* QGC sends its own heartbeats with compid 0 (fixed)
-     * and sysid 255 (configurable). We want to ignore these
-     * because they cause UI glitches like the flight mode
-     * appearing to change and the armed status flipping back
-     * and forth.
-     */
-    if (msg.compid != MAV_COMP_ID_AUTOPILOT1 && msg.compid != MAV_COMP_ID_SYSTEM_CONTROL) {
-        return;
-    }
+void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {    
     switch (msg.msgid) {
             case MAVLINK_MSG_ID_HEARTBEAT: {
                     mavlink_heartbeat_t heartbeat;

@@ -146,7 +146,8 @@ protected:
 
 protected:
     quint8 targetSysID;
-    quint8 targetCompID;
+    quint8 targetCompID1;
+    quint8 targetCompID2;
     quint16 localPort = 14550;
 
     QString groundAddress;
