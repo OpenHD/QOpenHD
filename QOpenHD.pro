@@ -12,6 +12,9 @@ include(platforms.pri)
 
 include(git.pri)
 
+include ($$PWD/lib/SortFilterProxyModel/SortFilterProxyModel.pri)
+
+
 CONFIG(debug, debug|release) {
     DESTDIR = $${OUT_PWD}/debug
 

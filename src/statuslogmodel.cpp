@@ -21,7 +21,6 @@ void StatusLogModel::addMessage(StatusMessage message) {
 
     beginInsertRows(QModelIndex(), rowCount(), rowCount());
     m_messages.append(message);
-    std::sort(m_messages.begin(), m_messages.end(), [](const StatusMessage a, const StatusMessage b) -> bool { return a.timestamp < b.timestamp; });
     endInsertRows();
 }
 

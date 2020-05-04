@@ -12,6 +12,7 @@ include($$PWD/../platforms.pri)
 
 include($$PWD/../git.pri)
 
+include ($$PWD/../lib/SortFilterProxyModel/SortFilterProxyModel.pri)
 
 QT += quick concurrent opengl gui
 

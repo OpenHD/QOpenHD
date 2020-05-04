@@ -2,13 +2,13 @@ import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
 
-
+import SortFilterProxyModel 0.2
 
 Item {
     ListView {
         id: messageList
 
-        model: StatusLogModel
+        model: sortModel
 
         anchors.fill: parent
 
@@ -23,8 +23,13 @@ Item {
     }
 
 
-    ListModel {
-        id: messageModel
+    SortFilterProxyModel {
+        id: sortModel
+        sourceModel: StatusLogModel
+        sorters: RoleSorter {
+            roleName: "timestamp";
+            sortOrder: Qt.AscendingOrder
+        }
     }
 
 
