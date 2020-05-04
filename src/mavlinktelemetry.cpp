@@ -308,6 +308,21 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
         case MAVLINK_MSG_ID_TERRAIN_REPORT:{
             break;
         }
+    case MAVLINK_MSG_ID_WIND:{
+        //slight change to naming convention due to prexisting "wind" that is calculated by us..
+        mavlink_wind_t mav_wind;
+        mavlink_msg_wind_decode(&msg, &mav_wind);
+
+        OpenHD::instance()->set_mav_wind_direction(mav_wind.direction);
+        OpenHD::instance()->set_mav_wind_speed(mav_wind.speed);
+
+
+        /*qDebug() << "Windmavdir: " << mav_wind.direction;
+        qDebug() << "Windmavspd: " << mav_wind.speed;*/
+
+
+        break;
+    }
         case MAVLINK_MSG_ID_BATTERY_STATUS: {
             mavlink_battery_status_t battery_status;
             mavlink_msg_battery_status_decode(&msg, &battery_status);

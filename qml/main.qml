@@ -187,7 +187,9 @@ ApplicationWindow {
 
         property bool show_wind: false
         property double wind_opacity: 1
-        //tumbler value had to be split into two values.. dirty fix
+        property bool wind_plane_copter: true
+        property bool wind_arrow_circle: true
+        //tumbler value had to be split into two values..
         property double wind_tumbler_decimal: 5
         property double wind_tumbler_tens: 13
         property double wind_max_quad_speed: wind_tumbler_tens+(wind_tumbler_decimal*.1)

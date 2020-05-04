@@ -168,6 +168,12 @@ public:
     Q_PROPERTY(double wind_direction MEMBER m_wind_direction WRITE set_wind_direction NOTIFY wind_direction_changed)
     void set_wind_direction(double wind_direction);
 
+    Q_PROPERTY(float mav_wind_direction MEMBER m_mav_wind_direction WRITE set_mav_wind_direction NOTIFY mav_wind_direction_changed)
+    void set_mav_wind_direction(float mav_wind_direction);
+
+    Q_PROPERTY(float mav_wind_speed MEMBER m_mav_wind_speed WRITE set_mav_wind_speed NOTIFY mav_wind_speed_changed)
+    void set_mav_wind_speed(float mav_wind_speed);
+
 
     // openhd
 
@@ -359,6 +365,9 @@ signals:
     void wind_speed_changed(double wind_speed);
     void wind_direction_changed(double wind_direction);
 
+    void mav_wind_direction_changed(float mav_wind_direction);
+    void mav_wind_speed_changed(float mav_wind_speed);
+
     // openhd
     void downlink_rssi_changed(int downlink_rssi);
     void current_signal_joystick_uplink_changed(int current_signal_joystick_uplink);
@@ -470,6 +479,9 @@ private:
     double m_wind_direction = 0.0;
     double m_wind_speed = 0.0;
     double speed_last_time = 0.0;
+
+    float m_mav_wind_direction = 0.0;
+    float m_mav_wind_speed = 0.0;
 
     // openhd
 

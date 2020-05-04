@@ -8,6 +8,13 @@ import QtQuick.Shapes 1.0
 
 import OpenHD 1.0
 
+/* Plane or Copter decides if the widget will use mavlink wind msg (only available for planes)
+  or openhd calculated wind messages which are based on expected tilt vs actual tilt.
+
+  Within our own openhd calculated wind there are two modes calculated. Both modes rely on
+  no climbing and unaccelerated flight. One mode is in position hold type of flight mode and the
+  other mode is in unaccelerated level motion */
+
 
 BaseWidget {
     id: windWidget
@@ -56,6 +63,49 @@ BaseWidget {
         Item {
             width: parent.width
             height: 32
+            Text {
+                text: "Style: Arrow / Circle"
+                color: "white"
+                height: parent.height
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels;
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
+            Switch {
+                width: 32
+                height: parent.height
+                anchors.rightMargin: 12
+                anchors.right: parent.right
+                checked: settings.wind_arrow_circle
+                onCheckedChanged: settings.wind_arrow_circle = checked
+            }
+        }
+        Item {
+            width: parent.width
+            height: 32
+            Text {
+                text: "Plane / Copter"
+                color: "white"
+                height: parent.height
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels;
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
+            Switch {
+                width: 32
+                height: parent.height
+                anchors.rightMargin: 12
+                anchors.right: parent.right
+                checked: settings.wind_plane_copter
+                onCheckedChanged: settings.wind_plane_copter = checked
+            }
+        }
+        Item {
+            width: parent.width
+            height: 32
+            visible: settings.wind_plane_copter ? true : false
 
             Text {
                 text: "45 Degree Speed"
@@ -185,11 +235,11 @@ BaseWidget {
             antialiasing: true
             opacity: settings.arrow_opacity
 
-            visible: false
+            visible: settings.wind_arrow_circle ? false : true
 
             ShapePath {
                 capStyle: ShapePath.RoundCap
-                strokeColor: settings.color_glow
+                strokeColor: settings.color_shape
                 fillColor: settings.color_shape
                 strokeWidth: 1
                 strokeStyle: ShapePath.SolidLine
@@ -210,10 +260,8 @@ BaseWidget {
                 origin.y: 20;
                 angle: {// @disable-check M223
 
-                 //   var wind=getWindDirection();
-                 //   var wind_direction=wind.direction - OpenHD.hdg + 180;
-                 //   return wind_direction;
-                    OpenHD.wind_direction - OpenHD.hdg + 180;
+
+                    (settings.wind_plane_copter ? OpenHD.wind_direction : OpenHD.mav_wind_direction)-OpenHD.hdg-180;
                 }
             }
         }
@@ -224,11 +272,11 @@ BaseWidget {
             antialiasing: true
             opacity: settings.arrow_opacity
 
-            visible: true
+            visible: settings.wind_arrow_circle ? true : false
 
             ShapePath {
                 capStyle: ShapePath.RoundCap
-                strokeColor: settings.color_glow
+                strokeColor: settings.color_shape
                 fillColor: settings.color_shape
                 strokeWidth: 2
                 strokeStyle: ShapePath.SolidLine
@@ -243,10 +291,8 @@ BaseWidget {
                 origin.y: 25;
                 angle: {// @disable-check M223
 
-                //    var wind=getWindDirection();
-                //    var wind_direction=wind.direction - OpenHD.hdg + 175;
-                 //   return wind_direction;
-                    OpenHD.wind_direction - OpenHD.hdg + 175;
+
+                    (settings.wind_plane_copter ? OpenHD.wind_direction : OpenHD.mav_wind_direction-10)-OpenHD.hdg-190;
                 }
             }
         }
@@ -256,11 +302,11 @@ BaseWidget {
             antialiasing: true
             opacity: settings.arrow_opacity
 
-            visible: true
+            visible: settings.wind_arrow_circle ? true : false
 
             ShapePath {
                 capStyle: ShapePath.RoundCap
-                strokeColor: settings.color_glow
+                strokeColor: settings.color_shape
                 fillColor: settings.color_shape
                 strokeWidth: 2
                 strokeStyle: ShapePath.SolidLine
@@ -278,7 +324,7 @@ BaseWidget {
                  //   var wind=getWindDirection();
                   //  var wind_direction=wind.direction - OpenHD.hdg + 185;
                  //   return wind_direction;
-                    OpenHD.wind_direction - OpenHD.hdg + 185;
+                    (settings.wind_plane_copter ? OpenHD.wind_direction : OpenHD.mav_wind_direction)-OpenHD.hdg-170;
                 }
             }
         }
@@ -287,6 +333,8 @@ BaseWidget {
             id: outerCircle
 
             anchors.centerIn: parent
+
+            visible: settings.wind_arrow_circle ? true : false
 
             width: (parent.width<parent.height?parent.width:parent.height)
             height: width
@@ -300,6 +348,8 @@ BaseWidget {
             id: innerCircle
 
             anchors.centerIn: parent
+
+            visible: settings.wind_arrow_circle ? true : false
 
             width: (parent.width<parent.height?parent.width:parent.height)/2
             height: width
@@ -321,18 +371,12 @@ BaseWidget {
 
               //  var wind=getWindDirection();
               //  var wind_speed=wind.speed;
-                Number(OpenHD.wind_speed).toLocaleString(// @disable-check M222
-                      Qt.locale(), 'f', 0)} // @disable-check M222
+                Number(settings.wind_plane_copter ? OpenHD.wind_speed : OpenHD.mav_wind_speed)
+                .toLocaleString(Qt.locale(), 'f', 0)} // @disable-check M222
             anchors.fill: parent
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
         }
-
-
-
-
-
-
     }
 }
 
