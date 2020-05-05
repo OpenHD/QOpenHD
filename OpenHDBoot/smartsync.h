@@ -13,7 +13,8 @@ enum SmartSyncState {
     SmartSyncStateTransferring,
     SmartSyncStateNotNeeded,
     SmartSyncStateFinished,
-    SmartSyncStateError
+    SmartSyncStateError,
+    SmartSyncStateSkipped
 };
 
 typedef struct {
@@ -24,6 +25,7 @@ typedef struct {
      * 3: no sync needed
      * 4: finished
      * 5: error
+     * 6: skipped
      */
     uint8_t state;
     /*

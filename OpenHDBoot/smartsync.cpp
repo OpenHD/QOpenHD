@@ -60,6 +60,10 @@ void SmartSync::processSmartSyncMessage(smartsync_status_t status) {
             setMessage("Sync error occurred, see log");
             break;
         }
+        case SmartSyncStateSkipped: {
+            setMessage("Sync skipped");
+            break;
+        }
         default: {
             break;
         }
