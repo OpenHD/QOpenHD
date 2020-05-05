@@ -223,7 +223,10 @@ BaseWidget {
                     //ctx.lineWidth = .5;
                     ctx.font = "bold 11px sans-serif";
 
-                    var alt=settings.altitude_rel_msl ? OpenHD.alt_msl : OpenHD.alt_rel;
+                    var alt=settings.enable_imperial ? (settings.altitude_rel_msl ? (OpenHD.alt_msl*3.28) : (OpenHD.alt_rel*3.28)) :
+                                                       (settings.altitude_rel_msl ? OpenHD.alt_msl : OpenHD.alt_rel);
+                    //weird rounding issue where decimals make ladder dissappear
+                    alt=Math.round(alt);
 
                     var x = 6; // ticks right/left position
                     var y_position= height/2+11; // ladder center up/down..tweak
@@ -277,7 +280,8 @@ BaseWidget {
                 font.pixelSize: 14
                 transform: Scale { origin.x: 12; origin.y: 12; xScale: settings.altitude_size ; yScale: settings.altitude_size}
                 text: Number( // @disable-check M222
-                          settings.altitude_rel_msl ? OpenHD.alt_msl : OpenHD.alt_rel).toLocaleString(
+                             settings.enable_imperial ? (settings.altitude_rel_msl ? (OpenHD.alt_msl*3.28) : (OpenHD.alt_rel*3.28)) :
+                             (settings.altitude_rel_msl ? OpenHD.alt_msl : OpenHD.alt_rel)).toLocaleString(
                           Qt.locale(), 'f', 0) // @disable-check M222
                 anchors.fill: parent
                 horizontalAlignment: Text.AlignHCenter
