@@ -36,8 +36,8 @@ void SmartSync::processSmartSyncMessage(smartsync_status_t status) {
     setState(status.state);
 
     switch (m_state) {
-        case SmartSyncStateIdle: {
-            setMessage("Idle");
+        case SmartSyncStateInitializing: {
+            setMessage("Initializing");
             break;
         }
         case SmartSyncStateWaitingForAir: {

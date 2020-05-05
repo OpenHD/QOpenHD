@@ -8,7 +8,7 @@ class QUdpSocket;
 
 
 enum SmartSyncState {
-    SmartSyncStateIdle,
+    SmartSyncStateInitializing,
     SmartSyncStateWaitingForAir,
     SmartSyncStateTransferring,
     SmartSyncStateNotNeeded,
@@ -18,7 +18,7 @@ enum SmartSyncState {
 
 typedef struct {
     /*
-     * 0: idle
+     * 0: initializing
      * 1: waiting for air to connect
      * 2: transferring
      * 3: no sync needed
@@ -72,9 +72,9 @@ private slots:
 private:
     QUdpSocket *smartSyncSocket = nullptr;
 
-    QString m_message = "Waiting...";
+    QString m_message = "Initializing";
 
-    int m_state = SmartSyncStateIdle;
+    int m_state = SmartSyncStateInitializing;
 
     int m_progress = 0;
 };
