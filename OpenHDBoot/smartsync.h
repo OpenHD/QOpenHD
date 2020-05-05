@@ -9,6 +9,7 @@ class QUdpSocket;
 
 enum SmartSyncState {
     SmartSyncStateInitializing,
+    SmartSyncStateWaitingForTrigger,
     SmartSyncStateWaitingForAir,
     SmartSyncStateTransferring,
     SmartSyncStateNotNeeded,
@@ -20,12 +21,13 @@ enum SmartSyncState {
 typedef struct {
     /*
      * 0: initializing
-     * 1: waiting for air to connect
-     * 2: transferring
-     * 3: no sync needed
-     * 4: finished
-     * 5: error
-     * 6: skipped
+     * 1: wait for trigger (gpio/rc)
+     * 2: waiting for air to connect
+     * 3: transferring
+     * 4: no sync needed
+     * 5: finished
+     * 6: error
+     * 7: skipped
      */
     uint8_t state;
     /*

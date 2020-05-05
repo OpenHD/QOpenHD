@@ -40,6 +40,10 @@ void SmartSync::processSmartSyncMessage(smartsync_status_t status) {
             setMessage("Initializing");
             break;
         }
+        case SmartSyncStateWaitingForTrigger: {
+            setMessage("Waiting for RC/GPIO trigger");
+            break;
+        }
         case SmartSyncStateWaitingForAir: {
             setMessage("Waiting for air to connect...");
             break;
