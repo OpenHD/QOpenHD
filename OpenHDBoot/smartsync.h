@@ -29,11 +29,11 @@ typedef struct {
      * 6: error
      * 7: skipped
      */
-    uint8_t state;
+    uint32_t state;
     /*
      * Progress percentage 0-100
      */
-    uint8_t progress;
+    uint32_t progress;
 }
 #ifndef _MSC_VER
 __attribute__((packed))
