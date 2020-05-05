@@ -231,9 +231,9 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             else{
                 OpenHD::instance()->set_hdg(global_position.hdg / 100);
             }
-            OpenHD::instance()->set_vx((double)(global_position.vx/100.0));
-            OpenHD::instance()->set_vy((double)(global_position.vy/100.0));
-            OpenHD::instance()->set_vz((double)(global_position.vz/100.0));
+            OpenHD::instance()->set_vx(global_position.vx/100.0);
+            OpenHD::instance()->set_vy(global_position.vy/100.0);
+            OpenHD::instance()->set_vz(global_position.vz/100.0);
 
             OpenHD::instance()->calculate_home_distance();
             OpenHD::instance()->calculate_home_course();

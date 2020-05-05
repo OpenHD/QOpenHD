@@ -248,7 +248,10 @@ BaseWidget {
                     //ctx.lineWidth = .5;
                     ctx.font = "bold 11px sans-serif";
 
-                    var speed=settings.speed_airspeed_gps ? OpenHD.airspeed : OpenHD.speed;
+                    var speed=settings.enable_imperial ? (settings.speed_airspeed_gps ? (OpenHD.airspeed*0.621371) : (OpenHD.speed*0.621371)) :
+                                (settings.speed_airspeed_gps ? OpenHD.airspeed : OpenHD.speed);
+                    //weird rounding issue where decimals make ladder dissappear
+                    speed=Math.round(speed);
 
                     var x = 32; // ticks right/left position
                     var y_position= height/2+11; // ladder center up/down..tweak
@@ -301,7 +304,9 @@ BaseWidget {
             font.pixelSize: 14
             transform: Scale { origin.x: 12; origin.y: 12; xScale: settings.speed_size ; yScale: settings.speed_size}
             text: Number(
-                      settings.speed_airspeed_gps ? OpenHD.airspeed : OpenHD.speed).toLocaleString(
+                      settings.enable_imperial ?
+                      (settings.speed_airspeed_gps ? OpenHD.airspeed*0.621371 : OpenHD.speed*0.621371) :
+                      (settings.speed_airspeed_gps ? OpenHD.airspeed : OpenHD.speed)   ).toLocaleString(
                       Qt.locale(), 'f', 0)
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter

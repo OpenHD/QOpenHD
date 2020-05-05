@@ -152,27 +152,27 @@ void OpenHD::set_boot_time(int boot_time) {
     emit boot_time_changed(m_boot_time);
 }
 
-void OpenHD::set_alt_rel(int alt_rel) {
+void OpenHD::set_alt_rel(double alt_rel) {
     m_alt_rel = alt_rel;
     emit alt_rel_changed(m_alt_rel);
 }
 
-void OpenHD::set_alt_msl(int alt_msl) {
+void OpenHD::set_alt_msl(double alt_msl) {
     m_alt_msl = alt_msl;
     emit alt_msl_changed(m_alt_msl);
 }
 
-void OpenHD::set_vx(int vx) {
+void OpenHD::set_vx(double vx) {
     m_vx = vx;
     emit vx_changed(m_vx);
 }
 
-void OpenHD::set_vy(int vy) {
+void OpenHD::set_vy(double vy) {
     m_vy = vy;
     emit vy_changed(m_vy);
 }
 
-void OpenHD::set_vz(int vz) {
+void OpenHD::set_vz(double vz) {
     m_vz = vz;
     emit vz_changed(m_vz);
 }
@@ -182,12 +182,12 @@ void OpenHD::set_hdg(int hdg) {
     emit hdg_changed(m_hdg);
 }
 
-void OpenHD::set_speed(int speed) {
+void OpenHD::set_speed(double speed) {
     m_speed = speed;
     emit speed_changed(m_speed);
 }
 
-void OpenHD::set_airspeed(int airspeed) {
+void OpenHD::set_airspeed(double airspeed) {
     m_airspeed = airspeed;
     emit airspeed_changed(m_airspeed);
 }
@@ -764,15 +764,15 @@ void OpenHD::updateWind() {
 
                 if (wind_direction < 0) wind_direction += 360;
                 if (wind_direction >= 360) wind_direction -= 360;
+                /*
+                qDebug() << "WIND expected speed="<< expected_speed;
 
-                //qDebug() << "WIND expected speed="<< expected_speed;
-
-                //qDebug() << "WIND angleA= " << wind_angle_a;
-                //qDebug() << "WIND angleB= " << wind_angle_b;
+                qDebug() << "WIND angleA= " << wind_angle_a;
+                qDebug() << "WIND angleB= " << wind_angle_b;
 
                 qDebug() << "WIND motion: dir="<<wind_direction<<
                             "exp="<<expected_course<<"act="<<actual_course<<"diff="<< course_diff;
-
+                */
                 set_wind_speed(wind_speed);
                 set_wind_direction(wind_direction);
 
