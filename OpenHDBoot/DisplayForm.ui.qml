@@ -153,7 +153,6 @@ Item {
             font.pixelSize: 14
             font.bold: true
             color: "#515151"
-            verticalAlignment: Text.AlignVCenter
         }
 
         Text {
@@ -166,7 +165,6 @@ Item {
             font.pixelSize: 14
             font.bold: false
             color: "black"
-            verticalAlignment: Text.AlignVCenter
         }
 
         Text {
@@ -179,7 +177,6 @@ Item {
             font.pixelSize: 14
             font.bold: true
             color: "#515151"
-            verticalAlignment: Text.AlignVCenter
         }
 
         Text {
@@ -192,7 +189,6 @@ Item {
             font.pixelSize: 14
             font.bold: false
             color: "black"
-            verticalAlignment: Text.AlignVCenter
         }
     }
 
