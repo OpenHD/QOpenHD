@@ -108,7 +108,7 @@ BaseWidget {
             visible: settings.wind_plane_copter ? true : false
 
             Text {
-                text: "45 Degree Speed"
+                text: "45 Degree Speed M/S"
                 color: "white"
                 height: parent.height
                 font.bold: true
