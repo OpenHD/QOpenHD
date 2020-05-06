@@ -108,7 +108,7 @@ BaseWidget {
             visible: settings.wind_plane_copter ? true : false
 
             Text {
-                text: "45 Degree Speed"
+                text: "45 Degree Speed M/S"
                 color: "white"
                 height: parent.height
                 font.bold: true
@@ -368,10 +368,9 @@ BaseWidget {
 
             font.pixelSize: 12
             text: {// @disable-check M223
-
-              //  var wind=getWindDirection();
-              //  var wind_speed=wind.speed;
-                Number(settings.wind_plane_copter ? OpenHD.wind_speed : OpenHD.mav_wind_speed)
+                Number(settings.enable_imperial ?
+                    (settings.wind_plane_copter ? OpenHD.wind_speed*2.237 : OpenHD.mav_wind_speed*2.237) :
+                    (settings.wind_plane_copter ? OpenHD.wind_speed*3.6 : OpenHD.mav_wind_speed*3.6))
                 .toLocaleString(Qt.locale(), 'f', 0)} // @disable-check M222
             anchors.fill: parent
             horizontalAlignment: Text.AlignHCenter
