@@ -43,7 +43,7 @@ private:
 
     uint64_t m_last_timestamp = 0;
 
-    QString m_openHDVersion = "N/A";
+    QString m_openHDVersion = "Checking...";
 };
 
 #endif // STATUSMICROSERVICE_H
