@@ -57,29 +57,29 @@ public:
     Q_PROPERTY(int boot_time MEMBER m_boot_time WRITE set_boot_time NOTIFY boot_time_changed)
     void set_boot_time(int boot_time);
 
-    Q_PROPERTY(int alt_rel MEMBER m_alt_rel WRITE set_alt_rel NOTIFY alt_rel_changed)
-    void set_alt_rel(int alt_rel);
+    Q_PROPERTY(double alt_rel MEMBER m_alt_rel WRITE set_alt_rel NOTIFY alt_rel_changed)
+    void set_alt_rel(double alt_rel);
 
-    Q_PROPERTY(int alt_msl MEMBER m_alt_msl WRITE set_alt_msl NOTIFY alt_msl_changed)
-    void set_alt_msl(int alt_msl);
+    Q_PROPERTY(double alt_msl MEMBER m_alt_msl WRITE set_alt_msl NOTIFY alt_msl_changed)
+    void set_alt_msl(double alt_msl);
 
-    Q_PROPERTY(int vx MEMBER m_vx WRITE set_vx NOTIFY vx_changed)
-    void set_vx(int vx);
+    Q_PROPERTY(double vx MEMBER m_vx WRITE set_vx NOTIFY vx_changed)
+    void set_vx(double vx);
 
-    Q_PROPERTY(int vy MEMBER m_vy WRITE set_vy NOTIFY vy_changed)
-    void set_vy(int vy);
+    Q_PROPERTY(double vy MEMBER m_vy WRITE set_vy NOTIFY vy_changed)
+    void set_vy(double vy);
 
-    Q_PROPERTY(int vz MEMBER m_vz WRITE set_vz NOTIFY vz_changed)
-    void set_vz(int vz);
+    Q_PROPERTY(double vz MEMBER m_vz WRITE set_vz NOTIFY vz_changed)
+    void set_vz(double vz);
 
     Q_PROPERTY(int hdg MEMBER m_hdg WRITE set_hdg NOTIFY hdg_changed)
     void set_hdg(int hdg);
 
-    Q_PROPERTY(int speed MEMBER m_speed WRITE set_speed NOTIFY speed_changed)
-    void set_speed(int speed);
+    Q_PROPERTY(double speed MEMBER m_speed WRITE set_speed NOTIFY speed_changed)
+    void set_speed(double speed);
 
-    Q_PROPERTY(int airspeed MEMBER m_airspeed WRITE set_airspeed NOTIFY airspeed_changed)
-    void set_airspeed(int airspeed);
+    Q_PROPERTY(double airspeed MEMBER m_airspeed WRITE set_airspeed NOTIFY airspeed_changed)
+    void set_airspeed(double airspeed);
 
     Q_PROPERTY(bool armed MEMBER m_armed WRITE set_armed NOTIFY armed_changed)
     void set_armed(bool armed);
@@ -167,6 +167,12 @@ public:
 
     Q_PROPERTY(double wind_direction MEMBER m_wind_direction WRITE set_wind_direction NOTIFY wind_direction_changed)
     void set_wind_direction(double wind_direction);
+
+    Q_PROPERTY(float mav_wind_direction MEMBER m_mav_wind_direction WRITE set_mav_wind_direction NOTIFY mav_wind_direction_changed)
+    void set_mav_wind_direction(float mav_wind_direction);
+
+    Q_PROPERTY(float mav_wind_speed MEMBER m_mav_wind_speed WRITE set_mav_wind_speed NOTIFY mav_wind_speed_changed)
+    void set_mav_wind_speed(float mav_wind_speed);
 
 
     // openhd
@@ -312,14 +318,14 @@ signals:
 
     // mavlink
     void boot_time_changed(int boot_time);
-    void alt_rel_changed(int alt_rel);
-    void alt_msl_changed(int alt_msl);
-    void vx_changed(int vx);
-    void vy_changed(int vy);
-    void vz_changed(int vz);
+    void alt_rel_changed(double alt_rel);
+    void alt_msl_changed(double alt_msl);
+    void vx_changed(double vx);
+    void vy_changed(double vy);
+    void vz_changed(double vz);
     void hdg_changed(int hdg);
-    void speed_changed(int speed);
-    void airspeed_changed(int airspeed);
+    void speed_changed(double speed);
+    void airspeed_changed(double airspeed);
     void armed_changed(bool armed);
     void flight_mode_changed(QString flight_mode);
     void homelat_changed(double homelat);
@@ -358,6 +364,9 @@ signals:
 
     void wind_speed_changed(double wind_speed);
     void wind_direction_changed(double wind_direction);
+
+    void mav_wind_direction_changed(float mav_wind_direction);
+    void mav_wind_speed_changed(float mav_wind_speed);
 
     // openhd
     void downlink_rssi_changed(int downlink_rssi);
@@ -419,8 +428,8 @@ private:
     // mavlink
     int m_boot_time = 0;
 
-    int m_alt_rel = 0;
-    int m_alt_msl = 0;
+    double m_alt_rel = 0;
+    double m_alt_msl = 0;
 
     double m_vx = 0;
     double m_vy = 0;
@@ -428,8 +437,8 @@ private:
 
     int m_hdg = 000;
 
-    int m_speed = 0;
-    int m_airspeed = 0;
+    double m_speed = 0;
+    double m_airspeed = 0;
 
     bool m_armed = false;
     QString m_flight_mode = "Stabilize";
@@ -470,6 +479,9 @@ private:
     double m_wind_direction = 0.0;
     double m_wind_speed = 0.0;
     double speed_last_time = 0.0;
+
+    float m_mav_wind_direction = 0.0;
+    float m_mav_wind_speed = 0.0;
 
     // openhd
 

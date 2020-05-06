@@ -152,27 +152,27 @@ void OpenHD::set_boot_time(int boot_time) {
     emit boot_time_changed(m_boot_time);
 }
 
-void OpenHD::set_alt_rel(int alt_rel) {
+void OpenHD::set_alt_rel(double alt_rel) {
     m_alt_rel = alt_rel;
     emit alt_rel_changed(m_alt_rel);
 }
 
-void OpenHD::set_alt_msl(int alt_msl) {
+void OpenHD::set_alt_msl(double alt_msl) {
     m_alt_msl = alt_msl;
     emit alt_msl_changed(m_alt_msl);
 }
 
-void OpenHD::set_vx(int vx) {
+void OpenHD::set_vx(double vx) {
     m_vx = vx;
     emit vx_changed(m_vx);
 }
 
-void OpenHD::set_vy(int vy) {
+void OpenHD::set_vy(double vy) {
     m_vy = vy;
     emit vy_changed(m_vy);
 }
 
-void OpenHD::set_vz(int vz) {
+void OpenHD::set_vz(double vz) {
     m_vz = vz;
     emit vz_changed(m_vz);
 }
@@ -182,12 +182,12 @@ void OpenHD::set_hdg(int hdg) {
     emit hdg_changed(m_hdg);
 }
 
-void OpenHD::set_speed(int speed) {
+void OpenHD::set_speed(double speed) {
     m_speed = speed;
     emit speed_changed(m_speed);
 }
 
-void OpenHD::set_airspeed(int airspeed) {
+void OpenHD::set_airspeed(double airspeed) {
     m_airspeed = airspeed;
     emit airspeed_changed(m_airspeed);
 }
@@ -402,6 +402,16 @@ void OpenHD::set_wind_speed(double wind_speed) {
 void OpenHD::set_wind_direction(double wind_direction) {
     m_wind_direction= wind_direction;
      emit wind_direction_changed(m_wind_direction);
+}
+
+void OpenHD::set_mav_wind_direction(float mav_wind_direction) {
+    m_mav_wind_direction= mav_wind_direction;
+     emit mav_wind_direction_changed(m_mav_wind_direction);
+}
+
+void OpenHD::set_mav_wind_speed(float mav_wind_speed) {
+    m_mav_wind_speed= mav_wind_speed;
+     emit mav_wind_speed_changed(m_mav_wind_speed);
 }
 
 void OpenHD::set_control_pitch(int control_pitch) {
@@ -661,7 +671,7 @@ void OpenHD::updateWind() {
 
         //qDebug() << "WIND: expected crs " << expected_course;
         //qDebug() << "WIND: actual crs " << actual_course;
-        //qDebug() << "WIND crs diff="<< course_diff;
+
 
         //have 2 cases to solve...
         // one in in pos hold so gs<1 or some value.. could also be control input
@@ -673,8 +683,14 @@ void OpenHD::updateWind() {
             auto speed_diff= expected_speed - actual_speed;
             //qDebug() << "WIND in poshold: speed="<< speed_diff << "dir=" << course_diff*-1;
 
+            //make wind from a heading not a vector AND correct for current heading
+            course_diff=(course_diff*-1)-m_hdg-180;
+
+            if (course_diff < 0) course_diff += 360;
+            if (course_diff >= 360) course_diff -= 360;
+
             set_wind_speed(speed_diff);
-            set_wind_direction(course_diff*-1);
+            set_wind_direction(course_diff);
         }
 
         if (actual_speed > 1){
@@ -685,9 +701,10 @@ void OpenHD::updateWind() {
 
             if (speed_diff < .5 ){
 
-                // below interferes with poshold wind dir..so its here
-                if (course_diff < -180){
-                    course_diff=(360+course_diff);
+                // too much to calculate
+                if (course_diff < -90 || course_diff > 90){
+                    //qDebug() << "WIND out of bounds";
+                    return;
                 }
 
                 //find speed
@@ -711,9 +728,9 @@ void OpenHD::updateWind() {
                 auto wind_direction=0.0;
 
                 //get exterior angles to make life easier
-                auto wind_angle_b_ext=0.0;
+                //auto wind_angle_b_ext=0.0;
 
-                wind_angle_b_ext = 360 - wind_angle_b;
+                //wind_angle_b_ext = 360 - wind_angle_b;
 
                 // this could be shortened to 2 cases but for easier understanding left it at 4
                 if (actual_speed <= expected_speed ){ //headwind
@@ -742,17 +759,20 @@ void OpenHD::updateWind() {
                         wind_direction = expected_course + 180 - wind_angle_b;
                     }
                 }
-                //make wind from a heading not a vector
+                // correct for current heading and make wind come from rather than to (vector)
                 wind_direction=wind_direction-180;
 
                 if (wind_direction < 0) wind_direction += 360;
                 if (wind_direction >= 360) wind_direction -= 360;
+                /*
+                qDebug() << "WIND expected speed="<< expected_speed;
 
-                //qDebug() << "WIND expected speed="<< expected_speed;
-                //qDebug() << "WIND angleA= " << wind_angle_a;
-                //qDebug() << "WIND angleB= " << wind_angle_b;
-                //qDebug() << "WIND in motion: dir= "<< wind_direction;
+                qDebug() << "WIND angleA= " << wind_angle_a;
+                qDebug() << "WIND angleB= " << wind_angle_b;
 
+                qDebug() << "WIND motion: dir="<<wind_direction<<
+                            "exp="<<expected_course<<"act="<<actual_course<<"diff="<< course_diff;
+                */
                 set_wind_speed(wind_speed);
                 set_wind_direction(wind_direction);
 

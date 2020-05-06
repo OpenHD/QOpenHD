@@ -17,10 +17,9 @@ BaseWidget {
     width: 50
     height: 50
     defaultAlignment: 1
-    defaultXOffset: 20
-    defaultYOffset: 300
+    defaultXOffset: -20
     defaultHCenter: false
-    defaultVCenter: false
+    defaultVCenter: true
 
     visible: settings.show_vsi
 

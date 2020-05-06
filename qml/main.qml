@@ -101,15 +101,18 @@ ApplicationWindow {
 
         property bool show_downlink_rssi: true
         property double downlink_rssi_opacity: 1
+        property bool downlink_rssi_showall: false
 
         property bool show_uplink_rssi: true
         property double uplink_rssi_opacity: 1
 
         property bool show_bitrate: true
         property double bitrate_opacity: 1
+        property bool bitrate_showall: false
 
         property bool show_air_battery: true
         property double air_battery_opacity: 1
+        property bool air_battery_showall: false
 
         property bool show_gps: true
         property double gps_opacity: 1
@@ -173,7 +176,6 @@ ApplicationWindow {
         property bool show_altitude_ladder: true
         property int altitude_range: 100
 
-
         property bool show_altitude_second: true
         property bool altitude_second_msl_rel: false
         property double altitude_second_opacity: 1
@@ -210,7 +212,9 @@ ApplicationWindow {
 
         property bool show_wind: false
         property double wind_opacity: 1
-        //tumbler value had to be split into two values.. dirty fix
+        property bool wind_plane_copter: true
+        property bool wind_arrow_circle: true
+        //tumbler value had to be split into two values..
         property double wind_tumbler_decimal: 5
         property double wind_tumbler_tens: 13
         property double wind_max_quad_speed: wind_tumbler_tens+(wind_tumbler_decimal*.1)

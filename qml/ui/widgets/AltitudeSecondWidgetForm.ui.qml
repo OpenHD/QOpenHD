@@ -96,8 +96,9 @@ BaseWidget {
             color: settings.color_text
             opacity: settings.altitude_second_opacity
             font.pixelSize: 14
-            text: Number(
-                      settings.altitude_second_msl_rel ? OpenHD.alt_msl : OpenHD.alt_rel).toLocaleString(
+            text: Number(settings.enable_imperial ? (settings.altitude_second_msl_rel ? (OpenHD.alt_msl*3.28) : (OpenHD.alt_rel*3.28)) :
+                      (settings.altitude_second_msl_rel ? OpenHD.alt_msl : OpenHD.alt_rel)
+                      ).toLocaleString(
                       Qt.locale(), 'f', 0)
             horizontalAlignment: Text.AlignRight
             topPadding: 2
