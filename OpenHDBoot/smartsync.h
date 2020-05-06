@@ -34,6 +34,26 @@ typedef struct {
      * Progress percentage 0-100
      */
     uint32_t progress;
+    /*
+     * RC trigger channel
+     */
+    uint32_t rc_channel;
+    /*
+     * RC trigger low value
+     */
+    uint32_t rc_low;
+    /*
+     * RC trigger high value
+     */
+    uint32_t rc_high;
+    /*
+     * RC current channel value
+     */
+    uint32_t rc_current_value;
+    /*
+     * GPIO pin 26 state
+     */
+    uint32_t gpio_26_state;
 }
 #ifndef _MSC_VER
 __attribute__((packed))
