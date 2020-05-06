@@ -656,41 +656,28 @@ void OpenHD::updateWind() {
             actual_course += 360.0;
         }
 
+
+
         // get expected speed
         auto expected_speed= tilt_angle*perf_ratio;
 
         //get actual speed
         auto actual_speed = sqrt(m_vx * m_vx + m_vy * m_vy);
 
-        auto course_diff_rad= (actual_course* (M_PI/180)) - (expected_course* (M_PI/180));
+        //qDebug() << "WIND actual crs="<< actual_course <<
+        //        "expected crs " << expected_course;
+        //qDebug() << "WIND actual speed="<< actual_speed;
 
-        auto course_diff= course_diff_rad * 180 / M_PI;
-        if (course_diff > 180){
-            course_diff=(360-course_diff)*-1;
-        }
-
-        //qDebug() << "WIND: expected crs " << expected_course;
-        //qDebug() << "WIND: actual crs " << actual_course;
-
-
-        //have 2 cases to solve...
-        // one in in pos hold so gs<1 or some value.. could also be control input
-        // other is while moving
 
         if (actual_speed < 1){
             //we are in pos hold
-
             auto speed_diff= expected_speed - actual_speed;
-            //qDebug() << "WIND in poshold: speed="<< speed_diff << "dir=" << course_diff*-1;
 
-            //make wind from a heading not a vector AND correct for current heading
-            course_diff=(course_diff*-1)-m_hdg-180;
-
-            if (course_diff < 0) course_diff += 360;
-            if (course_diff >= 360) course_diff -= 360;
+            //qDebug() << "WIND hold: dir="<<expected_course<< "exp="<<expected_course<<
+            //            "act="<<actual_course << "speed="<< speed_diff;
 
             set_wind_speed(speed_diff);
-            set_wind_direction(course_diff);
+            set_wind_direction(expected_course);
         }
 
         if (actual_speed > 1){
@@ -699,9 +686,17 @@ void OpenHD::updateWind() {
             auto speed_diff=speed_last_time-actual_speed;
             if (speed_diff<0)speed_diff=speed_diff*-1;
 
+            //make sure we are not accelerating
             if (speed_diff < .5 ){
 
-                // too much to calculate
+                auto course_diff_rad= (actual_course* (M_PI/180)) - (expected_course* (M_PI/180));
+
+                auto course_diff= course_diff_rad * 180 / M_PI;
+                if (course_diff > 180){
+                    course_diff=(360-course_diff)*-1;
+                }
+
+                // too much to calculate if we are getting pushed backwards by wind
                 if (course_diff < -90 || course_diff > 90){
                     //qDebug() << "WIND out of bounds";
                     return;
