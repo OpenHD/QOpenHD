@@ -179,11 +179,19 @@ BaseWidget {
 
             anchors.centerIn: parent
 
+            visible: settings.show_heading_ladder
+
             transform: Scale { origin.x: 24; origin.y: 0; xScale: settings.heading_size ; yScale: settings.heading_size}
 
             Connections{
                 target:OpenHD
                 onHdgChanged: {
+                    canvasHeadingLadder.requestPaint()
+                }
+            }
+            Connections{
+                target:settings
+                onHeading_ladder_textChanged: {
                     canvasHeadingLadder.requestPaint()
                 }
             }
