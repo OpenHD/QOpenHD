@@ -220,6 +220,8 @@ BaseWidget {
             anchors.right: parent.right
             anchors.rightMargin: 20 //tweak ladder left or right
 
+            visible: settings.show_speed_ladder
+
             transform: Scale { origin.x: -33; origin.y: 12; xScale: settings.speed_size ; yScale: settings.speed_size}
 
             Connections{

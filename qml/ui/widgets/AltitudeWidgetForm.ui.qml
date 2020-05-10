@@ -194,6 +194,8 @@ BaseWidget {
             anchors.left: parent.left
             anchors.leftMargin: 20 //tweak ladder left or right
 
+            visible: settings.show_altitude_ladder
+
             transform: Scale { origin.x: -5; origin.y: 12; xScale: settings.altitude_size ; yScale: settings.altitude_size}
 
             Connections{
