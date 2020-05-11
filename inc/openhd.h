@@ -21,7 +21,12 @@ public:
     void calculate_home_distance();
     void calculate_home_course();
 
-    void setWifiAdapters(QList<QVariantMap> adapters);
+    void setWifiAdapter0(uint32_t received_packet_cnt, int8_t current_signal_dbm, int8_t signal_good);
+    void setWifiAdapter1(uint32_t received_packet_cnt, int8_t current_signal_dbm, int8_t signal_good);
+    void setWifiAdapter2(uint32_t received_packet_cnt, int8_t current_signal_dbm, int8_t signal_good);
+    void setWifiAdapter3(uint32_t received_packet_cnt, int8_t current_signal_dbm, int8_t signal_good);
+    void setWifiAdapter4(uint32_t received_packet_cnt, int8_t current_signal_dbm, int8_t signal_good);
+    void setWifiAdapter5(uint32_t received_packet_cnt, int8_t current_signal_dbm, int8_t signal_good);
 
     Q_INVOKABLE void setGroundGPIO(int pin, bool state) {
         m_ground_gpio[pin] = state ? 1 : 0;
@@ -279,13 +284,6 @@ public:
     Q_PROPERTY(bool air_gpio_busy MEMBER m_air_gpio_busy WRITE set_air_gpio_busy NOTIFY air_gpio_busy_changed)
     void set_air_gpio_busy(bool air_gpio_busy);
 
-    Q_PROPERTY(QVariantMap wifi_adapter0 MEMBER m_wifi_adapter0 NOTIFY wifi_adapter0_changed)
-    Q_PROPERTY(QVariantMap wifi_adapter1 MEMBER m_wifi_adapter1 NOTIFY wifi_adapter1_changed)
-    Q_PROPERTY(QVariantMap wifi_adapter2 MEMBER m_wifi_adapter2 NOTIFY wifi_adapter2_changed)
-    Q_PROPERTY(QVariantMap wifi_adapter3 MEMBER m_wifi_adapter3 NOTIFY wifi_adapter3_changed)
-    Q_PROPERTY(QVariantMap wifi_adapter4 MEMBER m_wifi_adapter4 NOTIFY wifi_adapter4_changed)
-    Q_PROPERTY(QVariantMap wifi_adapter5 MEMBER m_wifi_adapter5 NOTIFY wifi_adapter5_changed)
-
     Q_PROPERTY(double ground_vin MEMBER m_ground_vin WRITE set_ground_vin NOTIFY ground_vin_changed)
     void set_ground_vin(double ground_vin);
 
@@ -309,12 +307,13 @@ signals:
     void ground_gpio_busy_changed(bool ground_gpio_busy);
     void air_gpio_busy_changed(bool air_gpio_busy);
 
-    void wifi_adapter0_changed(QVariantMap wifi_adapter);
-    void wifi_adapter1_changed(QVariantMap wifi_adapter);
-    void wifi_adapter2_changed(QVariantMap wifi_adapter);
-    void wifi_adapter3_changed(QVariantMap wifi_adapter);
-    void wifi_adapter4_changed(QVariantMap wifi_adapter);
-    void wifi_adapter5_changed(QVariantMap wifi_adapter);
+    void wifiAdapter0Changed(unsigned int received_packet_cnt, int current_signal_dbm, int signal_good);
+    void wifiAdapter1Changed(unsigned int received_packet_cnt, int current_signal_dbm, int signal_good);
+    void wifiAdapter2Changed(unsigned int received_packet_cnt, int current_signal_dbm, int signal_good);
+    void wifiAdapter3Changed(unsigned int received_packet_cnt, int current_signal_dbm, int signal_good);
+    void wifiAdapter4Changed(unsigned int received_packet_cnt, int current_signal_dbm, int signal_good);
+    void wifiAdapter5Changed(unsigned int received_packet_cnt, int current_signal_dbm, int signal_good);
+
 
     // mavlink
     void boot_time_changed(int boot_time);
@@ -533,12 +532,6 @@ private:
     bool m_pip_video_running = false;
     bool m_lte_video_running = false;
 
-    QVariantMap m_wifi_adapter0;
-    QVariantMap m_wifi_adapter1;
-    QVariantMap m_wifi_adapter2;
-    QVariantMap m_wifi_adapter3;
-    QVariantMap m_wifi_adapter4;
-    QVariantMap m_wifi_adapter5;
 
     QTime flightTimeStart;
 
