@@ -205,15 +205,6 @@ BaseWidget {
 
         antialiasing: true
 
-        Glow {
-            anchors.fill: widgetInner
-            radius: 4
-            samples: 17
-            color: settings.color_glow
-            opacity: settings.horizon_opacity
-            source: widgetInner
-        }
-
         transformOrigin: Item.Center
 
         rotation: settings.horizon_invert_roll ? OpenHD.roll : -OpenHD.roll
@@ -224,7 +215,6 @@ BaseWidget {
                 x: Item.Center
                 y: { getHorizonPitch() }
             }
-
 
         Item {
             id:mainHorizon
