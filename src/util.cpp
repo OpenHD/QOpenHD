@@ -154,8 +154,6 @@ QString sub_mode_from_enum(SUB_MODE mode) {
             return "Surface";
        case SUB_MODE_POSHOLD:
             return "Position Hold";
-       case SUB_MODE_ENUM_END:
-            break;
     }
     return "Unknown";
 }
@@ -182,8 +180,6 @@ QString rover_mode_from_enum(ROVER_MODE mode) {
             return "Loiter";
        case ROVER_MODE_GUIDED:
             return "Guided";
-       case ROVER_MODE_ENUM_END:
-            break;
     }
     return "Unknown";
 }
@@ -228,8 +224,6 @@ QString copter_mode_from_enum(COPTER_MODE mode) {
             return "Avoid ADSB";
        case COPTER_MODE_GUIDED:
             return "Guided";
-       case COPTER_MODE_ENUM_END:
-            break;
     }
     return "Unknown";
 }
@@ -280,8 +274,6 @@ QString plane_mode_from_enum(PLANE_MODE mode) {
             return "QRTL";
        case PLANE_MODE_QAUTOTUNE:
             return "QAutotune";
-       case PLANE_MODE_ENUM_END:
-            break;
     }
     return "Unknown";
 }
@@ -301,8 +293,6 @@ QString tracker_mode_from_enum(TRACKER_MODE mode) {
             return "Auto";
        case TRACKER_MODE_INITIALIZING:
             return "Initializing";
-       case TRACKER_MODE_ENUM_END:
-            break;
     }
     return "Unknown";
 }
