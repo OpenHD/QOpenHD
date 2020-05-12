@@ -169,7 +169,9 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
                param_id.append('\0');
             }
 
-            m_allParameters.insert(QString(param_id.data()), QVariant(param.param_value));
+            QString s(param_id.data());
+
+            m_allParameters.insert(s, QVariant(param.param_value));
             break;
         }
         case MAVLINK_MSG_ID_GPS_RAW_INT:{
