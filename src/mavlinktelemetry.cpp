@@ -425,7 +425,20 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
                     break;
             }
 
-            OpenHD::instance()->messageReceived(statustext.text, level);
+            QByteArray param_id(statustext.text, 50);
+            /*
+             * If there's no null in the text array, the mavlink docs say it has to be exactly 50 characters,
+             * so we add a null to the end and then continue. This guarantees that QString below will always find
+             * a null terminator.
+             *
+             */
+            if (!param_id.contains('\0')) {
+               param_id.append('\0');
+            }
+
+            QString s(param_id.data());
+
+            OpenHD::instance()->messageReceived(s, level);
             break;
         }
         case MAVLINK_MSG_ID_ESC_TELEMETRY_1_TO_4: {
