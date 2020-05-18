@@ -7,6 +7,9 @@
 #include "smartsync.h"
 
 
+#include "statuslogmodel.h"
+
+
 int main(int argc, char *argv[]) {
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
@@ -36,6 +39,8 @@ int main(int argc, char *argv[]) {
     engine.rootContext()->setContextProperty("SmartSync", smartSync);
     smartSync->onStarted();
 
+    auto statusLogModel = StatusLogModel::instance();
+    engine.rootContext()->setContextProperty("StatusLogModel", statusLogModel);
 
     engine.load(url);
 

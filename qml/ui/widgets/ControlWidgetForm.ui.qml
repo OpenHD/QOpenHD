@@ -119,14 +119,7 @@ BaseWidget {
                 color: settings.color_text
                 radius: width*0.5
 
-                visible: {
-                    if (OpenHD.control_throttle < 1000){
-                        console.log("Throttle control < 1000");
-                        left_control.visible=false;
-                    }else {
-                         left_control.visible=true;
-                    }
-                }
+                visible: OpenHD.control_throttle < 1000 ? false : true
 
                 transformOrigin: Item.Center
 
@@ -145,14 +138,7 @@ BaseWidget {
                 color: settings.color_text
                 radius: width*0.5
 
-                visible: {
-                    if (OpenHD.control_throttle < 1000){
-                        console.log("Throttle control < 1000");
-                        right_control.visible=false;
-                    }else {
-                         right_control.visible=true;
-                    }
-                }
+                visible: OpenHD.control_throttle < 1000 ? false : true
 
                 transformOrigin: Item.Center
 
@@ -210,14 +196,7 @@ BaseWidget {
                 color: settings.color_text
                 radius: width*0.5
 
-                visible: {
-                    if (OpenHD.control_throttle < 1000){
-                        console.log("Throttle control < 1000");
-                        left_control.visible=false;
-                    }else {
-                         left_control.visible=true;
-                    }
-                }
+                visible: OpenHD.control_throttle < 1000 ? false : true
 
                 transformOrigin: Item.Center
 
@@ -236,14 +215,7 @@ BaseWidget {
                 color: settings.color_text
                 radius: width*0.5
 
-                visible: {
-                    if (OpenHD.control_throttle < 1000){
-                        console.log("Throttle control < 1000");
-                        right_control.visible=false;
-                    }else {
-                         right_control.visible=true;
-                    }
-                }
+                visible: OpenHD.control_throttle < 1000 ? false : true
 
                 transformOrigin: Item.Center
 

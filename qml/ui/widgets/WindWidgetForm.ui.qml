@@ -258,11 +258,7 @@ BaseWidget {
             transform: Rotation {
                 origin.x: 3;
                 origin.y: 20;
-                angle: {// @disable-check M223
-
-
-                    (settings.wind_plane_copter ? OpenHD.wind_direction : OpenHD.mav_wind_direction)-OpenHD.hdg-180;
-                }
+                angle: (settings.wind_plane_copter ? OpenHD.wind_direction : OpenHD.mav_wind_direction) - OpenHD.hdg - 180
             }
         }
 
@@ -289,11 +285,7 @@ BaseWidget {
             transform: Rotation {
                 origin.x: 25;
                 origin.y: 25;
-                angle: {// @disable-check M223
-
-
-                    (settings.wind_plane_copter ? OpenHD.wind_direction : OpenHD.mav_wind_direction-10)-OpenHD.hdg-190;
-                }
+                angle: (settings.wind_plane_copter ? OpenHD.wind_direction : OpenHD.mav_wind_direction - 10) - OpenHD.hdg - 190
             }
         }
         Shape {

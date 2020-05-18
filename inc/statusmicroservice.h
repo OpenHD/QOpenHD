@@ -13,17 +13,9 @@
 
 #include "mavlinkbase.h"
 
+#include "statuslogmodel.h"
+
 class QUdpSocket;
-
-// matches struct defined in OpenHDMicroservice::StatusMicroservice
-struct StatusMessage {
-    QString message;
-    int sysid;
-    int compid;
-    MAV_SEVERITY severity;
-    uint64_t timestamp;
-};
-
 
 class StatusMicroservice : public MavlinkBase {
     Q_OBJECT
@@ -31,12 +23,9 @@ class StatusMicroservice : public MavlinkBase {
 public:
     explicit StatusMicroservice(QObject *parent = nullptr, MicroserviceTarget target = MicroserviceTargetNone, MavlinkType mavlink_type = MavlinkTypeUDP);
 
-    Q_INVOKABLE QList<StatusMessage> getAllMessages();
-
-    Q_INVOKABLE void resetMessages();
-
     Q_PROPERTY(QString openHDVersion MEMBER m_openHDVersion WRITE setOpenHDVersion NOTIFY openHDVersionChanged)
     void setOpenHDVersion(QString openHDVersion);
+
 
 signals:
     void statusMessage(int sysid, QString message, int level, unsigned long long timestamp);
@@ -52,9 +41,9 @@ private slots:
 private:
     MicroserviceTarget m_target;
 
-    QList<StatusMessage> m_messages;
+    uint64_t m_last_timestamp = 0;
 
-    QString m_openHDVersion = "N/A";
+    QString m_openHDVersion = "Checking...";
 };
 
-#endif // STATUSRMICROSERVICE_H
+#endif // STATUSMICROSERVICE_H

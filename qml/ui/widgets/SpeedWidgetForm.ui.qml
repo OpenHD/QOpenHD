@@ -252,8 +252,12 @@ BaseWidget {
                     //ctx.lineWidth = .5;
                     ctx.font = "bold 11px sans-serif";
 
-                    var speed=settings.enable_imperial ? (settings.speed_airspeed_gps ? (OpenHD.airspeed*0.621371) : (OpenHD.speed*0.621371)) :
-                                (settings.speed_airspeed_gps ? OpenHD.airspeed : OpenHD.speed);
+                    var speed_airspeed_gps = settings.speed_airspeed_gps;
+                    var _airspeed = OpenHD.airspeed;
+                    var _speed = OpenHD.speed;
+
+                    var speed = settings.enable_imperial ? (speed_airspeed_gps ? (_airspeed*0.621371) : (_speed*0.621371)) :
+                                                           (speed_airspeed_gps ? _airspeed : _speed);
                     //weird rounding issue where decimals make ladder dissappear
                     speed=Math.round(speed);
 
@@ -266,6 +270,8 @@ BaseWidget {
 
                     var k;
                     var y;
+
+                    var speed_minimum = settings.speed_minimum;
 
                     for (k = (speed - range / 2); k <= speed + range / 2; k++) {    // @disable-check M223
                         y =  y_position + ((k - speed) * ratio_speed)*-1;
@@ -280,14 +286,14 @@ BaseWidget {
                                     ctx.fillText(k, x_label, y+6);              // @disable-check M222
                                 }
                             }
-                            if (k < settings.speed_minimum) {                                        // @disable-check M223
+                            if (k < speed_minimum) {                                        // @disable-check M223
                                 //start position speed (squares) below "0"
                                 ctx.rect(x, y-12, 15, 15);
                                 ctx.fill();                                     // @disable-check M222
                                 //ctx.stroke();
                             }
                         }
-                        else if ((k % 5 == 0) && (k > settings.speed_minimum)){                      // @disable-check M223
+                        else if ((k % 5 == 0) && (k > speed_minimum)) {                      // @disable-check M223
                             //little ticks
                             ctx.rect(x+5, y, 7, 2);
                             ctx.fill(); // @disable-check M222

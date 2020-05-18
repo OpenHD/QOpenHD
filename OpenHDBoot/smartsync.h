@@ -8,24 +8,52 @@ class QUdpSocket;
 
 
 enum SmartSyncState {
-    SmartSyncStateWaiting,
+    SmartSyncStateInitializing,
+    SmartSyncStateWaitingForTrigger,
+    SmartSyncStateWaitingForAir,
     SmartSyncStateTransferring,
+    SmartSyncStateNotNeeded,
     SmartSyncStateFinished,
-    SmartSyncStateError
+    SmartSyncStateError,
+    SmartSyncStateSkipped
 };
 
 typedef struct {
     /*
-     * 0: waiting
-     * 1: transferring
-     * 2: finished
-     * 3: error
+     * 0: initializing
+     * 1: wait for trigger (gpio/rc)
+     * 2: waiting for air to connect
+     * 3: transferring
+     * 4: no sync needed
+     * 5: finished
+     * 6: error
+     * 7: skipped
      */
-    uint8_t state;
+    uint32_t state;
     /*
      * Progress percentage 0-100
      */
-    uint8_t progress;
+    uint32_t progress;
+    /*
+     * RC trigger channel
+     */
+    uint32_t rc_channel;
+    /*
+     * RC trigger low value
+     */
+    uint32_t rc_low;
+    /*
+     * RC trigger high value
+     */
+    uint32_t rc_high;
+    /*
+     * RC current channel value
+     */
+    uint32_t rc_current_value;
+    /*
+     * GPIO pin 26 state
+     */
+    uint32_t gpio_26_state;
 }
 #ifndef _MSC_VER
 __attribute__((packed))
@@ -68,9 +96,9 @@ private slots:
 private:
     QUdpSocket *smartSyncSocket = nullptr;
 
-    QString m_message = "Waiting...";
+    QString m_message = "Initializing";
 
-    int m_state = SmartSyncStateWaiting;
+    int m_state = SmartSyncStateInitializing;
 
     int m_progress = 0;
 };

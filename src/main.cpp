@@ -37,6 +37,11 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 
 #include "statusmicroservice.h"
 
+#include "statuslogmodel.h"
+
+#include "opensky.h"
+
+
 #if defined(ENABLE_GSTREAMER)
 
 #include "openhdvideostream.h"
@@ -299,6 +304,13 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
     engine.rootContext()->setContextProperty("AirStatusMicroservice", airStatusMicroservice);
     QObject::connect(openHDSettings, &OpenHDSettings::groundStationIPUpdated, airStatusMicroservice, &StatusMicroservice::setGroundIP, Qt::QueuedConnection);
     airStatusMicroservice->onStarted();
+
+
+    auto statusLogModel = StatusLogModel::instance();
+    engine.rootContext()->setContextProperty("StatusLogModel", statusLogModel);
+
+    auto opensky = new OpenSky();
+    engine.rootContext()->setContextProperty("OpenSky", opensky);
 
 
     engine.rootContext()->setContextProperty("OpenHD", openhd);

@@ -34,7 +34,9 @@ MavlinkTelemetry* MavlinkTelemetry::instance() {
 MavlinkTelemetry::MavlinkTelemetry(QObject *parent): MavlinkBase(parent) {
     qDebug() << "MavlinkTelemetry::MavlinkTelemetry()";
     targetSysID = 1;
-    targetCompID = MAV_COMP_ID_AUTOPILOT1;
+    targetCompID1 = MAV_COMP_ID_AUTOPILOT1;
+    targetCompID2 = MAV_COMP_ID_SYSTEM_CONTROL;
+
     localPort = 14550;
 
     #if defined(__rasp_pi__)
@@ -57,16 +59,7 @@ void MavlinkTelemetry::onSetup() {
 }
 
 
-void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
-    /* QGC sends its own heartbeats with compid 0 (fixed)
-     * and sysid 255 (configurable). We want to ignore these
-     * because they cause UI glitches like the flight mode
-     * appearing to change and the armed status flipping back
-     * and forth.
-     */
-    if (msg.compid != MAV_COMP_ID_AUTOPILOT1 && msg.compid != MAV_COMP_ID_SYSTEM_CONTROL) {
-        return;
-    }
+void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {    
     switch (msg.msgid) {
             case MAVLINK_MSG_ID_HEARTBEAT: {
                     mavlink_heartbeat_t heartbeat;
@@ -176,7 +169,9 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
                param_id.append('\0');
             }
 
-            m_allParameters.insert(QString(param_id.data()), QVariant(param.param_value));
+            QString s(param_id.data());
+
+            m_allParameters.insert(s, QVariant(param.param_value));
             break;
         }
         case MAVLINK_MSG_ID_GPS_RAW_INT:{
@@ -432,7 +427,20 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
                     break;
             }
 
-            OpenHD::instance()->messageReceived(statustext.text, level);
+            QByteArray param_id(statustext.text, 50);
+            /*
+             * If there's no null in the text array, the mavlink docs say it has to be exactly 50 characters,
+             * so we add a null to the end and then continue. This guarantees that QString below will always find
+             * a null terminator.
+             *
+             */
+            if (!param_id.contains('\0')) {
+               param_id.append('\0');
+            }
+
+            QString s(param_id.data());
+
+            OpenHD::instance()->messageReceived(s, level);
             break;
         }
         case MAVLINK_MSG_ID_ESC_TELEMETRY_1_TO_4: {

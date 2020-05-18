@@ -36,20 +36,36 @@ void SmartSync::processSmartSyncMessage(smartsync_status_t status) {
     setState(status.state);
 
     switch (m_state) {
-        case SmartSyncStateWaiting: {
-            setMessage("Waiting...");
+        case SmartSyncStateInitializing: {
+            setMessage("Initializing");
+            break;
+        }
+        case SmartSyncStateWaitingForTrigger: {
+            setMessage("Waiting for RC/GPIO trigger");
+            break;
+        }
+        case SmartSyncStateWaitingForAir: {
+            setMessage("Waiting for air to connect...");
             break;
         }
         case SmartSyncStateTransferring: {
-            setMessage("Transferring...");
+            setMessage("Syncing...");
+            break;
+        }
+        case SmartSyncStateNotNeeded: {
+            setMessage("Sync not necessary");
             break;
         }
         case SmartSyncStateFinished: {
-            setMessage("Finished");
+            setMessage("Sync finished");
             break;
         }
         case SmartSyncStateError: {
-            setMessage("Error, see log");
+            setMessage("Sync error occurred, see log");
+            break;
+        }
+        case SmartSyncStateSkipped: {
+            setMessage("Sync skipped");
             break;
         }
         default: {

@@ -227,8 +227,13 @@ BaseWidget {
                     //ctx.lineWidth = .5;
                     ctx.font = "bold 11px sans-serif";
 
-                    var alt=settings.enable_imperial ? (settings.altitude_rel_msl ? (OpenHD.alt_msl*3.28) : (OpenHD.alt_rel*3.28)) :
-                                                       (settings.altitude_rel_msl ? OpenHD.alt_msl : OpenHD.alt_rel);
+                    var enable_imperial = settings.enable_imperial;
+                    var altitude_rel_msl = settings.altitude_rel_msl;
+                    var alt_msl = OpenHD.alt_msl;
+                    var alt_rel = OpenHD.alt_rel;
+
+                    var alt = enable_imperial ? (altitude_rel_msl ? (alt_msl*3.28) : (alt_rel*3.28)) :
+                                                (altitude_rel_msl ? alt_msl : alt_rel);
                     //weird rounding issue where decimals make ladder dissappear
                     alt=Math.round(alt);
 

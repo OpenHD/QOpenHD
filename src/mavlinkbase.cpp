@@ -134,8 +134,12 @@ QVariantMap MavlinkBase::getAllParameters() {
 
 void MavlinkBase::fetchParameters() {
     qDebug() << "MavlinkBase::fetchParameters()";
+
+    QSettings settings;
+    int mavlink_sysid = settings.value("mavlink_sysid", default_mavlink_sysid()).toInt();
+
     mavlink_message_t msg;
-    mavlink_msg_param_request_list_pack(255, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID, targetCompID);
+    mavlink_msg_param_request_list_pack(mavlink_sysid, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID, targetCompID1);
 
     uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
     int len = mavlink_msg_to_send_buffer(buffer, &msg);
@@ -145,9 +149,12 @@ void MavlinkBase::fetchParameters() {
 
 
 void MavlinkBase::sendHeartbeat() {
+    QSettings settings;
+    int mavlink_sysid = settings.value("mavlink_sysid", default_mavlink_sysid()).toInt();
+
     mavlink_message_t msg;
 
-    mavlink_msg_heartbeat_pack(255, MAV_COMP_ID_MISSIONPLANNER, &msg, MAV_TYPE_GCS, MAV_AUTOPILOT_INVALID, 0, 0, 0);
+    mavlink_msg_heartbeat_pack(mavlink_sysid, MAV_COMP_ID_MISSIONPLANNER, &msg, MAV_TYPE_GCS, MAV_AUTOPILOT_INVALID, 0, 0, 0);
 
     uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
     int len = mavlink_msg_to_send_buffer(buffer, &msg);
@@ -271,6 +278,16 @@ void MavlinkBase::processData(QByteArray data) {
         uint8_t res = mavlink_parse_char(MAVLINK_COMM_0, (uint8_t)c, &msg, &r_mavlink_status);
 
         if (res) {
+            /*
+             * Not the target we're talking to, so reject it
+             */
+            if (msg.sysid != targetSysID) {
+                return;
+            }
+
+            if (msg.compid != targetCompID1 && msg.compid != targetCompID2) {
+                return;
+            }
             // process ack messages in the base class, subclasses will receive a signal
             // to indicate success or failure
             if (msg.msgid == MAVLINK_MSG_ID_COMMAND_ACK) {
@@ -331,10 +348,14 @@ void MavlinkBase::commandStateLoop() {
             mavlink_message_t msg;
             m_command_sent_timestamp = QDateTime::currentMSecsSinceEpoch();
 
+            QSettings settings;
+
+            int mavlink_sysid = settings.value("mavlink_sysid", default_mavlink_sysid()).toInt();
+
             if (m_current_command->m_is_long_cmd) {
-                mavlink_msg_command_long_pack(255, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID, targetCompID, m_current_command->command_id, m_current_command->long_confirmation, m_current_command->long_param1, m_current_command->long_param2, m_current_command->long_param3, m_current_command->long_param4, m_current_command->long_param5, m_current_command->long_param6, m_current_command->long_param7);
+                mavlink_msg_command_long_pack(mavlink_sysid, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID, targetCompID1, m_current_command->command_id, m_current_command->long_confirmation, m_current_command->long_param1, m_current_command->long_param2, m_current_command->long_param3, m_current_command->long_param4, m_current_command->long_param5, m_current_command->long_param6, m_current_command->long_param7);
             } else {
-                mavlink_msg_command_int_pack(255, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID, targetCompID, m_current_command->int_frame, m_current_command->command_id, m_current_command->int_current, m_current_command->int_autocontinue, m_current_command->int_param1, m_current_command->int_param2, m_current_command->int_param3, m_current_command->int_param4, m_current_command->int_param5, m_current_command->int_param6, m_current_command->int_param7);
+                mavlink_msg_command_int_pack(mavlink_sysid, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID, targetCompID1, m_current_command->int_frame, m_current_command->command_id, m_current_command->int_current, m_current_command->int_autocontinue, m_current_command->int_param1, m_current_command->int_param2, m_current_command->int_param3, m_current_command->int_param4, m_current_command->int_param5, m_current_command->int_param6, m_current_command->int_param7);
             }
             uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
             int len = mavlink_msg_to_send_buffer(buffer, &msg);

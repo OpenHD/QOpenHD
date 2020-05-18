@@ -40,6 +40,27 @@ ApplicationWindow {
         source: (EnableGStreamer && EnableMainVideo && EnablePiP)  ? "DummyVideoGStreamer.qml" : ""
     }
 
+    function default_mavlink_sysid() {
+        if (IsRaspPi) {
+            return 220;
+        }
+        if (IsMac) {
+            return 221;
+        }
+        if (IsiOS) {
+            return 222;
+        }
+        if (IsAndroid) {
+            return 223;
+        }
+        if (IsWindows) {
+            return 224;
+        }
+        if (IsDesktopLinux) {
+            return 225;
+        }
+    }
+
     /*
      * Local app settings. Uses the "user defaults" system on Mac/iOS, the Registry on Windows,
      * and equivalent settings systems on Linux and Android
@@ -53,6 +74,8 @@ ApplicationWindow {
         property int pip_video_port: 5601
         property int lte_video_port: 8000
         property int battery_cells: 3
+
+        property int mavlink_sysid: default_mavlink_sysid()
 
         property bool show_pip_video: false
         property double pip_video_opacity: 1

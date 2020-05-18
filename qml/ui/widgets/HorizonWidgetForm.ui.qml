@@ -185,16 +185,6 @@ BaseWidget {
         }
     }
 
-
-    function getHorizonPitch(){
-        var raw_pitch= settings.horizon_invert_pitch ? -OpenHD.pitch : OpenHD.pitch;
-
-        //in all the rectangles is a constant of "10" and each line represents 10 degrees
-        var ratio= settings.horizon_ladder_spacing
-
-        return ratio * raw_pitch
-    }
-
     Item {
         id: widgetInner
         height: 2
@@ -209,12 +199,10 @@ BaseWidget {
 
         rotation: settings.horizon_invert_roll ? OpenHD.roll : -OpenHD.roll
 
-
-        transform:
-            Translate {
-                x: Item.Center
-                y: { getHorizonPitch() }
-            }
+        transform: Translate {
+            x: Item.Center
+            y: (settings.horizon_invert_pitch ? -OpenHD.pitch : OpenHD.pitch) * settings.horizon_ladder_spacing
+        }
 
         Item {
             id:mainHorizon

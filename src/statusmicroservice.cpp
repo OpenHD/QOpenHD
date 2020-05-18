@@ -12,7 +12,8 @@
 StatusMicroservice::StatusMicroservice(QObject *parent, MicroserviceTarget target, MavlinkType mavlink_type): MavlinkBase(parent, mavlink_type), m_target(target) {
     qDebug() << "StatusMicroservice::StatusMicroservice()";
 
-    targetCompID = MAV_COMP_ID_USER3;
+    targetCompID1 = MAV_COMP_ID_USER3;
+    targetCompID2 = targetCompID1;
     localPort = 14551;
 
     #if defined(__rasp_pi__)
@@ -42,16 +43,6 @@ void StatusMicroservice::onSetup() {
 }
 
 
-QList<StatusMessage> StatusMicroservice::getAllMessages() {
-    return m_messages;
-}
-
-
-void StatusMicroservice::resetMessages() {
-    m_messages.clear();
-}
-
-
 void StatusMicroservice::setOpenHDVersion(QString openHDVersion) {
     m_openHDVersion = openHDVersion;
     emit openHDVersionChanged(m_openHDVersion);
@@ -59,26 +50,20 @@ void StatusMicroservice::setOpenHDVersion(QString openHDVersion) {
 
 
 void StatusMicroservice::onProcessMavlinkMessage(mavlink_message_t msg) {
-    if (msg.compid != targetCompID || msg.sysid != targetSysID) {
-        return;
-    }
     switch (msg.msgid) {
         case MAVLINK_MSG_ID_HEARTBEAT: {
-            qDebug() << "StatusMicroservice::MAVLINK_MSG_ID_HEARTBEAT";
-
             mavlink_heartbeat_t heartbeat;
             mavlink_msg_heartbeat_decode(&msg, &heartbeat);
             break;
         }
         case MAVLINK_MSG_ID_SYSTEM_TIME:{
-            qDebug() << "StatusMicroservice::MAVLINK_MSG_ID_SYSTEM_TIME";
-
             mavlink_system_time_t sys_time;
             mavlink_msg_system_time_decode(&msg, &sys_time);
             uint32_t boot_time = sys_time.time_boot_ms;
 
             if (boot_time != m_last_boot) {
                 m_last_boot = boot_time;
+                m_last_timestamp = 0;
 
                 MavlinkCommand c(true);
                 c.command_id = OPENHD_CMD_GET_VERSION;
@@ -88,8 +73,6 @@ void StatusMicroservice::onProcessMavlinkMessage(mavlink_message_t msg) {
             break;
         }
         case MAVLINK_MSG_ID_OPENHD_VERSION_MESSAGE: {
-            qDebug() << "StatusMicroservice::MAVLINK_MSG_ID_OPENHD_VERSION";
-
             mavlink_openhd_version_message_t version_message;
             mavlink_msg_openhd_version_message_decode(&msg, &version_message);
 
@@ -101,11 +84,9 @@ void StatusMicroservice::onProcessMavlinkMessage(mavlink_message_t msg) {
             setOpenHDVersion(openhd_version);
 
             /*
-             * Now that the initial state is loaded, reset the message list and load all known
+             * Now that the initial state is loaded, load all known
              * messages from the service on the air or ground
              */
-            resetMessages();
-
             MavlinkCommand c(true);
             c.command_id = OPENHD_CMD_GET_STATUS_MESSAGES;
             send_command(c);
@@ -113,8 +94,6 @@ void StatusMicroservice::onProcessMavlinkMessage(mavlink_message_t msg) {
             break;
         }
         case MAVLINK_MSG_ID_OPENHD_STATUS_MESSAGE: {
-            qDebug() << "StatusMicroservice::MAVLINK_MSG_ID_OPENHD_STATUS_MESSAGE";
-
             mavlink_openhd_status_message_t status_message;
             mavlink_msg_openhd_status_message_decode(&msg, &status_message);
 
@@ -122,14 +101,14 @@ void StatusMicroservice::onProcessMavlinkMessage(mavlink_message_t msg) {
             t.sysid = msg.sysid;
             t.compid = msg.compid;
             t.message = status_message.text;
-            t.severity = static_cast<MAV_SEVERITY>(status_message.severity);
+            t.severity = status_message.severity;
             t.timestamp = status_message.timestamp;
 
-            m_messages.append(t);
-
-            std::sort(m_messages.begin(), m_messages.end(), [](const StatusMessage a, const StatusMessage b) -> bool { return a.timestamp < b.timestamp; });
-
-            emit statusMessage(msg.sysid, status_message.text, status_message.severity, status_message.timestamp);
+            if (m_last_boot != 0 && t.timestamp > m_last_timestamp) {
+                m_last_timestamp = t.timestamp;
+                StatusLogModel::instance()->addMessage(t);
+                emit statusMessage(msg.sysid, status_message.text, status_message.severity, status_message.timestamp);
+            }
 
             break;
         }
@@ -139,3 +118,4 @@ void StatusMicroservice::onProcessMavlinkMessage(mavlink_message_t msg) {
         }
     }
 }
+

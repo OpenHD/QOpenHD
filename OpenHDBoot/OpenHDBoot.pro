@@ -12,6 +12,7 @@ include($$PWD/../platforms.pri)
 
 include($$PWD/../git.pri)
 
+include ($$PWD/../lib/SortFilterProxyModel/SortFilterProxyModel.pri)
 
 QT += quick concurrent opengl gui
 
@@ -32,13 +33,16 @@ INCLUDEPATH += $$PWD/../lib/mavlink_generated/include/mavlink/v2.0
 
 SOURCES += \
         main.cpp \
+        $$PWD/../src/util.cpp \
         $$PWD/../src/MavlinkBase.cpp \
         $$PWD/../src/statusmicroservice.cpp \
+        $$PWD/../src/statuslogmodel.cpp \
         smartsync.cpp
 
 HEADERS += \
     $$PWD/../inc/mavlinkbase.h \
     $$PWD/../inc/statusmicroservice.h \
+    $$PWD/../inc/statuslogmodel.h \
     smartsync.h
 
 RESOURCES += qml.qrc

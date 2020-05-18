@@ -73,23 +73,41 @@ void OpenHDTelemetry::processOpenHDTelemetry(wifibroadcast_rx_status_forward_t t
        also store the index in a property so it can be highlighted in the adapter list popup */
     int current_best = -127;
 
-    QList<QVariantMap> wifiAdapters;
-
     for (uint wifi_adapter = 0; wifi_adapter < telemetry.wifi_adapter_cnt; wifi_adapter++) {
         wifi_adapter_rx_status_forward_t adapter = telemetry.adapter[wifi_adapter];
-        QVariantMap wifiAdapter;
-        wifiAdapter.insert("received_packet_cnt", QVariant(adapter.received_packet_cnt));
-        wifiAdapter.insert("current_signal_dbm", QVariant(adapter.current_signal_dbm));
-        wifiAdapter.insert("type", QVariant(adapter.type));
-        wifiAdapter.insert("signal_good", QVariant(adapter.signal_good));
-        wifiAdapters.append(wifiAdapter);
+
+        switch (wifi_adapter) {
+            case 0: {
+                OpenHD::instance()->setWifiAdapter0(adapter.received_packet_cnt, adapter.current_signal_dbm, adapter.signal_good);
+                break;
+            }
+            case 1: {
+                OpenHD::instance()->setWifiAdapter1(adapter.received_packet_cnt, adapter.current_signal_dbm, adapter.signal_good);
+                break;
+            }
+            case 2: {
+                OpenHD::instance()->setWifiAdapter2(adapter.received_packet_cnt, adapter.current_signal_dbm, adapter.signal_good);
+                break;
+            }
+            case 3: {
+                OpenHD::instance()->setWifiAdapter3(adapter.received_packet_cnt, adapter.current_signal_dbm, adapter.signal_good);
+                break;
+            }
+            case 4: {
+                OpenHD::instance()->setWifiAdapter4(adapter.received_packet_cnt, adapter.current_signal_dbm, adapter.signal_good);
+                break;
+            }
+            case 5: {
+                OpenHD::instance()->setWifiAdapter5(adapter.received_packet_cnt, adapter.current_signal_dbm, adapter.signal_good);
+                break;
+            }
+        }
 
         if (adapter.current_signal_dbm > current_best) {
             current_best = adapter.current_signal_dbm;
         }
     }
 
-    OpenHD::instance()->setWifiAdapters(wifiAdapters);
 
     QLocale l = QLocale::system();
 

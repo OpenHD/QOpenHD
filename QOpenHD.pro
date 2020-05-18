@@ -12,6 +12,9 @@ include(platforms.pri)
 
 include(git.pri)
 
+include ($$PWD/lib/SortFilterProxyModel/SortFilterProxyModel.pri)
+
+
 CONFIG(debug, debug|release) {
     DESTDIR = $${OUT_PWD}/debug
 
@@ -66,9 +69,11 @@ SOURCES += \
     src/openhdrc.cpp \
     src/openhdsettings.cpp \
     src/openhdtelemetry.cpp \
+    src/opensky.cpp \
     src/powermicroservice.cpp \
     src/qopenhdlink.cpp \
     src/smartporttelemetry.cpp \
+    src/statuslogmodel.cpp \
     src/statusmicroservice.cpp \
     src/util.cpp \
     src/vectortelemetry.cpp
@@ -79,6 +84,7 @@ HEADERS += \
     inc/FPS.h \
     inc/gpiomicroservice.h \
     inc/mavlinkbase.h \
+    inc/opensky.h \
     inc/powermicroservice.h \
     inc/sharedqueue.h \
     inc/constants.h \
@@ -96,6 +102,7 @@ HEADERS += \
     inc/openhdtelemetry.h \
     inc/qopenhdlink.h \
     inc/smartporttelemetry.h \
+    inc/statuslogmodel.h \
     inc/statusmicroservice.h \
     inc/util.h \
     inc/vectortelemetry.h \

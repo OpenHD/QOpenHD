@@ -2,13 +2,13 @@ import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
 
-
+import SortFilterProxyModel 0.2
 
 Item {
     ListView {
         id: messageList
 
-        model: messageModel
+        model: sortModel
 
         anchors.fill: parent
 
@@ -23,27 +23,13 @@ Item {
     }
 
 
-    Connections {
-        target: GroundStatusMicroservice
-        onStatusMessage: {
-            console.log("Received ground message: " + message + ":" + sysid + ":" + level)
-            messageModel.append({ "sysid": sysid, "message": message, "level": level })
-            messageList.positionViewAtEnd()
+    SortFilterProxyModel {
+        id: sortModel
+        sourceModel: StatusLogModel
+        sorters: RoleSorter {
+            roleName: "timestamp";
+            sortOrder: Qt.AscendingOrder
         }
-    }
-
-
-    Connections {
-        target: AirStatusMicroservice
-        onStatusMessage: {
-            console.log("Received air message: " + message + ":" + sysid + ":" + level)
-            messageModel.append({ "sysid": sysid, "message": message, "level": level })
-        }
-    }
-
-
-    ListModel {
-        id: messageModel
     }
 
 
@@ -64,21 +50,21 @@ Item {
                 anchors.bottom: parent.bottom
                 width: 56
                 color: {
-                    if (level == 0) {
+                    if (severity == 0) {
                         return "#fa0000";
-                    } else if (level == 1) {
+                    } else if (severity == 1) {
                         return "#fa0000";
-                    } else if (level == 2) {
+                    } else if (severity == 2) {
                         return "#fa0000";
-                    } else if (level == 3) {
+                    } else if (severity == 3) {
                         return "#fa0000";
-                    } else if (level == 4) {
+                    } else if (severity == 4) {
                         return "#fffa00";
-                    } else if (level == 5) {
+                    } else if (severity == 5) {
                         return "#00ea00";
-                    } else if (level == 6) {
+                    } else if (severity == 6) {
                         return "#00ea00";
-                    } else if (level == 7) {
+                    } else if (severity == 7) {
                         return "#0000ea";
                     }
 
@@ -99,5 +85,4 @@ Item {
             }
         }
     }
-
 }
