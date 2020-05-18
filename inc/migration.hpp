@@ -15,14 +15,18 @@
 
 class Migration;
 
-extern Migration* _instance;
+Migration* _instance = nullptr;
 
 class Migration: public QObject {
     Q_OBJECT
 
 public:
     explicit Migration() {}
+
     static Migration* instance() {
+        if (_instance == nullptr) {
+            _instance = new Migration();
+        }
         return _instance;
     }
 
@@ -36,12 +40,7 @@ public:
 
 signals:
     void migrationsFinished();
-
-private:
-
-
 };
 
-Migration* _instance = new Migration();
 
 #endif
