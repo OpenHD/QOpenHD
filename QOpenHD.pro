@@ -266,6 +266,7 @@ RaspberryPiBuild {
     CONFIG += EnablePiP
     CONFIG += EnableLink
     CONFIG += EnableCharts
+    CONFIG += EnableSpeech
 
     CONFIG += EnableVideoRender
 
