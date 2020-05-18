@@ -165,7 +165,8 @@ BaseWidget {
                     width: parent.width - 96
 
                     onValueChanged: { // @disable-check M223
-                        settings.altitude_range = altitude_range_Slider.value
+                        settings.altitude_range = altitude_range_Slider.value;
+                        canvasAltLadder.requestPaint();
                     }
                 }
             }
@@ -193,6 +194,8 @@ BaseWidget {
             anchors.left: parent.left
             anchors.leftMargin: 20 //tweak ladder left or right
 
+            visible: settings.show_altitude_ladder
+
             transform: Scale { origin.x: -5; origin.y: 12; xScale: settings.altitude_size ; yScale: settings.altitude_size}
 
             Connections{
@@ -201,6 +204,7 @@ BaseWidget {
                     canvasAltLadder.requestPaint()
                 }
             }
+
 
             Canvas {
                 id: canvasAltLadder

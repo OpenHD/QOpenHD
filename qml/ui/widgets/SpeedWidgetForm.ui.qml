@@ -161,7 +161,8 @@ BaseWidget {
                     width: parent.width - 96
 
                     onValueChanged: { // @disable-check M223
-                        settings.speed_range = speed_range_Slider.value
+                        settings.speed_range = speed_range_Slider.value;
+                        canvasSpeedLadder.requestPaint();
                     }
                 }
             }
@@ -191,6 +192,7 @@ BaseWidget {
 
                     onValueChanged: { // @disable-check M223
                         settings.speed_minimum = speed_minimum_Slider.value
+                        canvasSpeedLadder.requestPaint();
                     }
                 }
             }
@@ -217,6 +219,8 @@ BaseWidget {
 
             anchors.right: parent.right
             anchors.rightMargin: 20 //tweak ladder left or right
+
+            visible: settings.show_speed_ladder
 
             transform: Scale { origin.x: -33; origin.y: 12; xScale: settings.speed_size ; yScale: settings.speed_size}
 

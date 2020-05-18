@@ -8,7 +8,7 @@ import OpenHD 1.0
 
 BaseWidget {
     id: horizonWidget
-    width: settings.horizon_size
+    width: 250
     height: 48
 
     visible: settings.show_horizon
@@ -62,7 +62,6 @@ BaseWidget {
             Item {
                 width: 230
                 height: 32
-                visible: false
                 Text {
                     text: "Size"
                     color: "white"
@@ -75,10 +74,10 @@ BaseWidget {
                 Slider {
                     id: horizon_size_Slider
                     orientation: Qt.Horizontal
-                    from: 225
+                    from: 1
                     value: settings.horizon_size
-                    to: 450
-                    stepSize: 1
+                    to: 3
+                    stepSize: .1
                     height: parent.height
                     anchors.rightMargin: 5
                     anchors.right: parent.right
@@ -196,41 +195,37 @@ BaseWidget {
 
         antialiasing: true
 
-        Glow {
-            anchors.fill: widgetInner
-            radius: 4
-            samples: 17
-            color: settings.color_glow
-            opacity: settings.horizon_opacity
-            source: widgetInner
-        }
-
         transformOrigin: Item.Center
 
         rotation: settings.horizon_invert_roll ? OpenHD.roll : -OpenHD.roll
+
         transform: Translate {
             x: Item.Center
             y: (settings.horizon_invert_pitch ? -OpenHD.pitch : OpenHD.pitch) * settings.horizon_ladder_spacing
         }
 
-
-
-
-        Rectangle {
-            id: leftLine
-            width: (settings.horizon_size / 2) - 25
-            height: 2
-            anchors.left: parent.left
+        Item {
+            id:mainHorizon
+            width: parent.width
             anchors.verticalCenter: parent.verticalCenter
-            color: settings.color_shape
-        }
-        Rectangle {
-            id: rightLine
-            width: (settings.horizon_size / 2) - 25
-            height: 2
-            anchors.right: parent.right
-            anchors.verticalCenter: parent.verticalCenter
-            color: settings.color_shape
+            transform: Scale { origin.x: 125; origin.y: 0; xScale: settings.horizon_size; yScale: 1}
+
+            Rectangle {
+                id: leftLine
+                width: (250 / 2) - 25
+                height: 2
+                anchors.left: parent.left
+                anchors.verticalCenter: parent.verticalCenter
+                color: settings.color_shape
+            }
+            Rectangle {
+                id: rightLine
+                width: (250 / 2) - 25
+                height: 2
+                anchors.right: parent.right
+                anchors.verticalCenter: parent.verticalCenter
+                color: settings.color_shape
+            }
         }
 
        //------------------- start upper 1 --------------------
@@ -238,11 +233,11 @@ BaseWidget {
         Rectangle {
             id: upperLeft1
             visible: settings.show_horizon_ladder
-            width: (settings.horizon_size / 4)
+            width: (250 / 4)
             height: 1
             anchors.left: parent.left
-            anchors.leftMargin: (settings.horizon_size / 10)
-            anchors.bottom: leftLine.top
+            anchors.leftMargin: (250 / 10)
+            anchors.bottom: mainHorizon.top
             anchors.bottomMargin: 10 * settings.horizon_ladder_spacing
             color: settings.color_shape
         }
@@ -271,11 +266,11 @@ BaseWidget {
         Rectangle {
             id: upperRight1
             visible: settings.show_horizon_ladder
-            width: (settings.horizon_size / 4)
+            width: (250 / 4)
             height: 1
             anchors.right: parent.right
-            anchors.rightMargin: (settings.horizon_size / 10)
-            anchors.bottom: rightLine.top
+            anchors.rightMargin: (250 / 10)
+            anchors.bottom: mainHorizon.top
             anchors.bottomMargin: 10 * settings.horizon_ladder_spacing
             color: settings.color_shape
         }
@@ -306,10 +301,10 @@ BaseWidget {
          Rectangle {
              id: upperLeft2
              visible: settings.show_horizon_ladder
-             width: (settings.horizon_size / 4)
+             width: (250 / 4)
              height: 1
              anchors.left: parent.left
-             anchors.leftMargin: (settings.horizon_size / 10)
+             anchors.leftMargin: (250 / 10)
              anchors.bottom: upperLeft1.top
              anchors.bottomMargin: 10 * settings.horizon_ladder_spacing
              color: settings.color_shape
@@ -339,10 +334,10 @@ BaseWidget {
          Rectangle {
              id: upperRight2
              visible: settings.show_horizon_ladder
-             width: (settings.horizon_size / 4)
+             width: (250 / 4)
              height: 1
              anchors.right: parent.right
-             anchors.rightMargin: (settings.horizon_size / 10)
+             anchors.rightMargin: (250 / 10)
              anchors.bottom: upperRight1.top
              anchors.bottomMargin: 10 * settings.horizon_ladder_spacing
              color: settings.color_shape
@@ -375,10 +370,10 @@ BaseWidget {
           Rectangle {
               id: upperLeft3
               visible: settings.show_horizon_ladder
-              width: (settings.horizon_size / 4)
+              width: (250 / 4)
               height: 1
               anchors.left: parent.left
-              anchors.leftMargin: (settings.horizon_size / 10)
+              anchors.leftMargin: (250 / 10)
               anchors.bottom: upperLeft2.top
               anchors.bottomMargin: 10 * settings.horizon_ladder_spacing
               color: settings.color_shape
@@ -408,10 +403,10 @@ BaseWidget {
           Rectangle {
               id: upperRight3
               visible: settings.show_horizon_ladder
-              width: (settings.horizon_size / 4)
+              width: (250 / 4)
               height: 1
               anchors.right: parent.right
-              anchors.rightMargin: (settings.horizon_size / 10)
+              anchors.rightMargin: (250 / 10)
               anchors.bottom: upperRight2.top
               anchors.bottomMargin: 10 * settings.horizon_ladder_spacing
               color: settings.color_shape
@@ -444,10 +439,10 @@ BaseWidget {
            Rectangle {
                id: upperLeft4
                visible: settings.show_horizon_ladder
-               width: (settings.horizon_size / 4)
+               width: (250 / 4)
                height: 1
                anchors.left: parent.left
-               anchors.leftMargin: (settings.horizon_size / 10)
+               anchors.leftMargin: (250 / 10)
                anchors.bottom: upperLeft3.top
                anchors.bottomMargin: 10 * settings.horizon_ladder_spacing
                color: settings.color_shape
@@ -477,10 +472,10 @@ BaseWidget {
            Rectangle {
                id: upperRight4
                visible: settings.show_horizon_ladder
-               width: (settings.horizon_size / 4)
+               width: (250 / 4)
                height: 1
                anchors.right: parent.right
-               anchors.rightMargin: (settings.horizon_size / 10)
+               anchors.rightMargin: (250 / 10)
                anchors.bottom: upperRight3.top
                anchors.bottomMargin: 10 * settings.horizon_ladder_spacing
                color: settings.color_shape
@@ -513,10 +508,10 @@ BaseWidget {
             Rectangle {
                 id: upperLeft5
                 visible: settings.show_horizon_ladder
-                width: (settings.horizon_size / 4)
+                width: (250 / 4)
                 height: 1
                 anchors.left: parent.left
-                anchors.leftMargin: (settings.horizon_size / 10)
+                anchors.leftMargin: (250 / 10)
                 anchors.bottom: upperLeft4.top
                 anchors.bottomMargin: 10 * settings.horizon_ladder_spacing
                 color: settings.color_shape
@@ -546,10 +541,10 @@ BaseWidget {
             Rectangle {
                 id: upperRight5
                 visible: settings.show_horizon_ladder
-                width: (settings.horizon_size / 4)
+                width: (250 / 4)
                 height: 1
                 anchors.right: parent.right
-                anchors.rightMargin: (settings.horizon_size / 10)
+                anchors.rightMargin: (250 / 10)
                 anchors.bottom: upperRight4.top
                 anchors.bottomMargin: 10 * settings.horizon_ladder_spacing
                 color: settings.color_shape
@@ -582,10 +577,10 @@ BaseWidget {
              Rectangle {
                  id: upperLeft6
                  visible: settings.show_horizon_ladder
-                 width: (settings.horizon_size / 4)
+                 width: (250 / 4)
                  height: 1
                  anchors.left: parent.left
-                 anchors.leftMargin: (settings.horizon_size / 10)
+                 anchors.leftMargin: (250 / 10)
                  anchors.bottom: upperLeft5.top
                  anchors.bottomMargin: 10 * settings.horizon_ladder_spacing
                  color: settings.color_shape
@@ -615,10 +610,10 @@ BaseWidget {
              Rectangle {
                  id: upperRight6
                  visible: settings.show_horizon_ladder
-                 width: (settings.horizon_size / 4)
+                 width: (250 / 4)
                  height: 1
                  anchors.right: parent.right
-                 anchors.rightMargin: (settings.horizon_size / 10)
+                 anchors.rightMargin: (250 / 10)
                  anchors.bottom: upperRight5.top
                  anchors.bottomMargin: 10 * settings.horizon_ladder_spacing
                  color: settings.color_shape
@@ -652,33 +647,33 @@ BaseWidget {
               Rectangle {
                   id: lowerLeft1
                   visible: settings.show_horizon_ladder
-                  width: (settings.horizon_size / 24)
+                  width: (250 / 24)
                   height: 1
                   anchors.left: parent.left
-                  anchors.leftMargin: (settings.horizon_size / 10)
-                  anchors.top: leftLine.bottom
+                  anchors.leftMargin: (250 / 10)
+                  anchors.top: mainHorizon.bottom
                   anchors.topMargin: 10 * settings.horizon_ladder_spacing
                   color: settings.color_shape
               }
               Rectangle {
                   id: lowerLeft1middle
                   visible: settings.show_horizon_ladder
-                  width: (settings.horizon_size / 24)
+                  width: (250 / 24)
                   height: 1
                   anchors.left: lowerLeft1.right
-                  anchors.leftMargin: (settings.horizon_size / 24)
-                  anchors.top: leftLine.bottom
+                  anchors.leftMargin: (250 / 24)
+                  anchors.top: mainHorizon.bottom
                   anchors.topMargin: 10 * settings.horizon_ladder_spacing
                   color: settings.color_shape
               }
               Rectangle {
                   id: lowerLeft1inner
                   visible: settings.show_horizon_ladder
-                  width: (settings.horizon_size / 24)
+                  width: (250 / 24)
                   height: 1
                   anchors.left: lowerLeft1middle.right
-                  anchors.leftMargin: (settings.horizon_size / 24)
-                  anchors.top: leftLine.bottom
+                  anchors.leftMargin: (250 / 24)
+                  anchors.top: mainHorizon.bottom
                   anchors.topMargin: 10 * settings.horizon_ladder_spacing
                   color: settings.color_shape
               }
@@ -707,33 +702,33 @@ BaseWidget {
               Rectangle {
                   id: lowerRight1
                   visible: settings.show_horizon_ladder
-                  width: (settings.horizon_size / 24)
+                  width: (250 / 24)
                   height: 1
                   anchors.right: parent.right
-                  anchors.rightMargin: (settings.horizon_size / 10)
-                  anchors.top: rightLine.bottom
+                  anchors.rightMargin: (250 / 10)
+                  anchors.top: mainHorizon.bottom
                   anchors.topMargin: 10 * settings.horizon_ladder_spacing
                   color: settings.color_shape
               }
               Rectangle {
                   id: lowerRight1middle
                   visible: settings.show_horizon_ladder
-                  width: (settings.horizon_size / 24)
+                  width: (250 / 24)
                   height: 1
                   anchors.right: lowerRight1.left
-                  anchors.rightMargin: (settings.horizon_size / 24)
-                  anchors.top: leftLine.bottom
+                  anchors.rightMargin: (250 / 24)
+                  anchors.top: mainHorizon.bottom
                   anchors.topMargin: 10 * settings.horizon_ladder_spacing
                   color: settings.color_shape
               }
               Rectangle {
                   id: lowerRight1inner
                   visible: settings.show_horizon_ladder
-                  width: (settings.horizon_size / 24)
+                  width: (250 / 24)
                   height: 1
                   anchors.right: lowerRight1middle.left
-                  anchors.rightMargin: (settings.horizon_size / 24)
-                  anchors.top: leftLine.bottom
+                  anchors.rightMargin: (250 / 24)
+                  anchors.top: mainHorizon.bottom
                   anchors.topMargin: 10 * settings.horizon_ladder_spacing
                   color: settings.color_shape
               }
@@ -765,10 +760,10 @@ BaseWidget {
                Rectangle {
                    id: lowerLeft2
                    visible: settings.show_horizon_ladder
-                   width: (settings.horizon_size / 24)
+                   width: (250 / 24)
                    height: 1
                    anchors.left: parent.left
-                   anchors.leftMargin: (settings.horizon_size / 10)
+                   anchors.leftMargin: (250 / 10)
                    anchors.top: lowerLeft1.bottom
                    anchors.topMargin: 10 * settings.horizon_ladder_spacing
                    color: settings.color_shape
@@ -776,10 +771,10 @@ BaseWidget {
                Rectangle {
                    id: lowerLeft2middle
                    visible: settings.show_horizon_ladder
-                   width: (settings.horizon_size / 24)
+                   width: (250 / 24)
                    height: 1
                    anchors.left: lowerLeft2.right
-                   anchors.leftMargin: (settings.horizon_size / 24)
+                   anchors.leftMargin: (250 / 24)
                    anchors.top: lowerLeft1.bottom
                    anchors.topMargin: 10 * settings.horizon_ladder_spacing
                    color: settings.color_shape
@@ -787,10 +782,10 @@ BaseWidget {
                Rectangle {
                    id: lowerLeft2inner
                    visible: settings.show_horizon_ladder
-                   width: (settings.horizon_size / 24)
+                   width: (250 / 24)
                    height: 1
                    anchors.left: lowerLeft2middle.right
-                   anchors.leftMargin: (settings.horizon_size / 24)
+                   anchors.leftMargin: (250 / 24)
                    anchors.top: lowerLeft1.bottom
                    anchors.topMargin: 10 * settings.horizon_ladder_spacing
                    color: settings.color_shape
@@ -820,10 +815,10 @@ BaseWidget {
                Rectangle {
                    id: lowerRight2
                    visible: settings.show_horizon_ladder
-                   width: (settings.horizon_size / 24)
+                   width: (250 / 24)
                    height: 1
                    anchors.right: parent.right
-                   anchors.rightMargin: (settings.horizon_size / 10)
+                   anchors.rightMargin: (250 / 10)
                    anchors.top: lowerLeft1.bottom
                    anchors.topMargin: 10 * settings.horizon_ladder_spacing
                    color: settings.color_shape
@@ -831,10 +826,10 @@ BaseWidget {
                Rectangle {
                    id: lowerRight2middle
                    visible: settings.show_horizon_ladder
-                   width: (settings.horizon_size / 24)
+                   width: (250 / 24)
                    height: 1
                    anchors.right: lowerRight2.left
-                   anchors.rightMargin: (settings.horizon_size / 24)
+                   anchors.rightMargin: (250 / 24)
                    anchors.top: lowerRight1.bottom
                    anchors.topMargin: 10 * settings.horizon_ladder_spacing
                    color: settings.color_shape
@@ -842,10 +837,10 @@ BaseWidget {
                Rectangle {
                    id: lowerRight2inner
                    visible: settings.show_horizon_ladder
-                   width: (settings.horizon_size / 24)
+                   width: (250 / 24)
                    height: 1
                    anchors.right: lowerRight2middle.left
-                   anchors.rightMargin: (settings.horizon_size / 24)
+                   anchors.rightMargin: (250 / 24)
                    anchors.top: lowerRight1.bottom
                    anchors.topMargin: 10 * settings.horizon_ladder_spacing
                    color: settings.color_shape
@@ -878,10 +873,10 @@ BaseWidget {
                 Rectangle {
                     id: lowerLeft3
                     visible: settings.show_horizon_ladder
-                    width: (settings.horizon_size / 24)
+                    width: (250 / 24)
                     height: 1
                     anchors.left: parent.left
-                    anchors.leftMargin: (settings.horizon_size / 10)
+                    anchors.leftMargin: (250 / 10)
                     anchors.top: lowerLeft2.bottom
                     anchors.topMargin: 10 * settings.horizon_ladder_spacing
                     color: settings.color_shape
@@ -889,10 +884,10 @@ BaseWidget {
                 Rectangle {
                     id: lowerLeft3middle
                     visible: settings.show_horizon_ladder
-                    width: (settings.horizon_size / 24)
+                    width: (250 / 24)
                     height: 1
                     anchors.left: lowerLeft3.right
-                    anchors.leftMargin: (settings.horizon_size / 24)
+                    anchors.leftMargin: (250 / 24)
                     anchors.top: lowerLeft2.bottom
                     anchors.topMargin: 10 * settings.horizon_ladder_spacing
                     color: settings.color_shape
@@ -900,10 +895,10 @@ BaseWidget {
                 Rectangle {
                     id: lowerLeft3inner
                     visible: settings.show_horizon_ladder
-                    width: (settings.horizon_size / 24)
+                    width: (250 / 24)
                     height: 1
                     anchors.left: lowerLeft3middle.right
-                    anchors.leftMargin: (settings.horizon_size / 24)
+                    anchors.leftMargin: (250 / 24)
                     anchors.top: lowerLeft2.bottom
                     anchors.topMargin: 10 * settings.horizon_ladder_spacing
                     color: settings.color_shape
@@ -933,10 +928,10 @@ BaseWidget {
                 Rectangle {
                     id: lowerRight3
                     visible: settings.show_horizon_ladder
-                    width: (settings.horizon_size / 24)
+                    width: (250 / 24)
                     height: 1
                     anchors.right: parent.right
-                    anchors.rightMargin: (settings.horizon_size / 10)
+                    anchors.rightMargin: (250 / 10)
                     anchors.top: lowerLeft2.bottom
                     anchors.topMargin: 10 * settings.horizon_ladder_spacing
                     color: settings.color_shape
@@ -944,10 +939,10 @@ BaseWidget {
                 Rectangle {
                     id: lowerRight3middle
                     visible: settings.show_horizon_ladder
-                    width: (settings.horizon_size / 24)
+                    width: (250 / 24)
                     height: 1
                     anchors.right: lowerRight3.left
-                    anchors.rightMargin: (settings.horizon_size / 24)
+                    anchors.rightMargin: (250 / 24)
                     anchors.top: lowerRight2.bottom
                     anchors.topMargin: 10 * settings.horizon_ladder_spacing
                     color: settings.color_shape
@@ -955,10 +950,10 @@ BaseWidget {
                 Rectangle {
                     id: lowerRight3inner
                     visible: settings.show_horizon_ladder
-                    width: (settings.horizon_size / 24)
+                    width: (250 / 24)
                     height: 1
                     anchors.right: lowerRight3middle.left
-                    anchors.rightMargin: (settings.horizon_size / 24)
+                    anchors.rightMargin: (250 / 24)
                     anchors.top: lowerRight2.bottom
                     anchors.topMargin: 10 * settings.horizon_ladder_spacing
                     color: settings.color_shape
@@ -991,10 +986,10 @@ BaseWidget {
                  Rectangle {
                      id: lowerLeft4
                      visible: settings.show_horizon_ladder
-                     width: (settings.horizon_size / 24)
+                     width: (250 / 24)
                      height: 1
                      anchors.left: parent.left
-                     anchors.leftMargin: (settings.horizon_size / 10)
+                     anchors.leftMargin: (250 / 10)
                      anchors.top: lowerLeft3.bottom
                      anchors.topMargin: 10 * settings.horizon_ladder_spacing
                      color: settings.color_shape
@@ -1002,10 +997,10 @@ BaseWidget {
                  Rectangle {
                      id: lowerLeft4middle
                      visible: settings.show_horizon_ladder
-                     width: (settings.horizon_size / 24)
+                     width: (250 / 24)
                      height: 1
                      anchors.left: lowerLeft4.right
-                     anchors.leftMargin: (settings.horizon_size / 24)
+                     anchors.leftMargin: (250 / 24)
                      anchors.top: lowerLeft3.bottom
                      anchors.topMargin: 10 * settings.horizon_ladder_spacing
                      color: settings.color_shape
@@ -1013,10 +1008,10 @@ BaseWidget {
                  Rectangle {
                      id: lowerLeft4inner
                      visible: settings.show_horizon_ladder
-                     width: (settings.horizon_size / 24)
+                     width: (250 / 24)
                      height: 1
                      anchors.left: lowerLeft4middle.right
-                     anchors.leftMargin: (settings.horizon_size / 24)
+                     anchors.leftMargin: (250 / 24)
                      anchors.top: lowerLeft3.bottom
                      anchors.topMargin: 10 * settings.horizon_ladder_spacing
                      color: settings.color_shape
@@ -1046,10 +1041,10 @@ BaseWidget {
                  Rectangle {
                      id: lowerRight4
                      visible: settings.show_horizon_ladder
-                     width: (settings.horizon_size / 24)
+                     width: (250 / 24)
                      height: 1
                      anchors.right: parent.right
-                     anchors.rightMargin: (settings.horizon_size / 10)
+                     anchors.rightMargin: (250 / 10)
                      anchors.top: lowerLeft3.bottom
                      anchors.topMargin: 10 * settings.horizon_ladder_spacing
                      color: settings.color_shape
@@ -1057,10 +1052,10 @@ BaseWidget {
                  Rectangle {
                      id: lowerRight4middle
                      visible: settings.show_horizon_ladder
-                     width: (settings.horizon_size / 24)
+                     width: (250 / 24)
                      height: 1
                      anchors.right: lowerRight4.left
-                     anchors.rightMargin: (settings.horizon_size / 24)
+                     anchors.rightMargin: (250 / 24)
                      anchors.top: lowerRight3.bottom
                      anchors.topMargin: 10 * settings.horizon_ladder_spacing
                      color: settings.color_shape
@@ -1068,10 +1063,10 @@ BaseWidget {
                  Rectangle {
                      id: lowerRight4inner
                      visible: settings.show_horizon_ladder
-                     width: (settings.horizon_size / 24)
+                     width: (250 / 24)
                      height: 1
                      anchors.right: lowerRight4middle.left
-                     anchors.rightMargin: (settings.horizon_size / 24)
+                     anchors.rightMargin: (250 / 24)
                      anchors.top: lowerRight3.bottom
                      anchors.topMargin: 10 * settings.horizon_ladder_spacing
                      color: settings.color_shape
@@ -1104,10 +1099,10 @@ BaseWidget {
                   Rectangle {
                       id: lowerLeft5
                       visible: settings.show_horizon_ladder
-                      width: (settings.horizon_size / 24)
+                      width: (250 / 24)
                       height: 1
                       anchors.left: parent.left
-                      anchors.leftMargin: (settings.horizon_size / 10)
+                      anchors.leftMargin: (250 / 10)
                       anchors.top: lowerLeft4.bottom
                       anchors.topMargin: 10 * settings.horizon_ladder_spacing
                       color: settings.color_shape
@@ -1115,10 +1110,10 @@ BaseWidget {
                   Rectangle {
                       id: lowerLeft5middle
                       visible: settings.show_horizon_ladder
-                      width: (settings.horizon_size / 24)
+                      width: (250 / 24)
                       height: 1
                       anchors.left: lowerLeft5.right
-                      anchors.leftMargin: (settings.horizon_size / 24)
+                      anchors.leftMargin: (250 / 24)
                       anchors.top: lowerLeft4.bottom
                       anchors.topMargin: 10 * settings.horizon_ladder_spacing
                       color: settings.color_shape
@@ -1126,10 +1121,10 @@ BaseWidget {
                   Rectangle {
                       id: lowerLeft5inner
                       visible: settings.show_horizon_ladder
-                      width: (settings.horizon_size / 24)
+                      width: (250 / 24)
                       height: 1
                       anchors.left: lowerLeft5middle.right
-                      anchors.leftMargin: (settings.horizon_size / 24)
+                      anchors.leftMargin: (250 / 24)
                       anchors.top: lowerLeft4.bottom
                       anchors.topMargin: 10 * settings.horizon_ladder_spacing
                       color: settings.color_shape
@@ -1159,10 +1154,10 @@ BaseWidget {
                   Rectangle {
                       id: lowerRight5
                       visible: settings.show_horizon_ladder
-                      width: (settings.horizon_size / 24)
+                      width: (250 / 24)
                       height: 1
                       anchors.right: parent.right
-                      anchors.rightMargin: (settings.horizon_size / 10)
+                      anchors.rightMargin: (250 / 10)
                       anchors.top: lowerLeft4.bottom
                       anchors.topMargin: 10 * settings.horizon_ladder_spacing
                       color: settings.color_shape
@@ -1170,10 +1165,10 @@ BaseWidget {
                   Rectangle {
                       id: lowerRight5middle
                       visible: settings.show_horizon_ladder
-                      width: (settings.horizon_size / 24)
+                      width: (250 / 24)
                       height: 1
                       anchors.right: lowerRight5.left
-                      anchors.rightMargin: (settings.horizon_size / 24)
+                      anchors.rightMargin: (250 / 24)
                       anchors.top: lowerRight4.bottom
                       anchors.topMargin: 10 * settings.horizon_ladder_spacing
                       color: settings.color_shape
@@ -1181,10 +1176,10 @@ BaseWidget {
                   Rectangle {
                       id: lowerRight5inner
                       visible: settings.show_horizon_ladder
-                      width: (settings.horizon_size / 24)
+                      width: (250 / 24)
                       height: 1
                       anchors.right: lowerRight5middle.left
-                      anchors.rightMargin: (settings.horizon_size / 24)
+                      anchors.rightMargin: (250 / 24)
                       anchors.top: lowerRight4.bottom
                       anchors.topMargin: 10 * settings.horizon_ladder_spacing
                       color: settings.color_shape
@@ -1217,10 +1212,10 @@ BaseWidget {
                    Rectangle {
                        id: lowerLeft6
                        visible: settings.show_horizon_ladder
-                       width: (settings.horizon_size / 24)
+                       width: (250 / 24)
                        height: 1
                        anchors.left: parent.left
-                       anchors.leftMargin: (settings.horizon_size / 10)
+                       anchors.leftMargin: (250 / 10)
                        anchors.top: lowerLeft5.bottom
                        anchors.topMargin: 10 * settings.horizon_ladder_spacing
                        color: settings.color_shape
@@ -1228,10 +1223,10 @@ BaseWidget {
                    Rectangle {
                        id: lowerLeft6middle
                        visible: settings.show_horizon_ladder
-                       width: (settings.horizon_size / 24)
+                       width: (250 / 24)
                        height: 1
                        anchors.left: lowerLeft6.right
-                       anchors.leftMargin: (settings.horizon_size / 24)
+                       anchors.leftMargin: (250 / 24)
                        anchors.top: lowerLeft5.bottom
                        anchors.topMargin: 10 * settings.horizon_ladder_spacing
                        color: settings.color_shape
@@ -1239,10 +1234,10 @@ BaseWidget {
                    Rectangle {
                        id: lowerLeft6inner
                        visible: settings.show_horizon_ladder
-                       width: (settings.horizon_size / 24)
+                       width: (250 / 24)
                        height: 1
                        anchors.left: lowerLeft6middle.right
-                       anchors.leftMargin: (settings.horizon_size / 24)
+                       anchors.leftMargin: (250 / 24)
                        anchors.top: lowerLeft5.bottom
                        anchors.topMargin: 10 * settings.horizon_ladder_spacing
                        color: settings.color_shape
@@ -1272,10 +1267,10 @@ BaseWidget {
                    Rectangle {
                        id: lowerRight6
                        visible: settings.show_horizon_ladder
-                       width: (settings.horizon_size / 24)
+                       width: (250 / 24)
                        height: 1
                        anchors.right: parent.right
-                       anchors.rightMargin: (settings.horizon_size / 10)
+                       anchors.rightMargin: (250 / 10)
                        anchors.top: lowerLeft5.bottom
                        anchors.topMargin: 10 * settings.horizon_ladder_spacing
                        color: settings.color_shape
@@ -1283,10 +1278,10 @@ BaseWidget {
                    Rectangle {
                        id: lowerRight6middle
                        visible: settings.show_horizon_ladder
-                       width: (settings.horizon_size / 24)
+                       width: (250 / 24)
                        height: 1
                        anchors.right: lowerRight6.left
-                       anchors.rightMargin: (settings.horizon_size / 24)
+                       anchors.rightMargin: (250 / 24)
                        anchors.top: lowerRight5.bottom
                        anchors.topMargin: 10 * settings.horizon_ladder_spacing
                        color: settings.color_shape
@@ -1294,10 +1289,10 @@ BaseWidget {
                    Rectangle {
                        id: lowerRight6inner
                        visible: settings.show_horizon_ladder
-                       width: (settings.horizon_size / 24)
+                       width: (250 / 24)
                        height: 1
                        anchors.right: lowerRight6middle.left
-                       anchors.rightMargin: (settings.horizon_size / 24)
+                       anchors.rightMargin: (250 / 24)
                        anchors.top: lowerRight5.bottom
                        anchors.topMargin: 10 * settings.horizon_ladder_spacing
                        color: settings.color_shape
