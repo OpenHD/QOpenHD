@@ -226,6 +226,8 @@ BaseWidget {
                     var ratio_heading = width/range;
                     var heading=OpenHD.hdg;
 
+                    var heading_ladder_text = settings.heading_ladder_text;
+
                     var x;
                     var i;
                     var j;
@@ -254,42 +256,42 @@ BaseWidget {
                             switch (j) {
                                 case 0:
                                     draw_text = true;
-                                    compass_direction = settings.heading_ladder_text ?
+                                    compass_direction = heading_ladder_text ?
                                                 qsTr("N") : (j);
                                 break;
                                 case 45:
                                     draw_text = true;
-                                    compass_direction = settings.heading_ladder_text ?
+                                    compass_direction = heading_ladder_text ?
                                                 qsTr("NE") : (j);
                                 break;
                                 case 90:
                                     draw_text = true;
-                                    compass_direction = settings.heading_ladder_text ?
+                                    compass_direction = heading_ladder_text ?
                                             qsTr("E") : (j);
                                 break;
                                 case 135:
                                     draw_text = true;
-                                    compass_direction = settings.heading_ladder_text ?
+                                    compass_direction = heading_ladder_text ?
                                                 qsTr("SE") : (j);
                                 break;
                                 case 180:
                                     draw_text = true;
-                                    compass_direction = settings.heading_ladder_text ?
+                                    compass_direction = heading_ladder_text ?
                                                 qsTr("S") : (j);
                                 break;
                                 case 225:
                                     draw_text = true;
-                                    compass_direction = settings.heading_ladder_text ?
+                                    compass_direction = heading_ladder_text ?
                                                 qsTr("SW") : (j);
                                 break;
                                 case 270:
                                     draw_text = true;
-                                    compass_direction = settings.heading_ladder_text ?
+                                    compass_direction = heading_ladder_text ?
                                                 qsTr("W") : (j);
                                 break;
                                 case 315:
                                     draw_text = true;
-                                    compass_direction = settings.heading_ladder_text ?
+                                    compass_direction = heading_ladder_text ?
                                                 qsTr("NW") : (j);
                                 break;
                             }
