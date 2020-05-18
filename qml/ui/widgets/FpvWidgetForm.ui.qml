@@ -107,10 +107,15 @@ BaseWidget {
             /*this function can be leveraged later to determine wind direction/speed
 
               magnitude of our motion vector */
-            var resultant_magnitude = Math.sqrt(OpenHD.vx * OpenHD.vx + OpenHD.vy * OpenHD.vy);
+
+            var vx = OpenHD.vx
+            var vy = OpenHD.vy
+            var hdg = OpenHD.hdg
+
+            var resultant_magnitude = Math.sqrt(vx * vx + vy * vy);
 
             //direction of motion vector in radians then converted to degree
-            var resultant_angle = Math.atan2 (OpenHD.vy , OpenHD.vx)*(180/Math.PI);
+            var resultant_angle = Math.atan2(vy , vx)*(180/Math.PI);
 
             //converted from degrees to a compass heading
             if (resultant_angle < 0.0){
@@ -118,8 +123,8 @@ BaseWidget {
             }
 
             //Compare the motion heading to the vehicle heading
-            var left = OpenHD.hdg - resultant_angle;
-            var right = resultant_angle - OpenHD.hdg;
+            var left = hdg - resultant_angle;
+            var right = resultant_angle - hdg;
             if (left < 0) left += 360;
             if (right < 0) right += 360;
             var heading_diff = left < right ? -left : right;
