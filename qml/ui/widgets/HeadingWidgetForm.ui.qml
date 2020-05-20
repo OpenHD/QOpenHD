@@ -38,7 +38,7 @@ BaseWidget {
                 height: 32
                 Text {
                     id: opacityText
-                    text: "Opacity"
+                    text: "Transparency"
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -97,7 +97,7 @@ BaseWidget {
                 width: 230
                 height: 32
                 Text {
-                    text: "Ardupilot (off) / iNav (on)"
+                    text: "Ardupilot / iNav"
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -118,7 +118,7 @@ BaseWidget {
                 width: 230
                 height: 32
                 Text {
-                    text: "Ladder (off) / (on)"
+                    text: "Show ticks"
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -139,7 +139,7 @@ BaseWidget {
                 width: 230
                 height: 32
                 Text {
-                    text: "(Numbers) / (Letters)"
+                    text: "Show N/S/E/W"
                     color: "white"
                     height: parent.height
                     font.bold: true

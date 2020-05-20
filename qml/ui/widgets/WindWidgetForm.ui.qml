@@ -35,7 +35,7 @@ BaseWidget {
             width: parent.width
             height: 32
             Text {
-                text: "Opacity"
+                text: "Transparency"
                 color: "white"
                 height: parent.height
                 font.bold: true

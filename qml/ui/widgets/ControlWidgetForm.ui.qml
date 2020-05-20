@@ -28,7 +28,7 @@ BaseWidget {
             height: 32
             Text {
                 id: opacityTitle
-                text: "Opacity"
+                text: "Transparency"
                 color: "white"
                 height: parent.height
                 font.bold: true
@@ -58,7 +58,7 @@ BaseWidget {
             height: 32
             Text {
                 id: displaySwitcher
-                text: "Controls: Two / One"
+                text: "Show two controls"
                 color: "white"
                 height: parent.height
                 font.bold: true

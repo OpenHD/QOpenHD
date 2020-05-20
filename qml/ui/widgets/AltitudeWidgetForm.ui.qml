@@ -43,7 +43,7 @@ BaseWidget {
                 height: 32
                 Text {
                     id: opacityTitle
-                    text: "Opacity"
+                    text: "Transparency"
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -123,7 +123,7 @@ BaseWidget {
                 width: 240
                 height: 32
                 Text {
-                    text: "Ladder (off/on)"
+                    text: "Show ladder"
                     color: "white"
                     height: parent.height
                     font.bold: true
