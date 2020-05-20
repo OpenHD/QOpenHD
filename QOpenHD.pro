@@ -63,6 +63,7 @@ SOURCES += \
     src/main.cpp \
     src/mavlinkbase.cpp \
     src/mavlinktelemetry.cpp \
+    src/migration.cpp \
     src/msptelemetry.cpp \
     src/openhd.cpp \
     src/openhdpi.cpp \
