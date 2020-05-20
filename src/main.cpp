@@ -15,7 +15,7 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 
 #include "constants.h"
 
-
+#include "migration.hpp"
 #include "openhdtelemetry.h"
 #include "openhdrc.h"
 #include "openhdsettings.h"
@@ -90,6 +90,8 @@ int main(int argc, char *argv[]) {
     qputenv("QT_SCALE_FACTOR", scaleAsQByteArray);
 
     QApplication app(argc, argv);
+
+    Migration::instance()->run();
 
 
 #if defined(__android__)
