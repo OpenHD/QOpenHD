@@ -9,15 +9,15 @@ import OpenHD 1.0
 
 BaseWidget {
     id: downlinkRSSIWidget
-    width: 92
-    height:24
+    width: 96
+    height: 48
 
     visible: settings.show_downlink_rssi
 
     widgetIdentifier: "downlink_rssi_widget"
 
     defaultAlignment: 0
-    defaultXOffset: 60
+    defaultXOffset: 80
     defaultYOffset: 0
     defaultHCenter: false
     defaultVCenter: false
@@ -381,18 +381,15 @@ BaseWidget {
             id: downlink_icon
             y: 0
             width: 24
-            height: 24
+            height: 48
             color: settings.color_shape
-
             text: "\uf381"
             anchors.left: parent.left
-            anchors.leftMargin: 0
-            anchors.top: parent.top
-            anchors.topMargin: 0
+            anchors.leftMargin: -2
             verticalAlignment: Text.AlignVCenter
             font.family: "Font Awesome 5 Free"
             styleColor: "#f7f7f7"
-            font.pixelSize: 14
+            font.pixelSize: 18
             horizontalAlignment: Text.AlignRight
         }
 
@@ -401,14 +398,12 @@ BaseWidget {
             width: 32
             height: 24
             color: settings.color_text
-
             text: "dBm"
             anchors.left: downlink_rssi.right
             anchors.leftMargin: 2
-            anchors.top: parent.top
-            anchors.topMargin: 0
+            anchors.verticalCenter: downlink_rssi.verticalCenter
             verticalAlignment: Text.AlignTop
-            font.pixelSize: 10
+            font.pixelSize: 12
             horizontalAlignment: Text.AlignLeft
             wrapMode: Text.NoWrap
             elide: Text.ElideRight
@@ -417,8 +412,8 @@ BaseWidget {
 
         Text {
             id: downlink_rssi
-            width: 34
-            height: 24
+            width: 42
+            height: 48
             color: settings.color_text
 
             text: OpenHD.downlink_rssi == -127 ? qsTr("N/A") : OpenHD.downlink_rssi
@@ -427,7 +422,7 @@ BaseWidget {
             anchors.top: parent.top
             anchors.topMargin: 0
             verticalAlignment: Text.AlignVCenter
-            font.pixelSize: 14
+            font.pixelSize: 18
             horizontalAlignment: Text.AlignRight
             wrapMode: Text.NoWrap
             elide: Text.ElideRight
