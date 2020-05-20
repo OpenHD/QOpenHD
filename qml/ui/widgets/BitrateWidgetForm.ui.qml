@@ -17,8 +17,8 @@ BaseWidget {
 
     widgetIdentifier: "bitrate_widget"
 
-    defaultAlignment: 0
-    defaultXOffset: 180
+    defaultAlignment: 1
+    defaultXOffset: 224
     defaultYOffset: 0
     defaultHCenter: false
     defaultVCenter: false
