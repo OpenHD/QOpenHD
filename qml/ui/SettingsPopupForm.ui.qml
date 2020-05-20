@@ -96,6 +96,7 @@ Rectangle {
 
             Text {
                 id: chartsButton
+                visible: EnableCharts
                 width: parent.width
                 height: 48
                 leftPadding: 12
