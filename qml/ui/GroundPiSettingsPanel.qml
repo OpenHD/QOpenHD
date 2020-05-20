@@ -57,13 +57,19 @@ GroundPiSettingsPanelForm {
                 return;
             }
 
+            /*
+             * Don't fetch settings if the settings panel is already open, this avoids changing
+             * settings UI controls while the user is trying to set them.
+             */
+            if (settings_popup.opened) {
+                return;
+            }
+
             var currentTime = (new Date).getTime();
             if (currentTime - lastSettingsLoad > 60000) {
-                if (!settings_popup.opened) {
-                    lastSettingsLoad = currentTime;
-                    console.log("Settings panel not open, triggering load");
-                    openHDSettings.fetchSettings();
-                }
+                lastSettingsLoad = currentTime;
+                console.log("Auto-fetching ground station settings");
+                openHDSettings.fetchSettings();
             }
         }
     }
