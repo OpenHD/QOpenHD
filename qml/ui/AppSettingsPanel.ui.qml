@@ -436,7 +436,7 @@ Item {
                     color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
                     Text {
-                        text: "Horizonatal Bars Behavior"
+                        text: "Top/bottom bars"
                         font.weight: Font.Bold
                         font.pixelSize: 13
                         anchors.leftMargin: 8
@@ -455,10 +455,10 @@ Item {
                         anchors.horizontalCenter: parent.horizonatalCenter
                         model: ListModel {
                             id: bar_behavior
-                            ListElement { text: "None" ; behavior: "none" }
-                            ListElement { text: "Black" ; behavior: "black" }
-                            ListElement { text: "Arm/None" ; behavior: "disappear" }
-                            ListElement { text: "Arm/Red" ; behavior: "red" }
+                            ListElement { text: "Hide" ; behavior: "none" }
+                            ListElement { text: "Transparent black" ; behavior: "black" }
+                            ListElement { text: "Hide when drone armed" ; behavior: "disappear" }
+                            ListElement { text: "Turn red when drone armed" ; behavior: "red" }
 
                         }
                         textRole: "text"
