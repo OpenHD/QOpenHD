@@ -469,7 +469,7 @@ Item {
                                 // @disable-check M222
                                 var choice = model.get(i);
                                 // @disable-check M223
-                                if (choice.behavior == settings.bar_bavior) {
+                                if (choice.behavior == settings.bar_behavior) {
                                     currentIndex = i;
                                 }
                             }
