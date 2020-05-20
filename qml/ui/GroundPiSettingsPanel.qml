@@ -44,6 +44,19 @@ GroundPiSettingsPanelForm {
                 return;
             }
 
+            /*
+             * Don't fetch settings if the drone is armed, this is an early implementation of
+             * a "radio silence" feature to avoid doing any unnecessary automatic tasks that
+             * could cause interference or affect the video reception in any way.
+             *
+             * The microservice code will have a more general radio silence switch to eliminate
+             * unnecessary air traffic, but this settings timer is a big one due to how much CPU
+             * time the settings processing code uses right now, and it's all in the main thread.
+             */
+            if (OpenHD.armed) {
+                return;
+            }
+
             var currentTime = (new Date).getTime();
             if (currentTime - lastSettingsLoad > 60000) {
                 if (!settings_popup.opened) {
