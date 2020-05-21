@@ -453,6 +453,7 @@ Item {
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
                         anchors.verticalCenter: parent.verticalCenter
                         anchors.horizontalCenter: parent.horizonatalCenter
+                        width: 320
                         model: ListModel {
                             id: bar_behavior
                             ListElement { text: "Hide" ; behavior: "none" }
