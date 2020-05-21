@@ -117,7 +117,7 @@ Rectangle {
         color: "#b3ffffff"
         text: "License: GPLv3"
         onLinkActivated: {
-            Qt.openUrlExternally("https://github.com/infincia/QOpenHD/blob/master/LICENSE")
+            Qt.openUrlExternally("https://github.com/OpenHD/QOpenHD/blob/master/LICENSE")
         }
 
         font.pointSize: 12
