@@ -39,10 +39,15 @@ typedef enum MavlinkCommandState {
     MavlinkCommandStateFailed
 } MavlinkCommandState;
 
+typedef enum MavlinkCommandType {
+    MavlinkCommandTypeLong,
+    MavlinkCommandTypeInt
+} MavlinkCommandType;
+
 class MavlinkCommand  {
 public:
-    MavlinkCommand(bool is_long_cmd) : m_is_long_cmd(is_long_cmd) {}
-    bool m_is_long_cmd;
+    MavlinkCommand(MavlinkCommandType command_type) : m_command_type(command_type) {}
+    MavlinkCommandType m_command_type;
     uint16_t command_id = 0;
     uint8_t retry_count = 0;
 

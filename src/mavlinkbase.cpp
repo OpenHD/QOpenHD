@@ -352,7 +352,7 @@ void MavlinkBase::commandStateLoop() {
 
             int mavlink_sysid = settings.value("mavlink_sysid", default_mavlink_sysid()).toInt();
 
-            if (m_current_command->m_is_long_cmd) {
+            if (m_current_command->m_command_type == MavlinkCommandTypeLong) {
                 mavlink_msg_command_long_pack(mavlink_sysid, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID, targetCompID1, m_current_command->command_id, m_current_command->long_confirmation, m_current_command->long_param1, m_current_command->long_param2, m_current_command->long_param3, m_current_command->long_param4, m_current_command->long_param5, m_current_command->long_param6, m_current_command->long_param7);
             } else {
                 mavlink_msg_command_int_pack(mavlink_sysid, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID, targetCompID1, m_current_command->int_frame, m_current_command->command_id, m_current_command->int_current, m_current_command->int_autocontinue, m_current_command->int_param1, m_current_command->int_param2, m_current_command->int_param3, m_current_command->int_param4, m_current_command->int_param5, m_current_command->int_param6, m_current_command->int_param7);
@@ -379,7 +379,7 @@ void MavlinkBase::commandStateLoop() {
                     return;
                 }
                 m_current_command->retry_count = m_current_command->retry_count + 1;
-                if (m_current_command->m_is_long_cmd) {
+                if (m_current_command->m_command_type == MavlinkCommandTypeLong) {
                     /* incremement the confirmation parameter according to the Mavlink command
                        documentation */
                     m_current_command->long_confirmation = m_current_command->long_confirmation + 1;
