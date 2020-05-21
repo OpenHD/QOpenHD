@@ -358,9 +358,6 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
 
     engine.rootContext()->setContextProperty("QOPENHD_VERSION", QVariant(QOPENHD_VERSION));
 
-    engine.rootContext()->setContextProperty("OPENHD_VERSION", QVariant(OPENHD_VERSION));
-    engine.rootContext()->setContextProperty("BUILDER_VERSION", QVariant(BUILDER_VERSION));
-
     engine.load(QUrl(QLatin1String("qrc:/main.qml")));
 
 #if defined(__android__)
