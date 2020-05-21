@@ -101,7 +101,7 @@ ApplicationWindow {
 
         property bool show_downlink_rssi: true
         property double downlink_rssi_opacity: 1
-        property bool downlink_rssi_showall: false
+        property bool downlink_rssi_show_lost_damaged: false
         property bool downlink_cards_right: true
 
         property bool show_uplink_rssi: true

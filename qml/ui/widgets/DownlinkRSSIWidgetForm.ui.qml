@@ -364,8 +364,8 @@ BaseWidget {
                 height: parent.height
                 anchors.rightMargin: 12
                 anchors.right: parent.right
-                checked: settings.downlink_rssi_showall
-                onCheckedChanged: settings.downlink_rssi_showall = checked
+                checked: settings.downlink_rssi_show_lost_damaged
+                onCheckedChanged: settings.downlink_rssi_show_lost_damaged = checked
             }
         }
 
@@ -456,7 +456,7 @@ BaseWidget {
 
         Text {
             id: extra_text
-            visible: settings.downlink_rssi_showall ? true : false
+            visible: settings.downlink_rssi_show_lost_damaged ? true : false
             text: "D: " + Number(OpenHD.damaged_block_cnt).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" (%L1%)").arg(OpenHD.damaged_block_percent);
             color: settings.color_text
             anchors.top: downlink_rssi.bottom
@@ -470,7 +470,7 @@ BaseWidget {
         }
 
         Text {
-            visible: settings.downlink_rssi_showall ? true : false
+            visible: settings.downlink_rssi_show_lost_damaged ? true : false
             text: "L: " + Number(OpenHD.lost_packet_cnt).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" (%L1%)").arg(OpenHD.lost_packet_percent);
             color: settings.color_text
             anchors.top: extra_text.bottom
