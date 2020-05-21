@@ -71,8 +71,8 @@ BaseWidget {
                 height: parent.height
                 anchors.rightMargin: 12
                 anchors.right: parent.right
-                checked: settings.control_version
-                onCheckedChanged: settings.control_version = checked
+                checked: settings.double_control
+                onCheckedChanged: settings.double_control = checked
             }
         }
     }
@@ -97,7 +97,7 @@ BaseWidget {
             width: parent.width
             anchors.verticalCenter: parent.verticalCenter
 
-            visible: settings.control_version ? true : false
+            visible: !settings.double_control
 
             Rectangle {
                 id: circle
@@ -158,7 +158,7 @@ BaseWidget {
             width: parent.width
             anchors.verticalCenter: parent.verticalCenter
 
-            visible: settings.control_version ? false : true
+            visible: settings.double_control
 
             Rectangle {
                 id: leftCircle
@@ -229,7 +229,7 @@ BaseWidget {
 
         Glow {
             anchors.fill: doubleCircle
-            visible: settings.control_version ? false : true
+            visible: settings.double_control
             radius: 2
             samples: 17
             color: settings.color_glow
@@ -239,7 +239,7 @@ BaseWidget {
 
         Glow {
             anchors.fill: singleCircle
-            visible: settings.control_version ? true : false
+            visible: !settings.double_control
             radius: 3
             samples: 17
             color: settings.color_glow
