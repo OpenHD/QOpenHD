@@ -82,7 +82,7 @@ BaseWidget {
             id: cpuload_gnd
             x: 0
             y: 0
-            width: 34
+            width: 36
             height: 24
             color: settings.color_text
             opacity: settings.ground_status_opacity
@@ -100,7 +100,7 @@ BaseWidget {
             id: temp_gnd
             x: 0
             y: 0
-            width: 34
+            width: 36
             height: 24
             color: settings.color_text
             opacity: settings.ground_status_opacity
