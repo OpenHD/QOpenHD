@@ -17,9 +17,7 @@ Item {
 
         delegate: messageDelegate
 
-        Component.onCompleted: {
-            messageList.positionViewAtEnd()
-        }
+
     }
 
 
@@ -35,6 +33,10 @@ Item {
 
     Component {
         id: messageDelegate
+
+        Component.onCompleted: {
+            messageList.positionViewAtEnd()
+        }
 
         Item {
             height: 16
