@@ -34,12 +34,13 @@ Item {
     Component {
         id: messageDelegate
 
-        Component.onCompleted: {
-            messageList.positionViewAtEnd()
-        }
-
         Item {
             height: 16
+
+
+            Component.onCompleted: {
+                messageList.positionViewAtEnd()
+            }
 
             Text {
                 id: sysidText
