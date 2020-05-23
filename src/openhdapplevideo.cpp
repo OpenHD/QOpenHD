@@ -168,7 +168,7 @@ void OpenHDAppleVideo::vtdecConfigure() {
 
     QThread::msleep(100);
 
-    m_videoOut->setFormat(width, height, QVideoFrame::PixelFormat::Format_YUV420P);
+    m_videoOut->setFormat(width, height, QVideoFrame::PixelFormat::Format_BGRA32);
 }
 
 
