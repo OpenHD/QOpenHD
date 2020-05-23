@@ -178,6 +178,9 @@ void OpenHDAppleVideo::inputLoop() {
 
 void OpenHDAppleVideo::processFrame(QByteArray &nal, FrameType frameType) {
 
+    if (frameType == FrameTypeSPS || frameType == FrameTypePPS || frameType == FrameTypeAU) {
+        return;
+    }
 
     CMSampleBufferRef sampleBuffer = nullptr;
     CMBlockBufferRef blockBuffer = nullptr;
