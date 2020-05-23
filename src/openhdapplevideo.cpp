@@ -133,7 +133,8 @@ void OpenHDAppleVideo::vtdecConfigure() {
     callBackRecord.decompressionOutputCallback = decompressionOutputCallback;
     callBackRecord.decompressionOutputRefCon = static_cast<void*>(this);
 
-    /*int useGL = 1;
+    #if defined(__ios__)
+    int useGL = 1;
 
     const void *keys[] =   { kCVPixelBufferOpenGLESCompatibilityKey };
     const void *values[] = { CFNumberCreate(nullptr, kCFNumberIntType, &useGL) };
@@ -143,12 +144,15 @@ void OpenHDAppleVideo::vtdecConfigure() {
                                                                           values,
                                                                           1,
                                                                           nullptr,
-                                                                          nullptr);*/
+                                                                          nullptr);
+    #else
+    CFDictionaryRef destinationImageBufferAttributes = nullptr;
+    #endif
 
     status = VTDecompressionSessionCreate(nullptr,
                                           m_formatDesc,
                                           nullptr,
-                                          nullptr, //destinationImageBufferAttributes,
+                                          destinationImageBufferAttributes,
                                           &callBackRecord,
                                           &m_decompressionSession);
 

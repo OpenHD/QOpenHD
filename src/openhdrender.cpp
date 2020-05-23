@@ -5,6 +5,7 @@
 #include <QQuickWindow>
 #include <QApplication>
 #include <QCoreApplication>
+#include <QOpenGLContext>
 
 #if defined(__apple__)
 #include <VideoToolbox/VideoToolbox.h>
@@ -40,11 +41,29 @@ QVideoFrame::PixelFormat QtPixelFormatFromCVFormat(OSType avPixelFormat)
 class CVPixelBufferVideoBuffer : public QAbstractPlanarVideoBuffer
 {
 public:
-    CVPixelBufferVideoBuffer(CVPixelBufferRef buffer): QAbstractPlanarVideoBuffer(NoHandle), m_buffer(buffer), m_mode(NotMapped) {
+    CVPixelBufferVideoBuffer(CVPixelBufferRef buffer, OpenHDRender *renderer)
+    #ifndef Q_OS_IOS
+    : QAbstractPlanarVideoBuffer(NoHandle)
+    #else
+    : QAbstractPlanarVideoBuffer(renderer->supportsTextures()
+                                     && CVPixelBufferGetPixelFormatType(buffer) == kCVPixelFormatType_32BGRA
+                                     ? GLTextureHandle : NoHandle)
+    , m_texture(nullptr)
+    #endif
+    , m_renderer(renderer)
+    , m_buffer(buffer)
+    , m_mode(NotMapped) {
+
         CVPixelBufferRetain(m_buffer);
     }
 
     virtual ~CVPixelBufferVideoBuffer() {
+        unmap();
+        #ifdef Q_OS_IOS
+        if (m_texture) {
+            CFRelease(m_texture);
+        }
+        #endif
         CVPixelBufferRelease(m_buffer);
     }
 
@@ -123,7 +142,59 @@ public:
         }
     }
 
+    QVariant handle() const {
+#ifdef Q_OS_IOS
+        // Called from the render thread, so there is a current OpenGL context
+
+        if (!m_renderer->m_textureCache) {
+            QOpenGLContext *c = QOpenGLContext::currentContext();
+
+            CVReturn err = CVOpenGLESTextureCacheCreate(kCFAllocatorDefault,
+                                                        nullptr,
+                                                        c,
+                                                        nullptr,
+                                                        &m_renderer->m_textureCache);
+
+            if (err != kCVReturnSuccess)
+                qWarning("Error creating texture cache");
+        }
+
+        if (m_renderer->m_textureCache && !m_texture) {
+            CVOpenGLESTextureCacheFlush(m_renderer->m_textureCache, 0);
+
+            CVReturn err = CVOpenGLESTextureCacheCreateTextureFromImage(kCFAllocatorDefault,
+                                                                        m_renderer->m_textureCache,
+                                                                        m_buffer,
+                                                                        nullptr,
+                                                                        GL_TEXTURE_2D,
+                                                                        GL_RGBA,
+                                                                        CVPixelBufferGetWidth(m_buffer),
+                                                                        CVPixelBufferGetHeight(m_buffer),
+                                                                        GL_RGBA,
+                                                                        GL_UNSIGNED_BYTE,
+                                                                        0,
+                                                                        &m_texture);
+
+            if (err != kCVReturnSuccess) {
+                qWarning("Error creating texture from buffer");
+            }
+        }
+
+        if (m_texture) {
+            return CVOpenGLESTextureGetName(m_texture);
+        } else {
+            return 0;
+        }
+#else
+        return QVariant();
+#endif
+    }
+
 private:
+#ifdef Q_OS_IOS
+    mutable CVOpenGLESTextureRef m_texture;
+#endif
+    OpenHDRender *m_renderer = nullptr;
     CVPixelBufferRef m_buffer = nullptr;
     MapMode m_mode = NotMapped;
 };
@@ -212,7 +283,12 @@ private:
 
 
 
-OpenHDRender::OpenHDRender(QQuickItem *parent): QQuickItem(parent) {
+OpenHDRender::OpenHDRender(QQuickItem *parent): QQuickItem(parent)
+    , m_supportsTextures(false)
+#ifdef Q_OS_IOS
+    , m_textureCache(nullptr)
+#endif
+ {
     QObject::connect(this, &OpenHDRender::newFrameAvailable, this, &OpenHDRender::onNewVideoContentReceived, Qt::QueuedConnection);
 }
 
@@ -239,7 +315,7 @@ void OpenHDRender::paintFrame(CVImageBufferRef imageBuffer) {
 
     QVideoFrame::PixelFormat format = QtPixelFormatFromCVFormat(CVPixelBufferGetPixelFormatType(imageBuffer));
 
-    QAbstractVideoBuffer *buffer = new CVPixelBufferVideoBuffer(imageBuffer);
+    QAbstractVideoBuffer *buffer = new CVPixelBufferVideoBuffer(imageBuffer, this);
     QVideoFrame f(buffer, QSize(width, height), format);
     emit newFrameAvailable(f);
 }
@@ -266,6 +342,9 @@ void OpenHDRender::setVideoSurface(QAbstractVideoSurface *surface) {
     }
 
     m_surface = surface;
+
+    m_supportsTextures = m_surface ? !m_surface->supportedPixelFormats(QAbstractVideoBuffer::GLTextureHandle).isEmpty() : false;
+
 }
 
 void OpenHDRender::setFormat(int width, int heigth, QVideoFrame::PixelFormat i_format) {
