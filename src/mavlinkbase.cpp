@@ -77,6 +77,9 @@ void MavlinkBase::reconnectTCP() {
 }
 
 void MavlinkBase::setGroundIP(QString address) {
+    if (!mavlinkSocket) {
+        return;
+    }
     bool reconnect = false;
     if (groundAddress != address) {
         reconnect = true;
