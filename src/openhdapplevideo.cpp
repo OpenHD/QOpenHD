@@ -176,7 +176,8 @@ void OpenHDAppleVideo::inputLoop() {
 }
 
 
-void OpenHDAppleVideo::processFrame(QByteArray &nal) {
+void OpenHDAppleVideo::processFrame(QByteArray &nal, FrameType frameType) {
+
 
     CMSampleBufferRef sampleBuffer = nullptr;
     CMBlockBufferRef blockBuffer = nullptr;

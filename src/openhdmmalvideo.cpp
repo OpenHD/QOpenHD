@@ -336,7 +336,7 @@ void OpenHDMMALVideo::inputLoop() {
 }
 
 
-void OpenHDMMALVideo::processFrame(QByteArray &nal) {
+void OpenHDMMALVideo::processFrame(QByteArray &nal, FrameType frameType) {
     if (!isConfigured) {
         return;
     }
