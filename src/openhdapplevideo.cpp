@@ -168,9 +168,6 @@ void OpenHDAppleVideo::vtdecConfigure() {
 
     QThread::msleep(100);
 
-
-
-    // the pi decoder hardware always gives us this format, so we hardcode it
     m_videoOut->setFormat(width, height, QVideoFrame::PixelFormat::Format_YUV420P);
 }
 
