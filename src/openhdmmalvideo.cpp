@@ -331,7 +331,7 @@ void OpenHDMMALVideo::mmalConfigure() {
 void OpenHDMMALVideo::inputLoop() {
     while (true) {
         auto nalUnit = nalQueue.front();
-        processFrame(nalUnit);
+        //processFrame(nalUnit);
     }
 }
 
