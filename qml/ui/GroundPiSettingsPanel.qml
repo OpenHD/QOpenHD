@@ -61,7 +61,7 @@ GroundPiSettingsPanelForm {
              * Don't fetch settings if the settings panel is already open, this avoids changing
              * settings UI controls while the user is trying to set them.
              */
-            if (settings_popup.opened) {
+            if (settings_popup.visible) {
                 return;
             }
 
