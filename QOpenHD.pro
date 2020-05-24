@@ -242,6 +242,12 @@ MacBuild {
         SOURCES += \
             src/openhdapplevideo.cpp
     }
+
+    EnableGStreamer {
+        DEFINES += GST_GL_HAVE_PLATFORM_CGL=1
+        DEFINES += GST_GL_HAVE_WINDOW_COCOA=1
+        DEFINES += HAVE_QT_MAC
+    }
 }
 
 LinuxBuild {
