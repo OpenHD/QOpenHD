@@ -211,7 +211,7 @@ BaseWidget {
                 width: (parent.width<parent.height?parent.width:parent.height)*.1
                 height: width
                 color: settings.color_text
-                radius: width*0.5
+                //radius: width*0.5
 
                 visible: OpenHD.control_throttle < 1000 ? false : true
 
