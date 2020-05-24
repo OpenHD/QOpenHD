@@ -198,6 +198,11 @@ ApplicationWindow {
         property bool show_control: false
         property double control_opacity: 1
         property bool control_version: true
+        property bool control_rev_pitch: false
+        property bool control_rev_roll: false
+        property bool control_rev_yaw: false
+        property bool control_rev_throttle: false
+
 
         property bool show_gpio: false
         property int selected_map_provider: 0
