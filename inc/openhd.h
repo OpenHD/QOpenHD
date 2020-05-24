@@ -44,6 +44,7 @@ public:
 
     void updateFlightDistance();
     void updateFlightMah();
+    void updateLateralSpeed();
     void updateWind();
 
     Q_PROPERTY(QString gstreamer_version READ get_gstreamer_version NOTIFY gstreamer_version_changed)
@@ -166,6 +167,9 @@ public:
 
     Q_PROPERTY(float vsi MEMBER m_vsi WRITE set_vsi NOTIFY vsi_changed)
     void set_vsi(float vsi);
+
+    Q_PROPERTY(double lateral_speed MEMBER m_lateral_speed WRITE set_lateral_speed NOTIFY lateral_speed_changed)
+    void set_lateral_speed(double lateral_speed);
 
     Q_PROPERTY(double wind_speed MEMBER m_wind_speed WRITE set_wind_speed NOTIFY wind_speed_changed)
     void set_wind_speed(double wind_speed);
@@ -361,6 +365,8 @@ signals:
 
     void vsi_changed(float vsi);
 
+    void lateral_speed_changed(double lateral_speed);
+
     void wind_speed_changed(double wind_speed);
     void wind_direction_changed(double wind_direction);
 
@@ -474,6 +480,8 @@ private:
     float m_clipping_z = 0.0;
 
     float m_vsi = 0.0;
+
+    double m_lateral_speed = 0.0;
 
     double m_wind_direction = 0.0;
     double m_wind_speed = 0.0;

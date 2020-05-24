@@ -235,6 +235,8 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
 
             OpenHD::instance()->updateFlightDistance();
 
+            OpenHD::instance()->updateLateralSpeed();
+
             OpenHD::instance()->updateWind();
 
             break;
