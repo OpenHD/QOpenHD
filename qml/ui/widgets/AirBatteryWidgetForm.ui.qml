@@ -9,7 +9,7 @@ import OpenHD 1.0
 BaseWidget {
     id: airBatteryWidget
     width: 96
-    height: 48
+    height: 55
 
     visible: settings.show_air_battery
 
@@ -22,6 +22,8 @@ BaseWidget {
     defaultVCenter: false
 
     hasWidgetDetail: true
+    widgetDetailHeight: 190
+
     widgetDetailComponent: Column {
         Item {
             width: parent.width
@@ -118,6 +120,28 @@ BaseWidget {
                 onCheckedChanged: settings.air_battery_showall = checked
             }
         }
+        Item {
+            width: parent.width
+            height: 32
+            visible: settings.air_battery_showall
+            Text {
+                text: "Individual Cell / Total Volts"
+                color: "white"
+                height: parent.height
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels;
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
+            Switch {
+                width: 32
+                height: parent.height
+                anchors.rightMargin: 12
+                anchors.right: parent.right
+                checked: settings.air_battery_by_cell
+                onCheckedChanged: settings.air_battery_by_cell = checked
+            }
+        }
     }
 
     Item {
@@ -157,7 +181,8 @@ BaseWidget {
         Text {
             id: battery_volt_text
             visible: settings.air_battery_showall ? true : false
-            text: Number(OpenHD.battery_voltage).toLocaleString(Qt.locale(), 'f', 1) + "V";
+            text: settings.air_battery_by_cell ? Number(OpenHD.battery_voltage).toLocaleString(Qt.locale(), 'f', 1) + "V" :
+                Number((OpenHD.battery_voltage)/settings.battery_cells).toLocaleString(Qt.locale(), 'f', 1) + "V" ;
             color: settings.color_text
             anchors.top: battery_percent.bottom
             anchors.left: batteryGauge.right
