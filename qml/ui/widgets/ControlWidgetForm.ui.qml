@@ -24,11 +24,12 @@ BaseWidget {
     hasWidgetDetail: true
     widgetDetailComponent: ScrollView{
 
-        contentHeight: altitudeSettingsColumn.height
+        contentHeight: controlSettingsColumn.height
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
         clip: true
 
         ColumnLayout{
+            id: controlSettingsColumn
             spacing:0
             clip: true
             Item {
