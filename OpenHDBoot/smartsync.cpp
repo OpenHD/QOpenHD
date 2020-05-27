@@ -34,6 +34,7 @@ void SmartSync::processDatagrams() {
 
 void SmartSync::processSmartSyncMessage(smartsync_status_t status) {
     setState(status.state);
+    setProgress(status.progress);
 
     switch (m_state) {
         case SmartSyncStateInitializing: {
