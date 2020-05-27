@@ -103,54 +103,6 @@ BaseWidget {
         }
     }
 
-    function getLateralSpeed() {
-            /*this function can be leveraged later to determine wind direction/speed
-
-              magnitude of our motion vector */
-
-            var vx = OpenHD.vx
-            var vy = OpenHD.vy
-            var hdg = OpenHD.hdg
-
-            var resultant_magnitude = Math.sqrt(vx * vx + vy * vy);
-
-            //direction of motion vector in radians then converted to degree
-            var resultant_angle = Math.atan2(vy , vx)*(180/Math.PI);
-
-            //converted from degrees to a compass heading
-            if (resultant_angle < 0.0){
-                resultant_angle += 360;
-            }
-
-            //Compare the motion heading to the vehicle heading
-            var left = hdg - resultant_angle;
-            var right = resultant_angle - hdg;
-            if (left < 0) left += 360;
-            if (right < 0) right += 360;
-            var heading_diff = left < right ? -left : right;
-
-            var vehicle_vx
-            var vehicle_vy
-
-            if (heading_diff > 0 && heading_diff <= 90){
-                //console.log("we are moving forward and or right");
-                vehicle_vx=(heading_diff/90)*resultant_magnitude;
-            }
-            else if (heading_diff > 90 && heading_diff <= 180){
-                //console.log("we are moving backwards and or right");
-                vehicle_vx=((heading_diff*-1)+180)/90*resultant_magnitude;
-            }
-            else if (heading_diff > -180 && heading_diff <= -90){
-                //console.log("we are moving backwards and or left");
-                vehicle_vx=((heading_diff+180)/90)*-1*resultant_magnitude;
-            }
-            else{
-                //console.log("we are moving forward and or left");
-                vehicle_vx=(heading_diff/90)*resultant_magnitude;
-            }
-            return vehicle_vx * settings.fpv_sensitivity
-        }
-
     Item {
         id: widgetInner
         height: 40
@@ -172,7 +124,7 @@ BaseWidget {
             transformOrigin: Item.Center
             transform: Translate {
 
-                x: settings.fpv_dynamic ? getLateralSpeed() : 0
+                x: settings.fpv_dynamic ? OpenHD.lateral_speed * settings.fpv_sensitivity : 0
 
                 //to get pitch relative to ahi add pitch in
                 y: settings.fpv_dynamic ? (settings.horizon_invert_pitch ? (-OpenHD.vz * settings.fpv_sensitivity) - OpenHD.pitch :

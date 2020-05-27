@@ -396,6 +396,11 @@ void OpenHD::set_vsi(float vsi) {
      emit vsi_changed(m_vsi);
 }
 
+void OpenHD::set_lateral_speed(double lateral_speed) {
+    m_lateral_speed= lateral_speed;
+     emit lateral_speed_changed(m_lateral_speed);
+}
+
 void OpenHD::set_wind_speed(double wind_speed) {
     m_wind_speed= wind_speed;
      emit wind_speed_changed(m_wind_speed);
@@ -611,7 +616,48 @@ void OpenHD::set_ground_iout(double ground_iout) {
     emit ground_iout_changed(m_ground_iout);
 }
 
-void OpenHD::updateWind() {
+void OpenHD::updateLateralSpeed(){
+
+    auto resultant_magnitude = sqrt(m_vx * m_vx + m_vy * m_vy);
+
+    //direction of motion vector in radians then converted to degree
+    auto resultant_angle = atan2(m_vy , m_vx)*(180/M_PI);
+
+    //converted from degrees to a compass heading
+    if (resultant_angle < 0.0){
+        resultant_angle += 360;
+    }
+
+    //Compare the motion heading to the vehicle heading
+    auto left = m_hdg - resultant_angle;
+    auto right = resultant_angle - m_hdg;
+    if (left < 0) left += 360;
+    if (right < 0) right += 360;
+    auto heading_diff = left < right ? -left : right;
+
+    double vehicle_vx=0.0;
+
+
+    if (heading_diff > 0 && heading_diff <= 90){
+        //console.log("we are moving forward and or right");
+        vehicle_vx=(heading_diff/90)*resultant_magnitude;
+    }
+    else if (heading_diff > 90 && heading_diff <= 180){
+        //console.log("we are moving backwards and or right");
+        vehicle_vx=((heading_diff*-1)+180)/90*resultant_magnitude;
+    }
+    else if (heading_diff > -180 && heading_diff <= -90){
+        //console.log("we are moving backwards and or left");
+        vehicle_vx=((heading_diff+180)/90)*-1*resultant_magnitude;
+    }
+    else{
+        //console.log("we are moving forward and or left");
+        vehicle_vx=(heading_diff/90)*resultant_magnitude;
+    }
+    set_lateral_speed(vehicle_vx);
+}
+
+void OpenHD::updateWind(){
 
     if (m_vsi < 1 && m_vsi > -1){
         // we are level, so a 2d vector is possible

@@ -114,6 +114,7 @@ ApplicationWindow {
         property bool show_air_battery: true
         property double air_battery_opacity: 1
         property bool air_battery_showall: false
+        property bool air_battery_by_cell: false
 
         property bool show_gps: true
         property double gps_opacity: 1
@@ -198,7 +199,12 @@ ApplicationWindow {
 
         property bool show_control: false
         property double control_opacity: 1
+
         property bool double_control: true
+        property bool control_rev_pitch: false
+        property bool control_rev_roll: false
+        property bool control_rev_yaw: false
+        property bool control_rev_throttle: false
 
         property bool show_gpio: false
         property int selected_map_provider: 0
