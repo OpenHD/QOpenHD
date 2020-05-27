@@ -133,7 +133,8 @@ void OpenHDAppleVideo::vtdecConfigure() {
     callBackRecord.decompressionOutputCallback = decompressionOutputCallback;
     callBackRecord.decompressionOutputRefCon = static_cast<void*>(this);
 
-    /*int useGL = 1;
+    #if defined(__ios__)
+    int useGL = 1;
 
     const void *keys[] =   { kCVPixelBufferOpenGLESCompatibilityKey };
     const void *values[] = { CFNumberCreate(nullptr, kCFNumberIntType, &useGL) };
@@ -143,12 +144,15 @@ void OpenHDAppleVideo::vtdecConfigure() {
                                                                           values,
                                                                           1,
                                                                           nullptr,
-                                                                          nullptr);*/
+                                                                          nullptr);
+    #else
+    CFDictionaryRef destinationImageBufferAttributes = nullptr;
+    #endif
 
     status = VTDecompressionSessionCreate(nullptr,
                                           m_formatDesc,
                                           nullptr,
-                                          nullptr, //destinationImageBufferAttributes,
+                                          destinationImageBufferAttributes,
                                           &callBackRecord,
                                           &m_decompressionSession);
 
@@ -164,10 +168,7 @@ void OpenHDAppleVideo::vtdecConfigure() {
 
     QThread::msleep(100);
 
-
-
-    // the pi decoder hardware always gives us this format, so we hardcode it
-    m_videoOut->setFormat(width, height, QVideoFrame::PixelFormat::Format_YUV420P);
+    m_videoOut->setFormat(width, height, QVideoFrame::PixelFormat::Format_BGRA32);
 }
 
 
@@ -176,7 +177,11 @@ void OpenHDAppleVideo::inputLoop() {
 }
 
 
-void OpenHDAppleVideo::processFrame(QByteArray &nal) {
+void OpenHDAppleVideo::processFrame(QByteArray &nal, FrameType frameType) {
+
+    if (frameType == FrameTypeSPS || frameType == FrameTypePPS || frameType == FrameTypeAU) {
+        return;
+    }
 
     CMSampleBufferRef sampleBuffer = nullptr;
     CMBlockBufferRef blockBuffer = nullptr;

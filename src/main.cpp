@@ -15,7 +15,7 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 
 #include "constants.h"
 
-
+#include "migration.hpp"
 #include "openhdtelemetry.h"
 #include "openhdrc.h"
 #include "openhdsettings.h"
@@ -90,6 +90,8 @@ int main(int argc, char *argv[]) {
     qputenv("QT_SCALE_FACTOR", scaleAsQByteArray);
 
     QApplication app(argc, argv);
+
+    Migration::instance()->run();
 
 
 #if defined(__android__)
@@ -355,9 +357,6 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
 #endif
 
     engine.rootContext()->setContextProperty("QOPENHD_VERSION", QVariant(QOPENHD_VERSION));
-
-    engine.rootContext()->setContextProperty("OPENHD_VERSION", QVariant(OPENHD_VERSION));
-    engine.rootContext()->setContextProperty("BUILDER_VERSION", QVariant(BUILDER_VERSION));
 
     engine.load(QUrl(QLatin1String("qrc:/main.qml")));
 

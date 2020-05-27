@@ -101,7 +101,8 @@ ApplicationWindow {
 
         property bool show_downlink_rssi: true
         property double downlink_rssi_opacity: 1
-        property bool downlink_rssi_showall: false
+        property bool downlink_rssi_show_lost_damaged: false
+        property bool downlink_cards_right: false
 
         property bool show_uplink_rssi: true
         property double uplink_rssi_opacity: 1
@@ -145,7 +146,7 @@ ApplicationWindow {
         property bool show_horizon: true
         property bool horizon_invert_pitch: false
         property bool horizon_invert_roll: false
-        property int horizon_size: 250
+        property int horizon_size: 1
         property double horizon_opacity: 1
         property int horizon_ladder_spacing: 10
         property bool show_horizon_ladder: true
@@ -198,12 +199,12 @@ ApplicationWindow {
 
         property bool show_control: false
         property double control_opacity: 1
-        property bool control_version: true
+
+        property bool double_control: true
         property bool control_rev_pitch: false
         property bool control_rev_roll: false
         property bool control_rev_yaw: false
         property bool control_rev_throttle: false
-
 
         property bool show_gpio: false
         property int selected_map_provider: 0

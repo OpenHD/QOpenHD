@@ -13,8 +13,8 @@ BaseWidget {
     width: 60
     height: 60
     defaultAlignment: 2
-    defaultXOffset: 60
-    defaultYOffset: 110
+    defaultXOffset: 6
+    defaultYOffset: 98
     defaultHCenter: false
     defaultVCenter: false
 
@@ -28,7 +28,7 @@ BaseWidget {
             width: parent.width
             height: 32
             Text {
-                text: "Opacity"
+                text: "Transparency"
                 color: "white"
                 height: parent.height
                 font.bold: true

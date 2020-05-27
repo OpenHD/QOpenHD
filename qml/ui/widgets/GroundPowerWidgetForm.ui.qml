@@ -56,7 +56,7 @@ BaseWidget {
             height: 32
             Text {
                 id: opacityTitle
-                text: "Opacity"
+                text: "Transparency"
                 color: "white"
                 height: parent.height
                 font.bold: true

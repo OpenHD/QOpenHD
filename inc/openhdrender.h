@@ -32,6 +32,8 @@ public:
     void paintFrame(MMAL_BUFFER_HEADER_T *buffer);
     #endif
 
+    bool supportsTextures() const { return m_supportsTextures; }
+
     QAbstractVideoSurface* videoSurface() const { return m_surface; }
 
 signals:
@@ -40,6 +42,15 @@ signals:
 private:
     QAbstractVideoSurface *m_surface = nullptr;
     QVideoSurfaceFormat m_format;
+
+    bool m_supportsTextures;
+
+#ifdef Q_OS_IOS
+    CVOpenGLESTextureCacheRef m_textureCache = nullptr;
+#endif
+
+    friend class CVPixelBufferVideoBuffer;
+
 
 public:
     void setVideoSurface(QAbstractVideoSurface *surface);

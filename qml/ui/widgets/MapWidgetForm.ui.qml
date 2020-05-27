@@ -169,7 +169,7 @@ BaseWidget {
                 width: parent.width
                 height: 32
                 Text {
-                    text: "Orient to Drone / North"
+                    text: "Lock map to drone direction"
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -513,7 +513,7 @@ BaseWidget {
 
                         Text {
                             id: opacityTitle
-                            text: "Opacity"
+                            text: "Transparency"
                             color: "white"
                             height: parent.height
                             font.bold: true
@@ -545,7 +545,7 @@ BaseWidget {
                         height: 32
 
                         Text {
-                            text: "Lock map orientation to drone direction"
+                            text: "Lock map to drone direction"
                             color: "white"
                             height: parent.height
                             font.bold: true

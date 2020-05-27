@@ -436,7 +436,7 @@ Item {
                     color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
                     Text {
-                        text: "Horizonatal Bars Behavior"
+                        text: "Top/bottom bars"
                         font.weight: Font.Bold
                         font.pixelSize: 13
                         anchors.leftMargin: 8
@@ -453,12 +453,13 @@ Item {
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
                         anchors.verticalCenter: parent.verticalCenter
                         anchors.horizontalCenter: parent.horizonatalCenter
+                        width: 320
                         model: ListModel {
                             id: bar_behavior
-                            ListElement { text: "None" ; behavior: "none" }
-                            ListElement { text: "Black" ; behavior: "black" }
-                            ListElement { text: "Arm/None" ; behavior: "disappear" }
-                            ListElement { text: "Arm/Red" ; behavior: "red" }
+                            ListElement { text: "Hide" ; behavior: "none" }
+                            ListElement { text: "Transparent black" ; behavior: "black" }
+                            ListElement { text: "Hide when drone armed" ; behavior: "disappear" }
+                            ListElement { text: "Turn red when drone armed" ; behavior: "red" }
 
                         }
                         textRole: "text"
@@ -469,7 +470,7 @@ Item {
                                 // @disable-check M222
                                 var choice = model.get(i);
                                 // @disable-check M223
-                                if (choice.behavior == settings.bar_bavior) {
+                                if (choice.behavior == settings.bar_behavior) {
                                     currentIndex = i;
                                 }
                             }
@@ -1389,6 +1390,7 @@ Item {
                     width: parent.width
                     height: rowHeight
                     color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                    visible: EnableGStreamer
 
                     Text {
                         text: "Always use software video decoder"

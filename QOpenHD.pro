@@ -63,6 +63,7 @@ SOURCES += \
     src/main.cpp \
     src/mavlinkbase.cpp \
     src/mavlinktelemetry.cpp \
+    src/migration.cpp \
     src/msptelemetry.cpp \
     src/openhd.cpp \
     src/openhdpi.cpp \
@@ -191,7 +192,7 @@ iOSBuild {
     CONFIG += EnablePiP
     CONFIG += EnableVideoRender
     CONFIG += EnableLink
-    CONFIG += EnableCharts
+    #CONFIG += EnableCharts
 
     #QMAKE_POST_LINK += /usr/libexec/PlistBuddy -c \"Set :CFBundleShortVersionString $$APPLE_BUILD\" $$DESTDIR/$${TARGET}.app/Contents/Info.plist
     #QMAKE_POST_LINK += && /usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $$APPLE_BUILD\" $$DESTDIR/$${TARGET}.app/Contents/Info.plist
@@ -230,7 +231,7 @@ MacBuild {
     CONFIG += EnablePiP
     CONFIG += EnableVideoRender
     CONFIG += EnableLink
-    CONFIG += EnableCharts
+    #CONFIG += EnableCharts
 
     EnableVideoRender {
         QT += multimedia
@@ -240,6 +241,12 @@ MacBuild {
 
         SOURCES += \
             src/openhdapplevideo.cpp
+    }
+
+    EnableGStreamer {
+        DEFINES += GST_GL_HAVE_PLATFORM_CGL=1
+        DEFINES += GST_GL_HAVE_WINDOW_COCOA=1
+        DEFINES += HAVE_QT_MAC
     }
 }
 
@@ -251,7 +258,7 @@ LinuxBuild {
     CONFIG += EnablePiP
     CONFIG += EnableGStreamer
     CONFIG += EnableLink
-    CONFIG += EnableCharts
+    #CONFIG += EnableCharts
 
     message("LinuxBuild - config")
 }
@@ -265,7 +272,8 @@ RaspberryPiBuild {
     #CONFIG += EnableMainVideo
     CONFIG += EnablePiP
     CONFIG += EnableLink
-    CONFIG += EnableCharts
+    #CONFIG += EnableCharts
+    CONFIG += EnableSpeech
 
     CONFIG += EnableVideoRender
 
@@ -291,7 +299,7 @@ WindowsBuild {
     #CONFIG +- EnablePiP
     CONFIG += EnableLink
     CONFIG += EnableGStreamer
-    CONFIG += EnableCharts
+    #CONFIG += EnableCharts
 
     DEFINES += GST_GL_HAVE_WINDOW_WIN32=1
     DEFINES += GST_GL_HAVE_PLATFORM_WGL=1
@@ -308,7 +316,7 @@ AndroidBuild {
     CONFIG += EnablePiP
     CONFIG += EnableLink
     CONFIG += EnableGStreamer
-    CONFIG += EnableCharts
+    #CONFIG += EnableCharts
     EnableGStreamer {
         OTHER_FILES += \
             $$PWD/android/src/org/openhd/OpenHDActivity.java

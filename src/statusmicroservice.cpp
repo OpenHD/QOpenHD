@@ -65,9 +65,9 @@ void StatusMicroservice::onProcessMavlinkMessage(mavlink_message_t msg) {
                 m_last_boot = boot_time;
                 m_last_timestamp = 0;
 
-                MavlinkCommand c(true);
-                c.command_id = OPENHD_CMD_GET_VERSION;
-                send_command(c);
+                MavlinkCommand command(MavlinkCommandTypeLong);
+                command.command_id = OPENHD_CMD_GET_VERSION;
+                send_command(command);
             }
 
             break;
@@ -87,9 +87,9 @@ void StatusMicroservice::onProcessMavlinkMessage(mavlink_message_t msg) {
              * Now that the initial state is loaded, load all known
              * messages from the service on the air or ground
              */
-            MavlinkCommand c(true);
-            c.command_id = OPENHD_CMD_GET_STATUS_MESSAGES;
-            send_command(c);
+            MavlinkCommand command(MavlinkCommandTypeLong);
+            command.command_id = OPENHD_CMD_GET_STATUS_MESSAGES;
+            send_command(command);
 
             break;
         }

@@ -10,16 +10,16 @@ import OpenHD 1.0
 
 BaseWidget {
     id: bitrateWidget
-    width: 104
-    height: 24
+    width: 112
+    height: 48
 
     visible: settings.show_bitrate
 
     widgetIdentifier: "bitrate_widget"
 
-    defaultAlignment: 0
-    defaultXOffset: 60
-    defaultYOffset: 24
+    defaultAlignment: 1
+    defaultXOffset: 224
+    defaultYOffset: 0
     defaultHCenter: false
     defaultVCenter: false
 
@@ -139,7 +139,7 @@ BaseWidget {
             height: 32
             Text {
                 id: opacityTitle
-                text: "Opacity"
+                text: "Transparency"
                 color: "white"
                 height: parent.height
                 font.bold: true
@@ -168,7 +168,7 @@ BaseWidget {
             width: parent.width
             height: 32
             Text {
-                text: "Show all data (No) / (Yes)"
+                text: "Show all data"
                 color: "white"
                 height: parent.height
                 font.bold: true
@@ -198,57 +198,44 @@ BaseWidget {
             id: kbitrate
             y: 0
             width: 84
-            height: 24
+            height: 48
             color: settings.color_text
             text: Number(OpenHD.kbitrate/1024.0).toLocaleString(Qt.locale(), 'f', 1) + " Mbit";
             anchors.verticalCenterOffset: 0
             anchors.left: camera_icon.right
             anchors.leftMargin: 6
             anchors.verticalCenter: parent.verticalCenter
-            verticalAlignment: Text.AlignTop
+            verticalAlignment: Text.AlignVCenter
             elide: Text.ElideRight
             wrapMode: Text.NoWrap
             clip: false
             horizontalAlignment: Text.AlignLeft
-            font.pixelSize: 14
+            font.pixelSize: 18
         }
 
         Text {
             id: camera_icon
             y: 0
             width: 24
-            height: 24
+            height: 48
             color: settings.color_shape
             text: "\uf03d"
             anchors.left: parent.left
-            anchors.leftMargin: 0
-            verticalAlignment: Text.AlignTop
+            anchors.leftMargin: -2
+            verticalAlignment: Text.AlignVCenter
             font.family: "Font Awesome 5 Free"
             styleColor: "#f7f7f7"
-            font.pixelSize: 16
+            font.pixelSize: 18
             horizontalAlignment: Text.AlignRight
         }
 
         Text {
-            id:skipped_text
+            id: allDataText
             visible: settings.bitrate_showall ? true : false
-            text:Number(OpenHD.skipped_packet_cnt).toLocaleString(Qt.locale(), 'f', 0)+" Skipped";
+            text: Number(OpenHD.injection_fail_cnt).toLocaleString(Qt.locale(), 'f', 0) + "/" + Number(OpenHD.skipped_packet_cnt).toLocaleString(Qt.locale(), 'f', 0)
             color: settings.color_text
             anchors.top: kbitrate.bottom
-            anchors.left: parent.left
-            verticalAlignment: Text.AlignVCenter
-            font.pixelSize: 14
-            horizontalAlignment: Text.AlignLeft
-            wrapMode: Text.NoWrap
-            elide: Text.ElideRight
-        }
-
-        Text {
-            id:failed_text
-            visible: settings.bitrate_showall ? true : false
-            text:Number(OpenHD.injection_fail_cnt).toLocaleString(Qt.locale(), 'f', 0)+" Failed";
-            color: settings.color_text
-            anchors.top: skipped_text.bottom
+            anchors.topMargin: -16
             anchors.left: parent.left
             verticalAlignment: Text.AlignVCenter
             font.pixelSize: 14

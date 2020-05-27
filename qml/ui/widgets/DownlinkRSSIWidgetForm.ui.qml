@@ -9,15 +9,15 @@ import OpenHD 1.0
 
 BaseWidget {
     id: downlinkRSSIWidget
-    width: 92
-    height:24
+    width: 96
+    height: 48
 
     visible: settings.show_downlink_rssi
 
     widgetIdentifier: "downlink_rssi_widget"
 
     defaultAlignment: 0
-    defaultXOffset: 60
+    defaultXOffset: 80
     defaultYOffset: 0
     defaultHCenter: false
     defaultVCenter: false
@@ -322,7 +322,7 @@ BaseWidget {
             height: 32
             Text {
                 id: opacityTitle
-                text: "Opacity"
+                text: "Transparency"
                 color: "white"
                 height: parent.height
                 font.bold: true
@@ -351,7 +351,7 @@ BaseWidget {
             width: parent.width
             height: 32
             Text {
-                text: "Show all data (No) / (Yes)"
+                text: "Show lost/damaged on OSD"
                 color: "white"
                 height: parent.height
                 font.bold: true
@@ -364,10 +364,35 @@ BaseWidget {
                 height: parent.height
                 anchors.rightMargin: 12
                 anchors.right: parent.right
-                checked: settings.downlink_rssi_showall
-                onCheckedChanged: settings.downlink_rssi_showall = checked
+                checked: settings.downlink_rssi_show_lost_damaged
+                onCheckedChanged: settings.downlink_rssi_show_lost_damaged = checked
             }
         }
+
+
+        Item {
+            width: parent.width
+            height: 32
+            Text {
+                text: "Show all cards to right"
+                color: "white"
+                height: parent.height
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels;
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
+            Switch {
+                width: 32
+                height: parent.height
+                anchors.rightMargin: 12
+                anchors.right: parent.right
+                checked: settings.downlink_cards_right
+                onCheckedChanged: settings.downlink_cards_right = checked
+            }
+        }
+
+
     }
 
     Item {
@@ -381,18 +406,15 @@ BaseWidget {
             id: downlink_icon
             y: 0
             width: 24
-            height: 24
+            height: 48
             color: settings.color_shape
-
             text: "\uf381"
             anchors.left: parent.left
-            anchors.leftMargin: 0
-            anchors.top: parent.top
-            anchors.topMargin: 0
+            anchors.leftMargin: -2
             verticalAlignment: Text.AlignVCenter
             font.family: "Font Awesome 5 Free"
             styleColor: "#f7f7f7"
-            font.pixelSize: 14
+            font.pixelSize: 18
             horizontalAlignment: Text.AlignRight
         }
 
@@ -401,14 +423,12 @@ BaseWidget {
             width: 32
             height: 24
             color: settings.color_text
-
             text: "dBm"
             anchors.left: downlink_rssi.right
             anchors.leftMargin: 2
-            anchors.top: parent.top
-            anchors.topMargin: 0
+            anchors.verticalCenter: downlink_rssi.verticalCenter
             verticalAlignment: Text.AlignTop
-            font.pixelSize: 10
+            font.pixelSize: 12
             horizontalAlignment: Text.AlignLeft
             wrapMode: Text.NoWrap
             elide: Text.ElideRight
@@ -417,8 +437,8 @@ BaseWidget {
 
         Text {
             id: downlink_rssi
-            width: 34
-            height: 24
+            width: 42
+            height: 48
             color: settings.color_text
 
             text: OpenHD.downlink_rssi == -127 ? qsTr("N/A") : OpenHD.downlink_rssi
@@ -427,109 +447,219 @@ BaseWidget {
             anchors.top: parent.top
             anchors.topMargin: 0
             verticalAlignment: Text.AlignVCenter
-            font.pixelSize: 14
+            font.pixelSize: 18
             horizontalAlignment: Text.AlignRight
             wrapMode: Text.NoWrap
             elide: Text.ElideRight
             clip: true
         }
+
         Text {
-            id:lost_text
-            visible: settings.downlink_rssi_showall ? true : false
-            text: Number(OpenHD.lost_packet_cnt).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" (%L1%)").arg(OpenHD.lost_packet_percent)+" Lost";
+            id: extra_text
+            visible: settings.downlink_rssi_show_lost_damaged ? true : false
+            text: "D: " + Number(OpenHD.damaged_block_cnt).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" (%L1%)").arg(OpenHD.damaged_block_percent);
             color: settings.color_text
             anchors.top: downlink_rssi.bottom
+            anchors.topMargin: -12
             anchors.left: parent.left
             verticalAlignment: Text.AlignVCenter
-            font.pixelSize: 14
+            font.pixelSize: 12
             horizontalAlignment: Text.AlignLeft
             wrapMode: Text.NoWrap
             elide: Text.ElideRight
         }
+
         Text {
-            id:damaged_text
-            visible: settings.downlink_rssi_showall ? true : false
-            text: Number(OpenHD.damaged_block_cnt).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" (%L1%)").arg(OpenHD.damaged_block_percent)+" Damaged";
+            visible: settings.downlink_rssi_show_lost_damaged ? true : false
+            text: "L: " + Number(OpenHD.lost_packet_cnt).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" (%L1%)").arg(OpenHD.lost_packet_percent);
             color: settings.color_text
-            anchors.top: lost_text.bottom
-            anchors.left: parent.left
+            anchors.top: extra_text.bottom
+            anchors.topMargin: 0
+            anchors.left: extra_text.left
             verticalAlignment: Text.AlignVCenter
-            font.pixelSize: 14
+            font.pixelSize: 12
             horizontalAlignment: Text.AlignLeft
             wrapMode: Text.NoWrap
             elide: Text.ElideRight
         }
-        Text {
-            id: card0textlower
-            color: settings.color_text
-            anchors.top: damaged_text.bottom
-            visible: false
-            anchors.left: parent.left
-            verticalAlignment: Text.AlignVCenter
-            font.pixelSize: 14
-            horizontalAlignment: Text.AlignLeft
-            wrapMode: Text.NoWrap
-            elide: Text.ElideRight
-        }
-        Text {
-            id: card1textlower
-            color: settings.color_text
-            anchors.top: card0textlower.bottom
-            visible: false
-            anchors.left: parent.left
-            verticalAlignment: Text.AlignVCenter
-            font.pixelSize: 14
-            horizontalAlignment: Text.AlignLeft
-            wrapMode: Text.NoWrap
-            elide: Text.ElideRight
-        }
-        Text {
-            id: card2textlower
-            color: settings.color_text
-            anchors.top: card1textlower.bottom
-            visible: false
-            anchors.left: parent.left
-            verticalAlignment: Text.AlignVCenter
-            font.pixelSize: 14
-            horizontalAlignment: Text.AlignLeft
-            wrapMode: Text.NoWrap
-            elide: Text.ElideRight
-        }
-        Text {
-            id: card3textlower
-            color: settings.color_text
-            anchors.top: card2textlower.bottom
-            visible: false
-            anchors.left: parent.left
-            verticalAlignment: Text.AlignVCenter
-            font.pixelSize: 14
-            horizontalAlignment: Text.AlignLeft
-            wrapMode: Text.NoWrap
-            elide: Text.ElideRight
-        }
-        Text {
-            id: card4textlower
-            color: settings.color_text
-            anchors.top: card3textlower.bottom
-            visible: false
-            anchors.left: parent.left
-            verticalAlignment: Text.AlignVCenter
-            font.pixelSize: 14
-            horizontalAlignment: Text.AlignLeft
-            wrapMode: Text.NoWrap
-            elide: Text.ElideRight
-        }
-        Text {
-            id: card5textlower
-            color: settings.color_text
-            anchors.top: card4textlower.bottom
-            visible: false
-            anchors.left: parent.left
-            verticalAlignment: Text.AlignVCenter
-            font.pixelSize: 14
-            horizontalAlignment: Text.AlignLeft
-            wrapMode: Text.NoWrap
-            elide: Text.ElideRight
+
+        Column {
+            anchors.left: widgetInner.right
+            anchors.leftMargin: 30
+            anchors.top: widgetInner.top
+            anchors.topMargin: 12
+            width: 224
+            spacing: 0
+
+            visible: settings.downlink_cards_right
+
+            Row {
+                height: 18
+                spacing: 6
+
+                Text {
+                    height: parent.height
+                    color: settings.color_shape
+                    text: "\uf381"
+                    visible: card0textlower.visible
+                    verticalAlignment: Text.AlignVCenter
+                    font.family: "Font Awesome 5 Free"
+                    styleColor: "#f7f7f7"
+                    font.pixelSize: 12
+                    horizontalAlignment: Text.AlignRight
+                }
+
+                Text {
+                    id: card0textlower
+                    height: parent.height
+                    color: settings.color_text
+                    visible: false
+                    verticalAlignment: Text.AlignVCenter
+                    font.pixelSize: 14
+                    horizontalAlignment: Text.AlignLeft
+                    wrapMode: Text.NoWrap
+                }
+            }
+
+            Row {
+                height: 18
+                spacing: 6
+
+                Text {
+                    height: parent.height
+                    color: settings.color_shape
+                    text: "\uf381"
+                    visible: card1textlower.visible
+                    verticalAlignment: Text.AlignVCenter
+                    font.family: "Font Awesome 5 Free"
+                    styleColor: "#f7f7f7"
+                    font.pixelSize: 12
+                    horizontalAlignment: Text.AlignRight
+                }
+
+                Text {
+                    id: card1textlower
+                    height: parent.height
+                    color: settings.color_text
+                    visible: false
+                    verticalAlignment: Text.AlignVCenter
+                    font.pixelSize: 14
+                    horizontalAlignment: Text.AlignLeft
+                    wrapMode: Text.NoWrap
+                }
+            }
+
+            Row {
+                height: 18
+                spacing: 6
+
+                Text {
+                    height: parent.height
+                    color: settings.color_shape
+                    text: "\uf381"
+                    visible: card2textlower.visible
+                    verticalAlignment: Text.AlignVCenter
+                    font.family: "Font Awesome 5 Free"
+                    styleColor: "#f7f7f7"
+                    font.pixelSize: 12
+                    horizontalAlignment: Text.AlignRight
+                }
+
+                Text {
+                    id: card2textlower
+                    height: parent.height
+                    color: settings.color_text
+                    visible: false
+                    verticalAlignment: Text.AlignVCenter
+                    font.pixelSize: 14
+                    horizontalAlignment: Text.AlignLeft
+                    wrapMode: Text.NoWrap
+                }
+            }
+
+            Row {
+                height: 18
+                spacing: 6
+
+                Text {
+                    height: parent.height
+                    color: settings.color_shape
+                    text: "\uf381"
+                    visible: card3textlower.visible
+                    verticalAlignment: Text.AlignVCenter
+                    font.family: "Font Awesome 5 Free"
+                    styleColor: "#f7f7f7"
+                    font.pixelSize: 12
+                    horizontalAlignment: Text.AlignRight
+                }
+
+                Text {
+                    id: card3textlower
+                    height: parent.height
+                    color: settings.color_text
+                    visible: false
+                    verticalAlignment: Text.AlignVCenter
+                    font.pixelSize: 14
+                    horizontalAlignment: Text.AlignLeft
+                    wrapMode: Text.NoWrap
+                }
+            }
+
+            Row {
+                height: 18
+                spacing: 6
+
+                Text {
+                    height: parent.height
+                    color: settings.color_shape
+                    text: "\uf381"
+                    visible: card4textlower.visible
+                    verticalAlignment: Text.AlignVCenter
+                    font.family: "Font Awesome 5 Free"
+                    styleColor: "#f7f7f7"
+                    font.pixelSize: 12
+                    horizontalAlignment: Text.AlignRight
+                }
+
+                Text {
+                    id: card4textlower
+                    height: parent.height
+                    color: settings.color_text
+                    visible: false
+                    verticalAlignment: Text.AlignVCenter
+                    font.pixelSize: 14
+                    horizontalAlignment: Text.AlignLeft
+                    wrapMode: Text.NoWrap
+                }
+            }
+
+            Row {
+                height: 18
+                spacing: 6
+
+                Text {
+                    height: parent.height
+                    color: settings.color_shape
+                    text: "\uf381"
+                    visible: card5textlower.visible
+                    verticalAlignment: Text.AlignVCenter
+                    font.family: "Font Awesome 5 Free"
+                    styleColor: "#f7f7f7"
+                    font.pixelSize: 12
+                    horizontalAlignment: Text.AlignRight
+                }
+
+                Text {
+                    id: card5textlower
+                    height: parent.height
+                    color: settings.color_text
+                    visible: false
+                    verticalAlignment: Text.AlignVCenter
+                    font.pixelSize: 14
+                    horizontalAlignment: Text.AlignLeft
+                    wrapMode: Text.NoWrap
+                }
+            }
         }
     }
 }

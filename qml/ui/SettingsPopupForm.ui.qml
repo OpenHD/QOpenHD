@@ -39,122 +39,95 @@ Rectangle {
 
         clip: true
 
-        Text {
-            id: appButton
-            y: 0
+        Column {
             width: parent.width
-            height: 48
             anchors.top: parent.top
-            leftPadding: 12
-            MouseArea {
-                id: appButtonMouseArea
-                anchors.fill: parent
-                onClicked: mainStackLayout.currentIndex = 0
-            }
-            text: "App"
-            anchors.topMargin: 0
-            anchors.right: parent.right
-            anchors.rightMargin: 0
-            anchors.left: parent.left
-            anchors.leftMargin: 0
-            font.pixelSize: 15
-            horizontalAlignment: Text.AlignLeft
-            verticalAlignment: Text.AlignVCenter
-            color: mainStackLayout.currentIndex == 0 ? "#33aaff" : "#333333"
-        }
 
-        Text {
-            id: groundPiSettingsButton
-            y: 0
-            width: parent.width
-            height: 48
-            anchors.top: appButton.bottom
-            leftPadding: 12
-            MouseArea {
-                id: groundPiSettingsButtonMouseArea
-                anchors.fill: parent
-                onClicked: mainStackLayout.currentIndex = 1
+            Text {
+                id: appButton
+                width: parent.width
+                height: 48
+                leftPadding: 12
+                MouseArea {
+                    id: appButtonMouseArea
+                    anchors.fill: parent
+                    onClicked: mainStackLayout.currentIndex = 0
+                }
+                text: "App"
+                font.pixelSize: 15
+                horizontalAlignment: Text.AlignLeft
+                verticalAlignment: Text.AlignVCenter
+                color: mainStackLayout.currentIndex == 0 ? "#33aaff" : "#333333"
             }
-            text: "Ground Pi"
-            anchors.topMargin: 0
-            anchors.right: parent.right
-            anchors.rightMargin: 0
-            anchors.left: parent.left
-            anchors.leftMargin: 0
-            font.pixelSize: 15
-            horizontalAlignment: Text.AlignLeft
-            verticalAlignment: Text.AlignVCenter
-            color: mainStackLayout.currentIndex == 1 ? "#33aaff" : "#333333"
-        }
 
-        Text {
-            id: statusButton
-            y: 0
-            width: parent.width
-            height: 48
-            anchors.top: groundPiSettingsButton.bottom
-            leftPadding: 12
-            MouseArea {
-                id: statusSettingsButtonMouseArea
-                anchors.fill: parent
-                onClicked: mainStackLayout.currentIndex = 2
+            Text {
+                id: groundPiSettingsButton
+                width: parent.width
+                height: 48
+                leftPadding: 12
+                MouseArea {
+                    id: groundPiSettingsButtonMouseArea
+                    anchors.fill: parent
+                    onClicked: mainStackLayout.currentIndex = 1
+                }
+                text: "Ground Pi"
+                font.pixelSize: 15
+                horizontalAlignment: Text.AlignLeft
+                verticalAlignment: Text.AlignVCenter
+                color: mainStackLayout.currentIndex == 1 ? "#33aaff" : "#333333"
             }
-            text: "Status"
-            anchors.right: parent.right
-            anchors.rightMargin: 0
-            anchors.left: parent.left
-            anchors.leftMargin: 0
-            font.pixelSize: 15
-            horizontalAlignment: Text.AlignLeft
-            verticalAlignment: Text.AlignVCenter
-            color: mainStackLayout.currentIndex == 2 ? "#33aaff" : "#333333"
-        }
 
-        Text {
-            id: chartsButton
-            y: 0
-            width: parent.width
-            height: 48
-            anchors.top: statusButton.bottom
-            leftPadding: 12
-            MouseArea {
-                id: chartsSettingsButtonMouseArea
-                anchors.fill: parent
-                onClicked: mainStackLayout.currentIndex = 3
+            Text {
+                id: statusButton
+                width: parent.width
+                height: 48
+                leftPadding: 12
+                MouseArea {
+                    id: statusSettingsButtonMouseArea
+                    anchors.fill: parent
+                    onClicked: mainStackLayout.currentIndex = 2
+                }
+                text: "Status"
+                font.pixelSize: 15
+                horizontalAlignment: Text.AlignLeft
+                verticalAlignment: Text.AlignVCenter
+                color: mainStackLayout.currentIndex == 2 ? "#33aaff" : "#333333"
             }
-            text: "Charts"
-            anchors.right: parent.right
-            anchors.rightMargin: 0
-            anchors.left: parent.left
-            anchors.leftMargin: 0
-            font.pixelSize: 15
-            horizontalAlignment: Text.AlignLeft
-            verticalAlignment: Text.AlignVCenter
-            color: mainStackLayout.currentIndex == 3 ? "#33aaff" : "#333333"
-        }
 
-        Text {
-            id: aboutButton
-            y: 0
-            width: parent.width
-            height: 48
-            anchors.top: chartsButton.bottom
-            leftPadding: 12
-            MouseArea {
-                id: aboutButtonMouseArea
-                anchors.fill: parent
-                onClicked: mainStackLayout.currentIndex = 4
+            Text {
+                id: chartsButton
+                visible: EnableCharts
+                width: parent.width
+                height: 48
+                leftPadding: 12
+                MouseArea {
+                    id: chartsSettingsButtonMouseArea
+                    anchors.fill: parent
+                    onClicked: mainStackLayout.currentIndex = 3
+                }
+                text: "Charts"
+                font.pixelSize: 15
+                horizontalAlignment: Text.AlignLeft
+                verticalAlignment: Text.AlignVCenter
+                color: mainStackLayout.currentIndex == 3 ? "#33aaff" : "#333333"
             }
-            text: "About"
-            anchors.topMargin: 0
-            anchors.right: parent.right
-            anchors.rightMargin: 0
-            anchors.left: parent.left
-            anchors.leftMargin: 0
-            font.pixelSize: 15
-            horizontalAlignment: Text.AlignLeft
-            verticalAlignment: Text.AlignVCenter
-            color: mainStackLayout.currentIndex == 4 ? "#33aaff" : "#333333"
+
+            Text {
+                id: aboutButton
+                width: parent.width
+                height: 48
+                leftPadding: 12
+                MouseArea {
+                    id: aboutButtonMouseArea
+                    anchors.fill: parent
+                    onClicked: mainStackLayout.currentIndex = 4
+                }
+                text: "About"
+                font.pixelSize: 15
+                horizontalAlignment: Text.AlignLeft
+                verticalAlignment: Text.AlignVCenter
+                color: mainStackLayout.currentIndex == 4 ? "#33aaff" : "#333333"
+            }
         }
 
 

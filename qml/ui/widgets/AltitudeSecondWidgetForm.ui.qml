@@ -28,7 +28,7 @@ BaseWidget {
             height: 32
             Text {
                 id: opacityTitle
-                text: "Opacity"
+                text: "Transparency"
                 color: "white"
                 height: parent.height
                 font.bold: true
@@ -59,7 +59,7 @@ BaseWidget {
             height: 32
             Text {
                 id: mslTitle
-                text: "Relative (off) / MSL (on)"
+                text: "Relative / MSL"
                 color: "white"
                 height: parent.height
                 font.bold: true

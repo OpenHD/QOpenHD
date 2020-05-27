@@ -74,7 +74,7 @@ BaseWidget {
             height: 32
             Text {
                 id: opacityTitle
-                text: "Opacity"
+                text: "Transparency"
                 color: "white"
                 height: parent.height
                 font.bold: true
@@ -103,7 +103,7 @@ BaseWidget {
             width: parent.width
             height: 32
             Text {
-                text: "Show all data (No) / (Yes)"
+                text: "Show all data"
                 color: "white"
                 height: parent.height
                 font.bold: true

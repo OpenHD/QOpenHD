@@ -22,6 +22,20 @@ Item {
         }
     }
 
+    Connections {
+        target: AirStatusMicroservice
+        onStatusMessage: {
+            messageList.positionViewAtEnd()
+        }
+    }
+
+    Connections {
+        target: GroundStatusMicroservice
+        onStatusMessage: {
+            messageList.positionViewAtEnd()
+        }
+    }
+
 
     SortFilterProxyModel {
         id: sortModel

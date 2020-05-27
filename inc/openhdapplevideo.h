@@ -30,7 +30,7 @@ public:
     void stop() override;
     void renderLoop() override;
     void inputLoop() override;
-    void processFrame(QByteArray &nal) override;
+    void processFrame(QByteArray &nal, FrameType frameType) override;
     void processDecodedFrame(CVImageBufferRef imageBuffer);
 
 public slots:

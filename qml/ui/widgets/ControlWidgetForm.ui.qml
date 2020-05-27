@@ -22,13 +22,14 @@ BaseWidget {
     defaultVCenter: false
 
     hasWidgetDetail: true
-    widgetDetailComponent: ScrollView{
+
+    widgetDetailComponent: ScrollView {
 
         contentHeight: controlSettingsColumn.height
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
         clip: true
 
-        ColumnLayout{
+        ColumnLayout {
             id: controlSettingsColumn
             spacing:0
             clip: true
@@ -37,7 +38,7 @@ BaseWidget {
                 height: 32
                 Text {
                     id: opacityTitle
-                    text: "Opacity"
+                    text: "Transparency"
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -67,7 +68,7 @@ BaseWidget {
                 height: 32
                 Text {
                     id: displaySwitcher
-                    text: "Controls: Two / One"
+                    text: "Show two controls"
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -80,8 +81,8 @@ BaseWidget {
                     height: parent.height
                     anchors.rightMargin: 12
                     anchors.right: parent.right
-                    checked: settings.control_version
-                    onCheckedChanged: settings.control_version = checked
+                    checked: settings.double_control
+                    onCheckedChanged: settings.double_control = checked
                 }
             }
             Item {
@@ -192,7 +193,7 @@ BaseWidget {
             width: parent.width
             anchors.verticalCenter: parent.verticalCenter
 
-            visible: settings.control_version ? true : false
+            visible: !settings.double_control
 
             Rectangle {
                 id: circle
@@ -253,7 +254,7 @@ BaseWidget {
             width: parent.width
             anchors.verticalCenter: parent.verticalCenter
 
-            visible: settings.control_version ? false : true
+            visible: settings.double_control
 
             Rectangle {
                 id: leftCircle
@@ -324,7 +325,7 @@ BaseWidget {
 
         Glow {
             anchors.fill: doubleCircle
-            visible: settings.control_version ? false : true
+            visible: settings.double_control
             radius: 2
             samples: 17
             color: settings.color_glow
@@ -334,7 +335,7 @@ BaseWidget {
 
         Glow {
             anchors.fill: singleCircle
-            visible: settings.control_version ? true : false
+            visible: !settings.double_control
             radius: 3
             samples: 17
             color: settings.color_glow

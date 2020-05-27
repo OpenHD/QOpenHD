@@ -35,6 +35,14 @@ typedef struct {
     uint8_t type : 5;
 } fu_a_header;
 
+enum FrameType {
+    FrameTypeIDR,
+    FrameTypeNonIDR,
+    FrameTypeSPS,
+    FrameTypePPS,
+    FrameTypeAU
+};
+
 class OpenHDVideo : public QObject
 {
     Q_OBJECT
@@ -65,7 +73,7 @@ protected:
     virtual void stop() = 0;
     virtual void inputLoop() = 0;
     virtual void renderLoop() = 0;
-    virtual void processFrame(QByteArray &nal) = 0;
+    virtual void processFrame(QByteArray &nal, FrameType frameType) = 0;
 
     bool firstRun = true;
 

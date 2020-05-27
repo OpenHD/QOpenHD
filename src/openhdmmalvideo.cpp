@@ -331,12 +331,12 @@ void OpenHDMMALVideo::mmalConfigure() {
 void OpenHDMMALVideo::inputLoop() {
     while (true) {
         auto nalUnit = nalQueue.front();
-        processFrame(nalUnit);
+        //processFrame(nalUnit);
     }
 }
 
 
-void OpenHDMMALVideo::processFrame(QByteArray &nal) {
+void OpenHDMMALVideo::processFrame(QByteArray &nal, FrameType frameType) {
     if (!isConfigured) {
         return;
     }
