@@ -530,7 +530,7 @@ private:
     long total_dist= 0;
 
     int m_flight_mah = 0;
-    qint64 flightMahLastTime= 0;
+    qint64 mahLastTime= 0;
     double total_mah= 0;
 
     qint64 m_last_openhd_heartbeat = -1;
@@ -540,7 +540,7 @@ private:
     bool m_pip_video_running = false;
     bool m_lte_video_running = false;
 
-
+    QElapsedTimer totalTime;
     QTime flightTimeStart;
 
     QList<int> m_ground_gpio;

@@ -137,10 +137,13 @@ void OpenHD::updateFlightDistance() {
 }
 
 void OpenHD::updateFlightMah() {
-    auto elapsed = flightTimeStart.elapsed();
+    if (!totalTime.isValid()){
+        totalTime.start();
+    }
+    auto elapsed = totalTime.elapsed();
     auto time = elapsed / 3600;
-    auto time_diff = time - flightMahLastTime;
-    flightMahLastTime = time;
+    auto time_diff = time - mahLastTime;
+    mahLastTime = time;
 
     //m_battery_current is 1 decimals to the right
     auto added_mah=(m_battery_current/100) * time_diff;
