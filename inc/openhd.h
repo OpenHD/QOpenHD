@@ -541,7 +541,7 @@ private:
     bool m_lte_video_running = false;
 
     QElapsedTimer totalTime;
-    QTime flightTimeStart;
+    QElapsedTimer flightTimeStart;
 
     QList<int> m_ground_gpio;
     QList<int> m_air_gpio;
