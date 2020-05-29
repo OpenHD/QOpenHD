@@ -126,7 +126,8 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             OpenHD::instance()->set_battery_voltage(battery_voltage);
 
             OpenHD::instance()->set_battery_current(sys_status.current_battery);
-            OpenHD::instance()->updateFlightMah();
+
+            OpenHD::instance()->updateAppMah();
 
             QSettings settings;
             auto battery_cells = settings.value("battery_cells", QVariant(3)).toInt();
@@ -323,6 +324,9 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
         case MAVLINK_MSG_ID_BATTERY_STATUS: {
             mavlink_battery_status_t battery_status;
             mavlink_msg_battery_status_decode(&msg, &battery_status);
+
+            OpenHD::instance()->set_flight_mah(battery_status.current_consumed);
+
             int total_voltage = 0;
             for (int cell = 0; cell < 10; cell++) {
                 int cell_voltage  = battery_status.voltages[cell];

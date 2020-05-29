@@ -136,7 +136,7 @@ void OpenHD::updateFlightDistance() {
     set_flight_distance( total_dist);
 }
 
-void OpenHD::updateFlightMah() {
+void OpenHD::updateAppMah() {
     if (!totalTime.isValid()){
         totalTime.start();
     }
@@ -149,7 +149,7 @@ void OpenHD::updateFlightMah() {
     auto added_mah=(m_battery_current/100) * time_diff;
     total_mah = total_mah + added_mah;
 
-    set_flight_mah( total_mah );
+    set_app_mah( total_mah );
 }
 
 void OpenHD::set_boot_time(int boot_time) {
@@ -552,6 +552,11 @@ void OpenHD::set_flight_distance(double flight_distance) {
 void OpenHD::set_flight_mah(double flight_mah) {
     m_flight_mah = flight_mah;
     emit flight_mah_changed(m_flight_mah);
+}
+
+void OpenHD::set_app_mah(double app_mah) {
+    m_app_mah = app_mah;
+    emit app_mah_changed(m_app_mah);
 }
 
 void OpenHD::set_last_openhd_heartbeat(qint64 last_openhd_heartbeat) {

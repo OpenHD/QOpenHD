@@ -132,6 +132,7 @@ ApplicationWindow {
         property double distance_opacity: 1
 
         property bool show_flight_mah: true
+        property bool air_battery_mah_source: true
         property double mah_opacity: 1
 
         property bool show_ground_status: true

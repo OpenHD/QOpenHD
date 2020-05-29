@@ -55,6 +55,27 @@ BaseWidget {
                 }
             }
         }
+        Item {
+            width: parent.width
+            height: 32
+            Text {
+                text: "Source: App / Telemetry"
+                color: "white"
+                height: parent.height
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels;
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
+            Switch {
+                width: 32
+                height: parent.height
+                anchors.rightMargin: 12
+                anchors.right: parent.right
+                checked: settings.air_battery_mah_source
+                onCheckedChanged: settings.air_battery_mah_source = checked
+            }
+        }
     }
 
     Item {
@@ -90,7 +111,7 @@ BaseWidget {
             color: settings.color_text
             opacity: settings.mah_opacity
 
-            text: OpenHD.flight_mah+"mAh"
+            text: settings.air_battery_mah_source ? OpenHD.flight_mah+"mAh" : OpenHD.app_mah+"mAh"
             anchors.right: parent.right
             anchors.rightMargin: 0
             verticalAlignment: Text.AlignVCenter
