@@ -185,13 +185,13 @@ BaseWidget {
 
             Connections{
                 target:OpenHD
-                onHdgChanged: {
+                function onHdgChanged() {
                     canvasHeadingLadder.requestPaint()
                 }
             }
             Connections{
                 target:settings
-                onHeading_ladder_textChanged: {
+                function onHeading_ladder_textChanged() {
                     canvasHeadingLadder.requestPaint()
                 }
             }

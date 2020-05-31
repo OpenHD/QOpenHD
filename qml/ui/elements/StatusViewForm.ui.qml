@@ -24,14 +24,14 @@ Item {
 
     Connections {
         target: AirStatusMicroservice
-        onStatusMessage: {
+        function onStatusMessage() {
             messageList.positionViewAtEnd()
         }
     }
 
     Connections {
         target: GroundStatusMicroservice
-        onStatusMessage: {
+        function onStatusMessage() {
             messageList.positionViewAtEnd()
         }
     }

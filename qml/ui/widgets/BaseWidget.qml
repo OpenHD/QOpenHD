@@ -32,7 +32,7 @@ BaseWidgetForm {
 
     Connections {
         target: link
-        onWidgetLocation: {
+        function onWidgetLocation(alignment, xOffset, yOffset, hCenter, vCenter, full) {
             if (widgetIdentifier === widgetName) {
                 setAlignment(alignment, xOffset, yOffset, hCenter, vCenter, false);
             }

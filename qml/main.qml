@@ -272,7 +272,7 @@ ApplicationWindow {
 
     Connections {
         target: OpenHD
-        onMessageReceived: {
+        function onMessageReceived() {
             if (level >= settings.log_level) {
                 hudOverlayGrid.messageHUD.pushMessage(message, level)
             }
@@ -281,7 +281,7 @@ ApplicationWindow {
 
     Connections {
         target: LocalMessage
-        onMessageReceived: {
+        function onMessageReceived() {
             if (level >= settings.log_level) {
                 hudOverlayGrid.messageHUD.pushMessage(message, level)
             }

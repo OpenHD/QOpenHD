@@ -30,37 +30,42 @@ BaseWidget {
     widgetDetailComponent: Column {
         Connections {
             target: OpenHD
-            onWifiAdapter0Changed: {
+            function onWifiAdapter0Changed() {
                 card0text.text = Number(current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
                 card0.visible = true;
                 card0textlower.text = Number(current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
                 card0textlower.visible = true;
             }
-            onWifiAdapter1Changed: {
+
+            function onWifiAdapter1Changed() {
                 card1text.text = Number(current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
                 card1.visible = true;
                 card1textlower.text = Number(current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
                 card1textlower.visible = true;
             }
-            onWifiAdapter2Changed: {
+
+            function onWifiAdapter2Changed() {
                 card2text.text = Number(current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
                 card2.visible = true;
                 card2textlower.text = Number(current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
                 card2textlower.visible = true;
             }
-            onWifiAdapter3Changed: {
+
+            function onWifiAdapter3Changed() {
                 card3text.text = Number(current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
                 card3.visible = true;
                 card3textlower.text = Number(current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
                 card3textlower.visible = true;
             }
-            onWifiAdapter4Changed: {
+
+            function onWifiAdapter4Changed() {
                 card4text.text = Number(current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
                 card4.visible = true;
                 card4textlower.text = Number(current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
                 card4textlower.visible = true;
             }
-            onWifiAdapter5Changed: {
+
+            function onWifiAdapter5Changed() {
                 card5text.text = Number(current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
                 card5.visible = true;
                 card5textlower.text = Number(current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");

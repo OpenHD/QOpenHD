@@ -48,7 +48,7 @@ Rectangle {
 
     Connections{
         target:settings
-        onBar_behaviorChanged: {
+        function onBar_behaviorChanged() {
             //console.log("onbar behavior changed!");
             getBarColor()
         }
@@ -56,7 +56,7 @@ Rectangle {
 
     Connections{
         target:OpenHD
-        onArmedChanged: {
+        function onArmedChanged() {
             //console.log("onbar behavior changed!");
             getBarColor()
         }

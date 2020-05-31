@@ -200,7 +200,7 @@ BaseWidget {
 
             Connections{
                 target:OpenHD
-                onAlt_rel_changed: { // if user selects msl it is part of same mavlink msg
+                function onAlt_rel_changed() { // if user selects msl it is part of same mavlink msg
                     canvasAltLadder.requestPaint()
                 }
             }

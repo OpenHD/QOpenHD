@@ -226,7 +226,7 @@ BaseWidget {
 
             Connections{
                 target:OpenHD
-                onSpeedChanged: { // if user selects msl it is part of same mavlink msg
+                function onSpeedChanged() { // if user selects msl it is part of same mavlink msg
                     canvasSpeedLadder.requestPaint()
                 }
             }
