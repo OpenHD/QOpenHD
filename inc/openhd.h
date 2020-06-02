@@ -43,7 +43,7 @@ public:
     void updateFlightTimer();
 
     void updateFlightDistance();
-    void updateFlightMah();
+    void updateAppMah();
     void updateLateralSpeed();
     void updateWind();
 
@@ -258,6 +258,9 @@ public:
     Q_PROPERTY(double flight_mah MEMBER m_flight_mah WRITE set_flight_mah NOTIFY flight_mah_changed)
     void set_flight_mah(double flight_mah);
 
+    Q_PROPERTY(double app_mah MEMBER m_app_mah WRITE set_app_mah NOTIFY app_mah_changed)
+    void set_app_mah(double app_mah);
+
     Q_PROPERTY(qint64 last_openhd_heartbeat MEMBER m_last_openhd_heartbeat WRITE set_last_openhd_heartbeat NOTIFY last_openhd_heartbeat_changed)
     void set_last_openhd_heartbeat(qint64 last_openhd_heartbeat);
 
@@ -401,6 +404,7 @@ signals:
     void flight_distance_changed(double flight_distance);
 
     void flight_mah_changed(int flight_mah);
+    void app_mah_changed(int app_mah);
 
     void last_openhd_heartbeat_changed(qint64 last_openhd_heartbeat);
 
@@ -530,7 +534,8 @@ private:
     long total_dist= 0;
 
     int m_flight_mah = 0;
-    qint64 flightMahLastTime= 0;
+    int m_app_mah = 0;
+    qint64 mahLastTime= 0;
     double total_mah= 0;
 
     qint64 m_last_openhd_heartbeat = -1;
@@ -540,8 +545,8 @@ private:
     bool m_pip_video_running = false;
     bool m_lte_video_running = false;
 
-
-    QTime flightTimeStart;
+    QElapsedTimer totalTime;
+    QElapsedTimer flightTimeStart;
 
     QList<int> m_ground_gpio;
     QList<int> m_air_gpio;
