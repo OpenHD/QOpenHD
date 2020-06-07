@@ -266,6 +266,16 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             OpenHD::instance()->set_control_throttle(rc_channels.chan3_raw);
             OpenHD::instance()->set_control_yaw(rc_channels.chan4_raw);
 
+            OpenHD::instance()->setRCChannel1(rc_channels.chan1_raw);
+            OpenHD::instance()->setRCChannel2(rc_channels.chan2_raw);
+            OpenHD::instance()->setRCChannel3(rc_channels.chan3_raw);
+            OpenHD::instance()->setRCChannel4(rc_channels.chan4_raw);
+            OpenHD::instance()->setRCChannel5(rc_channels.chan5_raw);
+            OpenHD::instance()->setRCChannel6(rc_channels.chan6_raw);
+            OpenHD::instance()->setRCChannel7(rc_channels.chan7_raw);
+            OpenHD::instance()->setRCChannel8(rc_channels.chan8_raw);
+
+
             /*qDebug() << "RC: " << rc_channels.chan1_raw
                                  << rc_channels.chan2_raw
                                  << rc_channels.chan3_raw
