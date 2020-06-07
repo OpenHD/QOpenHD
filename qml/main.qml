@@ -227,6 +227,7 @@ ApplicationWindow {
         property double wind_tumbler_tens: 13
         property double wind_max_quad_speed: wind_tumbler_tens+(wind_tumbler_decimal*.1)
 
+        property bool show_example_widget: false
     }
 
 

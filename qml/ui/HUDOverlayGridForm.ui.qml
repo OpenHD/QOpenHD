@@ -161,6 +161,10 @@ Item {
     WindWidget {
         id: windWidget
     }
+
+    ExampleWidget {
+        id: exampleWidget
+    }
 }
 
 /*##^##
