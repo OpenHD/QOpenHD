@@ -835,3 +835,44 @@ void OpenHD::updateWind(){
     }
 }
 
+
+void OpenHD::setRCChannel1(int rcChannel1) {
+    mRCChannel1 = rcChannel1;
+    emit rcChannel1Changed(mRCChannel1);
+}
+
+void OpenHD::setRCChannel2(int rcChannel2) {
+    mRCChannel2 = rcChannel2;
+    emit rcChannel2Changed(mRCChannel2);
+}
+
+void OpenHD::setRCChannel3(int rcChannel3) {
+    mRCChannel3 = rcChannel3;
+    emit rcChannel3Changed(mRCChannel3);
+}
+
+void OpenHD::setRCChannel4(int rcChannel4) {
+    mRCChannel4 = rcChannel4;
+    emit rcChannel4Changed(mRCChannel4);
+}
+
+void OpenHD::setRCChannel5(int rcChannel5) {
+    mRCChannel5 = rcChannel5;
+    emit rcChannel5Changed(mRCChannel5);
+}
+
+void OpenHD::setRCChannel6(int rcChannel6) {
+    mRCChannel6 = rcChannel6;
+    emit rcChannel6Changed(mRCChannel6);
+}
+
+void OpenHD::setRCChannel7(int rcChannel7) {
+    mRCChannel7 = rcChannel7;
+    emit rcChannel7Changed(mRCChannel7);
+}
+
+void OpenHD::setRCChannel8(int rcChannel8) {
+    mRCChannel8 = rcChannel8;
+    emit rcChannel8Changed(mRCChannel8);
+}
+
