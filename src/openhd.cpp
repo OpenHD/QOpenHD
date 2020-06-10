@@ -140,15 +140,24 @@ void OpenHD::findGcsPosition() {
 }
 
 void OpenHD::updateFlightDistance() {
-    auto elapsed = flightTimeStart.elapsed();
-    auto time = elapsed / 3600;
-    auto time_diff = time - flightDistanceLastTime;
-    flightDistanceLastTime = time;
+    if (m_gps_hdop > 20 || m_lat == 0.0){
+        //do not pollute distance if we have bad data
+        qDebug() << "bad data";
+        return;
+    }
+    if (m_armed==true){
+        auto elapsed = flightTimeStart.elapsed();
+        auto time = elapsed / 3600;
+        auto time_diff = time - flightDistanceLastTime;
+        flightDistanceLastTime = time;
 
-    auto added_distance =  m_speed * time_diff;
-    total_dist = total_dist + added_distance;
+        auto added_distance =  m_speed * time_diff;
+        qDebug() << "added distance" << added_distance;
+        total_dist = total_dist + added_distance;
 
-    set_flight_distance( total_dist);
+        qDebug() << "total distance" << total_dist;
+        set_flight_distance( total_dist);
+    }
 }
 
 void OpenHD::updateAppMah() {
