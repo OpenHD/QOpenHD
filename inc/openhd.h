@@ -42,6 +42,7 @@ public:
        the way QTimer and QML singletons/context properties work */
     void updateFlightTimer();
 
+    void findGcsPosition();
     void updateFlightDistance();
     void updateAppMah();
     void updateLateralSpeed();
@@ -451,8 +452,12 @@ private:
 
     bool m_armed = false;
     QString m_flight_mode = "Stabilize";
+
     double m_homelat = 0.0;
     double m_homelon = 0.0;
+    bool gcs_position_set = false;
+    int gps_quality_count = 0;
+
     double m_lat = 0.0;
     double m_lon = 0.0;
     double m_home_distance = 0.0;

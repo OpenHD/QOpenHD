@@ -231,6 +231,7 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             OpenHD::instance()->set_vy(global_position.vy/100.0);
             OpenHD::instance()->set_vz(global_position.vz/100.0);
 
+            OpenHD::instance()->findGcsPosition();
             OpenHD::instance()->calculate_home_distance();
             OpenHD::instance()->calculate_home_course();
 
@@ -391,8 +392,7 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             mavlink_msg_home_position_decode(&msg, &home_position);
             OpenHD::instance()->set_homelat((double)home_position.latitude / 10000000.0);
             OpenHD::instance()->set_homelon((double)home_position.longitude / 10000000.0);
-
-            OpenHD::instance()->calculate_home_distance();
+            LocalMessage::instance()->showMessage("Home Position set by OpenHD", 2);
             break;
         }
         case MAVLINK_MSG_ID_STATUSTEXT: {
