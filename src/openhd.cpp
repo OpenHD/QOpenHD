@@ -124,16 +124,40 @@ void OpenHD::updateFlightTimer() {
     }
 }
 
+void OpenHD::findGcsPosition() {
+    if (gcs_position_set==false){
+        //only attempt to set gcs home position if hdop<3m and unarmed
+        if (m_gps_hdop<3 && m_armed==false){
+            //get 20 good gps readings before setting
+            if (++gps_quality_count == 20) {
+                set_homelat(m_lat);
+                set_homelon(m_lon);
+                gcs_position_set=true;
+                LocalMessage::instance()->showMessage("Home Position set by OpenHD", 2);
+            }
+        }
+    }
+}
+
 void OpenHD::updateFlightDistance() {
-    auto elapsed = flightTimeStart.elapsed();
-    auto time = elapsed / 3600;
-    auto time_diff = time - flightDistanceLastTime;
-    flightDistanceLastTime = time;
+    if (m_gps_hdop > 20 || m_lat == 0.0){
+        //do not pollute distance if we have bad data
+        qDebug() << "bad data";
+        return;
+    }
+    if (m_armed==true){
+        auto elapsed = flightTimeStart.elapsed();
+        auto time = elapsed / 3600;
+        auto time_diff = time - flightDistanceLastTime;
+        flightDistanceLastTime = time;
 
-    auto added_distance =  m_speed * time_diff;
-    total_dist = total_dist + added_distance;
+        auto added_distance =  m_speed * time_diff;
+        qDebug() << "added distance" << added_distance;
+        total_dist = total_dist + added_distance;
 
-    set_flight_distance( total_dist);
+        qDebug() << "total distance" << total_dist;
+        set_flight_distance( total_dist);
+    }
 }
 
 void OpenHD::updateAppMah() {
@@ -221,7 +245,7 @@ void OpenHD::set_armed(bool armed) {
         flightTimeStart.start();
 
         if(armed==true && m_homelat == 0.0 && m_homelon == 0.0){
-            LocalMessage::instance()->showMessage("No Home Position in OpenHD", 3);
+            LocalMessage::instance()->showMessage("No Home Position in OpenHD", 4);
         }
     }
 
@@ -242,11 +266,13 @@ void OpenHD::set_flight_mode(QString flight_mode) {
 
 void OpenHD::set_homelat(double homelat) {
     m_homelat = homelat;
+    gcs_position_set = true;
     emit homelat_changed(m_homelat);
 }
 
 void OpenHD::set_homelon(double homelon) {
     m_homelon = homelon;
+    gcs_position_set = true;
     emit homelon_changed(m_homelon);
 }
 
