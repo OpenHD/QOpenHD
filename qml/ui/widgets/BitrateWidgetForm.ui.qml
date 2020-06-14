@@ -181,8 +181,8 @@ BaseWidget {
                 height: parent.height
                 anchors.rightMargin: 12
                 anchors.right: parent.right
-                checked: settings.bitrate_showall
-                onCheckedChanged: settings.bitrate_showall = checked
+                checked: settings.bitrate_show_skip_fail_count
+                onCheckedChanged: settings.bitrate_show_skip_fail_count = checked
             }
         }
     }
@@ -231,7 +231,7 @@ BaseWidget {
 
         Text {
             id: allDataText
-            visible: settings.bitrate_showall ? true : false
+            visible: settings.bitrate_show_skip_fail_count
             text: Number(OpenHD.injection_fail_cnt).toLocaleString(Qt.locale(), 'f', 0) + "/" + Number(OpenHD.skipped_packet_cnt).toLocaleString(Qt.locale(), 'f', 0)
             color: settings.color_text
             anchors.top: kbitrate.bottom

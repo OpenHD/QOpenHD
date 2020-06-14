@@ -116,14 +116,14 @@ BaseWidget {
                 height: parent.height
                 anchors.rightMargin: 12
                 anchors.right: parent.right
-                checked: settings.air_battery_showall
-                onCheckedChanged: settings.air_battery_showall = checked
+                checked: settings.air_battery_show_voltage_current
+                onCheckedChanged: settings.air_battery_show_voltage_current = checked
             }
         }
         Item {
             width: parent.width
             height: 32
-            visible: settings.air_battery_showall
+            visible: settings.air_battery_show_voltage_current
             Text {
                 text: "Individual Cell / Total Volts"
                 color: "white"
@@ -138,8 +138,8 @@ BaseWidget {
                 height: parent.height
                 anchors.rightMargin: 12
                 anchors.right: parent.right
-                checked: settings.air_battery_by_cell
-                onCheckedChanged: settings.air_battery_by_cell = checked
+                checked: settings.air_battery_show_single_cell
+                onCheckedChanged: settings.air_battery_show_single_cell = checked
             }
         }
     }
@@ -166,7 +166,7 @@ BaseWidget {
         }
         Text {
             id: battery_amp_text
-            visible: settings.air_battery_showall ? true : false
+            visible: settings.air_battery_show_voltage_current
             text: Number(OpenHD.battery_current/100.0).toLocaleString(Qt.locale(), 'f', 1) + "A";
             color: settings.color_text
             anchors.bottom: battery_percent.top
@@ -180,9 +180,9 @@ BaseWidget {
         }
         Text {
             id: battery_volt_text
-            visible: settings.air_battery_showall ? true : false
-            text: settings.air_battery_by_cell ? Number(OpenHD.battery_voltage).toLocaleString(Qt.locale(), 'f', 1) + "V" :
-                Number((OpenHD.battery_voltage)/settings.battery_cells).toLocaleString(Qt.locale(), 'f', 1) + "V" ;
+            visible: settings.air_battery_show_voltage_current
+            text: settings.air_battery_show_single_cell ? Number((OpenHD.battery_voltage)/settings.battery_cells).toLocaleString(Qt.locale(), 'f', 1) + "V" :
+                                                          Number(OpenHD.battery_voltage).toLocaleString(Qt.locale(), 'f', 1) + "V";
             color: settings.color_text
             anchors.top: battery_percent.bottom
             anchors.left: batteryGauge.right

@@ -72,8 +72,8 @@ BaseWidget {
                 height: parent.height
                 anchors.rightMargin: 12
                 anchors.right: parent.right
-                checked: settings.air_battery_mah_source
-                onCheckedChanged: settings.air_battery_mah_source = checked
+                checked: settings.flight_mah_use_telemetry
+                onCheckedChanged: settings.flight_mah_use_telemetry = checked
             }
         }
     }

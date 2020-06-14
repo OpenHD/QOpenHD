@@ -109,12 +109,12 @@ ApplicationWindow {
 
         property bool show_bitrate: true
         property double bitrate_opacity: 1
-        property bool bitrate_showall: false
+        property bool bitrate_show_skip_fail_count: false
 
         property bool show_air_battery: true
         property double air_battery_opacity: 1
-        property bool air_battery_showall: false
-        property bool air_battery_by_cell: false
+        property bool air_battery_show_voltage_current: false
+        property bool air_battery_show_single_cell: false
 
         property bool show_gps: true
         property double gps_opacity: 1
@@ -133,7 +133,7 @@ ApplicationWindow {
         property double distance_opacity: 1
 
         property bool show_flight_mah: true
-        property bool air_battery_mah_source: true
+        property bool flight_mah_use_telemetry: true
         property double mah_opacity: 1
 
         property bool show_ground_status: true
