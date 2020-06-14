@@ -29,7 +29,10 @@ void MavlinkBase::onStarted() {
     switch (m_mavlink_type) {
         case MavlinkTypeUDP: {
             mavlinkSocket = new QUdpSocket(this);
-            mavlinkSocket->bind(QHostAddress::Any, localPort);
+            auto bindStatus = mavlinkSocket->bind(QHostAddress::Any, localPort);
+            if (!bindStatus) {
+                emit bindError();
+            }
             connect(mavlinkSocket, &QUdpSocket::readyRead, this, &MavlinkBase::processMavlinkUDPDatagrams);
             break;
         }
