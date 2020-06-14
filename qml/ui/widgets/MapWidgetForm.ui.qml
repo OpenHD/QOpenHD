@@ -140,7 +140,7 @@ BaseWidget {
                 height: 32
                 Text {
                     id: mini_opacityTitle
-                    text: "Opacity"
+                    text: qsTr("Transparency")
                     color: "white"
                     height: parent.height
                     font.bold: true
