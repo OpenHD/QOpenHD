@@ -183,8 +183,8 @@ void OpenHDAndroidVideo::androidConfigure() {
 
 void OpenHDAndroidVideo::inputLoop() {
     while (true) {
-        auto nalUnit = nalQueue.front();
-        processFrame(nalUnit);
+        //auto nalUnit = nalQueue.front();
+        //processFrame(nalUnit);
     }
 }
 
