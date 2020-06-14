@@ -103,7 +103,7 @@ BaseWidget {
             width: parent.width
             height: 32
             Text {
-                text: "Show all data"
+                text: qsTr("Show volts and amps")
                 color: "white"
                 height: parent.height
                 font.bold: true
@@ -125,7 +125,7 @@ BaseWidget {
             height: 32
             visible: settings.air_battery_show_voltage_current
             Text {
-                text: "Individual Cell / Total Volts"
+                text: qsTr("Show single cell voltage")
                 color: "white"
                 height: parent.height
                 font.bold: true

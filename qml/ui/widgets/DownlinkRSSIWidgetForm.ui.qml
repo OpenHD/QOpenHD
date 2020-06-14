@@ -356,7 +356,7 @@ BaseWidget {
             width: parent.width
             height: 32
             Text {
-                text: "Show lost/damaged on OSD"
+                text: "Show lost/damaged"
                 color: "white"
                 height: parent.height
                 font.bold: true

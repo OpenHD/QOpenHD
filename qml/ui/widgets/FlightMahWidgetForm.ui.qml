@@ -59,7 +59,7 @@ BaseWidget {
             width: parent.width
             height: 32
             Text {
-                text: "Source: App / Telemetry"
+                text: "Use telemetry data"
                 color: "white"
                 height: parent.height
                 font.bold: true

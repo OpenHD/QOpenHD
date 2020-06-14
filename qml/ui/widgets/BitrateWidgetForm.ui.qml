@@ -168,7 +168,7 @@ BaseWidget {
             width: parent.width
             height: 32
             Text {
-                text: "Show all data"
+                text: "Show skip / fail count"
                 color: "white"
                 height: parent.height
                 font.bold: true
