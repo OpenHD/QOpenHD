@@ -41,6 +41,9 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 
 #include "opensky.h"
 
+#if defined(__ios__)
+#include "appleplatform.h"
+#endif
 
 #if defined(ENABLE_GSTREAMER)
 
@@ -92,6 +95,13 @@ int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
 
     Migration::instance()->run();
+
+
+#if defined(__ios__)
+    auto applePlatform = ApplePlatform::instance();
+    applePlatform->disableScreenLock();
+    applePlatform->registerNotifications();
+#endif
 
 
 #if defined(__android__)

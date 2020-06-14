@@ -211,6 +211,12 @@ iOSBuild {
             src/openhdapplevideo.cpp
     }
 
+    HEADERS += \
+        src/appleplatform.h
+
+    SOURCES += \
+        src/appleplatform.mm
+
     EnableGStreamer {
         DEFINES += GST_GL_HAVE_WINDOW_EAGL=1
         DEFINES += GST_GL_HAVE_PLATFORM_EAGL=1
