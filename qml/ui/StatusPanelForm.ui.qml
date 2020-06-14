@@ -16,7 +16,7 @@ Item {
     Layout.fillWidth: true
 
     Text {
-        text: "OpenHD Status Log"
+        text: qsTr("OpenHD Status Log")
         font.pixelSize: 16
         font.bold: true
         color: "#515151"
@@ -50,7 +50,7 @@ Item {
     Label {
         id: ohdLabel
         color: "black"
-        text: "Last openhd heartbeat: " + (OpenHD.last_openhd_heartbeat >= 0 && OpenHD.last_openhd_heartbeat <= 300000 ? OpenHD.last_openhd_heartbeat + "ms" : "N/A")
+        text: qsTr("Last openhd heartbeat: ") + (OpenHD.last_openhd_heartbeat >= 0 && OpenHD.last_openhd_heartbeat <= 300000 ? OpenHD.last_openhd_heartbeat + "ms" : "N/A")
         font.pixelSize: 12
         anchors.bottom: parent.bottom
         anchors.left: parent.left
@@ -63,7 +63,7 @@ Item {
     Label {
         id: mavLabel
         color: "black"
-        text: "Last telemetry heartbeat: " + (OpenHD.last_telemetry_heartbeat >= 0 && OpenHD.last_telemetry_heartbeat <= 300000 ? OpenHD.last_telemetry_heartbeat  + "ms": "N/A")
+        text: qsTr("Last telemetry heartbeat: ") + (OpenHD.last_telemetry_heartbeat >= 0 && OpenHD.last_telemetry_heartbeat <= 300000 ? OpenHD.last_telemetry_heartbeat  + "ms": "N/A")
         font.pixelSize: 12
         anchors.bottom: parent.bottom
         anchors.right: parent.right
