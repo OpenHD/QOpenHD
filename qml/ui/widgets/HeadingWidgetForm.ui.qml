@@ -97,7 +97,7 @@ BaseWidget {
                 width: 230
                 height: 32
                 Text {
-                    text: "Ardupilot / iNav"
+                    text: qsTr("UAV is iNav")
                     color: "white"
                     height: parent.height
                     font.bold: true
