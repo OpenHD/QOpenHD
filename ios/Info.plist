@@ -46,5 +46,9 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+        <key>NSLocationAlwaysUsageDescription</key>
+        <string>Location is required for drone home position and map location</string>
+        <key>NSLocationWhenInUseUsageDescription</key>
+        <string>Location is required for drone home position and map location</string>
 </dict>
 </plist>
