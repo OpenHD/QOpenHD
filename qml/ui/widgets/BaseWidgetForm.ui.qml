@@ -49,8 +49,7 @@ Rectangle {
         height: widgetDetailHeight
 
         background: Rectangle {
-            color: "#8a000000"
-            opacity: 0.8
+            color: "#ea000000"
             border.width: 1
             border.color: "white"
             radius: 12
@@ -95,8 +94,7 @@ Rectangle {
         height: OpenHDPi.is_raspberry_pi ? 244 : 304
 
         background: Rectangle {
-            color: "#8a000000"
-            opacity: 0.8
+            color: "#ea000000"
         }
 
         /*
