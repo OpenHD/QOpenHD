@@ -75,7 +75,7 @@ BaseWidget {
             Switch {
                 width: 32
                 height: parent.height
-                anchors.rightMargin: 12
+                anchors.rightMargin: 6
                 anchors.right: parent.right
                 checked: settings.wind_arrow_circle
                 onCheckedChanged: settings.wind_arrow_circle = checked
@@ -96,7 +96,7 @@ BaseWidget {
             Switch {
                 width: 32
                 height: parent.height
-                anchors.rightMargin: 12
+                anchors.rightMargin: 6
                 anchors.right: parent.right
                 checked: settings.wind_plane_copter
                 onCheckedChanged: settings.wind_plane_copter = checked

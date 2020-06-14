@@ -70,7 +70,7 @@ BaseWidget {
             Switch {
                 width: 32
                 height: parent.height
-                anchors.rightMargin: 12
+                anchors.rightMargin: 6
                 anchors.right: parent.right
                 checked: settings.flight_mah_use_telemetry
                 onCheckedChanged: settings.flight_mah_use_telemetry = checked

@@ -134,7 +134,7 @@ BaseWidget {
             Switch {
                 width: 32
                 height: parent.height
-                anchors.rightMargin: 12
+                anchors.rightMargin: 6
                 anchors.right: parent.right
                 checked: settings.gps_show_all
                 onCheckedChanged: settings.gps_show_all = checked

@@ -67,7 +67,7 @@ BaseWidget {
             Switch {
                 width: 32
                 height: parent.height
-                anchors.rightMargin: 12
+                anchors.rightMargin: 6
                 anchors.right: parent.right
                 checked: settings.arrow_invert
                 onCheckedChanged: settings.arrow_invert = checked

@@ -50,7 +50,7 @@ BaseWidget {
                     to: 1
                     stepSize: .1
                     height: parent.height
-                    anchors.rightMargin: 5
+                    anchors.rightMargin: 0
                     anchors.right: parent.right
                     width: parent.width - 96
 
@@ -79,7 +79,7 @@ BaseWidget {
                     to: 3
                     stepSize: .1
                     height: parent.height
-                    anchors.rightMargin: 5
+                    anchors.rightMargin: 0
                     anchors.right: parent.right
                     width: parent.width - 96
 
@@ -103,7 +103,7 @@ BaseWidget {
                 Switch {
                     width: 32
                     height: parent.height
-                    anchors.rightMargin: 12
+                    anchors.rightMargin: 6
                     anchors.right: parent.right
                     checked: settings.horizon_invert_pitch
                     onCheckedChanged: settings.horizon_invert_pitch = checked
@@ -125,7 +125,7 @@ BaseWidget {
                 Switch {
                     width: 32
                     height: parent.height
-                    anchors.rightMargin: 12
+                    anchors.rightMargin: 6
                     anchors.right: parent.right
                     checked: settings.horizon_invert_roll
                     onCheckedChanged: settings.horizon_invert_roll = checked
@@ -152,7 +152,7 @@ BaseWidget {
                     to: 20
                     stepSize: 1
                     height: parent.height
-                    anchors.rightMargin: 5
+                    anchors.rightMargin: 0
                     anchors.right: parent.right
                     width: parent.width - 96
 
@@ -176,7 +176,7 @@ BaseWidget {
                 Switch {
                     width: 32
                     height: parent.height
-                    anchors.rightMargin: 12
+                    anchors.rightMargin: 6
                     anchors.right: parent.right
                     checked: settings.show_horizon_ladder
                     onCheckedChanged: settings.show_horizon_ladder = checked

@@ -180,7 +180,7 @@ BaseWidget {
                 Switch {
                     width: 32
                     height: parent.height
-                    anchors.rightMargin: 12
+                    anchors.rightMargin: 6
                     anchors.right: parent.right
                     checked: settings.map_orientation
                     onCheckedChanged: settings.map_orientation = checked

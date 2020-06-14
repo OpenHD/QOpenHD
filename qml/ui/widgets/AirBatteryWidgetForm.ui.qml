@@ -114,7 +114,7 @@ BaseWidget {
             Switch {
                 width: 32
                 height: parent.height
-                anchors.rightMargin: 12
+                anchors.rightMargin: 6
                 anchors.right: parent.right
                 checked: settings.air_battery_show_voltage_current
                 onCheckedChanged: settings.air_battery_show_voltage_current = checked
@@ -136,7 +136,7 @@ BaseWidget {
             Switch {
                 width: 32
                 height: parent.height
-                anchors.rightMargin: 12
+                anchors.rightMargin: 6
                 anchors.right: parent.right
                 checked: settings.air_battery_show_single_cell
                 onCheckedChanged: settings.air_battery_show_single_cell = checked

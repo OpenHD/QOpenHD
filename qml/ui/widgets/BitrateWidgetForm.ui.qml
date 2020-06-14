@@ -179,7 +179,7 @@ BaseWidget {
             Switch {
                 width: 32
                 height: parent.height
-                anchors.rightMargin: 12
+                anchors.rightMargin: 6
                 anchors.right: parent.right
                 checked: settings.bitrate_show_skip_fail_count
                 onCheckedChanged: settings.bitrate_show_skip_fail_count = checked

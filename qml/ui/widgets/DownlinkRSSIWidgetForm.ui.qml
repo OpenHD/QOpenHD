@@ -367,7 +367,7 @@ BaseWidget {
             Switch {
                 width: 32
                 height: parent.height
-                anchors.rightMargin: 12
+                anchors.rightMargin: 6
                 anchors.right: parent.right
                 checked: settings.downlink_rssi_show_lost_damaged
                 onCheckedChanged: settings.downlink_rssi_show_lost_damaged = checked
@@ -390,7 +390,7 @@ BaseWidget {
             Switch {
                 width: 32
                 height: parent.height
-                anchors.rightMargin: 12
+                anchors.rightMargin: 6
                 anchors.right: parent.right
                 checked: settings.downlink_cards_right
                 onCheckedChanged: settings.downlink_cards_right = checked

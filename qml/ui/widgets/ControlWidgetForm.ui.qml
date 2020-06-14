@@ -79,7 +79,7 @@ BaseWidget {
                 Switch {
                     width: 32
                     height: parent.height
-                    anchors.rightMargin: 12
+                    anchors.rightMargin: 6
                     anchors.right: parent.right
                     checked: settings.double_control
                     onCheckedChanged: settings.double_control = checked
@@ -100,7 +100,7 @@ BaseWidget {
                 Switch {
                     width: 32
                     height: parent.height
-                    anchors.rightMargin: 12
+                    anchors.rightMargin: 6
                     anchors.right: parent.right
                     checked: settings.control_rev_pitch
                     onCheckedChanged: settings.control_rev_pitch = checked
@@ -121,7 +121,7 @@ BaseWidget {
                 Switch {
                     width: 32
                     height: parent.height
-                    anchors.rightMargin: 12
+                    anchors.rightMargin: 6
                     anchors.right: parent.right
                     checked: settings.control_rev_roll
                     onCheckedChanged: settings.control_rev_roll = checked
@@ -142,7 +142,7 @@ BaseWidget {
                 Switch {
                     width: 32
                     height: parent.height
-                    anchors.rightMargin: 12
+                    anchors.rightMargin: 6
                     anchors.right: parent.right
                     checked: settings.control_rev_yaw
                     onCheckedChanged: settings.control_rev_yaw = checked
@@ -163,7 +163,7 @@ BaseWidget {
                 Switch {
                     width: 32
                     height: parent.height
-                    anchors.rightMargin: 12
+                    anchors.rightMargin: 6
                     anchors.right: parent.right
                     checked: settings.control_rev_throttle
                     onCheckedChanged: settings.control_rev_throttle = checked
