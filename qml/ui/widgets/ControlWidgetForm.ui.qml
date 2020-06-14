@@ -89,7 +89,7 @@ BaseWidget {
                 width: 240
                 height: 32
                 Text {
-                    text: "Reverse Pitch: No / Yes"
+                    text: qsTr("Reverse Pitch")
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -110,7 +110,7 @@ BaseWidget {
                 width: 240
                 height: 32
                 Text {
-                    text: "Reverse Roll: No / Yes"
+                    text: qsTr("Reverse Roll")
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -131,7 +131,7 @@ BaseWidget {
                 width: 240
                 height: 32
                 Text {
-                    text: "Reverse yaw: No / Yes"
+                    text: qsTr("Reverse yaw")
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -152,7 +152,7 @@ BaseWidget {
                 width: 240
                 height: 32
                 Text {
-                    text: "Reverse Throttle: No / Yes"
+                    text: qsTr("Reverse Throttle")
                     color: "white"
                     height: parent.height
                     font.bold: true
