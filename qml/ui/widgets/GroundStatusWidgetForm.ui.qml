@@ -84,7 +84,7 @@ BaseWidget {
             y: 0
             width: 36
             height: 24
-            color: settings.color_text
+            color: OpenHD.cpuload_gnd >= 70 ? (OpenHD.cpuload_gnd >= 80 ? "#ff0000" : "#fbfd15") : settings.color_text
             opacity: settings.ground_status_opacity
             text: Number(OpenHD.cpuload_gnd).toLocaleString(Qt.locale(), 'f', 0) + "%";
             anchors.verticalCenter: parent.verticalCenter
@@ -102,7 +102,7 @@ BaseWidget {
             y: 0
             width: 36
             height: 24
-            color: settings.color_text
+            color: OpenHD.temp_gnd >= 65 ? (OpenHD.temp_gnd >= 75 ? "#ff0000" : "#fbfd15") : settings.color_text
             opacity: settings.ground_status_opacity
             text: Number(OpenHD.temp_gnd).toLocaleString(Qt.locale(), 'f', 0) + "°";
             anchors.verticalCenter: parent.verticalCenter
