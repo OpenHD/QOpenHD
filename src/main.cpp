@@ -146,8 +146,6 @@ int main(int argc, char *argv[]) {
 #endif
 
     QFontDatabase::addApplicationFont(":/Font Awesome 5 Free-Solid-900.otf");
-    /*QFontDatabase::addApplicationFont(":/Font Awesome 5 Free-Regular-400.otf");
-      QFontDatabase::addApplicationFont(":/Font Awesome 5 Brands-Regular-400.otf");*/
 
     QFontDatabase::addApplicationFont(":/osdicons.ttf");
 
