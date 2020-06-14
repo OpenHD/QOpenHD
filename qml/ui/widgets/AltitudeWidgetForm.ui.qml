@@ -43,7 +43,7 @@ BaseWidget {
                 height: 32
                 Text {
                     id: opacityTitle
-                    text: "Transparency"
+                    text: qsTr("Transparency")
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -73,7 +73,7 @@ BaseWidget {
                 height: 32
                 Text {
                     id: sizeTitle
-                    text: "Size"
+                    text: qsTr("Size")
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -102,7 +102,7 @@ BaseWidget {
                 width: 240
                 height: 32
                 Text {
-                    text: "Relative / MSL"
+                    text: qsTr("Relative / MSL")
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -123,7 +123,7 @@ BaseWidget {
                 width: 240
                 height: 32
                 Text {
-                    text: "Show ladder"
+                    text: qsTr("Show ladder")
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -144,7 +144,7 @@ BaseWidget {
                 width: 240
                 height: 32
                 Text {
-                    text: "Range"
+                    text: qsTr("Range")
                     color: "white"
                     height: parent.height
                     font.bold: true

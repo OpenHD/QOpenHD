@@ -38,7 +38,7 @@ BaseWidget {
                 height: 32
                 Text {
                     id: opacityTitle
-                    text: "Transparency"
+                    text: qsTr("Transparency")
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -68,7 +68,7 @@ BaseWidget {
                 height: 32
                 Text {
                     id: sizeTitle
-                    text: "Size"
+                    text: qsTr("Size")
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -97,7 +97,7 @@ BaseWidget {
                 width: 240
                 height: 32
                 Text {
-                    text: "Airspeed / GPS"
+                    text: qsTr("Airspeed / GPS")
                     horizontalAlignment: Text.AlignRight
                     color: "white"
                     height: parent.height
@@ -119,7 +119,7 @@ BaseWidget {
                 width: 240
                 height: 32
                 Text {
-                    text: "Show ladder"
+                    text: qsTr("Show ladder")
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -140,7 +140,7 @@ BaseWidget {
                 width: 240
                 height: 32
                 Text {
-                    text: "Range"
+                    text: qsTr("Range")
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -170,7 +170,7 @@ BaseWidget {
                 width: 240
                 height: 32
                 Text {
-                    text: "Minimum"
+                    text: qsTr("Minimum")
                     color: "white"
                     height: parent.height
                     font.bold: true

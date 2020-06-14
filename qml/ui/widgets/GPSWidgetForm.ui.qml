@@ -31,7 +31,7 @@ BaseWidget {
             width: parent.width
             height: 32
             Text {
-                text: "Lat:"
+                text: qsTr("Lat:")
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -53,7 +53,7 @@ BaseWidget {
             width: parent.width
             height: 32
             Text {
-                text: "Lon:"
+                text: qsTr("Lon:")
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -94,7 +94,7 @@ BaseWidget {
             height: 32
             Text {
                 id: opacityTitle
-                text: "Transparency"
+                text: qsTr("Transparency")
                 color: "white"
                 height: parent.height
                 font.bold: true

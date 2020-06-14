@@ -38,7 +38,7 @@ BaseWidget {
                 height: 32
                 Text {
                     id: opacityText
-                    text: "Transparency"
+                    text: qsTr("Transparency")
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -68,7 +68,7 @@ BaseWidget {
                 height: 32
                 Text {
                     id: sizeText
-                    text: "Size"
+                    text: qsTr("Size")
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -118,7 +118,7 @@ BaseWidget {
                 width: 230
                 height: 32
                 Text {
-                    text: "Show ticks"
+                    text: qsTr("Show ticks")
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -139,7 +139,7 @@ BaseWidget {
                 width: 230
                 height: 32
                 Text {
-                    text: "Show N/S/E/W"
+                    text: qsTr("Show N/S/E/W")
                     color: "white"
                     height: parent.height
                     font.bold: true

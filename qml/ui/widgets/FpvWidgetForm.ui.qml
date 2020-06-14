@@ -24,7 +24,7 @@ BaseWidget {
             width: parent.width
             height: 32
             Text {
-                text: "Dynamic"
+                text: qsTr("Dynamic")
                 color: "white"
                 height: parent.height
                 font.bold: true
@@ -46,7 +46,7 @@ BaseWidget {
             height: 32            
             Text {
                 id: sensitivityTitle
-                text: "Sensitivity"
+                text: qsTr("Sensitivity")
                 color: "white"
                 height: parent.height
                 font.bold: true
@@ -76,7 +76,7 @@ BaseWidget {
             height: 32
             Text {
                 id: opacityTitle
-                text: "Transparency"
+                text: qsTr("Transparency")
                 color: "white"
                 height: parent.height
                 font.bold: true

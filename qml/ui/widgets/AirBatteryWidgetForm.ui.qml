@@ -29,7 +29,7 @@ BaseWidget {
             width: parent.width
             height: 32
             Text {
-                text: "Voltage:"
+                text: qsTr("Voltage:")
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -51,7 +51,7 @@ BaseWidget {
             width: parent.width
             height: 32
             Text {
-                text: "Current:"
+                text: qsTr("Current:")
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -74,7 +74,7 @@ BaseWidget {
             height: 32
             Text {
                 id: opacityTitle
-                text: "Transparency"
+                text: qsTr("Transparency")
                 color: "white"
                 height: parent.height
                 font.bold: true

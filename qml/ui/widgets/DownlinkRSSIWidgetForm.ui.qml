@@ -78,7 +78,7 @@ BaseWidget {
             width: parent.width
             height: 32
             Text {
-                text: "Card 1:"
+                text: qsTr("Card 1:")
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -102,7 +102,7 @@ BaseWidget {
             width: parent.width
             height: 32
             Text {
-                text: "Card 2:"
+                text: qsTr("Card 2:")
                 color: "white"
                 font.bold: true
                 height: parent.height;
@@ -127,7 +127,7 @@ BaseWidget {
             width: parent.width
             height: 24
             Text {
-                text: "Card 3:"
+                text: qsTr("Card 3:")
                 color: "white"
                 font.bold: true
                 height: parent.height;
@@ -152,7 +152,7 @@ BaseWidget {
             width: parent.width
             height: 24
             Text {
-                text: "Card 4:"
+                text: qsTr("Card 4:")
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -177,7 +177,7 @@ BaseWidget {
             width: parent.width
             height: 24
             Text {
-                text: "Card 5:"
+                text: qsTr("Card 5:")
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -202,7 +202,7 @@ BaseWidget {
             width: parent.width
             height: 24
             Text {
-                text: "Card 6:"
+                text: qsTr("Card 6:")
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -243,7 +243,7 @@ BaseWidget {
             width: parent.width
             height: 32
             Text {
-                text: "Lost:"
+                text: qsTr("Lost:")
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -265,7 +265,7 @@ BaseWidget {
             width: parent.width
             height: 32
             Text {
-                text: "Damaged:"
+                text: qsTr("Damaged:")
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -287,7 +287,7 @@ BaseWidget {
             width: parent.width
             height: 32
             Text {
-                text: "CTS:"
+                text: qsTr("CTS:")
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -327,7 +327,7 @@ BaseWidget {
             height: 32
             Text {
                 id: opacityTitle
-                text: "Transparency"
+                text: qsTr("Transparency")
                 color: "white"
                 height: parent.height
                 font.bold: true
@@ -356,7 +356,7 @@ BaseWidget {
             width: parent.width
             height: 32
             Text {
-                text: "Show lost/damaged"
+                text: qsTr("Show lost/damaged")
                 color: "white"
                 height: parent.height
                 font.bold: true
@@ -379,7 +379,7 @@ BaseWidget {
             width: parent.width
             height: 32
             Text {
-                text: "Show all cards to right"
+                text: qsTr("Show all cards to right")
                 color: "white"
                 height: parent.height
                 font.bold: true

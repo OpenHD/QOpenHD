@@ -38,7 +38,7 @@ BaseWidget {
                 height: 32
                 Text {
                     id: opacityTitle
-                    text: "Transparency"
+                    text: qsTr("Transparency")
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -68,7 +68,7 @@ BaseWidget {
                 height: 32
                 Text {
                     id: displaySwitcher
-                    text: "Show two controls"
+                    text: qsTr("Show two controls")
                     color: "white"
                     height: parent.height
                     font.bold: true

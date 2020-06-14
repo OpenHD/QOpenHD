@@ -109,7 +109,7 @@ BaseWidget {
                 Text {
                     id: mini_zoomTitle
                     height: parent.height
-                    text: "Zoom"
+                    text: qsTr("Zoom")
                     color: "white"
                     font.bold: true
                     font.pixelSize: detailPanelFontPixels
@@ -169,7 +169,7 @@ BaseWidget {
                 width: parent.width
                 height: 32
                 Text {
-                    text: "Lock map to drone direction"
+                    text: qsTr("Lock map to drone direction")
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -191,7 +191,7 @@ BaseWidget {
                 width: parent.width
                 height: 32
                 Text {
-                    text: "Map shape Square / Round"
+                    text: qsTr("Map shape Square / Round")
                     color: "white"
                     height: parent.height
                     font.bold: true

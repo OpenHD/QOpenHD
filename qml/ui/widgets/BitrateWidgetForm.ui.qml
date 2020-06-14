@@ -32,7 +32,7 @@ BaseWidget {
             width: parent.width
             height: 32
             Text {
-                text: "Measured:"
+                text: qsTr("Measured:")
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -54,7 +54,7 @@ BaseWidget {
             width: parent.width
             height: 32
             Text {
-                text: "Set:"
+                text: qsTr("Set:")
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -77,7 +77,7 @@ BaseWidget {
             width: parent.width
             height: 32
             Text {
-                text: "Skipped packets:"
+                text: qsTr("Skipped packets:")
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -100,7 +100,7 @@ BaseWidget {
             width: parent.width
             height: 32
             Text {
-                text: "Injection failed:"
+                text: qsTr("Injection failed:")
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -139,7 +139,7 @@ BaseWidget {
             height: 32
             Text {
                 id: opacityTitle
-                text: "Transparency"
+                text: qsTr("Transparency")
                 color: "white"
                 height: parent.height
                 font.bold: true
@@ -168,7 +168,7 @@ BaseWidget {
             width: parent.width
             height: 32
             Text {
-                text: "Show skip / fail count"
+                text: qsTr("Show skip / fail count")
                 color: "white"
                 height: parent.height
                 font.bold: true

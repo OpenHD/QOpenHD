@@ -30,7 +30,7 @@ BaseWidget {
             height: 32
             Text {
                 id: opacityTitle
-                text: "Transparency"
+                text: qsTr("Transparency")
                 color: "white"
                 height: parent.height
                 font.bold: true
@@ -59,7 +59,7 @@ BaseWidget {
             width: parent.width
             height: 32
             Text {
-                text: "Use telemetry data"
+                text: qsTr("Use telemetry data")
                 color: "white"
                 height: parent.height
                 font.bold: true

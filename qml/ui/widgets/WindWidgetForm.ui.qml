@@ -35,7 +35,7 @@ BaseWidget {
             width: parent.width
             height: 32
             Text {
-                text: "Transparency"
+                text: qsTr("Transparency")
                 color: "white"
                 height: parent.height
                 font.bold: true
@@ -64,7 +64,7 @@ BaseWidget {
             width: parent.width
             height: 32
             Text {
-                text: "Style: Arrow / Circle"
+                text: qsTr("Style: Arrow / Circle")
                 color: "white"
                 height: parent.height
                 font.bold: true
@@ -85,7 +85,7 @@ BaseWidget {
             width: parent.width
             height: 32
             Text {
-                text: "Plane / Copter"
+                text: qsTr("Plane / Copter")
                 color: "white"
                 height: parent.height
                 font.bold: true
@@ -108,7 +108,7 @@ BaseWidget {
             visible: settings.wind_plane_copter ? true : false
 
             Text {
-                text: "45 Degree Speed M/S"
+                text: qsTr("45 Degree Speed M/S")
                 color: "white"
                 height: parent.height
                 font.bold: true

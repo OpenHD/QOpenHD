@@ -27,28 +27,28 @@ BaseWidget {
             width: parent.width
             height: 32
             visible: (OpenHDPower.vin !== -1);
-            Text { text: "Voltage in:";  color: "white"; height: parent.height; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.left: parent.left; verticalAlignment: Text.AlignVCenter }
+            Text { text: qsTr("Voltage in:");  color: "white"; height: parent.height; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.left: parent.left; verticalAlignment: Text.AlignVCenter }
             Text { text: OpenHDPower.vin; color: "white"; height: parent.height; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.right: parent.right; verticalAlignment: Text.AlignVCenter }
         }
         Item {
             width: parent.width
             height: 32
             visible: (OpenHDPower.vout !== -1);
-            Text { text: "Voltage out:";  color: "white"; height: parent.height; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.left: parent.left; verticalAlignment: Text.AlignVCenter }
+            Text { text: qsTr("Voltage out:");  color: "white"; height: parent.height; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.left: parent.left; verticalAlignment: Text.AlignVCenter }
             Text { text: OpenHDPower.vout; color: "white"; height: parent.height; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.right: parent.right; verticalAlignment: Text.AlignVCenter }
         }
         Item {
             width: parent.width
             height: 32
             visible: (OpenHDPower.iout !== -1);
-            Text { text: "Current out:";  color: "white"; height: parent.height; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.left: parent.left; verticalAlignment: Text.AlignVCenter }
+            Text { text: qsTr("Current out:");  color: "white"; height: parent.height; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.left: parent.left; verticalAlignment: Text.AlignVCenter }
             Text { text: OpenHDPower.iout; color: "white"; height: parent.height; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.right: parent.right; verticalAlignment: Text.AlignVCenter }
         }
         Item {
             width: parent.width
             height: 32
             visible: (OpenHDPower.vbat !== -1);
-            Text { text: "Voltage bat:";  color: "white"; height: parent.height; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.left: parent.left; verticalAlignment: Text.AlignVCenter }
+            Text { text: qsTr("Voltage bat:");  color: "white"; height: parent.height; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.left: parent.left; verticalAlignment: Text.AlignVCenter }
             Text { text: OpenHDPower.vbat; color: "white"; height: parent.height; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.right: parent.right; verticalAlignment: Text.AlignVCenter }
         }
         Item {
@@ -56,7 +56,7 @@ BaseWidget {
             height: 32
             Text {
                 id: opacityTitle
-                text: "Transparency"
+                text: qsTr("Transparency")
                 color: "white"
                 height: parent.height
                 font.bold: true
