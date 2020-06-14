@@ -123,7 +123,7 @@ BaseWidget {
             width: parent.width
             height: 32
             Text {
-                text: "Show All"
+                text: qsTr("Always show lat/lon")
                 color: "white"
                 height: parent.height
                 font.bold: true
