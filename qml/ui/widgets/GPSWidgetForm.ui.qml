@@ -198,6 +198,7 @@ BaseWidget {
         Column {
             anchors.bottom: parent.top
             anchors.left: parent.left
+            anchors.leftMargin: -12
 
             spacing: 0
 
@@ -226,7 +227,7 @@ BaseWidget {
                     opacity: settings.gps_opacity
                     font.bold: true;
                     height: parent.height
-                    width: 64
+                    width: 92
                     font.pixelSize: 14
                     horizontalAlignment: Text.AlignRight
                 }
@@ -257,7 +258,7 @@ BaseWidget {
                     opacity: settings.gps_opacity
                     font.bold: true
                     height: parent.height
-                    width: 64
+                    width: 92
                     font.pixelSize: 14
                     horizontalAlignment: Text.AlignRight
                 }
