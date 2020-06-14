@@ -53,7 +53,7 @@ Rectangle {
                     anchors.fill: parent
                     onClicked: mainStackLayout.currentIndex = 0
                 }
-                text: "App"
+                text: qsTr("App")
                 font.pixelSize: 15
                 horizontalAlignment: Text.AlignLeft
                 verticalAlignment: Text.AlignVCenter
@@ -70,7 +70,7 @@ Rectangle {
                     anchors.fill: parent
                     onClicked: mainStackLayout.currentIndex = 1
                 }
-                text: "Ground Pi"
+                text: qsTr("Ground Pi")
                 font.pixelSize: 15
                 horizontalAlignment: Text.AlignLeft
                 verticalAlignment: Text.AlignVCenter
@@ -87,7 +87,7 @@ Rectangle {
                     anchors.fill: parent
                     onClicked: mainStackLayout.currentIndex = 2
                 }
-                text: "Status"
+                text: qsTr("Status")
                 font.pixelSize: 15
                 horizontalAlignment: Text.AlignLeft
                 verticalAlignment: Text.AlignVCenter
@@ -105,7 +105,7 @@ Rectangle {
                     anchors.fill: parent
                     onClicked: mainStackLayout.currentIndex = 3
                 }
-                text: "Charts"
+                text: qsTr("Charts")
                 font.pixelSize: 15
                 horizontalAlignment: Text.AlignLeft
                 verticalAlignment: Text.AlignVCenter
@@ -122,7 +122,7 @@ Rectangle {
                     anchors.fill: parent
                     onClicked: mainStackLayout.currentIndex = 4
                 }
-                text: "About"
+                text: qsTr("About")
                 font.pixelSize: 15
                 horizontalAlignment: Text.AlignLeft
                 verticalAlignment: Text.AlignVCenter
