@@ -8,6 +8,9 @@ Loader {
             return "VideoWidgetGStreamerForm.ui.qml"
         }
 
+        if (IsAndroid && EnableVideoRender && EnablePiP) {
+            return "VideoWidgetAndroidForm.ui.qml"
+        }
 
         if (IsRaspPi && EnableVideoRender && EnablePiP) {
             return "VideoWidgetRenderForm.ui.qml"
