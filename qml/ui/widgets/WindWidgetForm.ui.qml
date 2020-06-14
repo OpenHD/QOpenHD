@@ -26,8 +26,8 @@ BaseWidget {
     widgetIdentifier: "wind_widget"
 
     defaultAlignment: 3
-    defaultXOffset: 100
-    defaultYOffset: 100
+    defaultXOffset: 6
+    defaultYOffset: 128
 
     hasWidgetDetail: true
     widgetDetailComponent: Column {
