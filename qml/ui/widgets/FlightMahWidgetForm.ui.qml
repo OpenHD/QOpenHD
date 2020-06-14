@@ -92,7 +92,7 @@ BaseWidget {
             clip: true
             color: settings.color_shape
             opacity: settings.mah_opacity
-            text: "\uE162"
+            text: "\uf0e7"
             anchors.right: flight_mah_text.left
             anchors.rightMargin: 6
             verticalAlignment: Text.AlignVCenter
