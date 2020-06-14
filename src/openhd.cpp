@@ -142,7 +142,6 @@ void OpenHD::findGcsPosition() {
 void OpenHD::updateFlightDistance() {
     if (m_gps_hdop > 20 || m_lat == 0.0){
         //do not pollute distance if we have bad data
-        qDebug() << "bad data";
         return;
     }
     if (m_armed==true){
