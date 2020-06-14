@@ -195,66 +195,73 @@ BaseWidget {
             horizontalAlignment: Text.AlignLeft
         }
 
-        Text {
-            id: lat_onscreen
-            visible: settings.gps_show_all
-            text: Number(OpenHD.lat).toLocaleString(Qt.locale(), 'f', 6);
-            color: settings.color_text
-            opacity: settings.gps_opacity
-            font.bold: true;
-            height: 16
-            font.pixelSize: 16
-            anchors.left: lat_icon.right
-            anchors.bottom: lon_onscreen.top
-            verticalAlignment: Text.AlignVCenter
-        }
-
-        Text {//need better icon
-            id: lat_icon
-            visible: settings.gps_show_all
-            height: 16
-            color: settings.color_shape
-            opacity: settings.gps_opacity
-            //font.family: "Font Awesome 5 Free"
-            text: "Lat:"
+        Column {
+            anchors.bottom: parent.top
             anchors.left: parent.left
-            rightPadding: 2
-            leftPadding: 3
-            anchors.bottom: lon_onscreen.top
-            verticalAlignment: Text.AlignVCenter
-            horizontalAlignment: Text.AlignRight
-            font.pixelSize: 14
-        }
 
-        Text {
-            id: lon_onscreen
-            visible: settings.gps_show_all
-            text: Number(OpenHD.lon).toLocaleString(Qt.locale(), 'f', 6);
-            color: settings.color_text
-            opacity: settings.gps_opacity
-            font.bold: true;
-            height: 16
-            font.pixelSize: 16
-            anchors.left: lon_icon.right
-            anchors.bottom: gps_hdop.top
-            verticalAlignment: Text.AlignVCenter
-        }
+            spacing: 0
 
-        Text {//need better icon
-            id: lon_icon
-            visible: settings.gps_show_all
-            height: 16
-            color: settings.color_shape
-            opacity: settings.gps_opacity
-            //font.family: "Font Awesome 5 Free"
-            text: "Lon:"
-            anchors.left: parent.left
-            rightPadding: 2
-            leftPadding: 3
-            anchors.bottom: gps_hdop.top
-            verticalAlignment: Text.AlignVCenter
-            horizontalAlignment: Text.AlignRight
-            font.pixelSize: 14
+            Row {
+                spacing: 6
+                height: 16
+
+                Text {//need better icon
+                    id: lat_icon
+                    visible: settings.gps_show_all
+                    height: parent.height
+                    width: 32
+                    color: settings.color_shape
+                    opacity: settings.gps_opacity
+                    //font.family: "Font Awesome 5 Free"
+                    text: "Lat:"
+                    horizontalAlignment: Text.AlignLeft
+                    font.pixelSize: 14
+                }
+
+                Text {
+                    id: lat_onscreen
+                    visible: settings.gps_show_all
+                    text: Number(OpenHD.lat).toLocaleString(Qt.locale(), 'f', 6);
+                    color: settings.color_text
+                    opacity: settings.gps_opacity
+                    font.bold: true;
+                    height: parent.height
+                    width: 64
+                    font.pixelSize: 14
+                    horizontalAlignment: Text.AlignRight
+                }
+            }
+
+            Row {
+                spacing: 6
+                height: 16
+
+                Text {//need better icon
+                    id: lon_icon
+                    visible: settings.gps_show_all
+                    height: parent.height
+                    width: 32
+                    color: settings.color_shape
+                    opacity: settings.gps_opacity
+                    //font.family: "Font Awesome 5 Free"
+                    text: "Lon:"
+                    horizontalAlignment: Text.AlignLeft
+                    font.pixelSize: 14
+                }
+
+                Text {
+                    id: lon_onscreen
+                    visible: settings.gps_show_all
+                    text: Number(OpenHD.lon).toLocaleString(Qt.locale(), 'f', 6);
+                    color: settings.color_text
+                    opacity: settings.gps_opacity
+                    font.bold: true
+                    height: parent.height
+                    width: 64
+                    font.pixelSize: 14
+                    horizontalAlignment: Text.AlignRight
+                }
+            }
         }
     }
 }
