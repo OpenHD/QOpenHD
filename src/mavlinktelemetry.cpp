@@ -411,23 +411,18 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             int level = 0;
             switch (statustext.severity) {
                 case MAV_SEVERITY_EMERGENCY:
-                    qDebug() << "EMER:" << statustext.text;
                     level = 7;
                     break;
                 case MAV_SEVERITY_ALERT:
-                    qDebug() << "ALERT:" <<  statustext.text;
                     level = 6;
                     break;
                 case MAV_SEVERITY_CRITICAL:
-                    qDebug() << "CRIT:" <<  statustext.text;
                     level = 5;
                     break;
                 case MAV_SEVERITY_ERROR:
-                    qDebug() << "ERROR:" <<  statustext.text;
                     level = 4;
                     break;
                 case MAV_SEVERITY_WARNING:
-                    qDebug() << "WARN:" <<  statustext.text;
                     level = 3;
                     break;
                 case MAV_SEVERITY_NOTICE:
