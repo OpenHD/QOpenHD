@@ -20,6 +20,7 @@ TMPDIR=/tmp/${PACKAGE_NAME}-installdir
 rm -rf ${TMPDIR}/*
 
 mkdir -p ${TMPDIR}/usr/local/bin || exit 1
+mkdir -p ${TMPDIR}/etc/systemd/system || exit 1
 
 /opt/${QT_VERSION}/bin/qmake
 
