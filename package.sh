@@ -36,12 +36,14 @@ make || exit 1
 cp OpenHDBoot ${TMPDIR}/usr/local/bin/ || exit 1
 popd
 
+cp systemd/* ${TMPDIR}/etc/systemd/system/ || exit 1
 
 VERSION=$(git describe)
 
 rm ${PACKAGE_NAME}_${VERSION//v}_${PACKAGE_ARCH}.deb > /dev/null 2>&1
 
 fpm -a ${PACKAGE_ARCH} -s dir -t deb -n ${PACKAGE_NAME} -v ${VERSION//v} -C ${TMPDIR} \
+  --after-install after-install.sh \
   -p ${PACKAGE_NAME}_VERSION_ARCH.deb \
   -d "openhd-qt >= 5.15.0" || exit 1
 
