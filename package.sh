@@ -21,6 +21,7 @@ rm -rf ${TMPDIR}/*
 
 mkdir -p ${TMPDIR}/usr/local/bin || exit 1
 mkdir -p ${TMPDIR}/etc/systemd/system || exit 1
+mkdir -p ${TMPDIR}/usr/local/share/openhd || exit 1
 
 /opt/${QT_VERSION}/bin/qmake
 
@@ -38,6 +39,7 @@ cp OpenHDBoot ${TMPDIR}/usr/local/bin/ || exit 1
 popd
 
 cp systemd/* ${TMPDIR}/etc/systemd/system/ || exit 1
+cp qt.json ${TMPDIR}/usr/local/share/openhd/ || exit 1
 
 VERSION=$(git describe)
 
