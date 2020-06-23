@@ -493,8 +493,3 @@ contains(ANDROID_TARGET_ARCH,arm64-v8a) {
         $$PWD/android
 }
 
-
-
-
-
-android: include(/opt/SourceCache/Toolchains/android/android_openssl/openssl.pri)
