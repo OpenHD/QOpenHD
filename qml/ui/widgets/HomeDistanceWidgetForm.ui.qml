@@ -33,7 +33,7 @@ BaseWidget {
         Item {
             width: parent.width
             height: 32
-            Text { text: qsTr("Long:");  color: "white"; height: parent.height; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.left: parent.left; verticalAlignment: Text.AlignVCenter }
+            Text { text: qsTr("Lon:");  color: "white"; height: parent.height; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.left: parent.left; verticalAlignment: Text.AlignVCenter }
             Text { text: Number(OpenHD.homelon).toLocaleString(Qt.locale(), 'f', 6); color: "white"; height: parent.height; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.right: parent.right; verticalAlignment: Text.AlignVCenter }
         }
 
