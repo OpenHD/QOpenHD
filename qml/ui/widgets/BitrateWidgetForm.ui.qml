@@ -218,7 +218,13 @@ BaseWidget {
             y: 0
             width: 24
             height: 48
-            color: (OpenHD.kbitrate / OpenHD.kbitrate_measured) >= 0.70 ? ((OpenHD.kbitrate / OpenHD.kbitrate_measured) >= 0.80 ? "#ff0000" : "#fbfd15") : settings.color_shape
+            color: {
+                if (OpenHD.kbitrate_measured <= 0.1) {
+                    return settings.color_shape;
+                }
+
+                return (OpenHD.kbitrate / OpenHD.kbitrate_measured) >= 0.70 ? ((OpenHD.kbitrate / OpenHD.kbitrate_measured) >= 0.80 ? "#ff0000" : "#fbfd15") : settings.color_shape
+            }
             text: "\uf03d"
             anchors.left: parent.left
             anchors.leftMargin: -2
