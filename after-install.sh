@@ -2,5 +2,4 @@
 
 # the openhd scripts start the correct OSD depending on the distro and settings
 systemctl disable qopenhd
-
-systemctl enable openhdboot
+systemctl disable openhdboot
