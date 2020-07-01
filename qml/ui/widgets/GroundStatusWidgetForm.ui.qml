@@ -55,6 +55,16 @@ BaseWidget {
         }
     }
 
+    Glow {
+        anchors.fill: widgetInner
+        visible: settings.show_ground_status
+        radius: 3
+        samples: 17
+        color: settings.color_glow
+        opacity: settings.ground_status_opacity
+        source: widgetInner
+    }
+
     Item {
         id: widgetInner
 

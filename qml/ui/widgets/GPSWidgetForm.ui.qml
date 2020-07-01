@@ -142,6 +142,16 @@ BaseWidget {
         }
     }
 
+    Glow {
+        anchors.fill: widgetInner
+        visible: settings.show_gps
+        radius: 3
+        samples: 17
+        color: settings.color_glow
+        opacity: settings.gps_opacity
+        source: widgetInner
+    }
+
     Item {
         id: widgetInner
 
@@ -263,6 +273,26 @@ BaseWidget {
                     horizontalAlignment: Text.AlignRight
                 }
             }
+        }
+
+        Glow {
+            anchors.fill: lon_onscreen
+            visible: settings.show_gps
+            radius: 3
+            samples: 17
+            color: settings.color_glow
+            opacity: settings.gps_opacity
+            source: lon_onscreen
+        }
+
+        Glow {
+            anchors.fill: lat_onscreen
+            visible: settings.show_gps
+            radius: 3
+            samples: 17
+            color: settings.color_glow
+            opacity: settings.gps_opacity
+            source: lat_onscreen
         }
     }
 }

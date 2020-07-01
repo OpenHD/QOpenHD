@@ -107,6 +107,9 @@ ApplicationWindow {
         property bool show_uplink_rssi: true
         property double uplink_rssi_opacity: 1
 
+        property bool show_rc_rssi: false
+        property double rc_rssi_opacity: 1
+
         property bool show_bitrate: true
         property double bitrate_opacity: 1
         property bool bitrate_show_skip_fail_count: false
@@ -130,7 +133,7 @@ ApplicationWindow {
         property double flight_mode_opacity: 1
 
         property bool show_flight_distance: true
-        property double distance_opacity: 1
+        property double flight_distance_opacity: 1
 
         property bool show_flight_mah: true
         property bool flight_mah_use_telemetry: true

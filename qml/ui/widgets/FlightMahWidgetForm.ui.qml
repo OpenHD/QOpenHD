@@ -78,6 +78,16 @@ BaseWidget {
         }
     }
 
+    Glow {
+        anchors.fill: widgetInner
+        visible: settings.show_flight_mah
+        radius: 3
+        samples: 17
+        color: settings.color_glow
+        opacity: settings.mah_opacity
+        source: widgetInner
+    }
+
     Item {
         id: widgetInner
 

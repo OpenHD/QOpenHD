@@ -103,6 +103,16 @@ BaseWidget {
         }
     }
 
+    Glow {
+        anchors.fill: widgetInner
+        visible: settings.show_fpv
+        radius: 3
+        samples: 17
+        color: settings.color_glow
+        opacity: settings.fpv_opacity
+        source: widgetInner
+    }
+
     Item {
         id: widgetInner
         height: 40
@@ -133,15 +143,6 @@ BaseWidget {
 
 
             antialiasing: true
-
-            Glow {
-                anchors.fill: widgetGlyph
-                radius: 4
-                samples: 17
-                color: settings.color_glow
-                opacity: settings.fpv_opacity
-                source: widgetGlyph
-            }
 
             Text {
                 id: widgetGlyph

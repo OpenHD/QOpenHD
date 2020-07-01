@@ -55,6 +55,16 @@ BaseWidget {
         }
     }
 
+    Glow {
+        anchors.fill: widgetInner
+        visible: settings.show_flight_timer
+        radius: 3
+        samples: 17
+        color: settings.color_glow
+        opacity: settings.flight_timer_opacity
+        source: widgetInner
+    }
+
     Item {
         id: widgetInner
 

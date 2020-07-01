@@ -187,6 +187,16 @@ BaseWidget {
         }
     }
 
+    Glow {
+        anchors.fill: widgetInner
+        visible: settings.show_bitrate
+        radius: 3
+        samples: 17
+        color: settings.color_glow
+        opacity: settings.bitrate_opacity
+        source: widgetInner
+    }
+
 
     Item {
         id: widgetInner

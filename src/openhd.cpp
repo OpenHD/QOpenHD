@@ -151,10 +151,10 @@ void OpenHD::updateFlightDistance() {
         flightDistanceLastTime = time;
 
         auto added_distance =  m_speed * time_diff;
-        qDebug() << "added distance" << added_distance;
+        //qDebug() << "added distance" << added_distance;
         total_dist = total_dist + added_distance;
 
-        qDebug() << "total distance" << total_dist;
+        //qDebug() << "total distance" << total_dist;
         set_flight_distance( total_dist);
     }
 }
@@ -467,6 +467,11 @@ void OpenHD::set_control_yaw(int control_yaw) {
 void OpenHD::set_control_throttle(int control_throttle) {
     m_control_throttle = control_throttle;
      emit control_throttle_changed(m_control_throttle);
+}
+
+void OpenHD::set_rc_rssi(int rc_rssi) {
+    m_rc_rssi = rc_rssi;
+    emit rc_rssi_changed(m_rc_rssi);
 }
 
 void OpenHD::set_downlink_rssi(int downlink_rssi) {
