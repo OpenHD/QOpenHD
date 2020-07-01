@@ -26,8 +26,8 @@ BaseWidget {
     widgetIdentifier: "wind_widget"
 
     defaultAlignment: 3
-    defaultXOffset: 100
-    defaultYOffset: 100
+    defaultXOffset: 6
+    defaultYOffset: 128
 
     hasWidgetDetail: true
     widgetDetailComponent: Column {
@@ -35,7 +35,7 @@ BaseWidget {
             width: parent.width
             height: 32
             Text {
-                text: "Transparency"
+                text: qsTr("Transparency")
                 color: "white"
                 height: parent.height
                 font.bold: true
@@ -64,7 +64,7 @@ BaseWidget {
             width: parent.width
             height: 32
             Text {
-                text: "Style: Arrow / Circle"
+                text: qsTr("Style: Arrow / Circle")
                 color: "white"
                 height: parent.height
                 font.bold: true
@@ -75,7 +75,7 @@ BaseWidget {
             Switch {
                 width: 32
                 height: parent.height
-                anchors.rightMargin: 12
+                anchors.rightMargin: 6
                 anchors.right: parent.right
                 checked: settings.wind_arrow_circle
                 onCheckedChanged: settings.wind_arrow_circle = checked
@@ -85,7 +85,7 @@ BaseWidget {
             width: parent.width
             height: 32
             Text {
-                text: "Plane / Copter"
+                text: qsTr("Plane / Copter")
                 color: "white"
                 height: parent.height
                 font.bold: true
@@ -96,7 +96,7 @@ BaseWidget {
             Switch {
                 width: 32
                 height: parent.height
-                anchors.rightMargin: 12
+                anchors.rightMargin: 6
                 anchors.right: parent.right
                 checked: settings.wind_plane_copter
                 onCheckedChanged: settings.wind_plane_copter = checked
@@ -108,7 +108,7 @@ BaseWidget {
             visible: settings.wind_plane_copter ? true : false
 
             Text {
-                text: "45 Degree Speed M/S"
+                text: qsTr("45 Degree Speed M/S")
                 color: "white"
                 height: parent.height
                 font.bold: true

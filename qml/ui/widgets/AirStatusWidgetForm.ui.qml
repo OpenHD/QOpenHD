@@ -28,7 +28,7 @@ BaseWidget {
             height: 32
             Text {
                 id: opacityTitle
-                text: "Transparency"
+                text: qsTr("Transparency")
                 color: "white"
                 height: parent.height
                 font.bold: true
@@ -95,7 +95,7 @@ BaseWidget {
             y: 0
             width: 36
             height: 24
-            color: settings.color_text
+            color: OpenHD.cpuload_air >= 70 ? (OpenHD.cpuload_air >= 80 ? "#ff0000" : "#fbfd15") : settings.color_text
             opacity: settings.air_status_opacity
             text: Number(OpenHD.cpuload_air).toLocaleString(Qt.locale(), 'f', 0) + "%";
             anchors.right: temp_air.left
@@ -112,7 +112,7 @@ BaseWidget {
             y: 4
             width: 36
             height: 24
-            color: settings.color_text
+            color: OpenHD.temp_air >= 65 ? (OpenHD.temp_air >= 75 ? "#ff0000" : "#fbfd15") : settings.color_text
             opacity: settings.air_status_opacity
             text: Number(OpenHD.temp_air).toLocaleString(Qt.locale(), 'f', 0) + "°";
             anchors.verticalCenter: parent.verticalCenter

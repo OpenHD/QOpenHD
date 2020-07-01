@@ -38,7 +38,7 @@ BaseWidget {
                 height: 32
                 Text {
                     id: opacityTitle
-                    text: "Transparency"
+                    text: qsTr("Transparency")
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -68,7 +68,7 @@ BaseWidget {
                 height: 32
                 Text {
                     id: displaySwitcher
-                    text: "Show two controls"
+                    text: qsTr("Show two controls")
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -79,7 +79,7 @@ BaseWidget {
                 Switch {
                     width: 32
                     height: parent.height
-                    anchors.rightMargin: 12
+                    anchors.rightMargin: 6
                     anchors.right: parent.right
                     checked: settings.double_control
                     onCheckedChanged: settings.double_control = checked
@@ -89,7 +89,7 @@ BaseWidget {
                 width: 240
                 height: 32
                 Text {
-                    text: "Reverse Pitch: No / Yes"
+                    text: qsTr("Reverse Pitch")
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -100,7 +100,7 @@ BaseWidget {
                 Switch {
                     width: 32
                     height: parent.height
-                    anchors.rightMargin: 12
+                    anchors.rightMargin: 6
                     anchors.right: parent.right
                     checked: settings.control_rev_pitch
                     onCheckedChanged: settings.control_rev_pitch = checked
@@ -110,7 +110,7 @@ BaseWidget {
                 width: 240
                 height: 32
                 Text {
-                    text: "Reverse Roll: No / Yes"
+                    text: qsTr("Reverse Roll")
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -121,7 +121,7 @@ BaseWidget {
                 Switch {
                     width: 32
                     height: parent.height
-                    anchors.rightMargin: 12
+                    anchors.rightMargin: 6
                     anchors.right: parent.right
                     checked: settings.control_rev_roll
                     onCheckedChanged: settings.control_rev_roll = checked
@@ -131,7 +131,7 @@ BaseWidget {
                 width: 240
                 height: 32
                 Text {
-                    text: "Reverse yaw: No / Yes"
+                    text: qsTr("Reverse yaw")
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -142,7 +142,7 @@ BaseWidget {
                 Switch {
                     width: 32
                     height: parent.height
-                    anchors.rightMargin: 12
+                    anchors.rightMargin: 6
                     anchors.right: parent.right
                     checked: settings.control_rev_yaw
                     onCheckedChanged: settings.control_rev_yaw = checked
@@ -152,7 +152,7 @@ BaseWidget {
                 width: 240
                 height: 32
                 Text {
-                    text: "Reverse Throttle: No / Yes"
+                    text: qsTr("Reverse Throttle")
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -163,7 +163,7 @@ BaseWidget {
                 Switch {
                     width: 32
                     height: parent.height
-                    anchors.rightMargin: 12
+                    anchors.rightMargin: 6
                     anchors.right: parent.right
                     checked: settings.control_rev_throttle
                     onCheckedChanged: settings.control_rev_throttle = checked

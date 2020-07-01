@@ -112,6 +112,8 @@ signals:
     void commandDone();
     void commandFailed();
 
+    void bindError();
+
 public slots:
     void onStarted();
 

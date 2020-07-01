@@ -7,6 +7,8 @@ BASEDIR = $$IN_PWD
 LANGUAGE = C++
 CONFIG += c++11
 CONFIG+=sdk_no_version_check
+TRANSLATIONS = translations/QOpenHD_en.ts translations/QOpenHD_de.ts translations/QOpenHD_ru.ts
+
 
 include(platforms.pri)
 
@@ -16,8 +18,6 @@ include ($$PWD/lib/SortFilterProxyModel/SortFilterProxyModel.pri)
 
 
 CONFIG(debug, debug|release) {
-    DESTDIR = $${OUT_PWD}/debug
-
     CONFIG += debug
     DEFINES += QMLJSDEBUGGER
 } else:CONFIG(release, debug|release) {
@@ -31,7 +31,6 @@ CONFIG(debug, debug|release) {
             }
         }
     }
-    DESTDIR = $${OUT_PWD}/release
     DEFINES += QMLJSDEBUGGER
 }
 
@@ -194,8 +193,6 @@ iOSBuild {
     CONFIG += EnableLink
     #CONFIG += EnableCharts
 
-    #QMAKE_POST_LINK += /usr/libexec/PlistBuddy -c \"Set :CFBundleShortVersionString $$APPLE_BUILD\" $$DESTDIR/$${TARGET}.app/Contents/Info.plist
-    #QMAKE_POST_LINK += && /usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $$APPLE_BUILD\" $$DESTDIR/$${TARGET}.app/Contents/Info.plist
     app_launch_images.files = $$PWD/icons/LaunchScreen.png $$files($$PWD/icons/LaunchScreen.storyboard)
     QMAKE_BUNDLE_DATA += app_launch_images
 
@@ -210,6 +207,12 @@ iOSBuild {
         SOURCES += \
             src/openhdapplevideo.cpp
     }
+
+    HEADERS += \
+        src/appleplatform.h
+
+    SOURCES += \
+        src/appleplatform.mm
 
     EnableGStreamer {
         DEFINES += GST_GL_HAVE_WINDOW_EAGL=1
@@ -326,7 +329,23 @@ AndroidBuild {
         DEFINES += HAVE_QT_ANDROID
     }
 
+    EnableVideoRender {
+        LIBS += -lmediandk
+        LIBS += -landroid
+        QT += multimedia
 
+        HEADERS += \
+            inc/openhdandroidrender.h \
+            inc/openhdandroidvideo.h
+
+        SOURCES += \
+            src/openhdandroidrender.cpp \
+            src/openhdandroidvideo.cpp
+
+        OTHER_FILES += \
+            $$PWD/android/src/org/openhd/OpenHDActivity.java \
+            $$PWD/android/src/org/openhd/SurfaceTextureListener.java
+    }
     QT += androidextras
 }
 
@@ -440,11 +459,7 @@ installer {
         OTHER_FILES += tools/qopenhd_installer.nsi
         QMAKE_POST_LINK +=$${PWD}/win_deploy_sdl.cmd \"$$DESTDIR_WIN\" \"$$PWD\QJoysticks\lib\SDL\bin\windows\msvc\x86\" $$escape_expand(\\n)
 
-        QMAKE_POST_LINK += $$escape_expand(\\n) c:\Qt\5.14.2\msvc2017\bin\windeployqt.exe --qmldir $${PWD}/qml \"$${DESTDIR_WIN}\\QOpenHD.exe\"
-
-        #QMAKE_POST_LINK += && $$escape_expand(\\n) $$QMAKE_COPY \"C:\\Windows\\System32\\msvcp140.dll\"  \"$$DESTDIR_WIN\"
-        #QMAKE_POST_LINK += && $$escape_expand(\\n) $$QMAKE_COPY \"C:\\Windows\\System32\\msvcr140.dll\"  \"$$DESTDIR_WIN\"
-        #QMAKE_POST_LINK += && $$escape_expand(\\n) $$QMAKE_COPY \"C:\\Windows\\System32\\msvcruntime140.dll\"  \"$$DESTDIR_WIN\"
+        QMAKE_POST_LINK += $$escape_expand(\\n) c:\Qt\5.15.0\msvc2019\bin\windeployqt.exe --qmldir $${PWD}/qml \"$${DESTDIR_WIN}\\QOpenHD.exe\"
 
         QMAKE_POST_LINK += $$escape_expand(\\n) cd $$BASEDIR_WIN && $$quote("\"C:\\Program Files \(x86\)\\NSIS\\makensis.exe\"" /DINSTALLER_ICON="\"$${PWD}\icons\openhd.ico\"" /DHEADER_BITMAP="\"$${PWD}\icons\LaunchScreen.png\"" /DAPPNAME="\"QOpenHD\"" /DEXENAME="\"$${TARGET}\"" /DORGNAME="\"Open.HD\"" /DDESTDIR=$${DESTDIR} /NOCD "\"/XOutFile $${DESTDIR_WIN}\\QOpenHD-$${QOPENHD_VERSION}.exe\"" "$$PWD/tools/qopenhd_installer.nsi")
 
@@ -452,8 +467,6 @@ installer {
     AndroidBuild {
         QMAKE_POST_LINK += mkdir -p $${DESTDIR}/package
         QMAKE_POST_LINK += && make install INSTALL_ROOT=$${DESTDIR}/android-build/
-        #QMAKE_POST_LINK += && androiddeployqt --input $${DESTDIR}/android-libQOpenHD.so-deployment-settings.json --output $${DESTDIR}/android-build --deployment bundled --gradle --sign $${HOME}/.android/android_release.keystore dagar --storepass $$(ANDROID_STOREPASS)
-        #QMAKE_POST_LINK += && cp $${DESTDIR}/android-build/build/outputs/apk/android-build-release-signed.apk $${DESTDIR}/package/QOpenHD-$$QOPENHD_VERSION.apk
     }
 }
 
@@ -468,8 +481,4 @@ contains(ANDROID_TARGET_ARCH,arm64-v8a) {
     ANDROID_PACKAGE_SOURCE_DIR = \
         $$PWD/android
 }
-
-
-
-
 

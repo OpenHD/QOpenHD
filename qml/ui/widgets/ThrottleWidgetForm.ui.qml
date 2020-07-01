@@ -20,8 +20,8 @@ BaseWidget {
     widgetIdentifier: "throttle_widget"
 
     defaultAlignment: 2
-    defaultXOffset: 72
-    defaultYOffset: 58
+    defaultXOffset: 96
+    defaultYOffset: 72
     defaultHCenter: false
     defaultVCenter: false
 
@@ -32,7 +32,7 @@ BaseWidget {
             height: 32
             Text {
                 id: opacityTitle
-                text: "Transparency"
+                text: qsTr("Transparency")
                 color: "white"
                 height: parent.height
                 font.bold: true

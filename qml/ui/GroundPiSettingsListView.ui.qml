@@ -18,9 +18,6 @@ ListView {
     property var currentModel: model
 
     delegate: Loader {
-        anchors.left: parent.left
-        anchors.right: parent.right
-
         property var listModel: currentModel
         property var itemModel: model
         /*property var choiceValues: model.choiceValues

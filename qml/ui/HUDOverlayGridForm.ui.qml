@@ -11,42 +11,7 @@ import Qt.labs.settings 1.0
 import "./widgets"
 
 Item {
-
-    property alias home_distance: home_distance
-    property alias flight_timer: flight_timer
-    property alias flight_distance: flight_distance
-    property alias flight_mah: flight_mah
-    property alias flight_mode: flight_mode
-    property alias air_battery: air_battery
-    property alias gps: gps
-
-    property alias downlink: downlink
-    property alias uplink: uplink
-    property alias bitrate: bitrate
-    property alias air_status: air_status
-    property alias ground_status: ground_status
     property alias messageHUD: messageHUD
-
-    property alias horizonWidget: horizonWidget
-    property alias fpvWidget: fpvWidget
-
-    property alias altitudeWidget: altitudeWidget
-    property alias altitudesecondWidget: altitudesecondWidget
-    property alias speedWidget: speedWidget
-    property alias headingWidget: headingWidget
-    property alias arrowWidget: arrowWidget
-
-    property alias mapWidget: mapWidget
-
-    property alias throttleWidget: throttleWidget
-
-    property alias controlWidget: controlWidget
-
-    property alias vibrationWidget: vibrationWidget
-
-    property alias vsiWidget: vsiWidget
-
-    property alias windWidget: windWidget
 
     MessageHUD {
         id: messageHUD
@@ -164,6 +129,10 @@ Item {
 
     WindWidget {
         id: windWidget
+    }
+
+    ExampleWidget {
+        id: exampleWidget
     }
 }
 

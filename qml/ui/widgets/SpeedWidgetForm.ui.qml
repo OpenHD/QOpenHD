@@ -23,177 +23,173 @@ BaseWidget {
     defaultHCenter: false
 
     hasWidgetDetail: true
-    widgetDetailComponent: ScrollView{
+    widgetDetailHeight: 224
+    widgetDetailWidth: 264
 
-        contentHeight: speedSettingsColumn.height
-        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
-        clip: true
+    widgetDetailComponent: Column {
+        id: speedSettingsColumn
+        spacing: 0
 
-        ColumnLayout{
-            id: speedSettingsColumn
-            spacing:0
-            clip: true
-            Item {
-                width: 240
-                height: 32
-                Text {
-                    id: opacityTitle
-                    text: "Transparency"
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Slider {
-                    id: speed_opacity_Slider
-                    orientation: Qt.Horizontal
-                    from: .1
-                    value: settings.speed_opacity
-                    to: 1
-                    stepSize: .1
-                    height: parent.height
-                    anchors.rightMargin: 5
-                    anchors.right: parent.right
-                    width: parent.width - 96
+        Item {
+            width: parent.width
+            height: 32
+            Text {
+                id: opacityTitle
+                text: qsTr("Transparency")
+                color: "white"
+                height: parent.height
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
+            Slider {
+                id: speed_opacity_Slider
+                orientation: Qt.Horizontal
+                from: .1
+                value: settings.speed_opacity
+                to: 1
+                stepSize: .1
+                height: parent.height
+                anchors.rightMargin: 0
+                anchors.right: parent.right
+                width: parent.width - 96
 
-                    onValueChanged: {
-                        settings.speed_opacity = speed_opacity_Slider.value
-                    }
+                onValueChanged: {
+                    settings.speed_opacity = speed_opacity_Slider.value
                 }
             }
-            Item {
-                width: 240
-                height: 32
-                Text {
-                    id: sizeTitle
-                    text: "Size"
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Slider {
-                    id: speed_size_Slider
-                    orientation: Qt.Horizontal
-                    from: .7
-                    value: settings.speed_size
-                    to: 3
-                    stepSize: .1
-                    height: parent.height
-                    anchors.rightMargin: 5
-                    anchors.right: parent.right
-                    width: parent.width - 96
+        }
+        Item {
+            width: parent.width
+            height: 32
+            Text {
+                id: sizeTitle
+                text: qsTr("Size")
+                color: "white"
+                height: parent.height
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
+            Slider {
+                id: speed_size_Slider
+                orientation: Qt.Horizontal
+                from: .7
+                value: settings.speed_size
+                to: 3
+                stepSize: .1
+                height: parent.height
+                anchors.rightMargin: 0
+                anchors.right: parent.right
+                width: parent.width - 96
 
-                    onValueChanged: {
-                        settings.speed_size = speed_size_Slider.value
-                    }
+                onValueChanged: {
+                    settings.speed_size = speed_size_Slider.value
                 }
             }
-            Item {
-                width: 240
-                height: 32
-                Text {
-                    text: "Airspeed / GPS"
-                    horizontalAlignment: Text.AlignRight
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Switch {
-                    width: 32
-                    height: parent.height
-                    anchors.rightMargin: 12
-                    anchors.right: parent.right
-                    checked: settings.speed_airspeed_gps
-                    onCheckedChanged: settings.speed_airspeed_gps = checked
-                }
+        }
+        Item {
+            width: parent.width
+            height: 32
+            Text {
+                text: qsTr("Airspeed / GPS")
+                horizontalAlignment: Text.AlignRight
+                color: "white"
+                height: parent.height
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
             }
-            Item {
-                width: 240
-                height: 32
-                Text {
-                    text: "Show ladder"
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Switch {
-                    width: 32
-                    height: parent.height
-                    anchors.rightMargin: 12
-                    anchors.right: parent.right
-                    checked: settings.show_speed_ladder
-                    onCheckedChanged: settings.show_speed_ladder = checked
-                }
+            Switch {
+                width: 32
+                height: parent.height
+                anchors.rightMargin: 6
+                anchors.right: parent.right
+                checked: settings.speed_airspeed_gps
+                onCheckedChanged: settings.speed_airspeed_gps = checked
             }
-            Item {
-                width: 240
-                height: 32
-                Text {
-                    text: "Range"
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Slider {
-                    id: speed_range_Slider
-                    orientation: Qt.Horizontal
-                    from: 40
-                    value: settings.speed_range
-                    to: 150
-                    stepSize: 10
-                    height: parent.height
-                    anchors.rightMargin: 5
-                    anchors.right: parent.right
-                    width: parent.width - 96
+        }
+        Item {
+            width: parent.width
+            height: 32
+            Text {
+                text: qsTr("Show ladder")
+                color: "white"
+                height: parent.height
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
+            Switch {
+                width: 32
+                height: parent.height
+                anchors.rightMargin: 6
+                anchors.right: parent.right
+                checked: settings.show_speed_ladder
+                onCheckedChanged: settings.show_speed_ladder = checked
+            }
+        }
+        Item {
+            width: parent.width
+            height: 32
+            Text {
+                text: qsTr("Range")
+                color: "white"
+                height: parent.height
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
+            Slider {
+                id: speed_range_Slider
+                orientation: Qt.Horizontal
+                from: 40
+                value: settings.speed_range
+                to: 150
+                stepSize: 10
+                height: parent.height
+                anchors.rightMargin: 0
+                anchors.right: parent.right
+                width: parent.width - 96
 
-                    onValueChanged: { // @disable-check M223
-                        settings.speed_range = speed_range_Slider.value;
-                        canvasSpeedLadder.requestPaint();
-                    }
+                onValueChanged: { // @disable-check M223
+                    settings.speed_range = speed_range_Slider.value;
+                    canvasSpeedLadder.requestPaint();
                 }
             }
-            Item {
-                width: 240
-                height: 32
-                Text {
-                    text: "Minimum"
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Slider {
-                    id: speed_minimum_Slider
-                    orientation: Qt.Horizontal
-                    from: 0
-                    value: settings.speed_minimum
-                    to: 50
-                    stepSize: 10
-                    height: parent.height
-                    anchors.rightMargin: 5
-                    anchors.right: parent.right
-                    width: parent.width - 96
+        }
+        Item {
+            width: parent.width
+            height: 32
+            Text {
+                text: qsTr("Minimum")
+                color: "white"
+                height: parent.height
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
+            Slider {
+                id: speed_minimum_Slider
+                orientation: Qt.Horizontal
+                from: 0
+                value: settings.speed_minimum
+                to: 50
+                stepSize: 10
+                height: parent.height
+                anchors.rightMargin: 0
+                anchors.right: parent.right
+                width: parent.width - 96
 
-                    onValueChanged: { // @disable-check M223
-                        settings.speed_minimum = speed_minimum_Slider.value
-                        canvasSpeedLadder.requestPaint();
-                    }
+                onValueChanged: { // @disable-check M223
+                    settings.speed_minimum = speed_minimum_Slider.value
+                    canvasSpeedLadder.requestPaint();
                 }
             }
         }
@@ -226,7 +222,7 @@ BaseWidget {
 
             Connections{
                 target:OpenHD
-                onSpeedChanged: { // if user selects msl it is part of same mavlink msg
+                function onSpeedChanged() { // if user selects msl it is part of same mavlink msg
                     canvasSpeedLadder.requestPaint()
                 }
             }

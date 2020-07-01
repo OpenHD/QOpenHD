@@ -307,6 +307,32 @@ public:
     Q_PROPERTY(double ground_iout MEMBER m_ground_iout WRITE set_ground_iout NOTIFY ground_iout_changed)
     void set_ground_iout(double ground_iout);
 
+
+
+    Q_PROPERTY(int rcChannel1 MEMBER mRCChannel1 WRITE setRCChannel1 NOTIFY rcChannel1Changed)
+    void setRCChannel1(int rcChannel1);
+
+    Q_PROPERTY(int rcChannel2 MEMBER mRCChannel2 WRITE setRCChannel2 NOTIFY rcChannel2Changed)
+    void setRCChannel2(int rcChannel2);
+
+    Q_PROPERTY(int rcChannel3 MEMBER mRCChannel3 WRITE setRCChannel3 NOTIFY rcChannel3Changed)
+    void setRCChannel3(int rcChannel3);
+
+    Q_PROPERTY(int rcChannel4 MEMBER mRCChannel4 WRITE setRCChannel4 NOTIFY rcChannel4Changed)
+    void setRCChannel4(int rcChannel4);
+
+    Q_PROPERTY(int rcChannel5 MEMBER mRCChannel5 WRITE setRCChannel5 NOTIFY rcChannel5Changed)
+    void setRCChannel5(int rcChannel5);
+
+    Q_PROPERTY(int rcChannel6 MEMBER mRCChannel6 WRITE setRCChannel6 NOTIFY rcChannel6Changed)
+    void setRCChannel6(int rcChannel6);
+
+    Q_PROPERTY(int rcChannel7 MEMBER mRCChannel7 WRITE setRCChannel7 NOTIFY rcChannel7Changed)
+    void setRCChannel7(int rcChannel7);
+
+    Q_PROPERTY(int rcChannel8 MEMBER mRCChannel8 WRITE setRCChannel8 NOTIFY rcChannel8Changed)
+    void setRCChannel8(int rcChannel8);
+
 signals:
     // system
     void gstreamer_version_changed();
@@ -433,6 +459,15 @@ signals:
     void ground_vout_changed(double ground_vout);
     void ground_vbat_changed(double ground_vbat);
     void ground_iout_changed(double ground_iout);
+
+    void rcChannel1Changed(int rcChanne1);
+    void rcChannel2Changed(int rcChanne2);
+    void rcChannel3Changed(int rcChanne3);
+    void rcChannel4Changed(int rcChanne4);
+    void rcChannel5Changed(int rcChanne5);
+    void rcChannel6Changed(int rcChanne6);
+    void rcChannel7Changed(int rcChanne7);
+    void rcChannel8Changed(int rcChanne8);
 
 private:
 #if defined(ENABLE_SPEECH)
@@ -572,6 +607,15 @@ private:
     double m_ground_vout = 0.0;
     double m_ground_vbat = 0.0;
     double m_ground_iout = 0.0;
+
+    int mRCChannel1 = 0;
+    int mRCChannel2 = 0;
+    int mRCChannel3 = 0;
+    int mRCChannel4 = 0;
+    int mRCChannel5 = 0;
+    int mRCChannel6 = 0;
+    int mRCChannel7 = 0;
+    int mRCChannel8 = 0;
 };
 
 

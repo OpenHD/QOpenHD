@@ -15,7 +15,7 @@ ThrottleWidgetForm {
     Connections {
         target: OpenHD
 
-        onThrottleChanged: {
+        function onThrottleChanged(throttle) {
             gaugeAngle = map(throttle, 0, 100, 0, 180);
         }
     }

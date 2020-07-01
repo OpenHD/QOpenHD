@@ -28,7 +28,7 @@ BaseWidget {
             height: 32
             Text {
                 id: opacityTitle
-                text: "Transparency"
+                text: qsTr("Transparency")
                 color: "white"
                 height: parent.height
                 font.bold: true
@@ -59,7 +59,7 @@ BaseWidget {
             height: 32
             Text {
                 id: mslTitle
-                text: "Relative / MSL"
+                text: qsTr("Relative / MSL")
                 color: "white"
                 height: parent.height
                 font.bold: true
@@ -70,7 +70,7 @@ BaseWidget {
             Switch {
                 width: 32
                 height: parent.height
-                anchors.rightMargin: 12
+                anchors.rightMargin: 6
                 anchors.right: parent.right
                 checked: settings.altitude_second_msl_rel
                 onCheckedChanged: settings.altitude_second_msl_rel = checked
@@ -96,30 +96,31 @@ BaseWidget {
             color: settings.color_text
             opacity: settings.altitude_second_opacity
             font.pixelSize: 14
+            width: 40
+            anchors.right: parent.right
+            anchors.rightMargin: 0
+            anchors.verticalCenter: widgetGlyph.verticalCenter
             text: Number(settings.enable_imperial ? (settings.altitude_second_msl_rel ? (OpenHD.alt_msl*3.28) : (OpenHD.alt_rel*3.28)) :
                       (settings.altitude_second_msl_rel ? OpenHD.alt_msl : OpenHD.alt_rel)
                       ).toLocaleString(
                       Qt.locale(), 'f', 0)
             horizontalAlignment: Text.AlignRight
-            topPadding: 2
-            bottomPadding: 2
-            anchors.fill: parent
+            verticalAlignment: Text.AlignVCenter
         }
 
         Text {
             id: widgetGlyph
-            y: 0
             width: 40
-            height: 18
+            height: parent.height
             color: settings.color_shape
             opacity: settings.altitude_second_opacity
-            text: "\u21a8"
+            text: "\uf338"
             anchors.left: parent.left
             anchors.leftMargin: 0
-            anchors.horizontalCenter: parent.horizontalCenter
             anchors.verticalCenter: parent.verticalCenter
             font.family: "Font Awesome 5 Free"
             font.pixelSize: 14
+            verticalAlignment: Text.AlignVCenter
         }
 
         antialiasing: true

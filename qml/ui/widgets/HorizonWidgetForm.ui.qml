@@ -34,7 +34,7 @@ BaseWidget {
                 width: 230
                 height: 32
                 Text {
-                    text: "Transparency"
+                    text: qsTr("Transparency")
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -50,7 +50,7 @@ BaseWidget {
                     to: 1
                     stepSize: .1
                     height: parent.height
-                    anchors.rightMargin: 5
+                    anchors.rightMargin: 0
                     anchors.right: parent.right
                     width: parent.width - 96
 
@@ -63,7 +63,7 @@ BaseWidget {
                 width: 230
                 height: 32
                 Text {
-                    text: "Size"
+                    text: qsTr("Size")
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -79,7 +79,7 @@ BaseWidget {
                     to: 3
                     stepSize: .1
                     height: parent.height
-                    anchors.rightMargin: 5
+                    anchors.rightMargin: 0
                     anchors.right: parent.right
                     width: parent.width - 96
 
@@ -92,7 +92,7 @@ BaseWidget {
                 width: 230
                 height: 32
                 Text {
-                    text: "Invert Pitch"
+                    text: qsTr("Invert Pitch")
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -103,7 +103,7 @@ BaseWidget {
                 Switch {
                     width: 32
                     height: parent.height
-                    anchors.rightMargin: 12
+                    anchors.rightMargin: 6
                     anchors.right: parent.right
                     checked: settings.horizon_invert_pitch
                     onCheckedChanged: settings.horizon_invert_pitch = checked
@@ -114,7 +114,7 @@ BaseWidget {
                 height: 32
                 Text {
                     id: invertTitle
-                    text: "Invert Roll"
+                    text: qsTr("Invert Roll")
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -125,7 +125,7 @@ BaseWidget {
                 Switch {
                     width: 32
                     height: parent.height
-                    anchors.rightMargin: 12
+                    anchors.rightMargin: 6
                     anchors.right: parent.right
                     checked: settings.horizon_invert_roll
                     onCheckedChanged: settings.horizon_invert_roll = checked
@@ -136,7 +136,7 @@ BaseWidget {
                 height: 32
                 visible: true
                 Text {
-                    text: "Spacing"
+                    text: qsTr("Spacing")
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -152,7 +152,7 @@ BaseWidget {
                     to: 20
                     stepSize: 1
                     height: parent.height
-                    anchors.rightMargin: 5
+                    anchors.rightMargin: 0
                     anchors.right: parent.right
                     width: parent.width - 96
 
@@ -165,7 +165,7 @@ BaseWidget {
                 width: 230
                 height: 32
                 Text {
-                    text: "Show Ladder"
+                    text: qsTr("Show Ladder")
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -176,7 +176,7 @@ BaseWidget {
                 Switch {
                     width: 32
                     height: parent.height
-                    anchors.rightMargin: 12
+                    anchors.rightMargin: 6
                     anchors.right: parent.right
                     checked: settings.show_horizon_ladder
                     onCheckedChanged: settings.show_horizon_ladder = checked

@@ -63,7 +63,7 @@ Rectangle {
         height: 14
         clip: true
         color: "#b3ffffff"
-        text: "Ground: " + GroundStatusMicroservice.openHDVersion
+        text: qsTr("Ground: ") + GroundStatusMicroservice.openHDVersion
         anchors.left: title.left
         anchors.leftMargin: 0
         anchors.top: qopenhd_version.bottom
@@ -77,7 +77,7 @@ Rectangle {
         height: 14
         clip: true
         color: "#b3ffffff"
-        text: "Air: " + AirStatusMicroservice.openHDVersion
+        text: qsTr("Air: ") + AirStatusMicroservice.openHDVersion
         anchors.left: title.left
         anchors.leftMargin: 0
         anchors.top: openhd_version.bottom
@@ -115,7 +115,7 @@ Rectangle {
     Text {
         id: license
         color: "#b3ffffff"
-        text: "License: GPLv3"
+        text: qsTr("License: GPLv3")
         onLinkActivated: {
             Qt.openUrlExternally("https://github.com/OpenHD/QOpenHD/blob/master/LICENSE")
         }

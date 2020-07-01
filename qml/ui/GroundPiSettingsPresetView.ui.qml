@@ -50,12 +50,14 @@ ScrollView {
             text: qsTr("Presets are groups of settings that must be configured together for some OpenHD features and to make common configurations easier to use. Once you apply a preset, the ground station will reboot and enter SmartSync mode automatically, then power on your drone to let it sync the new settings.");
             wrapMode: Text.WordWrap
             width: parent.width - 48
+            font.pixelSize: 14
         }
 
         Text {
             text: qsTr("Note: you can apply more than one preset, but any settings that are mutually exclusive (band switcher + 2nd camera at the same time), the last preset to be configured \"wins\"");
             wrapMode: Text.WordWrap
             width: parent.width - 48
+            font.pixelSize: 14
         }
 
         Row {
@@ -91,11 +93,13 @@ ScrollView {
             id: presetDescription
             wrapMode: Text.WordWrap
             width: parent.width - 48
+            font.pixelSize: 14
         }
 
         Text {
             id: changesTitle
             text: qsTr("Changes that will be applied:")
+            font.pixelSize: 14
         }
 
         Rectangle {

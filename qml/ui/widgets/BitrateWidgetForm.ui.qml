@@ -32,7 +32,7 @@ BaseWidget {
             width: parent.width
             height: 32
             Text {
-                text: "Measured:"
+                text: qsTr("Measured:")
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -54,7 +54,7 @@ BaseWidget {
             width: parent.width
             height: 32
             Text {
-                text: "Set:"
+                text: qsTr("Set:")
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -77,7 +77,7 @@ BaseWidget {
             width: parent.width
             height: 32
             Text {
-                text: "Skipped packets:"
+                text: qsTr("Skipped packets:")
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -100,7 +100,7 @@ BaseWidget {
             width: parent.width
             height: 32
             Text {
-                text: "Injection failed:"
+                text: qsTr("Injection failed:")
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -139,7 +139,7 @@ BaseWidget {
             height: 32
             Text {
                 id: opacityTitle
-                text: "Transparency"
+                text: qsTr("Transparency")
                 color: "white"
                 height: parent.height
                 font.bold: true
@@ -168,7 +168,7 @@ BaseWidget {
             width: parent.width
             height: 32
             Text {
-                text: "Show all data"
+                text: qsTr("Show skip / fail count")
                 color: "white"
                 height: parent.height
                 font.bold: true
@@ -179,10 +179,10 @@ BaseWidget {
             Switch {
                 width: 32
                 height: parent.height
-                anchors.rightMargin: 12
+                anchors.rightMargin: 6
                 anchors.right: parent.right
-                checked: settings.bitrate_showall
-                onCheckedChanged: settings.bitrate_showall = checked
+                checked: settings.bitrate_show_skip_fail_count
+                onCheckedChanged: settings.bitrate_show_skip_fail_count = checked
             }
         }
     }
@@ -228,7 +228,13 @@ BaseWidget {
             y: 0
             width: 24
             height: 48
-            color: settings.color_shape
+            color: {
+                if (OpenHD.kbitrate_measured <= 0.1) {
+                    return settings.color_shape;
+                }
+
+                return (OpenHD.kbitrate / OpenHD.kbitrate_measured) >= 0.70 ? ((OpenHD.kbitrate / OpenHD.kbitrate_measured) >= 0.80 ? "#ff0000" : "#fbfd15") : settings.color_shape
+            }
             text: "\uf03d"
             anchors.left: parent.left
             anchors.leftMargin: -2
@@ -241,7 +247,7 @@ BaseWidget {
 
         Text {
             id: allDataText
-            visible: settings.bitrate_showall ? true : false
+            visible: settings.bitrate_show_skip_fail_count
             text: Number(OpenHD.injection_fail_cnt).toLocaleString(Qt.locale(), 'f', 0) + "/" + Number(OpenHD.skipped_packet_cnt).toLocaleString(Qt.locale(), 'f', 0)
             color: settings.color_text
             anchors.top: kbitrate.bottom

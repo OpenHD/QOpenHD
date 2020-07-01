@@ -30,37 +30,42 @@ BaseWidget {
     widgetDetailComponent: Column {
         Connections {
             target: OpenHD
-            onWifiAdapter0Changed: {
+            function onWifiAdapter0Changed(received_packet_cnt, current_signal_dbm, signal_good) {
                 card0text.text = Number(current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
                 card0.visible = true;
                 card0textlower.text = Number(current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
                 card0textlower.visible = true;
             }
-            onWifiAdapter1Changed: {
+
+            function onWifiAdapter1Changed(received_packet_cnt, current_signal_dbm, signal_good) {
                 card1text.text = Number(current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
                 card1.visible = true;
                 card1textlower.text = Number(current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
                 card1textlower.visible = true;
             }
-            onWifiAdapter2Changed: {
+
+            function onWifiAdapter2Changed(received_packet_cnt, current_signal_dbm, signal_good) {
                 card2text.text = Number(current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
                 card2.visible = true;
                 card2textlower.text = Number(current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
                 card2textlower.visible = true;
             }
-            onWifiAdapter3Changed: {
+
+            function onWifiAdapter3Changed(received_packet_cnt, current_signal_dbm, signal_good) {
                 card3text.text = Number(current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
                 card3.visible = true;
                 card3textlower.text = Number(current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
                 card3textlower.visible = true;
             }
-            onWifiAdapter4Changed: {
+
+            function onWifiAdapter4Changed(received_packet_cnt, current_signal_dbm, signal_good) {
                 card4text.text = Number(current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
                 card4.visible = true;
                 card4textlower.text = Number(current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
                 card4textlower.visible = true;
             }
-            onWifiAdapter5Changed: {
+
+            function onWifiAdapter5Changed(received_packet_cnt, current_signal_dbm, signal_good) {
                 card5text.text = Number(current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
                 card5.visible = true;
                 card5textlower.text = Number(current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
@@ -73,7 +78,7 @@ BaseWidget {
             width: parent.width
             height: 32
             Text {
-                text: "Card 1:"
+                text: qsTr("Card 1:")
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -97,7 +102,7 @@ BaseWidget {
             width: parent.width
             height: 32
             Text {
-                text: "Card 2:"
+                text: qsTr("Card 2:")
                 color: "white"
                 font.bold: true
                 height: parent.height;
@@ -122,7 +127,7 @@ BaseWidget {
             width: parent.width
             height: 24
             Text {
-                text: "Card 3:"
+                text: qsTr("Card 3:")
                 color: "white"
                 font.bold: true
                 height: parent.height;
@@ -147,7 +152,7 @@ BaseWidget {
             width: parent.width
             height: 24
             Text {
-                text: "Card 4:"
+                text: qsTr("Card 4:")
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -172,7 +177,7 @@ BaseWidget {
             width: parent.width
             height: 24
             Text {
-                text: "Card 5:"
+                text: qsTr("Card 5:")
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -197,7 +202,7 @@ BaseWidget {
             width: parent.width
             height: 24
             Text {
-                text: "Card 6:"
+                text: qsTr("Card 6:")
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -238,7 +243,7 @@ BaseWidget {
             width: parent.width
             height: 32
             Text {
-                text: "Lost:"
+                text: qsTr("Lost:")
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -260,7 +265,7 @@ BaseWidget {
             width: parent.width
             height: 32
             Text {
-                text: "Damaged:"
+                text: qsTr("Damaged:")
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -282,7 +287,7 @@ BaseWidget {
             width: parent.width
             height: 32
             Text {
-                text: "CTS:"
+                text: qsTr("CTS:")
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -322,7 +327,7 @@ BaseWidget {
             height: 32
             Text {
                 id: opacityTitle
-                text: "Transparency"
+                text: qsTr("Transparency")
                 color: "white"
                 height: parent.height
                 font.bold: true
@@ -351,7 +356,7 @@ BaseWidget {
             width: parent.width
             height: 32
             Text {
-                text: "Show lost/damaged on OSD"
+                text: qsTr("Show lost/damaged")
                 color: "white"
                 height: parent.height
                 font.bold: true
@@ -362,7 +367,7 @@ BaseWidget {
             Switch {
                 width: 32
                 height: parent.height
-                anchors.rightMargin: 12
+                anchors.rightMargin: 6
                 anchors.right: parent.right
                 checked: settings.downlink_rssi_show_lost_damaged
                 onCheckedChanged: settings.downlink_rssi_show_lost_damaged = checked
@@ -374,7 +379,7 @@ BaseWidget {
             width: parent.width
             height: 32
             Text {
-                text: "Show all cards to right"
+                text: qsTr("Show all cards to right")
                 color: "white"
                 height: parent.height
                 font.bold: true
@@ -385,7 +390,7 @@ BaseWidget {
             Switch {
                 width: 32
                 height: parent.height
-                anchors.rightMargin: 12
+                anchors.rightMargin: 6
                 anchors.right: parent.right
                 checked: settings.downlink_cards_right
                 onCheckedChanged: settings.downlink_cards_right = checked

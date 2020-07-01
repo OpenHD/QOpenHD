@@ -63,13 +63,6 @@ ios {
     QMAKE_LFLAGS += -Wl
 }
 
-!iOSBuild {
-    OBJECTS_DIR  = $${OUT_PWD}/obj
-    MOC_DIR      = $${OUT_PWD}/moc
-    UI_DIR       = $${OUT_PWD}/ui
-    RCC_DIR      = $${OUT_PWD}/rcc
-}
-
 MobileBuild {
     DEFINES += __mobile__
 }

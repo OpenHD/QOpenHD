@@ -39,8 +39,7 @@ BaseWidget {
 
             clip: true
             delegate: MessageHUDRow {
-                width: parent.width
-
+                width: messageListView.width
             }
 
             // @disable-check M221

@@ -121,11 +121,11 @@ GroundPiSettingsPanelForm {
     Connections {
         target: openHDSettings
 
-        onSavingSettingsStart: {
+        function onSavingSettingsStart() {
             localMessage("saving ground settings...", 2);
         }
 
-        onSavingSettingsFinished: {
+        function onSavingSettingsFinished() {
             localMessage("ground settings saved", 2);
             showSavedCheckmark = true
             savedTimer.start()
@@ -134,7 +134,7 @@ GroundPiSettingsPanelForm {
             }
         }
 
-        onSavingSettingsFailed: {
+        function onSavingSettingsFailed() {
             localMessage("%1 ground settings did not save!".arg(failCount), 4);
             // todo: show failure message instead
             showSavedCheckmark = true
@@ -184,7 +184,7 @@ GroundPiSettingsPanelForm {
     Connections {
         target: openHDSettings
 
-        onAllSettingsChanged: {
+        function onAllSettingsChanged() {
             /*
              * Clear the local ListModels for each tab, the ListView in each tab uses these to decide
              * what to draw.

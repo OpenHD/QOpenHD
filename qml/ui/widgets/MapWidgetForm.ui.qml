@@ -109,7 +109,7 @@ BaseWidget {
                 Text {
                     id: mini_zoomTitle
                     height: parent.height
-                    text: "Zoom"
+                    text: qsTr("Zoom")
                     color: "white"
                     font.bold: true
                     font.pixelSize: detailPanelFontPixels
@@ -140,7 +140,7 @@ BaseWidget {
                 height: 32
                 Text {
                     id: mini_opacityTitle
-                    text: "Opacity"
+                    text: qsTr("Transparency")
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -169,7 +169,7 @@ BaseWidget {
                 width: parent.width
                 height: 32
                 Text {
-                    text: "Lock map to drone direction"
+                    text: qsTr("Lock map to drone direction")
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -180,7 +180,7 @@ BaseWidget {
                 Switch {
                     width: 32
                     height: parent.height
-                    anchors.rightMargin: 12
+                    anchors.rightMargin: 6
                     anchors.right: parent.right
                     checked: settings.map_orientation
                     onCheckedChanged: settings.map_orientation = checked
@@ -191,7 +191,7 @@ BaseWidget {
                 width: parent.width
                 height: 32
                 Text {
-                    text: "Map shape Square / Round"
+                    text: qsTr("Map shape Square / Round")
                     color: "white"
                     height: parent.height
                     font.bold: true

@@ -35,7 +35,7 @@ BaseWidget {
         spacing: 6
         Connections {
             target: OpenHD
-            onAir_gpio_changed: {
+            function onAir_gpio_changed(air_gpio) {
                 gpio1.checked = air_gpio[0] === 1;
                 gpio1.unknownState = false;
                 gpio2.checked = air_gpio[1] === 1;

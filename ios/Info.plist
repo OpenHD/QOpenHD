@@ -27,7 +27,9 @@
 	<key>NSCameraUsageDescription</key>
 	<string>Optional camera overlay</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Used to center map on user location</string>
+	<string>Location is required for drone home position and map location</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Location is required for drone home position and map location</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIRequiresFullScreen</key>
