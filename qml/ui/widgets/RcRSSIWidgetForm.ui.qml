@@ -8,7 +8,7 @@ import OpenHD 1.0
 
 BaseWidget {
     id: rcRSSIWidget
-    width: 30
+    width: 50
     height:30
 
     visible: settings.show_rc_rssi
@@ -72,7 +72,7 @@ BaseWidget {
 
         Rectangle {
             id: rcRSSI_0to20
-            anchors.left: parent.left
+            anchors.horizontalCenter: parent.horizontalCenter
             anchors.bottom: parent.bottom
             width: 3
             height: 5
@@ -188,15 +188,11 @@ BaseWidget {
         }
 
         Text {
-            id: rc_dbm
-            x: 568
-            y: 0
-            width: 32
-            height: 24
+            id: percent_symbol
             color: settings.color_text
             opacity: settings.rc_rssi_opacity
             text: OpenHD.rc_rssi == 0 ? qsTr("") : "%"
-            anchors.right: parent.right
+            anchors.right: rcRSSI_21to40.left
             anchors.rightMargin: 0
             anchors.top: parent.top
             anchors.topMargin: 0
@@ -210,14 +206,10 @@ BaseWidget {
 
         Text {
             id: rc_rssi
-            x: 820
-            y: 0
-            width: 34
-            height: 24
             color: settings.color_text
             opacity: settings.rc_rssi_opacity
             text: OpenHD.rc_rssi == 0 ? qsTr("N/A") : OpenHD.rc_rssi
-            anchors.right: rc_dbm.left
+            anchors.right: percent_symbol.left
             anchors.rightMargin: 2
             anchors.top: parent.top
             anchors.topMargin: 0
