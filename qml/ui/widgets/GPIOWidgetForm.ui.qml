@@ -160,6 +160,16 @@ BaseWidget {
         }
     }
 
+    Glow {
+        anchors.fill: widgetInner
+        visible: settings.show_gpio
+        radius: 3
+        samples: 17
+        color: settings.color_glow
+        //no opacity setting
+        source: widgetInner
+    }
+
     Item {
         id: widgetInner
 
