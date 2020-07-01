@@ -112,5 +112,7 @@
         <file>ui/elements/StatusViewForm.ui.qml</file>
         <file>ui/widgets/WindWidgetForm.ui.qml</file>
         <file>ui/widgets/WindWidget.qml</file>
+        <file>ui/widgets/RcRSSIWidgetForm.ui.qml</file>
+        <file>ui/widgets/RcRSSIWidget.qml</file>
     </qresource>
 </RCC>

@@ -107,6 +107,9 @@ ApplicationWindow {
         property bool show_uplink_rssi: true
         property double uplink_rssi_opacity: 1
 
+        property bool show_rc_rssi: false
+        property double rc_rssi_opacity: 1
+
         property bool show_bitrate: true
         property double bitrate_opacity: 1
         property bool bitrate_showall: false

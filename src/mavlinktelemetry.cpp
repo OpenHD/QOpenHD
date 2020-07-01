@@ -244,6 +244,12 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             break;
         }
         case MAVLINK_MSG_ID_RC_CHANNELS_RAW:{
+            mavlink_rc_channels_raw_t rc_channels_raw;
+            mavlink_msg_rc_channels_raw_decode(&msg, &rc_channels_raw);
+
+            OpenHD::instance()->set_rc_rssi(rc_channels_raw.rssi);
+
+            qDebug() << "RC RSSI: " << rc_channels_raw.rssi;
             break;
         }
         case MAVLINK_MSG_ID_SERVO_OUTPUT_RAW:{
