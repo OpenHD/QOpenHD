@@ -146,11 +146,11 @@ BaseWidget {
 
     Glow {
         anchors.fill: widgetInner
-        visible: settings.show_rc_rssi
+        visible: settings.show_air_battery
         radius: 2
         samples: 17
         color: settings.color_glow
-        opacity: settings.control_opacity
+        opacity: settings.air_battery_opacity
         source: widgetInner
     }
 
