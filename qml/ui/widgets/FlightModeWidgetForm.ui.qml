@@ -53,6 +53,16 @@ BaseWidget {
         }
     }
 
+    Glow {
+        anchors.fill: widgetInner
+        visible: settings.show_flight_distance
+        radius: 3
+        samples: 17
+        color: settings.color_glow
+        opacity: settings.flight_distance_opacity
+        source: widgetInner
+    }
+
     Item {
         id: widgetInner
 
