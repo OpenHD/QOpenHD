@@ -215,7 +215,7 @@ BaseWidget {
 
     Glow {
         anchors.fill: widgetInner
-        radius: 2
+        radius: 3
         samples: 17
         color: settings.color_glow
         opacity: settings.wind_opacity
