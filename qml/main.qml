@@ -133,7 +133,7 @@ ApplicationWindow {
         property double flight_mode_opacity: 1
 
         property bool show_flight_distance: true
-        property double distance_opacity: 1
+        property double flight_distance_opacity: 1
 
         property bool show_flight_mah: true
         property bool air_battery_mah_source: true

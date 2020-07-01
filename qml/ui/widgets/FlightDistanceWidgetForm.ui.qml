@@ -40,7 +40,7 @@ BaseWidget {
                 id: distance_opacity_Slider
                 orientation: Qt.Horizontal
                 from: .1
-                value: settings.distance_opacity
+                value: settings.flight_distance_opacity
                 to: 1
                 stepSize: .1
                 height: parent.height
@@ -49,10 +49,20 @@ BaseWidget {
                 width: parent.width - 96
 
                 onValueChanged: {
-                    settings.distance_opacity = distance_opacity_Slider.value
+                    settings.flight_distance_opacity = distance_opacity_Slider.value
                 }
             }
         }
+    }
+
+    Glow {
+        anchors.fill: widgetInner
+        visible: settings.show_flight_distance
+        radius: 3
+        samples: 17
+        color: settings.color_glow
+        opacity: settings.flight_distance_opacity
+        source: widgetInner
     }
 
     Item {
