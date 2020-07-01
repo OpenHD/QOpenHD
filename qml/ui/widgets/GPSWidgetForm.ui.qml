@@ -263,5 +263,25 @@ BaseWidget {
             horizontalAlignment: Text.AlignRight
             font.pixelSize: 14
         }
+
+        Glow {
+            anchors.fill: lon_onscreen
+            visible: settings.show_gps
+            radius: 3
+            samples: 17
+            color: settings.color_glow
+            opacity: settings.gps_opacity
+            source: lon_onscreen
+        }
+
+        Glow {
+            anchors.fill: lat_onscreen
+            visible: settings.show_gps
+            radius: 3
+            samples: 17
+            color: settings.color_glow
+            opacity: settings.gps_opacity
+            source: lat_onscreen
+        }
     }
 }
