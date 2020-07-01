@@ -545,7 +545,7 @@ Item {
                     color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
                     Text {
-                        text: "Show RC RSSI (not OpenHD RC)"
+                        text: qsTr("Show RC RSSI (not OpenHD RC)")
                         font.weight: Font.Bold
                         font.pixelSize: 13
                         anchors.leftMargin: 8
