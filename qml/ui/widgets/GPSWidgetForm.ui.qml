@@ -139,6 +139,16 @@ BaseWidget {
         }
     }
 
+    Glow {
+        anchors.fill: widgetInner
+        visible: settings.show_gps
+        radius: 3
+        samples: 17
+        color: settings.color_glow
+        opacity: settings.gps_opacity
+        source: widgetInner
+    }
+
     Item {
         id: widgetInner
 
