@@ -19,7 +19,7 @@ ApplicationWindow {
     minimumHeight: 320
     minimumWidth: 480
     title: qsTr("Open.HD")
-    color: EnableMainVideo ? "white" : "#00000000"
+    color: EnableMainVideo ? "black" : "#00000000"
 
     visibility: UseFullscreen ? "FullScreen" : "AutomaticVisibility"
 
