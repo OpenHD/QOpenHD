@@ -147,7 +147,7 @@ BaseWidget {
     Glow {
         anchors.fill: widgetInner
         visible: settings.show_air_battery
-        radius: 2
+        radius: 3
         samples: 17
         color: settings.color_glow
         opacity: settings.air_battery_opacity
