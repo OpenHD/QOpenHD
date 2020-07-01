@@ -395,6 +395,16 @@ BaseWidget {
 
     }
 
+    Glow {
+        anchors.fill: widgetInner
+        visible: settings.show_downlink_rssi
+        radius: 2
+        samples: 17
+        color: settings.color_glow
+        opacity: settings.downlink_rssi_opacity
+        source: widgetInner
+    }
+
     Item {
         id: widgetInner
 
