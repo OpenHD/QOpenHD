@@ -190,7 +190,7 @@ BaseWidget {
     Glow {
         anchors.fill: widgetInner
         visible: settings.show_bitrate
-        radius: 2
+        radius: 3
         samples: 17
         color: settings.color_glow
         opacity: settings.bitrate_opacity
