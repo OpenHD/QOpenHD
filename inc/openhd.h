@@ -491,7 +491,7 @@ private:
     double m_airspeed = 0;
 
     bool m_armed = false;
-    QString m_flight_mode = "Stabilize";
+    QString m_flight_mode = "------";
 
     double m_homelat = 0.0;
     double m_homelon = 0.0;
@@ -502,10 +502,12 @@ private:
     double m_lon = 0.0;
     double m_home_distance = 0.0;
     double m_home_course = 0.0;
+
     int m_battery_percent = 0;
     double m_battery_current = 0.0;
     double m_battery_voltage = 0.0;
     QString m_battery_gauge = "\uf091";
+
     int m_satellites_visible = 0;
     double m_gps_hdop = 99.00;
 
