@@ -187,6 +187,9 @@ public:
     Q_PROPERTY(int rc_rssi MEMBER m_rc_rssi WRITE set_rc_rssi NOTIFY rc_rssi_changed)
     void set_rc_rssi(int rc_rssi);
 
+    Q_PROPERTY(int fc_temp MEMBER m_fc_temp WRITE set_fc_temp NOTIFY fc_temp_changed)
+    void set_fc_temp(int fc_temp);
+
 
     // openhd
 
@@ -408,6 +411,8 @@ signals:
 
     void rc_rssi_changed(int rc_rssi);
 
+    void fc_temp_changed (int fc_temp);
+
     // openhd
     void downlink_rssi_changed(int downlink_rssi);
     void current_signal_joystick_uplink_changed(int current_signal_joystick_uplink);
@@ -556,6 +561,8 @@ private:
     double m_kbitrate = 0.0;
     double m_kbitrate_measured = 0.0;
     double m_kbitrate_set = 0.0;
+
+    int m_fc_temp = 0;
 
     int m_cpuload_gnd = 0;
 

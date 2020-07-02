@@ -49,6 +49,10 @@ Item {
         id: bitrate
     }
 
+    FcTempWidget {
+        id: fc_temp
+    }
+
     AirStatusWidget {
         id: air_status
     }
