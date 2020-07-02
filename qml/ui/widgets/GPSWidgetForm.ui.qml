@@ -206,6 +206,7 @@ BaseWidget {
         }
 
         Column {
+            id: lat_lon_column
             anchors.bottom: parent.top
             anchors.left: parent.left
             anchors.leftMargin: -12
@@ -243,6 +244,7 @@ BaseWidget {
                 }
             }
 
+
             Row {
                 spacing: 6
                 height: 16
@@ -274,25 +276,14 @@ BaseWidget {
                 }
             }
         }
-
         Glow {
-            anchors.fill: lon_onscreen
+            anchors.fill: lat_lon_column
             visible: settings.show_gps
             radius: 3
             samples: 17
             color: settings.color_glow
             opacity: settings.gps_opacity
-            source: lon_onscreen
-        }
-
-        Glow {
-            anchors.fill: lat_onscreen
-            visible: settings.show_gps
-            radius: 3
-            samples: 17
-            color: settings.color_glow
-            opacity: settings.gps_opacity
-            source: lat_onscreen
+            source: lat_lon_column
         }
     }
 }
