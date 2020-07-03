@@ -103,15 +103,7 @@ BaseWidget {
         }
     }
 
-    Glow {
-        anchors.fill: widgetInner
-        visible: settings.show_fpv
-        radius: 3
-        samples: 17
-        color: settings.color_glow
-        opacity: settings.fpv_opacity
-        source: widgetInner
-    }
+
 
     Item {
         id: widgetInner
@@ -162,6 +154,8 @@ BaseWidget {
                 font.family: "Font Awesome 5 Free"
                 verticalAlignment: Text.AlignVCenter
                 font.pixelSize: 24
+                style: Text.Outline
+                styleColor: settings.color_glow
             }
         }
     }
