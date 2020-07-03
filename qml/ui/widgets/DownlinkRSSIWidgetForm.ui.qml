@@ -31,258 +31,36 @@ BaseWidget {
         Connections {
             target: OpenHD
             function onWifiAdapter0Changed(received_packet_cnt, current_signal_dbm, signal_good) {
-                card0text.text = Number(current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
-                card0.visible = true;
                 card0textlower.text = Number(current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
                 card0textlower.visible = true;
             }
 
             function onWifiAdapter1Changed(received_packet_cnt, current_signal_dbm, signal_good) {
-                card1text.text = Number(current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
-                card1.visible = true;
                 card1textlower.text = Number(current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
                 card1textlower.visible = true;
             }
 
             function onWifiAdapter2Changed(received_packet_cnt, current_signal_dbm, signal_good) {
-                card2text.text = Number(current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
-                card2.visible = true;
                 card2textlower.text = Number(current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
                 card2textlower.visible = true;
             }
 
             function onWifiAdapter3Changed(received_packet_cnt, current_signal_dbm, signal_good) {
-                card3text.text = Number(current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
-                card3.visible = true;
                 card3textlower.text = Number(current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
                 card3textlower.visible = true;
             }
 
             function onWifiAdapter4Changed(received_packet_cnt, current_signal_dbm, signal_good) {
-                card4text.text = Number(current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
-                card4.visible = true;
                 card4textlower.text = Number(current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
                 card4textlower.visible = true;
             }
 
             function onWifiAdapter5Changed(received_packet_cnt, current_signal_dbm, signal_good) {
-                card5text.text = Number(current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
-                card5.visible = true;
                 card5textlower.text = Number(current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
                 card5textlower.visible = true;
             }
         }
-        Item {
-            id: card0
-            visible: false
-            width: parent.width
-            height: 32
-            Text {
-                text: qsTr("Card 1:")
-                color: "white"
-                font.bold: true
-                height: parent.height
-                font.pixelSize: detailPanelFontPixels
-                anchors.left: parent.left
-                verticalAlignment: Text.AlignVCenter
-            }
-            Text {
-                id: card0text
-                color: "white";
-                font.bold: true;
-                height: parent.height
-                font.pixelSize: detailPanelFontPixels;
-                anchors.right: parent.right
-                verticalAlignment: Text.AlignVCenter
-            }
-        }
-        Item {
-            id: card1
-            visible: false
-            width: parent.width
-            height: 32
-            Text {
-                text: qsTr("Card 2:")
-                color: "white"
-                font.bold: true
-                height: parent.height;
-                font.pixelSize: detailPanelFontPixels
-                anchors.left: parent.left
-                verticalAlignment: Text.AlignVCenter
-            }
-            Text {
-                id: card1text
-                color: "white";
-                font.bold: true;
-                height: parent.height
-                font.pixelSize: detailPanelFontPixels;
-                anchors.right: parent.right
-                verticalAlignment: Text.AlignVCenter
-            }
-        }
 
-        Item {
-            id: card2
-            visible: false
-            width: parent.width
-            height: 24
-            Text {
-                text: qsTr("Card 3:")
-                color: "white"
-                font.bold: true
-                height: parent.height;
-                font.pixelSize: detailPanelFontPixels
-                anchors.left: parent.left
-                verticalAlignment: Text.AlignVCenter
-            }
-            Text {
-                id: card2text
-                color: "white";
-                font.bold: true;
-                height: parent.height;
-                font.pixelSize: detailPanelFontPixels;
-                anchors.right: parent.right
-                verticalAlignment: Text.AlignVCenter
-            }
-        }
-
-        Item {
-            id: card3
-            visible: false
-            width: parent.width
-            height: 24
-            Text {
-                text: qsTr("Card 4:")
-                color: "white"
-                font.bold: true
-                height: parent.height
-                font.pixelSize: detailPanelFontPixels
-                anchors.left: parent.left
-                verticalAlignment: Text.AlignVCenter
-            }
-            Text {
-                id: card3text
-                color: "white";
-                font.bold: true;
-                height: parent.height;
-                font.pixelSize: detailPanelFontPixels;
-                anchors.right: parent.right
-                verticalAlignment: Text.AlignVCenter
-            }
-        }
-
-        Item {
-            id: card4
-            visible: false
-            width: parent.width
-            height: 24
-            Text {
-                text: qsTr("Card 5:")
-                color: "white"
-                font.bold: true
-                height: parent.height
-                font.pixelSize: detailPanelFontPixels
-                anchors.left: parent.left
-                verticalAlignment: Text.AlignVCenter
-            }
-            Text {
-                id: card4text
-                color: "white";
-                font.bold: true;
-                height: parent.height;
-                font.pixelSize: detailPanelFontPixels;
-                anchors.right: parent.right
-                verticalAlignment: Text.AlignVCenter
-            }
-        }
-
-        Item {
-            id: card5
-            visible: false
-            width: parent.width
-            height: 24
-            Text {
-                text: qsTr("Card 6:")
-                color: "white"
-                font.bold: true
-                height: parent.height
-                font.pixelSize: detailPanelFontPixels
-                anchors.left: parent.left
-                verticalAlignment: Text.AlignVCenter
-            }
-            Text {
-                id: card5text
-                color: "white";
-                font.bold: true;
-                height: parent.height
-                font.pixelSize: detailPanelFontPixels;
-                anchors.right: parent.right
-                verticalAlignment: Text.AlignVCenter
-            }
-        }
-
-
-        Shape {
-            id: line
-            height: 32
-            width: parent.width
-
-            ShapePath {
-                strokeColor: "white"
-                strokeWidth: 2
-                strokeStyle: ShapePath.SolidLine
-                fillColor: "transparent"
-                startX: 0
-                startY: line.height / 2
-                PathLine { x: 0;          y: line.height / 2 }
-                PathLine { x: line.width; y: line.height / 2 }
-            }
-        }
-
-        Item {
-            width: parent.width
-            height: 32
-            Text {
-                text: qsTr("Lost:")
-                color: "white"
-                font.bold: true
-                height: parent.height
-                font.pixelSize: detailPanelFontPixels
-                anchors.left: parent.left
-                verticalAlignment: Text.AlignVCenter
-            }
-            Text {
-                text: Number(OpenHD.lost_packet_cnt).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" (%L1%)").arg(OpenHD.lost_packet_percent);
-                color: "white";
-                font.bold: true;
-                height: parent.height
-                font.pixelSize: detailPanelFontPixels;
-                anchors.right: parent.right
-                verticalAlignment: Text.AlignVCenter
-            }
-        }
-        Item {
-            width: parent.width
-            height: 32
-            Text {
-                text: qsTr("Damaged:")
-                color: "white"
-                font.bold: true
-                height: parent.height
-                font.pixelSize: detailPanelFontPixels
-                anchors.left: parent.left
-                verticalAlignment: Text.AlignVCenter
-            }
-            Text {
-                text: Number(OpenHD.damaged_block_cnt).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" (%L1%)").arg(OpenHD.damaged_block_percent);
-                color: "white";
-                font.bold: true;
-                height: parent.height
-                font.pixelSize: detailPanelFontPixels;
-                anchors.right: parent.right
-                verticalAlignment: Text.AlignVCenter
-            }
-        }
         Item {
             width: parent.width
             height: 32
