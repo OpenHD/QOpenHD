@@ -11,7 +11,7 @@ BaseWidget {
     id: arrowWidget
     width: 64
     height: 48
-    defaultYOffset: 85
+    defaultYOffset: 135
 
     visible: settings.show_arrow
 
