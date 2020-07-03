@@ -22,6 +22,7 @@ BaseWidget {
     defaultVCenter: false
 
     hasWidgetDetail: true
+    widgetDetailHeight: 175
     widgetDetailComponent: Column {
         Item {
             width: parent.width
@@ -47,9 +48,9 @@ BaseWidget {
                 anchors.rightMargin: 0
                 anchors.right: parent.right
                 width: parent.width - 96
-         //       onValueChanged: {
-         //           settings.roll_opacity = roll_opacity_Slider.value
-         //       }
+                onValueChanged: {
+                    settings.roll_opacity = roll_opacity_Slider.value
+                }
             }
         }
         Item {
@@ -117,6 +118,28 @@ BaseWidget {
                 onCheckedChanged: settings.roll_show_numbers = checked
             }
         }
+
+        Item {
+            width: parent.width
+            height: 32
+            Text {
+                text: qsTr("Sky Pointer")
+                color: "white"
+                height: parent.height
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels;
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
+            Switch {
+                width: 32
+                height: parent.height
+                anchors.rightMargin: 6
+                anchors.right: parent.right
+                checked: settings.roll_sky_pointer
+                onCheckedChanged: settings.roll_sky_pointer = checked
+            }
+        }
     }
 
     Glow {
@@ -139,6 +162,7 @@ BaseWidget {
         Item {
             id:rollTicks
             anchors.fill: parent
+            opacity: settings.roll_opacity
 
             Shape {
                 width: 200
@@ -263,7 +287,6 @@ BaseWidget {
             Shape {
                 anchors.fill: parent
                 antialiasing: true
-                opacity: settings.roll_opacity
 
                 ShapePath {
                     capStyle: ShapePath.RoundCap
@@ -377,13 +400,10 @@ BaseWidget {
                 }
             }
 
-
-
-
             transform: Rotation {
                 origin.x: 100;
                 origin.y: 150;
-                angle: settings.roll_invert ? OpenHD.roll : OpenHD.roll*-1
+                angle: settings.roll_sky_pointer ? 0 : (settings.roll_invert ? OpenHD.roll : OpenHD.roll*-1)
             }
         }
 
@@ -405,6 +425,12 @@ BaseWidget {
                 PathLine { x: 110;                 y: 60  }//right lower edge of arrow
                 PathLine { x: 90;                 y: 60  }//left lower edge
                 PathLine { x: 100;                 y: 50 }//bottom right edge
+            }
+
+            transform: Rotation {
+                origin.x: 100;
+                origin.y: 150;
+                angle: settings.roll_sky_pointer ? (settings.roll_invert ? OpenHD.roll : OpenHD.roll*-1) : 0
             }
         }
     }

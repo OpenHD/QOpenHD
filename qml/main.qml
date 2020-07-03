@@ -238,6 +238,7 @@ ApplicationWindow {
         property bool roll_invert: false
         property bool roll_show_arc: true
         property bool roll_show_numbers: true
+        property bool roll_sky_pointer: false
         property double roll_opacity: 1
 
         property bool show_example_widget: false
