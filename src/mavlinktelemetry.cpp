@@ -85,6 +85,7 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
                         case MAV_TYPE_FIXED_WING: {
                             auto plane_mode = plane_mode_from_enum((PLANE_MODE)custom_mode);
                             OpenHD::instance()->set_flight_mode(plane_mode);
+                            //qDebug() << "Mavlink Mav Type= PLANE";
                             break;
                         }
                         case MAV_TYPE_GROUND_ROVER: {
@@ -95,6 +96,7 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
                         case MAV_TYPE_QUADROTOR: {
                             auto copter_mode = copter_mode_from_enum((COPTER_MODE)custom_mode);
                             OpenHD::instance()->set_flight_mode(copter_mode);
+                            //qDebug() << "Mavlink Mav Type= QUADROTOR";
                             break;
                         }
                         case MAV_TYPE_SUBMARINE: {
@@ -189,6 +191,11 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             break;
         }
         case MAVLINK_MSG_ID_SCALED_PRESSURE:{
+        mavlink_scaled_pressure_t raw_imu;
+        mavlink_msg_scaled_pressure_decode(&msg, &raw_imu);
+
+        OpenHD::instance()->set_fc_temp((int)raw_imu.temperature/100);
+        //qDebug() << "Temp:" <<  raw_imu.temperature;
             break;
         }
         case MAVLINK_MSG_ID_ATTITUDE:{

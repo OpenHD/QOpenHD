@@ -474,6 +474,11 @@ void OpenHD::set_rc_rssi(int rc_rssi) {
     emit rc_rssi_changed(m_rc_rssi);
 }
 
+void OpenHD::set_fc_temp(int fc_temp) {
+    m_fc_temp = fc_temp;
+    emit fc_temp_changed(m_fc_temp);
+}
+
 void OpenHD::set_downlink_rssi(int downlink_rssi) {
     m_downlink_rssi = downlink_rssi;
     emit downlink_rssi_changed(m_downlink_rssi);

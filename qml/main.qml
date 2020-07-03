@@ -139,6 +139,9 @@ ApplicationWindow {
         property bool flight_mah_use_telemetry: true
         property double mah_opacity: 1
 
+        property bool show_fc_temp: true
+        property double fc_temp_opacity: 1
+
         property bool show_ground_status: true
         property double ground_status_opacity: 1
 

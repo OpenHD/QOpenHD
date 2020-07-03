@@ -78,7 +78,7 @@ BaseWidget {
             height: 24
             clip: true
             color: settings.color_shape
-            opacity: settings.distance_opacity
+            opacity: settings.flight_distance_opacity
             text: "\uf018"
             anchors.right: flight_distance_text.left
             anchors.rightMargin: 6
@@ -96,7 +96,7 @@ BaseWidget {
             clip: true
 
             color: settings.color_text
-            opacity: settings.distance_opacity
+            opacity: settings.flight_distance_opacity
             // @disable-check M222
             text: {
                 var distance = OpenHD.flight_distance / 1000.0;
