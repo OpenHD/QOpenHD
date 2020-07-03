@@ -1096,7 +1096,7 @@ Item {
                     color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
                     Text {
-                        text: qsTr("Show Roll Indicator")
+                        text: qsTr("Show Bank Angle Indicator")
                         font.weight: Font.Bold
                         font.pixelSize: 13
                         anchors.leftMargin: 8
