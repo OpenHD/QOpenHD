@@ -234,6 +234,12 @@ ApplicationWindow {
         property double wind_tumbler_tens: 13
         property double wind_max_quad_speed: wind_tumbler_tens+(wind_tumbler_decimal*.1)
 
+        property bool show_roll: true
+        property bool roll_invert: false
+        property bool roll_show_arc: true
+        property bool roll_show_numbers: true
+        property double roll_opacity: 1
+
         property bool show_example_widget: false
     }
 

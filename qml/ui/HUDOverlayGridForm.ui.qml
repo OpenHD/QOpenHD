@@ -135,6 +135,10 @@ Item {
         id: windWidget
     }
 
+    RollWidget {
+        id: rollWidget
+    }
+
     ExampleWidget {
         id: exampleWidget
     }
