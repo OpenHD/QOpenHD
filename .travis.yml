@@ -12,7 +12,7 @@ matrix:
     dist: focal
     before_install:
     - sudo docker run --privileged linuxkit/binfmt:v0.6
-    - sudo docker run --rm --privileged multiarch/qemu-user-static:register
+    - sudo apt -y install qemu-user-static:i386
     compiler:
     - gcc
     services:
@@ -24,7 +24,7 @@ matrix:
     dist: bionic
     before_install:
     - sudo docker run --privileged linuxkit/binfmt:v0.6
-    - sudo docker run --rm --privileged multiarch/qemu-user-static:register
+    - sudo apt -y install qemu-user-static:i386
     compiler:
     - gcc
     services:
