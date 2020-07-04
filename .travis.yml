@@ -18,9 +18,19 @@ matrix:
     services:
     - docker
     env:
-      jobs:
-        - DOCKERFILE=Dockerfile-pi-buster
-        - DOCKERFILE=Dockerfile-pi-stretch
+    - DOCKERFILE=Dockerfile-pi-stretch
+    script: docker build -f $DOCKERFILE --build-arg CLOUDSMITH_API_KEY=${CLOUDSMITH_API_KEY} .
+  - os: linux
+    dist: bionic
+    before_install:
+    - sudo docker run --privileged linuxkit/binfmt:v0.6
+    - sudo docker run --rm --privileged multiarch/qemu-user-static:register
+    compiler:
+    - gcc
+    services:
+    - docker
+    env:
+    - DOCKERFILE=Dockerfile-pi-buster
     script: docker build -f $DOCKERFILE --build-arg CLOUDSMITH_API_KEY=${CLOUDSMITH_API_KEY} .
   - os: linux
     dist: bionic
