@@ -9,7 +9,7 @@ cache:
 matrix:
   include:
   - os: linux
-    dist: focal
+    dist: bionic
     before_install:
     - sudo docker run --privileged linuxkit/binfmt:v0.6
     - sudo dpkg --add-architecture i386
