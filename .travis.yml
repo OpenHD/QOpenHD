@@ -17,12 +17,10 @@ matrix:
     - gcc
     services:
     - docker
-    jobs:
-      include:
-      - name: "Pi stretch"
-        env: DOCKERFILE=Dockerfile-pi-stretch
-      - name: "Pi buster"
-        env: DOCKERFILE=Dockerfile-pi-buster
+    env:
+      jobs:
+        - DOCKERFILE=Dockerfile-pi-buster
+        - DOCKERFILE=Dockerfile-pi-stretch
     script: docker build -f $DOCKERFILE --build-arg CLOUDSMITH_API_KEY=${CLOUDSMITH_API_KEY} .
   - os: linux
     dist: bionic
