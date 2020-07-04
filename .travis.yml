@@ -12,6 +12,8 @@ matrix:
     dist: focal
     before_install:
     - sudo docker run --privileged linuxkit/binfmt:v0.6
+    - sudo dpkg --add-architecture i386
+    - sudo apt -y update
     - sudo apt -y install qemu-user-static:i386
     compiler:
     - gcc
@@ -24,6 +26,8 @@ matrix:
     dist: bionic
     before_install:
     - sudo docker run --privileged linuxkit/binfmt:v0.6
+    - sudo dpkg --add-architecture i386
+    - sudo apt -y update
     - sudo apt -y install qemu-user-static:i386
     compiler:
     - gcc
