@@ -11,7 +11,15 @@ if [[ "${PLATFORM}" == "pi" ]]; then
     PACKAGE_ARCH="armhf"
 fi
 
+apt-get install -y apt-transport-https
+curl -1sLf 'https://dl.cloudsmith.io/public/openhd/openhd-2-0/cfg/gpg/gpg.B9F0E99CF5787237.key' | apt-key add -
 
+
+echo "deb https://dl.cloudsmith.io/public/openhd/openhd-2-0/deb/${OS} ${DISTRO} main" > /etc/apt/sources.list.d/openhd-2-0.list
+
+apt -y update
+
+apt -y install openhd-qt=5.15.0
 
 PACKAGE_NAME=qopenhd
 
