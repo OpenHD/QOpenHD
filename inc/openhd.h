@@ -58,8 +58,11 @@ public:
     Q_PROPERTY(double home_distance MEMBER m_home_distance WRITE set_home_distance NOTIFY home_distance_changed)
     void set_home_distance(double home_distance);
 
-    Q_PROPERTY(double home_course MEMBER m_home_course WRITE set_home_course NOTIFY home_course_changed)
-    void set_home_course(double home_course);
+    Q_PROPERTY(int home_course MEMBER m_home_course WRITE set_home_course NOTIFY home_course_changed)
+    void set_home_course(int home_course);
+
+    Q_PROPERTY(int home_heading MEMBER m_home_heading WRITE set_home_heading NOTIFY home_heading_changed)
+    void set_home_heading(int home_heading);
 
     Q_PROPERTY(int boot_time MEMBER m_boot_time WRITE set_boot_time NOTIFY boot_time_changed)
     void set_boot_time(int boot_time);
@@ -372,7 +375,8 @@ signals:
     void lat_changed(double lat);
     void lon_changed(double lon);
     void home_distance_changed(double home_distance);
-    void home_course_changed(double home_course);
+    void home_course_changed(int home_course);
+    void home_heading_changed(int home_heading);
     void battery_percent_changed(int battery_percent);
     void battery_voltage_changed(double battery_voltage);
     void battery_current_changed(double battery_current);
@@ -506,7 +510,8 @@ private:
     double m_lat = 0.0;
     double m_lon = 0.0;
     double m_home_distance = 0.0;
-    double m_home_course = 0.0;
+    int m_home_heading = 0; //this is actual global heading
+    int m_home_course = 0; //this is the relative course from nose
 
     int m_battery_percent = 0;
     double m_battery_current = 0.0;
