@@ -11,6 +11,22 @@ matrix:
   - os: linux
     dist: bionic
     before_install:
+    - sudo docker run --privileged linuxkit/binfmt:v0.6
+    - sudo docker run --rm --privileged multiarch/qemu-user-static:register
+    compiler:
+    - gcc
+    services:
+    - docker
+    jobs:
+      include:
+      - name: "Pi stretch"
+        env: DOCKERFILE=Dockerfile-pi-stretch
+      - name: "Pi buster"
+        env: DOCKERFILE=Dockerfile-pi-buster
+    script: docker build -f $DOCKERFILE --build-arg CLOUDSMITH_API_KEY=${CLOUDSMITH_API_KEY} .
+  - os: linux
+    dist: bionic
+    before_install:
     - sudo apt-get update -qq
     - sudo apt-get install devscripts build-essential lintian dh-make
     - sudo apt-get install qt5-default libqt5quick5 libqt5qml5 qtdeclarative5-dev libqt5x11extras5-dev libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev libgstreamer-plugins-good1.0-dev libgstreamer-plugins-bad1.0-dev gstreamer1.0-gl gstreamer1.0-libav gstreamer1.0-qt5 libqt5concurrent5 qml-module-qt-labs-settings qml-module-qtquick-controls2 qml-module-qtquick-layouts qml-module-qtquick-controls qml-module-qtquick-shapes qml-module-qtlocation qml-module-qtpositioning qml-module-qtquick-dialogs 
