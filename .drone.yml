@@ -5,6 +5,12 @@ platform:
   os: linux
   arch: arm
 steps:
+- name: fetch
+  image: arm32v6/alpine
+  commands:
+  - apk add git
+  - git fetch --tags
+  - git submodule update --recursive --remote
 - name: build
   image: plugins/docker
   environment:
@@ -22,6 +28,12 @@ platform:
   os: linux
   arch: arm
 steps:
+- name: fetch
+  image: arm32v6/alpine
+  commands:
+  - apk add git
+  - git fetch --tags
+  - git submodule update --recursive --remote
 - name: build
   image: plugins/docker
   environment:
