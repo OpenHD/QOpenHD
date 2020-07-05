@@ -19,7 +19,7 @@ echo "deb https://dl.cloudsmith.io/public/openhd/openhd-2-0/deb/${OS} ${DISTRO} 
 
 apt -y update
 
-apt -y install openhd-qt=5.15.0\*
+apt -y install openhd-qt=5.15.0\* libgles2-mesa-dev libegl1-mesa-dev libgbm-dev
 
 PACKAGE_NAME=qopenhd
 
