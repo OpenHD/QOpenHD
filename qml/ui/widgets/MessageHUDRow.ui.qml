@@ -56,10 +56,6 @@ Item {
         }
 
         font.bold: true
-        /* @disable-check M224
-          Behavior on opacity {
-              NumberAnimation { duration: 1000 }
-          } */
     }
 
     Text {
@@ -76,12 +72,5 @@ Item {
         text: model.text
         leftPadding: 6
         rightPadding: 0
-
-        /* @disable-check M224
-          Behavior on opacity {
-              NumberAnimation { duration: 1000 }
-          }*/
-
-
     }
 }
