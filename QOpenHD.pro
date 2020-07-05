@@ -1,7 +1,3 @@
-!equals(QT_MAJOR_VERSION, 5) | !greaterThan(QT_MINOR_VERSION, 12) {
-    error("Unsupported Qt version, 5.12+ is required")
-}
-
 BASEDIR = $$IN_PWD
 
 LANGUAGE = C++
