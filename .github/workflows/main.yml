@@ -4,7 +4,7 @@ on: [push]
 
 jobs:
   pi-stretch:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v1
     - name: install-dependencies
@@ -19,7 +19,7 @@ jobs:
          export DOCKERFILE=Dockerfile-pi-stretch
          docker build -f $DOCKERFILE --build-arg CLOUDSMITH_API_KEY=${CLOUDSMITH_API_KEY} .
   pi-buster:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v1
     - name: install-dependencies
