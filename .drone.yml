@@ -1,0 +1,42 @@
+kind: pipeline
+type: docker
+name: pi-stretch
+platform:
+  os: linux
+  arch: arm
+steps:
+- name: build
+  image: ubuntu:20.04
+  environment:
+    DOCKERFILE: Dockerfile-pi-stretch
+    CLOUDSMITH_API_KEY:
+      from_secret: CLOUDSMITH_API_KEY
+  commands:
+  - apt install apt-transport-https ca-certificates curl software-properties-common
+  - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+  - add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable"
+  - apt update
+  - apt install docker-ce
+  - docker build -f $DOCKERFILE --build-arg CLOUDSMITH_API_KEY=${CLOUDSMITH_API_KEY} .
+
+---
+kind: pipeline
+type: docker
+name: pi-buster
+platform:
+  os: linux
+  arch: arm
+steps:
+- name: build
+  image: ubuntu:20.04
+  environment:
+    DOCKERFILE: Dockerfile-pi-buster
+    CLOUDSMITH_API_KEY:
+      from_secret: CLOUDSMITH_API_KEY
+  commands:
+  - apt install apt-transport-https ca-certificates curl software-properties-common
+  - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+  - add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable"
+  - apt update
+  - apt install docker-ce
+  - docker build -f $DOCKERFILE --build-arg CLOUDSMITH_API_KEY=${CLOUDSMITH_API_KEY} .
