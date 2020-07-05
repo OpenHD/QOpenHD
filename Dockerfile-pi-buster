@@ -1,5 +1,7 @@
 FROM openhd/2020-05-27-raspios-buster-lite-armhf:v1
 
+COPY .git /data/.git/
+
 COPY . /data/
 
 RUN apt update
