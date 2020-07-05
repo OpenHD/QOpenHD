@@ -10,7 +10,7 @@ steps:
   commands:
   - apk add git
   - git fetch --tags
-  - git submodule update --recursive --remote
+  - git submodule update --init --recursive --remote
 - name: build
   image: plugins/docker
   environment:
@@ -34,7 +34,7 @@ steps:
   commands:
   - apk add git
   - git fetch --tags
-  - git submodule update --recursive --remote
+  - git submodule update --init --recursive --remote
 - name: build
   image: plugins/docker
   environment:
