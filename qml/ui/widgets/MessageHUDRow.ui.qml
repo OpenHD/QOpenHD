@@ -56,8 +56,6 @@ Item {
         }
 
         font.bold: true
-        opacity: 0.9 //model.timeout
-
         /* @disable-check M224
           Behavior on opacity {
               NumberAnimation { duration: 1000 }
@@ -76,7 +74,6 @@ Item {
         anchors.bottom: parent.bottom
         width: parent.width - 24
         text: model.text
-        opacity: 0.9 //model.timeout
         leftPadding: 6
         rightPadding: 0
 
