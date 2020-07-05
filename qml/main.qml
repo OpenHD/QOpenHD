@@ -25,12 +25,6 @@ ApplicationWindow {
 
     property bool initialised: false
 
-    Component.onCompleted: {
-        if (!initialised) {
-            hudOverlayGrid.messageHUD.pushMessage("Initializing", 1)
-            initialised = true;
-        }
-    }
 
     /* this is not used but must stay right here, it forces qmlglsink to completely
        initialize the rendering system early. Without this, the next GstGLVideoItem
