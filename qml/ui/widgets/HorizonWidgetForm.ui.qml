@@ -130,11 +130,32 @@ BaseWidget {
                     checked: settings.horizon_invert_roll
                     onCheckedChanged: settings.horizon_invert_roll = checked
                 }
+            }            
+            Item {
+                width: 230
+                height: 32
+                Text {
+                    text: qsTr("Show Ladder")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 6
+                    anchors.right: parent.right
+                    checked: settings.show_horizon_ladder
+                    onCheckedChanged: settings.show_horizon_ladder = checked
+                }
             }
             Item {
                 width: 230
                 height: 32
-                visible: true
+                visible: settings.show_horizon_ladder
                 Text {
                     text: qsTr("Spacing")
                     color: "white"
@@ -165,7 +186,7 @@ BaseWidget {
                 width: 230
                 height: 32
                 Text {
-                    text: qsTr("Show Ladder")
+                    text: qsTr("Show Home")
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -176,10 +197,75 @@ BaseWidget {
                 Switch {
                     width: 32
                     height: parent.height
-                    anchors.rightMargin: 6
+                    anchors.rightMargin: 12
                     anchors.right: parent.right
-                    checked: settings.show_horizon_ladder
-                    onCheckedChanged: settings.show_horizon_ladder = checked
+                    checked: settings.show_horizon_home
+                    onCheckedChanged: settings.show_horizon_home = checked
+                }
+            }
+            Item {
+                width: 230
+                height: 32
+                Text {
+                    text: qsTr("Show heading")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 12
+                    anchors.right: parent.right
+                    checked: settings.show_horizon_heading_ladder
+                    onCheckedChanged: settings.show_horizon_heading_ladder = checked
+                }
+            }
+            Item {
+                width: 230
+                height: 32
+                visible: settings.show_horizon_heading_ladder
+                Text {
+                    text: qsTr("Show N/S/E/W")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 12
+                    anchors.right: parent.right
+                    checked: settings.heading_ladder_text
+                    onCheckedChanged: settings.heading_ladder_text = checked
+                }
+            }
+            Item {
+                width: 230
+                height: 32
+                visible: settings.show_horizon_heading_ladder
+                Text {
+                    text: qsTr("UAV is iNav")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 12
+                    anchors.right: parent.right
+                    checked: settings.heading_inav
+                    onCheckedChanged: settings.heading_inav = checked
                 }
             }
         }
@@ -248,7 +334,7 @@ BaseWidget {
             anchors.horizontalCenter: parent.horizontalCenter
             y:-7
 
-            visible: settings.show_horizon_heading_ladder
+            //visible: settings.show_horizon_heading_ladder
 
             //transform: Scale { origin.x: 125; origin.y: 0; xScale: settings.horizon_size; yScale: 1}
 
@@ -275,10 +361,6 @@ BaseWidget {
                 onPaint: { // @disable-check M223
                     var ctx = getContext("2d"); // @disable-check M222
                     ctx.reset(); // @disable-check M222
-
-                    if (settings.show_horizon_heading_ladder === false){
-                        return; // to stop it from painting per user selection
-                    }
 
                     ctx.fillStyle = settings.color_shape;
                     //cant get a good approximation of glow via canvas
@@ -323,7 +405,7 @@ BaseWidget {
                         if (h<0){
                             h=360+h;
                         }
-                        if (h == OpenHD.home_heading) {
+                        if (h == OpenHD.home_heading && settings.show_horizon_home === true) {
                             ctx.font='14px "Font Awesome 5 Free"';
                             ctx.fillText("\uf015", x, y_label);
                             ctx.font = "bold 11px sans-serif";
@@ -331,12 +413,12 @@ BaseWidget {
                         }
 
 
-                        if (i % 30 == 0) {
+                        if (i % 30 == 0 && settings.show_horizon_heading_ladder === true) {
                             //big ticks
                             ctx.rect(x, y, 3, 8);
                             ctx.fill();
                         }
-                        else if (i % 15 == 0) {
+                        else if (i % 15 == 0 && settings.show_horizon_heading_ladder === true) {
                             //little ticks
                             ctx.rect(x, y+3, 2,5);
                             ctx.fill();
@@ -391,13 +473,13 @@ BaseWidget {
                                         qsTr("NW") : (j);
                             break;
                         }
-                        if (draw_text === true) {
+                        if (draw_text === true && settings.show_horizon_heading_ladder === true) {
                             ctx.fillText(compass_direction, x, y_label);
                             draw_text = false;
                         }
 
                     }
-                    if (h_drawn === true) { //home is offscreen, out of compass range
+                    if (h_drawn === true && settings.show_horizon_home === true) { //home is offscreen, out of compass range
                         //find if home should be on left or right edge of compass
                         var left = OpenHD.hdg - OpenHD.home_heading;
                         var right = OpenHD.home_heading - OpenHD.hdg;

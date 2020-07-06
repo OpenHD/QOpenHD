@@ -159,7 +159,15 @@ ApplicationWindow {
         property int horizon_ladder_spacing: 10        
         property bool show_horizon_ladder: true
         property bool show_horizon_heading_ladder: true
-        property bool show_heading_home: true
+        property bool show_horizon_home: true
+
+        property bool heading_inav: false //shared between heading and horizon
+        property bool heading_ladder_text: true //shared between heading and horizon
+
+        property bool show_heading: true
+        property double heading_opacity: 1
+        property double heading_size: 1
+        property bool show_heading_ladder: true
 
         property bool show_fpv: true
         property bool fpv_dynamic: true
@@ -173,13 +181,6 @@ ApplicationWindow {
         property bool show_speed_ladder: true
         property int speed_range: 100
         property int speed_minimum: 0
-
-        property bool show_heading: true
-        property bool heading_inav: false
-        property double heading_opacity: 1
-        property double heading_size: 1
-        property bool show_heading_ladder: true
-        property bool heading_ladder_text: true //true:letters/false:numbers
 
         property bool show_altitude: true
         property bool altitude_rel_msl: false
