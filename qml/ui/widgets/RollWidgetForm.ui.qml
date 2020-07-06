@@ -158,7 +158,6 @@ BaseWidget {
         x: -50
         y: -30
 
-
         Item {
             id:rollTicks
             anchors.fill: parent

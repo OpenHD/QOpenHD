@@ -316,17 +316,29 @@ void OpenHD::calculate_home_course () {
     a2 = atan2(a1, a2);
     if (a2 < 0.0) a2 += M_PI*2;
 
-    set_home_course(180.0f / M_PI*(a2));
+    int result= 180.0f / M_PI*(a2);
+
+    set_home_course(result);
+    set_home_heading(result);
 
 }
 
-void OpenHD::set_home_course(double home_course) {
+void OpenHD::set_home_course(int home_course) {    
     //so arrow points correct way it must be relative to heading
-    double rel_heading = home_course - m_hdg;
+    int rel_heading = home_course - m_hdg;
     if (rel_heading < 0) rel_heading += 360;
     if (rel_heading >= 360) rel_heading -=360;
     m_home_course = rel_heading;
     emit home_course_changed(home_course);
+}
+
+void OpenHD::set_home_heading(int home_heading) {
+    //backwards for some reason
+    home_heading=home_heading-180;
+    if (home_heading < 0) home_heading += 360;
+    if (home_heading >= 360) home_heading -=360;
+    m_home_heading = home_heading;
+    emit home_heading_changed(home_heading);
 }
 
 void OpenHD::set_lat(double lat) {
