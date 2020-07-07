@@ -9,8 +9,8 @@ import OpenHD 1.0
 
 BaseWidget {
     id: downlinkRSSIWidget
-    width: 96
-    height: 48
+    width: 92
+    height: 24
 
     visible: settings.show_downlink_rssi
 
@@ -421,30 +421,32 @@ BaseWidget {
             id: downlink_icon
             y: 0
             width: 24
-            height: 48
+            height: 24
             color: settings.color_shape
             text: "\uf381"
             anchors.left: parent.left
             anchors.leftMargin: -2
-            verticalAlignment: Text.AlignVCenter
+            anchors.top: parent.top
             font.family: "Font Awesome 5 Free"
             styleColor: "#f7f7f7"
             font.pixelSize: 18
+            verticalAlignment: Text.AlignVCenter
             horizontalAlignment: Text.AlignRight
         }
 
         Text {
-            id: primary_radio_dbm
+            id: downlink_dbm
             width: 32
             height: 24
             color: settings.color_text
-            text: "dBm"
-            anchors.left: downlink_rssi.right
-            anchors.leftMargin: 2
-            anchors.verticalCenter: downlink_rssi.verticalCenter
-            verticalAlignment: Text.AlignTop
-            font.pixelSize: 12
+            text: "dBm"            
+            anchors.right: parent.right
+            anchors.rightMargin: 0
+            anchors.top: parent.top
+            anchors.topMargin: 2
             horizontalAlignment: Text.AlignLeft
+            font.pixelSize: 12
+            verticalAlignment: Text.AlignTop
             wrapMode: Text.NoWrap
             elide: Text.ElideRight
             clip: false
@@ -453,20 +455,19 @@ BaseWidget {
         Text {
             id: downlink_rssi
             width: 42
-            height: 48
+            height: 24
             color: settings.color_text
 
             text: OpenHD.downlink_rssi == -127 ? qsTr("N/A") : OpenHD.downlink_rssi
-            anchors.left: downlink_icon.right
-            anchors.leftMargin: 0
+            anchors.right: downlink_dbm.left
+            anchors.rightMargin: 2
             anchors.top: parent.top
-            anchors.topMargin: 0
-            verticalAlignment: Text.AlignVCenter
-            font.pixelSize: 18
             horizontalAlignment: Text.AlignRight
+            font.pixelSize: 18
+            verticalAlignment: Text.AlignTop
             wrapMode: Text.NoWrap
             elide: Text.ElideRight
-            clip: true
+            clip: false
         }
 
         Text {
@@ -475,7 +476,7 @@ BaseWidget {
             text: "D: " + Number(OpenHD.damaged_block_cnt).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" (%L1%)").arg(OpenHD.damaged_block_percent);
             color: settings.color_text
             anchors.top: downlink_rssi.bottom
-            anchors.topMargin: -12
+            //anchors.topMargin: -12
             anchors.left: parent.left
             verticalAlignment: Text.AlignVCenter
             font.pixelSize: 12
