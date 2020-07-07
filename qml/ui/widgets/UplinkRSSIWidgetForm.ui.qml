@@ -72,7 +72,6 @@ BaseWidget {
 
         Text {
             id: uplink_icon
-            y: 0
             width: 24
             height: 24
             color: settings.color_shape
@@ -92,8 +91,6 @@ BaseWidget {
 
         Text {
             id: uplink_dbm
-            x: 568
-            y: 0
             width: 32
             height: 24
             color: settings.color_text
@@ -112,9 +109,7 @@ BaseWidget {
         }
 
         Text {
-            id: uplink_rssi
-            x: 820
-            y: 0
+            id: uplink_rssi            
             width: 34
             height: 24
             color: settings.color_text
@@ -134,8 +129,6 @@ BaseWidget {
 
         Text {
             id: uplink_lost_packet_cnt_rc
-            x: 0
-            y: 0
             width: 64
             height: 24
             color: settings.color_text
@@ -156,8 +149,6 @@ BaseWidget {
 
         Text {
             id: uplink_lost_packet_cnt_telemetry_up
-            x: 0
-            y: 0
             width: 64
             height: 24
             color: settings.color_text
