@@ -81,7 +81,7 @@ BaseWidget {
             anchors.right: uplink_rssi.left
             anchors.rightMargin: 0
             font.family: "Font Awesome 5 Free"
-            font.pixelSize: 14
+            font.pixelSize: 18
             anchors.top: parent.top
             styleColor: "#f7f7f7"
             verticalAlignment: Text.AlignVCenter
@@ -104,7 +104,7 @@ BaseWidget {
             anchors.top: parent.top
             anchors.topMargin: 0
             horizontalAlignment: Text.AlignLeft
-            font.pixelSize: 10
+            font.pixelSize: 12
             verticalAlignment: Text.AlignTop
             wrapMode: Text.NoWrap
             elide: Text.ElideRight
@@ -125,7 +125,7 @@ BaseWidget {
             anchors.top: parent.top
             anchors.topMargin: 0
             horizontalAlignment: Text.AlignRight
-            font.pixelSize: 14
+            font.pixelSize: 18
             verticalAlignment: Text.AlignVCenter
             wrapMode: Text.NoWrap
             elide: Text.ElideRight
