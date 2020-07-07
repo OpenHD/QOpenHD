@@ -501,10 +501,9 @@ BaseWidget {
 
         Column {
             anchors.left: widgetInner.right
-            anchors.leftMargin: 30
+            anchors.leftMargin: 15
             anchors.top: widgetInner.top
             anchors.topMargin: 12
-            width: 224
             spacing: 0
 
             visible: settings.downlink_cards_right
