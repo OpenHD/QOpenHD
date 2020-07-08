@@ -33,6 +33,10 @@ CONFIG(debug, debug|release) {
     DEFINES += QMLJSDEBUGGER
 }
 
+OBJECTS_DIR  = $${OUT_PWD}/obj
+MOC_DIR      = $${OUT_PWD}/moc
+UI_DIR       = $${OUT_PWD}/ui
+RCC_DIR      = $${OUT_PWD}/rcc
 
 QT += qml quick concurrent opengl gui
 QT += positioning location
