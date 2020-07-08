@@ -9,7 +9,6 @@
 
 #include "sharedqueue.h"
 
-#include "h264bitstream/h264_stream.h"
 
 enum OpenHDStreamType {
     OpenHDStreamTypeMain,
@@ -66,7 +65,7 @@ protected:
     void processDatagrams();
     void parseRTP(QByteArray datagram);
     void findNAL();
-    void processNAL(QByteArray nalUnit);
+    void processNAL(const uint8_t* data, size_t length);
     void reconfigure();
 
     virtual void start() = 0;
@@ -86,8 +85,6 @@ protected:
     int main_default_port = 5600;
     int pip_default_port = 5601;
 
-
-    h264_stream_t* h264_stream = nullptr;
 
     QTimer* timer = nullptr;
 

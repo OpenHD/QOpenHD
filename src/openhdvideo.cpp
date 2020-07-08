@@ -16,11 +16,12 @@
 #include "h264bitstream/h264_stream.h"
 
 
+#include "h264_common.h"
+#include "sps_parser.h"
+#include "pps_parser.h"
 
 OpenHDVideo::OpenHDVideo(enum OpenHDStreamType stream_type): QObject(), m_stream_type(stream_type) {
     qDebug() << "OpenHDVideo::OpenHDVideo()";
-
-    h264_stream = h264_new();
 
     sps = (uint8_t*)malloc(sizeof(uint8_t)*1024);
     pps = (uint8_t*)malloc(sizeof(uint8_t)*1024);
@@ -257,7 +258,7 @@ void OpenHDVideo::parseRTP(QByteArray datagram) {
     if (submit) {
         QByteArray nalUnit(tempBuffer);
         tempBuffer.clear();
-        processNAL(nalUnit);
+        processNAL((uint8_t*)nalUnit.data(), nalUnit.length());
     }
 };
 
@@ -274,20 +275,15 @@ void OpenHDVideo::findNAL() {
     int nal_start, nal_end;
 
     while (find_nal_unit(p, sz, &nal_start, &nal_end) > 0) {
-        QByteArray nalUnit;
-
         auto nal_size = nal_end - nal_start;
-        nalUnit.resize(nal_size);
 
-        memcpy(nalUnit.data(), &p[nal_start], nal_size);
+        processNAL((uint8_t*)&p[nal_start], nal_size);
 
         tempBuffer.remove(0, nal_end);
 
         // update the temporary pointer with the new start of the buffer
         p = (uint8_t*)tempBuffer.data();
         sz = tempBuffer.size();
-
-        processNAL(nalUnit);
     }
 }
 
@@ -302,32 +298,25 @@ void OpenHDVideo::findNAL() {
  * before the PPS/SPS, or a non-IDR before an IDR.
  *
  */
-void OpenHDVideo::processNAL(QByteArray nalUnit) {
-    //auto forbidden_zero_bit = (nalUnit[0] >> 7) & 0x1;
-    //auto nal_ref_idc = (nalUnit[0] >> 5) & 0x3;
-    auto nal_unit_type = nalUnit[0] & 0x1F;
+void OpenHDVideo::processNAL(const uint8_t* data, size_t length) {
+    webrtc::H264::NaluType nalu_type = webrtc::H264::ParseNaluType(data[0]);
 
-    read_nal_unit(h264_stream, (uint8_t*)nalUnit.data(), nalUnit.length());
-
-    switch (nal_unit_type) {
-        case NAL_UNIT_TYPE_UNSPECIFIED: {
-            break;
-        }
-        case NAL_UNIT_TYPE_CODED_SLICE_NON_IDR: {
+    switch (nalu_type) {
+        case webrtc::H264::NaluType::kSlice: {
             if (isConfigured && sentSPS && sentPPS && sentIDR) {
                 QByteArray _n;
                 _n.append(NAL_HEADER, 4);
-                _n.append(nalUnit);
+                _n.append((const char*)data, length);
                 processFrame(_n, FrameTypeNonIDR);
                 //nalQueue.push_back(_n);
             }
             break;
         }
-        case NAL_UNIT_TYPE_CODED_SLICE_IDR: {
+        case webrtc::H264::NaluType::kIdr: {
             if (isConfigured && sentSPS && sentPPS) {
                 QByteArray _n;
                 _n.append(NAL_HEADER, 4);
-                _n.append(nalUnit);
+                _n.append((const char*)data, length);
 
                 processFrame(_n, FrameTypeIDR);
                 //nalQueue.push_back(_n);
@@ -336,63 +325,66 @@ void OpenHDVideo::processNAL(QByteArray nalUnit) {
             }
             break;
         }
-        case NAL_UNIT_TYPE_SPS: {
+        case webrtc::H264::NaluType::kSps: {
             auto new_width = 0;
             auto new_height = 0;
             auto new_fps = 0;
 
-            if (h264_stream->sps->frame_cropping_flag) {
-                new_width = ((h264_stream->sps->pic_width_in_mbs_minus1 + 1) * 16) - h264_stream->sps->frame_crop_left_offset * 2 - h264_stream->sps->frame_crop_right_offset * 2;
-                new_height = ((2 - h264_stream->sps->frame_mbs_only_flag)* (h264_stream->sps->pic_height_in_map_units_minus1 + 1) * 16) - (h264_stream->sps->frame_crop_top_offset * 2) - (h264_stream->sps->frame_crop_bottom_offset * 2);
-            }
-            else {
-                new_width = ((h264_stream->sps->pic_width_in_mbs_minus1 + 1) * 16);
-                new_height = ((2 - h264_stream->sps->frame_mbs_only_flag) * (h264_stream->sps->pic_height_in_map_units_minus1 + 1) * 16);
-            }
+            int sps_id = 0;
+            auto _sps = webrtc::SpsParser::ParseSps(data + webrtc::H264::kNaluTypeSize, length - webrtc::H264::kNaluTypeSize);
 
-            int vui_present = h264_stream->sps->vui_parameters_present_flag;
-            if (vui_present) {
-                if (h264_stream->sps->vui.timing_info_present_flag) {
-                    auto num_units_in_tick = h264_stream->sps->vui.num_units_in_tick;
-                    auto time_scale = h264_stream->sps->vui.time_scale;
-                    new_fps = time_scale / num_units_in_tick;
-                } else {
-                    new_fps = 30;
+            if (_sps) {
+                new_width = _sps->width;
+                new_height = _sps->height;
+                new_fps = 30;
+
+                // the webrtc h264 parser doesn't support this yet, but we can add it
+                /*int vui_present = _sps->vui_params_present;
+                if (vui_present) {
+                    if (nalu_sps->timing_info_present_flag) {
+                        auto num_units_in_tick = nalu_sps->num_units_in_tick;
+
+                        auto time_scale = nalu_sps->time_scale;
+                        new_fps = time_scale / num_units_in_tick;
+                    } else {
+                        new_fps = 30;
+                    }
+                }*/
+
+                if (new_height != height || new_width != width || new_fps != fps) {
+                    height = new_height;
+                    width = new_width;
+                    fps = new_fps;
+                }
+
+                if (!haveSPS) {
+                    QByteArray extraData;
+                    extraData.append(NAL_HEADER, 4);
+                    extraData.append((const char*)data, length);
+
+                    sps_len = extraData.size();
+                    memcpy(sps, extraData.data(), extraData.size());
+                    haveSPS = true;
+                }
+                if (isConfigured) {
+                    QByteArray _n;
+                    _n.append(NAL_HEADER, 4);
+                    _n.append((const char*)data, length);
+
+                    processFrame(_n, FrameTypeSPS);
+                    //nalQueue.push_back(_n);
+
+                    sentSPS = true;
                 }
             }
 
-            if (new_height != height || new_width != width || new_fps != fps) {
-                height = new_height;
-                width = new_width;
-                fps = new_fps;
-            }
-
-            if (!haveSPS) {
-                QByteArray extraData;
-                extraData.append(NAL_HEADER, 4);
-                extraData.append(nalUnit);
-
-                sps_len = extraData.size();
-                memcpy(sps, extraData.data(), extraData.size());
-                haveSPS = true;
-            }
-            if (isConfigured) {
-                QByteArray _n;
-                _n.append(NAL_HEADER, 4);
-                _n.append(nalUnit);
-
-                processFrame(_n, FrameTypeSPS);
-                //nalQueue.push_back(_n);
-
-                sentSPS = true;
-            }
             break;
         }
-        case NAL_UNIT_TYPE_PPS: {
+        case webrtc::H264::NaluType::kPps: {
             if (!havePPS) {
                 QByteArray extraData;
                 extraData.append(NAL_HEADER, 4);
-                extraData.append(nalUnit);
+                extraData.append((const char*)data, length);
 
                 pps_len = extraData.length();
                 memcpy(pps, extraData.data(), extraData.size());
@@ -401,7 +393,7 @@ void OpenHDVideo::processNAL(QByteArray nalUnit) {
             if (isConfigured && sentSPS) {
                 QByteArray _n;
                 _n.append(NAL_HEADER, 4);
-                _n.append(nalUnit);
+                _n.append((const char*)data, length);
 
                 processFrame(_n, FrameTypePPS);
                 //nalQueue.push_back(_n);
@@ -410,10 +402,10 @@ void OpenHDVideo::processNAL(QByteArray nalUnit) {
             }
             break;
         }
-        case NAL_UNIT_TYPE_AU: {
+        case webrtc::H264::NaluType::kAud: {
             QByteArray _n;
             _n.append(NAL_HEADER, 4);
-            _n.append(nalUnit);
+            _n.append((const char*)data, length);
 
             processFrame(_n, FrameTypeAU);
             break;
