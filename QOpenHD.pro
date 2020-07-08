@@ -317,7 +317,7 @@ AndroidBuild {
     CONFIG += EnableMainVideo
     CONFIG += EnablePiP
     CONFIG += EnableLink
-    CONFIG += EnableGStreamer
+    CONFIG += EnableVideoRender
     #CONFIG += EnableCharts
     EnableGStreamer {
         OTHER_FILES += \
