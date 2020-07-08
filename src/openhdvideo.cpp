@@ -288,6 +288,33 @@ void OpenHDVideo::findNAL() {
 }
 
 
+/*
+void OpenHDVideo::findNAL() {
+    size_t sz = tempBuffer.size();
+
+    if (sz == 0) {
+        return;
+    }
+
+    uint8_t* p = (uint8_t*)tempBuffer.data();
+
+    int final_offset = 0;
+
+    auto indexes = webrtc::H264::FindNaluIndices(p, sz);
+
+    for (auto & index : indexes) {
+        qDebug() << "p: " << p;
+        qDebug() << "NAL<" << index.payload_size << "> : " << index.payload_start_offset << ":" << index.payload_start_offset + index.payload_size;
+        processNAL(&p[index.payload_start_offset], index.payload_size);
+        final_offset = index.payload_start_offset + index.payload_size;
+    }
+
+    if (final_offset != 0) {
+        qDebug() << "Removing 0:" << final_offset;
+        tempBuffer.remove(0, final_offset);
+    }
+}*/
+
 
 /*
  * Parses the NAL header to determine which kind of NAL this is, and then either
