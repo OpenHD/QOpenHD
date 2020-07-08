@@ -199,7 +199,7 @@ void OpenHDAndroidVideo::processFrame(QByteArray &nal, FrameType frameType) {
 
     while (true) {
 
-        ssize_t buffIdx = AMediaCodec_dequeueInputBuffer(codec, 15000);
+        ssize_t buffIdx = AMediaCodec_dequeueInputBuffer(codec, 35000);
 
         if (buffIdx == AMEDIACODEC_INFO_TRY_AGAIN_LATER) {
             QThread::msleep(1);
@@ -232,7 +232,7 @@ void OpenHDAndroidVideo::renderLoop() {
             return;
         }
         AMediaCodecBufferInfo info;
-        auto status = AMediaCodec_dequeueOutputBuffer(codec, &info, -1);
+        auto status = AMediaCodec_dequeueOutputBuffer(codec, &info, 35000);
         if (status >= 0) {
             //const int64_t ts = (int64_t)duration_cast<nanoseconds>(steady_clock::now().time_since_epoch()).count();
             //AMediaCodec_releaseOutputBufferAtTime(codec, status, ts);
