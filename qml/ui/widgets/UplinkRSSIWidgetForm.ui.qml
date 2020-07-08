@@ -72,7 +72,6 @@ BaseWidget {
 
         Text {
             id: uplink_icon
-            y: 0
             width: 24
             height: 24
             color: settings.color_shape
@@ -81,7 +80,7 @@ BaseWidget {
             anchors.right: uplink_rssi.left
             anchors.rightMargin: 0
             font.family: "Font Awesome 5 Free"
-            font.pixelSize: 14
+            font.pixelSize: 18
             anchors.top: parent.top
             styleColor: "#f7f7f7"
             verticalAlignment: Text.AlignVCenter
@@ -92,8 +91,6 @@ BaseWidget {
 
         Text {
             id: uplink_dbm
-            x: 568
-            y: 0
             width: 32
             height: 24
             color: settings.color_text
@@ -104,7 +101,7 @@ BaseWidget {
             anchors.top: parent.top
             anchors.topMargin: 0
             horizontalAlignment: Text.AlignLeft
-            font.pixelSize: 10
+            font.pixelSize: 12
             verticalAlignment: Text.AlignTop
             wrapMode: Text.NoWrap
             elide: Text.ElideRight
@@ -112,9 +109,7 @@ BaseWidget {
         }
 
         Text {
-            id: uplink_rssi
-            x: 820
-            y: 0
+            id: uplink_rssi            
             width: 34
             height: 24
             color: settings.color_text
@@ -125,7 +120,7 @@ BaseWidget {
             anchors.top: parent.top
             anchors.topMargin: 0
             horizontalAlignment: Text.AlignRight
-            font.pixelSize: 14
+            font.pixelSize: 18
             verticalAlignment: Text.AlignVCenter
             wrapMode: Text.NoWrap
             elide: Text.ElideRight
@@ -134,8 +129,6 @@ BaseWidget {
 
         Text {
             id: uplink_lost_packet_cnt_rc
-            x: 0
-            y: 0
             width: 64
             height: 24
             color: settings.color_text
@@ -156,8 +149,6 @@ BaseWidget {
 
         Text {
             id: uplink_lost_packet_cnt_telemetry_up
-            x: 0
-            y: 0
             width: 64
             height: 24
             color: settings.color_text

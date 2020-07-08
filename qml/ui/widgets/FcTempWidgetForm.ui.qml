@@ -16,7 +16,7 @@ BaseWidget {
     widgetIdentifier: "fc_temp_widget"
 
     defaultAlignment: 1
-    defaultXOffset: 90
+    defaultXOffset: 93
     defaultYOffset: 0
     defaultHCenter: false
     defaultVCenter: false
