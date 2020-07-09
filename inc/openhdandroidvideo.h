@@ -43,9 +43,9 @@ private:
 
     QPointer<OpenHDAndroidRender> m_videoOut;
 
-    AMediaCodec* codec;
-    AMediaFormat *format;
-    ANativeWindow * window;
+    AMediaCodec* codec = nullptr;
+    AMediaFormat *format = nullptr;
+    ANativeWindow * window = nullptr;
 };
 
 #endif // OpenHDAndroidVideo_H
