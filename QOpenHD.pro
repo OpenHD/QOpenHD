@@ -53,10 +53,6 @@ INCLUDEPATH += $$PWD/lib/GeographicLib-1.50/include
 
 
 SOURCES += \
-    lib/h264bitstream/h264_avcc.c \
-    lib/h264bitstream/h264_nal.c \
-    lib/h264bitstream/h264_sei.c \
-    lib/h264bitstream/h264_stream.c \
     src/FPS.cpp \
     src/frskytelemetry.cpp \
     src/gpiomicroservice.cpp \
@@ -109,11 +105,7 @@ HEADERS += \
     inc/statusmicroservice.h \
     inc/util.h \
     inc/vectortelemetry.h \
-    inc/wifibroadcast.h \
-    lib/h264bitstream/bs.h \
-    lib/h264bitstream/h264_avcc.h \
-    lib/h264bitstream/h264_sei.h \
-    lib/h264bitstream/h264_stream.h
+    inc/wifibroadcast.h
 
 DISTFILES += \
     android/AndroidManifest.xml \
