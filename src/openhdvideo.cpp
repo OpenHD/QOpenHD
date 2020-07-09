@@ -284,6 +284,10 @@ void OpenHDVideo::findNAL() {
 
     auto indexes = webrtc::H264::FindNaluIndices(p, sz);
 
+    if (indexes.empty()) {
+        return;
+    }
+
     for (auto & index : indexes) {
         processNAL(&p[index.payload_start_offset], index.payload_size);
         final_offset = index.payload_start_offset + index.payload_size;
