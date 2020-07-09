@@ -19,13 +19,6 @@ enum OpenHDStreamType {
 class QUdpSocket;
 
 
-#define NAL_UNIT_TYPE_UNSPECIFIED                    0
-#define NAL_UNIT_TYPE_CODED_SLICE_NON_IDR            1
-#define NAL_UNIT_TYPE_CODED_SLICE_IDR                5
-#define NAL_UNIT_TYPE_SPS                            7
-#define NAL_UNIT_TYPE_PPS                            8
-#define NAL_UNIT_TYPE_AU                             9
-
 constexpr char NAL_HEADER[] = "\x00\x00\x00\x01";
 
 typedef struct {
@@ -35,13 +28,6 @@ typedef struct {
     uint8_t type : 5;
 } fu_a_header;
 
-enum FrameType {
-    FrameTypeIDR,
-    FrameTypeNonIDR,
-    FrameTypeSPS,
-    FrameTypePPS,
-    FrameTypeAU
-};
 
 class OpenHDVideo : public QObject
 {
