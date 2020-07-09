@@ -343,7 +343,6 @@ void OpenHDVideo::processNAL(const uint8_t* data, size_t length) {
             auto new_height = 0;
             auto new_fps = 0;
 
-            int sps_id = 0;
             auto _sps = webrtc::SpsParser::ParseSps(data + webrtc::H264::kNaluTypeSize, length - webrtc::H264::kNaluTypeSize);
 
             if (_sps) {
