@@ -95,6 +95,7 @@ protected:
 
     QByteArray rtpBuffer;
     size_t rtpData = 0;
+    bool rtpStateFrag = false;
 
     bool haveSPS = false;
     bool havePPS = false;
