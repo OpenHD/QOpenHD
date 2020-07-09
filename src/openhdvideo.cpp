@@ -289,6 +289,9 @@ void OpenHDVideo::findNAL() {
     }
 
     for (auto & index : indexes) {
+        if (index.payload_size == 0) {
+            continue;
+        }
         processNAL(&p[index.payload_start_offset], index.payload_size);
         final_offset = index.payload_start_offset + index.payload_size;
     }
