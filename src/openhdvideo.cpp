@@ -273,31 +273,6 @@ void OpenHDVideo::parseRTP(QByteArray datagram) {
 
 
 
-/*
- * Simple NAL search
- *
- */
-void OpenHDVideo::findNAL() {
-    size_t sz = tempBuffer.size();
-    uint8_t* p = (uint8_t*)tempBuffer.data();
-
-    int nal_start, nal_end;
-
-    while (find_nal_unit(p, sz, &nal_start, &nal_end) > 0) {
-        auto nal_size = nal_end - nal_start;
-
-        processNAL((uint8_t*)&p[nal_start], nal_size);
-
-        tempBuffer.remove(0, nal_end);
-
-        // update the temporary pointer with the new start of the buffer
-        p = (uint8_t*)tempBuffer.data();
-        sz = tempBuffer.size();
-    }
-}
-
-
-/*
 void OpenHDVideo::findNAL() {
     size_t sz = tempBuffer.size();
 
@@ -322,7 +297,7 @@ void OpenHDVideo::findNAL() {
         qDebug() << "Removing 0:" << final_offset;
         tempBuffer.remove(0, final_offset);
     }
-}*/
+}
 
 
 /*
