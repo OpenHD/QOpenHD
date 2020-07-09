@@ -16,6 +16,9 @@
 
 #include <VideoToolbox/VideoToolbox.h>
 
+#include "h264_common.h"
+
+
 using namespace std::chrono;
 
 
@@ -177,9 +180,9 @@ void OpenHDAppleVideo::inputLoop() {
 }
 
 
-void OpenHDAppleVideo::processFrame(QByteArray &nal, FrameType frameType) {
+void OpenHDAppleVideo::processFrame(QByteArray &nal, webrtc::H264::NaluType frameType) {
 
-    if (frameType == FrameTypeSPS || frameType == FrameTypePPS || frameType == FrameTypeAU) {
+    if (frameType == webrtc::H264::NaluType::kSps || frameType == webrtc::H264::NaluType::kPps || frameType == webrtc::H264::NaluType::kAud) {
         return;
     }
 

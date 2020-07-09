@@ -320,7 +320,7 @@ void OpenHDVideo::processNAL(const uint8_t* data, size_t length) {
                 QByteArray _n;
                 _n.append(NAL_HEADER, 4);
                 _n.append((const char*)data, length);
-                processFrame(_n, FrameTypeNonIDR);
+                processFrame(_n, nalu_type);
                 //nalQueue.push_back(_n);
             }
             break;
@@ -331,7 +331,7 @@ void OpenHDVideo::processNAL(const uint8_t* data, size_t length) {
                 _n.append(NAL_HEADER, 4);
                 _n.append((const char*)data, length);
 
-                processFrame(_n, FrameTypeIDR);
+                processFrame(_n, nalu_type);
                 //nalQueue.push_back(_n);
 
                 sentIDR = true;
@@ -384,7 +384,7 @@ void OpenHDVideo::processNAL(const uint8_t* data, size_t length) {
                     _n.append(NAL_HEADER, 4);
                     _n.append((const char*)data, length);
 
-                    processFrame(_n, FrameTypeSPS);
+                    processFrame(_n, nalu_type);
                     //nalQueue.push_back(_n);
 
                     sentSPS = true;
@@ -408,7 +408,7 @@ void OpenHDVideo::processNAL(const uint8_t* data, size_t length) {
                 _n.append(NAL_HEADER, 4);
                 _n.append((const char*)data, length);
 
-                processFrame(_n, FrameTypePPS);
+                processFrame(_n, nalu_type);
                 //nalQueue.push_back(_n);
 
                 sentPPS = true;
@@ -420,7 +420,7 @@ void OpenHDVideo::processNAL(const uint8_t* data, size_t length) {
             _n.append(NAL_HEADER, 4);
             _n.append((const char*)data, length);
 
-            processFrame(_n, FrameTypeAU);
+            processFrame(_n, nalu_type);
             break;
         }
         default: {

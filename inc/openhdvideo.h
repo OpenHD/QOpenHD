@@ -9,6 +9,7 @@
 
 #include "sharedqueue.h"
 
+#include "h264_common.h"
 
 enum OpenHDStreamType {
     OpenHDStreamTypeMain,
@@ -72,7 +73,7 @@ protected:
     virtual void stop() = 0;
     virtual void inputLoop() = 0;
     virtual void renderLoop() = 0;
-    virtual void processFrame(QByteArray &nal, FrameType frameType) = 0;
+    virtual void processFrame(QByteArray &nal, webrtc::H264::NaluType frameType) = 0;
 
     bool firstRun = true;
 

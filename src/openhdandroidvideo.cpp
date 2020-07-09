@@ -33,6 +33,7 @@
 
 using namespace std::chrono;
 
+#include "h264_common.h"
 
 
 OpenHDAndroidVideo::OpenHDAndroidVideo(enum OpenHDStreamType stream_type): OpenHDVideo(stream_type) {
@@ -188,8 +189,8 @@ void OpenHDAndroidVideo::inputLoop() {
     }
 }
 
-void OpenHDAndroidVideo::processFrame(QByteArray &nal, FrameType frameType) {
-    if (frameType == FrameTypeAU) {
+void OpenHDAndroidVideo::processFrame(QByteArray &nal, webrtc::H264::NaluType frameType) {
+    if (frameType == webrtc::H264::NaluType::kAud) {
         return;
     }
 
