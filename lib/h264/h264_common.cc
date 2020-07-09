@@ -51,9 +51,9 @@ std::vector<NaluIndex> FindNaluIndices(const uint8_t* buffer,
   }
 
   // Update length of last entry, if any.
-  auto it = sequences.rbegin();
+  /*auto it = sequences.rbegin();
   if (it != sequences.rend())
-    it->payload_size = buffer_size - it->payload_start_offset;
+    it->payload_size = buffer_size - it->payload_start_offset;*/
 
   return sequences;
 }
