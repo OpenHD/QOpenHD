@@ -285,14 +285,11 @@ void OpenHDVideo::findNAL() {
     auto indexes = webrtc::H264::FindNaluIndices(p, sz);
 
     for (auto & index : indexes) {
-        qDebug() << "p: " << p;
-        qDebug() << "NAL<" << index.payload_size << "> : " << index.payload_start_offset << ":" << index.payload_start_offset + index.payload_size;
         processNAL(&p[index.payload_start_offset], index.payload_size);
         final_offset = index.payload_start_offset + index.payload_size;
     }
 
     if (final_offset != 0) {
-        qDebug() << "Removing 0:" << final_offset;
         tempBuffer.remove(0, final_offset);
     }
 }
