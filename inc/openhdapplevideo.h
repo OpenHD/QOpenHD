@@ -35,6 +35,7 @@ public:
 
 public slots:
     void vtdecConfigure();
+    void onSetup();
 
 signals:
     void videoOutChanged();

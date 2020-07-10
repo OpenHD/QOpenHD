@@ -18,6 +18,8 @@
 
 #include "h264_common.h"
 
+#include "appleplatform.h"
+
 
 using namespace std::chrono;
 
@@ -42,6 +44,18 @@ void decompressionOutputCallback(void *decompressionOutputRefCon,
 OpenHDAppleVideo::OpenHDAppleVideo(enum OpenHDStreamType stream_type): OpenHDVideo(stream_type) {
     qDebug() << "OpenHDAppleVideo::OpenHDAppleVideo()";
     connect(this, &OpenHDAppleVideo::configure, this, &OpenHDAppleVideo::vtdecConfigure, Qt::DirectConnection);
+
+    connect(this, &OpenHDAppleVideo::setup, this, &OpenHDAppleVideo::onSetup);
+
+}
+
+void OpenHDAppleVideo::onSetup() {
+    qDebug() << "OpenHDAppleVideo::onSetup()";
+
+    auto applePlatform = ApplePlatform::instance();
+
+    connect(applePlatform, &ApplePlatform::willEnterForeground, this, &OpenHDAppleVideo::start, Qt::QueuedConnection);
+    connect(applePlatform, &ApplePlatform::didEnterBackground, this, &OpenHDAppleVideo::stop, Qt::QueuedConnection);
 }
 
 
@@ -51,11 +65,13 @@ OpenHDAppleVideo::~OpenHDAppleVideo() {
 
 
 void OpenHDAppleVideo::start() {
-    // nothing needed
+    m_background = false;
+    m_restart = true;
 }
 
 
 void OpenHDAppleVideo::stop() {
+    m_background = true;
     if (m_decompressionSession != nullptr) {
         VTDecompressionSessionInvalidate(m_decompressionSession);
         CFRelease(m_decompressionSession);
