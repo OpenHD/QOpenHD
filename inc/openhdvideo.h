@@ -70,6 +70,7 @@ protected:
 
     int m_video_port = 0;
 
+    bool m_restart = false;
     int main_default_port = 5600;
     int pip_default_port = 5601;
 
