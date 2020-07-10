@@ -18,7 +18,7 @@ Map {
     gesture.acceptedGestures: MapGestureArea.PanGesture | MapGestureArea.FlickGesture | MapGestureArea.PinchGesture | MapGestureArea.RotationGesture | MapGestureArea.TiltGesture
     gesture.flickDeceleration: 3000
 
-    bearing: settings.map_orientation ? 360 : OpenHD.hdg
+    bearing: settings.map_orientation ? OpenHD.hdg : 360
 
 
     property double userLat: 0.0
