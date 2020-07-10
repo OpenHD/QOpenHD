@@ -42,6 +42,7 @@ public:
 signals:
     void videoRunning(bool running);
     void configure();
+    void setup();
 
 public slots:
     void startVideo();

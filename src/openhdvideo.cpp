@@ -59,6 +59,8 @@ void OpenHDVideo::onStarted() {
     timer->start(1000);
 
     connect(m_socket, &QUdpSocket::readyRead, this, &OpenHDVideo::processDatagrams);
+
+    emit setup();
 }
 
 
