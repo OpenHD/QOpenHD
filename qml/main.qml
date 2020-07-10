@@ -239,6 +239,8 @@ ApplicationWindow {
         property double roll_opacity: 1
 
         property bool show_example_widget: false
+
+        property bool stereo_mode: false
     }
 
 
@@ -334,8 +336,35 @@ ApplicationWindow {
 
     HUDOverlayGrid {
         id: hudOverlayGrid
-        anchors.fill: parent
+        anchors.left: parent.left
+        anchors.top: parent.top
+        anchors.bottom: parent.bottom
+        anchors.right: settings.stereo_mode ? undefined : parent.right
+        width: settings.stereo_mode ? parent.width / 2 : parent.width
         z: 3.0
+        layer.enabled: true
+    }
+
+    Rectangle {
+        id: hudOverlayGridClone
+        anchors.right: parent.right
+        anchors.top: parent.top
+        anchors.bottom: parent.bottom
+        width: parent.width / 2
+        visible: settings.stereo_mode
+        z: 3.0
+        layer.enabled: true
+        layer.effect: ShaderEffect {
+            id: shader
+            property variant cloneSource : hudOverlayGrid
+            fragmentShader: "
+                  varying highp vec2 qt_TexCoord0;
+                  uniform highp sampler2D cloneSource;
+                  void main(void) {
+                       gl_FragColor =  texture2D(cloneSource, qt_TexCoord0);
+                  }
+            "
+        }
     }
 
     LowerOverlayBar {
