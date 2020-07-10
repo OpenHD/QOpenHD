@@ -72,6 +72,9 @@ void OpenHDVideo::onStarted() {
  * if necessary, such as hiding the PiP element when the stream has stopped.
  */
 void OpenHDVideo::reconfigure() {
+    if (m_background) {
+        return;
+    }
 
     auto currentTime = QDateTime::currentMSecsSinceEpoch();
 
