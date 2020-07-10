@@ -52,10 +52,11 @@ OpenHDAppleVideo::OpenHDAppleVideo(enum OpenHDStreamType stream_type): OpenHDVid
 void OpenHDAppleVideo::onSetup() {
     qDebug() << "OpenHDAppleVideo::onSetup()";
 
+    #if defined(__ios__)
     auto applePlatform = ApplePlatform::instance();
-
     connect(applePlatform, &ApplePlatform::willEnterForeground, this, &OpenHDAppleVideo::start, Qt::QueuedConnection);
     connect(applePlatform, &ApplePlatform::didEnterBackground, this, &OpenHDAppleVideo::stop, Qt::QueuedConnection);
+    #endif
 }
 
 
