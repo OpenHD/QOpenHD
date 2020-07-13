@@ -257,7 +257,6 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             auto rssi = static_cast<int>(static_cast<double>(rc_channels_raw.rssi) / 255.0 * 100.0);
             OpenHD::instance()->set_rc_rssi(rssi);
 
-            qDebug() << "RC RSSI: " << rc_channels_raw.rssi;
             break;
         }
         case MAVLINK_MSG_ID_SERVO_OUTPUT_RAW:{
