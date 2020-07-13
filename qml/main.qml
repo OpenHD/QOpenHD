@@ -240,7 +240,7 @@ ApplicationWindow {
 
         property bool show_example_widget: false
 
-        property bool stereo_mode: false
+        property bool stereo_enabled: false
     }
 
 
@@ -328,7 +328,7 @@ ApplicationWindow {
     // UI areas
 
     UpperOverlayBar {
-        visible: !settings.stereo_mode
+        visible: !settings.stereo_enabled
         id: upperOverlayBar
         onSettingsButtonClicked: {
             settings_panel.openSettings();
@@ -344,8 +344,8 @@ ApplicationWindow {
         transform: Scale {
             origin.x: 0
             origin.y: hudOverlayGrid.height / 2
-            xScale: settings.stereo_mode ? 0.5 : 1.0
-            yScale: settings.stereo_mode ? 0.5 : 1.0
+            xScale: settings.stereo_enabled ? 0.5 : 1.0
+            yScale: settings.stereo_enabled ? 0.5 : 1.0
         }
         z: 3.0
         layer.enabled: true
@@ -356,8 +356,8 @@ ApplicationWindow {
         anchors.right: parent.right
         width: parent.width / 2
         height: parent.height / 2
-        anchors.verticalCenter: settings.stereo_mode ? parent.verticalCenter : undefined
-        visible: settings.stereo_mode
+        anchors.verticalCenter: settings.stereo_enabled ? parent.verticalCenter : undefined
+        visible: settings.stereo_enabled
         z: 3.0
         layer.enabled: true
         layer.effect: ShaderEffect {
@@ -374,7 +374,7 @@ ApplicationWindow {
     }
 
     LowerOverlayBar {
-        visible: !settings.stereo_mode
+        visible: !settings.stereo_enabled
         id: lowerOverlayBar
     }
 
