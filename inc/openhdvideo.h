@@ -19,7 +19,8 @@ enum OpenHDStreamType {
 class QUdpSocket;
 
 
-constexpr char NAL_HEADER[] = "\x00\x00\x00\x01";
+constexpr char NAL_HEADER[4] = {'\x00', '\x00', '\x00', '\x01'};
+
 
 typedef struct {
     uint8_t s : 1;
