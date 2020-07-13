@@ -339,8 +339,13 @@ ApplicationWindow {
         anchors.left: parent.left
         anchors.top: parent.top
         anchors.bottom: parent.bottom
-        anchors.right: settings.stereo_mode ? undefined : parent.right
-        width: settings.stereo_mode ? parent.width / 2 : parent.width
+        anchors.right: parent.right
+        transform: Scale {
+            origin.x: 0
+            origin.y: hudOverlayGrid.height / 2
+            xScale: settings.stereo_mode ? 0.5 : 1.0
+            yScale: settings.stereo_mode ? 0.5 : 1.0
+        }
         z: 3.0
         layer.enabled: true
     }
@@ -348,9 +353,9 @@ ApplicationWindow {
     Rectangle {
         id: hudOverlayGridClone
         anchors.right: parent.right
-        anchors.top: parent.top
-        anchors.bottom: parent.bottom
         width: parent.width / 2
+        height: parent.height / 2
+        anchors.verticalCenter: settings.stereo_mode ? parent.verticalCenter : undefined
         visible: settings.stereo_mode
         z: 3.0
         layer.enabled: true
