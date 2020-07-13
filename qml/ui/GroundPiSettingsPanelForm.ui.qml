@@ -92,57 +92,57 @@ Item {
 
         GroundPiSettingsPresetView {
             id: presetTab
-            width: parent.width
-            height: parent.height
+            Layout.fillHeight: true
+            Layout.fillWidth: true
         }
 
         GroundPiSettingsListView {
             id: generalTab
-            width: parent.width
-            height: parent.height
+            Layout.fillHeight: true
+            Layout.fillWidth: true
             model: generalSettingsModel
         }
 
         GroundPiSettingsListView {
             id: radioTab
-            width: parent.width
-            height: parent.height
+            Layout.fillHeight: true
+            Layout.fillWidth: true
             model: radioSettingsModel
         }
 
         GroundPiSettingsListView {
             id: videoTab
-            width: parent.width
-            height: parent.height
+            Layout.fillHeight: true
+            Layout.fillWidth: true
             model: videoSettingsModel
         }
 
         GroundPiSettingsListView {
             id: rcTab
-            width: parent.width
-            height: parent.height
+            Layout.fillHeight: true
+            Layout.fillWidth: true
             model: rcSettingsModel
         }
 
         GroundPiSettingsListView {
             id: hotspotTab
             model: hotspotSettingsModel
-            width: parent.width
-            height: parent.height
+            Layout.fillHeight: true
+            Layout.fillWidth: true
         }
 
         GroundPiSettingsListView {
             id: smartSyncTab
             model: smartSyncSettingsModel
-            width: parent.width
-            height: parent.height
+            Layout.fillHeight: true
+            Layout.fillWidth: true
         }
 
         GroundPiSettingsListView {
             id: otherTab
             model: otherSettingsModel
-            width: parent.width
-            height: parent.height
+            Layout.fillHeight: true
+            Layout.fillWidth: true
         }
 
     }
