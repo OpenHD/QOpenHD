@@ -328,6 +328,7 @@ ApplicationWindow {
     // UI areas
 
     UpperOverlayBar {
+        visible: !settings.stereo_mode
         id: upperOverlayBar
         onSettingsButtonClicked: {
             settings_panel.openSettings();
@@ -373,6 +374,7 @@ ApplicationWindow {
     }
 
     LowerOverlayBar {
+        visible: !settings.stereo_mode
         id: lowerOverlayBar
     }
 
