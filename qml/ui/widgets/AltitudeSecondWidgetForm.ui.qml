@@ -78,15 +78,6 @@ BaseWidget {
         }
     }
 
-    Glow {
-        anchors.fill: widgetInner
-        radius: 3
-        samples: 17
-        color: settings.color_glow
-        opacity: settings.altitude_second_opacity
-        source: widgetInner
-    }
-
     Item {
         id: widgetInner
         anchors.fill: parent
@@ -106,6 +97,8 @@ BaseWidget {
                       Qt.locale(), 'f', 0)
             horizontalAlignment: Text.AlignRight
             verticalAlignment: Text.AlignVCenter
+            style: Text.Outline
+            styleColor: settings.color_glow
         }
 
         Text {
@@ -121,6 +114,8 @@ BaseWidget {
             font.family: "Font Awesome 5 Free"
             font.pixelSize: 14
             verticalAlignment: Text.AlignVCenter
+            style: Text.Outline
+            styleColor: settings.color_glow
         }
 
         antialiasing: true

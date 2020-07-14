@@ -367,6 +367,8 @@ BaseWidget {
             anchors.fill: parent
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
+            style: Text.Outline
+            styleColor: settings.color_glow
         }
     }
 }

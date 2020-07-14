@@ -138,6 +138,8 @@ BaseWidget {
                     text: styleData.value
                     color: settings.color_text
                     antialiasing: true
+                    style: Text.Outline
+                    styleColor: settings.color_glow
                 }
 
                 needle: Rectangle {

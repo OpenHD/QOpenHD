@@ -55,16 +55,6 @@ BaseWidget {
         }
     }
 
-    Glow {
-        anchors.fill: widgetInner
-        visible: settings.show_uplink_rssi
-        radius: 3
-        samples: 17
-        color: settings.color_glow
-        opacity: settings.uplink_rssi_opacity
-        source: widgetInner
-    }
-
     Item {
         id: widgetInner
 
@@ -82,11 +72,12 @@ BaseWidget {
             font.family: "Font Awesome 5 Free"
             font.pixelSize: 18
             anchors.top: parent.top
-            styleColor: "#f7f7f7"
             verticalAlignment: Text.AlignVCenter
             z: 2.2
             anchors.topMargin: 0
             horizontalAlignment: Text.AlignRight
+            style: Text.Outline
+            styleColor: settings.color_glow
         }
 
         Text {
@@ -106,6 +97,8 @@ BaseWidget {
             wrapMode: Text.NoWrap
             elide: Text.ElideRight
             clip: false
+            style: Text.Outline
+            styleColor: settings.color_glow
         }
 
         Text {
@@ -125,6 +118,8 @@ BaseWidget {
             wrapMode: Text.NoWrap
             elide: Text.ElideRight
             clip: false
+            style: Text.Outline
+            styleColor: settings.color_glow
         }
 
         Text {
@@ -145,6 +140,8 @@ BaseWidget {
             elide: Text.ElideRight
             clip: false
             visible: false
+            style: Text.Outline
+            styleColor: settings.color_glow
         }
 
         Text {
@@ -165,6 +162,8 @@ BaseWidget {
             elide: Text.ElideRight
             clip: false
             visible: false
+            style: Text.Outline
+            styleColor: settings.color_glow
         }
     }
 }

@@ -142,16 +142,6 @@ BaseWidget {
         }
     }
 
-    Glow {
-        anchors.fill: widgetInner
-        visible: settings.show_gps
-        radius: 3
-        samples: 17
-        color: settings.color_glow
-        opacity: settings.gps_opacity
-        source: widgetInner
-    }
-
     Item {
         id: widgetInner
 
@@ -170,8 +160,9 @@ BaseWidget {
             font.family: "Font Awesome 5 Free"
             horizontalAlignment: Text.AlignRight
             verticalAlignment: Text.AlignVCenter
-            styleColor: "#f7f7f7"
             font.pixelSize: 14
+            style: Text.Outline
+            styleColor: settings.color_glow
         }
 
         Text {
@@ -189,6 +180,8 @@ BaseWidget {
             verticalAlignment: Text.AlignVCenter
             horizontalAlignment: Text.AlignRight
             font.pixelSize: 16
+            style: Text.Outline
+            styleColor: settings.color_glow
         }
 
         Text {
@@ -203,6 +196,8 @@ BaseWidget {
             verticalAlignment: Text.AlignTop
             font.pixelSize: 10
             horizontalAlignment: Text.AlignLeft
+            style: Text.Outline
+            styleColor: settings.color_glow
         }
 
         Column {
@@ -228,6 +223,8 @@ BaseWidget {
                     text: "Lat:"
                     horizontalAlignment: Text.AlignLeft
                     font.pixelSize: 14
+                    style: Text.Outline
+                    styleColor: settings.color_glow
                 }
 
                 Text {
@@ -241,6 +238,8 @@ BaseWidget {
                     width: 92
                     font.pixelSize: 14
                     horizontalAlignment: Text.AlignRight
+                    style: Text.Outline
+                    styleColor: settings.color_glow
                 }
             }
 
@@ -260,6 +259,8 @@ BaseWidget {
                     text: "Lon:"
                     horizontalAlignment: Text.AlignLeft
                     font.pixelSize: 14
+                    style: Text.Outline
+                    styleColor: settings.color_glow
                 }
 
                 Text {
@@ -273,17 +274,10 @@ BaseWidget {
                     width: 92
                     font.pixelSize: 14
                     horizontalAlignment: Text.AlignRight
+                    style: Text.Outline
+                    styleColor: settings.color_glow
                 }
             }
-        }
-        Glow {
-            anchors.fill: lat_lon_column
-            visible: settings.show_gps
-            radius: 3
-            samples: 17
-            color: settings.color_glow
-            opacity: settings.gps_opacity
-            source: lat_lon_column
         }
     }
 }

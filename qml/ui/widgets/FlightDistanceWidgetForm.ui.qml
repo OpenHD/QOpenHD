@@ -55,16 +55,6 @@ BaseWidget {
         }
     }
 
-    Glow {
-        anchors.fill: widgetInner
-        visible: settings.show_flight_distance
-        radius: 3
-        samples: 17
-        color: settings.color_glow
-        opacity: settings.flight_distance_opacity
-        source: widgetInner
-    }
-
     Item {
         id: widgetInner
 
@@ -84,9 +74,10 @@ BaseWidget {
             anchors.rightMargin: 6
             verticalAlignment: Text.AlignVCenter
             font.family: "Font Awesome 5 Free"
-            styleColor: "#f7f7f7"
             font.pixelSize: 15
             horizontalAlignment: Text.AlignRight
+            style: Text.Outline
+            styleColor: settings.color_glow
         }
 
         Text {
@@ -116,6 +107,8 @@ BaseWidget {
             verticalAlignment: Text.AlignVCenter
             font.pixelSize: 16
             horizontalAlignment: Text.AlignLeft
+            style: Text.Outline
+            styleColor: settings.color_glow
         }
     }
 }

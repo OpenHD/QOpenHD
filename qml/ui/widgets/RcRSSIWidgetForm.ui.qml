@@ -201,7 +201,8 @@ BaseWidget {
             verticalAlignment: Text.AlignTop
             wrapMode: Text.NoWrap
             elide: Text.ElideRight
-
+            style: Text.Outline
+            styleColor: settings.color_glow
         }
 
         Text {
@@ -218,7 +219,8 @@ BaseWidget {
             verticalAlignment: Text.AlignVCenter
             wrapMode: Text.NoWrap
             elide: Text.ElideRight
-
+            style: Text.Outline
+            styleColor: settings.color_glow
         }       
     }
 }

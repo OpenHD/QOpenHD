@@ -85,6 +85,8 @@ BaseWidget {
             verticalAlignment: Text.AlignVCenter
             horizontalAlignment: Text.AlignHCenter
             font.pixelSize: 18
+            style: Text.Outline
+            styleColor: settings.color_glow
         }
 
         Shape {
@@ -125,6 +127,8 @@ BaseWidget {
             verticalAlignment: Text.AlignBottom
             horizontalAlignment: Text.AlignHCenter
             font.pixelSize: 14
+            style: Text.Outline
+            styleColor: settings.color_glow
         }
     }
 }

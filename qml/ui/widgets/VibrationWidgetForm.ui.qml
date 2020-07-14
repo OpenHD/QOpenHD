@@ -147,6 +147,8 @@ BaseWidget {
 
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
+                style: Text.Outline
+                styleColor: settings.color_glow
             }
         }
 
@@ -228,6 +230,8 @@ BaseWidget {
 
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
+                style: Text.Outline
+                styleColor: settings.color_glow
             }
         }
 
@@ -309,6 +313,8 @@ BaseWidget {
 
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
+                style: Text.Outline
+                styleColor: settings.color_glow
             }
         }
         Item {
@@ -335,6 +341,8 @@ BaseWidget {
 
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
+                style: Text.Outline
+                styleColor: settings.color_glow
             }
             Text {
                 id: thirty_text
@@ -352,6 +360,8 @@ BaseWidget {
 
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
+                style: Text.Outline
+                styleColor: settings.color_glow
             }
         }
     }
