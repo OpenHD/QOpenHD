@@ -110,6 +110,9 @@ void LTMTelemetry::processLTMMessage() {
         auto mah = (float)ltmread_u16()/1000.0f;
         OpenHD::instance()->set_battery_voltage(battery_voltage);
 
+        OpenHD::instance()->set_flight_mah(mah);
+
+
         // no current provided?
         //OpenHD::instance()->set_battery_current(ampere);
 
