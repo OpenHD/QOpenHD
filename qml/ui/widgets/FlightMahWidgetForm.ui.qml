@@ -78,16 +78,6 @@ BaseWidget {
         }
     }
 
-    Glow {
-        anchors.fill: widgetInner
-        visible: settings.show_flight_mah
-        radius: 3
-        samples: 17
-        color: settings.color_glow
-        opacity: settings.mah_opacity
-        source: widgetInner
-    }
-
     Item {
         id: widgetInner
 
@@ -107,9 +97,10 @@ BaseWidget {
             anchors.rightMargin: 6
             verticalAlignment: Text.AlignVCenter
             font.family: "Font Awesome 5 Free"
-            styleColor: "#f7f7f7"
             font.pixelSize: 15
             horizontalAlignment: Text.AlignRight
+            style: Text.Outline
+            styleColor: settings.color_glow
         }
 
         Text {
@@ -117,16 +108,16 @@ BaseWidget {
             width: 68
             height: 24
             clip: true
-
             color: settings.color_text
             opacity: settings.mah_opacity
-
             text: settings.air_battery_mah_source ? OpenHD.flight_mah+"mAh" : OpenHD.app_mah+"mAh"
             anchors.right: parent.right
             anchors.rightMargin: 0
             verticalAlignment: Text.AlignVCenter
             font.pixelSize: 16
             horizontalAlignment: Text.AlignLeft
+            style: Text.Outline
+            styleColor: settings.color_glow
         }
     }
 }

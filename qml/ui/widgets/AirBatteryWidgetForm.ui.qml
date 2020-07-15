@@ -144,16 +144,6 @@ BaseWidget {
         }
     }
 
-    Glow {
-        anchors.fill: widgetInner
-        visible: settings.show_air_battery
-        radius: 3
-        samples: 17
-        color: settings.color_glow
-        opacity: settings.air_battery_opacity
-        source: widgetInner
-    }
-
     Item {
         id: widgetInner
 
@@ -173,6 +163,8 @@ BaseWidget {
             elide: Text.ElideRight
             horizontalAlignment: Text.AlignLeft
             font.pixelSize: 14
+            style: Text.Outline
+            styleColor: settings.color_glow
         }
         Text {
             id: battery_amp_text
@@ -187,6 +179,8 @@ BaseWidget {
             elide: Text.ElideRight
             horizontalAlignment: Text.AlignLeft
             font.pixelSize: 14
+            style: Text.Outline
+            styleColor: settings.color_glow
         }
         Text {
             id: battery_volt_text
@@ -202,6 +196,8 @@ BaseWidget {
             elide: Text.ElideRight
             horizontalAlignment: Text.AlignLeft
             font.pixelSize: 14
+            style: Text.Outline
+            styleColor: settings.color_glow
         }
         Text {
             id: batteryGauge
@@ -230,6 +226,8 @@ BaseWidget {
             verticalAlignment: Text.AlignVCenter
             horizontalAlignment: Text.AlignHCenter
             font.pixelSize: 36
+            style: Text.Outline
+            styleColor: settings.color_glow
         }
     }
 }

@@ -187,17 +187,6 @@ BaseWidget {
         }
     }
 
-    Glow {
-        anchors.fill: widgetInner
-        visible: settings.show_bitrate
-        radius: 3
-        samples: 17
-        color: settings.color_glow
-        opacity: settings.bitrate_opacity
-        source: widgetInner
-    }
-
-
     Item {
         id: widgetInner
 
@@ -221,6 +210,8 @@ BaseWidget {
             clip: false
             horizontalAlignment: Text.AlignLeft
             font.pixelSize: 18
+            style: Text.Outline
+            styleColor: settings.color_glow
         }
 
         Text {
@@ -240,9 +231,10 @@ BaseWidget {
             anchors.leftMargin: -2
             verticalAlignment: Text.AlignVCenter
             font.family: "Font Awesome 5 Free"
-            styleColor: "#f7f7f7"
             font.pixelSize: 18
             horizontalAlignment: Text.AlignRight
+            style: Text.Outline
+            styleColor: settings.color_glow
         }
 
         Text {
@@ -258,6 +250,8 @@ BaseWidget {
             horizontalAlignment: Text.AlignLeft
             wrapMode: Text.NoWrap
             elide: Text.ElideRight
+            style: Text.Outline
+            styleColor: settings.color_glow
         }
     }
 }

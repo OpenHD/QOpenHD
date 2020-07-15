@@ -55,16 +55,6 @@ BaseWidget {
         }
     }
 
-    Glow {
-        anchors.fill: widgetInner
-        visible: settings.show_air_status
-        radius: 3
-        samples: 17
-        color: settings.color_glow
-        opacity: settings.air_status_opacity
-        source: widgetInner
-    }
-
     Item {
         id: widgetInner
 
@@ -86,6 +76,8 @@ BaseWidget {
             font.pixelSize: 14
             horizontalAlignment: Text.AlignRight
             elide: Text.ElideRight
+            style: Text.Outline
+            styleColor: settings.color_glow
         }
 
 
@@ -105,6 +97,8 @@ BaseWidget {
             font.pixelSize: 14
             horizontalAlignment: Text.AlignRight
             elide: Text.ElideRight
+            style: Text.Outline
+            styleColor: settings.color_glow
         }
         Text {
             id: temp_air
@@ -122,6 +116,8 @@ BaseWidget {
             font.pixelSize: 14
             horizontalAlignment: Text.AlignRight
             elide: Text.ElideRight
+            style: Text.Outline
+            styleColor: settings.color_glow
         }
     }
 }

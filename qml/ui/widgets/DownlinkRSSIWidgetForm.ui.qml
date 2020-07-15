@@ -178,16 +178,6 @@ BaseWidget {
 
     }
 
-    Glow {
-        anchors.fill: widgetInner
-        visible: settings.show_downlink_rssi
-        radius: 3
-        samples: 17
-        color: settings.color_glow
-        opacity: settings.downlink_rssi_opacity
-        source: widgetInner
-    }
-
     Item {
         id: widgetInner
 
@@ -206,10 +196,11 @@ BaseWidget {
             anchors.leftMargin: -2
             anchors.top: parent.top
             font.family: "Font Awesome 5 Free"
-            styleColor: "#f7f7f7"
             font.pixelSize: 18
             verticalAlignment: Text.AlignVCenter
             horizontalAlignment: Text.AlignRight
+            style: Text.Outline
+            styleColor: settings.color_glow
         }
 
         Text {
@@ -228,6 +219,8 @@ BaseWidget {
             wrapMode: Text.NoWrap
             elide: Text.ElideRight
             clip: false
+            style: Text.Outline
+            styleColor: settings.color_glow
         }
 
         Text {
@@ -246,6 +239,8 @@ BaseWidget {
             wrapMode: Text.NoWrap
             elide: Text.ElideRight
             clip: false
+            style: Text.Outline
+            styleColor: settings.color_glow
         }
 
         Text {
@@ -261,6 +256,8 @@ BaseWidget {
             horizontalAlignment: Text.AlignLeft
             wrapMode: Text.NoWrap
             elide: Text.ElideRight
+            style: Text.Outline
+            styleColor: settings.color_glow
         }
 
         Text {
@@ -275,6 +272,8 @@ BaseWidget {
             horizontalAlignment: Text.AlignLeft
             wrapMode: Text.NoWrap
             elide: Text.ElideRight
+            style: Text.Outline
+            styleColor: settings.color_glow
         }
 
         Column {
@@ -297,9 +296,10 @@ BaseWidget {
                     visible: card0textlower.visible
                     verticalAlignment: Text.AlignVCenter
                     font.family: "Font Awesome 5 Free"
-                    styleColor: "#f7f7f7"
                     font.pixelSize: 12
                     horizontalAlignment: Text.AlignRight
+                    style: Text.Outline
+                    styleColor: settings.color_glow
                 }
 
                 Text {
@@ -311,6 +311,8 @@ BaseWidget {
                     font.pixelSize: 14
                     horizontalAlignment: Text.AlignLeft
                     wrapMode: Text.NoWrap
+                    style: Text.Outline
+                    styleColor: settings.color_glow
                 }
             }
 
@@ -325,9 +327,10 @@ BaseWidget {
                     visible: card1textlower.visible
                     verticalAlignment: Text.AlignVCenter
                     font.family: "Font Awesome 5 Free"
-                    styleColor: "#f7f7f7"
                     font.pixelSize: 12
                     horizontalAlignment: Text.AlignRight
+                    style: Text.Outline
+                    styleColor: settings.color_glow
                 }
 
                 Text {
@@ -339,6 +342,8 @@ BaseWidget {
                     font.pixelSize: 14
                     horizontalAlignment: Text.AlignLeft
                     wrapMode: Text.NoWrap
+                    style: Text.Outline
+                    styleColor: settings.color_glow
                 }
             }
 
@@ -353,9 +358,10 @@ BaseWidget {
                     visible: card2textlower.visible
                     verticalAlignment: Text.AlignVCenter
                     font.family: "Font Awesome 5 Free"
-                    styleColor: "#f7f7f7"
                     font.pixelSize: 12
                     horizontalAlignment: Text.AlignRight
+                    style: Text.Outline
+                    styleColor: settings.color_glow
                 }
 
                 Text {
@@ -367,6 +373,8 @@ BaseWidget {
                     font.pixelSize: 14
                     horizontalAlignment: Text.AlignLeft
                     wrapMode: Text.NoWrap
+                    style: Text.Outline
+                    styleColor: settings.color_glow
                 }
             }
 
@@ -381,9 +389,10 @@ BaseWidget {
                     visible: card3textlower.visible
                     verticalAlignment: Text.AlignVCenter
                     font.family: "Font Awesome 5 Free"
-                    styleColor: "#f7f7f7"
                     font.pixelSize: 12
                     horizontalAlignment: Text.AlignRight
+                    style: Text.Outline
+                    styleColor: settings.color_glow
                 }
 
                 Text {
@@ -395,6 +404,8 @@ BaseWidget {
                     font.pixelSize: 14
                     horizontalAlignment: Text.AlignLeft
                     wrapMode: Text.NoWrap
+                    style: Text.Outline
+                    styleColor: settings.color_glow
                 }
             }
 
@@ -409,9 +420,10 @@ BaseWidget {
                     visible: card4textlower.visible
                     verticalAlignment: Text.AlignVCenter
                     font.family: "Font Awesome 5 Free"
-                    styleColor: "#f7f7f7"
                     font.pixelSize: 12
                     horizontalAlignment: Text.AlignRight
+                    style: Text.Outline
+                    styleColor: settings.color_glow
                 }
 
                 Text {
@@ -423,6 +435,8 @@ BaseWidget {
                     font.pixelSize: 14
                     horizontalAlignment: Text.AlignLeft
                     wrapMode: Text.NoWrap
+                    style: Text.Outline
+                    styleColor: settings.color_glow
                 }
             }
 
@@ -437,9 +451,10 @@ BaseWidget {
                     visible: card5textlower.visible
                     verticalAlignment: Text.AlignVCenter
                     font.family: "Font Awesome 5 Free"
-                    styleColor: "#f7f7f7"
                     font.pixelSize: 12
                     horizontalAlignment: Text.AlignRight
+                    style: Text.Outline
+                    styleColor: settings.color_glow
                 }
 
                 Text {
@@ -451,6 +466,8 @@ BaseWidget {
                     font.pixelSize: 14
                     horizontalAlignment: Text.AlignLeft
                     wrapMode: Text.NoWrap
+                    style: Text.Outline
+                    styleColor: settings.color_glow
                 }
             }
         }

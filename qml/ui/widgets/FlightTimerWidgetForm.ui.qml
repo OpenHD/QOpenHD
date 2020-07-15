@@ -55,16 +55,6 @@ BaseWidget {
         }
     }
 
-    Glow {
-        anchors.fill: widgetInner
-        visible: settings.show_flight_timer
-        radius: 3
-        samples: 17
-        color: settings.color_glow
-        opacity: settings.flight_timer_opacity
-        source: widgetInner
-    }
-
     Item {
         id: widgetInner
 
@@ -84,6 +74,8 @@ BaseWidget {
             verticalAlignment: Text.AlignVCenter
             font.pixelSize: 16
             horizontalAlignment: Text.AlignLeft
+            style: Text.Outline
+            styleColor: settings.color_glow
         }
 
         Text {
@@ -99,9 +91,10 @@ BaseWidget {
             anchors.right: flight_timer_text.left
             horizontalAlignment: Text.AlignRight
             verticalAlignment: Text.AlignVCenter
-            styleColor: "#f7f7f7"
             anchors.rightMargin: 6
             font.pixelSize: 14
+            style: Text.Outline
+            styleColor: settings.color_glow
         }
     }
 }

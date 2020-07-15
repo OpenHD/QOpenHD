@@ -53,16 +53,6 @@ BaseWidget {
         }
     }
 
-    Glow {
-        anchors.fill: widgetInner
-        visible: settings.show_flight_distance
-        radius: 3
-        samples: 17
-        color: settings.color_glow
-        opacity: settings.flight_distance_opacity
-        source: widgetInner
-    }
-
     Item {
         id: widgetInner
 
@@ -82,11 +72,12 @@ BaseWidget {
             horizontalAlignment: Text.AlignRight
             verticalAlignment: Text.AlignVCenter
             font.pixelSize: 20
+            style: Text.Outline
+            styleColor: settings.color_glow
         }
 
         Text {
             id: flight_mode_text
-
             height: 48
             color: settings.color_text
             opacity: settings.flight_mode_opacity
@@ -96,6 +87,8 @@ BaseWidget {
             verticalAlignment: Text.AlignVCenter
             font.pixelSize: 24
             elide: Text.ElideRight
+            style: Text.Outline
+            styleColor: settings.color_glow
         }
     }
 }

@@ -191,6 +191,8 @@ BaseWidget {
             verticalAlignment: Text.AlignVCenter
             horizontalAlignment: Text.AlignHCenter
             font.pixelSize: 36
+            style: Text.Outline
+            styleColor: settings.color_glow
         }
     }
 }

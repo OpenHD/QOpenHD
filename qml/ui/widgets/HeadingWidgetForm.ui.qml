@@ -332,6 +332,8 @@ BaseWidget {
             text: Number(OpenHD.hdg).toLocaleString( Qt.locale(), 'f', 0)
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
+            style: Text.Outline
+            styleColor: settings.color_glow
         }
 
         Shape {
