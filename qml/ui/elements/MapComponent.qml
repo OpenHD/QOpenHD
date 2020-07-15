@@ -23,15 +23,22 @@ Map {
 
     property double userLat: 0.0
     property double userLon: 0.0
+    property double center_coord_lat: 0.0
+    property double center_coord_lon: 0.0
 
     center {                
         latitude: OpenHD.lat == 0.0 ? userLat : followDrone ? OpenHD.lat : 9000
         longitude: OpenHD.lon == 0.0 ? userLon : followDrone ? OpenHD.lon : 9000
     }
 
+    onCenterChanged: {
+        findMapBounds();
+    }
 
-    onZoomLevelChanged: {
-        settings.map_zoom = zoomLevel
+    function findMapBounds(){
+        var center_coord = map.toCoordinate(Qt.point(map.width/2,map.height/2))
+        //console.log("my center",center_coord.latitude, center_coord.longitude);
+        OpenSky.mapBoundsChanged(center_coord);
     }
 
     PositionSource {
@@ -67,6 +74,206 @@ Map {
         sourceItem: Image {
             id: imageSmallMap
             source: "/homemarker.png"
+        }
+    }
+
+    MapCircle {
+        id: adsbCircle
+
+        center: OpenSky.adsb_api_coord
+        radius: MarkerModel.adsb_radius
+
+        color: "white"
+        border.color: "red"
+        border.width: 50
+        smooth: true
+        opacity: .2
+    }
+
+    MapItemView {
+        model: BlackBoxModel
+        delegate: trailDelegate
+
+        Component {
+            id: trailDelegate
+
+
+            MapPolyline {
+                id: polyline
+                /*
+               path: { //current_coord=QtPositioning.coordinate(model.lat, model.lon);
+                    pathPolyline.addCoordinate(QtPositioning.coordinate(model.lat, model.lon))
+                    //addCoordinate(current_coord);
+                    console.log("Map Polyline=",model.lat, model.lon);
+                }
+    */
+                path:  { polyline.addCoordinate(QtPositioning.coordinate(model.lat, model.lon));}
+
+                line.color: "red"
+                line.width: 5
+
+
+            }
+
+        }
+
+    }
+
+
+    Repeater{
+        model: MarkerModel
+        MapItemGroup {
+            id: delegateGroup
+
+            MapQuickItem {
+                id: marker
+                property alias lastMouseX: markerMouseArea.lastX
+                property alias lastMouseY: markerMouseArea.lastY
+
+                anchorPoint.x: image.width/2
+                anchorPoint.y: image.height/2
+
+                sourceItem: Image {
+                    id: image
+                    source: "/airplanemarkerblur.png"
+
+                    Rectangle{// has to be here prior to rotation call
+                        id: speedtail
+
+                        x: image.width*.4
+                        y: image.height*.8
+
+                        width: image.width*.2
+                        height: (model.velocity)/2
+                        opacity: .5
+                        color: "white"
+                        border.color: "grey"
+                        border.width: 1
+                    }
+
+                    rotation: model.track
+
+                    opacity: markerMouseArea.pressed ? 0.6 : 1.0
+                    MouseArea  {
+                        id: markerMouseArea
+                        property int pressX : -1
+                        property int pressY : -1
+                        property int jitterThreshold : 10
+                        property int lastX: -1
+                        property int lastY: -1
+                        anchors.fill: parent
+                        hoverEnabled : false
+                        drag.target: marker
+                        preventStealing: true
+
+                        onPressed : {
+                            map.pressX = mouse.x
+                            map.pressY = mouse.y
+                            map.currentMarker = -1
+                            for (var i = 0; i< map.markers.length; i++){
+                                if (marker == map.markers[i]){
+                                    map.currentMarker = i
+                                    break
+                                }
+                            }
+                        }
+
+                        onPressAndHold:{
+                            if (Math.abs(map.pressX - mouse.x ) < map.jitterThreshold
+                                    && Math.abs(map.pressY - mouse.y ) < map.jitterThreshold) {
+                                var p = map.fromCoordinate(marker.coordinate)
+                                lastX = p.x
+                                lastY = p.y
+                                map.showMarkerMenu(marker.coordinate)
+                            }
+                        }
+                    }
+
+                    Rectangle{ //holder to "derotate" info block
+                        id: holder
+
+                        x: image.width+5
+                        y: image.height/2
+                        //need handling for when map locks to drone dir
+                        rotation: -model.track
+                        width: image.width
+                        height: image.height
+                        color: "transparent"
+
+                        Rectangle{
+                            id: background
+
+                            width: image.width*1.25
+                            height: image.height
+                            color: "black"
+                            opacity: .2
+                            border.width: 2
+                            border.color: "white"
+                            radius: 8
+                        }
+
+                        Text{
+                            id: callsign
+                            anchors.top: holder.top
+                            topPadding: 2
+                            leftPadding: 10
+                            width: image.width
+                            color: "white"
+                            //font.bold: true
+                            font.pixelSize: 11
+                            horizontalAlignment: Text.AlignHCenter
+                            Component.onCompleted: {
+                                text = model.callsign
+                                //console.log("Map Callsign=",model.callsign);
+                            }
+                        }
+
+                        Text{
+                            id: alt
+                            anchors.top: callsign.bottom
+                            topPadding: 2
+                            leftPadding: 10
+                            width: image.width
+                            color: "white"
+                            font.bold: true
+                            font.pixelSize: 11
+                            horizontalAlignment: Text.AlignHCenter
+                            Component.onCompleted: {
+                                //need adjustment for imperial
+                                //only meters now
+                                text = Math.floor(model.alt-OpenHD.alt_msl)+"m"
+                                if(model.vertical > .2){
+                                    text = Math.floor(model.alt-OpenHD.alt_msl)+"m"+"\ue696"
+                                }
+                                else if (model.vertical < -.2){
+                                    text= Math.floor(model.alt-OpenHD.alt_msl)+"m"+"\ue697"
+                                }
+                                else {
+                                    text= Math.floor(model.alt-OpenHD.alt_msl)+"m"+"\u2501"
+                                }
+                            }
+                        }
+                        Text{
+                            id: velocity
+                            anchors.top: alt.bottom
+                            topPadding: 2
+                            leftPadding: 10
+                            width: image.width
+                            color: "white"
+                            //font.bold: true
+                            font.pixelSize: 11
+                            horizontalAlignment: Text.AlignHCenter
+                            Component.onCompleted: {
+                                text=  model.velocity+"m/s"
+                            }
+                        }
+                    }
+                }
+                //position everything
+                Component.onCompleted: coordinate = QtPositioning.coordinate(model.lat, model.lon);
+
+            }
+            Component.onCompleted: map.addMapItemGroup(this);
         }
     }
 

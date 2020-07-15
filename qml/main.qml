@@ -244,6 +244,13 @@ ApplicationWindow {
         property bool roll_sky_pointer: false
         property double roll_opacity: 1
 
+        property bool show_adsb: false
+        property int adsb_distance_limit: 100000//meters. Bound box for api from map center (so x2)
+        property int adsb_marker_limit: 19
+
+        property bool show_blackbox: false
+        property double blackbox_opacity: 1
+
         property bool show_example_widget: false
     }
 
@@ -266,6 +273,14 @@ ApplicationWindow {
 
     VectorTelemetry {
         id: vectorTelemetry
+    }
+
+    MarkerModel {
+        id: markerModel
+    }
+
+    BlackBoxModel {
+        id: blackBoxModel
     }
 
     Loader {

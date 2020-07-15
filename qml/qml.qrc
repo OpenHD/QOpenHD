@@ -122,5 +122,8 @@
         <file>ui/widgets/FcTempWidget.qml</file>
         <file>ui/widgets/RollWidgetForm.ui.qml</file>
         <file>ui/widgets/RollWidget.qml</file>
+        <file>ui/widgets/BlackBoxWidget.qml</file>
+        <file>ui/widgets/BlackBoxWidgetForm.ui.qml</file>
+        <file>airplanemarkerblur.png</file>
     </qresource>
 </RCC>
