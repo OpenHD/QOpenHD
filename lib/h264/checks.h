@@ -42,7 +42,16 @@ RTC_NORETURN void rtc_FatalMessage(const char* file, int line, const char* msg);
 
 #include <string>
 
-#include <string_view>
+
+#if __cplusplus >= 201703L
+    #include <string_view>
+#elif _cplusplus >= 201500L
+    #include <experimental/string_view>
+#else
+    #error "QOpenHD requires C++17 support in the compiler"
+#endif
+
+
 #include "safe_compare.h"
 #include "inline.h"
 
