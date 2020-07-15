@@ -96,11 +96,6 @@ bool ParseArg(va_list* args, const CheckArgType** fmt, std::string* s) {
     case CheckArgType::kStdString:
       s->append(*va_arg(*args, const std::string*));
       break;
-    case CheckArgType::kStringView: {
-      const std::string_view sv = *va_arg(*args, const std::string_view*);
-      s->append(sv.data(), sv.size());
-      break;
-    }
     case CheckArgType::kVoidP:
       AppendFormat(s, "%p", va_arg(*args, const void*));
       break;

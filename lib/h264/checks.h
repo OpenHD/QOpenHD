@@ -43,14 +43,6 @@ RTC_NORETURN void rtc_FatalMessage(const char* file, int line, const char* msg);
 #include <string>
 
 
-#if __cplusplus >= 201703L
-    #include <string_view>
-#elif _cplusplus >= 201500L
-    #include <experimental/string_view>
-#else
-    #error "QOpenHD requires C++17 support in the compiler"
-#endif
-
 
 #include "safe_compare.h"
 #include "inline.h"
@@ -175,10 +167,6 @@ inline Val<CheckArgType::kCharP, const char*> MakeVal(const char* x) {
 }
 inline Val<CheckArgType::kStdString, const std::string*> MakeVal(
     const std::string& x) {
-  return {&x};
-}
-inline Val<CheckArgType::kStringView, const std::string_view*> MakeVal(
-    const std::string_view& x) {
   return {&x};
 }
 
