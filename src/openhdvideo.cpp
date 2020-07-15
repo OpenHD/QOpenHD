@@ -13,14 +13,13 @@
 #include "openhd.h"
 
 
-#include "h264bitstream/h264_stream.h"
 
-
+#include "h264_common.h"
+#include "sps_parser.h"
+#include "pps_parser.h"
 
 OpenHDVideo::OpenHDVideo(enum OpenHDStreamType stream_type): QObject(), m_stream_type(stream_type) {
     qDebug() << "OpenHDVideo::OpenHDVideo()";
-
-    h264_stream = h264_new();
 
     sps = (uint8_t*)malloc(sizeof(uint8_t)*1024);
     pps = (uint8_t*)malloc(sizeof(uint8_t)*1024);
@@ -60,6 +59,8 @@ void OpenHDVideo::onStarted() {
     timer->start(1000);
 
     connect(m_socket, &QUdpSocket::readyRead, this, &OpenHDVideo::processDatagrams);
+
+    emit setup();
 }
 
 
@@ -71,7 +72,9 @@ void OpenHDVideo::onStarted() {
  * if necessary, such as hiding the PiP element when the stream has stopped.
  */
 void OpenHDVideo::reconfigure() {
-    bool restart = false;
+    if (m_background) {
+        return;
+    }
 
     auto currentTime = QDateTime::currentMSecsSinceEpoch();
 
@@ -97,16 +100,17 @@ void OpenHDVideo::reconfigure() {
         m_video_port = settings.value("pip_video_port", 5601).toInt();
     }
     if (m_video_port != m_socket->localPort()) {
-        restart = true;
+        m_restart = true;
     }
 
     auto enable_rtp = settings.value("enable_rtp", true).toBool();
     if (m_enable_rtp != enable_rtp) {
         m_enable_rtp = enable_rtp;
-        restart = true;
+        m_restart = true;
     }
 
-    if (restart) {
+    if (m_restart) {
+        m_restart = false;
         m_socket->close();
         stop();
         tempBuffer.clear();
@@ -226,6 +230,7 @@ void OpenHDVideo::parseRTP(QByteArray datagram) {
             fu_a.type = static_cast<uint8_t>((payload[1])      & 0x1f);
 
             if (fu_a.s == 1) {
+                rtpStateFrag = true;
                 rtpBuffer.clear();
                 uint8_t reassembled = 0;
                 reassembled |= (nalu_f << 7);
@@ -239,6 +244,7 @@ void OpenHDVideo::parseRTP(QByteArray datagram) {
                 tempBuffer.append(rtpBuffer.data(), rtpBuffer.size());
                 rtpBuffer.clear();
                 submit = true;
+                rtpStateFrag = false;
             }
             break;
         }
@@ -248,6 +254,13 @@ void OpenHDVideo::parseRTP(QByteArray datagram) {
         }
         default: {
             // should be a single NAL
+            if (rtpStateFrag) {
+                // this means there is one or more parts of an fu_a NAL in tempBuffer, but we can
+                // no longer use it because the end is missing (if it had arrived it would have
+                // reset this flag already).
+                rtpStateFrag = false;
+                tempBuffer.clear();
+            }
             tempBuffer.append(payload.data(), payload.size());
             rtpBuffer.clear();
             submit = true;
@@ -257,40 +270,41 @@ void OpenHDVideo::parseRTP(QByteArray datagram) {
     if (submit) {
         QByteArray nalUnit(tempBuffer);
         tempBuffer.clear();
-        processNAL(nalUnit);
+        processNAL((uint8_t*)nalUnit.data(), nalUnit.length());
     }
 };
 
 
 
-/*
- * Simple NAL search
- *
- */
 void OpenHDVideo::findNAL() {
     size_t sz = tempBuffer.size();
+
+    if (sz == 0) {
+        return;
+    }
+
     uint8_t* p = (uint8_t*)tempBuffer.data();
 
-    int nal_start, nal_end;
+    int final_offset = 0;
 
-    while (find_nal_unit(p, sz, &nal_start, &nal_end) > 0) {
-        QByteArray nalUnit;
+    auto indexes = webrtc::H264::FindNaluIndices(p, sz);
 
-        auto nal_size = nal_end - nal_start;
-        nalUnit.resize(nal_size);
+    if (indexes.empty()) {
+        return;
+    }
 
-        memcpy(nalUnit.data(), &p[nal_start], nal_size);
+    for (auto & index : indexes) {
+        if (index.payload_size == 0) {
+            continue;
+        }
+        processNAL(&p[index.payload_start_offset], index.payload_size);
+        final_offset = index.payload_start_offset + index.payload_size;
+    }
 
-        tempBuffer.remove(0, nal_end);
-
-        // update the temporary pointer with the new start of the buffer
-        p = (uint8_t*)tempBuffer.data();
-        sz = tempBuffer.size();
-
-        processNAL(nalUnit);
+    if (final_offset != 0) {
+        tempBuffer.remove(0, final_offset);
     }
 }
-
 
 
 /*
@@ -302,97 +316,92 @@ void OpenHDVideo::findNAL() {
  * before the PPS/SPS, or a non-IDR before an IDR.
  *
  */
-void OpenHDVideo::processNAL(QByteArray nalUnit) {
-    //auto forbidden_zero_bit = (nalUnit[0] >> 7) & 0x1;
-    //auto nal_ref_idc = (nalUnit[0] >> 5) & 0x3;
-    auto nal_unit_type = nalUnit[0] & 0x1F;
+void OpenHDVideo::processNAL(const uint8_t* data, size_t length) {
+    webrtc::H264::NaluType nalu_type = webrtc::H264::ParseNaluType(data[0]);
 
-    read_nal_unit(h264_stream, (uint8_t*)nalUnit.data(), nalUnit.length());
-
-    switch (nal_unit_type) {
-        case NAL_UNIT_TYPE_UNSPECIFIED: {
-            break;
-        }
-        case NAL_UNIT_TYPE_CODED_SLICE_NON_IDR: {
+    switch (nalu_type) {
+        case webrtc::H264::NaluType::kSlice: {
             if (isConfigured && sentSPS && sentPPS && sentIDR) {
                 QByteArray _n;
                 _n.append(NAL_HEADER, 4);
-                _n.append(nalUnit);
-                processFrame(_n, FrameTypeNonIDR);
+                _n.append((const char*)data, length);
+                processFrame(_n, nalu_type);
                 //nalQueue.push_back(_n);
             }
             break;
         }
-        case NAL_UNIT_TYPE_CODED_SLICE_IDR: {
+        case webrtc::H264::NaluType::kIdr: {
             if (isConfigured && sentSPS && sentPPS) {
                 QByteArray _n;
                 _n.append(NAL_HEADER, 4);
-                _n.append(nalUnit);
+                _n.append((const char*)data, length);
 
-                processFrame(_n, FrameTypeIDR);
+                processFrame(_n, nalu_type);
                 //nalQueue.push_back(_n);
 
                 sentIDR = true;
             }
             break;
         }
-        case NAL_UNIT_TYPE_SPS: {
+        case webrtc::H264::NaluType::kSps: {
             auto new_width = 0;
             auto new_height = 0;
             auto new_fps = 0;
 
-            if (h264_stream->sps->frame_cropping_flag) {
-                new_width = ((h264_stream->sps->pic_width_in_mbs_minus1 + 1) * 16) - h264_stream->sps->frame_crop_left_offset * 2 - h264_stream->sps->frame_crop_right_offset * 2;
-                new_height = ((2 - h264_stream->sps->frame_mbs_only_flag)* (h264_stream->sps->pic_height_in_map_units_minus1 + 1) * 16) - (h264_stream->sps->frame_crop_top_offset * 2) - (h264_stream->sps->frame_crop_bottom_offset * 2);
-            }
-            else {
-                new_width = ((h264_stream->sps->pic_width_in_mbs_minus1 + 1) * 16);
-                new_height = ((2 - h264_stream->sps->frame_mbs_only_flag) * (h264_stream->sps->pic_height_in_map_units_minus1 + 1) * 16);
-            }
+            auto _sps = webrtc::SpsParser::ParseSps(data + webrtc::H264::kNaluTypeSize, length - webrtc::H264::kNaluTypeSize);
 
-            int vui_present = h264_stream->sps->vui_parameters_present_flag;
-            if (vui_present) {
-                if (h264_stream->sps->vui.timing_info_present_flag) {
-                    auto num_units_in_tick = h264_stream->sps->vui.num_units_in_tick;
-                    auto time_scale = h264_stream->sps->vui.time_scale;
-                    new_fps = time_scale / num_units_in_tick;
-                } else {
-                    new_fps = 30;
+            if (_sps) {
+                new_width = _sps->width;
+                new_height = _sps->height;
+                new_fps = 30;
+
+                // the webrtc h264 parser doesn't support this yet, but we can add it
+                /*int vui_present = _sps->vui_params_present;
+                if (vui_present) {
+                    if (nalu_sps->timing_info_present_flag) {
+                        auto num_units_in_tick = nalu_sps->num_units_in_tick;
+
+                        auto time_scale = nalu_sps->time_scale;
+                        new_fps = time_scale / num_units_in_tick;
+                    } else {
+                        new_fps = 30;
+                    }
+                }*/
+
+                if (new_height != height || new_width != width || new_fps != fps) {
+                    height = new_height;
+                    width = new_width;
+                    fps = new_fps;
+                }
+
+                if (!haveSPS) {
+                    QByteArray extraData;
+                    extraData.append(NAL_HEADER, 4);
+                    extraData.append((const char*)data, length);
+
+                    sps_len = extraData.size();
+                    memcpy(sps, extraData.data(), extraData.size());
+                    haveSPS = true;
+                }
+                if (isConfigured) {
+                    QByteArray _n;
+                    _n.append(NAL_HEADER, 4);
+                    _n.append((const char*)data, length);
+
+                    processFrame(_n, nalu_type);
+                    //nalQueue.push_back(_n);
+
+                    sentSPS = true;
                 }
             }
 
-            if (new_height != height || new_width != width || new_fps != fps) {
-                height = new_height;
-                width = new_width;
-                fps = new_fps;
-            }
-
-            if (!haveSPS) {
-                QByteArray extraData;
-                extraData.append(NAL_HEADER, 4);
-                extraData.append(nalUnit);
-
-                sps_len = extraData.size();
-                memcpy(sps, extraData.data(), extraData.size());
-                haveSPS = true;
-            }
-            if (isConfigured) {
-                QByteArray _n;
-                _n.append(NAL_HEADER, 4);
-                _n.append(nalUnit);
-
-                processFrame(_n, FrameTypeSPS);
-                //nalQueue.push_back(_n);
-
-                sentSPS = true;
-            }
             break;
         }
-        case NAL_UNIT_TYPE_PPS: {
+        case webrtc::H264::NaluType::kPps: {
             if (!havePPS) {
                 QByteArray extraData;
                 extraData.append(NAL_HEADER, 4);
-                extraData.append(nalUnit);
+                extraData.append((const char*)data, length);
 
                 pps_len = extraData.length();
                 memcpy(pps, extraData.data(), extraData.size());
@@ -401,21 +410,21 @@ void OpenHDVideo::processNAL(QByteArray nalUnit) {
             if (isConfigured && sentSPS) {
                 QByteArray _n;
                 _n.append(NAL_HEADER, 4);
-                _n.append(nalUnit);
+                _n.append((const char*)data, length);
 
-                processFrame(_n, FrameTypePPS);
+                processFrame(_n, nalu_type);
                 //nalQueue.push_back(_n);
 
                 sentPPS = true;
             }
             break;
         }
-        case NAL_UNIT_TYPE_AU: {
+        case webrtc::H264::NaluType::kAud: {
             QByteArray _n;
             _n.append(NAL_HEADER, 4);
-            _n.append(nalUnit);
+            _n.append((const char*)data, length);
 
-            processFrame(_n, FrameTypeAU);
+            processFrame(_n, nalu_type);
             break;
         }
         default: {

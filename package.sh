@@ -11,7 +11,15 @@ if [[ "${PLATFORM}" == "pi" ]]; then
     PACKAGE_ARCH="armhf"
 fi
 
+apt-get install -y apt-transport-https
+curl -1sLf 'https://dl.cloudsmith.io/public/openhd/openhd-2-0/cfg/gpg/gpg.B9F0E99CF5787237.key' | apt-key add -
 
+
+echo "deb https://dl.cloudsmith.io/public/openhd/openhd-2-0/deb/${OS} ${DISTRO} main" > /etc/apt/sources.list.d/openhd-2-0.list
+
+apt -y update
+
+apt -y install openhd-qt=5.15.0\* libgles2-mesa-dev libegl1-mesa-dev libgbm-dev
 
 PACKAGE_NAME=qopenhd
 
@@ -28,7 +36,7 @@ mkdir -p ${TMPDIR}/usr/local/share/openhd || exit 1
 make clean || exit 1
 
 make -j4 || exit 1
-cp QOpenHD ${TMPDIR}/usr/local/bin/ || exit 1
+cp release/QOpenHD ${TMPDIR}/usr/local/bin/ || exit 1
 
 # included in the same package since it's sharing code and not independently versioned
 pushd OpenHDBoot

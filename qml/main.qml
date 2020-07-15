@@ -25,12 +25,6 @@ ApplicationWindow {
 
     property bool initialised: false
 
-    Component.onCompleted: {
-        if (!initialised) {
-            hudOverlayGrid.messageHUD.pushMessage("Initializing", 1)
-            initialised = true;
-        }
-    }
 
     /* this is not used but must stay right here, it forces qmlglsink to completely
        initialize the rendering system early. Without this, the next GstGLVideoItem
@@ -252,6 +246,8 @@ ApplicationWindow {
         property double blackbox_opacity: 1
 
         property bool show_example_widget: false
+
+        property int stereo_mode: 0
     }
 
 
@@ -325,9 +321,29 @@ ApplicationWindow {
         }
     }
 
+    Connections {
+        target: GroundStatusMicroservice
+        function onStatusMessage(sysid, message, level, timestamp) {
+            if (level >= settings.log_level) {
+                hudOverlayGrid.messageHUD.pushMessage(message, level)
+            }
+        }
+    }
+
+    Connections {
+        target: AirStatusMicroservice
+        function onStatusMessage(sysid, message, level, timestamp) {
+            if (level >= settings.log_level) {
+                hudOverlayGrid.messageHUD.pushMessage(message, level)
+            }
+        }
+    }
+
+
     // UI areas
 
     UpperOverlayBar {
+        visible: settings.stereo_mode == 0
         id: upperOverlayBar
         onSettingsButtonClicked: {
             settings_panel.openSettings();
@@ -336,11 +352,44 @@ ApplicationWindow {
 
     HUDOverlayGrid {
         id: hudOverlayGrid
-        anchors.fill: parent
+        anchors.left: parent.left
+        anchors.top: parent.top
+        anchors.bottom: parent.bottom
+        anchors.right: parent.right
+        transform: Scale {
+            origin.x: 0
+            origin.y: hudOverlayGrid.height / 2
+            xScale: settings.stereo_mode == 1 ? 0.5 : 1.0
+            yScale: settings.stereo_mode == 1 ? 0.5 : 1.0
+        }
         z: 3.0
+        layer.enabled: true
+    }
+
+    Rectangle {
+        id: hudOverlayGridClone
+        anchors.right: parent.right
+        width: parent.width / 2
+        height: parent.height / 2
+        anchors.verticalCenter: settings.stereo_mode == 1 ? parent.verticalCenter : undefined
+        visible: settings.stereo_mode != 0
+        z: 3.0
+        layer.enabled: true
+        layer.effect: ShaderEffect {
+            id: shader
+            property variant cloneSource : hudOverlayGrid
+            fragmentShader: "
+                  varying highp vec2 qt_TexCoord0;
+                  uniform highp sampler2D cloneSource;
+                  void main(void) {
+                       gl_FragColor =  texture2D(cloneSource, qt_TexCoord0);
+                  }
+            "
+        }
     }
 
     LowerOverlayBar {
+        visible: settings.stereo_mode == 0
         id: lowerOverlayBar
     }
 

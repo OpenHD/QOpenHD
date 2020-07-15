@@ -31,7 +31,7 @@ public:
     void stop() override;
     void renderLoop() override;
     void inputLoop() override;
-    void processFrame(QByteArray &nal, FrameType frameType) override;
+    void processFrame(QByteArray &nal, webrtc::H264::NaluType frameType) override;
 
 public slots:
     void androidConfigure();
@@ -43,9 +43,9 @@ private:
 
     QPointer<OpenHDAndroidRender> m_videoOut;
 
-    AMediaCodec* codec;
-    AMediaFormat *format;
-    ANativeWindow * window;
+    AMediaCodec* codec = nullptr;
+    AMediaFormat *format = nullptr;
+    ANativeWindow * window = nullptr;
 };
 
 #endif // OpenHDAndroidVideo_H

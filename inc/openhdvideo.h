@@ -9,7 +9,7 @@
 
 #include "sharedqueue.h"
 
-#include "h264bitstream/h264_stream.h"
+#include "h264_common.h"
 
 enum OpenHDStreamType {
     OpenHDStreamTypeMain,
@@ -19,14 +19,8 @@ enum OpenHDStreamType {
 class QUdpSocket;
 
 
-#define NAL_UNIT_TYPE_UNSPECIFIED                    0
-#define NAL_UNIT_TYPE_CODED_SLICE_NON_IDR            1
-#define NAL_UNIT_TYPE_CODED_SLICE_IDR                5
-#define NAL_UNIT_TYPE_SPS                            7
-#define NAL_UNIT_TYPE_PPS                            8
-#define NAL_UNIT_TYPE_AU                             9
+constexpr char NAL_HEADER[4] = {'\x00', '\x00', '\x00', '\x01'};
 
-constexpr char NAL_HEADER[] = "\x00\x00\x00\x01";
 
 typedef struct {
     uint8_t s : 1;
@@ -35,13 +29,6 @@ typedef struct {
     uint8_t type : 5;
 } fu_a_header;
 
-enum FrameType {
-    FrameTypeIDR,
-    FrameTypeNonIDR,
-    FrameTypeSPS,
-    FrameTypePPS,
-    FrameTypeAU
-};
 
 class OpenHDVideo : public QObject
 {
@@ -56,6 +43,7 @@ public:
 signals:
     void videoRunning(bool running);
     void configure();
+    void setup();
 
 public slots:
     void startVideo();
@@ -66,14 +54,14 @@ protected:
     void processDatagrams();
     void parseRTP(QByteArray datagram);
     void findNAL();
-    void processNAL(QByteArray nalUnit);
+    void processNAL(const uint8_t* data, size_t length);
     void reconfigure();
 
     virtual void start() = 0;
     virtual void stop() = 0;
     virtual void inputLoop() = 0;
     virtual void renderLoop() = 0;
-    virtual void processFrame(QByteArray &nal, FrameType frameType) = 0;
+    virtual void processFrame(QByteArray &nal, webrtc::H264::NaluType frameType) = 0;
 
     bool firstRun = true;
 
@@ -83,11 +71,12 @@ protected:
 
     int m_video_port = 0;
 
+    bool m_restart = false;
+    bool m_background = false;
+
     int main_default_port = 5600;
     int pip_default_port = 5601;
 
-
-    h264_stream_t* h264_stream = nullptr;
 
     QTimer* timer = nullptr;
 
@@ -98,6 +87,7 @@ protected:
 
     QByteArray rtpBuffer;
     size_t rtpData = 0;
+    bool rtpStateFrag = false;
 
     bool haveSPS = false;
     bool havePPS = false;

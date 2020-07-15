@@ -24,6 +24,8 @@
 
 using namespace std::chrono;
 
+#include "h264_common.h"
+
 
 static bool initialized_mmal = false;
 
@@ -336,7 +338,7 @@ void OpenHDMMALVideo::inputLoop() {
 }
 
 
-void OpenHDMMALVideo::processFrame(QByteArray &nal, FrameType frameType) {
+void OpenHDMMALVideo::processFrame(QByteArray &nal, webrtc::H264::NaluType frameType) {
     if (!isConfigured) {
         return;
     }

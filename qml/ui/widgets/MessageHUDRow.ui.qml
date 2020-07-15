@@ -27,40 +27,35 @@ Item {
         // @disable-check M223
         color: {
             switch (model.level) {
-            case 0: return "#00ff00"; // green debug
-            case 1: return "#0000ea"; // blue info
-            case 2: return "#0000ea"; // blue notice
-            case 3: return "#eaea00"; // yellow warning
-            case 4: return "#ea0000"; // red error
-            case 5: return "#ea0000"; // red critical
-            case 6: return "#ea0000"; // red alert
-            case 7: return "#ea0000"; // red emergency
-            default: return "#ffffff";
+            case 0: return "#fa0000"; // error
+            case 1: return "#fa0000"; // error
+            case 2: return "#fa0000"; // error
+            case 3: return "#fa0000"; // error
+            case 4: return "#fffa00"; // warning
+            case 5: return "#ffffff"; // notice
+            case 6: return "#00ea00"; // info
+            case 7: return "#0000ea"; // debug
+            default: return "#00ea00";
             }
         }
 
         // @disable-check M223
         text: {
             switch (model.level) {
-            case 0: return "\uf188"; // green debug
-            case 1: return "\uf05a"; // blue info
-            case 2: return "\uf05a"; // blue notice
-            case 3: return "\uf071"; // yellow warning
-            case 4: return "\uf071"; // red error
-            case 5: return "\uf057"; // red critical
-            case 6: return "\uf057"; // red alert
-            case 7: return "\uf057"; // red emergency
+
+            case 0: return "\uf057"; // red error
+            case 1: return "\uf057"; // red error
+            case 2: return "\uf057"; // red error
+            case 3: return "\uf057"; // red error
+            case 4: return "\uf071"; // yellow warning
+            case 5: return "\uf05a"; // white info
+            case 6: return "\uf05a"; // blue info
+            case 7: return "\uf188"; // green debug
             default: return "\uf05a";
             }
         }
 
         font.bold: true
-        opacity: 0.9 //model.timeout
-
-        /* @disable-check M224
-          Behavior on opacity {
-              NumberAnimation { duration: 1000 }
-          } */
     }
 
     Text {
@@ -75,15 +70,7 @@ Item {
         anchors.bottom: parent.bottom
         width: parent.width - 24
         text: model.text
-        opacity: 0.9 //model.timeout
         leftPadding: 6
         rightPadding: 0
-
-        /* @disable-check M224
-          Behavior on opacity {
-              NumberAnimation { duration: 1000 }
-          }*/
-
-
     }
 }

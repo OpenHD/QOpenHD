@@ -110,6 +110,9 @@ void LTMTelemetry::processLTMMessage() {
         auto mah = (float)ltmread_u16()/1000.0f;
         OpenHD::instance()->set_battery_voltage(battery_voltage);
 
+        OpenHD::instance()->set_flight_mah(mah);
+
+
         // no current provided?
         //OpenHD::instance()->set_battery_current(ampere);
 
@@ -121,6 +124,7 @@ void LTMTelemetry::processLTMMessage() {
         OpenHD::instance()->set_battery_gauge(battery_gauge_glyph);
 
         auto rssi = ltmread_u8();
+        OpenHD::instance()->set_rc_rssi(rssi);
 
         uint8_t uav_airspeedms = ltmread_u8();
         auto airspeed = (float)(uav_airspeedms * 3.6f); // convert to kmh

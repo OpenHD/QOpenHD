@@ -1440,7 +1440,6 @@ Item {
                         onCheckedChanged: settings.show_example_widget = checked
                     }
                 }
-
             }
         }
 

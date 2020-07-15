@@ -487,10 +487,8 @@ BaseWidget {
                         if (right < 0) right += 360;
                         ctx.font='14px "Font Awesome 5 Free"';
                         if (left < right){
-                            console.log("left");
                             ctx.fillText("\uf015" , 7, y_label);
                         } else{
-                            console.log("right");
                             ctx.fillText("\uf015" , width-7, y_label);
                         }
                     }

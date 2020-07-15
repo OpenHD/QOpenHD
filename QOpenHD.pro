@@ -1,11 +1,7 @@
-!equals(QT_MAJOR_VERSION, 5) | !greaterThan(QT_MINOR_VERSION, 12) {
-    error("Unsupported Qt version, 5.12+ is required")
-}
-
 BASEDIR = $$IN_PWD
 
 LANGUAGE = C++
-CONFIG += c++11
+CONFIG += c++17
 CONFIG+=sdk_no_version_check
 TRANSLATIONS = translations/QOpenHD_en.ts translations/QOpenHD_de.ts translations/QOpenHD_ru.ts
 
@@ -18,6 +14,8 @@ include ($$PWD/lib/SortFilterProxyModel/SortFilterProxyModel.pri)
 
 
 CONFIG(debug, debug|release) {
+    DESTDIR = $${OUT_PWD}/debug
+
     CONFIG += debug
     DEFINES += QMLJSDEBUGGER
 } else:CONFIG(release, debug|release) {
@@ -31,9 +29,14 @@ CONFIG(debug, debug|release) {
             }
         }
     }
+    DESTDIR = $${OUT_PWD}/release
     DEFINES += QMLJSDEBUGGER
 }
 
+OBJECTS_DIR  = $${OUT_PWD}/obj
+MOC_DIR      = $${OUT_PWD}/moc
+UI_DIR       = $${OUT_PWD}/ui
+RCC_DIR      = $${OUT_PWD}/rcc
 
 QT += qml quick concurrent opengl gui
 QT += positioning location
@@ -50,10 +53,6 @@ INCLUDEPATH += $$PWD/lib/GeographicLib-1.50/include
 
 
 SOURCES += \
-    lib/h264bitstream/h264_avcc.c \
-    lib/h264bitstream/h264_nal.c \
-    lib/h264bitstream/h264_sei.c \
-    lib/h264bitstream/h264_stream.c \
     src/FPS.cpp \
     src/blackboxmodel.cpp \
     src/frskytelemetry.cpp \
@@ -110,11 +109,7 @@ HEADERS += \
     inc/statusmicroservice.h \
     inc/util.h \
     inc/vectortelemetry.h \
-    inc/wifibroadcast.h \
-    lib/h264bitstream/bs.h \
-    lib/h264bitstream/h264_avcc.h \
-    lib/h264bitstream/h264_sei.h \
-    lib/h264bitstream/h264_stream.h
+    inc/wifibroadcast.h
 
 DISTFILES += \
     android/AndroidManifest.xml \
@@ -322,7 +317,7 @@ AndroidBuild {
     CONFIG += EnableMainVideo
     CONFIG += EnablePiP
     CONFIG += EnableLink
-    CONFIG += EnableGStreamer
+    CONFIG += EnableVideoRender
     #CONFIG += EnableCharts
     EnableGStreamer {
         OTHER_FILES += \
@@ -393,7 +388,16 @@ EnableVideoRender {
 
     SOURCES += \
         src/openhdvideo.cpp \
-        src/openhdrender.cpp
+        src/openhdrender.cpp \
+        $$PWD/lib/h264/h264_bitstream_parser.cc \
+        $$PWD/lib/h264/h264_common.cc \
+        $$PWD/lib/h264/pps_parser.cc \
+        $$PWD/lib/h264/sps_parser.cc \
+        $$PWD/lib/h264/bit_buffer.cc \
+        $$PWD/lib/h264/checks.cc \
+        $$PWD/lib/h264/zero_memory.cc
+
+    INCLUDEPATH += $$PWD/lib/h264/
 }
 
 EnablePiP {

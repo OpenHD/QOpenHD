@@ -7,10 +7,9 @@ import Qt.labs.settings 1.0
 import OpenHD 1.0
 
 ListView {
+    id: groundListView
     clip: true
     enabled: !openHDSettings.busy
-    Layout.fillWidth: true
-
 
     /* this little hack is necessary because inside the delegate's context, "model" means the
        individual item in the list rather than the entire ListModel, which the delegate needs
@@ -18,6 +17,7 @@ ListView {
     property var currentModel: model
 
     delegate: Loader {
+        width: groundListView.width
         property var listModel: currentModel
         property var itemModel: model
         /*property var choiceValues: model.choiceValues
