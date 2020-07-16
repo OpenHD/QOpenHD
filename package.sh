@@ -19,7 +19,7 @@ echo "deb https://dl.cloudsmith.io/public/openhd/openhd-2-0/deb/${OS} ${DISTRO} 
 
 apt -y update
 
-apt -y install openhd-qt=5.15.0\* libgles2-mesa-dev libegl1-mesa-dev libgbm-dev
+apt -y install openhd-qt=5.15.0\* libgles2-mesa-dev libegl1-mesa-dev libgbm-dev libboost-dev
 
 PACKAGE_NAME=qopenhd
 
@@ -56,6 +56,7 @@ rm ${PACKAGE_NAME}_${VERSION//v}_${PACKAGE_ARCH}.deb > /dev/null 2>&1
 fpm -a ${PACKAGE_ARCH} -s dir -t deb -n ${PACKAGE_NAME} -v ${VERSION//v} -C ${TMPDIR} \
   --after-install after-install.sh \
   -p ${PACKAGE_NAME}_VERSION_ARCH.deb \
+  -d "libboost-dev" \
   -d "openhd-qt >= 5.15.0" || exit 1
 
 #
