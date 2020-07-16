@@ -18,7 +18,7 @@ Map {
     gesture.acceptedGestures: MapGestureArea.PanGesture | MapGestureArea.FlickGesture | MapGestureArea.PinchGesture | MapGestureArea.RotationGesture | MapGestureArea.TiltGesture
     gesture.flickDeceleration: 3000
 
-    bearing: settings.map_orientation ? OpenHD.hdg : 360
+    bearing: settings.map_orientation ? 360 : OpenHD.hdg
 
 
     property double userLat: 0.0
@@ -26,7 +26,7 @@ Map {
     property double center_coord_lat: 0.0
     property double center_coord_lon: 0.0
 
-    center {                
+    center {
         latitude: OpenHD.lat == 0.0 ? userLat : followDrone ? OpenHD.lat : 9000
         longitude: OpenHD.lon == 0.0 ? userLon : followDrone ? OpenHD.lon : 9000
     }
@@ -151,7 +151,19 @@ Map {
                         border.width: 1
                     }
 
-                    rotation: model.track
+                    rotation: {
+                        var orientation = model.track-OpenHD.hdg;
+
+                        if (orientation < 0) orientation += 360;
+                        if (orientation >= 360) orientation -=360;
+
+                        if (settings.map_orientation === false){
+                            return orientation;
+                        }
+                        else {
+                            return model.track;
+                        }
+                    }
 
                     opacity: markerMouseArea.pressed ? 0.6 : 1.0
                     MouseArea  {
@@ -194,8 +206,19 @@ Map {
 
                         x: image.width+5
                         y: image.height/2
-                        //need handling for when map locks to drone dir
-                        rotation: -model.track
+                        rotation: {
+                            var orientation = model.track-OpenHD.hdg;
+
+                            if (orientation < 0) orientation += 360;
+                            if (orientation >= 360) orientation -=360;
+
+                            if (settings.map_orientation === false){
+                                return -orientation;
+                            }
+                            else {
+                                return -model.track;
+                            }
+                        }
                         width: image.width
                         height: image.height
                         color: "transparent"
@@ -241,15 +264,29 @@ Map {
                             Component.onCompleted: {
                                 //need adjustment for imperial
                                 //only meters now
-                                text = Math.floor(model.alt-OpenHD.alt_msl)+"m"
-                                if(model.vertical > .2){
-                                    text = Math.floor(model.alt-OpenHD.alt_msl)+"m"+"\ue696"
+                                if(model.vertical > .2){ //climbing
+                                    if (settings.enable_imperial === false){
+                                        text = Math.floor(model.alt-OpenHD.alt_msl)+"m "+"\ue696"
+                                    }
+                                    else{
+                                        text = Math.floor((model.alt-OpenHD.alt_msl)*3.28084)+"Ft "+"\ue696"
+                                    }
                                 }
-                                else if (model.vertical < -.2){
-                                    text= Math.floor(model.alt-OpenHD.alt_msl)+"m"+"\ue697"
+                                else if (model.vertical < -.2){//descending
+                                    if (settings.enable_imperial === false){
+                                        text= Math.floor(model.alt-OpenHD.alt_msl)+"m "+"\ue697"
+                                    }
+                                    else{
+                                        text = Math.floor((model.alt-OpenHD.alt_msl)*3.28084)+"Ft "+"\ue697"
+                                    }
                                 }
                                 else {
-                                    text= Math.floor(model.alt-OpenHD.alt_msl)+"m"+"\u2501"
+                                    if (settings.enable_imperial === false){//level
+                                        text= Math.floor(model.alt-OpenHD.alt_msl)+"m "+"\u2501"
+                                    }
+                                    else{
+                                        text = Math.floor((model.alt-OpenHD.alt_msl)*3.28084)+"Ft "+"\u2501"
+                                    }
                                 }
                             }
                         }
@@ -264,7 +301,8 @@ Map {
                             font.pixelSize: 11
                             horizontalAlignment: Text.AlignHCenter
                             Component.onCompleted: {
-                                text=  model.velocity+"m/s"
+                                text= settings.enable_imperial ? Math.floor(model.velocity*2.23694) + " mph"
+                                                                : Math.floor(model.velocity*3.6) + " kph"
                             }
                         }
                     }
@@ -312,7 +350,7 @@ Map {
                 PathLine { x: -10;               y: 17  } //left bottom
                 PathLine { x: 0;                 y: 0   } //back to start
             }
-            
+
             transform: Rotation {
                 origin.x: 0;
                 origin.y: 0;
