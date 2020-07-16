@@ -143,6 +143,10 @@ Item {
         id: blackboxWidget
     }
 
+    AdsbWidget {
+        id: adsbWidget
+    }
+
     ExampleWidget {
         id: exampleWidget
     }
