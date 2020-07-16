@@ -38,7 +38,7 @@ class H264BitstreamParser : public BitstreamParser {
 
   // New interface.
   void ParseBitstream(rtc::ArrayView<const uint8_t> bitstream) override;
-  std::optional<int> GetLastSliceQp() const override;
+  opt::optional<int> GetLastSliceQp() const override;
 
  protected:
   enum Result {
@@ -52,11 +52,11 @@ class H264BitstreamParser : public BitstreamParser {
                                   uint8_t nalu_type);
 
   // SPS/PPS state, updated when parsing new SPS/PPS, used to parse slices.
-  std::optional<SpsParser::SpsState> sps_;
-  std::optional<PpsParser::PpsState> pps_;
+  opt::optional<SpsParser::SpsState> sps_;
+  opt::optional<PpsParser::PpsState> pps_;
 
   // Last parsed slice QP.
-  std::optional<int32_t> last_slice_qp_delta_;
+  opt::optional<int32_t> last_slice_qp_delta_;
 };
 
 }  // namespace webrtc

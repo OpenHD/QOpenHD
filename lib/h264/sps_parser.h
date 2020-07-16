@@ -11,7 +11,23 @@
 #ifndef COMMON_VIDEO_H264_SPS_PARSER_H_
 #define COMMON_VIDEO_H264_SPS_PARSER_H_
 
-#include <optional>
+#if __cplusplus >= 201703L
+    #include <optional>
+    namespace opt = std;
+    #define RETURN_EMPTY_ON_FAIL(x) \
+      if (!(x)) {                   \
+        return std::optional::nullopt;       \
+      }
+#else
+    #include <boost/optional.hpp>
+    #include <boost/optional/optional.hpp>
+    namespace opt = boost;
+    #define RETURN_EMPTY_ON_FAIL(x) \
+      if (!(x)) {                   \
+        return boost::none;       \
+      }
+    #define OPT_NONE boost::none
+#endif
 
 namespace rtc {
 class BitBuffer;
@@ -43,12 +59,12 @@ class SpsParser {
   };
 
   // Unpack RBSP and parse SPS state from the supplied buffer.
-  static std::optional<SpsState> ParseSps(const uint8_t* data, size_t length);
+  static opt::optional<SpsState> ParseSps(const uint8_t* data, size_t length);
 
  protected:
   // Parse the SPS state, up till the VUI part, for a bit buffer where RBSP
   // decoding has already been performed.
-  static std::optional<SpsState> ParseSpsUpToVui(rtc::BitBuffer* buffer);
+  static opt::optional<SpsState> ParseSpsUpToVui(rtc::BitBuffer* buffer);
 };
 
 }  // namespace webrtc

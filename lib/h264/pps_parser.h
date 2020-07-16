@@ -11,7 +11,15 @@
 #ifndef COMMON_VIDEO_H264_PPS_PARSER_H_
 #define COMMON_VIDEO_H264_PPS_PARSER_H_
 
-#include <optional>
+#if __cplusplus >= 201703L
+    #include <optional>
+    namespace opt = std;
+#else
+    #include <boost/optional.hpp>
+    #include <boost/optional/optional.hpp>
+    namespace opt = boost;
+    #define OPT_NONE boost::none
+#endif
 
 namespace rtc {
 class BitBuffer;
@@ -38,20 +46,20 @@ class PpsParser {
   };
 
   // Unpack RBSP and parse PPS state from the supplied buffer.
-  static std::optional<PpsState> ParsePps(const uint8_t* data, size_t length);
+  static opt::optional<PpsState> ParsePps(const uint8_t* data, size_t length);
 
   static bool ParsePpsIds(const uint8_t* data,
                           size_t length,
                           uint32_t* pps_id,
                           uint32_t* sps_id);
 
-  static std::optional<uint32_t> ParsePpsIdFromSlice(const uint8_t* data,
+  static opt::optional<uint32_t> ParsePpsIdFromSlice(const uint8_t* data,
                                                       size_t length);
 
  protected:
   // Parse the PPS state, for a bit buffer where RBSP decoding has already been
   // performed.
-  static std::optional<PpsState> ParseInternal(rtc::BitBuffer* bit_buffer);
+  static opt::optional<PpsState> ParseInternal(rtc::BitBuffer* bit_buffer);
   static bool ParsePpsIdsInternal(rtc::BitBuffer* bit_buffer,
                                   uint32_t* pps_id,
                                   uint32_t* sps_id);
