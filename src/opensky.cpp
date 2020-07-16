@@ -101,7 +101,7 @@ void OpenSky::mapBoundsChanged(QGeoCoordinate center_coord) {
 
 void OpenSky::set_adsb_api_coord(QGeoCoordinate adsb_api_coord){
     m_adsb_api_coord=adsb_api_coord;
-    qDebug() << "adsb_api_coord=" << m_adsb_api_coord;
+    //qDebug() << "adsb_api_coord=" << m_adsb_api_coord;
     emit adsb_api_coord_changed(m_adsb_api_coord);
 }
 
@@ -152,7 +152,7 @@ void OpenSky::processReply(QNetworkReply *reply){
     QJsonValue value = object.value("states");
     QJsonArray array = value.toArray();
 
-    qDebug() << "MYARRAY COUNT=" << array.count();
+    //qDebug() << "MYARRAY COUNT=" << array.count();
 
     int current_row=0;
     int last_row=array.count();

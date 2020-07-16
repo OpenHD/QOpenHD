@@ -102,7 +102,7 @@ void MarkerModel::addMarker(int current_row, int total_rows, const Traffic &traf
 }
 
 void MarkerModel::doneAddingMarkers(){
-    qDebug() << "onDoneAddingMarkers rowcount=" << rowCount();
+    //qDebug() << "onDoneAddingMarkers rowcount=" << rowCount();
     endInsertRows();
 
     //get the last displayed row and distance of that object
@@ -115,7 +115,7 @@ void MarkerModel::doneAddingMarkers(){
 
 void MarkerModel::set_adsb_radius(int adsb_radius){
     m_adsb_radius=adsb_radius;
-    qDebug() << "adsbradius=" << m_adsb_radius;
+    //qDebug() << "adsbradius=" << m_adsb_radius;
     emit adsb_radius_changed(m_adsb_radius);
 }
 
