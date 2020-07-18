@@ -12,8 +12,6 @@ import "./widgets";
 
 Rectangle {
     id: toolBar
-    property alias settingsButton: settingsButton
-    property alias settingsButtonMouseArea: settingsButtonMouseArea
 
     width: 800      
     height: 48
@@ -66,27 +64,6 @@ Rectangle {
         top: parent.top
         left: parent.left
         right: parent.right
-    }
-
-
-    Image {
-        id: settingsButton
-        x: 8
-        y: 8
-        width: 48
-        height: 48
-        anchors.verticalCenter: parent.verticalCenter
-        fillMode: Image.PreserveAspectFit
-        z: 2.2
-
-        source: "../ic128.png"
-        anchors.leftMargin: 8
-        anchors.topMargin: 8
-        MouseArea {
-            id: settingsButtonMouseArea
-            anchors.fill: parent
-
-        }
     }
 }
 

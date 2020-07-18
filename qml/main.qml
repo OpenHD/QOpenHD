@@ -346,9 +346,6 @@ ApplicationWindow {
     UpperOverlayBar {
         visible: settings.stereo_mode == 0
         id: upperOverlayBar
-        onSettingsButtonClicked: {
-            settings_panel.openSettings();
-        }
     }
 
     HUDOverlayGrid {
@@ -365,6 +362,10 @@ ApplicationWindow {
         }
         z: 3.0
         layer.enabled: true
+
+        onSettingsButtonClicked: {
+            settings_panel.openSettings();
+        }
     }
 
     Rectangle {

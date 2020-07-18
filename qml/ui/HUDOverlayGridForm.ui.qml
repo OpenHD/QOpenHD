@@ -12,6 +12,31 @@ import "./widgets"
 
 Item {
     property alias messageHUD: messageHUD
+    signal settingsButtonClicked();
+
+    Image {
+        id: settingsButton
+        width: 48
+        height: 48
+        fillMode: Image.PreserveAspectFit
+        z: 2.2
+
+        source: "../ic128.png"
+        anchors.left: parent.left
+        anchors.leftMargin: 8
+        anchors.top: parent.top
+        anchors.topMargin: 0
+
+        MouseArea {
+            id: settingsButtonMouseArea
+            anchors.fill: parent
+
+            onClicked: {
+                hudOverlayGrid.settingsButtonClicked();
+            }
+        }
+    }
+
 
     MessageHUD {
         id: messageHUD
