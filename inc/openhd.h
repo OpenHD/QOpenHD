@@ -625,10 +625,11 @@ private:
 
     QTimer* timer = nullptr;
 
-    double m_ground_vin = 0.0;
-    double m_ground_vout = 0.0;
-    double m_ground_vbat = 0.0;
-    double m_ground_iout = 0.0;
+    double m_ground_vin = -1;
+    double m_ground_vout = -1;
+    double m_ground_vbat = -1;
+    double m_ground_iout = -1;
+
 
     int mRCChannel1 = 0;
     int mRCChannel2 = 0;
