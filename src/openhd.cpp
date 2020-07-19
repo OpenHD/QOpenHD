@@ -703,6 +703,16 @@ void OpenHD::set_ground_iout(double ground_iout) {
     emit ground_iout_changed(m_ground_iout);
 }
 
+void OpenHD::set_air_vout(double air_vout) {
+    m_air_vout = air_vout;
+    emit air_vout_changed(m_air_vout);
+}
+
+void OpenHD::set_air_iout(double air_iout) {
+    m_air_iout = air_iout;
+    emit air_iout_changed(m_air_iout);
+}
+
 void OpenHD::updateLateralSpeed(){
 
     auto resultant_magnitude = sqrt(m_vx * m_vx + m_vy * m_vy);

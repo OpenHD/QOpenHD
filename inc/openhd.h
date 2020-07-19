@@ -319,6 +319,13 @@ public:
 
 
 
+    Q_PROPERTY(double air_vout MEMBER m_air_vout WRITE set_air_vout NOTIFY air_vout_changed)
+    void set_air_vout(double air_vout);
+
+    Q_PROPERTY(double air_iout MEMBER m_air_iout WRITE set_air_iout NOTIFY air_iout_changed)
+    void set_air_iout(double air_iout);
+
+
     Q_PROPERTY(int rcChannel1 MEMBER mRCChannel1 WRITE setRCChannel1 NOTIFY rcChannel1Changed)
     void setRCChannel1(int rcChannel1);
 
@@ -472,6 +479,9 @@ signals:
     void ground_vout_changed(double ground_vout);
     void ground_vbat_changed(double ground_vbat);
     void ground_iout_changed(double ground_iout);
+
+    void air_vout_changed(double air_vout);
+    void air_iout_changed(double air_iout);
 
     void rcChannel1Changed(int rcChanne1);
     void rcChannel2Changed(int rcChanne2);
@@ -630,6 +640,8 @@ private:
     double m_ground_vbat = -1;
     double m_ground_iout = -1;
 
+    double m_air_vout = -1;
+    double m_air_iout = -1;
 
     int mRCChannel1 = 0;
     int mRCChannel2 = 0;
