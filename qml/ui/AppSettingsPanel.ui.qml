@@ -92,169 +92,164 @@ Item {
 
             clip: true
 
-            Item {
-                anchors.fill: parent
+            Column {
+                id: generalColumn
+                spacing: 0
+                width: parent.width
 
-                Column {
-                    id: generalColumn
-                    spacing: 0
-                    anchors.left: parent.left
-                    anchors.right: parent.right
+                Rectangle {
+                    width: parent.width
+                    height: rowHeight
+                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
-                    Rectangle {
-                        width: parent.width
-                        height: rowHeight
-                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                        //color: "#8cbfd7f3"
-                        Text {
-                            text: qsTr("Enable Speech")
-                            font.weight: Font.Bold
-                            font.pixelSize: 13
-                            anchors.leftMargin: 8
-                            verticalAlignment: Text.AlignVCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: 224
-                            height: elementHeight
-                            anchors.left: parent.left
-                        }
-
-                        Switch {
-                            width: 32
-                            height: elementHeight
-                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            checked: settings.enable_speech
-                            onCheckedChanged: settings.enable_speech = checked
-                        }
+                    //color: "#8cbfd7f3"
+                    Text {
+                        text: qsTr("Enable Speech")
+                        font.weight: Font.Bold
+                        font.pixelSize: 13
+                        anchors.leftMargin: 8
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 224
+                        height: elementHeight
+                        anchors.left: parent.left
                     }
 
-                    Rectangle {
-                        width: parent.width
-                        height: rowHeight
-                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.enable_speech
+                        onCheckedChanged: settings.enable_speech = checked
+                    }
+                }
 
-                        Text {
-                            text: qsTr("Battery Cells")
-                            font.weight: Font.Bold
-                            font.pixelSize: 13
-                            anchors.leftMargin: 8
-                            verticalAlignment: Text.AlignVCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: 224
-                            height: elementHeight
-                            anchors.left: parent.left
-                        }
+                Rectangle {
+                    width: parent.width
+                    height: rowHeight
+                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
-                        SpinBox {
-                            id: batteryCellspinBox
-                            height: elementHeight
-                            width: 210
-                            font.pixelSize: 14
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            from: 1
-                            to: 6
-                            stepSize: 1
-                            anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
-
-                            value: settings.battery_cells
-                            onValueChanged: settings.battery_cells = value
-                        }
+                    Text {
+                        text: qsTr("Battery Cells")
+                        font.weight: Font.Bold
+                        font.pixelSize: 13
+                        anchors.leftMargin: 8
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 224
+                        height: elementHeight
+                        anchors.left: parent.left
                     }
 
-                    Rectangle {
-                        width: parent.width
-                        height: rowHeight
-                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                    SpinBox {
+                        id: batteryCellspinBox
+                        height: elementHeight
+                        width: 210
+                        font.pixelSize: 14
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        from: 1
+                        to: 6
+                        stepSize: 1
+                        anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
 
-                        Text {
-                            text: qsTr("Imperial units")
-                            font.weight: Font.Bold
-                            font.pixelSize: 13
-                            anchors.leftMargin: 8
-                            verticalAlignment: Text.AlignVCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: 224
-                            height: elementHeight
-                            anchors.left: parent.left
-                        }
+                        value: settings.battery_cells
+                        onValueChanged: settings.battery_cells = value
+                    }
+                }
 
-                        Switch {
-                            width: 32
-                            height: elementHeight
-                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                Rectangle {
+                    width: parent.width
+                    height: rowHeight
+                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            checked: settings.enable_imperial
-                            onCheckedChanged: settings.enable_imperial = checked
-                        }
+                    Text {
+                        text: qsTr("Imperial units")
+                        font.weight: Font.Bold
+                        font.pixelSize: 13
+                        anchors.leftMargin: 8
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 224
+                        height: elementHeight
+                        anchors.left: parent.left
                     }
 
-                    Rectangle {
-                        width: parent.width
-                        height: rowHeight
-                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-                        visible: EnableRC
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
 
-                        Text {
-                            text: qsTr("Enable RC")
-                            font.weight: Font.Bold
-                            font.pixelSize: 13
-                            anchors.leftMargin: 8
-                            verticalAlignment: Text.AlignVCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: 224
-                            height: elementHeight
-                            anchors.left: parent.left
-                        }
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.enable_imperial
+                        onCheckedChanged: settings.enable_imperial = checked
+                    }
+                }
 
-                        Switch {
-                            width: 32
-                            height: elementHeight
-                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                Rectangle {
+                    width: parent.width
+                    height: rowHeight
+                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                    visible: EnableRC
 
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            checked: settings.enable_rc
-                            onCheckedChanged: settings.enable_rc = checked
-                        }
+                    Text {
+                        text: qsTr("Enable RC")
+                        font.weight: Font.Bold
+                        font.pixelSize: 13
+                        anchors.leftMargin: 8
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 224
+                        height: elementHeight
+                        anchors.left: parent.left
                     }
 
-                    Rectangle {
-                        width: parent.width
-                        height: rowHeight
-                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
 
-                        Text {
-                            text: qsTr("Mavlink SysID")
-                            font.weight: Font.Bold
-                            font.pixelSize: 13
-                            anchors.leftMargin: 8
-                            verticalAlignment: Text.AlignVCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: 224
-                            height: elementHeight
-                            anchors.left: parent.left
-                        }
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.enable_rc
+                        onCheckedChanged: settings.enable_rc = checked
+                    }
+                }
 
-                        SpinBox {
-                            id: mavlinkSysIDSpinBox
-                            height: elementHeight
-                            width: 210
-                            font.pixelSize: 14
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            from: 1
-                            to: 255
-                            stepSize: 1
-                            anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
+                Rectangle {
+                    width: parent.width
+                    height: rowHeight
+                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
-                            value: settings.mavlink_sysid
-                            onValueChanged: settings.mavlink_sysid = value
-                        }
+                    Text {
+                        text: qsTr("Mavlink SysID")
+                        font.weight: Font.Bold
+                        font.pixelSize: 13
+                        anchors.leftMargin: 8
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 224
+                        height: elementHeight
+                        anchors.left: parent.left
+                    }
+
+                    SpinBox {
+                        id: mavlinkSysIDSpinBox
+                        height: elementHeight
+                        width: 210
+                        font.pixelSize: 14
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        from: 1
+                        to: 255
+                        stepSize: 1
+                        anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
+
+                        value: settings.mavlink_sysid
+                        onValueChanged: settings.mavlink_sysid = value
                     }
                 }
             }
@@ -268,1126 +263,1182 @@ Item {
 
             clip: true
 
-            Item {
-                anchors.fill: parent
+            Column {
+                id: widgetColumn
+                spacing: 0
+                width: parent.width
 
-                Column {
-                    id: widgetColumn
-                    spacing: 0
-                    anchors.left: parent.left
-                    anchors.right: parent.right
+                Rectangle {
+                    width: parent.width
+                    height: rowHeight
+                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
-                    Rectangle {
-                        width: parent.width
-                        height: rowHeight
-                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                    Text {
+                        text: qsTr("Shape Color")
+                        font.weight: Font.Bold
+                        font.pixelSize: 13
+                        anchors.leftMargin: 8
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 224
+                        height: elementHeight
+                        anchors.left: parent.left
+                    }
 
-                        Text {
-                            text: qsTr("Shape Color")
-                            font.weight: Font.Bold
-                            font.pixelSize: 13
-                            anchors.leftMargin: 8
-                            verticalAlignment: Text.AlignVCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: 224
-                            height: elementHeight
-                            anchors.left: parent.left
+                    ComboBox {
+                        height: elementHeight
+                        anchors.right: parent.right
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.horizontalCenter: parent.horizonatalCenter
+                        model: ListModel {
+                            id: color_shape
+                            ListElement { text: "White"; color: "white" }
+                            ListElement { text: "Black"; color: "black" }
+                            ListElement { text: "Green"; color: "green" }
+                            ListElement { text: "Drk Green"; color: "darkGreen" }
+                            ListElement { text: "Yellow"; color: "yellow" }
+                            ListElement { text: "Drk Yellow"; color: "darkYellow" }
+                            ListElement { text: "Grey"; color: "grey" }
+                            ListElement { text: "Lgt Grey"; color: "lightGrey" }
+                            ListElement { text: "Drk Grey"; color: "darkGrey" }
                         }
-
-                        ComboBox {
-                            height: elementHeight
-                            anchors.right: parent.right
-                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-                            anchors.verticalCenter: parent.verticalCenter
-                            anchors.horizontalCenter: parent.horizonatalCenter
-                            model: ListModel {
-                                id: color_shape
-                                ListElement { text: "White"; color: "white" }
-                                ListElement { text: "Black"; color: "black" }
-                                ListElement { text: "Green"; color: "green" }
-                                ListElement { text: "Drk Green"; color: "darkGreen" }
-                                ListElement { text: "Yellow"; color: "yellow" }
-                                ListElement { text: "Drk Yellow"; color: "darkYellow" }
-                                ListElement { text: "Grey"; color: "grey" }
-                                ListElement { text: "Lgt Grey"; color: "lightGrey" }
-                                ListElement { text: "Drk Grey"; color: "darkGrey" }
-                            }
-                            textRole: "text"
+                        textRole: "text"
+                        // @disable-check M223
+                        Component.onCompleted: {
                             // @disable-check M223
-                            Component.onCompleted: {
+                            for (var i = 0; i < model.count; i++) {
+                                // @disable-check M222
+                                var choice = model.get(i);
                                 // @disable-check M223
-                                for (var i = 0; i < model.count; i++) {
-                                    // @disable-check M222
-                                    var choice = model.get(i);
-                                    // @disable-check M223
-                                    if (choice.color == settings.color_shape) {
-                                        currentIndex = i;
-                                    }
+                                if (choice.color == settings.color_shape) {
+                                    currentIndex = i;
                                 }
                             }
-                            onCurrentIndexChanged: {
-                                    settings.color_shape = color_shape.get(currentIndex).color
-                            }
+                        }
+                        onCurrentIndexChanged: {
+                                settings.color_shape = color_shape.get(currentIndex).color
                         }
                     }
+                }
 
-                    Rectangle {
-                        width: parent.width
-                        height: rowHeight
-                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                Rectangle {
+                    width: parent.width
+                    height: rowHeight
+                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
-                        Text {
-                            text: qsTr("Glow Color")
-                            font.weight: Font.Bold
-                            font.pixelSize: 13
-                            anchors.leftMargin: 8
-                            verticalAlignment: Text.AlignVCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: 224
-                            height: elementHeight
-                            anchors.left: parent.left
+                    Text {
+                        text: qsTr("Glow Color")
+                        font.weight: Font.Bold
+                        font.pixelSize: 13
+                        anchors.leftMargin: 8
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 224
+                        height: elementHeight
+                        anchors.left: parent.left
+                    }
+
+                    ComboBox {
+                        height: elementHeight
+                        anchors.right: parent.right
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.horizontalCenter: parent.horizonatalCenter
+                        model: ListModel {
+                            id: color_glow
+                            ListElement { text: "Black"; color: "black" }
+                            ListElement { text: "White"; color: "white" }
+                            ListElement { text: "Green"; color: "green" }
+                            ListElement { text: "Drk Green"; color: "darkGreen" }
+                            ListElement { text: "Yellow"; color: "yellow" }
+                            ListElement { text: "Drk Yellow"; color: "darkYellow" }
+                            ListElement { text: "Grey"; color: "grey" }
+                            ListElement { text: "Lgt Grey"; color: "lightGrey" }
+                            ListElement { text: "Drk Grey"; color: "darkGrey" }
                         }
-
-                        ComboBox {
-                            height: elementHeight
-                            anchors.right: parent.right
-                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-                            anchors.verticalCenter: parent.verticalCenter
-                            anchors.horizontalCenter: parent.horizonatalCenter
-                            model: ListModel {
-                                id: color_glow
-                                ListElement { text: "Black"; color: "black" }
-                                ListElement { text: "White"; color: "white" }
-                                ListElement { text: "Green"; color: "green" }
-                                ListElement { text: "Drk Green"; color: "darkGreen" }
-                                ListElement { text: "Yellow"; color: "yellow" }
-                                ListElement { text: "Drk Yellow"; color: "darkYellow" }
-                                ListElement { text: "Grey"; color: "grey" }
-                                ListElement { text: "Lgt Grey"; color: "lightGrey" }
-                                ListElement { text: "Drk Grey"; color: "darkGrey" }
-                            }
-                            textRole: "text"
+                        textRole: "text"
+                        // @disable-check M223
+                        Component.onCompleted: {
                             // @disable-check M223
-                            Component.onCompleted: {
+                            for (var i = 0; i < model.count; i++) {
+                                // @disable-check M222
+                                var choice = model.get(i);
                                 // @disable-check M223
-                                for (var i = 0; i < model.count; i++) {
-                                    // @disable-check M222
-                                    var choice = model.get(i);
-                                    // @disable-check M223
-                                    if (choice.color == settings.color_glow) {
-                                        currentIndex = i;
-                                    }
+                                if (choice.color == settings.color_glow) {
+                                    currentIndex = i;
                                 }
                             }
-                            onCurrentIndexChanged: {
-                                    settings.color_glow = color_glow.get(currentIndex).color
-                            }
+                        }
+                        onCurrentIndexChanged: {
+                                settings.color_glow = color_glow.get(currentIndex).color
                         }
                     }
+                }
 
-                    Rectangle {
-                        width: parent.width
-                        height: rowHeight
-                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                Rectangle {
+                    width: parent.width
+                    height: rowHeight
+                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
-                        Text {
-                            text: qsTr("Text Color")
-                            font.weight: Font.Bold
-                            font.pixelSize: 13
-                            anchors.leftMargin: 8
-                            verticalAlignment: Text.AlignVCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: 224
-                            height: elementHeight
-                            anchors.left: parent.left
+                    Text {
+                        text: qsTr("Text Color")
+                        font.weight: Font.Bold
+                        font.pixelSize: 13
+                        anchors.leftMargin: 8
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 224
+                        height: elementHeight
+                        anchors.left: parent.left
+                    }
+
+                    ComboBox {
+                        height: elementHeight
+                        anchors.right: parent.right
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.horizontalCenter: parent.horizonatalCenter
+                        model: ListModel {
+                            id: color_text
+                            ListElement { text: "White"; color: "white" }
+                            ListElement { text: "Black"; color: "black" }
+                            ListElement { text: "Green"; color: "green" }
+                            ListElement { text: "Drk Green"; color: "darkGreen" }
+                            ListElement { text: "Yellow"; color: "yellow" }
+                            ListElement { text: "Drk Yellow"; color: "darkYellow" }
+                            ListElement { text: "Grey"; color: "grey" }
+                            ListElement { text: "Lgt Grey"; color: "lightGrey" }
+                            ListElement { text: "Drk Grey"; color: "darkGrey" }
                         }
-
-                        ComboBox {
-                            height: elementHeight
-                            anchors.right: parent.right
-                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-                            anchors.verticalCenter: parent.verticalCenter
-                            anchors.horizontalCenter: parent.horizonatalCenter
-                            model: ListModel {
-                                id: color_text
-                                ListElement { text: "White"; color: "white" }
-                                ListElement { text: "Black"; color: "black" }
-                                ListElement { text: "Green"; color: "green" }
-                                ListElement { text: "Drk Green"; color: "darkGreen" }
-                                ListElement { text: "Yellow"; color: "yellow" }
-                                ListElement { text: "Drk Yellow"; color: "darkYellow" }
-                                ListElement { text: "Grey"; color: "grey" }
-                                ListElement { text: "Lgt Grey"; color: "lightGrey" }
-                                ListElement { text: "Drk Grey"; color: "darkGrey" }
-                            }
-                            textRole: "text"
+                        textRole: "text"
+                        // @disable-check M223
+                        Component.onCompleted: {
                             // @disable-check M223
-                            Component.onCompleted: {
+                            for (var i = 0; i < model.count; i++) {
+                                // @disable-check M222
+                                var choice = model.get(i);
                                 // @disable-check M223
-                                for (var i = 0; i < model.count; i++) {
-                                    // @disable-check M222
-                                    var choice = model.get(i);
-                                    // @disable-check M223
-                                    if (choice.color == settings.color_text) {
-                                        currentIndex = i;
-                                    }
+                                if (choice.color == settings.color_text) {
+                                    currentIndex = i;
                                 }
                             }
-                            onCurrentIndexChanged: {
-                                    settings.color_text = color_text.get(currentIndex).color
-                            }
+                        }
+                        onCurrentIndexChanged: {
+                                settings.color_text = color_text.get(currentIndex).color
                         }
                     }
+                }
 
-                    Rectangle {
-                        width: parent.width
-                        height: rowHeight
-                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                Rectangle {
+                    width: parent.width
+                    height: rowHeight
+                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
-                        Text {
-                            text: qsTr("Top/bottom bars")
-                            font.weight: Font.Bold
-                            font.pixelSize: 13
-                            anchors.leftMargin: 8
-                            verticalAlignment: Text.AlignVCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: 224
-                            height: elementHeight
-                            anchors.left: parent.left
+                    Text {
+                        text: qsTr("Top/bottom bars")
+                        font.weight: Font.Bold
+                        font.pixelSize: 13
+                        anchors.leftMargin: 8
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 224
+                        height: elementHeight
+                        anchors.left: parent.left
+                    }
+
+                    ComboBox {
+                        height: elementHeight
+                        anchors.right: parent.right
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.horizontalCenter: parent.horizonatalCenter
+                        width: 320
+                        model: ListModel {
+                            id: bar_behavior
+                            ListElement { text: "Hide" ; behavior: "none" }
+                            ListElement { text: "Transparent black" ; behavior: "black" }
+                            ListElement { text: "Hide when drone armed" ; behavior: "disappear" }
+                            ListElement { text: "Turn red when drone armed" ; behavior: "red" }
+
                         }
-
-                        ComboBox {
-                            height: elementHeight
-                            anchors.right: parent.right
-                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-                            anchors.verticalCenter: parent.verticalCenter
-                            anchors.horizontalCenter: parent.horizonatalCenter
-                            width: 320
-                            model: ListModel {
-                                id: bar_behavior
-                                ListElement { text: "Hide" ; behavior: "none" }
-                                ListElement { text: "Transparent black" ; behavior: "black" }
-                                ListElement { text: "Hide when drone armed" ; behavior: "disappear" }
-                                ListElement { text: "Turn red when drone armed" ; behavior: "red" }
-
-                            }
-                            textRole: "text"
+                        textRole: "text"
+                        // @disable-check M223
+                        Component.onCompleted: {
                             // @disable-check M223
-                            Component.onCompleted: {
+                            for (var i = 0; i < model.count; i++) {
+                                // @disable-check M222
+                                var choice = model.get(i);
                                 // @disable-check M223
-                                for (var i = 0; i < model.count; i++) {
-                                    // @disable-check M222
-                                    var choice = model.get(i);
-                                    // @disable-check M223
-                                    if (choice.behavior == settings.bar_behavior) {
-                                        currentIndex = i;
-                                    }
+                                if (choice.behavior == settings.bar_behavior) {
+                                    currentIndex = i;
                                 }
                             }
-                            onCurrentIndexChanged: {
-                                    settings.bar_behavior = bar_behavior.get(currentIndex).behavior
-                            }
+                        }
+                        onCurrentIndexChanged: {
+                                settings.bar_behavior = bar_behavior.get(currentIndex).behavior
                         }
                     }
+                }
 
-                    Rectangle {
-                        width: parent.width
-                        height: rowHeight
-                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                Rectangle {
+                    width: parent.width
+                    height: rowHeight
+                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
-                        Text {
-                            text: qsTr("Show Downlink RSSI")
-                            font.weight: Font.Bold
-                            font.pixelSize: 13
-                            anchors.leftMargin: 8
-                            verticalAlignment: Text.AlignVCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: 224
-                            height: elementHeight
-                            anchors.left: parent.left
-                        }
-
-                        Switch {
-                            width: 32
-                            height: elementHeight
-                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            checked: settings.show_downlink_rssi
-                            onCheckedChanged: settings.show_downlink_rssi = checked
-                        }
+                    Text {
+                        text: qsTr("Show Downlink RSSI")
+                        font.weight: Font.Bold
+                        font.pixelSize: 13
+                        anchors.leftMargin: 8
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 224
+                        height: elementHeight
+                        anchors.left: parent.left
                     }
 
-                    Rectangle {
-                        width: parent.width
-                        height: rowHeight
-                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
 
-                        Text {
-                            text: qsTr("Show Uplink RSSI")
-                            font.weight: Font.Bold
-                            font.pixelSize: 13
-                            anchors.leftMargin: 8
-                            verticalAlignment: Text.AlignVCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: 224
-                            height: elementHeight
-                            anchors.left: parent.left
-                        }
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.show_downlink_rssi
+                        onCheckedChanged: settings.show_downlink_rssi = checked
+                    }
+                }
 
-                        Switch {
-                            width: 32
-                            height: elementHeight
-                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                Rectangle {
+                    width: parent.width
+                    height: rowHeight
+                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            checked: settings.show_uplink_rssi
-                            onCheckedChanged: settings.show_uplink_rssi = checked
-                        }
+                    Text {
+                        text: qsTr("Show Uplink RSSI")
+                        font.weight: Font.Bold
+                        font.pixelSize: 13
+                        anchors.leftMargin: 8
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 224
+                        height: elementHeight
+                        anchors.left: parent.left
                     }
 
-                    Rectangle {
-                        width: parent.width
-                        height: rowHeight
-                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
 
-                        Text {
-                            text: qsTr("Show RC RSSI (not OpenHD RC)")
-                            font.weight: Font.Bold
-                            font.pixelSize: 13
-                            anchors.leftMargin: 8
-                            verticalAlignment: Text.AlignVCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: 224
-                            height: elementHeight
-                            anchors.left: parent.left
-                        }
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.show_uplink_rssi
+                        onCheckedChanged: settings.show_uplink_rssi = checked
+                    }
+                }
 
-                        Switch {
-                            width: 32
-                            height: elementHeight
-                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                Rectangle {
+                    width: parent.width
+                    height: rowHeight
+                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            checked: settings.show_rc_rssi
-                            onCheckedChanged: settings.show_rc_rssi = checked
-                        }
+                    Text {
+                        text: qsTr("Show RC RSSI (not OpenHD RC)")
+                        font.weight: Font.Bold
+                        font.pixelSize: 13
+                        anchors.leftMargin: 8
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 224
+                        height: elementHeight
+                        anchors.left: parent.left
                     }
 
-                    Rectangle {
-                        width: parent.width
-                        height: rowHeight
-                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
 
-                        Text {
-                            text: qsTr("Show Bitrate")
-                            font.weight: Font.Bold
-                            font.pixelSize: 13
-                            anchors.leftMargin: 8
-                            verticalAlignment: Text.AlignVCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: 224
-                            height: elementHeight
-                            anchors.left: parent.left
-                        }
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.show_rc_rssi
+                        onCheckedChanged: settings.show_rc_rssi = checked
+                    }
+                }
 
-                        Switch {
-                            width: 32
-                            height: elementHeight
-                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                Rectangle {
+                    width: parent.width
+                    height: rowHeight
+                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            checked: settings.show_bitrate
-                            onCheckedChanged: settings.show_bitrate = checked
-                        }
+                    Text {
+                        text: qsTr("Show Bitrate")
+                        font.weight: Font.Bold
+                        font.pixelSize: 13
+                        anchors.leftMargin: 8
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 224
+                        height: elementHeight
+                        anchors.left: parent.left
                     }
 
-                    Rectangle {
-                        width: parent.width
-                        height: rowHeight
-                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
 
-                        Text {
-                            text: qsTr("Show GPS")
-                            font.weight: Font.Bold
-                            font.pixelSize: 13
-                            anchors.leftMargin: 8
-                            verticalAlignment: Text.AlignVCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: 224
-                            height: elementHeight
-                            anchors.left: parent.left
-                        }
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.show_bitrate
+                        onCheckedChanged: settings.show_bitrate = checked
+                    }
+                }
 
-                        Switch {
-                            width: 32
-                            height: elementHeight
-                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                Rectangle {
+                    width: parent.width
+                    height: rowHeight
+                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            checked: settings.show_gps
-                            onCheckedChanged: settings.show_gps = checked
-                        }
+                    Text {
+                        text: qsTr("Show GPS")
+                        font.weight: Font.Bold
+                        font.pixelSize: 13
+                        anchors.leftMargin: 8
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 224
+                        height: elementHeight
+                        anchors.left: parent.left
                     }
 
-                    Rectangle {
-                        width: parent.width
-                        height: rowHeight
-                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
 
-                        Text {
-                            text: qsTr("Show Home Distance")
-                            font.weight: Font.Bold
-                            font.pixelSize: 13
-                            anchors.leftMargin: 8
-                            verticalAlignment: Text.AlignVCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: 224
-                            height: elementHeight
-                            anchors.left: parent.left
-                        }
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.show_gps
+                        onCheckedChanged: settings.show_gps = checked
+                    }
+                }
 
-                        Switch {
-                            width: 32
-                            height: elementHeight
-                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                Rectangle {
+                    width: parent.width
+                    height: rowHeight
+                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            checked: settings.show_home_distance
-                            onCheckedChanged: settings.show_home_distance = checked
-                        }
+                    Text {
+                        text: qsTr("Show Home Distance")
+                        font.weight: Font.Bold
+                        font.pixelSize: 13
+                        anchors.leftMargin: 8
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 224
+                        height: elementHeight
+                        anchors.left: parent.left
                     }
 
-                    Rectangle {
-                        width: parent.width
-                        height: rowHeight
-                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
 
-                        Text {
-                            text: qsTr("Show Flight Timer")
-                            font.weight: Font.Bold
-                            font.pixelSize: 13
-                            anchors.leftMargin: 8
-                            verticalAlignment: Text.AlignVCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: 224
-                            height: elementHeight
-                            anchors.left: parent.left
-                        }
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.show_home_distance
+                        onCheckedChanged: settings.show_home_distance = checked
+                    }
+                }
 
-                        Switch {
-                            width: 32
-                            height: elementHeight
-                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                Rectangle {
+                    width: parent.width
+                    height: rowHeight
+                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            checked: settings.show_flight_timer
-                            onCheckedChanged: settings.show_flight_timer = checked
-                        }
+                    Text {
+                        text: qsTr("Show Flight Timer")
+                        font.weight: Font.Bold
+                        font.pixelSize: 13
+                        anchors.leftMargin: 8
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 224
+                        height: elementHeight
+                        anchors.left: parent.left
                     }
 
-                    Rectangle {
-                        width: parent.width
-                        height: rowHeight
-                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
 
-                        Text {
-                            text: qsTr("Show Flight Mode")
-                            font.weight: Font.Bold
-                            font.pixelSize: 13
-                            anchors.leftMargin: 8
-                            verticalAlignment: Text.AlignVCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: 224
-                            height: elementHeight
-                            anchors.left: parent.left
-                        }
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.show_flight_timer
+                        onCheckedChanged: settings.show_flight_timer = checked
+                    }
+                }
 
-                        Switch {
-                            width: 32
-                            height: elementHeight
-                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                Rectangle {
+                    width: parent.width
+                    height: rowHeight
+                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            checked: settings.show_flight_mode
-                            onCheckedChanged: settings.show_flight_mode = checked
-                        }
+                    Text {
+                        text: qsTr("Show Flight Mode")
+                        font.weight: Font.Bold
+                        font.pixelSize: 13
+                        anchors.leftMargin: 8
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 224
+                        height: elementHeight
+                        anchors.left: parent.left
                     }
 
-                    Rectangle {
-                        width: parent.width
-                        height: rowHeight
-                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
 
-                        Text {
-                            text: qsTr("Show Flight Controller Temperature")
-                            font.weight: Font.Bold
-                            font.pixelSize: 13
-                            anchors.leftMargin: 8
-                            verticalAlignment: Text.AlignVCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: 224
-                            height: elementHeight
-                            anchors.left: parent.left
-                        }
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.show_flight_mode
+                        onCheckedChanged: settings.show_flight_mode = checked
+                    }
+                }
 
-                        Switch {
-                            width: 32
-                            height: elementHeight
-                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                Rectangle {
+                    width: parent.width
+                    height: rowHeight
+                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            checked: settings.show_fc_temp
-                            onCheckedChanged: settings.show_fc_temp = checked
-                        }
+                    Text {
+                        text: qsTr("Show Flight Controller Temperature")
+                        font.weight: Font.Bold
+                        font.pixelSize: 13
+                        anchors.leftMargin: 8
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 224
+                        height: elementHeight
+                        anchors.left: parent.left
                     }
 
-                    Rectangle {
-                        width: parent.width
-                        height: rowHeight
-                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
 
-                        Text {
-                            text: qsTr("Show Ground Status")
-                            font.weight: Font.Bold
-                            font.pixelSize: 13
-                            anchors.leftMargin: 8
-                            verticalAlignment: Text.AlignVCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: 224
-                            height: elementHeight
-                            anchors.left: parent.left
-                        }
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.show_fc_temp
+                        onCheckedChanged: settings.show_fc_temp = checked
+                    }
+                }
 
-                        Switch {
-                            width: 32
-                            height: elementHeight
-                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                Rectangle {
+                    width: parent.width
+                    height: rowHeight
+                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            checked: settings.show_ground_status
-                            onCheckedChanged: settings.show_ground_status = checked
-                        }
+                    Text {
+                        text: qsTr("Show Ground Status")
+                        font.weight: Font.Bold
+                        font.pixelSize: 13
+                        anchors.leftMargin: 8
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 224
+                        height: elementHeight
+                        anchors.left: parent.left
                     }
 
-                    Rectangle {
-                        width: parent.width
-                        height: rowHeight
-                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
 
-                        Text {
-                            text: qsTr("Show Air Status")
-                            font.weight: Font.Bold
-                            font.pixelSize: 13
-                            anchors.leftMargin: 8
-                            verticalAlignment: Text.AlignVCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: 224
-                            height: elementHeight
-                            anchors.left: parent.left
-                        }
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.show_ground_status
+                        onCheckedChanged: settings.show_ground_status = checked
+                    }
+                }
 
-                        Switch {
-                            width: 32
-                            height: elementHeight
-                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                Rectangle {
+                    width: parent.width
+                    height: rowHeight
+                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            checked: settings.show_air_status
-                            onCheckedChanged: settings.show_air_status = checked
-                        }
+                    Text {
+                        text: qsTr("Show Air Status")
+                        font.weight: Font.Bold
+                        font.pixelSize: 13
+                        anchors.leftMargin: 8
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 224
+                        height: elementHeight
+                        anchors.left: parent.left
                     }
 
-                    Rectangle {
-                        width: parent.width
-                        height: rowHeight
-                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
 
-                        Text {
-                            text: qsTr("Show Air Battery")
-                            font.weight: Font.Bold
-                            font.pixelSize: 13
-                            anchors.leftMargin: 8
-                            verticalAlignment: Text.AlignVCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: 224
-                            height: elementHeight
-                            anchors.left: parent.left
-                        }
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.show_air_status
+                        onCheckedChanged: settings.show_air_status = checked
+                    }
+                }
 
-                        Switch {
-                            width: 32
-                            height: elementHeight
-                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                Rectangle {
+                    width: parent.width
+                    height: rowHeight
+                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            checked: settings.show_air_battery
-                            onCheckedChanged: settings.show_air_battery = checked
-                        }
+                    Text {
+                        text: qsTr("Show Air Battery")
+                        font.weight: Font.Bold
+                        font.pixelSize: 13
+                        anchors.leftMargin: 8
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 224
+                        height: elementHeight
+                        anchors.left: parent.left
                     }
 
-                    Rectangle {
-                        width: parent.width
-                        height: rowHeight
-                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
 
-                        Text {
-                            text: qsTr("Show mAh")
-                            font.weight: Font.Bold
-                            font.pixelSize: 13
-                            anchors.leftMargin: 8
-                            verticalAlignment: Text.AlignVCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: 224
-                            height: elementHeight
-                            anchors.left: parent.left
-                        }
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.show_air_battery
+                        onCheckedChanged: settings.show_air_battery = checked
+                    }
+                }
 
-                        Switch {
-                            width: 32
-                            height: elementHeight
-                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                Rectangle {
+                    width: parent.width
+                    height: rowHeight
+                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            checked: settings.show_flight_mah
-                            onCheckedChanged: settings.show_flight_mah = checked
-                        }
+                    Text {
+                        text: qsTr("Show mAh")
+                        font.weight: Font.Bold
+                        font.pixelSize: 13
+                        anchors.leftMargin: 8
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 224
+                        height: elementHeight
+                        anchors.left: parent.left
                     }
 
-                    Rectangle {
-                        width: parent.width
-                        height: rowHeight
-                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
 
-                        Text {
-                            text: qsTr("Show Total Flight Distance")
-                            font.weight: Font.Bold
-                            font.pixelSize: 13
-                            anchors.leftMargin: 8
-                            verticalAlignment: Text.AlignVCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: 224
-                            height: elementHeight
-                            anchors.left: parent.left
-                        }
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.show_flight_mah
+                        onCheckedChanged: settings.show_flight_mah = checked
+                    }
+                }
 
-                        Switch {
-                            width: 32
-                            height: elementHeight
-                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                Rectangle {
+                    width: parent.width
+                    height: rowHeight
+                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            checked: settings.show_flight_distance
-                            onCheckedChanged: settings.show_flight_distance = checked
-                        }
+                    Text {
+                        text: qsTr("Show Total Flight Distance")
+                        font.weight: Font.Bold
+                        font.pixelSize: 13
+                        anchors.leftMargin: 8
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 224
+                        height: elementHeight
+                        anchors.left: parent.left
                     }
 
-                    Rectangle {
-                        width: parent.width
-                        height: rowHeight
-                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
 
-                        Text {
-                            text: qsTr("Show log messages on-screen")
-                            font.weight: Font.Bold
-                            font.pixelSize: 13
-                            anchors.leftMargin: 8
-                            verticalAlignment: Text.AlignVCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: 224
-                            height: elementHeight
-                            anchors.left: parent.left
-                        }
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.show_flight_distance
+                        onCheckedChanged: settings.show_flight_distance = checked
+                    }
+                }
 
-                        Switch {
-                            width: 32
-                            height: elementHeight
-                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                Rectangle {
+                    width: parent.width
+                    height: rowHeight
+                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            checked: settings.show_message_hud
-                            onCheckedChanged: settings.show_message_hud = checked
-                        }
+                    Text {
+                        text: qsTr("Show log messages on-screen")
+                        font.weight: Font.Bold
+                        font.pixelSize: 13
+                        anchors.leftMargin: 8
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 224
+                        height: elementHeight
+                        anchors.left: parent.left
                     }
 
-                    Rectangle {
-                        width: parent.width
-                        height: rowHeight
-                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
 
-                        Text {
-                            text: qsTr("Show Horizon")
-                            font.weight: Font.Bold
-                            font.pixelSize: 13
-                            anchors.leftMargin: 8
-                            verticalAlignment: Text.AlignVCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: 224
-                            height: elementHeight
-                            anchors.left: parent.left
-                        }
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.show_message_hud
+                        onCheckedChanged: settings.show_message_hud = checked
+                    }
+                }
 
-                        Switch {
-                            width: 32
-                            height: elementHeight
-                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                Rectangle {
+                    width: parent.width
+                    height: rowHeight
+                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            checked: settings.show_horizon
-                            onCheckedChanged: settings.show_horizon = checked
-                        }
+                    Text {
+                        text: qsTr("Show Horizon")
+                        font.weight: Font.Bold
+                        font.pixelSize: 13
+                        anchors.leftMargin: 8
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 224
+                        height: elementHeight
+                        anchors.left: parent.left
                     }
 
-                    Rectangle {
-                        width: parent.width
-                        height: rowHeight
-                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
 
-                        Text {
-                            text: qsTr("Show Flight Path Vector")
-                            font.weight: Font.Bold
-                            font.pixelSize: 13
-                            anchors.leftMargin: 8
-                            verticalAlignment: Text.AlignVCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: 224
-                            height: elementHeight
-                            anchors.left: parent.left
-                        }
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.show_horizon
+                        onCheckedChanged: settings.show_horizon = checked
+                    }
+                }
 
-                        Switch {
-                            width: 32
-                            height: elementHeight
-                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                Rectangle {
+                    width: parent.width
+                    height: rowHeight
+                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            checked: settings.show_fpv
-                            onCheckedChanged: settings.show_fpv = checked
-                        }
+                    Text {
+                        text: qsTr("Show Flight Path Vector")
+                        font.weight: Font.Bold
+                        font.pixelSize: 13
+                        anchors.leftMargin: 8
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 224
+                        height: elementHeight
+                        anchors.left: parent.left
                     }
 
-                    Rectangle {
-                        width: parent.width
-                        height: rowHeight
-                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
 
-                        Text {
-                            text: qsTr("Show Altitude")
-                            font.weight: Font.Bold
-                            font.pixelSize: 13
-                            anchors.leftMargin: 8
-                            verticalAlignment: Text.AlignVCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: 224
-                            height: elementHeight
-                            anchors.left: parent.left
-                        }
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.show_fpv
+                        onCheckedChanged: settings.show_fpv = checked
+                    }
+                }
 
-                        Switch {
-                            width: 32
-                            height: elementHeight
-                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                Rectangle {
+                    width: parent.width
+                    height: rowHeight
+                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            checked: settings.show_altitude
-                            onCheckedChanged: settings.show_altitude = checked
-                        }
+                    Text {
+                        text: qsTr("Show Altitude")
+                        font.weight: Font.Bold
+                        font.pixelSize: 13
+                        anchors.leftMargin: 8
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 224
+                        height: elementHeight
+                        anchors.left: parent.left
                     }
 
-                    Rectangle {
-                        width: parent.width
-                        height: rowHeight
-                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
 
-                        Text {
-                            text: qsTr("Show Speed")
-                            font.weight: Font.Bold
-                            font.pixelSize: 13
-                            anchors.leftMargin: 8
-                            verticalAlignment: Text.AlignVCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: 224
-                            height: elementHeight
-                            anchors.left: parent.left
-                        }
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.show_altitude
+                        onCheckedChanged: settings.show_altitude = checked
+                    }
+                }
 
-                        Switch {
-                            width: 32
-                            height: elementHeight
-                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                Rectangle {
+                    width: parent.width
+                    height: rowHeight
+                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            checked: settings.show_speed
-                            onCheckedChanged: settings.show_speed = checked
-                        }
+                    Text {
+                        text: qsTr("Show Speed")
+                        font.weight: Font.Bold
+                        font.pixelSize: 13
+                        anchors.leftMargin: 8
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 224
+                        height: elementHeight
+                        anchors.left: parent.left
                     }
 
-                    Rectangle {
-                        width: parent.width
-                        height: rowHeight
-                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
 
-                        Text {
-                            text: qsTr("Show Heading")
-                            font.weight: Font.Bold
-                            font.pixelSize: 13
-                            anchors.leftMargin: 8
-                            verticalAlignment: Text.AlignVCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: 224
-                            height: elementHeight
-                            anchors.left: parent.left
-                        }
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.show_speed
+                        onCheckedChanged: settings.show_speed = checked
+                    }
+                }
 
-                        Switch {
-                            width: 32
-                            height: elementHeight
-                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                Rectangle {
+                    width: parent.width
+                    height: rowHeight
+                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            checked: settings.show_heading
-                            onCheckedChanged: settings.show_heading = checked
-                        }
+                    Text {
+                        text: qsTr("Show Heading")
+                        font.weight: Font.Bold
+                        font.pixelSize: 13
+                        anchors.leftMargin: 8
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 224
+                        height: elementHeight
+                        anchors.left: parent.left
                     }
 
-                    Rectangle {
-                        width: parent.width
-                        height: rowHeight
-                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
 
-                        Text {
-                            text: qsTr("Show Second Altitude")
-                            font.weight: Font.Bold
-                            font.pixelSize: 13
-                            anchors.leftMargin: 8
-                            verticalAlignment: Text.AlignVCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: 224
-                            height: elementHeight
-                            anchors.left: parent.left
-                        }
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.show_heading
+                        onCheckedChanged: settings.show_heading = checked
+                    }
+                }
 
-                        Switch {
-                            width: 32
-                            height: elementHeight
-                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                Rectangle {
+                    width: parent.width
+                    height: rowHeight
+                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            checked: settings.show_altitude_second
-                            onCheckedChanged: settings.show_altitude_second = checked
-                        }
+                    Text {
+                        text: qsTr("Show Second Altitude")
+                        font.weight: Font.Bold
+                        font.pixelSize: 13
+                        anchors.leftMargin: 8
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 224
+                        height: elementHeight
+                        anchors.left: parent.left
                     }
 
-                    Rectangle {
-                        width: parent.width
-                        height: rowHeight
-                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
 
-                        Text {
-                            text: qsTr("Show Bank Angle Indicator")
-                            font.weight: Font.Bold
-                            font.pixelSize: 13
-                            anchors.leftMargin: 8
-                            verticalAlignment: Text.AlignVCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: 224
-                            height: elementHeight
-                            anchors.left: parent.left
-                        }
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.show_altitude_second
+                        onCheckedChanged: settings.show_altitude_second = checked
+                    }
+                }
 
-                        Switch {
-                            width: 32
-                            height: elementHeight
-                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                Rectangle {
+                    width: parent.width
+                    height: rowHeight
+                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            checked: settings.show_roll
-                            onCheckedChanged: settings.show_roll = checked
-                        }
+                    Text {
+                        text: qsTr("Show Bank Angle Indicator")
+                        font.weight: Font.Bold
+                        font.pixelSize: 13
+                        anchors.leftMargin: 8
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 224
+                        height: elementHeight
+                        anchors.left: parent.left
                     }
 
-                    Rectangle {
-                        width: parent.width
-                        height: rowHeight
-                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
 
-                        Text {
-                            text: qsTr("Show Home Arrow")
-                            font.weight: Font.Bold
-                            font.pixelSize: 13
-                            anchors.leftMargin: 8
-                            verticalAlignment: Text.AlignVCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: 224
-                            height: elementHeight
-                            anchors.left: parent.left
-                        }
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.show_roll
+                        onCheckedChanged: settings.show_roll = checked
+                    }
+                }
 
-                        Switch {
-                            width: 32
-                            height: elementHeight
-                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                Rectangle {
+                    width: parent.width
+                    height: rowHeight
+                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            checked: settings.show_arrow
-                            onCheckedChanged: settings.show_arrow = checked
-                        }
+                    Text {
+                        text: qsTr("Show Home Arrow")
+                        font.weight: Font.Bold
+                        font.pixelSize: 13
+                        anchors.leftMargin: 8
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 224
+                        height: elementHeight
+                        anchors.left: parent.left
                     }
 
-                    Rectangle {
-                        width: parent.width
-                        height: rowHeight
-                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
 
-                        Text {
-                            text: qsTr("Show Map")
-                            font.weight: Font.Bold
-                            font.pixelSize: 13
-                            anchors.leftMargin: 8
-                            verticalAlignment: Text.AlignVCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: 224
-                            height: elementHeight
-                            anchors.left: parent.left
-                        }
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.show_arrow
+                        onCheckedChanged: settings.show_arrow = checked
+                    }
+                }
 
-                        Switch {
-                            width: 32
-                            height: elementHeight
-                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                Rectangle {
+                    width: parent.width
+                    height: rowHeight
+                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            checked: settings.show_map
-                            onCheckedChanged: settings.show_map = checked
-                        }
+                    Text {
+                        text: qsTr("Show Map")
+                        font.weight: Font.Bold
+                        font.pixelSize: 13
+                        anchors.leftMargin: 8
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 224
+                        height: elementHeight
+                        anchors.left: parent.left
                     }
 
-                    Rectangle {
-                        width: parent.width
-                        height: rowHeight
-                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
 
-                        Text {
-                            text: qsTr("Show Throttle")
-                            font.weight: Font.Bold
-                            font.pixelSize: 13
-                            anchors.leftMargin: 8
-                            verticalAlignment: Text.AlignVCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: 224
-                            height: elementHeight
-                            anchors.left: parent.left
-                        }
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.show_map
+                        onCheckedChanged: settings.show_map = checked
+                    }
+                }
 
-                        Switch {
-                            width: 32
-                            height: elementHeight
-                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                Rectangle {
+                    width: parent.width
+                    height: rowHeight
+                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            checked: settings.show_throttle
-                            onCheckedChanged: settings.show_throttle = checked
-                        }
+                    Text {
+                        text: qsTr("Show Throttle")
+                        font.weight: Font.Bold
+                        font.pixelSize: 13
+                        anchors.leftMargin: 8
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 224
+                        height: elementHeight
+                        anchors.left: parent.left
                     }
 
-                    Rectangle {
-                        width: parent.width
-                        height: rowHeight
-                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
 
-                        Text {
-                            text: qsTr("Show Control Inputs")
-                            font.weight: Font.Bold
-                            font.pixelSize: 13
-                            anchors.leftMargin: 8
-                            verticalAlignment: Text.AlignVCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: 224
-                            height: elementHeight
-                            anchors.left: parent.left
-                        }
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.show_throttle
+                        onCheckedChanged: settings.show_throttle = checked
+                    }
+                }
 
-                        Switch {
-                            width: 32
-                            height: elementHeight
-                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                Rectangle {
+                    width: parent.width
+                    height: rowHeight
+                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            checked: settings.show_control
-                            onCheckedChanged: settings.show_control = checked
-                        }
+                    Text {
+                        text: qsTr("Show Control Inputs")
+                        font.weight: Font.Bold
+                        font.pixelSize: 13
+                        anchors.leftMargin: 8
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 224
+                        height: elementHeight
+                        anchors.left: parent.left
                     }
 
-                    Rectangle {
-                        width: parent.width
-                        height: rowHeight
-                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
 
-                        Text {
-                            text: qsTr("Show GPIO")
-                            font.weight: Font.Bold
-                            font.pixelSize: 13
-                            anchors.leftMargin: 8
-                            verticalAlignment: Text.AlignVCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: 224
-                            height: elementHeight
-                            anchors.left: parent.left
-                        }
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.show_control
+                        onCheckedChanged: settings.show_control = checked
+                    }
+                }
 
-                        Switch {
-                            width: 32
-                            height: elementHeight
-                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                Rectangle {
+                    width: parent.width
+                    height: rowHeight
+                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            checked: settings.show_gpio
-                            onCheckedChanged: settings.show_gpio = checked
-                        }
+                    Text {
+                        text: qsTr("Show GPIO")
+                        font.weight: Font.Bold
+                        font.pixelSize: 13
+                        anchors.leftMargin: 8
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 224
+                        height: elementHeight
+                        anchors.left: parent.left
                     }
 
-                    Rectangle {
-                        width: parent.width
-                        height: rowHeight
-                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
 
-                        Text {
-                            text: qsTr("Show Vibration")
-                            font.weight: Font.Bold
-                            font.pixelSize: 13
-                            anchors.leftMargin: 8
-                            verticalAlignment: Text.AlignVCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: 224
-                            height: elementHeight
-                            anchors.left: parent.left
-                        }
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.show_gpio
+                        onCheckedChanged: settings.show_gpio = checked
+                    }
+                }
 
-                        Switch {
-                            width: 32
-                            height: elementHeight
-                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                Rectangle {
+                    width: parent.width
+                    height: rowHeight
+                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            checked: settings.show_vibration
-                            onCheckedChanged: settings.show_vibration = checked
-                        }
+                    Text {
+                        text: qsTr("Show Vibration")
+                        font.weight: Font.Bold
+                        font.pixelSize: 13
+                        anchors.leftMargin: 8
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 224
+                        height: elementHeight
+                        anchors.left: parent.left
                     }
 
-                    Rectangle {
-                        width: parent.width
-                        height: rowHeight
-                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
 
-                        Text {
-                            text: qsTr("Show Vertical Speed")
-                            font.weight: Font.Bold
-                            font.pixelSize: 13
-                            anchors.leftMargin: 8
-                            verticalAlignment: Text.AlignVCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: 224
-                            height: elementHeight
-                            anchors.left: parent.left
-                        }
-
-                        Switch {
-                            width: 32
-                            height: elementHeight
-                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            checked: settings.show_vsi
-                            onCheckedChanged: settings.show_vsi = checked
-                        }
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.show_vibration
+                        onCheckedChanged: settings.show_vibration = checked
                     }
-                    Rectangle {
-                        width: parent.width
-                        height: rowHeight
-                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                }
 
-                        Text {
-                            text: qsTr("Show Wind (Experimental)")
-                            font.weight: Font.Bold
-                            font.pixelSize: 13
-                            anchors.leftMargin: 8
-                            verticalAlignment: Text.AlignVCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: 224
-                            height: elementHeight
-                            anchors.left: parent.left
-                        }
+                Rectangle {
+                    width: parent.width
+                    height: rowHeight
+                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
-                        Switch {
-                            width: 32
-                            height: elementHeight
-                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            checked: settings.show_wind
-                            onCheckedChanged: settings.show_wind = checked
-                        }
+                    Text {
+                        text: qsTr("Show Vertical Speed")
+                        font.weight: Font.Bold
+                        font.pixelSize: 13
+                        anchors.leftMargin: 8
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 224
+                        height: elementHeight
+                        anchors.left: parent.left
                     }
 
-                    Rectangle {
-                        width: parent.width
-                        height: rowHeight
-                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
 
-                        Text {
-                            text: qsTr("Show example widget")
-                            font.weight: Font.Bold
-                            font.pixelSize: 13
-                            anchors.leftMargin: 8
-                            verticalAlignment: Text.AlignVCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: 224
-                            height: elementHeight
-                            anchors.left: parent.left
-                        }
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.show_vsi
+                        onCheckedChanged: settings.show_vsi = checked
+                    }
+                }
+                Rectangle {
+                    width: parent.width
+                    height: rowHeight
+                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
-                        Switch {
-                            width: 32
-                            height: elementHeight
-                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            checked: settings.show_example_widget
-                            onCheckedChanged: settings.show_example_widget = checked
-                        }
+                    Text {
+                        text: qsTr("Show Wind (Experimental)")
+                        font.weight: Font.Bold
+                        font.pixelSize: 13
+                        anchors.leftMargin: 8
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 224
+                        height: elementHeight
+                        anchors.left: parent.left
                     }
 
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.show_wind
+                        onCheckedChanged: settings.show_wind = checked
+                    }
+                }
+
+                Rectangle {
+                    width: parent.width
+                    height: rowHeight
+                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+
+                    Text {
+                        text: "Show ADS-B Traffic"
+                        font.weight: Font.Bold
+                        font.pixelSize: 13
+                        anchors.leftMargin: 8
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 224
+                        height: elementHeight
+                        anchors.left: parent.left
+                    }
+
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.show_adsb
+                        onCheckedChanged: {
+                            settings.show_adsb = checked;
+                        }
+                    }
+                }
+                Rectangle {
+                    width: parent.width
+                    height: rowHeight
+                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+
+
+                    Text {
+                        text: "Show BlackBox"
+                        font.weight: Font.Bold
+                        font.pixelSize: 13
+                        anchors.leftMargin: 8
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 224
+                        height: elementHeight
+                        anchors.left: parent.left
+                    }
+
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.show_blackbox
+                        onCheckedChanged: {
+                            settings.show_blackbox = checked;
+                        }
+                    }
+                }
+
+                Rectangle {
+                    width: parent.width
+                    height: rowHeight
+                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+
+                    Text {
+                        text: qsTr("Show example widget")
+                        font.weight: Font.Bold
+                        font.pixelSize: 13
+                        anchors.leftMargin: 8
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 224
+                        height: elementHeight
+                        anchors.left: parent.left
+                    }
+
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.show_example_widget
+                        onCheckedChanged: settings.show_example_widget = checked
+                    }
                 }
             }
         }
@@ -1400,102 +1451,98 @@ Item {
 
             clip: true
 
-            Item {
-                anchors.fill: parent
 
-                Column {
-                    id: piColumn
-                    spacing: 0
-                    anchors.left: parent.left
-                    anchors.right: parent.right
+            Column {
+                id: piColumn
+                spacing: 0
+                width: parent.width
 
-                    Rectangle {
-                        width: parent.width
-                        height: rowHeight
-                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                Rectangle {
+                    width: parent.width
+                    height: rowHeight
+                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
-                        Text {
-                            text: qsTr("Screen Scale")
-                            font.weight: Font.Bold
-                            font.pixelSize: 13
-                            anchors.leftMargin: 8
-                            verticalAlignment: Text.AlignVCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: 224
-                            height: elementHeight
-                            anchors.left: parent.left
-                        }
-
-                        Text {
-                            text: Number(settings.global_scale).toLocaleString(Qt.locale(), 'f', 1) + "x";
-                            font.pixelSize: 16
-                            anchors.right: screenScaleSpinBox.left
-                            anchors.rightMargin: 12
-                            verticalAlignment: Text.AlignVCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: 32
-                            height: elementHeight
-
-                        }
-
-                        Slider {
-                            id: screenScaleSpinBox
-                            height: elementHeight
-                            width: 210
-                            font.pixelSize: 14
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            to : 2.0
-                            from : 1.0
-
-                            anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
-                            value: settings.global_scale
-
-                            // @disable-check M223
-                            onValueChanged: {
-                                // @disable-check M222
-                                settings.global_scale = value
-                            }
-                        }
+                    Text {
+                        text: qsTr("Screen Scale")
+                        font.weight: Font.Bold
+                        font.pixelSize: 13
+                        anchors.leftMargin: 8
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 224
+                        height: elementHeight
+                        anchors.left: parent.left
                     }
 
-                    Rectangle {
-                        width: parent.width
-                        height: rowHeight
-                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-                        visible: OpenHDPi.is_raspberry_pi
+                    Text {
+                        text: Number(settings.global_scale).toLocaleString(Qt.locale(), 'f', 1) + "x";
+                        font.pixelSize: 16
+                        anchors.right: screenScaleSpinBox.left
+                        anchors.rightMargin: 12
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 32
+                        height: elementHeight
 
-                        Text {
-                            text: qsTr("Brightness")
-                            font.weight: Font.Bold
-                            font.pixelSize: 13
-                            anchors.leftMargin: 8
-                            verticalAlignment: Text.AlignVCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: 224
-                            height: elementHeight
-                            anchors.left: parent.left
+                    }
+
+                    Slider {
+                        id: screenScaleSpinBox
+                        height: elementHeight
+                        width: 210
+                        font.pixelSize: 14
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        to : 2.0
+                        from : 1.0
+
+                        anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
+                        value: settings.global_scale
+
+                        // @disable-check M223
+                        onValueChanged: {
+                            // @disable-check M222
+                            settings.global_scale = value
                         }
+                    }
+                }
 
-                        SpinBox {
-                            id: screenBrightnessSpinBox
-                            height: elementHeight
-                            width: 210
-                            font.pixelSize: 14
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            from: 0
-                            to: 255
-                            stepSize: 5
-                            anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
+                Rectangle {
+                    width: parent.width
+                    height: rowHeight
+                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                    visible: OpenHDPi.is_raspberry_pi
 
-                            Component.onCompleted: value = OpenHDPi.brightness
-                            // @disable-check M223
-                            onValueChanged: {
-                                OpenHDPi.brightness = value
-                                // @disable-check M222
-                                settings.setValue("brightness", value)
-                            }
+                    Text {
+                        text: qsTr("Brightness")
+                        font.weight: Font.Bold
+                        font.pixelSize: 13
+                        anchors.leftMargin: 8
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 224
+                        height: elementHeight
+                        anchors.left: parent.left
+                    }
+
+                    SpinBox {
+                        id: screenBrightnessSpinBox
+                        height: elementHeight
+                        width: 210
+                        font.pixelSize: 14
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        from: 0
+                        to: 255
+                        stepSize: 5
+                        anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
+
+                        Component.onCompleted: value = OpenHDPi.brightness
+                        // @disable-check M223
+                        onValueChanged: {
+                            OpenHDPi.brightness = value
+                            // @disable-check M222
+                            settings.setValue("brightness", value)
                         }
                     }
                 }
@@ -1511,133 +1558,127 @@ Item {
             clip: true
             visible: EnableMainVideo || EnablePiP
 
+            Column {
+                id: videoColumn
+                spacing: 0
+                width: parent.width
 
-            Item {
-                anchors.fill: parent
+                Rectangle {
+                    width: parent.width
+                    height: rowHeight
+                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                    visible: EnableGStreamer
 
-                Column {
-                    id: videoColumn
-                    spacing: 0
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-
-                    Rectangle {
-                        width: parent.width
-                        height: rowHeight
-                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-                        visible: EnableGStreamer
-
-                        Text {
-                            text: qsTr("Always use software video decoder")
-                            font.weight: Font.Bold
-                            font.pixelSize: 13
-                            anchors.leftMargin: 8
-                            verticalAlignment: Text.AlignVCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: 224
-                            height: elementHeight
-                            anchors.left: parent.left
-                        }
-
-                        Switch {
-                            width: 32
-                            height: elementHeight
-                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            checked: settings.enable_software_video_decoder
-                            onCheckedChanged: settings.enable_software_video_decoder = checked
-                        }
+                    Text {
+                        text: qsTr("Always use software video decoder")
+                        font.weight: Font.Bold
+                        font.pixelSize: 13
+                        anchors.leftMargin: 8
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 224
+                        height: elementHeight
+                        anchors.left: parent.left
                     }
 
-                    Rectangle {
-                        width: parent.width
-                        height: rowHeight
-                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-                        visible: EnablePiP
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
 
-                        Text {
-                            text: qsTr("Enable PiP")
-                            font.weight: Font.Bold
-                            font.pixelSize: 13
-                            anchors.leftMargin: 8
-                            verticalAlignment: Text.AlignVCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: 224
-                            height: elementHeight
-                            anchors.left: parent.left
-                        }
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.enable_software_video_decoder
+                        onCheckedChanged: settings.enable_software_video_decoder = checked
+                    }
+                }
 
-                        Switch {
-                            width: 32
-                            height: elementHeight
-                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                Rectangle {
+                    width: parent.width
+                    height: rowHeight
+                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                    visible: EnablePiP
 
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            checked: settings.show_pip_video
-                            onCheckedChanged: settings.show_pip_video = checked
-                        }
+                    Text {
+                        text: qsTr("Enable PiP")
+                        font.weight: Font.Bold
+                        font.pixelSize: 13
+                        anchors.leftMargin: 8
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 224
+                        height: elementHeight
+                        anchors.left: parent.left
                     }
 
-                    Rectangle {
-                        width: parent.width
-                        height: rowHeight
-                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
 
-                        Text {
-                            text: qsTr("Enable LTE")
-                            font.weight: Font.Bold
-                            font.pixelSize: 13
-                            anchors.leftMargin: 8
-                            verticalAlignment: Text.AlignVCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: 224
-                            height: elementHeight
-                            anchors.left: parent.left
-                        }
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.show_pip_video
+                        onCheckedChanged: settings.show_pip_video = checked
+                    }
+                }
 
-                        Switch {
-                            width: 32
-                            height: elementHeight
-                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                Rectangle {
+                    width: parent.width
+                    height: rowHeight
+                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            checked: settings.enable_lte_video
-                            onCheckedChanged: settings.enable_lte_video = checked
-                        }
+                    Text {
+                        text: qsTr("Enable LTE")
+                        font.weight: Font.Bold
+                        font.pixelSize: 13
+                        anchors.leftMargin: 8
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 224
+                        height: elementHeight
+                        anchors.left: parent.left
                     }
 
-                    Rectangle {
-                        width: parent.width
-                        height: rowHeight
-                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-                        visible: EnableMainVideo
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
 
-                        Text {
-                            text: qsTr("Hide warning watermark")
-                            font.weight: Font.Bold
-                            font.pixelSize: 13
-                            anchors.leftMargin: 8
-                            verticalAlignment: Text.AlignVCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: 224
-                            height: elementHeight
-                            anchors.left: parent.left
-                        }
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.enable_lte_video
+                        onCheckedChanged: settings.enable_lte_video = checked
+                    }
+                }
 
-                        Switch {
-                            width: 32
-                            height: elementHeight
-                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                Rectangle {
+                    width: parent.width
+                    height: rowHeight
+                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                    visible: EnableMainVideo
 
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            checked: settings.hide_watermark
-                            onCheckedChanged: settings.hide_watermark = checked
-                        }
+                    Text {
+                        text: qsTr("Hide warning watermark")
+                        font.weight: Font.Bold
+                        font.pixelSize: 13
+                        anchors.leftMargin: 8
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 224
+                        height: elementHeight
+                        anchors.left: parent.left
+                    }
+
+                    Switch {
+                        width: 32
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settings.hide_watermark
+                        onCheckedChanged: settings.hide_watermark = checked
                     }
                 }
             }

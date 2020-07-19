@@ -52,14 +52,24 @@ void MavlinkTelemetry::onSetup() {
 
     connect(this, &MavlinkTelemetry::processMavlinkMessage, this, &MavlinkTelemetry::onProcessMavlinkMessage);
 
+    pause_telemetry=false;
+
     timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, &MavlinkTelemetry::stateLoop);
     resetParamVars();
     timer->start(200);
 }
 
+void MavlinkTelemetry::pauseTelemetry(bool toggle) {
+    pause_telemetry=toggle;
+}
 
-void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {    
+void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
+
+    if(pause_telemetry==true){
+        return;
+    }
+
     switch (msg.msgid) {
             case MAVLINK_MSG_ID_HEARTBEAT: {
                     mavlink_heartbeat_t heartbeat;

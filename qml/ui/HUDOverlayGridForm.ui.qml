@@ -139,6 +139,14 @@ Item {
         id: rollWidget
     }
 
+    BlackBoxWidget {
+        id: blackboxWidget
+    }
+
+    AdsbWidget {
+        id: adsbWidget
+    }
+
     ExampleWidget {
         id: exampleWidget
     }

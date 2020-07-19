@@ -54,11 +54,13 @@ INCLUDEPATH += $$PWD/lib/GeographicLib-1.50/include
 
 SOURCES += \
     src/FPS.cpp \
+    src/blackboxmodel.cpp \
     src/frskytelemetry.cpp \
     src/gpiomicroservice.cpp \
     src/localmessage.cpp \
     src/ltmtelemetry.cpp \
     src/main.cpp \
+    src/markermodel.cpp \
     src/mavlinkbase.cpp \
     src/mavlinktelemetry.cpp \
     src/migration.cpp \
@@ -81,7 +83,9 @@ RESOURCES += qml/qml.qrc
 
 HEADERS += \
     inc/FPS.h \
+    inc/blackboxmodel.h \
     inc/gpiomicroservice.h \
+    inc/markermodel.h \
     inc/mavlinkbase.h \
     inc/opensky.h \
     inc/powermicroservice.h \

@@ -41,6 +41,12 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 
 #include "opensky.h"
 
+#include "markermodel.h"
+
+#include "blackboxmodel.h"
+
+#include "opensky.h"
+
 #if defined(__ios__)
 #include "appleplatform.h"
 #endif
@@ -168,6 +174,12 @@ int main(int argc, char *argv[]) {
     qmlRegisterType<OpenHDSettings>("OpenHD", 1,0, "OpenHDSettings");
 
     qmlRegisterType<QOpenHDLink>("OpenHD", 1,0, "QOpenHDLink");
+
+    qmlRegisterType<OpenSky>("OpenHD", 1, 0, "OpenSky");
+
+    qmlRegisterType<MarkerModel>("OpenHD", 1, 0, "MarkerModel");
+
+    qmlRegisterType<BlackBoxModel>("OpenHD", 1, 0, "BlackBoxModel");
 
 #if defined(ENABLE_VIDEO_RENDER)
 #if defined(__android__)
@@ -336,9 +348,17 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
     auto statusLogModel = StatusLogModel::instance();
     engine.rootContext()->setContextProperty("StatusLogModel", statusLogModel);
 
-    auto opensky = new OpenSky();
-    engine.rootContext()->setContextProperty("OpenSky", opensky);
+    auto markerModel = MarkerModel::instance();
+    engine.rootContext()->setContextProperty("MarkerModel", markerModel);
+    markerModel->initMarkerModel();
 
+    auto blackBoxModel = BlackBoxModel::instance();
+    engine.rootContext()->setContextProperty("BlackBoxModel", blackBoxModel);
+    blackBoxModel->initBlackBoxModel();
+
+    auto openSky = OpenSky::instance();
+    engine.rootContext()->setContextProperty("OpenSky", openSky);
+    openSky->onStarted();
 
     engine.rootContext()->setContextProperty("OpenHD", openhd);
 

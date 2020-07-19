@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QtQuick>
 
+#include "blackboxmodel.h"
 
 #if defined(ENABLE_SPEECH)
 #include <QtTextToSpeech/QTextToSpeech>
@@ -20,6 +21,9 @@ public:
     void telemetryMessage(QString message, int level);
     void calculate_home_distance();
     void calculate_home_course();
+
+    Q_INVOKABLE void pauseBlackBox(bool pause, int index);
+    void updateBlackBoxModel();
 
     void setWifiAdapter0(uint32_t received_packet_cnt, int8_t current_signal_dbm, int8_t signal_good);
     void setWifiAdapter1(uint32_t received_packet_cnt, int8_t current_signal_dbm, int8_t signal_good);
@@ -478,6 +482,10 @@ signals:
     void rcChannel7Changed(int rcChanne7);
     void rcChannel8Changed(int rcChanne8);
 
+    void addBlackBoxObject(const BlackBox &blackbox);
+    void pauseTelemetry(bool pause);
+    void playBlackBoxObject(int index);
+
 private:
 #if defined(ENABLE_SPEECH)
     QTextToSpeech *m_speech;
@@ -630,6 +638,8 @@ private:
     int mRCChannel6 = 0;
     int mRCChannel7 = 0;
     int mRCChannel8 = 0;
+
+    bool m_pause_blackbox = false;
 };
 
 
