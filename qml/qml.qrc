@@ -145,5 +145,7 @@
         <file>airplanemarkerblur.png</file>
         <file>ui/widgets/AdsbWidgetForm.ui.qml</file>
         <file>ui/widgets/AdsbWidget.qml</file>
+        <file>ui/elements/LanguageSelect.qml</file>
+        <file>ui/elements/LanguageSelectForm.ui.qml</file>
     </qresource>
 </RCC>
