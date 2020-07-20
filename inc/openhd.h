@@ -32,6 +32,10 @@ public:
     void setWifiAdapter4(uint32_t received_packet_cnt, int8_t current_signal_dbm, int8_t signal_good);
     void setWifiAdapter5(uint32_t received_packet_cnt, int8_t current_signal_dbm, int8_t signal_good);
 
+    void setEngine(QQmlApplicationEngine *engine);
+
+    Q_INVOKABLE void switchToLanguage(const QString &language);
+
     Q_INVOKABLE void setGroundGPIO(int pin, bool state) {
         m_ground_gpio[pin] = state ? 1 : 0;
         emit save_ground_gpio(m_ground_gpio);
@@ -653,6 +657,10 @@ private:
     int mRCChannel8 = 0;
 
     bool m_pause_blackbox = false;
+
+    QTranslator m_translator;
+
+    QQmlApplicationEngine *m_engine = nullptr;
 };
 
 

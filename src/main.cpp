@@ -197,6 +197,8 @@ int main(int argc, char *argv[]) {
 #endif
 
     QQmlApplicationEngine engine;
+    auto openhd = OpenHD::instance();
+    openhd->setEngine(&engine);
 
 #if defined(__android__)
     engine.rootContext()->setContextProperty("IsAndroid", QVariant(true));
@@ -233,8 +235,6 @@ int main(int argc, char *argv[]) {
 #else
     engine.rootContext()->setContextProperty("IsRaspPi", QVariant(false));
 #endif
-
-    auto openhd = OpenHD::instance();
 
 #if defined(ENABLE_GSTREAMER)
 engine.rootContext()->setContextProperty("EnableGStreamer", QVariant(true));

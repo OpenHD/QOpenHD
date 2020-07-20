@@ -53,6 +53,28 @@ OpenHD::OpenHD(QObject *parent): QObject(parent) {
 }
 
 
+void OpenHD::switchToLanguage(const QString &language) {
+    QLocale::setDefault(language);
+
+    if (!m_translator.isEmpty()) {
+        QCoreApplication::removeTranslator(&m_translator);
+    }
+
+    bool success = m_translator.load(":/translations/QOpenHD.qm");
+    if (!success) {
+        qDebug() << "Translation load failed";
+        return;
+    }
+    QCoreApplication::installTranslator(&m_translator);
+    m_engine->retranslate();
+}
+
+
+void OpenHD::setEngine(QQmlApplicationEngine *engine) {
+    m_engine = engine;
+}
+
+
 QString OpenHD::get_gstreamer_version() {
 #if defined(ENABLE_GSTREAMER)
     guint major, minor, micro, nano;
