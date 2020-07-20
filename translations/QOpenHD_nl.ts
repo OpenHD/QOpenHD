@@ -1,0 +1,1057 @@
+<?xml version="1.0" ?><!DOCTYPE TS><TS language="nl" version="2.1">
+<context>
+    <name>AboutPanelForm.ui</name>
+    <message>
+        <location filename="../qml/ui/AboutPanelForm.ui.qml" line="22"/>
+        <source>QOpenHD</source>
+        <translation>QOpenHD</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/AboutPanelForm.ui.qml" line="66"/>
+        <source>Ground: </source>
+        <translation>Grond:</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/AboutPanelForm.ui.qml" line="80"/>
+        <source>Air: </source>
+        <translation>Voertuig:</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/AboutPanelForm.ui.qml" line="118"/>
+        <source>License: GPLv3</source>
+        <translation>Licentie: GPLv3</translation>
+    </message>
+</context>
+<context>
+    <name>AirBatteryWidgetForm.ui</name>
+    <message>
+        <location filename="../qml/ui/widgets/AirBatteryWidgetForm.ui.qml" line="32"/>
+        <source>Voltage:</source>
+        <translation>Voltage:</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/AirBatteryWidgetForm.ui.qml" line="54"/>
+        <source>Current:</source>
+        <translation>Stroom:</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/AirBatteryWidgetForm.ui.qml" line="77"/>
+        <source>Transparency</source>
+        <translation>Transparantie</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/AirBatteryWidgetForm.ui.qml" line="106"/>
+        <source>Show volts and amps</source>
+        <translation>Toon voltage en stroom</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/AirBatteryWidgetForm.ui.qml" line="128"/>
+        <source>Show single cell voltage</source>
+        <translation>Toon voltage enkele cell</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/AirBatteryWidgetForm.ui.qml" line="157"/>
+        <source>%L1%</source>
+        <translation>%L1%</translation>
+    </message>
+</context>
+<context>
+    <name>AirStatusWidgetForm.ui</name>
+    <message>
+        <location filename="../qml/ui/widgets/AirStatusWidgetForm.ui.qml" line="31"/>
+        <source>Transparency</source>
+        <translation>Transparantie</translation>
+    </message>
+</context>
+<context>
+    <name>AltitudeSecondWidgetForm.ui</name>
+    <message>
+        <location filename="../qml/ui/widgets/AltitudeSecondWidgetForm.ui.qml" line="31"/>
+        <source>Transparency</source>
+        <translation>Transparantie</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/AltitudeSecondWidgetForm.ui.qml" line="62"/>
+        <source>Relative / MSL</source>
+        <translation>Relatief / Zeenivo</translation>
+    </message>
+</context>
+<context>
+    <name>AltitudeWidgetForm.ui</name>
+    <message>
+        <location filename="../qml/ui/widgets/AltitudeWidgetForm.ui.qml" line="42"/>
+        <source>Transparency</source>
+        <translation>Transparantie</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/AltitudeWidgetForm.ui.qml" line="72"/>
+        <source>Size</source>
+        <translation>Grootte</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/AltitudeWidgetForm.ui.qml" line="101"/>
+        <source>Relative / MSL</source>
+        <translation>Relatief / Zeenivo</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/AltitudeWidgetForm.ui.qml" line="122"/>
+        <source>Show ladder</source>
+        <translation>Toon ladder</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/AltitudeWidgetForm.ui.qml" line="143"/>
+        <source>Range</source>
+        <translation>Bereik</translation>
+    </message>
+</context>
+<context>
+    <name>AppSettingsPanel.ui</name>
+    <message>
+        <location filename="../qml/ui/AppSettingsPanel.ui.qml" line="37"/>
+        <source>General</source>
+        <translation>Algemeen</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/AppSettingsPanel.ui.qml" line="44"/>
+        <source>Widgets</source>
+        <translation>Widgets</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/AppSettingsPanel.ui.qml" line="51"/>
+        <source>Screen</source>
+        <translation>Scherm</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/AppSettingsPanel.ui.qml" line="58"/>
+        <source>Video</source>
+        <translation>Video</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/AppSettingsPanel.ui.qml" line="107"/>
+        <source>Enable Speech</source>
+        <translation>Spraak aanzetten</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/AppSettingsPanel.ui.qml" line="135"/>
+        <source>Battery Cells</source>
+        <translation>Batterij cellen</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/AppSettingsPanel.ui.qml" line="169"/>
+        <source>Imperial units</source>
+        <translation>Engelse eenheden</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/AppSettingsPanel.ui.qml" line="199"/>
+        <source>Enable RC</source>
+        <translation>RC aanzetten</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/AppSettingsPanel.ui.qml" line="228"/>
+        <source>Mavlink SysID</source>
+        <translation>Mavlink SysID</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/AppSettingsPanel.ui.qml" line="277"/>
+        <source>Shape Color</source>
+        <translation>Vorm Kleur</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/AppSettingsPanel.ui.qml" line="331"/>
+        <source>Glow Color</source>
+        <translation>Gloei Kleur</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/AppSettingsPanel.ui.qml" line="385"/>
+        <source>Text Color</source>
+        <translation>Tekstkleur</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/AppSettingsPanel.ui.qml" line="439"/>
+        <source>Top/bottom bars</source>
+        <translation>Boven- en onderbalk</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/AppSettingsPanel.ui.qml" line="490"/>
+        <source>Show Downlink RSSI</source>
+        <translation>Toon downlink RSSI</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/AppSettingsPanel.ui.qml" line="519"/>
+        <source>Show Uplink RSSI</source>
+        <translation>Toon Uplink RSSI</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/AppSettingsPanel.ui.qml" line="548"/>
+        <source>Show Bitrate</source>
+        <translation>Toon Bitrate</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/AppSettingsPanel.ui.qml" line="577"/>
+        <source>Show GPS</source>
+        <translation>Toon GPS</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/AppSettingsPanel.ui.qml" line="606"/>
+        <source>Show Home Distance</source>
+        <translation>Toon Afstand Tot Thuis</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/AppSettingsPanel.ui.qml" line="635"/>
+        <source>Show Flight Timer</source>
+        <translation>Toon Vluchttimer</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/AppSettingsPanel.ui.qml" line="664"/>
+        <source>Show Flight Mode</source>
+        <translation>Toon Vluchtmodus</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/AppSettingsPanel.ui.qml" line="693"/>
+        <source>Show Ground Status</source>
+        <translation>Toon Grond Status</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/AppSettingsPanel.ui.qml" line="722"/>
+        <source>Show Air Status</source>
+        <translation>Toon Voertuig Status</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/AppSettingsPanel.ui.qml" line="751"/>
+        <source>Show Air Battery</source>
+        <translation>Toon Voertuig Batterij</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/AppSettingsPanel.ui.qml" line="780"/>
+        <source>Show mAh</source>
+        <translation>Toon mAh</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/AppSettingsPanel.ui.qml" line="809"/>
+        <source>Show Total Flight Distance</source>
+        <translation>Toon Totale Vluchtafstand</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/AppSettingsPanel.ui.qml" line="838"/>
+        <source>Show log messages on-screen</source>
+        <translation>Toon logberichten op het scherm</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/AppSettingsPanel.ui.qml" line="867"/>
+        <source>Show Horizon</source>
+        <translation>Toon Horizon</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/AppSettingsPanel.ui.qml" line="896"/>
+        <source>Show Flight Path Vector</source>
+        <translation>Toon Vluchtpad Vector</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/AppSettingsPanel.ui.qml" line="925"/>
+        <source>Show Altitude</source>
+        <translation>Toon Hoogte</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/AppSettingsPanel.ui.qml" line="954"/>
+        <source>Show Speed</source>
+        <translation>Toon Snelheid</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/AppSettingsPanel.ui.qml" line="983"/>
+        <source>Show Heading</source>
+        <translation>Toon Koers</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/AppSettingsPanel.ui.qml" line="1012"/>
+        <source>Show Second Altitude</source>
+        <translation>Toon Tweede Hoogte</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/AppSettingsPanel.ui.qml" line="1041"/>
+        <source>Show Home Arrow</source>
+        <translation>Toon Pijl Naar Huis</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/AppSettingsPanel.ui.qml" line="1070"/>
+        <source>Show Map</source>
+        <translation>Toon Kaart</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/AppSettingsPanel.ui.qml" line="1099"/>
+        <source>Show Throttle</source>
+        <translation>Toon Gashendel</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/AppSettingsPanel.ui.qml" line="1128"/>
+        <source>Show Control Inputs</source>
+        <translation>Toon Invoer Assen</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/AppSettingsPanel.ui.qml" line="1157"/>
+        <source>Show GPIO</source>
+        <translation>Toon GPIO</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/AppSettingsPanel.ui.qml" line="1186"/>
+        <source>Show Vibration</source>
+        <translation>Toon Vibratie</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/AppSettingsPanel.ui.qml" line="1215"/>
+        <source>Show Vertical Speed</source>
+        <translation>Toon Verticale Snelheid</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/AppSettingsPanel.ui.qml" line="1243"/>
+        <source>Show Wind (Experimental)</source>
+        <translation>Toon Wind (Experimenteel)</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/AppSettingsPanel.ui.qml" line="1272"/>
+        <source>Show example widget</source>
+        <translation>Toon Voorbeeldwidget</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/AppSettingsPanel.ui.qml" line="1318"/>
+        <source>Screen Scale</source>
+        <translation>Scherm Schaal</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/AppSettingsPanel.ui.qml" line="1369"/>
+        <source>Brightness</source>
+        <translation>Helderheid</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/AppSettingsPanel.ui.qml" line="1425"/>
+        <source>Always use software video decoder</source>
+        <translation>Gebruik altijd software video decoder</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/AppSettingsPanel.ui.qml" line="1455"/>
+        <source>Enable PiP</source>
+        <translation>Toon PiP</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/AppSettingsPanel.ui.qml" line="1484"/>
+        <source>Enable LTE</source>
+        <translation>Gebruik LTE</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/AppSettingsPanel.ui.qml" line="1514"/>
+        <source>Hide warning watermark</source>
+        <translation>Verberg waarschuwing watermerk</translation>
+    </message>
+</context>
+<context>
+    <name>ArrowWidgetForm</name>
+    <message>
+        <location filename="../qml/ui/widgets/ArrowWidgetForm.qml" line="30"/>
+        <source>Transparency</source>
+        <translation>Transparantie</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/ArrowWidgetForm.qml" line="59"/>
+        <source>Invert Arrow</source>
+        <translation>Inverteer Pijl</translation>
+    </message>
+</context>
+<context>
+    <name>BitrateWidgetForm.ui</name>
+    <message>
+        <location filename="../qml/ui/widgets/BitrateWidgetForm.ui.qml" line="35"/>
+        <source>Measured:</source>
+        <translation>Gemeten:</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/BitrateWidgetForm.ui.qml" line="57"/>
+        <source>Set:</source>
+        <translation>Zet:</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/BitrateWidgetForm.ui.qml" line="80"/>
+        <source>Skipped packets:</source>
+        <translation>Overgeslagen paketten: </translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/BitrateWidgetForm.ui.qml" line="103"/>
+        <source>Injection failed:</source>
+        <translation>Injectie gefaald:</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/BitrateWidgetForm.ui.qml" line="142"/>
+        <source>Transparency</source>
+        <translation>Transparantie</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/BitrateWidgetForm.ui.qml" line="171"/>
+        <source>Show skip / fail count</source>
+        <translation>Toon overgeslagen / mislukt telling</translation>
+    </message>
+</context>
+<context>
+    <name>ControlWidgetForm.ui</name>
+    <message>
+        <location filename="../qml/ui/widgets/ControlWidgetForm.ui.qml" line="41"/>
+        <source>Transparency</source>
+        <translation>Transparantie</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/ControlWidgetForm.ui.qml" line="71"/>
+        <source>Show two controls</source>
+        <translation>Toon twee controls</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/ControlWidgetForm.ui.qml" line="92"/>
+        <source>Reverse Pitch</source>
+        <translation>Inverteer Pitch</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/ControlWidgetForm.ui.qml" line="113"/>
+        <source>Reverse Roll</source>
+        <translation>Inverteer Rol</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/ControlWidgetForm.ui.qml" line="134"/>
+        <source>Reverse yaw</source>
+        <translation>Inverteer Yaw</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/ControlWidgetForm.ui.qml" line="155"/>
+        <source>Reverse Throttle</source>
+        <translation>Inverteer Gas</translation>
+    </message>
+</context>
+<context>
+    <name>DownlinkRSSIWidgetForm.ui</name>
+    <message>
+        <location filename="../qml/ui/widgets/DownlinkRSSIWidgetForm.ui.qml" line="34"/>
+        <location filename="../qml/ui/widgets/DownlinkRSSIWidgetForm.ui.qml" line="36"/>
+        <location filename="../qml/ui/widgets/DownlinkRSSIWidgetForm.ui.qml" line="41"/>
+        <location filename="../qml/ui/widgets/DownlinkRSSIWidgetForm.ui.qml" line="43"/>
+        <location filename="../qml/ui/widgets/DownlinkRSSIWidgetForm.ui.qml" line="48"/>
+        <location filename="../qml/ui/widgets/DownlinkRSSIWidgetForm.ui.qml" line="50"/>
+        <location filename="../qml/ui/widgets/DownlinkRSSIWidgetForm.ui.qml" line="55"/>
+        <location filename="../qml/ui/widgets/DownlinkRSSIWidgetForm.ui.qml" line="57"/>
+        <location filename="../qml/ui/widgets/DownlinkRSSIWidgetForm.ui.qml" line="62"/>
+        <location filename="../qml/ui/widgets/DownlinkRSSIWidgetForm.ui.qml" line="64"/>
+        <location filename="../qml/ui/widgets/DownlinkRSSIWidgetForm.ui.qml" line="69"/>
+        <location filename="../qml/ui/widgets/DownlinkRSSIWidgetForm.ui.qml" line="71"/>
+        <source> dBm</source>
+        <translation>dBm</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/DownlinkRSSIWidgetForm.ui.qml" line="81"/>
+        <source>Card 1:</source>
+        <translation>Kaart 1:</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/DownlinkRSSIWidgetForm.ui.qml" line="105"/>
+        <source>Card 2:</source>
+        <translation>Kaart 2:</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/DownlinkRSSIWidgetForm.ui.qml" line="130"/>
+        <source>Card 3:</source>
+        <translation>Kaart 3:</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/DownlinkRSSIWidgetForm.ui.qml" line="155"/>
+        <source>Card 4:</source>
+        <translation>Kaart 4:</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/DownlinkRSSIWidgetForm.ui.qml" line="180"/>
+        <source>Card 5:</source>
+        <translation>Kaart 5:</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/DownlinkRSSIWidgetForm.ui.qml" line="205"/>
+        <source>Card 6:</source>
+        <translation>Kaart 6:</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/DownlinkRSSIWidgetForm.ui.qml" line="246"/>
+        <source>Lost:</source>
+        <translation>Verloren:</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/DownlinkRSSIWidgetForm.ui.qml" line="255"/>
+        <location filename="../qml/ui/widgets/DownlinkRSSIWidgetForm.ui.qml" line="277"/>
+        <location filename="../qml/ui/widgets/DownlinkRSSIWidgetForm.ui.qml" line="465"/>
+        <location filename="../qml/ui/widgets/DownlinkRSSIWidgetForm.ui.qml" line="479"/>
+        <source> (%L1%)</source>
+        <translation> (%L1%)</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/DownlinkRSSIWidgetForm.ui.qml" line="268"/>
+        <source>Damaged:</source>
+        <translation>Beschadigd:</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/DownlinkRSSIWidgetForm.ui.qml" line="290"/>
+        <source>CTS:</source>
+        <translation>CTS:</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/DownlinkRSSIWidgetForm.ui.qml" line="330"/>
+        <source>Transparency</source>
+        <translation>Transparantie</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/DownlinkRSSIWidgetForm.ui.qml" line="359"/>
+        <source>Show lost/damaged</source>
+        <translation>Toon verloren/beschadigd</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/DownlinkRSSIWidgetForm.ui.qml" line="382"/>
+        <source>Show all cards to right</source>
+        <translation>Toon alle kaarten rechts</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/DownlinkRSSIWidgetForm.ui.qml" line="449"/>
+        <source>N/A</source>
+        <translation>N.V.T.</translation>
+    </message>
+</context>
+<context>
+    <name>FlightDistanceWidgetForm.ui</name>
+    <message>
+        <location filename="../qml/ui/widgets/FlightDistanceWidgetForm.ui.qml" line="31"/>
+        <source>Transparency</source>
+        <translation>Transparantie</translation>
+    </message>
+</context>
+<context>
+    <name>FlightMahWidgetForm.ui</name>
+    <message>
+        <location filename="../qml/ui/widgets/FlightMahWidgetForm.ui.qml" line="33"/>
+        <source>Transparency</source>
+        <translation>Transparantie</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/FlightMahWidgetForm.ui.qml" line="62"/>
+        <source>Use telemetry data</source>
+        <translation>Gebruik telemetrie data</translation>
+    </message>
+</context>
+<context>
+    <name>FlightModeWidgetForm.ui</name>
+    <message>
+        <location filename="../qml/ui/widgets/FlightModeWidgetForm.ui.qml" line="29"/>
+        <source>Transparency</source>
+        <translation>Transparantie</translation>
+    </message>
+</context>
+<context>
+    <name>FlightTimerWidgetForm.ui</name>
+    <message>
+        <location filename="../qml/ui/widgets/FlightTimerWidgetForm.ui.qml" line="31"/>
+        <source>Transparency</source>
+        <translation>Transparantie</translation>
+    </message>
+</context>
+<context>
+    <name>FpvWidgetForm.ui</name>
+    <message>
+        <location filename="../qml/ui/widgets/FpvWidgetForm.ui.qml" line="27"/>
+        <source>Dynamic</source>
+        <translation>Dynamisch</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/FpvWidgetForm.ui.qml" line="49"/>
+        <source>Sensitivity</source>
+        <translation>Gevoeligheid</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/FpvWidgetForm.ui.qml" line="79"/>
+        <source>Transparency</source>
+        <translation>Transparantie</translation>
+    </message>
+</context>
+<context>
+    <name>GPSWidgetForm.ui</name>
+    <message>
+        <location filename="../qml/ui/widgets/GPSWidgetForm.ui.qml" line="34"/>
+        <source>Lat:</source>
+        <translation>Lat:</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/GPSWidgetForm.ui.qml" line="56"/>
+        <source>Lon:</source>
+        <translation>Lon:</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/GPSWidgetForm.ui.qml" line="97"/>
+        <source>Transparency</source>
+        <translation>Transparantie</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/GPSWidgetForm.ui.qml" line="126"/>
+        <source>Always show lat/lon</source>
+        <translation>Toon altijd positie</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/GPSWidgetForm.ui.qml" line="190"/>
+        <source>%L1</source>
+        <translation>%L1</translation>
+    </message>
+</context>
+<context>
+    <name>GroundPiSettingsPanelForm.ui</name>
+    <message>
+        <location filename="../qml/ui/GroundPiSettingsPanelForm.ui.qml" line="29"/>
+        <source>Presets</source>
+        <translation>Voorinstellingen</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/GroundPiSettingsPanelForm.ui.qml" line="36"/>
+        <source>General</source>
+        <translation>Algemeen</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/GroundPiSettingsPanelForm.ui.qml" line="42"/>
+        <source>Radio</source>
+        <translation>Radio</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/GroundPiSettingsPanelForm.ui.qml" line="48"/>
+        <source>Video</source>
+        <translation>Video</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/GroundPiSettingsPanelForm.ui.qml" line="54"/>
+        <source>RC</source>
+        <translation>RC</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/GroundPiSettingsPanelForm.ui.qml" line="60"/>
+        <source>Hotspot</source>
+        <translation>Hotspot</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/GroundPiSettingsPanelForm.ui.qml" line="66"/>
+        <source>Smart Sync</source>
+        <translation>Smart Sync</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/GroundPiSettingsPanelForm.ui.qml" line="72"/>
+        <source>Other</source>
+        <translation>Anders</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/GroundPiSettingsPanelForm.ui.qml" line="196"/>
+        <source>Apply preset</source>
+        <translation>Voortinstelling toepassen</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/GroundPiSettingsPanelForm.ui.qml" line="196"/>
+        <source>Save</source>
+        <translation>Opslaan</translation>
+    </message>
+</context>
+<context>
+    <name>GroundPiSettingsPresetView.ui</name>
+    <message>
+        <location filename="../qml/ui/GroundPiSettingsPresetView.ui.qml" line="50"/>
+        <source>Presets are groups of settings that must be configured together for some OpenHD features and to make common configurations easier to use. Once you apply a preset, the ground station will reboot and enter SmartSync mode automatically, then power on your drone to let it sync the new settings.</source>
+        <translation>Voorinstellingen zijn gegroepeerde instelling die bij elkaar horen voor sommige eigenschappen van Open.HD welke het gebruik ervan makkelijker maken. Als je een voorinstelling toepast zal het grondstation herstarten en gaat deze automatisch in Smart Sync mode, schakel dan het voertuig in om de instellingen automatisch gelijk te laten zetten.</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/GroundPiSettingsPresetView.ui.qml" line="56"/>
+        <source>Note: you can apply more than one preset, but any settings that are mutually exclusive (band switcher + 2nd camera at the same time), the last preset to be configured &quot;wins&quot;</source>
+        <translation>Je kunt meer dan 1 voorinstelling gebruiken, maar als er conflicterende eigenschappen overschreven worden (bijvoorbeeld band switcher + 2e camera) dan wordt de waarde van de laatst gekozen voorinstelling gebruikt.</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/GroundPiSettingsPresetView.ui.qml" line="98"/>
+        <source>Changes that will be applied:</source>
+        <translation>Veranderingen die worden toegepast:</translation>
+    </message>
+</context>
+<context>
+    <name>GroundPowerWidgetForm.ui</name>
+    <message>
+        <location filename="../qml/ui/widgets/GroundPowerWidgetForm.ui.qml" line="30"/>
+        <source>Voltage in:</source>
+        <translation>Inkomend voltage:</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/GroundPowerWidgetForm.ui.qml" line="37"/>
+        <source>Voltage out:</source>
+        <translation>Uitgaand voltage:</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/GroundPowerWidgetForm.ui.qml" line="44"/>
+        <source>Current out:</source>
+        <translation>Inkomende stroom:</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/GroundPowerWidgetForm.ui.qml" line="51"/>
+        <source>Voltage bat:</source>
+        <translation>Batterij voltage:</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/GroundPowerWidgetForm.ui.qml" line="59"/>
+        <source>Transparency</source>
+        <translation>Transparantie</translation>
+    </message>
+</context>
+<context>
+    <name>GroundStatusWidgetForm.ui</name>
+    <message>
+        <location filename="../qml/ui/widgets/GroundStatusWidgetForm.ui.qml" line="31"/>
+        <source>Transparency</source>
+        <translation>Transparantie</translation>
+    </message>
+</context>
+<context>
+    <name>HeadingWidgetForm.ui</name>
+    <message>
+        <location filename="../qml/ui/widgets/HeadingWidgetForm.ui.qml" line="41"/>
+        <source>Transparency</source>
+        <translation>Transparantie</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/HeadingWidgetForm.ui.qml" line="71"/>
+        <source>Size</source>
+        <translation>Grootte</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/HeadingWidgetForm.ui.qml" line="100"/>
+        <source>UAV is iNav</source>
+        <translation>Voertuig is iNav</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/HeadingWidgetForm.ui.qml" line="121"/>
+        <source>Show ticks</source>
+        <translation>Toon ticks</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/HeadingWidgetForm.ui.qml" line="142"/>
+        <source>Show N/S/E/W</source>
+        <translation>Toon N/Z/O/W</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/HeadingWidgetForm.ui.qml" line="268"/>
+        <source>N</source>
+        <translation>N</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/HeadingWidgetForm.ui.qml" line="273"/>
+        <source>NE</source>
+        <translation>NO</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/HeadingWidgetForm.ui.qml" line="278"/>
+        <source>E</source>
+        <translation>O</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/HeadingWidgetForm.ui.qml" line="283"/>
+        <source>SE</source>
+        <translation>ZO</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/HeadingWidgetForm.ui.qml" line="288"/>
+        <source>S</source>
+        <translation>Z</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/HeadingWidgetForm.ui.qml" line="293"/>
+        <source>SW</source>
+        <translation>ZW</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/HeadingWidgetForm.ui.qml" line="298"/>
+        <source>W</source>
+        <translation>W</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/HeadingWidgetForm.ui.qml" line="303"/>
+        <source>NW</source>
+        <translation>NW</translation>
+    </message>
+</context>
+<context>
+    <name>HomeDistanceWidgetForm.ui</name>
+    <message>
+        <location filename="../qml/ui/widgets/HomeDistanceWidgetForm.ui.qml" line="30"/>
+        <source>Lat:</source>
+        <translation>Lat:</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/HomeDistanceWidgetForm.ui.qml" line="36"/>
+        <source>Long:</source>
+        <translation>Long:</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/HomeDistanceWidgetForm.ui.qml" line="62"/>
+        <source>Transparency</source>
+        <translation>Transparantie</translation>
+    </message>
+</context>
+<context>
+    <name>HorizonWidgetForm.ui</name>
+    <message>
+        <location filename="../qml/ui/widgets/HorizonWidgetForm.ui.qml" line="37"/>
+        <source>Transparency</source>
+        <translation>Transparantie</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/HorizonWidgetForm.ui.qml" line="66"/>
+        <source>Size</source>
+        <translation>Grootte</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/HorizonWidgetForm.ui.qml" line="95"/>
+        <source>Invert Pitch</source>
+        <translation>Inverteer Pitch</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/HorizonWidgetForm.ui.qml" line="117"/>
+        <source>Invert Roll</source>
+        <translation>Inverteer Rol</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/HorizonWidgetForm.ui.qml" line="139"/>
+        <source>Spacing</source>
+        <translation>Spatiëring</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/HorizonWidgetForm.ui.qml" line="168"/>
+        <source>Show Ladder</source>
+        <translation>Toon ladder</translation>
+    </message>
+</context>
+<context>
+    <name>MapWidgetForm.ui</name>
+    <message>
+        <location filename="../qml/ui/widgets/MapWidgetForm.ui.qml" line="112"/>
+        <source>Zoom</source>
+        <translation>Zoom</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/MapWidgetForm.ui.qml" line="143"/>
+        <source>Transparency</source>
+        <translation>Transparantie</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/MapWidgetForm.ui.qml" line="172"/>
+        <source>Lock map to drone direction</source>
+        <translation>Vergrendel kaart op voertuigpositie</translation>
+    </message>
+</context>
+<context>
+    <name>OpenHD</name>
+    <message>
+        <location filename="../src/openhd.cpp" line="258"/>
+        <source>%1 flight mode</source>
+        <translation>%1 vluchtmodus</translation>
+    </message>
+</context>
+<context>
+    <name>SettingsPopup</name>
+    <message>
+        <location filename="../qml/ui/SettingsPopup.qml" line="53"/>
+        <source>Reboot ground station?</source>
+        <translation>Herstart grondstation?</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/SettingsPopup.qml" line="83"/>
+        <source>If your drone is armed it may crash or enter failsafe mode</source>
+        <translation>Als het voertuig is gestart dan kan het crashen of overschakelen naar failsafe mode</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/SettingsPopup.qml" line="103"/>
+        <source>Cancel</source>
+        <translation>Annuleren</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/SettingsPopup.qml" line="115"/>
+        <source>Reboot</source>
+        <translation>Herstarten</translation>
+    </message>
+</context>
+<context>
+    <name>SettingsPopupForm.ui</name>
+    <message>
+        <location filename="../qml/ui/SettingsPopupForm.ui.qml" line="56"/>
+        <source>App</source>
+        <translation>App</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/SettingsPopupForm.ui.qml" line="73"/>
+        <source>Ground Pi</source>
+        <translation>Grond Pi</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/SettingsPopupForm.ui.qml" line="90"/>
+        <source>Status</source>
+        <translation>Status</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/SettingsPopupForm.ui.qml" line="108"/>
+        <source>Charts</source>
+        <translation>Grafieken</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/SettingsPopupForm.ui.qml" line="125"/>
+        <source>About</source>
+        <translation>Over</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/SettingsPopupForm.ui.qml" line="140"/>
+        <source>Reboot</source>
+        <translation>Herstarten</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/SettingsPopupForm.ui.qml" line="156"/>
+        <source>Close</source>
+        <translation>Sluiten</translation>
+    </message>
+</context>
+<context>
+    <name>SpeedWidgetForm.ui</name>
+    <message>
+        <location filename="../qml/ui/widgets/SpeedWidgetForm.ui.qml" line="38"/>
+        <source>Transparency</source>
+        <translation>Transparantie</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/SpeedWidgetForm.ui.qml" line="68"/>
+        <source>Size</source>
+        <translation>Grootte</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/SpeedWidgetForm.ui.qml" line="97"/>
+        <source>Airspeed / GPS</source>
+        <translation>Luchtsnelheid / GPS</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/SpeedWidgetForm.ui.qml" line="119"/>
+        <source>Show ladder</source>
+        <translation>Toon ladder</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/SpeedWidgetForm.ui.qml" line="140"/>
+        <source>Range</source>
+        <translation>Bereik</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/SpeedWidgetForm.ui.qml" line="170"/>
+        <source>Minimum</source>
+        <translation>Minimum</translation>
+    </message>
+</context>
+<context>
+    <name>StatusPanelForm.ui</name>
+    <message>
+        <location filename="../qml/ui/StatusPanelForm.ui.qml" line="19"/>
+        <source>OpenHD Status Log</source>
+        <translation>OpenHD Status Log</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/StatusPanelForm.ui.qml" line="53"/>
+        <source>Last openhd heartbeat: </source>
+        <translation>Laatste OpenHD hartslag:</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/StatusPanelForm.ui.qml" line="66"/>
+        <source>Last telemetry heartbeat: </source>
+        <translation>Laatste Telemetrie hartslag:</translation>
+    </message>
+</context>
+<context>
+    <name>ThrottleWidgetForm.ui</name>
+    <message>
+        <location filename="../qml/ui/widgets/ThrottleWidgetForm.ui.qml" line="35"/>
+        <source>Transparency</source>
+        <translation>Transparantie</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/ThrottleWidgetForm.ui.qml" line="122"/>
+        <source>throttle</source>
+        <translation>Gashendel</translation>
+    </message>
+</context>
+<context>
+    <name>UplinkRSSIWidgetForm.ui</name>
+    <message>
+        <location filename="../qml/ui/widgets/UplinkRSSIWidgetForm.ui.qml" line="31"/>
+        <source>Transparency</source>
+        <translation>Transparantie</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/UplinkRSSIWidgetForm.ui.qml" line="112"/>
+        <source>N/A</source>
+        <translation>N.V.T.</translation>
+    </message>
+</context>
+<context>
+    <name>VibrationWidgetForm.ui</name>
+    <message>
+        <location filename="../qml/ui/widgets/VibrationWidgetForm.ui.qml" line="31"/>
+        <source>Transparency</source>
+        <translation>Transparantie</translation>
+    </message>
+</context>
+<context>
+    <name>VideoWidgetGStreamerForm.ui</name>
+    <message>
+        <location filename="../qml/ui/widgets/VideoWidgetGStreamerForm.ui.qml" line="32"/>
+        <source>Transparency</source>
+        <translation>Transparantie</translation>
+    </message>
+</context>
+<context>
+    <name>VirtualJoystick</name>
+    <message>
+        <location filename="../QJoysticks/src/QJoysticks/VirtualJoystick.cpp" line="31"/>
+        <source>Virtual Joystick</source>
+        <translation>Virtuele Joystick</translation>
+    </message>
+</context>
+<context>
+    <name>VsiWidgetForm.ui</name>
+    <message>
+        <location filename="../qml/ui/widgets/VsiWidgetForm.ui.qml" line="34"/>
+        <source>Transparency</source>
+        <translation>Transparantie</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/VsiWidgetForm.ui.qml" line="64"/>
+        <source>Range</source>
+        <translation>Bereik</translation>
+    </message>
+</context>
+<context>
+    <name>WindWidgetForm.ui</name>
+    <message>
+        <location filename="../qml/ui/widgets/WindWidgetForm.ui.qml" line="38"/>
+        <source>Transparency</source>
+        <translation>Transparantie</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/WindWidgetForm.ui.qml" line="67"/>
+        <source>Style: Arrow / Circle</source>
+        <translation>Stijl: Pijl/Cirkel</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/WindWidgetForm.ui.qml" line="88"/>
+        <source>Plane / Copter</source>
+        <translation>Plane / Copter</translation>
+    </message>
+    <message>
+        <location filename="../qml/ui/widgets/WindWidgetForm.ui.qml" line="111"/>
+        <source>45 Degree Speed M/S</source>
+        <translation>45 Graden Snelheid m/s</translation>
+    </message>
+</context>
+<context>
+    <name>main</name>
+    <message>
+        <location filename="../qml/main.qml" line="21"/>
+        <source>Open.HD</source>
+        <translation>Open.HD</translation>
+    </message>
+</context>
+</TS>
