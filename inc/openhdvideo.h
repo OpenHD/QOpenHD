@@ -52,9 +52,9 @@ public slots:
 
 protected:
     void processDatagrams();
-    void parseRTP(QByteArray datagram);
+    void parseRTP(QByteArray &datagram);
     void findNAL();
-    void processNAL(const uint8_t* data, size_t length);
+    void processNAL(QByteArray &nalUnit);
     void reconfigure();
 
     virtual void start() = 0;
