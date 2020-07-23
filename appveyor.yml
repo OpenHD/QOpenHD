@@ -6,6 +6,6 @@ install:
   - msiexec /package gstreamer-1.0-x86-1.14.4.msi /passive ADDLOCAL=ALL
   - msiexec /package gstreamer-1.0-devel-x86-1.14.4.msi /passive ADDLOCAL=ALL
 build_script:
-  - C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvarsall.bat x86
+  - "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvarsall.bat" x86
   - qmake QOpenHD.pro
   - nmake
