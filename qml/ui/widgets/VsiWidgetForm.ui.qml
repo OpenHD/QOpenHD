@@ -56,7 +56,35 @@ BaseWidget {
                 }
             }
         }
+        Item {
+            width: parent.width
+            height: 32
+            Text {
+                text: qsTr("Size")
+                color: "white"
+                height: parent.height
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
+            Slider {
+                id: vsi_size_Slider
+                orientation: Qt.Horizontal
+                from: .5
+                value: settings.vsi_size
+                to: 3
+                stepSize: .1
+                height: parent.height
+                anchors.rightMargin: 0
+                anchors.right: parent.right
+                width: parent.width - 96
 
+                onValueChanged: {
+                    settings.vsi_size = vsi_size_Slider.value
+                }
+            }
+        }
         Item {
             width: parent.width
             height: 32
@@ -102,72 +130,78 @@ BaseWidget {
         anchors.fill: parent
         opacity: settings.vsi_opacity
 
-
-        CircularGauge {
-            id: gauge
+        Item {
             anchors.fill: parent
-            antialiasing: true
+            anchors.centerIn: parent
+            transform: Scale { origin.x: 25; origin.y: 25; xScale: settings.vsi_size ; yScale: settings.vsi_size}
 
-            rotation: 270
 
-            minimumValue: settings.vsi_max*-1
-            maximumValue: settings.vsi_max
+            CircularGauge {
+                id: gauge
+                anchors.fill: parent
+                antialiasing: true
 
-            value: OpenHD.vsi
+                rotation: 270
 
-            style: CircularGaugeStyle {
-                labelInset: outerRadius * -.3
-                minorTickmarkCount : 0
-                // @disable-check M223
-                labelStepSize : {settings.vsi_max/5}
-                maximumValueAngle : 135
-                minimumValueAngle : -135
+                minimumValue: settings.vsi_max*-1
+                maximumValue: settings.vsi_max
 
-                tickmark: Rectangle {
-                    visible: styleData.value
-                    implicitWidth: outerRadius * 0.05
-                    antialiasing: true
-                    implicitHeight: outerRadius * 0.09
-                    color: settings.color_shape
-                }
+                value: OpenHD.vsi
 
-                tickmarkLabel:  Text {
-                    rotation: 90
-                    //font.pixelSize: Math.max(6, outerRadius * 0.1)
-                    font.pixelSize: 9
-                    text: styleData.value
-                    color: settings.color_text
-                    antialiasing: true
-                    style: Text.Outline
-                    styleColor: settings.color_glow
-                }
-
-                needle: Rectangle {
-                    y: outerRadius * -.01 //this is the needle base closest to axis
-                    implicitWidth: outerRadius * 0.05
-                    implicitHeight: outerRadius
-                    antialiasing: true
-                    color: settings.color_text
-                }
-
-                function degreesToRadians(degrees) {
-                    return degrees * (Math.PI / 180);
-                }
-
-                background: Canvas {
+                style: CircularGaugeStyle {
+                    labelInset: outerRadius * -.3
+                    minorTickmarkCount : 0
                     // @disable-check M223
-                    onPaint: {
-                    var ctx = getContext("2d");
-                    ctx.reset();
+                    labelStepSize : {settings.vsi_max/5}
+                    maximumValueAngle : 135
+                    minimumValueAngle : -135
 
-                    ctx.beginPath();
-                    ctx.strokeStyle = settings.color_shape
-                    ctx.lineWidth = outerRadius * 0.02;
+                    tickmark: Rectangle {
+                        visible: styleData.value
+                        implicitWidth: outerRadius * 0.05
+                        antialiasing: true
+                        implicitHeight: outerRadius * 0.09
+                        color: settings.color_shape
+                    }
 
-                    ctx.arc(outerRadius, outerRadius, outerRadius - ctx.lineWidth / 2,
-                        degreesToRadians(valueToAngle(settings.vsi_max*-1) - 90),
-                        degreesToRadians(valueToAngle(settings.vsi_max) - 90));
-                    ctx.stroke();
+                    tickmarkLabel:  Text {
+                        rotation: 90
+                        //font.pixelSize: Math.max(6, outerRadius * 0.1)
+                        font.pixelSize: 9
+                        text: styleData.value
+                        color: settings.color_text
+                        antialiasing: true
+                        style: Text.Outline
+                        styleColor: settings.color_glow
+                    }
+
+                    needle: Rectangle {
+                        y: outerRadius * -.01 //this is the needle base closest to axis
+                        implicitWidth: outerRadius * 0.05
+                        implicitHeight: outerRadius
+                        antialiasing: true
+                        color: settings.color_text
+                    }
+
+                    function degreesToRadians(degrees) {
+                        return degrees * (Math.PI / 180);
+                    }
+
+                    background: Canvas {
+                        // @disable-check M223
+                        onPaint: {
+                            var ctx = getContext("2d");
+                            ctx.reset();
+
+                            ctx.beginPath();
+                            ctx.strokeStyle = settings.color_shape
+                            ctx.lineWidth = outerRadius * 0.02;
+
+                            ctx.arc(outerRadius, outerRadius, outerRadius - ctx.lineWidth / 2,
+                                    degreesToRadians(valueToAngle(settings.vsi_max*-1) - 90),
+                                    degreesToRadians(valueToAngle(settings.vsi_max) - 90));
+                            ctx.stroke();
+                        }
                     }
                 }
             }

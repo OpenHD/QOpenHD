@@ -22,7 +22,7 @@ BaseWidget {
     defaultVCenter: false
 
     hasWidgetDetail: true
-    widgetDetailHeight: 175
+    widgetDetailHeight: 200
     widgetDetailComponent: Column {
         Item {
             width: parent.width
@@ -50,6 +50,35 @@ BaseWidget {
                 width: parent.width - 96
                 onValueChanged: {
                     settings.roll_opacity = roll_opacity_Slider.value
+                }
+            }
+        }
+        Item {
+            width: parent.width
+            height: 32
+            Text {
+                text: qsTr("Size")
+                color: "white"
+                height: parent.height
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
+            Slider {
+                id: roll_size_Slider
+                orientation: Qt.Horizontal
+                from: .5
+                value: settings.downlink_rssi_opacity
+                to: 3
+                stepSize: .1
+                height: parent.height
+                anchors.rightMargin: 0
+                anchors.right: parent.right
+                width: parent.width - 96
+
+                onValueChanged: {
+                    settings.roll_size = roll_size_Slider.value
                 }
             }
         }
@@ -159,277 +188,284 @@ BaseWidget {
         y: -30
 
         Item {
-            id:rollTicks
             anchors.fill: parent
-            opacity: settings.roll_opacity
+            anchors.centerIn: parent
+            transform: Scale { origin.x: 100; origin.y: 60; xScale: settings.roll_size ; yScale: settings.roll_size}
 
-            Shape {
-                width: 200
-                height: 200
-                x: 0
-                y: 0
-                layer.enabled: true
-                layer.samples: 4
-                visible: settings.roll_show_arc
 
-                ShapePath {
-                    fillColor: "transparent"
-                    strokeColor: settings.color_shape
-                    strokeWidth: 2
-                    capStyle: ShapePath.FlatCap
+            Item {
+                id:rollTicks
+                anchors.fill: parent
+                opacity: settings.roll_opacity
 
-                    PathAngleArc {
-                        centerX: 100; centerY: 150
-                        radiusX: 100; radiusY: 100
-                        startAngle: -150
-                        sweepAngle: 120
+                Shape {
+                    width: 200
+                    height: 200
+                    x: 0
+                    y: 0
+                    layer.enabled: true
+                    layer.samples: 4
+                    visible: settings.roll_show_arc
+
+                    ShapePath {
+                        fillColor: "transparent"
+                        strokeColor: settings.color_shape
+                        strokeWidth: 2
+                        capStyle: ShapePath.FlatCap
+
+                        PathAngleArc {
+                            centerX: 100; centerY: 150
+                            radiusX: 100; radiusY: 100
+                            startAngle: -150
+                            sweepAngle: 120
+                        }
                     }
                 }
-            }
 
-            Item {
-                id:right_60_roll
-                x: 194
-                y: 92
+                Item {
+                    id:right_60_roll
+                    x: 194
+                    y: 92
 
-                Rectangle {
-                    id:right_60_roll_rect
+                    Rectangle {
+                        id:right_60_roll_rect
 
-                    width: 4
-                    height: 10
-                    color: settings.color_shape
+                        width: 4
+                        height: 10
+                        color: settings.color_shape
+                    }
+
+                    Text {
+                        color: settings.color_shape
+                        visible: settings.roll_show_numbers
+                        text: "60"
+                        anchors.bottom: right_60_roll_rect.top
+                        anchors.bottomMargin: 2
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                        font.pixelSize: 10
+                    }
+
+                    transform: Rotation {
+                        origin.x: 0;
+                        origin.y: 0;
+                        angle: 60
+                    }
                 }
 
-                Text {
-                    color: settings.color_shape
-                    visible: settings.roll_show_numbers
-                    text: "60"
-                    anchors.bottom: right_60_roll_rect.top
-                    anchors.bottomMargin: 2
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                    font.pixelSize: 10
+                Item {
+                    id:right_40_roll
+                    x: 169
+                    y: 64
+
+                    Rectangle {
+                        id:right_40_roll_rect
+
+                        width: 3
+                        height: 10
+                        color: settings.color_shape
+                    }
+
+                    Text {
+                        color: settings.color_shape
+                        visible: settings.roll_show_numbers
+                        text: "40"
+                        anchors.bottom: right_40_roll_rect.top
+                        anchors.bottomMargin: 2
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                        font.pixelSize: 10
+                    }
+
+                    transform: Rotation {
+                        origin.x: 0;
+                        origin.y: 0;
+                        angle: 40
+                    }
+                }
+
+                Item {
+                    id:right_20_roll
+                    x: 133
+                    y: 45
+
+                    Rectangle {
+                        id:right_20_roll_rect
+
+                        width: 3
+                        height: 10
+                        color: settings.color_shape
+                    }
+
+                    Text {
+                        color: settings.color_shape
+                        visible: settings.roll_show_numbers
+                        text: "20"
+                        anchors.bottom: right_20_roll_rect.top
+                        anchors.bottomMargin: 2
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                        font.pixelSize: 10
+                    }
+
+                    transform: Rotation {
+                        origin.x: 2;
+                        origin.y: 10;
+                        angle: 20
+                    }
+                }
+
+                Shape {
+                    anchors.fill: parent
+                    antialiasing: true
+
+                    ShapePath {
+                        capStyle: ShapePath.RoundCap
+                        strokeColor: settings.color_glow
+                        fillColor: settings.color_shape
+                        strokeWidth: 1
+                        strokeStyle: ShapePath.SolidLine
+
+                        startX: 100 //bottom point
+                        startY: 48
+                        PathLine { x: 107;                 y: 41  }//right upper edge
+                        PathLine { x: 93;                 y: 41  }//left upper edge
+                        PathLine { x: 100;                 y: 48 }
+                    }
+                }
+
+                Item {
+                    id:left_60_roll
+                    x: 4
+                    y: 95
+                    anchors.leftMargin: 0
+
+                    Rectangle {
+                        id:left_60_roll_rect
+
+                        width: 3
+                        height: 10
+                        color: settings.color_shape
+                    }
+
+                    Text {
+                        color: settings.color_shape
+                        visible: settings.roll_show_numbers
+                        text: "60"
+                        anchors.bottom: left_60_roll_rect.top
+                        anchors.bottomMargin: 2
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                        font.pixelSize: 10
+                    }
+
+                    transform: Rotation {
+                        origin.x: 0;
+                        origin.y: 0;
+                        angle: -60
+                    }
+                }
+
+                Item {
+                    id:left_40_roll
+                    x: 27
+                    y: 66
+
+                    Rectangle {
+                        id:left_40_roll_rect
+
+                        width: 3
+                        height: 10
+                        color: settings.color_shape
+                    }
+
+                    Text {
+                        color: settings.color_shape
+                        visible: settings.roll_show_numbers
+                        text: "40"
+                        anchors.bottom: left_40_roll_rect.top
+                        anchors.bottomMargin: 2
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                        font.pixelSize: 10
+                    }
+
+                    transform: Rotation {
+                        origin.x: 0;
+                        origin.y: 0;
+                        angle: -40
+                    }
+                }
+
+                Item {
+                    id:left_20_roll
+                    x: 60
+                    y: 46
+
+                    Rectangle {
+                        id:left_20_roll_rect
+
+                        width: 3
+                        height: 10
+                        color: settings.color_shape
+                    }
+
+                    Text {
+                        color: settings.color_shape
+                        visible: settings.roll_show_numbers
+                        text: "20"
+                        anchors.bottom: left_20_roll_rect.top
+                        anchors.bottomMargin: 2
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                        font.pixelSize: 10
+                    }
+
+                    transform: Rotation {
+                        origin.x: 0;
+                        origin.y: 0;
+                        angle: -20
+                    }
                 }
 
                 transform: Rotation {
-                    origin.x: 0;
-                    origin.y: 0;
-                    angle: 60
-                }
-            }
-
-            Item {
-                id:right_40_roll
-                x: 169
-                y: 64
-
-                Rectangle {
-                    id:right_40_roll_rect
-
-                    width: 3
-                    height: 10
-                    color: settings.color_shape
-                }
-
-                Text {
-                    color: settings.color_shape
-                    visible: settings.roll_show_numbers
-                    text: "40"
-                    anchors.bottom: right_40_roll_rect.top
-                    anchors.bottomMargin: 2
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                    font.pixelSize: 10
-                }
-
-                transform: Rotation {
-                    origin.x: 0;
-                    origin.y: 0;
-                    angle: 40
-                }
-            }
-
-            Item {
-                id:right_20_roll
-                x: 133
-                y: 45
-
-                Rectangle {
-                    id:right_20_roll_rect
-
-                    width: 3
-                    height: 10
-                    color: settings.color_shape
-                }
-
-                Text {
-                    color: settings.color_shape
-                    visible: settings.roll_show_numbers
-                    text: "20"
-                    anchors.bottom: right_20_roll_rect.top
-                    anchors.bottomMargin: 2
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                    font.pixelSize: 10
-                }
-
-                transform: Rotation {
-                    origin.x: 2;
-                    origin.y: 10;
-                    angle: 20
+                    origin.x: 100;
+                    origin.y: 150;
+                    angle: settings.roll_sky_pointer ? 0 : (settings.roll_invert ? OpenHD.roll : OpenHD.roll*-1)
                 }
             }
 
             Shape {
+                id: pointer
                 anchors.fill: parent
                 antialiasing: true
+                opacity: settings.roll_opacity
 
                 ShapePath {
                     capStyle: ShapePath.RoundCap
                     strokeColor: settings.color_glow
-                    fillColor: settings.color_shape
+                    fillColor: settings.color_text
                     strokeWidth: 1
                     strokeStyle: ShapePath.SolidLine
 
-                    startX: 100 //bottom point
-                    startY: 48
-                    PathLine { x: 107;                 y: 41  }//right upper edge
-                    PathLine { x: 93;                 y: 41  }//left upper edge
-                    PathLine { x: 100;                 y: 48 }
-                }
-            }
-
-            Item {
-                id:left_60_roll
-                x: 4
-                y: 95
-                anchors.leftMargin: 0
-
-                Rectangle {
-                    id:left_60_roll_rect
-
-                    width: 3
-                    height: 10
-                    color: settings.color_shape
-                }
-
-                Text {
-                    color: settings.color_shape
-                    visible: settings.roll_show_numbers
-                    text: "60"
-                    anchors.bottom: left_60_roll_rect.top
-                    anchors.bottomMargin: 2
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                    font.pixelSize: 10
+                    startX: 100 //top point
+                    startY: 50
+                    PathLine { x: 110;                 y: 60  }//right lower edge of arrow
+                    PathLine { x: 90;                 y: 60  }//left lower edge
+                    PathLine { x: 100;                 y: 50 }//bottom right edge
                 }
 
                 transform: Rotation {
-                    origin.x: 0;
-                    origin.y: 0;
-                    angle: -60
+                    origin.x: 100;
+                    origin.y: 150;
+                    angle: settings.roll_sky_pointer ? (settings.roll_invert ? OpenHD.roll : OpenHD.roll*-1) : 0
                 }
-            }
-
-            Item {
-                id:left_40_roll
-                x: 27
-                y: 66
-
-                Rectangle {
-                    id:left_40_roll_rect
-
-                    width: 3
-                    height: 10
-                    color: settings.color_shape
-                }
-
-                Text {
-                    color: settings.color_shape
-                    visible: settings.roll_show_numbers
-                    text: "40"
-                    anchors.bottom: left_40_roll_rect.top
-                    anchors.bottomMargin: 2
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                    font.pixelSize: 10
-                }
-
-                transform: Rotation {
-                    origin.x: 0;
-                    origin.y: 0;
-                    angle: -40
-                }
-            }
-
-            Item {
-                id:left_20_roll
-                x: 60
-                y: 46
-
-                Rectangle {
-                    id:left_20_roll_rect
-
-                    width: 3
-                    height: 10
-                    color: settings.color_shape
-                }
-
-                Text {
-                    color: settings.color_shape
-                    visible: settings.roll_show_numbers
-                    text: "20"
-                    anchors.bottom: left_20_roll_rect.top
-                    anchors.bottomMargin: 2
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                    font.pixelSize: 10
-                }
-
-                transform: Rotation {
-                    origin.x: 0;
-                    origin.y: 0;
-                    angle: -20
-                }
-            }
-
-            transform: Rotation {
-                origin.x: 100;
-                origin.y: 150;
-                angle: settings.roll_sky_pointer ? 0 : (settings.roll_invert ? OpenHD.roll : OpenHD.roll*-1)
-            }
-        }
-
-        Shape {
-            id: pointer
-            anchors.fill: parent
-            antialiasing: true
-            opacity: settings.roll_opacity
-
-            ShapePath {
-                capStyle: ShapePath.RoundCap
-                strokeColor: settings.color_glow
-                fillColor: settings.color_text
-                strokeWidth: 1
-                strokeStyle: ShapePath.SolidLine
-
-                startX: 100 //top point
-                startY: 50
-                PathLine { x: 110;                 y: 60  }//right lower edge of arrow
-                PathLine { x: 90;                 y: 60  }//left lower edge
-                PathLine { x: 100;                 y: 50 }//bottom right edge
-            }
-
-            transform: Rotation {
-                origin.x: 100;
-                origin.y: 150;
-                angle: settings.roll_sky_pointer ? (settings.roll_invert ? OpenHD.roll : OpenHD.roll*-1) : 0
             }
         }
     }

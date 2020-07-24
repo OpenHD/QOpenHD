@@ -103,6 +103,35 @@ BaseWidget {
             width: parent.width
             height: 32
             Text {
+                text: qsTr("Size")
+                color: "white"
+                height: parent.height
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
+            Slider {
+                id: air_battery_size_Slider
+                orientation: Qt.Horizontal
+                from: .5
+                value: settings.air_battery_size
+                to: 3
+                stepSize: .1
+                height: parent.height
+                anchors.rightMargin: 0
+                anchors.right: parent.right
+                width: parent.width - 96
+
+                onValueChanged: {
+                    settings.air_battery_size = air_battery_size_Slider.value
+                }
+            }
+        }
+        Item {
+            width: parent.width
+            height: 32
+            Text {
                 text: qsTr("Show volts and amps")
                 color: "white"
                 height: parent.height
@@ -149,6 +178,7 @@ BaseWidget {
 
         anchors.fill: parent
         opacity: settings.air_battery_opacity
+        scale:settings.air_battery_size
 
         Text {
             id: battery_percent

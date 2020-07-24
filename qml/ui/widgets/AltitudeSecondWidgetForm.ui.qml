@@ -58,6 +58,35 @@ BaseWidget {
             width: parent.width
             height: 32
             Text {
+                text: qsTr("Size")
+                color: "white"
+                height: parent.height
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
+            Slider {
+                id: alt_second_size_Slider
+                orientation: Qt.Horizontal
+                from: .5
+                value: settings.altitude_second_size
+                to: 3
+                stepSize: .1
+                height: parent.height
+                anchors.rightMargin: 0
+                anchors.right: parent.right
+                width: parent.width - 96
+
+                onValueChanged: {
+                    settings.altitude_second_size = alt_second_size_Slider.value
+                }
+            }
+        }
+        Item {
+            width: parent.width
+            height: 32
+            Text {
                 id: mslTitle
                 text: qsTr("Relative / MSL")
                 color: "white"
@@ -81,6 +110,8 @@ BaseWidget {
     Item {
         id: widgetInner
         anchors.fill: parent
+
+        scale: settings.altitude_second_size
 
         Text {
             id: second_alt_text

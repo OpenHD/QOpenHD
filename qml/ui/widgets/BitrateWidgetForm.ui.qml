@@ -168,6 +168,35 @@ BaseWidget {
             width: parent.width
             height: 32
             Text {
+                text: qsTr("Size")
+                color: "white"
+                height: parent.height
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
+            Slider {
+                id: bitrate_size_Slider
+                orientation: Qt.Horizontal
+                from: .5
+                value: settings.bitrate_size
+                to: 3
+                stepSize: .1
+                height: parent.height
+                anchors.rightMargin: 0
+                anchors.right: parent.right
+                width: parent.width - 96
+
+                onValueChanged: {
+                    settings.bitrate_size = bitrate_size_Slider.value
+                }
+            }
+        }
+        Item {
+            width: parent.width
+            height: 32
+            Text {
                 text: qsTr("Show skip / fail count")
                 color: "white"
                 height: parent.height
@@ -192,6 +221,7 @@ BaseWidget {
 
         anchors.fill: parent
         opacity: settings.bitrate_opacity
+        scale: settings.bitrate_size
 
         Text {
             id: kbitrate

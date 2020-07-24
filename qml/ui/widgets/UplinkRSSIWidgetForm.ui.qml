@@ -53,12 +53,42 @@ BaseWidget {
                 }
             }
         }
+        Item {
+            width: parent.width
+            height: 32
+            Text {
+                text: qsTr("Size")
+                color: "white"
+                height: parent.height
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
+            Slider {
+                id: uplink_rssi_size_Slider
+                orientation: Qt.Horizontal
+                from: .5
+                value: settings.uplink_rssi_size
+                to: 3
+                stepSize: .1
+                height: parent.height
+                anchors.rightMargin: 0
+                anchors.right: parent.right
+                width: parent.width - 96
+
+                onValueChanged: {
+                    settings.uplink_rssi_size = uplink_rssi_size_Slider.value
+                }
+            }
+        }
     }
 
     Item {
         id: widgetInner
 
         anchors.fill: parent
+        scale: settings.uplink_rssi_size
 
         Text {
             id: uplink_icon

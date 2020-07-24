@@ -53,6 +53,35 @@ BaseWidget {
                 }
             }
         }
+        Item {
+            width: parent.width
+            height: 32
+            Text {
+                text: qsTr("Size")
+                color: "white"
+                height: parent.height
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
+            Slider {
+                id: vibration_size_Slider
+                orientation: Qt.Horizontal
+                from: .5
+                value: settings.vibration_size
+                to: 3
+                stepSize: .1
+                height: parent.height
+                anchors.rightMargin: 0
+                anchors.right: parent.right
+                width: parent.width - 96
+
+                onValueChanged: {
+                    settings.vibration_size = vibration_size_Slider.value
+                }
+            }
+        }
     }
 
     Glow {
@@ -69,299 +98,305 @@ BaseWidget {
         anchors.fill: parent
 
         Item {
-            id: xAxis
-            anchors.left: parent.left
-            anchors.leftMargin: 0
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: 60
+            anchors.fill: parent
+            anchors.centerIn: parent
+            transform: Scale { origin.x: 30; origin.y: 30; xScale: settings.vibration_size ; yScale: settings.vibration_size}
 
-            Shape {
-                id: x_outline
-                anchors.fill: parent
-                opacity: settings.vibration_opacity
+            Item {
+                id: xAxis
+                anchors.left: parent.left
+                anchors.leftMargin: 0
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: 60
 
-                ShapePath {
-                    strokeColor: settings.color_glow
-                    strokeWidth: 1
-                    strokeStyle: ShapePath.SolidLine
-                    fillColor: settings.color_shape
-                    startX: 2
-                    startY: (40 + (OpenHD.vibration_x > 0 ? OpenHD.vibration_x
-                                                            * -1 : OpenHD.vibration_x) * .4)
-                    PathLine {
-                        x: 10
-                        y: (40 + (OpenHD.vibration_x > 0 ? OpenHD.vibration_x
-                                                           * -1 : OpenHD.vibration_x) * .4)
+                Shape {
+                    id: x_outline
+                    anchors.fill: parent
+                    opacity: settings.vibration_opacity
+
+                    ShapePath {
+                        strokeColor: settings.color_glow
+                        strokeWidth: 1
+                        strokeStyle: ShapePath.SolidLine
+                        fillColor: settings.color_shape
+                        startX: 2
+                        startY: (40 + (OpenHD.vibration_x > 0 ? OpenHD.vibration_x
+                                                                * -1 : OpenHD.vibration_x) * .4)
+                        PathLine {
+                            x: 10
+                            y: (40 + (OpenHD.vibration_x > 0 ? OpenHD.vibration_x
+                                                               * -1 : OpenHD.vibration_x) * .4)
+                        }
+                        PathLine {
+                            x: 10
+                            y: 40
+                        }
+                        PathLine {
+                            x: 2
+                            y: 40
+                        }
+                        PathLine {
+                            x: 2
+                            y: (40 + (OpenHD.vibration_x > 0 ? OpenHD.vibration_x
+                                                               * -1 : OpenHD.vibration_x) * .4)
+                        }
                     }
-                    PathLine {
-                        x: 10
-                        y: 40
-                    }
-                    PathLine {
-                        x: 2
-                        y: 40
-                    }
-                    PathLine {
-                        x: 2
-                        y: (40 + (OpenHD.vibration_x > 0 ? OpenHD.vibration_x
-                                                           * -1 : OpenHD.vibration_x) * .4)
+
+                    ShapePath {
+                        strokeColor: settings.color_shape
+                        strokeWidth: 1
+                        strokeStyle: ShapePath.SolidLine
+                        fillColor: "transparent"
+                        startX: 0
+                        startY: 0
+                        PathLine {
+                            x: 12
+                            y: 0
+                        }
+                        PathLine {
+                            x: 12
+                            y: 40
+                        }
+                        PathLine {
+                            x: 0
+                            y: 40
+                        }
+                        PathLine {
+                            x: 0
+                            y: 0
+                        }
                     }
                 }
+                Text {
+                    id: x_text
 
-                ShapePath {
-                    strokeColor: settings.color_shape
-                    strokeWidth: 1
-                    strokeStyle: ShapePath.SolidLine
-                    fillColor: "transparent"
-                    startX: 0
-                    startY: 0
-                    PathLine {
-                        x: 12
-                        y: 0
-                    }
-                    PathLine {
-                        x: 12
-                        y: 40
-                    }
-                    PathLine {
-                        x: 0
-                        y: 40
-                    }
-                    PathLine {
-                        x: 0
-                        y: 0
-                    }
+                    color: settings.color_text
+                    opacity: settings.vibration_opacity
+                    font.pixelSize: 10
+
+                    text: "X"
+                    leftPadding: 2
+                    anchors.top: parent.top
+                    anchors.topMargin: 0
+
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    style: Text.Outline
+                    styleColor: settings.color_glow
                 }
             }
-            Text {
-                id: x_text
 
-                color: settings.color_text
-                opacity: settings.vibration_opacity
-                font.pixelSize: 10
+            Item {
+                id: yAxis
+                anchors.left: xAxis.right
+                anchors.leftMargin: 18
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: 60
 
-                text: "X"
-                leftPadding: 2
-                anchors.top: parent.top
-                anchors.topMargin: 0
+                Shape {
+                    id: y_outline
+                    anchors.fill: parent
+                    opacity: settings.vibration_opacity
 
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-                style: Text.Outline
-                styleColor: settings.color_glow
-            }
-        }
-
-        Item {
-            id: yAxis
-            anchors.left: xAxis.right
-            anchors.leftMargin: 18
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: 60
-
-            Shape {
-                id: y_outline
-                anchors.fill: parent
-                opacity: settings.vibration_opacity
-
-                ShapePath {
-                    strokeColor: settings.color_glow
-                    strokeWidth: 1
-                    strokeStyle: ShapePath.SolidLine
-                    fillColor: settings.color_shape
-                    startX: 2
-                    startY: (40 + (OpenHD.vibration_y > 0 ? OpenHD.vibration_y
-                                                            * -1 : OpenHD.vibration_y) * .4)
-                    PathLine {
-                        x: 10
-                        y: (40 + (OpenHD.vibration_y > 0 ? OpenHD.vibration_y
-                                                           * -1 : OpenHD.vibration_y) * .4)
+                    ShapePath {
+                        strokeColor: settings.color_glow
+                        strokeWidth: 1
+                        strokeStyle: ShapePath.SolidLine
+                        fillColor: settings.color_shape
+                        startX: 2
+                        startY: (40 + (OpenHD.vibration_y > 0 ? OpenHD.vibration_y
+                                                                * -1 : OpenHD.vibration_y) * .4)
+                        PathLine {
+                            x: 10
+                            y: (40 + (OpenHD.vibration_y > 0 ? OpenHD.vibration_y
+                                                               * -1 : OpenHD.vibration_y) * .4)
+                        }
+                        PathLine {
+                            x: 10
+                            y: 40
+                        }
+                        PathLine {
+                            x: 2
+                            y: 40
+                        }
+                        PathLine {
+                            x: 2
+                            y: (40 + (OpenHD.vibration_y > 0 ? OpenHD.vibration_y
+                                                               * -1 : OpenHD.vibration_y) * .4)
+                        }
                     }
-                    PathLine {
-                        x: 10
-                        y: 40
-                    }
-                    PathLine {
-                        x: 2
-                        y: 40
-                    }
-                    PathLine {
-                        x: 2
-                        y: (40 + (OpenHD.vibration_y > 0 ? OpenHD.vibration_y
-                                                           * -1 : OpenHD.vibration_y) * .4)
-                    }
-                }
-                ShapePath {
-                    strokeColor: settings.color_shape
-                    strokeWidth: 1
-                    strokeStyle: ShapePath.SolidLine
-                    fillColor: "transparent"
-                    startX: 0
-                    startY: 0
-                    PathLine {
-                        x: 12
-                        y: 0
-                    }
-                    PathLine {
-                        x: 12
-                        y: 40
-                    }
-                    PathLine {
-                        x: 0
-                        y: 40
-                    }
-                    PathLine {
-                        x: 0
-                        y: 0
+                    ShapePath {
+                        strokeColor: settings.color_shape
+                        strokeWidth: 1
+                        strokeStyle: ShapePath.SolidLine
+                        fillColor: "transparent"
+                        startX: 0
+                        startY: 0
+                        PathLine {
+                            x: 12
+                            y: 0
+                        }
+                        PathLine {
+                            x: 12
+                            y: 40
+                        }
+                        PathLine {
+                            x: 0
+                            y: 40
+                        }
+                        PathLine {
+                            x: 0
+                            y: 0
+                        }
                     }
                 }
-            }
-            Text {
-                id: y_text
+                Text {
+                    id: y_text
 
-                color: settings.color_text
-                opacity: settings.vibration_opacity
-                font.pixelSize: 10
+                    color: settings.color_text
+                    opacity: settings.vibration_opacity
+                    font.pixelSize: 10
 
-                text: "Y"
-                leftPadding: 2
-                anchors.topMargin: 0
-                anchors.top: parent.top
+                    text: "Y"
+                    leftPadding: 2
+                    anchors.topMargin: 0
+                    anchors.top: parent.top
 
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-                style: Text.Outline
-                styleColor: settings.color_glow
-            }
-        }
-
-        Item {
-            id: zAxis
-            anchors.left: yAxis.right
-            anchors.leftMargin: 18
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: 60
-
-            Shape {
-                id: z_outline
-                anchors.fill: parent
-                opacity: settings.vibration_opacity
-
-                ShapePath {
-                    strokeColor: settings.color_glow
-                    strokeWidth: 1
-                    strokeStyle: ShapePath.SolidLine
-                    fillColor: settings.color_shape
-                    startX: 2
-                    startY: (40 + (OpenHD.vibration_z > 0 ? OpenHD.vibration_z
-                                                            * -1 : OpenHD.vibration_z) * .4)
-                    PathLine {
-                        x: 10
-                        y: (40 + (OpenHD.vibration_z > 0 ? OpenHD.vibration_z
-                                                           * -1 : OpenHD.vibration_z) * .4)
-                    }
-                    PathLine {
-                        x: 10
-                        y: 40
-                    }
-                    PathLine {
-                        x: 2
-                        y: 40
-                    }
-                    PathLine {
-                        x: 2
-                        y: (40 + (OpenHD.vibration_z > 0 ? OpenHD.vibration_z
-                                                           * -1 : OpenHD.vibration_z) * .4)
-                    }
-                }
-                ShapePath {
-                    strokeColor: settings.color_shape
-                    strokeWidth: 1
-                    strokeStyle: ShapePath.SolidLine
-                    fillColor: "transparent"
-                    startX: 0
-                    startY: 0
-                    PathLine {
-                        x: 12
-                        y: 0
-                    }
-                    PathLine {
-                        x: 12
-                        y: 40
-                    }
-                    PathLine {
-                        x: 0
-                        y: 40
-                    }
-                    PathLine {
-                        x: 0
-                        y: 0
-                    }
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    style: Text.Outline
+                    styleColor: settings.color_glow
                 }
             }
-            Text {
-                id: z_text
 
-                color: settings.color_text
-                opacity: settings.vibration_opacity
-                font.pixelSize: 10
+            Item {
+                id: zAxis
+                anchors.left: yAxis.right
+                anchors.leftMargin: 18
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: 60
 
-                text: "Z"
-                leftPadding: 2
-                anchors.topMargin: 0
-                anchors.top: parent.top
+                Shape {
+                    id: z_outline
+                    anchors.fill: parent
+                    opacity: settings.vibration_opacity
 
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-                style: Text.Outline
-                styleColor: settings.color_glow
+                    ShapePath {
+                        strokeColor: settings.color_glow
+                        strokeWidth: 1
+                        strokeStyle: ShapePath.SolidLine
+                        fillColor: settings.color_shape
+                        startX: 2
+                        startY: (40 + (OpenHD.vibration_z > 0 ? OpenHD.vibration_z
+                                                                * -1 : OpenHD.vibration_z) * .4)
+                        PathLine {
+                            x: 10
+                            y: (40 + (OpenHD.vibration_z > 0 ? OpenHD.vibration_z
+                                                               * -1 : OpenHD.vibration_z) * .4)
+                        }
+                        PathLine {
+                            x: 10
+                            y: 40
+                        }
+                        PathLine {
+                            x: 2
+                            y: 40
+                        }
+                        PathLine {
+                            x: 2
+                            y: (40 + (OpenHD.vibration_z > 0 ? OpenHD.vibration_z
+                                                               * -1 : OpenHD.vibration_z) * .4)
+                        }
+                    }
+                    ShapePath {
+                        strokeColor: settings.color_shape
+                        strokeWidth: 1
+                        strokeStyle: ShapePath.SolidLine
+                        fillColor: "transparent"
+                        startX: 0
+                        startY: 0
+                        PathLine {
+                            x: 12
+                            y: 0
+                        }
+                        PathLine {
+                            x: 12
+                            y: 40
+                        }
+                        PathLine {
+                            x: 0
+                            y: 40
+                        }
+                        PathLine {
+                            x: 0
+                            y: 0
+                        }
+                    }
+                }
+                Text {
+                    id: z_text
+
+                    color: settings.color_text
+                    opacity: settings.vibration_opacity
+                    font.pixelSize: 10
+
+                    text: "Z"
+                    leftPadding: 2
+                    anchors.topMargin: 0
+                    anchors.top: parent.top
+
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    style: Text.Outline
+                    styleColor: settings.color_glow
+                }
             }
-        }
-        Item {
-            id: tick_text
-            anchors.right: parent.right
-            anchors.rightMargin: 0
-
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: 60
-
-            Text {
-                id: sixty_text
-
-                color: settings.color_text
-                opacity: settings.vibration_opacity
-                font.pixelSize: 10
-
-                text: "-60"
-                anchors.top: parent.top
-                anchors.topMargin: 8
+            Item {
+                id: tick_text
                 anchors.right: parent.right
-                anchors.rightMargin: -2
-                leftPadding: 2
+                anchors.rightMargin: 0
 
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-                style: Text.Outline
-                styleColor: settings.color_glow
-            }
-            Text {
-                id: thirty_text
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: 60
 
-                color: settings.color_text
-                opacity: settings.vibration_opacity
-                font.pixelSize: 10
+                Text {
+                    id: sixty_text
 
-                text: "-30"
-                anchors.right: parent.right
-                anchors.rightMargin: -2
-                leftPadding: 2
-                anchors.topMargin: 21
-                anchors.top: parent.top
+                    color: settings.color_text
+                    opacity: settings.vibration_opacity
+                    font.pixelSize: 10
 
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-                style: Text.Outline
-                styleColor: settings.color_glow
+                    text: "-60"
+                    anchors.top: parent.top
+                    anchors.topMargin: 8
+                    anchors.right: parent.right
+                    anchors.rightMargin: -2
+                    leftPadding: 2
+
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    style: Text.Outline
+                    styleColor: settings.color_glow
+                }
+                Text {
+                    id: thirty_text
+
+                    color: settings.color_text
+                    opacity: settings.vibration_opacity
+                    font.pixelSize: 10
+
+                    text: "-30"
+                    anchors.right: parent.right
+                    anchors.rightMargin: -2
+                    leftPadding: 2
+                    anchors.topMargin: 21
+                    anchors.top: parent.top
+
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    style: Text.Outline
+                    styleColor: settings.color_glow
+                }
             }
         }
     }

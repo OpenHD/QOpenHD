@@ -97,53 +97,68 @@ ApplicationWindow {
         property double downlink_rssi_opacity: 1
         property bool downlink_rssi_show_lost_damaged: false
         property bool downlink_cards_right: false
+        property double downlink_rssi_size: 1
 
         property bool show_uplink_rssi: true
         property double uplink_rssi_opacity: 1
+        property double uplink_rssi_size: 1
 
         property bool show_rc_rssi: false
         property double rc_rssi_opacity: 1
+        property double rc_rssi_size: 1
 
         property bool show_bitrate: true
         property double bitrate_opacity: 1
         property bool bitrate_show_skip_fail_count: false
+        property double bitrate_size: 1
 
         property bool show_air_battery: true
         property double air_battery_opacity: 1
         property bool air_battery_show_voltage_current: false
         property bool air_battery_show_single_cell: false
+        property double air_battery_size: 1
 
         property bool show_gps: true
         property double gps_opacity: 1
         property bool gps_show_all: false
+        property double gps_size: 1
 
         property bool show_home_distance: true
         property double home_distance_opacity: 1
+        property double home_distance_size: 1
 
         property bool show_flight_timer: true
         property double flight_timer_opacity: 1
+        property double flight_timer_size: 1
 
         property bool show_flight_mode: true
         property double flight_mode_opacity: 1
+        property double flight_mode_size: 1
 
         property bool show_flight_distance: true
         property double flight_distance_opacity: 1
+        property double flight_distance_size: 1
 
         property bool show_flight_mah: true
         property bool flight_mah_use_telemetry: true
         property double mah_opacity: 1
+        property double mah_size: 1
 
         property bool show_fc_temp: true
         property double fc_temp_opacity: 1
+        property double fc_temp_size: 1
 
         property bool show_ground_status: true
         property double ground_status_opacity: 1
+        property double ground_status_size: 1
 
         property bool show_air_status: true
         property double air_status_opacity: 1
+        property double air_status_size: 1
 
         property bool show_message_hud: true
         property double message_hud_opacity: 1
+        property double message_hud_size: 1
 
         property bool show_horizon: true
         property bool horizon_invert_pitch: false
@@ -167,6 +182,7 @@ ApplicationWindow {
         property bool fpv_dynamic: true
         property int fpv_sensitivity: 5
         property double fpv_opacity: 1
+        property double fpv_size: 1
 
         property bool show_speed: true
         property bool speed_airspeed_gps: false
@@ -186,10 +202,12 @@ ApplicationWindow {
         property bool show_altitude_second: true
         property bool altitude_second_msl_rel: false
         property double altitude_second_opacity: 1
+        property double altitude_second_size: 1
 
         property bool show_arrow: true
         property bool arrow_invert: false
         property double arrow_opacity: 1
+        property double arrow_size: 1
 
         property bool show_map: false
 
@@ -201,9 +219,11 @@ ApplicationWindow {
 
         property bool show_throttle: true
         property double throttle_opacity: 1
+        property double throttle_scale: 1
 
         property bool show_control: false
         property double control_opacity: 1
+        property double control_size: 1
 
         property bool double_control: true
         property bool control_rev_pitch: false
@@ -217,10 +237,12 @@ ApplicationWindow {
 
         property bool show_vibration: false
         property double vibration_opacity: 1
+        property double vibration_size: 1
 
         property bool show_vsi: true
         property double vsi_opacity: 1
         property int vsi_max: 20
+        property double vsi_size: 1
 
         property bool show_wind: false
         property double wind_opacity: 1
@@ -230,6 +252,7 @@ ApplicationWindow {
         property double wind_tumbler_decimal: 5
         property double wind_tumbler_tens: 13
         property double wind_max_quad_speed: wind_tumbler_tens+(wind_tumbler_decimal*.1)
+        property double wind_size: 1
 
         property bool show_roll: true
         property bool roll_invert: false
@@ -237,14 +260,17 @@ ApplicationWindow {
         property bool roll_show_numbers: true
         property bool roll_sky_pointer: false
         property double roll_opacity: 1
+        property double roll_size: 1
 
         property bool show_adsb: false
         property int adsb_distance_limit: 100000//meters. Bound box for api from map center (so x2)
         property int adsb_marker_limit: 19
         property double adsb_opacity: 1
+        property double adsb_size: 1
 
         property bool show_blackbox: false
         property double blackbox_opacity: 1
+        property double blackbox_size: 1
 
         property bool show_example_widget: false
 
