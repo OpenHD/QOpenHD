@@ -150,5 +150,7 @@
         <file>ui/elements/LanguageSelect.qml</file>
         <file>ui/elements/LanguageSelectForm.ui.qml</file>
         <file alias="round.png">../icons/round.png</file>
+        <file>ui/elements/Card.qml</file>
+        <file>ui/elements/CardForm.ui.qml</file>
     </qresource>
 </RCC>
