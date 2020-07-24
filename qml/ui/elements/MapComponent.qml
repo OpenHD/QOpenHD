@@ -79,6 +79,7 @@ Map {
 
     MapCircle {
         id: adsbCircle
+        enabled: EnableADSB
 
         center: OpenSky.adsb_api_coord
         radius: MarkerModel.adsb_radius
@@ -93,6 +94,7 @@ Map {
     MapItemView {
         model: BlackBoxModel
         delegate: trailDelegate
+        enabled: EnableADSB
 
         Component {
             id: trailDelegate
@@ -122,6 +124,7 @@ Map {
 
     Repeater{
         model: MarkerModel
+        enabled: EnableADSB
         MapItemGroup {
             id: delegateGroup
 
@@ -246,6 +249,7 @@ Map {
                             font.pixelSize: 11
                             horizontalAlignment: Text.AlignHCenter
                             Component.onCompleted: {
+                                console.log("Model: " + model);
                                 text = model.callsign
                                 //console.log("Map Callsign=",model.callsign);
                             }

@@ -348,6 +348,11 @@ AndroidBuild {
     QT += androidextras
 }
 
+EnableADSB {
+    message("EnableADSB")
+    DEFINES += ENABLE_ADSB
+}
+
 EnableCharts {
     message("EnableCharts")
     DEFINES += ENABLE_CHARTS

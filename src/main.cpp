@@ -369,7 +369,9 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
 
     auto openSky = OpenSky::instance();
     engine.rootContext()->setContextProperty("OpenSky", openSky);
+    #if defined(ENABLE_ADSB)
     openSky->onStarted();
+    #endif
 
     engine.rootContext()->setContextProperty("OpenHD", openhd);
 
@@ -386,6 +388,12 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
     engine.rootContext()->setContextProperty("PiPStream", pipVideo);
 #else
     engine.rootContext()->setContextProperty("EnablePiP", QVariant(false));
+#endif
+
+#if defined(ENABLE_ADSB)
+    engine.rootContext()->setContextProperty("EnableADSB", QVariant(true));
+#else
+    engine.rootContext()->setContextProperty("EnableADSB", QVariant(false));
 #endif
 
 #if defined(ENABLE_CHARTS)
