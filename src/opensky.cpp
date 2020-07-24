@@ -178,6 +178,9 @@ void OpenSky::processReply(QNetworkReply *reply){
         QJsonArray innerarray = v.toArray();
 
         callsign=innerarray[1].toString();
+        if (callsign.length() == 0) {
+            callsign = "N/A";
+        }
         contact=innerarray[4].toInt();
         lat=innerarray[6].toDouble();
         lon=innerarray[5].toDouble();
