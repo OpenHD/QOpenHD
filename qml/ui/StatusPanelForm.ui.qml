@@ -1,6 +1,7 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
+import QtGraphicalEffects 1.12
 
 import Qt.labs.settings 1.0
 
@@ -15,12 +16,22 @@ Rectangle {
     Layout.fillWidth: true
     color: "#eaeaea"
 
+    DropShadow {
+        cached: true
+        anchors.fill: statusLog
+        horizontalOffset: 0
+        verticalOffset: 1
+        radius: 6
+        samples: 17
+        color: "#6a000000"
+        source: statusLog
+    }
+
     Rectangle {
+        id: statusLog
         color: "#ff2a2a2a"
-        border.width: 1
-        border.color: "white"
         clip: true
-        radius: 9
+        radius: 6
 
         anchors.top: parent.top
         anchors.topMargin: 12
