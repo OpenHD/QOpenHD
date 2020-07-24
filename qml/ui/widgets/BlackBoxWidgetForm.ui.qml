@@ -144,6 +144,7 @@ BaseWidget {
                 anchors.left: parent.left
                 anchors.leftMargin: 45
                 anchors.top: parent.top
+                enabled: BlackBoxModel.rowCount() >= 1
 
                 width: parent.width - 135
                 // @disable-check M223
@@ -162,6 +163,7 @@ BaseWidget {
                 anchors.rightMargin: 10
                 anchors.top: parent.top
                 font.family: "Font Awesome 5 Free"
+                enabled: BlackBoxModel.rowCount() >= 1
 
                 onClicked: {// play_pause true == looks like play, false == looks like pause
                     if (play_pause==true){play_pause = false;}
