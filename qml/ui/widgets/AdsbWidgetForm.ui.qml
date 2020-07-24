@@ -28,7 +28,7 @@ BaseWidget {
 
     Connections {
         target: MarkerModel
-        onDataChanged: {
+        function onDataChanged() {
             console.log("MARKER MODEL DATA CHANGED");
             adsb_status.active=true;
             adsb_status.color="green";

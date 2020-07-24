@@ -24,7 +24,7 @@ BaseWidget {
 
     Connections {
         target: BlackBoxModel
-        onDataChanged: {
+        function onDataChanged() {
             var count= BlackBoxModel.rowCount();
             blackboxmodel_count_text.text= Number(count).toLocaleString( Qt.locale(), 'f', 0)
             blackbox_play_Slider.to=count;
