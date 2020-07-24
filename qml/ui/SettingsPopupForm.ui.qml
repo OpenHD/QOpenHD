@@ -21,6 +21,11 @@ Rectangle {
 
     z: 4.0
 
+    MouseArea {
+        anchors.fill: parent
+        propagateComposedEvents: false
+    }
+
     Rectangle {
         id: sidebar
         width: 132
