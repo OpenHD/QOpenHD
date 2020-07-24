@@ -17,7 +17,7 @@ Rectangle {
 
     color: "#eaeaea"
 
-    Rectangle {
+    Card {
         id: infoPanel
         anchors.left: parent.left
         anchors.leftMargin: 12
@@ -26,16 +26,13 @@ Rectangle {
         anchors.top: parent.top
         anchors.topMargin: 12
 
-        height: infoColumn.height + 12
+        hasHeader: false
+        height: infoColumn.height + 24
 
-        radius: 9
-        color: "white"
-
-        Column {
+        cardBody: Column {
             id: infoColumn
-            width: parent.width
-
             spacing: 12
+            width: parent.width
 
             Text {
                 text: qsTr("The buttons below provide direct control over the power of the air and ground stations, you can remotely reboot or safely shut down before removing power or to apply settings changes when it is difficult to cycle power manually.")
@@ -69,46 +66,13 @@ Rectangle {
         spacing: 6
         height: 192
 
-
-        Rectangle {
+        Card {
             id: airBox
-            color: "white"
             height: 224
             Layout.fillWidth: true
-
-            radius: 9
-
-            Item {
-                id: airControlID
-                width: parent.width
-                height: 32
-                anchors.left: parent.left
-                anchors.leftMargin: 0
-                anchors.right: parent.right
-                anchors.rightMargin: 0
-                anchors.top: parent.top
-                anchors.topMargin: 0
-
-                Text {
-                    text: qsTr("Air")
-                    width: parent.width
-                    height: 24
-                    color: "#33aaff"
-                    font.bold: true
-                    font.pixelSize: 16
-                    verticalAlignment: Text.AlignVCenter
-                    horizontalAlignment: Text.AlignLeft
-                    anchors.top: parent.top
-                    leftPadding: 12
-                    topPadding: 3
-                }
-            }
-
-            ColumnLayout {
-                anchors.top: airControlID.bottom
-                anchors.topMargin: 6
-
-                width: parent.width
+            cardName: qsTr("Air")
+            cardBody: ColumnLayout {
+                height: parent.height
 
                 RowLayout {
                     Layout.fillWidth: true
@@ -160,33 +124,9 @@ Rectangle {
                     }
                 }
             }
-
-            Rectangle {
-                color: "#4c000000"
-                width: parent.width
-                height: 1
-
-                anchors.left: parent.left
-                anchors.leftMargin: 0
-                anchors.right: parent.right
-                anchors.rightMargin: 0
-                anchors.bottom: button_background.top
-                anchors.bottomMargin: 0
-            }
-
-
-            Rectangle {
-                id: button_background
-                width: parent.width
-                height: 64
-                color: "#f6f6f6"
-                anchors.left: parent.left
-                anchors.leftMargin: 0
-                anchors.right: parent.right
-                anchors.rightMargin: 0
-                anchors.bottom: parent.bottom
-                anchors.bottomMargin: 0
-
+            hasFooter: true
+            cardFooter: Item {
+                anchors.fill: parent
                 Button {
                     id: airReboot
                     width: 96
@@ -228,46 +168,14 @@ Rectangle {
             }
         }
 
-        Rectangle {
+
+        Card {
             id: groundBox
-            color: "white"
             height: 224
             Layout.fillWidth: true
-
-            radius: 9
-
-            Item {
-                id: groundControlID
-                width: parent.width
-                height: 32
-
-                anchors.left: parent.left
-                anchors.leftMargin: 0
-                anchors.right: parent.right
-                anchors.rightMargin: 0
-                anchors.top: parent.top
-                anchors.topMargin: 0
-
-                Text {
-                    text: qsTr("Ground")
-                    width: parent.width
-                    height: 24
-                    color: "#33aaff"
-                    font.bold: true
-                    font.pixelSize: 16
-                    verticalAlignment: Text.AlignVCenter
-                    horizontalAlignment: Text.AlignLeft
-                    anchors.top: parent.top
-                    leftPadding: 12
-                    topPadding: 3
-                }
-            }
-
-            ColumnLayout {
-                anchors.top: groundControlID.bottom
-                anchors.topMargin: 6
-
-                width: parent.width
+            cardName: qsTr("Ground")
+            cardBody: ColumnLayout {
+                height: parent.height
 
                 RowLayout {
                     Layout.fillWidth: true
@@ -370,31 +278,9 @@ Rectangle {
                 }
             }
 
-            Rectangle {
-                color: "#4c000000"
-                width: parent.width
-                height: 1
-
-                anchors.left: parent.left
-                anchors.leftMargin: 0
-                anchors.right: parent.right
-                anchors.rightMargin: 0
-                anchors.bottom: button_background4.top
-                anchors.bottomMargin: 0
-            }
-
-            Rectangle {
-                id: button_background4
-                width: parent.width
-                height: 64
-                color: "#f6f6f6"
-                anchors.left: parent.left
-                anchors.leftMargin: 0
-                anchors.right: parent.right
-                anchors.rightMargin: 0
-                anchors.bottom: parent.bottom
-                anchors.bottomMargin: 0
-
+            hasFooter: true
+            cardFooter: Item {
+                anchors.fill: parent
                 Button {
                     id: groundReboot
                     width: 96
