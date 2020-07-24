@@ -7,12 +7,12 @@ Item {
 
         model: ListModel {
             id: locales
-            ListElement { text: "DE"; locale: "de" }
-            ListElement { text: "RU"; locale: "ru" }
-            ListElement { text: "EN"; locale: "en" }
-            ListElement { text: "FR"; locale: "fr" }
-            ListElement { text: "ES"; locale: "es" }
-            ListElement { text: "NL"; locale: "nl" }
+            ListElement { text: "German"; locale: "de" }
+            ListElement { text: "Russian"; locale: "ru" }
+            ListElement { text: "English"; locale: "en" }
+            ListElement { text: "French"; locale: "fr" }
+            ListElement { text: "Spanish"; locale: "es" }
+            ListElement { text: "Dutch"; locale: "nl" }
         }
 
         textRole: "text"
