@@ -149,5 +149,6 @@
         <file>ui/PowerPanelForm.ui.qml</file>
         <file>ui/elements/LanguageSelect.qml</file>
         <file>ui/elements/LanguageSelectForm.ui.qml</file>
+        <file alias="round.png">../icons/round.png</file>
     </qresource>
 </RCC>
