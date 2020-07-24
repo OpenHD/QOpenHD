@@ -7,6 +7,7 @@ import Qt.labs.settings 1.0
 import OpenHD 1.0
 
 import "../ui" as Ui
+import "elements";
 
 
 /*
@@ -250,6 +251,37 @@ Item {
 
                         value: settings.mavlink_sysid
                         onValueChanged: settings.mavlink_sysid = value
+                    }
+                }
+
+
+                Rectangle {
+
+                    width: parent.width
+                    height: rowHeight
+                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                    visible: false
+
+                    Text {
+                        text: qsTr("Language / Locale")
+                        font.weight: Font.Bold
+                        font.pixelSize: 13
+                        anchors.leftMargin: 8
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 224
+                        height: elementHeight
+                        anchors.left: parent.left
+                    }
+
+                    LanguageSelect {
+                        id: languageSelectBox
+                        height: elementHeight
+                        width: 210
+                        anchors.right: parent.right
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.horizontalCenter: parent.horizonatalCenter
                     }
                 }
             }
