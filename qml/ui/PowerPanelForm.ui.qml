@@ -35,17 +35,7 @@ Rectangle {
             width: parent.width
 
             Text {
-                text: qsTr("The buttons below provide direct control over the power of the air and ground stations, you can remotely reboot or safely shut down before removing power or to apply settings changes when it is difficult to cycle power manually.")
-                wrapMode: Text.WordWrap
-                width: parent.width
-                leftPadding: 12
-                rightPadding: 12
-                topPadding: 12
-                font.pixelSize: 14
-            }
-
-            Text {
-                text: qsTr("If you have a power control board or sensors connected you may also see power supply information.")
+                text: qsTr("Reboot or safely shut down the air/ground before removing power, or to apply settings changes when it is difficult to cycle power manually. If you have a power control board or sensors connected you may also see power supply information.")
                 wrapMode: Text.WordWrap
                 width: parent.width
                 leftPadding: 12
