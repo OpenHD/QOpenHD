@@ -30,7 +30,7 @@ Item {
             }
         }
 
-        onCurrentIndexChanged: {
+        onActivated: {
             settings.locale = locales.get(currentIndex).locale
 
             OpenHD.switchToLanguage(settings.locale);
