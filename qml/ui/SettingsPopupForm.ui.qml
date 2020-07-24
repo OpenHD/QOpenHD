@@ -243,6 +243,47 @@ Rectangle {
                 }
             }
 
+
+            Item {
+                height: 48
+                width: parent.width
+                visible: false
+
+                Text {
+                    id: sensorsIcon
+                    text: "\uf2c9"
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    font.family: "Font Awesome 5 Free"
+                    font.pixelSize: 18
+                    height: parent.height
+                    width: 24
+                    anchors.left: parent.left
+                    anchors.leftMargin: 12
+
+                    color: "#dde4ed"
+
+                }
+
+                Text {
+                    id: sensorsButton
+                    height: parent.height
+                    anchors.left: sensorsIcon.right
+                    anchors.leftMargin: 6
+                    MouseArea {
+                        id: sensorsButtonMouseArea
+                        anchors.fill: parent
+                        onClicked: mainStackLayout.currentIndex = 5
+                    }
+
+                    text: qsTr("Sensors")
+                    font.pixelSize: 15
+                    horizontalAlignment: Text.AlignLeft
+                    verticalAlignment: Text.AlignVCenter
+                    color: mainStackLayout.currentIndex == 5 ? "#33aaff" : "#dde4ed"
+                }
+            }
+
             Item {
                 height: 48
                 width: parent.width
@@ -271,14 +312,14 @@ Rectangle {
                     MouseArea {
                         id: aboutButtonMouseArea
                         anchors.fill: parent
-                        onClicked: mainStackLayout.currentIndex = 5
+                        onClicked: mainStackLayout.currentIndex = 6
                     }
 
                     text: qsTr("About")
                     font.pixelSize: 15
                     horizontalAlignment: Text.AlignLeft
                     verticalAlignment: Text.AlignVCenter
-                    color: mainStackLayout.currentIndex == 5 ? "#33aaff" : "#dde4ed"
+                    color: mainStackLayout.currentIndex == 6 ? "#33aaff" : "#dde4ed"
                 }
             }
         }
@@ -330,6 +371,10 @@ Rectangle {
 
         PowerPanel {
             id: powerPanel
+        }
+
+        SensorPanel {
+            id: sensorPanel
         }
 
         AboutPanel {
