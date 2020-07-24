@@ -64,7 +64,7 @@ BaseWidget {
                 }
             }
             Item {
-                width: parent.width
+                width: 240
                 height: 32
                 Text {
                     text: qsTr("Size")
@@ -76,7 +76,7 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Slider {
-                    id: controls_size_Slider
+                    id: control_size_Slider
                     orientation: Qt.Horizontal
                     from: .5
                     value: settings.control_size
@@ -88,7 +88,7 @@ BaseWidget {
                     width: parent.width - 96
 
                     onValueChanged: {
-                        settings.control_size = controls_size_Slider.value
+                        settings.control_size = control_size_Slider.value
                     }
                 }
             }
