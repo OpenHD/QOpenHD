@@ -30,6 +30,34 @@ typedef struct {
 } fu_a_header;
 
 
+
+class OpenHDVideoReceiver : public QObject
+{
+    Q_OBJECT
+
+public:
+    OpenHDVideoReceiver(enum OpenHDStreamType stream_type = OpenHDStreamTypeMain);
+    virtual ~OpenHDVideoReceiver();
+
+signals:
+    void setup();
+    void receivedData(QByteArray data);
+
+public slots:
+    void onStarted();
+    void stop();
+    void start();
+
+protected:
+    void processDatagrams();
+    int m_video_port = 0;
+    QUdpSocket *m_socket;
+    enum OpenHDStreamType m_stream_type;
+
+};
+
+
+
 class OpenHDVideo : public QObject
 {
     Q_OBJECT
@@ -49,9 +77,12 @@ public slots:
     void startVideo();
     void stopVideo();
     void onStarted();
+    void onReceivedData(QByteArray data);
 
 protected:
-    void processDatagrams();
+    OpenHDVideoReceiver *m_receiver = nullptr;
+    QThread m_receiverThread;
+
     void parseRTP(QByteArray &datagram);
     void findNAL();
     void processNAL(QByteArray &nalUnit);
@@ -79,8 +110,6 @@ protected:
 
 
     QTimer* timer = nullptr;
-
-    QUdpSocket *m_socket;
 
     QByteArray tempBuffer;
     QByteArray accessUnit;

@@ -18,6 +18,69 @@
 #include "sps_parser.h"
 #include "pps_parser.h"
 
+
+OpenHDVideoReceiver::OpenHDVideoReceiver(enum OpenHDStreamType stream_type): QObject(), m_stream_type(stream_type) {
+    qDebug() << "OpenHDVideoReceiver::OpenHDVideoReceiver()";
+}
+
+
+OpenHDVideoReceiver::~OpenHDVideoReceiver() {
+    qDebug() << "~OpenHDVideoReceiver()";
+}
+
+
+/*
+ * Called by QUdpSocket signal readyRead()
+ *
+ */
+void OpenHDVideoReceiver::processDatagrams() {
+    QByteArray datagram;
+
+    while (m_socket->hasPendingDatagrams()) {
+        datagram.resize(int(m_socket->pendingDatagramSize()));
+        m_socket->readDatagram(datagram.data(), datagram.size());
+
+        emit receivedData(datagram);
+    }
+}
+
+
+/*
+ * General initialization.
+ *
+ * Video decoder setup happens in subclasses.
+ *
+ */
+void OpenHDVideoReceiver::onStarted() {
+    qDebug() << "OpenHDVideoReceiver::onStarted()";
+
+    m_socket = new QUdpSocket();
+
+    start();
+
+    connect(m_socket, &QUdpSocket::readyRead, this, &OpenHDVideoReceiver::processDatagrams);
+}
+
+
+void OpenHDVideoReceiver::stop() {
+    m_socket->close();
+}
+
+
+void OpenHDVideoReceiver::start() {
+    QSettings settings;
+
+    if (m_stream_type == OpenHDStreamTypeMain) {
+        m_video_port = settings.value("main_video_port", 5600).toInt();
+    } else {
+        m_video_port = settings.value("pip_video_port", 5601).toInt();
+    }
+
+    m_socket->bind(QHostAddress::Any, m_video_port);
+    m_socket->setSocketOption(QUdpSocket::SocketOption::ReceiveBufferSizeSocketOption, 12050000);
+}
+
+
 OpenHDVideo::OpenHDVideo(enum OpenHDStreamType stream_type): QObject(), m_stream_type(stream_type) {
     qDebug() << "OpenHDVideo::OpenHDVideo()";
 
@@ -39,27 +102,29 @@ OpenHDVideo::~OpenHDVideo() {
 void OpenHDVideo::onStarted() {
     qDebug() << "OpenHDVideo::onStarted()";
 
-    m_socket = new QUdpSocket();
-
     QSettings settings;
 
-    if (m_stream_type == OpenHDStreamTypeMain) {
-        m_video_port = settings.value("main_video_port", 5600).toInt();
-    } else {
-        m_video_port = settings.value("pip_video_port", 5601).toInt();
-    }
     m_enable_rtp = settings.value("enable_rtp", true).toBool();
 
     lastDataReceived = QDateTime::currentMSecsSinceEpoch();
-
-    m_socket->bind(QHostAddress::Any, m_video_port);
-    m_socket->setSocketOption(QUdpSocket::SocketOption::ReceiveBufferSizeSocketOption, 12050000);
 
     timer = new QTimer(this);
     QObject::connect(timer, &QTimer::timeout, this, &OpenHDVideo::reconfigure);
     timer->start(1000);
 
-    connect(m_socket, &QUdpSocket::readyRead, this, &OpenHDVideo::processDatagrams);
+    m_receiver = new OpenHDVideoReceiver(m_stream_type);
+
+    if (m_stream_type == OpenHDStreamTypeMain) {
+        m_receiverThread.setObjectName("mainVideoRecv");
+    } else {
+        m_receiverThread.setObjectName("pipVideoRecv");
+    }
+
+    QObject::connect(&m_receiverThread, &QThread::started, m_receiver, &OpenHDVideoReceiver::onStarted);
+    m_receiver->moveToThread(&m_receiverThread);
+    QObject::connect(m_receiver, &OpenHDVideoReceiver::receivedData, this, &OpenHDVideo::onReceivedData);
+
+    m_receiverThread.start();
 
     emit setup();
 }
@@ -95,12 +160,15 @@ void OpenHDVideo::reconfigure() {
 
     QSettings settings;
 
+    int port = 0;
+
     if (m_stream_type == OpenHDStreamTypeMain) {
-        m_video_port = settings.value("main_video_port", 5600).toInt();
+        port = settings.value("main_video_port", 5600).toInt();
     } else {
-        m_video_port = settings.value("pip_video_port", 5601).toInt();
+        port = settings.value("pip_video_port", 5601).toInt();
     }
-    if (m_video_port != m_socket->localPort()) {
+
+    if (m_video_port != port) {
         m_restart = true;
     }
 
@@ -112,7 +180,7 @@ void OpenHDVideo::reconfigure() {
 
     if (m_restart) {
         m_restart = false;
-        m_socket->close();
+        QMetaObject::invokeMethod(m_receiver, "stop");
         stop();
         tempBuffer.clear();
         rtpBuffer.clear();
@@ -122,11 +190,10 @@ void OpenHDVideo::reconfigure() {
         havePPS = false;
         sentIDR = false;
         isStart = true;
-        m_socket->bind(QHostAddress::Any, m_video_port);
-        m_socket->setSocketOption(QUdpSocket::SocketOption::ReceiveBufferSizeSocketOption, 12050000);
-
+        QMetaObject::invokeMethod(m_receiver, "start");
     }
 }
+
 
 void OpenHDVideo::startVideo() {
 #if defined(ENABLE_MAIN_VIDEO) || defined(ENABLE_PIP)
@@ -146,26 +213,15 @@ void OpenHDVideo::stopVideo() {
 }
 
 
-/*
- * Called by QUdpSocket signal readyRead()
- *
- */
-void OpenHDVideo::processDatagrams() {
-    QByteArray datagram;
 
-    while (m_socket->hasPendingDatagrams()) {
-        datagram.resize(int(m_socket->pendingDatagramSize()));
-        m_socket->readDatagram(datagram.data(), datagram.size());
-
-        if (m_enable_rtp || m_stream_type == OpenHDStreamTypePiP) {
-            parseRTP(datagram);
-        } else {
-            tempBuffer.append(datagram);
-            findNAL();
-        }
+void OpenHDVideo::onReceivedData(QByteArray data) {
+    if (m_enable_rtp || m_stream_type == OpenHDStreamTypePiP) {
+        parseRTP(data);
+    } else {
+        tempBuffer.append(data);
+        findNAL();
     }
 }
-
 
 
 /*
