@@ -240,8 +240,6 @@ void OpenHDVideo::parseRTP(QByteArray &datagram) {
 
             rtpBuffer.append(payload.data() + 2, payload.size() - 2);
             if (fu_a.e == 1) {
-                tempBuffer.append(rtpBuffer.data(), rtpBuffer.size());
-                rtpBuffer.clear();
                 submit = true;
             }
             break;
@@ -252,15 +250,14 @@ void OpenHDVideo::parseRTP(QByteArray &datagram) {
         }
         default: {
             // should be a single NAL
-            tempBuffer.append(payload.data(), payload.size());
-            rtpBuffer.clear();
+            rtpBuffer.append(payload);
             submit = true;
             break;
         }
     }
     if (submit) {
-        QByteArray nalUnit(tempBuffer);
-        tempBuffer.clear();
+        QByteArray nalUnit(rtpBuffer);
+        rtpBuffer.clear();
         processNAL(nalUnit);
     }
 };
