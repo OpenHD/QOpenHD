@@ -22,7 +22,7 @@ BaseWidget {
     defaultVCenter: false
 
     hasWidgetDetail: true
-    widgetDetailHeight: 190
+    widgetDetailHeight: 215
 
     widgetDetailComponent: Column {
         Item {
