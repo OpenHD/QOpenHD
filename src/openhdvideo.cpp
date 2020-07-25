@@ -157,7 +157,7 @@ void OpenHDVideo::processDatagrams() {
         if (m_enable_rtp || m_stream_type == OpenHDStreamTypePiP) {
             parseRTP(datagram);
         } else {
-            tempBuffer.append(datagram.data(), datagram.size());
+            tempBuffer.append(datagram);
             findNAL();
         }
     }
