@@ -24,7 +24,7 @@ BaseWidget {
 
     hasWidgetDetail: true
 
-    widgetDetailHeight: 192
+    widgetDetailHeight: 210
 
     widgetDetailComponent: Column {
         Item {
