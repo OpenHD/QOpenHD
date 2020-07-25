@@ -230,7 +230,6 @@ void OpenHDVideo::parseRTP(QByteArray &datagram) {
             fu_a.type = static_cast<uint8_t>((payload[1])      & 0x1f);
 
             if (fu_a.s == 1) {
-                rtpStateFrag = true;
                 rtpBuffer.clear();
                 uint8_t reassembled = 0;
                 reassembled |= (nalu_f << 7);
@@ -244,7 +243,6 @@ void OpenHDVideo::parseRTP(QByteArray &datagram) {
                 tempBuffer.append(rtpBuffer.data(), rtpBuffer.size());
                 rtpBuffer.clear();
                 submit = true;
-                rtpStateFrag = false;
             }
             break;
         }
@@ -254,13 +252,6 @@ void OpenHDVideo::parseRTP(QByteArray &datagram) {
         }
         default: {
             // should be a single NAL
-            if (rtpStateFrag) {
-                // this means there is one or more parts of an fu_a NAL in tempBuffer, but we can
-                // no longer use it because the end is missing (if it had arrived it would have
-                // reset this flag already).
-                rtpStateFrag = false;
-                tempBuffer.clear();
-            }
             tempBuffer.append(payload.data(), payload.size());
             rtpBuffer.clear();
             submit = true;
