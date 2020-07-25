@@ -53,6 +53,7 @@ void OpenHDVideo::onStarted() {
     lastDataReceived = QDateTime::currentMSecsSinceEpoch();
 
     m_socket->bind(QHostAddress::Any, m_video_port);
+    m_socket->setSocketOption(QUdpSocket::SocketOption::ReceiveBufferSizeSocketOption, 12050000);
 
     timer = new QTimer(this);
     QObject::connect(timer, &QTimer::timeout, this, &OpenHDVideo::reconfigure);
@@ -122,6 +123,8 @@ void OpenHDVideo::reconfigure() {
         sentIDR = false;
         isStart = true;
         m_socket->bind(QHostAddress::Any, m_video_port);
+        m_socket->setSocketOption(QUdpSocket::SocketOption::ReceiveBufferSizeSocketOption, 12050000);
+
     }
 }
 
