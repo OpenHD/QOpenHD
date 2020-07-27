@@ -14,6 +14,7 @@ BaseWidget {
 
     width: 480
     height: 72
+    z:4
 
     visible: settings.show_message_hud
 
