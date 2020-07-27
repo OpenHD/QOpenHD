@@ -68,52 +68,66 @@ void MarkerModel::addMarker(int current_row, int total_rows, const Traffic &traf
 
     if (current_row == 0){
         //LIMIT HOW MANY OF THE NEAREST MARKERS APPEAR
-         m_row_limit = settings.value("adsb_marker_limit").toInt();
+        //m_row_limit = settings.value("adsb_marker_limit").toInt();
 
-        if (total_rows<m_row_limit){
-            m_row_limit=total_rows-1;
-        }
-        //qDebug() << "begin insert " << m_row_limit;
-        beginInsertRows(QModelIndex(), 0, m_row_limit);
-    }
-
-    int rowcount=rowCount();
-
-    //sort to find nearest
-    if (rowcount>0){
-        //int distance=traffic.distance();
-
-        for (int i = 0; i < rowcount; ++i) {
-            Traffic compare_traffic=m_traffic.at(i);
-            if (traffic.distance() < compare_traffic.distance()){
-                m_traffic.insert(i, traffic);
-                break;
-            }
-            if (i == rowcount-1){
-                m_traffic.insert(i+1, traffic);
-                break;
-            }
-        }
-    }
-    else {
-        //first entry
+        beginInsertRows(QModelIndex(), 0, total_rows-1);
         m_traffic.insert(0, traffic);
     }
+    else {
+        m_traffic.insert(current_row, traffic);
+    }
+
+    if (current_row == total_rows-1){
+        //the last entry has been made
+        endInsertRows();
+        emit dataChanged(this->index(0),this->index(rowCount()));
+    }
+    /* old distance sort limiting the rows to nearest X results
+        int rowcount=rowCount();
+
+        if (rowcount>0){
+            for (int i = 0; i < rowcount; ++i) {
+                Traffic compare_traffic=m_traffic.at(i);
+                if (traffic.distance() < compare_traffic.distance()){
+                    if(i<=m_row_limit){
+                        m_traffic.insert(i, traffic);
+                    }
+                    break;
+                }
+                if (i == rowcount-1){
+                    if(i+1<=m_row_limit){
+                        m_traffic.insert(i+1, traffic);
+                    }
+                    break;
+                }
+            }
+        }
+        else {
+           //first entry
+                m_traffic.insert(0, traffic);
+        }
+ */
 }
 
 void MarkerModel::doneAddingMarkers(){
+    /*
+    //NO LONGER CALLED
+
     //qDebug() << "onDoneAddingMarkers rowcount=" << rowCount();
+
     endInsertRows();
 
-    //get the last displayed row and distance of that object
-        Traffic distant_traffic=m_traffic.at(m_row_limit);
-        set_adsb_radius(distant_traffic.distance()*1000);
+    // this signal is probably redundant but doesnt seem to hurt. It is ussed by the ADSB widget
+    emit dataChanged(this->index(0),this->index(rowCount()));
 
-    // not necessary- endinsertrows sends signal
-   // emit dataChanged(this->index(0),this->index(rowCount()));
+    //get the last displayed row and distance of that object (it is most distant)
+    Traffic distant_traffic=m_traffic.at(rowCount()-1);
+    set_adsb_radius(distant_traffic.distance()*1000);
+    */
 }
 
 void MarkerModel::set_adsb_radius(int adsb_radius){
+    //drawing a box now
     m_adsb_radius=adsb_radius;
     //qDebug() << "adsbradius=" << m_adsb_radius;
     emit adsb_radius_changed(m_adsb_radius);
@@ -121,11 +135,32 @@ void MarkerModel::set_adsb_radius(int adsb_radius){
 
 void MarkerModel::removeAllMarkers(){
     //remove all rows before adding new
+
     beginResetModel();
+    //qDeleteAll(m_traffic.begin(), m_traffic.end());
+    //qDeleteAll(m_traffic);
     m_traffic.clear();
     endResetModel();
+
+    /*
+    int removerowcount=rowCount();
+
+    if (removerowcount>0){
+        //qDebug() << "begin rowcount= " <<removerowcount;
+
+        beginRemoveRows(QModelIndex(), 0, removerowcount);
+        for (int z = 0; z < removerowcount; z++){
+            //qDebug() << "removing " << z << " of "<< removerowcount;
+            m_traffic.removeAt(z);
+        }
+        m_traffic.clear();
+        endRemoveRows();
+
     emit dataChanged(this->index(0),this->index(rowCount()));
+    }
+   */
 }
+
 
 Traffic MarkerModel::getMarker(int index)const {
     return m_traffic.at(index);

@@ -27,15 +27,15 @@ public:
     int distance() const;
 
 private:
-    QString m_callsign;
-    int m_contact;
-    double m_lat;
-    double m_lon;
-    double m_alt;
-    double m_velocity;
-    double m_track;
-    double m_vertical;
-    int m_distance;
+    QString m_callsign= "---";
+    int m_contact= 0;
+    double m_lat= 0.0;
+    double m_lon= 0.0;
+    double m_alt= 99999;
+    double m_velocity= 0;
+    double m_track= 0.0;
+    double m_vertical= 0.0;
+    int m_distance= 0;
 };
 
 
@@ -84,7 +84,7 @@ public slots:
 
 private:
     QList<Traffic> m_traffic;
-    int m_row_limit; //filters adsb traffic to nearest #
+    int m_row_limit;
     QSettings settings;
     int m_adsb_radius;
 };
