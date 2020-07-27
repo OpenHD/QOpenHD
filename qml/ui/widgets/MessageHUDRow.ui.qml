@@ -64,7 +64,7 @@ Item {
         verticalAlignment: Text.AlignVCenter
         elide: Text.ElideRight
         font.bold: true
-        color: "#ffffffff"
+        color: settings.color_text
         anchors.left: messageIcon.right
         anchors.top: parent.top
         anchors.bottom: parent.bottom
@@ -72,5 +72,7 @@ Item {
         text: model.text
         leftPadding: 6
         rightPadding: 0
+        style: Text.Outline
+        styleColor: settings.color_glow
     }
 }
