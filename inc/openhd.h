@@ -117,8 +117,10 @@ public:
     Q_PROPERTY(double lon MEMBER m_lon WRITE set_lon NOTIFY lon_changed)
     void set_lon(double lon);
 
-    double get_lat(){return m_lat;};
-    double get_lon(){return m_lon;};
+    double get_lat(){return m_lat;}
+    double get_lon(){return m_lon;}
+    double get_msl_alt(){return m_alt_msl;}
+    double get_hdg(){return m_hdg;}
 
     Q_PROPERTY(int satellites_visible MEMBER m_satellites_visible WRITE set_satellites_visible NOTIFY satellites_visible_changed)
     void set_satellites_visible(int satellites_visible);
