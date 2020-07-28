@@ -126,7 +126,7 @@ void OpenHDVideo::onStarted() {
 
     QObject::connect(&m_receiverThread, &QThread::started, m_receiver, &OpenHDVideoReceiver::onStarted);
     m_receiver->moveToThread(&m_receiverThread);
-    QObject::connect(m_receiver, &OpenHDVideoReceiver::receivedData, this, &OpenHDVideo::onReceivedData);
+    QObject::connect(m_receiver, &OpenHDVideoReceiver::receivedData, this, &OpenHDVideo::onReceivedData, Qt::QueuedConnection);
 
     m_receiverThread.start();
 
