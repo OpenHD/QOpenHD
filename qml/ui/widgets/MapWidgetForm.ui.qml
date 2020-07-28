@@ -186,6 +186,27 @@ BaseWidget {
                     onCheckedChanged: settings.map_orientation = checked
                 }
             }
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("Show Drone Track")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 6
+                    anchors.right: parent.right
+                    checked: settings.map_drone_track
+                    onCheckedChanged: settings.map_drone_track = checked
+                }
+            }
             /*
             Item {
                 width: parent.width

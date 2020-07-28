@@ -25,7 +25,7 @@ Map {
     property double center_coord_lon: 0.0
     property int track_count: 0;
     property int track_skip: 1;
-    property int track_limit: 50;
+    property int track_limit: 100;
 
     Connections {
         target: BlackBoxModel
@@ -107,29 +107,32 @@ Map {
         enabled: EnableADSB
 
     function addDroneTrack(){
-        if (track_count==0){
-            droneTrack.addCoordinate(QtPositioning.coordinate(OpenHD.lat, OpenHD.lon));
-            console.log("total points=", droneTrack.pathLength());
-        }
+        if (settings.map_drone_track===true){
 
-        track_count=track_count+1;
+            if (track_count==0){
+                droneTrack.addCoordinate(QtPositioning.coordinate(OpenHD.lat, OpenHD.lon));
+                console.log("total points=", droneTrack.pathLength());
+            }
 
-        if(track_count==track_skip){
-            track_count=0;
-        }
+            track_count=track_count+1;
 
-        if (droneTrack.pathLength()===track_limit){
-            //make line more coarse
-            track_skip=track_skip*2;
-            //cut the points in the list by half
-            for (var i = 0; i < track_limit; ++i) {
-                if (i % 2){//its odd
-                    droneTrack.removeCoordinate(i);
+            if(track_count==track_skip){
+                track_count=0;
+            }
+
+            if (droneTrack.pathLength()===track_limit){
+                //make line more coarse
+                track_skip=track_skip*2;
+                //cut the points in the list by half
+                for (var i = 0; i < track_limit; ++i) {
+                    if (i % 2){//its odd
+                        droneTrack.removeCoordinate(i);
+                    }
                 }
             }
-        }
 
-        //console.log("drone position=",OpenHD.lat, OpenHD.lon);
+            //console.log("drone position=",OpenHD.lat, OpenHD.lon);
+        }
     }
 
     MapPolyline {
