@@ -81,7 +81,7 @@ void OpenHDVideoReceiver::start() {
     }
 
     m_socket->bind(QHostAddress::Any, m_video_port);
-    m_socket->setSocketOption(QUdpSocket::SocketOption::ReceiveBufferSizeSocketOption, 12050000);
+    m_socket->setSocketOption(QAbstractSocket::ReceiveBufferSizeSocketOption, 2000000);
 }
 
 
