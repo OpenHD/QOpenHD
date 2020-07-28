@@ -97,28 +97,28 @@ Rectangle {
             Layout.fillWidth: true
 
             cardName: qsTr("Air")
-            cardBody: RowLayout {
+            cardBody: Item {
                 height: parent.height
 
                 Text {
+                    id: airVersionID
                     text: qsTr("OpenHD Version:")
+                    anchors.left: parent.left
+                    anchors.top: parent.top
                     height: 24
-                    Layout.fillWidth: true
                     font.pixelSize: 14
                     font.bold: true
-                    verticalAlignment: Text.AlignVCenter
-                    horizontalAlignment: Text.AlignLeft
                     leftPadding: 12
                 }
 
                 Text {
                     text: AirStatusMicroservice.openHDVersion
+                    anchors.left: airVersionID.right
+                    anchors.horizontalCenter: airVersionID.horizontalCenter
                     height: 24
-                    Layout.fillWidth: true
+                    width: 256
                     font.pixelSize: 14
-                    verticalAlignment: Text.AlignVCenter
-                    horizontalAlignment: Text.AlignRight
-                    rightPadding: 12
+                    leftPadding: 6
                 }
             }
         }
@@ -128,28 +128,28 @@ Rectangle {
             height: 128
             Layout.fillWidth: true
             cardName: qsTr("Ground")
-            cardBody: RowLayout {
+            cardBody: Item {
                 height: parent.height
 
                 Text {
+                    id: groundVersionID
                     text: qsTr("OpenHD Version:")
+                    anchors.left: parent.left
+                    anchors.top: parent.top
                     height: 24
-                    Layout.fillWidth: true
                     font.pixelSize: 14
                     font.bold: true
-                    verticalAlignment: Text.AlignVCenter
-                    horizontalAlignment: Text.AlignLeft
                     leftPadding: 12
                 }
 
                 Text {
                     text: GroundStatusMicroservice.openHDVersion
+                    anchors.left: groundVersionID.right
+                    anchors.horizontalCenter: groundVersionID.horizontalCenter
                     height: 24
-                    Layout.fillWidth: true
+                    width: 256
                     font.pixelSize: 14
-                    verticalAlignment: Text.AlignVCenter
-                    horizontalAlignment: Text.AlignRight
-                    rightPadding: 12
+                    leftPadding: 6
                 }
             }
 
