@@ -19,6 +19,21 @@
 #include "pps_parser.h"
 
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netdb.h>
+
+#include <unistd.h>
+#include <fcntl.h>
+
+//#define USE_RAW_SOCKET
+
+
 OpenHDVideoReceiver::OpenHDVideoReceiver(enum OpenHDStreamType stream_type): QObject(), m_stream_type(stream_type) {
     qDebug() << "OpenHDVideoReceiver::OpenHDVideoReceiver()";
 }
@@ -54,7 +69,9 @@ void OpenHDVideoReceiver::processDatagrams() {
 void OpenHDVideoReceiver::onStarted() {
     qDebug() << "OpenHDVideoReceiver::onStarted()";
 
+    #if defined(USE_RAW_SOCKET)
 
+    #else
     m_socket = new QUdpSocket();
     m_socket->moveToThread(&m_socketThread);
 
@@ -62,12 +79,18 @@ void OpenHDVideoReceiver::onStarted() {
     m_socketThread.setPriority(QThread::TimeCriticalPriority);
     connect(m_socket, &QUdpSocket::readyRead, this, &OpenHDVideoReceiver::processDatagrams);
 
+    #endif
+
     start();
 }
 
 
 void OpenHDVideoReceiver::stop() {
+#if defined(USE_RAW_SOCKET)
+
+#else
     m_socket->close();
+#endif
 }
 
 
@@ -80,8 +103,60 @@ void OpenHDVideoReceiver::start() {
         m_video_port = settings.value("pip_video_port", 5601).toInt();
     }
 
+#if defined(USE_RAW_SOCKET)
+    struct sockaddr_in myaddr;
+    int recvlen;
+    int fd;
+    unsigned char buf[65535];
+
+    /* create a UDP socket */
+
+    if ((fd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0) {
+        perror("cannot create socket\n");
+        return;
+    }
+
+
+
+    memset((char *)&myaddr, 0, sizeof(myaddr));
+    myaddr.sin_family = AF_INET;
+    myaddr.sin_addr.s_addr = htonl(INADDR_ANY);
+    myaddr.sin_port = htons(5600);
+
+    if (bind(fd, (struct sockaddr *)&myaddr, sizeof(myaddr)) < 0) {
+        perror("bind failed");
+        return;
+    }
+
+    int n = 1024 * 1024;
+
+    if (setsockopt(fd, SOL_SOCKET, SO_RCVBUF, &n, sizeof(n)) == -1) {
+        qDebug() << "Failed to set socket SO_RCVBUF";
+    }
+
+
+    //int flags = fcntl(fd, F_GETFL, 0);
+    //fcntl(fd, F_SETFL, flags | O_NONBLOCK);
+
+    int d;
+    socklen_t len = sizeof(d);
+
+    getsockopt(fd, SOL_SOCKET, SO_RCVBUF, &d, &len);
+
+    qDebug() << "real socket buffer size: " << d;
+
+    for (;;) {
+        recvlen = recvfrom(fd, buf, 65535, 0, NULL, NULL);
+
+        if (recvlen > 0) {
+            QByteArray datagram((char*)buf, recvlen);
+            emit receivedData(datagram);
+        }
+    }
+#else
     m_socket->bind(QHostAddress::Any, m_video_port);
     m_socket->setSocketOption(QAbstractSocket::ReceiveBufferSizeSocketOption, 2000000);
+#endif
 }
 
 
