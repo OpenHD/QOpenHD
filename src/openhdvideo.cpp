@@ -54,11 +54,15 @@ void OpenHDVideoReceiver::processDatagrams() {
 void OpenHDVideoReceiver::onStarted() {
     qDebug() << "OpenHDVideoReceiver::onStarted()";
 
+
     m_socket = new QUdpSocket();
+    m_socket->moveToThread(&m_socketThread);
+
+    m_socketThread.start();
+    m_socketThread.setPriority(QThread::TimeCriticalPriority);
+    connect(m_socket, &QUdpSocket::readyRead, this, &OpenHDVideoReceiver::processDatagrams);
 
     start();
-
-    connect(m_socket, &QUdpSocket::readyRead, this, &OpenHDVideoReceiver::processDatagrams);
 }
 
 

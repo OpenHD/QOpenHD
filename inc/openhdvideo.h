@@ -49,6 +49,7 @@ public slots:
     void start();
 
 protected:
+    QThread m_socketThread;
     void processDatagrams();
     int m_video_port = 0;
     QUdpSocket *m_socket;
