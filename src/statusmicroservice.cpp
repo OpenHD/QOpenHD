@@ -76,10 +76,10 @@ void StatusMicroservice::onProcessMavlinkMessage(mavlink_message_t msg) {
             mavlink_openhd_version_message_t version_message;
             mavlink_msg_openhd_version_message_decode(&msg, &version_message);
 
-            QByteArray openhd_version(version_message.version, 30);
-            if (!openhd_version.contains('\0')) {
-               openhd_version.append('\0');
-            }
+            // the microservice code ensures that there is always a null at the end of this array
+            // before sending the message, so we can rely on there being one and use QString directly
+            QString openhd_version(version_message.version);
+
 
             setOpenHDVersion(openhd_version);
 
