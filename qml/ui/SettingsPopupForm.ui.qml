@@ -51,6 +51,12 @@ Rectangle {
                 height: 48
                 width: parent.width
 
+                MouseArea {
+                    id: appButtonMouseArea
+                    anchors.fill: parent
+                    onClicked: mainStackLayout.currentIndex = 0
+                }
+
                 Text {
                     id: appIcon
                     text: "\uf013"
@@ -72,11 +78,6 @@ Rectangle {
                     height: parent.height
                     anchors.left: appIcon.right
                     anchors.leftMargin: 6
-                    MouseArea {
-                        id: appButtonMouseArea
-                        anchors.fill: parent
-                        onClicked: mainStackLayout.currentIndex = 0
-                    }
 
                     text: qsTr("App")
                     font.pixelSize: 15
@@ -89,6 +90,11 @@ Rectangle {
             Item {
                 height: 48
                 width: parent.width
+                MouseArea {
+                    id: groundButtonMouseArea
+                    anchors.fill: parent
+                    onClicked: mainStackLayout.currentIndex = 1
+                }
 
                 Text {
                     id: groundIcon
@@ -111,11 +117,6 @@ Rectangle {
                     height: parent.height
                     anchors.left: groundIcon.right
                     anchors.leftMargin: 6
-                    MouseArea {
-                        id: groundButtonMouseArea
-                        anchors.fill: parent
-                        onClicked: mainStackLayout.currentIndex = 1
-                    }
 
                     text: qsTr("Ground")
                     font.pixelSize: 15
@@ -128,6 +129,11 @@ Rectangle {
             Item {
                 height: 48
                 width: parent.width
+                MouseArea {
+                    id: statusButtonMouseArea
+                    anchors.fill: parent
+                    onClicked: mainStackLayout.currentIndex = 2
+                }
 
                 Text {
                     id: statusIcon
@@ -150,11 +156,6 @@ Rectangle {
                     height: parent.height
                     anchors.left: statusIcon.right
                     anchors.leftMargin: 6
-                    MouseArea {
-                        id: statusButtonMouseArea
-                        anchors.fill: parent
-                        onClicked: mainStackLayout.currentIndex = 2
-                    }
 
                     text: qsTr("Status")
                     font.pixelSize: 15
@@ -168,6 +169,11 @@ Rectangle {
                 height: 48
                 width: parent.width
                 visible: false
+                MouseArea {
+                    id: chartsButtonMouseArea
+                    anchors.fill: parent
+                    onClicked: mainStackLayout.currentIndex = 3
+                }
 
                 Text {
                     id: chartsIcon
@@ -190,11 +196,6 @@ Rectangle {
                     height: parent.height
                     anchors.left: chartsIcon.right
                     anchors.leftMargin: 6
-                    MouseArea {
-                        id: chartsButtonMouseArea
-                        anchors.fill: parent
-                        onClicked: mainStackLayout.currentIndex = 3
-                    }
 
                     text: qsTr("Charts")
                     font.pixelSize: 15
@@ -207,6 +208,11 @@ Rectangle {
             Item {
                 height: 48
                 width: parent.width
+                MouseArea {
+                    id: powerButtonMouseArea
+                    anchors.fill: parent
+                    onClicked: mainStackLayout.currentIndex = 4
+                }
 
                 Text {
                     id: powerIcon
@@ -229,11 +235,6 @@ Rectangle {
                     height: parent.height
                     anchors.left: powerIcon.right
                     anchors.leftMargin: 6
-                    MouseArea {
-                        id: powerButtonMouseArea
-                        anchors.fill: parent
-                        onClicked: mainStackLayout.currentIndex = 4
-                    }
 
                     text: qsTr("Power")
                     font.pixelSize: 15
@@ -248,6 +249,11 @@ Rectangle {
                 height: 48
                 width: parent.width
                 visible: false
+                MouseArea {
+                    id: sensorsButtonMouseArea
+                    anchors.fill: parent
+                    onClicked: mainStackLayout.currentIndex = 5
+                }
 
                 Text {
                     id: sensorsIcon
@@ -270,11 +276,6 @@ Rectangle {
                     height: parent.height
                     anchors.left: sensorsIcon.right
                     anchors.leftMargin: 6
-                    MouseArea {
-                        id: sensorsButtonMouseArea
-                        anchors.fill: parent
-                        onClicked: mainStackLayout.currentIndex = 5
-                    }
 
                     text: qsTr("Sensors")
                     font.pixelSize: 15
@@ -287,6 +288,11 @@ Rectangle {
             Item {
                 height: 48
                 width: parent.width
+                MouseArea {
+                    id: aboutButtonMouseArea
+                    anchors.fill: parent
+                    onClicked: mainStackLayout.currentIndex = 6
+                }
 
                 Text {
                     id: aboutIcon
@@ -309,11 +315,6 @@ Rectangle {
                     height: parent.height
                     anchors.left: aboutIcon.right
                     anchors.leftMargin: 6
-                    MouseArea {
-                        id: aboutButtonMouseArea
-                        anchors.fill: parent
-                        onClicked: mainStackLayout.currentIndex = 6
-                    }
 
                     text: qsTr("About")
                     font.pixelSize: 15
