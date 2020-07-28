@@ -73,10 +73,10 @@ void OpenHDVideoReceiver::onStarted() {
 
     #else
     m_socket = new QUdpSocket();
-    m_socket->moveToThread(&m_socketThread);
+    //m_socket->moveToThread(&m_socketThread);
 
-    m_socketThread.start();
-    m_socketThread.setPriority(QThread::TimeCriticalPriority);
+    //m_socketThread.start();
+    //m_socketThread.setPriority(QThread::TimeCriticalPriority);
     connect(m_socket, &QUdpSocket::readyRead, this, &OpenHDVideoReceiver::processDatagrams);
 
     #endif
@@ -204,6 +204,7 @@ void OpenHDVideo::onStarted() {
     QObject::connect(m_receiver, &OpenHDVideoReceiver::receivedData, this, &OpenHDVideo::onReceivedData, Qt::QueuedConnection);
 
     m_receiverThread.start();
+    m_receiverThread.setPriority(QThread::TimeCriticalPriority);
 
     emit setup();
 }
