@@ -194,6 +194,7 @@ void OpenHDVideo::reconfigure() {
         havePPS = false;
         sentIDR = false;
         isStart = true;
+        isConfigured = false;
         QMetaObject::invokeMethod(m_receiver, "start");
     }
 }
