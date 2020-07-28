@@ -299,11 +299,12 @@ void OpenHDVideo::parseRTP(QByteArray &datagram) {
                 reassembled |= (nalu_nri << 5);
                 reassembled |= (fu_a.type & 0x1f);
                 rtpBuffer.append((char*)&reassembled, 1);
-            }
-
-            rtpBuffer.append(payload.data() + 2, payload.size() - 2);
-            if (fu_a.e == 1) {
+                rtpBuffer.append(payload.data() + 2, payload.size() - 2);
+            } else if (fu_a.e == 1) {
+                rtpBuffer.append(payload.data() + 2, payload.size() - 2);
                 submit = true;
+            } else {
+                rtpBuffer.append(payload.data() + 2, payload.size() - 2);
             }
             break;
         }
