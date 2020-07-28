@@ -297,7 +297,7 @@ void OpenHDVideo::parseRTP(QByteArray &datagram) {
                 uint8_t reassembled = 0;
                 reassembled |= (nalu_f << 7);
                 reassembled |= (nalu_nri << 5);
-                reassembled |= (fu_a.type);
+                reassembled |= (fu_a.type & 0x1f);
                 rtpBuffer.append((char*)&reassembled, 1);
             }
 
