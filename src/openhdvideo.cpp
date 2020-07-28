@@ -480,6 +480,7 @@ void OpenHDVideo::processNAL(QByteArray &nalUnit) {
             break;
         }
         default: {
+            qDebug() << "unknown frame_type: " << nalu_type;
             break;
         }
     }
