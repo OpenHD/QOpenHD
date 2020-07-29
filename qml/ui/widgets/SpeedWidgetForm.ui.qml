@@ -159,6 +159,9 @@ BaseWidget {
 
                 onValueChanged: { // @disable-check M223
                     settings.speed_range = speed_range_Slider.value;
+                    if (!settings.show_speed_ladder) {
+                        return;
+                    }
                     canvasSpeedLadder.requestPaint();
                 }
             }
@@ -189,6 +192,9 @@ BaseWidget {
 
                 onValueChanged: { // @disable-check M223
                     settings.speed_minimum = speed_minimum_Slider.value
+                    if (!settings.show_speed_ladder) {
+                        return;
+                    }
                     canvasSpeedLadder.requestPaint();
                 }
             }
@@ -222,7 +228,12 @@ BaseWidget {
 
             Connections{
                 target:OpenHD
-                function onSpeedChanged() { // if user selects msl it is part of same mavlink msg
+                function onSpeedChanged() {
+                    if (!settings.show_speed_ladder) {
+                        return;
+                    }
+
+                    // if user selects msl it is part of same mavlink msg
                     canvasSpeedLadder.requestPaint()
                 }
             }
