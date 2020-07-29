@@ -69,6 +69,14 @@ void OpenHDVideoReceiver::processDatagrams() {
 void OpenHDVideoReceiver::onStarted() {
     qDebug() << "OpenHDVideoReceiver::onStarted()";
 
+    QSettings settings;
+
+    if (m_stream_type == OpenHDStreamTypeMain) {
+        m_video_port = settings.value("main_video_port", 5600).toInt();
+    } else {
+        m_video_port = settings.value("pip_video_port", 5601).toInt();
+    }
+
     #if defined(USE_RAW_SOCKET)
 
     #else
@@ -182,6 +190,12 @@ void OpenHDVideo::onStarted() {
     qDebug() << "OpenHDVideo::onStarted()";
 
     QSettings settings;
+
+    if (m_stream_type == OpenHDStreamTypeMain) {
+        m_video_port = settings.value("main_video_port", 5600).toInt();
+    } else {
+        m_video_port = settings.value("pip_video_port", 5601).toInt();
+    }
 
     m_enable_rtp = settings.value("enable_rtp", true).toBool();
 
