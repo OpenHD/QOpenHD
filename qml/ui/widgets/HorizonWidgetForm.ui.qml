@@ -341,12 +341,20 @@ BaseWidget {
             Connections{
                 target:OpenHD
                 function onHdgChanged() {
+                    if (!settings.show_horizon) {
+                        return;
+                    }
+
                     canvasHeadingLadder.requestPaint()
                 }
             }
             Connections{
                 target:settings
                 function onHeading_ladder_textChanged() {
+                    if (!settings.show_horizon) {
+                        return;
+                    }
+
                     canvasHeadingLadder.requestPaint()
                 }
             }
