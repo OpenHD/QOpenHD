@@ -151,8 +151,11 @@ BaseWidget {
                         visible: styleData.value
                         implicitWidth: outerRadius * 0.05
                         antialiasing: true
-                        implicitHeight: outerRadius * 0.09
+                        implicitHeight: outerRadius * 0.2
                         color: settings.color_shape
+                        border.color: settings.color_glow
+                        border.width: 1
+                        width: 3
                     }
 
                     tickmarkLabel:  Text {
@@ -172,6 +175,9 @@ BaseWidget {
                         implicitHeight: outerRadius
                         antialiasing: true
                         color: settings.color_text
+                        border.color: settings.color_glow
+                        border.width: 1
+                        width: 3
                     }
 
                     function degreesToRadians(degrees) {
@@ -185,13 +191,15 @@ BaseWidget {
                             ctx.reset();
 
                             ctx.beginPath();
+
+                            //ctx.strokeStyle = settings.color_glow;
                             ctx.strokeStyle = settings.color_shape
-                            ctx.lineWidth = outerRadius * 0.02;
+                            ctx.lineWidth = 3;
 
                             ctx.arc(outerRadius, outerRadius, outerRadius - ctx.lineWidth / 2,
                                     degreesToRadians(valueToAngle(settings.vsi_max*-1) - 90),
                                     degreesToRadians(valueToAngle(settings.vsi_max) - 90));
-                            ctx.stroke();
+                            ctx.stroke();                            
                         }
                     }
                 }
