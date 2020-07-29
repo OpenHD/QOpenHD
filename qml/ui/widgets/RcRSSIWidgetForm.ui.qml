@@ -101,6 +101,8 @@ BaseWidget {
                 anchors.bottom: parent.bottom
                 width: 3
                 height: 5
+                border.color: settings.color_glow
+                border.width: 1
                 color: {
                     if(OpenHD.rc_rssi==0){
                         return "red";
@@ -119,6 +121,8 @@ BaseWidget {
                 anchors.leftMargin: 2
                 width: 3
                 height: 10
+                border.color: settings.color_glow
+                border.width: 1
                 color: {
                     if(OpenHD.rc_rssi==0){
                         return "red";
@@ -142,6 +146,8 @@ BaseWidget {
                 anchors.left: rcRSSI_21to40.right
                 anchors.bottom: parent.bottom
                 anchors.leftMargin: 2
+                border.color: settings.color_glow
+                border.width: 1
                 width: 3
                 height: 15
                 color: {
@@ -167,6 +173,8 @@ BaseWidget {
                 anchors.left: rcRSSI_41to60.right
                 anchors.bottom: parent.bottom
                 anchors.leftMargin: 2
+                border.color: settings.color_glow
+                border.width: 1
                 width: 3
                 height: 20
                 color: {
@@ -192,6 +200,8 @@ BaseWidget {
                 anchors.left: rcRSSI_61to80.right
                 anchors.bottom: parent.bottom
                 anchors.leftMargin: 2
+                border.color: settings.color_glow
+                border.width: 1
                 width: 3
                 height: 25
                 color: {
