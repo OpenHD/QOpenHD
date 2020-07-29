@@ -69,6 +69,9 @@ void OpenHDVideoReceiver::processDatagrams() {
 void OpenHDVideoReceiver::onStarted() {
     qDebug() << "OpenHDVideoReceiver::onStarted()";
 
+    connect(this, &OpenHDVideoReceiver::start, this, &OpenHDVideoReceiver::onStart, Qt::BlockingQueuedConnection);
+    connect(this, &OpenHDVideoReceiver::stop, this, &OpenHDVideoReceiver::onStop, Qt::BlockingQueuedConnection);
+
     QSettings settings;
 
     if (m_stream_type == OpenHDStreamTypeMain) {
@@ -89,11 +92,11 @@ void OpenHDVideoReceiver::onStarted() {
 
     #endif
 
-    start();
+    onStart();
 }
 
 
-void OpenHDVideoReceiver::stop() {
+void OpenHDVideoReceiver::onStop() {
 #if defined(USE_RAW_SOCKET)
 
 #else
@@ -102,7 +105,7 @@ void OpenHDVideoReceiver::stop() {
 }
 
 
-void OpenHDVideoReceiver::start() {
+void OpenHDVideoReceiver::onStart() {
     QSettings settings;
 
     if (m_stream_type == OpenHDStreamTypeMain) {
@@ -274,7 +277,7 @@ void OpenHDVideo::reconfigure() {
 
     if (m_restart) {
         m_restart = false;
-        QMetaObject::invokeMethod(m_receiver, "stop");
+        emit m_receiver->stop();
         stop();
         tempBuffer.clear();
         rtpBuffer.clear();
@@ -285,7 +288,7 @@ void OpenHDVideo::reconfigure() {
         sentIDR = false;
         isStart = true;
         isConfigured = false;
-        QMetaObject::invokeMethod(m_receiver, "start");
+        emit m_receiver->start();
     }
 }
 

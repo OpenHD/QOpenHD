@@ -42,11 +42,13 @@ public:
 signals:
     void setup();
     void receivedData(QByteArray data);
+    void start();
+    void stop();
 
 public slots:
     void onStarted();
-    void stop();
-    void start();
+    void onStop();
+    void onStart();
 
 protected:
     QThread m_socketThread;
