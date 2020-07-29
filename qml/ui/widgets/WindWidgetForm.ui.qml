@@ -30,6 +30,7 @@ BaseWidget {
     defaultYOffset: 128
 
     hasWidgetDetail: true
+    widgetDetailHeight: 190
     widgetDetailComponent: Column {
         Item {
             width: parent.width
@@ -258,13 +259,12 @@ BaseWidget {
                 id: arrow
                 anchors.fill: parent
                 antialiasing: true
-                opacity: settings.arrow_opacity
 
                 visible: settings.wind_arrow_circle ? false : true
 
                 ShapePath {
                     capStyle: ShapePath.RoundCap
-                    strokeColor: settings.color_shape
+                    strokeColor: settings.color_glow
                     fillColor: settings.color_shape
                     strokeWidth: 1
                     strokeStyle: ShapePath.SolidLine
@@ -286,20 +286,52 @@ BaseWidget {
                     angle: (settings.wind_plane_copter ? OpenHD.wind_direction : OpenHD.mav_wind_direction) - OpenHD.hdg - 180
                 }
             }
+            Rectangle {
+                id: outerCircleGlow
 
+                anchors.centerIn: parent
+                visible: settings.wind_arrow_circle ? true : false
+                width: ((parent.width<parent.height?parent.width:parent.height))+2
+                height: width
+                color: "transparent"
+                radius: width*0.5
+                border.color: settings.color_glow
+                border.width: 3
+            }
+            Rectangle {
+                id: innerCircleGlow
+
+                anchors.centerIn: parent
+                visible: settings.wind_arrow_circle ? true : false
+                width: ((parent.width<parent.height?parent.width:parent.height)/2)+2
+                height: width
+                color: "transparent"
+                radius: width*0.5
+
+                border.color: settings.color_glow
+                border.width: 3
+            }
             Shape {
                 id: lowerPointer
                 anchors.fill: parent
                 antialiasing: true
-                opacity: settings.arrow_opacity
 
                 visible: settings.wind_arrow_circle ? true : false
 
                 ShapePath {
-                    capStyle: ShapePath.RoundCap
+                    capStyle: ShapePath.FlatCap
+                    strokeColor: settings.color_glow
+                    strokeWidth: 3
+                    strokeStyle: ShapePath.SolidLine
+
+                    startX: 25
+                    startY: 37
+                    PathLine { x: 25; y: 49  }
+                }
+                ShapePath {
+                    capStyle: ShapePath.FlatCap
                     strokeColor: settings.color_shape
-                    fillColor: settings.color_shape
-                    strokeWidth: 2
+                    strokeWidth: 1
                     strokeStyle: ShapePath.SolidLine
 
                     startX: 25
@@ -318,15 +350,22 @@ BaseWidget {
 
                 anchors.fill: parent
                 antialiasing: true
-                opacity: settings.arrow_opacity
 
                 visible: settings.wind_arrow_circle ? true : false
 
                 ShapePath {
-                    capStyle: ShapePath.RoundCap
+                    capStyle: ShapePath.FlatCap
+                    strokeColor: settings.color_glow
+                    strokeWidth: 3
+                    strokeStyle: ShapePath.SolidLine
+                    startX: 25
+                    startY: 38
+                    PathLine { x: 25; y: 49  }
+                }
+                ShapePath {
+                    capStyle: ShapePath.FlatCap
                     strokeColor: settings.color_shape
-                    fillColor: settings.color_shape
-                    strokeWidth: 2
+                    strokeWidth: 1
                     strokeStyle: ShapePath.SolidLine
                     startX: 25
                     startY: 38
@@ -344,8 +383,7 @@ BaseWidget {
                         (settings.wind_plane_copter ? OpenHD.wind_direction : OpenHD.mav_wind_direction)-OpenHD.hdg-170;
                     }
                 }
-            }
-
+            }            
             Rectangle {
                 id: outerCircle
 
@@ -371,7 +409,6 @@ BaseWidget {
                 border.color: settings.color_shape
                 border.width: .5
             }
-
             Text {
                 id: wind_text
                 color: settings.color_text
