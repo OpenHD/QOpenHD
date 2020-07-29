@@ -17,6 +17,7 @@ ThrottleWidgetForm {
 
         function onThrottleChanged(throttle) {
             gaugeAngle = map(throttle, 0, 100, 0, 180);
+            gaugeAngleGlow = map(throttle, 0, 100, 0, 180);
         }
     }
 }
