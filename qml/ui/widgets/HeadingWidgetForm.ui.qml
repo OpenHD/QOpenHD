@@ -206,8 +206,8 @@ BaseWidget {
 
                     ctx.fillStyle = settings.color_shape;
                     //cant get a good approximation of glow via canvas
-                    //ctx.strokeStyle = settings.color_glow;
-                    //ctx.lineWidth = 1;
+                    ctx.strokeStyle = settings.color_glow;
+                    ctx.lineWidth = 1;
                     ctx.font = "bold 11px sans-serif";
                     ctx.textAlign = "center";
 
@@ -238,11 +238,13 @@ BaseWidget {
                         // console.log("heading:  ",i);
                         if (i % 30 == 0) {
                             //big ticks
+                            ctx.stroke();
                             ctx.rect(x, y, 3, 8);
                             ctx.fill();
                         }
                         else if (i % 15 == 0) {
                             //little ticks
+                            ctx.stroke();
                             ctx.rect(x, y+3, 2,5);
                             ctx.fill();
                         }
@@ -328,7 +330,52 @@ BaseWidget {
             style: Text.Outline
             styleColor: settings.color_glow
         }
-
+        Shape {
+            id: outlineGlow
+            anchors.fill: parent
+            transform: Scale { origin.x: 24; origin.y: 24; xScale: settings.heading_size ; yScale: settings.heading_size}
+            ShapePath {
+                capStyle: ShapePath.RoundCap
+                strokeColor: settings.color_glow
+                strokeWidth: 3
+                strokeStyle: ShapePath.SolidLine
+                fillColor: "transparent"
+                startX: 4
+                startY: 0
+                PathLine {
+                    x: 4
+                    y: 0
+                }
+                PathLine {
+                    x: 44
+                    y: 0
+                }
+                PathLine {
+                    x: 44
+                    y: 24
+                }
+                PathLine {
+                    x: 32
+                    y: 24
+                }
+                PathLine {
+                    x: 24
+                    y: 32
+                }
+                PathLine {
+                    x: 16
+                    y: 24
+                }
+                PathLine {
+                    x: 4
+                    y: 24
+                }
+                PathLine {
+                    x: 4
+                    y: 0
+                }
+            }
+        }
         Shape {
             id: outline
             anchors.fill: parent
