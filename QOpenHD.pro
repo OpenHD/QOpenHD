@@ -335,11 +335,14 @@ AndroidBuild {
 
         HEADERS += \
             inc/openhdandroidrender.h \
-            inc/openhdandroidvideo.h
+            inc/openhdandroidvideo.h \
+            inc/androidsurfacetexture.h
+
 
         SOURCES += \
             src/openhdandroidrender.cpp \
-            src/openhdandroidvideo.cpp
+            src/openhdandroidvideo.cpp \
+            src/androidsurfacetexture.cpp
 
         OTHER_FILES += \
             $$PWD/android/src/org/openhd/OpenHDActivity.java \
