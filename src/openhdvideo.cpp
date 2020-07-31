@@ -6,6 +6,7 @@
 
 #include <QtConcurrent>
 #include <QtQuick>
+#include <QMutex>
 #include <QUdpSocket>
 
 #include "localmessage.h"
@@ -31,10 +32,8 @@
 #include <unistd.h>
 #include <fcntl.h>
 
-//#define USE_RAW_SOCKET
 
-
-OpenHDVideoReceiver::OpenHDVideoReceiver(enum OpenHDStreamType stream_type): QObject(), m_stream_type(stream_type) {
+OpenHDVideoReceiver::OpenHDVideoReceiver(OpenHDVideo *video, enum OpenHDStreamType stream_type): QObject(), m_stream_type(stream_type), m_video(video) {
     qDebug() << "OpenHDVideoReceiver::OpenHDVideoReceiver()";
 }
 
@@ -44,28 +43,6 @@ OpenHDVideoReceiver::~OpenHDVideoReceiver() {
 }
 
 
-/*
- * Called by QUdpSocket signal readyRead()
- *
- */
-void OpenHDVideoReceiver::processDatagrams() {
-    QByteArray datagram;
-
-    while (m_socket->hasPendingDatagrams()) {
-        datagram.resize(int(m_socket->pendingDatagramSize()));
-        m_socket->readDatagram(datagram.data(), datagram.size());
-
-        emit receivedData(datagram);
-    }
-}
-
-
-/*
- * General initialization.
- *
- * Video decoder setup happens in subclasses.
- *
- */
 void OpenHDVideoReceiver::onStarted() {
     qDebug() << "OpenHDVideoReceiver::onStarted()";
 
@@ -80,18 +57,6 @@ void OpenHDVideoReceiver::onStarted() {
         m_video_port = settings.value("pip_video_port", 5601).toInt();
     }
 
-    #if defined(USE_RAW_SOCKET)
-
-    #else
-    m_socket = new QUdpSocket();
-    //m_socket->moveToThread(&m_socketThread);
-
-    //m_socketThread.start();
-    //m_socketThread.setPriority(QThread::TimeCriticalPriority);
-    connect(m_socket, &QUdpSocket::readyRead, this, &OpenHDVideoReceiver::processDatagrams);
-
-    #endif
-
     onStart();
 }
 
@@ -100,7 +65,7 @@ void OpenHDVideoReceiver::onStop() {
 #if defined(USE_RAW_SOCKET)
 
 #else
-    m_socket->close();
+
 #endif
 }
 
@@ -114,20 +79,17 @@ void OpenHDVideoReceiver::onStart() {
         m_video_port = settings.value("pip_video_port", 5601).toInt();
     }
 
-#if defined(USE_RAW_SOCKET)
+
     struct sockaddr_in myaddr;
     int recvlen;
     int fd;
     unsigned char buf[65535];
 
-    /* create a UDP socket */
 
     if ((fd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0) {
         perror("cannot create socket\n");
         return;
     }
-
-
 
     memset((char *)&myaddr, 0, sizeof(myaddr));
     myaddr.sin_family = AF_INET;
@@ -156,18 +118,17 @@ void OpenHDVideoReceiver::onStart() {
 
     qDebug() << "real socket buffer size: " << d;
 
+    emit socketChanged(fd);
+
     for (;;) {
         recvlen = recvfrom(fd, buf, 65535, 0, NULL, NULL);
 
         if (recvlen > 0) {
             QByteArray datagram((char*)buf, recvlen);
-            emit receivedData(datagram);
+            QMutexLocker(&m_video->m_mutex);
+            m_video->onReceivedData(datagram);
         }
     }
-#else
-    m_socket->bind(QHostAddress::Any, m_video_port);
-    m_socket->setSocketOption(QAbstractSocket::ReceiveBufferSizeSocketOption, 2000000);
-#endif
 }
 
 
@@ -208,7 +169,7 @@ void OpenHDVideo::onStarted() {
     QObject::connect(timer, &QTimer::timeout, this, &OpenHDVideo::reconfigure);
     timer->start(1000);
 
-    m_receiver = new OpenHDVideoReceiver(m_stream_type);
+    m_receiver = new OpenHDVideoReceiver(this, m_stream_type);
 
     if (m_stream_type == OpenHDStreamTypeMain) {
         m_receiverThread.setObjectName("mainVideoRecv");
@@ -216,9 +177,10 @@ void OpenHDVideo::onStarted() {
         m_receiverThread.setObjectName("pipVideoRecv");
     }
 
+    connect(m_receiver, &OpenHDVideoReceiver::socketChanged, this, &OpenHDVideo::onSocketChanged);
+
     QObject::connect(&m_receiverThread, &QThread::started, m_receiver, &OpenHDVideoReceiver::onStarted);
     m_receiver->moveToThread(&m_receiverThread);
-    QObject::connect(m_receiver, &OpenHDVideoReceiver::receivedData, this, &OpenHDVideo::onReceivedData, Qt::QueuedConnection);
 
     m_receiverThread.start();
     m_receiverThread.setPriority(QThread::TimeCriticalPriority);
@@ -226,6 +188,10 @@ void OpenHDVideo::onStarted() {
     emit setup();
 }
 
+
+void OpenHDVideo::onSocketChanged(int fd) {
+    m_socket = fd;
+}
 
 
 /*
@@ -238,6 +204,8 @@ void OpenHDVideo::reconfigure() {
     if (m_background) {
         return;
     }
+
+    QMutexLocker locker(&m_mutex);
 
     auto currentTime = QDateTime::currentMSecsSinceEpoch();
 
@@ -277,7 +245,10 @@ void OpenHDVideo::reconfigure() {
 
     if (m_restart) {
         m_restart = false;
-        emit m_receiver->stop();
+        //emit m_receiver->stop();
+        shutdown(m_socket, SHUT_RD);
+        m_receiverThread.quit();
+        m_receiverThread.wait();
         stop();
         tempBuffer.clear();
         rtpBuffer.clear();
@@ -288,12 +259,14 @@ void OpenHDVideo::reconfigure() {
         sentIDR = false;
         isStart = true;
         isConfigured = false;
-        emit m_receiver->start();
+        m_receiverThread.start();
+        m_receiverThread.setPriority(QThread::TimeCriticalPriority);
     }
 }
 
 
 void OpenHDVideo::startVideo() {
+    QMutexLocker locker(&m_mutex);
 #if defined(ENABLE_MAIN_VIDEO) || defined(ENABLE_PIP)
     firstRun = false;
     lastDataReceived = QDateTime::currentMSecsSinceEpoch();
@@ -305,6 +278,7 @@ void OpenHDVideo::startVideo() {
 
 
 void OpenHDVideo::stopVideo() {
+    QMutexLocker locker(&m_mutex);
 #if defined(ENABLE_MAIN_VIDEO) || defined(ENABLE_PIP)
     QFuture<void> future = QtConcurrent::run(this, &OpenHDVideo::stop);
 #endif

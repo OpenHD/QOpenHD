@@ -3,16 +3,16 @@ package com.openhd.android;
 import android.graphics.SurfaceTexture;
 
 public class SurfaceTextureListener implements SurfaceTexture.OnFrameAvailableListener {
-    private long m_callback = 0;
+    private final long m_id;
 
-    public SurfaceTextureListener(long callback) {
-        m_callback = callback;
+    public SurfaceTextureListener(long id) {
+        m_id = id;
     }
 
     @Override
-    public void onFrameAvailable (SurfaceTexture surfaceTexture) {
-        frameAvailable(m_callback, surfaceTexture);
+    public void onFrameAvailable(SurfaceTexture surfaceTexture) {
+        notifyFrameAvailable(m_id);
     }
 
-    public native void frameAvailable(long nativeHandle, SurfaceTexture surfaceTexture);
+    private static native void notifyFrameAvailable(long id);
 }
