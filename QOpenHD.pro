@@ -62,6 +62,7 @@ SOURCES += \
     src/blackboxmodel.cpp \
     src/frskytelemetry.cpp \
     src/gpiomicroservice.cpp \
+    src/headingladder.cpp \
     src/localmessage.cpp \
     src/ltmtelemetry.cpp \
     src/main.cpp \
@@ -92,6 +93,7 @@ HEADERS += \
     inc/altitudeladder.h \
     inc/blackboxmodel.h \
     inc/gpiomicroservice.h \
+    inc/headingladder.h \
     inc/markermodel.h \
     inc/mavlinkbase.h \
     inc/opensky.h \

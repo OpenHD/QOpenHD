@@ -49,6 +49,7 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 
 #include "speedladder.h"
 #include "altitudeladder.h"
+#include "headingladder.h"
 
 #if defined(__ios__)
 #include "appleplatform.h"
@@ -187,6 +188,8 @@ int main(int argc, char *argv[]) {
     qmlRegisterType<SpeedLadder>("OpenHD", 1, 0, "SpeedLadder");
 
     qmlRegisterType<AltitudeLadder>("OpenHD", 1, 0, "AltitudeLadder");
+
+    qmlRegisterType<HeadingLadder>("OpenHD", 1, 0, "HeadingLadder");
 
 #if defined(ENABLE_VIDEO_RENDER)
 #if defined(__android__)
