@@ -162,6 +162,11 @@ BaseWidget {
 
                 onValueChanged: { // @disable-check M223
                     settings.altitude_range = altitude_range_Slider.value;
+
+                    if (!settings.show_altitude_ladder || !settings.show_altitude) {
+                        return;
+                    }
+
                     canvasAltLadder.requestPaint();
                 }
             }
@@ -186,7 +191,12 @@ BaseWidget {
 
             Connections{
                 target:OpenHD
-                function onAlt_rel_changed() { // if user selects msl it is part of same mavlink msg
+                function onAlt_rel_changed() {
+                    if (!settings.show_altitude_ladder || !settings.show_altitude) {
+                        return;
+                    }
+
+                    // if user selects msl it is part of same mavlink msg
                     canvasAltLadder.requestPaint()
                 }
             }
@@ -202,6 +212,10 @@ BaseWidget {
                 renderStrategy: Canvas.Cooperative
 
                 onPaint: { // @disable-check M223
+                    if (!settings.show_altitude_ladder || !settings.show_altitude) {
+                        return;
+                    }
+
                     var ctx = getContext("2d"); // @disable-check M222
                     ctx.reset(); // @disable-check M222
 
