@@ -28,6 +28,7 @@ GPIOMicroservice::GPIOMicroservice(QObject *parent, MicroserviceTarget target, M
 
     targetCompID1 = MAV_COMP_ID_USER2;
     targetCompID2 = targetCompID1;
+    targetCompID3 = targetCompID1;
 
     localPort = 14551;
 
@@ -37,17 +38,18 @@ GPIOMicroservice::GPIOMicroservice(QObject *parent, MicroserviceTarget target, M
 
     switch (m_target) {
         case MicroserviceTargetNone:
-        targetSysID = 0;
+        targetSysID1 = 0;
         break;
         case MicroserviceTargetAir:
-        targetSysID = 253;
+        targetSysID1 = 253;
         connect(OpenHD::instance(), &OpenHD::save_air_gpio, this, &GPIOMicroservice::onSaveGPIO);
         break;
         case MicroserviceTargetGround:
-        targetSysID = 254;
+        targetSysID1 = 254;
         connect(OpenHD::instance(), &OpenHD::save_ground_gpio, this, &GPIOMicroservice::onSaveGPIO);
         break;
     }
+    targetSysID2 = targetSysID1;
 
     connect(this, &GPIOMicroservice::setup, this, &GPIOMicroservice::onSetup);
 }
@@ -77,7 +79,7 @@ void GPIOMicroservice::onSaveGPIO(QList<int> gpio) {
 
 
 void GPIOMicroservice::onProcessMavlinkMessage(mavlink_message_t msg) {
-    if (msg.compid != targetCompID1 || msg.sysid != targetSysID) {
+    if (msg.compid != targetCompID1 || msg.sysid != targetSysID1) {
         return;
     }
     switch (msg.msgid) {

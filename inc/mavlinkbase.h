@@ -152,9 +152,12 @@ protected:
     bool m_saving = false;
 
 protected:
-    quint8 targetSysID;
+    quint8 targetSysID1;
+    quint8 targetSysID2;
     quint8 targetCompID1;
     quint8 targetCompID2;
+    quint8 targetCompID3;
+
     quint16 localPort = 14550;
 
     QString groundAddress;
