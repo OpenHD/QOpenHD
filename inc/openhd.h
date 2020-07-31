@@ -506,6 +506,7 @@ private:
 #endif
 
 
+public:
     // mavlink
     int m_boot_time = 0;
 
