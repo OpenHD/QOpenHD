@@ -49,7 +49,7 @@ void SpeedLadder::paint(QPainter* painter) {
                 painter->fillRect(QRectF(x, y, 12, 3), m_color);
 
                 if (k > speed + 5 || k < speed - 5) {
-                    painter->drawText(x_label, y + 6, QString(k));
+                    painter->drawText(x_label, y + 6, QString::number(k));
                 }
             }
             if (k < m_speedMinimum) {
