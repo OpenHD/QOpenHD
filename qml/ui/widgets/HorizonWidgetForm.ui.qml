@@ -365,6 +365,8 @@ BaseWidget {
                 width: 250*settings.horizon_size
                 height: 50
                 clip: false
+                renderTarget: Canvas.FramebufferObject
+                renderStrategy: Canvas.Cooperative
 
                 onPaint: { // @disable-check M223
                     var ctx = getContext("2d"); // @disable-check M222

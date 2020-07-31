@@ -155,6 +155,9 @@ BaseWidget {
                 }
 
                 background: Canvas {
+                    renderTarget: Canvas.FramebufferObject
+                    renderStrategy: Canvas.Cooperative
+
                     // @disable-check M223
                     onPaint: {
                     var ctx = getContext("2d");
