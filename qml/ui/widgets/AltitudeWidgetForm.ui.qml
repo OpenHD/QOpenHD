@@ -189,7 +189,6 @@ BaseWidget {
                 width: 50
                 height: 300
                 clip: false
-                renderTarget: FramebufferObject
                 color: settings.color_shape
                 altitudeRelMsl: settings.altitude_rel_msl
                 altitudeRange: settings.altitude_range

@@ -9,7 +9,7 @@
 
 HeadingLadder::HeadingLadder(QQuickItem *parent): QQuickPaintedItem(parent) {
     qDebug() << "HeadingLadder::HeadingLadder()";
-
+    setRenderTarget(RenderTarget::FramebufferObject);
 }
 
 void HeadingLadder::paint(QPainter* painter) {

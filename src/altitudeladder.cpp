@@ -9,7 +9,7 @@
 
 AltitudeLadder::AltitudeLadder(QQuickItem *parent): QQuickPaintedItem(parent) {
     qDebug() << "AltitudeLadder::AltitudeLadder()";
-
+    setRenderTarget(RenderTarget::FramebufferObject);
 }
 
 void AltitudeLadder::paint(QPainter* painter) {

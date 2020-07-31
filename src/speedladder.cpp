@@ -9,7 +9,7 @@
 
 SpeedLadder::SpeedLadder(QQuickItem *parent): QQuickPaintedItem(parent) {
     qDebug() << "SpeedLadder::SpeedLadder()";
-
+    setRenderTarget(RenderTarget::FramebufferObject);
 }
 
 void SpeedLadder::paint(QPainter* painter) {
