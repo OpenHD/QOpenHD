@@ -162,12 +162,6 @@ BaseWidget {
 
                 onValueChanged: { // @disable-check M223
                     settings.altitude_range = altitude_range_Slider.value;
-
-                    if (!settings.show_altitude_ladder || !settings.show_altitude) {
-                        return;
-                    }
-
-                    altitudeLadderC.paint();
                 }
             }
         }
