@@ -219,7 +219,7 @@ BaseWidget {
                 width: 50
                 height: 300
                 clip: false
-                renderTarget: Canvas.FramebufferObject
+                renderTarget: FramebufferObject
                 color: settings.color_shape
                 airspeedOrGps: settings.speed_airspeed_gps
                 imperial: settings.enable_imperial
