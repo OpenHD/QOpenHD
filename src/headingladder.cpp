@@ -15,9 +15,9 @@ HeadingLadder::HeadingLadder(QQuickItem *parent): QQuickPaintedItem(parent) {
 void HeadingLadder::paint(QPainter* painter) {
     painter->save();
 
-    QFont fontMain("sans-serif", 11, 1, false);
+    QFont fontMain("sans-serif", 11, QFont::Bold, false);
 
-    QFont fontAwesome("Font Awesome 5 Free", 14, 1, false);
+    QFont fontAwesome("Font Awesome 5 Free", 14, QFont::Bold, false);
 
     // ticks up/down position
     auto y = 25;
