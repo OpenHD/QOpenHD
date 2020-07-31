@@ -34,9 +34,11 @@ MavlinkTelemetry* MavlinkTelemetry::instance() {
 MavlinkTelemetry::MavlinkTelemetry(QObject *parent): MavlinkBase(parent) {
     qDebug() << "MavlinkTelemetry::MavlinkTelemetry()";
     targetSysID1 = 1;
-    targetSysID2 = targetSysID1;
+    targetSysID2 = 0;
     targetCompID1 = MAV_COMP_ID_AUTOPILOT1;
     targetCompID2 = MAV_COMP_ID_SYSTEM_CONTROL;
+    // betaflight
+    targetCompID3 = 200;
 
     localPort = 14550;
 
