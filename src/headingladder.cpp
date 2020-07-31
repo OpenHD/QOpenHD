@@ -87,42 +87,42 @@ void HeadingLadder::paint(QPainter* painter) {
         switch (j) {
             case 0: {
                 draw_text = true;
-                compass_direction = m_showHeadingLadderText ? tr("N") : QString(j);
+                compass_direction = m_showHeadingLadderText ? tr("N") : QString::number(j);
                 break;
             }
             case 45: {
                 draw_text = true;
-                compass_direction = m_showHeadingLadderText ? tr("NE") : QString(j);
+                compass_direction = m_showHeadingLadderText ? tr("NE") : QString::number(j);
                 break;
             }
             case 90: {
                 draw_text = true;
-                compass_direction = m_showHeadingLadderText ? tr("E") : QString(j);
+                compass_direction = m_showHeadingLadderText ? tr("E") : QString::number(j);
                 break;
             }
             case 135: {
                 draw_text = true;
-                compass_direction = m_showHeadingLadderText ? tr("SE") : QString(j);
+                compass_direction = m_showHeadingLadderText ? tr("SE") : QString::number(j);
                 break;
             }
             case 180: {
                 draw_text = true;
-                compass_direction = m_showHeadingLadderText ? tr("S") : QString(j);
+                compass_direction = m_showHeadingLadderText ? tr("S") : QString::number(j);
                 break;
             }
             case 225: {
                 draw_text = true;
-                compass_direction = m_showHeadingLadderText ? tr("SW") : QString(j);
+                compass_direction = m_showHeadingLadderText ? tr("SW") : QString::number(j);
                 break;
             }
             case 270: {
                 draw_text = true;
-                compass_direction = m_showHeadingLadderText ? tr("W") : QString(j);
+                compass_direction = m_showHeadingLadderText ? tr("W") : QString::number(j);
                 break;
             }
             case 315: {
                 draw_text = true;
-                compass_direction = m_showHeadingLadderText ? tr("NW") : QString(j);
+                compass_direction = m_showHeadingLadderText ? tr("NW") : QString::number(j);
                 break;
             }
         }
