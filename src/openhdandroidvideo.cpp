@@ -195,32 +195,26 @@ void OpenHDAndroidVideo::processFrame(QByteArray &nal, webrtc::H264::NaluType fr
         return;
     }
 
-    while (true) {
+    ssize_t buffIdx = AMediaCodec_dequeueInputBuffer(codec, 35000);
 
-        ssize_t buffIdx = AMediaCodec_dequeueInputBuffer(codec, 35000);
-
-        if (buffIdx == AMEDIACODEC_INFO_TRY_AGAIN_LATER) {
-            QThread::msleep(1);
-            continue;
-        } else if (buffIdx < 0) {
-            return;
-        }
-
-
-        auto now = steady_clock::now().time_since_epoch();
-        auto pts = duration_cast<microseconds>(now).count();
-
-        size_t buffsize;
-        uint8_t* inputBuff = AMediaCodec_getInputBuffer(codec, buffIdx, &buffsize);
-        size_t finalSize = 0;
-        if (inputBuff) {
-            memcpy(inputBuff, nal.data(), nal.size());
-            finalSize = nal.size();
-        }
-        //qDebug() << "AMediaCodec_queueInputBuffer";
-        AMediaCodec_queueInputBuffer(codec, buffIdx, 0, finalSize, pts, 0);
-        break;
+    if (buffIdx == AMEDIACODEC_INFO_TRY_AGAIN_LATER) {
+        return;
+    } else if (buffIdx < 0) {
+        return;
     }
+
+    auto now = steady_clock::now().time_since_epoch();
+    auto pts = duration_cast<microseconds>(now).count();
+
+    size_t buffsize;
+    uint8_t* inputBuff = AMediaCodec_getInputBuffer(codec, buffIdx, &buffsize);
+    size_t finalSize = 0;
+    if (inputBuff) {
+        memcpy(inputBuff, nal.data(), nal.size());
+        finalSize = nal.size();
+    }
+    //qDebug() << "AMediaCodec_queueInputBuffer";
+    AMediaCodec_queueInputBuffer(codec, buffIdx, 0, finalSize, pts, 0);
 }
 
 
