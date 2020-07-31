@@ -111,6 +111,7 @@ BaseWidget {
         anchors.horizontalCenter: parent.horizontalCenter
         width: 40
         anchors.verticalCenter: parent.verticalCenter
+        visible: settings.show_fpv
 
         rotation: settings.fpv_dynamic ? (settings.horizon_invert_roll ? OpenHD.roll : -OpenHD.roll) : 0
 
