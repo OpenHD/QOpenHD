@@ -151,6 +151,9 @@ BaseWidget {
 
                     // @disable-check M223
                     onPaint: {
+                    if (!settings.show_vsi) {
+                        return;
+                    }
                     var ctx = getContext("2d");
                     ctx.reset();
 
