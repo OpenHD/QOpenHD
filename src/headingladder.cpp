@@ -50,6 +50,7 @@ void HeadingLadder::paint(QPainter* painter) {
     //is home outside of compass "range"
     auto h_drawn = true;
 
+    painter->setPen(m_color);
 
     for (i = (heading - range / 2); i <= heading + range / 2; i++) {
         x =  x_position + ((i - heading) * ratio_heading);
