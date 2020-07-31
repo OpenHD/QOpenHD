@@ -58,6 +58,7 @@ INCLUDEPATH += $$PWD/lib/GeographicLib-1.50/include
 
 SOURCES += \
     src/FPS.cpp \
+    src/altitudeladder.cpp \
     src/blackboxmodel.cpp \
     src/frskytelemetry.cpp \
     src/gpiomicroservice.cpp \
@@ -88,6 +89,7 @@ RESOURCES += qml/qml.qrc
 
 HEADERS += \
     inc/FPS.h \
+    inc/altitudeladder.h \
     inc/blackboxmodel.h \
     inc/gpiomicroservice.h \
     inc/markermodel.h \
