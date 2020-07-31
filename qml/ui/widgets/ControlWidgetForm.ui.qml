@@ -322,28 +322,5 @@ BaseWidget {
 
             }
         }
-
-        Glow {
-            anchors.fill: doubleCircle
-            visible: settings.double_control
-            radius: 2
-            samples: 17
-            color: settings.color_glow
-            opacity: settings.control_opacity
-            source: doubleCircle
-        }
-
-        Glow {
-            anchors.fill: singleCircle
-            visible: !settings.double_control
-            radius: 3
-            samples: 17
-            color: settings.color_glow
-            opacity: settings.control_opacity
-            source: circle
-        }
-
-
-
     }
 }

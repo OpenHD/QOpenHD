@@ -55,16 +55,6 @@ BaseWidget {
         }
     }
 
-    Glow {
-        anchors.fill: widgetInner
-        visible: settings.show_rc_rssi
-        radius: 3
-        samples: 17
-        color: settings.color_glow
-        opacity: settings.control_opacity
-        source: widgetInner
-    }
-
     Item {
         id: widgetInner
 
