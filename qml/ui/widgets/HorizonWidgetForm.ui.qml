@@ -341,7 +341,7 @@ BaseWidget {
             Connections{
                 target:OpenHD
                 function onHdgChanged() {
-                    if (!settings.show_horizon) {
+                    if (!settings.show_heading_ladder || !settings.show_horizon) {
                         return;
                     }
 
@@ -351,7 +351,7 @@ BaseWidget {
             Connections{
                 target:settings
                 function onHeading_ladder_textChanged() {
-                    if (!settings.show_horizon) {
+                    if (!settings.show_heading_ladder || !settings.show_horizon) {
                         return;
                     }
 
@@ -369,6 +369,10 @@ BaseWidget {
                 renderStrategy: Canvas.Cooperative
 
                 onPaint: { // @disable-check M223
+                    if (!settings.show_heading_ladder || !settings.show_horizon) {
+                        return;
+                    }
+
                     var ctx = getContext("2d"); // @disable-check M222
                     ctx.reset(); // @disable-check M222
 
