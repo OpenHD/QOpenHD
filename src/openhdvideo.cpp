@@ -132,7 +132,7 @@ void OpenHDVideoReceiver::onStart() {
     memset((char *)&myaddr, 0, sizeof(myaddr));
     myaddr.sin_family = AF_INET;
     myaddr.sin_addr.s_addr = htonl(INADDR_ANY);
-    myaddr.sin_port = htons(5600);
+    myaddr.sin_port = htons(m_video_port);
 
     if (bind(fd, (struct sockaddr *)&myaddr, sizeof(myaddr)) < 0) {
         perror("bind failed");
