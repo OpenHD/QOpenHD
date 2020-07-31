@@ -60,7 +60,7 @@ void HeadingLadder::paint(QPainter* painter) {
             h = 360 + h;
         }
 
-        if (h == m_homeHeading && m_showHorizonHome && false) {
+        if (h == m_homeHeading && m_showHorizonHome) {
             painter->setFont(fontAwesome);
             painter->drawText(x, y_label, "\uf015");
             painter->setFont(fontMain);
