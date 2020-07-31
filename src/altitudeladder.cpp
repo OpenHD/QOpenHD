@@ -40,6 +40,8 @@ void AltitudeLadder::paint(QPainter* painter) {
     int k;
     int y;
 
+    painter->setPen(m_color);
+
     for (k = (alt - m_altitudeRange / 2); k <= alt + m_altitudeRange / 2; k++) {
         y =  y_position + ((k - alt) * ratio_alt) * -1;
         if (k % 10 == 0) {
