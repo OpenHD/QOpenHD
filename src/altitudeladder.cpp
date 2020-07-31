@@ -15,7 +15,7 @@ AltitudeLadder::AltitudeLadder(QQuickItem *parent): QQuickPaintedItem(parent) {
 void AltitudeLadder::paint(QPainter* painter) {
     painter->save();
 
-    QFont font("sans-serif", 11, 1, false);
+    QFont font("sans-serif", 11, QFont::Bold, false);
 
     painter->setFont(font);
 
