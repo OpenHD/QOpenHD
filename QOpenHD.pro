@@ -33,6 +33,10 @@ CONFIG(debug, debug|release) {
     DEFINES += QMLJSDEBUGGER
 }
 
+CONFIG += qmltypes
+QML_IMPORT_NAME = OpenHD
+QML_IMPORT_MAJOR_VERSION = 1
+
 OBJECTS_DIR  = $${OUT_PWD}/obj
 MOC_DIR      = $${OUT_PWD}/moc
 UI_DIR       = $${OUT_PWD}/ui
@@ -74,6 +78,7 @@ SOURCES += \
     src/powermicroservice.cpp \
     src/qopenhdlink.cpp \
     src/smartporttelemetry.cpp \
+    src/speedladder.cpp \
     src/statuslogmodel.cpp \
     src/statusmicroservice.cpp \
     src/util.cpp \
@@ -105,6 +110,7 @@ HEADERS += \
     inc/openhdtelemetry.h \
     inc/qopenhdlink.h \
     inc/smartporttelemetry.h \
+    inc/speedladder.h \
     inc/statuslogmodel.h \
     inc/statusmicroservice.h \
     inc/util.h \

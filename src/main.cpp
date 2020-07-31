@@ -47,6 +47,7 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 
 #include "opensky.h"
 
+#include "speedladder.h"
 #if defined(__ios__)
 #include "appleplatform.h"
 #endif
@@ -180,6 +181,8 @@ int main(int argc, char *argv[]) {
     qmlRegisterType<MarkerModel>("OpenHD", 1, 0, "MarkerModel");
 
     qmlRegisterType<BlackBoxModel>("OpenHD", 1, 0, "BlackBoxModel");
+
+    qmlRegisterType<SpeedLadder>("OpenHD", 1, 0, "SpeedLadder");
 
 #if defined(ENABLE_VIDEO_RENDER)
 #if defined(__android__)
