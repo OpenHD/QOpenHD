@@ -39,6 +39,8 @@ void SpeedLadder::paint(QPainter* painter) {
     int k;
     int y;
 
+    painter->setPen(m_color);
+
     for (k = (speed - m_speedRange / 2); k <= speed + m_speedRange / 2; k++) {
         y =  y_position + ((k - speed) * ratio_speed) * -1;
         if (k % 10 == 0) {
