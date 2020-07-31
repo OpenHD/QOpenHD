@@ -19,13 +19,8 @@ void AltitudeLadder::paint(QPainter* painter) {
 
     painter->setFont(font);
 
-    auto openhd = OpenHD::instance();
-
-    auto alt_msl = openhd->m_alt_msl;
-    auto alt_rel = openhd->m_alt_rel;
-
-    auto alt = m_imperial ? (m_altitudeRelMsl ? (alt_msl*3.28) : (alt_rel*3.28)) :
-                            (m_altitudeRelMsl ? alt_msl : alt_rel);
+    auto alt = m_imperial ? (m_altitudeRelMsl ? (m_altMsl*3.28) : (m_altRel*3.28)) :
+                            (m_altitudeRelMsl ? m_altMsl : m_altRel);
 
 
     //weird rounding issue where decimals make ladder dissappear
@@ -101,6 +96,20 @@ void AltitudeLadder::setImperial(bool imperial) {
 void AltitudeLadder::setAltitudeRange(int altitudeRange) {
     m_altitudeRange = altitudeRange;
     emit altitudeRangeChanged(m_altitudeRange);
+    update();
+}
+
+
+void AltitudeLadder::setAltMsl(double altMsl) {
+    m_altMsl = altMsl;
+    emit altMslChanged(m_altMsl);
+    update();
+}
+
+
+void AltitudeLadder::setAltRel(double altRel) {
+    m_altRel = altRel;
+    emit altRelChanged(m_altRel);
     update();
 }
 

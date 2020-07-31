@@ -189,19 +189,6 @@ BaseWidget {
 
             transform: Scale { origin.x: -5; origin.y: 12; xScale: settings.altitude_size ; yScale: settings.altitude_size}
 
-            Connections{
-                target:OpenHD
-                function onAlt_rel_changed() {
-                    if (!settings.show_altitude_ladder || !settings.show_altitude) {
-                        return;
-                    }
-
-                    // if user selects msl it is part of same mavlink msg
-                    altitudeLadderC.paint()
-                }
-            }
-
-
             AltitudeLadder {
                 id: altitudeLadderC
                 anchors.centerIn: parent
@@ -213,6 +200,8 @@ BaseWidget {
                 altitudeRelMsl: settings.altitude_rel_msl
                 altitudeRange: settings.altitude_range
                 imperial: settings.enable_imperial
+                altMsl: OpenHD.alt_msl
+                altRel: OpenHD.alt_rel
             }
         }
         //-----------------------ladder end---------------
