@@ -19,9 +19,6 @@ void HeadingLadder::paint(QPainter* painter) {
 
     QFont fontAwesome("Font Awesome 5 Free", 14, 1, false);
 
-
-    auto openhd = OpenHD::instance();
-
     // ticks up/down position
     auto y = 25;
 
@@ -40,7 +37,6 @@ void HeadingLadder::paint(QPainter* painter) {
 
     auto range = 180;
     auto ratio_heading = width() / range;
-    auto heading = openhd->m_hdg;
 
     int x;
     int i;
@@ -52,8 +48,8 @@ void HeadingLadder::paint(QPainter* painter) {
 
     painter->setPen(m_color);
 
-    for (i = (heading - range / 2); i <= heading + range / 2; i++) {
-        x =  x_position + ((i - heading) * ratio_heading);
+    for (i = (m_heading - range / 2); i <= m_heading + range / 2; i++) {
+        x =  x_position + ((i - m_heading) * ratio_heading);
 
         h = i;
         if (h > 360) {
@@ -64,7 +60,7 @@ void HeadingLadder::paint(QPainter* painter) {
             h = 360 + h;
         }
 
-        if (h == openhd->m_home_heading && m_showHorizonHome) {
+        if (h == m_homeHeading && m_showHorizonHome && false) {
             painter->setFont(fontAwesome);
             painter->drawText(x, y_label, "\uf015");
             painter->setFont(fontMain);
@@ -141,8 +137,8 @@ void HeadingLadder::paint(QPainter* painter) {
     // home is offscreen, out of compass range
     if (h_drawn == true && m_showHorizonHome) {
         // find if home should be on left or right edge of compass
-        auto left = openhd->m_hdg - openhd->m_home_heading;
-        auto right = openhd->m_home_heading - openhd->m_hdg;
+        auto left = m_heading - m_homeHeading;
+        auto right = m_homeHeading - m_heading;
 
         if (left < 0) left += 360;
         if (right < 0) right += 360;
@@ -197,5 +193,19 @@ void HeadingLadder::setShowHorizonHome(bool showHorizonHome) {
 void HeadingLadder::setShowHorizonHeadingLadder(bool showHorizonHeadingLadder) {
     m_showHorizonHeadingLadder = showHorizonHeadingLadder;
     emit showHorizonHeadingLadderChanged(m_showHorizonHeadingLadder);
+    update();
+}
+
+
+void HeadingLadder::setHeading(int heading) {
+    m_heading = heading;
+    emit headingChanged(m_heading);
+    update();
+}
+
+
+void HeadingLadder::setHomeHeading(int homeHeading) {
+    m_homeHeading = homeHeading;
+    emit homeHeadingChanged(m_homeHeading);
     update();
 }

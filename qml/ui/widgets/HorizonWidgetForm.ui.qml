@@ -338,17 +338,6 @@ BaseWidget {
 
             //transform: Scale { origin.x: 125; origin.y: 0; xScale: settings.horizon_size; yScale: 1}
 
-            Connections{
-                target:OpenHD
-                function onHdgChanged() {
-                    if (!settings.show_heading_ladder || !settings.show_horizon) {
-                        return;
-                    }
-
-                    headingLadderC.paint()
-                }
-            }
-
             HeadingLadder {
                 id: headingLadderC
                 anchors.centerIn: parent
@@ -360,6 +349,8 @@ BaseWidget {
                 showHeadingLadderText: settings.heading_ladder_text
                 showHorizonHeadingLadder: settings.show_horizon_heading_ladder
                 showHorizonHome: settings.show_horizon_home
+                heading: OpenHD.hdg
+                homeHeading: OpenHD.home_heading
             }
         }
 
