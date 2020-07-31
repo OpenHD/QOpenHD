@@ -192,7 +192,7 @@ BaseWidget {
 
                 onValueChanged: { // @disable-check M223
                     settings.speed_minimum = speed_minimum_Slider.value
-                    if (!settings.show_speed_ladder) {
+                    if (!settings.show_speed_ladder || !settings.show_speed) {
                         return;
                     }
                     canvasSpeedLadder.requestPaint();
@@ -220,7 +220,7 @@ BaseWidget {
             Connections{
                 target:OpenHD
                 function onSpeedChanged() {
-                    if (!settings.show_speed_ladder) {
+                    if (!settings.show_speed_ladder || !settings.show_speed) {
                         return;
                     }
 
@@ -239,6 +239,9 @@ BaseWidget {
                 renderStrategy: Canvas.Cooperative
 
                 onPaint: { // @disable-check M223
+                    if (!settings.show_speed_ladder || !settings.show_speed) {
+                        return;
+                    }
                     var ctx = getContext("2d"); // @disable-check M222
                     ctx.reset(); // @disable-check M222
 
