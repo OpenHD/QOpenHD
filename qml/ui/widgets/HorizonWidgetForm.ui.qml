@@ -351,6 +351,7 @@ BaseWidget {
                 showHorizonHome: settings.show_horizon_home
                 heading: OpenHD.hdg
                 homeHeading: OpenHD.home_heading
+                color: settings.color_shape
             }
         }
 
