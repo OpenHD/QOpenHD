@@ -62,7 +62,9 @@ void HeadingLadder::paint(QPainter* painter) {
 
         if (h == m_homeHeading && m_showHorizonHome) {
             painter->setFont(fontAwesome);
-            painter->drawText(x, y_label, "\uf015");
+            QFontMetrics fm(painter->font());
+            auto tw = fm.horizontalAdvance("\uf015");
+            painter->drawText(x-tw/2, y_label, "\uf015");
             painter->setFont(fontMain);
 
             h_drawn = false;
@@ -128,8 +130,9 @@ void HeadingLadder::paint(QPainter* painter) {
         }
 
         if (draw_text == true && m_showHorizonHeadingLadder) {
-            painter->drawText(x, y_label, compass_direction);
-
+            QFontMetrics fm(painter->font());
+            auto tw = fm.horizontalAdvance(compass_direction);
+            painter->drawText(x-tw/2, y_label, compass_direction);
             draw_text = false;
         }
     }
