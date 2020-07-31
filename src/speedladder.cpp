@@ -19,13 +19,8 @@ void SpeedLadder::paint(QPainter* painter) {
 
     painter->setFont(font);
 
-    auto openhd = OpenHD::instance();
-
-    auto _airspeed = openhd->m_airspeed;
-    auto _speed = openhd->m_speed;
-
-    auto speed = m_imperial ? (m_airspeedOrGps ? (_airspeed * 0.621371) : (_speed * 0.621371)) :
-                              (m_airspeedOrGps ? _airspeed : _speed);
+    auto speed = m_imperial ? (m_airspeedOrGps ? (m_airspeed * 0.621371) : (m_speed * 0.621371)) :
+                              (m_airspeedOrGps ? m_airspeed : m_speed);
 
     //weird rounding issue where decimals make ladder dissappear
     speed = round(speed);
@@ -109,3 +104,16 @@ void SpeedLadder::setSpeedRange(int speedRange) {
     update();
 }
 
+
+void SpeedLadder::setSpeed(int speed) {
+    m_speed = speed;
+    emit speedChanged(m_speed);
+    update();
+}
+
+
+void SpeedLadder::setAirspeed(int airspeed) {
+    m_airspeed = airspeed;
+    emit airspeedChanged(m_airspeed);
+    update();
+}

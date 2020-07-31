@@ -192,11 +192,6 @@ BaseWidget {
 
                 onValueChanged: { // @disable-check M223
                     settings.speed_minimum = speed_minimum_Slider.value
-                    if (!settings.show_speed_ladder || !settings.show_speed) {
-                        return;
-                    }
-
-                    speedLadderC.paint();
                 }
             }
         }
@@ -218,18 +213,6 @@ BaseWidget {
 
             transform: Scale { origin.x: -33; origin.y: 12; xScale: settings.speed_size ; yScale: settings.speed_size}
 
-            Connections{
-                target:OpenHD
-                function onSpeedChanged() {
-                    if (!settings.show_speed_ladder || !settings.show_speed) {
-                        return;
-                    }
-
-                    // if user selects msl it is part of same mavlink msg
-                    speedLadderC.paint()
-                }
-            }
-
             SpeedLadder {
                 id: speedLadderC
                 anchors.centerIn: parent
@@ -242,6 +225,8 @@ BaseWidget {
                 imperial: settings.enable_imperial
                 speedMinimum: settings.speed_minimum
                 speedRange: settings.speed_range
+                speed: OpenHD.speed
+                airspeed: OpenHD.airspeed
             }
         }
         //-----------------------ladder end---------------
