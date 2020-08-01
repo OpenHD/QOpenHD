@@ -68,7 +68,7 @@ BaseWidget {
             opacity: settings.uplink_rssi_opacity
             text: "\uf382"
             anchors.right: uplink_rssi.left
-            anchors.rightMargin: 0
+            anchors.rightMargin: 4
             font.family: "Font Awesome 5 Free"
             font.pixelSize: 18
             anchors.top: parent.top
