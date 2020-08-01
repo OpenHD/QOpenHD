@@ -32,14 +32,15 @@ Map {
     }
 
     onCenterChanged: {
-        findMapBounds();
+        //findMapBounds();
     }
 
+    /*
     function findMapBounds(){
         var center_coord = map.toCoordinate(Qt.point(map.width/2,map.height/2))
         //console.log("my center",center_coord.latitude, center_coord.longitude);
         OpenSky.mapBoundsChanged(center_coord);
-    }
+    }*/
 
     PositionSource {
         id: positionSource
@@ -77,6 +78,7 @@ Map {
         }
     }
 
+    /*
     MapCircle {
         id: adsbCircle
         enabled: EnableADSB
@@ -89,7 +91,7 @@ Map {
         border.width: 50
         smooth: true
         opacity: .2
-    }
+    }*/
 
     MapItemView {
         model: BlackBoxModel
