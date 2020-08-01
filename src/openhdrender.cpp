@@ -509,7 +509,6 @@ AndroidSurfaceTexture *OpenHDRender::surfaceTexture() {
     if (!initSurfaceTexture()) {
         return 0;
     }
-    qDebug() << "OpenHDRender::surfaceTexture(): created texture";
     return m_surfaceTexture;
 }
 
@@ -518,12 +517,10 @@ bool OpenHDRender::initSurfaceTexture() {
     qDebug() << "OpenHDRender::initSurfaceTexture()";
 
     if (m_surfaceTexture) {
-        qDebug() << "No surface texture";
         return true;
     }
 
     if (!m_surface) {
-        qDebug() << "No surface";
         return false;
     }
 
