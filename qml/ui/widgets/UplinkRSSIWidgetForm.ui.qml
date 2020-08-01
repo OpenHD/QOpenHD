@@ -8,7 +8,7 @@ import OpenHD 1.0
 
 BaseWidget {
     id: uplinkRSSIWidget
-    width: 92
+    width: 112
     height:24
 
     visible: settings.show_uplink_rssi
@@ -95,7 +95,7 @@ BaseWidget {
             font.pixelSize: 12
             verticalAlignment: Text.AlignTop
             wrapMode: Text.NoWrap
-            elide: Text.ElideRight
+            elide: Text.ElideNone
             clip: false
             style: Text.Outline
             styleColor: settings.color_glow
@@ -116,7 +116,7 @@ BaseWidget {
             font.pixelSize: 18
             verticalAlignment: Text.AlignVCenter
             wrapMode: Text.NoWrap
-            elide: Text.ElideRight
+            elide: Text.ElideNone
             clip: false
             style: Text.Outline
             styleColor: settings.color_glow
@@ -137,7 +137,7 @@ BaseWidget {
             font.pixelSize: 14
             horizontalAlignment: Text.AlignRight
             wrapMode: Text.NoWrap
-            elide: Text.ElideRight
+            elide: Text.ElideNone
             clip: false
             visible: false
             style: Text.Outline
