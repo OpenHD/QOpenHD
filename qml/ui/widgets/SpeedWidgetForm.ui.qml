@@ -159,10 +159,6 @@ BaseWidget {
 
                 onValueChanged: { // @disable-check M223
                     settings.speed_range = speed_range_Slider.value;
-                    if (!settings.show_speed_ladder) {
-                        return;
-                    }
-                    canvasSpeedLadder.requestPaint();
                 }
             }
         }
