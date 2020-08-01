@@ -76,7 +76,6 @@ SOURCES += \
     src/openhdrc.cpp \
     src/openhdsettings.cpp \
     src/openhdtelemetry.cpp \
-    src/opensky.cpp \
     src/powermicroservice.cpp \
     src/qopenhdlink.cpp \
     src/smartporttelemetry.cpp \
@@ -96,7 +95,6 @@ HEADERS += \
     inc/headingladder.h \
     inc/markermodel.h \
     inc/mavlinkbase.h \
-    inc/opensky.h \
     inc/powermicroservice.h \
     inc/sharedqueue.h \
     inc/constants.h \
@@ -364,6 +362,12 @@ AndroidBuild {
 EnableADSB {
     message("EnableADSB")
     DEFINES += ENABLE_ADSB
+
+    SOURCES += \
+            src/opensky.cpp
+    HEADERS += \
+            inc/opensky.h
+
 }
 
 EnableCharts {
