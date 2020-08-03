@@ -92,9 +92,6 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
                     auto autopilot = (MAV_AUTOPILOT)heartbeat.autopilot;
 
                     switch (autopilot) {
-                        case MAV_AUTOPILOT_GENERIC: {
-                            break;
-                        }
                         case MAV_AUTOPILOT_PX4: {
                             if (heartbeat.base_mode & MAV_MODE_FLAG_CUSTOM_MODE_ENABLED) {
                                 auto px4_mode = px4_mode_from_custom_mode(custom_mode);
@@ -102,6 +99,7 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
                             }
                             break;
                         }
+                        case MAV_AUTOPILOT_GENERIC:
                         case MAV_AUTOPILOT_ARDUPILOTMEGA: {
                             if (heartbeat.base_mode & MAV_MODE_FLAG_CUSTOM_MODE_ENABLED) {
                                 auto uav_type = heartbeat.type;
