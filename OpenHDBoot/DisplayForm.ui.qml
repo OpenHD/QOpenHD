@@ -198,11 +198,11 @@ Item {
         anchors.bottom:  parent.bottom
         width: parent.width
         height: parent.height / 2
-        color: "#ff2a2a2a"
-        clip: true
+        color: "#2a2a2a"
 
         StatusView {
             anchors.fill: parent
+            clip: true
         }
     }
 }
