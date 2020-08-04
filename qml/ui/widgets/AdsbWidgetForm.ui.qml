@@ -111,6 +111,35 @@ BaseWidget {
                 }
             }
         }
+        Item {
+            width: parent.width
+            height: 32
+            Text {
+                text: qsTr("Range")
+                color: "white"
+                height: parent.height
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
+            Slider {
+                id: adsb_distance_Slider
+                orientation: Qt.Horizontal
+                from: 7000
+                value: settings.adsb_distance_limit
+                to: 25000
+                stepSize: 1000
+                height: parent.height
+                anchors.rightMargin: 0
+                anchors.right: parent.right
+                width: parent.width - 96
+
+                onValueChanged: {
+                    settings.adsb_distance_limit = adsb_distance_Slider.value
+                }
+            }
+        }
     }
 
     Item {

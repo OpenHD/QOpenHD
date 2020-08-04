@@ -154,5 +154,7 @@
         <file alias="round.png">../icons/round.png</file>
         <file>ui/elements/Card.qml</file>
         <file>ui/elements/CardForm.ui.qml</file>
+        <file>airplanemarkeralert.png</file>
+        <file>airplanemarkerwarn.png</file>
     </qresource>
 </RCC>

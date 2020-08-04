@@ -191,7 +191,7 @@ void OpenSky::processReply(QNetworkReply *reply){
 
         //calculate distance from center of map so we can sort in marker model
 
-        distance= calculateKmDistance(center_lat, center_lon,lat,lon);
+        distance = calculateKmDistance(OpenHD::instance()->get_lat(), OpenHD::instance()->get_lon(), lat, lon);
         emit addMarker(current_row, last_row, Traffic(callsign,contact,lat,lon,alt,velocity,track,vertical,distance));
 
         current_row=current_row+1;
@@ -210,17 +210,17 @@ void OpenSky::processReply(QNetworkReply *reply){
         qDebug() << "----------------------------------------------------------";
 */
     }
-    emit doneAddingMarkers();
+    //emit doneAddingMarkers();
 }
 
-int OpenSky::calculateKmDistance(double center_lat, double center_lon,
-                                 double marker_lat, double marker_lon) {
+int OpenSky::calculateKmDistance(double lat_1, double lon_1,
+                                 double lat_2, double lon_2) {
 
-    double latDistance = qDegreesToRadians(center_lat - marker_lat);
-    double lngDistance = qDegreesToRadians(center_lon - marker_lon);
+    double latDistance = qDegreesToRadians(lat_1 - lat_2);
+    double lngDistance = qDegreesToRadians(lon_1 - lon_2);
 
     double a = qSin(latDistance / 2) * qSin(latDistance / 2)
-            + qCos(qDegreesToRadians(center_lat)) * qCos(qDegreesToRadians(marker_lat))
+            + qCos(qDegreesToRadians(center_lat)) * qCos(qDegreesToRadians(lat_2))
             * qSin(lngDistance / 2) * qSin(lngDistance / 2);
 
     double c = 2 * qAtan2(qSqrt(a), qSqrt(1 - a));
