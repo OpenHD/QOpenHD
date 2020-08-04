@@ -25,7 +25,7 @@ Map {
     property double center_coord_lon: 0.0
     property int track_count: 0;
     property int track_skip: 1;
-    property int track_limit: 50;
+    property int track_limit: 100;
 
     Connections {
         target: BlackBoxModel
