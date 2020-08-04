@@ -226,6 +226,18 @@ BaseWidget {
             visible: !settings.double_control
 
             Rectangle {
+                id: circleGlow
+                anchors.centerIn: circle
+                width: (parent.width<parent.height?parent.width:parent.height)+2
+                height: width
+                color: "transparent"
+                radius: width*0.5
+
+                border.color: settings.color_glow
+                border.width: 3
+            }
+
+            Rectangle {
                 id: circle
                 anchors.centerIn: singleCircle
                 width: parent.width<parent.height?parent.width:parent.height
@@ -245,6 +257,9 @@ BaseWidget {
                 color: settings.color_text
                 //radius: width*0.5
 
+                border.color: settings.color_glow
+                border.width: 1
+
                 visible: OpenHD.control_throttle < 1000 ? false : true
 
                 transformOrigin: Item.Center
@@ -263,6 +278,9 @@ BaseWidget {
                 height: width
                 color: settings.color_text
                 radius: width*0.5
+
+                border.color: settings.color_glow
+                border.width: 1
 
                 visible: OpenHD.control_throttle < 1000 ? false : true
 
@@ -287,6 +305,20 @@ BaseWidget {
             visible: settings.double_control
 
             Rectangle {
+                id: leftCircleGlow
+
+                anchors.centerIn: leftCircle
+                width: ((parent.width<parent.height?parent.width:parent.height)/2)+2
+                height: width
+                color: "transparent"
+                radius: width*0.5
+
+
+                border.color: settings.color_glow
+                border.width: 3
+            }
+
+            Rectangle {
                 id: leftCircle
 
             //    anchors.right: rightCircle.left
@@ -297,7 +329,20 @@ BaseWidget {
 
 
                 border.color: settings.color_shape
-                border.width: .5
+                border.width: 1
+            }
+
+            Rectangle {
+                id: rightCircleGlow
+
+                anchors.centerIn: rightCircle
+                width: ((parent.width<parent.height?parent.width:parent.height)/2)+2
+                height: width
+                color: "transparent"
+                radius: width*0.5
+
+                border.color: settings.color_glow
+                border.width: 3
             }
 
             Rectangle {
@@ -311,7 +356,7 @@ BaseWidget {
                 radius: width*0.5
 
                 border.color: settings.color_shape
-                border.width: .5
+                border.width: 1
             }
 
             Rectangle {
@@ -320,6 +365,8 @@ BaseWidget {
                 width: (parent.width<parent.height?parent.width:parent.height)*.1
                 height: width
                 color: settings.color_text
+                border.color: settings.color_glow
+                border.width: 1
                 radius: width*0.5
 
                 visible: OpenHD.control_throttle < 1000 ? false : true
@@ -339,6 +386,8 @@ BaseWidget {
                 width: (parent.width<parent.height?parent.width:parent.height)*.1
                 height: width
                 color: settings.color_text
+                border.color: settings.color_glow
+                border.width: 1
                 radius: width*0.5
 
                 visible: OpenHD.control_throttle < 1000 ? false : true
