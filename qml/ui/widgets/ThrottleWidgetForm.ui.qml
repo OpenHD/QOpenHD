@@ -119,7 +119,6 @@ BaseWidget {
             Shape {
                 id: throttleGauge
                 anchors.fill: parent
-                opacity: settings.throttle_opacity
                 scale: 1.0
 
                 ShapePath {
@@ -147,7 +146,6 @@ BaseWidget {
                 width: parent.width
                 height: 14
                 color: settings.color_text
-                opacity: settings.throttle_opacity
                 text: qsTr("throttle")
                 anchors.bottom: parent.bottom
                 anchors.bottomMargin: 0
