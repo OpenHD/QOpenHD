@@ -14,6 +14,8 @@ Item {
     property bool hasFooter: false
 
     property bool hasHeader: true
+    property bool hasHeaderImage: false
+
     property int cardRadius: 6
     property color cardNameColor: "#33aaff"
 
@@ -49,6 +51,23 @@ Item {
         anchors.topMargin: 0
 
         Text {
+            id: cardHeaderImage
+            width: hasHeaderImage ? 24 : 0
+            height: hasHeaderImage ? 24 : 0
+            visible: hasHeaderImage
+            color: "orange"
+            font.bold: true
+            font.pixelSize: 16
+            verticalAlignment: Text.AlignVCenter
+            horizontalAlignment: Text.AlignHCenter
+            anchors.top: parent.top
+            text: "\uf071"
+            font.family: "Font Awesome 5 Free"
+            topPadding: 5
+            leftPadding: 12
+        }
+
+        Text {
             id: cardHeader
             width: parent.width
             height: 24
@@ -58,6 +77,7 @@ Item {
             verticalAlignment: Text.AlignVCenter
             horizontalAlignment: Text.AlignLeft
             anchors.top: parent.top
+            anchors.left: cardHeaderImage.right
             leftPadding: 12
             topPadding: 3
         }
