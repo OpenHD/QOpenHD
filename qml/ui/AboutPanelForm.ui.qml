@@ -73,7 +73,7 @@ Rectangle {
                 onLinkActivated: {
                     Qt.openUrlExternally("https://github.com/OpenHD/QOpenHD/blob/master/LICENSE")
                 }
-                font.pointSize: 14
+                font.pixelSize: 14
                 leftPadding: 80
             }
         }
