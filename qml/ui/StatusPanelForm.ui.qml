@@ -28,7 +28,7 @@ Rectangle {
 
     Rectangle {
         id: statusLog
-        color: "#ff2a2a2a"
+        color: "#2a2a2a"
 
         anchors.top: parent.top
         anchors.topMargin: 12
