@@ -288,7 +288,7 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             mavlink_msg_rc_channels_raw_decode(&msg, &rc_channels_raw);
 
             auto rssi = static_cast<int>(static_cast<double>(rc_channels_raw.rssi) / 255.0 * 100.0);
-            OpenHD::instance()->set_rc_rssi(rssi);
+            OpenHD::instance()->setRcRssi(rssi);
 
             break;
         }
@@ -323,7 +323,7 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             OpenHD::instance()->setRCChannel8(rc_channels.chan8_raw);
 
             auto rssi = static_cast<int>(static_cast<double>(rc_channels.rssi) / 255.0 * 100.0);
-            OpenHD::instance()->set_rc_rssi(rssi);
+            OpenHD::instance()->setRcRssi(rssi);
 
             /*qDebug() << "RC: " << rc_channels.chan1_raw
                                  << rc_channels.chan2_raw

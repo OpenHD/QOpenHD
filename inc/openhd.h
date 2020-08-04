@@ -195,8 +195,8 @@ public:
     Q_PROPERTY(float mav_wind_speed MEMBER m_mav_wind_speed WRITE set_mav_wind_speed NOTIFY mav_wind_speed_changed)
     void set_mav_wind_speed(float mav_wind_speed);
 
-    Q_PROPERTY(int rc_rssi MEMBER m_rc_rssi WRITE set_rc_rssi NOTIFY rc_rssi_changed)
-    void set_rc_rssi(int rc_rssi);
+    Q_PROPERTY(int rcRssi MEMBER m_rcRssi WRITE setRcRssi NOTIFY rcRssiChanged)
+    void setRcRssi(int rcRssi);
 
     Q_PROPERTY(int fc_temp MEMBER m_fc_temp WRITE set_fc_temp NOTIFY fc_temp_changed)
     void set_fc_temp(int fc_temp);
@@ -428,7 +428,7 @@ signals:
     void mav_wind_direction_changed(float mav_wind_direction);
     void mav_wind_speed_changed(float mav_wind_speed);
 
-    void rc_rssi_changed(int rc_rssi);
+    void rcRssiChanged(int rcRssi);
 
     void fc_temp_changed (int fc_temp);
 
@@ -574,7 +574,7 @@ public:
     float m_mav_wind_direction = 0.0;
     float m_mav_wind_speed = 0.0;
 
-    int m_rc_rssi = 0;
+    int m_rcRssi = 0;
 
     // openhd
 

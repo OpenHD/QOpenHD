@@ -124,7 +124,7 @@ void LTMTelemetry::processLTMMessage() {
         OpenHD::instance()->set_battery_gauge(battery_gauge_glyph);
 
         auto rssi = ltmread_u8();
-        OpenHD::instance()->set_rc_rssi(rssi);
+        OpenHD::instance()->setRcRssi(rssi);
 
         uint8_t uav_airspeedms = ltmread_u8();
         auto airspeed = (float)(uav_airspeedms * 3.6f); // convert to kmh

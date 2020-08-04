@@ -535,9 +535,9 @@ void OpenHD::set_control_throttle(int control_throttle) {
      emit control_throttle_changed(m_control_throttle);
 }
 
-void OpenHD::set_rc_rssi(int rc_rssi) {
-    m_rc_rssi = rc_rssi;
-    emit rc_rssi_changed(m_rc_rssi);
+void OpenHD::setRcRssi(int rcRssi) {
+    m_rcRssi = rcRssi;
+    emit rcRssiChanged(m_rcRssi);
 }
 
 void OpenHD::set_fc_temp(int fc_temp) {

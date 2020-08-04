@@ -22,7 +22,7 @@ RcRSSIWidgetForm {
 
     Connections {
         target: OpenHD
-        function onRc_rssiChanged() {
+        function onRcRssiChanged() {
             lastData = (new Date).getTime();
             rssiValue = OpenHD.rc_rssi
         }
