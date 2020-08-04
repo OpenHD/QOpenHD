@@ -30,6 +30,7 @@ BaseWidget {
     defaultYOffset: 128
 
     hasWidgetDetail: true
+    widgetDetailHeight: 190
     widgetDetailComponent: Column {
         Item {
             width: parent.width
