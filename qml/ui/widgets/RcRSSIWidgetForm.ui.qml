@@ -102,7 +102,7 @@ BaseWidget {
                 width: 3
                 height: 5
                 color: {
-                    if(OpenHD.rc_rssi==0){
+                    if (rssiValue == 0) {
                         return "red";
                     }
                     else {
@@ -120,7 +120,7 @@ BaseWidget {
                 width: 3
                 height: 10
                 color: {
-                    if(OpenHD.rc_rssi==0){
+                    if (rssiValue == 0) {
                         return "red";
                     }
                     else {
@@ -128,7 +128,7 @@ BaseWidget {
                     }
                 }
                 visible: {
-                    if(OpenHD.rc_rssi>20 || OpenHD.rc_rssi==0){
+                    if (rssiValue > 20 || rssiValue == 0) {
                         return true;
                     }
                     else {
@@ -145,7 +145,7 @@ BaseWidget {
                 width: 3
                 height: 15
                 color: {
-                    if(OpenHD.rc_rssi==0){
+                    if (rssiValue == 0) {
                         return "red";
                     }
                     else {
@@ -153,7 +153,7 @@ BaseWidget {
                     }
                 }
                 visible: {
-                    if(OpenHD.rc_rssi>40 || OpenHD.rc_rssi==0){
+                    if (rssiValue > 40 || rssiValue == 0) {
                         return true;
                     }
                     else {
@@ -170,7 +170,7 @@ BaseWidget {
                 width: 3
                 height: 20
                 color: {
-                    if(OpenHD.rc_rssi==0){
+                    if (rssiValue == 0) {
                         return "red";
                     }
                     else {
@@ -178,7 +178,7 @@ BaseWidget {
                     }
                 }
                 visible: {
-                    if(OpenHD.rc_rssi>60 || OpenHD.rc_rssi==0){
+                    if (rssiValue > 60 || rssiValue == 0) {
                         return true;
                     }
                     else {
@@ -195,7 +195,7 @@ BaseWidget {
                 width: 3
                 height: 25
                 color: {
-                    if(OpenHD.rc_rssi==0){
+                    if (rssiValue == 0) {
                         return "red";
                     }
                     else {
@@ -203,7 +203,7 @@ BaseWidget {
                     }
                 }
                 visible: {
-                    if(OpenHD.rc_rssi>80 || OpenHD.rc_rssi==0){
+                    if (rssiValue > 80 || rssiValue == 0) {
                         return true;
                     }
                     else {
@@ -216,7 +216,7 @@ BaseWidget {
                 id: percent_symbol
                 color: settings.color_text
                 opacity: settings.rc_rssi_opacity
-                text: OpenHD.rc_rssi == 0 ? qsTr("") : "%"
+                text: rssiValue == 0 ? qsTr("") : "%"
                 anchors.right: rcRSSI_21to40.left
                 anchors.rightMargin: 0
                 anchors.top: parent.top
@@ -234,7 +234,7 @@ BaseWidget {
                 id: rc_rssi
                 color: settings.color_text
                 opacity: settings.rc_rssi_opacity
-                text: OpenHD.rc_rssi == 0 ? qsTr("N/A") : OpenHD.rc_rssi
+                text: rssiValue == 0 ? qsTr("N/A") : rssiValue
                 anchors.right: percent_symbol.left
                 anchors.rightMargin: 2
                 anchors.top: parent.top
