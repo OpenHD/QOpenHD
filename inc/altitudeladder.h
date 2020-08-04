@@ -15,8 +15,6 @@ class AltitudeLadder : public QQuickPaintedItem {
     Q_PROPERTY(int altMsl MEMBER m_altMsl WRITE setAltMsl NOTIFY altMslChanged)
     Q_PROPERTY(int altRel MEMBER m_altRel WRITE setAltRel NOTIFY altRelChanged)
 
-    QML_ELEMENT
-
 public:
     explicit AltitudeLadder(QQuickItem* parent = nullptr);
 
