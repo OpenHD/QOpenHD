@@ -11,6 +11,8 @@ import OpenHD 1.0
 BaseWidget {
     property alias gaugeAngle: throttleArc.sweepAngle
 
+    property alias gaugeAngleGlow: throttleArcGlow.sweepAngle
+
     id: throttleWidget
     width: 96
     height: 68
@@ -120,6 +122,24 @@ BaseWidget {
                 id: throttleGauge
                 anchors.fill: parent
                 scale: 1.0
+
+                ShapePath {
+                    id: throttleShapeGlow
+
+                    fillColor: "transparent"
+                    strokeColor: settings.color_glow
+                    strokeWidth: 11
+                    capStyle: ShapePath.RoundCap
+
+                    PathAngleArc {
+                        id: throttleArcGlow
+                        centerX: 48
+                        centerY: 48
+                        radiusX: 32
+                        radiusY: 32
+                        startAngle: -180
+                    }
+                }
 
                 ShapePath {
                     id: throttleShape
