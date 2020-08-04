@@ -112,10 +112,14 @@ Map {
 
         function addDroneTrack() {
             
-            if (track_count == 0) {
-                droneTrack.addCoordinate(QtPositioning.coordinate(OpenHD.lat, OpenHD.lon));
-                console.log("total points=", droneTrack.pathLength());
+            // always remove last point unless it was significant
+            if (track_count != 0) {
+                droneTrack.removeCoordinate(droneTrack.pathLength());
+                //console.log("total points=", droneTrack.pathLength());
             }
+
+            // always add the current location so drone looks like its connected to line
+            droneTrack.addCoordinate(QtPositioning.coordinate(OpenHD.lat, OpenHD.lon));
 
             track_count = track_count + 1;
 
