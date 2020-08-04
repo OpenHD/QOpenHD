@@ -25,7 +25,7 @@ Map {
     property double center_coord_lon: 0.0
     property int track_count: 0;
     property int track_skip: 1;
-    property int track_limit: 30;
+    property int track_limit: 100;
 
     Connections {
         target: BlackBoxModel
@@ -109,14 +109,10 @@ Map {
     function addDroneTrack(){
         if (settings.map_drone_track===true){
 
-            //always remove last point unless it was significant
-            if (track_count!=0){
-                droneTrack.removeCoordinate(droneTrack.pathLength());
-                //console.log("total points=", droneTrack.pathLength());
+            if (track_count==0){
+                droneTrack.addCoordinate(QtPositioning.coordinate(OpenHD.lat, OpenHD.lon));
+                console.log("total points=", droneTrack.pathLength());
             }
-
-            //always add the current location so drone looks like its connected to line
-            droneTrack.addCoordinate(QtPositioning.coordinate(OpenHD.lat, OpenHD.lon));
 
             track_count=track_count+1;
 
