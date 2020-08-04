@@ -30,10 +30,6 @@ public:
 
     Q_INVOKABLE void saveSettings(QVariantMap remoteSettings);
 
-    Q_INVOKABLE void reboot();
-
-    Q_INVOKABLE void shutdown();
-
     Q_PROPERTY(bool ground_available MEMBER m_ground_available WRITE set_ground_available NOTIFY ground_available_changed)
     void set_ground_available(bool ground_available);
 

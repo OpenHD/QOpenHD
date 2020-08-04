@@ -136,20 +136,6 @@ int main(int argc, char *argv[]) {
 #if defined(__rasp_pi__)
     qDebug() << "Initializing Pi";
     OpenHDPi pi;
-    if (pi.is_raspberry_pi()) {
-        /* no way around this for the moment due to the way Settings works, hopefully won't
-           be needed forever though */
-        pi.set_mount_rw();
-
-        // ensure the local message fifo exists before we continue
-        QString program("/usr/bin/mkfifo");
-        QStringList arguments;
-        arguments << MESSAGE_FIFO;
-        QProcess p;
-        p.start(program, arguments);
-        p.waitForFinished();
-    }
-
 
     // set persistent brightness level at startup
     if (pi.is_raspberry_pi()) {

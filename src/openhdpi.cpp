@@ -44,36 +44,6 @@ void OpenHDPi::stop_app() {
 #endif
 }
 
-void OpenHDPi::set_mount_rw() {
-#if defined(__rasp_pi__)
-    qDebug() << "OpenHDPi::set_mount_rw()";
-    QString program = "/bin/mount";
-    QStringList arguments;
-    arguments << "-o" << "remount,rw" << "/";
-    if (mountProcess != nullptr) {
-        delete mountProcess;
-    }
-    mountProcess = new QProcess(this);
-    mountProcess->start(program, arguments);
-    mountProcess->waitForFinished();
-#endif
-}
-
-void OpenHDPi::set_mount_ro() {
-#if defined(__rasp_pi__)
-    qDebug() << "OpenHDPi::set_mount_ro()";
-    QString program = "/bin/mount";
-    QStringList arguments;
-    arguments << "-o" << "remount,ro" << "/";
-    if (mountProcess != nullptr) {
-        delete mountProcess;
-    }
-    mountProcess = new QProcess(this);
-    mountProcess->start(program, arguments);
-    mountProcess->waitForFinished();
-#endif
-}
-
 
 void OpenHDPi::set_brightness(int brightness) {
     qDebug() << "OpenHDPi::set_brightness()";

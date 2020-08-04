@@ -67,36 +67,6 @@ void OpenHDSettings::checkSettingsSaveTimeout() {
 }
 
 
-void OpenHDSettings::reboot() {
-    if (m_saving) {
-        return;
-    }
-#if defined(__rasp_pi__)
-    QProcess process;
-    process.start("/sbin/reboot");
-    process.waitForFinished();
-#else
-    QByteArray r = QByteArray("RequestReboot");
-    settingSocket->writeDatagram(r, QHostAddress(groundAddress), SETTINGS_PORT);
-
-#endif
-}
-
-void OpenHDSettings::shutdown() {
-    if (m_saving) {
-        return;
-    }
-#if defined(__rasp_pi__)
-    QProcess process;
-    process.start("/sbin/shutdown -h -P now");
-    process.waitForFinished();
-#else
-    QByteArray r = QByteArray("RequestShutdown");
-    settingSocket->writeDatagram(r, QHostAddress(groundAddress), SETTINGS_PORT);
-#endif
-}
-
-
 void OpenHDSettings::saveSettings(QVariantMap remoteSettings) {
     qDebug() << "OpenHDSettings::saveSettings()";
 
