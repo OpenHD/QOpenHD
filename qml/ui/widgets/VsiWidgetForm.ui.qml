@@ -126,6 +126,46 @@ BaseWidget {
             anchors.centerIn: parent
             transform: Scale { origin.x: 25; origin.y: 25; xScale: settings.vsi_size ; yScale: settings.vsi_size}
 
+            Shape {
+                anchors.fill: parent
+                id: gaugeArcGlow
+
+                ShapePath {
+                    fillColor: "transparent"
+                    strokeColor: settings.color_glow
+                    strokeWidth: 3
+                    capStyle: ShapePath.RoundCap
+
+                    PathAngleArc {
+                        centerX: 25
+                        centerY: 25
+                        radiusX: 25
+                        radiusY: 25
+                        startAngle: 45
+                        sweepAngle: 270
+                    }
+                }
+            }
+            Shape {
+                anchors.fill: parent
+                id: gaugeArc
+
+                ShapePath {
+                    fillColor: "transparent"
+                    strokeColor: settings.color_shape
+                    strokeWidth: 1
+                    capStyle: ShapePath.RoundCap
+
+                    PathAngleArc {
+                        centerX: 25
+                        centerY: 25
+                        radiusX: 25
+                        radiusY: 25
+                        startAngle: 45
+                        sweepAngle: 270
+                    }
+                }
+            }
 
             CircularGauge {
                 id: gauge
@@ -142,6 +182,7 @@ BaseWidget {
                 style: CircularGaugeStyle {
                     labelInset: outerRadius * -.3
                     minorTickmarkCount : 0
+                    tickmarkStepSize : {settings.vsi_max/5}
                     // @disable-check M223
                     labelStepSize : {settings.vsi_max/5}
                     maximumValueAngle : 135
@@ -178,30 +219,7 @@ BaseWidget {
                         border.color: settings.color_glow
                         border.width: 1
                         width: 3
-                    }
-
-                    function degreesToRadians(degrees) {
-                        return degrees * (Math.PI / 180);
-                    }
-
-                    background: Canvas {
-                        // @disable-check M223
-                        onPaint: {
-                            var ctx = getContext("2d");
-                            ctx.reset();
-
-                            ctx.beginPath();
-
-                            //ctx.strokeStyle = settings.color_glow;
-                            ctx.strokeStyle = settings.color_shape
-                            ctx.lineWidth = 3;
-
-                            ctx.arc(outerRadius, outerRadius, outerRadius - ctx.lineWidth / 2,
-                                    degreesToRadians(valueToAngle(settings.vsi_max*-1) - 90),
-                                    degreesToRadians(valueToAngle(settings.vsi_max) - 90));
-                            ctx.stroke();
-                        }
-                    }
+                    }         
                 }
             }
         }
