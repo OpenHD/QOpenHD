@@ -45,6 +45,8 @@ private slots:
     void requestData();
     int calculateKmDistance(double center_lat, double center_lon,
         double marker_lat, double marker_lon);
+    void evaluateTraffic(QString callsign,int contact,double lat,double lon,double alt,double velocity,
+                                  double track,double vertical,double distance);
 
 private:
     QGeoCoordinate m_adsb_api_coord;

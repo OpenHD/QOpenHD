@@ -33,6 +33,7 @@
 #include "markermodel.h"
 #include <QTimer>
 #include "openhd.h"
+#include "localmessage.h"
 
 
 static OpenSky* _instance = nullptr;
@@ -194,6 +195,8 @@ void OpenSky::processReply(QNetworkReply *reply){
         distance = calculateKmDistance(OpenHD::instance()->get_lat(), OpenHD::instance()->get_lon(), lat, lon);
         emit addMarker(current_row, last_row, Traffic(callsign,contact,lat,lon,alt,velocity,track,vertical,distance));
 
+        evaluateTraffic(callsign, contact, lat, lon, alt, velocity, track, vertical, distance);
+
         current_row=current_row+1;
 
 /*
@@ -211,6 +214,30 @@ void OpenSky::processReply(QNetworkReply *reply){
 */
     }
     //emit doneAddingMarkers();
+}
+
+void OpenSky::evaluateTraffic(QString traffic_callsign,
+                              int traffic_contact,
+                              double traffic_lat,
+                              double traffic_lon,
+                              double traffic_alt,
+                              double traffic_velocity,
+                              double traffic_track,
+                              double traffic_vertical,
+                              double traffic_distance) {
+
+    /*
+     * Centralise traffic threat detection here. Once threat is detected it should be
+     * labled and then sent over to the adsb widget
+     *
+     */
+    int drone_alt = OpenHD::instance()->get_msl_alt();
+
+    if (traffic_alt - drone_alt < 300 && traffic_distance < 2) {
+        LocalMessage::instance()->showMessage("Aircraft Traffic", 3);
+    } else if (traffic_alt - drone_alt < 500 && traffic_distance < 5) {
+        LocalMessage::instance()->showMessage("Aircraft Traffic", 4);
+    }
 }
 
 int OpenSky::calculateKmDistance(double lat_1, double lon_1,
