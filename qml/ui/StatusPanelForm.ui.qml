@@ -21,7 +21,6 @@ Rectangle {
         anchors.fill: statusLog
         horizontalOffset: 0
         verticalOffset: 1
-        radius: 6
         samples: 17
         color: "#6a000000"
         source: statusLog
@@ -30,8 +29,6 @@ Rectangle {
     Rectangle {
         id: statusLog
         color: "#ff2a2a2a"
-        clip: true
-        radius: 6
 
         anchors.top: parent.top
         anchors.topMargin: 12
