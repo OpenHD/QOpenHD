@@ -44,7 +44,7 @@ PowerPanelForm {
                 AirPowerMicroservice.onShutdown();
             }
             powerDialog.close()
-            settings_panel.close()
+            settings_panel.visible = false;
         }
         onRejected: {
              powerDialog.close()
