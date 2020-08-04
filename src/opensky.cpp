@@ -120,7 +120,7 @@ void OpenSky::requestData() {
     QUrl api_request= "https://opensky-network.org/api/states/all?lamin="+lowerr_lat+"&lomin="+upperl_lon+"&lamax="+upperl_lat+"&lomax="+lowerr_lon;
     request.setUrl(api_request);
     request.setRawHeader("User-Agent", "MyOwnBrowser 1.0");
-        qDebug() << "url=" << api_request;
+    //qDebug() << "url=" << api_request;
     QNetworkReply *reply = m_manager->get(request);
 }
 
