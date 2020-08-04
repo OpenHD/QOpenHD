@@ -16,15 +16,6 @@ Rectangle {
     Layout.fillWidth: true
     color: "#eaeaea"
 
-    DropShadow {
-        cached: true
-        anchors.fill: statusLog
-        horizontalOffset: 0
-        verticalOffset: 1
-        samples: 17
-        color: "#6a000000"
-        source: statusLog
-    }
 
     Rectangle {
         id: statusLog
