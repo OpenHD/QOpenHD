@@ -32,7 +32,7 @@
 #include <QGeoCoordinate>
 #include "markermodel.h"
 #include <QTimer>
-#include <openhd.h>
+#include "openhd.h"
 
 
 static OpenSky* _instance = nullptr;
