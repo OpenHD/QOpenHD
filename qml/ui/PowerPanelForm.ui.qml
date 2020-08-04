@@ -131,7 +131,7 @@ Rectangle {
 
                     onPressed: {
                         powerAction = PowerPanel.PowerAction.RebootAir
-                        powerDialog.open()
+                        powerDialog.visible = true
                     }
                 }
 
@@ -152,7 +152,7 @@ Rectangle {
 
                     onPressed: {
                         powerAction = PowerPanel.PowerAction.ShutdownAir
-                        powerDialog.open()
+                        powerDialog.visible = true
                     }
                 }
             }
@@ -285,7 +285,7 @@ Rectangle {
 
                     onPressed: {
                         powerAction = PowerPanel.PowerAction.RebootGround
-                        powerDialog.open()
+                        powerDialog.visible = true
                     }
                 }
 
@@ -306,7 +306,7 @@ Rectangle {
 
                     onPressed: {
                         powerAction = PowerPanel.PowerAction.ShutdownGround
-                        powerDialog.open()
+                        powerDialog.visible = true
                     }
                 }
             }
