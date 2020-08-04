@@ -41,6 +41,7 @@ Rectangle {
 
         StatusView {
             anchors.fill: parent
+            clip: true
         }
     }
 
