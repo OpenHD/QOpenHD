@@ -24,7 +24,7 @@ BaseWidget {
 
     hasWidgetDetail: true
 
-    widgetDetailHeight: 192
+    widgetDetailHeight: 210
 
     widgetDetailComponent: Column {
         Item {
@@ -123,6 +123,35 @@ BaseWidget {
             width: parent.width
             height: 32
             Text {
+                text: qsTr("Size")
+                color: "white"
+                height: parent.height
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
+            Slider {
+                id: gps_size_Slider
+                orientation: Qt.Horizontal
+                from: .5
+                value: settings.gps_size
+                to: 3
+                stepSize: .1
+                height: parent.height
+                anchors.rightMargin: 0
+                anchors.right: parent.right
+                width: parent.width - 96
+
+                onValueChanged: {
+                    settings.gps_size = gps_size_Slider.value
+                }
+            }
+        }
+        Item {
+            width: parent.width
+            height: 32
+            Text {
                 text: qsTr("Always show lat/lon")
                 color: "white"
                 height: parent.height
@@ -146,6 +175,7 @@ BaseWidget {
         id: widgetInner
 
         anchors.fill: parent
+        scale: settings.gps_size
 
         Text {
             id: satellite_icon

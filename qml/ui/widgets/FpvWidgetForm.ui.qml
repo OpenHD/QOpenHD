@@ -43,7 +43,7 @@ BaseWidget {
         }
         Item {
             width: parent.width
-            height: 32            
+            height: 32
             Text {
                 id: sensitivityTitle
                 text: qsTr("Sensitivity")
@@ -101,6 +101,35 @@ BaseWidget {
                 }
             }
         }
+        Item {
+            width: parent.width
+            height: 32
+            Text {
+                text: qsTr("Size")
+                color: "white"
+                height: parent.height
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
+            Slider {
+                id: fpv_size_Slider
+                orientation: Qt.Horizontal
+                from: .5
+                value: settings.fpv_size
+                to: 3
+                stepSize: .1
+                height: parent.height
+                anchors.rightMargin: 0
+                anchors.right: parent.right
+                width: parent.width - 96
+
+                onValueChanged: {
+                    settings.fpv_size = fpv_size_Slider.value
+                }
+            }
+        }
     }
 
 
@@ -113,54 +142,59 @@ BaseWidget {
         anchors.verticalCenter: parent.verticalCenter
         visible: settings.show_fpv
 
-        rotation: settings.fpv_dynamic ? (settings.horizon_invert_roll ? OpenHD.roll : -OpenHD.roll) : 0
-
-        //had to add another item to compensate for rotation above
         Item {
-            id: fpvInner
+            anchors.fill: parent
+            anchors.centerIn: parent
+            transform: Scale { origin.x: 20; origin.y: 20; xScale: settings.fpv_size ; yScale: settings.fpv_size}
 
-            height: 40
-            anchors.horizontalCenter: parent.horizontalCenter
-            width: 40
-            anchors.verticalCenter: parent.verticalCenter
+            rotation: settings.fpv_dynamic ? (settings.horizon_invert_roll ? OpenHD.roll : -OpenHD.roll) : 0
 
-            transformOrigin: Item.Center
-            transform: Translate {
+            //had to add another item to compensate for rotation above
+            Item {
+                id: fpvInner
 
-                x: settings.fpv_dynamic ? OpenHD.lateral_speed * settings.fpv_sensitivity : 0
-
-                //to get pitch relative to ahi add pitch in
-                y: settings.fpv_dynamic ? (settings.horizon_invert_pitch ? (-OpenHD.vz * settings.fpv_sensitivity) - OpenHD.pitch :
-                                               (OpenHD.vz * settings.fpv_sensitivity) + OpenHD.pitch) : 0
-             }
-
-
-            antialiasing: true
-
-            Text {
-                id: widgetGlyph
-                width: 24
-                height: 24
-                color: settings.color_shape
-                opacity: settings.fpv_opacity
-                text: "\ufdd5"
-                bottomPadding: 17
-                leftPadding: 33
-                horizontalAlignment: Text.AlignHCenter
-                font.capitalization: Font.MixedCase
-                renderType: Text.QtRendering
-                textFormat: Text.AutoText
+                height: 40
                 anchors.horizontalCenter: parent.horizontalCenter
+                width: 40
                 anchors.verticalCenter: parent.verticalCenter
-                font.family: "Font Awesome 5 Free"
-                verticalAlignment: Text.AlignVCenter
-                font.pixelSize: 24
-                style: Text.Outline
-                styleColor: settings.color_glow
+
+                transformOrigin: Item.Center
+                transform: Translate {
+
+                    x: settings.fpv_dynamic ? OpenHD.lateral_speed * settings.fpv_sensitivity : 0
+
+                    //to get pitch relative to ahi add pitch in
+                    y: settings.fpv_dynamic ? (settings.horizon_invert_pitch ? (-OpenHD.vz * settings.fpv_sensitivity) - OpenHD.pitch :
+                                                                               (OpenHD.vz * settings.fpv_sensitivity) + OpenHD.pitch) : 0
+                }
+
+
+                antialiasing: true
+
+                Text {
+                    id: widgetGlyph
+                    width: 24
+                    height: 24
+                    color: settings.color_shape
+                    opacity: settings.fpv_opacity
+                    text: "\ufdd5"
+                    bottomPadding: 17
+                    leftPadding: 33
+                    horizontalAlignment: Text.AlignHCenter
+                    font.capitalization: Font.MixedCase
+                    renderType: Text.QtRendering
+                    textFormat: Text.AutoText
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.verticalCenter: parent.verticalCenter
+                    font.family: "Font Awesome 5 Free"
+                    verticalAlignment: Text.AlignVCenter
+                    font.pixelSize: 24
+                    style: Text.Outline
+                    styleColor: settings.color_glow
+                }
             }
         }
     }
 }
-
 
 

@@ -67,6 +67,35 @@ BaseWidget {
                 width: 240
                 height: 32
                 Text {
+                    text: qsTr("Size")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Slider {
+                    id: control_size_Slider
+                    orientation: Qt.Horizontal
+                    from: .5
+                    value: settings.control_size
+                    to: 3
+                    stepSize: .1
+                    height: parent.height
+                    anchors.rightMargin: 0
+                    anchors.right: parent.right
+                    width: parent.width - 96
+
+                    onValueChanged: {
+                        settings.control_size = control_size_Slider.value
+                    }
+                }
+            }
+            Item {
+                width: 240
+                height: 32
+                Text {
                     id: displaySwitcher
                     text: qsTr("Show two controls")
                     color: "white"
@@ -179,6 +208,7 @@ BaseWidget {
         width: parent.width
         anchors.verticalCenter: parent.verticalCenter
         opacity: settings.control_opacity
+        scale: settings.control_size
 
         antialiasing: true
 

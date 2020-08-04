@@ -299,8 +299,7 @@ Item {
             contentHeight: widgetColumn.height
 
             clip: true
-
-
+            
             Item {
                 anchors.fill: parent
 
@@ -344,6 +343,9 @@ Item {
                                 ListElement { text: "Grey"; color: "grey" }
                                 ListElement { text: "Lgt Grey"; color: "lightGrey" }
                                 ListElement { text: "Drk Grey"; color: "darkGrey" }
+                                ListElement { text: "Blue"; color: "blue" }
+                                ListElement { text: "Red"; color: "red" }
+                                ListElement { text: "Cyan"; color: "cyan" }
                             }
                             textRole: "text"
                             // @disable-check M223
@@ -380,7 +382,7 @@ Item {
                             height: elementHeight
                             anchors.left: parent.left
                         }
-
+                        
                         ComboBox {
                             height: elementHeight
                             anchors.right: parent.right
@@ -398,6 +400,9 @@ Item {
                                 ListElement { text: "Grey"; color: "grey" }
                                 ListElement { text: "Lgt Grey"; color: "lightGrey" }
                                 ListElement { text: "Drk Grey"; color: "darkGrey" }
+                                ListElement { text: "Blue"; color: "blue" }
+                                ListElement { text: "Red"; color: "red" }
+                                ListElement { text: "Cyan"; color: "cyan" }
                             }
                             textRole: "text"
                             // @disable-check M223
@@ -452,6 +457,9 @@ Item {
                                 ListElement { text: "Grey"; color: "grey" }
                                 ListElement { text: "Lgt Grey"; color: "lightGrey" }
                                 ListElement { text: "Drk Grey"; color: "darkGrey" }
+                                ListElement { text: "Blue"; color: "blue" }
+                                ListElement { text: "Red"; color: "red" }
+                                ListElement { text: "Cyan"; color: "cyan" }
                             }
                             textRole: "text"
                             // @disable-check M223

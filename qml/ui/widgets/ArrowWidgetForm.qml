@@ -56,6 +56,35 @@ BaseWidget {
             width: parent.width
             height: 32
             Text {
+                text: qsTr("Size")
+                color: "white"
+                height: parent.height
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
+            Slider {
+                id: arrow_size_Slider
+                orientation: Qt.Horizontal
+                from: .5
+                value: settings.arrow_size
+                to: 3
+                stepSize: .1
+                height: parent.height
+                anchors.rightMargin: 0
+                anchors.right: parent.right
+                width: parent.width - 96
+
+                onValueChanged: {
+                    settings.arrow_size = arrow_size_Slider.value
+                }
+            }
+        }
+        Item {
+            width: parent.width
+            height: 32
+            Text {
                 text: qsTr("Invert Arrow")
                 color: "white"
                 height: parent.height
@@ -79,36 +108,43 @@ BaseWidget {
         id: widgetInner
         anchors.fill: parent
 
-        Shape {
-            id: arrow
+        Item {
             anchors.fill: parent
-            antialiasing: true
-            opacity: settings.arrow_opacity
+            anchors.centerIn: parent
+            transform: Scale { origin.x: 32; origin.y: 12; xScale: settings.arrow_size ; yScale: settings.arrow_size}
 
-            ShapePath {
-                capStyle: ShapePath.RoundCap
-                strokeColor: settings.color_glow
-                fillColor: settings.color_shape
-                strokeWidth: 1
-                strokeStyle: ShapePath.SolidLine
 
-                startX: 32
-                startY: 0
-                PathLine { x: 44;                 y: 12  }//right edge of arrow
-                PathLine { x: 38;                 y: 12  }//inner right edge
-                PathLine { x: 38;                 y: 24 }//bottom right edge
-                PathLine { x: 26;                  y: 24 }//bottom left edge
-                PathLine { x: 26;                  y: 12  }//inner left edge
-                PathLine { x: 20;                  y: 12  }//outer left
-                PathLine { x: 32;                  y: 0  }//back to start
+            Shape {
+                id: arrow
+                anchors.fill: parent
+                antialiasing: true
+                opacity: settings.arrow_opacity
+
+                ShapePath {
+                    capStyle: ShapePath.RoundCap
+                    strokeColor: settings.color_glow
+                    fillColor: settings.color_shape
+                    strokeWidth: 1
+                    strokeStyle: ShapePath.SolidLine
+
+                    startX: 32
+                    startY: 0
+                    PathLine { x: 44;                 y: 12  }//right edge of arrow
+                    PathLine { x: 38;                 y: 12  }//inner right edge
+                    PathLine { x: 38;                 y: 24 }//bottom right edge
+                    PathLine { x: 26;                  y: 24 }//bottom left edge
+                    PathLine { x: 26;                  y: 12  }//inner left edge
+                    PathLine { x: 20;                  y: 12  }//outer left
+                    PathLine { x: 32;                  y: 0  }//back to start
+                }
+
+                transform: Rotation {
+                    origin.x: 32;
+                    origin.y: 12;
+                    angle: settings.arrow_invert ? OpenHD.home_course : OpenHD.home_course-180
+                }
             }
 
-            transform: Rotation {
-                origin.x: 32;
-                origin.y: 12;
-                angle: settings.arrow_invert ? OpenHD.home_course : OpenHD.home_course-180
-            }
         }
-
     }
 }

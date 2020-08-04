@@ -134,6 +134,35 @@ BaseWidget {
             width: parent.width
             height: 32
             Text {
+                text: qsTr("Size")
+                color: "white"
+                height: parent.height
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
+            Slider {
+                id: downlink_rssi_size_Slider
+                orientation: Qt.Horizontal
+                from: .5
+                value: settings.downlink_rssi_size
+                to: 3
+                stepSize: .1
+                height: parent.height
+                anchors.rightMargin: 0
+                anchors.right: parent.right
+                width: parent.width - 96
+
+                onValueChanged: {
+                    settings.downlink_rssi_size = downlink_rssi_size_Slider.value
+                }
+            }
+        }
+        Item {
+            width: parent.width
+            height: 32
+            Text {
                 text: qsTr("Show lost/damaged")
                 color: "white"
                 height: parent.height
@@ -182,8 +211,8 @@ BaseWidget {
         id: widgetInner
 
         anchors.fill: parent
-
         opacity: settings.downlink_rssi_opacity
+        scale: settings.downlink_rssi_size
 
         Text {
             id: downlink_icon
