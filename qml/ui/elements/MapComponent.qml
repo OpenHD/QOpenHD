@@ -5,7 +5,6 @@ import QtQuick.Shapes 1.0
 import QtLocation 5.12
 import QtPositioning 5.12
 
-
 Map {
     id: map
     copyrightsVisible: false
@@ -20,11 +19,20 @@ Map {
 
     bearing: settings.map_orientation ? 360 : OpenHD.hdg
 
-
     property double userLat: 0.0
     property double userLon: 0.0
     property double center_coord_lat: 0.0
     property double center_coord_lon: 0.0
+    property int track_count: 0;
+    property int track_skip: 1;
+    property int track_limit: 50;
+
+    Connections {
+        target: BlackBoxModel
+        onDataChanged: {
+            addDroneTrack();
+        }
+    }
 
     center {
         latitude: OpenHD.lat == 0.0 ? userLat : followDrone ? OpenHD.lat : 9000
@@ -94,35 +102,46 @@ Map {
     }
     */
 
+
     MapItemView {
         model: BlackBoxModel
         delegate: trailDelegate
         enabled: EnableADSB
 
-        Component {
-            id: trailDelegate
-
-
-            MapPolyline {
-                id: polyline
-                /*
-                path: { 
-                    //current_coord=QtPositioning.coordinate(model.lat, model.lon);
-                    pathPolyline.addCoordinate(QtPositioning.coordinate(model.lat, model.lon))
-                    //addCoordinate(current_coord);
-                    console.log("Map Polyline=",model.lat, model.lon);
-                }
-                */
-                path:  { polyline.addCoordinate(QtPositioning.coordinate(model.lat, model.lon));}
-
-                line.color: "red"
-                line.width: 5
-
-
+        function addDroneTrack() {
+            
+            if (track_count == 0) {
+                droneTrack.addCoordinate(QtPositioning.coordinate(OpenHD.lat, OpenHD.lon));
+                console.log("total points=", droneTrack.pathLength());
             }
 
-        }
+            track_count = track_count + 1;
 
+            if (track_count == track_skip) {
+                track_count = 0;
+            }
+
+            if (droneTrack.pathLength() === track_limit) {
+                //make line more coarse
+                track_skip = track_skip * 2;
+                //cut the points in the list by half
+                for (var i = 0; i < track_limit; ++i) {
+                    if (i % 2) {
+                        // it's odd
+                        droneTrack.removeCoordinate(i);
+                    }
+                }
+            }
+
+            //console.log("drone position=",OpenHD.lat, OpenHD.lon);
+        }
+    }
+
+    MapPolyline {
+        id: droneTrack
+
+        line.color: "red"
+        line.width: 3
     }
 
 
@@ -397,6 +416,7 @@ Map {
     MapQuickItem {
         id: dronemarker
         coordinate: QtPositioning.coordinate(OpenHD.lat, OpenHD.lon)
+
         anchorPoint.x : 0
         anchorPoint.y : 0
 
