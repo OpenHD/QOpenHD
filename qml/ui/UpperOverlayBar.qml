@@ -6,9 +6,4 @@ import OpenHD 1.0
 
 UpperOverlayBarForm {
     id: upperOverlayBar
-    signal settingsButtonClicked();
-
-    settingsButtonMouseArea.onClicked: {
-        upperOverlayBar.settingsButtonClicked();
-    }
 }

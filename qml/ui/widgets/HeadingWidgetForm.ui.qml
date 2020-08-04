@@ -159,15 +159,6 @@ BaseWidget {
         }
     }
 
-    Glow {
-        anchors.fill: widgetInner
-        radius: 3
-        samples: 17
-        color: settings.color_glow
-        opacity: settings.heading_opacity
-        source: widgetInner
-    }
-
     Item {
         id: widgetInner
         anchors.fill: parent
@@ -202,6 +193,8 @@ BaseWidget {
                 width: 250
                 height: 50
                 clip: false
+                renderTarget: Canvas.FramebufferObject
+                renderStrategy: Canvas.Cooperative
 
                 onPaint: { // @disable-check M223
                     var ctx = getContext("2d"); // @disable-check M222

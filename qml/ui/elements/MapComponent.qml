@@ -32,14 +32,15 @@ Map {
     }
 
     onCenterChanged: {
-        findMapBounds();
+        //findMapBounds();
     }
 
+    /*
     function findMapBounds(){
         var center_coord = map.toCoordinate(Qt.point(map.width/2,map.height/2))
         //console.log("my center",center_coord.latitude, center_coord.longitude);
         OpenSky.mapBoundsChanged(center_coord);
-    }
+    }*/
 
     PositionSource {
         id: positionSource
@@ -77,8 +78,10 @@ Map {
         }
     }
 
+    /*
     MapCircle {
         id: adsbCircle
+        enabled: EnableADSB
 
         center: OpenSky.adsb_api_coord
         radius: MarkerModel.adsb_radius
@@ -88,11 +91,12 @@ Map {
         border.width: 50
         smooth: true
         opacity: .2
-    }
+    }*/
 
     MapItemView {
         model: BlackBoxModel
         delegate: trailDelegate
+        enabled: EnableADSB
 
         Component {
             id: trailDelegate
@@ -122,6 +126,7 @@ Map {
 
     Repeater{
         model: MarkerModel
+        enabled: EnableADSB
         MapItemGroup {
             id: delegateGroup
 
@@ -246,6 +251,7 @@ Map {
                             font.pixelSize: 11
                             horizontalAlignment: Text.AlignHCenter
                             Component.onCompleted: {
+                                console.log("Model: " + model);
                                 text = model.callsign
                                 //console.log("Map Callsign=",model.callsign);
                             }

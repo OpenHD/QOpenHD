@@ -3,5 +3,6 @@ import QtQuick.Window 2.12
 import QtQuick.Layouts 1.12
 
 AdsbWidgetForm {
-
+    enabled: EnableADSB
+    visible: EnableADSB
 }

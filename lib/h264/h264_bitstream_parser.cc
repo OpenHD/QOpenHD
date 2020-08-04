@@ -34,6 +34,25 @@ namespace webrtc {
     return res;                           \
   }
 
+#if __cplusplus >= 201703L
+    #include <optional>
+    namespace opt = std;
+    #define RETURN_EMPTY_ON_FAIL(x) \
+      if (!(x)) {                   \
+        return std::nullopt;       \
+      }
+    #define OPT_NONE std::nullopt
+#else
+    #include <boost/optional.hpp>
+    #include <boost/optional/optional.hpp>
+    namespace opt = boost;
+    #define RETURN_EMPTY_ON_FAIL(x) \
+      if (!(x)) {                   \
+        return boost::none;       \
+      }
+    #define OPT_NONE boost::none
+#endif
+
 #define RETURN_INV_ON_FAIL(x) RETURN_ON_FAIL(x, kInvalidStream)
 
 H264BitstreamParser::H264BitstreamParser() {}
@@ -46,7 +65,7 @@ H264BitstreamParser::Result H264BitstreamParser::ParseNonParameterSetNalu(
   if (!sps_ || !pps_)
     return kInvalidStream;
 
-  last_slice_qp_delta_ = std::nullopt;
+  last_slice_qp_delta_ = OPT_NONE;
   const std::vector<uint8_t> slice_rbsp =
       H264::ParseRbsp(source, source_length);
   if (slice_rbsp.size() < H264::kNaluTypeSize)
@@ -321,10 +340,10 @@ void H264BitstreamParser::ParseBitstream(
   ParseBitstream(bitstream.data(), bitstream.size());
 }
 
-std::optional<int> H264BitstreamParser::GetLastSliceQp() const {
+opt::optional<int> H264BitstreamParser::GetLastSliceQp() const {
   int qp;
   bool success = GetLastSliceQp(&qp);
-  return success ? std::optional<int>(qp) : std::nullopt;
+  return success ? opt::optional<int>(qp) : OPT_NONE;
 }
 
 }  // namespace webrtc

@@ -84,15 +84,6 @@ BaseWidget {
         }
     }
 
-    Glow {
-        anchors.fill: widgetInner
-        radius: 3
-        samples: 17
-        color: settings.color_glow
-        opacity: settings.vibration_opacity
-        source: widgetInner
-    }
-
     Item {
         id: widgetInner
         anchors.fill: parent

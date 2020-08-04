@@ -7,6 +7,117 @@
 #include <QCoreApplication>
 #include <QOpenGLContext>
 
+
+#if defined(__android__)
+
+static const GLfloat g_vertex_data[] = {
+    -1.f, 1.f,
+    1.f, 1.f,
+    1.f, -1.f,
+    -1.f, -1.f
+};
+
+static const GLfloat g_texture_data[] = {
+    0.f, 0.f,
+    1.f, 0.f,
+    1.f, 1.f,
+    0.f, 1.f
+};
+
+void OpenGLResourcesDeleter::deleteTextureHelper(quint32 id) {
+    if (id != 0)
+        glDeleteTextures(1, &id);
+}
+
+void OpenGLResourcesDeleter::deleteFboHelper(void *fbo) {
+    delete reinterpret_cast<QOpenGLFramebufferObject *>(fbo);
+}
+
+void OpenGLResourcesDeleter::deleteShaderProgramHelper(void *prog) {
+    delete reinterpret_cast<QOpenGLShaderProgram *>(prog);
+}
+
+void OpenGLResourcesDeleter::deleteThisHelper() {
+    delete this;
+}
+
+
+class AndroidTextureVideoBuffer : public QAbstractVideoBuffer {
+public:
+    AndroidTextureVideoBuffer(OpenHDRender *renderer, const QSize &size)
+        : QAbstractVideoBuffer(GLTextureHandle)
+        , m_mapMode(NotMapped)
+        , m_renderer(renderer)
+        , m_size(size)
+        , m_textureUpdated(false) {}
+
+
+    virtual ~AndroidTextureVideoBuffer() {}
+
+    MapMode mapMode() const {
+        return m_mapMode;
+    }
+
+    uchar *map(MapMode mode, int *numBytes, int *bytesPerLine) {
+        if (m_mapMode == NotMapped && mode == ReadOnly && updateFrame()) {
+            m_mapMode = mode;
+            m_image = m_renderer->m_fbo->toImage();
+            if (numBytes) {
+                *numBytes = m_image.sizeInBytes();
+            }
+            if (bytesPerLine) {
+                *bytesPerLine = m_image.bytesPerLine();
+            }
+            return m_image.bits();
+        } else {
+            return 0;
+        }
+    }
+
+    void unmap() {
+        m_image = QImage();
+        m_mapMode = NotMapped;
+    }
+
+    QVariant handle() const {
+        AndroidTextureVideoBuffer *that = const_cast<AndroidTextureVideoBuffer*>(this);
+        if (!that->updateFrame()) {
+            return QVariant();
+        }
+        return m_renderer->m_fbo->texture();
+    }
+private:
+    bool updateFrame() {
+        // Even though the texture was updated in a previous call, we need to re-check
+        // that this has not become a stale buffer, e.g., if the output size changed or
+        // has since became invalid.
+        if (!m_renderer->m_nativeSize.isValid()) {
+            return false;
+        }
+
+        // Size changed
+        if (m_renderer->m_nativeSize != m_size) {
+            return false;
+        }
+        // In the unlikely event that we don't have a valid fbo, but have a valid size,
+        // force an update.
+        const bool forceUpdate = !m_renderer->m_fbo;
+        if (m_textureUpdated && !forceUpdate) {
+            return true;
+        }
+        // update the video texture (called from the render thread)
+        return (m_textureUpdated = m_renderer->renderFrameToFbo());
+    }
+    MapMode m_mapMode;
+    OpenHDRender *m_renderer = nullptr;
+    QImage m_image;
+    QSize m_size;
+    bool m_textureUpdated;
+};
+
+#endif
+
+
 #if defined(__apple__)
 #include <VideoToolbox/VideoToolbox.h>
 
@@ -288,7 +399,18 @@ OpenHDRender::OpenHDRender(QQuickItem *parent): QQuickItem(parent)
 #ifdef Q_OS_IOS
     , m_textureCache(nullptr)
 #endif
+
+#if defined(__android__)
+    , m_surfaceTexture(0)
+    , m_externalTex(0)
+    , m_fbo(0)
+    , m_program(0)
+    , m_glDeleter(0)
+    , m_surfaceTextureCanAttachToContext(true)
+#endif
  {
+    qDebug() << "OpenHDRender::OpenHDRender()";
+
     QObject::connect(this, &OpenHDRender::newFrameAvailable, this, &OpenHDRender::onNewVideoContentReceived, Qt::QueuedConnection);
 }
 
@@ -333,19 +455,325 @@ void OpenHDRender::paintFrame(MMAL_BUFFER_HEADER_T *buffer) {
 #endif
 
 OpenHDRender::~OpenHDRender() {
+#if defined(__android__)
+    clearSurfaceTexture();
 
+    if (m_glDeleter) { // Make sure all of these are deleted on the render thread.
+        m_glDeleter->deleteFbo(m_fbo);
+        m_glDeleter->deleteShaderProgram(m_program);
+        m_glDeleter->deleteTexture(m_externalTex);
+        m_glDeleter->deleteThis();
+    }
+#endif
 }
 
 void OpenHDRender::setVideoSurface(QAbstractVideoSurface *surface) {
+    qDebug() << "OpenHDRender::setVideoSurface()";
+
     if (m_surface && m_surface != surface && m_surface->isActive()) {
         m_surface->stop();
     }
+
+    #if defined(__android__)
+    if (m_surface) {
+        if (!m_surfaceTextureCanAttachToContext) {
+            m_surface->setProperty("_q_GLThreadCallback", QVariant());
+        }
+    }
+    #endif
+
 
     m_surface = surface;
 
     m_supportsTextures = m_surface ? !m_surface->supportedPixelFormats(QAbstractVideoBuffer::GLTextureHandle).isEmpty() : false;
 
+    #if defined(__android__)
+    if (m_surface && !m_surfaceTextureCanAttachToContext) {
+        m_surface->setProperty("_q_GLThreadCallback",
+                               QVariant::fromValue<QObject*>(this));
+    }
+    #endif
 }
+
+
+#if defined(__android__)
+bool OpenHDRender::isReady() {
+    qDebug() << "OpenHDRender::isReady()";
+
+    return m_surfaceTextureCanAttachToContext || QOpenGLContext::currentContext() || m_externalTex;
+}
+
+
+AndroidSurfaceTexture *OpenHDRender::surfaceTexture() {
+    qDebug() << "OpenHDRender::surfaceTexture()";
+    if (!initSurfaceTexture()) {
+        return 0;
+    }
+    return m_surfaceTexture;
+}
+
+
+bool OpenHDRender::initSurfaceTexture() {
+    qDebug() << "OpenHDRender::initSurfaceTexture()";
+
+    if (m_surfaceTexture) {
+        return true;
+    }
+
+    if (!m_surface) {
+        return false;
+    }
+
+    if (!m_surfaceTextureCanAttachToContext) {
+        // if we have an OpenGL context in the current thread, create a texture. Otherwise, wait
+        // for the GL render thread to call us back to do it.
+        if (QOpenGLContext::currentContext()) {
+            glGenTextures(1, &m_externalTex);
+
+            if (!m_glDeleter) {
+                m_glDeleter = new OpenGLResourcesDeleter;
+            }
+        } else if (!m_externalTex) {
+            return false;
+        }
+    }
+
+    QMutexLocker locker(&m_mutex);
+
+    m_surfaceTexture = new AndroidSurfaceTexture(m_externalTex);
+
+    if (m_surfaceTexture->surfaceTexture() != 0) {
+        connect(m_surfaceTexture, &AndroidSurfaceTexture::frameAvailable, this, &OpenHDRender::onFrameAvailable);
+    } else {
+        delete m_surfaceTexture;
+        m_surfaceTexture = 0;
+
+        if (m_glDeleter) {
+            m_glDeleter->deleteTexture(m_externalTex);
+        }
+
+        m_externalTex = 0;
+    }
+
+    return m_surfaceTexture != 0;
+}
+
+
+void OpenHDRender::clearSurfaceTexture() {
+    qDebug() << "OpenHDRender::clearSurfaceTexture()";
+
+    QMutexLocker locker(&m_mutex);
+
+    if (m_surfaceTexture) {
+        delete m_surfaceTexture;
+
+        m_surfaceTexture = 0;
+    }
+
+    // Also reset the attached OpenGL texture
+    // Note: The Android SurfaceTexture class does not release the texture on deletion,
+    // only if detachFromGLContext() called (API level >= 16), so we'll do it manually,
+    // on the render thread.
+    if (m_surfaceTextureCanAttachToContext) {
+        if (m_glDeleter) {
+            m_glDeleter->deleteTexture(m_externalTex);
+        }
+
+        m_externalTex = 0;
+    }
+}
+
+
+void OpenHDRender::setVideoSize(const QSize &size) {
+    qDebug() << "OpenHDRender::setVideoSize()";
+
+    QMutexLocker locker(&m_mutex);
+
+    if (m_nativeSize == size) {
+        return;
+    }
+
+    stop();
+
+    m_nativeSize = size;
+}
+
+void OpenHDRender::stop() {
+    qDebug() << "OpenHDRender::stop()";
+
+    if (m_surface && m_surface->isActive()) {
+        m_surface->stop();
+    }
+
+    m_nativeSize = QSize();
+}
+
+
+
+void OpenHDRender::reset() {
+    qDebug() << "OpenHDRender::reset()";
+
+    // flush pending frame
+
+    if (m_surface) {
+        m_surface->present(QVideoFrame());
+    }
+
+    clearSurfaceTexture();
+}
+
+
+void OpenHDRender::onFrameAvailable() {
+    if (!m_nativeSize.isValid() || !m_surface) {
+        return;
+    }
+
+    QAbstractVideoBuffer *buffer = new AndroidTextureVideoBuffer(this, m_nativeSize);
+
+    QVideoFrame frame(buffer, m_nativeSize, QVideoFrame::Format_ABGR32);
+
+    if (m_surface->isActive() && (m_surface->surfaceFormat().pixelFormat() != frame.pixelFormat()
+                                  || m_surface->surfaceFormat().frameSize() != frame.size())) {
+        m_surface->stop();
+    }
+
+    if (!m_surface->isActive()) {
+        QVideoSurfaceFormat format(frame.size(), frame.pixelFormat(),
+                                   QAbstractVideoBuffer::GLTextureHandle);
+        m_surface->start(format);
+    }
+
+    if (m_surface->isActive())
+        m_surface->present(frame);
+}
+
+
+bool OpenHDRender::renderFrameToFbo() {
+    QMutexLocker locker(&m_mutex);
+
+    if (!m_nativeSize.isValid() || !m_surfaceTexture) {
+        return false;
+    }
+
+    createGLResources();
+
+    m_surfaceTexture->updateTexImage();
+
+    // save current render states
+    GLboolean stencilTestEnabled;
+    GLboolean depthTestEnabled;
+    GLboolean scissorTestEnabled;
+    GLboolean blendEnabled;
+    glGetBooleanv(GL_STENCIL_TEST, &stencilTestEnabled);
+    glGetBooleanv(GL_DEPTH_TEST, &depthTestEnabled);
+    glGetBooleanv(GL_SCISSOR_TEST, &scissorTestEnabled);
+    glGetBooleanv(GL_BLEND, &blendEnabled);
+    if (stencilTestEnabled)
+        glDisable(GL_STENCIL_TEST);
+    if (depthTestEnabled)
+        glDisable(GL_DEPTH_TEST);
+    if (scissorTestEnabled)
+        glDisable(GL_SCISSOR_TEST);
+    if (blendEnabled)
+        glDisable(GL_BLEND);
+    m_fbo->bind();
+    glViewport(0, 0, m_nativeSize.width(), m_nativeSize.height());
+    m_program->bind();
+    m_program->enableAttributeArray(0);
+    m_program->enableAttributeArray(1);
+    m_program->setUniformValue("frameTexture", GLuint(0));
+    m_program->setUniformValue("texMatrix", m_surfaceTexture->getTransformMatrix());
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, g_vertex_data);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, g_texture_data);
+    glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+    m_program->disableAttributeArray(0);
+    m_program->disableAttributeArray(1);
+    glBindTexture(GL_TEXTURE_EXTERNAL_OES, 0);
+    m_fbo->release();
+    // restore render states
+    if (stencilTestEnabled)
+        glEnable(GL_STENCIL_TEST);
+    if (depthTestEnabled)
+        glEnable(GL_DEPTH_TEST);
+    if (scissorTestEnabled)
+        glEnable(GL_SCISSOR_TEST);
+    if (blendEnabled)
+        glEnable(GL_BLEND);
+    return true;
+}
+
+
+void OpenHDRender::createGLResources() {
+    Q_ASSERT(QOpenGLContext::currentContext() != NULL);
+
+    if (!m_glDeleter) {
+        m_glDeleter = new OpenGLResourcesDeleter;
+    }
+
+    if (m_surfaceTextureCanAttachToContext && !m_externalTex) {
+        m_surfaceTexture->detachFromGLContext();
+        glGenTextures(1, &m_externalTex);
+
+        m_surfaceTexture->attachToGLContext(m_externalTex);
+    }
+
+    if (!m_fbo || m_fbo->size() != m_nativeSize) {
+        delete m_fbo;
+        m_fbo = new QOpenGLFramebufferObject(m_nativeSize);
+    }
+
+    if (!m_program) {
+        m_program = new QOpenGLShaderProgram;
+        QOpenGLShader *vertexShader = new QOpenGLShader(QOpenGLShader::Vertex, m_program);
+        vertexShader->compileSourceCode("attribute highp vec4 vertexCoordsArray; \n" \
+                                        "attribute highp vec2 textureCoordArray; \n" \
+                                        "uniform   highp mat4 texMatrix; \n" \
+                                        "varying   highp vec2 textureCoords; \n" \
+                                        "void main(void) \n" \
+                                        "{ \n" \
+                                        "    gl_Position = vertexCoordsArray; \n" \
+                                        "    textureCoords = (texMatrix * vec4(textureCoordArray, 0.0, 1.0)).xy; \n" \
+                                        "}\n");
+
+        m_program->addShader(vertexShader);
+
+        QOpenGLShader *fragmentShader = new QOpenGLShader(QOpenGLShader::Fragment, m_program);
+
+        fragmentShader->compileSourceCode("#extension GL_OES_EGL_image_external : require \n" \
+                                          "varying highp vec2         textureCoords; \n" \
+                                          "uniform samplerExternalOES frameTexture; \n" \
+                                          "void main() \n" \
+                                          "{ \n" \
+                                          "    gl_FragColor = texture2D(frameTexture, textureCoords); \n" \
+                                          "}\n");
+
+        m_program->addShader(fragmentShader);
+
+        m_program->bindAttributeLocation("vertexCoordsArray", 0);
+        m_program->bindAttributeLocation("textureCoordArray", 1);
+
+        m_program->link();
+    }
+}
+
+void OpenHDRender::customEvent(QEvent *e) {
+    if (e->type() == QEvent::User) {
+
+        // This is running in the render thread (OpenGL enabled)
+        if (!m_surfaceTextureCanAttachToContext && !m_externalTex) {
+            glGenTextures(1, &m_externalTex);
+
+            if (!m_glDeleter) {
+                // We'll use this to cleanup GL resources in the correct thread
+                m_glDeleter = new OpenGLResourcesDeleter;
+            }
+
+            emit readyChanged(true);
+        }
+    }
+}
+#endif
+
 
 void OpenHDRender::setFormat(int width, int heigth, QVideoFrame::PixelFormat i_format) {
     QSize size(width, heigth);

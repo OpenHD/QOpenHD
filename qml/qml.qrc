@@ -1,4 +1,22 @@
 <RCC>
+    <qresource prefix="/translations" lang="en">
+        <file alias="QOpenHD.qm">../translations/QOpenHD_en.qm</file>
+    </qresource>
+    <qresource prefix="/translations" lang="de">
+        <file alias="QOpenHD.qm">../translations/QOpenHD_de.qm</file>
+    </qresource>
+    <qresource prefix="/translations" lang="ru">
+        <file alias="QOpenHD.qm">../translations/QOpenHD_ru.qm</file>
+    </qresource>
+    <qresource prefix="/translations" lang="es">
+        <file alias="QOpenHD.qm">../translations/QOpenHD_es.qm</file>
+    </qresource>
+    <qresource prefix="/translations" lang="fr">
+        <file alias="QOpenHD.qm">../translations/QOpenHD_fr.qm</file>
+    </qresource>
+    <qresource prefix="/translations" lang="nl">
+        <file alias="QOpenHD.qm">../translations/QOpenHD_nl.qm</file>
+    </qresource>
     <qresource prefix="/">
         <file>main.qml</file>
         <file>qtquickcontrols2.conf</file>
@@ -127,5 +145,14 @@
         <file>airplanemarkerblur.png</file>
         <file>ui/widgets/AdsbWidgetForm.ui.qml</file>
         <file>ui/widgets/AdsbWidget.qml</file>
+        <file>ui/PowerPanel.qml</file>
+        <file>ui/PowerPanelForm.ui.qml</file>
+        <file>ui/elements/LanguageSelect.qml</file>
+        <file>ui/elements/LanguageSelectForm.ui.qml</file>
+        <file>ui/SensorPanel.qml</file>
+        <file>ui/SensorPanelForm.ui.qml</file>
+        <file alias="round.png">../icons/round.png</file>
+        <file>ui/elements/Card.qml</file>
+        <file>ui/elements/CardForm.ui.qml</file>
     </qresource>
 </RCC>

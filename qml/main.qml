@@ -64,6 +64,8 @@ ApplicationWindow {
         id: settings
         property double global_scale: 1.0
 
+        property string locale: "en"
+
         property int main_video_port: 5600
         property int pip_video_port: 5601
         property int lte_video_port: 8000
@@ -314,7 +316,7 @@ ApplicationWindow {
                 return "MainVideoGStreamer.qml";
             }
             if (IsAndroid && EnableVideoRender && EnableMainVideo) {
-                return "MainVideoAndroid.qml";
+                return "MainVideoRender.qml";
             }
             if (IsRaspPi && EnableVideoRender && EnableMainVideo) {
                 return "MainVideoRender.qml";
@@ -372,9 +374,6 @@ ApplicationWindow {
     UpperOverlayBar {
         visible: settings.stereo_mode == 0
         id: upperOverlayBar
-        onSettingsButtonClicked: {
-            settings_panel.openSettings();
-        }
     }
 
     HUDOverlayGrid {
@@ -391,6 +390,10 @@ ApplicationWindow {
         }
         z: 3.0
         layer.enabled: true
+
+        onSettingsButtonClicked: {
+            settings_panel.openSettings();
+        }
     }
 
     Rectangle {

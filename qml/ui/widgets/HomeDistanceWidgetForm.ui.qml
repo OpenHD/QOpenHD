@@ -159,7 +159,7 @@ BaseWidget {
 
                 return distance.toLocaleString(Qt.locale(), "f", 1) + unit
             }
-            elide: Text.ElideRight
+            elide: Text.ElideNone
             anchors.right: parent.right
             anchors.rightMargin: 8
             verticalAlignment: Text.AlignVCenter

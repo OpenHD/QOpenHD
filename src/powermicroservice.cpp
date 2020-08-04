@@ -19,6 +19,7 @@ PowerMicroservice::PowerMicroservice(QObject *parent, MicroserviceTarget target,
 
     targetCompID1 = MAV_COMP_ID_USER1;
     targetCompID2 = targetCompID1;
+    targetCompID3 = targetCompID1;
     localPort = 14551;
 
     #if defined(__rasp_pi__)
@@ -27,19 +28,21 @@ PowerMicroservice::PowerMicroservice(QObject *parent, MicroserviceTarget target,
 
     switch (m_target) {
         case MicroserviceTargetNone:
-        targetSysID = 0;
+        targetSysID1 = 0;
         break;
         case MicroserviceTargetAir:
-        targetSysID = 253;
+        targetSysID1 = 253;
         connect(OpenHD::instance(), &OpenHD::air_shutdown, this, &PowerMicroservice::onShutdown);
         connect(OpenHD::instance(), &OpenHD::air_reboot, this, &PowerMicroservice::onReboot);
         break;
         case MicroserviceTargetGround:
-        targetSysID = 254;
+        targetSysID1 = 254;
         connect(OpenHD::instance(), &OpenHD::ground_shutdown, this, &PowerMicroservice::onShutdown);
         connect(OpenHD::instance(), &OpenHD::ground_reboot, this, &PowerMicroservice::onReboot);
         break;
     }
+
+    targetSysID2 = targetSysID1;
 
     connect(this, &PowerMicroservice::setup, this, &PowerMicroservice::onSetup);
 }
@@ -91,14 +94,27 @@ void PowerMicroservice::onProcessMavlinkMessage(mavlink_message_t msg) {
 
             break;
         }
-        case MAVLINK_MSG_ID_OPENHD_GROUND_POWER: {
-            mavlink_openhd_ground_power_t ground_power;
-            mavlink_msg_openhd_ground_power_decode(&msg, &ground_power);
+        case MAVLINK_MSG_ID_OPENHD_POWER: {
+            mavlink_openhd_power_t power;
+            mavlink_msg_openhd_power_decode(&msg, &power);
 
-            OpenHD::instance()->set_ground_vin(ground_power.vin);
-            OpenHD::instance()->set_ground_vout(ground_power.vout);
-            OpenHD::instance()->set_ground_vbat(ground_power.vbat);
-            OpenHD::instance()->set_ground_iout(ground_power.iout);
+            switch (m_target) {
+                case MicroserviceTargetAir: {
+                    OpenHD::instance()->set_air_vout(power.vout);
+                    OpenHD::instance()->set_air_iout(power.iout);
+                    break;
+                }
+                case MicroserviceTargetGround: {
+                    OpenHD::instance()->set_ground_vin(power.vin);
+                    OpenHD::instance()->set_ground_vout(power.vout);
+                    OpenHD::instance()->set_ground_vbat(power.vbat);
+                    OpenHD::instance()->set_ground_iout(power.iout);
+                    break;
+                }
+                default: {
+                    break;
+                }
+            }
 
             auto battery_cells = 1; //settings.value("battery_cells", QVariant(3)).toInt();
 

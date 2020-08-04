@@ -3,7 +3,7 @@ BASEDIR = $$IN_PWD
 LANGUAGE = C++
 CONFIG += c++17
 CONFIG+=sdk_no_version_check
-TRANSLATIONS = translations/QOpenHD_en.ts translations/QOpenHD_de.ts translations/QOpenHD_ru.ts
+TRANSLATIONS = translations/QOpenHD_en.ts translations/QOpenHD_de.ts translations/QOpenHD_ru.ts translations/QOpenHD_nl.ts translations/QOpenHD_es.ts translations/QOpenHD_fr.ts
 
 
 include(platforms.pri)
@@ -33,6 +33,10 @@ CONFIG(debug, debug|release) {
     DEFINES += QMLJSDEBUGGER
 }
 
+CONFIG += qmltypes
+QML_IMPORT_NAME = OpenHD
+QML_IMPORT_MAJOR_VERSION = 1
+
 OBJECTS_DIR  = $${OUT_PWD}/obj
 MOC_DIR      = $${OUT_PWD}/moc
 UI_DIR       = $${OUT_PWD}/ui
@@ -54,9 +58,11 @@ INCLUDEPATH += $$PWD/lib/GeographicLib-1.50/include
 
 SOURCES += \
     src/FPS.cpp \
+    src/altitudeladder.cpp \
     src/blackboxmodel.cpp \
     src/frskytelemetry.cpp \
     src/gpiomicroservice.cpp \
+    src/headingladder.cpp \
     src/localmessage.cpp \
     src/ltmtelemetry.cpp \
     src/main.cpp \
@@ -70,10 +76,10 @@ SOURCES += \
     src/openhdrc.cpp \
     src/openhdsettings.cpp \
     src/openhdtelemetry.cpp \
-    src/opensky.cpp \
     src/powermicroservice.cpp \
     src/qopenhdlink.cpp \
     src/smartporttelemetry.cpp \
+    src/speedladder.cpp \
     src/statuslogmodel.cpp \
     src/statusmicroservice.cpp \
     src/util.cpp \
@@ -83,11 +89,12 @@ RESOURCES += qml/qml.qrc
 
 HEADERS += \
     inc/FPS.h \
+    inc/altitudeladder.h \
     inc/blackboxmodel.h \
     inc/gpiomicroservice.h \
+    inc/headingladder.h \
     inc/markermodel.h \
     inc/mavlinkbase.h \
-    inc/opensky.h \
     inc/powermicroservice.h \
     inc/sharedqueue.h \
     inc/constants.h \
@@ -105,6 +112,7 @@ HEADERS += \
     inc/openhdtelemetry.h \
     inc/qopenhdlink.h \
     inc/smartporttelemetry.h \
+    inc/speedladder.h \
     inc/statuslogmodel.h \
     inc/statusmicroservice.h \
     inc/util.h \
@@ -335,17 +343,31 @@ AndroidBuild {
 
         HEADERS += \
             inc/openhdandroidrender.h \
-            inc/openhdandroidvideo.h
+            inc/openhdandroidvideo.h \
+            inc/androidsurfacetexture.h
+
 
         SOURCES += \
             src/openhdandroidrender.cpp \
-            src/openhdandroidvideo.cpp
+            src/openhdandroidvideo.cpp \
+            src/androidsurfacetexture.cpp
 
         OTHER_FILES += \
             $$PWD/android/src/org/openhd/OpenHDActivity.java \
             $$PWD/android/src/org/openhd/SurfaceTextureListener.java
     }
     QT += androidextras
+}
+
+EnableADSB {
+    message("EnableADSB")
+    DEFINES += ENABLE_ADSB
+
+    SOURCES += \
+            src/opensky.cpp
+    HEADERS += \
+            inc/opensky.h
+
 }
 
 EnableCharts {

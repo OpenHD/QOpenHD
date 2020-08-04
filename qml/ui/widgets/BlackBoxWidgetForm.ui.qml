@@ -24,7 +24,7 @@ BaseWidget {
 
     Connections {
         target: BlackBoxModel
-        onDataChanged: {
+        function onDataChanged() {
             var count= BlackBoxModel.rowCount();
             blackboxmodel_count_text.text= Number(count).toLocaleString( Qt.locale(), 'f', 0)
             blackbox_play_Slider.to=count;
@@ -119,15 +119,6 @@ BaseWidget {
         }
     }
 
-    Glow {
-        anchors.fill: widgetInner
-        radius: 3
-        samples: 17
-        color: settings.color_glow
-        opacity: settings.blackbox_opacity
-        source: widgetInner
-    }
-
     Item {
         id: widgetInner
         anchors.fill: parent
@@ -143,6 +134,10 @@ BaseWidget {
             border.color: "grey"
             border.width: 2
             radius: 10
+            MouseArea {
+                propagateComposedEvents: false
+                anchors.fill: parent
+            }
         }
 
         Item {
@@ -174,6 +169,7 @@ BaseWidget {
                 anchors.left: parent.left
                 anchors.leftMargin: 45
                 anchors.top: parent.top
+                enabled: BlackBoxModel.rowCount() >= 1
 
                 width: parent.width - 135
                 // @disable-check M223
@@ -192,6 +188,7 @@ BaseWidget {
                 anchors.rightMargin: 10
                 anchors.top: parent.top
                 font.family: "Font Awesome 5 Free"
+                enabled: BlackBoxModel.rowCount() >= 1
 
                 onClicked: {// play_pause true == looks like play, false == looks like pause
                     if (play_pause==true){play_pause = false;}

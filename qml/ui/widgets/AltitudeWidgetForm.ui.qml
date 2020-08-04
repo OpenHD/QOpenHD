@@ -162,19 +162,9 @@ BaseWidget {
 
                 onValueChanged: { // @disable-check M223
                     settings.altitude_range = altitude_range_Slider.value;
-                    canvasAltLadder.requestPaint();
                 }
             }
         }
-    }
-
-    Glow {
-        anchors.fill: widgetInner
-        radius: 3
-        samples: 17
-        color: settings.color_glow
-        opacity: settings.altitude_opacity
-        source: widgetInner
     }
 
     Item {
@@ -193,83 +183,18 @@ BaseWidget {
 
             transform: Scale { origin.x: -5; origin.y: 12; xScale: settings.altitude_size ; yScale: settings.altitude_size}
 
-            Connections{
-                target:OpenHD
-                function onAlt_rel_changed() { // if user selects msl it is part of same mavlink msg
-                    canvasAltLadder.requestPaint()
-                }
-            }
-
-
-            Canvas {
-                id: canvasAltLadder
+            AltitudeLadder {
+                id: altitudeLadderC
                 anchors.centerIn: parent
                 width: 50
                 height: 300
                 clip: false
-
-                onPaint: { // @disable-check M223
-                    var ctx = getContext("2d"); // @disable-check M222
-                    ctx.reset(); // @disable-check M222
-
-                    if (settings.show_altitude_ladder === false){
-                        return; // to stop it from painting per user selection
-                    }
-
-                    ctx.fillStyle = settings.color_shape;
-                    //cant get a good approximation of glow via canvas
-                    //ctx.strokeStyle = settings.color_glow;
-                    //ctx.lineWidth = .5;
-                    ctx.font = "bold 11px sans-serif";
-
-                    var enable_imperial = settings.enable_imperial;
-                    var altitude_rel_msl = settings.altitude_rel_msl;
-                    var alt_msl = OpenHD.alt_msl;
-                    var alt_rel = OpenHD.alt_rel;
-
-                    var alt = enable_imperial ? (altitude_rel_msl ? (alt_msl*3.28) : (alt_rel*3.28)) :
-                                                (altitude_rel_msl ? alt_msl : alt_rel);
-                    //weird rounding issue where decimals make ladder dissappear
-                    alt=Math.round(alt);
-
-                    var x = 6; // ticks right/left position
-                    var y_position= height/2+11; // ladder center up/down..tweak
-                    var x_label = 25; // ladder labels right/left position
-
-                    var range = settings.altitude_range; // alt range range of display, i.e. lowest and highest number on the ladder
-                    var ratio_alt = height / range;
-
-                    var k;
-                    var y;
-
-                    for (k = (alt - range / 2); k <= alt + range / 2; k++) {    // @disable-check M223
-                        y =  y_position + ((k - alt) * ratio_alt)*-1;
-                        if (k % 10 == 0) {                                      // @disable-check M223
-                            if (k >= 0) {                                       // @disable-check M223
-                                /// big ticks
-                                ctx.rect(x, y, 12, 3);
-                                ctx.fill();                                     // @disable-check M222
-                                //ctx.stroke();
-                                if (k>alt+5 || k<alt-5){                        // @disable-check M223
-                                    // text for label
-                                    ctx.fillText(k, x_label, y+6);              // @disable-check M222
-                                }
-                            }
-                            if (k < 0) {                                        // @disable-check M223
-                                //start position alt (squares) below "0"
-                                ctx.rect(x, y-15, 15, 15);
-                                ctx.fill();                                     // @disable-check M222
-                                //ctx.stroke();
-                            }
-                        }
-                        else if ((k % 5 == 0) && (k > 0)){                      // @disable-check M223
-                            //little ticks
-                            ctx.rect(x, y, 7, 2);
-                            ctx.fill(); // @disable-check M222
-                            //ctx.stroke();
-                        }
-                    }
-                }
+                color: settings.color_shape
+                altitudeRelMsl: settings.altitude_rel_msl
+                altitudeRange: settings.altitude_range
+                imperial: settings.enable_imperial
+                altMsl: OpenHD.alt_msl
+                altRel: OpenHD.alt_rel
             }
         }
         //-----------------------ladder end---------------

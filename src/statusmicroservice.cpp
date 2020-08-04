@@ -14,6 +14,7 @@ StatusMicroservice::StatusMicroservice(QObject *parent, MicroserviceTarget targe
 
     targetCompID1 = MAV_COMP_ID_USER3;
     targetCompID2 = targetCompID1;
+    targetCompID3 = targetCompID1;
     localPort = 14551;
 
     #if defined(__rasp_pi__)
@@ -22,15 +23,16 @@ StatusMicroservice::StatusMicroservice(QObject *parent, MicroserviceTarget targe
 
     switch (m_target) {
         case MicroserviceTargetNone:
-        targetSysID = 0;
+        targetSysID1 = 0;
         break;
         case MicroserviceTargetAir:
-        targetSysID = 253;
+        targetSysID1 = 253;
         break;
         case MicroserviceTargetGround:
-        targetSysID = 254;
+        targetSysID1 = 254;
         break;
     }
+    targetSysID2 = targetSysID1;
 
     connect(this, &StatusMicroservice::setup, this, &StatusMicroservice::onSetup);
 }
@@ -76,10 +78,10 @@ void StatusMicroservice::onProcessMavlinkMessage(mavlink_message_t msg) {
             mavlink_openhd_version_message_t version_message;
             mavlink_msg_openhd_version_message_decode(&msg, &version_message);
 
-            QByteArray openhd_version(version_message.version, 30);
-            if (!openhd_version.contains('\0')) {
-               openhd_version.append('\0');
-            }
+            // the microservice code ensures that there is always a null at the end of this array
+            // before sending the message, so we can rely on there being one and use QString directly
+            QString openhd_version(version_message.version);
+
 
             setOpenHDVersion(openhd_version);
 

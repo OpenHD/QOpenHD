@@ -1,6 +1,7 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
+import QtGraphicalEffects 1.12
 
 import Qt.labs.settings 1.0
 
@@ -10,35 +11,34 @@ import "../ui" as Ui
 
 import "../ui/elements"
 
-Item {
-    id: element2
+Rectangle {
     Layout.fillHeight: true
     Layout.fillWidth: true
+    color: "#eaeaea"
 
-    Text {
-        text: qsTr("OpenHD Status Log")
-        font.pixelSize: 16
-        font.bold: true
-        color: "#515151"
+    DropShadow {
+        cached: true
+        anchors.fill: statusLog
+        horizontalOffset: 0
+        verticalOffset: 1
+        radius: 6
+        samples: 17
+        color: "#6a000000"
+        source: statusLog
+    }
+
+    Rectangle {
+        id: statusLog
+        color: "#ff2a2a2a"
+        clip: true
+        radius: 6
 
         anchors.top: parent.top
         anchors.topMargin: 12
         anchors.left: parent.left
-        anchors.leftMargin: 24
-    }
-
-    Rectangle {
-        color: "#ff2a2a2a"
-        border.width: 1
-        border.color: "white"
-        clip: true
-
-        anchors.top: parent.top
-        anchors.topMargin: 48
-        anchors.left: parent.left
-        anchors.leftMargin: 24
+        anchors.leftMargin: 12
         anchors.right: parent.right
-        anchors.rightMargin: 24
+        anchors.rightMargin: 12
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 36
 

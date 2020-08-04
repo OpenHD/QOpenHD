@@ -17,10 +17,26 @@
 #include "bit_buffer.h"
 #include "checks.h"
 
-#define RETURN_EMPTY_ON_FAIL(x) \
-  if (!(x)) {                   \
-    return std::nullopt;       \
-  }
+#if __cplusplus >= 201703L
+    #include <optional>
+    namespace opt = std;
+    #define RETURN_EMPTY_ON_FAIL(x) \
+      if (!(x)) {                   \
+        return std::nullopt;       \
+      }
+    #define OPT_NONE std::nullopt
+#else
+    #include <boost/optional.hpp>
+    #include <boost/optional/optional.hpp>
+    namespace opt = boost;
+    #define RETURN_EMPTY_ON_FAIL(x) \
+      if (!(x)) {                   \
+        return boost::none;       \
+      }
+    #define OPT_NONE boost::none
+#endif
+
+
 
 namespace {
 const int kMaxPicInitQpDeltaValue = 25;
@@ -33,7 +49,7 @@ namespace webrtc {
 // You can find it on this page:
 // http://www.itu.int/rec/T-REC-H.264
 
-std::optional<PpsParser::PpsState> PpsParser::ParsePps(const uint8_t* data,
+opt::optional<PpsParser::PpsState> PpsParser::ParsePps(const uint8_t* data,
                                                         size_t length) {
   // First, parse out rbsp, which is basically the source buffer minus emulation
   // bytes (the last byte of a 0x00 0x00 0x03 sequence). RBSP is defined in
@@ -57,7 +73,7 @@ bool PpsParser::ParsePpsIds(const uint8_t* data,
   return ParsePpsIdsInternal(&bit_buffer, pps_id, sps_id);
 }
 
-std::optional<uint32_t> PpsParser::ParsePpsIdFromSlice(const uint8_t* data,
+opt::optional<uint32_t> PpsParser::ParsePpsIdFromSlice(const uint8_t* data,
                                                         size_t length) {
   std::vector<uint8_t> unpacked_buffer = H264::ParseRbsp(data, length);
   rtc::BitBuffer slice_reader(unpacked_buffer.data(), unpacked_buffer.size());
@@ -65,18 +81,18 @@ std::optional<uint32_t> PpsParser::ParsePpsIdFromSlice(const uint8_t* data,
   uint32_t golomb_tmp;
   // first_mb_in_slice: ue(v)
   if (!slice_reader.ReadExponentialGolomb(&golomb_tmp))
-    return std::nullopt;
+    return OPT_NONE;
   // slice_type: ue(v)
   if (!slice_reader.ReadExponentialGolomb(&golomb_tmp))
-    return std::nullopt;
+    return OPT_NONE;
   // pic_parameter_set_id: ue(v)
   uint32_t slice_pps_id;
   if (!slice_reader.ReadExponentialGolomb(&slice_pps_id))
-    return std::nullopt;
+    return OPT_NONE;
   return slice_pps_id;
 }
 
-std::optional<PpsParser::PpsState> PpsParser::ParseInternal(
+opt::optional<PpsParser::PpsState> PpsParser::ParseInternal(
     rtc::BitBuffer* bit_buffer) {
   PpsState pps;
 

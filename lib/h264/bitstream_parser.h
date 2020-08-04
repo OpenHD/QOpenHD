@@ -13,7 +13,14 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <optional>
+
+#if __cplusplus >= 201703L
+    #include <optional>
+    namespace opt = std;
+#else
+    #include <boost/optional.hpp>
+    namespace opt = boost;
+#endif
 
 #include "array_view.h"
 
@@ -29,7 +36,7 @@ class BitstreamParser {
 
   // Get the last extracted QP value from the parsed bitstream. If no QP
   // value could be parsed, returns absl::nullopt.
-  virtual std::optional<int> GetLastSliceQp() const = 0;
+  virtual opt::optional<int> GetLastSliceQp() const = 0;
 };
 
 }  // namespace webrtc

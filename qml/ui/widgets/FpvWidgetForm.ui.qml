@@ -140,6 +140,7 @@ BaseWidget {
         anchors.horizontalCenter: parent.horizontalCenter
         width: 40
         anchors.verticalCenter: parent.verticalCenter
+        visible: settings.show_fpv
 
         Item {
             anchors.fill: parent

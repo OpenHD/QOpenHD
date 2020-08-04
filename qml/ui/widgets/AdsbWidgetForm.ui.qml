@@ -26,10 +26,25 @@ BaseWidget {
 
     hasWidgetDetail: true
 
+    property double lastData: 0
+
+    Timer {
+        interval: 1000;
+        running: true;
+        repeat: true
+        onTriggered: {
+            var currentTime = (new Date).getTime();
+            if (currentTime - lastData > 20000) {
+                adsb_status.color = "red";
+            }
+        }
+    }
+
     Connections {
         target: MarkerModel
-        onDataChanged: {
-            //console.log("MARKER MODEL DATA CHANGED");
+        function onDataChanged() {
+            console.log("MARKER MODEL DATA CHANGED");
+            lastData = (new Date).getTime();
             adsb_status.active=true;
             adsb_status.color="green";
             adsb_status_animation.restart();
@@ -128,21 +143,6 @@ BaseWidget {
             anchors.leftMargin: 5
             anchors.verticalCenter: parent.verticalCenter
             active: false
-
-            //ColorAnimation on color { to: "red"; duration: 20000 }
-            ColorAnimation {
-                    id: adsb_status_animation
-
-                    target: adsb_status
-                    property: "color"
-
-                    running: true
-                    loops: Animation.Infinite
-                    duration: 20000
-
-                    from: "green"
-                    to: "red"
-                }
         }
     }
 }

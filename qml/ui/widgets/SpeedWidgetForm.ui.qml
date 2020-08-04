@@ -159,7 +159,6 @@ BaseWidget {
 
                 onValueChanged: { // @disable-check M223
                     settings.speed_range = speed_range_Slider.value;
-                    canvasSpeedLadder.requestPaint();
                 }
             }
         }
@@ -189,19 +188,9 @@ BaseWidget {
 
                 onValueChanged: { // @disable-check M223
                     settings.speed_minimum = speed_minimum_Slider.value
-                    canvasSpeedLadder.requestPaint();
                 }
             }
         }
-    }
-
-    Glow {
-        anchors.fill: widgetInner
-        radius: 3
-        samples: 17
-        color: settings.color_glow
-        opacity: settings.speed_opacity
-        source: widgetInner
     }
 
     Item {
@@ -220,83 +209,19 @@ BaseWidget {
 
             transform: Scale { origin.x: -33; origin.y: 12; xScale: settings.speed_size ; yScale: settings.speed_size}
 
-            Connections{
-                target:OpenHD
-                function onSpeedChanged() { // if user selects msl it is part of same mavlink msg
-                    canvasSpeedLadder.requestPaint()
-                }
-            }
-
-            Canvas {
-                id: canvasSpeedLadder
+            SpeedLadder {
+                id: speedLadderC
                 anchors.centerIn: parent
                 width: 50
                 height: 300
                 clip: false
-
-                onPaint: { // @disable-check M223
-                    var ctx = getContext("2d"); // @disable-check M222
-                    ctx.reset(); // @disable-check M222
-
-                    if (settings.show_speed_ladder === false){
-                        return; // to stop it from painting per user selection
-                    }
-
-                    ctx.fillStyle = settings.color_shape;
-                    //cant get a good approximation of glow via canvas
-                    //ctx.strokeStyle = settings.color_glow;
-                    //ctx.lineWidth = .5;
-                    ctx.font = "bold 11px sans-serif";
-
-                    var speed_airspeed_gps = settings.speed_airspeed_gps;
-                    var _airspeed = OpenHD.airspeed;
-                    var _speed = OpenHD.speed;
-
-                    var speed = settings.enable_imperial ? (speed_airspeed_gps ? (_airspeed*0.621371) : (_speed*0.621371)) :
-                                                           (speed_airspeed_gps ? _airspeed : _speed);
-                    //weird rounding issue where decimals make ladder dissappear
-                    speed=Math.round(speed);
-
-                    var x = 32; // ticks right/left position
-                    var y_position= height/2+11; // ladder center up/down..tweak
-                    var x_label = 10; // ladder labels right/left position
-
-                    var range = settings.speed_range; // speed range range of display, i.e. lowest and highest number on the ladder
-                    var ratio_speed = height / range;
-
-                    var k;
-                    var y;
-
-                    var speed_minimum = settings.speed_minimum;
-
-                    for (k = (speed - range / 2); k <= speed + range / 2; k++) {    // @disable-check M223
-                        y =  y_position + ((k - speed) * ratio_speed)*-1;
-                        if (k % 10 == 0) {                                      // @disable-check M223
-                            if (k >= 0) {                                       // @disable-check M223
-                                /// big ticks
-                                ctx.rect(x, y, 12, 3);
-                                ctx.fill();                                     // @disable-check M222
-                                //ctx.stroke();
-                                if (k>speed+5 || k<speed-5){                        // @disable-check M223
-                                    // text
-                                    ctx.fillText(k, x_label, y+6);              // @disable-check M222
-                                }
-                            }
-                            if (k < speed_minimum) {                                        // @disable-check M223
-                                //start position speed (squares) below "0"
-                                ctx.rect(x, y-12, 15, 15);
-                                ctx.fill();                                     // @disable-check M222
-                                //ctx.stroke();
-                            }
-                        }
-                        else if ((k % 5 == 0) && (k > speed_minimum)) {                      // @disable-check M223
-                            //little ticks
-                            ctx.rect(x+5, y, 7, 2);
-                            ctx.fill(); // @disable-check M222
-                            //ctx.stroke();
-                        }
-                    }
-                }
+                color: settings.color_shape
+                airspeedOrGps: settings.speed_airspeed_gps
+                imperial: settings.enable_imperial
+                speedMinimum: settings.speed_minimum
+                speedRange: settings.speed_range
+                speed: OpenHD.speed
+                airspeed: OpenHD.airspeed
             }
         }
         //-----------------------ladder end---------------

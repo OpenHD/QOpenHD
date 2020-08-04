@@ -53,6 +53,28 @@ OpenHD::OpenHD(QObject *parent): QObject(parent) {
 }
 
 
+void OpenHD::switchToLanguage(const QString &language) {
+    QLocale::setDefault(language);
+
+    if (!m_translator.isEmpty()) {
+        QCoreApplication::removeTranslator(&m_translator);
+    }
+
+    bool success = m_translator.load(":/translations/QOpenHD.qm");
+    if (!success) {
+        qDebug() << "Translation load failed";
+        return;
+    }
+    QCoreApplication::installTranslator(&m_translator);
+    m_engine->retranslate();
+}
+
+
+void OpenHD::setEngine(QQmlApplicationEngine *engine) {
+    m_engine = engine;
+}
+
+
 QString OpenHD::get_gstreamer_version() {
 #if defined(ENABLE_GSTREAMER)
     guint major, minor, micro, nano;
@@ -701,6 +723,16 @@ void OpenHD::set_ground_vbat(double ground_vbat) {
 void OpenHD::set_ground_iout(double ground_iout) {
     m_ground_iout = ground_iout;
     emit ground_iout_changed(m_ground_iout);
+}
+
+void OpenHD::set_air_vout(double air_vout) {
+    m_air_vout = air_vout;
+    emit air_vout_changed(m_air_vout);
+}
+
+void OpenHD::set_air_iout(double air_iout) {
+    m_air_iout = air_iout;
+    emit air_iout_changed(m_air_iout);
 }
 
 void OpenHD::updateLateralSpeed(){

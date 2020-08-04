@@ -182,10 +182,7 @@ QSGNode *OpenHDAndroidRender::updatePaintNode(QSGNode *n, QQuickItem::UpdatePain
 
     QSGGeometry::updateTexturedRectGeometry(node->geometry(), rect, QRectF(0, 0, 1, 1));
     node->markDirty(QSGNode::DirtyGeometry | QSGNode::DirtyMaterial);
-    if (m_window) {
-        m_window->update();
-    }
-    //emit onUpdate();
+
     return node;
 }
 

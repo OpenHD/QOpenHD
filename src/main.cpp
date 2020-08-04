@@ -39,13 +39,17 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 
 #include "statuslogmodel.h"
 
+#if defined(ENABLE_ADSB)
 #include "opensky.h"
+#endif
 
 #include "markermodel.h"
 
 #include "blackboxmodel.h"
 
-#include "opensky.h"
+#include "speedladder.h"
+#include "altitudeladder.h"
+#include "headingladder.h"
 
 #if defined(__ios__)
 #include "appleplatform.h"
@@ -61,7 +65,7 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "openhdvideo.h"
 #if defined(__android__)
 #include "openhdandroidvideo.h"
-#include "openhdandroidrender.h"
+#include "openhdrender.h"
 #endif
 #if defined(__rasp_pi__)
 #include "openhdmmalvideo.h"
@@ -175,16 +179,24 @@ int main(int argc, char *argv[]) {
 
     qmlRegisterType<QOpenHDLink>("OpenHD", 1,0, "QOpenHDLink");
 
+    #if defined(ENABLE_ADSB)
     qmlRegisterType<OpenSky>("OpenHD", 1, 0, "OpenSky");
+    #endif
 
     qmlRegisterType<MarkerModel>("OpenHD", 1, 0, "MarkerModel");
 
     qmlRegisterType<BlackBoxModel>("OpenHD", 1, 0, "BlackBoxModel");
 
+    qmlRegisterType<SpeedLadder>("OpenHD", 1, 0, "SpeedLadder");
+
+    qmlRegisterType<AltitudeLadder>("OpenHD", 1, 0, "AltitudeLadder");
+
+    qmlRegisterType<HeadingLadder>("OpenHD", 1, 0, "HeadingLadder");
+
 #if defined(ENABLE_VIDEO_RENDER)
 #if defined(__android__)
     qmlRegisterType<OpenHDAndroidVideo>("OpenHD", 1, 0, "OpenHDAndroidVideo");
-    qmlRegisterType<OpenHDAndroidRender>("OpenHD", 1, 0, "OpenHDAndroidRender");
+    qmlRegisterType<OpenHDRender>("OpenHD", 1, 0, "OpenHDRender");
 #endif
 #if defined(__rasp_pi__)
     qmlRegisterType<OpenHDMMALVideo>("OpenHD", 1, 0, "OpenHDMMALVideo");
@@ -197,6 +209,8 @@ int main(int argc, char *argv[]) {
 #endif
 
     QQmlApplicationEngine engine;
+    auto openhd = OpenHD::instance();
+    openhd->setEngine(&engine);
 
 #if defined(__android__)
     engine.rootContext()->setContextProperty("IsAndroid", QVariant(true));
@@ -233,8 +247,6 @@ int main(int argc, char *argv[]) {
 #else
     engine.rootContext()->setContextProperty("IsRaspPi", QVariant(false));
 #endif
-
-    auto openhd = OpenHD::instance();
 
 #if defined(ENABLE_GSTREAMER)
 engine.rootContext()->setContextProperty("EnableGStreamer", QVariant(true));
@@ -334,6 +346,17 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
     //groundPowerThread->start();
     groundPowerMicroservice->onStarted();
 
+
+    auto airPowerMicroservice = new PowerMicroservice(nullptr, MicroserviceTargetAir, MavlinkTypeTCP);
+    engine.rootContext()->setContextProperty("AirPowerMicroservice", airPowerMicroservice);
+    //QThread *airPowerThread = new QThread();
+    //QObject::connect(airPowerThread, &QThread::started, airPowerMicroservice, &PowerMicroservice::onStarted);
+    //airPowerMicroservice->moveToThread(airPowerThread);
+    QObject::connect(openHDSettings, &OpenHDSettings::groundStationIPUpdated, airPowerMicroservice, &PowerMicroservice::setGroundIP, Qt::QueuedConnection);
+    //airPowerThread->start();
+    airPowerMicroservice->onStarted();
+
+
     auto groundStatusMicroservice = new StatusMicroservice(nullptr, MicroserviceTargetGround, MavlinkTypeTCP);
     engine.rootContext()->setContextProperty("GroundStatusMicroservice", groundStatusMicroservice);
     QObject::connect(openHDSettings, &OpenHDSettings::groundStationIPUpdated, groundStatusMicroservice, &StatusMicroservice::setGroundIP, Qt::QueuedConnection);
@@ -356,9 +379,12 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
     engine.rootContext()->setContextProperty("BlackBoxModel", blackBoxModel);
     blackBoxModel->initBlackBoxModel();
 
+
+    #if defined(ENABLE_ADSB)
     auto openSky = OpenSky::instance();
     engine.rootContext()->setContextProperty("OpenSky", openSky);
     openSky->onStarted();
+    #endif
 
     engine.rootContext()->setContextProperty("OpenHD", openhd);
 
@@ -375,6 +401,12 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
     engine.rootContext()->setContextProperty("PiPStream", pipVideo);
 #else
     engine.rootContext()->setContextProperty("EnablePiP", QVariant(false));
+#endif
+
+#if defined(ENABLE_ADSB)
+    engine.rootContext()->setContextProperty("EnableADSB", QVariant(true));
+#else
+    engine.rootContext()->setContextProperty("EnableADSB", QVariant(false));
 #endif
 
 #if defined(ENABLE_CHARTS)
@@ -433,14 +465,14 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
 
 #if defined(__android__)
 #if defined(ENABLE_MAIN_VIDEO)
-    QQuickItem *mainRenderer = rootObject->findChild<QQuickItem *>("mainAndroidSurface");
-    mainVideo->setVideoOut((OpenHDAndroidRender*)mainRenderer);
+    QQuickItem *mainRenderer = rootObject->findChild<QQuickItem *>("mainSurface");
+    mainVideo->setVideoOut((OpenHDRender*)mainRenderer);
     QObject::connect(mainVideoThread, &QThread::started, mainVideo, &OpenHDAndroidVideo::onStarted);
 #endif
 
 #if defined(ENABLE_PIP)
-    QQuickItem *pipRenderer = rootObject->findChild<QQuickItem *>("pipAndroidSurface");
-    pipVideo->setVideoOut((OpenHDAndroidRender*)pipRenderer);
+    QQuickItem *pipRenderer = rootObject->findChild<QQuickItem *>("pipSurface");
+    pipVideo->setVideoOut((OpenHDRender*)pipRenderer);
     QObject::connect(pipVideoThread, &QThread::started, pipVideo, &OpenHDAndroidVideo::onStarted);
 #endif
 #endif

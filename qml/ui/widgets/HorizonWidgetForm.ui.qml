@@ -338,161 +338,19 @@ BaseWidget {
 
             //transform: Scale { origin.x: 125; origin.y: 0; xScale: settings.horizon_size; yScale: 1}
 
-            Connections{
-                target:OpenHD
-                function onHdgChanged() {
-                    canvasHeadingLadder.requestPaint()
-                }
-            }
-            Connections{
-                target:settings
-                function onHeading_ladder_textChanged() {
-                    canvasHeadingLadder.requestPaint()
-                }
-            }
-
-            Canvas {
-                id: canvasHeadingLadder
+            HeadingLadder {
+                id: headingLadderC
                 anchors.centerIn: parent
-                width: 250*settings.horizon_size
+                width: 250 * settings.horizon_size
                 height: 50
                 clip: false
-
-                onPaint: { // @disable-check M223
-                    var ctx = getContext("2d"); // @disable-check M222
-                    ctx.reset(); // @disable-check M222
-
-                    ctx.fillStyle = settings.color_shape;
-                    //cant get a good approximation of glow via canvas
-                    //ctx.strokeStyle = settings.color_glow;
-                    //ctx.lineWidth = 1;
-                    ctx.font = "bold 11px sans-serif";
-                    ctx.textAlign = "center";
-
-
-
-                    var y = 25; // ticks up/down position
-                    var y_label = 22; // labels up/down position
-
-                    var y_position= height/2; // ladder center up/down..tweak
-                    var x_position= width/2; // ladder center left/right..tweak
-
-                    var home_heading = 0;
-                    var compass_direction;
-                    var draw_text = false;
-
-                    var range= 180;
-                    var ratio_heading = width/range;
-                    var heading=OpenHD.hdg;
-
-                    var heading_ladder_text = settings.heading_ladder_text;
-
-                    var x;
-                    var i;
-                    var j;
-                    var h;
-                    var h_drawn=true; //is home outside of compass "range"
-
-
-                    for (i = (heading - range / 2); i <= heading + range / 2; i++) {    // @disable-check M223
-                        x =  x_position + ((i - heading) * ratio_heading);
-                        // console.log("heading:  ",i);
-
-                        h=i;
-                        if (h>360){
-                            h=h-360;
-                        }
-                        if (h<0){
-                            h=360+h;
-                        }
-                        if (h == OpenHD.home_heading && settings.show_horizon_home === true) {
-                            ctx.font='14px "Font Awesome 5 Free"';
-                            ctx.fillText("\uf015", x, y_label);
-                            ctx.font = "bold 11px sans-serif";
-                            h_drawn=false;
-                        }
-
-
-                        if (i % 30 == 0 && settings.show_horizon_heading_ladder === true) {
-                            //big ticks
-                            ctx.rect(x, y, 3, 8);
-                            ctx.fill();
-                        }
-                        else if (i % 15 == 0 && settings.show_horizon_heading_ladder === true) {
-                            //little ticks
-                            ctx.rect(x, y+3, 2,5);
-                            ctx.fill();
-                        }
-                        else {
-                            continue;
-                        }
-
-                        // leftover from "dont draw thru compass"
-                        j = i;
-                        if (j < 0) j += 360;
-                        if (j >= 360) j -= 360;
-                        switch (j) {
-                        case 0:
-                            draw_text = true;
-                            compass_direction = heading_ladder_text ?
-                                        qsTr("N") : (j);
-                            break;
-                        case 45:
-                            draw_text = true;
-                            compass_direction = heading_ladder_text ?
-                                        qsTr("NE") : (j);
-                            break;
-                        case 90:
-                            draw_text = true;
-                            compass_direction = heading_ladder_text ?
-                                        qsTr("E") : (j);
-                            break;
-                        case 135:
-                            draw_text = true;
-                            compass_direction = heading_ladder_text ?
-                                        qsTr("SE") : (j);
-                            break;
-                        case 180:
-                            draw_text = true;
-                            compass_direction = heading_ladder_text ?
-                                        qsTr("S") : (j);
-                            break;
-                        case 225:
-                            draw_text = true;
-                            compass_direction = heading_ladder_text ?
-                                        qsTr("SW") : (j);
-                            break;
-                        case 270:
-                            draw_text = true;
-                            compass_direction = heading_ladder_text ?
-                                        qsTr("W") : (j);
-                            break;
-                        case 315:
-                            draw_text = true;
-                            compass_direction = heading_ladder_text ?
-                                        qsTr("NW") : (j);
-                            break;
-                        }
-                        if (draw_text === true && settings.show_horizon_heading_ladder === true) {
-                            ctx.fillText(compass_direction, x, y_label);
-                            draw_text = false;
-                        }
-
-                    }
-                    if (h_drawn === true && settings.show_horizon_home === true) { //home is offscreen, out of compass range
-                        //find if home should be on left or right edge of compass
-                        var left = OpenHD.hdg - OpenHD.home_heading;
-                        var right = OpenHD.home_heading - OpenHD.hdg;
-                        if (left < 0) left += 360;
-                        if (right < 0) right += 360;
-                        ctx.font='14px "Font Awesome 5 Free"';
-                        if (left < right){
-                            ctx.fillText("\uf015" , 7, y_label);
-                        } else{
-                            ctx.fillText("\uf015" , width-7, y_label);
-                        }
-                    }
-                }
+                visible: settings.show_horizon_ladder && settings.show_horizon
+                showHeadingLadderText: settings.heading_ladder_text
+                showHorizonHeadingLadder: settings.show_horizon_heading_ladder
+                showHorizonHome: settings.show_horizon_home
+                heading: OpenHD.hdg
+                homeHeading: OpenHD.home_heading
+                color: settings.color_shape
             }
         }
 

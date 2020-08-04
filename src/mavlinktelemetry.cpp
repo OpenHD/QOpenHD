@@ -33,9 +33,12 @@ MavlinkTelemetry* MavlinkTelemetry::instance() {
 
 MavlinkTelemetry::MavlinkTelemetry(QObject *parent): MavlinkBase(parent) {
     qDebug() << "MavlinkTelemetry::MavlinkTelemetry()";
-    targetSysID = 1;
+    targetSysID1 = 1;
+    targetSysID2 = 0;
     targetCompID1 = MAV_COMP_ID_AUTOPILOT1;
     targetCompID2 = MAV_COMP_ID_SYSTEM_CONTROL;
+    // betaflight
+    targetCompID3 = 200;
 
     localPort = 14550;
 
@@ -89,9 +92,6 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
                     auto autopilot = (MAV_AUTOPILOT)heartbeat.autopilot;
 
                     switch (autopilot) {
-                        case MAV_AUTOPILOT_GENERIC: {
-                            break;
-                        }
                         case MAV_AUTOPILOT_PX4: {
                             if (heartbeat.base_mode & MAV_MODE_FLAG_CUSTOM_MODE_ENABLED) {
                                 auto px4_mode = px4_mode_from_custom_mode(custom_mode);
@@ -99,6 +99,7 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
                             }
                             break;
                         }
+                        case MAV_AUTOPILOT_GENERIC:
                         case MAV_AUTOPILOT_ARDUPILOTMEGA: {
                             if (heartbeat.base_mode & MAV_MODE_FLAG_CUSTOM_MODE_ENABLED) {
                                 auto uav_type = heartbeat.type;
