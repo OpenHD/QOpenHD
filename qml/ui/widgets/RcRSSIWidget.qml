@@ -24,7 +24,7 @@ RcRSSIWidgetForm {
         target: OpenHD
         function onRcRssiChanged() {
             lastData = (new Date).getTime();
-            rssiValue = OpenHD.rc_rssi
+            rssiValue = OpenHD.rcRssi
         }
     }
 }
