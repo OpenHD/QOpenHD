@@ -107,7 +107,6 @@ Map {
 
     MapItemView {
         model: BlackBoxModel
-        delegate: trailDelegate
         enabled: EnableADSB
 
         function addDroneTrack() {
