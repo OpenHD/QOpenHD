@@ -15,8 +15,6 @@ class SpeedLadder : public QQuickPaintedItem {
     Q_PROPERTY(int airspeed MEMBER m_airspeed WRITE setAirspeed NOTIFY airspeedChanged)
     Q_PROPERTY(int speed MEMBER m_speed WRITE setSpeed NOTIFY speedChanged)
 
-    QML_ELEMENT
-
 public:
     explicit SpeedLadder(QQuickItem* parent = nullptr);
 

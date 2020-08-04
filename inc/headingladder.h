@@ -15,8 +15,6 @@ class HeadingLadder : public QQuickPaintedItem {
     Q_PROPERTY(int heading MEMBER m_heading WRITE setHeading NOTIFY headingChanged)
     Q_PROPERTY(int homeHeading MEMBER m_homeHeading WRITE setHomeHeading NOTIFY homeHeadingChanged)
 
-    QML_ELEMENT
-
 //show_horizon_heading_ladder
 
 public:
