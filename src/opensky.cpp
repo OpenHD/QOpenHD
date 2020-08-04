@@ -230,6 +230,8 @@ void OpenSky::evaluateTraffic(QString traffic_callsign,
      * Centralise traffic threat detection here. Once threat is detected it should be
      * labled and then sent over to the adsb widget
      *
+     *  need to calculate azimuth and bearing of any threats so that it can be shared
+     *  and depicted in the adsb widget
      */
     int drone_alt = OpenHD::instance()->get_msl_alt();
 
