@@ -344,7 +344,6 @@ BaseWidget {
                 width: 250 * settings.horizon_size
                 height: 50
                 clip: false
-                visible: settings.show_horizon_ladder && settings.show_horizon
                 showHeadingLadderText: settings.heading_ladder_text
                 showHorizonHeadingLadder: settings.show_horizon_heading_ladder
                 showHorizonHome: settings.show_horizon_home
