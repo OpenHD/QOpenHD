@@ -140,7 +140,7 @@ BaseWidget {
             clip: true
             color: settings.color_text
             opacity: settings.mah_opacity
-            text: settings.air_battery_mah_source ? OpenHD.flight_mah+"mAh" : OpenHD.app_mah+"mAh"
+            text: settings.flight_mah_use_telemetry ? OpenHD.flight_mah + "mAh" : OpenHD.app_mah + "mAh"
             anchors.right: parent.right
             anchors.rightMargin: 0
             verticalAlignment: Text.AlignVCenter
