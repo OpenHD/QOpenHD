@@ -218,7 +218,49 @@ BaseWidget {
                 style: Text.Outline
                 styleColor: settings.color_glow
             }
+            Shape {
+                id: outlineGlow
+                anchors.fill: parent
 
+                transform: Scale {
+                    origin.x: 12
+                    origin.y: 12
+                    xScale: settings.altitude_size
+                    yScale: settings.altitude_size
+                }
+                ShapePath {
+                    strokeColor: settings.color_glow
+                    strokeWidth: 3
+                    strokeStyle: ShapePath.SolidLine
+                    fillColor: "transparent"
+                    startX: 0
+                    startY: 12
+                    PathLine {
+                        x: 0
+                        y: 12
+                    }
+                    PathLine {
+                        x: 12
+                        y: 0
+                    }
+                    PathLine {
+                        x: 58
+                        y: 0
+                    }
+                    PathLine {
+                        x: 58
+                        y: 24
+                    }
+                    PathLine {
+                        x: 12
+                        y: 24
+                    }
+                    PathLine {
+                        x: 0
+                        y: 12
+                    }
+                }
+            }
             Shape {
                 id: outline
                 anchors.fill: parent
