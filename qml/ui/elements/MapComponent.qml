@@ -29,7 +29,7 @@ Map {
 
     Connections {
         target: BlackBoxModel
-        onDataChanged: {
+        function onDataChanged() {
             if (settings.map_drone_track === true) {
                 addDroneTrack();
             }
