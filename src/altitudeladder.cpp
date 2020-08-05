@@ -33,7 +33,7 @@ void AltitudeLadder::paint(QPainter* painter) {
     auto y_position = height() / 2 + 11;
 
     // ladder labels right/left position
-    auto x_label = 25;
+    auto x_label = 18;
 
     auto ratio_alt = height() / m_altitudeRange;
 
