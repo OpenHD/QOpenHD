@@ -200,6 +200,8 @@ BaseWidget {
             anchors.horizontalCenter: parent.horizontalCenter
             y:27
 
+            transform: Scale { origin.x: 24; origin.y: 15; xScale: settings.heading_size ; yScale: settings.heading_size}
+
             HeadingLadder {
                 id: headingLadderC
                 anchors.centerIn: parent
@@ -225,7 +227,7 @@ BaseWidget {
             anchors.bottomMargin: parent.height - 24
             color: settings.color_text            
             font.pixelSize: 14
-            transform: Scale { origin.x: 24; origin.y: 32; xScale: settings.heading_size ; yScale: settings.heading_size}
+            transform: Scale { origin.x: 24; origin.y: 34; xScale: settings.heading_size ; yScale: settings.heading_size}
             text: Number(OpenHD.hdg).toLocaleString( Qt.locale(), 'f', 0)
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
@@ -235,7 +237,7 @@ BaseWidget {
         Shape {
             id: outlineGlow
             anchors.fill: parent
-            transform: Scale { origin.x: 24; origin.y: 32; xScale: settings.heading_size ; yScale: settings.heading_size}
+            transform: Scale { origin.x: 24; origin.y: 34; xScale: settings.heading_size ; yScale: settings.heading_size}
             ShapePath {
                 capStyle: ShapePath.RoundCap
                 strokeColor: settings.color_glow
@@ -281,7 +283,7 @@ BaseWidget {
         Shape {
             id: outline
             anchors.fill: parent
-            transform: Scale { origin.x: 24; origin.y: 32; xScale: settings.heading_size ; yScale: settings.heading_size}
+            transform: Scale { origin.x: 24; origin.y: 34; xScale: settings.heading_size ; yScale: settings.heading_size}
             ShapePath {
                 capStyle: ShapePath.RoundCap
                 strokeColor: settings.color_shape
