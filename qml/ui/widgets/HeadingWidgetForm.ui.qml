@@ -164,155 +164,27 @@ BaseWidget {
         anchors.fill: parent
         opacity: settings.heading_opacity
 
-        //-----------------------ladder start---------------
         Item {
             id: headingLadder
 
-            anchors.centerIn: parent
+            width: parent.width * settings.heading_size
+            anchors.horizontalCenter: parent.horizontalCenter
+            y:27
 
-            visible: settings.show_heading_ladder
-
-            transform: Scale { origin.x: 24; origin.y: 0; xScale: settings.heading_size ; yScale: settings.heading_size}
-
-            Connections{
-                target:OpenHD
-                function onHdgChanged() {
-                    canvasHeadingLadder.requestPaint()
-                }
-            }
-            Connections{
-                target:settings
-                function onHeading_ladder_textChanged() {
-                    canvasHeadingLadder.requestPaint()
-                }
-            }
-
-            Canvas {
-                id: canvasHeadingLadder
+            HeadingLadder {
+                id: headingLadderC
                 anchors.centerIn: parent
-                width: 250
+                width: 250 * settings.heading_size
                 height: 50
                 clip: false
-                renderTarget: Canvas.FramebufferObject
-                renderStrategy: Canvas.Cooperative
-
-                onPaint: { // @disable-check M223
-                    var ctx = getContext("2d"); // @disable-check M222
-                    ctx.reset(); // @disable-check M222
-
-                    if (settings.show_heading_ladder === false){
-                        return; // to stop it from painting per user selection
-                    }
-
-                    ctx.fillStyle = settings.color_shape;
-                    //cant get a good approximation of glow via canvas
-                    ctx.strokeStyle = settings.color_glow;
-                    ctx.lineWidth = 1;
-                    ctx.font = "bold 11px sans-serif";
-                    ctx.textAlign = "center";
-
-
-
-                    var y = 25; // ticks up/down position
-                    var y_label = 22; // labels up/down position
-
-                    var y_position= height/2; // ladder center up/down..tweak
-                    var x_position= width/2; // ladder center left/right..tweak
-
-                    var home_heading = 0;
-                    var compass_direction;
-                    var draw_text = false;
-
-                    var range= 180;
-                    var ratio_heading = width/range;
-                    var heading=OpenHD.hdg;
-
-                    var heading_ladder_text = settings.heading_ladder_text;
-
-                    var x;
-                    var i;
-                    var j;
-
-                    for (i = (heading - range / 2); i <= heading + range / 2; i++) {    // @disable-check M223
-                        x =  x_position + ((i - heading) * ratio_heading);
-                        // console.log("heading:  ",i);
-                        if (i % 30 == 0) {
-                            //big ticks
-                            ctx.stroke();
-                            ctx.rect(x, y, 3, 8);
-                            ctx.fill();
-                        }
-                        else if (i % 15 == 0) {
-                            //little ticks
-                            ctx.stroke();
-                            ctx.rect(x, y+3, 2,5);
-                            ctx.fill();
-                        }
-                        else {
-                            continue;
-                        }
-
-                        if (x < width/2-26 || x > width/2+31){  // dont draw thru compass
-                            j = i;
-                            if (j < 0) j += 360;
-                            if (j >= 360) j -= 360;
-                            switch (j) {
-                                case 0:
-                                    draw_text = true;
-                                    compass_direction = heading_ladder_text ?
-                                                qsTr("N") : (j);
-                                break;
-                                case 45:
-                                    draw_text = true;
-                                    compass_direction = heading_ladder_text ?
-                                                qsTr("NE") : (j);
-                                break;
-                                case 90:
-                                    draw_text = true;
-                                    compass_direction = heading_ladder_text ?
-                                            qsTr("E") : (j);
-                                break;
-                                case 135:
-                                    draw_text = true;
-                                    compass_direction = heading_ladder_text ?
-                                                qsTr("SE") : (j);
-                                break;
-                                case 180:
-                                    draw_text = true;
-                                    compass_direction = heading_ladder_text ?
-                                                qsTr("S") : (j);
-                                break;
-                                case 225:
-                                    draw_text = true;
-                                    compass_direction = heading_ladder_text ?
-                                                qsTr("SW") : (j);
-                                break;
-                                case 270:
-                                    draw_text = true;
-                                    compass_direction = heading_ladder_text ?
-                                                qsTr("W") : (j);
-                                break;
-                                case 315:
-                                    draw_text = true;
-                                    compass_direction = heading_ladder_text ?
-                                                qsTr("NW") : (j);
-                                break;
-                            }
-                            if (draw_text === true) {
-                                ctx.fillText(compass_direction, x, y_label);
-                                draw_text = false;
-                            }
-                            /*  if (j == home_heading) {
-                                             ctx.text(x, parent.height - height_element*2, "");
-                                             ctx.stroke();
-                                } */
-                        }
-                    }
-                }
+                showHeadingLadderText: settings.heading_ladder_text
+                showHorizonHeadingLadder: settings.show_heading_ladder
+                showHorizonHome: settings.show_horizon_home
+                heading: OpenHD.hdg
+                homeHeading: OpenHD.home_heading
+                color: settings.color_shape
             }
         }
-        //-----------------------ladder end---------------
-
 
         Text {
             id: hdg_text
@@ -323,7 +195,7 @@ BaseWidget {
             anchors.bottomMargin: parent.height - 24
             color: settings.color_text            
             font.pixelSize: 14
-            transform: Scale { origin.x: 24; origin.y: 24; xScale: settings.heading_size ; yScale: settings.heading_size}
+            transform: Scale { origin.x: 24; origin.y: 32; xScale: settings.heading_size ; yScale: settings.heading_size}
             text: Number(OpenHD.hdg).toLocaleString( Qt.locale(), 'f', 0)
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
@@ -333,7 +205,7 @@ BaseWidget {
         Shape {
             id: outlineGlow
             anchors.fill: parent
-            transform: Scale { origin.x: 24; origin.y: 24; xScale: settings.heading_size ; yScale: settings.heading_size}
+            transform: Scale { origin.x: 24; origin.y: 32; xScale: settings.heading_size ; yScale: settings.heading_size}
             ShapePath {
                 capStyle: ShapePath.RoundCap
                 strokeColor: settings.color_glow
@@ -379,7 +251,7 @@ BaseWidget {
         Shape {
             id: outline
             anchors.fill: parent
-            transform: Scale { origin.x: 24; origin.y: 24; xScale: settings.heading_size ; yScale: settings.heading_size}
+            transform: Scale { origin.x: 24; origin.y: 32; xScale: settings.heading_size ; yScale: settings.heading_size}
             ShapePath {
                 capStyle: ShapePath.RoundCap
                 strokeColor: settings.color_shape
