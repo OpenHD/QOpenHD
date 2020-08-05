@@ -32,7 +32,7 @@ void SpeedLadder::paint(QPainter* painter) {
     auto y_position = height() / 2 + 11;
 
     // ladder labels right/left position
-    auto x_label = 8;
+    auto x_label = 9;
 
     auto ratio_speed = height() / m_speedRange;
 
