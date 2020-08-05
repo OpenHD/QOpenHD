@@ -379,6 +379,9 @@ ApplicationWindow {
         id: hudOverlayGrid
         anchors.fill: parent
         z: 3.0
+        onSettingsButtonClicked: {
+            settings_panel.openSettings();
+        }
     }
 
     LowerOverlayBar {
