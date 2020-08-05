@@ -63,11 +63,17 @@ void SpeedLadder::paint(QPainter* painter) {
             if (k < m_speedMinimum) {
                 //start position speed (squares) below "0"
                 painter->fillRect(QRectF(x, y - 12, 15, 15), m_color);
+                painter->setPen(m_glow);
+                painter->drawRect(QRectF(x, y - 12, 15, 15));
+                painter->setPen(m_color);
             }
         }
         else if ((k % 5 == 0) && (k > m_speedMinimum)) {
             //little ticks
             painter->fillRect(QRectF(x + 5, y, 7, 2), m_color);
+            painter->setPen(m_glow);
+            painter->drawRect(QRectF(x + 5, y, 7, 2));
+            painter->setPen(m_color);
         }
     }
 
