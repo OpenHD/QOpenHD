@@ -359,6 +359,13 @@ AndroidBuild {
     QT += androidextras
 }
 
+
+EnableBlackbox {
+    message("EnableBlackbox")
+    DEFINES += ENABLE_BLACKBOX
+}
+
+
 EnableADSB {
     message("EnableADSB")
     DEFINES += ENABLE_ADSB

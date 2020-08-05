@@ -144,6 +144,7 @@ Map {
 
     MapPolyline {
         id: droneTrack
+        visible: EnableBlackbox
 
         line.color: "red"
         line.width: 3

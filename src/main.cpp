@@ -373,6 +373,12 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
     engine.rootContext()->setContextProperty("BlackBoxModel", blackBoxModel);
     blackBoxModel->initBlackBoxModel();
 
+    #if defined(ENABLE_BLACKBOX)
+    engine.rootContext()->setContextProperty("EnableBlackbox", QVariant(true));
+    #else
+    engine.rootContext()->setContextProperty("EnableBlackbox", QVariant(false));
+    #endif
+
 
     #if defined(ENABLE_ADSB)
     auto openSky = OpenSky::instance();
