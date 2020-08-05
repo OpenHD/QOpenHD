@@ -67,6 +67,35 @@ BaseWidget {
                 width: 230
                 height: 32
                 Text {
+                    text: qsTr("Width")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Slider {
+                    id: heading_width_Slider
+                    orientation: Qt.Horizontal
+                    from: 100
+                    value: settings.heading_width
+                    to: 1000
+                    stepSize: 50
+                    height: parent.height
+                    anchors.rightMargin: 5
+                    anchors.right: parent.right
+                    width: parent.width-96
+
+                    onValueChanged: {
+                        settings.heading_width = heading_width_Slider.value
+                    }
+                }
+            }
+            Item {
+                width: 230
+                height: 32
+                Text {
                     id: sizeText
                     text: qsTr("Size")
                     color: "white"
@@ -174,7 +203,7 @@ BaseWidget {
             HeadingLadder {
                 id: headingLadderC
                 anchors.centerIn: parent
-                width: 250 * settings.heading_size
+                width: settings.heading_width
                 height: 50
                 clip: false
                 showHeadingLadderText: settings.heading_ladder_text

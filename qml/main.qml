@@ -178,6 +178,7 @@ ApplicationWindow {
         property bool show_heading: true
         property double heading_opacity: 1
         property double heading_size: 1
+        property double heading_width: 250
         property bool show_heading_ladder: true
 
         property bool show_fpv: true
