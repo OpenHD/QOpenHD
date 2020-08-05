@@ -216,7 +216,7 @@ ApplicationWindow {
         property double map_opacity: 1
         property bool map_orientation: false
         property bool map_shape_circle: false
-        property bool map_drone_track: true
+        property bool map_drone_track: false
 
         property int map_zoom: 18
 
