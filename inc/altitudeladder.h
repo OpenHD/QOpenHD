@@ -7,6 +7,7 @@
 class AltitudeLadder : public QQuickPaintedItem {
     Q_OBJECT
     Q_PROPERTY(QColor color READ color WRITE setColor NOTIFY colorChanged)
+    Q_PROPERTY(QColor glow READ glow WRITE setGlow NOTIFY glowChanged)
     Q_PROPERTY(bool altitudeRelMsl MEMBER m_altitudeRelMsl WRITE setAltitudeRelMsl NOTIFY altitudeRelMslChanged)
     Q_PROPERTY(bool imperial MEMBER m_imperial WRITE setImperial NOTIFY imperialChanged)
     Q_PROPERTY(int altitudeRange MEMBER m_altitudeRange WRITE setAltitudeRange NOTIFY altitudeRangeChanged)
@@ -21,9 +22,11 @@ public:
     void paint(QPainter* painter) override;
 
     QColor color() const;
+    QColor glow() const;
 
 public slots:
     void setColor(QColor color);
+    void setGlow(QColor glow);
     void setAltitudeRelMsl(bool altitudeRelMsl);
     void setImperial(bool imperial);
     void setAltitudeRange(int altitudeRange);
@@ -32,6 +35,7 @@ public slots:
 
 signals:
     void colorChanged(QColor color);
+    void glowChanged(QColor glow);
     void altitudeRelMslChanged(bool altitudeRelMsl);
     void imperialChanged(bool imperial);
     void altitudeRangeChanged(int altitudeRange);
@@ -41,6 +45,7 @@ signals:
 
 private:
     QColor m_color;
+    QColor m_glow;
     bool m_altitudeRelMsl;
     bool m_imperial;
     int m_altitudeRange;
