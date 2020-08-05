@@ -155,10 +155,10 @@ void HeadingLadder::paint(QPainter* painter) {
         painter->setFont(fontAwesome);
 
         if (left < right){
-            painter->drawText(7, y_label, "\uf015");
+            painter->drawText(1, y_label, "\uf015");
 
         } else{
-            painter->drawText(width() - 7, y_label, "\uf015");
+            painter->drawText(width() -22, y_label, "\uf015");
         }
     }
 
