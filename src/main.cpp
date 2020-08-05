@@ -361,6 +361,14 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
     engine.rootContext()->setContextProperty("MarkerModel", markerModel);
     markerModel->initMarkerModel();
 
+
+    #if defined(ENABLE_EXAMPLE_WIDGET)
+    engine.rootContext()->setContextProperty("EnableExampleWidget", QVariant(true));
+    #else
+    engine.rootContext()->setContextProperty("EnableExampleWidget", QVariant(false));
+    #endif
+
+
     auto blackBoxModel = BlackBoxModel::instance();
     engine.rootContext()->setContextProperty("BlackBoxModel", blackBoxModel);
     blackBoxModel->initBlackBoxModel();
