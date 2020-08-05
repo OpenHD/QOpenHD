@@ -76,7 +76,7 @@ BaseWidget {
                     orientation: Qt.Horizontal
                     from: 1
                     value: settings.horizon_size
-                    to: 3
+                    to: 6
                     stepSize: .1
                     height: parent.height
                     anchors.rightMargin: 0
