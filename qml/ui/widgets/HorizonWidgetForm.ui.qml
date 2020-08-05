@@ -350,6 +350,7 @@ BaseWidget {
                 heading: OpenHD.hdg
                 homeHeading: OpenHD.home_heading
                 color: settings.color_shape
+                glow: settings.color_glow
             }
         }
 
