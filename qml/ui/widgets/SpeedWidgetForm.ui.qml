@@ -216,6 +216,7 @@ BaseWidget {
                 height: 300
                 clip: false
                 color: settings.color_shape
+                glow: settings.color_glow
                 airspeedOrGps: settings.speed_airspeed_gps
                 imperial: settings.enable_imperial
                 speedMinimum: settings.speed_minimum

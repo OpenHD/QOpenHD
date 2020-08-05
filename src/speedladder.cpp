@@ -32,7 +32,7 @@ void SpeedLadder::paint(QPainter* painter) {
     auto y_position = height() / 2 + 11;
 
     // ladder labels right/left position
-    auto x_label = 10;
+    auto x_label = 8;
 
     auto ratio_speed = height() / m_speedRange;
 
@@ -45,8 +45,11 @@ void SpeedLadder::paint(QPainter* painter) {
         y =  y_position + ((k - speed) * ratio_speed) * -1;
         if (k % 10 == 0) {
             if (k >= 0) {
-                // big ticks
+                // big ticks                
                 painter->fillRect(QRectF(x, y, 12, 3), m_color);
+                painter->setPen(m_glow);
+                painter->drawRect(QRectF(x, y, 12, 3));
+                painter->setPen(m_color);
 
                 if (k > speed + 5 || k < speed - 5) {
                     if (QString::number(k).count()>2){ //workaround cuz qfont does not have align
@@ -77,9 +80,21 @@ QColor SpeedLadder::color() const {
 }
 
 
+QColor SpeedLadder::glow() const {
+    return m_glow;
+}
+
+
 void SpeedLadder::setColor(QColor color) {
     m_color = color;
     emit colorChanged(m_color);
+    update();
+}
+
+
+void SpeedLadder::setGlow(QColor glow) {
+    m_glow = glow;
+    emit glowChanged(m_glow);
     update();
 }
 
