@@ -81,7 +81,7 @@ void HeadingLadder::paint(QPainter* painter) {
             //little ticks
             painter->fillRect(QRectF(x, y + 3, 2, 5), m_color);
             painter->setPen(m_glow);
-            painter->drawRect(QRectF(x, y, 3, 8));
+            painter->drawRect(QRectF(x, y + 3, 2, 5));
             painter->setPen(m_color);
         } else {
             continue;
