@@ -107,7 +107,7 @@ Map {
 
     MapItemView {
         model: BlackBoxModel
-        enabled: EnableADSB
+        enabled: EnableBlackbox
 
         function addDroneTrack() {
             
