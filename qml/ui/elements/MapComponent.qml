@@ -154,6 +154,7 @@ Map {
         id: markerMapView
         model: MarkerModel
         delegate: markerComponentDelegate
+        visible: EnableADSB
 
         Component {
             id: markerComponentDelegate
