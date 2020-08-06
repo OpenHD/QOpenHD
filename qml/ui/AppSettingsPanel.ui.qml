@@ -1088,6 +1088,35 @@ Item {
                         color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
                         Text {
+                            text: qsTr("Show Second Speed")
+                            font.weight: Font.Bold
+                            font.pixelSize: 13
+                            anchors.leftMargin: 8
+                            verticalAlignment: Text.AlignVCenter
+                            anchors.verticalCenter: parent.verticalCenter
+                            width: 224
+                            height: elementHeight
+                            anchors.left: parent.left
+                        }
+
+                        Switch {
+                            width: 32
+                            height: elementHeight
+                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                            anchors.right: parent.right
+                            anchors.verticalCenter: parent.verticalCenter
+                            checked: settings.show_speed_second
+                            onCheckedChanged: settings.show_speed_second = checked
+                        }
+                    }
+
+                    Rectangle {
+                        width: parent.width
+                        height: rowHeight
+                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+
+                        Text {
                             text: qsTr("Show Heading")
                             font.weight: Font.Bold
                             font.pixelSize: 13

@@ -156,5 +156,7 @@
         <file>ui/elements/CardForm.ui.qml</file>
         <file>airplanemarkeralert.png</file>
         <file>airplanemarkerwarn.png</file>
+        <file>ui/widgets/SpeedSecondWidget.qml</file>
+        <file>ui/widgets/SpeedSecondWidgetForm.ui.qml</file>
     </qresource>
 </RCC>
