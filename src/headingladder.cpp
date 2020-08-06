@@ -136,6 +136,7 @@ void HeadingLadder::paint(QPainter* painter) {
         }
 
         if (draw_text == true && m_showHorizonHeadingLadder) {
+            painter->setFont(fontMain);
             QFontMetrics fm(painter->font());
             auto tw = fm.horizontalAdvance(compass_direction);
             painter->drawText(x-tw/2, y_label, compass_direction);
@@ -160,6 +161,7 @@ void HeadingLadder::paint(QPainter* painter) {
         } else{
             painter->drawText(width() -22, y_label, "\uf015");
         }
+        painter->setFont(fontMain);
     }
 
 
