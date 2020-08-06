@@ -269,11 +269,11 @@ BaseWidget {
                     strokeWidth: 1
                     strokeStyle: ShapePath.SolidLine
 
-                    startX: 3
+                    startX: 4
                     startY: 0
-                    PathLine { x: 6;                 y: 12  }//right edge of arrow
-                    PathLine { x: 4;                 y: 12  }//inner right edge
-                    PathLine { x: 4;                 y: 40 }//bottom right edge
+                    PathLine { x: 8;                 y: 12  }//right edge of arrow
+                    PathLine { x: 5;                 y: 12  }//inner right edge
+                    PathLine { x: 5;                 y: 40 }//bottom right edge
                     PathLine { x: 3;                  y: 40 }//bottom left edge
                     PathLine { x: 3;                  y: 12  }//inner left edge
                     PathLine { x: 0;                  y: 12  }//outer left
