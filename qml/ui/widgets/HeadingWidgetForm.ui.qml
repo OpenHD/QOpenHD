@@ -210,7 +210,7 @@ BaseWidget {
                 clip: false
                 showHeadingLadderText: settings.heading_ladder_text
                 showHorizonHeadingLadder: settings.show_heading_ladder
-                showHorizonHome: settings.show_horizon_home
+                showHorizonHome: settings.show_heading_ladder //you dont want a floating home icon
                 heading: OpenHD.hdg
                 homeHeading: OpenHD.home_heading
                 color: settings.color_shape
