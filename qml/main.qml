@@ -276,6 +276,8 @@ ApplicationWindow {
         property double blackbox_size: 1
 
         property bool show_example_widget: false
+
+        property int stereo_mode: 0
     }
 
 
