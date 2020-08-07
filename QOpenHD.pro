@@ -141,7 +141,8 @@ DISTFILES += \
     qml/qtquickcontrols2.conf \
     qml/ui/qmldir
 
-
+HEADERS += \
+    lib/json.hpp \
 
 SOURCES += \
     lib/GeographicLib-1.50/src/Accumulator.cpp \
@@ -437,7 +438,6 @@ EnablePiP {
 EnableLink {
     message("EnableLink")
     DEFINES += ENABLE_LINK
-    HEADERS += lib/json.hpp
 }
 
 
