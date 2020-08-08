@@ -41,6 +41,12 @@ BaseWidgetForm {
 
     Component.onCompleted: {
         loadAlignment();
+        saveAlignment();
+        var _hCenter = settings.value(hCenterIdentifier, defaultHCenter)
+        settings.setValue(hCenterIdentifier, _hCenter)
+        var _vCenter = settings.value(vCenterIdentifier, defaultVCenter)
+        settings.setValue(vCenterIdentifier, _vCenter)
+        settings.sync();
     }
 
     SequentialAnimation {
