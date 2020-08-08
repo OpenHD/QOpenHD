@@ -34,13 +34,17 @@ OpenHD::OpenHD(QObject *parent): QObject(parent) {
     set_ground_gpio({0, 0, 0, 0, 0, 0, 0, 0});
     set_air_gpio({0, 0, 0, 0, 0, 0, 0, 0});
 
+    #if defined(ENABLE_BLACKBOX)
     auto blackBoxModel = BlackBoxModel::instance();
     connect(this, &OpenHD::addBlackBoxObject, blackBoxModel, &BlackBoxModel::addBlackBoxObject);
     connect(this, &OpenHD::playBlackBoxObject, blackBoxModel, &BlackBoxModel::playBlackBoxObject);
+    #endif
 
     timer = new QTimer(this);
     QObject::connect(timer, &QTimer::timeout, this, &OpenHD::updateFlightTimer);
+    #if defined(ENABLE_BLACKBOX)
     QObject::connect(timer, &QTimer::timeout, this, &OpenHD::updateBlackBoxModel);
+    #endif
     timer->start(1000);
 
     auto mavlink = MavlinkTelemetry::instance();

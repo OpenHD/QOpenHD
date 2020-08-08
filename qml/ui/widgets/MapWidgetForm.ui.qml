@@ -189,6 +189,7 @@ BaseWidget {
             Item {
                 width: parent.width
                 height: 32
+                visible: EnableBlackbox
                 Text {
                     text: qsTr("Show Drone Track")
                     color: "white"

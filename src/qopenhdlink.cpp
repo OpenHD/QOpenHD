@@ -9,7 +9,7 @@
 #include "constants.h"
 
 #if defined(ENABLE_LINK)
-#include <lib/json.hpp>
+#include <nlohmann/json.hpp>
 #endif
 
 #define LINK_PORT 6000
@@ -87,7 +87,7 @@ void QOpenHDLink::setWidgetEnabled(QString widgetName, bool enabled) {
 void QOpenHDLink::processCommand(QByteArray buffer) {
 #if defined(ENABLE_LINK)
     try {
-        auto commandData = nlohmann::json::parse(buffer);
+        auto commandData = nlohmann::json::parse(buffer.toStdString());
         if (commandData.count("cmd") == 1) {
             std::string cmd = commandData["cmd"];
 

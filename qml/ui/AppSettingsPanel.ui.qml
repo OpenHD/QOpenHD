@@ -1,6 +1,9 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
+import QtQuick.Controls.Material 2.12
+
+import QtQuick.Dialogs 1.0
 
 import Qt.labs.settings 1.0
 
@@ -61,6 +64,13 @@ Item {
             height: 48
             font.pixelSize: 13
             visible: (EnableMainVideo || EnablePiP)
+        }
+
+        TabButton {
+            text: qsTr("Manage")
+            width: implicitWidth
+            height: 48
+            font.pixelSize: 13
         }
 
 
@@ -1464,6 +1474,7 @@ Item {
                         width: parent.width
                         height: rowHeight
                         color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                        visible: EnableBlackbox
 
 
                         Text {
@@ -1496,6 +1507,7 @@ Item {
                         width: parent.width
                         height: rowHeight
                         color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                        visible: EnableExampleWidget
 
                         Text {
                             text: qsTr("Show example widget")
@@ -1817,6 +1829,166 @@ Item {
                             anchors.verticalCenter: parent.verticalCenter
                             checked: settings.hide_watermark
                             onCheckedChanged: settings.hide_watermark = checked
+                        }
+                    }
+                }
+            }
+        }
+
+        ScrollView {
+            id: manageView
+            width: parent.width
+            height: parent.height
+            contentHeight: manageColumn.height
+
+            clip: true
+
+            Item {
+                anchors.fill: parent
+
+                Column {
+                    id: manageColumn
+                    spacing: 0
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+
+                    Rectangle {
+                        width: parent.width
+                        height: rowHeight
+                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                        visible: !IsRaspPi
+
+                        Text {
+                            text: qsTr("Load settings from file")
+                            font.weight: Font.Bold
+                            font.pixelSize: 13
+                            anchors.leftMargin: 8
+                            verticalAlignment: Text.AlignVCenter
+                            anchors.verticalCenter: parent.verticalCenter
+                            width: 224
+                            height: elementHeight
+                            anchors.left: parent.left
+                        }
+
+                        Button {
+                            width: 128
+                            height: elementHeight
+                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                            anchors.right: parent.right
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: qsTr("Load")
+                            onClicked: {
+                                fileDialog.open();
+                            }
+                        }
+
+                        FileDialog {
+                            id: fileDialog
+                            title: qsTr("Select settings file")
+                            folder: shortcuts.home
+                            selectMultiple: false
+                            selectFolder: false
+                            defaultSuffix: "conf"
+                            onAccepted: {
+                                ManageSettings.loadSettingsFile(fileDialog.fileUrl);
+                                settings.sync();
+                            }
+                            onRejected: {
+                                console.log("Canceled")
+                            }
+                        }
+                    }
+
+                    Rectangle {
+                        width: parent.width
+                        height: rowHeight
+                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                        visible: !IsRaspPi
+
+                        Text {
+                            text: qsTr("Save settings to file")
+                            font.weight: Font.Bold
+                            font.pixelSize: 13
+                            anchors.leftMargin: 8
+                            verticalAlignment: Text.AlignVCenter
+                            anchors.verticalCenter: parent.verticalCenter
+                            width: 224
+                            height: elementHeight
+                            anchors.left: parent.left
+                        }
+
+                        Button {
+                            width: 128
+                            height: elementHeight
+                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                            anchors.right: parent.right
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: qsTr("Save")
+                            onClicked: {
+                                saveDialog.open();
+                            }
+                        }
+
+                        FileDialog {
+                            id: saveDialog
+                            title: qsTr("Select location")
+                            folder: shortcuts.home + "/qopenhd.conf";
+                            selectMultiple: false
+                            selectFolder: false
+                            selectExisting: false
+
+                            onAccepted: {
+                                console.log("Sa: " + saveDialog.fileUrl);
+                                settings.sync();
+                                // this is a folder path, the ManualSettings class chooses a filename to put there
+                                ManageSettings.saveSettingsFile(saveDialog.fileUrl);
+                            }
+                            onRejected: {
+                                console.log("Canceled")
+                            }
+                        }
+                    }
+
+                    Rectangle {
+                        width: parent.width
+                        height: rowHeight
+                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                        visible: false
+
+                        Text {
+                            text: qsTr("Reset all settings")
+                            font.weight: Font.Bold
+                            font.pixelSize: 13
+                            anchors.leftMargin: 8
+                            verticalAlignment: Text.AlignVCenter
+                            anchors.verticalCenter: parent.verticalCenter
+                            width: 224
+                            height: elementHeight
+                            anchors.left: parent.left
+                        }
+
+                        Button {
+                            id: resetButton
+                            width: 128
+                            height: elementHeight
+                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                            anchors.right: parent.right
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: qsTr("Reset")
+                            Material.accent: Material.Red
+                            highlighted: true
+
+                            ToolTip.delay: 250
+                            ToolTip.timeout: 5000
+                            ToolTip.visible: pressed
+                            ToolTip.text: qsTr("Settings reset")
+
+                            onClicked: {
+                                //settings.clear()
+                            }
                         }
                     }
                 }
