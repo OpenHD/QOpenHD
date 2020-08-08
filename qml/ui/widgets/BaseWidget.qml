@@ -199,6 +199,7 @@ BaseWidgetForm {
         settings.setValue(alignmentIdentifier, alignmentType);
         settings.setValue(xOffsetIdentifier, _xOffset);
         settings.setValue(yOffsetIdentifier, _yOffset);
+        settings.sync();
 
         var _hCenter = getHCenter();
         var _vCenter = getVCenter();
