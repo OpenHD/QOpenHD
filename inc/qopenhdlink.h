@@ -5,7 +5,7 @@
 #include <QtQuick>
 
 #include "constants.h"
-#include <lib/json.hpp>
+#include <nlohmann/json.hpp>
 
 
 class QUdpSocket;

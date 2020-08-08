@@ -9,7 +9,7 @@
 #include "constants.h"
 
 #if defined(ENABLE_LINK)
-#include <lib/json.hpp>
+#include <nlohmann/json.hpp>
 #endif
 
 #define LINK_PORT 6000

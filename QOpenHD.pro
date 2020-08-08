@@ -141,8 +141,6 @@ DISTFILES += \
     qml/qtquickcontrols2.conf \
     qml/ui/qmldir
 
-HEADERS += \
-    lib/json.hpp \
 
 SOURCES += \
     lib/GeographicLib-1.50/src/Accumulator.cpp \
