@@ -1,6 +1,7 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
+import QtQuick.Dialogs 1.0
 
 import Qt.labs.settings 1.0
 
@@ -326,45 +327,41 @@ Item {
                             anchors.left: parent.left
                         }
 
-                        ComboBox {
+
+                        ColorDialog {
+                            id: colorDialogShape
+                            title: "Please choose a color"
+                            onAccepted: {
+                                settings.color_shape = colorDialogShape.color
+                                colorDialogShape.close()
+                            }
+                            onRejected: {
+                                colorDialogShape.close()
+                            }
+                            Component.onCompleted: visible = false
+                        }
+
+                        RoundButton {
+                            //text: "Open"
+
                             height: elementHeight
                             anchors.right: parent.right
                             anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.horizontalCenter: parent.horizonatalCenter
-                            model: ListModel {
-                                id: color_shape
-                                ListElement { text: "White"; color: "white" }
-                                ListElement { text: "Black"; color: "black" }
-                                ListElement { text: "Green"; color: "green" }
-                                ListElement { text: "Drk Green"; color: "darkGreen" }
-                                ListElement { text: "Yellow"; color: "yellow" }
-                                ListElement { text: "Drk Yellow"; color: "darkYellow" }
-                                ListElement { text: "Grey"; color: "grey" }
-                                ListElement { text: "Lgt Grey"; color: "lightGrey" }
-                                ListElement { text: "Drk Grey"; color: "darkGrey" }
-                                ListElement { text: "Blue"; color: "blue" }
-                                ListElement { text: "Red"; color: "red" }
-                                ListElement { text: "Cyan"; color: "cyan" }
+                            onClicked: colorDialogShape.open()
+
+                            Rectangle {
+                                anchors.centerIn: parent
+                                width: ((parent.width<parent.height?parent.width:parent.height))-20
+                                height: width
+                                radius: width*0.5
+                                color: settings.color_shape
                             }
-                            textRole: "text"
-                            // @disable-check M223
-                            Component.onCompleted: {
-                                // @disable-check M223
-                                for (var i = 0; i < model.count; i++) {
-                                    // @disable-check M222
-                                    var choice = model.get(i);
-                                    // @disable-check M223
-                                    if (choice.color == settings.color_shape) {
-                                        currentIndex = i;
-                                    }
-                                }
-                            }
-                            onCurrentIndexChanged: {
-                                    settings.color_shape = color_shape.get(currentIndex).color
-                            }
+
                         }
                     }
+
 
                     Rectangle {
                         width: parent.width
@@ -381,44 +378,36 @@ Item {
                             width: 224
                             height: elementHeight
                             anchors.left: parent.left
+                        }                        
+                        ColorDialog {
+                            id: colorDialogGlow
+                            title: "Please choose a color"
+                            onAccepted: {
+                                settings.color_glow = colorDialogGlow.color
+                                colorDialogGlow.close()
+                            }
+                            onRejected: {
+                                colorDialogGlow.close()
+                            }
+                            Component.onCompleted: visible = false
                         }
-                        
-                        ComboBox {
+
+                        RoundButton {
+                            //text: "Open"
+
                             height: elementHeight
                             anchors.right: parent.right
                             anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.horizontalCenter: parent.horizonatalCenter
-                            model: ListModel {
-                                id: color_glow
-                                ListElement { text: "Black"; color: "black" }
-                                ListElement { text: "White"; color: "white" }
-                                ListElement { text: "Green"; color: "green" }
-                                ListElement { text: "Drk Green"; color: "darkGreen" }
-                                ListElement { text: "Yellow"; color: "yellow" }
-                                ListElement { text: "Drk Yellow"; color: "darkYellow" }
-                                ListElement { text: "Grey"; color: "grey" }
-                                ListElement { text: "Lgt Grey"; color: "lightGrey" }
-                                ListElement { text: "Drk Grey"; color: "darkGrey" }
-                                ListElement { text: "Blue"; color: "blue" }
-                                ListElement { text: "Red"; color: "red" }
-                                ListElement { text: "Cyan"; color: "cyan" }
-                            }
-                            textRole: "text"
-                            // @disable-check M223
-                            Component.onCompleted: {
-                                // @disable-check M223
-                                for (var i = 0; i < model.count; i++) {
-                                    // @disable-check M222
-                                    var choice = model.get(i);
-                                    // @disable-check M223
-                                    if (choice.color == settings.color_glow) {
-                                        currentIndex = i;
-                                    }
-                                }
-                            }
-                            onCurrentIndexChanged: {
-                                    settings.color_glow = color_glow.get(currentIndex).color
+                            onClicked: colorDialogGlow.open()
+
+                            Rectangle {
+                                anchors.centerIn: parent
+                                width: ((parent.width<parent.height?parent.width:parent.height))-20
+                                height: width
+                                radius: width*0.5
+                                color: settings.color_glow
                             }
                         }
                     }
@@ -438,44 +427,36 @@ Item {
                             width: 224
                             height: elementHeight
                             anchors.left: parent.left
+                        }                       
+                        ColorDialog {
+                            id: colorDialogText
+                            title: "Please choose a color"
+                            onAccepted: {
+                                settings.color_text = colorDialogText.color
+                                colorDialogText.close()
+                            }
+                            onRejected: {
+                                colorDialogText.close()
+                            }
+                            Component.onCompleted: visible = false
                         }
 
-                        ComboBox {
+                        RoundButton {
+                            //text: "Open"
+
                             height: elementHeight
                             anchors.right: parent.right
                             anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.horizontalCenter: parent.horizonatalCenter
-                            model: ListModel {
-                                id: color_text
-                                ListElement { text: "White"; color: "white" }
-                                ListElement { text: "Black"; color: "black" }
-                                ListElement { text: "Green"; color: "green" }
-                                ListElement { text: "Drk Green"; color: "darkGreen" }
-                                ListElement { text: "Yellow"; color: "yellow" }
-                                ListElement { text: "Drk Yellow"; color: "darkYellow" }
-                                ListElement { text: "Grey"; color: "grey" }
-                                ListElement { text: "Lgt Grey"; color: "lightGrey" }
-                                ListElement { text: "Drk Grey"; color: "darkGrey" }
-                                ListElement { text: "Blue"; color: "blue" }
-                                ListElement { text: "Red"; color: "red" }
-                                ListElement { text: "Cyan"; color: "cyan" }
-                            }
-                            textRole: "text"
-                            // @disable-check M223
-                            Component.onCompleted: {
-                                // @disable-check M223
-                                for (var i = 0; i < model.count; i++) {
-                                    // @disable-check M222
-                                    var choice = model.get(i);
-                                    // @disable-check M223
-                                    if (choice.color == settings.color_text) {
-                                        currentIndex = i;
-                                    }
-                                }
-                            }
-                            onCurrentIndexChanged: {
-                                    settings.color_text = color_text.get(currentIndex).color
+                            onClicked: colorDialogText.open()
+
+                            Rectangle {
+                                anchors.centerIn: parent
+                                width: ((parent.width<parent.height?parent.width:parent.height))-20
+                                height: width
+                                radius: width*0.5
+                                color: settings.color_text
                             }
                         }
                     }
@@ -1491,7 +1472,37 @@ Item {
                             }
                         }
                     }
+                    Rectangle {
+                        width: parent.width
+                        height: rowHeight
+                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
+
+                        Text {
+                            text: "Show Servos"
+                            font.weight: Font.Bold
+                            font.pixelSize: 13
+                            anchors.leftMargin: 8
+                            verticalAlignment: Text.AlignVCenter
+                            anchors.verticalCenter: parent.verticalCenter
+                            width: 224
+                            height: elementHeight
+                            anchors.left: parent.left
+                        }
+
+                        Switch {
+                            width: 32
+                            height: elementHeight
+                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                            anchors.right: parent.right
+                            anchors.verticalCenter: parent.verticalCenter
+                            checked: settings.show_servos
+                            onCheckedChanged: {
+                                settings.show_servos = checked;
+                            }
+                        }
+                    }
                     Rectangle {
                         width: parent.width
                         height: rowHeight
