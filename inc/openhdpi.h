@@ -24,6 +24,8 @@ public:
 
     Q_INVOKABLE void activate_console();
     Q_INVOKABLE void stop_app();
+    Q_INVOKABLE void set_boot_mount_rw();
+    Q_INVOKABLE void set_boot_mount_ro();
 
     Q_INVOKABLE void update_ground();
 
