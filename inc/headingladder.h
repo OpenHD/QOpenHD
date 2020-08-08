@@ -7,6 +7,7 @@
 class HeadingLadder : public QQuickPaintedItem {
     Q_OBJECT
     Q_PROPERTY(QColor color READ color WRITE setColor NOTIFY colorChanged)
+    Q_PROPERTY(QColor glow READ glow WRITE setGlow NOTIFY glowChanged)
     Q_PROPERTY(bool showHeadingLadderText MEMBER m_showHeadingLadderText WRITE setShowHeadingLadderText NOTIFY showHeadingLadderTextChanged)
     Q_PROPERTY(bool imperial MEMBER m_imperial WRITE setImperial NOTIFY imperialChanged)
     Q_PROPERTY(bool showHorizonHome MEMBER m_showHorizonHome WRITE setShowHorizonHome NOTIFY showHorizonHomeChanged)
@@ -23,9 +24,11 @@ public:
     void paint(QPainter* painter) override;
 
     QColor color() const;
+    QColor glow() const;
 
 public slots:
     void setColor(QColor color);
+    void setGlow(QColor glow);
     void setShowHeadingLadderText(bool showHeadingLadderText);
     void setImperial(bool imperial);
     void setShowHorizonHome(bool showHorizonHome);
@@ -36,6 +39,7 @@ public slots:
 
 signals:
     void colorChanged(QColor color);
+    void glowChanged(QColor glow);
     void imperialChanged(bool imperial);
     void showHeadingLadderTextChanged(bool showHeadingLadderText);
     void showHorizonHomeChanged(bool showHorizonHome);
@@ -46,6 +50,7 @@ signals:
 
 private:
     QColor m_color;
+    QColor m_glow;
     bool m_showHeadingLadderText;
     bool m_imperial;
     bool m_showHorizonHome;

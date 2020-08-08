@@ -76,7 +76,7 @@ BaseWidget {
                     orientation: Qt.Horizontal
                     from: 1
                     value: settings.horizon_size
-                    to: 3
+                    to: 6
                     stepSize: .1
                     height: parent.height
                     anchors.rightMargin: 0
@@ -300,28 +300,32 @@ BaseWidget {
                 id: leftLine
                 visible: settings.show_horizon_heading_ladder ? false : true
                 width: (250 / 2) - 25
-                height: 2
+                height: 3
                 anchors.left: parent.left
                 anchors.verticalCenter: parent.verticalCenter
+                border.color: settings.color_glow
                 color: settings.color_shape
             }
             Rectangle {
                 id: rightLine
                 visible: settings.show_horizon_heading_ladder ? false : true
                 width: (250 / 2) - 25
-                height: 2
+                height: 3
                 anchors.right: parent.right
                 anchors.verticalCenter: parent.verticalCenter
+                border.color: settings.color_glow
                 color: settings.color_shape
             }
             Rectangle {
                 id: singleLine
                 visible: settings.show_horizon_heading_ladder ? true : false
                 width: 250
-                height: 2
+                height: 3
                 anchors.right: parent.right
                 anchors.verticalCenter: parent.verticalCenter
+                border.color: settings.color_glow
                 color: settings.color_shape
+
             }
         }
 
@@ -332,7 +336,7 @@ BaseWidget {
 
             width: parent.width * settings.horizon_size
             anchors.horizontalCenter: parent.horizontalCenter
-            y:-7
+            y:-8
 
             //visible: settings.show_horizon_heading_ladder
 
@@ -350,6 +354,7 @@ BaseWidget {
                 heading: OpenHD.hdg
                 homeHeading: OpenHD.home_heading
                 color: settings.color_shape
+                glow: settings.color_glow
             }
         }
 

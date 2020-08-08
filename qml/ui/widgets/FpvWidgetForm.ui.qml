@@ -147,7 +147,7 @@ BaseWidget {
             anchors.centerIn: parent
             transform: Scale { origin.x: 20; origin.y: 20; xScale: settings.fpv_size ; yScale: settings.fpv_size}
 
-            rotation: settings.fpv_dynamic ? (settings.horizon_invert_roll ? OpenHD.roll : -OpenHD.roll) : 0
+            //rotation: settings.fpv_dynamic ? (settings.horizon_invert_roll ? -OpenHD.roll : OpenHD.roll) : 0
 
             //had to add another item to compensate for rotation above
             Item {

@@ -178,6 +178,7 @@ ApplicationWindow {
         property bool show_heading: true
         property double heading_opacity: 1
         property double heading_size: 1
+        property double heading_width: 250
         property bool show_heading_ladder: true
 
         property bool show_fpv: true
@@ -193,6 +194,11 @@ ApplicationWindow {
         property bool show_speed_ladder: true
         property int speed_range: 100
         property int speed_minimum: 0
+
+        property bool show_speed_second: true
+        property bool speed_second_ground_air: false
+        property double speed_second_opacity: 1
+        property double speed_second_size: 1
 
         property bool show_altitude: true
         property bool altitude_rel_msl: false
@@ -216,7 +222,7 @@ ApplicationWindow {
         property double map_opacity: 1
         property bool map_orientation: false
         property bool map_shape_circle: false
-        property bool map_drone_track: true
+        property bool map_drone_track: false
 
         property int map_zoom: 18
 

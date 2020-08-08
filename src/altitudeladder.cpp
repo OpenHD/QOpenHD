@@ -15,7 +15,7 @@ AltitudeLadder::AltitudeLadder(QQuickItem *parent): QQuickPaintedItem(parent) {
 void AltitudeLadder::paint(QPainter* painter) {
     painter->save();
 
-    QFont font("sans-serif", 11, QFont::Bold, false);
+    QFont font("sans-serif", 10, QFont::Bold, false);
 
     painter->setFont(font);
 
@@ -33,7 +33,7 @@ void AltitudeLadder::paint(QPainter* painter) {
     auto y_position = height() / 2 + 11;
 
     // ladder labels right/left position
-    auto x_label = 25;
+    auto x_label = 20;
 
     auto ratio_alt = height() / m_altitudeRange;
 
@@ -48,6 +48,9 @@ void AltitudeLadder::paint(QPainter* painter) {
             if (k >= 0) {
                 // big ticks
                 painter->fillRect(QRectF(x, y, 12, 3), m_color);
+                painter->setPen(m_glow);
+                painter->drawRect(QRectF(x, y, 12, 3));
+                painter->setPen(m_color);
 
                 if (k > alt + 5 || k < alt - 5) {
                     painter->drawText(x_label, y + 6, QString::number(k));
@@ -57,11 +60,17 @@ void AltitudeLadder::paint(QPainter* painter) {
             if (k < 0) {
                 //start position speed (squares) below "0"
                 painter->fillRect(QRectF(x, y - 15, 15, 15), m_color);
+                painter->setPen(m_glow);
+                painter->drawRect(QRectF(x, y - 15, 15, 15));
+                painter->setPen(m_color);
             }
         }
         else if ((k % 5 == 0) && (k > 0)) {
             //little ticks
             painter->fillRect(QRectF(x, y, 7, 2), m_color);
+            painter->setPen(m_glow);
+            painter->drawRect(QRectF(x, y, 7, 2));
+            painter->setPen(m_color);
         }
     }
 
@@ -73,10 +82,21 @@ QColor AltitudeLadder::color() const {
     return m_color;
 }
 
+QColor AltitudeLadder::glow() const {
+    return m_glow;
+}
+
 
 void AltitudeLadder::setColor(QColor color) {
     m_color = color;
     emit colorChanged(m_color);
+    update();
+}
+
+
+void AltitudeLadder::setGlow(QColor glow) {
+    m_glow = glow;
+    emit glowChanged(m_glow);
     update();
 }
 

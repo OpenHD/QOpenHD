@@ -190,6 +190,7 @@ BaseWidget {
                 height: 300
                 clip: false
                 color: settings.color_shape
+                glow: settings.color_glow
                 altitudeRelMsl: settings.altitude_rel_msl
                 altitudeRange: settings.altitude_range
                 imperial: settings.enable_imperial

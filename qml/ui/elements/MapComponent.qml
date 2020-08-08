@@ -36,6 +36,38 @@ Map {
         }
     }
 
+    function addDroneTrack() {
+
+        // always remove last point unless it was significant
+        if (track_count != 0) {
+            droneTrack.removeCoordinate(droneTrack.pathLength());
+            //console.log("total points=", droneTrack.pathLength());
+        }
+
+        // always add the current location so drone looks like its connected to line
+        droneTrack.addCoordinate(QtPositioning.coordinate(OpenHD.lat, OpenHD.lon));
+
+        track_count = track_count + 1;
+
+        if (track_count == track_skip) {
+            track_count = 0;
+        }
+
+        if (droneTrack.pathLength() === track_limit) {
+            //make line more coarse
+            track_skip = track_skip * 2;
+            //cut the points in the list by half
+            for (var i = 0; i < track_limit; ++i) {
+                if (i % 2) {
+                    // it's odd
+                    droneTrack.removeCoordinate(i);
+                }
+            }
+        }
+
+        //console.log("drone position=",OpenHD.lat, OpenHD.lon);
+    }
+
     center {
         latitude: OpenHD.lat == 0.0 ? userLat : followDrone ? OpenHD.lat : 9000
         longitude: OpenHD.lon == 0.0 ? userLon : followDrone ? OpenHD.lon : 9000
