@@ -284,6 +284,11 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
     auto manageSettings = new ManageSettings();
     engine.rootContext()->setContextProperty("ManageSettings", manageSettings);
 
+    #if defined(__rasp_pi__)
+    manageSettings->loadPiSettings();
+    #endif
+
+
     auto openHDSettings = new OpenHDSettings();
     engine.rootContext()->setContextProperty("openHDSettings", openHDSettings);
 
