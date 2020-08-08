@@ -1922,6 +1922,46 @@ Item {
                         }
                     }
 
+                    Rectangle {
+                        width: parent.width
+                        height: rowHeight
+                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                        visible: false
+
+                        Text {
+                            text: qsTr("Reset all settings")
+                            font.weight: Font.Bold
+                            font.pixelSize: 13
+                            anchors.leftMargin: 8
+                            verticalAlignment: Text.AlignVCenter
+                            anchors.verticalCenter: parent.verticalCenter
+                            width: 224
+                            height: elementHeight
+                            anchors.left: parent.left
+                        }
+
+                        Button {
+                            id: resetButton
+                            width: 128
+                            height: elementHeight
+                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                            anchors.right: parent.right
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: qsTr("Reset")
+                            Material.accent: Material.Red
+                            highlighted: true
+
+                            ToolTip.delay: 250
+                            ToolTip.timeout: 5000
+                            ToolTip.visible: pressed
+                            ToolTip.text: qsTr("Settings reset")
+
+                            onClicked: {
+                                //settings.clear()
+                            }
+                        }
+                    }
                 }
             }
         }
