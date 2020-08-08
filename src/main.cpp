@@ -51,6 +51,8 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "altitudeladder.h"
 #include "headingladder.h"
 
+#include "managesettings.h"
+
 #if defined(__ios__)
 #include "appleplatform.h"
 #endif
@@ -278,6 +280,9 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
 
 
 #endif
+
+    auto manageSettings = new ManageSettings();
+    engine.rootContext()->setContextProperty("ManageSettings", manageSettings);
 
     auto openHDSettings = new OpenHDSettings();
     engine.rootContext()->setContextProperty("openHDSettings", openHDSettings);

@@ -66,6 +66,7 @@ SOURCES += \
     src/localmessage.cpp \
     src/ltmtelemetry.cpp \
     src/main.cpp \
+    src/managesettings.cpp \
     src/markermodel.cpp \
     src/mavlinkbase.cpp \
     src/mavlinktelemetry.cpp \
@@ -93,6 +94,7 @@ HEADERS += \
     inc/blackboxmodel.h \
     inc/gpiomicroservice.h \
     inc/headingladder.h \
+    inc/managesettings.h \
     inc/markermodel.h \
     inc/mavlinkbase.h \
     inc/powermicroservice.h \
