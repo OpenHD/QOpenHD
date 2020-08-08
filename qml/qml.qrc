@@ -156,5 +156,6 @@
         <file>ui/elements/CardForm.ui.qml</file>
         <file>airplanemarkeralert.png</file>
         <file>airplanemarkerwarn.png</file>
+        <file>qopenhd.template</file>
     </qresource>
 </RCC>
