@@ -171,6 +171,10 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             OpenHD::instance()->set_battery_percent(battery_percent);
             QString battery_gauge_glyph = battery_gauge_glyph_from_percentage(battery_percent);
             OpenHD::instance()->set_battery_gauge(battery_gauge_glyph);
+
+            qint64 current_timestamp = QDateTime::currentMSecsSinceEpoch();
+
+            last_battery_timestamp = current_timestamp;
             break;
         }
 
@@ -240,6 +244,10 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
 
             OpenHD::instance()->set_roll((double)attitude.roll *57.2958);
             //qDebug() << "Roll:" <<  attitude.roll*57.2958;
+
+            qint64 current_timestamp = QDateTime::currentMSecsSinceEpoch();
+
+            last_attitude_timestamp = current_timestamp;
             break;
         }
         case MAVLINK_MSG_ID_LOCAL_POSITION_NED:{
@@ -280,6 +288,10 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             OpenHD::instance()->updateLateralSpeed();
 
             OpenHD::instance()->updateWind();
+
+            qint64 current_timestamp = QDateTime::currentMSecsSinceEpoch();
+
+            last_gps_timestamp = current_timestamp;
 
             break;
         }
@@ -353,6 +365,10 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             auto vsi = vfr_hud.climb;
             OpenHD::instance()->set_vsi(vsi);
             // qDebug() << "VSI- " << vsi;
+
+            qint64 current_timestamp = QDateTime::currentMSecsSinceEpoch();
+
+            last_vfr_timestamp = current_timestamp;
 
             break;
         }
