@@ -199,6 +199,11 @@ void MavlinkBase::stateLoop() {
     qint64 current_timestamp = QDateTime::currentMSecsSinceEpoch();
     set_last_heartbeat(current_timestamp - last_heartbeat_timestamp);
 
+    set_last_attitude(current_timestamp - last_attitude_timestamp);
+    set_last_battery(current_timestamp - last_battery_timestamp);
+    set_last_gps(current_timestamp - last_gps_timestamp);
+    set_last_vfr(current_timestamp - last_vfr_timestamp);
+
     return;
 
     switch (state) {
@@ -326,6 +331,26 @@ void MavlinkBase::processData(QByteArray data) {
 void MavlinkBase::set_last_heartbeat(qint64 last_heartbeat) {
     m_last_heartbeat = last_heartbeat;
     emit last_heartbeat_changed(m_last_heartbeat);
+}
+
+void MavlinkBase::set_last_attitude(qint64 last_attitude) {
+    m_last_attitude = last_attitude;
+    emit last_attitude_changed(m_last_attitude);
+}
+
+void MavlinkBase::set_last_battery(qint64 last_battery) {
+    m_last_battery = last_battery;
+    emit last_battery_changed(m_last_battery);
+}
+
+void MavlinkBase::set_last_gps(qint64 last_gps) {
+    m_last_gps = last_gps;
+    emit last_gps_changed(m_last_gps);
+}
+
+void MavlinkBase::set_last_vfr(qint64 last_vfr) {
+    m_last_vfr = last_vfr;
+    emit last_vfr_changed(m_last_vfr);
 }
 
 
