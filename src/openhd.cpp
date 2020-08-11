@@ -49,6 +49,10 @@ OpenHD::OpenHD(QObject *parent): QObject(parent) {
 
     auto mavlink = MavlinkTelemetry::instance();
     connect(mavlink, &MavlinkTelemetry::last_heartbeat_changed, this, &OpenHD::set_last_telemetry_heartbeat);
+    connect(mavlink, &MavlinkTelemetry::last_attitude_changed, this, &OpenHD::set_last_telemetry_attitude);
+    connect(mavlink, &MavlinkTelemetry::last_battery_changed, this, &OpenHD::set_last_telemetry_battery);
+    connect(mavlink, &MavlinkTelemetry::last_gps_changed, this, &OpenHD::set_last_telemetry_gps);
+    connect(mavlink, &MavlinkTelemetry::last_vfr_changed, this, &OpenHD::set_last_telemetry_vfr);
 
     connect(this, &OpenHD::pauseTelemetry, mavlink, &MavlinkTelemetry::pauseTelemetry);
 
@@ -672,6 +676,26 @@ void OpenHD::set_last_openhd_heartbeat(qint64 last_openhd_heartbeat) {
 void OpenHD::set_last_telemetry_heartbeat(qint64 last_telemetry_heartbeat) {
     m_last_telemetry_heartbeat = last_telemetry_heartbeat;
     emit last_telemetry_heartbeat_changed(m_last_telemetry_heartbeat);
+}
+
+void OpenHD::set_last_telemetry_attitude(qint64 last_telemetry_attitude) {
+    m_last_telemetry_attitude = last_telemetry_attitude;
+    emit last_telemetry_attitude_changed(m_last_telemetry_attitude);
+}
+
+void OpenHD::set_last_telemetry_battery(qint64 last_telemetry_battery) {
+    m_last_telemetry_battery = last_telemetry_battery;
+    emit last_telemetry_battery_changed(m_last_telemetry_battery);
+}
+
+void OpenHD::set_last_telemetry_gps(qint64 last_telemetry_gps) {
+    m_last_telemetry_gps = last_telemetry_gps;
+    emit last_telemetry_gps_changed(m_last_telemetry_gps);
+}
+
+void OpenHD::set_last_telemetry_vfr(qint64 last_telemetry_vfr) {
+    m_last_telemetry_vfr = last_telemetry_vfr;
+    emit last_telemetry_vfr_changed(m_last_telemetry_vfr);
 }
 
 void OpenHD::set_main_video_running(bool main_video_running) {
