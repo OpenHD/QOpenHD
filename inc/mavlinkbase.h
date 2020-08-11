@@ -149,7 +149,7 @@ protected:
     void resetParamVars();
     void processData(QByteArray data);
     void sendData(char* data, int len);
-    void send_command(MavlinkCommand command);
+    void sendCommand(MavlinkCommand command);
 
     void reconnectTCP();
 

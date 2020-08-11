@@ -369,7 +369,7 @@ void MavlinkBase::set_last_vfr(qint64 last_vfr) {
  * signals to further handle the result.
  *
  */
-void MavlinkBase::send_command(MavlinkCommand command) {
+void MavlinkBase::sendCommand(MavlinkCommand command) {
     m_current_command.reset(new MavlinkCommand(command));
     m_command_state = MavlinkCommandStateSend;
 }

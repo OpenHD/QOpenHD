@@ -66,13 +66,13 @@ void PowerMicroservice::onReboot() {
 void PowerMicroservice::shutdown() {
     MavlinkCommand command(MavlinkCommandTypeLong);
     command.command_id = OPENHD_CMD_POWER_SHUTDOWN;
-    send_command(command);
+    sendCommand(command);
 }
 
 void PowerMicroservice::reboot() {
     MavlinkCommand command(MavlinkCommandTypeLong);
     command.command_id = OPENHD_CMD_POWER_REBOOT;
-    send_command(command);
+    sendCommand(command);
 }
 
 
