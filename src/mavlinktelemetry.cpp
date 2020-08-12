@@ -183,7 +183,7 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             mavlink_msg_system_time_decode(&msg, &sys_time);
             uint32_t boot_time = sys_time.time_boot_ms;
 
-            if (boot_time != m_last_boot) {
+            if (boot_time < m_last_boot || m_last_boot == 0) {
                 m_last_boot = boot_time;
             }
 
