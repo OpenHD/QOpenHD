@@ -185,6 +185,14 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
 
             if (boot_time < m_last_boot || m_last_boot == 0) {
                 m_last_boot = boot_time;
+    
+                setDataStreamRate(MAV_DATA_STREAM_EXTENDED_STATUS, 2);
+                setDataStreamRate(MAV_DATA_STREAM_EXTRA1, 10);
+                setDataStreamRate(MAV_DATA_STREAM_EXTRA2, 5);
+                setDataStreamRate(MAV_DATA_STREAM_EXTRA3, 3);
+                setDataStreamRate(MAV_DATA_STREAM_POSITION, 3);
+                setDataStreamRate(MAV_DATA_STREAM_RAW_SENSORS, 2);
+                setDataStreamRate(MAV_DATA_STREAM_RC_CHANNELS, 2);
             }
 
             break;
