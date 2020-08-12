@@ -10,7 +10,7 @@
 
 #include <inja.hpp>
 
-#if defined(__rasp__pi)
+#if defined(__rasp__pi__)
 #include "openhdpi.h"
 #endif
 
@@ -183,7 +183,7 @@ Q_INVOKABLE void ManageSettings::saveSettingsFile(QUrl url) {
 
 
 Q_INVOKABLE void ManageSettings::savePiSettings() {
-#if defined(__rasp__pi)
+#if defined(__rasp__pi__)
     OpenHDPi pi;
     pi.set_boot_mount_rw();
     saveSettingsFile(piSettingsFile);
