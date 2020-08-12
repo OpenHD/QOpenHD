@@ -286,6 +286,7 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
 
     #if defined(__rasp_pi__)
     manageSettings->loadPiSettings();
+    manageSettings->savePiSettings();
     #endif
 
 
