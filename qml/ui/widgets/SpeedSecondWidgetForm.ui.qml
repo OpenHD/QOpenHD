@@ -14,7 +14,7 @@ BaseWidget {
     defaultHCenter: false
     defaultVCenter: false
     defaultXOffset: 12
-    defaultYOffset: 64
+    defaultYOffset: 128
     dragging: false
 
     visible: settings.show_speed_second
