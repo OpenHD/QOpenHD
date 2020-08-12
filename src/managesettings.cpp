@@ -41,6 +41,8 @@ ManageSettings::ManageSettings(QObject *parent) : QObject(parent) {
 Q_INVOKABLE void ManageSettings::loadSettingsFile(QUrl url) {
     #if defined(__android__)
     QFile file(url.toString());
+    #elif defined(__rasp__pi__)
+    QFile file(url.toString());
     #else
     QFile file(url.toLocalFile());
     #endif
@@ -218,6 +220,8 @@ Q_INVOKABLE void ManageSettings::saveSettingsFile(QUrl url) {
     std::string rendered = env.render(temp, data);
 
     #if defined(__android__)
+    QFile outFile(url.toString());
+    #elif defined(__rasp__pi__)
     QFile outFile(url.toString());
     #else
     QFile outFile(url.toLocalFile());
