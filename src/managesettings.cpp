@@ -176,8 +176,14 @@ Q_INVOKABLE void ManageSettings::saveSettingsFile(QUrl url) {
         }
     }
 
-
-    env.write(temp, data, url.toLocalFile().toStdString());
+    std::string rendered = env.render(temp, data);
+    QFile outFile(url.toString());
+    if (!outFile.open(QIODevice::ReadWrite)) {
+        qDebug() << "error: " << outFile.errorString();
+        return;
+    }
+    QByteArray byteArray(rendered.c_str(), rendered.length());
+    outFile.write(byteArray);
 }
 
 
