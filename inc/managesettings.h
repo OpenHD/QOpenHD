@@ -21,6 +21,7 @@ public:
     Q_INVOKABLE void loadSettingsFile(QUrl url);
     Q_INVOKABLE void saveSettingsFile(QUrl url);
 
+    Q_INVOKABLE void restartApp();
 
 signals:
     void settingUpdated(QString key, QVariant value);
