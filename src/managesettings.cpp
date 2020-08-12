@@ -153,9 +153,8 @@ Q_INVOKABLE void ManageSettings::restartApp() {
 }
 
 Q_INVOKABLE void ManageSettings::loadPiSettings() {
-    QDir _p(piSettingsFile);
-    QUrl _f = _p.filePath("qopenhd.conf");
-    loadSettingsFile(_f);
+    QUrl url(piSettingsFile);
+    loadSettingsFile(url);
 }
 
 
