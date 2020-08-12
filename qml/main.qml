@@ -61,6 +61,15 @@ ApplicationWindow {
         }
     }
 
+    // we call back into QML from ManagedSettings to ensure that the live settings take effect
+    // immediately, QSettings doesn't seem capable of doing it from C++
+    Connections {
+        target: ManageSettings
+        function onSettingUpdated(key, value) {
+            settings.setValue(key, value);
+        }
+    }
+
     /*
      * Local app settings. Uses the "user defaults" system on Mac/iOS, the Registry on Windows,
      * and equivalent settings systems on Linux and Android

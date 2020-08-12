@@ -37,7 +37,6 @@ ManageSettings::ManageSettings(QObject *parent) : QObject(parent) {
 
 
 Q_INVOKABLE void ManageSettings::loadSettingsFile(QUrl url) {
-    QSettings appSettings;
 
     QFile file(url.path());
 
@@ -84,17 +83,17 @@ Q_INVOKABLE void ManageSettings::loadSettingsFile(QUrl url) {
 
 
             if (isDouble) {
-                appSettings.setValue(key, QVariant(doubleValue));
+                emit settingUpdated(key, QVariant(doubleValue));
             } else if (isLongLong) {
-                appSettings.setValue(key, QVariant(longLongValue));
+                emit settingUpdated(key, QVariant(longLongValue));
             } else if (isInt) {
-                appSettings.setValue(key, QVariant(intValue));
+                emit settingUpdated(key, QVariant(intValue));
             } else if (value.contains("true")) {
-                appSettings.setValue(key, QVariant(true));
+                emit settingUpdated(key, QVariant(true));
             } else if (value.contains("false")) {
-                appSettings.setValue(key, QVariant(false));
+                emit settingUpdated(key, QVariant(false));
             } else {
-                appSettings.setValue(key, QVariant(value));
+                emit settingUpdated(key, QVariant(value));
             }
         }
 

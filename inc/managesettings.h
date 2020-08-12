@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QUrl>
+#include <QVariant>
 
 class ManageSettings : public QObject
 {
@@ -20,6 +21,9 @@ public:
     Q_INVOKABLE void loadSettingsFile(QUrl url);
     Q_INVOKABLE void saveSettingsFile(QUrl url);
 
+
+signals:
+    void settingUpdated(QString key, QVariant value);
 
 private:
     QString piSettingsFile = "/boot/qopenhd.conf";
