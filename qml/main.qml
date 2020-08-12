@@ -25,6 +25,12 @@ ApplicationWindow {
 
     property bool initialised: false
 
+    Component.onCompleted: {
+        if (IsRaspPi) {
+            ManageSettings.savePiSettings();
+        }
+    }
+
 
     /* this is not used but must stay right here, it forces qmlglsink to completely
        initialize the rendering system early. Without this, the next GstGLVideoItem
