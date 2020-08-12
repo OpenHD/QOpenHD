@@ -1642,53 +1642,7 @@ Item {
                             }
                         }
 
-                        Rectangle {
-                            width: parent.width
-                            height: rowHeight
-                            color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-                            visible: false
 
-                            Text {
-                                text: qsTr("Stereo OSD mode")
-                                font.weight: Font.Bold
-                                font.pixelSize: 13
-                                anchors.leftMargin: 8
-                                verticalAlignment: Text.AlignVCenter
-                                anchors.verticalCenter: parent.verticalCenter
-                                width: 224
-                                height: elementHeight
-                                anchors.left: parent.left
-                            }
-
-                            ComboBox {
-                                height: elementHeight
-                                anchors.right: parent.right
-                                anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-                                anchors.verticalCenter: parent.verticalCenter
-                                anchors.horizontalCenter: parent.horizonatalCenter
-                                model: ListModel {
-                                    id: stereo_list_model
-                                    ListElement { text: "Off"; mode: 0 }
-                                    ListElement { text: "Aspect Fit"; mode: 1  }
-                                }
-                                textRole: "text"
-                                // @disable-check M223
-                                Component.onCompleted: {
-                                    // @disable-check M223
-                                    for (var i = 0; i < model.count; i++) {
-                                        // @disable-check M222
-                                        var choice = model.get(i);
-                                        // @disable-check M223
-                                        if (choice.mode == settings.stereo_mode) {
-                                            currentIndex = i;
-                                        }
-                                    }
-                                }
-                                onActivated: {
-                                        settings.stereo_mode = stereo_list_model.get(currentIndex).mode
-                                }
-                            }
-                        }
                     }
                 }
             }
@@ -1829,6 +1783,53 @@ Item {
                             anchors.verticalCenter: parent.verticalCenter
                             checked: settings.hide_watermark
                             onCheckedChanged: settings.hide_watermark = checked
+                        }
+                    }
+
+                    Rectangle {
+                        width: parent.width
+                        height: rowHeight
+                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+
+                        Text {
+                            text: qsTr("Stereo OSD mode")
+                            font.weight: Font.Bold
+                            font.pixelSize: 13
+                            anchors.leftMargin: 8
+                            verticalAlignment: Text.AlignVCenter
+                            anchors.verticalCenter: parent.verticalCenter
+                            width: 224
+                            height: elementHeight
+                            anchors.left: parent.left
+                        }
+
+                        ComboBox {
+                            height: elementHeight
+                            anchors.right: parent.right
+                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.horizontalCenter: parent.horizonatalCenter
+                            model: ListModel {
+                                id: stereo_list_model
+                                ListElement { text: "Off"; mode: 0 }
+                                ListElement { text: "Aspect Fit"; mode: 1  }
+                            }
+                            textRole: "text"
+                            // @disable-check M223
+                            Component.onCompleted: {
+                                // @disable-check M223
+                                for (var i = 0; i < model.count; i++) {
+                                    // @disable-check M222
+                                    var choice = model.get(i);
+                                    // @disable-check M223
+                                    if (choice.mode == settings.stereo_mode) {
+                                        currentIndex = i;
+                                    }
+                                }
+                            }
+                            onActivated: {
+                                settings.stereo_mode = stereo_list_model.get(currentIndex).mode
+                            }
                         }
                     }
                 }
