@@ -176,7 +176,6 @@ Q_INVOKABLE void ManageSettings::saveSettingsFile(QUrl url) {
         }
     }
 
-    qDebug() << "_p: " << url.toLocalFile();
 
     env.write(temp, data, url.toLocalFile().toStdString());
 }
