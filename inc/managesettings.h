@@ -28,7 +28,7 @@ signals:
     void needRestart();
 
 private:
-    QString piSettingsFile = "/boot/qopenhd.conf";
+    QString piSettingsFile = "file:///boot/qopenhd.conf";
 };
 
 
