@@ -37,8 +37,12 @@ ManageSettings::ManageSettings(QObject *parent) : QObject(parent) {
 
 
 Q_INVOKABLE void ManageSettings::loadSettingsFile(QUrl url) {
+    #if defined(__android__)
+    QFile file(url.toString());
+    #else
+    QFile file(url.toLocalFile());
+    #endif
 
-    QFile file(url.path());
 
     if (file.open(QIODevice::ReadOnly)) {
 
@@ -176,7 +180,13 @@ Q_INVOKABLE void ManageSettings::saveSettingsFile(QUrl url) {
     }
 
     std::string rendered = env.render(temp, data);
+
+    #if defined(__android__)
     QFile outFile(url.toString());
+    #else
+    QFile outFile(url.toLocalFile());
+    #endif
+
     if (!outFile.open(QIODevice::ReadWrite)) {
         qDebug() << "error: " << outFile.errorString();
         return;
