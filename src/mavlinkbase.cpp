@@ -354,6 +354,32 @@ void MavlinkBase::set_last_vfr(qint64 last_vfr) {
 }
 
 
+void MavlinkBase::setDataStreamRate(MAV_DATA_STREAM streamType, uint8_t hz) {
+
+    QSettings settings;
+
+    int mavlink_sysid = settings.value("mavlink_sysid", default_mavlink_sysid()).toInt();
+
+
+    mavlink_message_t msg;
+    msg.sysid = mavlink_sysid;
+    msg.compid = MAV_COMP_ID_MISSIONPLANNER;
+
+    /*
+     * This only sends the message to sysid 1 compid 1 because nothing else responds to this
+     * message anyway, iNav uses a fixed rate and so does betaflight
+     *
+     */
+    mavlink_msg_request_data_stream_pack(mavlink_sysid, MAV_COMP_ID_MISSIONPLANNER, &msg, 1, MAV_COMP_ID_AUTOPILOT1, streamType, hz, 1);
+
+    uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
+    int len = mavlink_msg_to_send_buffer(buffer, &msg);
+
+    sendData((char*)buffer, len);
+}
+
+
+
 /*
  * This is the entry point for sending mavlink commands to any component, including flight
  * controllers and microservices.

@@ -150,6 +150,7 @@ protected:
     void processData(QByteArray data);
     void sendData(char* data, int len);
     void sendCommand(MavlinkCommand command);
+    void setDataStreamRate(MAV_DATA_STREAM streamType, uint8_t hz);
 
     void reconnectTCP();
 
