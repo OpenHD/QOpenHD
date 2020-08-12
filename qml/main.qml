@@ -413,6 +413,22 @@ ApplicationWindow {
             OpenHDPi.stop_app()
         }
     }
+
+    Item {
+        anchors.fill: parent
+        z: 10.0
+
+        TapHandler {
+            enabled: settings.stereo_mode > 0 && settings_panel.visible == false
+            acceptedButtons: Qt.AllButtons
+            onTapped: if (tapCount == 3) {
+                settings.stereo_mode = 0;
+            }
+            grabPermissions: PointerHandler.CanTakeOverFromAnything
+        }
+    }
+
+
 }
 
 /*##^##
