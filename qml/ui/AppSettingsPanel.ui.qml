@@ -68,9 +68,11 @@ Item {
 
         TabButton {
             text: qsTr("Manage")
-            width: implicitWidth
+            width: (!IsAndroid && !IsiOS) ? implicitWidth : 0
             height: 48
             font.pixelSize: 13
+            visible: (!IsAndroid && !IsiOS)
+
         }
 
 
