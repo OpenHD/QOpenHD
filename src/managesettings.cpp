@@ -105,6 +105,8 @@ Q_INVOKABLE void ManageSettings::loadSettingsFile(QUrl url) {
 
         file.close();
     }
+
+    emit needRestart();
 }
 
 

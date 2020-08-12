@@ -25,6 +25,7 @@ public:
 
 signals:
     void settingUpdated(QString key, QVariant value);
+    void needRestart();
 
 private:
     QString piSettingsFile = "/boot/qopenhd.conf";
