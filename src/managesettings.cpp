@@ -39,6 +39,8 @@ ManageSettings::ManageSettings(QObject *parent) : QObject(parent) {
 
 
 Q_INVOKABLE void ManageSettings::loadSettingsFile(QUrl url) {
+    QSettings appSettings;
+
     #if defined(__android__)
     QFile file(url.toString());
     #elif defined(__rasp__pi__)
@@ -92,16 +94,22 @@ Q_INVOKABLE void ManageSettings::loadSettingsFile(QUrl url) {
 
             if (isDouble) {
                 emit settingUpdated(key, QVariant(doubleValue));
+                appSettings.setValue(key, QVariant(doubleValue));
             } else if (isLongLong) {
                 emit settingUpdated(key, QVariant(longLongValue));
+                appSettings.setValue(key, QVariant(longLongValue));
             } else if (isInt) {
                 emit settingUpdated(key, QVariant(intValue));
+                appSettings.setValue(key, QVariant(intValue));
             } else if (value.contains("true")) {
                 emit settingUpdated(key, QVariant(true));
+                appSettings.setValue(key, QVariant(true));
             } else if (value.contains("false")) {
                 emit settingUpdated(key, QVariant(false));
+                appSettings.setValue(key, QVariant(false));
             } else {
                 emit settingUpdated(key, QVariant(value));
+                appSettings.setValue(key, QVariant(value));
             }
         }
 
