@@ -1790,6 +1790,37 @@ Item {
                         width: parent.width
                         height: rowHeight
                         color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                        visible: false
+
+                        Text {
+                            text: qsTr("Enable stereo mode")
+                            font.weight: Font.Bold
+                            font.pixelSize: 13
+                            anchors.leftMargin: 8
+                            verticalAlignment: Text.AlignVCenter
+                            anchors.verticalCenter: parent.verticalCenter
+                            width: 224
+                            height: elementHeight
+                            anchors.left: parent.left
+                        }
+
+                        Switch {
+                            width: 32
+                            height: elementHeight
+                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                            anchors.right: parent.right
+                            anchors.verticalCenter: parent.verticalCenter
+                            checked: settings.stereo_enable
+                            onCheckedChanged: settings.stereo_enable = checked
+                        }
+                    }
+
+                    Rectangle {
+                        width: parent.width
+                        height: rowHeight
+                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                        visible: settings.stereo_enable && false
 
                         Text {
                             text: qsTr("Stereo OSD mode")
@@ -1804,15 +1835,17 @@ Item {
                         }
 
                         ComboBox {
+                            id: stereoDropdown
                             height: elementHeight
+                            width: 320
                             anchors.right: parent.right
                             anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.horizontalCenter: parent.horizonatalCenter
                             model: ListModel {
                                 id: stereo_list_model
-                                ListElement { text: "Off"; mode: 0 }
-                                ListElement { text: "Aspect Fit"; mode: 1  }
+                                ListElement { text: "Side by side (no lens correction)"; mode: 0  }
+                                ListElement { text: "Google Daydream"; mode: 1 }
                             }
                             textRole: "text"
                             // @disable-check M223

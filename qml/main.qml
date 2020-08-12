@@ -283,6 +283,8 @@ ApplicationWindow {
 
         property bool show_example_widget: false
 
+        property bool stereo_enable: false
+
         property int stereo_mode: 0
     }
 
@@ -379,7 +381,7 @@ ApplicationWindow {
     // UI areas
 
     UpperOverlayBar {
-        visible: settings.stereo_mode == 0
+        visible: !settings.stereo_enable
         id: upperOverlayBar
     }
 
@@ -393,7 +395,7 @@ ApplicationWindow {
     }
 
     LowerOverlayBar {
-        visible: settings.stereo_mode == 0
+        visible: !settings.stereo_enable
         id: lowerOverlayBar
     }
 
@@ -419,10 +421,10 @@ ApplicationWindow {
         z: 10.0
 
         TapHandler {
-            enabled: settings.stereo_mode > 0 && settings_panel.visible == false
+            enabled: settings.stereo_enable && settings_panel.visible == false
             acceptedButtons: Qt.AllButtons
             onTapped: if (tapCount == 3) {
-                settings.stereo_mode = 0;
+                settings.stereo_enable = false
             }
             grabPermissions: PointerHandler.CanTakeOverFromAnything
         }
