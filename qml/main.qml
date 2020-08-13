@@ -27,12 +27,6 @@ ApplicationWindow {
 
     property bool initialised: false
 
-    Component.onCompleted: {
-        if (IsRaspPi) {
-            ManageSettings.savePiSettings();
-        }
-    }
-
 
     /* this is not used but must stay right here, it forces qmlglsink to completely
        initialize the rendering system early. Without this, the next GstGLVideoItem
@@ -171,6 +165,39 @@ ApplicationWindow {
         }
     }
 
+    /*
+     * This is racing the QML Settings class, because it has a delay before it writes
+     * out the merged default+saved settings when it first loads. The delay in Settings
+     * has a purpose, but it makes it impossible to know when all of the settings have
+     * actually made it into the settings system, which makes it impossible for QSettings
+     * in c++ to read all of them.
+     */
+    Timer {
+        id: piSettingsTimer
+        running: false
+        interval: 1000
+        repeat: true
+
+        property int retries: 10
+
+        onTriggered: {
+            if (!ManageSettings.savePiSettings()) {
+                if (retries == 0) {
+                    /*
+                     * Exceeded the retry count, which means in a whole 10 seconds
+                     * Qt did not manage to get all of the default+changed settings written to
+                     * disk. This should ever happen, that's a long time.
+                     */
+                    running = false;
+                    return;
+                }
+
+                retries = retries - 1;
+            }
+            // success
+            running = false;
+        }
+    }
 
     /*
      * Local app settings. Uses the "user defaults" system on Mac/iOS, the Registry on Windows,
@@ -179,6 +206,12 @@ ApplicationWindow {
      */
     Settings {
         id: settings
+        Component.onCompleted: {
+            if (IsRaspPi) {
+                piSettingsTimer.start();
+            }
+        }
+
         property double global_scale: 1.0
 
         property string locale: "en"
