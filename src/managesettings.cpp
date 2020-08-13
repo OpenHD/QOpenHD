@@ -159,7 +159,7 @@ Q_INVOKABLE void ManageSettings::loadPiSettings() {
 }
 
 
-Q_INVOKABLE void ManageSettings::saveSettingsFile(QUrl url) {
+Q_INVOKABLE bool ManageSettings::saveSettingsFile(QUrl url) {
     QSettings appSettings;
     Environment env;
     json data;
@@ -167,7 +167,7 @@ Q_INVOKABLE void ManageSettings::saveSettingsFile(QUrl url) {
     QFile file(":/qopenhd.template");
     if (!file.open(QIODevice::ReadOnly)) {
         qDebug() << "error: " << file.errorString();
-        return;
+        return false;
     }
 
     Template temp = env.parse(file.readAll().toStdString());
@@ -225,29 +225,38 @@ Q_INVOKABLE void ManageSettings::saveSettingsFile(QUrl url) {
         }
     }
 
-    std::string rendered = env.render(temp, data);
+    try {
+        std::string rendered = env.render(temp, data);
 
-    #if defined(__android__)
-    QFile outFile(url.toString());
-    #elif defined(__rasp__pi__)
-    QFile outFile(url.toString());
-    #else
-    QFile outFile(url.toLocalFile());
-    #endif
+        #if defined(__android__)
+        QFile outFile(url.toString());
+        #elif defined(__rasp__pi__)
+        QFile outFile(url.toString());
+        #else
+        QFile outFile(url.toLocalFile());
+        #endif
 
-    if (!outFile.open(QIODevice::ReadWrite)) {
-        qDebug() << "error: " << outFile.errorString();
-        return;
+        if (!outFile.open(QIODevice::ReadWrite)) {
+            qDebug() << "error: " << outFile.errorString();
+            return false;
+        }
+
+        QByteArray byteArray(rendered.c_str(), rendered.length());
+        outFile.write(byteArray);
+        return true;
+    } catch (std::exception &ex) {
+        return false;
     }
-    QByteArray byteArray(rendered.c_str(), rendered.length());
-    outFile.write(byteArray);
+
+    return false;
 }
 
 
-Q_INVOKABLE void ManageSettings::savePiSettings() {
+Q_INVOKABLE bool ManageSettings::savePiSettings() {
     OpenHDPi pi;
     pi.set_boot_mount_rw();
-    saveSettingsFile(piSettingsFile);
+    bool success = saveSettingsFile(piSettingsFile);
     pi.set_boot_mount_ro();
+    return success;
 }
 

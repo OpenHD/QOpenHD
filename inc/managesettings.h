@@ -16,10 +16,10 @@ public:
 
     Q_INVOKABLE void loadPiSettings();
 
-    Q_INVOKABLE void savePiSettings();
+    Q_INVOKABLE bool savePiSettings();
 
     Q_INVOKABLE void loadSettingsFile(QUrl url);
-    Q_INVOKABLE void saveSettingsFile(QUrl url);
+    Q_INVOKABLE bool saveSettingsFile(QUrl url);
 
     Q_INVOKABLE void restartApp();
 
