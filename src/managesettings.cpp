@@ -92,15 +92,16 @@ Q_INVOKABLE void ManageSettings::loadSettingsFile(QUrl url) {
             int intValue = value.toInt(&isInt);
 
 
-            if (isDouble) {
-                emit settingUpdated(key, QVariant(doubleValue));
-                appSettings.setValue(key, QVariant(doubleValue));
-            } else if (isLongLong) {
+
+            if (isLongLong) {
                 emit settingUpdated(key, QVariant(longLongValue));
                 appSettings.setValue(key, QVariant(longLongValue));
             } else if (isInt) {
                 emit settingUpdated(key, QVariant(intValue));
                 appSettings.setValue(key, QVariant(intValue));
+            } else if (isDouble) {
+                emit settingUpdated(key, QVariant(doubleValue));
+                appSettings.setValue(key, QVariant(doubleValue));
             } else if (value.contains("true")) {
                 emit settingUpdated(key, QVariant(true));
                 appSettings.setValue(key, QVariant(true));
