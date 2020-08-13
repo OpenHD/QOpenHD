@@ -94,7 +94,7 @@ BaseWidget {
             width: parent.width
             height: 32
             Text {
-                text: qsTr("Airspeed / Groundspeed")
+                text: qsTr("Groundspeed / Airspeed")
                 horizontalAlignment: Text.AlignRight
                 color: "white"
                 height: parent.height
