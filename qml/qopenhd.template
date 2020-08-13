@@ -635,7 +635,7 @@ blackbox_widget_y_offset={{ blackbox_widget_y_offset }}
 #
 # Note: this is not enabled in released builds yet
 #
-stereo_enable= {{ stereo_enable }}
+stereo_enable={{ stereo_enable }}
 
 # 0: side-by-side (no lens correction applied)
 # 1: google daydream
