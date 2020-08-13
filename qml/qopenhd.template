@@ -470,6 +470,19 @@ speed_widget_x_offset={{ speed_widget_x_offset }}
 speed_widget_y_offset={{ speed_widget_y_offset }}
 
 
+#
+# Second speed widget (number with speed icon)
+#
+show_second_speed={{ show_second_speed }}
+speed_second_use_groundspeed={{ speed_second_use_groundspeed }}
+speed_second_opacity={{ speed_second_opacity }}
+speed_second_size={{ speed_second_size }}
+speed_second_widget_h_center={{ speed_second_widget_h_center }}
+speed_second_widget_v_center={{ speed_second_widget_v_center }}
+speed_second_widget_align={{ speed_second_widget_align }}
+speed_second_widget_x_offset={{ speed_second_widget_x_offset }}
+speed_second_widget_y_offset={{ speed_second_widget_y_offset }}
+
 
 #
 # Altitude widget (ladder)
