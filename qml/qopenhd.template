@@ -5,8 +5,19 @@
 # there are new settings added, you don't have to manually update the file or try to guess what
 # changed, the file will be updated to include them without affecting your existing settings.
 #
-# If you need to update your saved settings file from Android/Windows/Mac/Linx, just load it and
+#
+# If you can, you are encouraged to use a touchscreen or mouse to configure the OSD, it is
+# significantly faster and much easier. However if you have neither of those you can always
+# change this file exactly the way you want it to be. You can also take the file and load it in
+# QOpenHD running on other platforms.
+#
+# If you need to update your saved settings file from Android/Windows/Mac/Linux, just load it and
 # save it again using the App->Manage tab in the settings area.
+#
+#
+# Deleting this file in /boot does not reset all of the settings due to the way they're stored
+# by the app. We will add a reset option very soon.
+#
 #
 #
 # To disable a widget
@@ -19,6 +30,19 @@
 # Don't comment out widget settings to disable them, if you do they will just revert to the
 # default, and the next time the file is saved it will contain the default again, uncommented.
 #
+#
+# Widget opacity/transparency
+# --------------------------
+#
+# 0.0 is completely transparent, 1.0 is completely opaque/solid.
+#
+#
+# Widget sizes
+# --------------------------
+#
+# These are multipliers, 1.0 is the standard size, 2.0 is twice as large. If you just
+# want the entire OSD to be larger because of a high resolution screen, don't change
+# the widget sizes just change global_scale below.
 #
 #
 # Widget layout instructions
