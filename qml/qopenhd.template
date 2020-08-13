@@ -99,9 +99,30 @@
 enable_speech={{ enable_speech }}
 battery_cells={{ battery_cells }}
 enable_imperial={{ enable_imperial }}
+
+# you generally don't need to change this unless you have 2x Android devices both running QOpenHD
+# at the same time connected to the same ground station. If you need to change it, always lower it.
 mavlink_sysid={{ mavlink_sysid }}
+
+#
+# This can be used to hide or change the behavior of the upper/lower shaded bars on the OSD
+#
+# The first two options are just to show or hide it:
+#
+#     none
+#     black
+#
+# The next two will show the bars but disappear or turn red when the drone is armed:
+#
+#     disappear
+#     red
+#
 bar_behavior={{ bar_behavior }}
+
+# not enabled in released builds
 locale={{ locale }}
+
+# affects the message HUD in the  lower left corner, 3 is error, 4 is warning, 7 is debug
 log_level={{ log_level }}
 
 
