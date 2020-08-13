@@ -457,7 +457,7 @@ fpv_widget_y_offset={{ fpv_widget_y_offset }}
 # Speed widget (ladder)
 #
 show_speed={{ show_speed }}
-speed_airspeed_gps={{ speed_airspeed_gps }}
+speed_use_groundspeed={{ speed_use_groundspeed }}
 speed_opacity={{ speed_opacity }}
 speed_size={{ speed_size }}
 show_speed_ladder={{ show_speed_ladder }}

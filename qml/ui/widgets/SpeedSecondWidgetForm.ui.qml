@@ -101,8 +101,8 @@ BaseWidget {
                 height: parent.height
                 anchors.rightMargin: 6
                 anchors.right: parent.right
-                checked: settings.speed_second_ground_air
-                onCheckedChanged: settings.speed_second_ground_air = checked
+                checked: settings.speed_second_use_groundspeed
+                onCheckedChanged: settings.speed_second_use_groundspeed = checked
             }
         }
     }
@@ -124,8 +124,8 @@ BaseWidget {
             anchors.verticalCenter: widgetGlyph.verticalCenter
             text: Number(
                       settings.enable_imperial ?
-                      (settings.speed_second_ground_air ? OpenHD.speed*0.621371 : OpenHD.airspeed*0.621371) :
-                      (settings.speed_second_ground_air ? OpenHD.speed : OpenHD.airspeed)   ).toLocaleString(
+                      (settings.speed_second_use_groundspeed ? OpenHD.speed * 0.621371 : OpenHD.airspeed * 0.621371) :
+                      (settings.speed_second_use_groundspeed ? OpenHD.speed : OpenHD.airspeed)   ).toLocaleString(
                       Qt.locale(), 'f', 0)
             horizontalAlignment: Text.AlignRight
             verticalAlignment: Text.AlignVCenter

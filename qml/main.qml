@@ -338,7 +338,7 @@ ApplicationWindow {
         property double fpv_size: 1
 
         property bool show_speed: true
-        property bool speed_airspeed_gps: false
+        property bool speed_use_groundspeed: true
         property double speed_opacity: 1
         property double speed_size: 1
         property bool show_speed_ladder: true
@@ -346,7 +346,7 @@ ApplicationWindow {
         property int speed_minimum: 0
 
         property bool show_speed_second: true
-        property bool speed_second_ground_air: true
+        property bool speed_second_use_groundspeed: true
         property double speed_second_opacity: 1
         property double speed_second_size: 1
 

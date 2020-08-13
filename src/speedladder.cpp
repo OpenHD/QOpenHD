@@ -19,8 +19,8 @@ void SpeedLadder::paint(QPainter* painter) {
 
     painter->setFont(font);
 
-    auto speed = m_imperial ? (m_airspeedOrGps ? (m_airspeed * 0.621371) : (m_speed * 0.621371)) :
-                              (m_airspeedOrGps ? m_airspeed : m_speed);
+    auto speed = m_imperial ? (m_useGroundspeed ? (m_speed * 0.621371) : (m_airspeed * 0.621371)) :
+                              (m_useGroundspeed ? m_speed : m_airspeed);
 
     //weird rounding issue where decimals make ladder dissappear
     speed = round(speed);
@@ -105,9 +105,9 @@ void SpeedLadder::setGlow(QColor glow) {
 }
 
 
-void SpeedLadder::setAirspeedOrGps(bool airspeedOrGps) {
-    m_airspeedOrGps = airspeedOrGps;
-    emit airspeedOrGpsChanged(m_airspeedOrGps);
+void SpeedLadder::setUseGroundspeed(bool useGroundspeed) {
+    m_useGroundspeed = useGroundspeed;
+    emit useGroundspeedChanged(m_useGroundspeed);
     update();
 }
 
