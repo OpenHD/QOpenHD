@@ -39,6 +39,8 @@ ManageSettings::ManageSettings(QObject *parent) : QObject(parent) {
 
 
 Q_INVOKABLE void ManageSettings::loadSettingsFile(QUrl url) {
+    qDebug() << "Loading settings file";
+
     QSettings appSettings;
 
     #if defined(__android__)
@@ -160,6 +162,8 @@ Q_INVOKABLE void ManageSettings::loadPiSettings() {
 
 
 Q_INVOKABLE bool ManageSettings::saveSettingsFile(QUrl url) {
+    qDebug() << "Saving settings file";
+
     QSettings appSettings;
     Environment env;
     json data;
