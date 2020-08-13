@@ -313,7 +313,7 @@ ApplicationWindow {
         property int speed_minimum: 0
 
         property bool show_speed_second: true
-        property bool speed_second_ground_air: false
+        property bool speed_second_ground_air: true
         property double speed_second_opacity: 1
         property double speed_second_size: 1
 
