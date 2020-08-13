@@ -130,7 +130,7 @@ ApplicationWindow {
                 font.capitalization: Font.MixedCase
 
                 onPressed: {
-                    powerDialog.visible = false
+                    restartDialog.visible = false
                 }
             }
 
