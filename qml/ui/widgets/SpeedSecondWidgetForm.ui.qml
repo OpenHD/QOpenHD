@@ -14,7 +14,7 @@ BaseWidget {
     defaultHCenter: false
     defaultVCenter: false
     defaultXOffset: 12
-    defaultYOffset: 128
+    defaultYOffset: 64
     dragging: false
 
     visible: settings.show_speed_second
@@ -88,7 +88,7 @@ BaseWidget {
             height: 32
             Text {
                 id: mslTitle
-                text: qsTr("Groundspeed / Airspeed")
+                text: qsTr("Airspeed / Groundspeed")
                 color: "white"
                 height: parent.height
                 font.bold: true
