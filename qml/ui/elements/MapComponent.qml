@@ -481,7 +481,7 @@ Map {
             transform: Rotation {
                 origin.x: 0;
                 origin.y: 0;
-                angle: settings.map_orientation ? OpenHD.hdg : 0
+                angle: settings.map_orientation ? 0 : OpenHD.hdg
             }
         }
     }
