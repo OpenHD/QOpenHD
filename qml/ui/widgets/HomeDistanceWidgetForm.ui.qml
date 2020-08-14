@@ -154,7 +154,7 @@ BaseWidget {
                 // QML settings can return strings for booleans on some platforms so we check
                 if (use_imperial === true || use_imperial === 1 || use_imperial === "true") {
                     unit = "ft";
-                    distance /= 3.28084;
+                    distance = distance * 3.28084;
                 }
 
                 return distance.toLocaleString(Qt.locale(), "f", 1) + unit
