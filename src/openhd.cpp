@@ -305,7 +305,7 @@ void OpenHD::set_armed(bool armed) {
          */
         flightTimeStart.start();
 
-        if(armed==true && m_homelat == 0.0 && m_homelon == 0.0){
+        if (m_homelat == 0.0 && m_homelon == 0.0) {
             LocalMessage::instance()->showMessage("No Home Position in OpenHD", 4);
         }
     }
