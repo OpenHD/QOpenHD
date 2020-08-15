@@ -8,7 +8,7 @@ class SpeedLadder : public QQuickPaintedItem {
     Q_OBJECT
     Q_PROPERTY(QColor color READ color WRITE setColor NOTIFY colorChanged)
     Q_PROPERTY(QColor glow READ glow WRITE setGlow NOTIFY glowChanged)
-    Q_PROPERTY(bool airspeedOrGps MEMBER m_airspeedOrGps WRITE setAirspeedOrGps NOTIFY airspeedOrGpsChanged)
+    Q_PROPERTY(bool useGroundspeed MEMBER m_useGroundspeed WRITE setUseGroundspeed NOTIFY useGroundspeedChanged)
     Q_PROPERTY(bool imperial MEMBER m_imperial WRITE setImperial NOTIFY imperialChanged)
     Q_PROPERTY(int speedMinimum MEMBER m_speedMinimum WRITE setSpeedMinimum NOTIFY speedMinimumChanged)
     Q_PROPERTY(int speedRange MEMBER m_speedRange WRITE setSpeedRange NOTIFY speedRangeChanged)
@@ -28,7 +28,7 @@ public:
 public slots:
     void setColor(QColor color);
     void setGlow(QColor glow);
-    void setAirspeedOrGps(bool airspeedOrGps);
+    void setUseGroundspeed(bool useGroundspeed);
     void setImperial(bool imperial);
     void setSpeedMinimum(int speedMinimum);
     void setSpeedRange(int speedRange);
@@ -39,7 +39,7 @@ public slots:
 signals:
     void colorChanged(QColor color);
     void glowChanged(QColor glow);
-    void airspeedOrGpsChanged(bool airspeedOrGps);
+    void useGroundspeedChanged(bool useGroundspeed);
     void imperialChanged(bool imperial);
     void speedMinimumChanged(int speedMinimum);
     void speedRangeChanged(int speedRange);
@@ -49,7 +49,7 @@ signals:
 private:
     QColor m_color;
     QColor m_glow;
-    bool m_airspeedOrGps;
+    bool m_useGroundspeed;
     bool m_imperial;
     int m_speedMinimum;
     int m_speedRange;

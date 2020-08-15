@@ -118,9 +118,8 @@ BaseWidget {
             color: settings.color_text
             opacity: settings.altitude_second_opacity
             font.pixelSize: 14
-            width: 40
-            anchors.right: parent.right
-            anchors.rightMargin: 0
+            anchors.left: widgetGlyph.right
+            anchors.leftMargin: 0
             anchors.verticalCenter: widgetGlyph.verticalCenter
             text: Number(settings.enable_imperial ? (settings.altitude_second_msl_rel ? (OpenHD.alt_msl*3.28) : (OpenHD.alt_rel*3.28)) :
                       (settings.altitude_second_msl_rel ? OpenHD.alt_msl : OpenHD.alt_rel)
@@ -134,7 +133,7 @@ BaseWidget {
 
         Text {
             id: widgetGlyph
-            width: 40
+            width: 16
             height: parent.height
             color: settings.color_shape
             opacity: settings.altitude_second_opacity

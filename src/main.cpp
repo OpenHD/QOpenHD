@@ -51,6 +51,8 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "altitudeladder.h"
 #include "headingladder.h"
 
+#include "managesettings.h"
+
 #if defined(__ios__)
 #include "appleplatform.h"
 #endif
@@ -279,6 +281,14 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
 
 #endif
 
+    auto manageSettings = new ManageSettings();
+    engine.rootContext()->setContextProperty("ManageSettings", manageSettings);
+
+    #if defined(__rasp_pi__)
+    manageSettings->loadPiSettings();
+    #endif
+
+
     auto openHDSettings = new OpenHDSettings();
     engine.rootContext()->setContextProperty("openHDSettings", openHDSettings);
 
@@ -361,9 +371,23 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
     engine.rootContext()->setContextProperty("MarkerModel", markerModel);
     markerModel->initMarkerModel();
 
+
+    #if defined(ENABLE_EXAMPLE_WIDGET)
+    engine.rootContext()->setContextProperty("EnableExampleWidget", QVariant(true));
+    #else
+    engine.rootContext()->setContextProperty("EnableExampleWidget", QVariant(false));
+    #endif
+
+
     auto blackBoxModel = BlackBoxModel::instance();
     engine.rootContext()->setContextProperty("BlackBoxModel", blackBoxModel);
     blackBoxModel->initBlackBoxModel();
+
+    #if defined(ENABLE_BLACKBOX)
+    engine.rootContext()->setContextProperty("EnableBlackbox", QVariant(true));
+    #else
+    engine.rootContext()->setContextProperty("EnableBlackbox", QVariant(false));
+    #endif
 
 
     #if defined(ENABLE_ADSB)

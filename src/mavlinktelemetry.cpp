@@ -171,6 +171,10 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             OpenHD::instance()->set_battery_percent(battery_percent);
             QString battery_gauge_glyph = battery_gauge_glyph_from_percentage(battery_percent);
             OpenHD::instance()->set_battery_gauge(battery_gauge_glyph);
+
+            qint64 current_timestamp = QDateTime::currentMSecsSinceEpoch();
+
+            last_battery_timestamp = current_timestamp;
             break;
         }
 
@@ -179,8 +183,16 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             mavlink_msg_system_time_decode(&msg, &sys_time);
             uint32_t boot_time = sys_time.time_boot_ms;
 
-            if (boot_time != m_last_boot) {
+            if (boot_time < m_last_boot || m_last_boot == 0) {
                 m_last_boot = boot_time;
+    
+                setDataStreamRate(MAV_DATA_STREAM_EXTENDED_STATUS, 2);
+                setDataStreamRate(MAV_DATA_STREAM_EXTRA1, 10);
+                setDataStreamRate(MAV_DATA_STREAM_EXTRA2, 5);
+                setDataStreamRate(MAV_DATA_STREAM_EXTRA3, 3);
+                setDataStreamRate(MAV_DATA_STREAM_POSITION, 3);
+                setDataStreamRate(MAV_DATA_STREAM_RAW_SENSORS, 2);
+                setDataStreamRate(MAV_DATA_STREAM_RC_CHANNELS, 2);
             }
 
             break;
@@ -240,6 +252,10 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
 
             OpenHD::instance()->set_roll((double)attitude.roll *57.2958);
             //qDebug() << "Roll:" <<  attitude.roll*57.2958;
+
+            qint64 current_timestamp = QDateTime::currentMSecsSinceEpoch();
+
+            last_attitude_timestamp = current_timestamp;
             break;
         }
         case MAVLINK_MSG_ID_LOCAL_POSITION_NED:{
@@ -280,6 +296,10 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             OpenHD::instance()->updateLateralSpeed();
 
             OpenHD::instance()->updateWind();
+
+            qint64 current_timestamp = QDateTime::currentMSecsSinceEpoch();
+
+            last_gps_timestamp = current_timestamp;
 
             break;
         }
@@ -353,6 +373,10 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             auto vsi = vfr_hud.climb;
             OpenHD::instance()->set_vsi(vsi);
             // qDebug() << "VSI- " << vsi;
+
+            qint64 current_timestamp = QDateTime::currentMSecsSinceEpoch();
+
+            last_vfr_timestamp = current_timestamp;
 
             break;
         }

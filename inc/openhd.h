@@ -301,6 +301,18 @@ public:
     Q_PROPERTY(qint64 last_telemetry_heartbeat MEMBER m_last_telemetry_heartbeat WRITE set_last_telemetry_heartbeat NOTIFY last_telemetry_heartbeat_changed)
     void set_last_telemetry_heartbeat(qint64 last_telemetry_heartbeat);
 
+    Q_PROPERTY(qint64 last_telemetry_attitude MEMBER m_last_telemetry_attitude WRITE set_last_telemetry_attitude NOTIFY last_telemetry_attitude_changed)
+    void set_last_telemetry_attitude(qint64 last_telemetry_attitude);
+
+    Q_PROPERTY(qint64 last_telemetry_battery MEMBER m_last_telemetry_battery WRITE set_last_telemetry_battery NOTIFY last_telemetry_battery_changed)
+    void set_last_telemetry_battery(qint64 last_telemetry_battery);
+
+    Q_PROPERTY(qint64 last_telemetry_gps MEMBER m_last_telemetry_gps WRITE set_last_telemetry_gps NOTIFY last_telemetry_gps_changed)
+    void set_last_telemetry_gps(qint64 last_telemetry_gps);
+
+    Q_PROPERTY(qint64 last_telemetry_vfr MEMBER m_last_telemetry_vfr WRITE set_last_telemetry_vfr NOTIFY last_telemetry_vfr_changed)
+    void set_last_telemetry_vfr(qint64 last_telemetry_vfr);
+
 
     Q_PROPERTY(bool main_video_running MEMBER m_main_video_running WRITE set_main_video_running NOTIFY main_video_running_changed)
     void set_main_video_running(bool main_video_running);
@@ -481,6 +493,10 @@ signals:
     void last_openhd_heartbeat_changed(qint64 last_openhd_heartbeat);
 
     void last_telemetry_heartbeat_changed(qint64 last_telemetry_heartbeat);
+    void last_telemetry_attitude_changed(qint64 last_telemetry_attitude);
+    void last_telemetry_battery_changed(qint64 last_telemetry_battery);
+    void last_telemetry_gps_changed(qint64 last_telemetry_gps);
+    void last_telemetry_vfr_changed(qint64 last_telemetry_vfr);
 
     void main_video_running_changed(bool main_video_running);
     void pip_video_running_changed(bool pip_video_running);
@@ -640,6 +656,10 @@ public:
 
     qint64 m_last_openhd_heartbeat = -1;
     qint64 m_last_telemetry_heartbeat = -1;
+    qint64 m_last_telemetry_attitude = -1;
+    qint64 m_last_telemetry_battery = -1;
+    qint64 m_last_telemetry_gps = -1;
+    qint64 m_last_telemetry_vfr = -1;
 
     bool m_main_video_running = false;
     bool m_pip_video_running = false;

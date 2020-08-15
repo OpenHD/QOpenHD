@@ -108,8 +108,8 @@ BaseWidget {
                 height: parent.height
                 anchors.rightMargin: 6
                 anchors.right: parent.right
-                checked: settings.speed_airspeed_gps
-                onCheckedChanged: settings.speed_airspeed_gps = checked
+                checked: settings.speed_use_groundspeed
+                onCheckedChanged: settings.speed_use_groundspeed = checked
             }
         }
         Item {
@@ -217,7 +217,7 @@ BaseWidget {
                 clip: false
                 color: settings.color_shape
                 glow: settings.color_glow
-                airspeedOrGps: settings.speed_airspeed_gps
+                useGroundspeed: settings.speed_use_groundspeed
                 imperial: settings.enable_imperial
                 speedMinimum: settings.speed_minimum
                 speedRange: settings.speed_range
@@ -237,8 +237,8 @@ BaseWidget {
             transform: Scale { origin.x: 12; origin.y: 12; xScale: settings.speed_size ; yScale: settings.speed_size}
             text: Number(
                       settings.enable_imperial ?
-                      (settings.speed_airspeed_gps ? OpenHD.airspeed*0.621371 : OpenHD.speed*0.621371) :
-                      (settings.speed_airspeed_gps ? OpenHD.airspeed : OpenHD.speed)   ).toLocaleString(
+                      (settings.speed_use_groundspeed ? OpenHD.speed * 0.621371 : OpenHD.airspeed * 0.621371) :
+                      (settings.speed_use_groundspeed ? OpenHD.speed : OpenHD.airspeed)   ).toLocaleString(
                       Qt.locale(), 'f', 0)
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter

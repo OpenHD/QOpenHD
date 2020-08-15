@@ -41,6 +41,12 @@ BaseWidgetForm {
 
     Component.onCompleted: {
         loadAlignment();
+        saveAlignment();
+        var _hCenter = settings.value(hCenterIdentifier, defaultHCenter)
+        settings.setValue(hCenterIdentifier, _hCenter)
+        var _vCenter = settings.value(vCenterIdentifier, defaultVCenter)
+        settings.setValue(vCenterIdentifier, _vCenter)
+        settings.sync();
     }
 
     SequentialAnimation {
@@ -193,6 +199,7 @@ BaseWidgetForm {
         settings.setValue(alignmentIdentifier, alignmentType);
         settings.setValue(xOffsetIdentifier, _xOffset);
         settings.setValue(yOffsetIdentifier, _yOffset);
+        settings.sync();
 
         var _hCenter = getHCenter();
         var _vCenter = getVCenter();

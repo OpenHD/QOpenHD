@@ -39,7 +39,7 @@ Rectangle {
     Label {
         id: ohdLabel
         color: "black"
-        text: qsTr("Last openhd heartbeat: ") + (OpenHD.last_openhd_heartbeat >= 0 && OpenHD.last_openhd_heartbeat <= 300000 ? OpenHD.last_openhd_heartbeat + "ms" : "N/A")
+        text: qsTr("Last RSSI: ") + (OpenHD.last_openhd_heartbeat >= 0 && OpenHD.last_openhd_heartbeat <= 300000 ? OpenHD.last_openhd_heartbeat + "ms" : "N/A")
         font.pixelSize: 12
         anchors.bottom: parent.bottom
         anchors.left: parent.left
@@ -49,16 +49,56 @@ Rectangle {
         z: 1.1
     }
 
-    Label {
-        id: mavLabel
-        color: "black"
-        text: qsTr("Last telemetry heartbeat: ") + (OpenHD.last_telemetry_heartbeat >= 0 && OpenHD.last_telemetry_heartbeat <= 300000 ? OpenHD.last_telemetry_heartbeat  + "ms": "N/A")
-        font.pixelSize: 12
+    Row {
         anchors.bottom: parent.bottom
         anchors.right: parent.right
         anchors.bottomMargin: 12
-        anchors.rightMargin: 142
+        anchors.rightMargin: 12
+        spacing: 0
 
-        z: 1.1
+        Label {
+            color: "black"
+            text: qsTr("  HB: ") + (OpenHD.last_telemetry_heartbeat >= 0 && OpenHD.last_telemetry_heartbeat <= 300000 ? OpenHD.last_telemetry_heartbeat: "N/A")
+            font.pixelSize: 12
+            font.family: "monospace"
+            width: 64
+            z: 1.1
+        }
+
+        Label {
+            color: "black"
+            text: qsTr(" | ATT: ") + (OpenHD.last_telemetry_attitude >= 0 && OpenHD.last_telemetry_attitude <= 300000 ? OpenHD.last_telemetry_attitude: "N/A")
+            font.pixelSize: 12
+            font.family: "monospace"
+            width: 64
+            z: 1.1
+        }
+
+        Label {
+            color: "black"
+            text: qsTr(" | BAT: ") + (OpenHD.last_telemetry_battery >= 0 && OpenHD.last_telemetry_battery <= 300000 ? OpenHD.last_telemetry_battery: "N/A")
+            font.pixelSize: 12
+            font.family: "monospace"
+            width: 64
+            z: 1.1
+        }
+
+        Label {
+            color: "black"
+            text: qsTr(" | GPS: ") + (OpenHD.last_telemetry_gps >= 0 && OpenHD.last_telemetry_gps <= 300000 ? OpenHD.last_telemetry_gps: "N/A")
+            font.pixelSize: 12
+            font.family: "monospace"
+            width: 64
+            z: 1.1
+        }
+
+        Label {
+            color: "black"
+            text: qsTr(" | VFR: ") + (OpenHD.last_telemetry_vfr >= 0 && OpenHD.last_telemetry_vfr <= 300000 ? OpenHD.last_telemetry_vfr: "N/A")
+            font.pixelSize: 12
+            font.family: "monospace"
+            width: 64
+            z: 1.1
+        }
     }
 }

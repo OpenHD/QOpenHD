@@ -66,6 +66,7 @@ SOURCES += \
     src/localmessage.cpp \
     src/ltmtelemetry.cpp \
     src/main.cpp \
+    src/managesettings.cpp \
     src/markermodel.cpp \
     src/mavlinkbase.cpp \
     src/mavlinktelemetry.cpp \
@@ -93,6 +94,7 @@ HEADERS += \
     inc/blackboxmodel.h \
     inc/gpiomicroservice.h \
     inc/headingladder.h \
+    inc/managesettings.h \
     inc/markermodel.h \
     inc/mavlinkbase.h \
     inc/powermicroservice.h \
@@ -140,7 +142,6 @@ DISTFILES += \
     android/src/org/freedesktop/gstreamer/androidmedia/GstAmcOnFrameAvailableListener.java \
     qml/qtquickcontrols2.conf \
     qml/ui/qmldir
-
 
 
 SOURCES += \
@@ -359,6 +360,13 @@ AndroidBuild {
     QT += androidextras
 }
 
+
+EnableBlackbox {
+    message("EnableBlackbox")
+    DEFINES += ENABLE_BLACKBOX
+}
+
+
 EnableADSB {
     message("EnableADSB")
     DEFINES += ENABLE_ADSB
@@ -430,7 +438,6 @@ EnablePiP {
 EnableLink {
     message("EnableLink")
     DEFINES += ENABLE_LINK
-    HEADERS += lib/json.hpp
 }
 
 

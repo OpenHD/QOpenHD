@@ -1,6 +1,7 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Controls.Styles 1.4
+import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.0
 import QtGraphicalEffects 1.12
 import Qt.labs.settings 1.0
@@ -9,6 +10,7 @@ import OpenHD 1.0
 
 import "./ui"
 import "./ui/widgets"
+import "./ui/elements"
 
 
 ApplicationWindow {
@@ -55,6 +57,148 @@ ApplicationWindow {
         }
     }
 
+    // we call back into QML from ManagedSettings to ensure that the live settings take effect
+    // immediately, QSettings doesn't seem capable of doing it from C++
+    Connections {
+        target: ManageSettings
+        function onSettingUpdated(key, value) {
+            settings.setValue(key, value);
+        }
+
+        function onNeedRestart() {
+            settings_panel.visible = false;
+            restartDialog.visible = true;
+        }
+    }
+
+    Card {
+        id: restartDialog
+        height: 240
+        width: 400
+        z: 5.0
+        anchors.centerIn: parent
+        cardNameColor: "black"
+        hasHeaderImage: true
+        visible: false
+
+        property bool stateVisible: visible
+
+        states: [
+            State {
+                when: restartDialog.stateVisible;
+                PropertyChanges {
+                    target: restartDialog
+                    opacity: 1.0
+                }
+            },
+            State {
+                when: !restartDialog.stateVisible;
+                PropertyChanges {
+                    target: restartDialog
+                    opacity: 0.0
+                }
+            }
+        ]
+        transitions: [ Transition { NumberAnimation { property: "opacity"; duration: 250}} ]
+
+        cardName: qsTr("Restart required")
+        cardBody: Column {
+            height: parent.height
+            width: parent.width
+
+            Text {
+                text: qsTr("You must restart the app for your loaded configuration file to take effect")
+                width: parent.width
+                leftPadding: 12
+                rightPadding: 12
+                wrapMode: Text.WordWrap
+            }
+        }
+
+        hasFooter: true
+        cardFooter: Item {
+            anchors.fill: parent
+            Button {
+                width: 96
+                height: 48
+                text: qsTr("Cancel")
+                anchors.left: parent.left
+                anchors.leftMargin: 12
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: 6
+                font.pixelSize: 14
+                font.capitalization: Font.MixedCase
+
+                onPressed: {
+                    restartDialog.visible = false
+                }
+            }
+
+            Button {
+                width: 140
+                height: 48
+                anchors.right: parent.right
+                anchors.rightMargin: 12
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: 6
+                font.pixelSize: 14
+                font.capitalization: Font.MixedCase
+                Material.accent: Material.Red
+                highlighted: true
+
+                text:  {
+                    if (IsAndroid) {
+                        return qsTr("Restart App")
+                    }
+                    return qsTr("Close App")
+                }
+
+
+                onPressed: {
+                    if (IsAndroid) {
+                        ManageSettings.restartApp();
+                        return;
+                    }
+                    Qt.quit();
+                }
+            }
+        }
+    }
+
+    /*
+     * This is racing the QML Settings class, because it has a delay before it writes
+     * out the merged default+saved settings when it first loads. The delay in Settings
+     * has a purpose, but it makes it impossible to know when all of the settings have
+     * actually made it into the settings system, which makes it impossible for QSettings
+     * in c++ to read all of them.
+     */
+    Timer {
+        id: piSettingsTimer
+        running: false
+        interval: 1000
+        repeat: true
+
+        property int retries: 10
+
+        onTriggered: {
+            if (!ManageSettings.savePiSettings()) {
+                if (retries == 0) {
+                    /*
+                     * Exceeded the retry count, which means in a whole 10 seconds
+                     * Qt did not manage to get all of the default+changed settings written to
+                     * disk. This should ever happen, that's a long time.
+                     */
+                    running = false;
+                    return;
+                }
+
+                retries = retries - 1;
+            }
+            // success
+            running = false;
+        }
+    }
+
     /*
      * Local app settings. Uses the "user defaults" system on Mac/iOS, the Registry on Windows,
      * and equivalent settings systems on Linux and Android
@@ -62,6 +206,12 @@ ApplicationWindow {
      */
     Settings {
         id: settings
+        Component.onCompleted: {
+            if (IsRaspPi) {
+                piSettingsTimer.start();
+            }
+        }
+
         property double global_scale: 1.0
 
         property string locale: "en"
@@ -188,7 +338,7 @@ ApplicationWindow {
         property double fpv_size: 1
 
         property bool show_speed: true
-        property bool speed_airspeed_gps: false
+        property bool speed_use_groundspeed: true
         property double speed_opacity: 1
         property double speed_size: 1
         property bool show_speed_ladder: true
@@ -196,7 +346,7 @@ ApplicationWindow {
         property int speed_minimum: 0
 
         property bool show_speed_second: true
-        property bool speed_second_ground_air: false
+        property bool speed_second_use_groundspeed: true
         property double speed_second_opacity: 1
         property double speed_second_size: 1
 
@@ -282,6 +432,8 @@ ApplicationWindow {
         property double blackbox_size: 1
 
         property bool show_example_widget: false
+
+        property bool stereo_enable: false
 
         property int stereo_mode: 0
     }
@@ -379,54 +531,21 @@ ApplicationWindow {
     // UI areas
 
     UpperOverlayBar {
-        visible: settings.stereo_mode == 0
+        visible: !settings.stereo_enable
         id: upperOverlayBar
     }
 
     HUDOverlayGrid {
         id: hudOverlayGrid
-        anchors.left: parent.left
-        anchors.top: parent.top
-        anchors.bottom: parent.bottom
-        anchors.right: parent.right
-        transform: Scale {
-            origin.x: 0
-            origin.y: hudOverlayGrid.height / 2
-            xScale: settings.stereo_mode == 1 ? 0.5 : 1.0
-            yScale: settings.stereo_mode == 1 ? 0.5 : 1.0
-        }
+        anchors.fill: parent
         z: 3.0
-        layer.enabled: true
-
         onSettingsButtonClicked: {
             settings_panel.openSettings();
         }
     }
 
-    Rectangle {
-        id: hudOverlayGridClone
-        anchors.right: parent.right
-        width: parent.width / 2
-        height: parent.height / 2
-        anchors.verticalCenter: settings.stereo_mode == 1 ? parent.verticalCenter : undefined
-        visible: settings.stereo_mode != 0
-        z: 3.0
-        layer.enabled: true
-        layer.effect: ShaderEffect {
-            id: shader
-            property variant cloneSource : hudOverlayGrid
-            fragmentShader: "
-                  varying highp vec2 qt_TexCoord0;
-                  uniform highp sampler2D cloneSource;
-                  void main(void) {
-                       gl_FragColor =  texture2D(cloneSource, qt_TexCoord0);
-                  }
-            "
-        }
-    }
-
     LowerOverlayBar {
-        visible: settings.stereo_mode == 0
+        visible: !settings.stereo_enable
         id: lowerOverlayBar
     }
 
@@ -446,6 +565,22 @@ ApplicationWindow {
             OpenHDPi.stop_app()
         }
     }
+
+    Item {
+        anchors.fill: parent
+        z: 10.0
+
+        TapHandler {
+            enabled: settings.stereo_enable && settings_panel.visible == false
+            acceptedButtons: Qt.AllButtons
+            onTapped: if (tapCount == 3) {
+                settings.stereo_enable = false
+            }
+            grabPermissions: PointerHandler.CanTakeOverFromAnything
+        }
+    }
+
+
 }
 
 /*##^##

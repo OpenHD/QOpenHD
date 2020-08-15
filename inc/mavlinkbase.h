@@ -97,10 +97,27 @@ public:
     Q_PROPERTY(qint64 last_heartbeat MEMBER m_last_heartbeat WRITE set_last_heartbeat NOTIFY last_heartbeat_changed)
     void set_last_heartbeat(qint64 last_heartbeat);
 
+    Q_PROPERTY(qint64 last_attitude MEMBER m_last_attitude WRITE set_last_attitude NOTIFY last_attitude_changed)
+    void set_last_attitude(qint64 last_attitude);
+
+    Q_PROPERTY(qint64 last_battery MEMBER m_last_battery WRITE set_last_battery NOTIFY last_battery_changed)
+    void set_last_battery(qint64 last_battery);
+
+    Q_PROPERTY(qint64 last_gps MEMBER m_last_gps WRITE set_last_gps NOTIFY last_gps_changed)
+    void set_last_gps(qint64 last_gps);
+
+    Q_PROPERTY(qint64 last_vfr MEMBER m_last_vfr WRITE set_last_vfr NOTIFY last_vfr_changed)
+    void set_last_vfr(qint64 last_vfr);
+
+
     Q_INVOKABLE void setGroundIP(QString address);
 
 signals:
     void last_heartbeat_changed(qint64 last_heartbeat);
+    void last_attitude_changed(qint64 last_attitude);
+    void last_battery_changed(qint64 last_battery);
+    void last_gps_changed(qint64 last_gps);
+    void last_vfr_changed(qint64 last_vfr);
     void setup();
     void processMavlinkMessage(mavlink_message_t msg);
 
@@ -132,7 +149,8 @@ protected:
     void resetParamVars();
     void processData(QByteArray data);
     void sendData(char* data, int len);
-    void send_command(MavlinkCommand command);
+    void sendCommand(MavlinkCommand command);
+    void setDataStreamRate(MAV_DATA_STREAM streamType, uint8_t hz);
 
     void reconnectTCP();
 
@@ -171,8 +189,16 @@ protected:
     mavlink_status_t r_mavlink_status;
 
     qint64 m_last_heartbeat = -1;
+    qint64 m_last_attitude = -1;
+    qint64 m_last_battery = -1;
+    qint64 m_last_gps = -1;
+    qint64 m_last_vfr = -1;
 
     qint64 last_heartbeat_timestamp = 0;
+    qint64 last_battery_timestamp = 0;
+    qint64 last_gps_timestamp = 0;
+    qint64 last_vfr_timestamp = 0;
+    qint64 last_attitude_timestamp = 0;
 
     QTimer* timer = nullptr;
     QTimer* m_heartbeat_timer = nullptr;

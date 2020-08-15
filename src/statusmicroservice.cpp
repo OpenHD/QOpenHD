@@ -69,7 +69,7 @@ void StatusMicroservice::onProcessMavlinkMessage(mavlink_message_t msg) {
 
                 MavlinkCommand command(MavlinkCommandTypeLong);
                 command.command_id = OPENHD_CMD_GET_VERSION;
-                send_command(command);
+                sendCommand(command);
             }
 
             break;
@@ -91,7 +91,7 @@ void StatusMicroservice::onProcessMavlinkMessage(mavlink_message_t msg) {
              */
             MavlinkCommand command(MavlinkCommandTypeLong);
             command.command_id = OPENHD_CMD_GET_STATUS_MESSAGES;
-            send_command(command);
+            sendCommand(command);
 
             break;
         }

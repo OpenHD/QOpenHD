@@ -17,7 +17,7 @@ Map {
     gesture.acceptedGestures: MapGestureArea.PanGesture | MapGestureArea.FlickGesture | MapGestureArea.PinchGesture | MapGestureArea.RotationGesture | MapGestureArea.TiltGesture
     gesture.flickDeceleration: 3000
 
-    bearing: settings.map_orientation ? 360 : OpenHD.hdg
+    bearing: settings.map_orientation ? OpenHD.hdg : 360
 
     property double userLat: 0.0
     property double userLon: 0.0
@@ -139,11 +139,44 @@ Map {
 
     MapItemView {
         model: BlackBoxModel
-        enabled: EnableADSB        
+        enabled: EnableBlackbox
+
+        function addDroneTrack() {
+            
+            // always remove last point unless it was significant
+            if (track_count != 0) {
+                droneTrack.removeCoordinate(droneTrack.pathLength());
+                //console.log("total points=", droneTrack.pathLength());
+            }
+
+            // always add the current location so drone looks like its connected to line
+            droneTrack.addCoordinate(QtPositioning.coordinate(OpenHD.lat, OpenHD.lon));
+
+            track_count = track_count + 1;
+
+            if (track_count == track_skip) {
+                track_count = 0;
+            }
+
+            if (droneTrack.pathLength() === track_limit) {
+                //make line more coarse
+                track_skip = track_skip * 2;
+                //cut the points in the list by half
+                for (var i = 0; i < track_limit; ++i) {
+                    if (i % 2) {
+                        // it's odd
+                        droneTrack.removeCoordinate(i);
+                    }
+                }
+            }
+
+            //console.log("drone position=",OpenHD.lat, OpenHD.lon);
+        }
     }
 
     MapPolyline {
         id: droneTrack
+        visible: EnableBlackbox
 
         line.color: "red"
         line.width: 3
@@ -154,6 +187,7 @@ Map {
         id: markerMapView
         model: MarkerModel
         delegate: markerComponentDelegate
+        visible: EnableADSB
 
         Component {
             id: markerComponentDelegate
@@ -447,7 +481,7 @@ Map {
             transform: Rotation {
                 origin.x: 0;
                 origin.y: 0;
-                angle: settings.map_orientation ? OpenHD.hdg : 0
+                angle: settings.map_orientation ? 0 : OpenHD.hdg
             }
         }
     }
