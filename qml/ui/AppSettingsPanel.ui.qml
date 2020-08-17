@@ -100,6 +100,7 @@ Item {
             width: parent.width
             height: parent.height
             contentHeight: generalColumn.height
+            visible: appSettingsBar.currentIndex == 0
 
             clip: true
 
@@ -307,6 +308,7 @@ Item {
             width: parent.width
             height: parent.height
             contentHeight: widgetColumn.height
+            visible: appSettingsBar.currentIndex == 1
 
             clip: true
             
@@ -1520,6 +1522,7 @@ Item {
             width: parent.width
             height: parent.height
             contentHeight: piColumn.height
+            visible: appSettingsBar.currentIndex == 2
 
             clip: true
 
@@ -1634,7 +1637,7 @@ Item {
             contentHeight: videoColumn.height
 
             clip: true
-            visible: EnableMainVideo || EnablePiP
+            visible: (EnableMainVideo || EnablePiP) && appSettingsBar.currentIndex == 3
 
 
             Item {
@@ -1853,6 +1856,7 @@ Item {
             width: parent.width
             height: parent.height
             contentHeight: manageColumn.height
+            visible: appSettingsBar.currentIndex == 4
 
             clip: true
 
