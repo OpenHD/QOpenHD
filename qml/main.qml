@@ -103,8 +103,8 @@ ApplicationWindow {
 
         cardName: qsTr("Restart required")
         cardBody: Column {
-            height: parent.height
-            width: parent.width
+            height: restartDialog.height
+            width: restartDialog.width
 
             Text {
                 text: qsTr("You must restart the app for your loaded configuration file to take effect")

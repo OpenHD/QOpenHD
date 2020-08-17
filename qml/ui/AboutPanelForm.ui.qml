@@ -32,7 +32,6 @@ Rectangle {
         hasHeader: false
 
         cardBody: ColumnLayout {
-            height: parent.height
             Row {
                 spacing: 12
                 leftPadding: 18
@@ -98,8 +97,6 @@ Rectangle {
 
             cardName: qsTr("Air")
             cardBody: Item {
-                height: parent.height
-
                 Text {
                     id: airVersionID
                     text: qsTr("OpenHD Version:")
@@ -129,8 +126,6 @@ Rectangle {
             Layout.fillWidth: true
             cardName: qsTr("Ground")
             cardBody: Item {
-                height: parent.height
-
                 Text {
                     id: groundVersionID
                     text: qsTr("OpenHD Version:")

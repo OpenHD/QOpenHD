@@ -32,7 +32,7 @@ Rectangle {
         cardBody: Column {
             id: infoColumn
             spacing: 12
-            width: parent.width
+            width: infoPanel.width
 
             Text {
                 text: qsTr("If you have temperature or IMU sensors connected you may see and/or calibrate them below.")
