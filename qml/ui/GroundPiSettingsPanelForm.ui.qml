@@ -223,7 +223,7 @@ Item {
 
             Text {
                 id: savedText
-                text: "saved"
+                text: qsTr("saved")
                 font.pixelSize: 20
                 height: parent.height
                 anchors.right: savedIcon.left

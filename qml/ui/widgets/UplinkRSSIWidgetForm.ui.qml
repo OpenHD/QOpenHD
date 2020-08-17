@@ -116,7 +116,7 @@ BaseWidget {
             height: 24
             color: settings.color_text
             opacity: settings.uplink_rssi_opacity
-            text: "dBm"
+            text: qsTr("dBm")
             anchors.right: parent.right
             anchors.rightMargin: 0
             anchors.top: parent.top

@@ -31,7 +31,7 @@ BaseWidget {
         anchors.fill: parent
 
         Text {
-            text: "Example widget";
+            text: qsTr("Example widget");
             color: "white"
             anchors.fill: parent
             verticalAlignment: Text.AlignVCenter

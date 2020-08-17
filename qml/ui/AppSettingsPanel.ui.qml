@@ -330,7 +330,7 @@ Item {
 
                         ColorDialog {
                             id: colorDialogShape
-                            title: "Please choose a color"
+                            title: qsTr("Choose a color")
                             onAccepted: {
                                 settings.color_shape = colorDialogShape.color
                                 colorDialogShape.close()
@@ -381,7 +381,7 @@ Item {
                         }                        
                         ColorDialog {
                             id: colorDialogGlow
-                            title: "Please choose a color"
+                            title: qsTr("Choose a color")
                             onAccepted: {
                                 settings.color_glow = colorDialogGlow.color
                                 colorDialogGlow.close()
@@ -430,7 +430,7 @@ Item {
                         }                       
                         ColorDialog {
                             id: colorDialogText
-                            title: "Please choose a color"
+                            title: qsTr("Choose a color")
                             onAccepted: {
                                 settings.color_text = colorDialogText.color
                                 colorDialogText.close()
@@ -487,10 +487,10 @@ Item {
                             width: 320
                             model: ListModel {
                                 id: bar_behavior
-                                ListElement { text: "Hide" ; behavior: "none" }
-                                ListElement { text: "Transparent black" ; behavior: "black" }
-                                ListElement { text: "Hide when drone armed" ; behavior: "disappear" }
-                                ListElement { text: "Turn red when drone armed" ; behavior: "red" }
+                                ListElement { text: qsTr("Hide") ; behavior: "none" }
+                                ListElement { text: qsTr("Transparent black") ; behavior: "black" }
+                                ListElement { text: qsTr("Hide when drone armed") ; behavior: "disappear" }
+                                ListElement { text: qsTr("Turn red when drone armed") ; behavior: "red" }
 
                             }
                             textRole: "text"
@@ -1417,7 +1417,7 @@ Item {
                         visible: EnableADSB
 
                         Text {
-                            text: "Show ADS-B Traffic"
+                            text: qsTr("Show ADS-B Traffic")
                             font.weight: Font.Bold
                             font.pixelSize: 13
                             anchors.leftMargin: 8
@@ -1448,7 +1448,7 @@ Item {
 
 
                         Text {
-                            text: "Show BlackBox"
+                            text: qsTr("Show BlackBox")
                             font.weight: Font.Bold
                             font.pixelSize: 13
                             anchors.leftMargin: 8

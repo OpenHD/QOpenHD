@@ -502,7 +502,7 @@ BaseWidget {
                         Text {
                             id: zoomTitle
                             height: parent.height
-                            text: "Zoom"
+                            text: qsTr("Zoom")
                             color: "white"
                             font.bold: true
                             font.pixelSize: detailPanelFontPixels
@@ -534,7 +534,7 @@ BaseWidget {
 
                         Text {
                             id: opacityTitle
-                            text: "Transparency"
+                            text: qsTr("Transparency")
                             color: "white"
                             height: parent.height
                             font.bold: true
@@ -566,7 +566,7 @@ BaseWidget {
                         height: 32
 
                         Text {
-                            text: "Lock map to drone direction"
+                            text: qsTr("Lock map to drone direction")
                             color: "white"
                             height: parent.height
                             font.bold: true

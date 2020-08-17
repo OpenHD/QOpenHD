@@ -250,7 +250,7 @@ BaseWidget {
                     color: settings.color_shape
                     opacity: settings.gps_opacity
                     //font.family: "Font Awesome 5 Free"
-                    text: "Lat:"
+                    text: qsTr("Lat:")
                     horizontalAlignment: Text.AlignLeft
                     font.pixelSize: 14
                     style: Text.Outline
@@ -286,7 +286,7 @@ BaseWidget {
                     color: settings.color_shape
                     opacity: settings.gps_opacity
                     //font.family: "Font Awesome 5 Free"
-                    text: "Lon:"
+                    text: qsTr("Lon:")
                     horizontalAlignment: Text.AlignLeft
                     font.pixelSize: 14
                     style: Text.Outline

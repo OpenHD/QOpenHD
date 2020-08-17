@@ -165,7 +165,7 @@ BaseWidget {
                     opacity: settings.vibration_opacity
                     font.pixelSize: 10
 
-                    text: "X"
+                    text: qsTr("X")
                     leftPadding: 2
                     anchors.top: parent.top
                     anchors.topMargin: 0
@@ -248,7 +248,7 @@ BaseWidget {
                     opacity: settings.vibration_opacity
                     font.pixelSize: 10
 
-                    text: "Y"
+                    text: qsTr("Y")
                     leftPadding: 2
                     anchors.topMargin: 0
                     anchors.top: parent.top
@@ -331,7 +331,7 @@ BaseWidget {
                     opacity: settings.vibration_opacity
                     font.pixelSize: 10
 
-                    text: "Z"
+                    text: qsTr("Z")
                     leftPadding: 2
                     anchors.topMargin: 0
                     anchors.top: parent.top

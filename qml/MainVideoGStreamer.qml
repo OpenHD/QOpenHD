@@ -14,7 +14,7 @@ GstGLVideoItem {
         color: "#89ffffff"
         visible: !settings.hide_watermark
         font.pixelSize: 18
-        text: "Do not fly with this app! Video is not stable yet!"
+        text: qsTr("Do not fly with this app! Video is not stable yet!")
         horizontalAlignment: Text.AlignHCenter
         height: 24
         anchors.left: parent.left
