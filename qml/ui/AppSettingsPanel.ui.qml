@@ -66,10 +66,10 @@ Item {
 
         TabButton {
             text: qsTr("Manage")
-            width: !IsiOS ? implicitWidth : 0
+            width: (!IsRaspPi && !IsiOS) ? implicitWidth : 0
             height: 48
             font.pixelSize: 13
-            visible: !IsiOS
+            visible: !IsRaspPi && !IsiOS
 
         }
 
