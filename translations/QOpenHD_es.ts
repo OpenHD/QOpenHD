@@ -1065,8 +1065,7 @@
     </message>
     <message>
         <source>Power</source>
-        <translation>Energia
- </translation>
+        <translation>Energia</translation>
     </message>
     <message>
         <source>Sensors</source>
