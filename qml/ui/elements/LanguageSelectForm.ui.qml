@@ -31,6 +31,7 @@ Item {
                     currentIndex = i;
                 }
             }
+            OpenHD.switchToLanguage(settings.locale);
         }
 
         onActivated: {
