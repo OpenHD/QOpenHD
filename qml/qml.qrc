@@ -17,6 +17,15 @@
     <qresource prefix="/translations" lang="nl">
         <file alias="QOpenHD.qm">../translations/QOpenHD_nl.qm</file>
     </qresource>
+    <qresource prefix="/translations" lang="ro">
+        <file alias="QOpenHD.qm">../translations/QOpenHD_ro.qm</file>
+    </qresource>
+    <qresource prefix="/translations" lang="it">
+        <file alias="QOpenHD.qm">../translations/QOpenHD_it.qm</file>
+    </qresource>
+    <qresource prefix="/translations" lang="zh">
+        <file alias="QOpenHD.qm">../translations/QOpenHD_zh.qm</file>
+    </qresource>
     <qresource prefix="/">
         <file>main.qml</file>
         <file>qtquickcontrols2.conf</file>

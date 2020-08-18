@@ -149,7 +149,10 @@ DISTFILES += \
     android/src/org/freedesktop/gstreamer/androidmedia/GstAhsCallback.java \
     android/src/org/freedesktop/gstreamer/androidmedia/GstAmcOnFrameAvailableListener.java \
     qml/qtquickcontrols2.conf \
-    qml/ui/qmldir
+    qml/ui/qmldir \
+    translations/QOpenHD_it.ts \
+    translations/QOpenHD_ro.ts \
+    translations/QOpenHD_zh.ts
 
 
 SOURCES += \
