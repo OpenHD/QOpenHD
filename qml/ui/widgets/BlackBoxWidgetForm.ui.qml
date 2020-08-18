@@ -63,7 +63,7 @@ BaseWidget {
             width: parent.width
             height: 32
             Text {
-                text: "Opacity"
+                text: qsTr("Transparency")
                 color: "white"
                 height: parent.height
                 font.bold: true
@@ -240,7 +240,7 @@ BaseWidget {
         Button {
             id: resumeTelemetryBtn
             visible: telemetry_pause
-            text: "restart telemetry"
+            text: qsTr("restart telemetry")
             //height: 25
             font.pixelSize: 12
             anchors.horizontalCenter: parent.horizontalCenter

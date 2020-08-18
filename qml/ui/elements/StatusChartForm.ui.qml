@@ -37,7 +37,7 @@ Item {
                 padding: 0
                 Layout.row: 0
                 Layout.column: 0
-                text: "Air CPU"
+                text: qsTr("Air CPU")
                 font.pixelSize: legend.fontSize
                 boxColor: airCPUAxis.color
                 checked: airCPUAxis.visible
@@ -49,7 +49,7 @@ Item {
                 padding: 0
                 Layout.row: 0
                 Layout.column: 1
-                text: "Air Temp"
+                text: qsTr("Air Temp")
                 font.pixelSize: legend.fontSize
                 boxColor: airTempAxis.color
                 checked: airTempAxis.visible
@@ -61,7 +61,7 @@ Item {
                 padding: 0
                 Layout.row: 0
                 Layout.column: 2
-                text: "Gnd CPU"
+                text: qsTr("Gnd CPU")
                 font.pixelSize: legend.fontSize
                 boxColor: gndCPUAxis.color
                 checked: gndCPUAxis.visible
@@ -72,7 +72,7 @@ Item {
                 padding: 0
                 Layout.row: 1
                 Layout.column: 0
-                text: "Gnd Temp"
+                text: qsTr("Gnd Temp")
                 font.pixelSize: legend.fontSize
                 boxColor: gndTempAxis.color
                 checked: gndTempAxis.visible
@@ -84,7 +84,7 @@ Item {
                 padding: 0
                 Layout.row: 1
                 Layout.column: 1
-                text: "Lost Pkt"
+                text: qsTr("Lost Pkt")
                 font.pixelSize: legend.fontSize
                 boxColor: lostPacketAxis.color
                 checked: lostPacketAxis.visible
@@ -96,7 +96,7 @@ Item {
                 padding: 0
                 Layout.row: 1
                 Layout.column: 2
-                text: "Damage Blk"
+                text: qsTr("Damage Blk")
                 font.pixelSize: legend.fontSize
                 boxColor: damagedBlockAxis.color
                 checked: damagedBlockAxis.visible
@@ -108,7 +108,7 @@ Item {
                 padding: 0
                 Layout.row: 1
                 Layout.column: 3
-                text: "Down RSSI"
+                text: qsTr("Down RSSI")
                 font.pixelSize: legend.fontSize
                 boxColor: downlinkRSSIAxis.color
                 checked: downlinkRSSIAxis.visible
@@ -120,7 +120,7 @@ Item {
                 padding: 0
                 Layout.row: 0
                 Layout.column: 3
-                text: "Up RSSI"
+                text: qsTr("Up RSSI")
                 font.pixelSize: legend.fontSize
                 boxColor: uplinkRSSIAxis.color
                 checked: uplinkRSSIAxis.visible
@@ -132,7 +132,7 @@ Item {
                 padding: 0
                 Layout.row: 0
                 Layout.column: 4
-                text: "Inj. Fail"
+                text: qsTr("Inj. Fail")
                 font.pixelSize: legend.fontSize
                 boxColor: injectionFailAxis.color
                 checked: injectionFailAxis.visible
@@ -144,7 +144,7 @@ Item {
                 padding: 0
                 Layout.row: 1
                 Layout.column: 4
-                text: "Skip Pkt"
+                text: qsTr("Skip Pkt")
                 font.pixelSize: legend.fontSize
                 boxColor: skippedPacketAxis.color
                 checked: skippedPacketAxis.visible
@@ -156,7 +156,7 @@ Item {
                 padding: 0
                 Layout.row: 2
                 Layout.column: 0
-                text: "Bitrate"
+                text: qsTr("Bitrate")
                 font.pixelSize: legend.fontSize
                 boxColor: bitrateAxis.color
                 checked: bitrateAxis.visible

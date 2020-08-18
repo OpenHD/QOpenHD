@@ -339,7 +339,7 @@ Item {
 
                         ColorDialog {
                             id: colorDialogShape
-                            title: "Please choose a color"
+                            title: qsTr("Choose a color")
                             onAccepted: {
                                 settings.color_shape = colorDialogShape.color
                                 colorDialogShape.close()
@@ -390,7 +390,7 @@ Item {
                         }                        
                         ColorDialog {
                             id: colorDialogGlow
-                            title: "Please choose a color"
+                            title: qsTr("Choose a color")
                             onAccepted: {
                                 settings.color_glow = colorDialogGlow.color
                                 colorDialogGlow.close()
@@ -439,7 +439,7 @@ Item {
                         }                       
                         ColorDialog {
                             id: colorDialogText
-                            title: "Please choose a color"
+                            title: qsTr("Choose a color")
                             onAccepted: {
                                 settings.color_text = colorDialogText.color
                                 colorDialogText.close()
@@ -496,10 +496,10 @@ Item {
                             width: 320
                             model: ListModel {
                                 id: bar_behavior
-                                ListElement { text: "Hide" ; behavior: "none" }
-                                ListElement { text: "Transparent black" ; behavior: "black" }
-                                ListElement { text: "Hide when drone armed" ; behavior: "disappear" }
-                                ListElement { text: "Turn red when drone armed" ; behavior: "red" }
+                                ListElement { text: qsTr("Hide") ; behavior: "none" }
+                                ListElement { text: qsTr("Transparent black") ; behavior: "black" }
+                                ListElement { text: qsTr("Hide when drone armed") ; behavior: "disappear" }
+                                ListElement { text: qsTr("Turn red when drone armed") ; behavior: "red" }
 
                             }
                             textRole: "text"
@@ -1426,7 +1426,7 @@ Item {
                         visible: EnableADSB
 
                         Text {
-                            text: "Show ADS-B Traffic"
+                            text: qsTr("Show ADS-B Traffic")
                             font.weight: Font.Bold
                             font.pixelSize: 13
                             anchors.leftMargin: 8
@@ -1458,7 +1458,7 @@ Item {
 
 
                         Text {
-                            text: "Show BlackBox"
+                            text: qsTr("Show BlackBox")
                             font.weight: Font.Bold
                             font.pixelSize: 13
                             anchors.leftMargin: 8
@@ -1481,38 +1481,7 @@ Item {
                                 settings.show_blackbox = checked;
                             }
                         }
-                    }
-                    Rectangle {
-                        width: parent.width
-                        height: rowHeight
-                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-
-                        Text {
-                            text: "Show Servos"
-                            font.weight: Font.Bold
-                            font.pixelSize: 13
-                            anchors.leftMargin: 8
-                            verticalAlignment: Text.AlignVCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: 224
-                            height: elementHeight
-                            anchors.left: parent.left
-                        }
-
-                        Switch {
-                            width: 32
-                            height: elementHeight
-                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            checked: settings.show_servos
-                            onCheckedChanged: {
-                                settings.show_servos = checked;
-                            }
-                        }
-                    }
+                    }                    
                     Rectangle {
                         width: parent.width
                         height: rowHeight
