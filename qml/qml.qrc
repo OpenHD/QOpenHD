@@ -168,5 +168,57 @@
         <file>ui/widgets/SpeedSecondWidget.qml</file>
         <file>ui/widgets/SpeedSecondWidgetForm.ui.qml</file>
         <file>qopenhd.template</file>
+        <file>osdfonts/Acme-Regular.ttf</file>
+        <file>osdfonts/Aldrich-Regular.ttf</file>
+        <file>osdfonts/AnonymousPro-Bold.ttf</file>
+        <file>osdfonts/AnonymousPro-BoldItalic.ttf</file>
+        <file>osdfonts/Archivo-Bold.ttf</file>
+        <file>osdfonts/Archivo-Medium.ttf</file>
+        <file>osdfonts/Archivo-Regular.ttf</file>
+        <file>osdfonts/ArchivoBlack-Regular.ttf</file>
+        <file>osdfonts/Armata-Regular.ttf</file>
+        <file>osdfonts/Bangers-Regular.ttf</file>
+        <file>osdfonts/BlackOpsOne-Regular.ttf</file>
+        <file>osdfonts/Bungee-Regular.ttf</file>
+        <file>osdfonts/Carbon-Bold.ttf</file>
+        <file>osdfonts/Chicle-Regular.ttf</file>
+        <file>osdfonts/Digital7SegmentDisplay.ttf</file>
+        <file>osdfonts/DigitalDotDisplay.ttf</file>
+        <file>osdfonts/DigitalSubwayTicker.ttf</file>
+        <file>osdfonts/ExpletusSans-Bold.ttf</file>
+        <file>osdfonts/FjallaOne-Regular.ttf</file>
+        <file>osdfonts/FredokaOne-Regular.ttf</file>
+        <file>osdfonts/GeostarFill-Regular.ttf</file>
+        <file>osdfonts/Iceberg-Regular.ttf</file>
+        <file>osdfonts/Iceland-Regular.ttf</file>
+        <file>osdfonts/Jura-Bold.ttf</file>
+        <file>osdfonts/KeaniaOne-Regular.ttf</file>
+        <file>osdfonts/Larabie.ttf</file>
+        <file>osdfonts/LuckiestGuy-Regular.ttf</file>
+        <file>osdfonts/Merysha-Regular.ttf</file>
+        <file>osdfonts/NixieOne-Regular.ttf</file>
+        <file>osdfonts/Orbitron-Bold.ttf</file>
+        <file>osdfonts/Orbitron-Regular.ttf</file>
+        <file>osdfonts/Oxygen-Bold.ttf</file>
+        <file>osdfonts/Oxygen-Regular.ttf</file>
+        <file>osdfonts/PassionOne-Bold.ttf</file>
+        <file>osdfonts/Quantico-Bold.ttf</file>
+        <file>osdfonts/Quantico-Regular.ttf</file>
+        <file>osdfonts/Quicksand-Bold.ttf</file>
+        <file>osdfonts/Quicksand-Regular.ttf</file>
+        <file>osdfonts/RammettoOne-Regular.ttf</file>
+        <file>osdfonts/Rationale-Regular.ttf</file>
+        <file>osdfonts/Righteous-Regular.ttf</file>
+        <file>osdfonts/RobotoMono-Bold.ttf</file>
+        <file>osdfonts/RobotoMono-Medium.ttf</file>
+        <file>osdfonts/RussoOne-Regular.ttf</file>
+        <file>osdfonts/ShareTech-Regular.ttf</file>
+        <file>osdfonts/ShareTechMono-Regular.ttf</file>
+        <file>osdfonts/SigmarOne-Regular.ttf</file>
+        <file>osdfonts/Slackey-Regular.ttf</file>
+        <file>osdfonts/UbuntuMono-Bold.ttf</file>
+        <file>osdfonts/UbuntuMono-BoldItalic.ttf</file>
+        <file>osdfonts/Visitor.ttf</file>
+        <file>osdfonts/ZolanMonoOblique.ttf</file>
     </qresource>
 </RCC>
