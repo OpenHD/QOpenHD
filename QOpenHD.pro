@@ -3,7 +3,15 @@ BASEDIR = $$IN_PWD
 LANGUAGE = C++
 CONFIG += c++17
 CONFIG+=sdk_no_version_check
-TRANSLATIONS = translations/QOpenHD_en.ts translations/QOpenHD_de.ts translations/QOpenHD_ru.ts translations/QOpenHD_nl.ts translations/QOpenHD_es.ts translations/QOpenHD_fr.ts
+TRANSLATIONS = translations/QOpenHD_en.ts \
+               translations/QOpenHD_de.ts \
+               translations/QOpenHD_ru.ts \
+               translations/QOpenHD_nl.ts \
+               translations/QOpenHD_es.ts \
+               translations/QOpenHD_fr.ts \
+               translations/QOpenHD_zh.ts \
+               translations/QOpenHD_it.ts \
+               translations/QOpenHD_ro.ts
 
 
 include(platforms.pri)
