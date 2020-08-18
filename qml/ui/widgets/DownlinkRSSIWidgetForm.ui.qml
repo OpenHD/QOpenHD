@@ -221,8 +221,8 @@ BaseWidget {
             height: 24
             color: settings.color_shape
             text: "\uf381"
-            anchors.left: parent.left
-            anchors.leftMargin: -2
+            anchors.right: downlink_rssi.left
+            anchors.rightMargin: 3
             anchors.top: parent.top
             font.family: "Font Awesome 5 Free"
             font.pixelSize: 18
@@ -246,7 +246,7 @@ BaseWidget {
             font.pixelSize: 12
             verticalAlignment: Text.AlignTop
             wrapMode: Text.NoWrap
-            elide: Text.ElideRight
+            elide: Text.ElideNone
             clip: false
             style: Text.Outline
             styleColor: settings.color_glow
@@ -254,7 +254,6 @@ BaseWidget {
 
         Text {
             id: downlink_rssi
-            width: 42
             height: 24
             color: settings.color_text
 
@@ -266,7 +265,7 @@ BaseWidget {
             font.pixelSize: 18
             verticalAlignment: Text.AlignTop
             wrapMode: Text.NoWrap
-            elide: Text.ElideRight
+            elide: Text.ElideNone
             clip: false
             style: Text.Outline
             styleColor: settings.color_glow
