@@ -235,7 +235,7 @@ BaseWidget {
             anchors.leftMargin: 6
             anchors.verticalCenter: parent.verticalCenter
             verticalAlignment: Text.AlignVCenter
-            elide: Text.ElideRight
+            elide: Text.ElideNone
             wrapMode: Text.NoWrap
             clip: false
             horizontalAlignment: Text.AlignLeft
