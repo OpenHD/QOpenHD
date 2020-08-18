@@ -119,7 +119,19 @@ mavlink_sysid={{ mavlink_sysid }}
 #
 bar_behavior={{ bar_behavior }}
 
-# not enabled in released builds
+#
+# Use the 2 letter locale code, NOT the full name of a language. For example:
+#
+# en for english
+# nl for dutch
+# de for german
+# ro for romanian
+# ru for russian
+# fr for french
+# it for italian
+# es for spanish
+# zh for chinese
+#
 locale={{ locale }}
 
 # affects the message HUD in the  lower left corner, 3 is error, 4 is warning, 7 is debug
