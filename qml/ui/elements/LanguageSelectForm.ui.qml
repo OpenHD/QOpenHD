@@ -13,6 +13,9 @@ Item {
             ListElement { text: "French"; locale: "fr" }
             ListElement { text: "Spanish"; locale: "es" }
             ListElement { text: "Dutch"; locale: "nl" }
+            ListElement { text: "Romanian"; locale: "ro" }
+            ListElement { text: "Chinese"; locale: "zh" }
+            ListElement { text: "Italian"; locale: "it" }
         }
 
         textRole: "text"
