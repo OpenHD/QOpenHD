@@ -16,6 +16,8 @@ class SpeedLadder : public QQuickPaintedItem {
     Q_PROPERTY(int airspeed MEMBER m_airspeed WRITE setAirspeed NOTIFY airspeedChanged)
     Q_PROPERTY(int speed MEMBER m_speed WRITE setSpeed NOTIFY speedChanged)
 
+    Q_PROPERTY(QString fontFamily MEMBER m_fontFamily WRITE setFontFamily NOTIFY fontFamilyChanged)
+
 public:
     explicit SpeedLadder(QQuickItem* parent = nullptr);
 
@@ -36,6 +38,8 @@ public slots:
     void setSpeed(int speed);
     void setAirspeed(int airspeed);
 
+    void setFontFamily(QString fontFamily);
+
 signals:
     void colorChanged(QColor color);
     void glowChanged(QColor glow);
@@ -46,6 +50,8 @@ signals:
     void speedChanged(int speed);
     void airspeedChanged(int airspeed);
 
+    void fontFamilyChanged(QString fontFamily);
+
 private:
     QColor m_color;
     QColor m_glow;
@@ -55,5 +61,9 @@ private:
     int m_speedRange;
     int m_speed;
     int m_airspeed;
+
+    QString m_fontFamily;
+
+    QFont m_font;
 
 };

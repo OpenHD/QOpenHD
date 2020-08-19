@@ -15,9 +15,7 @@ SpeedLadder::SpeedLadder(QQuickItem *parent): QQuickPaintedItem(parent) {
 void SpeedLadder::paint(QPainter* painter) {
     painter->save();
 
-    QFont font("sans-serif", 10, QFont::Bold, false);
-
-    painter->setFont(font);
+    painter->setFont(m_font);
 
     auto speed = m_imperial ? (m_useGroundspeed ? (m_speed * 0.621371) : (m_airspeed * 0.621371)) :
                               (m_useGroundspeed ? m_speed : m_airspeed);
@@ -143,5 +141,12 @@ void SpeedLadder::setSpeed(int speed) {
 void SpeedLadder::setAirspeed(int airspeed) {
     m_airspeed = airspeed;
     emit airspeedChanged(m_airspeed);
+    update();
+}
+
+void SpeedLadder::setFontFamily(QString fontFamily) {
+    m_fontFamily = fontFamily;
+    emit fontFamilyChanged(m_fontFamily);
+    m_font = QFont(m_fontFamily, 10, QFont::Bold, false);
     update();
 }
