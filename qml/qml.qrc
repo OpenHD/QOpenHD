@@ -222,5 +222,6 @@
         <file>osdfonts/ZolanMonoOblique.ttf</file>
         <file>ui/elements/FontSelect.qml</file>
         <file>ui/elements/FontSelectForm.ui.qml</file>
+        <file>ui/elements/OSDCustomizer.qml</file>
     </qresource>
 </RCC>
