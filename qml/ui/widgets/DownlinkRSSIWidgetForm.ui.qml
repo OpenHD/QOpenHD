@@ -221,8 +221,8 @@ BaseWidget {
             height: 24
             color: settings.color_shape
             text: "\uf381"
-            anchors.right: downlink_rssi.left
-            anchors.rightMargin: 3
+            anchors.left: parent.left
+            anchors.leftMargin: 0
             anchors.top: parent.top
             font.family: "Font Awesome 5 Free"
             font.pixelSize: 18
@@ -233,17 +233,16 @@ BaseWidget {
         }
 
         Text {
-            id: downlink_dbm
-            width: 32
+            id: downlink_rssi
             height: 24
             color: settings.color_text
-            text: "dBm"            
-            anchors.right: parent.right
-            anchors.rightMargin: 0
+
+            text: OpenHD.downlink_rssi == -127 ? qsTr("N/A") : OpenHD.downlink_rssi
+            anchors.left: downlink_icon.right
+            anchors.leftMargin: 3
             anchors.top: parent.top
-            anchors.topMargin: 2
-            horizontalAlignment: Text.AlignLeft
-            font.pixelSize: 12
+            horizontalAlignment: Text.AlignRight
+            font.pixelSize: 18
             verticalAlignment: Text.AlignTop
             wrapMode: Text.NoWrap
             elide: Text.ElideNone
@@ -253,16 +252,17 @@ BaseWidget {
         }
 
         Text {
-            id: downlink_rssi
+            id: downlink_dbm
+            width: 32
             height: 24
             color: settings.color_text
-
-            text: OpenHD.downlink_rssi == -127 ? qsTr("N/A") : OpenHD.downlink_rssi
-            anchors.right: downlink_dbm.left
-            anchors.rightMargin: 2
+            text: "dBm"            
+            anchors.left: downlink_rssi.right
+            anchors.leftMargin: 2
             anchors.top: parent.top
-            horizontalAlignment: Text.AlignRight
-            font.pixelSize: 18
+            anchors.topMargin: 2
+            horizontalAlignment: Text.AlignLeft
+            font.pixelSize: 12
             verticalAlignment: Text.AlignTop
             wrapMode: Text.NoWrap
             elide: Text.ElideNone
