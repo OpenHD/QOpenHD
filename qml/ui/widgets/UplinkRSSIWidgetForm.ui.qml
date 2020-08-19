@@ -97,8 +97,8 @@ BaseWidget {
             color: settings.color_shape
             opacity: settings.uplink_rssi_opacity
             text: "\uf382"
-            anchors.right: uplink_rssi.left
-            anchors.rightMargin: 3
+            anchors.left: parent.left
+            anchors.leftMargin: 0
             font.family: "Font Awesome 5 Free"
             font.pixelSize: 18
             anchors.top: parent.top
@@ -111,19 +111,18 @@ BaseWidget {
         }
 
         Text {
-            id: uplink_dbm
-            width: 32
+            id: uplink_rssi            
             height: 24
             color: settings.color_text
             opacity: settings.uplink_rssi_opacity
-            text: qsTr("dBm")
-            anchors.right: parent.right
-            anchors.rightMargin: 0
+            text: OpenHD.current_signal_joystick_uplink == -127 ? qsTr("N/A") : OpenHD.current_signal_joystick_uplink
+            anchors.left: uplink_icon.right
+            anchors.leftMargin: 3
             anchors.top: parent.top
             anchors.topMargin: 0
-            horizontalAlignment: Text.AlignLeft
-            font.pixelSize: 12
-            verticalAlignment: Text.AlignTop
+            horizontalAlignment: Text.AlignRight
+            font.pixelSize: 18
+            verticalAlignment: Text.AlignVCenter
             wrapMode: Text.NoWrap
             elide: Text.ElideNone
             clip: false
@@ -131,19 +130,21 @@ BaseWidget {
             styleColor: settings.color_glow
         }
 
+
         Text {
-            id: uplink_rssi            
+            id: uplink_dbm
+            width: 32
             height: 24
             color: settings.color_text
             opacity: settings.uplink_rssi_opacity
-            text: OpenHD.current_signal_joystick_uplink == -127 ? qsTr("N/A") : OpenHD.current_signal_joystick_uplink
-            anchors.right: uplink_dbm.left
-            anchors.rightMargin: 2
+            text: qsTr("dBm")
+            anchors.left: uplink_rssi.right
+            anchors.leftMargin: 2
             anchors.top: parent.top
             anchors.topMargin: 0
-            horizontalAlignment: Text.AlignRight
-            font.pixelSize: 18
-            verticalAlignment: Text.AlignVCenter
+            horizontalAlignment: Text.AlignLeft
+            font.pixelSize: 12
+            verticalAlignment: Text.AlignTop
             wrapMode: Text.NoWrap
             elide: Text.ElideNone
             clip: false
