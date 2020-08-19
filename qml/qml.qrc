@@ -220,5 +220,7 @@
         <file>osdfonts/UbuntuMono-BoldItalic.ttf</file>
         <file>osdfonts/Visitor.ttf</file>
         <file>osdfonts/ZolanMonoOblique.ttf</file>
+        <file>ui/elements/FontSelect.qml</file>
+        <file>ui/elements/FontSelectForm.ui.qml</file>
     </qresource>
 </RCC>
