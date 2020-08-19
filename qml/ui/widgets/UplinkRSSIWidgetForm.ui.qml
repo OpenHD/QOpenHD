@@ -88,6 +88,7 @@ BaseWidget {
         id: widgetInner
 
         anchors.fill: parent
+        opacity: settings.uplink_rssi_opacity
         scale: settings.uplink_rssi_size
 
         Text {
@@ -95,16 +96,14 @@ BaseWidget {
             width: 24
             height: 24
             color: settings.color_shape
-            opacity: settings.uplink_rssi_opacity
             text: "\uf382"
             anchors.left: parent.left
             anchors.leftMargin: 0
+            anchors.top: parent.top
+            anchors.topMargin: 0
             font.family: "Font Awesome 5 Free"
             font.pixelSize: 18
-            anchors.top: parent.top
-            verticalAlignment: Text.AlignVCenter
-            z: 2.2
-            anchors.topMargin: 0
+            verticalAlignment: Text.AlignVCenter           
             horizontalAlignment: Text.AlignRight
             style: Text.Outline
             styleColor: settings.color_glow
@@ -114,12 +113,11 @@ BaseWidget {
             id: uplink_rssi            
             height: 24
             color: settings.color_text
-            opacity: settings.uplink_rssi_opacity
+
             text: OpenHD.current_signal_joystick_uplink == -127 ? qsTr("N/A") : OpenHD.current_signal_joystick_uplink
             anchors.left: uplink_icon.right
             anchors.leftMargin: 3
             anchors.top: parent.top
-            anchors.topMargin: 0
             horizontalAlignment: Text.AlignRight
             font.pixelSize: 18
             font.family: settings.font_text
@@ -137,12 +135,11 @@ BaseWidget {
             width: 32
             height: 24
             color: settings.color_text
-            opacity: settings.uplink_rssi_opacity
             text: qsTr("dBm")
             anchors.left: uplink_rssi.right
             anchors.leftMargin: 2
             anchors.top: parent.top
-            anchors.topMargin: 0
+            anchors.topMargin: 2
             horizontalAlignment: Text.AlignLeft
             font.pixelSize: 12
             font.family: settings.font_text

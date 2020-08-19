@@ -9,7 +9,7 @@ import OpenHD 1.0
 
 BaseWidget {
     id: downlinkRSSIWidget
-    width: 92
+    width: 112
     height: 24
 
     visible: settings.show_downlink_rssi
@@ -216,7 +216,6 @@ BaseWidget {
 
         Text {
             id: downlink_icon
-            y: 0
             width: 24
             height: 24
             color: settings.color_shape
@@ -224,6 +223,7 @@ BaseWidget {
             anchors.left: parent.left
             anchors.leftMargin: 0
             anchors.top: parent.top
+            anchors.topMargin: 0
             font.family: "Font Awesome 5 Free"
             font.pixelSize: 18
             verticalAlignment: Text.AlignVCenter
@@ -244,7 +244,7 @@ BaseWidget {
             horizontalAlignment: Text.AlignRight
             font.pixelSize: 18
             font.family: settings.font_text
-            verticalAlignment: Text.AlignTop
+            verticalAlignment: Text.AlignVCenter
             wrapMode: Text.NoWrap
             elide: Text.ElideNone
             clip: false
@@ -257,7 +257,7 @@ BaseWidget {
             width: 32
             height: 24
             color: settings.color_text
-            text: "dBm"            
+            text: qsTr("dBm")            
             anchors.left: downlink_rssi.right
             anchors.leftMargin: 2
             anchors.top: parent.top
