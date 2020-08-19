@@ -15,10 +15,6 @@ HeadingLadder::HeadingLadder(QQuickItem *parent): QQuickPaintedItem(parent) {
 void HeadingLadder::paint(QPainter* painter) {
     painter->save();
 
-    QFont fontMain("sans-serif", 11, QFont::Bold, false);
-
-    QFont fontAwesome("Font Awesome 5 Free", 14, QFont::Bold, false);
-
     // ticks up/down position
     auto y = 25;
 
@@ -61,11 +57,11 @@ void HeadingLadder::paint(QPainter* painter) {
         }
 
         if (h == m_homeHeading && m_showHorizonHome) {
-            painter->setFont(fontAwesome);
+            painter->setFont(m_fontAwesome);
             QFontMetrics fm(painter->font());
             auto tw = fm.horizontalAdvance("\uf015");
             painter->drawText(x-tw/2, y_label, "\uf015");
-            painter->setFont(fontMain);
+            painter->setFont(m_font);
 
             h_drawn = false;
         }
@@ -136,7 +132,7 @@ void HeadingLadder::paint(QPainter* painter) {
         }
 
         if (draw_text == true && m_showHorizonHeadingLadder) {
-            painter->setFont(fontMain);
+            painter->setFont(m_font);
             QFontMetrics fm(painter->font());
             auto tw = fm.horizontalAdvance(compass_direction);
             painter->drawText(x-tw/2, y_label, compass_direction);
@@ -153,7 +149,7 @@ void HeadingLadder::paint(QPainter* painter) {
         if (left < 0) left += 360;
         if (right < 0) right += 360;
 
-        painter->setFont(fontAwesome);
+        painter->setFont(m_fontAwesome);
 
         if (left < right){
             painter->drawText(1, y_label, "\uf015");
@@ -161,7 +157,7 @@ void HeadingLadder::paint(QPainter* painter) {
         } else{
             painter->drawText(width() -22, y_label, "\uf015");
         }
-        painter->setFont(fontMain);
+        painter->setFont(m_font);
     }
 
 
@@ -230,5 +226,13 @@ void HeadingLadder::setHeading(int heading) {
 void HeadingLadder::setHomeHeading(int homeHeading) {
     m_homeHeading = homeHeading;
     emit homeHeadingChanged(m_homeHeading);
+    update();
+}
+
+
+void HeadingLadder::setFontFamily(QString fontFamily) {
+    m_fontFamily = fontFamily;
+    emit fontFamilyChanged(m_fontFamily);
+    m_font = QFont(m_fontFamily, 11, QFont::Bold, false);
     update();
 }

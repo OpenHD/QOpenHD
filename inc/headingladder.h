@@ -16,6 +16,9 @@ class HeadingLadder : public QQuickPaintedItem {
     Q_PROPERTY(int heading MEMBER m_heading WRITE setHeading NOTIFY headingChanged)
     Q_PROPERTY(int homeHeading MEMBER m_homeHeading WRITE setHomeHeading NOTIFY homeHeadingChanged)
 
+    Q_PROPERTY(QString fontFamily MEMBER m_fontFamily WRITE setFontFamily NOTIFY fontFamilyChanged)
+
+
 //show_horizon_heading_ladder
 
 public:
@@ -37,6 +40,8 @@ public slots:
     void setHeading(int heading);
     void setHomeHeading(int homeHeading);
 
+    void setFontFamily(QString fontFamily);
+
 signals:
     void colorChanged(QColor color);
     void glowChanged(QColor glow);
@@ -48,6 +53,8 @@ signals:
     void headingChanged(int heading);
     void homeHeadingChanged(int homeHeading);
 
+    void fontFamilyChanged(QString fontFamily);
+
 private:
     QColor m_color;
     QColor m_glow;
@@ -58,4 +65,10 @@ private:
 
     int m_heading;
     int m_homeHeading;
+
+    QString m_fontFamily;
+
+    QFont m_font;
+
+    QFont m_fontAwesome = QFont("Font Awesome 5 Free", 14, QFont::Bold, false);
 };
