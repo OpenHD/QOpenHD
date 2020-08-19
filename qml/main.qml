@@ -545,6 +545,10 @@ ApplicationWindow {
         }
     }
 
+    OSDCustomizer {
+        id: osdCustomizer
+    }
+
     LowerOverlayBar {
         visible: !settings.stereo_enable
         id: lowerOverlayBar
@@ -569,14 +573,24 @@ ApplicationWindow {
 
     Item {
         anchors.fill: parent
-        z: 10.0
+        z: settings.stereo_enable ? 10.0 : 1.0
 
         TapHandler {
-            enabled: settings.stereo_enable && settings_panel.visible == false
+            enabled: settings_panel.visible == false
             acceptedButtons: Qt.AllButtons
-            onTapped: if (tapCount == 3) {
-                settings.stereo_enable = false
+            onTapped: {
+                if (tapCount == 3) {
+                    settings.stereo_enable = false
+                }
             }
+            onLongPressed: {
+                if (settings.stereo_enable ) {
+                    return;
+                }
+
+                osdCustomizer.open()
+            }
+
             grabPermissions: PointerHandler.CanTakeOverFromAnything
         }
     }
