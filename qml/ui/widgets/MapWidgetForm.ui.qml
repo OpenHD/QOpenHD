@@ -37,11 +37,6 @@ BaseWidget {
             name: "osm"
             description: "OpenStreetMap"
         }
-
-        ListElement {
-            name: "mapboxgl"
-            description: "MapboxGL"
-        }
     }
 
     function configure() {
@@ -71,6 +66,9 @@ BaseWidget {
 
 
     Component.onCompleted: {
+        if (!IsRaspPi) {
+            pluginModel.append({"name": "mapboxgl", "description":"MapboxGL"})
+        }
         configure();
     }
 
