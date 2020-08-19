@@ -473,6 +473,39 @@ Item {
                         }
                     }
 
+
+
+                    Rectangle {
+                        width: parent.width
+                        height: rowHeight
+                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+
+                        Text {
+                            text: qsTr("Text font")
+                            font.weight: Font.Bold
+                            font.pixelSize: 13
+                            anchors.leftMargin: 8
+                            verticalAlignment: Text.AlignVCenter
+                            anchors.verticalCenter: parent.verticalCenter
+                            width: 224
+                            height: elementHeight
+                            anchors.left: parent.left
+                        }
+
+                        FontSelect {
+                            id: fontSelectBox
+                            height: elementHeight
+                            width: 320
+                            anchors.right: parent.right
+                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.horizontalCenter: parent.horizonatalCenter
+                        }
+                    }
+
+
+
+
                     Rectangle {
                         width: parent.width
                         height: rowHeight
