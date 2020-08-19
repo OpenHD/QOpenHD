@@ -124,6 +124,7 @@ BaseWidget {
             anchors.rightMargin: 2
             verticalAlignment: Text.AlignVCenter
             font.pixelSize: 14
+            font.family: settings.font_text
             horizontalAlignment: Text.AlignRight
             elide: Text.ElideRight
             style: Text.Outline
@@ -144,6 +145,7 @@ BaseWidget {
             anchors.rightMargin: 0
             verticalAlignment: Text.AlignVCenter
             font.pixelSize: 14
+            font.family: settings.font_text
             horizontalAlignment: Text.AlignRight
             elide: Text.ElideRight
             style: Text.Outline

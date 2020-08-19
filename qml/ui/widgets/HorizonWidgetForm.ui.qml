@@ -355,6 +355,7 @@ BaseWidget {
                 homeHeading: OpenHD.home_heading
                 color: settings.color_shape
                 glow: settings.color_glow
+                fontFamily: settings.font_text
             }
         }
 
@@ -388,6 +389,7 @@ BaseWidget {
             height: 10
             font.bold: true
             font.pixelSize: 8
+            font.family: settings.font_text
             anchors.left: upperLeft1Cap.right
             anchors.top: upperLeft1.bottom
             anchors.leftMargin: 1
@@ -421,6 +423,7 @@ BaseWidget {
             height: 10
             font.bold: true
             font.pixelSize: 8
+            font.family: settings.font_text
             anchors.right: upperRight1Cap.right
             anchors.top: upperRight1.bottom
             anchors.rightMargin: 2
@@ -456,6 +459,7 @@ BaseWidget {
             height: 10
             font.bold: true
             font.pixelSize: 8
+            font.family: settings.font_text
             anchors.left: upperLeft2Cap.right
             anchors.top: upperLeft2.bottom
             anchors.leftMargin: 1
@@ -489,6 +493,7 @@ BaseWidget {
             height: 10
             font.bold: true
             font.pixelSize: 8
+            font.family: settings.font_text
             anchors.right: upperRight2Cap.right
             anchors.top: upperRight2.bottom
             anchors.rightMargin: 2
@@ -525,6 +530,7 @@ BaseWidget {
             height: 10
             font.bold: true
             font.pixelSize: 8
+            font.family: settings.font_text
             anchors.left: upperLeft3Cap.right
             anchors.top: upperLeft3.bottom
             anchors.leftMargin: 1
@@ -558,6 +564,7 @@ BaseWidget {
             height: 10
             font.bold: true
             font.pixelSize: 8
+            font.family: settings.font_text
             anchors.right: upperRight3Cap.right
             anchors.top: upperRight3.bottom
             anchors.rightMargin: 2
@@ -594,6 +601,7 @@ BaseWidget {
             height: 10
             font.bold: true
             font.pixelSize: 8
+            font.family: settings.font_text
             anchors.left: upperLeft4Cap.right
             anchors.top: upperLeft4.bottom
             anchors.leftMargin: 1
@@ -627,6 +635,7 @@ BaseWidget {
             height: 10
             font.bold: true
             font.pixelSize: 8
+            font.family: settings.font_text
             anchors.right: upperRight4Cap.right
             anchors.top: upperRight4.bottom
             anchors.rightMargin: 2
@@ -663,6 +672,7 @@ BaseWidget {
             height: 10
             font.bold: true
             font.pixelSize: 8
+            font.family: settings.font_text
             anchors.left: upperLeft5Cap.right
             anchors.top: upperLeft5.bottom
             anchors.leftMargin: 1
@@ -696,6 +706,7 @@ BaseWidget {
             height: 10
             font.bold: true
             font.pixelSize: 8
+            font.family: settings.font_text
             anchors.right: upperRight5Cap.right
             anchors.top: upperRight5.bottom
             anchors.rightMargin: 2
@@ -732,6 +743,7 @@ BaseWidget {
             height: 10
             font.bold: true
             font.pixelSize: 8
+            font.family: settings.font_text
             anchors.left: upperLeft6Cap.right
             anchors.top: upperLeft6.bottom
             anchors.leftMargin: 1
@@ -765,6 +777,7 @@ BaseWidget {
             height: 10
             font.bold: true
             font.pixelSize: 8
+            font.family: settings.font_text
             anchors.right: upperRight6Cap.right
             anchors.top: upperRight6.bottom
             anchors.rightMargin: 2
@@ -824,6 +837,7 @@ BaseWidget {
             height: 10
             font.bold: true
             font.pixelSize: 8
+            font.family: settings.font_text
             anchors.left: lowerLeft1Cap.right
             anchors.bottom: lowerLeft1.top
             anchors.leftMargin: 1
@@ -879,6 +893,7 @@ BaseWidget {
             height: 10
             font.bold: true
             font.pixelSize: 8
+            font.family: settings.font_text
             anchors.right: lowerRight1Cap.right
             anchors.bottom: lowerRight1.top
             anchors.rightMargin: 2
@@ -937,6 +952,7 @@ BaseWidget {
             height: 10
             font.bold: true
             font.pixelSize: 8
+            font.family: settings.font_text
             anchors.left: lowerLeft2Cap.right
             anchors.bottom: lowerLeft2.top
             anchors.leftMargin: 1
@@ -992,6 +1008,7 @@ BaseWidget {
             height: 10
             font.bold: true
             font.pixelSize: 8
+            font.family: settings.font_text
             anchors.right: lowerRight2Cap.right
             anchors.bottom: lowerRight2.top
             anchors.rightMargin: 2
@@ -1050,6 +1067,7 @@ BaseWidget {
             height: 10
             font.bold: true
             font.pixelSize: 8
+            font.family: settings.font_text
             anchors.left: lowerLeft3Cap.right
             anchors.bottom: lowerLeft3.top
             anchors.leftMargin: 1
@@ -1105,6 +1123,7 @@ BaseWidget {
             height: 10
             font.bold: true
             font.pixelSize: 8
+            font.family: settings.font_text
             anchors.right: lowerRight3Cap.right
             anchors.bottom: lowerRight3.top
             anchors.rightMargin: 2
@@ -1163,6 +1182,7 @@ BaseWidget {
             height: 10
             font.bold: true
             font.pixelSize: 8
+            font.family: settings.font_text
             anchors.left: lowerLeft4Cap.right
             anchors.bottom: lowerLeft4.top
             anchors.leftMargin: 1
@@ -1218,6 +1238,7 @@ BaseWidget {
             height: 10
             font.bold: true
             font.pixelSize: 8
+            font.family: settings.font_text
             anchors.right: lowerRight4Cap.right
             anchors.bottom: lowerRight4.top
             anchors.rightMargin: 2
@@ -1276,6 +1297,7 @@ BaseWidget {
             height: 10
             font.bold: true
             font.pixelSize: 8
+            font.family: settings.font_text
             anchors.left: lowerLeft5Cap.right
             anchors.bottom: lowerLeft5.top
             anchors.leftMargin: 1
@@ -1331,6 +1353,7 @@ BaseWidget {
             height: 10
             font.bold: true
             font.pixelSize: 8
+            font.family: settings.font_text
             anchors.right: lowerRight5Cap.right
             anchors.bottom: lowerRight5.top
             anchors.rightMargin: 2
@@ -1389,6 +1412,7 @@ BaseWidget {
             height: 10
             font.bold: true
             font.pixelSize: 8
+            font.family: settings.font_text
             anchors.left: lowerLeft6Cap.right
             anchors.bottom: lowerLeft6.top
             anchors.leftMargin: 1
@@ -1444,6 +1468,7 @@ BaseWidget {
             height: 10
             font.bold: true
             font.pixelSize: 8
+            font.family: settings.font_text
             anchors.right: lowerRight6Cap.right
             anchors.bottom: lowerRight6.top
             anchors.rightMargin: 2

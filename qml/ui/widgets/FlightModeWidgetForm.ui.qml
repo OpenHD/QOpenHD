@@ -116,6 +116,7 @@ BaseWidget {
             anchors.horizontalCenter: parent.horizontalCenter
             verticalAlignment: Text.AlignVCenter
             font.pixelSize: 24
+            font.family: settings.font_text
             elide: Text.ElideRight
             style: Text.Outline
             styleColor: settings.color_glow

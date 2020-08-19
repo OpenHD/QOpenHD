@@ -208,6 +208,7 @@ BaseWidget {
                 color: settings.color_text
 
                 font.pixelSize: 14
+                font.family: settings.font_text
                 transform: Scale { origin.x: 12; origin.y: 12; xScale: settings.altitude_size ; yScale: settings.altitude_size}
                 text: Number( // @disable-check M222
                              settings.enable_imperial ? (settings.altitude_rel_msl ? (OpenHD.alt_msl*3.28) : (OpenHD.alt_rel*3.28)) :

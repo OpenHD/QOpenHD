@@ -251,6 +251,7 @@ BaseWidget {
                 anchors.topMargin: 0
                 horizontalAlignment: Text.AlignRight
                 font.pixelSize: 14
+                font.family: settings.font_text
                 verticalAlignment: Text.AlignVCenter
                 wrapMode: Text.NoWrap
                 elide: Text.ElideRight

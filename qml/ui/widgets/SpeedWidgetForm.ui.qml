@@ -223,6 +223,7 @@ BaseWidget {
                 speedRange: settings.speed_range
                 speed: OpenHD.speed
                 airspeed: OpenHD.airspeed
+                fontFamily: settings.font_text
             }
         }
         //-----------------------ladder end---------------
@@ -234,6 +235,7 @@ BaseWidget {
             id: speed_text
             color: settings.color_text           
             font.pixelSize: 14
+            font.family: settings.font_text
             transform: Scale { origin.x: 12; origin.y: 12; xScale: settings.speed_size ; yScale: settings.speed_size}
             text: Number(
                       settings.enable_imperial ?

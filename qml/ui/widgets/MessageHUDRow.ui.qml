@@ -61,6 +61,7 @@ Item {
     Text {
         height: parent.height
         font.pixelSize: 16
+        font.family: settings.font_text
         verticalAlignment: Text.AlignVCenter
         elide: Text.ElideRight
         font.bold: true

@@ -193,6 +193,7 @@ BaseWidget {
             elide: Text.ElideRight
             horizontalAlignment: Text.AlignLeft
             font.pixelSize: 14
+            font.family: settings.font_text
             style: Text.Outline
             styleColor: settings.color_glow
         }
@@ -209,6 +210,7 @@ BaseWidget {
             elide: Text.ElideRight
             horizontalAlignment: Text.AlignLeft
             font.pixelSize: 14
+            font.family: settings.font_text
             style: Text.Outline
             styleColor: settings.color_glow
         }
@@ -226,6 +228,7 @@ BaseWidget {
             elide: Text.ElideRight
             horizontalAlignment: Text.AlignLeft
             font.pixelSize: 14
+            font.family: settings.font_text
             style: Text.Outline
             styleColor: settings.color_glow
         }

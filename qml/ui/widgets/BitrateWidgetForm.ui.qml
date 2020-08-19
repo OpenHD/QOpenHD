@@ -240,6 +240,7 @@ BaseWidget {
             clip: false
             horizontalAlignment: Text.AlignLeft
             font.pixelSize: 18
+            font.family: settings.font_text
             style: Text.Outline
             styleColor: settings.color_glow
         }
@@ -277,6 +278,7 @@ BaseWidget {
             anchors.left: parent.left
             verticalAlignment: Text.AlignVCenter
             font.pixelSize: 14
+            font.family: settings.font_text
             horizontalAlignment: Text.AlignLeft
             wrapMode: Text.NoWrap
             elide: Text.ElideRight

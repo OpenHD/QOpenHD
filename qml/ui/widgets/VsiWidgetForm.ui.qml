@@ -203,6 +203,7 @@ BaseWidget {
                         rotation: 90
                         //font.pixelSize: Math.max(6, outerRadius * 0.1)
                         font.pixelSize: 9
+                        font.family: settings.font_text
                         text: styleData.value
                         color: settings.color_text
                         antialiasing: true

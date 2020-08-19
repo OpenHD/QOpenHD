@@ -122,6 +122,7 @@ BaseWidget {
             anchors.topMargin: 0
             horizontalAlignment: Text.AlignRight
             font.pixelSize: 18
+            font.family: settings.font_text
             verticalAlignment: Text.AlignVCenter
             wrapMode: Text.NoWrap
             elide: Text.ElideNone
@@ -144,6 +145,7 @@ BaseWidget {
             anchors.topMargin: 0
             horizontalAlignment: Text.AlignLeft
             font.pixelSize: 12
+            font.family: settings.font_text
             verticalAlignment: Text.AlignTop
             wrapMode: Text.NoWrap
             elide: Text.ElideNone
@@ -165,6 +167,7 @@ BaseWidget {
             anchors.rightMargin: 10
             verticalAlignment: Text.AlignVCenter
             font.pixelSize: 14
+            font.family: settings.font_text
             horizontalAlignment: Text.AlignRight
             wrapMode: Text.NoWrap
             elide: Text.ElideNone
@@ -187,6 +190,7 @@ BaseWidget {
             anchors.rightMargin: 8
             horizontalAlignment: Text.AlignLeft
             font.pixelSize: 14
+            font.family: settings.font_text
             verticalAlignment: Text.AlignVCenter
             wrapMode: Text.NoWrap
             elide: Text.ElideRight

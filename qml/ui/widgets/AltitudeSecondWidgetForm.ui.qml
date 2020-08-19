@@ -118,6 +118,7 @@ BaseWidget {
             color: settings.color_text
             opacity: settings.altitude_second_opacity
             font.pixelSize: 14
+            font.family: settings.font_text
             anchors.left: widgetGlyph.right
             anchors.leftMargin: 0
             anchors.verticalCenter: widgetGlyph.verticalCenter

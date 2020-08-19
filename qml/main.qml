@@ -238,6 +238,7 @@ ApplicationWindow {
         property string color_shape: "white"
         property string color_text: "white"
         property string color_glow: "black"
+        property string font_text: "Sans Serif"
 
         property string bar_behavior: "red"
 

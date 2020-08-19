@@ -114,6 +114,7 @@ BaseWidget {
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
                 font.pixelSize: 18
+                font.family: settings.font_text
                 style: Text.Outline
                 styleColor: settings.color_glow
             }
@@ -172,6 +173,7 @@ BaseWidget {
                 verticalAlignment: Text.AlignBottom
                 horizontalAlignment: Text.AlignHCenter
                 font.pixelSize: 14
+                font.family: settings.font_text
                 style: Text.Outline
                 styleColor: settings.color_glow
             }

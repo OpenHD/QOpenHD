@@ -215,6 +215,7 @@ BaseWidget {
                 homeHeading: OpenHD.home_heading
                 color: settings.color_shape
                 glow: settings.color_glow
+                fontFamily: settings.font_text
             }
         }
 
@@ -227,6 +228,7 @@ BaseWidget {
             anchors.bottomMargin: parent.height - 24
             color: settings.color_text            
             font.pixelSize: 14
+            font.family: settings.font_text
             transform: Scale { origin.x: 24; origin.y: 34; xScale: settings.heading_size ; yScale: settings.heading_size}
             text: Number(OpenHD.hdg).toLocaleString( Qt.locale(), 'f', 0)
             horizontalAlignment: Text.AlignHCenter

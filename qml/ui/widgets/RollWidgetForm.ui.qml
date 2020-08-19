@@ -235,6 +235,7 @@ BaseWidget {
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                         font.pixelSize: 10
+                        font.family: settings.font_text
                     }
 
                     transform: Rotation {
@@ -267,6 +268,7 @@ BaseWidget {
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                         font.pixelSize: 10
+                        font.family: settings.font_text
                     }
 
                     transform: Rotation {
@@ -299,6 +301,7 @@ BaseWidget {
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                         font.pixelSize: 10
+                        font.family: settings.font_text
                     }
 
                     transform: Rotation {
@@ -351,6 +354,7 @@ BaseWidget {
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                         font.pixelSize: 10
+                        font.family: settings.font_text
                     }
 
                     transform: Rotation {
@@ -383,6 +387,7 @@ BaseWidget {
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                         font.pixelSize: 10
+                        font.family: settings.font_text
                     }
 
                     transform: Rotation {
@@ -415,6 +420,7 @@ BaseWidget {
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                         font.pixelSize: 10
+                        font.family: settings.font_text
                     }
 
                     transform: Rotation {

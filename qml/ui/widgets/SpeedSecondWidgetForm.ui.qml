@@ -118,6 +118,7 @@ BaseWidget {
             color: settings.color_text
             opacity: settings.speed_second_opacity
             font.pixelSize: 14
+            font.family: settings.font_text
             width: 40
             anchors.right: parent.right
             anchors.rightMargin: 0

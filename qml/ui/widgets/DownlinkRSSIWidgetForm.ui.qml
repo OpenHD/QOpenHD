@@ -243,6 +243,7 @@ BaseWidget {
             anchors.top: parent.top
             horizontalAlignment: Text.AlignRight
             font.pixelSize: 18
+            font.family: settings.font_text
             verticalAlignment: Text.AlignTop
             wrapMode: Text.NoWrap
             elide: Text.ElideNone
@@ -263,6 +264,7 @@ BaseWidget {
             anchors.topMargin: 2
             horizontalAlignment: Text.AlignLeft
             font.pixelSize: 12
+            font.family: settings.font_text
             verticalAlignment: Text.AlignTop
             wrapMode: Text.NoWrap
             elide: Text.ElideNone
@@ -281,6 +283,7 @@ BaseWidget {
             anchors.left: parent.left
             verticalAlignment: Text.AlignVCenter
             font.pixelSize: 12
+            font.family: settings.font_text
             horizontalAlignment: Text.AlignLeft
             wrapMode: Text.NoWrap
             elide: Text.ElideRight
@@ -297,6 +300,7 @@ BaseWidget {
             anchors.left: extra_text.left
             verticalAlignment: Text.AlignVCenter
             font.pixelSize: 12
+            font.family: settings.font_text
             horizontalAlignment: Text.AlignLeft
             wrapMode: Text.NoWrap
             elide: Text.ElideRight
@@ -337,6 +341,7 @@ BaseWidget {
                     visible: false
                     verticalAlignment: Text.AlignVCenter
                     font.pixelSize: 14
+                    font.family: settings.font_text
                     horizontalAlignment: Text.AlignLeft
                     wrapMode: Text.NoWrap
                     style: Text.Outline
@@ -368,6 +373,7 @@ BaseWidget {
                     visible: false
                     verticalAlignment: Text.AlignVCenter
                     font.pixelSize: 14
+                    font.family: settings.font_text
                     horizontalAlignment: Text.AlignLeft
                     wrapMode: Text.NoWrap
                     style: Text.Outline
@@ -399,6 +405,7 @@ BaseWidget {
                     visible: false
                     verticalAlignment: Text.AlignVCenter
                     font.pixelSize: 14
+                    font.family: settings.font_text
                     horizontalAlignment: Text.AlignLeft
                     wrapMode: Text.NoWrap
                     style: Text.Outline
@@ -430,6 +437,7 @@ BaseWidget {
                     visible: false
                     verticalAlignment: Text.AlignVCenter
                     font.pixelSize: 14
+                    font.family: settings.font_text
                     horizontalAlignment: Text.AlignLeft
                     wrapMode: Text.NoWrap
                     style: Text.Outline
@@ -461,6 +469,7 @@ BaseWidget {
                     visible: false
                     verticalAlignment: Text.AlignVCenter
                     font.pixelSize: 14
+                    font.family: settings.font_text
                     horizontalAlignment: Text.AlignLeft
                     wrapMode: Text.NoWrap
                     style: Text.Outline
@@ -492,6 +501,7 @@ BaseWidget {
                     visible: false
                     verticalAlignment: Text.AlignVCenter
                     font.pixelSize: 14
+                    font.family: settings.font_text
                     horizontalAlignment: Text.AlignLeft
                     wrapMode: Text.NoWrap
                     style: Text.Outline

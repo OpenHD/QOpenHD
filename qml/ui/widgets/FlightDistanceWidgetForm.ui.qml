@@ -136,6 +136,7 @@ BaseWidget {
             anchors.rightMargin: 0
             verticalAlignment: Text.AlignVCenter
             font.pixelSize: 16
+            font.family: settings.font_text
             horizontalAlignment: Text.AlignLeft
             style: Text.Outline
             styleColor: settings.color_glow

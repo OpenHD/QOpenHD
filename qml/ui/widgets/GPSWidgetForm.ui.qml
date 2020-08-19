@@ -210,6 +210,7 @@ BaseWidget {
             verticalAlignment: Text.AlignVCenter
             horizontalAlignment: Text.AlignRight
             font.pixelSize: 16
+            font.family: settings.font_text
             style: Text.Outline
             styleColor: settings.color_glow
         }
@@ -225,6 +226,7 @@ BaseWidget {
             anchors.rightMargin: 0
             verticalAlignment: Text.AlignTop
             font.pixelSize: 10
+            font.family: settings.font_text
             horizontalAlignment: Text.AlignLeft
             style: Text.Outline
             styleColor: settings.color_glow
@@ -264,6 +266,7 @@ BaseWidget {
                     color: settings.color_text
                     opacity: settings.gps_opacity
                     font.bold: true;
+                    font.family: settings.font_text
                     height: parent.height
                     width: 92
                     font.pixelSize: 14
@@ -300,6 +303,7 @@ BaseWidget {
                     color: settings.color_text
                     opacity: settings.gps_opacity
                     font.bold: true
+                    font.family: settings.font_text
                     height: parent.height
                     width: 92
                     font.pixelSize: 14

@@ -21,6 +21,7 @@ VideoOutput {
         color: "#89ffffff"
         visible: !settings.hide_watermark
         font.pixelSize: 18
+        font.family: settings.font_text
         text: qsTr("Do not fly with this app! Video is not stable yet!")
         horizontalAlignment: Text.AlignHCenter
         height: 24
