@@ -224,5 +224,6 @@
         <file>ui/elements/FontSelectForm.ui.qml</file>
         <file>ui/elements/OSDCustomizer.qml</file>
         <file>ui/elements/RestartDialog.qml</file>
+        <file>ui/elements/AppSettings.qml</file>
     </qresource>
 </RCC>
