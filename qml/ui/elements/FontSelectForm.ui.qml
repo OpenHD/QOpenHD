@@ -3,6 +3,7 @@ import QtQuick.Controls 2.12
 
 Item {
     ComboBox {
+        id: fontDropdown
         anchors.fill: parent
         font.pixelSize: 14
 
@@ -57,6 +58,11 @@ Item {
         textRole: "text"
         // @disable-check M223
         Component.onCompleted: {
+
+            fontDropdown.popup.contentItem.implicitHeight = Qt.binding(function () {
+                return Math.min(250, fontDropdown.popup.contentItem.contentHeight);
+            });
+
             // @disable-check M223
             for (var i = 0; i < model.count; i++) {
                 // @disable-check M222
