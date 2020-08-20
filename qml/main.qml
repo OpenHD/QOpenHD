@@ -280,7 +280,7 @@ ApplicationWindow {
             acceptedButtons: Qt.AllButtons
             onTapped: {
                 if (tapCount == 3) {
-                    settings.stereo_enable = false
+                    settings.stereo_enable = !settings.stereo_enable
                 }
             }
             onLongPressed: {
