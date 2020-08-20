@@ -1780,7 +1780,7 @@ Item {
                         width: parent.width
                         height: rowHeight
                         color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-                        visible: false
+                        visible: true
 
                         Text {
                             text: qsTr("Enable stereo mode")
