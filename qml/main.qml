@@ -269,7 +269,6 @@ ApplicationWindow {
             id: shader
             property variant cloneSource : hudOverlayGrid
             fragmentShader: "
-                #version 110
                 varying highp vec2 qt_TexCoord0;
                 uniform highp sampler2D cloneSource;
                 void main(void) {
