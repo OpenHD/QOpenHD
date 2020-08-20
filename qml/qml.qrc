@@ -232,6 +232,7 @@
         <file>ui/elements/colorwheel/Wheel.qml</file>
         <file>ui/elements/colorwheel/mathUtils.js</file>
         <file>ui/elements/RestartDialog.qml</file>
+        <file>ui/elements/ColorPicker.qml</file>
         <file>ui/elements/AppSettings.qml</file>
     </qresource>
 </RCC>
