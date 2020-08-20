@@ -239,6 +239,44 @@ ApplicationWindow {
         onSettingsButtonClicked: {
             settings_panel.openSettings();
         }
+
+        anchors.left: parent.left
+        anchors.top: parent.top
+        anchors.bottom: parent.bottom
+        anchors.right: parent.right
+        transform: Scale {
+            origin.x: 0
+            origin.y: hudOverlayGrid.height / 2
+            xScale: settings.stereo_enable ? 0.5 : 1.0
+            yScale: settings.stereo_enable ? 0.5 : 1.0
+        }
+
+        layer.enabled: true
+    }
+
+
+    Rectangle {
+        id: hudOverlayGridClone
+        anchors.right: parent.right
+        width: parent.width / 2
+        height: parent.height / 2
+        anchors.verticalCenter: settings.stereo_enable ? parent.verticalCenter : undefined
+        visible: settings.stereo_enable
+        z: 3.0
+        layer.enabled: settings.stereo_enable
+        layer.samplerName: "hudOverlayGrid"
+        layer.effect: ShaderEffect {
+            id: shader
+            property variant cloneSource : hudOverlayGrid
+            fragmentShader: "
+                #version 110
+                varying highp vec2 qt_TexCoord0;
+                uniform highp sampler2D cloneSource;
+                void main(void) {
+                    gl_FragColor =  texture2D(cloneSource, qt_TexCoord0);
+                }
+            "
+        }
     }
 
     OSDCustomizer {
