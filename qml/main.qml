@@ -186,7 +186,7 @@ ApplicationWindow {
                     /*
                      * Exceeded the retry count, which means in a whole 10 seconds
                      * Qt did not manage to get all of the default+changed settings written to
-                     * disk. This should ever happen, that's a long time.
+                     * disk. This should never happen, that's a long time.
                      */
                     running = false;
                     return;
