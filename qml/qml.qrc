@@ -223,6 +223,14 @@
         <file>ui/elements/FontSelect.qml</file>
         <file>ui/elements/FontSelectForm.ui.qml</file>
         <file>ui/elements/OSDCustomizer.qml</file>
+        <file>ui/elements/colorwheel/CheckerBoard.qml</file>
+        <file>ui/elements/colorwheel/ColorWheel.qml</file>
+        <file>ui/elements/colorwheel/ColorUtils.js</file>
+        <file>ui/elements/colorwheel/NumberBox.qml</file>
+        <file>ui/elements/colorwheel/PanelBorder.qml</file>
+        <file>ui/elements/colorwheel/VerticalSlider.qml</file>
+        <file>ui/elements/colorwheel/Wheel.qml</file>
+        <file>ui/elements/colorwheel/mathUtils.js</file>
         <file>ui/elements/RestartDialog.qml</file>
         <file>ui/elements/AppSettings.qml</file>
     </qresource>
