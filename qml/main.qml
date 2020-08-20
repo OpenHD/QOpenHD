@@ -235,6 +235,10 @@ ApplicationWindow {
 
     OSDCustomizer {
         id: osdCustomizer
+
+        anchors.centerIn: parent
+        visible: false
+        z: 5.0
     }
 
     LowerOverlayBar {
@@ -276,7 +280,7 @@ ApplicationWindow {
                     return;
                 }
 
-                osdCustomizer.open()
+                osdCustomizer.visible = true
             }
 
             grabPermissions: PointerHandler.CanTakeOverFromAnything

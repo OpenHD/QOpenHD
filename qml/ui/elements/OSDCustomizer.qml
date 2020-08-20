@@ -4,25 +4,35 @@ import QtQuick.Controls 2.12
 import QtQuick.Dialogs 1.0
 
 
-Popup {
+Rectangle {
     id: osdCustomizer
 
     width: 196
     height: 240
 
-    background: Rectangle {
-        color: "#ffeaeaea"
-    }
+    color: "#ffeaeaea"
 
-    /*
-     * This centers the popup on the screen rather than positioning it
-     * relative to the parent item
-     *
-     */
-    parent: Overlay.overlay
-    x: Math.round((parent.width - width) / 2)
-    y: Math.round((parent.height - height) / 2)
 
+    property bool stateVisible: visible
+
+    states: [
+        State {
+            when: colorPicker.stateVisible;
+            PropertyChanges {
+                target: colorPicker
+                opacity: 1.0
+            }
+        },
+        State {
+            when: !colorPicker.stateVisible;
+            PropertyChanges {
+                target: colorPicker
+                opacity: 0.0
+            }
+        }
+    ]
+
+    transitions: [ Transition { NumberAnimation { property: "opacity"; duration: 250}} ]
 
     Item {
         anchors.fill: parent
@@ -31,9 +41,12 @@ Popup {
             id: col
             anchors.fill: parent
             spacing: 6
+            rightPadding: 12
+            leftPadding: 12
+            topPadding: 12
 
             Item {
-                width: parent.width
+                width: parent.width - 24
                 height: 48
 
                 ColorDialog {
@@ -82,7 +95,7 @@ Popup {
 
 
             Item {
-                width: parent.width
+                width: parent.width - 24
                 height: 48
 
                 ColorDialog {
@@ -130,7 +143,7 @@ Popup {
             }
 
             Item {
-                width: parent.width
+                width: parent.width - 24
                 height: 48
 
                 ColorDialog {
@@ -179,7 +192,7 @@ Popup {
 
             Item {
                 height: 60
-                width: parent.width
+                width: parent.width - 24
 
 
                 Text {
