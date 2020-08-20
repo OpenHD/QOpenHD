@@ -4,12 +4,13 @@ import QtQuick.Controls 2.12
 import QtQuick.Dialogs 1.0
 import QtQuick.Controls.Material 2.12
 
+import "colorwheel"
 
 Rectangle {
     id: osdCustomizer
 
     width: 196
-    height: 240
+    height: 312
 
     color: "#ffeaeaea"
 
@@ -50,19 +51,6 @@ Rectangle {
                 width: parent.width - 24
                 height: 48
 
-                ColorDialog {
-                    id: colorDialogShape
-                    title: qsTr("Choose a color")
-                    onAccepted: {
-                        settings.color_shape = colorDialogShape.color
-                        colorDialogShape.close()
-                    }
-                    onRejected: {
-                        colorDialogShape.close()
-                    }
-                    Component.onCompleted: visible = false
-                }
-
                 Text {
                     text: qsTr("Shape Color")
                     font.weight: Font.Bold
@@ -82,7 +70,11 @@ Rectangle {
                     anchors.right: parent.right
                     anchors.rightMargin: 8
                     anchors.verticalCenter: parent.verticalCenter
-                    onClicked: colorDialogShape.open()
+                    onClicked: {
+                        colorPicker.previousColor = settings.color_shape
+                        colorPicker.currentColorType = ColorPicker.ColorType.ShapeColor
+                        colorPicker.visible = true
+                    }
 
                     Rectangle {
                         anchors.centerIn: parent
@@ -98,19 +90,6 @@ Rectangle {
             Item {
                 width: parent.width - 24
                 height: 48
-
-                ColorDialog {
-                    id: colorDialogGlow
-                    title: qsTr("Choose a color")
-                    onAccepted: {
-                        settings.color_glow = colorDialogGlow.color
-                        colorDialogGlow.close()
-                    }
-                    onRejected: {
-                        colorDialogGlow.close()
-                    }
-                    Component.onCompleted: visible = false
-                }
 
                 Text {
                     text: qsTr("Glow Color")
@@ -131,7 +110,11 @@ Rectangle {
                     anchors.right: parent.right
                     anchors.rightMargin: 8
                     anchors.verticalCenter: parent.verticalCenter
-                    onClicked: colorDialogGlow.open()
+                    onClicked: {
+                        colorPicker.previousColor = settings.color_glow
+                        colorPicker.currentColorType = ColorPicker.ColorType.GlowColor
+                        colorPicker.visible = true
+                    }
 
                     Rectangle {
                         anchors.centerIn: parent
@@ -146,19 +129,6 @@ Rectangle {
             Item {
                 width: parent.width - 24
                 height: 48
-
-                ColorDialog {
-                    id: colorDialogText
-                    title: qsTr("Choose a color")
-                    onAccepted: {
-                        settings.color_text = colorDialogText.color
-                        colorDialogText.close()
-                    }
-                    onRejected: {
-                        colorDialogText.close()
-                    }
-                    Component.onCompleted: visible = false
-                }
 
                 Text {
                     text: qsTr("Text Color")
@@ -179,7 +149,11 @@ Rectangle {
                     anchors.right: parent.right
                     anchors.rightMargin: 8
                     anchors.verticalCenter: parent.verticalCenter
-                    onClicked: colorDialogText.open()
+                    onClicked: {
+                        colorPicker.previousColor = settings.color_text
+                        colorPicker.currentColorType = ColorPicker.ColorType.TextColor
+                        colorPicker.visible = true
+                    }
 
                     Rectangle {
                         anchors.centerIn: parent
