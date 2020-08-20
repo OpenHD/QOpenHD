@@ -339,20 +339,6 @@ Item {
                             anchors.left: parent.left
                         }
 
-
-                        ColorDialog {
-                            id: colorDialogShape
-                            title: qsTr("Choose a color")
-                            onAccepted: {
-                                settings.color_shape = colorDialogShape.color
-                                colorDialogShape.close()
-                            }
-                            onRejected: {
-                                colorDialogShape.close()
-                            }
-                            Component.onCompleted: visible = false
-                        }
-
                         RoundButton {
                             //text: "Open"
 
@@ -361,7 +347,11 @@ Item {
                             anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.horizontalCenter: parent.horizonatalCenter
-                            onClicked: colorDialogShape.open()
+                            onClicked: {
+                                colorPicker.previousColor = settings.color_shape
+                                colorPicker.currentColorType = ColorPicker.ColorType.ShapeColor
+                                colorPicker.visible = true
+                            }
 
                             Rectangle {
                                 anchors.centerIn: parent
@@ -391,18 +381,6 @@ Item {
                             height: elementHeight
                             anchors.left: parent.left
                         }                        
-                        ColorDialog {
-                            id: colorDialogGlow
-                            title: qsTr("Choose a color")
-                            onAccepted: {
-                                settings.color_glow = colorDialogGlow.color
-                                colorDialogGlow.close()
-                            }
-                            onRejected: {
-                                colorDialogGlow.close()
-                            }
-                            Component.onCompleted: visible = false
-                        }
 
                         RoundButton {
                             //text: "Open"
@@ -412,7 +390,11 @@ Item {
                             anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.horizontalCenter: parent.horizonatalCenter
-                            onClicked: colorDialogGlow.open()
+                            onClicked: {
+                                colorPicker.previousColor = settings.color_glow
+                                colorPicker.currentColorType = ColorPicker.ColorType.GlowColor
+                                colorPicker.visible = true
+                            }
 
                             Rectangle {
                                 anchors.centerIn: parent
@@ -440,18 +422,6 @@ Item {
                             height: elementHeight
                             anchors.left: parent.left
                         }                       
-                        ColorDialog {
-                            id: colorDialogText
-                            title: qsTr("Choose a color")
-                            onAccepted: {
-                                settings.color_text = colorDialogText.color
-                                colorDialogText.close()
-                            }
-                            onRejected: {
-                                colorDialogText.close()
-                            }
-                            Component.onCompleted: visible = false
-                        }
 
                         RoundButton {
                             //text: "Open"
@@ -461,7 +431,11 @@ Item {
                             anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.horizontalCenter: parent.horizonatalCenter
-                            onClicked: colorDialogText.open()
+                            onClicked: {
+                                colorPicker.previousColor = settings.color_text
+                                colorPicker.currentColorType = ColorPicker.ColorType.TextColor
+                                colorPicker.visible = true
+                            }
 
                             Rectangle {
                                 anchors.centerIn: parent
