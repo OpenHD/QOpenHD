@@ -52,7 +52,6 @@ Card {
         target: colorWheel
 
         function onColorChanged() {
-            console.debug("onColorChanged: " + colorPicker.color)
             if (colorPicker.currentColorType == ColorPicker.ColorType.ShapeColor) {
                 settings.color_shape = colorPicker.color
             }

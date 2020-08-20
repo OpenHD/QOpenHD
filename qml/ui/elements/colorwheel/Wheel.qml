@@ -114,11 +114,9 @@ Item {
                     cursor.y = Math.max(-pickerCursor.r, Math.min(wheelArea.height, wheel.height/2-ro*Math.sin(theta)-pickerCursor.r));
 
                     hue = Math.ceil((Math.atan2(((cursor.y+pickerCursor.r-wheel.height/2)*(-1)),((cursor.x+pickerCursor.r-wheel.width/2)))/(Math.PI*2)+0.5)*100)/100
-                    console.log(hue);
                     if (hue < 0) hue = 0;
                     if (hue > 1) hue = 1;
                     saturation = Math.ceil(Math.sqrt(Math.pow(cursor.x+pickerCursor.r-width/2,2)+Math.pow(cursor.y+pickerCursor.r-height/2,2))/wheel.height*2*100)/100;
-                    console.log(saturation)
                     if (saturation < 0) saturation = 0;
                     if (saturation > 1) saturation = 1;
                     root.updateHS(hue, saturation);
