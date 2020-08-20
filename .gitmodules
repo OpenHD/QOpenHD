@@ -13,3 +13,6 @@
 [submodule "lib/SortFilterProxyModel"]
 	path = lib/SortFilterProxyModel
 	url = https://github.com/OpenHD/SortFilterProxyModel.git
+[submodule "lib/android/openssl"]
+	path = lib/android/openssl
+	url = https://github.com/KDAB/android_openssl.git
