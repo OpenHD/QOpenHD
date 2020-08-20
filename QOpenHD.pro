@@ -369,6 +369,17 @@ AndroidBuild {
             $$PWD/android/src/org/openhd/SurfaceTextureListener.java
     }
     QT += androidextras
+
+    #Androidx86Build {
+    #    ANDROID_EXTRA_LIBS += $$PWD/lib/android/openssl/latest/x86/libcrypto_1_1.so \
+    #                          $$PWD/lib/android/openssl/latest/x86/libssl_1_1.so
+    #} AndroidARM64Build {
+    #    ANDROID_EXTRA_LIBS += $$PWD/lib/android/openssl/latest/arm64/libcrypto_1_1.so \
+    #                          $$PWD/lib/android/openssl/latest/arm64/libssl_1_1.so
+    #} else {
+        ANDROID_EXTRA_LIBS += $$PWD/lib/android/openssl/latest/arm/libcrypto_1_1.so \
+                              $$PWD/lib/android/openssl/latest/arm/libssl_1_1.so
+    #}
 }
 
 
