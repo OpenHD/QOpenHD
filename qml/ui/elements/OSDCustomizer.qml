@@ -2,6 +2,7 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Dialogs 1.0
+import QtQuick.Controls.Material 2.12
 
 
 Rectangle {
@@ -214,6 +215,16 @@ Rectangle {
                     anchors.left: parent.left
                     anchors.right: parent.right
                 }
+            }
+
+            Button {
+                height: 60
+                width: parent.width - 24
+                text: qsTr("Done")
+                Material.accent: Material.Red
+                highlighted: true
+
+                onClicked: osdCustomizer.visible = false
             }
         }
     }
