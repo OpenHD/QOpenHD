@@ -198,7 +198,12 @@ Rectangle {
                 Material.accent: Material.Red
                 highlighted: true
 
-                onClicked: osdCustomizer.visible = false
+                onClicked: {
+                    osdCustomizer.visible = false
+                    if (IsRaspPi) {
+                        piSettingsTimer.start();
+                    }
+                }
             }
         }
     }
