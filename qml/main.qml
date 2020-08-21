@@ -240,18 +240,18 @@ ApplicationWindow {
             settings_panel.openSettings();
         }
 
-        transform: Scale {
+        /*transform: Scale {
             origin.x: 0
             origin.y: hudOverlayGrid.height / 2
             xScale: settings.stereo_enable ? 0.5 : 1.0
             yScale: settings.stereo_enable ? 0.5 : 1.0
         }
 
-        layer.enabled: true
+        layer.enabled: true*/
     }
 
 
-    Rectangle {
+    /*Rectangle {
         id: hudOverlayGridClone
         anchors.right: parent.right
         width: parent.width / 2
@@ -272,7 +272,7 @@ ApplicationWindow {
                 }
             "
         }
-    }
+    }*/
 
     OSDCustomizer {
         id: osdCustomizer
@@ -306,12 +306,14 @@ ApplicationWindow {
 
     Item {
         anchors.fill: parent
-        z: settings.stereo_enable ? 10.0 : 1.0
+        //z: settings.stereo_enable ? 10.0 : 1.0
+        z: 1.0
 
         TapHandler {
             enabled: settings_panel.visible == false
             acceptedButtons: Qt.AllButtons
             onTapped: {
+                return;
                 if (tapCount == 3) {
                     settings.stereo_enable = !settings.stereo_enable
                     if (IsRaspPi) {
