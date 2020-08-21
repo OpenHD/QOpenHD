@@ -240,10 +240,6 @@ ApplicationWindow {
             settings_panel.openSettings();
         }
 
-        anchors.left: parent.left
-        anchors.top: parent.top
-        anchors.bottom: parent.bottom
-        anchors.right: parent.right
         transform: Scale {
             origin.x: 0
             origin.y: hudOverlayGrid.height / 2
