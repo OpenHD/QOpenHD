@@ -314,6 +314,9 @@ ApplicationWindow {
             onTapped: {
                 if (tapCount == 3) {
                     settings.stereo_enable = !settings.stereo_enable
+                    if (IsRaspPi) {
+                        piSettingsTimer.start();
+                    }
                 }
             }
             onLongPressed: {
