@@ -100,6 +100,11 @@ int main(int argc, char *argv[]) {
     QCoreApplication::setOrganizationDomain("open.hd");
     QCoreApplication::setApplicationName("Open.HD");
 
+    auto manageSettings = new ManageSettings();
+    #if defined(__rasp_pi__)
+    manageSettings->loadPiSettings();
+    #endif
+
     QSettings settings;
 
     double global_scale = settings.value("global_scale", 1.0).toDouble();
@@ -338,12 +343,7 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
 
 #endif
 
-    auto manageSettings = new ManageSettings();
     engine.rootContext()->setContextProperty("ManageSettings", manageSettings);
-
-    #if defined(__rasp_pi__)
-    manageSettings->loadPiSettings();
-    #endif
 
 
     auto openHDSettings = new OpenHDSettings();
