@@ -498,7 +498,7 @@ speed_widget_y_offset={{ speed_widget_y_offset }}
 #
 # Second speed widget (number with speed icon)
 #
-show_second_speed={{ show_second_speed }}
+show_speed_second={{ show_speed_second }}
 speed_second_use_groundspeed={{ speed_second_use_groundspeed }}
 speed_second_opacity={{ speed_second_opacity }}
 speed_second_size={{ speed_second_size }}
