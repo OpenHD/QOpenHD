@@ -11,6 +11,7 @@ import OpenHD 1.0
 SettingsPopupForm {
     id: settings_form
     signal localMessage(var message, var level)
+    signal settingsClosed
 
     /*Connections {
         target: openHDRC
@@ -32,6 +33,7 @@ SettingsPopupForm {
         if (IsRaspPi) {
             ManageSettings.savePiSettings();
         }
+        settings_form.settingsClosed()
     }
 }
 
