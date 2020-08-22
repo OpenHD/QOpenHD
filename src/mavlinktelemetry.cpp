@@ -481,34 +481,6 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             mavlink_statustext_t statustext;
             mavlink_msg_statustext_decode(&msg, &statustext);
             int level = 0;
-            switch (statustext.severity) {
-                case MAV_SEVERITY_EMERGENCY:
-                    level = 7;
-                    break;
-                case MAV_SEVERITY_ALERT:
-                    level = 6;
-                    break;
-                case MAV_SEVERITY_CRITICAL:
-                    level = 5;
-                    break;
-                case MAV_SEVERITY_ERROR:
-                    level = 4;
-                    break;
-                case MAV_SEVERITY_WARNING:
-                    level = 3;
-                    break;
-                case MAV_SEVERITY_NOTICE:
-                    level = 2;
-                    break;
-                case MAV_SEVERITY_INFO:
-                    level = 1;
-                    break;
-                case MAV_SEVERITY_DEBUG:
-                    level = 0;
-                    break;
-                default:
-                    break;
-            }
 
             QByteArray param_id(statustext.text, 50);
             /*
@@ -523,7 +495,7 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
 
             QString s(param_id.data());
 
-            OpenHD::instance()->messageReceived(s, level);
+            OpenHD::instance()->messageReceived(s, statustext.severity);
             break;
         }
         case MAVLINK_MSG_ID_ESC_TELEMETRY_1_TO_4: {
