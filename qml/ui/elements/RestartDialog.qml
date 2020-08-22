@@ -77,18 +77,18 @@ Card {
             highlighted: true
 
             text:  {
-                if (IsAndroid) {
+                /*if (IsAndroid) {
                     return qsTr("Restart App")
-                }
+                }*/
                 return qsTr("Close App")
             }
 
 
             onPressed: {
-                if (IsAndroid) {
+                /*if (IsAndroid) {
                     ManageSettings.restartApp();
                     return;
-                }
+                }*/
                 Qt.quit();
             }
         }
