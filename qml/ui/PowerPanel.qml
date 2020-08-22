@@ -55,6 +55,9 @@ PowerPanelForm {
 
         cardName: qsTr("Confirm Power Change")
         cardBody: Column {
+            height: powerDialog.height
+            width: powerDialog.width
+
             Text {
                 text: qsTr("If your drone is in the air, rebooting or shutting down the ground or air pi may cause a crash or make it enter failsafe mode!")
                 width: parent.width
