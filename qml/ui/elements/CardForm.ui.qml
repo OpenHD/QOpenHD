@@ -18,23 +18,16 @@ Item {
 
     property int cardRadius: 6
     property color cardNameColor: "#33aaff"
+    property color borderColor: "#3a000000"
 
     Rectangle {
         id: innerCard
         radius: cardRadius
         color: "white"
         anchors.fill: parent
-    }
+        border.width: 1
+        border.color: borderColor
 
-    DropShadow {
-        cached: true
-        anchors.fill: innerCard
-        horizontalOffset: 0
-        verticalOffset: 1
-        radius: cardRadius
-        samples: 17
-        color: "#6a000000"
-        source: innerCard
     }
 
     Item {
@@ -91,21 +84,18 @@ Item {
     }
 
     Rectangle {
-        color: "#4c000000"
-        width: parent.width
-        height: 1
-        anchors.bottom: cardFooterInner.top
-        anchors.bottomMargin: 0
-        visible: hasFooter
-    }
-
-    Rectangle {
         id: cardFooterInner
         anchors.bottom: parent.bottom
-        width: parent.width
+        anchors.left: parent.left
+        anchors.leftMargin: 0
+        anchors.right: parent.right
+        anchors.rightMargin: 0
+
         children: cardFooter
         visible: hasFooter
         height: 64
         color: "#f6f6f6"
+        border.width: 1
+        border.color: borderColor
     }
 }
