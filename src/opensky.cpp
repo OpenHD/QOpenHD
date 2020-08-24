@@ -93,11 +93,11 @@ void OpenSky::mapBoundsChanged(QGeoCoordinate center_coord) {
     upperl_lon= QString::number(qgeo_upper_left.longitude());
     lowerr_lat= QString::number(qgeo_lower_right.latitude());
     lowerr_lon= QString::number(qgeo_lower_right.longitude());
-    /*
+
     qDebug() << "OpenSky::lower right=" << lowerr_lat << " " << lowerr_lon;
     qDebug() << "OpenSky::upper left=" << upperl_lat << " " << upperl_lon;
     qDebug() << "OpenSky::Center=" << center_lat << " " << center_lon;
-    */
+
 }
 
 void OpenSky::set_adsb_api_coord(QGeoCoordinate adsb_api_coord){
@@ -121,7 +121,7 @@ void OpenSky::requestData() {
     QUrl api_request= "https://opensky-network.org/api/states/all?lamin="+lowerr_lat+"&lomin="+upperl_lon+"&lamax="+upperl_lat+"&lomax="+lowerr_lon;
     request.setUrl(api_request);
     request.setRawHeader("User-Agent", "MyOwnBrowser 1.0");
-    //qDebug() << "url=" << api_request;
+    qDebug() << "url=" << api_request;
     QNetworkReply *reply = m_manager->get(request);
 }
 

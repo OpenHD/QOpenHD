@@ -47,7 +47,7 @@ BaseWidget {
             lastData = (new Date).getTime();
             adsb_status.active=true;
             adsb_status.color="green";
-            adsb_status_animation.restart();
+            //adsb_status_animation.restart();
         }
     }
 
