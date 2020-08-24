@@ -90,7 +90,7 @@ Map {
     PositionSource {
         id: positionSource
         updateInterval: 5000
-        active: true
+        active: followDrone
 
         onPositionChanged: {
             userLat = position.coordinate.latitude
