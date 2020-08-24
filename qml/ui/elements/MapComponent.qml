@@ -64,8 +64,6 @@ Map {
                 }
             }
         }
-
-        //console.log("drone position=",OpenHD.lat, OpenHD.lon);
     }
 
     center {
@@ -73,16 +71,21 @@ Map {
         longitude: OpenHD.lon == 0.0 ? userLon : followDrone ? OpenHD.lon : 9000
     }
 
-    onCenterChanged: {
-        //findMapBounds();
+    onMapReadyChanged: {
+        //needed to intitialize opensky api coordinates
+        console.log("map is ready");
+        findMapBounds();
     }
 
-    /*
+    onCenterChanged: {
+        findMapBounds();
+    }
+
     function findMapBounds(){
         var center_coord = map.toCoordinate(Qt.point(map.width/2,map.height/2))
         //console.log("my center",center_coord.latitude, center_coord.longitude);
         OpenSky.mapBoundsChanged(center_coord);
-    }*/
+    }
 
     PositionSource {
         id: positionSource
@@ -120,11 +123,8 @@ Map {
         }
     }
 
-    /*
     MapRectangle {
         id: adsbSquare
-        //center: OpenSky.adsb_api_coord
-        //radius: MarkerModel.adsb_radius
         topLeft : OpenSky.adsb_api_coord.atDistanceAndAzimuth(settings.adsb_distance_limit, 315, 0.0)
         bottomRight: OpenSky.adsb_api_coord.atDistanceAndAzimuth(settings.adsb_distance_limit, 135, 0.0)
 
@@ -132,10 +132,8 @@ Map {
         border.color: "red"
         border.width: 5
         smooth: true
-        opacity: .2
+        opacity: .3
     }
-    */
-
 
     MapItemView {
         model: BlackBoxModel

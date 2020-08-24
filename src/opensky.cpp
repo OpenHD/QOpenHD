@@ -93,11 +93,12 @@ void OpenSky::mapBoundsChanged(QGeoCoordinate center_coord) {
     upperl_lon= QString::number(qgeo_upper_left.longitude());
     lowerr_lat= QString::number(qgeo_lower_right.latitude());
     lowerr_lon= QString::number(qgeo_lower_right.longitude());
+
     /*
     qDebug() << "OpenSky::lower right=" << lowerr_lat << " " << lowerr_lon;
     qDebug() << "OpenSky::upper left=" << upperl_lat << " " << upperl_lon;
     qDebug() << "OpenSky::Center=" << center_lat << " " << center_lon;
-    */
+*/
 }
 
 void OpenSky::set_adsb_api_coord(QGeoCoordinate adsb_api_coord){

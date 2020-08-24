@@ -281,6 +281,7 @@ LinuxBuild {
     CONFIG += EnableGStreamer
     CONFIG += EnableLink
     #CONFIG += EnableCharts
+    CONFIG += EnableADSB
 
     message("LinuxBuild - config")
 }
