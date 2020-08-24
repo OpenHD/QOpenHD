@@ -71,6 +71,12 @@ Map {
         longitude: OpenHD.lon == 0.0 ? userLon : followDrone ? OpenHD.lon : 9000
     }
 
+    onMapReadyChanged: {
+        //needed to intitialize opensky api coordinates
+        console.log("map is ready");
+        findMapBounds();
+    }
+
     onCenterChanged: {
         findMapBounds();
     }
