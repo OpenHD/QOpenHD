@@ -128,14 +128,16 @@ BaseWidget {
                     strokeStyle: ShapePath.SolidLine
 
                     startX: 32
-                    startY: 0
-                    PathLine { x: 44;                 y: 12  }//right edge of arrow
-                    PathLine { x: 38;                 y: 12  }//inner right edge
-                    PathLine { x: 38;                 y: 24 }//bottom right edge
+                    startY: 24
                     PathLine { x: 26;                  y: 24 }//bottom left edge
                     PathLine { x: 26;                  y: 12  }//inner left edge
                     PathLine { x: 20;                  y: 12  }//outer left
-                    PathLine { x: 32;                  y: 0  }//back to start
+                    PathLine { x: 32;                  y: 0  }//point
+                    PathLine { x: 44;                 y: 12  }//right edge of arrow
+                    PathLine { x: 38;                 y: 12  }//inner right edge
+                    PathLine { x: 38;                 y: 24 }//bottom right edge
+                    PathLine { x: 32;                 y: 24 }//back to start
+
                 }
 
                 transform: Rotation {
