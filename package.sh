@@ -20,7 +20,7 @@ nameserver 8.8.4.4
 EOF
 fi
 
-apt-get install -y apt-transport-https
+apt-get install -y apt-transport-https curl
 curl -1sLf 'https://dl.cloudsmith.io/public/openhd/openhd-2-0/cfg/gpg/gpg.B9F0E99CF5787237.key' | apt-key add -
 
 
