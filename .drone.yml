@@ -19,7 +19,7 @@ steps:
   settings:
       repo: openhd/qopenhd
       dry_run: true
-      dockerfile: Dockerfile-pi-stretch
+      dockerfile: Dockerfile-armhf-pi-stretch
       build_args_from_env:
         - CLOUDSMITH_API_KEY
 ---
@@ -44,6 +44,6 @@ steps:
   settings:
       repo: openhd/qopenhd
       dry_run: true
-      dockerfile: Dockerfile-pi-buster
+      dockerfile: Dockerfile-armhf-pi-buster
       build_args_from_env:
         - CLOUDSMITH_API_KEY

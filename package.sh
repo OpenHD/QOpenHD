@@ -2,15 +2,14 @@
 
 QT_VERSION=Qt5.15.0
 
-PLATFORM=$1
-DISTRO=$2
-BUILD_TYPE=$3
+export LC_ALL=C.UTF-8
+export LANG=C.UTF-8
 
-if [[ "${PLATFORM}" == "pi" ]]; then
-    OS="raspbian"
-    ARCH="arm"
-    PACKAGE_ARCH="armhf"
-fi
+PACKAGE_ARCH=$1
+OS=$2
+DISTRO=$3
+BUILD_TYPE=$4
+
 
 if [ "${BUILD_TYPE}" == "docker" ]; then
     cat << EOF > /etc/resolv.conf
