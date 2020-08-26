@@ -1,6 +1,6 @@
 kind: pipeline
 type: docker
-name: pi-stretch
+name: armhf-pi-stretch
 platform:
   os: linux
   arch: arm
@@ -25,7 +25,7 @@ steps:
 ---
 kind: pipeline
 type: docker
-name: pi-buster
+name: armhf-pi-buster
 platform:
   os: linux
   arch: arm
