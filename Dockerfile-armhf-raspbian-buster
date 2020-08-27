@@ -1,4 +1,4 @@
-FROM openhd/2018-10-09-raspbian-stretch-lite:v1  
+FROM openhd/2020-05-27-raspios-buster-lite-armhf:v1
 
 COPY .git /data/.git/
 
@@ -24,4 +24,4 @@ ARG CLOUDSMITH_API_KEY=000000000000
 
 RUN export CLOUDSMITH_API_KEY=$CLOUDSMITH_API_KEY
 
-RUN /data/package.sh armhf pi stretch docker
+RUN /data/package.sh armhf raspbian buster docker
