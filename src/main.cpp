@@ -453,6 +453,10 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
     openSky->onStarted();
     #endif
 
+    auto util = new OpenHDUtil;
+    engine.rootContext()->setContextProperty("OpenHDUtil", util);
+
+
     engine.rootContext()->setContextProperty("OpenHD", openhd);
 
 
