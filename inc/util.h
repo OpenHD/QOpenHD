@@ -2,8 +2,6 @@
 #define UTIL_H
 
 #include <QObject>
-#include <QMap>
-#include <QVariant>
 
 #include <openhd/mavlink.h>
 
