@@ -239,13 +239,11 @@ BaseWidget {
             height: 48
             // @disable-check M223
             color: {
-                /* todo: expose battery_voltage_to_percent to QML instead of using cell levels here
-                   @disable-check M222
-                */
+                // @disable-check M222
                 var cells = settings.value("show_ground_status", true);
-                var cellVoltage = OpenHD.battery_voltage / cells;
+                var percent = OpenHDUtil.lipo_battery_voltage_to_percent(cells, OpenHD.battery_voltage);
                 // 20% warning, 15% critical
-                return cellVoltage < 3.73 ? (cellVoltage < 3.71 ? "#ff0000" : "#fbfd15") :  settings.color_shape
+                return percent < 20 ? (percent < 15 ? "#ff0000" : "#fbfd15") : settings.color_shape
             }
             opacity: settings.air_battery_opacity
             text: OpenHD.battery_gauge
