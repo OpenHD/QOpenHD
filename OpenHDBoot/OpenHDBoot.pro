@@ -40,6 +40,7 @@ SOURCES += \
         smartsync.cpp
 
 HEADERS += \
+    $$PWD/../inc/util.h \
     $$PWD/../inc/mavlinkbase.h \
     $$PWD/../inc/statusmicroservice.h \
     $$PWD/../inc/statuslogmodel.h \
