@@ -117,6 +117,8 @@ int main(int argc, char *argv[]) {
 
     Migration::instance()->run();
 
+    auto util = new OpenHDUtil;
+
 
 #if defined(__ios__)
     auto applePlatform = ApplePlatform::instance();
@@ -126,7 +128,7 @@ int main(int argc, char *argv[]) {
 
 
 #if defined(__android__)
-    keep_screen_on(true);
+    util->keep_screen_on(true);
 
     for(const QString &permission : permissions) {
         auto result = QtAndroid::checkPermission(permission);
@@ -453,7 +455,6 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
     openSky->onStarted();
     #endif
 
-    auto util = new OpenHDUtil;
     engine.rootContext()->setContextProperty("OpenHDUtil", util);
 
 
