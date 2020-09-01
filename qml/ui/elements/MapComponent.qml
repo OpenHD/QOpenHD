@@ -84,7 +84,9 @@ Map {
     function findMapBounds(){
         var center_coord = map.toCoordinate(Qt.point(map.width/2,map.height/2))
         //console.log("my center",center_coord.latitude, center_coord.longitude);
-        OpenSky.mapBoundsChanged(center_coord);
+        if (EnableADSB) {
+            OpenSky.mapBoundsChanged(center_coord);
+        }
     }
 
     PositionSource {
@@ -125,8 +127,9 @@ Map {
 
     MapRectangle {
         id: adsbSquare
-        topLeft : OpenSky.adsb_api_coord.atDistanceAndAzimuth(settings.adsb_distance_limit, 315, 0.0)
-        bottomRight: OpenSky.adsb_api_coord.atDistanceAndAzimuth(settings.adsb_distance_limit, 135, 0.0)
+        topLeft : EnableADSB ? OpenSky.adsb_api_coord.atDistanceAndAzimuth(settings.adsb_distance_limit, 315, 0.0) : QtPositioning.coordinate(0, 0)
+        bottomRight: EnableADSB ? OpenSky.adsb_api_coord.atDistanceAndAzimuth(settings.adsb_distance_limit, 135, 0.0) : QtPositioning.coordinate(0, 0)
+        enabled: EnableADSB
 
         color: "white"
         border.color: "red"
