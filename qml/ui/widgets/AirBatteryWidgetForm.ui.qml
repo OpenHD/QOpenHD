@@ -240,8 +240,7 @@ BaseWidget {
             // @disable-check M223
             color: {
                 // @disable-check M222
-                var cells = settings.value("show_ground_status", true);
-                var percent = OpenHDUtil.lipo_battery_voltage_to_percent(cells, OpenHD.battery_voltage);
+                var percent = OpenHDUtil.lipo_battery_voltage_to_percent(settings.battery_cells, OpenHD.battery_voltage);
                 // 20% warning, 15% critical
                 return percent < 20 ? (percent < 15 ? "#ff0000" : "#fbfd15") : settings.color_shape
             }
