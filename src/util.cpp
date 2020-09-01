@@ -1,6 +1,8 @@
 #ifndef UTIL_CPP
 #define UTIL_CPP
 
+#include <QObject>
+
 #include "util.h"
 
 #if defined(__android__)
