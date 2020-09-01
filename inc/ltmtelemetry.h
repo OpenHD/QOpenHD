@@ -6,6 +6,8 @@
 
 #include "constants.h"
 
+#include "util.h"
+
 #define LIGHTTELEMETRY_START1 0x24 //$ Header byte 1
 #define LIGHTTELEMETRY_START2 0x54 //T Header byte 2
 #define LIGHTTELEMETRY_GFRAME 0x47 //G GPS frame: GPS + Baro altitude data (Lat, Lon, Speed, Alt, Sats, Sat fix)
@@ -53,6 +55,8 @@ private slots:
     void processLTMDatagrams();
 
 private:
+    OpenHDUtil m_util;
+
     int ltm_read(uint8_t *buf, int buflen);
     uint8_t ltmread_u8();
     uint16_t ltmread_u16();

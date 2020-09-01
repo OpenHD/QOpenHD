@@ -6,6 +6,7 @@
 
 #include "constants.h"
 
+#include "util.h"
 
 typedef struct {
     int sm_state;
@@ -34,6 +35,8 @@ private slots:
     void processFrSkyDatagrams();
 
 private:
+    OpenHDUtil m_util;
+
     void frsky_interpret_packet();
     void frsky_parse_buffer(uint8_t *buf, int buflen);
 

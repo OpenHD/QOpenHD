@@ -148,7 +148,7 @@ void MavlinkBase::fetchParameters() {
     qDebug() << "MavlinkBase::fetchParameters()";
 
     QSettings settings;
-    int mavlink_sysid = settings.value("mavlink_sysid", default_mavlink_sysid()).toInt();
+    int mavlink_sysid = settings.value("mavlink_sysid", m_util.default_mavlink_sysid()).toInt();
 
     mavlink_message_t msg;
     mavlink_msg_param_request_list_pack(mavlink_sysid, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID1, targetCompID1);
@@ -162,7 +162,7 @@ void MavlinkBase::fetchParameters() {
 
 void MavlinkBase::sendHeartbeat() {
     QSettings settings;
-    int mavlink_sysid = settings.value("mavlink_sysid", default_mavlink_sysid()).toInt();
+    int mavlink_sysid = settings.value("mavlink_sysid", m_util.default_mavlink_sysid()).toInt();
 
     mavlink_message_t msg;
 
@@ -358,7 +358,7 @@ void MavlinkBase::setDataStreamRate(MAV_DATA_STREAM streamType, uint8_t hz) {
 
     QSettings settings;
 
-    int mavlink_sysid = settings.value("mavlink_sysid", default_mavlink_sysid()).toInt();
+    int mavlink_sysid = settings.value("mavlink_sysid", m_util.default_mavlink_sysid()).toInt();
 
 
     mavlink_message_t msg;
@@ -413,7 +413,7 @@ void MavlinkBase::commandStateLoop() {
 
             QSettings settings;
 
-            int mavlink_sysid = settings.value("mavlink_sysid", default_mavlink_sysid()).toInt();
+            int mavlink_sysid = settings.value("mavlink_sysid", m_util.default_mavlink_sysid()).toInt();
 
             if (m_current_command->m_command_type == MavlinkCommandTypeLong) {
                 mavlink_msg_command_long_pack(mavlink_sysid, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID1, targetCompID1, m_current_command->command_id, m_current_command->long_confirmation, m_current_command->long_param1, m_current_command->long_param2, m_current_command->long_param3, m_current_command->long_param4, m_current_command->long_param5, m_current_command->long_param6, m_current_command->long_param7);

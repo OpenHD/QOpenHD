@@ -6,6 +6,8 @@
 
 #include "constants.h"
 
+#include "util.h"
+
 
 typedef struct {
     uint16_t id;
@@ -43,6 +45,8 @@ private slots:
     void processSmartportDatagrams();
 
 private:
+    OpenHDUtil m_util;
+
     void smartport_read(uint8_t *buf, int buflen);
     uint8_t u8CheckCrcSPORT(uint8_t *t);
 

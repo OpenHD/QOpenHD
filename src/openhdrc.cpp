@@ -258,43 +258,43 @@ void OpenHDRC::axisChanged(const int js, const int axis, const qreal value) {
     qDebug() << "OpenHDRC::axisChanged()";
     switch (axis) {
         case 0:
-        set_rc1(map(value, -1, 1, 1000, 2000));
+        set_rc1(m_util.map(value, -1, 1, 1000, 2000));
         break;
 
         case 1:
-        set_rc2(map(value, -1, 1, 1000, 2000));
+        set_rc2(m_util.map(value, -1, 1, 1000, 2000));
         break;
 
         case 2:
-        set_rc3(map(value, -1, 1, 1000, 2000));
+        set_rc3(m_util.map(value, -1, 1, 1000, 2000));
         break;
 
         case 3:
-        set_rc4(map(value, -1, 1, 1000, 2000));
+        set_rc4(m_util.map(value, -1, 1, 1000, 2000));
         break;
 
         case 4:
-        set_rc5(map(value, -1, 1, 1000, 2000));
+        set_rc5(m_util.map(value, -1, 1, 1000, 2000));
         break;
 
         case 5:
-        set_rc6(map(value, -1, 1, 1000, 2000));
+        set_rc6(m_util.map(value, -1, 1, 1000, 2000));
         break;
 
         case 6:
-        set_rc7(map(value, -1, 1, 1000, 2000));
+        set_rc7(m_util.map(value, -1, 1, 1000, 2000));
         break;
 
         case 7:
-        set_rc8(map(value, -1, 1, 1000, 2000));
+        set_rc8(m_util.map(value, -1, 1, 1000, 2000));
         break;
 
         case 8:
-        set_rc9(map(value, -1, 1, 1000, 2000));
+        set_rc9(m_util.map(value, -1, 1, 1000, 2000));
         break;
 
         case 9:
-        set_rc10(map(value, -1, 1, 1000, 2000));
+        set_rc10(m_util.map(value, -1, 1, 1000, 2000));
         break;
 
         default:
@@ -322,19 +322,19 @@ void OpenHDRC::connectedChanged(bool value) {
 /* RC channel slots arranged in channel order */
 
 void OpenHDRC::axisLeftXChanged(double value) {
-    set_rc4(map(value, -1, 1, 1000, 2000));
+    set_rc4(m_util.map(value, -1, 1, 1000, 2000));
 }
 
 void OpenHDRC::axisLeftYChanged(double value) {
-    set_rc3(map(value, -1, 1, 1000, 2000));
+    set_rc3(m_util.map(value, -1, 1, 1000, 2000));
 }
 
 void OpenHDRC::axisRightYChanged(double value) {
-    set_rc2(map(value, -1, 1, 1000, 2000));
+    set_rc2(m_util.map(value, -1, 1, 1000, 2000));
 }
 
 void OpenHDRC::axisRightXChanged(double value) {
-    set_rc1(map(value, -1, 1, 1000, 2000));
+    set_rc1(m_util.map(value, -1, 1, 1000, 2000));
 }
 
 void OpenHDRC::buttonAChanged(bool value) {

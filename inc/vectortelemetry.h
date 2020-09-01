@@ -6,6 +6,8 @@
 
 #include "constants.h"
 
+#include "util.h"
+
 
 enum _serial_state {
     IDLE,
@@ -36,6 +38,8 @@ private slots:
     void processVectorDatagrams();
 
 private:
+    OpenHDUtil m_util;
+
     uint8_t votread_u8();
     uint16_t votread_u16();
     uint16_t votbread_u16();

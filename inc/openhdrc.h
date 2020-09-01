@@ -7,6 +7,8 @@
 #include <QtTextToSpeech/QTextToSpeech>
 #endif
 
+#include "util.h"
+
 #if defined(ENABLE_GAMEPADS)
 #include <QGamepad>
 #endif
@@ -146,6 +148,8 @@ private slots:
     void buttonGuideChanged(bool value);
 
 private:
+    OpenHDUtil m_util;
+
     QUdpSocket *rcSocket = nullptr;
 
     QString groundAddress;

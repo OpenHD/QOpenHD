@@ -156,9 +156,9 @@ void VectorTelemetry::processVectorMessage() {
 
     QSettings settings;
     auto battery_cells = settings.value("battery_cells", QVariant(3)).toInt();
-    int battery_percent = lipo_battery_voltage_to_percent(battery_cells, battery_voltage);
+    int battery_percent = m_util.lipo_battery_voltage_to_percent(battery_cells, battery_voltage);
     OpenHD::instance()->set_battery_percent(battery_percent);
-    QString battery_gauge_glyph = battery_gauge_glyph_from_percentage(battery_percent);
+    QString battery_gauge_glyph = m_util.battery_gauge_glyph_from_percentage(battery_percent);
     OpenHD::instance()->set_battery_gauge(battery_gauge_glyph);
 
 
@@ -193,7 +193,7 @@ void VectorTelemetry::processVectorMessage() {
 
 
     auto _flightmode = (uint8_t)votread_u8(); // PresentFlightMode -uav_flightmode- present flight mode, as defined in VECTOR_FLIGHT_MODES
-    QString flightmode = vot_mode_from_telemetry(_flightmode);
+    QString flightmode = m_util.vot_mode_from_telemetry(_flightmode);
     OpenHD::instance()->set_flight_mode(flightmode);
 
     OpenHD::instance()->calculate_home_distance();

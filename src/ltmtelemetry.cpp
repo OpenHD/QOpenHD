@@ -118,9 +118,10 @@ void LTMTelemetry::processLTMMessage() {
 
         QSettings settings;
         auto battery_cells = settings.value("battery_cells", QVariant(3)).toInt();
-        int battery_percent = lipo_battery_voltage_to_percent(battery_cells, battery_voltage);
+        int battery_percent = m_util.lipo_battery_voltage_to_percent(battery_cells, battery_voltage);
         OpenHD::instance()->set_battery_percent(battery_percent);
-        QString battery_gauge_glyph = battery_gauge_glyph_from_percentage(battery_percent);
+
+        QString battery_gauge_glyph = m_util.battery_gauge_glyph_from_percentage(battery_percent);
         OpenHD::instance()->set_battery_gauge(battery_gauge_glyph);
 
         auto rssi = ltmread_u8();
@@ -137,7 +138,7 @@ void LTMTelemetry::processLTMMessage() {
         auto ltm_failsafe = (ltm_armfsmode >> 1) & 0b00000001;
 
         auto _flightmode = (ltm_armfsmode >> 2) & 0b00111111;
-        auto flightmode = ltm_mode_from_telem(_flightmode);
+        auto flightmode = m_util.ltm_mode_from_telem(_flightmode);
         OpenHD::instance()->set_flight_mode(flightmode);
     }
 }

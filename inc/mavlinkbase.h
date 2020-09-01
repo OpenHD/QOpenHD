@@ -170,6 +170,7 @@ protected:
     bool m_saving = false;
 
 protected:
+    OpenHDUtil m_util;
     quint8 targetSysID1;
     quint8 targetSysID2;
     quint8 targetCompID1;
