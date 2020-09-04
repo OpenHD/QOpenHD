@@ -209,7 +209,7 @@ iOSBuild {
     CONFIG += EnableMainVideo
     CONFIG += EnablePiP
     CONFIG += EnableVideoRender
-    CONFIG += EnableLink
+    #CONFIG += EnableLink
     #CONFIG += EnableCharts
 
     app_launch_images.files = $$PWD/icons/LaunchScreen.png $$files($$PWD/icons/LaunchScreen.storyboard)
@@ -252,7 +252,7 @@ MacBuild {
     CONFIG += EnableMainVideo
     CONFIG += EnablePiP
     CONFIG += EnableVideoRender
-    CONFIG += EnableLink
+    #CONFIG += EnableLink
     #CONFIG += EnableCharts
 
     EnableVideoRender {
@@ -279,7 +279,7 @@ LinuxBuild {
     CONFIG += EnableMainVideo
     CONFIG += EnablePiP
     CONFIG += EnableGStreamer
-    CONFIG += EnableLink
+    #CONFIG += EnableLink
     #CONFIG += EnableCharts
     CONFIG += EnableADSB
 
@@ -294,7 +294,7 @@ RaspberryPiBuild {
     message("RaspberryPiBuild - config")
     #CONFIG += EnableMainVideo
     CONFIG += EnablePiP
-    CONFIG += EnableLink
+    #CONFIG += EnableLink
     #CONFIG += EnableCharts
     CONFIG += EnableSpeech
 
@@ -320,7 +320,7 @@ WindowsBuild {
     CONFIG += EnableSpeech
     CONFIG += EnableMainVideo
     #CONFIG +- EnablePiP
-    CONFIG += EnableLink
+    #CONFIG += EnableLink
     CONFIG += EnableGStreamer
     #CONFIG += EnableCharts
 
@@ -337,7 +337,7 @@ AndroidBuild {
     CONFIG += EnableSpeech
     CONFIG += EnableMainVideo
     CONFIG += EnablePiP
-    CONFIG += EnableLink
+    #CONFIG += EnableLink
     CONFIG += EnableVideoRender
     #CONFIG += EnableCharts
     EnableGStreamer {
