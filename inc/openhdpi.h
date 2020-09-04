@@ -33,7 +33,9 @@ public:
     int ground_temp = 0;
 
 private:
+#if defined(__rasp_pi__)
     QProcess *mountProcess = nullptr;
+#endif
 
     bool m_undervolt = false;
     long double a[4], b[4];
