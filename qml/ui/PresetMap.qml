@@ -18,7 +18,7 @@ Item {
                      {setting: "LoadFlirDriver", value: "Y"},
                      {setting: "IsCamera1Enabled", value: "1"},
                      {setting: "IsCamera2Enabled", value: "1"},
-                     {setting: "USBCamera", value: "gst-launch-1.0 v4l2src device=/dev/video3 ! video/x-raw,width=160,height=128,framerate=10/1 ! omxh264enc control-rate=1 target-bitrate=600000 interval-intraframes=1 periodicty-idr=1 ! h264parse config-interval=3 ! rtph264pay ! udpsink host=127.0.0.1 port=5600"}],
+                     {setting: "USBCamera", value: "gst-launch-1.0 v4l2src device=/dev/video3 ! video/x-raw,width=160,height=128,framerate=10/1 ! videoconvert ! v4l2h264enc ! h264parse config-interval=3 ! rtph264pay ! udpsink host=127.0.0.1 port=5600"}],
         },
         { title: "FLIR One as 2nd camera (visual view)",
           info: "This preset will configure ground+air for a 2nd camera, and enable the FLIR visual camera sensor as the video source",
@@ -27,7 +27,7 @@ Item {
                      {setting: "LoadFlirDriver", value: "Y"},
                      {setting: "IsCamera1Enabled", value: "1"},
                      {setting: "IsCamera2Enabled", value: "1"},
-                     {setting: "USBCamera", value: "gst-launch-1.0 v4l2src device=/dev/video2 ! video/x-raw,width=640,height=480,framerate=10/1 ! omxh264enc control-rate=1 target-bitrate=600000 interval-intraframes=1 periodicty-idr=1 ! h264parse config-interval=3 ! rtph264pay ! udpsink host=127.0.0.1 port=5600"}],
+                     {setting: "USBCamera", value: "gst-launch-1.0 v4l2src device=/dev/video2 ! video/x-raw,width=640,height=480,framerate=10/1 ! videoconvert ! v4l2h264enc ! h264parse config-interval=3 ! rtph264pay ! udpsink host=127.0.0.1 port=5600"}],
         },
     ])
 }
