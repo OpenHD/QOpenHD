@@ -62,6 +62,7 @@ Settings {
     property double air_battery_opacity: 1
     property bool air_battery_show_voltage_current: false
     property bool air_battery_show_single_cell: false
+    property bool air_battery_show_fc_percent: false
     property double air_battery_size: 1
 
     property bool show_gps: true
@@ -90,9 +91,17 @@ Settings {
     property double mah_opacity: 1
     property double mah_size: 1
 
-    property bool show_fc_temp: true
-    property double fc_temp_opacity: 1
-    property double fc_temp_size: 1
+    property bool show_imu_temp: false
+    property double imu_temp_opacity: 1
+    property double imu_temp_size: 1
+
+    property bool show_press_temp: true
+    property double press_temp_opacity: 1
+    property double press_temp_size: 1
+
+    property bool show_esc_temp: false
+    property double esc_temp_opacity: 1
+    property double esc_temp_size: 1
 
     property bool show_ground_status: true
     property double ground_status_opacity: 1

@@ -142,7 +142,7 @@ void OpenHD::telemetryMessage(QString message, int level) {
 #if defined(ENABLE_SPEECH)
     QSettings settings;
     auto enable_speech = settings.value("enable_speech", QVariant(0));
-    if (enable_speech == 1 && level >= 3) {
+    if (enable_speech == 1 && level <= 3) {
         OpenHD::instance()->m_speech->say(message);
     }
 #endif
@@ -418,6 +418,11 @@ void OpenHD::set_battery_percent(int battery_percent) {
     emit battery_percent_changed(m_battery_percent);
 }
 
+void OpenHD::set_fc_battery_percent(int fc_battery_percent) {
+    m_fc_battery_percent = fc_battery_percent;
+    emit fc_battery_percent_changed(m_fc_battery_percent);
+}
+
 void OpenHD::set_battery_voltage(double battery_voltage) {
     m_battery_voltage = battery_voltage;
     emit battery_voltage_changed(m_battery_voltage);
@@ -431,6 +436,11 @@ void OpenHD::set_battery_current(double battery_current) {
 void OpenHD::set_battery_gauge(QString battery_gauge) {
     m_battery_gauge = battery_gauge;
     emit battery_gauge_changed(m_battery_gauge);
+}
+
+void OpenHD::set_fc_battery_gauge(QString fc_battery_gauge) {
+    m_fc_battery_gauge = fc_battery_gauge;
+    emit fc_battery_gauge_changed(m_fc_battery_gauge);
 }
 
 void OpenHD::set_satellites_visible(int satellites_visible) {
@@ -548,9 +558,19 @@ void OpenHD::setRcRssi(int rcRssi) {
     emit rcRssiChanged(m_rcRssi);
 }
 
-void OpenHD::set_fc_temp(int fc_temp) {
-    m_fc_temp = fc_temp;
-    emit fc_temp_changed(m_fc_temp);
+void OpenHD::set_imu_temp(int imu_temp) {
+    m_imu_temp = imu_temp;
+    emit imu_temp_changed(m_imu_temp);
+}
+
+void OpenHD::set_press_temp(int press_temp) {
+    m_press_temp = press_temp;
+    emit press_temp_changed(m_press_temp);
+}
+
+void OpenHD::set_esc_temp(int esc_temp) {
+    m_esc_temp = esc_temp;
+    emit esc_temp_changed(m_esc_temp);
 }
 
 void OpenHD::set_downlink_rssi(int downlink_rssi) {

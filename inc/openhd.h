@@ -142,6 +142,9 @@ public:
     Q_PROPERTY(int battery_percent MEMBER m_battery_percent WRITE set_battery_percent NOTIFY battery_percent_changed)
     void set_battery_percent(int battery_percent);
 
+    Q_PROPERTY(int fc_battery_percent MEMBER m_fc_battery_percent WRITE set_fc_battery_percent NOTIFY fc_battery_percent_changed)
+    void set_fc_battery_percent(int fc_battery_percent);
+
     Q_PROPERTY(double battery_voltage MEMBER m_battery_voltage WRITE set_battery_voltage NOTIFY battery_voltage_changed)
     void set_battery_voltage(double battery_voltage);
 
@@ -150,6 +153,9 @@ public:
 
     Q_PROPERTY(QString battery_gauge MEMBER m_battery_gauge WRITE set_battery_gauge NOTIFY battery_gauge_changed)
     void set_battery_gauge(QString battery_gauge);
+
+    Q_PROPERTY(QString fc_battery_gauge MEMBER m_fc_battery_gauge WRITE set_fc_battery_gauge NOTIFY fc_battery_gauge_changed)
+    void set_fc_battery_gauge(QString fc_battery_gauge);
 
     Q_PROPERTY(double pitch MEMBER m_pitch WRITE set_pitch NOTIFY pitch_changed)
     void set_pitch(double pitch);
@@ -214,8 +220,14 @@ public:
     Q_PROPERTY(int rcRssi MEMBER m_rcRssi WRITE setRcRssi NOTIFY rcRssiChanged)
     void setRcRssi(int rcRssi);
 
-    Q_PROPERTY(int fc_temp MEMBER m_fc_temp WRITE set_fc_temp NOTIFY fc_temp_changed)
-    void set_fc_temp(int fc_temp);
+    Q_PROPERTY(int imu_temp MEMBER m_imu_temp WRITE set_imu_temp NOTIFY imu_temp_changed)
+    void set_imu_temp(int imu_temp);
+
+    Q_PROPERTY(int press_temp MEMBER m_press_temp WRITE set_press_temp NOTIFY press_temp_changed)
+    void set_press_temp(int press_temp);
+
+    Q_PROPERTY(int esc_temp MEMBER m_esc_temp WRITE set_esc_temp NOTIFY esc_temp_changed)
+    void set_esc_temp(int esc_temp);
 
 
     // openhd
@@ -421,9 +433,11 @@ signals:
     void home_course_changed(int home_course);
     void home_heading_changed(int home_heading);
     void battery_percent_changed(int battery_percent);
+    void fc_battery_percent_changed(int fc_battery_percent);
     void battery_voltage_changed(double battery_voltage);
     void battery_current_changed(double battery_current);
     void battery_gauge_changed(QString battery_gauge);
+    void fc_battery_gauge_changed(QString fc_battery_gauge);
     void satellites_visible_changed(int satellites_visible);
     void gps_hdop_changed(double gps_hdop);
     void pitch_changed(double pitch);
@@ -458,7 +472,9 @@ signals:
 
     void rcRssiChanged(int rcRssi);
 
-    void fc_temp_changed (int fc_temp);
+    void imu_temp_changed (int imu_temp);
+    void press_temp_changed (int press_temp);
+    void esc_temp_changed (int esc_temp);
 
     // openhd
     void downlink_rssi_changed(int downlink_rssi);
@@ -569,9 +585,11 @@ public:
     int m_home_course = 0; //this is the relative course from nose
 
     int m_battery_percent = 0;
+    int m_fc_battery_percent = 0;
     double m_battery_current = 0.0;
     double m_battery_voltage = 0.0;
     QString m_battery_gauge = "\uf091";
+    QString m_fc_battery_gauge = "\uf091";
 
     int m_satellites_visible = 0;
     double m_gps_hdop = 99.00;
@@ -622,7 +640,9 @@ public:
     double m_kbitrate_measured = 0.0;
     double m_kbitrate_set = 0.0;
 
-    int m_fc_temp = 0;
+    int m_imu_temp = 0;
+    int m_press_temp = 0;
+    int m_esc_temp = 0;
 
     int m_cpuload_gnd = 0;
 

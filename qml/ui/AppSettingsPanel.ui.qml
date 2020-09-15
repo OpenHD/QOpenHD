@@ -769,7 +769,7 @@ Item {
                         color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
                         Text {
-                            text: qsTr("Show Flight Controller Temperature")
+                            text: qsTr("Show IMU Sensor Temperature")
                             font.weight: Font.Bold
                             font.pixelSize: 13
                             anchors.leftMargin: 8
@@ -787,8 +787,66 @@ Item {
 
                             anchors.right: parent.right
                             anchors.verticalCenter: parent.verticalCenter
-                            checked: settings.show_fc_temp
-                            onCheckedChanged: settings.show_fc_temp = checked
+                            checked: settings.show_imu_temp
+                            onCheckedChanged: settings.show_imu_temp = checked
+                        }
+                    }
+
+                    Rectangle {
+                        width: parent.width
+                        height: rowHeight
+                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+
+                        Text {
+                            text: qsTr("Show Pressure Sensor Temperature")
+                            font.weight: Font.Bold
+                            font.pixelSize: 13
+                            anchors.leftMargin: 8
+                            verticalAlignment: Text.AlignVCenter
+                            anchors.verticalCenter: parent.verticalCenter
+                            width: 224
+                            height: elementHeight
+                            anchors.left: parent.left
+                        }
+
+                        Switch {
+                            width: 32
+                            height: elementHeight
+                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                            anchors.right: parent.right
+                            anchors.verticalCenter: parent.verticalCenter
+                            checked: settings.show_press_temp
+                            onCheckedChanged: settings.show_press_temp = checked
+                        }
+                    }
+
+                    Rectangle {
+                        width: parent.width
+                        height: rowHeight
+                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+
+                        Text {
+                            text: qsTr("Show Esc Temperature")
+                            font.weight: Font.Bold
+                            font.pixelSize: 13
+                            anchors.leftMargin: 8
+                            verticalAlignment: Text.AlignVCenter
+                            anchors.verticalCenter: parent.verticalCenter
+                            width: 224
+                            height: elementHeight
+                            anchors.left: parent.left
+                        }
+
+                        Switch {
+                            width: 32
+                            height: elementHeight
+                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                            anchors.right: parent.right
+                            anchors.verticalCenter: parent.verticalCenter
+                            checked: settings.show_esc_temp
+                            onCheckedChanged: settings.show_esc_temp = checked
                         }
                     }
 

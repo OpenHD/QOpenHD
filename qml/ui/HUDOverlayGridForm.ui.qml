@@ -83,8 +83,18 @@ Item {
     }
 
     // + 0% cpu
-    FcTempWidget {
-        id: fc_temp
+    ImuTempWidget {
+        id: imu_temp
+    }
+
+    // + 0% cpu
+    PressTempWidget {
+        id: press_temp
+    }
+
+    // + 0% cpu
+    EscTempWidget {
+        id: esc_temp
     }
 
     // + 0% cpu

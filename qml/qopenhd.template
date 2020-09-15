@@ -286,6 +286,7 @@ show_air_battery={{ show_air_battery }}
 air_battery_opacity={{ air_battery_opacity }}
 air_battery_show_voltage_current={{ air_battery_show_voltage_current }}
 air_battery_show_single_cell={{ air_battery_show_single_cell }}
+air_battery_show_fc_percent={{ air_battery_show_fc_percent }}
 air_battery_size={{ air_battery_size }}
 air_battery_widget_h_center={{ air_battery_widget_h_center }}
 air_battery_widget_v_center={{ air_battery_widget_v_center }}
@@ -368,16 +369,44 @@ flight_mah_widget_y_offset={{ flight_mah_widget_y_offset }}
 
 
 #
-# Flight controller temperature widget
+# Imu temperature widget
 #
-show_fc_temp={{ show_fc_temp }}
-fc_temp_opacity={{ fc_temp_opacity }}
-fc_temp_size={{ fc_temp_size }}
-fc_temp_widget_h_center={{ fc_temp_widget_h_center }}
-fc_temp_widget_v_center={{ fc_temp_widget_v_center }}
-fc_temp_widget_align={{ fc_temp_widget_align }}
-fc_temp_widget_x_offset={{ fc_temp_widget_x_offset }}
-fc_temp_widget_y_offset={{ fc_temp_widget_y_offset }}
+show_imu_temp={{ show_imu_temp }}
+imu_temp_opacity={{ imu_temp_opacity }}
+imu_temp_size={{ imu_temp_size }}
+imu_temp_widget_h_center={{ imu_temp_widget_h_center }}
+imu_temp_widget_v_center={{ imu_temp_widget_v_center }}
+imu_temp_widget_align={{ imu_temp_widget_align }}
+imu_temp_widget_x_offset={{ imu_temp_widget_x_offset }}
+imu_temp_widget_y_offset={{ imu_temp_widget_y_offset }}
+
+
+
+#
+# Pressure temperature widget
+#
+show_press_temp={{ show_press_temp }}
+press_temp_opacity={{ press_temp_opacity }}
+press_temp_size={{ press_temp_size }}
+press_temp_widget_h_center={{ press_temp_widget_h_center }}
+press_temp_widget_v_center={{ press_temp_widget_v_center }}
+press_temp_widget_align={{ press_temp_widget_align }}
+press_temp_widget_x_offset={{ press_temp_widget_x_offset }}
+press_temp_widget_y_offset={{ press_temp_widget_y_offset }}
+
+
+
+#
+# Esc temperature widget
+#
+show_esc_temp={{ show_esc_temp }}
+esc_temp_opacity={{ esc_temp_opacity }}
+esc_temp_size={{ esc_temp_size }}
+esc_temp_widget_h_center={{ esc_temp_widget_h_center }}
+esc_temp_widget_v_center={{ esc_temp_widget_v_center }}
+esc_temp_widget_align={{ esc_temp_widget_align }}
+esc_temp_widget_x_offset={{ esc_temp_widget_x_offset }}
+esc_temp_widget_y_offset={{ esc_temp_widget_y_offset }}
 
 
 

@@ -7,13 +7,13 @@ import Qt.labs.settings 1.0
 import OpenHD 1.0
 
 BaseWidget {
-    id: fcTempWidget
+    id: pressTempWidget
     width: 30
     height:30
 
-    visible: settings.show_fc_temp
+    visible: settings.show_press_temp
 
-    widgetIdentifier: "fc_temp_widget"
+    widgetIdentifier: "press_temp_widget"
 
     defaultAlignment: 1
     defaultXOffset: 12
@@ -37,10 +37,10 @@ BaseWidget {
                 verticalAlignment: Text.AlignVCenter
             }
             Slider {
-                id: fc_temp_opacity_Slider
+                id: press_temp_opacity_Slider
                 orientation: Qt.Horizontal
                 from: .1
-                value: settings.fc_temp_opacity
+                value: settings.press_temp_opacity
                 to: 1
                 stepSize: .1
                 height: parent.height
@@ -49,7 +49,7 @@ BaseWidget {
                 width: parent.width - 96
 
                 onValueChanged: {
-                    settings.fc_temp_opacity = fc_temp_opacity_Slider.value
+                    settings.press_temp_opacity = press_temp_opacity_Slider.value
                 }
             }
         }
@@ -66,10 +66,10 @@ BaseWidget {
                 verticalAlignment: Text.AlignVCenter
             }
             Slider {
-                id: fc_temp_size_Slider
+                id: press_temp_size_Slider
                 orientation: Qt.Horizontal
                 from: .5
-                value: settings.fc_temp_size
+                value: settings.press_temp_size
                 to: 3
                 stepSize: .1
                 height: parent.height
@@ -78,7 +78,7 @@ BaseWidget {
                 width: parent.width - 96
 
                 onValueChanged: {
-                    settings.fc_temp_size = fc_temp_size_Slider.value
+                    settings.press_temp_size = press_temp_size_Slider.value
                 }
             }
         }
@@ -88,13 +88,13 @@ BaseWidget {
         id: widgetInner
 
         anchors.fill: parent
-        scale: settings.fc_temp_size
+        scale: settings.press_temp_size
 
         Text {
             id: temp_glyph
-            color: OpenHD.fc_temp >= 65 ? (OpenHD.fc_temp >= 75 ? "#ff0000" : "#fbfd15") : settings.color_shape
-            opacity: settings.fc_temp_opacity
-            text: OpenHD.fc_temp >= 65 ? (OpenHD.fc_temp >= 75 ? "\uf2c7" : "\uf2c9") : "\uf2cb"
+            color: OpenHD.press_temp >= 65 ? (OpenHD.press_temp >= 75 ? "#ff0000" : "#fbfd15") : settings.color_shape
+            opacity: settings.press_temp_opacity
+            text: OpenHD.press_temp >= 65 ? (OpenHD.press_temp >= 75 ? "\uf2c7" : "\uf2c9") : "\uf2cb"
             anchors.left: parent.left
             anchors.bottom: parent.bottom
             font.family: "Font Awesome 5 Free"
@@ -108,10 +108,10 @@ BaseWidget {
         }
 
         Text {
-            id: fc_temp
-            color: OpenHD.fc_temp >= 65 ? (OpenHD.fc_temp >= 75 ? "#ff0000" : "#fbfd15") : settings.color_text
-            opacity: settings.fc_temp_opacity
-            text: OpenHD.fc_temp == 0 ? qsTr("N/A") : OpenHD.fc_temp + "°"
+            id: press_temp
+            color: OpenHD.press_temp >= 65 ? (OpenHD.press_temp >= 75 ? "#ff0000" : "#fbfd15") : settings.color_text
+            opacity: settings.press_temp_opacity
+            text: OpenHD.press_temp == 0 ? qsTr("N/A") : OpenHD.press_temp + "°"
             anchors.left: temp_glyph.right
             anchors.leftMargin: 2
             anchors.bottom: parent.bottom

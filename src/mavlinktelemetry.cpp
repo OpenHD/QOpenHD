@@ -232,15 +232,21 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
         case MAVLINK_MSG_ID_GPS_STATUS: {
             break;
         }
+        case MAVLINK_MSG_ID_SCALED_IMU:{
+            mavlink_scaled_imu_t scaled_imu;
+            mavlink_msg_scaled_imu_decode(&msg, &scaled_imu);
+            OpenHD::instance()->set_imu_temp((int)scaled_imu.temperature/100);
+            break;
+        }
         case MAVLINK_MSG_ID_RAW_IMU:{
             break;
         }
         case MAVLINK_MSG_ID_SCALED_PRESSURE:{
-        mavlink_scaled_pressure_t raw_imu;
-        mavlink_msg_scaled_pressure_decode(&msg, &raw_imu);
+            mavlink_scaled_pressure_t scaled_pressure;
+            mavlink_msg_scaled_pressure_decode(&msg, &scaled_pressure);
 
-        OpenHD::instance()->set_fc_temp((int)raw_imu.temperature/100);
-        //qDebug() << "Temp:" <<  raw_imu.temperature;
+            OpenHD::instance()->set_press_temp((int)scaled_pressure.temperature/100);
+            //qDebug() << "Temp:" <<  scaled_pressure.temperature;
             break;
         }
         case MAVLINK_MSG_ID_ATTITUDE:{
@@ -411,13 +417,20 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             OpenHD::instance()->set_flight_mah(battery_status.current_consumed);
 
             int total_voltage = 0;
-            for (int cell = 0; cell < 10; cell++) {
-                int cell_voltage  = battery_status.voltages[cell];
-                if (cell_voltage != UINT16_MAX) {
-                    // qDebug() << "Battery cell voltage " << cell << " :" << cell_voltage;
-                    total_voltage += cell_voltage;
-                }
+            int cellCount;
+            for (cellCount = 0; ( (cellCount < MAVLINK_MSG_BATTERY_STATUS_FIELD_VOLTAGES_LEN)
+                                 && (battery_status.voltages[cellCount] != UINT16_MAX) ); cellCount++) {
+                // qDebug() << "Battery cell voltage " << cell << " :" << battery_status.voltages[cell];
+                total_voltage += battery_status.voltages[cellCount];
             }
+
+            QSettings settings;
+            settings.setValue("battery_cells", cellCount);
+
+            OpenHD::instance()->set_fc_battery_percent(battery_status.battery_remaining);
+            QString fc_battery_gauge_glyph = m_util.battery_gauge_glyph_from_percentage(battery_status.battery_remaining);
+            OpenHD::instance()->set_fc_battery_gauge(fc_battery_gauge_glyph);
+
             break;
         }
         case MAVLINK_MSG_ID_SENSOR_OFFSETS: {
@@ -474,14 +487,12 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             mavlink_msg_home_position_decode(&msg, &home_position);
             OpenHD::instance()->set_homelat((double)home_position.latitude / 10000000.0);
             OpenHD::instance()->set_homelon((double)home_position.longitude / 10000000.0);
-            LocalMessage::instance()->showMessage("Home Position set by OpenHD", 2);
+            //LocalMessage::instance()->showMessage("Home Position set by Telemetry", 7);
             break;
         }
         case MAVLINK_MSG_ID_STATUSTEXT: {
             mavlink_statustext_t statustext;
             mavlink_msg_statustext_decode(&msg, &statustext);
-            int level = 0;
-
             QByteArray param_id(statustext.text, 50);
             /*
              * If there's no null in the text array, the mavlink docs say it has to be exactly 50 characters,
@@ -499,6 +510,10 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             break;
         }
         case MAVLINK_MSG_ID_ESC_TELEMETRY_1_TO_4: {
+            mavlink_esc_telemetry_1_to_4_t esc_telemetry;
+            mavlink_msg_esc_telemetry_1_to_4_decode(&msg, &esc_telemetry);
+
+            OpenHD::instance()->set_esc_temp((int)esc_telemetry.temperature[0]);
             break;
         }
         default: {

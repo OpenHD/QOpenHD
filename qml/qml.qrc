@@ -145,8 +145,6 @@
         <file>ui/widgets/RcRSSIWidget.qml</file>
         <file>ui/widgets/ExampleWidget.qml</file>
         <file>ui/widgets/ExampleWidgetForm.ui.qml</file>
-        <file>ui/widgets/FcTempWidgetForm.ui.qml</file>
-        <file>ui/widgets/FcTempWidget.qml</file>
         <file>ui/widgets/RollWidgetForm.ui.qml</file>
         <file>ui/widgets/RollWidget.qml</file>
         <file>ui/widgets/BlackBoxWidget.qml</file>
@@ -234,5 +232,11 @@
         <file>ui/elements/RestartDialog.qml</file>
         <file>ui/elements/ColorPicker.qml</file>
         <file>ui/elements/AppSettings.qml</file>
+        <file>ui/widgets/EscTempWidget.qml</file>
+        <file>ui/widgets/EscTempWidgetForm.ui.qml</file>
+        <file>ui/widgets/PressTempWidget.qml</file>
+        <file>ui/widgets/PressTempWidgetForm.ui.qml</file>
+        <file>ui/widgets/ImuTempWidget.qml</file>
+        <file>ui/widgets/ImuTempWidgetForm.ui.qml</file>
     </qresource>
 </RCC>
