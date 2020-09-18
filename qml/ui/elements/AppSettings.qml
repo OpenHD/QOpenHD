@@ -91,6 +91,10 @@ Settings {
     property double mah_opacity: 1
     property double mah_size: 1
 
+    property bool show_flight_mah_km: false
+    property double mah_km_opacity: 1
+    property double mah_km_size: 1
+
     property bool show_imu_temp: false
     property double imu_temp_opacity: 1
     property double imu_temp_size: 1

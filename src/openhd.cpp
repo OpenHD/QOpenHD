@@ -216,6 +216,22 @@ void OpenHD::updateAppMah() {
     set_app_mah( total_mah );
 }
 
+void OpenHD::updateAppMahKm() {
+    if (!totalTime.isValid()){
+        totalTime.start();
+    }
+    static OpenHDUtil::pt1Filter_t eFilterState;
+    auto currentTimeMs = totalTime.elapsed();
+    auto efficiencyTimeDelta = currentTimeMs - mahKmLastTime;
+
+    if ( (m_gps_fix_type >= GPS_FIX_TYPE_2D_FIX) && (m_speed > 0) ) {
+        set_mah_km(OpenHDUtil::pt1FilterApply4(
+                    &eFilterState, ((float)m_battery_current*1000 / m_speed), 1, efficiencyTimeDelta * 1e-3f));
+        mahKmLastTime = currentTimeMs;
+    }
+
+}
+
 void OpenHD::pauseBlackBox(bool pause, int index){
     //qDebug() << "OpenHD::pauseBlackBox";
     m_pause_blackbox=pause;
@@ -453,6 +469,11 @@ void OpenHD::set_gps_hdop(double gps_hdop) {
     emit gps_hdop_changed(m_gps_hdop);
 }
 
+void OpenHD::set_gps_fix_type(GPS_FIX_TYPE gps_fix_type) {
+    m_gps_fix_type = gps_fix_type;
+    emit gps_fix_type_changed(m_gps_fix_type);
+}
+
 void OpenHD::set_pitch(double pitch) {
     m_pitch = pitch;
     emit pitch_changed(m_pitch);
@@ -686,6 +707,11 @@ void OpenHD::set_flight_mah(double flight_mah) {
 void OpenHD::set_app_mah(double app_mah) {
     m_app_mah = app_mah;
     emit app_mah_changed(m_app_mah);
+}
+
+void OpenHD::set_mah_km(double mah_km) {
+    m_mah_km = mah_km;
+    emit mah_km_changed(m_mah_km);
 }
 
 void OpenHD::set_last_openhd_heartbeat(qint64 last_openhd_heartbeat) {

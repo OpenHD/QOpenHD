@@ -112,6 +112,7 @@ int OpenHDUtil::lifepo4_battery_voltage_to_percent(int cells, double voltage) {
 
 
 QString OpenHDUtil::battery_gauge_glyph_from_percentage(int percent) {
+    percent = (percent / 5) * 5;
     // these are Material Design Icon codepoints from the battery gauge icon set
     switch (percent) {
         case 100:return "\uf079";
@@ -482,6 +483,19 @@ uint OpenHDUtil::map(double input, double input_start, double input_end, uint16_
     int output_range = output_end - output_start;
 
     return (input - input_start)*output_range / input_range + output_start;
+}
+
+
+float OpenHDUtil::pt1FilterApply4(OpenHDUtil::pt1Filter_t *filter, float input, float f_cut, float dT)
+{
+    // Pre calculate and store RC
+    if (!filter->RC) {
+        filter->RC = 1.0f / ( 2.0f * M_PIf * f_cut );
+    }
+
+    filter->dT = dT;    // cache latest dT for possible use in pt1FilterApply
+    filter->state = filter->state + dT / (filter->RC + dT) * (input - filter->state);
+    return filter->state;
 }
 
 #if defined(__android__)

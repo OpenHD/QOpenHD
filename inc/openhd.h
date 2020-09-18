@@ -53,6 +53,7 @@ public:
     void findGcsPosition();
     void updateFlightDistance();
     void updateAppMah();
+    void updateAppMahKm();
     void updateLateralSpeed();
     void updateWind();
 
@@ -138,6 +139,9 @@ public:
 
     Q_PROPERTY(double gps_hdop MEMBER m_gps_hdop WRITE set_gps_hdop NOTIFY gps_hdop_changed)
     void set_gps_hdop(double gps_hdop);
+
+    Q_PROPERTY(GPS_FIX_TYPE gps_fix_type MEMBER m_gps_fix_type WRITE set_gps_fix_type NOTIFY gps_fix_type_changed)
+    void set_gps_fix_type(GPS_FIX_TYPE gps_fix_type);
 
     Q_PROPERTY(int battery_percent MEMBER m_battery_percent WRITE set_battery_percent NOTIFY battery_percent_changed)
     void set_battery_percent(int battery_percent);
@@ -307,6 +311,9 @@ public:
     Q_PROPERTY(double app_mah MEMBER m_app_mah WRITE set_app_mah NOTIFY app_mah_changed)
     void set_app_mah(double app_mah);
 
+    Q_PROPERTY(double mah_km MEMBER m_mah_km WRITE set_mah_km NOTIFY mah_km_changed)
+    void set_mah_km(double mah_km);
+
     Q_PROPERTY(qint64 last_openhd_heartbeat MEMBER m_last_openhd_heartbeat WRITE set_last_openhd_heartbeat NOTIFY last_openhd_heartbeat_changed)
     void set_last_openhd_heartbeat(qint64 last_openhd_heartbeat);
 
@@ -440,6 +447,7 @@ signals:
     void fc_battery_gauge_changed(QString fc_battery_gauge);
     void satellites_visible_changed(int satellites_visible);
     void gps_hdop_changed(double gps_hdop);
+    void gps_fix_type_changed(GPS_FIX_TYPE gps_fix_type);
     void pitch_changed(double pitch);
     void roll_changed(double roll);
     void yaw_changed(double yaw);
@@ -505,6 +513,7 @@ signals:
 
     void flight_mah_changed(int flight_mah);
     void app_mah_changed(int app_mah);
+    void mah_km_changed(int mah_km);
 
     void last_openhd_heartbeat_changed(qint64 last_openhd_heartbeat);
 
@@ -593,6 +602,7 @@ public:
 
     int m_satellites_visible = 0;
     double m_gps_hdop = 99.00;
+    GPS_FIX_TYPE m_gps_fix_type = GPS_FIX_TYPE_NO_GPS;
 
     double m_roll = 0.0;
     double m_yaw = 0.0;
@@ -671,7 +681,9 @@ public:
 
     int m_flight_mah = 0;
     int m_app_mah = 0;
+    int m_mah_km = 0;
     qint64 mahLastTime= 0;
+    qint64 mahKmLastTime= 0;
     double total_mah= 0;
 
     qint64 m_last_openhd_heartbeat = -1;

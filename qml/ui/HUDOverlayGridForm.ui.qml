@@ -69,13 +69,18 @@ Item {
 
     // + 0% cpu
     FlightDistanceWidget {
-            id: flight_distance
-        }
+        id: flight_distance
+    }
 
     // + 0% cpu
     FlightMahWidget {
-            id: flight_mah
-        }
+        id: flight_mah
+    }
+
+    // + 0% cpu
+    FlightMahKmWidget {
+        id: flight_mah_km
+    }
 
     // + 0% cpu
     BitrateWidget {

@@ -164,6 +164,8 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
 
             OpenHD::instance()->updateAppMah();
 
+            OpenHD::instance()->updateAppMahKm();
+
             QSettings settings;
             auto battery_cells = settings.value("battery_cells", QVariant(3)).toInt();
 
@@ -227,6 +229,7 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             mavlink_msg_gps_raw_int_decode(&msg, &gps_status);
             OpenHD::instance()->set_satellites_visible(gps_status.satellites_visible);
             OpenHD::instance()->set_gps_hdop(gps_status.eph / 100.0);
+            OpenHD::instance()->set_gps_fix_type((GPS_FIX_TYPE)gps_status.fix_type);
             break;
         }
         case MAVLINK_MSG_ID_GPS_STATUS: {
@@ -417,20 +420,22 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             OpenHD::instance()->set_flight_mah(battery_status.current_consumed);
 
             int total_voltage = 0;
-            int cellCount;
-            for (cellCount = 0; ( (cellCount < MAVLINK_MSG_BATTERY_STATUS_FIELD_VOLTAGES_LEN)
-                                 && (battery_status.voltages[cellCount] != UINT16_MAX) ); cellCount++) {
-                // qDebug() << "Battery cell voltage " << cell << " :" << battery_status.voltages[cell];
-                total_voltage += battery_status.voltages[cellCount];
+            int cell_count;
+            for (cell_count = 0; ( (cell_count < MAVLINK_MSG_BATTERY_STATUS_FIELD_VOLTAGES_LEN)
+                                 && (battery_status.voltages[cell_count] != UINT16_MAX) ); cell_count++) {
+                total_voltage += battery_status.voltages[cell_count];
             }
 
             QSettings settings;
-            settings.setValue("battery_cells", cellCount);
+            if (cell_count && (cell_count != settings.value("battery_cells", QVariant(3)).toInt()) ) {
+                LocalMessage::instance()->showMessage("Battery Cells update by Telemetry", 7);
+                settings.setValue("battery_cells", QVariant(cell_count));
+                settings.sync();
+            }
 
             OpenHD::instance()->set_fc_battery_percent(battery_status.battery_remaining);
             QString fc_battery_gauge_glyph = m_util.battery_gauge_glyph_from_percentage(battery_status.battery_remaining);
             OpenHD::instance()->set_fc_battery_gauge(fc_battery_gauge_glyph);
-
             break;
         }
         case MAVLINK_MSG_ID_SENSOR_OFFSETS: {

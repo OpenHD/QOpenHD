@@ -238,5 +238,7 @@
         <file>ui/widgets/PressTempWidgetForm.ui.qml</file>
         <file>ui/widgets/ImuTempWidget.qml</file>
         <file>ui/widgets/ImuTempWidgetForm.ui.qml</file>
+        <file>ui/widgets/FlightMahKmWidget.qml</file>
+        <file>ui/widgets/FlightMahKmWidgetForm.ui.qml</file>
     </qresource>
 </RCC>
