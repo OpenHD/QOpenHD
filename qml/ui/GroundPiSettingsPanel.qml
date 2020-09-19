@@ -122,11 +122,11 @@ GroundPiSettingsPanelForm {
         target: openHDSettings
 
         function onSavingSettingsStart() {
-            localMessage("saving ground settings...", 2);
+            localMessage("Saving ground settings", 6);
         }
 
         function onSavingSettingsFinished() {
-            localMessage("ground settings saved", 2);
+            localMessage("Ground settings saved", 6);
             showSavedCheckmark = true
             savedTimer.start()
             if (requireReboot) {

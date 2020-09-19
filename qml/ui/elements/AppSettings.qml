@@ -37,7 +37,7 @@ Settings {
 
     property double ground_power_opacity: 1
 
-    property int log_level: 3
+    property int log_level: 6
 
     property bool show_downlink_rssi: true
     property double downlink_rssi_opacity: 1

@@ -174,7 +174,7 @@ void OpenHD::findGcsPosition() {
                 set_homelat(m_lat);
                 set_homelon(m_lon);
                 gcs_position_set=true;
-                LocalMessage::instance()->showMessage("Home Position set by OpenHD", 2);
+                LocalMessage::instance()->showMessage("Home Position set by OpenHD", 7);
             }
         }
     }

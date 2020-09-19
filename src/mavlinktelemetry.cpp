@@ -428,7 +428,7 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
 
             QSettings settings;
             if (cell_count && (cell_count != settings.value("battery_cells", QVariant(3)).toInt()) ) {
-                LocalMessage::instance()->showMessage("Battery Cells update by Telemetry", 7);
+                LocalMessage::instance()->showMessage("Battery Cells updated by Telemetry", 7);
                 settings.setValue("battery_cells", QVariant(cell_count));
                 settings.sync();
             }
