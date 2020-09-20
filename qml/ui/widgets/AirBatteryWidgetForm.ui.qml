@@ -271,7 +271,7 @@ BaseWidget {
             // @disable-check M223
             color: {
                 // @disable-check M222
-                var percent = settings.air_battery_show_fc_percent ? OpenHDUtil.lipo_battery_voltage_to_percent(settings.battery_cells, OpenHD.battery_voltage) : OpenHD.fc_battery_percent
+                var percent = settings.air_battery_show_fc_percent ? OpenHD.fc_battery_percent : OpenHDUtil.lipo_battery_voltage_to_percent(settings.battery_cells, OpenHD.battery_voltage);
                 // 20% warning, 15% critical
                 return percent < 20 ? (percent < 15 ? "#ff0000" : "#fbfd15") : settings.color_shape
             }

@@ -8,7 +8,7 @@ import OpenHD 1.0
 
 BaseWidget {
     id: flightMahKmWidget
-    width: 100
+    width: 130
     height: 24
 
     visible: settings.show_flight_mah_km
@@ -112,7 +112,7 @@ BaseWidget {
         }
         Text {
             id: flight_mah_km_text
-            width: 72
+            width: 102
             height: 24
             clip: true
             color: settings.color_text
@@ -124,7 +124,7 @@ BaseWidget {
             verticalAlignment: Text.AlignVCenter
             font.pixelSize: 16
             font.family: settings.font_text
-            horizontalAlignment: Text.AlignRight
+            horizontalAlignment: Text.AlignLeft
             style: Text.Outline
             styleColor: settings.color_glow
         }
