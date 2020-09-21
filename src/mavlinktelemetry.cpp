@@ -229,7 +229,7 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             mavlink_msg_gps_raw_int_decode(&msg, &gps_status);
             OpenHD::instance()->set_satellites_visible(gps_status.satellites_visible);
             OpenHD::instance()->set_gps_hdop(gps_status.eph / 100.0);
-            OpenHD::instance()->set_gps_fix_type((GPS_FIX_TYPE)gps_status.fix_type);
+            OpenHD::instance()->set_gps_fix_type((unsigned int)gps_status.fix_type);
             break;
         }
         case MAVLINK_MSG_ID_GPS_STATUS: {

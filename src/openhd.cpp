@@ -225,7 +225,7 @@ void OpenHD::updateAppMahKm() {
     auto efficiencyTimeDelta = currentTimeMs - mahKmLastTime;
 
     if ( (m_gps_fix_type >= GPS_FIX_TYPE_2D_FIX) && (m_speed > 0) ) {
-        set_mah_km(OpenHDUtil::pt1FilterApply4(
+        set_mah_km((int)OpenHDUtil::pt1FilterApply4(
                     &eFilterState, ((float)m_battery_current*10 / m_speed), 1, efficiencyTimeDelta * 1e-3f));
         mahKmLastTime = currentTimeMs;
     }
@@ -469,7 +469,7 @@ void OpenHD::set_gps_hdop(double gps_hdop) {
     emit gps_hdop_changed(m_gps_hdop);
 }
 
-void OpenHD::set_gps_fix_type(GPS_FIX_TYPE gps_fix_type) {
+void OpenHD::set_gps_fix_type(unsigned int gps_fix_type) {
     m_gps_fix_type = gps_fix_type;
     emit gps_fix_type_changed(m_gps_fix_type);
 }
@@ -709,7 +709,7 @@ void OpenHD::set_app_mah(double app_mah) {
     emit app_mah_changed(m_app_mah);
 }
 
-void OpenHD::set_mah_km(double mah_km) {
+void OpenHD::set_mah_km(int mah_km) {
     m_mah_km = mah_km;
     emit mah_km_changed(m_mah_km);
 }
