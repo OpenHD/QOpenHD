@@ -226,7 +226,7 @@ void OpenHD::updateAppMahKm() {
 
     if ( (m_gps_fix_type >= GPS_FIX_TYPE_2D_FIX) && (m_speed > 0) ) {
         set_mah_km(OpenHDUtil::pt1FilterApply4(
-                    &eFilterState, ((float)m_battery_current*1000 / m_speed), 1, efficiencyTimeDelta * 1e-3f));
+                    &eFilterState, ((float)m_battery_current*10 / m_speed), 1, efficiencyTimeDelta * 1e-3f));
         mahKmLastTime = currentTimeMs;
     }
 

@@ -372,7 +372,6 @@ flight_mah_widget_y_offset={{ flight_mah_widget_y_offset }}
 # Flight mAh/km widget
 #
 show_flight_mah_km={{ show_flight_mah_km }}
-flight_mah_km_use_telemetry={{ flight_mah_km_use_telemetry }}
 mah_km_opacity={{ mah_km_opacity }}
 mah_km_size={{ mah_km_size }}
 flight_mah_km_widget_h_center={{ flight_mah_km_widget_h_center }}
