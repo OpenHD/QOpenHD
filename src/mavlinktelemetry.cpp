@@ -236,12 +236,12 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             break;
         }
         case MAVLINK_MSG_ID_SCALED_IMU:{
-            mavlink_scaled_imu_t scaled_imu;
-            mavlink_msg_scaled_imu_decode(&msg, &scaled_imu);
-            OpenHD::instance()->set_imu_temp((int)scaled_imu.temperature/100);
             break;
         }
         case MAVLINK_MSG_ID_RAW_IMU:{
+            mavlink_raw_imu_t raw_imu;
+            mavlink_msg_raw_imu_decode(&msg, &raw_imu);
+            OpenHD::instance()->set_imu_temp((int)raw_imu.temperature/100);
             break;
         }
         case MAVLINK_MSG_ID_SCALED_PRESSURE:{
@@ -426,12 +426,12 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
                 total_voltage += battery_status.voltages[cell_count];
             }
 
-            QSettings settings;
-            if (cell_count && (cell_count != settings.value("battery_cells", QVariant(3)).toInt()) ) {
-                LocalMessage::instance()->showMessage("Battery Cells updated by Telemetry", 7);
-                settings.setValue("battery_cells", QVariant(cell_count));
-                settings.sync();
-            }
+//            QSettings settings;
+//            if (cell_count && (cell_count != settings.value("battery_cells", QVariant(3)).toInt()) ) {
+//                LocalMessage::instance()->showMessage("Battery Cells updated by Telemetry", 7);
+//                settings.setValue("battery_cells", QVariant(cell_count));
+//                settings.sync();
+//            }
 
             OpenHD::instance()->set_fc_battery_percent(battery_status.battery_remaining);
             QString fc_battery_gauge_glyph = m_util.battery_gauge_glyph_from_percentage(battery_status.battery_remaining);

@@ -200,7 +200,7 @@ BaseWidget {
             y: 0
             width: 24
             height: 24
-            color: settings.color_text
+            color: OpenHD.gps_fix_type >= 3 ? settings.color_text : (OpenHD.gps_fix_type < 2 ? "#ff0000" : "#fbfd15")
             opacity: settings.gps_opacity
             text: OpenHD.satellites_visible
             anchors.right: gps_hdop.left
@@ -219,7 +219,7 @@ BaseWidget {
             id: gps_hdop
             width: 48
             height: 24
-            color: settings.color_text
+            color: OpenHD.gps_fix_type >= 3 ? settings.color_text : (OpenHD.gps_fix_type < 2 ? "#ff0000" : "#fbfd15")
             opacity: settings.gps_opacity
             text: qsTr("%L1").arg(OpenHD.gps_hdop)
             anchors.right: parent.right

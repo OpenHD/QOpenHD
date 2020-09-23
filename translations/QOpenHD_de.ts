@@ -1,4 +1,6 @@
-<?xml version="1.0" ?><!DOCTYPE TS><TS language="de" version="2.1">
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE TS>
+<TS version="2.1" language="de">
 <context>
     <name>AboutPanelForm.ui</name>
     <message>
@@ -11,7 +13,7 @@
     </message>
     <message>
         <source>OpenHD Version:</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Ground</source>
@@ -66,6 +68,10 @@
     <message>
         <source>%L1%</source>
         <translation>%1L1%</translation>
+    </message>
+    <message>
+        <source>Use telemetry percentege</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -169,7 +175,7 @@
     </message>
     <message>
         <source>Choose a color</source>
-        <translation>Wähle eine Farbe</translation>
+        <translation type="vanished">Wähle eine Farbe</translation>
     </message>
     <message>
         <source>Glow Color</source>
@@ -193,11 +199,11 @@
     </message>
     <message>
         <source>Hide when drone armed</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Turn red when drone armed</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Show Downlink RSSI</source>
@@ -209,7 +215,7 @@
     </message>
     <message>
         <source>Show RC RSSI (not OpenHD RC)</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Show Bitrate</source>
@@ -233,7 +239,7 @@
     </message>
     <message>
         <source>Show Flight Controller Temperature</source>
-        <translation>Flugreglertemperatur anzeigen </translation>
+        <translation type="vanished">Flugreglertemperatur anzeigen </translation>
     </message>
     <message>
         <source>Show Ground Status</source>
@@ -289,7 +295,7 @@
     </message>
     <message>
         <source>Show Bank Angle Indicator</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Show Home Arrow</source>
@@ -403,6 +409,30 @@
         <source>Settings reset</source>
         <translation>Konfiguration zurücksetzen</translation>
     </message>
+    <message>
+        <source>Log Level</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Text font</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show IMU Sensor Temperature</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show Pressure Sensor Temperature</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show Esc Temperature</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show Efficiency in mAh/km</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ArrowWidgetForm</name>
@@ -462,7 +492,18 @@
     </message>
     <message>
         <source>restart telemetry</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ColorPicker</name>
+    <message>
+        <source>Cancel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -530,6 +571,25 @@
         <source>N/A</source>
         <translation>n.v.</translation>
     </message>
+    <message>
+        <source>dBm</source>
+        <translation type="unfinished">dBm</translation>
+    </message>
+</context>
+<context>
+    <name>EscTempWidgetForm.ui</name>
+    <message>
+        <source>Transparency</source>
+        <translation type="unfinished">Transparenz</translation>
+    </message>
+    <message>
+        <source>Size</source>
+        <translation type="unfinished">Größe</translation>
+    </message>
+    <message>
+        <source>N/A</source>
+        <translation type="unfinished">n.v.</translation>
+    </message>
 </context>
 <context>
     <name>ExampleWidgetForm.ui</name>
@@ -542,15 +602,15 @@
     <name>FcTempWidgetForm.ui</name>
     <message>
         <source>Transparency</source>
-        <translation>Transparenz</translation>
+        <translation type="vanished">Transparenz</translation>
     </message>
     <message>
         <source>Size</source>
-        <translation>Größe</translation>
+        <translation type="vanished">Größe</translation>
     </message>
     <message>
         <source>N/A</source>
-        <translation>n.v.</translation>
+        <translation type="vanished">n.v.</translation>
     </message>
 </context>
 <context>
@@ -562,6 +622,17 @@
     <message>
         <source>Size</source>
         <translation>Größe</translation>
+    </message>
+</context>
+<context>
+    <name>FlightMahKmWidgetForm.ui</name>
+    <message>
+        <source>Transparency</source>
+        <translation type="unfinished">Transparenz</translation>
+    </message>
+    <message>
+        <source>Size</source>
+        <translation type="unfinished">Größe</translation>
     </message>
 </context>
 <context>
@@ -813,7 +884,7 @@
     </message>
     <message>
         <source>Lon:</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished">Lon:</translation>
     </message>
     <message>
         <source>Size</source>
@@ -868,6 +939,21 @@
     </message>
 </context>
 <context>
+    <name>ImuTempWidgetForm.ui</name>
+    <message>
+        <source>Transparency</source>
+        <translation type="unfinished">Transparenz</translation>
+    </message>
+    <message>
+        <source>Size</source>
+        <translation type="unfinished">Größe</translation>
+    </message>
+    <message>
+        <source>N/A</source>
+        <translation type="unfinished">n.v.</translation>
+    </message>
+</context>
+<context>
     <name>MainVideoAndroid</name>
     <message>
         <source>Do not fly with this app! Video is not stable yet!</source>
@@ -908,6 +994,25 @@
     </message>
 </context>
 <context>
+    <name>OSDCustomizer</name>
+    <message>
+        <source>Shape Color</source>
+        <translation type="unfinished">Umrissfarbe</translation>
+    </message>
+    <message>
+        <source>Glow Color</source>
+        <translation type="unfinished">Umrissfarbe</translation>
+    </message>
+    <message>
+        <source>Text Color</source>
+        <translation type="unfinished">Textfarbe</translation>
+    </message>
+    <message>
+        <source>Done</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>OpenHD</name>
     <message>
         <source>%1 flight mode</source>
@@ -938,11 +1043,11 @@
     </message>
     <message>
         <source>Reboot Air</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Shutdown Air</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Yes</source>
@@ -953,7 +1058,7 @@
     <name>PowerPanelForm.ui</name>
     <message>
         <source>Reboot or safely shut down the air/ground before removing power, or to apply settings changes when it is difficult to cycle power manually. If you have a power control board or sensors connected you may also see power supply information.</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Air</source>
@@ -993,6 +1098,21 @@
     </message>
 </context>
 <context>
+    <name>PressTempWidgetForm.ui</name>
+    <message>
+        <source>Transparency</source>
+        <translation type="unfinished">Transparenz</translation>
+    </message>
+    <message>
+        <source>Size</source>
+        <translation type="unfinished">Größe</translation>
+    </message>
+    <message>
+        <source>N/A</source>
+        <translation type="unfinished">n.v.</translation>
+    </message>
+</context>
+<context>
     <name>RcRSSIWidgetForm.ui</name>
     <message>
         <source>Transparency</source>
@@ -1003,12 +1123,31 @@
         <translation>Größe</translation>
     </message>
     <message>
-        <source/>
-        <translation type="unfinished"/>
+        <source></source>
+        <translation></translation>
     </message>
     <message>
         <source>N/A</source>
         <translation>n.v.</translation>
+    </message>
+</context>
+<context>
+    <name>RestartDialog</name>
+    <message>
+        <source>Restart required</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You must restart the app for your loaded configuration file to take effect</source>
+        <translation type="unfinished">Sie müssen die App neu starten, damit die Konfiguration festgelegt werden kann</translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Close App</source>
+        <translation type="unfinished">Sluiten App</translation>
     </message>
 </context>
 <context>
@@ -1027,7 +1166,7 @@
     </message>
     <message>
         <source>Show Arc</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Show Numbers</source>
@@ -1035,14 +1174,14 @@
     </message>
     <message>
         <source>Sky Pointer</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>SensorPanelForm.ui</name>
     <message>
         <source>If you have temperature or IMU sensors connected you may see and/or calibrate them below.</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1126,19 +1265,19 @@
     <name>StatusChartForm.ui</name>
     <message>
         <source>Air CPU</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Air Temp</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Gnd CPU</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Gnd Temp</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Lost Pkt</source>
@@ -1158,11 +1297,11 @@
     </message>
     <message>
         <source>Inj. Fail</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Skip Pkt</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Bitrate</source>
@@ -1173,27 +1312,27 @@
     <name>StatusPanelForm.ui</name>
     <message>
         <source>Last RSSI: </source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>  HB: </source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source> | ATT: </source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source> | BAT: </source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source> | GPS: </source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source> | VFR: </source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1319,24 +1458,24 @@
         <translation>Open.HD</translation>
     </message>
     <message>
-        <source>Restart required</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
         <source>You must restart the app for your loaded configuration file to take effect</source>
-        <translation>Sie müssen die App neu starten, damit die Konfiguration festgelegt werden kann</translation>
+        <translation type="vanished">Sie müssen die App neu starten, damit die Konfiguration festgelegt werden kann</translation>
     </message>
     <message>
         <source>Cancel</source>
-        <translation>Stornieren</translation>
+        <translation type="vanished">Stornieren</translation>
     </message>
     <message>
         <source>Restart App</source>
-        <translation>App neu starten</translation>
+        <translation type="vanished">App neu starten</translation>
     </message>
     <message>
         <source>Close App</source>
-        <translation>Sluiten App</translation>
+        <translation type="vanished">Sluiten App</translation>
+    </message>
+    <message>
+        <source>Rapidly tap between widgets to enable/disable stereo</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>
