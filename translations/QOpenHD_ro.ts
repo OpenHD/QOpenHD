@@ -1,4 +1,6 @@
-<?xml version="1.0" ?><!DOCTYPE TS><TS language="ro" version="2.1">
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE TS>
+<TS version="2.1" language="ro">
 <context>
     <name>AboutPanelForm.ui</name>
     <message>
@@ -66,6 +68,10 @@
     <message>
         <source>%L1%</source>
         <translation>%L1%</translation>
+    </message>
+    <message>
+        <source>Use telemetry percentege</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -169,7 +175,7 @@
     </message>
     <message>
         <source>Choose a color</source>
-        <translation>Alegeți o culoare</translation>
+        <translation type="vanished">Alegeți o culoare</translation>
     </message>
     <message>
         <source>Glow Color</source>
@@ -193,11 +199,11 @@
     </message>
     <message>
         <source>Hide when drone armed</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Turn red when drone armed</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Show Downlink RSSI</source>
@@ -209,7 +215,7 @@
     </message>
     <message>
         <source>Show RC RSSI (not OpenHD RC)</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Show Bitrate</source>
@@ -233,7 +239,7 @@
     </message>
     <message>
         <source>Show Flight Controller Temperature</source>
-        <translation>Afișează temperatura controlerului de zbor</translation>
+        <translation type="vanished">Afișează temperatura controlerului de zbor</translation>
     </message>
     <message>
         <source>Show Ground Status</source>
@@ -289,7 +295,7 @@
     </message>
     <message>
         <source>Show Bank Angle Indicator</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Show Home Arrow</source>
@@ -403,6 +409,30 @@
         <source>Settings reset</source>
         <translation>Resetează configurația</translation>
     </message>
+    <message>
+        <source>Log Level</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Text font</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show IMU Sensor Temperature</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show Pressure Sensor Temperature</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show Esc Temperature</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show Efficiency in mAh/km</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ArrowWidgetForm</name>
@@ -466,10 +496,21 @@
     </message>
 </context>
 <context>
+    <name>ColorPicker</name>
+    <message>
+        <source>Cancel</source>
+        <translation type="unfinished">Anulare</translation>
+    </message>
+    <message>
+        <source>Select</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>ControlWidgetForm.ui</name>
     <message>
         <source>Transparency</source>
-        <translation>Transparență </translation>
+        <translation>Transparență&#xa0;</translation>
     </message>
     <message>
         <source>Size</source>
@@ -512,7 +553,7 @@
     </message>
     <message>
         <source>Transparency</source>
-        <translation>Transparență </translation>
+        <translation>Transparență&#xa0;</translation>
     </message>
     <message>
         <source>Size</source>
@@ -530,6 +571,25 @@
         <source>N/A</source>
         <translation>N/A</translation>
     </message>
+    <message>
+        <source>dBm</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>EscTempWidgetForm.ui</name>
+    <message>
+        <source>Transparency</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>N/A</source>
+        <translation type="unfinished">N/A</translation>
+    </message>
 </context>
 <context>
     <name>ExampleWidgetForm.ui</name>
@@ -542,22 +602,22 @@
     <name>FcTempWidgetForm.ui</name>
     <message>
         <source>Transparency</source>
-        <translation>Transparență</translation>
+        <translation type="vanished">Transparență</translation>
     </message>
     <message>
         <source>Size</source>
-        <translation>Dimensiune</translation>
+        <translation type="vanished">Dimensiune</translation>
     </message>
     <message>
         <source>N/A</source>
-        <translation>N/A</translation>
+        <translation type="vanished">N/A</translation>
     </message>
 </context>
 <context>
     <name>FlightDistanceWidgetForm.ui</name>
     <message>
         <source>Transparency</source>
-        <translation>Transparență </translation>
+        <translation>Transparență&#xa0;</translation>
     </message>
     <message>
         <source>Size</source>
@@ -565,10 +625,21 @@
     </message>
 </context>
 <context>
+    <name>FlightMahKmWidgetForm.ui</name>
+    <message>
+        <source>Transparency</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Size</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>FlightMahWidgetForm.ui</name>
     <message>
         <source>Transparency</source>
-        <translation>Transparență </translation>
+        <translation>Transparență&#xa0;</translation>
     </message>
     <message>
         <source>Size</source>
@@ -583,7 +654,7 @@
     <name>FlightModeWidgetForm.ui</name>
     <message>
         <source>Transparency</source>
-        <translation>Transparență </translation>
+        <translation>Transparență&#xa0;</translation>
     </message>
     <message>
         <source>Size</source>
@@ -594,7 +665,7 @@
     <name>FlightTimerWidgetForm.ui</name>
     <message>
         <source>Transparency</source>
-        <translation>Transparență </translation>
+        <translation>Transparență&#xa0;</translation>
     </message>
     <message>
         <source>Size</source>
@@ -613,7 +684,7 @@
     </message>
     <message>
         <source>Transparency</source>
-        <translation>Transparență </translation>
+        <translation>Transparență&#xa0;</translation>
     </message>
     <message>
         <source>Size</source>
@@ -632,7 +703,7 @@
     </message>
     <message>
         <source>Transparency</source>
-        <translation>Transparență </translation>
+        <translation>Transparență&#xa0;</translation>
     </message>
     <message>
         <source>Size</source>
@@ -868,6 +939,21 @@
     </message>
 </context>
 <context>
+    <name>ImuTempWidgetForm.ui</name>
+    <message>
+        <source>Transparency</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>N/A</source>
+        <translation type="unfinished">N/A</translation>
+    </message>
+</context>
+<context>
     <name>MainVideoAndroid</name>
     <message>
         <source>Do not fly with this app! Video is not stable yet!</source>
@@ -908,6 +994,25 @@
     </message>
 </context>
 <context>
+    <name>OSDCustomizer</name>
+    <message>
+        <source>Shape Color</source>
+        <translation type="unfinished">Culoare formă</translation>
+    </message>
+    <message>
+        <source>Glow Color</source>
+        <translation type="unfinished">Culoare radială</translation>
+    </message>
+    <message>
+        <source>Text Color</source>
+        <translation type="unfinished">Culoare text</translation>
+    </message>
+    <message>
+        <source>Done</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>OpenHD</name>
     <message>
         <source>%1 flight mode</source>
@@ -934,15 +1039,15 @@
     </message>
     <message>
         <source>Shutdown Ground</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Reboot Air</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Shutdown Air</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Yes</source>
@@ -953,7 +1058,7 @@
     <name>PowerPanelForm.ui</name>
     <message>
         <source>Reboot or safely shut down the air/ground before removing power, or to apply settings changes when it is difficult to cycle power manually. If you have a power control board or sensors connected you may also see power supply information.</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Air</source>
@@ -993,6 +1098,21 @@
     </message>
 </context>
 <context>
+    <name>PressTempWidgetForm.ui</name>
+    <message>
+        <source>Transparency</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>N/A</source>
+        <translation type="unfinished">N/A</translation>
+    </message>
+</context>
+<context>
     <name>RcRSSIWidgetForm.ui</name>
     <message>
         <source>Transparency</source>
@@ -1003,12 +1123,31 @@
         <translation>Dimensiune</translation>
     </message>
     <message>
-        <source/>
-        <translation type="unfinished"/>
+        <source></source>
+        <translation></translation>
     </message>
     <message>
         <source>N/A</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished">N/A</translation>
+    </message>
+</context>
+<context>
+    <name>RestartDialog</name>
+    <message>
+        <source>Restart required</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You must restart the app for your loaded configuration file to take effect</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation type="unfinished">Anulare</translation>
+    </message>
+    <message>
+        <source>Close App</source>
+        <translation type="unfinished">Închideți aplicația</translation>
     </message>
 </context>
 <context>
@@ -1027,7 +1166,7 @@
     </message>
     <message>
         <source>Show Arc</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Show Numbers</source>
@@ -1035,14 +1174,14 @@
     </message>
     <message>
         <source>Sky Pointer</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>SensorPanelForm.ui</name>
     <message>
         <source>If you have temperature or IMU sensors connected you may see and/or calibrate them below.</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1158,11 +1297,11 @@
     </message>
     <message>
         <source>Inj. Fail</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Skip Pkt</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Bitrate</source>
@@ -1173,27 +1312,27 @@
     <name>StatusPanelForm.ui</name>
     <message>
         <source>Last RSSI: </source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>  HB: </source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source> | ATT: </source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source> | BAT: </source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source> | GPS: </source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source> | VFR: </source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1223,7 +1362,7 @@
     </message>
     <message>
         <source>dBm</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>N/A</source>
@@ -1242,15 +1381,15 @@
     </message>
     <message>
         <source>X</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Y</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Z</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1319,24 +1458,20 @@
         <translation>Open.HD</translation>
     </message>
     <message>
-        <source>Restart required</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>You must restart the app for your loaded configuration file to take effect</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
         <source>Cancel</source>
-        <translation>Anulare</translation>
+        <translation type="vanished">Anulare</translation>
     </message>
     <message>
         <source>Restart App</source>
-        <translation>Reporniți aplicația</translation>
+        <translation type="vanished">Reporniți aplicația</translation>
     </message>
     <message>
         <source>Close App</source>
-        <translation>Închideți aplicația</translation>
+        <translation type="vanished">Închideți aplicația</translation>
+    </message>
+    <message>
+        <source>Rapidly tap between widgets to enable/disable stereo</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>

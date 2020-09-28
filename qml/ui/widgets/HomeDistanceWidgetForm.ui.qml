@@ -23,18 +23,51 @@ BaseWidget {
     defaultVCenter: false
 
     hasWidgetDetail: true
+    widgetDetailHeight: 178
     widgetDetailComponent: Column {
         Item {
             width: parent.width
             height: 32
-            Text { text: qsTr("Lat:");  color: "white"; height: parent.height; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.left: parent.left; verticalAlignment: Text.AlignVCenter }
-            Text { text: Number(OpenHD.homelat).toLocaleString(Qt.locale(), 'f', 6); color: "white"; height: parent.height; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.right: parent.right; verticalAlignment: Text.AlignVCenter }
+            Text {
+                text: qsTr("Lat:")
+                color: "white"
+                height: parent.height
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
+            Text {
+                text: Number(OpenHD.homelat).toLocaleString(Qt.locale(), 'f', 6)
+                color: "white"
+                height: parent.height
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.right: parent.right
+                verticalAlignment: Text.AlignVCenter
+            }
         }
         Item {
             width: parent.width
             height: 32
-            Text { text: qsTr("Lon:");  color: "white"; height: parent.height; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.left: parent.left; verticalAlignment: Text.AlignVCenter }
-            Text { text: Number(OpenHD.homelon).toLocaleString(Qt.locale(), 'f', 6); color: "white"; height: parent.height; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.right: parent.right; verticalAlignment: Text.AlignVCenter }
+            Text {
+                text: qsTr("Lon:")
+                color: "white"
+                height: parent.height
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
+            Text {
+                text: Number(OpenHD.homelon).toLocaleString(Qt.locale(), 'f', 6)
+                color: "white"
+                height: parent.height
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.right: parent.right
+                verticalAlignment: Text.AlignVCenter
+            }
         }
 
         Shape {
@@ -49,8 +82,14 @@ BaseWidget {
                 fillColor: "transparent"
                 startX: 0
                 startY: line.height / 2
-                PathLine { x: 0;          y: line.height / 2 }
-                PathLine { x: line.width; y: line.height / 2 }
+                PathLine {
+                    x: 0
+                    y: line.height / 2
+                }
+                PathLine {
+                    x: line.width
+                    y: line.height / 2
+                }
             }
         }
 
@@ -119,7 +158,7 @@ BaseWidget {
         id: widgetInner
 
         anchors.fill: parent
-        scale:settings.home_distance_size
+        scale: settings.home_distance_size
 
         Text {
             id: home_icon
@@ -148,13 +187,14 @@ BaseWidget {
             opacity: settings.home_distance_opacity
             // @disable-check M222
             text: {
-                var distance = OpenHD.home_distance;
-                var unit = "m";
-                var use_imperial = settings.value("enable_imperial", false);
+                var distance = OpenHD.home_distance
+                var unit = "m"
+                var use_imperial = settings.value("enable_imperial", false)
                 // QML settings can return strings for booleans on some platforms so we check
-                if (use_imperial === true || use_imperial === 1 || use_imperial === "true") {
-                    unit = "ft";
-                    distance = distance * 3.28084;
+                if (use_imperial === true || use_imperial === 1
+                        || use_imperial === "true") {
+                    unit = "ft"
+                    distance = distance * 3.28084
                 }
 
                 return distance.toLocaleString(Qt.locale(), "f", 1) + unit

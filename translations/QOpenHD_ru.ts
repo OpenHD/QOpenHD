@@ -1,4 +1,6 @@
-<?xml version="1.0" ?><!DOCTYPE TS><TS language="ru" version="2.1">
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE TS>
+<TS version="2.1" language="ru">
 <context>
     <name>AboutPanelForm.ui</name>
     <message>
@@ -11,7 +13,7 @@
     </message>
     <message>
         <source>OpenHD Version:</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Ground</source>
@@ -66,6 +68,10 @@
     <message>
         <source>%L1%</source>
         <translation>%L1%</translation>
+    </message>
+    <message>
+        <source>Use telemetry percentege</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -169,7 +175,7 @@
     </message>
     <message>
         <source>Choose a color</source>
-        <translation>Выбери цвет</translation>
+        <translation type="vanished">Выбери цвет</translation>
     </message>
     <message>
         <source>Glow Color</source>
@@ -189,15 +195,15 @@
     </message>
     <message>
         <source>Transparent black</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Hide when drone armed</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Turn red when drone armed</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Show Downlink RSSI</source>
@@ -209,7 +215,7 @@
     </message>
     <message>
         <source>Show RC RSSI (not OpenHD RC)</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Show Bitrate</source>
@@ -230,10 +236,6 @@
     <message>
         <source>Show Flight Mode</source>
         <translation>Показывать ПолетныйРежим</translation>
-    </message>
-    <message>
-        <source>Show Flight Controller Temperature</source>
-        <translation type="unfinished"/>
     </message>
     <message>
         <source>Show Ground Status</source>
@@ -277,7 +279,7 @@
     </message>
     <message>
         <source>Show Second Speed</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Show Heading</source>
@@ -289,7 +291,7 @@
     </message>
     <message>
         <source>Show Bank Angle Indicator</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Show Home Arrow</source>
@@ -325,11 +327,11 @@
     </message>
     <message>
         <source>Show ADS-B Traffic</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Show BlackBox</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Show example widget</source>
@@ -361,47 +363,71 @@
     </message>
     <message>
         <source>Enable stereo mode</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Stereo OSD mode</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Load settings from file</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Load</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Select settings file</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Save settings to file</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Save</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished">Сохранить</translation>
     </message>
     <message>
         <source>Select location</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Reset all settings</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Reset</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Settings reset</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Log Level</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Text font</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show IMU Sensor Temperature</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show Pressure Sensor Temperature</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show Esc Temperature</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show Efficiency in mAh/km</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -462,7 +488,18 @@
     </message>
     <message>
         <source>restart telemetry</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ColorPicker</name>
+    <message>
+        <source>Cancel</source>
+        <translation type="unfinished">Отменить</translation>
+    </message>
+    <message>
+        <source>Select</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -530,6 +567,25 @@
         <source>N/A</source>
         <translation>н/а</translation>
     </message>
+    <message>
+        <source>dBm</source>
+        <translation type="unfinished">дБм</translation>
+    </message>
+</context>
+<context>
+    <name>EscTempWidgetForm.ui</name>
+    <message>
+        <source>Transparency</source>
+        <translation type="unfinished">Прозрачность</translation>
+    </message>
+    <message>
+        <source>Size</source>
+        <translation type="unfinished">Размер</translation>
+    </message>
+    <message>
+        <source>N/A</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ExampleWidgetForm.ui</name>
@@ -542,15 +598,15 @@
     <name>FcTempWidgetForm.ui</name>
     <message>
         <source>Transparency</source>
-        <translation>Прозрачность</translation>
+        <translation type="vanished">Прозрачность</translation>
     </message>
     <message>
         <source>Size</source>
-        <translation>Размер</translation>
+        <translation type="vanished">Размер</translation>
     </message>
     <message>
         <source>N/A</source>
-        <translation>н/а</translation>
+        <translation type="vanished">н/а</translation>
     </message>
 </context>
 <context>
@@ -562,6 +618,17 @@
     <message>
         <source>Size</source>
         <translation>Размер</translation>
+    </message>
+</context>
+<context>
+    <name>FlightMahKmWidgetForm.ui</name>
+    <message>
+        <source>Transparency</source>
+        <translation type="unfinished">Прозрачность</translation>
+    </message>
+    <message>
+        <source>Size</source>
+        <translation type="unfinished">Размер</translation>
     </message>
 </context>
 <context>
@@ -868,6 +935,21 @@
     </message>
 </context>
 <context>
+    <name>ImuTempWidgetForm.ui</name>
+    <message>
+        <source>Transparency</source>
+        <translation type="unfinished">Прозрачность</translation>
+    </message>
+    <message>
+        <source>Size</source>
+        <translation type="unfinished">Размер</translation>
+    </message>
+    <message>
+        <source>N/A</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>MainVideoAndroid</name>
     <message>
         <source>Do not fly with this app! Video is not stable yet!</source>
@@ -908,6 +990,25 @@
     </message>
 </context>
 <context>
+    <name>OSDCustomizer</name>
+    <message>
+        <source>Shape Color</source>
+        <translation type="unfinished">Цвет очертаний</translation>
+    </message>
+    <message>
+        <source>Glow Color</source>
+        <translation type="unfinished">Цвет заполнения</translation>
+    </message>
+    <message>
+        <source>Text Color</source>
+        <translation type="unfinished">Цвет текста</translation>
+    </message>
+    <message>
+        <source>Done</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>OpenHD</name>
     <message>
         <source>%1 flight mode</source>
@@ -930,19 +1031,19 @@
     </message>
     <message>
         <source>Reboot Ground</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Shutdown Ground</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Reboot Air</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Shutdown Air</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Yes</source>
@@ -953,7 +1054,7 @@
     <name>PowerPanelForm.ui</name>
     <message>
         <source>Reboot or safely shut down the air/ground before removing power, or to apply settings changes when it is difficult to cycle power manually. If you have a power control board or sensors connected you may also see power supply information.</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Air</source>
@@ -973,7 +1074,7 @@
     </message>
     <message>
         <source>Shutdown</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Ground</source>
@@ -993,6 +1094,21 @@
     </message>
 </context>
 <context>
+    <name>PressTempWidgetForm.ui</name>
+    <message>
+        <source>Transparency</source>
+        <translation type="unfinished">Прозрачность</translation>
+    </message>
+    <message>
+        <source>Size</source>
+        <translation type="unfinished">Размер</translation>
+    </message>
+    <message>
+        <source>N/A</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>RcRSSIWidgetForm.ui</name>
     <message>
         <source>Transparency</source>
@@ -1003,12 +1119,31 @@
         <translation>Размер</translation>
     </message>
     <message>
-        <source/>
-        <translation type="unfinished"/>
+        <source></source>
+        <translation></translation>
     </message>
     <message>
         <source>N/A</source>
         <translation>н/а</translation>
+    </message>
+</context>
+<context>
+    <name>RestartDialog</name>
+    <message>
+        <source>Restart required</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You must restart the app for your loaded configuration file to take effect</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation type="unfinished">Отменить</translation>
+    </message>
+    <message>
+        <source>Close App</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1027,7 +1162,7 @@
     </message>
     <message>
         <source>Show Arc</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Show Numbers</source>
@@ -1035,14 +1170,14 @@
     </message>
     <message>
         <source>Sky Pointer</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>SensorPanelForm.ui</name>
     <message>
         <source>If you have temperature or IMU sensors connected you may see and/or calibrate them below.</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1158,11 +1293,11 @@
     </message>
     <message>
         <source>Inj. Fail</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Skip Pkt</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Bitrate</source>
@@ -1173,27 +1308,27 @@
     <name>StatusPanelForm.ui</name>
     <message>
         <source>Last RSSI: </source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>  HB: </source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source> | ATT: </source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source> | BAT: </source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source> | GPS: </source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source> | VFR: </source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1242,15 +1377,15 @@
     </message>
     <message>
         <source>X</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Y</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Z</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1319,24 +1454,12 @@
         <translation>Open.HD</translation>
     </message>
     <message>
-        <source>Restart required</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>You must restart the app for your loaded configuration file to take effect</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
         <source>Cancel</source>
-        <translation>Отменить</translation>
+        <translation type="vanished">Отменить</translation>
     </message>
     <message>
-        <source>Restart App</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Close App</source>
-        <translation type="unfinished"/>
+        <source>Rapidly tap between widgets to enable/disable stereo</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>

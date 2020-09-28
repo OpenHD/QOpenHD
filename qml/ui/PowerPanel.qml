@@ -120,19 +120,19 @@ PowerPanelForm {
 
                 onPressed: {
                     if (powerAction == PowerPanel.PowerAction.RebootGround) {
-                        localMessage("Rebooting ground station", 3);
+                        localMessage("Rebooting ground station", 6);
                         GroundPowerMicroservice.onReboot();
                     }
                     if (powerAction == PowerPanel.PowerAction.ShutdownGround) {
-                        localMessage("Shutting down ground station", 3);
+                        localMessage("Shutting down ground station", 6);
                         GroundPowerMicroservice.onShutdown();
                     }
                     if (powerAction == PowerPanel.PowerAction.RebootAir) {
-                        localMessage("Rebooting air pi", 3);
+                        localMessage("Rebooting air pi", 6);
                         AirPowerMicroservice.onReboot();
                     }
                     if (powerAction == PowerPanel.PowerAction.ShutdownAir) {
-                        localMessage("Shutting down air pi", 3);
+                        localMessage("Shutting down air pi", 6);
                         AirPowerMicroservice.onShutdown();
                     }
                     powerDialog.visible = false

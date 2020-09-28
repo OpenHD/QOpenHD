@@ -237,9 +237,9 @@ void OpenSky::evaluateTraffic(QString traffic_callsign,
     int drone_alt = OpenHD::instance()->get_msl_alt();
 
     if (traffic_alt - drone_alt < 300 && traffic_distance < 2) {
-        LocalMessage::instance()->showMessage("Aircraft Traffic", 3);
-    } else if (traffic_alt - drone_alt < 500 && traffic_distance < 5) {
         LocalMessage::instance()->showMessage("Aircraft Traffic", 4);
+    } else if (traffic_alt - drone_alt < 500 && traffic_distance < 5) {
+        LocalMessage::instance()->showMessage("Aircraft Traffic", 5);
     }
 }
 

@@ -142,7 +142,7 @@ void OpenHD::telemetryMessage(QString message, int level) {
 #if defined(ENABLE_SPEECH)
     QSettings settings;
     auto enable_speech = settings.value("enable_speech", QVariant(0));
-    if (enable_speech == 1 && level >= 3) {
+    if (enable_speech == 1 && level <= 3) {
         OpenHD::instance()->m_speech->say(message);
     }
 #endif
@@ -174,7 +174,7 @@ void OpenHD::findGcsPosition() {
                 set_homelat(m_lat);
                 set_homelon(m_lon);
                 gcs_position_set=true;
-                LocalMessage::instance()->showMessage("Home Position set by OpenHD", 2);
+                LocalMessage::instance()->showMessage("Home Position set by OpenHD", 7);
             }
         }
     }
@@ -214,6 +214,22 @@ void OpenHD::updateAppMah() {
     total_mah = total_mah + added_mah;
 
     set_app_mah( total_mah );
+}
+
+void OpenHD::updateAppMahKm() {
+    if (!totalTime.isValid()){
+        totalTime.start();
+    }
+    static OpenHDUtil::pt1Filter_t eFilterState;
+    auto currentTimeMs = totalTime.elapsed();
+    auto efficiencyTimeDelta = currentTimeMs - mahKmLastTime;
+
+    if ( (m_gps_fix_type >= GPS_FIX_TYPE_2D_FIX) && (m_speed > 0) ) {
+        set_mah_km((int)OpenHDUtil::pt1FilterApply4(
+                    &eFilterState, ((float)m_battery_current*10 / m_speed), 1, efficiencyTimeDelta * 1e-3f));
+        mahKmLastTime = currentTimeMs;
+    }
+
 }
 
 void OpenHD::pauseBlackBox(bool pause, int index){
@@ -418,6 +434,11 @@ void OpenHD::set_battery_percent(int battery_percent) {
     emit battery_percent_changed(m_battery_percent);
 }
 
+void OpenHD::set_fc_battery_percent(int fc_battery_percent) {
+    m_fc_battery_percent = fc_battery_percent;
+    emit fc_battery_percent_changed(m_fc_battery_percent);
+}
+
 void OpenHD::set_battery_voltage(double battery_voltage) {
     m_battery_voltage = battery_voltage;
     emit battery_voltage_changed(m_battery_voltage);
@@ -433,6 +454,11 @@ void OpenHD::set_battery_gauge(QString battery_gauge) {
     emit battery_gauge_changed(m_battery_gauge);
 }
 
+void OpenHD::set_fc_battery_gauge(QString fc_battery_gauge) {
+    m_fc_battery_gauge = fc_battery_gauge;
+    emit fc_battery_gauge_changed(m_fc_battery_gauge);
+}
+
 void OpenHD::set_satellites_visible(int satellites_visible) {
     m_satellites_visible = satellites_visible;
     emit satellites_visible_changed(m_satellites_visible);
@@ -441,6 +467,11 @@ void OpenHD::set_satellites_visible(int satellites_visible) {
 void OpenHD::set_gps_hdop(double gps_hdop) {
     m_gps_hdop = gps_hdop;
     emit gps_hdop_changed(m_gps_hdop);
+}
+
+void OpenHD::set_gps_fix_type(unsigned int gps_fix_type) {
+    m_gps_fix_type = gps_fix_type;
+    emit gps_fix_type_changed(m_gps_fix_type);
 }
 
 void OpenHD::set_pitch(double pitch) {
@@ -548,9 +579,19 @@ void OpenHD::setRcRssi(int rcRssi) {
     emit rcRssiChanged(m_rcRssi);
 }
 
-void OpenHD::set_fc_temp(int fc_temp) {
-    m_fc_temp = fc_temp;
-    emit fc_temp_changed(m_fc_temp);
+void OpenHD::set_imu_temp(int imu_temp) {
+    m_imu_temp = imu_temp;
+    emit imu_temp_changed(m_imu_temp);
+}
+
+void OpenHD::set_press_temp(int press_temp) {
+    m_press_temp = press_temp;
+    emit press_temp_changed(m_press_temp);
+}
+
+void OpenHD::set_esc_temp(int esc_temp) {
+    m_esc_temp = esc_temp;
+    emit esc_temp_changed(m_esc_temp);
 }
 
 void OpenHD::set_downlink_rssi(int downlink_rssi) {
@@ -666,6 +707,11 @@ void OpenHD::set_flight_mah(double flight_mah) {
 void OpenHD::set_app_mah(double app_mah) {
     m_app_mah = app_mah;
     emit app_mah_changed(m_app_mah);
+}
+
+void OpenHD::set_mah_km(int mah_km) {
+    m_mah_km = mah_km;
+    emit mah_km_changed(m_mah_km);
 }
 
 void OpenHD::set_last_openhd_heartbeat(qint64 last_openhd_heartbeat) {

@@ -101,6 +101,6 @@ function intToHexa(val, nb) {
 
 
 function hexaFromRGBA(red, green, blue, alpha) {
-    var temp = intToHexa(Math.round(red * 255), 2) + intToHexa(Math.round(green * 255), 2) + intToHexa(Math.round(blue * 255), 2);
+    var temp = intToHexa(Math.round(alpha * 255), 2) + intToHexa(Math.round(red * 255), 2) + intToHexa(Math.round(green * 255), 2) + intToHexa(Math.round(blue * 255), 2);
     return "#" + temp;
 }

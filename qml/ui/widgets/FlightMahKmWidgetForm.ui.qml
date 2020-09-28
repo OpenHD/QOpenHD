@@ -7,21 +7,22 @@ import Qt.labs.settings 1.0
 import OpenHD 1.0
 
 BaseWidget {
-    id: fcTempWidget
-    width: 30
-    height:30
+    id: flightMahKmWidget
+    width: 130
+    height: 24
 
-    visible: settings.show_fc_temp
+    visible: settings.show_flight_mah_km
 
-    widgetIdentifier: "fc_temp_widget"
+    widgetIdentifier: "flight_mah_km_widget"
 
-    defaultAlignment: 1
-    defaultXOffset: 12
-    defaultYOffset: 32
+    defaultAlignment: 3
+    defaultXOffset: 110
+    defaultYOffset: 0
     defaultHCenter: false
     defaultVCenter: false
 
     hasWidgetDetail: true
+
     widgetDetailComponent: Column {
         Item {
             width: parent.width
@@ -37,10 +38,10 @@ BaseWidget {
                 verticalAlignment: Text.AlignVCenter
             }
             Slider {
-                id: fc_temp_opacity_Slider
+                id: mah_km_opacity_Slider
                 orientation: Qt.Horizontal
                 from: .1
-                value: settings.fc_temp_opacity
+                value: settings.mah_km_opacity
                 to: 1
                 stepSize: .1
                 height: parent.height
@@ -49,7 +50,7 @@ BaseWidget {
                 width: parent.width - 96
 
                 onValueChanged: {
-                    settings.fc_temp_opacity = fc_temp_opacity_Slider.value
+                    settings.mah_km_opacity = mah_km_opacity_Slider.value
                 }
             }
         }
@@ -66,10 +67,10 @@ BaseWidget {
                 verticalAlignment: Text.AlignVCenter
             }
             Slider {
-                id: fc_temp_size_Slider
+                id: mah_km_size_Slider
                 orientation: Qt.Horizontal
                 from: .5
-                value: settings.fc_temp_size
+                value: settings.mah_km_size
                 to: 3
                 stepSize: .1
                 height: parent.height
@@ -78,7 +79,7 @@ BaseWidget {
                 width: parent.width - 96
 
                 onValueChanged: {
-                    settings.fc_temp_size = fc_temp_size_Slider.value
+                    settings.mah_km_size = mah_km_size_Slider.value
                 }
             }
         }
@@ -88,41 +89,44 @@ BaseWidget {
         id: widgetInner
 
         anchors.fill: parent
-        scale: settings.fc_temp_size
+        scale: settings.mah_km_size
 
         Text {
-            id: temp_glyph
-            color: OpenHD.fc_temp >= 65 ? (OpenHD.fc_temp >= 75 ? "#ff0000" : "#fbfd15") : settings.color_shape
-            opacity: settings.fc_temp_opacity
-            text: OpenHD.fc_temp >= 65 ? (OpenHD.fc_temp >= 75 ? "\uf2c7" : "\uf2c9") : "\uf2cb"
-            anchors.left: parent.left
-            anchors.bottom: parent.bottom
+            id: home_icon
+            x: 0
+
+            width: 24
+            height: 24
+            clip: true
+            color: settings.color_shape
+            opacity: settings.mah_km_opacity
+            text: "\uf0e7"
+            anchors.right: flight_mah_km_text.left
+            anchors.rightMargin: 6
+            verticalAlignment: Text.AlignVCenter
             font.family: "Font Awesome 5 Free"
-            horizontalAlignment: Text.AlignLeft
-            font.pixelSize: 16
-            verticalAlignment: Text.AlignTop
-            wrapMode: Text.NoWrap
-            elide: Text.ElideRight
+            font.pixelSize: 15
+            horizontalAlignment: Text.AlignRight
             style: Text.Outline
             styleColor: settings.color_glow
         }
-
         Text {
-            id: fc_temp
-            color: OpenHD.fc_temp >= 65 ? (OpenHD.fc_temp >= 75 ? "#ff0000" : "#fbfd15") : settings.color_text
-            opacity: settings.fc_temp_opacity
-            text: OpenHD.fc_temp == 0 ? qsTr("N/A") : OpenHD.fc_temp + "°"
-            anchors.left: temp_glyph.right
-            anchors.leftMargin: 2
-            anchors.bottom: parent.bottom
-            horizontalAlignment: Text.AlignRight
-            font.pixelSize: 14
-            font.family: settings.font_text
+            id: flight_mah_km_text
+            width: 102
+            height: 24
+            clip: true
+            color: settings.color_text
+            opacity: settings.mah_km_opacity
+            text: (OpenHD.mah_km > 0) && (OpenHD.mah_km < 999) ?
+                      OpenHD.mah_km + "mAh/km" : "---mAh/km"
+            anchors.right: parent.right
+            anchors.rightMargin: 0
             verticalAlignment: Text.AlignVCenter
-            wrapMode: Text.NoWrap
-            elide: Text.ElideRight
+            font.pixelSize: 16
+            font.family: settings.font_text
+            horizontalAlignment: Text.AlignLeft
             style: Text.Outline
             styleColor: settings.color_glow
-        }       
+        }
     }
 }
