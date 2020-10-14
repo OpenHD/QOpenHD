@@ -59,6 +59,10 @@ private:
     double center_lon;
     QSettings settings;
     double radius_earth_km = 6371;
+    QString adsb_url;
+    int timer_interval = 1000; //get reset later if api or sdr selected
+    QTimer *timer;
+    bool adsb_api_sdr;
 };
 
 

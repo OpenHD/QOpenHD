@@ -231,6 +231,7 @@ Settings {
     property bool show_adsb: false
     property int adsb_distance_limit: 15000//meters. Bound box for api from map center (so x2)
     //property int adsb_marker_limit: 19
+    property bool adsb_api_sdr: false
     property double adsb_opacity: 1
     property double adsb_size: 1
 

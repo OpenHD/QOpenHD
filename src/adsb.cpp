@@ -62,17 +62,17 @@ void Adsb::onStarted() {
 
     connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(processReply(QNetworkReply*))) ;
 
-    QTimer *timer = new QTimer(this);
+    timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, &Adsb::requestData);
     // How frequently data is requested
-    timer->start(10000);
+    timer->start(timer_interval);
 }
 
 void Adsb::mapBoundsChanged(QGeoCoordinate center_coord) {
     center_lat= center_coord.latitude();
     center_lon= center_coord.longitude();
 
-   // api_request_center_lat=setLatitude(center_lat);
+    // api_request_center_lat=setLatitude(center_lat);
     //api_request_center_lon=setLongitude(center_lon);
 
     /*
@@ -111,15 +111,31 @@ void Adsb::requestData() {
     //qDebug() << "Adsb::requestData()";
     auto show_adsb = settings.value("show_adsb", false).toBool();
 
+    adsb_api_sdr = settings.value("adsb_api_sdr").toBool();
+
+
+    if (adsb_api_sdr == true){
+        //qDebug() << "timer 1";
+        timer->stop();
+        timer->start(1000);
+
+        adsb_url= "http://192.168.2.1/dump1090/data/aircraft.json";
+    }
+    else {
+        //qDebug() << "timer 10";
+        timer->stop();
+        timer->start(10000);
+        set_adsb_api_coord(QGeoCoordinate(center_lat,center_lon));
+        adsb_url= "https://opensky-network.org/api/states/all?lamin="+lowerr_lat+"&lomin="+upperl_lon+"&lamax="+upperl_lat+"&lomax="+lowerr_lon;
+    }
+
     if(show_adsb==false){
         emit removeAllMarkers();
         return;
     }
-
-    set_adsb_api_coord(QGeoCoordinate(center_lat,center_lon));
-
+    //qDebug() << "URL REQUEST:" << adsb_url;
     QNetworkRequest request;
-    QUrl api_request= "https://opensky-network.org/api/states/all?lamin="+lowerr_lat+"&lomin="+upperl_lon+"&lamax="+upperl_lat+"&lomax="+lowerr_lon;
+    QUrl api_request= adsb_url;
     request.setUrl(api_request);
     request.setRawHeader("User-Agent", "MyOwnBrowser 1.0");
     //qDebug() << "url=" << api_request;
@@ -127,37 +143,6 @@ void Adsb::requestData() {
 }
 
 void Adsb::processReply(QNetworkReply *reply){
-    if (reply->error()) {
-        qDebug() << reply->errorString();
-        return;
-    }
-
-    QString strReply = reply->readAll();
-    QJsonDocument jsonDoc = QJsonDocument::fromJson(strReply.toUtf8());
-
-    if(jsonDoc.isNull()){
-        qDebug()<<"Failed to create JSON doc.";
-        exit(2);
-    }
-    if(!jsonDoc.isObject()){
-        qDebug()<<"JSON is not an object.";
-        exit(3);
-    }
-
-    QJsonObject object = jsonDoc.object();
-
-    if(object.isEmpty()){
-        qDebug()<<"JSON object is empty.";
-        exit(4);
-    }
-
-    QJsonValue value = object.value("states");
-    QJsonArray array = value.toArray();
-
-    //qDebug() << "MYARRAY COUNT=" << array.count();
-
-    int current_row=0;
-    int last_row=array.count();
 
     QString callsign;
     int contact;
@@ -169,63 +154,195 @@ void Adsb::processReply(QNetworkReply *reply){
     double vertical;
     qreal distance;
 
-    emit removeAllMarkers();
-
-    if (last_row==0){
-        //no markers to add.. either the api is not happy (too zoomed out) or no traffic to report
+    if (reply->error()) {
+        qDebug() << "ADSB request error!";
+        qDebug() << reply->errorString();
         return;
     }
 
-    foreach (const QJsonValue & v, array){
-        QJsonArray innerarray = v.toArray();
+    QByteArray data = reply->readAll();
 
-        callsign=innerarray[1].toString();
-        if (callsign.length() == 0) {
-            callsign = "N/A";
+    QJsonParseError errorPtr;
+    QJsonDocument doc = QJsonDocument::fromJson(data, &errorPtr);
+
+    if (doc.isNull()) {
+        qDebug() << "Parse failed";
+    }
+
+    if(doc.isNull()){
+        qDebug()<<"Failed to create JSON doc.";
+        return;
+    }
+    if(!doc.isObject()){
+        qDebug()<<"JSON is not an object.";
+        return;
+    }
+
+    QJsonObject jsonObject = doc.object();
+
+    if(jsonObject.isEmpty()){
+        qDebug()<<"JSON object is empty.";
+        return;
+    }
+
+    // --------------- PARSE FOR SDR ---------------------------------
+
+    if (adsb_api_sdr == true){
+
+        QJsonArray array = jsonObject["aircraft"].toArray();
+
+        //QJsonArray array = doc.array();
+
+        if(array.isEmpty()){
+            qDebug()<<"JSON array is empty.";
         }
-        contact=innerarray[4].toInt();
-        lat=innerarray[6].toDouble();
-        lon=innerarray[5].toDouble();
-        alt=innerarray[7].toDouble();
-        velocity=innerarray[9].toDouble();
-        track=innerarray[10].toDouble();
-        vertical=innerarray[11].toDouble();
 
-        //calculate distance from center of map so we can sort in marker model
+        qDebug() << "MYARRAY COUNT=" << array.count();
 
-        distance = calculateKmDistance(OpenHD::instance()->get_lat(), OpenHD::instance()->get_lon(), lat, lon);
-        emit addMarker(current_row, last_row, Traffic(callsign,contact,lat,lon,alt,velocity,track,vertical,distance));
+        int current_row=0;
+        int last_row=array.count();
 
-        evaluateTraffic(callsign, contact, lat, lon, alt, velocity, track, vertical, distance);
+        emit removeAllMarkers();
 
-        current_row=current_row+1;
+        if (last_row==0){
+            //no markers to add.. either the api is not happy (too zoomed out) or no traffic to report
+            return;
+        }
 
-/*
-        qDebug() << "callsign=" << innerarray[1].toString();
-        qDebug() << "last_contact=" << innerarray[4].toInt();
-        qDebug() << "lat=" << innerarray[6].toDouble();
-        qDebug() << "lon=" << innerarray[5].toDouble();
-        qDebug() << "alt=" << innerarray[7].toDouble();
-        qDebug() << "velocity=" << innerarray[9].toDouble();
-        qDebug() << "track=" << innerarray[10].toDouble();
-        qDebug() << "vertical=" << innerarray[11].toDouble();
-        qDebug() << "distance=" << distance;
 
-        qDebug() << "----------------------------------------------------------";
-*/
+        foreach (const QJsonValue & val, array){
+
+            callsign=val.toObject().value("flight").toString();
+            if (callsign.length() == 0) {
+                callsign = "N/A";
+            }
+
+            //sdr defaults to imperial and something wacky for speed from dump1090
+
+            contact=val.toObject().value("seen_pos").toInt();
+            lat=val.toObject().value("lat").toDouble();
+            lon=val.toObject().value("lon").toDouble();
+            alt=val.toObject().value("altitude").toInt();
+            alt=alt*0.3048;
+            velocity=val.toObject().value("speed").toDouble();
+            velocity=round(velocity*.51418);
+            track=val.toObject().value("track").toDouble();
+            vertical=val.toObject().value("vert_rate").toDouble();
+            vertical=round(vertical*0.3048);
+
+
+
+
+            //calculate distance from center of map so we can sort in marker model
+            distance = calculateKmDistance(OpenHD::instance()->get_lat(), OpenHD::instance()->get_lon(), lat, lon);
+            emit addMarker(current_row, last_row, Traffic(callsign,contact,lat,lon,alt,velocity,track,vertical,distance));
+            current_row=current_row+1;
+
+            if(lat!=0 or lon!=0){
+                /*dont evaluate marker if position msg is missing
+                    above we are adding markers with 0 lat lon cuz we dont know the last row count at loop start
+                    those "0 position" aircraft are being eliminated in mapcomponent
+                    */
+                evaluateTraffic(callsign, contact, lat, lon, alt, velocity, track, vertical, distance);
+            }
+
+            qDebug() << "callsign=" << callsign;
+            qDebug() << "last_contact=" << contact;
+            qDebug() << "lat=" << lat;
+            qDebug() << "lon=" << lon;
+            qDebug() << "alt=" << alt;
+            qDebug() << "velocity=" << velocity;
+            qDebug() << "track=" << track;
+            qDebug() << "vertical=" << vertical;
+            qDebug() << "distance=" << distance;
+
+            qDebug() << "----------------------------------------------------------";
+
+
+
+
+        }
+
+    }
+    // --------------- PARSE FOR API ---------------------------------
+    else {
+
+        QJsonValue value = jsonObject.value("states");
+        QJsonArray array = value.toArray();
+
+        qDebug() << "MYARRAY COUNT=" << array.count();
+
+        int current_row=0;
+        int last_row=array.count();
+
+        QString callsign;
+        int contact;
+        double lat;
+        double lon;
+        int alt;
+        int track;
+        int velocity;
+        double vertical;
+        qreal distance;
+
+        emit removeAllMarkers();
+
+        if (last_row==0){
+            //no markers to add.. either the api is not happy (too zoomed out) or no traffic to report
+            return;
+        }
+
+        foreach (const QJsonValue & v, array){
+            QJsonArray innerarray = v.toArray();
+
+            callsign=innerarray[1].toString();
+            if (callsign.length() == 0) {
+                callsign = "N/A";
+            }
+            contact=innerarray[4].toInt();
+            lat=innerarray[6].toDouble();
+            lon=innerarray[5].toDouble();
+            alt=innerarray[7].toDouble();
+            velocity=innerarray[9].toDouble();
+            track=innerarray[10].toDouble();
+            vertical=innerarray[11].toDouble();
+
+            //calculate distance from center of map so we can sort in marker model
+
+            distance = calculateKmDistance(OpenHD::instance()->get_lat(), OpenHD::instance()->get_lon(), lat, lon);
+            emit addMarker(current_row, last_row, Traffic(callsign,contact,lat,lon,alt,velocity,track,vertical,distance));
+
+            evaluateTraffic(callsign, contact, lat, lon, alt, velocity, track, vertical, distance);
+
+            current_row=current_row+1;
+
+            /*
+             qDebug() << "callsign=" << innerarray[1].toString();
+             qDebug() << "last_contact=" << innerarray[4].toInt();
+             qDebug() << "lat=" << innerarray[6].toDouble();
+             qDebug() << "lon=" << innerarray[5].toDouble();
+             qDebug() << "alt=" << innerarray[7].toDouble();
+             qDebug() << "velocity=" << innerarray[9].toDouble();
+             qDebug() << "track=" << innerarray[10].toDouble();
+             qDebug() << "vertical=" << innerarray[11].toDouble();
+             qDebug() << "distance=" << distance;
+             qDebug() << "----------------------------------------------------------";
+     */
+        }
+
     }
     //emit doneAddingMarkers();
 }
 
 void Adsb::evaluateTraffic(QString traffic_callsign,
-                              int traffic_contact,
-                              double traffic_lat,
-                              double traffic_lon,
-                              double traffic_alt,
-                              double traffic_velocity,
-                              double traffic_track,
-                              double traffic_vertical,
-                              double traffic_distance) {
+                           int traffic_contact,
+                           double traffic_lat,
+                           double traffic_lon,
+                           double traffic_alt,
+                           double traffic_velocity,
+                           double traffic_track,
+                           double traffic_vertical,
+                           double traffic_distance) {
 
     /*
      * Centralise traffic threat detection here. Once threat is detected it should be
@@ -237,14 +354,14 @@ void Adsb::evaluateTraffic(QString traffic_callsign,
     int drone_alt = OpenHD::instance()->get_msl_alt();
 
     if (traffic_alt - drone_alt < 300 && traffic_distance < 2) {
-        LocalMessage::instance()->showMessage("Aircraft Traffic", 4);
+        LocalMessage::instance()->showMessage("Aircraft Traffic", 3);
     } else if (traffic_alt - drone_alt < 500 && traffic_distance < 5) {
-        LocalMessage::instance()->showMessage("Aircraft Traffic", 5);
+        LocalMessage::instance()->showMessage("Aircraft Traffic", 4);
     }
 }
 
 int Adsb::calculateKmDistance(double lat_1, double lon_1,
-                                 double lat_2, double lon_2) {
+                              double lat_2, double lon_2) {
 
     double latDistance = qDegreesToRadians(lat_1 - lat_2);
     double lngDistance = qDegreesToRadians(lon_1 - lon_2);

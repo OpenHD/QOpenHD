@@ -130,7 +130,7 @@ Map {
         topLeft : EnableADSB ? Adsb.adsb_api_coord.atDistanceAndAzimuth(settings.adsb_distance_limit, 315, 0.0) : QtPositioning.coordinate(0, 0)
         bottomRight: EnableADSB ? Adsb.adsb_api_coord.atDistanceAndAzimuth(settings.adsb_distance_limit, 135, 0.0) : QtPositioning.coordinate(0, 0)
         enabled: EnableADSB
-
+        visible: !settings.adsb_api_sdr
         color: "white"
         border.color: "red"
         border.width: 5
