@@ -6,7 +6,7 @@
 #include "constants.h"
 
 #include "markermodel.h"
-#include "opensky.h"
+#include "adsb.h"
 
 
 Traffic::Traffic(const QString &callsign, const int &contact, const double &lat, const double &lon,

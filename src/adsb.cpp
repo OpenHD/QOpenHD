@@ -1,4 +1,4 @@
-#include "opensky.h"
+#include "adsb.h"
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <fcntl.h>
@@ -36,25 +36,25 @@
 #include "localmessage.h"
 
 
-static OpenSky* _instance = nullptr;
+static Adsb* _instance = nullptr;
 
-OpenSky* OpenSky::instance() {
+Adsb* Adsb::instance() {
     if (_instance == nullptr) {
-        _instance = new OpenSky();
+        _instance = new Adsb();
     }
     return _instance;
 }
 
-OpenSky::OpenSky(QObject *parent): QObject(parent) {
-    qDebug() << "OpenSky::OpenSky()";
+Adsb::Adsb(QObject *parent): QObject(parent) {
+    qDebug() << "Adsb::Adsb()";
 }
 
-void OpenSky::onStarted() {
-    qDebug() << "------------------OpenSky::onStarted()";
+void Adsb::onStarted() {
+    qDebug() << "------------------Adsb::onStarted()";
     auto markerModel = MarkerModel::instance();
-    connect(this, &OpenSky::addMarker, markerModel, &MarkerModel::addMarker);
-    connect(this, &OpenSky::doneAddingMarkers, markerModel, &MarkerModel::doneAddingMarkers);
-    connect(this, &OpenSky::removeAllMarkers, markerModel, &MarkerModel::removeAllMarkers);
+    connect(this, &Adsb::addMarker, markerModel, &MarkerModel::addMarker);
+    connect(this, &Adsb::doneAddingMarkers, markerModel, &MarkerModel::doneAddingMarkers);
+    connect(this, &Adsb::removeAllMarkers, markerModel, &MarkerModel::removeAllMarkers);
 
     QNetworkAccessManager * manager = new QNetworkAccessManager(this);
 
@@ -63,12 +63,12 @@ void OpenSky::onStarted() {
     connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(processReply(QNetworkReply*))) ;
 
     QTimer *timer = new QTimer(this);
-    connect(timer, &QTimer::timeout, this, &OpenSky::requestData);
+    connect(timer, &QTimer::timeout, this, &Adsb::requestData);
     // How frequently data is requested
     timer->start(10000);
 }
 
-void OpenSky::mapBoundsChanged(QGeoCoordinate center_coord) {
+void Adsb::mapBoundsChanged(QGeoCoordinate center_coord) {
     center_lat= center_coord.latitude();
     center_lon= center_coord.longitude();
 
@@ -95,20 +95,20 @@ void OpenSky::mapBoundsChanged(QGeoCoordinate center_coord) {
     lowerr_lon= QString::number(qgeo_lower_right.longitude());
 
     /*
-    qDebug() << "OpenSky::lower right=" << lowerr_lat << " " << lowerr_lon;
-    qDebug() << "OpenSky::upper left=" << upperl_lat << " " << upperl_lon;
-    qDebug() << "OpenSky::Center=" << center_lat << " " << center_lon;
+    qDebug() << "Adsb::lower right=" << lowerr_lat << " " << lowerr_lon;
+    qDebug() << "Adsb::upper left=" << upperl_lat << " " << upperl_lon;
+    qDebug() << "Adsb::Center=" << center_lat << " " << center_lon;
 */
 }
 
-void OpenSky::set_adsb_api_coord(QGeoCoordinate adsb_api_coord){
+void Adsb::set_adsb_api_coord(QGeoCoordinate adsb_api_coord){
     m_adsb_api_coord=adsb_api_coord;
     //qDebug() << "adsb_api_coord=" << m_adsb_api_coord;
     emit adsb_api_coord_changed(m_adsb_api_coord);
 }
 
-void OpenSky::requestData() {
-    //qDebug() << "OpenSky::requestData()";
+void Adsb::requestData() {
+    //qDebug() << "Adsb::requestData()";
     auto show_adsb = settings.value("show_adsb", false).toBool();
 
     if(show_adsb==false){
@@ -126,7 +126,7 @@ void OpenSky::requestData() {
     QNetworkReply *reply = m_manager->get(request);
 }
 
-void OpenSky::processReply(QNetworkReply *reply){
+void Adsb::processReply(QNetworkReply *reply){
     if (reply->error()) {
         qDebug() << reply->errorString();
         return;
@@ -217,7 +217,7 @@ void OpenSky::processReply(QNetworkReply *reply){
     //emit doneAddingMarkers();
 }
 
-void OpenSky::evaluateTraffic(QString traffic_callsign,
+void Adsb::evaluateTraffic(QString traffic_callsign,
                               int traffic_contact,
                               double traffic_lat,
                               double traffic_lon,
@@ -243,7 +243,7 @@ void OpenSky::evaluateTraffic(QString traffic_callsign,
     }
 }
 
-int OpenSky::calculateKmDistance(double lat_1, double lon_1,
+int Adsb::calculateKmDistance(double lat_1, double lon_1,
                                  double lat_2, double lon_2) {
 
     double latDistance = qDegreesToRadians(lat_1 - lat_2);

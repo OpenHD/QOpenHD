@@ -1,5 +1,5 @@
-#ifndef OPENSKY_H
-#define OPENSKY_H
+#ifndef ADSB_H
+#define ADSB_H
 
 #include <QObject>
 #include <QtQuick>
@@ -20,12 +20,12 @@
 #include "markermodel.h"
 
 
-class OpenSky: public QObject {
+class Adsb: public QObject {
     Q_OBJECT
 
 public:
-    explicit OpenSky(QObject *parent = nullptr);
-    static OpenSky* instance();
+    explicit Adsb(QObject *parent = nullptr);
+    static Adsb* instance();
 
     Q_PROPERTY(QGeoCoordinate adsb_api_coord MEMBER m_adsb_api_coord WRITE set_adsb_api_coord NOTIFY adsb_api_coord_changed)
     void set_adsb_api_coord(QGeoCoordinate adsb_api_coord);

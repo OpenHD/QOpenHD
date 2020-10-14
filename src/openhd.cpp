@@ -4,7 +4,7 @@
 #include "openhdtelemetry.h"
 #include "localmessage.h"
 
-#include "opensky.h"
+#include "adsb.h"
 #include "markermodel.h"
 #include "blackboxmodel.h"
 

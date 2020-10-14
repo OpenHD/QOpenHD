@@ -407,9 +407,9 @@ EnableADSB {
     DEFINES += ENABLE_ADSB
 
     SOURCES += \
-            src/opensky.cpp
+    src/adsb.cpp
     HEADERS += \
-            inc/opensky.h
+    inc/adsb.h
 
 }
 

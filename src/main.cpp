@@ -40,7 +40,7 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "statuslogmodel.h"
 
 #if defined(ENABLE_ADSB)
-#include "opensky.h"
+#include "adsb.h"
 #endif
 
 #include "markermodel.h"
@@ -232,7 +232,7 @@ int main(int argc, char *argv[]) {
     qmlRegisterType<QOpenHDLink>("OpenHD", 1,0, "QOpenHDLink");
 
     #if defined(ENABLE_ADSB)
-    qmlRegisterType<OpenSky>("OpenHD", 1, 0, "OpenSky");
+    qmlRegisterType<Adsb>("OpenHD", 1, 0, "Adsb");
     #endif
 
     qmlRegisterType<MarkerModel>("OpenHD", 1, 0, "MarkerModel");
@@ -450,9 +450,9 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
 
 
     #if defined(ENABLE_ADSB)
-    auto openSky = OpenSky::instance();
-    engine.rootContext()->setContextProperty("OpenSky", openSky);
-    openSky->onStarted();
+    auto Adsb = Adsb::instance();
+    engine.rootContext()->setContextProperty("Adsb", Adsb);
+    Adsb->onStarted();
     #endif
 
     engine.rootContext()->setContextProperty("OpenHDUtil", util);
