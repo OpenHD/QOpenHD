@@ -450,9 +450,9 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
 
 
     #if defined(ENABLE_ADSB)
-    auto Adsb = Adsb::instance();
-    engine.rootContext()->setContextProperty("Adsb", Adsb);
-    Adsb->onStarted();
+    auto adsb = Adsb::instance();
+    engine.rootContext()->setContextProperty("Adsb", adsb);
+    adsb->onStarted();
     #endif
 
     engine.rootContext()->setContextProperty("OpenHDUtil", util);
