@@ -73,6 +73,8 @@ Settings {
     property bool show_home_distance: true
     property double home_distance_opacity: 1
     property double home_distance_size: 1
+    property double home_saved_lat: 0.0
+    property double home_saved_lon: 0.0
 
     property bool show_flight_timer: true
     property double flight_timer_opacity: 1

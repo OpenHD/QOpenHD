@@ -172,10 +172,15 @@ void OpenHD::findGcsPosition() {
             //get 20 good gps readings before setting
             if (++gps_quality_count == 20) {
                 set_homelat(m_lat);
-                set_homelon(m_lon);
+                set_homelon(m_lon);                
                 gcs_position_set=true;
                 LocalMessage::instance()->showMessage("Home Position set by OpenHD", 7);
             }
+        }
+        else if (m_armed==false){ //we are in flight and the app crashed
+            QSettings settings;
+            set_homelat(settings.value("home_saved_lat", QVariant(0)).toDouble());
+            set_homelon(settings.value("home_saved_lon", QVariant(0)).toDouble());
         }
     }
 }
@@ -345,12 +350,17 @@ void OpenHD::set_homelat(double homelat) {
     m_homelat = homelat;
     gcs_position_set = true;
     emit homelat_changed(m_homelat);
+    QSettings settings;
+    settings.value("home_saved_lat", QVariant(0)) = m_homelat;
+
 }
 
 void OpenHD::set_homelon(double homelon) {
     m_homelon = homelon;
     gcs_position_set = true;
     emit homelon_changed(m_homelon);
+    QSettings settings;
+    settings.value("home_saved_lon", QVariant(0)) = m_homelon;
 }
 
 void OpenHD::calculate_home_distance() {
