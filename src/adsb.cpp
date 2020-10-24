@@ -11,7 +11,6 @@
 #include <QNetworkReply>
 #include <QNetworkRequest>
 
-#include <QtWebSockets/QtWebSockets>
 #include <QSslSocket>
 
 #include <QCoreApplication>
