@@ -211,6 +211,8 @@ iOSBuild {
     CONFIG += EnableVideoRender
     #CONFIG += EnableLink
     #CONFIG += EnableCharts
+    CONFIG += EnableADSB
+    #CONFIG += EnableBlackbox
 
     app_launch_images.files = $$PWD/icons/LaunchScreen.png $$files($$PWD/icons/LaunchScreen.storyboard)
     QMAKE_BUNDLE_DATA += app_launch_images
@@ -254,6 +256,8 @@ MacBuild {
     CONFIG += EnableVideoRender
     #CONFIG += EnableLink
     #CONFIG += EnableCharts
+    CONFIG += EnableADSB
+    #CONFIG += EnableBlackbox
 
     EnableVideoRender {
         QT += multimedia
@@ -282,6 +286,7 @@ LinuxBuild {
     #CONFIG += EnableLink
     #CONFIG += EnableCharts
     CONFIG += EnableADSB
+    #CONFIG += EnableBlackbox
 
     message("LinuxBuild - config")
 }
@@ -297,6 +302,8 @@ RaspberryPiBuild {
     #CONFIG += EnableLink
     #CONFIG += EnableCharts
     CONFIG += EnableSpeech
+    CONFIG += EnableADSB
+    #CONFIG += EnableBlackbox
 
     CONFIG += EnableVideoRender
 
@@ -323,6 +330,8 @@ WindowsBuild {
     #CONFIG += EnableLink
     CONFIG += EnableGStreamer
     #CONFIG += EnableCharts
+    CONFIG += EnableADSB
+    #CONFIG += EnableBlackbox
 
     DEFINES += GST_GL_HAVE_WINDOW_WIN32=1
     DEFINES += GST_GL_HAVE_PLATFORM_WGL=1
@@ -340,6 +349,9 @@ AndroidBuild {
     #CONFIG += EnableLink
     CONFIG += EnableVideoRender
     #CONFIG += EnableCharts
+    CONFIG += EnableADSB
+    #CONFIG += EnableBlackbox
+
     EnableGStreamer {
         OTHER_FILES += \
             $$PWD/android/src/org/openhd/OpenHDActivity.java
@@ -395,9 +407,9 @@ EnableADSB {
     DEFINES += ENABLE_ADSB
 
     SOURCES += \
-            src/opensky.cpp
+    src/adsb.cpp
     HEADERS += \
-            inc/opensky.h
+    inc/adsb.h
 
 }
 

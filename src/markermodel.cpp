@@ -6,7 +6,7 @@
 #include "constants.h"
 
 #include "markermodel.h"
-#include "opensky.h"
+#include "adsb.h"
 
 
 Traffic::Traffic(const QString &callsign, const int &contact, const double &lat, const double &lon,
@@ -134,6 +134,8 @@ void MarkerModel::set_adsb_radius(int adsb_radius){
 }
 
 void MarkerModel::removeAllMarkers(){
+
+    //qDebug() << "removeallmarker";
     //remove all rows before adding new
 
     beginResetModel();
@@ -141,6 +143,8 @@ void MarkerModel::removeAllMarkers(){
     //qDeleteAll(m_traffic);
     m_traffic.clear();
     endResetModel();
+
+    emit dataChanged(this->index(0),this->index(rowCount()));
 
     /*
     int removerowcount=rowCount();

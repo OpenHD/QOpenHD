@@ -5,7 +5,7 @@ import QtGraphicalEffects 1.12
 import Qt.labs.settings 1.0
 import QtQuick.Extras 1.4
 
-//import OpenHD 1.0
+//import OpenHD 1.0 // uncommented than markermodel on datachange connection is not made??!
 
 BaseWidget {
     id: adsbWidget
@@ -43,7 +43,7 @@ BaseWidget {
     Connections {
         target: MarkerModel
         function onDataChanged() {
-            console.log("MARKER MODEL DATA CHANGED");
+            //console.log("MARKER MODEL DATA CHANGED");
             lastData = (new Date).getTime();
             adsb_status.active=true;
             adsb_status.color="green";
@@ -115,6 +115,30 @@ BaseWidget {
             width: parent.width
             height: 32
             Text {
+                text: qsTr("Source OpenSky / SDR")
+                color: "white"
+                height: parent.height
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
+            Switch {
+                width: 32
+                height: parent.height
+                anchors.rightMargin: 6
+                anchors.right: parent.right
+                checked: settings.adsb_api_sdr
+                onCheckedChanged: {
+                    settings.adsb_api_sdr = checked;
+                    markerModel.removeAllMarkers();
+                }
+            }
+        }
+        Item {
+            width: parent.width
+            height: 32
+            Text {
                 text: qsTr("Range")
                 color: "white"
                 height: parent.height
@@ -144,7 +168,7 @@ BaseWidget {
 
     Item {
         id: widgetInner
-
+        visible: settings.show_adsb
         anchors.fill: parent
         scale: settings.adsb_size
 
@@ -172,6 +196,7 @@ BaseWidget {
             anchors.leftMargin: 5
             anchors.verticalCenter: parent.verticalCenter
             active: false
+            visible: !settings.adsb_api_sdr
         }
     }
 }

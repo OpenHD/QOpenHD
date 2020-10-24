@@ -73,6 +73,8 @@ Settings {
     property bool show_home_distance: true
     property double home_distance_opacity: 1
     property double home_distance_size: 1
+    property double home_saved_lat: 0.0
+    property double home_saved_lon: 0.0
 
     property bool show_flight_timer: true
     property double flight_timer_opacity: 1
@@ -231,6 +233,7 @@ Settings {
     property bool show_adsb: false
     property int adsb_distance_limit: 15000//meters. Bound box for api from map center (so x2)
     //property int adsb_marker_limit: 19
+    property bool adsb_api_sdr: false
     property double adsb_opacity: 1
     property double adsb_size: 1
 
