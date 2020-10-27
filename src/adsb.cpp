@@ -50,6 +50,11 @@ Adsb::Adsb(QObject *parent): QObject(parent) {
 
 void Adsb::onStarted() {
     qDebug() << "------------------Adsb::onStarted()";
+
+    #if defined(__rasp_pi__)
+    groundAddress = "127.0.0.1";
+    #endif
+
     auto markerModel = MarkerModel::instance();
     connect(this, &Adsb::addMarker, markerModel, &MarkerModel::addMarker);
     connect(this, &Adsb::doneAddingMarkers, markerModel, &MarkerModel::doneAddingMarkers);
@@ -65,6 +70,10 @@ void Adsb::onStarted() {
     connect(timer, &QTimer::timeout, this, &Adsb::requestData);
     // How frequently data is requested
     timer->start(timer_interval);
+}
+
+void Adsb::setGroundIP(QString address) {
+    groundAddress = address;
 }
 
 void Adsb::mapBoundsChanged(QGeoCoordinate center_coord) {
@@ -107,6 +116,10 @@ void Adsb::set_adsb_api_coord(QGeoCoordinate adsb_api_coord){
 }
 
 void Adsb::requestData() {
+    if (groundAddress.isEmpty()) {
+        return;
+    }
+
     //qDebug() << "Adsb::requestData()";
     auto show_adsb = settings.value("show_adsb", false).toBool();
 
@@ -118,7 +131,7 @@ void Adsb::requestData() {
         timer->stop();
         timer->start(1000);
 
-        adsb_url= "http://192.168.2.1/dump1090/data/aircraft.json";
+        adsb_url= "http://"+groundAddress+"/dump1090/data/aircraft.json";
     }
     else {
         //qDebug() << "timer 10";

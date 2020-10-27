@@ -452,6 +452,7 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
     #if defined(ENABLE_ADSB)
     auto adsb = Adsb::instance();
     engine.rootContext()->setContextProperty("Adsb", adsb);
+    QObject::connect(openHDSettings, &OpenHDSettings::groundStationIPUpdated, adsb, &Adsb::setGroundIP, Qt::QueuedConnection);
     adsb->onStarted();
     #endif
 

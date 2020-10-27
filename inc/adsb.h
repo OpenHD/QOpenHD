@@ -40,6 +40,8 @@ public slots:
     void onStarted();
     void mapBoundsChanged(QGeoCoordinate center_coord);
 
+    Q_INVOKABLE void setGroundIP(QString address);
+
 private slots:
     void processReply(QNetworkReply *reply);
     void requestData();
@@ -63,6 +65,7 @@ private:
     int timer_interval = 1000; //get reset later if api or sdr selected
     QTimer *timer;
     bool adsb_api_sdr;
+    QString groundAddress;
 };
 
 
