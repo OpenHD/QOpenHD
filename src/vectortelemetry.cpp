@@ -168,6 +168,8 @@ void VectorTelemetry::processVectorMessage() {
 
     dummy16 = (uint16_t)votbread_u16(); // CompassDegrees-not used- either magnetic compass reading (if compass enabled) or filtered GPS course over ground if not
     auto rssi = (uint8_t)votread_u8();  // RSSIPercent-rssi-
+    OpenHD::instance()->setRcRssi(rssi);
+
     auto lq   = (uint8_t)votread_u8();  // LQPercent-not used-
 
     auto latitude = (double)(int32_t)votbread_u32() / 10000000; // -latitude- (degrees * 10,000,000 )
