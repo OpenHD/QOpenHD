@@ -17,9 +17,7 @@
 PowerMicroservice::PowerMicroservice(QObject *parent, MicroserviceTarget target, MavlinkType mavlink_type): MavlinkBase(parent, mavlink_type), m_target(target) {
     qDebug() << "PowerMicroservice::PowerMicroservice()";
 
-    targetCompID1 = MAV_COMP_ID_USER1;
-    targetCompID2 = targetCompID1;
-    targetCompID3 = targetCompID1;
+    targetCompID = MAV_COMP_ID_USER1;
     localPort = 14551;
 
     #if defined(__rasp_pi__)
@@ -28,21 +26,19 @@ PowerMicroservice::PowerMicroservice(QObject *parent, MicroserviceTarget target,
 
     switch (m_target) {
         case MicroserviceTargetNone:
-        targetSysID1 = 0;
+        targetSysID = 0;
         break;
         case MicroserviceTargetAir:
-        targetSysID1 = 253;
+        targetSysID = 253;
         connect(OpenHD::instance(), &OpenHD::air_shutdown, this, &PowerMicroservice::onShutdown);
         connect(OpenHD::instance(), &OpenHD::air_reboot, this, &PowerMicroservice::onReboot);
         break;
         case MicroserviceTargetGround:
-        targetSysID1 = 254;
+        targetSysID = 254;
         connect(OpenHD::instance(), &OpenHD::ground_shutdown, this, &PowerMicroservice::onShutdown);
         connect(OpenHD::instance(), &OpenHD::ground_reboot, this, &PowerMicroservice::onReboot);
         break;
     }
-
-    targetSysID2 = targetSysID1;
 
     connect(this, &PowerMicroservice::setup, this, &PowerMicroservice::onSetup);
 }

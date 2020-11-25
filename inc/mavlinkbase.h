@@ -169,13 +169,13 @@ protected:
     bool m_loading = false;
     bool m_saving = false;
 
+    bool m_restrict_sysid = true;
+    bool m_restrict_compid = true;
+
 protected:
     OpenHDUtil m_util;
-    quint8 targetSysID1;
-    quint8 targetSysID2;
-    quint8 targetCompID1;
-    quint8 targetCompID2;
-    quint8 targetCompID3;
+    quint8 targetSysID;
+    quint8 targetCompID;
 
     quint16 localPort = 14550;
 

@@ -151,7 +151,7 @@ void MavlinkBase::fetchParameters() {
     int mavlink_sysid = settings.value("mavlink_sysid", m_util.default_mavlink_sysid()).toInt();
 
     mavlink_message_t msg;
-    mavlink_msg_param_request_list_pack(mavlink_sysid, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID1, targetCompID1);
+    mavlink_msg_param_request_list_pack(mavlink_sysid, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID, targetCompID);
 
     uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
     int len = mavlink_msg_to_send_buffer(buffer, &msg);
@@ -298,13 +298,14 @@ void MavlinkBase::processData(QByteArray data) {
             /*
              * Not the target we're talking to, so reject it
              */
-            if (msg.sysid != targetSysID1 && msg.sysid != targetSysID2) {
+            if (m_restrict_sysid && (msg.sysid != targetSysID)) {
                 return;
             }
 
-            if (msg.compid != targetCompID1 && msg.compid != targetCompID2 && msg.compid != targetCompID3) {
+            if (m_restrict_compid && (msg.compid != targetCompID)) {
                 return;
             }
+
             // process ack messages in the base class, subclasses will receive a signal
             // to indicate success or failure
             if (msg.msgid == MAVLINK_MSG_ID_COMMAND_ACK) {
@@ -416,9 +417,9 @@ void MavlinkBase::commandStateLoop() {
             int mavlink_sysid = settings.value("mavlink_sysid", m_util.default_mavlink_sysid()).toInt();
 
             if (m_current_command->m_command_type == MavlinkCommandTypeLong) {
-                mavlink_msg_command_long_pack(mavlink_sysid, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID1, targetCompID1, m_current_command->command_id, m_current_command->long_confirmation, m_current_command->long_param1, m_current_command->long_param2, m_current_command->long_param3, m_current_command->long_param4, m_current_command->long_param5, m_current_command->long_param6, m_current_command->long_param7);
+                mavlink_msg_command_long_pack(mavlink_sysid, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID, targetCompID, m_current_command->command_id, m_current_command->long_confirmation, m_current_command->long_param1, m_current_command->long_param2, m_current_command->long_param3, m_current_command->long_param4, m_current_command->long_param5, m_current_command->long_param6, m_current_command->long_param7);
             } else {
-                mavlink_msg_command_int_pack(mavlink_sysid, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID1, targetCompID1, m_current_command->int_frame, m_current_command->command_id, m_current_command->int_current, m_current_command->int_autocontinue, m_current_command->int_param1, m_current_command->int_param2, m_current_command->int_param3, m_current_command->int_param4, m_current_command->int_param5, m_current_command->int_param6, m_current_command->int_param7);
+                mavlink_msg_command_int_pack(mavlink_sysid, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID, targetCompID, m_current_command->int_frame, m_current_command->command_id, m_current_command->int_current, m_current_command->int_autocontinue, m_current_command->int_param1, m_current_command->int_param2, m_current_command->int_param3, m_current_command->int_param4, m_current_command->int_param5, m_current_command->int_param6, m_current_command->int_param7);
             }
             uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
             int len = mavlink_msg_to_send_buffer(buffer, &msg);
