@@ -79,9 +79,6 @@ void GPIOMicroservice::onSaveGPIO(QList<int> gpio) {
 
 
 void GPIOMicroservice::onProcessMavlinkMessage(mavlink_message_t msg) {
-    if (msg.compid != targetCompID1 || msg.sysid != targetSysID1) {
-        return;
-    }
     switch (msg.msgid) {
         case MAVLINK_MSG_ID_HEARTBEAT: {
             mavlink_heartbeat_t heartbeat;
