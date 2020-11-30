@@ -38,6 +38,10 @@
         <source>Range</source>
         <translation>Portée</translation>
     </message>
+    <message>
+        <source>Source OpenSky / SDR</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>AirBatteryWidgetForm.ui</name>
