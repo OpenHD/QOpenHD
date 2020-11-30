@@ -554,3 +554,5 @@ contains(ANDROID_TARGET_ARCH,arm64-v8a) {
         $$PWD/android
 }
 
+ANDROID_ABIS = armeabi-v7a
+

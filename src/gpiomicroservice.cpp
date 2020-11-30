@@ -26,9 +26,7 @@
 GPIOMicroservice::GPIOMicroservice(QObject *parent, MicroserviceTarget target, MavlinkType mavlink_type): MavlinkBase(parent, mavlink_type), m_target(target) {
     qDebug() << "GPIOMicroservice::GPIOMicroservice()";
 
-    targetCompID1 = MAV_COMP_ID_USER2;
-    targetCompID2 = targetCompID1;
-    targetCompID3 = targetCompID1;
+    targetCompID = MAV_COMP_ID_USER2;
 
     localPort = 14551;
 
@@ -38,18 +36,17 @@ GPIOMicroservice::GPIOMicroservice(QObject *parent, MicroserviceTarget target, M
 
     switch (m_target) {
         case MicroserviceTargetNone:
-        targetSysID1 = 0;
+        targetSysID = 0;
         break;
         case MicroserviceTargetAir:
-        targetSysID1 = 253;
+        targetSysID = 253;
         connect(OpenHD::instance(), &OpenHD::save_air_gpio, this, &GPIOMicroservice::onSaveGPIO);
         break;
         case MicroserviceTargetGround:
-        targetSysID1 = 254;
+        targetSysID = 254;
         connect(OpenHD::instance(), &OpenHD::save_ground_gpio, this, &GPIOMicroservice::onSaveGPIO);
         break;
     }
-    targetSysID2 = targetSysID1;
 
     connect(this, &GPIOMicroservice::setup, this, &GPIOMicroservice::onSetup);
 }
@@ -79,9 +76,6 @@ void GPIOMicroservice::onSaveGPIO(QList<int> gpio) {
 
 
 void GPIOMicroservice::onProcessMavlinkMessage(mavlink_message_t msg) {
-    if (msg.compid != targetCompID1 || msg.sysid != targetSysID1) {
-        return;
-    }
     switch (msg.msgid) {
         case MAVLINK_MSG_ID_HEARTBEAT: {
             mavlink_heartbeat_t heartbeat;

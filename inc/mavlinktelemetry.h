@@ -27,6 +27,7 @@ public:
 public slots:
     void onSetup();
     void pauseTelemetry(bool toggle);
+    void requestSysIdSettings();
 
 private slots:
     void onProcessMavlinkMessage(mavlink_message_t msg);

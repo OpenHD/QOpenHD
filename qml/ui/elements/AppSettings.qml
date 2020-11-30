@@ -15,6 +15,8 @@ Settings {
     property int battery_cells: 3
 
     property int mavlink_sysid: default_mavlink_sysid()
+    property int fc_mavlink_sysid: 1
+    property bool filter_mavlink_telemetry: false
 
     property bool show_pip_video: false
     property double pip_video_opacity: 1

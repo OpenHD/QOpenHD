@@ -12,9 +12,7 @@
 StatusMicroservice::StatusMicroservice(QObject *parent, MicroserviceTarget target, MavlinkType mavlink_type): MavlinkBase(parent, mavlink_type), m_target(target) {
     qDebug() << "StatusMicroservice::StatusMicroservice()";
 
-    targetCompID1 = MAV_COMP_ID_USER3;
-    targetCompID2 = targetCompID1;
-    targetCompID3 = targetCompID1;
+    targetCompID = MAV_COMP_ID_USER3;
     localPort = 14551;
 
     #if defined(__rasp_pi__)
@@ -23,16 +21,15 @@ StatusMicroservice::StatusMicroservice(QObject *parent, MicroserviceTarget targe
 
     switch (m_target) {
         case MicroserviceTargetNone:
-        targetSysID1 = 0;
+        targetSysID = 0;
         break;
         case MicroserviceTargetAir:
-        targetSysID1 = 253;
+        targetSysID = 253;
         break;
         case MicroserviceTargetGround:
-        targetSysID1 = 254;
+        targetSysID = 254;
         break;
     }
-    targetSysID2 = targetSysID1;
 
     connect(this, &StatusMicroservice::setup, this, &StatusMicroservice::onSetup);
 }
@@ -120,4 +117,3 @@ void StatusMicroservice::onProcessMavlinkMessage(mavlink_message_t msg) {
         }
     }
 }
-
