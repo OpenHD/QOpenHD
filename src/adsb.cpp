@@ -116,9 +116,6 @@ void Adsb::set_adsb_api_coord(QGeoCoordinate adsb_api_coord){
 }
 
 void Adsb::requestData() {
-    if (groundAddress.isEmpty()) {
-        return;
-    }
 
     //qDebug() << "Adsb::requestData()";
     auto show_adsb = settings.value("show_adsb", false).toBool();
@@ -130,6 +127,10 @@ void Adsb::requestData() {
         //qDebug() << "timer 1";
         timer->stop();
         timer->start(1000);
+
+        if (groundAddress.isEmpty()) {
+            return;
+        }
 
         adsb_url= "http://"+groundAddress+"/dump1090/data/aircraft.json";
     }
