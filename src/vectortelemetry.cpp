@@ -163,9 +163,13 @@ void VectorTelemetry::processVectorMessage() {
 
 
     dummy16 = (uint16_t)votbread_u16(); // TempDegreesCX10-- degrees C * 10, from optional temperature sensor
-    dummy16 = (uint16_t)votbread_u16(); // mAHConsumed-not used-
+    auto mah = (uint16_t)votbread_u16(); // mAHConsumed-not used-
+    OpenHD::instance()->set_flight_mah(mah);
+
     dummy16 = (uint16_t)votbread_u16(); // CompassDegrees-not used- either magnetic compass reading (if compass enabled) or filtered GPS course over ground if not
     auto rssi = (uint8_t)votread_u8();  // RSSIPercent-rssi-
+    OpenHD::instance()->setRcRssi(rssi);
+
     auto lq   = (uint8_t)votread_u8();  // LQPercent-not used-
 
     auto latitude = (double)(int32_t)votbread_u32() / 10000000; // -latitude- (degrees * 10,000,000 )

@@ -38,6 +38,9 @@ MavlinkTelemetry::MavlinkTelemetry(QObject *parent): MavlinkBase(parent) {
     m_restrict_compid = false;
     targetCompID = MAV_COMP_ID_AUTOPILOT1;
 
+    m_restrict_sysid = false;
+    m_restrict_compid = false;
+    
     localPort = 14550;
 
     #if defined(__rasp_pi__)
@@ -83,15 +86,6 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             case MAVLINK_MSG_ID_HEARTBEAT: {
                     mavlink_heartbeat_t heartbeat;
                     mavlink_msg_heartbeat_decode(&msg, &heartbeat);
-                    //MAV_STATE state = (MAV_STATE)heartbeat.system_status;
-                    MAV_MODE_FLAG mode = (MAV_MODE_FLAG)heartbeat.base_mode;
-
-                    if (mode & MAV_MODE_FLAG_SAFETY_ARMED) {
-                        // armed
-                        OpenHD::instance()->set_armed(true);
-                    } else {
-                        OpenHD::instance()->set_armed(false);
-                    }
 
                     auto custom_mode = heartbeat.custom_mode;
 
@@ -149,8 +143,20 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
                             break;
                         }
                         default: {
-                            break;
+                            // this returns to prevent heartbeats from devices other than an autopilot from setting
+                            // the armed/disarmed flag or resetting the last heartbeat timestamp
+                            return;
                         }
+                    }
+
+                    //MAV_STATE state = (MAV_STATE)heartbeat.system_status;
+                    MAV_MODE_FLAG mode = (MAV_MODE_FLAG)heartbeat.base_mode;
+
+                    if (mode & MAV_MODE_FLAG_SAFETY_ARMED) {
+                        // armed
+                        OpenHD::instance()->set_armed(true);
+                    } else {
+                        OpenHD::instance()->set_armed(false);
                     }
 
                     qint64 current_timestamp = QDateTime::currentMSecsSinceEpoch();
