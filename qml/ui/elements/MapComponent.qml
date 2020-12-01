@@ -248,7 +248,7 @@ Map {
                                 return orientation;
                             }
                             else {                                
-                                console.log("TRACK=", model.track);
+                                //console.log("TRACK=", model.track);
                                 return model.track;
                             }
                         }
