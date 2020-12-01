@@ -63,12 +63,10 @@ void MavlinkTelemetry::onSetup() {
 }
 
 void MavlinkTelemetry::requestSysIdSettings() {
-    qDebug() << "requestTargetSysId called";
+    //qDebug() << "requestTargetSysId called";
     QSettings settings;
     m_restrict_sysid = settings.value("filter_mavlink_telemetry", false).toBool();
-    qDebug() << "restrict_sysid = " << m_restrict_sysid;
     targetSysID = settings.value("fc_mavlink_sysid", m_util.default_mavlink_sysid()).toInt();
-    qDebug() << "targetSysID = " << targetSysID;
 }
 
 void MavlinkTelemetry::pauseTelemetry(bool toggle) {
