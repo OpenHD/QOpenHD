@@ -183,7 +183,7 @@ Item {
                         color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
                         Text {
-                            text: qsTr("Battery Cells")
+                            text: qsTr("Air Battery Cells")
                             font.weight: Font.Bold
                             font.pixelSize: 13
                             anchors.leftMargin: 8
@@ -208,6 +208,40 @@ Item {
 
                             value: settings.battery_cells
                             onValueChanged: settings.battery_cells = value
+                        }
+                    }
+
+                    Rectangle {
+                        width: parent.width
+                        height: rowHeight
+                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+
+                        Text {
+                            text: qsTr("Ground Battery Cells")
+                            font.weight: Font.Bold
+                            font.pixelSize: 13
+                            anchors.leftMargin: 8
+                            verticalAlignment: Text.AlignVCenter
+                            anchors.verticalCenter: parent.verticalCenter
+                            width: 224
+                            height: elementHeight
+                            anchors.left: parent.left
+                        }
+
+                        SpinBox {
+                            id: gndBatteryCellspinBox
+                            height: elementHeight
+                            width: 210
+                            font.pixelSize: 14
+                            anchors.right: parent.right
+                            anchors.verticalCenter: parent.verticalCenter
+                            from: 1
+                            to: 6
+                            stepSize: 1
+                            anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
+
+                            value: settings.gnd_battery_cells
+                            onValueChanged: settings.gnd_battery_cells = value
                         }
                     }
 
@@ -910,6 +944,35 @@ Item {
                             anchors.verticalCenter: parent.verticalCenter
                             checked: settings.show_ground_status
                             onCheckedChanged: settings.show_ground_status = checked
+                        }
+                    }
+
+                    Rectangle {
+                        width: parent.width
+                        height: rowHeight
+                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+
+                        Text {
+                            text: qsTr("Show Ground Battery")
+                            font.weight: Font.Bold
+                            font.pixelSize: 13
+                            anchors.leftMargin: 8
+                            verticalAlignment: Text.AlignVCenter
+                            anchors.verticalCenter: parent.verticalCenter
+                            width: 224
+                            height: elementHeight
+                            anchors.left: parent.left
+                        }
+
+                        Switch {
+                            width: 32
+                            height: elementHeight
+                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                            anchors.right: parent.right
+                            anchors.verticalCenter: parent.verticalCenter
+                            checked: settings.show_gnd_battery
+                            onCheckedChanged: settings.show_gnd_battery = checked
                         }
                     }
 

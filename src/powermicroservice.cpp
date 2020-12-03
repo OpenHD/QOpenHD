@@ -105,6 +105,15 @@ void PowerMicroservice::onProcessMavlinkMessage(mavlink_message_t msg) {
                     OpenHD::instance()->set_ground_vout(power.vout);
                     OpenHD::instance()->set_ground_vbat(power.vbat);
                     OpenHD::instance()->set_ground_iout(power.iout);
+
+                    QSettings settings;
+                    auto gnd_battery_cells = settings.value("gnd_battery_cells", QVariant(3)).toInt();
+
+                    int gnd_battery_percent = m_util.lipo_battery_voltage_to_percent(gnd_battery_cells, power.vbat);
+                    OpenHD::instance()->set_gnd_battery_percent(gnd_battery_percent);
+                    QString gnd_battery_gauge_glyph = m_util.battery_gauge_glyph_from_percentage(gnd_battery_percent);
+                    OpenHD::instance()->set_gnd_battery_gauge(gnd_battery_gauge_glyph);
+
                     break;
                 }
                 default: {
@@ -112,13 +121,6 @@ void PowerMicroservice::onProcessMavlinkMessage(mavlink_message_t msg) {
                 }
             }
 
-            auto battery_cells = 1; //settings.value("battery_cells", QVariant(3)).toInt();
-
-            /*int battery_percent = lifepo4_battery_voltage_to_percent(battery_cells, m_vbat_raw);
-              set_battery_percent(QString("%1%").arg(battery_percent));
-              QString battery_gauge_glyph = battery_gauge_glyph_from_percentage(battery_percent);
-              set_battery_gauge(battery_gauge_glyph);
-            */
             break;
         }
         default: {

@@ -12,7 +12,7 @@ import "./widgets"
 
 Item {
     property alias messageHUD: messageHUD
-    signal settingsButtonClicked();
+    signal settingsButtonClicked
 
     Image {
         id: settingsButton
@@ -32,7 +32,7 @@ Item {
             anchors.fill: parent
 
             onClicked: {
-                hudOverlayGrid.settingsButtonClicked();
+                hudOverlayGrid.settingsButtonClicked()
             }
         }
     }
@@ -40,6 +40,10 @@ Item {
     // + 0% cpu
     MessageHUD {
         id: messageHUD
+    }
+
+    GroundPowerWidget {
+        id: groundPowerWidget
     }
 
     // + 0% cpu
@@ -147,7 +151,6 @@ Item {
         id: altitudesecondWidget
     }
 
-
     // + 17% cpu
     SpeedWidget {
         id: speedWidget
@@ -157,12 +160,10 @@ Item {
         id: speedSecondWidget
     }
 
-
     // +3% cpu
     HeadingWidget {
         id: headingWidget
     }
-
 
     // + 0% cpu
     ArrowWidget {
@@ -178,7 +179,7 @@ Item {
     // + 0% cpu
     ControlWidget {
         id: controlWidget
-     //   scale: 0.7
+        //   scale: 0.7
     }
 
     // + 3% cpu
@@ -231,9 +232,5 @@ Item {
     }
 }
 
-/*##^##
-Designer {
-    D{i:0;autoSize:true;height:480;width:640}
-}
-##^##*/
+
 
