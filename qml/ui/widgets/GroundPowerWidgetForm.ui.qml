@@ -213,6 +213,25 @@ BaseWidget {
         scale: settings.gnd_battery_size
 
         Text {
+            id: gndTag
+            y: 0
+            rotation: -90
+            color: settings.color_text
+            text: "gnd"
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.left: parent.left
+            anchors.leftMargin: -2
+            clip: true
+            verticalAlignment: Text.AlignVCenter
+            elide: Text.ElideRight
+            horizontalAlignment: Text.AlignLeft
+            font.pixelSize: 14
+            font.family: settings.font_text
+            style: Text.Outline
+            styleColor: settings.color_glow
+        }
+
+        Text {
             id: battery_percent
             y: 0
             color: settings.color_text
