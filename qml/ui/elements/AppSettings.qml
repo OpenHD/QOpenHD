@@ -127,8 +127,9 @@ Settings {
     property bool horizon_invert_pitch: false
     property bool horizon_invert_roll: false
     property int horizon_size: 1
+    property int horizon_width: 1
     property double horizon_opacity: 1
-    property int horizon_ladder_spacing: 10
+    property int horizon_ladder_spacing: 180
     property bool show_horizon_ladder: true
     property bool show_horizon_heading_ladder: true
     property bool show_horizon_home: true
