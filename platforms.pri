@@ -8,7 +8,7 @@ linux {
             message("Linux clang")
             QMAKE_CXXFLAGS += -Qunused-arguments -fcolor-diagnostics
         }
-    } else : linux-rpi-g++ {
+    } else : linux-rpi-g++ | linux-rpi-vc4-g++ | linux-rasp-pi-g++ {
         message("RaspberryPiBuild")
         CONFIG += RaspberryPiBuild
         DEFINES += __STDC_LIMIT_MACROS __rasp_pi__
@@ -61,13 +61,6 @@ ios {
     QMAKE_IOS_DEPLOYMENT_TARGET = 12.1
     QMAKE_APPLE_TARGETED_DEVICE_FAMILY = 1,2
     QMAKE_LFLAGS += -Wl
-}
-
-!iOSBuild {
-    OBJECTS_DIR  = $${OUT_PWD}/obj
-    MOC_DIR      = $${OUT_PWD}/moc
-    UI_DIR       = $${OUT_PWD}/ui
-    RCC_DIR      = $${OUT_PWD}/rcc
 }
 
 MobileBuild {

@@ -1,6 +1,8 @@
 #ifndef UTIL_CPP
 #define UTIL_CPP
 
+#include <QObject>
+
 #include "util.h"
 
 #if defined(__android__)
@@ -8,7 +10,10 @@
 #include <QAndroidJniEnvironment>
 #endif
 
-int battery_voltage_to_percent(int cells, double voltage) {
+OpenHDUtil::OpenHDUtil(QObject *parent): QObject(parent) { }
+
+
+int OpenHDUtil::lipo_battery_voltage_to_percent(int cells, double voltage) {
     double cell_voltage = voltage / static_cast<double>(cells);
 
     if (cell_voltage >= 4.2) {
@@ -56,7 +61,58 @@ int battery_voltage_to_percent(int cells, double voltage) {
     }
 }
 
-QString battery_gauge_glyph_from_percentage(int percent) {
+
+int OpenHDUtil::lifepo4_battery_voltage_to_percent(int cells, double voltage) {
+    double cell_voltage = voltage / static_cast<double>(cells);
+
+    if (cell_voltage >= 3.40) {
+        return 100;
+    } else if (cell_voltage >= 3.20) {
+        return 95;
+    } else if (cell_voltage >= 3.19) {
+        return 90;
+    } else if (cell_voltage >= 3.18) {
+        return 85;
+    } else if (cell_voltage >= 3.17) {
+        return 80;
+    } else if (cell_voltage >= 3.16) {
+        return 75;
+    } else if (cell_voltage >= 3.15) {
+        return 70;
+    } else if (cell_voltage >= 3.14) {
+        return 65;
+    } else if (cell_voltage >= 3.13) {
+        return 60;
+    } else if (cell_voltage >= 3.12) {
+        return 55;
+    } else if (cell_voltage >= 3.11) {
+        return 50;
+    } else if (cell_voltage >= 3.10) {
+        return 45;
+    } else if (cell_voltage >= 3.09) {
+        return 40;
+    } else if (cell_voltage >= 3.08) {
+        return 35;
+    } else if (cell_voltage >= 3.07) {
+        return 30;
+    } else if (cell_voltage >= 3.06) {
+        return 25;
+    } else if (cell_voltage >= 3.05) {
+        return 20;
+    } else if (cell_voltage >= 3.04) {
+        return 15;
+    } else if (cell_voltage >= 3.03) {
+        return 10;
+    } else if (cell_voltage >= 3.02) {
+        return 5;
+    } else {
+        return 0;
+    }
+}
+
+
+QString OpenHDUtil::battery_gauge_glyph_from_percentage(int percent) {
+    percent = (percent / 5) * 5;
     // these are Material Design Icon codepoints from the battery gauge icon set
     switch (percent) {
         case 100:return "\uf079";
@@ -84,7 +140,7 @@ QString battery_gauge_glyph_from_percentage(int percent) {
     }
 }
 
-QString sub_mode_from_enum(SUB_MODE mode) {
+QString OpenHDUtil::sub_mode_from_enum(SUB_MODE mode) {
     switch (mode) {
        case SUB_MODE_MANUAL:
             return "Manual";
@@ -104,13 +160,11 @@ QString sub_mode_from_enum(SUB_MODE mode) {
             return "Surface";
        case SUB_MODE_POSHOLD:
             return "Position Hold";
-       case SUB_MODE_ENUM_END:
-            break;
     }
     return "Unknown";
 }
 
-QString rover_mode_from_enum(ROVER_MODE mode) {
+QString OpenHDUtil::rover_mode_from_enum(ROVER_MODE mode) {
     switch (mode) {
        case ROVER_MODE_HOLD:
             return "Hold";
@@ -132,13 +186,11 @@ QString rover_mode_from_enum(ROVER_MODE mode) {
             return "Loiter";
        case ROVER_MODE_GUIDED:
             return "Guided";
-       case ROVER_MODE_ENUM_END:
-            break;
     }
     return "Unknown";
 }
 
-QString copter_mode_from_enum(COPTER_MODE mode) {
+QString OpenHDUtil::copter_mode_from_enum(COPTER_MODE mode) {
     switch (mode) {
         case COPTER_MODE_LAND:
              return "Landing";
@@ -178,13 +230,11 @@ QString copter_mode_from_enum(COPTER_MODE mode) {
             return "Avoid ADSB";
        case COPTER_MODE_GUIDED:
             return "Guided";
-       case COPTER_MODE_ENUM_END:
-            break;
     }
     return "Unknown";
 }
 
-QString plane_mode_from_enum(PLANE_MODE mode) {
+QString OpenHDUtil::plane_mode_from_enum(PLANE_MODE mode) {
     switch (mode) {
        case PLANE_MODE_MANUAL:
             return "Manual";
@@ -210,6 +260,8 @@ QString plane_mode_from_enum(PLANE_MODE mode) {
             return "RTL";
        case PLANE_MODE_LOITER:
             return "Loiter";
+       case PLANE_MODE_TAKEOFF:
+            return "Takeoff";
        case PLANE_MODE_AVOID_ADSB:
             return "Avoid ADSB";
        case PLANE_MODE_GUIDED:
@@ -228,14 +280,12 @@ QString plane_mode_from_enum(PLANE_MODE mode) {
             return "QRTL";
        case PLANE_MODE_QAUTOTUNE:
             return "QAutotune";
-       case PLANE_MODE_ENUM_END:
-            break;
     }
     return "Unknown";
 }
 
 
-QString tracker_mode_from_enum(TRACKER_MODE mode) {
+QString OpenHDUtil::tracker_mode_from_enum(TRACKER_MODE mode) {
     switch (mode) {
        case TRACKER_MODE_MANUAL:
             return "Manual";
@@ -249,21 +299,207 @@ QString tracker_mode_from_enum(TRACKER_MODE mode) {
             return "Auto";
        case TRACKER_MODE_INITIALIZING:
             return "Initializing";
-       case TRACKER_MODE_ENUM_END:
-            break;
     }
     return "Unknown";
 }
 
-uint map(double input, double input_start, double input_end, uint16_t output_start, uint16_t output_end) {
+QString OpenHDUtil::vot_mode_from_telemetry(uint8_t mode) {
+    switch (mode) {
+        case 0:
+            return "2D";
+        case 1:
+            return "2DAH";
+        case 2:
+            return "2DHH";
+        case 3:
+            return "2DAHH";
+        case 4:
+            return "LOITER";
+        case 5:
+            return "3D";
+        case 6:
+            return "3DHH";
+        case 7:
+            return "RTH";
+        case 8:
+            return "LAND";
+        case 9:
+            return "CART";
+        case 10:
+            return "CARTLOI";
+        case 11:
+            return "POLAR";
+        case 12:
+            return "POLARLOI";
+        case 13:
+            return "CENTERSTICK";
+        case 14:
+            return "OFF";
+        case 15:
+            return "WAYPOINT";
+        case 16:
+            return "MAX";
+        default:
+            return "Unknown";
+    }
+    return "Unknown";
+}
+
+
+QString OpenHDUtil::ltm_mode_from_telem(int mode) {
+    switch (mode) {
+        case 0:
+            return "Manual";
+        case 1:
+            return "Rate";
+        case 2:
+            return "Angle";
+        case 3:
+            return "Horizon";
+        case 4:
+            return "Acro";
+        case 5:
+            return "Stabilized 1";
+        case 6:
+            return "Stabilized 2";
+        case 7:
+            return "Stabilized 3";
+        case 8:
+            return "Alt Hold";
+        case 9:
+            return "GPS Hold";
+        case 10:
+            return "Waypoints";
+        case 11:
+            return "Head Free";
+        case 12:
+            return "Circle";
+        case 13:
+            return "RTH";
+        case 14:
+            return "Follow Me";
+        case 15:
+            return "Land";
+        case 16:
+            return "Fly By Wire A";
+        case 17:
+            return "Fly By Wire B";
+        case 18:
+            return "Cruise";
+        default:
+            return "Unknown";
+    }
+    return "Unknown";
+}
+
+QString OpenHDUtil::px4_mode_from_custom_mode(int custom_mode) {
+    union px4_custom_mode px4_mode;
+    px4_mode.data = custom_mode;
+
+    auto main_mode = px4_mode.main_mode;
+
+    switch (main_mode) {
+        case PX4_CUSTOM_MAIN_MODE_MANUAL: {
+            return "Manual";
+        }
+        case PX4_CUSTOM_MAIN_MODE_ALTCTL: {
+            return "Altitude Control";
+        }
+        case PX4_CUSTOM_MAIN_MODE_POSCTL: {
+            switch (px4_mode.sub_mode) {
+                case PX4_CUSTOM_SUB_MODE_POSCTL_POSCTL: {
+                    return "Position Control";
+                }
+                case PX4_CUSTOM_SUB_MODE_POSCTL_ORBIT: {
+                    return "Position Control Orbit";
+                }
+                default: {
+                    break;
+                }
+            }
+
+            break;
+        }
+        case PX4_CUSTOM_MAIN_MODE_AUTO: {
+            switch (px4_mode.sub_mode) {
+                case PX4_CUSTOM_SUB_MODE_AUTO_READY: {
+                    return "Auto Ready";
+                }
+                case PX4_CUSTOM_SUB_MODE_AUTO_TAKEOFF: {
+                    return "Takeoff";
+                }
+                case PX4_CUSTOM_SUB_MODE_AUTO_LOITER: {
+                    return "Auto Loiter";
+                }
+                case PX4_CUSTOM_SUB_MODE_AUTO_MISSION: {
+                    return "Auto Mission";
+                }
+                case PX4_CUSTOM_SUB_MODE_AUTO_RTL: {
+                    return "Auto RTL";
+                }
+                case PX4_CUSTOM_SUB_MODE_AUTO_LAND: {
+                    return "Auto Land";
+                }
+                case PX4_CUSTOM_SUB_MODE_AUTO_RESERVED_DO_NOT_USE: {
+                    break;
+                }
+                case PX4_CUSTOM_SUB_MODE_AUTO_FOLLOW_TARGET: {
+                    return "Auto Follow Tgt";
+                }
+                case PX4_CUSTOM_SUB_MODE_AUTO_PRECLAND: {
+                    return "Auto Precision Land";
+                }
+                default: {
+                    break;
+                }
+            }
+            break;
+        }
+        case PX4_CUSTOM_MAIN_MODE_ACRO: {
+            return "Acro";
+        }
+        case PX4_CUSTOM_MAIN_MODE_OFFBOARD: {
+            return "Offboard";
+        }
+        case PX4_CUSTOM_MAIN_MODE_STABILIZED: {
+            return "Stabilized";
+        }
+        case PX4_CUSTOM_MAIN_MODE_RATTITUDE: {
+            return "Rattitude";
+        }
+        case PX4_CUSTOM_MAIN_MODE_SIMPLE: {
+            return "Simple";
+        }
+        default: {
+            break;
+        }
+    }
+    return "Unknown";
+}
+
+
+uint OpenHDUtil::map(double input, double input_start, double input_end, uint16_t output_start, uint16_t output_end) {
     double input_range = input_end - input_start;
     int output_range = output_end - output_start;
 
     return (input - input_start)*output_range / input_range + output_start;
 }
 
+
+float OpenHDUtil::pt1FilterApply4(OpenHDUtil::pt1Filter_t *filter, float input, float f_cut, float dT)
+{
+    // Pre calculate and store RC
+    if (!filter->RC) {
+        filter->RC = 1.0f / ( 2.0f * M_PIf * f_cut );
+    }
+
+    filter->dT = dT;    // cache latest dT for possible use in pt1FilterApply
+    filter->state = filter->state + dT / (filter->RC + dT) * (input - filter->state);
+    return filter->state;
+}
+
 #if defined(__android__)
-void keep_screen_on(bool on) {
+void OpenHDUtil::keep_screen_on(bool on) {
     QtAndroid::runOnAndroidThread([on] {
         QAndroidJniObject activity = QtAndroid::androidActivity();
         if (activity.isValid()) {
@@ -285,5 +521,31 @@ void keep_screen_on(bool on) {
     });
 }
 #endif
+
+int OpenHDUtil::default_mavlink_sysid() {
+    #if defined (__macos__)
+        return 220;
+    #endif
+
+    #if defined (__ios__)
+        return 221;
+    #endif
+
+    #if defined (__android__)
+        return 222;
+    #endif
+
+    #if defined (__windows__)
+        return 223;
+    #endif
+
+    #if defined (__rasp_pi__)
+        return 224;
+    #endif
+
+    #if defined (__desktoplinux__)
+        return 225;
+    #endif
+}
 
 #endif // UTIL_CPP

@@ -25,7 +25,6 @@ BaseDelegate {
         // @disable-check M223
         onTextChanged: {
             model.value = text;
-            model.modified = true;
         }
         enabled: !model.disabled
     }

@@ -21,18 +21,83 @@ BaseWidget {
     defaultHCenter: false
     defaultVCenter: false
 
+    hasWidgetDetail: true
+    widgetDetailComponent: Column {
+        Item {
+            width: parent.width
+            height: 32
+            Text {
+                id: opacityTitle
+                text: qsTr("Transparency")
+                color: "white"
+                height: parent.height
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
+            Slider {
+                id: ground_status_opacity_Slider
+                orientation: Qt.Horizontal
+                from: .1
+                value: settings.ground_status_opacity
+                to: 1
+                stepSize: .1
+                height: parent.height
+                anchors.rightMargin: 0
+                anchors.right: parent.right
+                width: parent.width - 96
+
+                onValueChanged: {
+                    settings.ground_status_opacity = ground_status_opacity_Slider.value
+                }
+            }
+        }
+        Item {
+            width: parent.width
+            height: 32
+            Text {
+                text: qsTr("Size")
+                color: "white"
+                height: parent.height
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
+            Slider {
+                id: ground_status_size_Slider
+                orientation: Qt.Horizontal
+                from: .5
+                value: settings.ground_status_size
+                to: 3
+                stepSize: .1
+                height: parent.height
+                anchors.rightMargin: 0
+                anchors.right: parent.right
+                width: parent.width - 96
+
+                onValueChanged: {
+                    settings.ground_status_size = ground_status_size_Slider.value
+                }
+            }
+        }
+    }
+
     Item {
         id: widgetInner
 
         anchors.fill: parent
+        scale: settings.ground_status_size
 
         Text {
             id: chip_gnd
             y: 0
             width: 24
             height: 24
-            color: "#ffffff"
-            text: "\uf2db"
+            color: settings.color_shape
+            opacity: settings.ground_status_opacity
+            text: "\uF2DA"
             anchors.right: cpuload_gnd.left
             anchors.rightMargin: 2
             anchors.verticalCenter: parent.verticalCenter
@@ -41,40 +106,50 @@ BaseWidget {
             font.pixelSize: 14
             horizontalAlignment: Text.AlignRight
             elide: Text.ElideRight
+            style: Text.Outline
+            styleColor: settings.color_glow
         }
 
         Text {
             id: cpuload_gnd
             x: 0
             y: 0
-            width: 34
+            width: 36
             height: 24
-            color: "#ffffff"
-            text: OpenHD.cpuload_gnd
+            color: OpenHD.cpuload_gnd >= 70 ? (OpenHD.cpuload_gnd >= 80 ? "#ff0000" : "#fbfd15") : settings.color_text
+            opacity: settings.ground_status_opacity
+            text: Number(OpenHD.cpuload_gnd).toLocaleString(Qt.locale(), 'f', 0) + "%";
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: temp_gnd.left
             anchors.rightMargin: 2
             verticalAlignment: Text.AlignVCenter
             font.pixelSize: 14
+            font.family: settings.font_text
             horizontalAlignment: Text.AlignRight
             elide: Text.ElideRight
+            style: Text.Outline
+            styleColor: settings.color_glow
         }
 
         Text {
             id: temp_gnd
             x: 0
             y: 0
-            width: 34
+            width: 36
             height: 24
-            color: "#ffffff"
-            text: OpenHD.temp_gnd
+            color: OpenHD.temp_gnd >= 65 ? (OpenHD.temp_gnd >= 75 ? "#ff0000" : "#fbfd15") : settings.color_text
+            opacity: settings.ground_status_opacity
+            text: Number(OpenHD.temp_gnd).toLocaleString(Qt.locale(), 'f', 0) + "°";
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: parent.right
             anchors.rightMargin: 0
             verticalAlignment: Text.AlignVCenter
             font.pixelSize: 14
+            font.family: settings.font_text
             horizontalAlignment: Text.AlignRight
             elide: Text.ElideRight
+            style: Text.Outline
+            styleColor: settings.color_glow
         }
     }
 }

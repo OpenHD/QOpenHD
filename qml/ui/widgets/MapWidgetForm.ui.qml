@@ -14,8 +14,9 @@ import OpenHD 1.0
 
 BaseWidget {
     id: mapWidget
-    width: 100
-    height: 100
+
+    width: 200
+    height: 135
 
     visible: settings.show_map
 
@@ -25,375 +26,592 @@ BaseWidget {
 
     widgetIdentifier: "map_widget"
 
-    hasWidgetDetail: true
+    hasWidgetDetail: mapExpanded ? true : false
+
+    z: mapExpanded ? 2.0 : 1.0
+
+    ListModel {
+        id: pluginModel
+
+        ListElement {
+            name: "osm"
+            description: "OpenStreetMap"
+        }
+    }
+
+    function configure() {
+        var provider = pluginModel.get(settings.selected_map_provider)
+        switch (provider.name) {
+            case "mapboxgl": {
+                createMap(widgetInner, "mapboxgl");
+                break;
+            }
+            case "osm": {
+                createMap(widgetInner, "osm");
+                break;
+            }
+            default: {
+                createMap(widgetInner, "osm");
+                break;
+            }
+        }
+
+        if (map) {
+            variantDropdown.model = map.supportedMapTypes;
+            settings.selected_map_variant = 0;
+            variantDropdown.currentIndex = settings.selected_map_variant;
+            map.activeMapType = map.supportedMapTypes[variantDropdown.currentIndex];
+        }
+    }
 
 
+    Component.onCompleted: {
+        if (!IsRaspPi) {
+            pluginModel.append({"name": "mapboxgl", "description":"MapboxGL"})
+        }
+        configure();
+    }
+
+    function configureLargeMap(){
+        if (mapExpanded==false){
+            resetAnchors();
+            setAlignment(0, 0, 48, false, false, true);
+            map.gesture.enabled=true
+            mapExpanded = !mapExpanded;
+        }
+    }
+
+    function configureSmallMap(){
+        resetAnchors();
+        mapWidget.width = 200;
+        mapWidget.height = 135;
+        mapWidget.map
+        loadAlignment();
+        followDrone = true;
+        settingsVisible = false;
+        map.gesture.enabled=false
+        mapExpanded = !mapExpanded;
+    }
+
+    function launchPopup(){
+        mapWidget.hasWidgetDetail=true
+        widgetDetail.open()
+    }
+
+//----------------------------- Widget Detail (popup options)------------------------
     widgetDetailComponent: Column {
-        Item {
-            width: parent.width
-            height: 24
-            Text {
-                text: "Google or Bing"
-                color: "white"
-                font.bold: true
-                font.pixelSize: detailPanelFontPixels
-                anchors.left: parent.left
-            }
-            Switch {
-                width: 32
-                height: parent.height
-                anchors.rightMargin: 12
-                anchors.right: parent.right
-                // @disable-check M222
-                Component.onCompleted: checked = settings.value(
-                                           "map_bing_google", true)
-                // @disable-check M222
-                onCheckedChanged: settings.setValue("map_bing_google", checked)
-            }
-        }
-        Item {
-            width: parent.width
-            height: 24
-            Text {
-                text: "Default Zoom"
-                color: "white"
-                font.bold: true
-                font.pixelSize: detailPanelFontPixels
-                anchors.left: parent.left
-            }
-            Switch {
-                width: 32
-                height: parent.height
-                anchors.rightMargin: 12
-                anchors.right: parent.right
-                // @disable-check M222
-                Component.onCompleted: checked = settings.value("map_zoom",
-                                                                true)
-                // @disable-check M222
-                onCheckedChanged: settings.setValue("map_zoom", checked)
-            }
-        }
-        Item {
-            width: parent.width
-            height: 24
-            GroupBox{
-                height: parent.height
-                anchors.rightMargin: 12
-                anchors.right: parent.right
-                ComboBox{
-                    model:mapsmall.supportedMapTypes
-                    textRole:"description"
-                    onCurrentIndexChanged: {
-                        mapsmall.activeMapType = mapsmall.supportedMapTypes[currentIndex];
-                        maplarge.activeMapType = maplarge.supportedMapTypes[currentIndex];
-                    }
-                }
-            }
-        }
-    }
+            Item {
+                width: parent.width
+                height: 32
 
-    widgetPopup: Popup {
-        id: map_popup
-        parent: Overlay.overlay
-
-        x: Math.round((Overlay.overlay.width - width) / 2)
-        y: Math.round((Overlay.overlay.height - height) / 2)
-
-        width: applicationWindow.width
-        height: applicationWindow.height - 96
-
-        padding: 0
-        rightPadding: 0
-        bottomPadding: 0
-        leftPadding: 0
-        topPadding: 0
-        margins: 0
-        rightMargin: 0
-        bottomMargin: 0
-        leftMargin: 0
-        topMargin: 0
-        modal: true
-        clip: true
-
-        visible: false
-
-
-
-
-        Plugin {
-            id: mapPluginLarge
-            name: "osm" // "osm" , "mapboxgl", "esri", ...
-
-         //   PluginParameter { name: "here.app_id"; value: "****" }
-         //   PluginParameter { name: "here.token"; value: "*****" }
-        }
-
-        Map {
-            anchors.fill: parent
-            copyrightsVisible: false
-            id: maplarge
-            plugin: mapPluginLarge
-            zoomLevel: 18
-            // Enable pan, flick, and pinch gestures to zoom in and out
-            gesture.enabled: true
-            gesture.acceptedGestures: MapGestureArea.PanGesture | MapGestureArea.FlickGesture | MapGestureArea.PinchGesture | MapGestureArea.RotationGesture | MapGestureArea.TiltGesture
-            gesture.flickDeceleration: 3000
-
-
-            activeMapType: MapType.SatelliteMapDay
-            center {
-                latitude: followDrone ? OpenHD.lat_raw : 9000
-                longitude: followDrone ? OpenHD.lon_raw : 9000
-            }
-
-            property bool followDrone: true
-
-            MapQuickItem {
-                id: homemarkerLargeMap
-                anchorPoint.x: imageLargeMap.width / 2
-                anchorPoint.y: imageLargeMap.height
-                coordinate {
-                    latitude: OpenHD.homelat_raw
-                    longitude: OpenHD.homelon_raw
-                }
-
-                sourceItem: Image {
-                    id: imageLargeMap
-                    source: "home_marker.png"
-                }
-            }
-
-            MapCircle {
-                center {
-                    latitude: OpenHD.lat_raw
-                    longitude: OpenHD.lon_raw
-                }
-                radius: OpenHD.gps_hdop
-                color: 'red'
-                opacity: .3
-            }
-
-            MapCircle {
-                center {
-                    latitude: OpenHD.lat_raw
-                    longitude: OpenHD.lon_raw
-                }
-                radius: 1
-                color: 'blue'
-                border.width: 1
-                opacity: .75
-            }
-
-//get coordinates on click... for future use
-            MouseArea{
-                    anchors.fill: parent
-                    onClicked: {
-                        var coord = maplarge.toCoordinate(Qt.point(mouse.x,mouse.y));
-                        console.log(coord.latitude, coord.longitude)
-                    }
-                }
-
-            Rectangle {
-                anchors.top: parent.top
-                anchors.topMargin: 6
-                anchors.left: parent.left
-                anchors.leftMargin: 6
-
-                radius: 12
-                color: "#8f000000"
-
-                height: 144
-                width: 48
-                clip: true
-
-                Button {
-                    id: close_button
-
-                    width: parent.width
-                    height: 48
-                    anchors.top: parent.top
-                    anchors.topMargin: 0
+                Text {
+                    id: mini_zoomTitle
+                    height: parent.height
+                    text: qsTr("Zoom")
+                    color: "white"
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
                     anchors.left: parent.left
-                    anchors.leftMargin: 0
-                    flat: true
-
-                    checkable: false
-
-                    //     display: AbstractButton.IconOnly
-                    Text {
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        anchors.verticalCenter: parent.verticalCenter
-                        font.family: "Font Awesome 5 Free"
-                        color: "white"
-                        text: "\uf065"
-                        font.pixelSize: 20
-                    }
-
-                    onClicked: {
-                        print("Map resize large clicked")
-                        map_popup.close()
-                    }
+                    verticalAlignment: Text.AlignVCenter
                 }
 
-                Button {
-                    id: search_button
+                Slider {
+                    id: mini_zoomSlider
+                    orientation: Qt.Horizontal
+                    from: 1
+                    value: settings.map_zoom
+                    to: 30
+                    stepSize: 1
+                    anchors.rightMargin: 0
+                    anchors.right: parent.right
+                    anchors.leftMargin: 32
+                    anchors.left: mini_zoomTitle.right
+                    height: parent.height
 
-                    width: parent.width
-                    height: 48
-                    anchors.top: parent.top
-                    anchors.topMargin: 48
-                    anchors.left: parent.left
-                    anchors.leftMargin: 0
-                    flat: true
-
-                    checkable: false
-
-                    Text {
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        anchors.verticalCenter: parent.verticalCenter
-                        font.family: "Font Awesome 5 Free"
-                        color: "white"
-                        text: "\uf002"
-                        font.pixelSize: 20
-                    }
-
-                    onClicked: {
-                        print("Map search clicked")
-                    }
-                }
-
-                Button {
-                    id: follow_button
-
-                    width: parent.width
-                    height: 48
-                    anchors.top: parent.top
-                    anchors.topMargin: 96
-                    anchors.left: parent.left
-                    anchors.leftMargin: 0
-                    flat: true
-
-                    checkable: false
-
-                    Text {
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        anchors.verticalCenter: parent.verticalCenter
-                        font.family: "Font Awesome 5 Free"
-                        color: maplarge.followDrone ? "#ff00aeef" : "white"
-                        text: "\uf05b"
-                        font.pixelSize: 20
-                    }
-
-                    onClicked: {
-                        print("Follow toggle clicked")
-                        maplarge.followDrone = !maplarge.followDrone
+                    onValueChanged: {
+                        settings.map_zoom = mini_zoomSlider.value
                     }
                 }
             }
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    id: mini_opacityTitle
+                    text: qsTr("Transparency")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Slider {
+                    id: mini_opacity_Slider
+                    orientation: Qt.Horizontal
+                    from: .1
+                    value: settings.map_opacity
+                    to: 1
+                    stepSize: .1
+                    height: parent.height
+                    anchors.rightMargin: 0
+                    anchors.right: parent.right
+                    width: parent.width - 96
 
-
-
+                    onValueChanged: {
+                        settings.map_opacity = mini_opacity_Slider.value
+                    }
+                }
+            }
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("Lock map to drone direction")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 6
+                    anchors.right: parent.right
+                    checked: settings.map_orientation
+                    onCheckedChanged: settings.map_orientation = checked
+                }
+            }
+            Item {
+                width: parent.width
+                height: 32
+                visible: EnableBlackbox
+                Text {
+                    text: qsTr("Show Drone Track")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 6
+                    anchors.right: parent.right
+                    checked: settings.map_drone_track
+                    onCheckedChanged: settings.map_drone_track = checked
+                }
+            }
+            /*
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("Map shape Square / Round")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 12
+                    anchors.right: parent.right
+                    checked: settings.map_shape_circle
+                    onCheckedChanged: settings.map_shape_circle = checked
+                }
+            }
+            */
         }
-    }
 
-
-
-//// ------------------------- split between large map above and small map below------------
-
-
-
+//----------------------------- Widget Inner ----------------------------------------
 
     Item {
         id: widgetInner
         anchors.fill: parent
+        //opacity: mapExpanded ? 100 : settings.map_shape_circle ? 0 : settings.map_opacity
+        opacity: mapExpanded ? 100 : settings.map_opacity
 
-        Plugin {
-            id: mapPlugin
-            name: "osm" // "mapboxgl", "esri", ...
-            // specify plugin parameters if necessary
-            // PluginParameter {
-            //     name:
-            //     value:
-            // }
+        Behavior on width {
+            NumberAnimation { duration: 200 }
         }
 
-        Map {
-            copyrightsVisible: false
-            anchors.fill: parent
-            plugin: mapPlugin
-            id:mapsmall
-            zoomLevel: 18
-            gesture.enabled: false
+        Behavior on height {
+            NumberAnimation { duration: 200 }
+        }
 
-            //      activeMapType: MapType.SatelliteMapDay
-            bearing: OpenHD.hdg_raw
+        /*Button {
+            id: openclose_button_overlay
+            width: 48
+            height: 48
+            z: 3.0
 
-            center {
-                latitude: OpenHD.lat_raw
-                longitude: OpenHD.lon_raw
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 0
+            anchors.horizontalCenter: parent.horizontalCenter
+
+            flat: true
+
+            visible: true //!mapExpanded && settings.map_shape_circle
+
+            checkable: false
+
+            Text {
+                id : openclose_text_overlay
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.verticalCenter: parent.verticalCenter
+                font.family: "Font Awesome 5 Free"
+                color: "white"
+                text: "\uf31e"
+                font.pixelSize: 20
             }
 
-            MapQuickItem {
-                id: homemarkerSmallMap
-                anchorPoint.x: imageSmallMap.width / 2
-                anchorPoint.y: imageSmallMap.height
-                coordinate {
-                    latitude: OpenHD.homelat_raw
-                    longitude: OpenHD.homelon_raw
+            onClicked: {
+                if (mapExpanded) {
+                    resetAnchors();
+                    mapWidget.width = 200;
+                    mapWidget.height = 135;
+                    loadAlignment();
+                    settingsVisible = false;
+                } else {
+                    resetAnchors();
+                    setAlignment(0, 0, 48, false, false, true);
                 }
+                mapExpanded = !mapExpanded;
+            }
+        }*/
 
-                sourceItem: Image {
-                    id: imageSmallMap
-                    source: "home_marker.png"
-                }
+
+
+
+ //----------------------------- Expanded map Sidebar Menu----------------------------
+
+        Rectangle {
+            id: sidebar_wrapper
+            z: 2.1
+
+            anchors.top: parent.top
+            anchors.topMargin: mapExpanded ? 6 : 0
+            anchors.left: parent.left
+            anchors.leftMargin: mapExpanded ? 6 : 0
+
+            radius: 12
+            color: mapExpanded ? "#ff000000" : "#00000000"
+
+            height: mapExpanded ? 192 : 48
+            width: settingsVisible ? 548 : 48
+            clip: true
+
+            Behavior on width {
+                NumberAnimation { duration: 200 }
             }
 
-
-            MapCircle {
-                center {
-                    latitude: OpenHD.lat_raw
-                    longitude: OpenHD.lon_raw
-                }
-                radius: OpenHD.gps_hdop
-                color: 'red'
-                opacity: .3
-            }
-
-            MapCircle {
-                center {
-                    latitude: OpenHD.lat_raw
-                    longitude: OpenHD.lon_raw
-                }
-                radius: 1
-                color: 'blue'
-                border.width: 1
-                opacity: .75
+            Behavior on height {
+                NumberAnimation { duration: 200 }
             }
 
             Button {
-                id: resize
-
-                width: 32
-                height: 32
-
+                id: openclose_button
+                width: 48
+                height: 48
+                anchors.top: parent.top
+                anchors.topMargin: 0
+                anchors.left: parent.left
+                anchors.leftMargin: 0
                 flat: true
 
                 checkable: false
 
-                //     display: AbstractButton.IconOnly
+                Text {
+                    id : openclose_text
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.verticalCenter: parent.verticalCenter
+                    font.family: "Font Awesome 5 Free"
+                    color: "white"
+                    text: mapExpanded ? "\uf057" : "\uf085"
+                    font.pixelSize: 20
+                }
+
+                onClicked: {
+                    if (mapExpanded) {
+                         console.log("X button clicked");
+                        configureSmallMap()
+
+                    } else {
+                        console.log("gear button clicked");
+                        launchPopup()
+                    }
+                }
+            }
+
+
+            Button {
+                id: search_button
+
+                width: 48
+                height: 48
+                anchors.top: parent.top
+                anchors.topMargin: 48
+                anchors.left: parent.left
+                anchors.leftMargin: 0
+                flat: true
+
+                checkable: false
+
+                visible: mapExpanded
+
                 Text {
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.verticalCenter: parent.verticalCenter
                     font.family: "Font Awesome 5 Free"
-                    color: "black"
-                    text: "\uf065"
-                    font.pixelSize: 16
+                    color: "white"
+                    text: "\uf002"
+                    font.pixelSize: 20
+                }
+            }
+
+            Button {
+                id: follow_button
+
+                width: 48
+                height: 48
+                anchors.top: parent.top
+                anchors.topMargin: 96
+                anchors.left: parent.left
+                anchors.leftMargin: 0
+                flat: true
+
+                checkable: false
+
+                visible: mapExpanded
+
+                Text {
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.verticalCenter: parent.verticalCenter
+                    font.family: "Font Awesome 5 Free"
+                    color: followDrone ? "#ff00aeef" : "white"
+                    text: "\uf05b"
+                    font.pixelSize: 20
                 }
 
-                onClicked: {
-                    map_popup.open()
+                onClicked: followDrone = !followDrone
+            }
+
+            Button {
+                id: settings_button
+
+                width: 48
+                height: 48
+                anchors.top: parent.top
+                anchors.topMargin: 144
+                anchors.left: parent.left
+                anchors.leftMargin: 0
+
+                flat: true
+                checkable: false
+
+                visible: mapExpanded
+
+                Text {
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.verticalCenter: parent.verticalCenter
+                    font.family: "Font Awesome 5 Free"
+                    color: settingsVisible ? "#ff00aeef" : "white"
+                    text: "\uf085"
+                    font.pixelSize: 20
+                }
+
+                onClicked: settingsVisible = !settingsVisible
+            }
+
+            ScrollView {
+                contentHeight: mapSettingsColumn.height
+                clip: true
+
+
+                anchors.top: parent.top
+                anchors.left: parent.left
+                anchors.leftMargin: 48
+                anchors.right: parent.right
+                anchors.rightMargin: 0
+                anchors.bottom: parent.bottom
+
+                topPadding: 6
+                leftPadding: 6
+                rightPadding: 6
+                bottomPadding: 6
+
+                visible: mapExpanded
+
+                Column {
+                    id: mapSettingsColumn
+                    spacing: 6
+                    width: settingsVisible ? 488 : 0
+
+
+                    ComboBox {
+                        id: providerDropdown
+                        height: 48
+                        width: parent.width
+
+                        model: pluginModel
+                        textRole: "description"
+
+                        Component.onCompleted: {
+                            currentIndex = settings.selected_map_provider;
+                        }
+
+                        // @disable-check M223
+                        onActivated: {
+                            settings.selected_map_provider = index;
+                            configure();
+                        }
+                    }
+
+                    ComboBox {
+                        id: variantDropdown
+                        height: 48
+                        width: parent.width
+
+                        textRole: "description"
+
+                        Component.onCompleted: {
+                            currentIndex = settings.selected_map_variant;
+                        }
+
+                        // @disable-check M223
+                        onActivated: {
+                            settings.selected_map_variant = index;
+                            map.activeMapType = map.supportedMapTypes[index];
+                        }
+                    }
+
+
+                    Item {
+                        width: parent.width
+                        height: 32
+
+                        Text {
+                            id: zoomTitle
+                            height: parent.height
+                            text: qsTr("Zoom")
+                            color: "white"
+                            font.bold: true
+                            font.pixelSize: detailPanelFontPixels
+                            anchors.left: parent.left
+                            verticalAlignment: Text.AlignVCenter
+                        }
+
+                        Slider {
+                            id: zoomSlider
+                            orientation: Qt.Horizontal
+                            from: 1
+                            value: settings.map_zoom
+                            to: 30
+                            stepSize: 1
+                            height: parent.height
+                            anchors.rightMargin: 0
+                            anchors.right: parent.right
+                            width: parent.width - 96
+
+                            onValueChanged: {
+                                settings.map_zoom = zoomSlider.value
+                            }
+                        }
+                    }
+
+                    Item {
+                        width: parent.width
+                        height: 32
+
+                        Text {
+                            id: opacityTitle
+                            text: qsTr("Transparency")
+                            color: "white"
+                            height: parent.height
+                            font.bold: true
+                            font.pixelSize: detailPanelFontPixels
+                            anchors.left: parent.left
+                            verticalAlignment: Text.AlignVCenter
+                        }
+
+                        Slider {
+                            id: map_opacity_Slider
+                            orientation: Qt.Horizontal
+                            from: .1
+                            value: settings.map_opacity
+                            to: 1
+                            stepSize: .1
+                            height: parent.height
+                            anchors.rightMargin: 0
+                            anchors.right: parent.right
+                            width: parent.width - 96
+
+                            onValueChanged: {
+                                settings.map_opacity = map_opacity_Slider.value
+                            }
+                        }
+                    }
+
+                    Item {
+                        width: parent.width
+                        height: 32
+
+                        Text {
+                            text: qsTr("Lock map to drone direction")
+                            color: "white"
+                            height: parent.height
+                            font.bold: true
+                            font.pixelSize: detailPanelFontPixels
+                            anchors.left: parent.left
+                            verticalAlignment: Text.AlignVCenter
+                        }
+
+                        Switch {
+                            width: 32
+                            height: parent.height
+                            anchors.rightMargin: 12
+                            anchors.right: parent.right
+                            checked: settings.map_orientation
+                            onCheckedChanged: settings.map_orientation = checked
+                        }
+                    }
                 }
             }
         }
     }
+    /*
+    Item {
+            id: mask
+            anchors.fill: widgetInner
+            visible: true
+            z:0
+            Rectangle {
+                anchors.centerIn: parent
+                width: parent.width<parent.height?parent.width:parent.height
+                height: width
+                color: "red"
+                radius: width*0.5
+
+            }
+        }
+
+        OpacityMask {
+            anchors.fill: widgetInner
+            source: widgetInner
+            maskSource: mask
+            opacity: settings.map_shape_circle ? settings.map_opacity : 0
+            z:0
+        }
+        */
 }
+
+
+

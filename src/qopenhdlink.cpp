@@ -9,7 +9,7 @@
 #include "constants.h"
 
 #if defined(ENABLE_LINK)
-#include <lib/json.hpp>
+#include <nlohmann/json.hpp>
 #endif
 
 #define LINK_PORT 6000
@@ -20,20 +20,17 @@ QOpenHDLink::QOpenHDLink(QObject *parent):
     {
     qDebug() << "QOpenHDLink::QOpenHDLink()";
 
-    init();
-}
-
-
-
-void QOpenHDLink::init() {
 #if defined(ENABLE_LINK)
-    qDebug() << "QOpenHDLink::init()";
-
     linkSocket = new QUdpSocket(this);
     linkSocket->bind(LINK_PORT);
 
     connect(linkSocket, &QUdpSocket::readyRead, this, &QOpenHDLink::readyRead);
 #endif
+}
+
+
+void QOpenHDLink::setGroundIP(QString address) {
+    groundAddress = address;
 }
 
 
@@ -53,6 +50,7 @@ void QOpenHDLink::readyRead() {
 
 void QOpenHDLink::setWidgetLocation(QString widgetName, int alignment, int xOffset, int yOffset, bool hCenter, bool vCenter) {
 #if defined(ENABLE_LINK)
+#if !defined(__rasp_pi__)
     nlohmann::json j = {
       {"cmd", "setWidgetLocation"},
       {"widgetName", widgetName.toStdString()},
@@ -65,15 +63,14 @@ void QOpenHDLink::setWidgetLocation(QString widgetName, int alignment, int xOffs
 
     std::string serialized_string = j.dump();
     auto buf = QByteArray(serialized_string.c_str());
-    if (linkSocket->state() != QUdpSocket::ConnectedState) {
-        linkSocket->connectToHost("192.168.2.1", LINK_PORT);
-    }
-    linkSocket->writeDatagram(buf);
+    linkSocket->writeDatagram(buf, QHostAddress(groundAddress), LINK_PORT);
+#endif
 #endif
 }
 
 void QOpenHDLink::setWidgetEnabled(QString widgetName, bool enabled) {
 #if defined(ENABLE_LINK)
+#if !defined(__rasp_pi__)
     nlohmann::json j = {
       {"cmd", "setWidgetEnabled"},
       {"widgetName", widgetName.toStdString()},
@@ -82,17 +79,15 @@ void QOpenHDLink::setWidgetEnabled(QString widgetName, bool enabled) {
 
     std::string serialized_string = j.dump();
     auto buf = QByteArray(serialized_string.c_str());
-    if (linkSocket->state() != QUdpSocket::ConnectedState) {
-        linkSocket->connectToHost("192.168.2.1", LINK_PORT);
-    }
-    linkSocket->writeDatagram(buf);
+    linkSocket->writeDatagram(buf, QHostAddress(groundAddress), LINK_PORT);
+#endif
 #endif
 }
 
 void QOpenHDLink::processCommand(QByteArray buffer) {
 #if defined(ENABLE_LINK)
     try {
-        auto commandData = nlohmann::json::parse(buffer);
+        auto commandData = nlohmann::json::parse(buffer.toStdString());
         if (commandData.count("cmd") == 1) {
             std::string cmd = commandData["cmd"];
 
@@ -105,8 +100,8 @@ void QOpenHDLink::processCommand(QByteArray buffer) {
             }
         }
     } catch (std::exception &e) {
-        // not much we can do about it but we definitely don't want a crash here,
-        // we may consider show warning messages in the local message panel though
+        /* not much we can do about it but we definitely don't want a crash here,
+           we may consider show warning messages in the local message panel though */
         qDebug() << "exception: " << e.what();
     }
 #endif

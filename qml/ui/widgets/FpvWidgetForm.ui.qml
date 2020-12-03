@@ -22,78 +22,179 @@ BaseWidget {
     widgetDetailComponent: Column {
         Item {
             width: parent.width
-            height: 24
+            height: 32
             Text {
-                text: "Sensitivity"
+                text: qsTr("Dynamic")
                 color: "white"
+                height: parent.height
                 font.bold: true
                 font.pixelSize: detailPanelFontPixels;
                 anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
             }
             Switch {
                 width: 32
                 height: parent.height
-                anchors.rightMargin: 12
+                anchors.rightMargin: 6
                 anchors.right: parent.right
-                // @disable-check M222
-                Component.onCompleted: checked = settings.value("fpv_sensitivity",
-                                                                true)
-                // @disable-check M222
-                onCheckedChanged: settings.setValue("fpv_sensitivity", checked)
+                checked: settings.fpv_dynamic
+                onCheckedChanged: settings.fpv_dynamic = checked
+            }
+        }
+        Item {
+            width: parent.width
+            height: 32
+            Text {
+                id: sensitivityTitle
+                text: qsTr("Sensitivity")
+                color: "white"
+                height: parent.height
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
+            Slider {
+                id: fpvSlider
+                orientation: Qt.Horizontal
+                from: 1
+                value: settings.fpv_sensitivity
+                to: 20
+                stepSize: 1
+                height: parent.height
+                anchors.rightMargin: 0
+                anchors.right: parent.right
+                width: parent.width - 96
+
+                onValueChanged: {
+                    settings.fpv_sensitivity = fpvSlider.value
+                }
+            }
+        }
+        Item {
+            width: parent.width
+            height: 32
+            Text {
+                id: opacityTitle
+                text: qsTr("Transparency")
+                color: "white"
+                height: parent.height
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
+            Slider {
+                id: fpv_opacity_Slider
+                orientation: Qt.Horizontal
+                from: .1
+                value: settings.fpv_opacity
+                to: 1
+                stepSize: .1
+                height: parent.height
+                anchors.rightMargin: 0
+                anchors.right: parent.right
+                width: parent.width - 96
+
+                onValueChanged: {
+                    settings.fpv_opacity = fpv_opacity_Slider.value
+                }
+            }
+        }
+        Item {
+            width: parent.width
+            height: 32
+            Text {
+                text: qsTr("Size")
+                color: "white"
+                height: parent.height
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
+            Slider {
+                id: fpv_size_Slider
+                orientation: Qt.Horizontal
+                from: .5
+                value: settings.fpv_size
+                to: 3
+                stepSize: .1
+                height: parent.height
+                anchors.rightMargin: 0
+                anchors.right: parent.right
+                width: parent.width - 96
+
+                onValueChanged: {
+                    settings.fpv_size = fpv_size_Slider.value
+                }
             }
         }
     }
+
+
 
     Item {
         id: widgetInner
         height: 40
         anchors.horizontalCenter: parent.horizontalCenter
-        //so that fpv sits aligned in horizon must add margin
         width: 40
         anchors.verticalCenter: parent.verticalCenter
+        visible: settings.show_fpv
 
-        transformOrigin: Item.Center
+        Item {
+            anchors.fill: parent
+            anchors.centerIn: parent
+            transform: Scale { origin.x: 20; origin.y: 20; xScale: settings.fpv_size ; yScale: settings.fpv_size}
 
-        transform: Translate {
-            x: OpenHD.vy*20
-            //to get pitch relative to ahi add pitch in
-            y: (OpenHD.vz*20)+ OpenHD.pitch_raw
-        }
-        antialiasing: true
+            //rotation: settings.fpv_dynamic ? (settings.horizon_invert_roll ? -OpenHD.roll : OpenHD.roll) : 0
 
-        Glow {
-            anchors.fill: widgetGlyph
-            radius: 4
-            samples: 17
-            color: "black"
-            source: widgetGlyph
-        }
+            //had to add another item to compensate for rotation above
+            Item {
+                id: fpvInner
 
-        Text {
-            id: widgetGlyph
-            y: 0
-            width: 24
-            height: 24
-            color: "#ffffff"
-            text: "\ufdd5"
-            bottomPadding: 17
-            leftPadding: 33
-            horizontalAlignment: Text.AlignHCenter
-            font.capitalization: Font.MixedCase
-            renderType: Text.QtRendering
-            textFormat: Text.AutoText
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.verticalCenter: parent.verticalCenter
-            font.family: "Font Awesome 5 Free"
-            verticalAlignment: Text.AlignVCenter
-            font.pixelSize: 24
+                height: 40
+                anchors.horizontalCenter: parent.horizontalCenter
+                width: 40
+                anchors.verticalCenter: parent.verticalCenter
+
+                transformOrigin: Item.Center
+                transform: Translate {
+
+                    x: settings.fpv_dynamic ? OpenHD.lateral_speed * settings.fpv_sensitivity : 0
+
+                    //to get pitch relative to ahi add pitch in
+                    y: settings.fpv_dynamic ? (settings.horizon_invert_pitch ? (-OpenHD.vz * settings.fpv_sensitivity) - OpenHD.pitch :
+                                                                               (OpenHD.vz * settings.fpv_sensitivity) + OpenHD.pitch) : 0
+                }
+
+
+                antialiasing: true
+
+                Text {
+                    id: widgetGlyph
+                    width: 24
+                    height: 24
+                    color: settings.color_shape
+                    opacity: settings.fpv_opacity
+                    text: "\ufdd5"
+                    bottomPadding: 17
+                    leftPadding: 33
+                    horizontalAlignment: Text.AlignHCenter
+                    font.capitalization: Font.MixedCase
+                    renderType: Text.QtRendering
+                    textFormat: Text.AutoText
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.verticalCenter: parent.verticalCenter
+                    font.family: "Font Awesome 5 Free"
+                    verticalAlignment: Text.AlignVCenter
+                    font.pixelSize: 24
+                    style: Text.Outline
+                    styleColor: settings.color_glow
+                }
+            }
         }
     }
 }
 
-/*##^##
-Designer {
-    D{i:3;anchors_height:24;anchors_width:24;anchors_y:0}
-}
-##^##*/
 

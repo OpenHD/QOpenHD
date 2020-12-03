@@ -1,6 +1,7 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Controls.Styles 1.4
+import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.0
 import QtGraphicalEffects 1.12
 import Qt.labs.settings 1.0
@@ -9,6 +10,7 @@ import OpenHD 1.0
 
 import "./ui"
 import "./ui/widgets"
+import "./ui/elements"
 
 
 ApplicationWindow {
@@ -25,28 +27,98 @@ ApplicationWindow {
 
     property bool initialised: false
 
-    onAfterSynchronizing: {
-        if (!initialised) {
-            hudOverlayGrid.messageHUD.pushMessage("Initializing", 1)
-            if (EnableRC) {
-                OpenHDRC.initRC;
-            }
-            initialised = true;
-            if (EnableMainVideo) {
-                MainStream.startVideo();
-            }
-            if (EnablePiP) {
-                PiPStream.startVideo();
-            }
+
+    /* this is not used but must stay right here, it forces qmlglsink to completely
+       initialize the rendering system early. Without this, the next GstGLVideoItem
+       to be initialized, depending on the order they appear in the QML, will simply
+       not work on desktop linux. */
+    Loader {
+        source: (EnableGStreamer && EnableMainVideo && EnablePiP)  ? "DummyVideoGStreamer.qml" : ""
+    }
+
+    function default_mavlink_sysid() {
+        if (IsRaspPi) {
+            return 220;
+        }
+        if (IsMac) {
+            return 221;
+        }
+        if (IsiOS) {
+            return 222;
+        }
+        if (IsAndroid) {
+            return 223;
+        }
+        if (IsWindows) {
+            return 224;
+        }
+        if (IsDesktopLinux) {
+            return 225;
         }
     }
 
-    // this is not used but must stay right here, it forces qmlglsink to completely
-    // initialize the rendering system early. Without this, the next GstGLVideoItem
-    // to be initialized, depending on the order they appear in the QML, will simply
-    // not work on desktop linux.
-    Loader {
-        source:  (EnableMainVideo && EnablePiP)  ? "DummyVideoItem.qml" : ""
+    // we call back into QML from ManagedSettings to ensure that the live settings take effect
+    // immediately, QSettings doesn't seem capable of doing it from C++
+    Connections {
+        target: ManageSettings
+        function onSettingUpdated(key, value) {
+            settings.setValue(key, value);
+        }
+
+        function onNeedRestart() {
+            settings_panel.visible = false;
+            restartDialog.visible = true;
+        }
+    }
+
+    ColorPicker {
+        id: colorPicker
+        height: 264
+        width: 380
+        z: 15.0
+        anchors.centerIn: parent
+    }
+
+    RestartDialog {
+        id: restartDialog
+        height: 240
+        width: 400
+        z: 5.0
+        anchors.centerIn: parent
+    }
+
+    /*
+     * This is racing the QML Settings class, because it has a delay before it writes
+     * out the merged default+saved settings when it first loads. The delay in Settings
+     * has a purpose, but it makes it impossible to know when all of the settings have
+     * actually made it into the settings system, which makes it impossible for QSettings
+     * in c++ to read all of them.
+     */
+    Timer {
+        id: piSettingsTimer
+        running: false
+        interval: 1000
+        repeat: true
+
+        property int retries: 10
+
+        onTriggered: {
+            if (!ManageSettings.savePiSettings()) {
+                if (retries == 0) {
+                    /*
+                     * Exceeded the retry count, which means in a whole 10 seconds
+                     * Qt did not manage to get all of the default+changed settings written to
+                     * disk. This should never happen, that's a long time.
+                     */
+                    running = false;
+                    return;
+                }
+
+                retries = retries - 1;
+            }
+            // success
+            running = false;
+        }
     }
 
     /*
@@ -54,111 +126,249 @@ ApplicationWindow {
      * and equivalent settings systems on Linux and Android
      *
      */
-    Settings {
+    AppSettings {
         id: settings
-        property int main_video_port: 5600
-        property int pip_video_port: 5601
-        property int battery_cells: 3
-        property bool show_pip_video: false
-        property bool enable_software_video_decoder: false
-        property bool enable_rtp: true
-
-        property bool enable_speech: true
-        property bool enable_imperial: false
-        property bool enable_rc: false
-
-        property bool show_downlink_rssi: true
-        property bool show_uplink_rssi: true
-        property bool show_bitrate: true
-        property bool show_air_battery: true
-        property bool show_gps: true
-        property bool show_home_distance: true
-        property bool show_flight_timer: true
-        property bool show_flight_mode: true
-        property bool show_ground_status: true
-        property bool show_air_status: true
-        property bool show_message_hud: true
-        property bool show_horizon: true
-        property bool show_fpv: true
-        property bool show_altitude: true
-        property bool show_speed: true
-        property bool show_heading: true
-        property bool show_altitude_second: true
-        property bool show_arrow: true
-        property bool show_map: true
-        property bool show_throttle: true
+        Component.onCompleted: {
+            if (IsRaspPi) {
+                piSettingsTimer.start();
+            }
+        }
     }
 
-    QOpenHDLink {
-        id: link
-    }
 
-    OpenHDTelemetry {
-        id: openHDTelemetry
+    FrSkyTelemetry {
+        id: frskyTelemetry
     }
-
-    MavlinkTelemetry {
-        id: mavlinkTelemetry
-    }
-
-    //FrSkyTelemetry {
-    //    id: frskyTelemetry
-    //}
 
     //MSPTelemetry {
     //    id: mspTelemetry
     //}
 
-    //LTMTelemetry {
-    //    id: ltmTelemetry
-    //}
+    SmartportTelemetry {
+        id: smartportTelemetry
+    }
+
+    LTMTelemetry {
+        id: ltmTelemetry
+    }
+
+    VectorTelemetry {
+        id: vectorTelemetry
+    }
+
+    MarkerModel {
+        id: markerModel
+    }
+
+    BlackBoxModel {
+        id: blackBoxModel
+    }
 
     Loader {
-        anchors.centerIn: parent
-        width: parent.width
-        height: parent.height
+        anchors.fill: parent
         z: 1.0
-        source: EnableMainVideo ? "MainVideoItem.qml" : ""
+        source: {
+            if (EnableGStreamer && EnableMainVideo) {
+                return "MainVideoGStreamer.qml";
+            }
+            if (IsAndroid && EnableVideoRender && EnableMainVideo) {
+                return "MainVideoRender.qml";
+            }
+            if (IsRaspPi && EnableVideoRender && EnableMainVideo) {
+                return "MainVideoRender.qml";
+            }
+
+            if (IsMac && EnableVideoRender && EnableMainVideo) {
+                return "MainVideoRender.qml";
+            }
+            if (IsiOS && EnableVideoRender && EnableMainVideo) {
+                return "MainVideoRender.qml";
+            }
+            return ""
+        }
     }
 
     Connections {
         target: OpenHD
-        onMessageReceived: {
-            hudOverlayGrid.messageHUD.pushMessage(message, level)
+        function onMessageReceived(message, level) {
+            if (level <= settings.log_level) {
+                hudOverlayGrid.messageHUD.pushMessage(message, level)
+            }
         }
     }
 
     Connections {
         target: LocalMessage
-        onMessageReceived: {
-            hudOverlayGrid.messageHUD.pushMessage(message, level)
+        function onMessageReceived(message, level) {
+            if (level <= settings.log_level) {
+                hudOverlayGrid.messageHUD.pushMessage(message, level)
+            }
         }
     }
+
+    Connections {
+        target: GroundStatusMicroservice
+        function onStatusMessage(sysid, message, level, timestamp) {
+            if (level <= settings.log_level) {
+                hudOverlayGrid.messageHUD.pushMessage(message, level)
+            }
+        }
+    }
+
+    Connections {
+        target: AirStatusMicroservice
+        function onStatusMessage(sysid, message, level, timestamp) {
+            if (level <= settings.log_level) {
+                hudOverlayGrid.messageHUD.pushMessage(message, level)
+            }
+        }
+    }
+
 
     // UI areas
 
     UpperOverlayBar {
+        visible: !settings.stereo_enable
         id: upperOverlayBar
-        onSettingsButtonClicked: {
-            settings_panel.openSettings();
-        }
     }
 
     HUDOverlayGrid {
         id: hudOverlayGrid
         anchors.fill: parent
         z: 3.0
+        onSettingsButtonClicked: {
+            settings_panel.openSettings();
+        }
+
+        transform: Scale {
+            origin.x: 0
+            origin.y: hudOverlayGrid.height / 2
+            xScale: settings.stereo_enable ? 0.5 : 1.0
+            yScale: settings.stereo_enable ? 0.5 : 1.0
+        }
+
+        layer.enabled: true
+    }
+
+
+    Rectangle {
+        id: hudOverlayGridClone
+        anchors.right: parent.right
+        width: parent.width / 2
+        height: parent.height / 2
+        anchors.verticalCenter: settings.stereo_enable ? parent.verticalCenter : undefined
+        visible: settings.stereo_enable
+        z: 3.0
+        layer.enabled: settings.stereo_enable
+        layer.samplerName: "hudOverlayGrid"
+        layer.effect: ShaderEffect {
+            id: shader
+            property variant cloneSource : hudOverlayGrid
+            fragmentShader: "
+                varying highp vec2 qt_TexCoord0;
+                uniform highp sampler2D cloneSource;
+                void main(void) {
+                    gl_FragColor =  texture2D(cloneSource, qt_TexCoord0);
+                }
+            "
+        }
+    }
+
+    OSDCustomizer {
+        id: osdCustomizer
+
+        anchors.centerIn: parent
+        visible: false
+        z: 5.0
     }
 
     LowerOverlayBar {
+        visible: !settings.stereo_enable
         id: lowerOverlayBar
     }
 
 
     SettingsPopup {
         id: settings_panel
+        visible: false
         onLocalMessage: {
             hudOverlayGrid.messageHUD.pushMessage(message, level)
+        }
+
+        onSettingsClosed: {
+            if (settings.stereo_enable) {
+                stereoHelpMessage.visible = true
+                stereoHelpTimer.start()
+            }
+        }
+    }
+
+    Shortcut {
+        sequence: "Ctrl+F12"
+        onActivated: {
+            OpenHDPi.activate_console()
+            OpenHDPi.stop_app()
+        }
+    }
+
+    Item {
+        anchors.fill: parent
+        z: settings.stereo_enable ? 10.0 : 1.0
+
+        TapHandler {
+            enabled: settings_panel.visible == false
+            acceptedButtons: Qt.AllButtons
+            onTapped: {
+                if (tapCount == 3) {
+                    settings.stereo_enable = !settings.stereo_enable
+                    if (settings.stereo_enable) {
+                        stereoHelpMessage.visible = true
+                        stereoHelpTimer.start()
+                    }
+
+                    if (IsRaspPi) {
+                        piSettingsTimer.start();
+                    }
+                }
+            }
+            onLongPressed: {
+                if (settings.stereo_enable ) {
+                    return;
+                }
+
+                osdCustomizer.visible = true
+            }
+
+            grabPermissions: PointerHandler.CanTakeOverFromAnything
+        }
+    }
+
+    Text {
+        id: stereoHelpMessage
+        z: 2.0
+        color: "#89ffffff"
+        visible: false
+        font.pixelSize: 18
+        font.family: settings.font_text
+        text: qsTr("Rapidly tap between widgets to enable/disable stereo")
+        horizontalAlignment: Text.AlignHCenter
+        height: 24
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.top: parent.top
+        anchors.topMargin: 64
+        style: Text.Outline
+        styleColor: "black"
+    }
+
+    Timer {
+        id: stereoHelpTimer
+        running: false
+        interval: 4000
+        repeat: false
+
+        onTriggered: {
+            stereoHelpMessage.visible = false;
         }
     }
 }

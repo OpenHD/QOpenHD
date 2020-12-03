@@ -1,0 +1,15 @@
+[Unit]
+Description=OpenHDBoot
+After=multi-user.target
+
+[Service]
+Type=simple
+Environment="LD_PRELOAD=/opt/vc/lib/libGLESv2.so /opt/vc/lib/libEGL.so"
+Environment="QT_QPA_EGLFS_KMS_ATOMIC=1"
+Environment="QT_QPA_EGLFS_KMS_CONFIG=/usr/local/share/openhd/qt.json"
+ExecStart=/usr/local/bin/OpenHDBoot -platform eglfs
+User=root
+
+[Install]
+WantedBy=multi-user.target
+

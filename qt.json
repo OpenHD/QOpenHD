@@ -1,0 +1,19 @@
+{
+    "device": "/dev/dri/by-path/platform-soc:gpu-card",
+    "hwcursor": false,
+    "pbuffers": true,
+    "outputs": [
+      {
+        "name": "HDMI1",
+        "mode": "current"
+      },
+      {
+        "name": "HDMI2",
+        "mode": "current"
+      },
+      {
+        "name": "DSI1",
+        "mode": "current"
+      }
+    ]
+  }

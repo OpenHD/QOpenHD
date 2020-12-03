@@ -20,25 +20,36 @@ Rectangle {
     property alias widgetDetail: widgetDetail
     property alias alignmentType: choiceBox.currentIndex
 
-    // intended to be overriden by widgets, anything in this item will show up inside the
-    // detail popover
+    /* intended to be overriden by widgets, anything in this item will show up inside the
+       detail popover
+    */
     property Item widgetDetailComponent: Item {}
     property bool hasWidgetDetail: false
+    property int widgetDetailWidth: 256
+    property int widgetDetailHeight: 164
 
     property Popup widgetPopup: Popup {}
     property bool hasWidgetPopup: false
+
+
+    Behavior on width {
+        NumberAnimation { duration: 200 }
+    }
+
+
+    Behavior on height {
+        NumberAnimation { duration: 200 }
+    }
 
     Popup {
         id: widgetDetail
 
 
-        width: 256
-        // the alignment dropdown isn't necessary on the ground station so we hide it
-        height: 164
+        width: widgetDetailWidth
+        height: widgetDetailHeight
 
         background: Rectangle {
-            color: "#8a000000"
-            opacity: 0.8
+            color: "#ea000000"
             border.width: 1
             border.color: "white"
             radius: 12
@@ -83,8 +94,7 @@ Rectangle {
         height: OpenHDPi.is_raspberry_pi ? 244 : 304
 
         background: Rectangle {
-            color: "#8a000000"
-            opacity: 0.8
+            color: "#ea000000"
         }
 
         /*

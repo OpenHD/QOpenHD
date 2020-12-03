@@ -1,3 +1,5 @@
+#if defined(ENABLE_GSTREAMER)
+
 #ifndef OpenHDVideoStream_H
 #define OpenHDVideoStream_H
 
@@ -20,6 +22,11 @@ public:
     virtual ~OpenHDVideoStream();
     void init(QQmlApplicationEngine * engine, enum StreamType stream_type);
 
+    qint64 lastDataTimeout = 0;
+
+signals:
+    void videoRunning(bool running);
+
 public slots:
     void startVideo();
     void stopVideo();
@@ -38,8 +45,8 @@ private:
     bool m_enable_videotest = false;
     bool m_enable_software_video_decoder = false;
     bool m_enable_rtp = true;
-
     bool m_enable_pip_video = false;
+    bool m_enable_lte_video = false;
 
     enum StreamType m_stream_type;
 
@@ -47,8 +54,13 @@ private:
 
     int main_default_port = 5600;
     int pip_default_port = 5601;
+    int lte_default_port = 8000;
 
     QTimer* timer = nullptr;
+
+    GMainLoop *mainLoop = nullptr;
 };
 
 #endif // OpenHDVideoStream_H
+
+#endif

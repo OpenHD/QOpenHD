@@ -11,34 +11,20 @@ import OpenHD 1.0
 
 import "../ui" as Ui
 
-Popup {
-    property alias save: groundPiSettingsPanel.save
+Rectangle {
     property alias settings_popup: settings_popup
     property alias closeButton: closeButton
-    property alias rebootButton: rebootButton
 
     id: settings_popup
-    parent: Overlay.overlay
 
-    x: Math.round((Overlay.overlay.width - width) / 2)
-    y: Math.round((Overlay.overlay.height - height) / 2)
+    anchors.fill: parent
 
-    width: applicationWindow.width
-    height: applicationWindow.height
+    z: 4.0
 
-
-    padding: 0
-    rightPadding: 0
-    bottomPadding: 0
-    leftPadding: 0
-    topPadding: 0
-    margins: 0
-    rightMargin: 0
-    bottomMargin: 0
-    leftMargin: 0
-    topMargin: 0
-    modal: true
-    clip: true
+    MouseArea {
+        anchors.fill: parent
+        propagateComposedEvents: false
+    }
 
     Rectangle {
         id: sidebar
@@ -50,124 +36,293 @@ Popup {
         anchors.bottomMargin: -1
         anchors.top: parent.top
         anchors.topMargin: -1
-        color: "#f6f6f6"
+        color: "#333c4c"
         radius: 0
         border.width: 1
         border.color: "#4c000000"
 
         clip: true
 
-        Text {
-            id: appButton
-            y: 0
+        Column {
             width: parent.width
-            height: 48
             anchors.top: parent.top
-            leftPadding: 12
-            MouseArea {
-                id: appButtonMouseArea
-                anchors.fill: parent
-                onClicked: mainStackLayout.currentIndex = 0
+
+            Item {
+                height: 48
+                width: parent.width
+
+                MouseArea {
+                    id: appButtonMouseArea
+                    anchors.fill: parent
+                    onClicked: mainStackLayout.currentIndex = 0
+                }
+
+                Text {
+                    id: appIcon
+                    text: "\uf013"
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    font.family: "Font Awesome 5 Free"
+                    font.pixelSize: 18
+                    height: parent.height
+                    width: 24
+                    anchors.left: parent.left
+                    anchors.leftMargin: 12
+
+                    color: "#dde4ed"
+
+                }
+
+                Text {
+                    id: appButton
+                    height: parent.height
+                    anchors.left: appIcon.right
+                    anchors.leftMargin: 6
+
+                    text: qsTr("App")
+                    font.pixelSize: 15
+                    horizontalAlignment: Text.AlignLeft
+                    verticalAlignment: Text.AlignVCenter
+                    color: mainStackLayout.currentIndex == 0 ? "#33aaff" : "#dde4ed"
+                }
             }
-            text: "App"
-            anchors.topMargin: 0
-            anchors.right: parent.right
-            anchors.rightMargin: 0
-            anchors.left: parent.left
-            anchors.leftMargin: 0
-            font.pixelSize: 15
-            horizontalAlignment: Text.AlignLeft
-            verticalAlignment: Text.AlignVCenter
-            color: mainStackLayout.currentIndex == 0 ? "#33aaff" : "#333333"
-        }
 
-        Text {
-            id: groundPiSettingsButton
-            y: 0
-            width: parent.width
-            height: 48
-            anchors.top: appButton.bottom
-            leftPadding: 12
-            MouseArea {
-                id: groundPiSettingsButtonMouseArea
-                anchors.fill: parent
-                onClicked: mainStackLayout.currentIndex = 1
+            Item {
+                height: 48
+                width: parent.width
+                MouseArea {
+                    id: groundButtonMouseArea
+                    anchors.fill: parent
+                    onClicked: mainStackLayout.currentIndex = 1
+                }
+
+                Text {
+                    id: groundIcon
+                    text: "\uf085"
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    font.family: "Font Awesome 5 Free"
+                    font.pixelSize: 18
+                    height: parent.height
+                    width: 24
+                    anchors.left: parent.left
+                    anchors.leftMargin: 12
+
+                    color: "#dde4ed"
+
+                }
+
+                Text {
+                    id: groundButton
+                    height: parent.height
+                    anchors.left: groundIcon.right
+                    anchors.leftMargin: 6
+
+                    text: qsTr("Ground")
+                    font.pixelSize: 15
+                    horizontalAlignment: Text.AlignLeft
+                    verticalAlignment: Text.AlignVCenter
+                    color: mainStackLayout.currentIndex == 1 ? "#33aaff" : "#dde4ed"
+                }
             }
-            text: "Ground Pi"
-            anchors.topMargin: 0
-            anchors.right: parent.right
-            anchors.rightMargin: 0
-            anchors.left: parent.left
-            anchors.leftMargin: 0
-            font.pixelSize: 15
-            horizontalAlignment: Text.AlignLeft
-            verticalAlignment: Text.AlignVCenter
-            color: mainStackLayout.currentIndex == 1 ? "#33aaff" : "#333333"
-        }
 
-        Text {
-            id: statusButton
-            y: 0
-            width: parent.width
-            height: 48
-            anchors.top: groundPiSettingsButton.bottom
-            leftPadding: 12
-            MouseArea {
-                id: statusSettingsButtonMouseArea
-                anchors.fill: parent
-                onClicked: mainStackLayout.currentIndex = 2
+            Item {
+                height: 48
+                width: parent.width
+                MouseArea {
+                    id: statusButtonMouseArea
+                    anchors.fill: parent
+                    onClicked: mainStackLayout.currentIndex = 2
+                }
+
+                Text {
+                    id: statusIcon
+                    text: "\uf0c9"
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    font.family: "Font Awesome 5 Free"
+                    font.pixelSize: 18
+                    height: parent.height
+                    width: 24
+                    anchors.left: parent.left
+                    anchors.leftMargin: 12
+
+                    color: "#dde4ed"
+
+                }
+
+                Text {
+                    id: statusButton
+                    height: parent.height
+                    anchors.left: statusIcon.right
+                    anchors.leftMargin: 6
+
+                    text: qsTr("Status")
+                    font.pixelSize: 15
+                    horizontalAlignment: Text.AlignLeft
+                    verticalAlignment: Text.AlignVCenter
+                    color: mainStackLayout.currentIndex == 2 ? "#33aaff" : "#dde4ed"
+                }
             }
-            text: "Status"
-            anchors.right: parent.right
-            anchors.rightMargin: 0
-            anchors.left: parent.left
-            anchors.leftMargin: 0
-            font.pixelSize: 15
-            horizontalAlignment: Text.AlignLeft
-            verticalAlignment: Text.AlignVCenter
-            color: mainStackLayout.currentIndex == 2 ? "#33aaff" : "#333333"
-        }
 
-        Text {
-            id: aboutButton
-            y: 0
-            width: parent.width
-            height: 48
-            anchors.top: statusButton.bottom
-            leftPadding: 12
-            MouseArea {
-                id: aboutButtonMouseArea
-                anchors.fill: parent
-                onClicked: mainStackLayout.currentIndex = 3
+            Item {
+                height: 48
+                width: parent.width
+                visible: false
+                MouseArea {
+                    id: chartsButtonMouseArea
+                    anchors.fill: parent
+                    onClicked: mainStackLayout.currentIndex = 3
+                }
+
+                Text {
+                    id: chartsIcon
+                    text: "\uf201"
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    font.family: "Font Awesome 5 Free"
+                    font.pixelSize: 18
+                    height: parent.height
+                    width: 24
+                    anchors.left: parent.left
+                    anchors.leftMargin: 12
+
+                    color: "#dde4ed"
+
+                }
+
+                Text {
+                    id: chartsButton
+                    height: parent.height
+                    anchors.left: chartsIcon.right
+                    anchors.leftMargin: 6
+
+                    text: qsTr("Charts")
+                    font.pixelSize: 15
+                    horizontalAlignment: Text.AlignLeft
+                    verticalAlignment: Text.AlignVCenter
+                    color: mainStackLayout.currentIndex == 3 ? "#33aaff" : "#dde4ed"
+                }
             }
-            text: "About"
-            anchors.topMargin: 0
-            anchors.right: parent.right
-            anchors.rightMargin: 0
-            anchors.left: parent.left
-            anchors.leftMargin: 0
-            font.pixelSize: 15
-            horizontalAlignment: Text.AlignLeft
-            verticalAlignment: Text.AlignVCenter
-            color: mainStackLayout.currentIndex == 3 ? "#33aaff" : "#333333"
-        }
+
+            Item {
+                height: 48
+                width: parent.width
+                MouseArea {
+                    id: powerButtonMouseArea
+                    anchors.fill: parent
+                    onClicked: mainStackLayout.currentIndex = 4
+                }
+
+                Text {
+                    id: powerIcon
+                    text: "\uf011"
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    font.family: "Font Awesome 5 Free"
+                    font.pixelSize: 18
+                    height: parent.height
+                    width: 24
+                    anchors.left: parent.left
+                    anchors.leftMargin: 12
+
+                    color: "#dde4ed"
+
+                }
+
+                Text {
+                    id: powerButton
+                    height: parent.height
+                    anchors.left: powerIcon.right
+                    anchors.leftMargin: 6
+
+                    text: qsTr("Power")
+                    font.pixelSize: 15
+                    horizontalAlignment: Text.AlignLeft
+                    verticalAlignment: Text.AlignVCenter
+                    color: mainStackLayout.currentIndex == 4 ? "#33aaff" : "#dde4ed"
+                }
+            }
 
 
+            Item {
+                height: 48
+                width: parent.width
+                visible: false
+                MouseArea {
+                    id: sensorsButtonMouseArea
+                    anchors.fill: parent
+                    onClicked: mainStackLayout.currentIndex = 5
+                }
 
-        Button {
-            id: rebootButton
-            y: 0
-            height: 48
-            leftPadding: 6
-            text: qsTr("Reboot")
-            anchors.bottom: closeButton.top
-            anchors.bottomMargin: 6
-            anchors.right: parent.right
-            anchors.rightMargin: 12
-            anchors.left: parent.left
-            anchors.leftMargin: 12
-            font.pixelSize: 13
-            enabled: !OpenHD.armed && !openHDSettings.saving
+                Text {
+                    id: sensorsIcon
+                    text: "\uf2c9"
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    font.family: "Font Awesome 5 Free"
+                    font.pixelSize: 18
+                    height: parent.height
+                    width: 24
+                    anchors.left: parent.left
+                    anchors.leftMargin: 12
+
+                    color: "#dde4ed"
+
+                }
+
+                Text {
+                    id: sensorsButton
+                    height: parent.height
+                    anchors.left: sensorsIcon.right
+                    anchors.leftMargin: 6
+
+                    text: qsTr("Sensors")
+                    font.pixelSize: 15
+                    horizontalAlignment: Text.AlignLeft
+                    verticalAlignment: Text.AlignVCenter
+                    color: mainStackLayout.currentIndex == 5 ? "#33aaff" : "#dde4ed"
+                }
+            }
+
+            Item {
+                height: 48
+                width: parent.width
+                MouseArea {
+                    id: aboutButtonMouseArea
+                    anchors.fill: parent
+                    onClicked: mainStackLayout.currentIndex = 6
+                }
+
+                Text {
+                    id: aboutIcon
+                    text: "\uf05a"
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    font.family: "Font Awesome 5 Free"
+                    font.pixelSize: 18
+                    height: parent.height
+                    width: 24
+                    anchors.left: parent.left
+                    anchors.leftMargin: 12
+
+                    color: "#dde4ed"
+
+                }
+
+                Text {
+                    id: aboutButton
+                    height: parent.height
+                    anchors.left: aboutIcon.right
+                    anchors.leftMargin: 6
+
+                    text: qsTr("About")
+                    font.pixelSize: 15
+                    horizontalAlignment: Text.AlignLeft
+                    verticalAlignment: Text.AlignVCenter
+                    color: mainStackLayout.currentIndex == 6 ? "#33aaff" : "#dde4ed"
+                }
+            }
         }
 
         Button {
@@ -209,6 +364,18 @@ Popup {
 
         StatusPanel {
             id: statusPanel
+        }
+
+        ChartsPanel {
+            id: chartsPanel
+        }
+
+        PowerPanel {
+            id: powerPanel
+        }
+
+        SensorPanel {
+            id: sensorPanel
         }
 
         AboutPanel {

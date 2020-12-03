@@ -1,0 +1,11 @@
+install:
+  - set QTDIR=C:\Qt\5.15.0\msvc2019
+  - set PATH=%PATH%;%QTDIR%\bin;C:\MinGW\bin
+  - curl -LfsS -o gstreamer-1.0-x86-1.14.4.msi https://gstreamer.freedesktop.org/data/pkg/windows/1.14.4/gstreamer-1.0-x86-1.14.4.msi
+  - curl -LfsS -o gstreamer-1.0-devel-x86-1.14.4.msi https://gstreamer.freedesktop.org/data/pkg/windows/1.14.4/gstreamer-1.0-devel-x86-1.14.4.msi
+  - msiexec /package gstreamer-1.0-x86-1.14.4.msi /passive ADDLOCAL=ALL
+  - msiexec /package gstreamer-1.0-devel-x86-1.14.4.msi /passive ADDLOCAL=ALL
+build_script:
+  - call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvarsall.bat" x86
+  - qmake QOpenHD.pro
+  - nmake

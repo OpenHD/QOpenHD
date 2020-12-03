@@ -1,10 +1,35 @@
 <RCC>
+    <qresource prefix="/translations" lang="en">
+        <file alias="QOpenHD.qm">../translations/QOpenHD_en.qm</file>
+    </qresource>
+    <qresource prefix="/translations" lang="de">
+        <file alias="QOpenHD.qm">../translations/QOpenHD_de.qm</file>
+    </qresource>
+    <qresource prefix="/translations" lang="ru">
+        <file alias="QOpenHD.qm">../translations/QOpenHD_ru.qm</file>
+    </qresource>
+    <qresource prefix="/translations" lang="es">
+        <file alias="QOpenHD.qm">../translations/QOpenHD_es.qm</file>
+    </qresource>
+    <qresource prefix="/translations" lang="fr">
+        <file alias="QOpenHD.qm">../translations/QOpenHD_fr.qm</file>
+    </qresource>
+    <qresource prefix="/translations" lang="nl">
+        <file alias="QOpenHD.qm">../translations/QOpenHD_nl.qm</file>
+    </qresource>
+    <qresource prefix="/translations" lang="ro">
+        <file alias="QOpenHD.qm">../translations/QOpenHD_ro.qm</file>
+    </qresource>
+    <qresource prefix="/translations" lang="it">
+        <file alias="QOpenHD.qm">../translations/QOpenHD_it.qm</file>
+    </qresource>
+    <qresource prefix="/translations" lang="zh">
+        <file alias="QOpenHD.qm">../translations/QOpenHD_zh.qm</file>
+    </qresource>
     <qresource prefix="/">
         <file>main.qml</file>
         <file>qtquickcontrols2.conf</file>
         <file>materialdesignicons-webfont.ttf</file>
-        <file>Font Awesome 5 Brands-Regular-400.otf</file>
-        <file>Font Awesome 5 Free-Regular-400.otf</file>
         <file>Font Awesome 5 Free-Solid-900.otf</file>
         <file>ic.png</file>
         <file>ui/LowerOverlayBar.qml</file>
@@ -22,7 +47,7 @@
         <file>ui/delegates/ChoiceSettingDelegate.ui.qml</file>
         <file>ui/SettingsMap.qml</file>
         <file>ui/delegates/RangeSettingDelegate.ui.qml</file>
-        <file>ui/GroundPiSettingsPanel.ui.qml</file>
+        <file>ui/GroundPiSettingsPanelForm.ui.qml</file>
         <file>ui/AboutPanelForm.ui.qml</file>
         <file>ui/widgets/MessageHUDForm.ui.qml</file>
         <file>ui/widgets/MessageHUD.qml</file>
@@ -72,14 +97,148 @@
         <file>ui/widgets/ArrowWidgetForm.qml</file>
         <file>ui/widgets/MapWidget.qml</file>
         <file>ui/widgets/MapWidgetForm.ui.qml</file>
-        <file>ui/widgets/home_marker.png</file>
         <file>ui/StatusPanel.qml</file>
         <file>ui/delegates/BaseDelegate.ui.qml</file>
         <file>ui/widgets/VideoWidget.qml</file>
-        <file>ui/widgets/VideoWidgetForm.ui.qml</file>
-        <file>DummyVideoItem.qml</file>
-        <file>MainVideoItem.qml</file>
+        <file>ui/widgets/VideoWidgetGStreamerForm.ui.qml</file>
+        <file>DummyVideoGStreamer.qml</file>
+        <file>MainVideoGStreamer.qml</file>
         <file>ui/elements/SlideSwitchForm.ui.qml</file>
         <file>ui/elements/SlideSwitch.qml</file>
+        <file>ui/ArdupilotParameterMap.qml</file>
+        <file>ui/GroundPiSettingsPanel.qml</file>
+        <file>ui/widgets/GroundPowerWidget.qml</file>
+        <file>ui/widgets/GroundPowerWidgetForm.ui.qml</file>
+        <file>ui/GroundPiSettingsPresetView.ui.qml</file>
+        <file>ui/PresetMap.qml</file>
+        <file>ui/elements/ColoredCheckboxForm.ui.qml</file>
+        <file>ui/elements/ColoredCheckbox.qml</file>
+        <file>MainVideoAndroid.qml</file>
+        <file>ui/FrequencyItem.qml</file>
+        <file>ui/elements/StatusChart.qml</file>
+        <file>ui/elements/StatusChartForm.ui.qml</file>
+        <file>ui/widgets/GPIOWidget.qml</file>
+        <file>ui/widgets/GPIOWidgetForm.ui.qml</file>
+        <file>MainVideoRender.qml</file>
+        <file>ui/widgets/VideoWidgetRenderForm.ui.qml</file>
+        <file>ui/widgets/VideoWidgetAndroidForm.ui.qml</file>
+        <file>ic128.png</file>
+        <file>ui/elements/MapComponent.qml</file>
+        <file>homemarker.png</file>
+        <file>ui/widgets/FlightDistanceWidgetForm.ui.qml</file>
+        <file>ui/widgets/FlightDistanceWidget.qml</file>
+        <file>ui/widgets/FlightMahWidgetForm.ui.qml</file>
+        <file>ui/widgets/FlightMahWidget.qml</file>
+        <file>ui/widgets/ControlWidgetForm.ui.qml</file>
+        <file>ui/widgets/ControlWidget.qml</file>
+        <file>ui/widgets/VibrationWidget.qml</file>
+        <file>ui/widgets/VibrationWidgetForm.ui.qml</file>
+        <file>ui/widgets/VsiWidgetForm.ui.qml</file>
+        <file>ui/widgets/VsiWidget.qml</file>
+        <file>ui/ChartsPanel.qml</file>
+        <file>ui/ChartsPanelForm.ui.qml</file>
+        <file>ui/elements/StatusView.qml</file>
+        <file>ui/elements/StatusViewForm.ui.qml</file>
+        <file>ui/widgets/WindWidgetForm.ui.qml</file>
+        <file>ui/widgets/WindWidget.qml</file>
+        <file>ui/widgets/RcRSSIWidgetForm.ui.qml</file>
+        <file>ui/widgets/RcRSSIWidget.qml</file>
+        <file>ui/widgets/ExampleWidget.qml</file>
+        <file>ui/widgets/ExampleWidgetForm.ui.qml</file>
+        <file>ui/widgets/RollWidgetForm.ui.qml</file>
+        <file>ui/widgets/RollWidget.qml</file>
+        <file>ui/widgets/BlackBoxWidget.qml</file>
+        <file>ui/widgets/BlackBoxWidgetForm.ui.qml</file>
+        <file>airplanemarkerblur.png</file>
+        <file>ui/widgets/AdsbWidgetForm.ui.qml</file>
+        <file>ui/widgets/AdsbWidget.qml</file>
+        <file>ui/PowerPanel.qml</file>
+        <file>ui/PowerPanelForm.ui.qml</file>
+        <file>ui/elements/LanguageSelect.qml</file>
+        <file>ui/elements/LanguageSelectForm.ui.qml</file>
+        <file>ui/SensorPanel.qml</file>
+        <file>ui/SensorPanelForm.ui.qml</file>
+        <file alias="round.png">../icons/round.png</file>
+        <file>ui/elements/Card.qml</file>
+        <file>ui/elements/CardForm.ui.qml</file>
+        <file>airplanemarkeralert.png</file>
+        <file>airplanemarkerwarn.png</file>
+        <file>ui/widgets/SpeedSecondWidget.qml</file>
+        <file>ui/widgets/SpeedSecondWidgetForm.ui.qml</file>
+        <file>qopenhd.template</file>
+        <file>osdfonts/Acme-Regular.ttf</file>
+        <file>osdfonts/Aldrich-Regular.ttf</file>
+        <file>osdfonts/AnonymousPro-Bold.ttf</file>
+        <file>osdfonts/AnonymousPro-BoldItalic.ttf</file>
+        <file>osdfonts/Archivo-Bold.ttf</file>
+        <file>osdfonts/Archivo-Medium.ttf</file>
+        <file>osdfonts/Archivo-Regular.ttf</file>
+        <file>osdfonts/ArchivoBlack-Regular.ttf</file>
+        <file>osdfonts/Armata-Regular.ttf</file>
+        <file>osdfonts/Bangers-Regular.ttf</file>
+        <file>osdfonts/BlackOpsOne-Regular.ttf</file>
+        <file>osdfonts/Bungee-Regular.ttf</file>
+        <file>osdfonts/Carbon-Bold.ttf</file>
+        <file>osdfonts/Chicle-Regular.ttf</file>
+        <file>osdfonts/Digital7SegmentDisplay.ttf</file>
+        <file>osdfonts/DigitalDotDisplay.ttf</file>
+        <file>osdfonts/DigitalSubwayTicker.ttf</file>
+        <file>osdfonts/ExpletusSans-Bold.ttf</file>
+        <file>osdfonts/FjallaOne-Regular.ttf</file>
+        <file>osdfonts/FredokaOne-Regular.ttf</file>
+        <file>osdfonts/GeostarFill-Regular.ttf</file>
+        <file>osdfonts/Iceberg-Regular.ttf</file>
+        <file>osdfonts/Iceland-Regular.ttf</file>
+        <file>osdfonts/Jura-Bold.ttf</file>
+        <file>osdfonts/KeaniaOne-Regular.ttf</file>
+        <file>osdfonts/Larabie.ttf</file>
+        <file>osdfonts/LuckiestGuy-Regular.ttf</file>
+        <file>osdfonts/Merysha-Regular.ttf</file>
+        <file>osdfonts/NixieOne-Regular.ttf</file>
+        <file>osdfonts/Orbitron-Bold.ttf</file>
+        <file>osdfonts/Orbitron-Regular.ttf</file>
+        <file>osdfonts/Oxygen-Bold.ttf</file>
+        <file>osdfonts/Oxygen-Regular.ttf</file>
+        <file>osdfonts/PassionOne-Bold.ttf</file>
+        <file>osdfonts/Quantico-Bold.ttf</file>
+        <file>osdfonts/Quantico-Regular.ttf</file>
+        <file>osdfonts/Quicksand-Bold.ttf</file>
+        <file>osdfonts/Quicksand-Regular.ttf</file>
+        <file>osdfonts/RammettoOne-Regular.ttf</file>
+        <file>osdfonts/Rationale-Regular.ttf</file>
+        <file>osdfonts/Righteous-Regular.ttf</file>
+        <file>osdfonts/RobotoMono-Bold.ttf</file>
+        <file>osdfonts/RobotoMono-Medium.ttf</file>
+        <file>osdfonts/RussoOne-Regular.ttf</file>
+        <file>osdfonts/ShareTech-Regular.ttf</file>
+        <file>osdfonts/ShareTechMono-Regular.ttf</file>
+        <file>osdfonts/SigmarOne-Regular.ttf</file>
+        <file>osdfonts/Slackey-Regular.ttf</file>
+        <file>osdfonts/UbuntuMono-Bold.ttf</file>
+        <file>osdfonts/UbuntuMono-BoldItalic.ttf</file>
+        <file>osdfonts/Visitor.ttf</file>
+        <file>osdfonts/ZolanMonoOblique.ttf</file>
+        <file>ui/elements/FontSelect.qml</file>
+        <file>ui/elements/FontSelectForm.ui.qml</file>
+        <file>ui/elements/OSDCustomizer.qml</file>
+        <file>ui/elements/colorwheel/CheckerBoard.qml</file>
+        <file>ui/elements/colorwheel/ColorWheel.qml</file>
+        <file>ui/elements/colorwheel/ColorUtils.js</file>
+        <file>ui/elements/colorwheel/NumberBox.qml</file>
+        <file>ui/elements/colorwheel/PanelBorder.qml</file>
+        <file>ui/elements/colorwheel/VerticalSlider.qml</file>
+        <file>ui/elements/colorwheel/Wheel.qml</file>
+        <file>ui/elements/colorwheel/mathUtils.js</file>
+        <file>ui/elements/RestartDialog.qml</file>
+        <file>ui/elements/ColorPicker.qml</file>
+        <file>ui/elements/AppSettings.qml</file>
+        <file>ui/widgets/EscTempWidget.qml</file>
+        <file>ui/widgets/EscTempWidgetForm.ui.qml</file>
+        <file>ui/widgets/PressTempWidget.qml</file>
+        <file>ui/widgets/PressTempWidgetForm.ui.qml</file>
+        <file>ui/widgets/ImuTempWidget.qml</file>
+        <file>ui/widgets/ImuTempWidgetForm.ui.qml</file>
+        <file>ui/widgets/FlightMahKmWidget.qml</file>
+        <file>ui/widgets/FlightMahKmWidgetForm.ui.qml</file>
     </qresource>
 </RCC>

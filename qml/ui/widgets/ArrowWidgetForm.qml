@@ -9,9 +9,9 @@ import OpenHD 1.0
 
 BaseWidget {
     id: arrowWidget
-    width: 24
-    height: 24
-    defaultYOffset: 85
+    width: 64
+    height: 48
+    defaultYOffset: 135
 
     visible: settings.show_arrow
 
@@ -24,24 +24,82 @@ BaseWidget {
     widgetDetailComponent: Column {
         Item {
             width: parent.width
-            height: 24
+            height: 32
             Text {
-                text: "Invert Arrow"
+                id: opacityTitle
+                text: qsTr("Transparency")
                 color: "white"
+                height: parent.height
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
+            Slider {
+                id: arrow_opacity_Slider
+                orientation: Qt.Horizontal
+                from: .1
+                value: settings.arrow_opacity
+                to: 1
+                stepSize: .1
+                height: parent.height
+                anchors.rightMargin: 0
+                anchors.right: parent.right
+                width: parent.width - 96
+
+                onValueChanged: {
+                    settings.arrow_opacity = arrow_opacity_Slider.value
+                }
+            }
+        }
+        Item {
+            width: parent.width
+            height: 32
+            Text {
+                text: qsTr("Size")
+                color: "white"
+                height: parent.height
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
+            Slider {
+                id: arrow_size_Slider
+                orientation: Qt.Horizontal
+                from: .5
+                value: settings.arrow_size
+                to: 3
+                stepSize: .1
+                height: parent.height
+                anchors.rightMargin: 0
+                anchors.right: parent.right
+                width: parent.width - 96
+
+                onValueChanged: {
+                    settings.arrow_size = arrow_size_Slider.value
+                }
+            }
+        }
+        Item {
+            width: parent.width
+            height: 32
+            Text {
+                text: qsTr("Invert Arrow")
+                color: "white"
+                height: parent.height
                 font.bold: true
                 font.pixelSize: detailPanelFontPixels;
                 anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
             }
             Switch {
                 width: 32
                 height: parent.height
-                anchors.rightMargin: 12
+                anchors.rightMargin: 6
                 anchors.right: parent.right
-                // @disable-check M222
-                Component.onCompleted: checked = settings.value("inav_heading",
-                                                                true)
-                // @disable-check M222
-                onCheckedChanged: settings.setValue("inav_heading", checked)
+                checked: settings.arrow_invert
+                onCheckedChanged: settings.arrow_invert = checked
             }
         }
     }
@@ -50,32 +108,45 @@ BaseWidget {
         id: widgetInner
         anchors.fill: parent
 
-        Shape {
-            id: arrow
+        Item {
             anchors.fill: parent
-            antialiasing: true
+            anchors.centerIn: parent
+            transform: Scale { origin.x: 32; origin.y: 12; xScale: settings.arrow_size ; yScale: settings.arrow_size}
 
 
-            ShapePath {
-                capStyle: ShapePath.RoundCap
-                strokeColor: "black"
-                fillColor: "white"
-                strokeWidth: 1
-                strokeStyle: ShapePath.SolidLine
+            Shape {
+                id: arrow
+                anchors.fill: parent
+                antialiasing: true
+                opacity: settings.arrow_opacity
 
-                startX: 12
-                startY: 0
-                PathLine { x: 24;                 y: 12  }//right edge of arrow
-                PathLine { x: 18;                 y: 12  }//inner right edge
-                PathLine { x: 18;                 y: 24 }//bottom right edge
-                PathLine { x: 6;                  y: 24 }//bottom left edge
-                PathLine { x: 6;                  y: 12  }//inner left edge
-                PathLine { x: 0;                  y: 12  }//outer left
-                PathLine { x: 12;                  y: 0  }//back to start
+                ShapePath {
+                    capStyle: ShapePath.RoundCap
+                    strokeColor: settings.color_glow
+                    fillColor: settings.color_shape
+                    strokeWidth: 1
+                    strokeStyle: ShapePath.SolidLine
+
+                    startX: 32
+                    startY: 24
+                    PathLine { x: 26;                  y: 24 }//bottom left edge
+                    PathLine { x: 26;                  y: 12  }//inner left edge
+                    PathLine { x: 20;                  y: 12  }//outer left
+                    PathLine { x: 32;                  y: 0  }//point
+                    PathLine { x: 44;                 y: 12  }//right edge of arrow
+                    PathLine { x: 38;                 y: 12  }//inner right edge
+                    PathLine { x: 38;                 y: 24 }//bottom right edge
+                    PathLine { x: 32;                 y: 24 }//back to start
+
+                }
+
+                transform: Rotation {
+                    origin.x: 32;
+                    origin.y: 12;
+                    angle: settings.arrow_invert ? OpenHD.home_course : OpenHD.home_course-180
+                }
             }
 
-            transform: Rotation { origin.x: 12; origin.y: 12; angle: OpenHD.home_course }
         }
-
     }
 }

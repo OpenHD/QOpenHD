@@ -4,26 +4,29 @@
 #include <QThread>
 #include <QtConcurrent>
 
+#include "localmessage.h"
+
 #define SETTINGS_PORT 1011
-#define SETTINGS_IP "192.168.2.1"
 
 OpenHDSettings::OpenHDSettings(QObject *parent) : QObject(parent) {
     qDebug() << "OpenHDSettings::OpenHDSettings()";
-    initSettings();
-}
 
+    #if defined(__rasp_pi__)
+    groundAddress = "127.0.0.1";
+    set_ground_available(true);
+    #endif
 
-void OpenHDSettings::initSettings() {
-    qDebug() << "OpenHDSettings::initSettings()";
     settingSocket = new QUdpSocket(this);
     settingSocket->bind(QHostAddress::Any, 5115);
     connect(settingSocket, SIGNAL(readyRead()), this, SLOT(processDatagrams()));
 
-    connect(&timer, &QTimer::timeout, this, &OpenHDSettings::check);
+    connect(&loadTimer, &QTimer::timeout, this, &OpenHDSettings::checkSettingsLoadTimeout);
+    connect(&saveTimer, &QTimer::timeout, this, &OpenHDSettings::checkSettingsSaveTimeout);
+}
 
-    // internal signal from background thread
-    connect(this, &OpenHDSettings::savingSettingsStart, this, &OpenHDSettings::_savingSettingsStart);
-    connect(this, &OpenHDSettings::savingSettingsFinish, this, &OpenHDSettings::_savingSettingsFinish);
+void OpenHDSettings::set_ground_available(bool ground_available) {
+    m_ground_available = ground_available;
+    emit ground_available_changed(m_ground_available);
 }
 
 void OpenHDSettings::set_loading(bool loading) {
@@ -36,84 +39,60 @@ void OpenHDSettings::set_saving(bool saving) {
     emit savingChanged(m_saving);
 }
 
-void OpenHDSettings::check() {
+
+void OpenHDSettings::checkSettingsLoadTimeout() {
     qint64 current = QDateTime::currentSecsSinceEpoch();
     //fallback in case the ground pi never sends back "ConfigEnd=ConfigEnd"
-    if (current - start > 20) {
-        timer.stop();
-        emit allSettingsChanged(m_allSettings);
+    if (current - loadStart > 30) {
+        loadTimer.stop();
         set_loading(false);
+        emit allSettingsChanged();
     }
 }
 
-void OpenHDSettings::reboot() {
-    if (m_saving) {
-        return;
+
+void OpenHDSettings::checkSettingsSaveTimeout() {
+    qint64 current = QDateTime::currentSecsSinceEpoch();
+    /*fallback in case the ground pi never sends back "SavedGround" for all
+       the settings we saved*/
+    if (current - saveStart > 30) {
+        saveTimer.stop();
+        set_saving(false);
+        if (settingsCount <= 0) {
+            emit savingSettingsFinished();
+        } else {
+            emit savingSettingsFailed(settingsCount);
+        }
     }
-#if defined(__rasp_pi__)
-    QProcess process;
-    process.start("/sbin/reboot");
-    process.waitForFinished();
-#else
-    QUdpSocket *s = new QUdpSocket(this);
-    s->connectToHost(groundAddress, SETTINGS_PORT);
-    s->waitForConnected(5000);
-    QByteArray r = QByteArray("RequestReboot");
-    QNetworkDatagram d(r);
-    s->writeDatagram(d);
-#endif
-}
-
-void OpenHDSettings::shutdown() {
-    if (m_saving) {
-        return;
-    }
-#if defined(__rasp_pi__)
-    QProcess process;
-    process.start("/sbin/shutdown -h -P now");
-    process.waitForFinished();
-#else
-    QUdpSocket *s = new QUdpSocket(this);
-    s->connectToHost(groundAddress, SETTINGS_PORT);
-    s->waitForConnected(5000);
-    QByteArray r = QByteArray("RequestShutdown");
-    QNetworkDatagram d(r);
-    s->writeDatagram(d);
-#endif
 }
 
 
-void OpenHDSettings::_savingSettingsStart() {
-    set_saving(true);
-}
-
-void OpenHDSettings::_savingSettingsFinish() {
-    set_saving(false);
-}
-
-void OpenHDSettings::saveSettings(VMap remoteSettings) {
+void OpenHDSettings::saveSettings(QVariantMap remoteSettings) {
     qDebug() << "OpenHDSettings::saveSettings()";
 
-    // run the real network calls in the background. needs some minor changes to avoid threading related
-    // errors
-    //QFuture<void> future = QtConcurrent::run(this, &OpenHDSettings::_saveSettings, remoteSettings);
+    /* run the real network calls in the background. needs some minor changes to avoid threading related
+       errors
+      QFuture<void> future = QtConcurrent::run(this, &OpenHDSettings::_saveSettings, remoteSettings);
+      */
     _saveSettings(remoteSettings);
 }
 
-void OpenHDSettings::_saveSettings(VMap remoteSettings) {
+void OpenHDSettings::_saveSettings(QVariantMap remoteSettings) {
     if (m_saving || m_loading) {
         return;
     }
+    // shortcut if there aren't any modified settings
+    if (remoteSettings.size() == 0) {
+        emit savingSettingsFinished();
+        return;
+    }
     set_saving(true);
-    //emit savingSettingsStart();
-    QUdpSocket *s = new QUdpSocket(this);
-#if defined(__rasp_pi__)
-    s->connectToHost(SETTINGS_IP, SETTINGS_PORT);
-#else
-    s->connectToHost(groundAddress, SETTINGS_PORT);
-#endif
+
+    emit savingSettingsStart();
 
     settingsCount = remoteSettings.count();
+    saveStart = QDateTime::currentSecsSinceEpoch();
+    saveTimer.start(1000);
 
     QMapIterator<QString, QVariant> i(remoteSettings);
     while (i.hasNext()) {
@@ -123,17 +102,13 @@ void OpenHDSettings::_saveSettings(VMap remoteSettings) {
         r.append(i.key());
         r.append('=');
         r.append(i.value().toString());
-        QNetworkDatagram d(r);
-        s->writeDatagram(d);
+        settingSocket->writeDatagram(r, QHostAddress(groundAddress), SETTINGS_PORT);
 
         QThread::msleep(30);
     }
-    set_saving(false);
-
-    //emit savingSettingsFinish();
 }
 
-VMap OpenHDSettings::getAllSettings() {
+QVariantMap OpenHDSettings::getAllSettings() {
     return m_allSettings;
 }
 
@@ -145,20 +120,12 @@ void OpenHDSettings::fetchSettings() {
 
     qDebug() << "OpenHDSettings::fetchSettings()";
 
-    start = QDateTime::currentSecsSinceEpoch();
-    timer.start(1000);
+    loadStart = QDateTime::currentSecsSinceEpoch();
+    loadTimer.start(1000);
 
     QByteArray r = QByteArray("RequestAllSettings");
-
     QNetworkDatagram d(r);
-    QUdpSocket *s = new QUdpSocket(this);
-#if defined(__rasp_pi__)
-    s->connectToHost(SETTINGS_IP, SETTINGS_PORT);
-#else
-    s->connectToHost(groundAddress, SETTINGS_PORT);
-#endif
-    s->waitForConnected(5000);
-    s->writeDatagram(d);
+    settingSocket->writeDatagram(r, QHostAddress(groundAddress), SETTINGS_PORT);
 }
 
 
@@ -168,14 +135,31 @@ void OpenHDSettings::processDatagrams() {
     while (settingSocket->hasPendingDatagrams()) {
         datagram.resize(int(settingSocket->pendingDatagramSize()));
 
-        settingSocket->readDatagram(datagram.data(), datagram.size(), &groundAddress);
+        QHostAddress _groundAddress;
+
+        settingSocket->readDatagram(datagram.data(), datagram.size(), &_groundAddress);
+
+        bool conversionOK = false;
+        QHostAddress ip4Address(_groundAddress.toIPv4Address(&conversionOK));
+        QString ip4String;
+        if (conversionOK) {
+            groundAddress = ip4Address.toString();
+
+            emit groundStationIPUpdated(groundAddress);
+            set_ground_available(true);
+        }
 
         if (datagram == "ConfigRespConfigEnd=ConfigEnd") {
-            timer.stop();
-            emit allSettingsChanged(m_allSettings);
+            loadTimer.stop();
+            emit allSettingsChanged();
             set_loading(false);
         } else if (datagram.contains("SavedGround")) {
             settingsCount -= 1;
+            if (settingsCount <= 0) {
+                set_saving(false);
+                saveTimer.stop();
+                emit savingSettingsFinished();
+            }
         } else {
             auto set = datagram.split('=');
             auto key = set.first();         

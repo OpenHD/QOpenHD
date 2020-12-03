@@ -5,51 +5,34 @@
 #include <QtQuick>
 
 
-#include <common/mavlink.h>
-#include <ardupilotmega/ardupilotmega.h>
+#include <openhd/mavlink.h>
 #include "constants.h"
+
+#include "util.h"
+
+#include "mavlinkbase.h"
 
 
 class QUdpSocket;
 
-class MavlinkTelemetry: public QObject {
+
+
+class MavlinkTelemetry: public MavlinkBase {
     Q_OBJECT
 
 public:
     explicit MavlinkTelemetry(QObject *parent = nullptr);
+    static MavlinkTelemetry* instance();
 
-
-    Q_PROPERTY(QString last_heartbeat MEMBER m_last_heartbeat WRITE set_last_heartbeat NOTIFY last_heartbeat_changed)
-    void set_last_heartbeat(QString last_heartbeat);
-
-signals:
-    void last_heartbeat_changed(QString last_heartbeat);
-
+public slots:
+    void onSetup();
+    void pauseTelemetry(bool toggle);
 
 private slots:
-#if defined(__rasp_pi__)
-    void processMavlinkFifo();
-    void restartFifo();
-#else
-    void processMavlinkDatagrams();
-#endif
-    void processMavlinkMessage(mavlink_message_t msg);
+    void onProcessMavlinkMessage(mavlink_message_t msg);
 
 private:
-    void init();
-
-
-#if defined(__rasp_pi__)
-    QFuture<void> fifoFuture;
-    QFutureWatcher<void> watcher;
-#else
-    QUdpSocket *mavlinkSocket = nullptr;
-#endif
-    mavlink_status_t r_mavlink_status;
-
-    QString m_last_heartbeat = "N/A";
-    qint64 last_heartbeat_timestamp;
-
+    bool pause_telemetry;
 };
 
 #endif

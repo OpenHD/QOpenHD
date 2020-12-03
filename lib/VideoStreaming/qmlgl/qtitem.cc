@@ -239,6 +239,8 @@ QtGLVideoItem::updatePaintNode(QSGNode * oldNode,
   gst_gl_context_activate (this->priv->other_context, FALSE);
   g_mutex_unlock (&this->priv->lock);
 
+  window()->update();
+
   return texNode;
 }
 

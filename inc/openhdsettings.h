@@ -9,20 +9,15 @@
 #include <QVariant>
 #include <QtQuick>
 #include <QQmlPropertyMap>
+#include "util.h"
 
 class QUdpSocket;
 
-typedef QMap<QString, QVariant> VMap;
-
-Q_DECLARE_METATYPE(VMap);
 
 class OpenHDSettings : public QObject {
     Q_OBJECT
 public:
     explicit OpenHDSettings(QObject *parent = nullptr);
-    void initSettings();
-
-    Q_PROPERTY(VMap allSettings MEMBER m_allSettings NOTIFY allSettingsChanged)
 
     Q_PROPERTY(bool loading MEMBER m_loading WRITE set_loading NOTIFY loadingChanged)
     void set_loading(bool loading);
@@ -31,47 +26,60 @@ public:
     void set_saving(bool saving);
 
     Q_INVOKABLE void fetchSettings();
-    Q_INVOKABLE VMap getAllSettings();
+    Q_INVOKABLE QVariantMap getAllSettings();
 
-    Q_INVOKABLE void saveSettings(VMap remoteSettings);
+    Q_INVOKABLE void saveSettings(QVariantMap remoteSettings);
 
-    Q_INVOKABLE void reboot();
-
-    Q_INVOKABLE void shutdown();
+    Q_PROPERTY(bool ground_available MEMBER m_ground_available WRITE set_ground_available NOTIFY ground_available_changed)
+    void set_ground_available(bool ground_available);
 
 signals:
-    void allSettingsChanged(VMap allSettings);
+    void allSettingsChanged();
     void loadingChanged(bool loading);
     void savingChanged(bool saving);
+    void savedChanged(bool saved);
+
     void savingSettingsStart();
-    void savingSettingsFinish();
+    void savingSettingsFinished();
+    void savingSettingsFailed(qint64 failCount);
+
+    void groundStationIPUpdated(QString address);
+
+    void ground_available_changed(bool ground_available);
 
 public slots:
     void processDatagrams();
 
-
-private slots:
-    void _savingSettingsStart();
-    void _savingSettingsFinish();
-
 private:
     void init();
-    void _saveSettings(VMap remoteSettings);
+    void _saveSettings(QVariantMap remoteSettings);
+
     QUdpSocket *settingSocket = nullptr;
 
-    VMap m_allSettings;
-    qint64 start = 0;
-    QTimer timer;
-    void check();
+    bool m_ground_available = false;
 
-    // used to keep track of how many settings need to be saved so we can compare it to
-    // the number of save confirmations we get back from the ground side
+    QVariantMap m_allSettings;
+
+    qint64 loadStart = 0;
+
+    qint64 saveStart = 0;
+
+    QTimer loadTimer;
+    QTimer saveTimer;
+
+    void checkSettingsLoadTimeout();
+    void checkSettingsSaveTimeout();
+
+    QTimer savedTimer;
+
+    /* used to keep track of how many settings need to be saved so we can compare it to
+       the number of save confirmations we get back from the ground side */
     int settingsCount = 0;
 
     bool m_loading = false;
     bool m_saving = false;
 
-    QHostAddress groundAddress;
+    QString groundAddress;
 };
 
 
