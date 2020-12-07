@@ -444,6 +444,11 @@ void OpenHD::set_battery_percent(int battery_percent) {
     emit battery_percent_changed(m_battery_percent);
 }
 
+void OpenHD::set_gnd_battery_percent(int gnd_battery_percent) {
+    m_gnd_battery_percent = gnd_battery_percent;
+    emit gnd_battery_percent_changed(m_gnd_battery_percent);
+}
+
 void OpenHD::set_fc_battery_percent(int fc_battery_percent) {
     m_fc_battery_percent = fc_battery_percent;
     emit fc_battery_percent_changed(m_fc_battery_percent);
@@ -462,6 +467,11 @@ void OpenHD::set_battery_current(double battery_current) {
 void OpenHD::set_battery_gauge(QString battery_gauge) {
     m_battery_gauge = battery_gauge;
     emit battery_gauge_changed(m_battery_gauge);
+}
+
+void OpenHD::set_gnd_battery_gauge(QString gnd_battery_gauge) {
+    m_gnd_battery_gauge = gnd_battery_gauge;
+    emit gnd_battery_gauge_changed(m_gnd_battery_gauge);
 }
 
 void OpenHD::set_fc_battery_gauge(QString fc_battery_gauge) {
