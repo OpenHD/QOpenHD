@@ -132,7 +132,7 @@ void Adsb::requestData() {
             return;
         }
 
-        adsb_url= "http://"+groundAddress+"/dump1090/data/aircraft.json";
+        adsb_url= "http://"+groundAddress+":8080/data/aircraft.json";
     }
     else {
         //qDebug() << "timer 10";
@@ -329,7 +329,7 @@ void Adsb::processReply(QNetworkReply *reply){
 
             current_row=current_row+1;
 
-            /*
+
              qDebug() << "callsign=" << innerarray[1].toString();
              qDebug() << "last_contact=" << innerarray[4].toInt();
              qDebug() << "lat=" << innerarray[6].toDouble();
@@ -340,7 +340,7 @@ void Adsb::processReply(QNetworkReply *reply){
              qDebug() << "vertical=" << innerarray[11].toDouble();
              qDebug() << "distance=" << distance;
              qDebug() << "----------------------------------------------------------";
-     */
+
         }
 
     }
