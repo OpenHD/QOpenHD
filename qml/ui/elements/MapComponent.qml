@@ -239,19 +239,21 @@ Map {
                                 return 0;
                             }
 
-                            var orientation = model.track-OpenHD.hdg;
 
-                            if (orientation < 0) orientation += 360;
-                            if (orientation >= 360) orientation -=360;
 
-                            if (settings.map_orientation === false){
+                            if (settings.map_orientation === true){
+                                var orientation = model.track-OpenHD.hdg;
+                                if (orientation < 0) orientation += 360;
+                                if (orientation >= 360) orientation -=360;
                                 return orientation;
                             }
-                            else {
+                            else {                                
+                                //console.log("TRACK=", model.track);
                                 return model.track;
                             }
                         }
 
+                        //UNUSED MOUSE AREA.. reating for future functionality
                         opacity: markerMouseArea.pressed ? 0.6 : 1.0
                         MouseArea  {
                             id: markerMouseArea
@@ -298,12 +300,11 @@ Map {
                                     return 0;
                                 }
 
-                                var orientation = model.track-OpenHD.hdg;
+                                if (settings.map_orientation === true){
+                                    var orientation = model.track-OpenHD.hdg;
 
-                                if (orientation < 0) orientation += 360;
-                                if (orientation >= 360) orientation -=360;
-
-                                if (settings.map_orientation === false){
+                                    if (orientation < 0) orientation += 360;
+                                    if (orientation >= 360) orientation -=360;
                                     return -orientation;
                                 }
                                 else {
@@ -338,7 +339,7 @@ Map {
                                 horizontalAlignment: Text.AlignHCenter
                                 text: {
                                     if (model.callsign === undefined) {
-                                        console.log("UNDEFINED Callsign count=", MarkerModel.rowCount());
+                                        //console.log("UNDEFINED Callsign count=", MarkerModel.rowCount());
                                         return "---"
                                     }
                                     else {

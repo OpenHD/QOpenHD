@@ -33,7 +33,9 @@ MavlinkTelemetry* MavlinkTelemetry::instance() {
 
 MavlinkTelemetry::MavlinkTelemetry(QObject *parent): MavlinkBase(parent) {
     qDebug() << "MavlinkTelemetry::MavlinkTelemetry()";
-    targetSysID = 1;
+
+    requestSysIdSettings();
+    m_restrict_compid = false;
     targetCompID = MAV_COMP_ID_AUTOPILOT1;
 
     m_restrict_sysid = false;
@@ -58,8 +60,16 @@ void MavlinkTelemetry::onSetup() {
 
     timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, &MavlinkTelemetry::stateLoop);
+    connect(timer, &QTimer::timeout, this, &MavlinkTelemetry::requestSysIdSettings);
     resetParamVars();
     timer->start(200);
+}
+
+void MavlinkTelemetry::requestSysIdSettings() {
+    //qDebug() << "requestTargetSysId called";
+    QSettings settings;
+    m_restrict_sysid = settings.value("filter_mavlink_telemetry", false).toBool();
+    targetSysID = settings.value("fc_mavlink_sysid", m_util.default_mavlink_sysid()).toInt();
 }
 
 void MavlinkTelemetry::pauseTelemetry(bool toggle) {
@@ -189,7 +199,7 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
 
             if (boot_time < m_last_boot || m_last_boot == 0) {
                 m_last_boot = boot_time;
-    
+
                 setDataStreamRate(MAV_DATA_STREAM_EXTENDED_STATUS, 2);
                 setDataStreamRate(MAV_DATA_STREAM_EXTRA1, 10);
                 setDataStreamRate(MAV_DATA_STREAM_EXTRA2, 5);
@@ -529,4 +539,3 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
         }
     }
 }
-

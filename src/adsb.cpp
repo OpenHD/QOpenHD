@@ -129,10 +129,11 @@ void Adsb::requestData() {
         timer->start(1000);
 
         if (groundAddress.isEmpty()) {
+            LocalMessage::instance()->showMessage("No ADSB Ground Address", 4);
             return;
         }
 
-        adsb_url= "http://"+groundAddress+"/dump1090/data/aircraft.json";
+        adsb_url= "http://"+groundAddress+":8080/data/aircraft.json";
     }
     else {
         //qDebug() << "timer 10";
@@ -170,6 +171,7 @@ void Adsb::processReply(QNetworkReply *reply){
     if (reply->error()) {
         qDebug() << "ADSB request error!";
         qDebug() << reply->errorString();
+        LocalMessage::instance()->showMessage("ADSB Reply Error", 4);
         return;
     }
 
@@ -180,6 +182,7 @@ void Adsb::processReply(QNetworkReply *reply){
 
     if (doc.isNull()) {
         qDebug() << "Parse failed";
+        LocalMessage::instance()->showMessage("ADSB Parse Error", 4);
     }
 
     if(doc.isNull()){
@@ -210,7 +213,7 @@ void Adsb::processReply(QNetworkReply *reply){
             qDebug()<<"JSON array is empty.";
         }
 
-        qDebug() << "MYARRAY COUNT=" << array.count();
+        //qDebug() << "MYARRAY COUNT=" << array.count();
 
         int current_row=0;
         int last_row=array.count();
@@ -218,7 +221,7 @@ void Adsb::processReply(QNetworkReply *reply){
         emit removeAllMarkers();
 
         if (last_row==0){
-            //no markers to add.. either the api is not happy (too zoomed out) or no traffic to report
+            //no markers to add..
             return;
         }
 
@@ -258,7 +261,7 @@ void Adsb::processReply(QNetworkReply *reply){
                     */
                 evaluateTraffic(callsign, contact, lat, lon, alt, velocity, track, vertical, distance);
             }
-
+/*
             qDebug() << "callsign=" << callsign;
             qDebug() << "last_contact=" << contact;
             qDebug() << "lat=" << lat;
@@ -270,7 +273,7 @@ void Adsb::processReply(QNetworkReply *reply){
             qDebug() << "distance=" << distance;
 
             qDebug() << "----------------------------------------------------------";
-
+*/
 
 
 
@@ -283,7 +286,7 @@ void Adsb::processReply(QNetworkReply *reply){
         QJsonValue value = jsonObject.value("states");
         QJsonArray array = value.toArray();
 
-        qDebug() << "MYARRAY COUNT=" << array.count();
+        //qDebug() << "MYARRAY COUNT=" << array.count();
 
         int current_row=0;
         int last_row=array.count();
@@ -329,7 +332,7 @@ void Adsb::processReply(QNetworkReply *reply){
 
             current_row=current_row+1;
 
-            /*
+/*
              qDebug() << "callsign=" << innerarray[1].toString();
              qDebug() << "last_contact=" << innerarray[4].toInt();
              qDebug() << "lat=" << innerarray[6].toDouble();
@@ -340,7 +343,7 @@ void Adsb::processReply(QNetworkReply *reply){
              qDebug() << "vertical=" << innerarray[11].toDouble();
              qDebug() << "distance=" << distance;
              qDebug() << "----------------------------------------------------------";
-     */
+*/
         }
 
     }
