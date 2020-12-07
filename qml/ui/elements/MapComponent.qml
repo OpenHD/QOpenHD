@@ -339,7 +339,7 @@ Map {
                                 horizontalAlignment: Text.AlignHCenter
                                 text: {
                                     if (model.callsign === undefined) {
-                                        console.log("UNDEFINED Callsign count=", MarkerModel.rowCount());
+                                        //console.log("UNDEFINED Callsign count=", MarkerModel.rowCount());
                                         return "---"
                                     }
                                     else {

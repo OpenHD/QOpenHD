@@ -213,7 +213,7 @@ void Adsb::processReply(QNetworkReply *reply){
             qDebug()<<"JSON array is empty.";
         }
 
-        qDebug() << "MYARRAY COUNT=" << array.count();
+        //qDebug() << "MYARRAY COUNT=" << array.count();
 
         int current_row=0;
         int last_row=array.count();
@@ -286,7 +286,7 @@ void Adsb::processReply(QNetworkReply *reply){
         QJsonValue value = jsonObject.value("states");
         QJsonArray array = value.toArray();
 
-        qDebug() << "MYARRAY COUNT=" << array.count();
+        //qDebug() << "MYARRAY COUNT=" << array.count();
 
         int current_row=0;
         int last_row=array.count();
