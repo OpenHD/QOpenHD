@@ -234,7 +234,7 @@ void Adsb::processReply(QNetworkReply *reply){
             }
 
             //sdr defaults to imperial and something wacky for speed from dump1090
-/*
+
             contact=val.toObject().value("seen_pos").toInt();
             lat=val.toObject().value("lat").toDouble();
             lon=val.toObject().value("lon").toDouble();
@@ -245,7 +245,7 @@ void Adsb::processReply(QNetworkReply *reply){
             track=val.toObject().value("track").toDouble();
             vertical=val.toObject().value("vert_rate").toDouble();
             vertical=round(vertical*0.3048);
-*/
+
 
 
 
