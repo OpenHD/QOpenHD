@@ -117,4 +117,3 @@ void StatusMicroservice::onProcessMavlinkMessage(mavlink_message_t msg) {
         }
     }
 }
-
