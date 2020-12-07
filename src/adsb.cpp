@@ -129,6 +129,7 @@ void Adsb::requestData() {
         timer->start(1000);
 
         if (groundAddress.isEmpty()) {
+            LocalMessage::instance()->showMessage("No ADSB Ground Address", 4);
             return;
         }
 
@@ -170,6 +171,7 @@ void Adsb::processReply(QNetworkReply *reply){
     if (reply->error()) {
         qDebug() << "ADSB request error!";
         qDebug() << reply->errorString();
+        LocalMessage::instance()->showMessage("ADSB Reply Error", 4);
         return;
     }
 
@@ -180,6 +182,7 @@ void Adsb::processReply(QNetworkReply *reply){
 
     if (doc.isNull()) {
         qDebug() << "Parse failed";
+        LocalMessage::instance()->showMessage("ADSB Parse Error", 4);
     }
 
     if(doc.isNull()){
@@ -218,7 +221,7 @@ void Adsb::processReply(QNetworkReply *reply){
         emit removeAllMarkers();
 
         if (last_row==0){
-            //no markers to add.. either the api is not happy (too zoomed out) or no traffic to report
+            //no markers to add..
             return;
         }
 
@@ -258,7 +261,7 @@ void Adsb::processReply(QNetworkReply *reply){
                     */
                 evaluateTraffic(callsign, contact, lat, lon, alt, velocity, track, vertical, distance);
             }
-
+/*
             qDebug() << "callsign=" << callsign;
             qDebug() << "last_contact=" << contact;
             qDebug() << "lat=" << lat;
@@ -270,7 +273,7 @@ void Adsb::processReply(QNetworkReply *reply){
             qDebug() << "distance=" << distance;
 
             qDebug() << "----------------------------------------------------------";
-
+*/
 
 
 
