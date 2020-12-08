@@ -51,6 +51,7 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "altitudeladder.h"
 #include "headingladder.h"
 #include "horizonladder.h"
+#include "flightpathvector.h"
 
 #include "managesettings.h"
 
@@ -247,6 +248,8 @@ int main(int argc, char *argv[]) {
     qmlRegisterType<HeadingLadder>("OpenHD", 1, 0, "HeadingLadder");
 
     qmlRegisterType<HorizonLadder>("OpenHD", 1, 0, "HorizonLadder");
+
+    qmlRegisterType<FlightPathVector>("OpenHD", 1, 0, "FlightPathVector");
 
 #if defined(ENABLE_VIDEO_RENDER)
 #if defined(__android__)

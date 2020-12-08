@@ -152,10 +152,12 @@ Settings {
     property bool show_heading_ladder: true
 
     property bool show_fpv: true
-    property bool fpv_dynamic: true
+    property bool fpv_dynamic: true    
     property int fpv_sensitivity: 5
     property double fpv_opacity: 1
     property double fpv_size: 1
+    property bool fpv_invert_pitch: false
+    property bool fpv_invert_roll: false
 
     property bool show_speed: true
     property bool speed_use_groundspeed: true
