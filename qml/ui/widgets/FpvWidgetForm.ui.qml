@@ -41,6 +41,7 @@ BaseWidget {
                 onCheckedChanged: settings.fpv_dynamic = checked
             }
         }
+        /* might add this back in if ppl dont like actual only fpv
         Item {
             width: parent.width
             height: 32
@@ -71,6 +72,7 @@ BaseWidget {
                 }
             }
         }
+        */
         Item {
             width: parent.width
             height: 32
@@ -130,6 +132,51 @@ BaseWidget {
                 }
             }
         }
+        Item {
+            width: 230
+            height: 32
+            Text {
+                text: qsTr("Invert Pitch")
+                color: "white"
+                height: parent.height
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
+            Switch {
+                width: 32
+                height: parent.height
+                anchors.rightMargin: 6
+                anchors.right: parent.right
+                checked: settings.fpv_invert_pitch
+                onCheckedChanged: settings.fpv_invert_pitch = checked
+            }
+        }
+        /* not really needed
+        Item {
+            width: 230
+            height: 32
+            Text {
+                id: invertTitle
+                text: qsTr("Invert Roll")
+                color: "white"
+                height: parent.height
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
+            Switch {
+                width: 32
+                height: parent.height
+                anchors.rightMargin: 6
+                anchors.right: parent.right
+                checked: settings.fpv_invert_roll
+                onCheckedChanged: settings.fpv_invert_roll = checked
+            }
+        }
+        */
     }
 
 
@@ -137,61 +184,53 @@ BaseWidget {
     Item {
         id: widgetInner
         height: 40
-        anchors.horizontalCenter: parent.horizontalCenter
+
         width: 40
-        anchors.verticalCenter: parent.verticalCenter
+
+        anchors.centerIn: parent
+
         visible: settings.show_fpv
+        opacity: settings.fpv_opacity
+
 
         Item {
-            anchors.fill: parent
+            id: flightPathVector
+
             anchors.centerIn: parent
-            transform: Scale { origin.x: 20; origin.y: 20; xScale: settings.fpv_size ; yScale: settings.fpv_size}
 
-            //rotation: settings.fpv_dynamic ? (settings.horizon_invert_roll ? -OpenHD.roll : OpenHD.roll) : 0
+            visible: settings.show_fpv
 
-            //had to add another item to compensate for rotation above
-            Item {
-                id: fpvInner
-
-                height: 40
-                anchors.horizontalCenter: parent.horizontalCenter
-                width: 40
-                anchors.verticalCenter: parent.verticalCenter
-
-                transformOrigin: Item.Center
-                transform: Translate {
-
-                    x: settings.fpv_dynamic ? OpenHD.lateral_speed * settings.fpv_sensitivity : 0
-
-                    //to get pitch relative to ahi add pitch in
-                    y: settings.fpv_dynamic ? (settings.horizon_invert_pitch ? (-OpenHD.vz * settings.fpv_sensitivity) - OpenHD.pitch :
-                                                                               (OpenHD.vz * settings.fpv_sensitivity) + OpenHD.pitch) : 0
-                }
+            //transform: Scale { origin.x: 0; origin.y: 0; xScale: settings.fpv_size ; yScale: settings.fpv_size}
 
 
-                antialiasing: true
+            FlightPathVector {
+                id: fpvC
+                anchors.centerIn: parent
+                /* could turn the width and height into settings and thereby clip the fpv
+                  *even theough clipping is false it still clips
+                */
+                width: 1200
+                height: 800
+                clip: false
+                color: settings.color_shape
+                glow: settings.color_glow
+                fpvInvertPitch: settings.fpv_invert_pitch
+                fpvInvertRoll: settings.fpv_invert_roll
+/*
+                fpvSensitivity:
+                fpvActual:
+                fpvPipper:
+*/
+                pitch: settings.fpv_dynamic ? OpenHD.pitch : 0.0
+                roll: settings.fpv_dynamic ? OpenHD.roll : 0.0
 
-                Text {
-                    id: widgetGlyph
-                    width: 24
-                    height: 24
-                    color: settings.color_shape
-                    opacity: settings.fpv_opacity
-                    text: "\ufdd5"
-                    bottomPadding: 17
-                    leftPadding: 33
-                    horizontalAlignment: Text.AlignHCenter
-                    font.capitalization: Font.MixedCase
-                    renderType: Text.QtRendering
-                    textFormat: Text.AutoText
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    font.family: "Font Awesome 5 Free"
-                    verticalAlignment: Text.AlignVCenter
-                    font.pixelSize: 24
-                    style: Text.Outline
-                    styleColor: settings.color_glow
-                }
+                lateral: settings.fpv_dynamic ? OpenHD.vehicle_vx_angle : 0.0
+                vertical: settings.fpv_dynamic ? OpenHD.vehicle_vz_angle : 0.0
+
+                // referencing the horizon so that fpv moves accurately
+                horizonSpacing: settings.horizon_ladder_spacing
+                horizonWidth: settings.horizon_width
+                fpvSize: settings.fpv_size
             }
         }
     }

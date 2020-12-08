@@ -54,7 +54,7 @@ public:
     void updateFlightDistance();
     void updateAppMah();
     void updateAppMahKm();
-    void updateLateralSpeed();
+    void updateVehicleAngles();
     void updateWind();
 
     Q_PROPERTY(QString gstreamer_version READ get_gstreamer_version NOTIFY gstreamer_version_changed)
@@ -376,6 +376,12 @@ public:
     Q_PROPERTY(double air_iout MEMBER m_air_iout WRITE set_air_iout NOTIFY air_iout_changed)
     void set_air_iout(double air_iout);
 
+    Q_PROPERTY(double vehicle_vx_angle MEMBER m_vehicle_vx_angle WRITE set_vehicle_vx_angle NOTIFY vehicle_vx_angle_changed)
+    void set_vehicle_vx_angle(double vehicle_vx_angle);
+
+    Q_PROPERTY(double vehicle_vz_angle MEMBER m_vehicle_vz_angle WRITE set_vehicle_vz_angle NOTIFY vehicle_vz_angle_changed)
+    void set_vehicle_vz_angle(double vehicle_vz_angle);
+
 
     Q_PROPERTY(int rcChannel1 MEMBER mRCChannel1 WRITE setRCChannel1 NOTIFY rcChannel1Changed)
     void setRCChannel1(int rcChannel1);
@@ -543,6 +549,9 @@ signals:
 
     void air_vout_changed(double air_vout);
     void air_iout_changed(double air_iout);
+
+    void vehicle_vx_angle_changed(double vehicle_vx_angle);
+    void vehicle_vz_angle_changed(double vehicle_vz_angle);
 
     void rcChannel1Changed(int rcChanne1);
     void rcChannel2Changed(int rcChanne2);
@@ -715,6 +724,9 @@ public:
 
     double m_air_vout = -1;
     double m_air_iout = -1;
+
+    double m_vehicle_vx_angle = 0.0;
+    double m_vehicle_vz_angle = 0.0;
 
     int mRCChannel1 = 0;
     int mRCChannel2 = 0;

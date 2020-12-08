@@ -819,27 +819,37 @@ void OpenHD::set_air_iout(double air_iout) {
     emit air_iout_changed(m_air_iout);
 }
 
-void OpenHD::updateLateralSpeed(){
+void OpenHD::set_vehicle_vx_angle(double vehicle_vx_angle) {
+    m_vehicle_vx_angle = vehicle_vx_angle;
+    emit vehicle_vx_angle_changed(m_vehicle_vx_angle);
+}
+
+void OpenHD::set_vehicle_vz_angle(double vehicle_vz_angle) {
+    m_vehicle_vz_angle = vehicle_vz_angle;
+    emit vehicle_vz_angle_changed(m_vehicle_vz_angle);
+}
+
+void OpenHD::updateVehicleAngles(){
 
     auto resultant_magnitude = sqrt(m_vx * m_vx + m_vy * m_vy);
 
     //direction of motion vector in radians then converted to degree
-    auto resultant_angle = atan2(m_vy , m_vx)*(180/M_PI);
+    auto resultant_lateral_angle = atan2(m_vy , m_vx)*(180/M_PI);
 
     //converted from degrees to a compass heading
-    if (resultant_angle < 0.0){
-        resultant_angle += 360;
+    if (resultant_lateral_angle < 0.0){
+        resultant_lateral_angle += 360;
     }
 
     //Compare the motion heading to the vehicle heading
-    auto left = m_hdg - resultant_angle;
-    auto right = resultant_angle - m_hdg;
+    auto left = m_hdg - resultant_lateral_angle;
+    auto right = resultant_lateral_angle - m_hdg;
     if (left < 0) left += 360;
     if (right < 0) right += 360;
     auto heading_diff = left < right ? -left : right;
-
+    //qDebug() << "LATERAL ANGLE=" << heading_diff;
+    set_vehicle_vx_angle(heading_diff);
     double vehicle_vx=0.0;
-
 
     if (heading_diff > 0 && heading_diff <= 90){
         //console.log("we are moving forward and or right");
@@ -858,6 +868,15 @@ void OpenHD::updateLateralSpeed(){
         vehicle_vx=(heading_diff/90)*resultant_magnitude;
     }
     set_lateral_speed(vehicle_vx);
+
+    //--------- CALCULATE THE VERTICAL ANGLE OF MOTION
+
+    //direction of motion vector in radians then converted to degree
+    auto resultant_vertical_angle = atan2(resultant_magnitude , m_vz)*(180/M_PI)-90;
+    //qDebug() << "VERTICAL ANGLE1=" << resultant_vertical_angle;
+
+    set_vehicle_vz_angle(resultant_vertical_angle);
+
 }
 
 void OpenHD::updateWind(){
