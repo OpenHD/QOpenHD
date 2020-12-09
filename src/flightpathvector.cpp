@@ -94,9 +94,18 @@ void FlightPathVector::paint(QPainter* painter) {
     painter->translate(pos_x+(lateral*heading_ratio), pos_y+(pitch+vertical)*pitch_ratio);
     painter->rotate(roll);
 
-    painter->setFont(m_fontAwesome);
+    painter->setPen(m_glow);
+    QFont m_fontBig = QFont("Font Awesome 5 Free", 14* m_fpvSize*1.1, QFont::Bold, false);
     QFontMetrics fm(painter->font());
+    painter->setFont(m_fontBig);
     painter->drawText(0, 0, "\ufdd5");
+
+    painter->setPen(m_color);
+    painter->setFont(m_fontAwesome);
+
+    painter->drawText(0, 0, "\ufdd5");
+
+
 
     painter->restore();
 }
