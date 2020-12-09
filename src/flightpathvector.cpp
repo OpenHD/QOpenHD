@@ -21,6 +21,10 @@ void FlightPathVector::paint(QPainter* painter) {
 
     bool fpvInvertPitch = m_fpvInvertPitch;
 
+    auto vertical_max = m_verticalLimit;
+    auto vertical_min = m_verticalLimit*-1;
+    auto lateral_max = m_lateralLimit;
+    auto lateral_min = m_lateralLimit*-1;
 
     auto roll = m_roll;
     auto pitch = m_pitch;
@@ -56,6 +60,33 @@ void FlightPathVector::paint(QPainter* painter) {
 
     //qDebug() << "hdg ratio=" << heading_ratio;
 
+    painter->setPen(m_color);
+
+    //fpv size handled here rather than transform. Has to be awesome font for the glyph
+    QFont m_fontAwesome = QFont("Font Awesome 5 Free", 14* m_fpvSize , QFont::Bold, false);
+    setOpacity(1.0);
+
+    if (vertical>vertical_max ){
+        setOpacity(.5);
+        QFont m_fontAwesome = QFont("Font Awesome 5 Free", 14* m_fpvSize , QFont::ExtraLight, false);
+        vertical=vertical_max;
+    }
+    if(vertical<vertical_min ){
+        setOpacity(.5);
+        QFont m_fontAwesome = QFont("Font Awesome 5 Free", 14* m_fpvSize , QFont::ExtraLight, false);
+        vertical=vertical_min;
+    }
+    if(lateral>lateral_max ){
+        setOpacity(.5);
+        QFont m_fontAwesome = QFont("Font Awesome 5 Free", 14* m_fpvSize , QFont::ExtraLight, false);
+        lateral=lateral_max;
+    }
+    if(lateral<lateral_min ){
+        setOpacity(.5);
+        QFont m_fontAwesome = QFont("Font Awesome 5 Free", 14* m_fpvSize , QFont::ExtraLight, false);
+        lateral=lateral_min;
+    }
+
     painter->translate(pos_x,pos_y);
     painter->rotate(roll*-1);
     painter->translate(pos_x*-1,pos_y*-1);
@@ -63,19 +94,9 @@ void FlightPathVector::paint(QPainter* painter) {
     painter->translate(pos_x+(lateral*heading_ratio), pos_y+(pitch+vertical)*pitch_ratio);
     painter->rotate(roll);
 
-
-    painter->setPen(m_color);
-
-    //--------DRAW STUFF HERE
-
-
-    //fpv size handled here rather than transform. Has to be awesome font for the glyph
-    QFont m_fontAwesome = QFont("Font Awesome 5 Free", 14* m_fpvSize , QFont::Bold, false);
-
     painter->setFont(m_fontAwesome);
     QFontMetrics fm(painter->font());
     painter->drawText(0, 0, "\ufdd5");
-
 
     painter->restore();
 }
@@ -90,13 +111,11 @@ QColor FlightPathVector::glow() const {
     return m_glow;
 }
 
-
 void FlightPathVector::setColor(QColor color) {
     m_color = color;
     emit colorChanged(m_color);
     update();
 }
-
 
 void FlightPathVector::setGlow(QColor glow) {
     m_glow = glow;
@@ -104,13 +123,11 @@ void FlightPathVector::setGlow(QColor glow) {
     update();
 }
 
-
 void FlightPathVector::setFpvInvertPitch(bool fpvInvertPitch) {
     m_fpvInvertPitch = fpvInvertPitch;
     emit fpvInvertPitchChanged(m_fpvInvertPitch);
     update();
 }
-
 
 void FlightPathVector::setFpvInvertRoll(bool fpvInvertRoll) {
     m_fpvInvertRoll = fpvInvertRoll;
@@ -118,13 +135,11 @@ void FlightPathVector::setFpvInvertRoll(bool fpvInvertRoll) {
     update();
 }
 
-
 void FlightPathVector::setRoll(int roll) {
     m_roll = roll;
     emit rollChanged(m_roll);
     update();
 }
-
 
 void FlightPathVector::setPitch(int pitch) {
     m_pitch = pitch;
@@ -132,13 +147,11 @@ void FlightPathVector::setPitch(int pitch) {
     update();
 }
 
-
 void FlightPathVector::setLateral(int lateral) {
     m_lateral = lateral;
     emit lateralChanged(m_lateral);
     update();
 }
-
 
 void FlightPathVector::setVertical(int vertical) {
     m_vertical = vertical;
@@ -146,13 +159,11 @@ void FlightPathVector::setVertical(int vertical) {
     update();
 }
 
-
 void FlightPathVector::setHorizonSpacing(int horizonSpacing) {
     m_horizonSpacing = horizonSpacing;
     emit horizonSpacingChanged(m_horizonSpacing);
     update();
 }
-
 
 void FlightPathVector::setHorizonWidth(int horizonWidth) {
     m_horizonWidth = horizonWidth;
@@ -160,13 +171,23 @@ void FlightPathVector::setHorizonWidth(int horizonWidth) {
     update();
 }
 
-
 void FlightPathVector::setFpvSize(double fpvSize) {
     m_fpvSize = fpvSize;
     emit fpvSizeChanged(m_fpvSize);
     update();
 }
 
+void FlightPathVector::setVerticalLimit(double verticalLimit) {
+    m_verticalLimit = verticalLimit;
+    emit verticalLimitChanged(m_verticalLimit);
+    update();
+}
+
+void FlightPathVector::setLateralLimit(double lateralLimit) {
+    m_lateralLimit = lateralLimit;
+    emit lateralLimitChanged(m_lateralLimit);
+    update();
+}
 
 void FlightPathVector::setFontFamily(QString fontFamily) {
     m_fontFamily = fontFamily;
