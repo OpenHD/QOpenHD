@@ -21,6 +21,9 @@ class FlightPathVector : public QQuickPaintedItem {
     Q_PROPERTY(int horizonWidth MEMBER m_horizonWidth WRITE setHorizonWidth NOTIFY horizonWidthChanged)
     Q_PROPERTY(double fpvSize MEMBER m_fpvSize WRITE setFpvSize NOTIFY fpvSizeChanged)
 
+    Q_PROPERTY(double verticalLimit MEMBER m_verticalLimit WRITE setVerticalLimit NOTIFY verticalLimitChanged)
+    Q_PROPERTY(double lateralLimit MEMBER m_lateralLimit WRITE setLateralLimit NOTIFY lateralLimitChanged)
+
     Q_PROPERTY(QString fontFamily MEMBER m_fontFamily WRITE setFontFamily NOTIFY fontFamilyChanged)
 
 public:
@@ -47,6 +50,9 @@ public slots:
     void setHorizonWidth(int horizonWidth);
     void setFpvSize(double fpvSize);
 
+    void setVerticalLimit(double verticalLimit);
+    void setLateralLimit(double lateralLimit);
+
     void setFontFamily(QString fontFamily);
 
 signals:
@@ -65,6 +71,9 @@ signals:
     void horizonWidthChanged(int horizonWidth);
     void fpvSizeChanged(double fpvSize);
 
+    void verticalLimitChanged(double verticalLimit);
+    void lateralLimitChanged(double lateralLimit);
+
     void fontFamilyChanged(QString fontFamily);
 
 private:
@@ -82,6 +91,9 @@ private:
     int m_horizonSpacing;
     int m_horizonWidth;
     double m_fpvSize;
+
+    double m_verticalLimit;
+    double m_lateralLimit;
 
     QString m_fontFamily;
 

@@ -157,7 +157,10 @@ Settings {
     property double fpv_opacity: 1
     property double fpv_size: 1
     property bool fpv_invert_pitch: false
-    property bool fpv_invert_roll: false
+    property bool fpv_invert_roll: false //currently not used
+    property double fpv_vertical_limit: 60
+    property double fpv_lateral_limit: 60
+
 
     property bool show_speed: true
     property bool speed_use_groundspeed: true

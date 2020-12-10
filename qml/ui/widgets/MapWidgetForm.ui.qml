@@ -58,7 +58,7 @@ BaseWidget {
 
         if (map) {
             variantDropdown.model = map.supportedMapTypes;
-            settings.selected_map_variant = 0;
+            //settings.selected_map_variant = 0;
             variantDropdown.currentIndex = settings.selected_map_variant;
             map.activeMapType = map.supportedMapTypes[variantDropdown.currentIndex];
         }
