@@ -33,7 +33,9 @@ CONFIG(debug, debug|release) {
     !iOSBuild {
         !AndroidBuild {
             !RaspberryPiBuild {
-                CONFIG += ltcg
+                !JetsonBuild {
++                   CONFIG += ltcg
++               }
             }
         }
     }
