@@ -177,29 +177,8 @@ BaseWidget {
                     height: parent.height
                     anchors.rightMargin: 6
                     anchors.right: parent.right
-                    checked: settings.gnd_battery_show_single_cell
-                    onCheckedChanged: settings.gnd_battery_show_single_cell = checked
-                }
-            }
-            Item {
-                width: 230
-                height: 32
-                Text {
-                    text: qsTr("Use telemetry percentege")
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Switch {
-                    width: 32
-                    height: parent.height
-                    anchors.rightMargin: 6
-                    anchors.right: parent.right
-                    checked: settings.gnd_battery_show_fc_percent
-                    onCheckedChanged: settings.gnd_battery_show_fc_percent = checked
+                    checked: settings.ground_battery_show_single_cell
+                    onCheckedChanged: settings.ground_battery_show_single_cell = checked
                 }
             }
         }
