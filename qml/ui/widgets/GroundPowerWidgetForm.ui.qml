@@ -230,8 +230,8 @@ BaseWidget {
         }
         Text {
             id: battery_amp_text
-            visible: settings.gnd_battery_show_voltage_current
-            text: Number(OpenHD.ground_iout / 100.0).toLocaleString(
+            visible: settings.ground_battery_show_voltage_current
+            text: Number((OpenHD.ground_iout < 0 ? 0 : OpenHD.ground_iout) / 100.0).toLocaleString(
                       Qt.locale(), 'f', 1) + "A"
             color: settings.color_text
             anchors.bottom: battery_percent.top
@@ -248,11 +248,11 @@ BaseWidget {
         }
         Text {
             id: battery_volt_text
-            visible: settings.gnd_battery_show_voltage_current
-            text: settings.gnd_battery_show_single_cell ? Number(
-                                                              (OpenHD.ground_vbat) / settings.gnd_battery_cells).toLocaleString(
+            visible: settings.ground_battery_show_voltage_current
+            text: settings.ground_battery_show_single_cell ? Number(
+                                                              ((OpenHD.ground_vbat < 0 ? 0 : OpenHD.ground_vbat)) / settings.ground_battery_cells).toLocaleString(
                                                               Qt.locale(),
-                                                              'f', 1) + "V" : Number(OpenHD.ground_vbat).toLocaleString(
+                                                              'f', 1) + "V" : Number((OpenHD.ground_vbat < 0 ? 0 : OpenHD.ground_vbat)).toLocaleString(
                                                               Qt.locale(),
                                                               'f', 1) + "V"
             color: settings.color_text
