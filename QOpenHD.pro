@@ -298,6 +298,19 @@ LinuxBuild {
     message("LinuxBuild - config")
 }
 
+JetsonBuild {
+    message("JetsonBuild")
+    CONFIG += EnableMainVideo
+    CONFIG += EnablePiP
+    #CONFIG += EnableLink
+    #CONFIG += EnableCharts
+    CONFIG += EnableSpeech
+    CONFIG += EnableADSB
+    #CONFIG += EnableBlackbox
+
+    CONFIG += EnableGStreamer
+}
+
 RaspberryPiBuild {
     # we don't enable video here because hello_video handles it,
     # and we dont enable gamepads or joysticks because those are already
