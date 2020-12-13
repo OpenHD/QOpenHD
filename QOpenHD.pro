@@ -30,15 +30,6 @@ CONFIG(debug, debug|release) {
     DEFINES += QT_NO_DEBUG
     CONFIG += installer
     CONFIG += force_debug_info
-    !iOSBuild {
-        !AndroidBuild {
-            !RaspberryPiBuild {
-                !JetsonBuild {
-+                   CONFIG += ltcg
-+               }
-            }
-        }
-    }
     DESTDIR = $${OUT_PWD}/release
     DEFINES += QMLJSDEBUGGER
 }
