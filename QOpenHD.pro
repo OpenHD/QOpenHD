@@ -302,6 +302,11 @@ JetsonBuild {
     #CONFIG += EnableBlackbox
 
     CONFIG += EnableGStreamer
+
+    EnableGStreamer {
+        DEFINES += GST_GL_HAVE_PLATFORM_EGL=1
+        DEFINES += HAVE_QT_EGLFS=1
+    }
 }
 
 RaspberryPiBuild {
