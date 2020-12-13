@@ -295,6 +295,21 @@ air_battery_widget_x_offset={{ air_battery_widget_x_offset }}
 air_battery_widget_y_offset={{ air_battery_widget_y_offset }}
 
 
+#
+# Ground station battery widget
+#
+show_ground_battery={{ show_ground_battery }}
+ground_battery_opacity={{ ground_battery_opacity }}
+ground_battery_show_voltage_current={{ ground_battery_show_voltage_current }}
+ground_battery_show_single_cell={{ ground_battery_show_single_cell }}
+ground_battery_size={{ ground_battery_size }}
+ground_battery_widget_h_center={{ ground_battery_widget_h_center }}
+ground_battery_widget_v_center={{ ground_battery_widget_v_center }}
+ground_battery_widget_align={{ ground_battery_widget_align }}
+ground_battery_widget_x_offset={{ ground_battery_widget_x_offset }}
+ground_battery_widget_y_offset={{ ground_battery_widget_y_offset }}
+
+
 
 #
 # GPS widget
