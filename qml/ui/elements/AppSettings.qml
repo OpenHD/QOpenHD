@@ -67,13 +67,13 @@ Settings {
     property bool air_battery_show_fc_percent: false
     property double air_battery_size: 1
 
-    property bool show_gnd_battery: true
-    property double gnd_battery_opacity: 1
-    property bool gnd_battery_show_voltage_current: false
-    property bool gnd_battery_show_single_cell: false
-    property bool gnd_battery_show_fc_percent: false
-    property double gnd_battery_size: 1
-    property int gnd_battery_cells: 3
+    property bool show_ground_battery: true
+    property double ground_battery_opacity: 1
+    property bool ground_battery_show_voltage_current: false
+    property bool ground_battery_show_single_cell: false
+    property bool ground_battery_show_fc_percent: false
+    property double ground_battery_size: 1
+    property int ground_battery_cells: 3
 
     property bool show_gps: true
     property double gps_opacity: 1

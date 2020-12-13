@@ -11,9 +11,9 @@ BaseWidget {
     width: 96
     height: 55
 
-    visible: settings.show_gnd_battery
+    visible: settings.show_ground_battery
 
-    widgetIdentifier: "gnd_battery_widget"
+    widgetIdentifier: "ground_battery_widget"
 
     defaultAlignment: 2
     defaultXOffset: 296
@@ -93,11 +93,11 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Slider {
-                    id: gnd_battery_opacity_Slider
+                    id: ground_battery_opacity_Slider
                     orientation: Qt.Horizontal
                     height: parent.height
                     from: .1
-                    value: settings.gnd_battery_opacity
+                    value: settings.ground_battery_opacity
                     to: 1
                     stepSize: .1
                     anchors.rightMargin: 0
@@ -105,7 +105,7 @@ BaseWidget {
                     width: parent.width - 96
 
                     onValueChanged: {
-                        settings.gnd_battery_opacity = gnd_battery_opacity_Slider.value
+                        settings.ground_battery_opacity = ground_battery_opacity_Slider.value
                     }
                 }
             }
@@ -122,10 +122,10 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Slider {
-                    id: gnd_battery_size_Slider
+                    id: ground_battery_size_Slider
                     orientation: Qt.Horizontal
                     from: .5
-                    value: settings.gnd_battery_size
+                    value: settings.ground_battery_size
                     to: 3
                     stepSize: .1
                     height: parent.height
@@ -134,7 +134,7 @@ BaseWidget {
                     width: parent.width - 96
 
                     onValueChanged: {
-                        settings.gnd_battery_size = gnd_battery_size_Slider.value
+                        settings.ground_battery_size = ground_battery_size_Slider.value
                     }
                 }
             }
@@ -155,14 +155,14 @@ BaseWidget {
                     height: parent.height
                     anchors.rightMargin: 6
                     anchors.right: parent.right
-                    checked: settings.gnd_battery_show_voltage_current
-                    onCheckedChanged: settings.gnd_battery_show_voltage_current = checked
+                    checked: settings.ground_battery_show_voltage_current
+                    onCheckedChanged: settings.ground_battery_show_voltage_current = checked
                 }
             }
             Item {
                 width: 230
                 height: 32
-                visible: settings.gnd_battery_show_voltage_current
+                visible: settings.ground_battery_show_voltage_current
                 Text {
                     text: qsTr("Show single cell voltage")
                     color: "white"
@@ -209,8 +209,8 @@ BaseWidget {
         id: widgetInner
 
         anchors.fill: parent
-        opacity: settings.gnd_battery_opacity
-        scale: settings.gnd_battery_size
+        opacity: settings.ground_battery_opacity
+        scale: settings.ground_battery_size
 
         Text {
             id: gndTag
@@ -236,7 +236,7 @@ BaseWidget {
             y: 0
             color: settings.color_text
             text: qsTr("%L1%").arg(
-                       OpenHD.gnd_battery_percent)
+                       OpenHD.ground_battery_percent)
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: batteryGauge.right
             anchors.leftMargin: 0
@@ -296,13 +296,13 @@ BaseWidget {
             height: 48
             // @disable-check M223
             color: {
-                var percent = OpenHD.gnd_battery_percent;
+                var percent = OpenHD.ground_battery_percent;
 
                 // 20% warning, 15% critical
                 return percent < 20 ? (percent < 15 ? "#ff0000" : "#fbfd15") : settings.color_shape
             }
-            opacity: settings.gnd_battery_opacity
-            text: OpenHD.gnd_battery_gauge
+            opacity: settings.ground_battery_opacity
+            text: OpenHD.ground_battery_gauge
             anchors.left: parent.left
             anchors.leftMargin: 12
             fontSizeMode: Text.VerticalFit

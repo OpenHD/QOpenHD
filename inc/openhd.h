@@ -146,8 +146,8 @@ public:
     Q_PROPERTY(int battery_percent MEMBER m_battery_percent WRITE set_battery_percent NOTIFY battery_percent_changed)
     void set_battery_percent(int battery_percent);
 
-    Q_PROPERTY(int gnd_battery_percent MEMBER m_gnd_battery_percent WRITE set_gnd_battery_percent NOTIFY gnd_battery_percent_changed)
-    void set_gnd_battery_percent(int gnd_battery_percent);
+    Q_PROPERTY(int ground_battery_percent MEMBER m_ground_battery_percent WRITE set_ground_battery_percent NOTIFY ground_battery_percent_changed)
+    void set_ground_battery_percent(int ground_battery_percent);
 
     Q_PROPERTY(int fc_battery_percent MEMBER m_fc_battery_percent WRITE set_fc_battery_percent NOTIFY fc_battery_percent_changed)
     void set_fc_battery_percent(int fc_battery_percent);
@@ -161,8 +161,8 @@ public:
     Q_PROPERTY(QString battery_gauge MEMBER m_battery_gauge WRITE set_battery_gauge NOTIFY battery_gauge_changed)
     void set_battery_gauge(QString battery_gauge);
 
-    Q_PROPERTY(QString gnd_battery_gauge MEMBER m_gnd_battery_gauge WRITE set_gnd_battery_gauge NOTIFY gnd_battery_gauge_changed)
-    void set_gnd_battery_gauge(QString gnd_battery_gauge);
+    Q_PROPERTY(QString ground_battery_gauge MEMBER m_ground_battery_gauge WRITE set_ground_battery_gauge NOTIFY ground_battery_gauge_changed)
+    void set_ground_battery_gauge(QString ground_battery_gauge);
 
     Q_PROPERTY(QString fc_battery_gauge MEMBER m_fc_battery_gauge WRITE set_fc_battery_gauge NOTIFY fc_battery_gauge_changed)
     void set_fc_battery_gauge(QString fc_battery_gauge);
@@ -452,12 +452,12 @@ signals:
     void home_course_changed(int home_course);
     void home_heading_changed(int home_heading);
     void battery_percent_changed(int battery_percent);
-    void gnd_battery_percent_changed(int gnd_battery_percent);
+    void ground_battery_percent_changed(int ground_battery_percent);
     void fc_battery_percent_changed(int fc_battery_percent);
     void battery_voltage_changed(double battery_voltage);
     void battery_current_changed(double battery_current);
     void battery_gauge_changed(QString battery_gauge);
-    void gnd_battery_gauge_changed(QString gnd_battery_gauge);
+    void ground_battery_gauge_changed(QString ground_battery_gauge);
     void fc_battery_gauge_changed(QString fc_battery_gauge);
     void satellites_visible_changed(int satellites_visible);
     void gps_hdop_changed(double gps_hdop);
@@ -611,12 +611,12 @@ public:
     int m_home_course = 0; //this is the relative course from nose
 
     int m_battery_percent = 0;
-    int m_gnd_battery_percent = 0;
+    int m_ground_battery_percent = 0;
     int m_fc_battery_percent = 0;
     double m_battery_current = 0.0;
     double m_battery_voltage = 0.0;
     QString m_battery_gauge = "\uf091";
-    QString m_gnd_battery_gauge = "\uf091";
+    QString m_ground_battery_gauge = "\uf091";
     QString m_fc_battery_gauge = "\uf091";
 
     int m_satellites_visible = 0;

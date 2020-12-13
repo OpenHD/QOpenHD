@@ -279,8 +279,8 @@ Item {
                             stepSize: 1
                             anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
 
-                            value: settings.gnd_battery_cells
-                            onValueChanged: settings.gnd_battery_cells = value
+                            value: settings.ground_battery_cells
+                            onValueChanged: settings.ground_battery_cells = value
                         }
                     }
 
@@ -1063,8 +1063,8 @@ Item {
 
                             anchors.right: parent.right
                             anchors.verticalCenter: parent.verticalCenter
-                            checked: settings.show_gnd_battery
-                            onCheckedChanged: settings.show_gnd_battery = checked
+                            checked: settings.show_ground_battery
+                            onCheckedChanged: settings.show_ground_battery = checked
                         }
                     }
 

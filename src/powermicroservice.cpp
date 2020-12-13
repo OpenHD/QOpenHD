@@ -107,12 +107,12 @@ void PowerMicroservice::onProcessMavlinkMessage(mavlink_message_t msg) {
                     OpenHD::instance()->set_ground_iout(power.iout);
 
                     QSettings settings;
-                    auto gnd_battery_cells = settings.value("gnd_battery_cells", QVariant(3)).toInt();
+                    auto ground_battery_cells = settings.value("ground_battery_cells", QVariant(3)).toInt();
 
-                    int gnd_battery_percent = m_util.lipo_battery_voltage_to_percent(gnd_battery_cells, power.vbat);
-                    OpenHD::instance()->set_gnd_battery_percent(gnd_battery_percent);
-                    QString gnd_battery_gauge_glyph = m_util.battery_gauge_glyph_from_percentage(gnd_battery_percent);
-                    OpenHD::instance()->set_gnd_battery_gauge(gnd_battery_gauge_glyph);
+                    int ground_battery_percent = m_util.lipo_battery_voltage_to_percent(ground_battery_cells, power.vbat);
+                    OpenHD::instance()->set_ground_battery_percent(ground_battery_percent);
+                    QString ground_battery_gauge_glyph = m_util.battery_gauge_glyph_from_percentage(ground_battery_percent);
+                    OpenHD::instance()->set_ground_battery_gauge(ground_battery_gauge_glyph);
 
                     break;
                 }
