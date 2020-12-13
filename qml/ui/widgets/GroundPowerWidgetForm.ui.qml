@@ -16,7 +16,7 @@ BaseWidget {
     widgetIdentifier: "ground_battery_widget"
 
     defaultAlignment: 2
-    defaultXOffset: 296
+    defaultXOffset: 188
     defaultYOffset: 0
     defaultHCenter: false
     defaultVCenter: false
