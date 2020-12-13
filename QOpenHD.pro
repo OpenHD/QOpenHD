@@ -200,6 +200,9 @@ SOURCES += \
 
 iOSBuild {
     QMAKE_INFO_PLIST    = ios/Info.plist
+    QMAKE_TARGET_BUNDLE_PREFIX = com.infincia
+    QMAKE_BUNDLE = qopenhd
+    QMAKE_DEVELOPMENT_TEAM = G738Z89QKM
     ICON                = $${BASEDIR}/icons/macos.icns
     DISTFILES        += ios/Info.plist \
                         icons/LaunchScreen.png \
