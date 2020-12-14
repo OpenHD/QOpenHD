@@ -37,52 +37,6 @@ BaseWidget {
                 width: 230
                 height: 32
                 Text {
-                    text: qsTr("Voltage:")
-                    color: "white"
-                    font.bold: true
-                    height: parent.height
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Text {
-                    text: Number(OpenHD.battery_voltage).toLocaleString(
-                              Qt.locale(), 'f', 1) + "V"
-                    color: "white"
-                    font.bold: true
-                    height: parent.height
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.right: parent.right
-                    verticalAlignment: Text.AlignVCenter
-                }
-            }
-            Item {
-                width: 230
-                height: 32
-                Text {
-                    text: qsTr("Current:")
-                    color: "white"
-                    font.bold: true
-                    height: parent.height
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Text {
-                    text: Number(OpenHD.battery_current / 100.0).toLocaleString(
-                              Qt.locale(), 'f', 1) + "A"
-                    color: "white"
-                    font.bold: true
-                    height: parent.height
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.right: parent.right
-                    verticalAlignment: Text.AlignVCenter
-                }
-            }
-            Item {
-                width: 230
-                height: 32
-                Text {
                     id: opacityTitle
                     text: qsTr("Transparency")
                     color: "white"
