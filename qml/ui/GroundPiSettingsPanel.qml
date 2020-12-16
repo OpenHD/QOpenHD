@@ -90,11 +90,6 @@ GroundPiSettingsPanelForm {
 
     ListModel {
         dynamicRoles: true
-        id: vehicleSettingsModel
-    }
-
-    ListModel {
-        dynamicRoles: true
         id: radioSettingsModel
     }
 
@@ -154,8 +149,6 @@ GroundPiSettingsPanelForm {
 
             if (settingsMap.generalSettingsMap[setting] !== undefined) {
                 model = generalSettingsModel;
-            } else if (settingsMap.vehicleSettingsMap[setting] !== undefined) {
-                model = vehicleSettingsModel;
             } else if (settingsMap.radioSettingsMap[setting] !== undefined) {
                 model = radioSettingsModel;
             } else if (settingsMap.videoSettingsMap[setting] !== undefined) {
@@ -198,7 +191,6 @@ GroundPiSettingsPanelForm {
              *
              */
             generalSettingsModel.clear();
-            vehicleSettingsModel.clear();
             radioSettingsModel.clear();
             videoSettingsModel.clear();
             rcSettingsModel.clear();
@@ -383,7 +375,6 @@ GroundPiSettingsPanelForm {
             }
         }
         _process(generalSettingsModel,   settingsMap.generalSettingsMap);
-        _process(vehicleSettingsModel,     settingsMap.vehicleSettingsMap);
         _process(radioSettingsModel,     settingsMap.radioSettingsMap);
         _process(videoSettingsModel,     settingsMap.videoSettingsMap);
         _process(rcSettingsModel,        settingsMap.rcSettingsMap);
