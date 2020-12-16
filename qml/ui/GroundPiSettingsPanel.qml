@@ -298,8 +298,6 @@ GroundPiSettingsPanelForm {
                 var initialValue = allSettings[setting];
                 if (settingsMap.generalSettingsMap[setting] !== undefined) {
                     _process(setting, initialValue, generalSettingsModel, settingsMap.generalSettingsMap, disabled);
-                } else if (settingsMap.vehicleSettingsMap[setting] !== undefined) {
-                    _process(setting, initialValue, vehicleSettingsModel, settingsMap.vehicleSettingsMap, disabled);
                 } else if (settingsMap.radioSettingsMap[setting] !== undefined) {
                     _process(setting, initialValue, radioSettingsModel, settingsMap.radioSettingsMap, disabled);
                 } else if (settingsMap.videoSettingsMap[setting] !== undefined) {
