@@ -9,75 +9,130 @@ import OpenHD 1.0
 BaseWidget {
     id: groundPowerWidget
     width: 96
-    height: 48
+    height: 55
 
-    //visible: settings.show_ground_power
+    visible: settings.show_ground_battery
 
-    widgetIdentifier: "ground_power_widget"
+    widgetIdentifier: "ground_battery_widget"
 
-    defaultAlignment: 3
-    defaultXOffset: 96
+    defaultAlignment: 2
+    defaultXOffset: 188
     defaultYOffset: 0
     defaultHCenter: false
     defaultVCenter: false
 
     hasWidgetDetail: true
-    widgetDetailComponent: Column {
-        Item {
-            width: parent.width
-            height: 32
-            visible: (OpenHDPower.vin !== -1);
-            Text { text: qsTr("Voltage in:");  color: "white"; height: parent.height; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.left: parent.left; verticalAlignment: Text.AlignVCenter }
-            Text { text: OpenHDPower.vin; color: "white"; height: parent.height; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.right: parent.right; verticalAlignment: Text.AlignVCenter }
-        }
-        Item {
-            width: parent.width
-            height: 32
-            visible: (OpenHDPower.vout !== -1);
-            Text { text: qsTr("Voltage out:");  color: "white"; height: parent.height; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.left: parent.left; verticalAlignment: Text.AlignVCenter }
-            Text { text: OpenHDPower.vout; color: "white"; height: parent.height; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.right: parent.right; verticalAlignment: Text.AlignVCenter }
-        }
-        Item {
-            width: parent.width
-            height: 32
-            visible: (OpenHDPower.iout !== -1);
-            Text { text: qsTr("Current out:");  color: "white"; height: parent.height; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.left: parent.left; verticalAlignment: Text.AlignVCenter }
-            Text { text: OpenHDPower.iout; color: "white"; height: parent.height; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.right: parent.right; verticalAlignment: Text.AlignVCenter }
-        }
-        Item {
-            width: parent.width
-            height: 32
-            visible: (OpenHDPower.vbat !== -1);
-            Text { text: qsTr("Voltage bat:");  color: "white"; height: parent.height; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.left: parent.left; verticalAlignment: Text.AlignVCenter }
-            Text { text: OpenHDPower.vbat; color: "white"; height: parent.height; font.bold: true; font.pixelSize: detailPanelFontPixels; anchors.right: parent.right; verticalAlignment: Text.AlignVCenter }
-        }
-        Item {
-            width: parent.width
-            height: 32
-            Text {
-                id: opacityTitle
-                text: qsTr("Transparency")
-                color: "white"
-                height: parent.height
-                font.bold: true
-                font.pixelSize: detailPanelFontPixels
-                anchors.left: parent.left
-                verticalAlignment: Text.AlignVCenter
-            }
-            Slider {
-                id: ground_power_opacity_Slider
-                orientation: Qt.Horizontal
-                from: .1
-                value: settings.ground_power_opacity
-                to: 1
-                stepSize: .1
-                height: parent.height
-                anchors.rightMargin: 0
-                anchors.right: parent.right
-                width: parent.width - 96
+    widgetDetailComponent: ScrollView {
 
-                onValueChanged: {
-                    settings.ground_power_opacity = ground_power_opacity_Slider.value
+        contentHeight: gndBatterySettingsColumn.height
+        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+        clip: true
+
+        ColumnLayout {
+            id: gndBatterySettingsColumn
+            spacing: 0
+            clip: true
+
+            Item {
+                width: 230
+                height: 32
+                Text {
+                    id: opacityTitle
+                    text: qsTr("Transparency")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Slider {
+                    id: ground_battery_opacity_Slider
+                    orientation: Qt.Horizontal
+                    height: parent.height
+                    from: .1
+                    value: settings.ground_battery_opacity
+                    to: 1
+                    stepSize: .1
+                    anchors.rightMargin: 0
+                    anchors.right: parent.right
+                    width: parent.width - 96
+
+                    onValueChanged: {
+                        settings.ground_battery_opacity = ground_battery_opacity_Slider.value
+                    }
+                }
+            }
+            Item {
+                width: 230
+                height: 32
+                Text {
+                    text: qsTr("Size")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Slider {
+                    id: ground_battery_size_Slider
+                    orientation: Qt.Horizontal
+                    from: .5
+                    value: settings.ground_battery_size
+                    to: 3
+                    stepSize: .1
+                    height: parent.height
+                    anchors.rightMargin: 0
+                    anchors.right: parent.right
+                    width: parent.width - 96
+
+                    onValueChanged: {
+                        settings.ground_battery_size = ground_battery_size_Slider.value
+                    }
+                }
+            }
+            Item {
+                width: 230
+                height: 32
+                Text {
+                    text: qsTr("Show volts and amps")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 6
+                    anchors.right: parent.right
+                    checked: settings.ground_battery_show_voltage_current
+                    onCheckedChanged: settings.ground_battery_show_voltage_current = checked
+                }
+            }
+            Item {
+                width: 230
+                height: 32
+                visible: settings.ground_battery_show_voltage_current
+                Text {
+                    text: qsTr("Show single cell voltage")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 6
+                    anchors.right: parent.right
+                    checked: settings.ground_battery_show_single_cell
+                    onCheckedChanged: settings.ground_battery_show_single_cell = checked
                 }
             }
         }
@@ -87,14 +142,34 @@ BaseWidget {
         id: widgetInner
 
         anchors.fill: parent
+        opacity: settings.ground_battery_opacity
+        scale: settings.ground_battery_size
+
+        Text {
+            id: gndTag
+            y: 0
+            rotation: -90
+            color: settings.color_text
+            text: "gnd"
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.left: parent.left
+            anchors.leftMargin: -2
+            clip: true
+            verticalAlignment: Text.AlignVCenter
+            elide: Text.ElideRight
+            horizontalAlignment: Text.AlignLeft
+            font.pixelSize: 14
+            font.family: settings.font_text
+            style: Text.Outline
+            styleColor: settings.color_glow
+        }
+
         Text {
             id: battery_percent
             y: 0
-            width: 48
-            height: 24
             color: settings.color_text
-            opacity: settings.ground_power_opacity
-            text: OpenHDPower.battery_percent
+            text: qsTr("%L1%").arg(
+                       OpenHD.ground_battery_percent)
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: batteryGauge.right
             anchors.leftMargin: 0
@@ -103,8 +178,50 @@ BaseWidget {
             elide: Text.ElideRight
             horizontalAlignment: Text.AlignLeft
             font.pixelSize: 14
+            font.family: settings.font_text
+            style: Text.Outline
+            styleColor: settings.color_glow
         }
-
+        Text {
+            id: battery_amp_text
+            visible: settings.ground_battery_show_voltage_current
+            text: Number((OpenHD.ground_iout < 0 ? 0 : OpenHD.ground_iout) / 1000.0).toLocaleString(
+                      Qt.locale(), 'f', 1) + "A"
+            color: settings.color_text
+            anchors.bottom: battery_percent.top
+            anchors.left: batteryGauge.right
+            anchors.leftMargin: 0
+            clip: true
+            verticalAlignment: Text.AlignVCenter
+            elide: Text.ElideRight
+            horizontalAlignment: Text.AlignLeft
+            font.pixelSize: 14
+            font.family: settings.font_text
+            style: Text.Outline
+            styleColor: settings.color_glow
+        }
+        Text {
+            id: battery_volt_text
+            visible: settings.ground_battery_show_voltage_current
+            text: settings.ground_battery_show_single_cell ? Number(
+                                                              ((OpenHD.ground_vbat < 0 ? 0 : OpenHD.ground_vbat / 1000.0)) / settings.ground_battery_cells).toLocaleString(
+                                                              Qt.locale(),
+                                                              'f', 1) + "V" : Number((OpenHD.ground_vbat < 0 ? 0 : OpenHD.ground_vbat / 1000.0)).toLocaleString(
+                                                              Qt.locale(),
+                                                              'f', 1) + "V"
+            color: settings.color_text
+            anchors.top: battery_percent.bottom
+            anchors.left: batteryGauge.right
+            anchors.leftMargin: 0
+            clip: true
+            verticalAlignment: Text.AlignVCenter
+            elide: Text.ElideRight
+            horizontalAlignment: Text.AlignLeft
+            font.pixelSize: 14
+            font.family: settings.font_text
+            style: Text.Outline
+            styleColor: settings.color_glow
+        }
         Text {
             id: batteryGauge
             y: 8
@@ -112,13 +229,13 @@ BaseWidget {
             height: 48
             // @disable-check M223
             color: {
-                // todo: expose battery_voltage_to_percent to QML instead of using cell levels here
-                var cellVoltage = OpenHDPower.vbat;
+                var percent = OpenHD.ground_battery_percent;
+
                 // 20% warning, 15% critical
-                return cellVoltage < 3.15 ? (cellVoltage < 3.00 ? "#ff0000" : "#fbfd15") : "#ffffff"
+                return percent < 20 ? (percent < 15 ? "#ff0000" : "#fbfd15") : settings.color_shape
             }
-            opacity: settings.ground_power_opacity
-            text: OpenHDPower.battery_gauge
+            opacity: settings.ground_battery_opacity
+            text: OpenHD.ground_battery_gauge
             anchors.left: parent.left
             anchors.leftMargin: 12
             fontSizeMode: Text.VerticalFit
@@ -129,6 +246,8 @@ BaseWidget {
             verticalAlignment: Text.AlignVCenter
             horizontalAlignment: Text.AlignHCenter
             font.pixelSize: 36
+            style: Text.Outline
+            styleColor: settings.color_glow
         }
     }
 }

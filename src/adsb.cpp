@@ -254,7 +254,7 @@ void Adsb::processReply(QNetworkReply *reply){
             emit addMarker(current_row, last_row, Traffic(callsign,contact,lat,lon,alt,velocity,track,vertical,distance));
             current_row=current_row+1;
 
-            if(lat!=0 or lon!=0){
+            if (lat!=0 || lon!=0) {
                 /*dont evaluate marker if position msg is missing
                     above we are adding markers with 0 lat lon cuz we dont know the last row count at loop start
                     those "0 position" aircraft are being eliminated in mapcomponent

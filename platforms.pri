@@ -4,10 +4,17 @@ linux {
         CONFIG += LinuxBuild
         DEFINES += __desktoplinux__
         DEFINES += __STDC_LIMIT_MACROS
+        CONFIG += ltcg
         linux-clang {
             message("Linux clang")
             QMAKE_CXXFLAGS += -Qunused-arguments -fcolor-diagnostics
         }
+    } else : linux-jetson-nano-g++ {
+        message("JetsonBuild")
+        CONFIG += JetsonBuild
+        DEFINES += __STDC_LIMIT_MACROS __jetson__
+        LIBS += -lrt
+        message($$LIBS)
     } else : linux-rpi-g++ | linux-rpi-vc4-g++ | linux-rasp-pi-g++ {
         message("RaspberryPiBuild")
         CONFIG += RaspberryPiBuild
@@ -38,6 +45,7 @@ win32 {
     CONFIG += WindowsBuild
     DEFINES += __windows__
     DEFINES += __STDC_LIMIT_MACROS
+    CONFIG += ltcg
 }
 
 macx {
@@ -50,6 +58,7 @@ macx {
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.12
     QMAKE_CXXFLAGS += -fvisibility=hidden
     QMAKE_CXXFLAGS += -Wno-address-of-packed-member
+    CONFIG += ltcg
 }
 
 ios {

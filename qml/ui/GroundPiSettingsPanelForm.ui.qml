@@ -39,13 +39,6 @@ Item {
             font.pixelSize: 13
         }
         TabButton {
-            y: 0
-            text: qsTr("Vehicle")
-            width: implicitWidth
-            height: 48
-            font.pixelSize: 13
-        }
-        TabButton {
             text: qsTr("Radio")
             width: implicitWidth
             height: 48
@@ -108,13 +101,6 @@ Item {
             Layout.fillHeight: true
             Layout.fillWidth: true
             model: generalSettingsModel
-        }
-
-        GroundPiSettingsListView {
-            id: vehicleTab
-            Layout.fillHeight: true
-            Layout.fillWidth: true
-            model: vehicleSettingsModel
         }
 
         GroundPiSettingsListView {

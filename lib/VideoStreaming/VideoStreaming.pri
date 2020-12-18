@@ -30,6 +30,12 @@ LinuxBuild {
         PKGCONFIG   += gstreamer-1.0  gstreamer-video-1.0 gstreamer-gl-1.0
         CONFIG      += VideoEnabled
     }
+} else: JetsonBuild {
+    CONFIG += link_pkgconfig
+    packagesExist(gstreamer-1.0) {
+        PKGCONFIG   += gstreamer-1.0  gstreamer-video-1.0 gstreamer-gl-1.0
+        CONFIG      += VideoEnabled
+    }
 } else: RaspberryPiBuild {
     CONFIG += link_pkgconfig
     packagesExist(gstreamer-1.0) {
@@ -165,7 +171,7 @@ VideoEnabled {
     }
 
 } else {
-    LinuxBuild|MacBuild|iOSBuild|WindowsBuild|AndroidBuild|RaspberryPiBuild {
+    LinuxBuild|MacBuild|iOSBuild|WindowsBuild|AndroidBuild|RaspberryPiBuild|JetsonBuild {
         message("Skipping support for video streaming (GStreamer libraries not installed)")
         message("Installation instructions here: https://github.com/mavlink/qgroundcontrol/blob/master/src/VideoStreaming/README.md")
     } else {

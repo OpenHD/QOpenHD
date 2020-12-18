@@ -30,13 +30,6 @@ CONFIG(debug, debug|release) {
     DEFINES += QT_NO_DEBUG
     CONFIG += installer
     CONFIG += force_debug_info
-    !iOSBuild {
-        !AndroidBuild {
-            !RaspberryPiBuild {
-                CONFIG += ltcg
-            }
-        }
-    }
     DESTDIR = $${OUT_PWD}/release
     DEFINES += QMLJSDEBUGGER
 }
@@ -68,6 +61,7 @@ SOURCES += \
     src/FPS.cpp \
     src/altitudeladder.cpp \
     src/blackboxmodel.cpp \
+    src/flightpathvector.cpp \
     src/frskytelemetry.cpp \
     src/gpiomicroservice.cpp \
     src/headingladder.cpp \
@@ -102,6 +96,7 @@ HEADERS += \
     inc/altitudeladder.h \
     inc/blackboxmodel.h \
     inc/gpiomicroservice.h \
+    inc/flightpathvector.h \
     inc/headingladder.h \
     inc/horizonladder.h \
     inc/managesettings.h \
@@ -200,6 +195,9 @@ SOURCES += \
 
 iOSBuild {
     QMAKE_INFO_PLIST    = ios/Info.plist
+    QMAKE_TARGET_BUNDLE_PREFIX = com.infincia
+    QMAKE_BUNDLE = qopenhd
+    QMAKE_DEVELOPMENT_TEAM = G738Z89QKM
     ICON                = $${BASEDIR}/icons/macos.icns
     DISTFILES        += ios/Info.plist \
                         icons/LaunchScreen.png \
@@ -291,6 +289,24 @@ LinuxBuild {
     #CONFIG += EnableBlackbox
 
     message("LinuxBuild - config")
+}
+
+JetsonBuild {
+    message("JetsonBuild")
+    CONFIG += EnableMainVideo
+    CONFIG += EnablePiP
+    #CONFIG += EnableLink
+    #CONFIG += EnableCharts
+    CONFIG += EnableSpeech
+    CONFIG += EnableADSB
+    #CONFIG += EnableBlackbox
+
+    CONFIG += EnableGStreamer
+
+    EnableGStreamer {
+        DEFINES += GST_GL_HAVE_PLATFORM_EGL=1
+        DEFINES += HAVE_QT_EGLFS=1
+    }
 }
 
 RaspberryPiBuild {
@@ -533,7 +549,7 @@ installer {
         OTHER_FILES += tools/qopenhd_installer.nsi
         QMAKE_POST_LINK +=$${PWD}/win_deploy_sdl.cmd \"$$DESTDIR_WIN\" \"$$PWD\QJoysticks\lib\SDL\bin\windows\msvc\x86\" $$escape_expand(\\n)
 
-        QMAKE_POST_LINK += $$escape_expand(\\n) c:\Qt\5.15.0\msvc2019\bin\windeployqt.exe --qmldir $${PWD}/qml \"$${DESTDIR_WIN}\\QOpenHD.exe\"
+        QMAKE_POST_LINK += $$escape_expand(\\n) c:\Qt\5.15.2\msvc2019\bin\windeployqt.exe --qmldir $${PWD}/qml \"$${DESTDIR_WIN}\\QOpenHD.exe\"
 
         QMAKE_POST_LINK += $$escape_expand(\\n) cd $$BASEDIR_WIN && $$quote("\"C:\\Program Files \(x86\)\\NSIS\\makensis.exe\"" /DINSTALLER_ICON="\"$${PWD}\icons\openhd.ico\"" /DHEADER_BITMAP="\"$${PWD}\icons\LaunchScreen.png\"" /DAPPNAME="\"QOpenHD\"" /DEXENAME="\"$${TARGET}\"" /DORGNAME="\"Open.HD\"" /DDESTDIR=$${DESTDIR} /NOCD "\"/XOutFile $${DESTDIR_WIN}\\QOpenHD-$${QOPENHD_VERSION}.exe\"" "$$PWD/tools/qopenhd_installer.nsi")
 
