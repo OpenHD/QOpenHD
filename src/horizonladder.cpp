@@ -15,7 +15,8 @@ HorizonLadder::HorizonLadder(QQuickItem *parent): QQuickPaintedItem(parent) {
 void HorizonLadder::paint(QPainter* painter) {
     painter->save();
 
-    //QFont font("sans-serif", 10, QFont::Bold, false);
+    painter->setRenderHint(QPainter::Antialiasing);
+    painter->setRenderHint(QPainter::TextAntialiasing);
 
     painter->setFont(m_font);
 
@@ -57,6 +58,7 @@ void HorizonLadder::paint(QPainter* painter) {
     int i;
     int k;
     int y;
+    int n;
 
     painter->setPen(m_color);
 
@@ -70,13 +72,21 @@ void HorizonLadder::paint(QPainter* painter) {
         if (k % 10 == 0 && k!= 0) {
             if (horizonShowLadder == true) {
 
+            //fix pitch line wrap around at extreme nose up/down
+            n=k;
+            if (n>90){
+                n=(90-k)+90;
+            }
+            if (n<-90){
+                n=((k+90)+90)*-1;
+            }
 
                 //left numbers
                 painter->setPen(m_color);
-                painter->drawText(px-30, y+6, QString::number(k));
+                painter->drawText(px-30, y+6, QString::number(n));
 
                 //right numbers
-                painter->drawText((px + width_ladder)+8, y+6, QString::number(k));
+                painter->drawText((px + width_ladder)+8, y+6, QString::number(n));
                 painter->setPen(m_color);
             }
         }
