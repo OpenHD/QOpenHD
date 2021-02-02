@@ -348,6 +348,7 @@ void Adsb::processReply(QNetworkReply *reply){
 
     }
     //emit doneAddingMarkers();
+    reply->deleteLater();
 }
 
 void Adsb::evaluateTraffic(QString traffic_callsign,
