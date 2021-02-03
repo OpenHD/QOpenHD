@@ -50,6 +50,8 @@ MapWidgetForm {
                 if (previousCenter) {
                     map.center = previousCenter;
                 }
+            } else {
+                console.log(component.errorString())
             }
         }
     }
