@@ -115,7 +115,7 @@ BaseWidget {
             width: parent.width
             height: 32
             Text {
-                text: qsTr("Source OpenSky / SDR")
+                text: qsTr("Source SDR")
                 color: "white"
                 height: parent.height
                 font.bold: true
@@ -131,6 +131,30 @@ BaseWidget {
                 checked: settings.adsb_api_sdr
                 onCheckedChanged: {
                     settings.adsb_api_sdr = checked;
+                    markerModel.removeAllMarkers();
+                }
+            }
+        }
+        Item {
+            width: parent.width
+            height: 32
+            Text {
+                text: qsTr("Source OpenSky")
+                color: "white"
+                height: parent.height
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
+            Switch {
+                width: 32
+                height: parent.height
+                anchors.rightMargin: 6
+                anchors.right: parent.right
+                checked: settings.adsb_api_openskynetwork
+                onCheckedChanged: {
+                    settings.adsb_api_openskynetwork = checked;
                     markerModel.removeAllMarkers();
                 }
             }
