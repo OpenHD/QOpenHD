@@ -236,8 +236,6 @@ Map {
                         rotation: {
                             if (object.heading === undefined) {
                                 console.log("qml: model heading undefined")
-                                //console.log("UNDEFINED MODEL ERROR count=", MarkerModel.rowCount() );
-                                //marker.visible=false;
                                 return 0;
                             }
 
@@ -343,7 +341,6 @@ Map {
                                 text: {
                                     if (object.callsign === undefined) {
                                         console.log("qml: model callsign undefined")
-                                        //console.log("UNDEFINED Callsign count=", MarkerModel.rowCount());
                                         return "---"
                                     }
                                     else {

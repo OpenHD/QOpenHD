@@ -70,7 +70,6 @@ SOURCES += \
     src/ltmtelemetry.cpp \
     src/main.cpp \
     src/managesettings.cpp \
-    src/markermodel.cpp \
     src/mavlinkbase.cpp \
     src/mavlinktelemetry.cpp \
     src/migration.cpp \
@@ -101,7 +100,6 @@ HEADERS += \
     inc/headingladder.h \
     inc/horizonladder.h \
     inc/managesettings.h \
-    inc/markermodel.h \
     inc/mavlinkbase.h \
     inc/powermicroservice.h \
     inc/sharedqueue.h \
@@ -427,12 +425,10 @@ EnableADSB {
     DEFINES += ENABLE_ADSB
 
     SOURCES += \
-    src/adsb.cpp \
     src/ADSBVehicleManager.cpp \
     src/ADSBVehicle.cpp
     
     HEADERS += \
-    inc/adsb.h \
     inc/ADSBVehicleManager.h \
     inc/ADSBVehicle.h
 

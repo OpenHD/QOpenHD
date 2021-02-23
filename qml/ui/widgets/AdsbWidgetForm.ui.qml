@@ -5,8 +5,6 @@ import QtGraphicalEffects 1.12
 import Qt.labs.settings 1.0
 import QtQuick.Extras 1.4
 
-//import OpenHD 1.0 // uncommented than markermodel on datachange connection is not made??!
-
 BaseWidget {
     id: adsbWidget
     width: 55

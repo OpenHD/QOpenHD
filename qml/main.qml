@@ -156,10 +156,6 @@ ApplicationWindow {
         id: vectorTelemetry
     }
 
-    MarkerModel {
-        id: markerModel
-    }
-
     BlackBoxModel {
         id: blackBoxModel
     }
