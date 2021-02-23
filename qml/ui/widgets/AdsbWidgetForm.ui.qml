@@ -131,7 +131,6 @@ BaseWidget {
                 checked: settings.adsb_api_sdr
                 onCheckedChanged: {
                     settings.adsb_api_sdr = checked;
-                    markerModel.removeAllMarkers();
                 }
             }
         }
@@ -155,7 +154,6 @@ BaseWidget {
                 checked: settings.adsb_api_openskynetwork
                 onCheckedChanged: {
                     settings.adsb_api_openskynetwork = checked;
-                    markerModel.removeAllMarkers();
                 }
             }
         }
