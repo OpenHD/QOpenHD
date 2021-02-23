@@ -87,7 +87,8 @@ SOURCES += \
     src/statuslogmodel.cpp \
     src/statusmicroservice.cpp \
     src/util.cpp \
-    src/vectortelemetry.cpp
+    src/vectortelemetry.cpp \
+    src/QmlObjectListModel.cpp
 
 RESOURCES += qml/qml.qrc
 
@@ -124,7 +125,8 @@ HEADERS += \
     inc/statusmicroservice.h \
     inc/util.h \
     inc/vectortelemetry.h \
-    inc/wifibroadcast.h
+    inc/wifibroadcast.h \
+    inc/QmlObjectListModel.h
 
 DISTFILES += \
     android/AndroidManifest.xml \
@@ -425,9 +427,14 @@ EnableADSB {
     DEFINES += ENABLE_ADSB
 
     SOURCES += \
-    src/adsb.cpp
+    src/adsb.cpp \
+    src/ADSBVehicleManager.cpp \
+    src/ADSBVehicle.cpp
+    
     HEADERS += \
-    inc/adsb.h
+    inc/adsb.h \
+    inc/ADSBVehicleManager.h \
+    inc/ADSBVehicle.h
 
 }
 

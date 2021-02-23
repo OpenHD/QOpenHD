@@ -41,9 +41,12 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 
 #if defined(ENABLE_ADSB)
 #include "adsb.h"
+#include "ADSBVehicleManager.h"
+#include "ADSBVehicle.h"
 #endif
 
 #include "markermodel.h"
+#include "QmlObjectListModel.h"
 
 #include "blackboxmodel.h"
 
@@ -238,6 +241,8 @@ int main(int argc, char *argv[]) {
     #endif
 
     qmlRegisterType<MarkerModel>("OpenHD", 1, 0, "MarkerModel");
+
+    qmlRegisterUncreatableType<QmlObjectListModel>("OpenHD", 1, 0, "QmlObjectListModel", "Reference only");
 
     qmlRegisterType<BlackBoxModel>("OpenHD", 1, 0, "BlackBoxModel");
 
@@ -460,6 +465,11 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
     engine.rootContext()->setContextProperty("Adsb", adsb);
     QObject::connect(openHDSettings, &OpenHDSettings::groundStationIPUpdated, adsb, &Adsb::setGroundIP, Qt::QueuedConnection);
     adsb->onStarted();
+
+    auto adsbVehicleManager = ADSBVehicleManager::instance();
+    engine.rootContext()->setContextProperty("AdsbVehicleManager", adsbVehicleManager);
+    QObject::connect(openHDSettings, &OpenHDSettings::groundStationIPUpdated, adsbVehicleManager, &ADSBVehicleManager::setGroundIP, Qt::QueuedConnection);
+    adsbVehicleManager->onStarted();
     #endif
 
     engine.rootContext()->setContextProperty("OpenHDUtil", util);
