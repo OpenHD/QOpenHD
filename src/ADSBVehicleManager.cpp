@@ -74,6 +74,17 @@ void ADSBVehicleManager::_cleanupStaleVehicles()
             adsbVehicle->deleteLater();
         }
     }
+
+    // if more than 20 seconds with with no updates, set frontend indicator red
+    // if more than 60 seconds with no updates deactivate frontend indicator
+    if (_last_update_timer.elapsed() > 60000) {
+        _status = 0;
+        emit statusChanged();
+
+    } else if (_last_update_timer.elapsed() > 20000) {
+        _status = 1;
+        emit statusChanged();
+    }
 }
 
 // we evaluate traffic here!!
@@ -96,6 +107,10 @@ void ADSBVehicleManager::adsbVehicleUpdate(const ADSBVehicle::VehicleInfo_t vehi
         qreal distance = _calculateKmDistance(vehicleInfo.location);
         _evaluateTraffic(vehicleInfo.altitude, distance);
     }
+
+    _last_update_timer.restart();
+    _status = 2;
+    emit statusChanged();
 }
 
 void ADSBVehicleManager::_evaluateTraffic(double traffic_alt, int traffic_distance) 

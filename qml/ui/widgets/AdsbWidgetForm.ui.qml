@@ -26,28 +26,12 @@ BaseWidget {
 
     property double lastData: 0
 
-    Timer {
-        interval: 1000;
-        running: true;
-        repeat: true
-        onTriggered: {
-            var currentTime = (new Date).getTime();
-            if (currentTime - lastData > 20000) {
-                adsb_status.color = "red";
-            }
-        }
-    }
-
-    Connections {
-        target: MarkerModel
-        function onDataChanged() {
-            //console.log("MARKER MODEL DATA CHANGED");
-            lastData = (new Date).getTime();
-            adsb_status.active=true;
-            adsb_status.color="green";
-            //adsb_status_animation.restart();
-        }
-    }
+    // Property status from adsbVehicleManager can be 
+    // 0 - not active ( if more than 60 seconds since last update )
+    // 1 - active but more than 20 seconds since last update
+    // 2 - active, less than 20 seconds since last update
+    property bool adsbStatus: AdsbVehicleManager.status ? true : false
+    property color adsbStatusColor: AdsbVehicleManager.status == 2 ? "green" : "red"
 
     widgetDetailComponent: Column {
         Item {
@@ -215,7 +199,8 @@ BaseWidget {
             anchors.left: adsb_text.right
             anchors.leftMargin: 5
             anchors.verticalCenter: parent.verticalCenter
-            active: false
+            color: adsbStatusColor
+            active: adsbStatus
             visible: !settings.adsb_api_sdr
         }
     }

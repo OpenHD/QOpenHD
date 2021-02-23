@@ -109,8 +109,12 @@ public:
     Q_PROPERTY(QmlObjectListModel* adsbVehicles READ adsbVehicles CONSTANT)
     Q_PROPERTY(QGeoCoordinate apiMapCenter READ apiMapCenter MEMBER _api_center_coord NOTIFY mapCenterChanged)
 
+    // frontend indicator. 0 inactive, 1 red, 2 green
+    Q_PROPERTY(uint status READ status NOTIFY statusChanged)
+
     QmlObjectListModel* adsbVehicles(void) { return &_adsbVehicles; }
     QGeoCoordinate apiMapCenter(void) { return _api_center_coord; }
+    uint status() { return _status; }
 
     // called from qml when the map has moved
     Q_INVOKABLE void newMapCenter(QGeoCoordinate center_coord);
@@ -120,6 +124,9 @@ public:
 signals:
     // sent to ADSBapi to make requests based into this
     void mapCenterChanged(QGeoCoordinate center_coord);
+
+    // sent to adsbwidgetform.ui to update the status indicator
+    void statusChanged(void);
 
 public slots:
     void adsbVehicleUpdate  (const ADSBVehicle::VehicleInfo_t vehicleInfo);
@@ -140,4 +147,6 @@ private:
     ADSBInternet*                   _internetLink = nullptr;
     ADSBSdr*                        _sdrLink = nullptr;
     QGeoCoordinate                  _api_center_coord;
+    QElapsedTimer                   _last_update_timer;
+    uint                            _status = 0;
 };
