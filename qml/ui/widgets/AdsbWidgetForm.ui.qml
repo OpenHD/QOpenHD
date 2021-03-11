@@ -5,8 +5,6 @@ import QtGraphicalEffects 1.12
 import Qt.labs.settings 1.0
 import QtQuick.Extras 1.4
 
-//import OpenHD 1.0 // uncommented than markermodel on datachange connection is not made??!
-
 BaseWidget {
     id: adsbWidget
     width: 55
@@ -28,28 +26,12 @@ BaseWidget {
 
     property double lastData: 0
 
-    Timer {
-        interval: 1000;
-        running: true;
-        repeat: true
-        onTriggered: {
-            var currentTime = (new Date).getTime();
-            if (currentTime - lastData > 20000) {
-                adsb_status.color = "red";
-            }
-        }
-    }
-
-    Connections {
-        target: MarkerModel
-        function onDataChanged() {
-            //console.log("MARKER MODEL DATA CHANGED");
-            lastData = (new Date).getTime();
-            adsb_status.active=true;
-            adsb_status.color="green";
-            //adsb_status_animation.restart();
-        }
-    }
+    // Property status from adsbVehicleManager can be 
+    // 0 - not active ( if more than 60 seconds since last update )
+    // 1 - active but more than 20 seconds since last update
+    // 2 - active, less than 20 seconds since last update
+    property bool adsbStatus: AdsbVehicleManager.status ? true : false
+    property color adsbStatusColor: AdsbVehicleManager.status == 2 ? "green" : "red"
 
     widgetDetailComponent: Column {
         Item {
@@ -115,7 +97,7 @@ BaseWidget {
             width: parent.width
             height: 32
             Text {
-                text: qsTr("Source OpenSky / SDR")
+                text: qsTr("Source SDR")
                 color: "white"
                 height: parent.height
                 font.bold: true
@@ -131,7 +113,29 @@ BaseWidget {
                 checked: settings.adsb_api_sdr
                 onCheckedChanged: {
                     settings.adsb_api_sdr = checked;
-                    markerModel.removeAllMarkers();
+                }
+            }
+        }
+        Item {
+            width: parent.width
+            height: 32
+            Text {
+                text: qsTr("Source OpenSky")
+                color: "white"
+                height: parent.height
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+                verticalAlignment: Text.AlignVCenter
+            }
+            Switch {
+                width: 32
+                height: parent.height
+                anchors.rightMargin: 6
+                anchors.right: parent.right
+                checked: settings.adsb_api_openskynetwork
+                onCheckedChanged: {
+                    settings.adsb_api_openskynetwork = checked;
                 }
             }
         }
@@ -195,7 +199,8 @@ BaseWidget {
             anchors.left: adsb_text.right
             anchors.leftMargin: 5
             anchors.verticalCenter: parent.verticalCenter
-            active: false
+            color: adsbStatusColor
+            active: adsbStatus
             visible: !settings.adsb_api_sdr
         }
     }

@@ -11,6 +11,7 @@
 #include "util.h"
 
 #include "mavlinkbase.h"
+#include "ADSBVehicle.h"
 
 
 class QUdpSocket;
@@ -31,6 +32,9 @@ public slots:
 
 private slots:
     void onProcessMavlinkMessage(mavlink_message_t msg);
+
+signals:
+    void adsbVehicleUpdate(const ADSBVehicle::VehicleInfo_t vehicleInfo);
 
 private:
     bool pause_telemetry;

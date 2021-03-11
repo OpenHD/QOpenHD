@@ -40,10 +40,11 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "statuslogmodel.h"
 
 #if defined(ENABLE_ADSB)
-#include "adsb.h"
+#include "ADSBVehicleManager.h"
+#include "ADSBVehicle.h"
 #endif
 
-#include "markermodel.h"
+#include "QmlObjectListModel.h"
 
 #include "blackboxmodel.h"
 
@@ -233,11 +234,7 @@ int main(int argc, char *argv[]) {
 
     qmlRegisterType<QOpenHDLink>("OpenHD", 1,0, "QOpenHDLink");
 
-    #if defined(ENABLE_ADSB)
-    qmlRegisterType<Adsb>("OpenHD", 1, 0, "Adsb");
-    #endif
-
-    qmlRegisterType<MarkerModel>("OpenHD", 1, 0, "MarkerModel");
+    qmlRegisterUncreatableType<QmlObjectListModel>("OpenHD", 1, 0, "QmlObjectListModel", "Reference only");
 
     qmlRegisterType<BlackBoxModel>("OpenHD", 1, 0, "BlackBoxModel");
 
@@ -432,11 +429,6 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
     auto statusLogModel = StatusLogModel::instance();
     engine.rootContext()->setContextProperty("StatusLogModel", statusLogModel);
 
-    auto markerModel = MarkerModel::instance();
-    engine.rootContext()->setContextProperty("MarkerModel", markerModel);
-    markerModel->initMarkerModel();
-
-
     #if defined(ENABLE_EXAMPLE_WIDGET)
     engine.rootContext()->setContextProperty("EnableExampleWidget", QVariant(true));
     #else
@@ -456,10 +448,10 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
 
 
     #if defined(ENABLE_ADSB)
-    auto adsb = Adsb::instance();
-    engine.rootContext()->setContextProperty("Adsb", adsb);
-    QObject::connect(openHDSettings, &OpenHDSettings::groundStationIPUpdated, adsb, &Adsb::setGroundIP, Qt::QueuedConnection);
-    adsb->onStarted();
+    auto adsbVehicleManager = ADSBVehicleManager::instance();
+    engine.rootContext()->setContextProperty("AdsbVehicleManager", adsbVehicleManager);
+    QObject::connect(openHDSettings, &OpenHDSettings::groundStationIPUpdated, adsbVehicleManager, &ADSBVehicleManager::setGroundIP, Qt::QueuedConnection);
+    adsbVehicleManager->onStarted();
     #endif
 
     engine.rootContext()->setContextProperty("OpenHDUtil", util);
