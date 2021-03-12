@@ -22,6 +22,8 @@
 
 #include "localmessage.h"
 
+#include "adsb.h"
+
 static MavlinkTelemetry* _instance = nullptr;
 
 MavlinkTelemetry* MavlinkTelemetry::instance() {
@@ -531,6 +533,50 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             mavlink_msg_esc_telemetry_1_to_4_decode(&msg, &esc_telemetry);
 
             OpenHD::instance()->set_esc_temp((int)esc_telemetry.temperature[0]);
+            break;
+        }
+        case MAVLINK_MSG_ID_ADSB_VEHICLE: {
+            mavlink_adsb_vehicle_t adsbVehicleMsg;
+            static const int maxTimeSinceLastSeen = 15;
+
+            mavlink_msg_adsb_vehicle_decode(&msg, &adsbVehicleMsg);
+
+            // ignore report if more than 15 since last seen
+            if ((adsbVehicleMsg.flags & ADSB_FLAGS_VALID_COORDS) && adsbVehicleMsg.tslc <= maxTimeSinceLastSeen) {
+                ADSBVehicle::VehicleInfo_t vehicleInfo;
+
+                vehicleInfo.availableFlags = 0;
+                vehicleInfo.icaoAddress = adsbVehicleMsg.ICAO_address;
+
+                vehicleInfo.location.setLatitude(adsbVehicleMsg.lat / 1e7); // degE7 to deg 
+                vehicleInfo.location.setLongitude(adsbVehicleMsg.lon / 1e7); // degE7 to deg
+                vehicleInfo.availableFlags |= ADSBVehicle::LocationAvailable;
+
+                vehicleInfo.callsign = adsbVehicleMsg.callsign;
+                vehicleInfo.availableFlags |= ADSBVehicle::CallsignAvailable;
+
+                if (adsbVehicleMsg.flags & ADSB_FLAGS_VALID_ALTITUDE) {
+                    vehicleInfo.altitude = (double)adsbVehicleMsg.altitude / 1e3; // mm to m
+                    vehicleInfo.availableFlags |= ADSBVehicle::AltitudeAvailable;
+                }
+
+                if (adsbVehicleMsg.flags & ADSB_FLAGS_VALID_HEADING) {
+                    vehicleInfo.heading = (double)adsbVehicleMsg.heading / 100.0; // centideg to deg
+                    vehicleInfo.availableFlags |= ADSBVehicle::HeadingAvailable;
+                }
+
+                if (adsbVehicleMsg.flags & ADSB_FLAGS_VALID_VELOCITY) {
+                    vehicleInfo.velocity = (double)adsbVehicleMsg.hor_velocity * 0.036; // cm/s to km/h
+                    vehicleInfo.availableFlags |= ADSBVehicle::VelocityAvailable;
+                }
+
+                if (adsbVehicleMsg.flags & ADSB_FLAGS_VERTICAL_VELOCITY_VALID) {
+                    vehicleInfo.verticalVel = (double)adsbVehicleMsg.ver_velocity / 100; // cm/s to m/s 
+                    vehicleInfo.availableFlags |= ADSBVehicle::VerticalVelAvailable;
+                }
+
+                emit adsbVehicleUpdate(vehicleInfo);
+            }
             break;
         }
         default: {

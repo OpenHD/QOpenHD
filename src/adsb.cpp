@@ -172,6 +172,7 @@ void Adsb::processReply(QNetworkReply *reply){
         qDebug() << "ADSB request error!";
         qDebug() << reply->errorString();
         LocalMessage::instance()->showMessage("ADSB Reply Error", 4);
+        reply->deleteLater();
         return;
     }
 
@@ -187,10 +188,12 @@ void Adsb::processReply(QNetworkReply *reply){
 
     if(doc.isNull()){
         qDebug()<<"Failed to create JSON doc.";
+        reply->deleteLater();
         return;
     }
     if(!doc.isObject()){
         qDebug()<<"JSON is not an object.";
+        reply->deleteLater();
         return;
     }
 
@@ -198,6 +201,7 @@ void Adsb::processReply(QNetworkReply *reply){
 
     if(jsonObject.isEmpty()){
         qDebug()<<"JSON object is empty.";
+        reply->deleteLater();
         return;
     }
 
@@ -222,6 +226,7 @@ void Adsb::processReply(QNetworkReply *reply){
 
         if (last_row==0){
             //no markers to add..
+            reply->deleteLater();
             return;
         }
 
@@ -305,6 +310,7 @@ void Adsb::processReply(QNetworkReply *reply){
 
         if (last_row==0){
             //no markers to add.. either the api is not happy (too zoomed out) or no traffic to report
+            reply->deleteLater();
             return;
         }
 
@@ -348,6 +354,7 @@ void Adsb::processReply(QNetworkReply *reply){
 
     }
     //emit doneAddingMarkers();
+    reply->deleteLater();
 }
 
 void Adsb::evaluateTraffic(QString traffic_callsign,

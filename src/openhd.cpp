@@ -4,8 +4,6 @@
 #include "openhdtelemetry.h"
 #include "localmessage.h"
 
-#include "adsb.h"
-#include "markermodel.h"
 #include "blackboxmodel.h"
 
 #include <GeographicLib/Geodesic.hpp>

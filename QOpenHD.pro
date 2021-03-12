@@ -70,7 +70,6 @@ SOURCES += \
     src/ltmtelemetry.cpp \
     src/main.cpp \
     src/managesettings.cpp \
-    src/markermodel.cpp \
     src/mavlinkbase.cpp \
     src/mavlinktelemetry.cpp \
     src/migration.cpp \
@@ -87,7 +86,8 @@ SOURCES += \
     src/statuslogmodel.cpp \
     src/statusmicroservice.cpp \
     src/util.cpp \
-    src/vectortelemetry.cpp
+    src/vectortelemetry.cpp \
+    src/QmlObjectListModel.cpp
 
 RESOURCES += qml/qml.qrc
 
@@ -100,7 +100,6 @@ HEADERS += \
     inc/headingladder.h \
     inc/horizonladder.h \
     inc/managesettings.h \
-    inc/markermodel.h \
     inc/mavlinkbase.h \
     inc/powermicroservice.h \
     inc/sharedqueue.h \
@@ -124,7 +123,8 @@ HEADERS += \
     inc/statusmicroservice.h \
     inc/util.h \
     inc/vectortelemetry.h \
-    inc/wifibroadcast.h
+    inc/wifibroadcast.h \
+    inc/QmlObjectListModel.h
 
 DISTFILES += \
     android/AndroidManifest.xml \
@@ -425,9 +425,12 @@ EnableADSB {
     DEFINES += ENABLE_ADSB
 
     SOURCES += \
-    src/adsb.cpp
+    src/ADSBVehicleManager.cpp \
+    src/ADSBVehicle.cpp
+    
     HEADERS += \
-    inc/adsb.h
+    inc/ADSBVehicleManager.h \
+    inc/ADSBVehicle.h
 
 }
 
