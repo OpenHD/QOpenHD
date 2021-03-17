@@ -28,7 +28,16 @@ echo "deb https://dl.cloudsmith.io/public/openhd/openhd-2-0/deb/${OS} ${DISTRO} 
 
 apt -y update
 
-apt -y install openhd-qt=5.15.0\* libgles2-mesa-dev libegl1-mesa-dev libgbm-dev libboost-dev
+
+if [[ "${OS}" == "raspbian" ]]; then
+    PLATFORM_PACKAGES="openhd-qt"
+fi
+
+if [[ "${OS}" == "ubuntu" ]] && [[ "${PACKAGE_ARCH}" == "armhf" || "${PACKAGE_ARCH}" == "arm64" ]]; then
+    PLATFORM_PACKAGES="openhd-qt-jetson-nano"
+fi
+
+apt -y install ${PLATFORM_PACKAGES} libgles2-mesa-dev libegl1-mesa-dev libgbm-dev libboost-dev
 
 PACKAGE_NAME=qopenhd
 
