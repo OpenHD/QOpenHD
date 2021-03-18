@@ -39,7 +39,7 @@ if [[ "${OS}" == "ubuntu" ]] && [[ "${PACKAGE_ARCH}" == "armhf" || "${PACKAGE_AR
     PLATFORM_PACKAGES="-d openhd-qt-jetson-nano"
 fi
 
-apt -y install ${PLATFORM_DEV_PACKAGES} libgles2-mesa-dev libegl1-mesa-dev libgbm-dev libboost-dev
+apt -y install ${PLATFORM_DEV_PACKAGES} libgstreamer-plugins-base1.0-dev libgles2-mesa-dev libegl1-mesa-dev libgbm-dev libboost-dev
 
 PACKAGE_NAME=qopenhd
 
@@ -77,6 +77,14 @@ fpm -a ${PACKAGE_ARCH} -s dir -t deb -n ${PACKAGE_NAME} -v ${VERSION//v} -C ${TM
   --after-install after-install.sh \
   -p ${PACKAGE_NAME}_VERSION_ARCH.deb \
   -d "libboost-dev" \
+  -d "gstreamer1.0-plugins-base" \
+  -d "gstreamer1.0-plugins-good" \
+  -d "gstreamer1.0-plugins-bad" \
+  -d "gstreamer1.0-plugins-ugly" \
+  -d "gstreamer1.0-libav" \
+  -d "gstreamer1.0-tools" \
+  -d "gstreamer1.0-alsa" \
+  -d "gstreamer1.0-pulseaudio"
   -d "openhd-qt >= 5.15.0" || exit 1
 
 #
