@@ -84,7 +84,7 @@ fpm -a ${PACKAGE_ARCH} -s dir -t deb -n ${PACKAGE_NAME} -v ${VERSION//v} -C ${TM
   -d "gstreamer1.0-libav" \
   -d "gstreamer1.0-tools" \
   -d "gstreamer1.0-alsa" \
-  -d "gstreamer1.0-pulseaudio"
+  -d "gstreamer1.0-pulseaudio" \
   -d "openhd-qt >= 5.15.0" || exit 1
 
 #
