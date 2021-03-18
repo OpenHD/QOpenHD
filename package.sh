@@ -30,14 +30,16 @@ apt -y update
 
 
 if [[ "${OS}" == "raspbian" ]]; then
-    PLATFORM_PACKAGES="openhd-qt"
+    PLATFORM_DEV_PACKAGES="openhd-qt"
+    PLATFORM_PACKAGES="-d openhd-qt"
 fi
 
 if [[ "${OS}" == "ubuntu" ]] && [[ "${PACKAGE_ARCH}" == "armhf" || "${PACKAGE_ARCH}" == "arm64" ]]; then
-    PLATFORM_PACKAGES="openhd-qt-jetson-nano"
+    PLATFORM_DEV_PACKAGES="openhd-qt-jetson-nano"
+    PLATFORM_PACKAGES="-d openhd-qt-jetson-nano"
 fi
 
-apt -y install ${PLATFORM_PACKAGES} libgles2-mesa-dev libegl1-mesa-dev libgbm-dev libboost-dev
+apt -y install ${PLATFORM_DEV_PACKAGES} libgles2-mesa-dev libegl1-mesa-dev libgbm-dev libboost-dev
 
 PACKAGE_NAME=qopenhd
 
