@@ -35,27 +35,27 @@ BaseWidget {
     property bool telemetry_pause: false
 
     function playPause() {
-        console.log("playPause from:" , blackbox_play_Slider.value);
+        //console.log("playPause from:" , blackbox_play_Slider.value);
 
         OpenHD.pauseBlackBox(true, blackbox_play_Slider.value);
 
         if (play_pause==false){
-        playTimer.start();
+            playTimer.start();
         }
         else {
-        playTimer.stop();
+            playTimer.stop();
         }
 
     }
 
     Timer {
-            id: playTimer
-            interval: 1000
-            repeat: true
-            running: false
-            triggeredOnStart: false
-            onTriggered: blackbox_play_Slider.value= blackbox_play_Slider.value+1;
-        }
+        id: playTimer
+        interval: 1000
+        repeat: true
+        running: false
+        triggeredOnStart: false
+        onTriggered: blackbox_play_Slider.value= blackbox_play_Slider.value+1;
+    }
 
     hasWidgetDetail: true
     widgetDetailComponent: Column {
@@ -123,7 +123,6 @@ BaseWidget {
         id: widgetInner
         anchors.fill: parent
         opacity: settings.blackbox_opacity
-        scale: settings.blackbox_size
 
         Rectangle
         {
@@ -134,10 +133,11 @@ BaseWidget {
             border.color: "grey"
             border.width: 2
             radius: 10
+
             MouseArea {
-                propagateComposedEvents: false
-                anchors.fill: parent
-            }
+                            propagateComposedEvents: false
+                            anchors.fill: parent
+                        }
         }
 
         Item {
@@ -169,7 +169,6 @@ BaseWidget {
                 anchors.left: parent.left
                 anchors.leftMargin: 45
                 anchors.top: parent.top
-                enabled: BlackBoxModel.rowCount() >= 1
 
                 width: parent.width - 135
                 // @disable-check M223
@@ -188,7 +187,6 @@ BaseWidget {
                 anchors.rightMargin: 10
                 anchors.top: parent.top
                 font.family: "Font Awesome 5 Free"
-                enabled: BlackBoxModel.rowCount() >= 1
 
                 onClicked: {// play_pause true == looks like play, false == looks like pause
                     if (play_pause==true){play_pause = false;}
@@ -240,7 +238,7 @@ BaseWidget {
         Button {
             id: resumeTelemetryBtn
             visible: telemetry_pause
-            text: qsTr("restart telemetry")
+            text: "restart telemetry"
             //height: 25
             font.pixelSize: 12
             anchors.horizontalCenter: parent.horizontalCenter
