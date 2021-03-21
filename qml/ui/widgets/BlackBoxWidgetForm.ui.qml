@@ -134,7 +134,7 @@ BaseWidget {
             border.width: 2
             radius: 10
 
-            MouseArea {
+            MouseArea { //adding this disable the ability to move the widget and open menu
                             propagateComposedEvents: false
                             anchors.fill: parent
                         }
