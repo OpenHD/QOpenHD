@@ -22,10 +22,12 @@ BaseWidget {
 
     widgetIdentifier: "blackbox_widget"
 
+    property var count: 0
+
     Connections {
         target: BlackBoxModel
         function onDataChanged() {
-            var count= BlackBoxModel.rowCount();
+            count= BlackBoxModel.rowCount();
             blackboxmodel_count_text.text= Number(count).toLocaleString( Qt.locale(), 'f', 0)
             blackbox_play_Slider.to=count;
         }
@@ -134,7 +136,9 @@ BaseWidget {
             border.width: 2
             radius: 10
 
-            MouseArea { //adding this disable the ability to move the widget and open menu
+            MouseArea {
+//adding this disables the ability to move the widget and open menu
+//another solution might need to be found to prevent propogation of clicks thru the layer
                             propagateComposedEvents: false
                             anchors.fill: parent
                         }
@@ -169,6 +173,7 @@ BaseWidget {
                 anchors.left: parent.left
                 anchors.leftMargin: 45
                 anchors.top: parent.top
+                enabled:{count >= 1;}
 
                 width: parent.width - 135
                 // @disable-check M223
@@ -195,6 +200,7 @@ BaseWidget {
                 anchors.rightMargin: 10
                 anchors.top: parent.top
                 font.family: "Font Awesome 5 Free"
+                enabled: {count >= 1;}
 
                 onClicked: {// play_pause true == looks like play, false == looks like pause
                     if (play_pause==true)
