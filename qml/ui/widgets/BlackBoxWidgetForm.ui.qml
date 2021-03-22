@@ -175,13 +175,21 @@ BaseWidget {
                 onValueChanged: {
                     //console.log("play slider=",blackbox_play_Slider.value);
                     telemetry_pause=true;
+
+                    if (play_pause == false){
+                        playPauseBtn.text="\uf04c";
+                    }
+                    else{
+                        playPauseBtn.text="\uf04b";
+                    }
+
                     OpenHD.pauseBlackBox(telemetry_pause, blackbox_play_Slider.value);
                 }
             }
 
             Button {
                 id: playPauseBtn
-                text: "\uf04b"
+                text: "\uf04c"
                 font.pixelSize: 12
                 anchors.right: parent.right
                 anchors.rightMargin: 10
@@ -189,7 +197,8 @@ BaseWidget {
                 font.family: "Font Awesome 5 Free"
 
                 onClicked: {// play_pause true == looks like play, false == looks like pause
-                    if (play_pause==true){play_pause = false;}
+                    if (play_pause==true)
+                        {play_pause = false;}
                     else {play_pause = true;}
 
                     playPause()
@@ -246,7 +255,7 @@ BaseWidget {
             onClicked: {
                 playTimer.stop();
                 play_pause=true;
-                playPauseBtn.text="\uf04b";
+                playPauseBtn.text="\uf04c";
                 telemetry_pause=false;
                 OpenHD.pauseBlackBox(telemetry_pause, blackbox_play_Slider.value);
             }
