@@ -254,6 +254,14 @@ Settings {
     property double adsb_opacity: 1
     property double adsb_size: 1
 
+    property bool show_vroverlay: false
+    property double vroverlay_opacity: 1
+    property double vroverlay_size: 1
+    property bool vroverlay_invert_pitch: false
+    property bool vroverlay_invert_roll: false //currently not used
+    property double vroverlay_vertical_fov: 120
+    property double vroverlay_horizontal_fov: 180
+
     property bool show_blackbox: false
     property double blackbox_opacity: 1
     property double blackbox_size: 1

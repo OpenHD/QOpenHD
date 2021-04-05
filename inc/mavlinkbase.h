@@ -212,6 +212,7 @@ protected:
     uint64_t m_command_sent_timestamp = 0;
 
     std::shared_ptr<MavlinkCommand> m_current_command;
+
 };
 
 #endif

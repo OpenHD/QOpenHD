@@ -29,6 +29,7 @@ public slots:
     void onSetup();
     void pauseTelemetry(bool toggle);
     void requestSysIdSettings();
+    void requested_Flight_Mode_Changed(int mode);
 
 private slots:
     void onProcessMavlinkMessage(mavlink_message_t msg);
@@ -38,6 +39,8 @@ signals:
 
 private:
     bool pause_telemetry;
+
+    int m_mode=0;
 };
 
 #endif

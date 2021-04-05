@@ -23,34 +23,42 @@ BaseWidget {
     defaultVCenter: false
 
     hasWidgetDetail: true
-    widgetDetailComponent: Column {
-        Item {
-            width: parent.width
-            height: 32
-            Text {
-                id:opacityTitle
-                text: qsTr("Transparency")
-                color: "white"
-                height: parent.height
-                font.bold: true
-                font.pixelSize: detailPanelFontPixels
-                anchors.left: parent.left
-                verticalAlignment: Text.AlignVCenter
-            }
-            Slider {
-                id: pip_video_opacity_Slider
-                orientation: Qt.Horizontal
-                from: .1
-                value: settings.pip_video_opacity
-                to: 1
-                stepSize: .1
-                height: parent.height
-                anchors.rightMargin: 0
-                anchors.right: parent.right
-                width: parent.width - 96
 
-                onValueChanged: {
-                    settings.pip_video_opacity = pip_video_opacity_Slider.value
+    widgetDetailComponent: ScrollView{
+
+        contentHeight: videoSettingsColumn.height
+        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+        clip: true
+        Column {
+            id: videoSettingsColumn
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    id:opacityTitle
+                    text: qsTr("Transparency")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Slider {
+                    id: pip_video_opacity_Slider
+                    orientation: Qt.Horizontal
+                    from: .1
+                    value: settings.pip_video_opacity
+                    to: 1
+                    stepSize: .1
+                    height: parent.height
+                    anchors.rightMargin: 0
+                    anchors.right: parent.right
+                    width: parent.width - 96
+
+                    onValueChanged: {
+                        settings.pip_video_opacity = pip_video_opacity_Slider.value
+                    }
                 }
             }
         }

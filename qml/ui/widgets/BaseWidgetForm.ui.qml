@@ -16,8 +16,9 @@ Rectangle {
     border.width: dragging ? 1 : 0
     border.color: dragging ? "white" : "#00000000"
 
-    property alias widgetControls: widgetControls
+    //property alias widgetControls: widgetControls
     property alias widgetDetail: widgetDetail
+    property alias widgetAction: widgetAction
     property alias alignmentType: choiceBox.currentIndex
 
     /* intended to be overriden by widgets, anything in this item will show up inside the
@@ -25,8 +26,13 @@ Rectangle {
     */
     property Item widgetDetailComponent: Item {}
     property bool hasWidgetDetail: false
-    property int widgetDetailWidth: 256
-    property int widgetDetailHeight: 164
+    property int widgetDetailWidth: 300
+    property int widgetDetailHeight: 250
+
+    property Item widgetActionComponent: Item {}
+    property bool hasWidgetAction: false
+    property int widgetActionWidth: 256
+    property int widgetActionHeight: 164
 
     property Popup widgetPopup: Popup {}
     property bool hasWidgetPopup: false
@@ -55,11 +61,71 @@ Rectangle {
             radius: 12
         }
 
+        closePolicy: Popup.CloseOnPressOutside | Popup.CloseOnEscape
+
+        onAboutToHide: {
+            dragging = false
+            // @disable-check M222
+            //widgetControls.close()
+            // @disable-check M222
+            saveAlignment()
+            // @disable-check M222
+            loadAlignment()
+            globalDragLock = false
+        }
+
+
+
         /*
-         * Prevent the popup from closing while the widget is being positioned, regardless
-         * of where the user taps or clicks
+         * This centers the popup on the screen rather than positioning it
+         * relative to the parent item
          *
          */
+        parent: Overlay.overlay
+        x: {
+            if (widgetBase.x <= Math.round((parent.width - width) / 2)) {
+                return 24;
+            } else {
+                return parent.width - width - 24;
+            }
+        }
+        y: {
+            if (widgetBase.y <= Math.round((parent.height - height) / 2)) {
+                return 64;
+            } else {
+                return parent.height - height - 64;
+            }
+        }
+
+
+
+        contentItem: widgetDetailComponent
+
+        //this is an ugly adaptation.. So that there are no null returns on this model
+        Item {
+            anchors.fill: parent
+
+            ComboBox {
+                id: choiceBox
+                model: ["Top Left", "Top Right", "Bottom Right", "Bottom Left"]
+            }
+        }
+    }
+
+    Popup {
+        id: widgetAction
+
+
+        width: widgetActionWidth
+        height: widgetActionHeight
+
+        background: Rectangle {
+            color: "#ea000000"
+            border.width: 1
+            border.color: "white"
+            radius: 12
+        }
+
         closePolicy: Popup.CloseOnPressOutside | Popup.CloseOnEscape
 
         /*
@@ -83,8 +149,11 @@ Rectangle {
             }
         }
 
-        contentItem: widgetDetailComponent
+        contentItem: widgetActionComponent
+
+
     }
+    /*  Below are the old controls popup.. Left as a reference
 
     Popup {
         id: widgetControls
@@ -97,18 +166,7 @@ Rectangle {
             color: "#ea000000"
         }
 
-        /*
-         * Prevent the popup from closing while the widget is being positioned, regardless
-         * of where the user taps or clicks
-         *
-         */
-        closePolicy: Popup.NoAutoClose
 
-        /*
-         * This centers the popup on the screen rather than positioning it
-         * relative to the parent item
-         *
-         */
         parent: Overlay.overlay
         x: Math.round((parent.width - width) / 2)
         y: Math.round((parent.height - height) / 2)
@@ -290,12 +348,7 @@ Rectangle {
 
                     // @disable-check M223
                     Component.onCompleted: {
-                        /*
-                         * More absurd code to handle inconsistencies with Qt.labs.settings
-                         * return values (on Linux, booleans come back out as strings, while
-                         * everywhere else it works properly. So we have to check the value here
-                         * and in the other checkbox below
-                         */
+
                          // @disable-check M222
                         var _hCenter = settings.value(hCenterIdentifier, defaultHCenter)
                          // @disable-check M223
@@ -396,41 +449,9 @@ Rectangle {
                     }
                 }
             }
-
-            Item {
-                height: 60
-                width: parent.width
-                id: comboboxContainer
-                anchors.top: checkboxContainer.bottom
-                anchors.topMargin: 6
-                anchors.left: parent.left
-                anchors.right: parent.right
-                visible: !OpenHDPi.is_raspberry_pi
-
-                Text {
-                    id: choiceBoxDescription
-                    text: "Move with:"
-                    height: 20
-                    color: "white"
-                    font.bold: true
-                    font.pixelSize: 14
-                }
-
-                ComboBox {
-                    id: choiceBox
-                    model: ["Top Left", "Top Right", "Bottom Right", "Bottom Left"]
-                    width: parent.width
-                    height: 40
-                    font.pixelSize: 14
-                    anchors.top: choiceBoxDescription.bottom
-                    anchors.topMargin: 6
-                    anchors.bottom: parent.bottom
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                }
-            }
         }
     }
+    */
 }
 
 

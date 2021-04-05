@@ -23,132 +23,219 @@ BaseWidget {
     defaultVCenter: false
 
     hasWidgetDetail: true
-    widgetDetailHeight: 178
-    widgetDetailComponent: Column {
-        Item {
-            width: parent.width
-            height: 32
-            Text {
-                text: qsTr("Lat:")
-                color: "white"
-                height: parent.height
-                font.bold: true
-                font.pixelSize: detailPanelFontPixels
-                anchors.left: parent.left
-                verticalAlignment: Text.AlignVCenter
-            }
-            Text {
-                text: Number(OpenHD.homelat).toLocaleString(Qt.locale(), 'f', 6)
-                color: "white"
-                height: parent.height
-                font.bold: true
-                font.pixelSize: detailPanelFontPixels
-                anchors.right: parent.right
-                verticalAlignment: Text.AlignVCenter
-            }
-        }
-        Item {
-            width: parent.width
-            height: 32
-            Text {
-                text: qsTr("Lon:")
-                color: "white"
-                height: parent.height
-                font.bold: true
-                font.pixelSize: detailPanelFontPixels
-                anchors.left: parent.left
-                verticalAlignment: Text.AlignVCenter
-            }
-            Text {
-                text: Number(OpenHD.homelon).toLocaleString(Qt.locale(), 'f', 6)
-                color: "white"
-                height: parent.height
-                font.bold: true
-                font.pixelSize: detailPanelFontPixels
-                anchors.right: parent.right
-                verticalAlignment: Text.AlignVCenter
-            }
-        }
+    hasWidgetAction: true
 
-        Shape {
-            id: line
-            height: 32
-            width: parent.width
+    //----------------------------- DETAIL BELOW ----------------------------------
 
-            ShapePath {
-                strokeColor: "white"
-                strokeWidth: 2
-                strokeStyle: ShapePath.SolidLine
-                fillColor: "transparent"
-                startX: 0
-                startY: line.height / 2
-                PathLine {
-                    x: 0
-                    y: line.height / 2
-                }
-                PathLine {
-                    x: line.width
-                    y: line.height / 2
+    widgetDetailComponent: ScrollView{
+
+        contentHeight: homedistanceSettingsColumn.height
+        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+        clip: true
+        Column {
+            id: homedistanceSettingsColumn
+
+
+            /*         Shape {
+                id: line
+                height: 32
+                width: parent.width
+
+                ShapePath {
+                    strokeColor: "white"
+                    strokeWidth: 2
+                    strokeStyle: ShapePath.SolidLine
+                    fillColor: "transparent"
+                    startX: 0
+                    startY: line.height / 2
+                    PathLine {
+                        x: 0
+                        y: line.height / 2
+                    }
+                    PathLine {
+                        x: line.width
+                        y: line.height / 2
+                    }
                 }
             }
-        }
+*/
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    id: opacityTitle
+                    text: qsTr("Transparency")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Slider {
+                    id: home_distance_opacity_Slider
+                    orientation: Qt.Horizontal
+                    from: .1
+                    value: settings.home_distance_opacity
+                    to: 1
+                    stepSize: .1
+                    height: parent.height
+                    anchors.rightMargin: 0
+                    anchors.right: parent.right
+                    width: parent.width - 96
 
-        Item {
-            width: parent.width
-            height: 32
-            Text {
-                id: opacityTitle
-                text: qsTr("Transparency")
-                color: "white"
-                height: parent.height
-                font.bold: true
-                font.pixelSize: detailPanelFontPixels
-                anchors.left: parent.left
-                verticalAlignment: Text.AlignVCenter
+                    onValueChanged: {
+                        settings.home_distance_opacity = home_distance_opacity_Slider.value
+                    }
+                }
             }
-            Slider {
-                id: home_distance_opacity_Slider
-                orientation: Qt.Horizontal
-                from: .1
-                value: settings.home_distance_opacity
-                to: 1
-                stepSize: .1
-                height: parent.height
-                anchors.rightMargin: 0
-                anchors.right: parent.right
-                width: parent.width - 96
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("Size")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Slider {
+                    id: home_distance_size_Slider
+                    orientation: Qt.Horizontal
+                    from: .5
+                    value: settings.home_distance_size
+                    to: 3
+                    stepSize: .1
+                    height: parent.height
+                    anchors.rightMargin: 0
+                    anchors.right: parent.right
+                    width: parent.width - 96
 
-                onValueChanged: {
-                    settings.home_distance_opacity = home_distance_opacity_Slider.value
+                    onValueChanged: {
+                        settings.home_distance_size = home_distance_size_Slider.value
+                    }
+                }
+            }
+            Item {
+                width: 230
+                height: 32
+                Text {
+                    text: qsTr("Lock to Horizontal Center")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 6
+                    anchors.right: parent.right
+                    checked: {
+                        // @disable-check M222
+                        var _hCenter = settings.value(hCenterIdentifier, defaultHCenter)
+                        // @disable-check M223
+                        if (_hCenter === "true" || _hCenter === 1 || _hCenter === true) {
+                            checked = true;
+                            // @disable-check M223
+                        } else {
+                            checked = false;
+                        }
+                    }
+
+                    onCheckedChanged: settings.setValue(hCenterIdentifier, checked)
+                }
+            }
+            Item {
+                width: 230
+                height: 32
+                Text {
+                    text: qsTr("Lock to Vertical Center")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 6
+                    anchors.right: parent.right
+                    checked: {
+                        // @disable-check M222
+                        var _vCenter = settings.value(vCenterIdentifier, defaultVCenter)
+                        // @disable-check M223
+                        if (_vCenter === "true" || _vCenter === 1 || _vCenter === true) {
+                            checked = true;
+                            // @disable-check M223
+                        } else {
+                            checked = false;
+                        }
+                    }
+
+                    onCheckedChanged: settings.setValue(vCenterIdentifier, checked)
                 }
             }
         }
-        Item {
-            width: parent.width
-            height: 32
-            Text {
-                text: qsTr("Size")
-                color: "white"
-                height: parent.height
-                font.bold: true
-                font.pixelSize: detailPanelFontPixels
-                anchors.left: parent.left
-                verticalAlignment: Text.AlignVCenter
-            }
-            Slider {
-                id: home_distance_size_Slider
-                orientation: Qt.Horizontal
-                from: .5
-                value: settings.home_distance_size
-                to: 3
-                stepSize: .1
-                height: parent.height
-                anchors.rightMargin: 0
-                anchors.right: parent.right
-                width: parent.width - 96
+    }
 
-                onValueChanged: {
-                    settings.home_distance_size = home_distance_size_Slider.value
+    //---------------------------ACTION WIDGET COMPONENT BELOW-----------------------------
+
+    widgetActionComponent: ScrollView{
+
+        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+        clip: true
+
+        ColumnLayout{
+            width:200
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("Lat:")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Text {
+                    text: Number(OpenHD.homelat).toLocaleString(Qt.locale(), 'f', 6)
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.right: parent.right
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("Lon:")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Text {
+                    text: Number(OpenHD.homelon).toLocaleString(Qt.locale(), 'f', 6)
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.right: parent.right
+                    verticalAlignment: Text.AlignVCenter
                 }
             }
         }

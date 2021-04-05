@@ -7,14 +7,16 @@ import QtQuick.Controls.Material 2.12
 
 import OpenHD 1.0
 
+
+
 BaseWidget {
-    id: fpvWidget
+    id: vroverlayWidget
     width: 50
     height: 55
 
-    visible: settings.show_fpv
+    visible: settings.show_vroverlay
 
-    widgetIdentifier: "fpv_widget"
+    widgetIdentifier: "vroverlay_widget"
 
     defaultHCenter: true
     defaultVCenter: true
@@ -22,70 +24,16 @@ BaseWidget {
     hasWidgetDetail: true
     widgetDetailComponent: ScrollView {
 
-        contentHeight: fpvWidgetColumn.height
+        contentHeight: vroverlayWidgetColumn.height
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
         clip: true
 
         ColumnLayout {
 
-            id: fpvWidgetColumn
+            id: vroverlayWidgetColumn
             spacing: 0
             clip: true
 
-
-            Item {
-                width: 230
-                height: 32
-                Text {
-                    text: qsTr("Dynamic")
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels;
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Switch {
-                    width: 32
-                    height: parent.height
-                    anchors.rightMargin: 6
-                    anchors.right: parent.right
-                    checked: settings.fpv_dynamic
-                    onCheckedChanged: settings.fpv_dynamic = checked
-                }
-            }
-            /* might add this back in if ppl dont like actual only fpv
-        Item {
-            width: parent.width
-            height: 32
-            Text {
-                id: sensitivityTitle
-                text: qsTr("Sensitivity")
-                color: "white"
-                height: parent.height
-                font.bold: true
-                font.pixelSize: detailPanelFontPixels
-                anchors.left: parent.left
-                verticalAlignment: Text.AlignVCenter
-            }
-            Slider {
-                id: fpvSlider
-                orientation: Qt.Horizontal
-                from: 1
-                value: settings.fpv_sensitivity
-                to: 20
-                stepSize: 1
-                height: parent.height
-                anchors.rightMargin: 0
-                anchors.right: parent.right
-                width: parent.width - 96
-
-                onValueChanged: {
-                    settings.fpv_sensitivity = fpvSlider.value
-                }
-            }
-        }
-        */
             Item {
                 width: 230
                 height: 32
@@ -100,10 +48,10 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Slider {
-                    id: fpv_opacity_Slider
+                    id: vroverlay_opacity_Slider
                     orientation: Qt.Horizontal
                     from: .1
-                    value: settings.fpv_opacity
+                    value: settings.vroverlay_opacity
                     to: 1
                     stepSize: .1
                     height: parent.height
@@ -112,7 +60,7 @@ BaseWidget {
                     width: parent.width - 96
 
                     onValueChanged: {
-                        settings.fpv_opacity = fpv_opacity_Slider.value
+                        settings.vroverlay_opacity = vroverlay_opacity_Slider.value
                     }
                 }
             }
@@ -129,10 +77,10 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Slider {
-                    id: fpv_size_Slider
+                    id: vroverlay_size_Slider
                     orientation: Qt.Horizontal
                     from: .5
-                    value: settings.fpv_size
+                    value: settings.vroverlay_size
                     to: 3
                     stepSize: .1
                     height: parent.height
@@ -141,7 +89,7 @@ BaseWidget {
                     width: parent.width - 96
 
                     onValueChanged: {
-                        settings.fpv_size = fpv_size_Slider.value
+                        settings.vroverlay_size = vroverlay_size_Slider.value
                     }
                 }
             }
@@ -209,6 +157,8 @@ BaseWidget {
                     onCheckedChanged: settings.setValue(vCenterIdentifier, checked)
                 }
             }
+
+            /*
             Item {
                 width: 230
                 height: 32
@@ -226,42 +176,17 @@ BaseWidget {
                     height: parent.height
                     anchors.rightMargin: 6
                     anchors.right: parent.right
-                    checked: settings.fpv_invert_pitch
-                    onCheckedChanged: settings.fpv_invert_pitch = checked
+                    checked: settings.vroverlay_invert_pitch
+                    onCheckedChanged: settings.vroverlay_invert_pitch = checked
                 }
             }
-            /* not really needed
-        Item {
-            width: 230
-            height: 32
-            Text {
-                id: invertTitle
-                text: qsTr("Invert Roll")
-                color: "white"
-                height: parent.height
-                font.bold: true
-                font.pixelSize: detailPanelFontPixels
-                anchors.left: parent.left
-                verticalAlignment: Text.AlignVCenter
-            }
-            Switch {
-                width: 32
-                height: parent.height
-                anchors.rightMargin: 6
-                anchors.right: parent.right
-                checked: settings.fpv_invert_roll
-                onCheckedChanged: settings.fpv_invert_roll = checked
-            }
-        }
-        */
-
+            */
             Item {
                 width: 230
                 height: 50
-                visible: settings.fpv_dynamic ? true : false
 
                 Text {
-                    text: qsTr("Vertical Limit")
+                    text: qsTr("Vertical FOV")
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -277,13 +202,13 @@ BaseWidget {
                     antialiasing: true;
 
                     Tumbler {
-                        model: 90
+                        model: 180
                         visibleItemCount : 1
                         anchors.fill: parent
 
                         Component.onCompleted: {
                             // rounds it due to int
-                            currentIndex= settings.fpv_vertical_limit;
+                            currentIndex= settings.vroverlay_vertical_fov;
                         }
                         delegate: Text {
                             text: modelData
@@ -298,8 +223,8 @@ BaseWidget {
                             scale: opacity
                         }
                         onCurrentIndexChanged: {
-                            settings.fpv_vertical_limit = currentIndex;
-                            //   console.log("vert limit-",settings.fpv_vertical_limit);
+                            settings.vroverlay_vertical_fov = currentIndex;
+                            console.log("verticalFOV=",settings.vroverlay_vertical_fov);
                         }
                     }
                     gradient: Gradient {
@@ -312,10 +237,9 @@ BaseWidget {
             Item {
                 width: 230
                 height: 50
-                visible: settings.fpv_dynamic ? true : false
 
                 Text {
-                    text: qsTr("Lateral Limit")
+                    text: qsTr("Horizontal FOV")
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -331,13 +255,13 @@ BaseWidget {
                     antialiasing: true;
 
                     Tumbler {
-                        model: 90
+                        model: 180
                         visibleItemCount : 1
                         anchors.fill: parent
 
                         Component.onCompleted: {
                             // rounds it due to int
-                            currentIndex= settings.fpv_lateral_limit;
+                            currentIndex= settings.vroverlay_horizontal_fov;
                         }
                         delegate: Text {
                             text: modelData
@@ -352,8 +276,8 @@ BaseWidget {
                             scale: opacity
                         }
                         onCurrentIndexChanged: {
-                            settings.fpv_lateral_limit = currentIndex;
-                            //   console.log("vert limit-",settings.fpv_vertical_limit);
+                            settings.vroverlay_horizontal_fov = currentIndex;
+                            console.log("horizontalfov=",settings.vroverlay_horizontal_fov);
                         }
                     }
                     gradient: Gradient {
@@ -376,51 +300,148 @@ BaseWidget {
 
         anchors.centerIn: parent
 
-        visible: settings.show_fpv
-        opacity: settings.fpv_opacity
+        visible: settings.show_vroverlay
+        opacity: settings.vroverlay_opacity
+
+        Text {
+            id: vr_text
+            color: settings.color_shape
+            opacity: settings.vroverlay_opacity
+            text: "VR"
+            anchors.left: parent.left
+            anchors.verticalCenter: parent.verticalCenter
+            horizontalAlignment: Text.AlignLeft
+            font.pixelSize: 14
+            verticalAlignment: Text.AlignTop
+            wrapMode: Text.NoWrap
+            elide: Text.ElideRight
+            style: Text.Outline
+            styleColor: settings.color_glow
+        }
+
 
 
         Item {
-            id: flightPathVector
+            id: vrOverlay
 
             anchors.centerIn: parent
+            visible: settings.show_vroverlay
 
-            visible: settings.show_fpv
+            Repeater {
+                model: AdsbVehicleManager.adsbVehicles
 
-            //transform: Scale { origin.x: 0; origin.y: 0; xScale: settings.fpv_size ; yScale: settings.fpv_size}
+                VROverlay {
+                    id: vroverlayC
+                    anchors.centerIn: parent
+                    //needs width and height but needs to be dynamic
+                    width:applicationWindow.width
+                    height:applicationWindow.height
 
+                    clip: false
+                    color: settings.color_shape
+                    glow: settings.color_glow
+                    vroverlayInvertPitch: settings.vroverlay_invert_pitch
 
-            FlightPathVector {
-                id: fpvC
+                    pitch: OpenHD.pitch
+                    roll: OpenHD.roll
+
+                    type: "adsb"
+                    name: object.callsign
+                    lat: object.lat
+                    lon: object.lon
+                    alt: object.altitude
+                    speed: object.velocity
+                    vert: object.verticalVel
+
+                    vroverlaySize: settings.vroverlay_size
+
+                    verticalFOV: settings.vroverlay_vertical_fov
+                    horizontalFOV: settings.vroverlay_horizontal_fov
+                }
+            }
+            VROverlay {
+                id: homeVROverlayC
                 anchors.centerIn: parent
-                /* could turn the width and height into settings and thereby clip the fpv
-                  *even theough clipping is false it still clips
-                */
-                width: 1200
-                height: 800
+
+                width:applicationWindow.width
+                height:applicationWindow.height
+
                 clip: false
                 color: settings.color_shape
                 glow: settings.color_glow
-                fpvInvertPitch: settings.fpv_invert_pitch
-                fpvInvertRoll: settings.fpv_invert_roll
-                /*
-                fpvSensitivity:
-                fpvActual:
-                fpvPipper:
-*/
-                pitch: settings.fpv_dynamic ? OpenHD.pitch : 0.0
-                roll: settings.fpv_dynamic ? OpenHD.roll : 0.0
+                vroverlayInvertPitch: settings.vroverlay_invert_pitch
 
-                lateral: settings.fpv_dynamic ? OpenHD.vehicle_vx_angle : 0.0
-                vertical: settings.fpv_dynamic ? OpenHD.vehicle_vz_angle : 0.0
+                pitch: OpenHD.pitch
+                roll: OpenHD.roll
 
-                // referencing the horizon so that fpv moves accurately
-                horizonSpacing: settings.horizon_ladder_spacing
-                horizonWidth: settings.horizon_width
-                fpvSize: settings.fpv_size
+                type: "home"
+                name: "HOME"
+                lat: OpenHD.homelat
+                lon: OpenHD.homelon
+                alt: 0
+                speed: 0
+                vert: 0
 
-                verticalLimit: settings.fpv_vertical_limit
-                lateralLimit: settings.fpv_lateral_limit
+                vroverlaySize: settings.vroverlay_size
+
+                verticalFOV: settings.vroverlay_vertical_fov
+                horizontalFOV: settings.vroverlay_horizontal_fov
+            }
+            VROverlay {
+                id: race1VROverlayC
+                anchors.centerIn: parent
+
+                width:applicationWindow.width
+                height:applicationWindow.height
+
+                clip: false
+                color: settings.color_shape
+                glow: settings.color_glow
+                vroverlayInvertPitch: settings.vroverlay_invert_pitch
+
+                pitch: OpenHD.pitch
+                roll: OpenHD.roll
+
+                type: "race"
+                name: "START"
+                lat: {OpenHD.homelat-.001}
+                lon: OpenHD.homelon
+                alt: 50
+                speed: 0
+                vert: 0
+
+                vroverlaySize: settings.vroverlay_size
+
+                verticalFOV: settings.vroverlay_vertical_fov
+                horizontalFOV: settings.vroverlay_horizontal_fov
+            }
+            VROverlay {
+                id: race2VROverlayC
+                anchors.centerIn: parent
+
+                width:applicationWindow.width
+                height:applicationWindow.height
+
+                clip: false
+                color: settings.color_shape
+                glow: settings.color_glow
+                vroverlayInvertPitch: settings.vroverlay_invert_pitch
+
+                pitch: OpenHD.pitch
+                roll: OpenHD.roll
+
+                type: "race"
+                name: "FINISH"
+                lat: {OpenHD.homelat-.003}
+                lon: OpenHD.homelon
+                alt: 50
+                speed: 0
+                vert: 0
+
+                vroverlaySize: settings.vroverlay_size
+
+                verticalFOV: settings.vroverlay_vertical_fov
+                horizontalFOV: settings.vroverlay_horizontal_fov
             }
         }
     }

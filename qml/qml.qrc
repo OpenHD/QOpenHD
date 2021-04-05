@@ -240,5 +240,9 @@
         <file>ui/widgets/ImuTempWidgetForm.ui.qml</file>
         <file>ui/widgets/FlightMahKmWidget.qml</file>
         <file>ui/widgets/FlightMahKmWidgetForm.ui.qml</file>
+        <file>ui/widgets/VROverlayForm.ui.qml</file>
+        <file>ui/widgets/VROverlayWidget.qml</file>
+        <file>ui/elements/ConfirmSlider.qml</file>
+        <file>ui/elements/ConfirmSliderForm.ui.qml</file>
     </qresource>
 </RCC>

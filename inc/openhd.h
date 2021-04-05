@@ -25,6 +25,8 @@ public:
     Q_INVOKABLE void pauseBlackBox(bool pause, int index);
     void updateBlackBoxModel();
 
+    Q_INVOKABLE void set_Requested_Flight_Mode(int mode);
+
     void setWifiAdapter0(uint32_t received_packet_cnt, int8_t current_signal_dbm, int8_t signal_good);
     void setWifiAdapter1(uint32_t received_packet_cnt, int8_t current_signal_dbm, int8_t signal_good);
     void setWifiAdapter2(uint32_t received_packet_cnt, int8_t current_signal_dbm, int8_t signal_good);
@@ -572,6 +574,7 @@ signals:
 
     void addBlackBoxObject(const BlackBox &blackbox);
     void pauseTelemetry(bool pause);
+    void requested_Flight_Mode_Changed(int mode);
     void playBlackBoxObject(int index);
 
 private:
@@ -752,6 +755,8 @@ public:
     QTranslator m_translator;
 
     QQmlApplicationEngine *m_engine = nullptr;
+
+    int m_mode = 0;
 };
 
 

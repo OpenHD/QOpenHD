@@ -60,62 +60,134 @@ BaseWidget {
     }
 
     hasWidgetDetail: true
-    widgetDetailComponent: Column {
-        Item {
-            width: parent.width
-            height: 32
-            Text {
-                text: qsTr("Transparency")
-                color: "white"
-                height: parent.height
-                font.bold: true
-                font.pixelSize: detailPanelFontPixels
-                anchors.left: parent.left
-                verticalAlignment: Text.AlignVCenter
-            }
-            Slider {
-                id: blackbox_opacity_Slider
-                orientation: Qt.Horizontal
-                from: .1
-                value: settings.blackbox_opacity
-                to: 1
-                stepSize: .1
-                height: parent.height
-                anchors.rightMargin: 0
-                anchors.right: parent.right
-                width: parent.width - 96
-                // @disable-check M223
-                onValueChanged: {
-                    settings.blackbox_opacity = blackbox_opacity_Slider.value
+
+    widgetDetailComponent: ScrollView{
+
+        contentHeight: blackboxSettingsColumn.height
+        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+        clip: true
+        Column {
+            id: blackboxSettingsColumn
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("Transparency")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Slider {
+                    id: blackbox_opacity_Slider
+                    orientation: Qt.Horizontal
+                    from: .1
+                    value: settings.blackbox_opacity
+                    to: 1
+                    stepSize: .1
+                    height: parent.height
+                    anchors.rightMargin: 0
+                    anchors.right: parent.right
+                    width: parent.width - 96
+                    // @disable-check M223
+                    onValueChanged: {
+                        settings.blackbox_opacity = blackbox_opacity_Slider.value
+                    }
                 }
             }
-        }
-        Item {
-            width: parent.width
-            height: 32
-            Text {
-                text: qsTr("Size")
-                color: "white"
-                height: parent.height
-                font.bold: true
-                font.pixelSize: detailPanelFontPixels
-                anchors.left: parent.left
-                verticalAlignment: Text.AlignVCenter
-            }
-            Slider {
-                id: blackbox_size_Slider
-                orientation: Qt.Horizontal
-                from: .5
-                value: settings.blackbox_size
-                to: 3
-                stepSize: .1
-                height: parent.height
-                anchors.rightMargin: 0
-                anchors.right: parent.right
-                width: parent.width - 96
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("Size")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Slider {
+                    id: blackbox_size_Slider
+                    orientation: Qt.Horizontal
+                    from: .5
+                    value: settings.blackbox_size
+                    to: 3
+                    stepSize: .1
+                    height: parent.height
+                    anchors.rightMargin: 0
+                    anchors.right: parent.right
+                    width: parent.width - 96
 
-                onValueChanged: {
-                    settings.blackbox_size = blackbox_size_Slider.value
+                    onValueChanged: {
+                        settings.blackbox_size = blackbox_size_Slider.value
+                    }
+                }
+            }
+            Item {
+                width: 230
+                height: 32
+                Text {
+                    text: qsTr("Lock to Horizontal Center")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 6
+                    anchors.right: parent.right
+                    checked: {
+                        // @disable-check M222
+                        var _hCenter = settings.value(hCenterIdentifier, defaultHCenter)
+                        // @disable-check M223
+                        if (_hCenter === "true" || _hCenter === 1 || _hCenter === true) {
+                            checked = true;
+                            // @disable-check M223
+                        } else {
+                            checked = false;
+                        }
+                    }
+
+                    onCheckedChanged: settings.setValue(hCenterIdentifier, checked)
+                }
+            }
+            Item {
+                width: 230
+                height: 32
+                Text {
+                    text: qsTr("Lock to Vertical Center")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 6
+                    anchors.right: parent.right
+                    checked: {
+                        // @disable-check M222
+                        var _vCenter = settings.value(vCenterIdentifier, defaultVCenter)
+                        // @disable-check M223
+                        if (_vCenter === "true" || _vCenter === 1 || _vCenter === true) {
+                            checked = true;
+                            // @disable-check M223
+                        } else {
+                            checked = false;
+                        }
+                    }
+
+                    onCheckedChanged: settings.setValue(vCenterIdentifier, checked)
                 }
             }
         }
@@ -137,11 +209,11 @@ BaseWidget {
             radius: 10
 
             MouseArea {
-//adding this disables the ability to move the widget and open menu
-//another solution might need to be found to prevent propogation of clicks thru the layer
-                            propagateComposedEvents: false
-                            anchors.fill: parent
-                        }
+                //adding this disables the ability to move the widget and open menu
+                //another solution might need to be found to prevent propogation of clicks thru the layer
+                propagateComposedEvents: false
+                anchors.fill: parent
+            }
         }
 
         Item {
@@ -204,7 +276,7 @@ BaseWidget {
 
                 onClicked: {// play_pause true == looks like play, false == looks like pause
                     if (play_pause==true)
-                        {play_pause = false;}
+                    {play_pause = false;}
                     else {play_pause = true;}
 
                     playPause()

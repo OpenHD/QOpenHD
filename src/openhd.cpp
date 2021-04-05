@@ -53,7 +53,7 @@ OpenHD::OpenHD(QObject *parent): QObject(parent) {
     connect(mavlink, &MavlinkTelemetry::last_vfr_changed, this, &OpenHD::set_last_telemetry_vfr);
 
     connect(this, &OpenHD::pauseTelemetry, mavlink, &MavlinkTelemetry::pauseTelemetry);
-
+    connect(this, &OpenHD::requested_Flight_Mode_Changed, mavlink, &MavlinkTelemetry::requested_Flight_Mode_Changed);
     auto openhd = OpenHDTelemetry::instance();
     connect(openhd, &OpenHDTelemetry::last_heartbeat_changed, this, &OpenHD::set_last_openhd_heartbeat);
 }
@@ -235,8 +235,14 @@ void OpenHD::updateAppMahKm() {
 
 }
 
+void OpenHD::set_Requested_Flight_Mode(int mode){
+    //qDebug() << "OpenHD::set_Requested_Flight_Mode="<< mode;
+    m_mode=mode;
+    emit requested_Flight_Mode_Changed(m_mode);
+}
+
 void OpenHD::pauseBlackBox(bool pause, int index){
-    qDebug() << "OpenHD::pauseBlackBox";
+    //qDebug() << "OpenHD::pauseBlackBox";
     m_pause_blackbox=pause;
     emit pauseTelemetry(pause);
     emit playBlackBoxObject(index);

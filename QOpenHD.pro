@@ -87,7 +87,8 @@ SOURCES += \
     src/statusmicroservice.cpp \
     src/util.cpp \
     src/vectortelemetry.cpp \
-    src/QmlObjectListModel.cpp
+    src/QmlObjectListModel.cpp \
+    src/vroverlay.cpp
 
 RESOURCES += qml/qml.qrc
 
@@ -123,6 +124,7 @@ HEADERS += \
     inc/statusmicroservice.h \
     inc/util.h \
     inc/vectortelemetry.h \
+    inc/vroverlay.h \
     inc/wifibroadcast.h \
     inc/QmlObjectListModel.h
 

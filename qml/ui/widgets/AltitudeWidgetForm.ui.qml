@@ -28,140 +28,209 @@ BaseWidget {
     defaultHCenter: false
 
     hasWidgetDetail: true
-    widgetDetailHeight: 192
+    widgetDetailComponent: ScrollView{
 
-    widgetDetailComponent: Column {
-        id: altitudeSettingsColumn
-        spacing: 0
+        contentHeight: altSettingsColumn.height
+        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+        clip: true
 
-        Item {
-            width: parent.width
-            height: 32
-            Text {
-                id: opacityTitle
-                text: qsTr("Transparency")
-                color: "white"
-                height: parent.height
-                font.bold: true
-                font.pixelSize: detailPanelFontPixels
-                anchors.left: parent.left
-                verticalAlignment: Text.AlignVCenter
-            }
-            Slider {
-                id: altitude_opacity_Slider
-                orientation: Qt.Horizontal
-                from: .1
-                value: settings.altitude_opacity
-                to: 1
-                stepSize: .1
-                height: parent.height
-                anchors.rightMargin: 0
-                anchors.right: parent.right
-                width: parent.width - 96
+        Column {
+            id: altSettingsColumn
+            spacing: 0
 
-                onValueChanged: { // @disable-check M223
-                    settings.altitude_opacity = altitude_opacity_Slider.value
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    id: opacityTitle
+                    text: qsTr("Transparency")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Slider {
+                    id: altitude_opacity_Slider
+                    orientation: Qt.Horizontal
+                    from: .1
+                    value: settings.altitude_opacity
+                    to: 1
+                    stepSize: .1
+                    height: parent.height
+                    anchors.rightMargin: 0
+                    anchors.right: parent.right
+                    width: parent.width - 96
+
+                    onValueChanged: { // @disable-check M223
+                        settings.altitude_opacity = altitude_opacity_Slider.value
+                    }
                 }
             }
-        }
-        Item {
-            width: parent.width
-            height: 32
-            Text {
-                id: sizeTitle
-                text: qsTr("Size")
-                color: "white"
-                height: parent.height
-                font.bold: true
-                font.pixelSize: detailPanelFontPixels
-                anchors.left: parent.left
-                verticalAlignment: Text.AlignVCenter
-            }
-            Slider {
-                id: altitude_size_Slider
-                orientation: Qt.Horizontal
-                from: .7
-                value: settings.altitude_size
-                to: 3
-                stepSize: .1
-                height: parent.height
-                anchors.rightMargin: 0
-                anchors.right: parent.right
-                width: parent.width - 96
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    id: sizeTitle
+                    text: qsTr("Size")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Slider {
+                    id: altitude_size_Slider
+                    orientation: Qt.Horizontal
+                    from: .7
+                    value: settings.altitude_size
+                    to: 3
+                    stepSize: .1
+                    height: parent.height
+                    anchors.rightMargin: 0
+                    anchors.right: parent.right
+                    width: parent.width - 96
 
-                onValueChanged: { // @disable-check M223
-                    settings.altitude_size = altitude_size_Slider.value
+                    onValueChanged: { // @disable-check M223
+                        settings.altitude_size = altitude_size_Slider.value
+                    }
                 }
             }
-        }
-        Item {
-            width: parent.width
-            height: 32
-            Text {
-                text: qsTr("Relative / MSL")
-                color: "white"
-                height: parent.height
-                font.bold: true
-                font.pixelSize: detailPanelFontPixels
-                anchors.left: parent.left
-                verticalAlignment: Text.AlignVCenter
-            }
-            Switch {
-                width: 32
-                height: parent.height
-                anchors.rightMargin: 6
-                anchors.right: parent.right
-                checked: settings.altitude_rel_msl
-                onCheckedChanged: settings.altitude_rel_msl = checked
-            }
-        }
-        Item {
-            width: parent.width
-            height: 32
-            Text {
-                text: qsTr("Show ladder")
-                color: "white"
-                height: parent.height
-                font.bold: true
-                font.pixelSize: detailPanelFontPixels
-                anchors.left: parent.left
-                verticalAlignment: Text.AlignVCenter
-            }
-            Switch {
-                width: 32
-                height: parent.height
-                anchors.rightMargin: 6
-                anchors.right: parent.right
-                checked: settings.show_altitude_ladder
-                onCheckedChanged: settings.show_altitude_ladder = checked
-            }
-        }
-        Item {
-            width: parent.width
-            height: 32
-            Text {
-                text: qsTr("Range")
-                color: "white"
-                height: parent.height
-                font.bold: true
-                font.pixelSize: detailPanelFontPixels
-                anchors.left: parent.left
-                verticalAlignment: Text.AlignVCenter
-            }
-            Slider {
-                id: altitude_range_Slider
-                orientation: Qt.Horizontal
-                from: 40
-                value: settings.altitude_range
-                to: 150
-                stepSize: 10
-                height: parent.height
-                anchors.rightMargin: 0
-                anchors.right: parent.right
-                width: parent.width - 96
+            Item {
+                width: 230
+                height: 32
+                Text {
+                    text: qsTr("Lock to Horizontal Center")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 6
+                    anchors.right: parent.right
+                    checked: {
+                        // @disable-check M222
+                        var _hCenter = settings.value(hCenterIdentifier, defaultHCenter)
+                        // @disable-check M223
+                        if (_hCenter === "true" || _hCenter === 1 || _hCenter === true) {
+                            checked = true;
+                            // @disable-check M223
+                        } else {
+                            checked = false;
+                        }
+                    }
 
-                onValueChanged: { // @disable-check M223
-                    settings.altitude_range = altitude_range_Slider.value;
+                    onCheckedChanged: settings.setValue(hCenterIdentifier, checked)
+                }
+            }
+            Item {
+                width: 230
+                height: 32
+                Text {
+                    text: qsTr("Lock to Vertical Center")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 6
+                    anchors.right: parent.right
+                    checked: {
+                        // @disable-check M222
+                        var _vCenter = settings.value(vCenterIdentifier, defaultVCenter)
+                        // @disable-check M223
+                        if (_vCenter === "true" || _vCenter === 1 || _vCenter === true) {
+                            checked = true;
+                            // @disable-check M223
+                        } else {
+                            checked = false;
+                        }
+                    }
+
+                    onCheckedChanged: settings.setValue(vCenterIdentifier, checked)
+                }
+            }
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("Relative / MSL")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 6
+                    anchors.right: parent.right
+                    checked: settings.altitude_rel_msl
+                    onCheckedChanged: settings.altitude_rel_msl = checked
+                }
+            }
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("Show ladder")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 6
+                    anchors.right: parent.right
+                    checked: settings.show_altitude_ladder
+                    onCheckedChanged: settings.show_altitude_ladder = checked
+                }
+            }
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("Range")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Slider {
+                    id: altitude_range_Slider
+                    orientation: Qt.Horizontal
+                    from: 40
+                    value: settings.altitude_range
+                    to: 150
+                    stepSize: 10
+                    height: parent.height
+                    anchors.rightMargin: 0
+                    anchors.right: parent.right
+                    width: parent.width - 96
+
+                    onValueChanged: { // @disable-check M223
+                        settings.altitude_range = altitude_range_Slider.value;
+                    }
                 }
             }
         }
@@ -212,7 +281,7 @@ BaseWidget {
                 transform: Scale { origin.x: 12; origin.y: 12; xScale: settings.altitude_size ; yScale: settings.altitude_size}
                 text: Number( // @disable-check M222
                              settings.enable_imperial ? (settings.altitude_rel_msl ? (OpenHD.alt_msl*3.28) : (OpenHD.alt_rel*3.28)) :
-                             (settings.altitude_rel_msl ? OpenHD.alt_msl : OpenHD.alt_rel)).toLocaleString(
+                                                        (settings.altitude_rel_msl ? OpenHD.alt_msl : OpenHD.alt_rel)).toLocaleString(
                           Qt.locale(), 'f', 0) // @disable-check M222
                 anchors.fill: parent
                 horizontalAlignment: Text.AlignHCenter
