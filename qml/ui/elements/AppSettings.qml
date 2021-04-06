@@ -230,7 +230,7 @@ Settings {
 
     property bool show_wind: false
     property double wind_opacity: 1
-    property bool wind_plane_copter: true
+    property bool wind_plane_copter: false //should default to plane
     property bool wind_arrow_circle: true
     //tumbler value had to be split into two values..
     property double wind_tumbler_decimal: 5
