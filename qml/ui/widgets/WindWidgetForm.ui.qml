@@ -230,6 +230,9 @@ BaseWidget {
 
                         visibleItemCount : 1
                         anchors.fill: parent
+
+                        currentIndex: settings.wind_tumbler_decimal
+
                         Component.onCompleted: {
                             currentIndex= settings.wind_tumbler_decimal ;
                         }
@@ -282,6 +285,8 @@ BaseWidget {
                         model: 60
                         visibleItemCount : 1
                         anchors.fill: parent
+
+                        currentIndex: settings.wind_tumbler_tens
 
                         Component.onCompleted: {
                             // rounds it due to int
