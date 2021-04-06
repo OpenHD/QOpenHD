@@ -281,6 +281,8 @@ BaseWidget {
                         visibleItemCount : 1
                         anchors.fill: parent
 
+                        currentIndex: settings.fpv_vertical_limit
+
                         Component.onCompleted: {
                             // rounds it due to int
                             currentIndex= settings.fpv_vertical_limit;
@@ -334,6 +336,8 @@ BaseWidget {
                         model: 90
                         visibleItemCount : 1
                         anchors.fill: parent
+
+                        currentIndex: settings.fpv_lateral_limit
 
                         Component.onCompleted: {
                             // rounds it due to int
