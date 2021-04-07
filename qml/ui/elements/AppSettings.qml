@@ -94,8 +94,8 @@ Settings {
     property bool gps_show_all: false
     property double gps_size: 1
     property bool gps_declutter: false
-    property double gps_warn: 0
-    property double gps_caution: 0
+    property double gps_warn: 3
+    property double gps_caution: 2
 
     property bool show_home_distance: true
     property double home_distance_opacity: 1
@@ -149,15 +149,19 @@ Settings {
     property double ground_status_opacity: 1
     property double ground_status_size: 1
     property bool ground_status_declutter: false
-    property double ground_status_warn: 0
-    property double ground_status_caution: 0
+    property double ground_status_cpu_warn: 50
+    property double ground_status_cpu_caution: 40
+    property double ground_status_temp_warn: 60
+    property double ground_status_temp_caution: 50
 
     property bool show_air_status: true
     property double air_status_opacity: 1
     property double air_status_size: 1
     property bool air_status_declutter: false
-    property double air_status_warn: 0
-    property double air_status_caution: 0
+    property double air_status_cpu_warn: 70
+    property double air_status_cpu_caution: 80
+    property double air_status_temp_warn: 60
+    property double air_status_temp_caution: 50
 
     property bool show_message_hud: true
     property double message_hud_opacity: 1
