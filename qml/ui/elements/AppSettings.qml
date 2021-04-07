@@ -135,8 +135,8 @@ Settings {
     property double press_temp_opacity: 1
     property double press_temp_size: 1
     property bool press_temp_declutter: false
-    property double press_temp_warn: 0
-    property double press_temp_caution: 0
+    property double press_temp_warn: 75
+    property double press_temp_caution: 60
 
     property bool show_esc_temp: false
     property double esc_temp_opacity: 1
