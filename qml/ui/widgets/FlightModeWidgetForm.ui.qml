@@ -270,7 +270,7 @@ BaseWidget {
 
             ConfirmSlider {
 
-                text_off: "RTL"
+                text_off: qsTr("RTL")
                 msg_id: 11
 
                 onCheckedChanged:{
@@ -283,7 +283,7 @@ BaseWidget {
             }
             ConfirmSlider {
 
-                text_off: "MANUAL"
+                text_off: qsTr("MANUAL")
                 msg_id: 0
 
                 onCheckedChanged:{
@@ -296,7 +296,7 @@ BaseWidget {
             }
             ConfirmSlider {
 
-                text_off: "STABILIZE"
+                text_off: qsTr("STABILIZE")
                 msg_id: 2
 
                 onCheckedChanged:{
@@ -309,7 +309,7 @@ BaseWidget {
             }
             ConfirmSlider {
 
-                text_off: "LOITER"
+                text_off: qsTr("LOITER")
                 msg_id: 12
 
                 onCheckedChanged:{
@@ -322,7 +322,7 @@ BaseWidget {
             }
             ConfirmSlider {
 
-                text_off: "FBWA"
+                text_off: qsTr("FBWA")
                 msg_id: 5
 
                 onCheckedChanged:{
