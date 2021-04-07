@@ -384,23 +384,21 @@ BaseWidget {
             y: 0
             width: 24
             height: 24
-       //     color: OpenHD.gps_fix_type >= 3 ? settings.color_text : (OpenHD.gps_fix_type < 2 ? "#ff0000" : "#fbfd15")
+            //     color: OpenHD.gps_fix_type >= 3 ? settings.color_text : (OpenHD.gps_fix_type < 2 ? "#ff0000" : "#fbfd15")
             color: {
-                   if (OpenHD.gps_hdop >= settings.gps_warn ){
-                       widgetInner.visible=true;
-                       return settings.color_warn;
-                   } else if (OpenHD.gps_hdop > settings.gps_caution){
-                       widgetInner.visible=true;
-                       return settings.color_caution;
-                   } else if (settings.gps_declutter == true && OpenHD.armed == true){
-                       widgetInner.visible=false;
-                       return settings.color_text;
-                   } else {
-                       widgetInner.visible=true;
-                       return settings.color_text;
-                   }
-
-
+                if (OpenHD.gps_hdop >= settings.gps_warn ){
+                    widgetInner.visible=true;
+                    return settings.color_warn;
+                } else if (OpenHD.gps_hdop > settings.gps_caution){
+                    widgetInner.visible=true;
+                    return settings.color_caution;
+                } else if (settings.gps_declutter == true && OpenHD.armed == true){
+                    widgetInner.visible=false;
+                    return settings.color_text;
+                } else {
+                    widgetInner.visible=true;
+                    return settings.color_text;
+                }
             }
             opacity: settings.gps_opacity
             text: OpenHD.satellites_visible
