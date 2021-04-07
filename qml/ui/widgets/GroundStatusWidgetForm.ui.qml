@@ -153,6 +153,179 @@ BaseWidget {
                     onCheckedChanged: settings.setValue(vCenterIdentifier, checked)
                 }
             }
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("Declutter Upon Arm")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels;
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 6
+                    anchors.right: parent.right
+                    checked: settings.ground_status_declutter
+                    onCheckedChanged: settings.ground_status_declutter = checked
+                }
+            }
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("Warn CPU")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Text {
+                    text: settings.ground_status_cpu_warn
+                    color: settings.color_warn
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.right
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Slider {
+                    id: ground_status_cpu_warn_Slider
+                    orientation: Qt.Horizontal
+                    from: 50
+                    value: settings.ground_status_cpu_warn
+                    to: 100
+                    stepSize: 1
+                    height: parent.height
+                    anchors.rightMargin: 0
+                    anchors.right: parent.right
+                    width: parent.width - 96
+
+                    onValueChanged: {
+                        settings.ground_status_cpu_warn = Math.round(ground_status_cpu_warn_Slider.value * 10) / 10.0;
+                    }
+                }
+            }
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("Caution CPU")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Text {
+                    text: settings.ground_status_cpu_caution
+                    color: settings.color_caution
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.right
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Slider {
+                    id: ground_status_cpu_caution_Slider
+                    orientation: Qt.Horizontal
+                    from: 20
+                    value: settings.ground_status_cpu_caution
+                    to: 49
+                    stepSize: 1
+                    height: parent.height
+                    anchors.rightMargin: 0
+                    anchors.right: parent.right
+                    width: parent.width - 96
+
+                    onValueChanged: {
+                        settings.ground_status_cpu_caution = Math.round(ground_status_cpu_caution_Slider.value * 10) / 10.0;
+                    }
+                }
+            }
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("Warn Temp")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Text {
+                    text: settings.ground_status_temp_warn
+                    color: settings.color_warn
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.right
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Slider {
+                    id: ground_status_temp_warn_Slider
+                    orientation: Qt.Horizontal
+                    from: 50
+                    value: settings.ground_status_temp_warn
+                    to: 150
+                    stepSize: 1
+                    height: parent.height
+                    anchors.rightMargin: 0
+                    anchors.right: parent.right
+                    width: parent.width - 96
+
+                    onValueChanged: {
+                        settings.ground_status_temp_warn = Math.round(ground_status_temp_warn_Slider.value * 10) / 10.0;
+                    }
+                }
+            }
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("Caution Temp")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Text {
+                    text: settings.ground_status_temp_caution
+                    color: settings.color_caution
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.right
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Slider {
+                    id: ground_status_temp_caution_Slider
+                    orientation: Qt.Horizontal
+                    from: 20
+                    value: settings.ground_status_temp_caution
+                    to: 49
+                    stepSize: 1
+                    height: parent.height
+                    anchors.rightMargin: 0
+                    anchors.right: parent.right
+                    width: parent.width - 96
+
+                    onValueChanged: {
+                        settings.ground_status_temp_caution = Math.round(ground_status_temp_caution_Slider.value * 10) / 10.0;
+                    }
+                }
+            }
         }
     }
 
@@ -188,7 +361,21 @@ BaseWidget {
             y: 0
             width: 36
             height: 24
-            color: OpenHD.cpuload_gnd >= 70 ? (OpenHD.cpuload_gnd >= 80 ? "#ff0000" : "#fbfd15") : settings.color_text
+            color: {
+                if (OpenHD.cpuload_ground >= settings.ground_status_cpu_warn ||  OpenHD.temp_ground >= settings.ground_status_temp_warn){
+                    widgetInner.visible=true;
+                    return settings.color_warn;
+                } else if (OpenHD.cpuload_ground > settings.ground_status_cpu_caution ||  OpenHD.temp_ground > settings.ground_status_temp_caution){
+                    widgetInner.visible=true;
+                    return settings.color_caution;
+                } else if (settings.ground_status_declutter == true && OpenHD.armed == true){
+                    widgetInner.visible=false;
+                    return settings.color_text;
+                } else {
+                    widgetInner.visible=true;
+                    return settings.color_text;
+                }
+            }
             opacity: settings.ground_status_opacity
             text: Number(OpenHD.cpuload_gnd).toLocaleString(Qt.locale(), 'f', 0) + "%";
             anchors.verticalCenter: parent.verticalCenter
@@ -209,7 +396,21 @@ BaseWidget {
             y: 0
             width: 36
             height: 24
-            color: OpenHD.temp_gnd >= 65 ? (OpenHD.temp_gnd >= 75 ? "#ff0000" : "#fbfd15") : settings.color_text
+            color: {
+                if (OpenHD.cpuload_ground >= settings.ground_status_cpu_warn ||  OpenHD.temp_ground >= settings.ground_status_temp_warn){
+                    widgetInner.visible=true;
+                    return settings.color_warn;
+                } else if (OpenHD.cpuload_ground > settings.ground_status_cpu_caution ||  OpenHD.temp_ground > settings.ground_status_temp_caution){
+                    widgetInner.visible=true;
+                    return settings.color_caution;
+                } else if (settings.ground_status_declutter == true && OpenHD.armed == true){
+                    widgetInner.visible=false;
+                    return settings.color_text;
+                } else {
+                    widgetInner.visible=true;
+                    return settings.color_text;
+                }
+            }
             opacity: settings.ground_status_opacity
             text: Number(OpenHD.temp_gnd).toLocaleString(Qt.locale(), 'f', 0) + "°";
             anchors.verticalCenter: parent.verticalCenter
