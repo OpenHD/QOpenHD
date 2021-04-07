@@ -153,6 +153,105 @@ BaseWidget {
                     onCheckedChanged: settings.setValue(vCenterIdentifier, checked)
                 }
             }
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("Declutter Upon Arm")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels;
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 6
+                    anchors.right: parent.right
+                    checked: settings.esc_temp_declutter
+                    onCheckedChanged: settings.esc_temp_declutter = checked
+                }
+            }
+            Item {
+                id: esc_temp_warn_label
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("Warn Temp")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Text {
+                    text: settings.esc_temp_warn
+                    color: settings.color_warn
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.right
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Slider {
+                    id: esc_temp_warn_Slider
+                    orientation: Qt.Horizontal
+                    from: 75
+                    value: settings.esc_temp_warn
+                    to: 150
+                    stepSize: 1
+                    height: parent.height
+                    anchors.rightMargin: 0
+                    anchors.right: parent.right
+                    width: parent.width - 96
+
+                    onValueChanged: {
+                        settings.esc_temp_warn = Math.round(esc_temp_warn_Slider.value * 10) / 10.0;
+                    }
+                }
+            }
+            Item {
+                id: esc_temp_caution_label
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("Caution Temp")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Text {
+                    text: settings.esc_temp_caution
+                    color: settings.color_caution
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: esc_temp_caution_label.right
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Slider {
+                    id: esc_temp_caution_Slider
+                    orientation: Qt.Horizontal
+                    from: 30
+                    value: settings.esc_temp_caution
+                    to: 74
+                    stepSize: 1
+                    height: parent.height
+                    anchors.rightMargin: 0
+                    anchors.right: parent.right
+                    width: parent.width - 96
+
+                    onValueChanged: {
+                        settings.esc_temp_caution = Math.round(esc_temp_caution_Slider.value * 10) / 10.0;
+                    }
+                }
+            }
         }
     }
 
@@ -164,8 +263,7 @@ BaseWidget {
 
         Text {
             id: temp_glyph
-            color: OpenHD.esc_temp >= 65 ? (OpenHD.esc_temp
-                                            >= 75 ? "#ff0000" : "#fbfd15") : settings.color_shape
+            color: OpenHD.esc_temp >= settings.esc_temp_caution ? (OpenHD.esc_temp >= settings.esc_temp_warn ? settings.color_warn : settings.color_caution) : settings.color_shape
             opacity: settings.esc_temp_opacity
             text: "\uf613"
             anchors.left: parent.left
@@ -182,8 +280,21 @@ BaseWidget {
 
         Text {
             id: esc_temp
-            color: OpenHD.esc_temp >= 65 ? (OpenHD.esc_temp
-                                            >= 75 ? "#ff0000" : "#fbfd15") : settings.color_text
+            color: {
+                if (OpenHD.esc_temp >= settings.esc_temp_warn){
+                    widgetInner.visible=true;
+                    return settings.color_warn;
+                } else if (OpenHD.esc_temp > settings.esc_temp_caution){
+                    widgetInner.visible=true;
+                    return settings.color_caution;
+                } else if (settings.esc_temp_declutter == true && OpenHD.armed == true){
+                    widgetInner.visible=false;
+                    return settings.color_text;
+                } else {
+                    widgetInner.visible=true;
+                    return settings.color_text;
+                }
+            }
             opacity: settings.esc_temp_opacity
             text: OpenHD.esc_temp == 0 ? qsTr("N/A") : OpenHD.esc_temp + "°"
             anchors.left: temp_glyph.right

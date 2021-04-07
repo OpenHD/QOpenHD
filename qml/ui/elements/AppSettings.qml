@@ -128,8 +128,8 @@ Settings {
     property double imu_temp_opacity: 1
     property double imu_temp_size: 1
     property bool imu_temp_declutter: false
-    property double imu_temp_warn: 0
-    property double imu_temp_caution: 0
+    property double imu_temp_warn: 75
+    property double imu_temp_caution: 65
 
     property bool show_press_temp: true
     property double press_temp_opacity: 1
@@ -142,8 +142,8 @@ Settings {
     property double esc_temp_opacity: 1
     property double esc_temp_size: 1
     property bool esc_temp_declutter: false
-    property double esc_temp_warn: 0
-    property double esc_temp_caution: 0
+    property double esc_temp_warn: 75
+    property double esc_temp_caution: 60
 
     property bool show_ground_status: true
     property double ground_status_opacity: 1
