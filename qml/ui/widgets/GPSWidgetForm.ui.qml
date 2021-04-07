@@ -197,6 +197,105 @@ BaseWidget {
                     onCheckedChanged: settings.gps_show_all = checked
                 }
             }
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("Declutter Upon Arm")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels;
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 6
+                    anchors.right: parent.right
+                    checked: settings.gps_declutter
+                    onCheckedChanged: settings.gps_declutter = checked
+                }
+            }
+            Item {
+                id: gps_warn_label
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("Warn HDOP")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Text {
+                    text: settings.gps_warn
+                    color: settings.color_warn
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: gps_warn_label.right
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Slider {
+                    id: gps_warn_Slider
+                    orientation: Qt.Horizontal
+                    from: 3
+                    value: settings.gps_warn
+                    to: 6
+                    stepSize: .1
+                    height: parent.height
+                    anchors.rightMargin: 0
+                    anchors.right: parent.right
+                    width: parent.width - 96
+
+                    onValueChanged: {
+                        settings.gps_warn = Math.round(gps_warn_Slider.value * 10) / 10.0;
+                    }
+                }
+            }
+            Item {
+                id: gps_caution_label
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("Caution HDOP")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Text {
+                    text: settings.gps_caution
+                    color: settings.color_caution
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: gps_caution_label.right
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Slider {
+                    id: gps_caution_Slider
+                    orientation: Qt.Horizontal
+                    from: .5
+                    value: settings.gps_caution
+                    to: 3
+                    stepSize: .1
+                    height: parent.height
+                    anchors.rightMargin: 0
+                    anchors.right: parent.right
+                    width: parent.width - 96
+
+                    onValueChanged: {
+                        settings.gps_caution = Math.round(gps_caution_Slider.value * 10) / 10.0;
+                    }
+                }
+            }
         }
     }
 
@@ -285,7 +384,24 @@ BaseWidget {
             y: 0
             width: 24
             height: 24
-            color: OpenHD.gps_fix_type >= 3 ? settings.color_text : (OpenHD.gps_fix_type < 2 ? "#ff0000" : "#fbfd15")
+       //     color: OpenHD.gps_fix_type >= 3 ? settings.color_text : (OpenHD.gps_fix_type < 2 ? "#ff0000" : "#fbfd15")
+            color: {
+                   if (OpenHD.gps_hdop >= settings.gps_warn ){
+                       widgetInner.visible=true;
+                       return settings.color_warn;
+                   } else if (OpenHD.gps_hdop > settings.gps_caution){
+                       widgetInner.visible=true;
+                       return settings.color_caution;
+                   } else if (settings.gps_declutter == true && OpenHD.armed == true){
+                       widgetInner.visible=false;
+                       return settings.color_text;
+                   } else {
+                       widgetInner.visible=true;
+                       return settings.color_text;
+                   }
+
+
+            }
             opacity: settings.gps_opacity
             text: OpenHD.satellites_visible
             anchors.right: gps_hdop.left
@@ -304,7 +420,21 @@ BaseWidget {
             id: gps_hdop
             width: 48
             height: 24
-            color: OpenHD.gps_fix_type >= 3 ? settings.color_text : (OpenHD.gps_fix_type < 2 ? "#ff0000" : "#fbfd15")
+            color: {
+                if (OpenHD.gps_hdop >= settings.gps_warn ){
+                    widgetInner.visible=true;
+                    return settings.color_warn;
+                } else if (OpenHD.gps_hdop > settings.gps_caution){
+                    widgetInner.visible=true;
+                    return settings.color_caution;
+                } else if (settings.gps_declutter == true && OpenHD.armed == true){
+                    widgetInner.visible=false;
+                    return settings.color_text;
+                } else {
+                    widgetInner.visible=true;
+                    return settings.color_text;
+                }
+            }
             opacity: settings.gps_opacity
             text: qsTr("%L1").arg(OpenHD.gps_hdop)
             anchors.right: parent.right
