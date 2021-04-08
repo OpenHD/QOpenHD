@@ -209,7 +209,7 @@ BaseWidget {
             id: flight_mah_text
             width: 68
             height: 24
-            clip: true
+            clip: false
             color: settings.color_text
             opacity: settings.mah_opacity
             text: settings.flight_mah_use_telemetry ? OpenHD.flight_mah + "mAh" : OpenHD.app_mah + "mAh"
