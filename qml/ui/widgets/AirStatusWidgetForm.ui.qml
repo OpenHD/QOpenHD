@@ -341,7 +341,15 @@ BaseWidget {
             y: 0
             width: 24
             height: 24
-            color: settings.color_shape
+            color: {
+                if (OpenHD.cpuload_air >= settings.air_status_cpu_warn ||  OpenHD.temp_air >= settings.air_status_temp_warn){
+                    return settings.color_warn;
+                } else if (OpenHD.cpuload_air > settings.air_status_cpu_caution ||  OpenHD.temp_air > settings.air_status_temp_caution){
+                    return settings.color_caution;
+                } else {
+                    return settings.color_text;
+                }
+            }
             opacity: settings.air_status_opacity
             text: "\uf2db"
             anchors.right: cpuload_air.left
