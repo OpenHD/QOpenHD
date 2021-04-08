@@ -191,7 +191,7 @@ Settings {
     property bool fpv_dynamic: true    
     property int fpv_sensitivity: 5
     property double fpv_opacity: 1
-    property double fpv_size: 1
+    property double fpv_size: 1.5
     property bool fpv_invert_pitch: false
     property bool fpv_invert_roll: false //currently not used
     property double fpv_vertical_limit: 60
