@@ -347,7 +347,7 @@ BaseWidget {
                 } else if (OpenHD.cpuload_air > settings.air_status_cpu_caution ||  OpenHD.temp_air > settings.air_status_temp_caution){
                     return settings.color_caution;
                 } else {
-                    return settings.color_text;
+                    return settings.color_shape;
                 }
             }
             opacity: settings.air_status_opacity
