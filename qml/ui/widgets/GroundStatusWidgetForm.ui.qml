@@ -340,7 +340,15 @@ BaseWidget {
             y: 0
             width: 24
             height: 24
-            color: settings.color_shape
+            color: {
+                if (OpenHD.cpuload_ground >= settings.ground_status_cpu_warn ||  OpenHD.temp_ground >= settings.ground_status_temp_warn){
+                    return settings.color_warn;
+                } else if (OpenHD.cpuload_ground > settings.ground_status_cpu_caution ||  OpenHD.temp_ground > settings.ground_status_temp_caution){
+                    return settings.color_caution;
+                } else {
+                    return settings.color_shape;
+                }
+            }
             opacity: settings.ground_status_opacity
             text: "\uF2DA"
             anchors.right: cpuload_gnd.left
