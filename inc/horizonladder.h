@@ -10,7 +10,7 @@ class HorizonLadder : public QQuickPaintedItem {
     Q_PROPERTY(QColor glow READ glow WRITE setGlow NOTIFY glowChanged)
     Q_PROPERTY(bool horizonInvertPitch MEMBER m_horizonInvertPitch WRITE setHorizonInvertPitch NOTIFY horizonInvertPitchChanged)
     Q_PROPERTY(bool horizonInvertRoll MEMBER m_horizonInvertRoll WRITE setHorizonInvertRoll NOTIFY horizonInvertRollChanged)
-    Q_PROPERTY(int horizonWidth MEMBER m_horizonWidth WRITE setHorizonWidth NOTIFY horizonWidthChanged)
+    Q_PROPERTY(double horizonWidth MEMBER m_horizonWidth WRITE setHorizonWidth NOTIFY horizonWidthChanged)
     Q_PROPERTY(int horizonSpacing MEMBER m_horizonSpacing WRITE setHorizonSpacing NOTIFY horizonSpacingChanged)
     Q_PROPERTY(bool horizonShowLadder MEMBER m_horizonShowLadder WRITE setHorizonShowLadder NOTIFY horizonShowLadderChanged)
     Q_PROPERTY(int horizonRange MEMBER m_horizonRange WRITE setHorizonRange NOTIFY horizonRangeChanged)
@@ -38,7 +38,7 @@ public slots:
     void setGlow(QColor glow);
     void setHorizonInvertPitch(bool horizonInvertPitch);
     void setHorizonInvertRoll(bool horizonInvertRoll);
-    void setHorizonWidth(int horizonWidth);
+    void setHorizonWidth(double horizonWidth);
     void setHorizonSpacing(int horizonSpacing);
     void setHorizonShowLadder(bool horizonShowLadder);
     void setHorizonRange(int horizonRange);
@@ -58,7 +58,7 @@ signals:
     void glowChanged(QColor glow);
     void horizonInvertPitchChanged(bool horizonInvertPitch);
     void horizonInvertRollChanged(bool horizonInvertRoll);
-    void horizonWidthChanged(int horizonWidth);
+    void horizonWidthChanged(double horizonWidth);
     void horizonSpacingChanged(int horizonSpacing);
     void horizonShowLadderChanged(bool horizonShowLadder);
     void horizonRangeChanged(int horizonRange);
@@ -78,7 +78,7 @@ private:
     QColor m_glow;
     bool m_horizonInvertPitch;
     bool m_horizonInvertRoll;
-    int m_horizonWidth;
+    double m_horizonWidth;
     int m_horizonSpacing;
     bool m_horizonShowLadder;
     int m_horizonRange;

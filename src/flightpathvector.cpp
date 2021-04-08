@@ -174,7 +174,7 @@ void FlightPathVector::setHorizonSpacing(int horizonSpacing) {
     update();
 }
 
-void FlightPathVector::setHorizonWidth(int horizonWidth) {
+void FlightPathVector::setHorizonWidth(double horizonWidth) {
     m_horizonWidth = horizonWidth;
     emit horizonWidthChanged(m_horizonWidth);
     update();

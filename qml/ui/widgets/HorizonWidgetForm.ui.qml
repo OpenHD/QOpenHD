@@ -170,7 +170,7 @@ BaseWidget {
                     from: 1
                     value: settings.horizon_width
                     to: 10
-                    stepSize: .5
+                    stepSize: .1
                     height: parent.height
                     anchors.rightMargin: 0
                     anchors.right: parent.right
