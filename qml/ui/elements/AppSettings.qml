@@ -207,7 +207,7 @@ Settings {
     property int speed_minimum: 0
 
     property bool show_speed_second: true
-    property bool speed_second_use_groundspeed: true
+    property bool speed_second_use_groundspeed: false
     property double speed_second_opacity: 1
     property double speed_second_size: 1
 
@@ -219,7 +219,7 @@ Settings {
     property int altitude_range: 100
 
     property bool show_altitude_second: true
-    property bool altitude_second_msl_rel: false
+    property bool altitude_second_msl_rel: true
     property double altitude_second_opacity: 1
     property double altitude_second_size: 1
 
