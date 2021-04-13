@@ -24,187 +24,272 @@ BaseWidget {
 
 
     hasWidgetDetail: true
-    widgetDetailWidth: 256
-    widgetDetailHeight: 320
+    hasWidgetAction: true
 
-    widgetDetailComponent: Column {
-        Connections {
-            target: OpenHD
-            function onWifiAdapter0Changed(received_packet_cnt, current_signal_dbm, signal_good) {
-                card0textlower.text = Number(current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
-                card0textlower.visible = true;
+    //----------------------------- DETAIL BELOW ----------------------------------
+
+    widgetDetailComponent: ScrollView{
+
+        contentHeight: downrssiSettingsColumn.height
+        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+        clip: true
+        Column {
+            id: downrssiSettingsColumn
+
+
+            /*            Shape {
+                id: line2
+                height: 32
+                width: parent.width
+
+                ShapePath {
+                    strokeColor: "white"
+                    strokeWidth: 2
+                    strokeStyle: ShapePath.SolidLine
+                    fillColor: "transparent"
+                    startX: 0
+                    startY: line2.height / 2
+                    PathLine { x: 0;           y: line2.height / 2 }
+                    PathLine { x: line2.width; y: line2.height / 2 }
+                }
+            }
+*/
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    id: opacityTitle
+                    text: qsTr("Transparency")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Slider {
+                    id: downlink_rssi_opacity_Slider
+                    orientation: Qt.Horizontal
+                    from: .1
+                    value: settings.downlink_rssi_opacity
+                    to: 1
+                    stepSize: .1
+                    height: parent.height
+                    anchors.rightMargin: 0
+                    anchors.right: parent.right
+                    width: parent.width - 96
+
+                    onValueChanged: {
+                        settings.downlink_rssi_opacity = downlink_rssi_opacity_Slider.value
+                    }
+                }
+            }
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("Size")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Slider {
+                    id: downlink_rssi_size_Slider
+                    orientation: Qt.Horizontal
+                    from: .5
+                    value: settings.downlink_rssi_size
+                    to: 3
+                    stepSize: .1
+                    height: parent.height
+                    anchors.rightMargin: 0
+                    anchors.right: parent.right
+                    width: parent.width - 96
+
+                    onValueChanged: {
+                        settings.downlink_rssi_size = downlink_rssi_size_Slider.value
+                    }
+                }
+            }
+            Item {
+                width: 230
+                height: 32
+                Text {
+                    text: qsTr("Lock to Horizontal Center")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 6
+                    anchors.right: parent.right
+                    checked: {
+                        // @disable-check M222
+                        var _hCenter = settings.value(hCenterIdentifier, defaultHCenter)
+                        // @disable-check M223
+                        if (_hCenter === "true" || _hCenter === 1 || _hCenter === true) {
+                            checked = true;
+                            // @disable-check M223
+                        } else {
+                            checked = false;
+                        }
+                    }
+
+                    onCheckedChanged: settings.setValue(hCenterIdentifier, checked)
+                }
+            }
+            Item {
+                width: 230
+                height: 32
+                Text {
+                    text: qsTr("Lock to Vertical Center")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 6
+                    anchors.right: parent.right
+                    checked: {
+                        // @disable-check M222
+                        var _vCenter = settings.value(vCenterIdentifier, defaultVCenter)
+                        // @disable-check M223
+                        if (_vCenter === "true" || _vCenter === 1 || _vCenter === true) {
+                            checked = true;
+                            // @disable-check M223
+                        } else {
+                            checked = false;
+                        }
+                    }
+
+                    onCheckedChanged: settings.setValue(vCenterIdentifier, checked)
+                }
             }
 
-            function onWifiAdapter1Changed(received_packet_cnt, current_signal_dbm, signal_good) {
-                card1textlower.text = Number(current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
-                card1textlower.visible = true;
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("Show lost/damaged")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels;
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 6
+                    anchors.right: parent.right
+                    checked: settings.downlink_rssi_show_lost_damaged
+                    onCheckedChanged: settings.downlink_rssi_show_lost_damaged = checked
+                }
             }
 
-            function onWifiAdapter2Changed(received_packet_cnt, current_signal_dbm, signal_good) {
-                card2textlower.text = Number(current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
-                card2textlower.visible = true;
-            }
 
-            function onWifiAdapter3Changed(received_packet_cnt, current_signal_dbm, signal_good) {
-                card3textlower.text = Number(current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
-                card3textlower.visible = true;
-            }
-
-            function onWifiAdapter4Changed(received_packet_cnt, current_signal_dbm, signal_good) {
-                card4textlower.text = Number(current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
-                card4textlower.visible = true;
-            }
-
-            function onWifiAdapter5Changed(received_packet_cnt, current_signal_dbm, signal_good) {
-                card5textlower.text = Number(current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
-                card5textlower.visible = true;
-            }
-        }
-
-        Item {
-            width: parent.width
-            height: 32
-            Text {
-                text: qsTr("CTS:")
-                color: "white"
-                font.bold: true
-                height: parent.height
-                font.pixelSize: detailPanelFontPixels
-                anchors.left: parent.left
-                verticalAlignment: Text.AlignVCenter
-            }
-            Text {
-                text: OpenHD.cts
-                color: "white"
-                font.bold: true
-                height: parent.height
-                font.pixelSize: detailPanelFontPixels
-                anchors.right: parent.right
-                verticalAlignment: Text.AlignVCenter
-            }
-        }
-
-        Shape {
-            id: line2
-            height: 32
-            width: parent.width
-
-            ShapePath {
-                strokeColor: "white"
-                strokeWidth: 2
-                strokeStyle: ShapePath.SolidLine
-                fillColor: "transparent"
-                startX: 0
-                startY: line2.height / 2
-                PathLine { x: 0;           y: line2.height / 2 }
-                PathLine { x: line2.width; y: line2.height / 2 }
-            }
-        }
-        Item {
-            width: parent.width
-            height: 32
-            Text {
-                id: opacityTitle
-                text: qsTr("Transparency")
-                color: "white"
-                height: parent.height
-                font.bold: true
-                font.pixelSize: detailPanelFontPixels
-                anchors.left: parent.left
-                verticalAlignment: Text.AlignVCenter
-            }
-            Slider {
-                id: downlink_rssi_opacity_Slider
-                orientation: Qt.Horizontal
-                from: .1
-                value: settings.downlink_rssi_opacity
-                to: 1
-                stepSize: .1
-                height: parent.height
-                anchors.rightMargin: 0
-                anchors.right: parent.right
-                width: parent.width - 96
-
-                onValueChanged: {
-                    settings.downlink_rssi_opacity = downlink_rssi_opacity_Slider.value
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("Show all cards to right")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels;
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 6
+                    anchors.right: parent.right
+                    checked: settings.downlink_cards_right
+                    onCheckedChanged: settings.downlink_cards_right = checked
                 }
             }
         }
-        Item {
-            width: parent.width
-            height: 32
-            Text {
-                text: qsTr("Size")
-                color: "white"
-                height: parent.height
-                font.bold: true
-                font.pixelSize: detailPanelFontPixels
-                anchors.left: parent.left
-                verticalAlignment: Text.AlignVCenter
-            }
-            Slider {
-                id: downlink_rssi_size_Slider
-                orientation: Qt.Horizontal
-                from: .5
-                value: settings.downlink_rssi_size
-                to: 3
-                stepSize: .1
-                height: parent.height
-                anchors.rightMargin: 0
-                anchors.right: parent.right
-                width: parent.width - 96
+    }
 
-                onValueChanged: {
-                    settings.downlink_rssi_size = downlink_rssi_size_Slider.value
+    //---------------------------ACTION WIDGET COMPONENT BELOW-----------------------------
+
+    widgetActionComponent: ScrollView{
+
+        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+        clip: true
+
+        ColumnLayout{
+            width:200
+            Connections {
+                target: OpenHD
+                function onWifiAdapter0Changed(received_packet_cnt, current_signal_dbm, signal_good) {
+                    card0textlower.text = Number(current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
+                    card0textlower.visible = true;
+                }
+
+                function onWifiAdapter1Changed(received_packet_cnt, current_signal_dbm, signal_good) {
+                    card1textlower.text = Number(current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
+                    card1textlower.visible = true;
+                }
+
+                function onWifiAdapter2Changed(received_packet_cnt, current_signal_dbm, signal_good) {
+                    card2textlower.text = Number(current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
+                    card2textlower.visible = true;
+                }
+
+                function onWifiAdapter3Changed(received_packet_cnt, current_signal_dbm, signal_good) {
+                    card3textlower.text = Number(current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
+                    card3textlower.visible = true;
+                }
+
+                function onWifiAdapter4Changed(received_packet_cnt, current_signal_dbm, signal_good) {
+                    card4textlower.text = Number(current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
+                    card4textlower.visible = true;
+                }
+
+                function onWifiAdapter5Changed(received_packet_cnt, current_signal_dbm, signal_good) {
+                    card5textlower.text = Number(current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
+                    card5textlower.visible = true;
+                }
+            }
+
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("CTS:")
+                    color: "white"
+                    font.bold: true
+                    height: parent.height
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Text {
+                    text: OpenHD.cts
+                    color: "white"
+                    font.bold: true
+                    height: parent.height
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.right: parent.right
+                    verticalAlignment: Text.AlignVCenter
                 }
             }
         }
-        Item {
-            width: parent.width
-            height: 32
-            Text {
-                text: qsTr("Show lost/damaged")
-                color: "white"
-                height: parent.height
-                font.bold: true
-                font.pixelSize: detailPanelFontPixels;
-                anchors.left: parent.left
-                verticalAlignment: Text.AlignVCenter
-            }
-            Switch {
-                width: 32
-                height: parent.height
-                anchors.rightMargin: 6
-                anchors.right: parent.right
-                checked: settings.downlink_rssi_show_lost_damaged
-                onCheckedChanged: settings.downlink_rssi_show_lost_damaged = checked
-            }
-        }
-
-
-        Item {
-            width: parent.width
-            height: 32
-            Text {
-                text: qsTr("Show all cards to right")
-                color: "white"
-                height: parent.height
-                font.bold: true
-                font.pixelSize: detailPanelFontPixels;
-                anchors.left: parent.left
-                verticalAlignment: Text.AlignVCenter
-            }
-            Switch {
-                width: 32
-                height: parent.height
-                anchors.rightMargin: 6
-                anchors.right: parent.right
-                checked: settings.downlink_cards_right
-                onCheckedChanged: settings.downlink_cards_right = checked
-            }
-        }
-
-
     }
 
     Item {
@@ -257,7 +342,7 @@ BaseWidget {
             width: 32
             height: 24
             color: settings.color_text
-            text: qsTr("dBm")            
+            text: qsTr("dBm")
             anchors.left: downlink_rssi.right
             anchors.leftMargin: 2
             anchors.top: parent.top

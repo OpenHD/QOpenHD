@@ -68,7 +68,7 @@ void MavlinkBase::onStarted() {
 }
 
 void MavlinkBase::onTCPConnected() {
-
+    //qDebug() << "MavlinkBase::onTCPConnected()";
 }
 
 void MavlinkBase::onTCPDisconnected() {
@@ -140,13 +140,12 @@ void MavlinkBase::sendData(char* data, int len) {
 }
 
 QVariantMap MavlinkBase::getAllParameters() {
+    qDebug() << "MavlinkBase::getAllParameters()";
     return m_allParameters;
 }
 
 
 void MavlinkBase::fetchParameters() {
-    qDebug() << "MavlinkBase::fetchParameters()";
-
     QSettings settings;
     int mavlink_sysid = settings.value("mavlink_sysid", m_util.default_mavlink_sysid()).toInt();
 
@@ -173,7 +172,6 @@ void MavlinkBase::sendHeartbeat() {
 
     sendData((char*)buffer, len);
 }
-
 
 bool MavlinkBase::isConnectionLost() {
     /* we want to know if a heartbeat has been received (not -1, the default)
@@ -351,9 +349,8 @@ void MavlinkBase::set_last_gps(qint64 last_gps) {
 
 void MavlinkBase::set_last_vfr(qint64 last_vfr) {
     m_last_vfr = last_vfr;
-    emit last_vfr_changed(m_last_vfr);
+    emit last_vfr_changed(m_last_vfr);   
 }
-
 
 void MavlinkBase::setDataStreamRate(MAV_DATA_STREAM streamType, uint8_t hz) {
 
@@ -409,6 +406,7 @@ void MavlinkBase::commandStateLoop() {
             break;
         }
         case MavlinkCommandStateSend: {
+        qDebug() << "CMD SEND";
             mavlink_message_t msg;
             m_command_sent_timestamp = QDateTime::currentMSecsSinceEpoch();
 
@@ -416,10 +414,13 @@ void MavlinkBase::commandStateLoop() {
 
             int mavlink_sysid = settings.value("mavlink_sysid", m_util.default_mavlink_sysid()).toInt();
 
+            //qDebug() << "SYSID=" << mavlink_sysid;
+            //qDebug() << "Target SYSID=" << targetSysID;
+
             if (m_current_command->m_command_type == MavlinkCommandTypeLong) {
                 mavlink_msg_command_long_pack(mavlink_sysid, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID, targetCompID, m_current_command->command_id, m_current_command->long_confirmation, m_current_command->long_param1, m_current_command->long_param2, m_current_command->long_param3, m_current_command->long_param4, m_current_command->long_param5, m_current_command->long_param6, m_current_command->long_param7);
             } else {
-                mavlink_msg_command_int_pack(mavlink_sysid, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID, targetCompID, m_current_command->int_frame, m_current_command->command_id, m_current_command->int_current, m_current_command->int_autocontinue, m_current_command->int_param1, m_current_command->int_param2, m_current_command->int_param3, m_current_command->int_param4, m_current_command->int_param5, m_current_command->int_param6, m_current_command->int_param7);
+                mavlink_msg_command_int_pack(mavlink_sysid, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID, targetCompID, m_current_command->int_frame, m_current_command->command_id, m_current_command->int_current, m_current_command->int_autocontinue, m_current_command->int_param1, m_current_command->int_param2, m_current_command->int_param3, m_current_command->int_param4, m_current_command->int_param5, m_current_command->int_param6, m_current_command->int_param7);          
             }
             uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
             int len = mavlink_msg_to_send_buffer(buffer, &msg);
@@ -432,11 +433,13 @@ void MavlinkBase::commandStateLoop() {
             break;
         }
         case MavlinkCommandStateWaitACK: {
+        qDebug() << "CMD ACK";
             qint64 current_timestamp = QDateTime::currentMSecsSinceEpoch();
             auto elapsed = current_timestamp - m_command_sent_timestamp;
 
             if (elapsed > 200) {
                 // no ack in 200ms, cancel or resend
+                qDebug() << "CMD RETRY";
                 if (m_current_command->retry_count >= 5) {
                     m_command_state = MavlinkCommandStateFailed;
                     m_current_command.reset();
@@ -453,12 +456,14 @@ void MavlinkBase::commandStateLoop() {
             break;
         }
         case MavlinkCommandStateDone: {
+            qDebug() << "CMD DONE";
             m_current_command.reset();
             emit commandDone();
             m_command_state = MavlinkCommandStateReady;
             break;
         }
         case MavlinkCommandStateFailed: {
+            qDebug() << "CMD FAIL";
             m_current_command.reset();
             emit commandFailed();
             m_command_state = MavlinkCommandStateReady;

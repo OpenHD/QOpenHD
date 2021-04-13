@@ -30,214 +30,290 @@ BaseWidget {
     defaultYOffset: 128
 
     hasWidgetDetail: true
-    widgetDetailHeight: 190
-    widgetDetailComponent: Column {
-        Item {
-            width: parent.width
-            height: 32
-            Text {
-                text: qsTr("Transparency")
-                color: "white"
-                height: parent.height
-                font.bold: true
-                font.pixelSize: detailPanelFontPixels
-                anchors.left: parent.left
-                verticalAlignment: Text.AlignVCenter
-            }
-            Slider {
-                id: wind_opacity_Slider
-                orientation: Qt.Horizontal
-                from: .1
-                value: settings.wind_opacity
-                to: 1
-                stepSize: .1
-                height: parent.height
-                anchors.rightMargin: 0
-                anchors.right: parent.right
-                width: parent.width - 96
 
-                onValueChanged: {// @disable-check M223
-                    settings.wind_opacity = wind_opacity_Slider.value
+    widgetDetailComponent: ScrollView{
+
+        contentHeight: windSettingsColumn.height
+        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+        clip: true
+        Column {
+            id: windSettingsColumn
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("Transparency")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Slider {
+                    id: wind_opacity_Slider
+                    orientation: Qt.Horizontal
+                    from: .1
+                    value: settings.wind_opacity
+                    to: 1
+                    stepSize: .1
+                    height: parent.height
+                    anchors.rightMargin: 0
+                    anchors.right: parent.right
+                    width: parent.width - 96
+
+                    onValueChanged: {// @disable-check M223
+                        settings.wind_opacity = wind_opacity_Slider.value
+                    }
                 }
             }
-        }
-        Item {
-            width: parent.width
-            height: 32
-            Text {
-                text: qsTr("Size")
-                color: "white"
-                height: parent.height
-                font.bold: true
-                font.pixelSize: detailPanelFontPixels
-                anchors.left: parent.left
-                verticalAlignment: Text.AlignVCenter
-            }
-            Slider {
-                id: wind_size_Slider
-                orientation: Qt.Horizontal
-                from: .5
-                value: settings.wind_size
-                to: 3
-                stepSize: .1
-                height: parent.height
-                anchors.rightMargin: 0
-                anchors.right: parent.right
-                width: parent.width - 96
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("Size")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Slider {
+                    id: wind_size_Slider
+                    orientation: Qt.Horizontal
+                    from: .5
+                    value: settings.wind_size
+                    to: 3
+                    stepSize: .1
+                    height: parent.height
+                    anchors.rightMargin: 0
+                    anchors.right: parent.right
+                    width: parent.width - 96
 
-                onValueChanged: {
-                    settings.wind_size = wind_size_Slider.value
+                    onValueChanged: {
+                        settings.wind_size = wind_size_Slider.value
+                    }
                 }
             }
-        }
-        Item {
-            width: parent.width
-            height: 32
-            Text {
-                text: qsTr("Style: Arrow / Circle")
-                color: "white"
-                height: parent.height
-                font.bold: true
-                font.pixelSize: detailPanelFontPixels;
-                anchors.left: parent.left
-                verticalAlignment: Text.AlignVCenter
-            }
-            Switch {
-                width: 32
-                height: parent.height
-                anchors.rightMargin: 6
-                anchors.right: parent.right
-                checked: settings.wind_arrow_circle
-                onCheckedChanged: settings.wind_arrow_circle = checked
-            }
-        }
-        Item {
-            width: parent.width
-            height: 32
-            Text {
-                text: qsTr("Plane / Copter")
-                color: "white"
-                height: parent.height
-                font.bold: true
-                font.pixelSize: detailPanelFontPixels;
-                anchors.left: parent.left
-                verticalAlignment: Text.AlignVCenter
-            }
-            Switch {
-                width: 32
-                height: parent.height
-                anchors.rightMargin: 6
-                anchors.right: parent.right
-                checked: settings.wind_plane_copter
-                onCheckedChanged: settings.wind_plane_copter = checked
-            }
-        }
-        Item {
-            width: parent.width
-            height: 32
-            visible: settings.wind_plane_copter ? true : false
-
-            Text {
-                text: qsTr("45 Degree Speed M/S")
-                color: "white"
-                height: parent.height
-                font.bold: true
-                font.pixelSize: detailPanelFontPixels
-                anchors.left: parent.left
-                verticalAlignment: Text.AlignVCenter
-            }
-            Rectangle {
-                id: decimalRect
-                height: 40
-                width: 30
-                anchors.rightMargin: 0
-                anchors.right: parent.right
-                antialiasing: true;
-
-                Tumbler {
-                    id: decimalTumbler
-                    model: 10
-
-                    visibleItemCount : 1
-                    anchors.fill: parent
-                    Component.onCompleted: {
-                        currentIndex= settings.wind_tumbler_decimal ;
-                    }
-
-                    delegate: Text {
-                        text: modelData
-                        color: "white"
-                        font.family: "Arial"
-                        font.weight: Font.Thin
-                        font.pixelSize: 14
-
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
-                        //opacity: 1.0 - Math.abs(Tumbler.displacement) / root.visibleItemCount
-                        scale: opacity
-                    }
-
-                    onCurrentIndexChanged: {
-                        settings.wind_tumbler_decimal = currentIndex;
-                        //  console.log("decimal Changed-",settings.wind_tumbler_decimal)
-                    }
+            Item {
+                width: 230
+                height: 32
+                Text {
+                    text: qsTr("Lock to Horizontal Center")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
                 }
-                gradient: Gradient {
-                    GradientStop { position: 0.0; color: Material.color(Material.Grey ,Material.Shade500) }
-                    GradientStop { position: 0.5; color: "transparent" }
-                    GradientStop { position: 1.0; color: Material.color(Material.Grey ,Material.Shade500) }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 6
+                    anchors.right: parent.right
+                    checked: {
+                        // @disable-check M222
+                        var _hCenter = settings.value(hCenterIdentifier, defaultHCenter)
+                        // @disable-check M223
+                        if (_hCenter === "true" || _hCenter === 1 || _hCenter === true) {
+                            checked = true;
+                            // @disable-check M223
+                        } else {
+                            checked = false;
+                        }
+                    }
+
+                    onCheckedChanged: settings.setValue(hCenterIdentifier, checked)
                 }
             }
-            Text {
-                id:decimalText
-                text: "."
-                color: "white"
-                height: parent.height
-                font.bold: true
-                font.pixelSize: detailPanelFontPixels
-                anchors.right: decimalRect.left
-                rightPadding: 5
-                leftPadding: 5
-                verticalAlignment: Text.AlignVCenter
+            Item {
+                width: 230
+                height: 32
+                Text {
+                    text: qsTr("Lock to Vertical Center")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 6
+                    anchors.right: parent.right
+                    checked: {
+                        // @disable-check M222
+                        var _vCenter = settings.value(vCenterIdentifier, defaultVCenter)
+                        // @disable-check M223
+                        if (_vCenter === "true" || _vCenter === 1 || _vCenter === true) {
+                            checked = true;
+                            // @disable-check M223
+                        } else {
+                            checked = false;
+                        }
+                    }
+
+                    onCheckedChanged: settings.setValue(vCenterIdentifier, checked)
+                }
             }
-            Rectangle {
-                id: tensRect
-                height: 40
-                width: 30
-                anchors.right: decimalText.left
-                antialiasing: true;
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("Style: Arrow / Circle")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels;
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 6
+                    anchors.right: parent.right
+                    checked: settings.wind_arrow_circle
+                    onCheckedChanged: settings.wind_arrow_circle = checked
+                }
+            }
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("Plane / Copter")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels;
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 6
+                    anchors.right: parent.right
+                    checked: settings.wind_plane_copter
+                    onCheckedChanged: settings.wind_plane_copter = checked
+                }
+            }
+            Item {
+                width: parent.width
+                height: 32
+                visible: settings.wind_plane_copter ? true : false
 
-                Tumbler {
-                    id: tensTumbler
-                    model: 60
-                    visibleItemCount : 1
-                    anchors.fill: parent
+                Text {
+                    text: qsTr("45 Degree Speed M/S")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Rectangle {
+                    id: decimalRect
+                    height: 40
+                    width: 30
+                    anchors.rightMargin: 0
+                    anchors.right: parent.right
+                    antialiasing: true;
 
-                    Component.onCompleted: {
-                        // rounds it due to int
-                        currentIndex= settings.wind_tumbler_tens;
+                    Tumbler {
+                        id: decimalTumbler
+                        model: 10
+
+                        visibleItemCount : 1
+                        anchors.fill: parent
+
+                        currentIndex: settings.wind_tumbler_decimal
+
+                        Component.onCompleted: {
+                            currentIndex= settings.wind_tumbler_decimal ;
+                        }
+
+                        delegate: Text {
+                            text: modelData
+                            color: "white"
+                            font.family: "Arial"
+                            font.weight: Font.Thin
+                            font.pixelSize: 14
+
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                            //opacity: 1.0 - Math.abs(Tumbler.displacement) / root.visibleItemCount
+                            scale: opacity
+                        }
+
+                        onCurrentIndexChanged: {
+                            settings.wind_tumbler_decimal = currentIndex;
+                            //  console.log("decimal Changed-",settings.wind_tumbler_decimal)
+                        }
                     }
-                    delegate: Text {
-                        text: modelData
-                        color: "white"
-
-                        font.family: "Arial"
-                        font.weight: Font.Thin
-                        font.pixelSize: 14
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
-                        //opacity: 1.0 - Math.abs(Tumbler.displacement) / root.visibleItemCount
-                        scale: opacity
-                    }
-                    onCurrentIndexChanged: {
-                        settings.wind_tumbler_tens = currentIndex;
-                        //   console.log("tens Changed-",settings.wind_tumbler_tens);
+                    gradient: Gradient {
+                        GradientStop { position: 0.0; color: Material.color(Material.Grey ,Material.Shade500) }
+                        GradientStop { position: 0.5; color: "transparent" }
+                        GradientStop { position: 1.0; color: Material.color(Material.Grey ,Material.Shade500) }
                     }
                 }
-                gradient: Gradient {
-                    GradientStop { position: 0.0; color: Material.color(Material.Grey ,Material.Shade500) }
-                    GradientStop { position: 0.5; color: "transparent" }
-                    GradientStop { position: 1.0; color: Material.color(Material.Grey ,Material.Shade500) }
+                Text {
+                    id:decimalText
+                    text: "."
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.right: decimalRect.left
+                    rightPadding: 5
+                    leftPadding: 5
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Rectangle {
+                    id: tensRect
+                    height: 40
+                    width: 30
+                    anchors.right: decimalText.left
+                    antialiasing: true;
+
+                    Tumbler {
+                        id: tensTumbler
+                        model: 60
+                        visibleItemCount : 1
+                        anchors.fill: parent
+
+                        currentIndex: settings.wind_tumbler_tens
+
+                        Component.onCompleted: {
+                            // rounds it due to int
+                            currentIndex= settings.wind_tumbler_tens;
+                        }
+                        delegate: Text {
+                            text: modelData
+                            color: "white"
+
+                            font.family: "Arial"
+                            font.weight: Font.Thin
+                            font.pixelSize: 14
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                            //opacity: 1.0 - Math.abs(Tumbler.displacement) / root.visibleItemCount
+                            scale: opacity
+                        }
+                        onCurrentIndexChanged: {
+                            settings.wind_tumbler_tens = currentIndex;
+                            //   console.log("tens Changed-",settings.wind_tumbler_tens);
+                        }
+                    }
+                    gradient: Gradient {
+                        GradientStop { position: 0.0; color: Material.color(Material.Grey ,Material.Shade500) }
+                        GradientStop { position: 0.5; color: "transparent" }
+                        GradientStop { position: 1.0; color: Material.color(Material.Grey ,Material.Shade500) }
+                    }
                 }
             }
         }

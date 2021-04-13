@@ -33,6 +33,8 @@ Settings {
     property string color_shape: "white"
     property string color_text: "white"
     property string color_glow: "black"
+    property string color_warn: "red"
+    property string color_caution: "yellow"
     property string font_text: "Sans Serif"
 
     property string bar_behavior: "red"
@@ -46,19 +48,31 @@ Settings {
     property bool downlink_rssi_show_lost_damaged: false
     property bool downlink_cards_right: false
     property double downlink_rssi_size: 1
+    property bool downlink_rssi_declutter: false
+    property double downlink_rssi_warn: 0
+    property double downlink_rssi_caution: 0
 
     property bool show_uplink_rssi: true
     property double uplink_rssi_opacity: 1
     property double uplink_rssi_size: 1
+    property bool uplink_rssi_declutter: false
+    property double uplink_rssi_warn: 0
+    property double uplink_rssi_caution: 0
 
     property bool show_rc_rssi: false
     property double rc_rssi_opacity: 1
     property double rc_rssi_size: 1
+    property bool rc_rssi_declutter: false
+    property double rc_rssi_warn: 0
+    property double rc_rssi_caution: 0
 
     property bool show_bitrate: true
     property double bitrate_opacity: 1
     property bool bitrate_show_skip_fail_count: false
     property double bitrate_size: 1
+    property bool bitrate_declutter: false
+    property double bitrate_warn: 0
+    property double bitrate_caution: 0
 
     property bool show_air_battery: true
     property double air_battery_opacity: 1
@@ -79,6 +93,9 @@ Settings {
     property double gps_opacity: 1
     property bool gps_show_all: false
     property double gps_size: 1
+    property bool gps_declutter: false
+    property double gps_warn: 3
+    property double gps_caution: 2
 
     property bool show_home_distance: true
     property double home_distance_opacity: 1
@@ -110,22 +127,41 @@ Settings {
     property bool show_imu_temp: false
     property double imu_temp_opacity: 1
     property double imu_temp_size: 1
+    property bool imu_temp_declutter: false
+    property double imu_temp_warn: 75
+    property double imu_temp_caution: 65
 
     property bool show_press_temp: true
     property double press_temp_opacity: 1
     property double press_temp_size: 1
+    property bool press_temp_declutter: false
+    property double press_temp_warn: 75
+    property double press_temp_caution: 60
 
     property bool show_esc_temp: false
     property double esc_temp_opacity: 1
     property double esc_temp_size: 1
+    property bool esc_temp_declutter: false
+    property double esc_temp_warn: 75
+    property double esc_temp_caution: 60
 
     property bool show_ground_status: true
     property double ground_status_opacity: 1
     property double ground_status_size: 1
+    property bool ground_status_declutter: false
+    property double ground_status_cpu_warn: 50
+    property double ground_status_cpu_caution: 40
+    property double ground_status_temp_warn: 60
+    property double ground_status_temp_caution: 50
 
     property bool show_air_status: true
     property double air_status_opacity: 1
     property double air_status_size: 1
+    property bool air_status_declutter: false
+    property double air_status_cpu_warn: 70
+    property double air_status_cpu_caution: 80
+    property double air_status_temp_warn: 60
+    property double air_status_temp_caution: 50
 
     property bool show_message_hud: true
     property double message_hud_opacity: 1
@@ -135,7 +171,7 @@ Settings {
     property bool horizon_invert_pitch: false
     property bool horizon_invert_roll: false
     property int horizon_size: 1
-    property int horizon_width: 1
+    property double horizon_width: 2
     property double horizon_opacity: 1
     property int horizon_ladder_spacing: 180
     property bool show_horizon_ladder: true
@@ -155,7 +191,7 @@ Settings {
     property bool fpv_dynamic: true    
     property int fpv_sensitivity: 5
     property double fpv_opacity: 1
-    property double fpv_size: 1
+    property double fpv_size: 1.5
     property bool fpv_invert_pitch: false
     property bool fpv_invert_roll: false //currently not used
     property double fpv_vertical_limit: 60
@@ -171,7 +207,7 @@ Settings {
     property int speed_minimum: 0
 
     property bool show_speed_second: true
-    property bool speed_second_use_groundspeed: true
+    property bool speed_second_use_groundspeed: false
     property double speed_second_opacity: 1
     property double speed_second_size: 1
 
@@ -183,7 +219,7 @@ Settings {
     property int altitude_range: 100
 
     property bool show_altitude_second: true
-    property bool altitude_second_msl_rel: false
+    property bool altitude_second_msl_rel: true
     property double altitude_second_opacity: 1
     property double altitude_second_size: 1
 
@@ -230,7 +266,7 @@ Settings {
 
     property bool show_wind: false
     property double wind_opacity: 1
-    property bool wind_plane_copter: true
+    property bool wind_plane_copter: false //should default to plane
     property bool wind_arrow_circle: true
     //tumbler value had to be split into two values..
     property double wind_tumbler_decimal: 5
@@ -253,6 +289,14 @@ Settings {
     property bool adsb_api_openskynetwork: false
     property double adsb_opacity: 1
     property double adsb_size: 1
+
+    property bool show_vroverlay: false
+    property double vroverlay_opacity: 1
+    property double vroverlay_size: 1
+    property bool vroverlay_invert_pitch: false
+    property bool vroverlay_invert_roll: false //currently not used
+    property double vroverlay_vertical_fov: 120
+    property double vroverlay_horizontal_fov: 180
 
     property bool show_blackbox: false
     property double blackbox_opacity: 1

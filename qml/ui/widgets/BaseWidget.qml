@@ -84,21 +84,33 @@ BaseWidgetForm {
     function _onClicked(drag) {
         if (dragging) {
             drag.target = null
-            widgetControls.close()
+            widgetDetail.close()
             saveAlignment()
             loadAlignment()
             dragging = false
             globalDragLock = false
         } else if (hasWidgetPopup) {
             widgetPopup.open()
-        } else if (hasWidgetDetail) {
-            if (widgetDetail.visible) {
+        } else if (hasWidgetAction) {
+            if (widgetAction.visible) {
+                widgetAction.close()
+            }
+            else if (widgetDetail.visible) {
                 widgetDetail.close()
-            } else {
+                dragging = false
+
+                //widgetControls.close()
+
+                saveAlignment()
+
+                loadAlignment()
+                globalDragLock = false
+            }
+            else {
                 if (globalDragLock) {
                     return;
                 }
-                widgetDetail.open()
+                widgetAction.open()
             }
         }
     }
@@ -117,10 +129,12 @@ BaseWidgetForm {
                  */
             resetAnchors()
             drag.target = widgetBase
-            widgetControls.open()
+            //widgetControls.open() ///-------------this is the arrow window
+            widgetDetail.open()
+
         } else {
             drag.target = null
-            widgetControls.close()
+            widgetDetail.close()
             saveAlignment()
             loadAlignment()
             dragging = false

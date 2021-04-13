@@ -227,6 +227,11 @@ Item {
         id: adsbWidget
     }
 
+    // UNTESTED CPU USAGE!!
+    VROverlayWidget {
+        id: vrOverlayWidget
+    }
+
     ExampleWidget {
         id: exampleWidget
     }

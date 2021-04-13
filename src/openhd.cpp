@@ -53,7 +53,7 @@ OpenHD::OpenHD(QObject *parent): QObject(parent) {
     connect(mavlink, &MavlinkTelemetry::last_vfr_changed, this, &OpenHD::set_last_telemetry_vfr);
 
     connect(this, &OpenHD::pauseTelemetry, mavlink, &MavlinkTelemetry::pauseTelemetry);
-
+    connect(this, &OpenHD::requested_Flight_Mode_Changed, mavlink, &MavlinkTelemetry::requested_Flight_Mode_Changed);
     auto openhd = OpenHDTelemetry::instance();
     connect(openhd, &OpenHDTelemetry::last_heartbeat_changed, this, &OpenHD::set_last_openhd_heartbeat);
 }
@@ -147,7 +147,7 @@ void OpenHD::telemetryMessage(QString message, int level) {
 }
 
 void OpenHD::updateFlightTimer() {
-    if (m_armed && m_pause_blackbox == false) {
+    if (m_armed == true && m_pause_blackbox == false) {
         // check elapsed time since arming and update the UI-visible flight_time property
         int elapsed = flightTimeStart.elapsed() / 1000;
         auto hours = elapsed / 3600;
@@ -235,6 +235,12 @@ void OpenHD::updateAppMahKm() {
 
 }
 
+void OpenHD::set_Requested_Flight_Mode(int mode){
+    //qDebug() << "OpenHD::set_Requested_Flight_Mode="<< mode;
+    m_mode=mode;
+    emit requested_Flight_Mode_Changed(m_mode);
+}
+
 void OpenHD::pauseBlackBox(bool pause, int index){
     //qDebug() << "OpenHD::pauseBlackBox";
     m_pause_blackbox=pause;
@@ -243,9 +249,8 @@ void OpenHD::pauseBlackBox(bool pause, int index){
 }
 
 void OpenHD::updateBlackBoxModel() {
-    //qDebug() << "updateBlackBoxModel() ";
-
     if (m_pause_blackbox==false && m_armed == true){
+        //qDebug() << "updateBlackBoxModel() ";
         emit addBlackBoxObject(BlackBox(m_flight_mode,m_flight_time,m_lat,m_lon,m_alt_msl,m_speed,
                                         m_hdg,m_vsi,m_pitch,m_roll,m_throttle, m_control_pitch,m_control_roll,m_control_yaw,
                                         m_control_throttle,m_current_signal_joystick_uplink,m_downlink_rssi,m_lost_packet_cnt_rc,

@@ -22,7 +22,7 @@ void HorizonLadder::paint(QPainter* painter) {
 
     bool horizonInvertPitch = m_horizonInvertPitch;
     bool horizonInvertRoll = m_horizonInvertRoll;
-    int horizonWidth = m_horizonWidth;
+    double horizonWidth = m_horizonWidth;
     int horizonSpacing = m_horizonSpacing;
     bool horizonShowLadder = m_horizonShowLadder;
     int horizonRange = m_horizonRange;
@@ -370,7 +370,7 @@ void HorizonLadder::setHorizonInvertRoll(bool horizonInvertRoll) {
 }
 
 
-void HorizonLadder::setHorizonWidth(int horizonWidth) {
+void HorizonLadder::setHorizonWidth(double horizonWidth) {
     m_horizonWidth = horizonWidth;
     emit horizonWidthChanged(m_horizonWidth);
     update();

@@ -93,6 +93,71 @@ BaseWidget {
                 }
             }
             Item {
+                width: 230
+                height: 32
+                Text {
+                    text: qsTr("Lock to Horizontal Center")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 6
+                    anchors.right: parent.right
+                    checked: {
+                        // @disable-check M222
+                        var _hCenter = settings.value(hCenterIdentifier, defaultHCenter)
+                        // @disable-check M223
+                        if (_hCenter === "true" || _hCenter === 1 || _hCenter === true) {
+                            checked = true;
+                            // @disable-check M223
+                        } else {
+                            checked = false;
+                        }
+                    }
+
+                    onCheckedChanged: settings.setValue(hCenterIdentifier, checked)
+                }
+            }
+            Item {
+                width: 230
+                height: 32
+                Text {
+                    text: qsTr("Lock to Vertical Center")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 6
+                    anchors.right: parent.right
+                    checked: {
+                        // @disable-check M222
+                        var _vCenter = settings.value(vCenterIdentifier, defaultVCenter)
+                        // @disable-check M223
+                        if (_vCenter === "true" || _vCenter === 1 || _vCenter === true) {
+                            checked = true;
+                            // @disable-check M223
+                        } else {
+                            checked = false;
+                        }
+                    }
+
+                    onCheckedChanged: settings.setValue(vCenterIdentifier, checked)
+                }
+            }
+
+            Item {
                 width: 240
                 height: 32
                 Text {
@@ -201,7 +266,6 @@ BaseWidget {
         }
     }
 
-
     Item {
         id: widgetInner
         height: parent.height
@@ -212,7 +276,7 @@ BaseWidget {
 
         antialiasing: true
 
-/*------------------------------ Single Circle Version start------------------
+        /*------------------------------ Single Circle Version start------------------
         this could all be simplified and condensed with either or type of logic. However
         might add a 3rd type of display version then the either or logic would have to
         be undone...
@@ -294,7 +358,7 @@ BaseWidget {
             }
         }
 
-//------------------------------ Double Circle Version start------------------
+        //------------------------------ Double Circle Version start------------------
 
         Item {
             id: doubleCircle
@@ -321,7 +385,7 @@ BaseWidget {
             Rectangle {
                 id: leftCircle
 
-            //    anchors.right: rightCircle.left
+                //    anchors.right: rightCircle.left
                 width: (parent.width<parent.height?parent.width:parent.height)/2
                 height: width
                 color: "transparent"

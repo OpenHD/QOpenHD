@@ -26,91 +26,163 @@ BaseWidget {
     widgetIdentifier: "vsi_widget"
 
     hasWidgetDetail: true
-    widgetDetailComponent: Column {
-        Item {
-            width: parent.width
-            height: 32
-            Text {
-                text: qsTr("Transparency")
-                color: "white"
-                height: parent.height
-                font.bold: true
-                font.pixelSize: detailPanelFontPixels
-                anchors.left: parent.left
-                verticalAlignment: Text.AlignVCenter
-            }
-            Slider {
-                id: vsi_opacity_Slider
-                orientation: Qt.Horizontal
-                from: .1
-                value: settings.vsi_opacity
-                to: 1
-                stepSize: .1
-                height: parent.height
-                anchors.rightMargin: 0
-                anchors.right: parent.right
-                width: parent.width - 96
-                // @disable-check M223
-                onValueChanged: {
-                    settings.vsi_opacity = vsi_opacity_Slider.value
-                }
-            }
-        }
-        Item {
-            width: parent.width
-            height: 32
-            Text {
-                text: qsTr("Size")
-                color: "white"
-                height: parent.height
-                font.bold: true
-                font.pixelSize: detailPanelFontPixels
-                anchors.left: parent.left
-                verticalAlignment: Text.AlignVCenter
-            }
-            Slider {
-                id: vsi_size_Slider
-                orientation: Qt.Horizontal
-                from: .5
-                value: settings.vsi_size
-                to: 3
-                stepSize: .1
-                height: parent.height
-                anchors.rightMargin: 0
-                anchors.right: parent.right
-                width: parent.width - 96
 
-                onValueChanged: {
-                    settings.vsi_size = vsi_size_Slider.value
+    widgetDetailComponent: ScrollView{
+
+        contentHeight: vsiSettingsColumn.height
+        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+        clip: true
+        Column {
+            id: vsiSettingsColumn
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("Transparency")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Slider {
+                    id: vsi_opacity_Slider
+                    orientation: Qt.Horizontal
+                    from: .1
+                    value: settings.vsi_opacity
+                    to: 1
+                    stepSize: .1
+                    height: parent.height
+                    anchors.rightMargin: 0
+                    anchors.right: parent.right
+                    width: parent.width - 96
+                    // @disable-check M223
+                    onValueChanged: {
+                        settings.vsi_opacity = vsi_opacity_Slider.value
+                    }
                 }
             }
-        }
-        Item {
-            width: parent.width
-            height: 32
-            Text {
-                text: qsTr("Range")
-                color: "white"
-                height: parent.height
-                font.bold: true
-                font.pixelSize: detailPanelFontPixels
-                anchors.left: parent.left
-                verticalAlignment: Text.AlignVCenter
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("Size")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Slider {
+                    id: vsi_size_Slider
+                    orientation: Qt.Horizontal
+                    from: .5
+                    value: settings.vsi_size
+                    to: 3
+                    stepSize: .1
+                    height: parent.height
+                    anchors.rightMargin: 0
+                    anchors.right: parent.right
+                    width: parent.width - 96
+
+                    onValueChanged: {
+                        settings.vsi_size = vsi_size_Slider.value
+                    }
+                }
             }
-            Slider {
-                id: vsi_max_Slider
-                orientation: Qt.Horizontal
-                from: 5
-                value: settings.vsi_max
-                to: 50
-                stepSize: 5
-                height: parent.height
-                anchors.rightMargin: 0
-                anchors.right: parent.right
-                width: parent.width - 96
-                // @disable-check M223
-                onValueChanged: {
-                    settings.vsi_max = vsi_max_Slider.value
+            Item {
+                width: 230
+                height: 32
+                Text {
+                    text: qsTr("Lock to Horizontal Center")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 6
+                    anchors.right: parent.right
+                    checked: {
+                        // @disable-check M222
+                        var _hCenter = settings.value(hCenterIdentifier, defaultHCenter)
+                        // @disable-check M223
+                        if (_hCenter === "true" || _hCenter === 1 || _hCenter === true) {
+                            checked = true;
+                            // @disable-check M223
+                        } else {
+                            checked = false;
+                        }
+                    }
+
+                    onCheckedChanged: settings.setValue(hCenterIdentifier, checked)
+                }
+            }
+            Item {
+                width: 230
+                height: 32
+                Text {
+                    text: qsTr("Lock to Vertical Center")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 6
+                    anchors.right: parent.right
+                    checked: {
+                        // @disable-check M222
+                        var _vCenter = settings.value(vCenterIdentifier, defaultVCenter)
+                        // @disable-check M223
+                        if (_vCenter === "true" || _vCenter === 1 || _vCenter === true) {
+                            checked = true;
+                            // @disable-check M223
+                        } else {
+                            checked = false;
+                        }
+                    }
+
+                    onCheckedChanged: settings.setValue(vCenterIdentifier, checked)
+                }
+            }
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("Range")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Slider {
+                    id: vsi_max_Slider
+                    orientation: Qt.Horizontal
+                    from: 5
+                    value: settings.vsi_max
+                    to: 50
+                    stepSize: 5
+                    height: parent.height
+                    anchors.rightMargin: 0
+                    anchors.right: parent.right
+                    width: parent.width - 96
+                    // @disable-check M223
+                    onValueChanged: {
+                        settings.vsi_max = vsi_max_Slider.value
+                    }
                 }
             }
         }
@@ -220,7 +292,7 @@ BaseWidget {
                         border.color: settings.color_glow
                         border.width: 1
                         width: 3
-                    }         
+                    }
                 }
             }
         }

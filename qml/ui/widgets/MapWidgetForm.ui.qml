@@ -42,18 +42,18 @@ BaseWidget {
     function configure() {
         var provider = pluginModel.get(settings.selected_map_provider)
         switch (provider.name) {
-            case "mapboxgl": {
-                createMap(widgetInner, "mapboxgl");
-                break;
-            }
-            case "osm": {
-                createMap(widgetInner, "osm");
-                break;
-            }
-            default: {
-                createMap(widgetInner, "osm");
-                break;
-            }
+        case "mapboxgl": {
+            createMap(widgetInner, "mapboxgl");
+            break;
+        }
+        case "osm": {
+            createMap(widgetInner, "osm");
+            break;
+        }
+        default: {
+            createMap(widgetInner, "osm");
+            break;
+        }
         }
 
         if (map) {
@@ -98,10 +98,20 @@ BaseWidget {
         widgetDetail.open()
     }
 
-//----------------------------- Widget Detail (popup options)------------------------
-    widgetDetailComponent: Column {
+    //----------------------------- Widget Detail (popup options)------------------------
+
+    widgetDetailComponent: ScrollView{
+
+        contentHeight: popupmapSettingsColumn.height
+        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+        clip: true
+        Column {
+            id: popupmapSettingsColumn
+
+
+
             Item {
-                width: parent.width
+                width: 230
                 height: 32
 
                 Text {
@@ -134,7 +144,7 @@ BaseWidget {
                 }
             }
             Item {
-                width: parent.width
+                width: 230
                 height: 32
                 Text {
                     id: mini_opacityTitle
@@ -164,7 +174,7 @@ BaseWidget {
                 }
             }
             Item {
-                width: parent.width
+                width: 230
                 height: 32
                 Text {
                     text: qsTr("Lock map to drone direction")
@@ -185,7 +195,7 @@ BaseWidget {
                 }
             }
             Item {
-                width: parent.width
+                width: 230
                 height: 32
                 visible: EnableBlackbox
                 Text {
@@ -230,8 +240,9 @@ BaseWidget {
             }
             */
         }
+    }
 
-//----------------------------- Widget Inner ----------------------------------------
+    //----------------------------- Widget Inner ----------------------------------------
 
     Item {
         id: widgetInner
@@ -291,7 +302,7 @@ BaseWidget {
 
 
 
- //----------------------------- Expanded map Sidebar Menu----------------------------
+        //----------------------------- Expanded map Sidebar Menu----------------------------
 
         Rectangle {
             id: sidebar_wrapper
@@ -341,7 +352,7 @@ BaseWidget {
 
                 onClicked: {
                     if (mapExpanded) {
-                         console.log("X button clicked");
+                        console.log("X button clicked");
                         configureSmallMap()
 
                     } else {

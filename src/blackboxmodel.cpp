@@ -383,7 +383,7 @@ BlackBox BlackBoxModel::getBlackBoxObject(int index)const {
 }
 
 void BlackBoxModel::playBlackBoxObject(int index){
-    qDebug() << "playBlackBoxMarker: " << index;
+    //qDebug() << "playBlackBoxMarker: " << index;
     if (index>=rowCount()){
         index=rowCount()-1;
     }

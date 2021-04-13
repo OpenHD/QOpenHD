@@ -22,10 +22,12 @@ BaseWidget {
 
     widgetIdentifier: "blackbox_widget"
 
+    property var count: 0
+
     Connections {
         target: BlackBoxModel
         function onDataChanged() {
-            var count= BlackBoxModel.rowCount();
+            count= BlackBoxModel.rowCount();
             blackboxmodel_count_text.text= Number(count).toLocaleString( Qt.locale(), 'f', 0)
             blackbox_play_Slider.to=count;
         }
@@ -35,85 +37,157 @@ BaseWidget {
     property bool telemetry_pause: false
 
     function playPause() {
-        console.log("playPause from:" , blackbox_play_Slider.value);
+        //console.log("playPause from:" , blackbox_play_Slider.value);
 
         OpenHD.pauseBlackBox(true, blackbox_play_Slider.value);
 
         if (play_pause==false){
-        playTimer.start();
+            playTimer.start();
         }
         else {
-        playTimer.stop();
+            playTimer.stop();
         }
 
     }
 
     Timer {
-            id: playTimer
-            interval: 1000
-            repeat: true
-            running: false
-            triggeredOnStart: false
-            onTriggered: blackbox_play_Slider.value= blackbox_play_Slider.value+1;
-        }
+        id: playTimer
+        interval: 1000
+        repeat: true
+        running: false
+        triggeredOnStart: false
+        onTriggered: blackbox_play_Slider.value= blackbox_play_Slider.value+1;
+    }
 
     hasWidgetDetail: true
-    widgetDetailComponent: Column {
-        Item {
-            width: parent.width
-            height: 32
-            Text {
-                text: qsTr("Transparency")
-                color: "white"
-                height: parent.height
-                font.bold: true
-                font.pixelSize: detailPanelFontPixels
-                anchors.left: parent.left
-                verticalAlignment: Text.AlignVCenter
-            }
-            Slider {
-                id: blackbox_opacity_Slider
-                orientation: Qt.Horizontal
-                from: .1
-                value: settings.blackbox_opacity
-                to: 1
-                stepSize: .1
-                height: parent.height
-                anchors.rightMargin: 0
-                anchors.right: parent.right
-                width: parent.width - 96
-                // @disable-check M223
-                onValueChanged: {
-                    settings.blackbox_opacity = blackbox_opacity_Slider.value
+
+    widgetDetailComponent: ScrollView{
+
+        contentHeight: blackboxSettingsColumn.height
+        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+        clip: true
+        Column {
+            id: blackboxSettingsColumn
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("Transparency")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Slider {
+                    id: blackbox_opacity_Slider
+                    orientation: Qt.Horizontal
+                    from: .1
+                    value: settings.blackbox_opacity
+                    to: 1
+                    stepSize: .1
+                    height: parent.height
+                    anchors.rightMargin: 0
+                    anchors.right: parent.right
+                    width: parent.width - 96
+                    // @disable-check M223
+                    onValueChanged: {
+                        settings.blackbox_opacity = blackbox_opacity_Slider.value
+                    }
                 }
             }
-        }
-        Item {
-            width: parent.width
-            height: 32
-            Text {
-                text: qsTr("Size")
-                color: "white"
-                height: parent.height
-                font.bold: true
-                font.pixelSize: detailPanelFontPixels
-                anchors.left: parent.left
-                verticalAlignment: Text.AlignVCenter
-            }
-            Slider {
-                id: blackbox_size_Slider
-                orientation: Qt.Horizontal
-                from: .5
-                value: settings.blackbox_size
-                to: 3
-                stepSize: .1
-                height: parent.height
-                anchors.rightMargin: 0
-                anchors.right: parent.right
-                width: parent.width - 96
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("Size")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Slider {
+                    id: blackbox_size_Slider
+                    orientation: Qt.Horizontal
+                    from: .5
+                    value: settings.blackbox_size
+                    to: 3
+                    stepSize: .1
+                    height: parent.height
+                    anchors.rightMargin: 0
+                    anchors.right: parent.right
+                    width: parent.width - 96
 
-                onValueChanged: {
-                    settings.blackbox_size = blackbox_size_Slider.value
+                    onValueChanged: {
+                        settings.blackbox_size = blackbox_size_Slider.value
+                    }
+                }
+            }
+            Item {
+                width: 230
+                height: 32
+                Text {
+                    text: qsTr("Lock to Horizontal Center")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 6
+                    anchors.right: parent.right
+                    checked: {
+                        // @disable-check M222
+                        var _hCenter = settings.value(hCenterIdentifier, defaultHCenter)
+                        // @disable-check M223
+                        if (_hCenter === "true" || _hCenter === 1 || _hCenter === true) {
+                            checked = true;
+                            // @disable-check M223
+                        } else {
+                            checked = false;
+                        }
+                    }
+
+                    onCheckedChanged: settings.setValue(hCenterIdentifier, checked)
+                }
+            }
+            Item {
+                width: 230
+                height: 32
+                Text {
+                    text: qsTr("Lock to Vertical Center")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 6
+                    anchors.right: parent.right
+                    checked: {
+                        // @disable-check M222
+                        var _vCenter = settings.value(vCenterIdentifier, defaultVCenter)
+                        // @disable-check M223
+                        if (_vCenter === "true" || _vCenter === 1 || _vCenter === true) {
+                            checked = true;
+                            // @disable-check M223
+                        } else {
+                            checked = false;
+                        }
+                    }
+
+                    onCheckedChanged: settings.setValue(vCenterIdentifier, checked)
                 }
             }
         }
@@ -123,7 +197,6 @@ BaseWidget {
         id: widgetInner
         anchors.fill: parent
         opacity: settings.blackbox_opacity
-        scale: settings.blackbox_size
 
         Rectangle
         {
@@ -134,7 +207,10 @@ BaseWidget {
             border.color: "grey"
             border.width: 2
             radius: 10
+
             MouseArea {
+                //adding this disables the ability to move the widget and open menu
+                //another solution might need to be found to prevent propogation of clicks thru the layer
                 propagateComposedEvents: false
                 anchors.fill: parent
             }
@@ -169,29 +245,38 @@ BaseWidget {
                 anchors.left: parent.left
                 anchors.leftMargin: 45
                 anchors.top: parent.top
-                enabled: BlackBoxModel.rowCount() >= 1
+                enabled:{count >= 1;}
 
                 width: parent.width - 135
                 // @disable-check M223
                 onValueChanged: {
                     //console.log("play slider=",blackbox_play_Slider.value);
                     telemetry_pause=true;
+
+                    if (play_pause == false){
+                        playPauseBtn.text="\uf04c";
+                    }
+                    else{
+                        playPauseBtn.text="\uf04b";
+                    }
+
                     OpenHD.pauseBlackBox(telemetry_pause, blackbox_play_Slider.value);
                 }
             }
 
             Button {
                 id: playPauseBtn
-                text: "\uf04b"
+                text: "\uf04c"
                 font.pixelSize: 12
                 anchors.right: parent.right
                 anchors.rightMargin: 10
                 anchors.top: parent.top
                 font.family: "Font Awesome 5 Free"
-                enabled: BlackBoxModel.rowCount() >= 1
+                enabled: {count >= 1;}
 
                 onClicked: {// play_pause true == looks like play, false == looks like pause
-                    if (play_pause==true){play_pause = false;}
+                    if (play_pause==true)
+                    {play_pause = false;}
                     else {play_pause = true;}
 
                     playPause()
@@ -240,7 +325,7 @@ BaseWidget {
         Button {
             id: resumeTelemetryBtn
             visible: telemetry_pause
-            text: qsTr("restart telemetry")
+            text: "restart telemetry"
             //height: 25
             font.pixelSize: 12
             anchors.horizontalCenter: parent.horizontalCenter
@@ -248,7 +333,7 @@ BaseWidget {
             onClicked: {
                 playTimer.stop();
                 play_pause=true;
-                playPauseBtn.text="\uf04b";
+                playPauseBtn.text="\uf04c";
                 telemetry_pause=false;
                 OpenHD.pauseBlackBox(telemetry_pause, blackbox_play_Slider.value);
             }
