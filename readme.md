@@ -274,4 +274,4 @@ I have never tried to run it on the Android simulator, I doubt it would work ver
 
 Building GroundPi images with QOpenHD integrated is handled by the [Open.HD image builder](https://github.com/OpenHD/Open.HD_Image_Builder) as it is very complicated to get right. It requires a specific set of packages to be preinstalled on the image, and requires building Qt from source to enable `eglfs`. 
 
-Prebuilt SD card images are available on the [releases tab in GitHub](https://github.com/OpenHD/OpenHD/releases/latest). 
+Prebuilt SD card images are available on the [releases tab in GitHub](https://github.com/OpenHD/Open.HD/releases). 
