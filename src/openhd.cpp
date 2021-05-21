@@ -349,6 +349,13 @@ void OpenHD::set_flight_mode(QString flight_mode) {
     emit flight_mode_changed(m_flight_mode);
 }
 
+void OpenHD::set_mav_type(QString mav_type) {
+
+    m_mav_type = mav_type;
+
+    emit mav_type_changed(m_mav_type);
+}
+
 void OpenHD::set_homelat(double homelat) {
     m_homelat = homelat;
     gcs_position_set = true;

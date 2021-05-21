@@ -108,6 +108,9 @@ public:
     Q_PROPERTY(QString flight_mode MEMBER m_flight_mode WRITE set_flight_mode NOTIFY flight_mode_changed)
     void set_flight_mode(QString flight_mode);
 
+    Q_PROPERTY(QString mav_type MEMBER m_mav_type WRITE set_mav_type NOTIFY mav_type_changed)
+    void set_mav_type(QString mav_type);
+
     Q_PROPERTY(double homelat MEMBER m_homelat WRITE set_homelat NOTIFY homelat_changed)
     void set_homelat(double homelat);
 
@@ -446,6 +449,7 @@ signals:
     void airspeed_changed(double airspeed);
     void armed_changed(bool armed);
     void flight_mode_changed(QString flight_mode);
+    void mav_type_changed(QString mav_type);
     void homelat_changed(double homelat);
     void homelon_changed(double homelon);
     void lat_changed(double lat);
@@ -601,6 +605,7 @@ public:
 
     bool m_armed = false;
     QString m_flight_mode = "------";
+    QString m_mav_type = "UNKOWN";
 
     double m_homelat = 0.0;
     double m_homelon = 0.0;
