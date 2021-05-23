@@ -206,6 +206,8 @@ BaseWidget {
                         visibleItemCount : 1
                         anchors.fill: parent
 
+                        currentIndex: settings.vroverlay_vertical_fov;
+
                         Component.onCompleted: {
                             // rounds it due to int
                             currentIndex= settings.vroverlay_vertical_fov;
@@ -258,6 +260,8 @@ BaseWidget {
                         model: 180
                         visibleItemCount : 1
                         anchors.fill: parent
+
+                        currentIndex: settings.vroverlay_horizontal_fov;
 
                         Component.onCompleted: {
                             // rounds it due to int
@@ -337,6 +341,9 @@ BaseWidget {
                     width:applicationWindow.width
                     height:applicationWindow.height
 
+                    //width: 1200
+                    //height: 800
+
                     clip: false
                     color: settings.color_shape
                     glow: settings.color_glow
@@ -363,8 +370,12 @@ BaseWidget {
                 id: homeVROverlayC
                 anchors.centerIn: parent
 
-                width:applicationWindow.width
-                height:applicationWindow.height
+                //needs width and height but needs to be dynamic
+                //:applicationWindow.width
+                //height:applicationWindow.height
+
+                width: 1200
+                height: 800
 
                 clip: false
                 color: settings.color_shape
@@ -391,8 +402,12 @@ BaseWidget {
                 id: race1VROverlayC
                 anchors.centerIn: parent
 
+                //needs width and height but needs to be dynamic
                 width:applicationWindow.width
                 height:applicationWindow.height
+
+                //width: 1200
+                //height: 800
 
                 clip: false
                 color: settings.color_shape
@@ -419,8 +434,12 @@ BaseWidget {
                 id: race2VROverlayC
                 anchors.centerIn: parent
 
+                //needs width and height but needs to be dynamic
                 width:applicationWindow.width
                 height:applicationWindow.height
+
+                //width: 1200
+                //height: 800
 
                 clip: false
                 color: settings.color_shape

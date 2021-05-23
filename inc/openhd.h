@@ -27,6 +27,10 @@ public:
 
     Q_INVOKABLE void set_Requested_Flight_Mode(int mode);
 
+    Q_INVOKABLE void set_Requested_ArmDisarm(int mode);
+
+    Q_INVOKABLE void set_FC_Reboot_Shutdown(int reboot_shutdown);
+
     void setWifiAdapter0(uint32_t received_packet_cnt, int8_t current_signal_dbm, int8_t signal_good);
     void setWifiAdapter1(uint32_t received_packet_cnt, int8_t current_signal_dbm, int8_t signal_good);
     void setWifiAdapter2(uint32_t received_packet_cnt, int8_t current_signal_dbm, int8_t signal_good);
@@ -107,6 +111,9 @@ public:
 
     Q_PROPERTY(QString flight_mode MEMBER m_flight_mode WRITE set_flight_mode NOTIFY flight_mode_changed)
     void set_flight_mode(QString flight_mode);
+
+    Q_PROPERTY(QString mav_type MEMBER m_mav_type WRITE set_mav_type NOTIFY mav_type_changed)
+    void set_mav_type(QString mav_type);
 
     Q_PROPERTY(double homelat MEMBER m_homelat WRITE set_homelat NOTIFY homelat_changed)
     void set_homelat(double homelat);
@@ -446,6 +453,7 @@ signals:
     void airspeed_changed(double airspeed);
     void armed_changed(bool armed);
     void flight_mode_changed(QString flight_mode);
+    void mav_type_changed(QString mav_type);
     void homelat_changed(double homelat);
     void homelon_changed(double homelon);
     void lat_changed(double lat);
@@ -575,6 +583,8 @@ signals:
     void addBlackBoxObject(const BlackBox &blackbox);
     void pauseTelemetry(bool pause);
     void requested_Flight_Mode_Changed(int mode);
+    void requested_ArmDisarm_Changed(int arm_disarm);
+    void FC_Reboot_Shutdown_Changed(int reboot_shutdown);
     void playBlackBoxObject(int index);
 
 private:
@@ -601,6 +611,7 @@ public:
 
     bool m_armed = false;
     QString m_flight_mode = "------";
+    QString m_mav_type = "UNKOWN";
 
     double m_homelat = 0.0;
     double m_homelon = 0.0;
@@ -757,6 +768,10 @@ public:
     QQmlApplicationEngine *m_engine = nullptr;
 
     int m_mode = 0;
+
+    int m_arm_disarm = 99;
+
+    int m_reboot_shutdown=99;
 };
 
 

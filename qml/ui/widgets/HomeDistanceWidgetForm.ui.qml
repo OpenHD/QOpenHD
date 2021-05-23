@@ -7,6 +7,8 @@ import QtQuick.Shapes 1.0
 
 import OpenHD 1.0
 
+import "../elements"
+
 BaseWidget {
     id: homeDistanceWidget
     width: 96
@@ -236,6 +238,50 @@ BaseWidget {
                     font.pixelSize: detailPanelFontPixels
                     anchors.right: parent.right
                     verticalAlignment: Text.AlignVCenter
+                }
+            }
+
+            Item {
+                Text {
+                    id: name
+                    text: qsTr("Vehicle type: "+OpenHD.mav_type)
+                    color: "white"
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                }
+            }
+
+            ConfirmSlider {
+
+                visible: OpenHD.mav_type=="ARDUPLANE"
+
+                text_off: qsTr("RTL")
+                msg_id: 11
+
+                onCheckedChanged:{
+                    if (checked==true){ //double check.... not really needed
+
+                        OpenHD.set_Requested_Flight_Mode(msg_id);
+                        //console.log("selected");
+                    }
+                }
+            }
+
+            //-----------------------Split from plane to copter
+            ConfirmSlider {
+
+                visible: OpenHD.mav_type=="ARDUCOPTER"
+
+                text_off: qsTr("RTL")
+                msg_id: 6
+
+                onCheckedChanged:{
+                    if (checked==true){ //double check.... not really needed
+
+                        OpenHD.set_Requested_Flight_Mode(msg_id);
+                        //console.log("selected");
+                    }
                 }
             }
         }

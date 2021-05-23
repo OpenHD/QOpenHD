@@ -418,7 +418,8 @@ void MavlinkBase::commandStateLoop() {
             //qDebug() << "Target SYSID=" << targetSysID;
 
             if (m_current_command->m_command_type == MavlinkCommandTypeLong) {
-                mavlink_msg_command_long_pack(mavlink_sysid, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID, targetCompID, m_current_command->command_id, m_current_command->long_confirmation, m_current_command->long_param1, m_current_command->long_param2, m_current_command->long_param3, m_current_command->long_param4, m_current_command->long_param5, m_current_command->long_param6, m_current_command->long_param7);
+               mavlink_msg_command_long_pack(mavlink_sysid, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID, targetCompID, m_current_command->command_id, m_current_command->long_confirmation, m_current_command->long_param1, m_current_command->long_param2, m_current_command->long_param3, m_current_command->long_param4, m_current_command->long_param5, m_current_command->long_param6, m_current_command->long_param7);
+            //mavlink_mission_current_t(&msg);
             } else {
                 mavlink_msg_command_int_pack(mavlink_sysid, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID, targetCompID, m_current_command->int_frame, m_current_command->command_id, m_current_command->int_current, m_current_command->int_autocontinue, m_current_command->int_param1, m_current_command->int_param2, m_current_command->int_param3, m_current_command->int_param4, m_current_command->int_param5, m_current_command->int_param6, m_current_command->int_param7);          
             }

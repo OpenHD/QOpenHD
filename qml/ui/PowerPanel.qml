@@ -19,7 +19,9 @@ PowerPanelForm {
         RebootAir,
         ShutdownAir,
         RebootGround,
-        ShutdownGround
+        ShutdownGround,
+        RebootFC,
+        ShutdownFC
     }
 
     Card {
@@ -59,7 +61,7 @@ PowerPanelForm {
             width: powerDialog.width
 
             Text {
-                text: qsTr("If your drone is in the air, rebooting or shutting down the ground or air pi may cause a crash or make it enter failsafe mode!")
+                text: qsTr("If your drone is in the air, rebooting or shutting down may cause a crash or make it enter failsafe mode!")
                 width: parent.width
                 leftPadding: 12
                 rightPadding: 12
@@ -113,6 +115,12 @@ PowerPanelForm {
                     if (powerAction == PowerPanel.PowerAction.ShutdownAir) {
                         return qsTr("Shutdown Air")
                     }
+                    if (powerAction == PowerPanel.PowerAction.RebootFC) {
+                        return qsTr("Reboot Flight Controller")
+                    }
+                    if (powerAction == PowerPanel.PowerAction.ShutdownFC) {
+                        return qsTr("Shutdown Flight Controller")
+                    }
                     return qsTr("Yes")
                 }
 
@@ -134,6 +142,14 @@ PowerPanelForm {
                     if (powerAction == PowerPanel.PowerAction.ShutdownAir) {
                         localMessage("Shutting down air pi", 6);
                         AirPowerMicroservice.onShutdown();
+                    }
+                    if (powerAction == PowerPanel.PowerAction.ShutdownFC) { //button commented out
+                        localMessage("Shutting down Flight Controller", 6);
+                        OpenHD.set_FC_Reboot_Shutdown(2);
+                    }
+                    if (powerAction == PowerPanel.PowerAction.RebootFC) {
+                        localMessage("Rebooting Flight Controller", 6);
+                        OpenHD.set_FC_Reboot_Shutdown(1);
                     }
                     powerDialog.visible = false
                     settings_panel.visible = false;

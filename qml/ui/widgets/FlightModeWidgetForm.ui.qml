@@ -22,7 +22,7 @@ BaseWidget {
     defaultVCenter: false
 
     hasWidgetDetail: true
-    hasWidgetAction: false //--TURN TO TRUE TO SEE THE FLIGHT MODE ACTIONS
+    hasWidgetAction: true //--TURN TO TRUE TO SEE THE FLIGHT MODE ACTIONS
     widgetDetailComponent: ScrollView{
 
         //contentHeight: horizonSettingsColumn.height
@@ -268,7 +268,18 @@ BaseWidget {
             width:200
             spacing: 10
 
+            Text {
+                id: name
+                text: qsTr("Vehicle type: "+OpenHD.mav_type)
+                color: "white"
+                font.bold: true
+                font.pixelSize: detailPanelFontPixels
+                anchors.left: parent.left
+            }
+
             ConfirmSlider {
+
+                visible: OpenHD.mav_type=="ARDUPLANE"
 
                 text_off: qsTr("RTL")
                 msg_id: 11
@@ -283,6 +294,8 @@ BaseWidget {
             }
             ConfirmSlider {
 
+                visible: OpenHD.mav_type=="ARDUPLANE"
+
                 text_off: qsTr("MANUAL")
                 msg_id: 0
 
@@ -295,6 +308,8 @@ BaseWidget {
                 }
             }
             ConfirmSlider {
+
+                visible: OpenHD.mav_type=="ARDUPLANE"
 
                 text_off: qsTr("STABILIZE")
                 msg_id: 2
@@ -309,6 +324,8 @@ BaseWidget {
             }
             ConfirmSlider {
 
+                visible: OpenHD.mav_type=="ARDUPLANE"
+
                 text_off: qsTr("LOITER")
                 msg_id: 12
 
@@ -322,8 +339,147 @@ BaseWidget {
             }
             ConfirmSlider {
 
+                visible: OpenHD.mav_type=="ARDUPLANE"
+
                 text_off: qsTr("FBWA")
                 msg_id: 5
+
+                onCheckedChanged:{
+                    if (checked==true){ //double check.... not really needed
+
+                        OpenHD.set_Requested_Flight_Mode(msg_id);
+                        //console.log("selected");
+                    }
+                }
+            }
+            ConfirmSlider {
+
+                visible: OpenHD.mav_type=="ARDUPLANE"
+
+                text_off: qsTr("AUTO")
+                msg_id: 10
+
+                onCheckedChanged:{
+                    if (checked==true){ //double check.... not really needed
+
+                        OpenHD.set_Requested_Flight_Mode(msg_id);
+                        //console.log("selected");
+                    }
+                }
+            }
+            ConfirmSlider {
+
+                visible: OpenHD.mav_type=="ARDUPLANE"
+
+                text_off: qsTr("AUTOTUNE")
+                msg_id: 8
+
+                onCheckedChanged:{
+                    if (checked==true){ //double check.... not really needed
+
+                        OpenHD.set_Requested_Flight_Mode(msg_id);
+                        //console.log("selected");
+                    }
+                }
+            }
+
+ //-----------------------Split from plane to copter
+            ConfirmSlider {
+
+                visible: OpenHD.mav_type=="ARDUCOPTER"
+
+                text_off: qsTr("RTL")
+                msg_id: 6
+
+                onCheckedChanged:{
+                    if (checked==true){ //double check.... not really needed
+
+                        OpenHD.set_Requested_Flight_Mode(msg_id);
+                        //console.log("selected");
+                    }
+                }
+            }
+            ConfirmSlider {
+
+                visible: OpenHD.mav_type=="ARDUCOPTER"
+
+                text_off: qsTr("STABILIZE")
+                msg_id: 0
+
+                onCheckedChanged:{
+                    if (checked==true){ //double check.... not really needed
+
+                        OpenHD.set_Requested_Flight_Mode(msg_id);
+                        //console.log("selected");
+                    }
+                }
+            }
+            ConfirmSlider {
+
+                visible: OpenHD.mav_type=="ARDUCOPTER"
+
+                text_off: qsTr("ALT_HOLD")
+                msg_id: 2
+
+                onCheckedChanged:{
+                    if (checked==true){ //double check.... not really needed
+
+                        OpenHD.set_Requested_Flight_Mode(msg_id);
+                        //console.log("selected");
+                    }
+                }
+            }
+            ConfirmSlider {
+
+                visible: OpenHD.mav_type=="ARDUCOPTER"
+
+                text_off: qsTr("LOITER")
+                msg_id: 5
+
+                onCheckedChanged:{
+                    if (checked==true){ //double check.... not really needed
+
+                        OpenHD.set_Requested_Flight_Mode(msg_id);
+                        //console.log("selected");
+                    }
+                }
+            }
+            ConfirmSlider {
+
+                visible: OpenHD.mav_type=="ARDUCOPTER"
+
+                text_off: qsTr("POSHOLD")
+                msg_id: 16
+
+                onCheckedChanged:{
+                    if (checked==true){ //double check.... not really needed
+
+                        OpenHD.set_Requested_Flight_Mode(msg_id);
+                        //console.log("selected");
+                    }
+                }
+            }
+            ConfirmSlider {
+
+                visible: OpenHD.mav_type=="ARDUCOPTER"
+
+                text_off: qsTr("AUTO")
+                msg_id: 3
+
+                onCheckedChanged:{
+                    if (checked==true){ //double check.... not really needed
+
+                        OpenHD.set_Requested_Flight_Mode(msg_id);
+                        //console.log("selected");
+                    }
+                }
+            }
+            ConfirmSlider {
+
+                visible: OpenHD.mav_type=="ARDUCOPTER"
+
+                text_off: qsTr("AUTOTUNE")
+                msg_id: 15
 
                 onCheckedChanged:{
                     if (checked==true){ //double check.... not really needed

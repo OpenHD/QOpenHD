@@ -89,6 +89,31 @@ void MavlinkTelemetry::requested_Flight_Mode_Changed(int mode) {
     command.long_param2 = m_mode;
     sendCommand(command);
 
+/*
+MavlinkCommand command(MAVLINK_MSG_ID_MISSION_REQUEST_LIST);
+*/
+}
+
+void MavlinkTelemetry::requested_ArmDisarm_Changed(int arm_disarm) {
+    m_arm_disarm=arm_disarm;
+    qDebug() << "MavlinkTelemetry::requested_ArmDisarm_Changed="<< m_arm_disarm;
+
+    MavlinkCommand command(MavlinkCommandTypeLong);
+    command.command_id = MAV_CMD_COMPONENT_ARM_DISARM ;
+    command.long_param1 = m_arm_disarm;
+    //command.long_param2 = m_arm_disarm;
+    sendCommand(command);
+}
+
+void MavlinkTelemetry::FC_Reboot_Shutdown_Changed(int reboot_shutdown) {
+    m_reboot_shutdown=reboot_shutdown;
+    qDebug() << "MavlinkTelemetry::FC_Reboot_Shutdown_Changed="<< m_reboot_shutdown;
+
+    MavlinkCommand command(MavlinkCommandTypeLong);
+    command.command_id = MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN ;
+    command.long_param1 = m_reboot_shutdown;
+    //command.long_param2 = m_arm_disarm;
+    sendCommand(command);
 }
 
 void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
@@ -126,6 +151,8 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
                                     case MAV_TYPE_FIXED_WING: {
                                         auto plane_mode = m_util.plane_mode_from_enum((PLANE_MODE)custom_mode);
                                         OpenHD::instance()->set_flight_mode(plane_mode);
+                                        OpenHD::instance()->set_mav_type("ARDUPLANE");
+
                                         //qDebug() << "Mavlink Mav Type= ARDUPLANE";
                                         break;
                                     }
@@ -137,6 +164,8 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
                                     case MAV_TYPE_QUADROTOR: {
                                         auto copter_mode = m_util.copter_mode_from_enum((COPTER_MODE)custom_mode);
                                         OpenHD::instance()->set_flight_mode(copter_mode);
+                                        OpenHD::instance()->set_mav_type("ARDUCOPTER");
+
                                         qDebug() << "Mavlink Mav Type= ARDUCOPTER";
                                         break;
                                     }
