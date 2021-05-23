@@ -398,6 +398,7 @@ BaseWidget {
                 verticalFOV: settings.vroverlay_vertical_fov
                 horizontalFOV: settings.vroverlay_horizontal_fov
             }
+/* comment out race stuff
             VROverlay {
                 id: race1VROverlayC
                 anchors.centerIn: parent
@@ -462,6 +463,7 @@ BaseWidget {
                 verticalFOV: settings.vroverlay_vertical_fov
                 horizontalFOV: settings.vroverlay_horizontal_fov
             }
+            */
         }
     }
 }
