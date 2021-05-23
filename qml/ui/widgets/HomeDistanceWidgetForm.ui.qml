@@ -241,13 +241,15 @@ BaseWidget {
                 }
             }
 
-            Text {
-                id: name
-                text: qsTr("Vehicle type: "+OpenHD.mav_type)
-                color: "white"
-                font.bold: true
-                font.pixelSize: detailPanelFontPixels
-                anchors.left: parent.left
+            Item {
+                Text {
+                    id: name
+                    text: qsTr("Vehicle type: "+OpenHD.mav_type)
+                    color: "white"
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                }
             }
 
             ConfirmSlider {

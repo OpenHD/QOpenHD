@@ -307,6 +307,62 @@ Rectangle {
                 }
             }
         }
+
+
+        Card {
+            id: fcBox
+            height: 224
+            Layout.fillWidth: true
+            cardName: qsTr("Flight Controller")
+            cardBody: ColumnLayout {
+                //empty..
+            }
+
+            hasFooter: true
+            cardFooter: Item {
+                anchors.fill: parent
+                Button {
+                    id: fcReboot
+                    width: 96
+                    height: 48
+                    text: qsTr("Reboot")
+                    anchors.left: parent.left
+                    anchors.leftMargin: 12
+                    anchors.bottom: parent.bottom
+                    anchors.bottomMargin: 6
+                    font.pixelSize: 14
+                    font.capitalization: Font.MixedCase
+
+                    onPressed: {
+                        powerAction = PowerPanel.PowerAction.RebootFC
+                        powerDialog.visible = true
+                    }
+                }
+/* needs testing on actual FC. Shutdown is not accepted by SITL
+                Button {
+                    id: fcShutdown
+                    width: 96
+                    height: 48
+                    anchors.right: parent.right
+                    anchors.rightMargin: 12
+                    anchors.bottom: parent.bottom
+                    anchors.bottomMargin: 6
+                    font.pixelSize: 14
+                    font.capitalization: Font.MixedCase
+                    Material.accent: Material.Red
+                    highlighted: true
+
+                    text: qsTr("Shutdown")
+
+                    onPressed: {
+                        powerAction = PowerPanel.PowerAction.ShutdownFC
+                        powerDialog.visible = true
+                    }
+                }
+                */
+            }
+        }
+
     }
 
 }

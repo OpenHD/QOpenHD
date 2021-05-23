@@ -54,6 +54,8 @@ OpenHD::OpenHD(QObject *parent): QObject(parent) {
 
     connect(this, &OpenHD::pauseTelemetry, mavlink, &MavlinkTelemetry::pauseTelemetry);
     connect(this, &OpenHD::requested_Flight_Mode_Changed, mavlink, &MavlinkTelemetry::requested_Flight_Mode_Changed);
+    connect(this, &OpenHD::requested_ArmDisarm_Changed, mavlink, &MavlinkTelemetry::requested_ArmDisarm_Changed);
+    connect(this, &OpenHD::FC_Reboot_Shutdown_Changed, mavlink, &MavlinkTelemetry::FC_Reboot_Shutdown_Changed);
     auto openhd = OpenHDTelemetry::instance();
     connect(openhd, &OpenHDTelemetry::last_heartbeat_changed, this, &OpenHD::set_last_openhd_heartbeat);
 }
@@ -239,6 +241,18 @@ void OpenHD::set_Requested_Flight_Mode(int mode){
     //qDebug() << "OpenHD::set_Requested_Flight_Mode="<< mode;
     m_mode=mode;
     emit requested_Flight_Mode_Changed(m_mode);
+}
+
+void OpenHD::set_Requested_ArmDisarm(int arm_disarm){
+    qDebug() << "OpenHD::set_Requested_ArmDisarm="<< arm_disarm;
+    m_arm_disarm=arm_disarm;
+    emit requested_ArmDisarm_Changed(m_arm_disarm);
+}
+
+void OpenHD::set_FC_Reboot_Shutdown(int reboot_shutdown){
+    qDebug() << "OpenHD::set_FC_Reboot_Shutdown="<< reboot_shutdown;
+    m_reboot_shutdown=reboot_shutdown;
+    emit FC_Reboot_Shutdown_Changed(m_reboot_shutdown);
 }
 
 void OpenHD::pauseBlackBox(bool pause, int index){

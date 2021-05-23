@@ -1736,7 +1736,7 @@ Item {
                             }
                         }
                     }
-/* NOT READY YET
+/* NOT READY YET */
                     Rectangle {
                         width: parent.width
                         height: rowHeight
@@ -1765,7 +1765,7 @@ Item {
                             onCheckedChanged: settings.show_vroverlay = checked
                         }
                     }
-*/
+/**/
                     Rectangle {
                         width: parent.width
                         height: rowHeight

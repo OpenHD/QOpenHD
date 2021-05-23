@@ -27,6 +27,10 @@ public:
 
     Q_INVOKABLE void set_Requested_Flight_Mode(int mode);
 
+    Q_INVOKABLE void set_Requested_ArmDisarm(int mode);
+
+    Q_INVOKABLE void set_FC_Reboot_Shutdown(int reboot_shutdown);
+
     void setWifiAdapter0(uint32_t received_packet_cnt, int8_t current_signal_dbm, int8_t signal_good);
     void setWifiAdapter1(uint32_t received_packet_cnt, int8_t current_signal_dbm, int8_t signal_good);
     void setWifiAdapter2(uint32_t received_packet_cnt, int8_t current_signal_dbm, int8_t signal_good);
@@ -579,6 +583,8 @@ signals:
     void addBlackBoxObject(const BlackBox &blackbox);
     void pauseTelemetry(bool pause);
     void requested_Flight_Mode_Changed(int mode);
+    void requested_ArmDisarm_Changed(int arm_disarm);
+    void FC_Reboot_Shutdown_Changed(int reboot_shutdown);
     void playBlackBoxObject(int index);
 
 private:
@@ -762,6 +768,10 @@ public:
     QQmlApplicationEngine *m_engine = nullptr;
 
     int m_mode = 0;
+
+    int m_arm_disarm = 99;
+
+    int m_reboot_shutdown=99;
 };
 
 

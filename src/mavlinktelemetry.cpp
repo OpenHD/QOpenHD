@@ -94,6 +94,28 @@ MavlinkCommand command(MAVLINK_MSG_ID_MISSION_REQUEST_LIST);
 */
 }
 
+void MavlinkTelemetry::requested_ArmDisarm_Changed(int arm_disarm) {
+    m_arm_disarm=arm_disarm;
+    qDebug() << "MavlinkTelemetry::requested_ArmDisarm_Changed="<< m_arm_disarm;
+
+    MavlinkCommand command(MavlinkCommandTypeLong);
+    command.command_id = MAV_CMD_COMPONENT_ARM_DISARM ;
+    command.long_param1 = m_arm_disarm;
+    //command.long_param2 = m_arm_disarm;
+    sendCommand(command);
+}
+
+void MavlinkTelemetry::FC_Reboot_Shutdown_Changed(int reboot_shutdown) {
+    m_reboot_shutdown=reboot_shutdown;
+    qDebug() << "MavlinkTelemetry::FC_Reboot_Shutdown_Changed="<< m_reboot_shutdown;
+
+    MavlinkCommand command(MavlinkCommandTypeLong);
+    command.command_id = MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN ;
+    command.long_param1 = m_reboot_shutdown;
+    //command.long_param2 = m_arm_disarm;
+    sendCommand(command);
+}
+
 void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
 
     if(pause_telemetry==true){

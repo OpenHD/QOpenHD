@@ -8,6 +8,8 @@ import Qt.labs.settings 1.0
 
 import OpenHD 1.0
 
+import "../elements"
+
 BaseWidget {
     property alias gaugeAngle: throttleArc.sweepAngle
 
@@ -28,6 +30,7 @@ BaseWidget {
     defaultVCenter: false
 
     hasWidgetDetail: true
+    hasWidgetAction: true
 
     widgetDetailComponent: ScrollView{
 
@@ -159,6 +162,90 @@ BaseWidget {
                     onCheckedChanged: settings.setValue(vCenterIdentifier, checked)
                 }
             }
+        }
+    }
+
+    //---------------------------ACTION WIDGET COMPONENT BELOW-----------------------------
+
+    widgetActionComponent: ScrollView{
+
+        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+        clip: true
+
+        ColumnLayout{
+            width:200
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("Lat:")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Text {
+                    text: Number(OpenHD.homelat).toLocaleString(Qt.locale(), 'f', 6)
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.right: parent.right
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("Lon:")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Text {
+                    text: Number(OpenHD.homelon).toLocaleString(Qt.locale(), 'f', 6)
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.right: parent.right
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
+/*
+            Item {
+                Text {
+                    id: name
+                    text: qsTr("Vehicle type: "+OpenHD.mav_type)
+                    color: "white"
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                }
+            }
+*/
+            ConfirmSlider {
+
+                visible: OpenHD.mav_type=="ARDUPLANE" || OpenHD.mav_type=="ARDUCOPTER"
+
+                text_off: OpenHD.armed ? qsTr("DISARM") : qsTr("ARM")
+
+                msg_id: OpenHD.armed ? 0 : 1
+
+                onCheckedChanged:{
+                    if (checked==true){ //double check.... not really needed
+
+                        OpenHD.set_Requested_ArmDisarm(msg_id);
+                        //console.log("selected");
+                    }
+                }
+            }            
         }
     }
 
