@@ -203,7 +203,7 @@ BaseWidget {
                 width: 230
                 height: 32
                 Text {
-                    text: qsTr("Use telemetry percentege")
+                    text: qsTr("Use telemetry percentage")
                     color: "white"
                     height: parent.height
                     font.bold: true
