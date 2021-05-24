@@ -302,6 +302,10 @@ Settings {
     property double blackbox_opacity: 1
     property double blackbox_size: 1
 
+    property bool show_mission: true
+    property double mission_opacity: 1
+    property double mission_size: 1
+
     property bool show_example_widget: false
 
     property bool stereo_enable: false
