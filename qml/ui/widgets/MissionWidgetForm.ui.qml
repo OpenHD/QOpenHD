@@ -14,7 +14,7 @@ BaseWidget {
 
     id: missionWidget
     width: 96
-    height: 68
+    height: 25
 
     visible: settings.show_mission
 
@@ -190,12 +190,12 @@ BaseWidget {
 
                 text_off: qsTr("Request Mission")
 
-                msg_id: 1
+                msg_id: 43 //mission_request_list
 
                 onCheckedChanged:{
                     if (checked==true){ //double check.... not really needed
 
-                        OpenHD.request_Mission(msg_id);
+                        OpenHD.request_Mission();
                         console.log("Mission selected");
                     }
                 }
@@ -219,7 +219,7 @@ BaseWidget {
                 width: parent.width
                 height: 14
                 color: settings.color_text
-                text: qsTr("Mission")
+                text: qsTr("Mission")+": "+OpenHD.current_waypoint+"/"+OpenHD.total_waypoints
                 anchors.bottom: parent.bottom
                 anchors.bottomMargin: 0
                 verticalAlignment: Text.AlignBottom

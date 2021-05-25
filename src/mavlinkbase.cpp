@@ -173,6 +173,62 @@ void MavlinkBase::sendHeartbeat() {
     sendData((char*)buffer, len);
 }
 
+
+void MavlinkBase::request_Mission_Changed() {
+    qDebug() << "MavlinkBase::request_Mission_Changed";
+
+    QSettings settings;
+    int mavlink_sysid = settings.value("mavlink_sysid", m_util.default_mavlink_sysid()).toInt();
+
+    mavlink_message_t msg;
+
+    mavlink_msg_mission_request_list_pack(mavlink_sysid, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID,1,0);
+
+    uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
+    int len = mavlink_msg_to_send_buffer(buffer, &msg);
+
+    sendData((char*)buffer, len);
+
+}
+
+void MavlinkBase::get_Mission_Items(int total) {
+    qDebug() << "MavlinkBase::get_Mission_Items total="<< total;
+    QSettings settings;
+    int mavlink_sysid = settings.value("mavlink_sysid", m_util.default_mavlink_sysid()).toInt();
+
+    mavlink_message_t msg;
+
+    int current_seq;
+
+    for (current_seq = 0; current_seq < total; ++current_seq){
+        qDebug() << "MavlinkBase::get_Mission_Items current="<< current_seq;
+
+        mavlink_msg_mission_request_int_pack(mavlink_sysid, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID,1,current_seq,0);
+
+        uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
+        int len = mavlink_msg_to_send_buffer(buffer, &msg);
+
+        sendData((char*)buffer, len);
+    }
+}
+
+void MavlinkBase::send_Mission_Ack() {
+    qDebug() << "MavlinkBase::send_Mission_Ack";
+
+    QSettings settings;
+    int mavlink_sysid = settings.value("mavlink_sysid", m_util.default_mavlink_sysid()).toInt();
+
+    mavlink_message_t msg;
+
+    mavlink_msg_mission_ack_pack(mavlink_sysid, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID,1,0,0);
+
+    uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
+    int len = mavlink_msg_to_send_buffer(buffer, &msg);
+
+    sendData((char*)buffer, len);
+
+}
+
 bool MavlinkBase::isConnectionLost() {
     /* we want to know if a heartbeat has been received (not -1, the default)
        but not in the last 5 seconds.*/
@@ -419,7 +475,6 @@ void MavlinkBase::commandStateLoop() {
 
             if (m_current_command->m_command_type == MavlinkCommandTypeLong) {
                mavlink_msg_command_long_pack(mavlink_sysid, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID, targetCompID, m_current_command->command_id, m_current_command->long_confirmation, m_current_command->long_param1, m_current_command->long_param2, m_current_command->long_param3, m_current_command->long_param4, m_current_command->long_param5, m_current_command->long_param6, m_current_command->long_param7);
-            //mavlink_mission_current_t(&msg);
             } else {
                 mavlink_msg_command_int_pack(mavlink_sysid, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID, targetCompID, m_current_command->int_frame, m_current_command->command_id, m_current_command->int_current, m_current_command->int_autocontinue, m_current_command->int_param1, m_current_command->int_param2, m_current_command->int_param3, m_current_command->int_param4, m_current_command->int_param5, m_current_command->int_param6, m_current_command->int_param7);          
             }

@@ -13,6 +13,8 @@
 #include "mavlinkbase.h"
 #include "ADSBVehicle.h"
 
+#include "missionwaypoint.h"
+
 
 class QUdpSocket;
 
@@ -31,22 +33,21 @@ public slots:
     void requestSysIdSettings();
     void requested_Flight_Mode_Changed(int mode);
     void requested_ArmDisarm_Changed(int arm_disarm);
-    void FC_Reboot_Shutdown_Changed(int reboot_shutdown);
+    void FC_Reboot_Shutdown_Changed(int reboot_shutdown);    
 
 private slots:
     void onProcessMavlinkMessage(mavlink_message_t msg);
 
 signals:
     void adsbVehicleUpdate(const ADSBVehicle::VehicleInfo_t vehicleInfo);
+    void addMissionWaypoint(const MissionWaypoint::WaypointInfo_t waypointInfo);
 
 private:
     bool pause_telemetry;
-
     int m_mode=0;
-
     int m_arm_disarm=99;
-
     int m_reboot_shutdown=99;
+    int m_total_waypoints=0;
 };
 
 #endif
