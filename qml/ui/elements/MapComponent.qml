@@ -183,7 +183,6 @@ Map {
         line.width: 3
     }
 
-
     MapItemView {
         id: markerMapView
         model: AdsbVehicleManager.adsbVehicles
@@ -456,6 +455,69 @@ Map {
             configureLargeMap()
         }
     }
+
+
+    MapItemView {
+        id: waypointMapView
+        model: MissionWaypointManager.waypoints
+        delegate: waypointComponent
+
+
+        Component {
+            id: waypointComponent
+
+            MapItemGroup {
+                id: waypointGroup
+
+                MapQuickItem {
+
+                    id: waypointMarker
+                    anchorPoint.x: seq.width / 2
+                    anchorPoint.y: seq.height
+
+/*
+                    sourceItem: Image {
+                        id: imageWaypoint
+                        source: "/homemarker.png"
+                    }
+*/
+                    sourceItem:Text{
+                        id: seq
+                        //anchors.bottom: imageWaypoint.top
+                        //topPadding: 2
+                        //leftPadding: 10
+                        //width: imageWaypoint.width
+                        color: "white"
+                        font.bold: true
+                        font.pixelSize: 15
+                        horizontalAlignment: Text.AlignHCenter
+                        text: {
+
+                            return object.sequence
+
+                        }
+                    }
+
+
+
+                    coordinate: {
+                        // TODO "undefined" protection
+                        console.log("Map sequence="+object.sequence);
+                        console.log("Map command="+object.command);
+                        console.log("Map latitude="+object.latitude);
+                        console.log("Map longitude="+object.longitude);
+                        console.log("Map altitude="+object.altitude);
+
+                        return QtPositioning.coordinate(object.latitude, object.longitude);
+                    }
+
+                }
+
+
+            }
+        }
+    }
+
 
     MapQuickItem {
         id: dronemarker

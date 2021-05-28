@@ -29,9 +29,9 @@ public:
     ~MissionWaypointManager(); // this was causing compiler error
     static MissionWaypointManager* instance();
 
-    Q_PROPERTY(QmlObjectListModel* waypointModel READ waypointModel CONSTANT)
+    Q_PROPERTY(QmlObjectListModel* waypoints READ waypoints CONSTANT)
 
-    QmlObjectListModel* waypointModel(void) { return &_waypoints; }
+    QmlObjectListModel* waypoints(void) { return &_waypoints; }
 
 
 signals:
@@ -39,7 +39,9 @@ signals:
     //void statusChanged(void);
 
 public slots:
-    void addMissionWaypoint  (const MissionWaypoint::WaypointInfo_t waypointInfo);
+    void deleteMissionWaypoints();
+    void addMissionWaypoint (int seq,int cmd,double lat,double lon,
+                             double alt,double spd, double hdg,bool alert,double vert);
     void onStarted();
 
 private slots:
