@@ -26,12 +26,13 @@ class MissionWaypointManager : public QObject {
     
 public:
     MissionWaypointManager(QObject* parent = nullptr);
-    ~MissionWaypointManager(); // this was causing compiler error
+    //~MissionWaypointManager(); // this was causing compiler error
     static MissionWaypointManager* instance();
 
-    Q_PROPERTY(QmlObjectListModel* waypoints READ waypoints CONSTANT)
 
-    QmlObjectListModel* waypoints(void) { return &_waypoints; }
+    Q_PROPERTY(QmlObjectListModel* missionWaypoints READ missionWaypoints CONSTANT)
+
+    QmlObjectListModel* missionWaypoints(void) { return &_missionWaypoints; }
 
 
 signals:
@@ -40,16 +41,14 @@ signals:
 
 public slots:
     void deleteMissionWaypoints();
-    void addMissionWaypoint (int seq,int cmd,double lat,double lon,
-                             double alt,double spd, double hdg,bool alert,double vert);
+    void addMissionWaypoint (const MissionWaypoint::WaypointInfo_t waypointInfo);
     void onStarted();
 
 private slots:
     //void _cleanupStaleVehicles(void);
 
 private:
-    QmlObjectListModel              _waypoints;
-    QMap<int, MissionWaypoint*>    _sequenceMap;
-
+    QmlObjectListModel              _missionWaypoints;
+    QMap<uint16_t, MissionWaypoint*>    _sequenceMap;
 
 };

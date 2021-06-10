@@ -6,16 +6,15 @@
 MissionWaypoint::MissionWaypoint(const WaypointInfo_t& waypointInfo, QObject* parent)
     : QObject       (parent)
     , _sequence  (waypointInfo.sequence)
-    , _latitude     (waypointInfo.latitude)
-    , _longitude     (waypointInfo.longitude)
-    , _altitude     (waypointInfo.altitude)
+    , _altitude     (qQNaN())
+    , _heading      (qQNaN())
 
 {
-    updateWaypoint(waypointInfo);
+    update(waypointInfo);
 }
 
 
-void MissionWaypoint::updateWaypoint(const WaypointInfo_t& waypointInfo)
+void MissionWaypoint::update(const WaypointInfo_t& waypointInfo)
 {
 
     qDebug() << "MissionWaypoint::updateWaypoint = " << _sequence << " : " << waypointInfo.sequence;
@@ -31,20 +30,10 @@ void MissionWaypoint::updateWaypoint(const WaypointInfo_t& waypointInfo)
             emit commandChanged();
         }
     }
-    if (waypointInfo.availableFlags & LatitudeAvailable) {
-        qDebug() << "lat avail";
-        if (_latitude != waypointInfo.latitude) {
-            _latitude = waypointInfo.latitude;
-            qDebug() << "lat changed";
-            emit latitudeChanged();
-        }
-    }
-    if (waypointInfo.availableFlags & LongitudeAvailable) {
-        qDebug() << "lon avail";
-        if (_longitude != waypointInfo.longitude) {
-            _longitude = waypointInfo.longitude;
-            qDebug() << "lon changed";
-            emit longitudeChanged();
+    if (waypointInfo.availableFlags & LocationAvailable) {
+        if (_coordinate != waypointInfo.location) {
+            _coordinate = waypointInfo.location;
+            emit coordinateChanged();
         }
     }
     if (waypointInfo.availableFlags & AltitudeAvailable) {
@@ -57,12 +46,6 @@ void MissionWaypoint::updateWaypoint(const WaypointInfo_t& waypointInfo)
         if (!(qIsNaN(waypointInfo.heading) && qIsNaN(_heading)) && !qFuzzyCompare(waypointInfo.heading, _heading)) {
             _heading = waypointInfo.heading;
             emit headingChanged();
-        }
-    }
-    if (waypointInfo.availableFlags & AlertAvailable) {
-        if (waypointInfo.alert != _alert) {
-            _alert = waypointInfo.alert;
-            emit alertChanged();
         }
     }
     if (waypointInfo.availableFlags & VelocityAvailable) {

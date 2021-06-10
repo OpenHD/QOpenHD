@@ -206,7 +206,10 @@ Map {
                     height: image.height
 
 
-                    sourceItem: Image {
+                    sourceItem:
+
+                        Image {
+
                         id: image
                         source: "/airplanemarkerblur.png"
 
@@ -246,7 +249,7 @@ Map {
                                 if (orientation >= 360) orientation -=360;
                                 return orientation;
                             }
-                            else {                                
+                            else {
                                 //console.log("TRACK=", object.heading);
                                 return object.heading;
                             }
@@ -459,7 +462,7 @@ Map {
 
     MapItemView {
         id: waypointMapView
-        model: MissionWaypointManager.waypoints
+        model: MissionWaypointManager.missionWaypoints
         delegate: waypointComponent
 
 
@@ -470,50 +473,54 @@ Map {
                 id: waypointGroup
 
                 MapQuickItem {
-
                     id: waypointMarker
-                    anchorPoint.x: seq.width / 2
-                    anchorPoint.y: seq.height
 
-/*
-                    sourceItem: Image {
-                        id: imageWaypoint
-                        source: "/homemarker.png"
-                    }
-*/
-                    sourceItem:Text{
-                        id: seq
-                        //anchors.bottom: imageWaypoint.top
-                        //topPadding: 2
-                        //leftPadding: 10
-                        //width: imageWaypoint.width
-                        color: "white"
-                        font.bold: true
-                        font.pixelSize: 15
-                        horizontalAlignment: Text.AlignHCenter
-                        text: {
+                    //   anchorPoint.x: seq_rect.width / 2
+                    //   anchorPoint.y: seq_rect.height
 
-                            return object.sequence
 
+                    sourceItem:
+
+                        Rectangle {
+                        id: seq_rect
+                        anchors.centerIn: parent
+
+                        width: 22
+                        height: 22
+                        color: "green"
+                        border.color: "black"
+                        border.width: 1
+                        radius: width*0.5
+
+                        Text{
+                            id:seq_text
+                            anchors.centerIn: parent
+                            color: "white"
+                            font.bold: true
+                            font.pixelSize: 15
+                            horizontalAlignment: Text.AlignHCenter
+                            text: {
+                                return object.sequence
+                            }
                         }
                     }
 
 
 
+
                     coordinate: {
                         // TODO "undefined" protection
+/*
                         console.log("Map sequence="+object.sequence);
                         console.log("Map command="+object.command);
-                        console.log("Map latitude="+object.latitude);
-                        console.log("Map longitude="+object.longitude);
+                        console.log("Map latitude="+object.lat);
+                        console.log("Map longitude="+object.lon);
                         console.log("Map altitude="+object.altitude);
-
-                        return QtPositioning.coordinate(object.latitude, object.longitude);
+*/
+                        return object.coordinate;
                     }
 
                 }
-
-
             }
         }
     }

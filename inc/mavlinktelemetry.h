@@ -41,7 +41,7 @@ private slots:
 signals:
     void adsbVehicleUpdate(const ADSBVehicle::VehicleInfo_t vehicleInfo);
     void deleteMissionWaypoints();
-    void addMissionWaypoint(int seq,int cmd,double lat,double lon,double alt,double spd, double hdg,bool alert,double vert);
+    void addMissionWaypoint(const MissionWaypoint::WaypointInfo_t waypointInfo);
 
 private:
     bool pause_telemetry;

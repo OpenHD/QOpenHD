@@ -23,19 +23,12 @@ MissionWaypointManager::MissionWaypointManager(QObject *parent) : QObject(parent
 }
 
 
-MissionWaypointManager::~MissionWaypointManager()
-{
-    // manually stop the threads
-
-}
-
-
 void MissionWaypointManager::onStarted()
 {
     qDebug() << "MissionWaypointManager::onStarted";
     MavlinkTelemetry* mavlinktelemetry = MavlinkTelemetry::instance();
     connect(mavlinktelemetry, &MavlinkTelemetry::deleteMissionWaypoints, this, &MissionWaypointManager::deleteMissionWaypoints);
-    connect(mavlinktelemetry, &MavlinkTelemetry::addMissionWaypoint, this, &MissionWaypointManager::addMissionWaypoint);
+    connect(mavlinktelemetry, &MavlinkTelemetry::addMissionWaypoint, this, &MissionWaypointManager::addMissionWaypoint, Qt::QueuedConnection);
 }
 
 void MissionWaypointManager::deleteMissionWaypoints()
@@ -51,12 +44,12 @@ void MissionWaypointManager::deleteMissionWaypoints()
 
     //must adjust the counter since the model index starts at 0
 
-    qDebug() << "deleteMissionWaypoints count=" << _waypoints.count();
-    for (int i=_waypoints.count()-1; i>=0; i--) {
+    qDebug() << "deleteMissionWaypoints count=" << _missionWaypoints.count();
+    for (int i=_missionWaypoints.count()-1; i>=0; i--) {
 
-        MissionWaypoint* missionWaypoint = _waypoints.value<MissionWaypoint*>(i);
+        MissionWaypoint* missionWaypoint = _missionWaypoints.value<MissionWaypoint*>(i);
 
-        _waypoints.removeAt(i);
+        _missionWaypoints.removeAt(i);
 
         _sequenceMap.remove(missionWaypoint->sequence());
         qDebug() << "deleteMissionWaypoints at " << i;
@@ -66,76 +59,32 @@ void MissionWaypointManager::deleteMissionWaypoints()
 }
 
 
-void MissionWaypointManager::addMissionWaypoint(int seq,int cmd,double lat,double lon,double alt,
-                                                double spd, double hdg,bool alert,double vert)
+void MissionWaypointManager::addMissionWaypoint(const MissionWaypoint::WaypointInfo_t waypointInfo)
 {
-    //qDebug() << "MissionWaypointManager::missionWaypointUpdate";
+    qDebug() << "MissionWaypointManager::missionWaypointUpdate";
 
-        MissionWaypoint::WaypointInfo_t waypointInfo;
-
-        waypointInfo.availableFlags = 0;
-        waypointInfo.sequence = seq;
-
-        uint32_t sequence = waypointInfo.sequence;
-
-
+        uint16_t sequence = waypointInfo.sequence;
 
         qDebug() << "MissionWaypoint seq=" << waypointInfo.sequence;
 
         if (_sequenceMap.contains(sequence)) {
 
-            _sequenceMap[sequence]->updateWaypoint(waypointInfo);
+            qDebug() << "MissionWaypointManager calling update";
+
+            _sequenceMap[sequence]->update(waypointInfo);
 
         } else {
 
             MissionWaypoint* missionWaypoint = new MissionWaypoint(waypointInfo, this);
 
-
             _sequenceMap[sequence] = missionWaypoint;
 
+            _missionWaypoints.append(missionWaypoint);
 
-            qDebug() << "MissionWaypoint lat=" << lat;
-            qDebug() << "MissionWaypoint lon=" << lon;
+            qDebug() << "MissionWaypoint Appended count : " << _missionWaypoints.count();
 
-            waypointInfo.latitude = lat;
-            waypointInfo.availableFlags |= MissionWaypoint::LatitudeAvailable;
-
-            waypointInfo.longitude = lon;
-            waypointInfo.availableFlags |= MissionWaypoint::LongitudeAvailable;
-
-            waypointInfo.command = cmd;
-            waypointInfo.availableFlags |= MissionWaypoint::CommandAvailable;
-
-            qDebug() << "MissionWaypoint cmd=" << cmd;
-
-            waypointInfo.altitude = alt;
-            waypointInfo.availableFlags |= MissionWaypoint::AltitudeAvailable;
-
-            waypointInfo.velocity = spd;
-            waypointInfo.availableFlags |= MissionWaypoint::VelocityAvailable;
-
-            waypointInfo.heading = hdg;
-            waypointInfo.availableFlags |= MissionWaypoint::HeadingAvailable;
-
-            waypointInfo.alert = alert;
-            waypointInfo.availableFlags |= MissionWaypoint::AlertAvailable;
-
-            waypointInfo.verticalVel = vert;
-            waypointInfo.availableFlags |= MissionWaypoint::VerticalVelAvailable;
-
-
-            //_waypoints.insert(seq, missionWaypoint);
-
-            _waypoints.append(missionWaypoint);
-
-            qDebug() << "MissionWaypoint Appended count : " << _waypoints.count();
-
-            qDebug() << "MissionWaypoint Appended index : " << _waypoints.indexOf(missionWaypoint);
+            qDebug() << "MissionWaypoint Appended index : " << _missionWaypoints.indexOf(missionWaypoint);
         }
 }
-
-
-
-
 
 

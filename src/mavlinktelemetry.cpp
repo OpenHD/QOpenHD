@@ -402,23 +402,36 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
         case MAVLINK_MSG_ID_MISSION_ITEM_INT:{
             mavlink_mission_item_int_t item;
             mavlink_msg_mission_item_int_decode(&msg, &item);
-            auto item_int=item.seq;
-            auto item_lat=item.x/ 1e7;
-            auto item_lon=item.y/ 1e7;
 
-           // if (item.seq!=0){
-                qDebug() << "Mavlink msg seq: " << item_int;
-                qDebug() << "Mavlink msg cmd: " << item.command;
-                qDebug() << "Mavlink msg lat: " << item_lat;
-                qDebug() << "Mavlink msg lon: " << item_lon;
-                qDebug() << "Mavlink msg alt: " << item.z;
-                emit addMissionWaypoint(item_int,item.command,item_lat,item_lon,item.z,99,99,false,99);
-          //  }
+            MissionWaypoint::WaypointInfo_t waypointInfo;
 
-            //  int seq,intQString cmd,double lat,double lon, double alt,double spd, double hdg,bool alert,double vert
+            waypointInfo.availableFlags = 0;
+            waypointInfo.sequence = item.seq;
 
+            waypointInfo.location.setLatitude(item.x / 1e7); // degE7 to deg
+            waypointInfo.location.setLongitude(item.y / 1e7); // degE7 to deg
+            waypointInfo.availableFlags |= MissionWaypoint::LocationAvailable;
+
+            waypointInfo.command = item.command;
+            waypointInfo.availableFlags |= MissionWaypoint::CommandAvailable;
+
+            waypointInfo.altitude = (double)item.z; // float to double
+            waypointInfo.availableFlags |= MissionWaypoint::AltitudeAvailable;
+
+            waypointInfo.heading = 99; // fake data
+            waypointInfo.availableFlags |= MissionWaypoint::HeadingAvailable;
+
+            waypointInfo.velocity = 99; // fake
+            waypointInfo.availableFlags |= MissionWaypoint::VelocityAvailable;
+
+            waypointInfo.verticalVel = 99; // fake
+            waypointInfo.availableFlags |= MissionWaypoint::VerticalVelAvailable;
+
+            emit addMissionWaypoint(waypointInfo);
+
+qDebug() << "emit waypoint = " << item.seq;
             //if this is last waypoint we need to send an ack to the drone
-            if (item_int==m_total_waypoints){
+            if ((int)item.seq==m_total_waypoints){
                 send_Mission_Ack();
             }
 
