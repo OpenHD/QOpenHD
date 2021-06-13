@@ -25,16 +25,7 @@ Map {
     property double center_coord_lon: 0.0
     property int track_count: 0;
     property int track_skip: 1;
-    property int track_limit: 100;
-
-    Connections {
-        target: BlackBoxModel
-        function onDataChanged() {
-            if (settings.map_drone_track === true) {
-                addDroneTrack();
-            }
-        }
-    }
+    property int track_limit: 100; //max number of drone track points before it starts averaging
 
     Connections {
         target: MissionWaypointManager
@@ -46,36 +37,6 @@ Map {
                 for (var i = 0; i < waypoint_track_count; ++i) {
                     waypointTrack.removeCoordinate(i);
 
-                }
-            }
-        }
-    }
-
-    function addDroneTrack() {
-
-        // always remove last point unless it was significant
-        if (track_count != 0) {
-            droneTrack.removeCoordinate(droneTrack.pathLength());
-            //console.log("total points=", droneTrack.pathLength());
-        }
-
-        // always add the current location so drone looks like its connected to line
-        droneTrack.addCoordinate(QtPositioning.coordinate(OpenHD.lat, OpenHD.lon));
-
-        track_count = track_count + 1;
-
-        if (track_count == track_skip) {
-            track_count = 0;
-        }
-
-        if (droneTrack.pathLength() === track_limit) {
-            //make line more coarse
-            track_skip = track_skip * 2;
-            //cut the points in the list by half
-            for (var i = 0; i < track_limit; ++i) {
-                if (i % 2) {
-                    // it's odd
-                    droneTrack.removeCoordinate(i);
                 }
             }
         }
@@ -115,6 +76,44 @@ Map {
         }
     }
 
+    function addDroneTrack() {
+
+        // always remove last point unless it was significant
+        if (track_count != 0) {
+            droneTrack.removeCoordinate(droneTrack.pathLength());
+            //console.log("total points=", droneTrack.pathLength());
+        }
+
+        // always add the current location so drone looks like its connected to line
+        droneTrack.addCoordinate(QtPositioning.coordinate(OpenHD.lat, OpenHD.lon));
+
+        track_count = track_count + 1;
+
+        if (track_count == track_skip) {
+            track_count = 0;
+        }
+
+        if (droneTrack.pathLength() === track_limit) {
+            //make line more coarse
+            track_skip = track_skip * 2;
+            //cut the points in the list by half
+            for (var i = 0; i < track_limit; ++i) {
+                if (i % 2) {
+                    // it's odd
+                    droneTrack.removeCoordinate(i);
+                }
+            }
+        }
+    }
+
+    MapPolyline {
+        id: droneTrack
+        visible: EnableBlackbox
+
+        line.color: "red"
+        line.width: 3
+    }
+
     MapCircle {
         center {
             latitude: OpenHD.lat
@@ -151,51 +150,6 @@ Map {
         border.width: 5
         smooth: true
         opacity: .3
-    }
-
-    MapItemView {
-        model: BlackBoxModel
-        enabled: EnableBlackbox
-
-        function addDroneTrack() {
-            
-            // always remove last point unless it was significant
-            if (track_count != 0) {
-                droneTrack.removeCoordinate(droneTrack.pathLength());
-                //console.log("total points=", droneTrack.pathLength());
-            }
-
-            // always add the current location so drone looks like its connected to line
-            droneTrack.addCoordinate(QtPositioning.coordinate(OpenHD.lat, OpenHD.lon));
-
-            track_count = track_count + 1;
-
-            if (track_count == track_skip) {
-                track_count = 0;
-            }
-
-            if (droneTrack.pathLength() === track_limit) {
-                //make line more coarse
-                track_skip = track_skip * 2;
-                //cut the points in the list by half
-                for (var i = 0; i < track_limit; ++i) {
-                    if (i % 2) {
-                        // it's odd
-                        droneTrack.removeCoordinate(i);
-                    }
-                }
-            }
-
-            //console.log("drone position=",OpenHD.lat, OpenHD.lon);
-        }
-    }
-
-    MapPolyline {
-        id: droneTrack
-        visible: EnableBlackbox
-
-        line.color: "red"
-        line.width: 3
     }
 
     MapItemView {
@@ -609,6 +563,10 @@ Map {
     MapQuickItem {
         id: dronemarker
         coordinate: QtPositioning.coordinate(OpenHD.lat, OpenHD.lon)
+
+        onCoordinateChanged: {
+            addDroneTrack();
+        }
 
         anchorPoint.x : 0
         anchorPoint.y : 0
