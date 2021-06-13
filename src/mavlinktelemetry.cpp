@@ -161,7 +161,7 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
                                         OpenHD::instance()->set_flight_mode(copter_mode);
                                         OpenHD::instance()->set_mav_type("ARDUCOPTER");
 
-                                        qDebug() << "Mavlink Mav Type= ARDUCOPTER";
+                                        //qDebug() << "Mavlink Mav Type= ARDUCOPTER";
                                         break;
                                     }
                                     case MAV_TYPE_SUBMARINE: {
@@ -443,7 +443,7 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             if (item.seq>0){
                 emit addMissionWaypoint(waypointInfo);
             }
-qDebug() << "emit waypoint = " << item.seq;
+            //qDebug() << "emit waypoint = " << item.seq;
 
             //if this is last waypoint we need to send an ack to the drone
             if ((int)item.seq==m_total_waypoints){

@@ -172,7 +172,7 @@ BaseWidget {
         ColumnLayout{
             width:200
 
-/*
+            /*
             Item {
                 Text {
                     id: name
@@ -196,10 +196,10 @@ BaseWidget {
                     if (checked==true){ //double check.... not really needed
 
                         OpenHD.request_Mission();
-                        console.log("Mission selected");
+                        //console.log("Mission selected");
                     }
                 }
-            }            
+            }
         }
     }
 

@@ -244,6 +244,7 @@ BaseWidget {
             Item {
                 Text {
                     id: name
+                    visible: false
                     text: qsTr("Vehicle type: "+OpenHD.mav_type)
                     color: "white"
                     font.bold: true

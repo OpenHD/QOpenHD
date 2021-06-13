@@ -292,7 +292,7 @@ LinuxBuild {
     #CONFIG += EnableLink
     CONFIG += EnableCharts
     CONFIG += EnableADSB
-    CONFIG += EnableBlackbox
+    #CONFIG += EnableBlackbox
 
     message("LinuxBuild - config")
 }
@@ -374,7 +374,7 @@ AndroidBuild {
     CONFIG += EnableVideoRender
     CONFIG += EnableCharts
     CONFIG += EnableADSB
-    CONFIG += EnableBlackbox
+    #CONFIG += EnableBlackbox
 
     EnableGStreamer {
         OTHER_FILES += \

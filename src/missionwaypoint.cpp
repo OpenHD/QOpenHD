@@ -17,7 +17,7 @@ MissionWaypoint::MissionWaypoint(const WaypointInfo_t& waypointInfo, QObject* pa
 void MissionWaypoint::update(const WaypointInfo_t& waypointInfo)
 {
 
-    qDebug() << "MissionWaypoint::updateWaypoint = " << _sequence << " : " << waypointInfo.sequence;
+    //qDebug() << "MissionWaypoint::updateWaypoint = " << _sequence << " : " << waypointInfo.sequence;
 
     if (_sequence != waypointInfo.sequence) {
         qDebug() << "Sequence mismatch expected:actual";

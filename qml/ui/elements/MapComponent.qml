@@ -44,7 +44,7 @@ Map {
             var waypoint_track_count = waypointTrack.pathLength();
             if (waypoint_track_count>0){
                 for (var i = 0; i < waypoint_track_count; ++i) {
-                        waypointTrack.removeCoordinate(i);
+                    waypointTrack.removeCoordinate(i);
 
                 }
             }
@@ -116,14 +116,14 @@ Map {
     }
 
     MapCircle {
-                    center {
-                        latitude: OpenHD.lat
-                        longitude: OpenHD.lon
-                    }
-                    radius: OpenHD.gps_hdop
-                    color: 'red'
-                    opacity: .3
-                }
+        center {
+            latitude: OpenHD.lat
+            longitude: OpenHD.lon
+        }
+        radius: OpenHD.gps_hdop
+        color: 'red'
+        opacity: .3
+    }
 
     MapQuickItem {
         id: homemarkerSmallMap
@@ -578,7 +578,7 @@ Map {
                                     return "L";
                                 }
                                 else {
-                                return object.sequence;
+                                    return object.sequence;
                                 }
                             }
                         }
@@ -589,7 +589,7 @@ Map {
 
                     coordinate: {
                         // TODO "undefined" protection
-/*
+                        /*
                         console.log("Map sequence="+object.sequence);
                         console.log("Map command="+object.command);
                         console.log("Map latitude="+object.lat);

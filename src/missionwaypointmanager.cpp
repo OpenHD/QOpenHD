@@ -52,7 +52,7 @@ void MissionWaypointManager::deleteMissionWaypoints()
         _missionWaypoints.removeAt(i);
 
         _sequenceMap.remove(missionWaypoint->sequence());
-        qDebug() << "deleteMissionWaypoints at " << i;
+        //qDebug() << "deleteMissionWaypoints at " << i;
         missionWaypoint->deleteLater();
         emit mapDeleteWaypoints();
     }
@@ -62,30 +62,30 @@ void MissionWaypointManager::deleteMissionWaypoints()
 
 void MissionWaypointManager::addMissionWaypoint(const MissionWaypoint::WaypointInfo_t waypointInfo)
 {
-    qDebug() << "MissionWaypointManager::missionWaypointUpdate";
+    //qDebug() << "MissionWaypointManager::missionWaypointUpdate";
 
-        uint16_t sequence = waypointInfo.sequence;
+    uint16_t sequence = waypointInfo.sequence;
 
-        qDebug() << "MissionWaypoint seq=" << waypointInfo.sequence;
+    //qDebug() << "MissionWaypoint seq=" << waypointInfo.sequence;
 
-        if (_sequenceMap.contains(sequence)) {
+    if (_sequenceMap.contains(sequence)) {
 
-            qDebug() << "MissionWaypointManager calling update";
+        //Debug() << "MissionWaypointManager calling update";
 
-            _sequenceMap[sequence]->update(waypointInfo);
+        _sequenceMap[sequence]->update(waypointInfo);
 
-        } else {
+    } else {
 
-            MissionWaypoint* missionWaypoint = new MissionWaypoint(waypointInfo, this);
+        MissionWaypoint* missionWaypoint = new MissionWaypoint(waypointInfo, this);
 
-            _sequenceMap[sequence] = missionWaypoint;
+        _sequenceMap[sequence] = missionWaypoint;
 
-            _missionWaypoints.append(missionWaypoint);
+        _missionWaypoints.append(missionWaypoint);
 
-            qDebug() << "MissionWaypoint Appended count : " << _missionWaypoints.count();
+        //qDebug() << "MissionWaypoint Appended count : " << _missionWaypoints.count();
 
-            qDebug() << "MissionWaypoint Appended index : " << _missionWaypoints.indexOf(missionWaypoint);
-        }
+        //qDebug() << "MissionWaypoint Appended index : " << _missionWaypoints.indexOf(missionWaypoint);
+    }
 }
 
 
