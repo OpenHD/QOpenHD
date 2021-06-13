@@ -108,8 +108,7 @@ Map {
 
     MapPolyline {
         id: droneTrack
-        visible: EnableBlackbox
-
+        visible: settings.map_drone_track
         line.color: "red"
         line.width: 3
     }
