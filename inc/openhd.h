@@ -137,6 +137,15 @@ public:
         return m_lon;
     };
 
+    double get_home_lat() {
+        return m_homelat;
+    };
+
+    double get_home_lon() {
+        return m_homelon;
+    };
+
+
     double get_msl_alt() {
         return m_alt_msl;
     }

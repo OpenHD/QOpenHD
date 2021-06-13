@@ -200,7 +200,7 @@ void MavlinkBase::get_Mission_Items(int total) {
 
     int current_seq;
 
-    for (current_seq = 0; current_seq < total; ++current_seq){
+    for (current_seq = 1; current_seq < total; ++current_seq){
         qDebug() << "MavlinkBase::get_Mission_Items current="<< current_seq;
 
         mavlink_msg_mission_request_int_pack(mavlink_sysid, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID,1,current_seq,0);

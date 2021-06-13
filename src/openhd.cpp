@@ -1137,6 +1137,9 @@ void OpenHD::setCurrentWaypoint(int current_waypoint) {
 }
 
 void OpenHD::setTotalWaypoints(int total_waypoints) {
-    m_total_waypoints = total_waypoints;
+    m_total_waypoints = total_waypoints-1;
+    if(m_total_waypoints<0){
+        m_total_waypoints=0;
+    }
     emit totalWaypointsChanged(m_total_waypoints);
 }

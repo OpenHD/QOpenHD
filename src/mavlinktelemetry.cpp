@@ -408,8 +408,21 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             waypointInfo.availableFlags = 0;
             waypointInfo.sequence = item.seq;
 
-            waypointInfo.location.setLatitude(item.x / 1e7); // degE7 to deg
-            waypointInfo.location.setLongitude(item.y / 1e7); // degE7 to deg
+            double lat=item.x / 1e7;
+            double lon=item.y / 1e7;
+
+            if (item.command == 22 ){
+                lat=OpenHD::instance()->get_home_lat();
+                lon=OpenHD::instance()->get_home_lon();
+            }
+
+            //early return on all lat/lon 0,0 that are not takeoff
+            if (lat==0 || lon ==0){
+                break;
+            }
+
+            waypointInfo.location.setLatitude(lat); // degE7 to deg
+            waypointInfo.location.setLongitude(lon); // degE7 to deg
             waypointInfo.availableFlags |= MissionWaypoint::LocationAvailable;
 
             waypointInfo.command = item.command;
@@ -427,9 +440,11 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             waypointInfo.verticalVel = 99; // fake
             waypointInfo.availableFlags |= MissionWaypoint::VerticalVelAvailable;
 
-            emit addMissionWaypoint(waypointInfo);
-
+            if (item.seq>0){
+                emit addMissionWaypoint(waypointInfo);
+            }
 qDebug() << "emit waypoint = " << item.seq;
+
             //if this is last waypoint we need to send an ack to the drone
             if ((int)item.seq==m_total_waypoints){
                 send_Mission_Ack();

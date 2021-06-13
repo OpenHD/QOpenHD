@@ -54,6 +54,7 @@ void MissionWaypointManager::deleteMissionWaypoints()
         _sequenceMap.remove(missionWaypoint->sequence());
         qDebug() << "deleteMissionWaypoints at " << i;
         missionWaypoint->deleteLater();
+        emit mapDeleteWaypoints();
     }
 
 }

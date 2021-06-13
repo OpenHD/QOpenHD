@@ -36,6 +36,21 @@ Map {
         }
     }
 
+    Connections {
+        target: MissionWaypointManager
+        function onMapDeleteWaypoints(){
+            console.log("onMapDeleteWaypoints");
+
+            var waypoint_track_count = waypointTrack.pathLength();
+            if (waypoint_track_count>0){
+                for (var i = 0; i < waypoint_track_count; ++i) {
+                        waypointTrack.removeCoordinate(i);
+
+                }
+            }
+        }
+    }
+
     function addDroneTrack() {
 
         // always remove last point unless it was significant
@@ -460,6 +475,14 @@ Map {
     }
 
 
+    MapPolyline {
+        id: waypointTrack
+
+        line.color: "yellow"
+        line.width: 3
+    }
+
+
     MapItemView {
         id: waypointMapView
         model: MissionWaypointManager.missionWaypoints
@@ -485,9 +508,44 @@ Map {
                         id: seq_rect
                         anchors.centerIn: parent
 
-                        width: 22
-                        height: 22
-                        color: "green"
+                        width: {
+                            if (object.sequence === undefined) {
+                                return 22;
+                            }
+
+                            if (object.sequence === OpenHD.current_waypoint){
+                                return 30;
+                            }
+                            else{
+                                return 22;
+                            }
+                        }
+
+                        height: {
+                            if (object.sequence === undefined) {
+                                return 22;
+                            }
+                            if (object.sequence === OpenHD.current_waypoint){
+                                return 30;
+                            }
+                            else{
+                                return 22;
+                            }
+                        }
+                        color: {
+                            if (object.sequence === undefined) {
+                                return "green";
+                            }
+                            if (object.sequence === OpenHD.current_waypoint){
+                                return "red";
+                            }
+                            else if(object.sequence < OpenHD.current_waypoint){
+                                return "grey";
+                            }
+                            else{
+                                return "green";
+                            }
+                        }
                         border.color: "black"
                         border.width: 1
                         radius: width*0.5
@@ -497,10 +555,31 @@ Map {
                             anchors.centerIn: parent
                             color: "white"
                             font.bold: true
-                            font.pixelSize: 15
+                            font.pixelSize: {
+                                if (object.sequence === undefined) {
+                                    return 15;
+                                }
+                                if (object.sequence === OpenHD.current_waypoint){
+                                    return 17;
+                                }
+                                else{
+                                    return 15;
+                                }
+                            }
                             horizontalAlignment: Text.AlignHCenter
                             text: {
-                                return object.sequence
+                                if (object.sequence === undefined) {
+                                    return "?";
+                                }
+                                else if (object.command === 22) {
+                                    return "T";
+                                }
+                                else if (object.command === 21) {
+                                    return "L";
+                                }
+                                else {
+                                return object.sequence;
+                                }
                             }
                         }
                     }
@@ -517,6 +596,7 @@ Map {
                         console.log("Map longitude="+object.lon);
                         console.log("Map altitude="+object.altitude);
 */
+                        waypointTrack.addCoordinate(object.coordinate);
                         return object.coordinate;
                     }
 

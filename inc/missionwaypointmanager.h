@@ -38,6 +38,7 @@ public:
 signals:
     // sent to adsbwidgetform.ui to update the status indicator
     //void statusChanged(void);
+    void mapDeleteWaypoints();
 
 public slots:
     void deleteMissionWaypoints();
