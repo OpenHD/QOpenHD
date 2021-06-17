@@ -77,6 +77,7 @@ Map {
     }
 
     function addDroneTrack() {
+        //this function keeps recycling points to preserve memory
 
         // always remove last point unless it was significant
         if (track_count != 0) {
