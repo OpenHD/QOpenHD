@@ -8,11 +8,11 @@ image_pull_secrets:
 - dockerconfigjson
 steps:
 - name: fetch
-  image: arm32v6/alpine
+  image: arm32v6/alpine:3.13
   commands:
-  - apk add git --privileged
-  - git fetch --tags --privileged
-  - git submodule update --init --recursive --remote --privileged
+  - apk add git
+  - git fetch --tags 
+  - git submodule update --init --recursive --remote 
 - name: build
   image: plugins/docker
   environment:
@@ -39,7 +39,7 @@ image_pull_secrets:
 - dockerconfigjson
 steps:
 - name: fetch
-  image: arm64v8/alpine
+  image: arm64v8/alpine:3.13
   commands:
   - apk add git
   - git fetch --tags
@@ -70,7 +70,7 @@ image_pull_secrets:
 - dockerconfigjson
 steps:
 - name: fetch
-  image: arm32v6/alpine
+  image: arm32v6/alpine:3.13
   commands:
   - apk add git
   - git fetch --tags
