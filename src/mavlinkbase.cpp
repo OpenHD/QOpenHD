@@ -182,7 +182,7 @@ void MavlinkBase::request_Mission_Changed() {
 
     mavlink_message_t msg;
 
-    mavlink_msg_mission_request_list_pack(mavlink_sysid, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID,1,0);
+    mavlink_msg_mission_request_list_pack(mavlink_sysid, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID,targetCompID,0);
 
     uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
     int len = mavlink_msg_to_send_buffer(buffer, &msg);
@@ -203,7 +203,7 @@ void MavlinkBase::get_Mission_Items(int total) {
     for (current_seq = 1; current_seq < total; ++current_seq){
         //qDebug() << "MavlinkBase::get_Mission_Items current="<< current_seq;
 
-        mavlink_msg_mission_request_int_pack(mavlink_sysid, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID,1,current_seq,0);
+        mavlink_msg_mission_request_int_pack(mavlink_sysid, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID,targetCompID,current_seq,0);
 
         uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
         int len = mavlink_msg_to_send_buffer(buffer, &msg);
@@ -220,7 +220,7 @@ void MavlinkBase::send_Mission_Ack() {
 
     mavlink_message_t msg;
 
-    mavlink_msg_mission_ack_pack(mavlink_sysid, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID,1,0,0);
+    mavlink_msg_mission_ack_pack(mavlink_sysid, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID,targetCompID,0,0);
 
     uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
     int len = mavlink_msg_to_send_buffer(buffer, &msg);

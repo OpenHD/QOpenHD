@@ -28,15 +28,16 @@ Map {
     property int track_limit: 100; //max number of drone track points before it starts averaging
 
     Connections {
+        //this deletes the lines drawn between mission waypoints
         target: MissionWaypointManager
         function onMapDeleteWaypoints(){
-            console.log("onMapDeleteWaypoints");
+            console.log("onMapDeleteWaypoints from polyline");
 
             var waypoint_track_count = waypointTrack.pathLength();
+
             if (waypoint_track_count>0){
                 for (var i = 0; i < waypoint_track_count; ++i) {
                     waypointTrack.removeCoordinate(i);
-
                 }
             }
         }
