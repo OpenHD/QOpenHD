@@ -229,11 +229,10 @@ Settings {
     property double arrow_size: 1
 
     property bool show_map: false
-
     property double map_opacity: 1
     property bool map_orientation: false
     property bool map_shape_circle: false
-    property bool map_drone_track: false
+    property bool map_drone_track: true
 
     property int map_zoom: 18
 
@@ -301,6 +300,10 @@ Settings {
     property bool show_blackbox: false
     property double blackbox_opacity: 1
     property double blackbox_size: 1
+
+    property bool show_mission: true
+    property double mission_opacity: 1
+    property double mission_size: 1
 
     property bool show_example_widget: false
 

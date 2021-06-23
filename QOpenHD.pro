@@ -73,6 +73,8 @@ SOURCES += \
     src/mavlinkbase.cpp \
     src/mavlinktelemetry.cpp \
     src/migration.cpp \
+    src/missionwaypoint.cpp \
+    src/missionwaypointmanager.cpp \
     src/msptelemetry.cpp \
     src/openhd.cpp \
     src/openhdpi.cpp \
@@ -102,6 +104,8 @@ HEADERS += \
     inc/horizonladder.h \
     inc/managesettings.h \
     inc/mavlinkbase.h \
+    inc/missionwaypoint.h \
+    inc/missionwaypointmanager.h \
     inc/powermicroservice.h \
     inc/sharedqueue.h \
     inc/constants.h \
@@ -286,7 +290,7 @@ LinuxBuild {
     CONFIG += EnablePiP
     CONFIG += EnableGStreamer
     #CONFIG += EnableLink
-    #CONFIG += EnableCharts
+    CONFIG += EnableCharts
     CONFIG += EnableADSB
     #CONFIG += EnableBlackbox
 
@@ -368,7 +372,7 @@ AndroidBuild {
     CONFIG += EnablePiP
     #CONFIG += EnableLink
     CONFIG += EnableVideoRender
-    #CONFIG += EnableCharts
+    CONFIG += EnableCharts
     CONFIG += EnableADSB
     #CONFIG += EnableBlackbox
 

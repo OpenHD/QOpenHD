@@ -56,6 +56,7 @@ OpenHD::OpenHD(QObject *parent): QObject(parent) {
     connect(this, &OpenHD::requested_Flight_Mode_Changed, mavlink, &MavlinkTelemetry::requested_Flight_Mode_Changed);
     connect(this, &OpenHD::requested_ArmDisarm_Changed, mavlink, &MavlinkTelemetry::requested_ArmDisarm_Changed);
     connect(this, &OpenHD::FC_Reboot_Shutdown_Changed, mavlink, &MavlinkTelemetry::FC_Reboot_Shutdown_Changed);
+    connect(this, &OpenHD::request_Mission_Changed, mavlink, &MavlinkBase::request_Mission_Changed);
     auto openhd = OpenHDTelemetry::instance();
     connect(openhd, &OpenHDTelemetry::last_heartbeat_changed, this, &OpenHD::set_last_openhd_heartbeat);
 }
@@ -253,6 +254,12 @@ void OpenHD::set_FC_Reboot_Shutdown(int reboot_shutdown){
     qDebug() << "OpenHD::set_FC_Reboot_Shutdown="<< reboot_shutdown;
     m_reboot_shutdown=reboot_shutdown;
     emit FC_Reboot_Shutdown_Changed(m_reboot_shutdown);
+}
+
+void OpenHD::request_Mission(){
+    qDebug() << "OpenHD::request_Mission=";
+
+    emit request_Mission_Changed();
 }
 
 void OpenHD::pauseBlackBox(bool pause, int index){
@@ -1124,3 +1131,15 @@ void OpenHD::setRCChannel8(int rcChannel8) {
     emit rcChannel8Changed(mRCChannel8);
 }
 
+void OpenHD::setCurrentWaypoint(int current_waypoint) {
+    m_current_waypoint = current_waypoint;
+    emit currentWaypointChanged(m_current_waypoint);
+}
+
+void OpenHD::setTotalWaypoints(int total_waypoints) {
+    m_total_waypoints = total_waypoints-1;
+    if(m_total_waypoints<0){
+        m_total_waypoints=0;
+    }
+    emit totalWaypointsChanged(m_total_waypoints);
+}

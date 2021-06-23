@@ -93,6 +93,9 @@ public:
 
     void sendHeartbeat();
 
+    Q_INVOKABLE void get_Mission_Items(int count);
+    Q_INVOKABLE void send_Mission_Ack();
+
 
     Q_PROPERTY(qint64 last_heartbeat MEMBER m_last_heartbeat WRITE set_last_heartbeat NOTIFY last_heartbeat_changed)
     void set_last_heartbeat(qint64 last_heartbeat);
@@ -110,7 +113,7 @@ public:
     void set_last_vfr(qint64 last_vfr);
 
 
-    Q_INVOKABLE void setGroundIP(QString address);
+    Q_INVOKABLE void setGroundIP(QString address);   
 
 signals:
     void last_heartbeat_changed(qint64 last_heartbeat);
@@ -133,6 +136,7 @@ signals:
 
 public slots:
     void onStarted();
+    void request_Mission_Changed();
 
 protected slots:
     void processMavlinkUDPDatagrams();

@@ -232,6 +232,10 @@ Item {
         id: vrOverlayWidget
     }
 
+    MissionWidget {
+        id: missionWidget
+    }
+
     ExampleWidget {
         id: exampleWidget
     }

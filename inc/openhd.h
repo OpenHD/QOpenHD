@@ -31,6 +31,8 @@ public:
 
     Q_INVOKABLE void set_FC_Reboot_Shutdown(int reboot_shutdown);
 
+    Q_INVOKABLE void request_Mission();
+
     void setWifiAdapter0(uint32_t received_packet_cnt, int8_t current_signal_dbm, int8_t signal_good);
     void setWifiAdapter1(uint32_t received_packet_cnt, int8_t current_signal_dbm, int8_t signal_good);
     void setWifiAdapter2(uint32_t received_packet_cnt, int8_t current_signal_dbm, int8_t signal_good);
@@ -134,6 +136,15 @@ public:
     double get_lon() { 
         return m_lon;
     };
+
+    double get_home_lat() {
+        return m_homelat;
+    };
+
+    double get_home_lon() {
+        return m_homelon;
+    };
+
 
     double get_msl_alt() {
         return m_alt_msl;
@@ -422,6 +433,12 @@ public:
     Q_PROPERTY(int rcChannel8 MEMBER mRCChannel8 WRITE setRCChannel8 NOTIFY rcChannel8Changed)
     void setRCChannel8(int rcChannel8);
 
+    Q_PROPERTY(int current_waypoint MEMBER m_current_waypoint WRITE setCurrentWaypoint NOTIFY currentWaypointChanged)
+    void setCurrentWaypoint(int current_waypoint);
+
+    Q_PROPERTY(int total_waypoints MEMBER m_total_waypoints WRITE setTotalWaypoints NOTIFY totalWaypointsChanged)
+    void setTotalWaypoints(int total_waypoints);
+
 signals:
     // system
     void gstreamer_version_changed();
@@ -580,11 +597,15 @@ signals:
     void rcChannel7Changed(int rcChanne7);
     void rcChannel8Changed(int rcChanne8);
 
+    void currentWaypointChanged (int current_waypoint);
+    void totalWaypointsChanged (int total_waypoints);
+
     void addBlackBoxObject(const BlackBox &blackbox);
     void pauseTelemetry(bool pause);
     void requested_Flight_Mode_Changed(int mode);
     void requested_ArmDisarm_Changed(int arm_disarm);
     void FC_Reboot_Shutdown_Changed(int reboot_shutdown);
+    void request_Mission_Changed();
     void playBlackBoxObject(int index);
 
 private:
@@ -760,6 +781,9 @@ public:
     int mRCChannel6 = 0;
     int mRCChannel7 = 0;
     int mRCChannel8 = 0;
+
+    int m_current_waypoint = 0;
+    int m_total_waypoints = 0;
 
     bool m_pause_blackbox = false;
 

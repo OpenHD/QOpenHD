@@ -44,6 +44,9 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "ADSBVehicle.h"
 #endif
 
+#include "missionwaypointmanager.h"
+#include "missionwaypoint.h"
+
 #include "QmlObjectListModel.h"
 
 #include "blackboxmodel.h"
@@ -457,8 +460,13 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
     adsbVehicleManager->onStarted();
     #endif
 
-    engine.rootContext()->setContextProperty("OpenHDUtil", util);
 
+    auto missionWaypointManager = MissionWaypointManager::instance();
+    engine.rootContext()->setContextProperty("MissionWaypointManager", missionWaypointManager);
+    missionWaypointManager->onStarted();
+
+
+    engine.rootContext()->setContextProperty("OpenHDUtil", util);
 
     engine.rootContext()->setContextProperty("OpenHD", openhd);
 

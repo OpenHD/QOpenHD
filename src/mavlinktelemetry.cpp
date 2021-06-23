@@ -22,8 +22,6 @@
 
 #include "localmessage.h"
 
-#include "adsb.h"
-
 static MavlinkTelemetry* _instance = nullptr;
 
 MavlinkTelemetry* MavlinkTelemetry::instance() {
@@ -89,9 +87,6 @@ void MavlinkTelemetry::requested_Flight_Mode_Changed(int mode) {
     command.long_param2 = m_mode;
     sendCommand(command);
 
-/*
-MavlinkCommand command(MAVLINK_MSG_ID_MISSION_REQUEST_LIST);
-*/
 }
 
 void MavlinkTelemetry::requested_ArmDisarm_Changed(int arm_disarm) {
@@ -166,7 +161,7 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
                                         OpenHD::instance()->set_flight_mode(copter_mode);
                                         OpenHD::instance()->set_mav_type("ARDUCOPTER");
 
-                                        qDebug() << "Mavlink Mav Type= ARDUCOPTER";
+                                        //qDebug() << "Mavlink Mav Type= ARDUCOPTER";
                                         break;
                                     }
                                     case MAV_TYPE_SUBMARINE: {
@@ -381,6 +376,80 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             break;
         }
         case MAVLINK_MSG_ID_MISSION_CURRENT:{
+            mavlink_mission_current_t mission_current;
+            mavlink_msg_mission_current_decode(&msg, &mission_current);
+            auto current_waypoint=mission_current.seq;
+            //qDebug() << "Mission Current: " << current_waypoint;
+            OpenHD::instance()->setCurrentWaypoint(current_waypoint);
+            break;
+        }
+        case MAVLINK_MSG_ID_MISSION_COUNT:{
+            mavlink_mission_count_t mission_count;
+            mavlink_msg_mission_count_decode(&msg, &mission_count);
+            m_total_waypoints=mission_count.count;
+            //qDebug() << "Mission Count: " << m_total_waypoints;
+            OpenHD::instance()->setTotalWaypoints(m_total_waypoints);
+            send_Mission_Ack();
+
+            //request each waypoint
+            if (m_total_waypoints>0){
+                emit deleteMissionWaypoints();
+                get_Mission_Items(m_total_waypoints);
+            }
+
+            break;
+        }
+        case MAVLINK_MSG_ID_MISSION_ITEM_INT:{
+            mavlink_mission_item_int_t item;
+            mavlink_msg_mission_item_int_decode(&msg, &item);
+
+            MissionWaypoint::WaypointInfo_t waypointInfo;
+
+            waypointInfo.availableFlags = 0;
+            waypointInfo.sequence = item.seq;
+
+            double lat=item.x / 1e7;
+            double lon=item.y / 1e7;
+
+            if (item.command == 22 ){
+                lat=OpenHD::instance()->get_home_lat();
+                lon=OpenHD::instance()->get_home_lon();
+            }
+
+            //early return on all lat/lon 0,0 that are not takeoff
+            if (lat==0 || lon ==0){
+                break;
+            }
+
+            waypointInfo.location.setLatitude(lat); // degE7 to deg
+            waypointInfo.location.setLongitude(lon); // degE7 to deg
+            waypointInfo.availableFlags |= MissionWaypoint::LocationAvailable;
+
+            waypointInfo.command = item.command;
+            waypointInfo.availableFlags |= MissionWaypoint::CommandAvailable;
+
+            waypointInfo.altitude = (double)item.z; // float to double
+            waypointInfo.availableFlags |= MissionWaypoint::AltitudeAvailable;
+
+            waypointInfo.heading = 99; // fake data
+            waypointInfo.availableFlags |= MissionWaypoint::HeadingAvailable;
+
+            waypointInfo.velocity = 99; // fake
+            waypointInfo.availableFlags |= MissionWaypoint::VelocityAvailable;
+
+            waypointInfo.verticalVel = 99; // fake
+            waypointInfo.availableFlags |= MissionWaypoint::VerticalVelAvailable;
+
+            if (item.seq>0){
+                emit addMissionWaypoint(waypointInfo);
+            }
+            //qDebug() << "emit waypoint = " << item.seq;
+
+            //if this is last waypoint we need to send an ack to the drone
+            if ((int)item.seq==m_total_waypoints){
+                send_Mission_Ack();
+            }
+
             break;
         }
         case MAVLINK_MSG_ID_GPS_GLOBAL_ORIGIN:{
@@ -541,6 +610,12 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             break;
         }
         case MAVLINK_MSG_ID_SIMSTATE:{
+            break;
+        }
+        case MAVLINK_MSG_ID_POSITION_TARGET_GLOBAL_INT:{
+            break;
+        }
+        case MAVLINK_MSG_ID_SCALED_PRESSURE2:{
             break;
         }
         case MAVLINK_MSG_ID_HOME_POSITION:{

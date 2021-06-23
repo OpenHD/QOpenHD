@@ -2,65 +2,40 @@ import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
 import QtGraphicalEffects 1.12
-import Qt.labs.settings 1.0
 import QtQuick.Shapes 1.0
+
+import Qt.labs.settings 1.0
 
 import OpenHD 1.0
 
 import "../elements"
 
 BaseWidget {
-    id: homeDistanceWidget
+
+    id: missionWidget
     width: 96
-    height: 24
+    height: 25
 
-    visible: settings.show_home_distance
+    visible: settings.show_mission
 
-    widgetIdentifier: "home_distance_widget"
+    widgetIdentifier: "mission_widget"
 
     defaultAlignment: 2
-    defaultXOffset: 0
-    defaultYOffset: 24
+    defaultXOffset: 50
+    defaultYOffset: 50
     defaultHCenter: false
     defaultVCenter: false
 
     hasWidgetDetail: true
     hasWidgetAction: true
 
-    //----------------------------- DETAIL BELOW ----------------------------------
-
     widgetDetailComponent: ScrollView{
 
-        contentHeight: homedistanceSettingsColumn.height
+        contentHeight: missionSettingsColumn.height
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
         clip: true
         Column {
-            id: homedistanceSettingsColumn
-
-
-            /*         Shape {
-                id: line
-                height: 32
-                width: parent.width
-
-                ShapePath {
-                    strokeColor: "white"
-                    strokeWidth: 2
-                    strokeStyle: ShapePath.SolidLine
-                    fillColor: "transparent"
-                    startX: 0
-                    startY: line.height / 2
-                    PathLine {
-                        x: 0
-                        y: line.height / 2
-                    }
-                    PathLine {
-                        x: line.width
-                        y: line.height / 2
-                    }
-                }
-            }
-*/
+            id: missionSettingsColumn
             Item {
                 width: parent.width
                 height: 32
@@ -75,10 +50,10 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Slider {
-                    id: home_distance_opacity_Slider
+                    id: mission_opacity_Slider
                     orientation: Qt.Horizontal
                     from: .1
-                    value: settings.home_distance_opacity
+                    value: settings.mission_opacity
                     to: 1
                     stepSize: .1
                     height: parent.height
@@ -87,7 +62,7 @@ BaseWidget {
                     width: parent.width - 96
 
                     onValueChanged: {
-                        settings.home_distance_opacity = home_distance_opacity_Slider.value
+                        settings.mission_opacity = mission_opacity_Slider.value
                     }
                 }
             }
@@ -104,10 +79,10 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Slider {
-                    id: home_distance_size_Slider
+                    id: mission_size_Slider
                     orientation: Qt.Horizontal
                     from: .5
-                    value: settings.home_distance_size
+                    value: settings.mission_size
                     to: 3
                     stepSize: .1
                     height: parent.height
@@ -116,7 +91,7 @@ BaseWidget {
                     width: parent.width - 96
 
                     onValueChanged: {
-                        settings.home_distance_size = home_distance_size_Slider.value
+                        settings.mission_size = mission_size_Slider.value
                     }
                 }
             }
@@ -196,55 +171,11 @@ BaseWidget {
 
         ColumnLayout{
             width:200
-            Item {
-                width: parent.width
-                height: 32
-                Text {
-                    text: qsTr("Lat:")
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Text {
-                    text: Number(OpenHD.homelat).toLocaleString(Qt.locale(), 'f', 6)
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.right: parent.right
-                    verticalAlignment: Text.AlignVCenter
-                }
-            }
-            Item {
-                width: parent.width
-                height: 32
-                Text {
-                    text: qsTr("Lon:")
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Text {
-                    text: Number(OpenHD.homelon).toLocaleString(Qt.locale(), 'f', 6)
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.right: parent.right
-                    verticalAlignment: Text.AlignVCenter
-                }
-            }
 
+            /*
             Item {
                 Text {
                     id: name
-                    visible: false
                     text: qsTr("Vehicle type: "+OpenHD.mav_type)
                     color: "white"
                     font.bold: true
@@ -252,36 +183,20 @@ BaseWidget {
                     anchors.left: parent.left
                 }
             }
-
+*/
             ConfirmSlider {
 
-                visible: OpenHD.mav_type=="ARDUPLANE"
+                //visible: OpenHD.mav_type=="ARDUPLANE" || OpenHD.mav_type=="ARDUCOPTER"
 
-                text_off: qsTr("RTL")
-                msg_id: 11
+                text_off: qsTr("Request Mission")
+
+                msg_id: 43 //mission_request_list
 
                 onCheckedChanged:{
                     if (checked==true){ //double check.... not really needed
 
-                        OpenHD.set_Requested_Flight_Mode(msg_id);
-                        //console.log("selected");
-                    }
-                }
-            }
-
-            //-----------------------Split from plane to copter
-            ConfirmSlider {
-
-                visible: OpenHD.mav_type=="ARDUCOPTER"
-
-                text_off: qsTr("RTL")
-                msg_id: 6
-
-                onCheckedChanged:{
-                    if (checked==true){ //double check.... not really needed
-
-                        OpenHD.set_Requested_Flight_Mode(msg_id);
-                        //console.log("selected");
+                        OpenHD.request_Mission();
+                        //console.log("Mission selected");
                     }
                 }
             }
@@ -290,58 +205,30 @@ BaseWidget {
 
     Item {
         id: widgetInner
-
         anchors.fill: parent
-        scale: settings.home_distance_size
+        opacity: settings.mission_opacity
 
-        Text {
-            id: home_icon
-            x: 0
+        Item {
+            anchors.fill: parent
+            anchors.centerIn: parent
 
-            width: 24
-            height: 24
-            color: settings.color_shape
-            opacity: settings.home_distance_opacity
-            text: "\uf015"
-            anchors.right: home_distance_text.left
-            anchors.rightMargin: 6
-            verticalAlignment: Text.AlignVCenter
-            font.family: "Font Awesome 5 Free"
-            font.pixelSize: 14
-            horizontalAlignment: Text.AlignRight
-            style: Text.Outline
-            styleColor: settings.color_glow
-        }
 
-        Text {
-            id: home_distance_text
-            width: 64
-            height: 24
-            color: settings.color_text
-            opacity: settings.home_distance_opacity
-            // @disable-check M222
-            text: {
-                var distance = OpenHD.home_distance
-                var unit = "m"
-                var use_imperial = settings.value("enable_imperial", false)
-                // QML settings can return strings for booleans on some platforms so we check
-                if (use_imperial === true || use_imperial === 1
-                        || use_imperial === "true") {
-                    unit = "ft"
-                    distance = distance * 3.28084
-                }
-
-                return distance.toLocaleString(Qt.locale(), "f", 1) + unit
+            Text {
+                id: mission_description
+                y: 0
+                width: parent.width
+                height: 14
+                color: settings.color_text
+                text: qsTr("Mission")+": "+OpenHD.current_waypoint+"/"+OpenHD.total_waypoints
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: 0
+                verticalAlignment: Text.AlignBottom
+                horizontalAlignment: Text.AlignHCenter
+                font.pixelSize: 14
+                font.family: settings.font_text
+                style: Text.Outline
+                styleColor: settings.color_glow
             }
-            elide: Text.ElideNone
-            anchors.right: parent.right
-            anchors.rightMargin: 8
-            verticalAlignment: Text.AlignVCenter
-            font.pixelSize: 16
-            font.family: settings.font_text
-            horizontalAlignment: Text.AlignLeft
-            style: Text.Outline
-            styleColor: settings.color_glow
         }
     }
 }

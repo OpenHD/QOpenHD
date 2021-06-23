@@ -25,42 +25,19 @@ Map {
     property double center_coord_lon: 0.0
     property int track_count: 0;
     property int track_skip: 1;
-    property int track_limit: 100;
+    property int track_limit: 100; //max number of drone track points before it starts averaging
 
     Connections {
-        target: BlackBoxModel
-        function onDataChanged() {
-            if (settings.map_drone_track === true) {
-                addDroneTrack();
-            }
-        }
-    }
+        //this deletes the lines drawn between mission waypoints
+        target: MissionWaypointManager
+        function onMapDeleteWaypoints(){
+            console.log("onMapDeleteWaypoints from polyline");
 
-    function addDroneTrack() {
+            var waypoint_track_count = waypointTrack.pathLength();
 
-        // always remove last point unless it was significant
-        if (track_count != 0) {
-            droneTrack.removeCoordinate(droneTrack.pathLength());
-            //console.log("total points=", droneTrack.pathLength());
-        }
-
-        // always add the current location so drone looks like its connected to line
-        droneTrack.addCoordinate(QtPositioning.coordinate(OpenHD.lat, OpenHD.lon));
-
-        track_count = track_count + 1;
-
-        if (track_count == track_skip) {
-            track_count = 0;
-        }
-
-        if (droneTrack.pathLength() === track_limit) {
-            //make line more coarse
-            track_skip = track_skip * 2;
-            //cut the points in the list by half
-            for (var i = 0; i < track_limit; ++i) {
-                if (i % 2) {
-                    // it's odd
-                    droneTrack.removeCoordinate(i);
+            if (waypoint_track_count>0){
+                for (var i = 0; i < waypoint_track_count; ++i) {
+                    waypointTrack.removeCoordinate(i);
                 }
             }
         }
@@ -100,15 +77,53 @@ Map {
         }
     }
 
-    MapCircle {
-                    center {
-                        latitude: OpenHD.lat
-                        longitude: OpenHD.lon
-                    }
-                    radius: OpenHD.gps_hdop
-                    color: 'red'
-                    opacity: .3
+    function addDroneTrack() {
+        //this function keeps recycling points to preserve memory
+
+        // always remove last point unless it was significant
+        if (track_count != 0) {
+            droneTrack.removeCoordinate(droneTrack.pathLength());
+            //console.log("total points=", droneTrack.pathLength());
+        }
+
+        // always add the current location so drone looks like its connected to line
+        droneTrack.addCoordinate(QtPositioning.coordinate(OpenHD.lat, OpenHD.lon));
+
+        track_count = track_count + 1;
+
+        if (track_count == track_skip) {
+            track_count = 0;
+        }
+
+        if (droneTrack.pathLength() === track_limit) {
+            //make line more coarse
+            track_skip = track_skip * 2;
+            //cut the points in the list by half
+            for (var i = 0; i < track_limit; ++i) {
+                if (i % 2) {
+                    // it's odd
+                    droneTrack.removeCoordinate(i);
                 }
+            }
+        }
+    }
+
+    MapPolyline {
+        id: droneTrack
+        visible: settings.map_drone_track
+        line.color: "red"
+        line.width: 3
+    }
+
+    MapCircle {
+        center {
+            latitude: OpenHD.lat
+            longitude: OpenHD.lon
+        }
+        radius: OpenHD.gps_hdop
+        color: 'red'
+        opacity: .3
+    }
 
     MapQuickItem {
         id: homemarkerSmallMap
@@ -139,52 +154,6 @@ Map {
     }
 
     MapItemView {
-        model: BlackBoxModel
-        enabled: EnableBlackbox
-
-        function addDroneTrack() {
-            
-            // always remove last point unless it was significant
-            if (track_count != 0) {
-                droneTrack.removeCoordinate(droneTrack.pathLength());
-                //console.log("total points=", droneTrack.pathLength());
-            }
-
-            // always add the current location so drone looks like its connected to line
-            droneTrack.addCoordinate(QtPositioning.coordinate(OpenHD.lat, OpenHD.lon));
-
-            track_count = track_count + 1;
-
-            if (track_count == track_skip) {
-                track_count = 0;
-            }
-
-            if (droneTrack.pathLength() === track_limit) {
-                //make line more coarse
-                track_skip = track_skip * 2;
-                //cut the points in the list by half
-                for (var i = 0; i < track_limit; ++i) {
-                    if (i % 2) {
-                        // it's odd
-                        droneTrack.removeCoordinate(i);
-                    }
-                }
-            }
-
-            //console.log("drone position=",OpenHD.lat, OpenHD.lon);
-        }
-    }
-
-    MapPolyline {
-        id: droneTrack
-        visible: EnableBlackbox
-
-        line.color: "red"
-        line.width: 3
-    }
-
-
-    MapItemView {
         id: markerMapView
         model: AdsbVehicleManager.adsbVehicles
         delegate: markerComponentDelegate
@@ -207,7 +176,10 @@ Map {
                     height: image.height
 
 
-                    sourceItem: Image {
+                    sourceItem:
+
+                        Image {
+
                         id: image
                         source: "/airplanemarkerblur.png"
 
@@ -247,7 +219,7 @@ Map {
                                 if (orientation >= 360) orientation -=360;
                                 return orientation;
                             }
-                            else {                                
+                            else {
                                 //console.log("TRACK=", object.heading);
                                 return object.heading;
                             }
@@ -457,9 +429,145 @@ Map {
         }
     }
 
+
+    MapPolyline {
+        id: waypointTrack
+
+        line.color: "yellow"
+        line.width: 3
+    }
+
+
+    MapItemView {
+        id: waypointMapView
+        model: MissionWaypointManager.missionWaypoints
+        delegate: waypointComponent
+
+
+        Component {
+            id: waypointComponent
+
+            MapItemGroup {
+                id: waypointGroup
+
+                MapQuickItem {
+                    id: waypointMarker
+
+                    //   anchorPoint.x: seq_rect.width / 2
+                    //   anchorPoint.y: seq_rect.height
+
+
+                    sourceItem:
+
+                        Rectangle {
+                        id: seq_rect
+                        anchors.centerIn: parent
+
+                        width: {
+                            if (object.sequence === undefined) {
+                                return 22;
+                            }
+
+                            if (object.sequence === OpenHD.current_waypoint){
+                                return 30;
+                            }
+                            else{
+                                return 22;
+                            }
+                        }
+
+                        height: {
+                            if (object.sequence === undefined) {
+                                return 22;
+                            }
+                            if (object.sequence === OpenHD.current_waypoint){
+                                return 30;
+                            }
+                            else{
+                                return 22;
+                            }
+                        }
+                        color: {
+                            if (object.sequence === undefined) {
+                                return "green";
+                            }
+                            if (object.sequence === OpenHD.current_waypoint){
+                                return "red";
+                            }
+                            else if(object.sequence < OpenHD.current_waypoint){
+                                return "grey";
+                            }
+                            else{
+                                return "green";
+                            }
+                        }
+                        border.color: "black"
+                        border.width: 1
+                        radius: width*0.5
+
+                        Text{
+                            id:seq_text
+                            anchors.centerIn: parent
+                            color: "white"
+                            font.bold: true
+                            font.pixelSize: {
+                                if (object.sequence === undefined) {
+                                    return 15;
+                                }
+                                if (object.sequence === OpenHD.current_waypoint){
+                                    return 17;
+                                }
+                                else{
+                                    return 15;
+                                }
+                            }
+                            horizontalAlignment: Text.AlignHCenter
+                            text: {
+                                if (object.sequence === undefined) {
+                                    return "?";
+                                }
+                                else if (object.command === 22) {
+                                    return "T";
+                                }
+                                else if (object.command === 21) {
+                                    return "L";
+                                }
+                                else {
+                                    return object.sequence;
+                                }
+                            }
+                        }
+                    }
+
+
+
+
+                    coordinate: {
+                        // TODO "undefined" protection
+                        /*
+                        console.log("Map sequence="+object.sequence);
+                        console.log("Map command="+object.command);
+                        console.log("Map latitude="+object.lat);
+                        console.log("Map longitude="+object.lon);
+                        console.log("Map altitude="+object.altitude);
+*/
+                        waypointTrack.addCoordinate(object.coordinate);
+                        return object.coordinate;
+                    }
+
+                }
+            }
+        }
+    }
+
+
     MapQuickItem {
         id: dronemarker
         coordinate: QtPositioning.coordinate(OpenHD.lat, OpenHD.lon)
+
+        onCoordinateChanged: {
+            addDroneTrack();
+        }
 
         anchorPoint.x : 0
         anchorPoint.y : 0

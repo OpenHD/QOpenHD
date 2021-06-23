@@ -174,50 +174,7 @@ BaseWidget {
 
         ColumnLayout{
             width:200
-            Item {
-                width: parent.width
-                height: 32
-                Text {
-                    text: qsTr("Lat:")
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Text {
-                    text: Number(OpenHD.homelat).toLocaleString(Qt.locale(), 'f', 6)
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.right: parent.right
-                    verticalAlignment: Text.AlignVCenter
-                }
-            }
-            Item {
-                width: parent.width
-                height: 32
-                Text {
-                    text: qsTr("Lon:")
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Text {
-                    text: Number(OpenHD.homelon).toLocaleString(Qt.locale(), 'f', 6)
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.right: parent.right
-                    verticalAlignment: Text.AlignVCenter
-                }
-            }
+
 /*
             Item {
                 Text {
@@ -232,7 +189,7 @@ BaseWidget {
 */
             ConfirmSlider {
 
-                visible: OpenHD.mav_type=="ARDUPLANE" || OpenHD.mav_type=="ARDUCOPTER"
+                //visible: OpenHD.mav_type=="ARDUPLANE" || OpenHD.mav_type=="ARDUCOPTER"
 
                 text_off: OpenHD.armed ? qsTr("DISARM") : qsTr("ARM")
 
@@ -245,7 +202,7 @@ BaseWidget {
                         //console.log("selected");
                     }
                 }
-            }            
+            }
         }
     }
 
