@@ -9,17 +9,14 @@ import QtQml.Models 2.15
 import QtPositioning 5.2
 import QtLocation 5.12
 
-
 import OpenHD 1.0
-
-
 
 BaseWidget {
     id: adsbWidget
     width: 55
     height: 15
 
-    z:4
+    z: 4
 
     visible: settings.show_adsb
 
@@ -42,8 +39,7 @@ BaseWidget {
     property bool adsbStatus: AdsbVehicleManager.status ? true : false
     property color adsbStatusColor: AdsbVehicleManager.status == 2 ? "green" : "red"
 
-
-    widgetDetailComponent: ScrollView{
+    widgetDetailComponent: ScrollView {
 
         contentHeight: adsbSettingsColumn.height
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
@@ -51,6 +47,29 @@ BaseWidget {
 
         Column {
             id: adsbSettingsColumn
+            Item {
+                width: parent.width
+                height: 42
+                Text {
+                    id: adsbTitle
+                    text: qsTr("ADSB")
+                    color: "white"
+                    height: parent.height - 10
+                    width: parent.width
+                    font.bold: true
+                    horizontalAlignment: Text.AlignHCenter
+                    font.pixelSize: detailPanelFontPixels
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Rectangle {
+                    id: adsbTitleUL
+                    y: 34
+                    width: parent.width
+                    height: 3
+                    color: "white"
+                    radius: 5
+                }
+            }
             Item {
                 width: parent.width
                 height: 32
@@ -129,17 +148,20 @@ BaseWidget {
                     anchors.right: parent.right
                     checked: {
                         // @disable-check M222
-                        var _hCenter = settings.value(hCenterIdentifier, defaultHCenter)
+                        var _hCenter = settings.value(hCenterIdentifier,
+                                                      defaultHCenter)
                         // @disable-check M223
-                        if (_hCenter === "true" || _hCenter === 1 || _hCenter === true) {
-                            checked = true;
+                        if (_hCenter === "true" || _hCenter === 1
+                                || _hCenter === true) {
+                            checked = true
                             // @disable-check M223
                         } else {
-                            checked = false;
+                            checked = false
                         }
                     }
 
-                    onCheckedChanged: settings.setValue(hCenterIdentifier, checked)
+                    onCheckedChanged: settings.setValue(hCenterIdentifier,
+                                                        checked)
                 }
             }
             Item {
@@ -161,17 +183,20 @@ BaseWidget {
                     anchors.right: parent.right
                     checked: {
                         // @disable-check M222
-                        var _vCenter = settings.value(vCenterIdentifier, defaultVCenter)
+                        var _vCenter = settings.value(vCenterIdentifier,
+                                                      defaultVCenter)
                         // @disable-check M223
-                        if (_vCenter === "true" || _vCenter === 1 || _vCenter === true) {
-                            checked = true;
+                        if (_vCenter === "true" || _vCenter === 1
+                                || _vCenter === true) {
+                            checked = true
                             // @disable-check M223
                         } else {
-                            checked = false;
+                            checked = false
                         }
                     }
 
-                    onCheckedChanged: settings.setValue(vCenterIdentifier, checked)
+                    onCheckedChanged: settings.setValue(vCenterIdentifier,
+                                                        checked)
                 }
             }
             Item {
@@ -193,7 +218,7 @@ BaseWidget {
                     anchors.right: parent.right
                     checked: settings.adsb_api_sdr
                     onCheckedChanged: {
-                        settings.adsb_api_sdr = checked;
+                        settings.adsb_api_sdr = checked
                     }
                 }
             }
@@ -216,7 +241,7 @@ BaseWidget {
                     anchors.right: parent.right
                     checked: settings.adsb_api_openskynetwork
                     onCheckedChanged: {
-                        settings.adsb_api_openskynetwork = checked;
+                        settings.adsb_api_openskynetwork = checked
                     }
                 }
             }

@@ -42,74 +42,98 @@ BaseWidget {
     function configure() {
         var provider = pluginModel.get(settings.selected_map_provider)
         switch (provider.name) {
-        case "mapboxgl": {
-            createMap(widgetInner, "mapboxgl");
-            break;
+        case "mapboxgl":
+        {
+            createMap(widgetInner, "mapboxgl")
+            break
         }
-        case "osm": {
-            createMap(widgetInner, "osm");
-            break;
+        case "osm":
+        {
+            createMap(widgetInner, "osm")
+            break
         }
-        default: {
-            createMap(widgetInner, "osm");
-            break;
+        default:
+        {
+            createMap(widgetInner, "osm")
+            break
         }
         }
 
         if (map) {
-            variantDropdown.model = map.supportedMapTypes;
+            variantDropdown.model = map.supportedMapTypes
             //settings.selected_map_variant = 0;
-            variantDropdown.currentIndex = settings.selected_map_variant;
-            map.activeMapType = map.supportedMapTypes[variantDropdown.currentIndex];
+            variantDropdown.currentIndex = settings.selected_map_variant
+            map.activeMapType = map.supportedMapTypes[variantDropdown.currentIndex]
         }
     }
-
 
     Component.onCompleted: {
         if (!IsRaspPi) {
-            pluginModel.append({"name": "mapboxgl", "description":"MapboxGL"})
+            pluginModel.append({
+                                   "name": "mapboxgl",
+                                   "description": "MapboxGL"
+                               })
         }
-        configure();
+        configure()
     }
 
-    function configureLargeMap(){
-        if (mapExpanded==false){
-            resetAnchors();
-            setAlignment(0, 0, 48, false, false, true);
-            map.gesture.enabled=true
-            mapExpanded = !mapExpanded;
+    function configureLargeMap() {
+        if (mapExpanded == false) {
+            resetAnchors()
+            setAlignment(0, 0, 48, false, false, true)
+            map.gesture.enabled = true
+            mapExpanded = !mapExpanded
         }
     }
 
-    function configureSmallMap(){
-        resetAnchors();
-        mapWidget.width = 200;
-        mapWidget.height = 135;
+    function configureSmallMap() {
+        resetAnchors()
+        mapWidget.width = 200
+        mapWidget.height = 135
         mapWidget.map
-        loadAlignment();
-        followDrone = true;
-        settingsVisible = false;
-        map.gesture.enabled=false
-        mapExpanded = !mapExpanded;
+        loadAlignment()
+        followDrone = true
+        settingsVisible = false
+        map.gesture.enabled = false
+        mapExpanded = !mapExpanded
     }
 
-    function launchPopup(){
-        mapWidget.hasWidgetDetail=true
+    function launchPopup() {
+        mapWidget.hasWidgetDetail = true
         widgetDetail.open()
     }
 
     //----------------------------- Widget Detail (popup options)------------------------
-
-    widgetDetailComponent: ScrollView{
+    widgetDetailComponent: ScrollView {
 
         contentHeight: popupmapSettingsColumn.height
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
         clip: true
         Column {
             id: popupmapSettingsColumn
-
-
-
+            Item {
+                width: 230
+                height: 42
+                Text {
+                    id: popupmapSettingsTitle
+                    text: qsTr("MAP")
+                    color: "white"
+                    height: parent.height - 10
+                    width: parent.width
+                    font.bold: true
+                    horizontalAlignment: Text.AlignHCenter
+                    font.pixelSize: detailPanelFontPixels
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Rectangle {
+                    id: popupmapSettingsTitleUL
+                    y: 34
+                    width: parent.width
+                    height: 3
+                    color: "white"
+                    radius: 5
+                }
+            }
             Item {
                 width: 230
                 height: 32
@@ -215,6 +239,7 @@ BaseWidget {
                     onCheckedChanged: settings.map_drone_track = checked
                 }
             }
+
             /*
             Item {
                 width: parent.width
@@ -242,7 +267,6 @@ BaseWidget {
     }
 
     //----------------------------- Widget Inner ----------------------------------------
-
     Item {
         id: widgetInner
         anchors.fill: parent
@@ -250,12 +274,17 @@ BaseWidget {
         opacity: mapExpanded ? 100 : settings.map_opacity
 
         Behavior on width {
-            NumberAnimation { duration: 200 }
+            NumberAnimation {
+                duration: 200
+            }
         }
 
         Behavior on height {
-            NumberAnimation { duration: 200 }
+            NumberAnimation {
+                duration: 200
+            }
         }
+
 
         /*Button {
             id: openclose_button_overlay
@@ -298,11 +327,7 @@ BaseWidget {
             }
         }*/
 
-
-
-
         //----------------------------- Expanded map Sidebar Menu----------------------------
-
         Rectangle {
             id: sidebar_wrapper
             z: 2.1
@@ -320,11 +345,15 @@ BaseWidget {
             clip: true
 
             Behavior on width {
-                NumberAnimation { duration: 200 }
+                NumberAnimation {
+                    duration: 200
+                }
             }
 
             Behavior on height {
-                NumberAnimation { duration: 200 }
+                NumberAnimation {
+                    duration: 200
+                }
             }
 
             Button {
@@ -340,7 +369,7 @@ BaseWidget {
                 checkable: false
 
                 Text {
-                    id : openclose_text
+                    id: openclose_text
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.verticalCenter: parent.verticalCenter
                     font.family: "Font Awesome 5 Free"
@@ -351,16 +380,14 @@ BaseWidget {
 
                 onClicked: {
                     if (mapExpanded) {
-                        console.log("X button clicked");
+                        console.log("X button clicked")
                         configureSmallMap()
-
                     } else {
-                        console.log("gear button clicked");
+                        console.log("gear button clicked")
                         launchPopup()
                     }
                 }
             }
-
 
             Button {
                 id: search_button
@@ -445,7 +472,6 @@ BaseWidget {
                 contentHeight: mapSettingsColumn.height
                 clip: true
 
-
                 anchors.top: parent.top
                 anchors.left: parent.left
                 anchors.leftMargin: 48
@@ -465,7 +491,6 @@ BaseWidget {
                     spacing: 6
                     width: settingsVisible ? 488 : 0
 
-
                     ComboBox {
                         id: providerDropdown
                         height: 48
@@ -475,13 +500,13 @@ BaseWidget {
                         textRole: "description"
 
                         Component.onCompleted: {
-                            currentIndex = settings.selected_map_provider;
+                            currentIndex = settings.selected_map_provider
                         }
 
                         // @disable-check M223
                         onActivated: {
-                            settings.selected_map_provider = index;
-                            configure();
+                            settings.selected_map_provider = index
+                            configure()
                         }
                     }
 
@@ -493,16 +518,15 @@ BaseWidget {
                         textRole: "description"
 
                         Component.onCompleted: {
-                            currentIndex = settings.selected_map_variant;
+                            currentIndex = settings.selected_map_variant
                         }
 
                         // @disable-check M223
                         onActivated: {
-                            settings.selected_map_variant = index;
-                            map.activeMapType = map.supportedMapTypes[index];
+                            settings.selected_map_variant = index
+                            map.activeMapType = map.supportedMapTypes[index]
                         }
                     }
-
 
                     Item {
                         width: parent.width
@@ -597,6 +621,7 @@ BaseWidget {
             }
         }
     }
+
     /*
     Item {
             id: mask
@@ -622,6 +647,3 @@ BaseWidget {
         }
         */
 }
-
-
-
