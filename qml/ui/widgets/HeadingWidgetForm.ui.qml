@@ -190,7 +190,7 @@ BaseWidget {
                 width: 230
                 height: 32
                 Text {
-                    text: qsTr("UAV is iNav")
+                    text: qsTr("UAV is iNav < 2.6")
                     color: "white"
                     height: parent.height
                     font.bold: true
