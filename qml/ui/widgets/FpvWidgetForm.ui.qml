@@ -32,7 +32,29 @@ BaseWidget {
             spacing: 0
             clip: true
 
-
+            Item {
+                width: 230
+                height: 42
+                Text {
+                    id: fpvWidgetTitle
+                    text: qsTr("FLIGHT PATH VECTOR")
+                    color: "white"
+                    height: parent.height - 10
+                    width: parent.width
+                    font.bold: true
+                    horizontalAlignment: Text.AlignHCenter
+                    font.pixelSize: detailPanelFontPixels
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Rectangle {
+                    id: fpvWidgetTitleUL
+                    y: 34
+                    width: parent.width
+                    height: 3
+                    color: "white"
+                    radius: 5
+                }
+            }
             Item {
                 width: 230
                 height: 32
@@ -41,7 +63,7 @@ BaseWidget {
                     color: "white"
                     height: parent.height
                     font.bold: true
-                    font.pixelSize: detailPanelFontPixels;
+                    font.pixelSize: detailPanelFontPixels
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
@@ -54,6 +76,7 @@ BaseWidget {
                     onCheckedChanged: settings.fpv_dynamic = checked
                 }
             }
+
             /* might add this back in if ppl dont like actual only fpv
         Item {
             width: parent.width
@@ -164,17 +187,20 @@ BaseWidget {
                     anchors.right: parent.right
                     checked: {
                         // @disable-check M222
-                        var _hCenter = settings.value(hCenterIdentifier, defaultHCenter)
+                        var _hCenter = settings.value(hCenterIdentifier,
+                                                      defaultHCenter)
                         // @disable-check M223
-                        if (_hCenter === "true" || _hCenter === 1 || _hCenter === true) {
-                            checked = true;
+                        if (_hCenter === "true" || _hCenter === 1
+                                || _hCenter === true) {
+                            checked = true
                             // @disable-check M223
                         } else {
-                            checked = false;
+                            checked = false
                         }
                     }
 
-                    onCheckedChanged: settings.setValue(hCenterIdentifier, checked)
+                    onCheckedChanged: settings.setValue(hCenterIdentifier,
+                                                        checked)
                 }
             }
             Item {
@@ -196,17 +222,20 @@ BaseWidget {
                     anchors.right: parent.right
                     checked: {
                         // @disable-check M222
-                        var _vCenter = settings.value(vCenterIdentifier, defaultVCenter)
+                        var _vCenter = settings.value(vCenterIdentifier,
+                                                      defaultVCenter)
                         // @disable-check M223
-                        if (_vCenter === "true" || _vCenter === 1 || _vCenter === true) {
-                            checked = true;
+                        if (_vCenter === "true" || _vCenter === 1
+                                || _vCenter === true) {
+                            checked = true
                             // @disable-check M223
                         } else {
-                            checked = false;
+                            checked = false
                         }
                     }
 
-                    onCheckedChanged: settings.setValue(vCenterIdentifier, checked)
+                    onCheckedChanged: settings.setValue(vCenterIdentifier,
+                                                        checked)
                 }
             }
             Item {
@@ -230,6 +259,8 @@ BaseWidget {
                     onCheckedChanged: settings.fpv_invert_pitch = checked
                 }
             }
+
+
             /* not really needed
         Item {
             width: 230
@@ -254,7 +285,6 @@ BaseWidget {
             }
         }
         */
-
             Item {
                 width: 230
                 height: 50
@@ -274,18 +304,18 @@ BaseWidget {
                     width: 30
                     anchors.rightMargin: 15
                     anchors.right: parent.right
-                    antialiasing: true;
+                    antialiasing: true
 
                     Tumbler {
                         model: 90
-                        visibleItemCount : 1
+                        visibleItemCount: 1
                         anchors.fill: parent
 
                         currentIndex: settings.fpv_vertical_limit
 
                         Component.onCompleted: {
                             // rounds it due to int
-                            currentIndex= settings.fpv_vertical_limit;
+                            currentIndex = settings.fpv_vertical_limit
                         }
                         delegate: Text {
                             text: modelData
@@ -300,14 +330,25 @@ BaseWidget {
                             scale: opacity
                         }
                         onCurrentIndexChanged: {
-                            settings.fpv_vertical_limit = currentIndex;
+                            settings.fpv_vertical_limit = currentIndex
                             //   console.log("vert limit-",settings.fpv_vertical_limit);
                         }
                     }
                     gradient: Gradient {
-                        GradientStop { position: 0.0; color: Material.color(Material.Grey ,Material.Shade500) }
-                        GradientStop { position: 0.5; color: "transparent" }
-                        GradientStop { position: 1.0; color: Material.color(Material.Grey ,Material.Shade500) }
+                        GradientStop {
+                            position: 0.0
+                            color: Material.color(Material.Grey,
+                                                  Material.Shade500)
+                        }
+                        GradientStop {
+                            position: 0.5
+                            color: "transparent"
+                        }
+                        GradientStop {
+                            position: 1.0
+                            color: Material.color(Material.Grey,
+                                                  Material.Shade500)
+                        }
                     }
                 }
             }
@@ -330,18 +371,18 @@ BaseWidget {
                     width: 30
                     anchors.rightMargin: 15
                     anchors.right: parent.right
-                    antialiasing: true;
+                    antialiasing: true
 
                     Tumbler {
                         model: 90
-                        visibleItemCount : 1
+                        visibleItemCount: 1
                         anchors.fill: parent
 
                         currentIndex: settings.fpv_lateral_limit
 
                         Component.onCompleted: {
                             // rounds it due to int
-                            currentIndex= settings.fpv_lateral_limit;
+                            currentIndex = settings.fpv_lateral_limit
                         }
                         delegate: Text {
                             text: modelData
@@ -356,21 +397,30 @@ BaseWidget {
                             scale: opacity
                         }
                         onCurrentIndexChanged: {
-                            settings.fpv_lateral_limit = currentIndex;
+                            settings.fpv_lateral_limit = currentIndex
                             //   console.log("vert limit-",settings.fpv_vertical_limit);
                         }
                     }
                     gradient: Gradient {
-                        GradientStop { position: 0.0; color: Material.color(Material.Grey ,Material.Shade500) }
-                        GradientStop { position: 0.5; color: "transparent" }
-                        GradientStop { position: 1.0; color: Material.color(Material.Grey ,Material.Shade500) }
+                        GradientStop {
+                            position: 0.0
+                            color: Material.color(Material.Grey,
+                                                  Material.Shade500)
+                        }
+                        GradientStop {
+                            position: 0.5
+                            color: "transparent"
+                        }
+                        GradientStop {
+                            position: 1.0
+                            color: Material.color(Material.Grey,
+                                                  Material.Shade500)
+                        }
                     }
                 }
             }
         }
     }
-
-
 
     Item {
         id: widgetInner
@@ -383,7 +433,6 @@ BaseWidget {
         visible: settings.show_fpv
         opacity: settings.fpv_opacity
 
-
         Item {
             id: flightPathVector
 
@@ -392,11 +441,10 @@ BaseWidget {
             visible: settings.show_fpv
 
             //transform: Scale { origin.x: 0; origin.y: 0; xScale: settings.fpv_size ; yScale: settings.fpv_size}
-
-
             FlightPathVector {
                 id: fpvC
                 anchors.centerIn: parent
+
                 /* could turn the width and height into settings and thereby clip the fpv
                   *even theough clipping is false it still clips
                 */
@@ -407,6 +455,7 @@ BaseWidget {
                 glow: settings.color_glow
                 fpvInvertPitch: settings.fpv_invert_pitch
                 fpvInvertRoll: settings.fpv_invert_roll
+
                 /*
                 fpvSensitivity:
                 fpvActual:
@@ -429,5 +478,3 @@ BaseWidget {
         }
     }
 }
-
-

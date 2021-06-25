@@ -8,14 +8,13 @@ import QtQuick.Shapes 1.0
 
 import OpenHD 1.0
 
+
 /* Plane or Copter decides if the widget will use mavlink wind msg (only available for planes)
   or openhd calculated wind messages which are based on expected tilt vs actual tilt.
 
   Within our own openhd calculated wind there are two modes calculated. Both modes rely on
   no climbing and unaccelerated flight. One mode is in position hold type of flight mode and the
   other mode is in unaccelerated level motion */
-
-
 BaseWidget {
     id: windWidget
     width: 50
@@ -31,13 +30,36 @@ BaseWidget {
 
     hasWidgetDetail: true
 
-    widgetDetailComponent: ScrollView{
+    widgetDetailComponent: ScrollView {
 
         contentHeight: windSettingsColumn.height
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
         clip: true
         Column {
             id: windSettingsColumn
+            Item {
+                width: parent.width
+                height: 42
+                Text {
+                    id: windSettingsTitle
+                    text: qsTr("WIND")
+                    color: "white"
+                    height: parent.height - 10
+                    width: parent.width
+                    font.bold: true
+                    horizontalAlignment: Text.AlignHCenter
+                    font.pixelSize: detailPanelFontPixels
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Rectangle {
+                    id: windSettingsTitleUL
+                    y: 34
+                    width: parent.width
+                    height: 3
+                    color: "white"
+                    radius: 5
+                }
+            }
             Item {
                 width: parent.width
                 height: 32
@@ -62,7 +84,8 @@ BaseWidget {
                     anchors.right: parent.right
                     width: parent.width - 96
 
-                    onValueChanged: {// @disable-check M223
+                    onValueChanged: {
+                        // @disable-check M223
                         settings.wind_opacity = wind_opacity_Slider.value
                     }
                 }
@@ -115,17 +138,20 @@ BaseWidget {
                     anchors.right: parent.right
                     checked: {
                         // @disable-check M222
-                        var _hCenter = settings.value(hCenterIdentifier, defaultHCenter)
+                        var _hCenter = settings.value(hCenterIdentifier,
+                                                      defaultHCenter)
                         // @disable-check M223
-                        if (_hCenter === "true" || _hCenter === 1 || _hCenter === true) {
-                            checked = true;
+                        if (_hCenter === "true" || _hCenter === 1
+                                || _hCenter === true) {
+                            checked = true
                             // @disable-check M223
                         } else {
-                            checked = false;
+                            checked = false
                         }
                     }
 
-                    onCheckedChanged: settings.setValue(hCenterIdentifier, checked)
+                    onCheckedChanged: settings.setValue(hCenterIdentifier,
+                                                        checked)
                 }
             }
             Item {
@@ -147,17 +173,20 @@ BaseWidget {
                     anchors.right: parent.right
                     checked: {
                         // @disable-check M222
-                        var _vCenter = settings.value(vCenterIdentifier, defaultVCenter)
+                        var _vCenter = settings.value(vCenterIdentifier,
+                                                      defaultVCenter)
                         // @disable-check M223
-                        if (_vCenter === "true" || _vCenter === 1 || _vCenter === true) {
-                            checked = true;
+                        if (_vCenter === "true" || _vCenter === 1
+                                || _vCenter === true) {
+                            checked = true
                             // @disable-check M223
                         } else {
-                            checked = false;
+                            checked = false
                         }
                     }
 
-                    onCheckedChanged: settings.setValue(vCenterIdentifier, checked)
+                    onCheckedChanged: settings.setValue(vCenterIdentifier,
+                                                        checked)
                 }
             }
             Item {
@@ -168,7 +197,7 @@ BaseWidget {
                     color: "white"
                     height: parent.height
                     font.bold: true
-                    font.pixelSize: detailPanelFontPixels;
+                    font.pixelSize: detailPanelFontPixels
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
@@ -189,7 +218,7 @@ BaseWidget {
                     color: "white"
                     height: parent.height
                     font.bold: true
-                    font.pixelSize: detailPanelFontPixels;
+                    font.pixelSize: detailPanelFontPixels
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
@@ -222,19 +251,19 @@ BaseWidget {
                     width: 30
                     anchors.rightMargin: 0
                     anchors.right: parent.right
-                    antialiasing: true;
+                    antialiasing: true
 
                     Tumbler {
                         id: decimalTumbler
                         model: 10
 
-                        visibleItemCount : 1
+                        visibleItemCount: 1
                         anchors.fill: parent
 
                         currentIndex: settings.wind_tumbler_decimal
 
                         Component.onCompleted: {
-                            currentIndex= settings.wind_tumbler_decimal ;
+                            currentIndex = settings.wind_tumbler_decimal
                         }
 
                         delegate: Text {
@@ -251,18 +280,29 @@ BaseWidget {
                         }
 
                         onCurrentIndexChanged: {
-                            settings.wind_tumbler_decimal = currentIndex;
+                            settings.wind_tumbler_decimal = currentIndex
                             //  console.log("decimal Changed-",settings.wind_tumbler_decimal)
                         }
                     }
                     gradient: Gradient {
-                        GradientStop { position: 0.0; color: Material.color(Material.Grey ,Material.Shade500) }
-                        GradientStop { position: 0.5; color: "transparent" }
-                        GradientStop { position: 1.0; color: Material.color(Material.Grey ,Material.Shade500) }
+                        GradientStop {
+                            position: 0.0
+                            color: Material.color(Material.Grey,
+                                                  Material.Shade500)
+                        }
+                        GradientStop {
+                            position: 0.5
+                            color: "transparent"
+                        }
+                        GradientStop {
+                            position: 1.0
+                            color: Material.color(Material.Grey,
+                                                  Material.Shade500)
+                        }
                     }
                 }
                 Text {
-                    id:decimalText
+                    id: decimalText
                     text: "."
                     color: "white"
                     height: parent.height
@@ -278,19 +318,19 @@ BaseWidget {
                     height: 40
                     width: 30
                     anchors.right: decimalText.left
-                    antialiasing: true;
+                    antialiasing: true
 
                     Tumbler {
                         id: tensTumbler
                         model: 60
-                        visibleItemCount : 1
+                        visibleItemCount: 1
                         anchors.fill: parent
 
                         currentIndex: settings.wind_tumbler_tens
 
                         Component.onCompleted: {
                             // rounds it due to int
-                            currentIndex= settings.wind_tumbler_tens;
+                            currentIndex = settings.wind_tumbler_tens
                         }
                         delegate: Text {
                             text: modelData
@@ -305,14 +345,25 @@ BaseWidget {
                             scale: opacity
                         }
                         onCurrentIndexChanged: {
-                            settings.wind_tumbler_tens = currentIndex;
+                            settings.wind_tumbler_tens = currentIndex
                             //   console.log("tens Changed-",settings.wind_tumbler_tens);
                         }
                     }
                     gradient: Gradient {
-                        GradientStop { position: 0.0; color: Material.color(Material.Grey ,Material.Shade500) }
-                        GradientStop { position: 0.5; color: "transparent" }
-                        GradientStop { position: 1.0; color: Material.color(Material.Grey ,Material.Shade500) }
+                        GradientStop {
+                            position: 0.0
+                            color: Material.color(Material.Grey,
+                                                  Material.Shade500)
+                        }
+                        GradientStop {
+                            position: 0.5
+                            color: "transparent"
+                        }
+                        GradientStop {
+                            position: 1.0
+                            color: Material.color(Material.Grey,
+                                                  Material.Shade500)
+                        }
                     }
                 }
             }
@@ -329,7 +380,12 @@ BaseWidget {
         Item {
             anchors.fill: parent
             anchors.centerIn: parent
-            transform: Scale { origin.x: 25; origin.y: 25; xScale: settings.wind_size ; yScale: settings.wind_size}
+            transform: Scale {
+                origin.x: 25
+                origin.y: 25
+                xScale: settings.wind_size
+                yScale: settings.wind_size
+            }
 
             Shape {
                 id: arrow
@@ -347,18 +403,39 @@ BaseWidget {
 
                     startX: 4
                     startY: 0
-                    PathLine { x: 8;                 y: 12  }//right edge of arrow
-                    PathLine { x: 5;                 y: 12  }//inner right edge
-                    PathLine { x: 5;                 y: 40 }//bottom right edge
-                    PathLine { x: 3;                  y: 40 }//bottom left edge
-                    PathLine { x: 3;                  y: 12  }//inner left edge
-                    PathLine { x: 0;                  y: 12  }//outer left
-                    PathLine { x: 3;                  y: 0  }//back to start
+                    PathLine {
+                        x: 8
+                        y: 12
+                    } //right edge of arrow
+                    PathLine {
+                        x: 5
+                        y: 12
+                    } //inner right edge
+                    PathLine {
+                        x: 5
+                        y: 40
+                    } //bottom right edge
+                    PathLine {
+                        x: 3
+                        y: 40
+                    } //bottom left edge
+                    PathLine {
+                        x: 3
+                        y: 12
+                    } //inner left edge
+                    PathLine {
+                        x: 0
+                        y: 12
+                    } //outer left
+                    PathLine {
+                        x: 3
+                        y: 0
+                    } //back to start
                 }
 
                 transform: Rotation {
-                    origin.x: 3;
-                    origin.y: 20;
+                    origin.x: 3
+                    origin.y: 20
                     angle: (settings.wind_plane_copter ? OpenHD.wind_direction : OpenHD.mav_wind_direction) - OpenHD.hdg - 180
                 }
             }
@@ -367,10 +444,10 @@ BaseWidget {
 
                 anchors.centerIn: parent
                 visible: settings.wind_arrow_circle ? true : false
-                width: ((parent.width<parent.height?parent.width:parent.height))+2
+                width: ((parent.width < parent.height ? parent.width : parent.height)) + 2
                 height: width
                 color: "transparent"
-                radius: width*0.5
+                radius: width * 0.5
                 border.color: settings.color_glow
                 border.width: 3
             }
@@ -379,10 +456,10 @@ BaseWidget {
 
                 anchors.centerIn: parent
                 visible: settings.wind_arrow_circle ? true : false
-                width: ((parent.width<parent.height?parent.width:parent.height)/2)+2
+                width: ((parent.width < parent.height ? parent.width : parent.height) / 2) + 2
                 height: width
                 color: "transparent"
-                radius: width*0.5
+                radius: width * 0.5
 
                 border.color: settings.color_glow
                 border.width: 3
@@ -402,7 +479,10 @@ BaseWidget {
 
                     startX: 25
                     startY: 37
-                    PathLine { x: 25; y: 49  }
+                    PathLine {
+                        x: 25
+                        y: 49
+                    }
                 }
                 ShapePath {
                     capStyle: ShapePath.FlatCap
@@ -412,12 +492,15 @@ BaseWidget {
 
                     startX: 25
                     startY: 37
-                    PathLine { x: 25; y: 49  }
+                    PathLine {
+                        x: 25
+                        y: 49
+                    }
                 }
 
                 transform: Rotation {
-                    origin.x: 25;
-                    origin.y: 25;
+                    origin.x: 25
+                    origin.y: 25
                     angle: (settings.wind_plane_copter ? OpenHD.wind_direction : OpenHD.mav_wind_direction - 10) - OpenHD.hdg - 190
                 }
             }
@@ -436,7 +519,10 @@ BaseWidget {
                     strokeStyle: ShapePath.SolidLine
                     startX: 25
                     startY: 38
-                    PathLine { x: 25; y: 49  }
+                    PathLine {
+                        x: 25
+                        y: 49
+                    }
                 }
                 ShapePath {
                     capStyle: ShapePath.FlatCap
@@ -445,18 +531,22 @@ BaseWidget {
                     strokeStyle: ShapePath.SolidLine
                     startX: 25
                     startY: 38
-                    PathLine { x: 25; y: 49  }
+                    PathLine {
+                        x: 25
+                        y: 49
+                    }
                 }
 
                 transform: Rotation {
-                    origin.x: 25;
-                    origin.y: 25;
-                    angle: {// @disable-check M223
+                    origin.x: 25
+                    origin.y: 25
+                    angle: {
+                        // @disable-check M223
 
                         //   var wind=getWindDirection();
                         //  var wind_direction=wind.direction - OpenHD.hdg + 185;
                         //   return wind_direction;
-                        (settings.wind_plane_copter ? OpenHD.wind_direction : OpenHD.mav_wind_direction)-OpenHD.hdg-170;
+                        (settings.wind_plane_copter ? OpenHD.wind_direction : OpenHD.mav_wind_direction) - OpenHD.hdg - 170
                     }
                 }
             }
@@ -466,10 +556,10 @@ BaseWidget {
 
                 anchors.centerIn: parent
                 visible: settings.wind_arrow_circle ? true : false
-                width: (parent.width<parent.height?parent.width:parent.height)
+                width: (parent.width < parent.height ? parent.width : parent.height)
                 height: width
                 color: "transparent"
-                radius: width*0.5
+                radius: width * 0.5
                 border.color: settings.color_shape
                 border.width: .5
             }
@@ -478,10 +568,10 @@ BaseWidget {
 
                 anchors.centerIn: parent
                 visible: settings.wind_arrow_circle ? true : false
-                width: (parent.width<parent.height?parent.width:parent.height)/2
+                width: (parent.width < parent.height ? parent.width : parent.height) / 2
                 height: width
                 color: "transparent"
-                radius: width*0.5
+                radius: width * 0.5
 
                 border.color: settings.color_shape
                 border.width: .5
@@ -492,11 +582,11 @@ BaseWidget {
                 color: settings.color_text
                 anchors.centerIn: parent
                 font.pixelSize: 12
-                text: {// @disable-check M223
-                    Number(settings.enable_imperial ?
-                               (settings.wind_plane_copter ? OpenHD.wind_speed*2.237 : OpenHD.mav_wind_speed*2.237) :
-                               (settings.wind_plane_copter ? OpenHD.wind_speed*3.6 : OpenHD.mav_wind_speed*3.6))
-                    .toLocaleString(Qt.locale(), 'f', 0)} // @disable-check M222
+                text: {
+                    // @disable-check M223
+                    Number(settings.enable_imperial ? (settings.wind_plane_copter ? OpenHD.wind_speed * 2.237 : OpenHD.mav_wind_speed * 2.237) : (settings.wind_plane_copter ? OpenHD.wind_speed * 3.6 : OpenHD.mav_wind_speed * 3.6)).toLocaleString(
+                                Qt.locale(), 'f', 0)
+                } // @disable-check M222
                 anchors.fill: parent
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
@@ -506,6 +596,3 @@ BaseWidget {
         }
     }
 }
-
-
-

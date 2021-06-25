@@ -32,7 +32,29 @@ BaseWidget {
             id: gndBatterySettingsColumn
             spacing: 0
             clip: true
-
+            Item {
+                width: 230
+                height: 42
+                Text {
+                    id: gndBatterySettingsTitle
+                    text: qsTr("GROUND BATTERY")
+                    color: "white"
+                    height: parent.height - 10
+                    width: parent.width
+                    font.bold: true
+                    horizontalAlignment: Text.AlignHCenter
+                    font.pixelSize: detailPanelFontPixels
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Rectangle {
+                    id: gndBatterySettingsTitleUL
+                    y: 34
+                    width: parent.width
+                    height: 3
+                    color: "white"
+                    radius: 5
+                }
+            }
             Item {
                 width: 230
                 height: 32
@@ -111,17 +133,20 @@ BaseWidget {
                     anchors.right: parent.right
                     checked: {
                         // @disable-check M222
-                        var _hCenter = settings.value(hCenterIdentifier, defaultHCenter)
+                        var _hCenter = settings.value(hCenterIdentifier,
+                                                      defaultHCenter)
                         // @disable-check M223
-                        if (_hCenter === "true" || _hCenter === 1 || _hCenter === true) {
-                            checked = true;
+                        if (_hCenter === "true" || _hCenter === 1
+                                || _hCenter === true) {
+                            checked = true
                             // @disable-check M223
                         } else {
-                            checked = false;
+                            checked = false
                         }
                     }
 
-                    onCheckedChanged: settings.setValue(hCenterIdentifier, checked)
+                    onCheckedChanged: settings.setValue(hCenterIdentifier,
+                                                        checked)
                 }
             }
             Item {
@@ -143,17 +168,20 @@ BaseWidget {
                     anchors.right: parent.right
                     checked: {
                         // @disable-check M222
-                        var _vCenter = settings.value(vCenterIdentifier, defaultVCenter)
+                        var _vCenter = settings.value(vCenterIdentifier,
+                                                      defaultVCenter)
                         // @disable-check M223
-                        if (_vCenter === "true" || _vCenter === 1 || _vCenter === true) {
-                            checked = true;
+                        if (_vCenter === "true" || _vCenter === 1
+                                || _vCenter === true) {
+                            checked = true
                             // @disable-check M223
                         } else {
-                            checked = false;
+                            checked = false
                         }
                     }
 
-                    onCheckedChanged: settings.setValue(vCenterIdentifier, checked)
+                    onCheckedChanged: settings.setValue(vCenterIdentifier,
+                                                        checked)
                 }
             }
             Item {
@@ -232,8 +260,7 @@ BaseWidget {
             id: battery_percent
             y: 0
             color: settings.color_text
-            text: qsTr("%L1%").arg(
-                       OpenHD.ground_battery_percent)
+            text: qsTr("%L1%").arg(OpenHD.ground_battery_percent)
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: batteryGauge.right
             anchors.leftMargin: 0
@@ -249,7 +276,8 @@ BaseWidget {
         Text {
             id: battery_amp_text
             visible: settings.ground_battery_show_voltage_current
-            text: Number((OpenHD.ground_iout < 0 ? 0 : OpenHD.ground_iout) / 1000.0).toLocaleString(
+            text: Number(
+                      (OpenHD.ground_iout < 0 ? 0 : OpenHD.ground_iout) / 1000.0).toLocaleString(
                       Qt.locale(), 'f', 1) + "A"
             color: settings.color_text
             anchors.bottom: battery_percent.top
@@ -268,11 +296,9 @@ BaseWidget {
             id: battery_volt_text
             visible: settings.ground_battery_show_voltage_current
             text: settings.ground_battery_show_single_cell ? Number(
-                                                              ((OpenHD.ground_vbat < 0 ? 0 : OpenHD.ground_vbat / 1000.0)) / settings.ground_battery_cells).toLocaleString(
-                                                              Qt.locale(),
-                                                              'f', 1) + "V" : Number((OpenHD.ground_vbat < 0 ? 0 : OpenHD.ground_vbat / 1000.0)).toLocaleString(
-                                                              Qt.locale(),
-                                                              'f', 1) + "V"
+                                                                 ((OpenHD.ground_vbat < 0 ? 0 : OpenHD.ground_vbat / 1000.0)) / settings.ground_battery_cells).toLocaleString(Qt.locale(), 'f', 1) + "V" : Number((OpenHD.ground_vbat < 0 ? 0 : OpenHD.ground_vbat / 1000.0)).toLocaleString(
+                                                                 Qt.locale(),
+                                                                 'f', 1) + "V"
             color: settings.color_text
             anchors.top: battery_percent.bottom
             anchors.left: batteryGauge.right
@@ -293,7 +319,7 @@ BaseWidget {
             height: 48
             // @disable-check M223
             color: {
-                var percent = OpenHD.ground_battery_percent;
+                var percent = OpenHD.ground_battery_percent
 
                 // 20% warning, 15% critical
                 return percent < 20 ? (percent < 15 ? "#ff0000" : "#fbfd15") : settings.color_shape

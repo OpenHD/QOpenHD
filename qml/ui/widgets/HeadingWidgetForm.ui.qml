@@ -22,17 +22,39 @@ BaseWidget {
     defaultVCenter: false
 
     hasWidgetDetail: true
-    widgetDetailComponent: ScrollView{
+    widgetDetailComponent: ScrollView {
 
         contentHeight: headingSettingsColumn.height
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
         clip: true
 
-        ColumnLayout{
+        ColumnLayout {
             id: headingSettingsColumn
-            spacing:0
+            spacing: 0
             clip: true
-
+            Item {
+                width: 230
+                height: 42
+                Text {
+                    id: headingSettingsTitle
+                    text: qsTr("HEADING")
+                    color: "white"
+                    height: parent.height - 10
+                    width: parent.width
+                    font.bold: true
+                    horizontalAlignment: Text.AlignHCenter
+                    font.pixelSize: detailPanelFontPixels
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Rectangle {
+                    id: headingSettingsTitleUL
+                    y: 34
+                    width: parent.width
+                    height: 3
+                    color: "white"
+                    radius: 5
+                }
+            }
             Item {
                 width: 230
                 height: 32
@@ -56,7 +78,7 @@ BaseWidget {
                     height: parent.height
                     anchors.rightMargin: 5
                     anchors.right: parent.right
-                    width: parent.width-96
+                    width: parent.width - 96
 
                     onValueChanged: {
                         settings.heading_opacity = heading_opacity_Slider.value
@@ -85,7 +107,7 @@ BaseWidget {
                     height: parent.height
                     anchors.rightMargin: 5
                     anchors.right: parent.right
-                    width: parent.width-96
+                    width: parent.width - 96
 
                     onValueChanged: {
                         settings.heading_width = heading_width_Slider.value
@@ -115,7 +137,7 @@ BaseWidget {
                     height: parent.height
                     anchors.rightMargin: 5
                     anchors.right: parent.right
-                    width: parent.width-96
+                    width: parent.width - 96
 
                     onValueChanged: {
                         settings.heading_size = heading_size_Slider.value
@@ -141,17 +163,20 @@ BaseWidget {
                     anchors.right: parent.right
                     checked: {
                         // @disable-check M222
-                        var _hCenter = settings.value(hCenterIdentifier, defaultHCenter)
+                        var _hCenter = settings.value(hCenterIdentifier,
+                                                      defaultHCenter)
                         // @disable-check M223
-                        if (_hCenter === "true" || _hCenter === 1 || _hCenter === true) {
-                            checked = true;
+                        if (_hCenter === "true" || _hCenter === 1
+                                || _hCenter === true) {
+                            checked = true
                             // @disable-check M223
                         } else {
-                            checked = false;
+                            checked = false
                         }
                     }
 
-                    onCheckedChanged: settings.setValue(hCenterIdentifier, checked)
+                    onCheckedChanged: settings.setValue(hCenterIdentifier,
+                                                        checked)
                 }
             }
             Item {
@@ -173,17 +198,20 @@ BaseWidget {
                     anchors.right: parent.right
                     checked: {
                         // @disable-check M222
-                        var _vCenter = settings.value(vCenterIdentifier, defaultVCenter)
+                        var _vCenter = settings.value(vCenterIdentifier,
+                                                      defaultVCenter)
                         // @disable-check M223
-                        if (_vCenter === "true" || _vCenter === 1 || _vCenter === true) {
-                            checked = true;
+                        if (_vCenter === "true" || _vCenter === 1
+                                || _vCenter === true) {
+                            checked = true
                             // @disable-check M223
                         } else {
-                            checked = false;
+                            checked = false
                         }
                     }
 
-                    onCheckedChanged: settings.setValue(vCenterIdentifier, checked)
+                    onCheckedChanged: settings.setValue(vCenterIdentifier,
+                                                        checked)
                 }
             }
             Item {
@@ -262,9 +290,14 @@ BaseWidget {
 
             width: parent.width * settings.heading_size
             anchors.horizontalCenter: parent.horizontalCenter
-            y:27
+            y: 27
 
-            transform: Scale { origin.x: 24; origin.y: 15; xScale: settings.heading_size ; yScale: settings.heading_size}
+            transform: Scale {
+                origin.x: 24
+                origin.y: 15
+                xScale: settings.heading_size
+                yScale: settings.heading_size
+            }
 
             HeadingLadder {
                 id: headingLadderC
@@ -290,11 +323,16 @@ BaseWidget {
             anchors.right: parent.right
             anchors.bottom: parent.bottom
             anchors.bottomMargin: parent.height - 24
-            color: settings.color_text            
+            color: settings.color_text
             font.pixelSize: 14
             font.family: settings.font_text
-            transform: Scale { origin.x: 24; origin.y: 34; xScale: settings.heading_size ; yScale: settings.heading_size}
-            text: Number(OpenHD.hdg).toLocaleString( Qt.locale(), 'f', 0)
+            transform: Scale {
+                origin.x: 24
+                origin.y: 34
+                xScale: settings.heading_size
+                yScale: settings.heading_size
+            }
+            text: Number(OpenHD.hdg).toLocaleString(Qt.locale(), 'f', 0)
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             style: Text.Outline
@@ -303,7 +341,12 @@ BaseWidget {
         Shape {
             id: outlineGlow
             anchors.fill: parent
-            transform: Scale { origin.x: 24; origin.y: 34; xScale: settings.heading_size ; yScale: settings.heading_size}
+            transform: Scale {
+                origin.x: 24
+                origin.y: 34
+                xScale: settings.heading_size
+                yScale: settings.heading_size
+            }
             ShapePath {
                 capStyle: ShapePath.RoundCap
                 strokeColor: settings.color_glow
@@ -349,7 +392,12 @@ BaseWidget {
         Shape {
             id: outline
             anchors.fill: parent
-            transform: Scale { origin.x: 24; origin.y: 34; xScale: settings.heading_size ; yScale: settings.heading_size}
+            transform: Scale {
+                origin.x: 24
+                origin.y: 34
+                xScale: settings.heading_size
+                yScale: settings.heading_size
+            }
             ShapePath {
                 capStyle: ShapePath.RoundCap
                 strokeColor: settings.color_shape
