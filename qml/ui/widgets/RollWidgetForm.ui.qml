@@ -10,7 +10,7 @@ import OpenHD 1.0
 BaseWidget {
     id: rollWidget
     width: 100
-    height:30
+    height: 30
 
     visible: settings.show_roll
 
@@ -23,13 +23,36 @@ BaseWidget {
 
     hasWidgetDetail: true
 
-    widgetDetailComponent: ScrollView{
+    widgetDetailComponent: ScrollView {
 
         contentHeight: rollSettingsColumn.height
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
         clip: true
         Column {
             id: rollSettingsColumn
+            Item {
+                width: parent.width
+                height: 42
+                Text {
+                    id: rollSettingsTitle
+                    text: qsTr("BANK ANGLE INDICATOR")
+                    color: "white"
+                    height: parent.height - 10
+                    width: parent.width
+                    font.bold: true
+                    horizontalAlignment: Text.AlignHCenter
+                    font.pixelSize: detailPanelFontPixels
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Rectangle {
+                    id: rollSettingsTitleUL
+                    y: 34
+                    width: parent.width
+                    height: 3
+                    color: "white"
+                    radius: 5
+                }
+            }
             Item {
                 width: parent.width
                 height: 32
@@ -107,17 +130,20 @@ BaseWidget {
                     anchors.right: parent.right
                     checked: {
                         // @disable-check M222
-                        var _hCenter = settings.value(hCenterIdentifier, defaultHCenter)
+                        var _hCenter = settings.value(hCenterIdentifier,
+                                                      defaultHCenter)
                         // @disable-check M223
-                        if (_hCenter === "true" || _hCenter === 1 || _hCenter === true) {
-                            checked = true;
+                        if (_hCenter === "true" || _hCenter === 1
+                                || _hCenter === true) {
+                            checked = true
                             // @disable-check M223
                         } else {
-                            checked = false;
+                            checked = false
                         }
                     }
 
-                    onCheckedChanged: settings.setValue(hCenterIdentifier, checked)
+                    onCheckedChanged: settings.setValue(hCenterIdentifier,
+                                                        checked)
                 }
             }
             Item {
@@ -139,17 +165,20 @@ BaseWidget {
                     anchors.right: parent.right
                     checked: {
                         // @disable-check M222
-                        var _vCenter = settings.value(vCenterIdentifier, defaultVCenter)
+                        var _vCenter = settings.value(vCenterIdentifier,
+                                                      defaultVCenter)
                         // @disable-check M223
-                        if (_vCenter === "true" || _vCenter === 1 || _vCenter === true) {
-                            checked = true;
+                        if (_vCenter === "true" || _vCenter === 1
+                                || _vCenter === true) {
+                            checked = true
                             // @disable-check M223
                         } else {
-                            checked = false;
+                            checked = false
                         }
                     }
 
-                    onCheckedChanged: settings.setValue(vCenterIdentifier, checked)
+                    onCheckedChanged: settings.setValue(vCenterIdentifier,
+                                                        checked)
                 }
             }
             Item {
@@ -160,7 +189,7 @@ BaseWidget {
                     color: "white"
                     height: parent.height
                     font.bold: true
-                    font.pixelSize: detailPanelFontPixels;
+                    font.pixelSize: detailPanelFontPixels
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
@@ -182,7 +211,7 @@ BaseWidget {
                     color: "white"
                     height: parent.height
                     font.bold: true
-                    font.pixelSize: detailPanelFontPixels;
+                    font.pixelSize: detailPanelFontPixels
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
@@ -204,7 +233,7 @@ BaseWidget {
                     color: "white"
                     height: parent.height
                     font.bold: true
-                    font.pixelSize: detailPanelFontPixels;
+                    font.pixelSize: detailPanelFontPixels
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
@@ -226,7 +255,7 @@ BaseWidget {
                     color: "white"
                     height: parent.height
                     font.bold: true
-                    font.pixelSize: detailPanelFontPixels;
+                    font.pixelSize: detailPanelFontPixels
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
@@ -251,11 +280,15 @@ BaseWidget {
         Item {
             anchors.fill: parent
             anchors.centerIn: parent
-            transform: Scale { origin.x: 100; origin.y: 60; xScale: settings.roll_size ; yScale: settings.roll_size}
-
+            transform: Scale {
+                origin.x: 100
+                origin.y: 60
+                xScale: settings.roll_size
+                yScale: settings.roll_size
+            }
 
             Item {
-                id:rollTicks
+                id: rollTicks
                 anchors.fill: parent
                 opacity: settings.roll_opacity
 
@@ -275,8 +308,10 @@ BaseWidget {
                         capStyle: ShapePath.FlatCap
 
                         PathAngleArc {
-                            centerX: 100; centerY: 150
-                            radiusX: 100; radiusY: 100
+                            centerX: 100
+                            centerY: 150
+                            radiusX: 100
+                            radiusY: 100
                             startAngle: -150
                             sweepAngle: 120
                         }
@@ -284,12 +319,12 @@ BaseWidget {
                 }
 
                 Item {
-                    id:right_60_roll
+                    id: right_60_roll
                     x: 194
                     y: 92
 
                     Rectangle {
-                        id:right_60_roll_rect
+                        id: right_60_roll_rect
 
                         width: 4
                         height: 10
@@ -310,19 +345,19 @@ BaseWidget {
                     }
 
                     transform: Rotation {
-                        origin.x: 0;
-                        origin.y: 0;
+                        origin.x: 0
+                        origin.y: 0
                         angle: 60
                     }
                 }
 
                 Item {
-                    id:right_40_roll
+                    id: right_40_roll
                     x: 169
                     y: 64
 
                     Rectangle {
-                        id:right_40_roll_rect
+                        id: right_40_roll_rect
 
                         width: 3
                         height: 10
@@ -343,19 +378,19 @@ BaseWidget {
                     }
 
                     transform: Rotation {
-                        origin.x: 0;
-                        origin.y: 0;
+                        origin.x: 0
+                        origin.y: 0
                         angle: 40
                     }
                 }
 
                 Item {
-                    id:right_20_roll
+                    id: right_20_roll
                     x: 133
                     y: 45
 
                     Rectangle {
-                        id:right_20_roll_rect
+                        id: right_20_roll_rect
 
                         width: 3
                         height: 10
@@ -376,8 +411,8 @@ BaseWidget {
                     }
 
                     transform: Rotation {
-                        origin.x: 2;
-                        origin.y: 10;
+                        origin.x: 2
+                        origin.y: 10
                         angle: 20
                     }
                 }
@@ -395,20 +430,29 @@ BaseWidget {
 
                         startX: 100 //bottom point
                         startY: 48
-                        PathLine { x: 107;                 y: 41  }//right upper edge
-                        PathLine { x: 93;                 y: 41  }//left upper edge
-                        PathLine { x: 100;                 y: 48 }
+                        PathLine {
+                            x: 107
+                            y: 41
+                        } //right upper edge
+                        PathLine {
+                            x: 93
+                            y: 41
+                        } //left upper edge
+                        PathLine {
+                            x: 100
+                            y: 48
+                        }
                     }
                 }
 
                 Item {
-                    id:left_60_roll
+                    id: left_60_roll
                     x: 4
                     y: 95
                     anchors.leftMargin: 0
 
                     Rectangle {
-                        id:left_60_roll_rect
+                        id: left_60_roll_rect
 
                         width: 3
                         height: 10
@@ -429,19 +473,19 @@ BaseWidget {
                     }
 
                     transform: Rotation {
-                        origin.x: 0;
-                        origin.y: 0;
+                        origin.x: 0
+                        origin.y: 0
                         angle: -60
                     }
                 }
 
                 Item {
-                    id:left_40_roll
+                    id: left_40_roll
                     x: 27
                     y: 66
 
                     Rectangle {
-                        id:left_40_roll_rect
+                        id: left_40_roll_rect
 
                         width: 3
                         height: 10
@@ -462,19 +506,19 @@ BaseWidget {
                     }
 
                     transform: Rotation {
-                        origin.x: 0;
-                        origin.y: 0;
+                        origin.x: 0
+                        origin.y: 0
                         angle: -40
                     }
                 }
 
                 Item {
-                    id:left_20_roll
+                    id: left_20_roll
                     x: 60
                     y: 46
 
                     Rectangle {
-                        id:left_20_roll_rect
+                        id: left_20_roll_rect
 
                         width: 3
                         height: 10
@@ -495,16 +539,16 @@ BaseWidget {
                     }
 
                     transform: Rotation {
-                        origin.x: 0;
-                        origin.y: 0;
+                        origin.x: 0
+                        origin.y: 0
                         angle: -20
                     }
                 }
 
                 transform: Rotation {
-                    origin.x: 100;
-                    origin.y: 150;
-                    angle: settings.roll_sky_pointer ? 0 : (settings.roll_invert ? OpenHD.roll : OpenHD.roll*-1)
+                    origin.x: 100
+                    origin.y: 150
+                    angle: settings.roll_sky_pointer ? 0 : (settings.roll_invert ? OpenHD.roll : OpenHD.roll * -1)
                 }
             }
 
@@ -523,18 +567,26 @@ BaseWidget {
 
                     startX: 100 //top point
                     startY: 50
-                    PathLine { x: 110;                 y: 60  }//right lower edge of arrow
-                    PathLine { x: 90;                 y: 60  }//left lower edge
-                    PathLine { x: 100;                 y: 50 }//bottom right edge
+                    PathLine {
+                        x: 110
+                        y: 60
+                    } //right lower edge of arrow
+                    PathLine {
+                        x: 90
+                        y: 60
+                    } //left lower edge
+                    PathLine {
+                        x: 100
+                        y: 50
+                    } //bottom right edge
                 }
 
                 transform: Rotation {
-                    origin.x: 100;
-                    origin.y: 150;
-                    angle: settings.roll_sky_pointer ? (settings.roll_invert ? OpenHD.roll : OpenHD.roll*-1) : 0
+                    origin.x: 100
+                    origin.y: 150
+                    angle: settings.roll_sky_pointer ? (settings.roll_invert ? OpenHD.roll : OpenHD.roll * -1) : 0
                 }
             }
         }
     }
 }
-

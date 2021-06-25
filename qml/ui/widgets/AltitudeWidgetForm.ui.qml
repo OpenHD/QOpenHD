@@ -10,8 +10,6 @@ import Qt.labs.settings 1.0
 
 import OpenHD 1.0
 
-
-
 BaseWidget {
     id: altitudeWidget
     width: 64
@@ -28,7 +26,7 @@ BaseWidget {
     defaultHCenter: false
 
     hasWidgetDetail: true
-    widgetDetailComponent: ScrollView{
+    widgetDetailComponent: ScrollView {
 
         contentHeight: altSettingsColumn.height
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
@@ -38,6 +36,29 @@ BaseWidget {
             id: altSettingsColumn
             spacing: 0
 
+            Item {
+                width: parent.width
+                height: 42
+                Text {
+                    id: altSettingsTitle
+                    text: qsTr("ALTITUDE")
+                    color: "white"
+                    height: parent.height - 10
+                    width: parent.width
+                    font.bold: true
+                    horizontalAlignment: Text.AlignHCenter
+                    font.pixelSize: detailPanelFontPixels
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Rectangle {
+                    id: altSettingsTitleUL
+                    y: 34
+                    width: parent.width
+                    height: 3
+                    color: "white"
+                    radius: 5
+                }
+            }
             Item {
                 width: parent.width
                 height: 32
@@ -63,7 +84,8 @@ BaseWidget {
                     anchors.right: parent.right
                     width: parent.width - 96
 
-                    onValueChanged: { // @disable-check M223
+                    onValueChanged: {
+                        // @disable-check M223
                         settings.altitude_opacity = altitude_opacity_Slider.value
                     }
                 }
@@ -93,7 +115,8 @@ BaseWidget {
                     anchors.right: parent.right
                     width: parent.width - 96
 
-                    onValueChanged: { // @disable-check M223
+                    onValueChanged: {
+                        // @disable-check M223
                         settings.altitude_size = altitude_size_Slider.value
                     }
                 }
@@ -117,17 +140,20 @@ BaseWidget {
                     anchors.right: parent.right
                     checked: {
                         // @disable-check M222
-                        var _hCenter = settings.value(hCenterIdentifier, defaultHCenter)
+                        var _hCenter = settings.value(hCenterIdentifier,
+                                                      defaultHCenter)
                         // @disable-check M223
-                        if (_hCenter === "true" || _hCenter === 1 || _hCenter === true) {
-                            checked = true;
+                        if (_hCenter === "true" || _hCenter === 1
+                                || _hCenter === true) {
+                            checked = true
                             // @disable-check M223
                         } else {
-                            checked = false;
+                            checked = false
                         }
                     }
 
-                    onCheckedChanged: settings.setValue(hCenterIdentifier, checked)
+                    onCheckedChanged: settings.setValue(hCenterIdentifier,
+                                                        checked)
                 }
             }
             Item {
@@ -149,17 +175,20 @@ BaseWidget {
                     anchors.right: parent.right
                     checked: {
                         // @disable-check M222
-                        var _vCenter = settings.value(vCenterIdentifier, defaultVCenter)
+                        var _vCenter = settings.value(vCenterIdentifier,
+                                                      defaultVCenter)
                         // @disable-check M223
-                        if (_vCenter === "true" || _vCenter === 1 || _vCenter === true) {
-                            checked = true;
+                        if (_vCenter === "true" || _vCenter === 1
+                                || _vCenter === true) {
+                            checked = true
                             // @disable-check M223
                         } else {
-                            checked = false;
+                            checked = false
                         }
                     }
 
-                    onCheckedChanged: settings.setValue(vCenterIdentifier, checked)
+                    onCheckedChanged: settings.setValue(vCenterIdentifier,
+                                                        checked)
                 }
             }
             Item {
@@ -228,8 +257,9 @@ BaseWidget {
                     anchors.right: parent.right
                     width: parent.width - 96
 
-                    onValueChanged: { // @disable-check M223
-                        settings.altitude_range = altitude_range_Slider.value;
+                    onValueChanged: {
+                        // @disable-check M223
+                        settings.altitude_range = altitude_range_Slider.value
                     }
                 }
             }
@@ -250,7 +280,12 @@ BaseWidget {
 
             visible: settings.show_altitude_ladder
 
-            transform: Scale { origin.x: -5; origin.y: 12; xScale: settings.altitude_size ; yScale: settings.altitude_size}
+            transform: Scale {
+                origin.x: -5
+                origin.y: 12
+                xScale: settings.altitude_size
+                yScale: settings.altitude_size
+            }
 
             AltitudeLadder {
                 id: altitudeLadderC
@@ -278,10 +313,14 @@ BaseWidget {
 
                 font.pixelSize: 14
                 font.family: settings.font_text
-                transform: Scale { origin.x: 12; origin.y: 12; xScale: settings.altitude_size ; yScale: settings.altitude_size}
-                text: Number( // @disable-check M222
-                             settings.enable_imperial ? (settings.altitude_rel_msl ? (OpenHD.alt_msl*3.28) : (OpenHD.alt_rel*3.28)) :
-                                                        (settings.altitude_rel_msl ? OpenHD.alt_msl : OpenHD.alt_rel)).toLocaleString(
+                transform: Scale {
+                    origin.x: 12
+                    origin.y: 12
+                    xScale: settings.altitude_size
+                    yScale: settings.altitude_size
+                }
+                text: Number(// @disable-check M222
+                             settings.enable_imperial ? (settings.altitude_rel_msl ? (OpenHD.alt_msl * 3.28) : (OpenHD.alt_rel * 3.28)) : (settings.altitude_rel_msl ? OpenHD.alt_msl : OpenHD.alt_rel)).toLocaleString(
                           Qt.locale(), 'f', 0) // @disable-check M222
                 anchors.fill: parent
                 horizontalAlignment: Text.AlignHCenter

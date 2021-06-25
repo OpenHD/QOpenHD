@@ -23,13 +23,36 @@ BaseWidget {
 
     hasWidgetDetail: true
 
-    widgetDetailComponent: ScrollView{
+    widgetDetailComponent: ScrollView {
 
         contentHeight: flightmahkmSettingsColumn.height
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
         clip: true
         Column {
             id: flightmahkmSettingsColumn
+            Item {
+                width: parent.width
+                height: 42
+                Text {
+                    id: flightmahkmSettingsTitle
+                    text: qsTr("EFFICIENCY IN MAH/KM")
+                    color: "white"
+                    height: parent.height - 10
+                    width: parent.width
+                    font.bold: true
+                    horizontalAlignment: Text.AlignHCenter
+                    font.pixelSize: detailPanelFontPixels
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Rectangle {
+                    id: flightmahkmSettingsTitleUL
+                    y: 34
+                    width: parent.width
+                    height: 3
+                    color: "white"
+                    radius: 5
+                }
+            }
             Item {
                 width: parent.width
                 height: 32
@@ -108,17 +131,20 @@ BaseWidget {
                     anchors.right: parent.right
                     checked: {
                         // @disable-check M222
-                        var _hCenter = settings.value(hCenterIdentifier, defaultHCenter)
+                        var _hCenter = settings.value(hCenterIdentifier,
+                                                      defaultHCenter)
                         // @disable-check M223
-                        if (_hCenter === "true" || _hCenter === 1 || _hCenter === true) {
-                            checked = true;
+                        if (_hCenter === "true" || _hCenter === 1
+                                || _hCenter === true) {
+                            checked = true
                             // @disable-check M223
                         } else {
-                            checked = false;
+                            checked = false
                         }
                     }
 
-                    onCheckedChanged: settings.setValue(hCenterIdentifier, checked)
+                    onCheckedChanged: settings.setValue(hCenterIdentifier,
+                                                        checked)
                 }
             }
             Item {
@@ -140,17 +166,20 @@ BaseWidget {
                     anchors.right: parent.right
                     checked: {
                         // @disable-check M222
-                        var _vCenter = settings.value(vCenterIdentifier, defaultVCenter)
+                        var _vCenter = settings.value(vCenterIdentifier,
+                                                      defaultVCenter)
                         // @disable-check M223
-                        if (_vCenter === "true" || _vCenter === 1 || _vCenter === true) {
-                            checked = true;
+                        if (_vCenter === "true" || _vCenter === 1
+                                || _vCenter === true) {
+                            checked = true
                             // @disable-check M223
                         } else {
-                            checked = false;
+                            checked = false
                         }
                     }
 
-                    onCheckedChanged: settings.setValue(vCenterIdentifier, checked)
+                    onCheckedChanged: settings.setValue(vCenterIdentifier,
+                                                        checked)
                 }
             }
         }
@@ -188,8 +217,8 @@ BaseWidget {
             clip: true
             color: settings.color_text
             opacity: settings.mah_km_opacity
-            text: (OpenHD.mah_km > 0) && (OpenHD.mah_km < 999) ?
-                      OpenHD.mah_km + "mAh/km" : "---mAh/km"
+            text: (OpenHD.mah_km > 0)
+                  && (OpenHD.mah_km < 999) ? OpenHD.mah_km + "mAh/km" : "---mAh/km"
             anchors.right: parent.right
             anchors.rightMargin: 0
             verticalAlignment: Text.AlignVCenter

@@ -28,8 +28,7 @@ BaseWidget {
     hasWidgetAction: true
 
     //----------------------------- DETAIL BELOW ----------------------------------
-
-    widgetDetailComponent: ScrollView{
+    widgetDetailComponent: ScrollView {
 
         contentHeight: homedistanceSettingsColumn.height
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
@@ -61,6 +60,29 @@ BaseWidget {
                 }
             }
 */
+            Item {
+                width: parent.width
+                height: 42
+                Text {
+                    id: homedistanceSettingsTitle
+                    text: qsTr("HOME DISTANCE")
+                    color: "white"
+                    height: parent.height - 10
+                    width: parent.width
+                    font.bold: true
+                    horizontalAlignment: Text.AlignHCenter
+                    font.pixelSize: detailPanelFontPixels
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Rectangle {
+                    id: homedistanceSettingsTitleUL
+                    y: 34
+                    width: parent.width
+                    height: 3
+                    color: "white"
+                    radius: 5
+                }
+            }
             Item {
                 width: parent.width
                 height: 32
@@ -139,17 +161,20 @@ BaseWidget {
                     anchors.right: parent.right
                     checked: {
                         // @disable-check M222
-                        var _hCenter = settings.value(hCenterIdentifier, defaultHCenter)
+                        var _hCenter = settings.value(hCenterIdentifier,
+                                                      defaultHCenter)
                         // @disable-check M223
-                        if (_hCenter === "true" || _hCenter === 1 || _hCenter === true) {
-                            checked = true;
+                        if (_hCenter === "true" || _hCenter === 1
+                                || _hCenter === true) {
+                            checked = true
                             // @disable-check M223
                         } else {
-                            checked = false;
+                            checked = false
                         }
                     }
 
-                    onCheckedChanged: settings.setValue(hCenterIdentifier, checked)
+                    onCheckedChanged: settings.setValue(hCenterIdentifier,
+                                                        checked)
                 }
             }
             Item {
@@ -171,31 +196,33 @@ BaseWidget {
                     anchors.right: parent.right
                     checked: {
                         // @disable-check M222
-                        var _vCenter = settings.value(vCenterIdentifier, defaultVCenter)
+                        var _vCenter = settings.value(vCenterIdentifier,
+                                                      defaultVCenter)
                         // @disable-check M223
-                        if (_vCenter === "true" || _vCenter === 1 || _vCenter === true) {
-                            checked = true;
+                        if (_vCenter === "true" || _vCenter === 1
+                                || _vCenter === true) {
+                            checked = true
                             // @disable-check M223
                         } else {
-                            checked = false;
+                            checked = false
                         }
                     }
 
-                    onCheckedChanged: settings.setValue(vCenterIdentifier, checked)
+                    onCheckedChanged: settings.setValue(vCenterIdentifier,
+                                                        checked)
                 }
             }
         }
     }
 
     //---------------------------ACTION WIDGET COMPONENT BELOW-----------------------------
-
-    widgetActionComponent: ScrollView{
+    widgetActionComponent: ScrollView {
 
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
         clip: true
 
-        ColumnLayout{
-            width:200
+        ColumnLayout {
+            width: 200
             Item {
                 width: parent.width
                 height: 32
@@ -209,7 +236,8 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Text {
-                    text: Number(OpenHD.homelat).toLocaleString(Qt.locale(), 'f', 6)
+                    text: Number(OpenHD.homelat).toLocaleString(Qt.locale(),
+                                                                'f', 6)
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -231,7 +259,8 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Text {
-                    text: Number(OpenHD.homelon).toLocaleString(Qt.locale(), 'f', 6)
+                    text: Number(OpenHD.homelon).toLocaleString(Qt.locale(),
+                                                                'f', 6)
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -245,7 +274,7 @@ BaseWidget {
                 Text {
                     id: name
                     visible: false
-                    text: qsTr("Vehicle type: "+OpenHD.mav_type)
+                    text: qsTr("Vehicle type: " + OpenHD.mav_type)
                     color: "white"
                     font.bold: true
                     font.pixelSize: detailPanelFontPixels
@@ -255,15 +284,16 @@ BaseWidget {
 
             ConfirmSlider {
 
-                visible: OpenHD.mav_type=="ARDUPLANE"
+                visible: OpenHD.mav_type == "ARDUPLANE"
 
                 text_off: qsTr("RTL")
                 msg_id: 11
 
-                onCheckedChanged:{
-                    if (checked==true){ //double check.... not really needed
+                onCheckedChanged: {
+                    if (checked == true) {
 
-                        OpenHD.set_Requested_Flight_Mode(msg_id);
+                        //double check.... not really needed
+                        OpenHD.set_Requested_Flight_Mode(msg_id)
                         //console.log("selected");
                     }
                 }
@@ -272,15 +302,16 @@ BaseWidget {
             //-----------------------Split from plane to copter
             ConfirmSlider {
 
-                visible: OpenHD.mav_type=="ARDUCOPTER"
+                visible: OpenHD.mav_type == "ARDUCOPTER"
 
                 text_off: qsTr("RTL")
                 msg_id: 6
 
-                onCheckedChanged:{
-                    if (checked==true){ //double check.... not really needed
+                onCheckedChanged: {
+                    if (checked == true) {
 
-                        OpenHD.set_Requested_Flight_Mode(msg_id);
+                        //double check.... not really needed
+                        OpenHD.set_Requested_Flight_Mode(msg_id)
                         //console.log("selected");
                     }
                 }

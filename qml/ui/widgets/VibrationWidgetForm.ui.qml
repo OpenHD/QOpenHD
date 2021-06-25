@@ -24,13 +24,36 @@ BaseWidget {
 
     hasWidgetDetail: true
 
-    widgetDetailComponent: ScrollView{
+    widgetDetailComponent: ScrollView {
 
         contentHeight: vibrationSettingsColumn.height
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
         clip: true
         Column {
             id: vibrationSettingsColumn
+            Item {
+                width: parent.width
+                height: 42
+                Text {
+                    id: vibrationSettingsTitle
+                    text: qsTr("VIBRATION")
+                    color: "white"
+                    height: parent.height - 10
+                    width: parent.width
+                    font.bold: true
+                    horizontalAlignment: Text.AlignHCenter
+                    font.pixelSize: detailPanelFontPixels
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Rectangle {
+                    id: vibrationSettingsTitleUL
+                    y: 34
+                    width: parent.width
+                    height: 3
+                    color: "white"
+                    radius: 5
+                }
+            }
             Item {
                 width: parent.width
                 height: 32
@@ -108,17 +131,20 @@ BaseWidget {
                     anchors.right: parent.right
                     checked: {
                         // @disable-check M222
-                        var _hCenter = settings.value(hCenterIdentifier, defaultHCenter)
+                        var _hCenter = settings.value(hCenterIdentifier,
+                                                      defaultHCenter)
                         // @disable-check M223
-                        if (_hCenter === "true" || _hCenter === 1 || _hCenter === true) {
-                            checked = true;
+                        if (_hCenter === "true" || _hCenter === 1
+                                || _hCenter === true) {
+                            checked = true
                             // @disable-check M223
                         } else {
-                            checked = false;
+                            checked = false
                         }
                     }
 
-                    onCheckedChanged: settings.setValue(hCenterIdentifier, checked)
+                    onCheckedChanged: settings.setValue(hCenterIdentifier,
+                                                        checked)
                 }
             }
             Item {
@@ -140,17 +166,20 @@ BaseWidget {
                     anchors.right: parent.right
                     checked: {
                         // @disable-check M222
-                        var _vCenter = settings.value(vCenterIdentifier, defaultVCenter)
+                        var _vCenter = settings.value(vCenterIdentifier,
+                                                      defaultVCenter)
                         // @disable-check M223
-                        if (_vCenter === "true" || _vCenter === 1 || _vCenter === true) {
-                            checked = true;
+                        if (_vCenter === "true" || _vCenter === 1
+                                || _vCenter === true) {
+                            checked = true
                             // @disable-check M223
                         } else {
-                            checked = false;
+                            checked = false
                         }
                     }
 
-                    onCheckedChanged: settings.setValue(vCenterIdentifier, checked)
+                    onCheckedChanged: settings.setValue(vCenterIdentifier,
+                                                        checked)
                 }
             }
         }
@@ -163,7 +192,12 @@ BaseWidget {
         Item {
             anchors.fill: parent
             anchors.centerIn: parent
-            transform: Scale { origin.x: 30; origin.y: 30; xScale: settings.vibration_size ; yScale: settings.vibration_size}
+            transform: Scale {
+                origin.x: 30
+                origin.y: 30
+                xScale: settings.vibration_size
+                yScale: settings.vibration_size
+            }
 
             Item {
                 id: xAxis
@@ -183,12 +217,12 @@ BaseWidget {
                         strokeStyle: ShapePath.SolidLine
                         fillColor: settings.color_shape
                         startX: 2
-                        startY: (40 + (OpenHD.vibration_x > 0 ? OpenHD.vibration_x
-                                                                * -1 : OpenHD.vibration_x) * .4)
+                        startY: (40 + (OpenHD.vibration_x
+                                       > 0 ? OpenHD.vibration_x * -1 : OpenHD.vibration_x) * .4)
                         PathLine {
                             x: 10
-                            y: (40 + (OpenHD.vibration_x > 0 ? OpenHD.vibration_x
-                                                               * -1 : OpenHD.vibration_x) * .4)
+                            y: (40 + (OpenHD.vibration_x
+                                      > 0 ? OpenHD.vibration_x * -1 : OpenHD.vibration_x) * .4)
                         }
                         PathLine {
                             x: 10
@@ -200,8 +234,8 @@ BaseWidget {
                         }
                         PathLine {
                             x: 2
-                            y: (40 + (OpenHD.vibration_x > 0 ? OpenHD.vibration_x
-                                                               * -1 : OpenHD.vibration_x) * .4)
+                            y: (40 + (OpenHD.vibration_x
+                                      > 0 ? OpenHD.vibration_x * -1 : OpenHD.vibration_x) * .4)
                         }
                     }
 
@@ -267,12 +301,12 @@ BaseWidget {
                         strokeStyle: ShapePath.SolidLine
                         fillColor: settings.color_shape
                         startX: 2
-                        startY: (40 + (OpenHD.vibration_y > 0 ? OpenHD.vibration_y
-                                                                * -1 : OpenHD.vibration_y) * .4)
+                        startY: (40 + (OpenHD.vibration_y
+                                       > 0 ? OpenHD.vibration_y * -1 : OpenHD.vibration_y) * .4)
                         PathLine {
                             x: 10
-                            y: (40 + (OpenHD.vibration_y > 0 ? OpenHD.vibration_y
-                                                               * -1 : OpenHD.vibration_y) * .4)
+                            y: (40 + (OpenHD.vibration_y
+                                      > 0 ? OpenHD.vibration_y * -1 : OpenHD.vibration_y) * .4)
                         }
                         PathLine {
                             x: 10
@@ -284,8 +318,8 @@ BaseWidget {
                         }
                         PathLine {
                             x: 2
-                            y: (40 + (OpenHD.vibration_y > 0 ? OpenHD.vibration_y
-                                                               * -1 : OpenHD.vibration_y) * .4)
+                            y: (40 + (OpenHD.vibration_y
+                                      > 0 ? OpenHD.vibration_y * -1 : OpenHD.vibration_y) * .4)
                         }
                     }
                     ShapePath {
@@ -350,12 +384,12 @@ BaseWidget {
                         strokeStyle: ShapePath.SolidLine
                         fillColor: settings.color_shape
                         startX: 2
-                        startY: (40 + (OpenHD.vibration_z > 0 ? OpenHD.vibration_z
-                                                                * -1 : OpenHD.vibration_z) * .4)
+                        startY: (40 + (OpenHD.vibration_z
+                                       > 0 ? OpenHD.vibration_z * -1 : OpenHD.vibration_z) * .4)
                         PathLine {
                             x: 10
-                            y: (40 + (OpenHD.vibration_z > 0 ? OpenHD.vibration_z
-                                                               * -1 : OpenHD.vibration_z) * .4)
+                            y: (40 + (OpenHD.vibration_z
+                                      > 0 ? OpenHD.vibration_z * -1 : OpenHD.vibration_z) * .4)
                         }
                         PathLine {
                             x: 10
@@ -367,8 +401,8 @@ BaseWidget {
                         }
                         PathLine {
                             x: 2
-                            y: (40 + (OpenHD.vibration_z > 0 ? OpenHD.vibration_z
-                                                               * -1 : OpenHD.vibration_z) * .4)
+                            y: (40 + (OpenHD.vibration_z
+                                      > 0 ? OpenHD.vibration_z * -1 : OpenHD.vibration_z) * .4)
                         }
                     }
                     ShapePath {

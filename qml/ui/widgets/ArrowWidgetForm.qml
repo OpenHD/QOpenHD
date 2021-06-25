@@ -31,6 +31,29 @@ BaseWidget {
             id: arrowSettingsColumn
             Item {
                 width: parent.width
+                height: 42
+                Text {
+                    id: arrowSettingsTitle
+                    text: qsTr("HOME ARROW")
+                    color: "white"
+                    height: parent.height - 10
+                    width: parent.width
+                    font.bold: true
+                    horizontalAlignment: Text.AlignHCenter
+                    font.pixelSize: detailPanelFontPixels
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Rectangle {
+                    id: arrowSettingsTitleUL
+                    y: 34
+                    width: parent.width
+                    height: 3
+                    color: "white"
+                    radius: 5
+                }
+            }
+            Item {
+                width: parent.width
                 height: 32
                 Text {
                     id: opacityTitle

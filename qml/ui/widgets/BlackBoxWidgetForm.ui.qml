@@ -7,7 +7,6 @@ import QtQuick.Shapes 1.0
 import Qt.labs.settings 1.0
 
 //import OpenHD 1.0
-
 BaseWidget {
     id: blackboxWidget
     width: 380
@@ -27,9 +26,10 @@ BaseWidget {
     Connections {
         target: BlackBoxModel
         function onDataChanged() {
-            count= BlackBoxModel.rowCount();
-            blackboxmodel_count_text.text= Number(count).toLocaleString( Qt.locale(), 'f', 0)
-            blackbox_play_Slider.to=count;
+            count = BlackBoxModel.rowCount()
+            blackboxmodel_count_text.text = Number(count).toLocaleString(
+                        Qt.locale(), 'f', 0)
+            blackbox_play_Slider.to = count
         }
     }
 
@@ -37,17 +37,15 @@ BaseWidget {
     property bool telemetry_pause: false
 
     function playPause() {
+
         //console.log("playPause from:" , blackbox_play_Slider.value);
+        OpenHD.pauseBlackBox(true, blackbox_play_Slider.value)
 
-        OpenHD.pauseBlackBox(true, blackbox_play_Slider.value);
-
-        if (play_pause==false){
-            playTimer.start();
+        if (play_pause == false) {
+            playTimer.start()
+        } else {
+            playTimer.stop()
         }
-        else {
-            playTimer.stop();
-        }
-
     }
 
     Timer {
@@ -56,18 +54,41 @@ BaseWidget {
         repeat: true
         running: false
         triggeredOnStart: false
-        onTriggered: blackbox_play_Slider.value= blackbox_play_Slider.value+1;
+        onTriggered: blackbox_play_Slider.value = blackbox_play_Slider.value + 1
     }
 
     hasWidgetDetail: true
 
-    widgetDetailComponent: ScrollView{
+    widgetDetailComponent: ScrollView {
 
         contentHeight: blackboxSettingsColumn.height
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
         clip: true
         Column {
             id: blackboxSettingsColumn
+            Item {
+                width: parent.width
+                height: 42
+                Text {
+                    id: blackboxSettingTitle
+                    text: qsTr("BLACKBOX")
+                    color: "white"
+                    height: parent.height - 10
+                    width: parent.width
+                    font.bold: true
+                    horizontalAlignment: Text.AlignHCenter
+                    font.pixelSize: detailPanelFontPixels
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Rectangle {
+                    id: blackboxSettingsTitleUL
+                    y: 34
+                    width: parent.width
+                    height: 3
+                    color: "white"
+                    radius: 5
+                }
+            }
             Item {
                 width: parent.width
                 height: 32
@@ -145,17 +166,20 @@ BaseWidget {
                     anchors.right: parent.right
                     checked: {
                         // @disable-check M222
-                        var _hCenter = settings.value(hCenterIdentifier, defaultHCenter)
+                        var _hCenter = settings.value(hCenterIdentifier,
+                                                      defaultHCenter)
                         // @disable-check M223
-                        if (_hCenter === "true" || _hCenter === 1 || _hCenter === true) {
-                            checked = true;
+                        if (_hCenter === "true" || _hCenter === 1
+                                || _hCenter === true) {
+                            checked = true
                             // @disable-check M223
                         } else {
-                            checked = false;
+                            checked = false
                         }
                     }
 
-                    onCheckedChanged: settings.setValue(hCenterIdentifier, checked)
+                    onCheckedChanged: settings.setValue(hCenterIdentifier,
+                                                        checked)
                 }
             }
             Item {
@@ -177,17 +201,20 @@ BaseWidget {
                     anchors.right: parent.right
                     checked: {
                         // @disable-check M222
-                        var _vCenter = settings.value(vCenterIdentifier, defaultVCenter)
+                        var _vCenter = settings.value(vCenterIdentifier,
+                                                      defaultVCenter)
                         // @disable-check M223
-                        if (_vCenter === "true" || _vCenter === 1 || _vCenter === true) {
-                            checked = true;
+                        if (_vCenter === "true" || _vCenter === 1
+                                || _vCenter === true) {
+                            checked = true
                             // @disable-check M223
                         } else {
-                            checked = false;
+                            checked = false
                         }
                     }
 
-                    onCheckedChanged: settings.setValue(vCenterIdentifier, checked)
+                    onCheckedChanged: settings.setValue(vCenterIdentifier,
+                                                        checked)
                 }
             }
         }
@@ -198,8 +225,7 @@ BaseWidget {
         anchors.fill: parent
         opacity: settings.blackbox_opacity
 
-        Rectangle
-        {
+        Rectangle {
             id: background
             anchors.fill: parent
             opacity: .1
@@ -224,7 +250,7 @@ BaseWidget {
             anchors.topMargin: 10
 
             Text {
-                id:playText
+                id: playText
                 text: blackbox_play_Slider.value
                 color: "white"
                 height: parent.height
@@ -245,22 +271,24 @@ BaseWidget {
                 anchors.left: parent.left
                 anchors.leftMargin: 45
                 anchors.top: parent.top
-                enabled:{count >= 1;}
+                enabled: {
+                    count >= 1
+                }
 
                 width: parent.width - 135
                 // @disable-check M223
                 onValueChanged: {
                     //console.log("play slider=",blackbox_play_Slider.value);
-                    telemetry_pause=true;
+                    telemetry_pause = true
 
-                    if (play_pause == false){
-                        playPauseBtn.text="\uf04c";
-                    }
-                    else{
-                        playPauseBtn.text="\uf04b";
+                    if (play_pause == false) {
+                        playPauseBtn.text = "\uf04c"
+                    } else {
+                        playPauseBtn.text = "\uf04b"
                     }
 
-                    OpenHD.pauseBlackBox(telemetry_pause, blackbox_play_Slider.value);
+                    OpenHD.pauseBlackBox(telemetry_pause,
+                                         blackbox_play_Slider.value)
                 }
             }
 
@@ -272,20 +300,24 @@ BaseWidget {
                 anchors.rightMargin: 10
                 anchors.top: parent.top
                 font.family: "Font Awesome 5 Free"
-                enabled: {count >= 1;}
+                enabled: {
+                    count >= 1
+                }
 
-                onClicked: {// play_pause true == looks like play, false == looks like pause
-                    if (play_pause==true)
-                    {play_pause = false;}
-                    else {play_pause = true;}
+                onClicked: {
+                    // play_pause true == looks like play, false == looks like pause
+                    if (play_pause == true) {
+                        play_pause = false
+                    } else {
+                        play_pause = true
+                    }
 
                     playPause()
 
-                    if (play_pause == false){
-                        playPauseBtn.text="\uf04c";
-                    }
-                    else{
-                        playPauseBtn.text="\uf04b";
+                    if (play_pause == false) {
+                        playPauseBtn.text = "\uf04c"
+                    } else {
+                        playPauseBtn.text = "\uf04b"
                     }
                 }
 
@@ -331,11 +363,12 @@ BaseWidget {
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.bottom: parent.bottom
             onClicked: {
-                playTimer.stop();
-                play_pause=true;
-                playPauseBtn.text="\uf04c";
-                telemetry_pause=false;
-                OpenHD.pauseBlackBox(telemetry_pause, blackbox_play_Slider.value);
+                playTimer.stop()
+                play_pause = true
+                playPauseBtn.text = "\uf04c"
+                telemetry_pause = false
+                OpenHD.pauseBlackBox(telemetry_pause,
+                                     blackbox_play_Slider.value)
             }
 
             contentItem: Text {

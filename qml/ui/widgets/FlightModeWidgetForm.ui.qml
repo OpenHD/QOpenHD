@@ -23,13 +23,37 @@ BaseWidget {
 
     hasWidgetDetail: true
     hasWidgetAction: true //--TURN TO TRUE TO SEE THE FLIGHT MODE ACTIONS
-    widgetDetailComponent: ScrollView{
+    widgetDetailComponent: ScrollView {
 
         //contentHeight: horizonSettingsColumn.height
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
         clip: true
 
-        ColumnLayout{
+        ColumnLayout {
+            id: flightModeSettings
+            Item {
+                width: 230
+                height: 42
+                Text {
+                    id: flightModeSettingsTitle
+                    text: qsTr("FLIGHT MODE")
+                    color: "white"
+                    height: parent.height - 10
+                    width: parent.width
+                    font.bold: true
+                    horizontalAlignment: Text.AlignHCenter
+                    font.pixelSize: detailPanelFontPixels
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Rectangle {
+                    id: flightModeSettingsTitleUL
+                    y: 34
+                    width: parent.width
+                    height: 3
+                    color: "white"
+                    radius: 5
+                }
+            }
             Item {
                 width: 230
                 height: 32
@@ -108,17 +132,20 @@ BaseWidget {
                     anchors.right: parent.right
                     checked: {
                         // @disable-check M222
-                        var _hCenter = settings.value(hCenterIdentifier, defaultHCenter)
+                        var _hCenter = settings.value(hCenterIdentifier,
+                                                      defaultHCenter)
                         // @disable-check M223
-                        if (_hCenter === "true" || _hCenter === 1 || _hCenter === true) {
-                            checked = true;
+                        if (_hCenter === "true" || _hCenter === 1
+                                || _hCenter === true) {
+                            checked = true
                             // @disable-check M223
                         } else {
-                            checked = false;
+                            checked = false
                         }
                     }
 
-                    onCheckedChanged: settings.setValue(hCenterIdentifier, checked)
+                    onCheckedChanged: settings.setValue(hCenterIdentifier,
+                                                        checked)
                 }
             }
             Item {
@@ -140,17 +167,20 @@ BaseWidget {
                     anchors.right: parent.right
                     checked: {
                         // @disable-check M222
-                        var _vCenter = settings.value(vCenterIdentifier, defaultVCenter)
+                        var _vCenter = settings.value(vCenterIdentifier,
+                                                      defaultVCenter)
                         // @disable-check M223
-                        if (_vCenter === "true" || _vCenter === 1 || _vCenter === true) {
-                            checked = true;
+                        if (_vCenter === "true" || _vCenter === 1
+                                || _vCenter === true) {
+                            checked = true
                             // @disable-check M223
                         } else {
-                            checked = false;
+                            checked = false
                         }
                     }
 
-                    onCheckedChanged: settings.setValue(vCenterIdentifier, checked)
+                    onCheckedChanged: settings.setValue(vCenterIdentifier,
+                                                        checked)
                 }
             }
             Item {
@@ -172,17 +202,20 @@ BaseWidget {
                     anchors.right: parent.right
                     checked: {
                         // @disable-check M222
-                        var _hCenter = settings.value(hCenterIdentifier, defaultHCenter)
+                        var _hCenter = settings.value(hCenterIdentifier,
+                                                      defaultHCenter)
                         // @disable-check M223
-                        if (_hCenter === "true" || _hCenter === 1 || _hCenter === true) {
-                            checked = true;
+                        if (_hCenter === "true" || _hCenter === 1
+                                || _hCenter === true) {
+                            checked = true
                             // @disable-check M223
                         } else {
-                            checked = false;
+                            checked = false
                         }
                     }
 
-                    onCheckedChanged: settings.setValue(hCenterIdentifier, checked)
+                    onCheckedChanged: settings.setValue(hCenterIdentifier,
+                                                        checked)
                 }
             }
             Item {
@@ -204,29 +237,31 @@ BaseWidget {
                     anchors.right: parent.right
                     checked: {
                         // @disable-check M222
-                        var _vCenter = settings.value(vCenterIdentifier, defaultVCenter)
+                        var _vCenter = settings.value(vCenterIdentifier,
+                                                      defaultVCenter)
                         // @disable-check M223
-                        if (_vCenter === "true" || _vCenter === 1 || _vCenter === true) {
-                            checked = true;
+                        if (_vCenter === "true" || _vCenter === 1
+                                || _vCenter === true) {
+                            checked = true
                             // @disable-check M223
                         } else {
-                            checked = false;
+                            checked = false
                         }
                     }
 
-                    onCheckedChanged: settings.setValue(vCenterIdentifier, checked)
+                    onCheckedChanged: settings.setValue(vCenterIdentifier,
+                                                        checked)
                 }
             }
         }
     }
 
-
     //---------------------------ACTION WIDGET COMPONENT BELOW-----------------------------
-
-    widgetActionComponent: ScrollView{
+    widgetActionComponent: ScrollView {
 
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
         clip: true
+
 
         /*
         PLANE_MODE_MANUAL=0,
@@ -263,14 +298,13 @@ BaseWidget {
        COPTER_MODE_GUIDED_NOGPS=20
        COPTER_MODE_SMART_RTL=21
 */
-
-        Column{
-            width:200
+        Column {
+            width: 200
             spacing: 10
 
             Text {
                 id: name
-                text: qsTr("Vehicle type: "+OpenHD.mav_type)
+                text: qsTr("Vehicle type: " + OpenHD.mav_type)
                 color: "white"
                 font.bold: true
                 font.pixelSize: detailPanelFontPixels
@@ -279,216 +313,232 @@ BaseWidget {
 
             ConfirmSlider {
 
-                visible: OpenHD.mav_type=="ARDUPLANE"
+                visible: OpenHD.mav_type == "ARDUPLANE"
 
                 text_off: qsTr("RTL")
                 msg_id: 11
 
-                onCheckedChanged:{
-                    if (checked==true){ //double check.... not really needed
+                onCheckedChanged: {
+                    if (checked == true) {
 
-                        OpenHD.set_Requested_Flight_Mode(msg_id);
+                        //double check.... not really needed
+                        OpenHD.set_Requested_Flight_Mode(msg_id)
                         //console.log("selected");
                     }
                 }
             }
             ConfirmSlider {
 
-                visible: OpenHD.mav_type=="ARDUPLANE"
+                visible: OpenHD.mav_type == "ARDUPLANE"
 
                 text_off: qsTr("MANUAL")
                 msg_id: 0
 
-                onCheckedChanged:{
-                    if (checked==true){ //double check.... not really needed
+                onCheckedChanged: {
+                    if (checked == true) {
 
-                        OpenHD.set_Requested_Flight_Mode(msg_id);
+                        //double check.... not really needed
+                        OpenHD.set_Requested_Flight_Mode(msg_id)
                         //console.log("selected");
                     }
                 }
             }
             ConfirmSlider {
 
-                visible: OpenHD.mav_type=="ARDUPLANE"
+                visible: OpenHD.mav_type == "ARDUPLANE"
 
                 text_off: qsTr("STABILIZE")
                 msg_id: 2
 
-                onCheckedChanged:{
-                    if (checked==true){ //double check.... not really needed
+                onCheckedChanged: {
+                    if (checked == true) {
 
-                        OpenHD.set_Requested_Flight_Mode(msg_id);
+                        //double check.... not really needed
+                        OpenHD.set_Requested_Flight_Mode(msg_id)
                         //console.log("selected");
                     }
                 }
             }
             ConfirmSlider {
 
-                visible: OpenHD.mav_type=="ARDUPLANE"
+                visible: OpenHD.mav_type == "ARDUPLANE"
 
                 text_off: qsTr("LOITER")
                 msg_id: 12
 
-                onCheckedChanged:{
-                    if (checked==true){ //double check.... not really needed
+                onCheckedChanged: {
+                    if (checked == true) {
 
-                        OpenHD.set_Requested_Flight_Mode(msg_id);
+                        //double check.... not really needed
+                        OpenHD.set_Requested_Flight_Mode(msg_id)
                         //console.log("selected");
                     }
                 }
             }
             ConfirmSlider {
 
-                visible: OpenHD.mav_type=="ARDUPLANE"
+                visible: OpenHD.mav_type == "ARDUPLANE"
 
                 text_off: qsTr("FBWA")
                 msg_id: 5
 
-                onCheckedChanged:{
-                    if (checked==true){ //double check.... not really needed
+                onCheckedChanged: {
+                    if (checked == true) {
 
-                        OpenHD.set_Requested_Flight_Mode(msg_id);
+                        //double check.... not really needed
+                        OpenHD.set_Requested_Flight_Mode(msg_id)
                         //console.log("selected");
                     }
                 }
             }
             ConfirmSlider {
 
-                visible: OpenHD.mav_type=="ARDUPLANE"
+                visible: OpenHD.mav_type == "ARDUPLANE"
 
                 text_off: qsTr("AUTO")
                 msg_id: 10
 
-                onCheckedChanged:{
-                    if (checked==true){ //double check.... not really needed
+                onCheckedChanged: {
+                    if (checked == true) {
 
-                        OpenHD.set_Requested_Flight_Mode(msg_id);
+                        //double check.... not really needed
+                        OpenHD.set_Requested_Flight_Mode(msg_id)
                         //console.log("selected");
                     }
                 }
             }
             ConfirmSlider {
 
-                visible: OpenHD.mav_type=="ARDUPLANE"
+                visible: OpenHD.mav_type == "ARDUPLANE"
 
                 text_off: qsTr("AUTOTUNE")
                 msg_id: 8
 
-                onCheckedChanged:{
-                    if (checked==true){ //double check.... not really needed
+                onCheckedChanged: {
+                    if (checked == true) {
 
-                        OpenHD.set_Requested_Flight_Mode(msg_id);
+                        //double check.... not really needed
+                        OpenHD.set_Requested_Flight_Mode(msg_id)
                         //console.log("selected");
                     }
                 }
             }
 
- //-----------------------Split from plane to copter
+            //-----------------------Split from plane to copter
             ConfirmSlider {
 
-                visible: OpenHD.mav_type=="ARDUCOPTER"
+                visible: OpenHD.mav_type == "ARDUCOPTER"
 
                 text_off: qsTr("RTL")
                 msg_id: 6
 
-                onCheckedChanged:{
-                    if (checked==true){ //double check.... not really needed
+                onCheckedChanged: {
+                    if (checked == true) {
 
-                        OpenHD.set_Requested_Flight_Mode(msg_id);
+                        //double check.... not really needed
+                        OpenHD.set_Requested_Flight_Mode(msg_id)
                         //console.log("selected");
                     }
                 }
             }
             ConfirmSlider {
 
-                visible: OpenHD.mav_type=="ARDUCOPTER"
+                visible: OpenHD.mav_type == "ARDUCOPTER"
 
                 text_off: qsTr("STABILIZE")
                 msg_id: 0
 
-                onCheckedChanged:{
-                    if (checked==true){ //double check.... not really needed
+                onCheckedChanged: {
+                    if (checked == true) {
 
-                        OpenHD.set_Requested_Flight_Mode(msg_id);
+                        //double check.... not really needed
+                        OpenHD.set_Requested_Flight_Mode(msg_id)
                         //console.log("selected");
                     }
                 }
             }
             ConfirmSlider {
 
-                visible: OpenHD.mav_type=="ARDUCOPTER"
+                visible: OpenHD.mav_type == "ARDUCOPTER"
 
                 text_off: qsTr("ALT_HOLD")
                 msg_id: 2
 
-                onCheckedChanged:{
-                    if (checked==true){ //double check.... not really needed
+                onCheckedChanged: {
+                    if (checked == true) {
 
-                        OpenHD.set_Requested_Flight_Mode(msg_id);
+                        //double check.... not really needed
+                        OpenHD.set_Requested_Flight_Mode(msg_id)
                         //console.log("selected");
                     }
                 }
             }
             ConfirmSlider {
 
-                visible: OpenHD.mav_type=="ARDUCOPTER"
+                visible: OpenHD.mav_type == "ARDUCOPTER"
 
                 text_off: qsTr("LOITER")
                 msg_id: 5
 
-                onCheckedChanged:{
-                    if (checked==true){ //double check.... not really needed
+                onCheckedChanged: {
+                    if (checked == true) {
 
-                        OpenHD.set_Requested_Flight_Mode(msg_id);
+                        //double check.... not really needed
+                        OpenHD.set_Requested_Flight_Mode(msg_id)
                         //console.log("selected");
                     }
                 }
             }
             ConfirmSlider {
 
-                visible: OpenHD.mav_type=="ARDUCOPTER"
+                visible: OpenHD.mav_type == "ARDUCOPTER"
 
                 text_off: qsTr("POSHOLD")
                 msg_id: 16
 
-                onCheckedChanged:{
-                    if (checked==true){ //double check.... not really needed
+                onCheckedChanged: {
+                    if (checked == true) {
 
-                        OpenHD.set_Requested_Flight_Mode(msg_id);
+                        //double check.... not really needed
+                        OpenHD.set_Requested_Flight_Mode(msg_id)
                         //console.log("selected");
                     }
                 }
             }
             ConfirmSlider {
 
-                visible: OpenHD.mav_type=="ARDUCOPTER"
+                visible: OpenHD.mav_type == "ARDUCOPTER"
 
                 text_off: qsTr("AUTO")
                 msg_id: 3
 
-                onCheckedChanged:{
-                    if (checked==true){ //double check.... not really needed
+                onCheckedChanged: {
+                    if (checked == true) {
 
-                        OpenHD.set_Requested_Flight_Mode(msg_id);
+                        //double check.... not really needed
+                        OpenHD.set_Requested_Flight_Mode(msg_id)
                         //console.log("selected");
                     }
                 }
             }
             ConfirmSlider {
 
-                visible: OpenHD.mav_type=="ARDUCOPTER"
+                visible: OpenHD.mav_type == "ARDUCOPTER"
 
                 text_off: qsTr("AUTOTUNE")
                 msg_id: 15
 
-                onCheckedChanged:{
-                    if (checked==true){ //double check.... not really needed
+                onCheckedChanged: {
+                    if (checked == true) {
 
-                        OpenHD.set_Requested_Flight_Mode(msg_id);
+                        //double check.... not really needed
+                        OpenHD.set_Requested_Flight_Mode(msg_id)
                         //console.log("selected");
                     }
                 }
             }
+
+
             /*
 
             Column{//needs this column or buttons dont select
@@ -550,8 +600,6 @@ BaseWidget {
         anchors.fill: parent
         scale: settings.flight_mode_size
 
-
-
         Text {
             id: flight_mode_icon
             width: 24
@@ -570,14 +618,12 @@ BaseWidget {
             styleColor: settings.color_glow
         }
 
-
-
         Text {
             id: flight_mode_text
             height: 48
             color: settings.color_text
             opacity: settings.flight_mode_opacity
-            text: OpenHD.armed ? "["+OpenHD.flight_mode+"]" : OpenHD.flight_mode
+            text: OpenHD.armed ? "[" + OpenHD.flight_mode + "]" : OpenHD.flight_mode
             anchors.verticalCenter: parent.verticalCenter
             anchors.horizontalCenter: parent.horizontalCenter
             verticalAlignment: Text.AlignVCenter

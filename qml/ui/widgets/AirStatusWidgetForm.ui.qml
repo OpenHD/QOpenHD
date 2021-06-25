@@ -23,7 +23,7 @@ BaseWidget {
 
     hasWidgetDetail: true
 
-    widgetDetailComponent: ScrollView{
+    widgetDetailComponent: ScrollView {
 
         contentHeight: airstatusSettingsColumn.height
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
@@ -31,6 +31,29 @@ BaseWidget {
 
         Column {
             id: airstatusSettingsColumn
+            Item {
+                width: parent.width
+                height: 42
+                Text {
+                    id: airstatusTitle
+                    text: qsTr("AIR STATUS")
+                    color: "white"
+                    height: parent.height - 10
+                    width: parent.width
+                    font.bold: true
+                    horizontalAlignment: Text.AlignHCenter
+                    font.pixelSize: detailPanelFontPixels
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Rectangle {
+                    id: airstatusTitleUL
+                    y: 34
+                    width: parent.width
+                    height: 3
+                    color: "white"
+                    radius: 5
+                }
+            }
             Item {
                 width: parent.width
                 height: 32
@@ -109,17 +132,20 @@ BaseWidget {
                     anchors.right: parent.right
                     checked: {
                         // @disable-check M222
-                        var _hCenter = settings.value(hCenterIdentifier, defaultHCenter)
+                        var _hCenter = settings.value(hCenterIdentifier,
+                                                      defaultHCenter)
                         // @disable-check M223
-                        if (_hCenter === "true" || _hCenter === 1 || _hCenter === true) {
-                            checked = true;
+                        if (_hCenter === "true" || _hCenter === 1
+                                || _hCenter === true) {
+                            checked = true
                             // @disable-check M223
                         } else {
-                            checked = false;
+                            checked = false
                         }
                     }
 
-                    onCheckedChanged: settings.setValue(hCenterIdentifier, checked)
+                    onCheckedChanged: settings.setValue(hCenterIdentifier,
+                                                        checked)
                 }
             }
             Item {
@@ -141,17 +167,20 @@ BaseWidget {
                     anchors.right: parent.right
                     checked: {
                         // @disable-check M222
-                        var _vCenter = settings.value(vCenterIdentifier, defaultVCenter)
+                        var _vCenter = settings.value(vCenterIdentifier,
+                                                      defaultVCenter)
                         // @disable-check M223
-                        if (_vCenter === "true" || _vCenter === 1 || _vCenter === true) {
-                            checked = true;
+                        if (_vCenter === "true" || _vCenter === 1
+                                || _vCenter === true) {
+                            checked = true
                             // @disable-check M223
                         } else {
-                            checked = false;
+                            checked = false
                         }
                     }
 
-                    onCheckedChanged: settings.setValue(vCenterIdentifier, checked)
+                    onCheckedChanged: settings.setValue(vCenterIdentifier,
+                                                        checked)
                 }
             }
             Item {
@@ -162,7 +191,7 @@ BaseWidget {
                     color: "white"
                     height: parent.height
                     font.bold: true
-                    font.pixelSize: detailPanelFontPixels;
+                    font.pixelSize: detailPanelFontPixels
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
@@ -209,7 +238,8 @@ BaseWidget {
                     width: parent.width - 96
 
                     onValueChanged: {
-                        settings.air_status_cpu_warn = Math.round(air_status_cpu_warn_Slider.value * 10) / 10.0;
+                        settings.air_status_cpu_warn = Math.round(
+                                    air_status_cpu_warn_Slider.value * 10) / 10.0
                     }
                 }
             }
@@ -247,7 +277,8 @@ BaseWidget {
                     width: parent.width - 96
 
                     onValueChanged: {
-                        settings.air_status_cpu_caution = Math.round(air_status_cpu_caution_Slider.value * 10) / 10.0;
+                        settings.air_status_cpu_caution = Math.round(
+                                    air_status_cpu_caution_Slider.value * 10) / 10.0
                     }
                 }
             }
@@ -285,7 +316,8 @@ BaseWidget {
                     width: parent.width - 96
 
                     onValueChanged: {
-                        settings.air_status_temp_warn = Math.round(air_status_temp_warn_Slider.value * 10) / 10.0;
+                        settings.air_status_temp_warn = Math.round(
+                                    air_status_temp_warn_Slider.value * 10) / 10.0
                     }
                 }
             }
@@ -323,7 +355,8 @@ BaseWidget {
                     width: parent.width - 96
 
                     onValueChanged: {
-                        settings.air_status_temp_caution = Math.round(air_status_temp_caution_Slider.value * 10) / 10.0;
+                        settings.air_status_temp_caution = Math.round(
+                                    air_status_temp_caution_Slider.value * 10) / 10.0
                     }
                 }
             }
@@ -342,12 +375,14 @@ BaseWidget {
             width: 24
             height: 24
             color: {
-                if (OpenHD.cpuload_air >= settings.air_status_cpu_warn ||  OpenHD.temp_air >= settings.air_status_temp_warn){
-                    return settings.color_warn;
-                } else if (OpenHD.cpuload_air > settings.air_status_cpu_caution ||  OpenHD.temp_air > settings.air_status_temp_caution){
-                    return settings.color_caution;
+                if (OpenHD.cpuload_air >= settings.air_status_cpu_warn
+                        || OpenHD.temp_air >= settings.air_status_temp_warn) {
+                    return settings.color_warn
+                } else if (OpenHD.cpuload_air > settings.air_status_cpu_caution
+                           || OpenHD.temp_air > settings.air_status_temp_caution) {
+                    return settings.color_caution
                 } else {
-                    return settings.color_shape;
+                    return settings.color_shape
                 }
             }
             opacity: settings.air_status_opacity
@@ -364,7 +399,6 @@ BaseWidget {
             styleColor: settings.color_glow
         }
 
-
         Text {
             id: cpuload_air
             x: 0
@@ -372,22 +406,26 @@ BaseWidget {
             width: 36
             height: 24
             color: {
-                if (OpenHD.cpuload_air >= settings.air_status_cpu_warn ||  OpenHD.temp_air >= settings.air_status_temp_warn){
-                    widgetInner.visible=true;
-                    return settings.color_warn;
-                } else if (OpenHD.cpuload_air > settings.air_status_cpu_caution ||  OpenHD.temp_air > settings.air_status_temp_caution){
-                    widgetInner.visible=true;
-                    return settings.color_caution;
-                } else if (settings.air_status_declutter == true && OpenHD.armed == true){
-                    widgetInner.visible=false;
-                    return settings.color_text;
+                if (OpenHD.cpuload_air >= settings.air_status_cpu_warn
+                        || OpenHD.temp_air >= settings.air_status_temp_warn) {
+                    widgetInner.visible = true
+                    return settings.color_warn
+                } else if (OpenHD.cpuload_air > settings.air_status_cpu_caution
+                           || OpenHD.temp_air > settings.air_status_temp_caution) {
+                    widgetInner.visible = true
+                    return settings.color_caution
+                } else if (settings.air_status_declutter == true
+                           && OpenHD.armed == true) {
+                    widgetInner.visible = false
+                    return settings.color_text
                 } else {
-                    widgetInner.visible=true;
-                    return settings.color_text;
+                    widgetInner.visible = true
+                    return settings.color_text
                 }
             }
             opacity: settings.air_status_opacity
-            text: Number(OpenHD.cpuload_air).toLocaleString(Qt.locale(), 'f', 0) + "%";
+            text: Number(OpenHD.cpuload_air).toLocaleString(Qt.locale(),
+                                                            'f', 0) + "%"
             anchors.right: temp_air.left
             anchors.rightMargin: 2
             anchors.verticalCenter: parent.verticalCenter
@@ -406,22 +444,26 @@ BaseWidget {
             width: 36
             height: 24
             color: {
-                if (OpenHD.cpuload_air >= settings.air_status_cpu_warn ||  OpenHD.temp_air >= settings.air_status_temp_warn){
-                    widgetInner.visible=true;
-                    return settings.color_warn;
-                } else if (OpenHD.cpuload_air > settings.air_status_cpu_caution ||  OpenHD.temp_air > settings.air_status_temp_caution){
-                    widgetInner.visible=true;
-                    return settings.color_caution;
-                } else if (settings.air_status_declutter == true && OpenHD.armed == true){
-                    widgetInner.visible=false;
-                    return settings.color_text;
+                if (OpenHD.cpuload_air >= settings.air_status_cpu_warn
+                        || OpenHD.temp_air >= settings.air_status_temp_warn) {
+                    widgetInner.visible = true
+                    return settings.color_warn
+                } else if (OpenHD.cpuload_air > settings.air_status_cpu_caution
+                           || OpenHD.temp_air > settings.air_status_temp_caution) {
+                    widgetInner.visible = true
+                    return settings.color_caution
+                } else if (settings.air_status_declutter == true
+                           && OpenHD.armed == true) {
+                    widgetInner.visible = false
+                    return settings.color_text
                 } else {
-                    widgetInner.visible=true;
-                    return settings.color_text;
+                    widgetInner.visible = true
+                    return settings.color_text
                 }
             }
             opacity: settings.air_status_opacity
-            text: Number(OpenHD.temp_air).toLocaleString(Qt.locale(), 'f', 0) + "°";
+            text: Number(OpenHD.temp_air).toLocaleString(Qt.locale(),
+                                                         'f', 0) + "°"
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: parent.right
             anchors.rightMargin: 0
