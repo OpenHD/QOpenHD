@@ -66,6 +66,7 @@ SOURCES += \
     src/gpiomicroservice.cpp \
     src/headingladder.cpp \
     src/horizonladder.cpp \
+    src/linkmicroservice.cpp \
     src/localmessage.cpp \
     src/ltmtelemetry.cpp \
     src/main.cpp \
@@ -102,6 +103,7 @@ HEADERS += \
     inc/flightpathvector.h \
     inc/headingladder.h \
     inc/horizonladder.h \
+    inc/linkmicroservice.h \
     inc/managesettings.h \
     inc/mavlinkbase.h \
     inc/missionwaypoint.h \
@@ -290,7 +292,7 @@ LinuxBuild {
     CONFIG += EnablePiP
     CONFIG += EnableGStreamer
     #CONFIG += EnableLink
-    CONFIG += EnableCharts
+    #CONFIG += EnableCharts
     CONFIG += EnableADSB
     #CONFIG += EnableBlackbox
 
@@ -372,7 +374,7 @@ AndroidBuild {
     CONFIG += EnablePiP
     #CONFIG += EnableLink
     CONFIG += EnableVideoRender
-    CONFIG += EnableCharts
+    #CONFIG += EnableCharts
     CONFIG += EnableADSB
     #CONFIG += EnableBlackbox
 

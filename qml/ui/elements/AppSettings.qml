@@ -24,7 +24,7 @@ Settings {
     property bool enable_software_video_decoder: false
     property bool enable_rtp: true
     property bool enable_lte_video: false
-    property bool hide_watermark: false
+    property bool hide_watermark: true
 
     property bool enable_speech: true
     property bool enable_imperial: false

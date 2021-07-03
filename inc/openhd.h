@@ -54,6 +54,16 @@ public:
         emit save_air_gpio(m_air_gpio);
     }
 
+    Q_INVOKABLE void setAirFREQ(int air_freq) {
+        qDebug() << "OPENHD setAirFREQ =" <<  air_freq;
+        m_air_freq = air_freq;
+        emit save_air_freq(m_air_freq);
+    }
+    Q_INVOKABLE void setGndFREQ(int gnd_freq) {
+        m_gnd_freq = gnd_freq;
+        emit save_gnd_freq(m_gnd_freq);
+    }
+
     /* public so that a QTimer can call it from main(), temporary fix due to some quirks with
        the way QTimer and QML singletons/context properties work */
     void updateFlightTimer();
@@ -382,6 +392,18 @@ public:
     Q_PROPERTY(bool air_gpio_busy MEMBER m_air_gpio_busy WRITE set_air_gpio_busy NOTIFY air_gpio_busy_changed)
     void set_air_gpio_busy(bool air_gpio_busy);
 
+    Q_PROPERTY(int air_freq MEMBER m_air_freq WRITE set_air_freq NOTIFY air_freq_changed)
+    void set_air_freq(int air_freq);
+
+    Q_PROPERTY(int gnd_freq MEMBER m_gnd_freq WRITE set_gnd_freq NOTIFY gnd_freq_changed)
+    void set_gnd_freq(int gnd_freq);
+
+    Q_PROPERTY(bool air_freq_busy MEMBER m_air_freq_busy WRITE set_air_freq_busy NOTIFY air_freq_busy_changed)
+    void set_air_freq_busy(bool air_freq_busy);
+
+    Q_PROPERTY(bool gnd_freq_busy MEMBER m_gnd_freq_busy WRITE set_gnd_freq_busy NOTIFY gnd_freq_busy_changed)
+    void set_gnd_freq_busy(bool gnd_freq_busy);
+
     Q_PROPERTY(double ground_vin MEMBER m_ground_vin WRITE set_ground_vin NOTIFY ground_vin_changed)
     void set_ground_vin(double ground_vin);
 
@@ -449,6 +471,12 @@ signals:
 
     void ground_gpio_busy_changed(bool ground_gpio_busy);
     void air_gpio_busy_changed(bool air_gpio_busy);
+
+    void save_air_freq(int air_freq);
+    void save_gnd_freq(int gnd_freq);
+
+    void air_freq_busy_changed(bool air_freq_busy);
+    void gnd_freq_busy_changed(bool gnd_freq_busy);
 
     void wifiAdapter0Changed(unsigned int received_packet_cnt, int current_signal_dbm, int signal_good);
     void wifiAdapter1Changed(unsigned int received_packet_cnt, int current_signal_dbm, int signal_good);
@@ -571,6 +599,9 @@ signals:
 
     void ground_gpio_changed(QList<int> ground_gpio);
     void air_gpio_changed(QList<int> air_gpio);
+
+    void air_freq_changed(int air_freq);
+    void gnd_freq_changed(int gnd_freq);
 
     void air_reboot();
     void air_shutdown();
@@ -759,6 +790,12 @@ public:
 
     bool m_ground_gpio_busy = false;
     bool m_air_gpio_busy = false;
+
+    int m_air_freq;
+    int m_gnd_freq;
+
+    bool m_air_freq_busy = false;
+    bool m_gnd_freq_busy = false;
 
     QTimer* timer = nullptr;
 
