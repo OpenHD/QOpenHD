@@ -6,11 +6,11 @@ import QtQuick.Controls 2.12
 BaseDelegate {
 
     Slider {
-        id: choiceBox
+        id: valueElement
         width: 210
         height: 48
-        from: 0
-        to: 100
+        from: model.from
+        to: model.to
         stepSize: 1
         value: model.value
         anchors.right: parent.right
@@ -23,6 +23,9 @@ BaseDelegate {
             visible: valueElement.pressed
             // @disable-check M222
             text: "%1%2".arg(valueElement.value).arg(model.unit)
+        }
+        onValueChanged: {
+            model.value = value
         }
         enabled: !model.disabled
     }

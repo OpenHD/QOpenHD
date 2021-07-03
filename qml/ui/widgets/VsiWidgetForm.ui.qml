@@ -10,9 +10,7 @@ import Qt.labs.settings 1.0
 
 import OpenHD 1.0
 
-
-
-BaseWidget {   
+BaseWidget {
     id: vsiWidget
     width: 50
     height: 50
@@ -27,13 +25,36 @@ BaseWidget {
 
     hasWidgetDetail: true
 
-    widgetDetailComponent: ScrollView{
+    widgetDetailComponent: ScrollView {
 
         contentHeight: vsiSettingsColumn.height
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
         clip: true
         Column {
             id: vsiSettingsColumn
+            Item {
+                width: parent.width
+                height: 42
+                Text {
+                    id: vsiSettingsTitle
+                    text: qsTr("VERTICAL SPEED")
+                    color: "white"
+                    height: parent.height - 10
+                    width: parent.width
+                    font.bold: true
+                    horizontalAlignment: Text.AlignHCenter
+                    font.pixelSize: detailPanelFontPixels
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Rectangle {
+                    id: vsiSettingsTitleUL
+                    y: 34
+                    width: parent.width
+                    height: 3
+                    color: "white"
+                    radius: 5
+                }
+            }
             Item {
                 width: parent.width
                 height: 32
@@ -111,17 +132,20 @@ BaseWidget {
                     anchors.right: parent.right
                     checked: {
                         // @disable-check M222
-                        var _hCenter = settings.value(hCenterIdentifier, defaultHCenter)
+                        var _hCenter = settings.value(hCenterIdentifier,
+                                                      defaultHCenter)
                         // @disable-check M223
-                        if (_hCenter === "true" || _hCenter === 1 || _hCenter === true) {
-                            checked = true;
+                        if (_hCenter === "true" || _hCenter === 1
+                                || _hCenter === true) {
+                            checked = true
                             // @disable-check M223
                         } else {
-                            checked = false;
+                            checked = false
                         }
                     }
 
-                    onCheckedChanged: settings.setValue(hCenterIdentifier, checked)
+                    onCheckedChanged: settings.setValue(hCenterIdentifier,
+                                                        checked)
                 }
             }
             Item {
@@ -143,17 +167,20 @@ BaseWidget {
                     anchors.right: parent.right
                     checked: {
                         // @disable-check M222
-                        var _vCenter = settings.value(vCenterIdentifier, defaultVCenter)
+                        var _vCenter = settings.value(vCenterIdentifier,
+                                                      defaultVCenter)
                         // @disable-check M223
-                        if (_vCenter === "true" || _vCenter === 1 || _vCenter === true) {
-                            checked = true;
+                        if (_vCenter === "true" || _vCenter === 1
+                                || _vCenter === true) {
+                            checked = true
                             // @disable-check M223
                         } else {
-                            checked = false;
+                            checked = false
                         }
                     }
 
-                    onCheckedChanged: settings.setValue(vCenterIdentifier, checked)
+                    onCheckedChanged: settings.setValue(vCenterIdentifier,
+                                                        checked)
                 }
             }
             Item {
@@ -196,7 +223,12 @@ BaseWidget {
         Item {
             anchors.fill: parent
             anchors.centerIn: parent
-            transform: Scale { origin.x: 25; origin.y: 25; xScale: settings.vsi_size ; yScale: settings.vsi_size}
+            transform: Scale {
+                origin.x: 25
+                origin.y: 25
+                xScale: settings.vsi_size
+                yScale: settings.vsi_size
+            }
 
             Shape {
                 anchors.fill: parent
@@ -246,19 +278,23 @@ BaseWidget {
 
                 rotation: 270
 
-                minimumValue: settings.vsi_max*-1
+                minimumValue: settings.vsi_max * -1
                 maximumValue: settings.vsi_max
 
                 value: OpenHD.vsi
 
                 style: CircularGaugeStyle {
                     labelInset: outerRadius * -.3
-                    minorTickmarkCount : 0
-                    tickmarkStepSize : {settings.vsi_max/5}
+                    minorTickmarkCount: 0
+                    tickmarkStepSize: {
+                        settings.vsi_max / 5
+                    }
                     // @disable-check M223
-                    labelStepSize : {settings.vsi_max/5}
-                    maximumValueAngle : 135
-                    minimumValueAngle : -135
+                    labelStepSize: {
+                        settings.vsi_max / 5
+                    }
+                    maximumValueAngle: 135
+                    minimumValueAngle: -135
 
                     tickmark: Rectangle {
                         visible: styleData.value
@@ -271,7 +307,7 @@ BaseWidget {
                         width: 3
                     }
 
-                    tickmarkLabel:  Text {
+                    tickmarkLabel: Text {
                         rotation: 90
                         //font.pixelSize: Math.max(6, outerRadius * 0.1)
                         font.pixelSize: 9

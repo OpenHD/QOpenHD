@@ -214,6 +214,7 @@ GroundPiSettingsPanelForm {
                     itemInfo = "N/A";
                 }
                 var itemType  = mapping[setting]["itemType"];
+                var rangeType = mapping[setting]["rangeType"];
 
                 /* not all of these are used for each setting, they don't need to be defined in the
                    mapping if they aren't needed as the QML component will simply not attempt to use them
@@ -225,6 +226,11 @@ GroundPiSettingsPanelForm {
                 var upperLimit   = mapping[setting]["upperLimit"];
                 var interval     = mapping[setting]["interval"];
                 var unit         = mapping[setting]["unit"];
+                var from         = mapping[setting]["from"];
+                var to           = mapping[setting]["to"];
+                var checkedValue = mapping[setting]["checkedValue"];
+                var uncheckedValue = mapping[setting]["uncheckedValue"];
+                var checked = (initialValue == checkedValue) ? true : false;
 
                 var finalValue;
 
@@ -235,6 +241,8 @@ GroundPiSettingsPanelForm {
                     finalValue = (initialValue == trueValue) ? true : false;
                 } else if (itemType === "choice") {
                     finalValue = String(initialValue);
+                } else if (itemType === "switch") {
+                    finalValue = Number(initialValue);
                 } else if (itemType === "range") {
                     finalValue = Number(initialValue);
                 } else if (itemType === "number") {
@@ -258,7 +266,13 @@ GroundPiSettingsPanelForm {
                               "value": finalValue,
                               "unit": unit,
                               "disabled": disabled,
-                              "info": itemInfo});
+                              "info": itemInfo,
+                              "from": from,
+                              "to": to,
+                              "rangeType": rangeType,
+                              "checkedValue": checkedValue,
+                              "uncheckedValue": uncheckedValue,
+                              "checked": checked});
             }
 
             /*
@@ -362,6 +376,7 @@ GroundPiSettingsPanelForm {
                     var itemType   = mapping[setting.setting]["itemType"];
                     var trueValue  = mapping[setting.setting]["trueValue"];
                     var falseValue = mapping[setting.setting]["falseValue"];
+                    var valueType = mapping[setting.setting]["valueType"];
 
                     if (itemType === "bool") {
                         if (newValue) {
@@ -369,6 +384,21 @@ GroundPiSettingsPanelForm {
                         } else {
                             finalValue = falseValue;
                         }
+                    }
+                    if (valueType === "hex4") {
+                        var hexValue4 = newValue.toString(16)
+                        if (newValue < 16){
+                            finalValue = "0x0" + hexValue4.toUpperCase();
+                        } else if (newValue < 256){
+                            finalValue = "0x" + hexValue4.toUpperCase();
+                        } else {
+                            finalValue = "0" + hexValue4.toUpperCase();
+                        }
+                    } else if(valueType === "hex3"){
+                        var hexValue3 = newValue.toString(16);
+                        finalValue = "0x" + hexValue3.toUpperCase();
+                    } else {
+                        finalValue = newValue;
                     }
                 }
                 remoteSettings[key] = finalValue;

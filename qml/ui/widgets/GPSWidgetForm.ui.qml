@@ -26,8 +26,7 @@ BaseWidget {
     hasWidgetAction: true
 
     //----------------------------- DETAIL BELOW ----------------------------------
-
-    widgetDetailComponent: ScrollView{
+    widgetDetailComponent: ScrollView {
 
         contentHeight: gpsSettingsColumn.height
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
@@ -53,6 +52,29 @@ BaseWidget {
                 }
             }
 */
+            Item {
+                width: parent.width
+                height: 42
+                Text {
+                    id: gpsSettingsTitle
+                    text: qsTr("GPS")
+                    color: "white"
+                    height: parent.height - 10
+                    width: parent.width
+                    font.bold: true
+                    horizontalAlignment: Text.AlignHCenter
+                    font.pixelSize: detailPanelFontPixels
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Rectangle {
+                    id: gpsSettingsTitleUL
+                    y: 34
+                    width: parent.width
+                    height: 3
+                    color: "white"
+                    radius: 5
+                }
+            }
             Item {
                 width: parent.width
                 height: 32
@@ -131,17 +153,20 @@ BaseWidget {
                     anchors.right: parent.right
                     checked: {
                         // @disable-check M222
-                        var _hCenter = settings.value(hCenterIdentifier, defaultHCenter)
+                        var _hCenter = settings.value(hCenterIdentifier,
+                                                      defaultHCenter)
                         // @disable-check M223
-                        if (_hCenter === "true" || _hCenter === 1 || _hCenter === true) {
-                            checked = true;
+                        if (_hCenter === "true" || _hCenter === 1
+                                || _hCenter === true) {
+                            checked = true
                             // @disable-check M223
                         } else {
-                            checked = false;
+                            checked = false
                         }
                     }
 
-                    onCheckedChanged: settings.setValue(hCenterIdentifier, checked)
+                    onCheckedChanged: settings.setValue(hCenterIdentifier,
+                                                        checked)
                 }
             }
             Item {
@@ -163,17 +188,20 @@ BaseWidget {
                     anchors.right: parent.right
                     checked: {
                         // @disable-check M222
-                        var _vCenter = settings.value(vCenterIdentifier, defaultVCenter)
+                        var _vCenter = settings.value(vCenterIdentifier,
+                                                      defaultVCenter)
                         // @disable-check M223
-                        if (_vCenter === "true" || _vCenter === 1 || _vCenter === true) {
-                            checked = true;
+                        if (_vCenter === "true" || _vCenter === 1
+                                || _vCenter === true) {
+                            checked = true
                             // @disable-check M223
                         } else {
-                            checked = false;
+                            checked = false
                         }
                     }
 
-                    onCheckedChanged: settings.setValue(vCenterIdentifier, checked)
+                    onCheckedChanged: settings.setValue(vCenterIdentifier,
+                                                        checked)
                 }
             }
             Item {
@@ -184,7 +212,7 @@ BaseWidget {
                     color: "white"
                     height: parent.height
                     font.bold: true
-                    font.pixelSize: detailPanelFontPixels;
+                    font.pixelSize: detailPanelFontPixels
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
@@ -205,7 +233,7 @@ BaseWidget {
                     color: "white"
                     height: parent.height
                     font.bold: true
-                    font.pixelSize: detailPanelFontPixels;
+                    font.pixelSize: detailPanelFontPixels
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
@@ -253,7 +281,8 @@ BaseWidget {
                     width: parent.width - 96
 
                     onValueChanged: {
-                        settings.gps_warn = Math.round(gps_warn_Slider.value * 10) / 10.0;
+                        settings.gps_warn = Math.round(
+                                    gps_warn_Slider.value * 10) / 10.0
                     }
                 }
             }
@@ -292,7 +321,8 @@ BaseWidget {
                     width: parent.width - 96
 
                     onValueChanged: {
-                        settings.gps_caution = Math.round(gps_caution_Slider.value * 10) / 10.0;
+                        settings.gps_caution = Math.round(
+                                    gps_caution_Slider.value * 10) / 10.0
                     }
                 }
             }
@@ -300,14 +330,13 @@ BaseWidget {
     }
 
     //---------------------------ACTION WIDGET COMPONENT BELOW-----------------------------
-
-    widgetActionComponent: ScrollView{
+    widgetActionComponent: ScrollView {
 
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
         clip: true
 
-        ColumnLayout{
-            width:200
+        ColumnLayout {
+            width: 200
             Item {
                 width: parent.width
                 height: 32
@@ -321,11 +350,11 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Text {
-                    text: Number(OpenHD.lat).toLocaleString(Qt.locale(), 'f', 6);
-                    color: "white";
-                    font.bold: true;
+                    text: Number(OpenHD.lat).toLocaleString(Qt.locale(), 'f', 6)
+                    color: "white"
+                    font.bold: true
                     height: parent.height
-                    font.pixelSize: detailPanelFontPixels;
+                    font.pixelSize: detailPanelFontPixels
                     anchors.right: parent.right
                     verticalAlignment: Text.AlignVCenter
                 }
@@ -343,11 +372,11 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Text {
-                    text: Number(OpenHD.lon).toLocaleString(Qt.locale(), 'f', 6);
-                    color: "white";
-                    font.bold: true;
+                    text: Number(OpenHD.lon).toLocaleString(Qt.locale(), 'f', 6)
+                    color: "white"
+                    font.bold: true
                     height: parent.height
-                    font.pixelSize: detailPanelFontPixels;
+                    font.pixelSize: detailPanelFontPixels
                     anchors.right: parent.right
                     verticalAlignment: Text.AlignVCenter
                 }
@@ -386,18 +415,19 @@ BaseWidget {
             height: 24
             //     color: OpenHD.gps_fix_type >= 3 ? settings.color_text : (OpenHD.gps_fix_type < 2 ? "#ff0000" : "#fbfd15")
             color: {
-                if (OpenHD.gps_hdop >= settings.gps_warn ){
-                    widgetInner.visible=true;
-                    return settings.color_warn;
-                } else if (OpenHD.gps_hdop > settings.gps_caution){
-                    widgetInner.visible=true;
-                    return settings.color_caution;
-                } else if (settings.gps_declutter == true && OpenHD.armed == true){
-                    widgetInner.visible=false;
-                    return settings.color_text;
+                if (OpenHD.gps_hdop >= settings.gps_warn) {
+                    widgetInner.visible = true
+                    return settings.color_warn
+                } else if (OpenHD.gps_hdop > settings.gps_caution) {
+                    widgetInner.visible = true
+                    return settings.color_caution
+                } else if (settings.gps_declutter == true
+                           && OpenHD.armed == true) {
+                    widgetInner.visible = false
+                    return settings.color_text
                 } else {
-                    widgetInner.visible=true;
-                    return settings.color_text;
+                    widgetInner.visible = true
+                    return settings.color_text
                 }
             }
             opacity: settings.gps_opacity
@@ -419,18 +449,19 @@ BaseWidget {
             width: 48
             height: 24
             color: {
-                if (OpenHD.gps_hdop >= settings.gps_warn ){
-                    widgetInner.visible=true;
-                    return settings.color_warn;
-                } else if (OpenHD.gps_hdop > settings.gps_caution){
-                    widgetInner.visible=true;
-                    return settings.color_caution;
-                } else if (settings.gps_declutter == true && OpenHD.armed == true){
-                    widgetInner.visible=false;
-                    return settings.color_text;
+                if (OpenHD.gps_hdop >= settings.gps_warn) {
+                    widgetInner.visible = true
+                    return settings.color_warn
+                } else if (OpenHD.gps_hdop > settings.gps_caution) {
+                    widgetInner.visible = true
+                    return settings.color_caution
+                } else if (settings.gps_declutter == true
+                           && OpenHD.armed == true) {
+                    widgetInner.visible = false
+                    return settings.color_text
                 } else {
-                    widgetInner.visible=true;
-                    return settings.color_text;
+                    widgetInner.visible = true
+                    return settings.color_text
                 }
             }
             opacity: settings.gps_opacity
@@ -457,7 +488,8 @@ BaseWidget {
                 spacing: 6
                 height: 16
 
-                Text {//need better icon
+                Text {
+                    //need better icon
                     id: lat_icon
                     visible: settings.gps_show_all
                     height: parent.height
@@ -475,10 +507,10 @@ BaseWidget {
                 Text {
                     id: lat_onscreen
                     visible: settings.gps_show_all
-                    text: Number(OpenHD.lat).toLocaleString(Qt.locale(), 'f', 6);
+                    text: Number(OpenHD.lat).toLocaleString(Qt.locale(), 'f', 6)
                     color: settings.color_text
                     opacity: settings.gps_opacity
-                    font.bold: true;
+                    font.bold: true
                     font.family: settings.font_text
                     height: parent.height
                     width: 92
@@ -489,12 +521,12 @@ BaseWidget {
                 }
             }
 
-
             Row {
                 spacing: 6
                 height: 16
 
-                Text {//need better icon
+                Text {
+                    //need better icon
                     id: lon_icon
                     visible: settings.gps_show_all
                     height: parent.height
@@ -512,7 +544,7 @@ BaseWidget {
                 Text {
                     id: lon_onscreen
                     visible: settings.gps_show_all
-                    text: Number(OpenHD.lon).toLocaleString(Qt.locale(), 'f', 6);
+                    text: Number(OpenHD.lon).toLocaleString(Qt.locale(), 'f', 6)
                     color: settings.color_text
                     opacity: settings.gps_opacity
                     font.bold: true

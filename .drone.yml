@@ -1,32 +1,5 @@
 kind: pipeline
 type: docker
-name: armhf-raspbian-stretch
-platform:
-  os: linux
-  arch: arm
-image_pull_secrets:
-- dockerconfigjson
-steps:
-- name: fetch
-  image: arm32v6/alpine
-  commands:
-  - apk add git
-  - git fetch --tags
-  - git submodule update --init --recursive --remote
-- name: build
-  image: plugins/docker
-  environment:
-    CLOUDSMITH_API_KEY:
-      from_secret: CLOUDSMITH_API_KEY
-  settings:
-      repo: openhd/qopenhd
-      dry_run: true
-      dockerfile: Dockerfile-armhf-raspbian-stretch
-      build_args_from_env:
-        - CLOUDSMITH_API_KEY
----
-kind: pipeline
-type: docker
 name: armhf-raspbian-buster
 platform:
   os: linux
@@ -35,11 +8,11 @@ image_pull_secrets:
 - dockerconfigjson
 steps:
 - name: fetch
-  image: arm32v6/alpine
+  image: arm32v6/alpine:3.12
   commands:
   - apk add git
-  - git fetch --tags
-  - git submodule update --init --recursive --remote
+  - git fetch --tags 
+  - git submodule update --init --recursive --remote 
 - name: build
   image: plugins/docker
   environment:
@@ -48,6 +21,10 @@ steps:
   settings:
       repo: openhd/qopenhd
       dry_run: true
+      username:
+        from_secret: docker_openhd_username
+      password:
+        from_secret: docker_openhd_password
       dockerfile: Dockerfile-armhf-raspbian-buster
       build_args_from_env:
         - CLOUDSMITH_API_KEY
@@ -62,7 +39,7 @@ image_pull_secrets:
 - dockerconfigjson
 steps:
 - name: fetch
-  image: arm64v8/alpine
+  image: arm64v8/alpine:3.13
   commands:
   - apk add git
   - git fetch --tags
@@ -75,6 +52,10 @@ steps:
   settings:
       repo: openhd/qopenhd
       dry_run: true
+      username:
+        from_secret: docker_openhd_username
+      password:
+        from_secret: docker_openhd_password
       dockerfile: Dockerfile-arm64-debian-buster
       build_args_from_env:
         - CLOUDSMITH_API_KEY
@@ -89,7 +70,7 @@ image_pull_secrets:
 - dockerconfigjson
 steps:
 - name: fetch
-  image: arm64v8/alpine
+  image: arm32v6/alpine:3.14
   commands:
   - apk add git
   - git fetch --tags
@@ -102,6 +83,10 @@ steps:
   settings:
       repo: openhd/qopenhd
       dry_run: true
+      username:
+        from_secret: docker_openhd_username
+      password:
+        from_secret: docker_openhd_password
       dockerfile: Dockerfile-arm64-ubuntu-bionic
       build_args_from_env:
         - CLOUDSMITH_API_KEY
