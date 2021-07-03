@@ -219,13 +219,14 @@ static void mavlink_test_openhd_wifi_status(uint8_t system_id, uint8_t component
         uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
         uint16_t i;
     mavlink_openhd_wifi_status_t packet_in = {
-        { 963497464, 963497465, 963497466, 963497467 },53,120,187,{ 254, 255, 0, 1 },{ 10, 11, 12, 13 }
+        { 963497464, 963497465, 963497466, 963497467 },53,120,187,{ 254, 255, 0, 1 },{ 10, 11, 12, 13 },22
     };
     mavlink_openhd_wifi_status_t packet1, packet2;
         memset(&packet1, 0, sizeof(packet1));
         packet1.target_system = packet_in.target_system;
         packet1.target_component = packet_in.target_component;
         packet1.wifi_adapter_cnt = packet_in.wifi_adapter_cnt;
+        packet1.wifi_freq = packet_in.wifi_freq;
         
         mav_array_memcpy(packet1.received_packet_cnt, packet_in.received_packet_cnt, sizeof(uint32_t)*4);
         mav_array_memcpy(packet1.current_signal_dbm, packet_in.current_signal_dbm, sizeof(int8_t)*4);
@@ -243,12 +244,12 @@ static void mavlink_test_openhd_wifi_status(uint8_t system_id, uint8_t component
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 
         memset(&packet2, 0, sizeof(packet2));
-    mavlink_msg_openhd_wifi_status_pack(system_id, component_id, &msg , packet1.target_system , packet1.target_component , packet1.wifi_adapter_cnt , packet1.current_signal_dbm , packet1.wifi_card_type , packet1.received_packet_cnt );
+    mavlink_msg_openhd_wifi_status_pack(system_id, component_id, &msg , packet1.target_system , packet1.target_component , packet1.wifi_adapter_cnt , packet1.current_signal_dbm , packet1.wifi_card_type , packet1.received_packet_cnt , packet1.wifi_freq );
     mavlink_msg_openhd_wifi_status_decode(&msg, &packet2);
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 
         memset(&packet2, 0, sizeof(packet2));
-    mavlink_msg_openhd_wifi_status_pack_chan(system_id, component_id, MAVLINK_COMM_0, &msg , packet1.target_system , packet1.target_component , packet1.wifi_adapter_cnt , packet1.current_signal_dbm , packet1.wifi_card_type , packet1.received_packet_cnt );
+    mavlink_msg_openhd_wifi_status_pack_chan(system_id, component_id, MAVLINK_COMM_0, &msg , packet1.target_system , packet1.target_component , packet1.wifi_adapter_cnt , packet1.current_signal_dbm , packet1.wifi_card_type , packet1.received_packet_cnt , packet1.wifi_freq );
     mavlink_msg_openhd_wifi_status_decode(&msg, &packet2);
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 
@@ -261,7 +262,7 @@ static void mavlink_test_openhd_wifi_status(uint8_t system_id, uint8_t component
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
         
         memset(&packet2, 0, sizeof(packet2));
-    mavlink_msg_openhd_wifi_status_send(MAVLINK_COMM_1 , packet1.target_system , packet1.target_component , packet1.wifi_adapter_cnt , packet1.current_signal_dbm , packet1.wifi_card_type , packet1.received_packet_cnt );
+    mavlink_msg_openhd_wifi_status_send(MAVLINK_COMM_1 , packet1.target_system , packet1.target_component , packet1.wifi_adapter_cnt , packet1.current_signal_dbm , packet1.wifi_card_type , packet1.received_packet_cnt , packet1.wifi_freq );
     mavlink_msg_openhd_wifi_status_decode(last_msg, &packet2);
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 }

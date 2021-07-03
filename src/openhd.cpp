@@ -830,6 +830,27 @@ void OpenHD::set_air_gpio_busy(bool air_gpio_busy){
     emit air_gpio_busy_changed(air_gpio_busy);
 }
 
+void OpenHD::set_air_freq(int air_freq){
+    qDebug() << "OPENHD set_air_freq =" <<  air_freq;
+    m_air_freq = air_freq;
+    emit air_freq_changed(m_air_freq);
+}
+
+void OpenHD::set_gnd_freq(int gnd_freq){
+    m_gnd_freq = gnd_freq;
+    emit gnd_freq_changed(m_gnd_freq);
+}
+
+void OpenHD::set_air_freq_busy(bool air_freq_busy){
+    m_air_freq_busy = air_freq_busy;
+    emit air_freq_busy_changed(air_freq_busy);
+}
+
+void OpenHD::set_gnd_freq_busy(bool gnd_freq_busy){
+    m_gnd_freq_busy = gnd_freq_busy;
+    emit gnd_freq_busy_changed(gnd_freq_busy);
+}
+
 void OpenHD::set_ground_vin(double ground_vin) {
     m_ground_vin = ground_vin;
     emit ground_vin_changed(m_ground_vin);

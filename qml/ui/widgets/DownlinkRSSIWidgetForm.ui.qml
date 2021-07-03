@@ -7,6 +7,10 @@ import QtQuick.Shapes 1.0
 
 import OpenHD 1.0
 
+import "../../ui" as Ui
+import "../../ui/elements"
+import "../elements"
+
 BaseWidget {
     id: downlinkRSSIWidget
     width: 112
@@ -288,6 +292,16 @@ BaseWidget {
                     anchors.right: parent.right
                     verticalAlignment: Text.AlignVCenter
                 }
+            }           
+        }
+        Button {
+            //this is for testing the new link microservice and freq change
+            visible: false
+            text: "Freq Test"
+            anchors.centerIn: parent
+
+            onPressed: {
+                OpenHD.setAirFREQ(5400);
             }
         }
     }

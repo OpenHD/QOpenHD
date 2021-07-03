@@ -35,6 +35,8 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 
 #include "gpiomicroservice.h"
 
+#include "linkmicroservice.h"
+
 #include "statusmicroservice.h"
 
 #include "statuslogmodel.h"
@@ -430,6 +432,11 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
     engine.rootContext()->setContextProperty("AirStatusMicroservice", airStatusMicroservice);
     QObject::connect(openHDSettings, &OpenHDSettings::groundStationIPUpdated, airStatusMicroservice, &StatusMicroservice::setGroundIP, Qt::QueuedConnection);
     airStatusMicroservice->onStarted();
+
+    auto airLinkMicroservice = new LinkMicroservice(nullptr, MicroserviceTargetAir, MavlinkTypeTCP);
+    engine.rootContext()->setContextProperty("AirLinkMicroservice", airLinkMicroservice);
+    QObject::connect(openHDSettings, &OpenHDSettings::groundStationIPUpdated, airLinkMicroservice, &GPIOMicroservice::setGroundIP, Qt::QueuedConnection);
+    airLinkMicroservice->onStarted();
 
 
     auto statusLogModel = StatusLogModel::instance();
