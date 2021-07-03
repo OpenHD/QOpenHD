@@ -26,11 +26,13 @@ BaseWidget {
     defaultHCenter: false
     defaultVCenter: false
 
+
     hasWidgetDetail: true
     hasWidgetAction: true
 
     //----------------------------- DETAIL BELOW ----------------------------------
-    widgetDetailComponent: ScrollView {
+
+    widgetDetailComponent: ScrollView{
 
         contentHeight: downrssiSettingsColumn.height
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
@@ -56,29 +58,6 @@ BaseWidget {
                 }
             }
 */
-            Item {
-                width: parent.width
-                height: 42
-                Text {
-                    id: downrssiSettingsTitle
-                    text: qsTr("DOWNLINK RSSI")
-                    color: "white"
-                    height: parent.height - 10
-                    width: parent.width
-                    font.bold: true
-                    horizontalAlignment: Text.AlignHCenter
-                    font.pixelSize: detailPanelFontPixels
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Rectangle {
-                    id: downrssiSettingsTitleUL
-                    y: 34
-                    width: parent.width
-                    height: 3
-                    color: "white"
-                    radius: 5
-                }
-            }
             Item {
                 width: parent.width
                 height: 32
@@ -157,20 +136,17 @@ BaseWidget {
                     anchors.right: parent.right
                     checked: {
                         // @disable-check M222
-                        var _hCenter = settings.value(hCenterIdentifier,
-                                                      defaultHCenter)
+                        var _hCenter = settings.value(hCenterIdentifier, defaultHCenter)
                         // @disable-check M223
-                        if (_hCenter === "true" || _hCenter === 1
-                                || _hCenter === true) {
-                            checked = true
+                        if (_hCenter === "true" || _hCenter === 1 || _hCenter === true) {
+                            checked = true;
                             // @disable-check M223
                         } else {
-                            checked = false
+                            checked = false;
                         }
                     }
 
-                    onCheckedChanged: settings.setValue(hCenterIdentifier,
-                                                        checked)
+                    onCheckedChanged: settings.setValue(hCenterIdentifier, checked)
                 }
             }
             Item {
@@ -192,20 +168,17 @@ BaseWidget {
                     anchors.right: parent.right
                     checked: {
                         // @disable-check M222
-                        var _vCenter = settings.value(vCenterIdentifier,
-                                                      defaultVCenter)
+                        var _vCenter = settings.value(vCenterIdentifier, defaultVCenter)
                         // @disable-check M223
-                        if (_vCenter === "true" || _vCenter === 1
-                                || _vCenter === true) {
-                            checked = true
+                        if (_vCenter === "true" || _vCenter === 1 || _vCenter === true) {
+                            checked = true;
                             // @disable-check M223
                         } else {
-                            checked = false
+                            checked = false;
                         }
                     }
 
-                    onCheckedChanged: settings.setValue(vCenterIdentifier,
-                                                        checked)
+                    onCheckedChanged: settings.setValue(vCenterIdentifier, checked)
                 }
             }
 
@@ -217,7 +190,7 @@ BaseWidget {
                     color: "white"
                     height: parent.height
                     font.bold: true
-                    font.pixelSize: detailPanelFontPixels
+                    font.pixelSize: detailPanelFontPixels;
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
@@ -231,6 +204,7 @@ BaseWidget {
                 }
             }
 
+
             Item {
                 width: parent.width
                 height: 32
@@ -239,7 +213,7 @@ BaseWidget {
                     color: "white"
                     height: parent.height
                     font.bold: true
-                    font.pixelSize: detailPanelFontPixels
+                    font.pixelSize: detailPanelFontPixels;
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
@@ -256,55 +230,44 @@ BaseWidget {
     }
 
     //---------------------------ACTION WIDGET COMPONENT BELOW-----------------------------
-    widgetActionComponent: ScrollView {
+
+    widgetActionComponent: ScrollView{
 
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
         clip: true
 
-        ColumnLayout {
-            width: 200
+        ColumnLayout{
+            width:200
             Connections {
                 target: OpenHD
                 function onWifiAdapter0Changed(received_packet_cnt, current_signal_dbm, signal_good) {
-                    card0textlower.text = Number(
-                                current_signal_dbm).toLocaleString(
-                                Qt.locale(), 'f', 0) + qsTr(" dBm")
-                    card0textlower.visible = true
+                    card0textlower.text = Number(current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
+                    card0textlower.visible = true;
                 }
 
                 function onWifiAdapter1Changed(received_packet_cnt, current_signal_dbm, signal_good) {
-                    card1textlower.text = Number(
-                                current_signal_dbm).toLocaleString(
-                                Qt.locale(), 'f', 0) + qsTr(" dBm")
-                    card1textlower.visible = true
+                    card1textlower.text = Number(current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
+                    card1textlower.visible = true;
                 }
 
                 function onWifiAdapter2Changed(received_packet_cnt, current_signal_dbm, signal_good) {
-                    card2textlower.text = Number(
-                                current_signal_dbm).toLocaleString(
-                                Qt.locale(), 'f', 0) + qsTr(" dBm")
-                    card2textlower.visible = true
+                    card2textlower.text = Number(current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
+                    card2textlower.visible = true;
                 }
 
                 function onWifiAdapter3Changed(received_packet_cnt, current_signal_dbm, signal_good) {
-                    card3textlower.text = Number(
-                                current_signal_dbm).toLocaleString(
-                                Qt.locale(), 'f', 0) + qsTr(" dBm")
-                    card3textlower.visible = true
+                    card3textlower.text = Number(current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
+                    card3textlower.visible = true;
                 }
 
                 function onWifiAdapter4Changed(received_packet_cnt, current_signal_dbm, signal_good) {
-                    card4textlower.text = Number(
-                                current_signal_dbm).toLocaleString(
-                                Qt.locale(), 'f', 0) + qsTr(" dBm")
-                    card4textlower.visible = true
+                    card4textlower.text = Number(current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
+                    card4textlower.visible = true;
                 }
 
                 function onWifiAdapter5Changed(received_packet_cnt, current_signal_dbm, signal_good) {
-                    card5textlower.text = Number(
-                                current_signal_dbm).toLocaleString(
-                                Qt.locale(), 'f', 0) + qsTr(" dBm")
-                    card5textlower.visible = true
+                    card5textlower.text = Number(current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
+                    card5textlower.visible = true;
                 }
             }
 
@@ -412,9 +375,7 @@ BaseWidget {
         Text {
             id: extra_text
             visible: settings.downlink_rssi_show_lost_damaged ? true : false
-            text: "D: " + Number(OpenHD.damaged_block_cnt).toLocaleString(
-                      Qt.locale(), 'f',
-                      0) + qsTr(" (%L1%)").arg(OpenHD.damaged_block_percent)
+            text: "D: " + Number(OpenHD.damaged_block_cnt).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" (%L1%)").arg(OpenHD.damaged_block_percent);
             color: settings.color_text
             anchors.top: downlink_rssi.bottom
             //anchors.topMargin: -12
@@ -431,9 +392,7 @@ BaseWidget {
 
         Text {
             visible: settings.downlink_rssi_show_lost_damaged ? true : false
-            text: "L: " + Number(OpenHD.lost_packet_cnt).toLocaleString(
-                      Qt.locale(), 'f',
-                      0) + qsTr(" (%L1%)").arg(OpenHD.lost_packet_percent)
+            text: "L: " + Number(OpenHD.lost_packet_cnt).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" (%L1%)").arg(OpenHD.lost_packet_percent);
             color: settings.color_text
             anchors.top: extra_text.bottom
             anchors.topMargin: 0
