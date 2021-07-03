@@ -7,8 +7,6 @@ import QtQuick.Controls.Material 2.12
 
 import OpenHD 1.0
 
-
-
 BaseWidget {
     id: vroverlayWidget
     width: 50
@@ -33,7 +31,29 @@ BaseWidget {
             id: vroverlayWidgetColumn
             spacing: 0
             clip: true
-
+            Item {
+                width: 230
+                height: 42
+                Text {
+                    id: vroverlaySettingsTitle
+                    text: qsTr("VR OVERLAY")
+                    color: "white"
+                    height: parent.height - 10
+                    width: parent.width
+                    font.bold: true
+                    horizontalAlignment: Text.AlignHCenter
+                    font.pixelSize: detailPanelFontPixels
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Rectangle {
+                    id: vroverlaySettingsTitleUL
+                    y: 34
+                    width: parent.width
+                    height: 3
+                    color: "white"
+                    radius: 5
+                }
+            }
             Item {
                 width: 230
                 height: 32
@@ -112,17 +132,20 @@ BaseWidget {
                     anchors.right: parent.right
                     checked: {
                         // @disable-check M222
-                        var _hCenter = settings.value(hCenterIdentifier, defaultHCenter)
+                        var _hCenter = settings.value(hCenterIdentifier,
+                                                      defaultHCenter)
                         // @disable-check M223
-                        if (_hCenter === "true" || _hCenter === 1 || _hCenter === true) {
-                            checked = true;
+                        if (_hCenter === "true" || _hCenter === 1
+                                || _hCenter === true) {
+                            checked = true
                             // @disable-check M223
                         } else {
-                            checked = false;
+                            checked = false
                         }
                     }
 
-                    onCheckedChanged: settings.setValue(hCenterIdentifier, checked)
+                    onCheckedChanged: settings.setValue(hCenterIdentifier,
+                                                        checked)
                 }
             }
             Item {
@@ -144,19 +167,23 @@ BaseWidget {
                     anchors.right: parent.right
                     checked: {
                         // @disable-check M222
-                        var _vCenter = settings.value(vCenterIdentifier, defaultVCenter)
+                        var _vCenter = settings.value(vCenterIdentifier,
+                                                      defaultVCenter)
                         // @disable-check M223
-                        if (_vCenter === "true" || _vCenter === 1 || _vCenter === true) {
-                            checked = true;
+                        if (_vCenter === "true" || _vCenter === 1
+                                || _vCenter === true) {
+                            checked = true
                             // @disable-check M223
                         } else {
-                            checked = false;
+                            checked = false
                         }
                     }
 
-                    onCheckedChanged: settings.setValue(vCenterIdentifier, checked)
+                    onCheckedChanged: settings.setValue(vCenterIdentifier,
+                                                        checked)
                 }
             }
+
 
             /*
             Item {
@@ -199,18 +226,18 @@ BaseWidget {
                     width: 30
                     anchors.rightMargin: 15
                     anchors.right: parent.right
-                    antialiasing: true;
+                    antialiasing: true
 
                     Tumbler {
                         model: 180
-                        visibleItemCount : 1
+                        visibleItemCount: 1
                         anchors.fill: parent
 
-                        currentIndex: settings.vroverlay_vertical_fov;
+                        currentIndex: settings.vroverlay_vertical_fov
 
                         Component.onCompleted: {
                             // rounds it due to int
-                            currentIndex= settings.vroverlay_vertical_fov;
+                            currentIndex = settings.vroverlay_vertical_fov
                         }
                         delegate: Text {
                             text: modelData
@@ -225,14 +252,26 @@ BaseWidget {
                             scale: opacity
                         }
                         onCurrentIndexChanged: {
-                            settings.vroverlay_vertical_fov = currentIndex;
-                            console.log("verticalFOV=",settings.vroverlay_vertical_fov);
+                            settings.vroverlay_vertical_fov = currentIndex
+                            console.log("verticalFOV=",
+                                        settings.vroverlay_vertical_fov)
                         }
                     }
                     gradient: Gradient {
-                        GradientStop { position: 0.0; color: Material.color(Material.Grey ,Material.Shade500) }
-                        GradientStop { position: 0.5; color: "transparent" }
-                        GradientStop { position: 1.0; color: Material.color(Material.Grey ,Material.Shade500) }
+                        GradientStop {
+                            position: 0.0
+                            color: Material.color(Material.Grey,
+                                                  Material.Shade500)
+                        }
+                        GradientStop {
+                            position: 0.5
+                            color: "transparent"
+                        }
+                        GradientStop {
+                            position: 1.0
+                            color: Material.color(Material.Grey,
+                                                  Material.Shade500)
+                        }
                     }
                 }
             }
@@ -254,18 +293,18 @@ BaseWidget {
                     width: 30
                     anchors.rightMargin: 15
                     anchors.right: parent.right
-                    antialiasing: true;
+                    antialiasing: true
 
                     Tumbler {
                         model: 180
-                        visibleItemCount : 1
+                        visibleItemCount: 1
                         anchors.fill: parent
 
-                        currentIndex: settings.vroverlay_horizontal_fov;
+                        currentIndex: settings.vroverlay_horizontal_fov
 
                         Component.onCompleted: {
                             // rounds it due to int
-                            currentIndex= settings.vroverlay_horizontal_fov;
+                            currentIndex = settings.vroverlay_horizontal_fov
                         }
                         delegate: Text {
                             text: modelData
@@ -280,21 +319,31 @@ BaseWidget {
                             scale: opacity
                         }
                         onCurrentIndexChanged: {
-                            settings.vroverlay_horizontal_fov = currentIndex;
-                            console.log("horizontalfov=",settings.vroverlay_horizontal_fov);
+                            settings.vroverlay_horizontal_fov = currentIndex
+                            console.log("horizontalfov=",
+                                        settings.vroverlay_horizontal_fov)
                         }
                     }
                     gradient: Gradient {
-                        GradientStop { position: 0.0; color: Material.color(Material.Grey ,Material.Shade500) }
-                        GradientStop { position: 0.5; color: "transparent" }
-                        GradientStop { position: 1.0; color: Material.color(Material.Grey ,Material.Shade500) }
+                        GradientStop {
+                            position: 0.0
+                            color: Material.color(Material.Grey,
+                                                  Material.Shade500)
+                        }
+                        GradientStop {
+                            position: 0.5
+                            color: "transparent"
+                        }
+                        GradientStop {
+                            position: 1.0
+                            color: Material.color(Material.Grey,
+                                                  Material.Shade500)
+                        }
                     }
                 }
             }
         }
     }
-
-
 
     Item {
         id: widgetInner
@@ -323,8 +372,6 @@ BaseWidget {
             styleColor: settings.color_glow
         }
 
-
-
         Item {
             id: vrOverlay
 
@@ -338,12 +385,11 @@ BaseWidget {
                     id: vroverlayC
                     anchors.centerIn: parent
                     //needs width and height but needs to be dynamic
-                    width:applicationWindow.width
-                    height:applicationWindow.height
+                    width: applicationWindow.width
+                    height: applicationWindow.height
 
                     //width: 1200
                     //height: 800
-
                     clip: false
                     color: settings.color_shape
                     glow: settings.color_glow
@@ -373,7 +419,6 @@ BaseWidget {
                 //needs width and height but needs to be dynamic
                 //:applicationWindow.width
                 //height:applicationWindow.height
-
                 width: 1200
                 height: 800
 
@@ -398,7 +443,8 @@ BaseWidget {
                 verticalFOV: settings.vroverlay_vertical_fov
                 horizontalFOV: settings.vroverlay_horizontal_fov
             }
-/* comment out race stuff
+
+            /* comment out race stuff
             VROverlay {
                 id: race1VROverlayC
                 anchors.centerIn: parent
@@ -467,5 +513,3 @@ BaseWidget {
         }
     }
 }
-
-

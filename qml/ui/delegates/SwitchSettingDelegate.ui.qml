@@ -7,19 +7,16 @@ BaseDelegate {
 
     Switch {
         id: valueElement
+        checked: model.checked
         anchors.right: parent.right
-        checked: model.value
-        font.pixelSize: 16
-        topPadding: 0
-        bottomPadding: 0
-        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+        anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
         anchors.top: parent.top
-        anchors.topMargin: 12
-        width: 32
-        height: 32
+        anchors.topMargin: 8
+        width: 210
+        height: 48
         // @disable-check M223
         onCheckedChanged: {
-            model.value = checked
+            model.value = (checked == true) ? model.checkedValue : model.uncheckedValue;
         }
         enabled: !model.disabled
     }

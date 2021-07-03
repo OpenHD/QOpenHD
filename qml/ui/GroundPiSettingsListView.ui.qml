@@ -32,6 +32,8 @@ ListView {
                     return "delegates/TextSettingDelegate.ui.qml"
                 case "range":
                     return "delegates/RangeSettingDelegate.ui.qml"
+                case "switch":
+                    return "delegates/SwitchSettingDelegate.ui.qml"
                 case "number":
                     return "delegates/NumberSettingDelegate.ui.qml"
                 case "choice":

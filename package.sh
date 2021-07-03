@@ -21,14 +21,25 @@ EOF
 fi
 
 apt-get install -y apt-transport-https curl
-curl -1sLf 'https://dl.cloudsmith.io/public/openhd/openhd-2-0/cfg/gpg/gpg.B9F0E99CF5787237.key' | apt-key add -
+curl -1sLf 'https://dl.cloudsmith.io/public/openhd/openhd-2-1/cfg/gpg/gpg.0AD501344F75A993.key' | apt-key add -
 
 
-echo "deb https://dl.cloudsmith.io/public/openhd/openhd-2-0/deb/${OS} ${DISTRO} main" > /etc/apt/sources.list.d/openhd-2-0.list
+echo "deb https://dl.cloudsmith.io/public/openhd/openhd-2-1/deb/${OS} ${DISTRO} main" > /etc/apt/sources.list.d/openhd-2-1.list
 
 apt -y update
 
-apt -y install openhd-qt=5.15.0\* libgles2-mesa-dev libegl1-mesa-dev libgbm-dev libboost-dev
+
+if [[ "${OS}" == "raspbian" ]]; then
+    PLATFORM_DEV_PACKAGES="openhd-qt"
+    PLATFORM_PACKAGES="-d openhd-qt"
+fi
+
+if [[ "${OS}" == "ubuntu" ]] && [[ "${PACKAGE_ARCH}" == "armhf" || "${PACKAGE_ARCH}" == "arm64" ]]; then
+    PLATFORM_DEV_PACKAGES="openhd-qt-jetson-nano"
+    PLATFORM_PACKAGES="-d openhd-qt-jetson-nano"
+fi
+
+apt -y install ${PLATFORM_DEV_PACKAGES} libgstreamer-plugins-base1.0-dev libgles2-mesa-dev libegl1-mesa-dev libgbm-dev libboost-dev
 
 PACKAGE_NAME=qopenhd
 
@@ -50,7 +61,7 @@ cp release/QOpenHD ${TMPDIR}/usr/local/bin/ || exit 1
 # included in the same package since it's sharing code and not independently versioned
 pushd OpenHDBoot
 /opt/${QT_VERSION}/bin/qmake
-make clean || exit 1
+#make clean || exit 1
 make -j4 || exit 1
 cp OpenHDBoot ${TMPDIR}/usr/local/bin/ || exit 1
 popd
@@ -66,7 +77,15 @@ fpm -a ${PACKAGE_ARCH} -s dir -t deb -n ${PACKAGE_NAME} -v ${VERSION//v} -C ${TM
   --after-install after-install.sh \
   -p ${PACKAGE_NAME}_VERSION_ARCH.deb \
   -d "libboost-dev" \
-  -d "openhd-qt >= 5.15.0" || exit 1
+  -d "gstreamer1.0-plugins-base" \
+  -d "gstreamer1.0-plugins-good" \
+  -d "gstreamer1.0-plugins-bad" \
+  -d "gstreamer1.0-plugins-ugly" \
+  -d "gstreamer1.0-libav" \
+  -d "gstreamer1.0-tools" \
+  -d "gstreamer1.0-alsa" \
+  -d "gstreamer1.0-pulseaudio" \
+  ${PLATFORM_PACKAGES} || exit 1
 
 #
 # Only push to cloudsmith for tags. If you don't want something to be pushed to the repo, 

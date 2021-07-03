@@ -32,13 +32,36 @@ BaseWidget {
     hasWidgetDetail: true
     hasWidgetAction: true
 
-    widgetDetailComponent: ScrollView{
+    widgetDetailComponent: ScrollView {
 
         contentHeight: throttleSettingsColumn.height
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
         clip: true
         Column {
             id: throttleSettingsColumn
+            Item {
+                width: parent.width
+                height: 42
+                Text {
+                    id: throttleSettingsTitle
+                    text: qsTr("THROTTLE")
+                    color: "white"
+                    height: parent.height - 10
+                    width: parent.width
+                    font.bold: true
+                    horizontalAlignment: Text.AlignHCenter
+                    font.pixelSize: detailPanelFontPixels
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Rectangle {
+                    id: throttleSettingsTitleUL
+                    y: 34
+                    width: parent.width
+                    height: 3
+                    color: "white"
+                    radius: 5
+                }
+            }
             Item {
                 width: parent.width
                 height: 32
@@ -117,17 +140,20 @@ BaseWidget {
                     anchors.right: parent.right
                     checked: {
                         // @disable-check M222
-                        var _hCenter = settings.value(hCenterIdentifier, defaultHCenter)
+                        var _hCenter = settings.value(hCenterIdentifier,
+                                                      defaultHCenter)
                         // @disable-check M223
-                        if (_hCenter === "true" || _hCenter === 1 || _hCenter === true) {
-                            checked = true;
+                        if (_hCenter === "true" || _hCenter === 1
+                                || _hCenter === true) {
+                            checked = true
                             // @disable-check M223
                         } else {
-                            checked = false;
+                            checked = false
                         }
                     }
 
-                    onCheckedChanged: settings.setValue(hCenterIdentifier, checked)
+                    onCheckedChanged: settings.setValue(hCenterIdentifier,
+                                                        checked)
                 }
             }
             Item {
@@ -149,33 +175,36 @@ BaseWidget {
                     anchors.right: parent.right
                     checked: {
                         // @disable-check M222
-                        var _vCenter = settings.value(vCenterIdentifier, defaultVCenter)
+                        var _vCenter = settings.value(vCenterIdentifier,
+                                                      defaultVCenter)
                         // @disable-check M223
-                        if (_vCenter === "true" || _vCenter === 1 || _vCenter === true) {
-                            checked = true;
+                        if (_vCenter === "true" || _vCenter === 1
+                                || _vCenter === true) {
+                            checked = true
                             // @disable-check M223
                         } else {
-                            checked = false;
+                            checked = false
                         }
                     }
 
-                    onCheckedChanged: settings.setValue(vCenterIdentifier, checked)
+                    onCheckedChanged: settings.setValue(vCenterIdentifier,
+                                                        checked)
                 }
             }
         }
     }
 
     //---------------------------ACTION WIDGET COMPONENT BELOW-----------------------------
-
-    widgetActionComponent: ScrollView{
+    widgetActionComponent: ScrollView {
 
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
         clip: true
 
-        ColumnLayout{
-            width:200
+        ColumnLayout {
+            width: 200
 
-/*
+
+            /*
             Item {
                 Text {
                     id: name
@@ -190,15 +219,15 @@ BaseWidget {
             ConfirmSlider {
 
                 //visible: OpenHD.mav_type=="ARDUPLANE" || OpenHD.mav_type=="ARDUCOPTER"
-
                 text_off: OpenHD.armed ? qsTr("DISARM") : qsTr("ARM")
 
                 msg_id: OpenHD.armed ? 0 : 1
 
-                onCheckedChanged:{
-                    if (checked==true){ //double check.... not really needed
+                onCheckedChanged: {
+                    if (checked == true) {
 
-                        OpenHD.set_Requested_ArmDisarm(msg_id);
+                        //double check.... not really needed
+                        OpenHD.set_Requested_ArmDisarm(msg_id)
                         //console.log("selected");
                     }
                 }
@@ -214,8 +243,12 @@ BaseWidget {
         Item {
             anchors.fill: parent
             anchors.centerIn: parent
-            transform: Scale { origin.x: 48; origin.y: 34; xScale: settings.throttle_scale ; yScale: settings.throttle_scale}
-
+            transform: Scale {
+                origin.x: 48
+                origin.y: 34
+                xScale: settings.throttle_scale
+                yScale: settings.throttle_scale
+            }
 
             Text {
                 id: throttle_percent
