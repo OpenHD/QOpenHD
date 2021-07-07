@@ -397,8 +397,6 @@ GroundPiSettingsPanelForm {
                     } else if(valueType === "hex3"){
                         var hexValue3 = newValue.toString(16);
                         finalValue = "0x" + hexValue3.toUpperCase();
-                    } else {
-                        finalValue = newValue;
                     }
                 }
                 remoteSettings[key] = finalValue;
