@@ -27,7 +27,7 @@ ListView {
         source: {
             switch (itemType) {
                 case "bool":
-                    return "delegates/SwitchSettingDelegate.ui.qml"
+                    return "delegates/BoolSwitchSettingDelegate.ui.qml"
                 case "text":
                     return "delegates/TextSettingDelegate.ui.qml"
                 case "range":
