@@ -1761,7 +1761,7 @@ Item {
 
                             anchors.right: parent.right
                             anchors.verticalCenter: parent.verticalCenter
-                            checked: settings.show_fpv
+                            checked: settings.show_vroverlay
                             onCheckedChanged: settings.show_vroverlay = checked
                         }
                     }

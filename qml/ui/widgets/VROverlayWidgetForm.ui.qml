@@ -236,7 +236,6 @@ BaseWidget {
                         currentIndex: settings.vroverlay_vertical_fov
 
                         Component.onCompleted: {
-                            // rounds it due to int
                             currentIndex = settings.vroverlay_vertical_fov
                         }
                         delegate: Text {
@@ -252,9 +251,7 @@ BaseWidget {
                             scale: opacity
                         }
                         onCurrentIndexChanged: {
-                            settings.vroverlay_vertical_fov = currentIndex
-                            console.log("verticalFOV=",
-                                        settings.vroverlay_vertical_fov)
+                            settings.vroverlay_vertical_fov = currentIndex                     
                         }
                     }
                     gradient: Gradient {
@@ -303,7 +300,6 @@ BaseWidget {
                         currentIndex: settings.vroverlay_horizontal_fov
 
                         Component.onCompleted: {
-                            // rounds it due to int
                             currentIndex = settings.vroverlay_horizontal_fov
                         }
                         delegate: Text {
@@ -319,9 +315,7 @@ BaseWidget {
                             scale: opacity
                         }
                         onCurrentIndexChanged: {
-                            settings.vroverlay_horizontal_fov = currentIndex
-                            console.log("horizontalfov=",
-                                        settings.vroverlay_horizontal_fov)
+                            settings.vroverlay_horizontal_fov = currentIndex                           
                         }
                     }
                     gradient: Gradient {
