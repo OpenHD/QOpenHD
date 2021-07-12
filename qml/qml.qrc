@@ -246,5 +246,6 @@
         <file>ui/elements/ConfirmSliderForm.ui.qml</file>
         <file>ui/widgets/MissionWidgetForm.ui.qml</file>
         <file>ui/widgets/MissionWidget.qml</file>
+        <file>ui/delegates/BoolSwitchSettingDelegate.ui.qml</file>
     </qresource>
 </RCC>
