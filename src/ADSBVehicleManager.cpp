@@ -225,6 +225,10 @@ void ADSBInternet::requestData(void) {
 
 void ADSBInternet::processReply(QNetworkReply *reply) {
 
+    if (!_adsb_api_openskynetwork) {
+        return;
+    }
+
     if (reply->error()) {
         qDebug() << "ADSB request error!";
         qDebug() << reply->errorString();
@@ -340,6 +344,10 @@ void ADSBSdr::requestData(void) {
 }
 
 void ADSBSdr::processReply(QNetworkReply *reply) {
+
+    if (!_adsb_api_sdr) {
+        return;
+    }
 
     if (reply->error()) {
         qDebug() << "ADSB request error!";
