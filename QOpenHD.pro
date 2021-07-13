@@ -221,6 +221,7 @@ iOSBuild {
     #CONFIG += EnableCharts
     CONFIG += EnableADSB
     #CONFIG += EnableBlackbox
+    #CONFIG += EnableVR
 
     app_launch_images.files = $$PWD/icons/LaunchScreen.png $$files($$PWD/icons/LaunchScreen.storyboard)
     QMAKE_BUNDLE_DATA += app_launch_images
@@ -266,6 +267,7 @@ MacBuild {
     #CONFIG += EnableCharts
     CONFIG += EnableADSB
     #CONFIG += EnableBlackbox
+    #CONFIG += EnableVR
 
     EnableVideoRender {
         QT += multimedia
@@ -295,6 +297,7 @@ LinuxBuild {
     #CONFIG += EnableCharts
     CONFIG += EnableADSB
     #CONFIG += EnableBlackbox
+    #CONFIG += EnableVR
 
     message("LinuxBuild - config")
 }
@@ -308,6 +311,7 @@ JetsonBuild {
     CONFIG += EnableSpeech
     CONFIG += EnableADSB
     #CONFIG += EnableBlackbox
+    #CONFIG += EnableVR
 
     CONFIG += EnableGStreamer
 
@@ -330,6 +334,7 @@ RaspberryPiBuild {
     CONFIG += EnableSpeech
     CONFIG += EnableADSB
     #CONFIG += EnableBlackbox
+    #CONFIG += EnableVR
 
     CONFIG += EnableVideoRender
 
@@ -358,6 +363,7 @@ WindowsBuild {
     #CONFIG += EnableCharts
     CONFIG += EnableADSB
     #CONFIG += EnableBlackbox
+    #CONFIG += EnableVR
 
     DEFINES += GST_GL_HAVE_WINDOW_WIN32=1
     DEFINES += GST_GL_HAVE_PLATFORM_WGL=1
@@ -377,6 +383,7 @@ AndroidBuild {
     #CONFIG += EnableCharts
     CONFIG += EnableADSB
     #CONFIG += EnableBlackbox
+    #CONFIG += EnableVR
 
     EnableGStreamer {
         OTHER_FILES += \
@@ -425,6 +432,12 @@ AndroidBuild {
 EnableBlackbox {
     message("EnableBlackbox")
     DEFINES += ENABLE_BLACKBOX
+}
+
+
+EnableVR {
+    message("EnableVR")
+    DEFINES += ENABLE_VR
 }
 
 

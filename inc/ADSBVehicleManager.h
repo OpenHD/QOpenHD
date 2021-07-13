@@ -77,6 +77,7 @@ private slots:
 
 private: 
     bool _adsb_api_openskynetwork;
+    bool _show_adsb_internet; //wired to show widget setting. somewhat redundant
 };
 
 // This class gets the info from SDR
@@ -96,6 +97,7 @@ private slots:
 private:
     QString _groundAddress = "";
     bool _adsb_api_sdr;
+    bool _show_adsb_sdr; //wired to show widget setting. somewhat redundant
 };
 
 class ADSBVehicleManager : public QObject {

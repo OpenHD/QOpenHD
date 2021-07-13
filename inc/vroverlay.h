@@ -123,4 +123,7 @@ private:
     int m_current_gate;
     int m_gate_int;
     double m_alt_diff;
+
+    QSettings _settings;
+    bool _show_vr;
 };
