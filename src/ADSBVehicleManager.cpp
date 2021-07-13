@@ -206,9 +206,10 @@ void ADSBapi::mapBoundsChanged(QGeoCoordinate center_coord) {
 
 void ADSBInternet::requestData(void) {
     _adsb_api_openskynetwork = _settings.value("adsb_api_openskynetwork").toBool();
+    _show_adsb_internet = _settings.value("show_adsb").toBool();
 
     // If openskynetwork is disabled by settings don't make the request and return
-    if (!_adsb_api_openskynetwork) {
+    if (!_adsb_api_openskynetwork || !_show_adsb_internet) {
         return;
     }
 
@@ -225,7 +226,7 @@ void ADSBInternet::requestData(void) {
 
 void ADSBInternet::processReply(QNetworkReply *reply) {
 
-    if (!_adsb_api_openskynetwork) {
+    if (!_adsb_api_openskynetwork || !_show_adsb_internet) {
         return;
     }
 
@@ -326,9 +327,10 @@ ADSBSdr::ADSBSdr()
 
 void ADSBSdr::requestData(void) {
     _adsb_api_sdr = _settings.value("adsb_api_sdr").toBool();
+    _show_adsb_sdr = _settings.value("show_adsb").toBool();
 
     // If sdr is disabled by settings don't make the request and return
-    if (!_adsb_api_sdr) {
+    if (!_adsb_api_sdr || !_show_adsb_sdr) {
         return;
     }
 
@@ -345,7 +347,7 @@ void ADSBSdr::requestData(void) {
 
 void ADSBSdr::processReply(QNetworkReply *reply) {
 
-    if (!_adsb_api_sdr) {
+    if (!_adsb_api_sdr || !_show_adsb_sdr) {
         return;
     }
 
