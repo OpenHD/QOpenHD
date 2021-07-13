@@ -459,6 +459,11 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
     engine.rootContext()->setContextProperty("EnableBlackbox", QVariant(false));
     #endif
 
+    #if defined(ENABLE_VR)
+    engine.rootContext()->setContextProperty("EnableVR", QVariant(true));
+    #else
+    engine.rootContext()->setContextProperty("EnableVR", QVariant(false));
+    #endif
 
     #if defined(ENABLE_ADSB)
     auto adsbVehicleManager = ADSBVehicleManager::instance();

@@ -13,6 +13,14 @@
 
 
 VROverlay::VROverlay(QQuickItem *parent): QQuickPaintedItem(parent) {
+
+    _show_vr = _settings.value("show_vroverlay").toBool();
+
+    // If sdr is disabled by settings don't make the request and return
+    if (!_show_vr ) {
+        return;
+    }
+
     qDebug() << "VROverlay::VROverlay()";
     setRenderTarget(RenderTarget::FramebufferObject);
 }
