@@ -168,7 +168,7 @@ Rectangle {
             Item {
                 height: 48
                 width: parent.width
-                visible: false
+                visible: EnableCharts
                 MouseArea {
                     id: chartsButtonMouseArea
                     anchors.fill: parent
