@@ -17,6 +17,7 @@ public:
     void logData(QString data, int level);
 
     QFile *outFile;
+
 signals:    
 
 private:

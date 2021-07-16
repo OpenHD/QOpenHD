@@ -71,31 +71,29 @@ outFile = new QFile(filePath);
 
 outFile->open(QIODevice::WriteOnly | QIODevice::Append);
 
+if(!outFile->isOpen()){
+    qDebug() << "Log File NOT open";
+    LocalMessage::instance()->showMessage("Could Not Open Log File!", 4);
+}
+
 }
 
 void Logger::logData(QString data, int level) {
 
 #if defined(ENABLE_LOG)
 
-   // QFile outFile(filePath);
+    if(outFile->isOpen()){
 
-    if(!outFile->isOpen())
-    {
-        qDebug() << "Log File NOT open";
-        LocalMessage::instance()->showMessage("Could Not Open Log File!", 4);
-        return;
+        QDateTime dateTime(QDateTime::currentDateTime());
+
+        QString timeStr(dateTime.toString("dd-MM-yyyy HH:mm:ss:zzz"));
+
+        QTextStream outStream(outFile);
+
+        outStream << timeStr << " Data: " << data ;
+
+        //outFile.close(); // is never called
     }
-
-    QDateTime dateTime(QDateTime::currentDateTime());
-
-    QString timeStr(dateTime.toString("dd-MM-yyyy HH:mm:ss:zzz"));
-
-    QTextStream outStream(outFile);
-
-    outStream << timeStr << " Data: " << data ;
-
-
-    //outFile.close();
 #endif
 }
 
