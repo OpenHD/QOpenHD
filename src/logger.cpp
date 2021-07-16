@@ -66,17 +66,20 @@ filePath="/tmp/QOpenHD-Logs.txt";
 filePath="%userprofiles%\AppData\Local\QOpenHD_Log.log"; //untested
 #endif
 
+
+outFile = new QFile(filePath);
+
+outFile->open(QIODevice::WriteOnly | QIODevice::Append);
+
 }
 
 void Logger::logData(QString data, int level) {
 
 #if defined(ENABLE_LOG)
 
-    QFile outFile(filePath);
+   // QFile outFile(filePath);
 
-    outFile.open(QIODevice::WriteOnly | QIODevice::Append);
-
-    if(!outFile.isOpen())
+    if(!outFile->isOpen())
     {
         qDebug() << "Log File NOT open";
         LocalMessage::instance()->showMessage("Could Not Open Log File!", 4);
@@ -87,11 +90,12 @@ void Logger::logData(QString data, int level) {
 
     QString timeStr(dateTime.toString("dd-MM-yyyy HH:mm:ss:zzz"));
 
-    QTextStream outStream(&outFile);
+    QTextStream outStream(outFile);
 
     outStream << timeStr << " Data: " << data ;
 
-    outFile.close();
+
+    //outFile.close();
 #endif
 }
 
