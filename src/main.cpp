@@ -23,6 +23,11 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "openhd.h"
 #include "mavlinktelemetry.h"
 #include "localmessage.h"
+
+//#if defined(ENABLE_LOG)
+#include "logger.h"
+//#endif
+
 #include "frskytelemetry.h"
 #include "msptelemetry.h"
 #include "ltmtelemetry.h"
@@ -235,6 +240,10 @@ int main(int argc, char *argv[]) {
 
     qmlRegisterSingletonType<OpenHDPi>("OpenHD", 1, 0, "OpenHDPi", openHDPiSingletonProvider);
     qmlRegisterSingletonType<LocalMessage>("OpenHD", 1, 0, "LocalMessage", localMessageSingletonProvider);
+
+    //#if defined(ENABLE_LOG)
+    qmlRegisterSingletonType<Logger>("OpenHD", 1, 0, "Logger", loggerSingletonProvider);
+    //#endif
 
     qmlRegisterType<OpenHDSettings>("OpenHD", 1,0, "OpenHDSettings");
 
@@ -465,6 +474,12 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
     engine.rootContext()->setContextProperty("EnableVR", QVariant(false));
     #endif
 
+    #if defined(ENABLE_LOG)
+    engine.rootContext()->setContextProperty("EnableLog", QVariant(true));
+    #else
+    engine.rootContext()->setContextProperty("EnableLog", QVariant(false));
+    #endif
+
     #if defined(ENABLE_ADSB)
     auto adsbVehicleManager = ADSBVehicleManager::instance();
     engine.rootContext()->setContextProperty("AdsbVehicleManager", adsbVehicleManager);
@@ -624,4 +639,6 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
 #endif
 #endif
     return retval;
+
+
 }
