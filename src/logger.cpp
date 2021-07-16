@@ -21,7 +21,6 @@
  * -the class is a bit hard to control with the build directive (enable_log)
  * -all of the platforms paths need to be determined.. the only accurate one
  * is for the rpi.
- * -the file should be opened in init once. not constantly opened and closed
  */
 
 
