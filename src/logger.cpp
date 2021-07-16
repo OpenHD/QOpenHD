@@ -48,19 +48,22 @@ void Logger::init() {
 filePath="/boot/QOpenHD_Log.log";
 #endif
 #if defined(__apple__)
-filePath="/boot/QOpenHD_Log.log";
+//TODO
 #endif
 #if defined(__macos__)
-filePath="/boot/QOpenHD_Log.log";
+//TODO
+#endif
+#if defined(__ios__)
+//TODO
 #endif
 #if defined(__android__)
-filePath="/boot/QOpenHD_Log.log";
+filePath="/tmp/QOpenHD_Log.log"; //untested
 #endif
 #if defined(__desktoplinux__)
 filePath="/tmp/QOpenHD-Logs.txt";
 #endif
 #if defined(__windows__)
-filePath="/boot/QOpenHD_Log.log";
+filePath="%userprofiles%\AppData\Local\QOpenHD_Log.log"; //untested
 #endif
 
 }

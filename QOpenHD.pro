@@ -225,7 +225,7 @@ iOSBuild {
     CONFIG += EnableADSB
     #CONFIG += EnableBlackbox
     #CONFIG += EnableVR
-    #CONFIG += EnableLog
+    #CONFIG += EnableLog //does not work due to filepath not set
 
     app_launch_images.files = $$PWD/icons/LaunchScreen.png $$files($$PWD/icons/LaunchScreen.storyboard)
     QMAKE_BUNDLE_DATA += app_launch_images
@@ -272,7 +272,7 @@ MacBuild {
     CONFIG += EnableADSB
     #CONFIG += EnableBlackbox
     #CONFIG += EnableVR
-    #CONFIG += EnableLog
+    #CONFIG += EnableLog //does not work due to filepath not set
 
     EnableVideoRender {
         QT += multimedia
@@ -318,7 +318,7 @@ JetsonBuild {
     CONFIG += EnableADSB
     #CONFIG += EnableBlackbox
     #CONFIG += EnableVR
-    #CONFIG += EnableLog
+    #CONFIG += EnableLog //does not work due to filepath not set
 
     CONFIG += EnableGStreamer
 
