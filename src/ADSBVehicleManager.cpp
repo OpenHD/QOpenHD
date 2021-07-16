@@ -9,6 +9,7 @@
 
 #include "ADSBVehicleManager.h"
 #include "localmessage.h"
+#include "logger.h"
 #include "openhd.h"
 #include "mavlinktelemetry.h"
 
@@ -326,6 +327,7 @@ ADSBSdr::ADSBSdr()
 }
 
 void ADSBSdr::requestData(void) {
+    Logger::instance()->logData("request data", 1);
     _adsb_api_sdr = _settings.value("adsb_api_sdr").toBool();
     _show_adsb_sdr = _settings.value("show_adsb").toBool();
 
@@ -346,7 +348,7 @@ void ADSBSdr::requestData(void) {
 }
 
 void ADSBSdr::processReply(QNetworkReply *reply) {
-
+    Logger::instance()->logData("process reply", 1);
     if (!_adsb_api_sdr || !_show_adsb_sdr) {
         return;
     }
@@ -393,7 +395,7 @@ void ADSBSdr::processReply(QNetworkReply *reply) {
     }
 
     foreach (const QJsonValue & val, array){
-
+        Logger::instance()->logData("For Each Loop", 1);
         ADSBVehicle::VehicleInfo_t adsbInfo;
         bool icaoOk;
 
@@ -402,11 +404,12 @@ void ADSBSdr::processReply(QNetworkReply *reply) {
         // by "~" in case it isn't a valid ICAO. How this will 
         // behave then?
         QString icaoAux = val.toObject().value("hex").toString();
+        Logger::instance()->logData("icaoAux:"+icaoAux, 1);
         adsbInfo.icaoAddress = icaoAux.toUInt(&icaoOk, 16);
         
         // Only continue if icao number is ok
         if (icaoOk) {
-
+            Logger::instance()->logData("icao ok!", 1);
             // calsign
             adsbInfo.callsign = val.toObject().value("flight").toString();
 
@@ -440,6 +443,7 @@ void ADSBSdr::processReply(QNetworkReply *reply) {
             emit adsbVehicleUpdate(adsbInfo);
         }
         else {
+            Logger::instance()->logData("icao REJECTED!", 1);
             qDebug()<<"ICAO number NOT OK!";
         }
     }

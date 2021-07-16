@@ -68,6 +68,7 @@ SOURCES += \
     src/horizonladder.cpp \
     src/linkmicroservice.cpp \
     src/localmessage.cpp \
+    src/logger.cpp \
     src/ltmtelemetry.cpp \
     src/main.cpp \
     src/managesettings.cpp \
@@ -104,6 +105,8 @@ HEADERS += \
     inc/headingladder.h \
     inc/horizonladder.h \
     inc/linkmicroservice.h \
+    inc/logger.h \
+    inc/logger_t.h \
     inc/managesettings.h \
     inc/mavlinkbase.h \
     inc/missionwaypoint.h \
@@ -222,6 +225,7 @@ iOSBuild {
     CONFIG += EnableADSB
     #CONFIG += EnableBlackbox
     #CONFIG += EnableVR
+    #CONFIG += EnableLog
 
     app_launch_images.files = $$PWD/icons/LaunchScreen.png $$files($$PWD/icons/LaunchScreen.storyboard)
     QMAKE_BUNDLE_DATA += app_launch_images
@@ -268,6 +272,7 @@ MacBuild {
     CONFIG += EnableADSB
     #CONFIG += EnableBlackbox
     #CONFIG += EnableVR
+    #CONFIG += EnableLog
 
     EnableVideoRender {
         QT += multimedia
@@ -294,10 +299,11 @@ LinuxBuild {
     CONFIG += EnablePiP
     CONFIG += EnableGStreamer
     #CONFIG += EnableLink
-    #CONFIG += EnableCharts
+    CONFIG += EnableCharts
     CONFIG += EnableADSB
     #CONFIG += EnableBlackbox
     #CONFIG += EnableVR
+    CONFIG += EnableLog
 
     message("LinuxBuild - config")
 }
@@ -312,6 +318,7 @@ JetsonBuild {
     CONFIG += EnableADSB
     #CONFIG += EnableBlackbox
     #CONFIG += EnableVR
+    #CONFIG += EnableLog
 
     CONFIG += EnableGStreamer
 
@@ -335,6 +342,7 @@ RaspberryPiBuild {
     CONFIG += EnableADSB
     #CONFIG += EnableBlackbox
     #CONFIG += EnableVR
+    CONFIG += EnableLog
 
     CONFIG += EnableVideoRender
 
@@ -364,6 +372,7 @@ WindowsBuild {
     CONFIG += EnableADSB
     #CONFIG += EnableBlackbox
     #CONFIG += EnableVR
+    #CONFIG += EnableLog
 
     DEFINES += GST_GL_HAVE_WINDOW_WIN32=1
     DEFINES += GST_GL_HAVE_PLATFORM_WGL=1
@@ -384,6 +393,7 @@ AndroidBuild {
     CONFIG += EnableADSB
     #CONFIG += EnableBlackbox
     #CONFIG += EnableVR
+    #CONFIG += EnableLog
 
     EnableGStreamer {
         OTHER_FILES += \
@@ -438,6 +448,13 @@ EnableBlackbox {
 EnableVR {
     message("EnableVR")
     DEFINES += ENABLE_VR
+}
+
+
+EnableLog {
+    message("EnableLog")
+    DEFINES += ENABLE_LOG
+
 }
 
 
