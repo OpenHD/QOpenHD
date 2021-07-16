@@ -404,42 +404,44 @@ void ADSBSdr::processReply(QNetworkReply *reply) {
         QString icaoAux = val.toObject().value("hex").toString();
         adsbInfo.icaoAddress = icaoAux.toUInt(&icaoOk, 16);
         
-        // Skip this element if icao number is not ok
-        if (!icaoOk) {
-            continue;
+        // Only continue if icao number is ok
+        if (icaoOk) {
+
+            // calsign
+            adsbInfo.callsign = val.toObject().value("flight").toString();
+
+            if (adsbInfo.callsign.length() == 0) {
+                adsbInfo.callsign = "N/A";
+            } else {
+                adsbInfo.availableFlags |= ADSBVehicle::CallsignAvailable;
+            }
+
+            // location comes in lat lon format, but we need it as QGeoCoordinate
+            double lat = val.toObject().value("lat").toDouble();
+            double lon = val.toObject().value("lon").toDouble();
+            QGeoCoordinate location(lat, lon);
+            adsbInfo.location = location;
+            adsbInfo.availableFlags |= ADSBVehicle::LocationAvailable;
+
+            // TODO - we must review the units here
+            // rest of fields
+            adsbInfo.altitude = (val.toObject().value("altitude").toInt() * 0.3048); //feet to meters
+            adsbInfo.availableFlags |= ADSBVehicle::AltitudeAvailable;
+            adsbInfo.velocity = round(val.toObject().value("speed").toDouble() * 1.852); // knots to km/h
+            adsbInfo.availableFlags |= ADSBVehicle::VelocityAvailable;
+            adsbInfo.heading = val.toObject().value("track").toDouble();
+            adsbInfo.availableFlags |= ADSBVehicle::HeadingAvailable;
+            adsbInfo.lastContact = val.toObject().value("seen_pos").toInt();
+            adsbInfo.availableFlags |= ADSBVehicle::LastContactAvailable;
+            adsbInfo.verticalVel = round(val.toObject().value("vert_rate").toDouble() * 0.00508); //feet/min to m/s
+            adsbInfo.availableFlags |= ADSBVehicle::VerticalVelAvailable;
+
+            // this is received on adsbvehicleupdate slot
+            emit adsbVehicleUpdate(adsbInfo);
         }
-
-        // calsign
-        adsbInfo.callsign = val.toObject().value("flight").toString();
-
-        if (adsbInfo.callsign.length() == 0) {
-            adsbInfo.callsign = "N/A";
-        } else {
-            adsbInfo.availableFlags |= ADSBVehicle::CallsignAvailable;
+        else {
+            qDebug()<<"ICAO number NOT OK!";
         }
-
-        // location comes in lat lon format, but we need it as QGeoCoordinate
-        double lat = val.toObject().value("lat").toDouble();
-        double lon = val.toObject().value("lon").toDouble();
-        QGeoCoordinate location(lat, lon);
-        adsbInfo.location = location;
-        adsbInfo.availableFlags |= ADSBVehicle::LocationAvailable;  
-
-        // TODO - we must review the units here
-        // rest of fields
-        adsbInfo.altitude = (val.toObject().value("altitude").toInt() * 0.3048); //feet to meters
-        adsbInfo.availableFlags |= ADSBVehicle::AltitudeAvailable;
-        adsbInfo.velocity = round(val.toObject().value("speed").toDouble() * 1.852); // knots to km/h
-        adsbInfo.availableFlags |= ADSBVehicle::VelocityAvailable;
-        adsbInfo.heading = val.toObject().value("track").toDouble();
-        adsbInfo.availableFlags |= ADSBVehicle::HeadingAvailable;
-        adsbInfo.lastContact = val.toObject().value("seen_pos").toInt();
-        adsbInfo.availableFlags |= ADSBVehicle::LastContactAvailable;
-        adsbInfo.verticalVel = round(val.toObject().value("vert_rate").toDouble() * 0.00508); //feet/min to m/s
-        adsbInfo.availableFlags |= ADSBVehicle::VerticalVelAvailable;
-
-        // this is received on adsbvehicleupdate slot
-        emit adsbVehicleUpdate(adsbInfo);
     }
     reply->deleteLater();
 }
