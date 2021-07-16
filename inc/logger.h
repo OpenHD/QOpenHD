@@ -16,12 +16,15 @@ public:
 
     void logData(QString data, int level);
 
+    QFile *outFile;
+
 signals:    
 
 private:
     void init();
     QString filePath;
-    //QFile outFile;
+
+
 };
 
 
