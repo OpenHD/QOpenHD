@@ -26,17 +26,17 @@ BaseWidget {
     defaultHCenter: false
     defaultVCenter: false
 
-    widgetDetailWidth: 120
-    hasWidgetDetail: true
+    widgetActionHeight: 325
+    widgetActionWidth: 120
+    hasWidgetDetail: false
+    hasWidgetAction: true
 
-    widgetDetailComponent: ScrollView {
+    widgetActionComponent:
 
-        contentHeight: gpioSettingsColumn.height
-        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
-        clip: true
         Column {
             id: gpioSettingsColumn
             spacing: 6
+            height:325
             Connections {
                 target: OpenHD
                 function onAir_gpio_changed(air_gpio) {
@@ -163,7 +163,6 @@ BaseWidget {
                 onCheckedChanged: OpenHD.setAirGPIO(7, checked)
             }
         }
-    }
 
     Item {
         id: widgetInner
