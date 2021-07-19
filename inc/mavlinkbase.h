@@ -135,7 +135,7 @@ signals:
     void bindError();
 
 public slots:
-    void onStarted();
+    void onStarted();    
     void request_Mission_Changed();
 
 protected slots:
@@ -155,6 +155,7 @@ protected:
     void sendData(char* data, int len);
     void sendCommand(MavlinkCommand command);
     void setDataStreamRate(MAV_DATA_STREAM streamType, uint8_t hz);
+    void requestAutopilotInfo();
 
     void reconnectTCP();
 
