@@ -44,7 +44,7 @@ void Logger::init() {
     qDebug() << "Logger::init()";
 
 #if defined(__rasp_pi__)
-filePath="/boot/QOpenHD_Log.log";
+filePath="/boot/QOpenHD_Log.txt";
 #endif
 #if defined(__apple__)
 //TODO

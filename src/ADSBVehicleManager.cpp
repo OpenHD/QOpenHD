@@ -395,7 +395,7 @@ void ADSBSdr::processReply(QNetworkReply *reply) {
     }
 
     foreach (const QJsonValue & val, array){
-        Logger::instance()->logData("For Each Loop", 1);
+        Logger::instance()->logData("For Each Loop... /n", 1);
         ADSBVehicle::VehicleInfo_t adsbInfo;
         bool icaoOk;
 
@@ -443,7 +443,7 @@ void ADSBSdr::processReply(QNetworkReply *reply) {
             emit adsbVehicleUpdate(adsbInfo);
         }
         else {
-            Logger::instance()->logData("icao REJECTED!", 1);
+            Logger::instance()->logData("icao REJECTED! /n", 1);
             qDebug()<<"ICAO number NOT OK!";
         }
     }

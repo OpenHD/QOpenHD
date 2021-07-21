@@ -199,23 +199,29 @@ BaseWidget {
 
         ColumnLayout {
             width: 200
+            spacing: 10
 
-
-            /*
             Item {
+                height: 32
                 Text {
-                    id: name
-                    text: qsTr("Vehicle type: "+OpenHD.mav_type)
+                    text: {
+                        if(OpenHD.mav_type=="ARDUPLANE" || OpenHD.mav_type=="ARDUCOPTER"){
+                            return qsTr("Vehicle type: "+OpenHD.mav_type);
+                        }
+                        else {
+                            return qsTr("Only Ardupilot Commands Supported");
+                        }
+                    }
                     color: "white"
                     font.bold: true
                     font.pixelSize: detailPanelFontPixels
                     anchors.left: parent.left
                 }
             }
-*/
+
             ConfirmSlider {
 
-                //visible: OpenHD.mav_type=="ARDUPLANE" || OpenHD.mav_type=="ARDUCOPTER"
+                visible: OpenHD.mav_type=="ARDUPLANE" || OpenHD.mav_type=="ARDUCOPTER"
                 text_off: qsTr("Request Mission")
 
                 msg_id: 43 //mission_request_list
