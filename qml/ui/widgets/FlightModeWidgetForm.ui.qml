@@ -303,8 +303,15 @@ BaseWidget {
             spacing: 10
 
             Text {
-                id: name
-                text: qsTr("Vehicle type: " + OpenHD.mav_type)
+                height: 32
+                text: {
+                    if(OpenHD.mav_type=="ARDUPLANE" || OpenHD.mav_type=="ARDUCOPTER"){
+                        return qsTr("Vehicle type: "+OpenHD.mav_type);
+                    }
+                    else {
+                        return qsTr("Only Ardupilot Commands Supported");
+                    }
+                }
                 color: "white"
                 font.bold: true
                 font.pixelSize: detailPanelFontPixels

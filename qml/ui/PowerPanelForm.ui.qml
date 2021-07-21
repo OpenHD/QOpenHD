@@ -311,6 +311,14 @@ Rectangle {
 
         Card {
             id: fcBox
+            visible: {
+                if(OpenHD.mav_type=="ARDUPLANE" || OpenHD.mav_type=="ARDUCOPTER"){
+                    return true;
+                }
+                else{
+                    return false;
+                }
+            }
             height: 224
             Layout.fillWidth: true
             cardName: qsTr("Flight Controller")

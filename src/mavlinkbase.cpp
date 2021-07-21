@@ -68,7 +68,7 @@ void MavlinkBase::onStarted() {
 }
 
 void MavlinkBase::onTCPConnected() {
-    //qDebug() << "MavlinkBase::onTCPConnected()";
+    qDebug() << "MavlinkBase::onTCPConnected()";
 }
 
 void MavlinkBase::onTCPDisconnected() {

@@ -223,6 +223,8 @@ BaseWidget {
 
         ColumnLayout {
             width: 200
+            spacing: 10
+
             Item {
                 width: parent.width
                 height: 32
@@ -271,10 +273,16 @@ BaseWidget {
             }
 
             Item {
+                height: 32
                 Text {
-                    id: name
-                    visible: false
-                    text: qsTr("Vehicle type: " + OpenHD.mav_type)
+                    text: {
+                        if(OpenHD.mav_type=="ARDUPLANE" || OpenHD.mav_type=="ARDUCOPTER"){
+                            return qsTr("Vehicle type: "+OpenHD.mav_type);
+                        }
+                        else {
+                            return qsTr("Only Ardupilot Commands Supported");
+                        }
+                    }
                     color: "white"
                     font.bold: true
                     font.pixelSize: detailPanelFontPixels

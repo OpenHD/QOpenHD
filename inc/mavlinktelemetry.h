@@ -49,6 +49,8 @@ private:
     int m_arm_disarm=99;
     int m_reboot_shutdown=99;
     int m_total_waypoints=0;
+    bool sent_autopilot_request=false;
+    int ap_version=0;
 };
 
 #endif

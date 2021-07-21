@@ -69,7 +69,8 @@ void MavlinkTelemetry::requestSysIdSettings() {
     //qDebug() << "requestTargetSysId called";
     QSettings settings;
     m_restrict_sysid = settings.value("filter_mavlink_telemetry", false).toBool();
-    targetSysID = settings.value("fc_mavlink_sysid", m_util.default_mavlink_sysid()).toInt();   
+    targetSysID = settings.value("fc_mavlink_sysid", m_util.default_mavlink_sysid()).toInt();
+    //qDebug() << "requestTargetSysId="<<targetSysID;
 }
 
 void MavlinkTelemetry::pauseTelemetry(bool toggle) {
@@ -126,6 +127,12 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
 
                     auto autopilot = (MAV_AUTOPILOT)heartbeat.autopilot;
 
+                    //upon first heartbeat find out if autopilot is ardupilot or "other"
+                    if (!sent_autopilot_request){
+                        requestAutopilotInfo();
+                        sent_autopilot_request=true;
+                    }
+
                     switch (autopilot) {
                         case MAV_AUTOPILOT_PX4: {
                             if (heartbeat.base_mode & MAV_MODE_FLAG_CUSTOM_MODE_ENABLED) {
@@ -146,9 +153,11 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
                                     case MAV_TYPE_FIXED_WING: {
                                         auto plane_mode = m_util.plane_mode_from_enum((PLANE_MODE)custom_mode);
                                         OpenHD::instance()->set_flight_mode(plane_mode);
-                                        OpenHD::instance()->set_mav_type("ARDUPLANE");
 
-                                        //qDebug() << "Mavlink Mav Type= ARDUPLANE";
+                                        if(ap_version>999){
+                                            OpenHD::instance()->set_mav_type("ARDUPLANE");
+                                            //qDebug() << "Mavlink Mav Type= ARDUPLANE";
+                                        }
                                         break;
                                     }
                                     case MAV_TYPE_GROUND_ROVER: {
@@ -159,9 +168,11 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
                                     case MAV_TYPE_QUADROTOR: {
                                         auto copter_mode = m_util.copter_mode_from_enum((COPTER_MODE)custom_mode);
                                         OpenHD::instance()->set_flight_mode(copter_mode);
-                                        OpenHD::instance()->set_mav_type("ARDUCOPTER");
 
-                                        //qDebug() << "Mavlink Mav Type= ARDUCOPTER";
+                                        if(ap_version>999){
+                                            OpenHD::instance()->set_mav_type("ARDUCOPTER");
+                                            //qDebug() << "Mavlink Mav Type= ARDUCOPTER";
+                                        }
                                         break;
                                     }
                                     case MAV_TYPE_SUBMARINE: {
@@ -208,17 +219,17 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
         mavlink_autopilot_version_t autopilot_version;
         mavlink_msg_autopilot_version_decode(&msg, &autopilot_version);
 
-        auto version = autopilot_version.flight_sw_version;
-        auto board_version = autopilot_version.board_version;
-        auto os_version = autopilot_version.os_sw_version;
-        auto product_id = autopilot_version.product_id;
-        auto uid = autopilot_version.uid;
+        ap_version = autopilot_version.flight_sw_version;
+        auto ap_board_version = autopilot_version.board_version;
+        auto ap_os_version = autopilot_version.os_sw_version;
+        auto ap_product_id = autopilot_version.product_id;
+        auto ap_uid = autopilot_version.uid;
 
-        qDebug() << "MAVLINK AUTOPILOT VERSION=" <<  version;
-        qDebug() << "MAVLINK AUTOPILOT board_version=" <<  board_version;
-        qDebug() << "MAVLINK AUTOPILOT os_version=" <<  os_version;
-        qDebug() << "MAVLINK AUTOPILOT product_id=" <<  product_id;
-        qDebug() << "MAVLINK AUTOPILOT uid=" <<  uid;
+        qDebug() << "MAVLINK AUTOPILOT VERSION=" <<  ap_version;
+        qDebug() << "MAVLINK AUTOPILOT board_version=" <<  ap_board_version;
+        qDebug() << "MAVLINK AUTOPILOT os_version=" <<  ap_os_version;
+        qDebug() << "MAVLINK AUTOPILOT product_id=" <<  ap_product_id;
+        qDebug() << "MAVLINK AUTOPILOT uid=" <<  ap_uid;
         break;
     }
 
@@ -264,8 +275,6 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
                 setDataStreamRate(MAV_DATA_STREAM_POSITION, 3);
                 setDataStreamRate(MAV_DATA_STREAM_RAW_SENSORS, 2);
                 setDataStreamRate(MAV_DATA_STREAM_RC_CHANNELS, 2);
-
-                requestAutopilotInfo();
             }
 
             break;
