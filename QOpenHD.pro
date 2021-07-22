@@ -61,6 +61,7 @@ SOURCES += \
     src/FPS.cpp \
     src/altitudeladder.cpp \
     src/blackboxmodel.cpp \
+    src/drawingcanvas.cpp \
     src/flightpathvector.cpp \
     src/frskytelemetry.cpp \
     src/gpiomicroservice.cpp \
@@ -100,6 +101,7 @@ HEADERS += \
     inc/FPS.h \
     inc/altitudeladder.h \
     inc/blackboxmodel.h \
+    inc/drawingcanvas.h \
     inc/gpiomicroservice.h \
     inc/flightpathvector.h \
     inc/headingladder.h \
