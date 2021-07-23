@@ -4,6 +4,7 @@ import QtQuick.Shapes 1.0
 
 import QtLocation 5.12
 import QtPositioning 5.12
+import OpenHD 1.0
 
 Map {
     id: map
@@ -167,43 +168,27 @@ Map {
 
                 MapQuickItem {
                     id: marker
-                    property alias lastMouseX: markerMouseArea.lastX
-                    property alias lastMouseY: markerMouseArea.lastY
 
-                    anchorPoint.x: image.width/2
-                    anchorPoint.y: image.height/2
-                    width: image.width
-                    height: image.height
+                    anchorPoint.x: icon.width/2
+                    anchorPoint.y: icon.height/2
+                    width: icon.width
+                    height: icon.height
 
 
                     sourceItem:
 
-                        Image {
+                        DrawingCanvas {
+                            id: icon
+                            anchors.centerIn: parent
 
-                        id: image
-                        source: "/airplanemarkerblur.png"
-
-                        Rectangle{// has to be here prior to rotation call
-                            id: speedtail
-
-                            x: image.width*.4
-                            y: image.height*.8
-
-                            width: image.width*.2
-                            height: {
-                                if (object.velocity === undefined) {
-                                    console.log("qml: object velocity undefined")
-                                    return 0;
-                                }
-                                else {
-                                    return object.velocity / 2;
-                                }
-                            }
-                            opacity: .5
-                            color: "white"
-                            border.color: "grey"
-                            border.width: 1
-                        }
+                            /* could turn the width and height into settings and thereby clip the fpv
+                              *even theough clipping is false it still clips
+                            */
+                            width: 50
+                            height: 50
+                            clip: false
+                            color: settings.color_shape
+                            glow: settings.color_glow
 
                         rotation: {
                             if (object.heading === undefined) {
@@ -225,48 +210,15 @@ Map {
                             }
                         }
 
-                        //UNUSED MOUSE AREA.. reating for future functionality
-                        opacity: markerMouseArea.pressed ? 0.6 : 1.0
-                        MouseArea  {
-                            id: markerMouseArea
-                            property int pressX : -1
-                            property int pressY : -1
-                            property int jitterThreshold : 10
-                            property int lastX: -1
-                            property int lastY: -1
-                            anchors.fill: parent
-                            hoverEnabled : false
-                            drag.target: marker
-                            preventStealing: true
 
-                            onPressed : {
-                                map.pressX = mouse.x
-                                map.pressY = mouse.y
-                                map.currentMarker = -1
-                                for (var i = 0; i< map.markers.length; i++){
-                                    if (marker == map.markers[i]){
-                                        map.currentMarker = i
-                                        break
-                                    }
-                                }
-                            }
 
-                            onPressAndHold:{
-                                if (Math.abs(map.pressX - mouse.x ) < map.jitterThreshold
-                                        && Math.abs(map.pressY - mouse.y ) < map.jitterThreshold) {
-                                    var p = map.fromCoordinate(marker.coordinate)
-                                    lastX = p.x
-                                    lastY = p.y
-                                    map.showMarkerMenu(marker.coordinate)
-                                }
-                            }
-                        }
+
 
                         Rectangle{ //holder to "derotate" info block
                             id: holder
 
-                            x: image.width+5
-                            y: image.height/2
+                            x: icon.width+5
+                            y: icon.height/2
                             rotation: {
                                 if (object.heading === undefined) {
                                     console.log("qml: model velocity undefined")
@@ -284,15 +236,15 @@ Map {
                                     return -object.heading;
                                 }
                             }
-                            width: image.width
-                            height: image.height
+                            width: icon.width
+                            height: icon.height
                             color: "transparent"
 
                             Rectangle{
                                 id: background
 
-                                width: image.width*1.25
-                                height: image.height
+                                width: icon.width*1.25
+                                height: icon.height
                                 color: "black"
                                 opacity: .2
                                 border.width: 2
@@ -305,7 +257,7 @@ Map {
                                 anchors.top: holder.top
                                 topPadding: 2
                                 leftPadding: 10
-                                width: image.width
+                                width: icon.width
                                 color: "white"
                                 //font.bold: true
                                 font.pixelSize: 11
@@ -327,7 +279,7 @@ Map {
                                 anchors.top: callsign.bottom
                                 topPadding: 2
                                 leftPadding: 10
-                                width: image.width
+                                width: icon.width
                                 color: "white"
                                 font.bold: true
                                 font.pixelSize: 11
@@ -336,13 +288,15 @@ Map {
                                     // check if traffic is a threat
                                     if (object.altitude - OpenHD.alt_msl < 300 && model.distance < 2){
                                         //console.log("TRAFFIC WARNING");
-                                        image.source="/airplanemarkerwarn.png";
+ //todo
+                                        //image.source="/airplanemarkerwarn.png";
                                         background.border.color = "red";
                                         background.border.width = 5;
                                         background.opacity = 0.5;
                                     } else if (object.altitude - OpenHD.alt_msl < 500 && model.distance < 5){
                                         //console.log("TRAFFIC ALERT");
-                                        image.source="/airplanemarkeralert.png";
+ //todo
+                                        //image.source="/airplanemarkeralert.png";
                                         background.border.color = "yellow";
                                         background.border.width = 5;
                                         background.opacity = 0.5;
@@ -384,7 +338,7 @@ Map {
                                 anchors.top: alt.bottom
                                 topPadding: 2
                                 leftPadding: 10
-                                width: image.width
+                                width: icon.width
                                 color: "white"
                                 //font.bold: true
                                 font.pixelSize: 11
