@@ -26,9 +26,9 @@ void DrawingCanvas::paint(QPainter* painter) {
     painter->setPen(m_color);
 
     // Has to be awesome font for the glyph
-    QFont m_fontNormal = QFont("Font Awesome 5 Free", 20 , QFont::PreferAntialias, false);
+    QFont m_fontNormal = QFont("osdicons", 25 , QFont::PreferAntialias, true);
 
-    QFont m_fontBig = QFont("Font Awesome 5 Free", 20*1.2, QFont::PreferAntialias, false);
+    QFont m_fontBig = QFont("osdicons", 25*1.1, QFont::PreferAntialias, true);
     \
 
     setOpacity(1.0);
@@ -39,21 +39,22 @@ void DrawingCanvas::paint(QPainter* painter) {
     painter->rotate(m_heading-90);//glyph is oriented +90
 
     //draw speed tail
-    painter->fillRect(QRectF(0, -12, -m_speed/3, 4), "white");
+    painter->setOpacity(0.5);
+    painter->fillRect(QRectF(0, -13, -m_speed/3, 4), "white");
     painter->setPen("grey");
-    painter->drawRect(QRectF(0, -12, -m_speed/3, 4));
+    painter->drawRect(QRectF(0, -13, -m_speed/3, 4));
 
     //add icon glyph of airplane
+    painter->setOpacity(1.0);
     painter->setPen("grey");
     painter->setFont(m_fontBig);
-    painter->drawText(0, 0, "\ue203");
-
+    painter->drawText(0, 0, "\ue3d0");
 
     painter->setPen("black");
     painter->setFont(m_fontNormal);
-    painter->drawText(1, -2, "\ue203");
+    painter->drawText(1, -2, "\ue3d0");
 
-
+    //draw data block
 
 
 
