@@ -354,9 +354,9 @@ void ADSBSdr::processReply(QNetworkReply *reply) {
     }
 
     if (reply->error()) {
-        qDebug() << "ADSB request error!";
+        qDebug() << "ADSB SDR request error!";
         qDebug() << reply->errorString();
-        LocalMessage::instance()->showMessage("ADSB Reply Error", 4);
+        LocalMessage::instance()->showMessage("ADSB SDR Reply Error", 4);
         reply->deleteLater();
         return;
     }
@@ -366,8 +366,8 @@ void ADSBSdr::processReply(QNetworkReply *reply) {
     QJsonDocument doc = QJsonDocument::fromJson(data, &errorPtr);
 
     if (doc.isNull()) {
-        qDebug() << "ADSB Openskynetwork response: Parse failed";
-        LocalMessage::instance()->showMessage("ADSB Parse Error", 4);
+        qDebug() << "ADSB SDR response: Parse failed";
+        LocalMessage::instance()->showMessage("ADSB SDR Parse Error", 4);
         reply->deleteLater();
         return;
     }
@@ -422,6 +422,11 @@ void ADSBSdr::processReply(QNetworkReply *reply) {
             // location comes in lat lon format, but we need it as QGeoCoordinate
             double lat = val.toObject().value("lat").toDouble();
             double lon = val.toObject().value("lon").toDouble();
+            if (lat==0.0 || lon == 0.0){
+                //skip this entry- no point in adding it iff theres no location
+                qDebug()<<"Skipped ADSB SDR vehicle because no Location.";
+                continue;
+            }
             QGeoCoordinate location(lat, lon);
             adsbInfo.location = location;
             adsbInfo.availableFlags |= ADSBVehicle::LocationAvailable;
