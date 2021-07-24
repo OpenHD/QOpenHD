@@ -184,31 +184,39 @@ Map {
                             /* could turn the width and height into settings and thereby clip the fpv
                               *even theough clipping is false it still clips
                             */
-                            width: 50
-                            height: 50
+                            width: 200
+                            height: 200
                             clip: false
                             color: settings.color_shape
                             glow: settings.color_glow
 
-                        rotation: {
-                            if (object.heading === undefined) {
-                                console.log("qml: model heading undefined")
-                                return 0;
+                            heading: {
+                                if (object.heading === undefined) {
+                                    console.log("qml: model heading undefined")
+                                    return 0;
+                                }
+                                if (settings.map_orientation === true){
+                                    var orientation = object.heading-OpenHD.hdg;
+                                    if (orientation < 0) orientation += 360;
+                                    if (orientation >= 360) orientation -=360;
+                                    return orientation;
+                                }
+                                else {
+                                    //console.log("TRACK=", object.heading);
+                                    return object.heading;
+                                }
                             }
 
-
-
-                            if (settings.map_orientation === true){
-                                var orientation = object.heading-OpenHD.hdg;
-                                if (orientation < 0) orientation += 360;
-                                if (orientation >= 360) orientation -=360;
-                                return orientation;
-                            }
-                            else {
-                                //console.log("TRACK=", object.heading);
-                                return object.heading;
-                            }
-                        }
+                            speed: {
+                                       if (object.velocity === undefined) {
+                                           return 0;
+                                       }
+                                       else {
+  //todo add mph and kph (km is bottom
+                                           return settings.enable_imperial ? Math.floor(object.velocity * 2.23694)
+                                                                           : Math.floor(object.velocity * 3.6);
+                                       }
+                                   }
 
 
 
@@ -217,9 +225,9 @@ Map {
                         Rectangle{ //holder to "derotate" info block
                             id: holder
 
-                            x: icon.width+5
-                            y: icon.height/2
-                            rotation: {
+                            x: 50+5
+                            y: 50/2
+                       /*     rotation: {
                                 if (object.heading === undefined) {
                                     console.log("qml: model velocity undefined")
                                     return 0;
@@ -236,6 +244,7 @@ Map {
                                     return -object.heading;
                                 }
                             }
+                            */
                             width: icon.width
                             height: icon.height
                             color: "transparent"
@@ -243,8 +252,8 @@ Map {
                             Rectangle{
                                 id: background
 
-                                width: icon.width*1.25
-                                height: icon.height
+                                width: 50*1.25
+                                height: 50
                                 color: "black"
                                 opacity: .2
                                 border.width: 2
@@ -257,7 +266,7 @@ Map {
                                 anchors.top: holder.top
                                 topPadding: 2
                                 leftPadding: 10
-                                width: icon.width
+                                width: 50
                                 color: "white"
                                 //font.bold: true
                                 font.pixelSize: 11
@@ -279,7 +288,7 @@ Map {
                                 anchors.top: callsign.bottom
                                 topPadding: 2
                                 leftPadding: 10
-                                width: icon.width
+                                width: 50
                                 color: "white"
                                 font.bold: true
                                 font.pixelSize: 11
@@ -338,7 +347,7 @@ Map {
                                 anchors.top: alt.bottom
                                 topPadding: 2
                                 leftPadding: 10
-                                width: icon.width
+                                width: 50
                                 color: "white"
                                 //font.bold: true
                                 font.pixelSize: 11

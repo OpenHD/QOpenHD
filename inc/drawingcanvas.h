@@ -11,6 +11,10 @@ class DrawingCanvas : public QQuickPaintedItem {
     Q_PROPERTY(bool fpvInvertPitch MEMBER m_fpvInvertPitch WRITE setFpvInvertPitch NOTIFY fpvInvertPitchChanged)
     Q_PROPERTY(bool fpvInvertRoll MEMBER m_fpvInvertRoll WRITE setFpvInvertRoll NOTIFY fpvInvertRollChanged)
 
+    Q_PROPERTY(int alt MEMBER m_alt WRITE setAlt NOTIFY altChanged)
+    Q_PROPERTY(int speed MEMBER m_speed WRITE setSpeed NOTIFY speedChanged)
+    Q_PROPERTY(int vert_spd MEMBER m_vert_spd WRITE setVertSpd NOTIFY vertSpdChanged)
+    Q_PROPERTY(int heading MEMBER m_heading WRITE setHeading NOTIFY headingChanged)
     Q_PROPERTY(int roll MEMBER m_roll WRITE setRoll NOTIFY rollChanged)
     Q_PROPERTY(int pitch MEMBER m_pitch WRITE setPitch NOTIFY pitchChanged)
 
@@ -19,7 +23,9 @@ class DrawingCanvas : public QQuickPaintedItem {
 
     Q_PROPERTY(int horizonSpacing MEMBER m_horizonSpacing WRITE setHorizonSpacing NOTIFY horizonSpacingChanged)
     Q_PROPERTY(double horizonWidth MEMBER m_horizonWidth WRITE setHorizonWidth NOTIFY horizonWidthChanged)
-    Q_PROPERTY(double fpvSize MEMBER m_fpvSize WRITE setFpvSize NOTIFY fpvSizeChanged)
+    Q_PROPERTY(double size MEMBER m_size WRITE setSize NOTIFY sizeChanged)
+
+    Q_PROPERTY(QString name MEMBER m_name WRITE setName NOTIFY nameChanged)
 
     Q_PROPERTY(double verticalLimit MEMBER m_verticalLimit WRITE setVerticalLimit NOTIFY verticalLimitChanged)
     Q_PROPERTY(double lateralLimit MEMBER m_lateralLimit WRITE setLateralLimit NOTIFY lateralLimitChanged)
@@ -40,6 +46,10 @@ public slots:
     void setFpvInvertPitch(bool fpvInvertPitch);
     void setFpvInvertRoll(bool fpvInvertRoll);
 
+    void setAlt(int alt);
+    void setSpeed(int speed);
+    void setVertSpd(int vert_spd);
+    void setHeading(int heading);
     void setRoll(int roll);
     void setPitch(int pitch);
 
@@ -48,7 +58,9 @@ public slots:
 
     void setHorizonSpacing(int horizonSpacing);
     void setHorizonWidth(double horizonWidth);
-    void setFpvSize(double fpvSize);
+    void setSize(double size);
+
+    void setName(QString name);
 
     void setVerticalLimit(double verticalLimit);
     void setLateralLimit(double lateralLimit);
@@ -61,6 +73,10 @@ signals:
     void fpvInvertPitchChanged(bool fpvInvertPitch);
     void fpvInvertRollChanged(bool fpvInvertRoll);
 
+    void altChanged(int alt);
+    void speedChanged(int speed);
+    void vertSpdChanged(int vert_spd);
+    void headingChanged(int heading);
     void rollChanged(int roll);
     void pitchChanged(int pitch);
 
@@ -69,7 +85,9 @@ signals:
 
     void horizonSpacingChanged(int horizonSpacing);
     void horizonWidthChanged(double horizonWidth);
-    void fpvSizeChanged(double fpvSize);
+    void sizeChanged(double size);
+
+    void nameChanged(QString name);
 
     void verticalLimitChanged(double verticalLimit);
     void lateralLimitChanged(double lateralLimit);
@@ -82,6 +100,10 @@ private:
     bool m_fpvInvertPitch;
     bool m_fpvInvertRoll;
 
+    int m_heading;
+    int m_alt;
+    int m_speed;
+    int m_vert_spd;
     int m_roll;
     int m_pitch;
 
@@ -90,11 +112,15 @@ private:
 
     int m_horizonSpacing;
     double m_horizonWidth;
-    double m_fpvSize;
+    double m_size;
+
+    QString m_name;
 
     double m_verticalLimit;
     double m_lateralLimit;
 
     QString m_fontFamily;
+
+    QString m_draw_request="adsb"; //for future build out of more draw requests
 
 };
