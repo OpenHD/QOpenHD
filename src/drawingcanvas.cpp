@@ -15,11 +15,10 @@ DrawingCanvas::DrawingCanvas(QQuickItem *parent): QQuickPaintedItem(parent) {
 void DrawingCanvas::paint(QPainter* painter) {
     painter->save();
 
-    //QFont font("sans-serif", 10, QFont::Bold, false);
 
-
-    auto pos_x= width()/2;
-    auto pos_y= height()/2;
+    if (m_draw_request=="adsb"){ //statis for now, but here for future build out
+    auto pos_x= 100;
+    auto pos_y= 100;
 
 
     //qDebug() << "hdg ratio=" << heading_ratio;
@@ -37,20 +36,29 @@ void DrawingCanvas::paint(QPainter* painter) {
 
     painter->translate(pos_x,pos_y);
 
-    //painter->rotate(roll);
+    painter->rotate(m_heading-90);//glyph is oriented +90
 
-    painter->setPen("black");
+    //draw speed tail
+    painter->fillRect(QRectF(0, -12, -m_speed/3, 4), "white");
+    painter->setPen("grey");
+    painter->drawRect(QRectF(0, -12, -m_speed/3, 4));
+
+    //add icon glyph of airplane
+    painter->setPen("grey");
     painter->setFont(m_fontBig);
     painter->drawText(0, 0, "\ue203");
 
 
-    painter->setPen("white");
+    painter->setPen("black");
     painter->setFont(m_fontNormal);
     painter->drawText(1, -2, "\ue203");
 
 
 
+
+
     painter->restore();
+    }
 }
 
 
@@ -84,6 +92,30 @@ void DrawingCanvas::setFpvInvertPitch(bool fpvInvertPitch) {
 void DrawingCanvas::setFpvInvertRoll(bool fpvInvertRoll) {
     m_fpvInvertRoll = fpvInvertRoll;
     emit fpvInvertRollChanged(m_fpvInvertRoll);
+    update();
+}
+
+void DrawingCanvas::setHeading(int heading) {
+    m_heading = heading;
+    emit headingChanged(m_heading);
+    update();
+}
+
+void DrawingCanvas::setAlt(int alt) {
+    m_alt = alt;
+    emit altChanged(m_alt);
+    update();
+}
+
+void DrawingCanvas::setSpeed(int speed) {
+    m_speed = speed;
+    emit speedChanged(m_speed);
+    update();
+}
+
+void DrawingCanvas::setVertSpd(int vert_spd) {
+    m_vert_spd = vert_spd;
+    emit vertSpdChanged(m_vert_spd);
     update();
 }
 
@@ -123,9 +155,15 @@ void DrawingCanvas::setHorizonWidth(double horizonWidth) {
     update();
 }
 
-void DrawingCanvas::setFpvSize(double fpvSize) {
-    m_fpvSize = fpvSize;
-    emit fpvSizeChanged(m_fpvSize);
+void DrawingCanvas::setSize(double size) {
+    m_size = size;
+    emit sizeChanged(m_size);
+    update();
+}
+
+void DrawingCanvas::setName(QString name) {
+    m_name = name;
+    emit nameChanged(m_name);
     update();
 }
 
