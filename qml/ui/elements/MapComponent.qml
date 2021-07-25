@@ -169,8 +169,8 @@ Map {
                 MapQuickItem {
                     id: marker
 
-                    anchorPoint.x: icon.width/2
-                    anchorPoint.y: icon.height/2
+                    anchorPoint.x: 0
+                    anchorPoint.y: 0
                     width: icon.width
                     height: icon.height
 
@@ -178,189 +178,106 @@ Map {
                     sourceItem:
 
                         DrawingCanvas {
-                            id: icon
-                            anchors.centerIn: parent
+                        id: icon
+                        anchors.centerIn: parent
 
-                            /* could turn the width and height into settings and thereby clip the fpv
-                              *even theough clipping is false it still clips
-                            */
-                            width: 200
-                            height: 200
-                            clip: false
-                            color: settings.color_shape
-                            glow: settings.color_glow
+                        width: 260
+                        height: 260
 
-                            heading: {
-                                if (object.heading === undefined) {
-                                    console.log("qml: model heading undefined")
-                                    return 0;
+                        color: settings.color_shape
+                        glow: settings.color_glow
+
+                        drone_heading: OpenHD.hdg; //need this to adjust orientation
+
+                        heading: { //heading of the traffic
+                            if (object.heading === undefined) {
+                                console.log("qml: model heading undefined")
+                                return 0;
+                            }
+                            else {
+                                //console.log("TRACK=", object.heading);
+                                return object.heading;
+                            }
+                        }
+
+                        speed: {
+                            if (object.velocity === undefined) {
+                                console.log("qml: model velocity undefined")
+                                return 0;
+                            }
+                            else {
+                                return settings.enable_imperial ? Math.floor(object.velocity * 2.23694)
+                                                                : Math.floor(object.velocity * 3.6);
+                            }
+                        }
+
+                        name: {
+                            if (object.callsign === undefined) {
+                                console.log("qml: model callsign undefined")
+                                return "---"
+                            }
+                            else {
+                                return object.callsign
+                                //console.log("Map Callsign=",object.callsign);
+                            }
+                        }
+
+                        alt_text:{
+                            /* check if traffic is a threat
+                                if (object.altitude - OpenHD.alt_msl < 300 && model.distance < 2){
+                                    //console.log("TRAFFIC WARNING");
+
+                                    //image.source="/airplanemarkerwarn.png";
+                                    background.border.color = "red";
+                                    background.border.width = 5;
+                                    background.opacity = 0.5;
+                                } else if (object.altitude - OpenHD.alt_msl < 500 && model.distance < 5){
+                                    //console.log("TRAFFIC ALERT");
+
+                                    //image.source="/airplanemarkeralert.png";
+                                    background.border.color = "yellow";
+                                    background.border.width = 5;
+                                    background.opacity = 0.5;
                                 }
-                                if (settings.map_orientation === true){
-                                    var orientation = object.heading-OpenHD.hdg;
-                                    if (orientation < 0) orientation += 360;
-                                    if (orientation >= 360) orientation -=360;
-                                    return orientation;
+*/
+                            if (object.altitude === undefined || object.verticalVel === undefined) {
+                                //console.log("qml: model alt or vertical undefined")
+                                return "---";
+                            } else {
+                                if(object.verticalVel > .2){ //climbing
+                                    if (settings.enable_imperial === false){
+                                        return Math.floor(object.altitude - OpenHD.alt_msl) + "m " + "\ue696"
+                                    }
+                                    else{
+                                        return Math.floor((object.altitude - OpenHD.alt_msl) * 3.28084) + "Ft " + "\ue696"
+                                    }
+                                }
+                                else if (object.verticalVel < -.2){//descending
+                                    if (settings.enable_imperial === false){
+                                        return Math.floor(object.altitude - OpenHD.alt_msl) + "m " + "\ue697"
+                                    }
+                                    else{
+                                        return Math.floor((object.altitude - OpenHD.alt_msl) * 3.28084) + "Ft " + "\ue697"
+                                    }
                                 }
                                 else {
-                                    //console.log("TRACK=", object.heading);
-                                    return object.heading;
-                                }
-                            }
-
-                            speed: {
-                                       if (object.velocity === undefined) {
-                                           return 0;
-                                       }
-                                       else {
-  //todo add mph and kph (km is bottom
-                                           return settings.enable_imperial ? Math.floor(object.velocity * 2.23694)
-                                                                           : Math.floor(object.velocity * 3.6);
-                                       }
-                                   }
-
-
-
-
-
-                        Rectangle{ //holder to "derotate" info block
-                            id: holder
-
-                            x: 50+5
-                            y: 50/2
-                       /*     rotation: {
-                                if (object.heading === undefined) {
-                                    console.log("qml: model velocity undefined")
-                                    return 0;
-                                }
-
-                                if (settings.map_orientation === true){
-                                    var orientation = object.heading - OpenHD.hdg;
-
-                                    if (orientation < 0) orientation += 360;
-                                    if (orientation >= 360) orientation -=360;
-                                    return -orientation;
-                                }
-                                else {
-                                    return -object.heading;
-                                }
-                            }
-                            */
-                            width: icon.width
-                            height: icon.height
-                            color: "transparent"
-
-                            Rectangle{
-                                id: background
-
-                                width: 50*1.25
-                                height: 50
-                                color: "black"
-                                opacity: .2
-                                border.width: 2
-                                border.color: "white"
-                                radius: 8
-                            }
-
-                            Text{
-                                id: callsign
-                                anchors.top: holder.top
-                                topPadding: 2
-                                leftPadding: 10
-                                width: 50
-                                color: "white"
-                                //font.bold: true
-                                font.pixelSize: 11
-                                horizontalAlignment: Text.AlignHCenter
-                                text: {
-                                    if (object.callsign === undefined) {
-                                        console.log("qml: model callsign undefined")
-                                        return "---"
+                                    if (settings.enable_imperial === false){//level
+                                        return Math.floor(object.altitude - OpenHD.alt_msl) + "m " + "\u2501"
                                     }
-                                    else {
-                                        return object.callsign
-                                        //console.log("Map Callsign=",object.callsign);
+                                    else{
+                                        return Math.floor((object.altitude - OpenHD.alt_msl) * 3.28084) + "Ft " + "\u2501"
                                     }
                                 }
                             }
+                        }
 
-                            Text{
-                                id: alt
-                                anchors.top: callsign.bottom
-                                topPadding: 2
-                                leftPadding: 10
-                                width: 50
-                                color: "white"
-                                font.bold: true
-                                font.pixelSize: 11
-                                horizontalAlignment: Text.AlignHCenter
-                                text:  {
-                                    // check if traffic is a threat
-                                    if (object.altitude - OpenHD.alt_msl < 300 && model.distance < 2){
-                                        //console.log("TRAFFIC WARNING");
- //todo
-                                        //image.source="/airplanemarkerwarn.png";
-                                        background.border.color = "red";
-                                        background.border.width = 5;
-                                        background.opacity = 0.5;
-                                    } else if (object.altitude - OpenHD.alt_msl < 500 && model.distance < 5){
-                                        //console.log("TRAFFIC ALERT");
- //todo
-                                        //image.source="/airplanemarkeralert.png";
-                                        background.border.color = "yellow";
-                                        background.border.width = 5;
-                                        background.opacity = 0.5;
-                                    }
-
-                                    if (object.altitude === undefined || object.verticalVel === undefined) {
-                                        //console.log("qml: model alt or vertical undefined")
-                                        return "---";
-                                    } else {
-                                        if(object.verticalVel > .2){ //climbing
-                                            if (settings.enable_imperial === false){
-                                                return Math.floor(object.altitude - OpenHD.alt_msl) + "m " + "\ue696"
-                                            }
-                                            else{
-                                                return Math.floor((object.altitude - OpenHD.alt_msl) * 3.28084) + "Ft " + "\ue696"
-                                            }
-                                        }
-                                        else if (object.verticalVel < -.2){//descending
-                                            if (settings.enable_imperial === false){
-                                                return Math.floor(object.altitude - OpenHD.alt_msl) + "m " + "\ue697"
-                                            }
-                                            else{
-                                                return Math.floor((object.altitude - OpenHD.alt_msl) * 3.28084) + "Ft " + "\ue697"
-                                            }
-                                        }
-                                        else {
-                                            if (settings.enable_imperial === false){//level
-                                                return Math.floor(object.altitude - OpenHD.alt_msl) + "m " + "\u2501"
-                                            }
-                                            else{
-                                                return Math.floor((object.altitude - OpenHD.alt_msl) * 3.28084) + "Ft " + "\u2501"
-                                            }
-                                        }
-                                    }
-                                }
+                        speed_text: {
+                            if (object.velocity === undefined) {
+                                return "---";
                             }
-                            Text{
-                                id: velocity
-                                anchors.top: alt.bottom
-                                topPadding: 2
-                                leftPadding: 10
-                                width: 50
-                                color: "white"
-                                //font.bold: true
-                                font.pixelSize: 11
-                                horizontalAlignment: Text.AlignHCenter
-                                text: {
-                                    if (object.velocity === undefined) {
-                                        return "---";
-                                    }
-                                    else {
-                                        return settings.enable_imperial ? Math.floor(object.velocity * 2.23694) + " mph"
-                                                                        : Math.floor(object.velocity * 3.6) + " kph";
-                                    }
-                                }
+                            else {
+                                return settings.enable_imperial ? Math.floor(object.velocity * 2.23694) + " mph"
+                                                                : Math.floor(object.velocity * 3.6) + " kph";
                             }
                         }
                     }

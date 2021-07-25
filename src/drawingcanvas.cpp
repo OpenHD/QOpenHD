@@ -15,48 +15,80 @@ DrawingCanvas::DrawingCanvas(QQuickItem *parent): QQuickPaintedItem(parent) {
 void DrawingCanvas::paint(QPainter* painter) {
     painter->save();
 
-
     if (m_draw_request=="adsb"){ //statis for now, but here for future build out
-    auto pos_x= 100;
-    auto pos_y= 100;
-
-
-    //qDebug() << "hdg ratio=" << heading_ratio;
+    auto pos_x= 130;//the middle
+    auto pos_y= 130;
 
     painter->setPen(m_color);
-
-    // Has to be awesome font for the glyph
-    QFont m_fontNormal = QFont("osdicons", 25 , QFont::PreferAntialias, true);
-
-    QFont m_fontBig = QFont("osdicons", 25*1.1, QFont::PreferAntialias, true);
     \
-
     setOpacity(1.0);
-
 
     painter->translate(pos_x,pos_y);
 
-    painter->rotate(m_heading-90);//glyph is oriented +90
+    painter->rotate(-90);//glyph is oriented +90
+
+    QSettings settings;
+    bool orientation_setting = settings.value("map_orientation").toBool();
+
+    if (orientation_setting == true){ //orienting map to drone
+        m_orientation = m_heading - m_drone_heading;
+
+        if (m_orientation < 0) m_orientation += 360;
+        if (m_orientation >= 360) m_orientation -=360;
+        painter->rotate(m_orientation);
+    }
+    else{ //orienting map to north
+        m_orientation=0;
+        painter->rotate(m_heading);
+    }
 
     //draw speed tail
     painter->setOpacity(0.5);
-    painter->fillRect(QRectF(0, -13, -m_speed/3, 4), "white");
+    painter->fillRect(QRectF(0, -14, -m_speed/4, 4), "white");
     painter->setPen("grey");
-    painter->drawRect(QRectF(0, -13, -m_speed/3, 4));
+    painter->drawRect(QRectF(0, -14, -m_speed/4, 4));
 
     //add icon glyph of airplane
+    /*
     painter->setOpacity(1.0);
     painter->setPen("grey");
     painter->setFont(m_fontBig);
     painter->drawText(0, 0, "\ue3d0");
+    */
 
+    painter->setOpacity(1.0);
     painter->setPen("black");
     painter->setFont(m_fontNormal);
-    painter->drawText(1, -2, "\ue3d0");
+    painter->drawText(0, 0, "\ue3d0");
 
     //draw data block
 
+    painter->translate(+50,-60); //+up -down, -left +right
 
+    //de-rotate whatever was done above and the adjustment for the glyph
+    if (m_orientation!=0){
+        painter->rotate(-m_orientation+90);
+    }
+    else {
+        painter->rotate(-m_heading+90);
+    }
+
+    painter->translate(-33,-24); //preposition the text block
+
+    painter->setOpacity(0.5);
+    QPainterPath path;
+    path.addRoundedRect(QRectF(0, 0, 75, 48), 10, 10);
+    QPen pen(Qt::white, 2);
+    painter->setPen(pen);
+    painter->fillPath(path, Qt::black);
+    painter->drawPath(path);
+
+    painter->setOpacity(1.0);
+    painter->setPen("white");
+    painter->setFont(m_font);
+    painter->drawText(5, 15, m_name);
+    painter->drawText(10, 30, m_speed_text);
+    painter->drawText(10, 45, m_alt_text);
 
     painter->restore();
     }
@@ -102,15 +134,33 @@ void DrawingCanvas::setHeading(int heading) {
     update();
 }
 
+void DrawingCanvas::setDroneHeading(int drone_heading) {
+    m_drone_heading = drone_heading;
+    emit droneHeadingChanged(m_drone_heading);
+    update();
+}
+
 void DrawingCanvas::setAlt(int alt) {
     m_alt = alt;
     emit altChanged(m_alt);
     update();
 }
 
+void DrawingCanvas::setAltText(QString alt_text) {
+    m_alt_text = alt_text;
+    emit altTextChanged(m_alt_text);
+    update();
+}
+
 void DrawingCanvas::setSpeed(int speed) {
     m_speed = speed;
     emit speedChanged(m_speed);
+    update();
+}
+
+void DrawingCanvas::setSpeedText(QString speed_text) {
+    m_speed_text = speed_text;
+    emit speedTextChanged(m_speed_text);
     update();
 }
 

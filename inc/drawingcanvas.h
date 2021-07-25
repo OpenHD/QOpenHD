@@ -12,9 +12,12 @@ class DrawingCanvas : public QQuickPaintedItem {
     Q_PROPERTY(bool fpvInvertRoll MEMBER m_fpvInvertRoll WRITE setFpvInvertRoll NOTIFY fpvInvertRollChanged)
 
     Q_PROPERTY(int alt MEMBER m_alt WRITE setAlt NOTIFY altChanged)
+    Q_PROPERTY(QString alt_text MEMBER m_alt_text WRITE setAltText NOTIFY altTextChanged)
     Q_PROPERTY(int speed MEMBER m_speed WRITE setSpeed NOTIFY speedChanged)
+    Q_PROPERTY(QString speed_text MEMBER m_speed_text WRITE setSpeedText NOTIFY speedTextChanged)
     Q_PROPERTY(int vert_spd MEMBER m_vert_spd WRITE setVertSpd NOTIFY vertSpdChanged)
     Q_PROPERTY(int heading MEMBER m_heading WRITE setHeading NOTIFY headingChanged)
+    Q_PROPERTY(int drone_heading MEMBER m_drone_heading WRITE setDroneHeading NOTIFY droneHeadingChanged)
     Q_PROPERTY(int roll MEMBER m_roll WRITE setRoll NOTIFY rollChanged)
     Q_PROPERTY(int pitch MEMBER m_pitch WRITE setPitch NOTIFY pitchChanged)
 
@@ -47,9 +50,12 @@ public slots:
     void setFpvInvertRoll(bool fpvInvertRoll);
 
     void setAlt(int alt);
+    void setAltText(QString alt_text);
     void setSpeed(int speed);
+    void setSpeedText(QString speed_text);
     void setVertSpd(int vert_spd);
     void setHeading(int heading);
+    void setDroneHeading(int drone_heading);
     void setRoll(int roll);
     void setPitch(int pitch);
 
@@ -74,9 +80,12 @@ signals:
     void fpvInvertRollChanged(bool fpvInvertRoll);
 
     void altChanged(int alt);
+    void altTextChanged(QString alt_text);
     void speedChanged(int speed);
+    void speedTextChanged(QString speed_text);
     void vertSpdChanged(int vert_spd);
     void headingChanged(int heading);
+    void droneHeadingChanged(int drone_heading);
     void rollChanged(int roll);
     void pitchChanged(int pitch);
 
@@ -101,8 +110,11 @@ private:
     bool m_fpvInvertRoll;
 
     int m_heading;
+    int m_drone_heading;
     int m_alt;
+    QString m_alt_text;
     int m_speed;
+    QString m_speed_text;
     int m_vert_spd;
     int m_roll;
     int m_pitch;
@@ -119,8 +131,14 @@ private:
     double m_verticalLimit;
     double m_lateralLimit;
 
+    int m_orientation=0;
+
     QString m_fontFamily;
 
     QString m_draw_request="adsb"; //for future build out of more draw requests
+
+    QFont m_font = QFont("Font Awesome 5 Free", 10, QFont::Bold, false);
+    QFont m_fontNormal = QFont("osdicons", 25 , QFont::PreferAntialias, true);
+    QFont m_fontBig = QFont("osdicons", 25*1.1, QFont::PreferAntialias, true);
 
 };
