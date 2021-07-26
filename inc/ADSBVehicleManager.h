@@ -151,4 +151,7 @@ private:
     QGeoCoordinate                  _api_center_coord;
     QElapsedTimer                   _last_update_timer;
     uint                            _status = 0;
+
+    qreal distance = 0;
+    qreal max_distance = 20;
 };

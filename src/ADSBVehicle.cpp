@@ -83,3 +83,8 @@ bool ADSBVehicle::expired()
 {
     return _lastUpdateTimer.hasExpired(expirationTimeoutMs);
 }
+
+bool ADSBVehicle::tooFar()
+{
+    return _too_far;
+}
