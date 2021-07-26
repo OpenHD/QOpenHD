@@ -73,6 +73,8 @@ public:
     /// check if the vehicle is expired and should be removed
     bool expired();
 
+    bool tooFar();
+
 signals:
     void coordinateChanged  ();
     void callsignChanged    ();
@@ -98,6 +100,8 @@ private:
     double          _verticalVel;
 
     QElapsedTimer   _lastUpdateTimer;
+
+    bool _too_far = false;
 };
 
 Q_DECLARE_METATYPE(ADSBVehicle::VehicleInfo_t)

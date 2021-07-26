@@ -46,7 +46,7 @@ void ADSBVehicleManager::onStarted()
 
     connect(&_adsbVehicleCleanupTimer, &QTimer::timeout, this, &ADSBVehicleManager::_cleanupStaleVehicles);
     _adsbVehicleCleanupTimer.setSingleShot(false);
-    _adsbVehicleCleanupTimer.start(1000);
+    _adsbVehicleCleanupTimer.start(4500);
 
     _internetLink = new ADSBInternet();
     connect(_internetLink, &ADSBInternet::adsbVehicleUpdate, this, &ADSBVehicleManager::adsbVehicleUpdate, Qt::QueuedConnection);
@@ -93,19 +93,47 @@ void ADSBVehicleManager::adsbVehicleUpdate(const ADSBVehicle::VehicleInfo_t vehi
 {
     uint32_t icaoAddress = vehicleInfo.icaoAddress;
 
+    if (vehicleInfo.availableFlags & ADSBVehicle::LocationAvailable) {
+        distance = _calculateKmDistance(vehicleInfo.location);
+        qDebug() << "adsb distance=" << distance;
+    }
+    else {
+        //no point in continuing because no location
+        //possible situation where we start to not get location.. and gets stale then removed
+        return;
+    }
+
+    //now that we know distance- decide if vehicle is too far and if its new or needs update
     if (_adsbICAOMap.contains(icaoAddress)) {
-        _adsbICAOMap[icaoAddress]->update(vehicleInfo);
-    } else {
+        if (distance>max_distance){
+            //already have vehicle and its too far.. delete this vehicle
+            for (int i=_adsbVehicles.count()-1; i>=0; i--) {
+                ADSBVehicle* adsbVehicle = _adsbVehicles.value<ADSBVehicle*>(i);
+                _adsbVehicles.removeAt(i);
+                _adsbICAOMap.remove(adsbVehicle->icaoAddress());
+                adsbVehicle->deleteLater();
+            }
+        }
+        else{
+            _adsbICAOMap[icaoAddress]->update(vehicleInfo);
+        }
+    }
+    else {
         if (vehicleInfo.availableFlags & ADSBVehicle::LocationAvailable) {
+            if (distance>max_distance){
+                //dont add this new vehicle, its too far
+                return;
+            }
+            else {
             ADSBVehicle* adsbVehicle = new ADSBVehicle(vehicleInfo, this);
             _adsbICAOMap[icaoAddress] = adsbVehicle;
             _adsbVehicles.append(adsbVehicle);
+            }
         }
     }
 
     // Show warnings if adsb reported traffic is too close
-    if (vehicleInfo.availableFlags & ADSBVehicle::LocationAvailable) {
-        qreal distance = _calculateKmDistance(vehicleInfo.location);
+    if (vehicleInfo.availableFlags & ADSBVehicle::LocationAvailable) {       
         _evaluateTraffic(vehicleInfo.altitude, distance);
     }
 
@@ -323,7 +351,7 @@ ADSBSdr::ADSBSdr()
     _groundAddress = "127.0.0.1";
     #endif
 
-    timer_interval = 1000;
+    timer_interval = 2000;
 }
 
 void ADSBSdr::requestData(void) {
@@ -422,11 +450,7 @@ void ADSBSdr::processReply(QNetworkReply *reply) {
             // location comes in lat lon format, but we need it as QGeoCoordinate
             double lat = val.toObject().value("lat").toDouble();
             double lon = val.toObject().value("lon").toDouble();
-            if (lat==0.0 || lon == 0.0){
-                //skip this entry- no point in adding it iff theres no location
-                qDebug()<<"Skipped ADSB SDR vehicle because no Location.";
-                continue;
-            }
+
             QGeoCoordinate location(lat, lon);
             adsbInfo.location = location;
             adsbInfo.availableFlags |= ADSBVehicle::LocationAvailable;
