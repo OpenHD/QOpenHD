@@ -153,5 +153,6 @@ private:
     uint                            _status = 0;
 
     qreal distance = 0;
-    qreal max_distance = 20;
+    qreal max_distance;
+    QSettings _settings;
 };

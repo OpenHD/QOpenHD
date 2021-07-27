@@ -249,7 +249,7 @@ BaseWidget {
                 width: parent.width
                 height: 32
                 Text {
-                    text: qsTr("Range")
+                    text: qsTr("Max")
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -257,16 +257,26 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
+                Text {
+                    id: adsb_distance_text
+                    text: settings.adsb_distance_limit/1000+"Km"
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.right: parent.right
+                    verticalAlignment: Text.AlignVCenter
+                }
                 Slider {
                     id: adsb_distance_Slider
                     orientation: Qt.Horizontal
-                    from: 7000
+                    from: 5000
                     value: settings.adsb_distance_limit
-                    to: 25000
+                    to: 75000
                     stepSize: 1000
                     height: parent.height
                     anchors.rightMargin: 0
-                    anchors.right: parent.right
+                    anchors.right: adsb_distance_text.left
                     width: parent.width - 96
 
                     onValueChanged: {
