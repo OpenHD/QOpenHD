@@ -93,6 +93,10 @@ void ADSBVehicleManager::adsbVehicleUpdate(const ADSBVehicle::VehicleInfo_t vehi
 {
     uint32_t icaoAddress = vehicleInfo.icaoAddress;
 
+    max_distance=(_settings.value("adsb_distance_limit").toInt())/1000;
+
+    qDebug() << "MAX adsb distance=" << max_distance;
+
     if (vehicleInfo.availableFlags & ADSBVehicle::LocationAvailable) {
         distance = _calculateKmDistance(vehicleInfo.location);
         qDebug() << "adsb distance=" << distance;
@@ -107,6 +111,7 @@ void ADSBVehicleManager::adsbVehicleUpdate(const ADSBVehicle::VehicleInfo_t vehi
     if (_adsbICAOMap.contains(icaoAddress)) {
         if (distance>max_distance){
             //already have vehicle and its too far.. delete this vehicle
+            qDebug() << "existing adsb vehicle too far: deleting...";
             for (int i=_adsbVehicles.count()-1; i>=0; i--) {
                 ADSBVehicle* adsbVehicle = _adsbVehicles.value<ADSBVehicle*>(i);
                 _adsbVehicles.removeAt(i);
@@ -122,6 +127,7 @@ void ADSBVehicleManager::adsbVehicleUpdate(const ADSBVehicle::VehicleInfo_t vehi
         if (vehicleInfo.availableFlags & ADSBVehicle::LocationAvailable) {
             if (distance>max_distance){
                 //dont add this new vehicle, its too far
+                qDebug() << "new adsb vehicle too far: not adding...";
                 return;
             }
             else {
