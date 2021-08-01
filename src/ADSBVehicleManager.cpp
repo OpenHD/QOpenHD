@@ -49,12 +49,12 @@ void ADSBVehicleManager::onStarted()
     _adsbVehicleCleanupTimer.start(4500);
 
     _internetLink = new ADSBInternet();
-    connect(_internetLink, &ADSBInternet::adsbVehicleUpdate, this, &ADSBVehicleManager::adsbVehicleUpdate, Qt::QueuedConnection);
-    connect(this, &ADSBVehicleManager::mapCenterChanged, _internetLink, &ADSBInternet::mapBoundsChanged, Qt::QueuedConnection);
+    connect(_internetLink, &ADSBInternet::adsbVehicleUpdate, this, &ADSBVehicleManager::adsbVehicleUpdate, Qt::AutoConnection);
+    connect(this, &ADSBVehicleManager::mapCenterChanged, _internetLink, &ADSBInternet::mapBoundsChanged, Qt::AutoConnection);
     
     _sdrLink = new ADSBSdr();
-    connect(_sdrLink, &ADSBSdr::adsbVehicleUpdate, this, &ADSBVehicleManager::adsbVehicleUpdate, Qt::QueuedConnection);
-    connect(this, &ADSBVehicleManager::mapCenterChanged, _sdrLink, &ADSBSdr::mapBoundsChanged, Qt::QueuedConnection);
+    connect(_sdrLink, &ADSBSdr::adsbVehicleUpdate, this, &ADSBVehicleManager::adsbVehicleUpdate, Qt::AutoConnection);
+    connect(this, &ADSBVehicleManager::mapCenterChanged, _sdrLink, &ADSBSdr::mapBoundsChanged, Qt::AutoConnection);
 }
 
 // called from qml when the map is moved
@@ -95,11 +95,11 @@ void ADSBVehicleManager::adsbVehicleUpdate(const ADSBVehicle::VehicleInfo_t vehi
 
     max_distance=(_settings.value("adsb_distance_limit").toInt())/1000;
 
-    qDebug() << "MAX adsb distance=" << max_distance;
+    //qDebug() << "MAX adsb distance=" << max_distance;
 
     if (vehicleInfo.availableFlags & ADSBVehicle::LocationAvailable) {
         distance = _calculateKmDistance(vehicleInfo.location);
-        qDebug() << "adsb distance=" << distance;
+        //qDebug() << "adsb distance=" << distance;
     }
     else {
         //no point in continuing because no location
