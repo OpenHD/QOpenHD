@@ -342,6 +342,7 @@ RaspberryPiBuild {
     #CONFIG += EnableCharts
     CONFIG += EnableSpeech
     CONFIG += EnableADSB
+    CONFIG += LimitADSBMax
     #CONFIG += EnableBlackbox
     #CONFIG += EnableVR
     #CONFIG += EnableLog
@@ -472,6 +473,11 @@ EnableADSB {
     inc/ADSBVehicleManager.h \
     inc/ADSBVehicle.h
 
+}
+
+LimitADSBMax {
+    message("LimitADSBMax")
+    DEFINES += LIMIT_ADSB_MAX
 }
 
 EnableCharts {

@@ -477,6 +477,12 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
     engine.rootContext()->setContextProperty("EnableVR", QVariant(false));
     #endif
 
+    #if defined(LIMIT_ADSB_MAX)
+    engine.rootContext()->setContextProperty("LimitADSBMax", QVariant(true));
+    #else
+    engine.rootContext()->setContextProperty("LimitADSBMax", QVariant(false));
+    #endif
+
     #if defined(ENABLE_LOG)
     engine.rootContext()->setContextProperty("EnableLog", QVariant(true));
     #else
