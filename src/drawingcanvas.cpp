@@ -8,7 +8,7 @@
 
 
 DrawingCanvas::DrawingCanvas(QQuickItem *parent): QQuickPaintedItem(parent) {
-    qDebug() << "DrawingCanvas::DrawingCanvas()";
+    //qDebug() << "DrawingCanvas::DrawingCanvas()";
     setRenderTarget(RenderTarget::FramebufferObject);
 }
 
