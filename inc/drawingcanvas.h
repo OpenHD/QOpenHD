@@ -13,6 +13,7 @@ class DrawingCanvas : public QQuickPaintedItem {
 
     Q_PROPERTY(int alt MEMBER m_alt WRITE setAlt NOTIFY altChanged)
     Q_PROPERTY(QString alt_text MEMBER m_alt_text WRITE setAltText NOTIFY altTextChanged)
+    Q_PROPERTY(int drone_alt MEMBER m_drone_alt WRITE setDroneAlt NOTIFY droneAltChanged)
     Q_PROPERTY(int speed MEMBER m_speed WRITE setSpeed NOTIFY speedChanged)
     Q_PROPERTY(QString speed_text MEMBER m_speed_text WRITE setSpeedText NOTIFY speedTextChanged)
     Q_PROPERTY(int vert_spd MEMBER m_vert_spd WRITE setVertSpd NOTIFY vertSpdChanged)
@@ -51,6 +52,7 @@ public slots:
 
     void setAlt(int alt);
     void setAltText(QString alt_text);
+    void setDroneAlt(int drone_alt);
     void setSpeed(int speed);
     void setSpeedText(QString speed_text);
     void setVertSpd(int vert_spd);
@@ -81,6 +83,7 @@ signals:
 
     void altChanged(int alt);
     void altTextChanged(QString alt_text);
+    void droneAltChanged(int drone_alt);
     void speedChanged(int speed);
     void speedTextChanged(QString speed_text);
     void vertSpdChanged(int vert_spd);
@@ -113,6 +116,7 @@ private:
     int m_drone_heading;
     int m_alt;
     QString m_alt_text;
+    int m_drone_alt;
     int m_speed;
     QString m_speed_text;
     int m_vert_spd;
@@ -130,6 +134,9 @@ private:
 
     double m_verticalLimit;
     double m_lateralLimit;
+
+    QSettings settings;
+    bool imperial;
 
     int m_orientation=0;
 
