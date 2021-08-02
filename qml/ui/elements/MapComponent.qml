@@ -187,43 +187,20 @@ Map {
                         color: settings.color_shape
                         glow: settings.color_glow
 
+                        name: object.callsign
+
                         drone_heading: OpenHD.hdg; //need this to adjust orientation
 
-                        heading: { //heading of the traffic
-                            if (object.heading === undefined) {
-                                console.log("qml: model heading undefined")
-                                return 0;
-                            }
-                            else {
-                                //console.log("TRACK=", object.heading);
-                                return object.heading;
-                            }
-                        }
+                        drone_alt: OpenHD.alt_msl;
 
-                        speed: {
-                            if (object.velocity === undefined) {
-                                console.log("qml: model velocity undefined")
-                                return 0;
-                            }
-                            else {
-                                return settings.enable_imperial ? Math.floor(object.velocity * 2.23694)
-                                                                : Math.floor(object.velocity * 3.6);
-                            }
-                        }
+                        heading: object.heading;
 
-                        name: {
-                            if (object.callsign === undefined) {
-                                console.log("qml: model callsign undefined")
-                                return "---"
-                            }
-                            else {
-                                return object.callsign
-                                //console.log("Map Callsign=",object.callsign);
-                            }
-                        }
+                        speed: object.velocity
 
-                        alt_text:{
-                            /* check if traffic is a threat
+                        alt: object.altitude
+
+//                          {
+/*                          check if traffic is a threat.. this should not be done here. Left as REF
                                 if (object.altitude - OpenHD.alt_msl < 300 && model.distance < 2){
                                     //console.log("TRAFFIC WARNING");
 
@@ -240,58 +217,49 @@ Map {
                                     background.opacity = 0.5;
                                 }
 */
-                            if (object.altitude === undefined || object.verticalVel === undefined) {
+
+/*                          *discovered issues when the object is referenced multiple times
+                            *last attempt at putting altitude into a var still resulted in "nulls"
+
+                            var _adsb_alt;
+
+                            _adsb_alt=object.altitude;
+
+                            if ( _adsb_alt> 9999) {
                                 //console.log("qml: model alt or vertical undefined")
-                                return "---";
+                               return "---";
                             } else {
                                 if(object.verticalVel > .2){ //climbing
                                     if (settings.enable_imperial === false){
-                                        return Math.floor(object.altitude - OpenHD.alt_msl) + "m " + "\ue696"
+                                        return Math.floor(_adsb_alt - OpenHD.alt_msl) + "m " + "\ue696"
                                     }
                                     else{
-                                        return Math.floor((object.altitude - OpenHD.alt_msl) * 3.28084) + "Ft " + "\ue696"
+                                        return Math.floor((_adsb_alt - OpenHD.alt_msl) * 3.28084) + "Ft " + "\ue696"
                                     }
                                 }
                                 else if (object.verticalVel < -.2){//descending
                                     if (settings.enable_imperial === false){
-                                        return Math.floor(object.altitude - OpenHD.alt_msl) + "m " + "\ue697"
+                                        return Math.floor(_adsb_alt - OpenHD.alt_msl) + "m " + "\ue697"
                                     }
                                     else{
-                                        return Math.floor((object.altitude - OpenHD.alt_msl) * 3.28084) + "Ft " + "\ue697"
+                                        return Math.floor((_adsb_alt - OpenHD.alt_msl) * 3.28084) + "Ft " + "\ue697"
                                     }
                                 }
                                 else {
                                     if (settings.enable_imperial === false){//level
-                                        return Math.floor(object.altitude - OpenHD.alt_msl) + "m " + "\u2501"
+                                        return Math.floor(_adsb_alt - OpenHD.alt_msl) + "m " + "\u2501"
                                     }
                                     else{
-                                        return Math.floor((object.altitude - OpenHD.alt_msl) * 3.28084) + "Ft " + "\u2501"
+                                        return Math.floor((_adsb_alt - OpenHD.alt_msl) * 3.28084) + "Ft " + "\u2501"
                                     }
                                 }
                             }
                         }
-
-                        speed_text: {
-                            if (object.velocity === undefined) {
-                                return "---";
-                            }
-                            else {
-                                return settings.enable_imperial ? Math.floor(object.velocity * 2.23694) + " mph"
-                                                                : Math.floor(object.velocity * 3.6) + " kph";
-                            }
-                        }
+  */
                     }
                     //position everything
-                    coordinate: {
-                        if (object.coordinate === undefined) {
-                            console.log("qml: model geo undefined")
-                            marker.visible = false;
-                            return QtPositioning.coordinate(0.0, 0.0);
-                        }
-                        else {
-                            return object.coordinate;
-                        }
-                    }
+                    coordinate: object.coordinate;
+
                 }
                 //Component.onCompleted: map.addMapItemGroup(this);
             }

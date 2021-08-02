@@ -8,7 +8,7 @@
 
 
 DrawingCanvas::DrawingCanvas(QQuickItem *parent): QQuickPaintedItem(parent) {
-    qDebug() << "DrawingCanvas::DrawingCanvas()";
+    //qDebug() << "DrawingCanvas::DrawingCanvas()";
     setRenderTarget(RenderTarget::FramebufferObject);
 }
 
@@ -49,7 +49,7 @@ void DrawingCanvas::paint(QPainter* painter) {
     painter->drawRect(QRectF(0, -14, -m_speed/4, 4));
 
     //add icon glyph of airplane
-    /*
+    /* //for glow effect
     painter->setOpacity(1.0);
     painter->setPen("grey");
     painter->setFont(m_fontBig);
@@ -142,7 +142,22 @@ void DrawingCanvas::setDroneHeading(int drone_heading) {
 
 void DrawingCanvas::setAlt(int alt) {
     m_alt = alt;
+
+    if(alt>9999){
+        m_alt_text="---";
+    }
+    else{
+        imperial = settings.value("enable_imperial").toBool();
+        if (imperial == false){
+            m_alt_text = (QString::number(round(alt)))+" M";
+        }
+        else{
+            m_alt_text = (QString::number(round((alt) * 3.28084)))+" Ft";
+        }
+    }
+
     emit altChanged(m_alt);
+    emit altTextChanged(m_alt_text);
     update();
 }
 
@@ -152,8 +167,30 @@ void DrawingCanvas::setAltText(QString alt_text) {
     update();
 }
 
+void DrawingCanvas::setDroneAlt(int drone_alt) {
+    m_drone_alt = drone_alt;
+    emit droneAltChanged(m_drone_alt);
+    update();
+}
+
 void DrawingCanvas::setSpeed(int speed) {
-    m_speed = speed;
+    if(speed>9999){
+        m_speed=0;
+        m_speed_text="---";
+    }
+    else{
+        imperial = settings.value("enable_imperial").toBool();
+        if (imperial == false){
+            m_speed =round(speed* 3.6);
+            m_speed_text = (QString::number(round(speed* 3.6)))+" Kph";
+        }
+        else{
+            m_speed = round(speed* 2.23694);
+            m_speed_text = (QString::number(round((speed* 2.23694))))+" Mph";
+        }
+    }
+
+    emit speedTextChanged(m_speed_text);
     emit speedChanged(m_speed);
     update();
 }

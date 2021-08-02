@@ -272,7 +272,15 @@ BaseWidget {
                     orientation: Qt.Horizontal
                     from: 5000
                     value: settings.adsb_distance_limit
-                    to: 75000
+                    to: {
+                        if (LimitADSBMax){
+                            return 20000;
+                        }
+                        else{
+                            return 50000;
+                        }
+                    }
+
                     stepSize: 1000
                     height: parent.height
                     anchors.rightMargin: 0

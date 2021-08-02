@@ -95,11 +95,11 @@ void ADSBVehicleManager::adsbVehicleUpdate(const ADSBVehicle::VehicleInfo_t vehi
 
     max_distance=(_settings.value("adsb_distance_limit").toInt())/1000;
 
-    qDebug() << "MAX adsb distance=" << max_distance;
+    //qDebug() << "MAX adsb distance=" << max_distance;
 
     if (vehicleInfo.availableFlags & ADSBVehicle::LocationAvailable) {
         distance = _calculateKmDistance(vehicleInfo.location);
-        qDebug() << "adsb distance=" << distance;
+        //qDebug() << "adsb distance=" << distance;
     }
     else {
         //no point in continuing because no location
@@ -111,7 +111,7 @@ void ADSBVehicleManager::adsbVehicleUpdate(const ADSBVehicle::VehicleInfo_t vehi
     if (_adsbICAOMap.contains(icaoAddress)) {
         if (distance>max_distance){
             //already have vehicle and its too far.. delete this vehicle
-            qDebug() << "existing adsb vehicle too far: deleting...";
+            //qDebug() << "existing adsb vehicle too far: deleting...";
             for (int i=_adsbVehicles.count()-1; i>=0; i--) {
                 ADSBVehicle* adsbVehicle = _adsbVehicles.value<ADSBVehicle*>(i);
                 _adsbVehicles.removeAt(i);
@@ -127,7 +127,7 @@ void ADSBVehicleManager::adsbVehicleUpdate(const ADSBVehicle::VehicleInfo_t vehi
         if (vehicleInfo.availableFlags & ADSBVehicle::LocationAvailable) {
             if (distance>max_distance){
                 //dont add this new vehicle, its too far
-                qDebug() << "new adsb vehicle too far: not adding...";
+                //qDebug() << "new adsb vehicle too far: not adding...";
                 return;
             }
             else {
@@ -315,16 +315,10 @@ void ADSBInternet::processReply(QNetworkReply *reply) {
             continue;
         }
 
-        // calsign
-        adsbInfo.callsign = innerarray[1].toString();
-
-        if (adsbInfo.callsign.length() == 0) {
-            adsbInfo.callsign = "N/A";
-        } else {
-            adsbInfo.availableFlags |= ADSBVehicle::CallsignAvailable;
-        }
-
         // location comes in lat lon format, but we need it as QGeoCoordinate
+        if(innerarray[6].isNull() || innerarray[5].isNull()){ //skip if no lat lon
+            continue;
+        }
         double lat = innerarray[6].toDouble();
         double lon = innerarray[5].toDouble();
         QGeoCoordinate location(lat, lon);
@@ -332,16 +326,61 @@ void ADSBInternet::processReply(QNetworkReply *reply) {
         adsbInfo.availableFlags |= ADSBVehicle::LocationAvailable;  
 
         // rest of fields
-        adsbInfo.altitude = innerarray[7].toDouble();
+
+        // callsign
+        adsbInfo.callsign = innerarray[1].toString();
+        if (adsbInfo.callsign.length() == 0) {
+            adsbInfo.callsign = "N/A";
+        }
+        adsbInfo.availableFlags |= ADSBVehicle::CallsignAvailable;
+
+        //altitude
+        if(innerarray[7].isDouble()){
+            adsbInfo.altitude = innerarray[7].toDouble();
+        }
+        else {
+            adsbInfo.altitude=99999.9;
+        }
         adsbInfo.availableFlags |= ADSBVehicle::AltitudeAvailable;
-        adsbInfo.velocity = innerarray[9].toDouble() * 3.6; // m/s to km/h
+
+        //velocity
+        if(innerarray[9].isNull()){
+            adsbInfo.velocity=99999.9;
+        }
+        else {
+            adsbInfo.velocity = innerarray[9].toDouble() * 3.6; // m/s to km/h
+        }
         adsbInfo.availableFlags |= ADSBVehicle::VelocityAvailable;
-        adsbInfo.heading = innerarray[10].toDouble();
+
+        //heading
+        if(innerarray[10].isNull()){
+            adsbInfo.heading=0.0;
+        }
+        else {
+            adsbInfo.heading = innerarray[10].toDouble();
+        }
         adsbInfo.availableFlags |= ADSBVehicle::HeadingAvailable;
-        adsbInfo.lastContact = innerarray[4].toInt();
+
+        //last contact
+        if(innerarray[4].isNull()){
+            adsbInfo.lastContact=0;
+        }
+        else {
+            adsbInfo.lastContact = innerarray[4].toInt();
+        }
         adsbInfo.availableFlags |= ADSBVehicle::LastContactAvailable;
-        adsbInfo.verticalVel = innerarray[11].toDouble();
+
+        //vertical velocity
+        if(innerarray[11].isNull()){
+            adsbInfo.verticalVel=0.0;
+        }
+        else {
+            adsbInfo.verticalVel = innerarray[11].toDouble();
+        }
         adsbInfo.availableFlags |= ADSBVehicle::VerticalVelAvailable;
+
+
+
 
         // this is received on adsbvehicleupdate slot
         emit adsbVehicleUpdate(adsbInfo);
@@ -408,6 +447,7 @@ void ADSBSdr::processReply(QNetworkReply *reply) {
 
     if(!doc.isObject()){
         qDebug()<<"JSON is not an object.";
+        LocalMessage::instance()->showMessage("ADSB SDR Json not an object", 4);
         reply->deleteLater();
         return;
     }
@@ -416,6 +456,7 @@ void ADSBSdr::processReply(QNetworkReply *reply) {
 
     if(jsonObject.isEmpty()){
         qDebug()<<"ADSB Openskynetwork response: JSON object is empty.";
+        LocalMessage::instance()->showMessage("ADSB SDR Json empty", 4);
         reply->deleteLater();
         return;
     }
@@ -444,7 +485,21 @@ void ADSBSdr::processReply(QNetworkReply *reply) {
         // Only continue if icao number is ok
         if (icaoOk) {
             Logger::instance()->logData("icao ok!", 1);
-            // calsign
+
+            // location comes in lat lon format, but we need it as QGeoCoordinate
+
+            if(val.toObject().value("lat").isNull() || val.toObject().value("lon").isNull()){ //skip if no lat lon
+                continue;
+            }
+
+            double lat = val.toObject().value("lat").toDouble();
+            double lon = val.toObject().value("lon").toDouble();
+
+            QGeoCoordinate location(lat, lon);
+            adsbInfo.location = location;
+            adsbInfo.availableFlags |= ADSBVehicle::LocationAvailable;
+
+            // callsign
             adsbInfo.callsign = val.toObject().value("flight").toString();
 
             if (adsbInfo.callsign.length() == 0) {
@@ -453,26 +508,51 @@ void ADSBSdr::processReply(QNetworkReply *reply) {
                 adsbInfo.availableFlags |= ADSBVehicle::CallsignAvailable;
             }
 
-            // location comes in lat lon format, but we need it as QGeoCoordinate
-            double lat = val.toObject().value("lat").toDouble();
-            double lon = val.toObject().value("lon").toDouble();
-
-            QGeoCoordinate location(lat, lon);
-            adsbInfo.location = location;
-            adsbInfo.availableFlags |= ADSBVehicle::LocationAvailable;
-
-            // TODO - we must review the units here
-            // rest of fields
-            adsbInfo.altitude = (val.toObject().value("altitude").toInt() * 0.3048); //feet to meters
+            //altitude
+            if(val.toObject().value("altitude").isNull()){
+                adsbInfo.altitude=99999.9;
+            }
+            else {
+                adsbInfo.altitude = val.toObject().value("altitude").toInt() * 0.3048;//feet to meters
+            }
             adsbInfo.availableFlags |= ADSBVehicle::AltitudeAvailable;
-            adsbInfo.velocity = round(val.toObject().value("speed").toDouble() * 1.852); // knots to km/h
+
+            //velocity
+            if(val.toObject().value("speed").isNull()){
+                adsbInfo.velocity=99999.9;
+            }
+            else {
+                adsbInfo.velocity = round(val.toObject().value("speed").toDouble() * 1.852); // knots to km/h
+            }
             adsbInfo.availableFlags |= ADSBVehicle::VelocityAvailable;
-            adsbInfo.heading = val.toObject().value("track").toDouble();
+
+            //heading
+            if(val.toObject().value("track").isNull()){
+                adsbInfo.heading=0.0;
+            }
+            else {
+                adsbInfo.heading = val.toObject().value("track").toDouble();
+            }
             adsbInfo.availableFlags |= ADSBVehicle::HeadingAvailable;
-            adsbInfo.lastContact = val.toObject().value("seen_pos").toInt();
+
+            //last contact
+            if(val.toObject().value("seen_pos").isNull()){
+                adsbInfo.lastContact=0;
+            }
+            else {
+                adsbInfo.lastContact = val.toObject().value("seen_pos").toInt();
+            }
             adsbInfo.availableFlags |= ADSBVehicle::LastContactAvailable;
-            adsbInfo.verticalVel = round(val.toObject().value("vert_rate").toDouble() * 0.00508); //feet/min to m/s
+
+            //vertical velocity
+            if(val.toObject().value("vert_rate").isNull()){
+                adsbInfo.verticalVel=0.0;
+            }
+            else {
+                adsbInfo.verticalVel = round(val.toObject().value("vert_rate").toDouble() * 0.00508); //feet/min to m/s
+            }
             adsbInfo.availableFlags |= ADSBVehicle::VerticalVelAvailable;
+
 
             // this is received on adsbvehicleupdate slot
             emit adsbVehicleUpdate(adsbInfo);
