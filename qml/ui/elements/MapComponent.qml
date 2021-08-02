@@ -190,7 +190,7 @@ Map {
                         drone_heading: OpenHD.hdg; //need this to adjust orientation
 
                         heading: { //heading of the traffic
-                            if (object.heading === undefined) {
+                            if (!object.heading) {
                                 console.log("qml: model heading undefined")
                                 return 0;
                             }
@@ -201,7 +201,7 @@ Map {
                         }
 
                         speed: {
-                            if (object.velocity === undefined) {
+                            if (!object.velocity) {
                                 console.log("qml: model velocity undefined")
                                 return 0;
                             }
@@ -212,7 +212,7 @@ Map {
                         }
 
                         name: {
-                            if (object.callsign === undefined) {
+                            if (!object.callsign) {
                                 console.log("qml: model callsign undefined")
                                 return "---"
                             }
@@ -240,8 +240,10 @@ Map {
                                     background.opacity = 0.5;
                                 }
 */
-                            if (object.altitude === undefined || object.verticalVel === undefined) {
+
+                            if (!object.altitude || !object.verticalVel) {
                                 //console.log("qml: model alt or vertical undefined")
+                                //this is commonly missing and thus undefined for some reason
                                 return "---";
                             } else {
                                 if(object.verticalVel > .2){ //climbing
@@ -272,7 +274,7 @@ Map {
                         }
 
                         speed_text: {
-                            if (object.velocity === undefined) {
+                            if (!object.velocity) {
                                 return "---";
                             }
                             else {
@@ -283,7 +285,7 @@ Map {
                     }
                     //position everything
                     coordinate: {
-                        if (object.coordinate === undefined) {
+                        if (!object.coordinate) {
                             console.log("qml: model geo undefined")
                             marker.visible = false;
                             return QtPositioning.coordinate(0.0, 0.0);
