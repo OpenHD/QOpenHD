@@ -13,8 +13,8 @@ import OpenHD 1.0
 
 BaseWidget {
     id: adsbWidget
-    width: 55
-    height: 15
+    width: 75
+    height: 25
 
     z: 4
 

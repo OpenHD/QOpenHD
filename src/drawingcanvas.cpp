@@ -44,9 +44,9 @@ void DrawingCanvas::paint(QPainter* painter) {
 
     //draw speed tail
     painter->setOpacity(0.5);
-    painter->fillRect(QRectF(0, -14, -m_speed/4, 4), "white");
+    painter->fillRect(QRectF(0, -8, -m_speed/4, 4), "white");
     painter->setPen("grey");
-    painter->drawRect(QRectF(0, -14, -m_speed/4, 4));
+    painter->drawRect(QRectF(0, -8, -m_speed/4, 4));
 
     //add icon glyph of airplane
     /* //for glow effect
@@ -59,7 +59,7 @@ void DrawingCanvas::paint(QPainter* painter) {
     painter->setOpacity(1.0);
     painter->setPen("black");
     painter->setFont(m_fontNormal);
-    painter->drawText(0, 0, "\ue3d0");
+    painter->drawText(0, 0, "\uf072");
 
     //draw data block
 
