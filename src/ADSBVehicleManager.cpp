@@ -49,12 +49,12 @@ void ADSBVehicleManager::onStarted()
     _adsbVehicleCleanupTimer.start(4500);
 
     _internetLink = new ADSBInternet();
-    connect(_internetLink, &ADSBInternet::adsbVehicleUpdate, this, &ADSBVehicleManager::adsbVehicleUpdate, Qt::AutoConnection);
-    connect(this, &ADSBVehicleManager::mapCenterChanged, _internetLink, &ADSBInternet::mapBoundsChanged, Qt::AutoConnection);
+    connect(_internetLink, &ADSBInternet::adsbVehicleUpdate, this, &ADSBVehicleManager::adsbVehicleUpdate, Qt::QueuedConnection);
+    connect(this, &ADSBVehicleManager::mapCenterChanged, _internetLink, &ADSBInternet::mapBoundsChanged, Qt::QueuedConnection);
     
     _sdrLink = new ADSBSdr();
-    connect(_sdrLink, &ADSBSdr::adsbVehicleUpdate, this, &ADSBVehicleManager::adsbVehicleUpdate, Qt::AutoConnection);
-    connect(this, &ADSBVehicleManager::mapCenterChanged, _sdrLink, &ADSBSdr::mapBoundsChanged, Qt::AutoConnection);
+    connect(_sdrLink, &ADSBSdr::adsbVehicleUpdate, this, &ADSBVehicleManager::adsbVehicleUpdate, Qt::QueuedConnection);
+    connect(this, &ADSBVehicleManager::mapCenterChanged, _sdrLink, &ADSBSdr::mapBoundsChanged, Qt::QueuedConnection);
 }
 
 // called from qml when the map is moved
@@ -333,6 +333,7 @@ void ADSBInternet::processReply(QNetworkReply *reply) {
 
         // rest of fields
         adsbInfo.altitude = innerarray[7].toDouble();
+        //qDebug()<<"ALT-"<<adsbInfo.altitude;
         adsbInfo.availableFlags |= ADSBVehicle::AltitudeAvailable;
         adsbInfo.velocity = innerarray[9].toDouble() * 3.6; // m/s to km/h
         adsbInfo.availableFlags |= ADSBVehicle::VelocityAvailable;
