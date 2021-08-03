@@ -169,8 +169,8 @@ void ADSBVehicleManager::_evaluateTraffic(double traffic_alt, int traffic_distan
 
 int ADSBVehicleManager::_calculateKmDistance(QGeoCoordinate coord)
 {
-    double lat_1 = OpenHD::instance()->get_lat(); 
-    double lon_1 = OpenHD::instance()->get_lon();
+    double lat_1 = _api_center_coord.latitude();
+    double lon_1 = _api_center_coord.longitude();
     double lat_2 = coord.latitude();
     double lon_2 = coord.longitude();
 
@@ -178,7 +178,7 @@ int ADSBVehicleManager::_calculateKmDistance(QGeoCoordinate coord)
     double lngDistance = qDegreesToRadians(lon_1 - lon_2);
 
     double a = qSin(latDistance / 2) * qSin(latDistance / 2)
-            + qCos(qDegreesToRadians(_api_center_coord.latitude())) * qCos(qDegreesToRadians(lat_2))
+            + qCos(qDegreesToRadians(lat_1)) * qCos(qDegreesToRadians(lat_2))
             * qSin(lngDistance / 2) * qSin(lngDistance / 2);
 
     double c = 2 * qAtan2(qSqrt(a), qSqrt(1 - a));
