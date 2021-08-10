@@ -344,20 +344,20 @@ void ADSBInternet::processReply(QNetworkReply *reply) {
         adsbInfo.availableFlags |= ADSBVehicle::AltitudeAvailable;
 
         //velocity
-        if(innerarray[9].isNull()){
-            adsbInfo.velocity=99999.9;
-        }
-        else {
+        if(innerarray[9].isDouble()){
             adsbInfo.velocity = innerarray[9].toDouble() * 3.6; // m/s to km/h
+        }
+        else {            
+            adsbInfo.velocity=99999.9;
         }
         adsbInfo.availableFlags |= ADSBVehicle::VelocityAvailable;
 
         //heading
-        if(innerarray[10].isNull()){
-            adsbInfo.heading=0.0;
-        }
-        else {
+        if(innerarray[10].isDouble()){
             adsbInfo.heading = innerarray[10].toDouble();
+        }
+        else {            
+            adsbInfo.heading=0.0;
         }
         adsbInfo.availableFlags |= ADSBVehicle::HeadingAvailable;
 
@@ -371,16 +371,13 @@ void ADSBInternet::processReply(QNetworkReply *reply) {
         adsbInfo.availableFlags |= ADSBVehicle::LastContactAvailable;
 
         //vertical velocity
-        if(innerarray[11].isNull()){
-            adsbInfo.verticalVel=0.0;
-        }
-        else {
+        if(innerarray[11].isDouble()){
             adsbInfo.verticalVel = innerarray[11].toDouble();
         }
+        else {
+            adsbInfo.verticalVel=0.0;
+        }
         adsbInfo.availableFlags |= ADSBVehicle::VerticalVelAvailable;
-
-
-
 
         // this is received on adsbvehicleupdate slot
         emit adsbVehicleUpdate(adsbInfo);
