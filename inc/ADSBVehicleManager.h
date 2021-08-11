@@ -33,6 +33,8 @@ public:
 signals:
     void adsbVehicleUpdate(const ADSBVehicle::VehicleInfo_t vehicleInfo);
 
+    void adsbClearModelRequest();
+
 protected: 
     void run(void) final;
 
@@ -61,6 +63,10 @@ protected:
     QTimer *timer;
 
     QSettings _settings;
+
+    QGeoCoordinate _api_center_coord; //private but duplicated across classes
+
+    qreal max_distance;
 };
 
 // This class gets the info from Openskynetwork api
@@ -98,6 +104,7 @@ private:
     QString _groundAddress = "";
     bool _adsb_api_sdr;
     bool _show_adsb_sdr; //wired to show widget setting. somewhat redundant
+
 };
 
 class ADSBVehicleManager : public QObject {
@@ -133,15 +140,13 @@ signals:
 public slots:
     void adsbVehicleUpdate  (const ADSBVehicle::VehicleInfo_t vehicleInfo);
     void onStarted();
+    void adsbClearModel();
 
 private slots:
     void _cleanupStaleVehicles(void);
 
 private:
     void _evaluateTraffic(double traffic_alt, int traffic_distance);
-    int  _calculateKmDistance(QGeoCoordinate coord);
-
-    double radius_earth_km = 6371; // For _calculateKmDistance
 
     QmlObjectListModel              _adsbVehicles;
     QMap<uint32_t, ADSBVehicle*>    _adsbICAOMap;
@@ -152,7 +157,6 @@ private:
     QElapsedTimer                   _last_update_timer;
     uint                            _status = 0;
 
-    qreal distance = 0;
-    qreal max_distance;
+    qreal distance = 0;    
     QSettings _settings;
 };

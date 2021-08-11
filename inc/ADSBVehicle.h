@@ -26,7 +26,8 @@ public:
         AlertAvailable =        1 << 5,
         VelocityAvailable =     1 << 6,
         VerticalVelAvailable =  1 << 7,
-        LastContactAvailable =  1 << 8
+        LastContactAvailable =  1 << 8,
+        DistanceAvailable =  1 << 8
     };
 
     typedef struct {
@@ -36,10 +37,11 @@ public:
         double          altitude;
         double          velocity;
         double          heading;
-        bool            alert;
+        int            alert;
         uint32_t        availableFlags;
         int             lastContact;
         double          verticalVel;
+        double          distance;
     } VehicleInfo_t;
 
     ADSBVehicle(const VehicleInfo_t& vehicleInfo, QObject* parent);
@@ -52,9 +54,10 @@ public:
     Q_PROPERTY(double           altitude    READ altitude       NOTIFY altitudeChanged)     // NaN for not available
     Q_PROPERTY(double           velocity    READ velocity       NOTIFY velocityChanged)     // NaN for not available
     Q_PROPERTY(double           heading     READ heading        NOTIFY headingChanged)      // NaN for not available
-    Q_PROPERTY(bool             alert       READ alert          NOTIFY alertChanged)        // Collision path
+    Q_PROPERTY(int              alert       READ alert          NOTIFY alertChanged)        // Collision path
     Q_PROPERTY(int              lastContact READ lastContact    NOTIFY lastContactChanged)
     Q_PROPERTY(double           verticalVel READ verticalVel    NOTIFY verticalVelChanged)
+    Q_PROPERTY(double           distance    READ distance       NOTIFY distanceChanged)
 
     int             icaoAddress (void) const { return static_cast<int>(_icaoAddress); }
     QString         callsign    (void) const { return _callsign; }
@@ -64,9 +67,10 @@ public:
     double          altitude    (void) const { return _altitude; }
     double          velocity    (void) const { return _velocity; }
     double          heading     (void) const { return _heading; }
-    bool            alert       (void) const { return _alert; }
+    int             alert       (void) const { return _alert; }
     int             lastContact (void) const { return _lastContact; }
     double          verticalVel (void) const { return _verticalVel; }
+    double          distance    (void) const { return _distance; }
 
     void update(const VehicleInfo_t& vehicleInfo);
 
@@ -84,10 +88,11 @@ signals:
     void alertChanged       ();
     void lastContactChanged ();
     void verticalVelChanged ();
+    void distanceChanged    ();
 
 private:
     // This is the time in ms our vehicle will expire and thus removed from map
-    static constexpr qint64 expirationTimeoutMs = 120000;
+    static constexpr qint64 expirationTimeoutMs = 25000;
 
     uint32_t        _icaoAddress;
     QString         _callsign;
@@ -95,9 +100,10 @@ private:
     double          _altitude;
     double          _velocity;
     double          _heading;
-    bool            _alert;
+    int             _alert;
     int             _lastContact;
     double          _verticalVel;
+    double          _distance;
 
     QElapsedTimer   _lastUpdateTimer;
 

@@ -76,6 +76,12 @@ void ADSBVehicle::update(const VehicleInfo_t& vehicleInfo)
             emit lastContactChanged();
         }
     }
+    if (vehicleInfo.availableFlags & DistanceAvailable) {
+        if (vehicleInfo.distance != _distance) {
+            _distance = vehicleInfo.distance;
+            emit distanceChanged();
+        }
+    }
     _lastUpdateTimer.restart();
 }
 
