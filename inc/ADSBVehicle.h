@@ -92,7 +92,7 @@ signals:
 
 private:
     // This is the time in ms our vehicle will expire and thus removed from map
-    static constexpr qint64 expirationTimeoutMs = 120000;
+    static constexpr qint64 expirationTimeoutMs = 25000;
 
     uint32_t        _icaoAddress;
     QString         _callsign;
