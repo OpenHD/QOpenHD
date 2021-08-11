@@ -93,59 +93,27 @@ void ADSBVehicleManager::adsbVehicleUpdate(const ADSBVehicle::VehicleInfo_t vehi
 {
     uint32_t icaoAddress = vehicleInfo.icaoAddress;
 
-    max_distance=(_settings.value("adsb_distance_limit").toInt())/1000;
-
-    //qDebug() << "MAX adsb distance=" << max_distance;
-
+    //no point in continuing because no location. This is somewhat redundant with parser
+    //possible situation where we start to not get location.. and gets stale then removed
     if (vehicleInfo.availableFlags & ADSBVehicle::LocationAvailable) {
-        distance = _calculateKmDistance(vehicleInfo.location);
-        //qDebug() << "adsb distance=" << distance;
-    }
-    else {
-        //no point in continuing because no location
-        //possible situation where we start to not get location.. and gets stale then removed
-        return;
-    }
 
-    //now that we know distance- decide if vehicle is too far and if its new or needs update
-    if (_adsbICAOMap.contains(icaoAddress)) {
-        if (distance>max_distance){
-            //already have vehicle and its too far.. delete this vehicle
-            //qDebug() << "existing adsb vehicle too far: deleting...";
-            for (int i=_adsbVehicles.count()-1; i>=0; i--) {
-                ADSBVehicle* adsbVehicle = _adsbVehicles.value<ADSBVehicle*>(i);
-                _adsbVehicles.removeAt(i);
-                _adsbICAOMap.remove(adsbVehicle->icaoAddress());
-                adsbVehicle->deleteLater();
-            }
-        }
-        else{
+        //decide if its new or needs update
+        if (_adsbICAOMap.contains(icaoAddress)) {
             _adsbICAOMap[icaoAddress]->update(vehicleInfo);
         }
-    }
-    else {
-        if (vehicleInfo.availableFlags & ADSBVehicle::LocationAvailable) {
-            if (distance>max_distance){
-                //dont add this new vehicle, its too far
-                //qDebug() << "new adsb vehicle too far: not adding...";
-                return;
-            }
-            else {
+        else {
             ADSBVehicle* adsbVehicle = new ADSBVehicle(vehicleInfo, this);
             _adsbICAOMap[icaoAddress] = adsbVehicle;
             _adsbVehicles.append(adsbVehicle);
-            }
         }
-    }
 
-    // Show warnings if adsb reported traffic is too close
-    if (vehicleInfo.availableFlags & ADSBVehicle::LocationAvailable) {       
-        _evaluateTraffic(vehicleInfo.altitude, distance);
-    }
+        // Show warnings if adsb reported traffic is too close
+        _evaluateTraffic(vehicleInfo.altitude, vehicleInfo.distance);
 
-    _last_update_timer.restart();
-    _status = 2;
-    emit statusChanged();
+        _last_update_timer.restart();
+        _status = 2;
+        emit statusChanged();
+    }
 }
 
 void ADSBVehicleManager::_evaluateTraffic(double traffic_alt, int traffic_distance) 
@@ -165,26 +133,6 @@ void ADSBVehicleManager::_evaluateTraffic(double traffic_alt, int traffic_distan
     } else if (traffic_alt - drone_alt < 500 && traffic_distance < 5) {
         LocalMessage::instance()->showMessage("Aircraft Traffic", 4);
     }
-}
-
-int ADSBVehicleManager::_calculateKmDistance(QGeoCoordinate coord)
-{
-    double lat_1 = _api_center_coord.latitude();
-    double lon_1 = _api_center_coord.longitude();
-    double lat_2 = coord.latitude();
-    double lon_2 = coord.longitude();
-
-    double latDistance = qDegreesToRadians(lat_1 - lat_2);
-    double lngDistance = qDegreesToRadians(lon_1 - lon_2);
-
-    double a = qSin(latDistance / 2) * qSin(latDistance / 2)
-            + qCos(qDegreesToRadians(lat_1)) * qCos(qDegreesToRadians(lat_2))
-            * qSin(lngDistance / 2) * qSin(lngDistance / 2);
-
-    double c = 2 * qAtan2(qSqrt(a), qSqrt(1 - a));
-    int distance = radius_earth_km * c;
-
-    return distance;
 }
 
 ADSBapi::ADSBapi()
@@ -223,8 +171,9 @@ void ADSBapi::init(void) {
     mapBoundsChanged(QGeoCoordinate(40.48205, -3.35996)); // this shouldn't be necesary
 }
 
-// this is duplicated
+
 void ADSBapi::mapBoundsChanged(QGeoCoordinate center_coord) {
+    _api_center_coord= center_coord;
     qreal adsb_distance_limit = _settings.value("adsb_distance_limit").toInt();
 
     QGeoCoordinate qgeo_upper_left;
@@ -264,6 +213,10 @@ void ADSBInternet::processReply(QNetworkReply *reply) {
     if (!_adsb_api_openskynetwork || !_show_adsb_internet) {
         return;
     }
+
+    max_distance=(_settings.value("adsb_distance_limit").toInt())/1000;
+
+    qDebug() << "MAX adsb distance=" << max_distance;
 
     if (reply->error()) {
         qDebug() << "ADSB request error!";
@@ -323,7 +276,31 @@ void ADSBInternet::processReply(QNetworkReply *reply) {
         double lon = innerarray[5].toDouble();
         QGeoCoordinate location(lat, lon);
         adsbInfo.location = location;
-        adsbInfo.availableFlags |= ADSBVehicle::LocationAvailable;  
+        adsbInfo.availableFlags |= ADSBVehicle::LocationAvailable;
+
+        //evaluate distance for INTERNET adsb traffic... this is redundant with sdr
+        double lat_1 = _api_center_coord.latitude();
+        double lon_1 = _api_center_coord.longitude();
+
+        double latDistance = qDegreesToRadians(lat_1 - lat);
+        double lngDistance = qDegreesToRadians(lon_1 - lon);
+
+        double a = qSin(latDistance / 2) * qSin(latDistance / 2)
+                + qCos(qDegreesToRadians(lat_1)) * qCos(qDegreesToRadians(lat))
+                * qSin(lngDistance / 2) * qSin(lngDistance / 2);
+
+        double c = 2 * qAtan2(qSqrt(a), qSqrt(1 - a));
+        double distance = 6371 * c;
+
+        adsbInfo.distance = distance;
+        qDebug() << "adsb internet distance=" << distance;
+        adsbInfo.availableFlags |= ADSBVehicle::DistanceAvailable;
+
+        // If aircraft beyond max distance than skip this one
+        if(distance>max_distance){
+            qDebug() << "Beyond max SKIPPING";
+            continue;
+        }
 
         // rest of fields
 
@@ -423,6 +400,10 @@ void ADSBSdr::processReply(QNetworkReply *reply) {
         return;
     }
 
+    max_distance=(_settings.value("adsb_distance_limit").toInt())/1000;
+
+    //qDebug() << "MAX adsb distance=" << max_distance;
+
     if (reply->error()) {
         qDebug() << "ADSB SDR request error!";
         qDebug() << reply->errorString();
@@ -495,6 +476,29 @@ void ADSBSdr::processReply(QNetworkReply *reply) {
             QGeoCoordinate location(lat, lon);
             adsbInfo.location = location;
             adsbInfo.availableFlags |= ADSBVehicle::LocationAvailable;
+
+            //evaluate distance for SDR adsb traffic... this is redundant with internet
+            double lat_1 = _api_center_coord.latitude();
+            double lon_1 = _api_center_coord.longitude();
+
+            double latDistance = qDegreesToRadians(lat_1 - lat);
+            double lngDistance = qDegreesToRadians(lon_1 - lon);
+
+            double a = qSin(latDistance / 2) * qSin(latDistance / 2)
+                    + qCos(qDegreesToRadians(lat_1)) * qCos(qDegreesToRadians(lat))
+                    * qSin(lngDistance / 2) * qSin(lngDistance / 2);
+
+            double c = 2 * qAtan2(qSqrt(a), qSqrt(1 - a));
+            double distance = 6371 * c;
+
+            adsbInfo.distance = distance;
+            adsbInfo.availableFlags |= ADSBVehicle::DistanceAvailable;
+
+            // If aircraft beyond max distance than skip this one
+            if(distance>max_distance){
+                //qDebug() << "Beyond max SKIPPING";
+                continue;
+            }
 
             // callsign
             adsbInfo.callsign = val.toObject().value("flight").toString();
