@@ -67,7 +67,6 @@ void ADSBVehicleManager::newMapCenter(QGeoCoordinate center_coord) {
 
 void ADSBVehicleManager::_cleanupStaleVehicles()
 {
-/*
     // Remove all expired ADSB vehicles
     for (int i=_adsbVehicles.count()-1; i>=0; i--) {
         ADSBVehicle* adsbVehicle = _adsbVehicles.value<ADSBVehicle*>(i);
@@ -78,7 +77,6 @@ void ADSBVehicleManager::_cleanupStaleVehicles()
             adsbVehicle->deleteLater();
         }
     }
-*/
     // if more than 20 seconds with with no updates, set frontend indicator red
     // if more than 60 seconds with no updates deactivate frontend indicator
     if (_last_update_timer.elapsed() > 60000) {
@@ -91,6 +89,7 @@ void ADSBVehicleManager::_cleanupStaleVehicles()
     }
 }
 
+//currently not used.. was for testing but could have future purpose to turn off display
 void ADSBVehicleManager::adsbClearModel(){
     //qDebug() << "_adsbVehicles.clearAndDeleteContents";
     _adsbVehicles.clearAndDeleteContents();
@@ -103,17 +102,17 @@ void ADSBVehicleManager::adsbVehicleUpdate(const ADSBVehicle::VehicleInfo_t vehi
     //no point in continuing because no location. This is somewhat redundant with parser
     //possible situation where we start to not get location.. and gets stale then removed
     if (vehicleInfo.availableFlags & ADSBVehicle::LocationAvailable) {
-/*
+
         //decide if its new or needs update
         if (_adsbICAOMap.contains(icaoAddress)) {
             _adsbICAOMap[icaoAddress]->update(vehicleInfo);
         }
         else {
-*/
+
             ADSBVehicle* adsbVehicle = new ADSBVehicle(vehicleInfo, this);
             _adsbICAOMap[icaoAddress] = adsbVehicle;
             _adsbVehicles.append(adsbVehicle);
-//        }
+        }
 
         // Show warnings if adsb reported traffic is too close
         _evaluateTraffic(vehicleInfo.altitude, vehicleInfo.distance);
@@ -261,9 +260,6 @@ void ADSBInternet::processReply(QNetworkReply *reply) {
 
     QJsonValue value = jsonObject.value("states");
     QJsonArray array = value.toArray();
-
-//CLEAR THE MODEL HERE FOR TESTING
-emit adsbClearModelRequest();
 
     foreach (const QJsonValue & v, array){
 
@@ -457,9 +453,6 @@ void ADSBSdr::processReply(QNetworkReply *reply) {
         reply->deleteLater();
         return;
     }
-
-//CLEAR THE MODEL HERE FOR TESTING
-emit adsbClearModelRequest();
 
     foreach (const QJsonValue & val, array){
         Logger::instance()->logData("For Each Loop... /n", 1);
