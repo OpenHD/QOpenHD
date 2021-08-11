@@ -33,6 +33,8 @@ public:
 signals:
     void adsbVehicleUpdate(const ADSBVehicle::VehicleInfo_t vehicleInfo);
 
+    void adsbClearModelRequest();
+
 protected: 
     void run(void) final;
 
@@ -138,6 +140,7 @@ signals:
 public slots:
     void adsbVehicleUpdate  (const ADSBVehicle::VehicleInfo_t vehicleInfo);
     void onStarted();
+    void adsbClearModel();
 
 private slots:
     void _cleanupStaleVehicles(void);

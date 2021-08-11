@@ -51,10 +51,12 @@ void ADSBVehicleManager::onStarted()
     _internetLink = new ADSBInternet();
     connect(_internetLink, &ADSBInternet::adsbVehicleUpdate, this, &ADSBVehicleManager::adsbVehicleUpdate, Qt::QueuedConnection);
     connect(this, &ADSBVehicleManager::mapCenterChanged, _internetLink, &ADSBInternet::mapBoundsChanged, Qt::QueuedConnection);
+    connect(_internetLink, &ADSBInternet::adsbClearModelRequest, this, &ADSBVehicleManager::adsbClearModel, Qt::QueuedConnection);
     
     _sdrLink = new ADSBSdr();
     connect(_sdrLink, &ADSBSdr::adsbVehicleUpdate, this, &ADSBVehicleManager::adsbVehicleUpdate, Qt::QueuedConnection);
     connect(this, &ADSBVehicleManager::mapCenterChanged, _sdrLink, &ADSBSdr::mapBoundsChanged, Qt::QueuedConnection);
+    connect(_sdrLink, &ADSBSdr::adsbClearModelRequest, this, &ADSBVehicleManager::adsbClearModel, Qt::QueuedConnection);
 }
 
 // called from qml when the map is moved
@@ -65,6 +67,7 @@ void ADSBVehicleManager::newMapCenter(QGeoCoordinate center_coord) {
 
 void ADSBVehicleManager::_cleanupStaleVehicles()
 {
+/*
     // Remove all expired ADSB vehicles
     for (int i=_adsbVehicles.count()-1; i>=0; i--) {
         ADSBVehicle* adsbVehicle = _adsbVehicles.value<ADSBVehicle*>(i);
@@ -75,7 +78,7 @@ void ADSBVehicleManager::_cleanupStaleVehicles()
             adsbVehicle->deleteLater();
         }
     }
-
+*/
     // if more than 20 seconds with with no updates, set frontend indicator red
     // if more than 60 seconds with no updates deactivate frontend indicator
     if (_last_update_timer.elapsed() > 60000) {
@@ -88,7 +91,11 @@ void ADSBVehicleManager::_cleanupStaleVehicles()
     }
 }
 
-// we evaluate traffic here!!
+void ADSBVehicleManager::adsbClearModel(){
+    //qDebug() << "_adsbVehicles.clearAndDeleteContents";
+    _adsbVehicles.clearAndDeleteContents();
+}
+
 void ADSBVehicleManager::adsbVehicleUpdate(const ADSBVehicle::VehicleInfo_t vehicleInfo)
 {
     uint32_t icaoAddress = vehicleInfo.icaoAddress;
@@ -96,16 +103,17 @@ void ADSBVehicleManager::adsbVehicleUpdate(const ADSBVehicle::VehicleInfo_t vehi
     //no point in continuing because no location. This is somewhat redundant with parser
     //possible situation where we start to not get location.. and gets stale then removed
     if (vehicleInfo.availableFlags & ADSBVehicle::LocationAvailable) {
-
+/*
         //decide if its new or needs update
         if (_adsbICAOMap.contains(icaoAddress)) {
             _adsbICAOMap[icaoAddress]->update(vehicleInfo);
         }
         else {
+*/
             ADSBVehicle* adsbVehicle = new ADSBVehicle(vehicleInfo, this);
             _adsbICAOMap[icaoAddress] = adsbVehicle;
             _adsbVehicles.append(adsbVehicle);
-        }
+//        }
 
         // Show warnings if adsb reported traffic is too close
         _evaluateTraffic(vehicleInfo.altitude, vehicleInfo.distance);
@@ -216,7 +224,7 @@ void ADSBInternet::processReply(QNetworkReply *reply) {
 
     max_distance=(_settings.value("adsb_distance_limit").toInt())/1000;
 
-    qDebug() << "MAX adsb distance=" << max_distance;
+    //qDebug() << "MAX adsb distance=" << max_distance;
 
     if (reply->error()) {
         qDebug() << "ADSB request error!";
@@ -253,6 +261,9 @@ void ADSBInternet::processReply(QNetworkReply *reply) {
 
     QJsonValue value = jsonObject.value("states");
     QJsonArray array = value.toArray();
+
+//CLEAR THE MODEL HERE FOR TESTING
+emit adsbClearModelRequest();
 
     foreach (const QJsonValue & v, array){
 
@@ -293,12 +304,12 @@ void ADSBInternet::processReply(QNetworkReply *reply) {
         double distance = 6371 * c;
 
         adsbInfo.distance = distance;
-        qDebug() << "adsb internet distance=" << distance;
+        //qDebug() << "adsb internet distance=" << distance;
         adsbInfo.availableFlags |= ADSBVehicle::DistanceAvailable;
 
         // If aircraft beyond max distance than skip this one
         if(distance>max_distance){
-            qDebug() << "Beyond max SKIPPING";
+            //qDebug() << "Beyond max SKIPPING";
             continue;
         }
 
@@ -446,6 +457,9 @@ void ADSBSdr::processReply(QNetworkReply *reply) {
         reply->deleteLater();
         return;
     }
+
+//CLEAR THE MODEL HERE FOR TESTING
+emit adsbClearModelRequest();
 
     foreach (const QJsonValue & val, array){
         Logger::instance()->logData("For Each Loop... /n", 1);
