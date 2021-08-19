@@ -1,4 +1,4 @@
-FROM openhd/armbian_21.05_buster_arm64:v2
+FROM openhd/armbian_20.08_buster_arm64:v2
 
 COPY .git /data/.git/
 
