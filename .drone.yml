@@ -70,7 +70,7 @@ image_pull_secrets:
 - dockerconfigjson
 steps:
 - name: fetch
-  image: arm32v6/alpine:3.14
+  image: arm64v8/alpine:3.14
   commands:
   - apk add git
   - git fetch --tags
