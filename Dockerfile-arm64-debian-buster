@@ -4,7 +4,7 @@ COPY .git /data/.git/
 
 COPY . /data/
 
-RUN apt update
+RUN apt-get update
 
 WORKDIR /data
 
