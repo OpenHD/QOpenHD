@@ -34,7 +34,7 @@ if [[ "${OS}" == "raspbian" ]]; then
     PLATFORM_PACKAGES="-d openhd-qt"
 fi
 
-if [[ "${OS}" == "buster" ]]; then
+if [[ "${OS}" == "debian" ]]; then
     PLATFORM_DEV_PACKAGES="openhd-qt"
     PLATFORM_PACKAGES="-d openhd-qt"
 fi
