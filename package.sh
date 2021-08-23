@@ -34,6 +34,11 @@ if [[ "${OS}" == "raspbian" ]]; then
     PLATFORM_PACKAGES="-d openhd-qt"
 fi
 
+if [[ "${OS}" == "buster" ]]; then
+    PLATFORM_DEV_PACKAGES="openhd-qt"
+    PLATFORM_PACKAGES="-d openhd-qt"
+fi
+
 if [[ "${OS}" == "ubuntu" ]] && [[ "${PACKAGE_ARCH}" == "armhf" || "${PACKAGE_ARCH}" == "arm64" ]]; then
     PLATFORM_DEV_PACKAGES="openhd-qt-jetson-nano"
     PLATFORM_PACKAGES="-d openhd-qt-jetson-nano"
