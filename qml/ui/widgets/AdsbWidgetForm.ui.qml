@@ -274,10 +274,10 @@ BaseWidget {
                     value: settings.adsb_distance_limit
                     to: {
                         if (LimitADSBMax){
-                            return 500000; //this is to limit pi... 200km for testing
+                            return 20000; //this is to limit pi... 200km for testing
                         }
                         else{
-                            return 500000;
+                            return 50000;
                         }
                     }
 
