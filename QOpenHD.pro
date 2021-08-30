@@ -305,7 +305,7 @@ LinuxBuild {
     CONFIG += EnableADSB
     #CONFIG += EnableBlackbox
     CONFIG += EnableVR
-    CONFIG += EnableLog
+    #CONFIG += EnableLog
 
     message("LinuxBuild - config")
 }
@@ -339,7 +339,7 @@ RaspberryPiBuild {
     #CONFIG += EnableMainVideo
     CONFIG += EnablePiP
     #CONFIG += EnableLink
-    CONFIG += EnableCharts
+    #CONFIG += EnableCharts
     CONFIG += EnableSpeech
     CONFIG += EnableADSB
     CONFIG += LimitADSBMax
