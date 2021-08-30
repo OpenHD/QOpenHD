@@ -339,7 +339,7 @@ RaspberryPiBuild {
     #CONFIG += EnableMainVideo
     CONFIG += EnablePiP
     #CONFIG += EnableLink
-    CONFIG += EnableCharts
+    #CONFIG += EnableCharts
     CONFIG += EnableSpeech
     CONFIG += EnableADSB
     CONFIG += LimitADSBMax
