@@ -59,6 +59,7 @@ void DrawingCanvas::paint(QPainter* painter) {
     painter->setOpacity(1.0);
     painter->setPen("black");
     painter->setFont(m_fontNormal);
+    m_fontNormal.setPixelSize(35);
     painter->drawText(0, 0, "\uf072");
 
     //draw data block

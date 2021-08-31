@@ -144,8 +144,8 @@ private:
 
     QString m_draw_request="adsb"; //for future build out of more draw requests
 
-    QFont m_font = QFont("Font Awesome 5 Free", 10, QFont::Bold, false);
+    // m_font = QFont("Font Awesome 5 Free", 10, QFont::Bold, false);
     QFont m_fontNormal = QFont("osdicons", 25 , QFont::PreferAntialias, true);
-    QFont m_fontBig = QFont("osdicons", 25*1.1, QFont::PreferAntialias, true);
+    //QFont m_fontBig = QFont("osdicons", 25*1.1, QFont::PreferAntialias, true);
 
 };
