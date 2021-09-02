@@ -413,8 +413,8 @@ BaseWidget {
                 //needs width and height but needs to be dynamic
                 //:applicationWindow.width
                 //height:applicationWindow.height
-                width: 1200
-                height: 800
+                width: applicationWindow.width
+                height: applicationWindow.height
 
                 clip: false
                 color: settings.color_shape
