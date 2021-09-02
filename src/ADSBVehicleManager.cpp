@@ -222,6 +222,7 @@ void ADSBInternet::processReply(QNetworkReply *reply) {
     }
 
     max_distance=(_settings.value("adsb_distance_limit").toInt())/1000;
+    unknown_zero_alt=_settings.value("adsb_show_unknown_or_zero_alt").toBool();
 
     //qDebug() << "MAX adsb distance=" << max_distance;
 
@@ -321,9 +322,21 @@ void ADSBInternet::processReply(QNetworkReply *reply) {
         //altitude
         if(innerarray[7].isDouble()){
             adsbInfo.altitude = innerarray[7].toDouble();
+            //per setting eliminate all unknown alt
+            if (adsbInfo.altitude<5 && unknown_zero_alt==false){
+                //skip this traffic
+                continue;
+            }
         }
         else {
-            adsbInfo.altitude=99999.9;
+            //per setting eliminate all unknown alt
+            if (unknown_zero_alt==false){
+                //skip this traffic
+                continue;
+            }
+            else {
+                adsbInfo.altitude=99999.9;
+            }
         }
         adsbInfo.availableFlags |= ADSBVehicle::AltitudeAvailable;
 
@@ -408,6 +421,7 @@ void ADSBSdr::processReply(QNetworkReply *reply) {
     }
 
     max_distance=(_settings.value("adsb_distance_limit").toInt())/1000;
+    unknown_zero_alt=_settings.value("adsb_show_unknown_or_zero_alt").toBool();
 
     //qDebug() << "MAX adsb distance=" << max_distance;
 
@@ -518,10 +532,21 @@ void ADSBSdr::processReply(QNetworkReply *reply) {
 
             //altitude
             if(val.toObject().value("altitude").isNull()){
-                adsbInfo.altitude=99999.9;
+                //per setting eliminate unknown alt traffic
+                if (unknown_zero_alt==false){
+                    //skip this traffic
+                    continue;
+                } else {
+                    adsbInfo.altitude=99999.9;
+                }
             }
             else {
                 adsbInfo.altitude = val.toObject().value("altitude").toInt() * 0.3048;//feet to meters
+                //per setting eliminate all unknown alt
+                if (adsbInfo.altitude<5 && unknown_zero_alt==false){
+                    //skip this traffic
+                    continue;
+                }
             }
             adsbInfo.availableFlags |= ADSBVehicle::AltitudeAvailable;
 

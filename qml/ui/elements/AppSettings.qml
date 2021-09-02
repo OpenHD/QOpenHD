@@ -288,6 +288,7 @@ Settings {
     property bool adsb_api_openskynetwork: false
     property double adsb_opacity: 1
     property double adsb_size: 1
+    property bool adsb_show_unknown_or_zero_alt: false
 
     property bool show_vroverlay: false
     property double vroverlay_opacity: 1

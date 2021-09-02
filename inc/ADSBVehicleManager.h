@@ -67,6 +67,7 @@ protected:
     QGeoCoordinate _api_center_coord; //private but duplicated across classes
 
     qreal max_distance;
+    bool unknown_zero_alt;
 };
 
 // This class gets the info from Openskynetwork api
