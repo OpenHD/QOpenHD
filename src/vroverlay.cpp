@@ -26,6 +26,18 @@ VROverlay::VROverlay(QQuickItem *parent): QQuickPaintedItem(parent) {
 }
 
 void VROverlay::paint(QPainter* painter) {
+
+    //if no position
+
+    double home_lat = OpenHD::instance()->get_lat();
+    double home_lon = OpenHD::instance()->get_lon();
+
+    if ( home_lat == 0.0 || home_lon == 0.0 ){
+        //dont draw any VR if we dont have a real position for the uav
+        qDebug() << "VROverlay:: early return due to bad position";
+        return;
+    }
+
     painter->save();
 
     //QFont font("sans-serif", 10, QFont::Bold, false);
