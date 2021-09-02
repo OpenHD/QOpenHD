@@ -86,7 +86,8 @@ void DrawingCanvas::paint(QPainter* painter) {
 
     painter->setOpacity(1.0);
     painter->setPen("white");
-    painter->setFont(m_fontFamily);
+    painter->setFont(m_font);
+    m_font.setPixelSize(14);
     painter->drawText(5, 15, m_name);
     painter->drawText(10, 30, m_speed_text);
     painter->drawText(10, 45, m_alt_text);
