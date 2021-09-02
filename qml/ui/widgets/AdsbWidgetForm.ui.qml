@@ -22,6 +22,8 @@ BaseWidget {
 
     widgetIdentifier: "adsb_widget"
 
+
+
     defaultAlignment: 1
     defaultXOffset: 93
     defaultYOffset: 50
@@ -289,6 +291,29 @@ BaseWidget {
 
                     onValueChanged: {
                         settings.adsb_distance_limit = adsb_distance_Slider.value
+                    }
+                }
+            }
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("Uknown/Zero Alt Traffic")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 6
+                    anchors.right: parent.right
+                    checked: settings.adsb_show_unknown_or_zero_alt
+                    onCheckedChanged: {
+                        settings.adsb_show_unknown_or_zero_alt = checked
                     }
                 }
             }
