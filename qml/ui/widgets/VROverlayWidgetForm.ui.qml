@@ -411,6 +411,7 @@ BaseWidget {
                 anchors.centerIn: parent
 
                 //needs width and height but needs to be dynamic
+                //by hard coding the only display that is accurate is ones that match the hard code
                 //:applicationWindow.width
                 //height:applicationWindow.height
                 width: 1200

@@ -171,8 +171,8 @@ Map {
 
                     anchorPoint.x: 0
                     anchorPoint.y: 0
-                    width: icon.width
-                    height: icon.height
+                    width: 260
+                    height: 260
 
 
                     sourceItem:

@@ -10,6 +10,10 @@
 DrawingCanvas::DrawingCanvas(QQuickItem *parent): QQuickPaintedItem(parent) {
     //qDebug() << "DrawingCanvas::DrawingCanvas()";
     setRenderTarget(RenderTarget::FramebufferObject);
+
+    //set font to pixels size early
+    m_font.setPixelSize(14);
+    m_fontNormal.setPixelSize(35);
 }
 
 void DrawingCanvas::paint(QPainter* painter) {
@@ -20,7 +24,6 @@ void DrawingCanvas::paint(QPainter* painter) {
     auto pos_y= 130;
 
     painter->setPen(m_color);
-    \
     setOpacity(1.0);
 
     painter->translate(pos_x,pos_y);
@@ -59,7 +62,7 @@ void DrawingCanvas::paint(QPainter* painter) {
     painter->setOpacity(1.0);
     painter->setPen("black");
     painter->setFont(m_fontNormal);
-    m_fontNormal.setPixelSize(35);
+
     painter->drawText(0, 0, "\uf072");
 
     //draw data block
@@ -87,7 +90,7 @@ void DrawingCanvas::paint(QPainter* painter) {
     painter->setOpacity(1.0);
     painter->setPen("white");
     painter->setFont(m_font);
-    m_font.setPixelSize(14);
+
     painter->drawText(5, 15, m_name);
     painter->drawText(10, 30, m_speed_text);
     painter->drawText(10, 45, m_alt_text);
