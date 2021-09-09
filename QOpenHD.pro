@@ -304,7 +304,7 @@ LinuxBuild {
     #CONFIG += EnableCharts
     CONFIG += EnableADSB
     #CONFIG += EnableBlackbox
-    CONFIG += EnableVR
+    #CONFIG += EnableVR
     #CONFIG += EnableLog
 
     message("LinuxBuild - config")
