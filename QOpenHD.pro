@@ -226,7 +226,7 @@ iOSBuild {
     CONFIG += EnableCharts
     CONFIG += EnableADSB
     #CONFIG += EnableBlackbox
-    CONFIG += EnableVR
+    #CONFIG += EnableVR
     #CONFIG += EnableLog //does not work due to filepath not set
 
     app_launch_images.files = $$PWD/icons/LaunchScreen.png $$files($$PWD/icons/LaunchScreen.storyboard)
@@ -273,7 +273,7 @@ MacBuild {
     CONFIG += EnableCharts
     CONFIG += EnableADSB
     #CONFIG += EnableBlackbox
-    CONFIG += EnableVR
+    #CONFIG += EnableVR
     #CONFIG += EnableLog //does not work due to filepath not set
 
     EnableVideoRender {
@@ -304,7 +304,7 @@ LinuxBuild {
     CONFIG += EnableCharts
     CONFIG += EnableADSB
     #CONFIG += EnableBlackbox
-    CONFIG += EnableVR
+    #CONFIG += EnableVR
     #CONFIG += EnableLog
 
     message("LinuxBuild - config")
@@ -319,7 +319,7 @@ JetsonBuild {
     CONFIG += EnableSpeech
     CONFIG += EnableADSB
     #CONFIG += EnableBlackbox
-    CONFIG += EnableVR
+    #CONFIG += EnableVR
     #CONFIG += EnableLog //does not work due to filepath not set
 
     CONFIG += EnableGStreamer
@@ -344,7 +344,7 @@ RaspberryPiBuild {
     CONFIG += EnableADSB
     CONFIG += LimitADSBMax
     #CONFIG += EnableBlackbox
-    CONFIG += EnableVR
+    #CONFIG += EnableVR
     #CONFIG += EnableLog
 
     CONFIG += EnableVideoRender
@@ -374,7 +374,7 @@ WindowsBuild {
     CONFIG += EnableCharts
     CONFIG += EnableADSB
     #CONFIG += EnableBlackbox
-    CONFIG += EnableVR
+    #CONFIG += EnableVR
     #CONFIG += EnableLog
 
     DEFINES += GST_GL_HAVE_WINDOW_WIN32=1
@@ -395,7 +395,7 @@ AndroidBuild {
     CONFIG += EnableCharts
     CONFIG += EnableADSB
     #CONFIG += EnableBlackbox
-    CONFIG += EnableVR
+    #CONFIG += EnableVR
     #CONFIG += EnableLog
 
     EnableGStreamer {
