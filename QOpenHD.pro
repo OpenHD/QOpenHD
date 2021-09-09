@@ -451,6 +451,12 @@ EnableBlackbox {
 EnableVR {
     message("EnableVR")
     DEFINES += ENABLE_VR
+
+    SOURCES += \
+    src/vroverlay.cpp
+
+    HEADERS += \
+    inc/vroverlay.h
 }
 
 
