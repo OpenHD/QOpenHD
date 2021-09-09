@@ -27,8 +27,11 @@ VROverlay::VROverlay(QQuickItem *parent): QQuickPaintedItem(parent) {
 
 void VROverlay::paint(QPainter* painter) {
 
-    //if no position
+    if (!_show_vr ) {
+        return;
+    }
 
+    //if no position
     double home_lat = OpenHD::instance()->get_lat();
     double home_lon = OpenHD::instance()->get_lon();
 
