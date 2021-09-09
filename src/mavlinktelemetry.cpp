@@ -619,6 +619,9 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
         case MAVLINK_MSG_ID_EKF_STATUS_REPORT: {
             break;
         }
+        case MAVLINK_MSG_ID_AOA_SSA: {
+            break;
+        }
         case MAVLINK_MSG_ID_VIBRATION:{
         mavlink_vibration_t vibration;
         mavlink_msg_vibration_decode (&msg, &vibration);
