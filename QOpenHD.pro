@@ -223,7 +223,7 @@ iOSBuild {
     CONFIG += EnablePiP
     CONFIG += EnableVideoRender
     #CONFIG += EnableLink
-    CONFIG += EnableCharts
+    #CONFIG += EnableCharts
     CONFIG += EnableADSB
     #CONFIG += EnableBlackbox
     #CONFIG += EnableVR
@@ -270,7 +270,7 @@ MacBuild {
     CONFIG += EnablePiP
     CONFIG += EnableVideoRender
     #CONFIG += EnableLink
-    CONFIG += EnableCharts
+    #CONFIG += EnableCharts
     CONFIG += EnableADSB
     #CONFIG += EnableBlackbox
     #CONFIG += EnableVR
@@ -301,7 +301,7 @@ LinuxBuild {
     CONFIG += EnablePiP
     CONFIG += EnableGStreamer
     #CONFIG += EnableLink
-    CONFIG += EnableCharts
+    #CONFIG += EnableCharts
     CONFIG += EnableADSB
     #CONFIG += EnableBlackbox
     #CONFIG += EnableVR
@@ -315,7 +315,7 @@ JetsonBuild {
     CONFIG += EnableMainVideo
     CONFIG += EnablePiP
     #CONFIG += EnableLink
-    CONFIG += EnableCharts
+    #CONFIG += EnableCharts
     CONFIG += EnableSpeech
     CONFIG += EnableADSB
     #CONFIG += EnableBlackbox
@@ -371,7 +371,7 @@ WindowsBuild {
     #CONFIG +- EnablePiP
     #CONFIG += EnableLink
     CONFIG += EnableGStreamer
-    CONFIG += EnableCharts
+    #CONFIG += EnableCharts
     CONFIG += EnableADSB
     #CONFIG += EnableBlackbox
     #CONFIG += EnableVR
@@ -392,7 +392,7 @@ AndroidBuild {
     CONFIG += EnablePiP
     #CONFIG += EnableLink
     CONFIG += EnableVideoRender
-    CONFIG += EnableCharts
+    #CONFIG += EnableCharts
     CONFIG += EnableADSB
     #CONFIG += EnableBlackbox
     #CONFIG += EnableVR
