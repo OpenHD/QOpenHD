@@ -223,10 +223,10 @@ iOSBuild {
     CONFIG += EnablePiP
     CONFIG += EnableVideoRender
     #CONFIG += EnableLink
-    CONFIG += EnableCharts
+    #CONFIG += EnableCharts
     CONFIG += EnableADSB
     #CONFIG += EnableBlackbox
-    CONFIG += EnableVR
+    #CONFIG += EnableVR
     #CONFIG += EnableLog //does not work due to filepath not set
 
     app_launch_images.files = $$PWD/icons/LaunchScreen.png $$files($$PWD/icons/LaunchScreen.storyboard)
@@ -270,10 +270,10 @@ MacBuild {
     CONFIG += EnablePiP
     CONFIG += EnableVideoRender
     #CONFIG += EnableLink
-    CONFIG += EnableCharts
+    #CONFIG += EnableCharts
     CONFIG += EnableADSB
     #CONFIG += EnableBlackbox
-    CONFIG += EnableVR
+    #CONFIG += EnableVR
     #CONFIG += EnableLog //does not work due to filepath not set
 
     EnableVideoRender {
@@ -301,10 +301,10 @@ LinuxBuild {
     CONFIG += EnablePiP
     CONFIG += EnableGStreamer
     #CONFIG += EnableLink
-    CONFIG += EnableCharts
+    #CONFIG += EnableCharts
     CONFIG += EnableADSB
     #CONFIG += EnableBlackbox
-    CONFIG += EnableVR
+    #CONFIG += EnableVR
     #CONFIG += EnableLog
 
     message("LinuxBuild - config")
@@ -315,11 +315,11 @@ JetsonBuild {
     CONFIG += EnableMainVideo
     CONFIG += EnablePiP
     #CONFIG += EnableLink
-    CONFIG += EnableCharts
+    #CONFIG += EnableCharts
     CONFIG += EnableSpeech
     CONFIG += EnableADSB
     #CONFIG += EnableBlackbox
-    CONFIG += EnableVR
+    #CONFIG += EnableVR
     #CONFIG += EnableLog //does not work due to filepath not set
 
     CONFIG += EnableGStreamer
@@ -344,7 +344,7 @@ RaspberryPiBuild {
     CONFIG += EnableADSB
     CONFIG += LimitADSBMax
     #CONFIG += EnableBlackbox
-    CONFIG += EnableVR
+    #CONFIG += EnableVR
     #CONFIG += EnableLog
 
     CONFIG += EnableVideoRender
@@ -371,10 +371,10 @@ WindowsBuild {
     #CONFIG +- EnablePiP
     #CONFIG += EnableLink
     CONFIG += EnableGStreamer
-    CONFIG += EnableCharts
+    #CONFIG += EnableCharts
     CONFIG += EnableADSB
     #CONFIG += EnableBlackbox
-    CONFIG += EnableVR
+    #CONFIG += EnableVR
     #CONFIG += EnableLog
 
     DEFINES += GST_GL_HAVE_WINDOW_WIN32=1
@@ -392,10 +392,10 @@ AndroidBuild {
     CONFIG += EnablePiP
     #CONFIG += EnableLink
     CONFIG += EnableVideoRender
-    CONFIG += EnableCharts
+    #CONFIG += EnableCharts
     CONFIG += EnableADSB
     #CONFIG += EnableBlackbox
-    CONFIG += EnableVR
+    #CONFIG += EnableVR
     #CONFIG += EnableLog
 
     EnableGStreamer {
@@ -451,6 +451,12 @@ EnableBlackbox {
 EnableVR {
     message("EnableVR")
     DEFINES += ENABLE_VR
+
+    SOURCES += \
+    src/vroverlay.cpp
+
+    HEADERS += \
+    inc/vroverlay.h
 }
 
 

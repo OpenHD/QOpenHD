@@ -56,7 +56,9 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 
 #include "QmlObjectListModel.h"
 
+#if defined(ENABLE_BLACKBOX)
 #include "blackboxmodel.h"
+#endif
 
 #include "speedladder.h"
 #include "altitudeladder.h"
@@ -460,13 +462,12 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
     engine.rootContext()->setContextProperty("EnableExampleWidget", QVariant(false));
     #endif
 
-
     auto blackBoxModel = BlackBoxModel::instance();
     engine.rootContext()->setContextProperty("BlackBoxModel", blackBoxModel);
-    blackBoxModel->initBlackBoxModel();
 
     #if defined(ENABLE_BLACKBOX)
     engine.rootContext()->setContextProperty("EnableBlackbox", QVariant(true));
+    blackBoxModel->initBlackBoxModel();
     #else
     engine.rootContext()->setContextProperty("EnableBlackbox", QVariant(false));
     #endif

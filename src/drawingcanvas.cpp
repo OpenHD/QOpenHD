@@ -14,6 +14,8 @@ DrawingCanvas::DrawingCanvas(QQuickItem *parent): QQuickPaintedItem(parent) {
     //set font to pixels size early
     m_font.setPixelSize(14);
     m_fontNormal.setPixelSize(35);
+
+    QSettings settings;
 }
 
 void DrawingCanvas::paint(QPainter* painter) {
@@ -30,7 +32,7 @@ void DrawingCanvas::paint(QPainter* painter) {
 
     painter->rotate(-90);//glyph is oriented +90
 
-    QSettings settings;
+
     bool orientation_setting = settings.value("map_orientation").toBool();
 
     if (orientation_setting == true){ //orienting map to drone
@@ -81,7 +83,7 @@ void DrawingCanvas::paint(QPainter* painter) {
 
     painter->setOpacity(0.5);
     QPainterPath path;
-    path.addRoundedRect(QRectF(0, 0, 75, 48), 10, 10);
+    path.addRoundedRect(QRectF(0, 0, 80, 50), 10, 10);
     QPen pen(Qt::white, 2);
     painter->setPen(pen);
     painter->fillPath(path, Qt::black);
