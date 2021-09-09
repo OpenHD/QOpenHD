@@ -304,7 +304,7 @@ LinuxBuild {
     #CONFIG += EnableCharts
     CONFIG += EnableADSB
     #CONFIG += EnableBlackbox
-    #CONFIG += EnableVR
+    CONFIG += EnableVR
     #CONFIG += EnableLog
 
     message("LinuxBuild - config")
@@ -451,19 +451,12 @@ EnableBlackbox {
 EnableVR {
     message("EnableVR")
     DEFINES += ENABLE_VR
-
-    SOURCES += \
-    src/vroverlay.cpp
-
-    HEADERS += \
-    inc/vroverlay.h
 }
 
 
 EnableLog {
     message("EnableLog")
     DEFINES += ENABLE_LOG
-
 }
 
 
