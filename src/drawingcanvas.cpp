@@ -11,9 +11,11 @@ DrawingCanvas::DrawingCanvas(QQuickItem *parent): QQuickPaintedItem(parent) {
     //qDebug() << "DrawingCanvas::DrawingCanvas()";
     setRenderTarget(RenderTarget::FramebufferObject);
 
+    QSettings settings;
+
     //set font to pixels size early
-    m_font.setPixelSize(14);
-    m_fontNormal.setPixelSize(35);
+    m_font.setPixelSize(18);
+    m_fontNormal.setPixelSize(45);
 }
 
 void DrawingCanvas::paint(QPainter* painter) {
@@ -30,7 +32,6 @@ void DrawingCanvas::paint(QPainter* painter) {
 
     painter->rotate(-90);//glyph is oriented +90
 
-    QSettings settings;
     bool orientation_setting = settings.value("map_orientation").toBool();
 
     if (orientation_setting == true){ //orienting map to drone
@@ -47,9 +48,9 @@ void DrawingCanvas::paint(QPainter* painter) {
 
     //draw speed tail
     painter->setOpacity(0.5);
-    painter->fillRect(QRectF(0, -8, -m_speed/12, 4), "white");
+    painter->fillRect(QRectF(0, -11, -m_speed/14, 4), "white");
     painter->setPen("grey");
-    painter->drawRect(QRectF(0, -8, -m_speed/12, 4));
+    painter->drawRect(QRectF(0, -11, -m_speed/14, 4));
 
     //add icon glyph of airplane
     /* //for glow effect
@@ -81,7 +82,7 @@ void DrawingCanvas::paint(QPainter* painter) {
 
     painter->setOpacity(0.5);
     QPainterPath path;
-    path.addRoundedRect(QRectF(0, 0, 75, 48), 10, 10);
+    path.addRoundedRect(QRectF(0, 0, 105, 60), 10, 10);
     QPen pen(Qt::white, 2);
     painter->setPen(pen);
     painter->fillPath(path, Qt::black);
@@ -91,9 +92,9 @@ void DrawingCanvas::paint(QPainter* painter) {
     painter->setPen("white");
     painter->setFont(m_font);
 
-    painter->drawText(5, 15, m_name);
-    painter->drawText(10, 30, m_speed_text);
-    painter->drawText(10, 45, m_alt_text);
+    painter->drawText(5, 20, m_name);
+    painter->drawText(7, 39, m_speed_text);
+    painter->drawText(7, 57, m_alt_text);
 
     painter->restore();
     }
