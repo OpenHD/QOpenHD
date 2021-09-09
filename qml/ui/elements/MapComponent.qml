@@ -171,8 +171,8 @@ Map {
 
                     anchorPoint.x: 0
                     anchorPoint.y: 0
-                    width: 300
-                    height: 300
+                    width: 260
+                    height: 260
 
 
                     sourceItem:
@@ -181,8 +181,8 @@ Map {
                         id: icon
                         anchors.centerIn: parent
 
-                        width: 300
-                        height: 300
+                        width: 260
+                        height: 260
 
                         color: settings.color_shape
                         glow: settings.color_glow
