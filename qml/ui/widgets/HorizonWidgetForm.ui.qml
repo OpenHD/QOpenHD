@@ -27,6 +27,10 @@ BaseWidget {
 
         ColumnLayout {
             id: horizonSettingsColumn
+            x: 0
+            y: 0
+            width: 321
+            height: 522
             spacing: 0
             clip: true
             Item {
@@ -225,10 +229,10 @@ BaseWidget {
                 Slider {
                     id: horizon_spacing_Slider
                     orientation: Qt.Horizontal
-                    from: 40
+                    from: 10
                     value: settings.horizon_ladder_spacing
-                    to: 180
-                    stepSize: 10
+                    to: 500
+                    stepSize: 1
                     height: parent.height
                     anchors.rightMargin: 0
                     anchors.right: parent.right
@@ -236,6 +240,64 @@ BaseWidget {
 
                     onValueChanged: {
                         settings.horizon_ladder_spacing = horizon_spacing_Slider.value
+                    }
+                }
+            }
+            Item {
+                width: 230
+                height: 32
+                Text {
+                    text: qsTr("Range")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Slider {
+                    id: horizon_range_Slider
+                    orientation: Qt.Horizontal
+                    from: 1
+                    value: settings.horizon_range
+                    to: 180
+                    stepSize: 1
+                    height: parent.height
+                    anchors.rightMargin: 0
+                    anchors.right: parent.right
+                    width: parent.width - 96
+
+                    onValueChanged: {
+                        settings.horizon_range = horizon_range_Slider.value
+                    }
+                }
+            }
+            Item {
+                width: 230
+                height: 32
+                Text {
+                    text: qsTr("Step")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Slider {
+                    id: horizon_step_Slider
+                    orientation: Qt.Horizontal
+                    from: 5
+                    value: settings.horizon_step
+                    to: 90
+                    stepSize: 5
+                    height: parent.height
+                    anchors.rightMargin: 0
+                    anchors.right: parent.right
+                    width: parent.width - 96
+
+                    onValueChanged: {
+                        settings.horizon_step = horizon_step_Slider.value
                     }
                 }
             }
@@ -316,9 +378,11 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Switch {
+                    x: 190
+                    y: 0
                     width: 32
                     height: parent.height
-                    anchors.rightMargin: 12
+                    anchors.rightMargin: 8
                     anchors.right: parent.right
                     checked: settings.show_horizon_home
                     onCheckedChanged: settings.show_horizon_home = checked
@@ -337,9 +401,11 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Switch {
+                    x: 190
+                    y: 0
                     width: 32
                     height: parent.height
-                    anchors.rightMargin: 12
+                    anchors.rightMargin: 8
                     anchors.right: parent.right
                     checked: settings.show_horizon_heading_ladder
                     onCheckedChanged: settings.show_horizon_heading_ladder = checked
@@ -359,9 +425,11 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Switch {
+                    x: 190
+                    y: 0
                     width: 32
                     height: parent.height
-                    anchors.rightMargin: 12
+                    anchors.rightMargin: 8
                     anchors.right: parent.right
                     checked: settings.heading_ladder_text
                     onCheckedChanged: settings.heading_ladder_text = checked
@@ -381,9 +449,11 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Switch {
+                    x: 190
+                    y: 0
                     width: 32
                     height: parent.height
-                    anchors.rightMargin: 12
+                    anchors.rightMargin: 8
                     anchors.right: parent.right
                     checked: settings.heading_inav
                     onCheckedChanged: settings.heading_inav = checked
@@ -399,10 +469,10 @@ BaseWidget {
 
         Item {
             id: horizonLadder
+            visible: true
 
             anchors.centerIn: parent
 
-            visible: settings.show_horizon
 
             transform: Scale {
                 origin.x: 0
@@ -428,7 +498,8 @@ BaseWidget {
                 horizonWidth: settings.horizon_width
                 horizonSpacing: settings.horizon_ladder_spacing
                 horizonShowLadder: settings.show_horizon_ladder
-                horizonRange: settings.horizon_ladder_spacing
+                horizonRange: settings.horizon_range
+                horizonStep: settings.horizon_step
 
                 pitch: OpenHD.pitch
                 roll: OpenHD.roll
@@ -439,6 +510,7 @@ BaseWidget {
                 showHeadingLadderText: settings.heading_ladder_text
                 showHorizonHeadingLadder: settings.show_horizon_heading_ladder
                 showHorizonHome: settings.show_horizon_home //you dont want a floating home icon
+                fontFamily: settings.font_text
             }
         }
     }

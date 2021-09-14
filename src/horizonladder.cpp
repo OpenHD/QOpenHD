@@ -26,6 +26,7 @@ void HorizonLadder::paint(QPainter* painter) {
     int horizonSpacing = m_horizonSpacing;
     bool horizonShowLadder = m_horizonShowLadder;
     int horizonRange = m_horizonRange;
+    int horizonStep = m_horizonStep;
 
     auto roll = m_roll;
     auto pitch = m_pitch;
@@ -50,36 +51,42 @@ void HorizonLadder::paint(QPainter* painter) {
 
     auto px = pos_x - width_ladder / 2;
 
-    auto ratio = height() / horizonSpacing;
-
-    //int k = pitch - range / 2;
-    //int max = pitch + range / 2;
+    auto ratio = horizonSpacing; //pixels per degree
+    auto vrange = horizonRange; //total vertical range in degrees
+    auto step = horizonStep; //degrees per line
+    if (step == 0) step = 10;  // avoid div by 0
+    if (ratio == 0) ratio = 1; // avoid div by 0
 
     int i;
     int k;
     int y;
     int n;
+    int startH;
+    int stopH;
+    startH = pitch - vrange/2;
+    stopH = pitch + vrange/2;
+    if (startH<-90) startH = -90;
+    if (stopH>90) stopH = 90;
 
     painter->setPen(m_color);
 
-    for (i = pitch - horizonSpacing / 2; i <= pitch + horizonSpacing / 2; i++) {
+    for (i = startH/step; i <= stopH/step; i++) {
 
-        k=i;
-        //y = pos_y - ((k - pitch)*spacing) ;
+        if (i>0 && i*ratio<30 && m_showHorizonHeadingLadder ) i=i+ 30/ratio;
 
-        y = pos_y - (k - pitch) * ratio;
+        k = i*step;
+        y = pos_y - (i - 1.0*pitch/step)*ratio;
+        if (horizonShowLadder == true) {
+            if (i != 0) {
 
-        if (k % 10 == 0 && k!= 0) {
-            if (horizonShowLadder == true) {
-
-            //fix pitch line wrap around at extreme nose up/down
-            n=k;
-            if (n>90){
-                n=(90-k)+90;
-            }
-            if (n<-90){
-                n=((k+90)+90)*-1;
-            }
+                //fix pitch line wrap around at extreme nose up/down
+                n=k;
+                if (n>90){
+                    n=180-k;
+                }
+                if (n<-90){
+                    n=-k-180;
+                }
 
                 //left numbers
                 painter->setPen(m_color);
@@ -88,101 +95,92 @@ void HorizonLadder::paint(QPainter* painter) {
                 //right numbers
                 painter->drawText((px + width_ladder)+8, y+6, QString::number(n));
                 painter->setPen(m_color);
+
+                if ((i > 0)) {
+                    //Upper ladders
+
+                    //left upper cap
+                    painter->setPen(m_color);
+                    painter->fillRect(QRectF(px , y , 2 , width_ladder/24), m_color);
+                    painter->setPen(m_glow);
+                    painter->drawRect(QRectF(px , y , 2 , width_ladder/24));
+
+                    //left upper line
+                    painter->setPen(m_color);
+                    painter->fillRect(QRectF(px , y , width_ladder/3 , 2), m_color);
+                    painter->setPen(m_glow);
+                    painter->drawRect(QRectF(px , y , width_ladder/3 , 2));
+
+                    //right upper cap
+                    painter->setPen(m_color);
+                    painter->fillRect(QRectF(px+width_ladder-2 , y , 2 , width_ladder/24), m_color);
+                    painter->setPen(m_glow);
+                    painter->drawRect(QRectF(px+width_ladder-2 , y , 2 , width_ladder/24));
+
+                    //right upper line
+                    painter->setPen(m_color);
+                    painter->fillRect(QRectF(px+width_ladder*2/3 , y , width_ladder/3 , 2), m_color);
+                    painter->setPen(m_glow);
+                    painter->drawRect(QRectF(px+width_ladder*2/3 , y , width_ladder/3 , 2));
+                    painter->setPen(m_color);
+
+                } else if (i < 0) {
+                    // Lower ladders
+
+                    //left to right
+                    //left lower cap
+                    painter->setPen(m_color);
+                    painter->fillRect(QRectF(px , y-(width_ladder/24)+2 , 2 , width_ladder/24), m_color);
+                    painter->setPen(m_glow);
+                    painter->drawRect(QRectF(px , y-(width_ladder/24)+2 , 2 , width_ladder/24));
+                    //1l
+                    painter->setPen(m_color);
+                    painter->fillRect(QRectF(px , y , width_ladder/12 , 2), m_color);
+                    painter->setPen(m_glow);
+                    painter->drawRect(QRectF(px , y , width_ladder/12 , 2));
+                    //2l
+                    painter->setPen(m_color);
+                    painter->fillRect(QRectF(px+(width_ladder/12)*1.5 , y , width_ladder/12 , 2), m_color);
+                    painter->setPen(m_glow);
+                    painter->drawRect(QRectF(px+(width_ladder/12)*1.5 , y , width_ladder/12 , 2));
+                    //3l
+                    painter->setPen(m_color);
+                    painter->fillRect(QRectF(px+(width_ladder/12)*3 , y , width_ladder/12 , 2), m_color);
+                    painter->setPen(m_glow);
+                    painter->drawRect(QRectF(px+(width_ladder/12)*3 , y , width_ladder/12 , 2));
+
+                    //right lower cap
+                    painter->setPen(m_color);
+                    painter->fillRect(QRectF(px+width_ladder-2 , y-(width_ladder/24)+2 , 2 , width_ladder/24), m_color);
+                    painter->setPen(m_glow);
+                    painter->drawRect(QRectF(px+width_ladder-2 , y-(width_ladder/24)+2 , 2 , width_ladder/24));
+                    //1r ///spacing on these might be a bit off
+                    painter->setPen(m_color);
+                    painter->fillRect(QRectF(px+(width_ladder/12)*8 , y , width_ladder/12 , 2), m_color);
+                    painter->setPen(m_glow);
+                    painter->drawRect(QRectF(px+(width_ladder/12)*8 , y , width_ladder/12 , 2));
+                    //2r ///spacing on these might be a bit off
+                    painter->setPen(m_color);
+                    painter->fillRect(QRectF(px+(width_ladder/12)*9.5 , y , width_ladder/12 , 2), m_color);
+                    painter->setPen(m_glow);
+                    painter->drawRect(QRectF(px+(width_ladder/12)*9.5 , y , width_ladder/12 , 2));
+                    //3r  ///spacing on these might be a bit off tried a decimal here
+                    painter->setPen(m_color);
+                    painter->fillRect(QRectF(px+(width_ladder*.9166) , y , width_ladder/12 , 2), m_color);
+                    painter->setPen(m_glow);
+                    painter->drawRect(QRectF(px+(width_ladder*.9166) , y , width_ladder/12 , 2));
+                    painter->setPen(m_color);
+
+
+                }
+            } else { // i==0
+
+                //Center line
+                painter->fillRect(QRectF(pos_x-width_ladder*2.5/2, y, width_ladder*2.5, 3), m_color);
+                painter->setPen(m_glow);
+                painter->drawRect(QRectF(pos_x-width_ladder*2.5/2, y, width_ladder*2.5, 3));
             }
         }
-
-        if ((k > 0) && (k % 10 == 0)) {
-            //Upper ladders
-
-            if (horizonShowLadder == true) {
-
-                //left upper cap
-                painter->setPen(m_color);
-                painter->fillRect(QRectF(px , y , 2 , width_ladder/24), m_color);
-                painter->setPen(m_glow);
-                painter->drawRect(QRectF(px , y , 2 , width_ladder/24));
-
-                //left upper line
-                painter->setPen(m_color);
-                painter->fillRect(QRectF(px , y , width_ladder/3 , 2), m_color);
-                painter->setPen(m_glow);
-                painter->drawRect(QRectF(px , y , width_ladder/3 , 2));
-
-                //right upper cap
-                painter->setPen(m_color);
-                painter->fillRect(QRectF(px+width_ladder-2 , y , 2 , width_ladder/24), m_color);
-                painter->setPen(m_glow);
-                painter->drawRect(QRectF(px+width_ladder-2 , y , 2 , width_ladder/24));
-
-                //right upper line
-                painter->setPen(m_color);
-                painter->fillRect(QRectF(px+width_ladder*2/3 , y , width_ladder/3 , 2), m_color);
-                painter->setPen(m_glow);
-                painter->drawRect(QRectF(px+width_ladder*2/3 , y , width_ladder/3 , 2));
-                painter->setPen(m_color);
-
-            }
-
-        } else if ((k < 0) && (k % 10 == 0)) {
-            // Lower ladders
-
-            if (horizonShowLadder == true) {
-                //left to right
-                //left lower cap
-                painter->setPen(m_color);
-                painter->fillRect(QRectF(px , y-(width_ladder/24)+2 , 2 , width_ladder/24), m_color);
-                painter->setPen(m_glow);
-                painter->drawRect(QRectF(px , y-(width_ladder/24)+2 , 2 , width_ladder/24));
-                //1l
-                painter->setPen(m_color);
-                painter->fillRect(QRectF(px , y , width_ladder/12 , 2), m_color);
-                painter->setPen(m_glow);
-                painter->drawRect(QRectF(px , y , width_ladder/12 , 2));
-                //2l
-                painter->setPen(m_color);
-                painter->fillRect(QRectF(px+(width_ladder/12)*1.5 , y , width_ladder/12 , 2), m_color);
-                painter->setPen(m_glow);
-                painter->drawRect(QRectF(px+(width_ladder/12)*1.5 , y , width_ladder/12 , 2));
-                //3l
-                painter->setPen(m_color);
-                painter->fillRect(QRectF(px+(width_ladder/12)*3 , y , width_ladder/12 , 2), m_color);
-                painter->setPen(m_glow);
-                painter->drawRect(QRectF(px+(width_ladder/12)*3 , y , width_ladder/12 , 2));
-
-                //right lower cap
-                painter->setPen(m_color);
-                painter->fillRect(QRectF(px+width_ladder-2 , y-(width_ladder/24)+2 , 2 , width_ladder/24), m_color);
-                painter->setPen(m_glow);
-                painter->drawRect(QRectF(px+width_ladder-2 , y-(width_ladder/24)+2 , 2 , width_ladder/24));
-                //1r ///spacing on these might be a bit off
-                painter->setPen(m_color);
-                painter->fillRect(QRectF(px+(width_ladder/12)*8 , y , width_ladder/12 , 2), m_color);
-                painter->setPen(m_glow);
-                painter->drawRect(QRectF(px+(width_ladder/12)*8 , y , width_ladder/12 , 2));
-                //2r ///spacing on these might be a bit off
-                painter->setPen(m_color);
-                painter->fillRect(QRectF(px+(width_ladder/12)*9.5 , y , width_ladder/12 , 2), m_color);
-                painter->setPen(m_glow);
-                painter->drawRect(QRectF(px+(width_ladder/12)*9.5 , y , width_ladder/12 , 2));
-                //3r  ///spacing on these might be a bit off tried a decimal here
-                painter->setPen(m_color);
-                painter->fillRect(QRectF(px+(width_ladder*.9166) , y , width_ladder/12 , 2), m_color);
-                painter->setPen(m_glow);
-                painter->drawRect(QRectF(px+(width_ladder*.9166) , y , width_ladder/12 , 2));
-                painter->setPen(m_color);
-
-
-            }
-
-        } else if (k == 0) {
-            //Center line
-
-            painter->fillRect(QRectF(pos_x-width_ladder*2.5/2, y, width_ladder*2.5, 3), m_color);
-            painter->setPen(m_glow);
-            painter->drawRect(QRectF(pos_x-width_ladder*2.5/2, y, width_ladder*2.5, 3));
-        }
-
-        k++;
     }
 
 
@@ -190,7 +188,7 @@ void HorizonLadder::paint(QPainter* painter) {
 
 
     // ticks up/down position
-    y = pos_y + (pitch * ratio)-8;
+    y = pos_y + (1.0*pitch/step * ratio)-8;
 
     // labels up/down position
     auto y_label = y - 4;
@@ -224,11 +222,13 @@ void HorizonLadder::paint(QPainter* painter) {
         }
 
         if (h == m_homeHeading && m_showHorizonHome) {
-            painter->setFont(m_fontAwesome);
+            //painter->setFont(m_font);
+            //painter->setFont(m_fontAwesome);
             QFontMetrics fm(painter->font());
+            painter->setFont(m_font);
             auto tw = fm.horizontalAdvance("\uf015");
             painter->drawText(x-tw/2, y_label, "\uf015");
-            painter->setFont(m_font);
+
 
             h_drawn = false;
         }
@@ -316,7 +316,7 @@ void HorizonLadder::paint(QPainter* painter) {
         if (left < 0) left += 360;
         if (right < 0) right += 360;
 
-        painter->setFont(m_fontAwesome);
+ //       painter->setFont(m_fontAwesome);
 
         if (left < right){
             painter->drawText(pos_x-width_ladder*2.5/2+1, y_label, "\uf015");
@@ -397,6 +397,11 @@ void HorizonLadder::setHorizonRange(int horizonRange) {
     update();
 }
 
+void HorizonLadder::setHorizonStep(int horizonStep) {
+    m_horizonStep = horizonStep;
+    emit horizonStepChanged(m_horizonStep);
+    update();
+}
 
 void HorizonLadder::setRoll(int roll) {
     m_roll = roll;
