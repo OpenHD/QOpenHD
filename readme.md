@@ -221,7 +221,7 @@ Once you have those steps done you can open `QOpenHD.pro` with Qt Creator, build
 
 3. Have the Qt Installer download Qt 5.15.0+ and Qt Creator
 
-4. Download the [GStreamer development kit](https://gstreamer.freedesktop.org/download/) for Windows, both the Runtime and Development packages. You *must use* the 32-bit MinGW packages, NOT the one labeled MSVC, and it should be version 1.14.4.
+4. Download the [GStreamer development kit](https://gstreamer.freedesktop.org/download/) for Windows, both the Runtime and Development packages. You *must use* the 32-bit MinGW packages, NOT the one labeled MSVC, and it should be version 1.14.4. (QT will look for gstreamer in c:/gstreamer/1.0/x86 )
 
 5. Clone the source code:
 

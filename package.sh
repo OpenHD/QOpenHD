@@ -34,6 +34,11 @@ if [[ "${OS}" == "raspbian" ]]; then
     PLATFORM_PACKAGES="-d openhd-qt"
 fi
 
+if [[ "${OS}" == "debian" ]]; then
+    PLATFORM_DEV_PACKAGES="openhd-qt"
+    PLATFORM_PACKAGES="-d openhd-qt"
+fi
+
 if [[ "${OS}" == "ubuntu" ]] && [[ "${PACKAGE_ARCH}" == "armhf" || "${PACKAGE_ARCH}" == "arm64" ]]; then
     PLATFORM_DEV_PACKAGES="openhd-qt-jetson-nano"
     PLATFORM_PACKAGES="-d openhd-qt-jetson-nano"
@@ -53,7 +58,7 @@ mkdir -p ${TMPDIR}/usr/local/share/openhd || exit 1
 
 /opt/${QT_VERSION}/bin/qmake
 
-make clean || exit 1
+#make clean || exit 1
 
 make -j4 || exit 1
 cp release/QOpenHD ${TMPDIR}/usr/local/bin/ || exit 1
