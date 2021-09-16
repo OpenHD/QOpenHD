@@ -17,7 +17,7 @@ void AltitudeLadder::paint(QPainter* painter) {
 
     QFont font("sans-serif", 10, QFont::Bold, false);
 
-    painter->setFont(font);
+    painter->setFont(m_font);
 
     auto alt = m_imperial ? (m_altitudeRelMsl ? (m_altMsl*3.28) : (m_altRel*3.28)) :
                             (m_altitudeRelMsl ? m_altMsl : m_altRel);
@@ -135,3 +135,9 @@ void AltitudeLadder::setAltRel(double altRel) {
     update();
 }
 
+void AltitudeLadder::setFontFamily(QString fontFamily) {
+    m_fontFamily = fontFamily;
+    emit fontFamilyChanged(m_fontFamily);
+    m_font = QFont(m_fontFamily, 11, QFont::Bold, false);
+    update();
+}

@@ -15,6 +15,7 @@ class AltitudeLadder : public QQuickPaintedItem {
 
     Q_PROPERTY(int altMsl MEMBER m_altMsl WRITE setAltMsl NOTIFY altMslChanged)
     Q_PROPERTY(int altRel MEMBER m_altRel WRITE setAltRel NOTIFY altRelChanged)
+    Q_PROPERTY(QString fontFamily MEMBER m_fontFamily WRITE setFontFamily NOTIFY fontFamilyChanged)
 
 public:
     explicit AltitudeLadder(QQuickItem* parent = nullptr);
@@ -32,6 +33,7 @@ public slots:
     void setAltitudeRange(int altitudeRange);
     void setAltMsl(double altMsl);
     void setAltRel(double altRel);
+    void setFontFamily(QString fontFamily);
 
 signals:
     void colorChanged(QColor color);
@@ -43,6 +45,8 @@ signals:
     void altMslChanged(double altMsl);
     void altRelChanged(double altRel);
 
+    void fontFamilyChanged(QString fontFamily);
+
 private:
     QColor m_color;
     QColor m_glow;
@@ -52,5 +56,8 @@ private:
 
     double m_altMsl;
     double m_altRel;
+
+    QString m_fontFamily;
+    QFont m_font;
 
 };

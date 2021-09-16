@@ -270,6 +270,7 @@ BaseWidget {
                     color: settings.color_text
                     opacity: settings.vibration_opacity
                     font.pixelSize: 10
+                    font.family: settings.font_text
 
                     text: qsTr("X")
                     leftPadding: 2
@@ -353,6 +354,7 @@ BaseWidget {
                     color: settings.color_text
                     opacity: settings.vibration_opacity
                     font.pixelSize: 10
+                    font.family: settings.font_text
 
                     text: qsTr("Y")
                     leftPadding: 2
@@ -436,6 +438,7 @@ BaseWidget {
                     color: settings.color_text
                     opacity: settings.vibration_opacity
                     font.pixelSize: 10
+                    font.family: settings.font_text
 
                     text: qsTr("Z")
                     leftPadding: 2
@@ -462,6 +465,7 @@ BaseWidget {
                     color: settings.color_text
                     opacity: settings.vibration_opacity
                     font.pixelSize: 10
+                    font.family: settings.font_text
 
                     text: "-60"
                     anchors.top: parent.top
@@ -481,6 +485,7 @@ BaseWidget {
                     color: settings.color_text
                     opacity: settings.vibration_opacity
                     font.pixelSize: 10
+                    font.family: settings.font_text
 
                     text: "-30"
                     anchors.right: parent.right

@@ -300,6 +300,7 @@ BaseWidget {
                 imperial: settings.enable_imperial
                 altMsl: OpenHD.alt_msl
                 altRel: OpenHD.alt_rel
+                fontFamily: settings.font_text
             }
         }
         //-----------------------ladder end---------------

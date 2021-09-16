@@ -100,5 +100,5 @@ private:
 
     QFont m_font;
 
-    QFont m_fontAwesome = QFont("Font Awesome 5 Free", 14, QFont::Bold, false);
+    QFont m_fontAwesome = QFont("Font Awesome 5 Free", 15, QFont::Bold, false);
 };

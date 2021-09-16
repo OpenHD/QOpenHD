@@ -211,7 +211,7 @@ void HorizonLadder::paint(QPainter* painter) {
 
     for (i = (m_heading - range / 2); i <= m_heading + range / 2; i++) {
         x =  pos_x + ((i - m_heading) * ratio_heading);
-
+        auto no_house = true;
         h = i;
         if (h > 360) {
             h = h - 360;
@@ -222,14 +222,14 @@ void HorizonLadder::paint(QPainter* painter) {
         }
 
         if (h == m_homeHeading && m_showHorizonHome) {
-            //painter->setFont(m_font);
-            //painter->setFont(m_fontAwesome);
+
+            painter->setFont(m_fontAwesome);
             QFontMetrics fm(painter->font());
-            painter->setFont(m_font);
             auto tw = fm.horizontalAdvance("\uf015");
             painter->drawText(x-tw/2, y_label, "\uf015");
+            painter->setFont(m_font);
 
-
+            no_house = false; //avoid printing compass on house
             h_drawn = false;
         }
 
@@ -255,50 +255,51 @@ void HorizonLadder::paint(QPainter* painter) {
         if (j < 0)    j += 360;
         if (j >= 360) j -= 360;
 
-        switch (j) {
-        case 0: {
-            draw_text = true;
-            compass_direction = m_showHeadingLadderText ? tr("N") : QString::number(j);
-            break;
+        if (no_house) {
+           switch (j) {
+            case 0: {
+                draw_text = true;
+                compass_direction = m_showHeadingLadderText ? tr("N") : QString::number(j);
+                break;
+            }
+            case 45: {
+                draw_text = true;
+                compass_direction = m_showHeadingLadderText ? tr("NE") : QString::number(j);
+                break;
+            }
+            case 90: {
+                draw_text = true;
+                compass_direction = m_showHeadingLadderText ? tr("E") : QString::number(j);
+                break;
+            }
+            case 135: {
+                draw_text = true;
+                compass_direction = m_showHeadingLadderText ? tr("SE") : QString::number(j);
+                break;
+            }
+            case 180: {
+                draw_text = true;
+                compass_direction = m_showHeadingLadderText ? tr("S") : QString::number(j);
+                break;
+            }
+            case 225: {
+                draw_text = true;
+                compass_direction = m_showHeadingLadderText ? tr("SW") : QString::number(j);
+                break;
+            }
+            case 270: {
+                draw_text = true;
+                compass_direction = m_showHeadingLadderText ? tr("W") : QString::number(j);
+                break;
+            }
+            case 315: {
+                draw_text = true;
+                compass_direction = m_showHeadingLadderText ? tr("NW") : QString::number(j);
+                break;
+            }
+            }
         }
-        case 45: {
-            draw_text = true;
-            compass_direction = m_showHeadingLadderText ? tr("NE") : QString::number(j);
-            break;
-        }
-        case 90: {
-            draw_text = true;
-            compass_direction = m_showHeadingLadderText ? tr("E") : QString::number(j);
-            break;
-        }
-        case 135: {
-            draw_text = true;
-            compass_direction = m_showHeadingLadderText ? tr("SE") : QString::number(j);
-            break;
-        }
-        case 180: {
-            draw_text = true;
-            compass_direction = m_showHeadingLadderText ? tr("S") : QString::number(j);
-            break;
-        }
-        case 225: {
-            draw_text = true;
-            compass_direction = m_showHeadingLadderText ? tr("SW") : QString::number(j);
-            break;
-        }
-        case 270: {
-            draw_text = true;
-            compass_direction = m_showHeadingLadderText ? tr("W") : QString::number(j);
-            break;
-        }
-        case 315: {
-            draw_text = true;
-            compass_direction = m_showHeadingLadderText ? tr("NW") : QString::number(j);
-            break;
-        }
-        }
-
-        if (draw_text == true && m_showHorizonHeadingLadder) {
+        if (draw_text == true && m_showHorizonHeadingLadder && no_house) {
             painter->setFont(m_font);
             QFontMetrics fm(painter->font());
             auto tw = fm.horizontalAdvance(compass_direction);
@@ -316,7 +317,7 @@ void HorizonLadder::paint(QPainter* painter) {
         if (left < 0) left += 360;
         if (right < 0) right += 360;
 
- //       painter->setFont(m_fontAwesome);
+        painter->setFont(m_fontAwesome);
 
         if (left < right){
             painter->drawText(pos_x-width_ladder*2.5/2+1, y_label, "\uf015");

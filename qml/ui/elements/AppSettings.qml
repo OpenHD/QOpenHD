@@ -170,10 +170,12 @@ Settings {
     property bool show_horizon: true
     property bool horizon_invert_pitch: false
     property bool horizon_invert_roll: false
-    property int horizon_size: 1
+    property double horizon_size: 1
     property double horizon_width: 2
     property double horizon_opacity: 1
     property int horizon_ladder_spacing: 180
+    property int horizon_range: 50
+    property int horizon_step: 10
     property bool show_horizon_ladder: true
     property bool show_horizon_heading_ladder: true
     property bool show_horizon_home: true
