@@ -81,7 +81,7 @@ Settings {
     property bool air_battery_show_fc_percent: false
     property double air_battery_size: 1
 
-    property bool show_ground_battery: true
+    property bool show_ground_battery: false
     property double ground_battery_opacity: 1
     property bool ground_battery_show_voltage_current: false
     property bool ground_battery_show_single_cell: false

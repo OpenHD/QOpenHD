@@ -10,6 +10,8 @@
 HorizonLadder::HorizonLadder(QQuickItem *parent): QQuickPaintedItem(parent) {
     qDebug() << "HorizonLadder::HorizonLadder()";
     setRenderTarget(RenderTarget::FramebufferObject);
+
+    m_font.setPixelSize(14);
 }
 
 void HorizonLadder::paint(QPainter* painter) {
@@ -231,6 +233,8 @@ void HorizonLadder::paint(QPainter* painter) {
 
             no_house = false; //avoid printing compass on house
             h_drawn = false;
+
+            painter->setFont(m_font);
         }
 
         auto big_tick_width = 3;
