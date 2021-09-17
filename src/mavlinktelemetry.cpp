@@ -42,10 +42,10 @@ MavlinkTelemetry::MavlinkTelemetry(QObject *parent): MavlinkBase(parent) {
     m_restrict_compid = false;
     
     localPort = 14550;
-//------------------------------------DONT FORGET TO REDO THIS------------------------------
-//    #if defined(__rasp_pi__)
+
+#if defined(__rasp_pi__)
     groundAddress = "127.0.0.1";
-//    #endif
+#endif
 
     connect(this, &MavlinkTelemetry::setup, this, &MavlinkTelemetry::onSetup);
 
@@ -154,10 +154,17 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
                                         auto plane_mode = m_util.plane_mode_from_enum((PLANE_MODE)custom_mode);
                                         OpenHD::instance()->set_flight_mode(plane_mode);
 
+                                        OpenHD::instance()->set_mav_type("ARDUPLANE");
+
+                                        /* autopilot detecton not reliable
                                         if(ap_version>999){
                                             OpenHD::instance()->set_mav_type("ARDUPLANE");
                                             //qDebug() << "Mavlink Mav Type= ARDUPLANE";
                                         }
+                                        else{
+                                            OpenHD::instance()->set_mav_type("UKNOWN PLANE");
+                                        }
+                                        */
                                         break;
                                     }
                                     case MAV_TYPE_GROUND_ROVER: {
@@ -169,10 +176,17 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
                                         auto copter_mode = m_util.copter_mode_from_enum((COPTER_MODE)custom_mode);
                                         OpenHD::instance()->set_flight_mode(copter_mode);
 
+                                        OpenHD::instance()->set_mav_type("ARDUCOPTER");
+
+                                        /* autopilot detection not reliable
                                         if(ap_version>999){
                                             OpenHD::instance()->set_mav_type("ARDUCOPTER");
                                             //qDebug() << "Mavlink Mav Type= ARDUCOPTER";
                                         }
+                                        else {
+                                            OpenHD::instance()->set_mav_type("UNKNOWN COPTER");
+                                        }
+                                        */
                                         break;
                                     }
                                     case MAV_TYPE_SUBMARINE: {

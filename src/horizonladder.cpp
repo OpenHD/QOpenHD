@@ -319,7 +319,7 @@ void HorizonLadder::paint(QPainter* painter) {
         if (left < 0) left += 360;
         if (right < 0) right += 360;
 
- //       painter->setFont(m_fontAwesome);
+        painter->setFont(m_fontAwesome);
 
         if (left < right){
             painter->drawText(pos_x-width_ladder*2.5/2+1, y_label, "\uf015");

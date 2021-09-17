@@ -305,12 +305,15 @@ BaseWidget {
             Text {
                 height: 32
                 text: {
+                    /* autopilot detection not reliable.. gets set in MavlinkTelemetry
                     if(OpenHD.mav_type=="ARDUPLANE" || OpenHD.mav_type=="ARDUCOPTER"){
                         return qsTr("Vehicle type: "+OpenHD.mav_type);
                     }
                     else {
-                        return qsTr("Only Ardupilot Commands Supported");
+                        return qsTr("Only For Ardupilot...");
                     }
+                    */
+                    return qsTr("Only For Ardupilot...");
                 }
                 color: "white"
                 font.bold: true
