@@ -233,18 +233,19 @@ void HorizonLadder::paint(QPainter* painter) {
             h_drawn = false;
         }
 
-
+        auto big_tick_width = 3;
+        auto little_tick_width = 2;
         if (i % 30 == 0 && m_showHorizonHeadingLadder) {
             //big ticks
-            painter->fillRect(QRectF(x, y, 3, 8), m_color);
+            painter->fillRect(QRectF(x-big_tick_width/2, y, big_tick_width, 8), m_color);
             painter->setPen(m_glow);
-            painter->drawRect(QRectF(x, y, 3, 8));
+            painter->drawRect(QRectF(x-big_tick_width/2, y, big_tick_width, 8));
             painter->setPen(m_color);
         } else if (i % 15 == 0 && m_showHorizonHeadingLadder) {
             //little ticks
-            painter->fillRect(QRectF(x, y + 3, 2, 5), m_color);
+            painter->fillRect(QRectF(x-little_tick_width/2, y + 3, little_tick_width, 5), m_color);
             painter->setPen(m_glow);
-            painter->drawRect(QRectF(x, y + 3, 2, 5));
+            painter->drawRect(QRectF(x-little_tick_width/2, y + 3, little_tick_width, 5));
             painter->setPen(m_color);
         } else {
             continue;

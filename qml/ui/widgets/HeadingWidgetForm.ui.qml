@@ -291,9 +291,10 @@ BaseWidget {
             width: parent.width * settings.heading_size
             anchors.horizontalCenter: parent.horizontalCenter
             y: 27
+            x: width/2
 
             transform: Scale {
-                origin.x: 24
+                origin.x: width/2*settings.heading_size //24
                 origin.y: 15
                 xScale: settings.heading_size
                 yScale: settings.heading_size
@@ -322,13 +323,13 @@ BaseWidget {
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.bottom: parent.bottom
-            anchors.bottomMargin: parent.height - 24
+            anchors.bottomMargin: parent.height +20 //-24
             color: settings.color_text
             font.pixelSize: 14
             font.family: settings.font_text
             transform: Scale {
-                origin.x: 24
-                origin.y: 34
+                origin.x: width/2 //24
+                origin.y: 40 //34
                 xScale: settings.heading_size
                 yScale: settings.heading_size
             }
@@ -341,9 +342,10 @@ BaseWidget {
         Shape {
             id: outlineGlow
             anchors.fill: parent
+
             transform: Scale {
-                origin.x: 24
-                origin.y: 34
+                origin.x: width/2 //24
+                origin.y: 40-20*settings.heading_size
                 xScale: settings.heading_size
                 yScale: settings.heading_size
             }
@@ -354,47 +356,48 @@ BaseWidget {
                 strokeStyle: ShapePath.SolidLine
                 fillColor: "transparent"
                 startX: 4
-                startY: 0
+                startY: 0-20*settings.heading_size
                 PathLine {
                     x: 4
-                    y: 0
+                    y: 0-20*settings.heading_size
                 }
                 PathLine {
                     x: 44
-                    y: 0
+                    y: 0-20*settings.heading_size
                 }
                 PathLine {
                     x: 44
-                    y: 24
+                    y: 20-20*settings.heading_size
                 }
                 PathLine {
                     x: 32
-                    y: 24
+                    y: 20-20*settings.heading_size
                 }
                 PathLine {
                     x: 24
-                    y: 32
+                    y: 25-20*settings.heading_size
                 }
                 PathLine {
                     x: 16
-                    y: 24
+                    y: 20-20*settings.heading_size
                 }
                 PathLine {
                     x: 4
-                    y: 24
+                    y: 20-20*settings.heading_size
                 }
                 PathLine {
                     x: 4
-                    y: 0
+                    y: 0-20*settings.heading_size
                 }
             }
         }
         Shape {
             id: outline
             anchors.fill: parent
+
             transform: Scale {
-                origin.x: 24
-                origin.y: 34
+                origin.x: width/2 //24
+                origin.y: 40-20*settings.heading_size
                 xScale: settings.heading_size
                 yScale: settings.heading_size
             }
@@ -405,38 +408,38 @@ BaseWidget {
                 strokeStyle: ShapePath.SolidLine
                 fillColor: "transparent"
                 startX: 4
-                startY: 0
+                startY: 0-20*settings.heading_size
                 PathLine {
                     x: 4
-                    y: 0
+                    y: 0-20*settings.heading_size
                 }
                 PathLine {
                     x: 44
-                    y: 0
+                    y: 0-20*settings.heading_size
                 }
                 PathLine {
                     x: 44
-                    y: 24
+                    y: 20-20*settings.heading_size
                 }
                 PathLine {
                     x: 32
-                    y: 24
+                    y: 20-20*settings.heading_size
                 }
                 PathLine {
                     x: 24
-                    y: 32
+                    y: 25-20*settings.heading_size
                 }
                 PathLine {
                     x: 16
-                    y: 24
+                    y: 20-20*settings.heading_size
                 }
                 PathLine {
                     x: 4
-                    y: 24
+                    y: 20-20*settings.heading_size
                 }
                 PathLine {
                     x: 4
-                    y: 0
+                    y: 0-20*settings.heading_size
                 }
             }
         }
