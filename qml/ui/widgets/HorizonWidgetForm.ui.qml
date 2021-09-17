@@ -100,9 +100,9 @@ BaseWidget {
                 Slider {
                     id: horizon_size_Slider
                     orientation: Qt.Horizontal
-                    from: 1
+                    from: .7
                     value: settings.horizon_size
-                    to: 6
+                    to: 3
                     stepSize: .1
                     height: parent.height
                     anchors.rightMargin: 0

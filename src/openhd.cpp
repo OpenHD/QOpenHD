@@ -1164,3 +1164,10 @@ void OpenHD::setTotalWaypoints(int total_waypoints) {
     }
     emit totalWaypointsChanged(m_total_waypoints);
 }
+
+void OpenHD::setFontFamily(QString fontFamily) {
+    m_fontFamily = fontFamily;
+    emit fontFamilyChanged(m_fontFamily);
+    m_font = QFont(m_fontFamily, 11, QFont::Bold, false);
+
+}

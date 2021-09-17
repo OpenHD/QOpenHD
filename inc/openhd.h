@@ -269,6 +269,8 @@ public:
     Q_PROPERTY(int esc_temp MEMBER m_esc_temp WRITE set_esc_temp NOTIFY esc_temp_changed)
     void set_esc_temp(int esc_temp);
 
+    Q_PROPERTY(QString fontFamily MEMBER m_fontFamily WRITE setFontFamily NOTIFY fontFamilyChanged)
+    void setFontFamily(QString fontFamily);
 
     // openhd
 
@@ -639,11 +641,15 @@ signals:
     void request_Mission_Changed();
     void playBlackBoxObject(int index);
 
+    void fontFamilyChanged(QString fontFamily);
+
 private:
 #if defined(ENABLE_SPEECH)
     QTextToSpeech *m_speech;
 #endif
+    QString m_fontFamily;
 
+    QFont m_font;
 
 public:
     // mavlink
