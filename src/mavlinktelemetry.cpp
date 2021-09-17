@@ -42,10 +42,10 @@ MavlinkTelemetry::MavlinkTelemetry(QObject *parent): MavlinkBase(parent) {
     m_restrict_compid = false;
     
     localPort = 14550;
-//------------------------------------DONT FORGET TO REDO THIS------------------------------
-//    #if defined(__rasp_pi__)
+
+#if defined(__rasp_pi__)
     groundAddress = "127.0.0.1";
-//    #endif
+#endif
 
     connect(this, &MavlinkTelemetry::setup, this, &MavlinkTelemetry::onSetup);
 
