@@ -126,4 +126,9 @@ private:
 
     QSettings _settings;
     bool _show_vr;
+
+    QFont m_fontBig = QFont("Font Awesome 5 Free", 12* m_vroverlaySize*1.1, QFont::Bold, false);
+    QFont m_fontSmall = QFont("Font Awesome 5 Free", 9* m_vroverlaySize*1.1, QFont::Bold, false);
+    QFont m_fontHome = QFont("Font Awesome 5 Free", 14* m_vroverlaySize*1.1, QFont::Bold, false);
+
 };

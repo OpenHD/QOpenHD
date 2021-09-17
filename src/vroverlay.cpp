@@ -23,6 +23,12 @@ VROverlay::VROverlay(QQuickItem *parent): QQuickPaintedItem(parent) {
 
     qDebug() << "VROverlay::VROverlay()";
     setRenderTarget(RenderTarget::FramebufferObject);
+
+    //set font to pixels size early
+    m_fontBig.setPixelSize(18);
+    m_fontSmall.setPixelSize(14);
+    m_fontHome.setPixelSize(30);
+
 }
 
 void VROverlay::paint(QPainter* painter) {
@@ -98,7 +104,8 @@ void VROverlay::paint(QPainter* painter) {
     if(m_type=="adsb"){
 
         //adjust perspective of object size vs distance
-        distance_ratio=(5000-distance)/500;
+        //distance_ratio=(5000-distance)/500;
+        distance_ratio=1000/(sqrt((distance)*(distance)+(10)*(10)));
 
         if (distance_ratio<1){
             distance_ratio=1;
@@ -113,11 +120,10 @@ void VROverlay::paint(QPainter* painter) {
                                  10*distance_ratio, 10*distance_ratio));
 
         painter->setPen(m_color);
-        QFont m_fontBig = QFont("Font Awesome 5 Free", 12* m_vroverlaySize*1.1, QFont::Bold, false);
+
         painter->setFont(m_fontBig);
         painter->drawText(-4*distance_ratio, -5*distance_ratio, m_name);
 
-        QFont m_fontSmall = QFont("Font Awesome 5 Free", 9* m_vroverlaySize*1.1, QFont::Bold, false);
         painter->setPen(m_color);
         painter->setFont(m_fontSmall);
         painter->drawText(5*distance_ratio, (-4*distance_ratio)+14, "  Dis: "+QString::number(distance_int));
@@ -127,8 +133,7 @@ void VROverlay::paint(QPainter* painter) {
     }
     //----------------HERE IF VR HOME && TYPE==HOME ----------------
     if(m_type=="home"){
-        painter->setPen(m_color);
-        QFont m_fontHome = QFont("Font Awesome 5 Free", 14* m_vroverlaySize*1.1, QFont::Bold, false);
+        painter->setPen(m_color);        
         painter->setFont(m_fontHome);
 
         painter->drawText(-7, 0, "\uf015");

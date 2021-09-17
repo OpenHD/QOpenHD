@@ -10,6 +10,8 @@
 HorizonLadder::HorizonLadder(QQuickItem *parent): QQuickPaintedItem(parent) {
     qDebug() << "HorizonLadder::HorizonLadder()";
     setRenderTarget(RenderTarget::FramebufferObject);
+
+    m_font.setPixelSize(14);
 }
 
 void HorizonLadder::paint(QPainter* painter) {
@@ -222,15 +224,16 @@ void HorizonLadder::paint(QPainter* painter) {
         }
 
         if (h == m_homeHeading && m_showHorizonHome) {
-            //painter->setFont(m_font);
-            //painter->setFont(m_fontAwesome);
+
+            painter->setFont(m_fontAwesome);
+
             QFontMetrics fm(painter->font());
-            painter->setFont(m_font);
             auto tw = fm.horizontalAdvance("\uf015");
             painter->drawText(x-tw/2, y_label, "\uf015");
 
-
             h_drawn = false;
+
+            painter->setFont(m_font);
         }
 
 
