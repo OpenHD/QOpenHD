@@ -44,17 +44,17 @@ BaseWidget {
         switch (provider.name) {
         case "mapboxgl":
         {
-            createMap(widgetInner, "mapboxgl")
+            createMap(widgetInnerMap, "mapboxgl")
             break
         }
         case "osm":
         {
-            createMap(widgetInner, "osm")
+            createMap(widgetInnerMap, "osm")
             break
         }
         default:
         {
-            createMap(widgetInner, "osm")
+            createMap(widgetInnerMap, "osm")
             break
         }
         }
@@ -265,14 +265,29 @@ BaseWidget {
             */
         }
     }
-
-    //----------------------------- Widget Inner ----------------------------------------
+//--- widgetInner only used to have something to shake ---
     Item {
         id: widgetInner
         anchors.fill: parent
+        width: 100
+        height: 100
+        clip: false
+        Rectangle {
+            id: rect1
+            width: parent.width
+            height: parent.height
+            color: "white"
+            radius: 5
+        }
+
+    }
+//----------------------------- Widget Inner Map----------------------------------------
+    Item {
+        id: widgetInnerMap
+        anchors.fill: parent
         //opacity: mapExpanded ? 100 : settings.map_shape_circle ? 0 : settings.map_opacity
         opacity: mapExpanded ? 100 : settings.map_opacity
-
+/*
         Behavior on width {
             NumberAnimation {
                 duration: 200
@@ -284,7 +299,7 @@ BaseWidget {
                 duration: 200
             }
         }
-
+*/
 
         /*Button {
             id: openclose_button_overlay

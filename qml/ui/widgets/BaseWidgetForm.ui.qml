@@ -83,18 +83,14 @@ Rectangle {
          */
         parent: Overlay.overlay
         x: {
-            if (widgetBase.x <= Math.round((parent.width - width) / 2)) {
+            if (widgetBase.x > Math.round((parent.width - width) / 2)) {
                 return 24;
             } else {
                 return parent.width - width - 24;
             }
         }
         y: {
-            if (widgetBase.y <= Math.round((parent.height - height) / 2)) {
-                return 64;
-            } else {
-                return parent.height - height - 64;
-            }
+            return parent.height - height - 64;
         }
 
 
@@ -135,18 +131,14 @@ Rectangle {
          */
         parent: Overlay.overlay
         x: {
-            if (widgetBase.x <= Math.round((parent.width - width) / 2)) {
+            if (widgetBase.x > Math.round((parent.width - width) / 2)) {
                 return 24;
             } else {
                 return parent.width - width - 24;
             }
         }
         y: {
-            if (widgetBase.y <= Math.round((parent.height - height) / 2)) {
-                return 64;
-            } else {
-                return parent.height - height - 64;
-            }
+            return parent.height - height - 64;
         }
 
         contentItem: widgetActionComponent
@@ -455,8 +447,4 @@ Rectangle {
 }
 
 
-/*##^##
-Designer {
-    D{i:0;autoSize:true;height:150;width:150}
-}
-##^##*/
+
