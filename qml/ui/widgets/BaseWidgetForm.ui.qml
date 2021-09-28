@@ -131,14 +131,16 @@ Rectangle {
          */
         parent: Overlay.overlay
         x: {
-            if (widgetBase.x > Math.round((parent.width - width) / 2)) {
-                return 24;
-            } else {
-                return parent.width - width - 24;
-            }
+            var gridStepsX = 4;
+            var gridLengthX = parent.width-width;
+            var gridStepX = Math.round(gridLengthX/gridStepsX);
+            return Math.round((widgetBase.x-(width/2))/gridStepX)*gridStepX;
         }
         y: {
-            return parent.height - height - 64;
+            var gridStepsY = 4;
+            var gridLengthY = parent.height-height
+            var gridStepY = Math.round(gridLengthY/gridStepsY);
+            return Math.round((widgetBase.y-height/2)/gridStepY)*gridStepY;
         }
 
         contentItem: widgetActionComponent

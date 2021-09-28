@@ -19,6 +19,17 @@ BaseWidget {
     height: 135
 
     visible: settings.show_map
+    property alias mapSettingsColumn: mapSettingsColumn
+    property alias switch1: switch1
+    property alias mini_zoomSlider: mini_zoomSlider
+    property alias mini_opacity_Slider: mini_opacity_Slider
+    property alias openclose_button: openclose_button
+    property alias search_button: search_button
+    property alias providerDropdown: providerDropdown
+    property alias variantDropdown: variantDropdown
+    property alias widgetInnerMap: widgetInnerMap
+    property alias sidebar_wrapper: sidebar_wrapper
+    property alias pluginModel: pluginModel
 
     defaultAlignment: 1
     defaultXOffset: 12
@@ -39,69 +50,6 @@ BaseWidget {
         }
     }
 
-    function configure() {
-        var provider = pluginModel.get(settings.selected_map_provider)
-        switch (provider.name) {
-        case "mapboxgl":
-        {
-            createMap(widgetInnerMap, "mapboxgl")
-            break
-        }
-        case "osm":
-        {
-            createMap(widgetInnerMap, "osm")
-            break
-        }
-        default:
-        {
-            createMap(widgetInnerMap, "osm")
-            break
-        }
-        }
-
-        if (map) {
-            variantDropdown.model = map.supportedMapTypes
-            //settings.selected_map_variant = 0;
-            variantDropdown.currentIndex = settings.selected_map_variant
-            map.activeMapType = map.supportedMapTypes[variantDropdown.currentIndex]
-        }
-    }
-
-    Component.onCompleted: {
-        if (!IsRaspPi) {
-            pluginModel.append({
-                                   "name": "mapboxgl",
-                                   "description": "MapboxGL"
-                               })
-        }
-        configure()
-    }
-
-    function configureLargeMap() {
-        if (mapExpanded == false) {
-            resetAnchors()
-            setAlignment(0, 0, 48, false, false, true)
-            map.gesture.enabled = true
-            mapExpanded = !mapExpanded
-        }
-    }
-
-    function configureSmallMap() {
-        resetAnchors()
-        mapWidget.width = 200
-        mapWidget.height = 135
-        mapWidget.map
-        loadAlignment()
-        followDrone = true
-        settingsVisible = false
-        map.gesture.enabled = false
-        mapExpanded = !mapExpanded
-    }
-
-    function launchPopup() {
-        mapWidget.hasWidgetDetail = true
-        widgetDetail.open()
-    }
 
     //----------------------------- Widget Detail (popup options)------------------------
     widgetDetailComponent: ScrollView {
@@ -161,10 +109,6 @@ BaseWidget {
                     anchors.leftMargin: 32
                     anchors.left: mini_zoomTitle.right
                     height: parent.height
-
-                    onValueChanged: {
-                        settings.map_zoom = mini_zoomSlider.value
-                    }
                 }
             }
             Item {
@@ -191,10 +135,6 @@ BaseWidget {
                     anchors.rightMargin: 0
                     anchors.right: parent.right
                     width: parent.width - 96
-
-                    onValueChanged: {
-                        settings.map_opacity = mini_opacity_Slider.value
-                    }
                 }
             }
             Item {
@@ -359,18 +299,6 @@ BaseWidget {
             width: settingsVisible ? 548 : 48
             clip: true
 
-            Behavior on width {
-                NumberAnimation {
-                    duration: 200
-                }
-            }
-
-            Behavior on height {
-                NumberAnimation {
-                    duration: 200
-                }
-            }
-
             Button {
                 id: openclose_button
                 width: 48
@@ -391,16 +319,6 @@ BaseWidget {
                     color: "white"
                     text: mapExpanded ? "\uf057" : "\uf085"
                     font.pixelSize: 20
-                }
-
-                onClicked: {
-                    if (mapExpanded) {
-                        console.log("X button clicked")
-                        configureSmallMap()
-                    } else {
-                        console.log("gear button clicked")
-                        launchPopup()
-                    }
                 }
             }
 
@@ -514,15 +432,8 @@ BaseWidget {
                         model: pluginModel
                         textRole: "description"
 
-                        Component.onCompleted: {
-                            currentIndex = settings.selected_map_provider
-                        }
+                        Component.onCompleted: currentIndex = settings.selected_map_provider
 
-                        // @disable-check M223
-                        onActivated: {
-                            settings.selected_map_provider = index
-                            configure()
-                        }
                     }
 
                     ComboBox {
@@ -532,15 +443,7 @@ BaseWidget {
 
                         textRole: "description"
 
-                        Component.onCompleted: {
-                            currentIndex = settings.selected_map_variant
-                        }
 
-                        // @disable-check M223
-                        onActivated: {
-                            settings.selected_map_variant = index
-                            map.activeMapType = map.supportedMapTypes[index]
-                        }
                     }
 
                     Item {
@@ -570,9 +473,7 @@ BaseWidget {
                             anchors.right: parent.right
                             width: parent.width - 96
 
-                            onValueChanged: {
-                                settings.map_zoom = zoomSlider.value
-                            }
+                            onValueChanged: settings.map_zoom = zoomSlider.value
                         }
                     }
 
@@ -603,9 +504,7 @@ BaseWidget {
                             anchors.right: parent.right
                             width: parent.width - 96
 
-                            onValueChanged: {
-                                settings.map_opacity = map_opacity_Slider.value
-                            }
+                            onValueChanged: settings.map_opacity = map_opacity_Slider.value
                         }
                     }
 
@@ -624,6 +523,7 @@ BaseWidget {
                         }
 
                         Switch {
+                            id: switch1
                             width: 32
                             height: parent.height
                             anchors.rightMargin: 12
