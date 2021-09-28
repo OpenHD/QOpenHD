@@ -202,6 +202,13 @@ BaseWidgetForm {
             _yOffset = parent.height - (y + height);
             break;
         }
+        if (_xOffset+width>parent.width) {
+        _xOffset = parent.width-width}
+        if (_xOffset<0){
+        _xOffset = 0}
+        if (_yOffset<0){
+        _yOffset = 0}
+
         return Qt.point(_xOffset, _yOffset);
     }
 
