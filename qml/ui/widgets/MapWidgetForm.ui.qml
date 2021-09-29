@@ -24,7 +24,6 @@ BaseWidget {
     property alias mini_zoomSlider: mini_zoomSlider
     property alias mini_opacity_Slider: mini_opacity_Slider
     property alias openclose_button: openclose_button
-    property alias search_button: search_button
     property alias providerDropdown: providerDropdown
     property alias variantDropdown: variantDropdown
     property alias widgetInnerMap: widgetInnerMap
@@ -295,7 +294,7 @@ BaseWidget {
             radius: 12
             color: mapExpanded ? "#ff000000" : "#00000000"
 
-            height: mapExpanded ? 192 : 48
+            height: mapExpanded ? 155 : 48
             width: settingsVisible ? 548 : 48
             clip: true
 
@@ -323,37 +322,12 @@ BaseWidget {
             }
 
             Button {
-                id: search_button
-
-                width: 48
-                height: 48
-                anchors.top: parent.top
-                anchors.topMargin: 48
-                anchors.left: parent.left
-                anchors.leftMargin: 0
-                flat: true
-
-                checkable: false
-
-                visible: mapExpanded
-
-                Text {
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    font.family: "Font Awesome 5 Free"
-                    color: "white"
-                    text: "\uf002"
-                    font.pixelSize: 20
-                }
-            }
-
-            Button {
                 id: follow_button
 
                 width: 48
                 height: 48
                 anchors.top: parent.top
-                anchors.topMargin: 96
+                anchors.topMargin: 48
                 anchors.left: parent.left
                 anchors.leftMargin: 0
                 flat: true
@@ -380,7 +354,7 @@ BaseWidget {
                 width: 48
                 height: 48
                 anchors.top: parent.top
-                anchors.topMargin: 144
+                anchors.topMargin: 96
                 anchors.left: parent.left
                 anchors.leftMargin: 0
 
