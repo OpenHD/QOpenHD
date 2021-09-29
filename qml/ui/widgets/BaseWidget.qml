@@ -130,7 +130,7 @@ BaseWidgetForm {
             resetAnchors()
             drag.target = widgetBase
             //widgetControls.open() ///-------------this is the arrow window
-            widgetDetail.open()
+            //widgetDetail.open()
 
         } else {
             drag.target = null
@@ -178,6 +178,11 @@ BaseWidgetForm {
         onClicked: { _onClicked(drag) }
 
         onPressAndHold: { _onPressAndHold(drag) }
+
+        onReleased: {
+            if (dragging) widgetDetail.open();
+        }
+
     }
 
     function calculateOffsets() {

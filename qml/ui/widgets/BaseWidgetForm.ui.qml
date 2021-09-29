@@ -55,7 +55,7 @@ Rectangle {
         height: widgetDetailHeight
 
         background: Rectangle {
-            color: "#ea000000"
+            color: "grey"
             border.width: 1
             border.color: "white"
             radius: 12
@@ -63,6 +63,7 @@ Rectangle {
 
         closePolicy: Popup.CloseOnPressOutside | Popup.CloseOnEscape
 
+        // @disable-check M223
         onAboutToHide: {
             dragging = false
             // @disable-check M222
@@ -81,6 +82,7 @@ Rectangle {
          * relative to the parent item
          *
          */
+
         parent: Overlay.overlay
         x: {
             if (widgetBase.x > Math.round((parent.width - width) / 2)) {
