@@ -30,9 +30,18 @@ MapWidgetForm {
 
     function createMap(parent, provider) {
         console.log("createMap(" + provider + ")");
-
-        var plugin = Qt.createQmlObject('import QtLocation 5.12; Plugin{ name:"' + provider + '"}', mapWidget);
-
+//
+        var mapboxglParameters = ' PluginParameter { name: "mapboxgl.mapping.cache.size"; value: "50" }';
+        var plugin
+        if (provider==="osm") {
+            plugin = Qt.createQmlObject('import QtLocation 5.12; Plugin{ name:"' + provider + '"
+                PluginParameter { name: "osm.mapping.cache.disk.size"; value: "200" }
+            }', mapWidget);
+        } else {
+            plugin = Qt.createQmlObject('import QtLocation 5.12; Plugin{ name:"' + provider + '"
+                 PluginParameter { name: "mapboxgl.mapping.cache.size"; value: "50" }
+            }', mapWidget);
+        }
         console.log("Using plugin: " + plugin.name);
 
         if (plugin.supportsMapping()) {
@@ -144,7 +153,6 @@ MapWidgetForm {
 
         if (map) {
             variantDropdown.model = map.supportedMapTypes
-            settings.selected_map_variant = index;
             variantDropdown.currentIndex = settings.selected_map_variant
             map.activeMapType = map.supportedMapTypes[variantDropdown.currentIndex]
         }
@@ -158,7 +166,7 @@ MapWidgetForm {
     //Component.onActivated: {
     variantDropdown.onActivated: {
         variantDropdown.model = map.supportedMapTypes
-        settings.selected_map_variant = index
+        variantDropdown.currentIndex = index
         map.activeMapType = map.supportedMapTypes[index]
         map.gesture.enabled = true
     }
