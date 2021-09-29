@@ -227,9 +227,9 @@ void ADSBInternet::processReply(QNetworkReply *reply) {
     //qDebug() << "MAX adsb distance=" << max_distance;
 
     if (reply->error()) {
-        qDebug() << "ADSB request error!";
+        qDebug() << "ADSB OpenSky request error!";
         qDebug() << reply->errorString();
-        LocalMessage::instance()->showMessage("ADSB Reply Error", 4);
+        LocalMessage::instance()->showMessage("ADSB OpenSky Reply Error", 4);
         reply->deleteLater();
         return;
     }
@@ -239,8 +239,8 @@ void ADSBInternet::processReply(QNetworkReply *reply) {
     QJsonDocument doc = QJsonDocument::fromJson(data, &errorPtr);
 
     if (doc.isNull()) {
-        qDebug() << "ADSB Openskynetwork response: Parse failed";
-        LocalMessage::instance()->showMessage("ADSB Parse Error", 4);
+        qDebug() << "ADSB Opensky network response: Parse failed";
+        LocalMessage::instance()->showMessage("ADSB OpenSky Parse Error", 4);
         reply->deleteLater();
         return;
     }
@@ -255,6 +255,7 @@ void ADSBInternet::processReply(QNetworkReply *reply) {
 
     if(jsonObject.isEmpty()){
         qDebug()<<"ADSB Openskynetwork response: JSON object is empty.";
+        LocalMessage::instance()->showMessage("ADSB OpenSky empty object", 4);
         reply->deleteLater();
         return;
     }
@@ -464,6 +465,7 @@ void ADSBSdr::processReply(QNetworkReply *reply) {
 
     if(array.isEmpty()){
         qDebug()<<"JSON array is empty.";
+        LocalMessage::instance()->showMessage("ADSB SDR Json array empty", 4);
         reply->deleteLater();
         return;
     }
