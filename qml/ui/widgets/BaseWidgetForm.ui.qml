@@ -137,7 +137,7 @@ Rectangle {
             return Math.round((widgetBase.x-(width/2))/gridStepX)*gridStepX;
         }
         y: {
-            var gridStepsY = 4;
+            var gridStepsY = 2;
             var gridLengthY = parent.height-height
             var gridStepY = Math.round(gridLengthY/gridStepsY);
             return Math.round((widgetBase.y-height/2)/gridStepY)*gridStepY;
