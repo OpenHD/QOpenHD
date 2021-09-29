@@ -49,6 +49,11 @@ Map {
         longitude: OpenHD.lon == 0.0 ? userLon : followDrone ? OpenHD.lon : 9000
     }
 
+    onSupportedMapTypesChanged: {
+        console.log("supported map types has changed")
+        variantDropdown.model = map.supportedMapTypes
+    }
+
     onMapReadyChanged: {
         //needed to intitialize adsb api coordinates
         console.log("map is ready");
