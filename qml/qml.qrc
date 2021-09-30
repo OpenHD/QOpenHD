@@ -244,5 +244,7 @@
         <file>ui/widgets/MissionWidgetForm.ui.qml</file>
         <file>ui/widgets/MissionWidget.qml</file>
         <file>ui/delegates/BoolSwitchSettingDelegate.ui.qml</file>
+        <file>ui/widgets/CameraWidget.qml</file>
+        <file>ui/widgets/CameraWidgetForm.ui.qml</file>
     </qresource>
 </RCC>

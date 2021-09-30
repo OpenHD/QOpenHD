@@ -308,6 +308,10 @@ Settings {
     property double mission_opacity: 1
     property double mission_size: 1
 
+    property bool show_camera: true
+    property double camera_opacity: 1
+    property double camera_size: 1
+
     property bool show_example_widget: false
 
     property bool stereo_enable: false
