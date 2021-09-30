@@ -851,6 +851,16 @@ void OpenHD::set_gnd_freq_busy(bool gnd_freq_busy){
     emit gnd_freq_busy_changed(gnd_freq_busy);
 }
 
+void OpenHD::set_cam_bright(int cam_bright){
+    m_cam_bright = cam_bright;
+    emit cam_bright_changed(m_cam_bright);
+}
+
+void OpenHD::set_cam_busy(bool cam_busy){
+    m_cam_busy = cam_busy;
+    emit cam_busy_changed(cam_busy);
+}
+
 void OpenHD::set_ground_vin(double ground_vin) {
     m_ground_vin = ground_vin;
     emit ground_vin_changed(m_ground_vin);

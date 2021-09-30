@@ -65,6 +65,7 @@ public:
     }
 
     Q_INVOKABLE void setCamBright(int cam_bright) {
+        qDebug() << "OPENHD setCamBright =" <<  cam_bright;
         m_cam_bright = cam_bright;
         emit save_cam_bright(m_cam_bright);
     }
@@ -492,7 +493,7 @@ signals:
     void gnd_freq_busy_changed(bool gnd_freq_busy);
 
     void save_cam_bright(int cam_bright);
-    void air_cam_busy_changed(bool air_cam_busy);
+    void cam_busy_changed(bool cam_busy);
 
     void wifiAdapter0Changed(unsigned int received_packet_cnt, int current_signal_dbm, int signal_good);
     void wifiAdapter1Changed(unsigned int received_packet_cnt, int current_signal_dbm, int signal_good);
@@ -618,6 +619,8 @@ signals:
 
     void air_freq_changed(int air_freq);
     void gnd_freq_changed(int gnd_freq);
+
+    void cam_bright_changed(int cam_bright);
 
     void air_reboot();
     void air_shutdown();
@@ -818,6 +821,7 @@ public:
     bool m_gnd_freq_busy = false;
 
     int m_cam_bright;
+    bool m_cam_busy = false;
 
     QTimer* timer = nullptr;
 

@@ -238,7 +238,7 @@ BaseWidget {
 
 
                 onPressed: {
-
+OpenHD.setCamBright(50);
                     console.log("Test pressed");
                 }
             }

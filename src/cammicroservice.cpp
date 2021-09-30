@@ -29,17 +29,21 @@ CamMicroservice::CamMicroservice(QObject *parent, MicroserviceTarget target, Mav
 
     localPort = 14551;
 
-    #if defined(__rasp_pi__)
+#if defined(__rasp_pi__)
     groundAddress = "127.0.0.1";
-    #endif
+#endif
 
     switch (m_target) {
-        case MicroserviceTargetNone:
+    case MicroserviceTargetNone:
         targetSysID = 0;
         break;
-        case MicroserviceTargetAir:
+    case MicroserviceTargetAir:
         targetSysID = 253;
         connect(OpenHD::instance(), &OpenHD::save_cam_bright, this, &CamMicroservice::onSaveCamBright);
+        break;
+    case MicroserviceTargetGround:
+        targetSysID = 254;
+        //no ground cams :) so nothing here
         break;
     }
 
@@ -71,81 +75,87 @@ void CamMicroservice::onSaveCamBright(int bright) {
 
 void CamMicroservice::onProcessMavlinkMessage(mavlink_message_t msg) {
     switch (msg.msgid) {
-        case MAVLINK_MSG_ID_HEARTBEAT: {
-            mavlink_heartbeat_t heartbeat;
-            mavlink_msg_heartbeat_decode(&msg, &heartbeat);
-            break;
-        }
-        case MAVLINK_MSG_ID_SYSTEM_TIME:{
-            mavlink_system_time_t sys_time;
-            mavlink_msg_system_time_decode(&msg, &sys_time);
-            uint32_t boot_time = sys_time.time_boot_ms;
+    case MAVLINK_MSG_ID_HEARTBEAT: {
+        mavlink_heartbeat_t heartbeat;
+        mavlink_msg_heartbeat_decode(&msg, &heartbeat);
+        break;
+    }
+    case MAVLINK_MSG_ID_SYSTEM_TIME:{
+        mavlink_system_time_t sys_time;
+        mavlink_msg_system_time_decode(&msg, &sys_time);
+        uint32_t boot_time = sys_time.time_boot_ms;
 
-            /* if the boot time of the service at the other end of the link has changed,
-               we need to re-fetch the Link state */
-            if (boot_time != m_last_boot) {
-                m_last_boot = boot_time;
-                switch (m_target) {
-                    case MicroserviceTargetNone:
-                        break;
-                    case MicroserviceTargetAir:
-                        OpenHD::instance()->set_cam_busy(true);
-                        break;
-                    case MicroserviceTargetGround:
-                        OpenHD::instance()->set_cam_busy(true);
-                        break;
-                }
-
-                MavlinkCommand command(MavlinkCommandTypeLong);
-                command.command_id = OPENHD_CMD_GET_CAMERA_SETTINGS;
-                sendCommand(command);
-            }
-
-            break;
-        }
-        case MAVLINK_MSG_ID_OPENHD_CAMERA_SETTINGS: {
-            mavlink_openhd_camera_settings_t cam;
-            mavlink_msg_openhd_camera_settings_decode(&msg, &cam);
-
+        /* if the boot time of the service at the other end of the link has changed,
+               we need to re-fetch the cam state */
+        if (boot_time != m_last_boot) {
+            m_last_boot = boot_time;
             switch (m_target) {
-                case MicroserviceTargetNone:
+            case MicroserviceTargetNone:
                 break;
-                case MicroserviceTargetAir:
-                OpenHD::instance()->set_cam_bright(cam.bright);
+            case MicroserviceTargetAir:
+                OpenHD::instance()->set_cam_busy(true);
+                break;
+            case MicroserviceTargetGround:
+                OpenHD::instance()->set_cam_busy(true);
                 break;
             }
+
+            MavlinkCommand command(MavlinkCommandTypeLong);
+            command.command_id = OPENHD_CMD_GET_CAMERA_SETTINGS;
+            qDebug() << "CamMicroservice::get cam settings";
+            sendCommand(command);
+        }
+
+        break;
+    }
+    case MAVLINK_MSG_ID_OPENHD_CAMERA_SETTINGS: {
+        mavlink_openhd_camera_settings_t cam;
+        mavlink_msg_openhd_camera_settings_decode(&msg, &cam);
+
+        switch (m_target) {
+        case MicroserviceTargetNone:
+            break;
+        case MicroserviceTargetAir:
+            OpenHD::instance()->set_cam_bright(cam.brightness);
+            qDebug() << "CamMicroservice::set_cam_bright target air";
+            break;
+        case MicroserviceTargetGround:
+            //this would only be reached in error as there are no ground cams
+            qDebug() << "CamMicroservice::set_cam_bright target ground";
             break;
         }
-        default: {
-            printf("CamMicroservice received unmatched message with ID %d, sequence: %d from component %d of system %d\n", msg.msgid, msg.seq, msg.compid, msg.sysid);
-            break;
-        }
+        break;
+    }
+    default: {
+        printf("CamMicroservice received unmatched message with ID %d, sequence: %d from component %d of system %d\n", msg.msgid, msg.seq, msg.compid, msg.sysid);
+        break;
+    }
     }
 }
 
 void CamMicroservice::onCommandDone() {
     switch (m_target) {
-        case MicroserviceTargetNone:
-            break;
-        case MicroserviceTargetAir:
-            OpenHD::instance()->set_cam_busy(false);
-            break;
-        case MicroserviceTargetGround:
-            OpenHD::instance()->set_cam_busy(false);
-            break;
+    case MicroserviceTargetNone:
+        break;
+    case MicroserviceTargetAir:
+        OpenHD::instance()->set_cam_busy(false);
+        break;
+    case MicroserviceTargetGround:
+        OpenHD::instance()->set_cam_busy(false);
+        break;
     }
 }
 
 void CamMicroservice::onCommandFailed() {
     switch (m_target) {
-        case MicroserviceTargetNone:
-            break;
-        case MicroserviceTargetAir:
-            OpenHD::instance()->set_cam_busy(false);
-            break;
-        case MicroserviceTargetGround:
-            OpenHD::instance()->set_cam_busy(false);
-            break;
+    case MicroserviceTargetNone:
+        break;
+    case MicroserviceTargetAir:
+        OpenHD::instance()->set_cam_busy(false);
+        break;
+    case MicroserviceTargetGround:
+        OpenHD::instance()->set_cam_busy(false);
+        break;
     }
     m_last_boot = 0;
 }
