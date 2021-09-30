@@ -3,6 +3,7 @@ import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
 import QtGraphicalEffects 1.12
 import QtQuick.Shapes 1.0
+import QtQuick.Controls.Material 2.12
 
 import Qt.labs.settings 1.0
 
@@ -212,6 +213,33 @@ BaseWidget {
                     font.bold: true
                     font.pixelSize: detailPanelFontPixels
                     anchors.left: parent.left
+                }
+            }
+
+
+            Button {
+                id: testButton
+                width: 140
+                height: 48
+
+                anchors.rightMargin: 12
+
+                anchors.bottomMargin: 6
+                font.pixelSize: 14
+                font.capitalization: Font.MixedCase
+                Material.accent: Material.Red
+                highlighted: true
+
+                text:  {
+
+                    return qsTr("Test")
+                }
+
+
+
+                onPressed: {
+
+                    console.log("Test pressed");
                 }
             }
 
