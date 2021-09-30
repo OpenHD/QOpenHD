@@ -64,6 +64,11 @@ public:
         emit save_gnd_freq(m_gnd_freq);
     }
 
+    Q_INVOKABLE void setCamBright(int cam_bright) {
+        m_cam_bright = cam_bright;
+        emit save_cam_bright(m_cam_bright);
+    }
+
     /* public so that a QTimer can call it from main(), temporary fix due to some quirks with
        the way QTimer and QML singletons/context properties work */
     void updateFlightTimer();
@@ -406,6 +411,12 @@ public:
     Q_PROPERTY(bool gnd_freq_busy MEMBER m_gnd_freq_busy WRITE set_gnd_freq_busy NOTIFY gnd_freq_busy_changed)
     void set_gnd_freq_busy(bool gnd_freq_busy);
 
+    Q_PROPERTY(int cam_bright MEMBER m_cam_bright WRITE set_cam_bright NOTIFY cam_bright_changed)
+    void set_cam_bright(int cam_bright);
+
+    Q_PROPERTY(bool cam_busy MEMBER m_cam_busy WRITE set_cam_busy NOTIFY cam_busy_changed)
+    void set_cam_busy(bool cam_busy);
+
     Q_PROPERTY(double ground_vin MEMBER m_ground_vin WRITE set_ground_vin NOTIFY ground_vin_changed)
     void set_ground_vin(double ground_vin);
 
@@ -479,6 +490,9 @@ signals:
 
     void air_freq_busy_changed(bool air_freq_busy);
     void gnd_freq_busy_changed(bool gnd_freq_busy);
+
+    void save_cam_bright(int cam_bright);
+    void air_cam_busy_changed(bool air_cam_busy);
 
     void wifiAdapter0Changed(unsigned int received_packet_cnt, int current_signal_dbm, int signal_good);
     void wifiAdapter1Changed(unsigned int received_packet_cnt, int current_signal_dbm, int signal_good);
@@ -802,6 +816,8 @@ public:
 
     bool m_air_freq_busy = false;
     bool m_gnd_freq_busy = false;
+
+    int m_cam_bright;
 
     QTimer* timer = nullptr;
 
