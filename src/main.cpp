@@ -451,8 +451,13 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
 
     auto airLinkMicroservice = new LinkMicroservice(nullptr, MicroserviceTargetAir, MavlinkTypeTCP);
     engine.rootContext()->setContextProperty("AirLinkMicroservice", airLinkMicroservice);
-    QObject::connect(openHDSettings, &OpenHDSettings::groundStationIPUpdated, airLinkMicroservice, &GPIOMicroservice::setGroundIP, Qt::QueuedConnection);
+    QObject::connect(openHDSettings, &OpenHDSettings::groundStationIPUpdated, airLinkMicroservice, &LinkMicroservice::setGroundIP, Qt::QueuedConnection);
     airLinkMicroservice->onStarted();
+
+    auto groundLinkMicroservice = new LinkMicroservice(nullptr, MicroserviceTargetGround, MavlinkTypeTCP);
+    engine.rootContext()->setContextProperty("GroundLinkMicroservice", groundLinkMicroservice);
+    QObject::connect(openHDSettings, &OpenHDSettings::groundStationIPUpdated, groundLinkMicroservice, &LinkMicroservice::setGroundIP, Qt::QueuedConnection);
+    groundLinkMicroservice->onStarted();
 
     auto airCamMicroservice = new CamMicroservice(nullptr, MicroserviceTargetAir, MavlinkTypeTCP);
     engine.rootContext()->setContextProperty("AirCamMicroservice", airCamMicroservice);
