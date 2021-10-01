@@ -245,6 +245,7 @@ BaseWidget {
         id: widgetInner
         anchors.fill: parent
         opacity: settings.mission_opacity
+        scale: settings.mission_size
 
         Item {
             anchors.fill: parent
