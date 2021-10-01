@@ -225,6 +225,40 @@ BaseWidget {
                     onCheckedChanged: settings.bitrate_show_skip_fail_count = checked
                 }
             }
+
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("Cam Brightness")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Slider {
+                    id: bitrate_bright_Slider
+                    orientation: Qt.Horizontal
+                    from: 1
+                    value: settings.bitrate_bright
+                    to: 255
+                    stepSize: 1
+                    height: parent.height
+                    anchors.rightMargin: 0
+                    anchors.right: parent.right
+                    width: parent.width - 96
+
+                    onValueChanged: {
+                        settings.bitrate_bright = bitrate_bright_Slider.value
+
+                        OpenHD.setCamBright(bitrate_bright_Slider.value);
+                        console.log("Cam Brightness"+bitrate_bright_Slider.value);
+                    }
+                }
+            }
+
         }
     }
 

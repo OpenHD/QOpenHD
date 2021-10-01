@@ -73,6 +73,7 @@ Settings {
     property bool bitrate_declutter: false
     property double bitrate_warn: 0
     property double bitrate_caution: 0
+    property int bitrate_bright: 175
 
     property bool show_air_battery: true
     property double air_battery_opacity: 1
@@ -307,10 +308,6 @@ Settings {
     property bool show_mission: true
     property double mission_opacity: 1
     property double mission_size: 1
-
-    property bool show_camera: true
-    property double camera_opacity: 1
-    property double camera_size: 1
 
     property bool show_example_widget: false
 

@@ -236,10 +236,6 @@ Item {
         id: missionWidget
     }
 
-    CameraWidget {
-        id: cameraWidget
-    }
-
     ExampleWidget {
         id: exampleWidget
     }

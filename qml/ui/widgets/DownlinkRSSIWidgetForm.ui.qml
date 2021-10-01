@@ -296,12 +296,13 @@ BaseWidget {
         }
         Button {
             //this is for testing the new link microservice and freq change
-            visible: false
+            visible: true
             text: "Freq Test"
             anchors.centerIn: parent
 
             onPressed: {
-                OpenHD.setAirFREQ(5400);
+                OpenHD.setAirFREQ(5180);
+                OpenHD.setGndFREQ(5180);
             }
         }
     }
