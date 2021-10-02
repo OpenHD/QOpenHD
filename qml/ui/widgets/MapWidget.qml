@@ -90,7 +90,9 @@ MapWidgetForm {
 
     mini_sizeSlider.onValueChanged: {
         settings.map_size = mini_sizeSlider.value
-        mapWidget.scale = mini_sizeSlider.value
+        // mapWidget.scale = mini_sizeSlider.value
+        mapWidget.height = 135*mini_sizeSlider.value
+        mapWidget.width = 200*mini_sizeSlider.value
     }
 
     mini_opacity_Slider.onValueChanged: {
@@ -179,15 +181,16 @@ MapWidgetForm {
 
     function configureSmallMap() {
         resetAnchors()
-        mapWidget.width = 200
-        mapWidget.height = 135
+        mapWidget.width = 200*settings.map_size
+        mapWidget.height = 135*settings.map_size
         //mapWidget.map
         loadAlignment()
         followDrone = true
         settingsVisible = false
         map.gesture.enabled = false
         mapExpanded = !mapExpanded
-        scale = 0.5
+        //scale = settings.map_size
+        mapWidget.widgetInner.opacity = 0
     }
 
     function launchPopup() {
