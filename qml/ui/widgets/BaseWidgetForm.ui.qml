@@ -85,10 +85,12 @@ Rectangle {
 
         parent: Overlay.overlay
         x: {
-            if (widgetBase.x > Math.round((parent.width - width) / 2)) {
-                return 24;
-            } else {
-                return parent.width - width - 24;
+            if (!widgetDetailComponent.visible){
+                if (widgetBase.x > Math.round((parent.width - width) / 2)) {
+                    return 24;
+                } else {
+                    return parent.width - width - 24;
+                }
             }
         }
         y: {

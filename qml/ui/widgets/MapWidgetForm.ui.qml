@@ -132,7 +132,7 @@ BaseWidget {
                     orientation: Qt.Horizontal
                     from: 0.25
                     value: settings.map_size
-                    to: 4
+                    to: 8
                     stepSize: .05
                     anchors.rightMargin: 0
                     anchors.right: parent.right
