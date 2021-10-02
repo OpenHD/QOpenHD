@@ -30,18 +30,8 @@ MapWidgetForm {
 
     function createMap(parent, provider) {
         console.log("createMap(" + provider + ")");
-//
-        var mapboxglParameters = ' PluginParameter { name: "mapboxgl.mapping.cache.size"; value: "50" }';
         var plugin
-        if (provider==="osm") {
-            plugin = Qt.createQmlObject('import QtLocation 5.12; Plugin{ name:"' + provider + '"
-                PluginParameter { name: "osm.mapping.cache.disk.size"; value: "200" }
-            }', mapWidget);
-        } else {
-            plugin = Qt.createQmlObject('import QtLocation 5.12; Plugin{ name:"' + provider + '"
-                 PluginParameter { name: "mapboxgl.mapping.cache.size"; value: "50" }
-            }', mapWidget);
-        }
+        plugin = Qt.createQmlObject('import QtLocation 5.12; Plugin{ name:"' + provider + '"}', mapWidget);
         console.log("Using plugin: " + plugin.name);
 
         if (plugin.supportsMapping()) {
@@ -96,6 +86,11 @@ MapWidgetForm {
 
     mini_zoomSlider.onValueChanged: {
         settings.map_zoom = mini_zoomSlider.value
+    }
+
+    mini_sizeSlider.onValueChanged: {
+        settings.map_size = mini_sizeSlider.value
+        mapWidget.scale = mini_sizeSlider.value
     }
 
     mini_opacity_Slider.onValueChanged: {
@@ -178,6 +173,7 @@ MapWidgetForm {
             setAlignment(0, 0, 48, false, false, true)
             map.gesture.enabled = true
             mapExpanded = !mapExpanded
+            scale = 1
         }
     }
 
@@ -191,6 +187,7 @@ MapWidgetForm {
         settingsVisible = false
         map.gesture.enabled = false
         mapExpanded = !mapExpanded
+        scale = 0.5
     }
 
     function launchPopup() {
