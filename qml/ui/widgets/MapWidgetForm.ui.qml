@@ -18,10 +18,12 @@ BaseWidget {
     width: 200
     height: 135
 
+
     visible: settings.show_map
     property alias mapSettingsColumn: mapSettingsColumn
     property alias switch1: switch1
     property alias mini_zoomSlider: mini_zoomSlider
+    property alias mini_sizeSlider: mini_sizeSlider
     property alias mini_opacity_Slider: mini_opacity_Slider
     property alias openclose_button: openclose_button
     property alias providerDropdown: providerDropdown
@@ -107,6 +109,35 @@ BaseWidget {
                     anchors.right: parent.right
                     anchors.leftMargin: 32
                     anchors.left: mini_zoomTitle.right
+                    height: parent.height
+                }
+            }
+            Item {
+                width: 230
+                height: 32
+
+                Text {
+                    id: mini_sizeTitle
+                    height: parent.height
+                    text: qsTr("Size")
+                    color: "white"
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+
+                Slider {
+                    id: mini_sizeSlider
+                    orientation: Qt.Horizontal
+                    from: 0.25
+                    value: settings.map_size
+                    to: 4
+                    stepSize: .05
+                    anchors.rightMargin: 0
+                    anchors.right: parent.right
+                    anchors.leftMargin: 32
+                    anchors.left: mini_sizeTitle.right
                     height: parent.height
                 }
             }
@@ -211,11 +242,14 @@ BaseWidget {
         width: 100
         height: 100
         clip: false
+        opacity: 0
         Rectangle {
             id: rect1
             width: parent.width
             height: parent.height
             color: "white"
+            border.color: "white"
+            border.width: 5
             radius: 5
         }
 

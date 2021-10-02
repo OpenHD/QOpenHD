@@ -237,7 +237,7 @@ Settings {
     property bool map_drone_track: true
 
     property int map_zoom: 18
-
+    property double map_size: 1
     property bool show_throttle: true
     property double throttle_opacity: 1
     property double throttle_scale: 1

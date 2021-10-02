@@ -29,6 +29,7 @@ BaseWidgetForm {
     property string yOffsetIdentifier: "%1_y_offset".arg(widgetIdentifier);
     property string hCenterIdentifier: "%1_h_center".arg(widgetIdentifier);
     property string vCenterIdentifier: "%1_v_center".arg(widgetIdentifier);
+    property double oldOpacity: 100;
 
     Connections {
         target: link
@@ -51,12 +52,14 @@ BaseWidgetForm {
 
     SequentialAnimation {
         running: dragging
+
         onFinished: {
             if (dragging) {
                 restart()
             }
         }
         alwaysRunToEnd: true
+
         animations: [
             RotationAnimator { target: widgetInner; from: 0; to: 2; duration: 200 * 0.4 },
             RotationAnimator { target: widgetInner; from: 2; to: 0; duration: 200 * 0.4 },
@@ -122,6 +125,7 @@ BaseWidgetForm {
             }
             globalDragLock = true
             dragging = true
+
             /*
                  * Unlock the element anchors so it can be dragged. They'll be enabled
                  * again when the widget is done being moved, if the selected alignment
@@ -130,7 +134,7 @@ BaseWidgetForm {
             resetAnchors()
             drag.target = widgetBase
             //widgetControls.open() ///-------------this is the arrow window
-            widgetDetail.open()
+            //widgetDetail.open()
 
         } else {
             drag.target = null
@@ -164,7 +168,13 @@ BaseWidgetForm {
                 _onClicked(drag)
             }
             onPressAndHold: {
+                oldOpacity = widgetInner.opacity
+                widgetInner.opacity = 100
                 _onPressAndHold(drag)
+            }
+            onReleased: {
+                widgetInner.opacity = oldOpacity
+                _onClicked(drag)
             }
         }
     }
@@ -178,6 +188,11 @@ BaseWidgetForm {
         onClicked: { _onClicked(drag) }
 
         onPressAndHold: { _onPressAndHold(drag) }
+
+        onReleased: {
+            if (dragging) widgetDetail.open();
+        }
+
     }
 
     function calculateOffsets() {
