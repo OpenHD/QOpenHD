@@ -374,11 +374,11 @@ BaseWidget {
             width: 24
             height: 24
             color: {
-                if (OpenHD.cpuload_ground >= settings.ground_status_cpu_warn
-                        || OpenHD.temp_ground >= settings.ground_status_temp_warn) {
+                if (OpenHD.cpuload_gnd >= settings.ground_status_cpu_warn
+                        || OpenHD.temp_gnd >= settings.ground_status_temp_warn) {
                     return settings.color_warn
-                } else if (OpenHD.cpuload_ground > settings.ground_status_cpu_caution
-                           || OpenHD.temp_ground > settings.ground_status_temp_caution) {
+                } else if (OpenHD.cpuload_gnd > settings.ground_status_cpu_caution
+                           || OpenHD.temp_gnd > settings.ground_status_temp_caution) {
                     return settings.color_caution
                 } else {
                     return settings.color_shape
@@ -405,12 +405,12 @@ BaseWidget {
             width: 36
             height: 24
             color: {
-                if (OpenHD.cpuload_ground >= settings.ground_status_cpu_warn
-                        || OpenHD.temp_ground >= settings.ground_status_temp_warn) {
+                if (OpenHD.cpuload_gnd >= settings.ground_status_cpu_warn
+                        || OpenHD.temp_gnd >= settings.ground_status_temp_warn) {
                     widgetInner.visible = true
                     return settings.color_warn
-                } else if (OpenHD.cpuload_ground > settings.ground_status_cpu_caution
-                           || OpenHD.temp_ground > settings.ground_status_temp_caution) {
+                } else if (OpenHD.cpuload_gnd > settings.ground_status_cpu_caution
+                           || OpenHD.temp_gnd > settings.ground_status_temp_caution) {
                     widgetInner.visible = true
                     return settings.color_caution
                 } else if (settings.ground_status_declutter == true
@@ -444,12 +444,12 @@ BaseWidget {
             width: 36
             height: 24
             color: {
-                if (OpenHD.cpuload_ground >= settings.ground_status_cpu_warn
-                        || OpenHD.temp_ground >= settings.ground_status_temp_warn) {
+                if (OpenHD.cpuload_gnd >= settings.ground_status_cpu_warn
+                        || OpenHD.temp_gnd >= settings.ground_status_temp_warn) {
                     widgetInner.visible = true
                     return settings.color_warn
-                } else if (OpenHD.cpuload_ground > settings.ground_status_cpu_caution
-                           || OpenHD.temp_ground > settings.ground_status_temp_caution) {
+                } else if (OpenHD.cpuload_gnd > settings.ground_status_cpu_caution
+                           || OpenHD.temp_gnd > settings.ground_status_temp_caution) {
                     widgetInner.visible = true
                     return settings.color_caution
                 } else if (settings.ground_status_declutter == true
