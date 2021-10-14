@@ -4,7 +4,6 @@
 
 
 #include "statusmicroservice.h"
-#include "smartsync.h"
 
 
 #include "statuslogmodel.h"
@@ -34,10 +33,6 @@ int main(int argc, char *argv[]) {
     auto airStatusMicroservice = new StatusMicroservice(nullptr, MicroserviceTargetAir, MavlinkTypeTCP);
     engine.rootContext()->setContextProperty("AirStatusMicroservice", airStatusMicroservice);
     airStatusMicroservice->onStarted();
-
-    auto smartSync = new SmartSync(nullptr);
-    engine.rootContext()->setContextProperty("SmartSync", smartSync);
-    smartSync->onStarted();
 
     auto statusLogModel = StatusLogModel::instance();
     engine.rootContext()->setContextProperty("StatusLogModel", statusLogModel);
