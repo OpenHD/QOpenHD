@@ -219,7 +219,7 @@ iOSBuild {
     CONFIG -= bitcode
     #CONFIG += EnableGamepads
     CONFIG += EnableSpeech
-    CONFIG += EnableMainVideo
+    #CONFIG += EnableMainVideo
     CONFIG += EnablePiP
     CONFIG += EnableVideoRender
     #CONFIG += EnableLink
