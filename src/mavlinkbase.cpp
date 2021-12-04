@@ -44,10 +44,10 @@ void MavlinkBase::onStarted() {
         }
         case MavlinkTypeTCP: {
             mavlinkSocket = new QTcpSocket(this);
-            connect(mavlinkSocket, &QUdpSocket::readyRead, this, &MavlinkBase::processMavlinkTCPData);
-            connect(mavlinkSocket, &QUdpSocket::connected, this, &MavlinkBase::onTCPConnected);
-            connect(mavlinkSocket, &QUdpSocket::disconnected, this, &MavlinkBase::onTCPDisconnected);
-
+            connect(mavlinkSocket, &QTcpSocket::readyRead, this, &MavlinkBase::processMavlinkTCPData);
+            connect(mavlinkSocket, &QTcpSocket::connected, this, &MavlinkBase::onTCPConnected);
+            connect(mavlinkSocket, &QTcpSocket::disconnected, this, &MavlinkBase::onTCPDisconnected);
+	        ((QTcpSocket*)mavlinkSocket)->connectToHost(groundAddress, groundTCPPort);
             tcpReconnectTimer = new QTimer(this);
             connect(tcpReconnectTimer, &QTimer::timeout, this, &MavlinkBase::reconnectTCP);
             tcpReconnectTimer->start(1000);
