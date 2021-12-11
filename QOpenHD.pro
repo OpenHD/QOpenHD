@@ -312,7 +312,7 @@ LinuxBuild {
 
 JetsonBuild {
     message("JetsonBuild")
-    CONFIG += EnableMainVideo
+    #CONFIG += EnableMainVideo
     CONFIG += EnablePiP
     #CONFIG += EnableLink
     #CONFIG += EnableCharts
