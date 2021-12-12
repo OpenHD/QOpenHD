@@ -75,6 +75,30 @@ public:
 
     Q_PROPERTY(uint rc10 MEMBER m_rc10 WRITE set_rc10 NOTIFY rc10_changed)
     void set_rc10(uint rc10);
+
+    Q_PROPERTY(uint rc11 MEMBER m_rc11 WRITE set_rc11 NOTIFY rc11_changed)
+    void set_rc11(uint rc11);
+
+    Q_PROPERTY(uint rc12 MEMBER m_rc12 WRITE set_rc12 NOTIFY rc12_changed)
+    void set_rc12(uint rc12);
+
+    Q_PROPERTY(uint rc13 MEMBER m_rc13 WRITE set_rc13 NOTIFY rc13_changed)
+    void set_rc13(uint rc13);
+
+    Q_PROPERTY(uint rc14 MEMBER m_rc14 WRITE set_rc14 NOTIFY rc14_changed)
+    void set_rc14(uint rc14);
+
+    Q_PROPERTY(uint rc15 MEMBER m_rc15 WRITE set_rc15 NOTIFY rc15_changed)
+    void set_rc15(uint rc15);
+
+    Q_PROPERTY(uint rc16 MEMBER m_rc16 WRITE set_rc16 NOTIFY rc16_changed)
+    void set_rc16(uint rc16);
+
+    Q_PROPERTY(uint rc17 MEMBER m_rc17 WRITE set_rc17 NOTIFY rc17_changed)
+    void set_rc17(uint rc17);
+
+    Q_PROPERTY(uint rc18 MEMBER m_rc18 WRITE set_rc18 NOTIFY rc18_changed)
+    void set_rc18(uint rc18);
 signals:
     void channelUpdate(uint rc1,
                        uint rc2,
@@ -85,7 +109,15 @@ signals:
                        uint rc7,
                        uint rc8,
                        uint rc9,
-                       uint rc10);
+                       uint rc10,
+                       uint rc11,
+                       uint rc12,
+                       uint rc13,
+                       uint rc14,
+                       uint rc15,
+                       uint rc16,
+                       uint rc17,
+                       uint rc18);
 
     void rc1_changed(uint rc1);
     void rc2_changed(uint rc2);
@@ -97,6 +129,14 @@ signals:
     void rc8_changed(uint rc8);
     void rc9_changed(uint rc9);
     void rc10_changed(uint rc10);
+    void rc11_changed(uint rc11);
+    void rc12_changed(uint rc12);
+    void rc13_changed(uint rc13);
+    void rc14_changed(uint rc14);
+    void rc15_changed(uint rc15);
+    void rc16_changed(uint rc16);
+    void rc17_changed(uint rc17);
+    void rc18_changed(uint rc18);
 
 #if defined(ENABLE_GAMEPADS)
     void selectedGamepadChanged(int selectedGamepad);
@@ -185,6 +225,14 @@ private:
     uint m_rc8 = 1500;
     uint m_rc9 = 1500;
     uint m_rc10 = 1500;
+    uint m_rc11 = 1500;
+    uint m_rc12 = 1500;
+    uint m_rc13 = 1500;
+    uint m_rc14 = 1500;
+    uint m_rc15 = 1500;
+    uint m_rc16 = 1500;
+    uint m_rc17 = 1500;
+    uint m_rc18 = 1500;
 
 };
 

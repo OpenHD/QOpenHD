@@ -70,6 +70,10 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 
 #include "managesettings.h"
 
+#if defined(ENABLE_RC)
+#include "QJoysticks.h"
+#endif
+
 #if defined(__ios__)
 #include "appleplatform.h"
 #endif
