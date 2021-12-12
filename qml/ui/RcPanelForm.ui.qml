@@ -12,147 +12,191 @@ import "../ui" as Ui
 import "../ui/elements"
 
 
+
+
 Rectangle {
     id: element2
     Layout.fillHeight: true
     Layout.fillWidth: true
-    property alias license: license
 
     color: "#eaeaea"
 
-    Card {
-        id: infoPanel
-        anchors.left: parent.left
-        anchors.leftMargin: 12
-        anchors.right: parent.right
-        anchors.rightMargin: 12
-        anchors.top: parent.top
-        anchors.topMargin: 12
-        height: 128
-        hasHeader: false
-
-        cardBody: ColumnLayout {
-            Row {
-                spacing: 12
-                leftPadding: 18
-
-                Image {
-                    id: image
-                    width: 48
-                    height: 48
-                    source: "qrc:/round.png"
-                    fillMode: Image.PreserveAspectFit
-                    anchors.verticalCenter: title.verticalCenter
-                }
-
-                Text {
-                    id: title
-                    height: 48
-                    color: "#ff3a3a3a"
-                    text: qsTr("QOpenHD")
-                    font.pixelSize: 36
-                }
-            }
+    //
+    // Holds the current joystick selected by the combobox
+    //
+    property int currentJoystick: 0
 
 
-            Text {
-                id: qopenhd_version
-                width: 173
-                height: 14
-                color: "#ff3a3a3a"
-                text: QOPENHD_VERSION
-                font.pixelSize: 14
-                leftPadding: 80
-            }
+    //
+    // Generates the axes, button and POV indicators when the user selects
+    // another joystick from the combobox
+    //
+    function generateJoystickWidgets (id) {
+        /* Clear the joystick indicators */
+        axes.model = 0
+        povs.model = 0
+        buttons.model = 0
 
-            Text {
-                id: license
-                color: "#ff3a3a3a"
-                text: qsTr("License: GPLv3")
-                onLinkActivated: {
-                    Qt.openUrlExternally("https://github.com/OpenHD/QOpenHD/blob/master/LICENSE")
-                }
-                font.pixelSize: 14
-                leftPadding: 80
-            }
+        /* Change the current joystick id */
+        currentJoystick = id
+
+        /* Get current joystick information & generate indicators */
+        if (QJoysticks.joystickExists (id)) {
+            axes.model = QJoysticks.getNumAxes (id)
+            povs.model = QJoysticks.getNumPOVs (id)
+            buttons.model = QJoysticks.getNumButtons (id)
         }
+
+        /* Resize window to minimum size */
+        width = minimumWidth
+        height = minimumHeight
     }
 
 
-    RowLayout {
-        anchors.right: parent.right
-        anchors.rightMargin: 12
-        anchors.top: infoPanel.bottom
-        anchors.topMargin: 24
-        anchors.left: parent.left
-        anchors.leftMargin: 12
-        spacing: 6
-        height: airBox.height
 
+    //
+    // Display all the widgets in a vertical layout
+    //
+    ColumnLayout {
+        spacing: 5
+        anchors.margins: 10
+        anchors.fill: parent
 
-        Card {
-            id: airBox
-            height: 128
+        //
+        // Joystick selector combobox
+        //
+        ComboBox {
+            id: joysticks
             Layout.fillWidth: true
+            model: QJoysticks.deviceNames
+            onCurrentIndexChanged: generateJoystickWidgets (currentIndex)
+            onCurrentTextChanged: generateJoystickWidgets (currentIndex)
+        }
 
-            cardName: qsTr("Air")
-            cardBody: Item {
-                Text {
-                    id: airVersionID
-                    text: qsTr("OpenHD Version:")
-                    anchors.left: parent.left
-                    anchors.top: parent.top
-                    height: 24
-                    font.pixelSize: 14
-                    font.bold: true
-                    leftPadding: 12
-                }
+        //
+        // Axes indicator
+        //
+        GroupBox {
+            title: qsTr ("Axis")
+            Layout.fillWidth: true
+            Layout.fillHeight: true
 
-                Text {
-                    text: AirStatusMicroservice.openHDVersion
-                    anchors.left: airVersionID.right
-                    anchors.horizontalCenter: airVersionID.horizontalCenter
-                    height: 24
-                    width: 256
-                    font.pixelSize: 14
-                    leftPadding: 6
+            ColumnLayout {
+                spacing:    10
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+
+                //
+                // Generate a progressbar for each joystick axis
+                //
+                Repeater {
+                    id: axes
+                    delegate: ProgressBar {
+                        id: progressbar
+                        from: -100
+                        to: 100
+                        Layout.fillWidth: true
+
+                        value: 0
+                        Behavior on value {NumberAnimation{}}
+
+                        Connections {
+                            target: QJoysticks
+                            onAxisChanged: {
+                                if (currentJoystick === js && index === axis)
+                                    progressbar.value = QJoysticks.getAxis (js, index) * 100
+                            }
+                        }
+                    }
                 }
             }
         }
 
-        Card {
-            id: groundBox
-            height: 128
+        //
+        // Buttons indicator
+        //
+        GroupBox {
+            title: qsTr ("Buttons")
             Layout.fillWidth: true
-            cardName: qsTr("Ground")
-            cardBody: Item {
-                Text {
-                    id: groundVersionID
-                    text: qsTr("OpenHD Version:")
-                    anchors.left: parent.left
-                    anchors.top: parent.top
-                    height: 24
-                    font.pixelSize: 14
-                    font.bold: true
-                    leftPadding: 12
-                }
+            Layout.fillHeight: true
 
-                Text {
-                    text: GroundStatusMicroservice.openHDVersion
-                    anchors.left: groundVersionID.right
-                    anchors.horizontalCenter: groundVersionID.horizontalCenter
-                    height: 24
-                    width: 256
-                    font.pixelSize: 14
-                    leftPadding: 6
+            GridLayout {
+                rows: 6
+                rowSpacing: 5
+                columnSpacing: 5
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                flow: GridLayout.TopToBottom
+
+                //
+                // Generate a checkbox for each joystick button
+                //
+                Repeater {
+                    id: buttons
+                    delegate: CheckBox {
+                        enabled: false
+                        Layout.fillWidth: true
+                        text: qsTr ("Button %1").arg (index)
+
+                        //
+                        // React to QJoystick signals
+                        //
+                        Connections {
+                            target: QJoysticks
+                            onButtonChanged: {
+                                if (currentJoystick === js && button === index)
+                                    checked = QJoysticks.getButton (js, index)
+                            }
+                        }
+                    }
                 }
             }
-
         }
-    }
+
+        //
+        // POVs indicator
+        //
+        GroupBox {
+            title: qsTr ("POVs")
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+
+            ColumnLayout {
+                spacing: 5
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+
+                //
+                // Generate a spinbox for each joystick POV
+                //
+                Repeater {
+                    id: povs
+                    delegate: SpinBox {
+                        enabled: false
+                        from: 0
+                        to: 360
+                        Layout.fillWidth: true
+
+                        //
+                        // React to QJoystick signals
+                        //
+                        Connections {
+                            target: QJoysticks
+                            onPovChanged: {
+                                if (currentJoystick === js && pov === index)
+                                    value = QJoysticks.getPOV (js, index)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+      }
+
 }
 
-/*##^##
+    /*##^##
 Designer {
     D{i:1;anchors_width:224;anchors_x:71;anchors_y:8}D{i:2;anchors_height:15;anchors_width:488;anchors_x:8;anchors_y:91}
 D{i:3;anchors_height:106;anchors_width:282;anchors_x:35;anchors_y:110}

@@ -540,6 +540,9 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
 
 #if defined(ENABLE_RC)
     engine.rootContext()->setContextProperty("EnableRC", QVariant(true));
+    //QJoysticks* jinstance = QJoysticks::getInstance();
+    auto QJoysticks = QJoysticks::getInstance();
+    engine.rootContext()->setContextProperty("QJoysticks", QJoysticks);
 #else
     engine.rootContext()->setContextProperty("EnableRC", QVariant(false));
 #endif
