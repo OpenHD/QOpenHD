@@ -281,6 +281,7 @@ BaseWidget {
                 minimumValue: settings.vsi_max * -1
                 maximumValue: settings.vsi_max
 
+                Behavior on value {NumberAnimation { duration: settings.smoothing }}
                 value: OpenHD.vsi
 
                 style: CircularGaugeStyle {

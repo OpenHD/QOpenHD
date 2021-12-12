@@ -309,7 +309,9 @@ BaseWidget {
                 showHeadingLadderText: settings.heading_ladder_text
                 showHorizonHeadingLadder: settings.show_heading_ladder
                 showHorizonHome: settings.show_heading_ladder //you dont want a floating home icon
+                Behavior on heading {NumberAnimation { duration: settings.smoothing }}
                 heading: OpenHD.hdg
+                Behavior on homeHeading {NumberAnimation { duration: settings.smoothing }}
                 homeHeading: OpenHD.home_heading
                 color: settings.color_shape
                 glow: settings.color_glow

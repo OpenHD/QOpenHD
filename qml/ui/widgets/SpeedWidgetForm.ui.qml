@@ -325,7 +325,9 @@ BaseWidget {
                 imperial: settings.enable_imperial
                 speedMinimum: settings.speed_minimum
                 speedRange: settings.speed_range
+                Behavior on speed {NumberAnimation { duration: settings.smoothing }}
                 speed: OpenHD.speed
+                Behavior on airspeed {NumberAnimation { duration: settings.smoothing }}
                 airspeed: OpenHD.airspeed
                 fontFamily: settings.font_text
             }
