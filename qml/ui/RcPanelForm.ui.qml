@@ -14,12 +14,12 @@ import "../ui/elements"
 
 
 
-Rectangle {
+ScrollView  {
     id: element2
     Layout.fillHeight: true
     Layout.fillWidth: true
 
-    color: "#eaeaea"
+    // color: "#eaeaea"
 
     //
     // Holds the current joystick selected by the combobox
@@ -48,8 +48,8 @@ Rectangle {
         }
 
         /* Resize window to minimum size */
-        width = minimumWidth
-        height = minimumHeight
+        // width = minimumWidth
+        // height = minimumHeight
     }
 
 
@@ -58,9 +58,11 @@ Rectangle {
     // Display all the widgets in a vertical layout
     //
     ColumnLayout {
-        spacing: 5
+        spacing: 10
         anchors.margins: 10
         anchors.fill: parent
+        width: parent.width
+
 
         //
         // Joystick selector combobox
@@ -78,12 +80,12 @@ Rectangle {
         //
         GroupBox {
             title: qsTr ("Axis")
-            Layout.fillWidth: true
+            width: parent.width
             Layout.fillHeight: true
 
             ColumnLayout {
                 spacing:    10
-                Layout.fillWidth: true
+                width: parent.width
                 Layout.fillHeight: true
 
                 //
@@ -91,10 +93,11 @@ Rectangle {
                 //
                 Repeater {
                     id: axes
-                    delegate: ProgressBar {
+                    ProgressBar {
                         id: progressbar
                         from: -100
                         to: 100
+
                         Layout.fillWidth: true
 
                         value: 0
@@ -102,6 +105,8 @@ Rectangle {
 
                         Connections {
                             target: QJoysticks
+
+
                             onAxisChanged: {
                                 if (currentJoystick === js && index === axis)
                                     progressbar.value = QJoysticks.getAxis (js, index) * 100
@@ -183,8 +188,8 @@ Rectangle {
                         Connections {
                             target: QJoysticks
                             onPovChanged: {
-                                if (currentJoystick === js && pov === index)
-                                    value = QJoysticks.getPOV (js, index)
+                                if (pov === index)
+                                    value = QJoysticks.getPOV (QJoysticks.currentJoystick, QJoysticks.index)
                             }
                         }
                     }
@@ -192,13 +197,8 @@ Rectangle {
             }
         }
 
-      }
+    }
 
 }
 
-    /*##^##
-Designer {
-    D{i:1;anchors_width:224;anchors_x:71;anchors_y:8}D{i:2;anchors_height:15;anchors_width:488;anchors_x:8;anchors_y:91}
-D{i:3;anchors_height:106;anchors_width:282;anchors_x:35;anchors_y:110}
-}
-##^##*/
+
