@@ -754,9 +754,15 @@ void OpenHDVideoStream::_start() {
         qDebug() << "Listening on port" << m_video_port;
 
         if (m_enable_rtp || m_stream_type == StreamTypePiP) {
-            s << QString("udpsrc port=%1 caps=\"application/x-rtp, media=(string)video, clock-rate=(int)90000, encoding-name=(string)H264\" timeout=1000000000 !").arg(m_video_port);
-            s << "rtpjitterbuffer !";
-            s << "rtph264depay ! ";
+            //s << QString("udpsrc port=%1 caps=\"application/x-rtp, media=(string)video, clock-rate=(int)90000, encoding-name=(string)H264\" timeout=1000000000 !").arg(m_video_port);
+            s << QString("udpsrc port=%1 caps=\"application/x-rtp, encoding-name=(string)H265,payload=96\" timeout=1000000000 !").arg(m_video_port);
+            //s << "rtpjitterbuffer !";
+            s << "h265parse !";
+            //s << "rtph264depay ! ";
+            s << "rtph265depay ! ";
+            //may also need nvv4l2decoder ! nvoverlaysink sync=false in the pipeline. Will test and add if needed.
+                    } else {
+            s << QString("udpsrc port=%1 timeout=1000000000 !").arg(m_video_port);
         } else {
             s << QString("udpsrc port=%1 timeout=1000000000 !").arg(m_video_port);
         }
