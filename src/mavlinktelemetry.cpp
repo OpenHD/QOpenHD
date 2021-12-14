@@ -65,8 +65,10 @@ void MavlinkTelemetry::onSetup() {
     resetParamVars();
     timer->start(200);
 
+    #if defined(ENABLE_RC)
     auto mavlink = MavlinkTelemetry::instance();
     connect(this, &MavlinkTelemetry::update_RC_MavlinkBase, mavlink, &MavlinkBase::receive_RC_Update);
+    #endif
 }
 
 void MavlinkTelemetry::requestSysIdSettings() {
@@ -115,7 +117,7 @@ void MavlinkTelemetry::FC_Reboot_Shutdown_Changed(int reboot_shutdown) {
     //command.long_param2 = m_arm_disarm;
     sendCommand(command);
 }
-
+#if defined(ENABLE_RC)
 /*RC updates passing thru mavlink telemetry is really not required. But it does serve to agregate
   all of the rc inputs in one place and then send all of them in one go to mavlinkbase where they
   are actually sent
@@ -197,7 +199,7 @@ void MavlinkTelemetry::rc18_changed(uint rc18) {
     m_rc18=rc18;
     qDebug() << "MavlinkTelemetry::rc18_changed="<< m_rc18;
 }
-
+#endif
 
 void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
 

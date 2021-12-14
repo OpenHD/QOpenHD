@@ -73,7 +73,7 @@ public:
     float int_param7 = 0;
 };
 
-
+#if defined(ENABLE_RC)
 class MavlinkRC  {
 public:
     uint ch1 = 0;
@@ -96,7 +96,7 @@ public:
     uint ch18 = 0;
 
 };
-
+#endif
 
 
 class MavlinkBase: public QObject {
@@ -163,7 +163,7 @@ signals:
 public slots:
     void onStarted();    
     void request_Mission_Changed();
-
+#if defined(ENABLE_RC)
     void receive_RC_Update(uint rc1,
                            uint rc2,
                            uint rc3,
@@ -183,7 +183,7 @@ public slots:
                            uint rc17,
                            uint rc18
                            );
-
+#endif
 protected slots:
     void processMavlinkUDPDatagrams();
     void processMavlinkTCPData();

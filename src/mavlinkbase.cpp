@@ -65,7 +65,9 @@ void MavlinkBase::onStarted() {
     m_heartbeat_timer->start(5000);
 
     m_rc_timer = new QTimer(this);
+    #if defined(ENABLE_RC)
     connect(m_rc_timer, &QTimer::timeout, this, &MavlinkBase::sendRC);
+    #endif
     m_rc_timer->start(20);
 
     emit setup();
@@ -177,6 +179,7 @@ void MavlinkBase::sendHeartbeat() {
     sendData((char*)buffer, len);
 }
 
+#if defined(ENABLE_RC)
 void MavlinkBase::receive_RC_Update(uint rc1,uint rc2,uint rc3,uint rc4,uint rc5,uint rc6,uint rc7,uint rc8,
                                     uint rc9,uint rc10,uint rc11,uint rc12,uint rc13,uint rc14,uint rc15,uint rc16,uint rc17,uint rc18) {
 
@@ -202,7 +205,6 @@ void MavlinkBase::receive_RC_Update(uint rc1,uint rc2,uint rc3,uint rc4,uint rc5
 
 }
 
-
 void MavlinkBase::sendRC () {
     QSettings settings;
     int mavlink_sysid = settings.value("mavlink_sysid", m_util.default_mavlink_sysid()).toInt();
@@ -216,7 +218,9 @@ void MavlinkBase::sendRC () {
     int len = mavlink_msg_to_send_buffer(buffer, &msg);
 
     sendData((char*)buffer, len);
+
 }
+#endif
 
 void MavlinkBase::requestAutopilotInfo() {
     qDebug() << "MavlinkBase::request_Autopilot_Info";

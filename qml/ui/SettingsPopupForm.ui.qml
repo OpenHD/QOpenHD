@@ -129,6 +129,7 @@ Rectangle {
             Item {
                 height: 48
                 width: parent.width
+                visible: EnableRC
                 MouseArea {
                     id: rcButtonMouseArea
                     anchors.fill: parent

@@ -88,6 +88,7 @@ void OpenHDRC::setGroundIP(QString address) {
 void OpenHDRC::channelTrigger() {
     emit channelUpdate(m_rc1, m_rc2, m_rc3, m_rc4, m_rc5, m_rc6, m_rc7, m_rc8, m_rc9, m_rc10
                        ,m_rc11,m_rc12,m_rc13,m_rc14,m_rc15,m_rc16,m_rc17,m_rc18);
+/*this is Stuff Stephen wrote and interferes
 #if defined(ENABLE_RC)
     QSettings settings;
     auto enable_rc = settings.value("enable_rc", false).toBool();
@@ -134,6 +135,7 @@ void OpenHDRC::channelTrigger() {
         seqno++;
     }
 #endif
+*/
 }
 
 void OpenHDRC::processRCDatagrams() {

@@ -306,8 +306,7 @@ LinuxBuild {
     #CONFIG += EnableBlackbox
     #CONFIG += EnableVR
     #CONFIG += EnableLog
-    CONFIG += EnableRC
-    CONFIG += EnableJoysticks
+    #CONFIG += EnableRC
     message("LinuxBuild - config")
 }
 
