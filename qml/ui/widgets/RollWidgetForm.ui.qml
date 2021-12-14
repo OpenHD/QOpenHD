@@ -548,6 +548,7 @@ BaseWidget {
                 transform: Rotation {
                     origin.x: 100
                     origin.y: 150
+                    Behavior on angle {NumberAnimation { duration: settings.smoothing }}
                     angle: settings.roll_sky_pointer ? 0 : (settings.roll_invert ? OpenHD.roll : OpenHD.roll * -1)
                 }
             }
@@ -584,6 +585,7 @@ BaseWidget {
                 transform: Rotation {
                     origin.x: 100
                     origin.y: 150
+                    Behavior on angle {NumberAnimation { duration: settings.smoothing }}
                     angle: settings.roll_sky_pointer ? (settings.roll_invert ? OpenHD.roll : OpenHD.roll * -1) : 0
                 }
             }

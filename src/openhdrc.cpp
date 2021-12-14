@@ -11,6 +11,8 @@
 #include <QJoysticks.h>
 #endif
 
+#include "mavlinktelemetry.h"
+
 #define BUFLEN 21
 #define PORT 5565 // UDP port for OpenHD RC
 
@@ -41,8 +43,34 @@ OpenHDRC::OpenHDRC(QObject *parent): QObject(parent) {
 #if defined(ENABLE_JOYSTICKS)
     qDebug() << "OpenHDRC: using QJoysticks";
     QJoysticks* jinstance = QJoysticks::getInstance();
+   //THIS IS ENABLED BELOW FOR TESTING
+   //TODO TURN OFF VIRTUAL JOYSTICK FOR RELEASE!!
+    jinstance->setVirtualJoystickRange(1);
+    jinstance->setVirtualJoystickEnabled(true);
+    //jinstance->setVirtualJoystickAxisSensibility(0.7) - from newer version
+
     connect(jinstance, &QJoysticks::countChanged, this, &OpenHDRC::connectedJoysticksChanged);
     connect(jinstance, &QJoysticks::axisChanged, this, &OpenHDRC::axisChanged);
+
+    auto mavlink = MavlinkTelemetry::instance();
+    connect(this, &OpenHDRC::rc1_changed, mavlink, &MavlinkTelemetry::rc1_changed);
+    connect(this, &OpenHDRC::rc2_changed, mavlink, &MavlinkTelemetry::rc2_changed);
+    connect(this, &OpenHDRC::rc3_changed, mavlink, &MavlinkTelemetry::rc3_changed);
+    connect(this, &OpenHDRC::rc4_changed, mavlink, &MavlinkTelemetry::rc4_changed);
+    connect(this, &OpenHDRC::rc5_changed, mavlink, &MavlinkTelemetry::rc5_changed);
+    connect(this, &OpenHDRC::rc6_changed, mavlink, &MavlinkTelemetry::rc6_changed);
+    connect(this, &OpenHDRC::rc7_changed, mavlink, &MavlinkTelemetry::rc7_changed);
+    connect(this, &OpenHDRC::rc8_changed, mavlink, &MavlinkTelemetry::rc8_changed);
+    connect(this, &OpenHDRC::rc9_changed, mavlink, &MavlinkTelemetry::rc9_changed);
+    connect(this, &OpenHDRC::rc10_changed, mavlink, &MavlinkTelemetry::rc10_changed);
+    connect(this, &OpenHDRC::rc11_changed, mavlink, &MavlinkTelemetry::rc11_changed);
+    connect(this, &OpenHDRC::rc12_changed, mavlink, &MavlinkTelemetry::rc12_changed);
+    connect(this, &OpenHDRC::rc13_changed, mavlink, &MavlinkTelemetry::rc13_changed);
+    connect(this, &OpenHDRC::rc14_changed, mavlink, &MavlinkTelemetry::rc14_changed);
+    connect(this, &OpenHDRC::rc15_changed, mavlink, &MavlinkTelemetry::rc15_changed);
+    connect(this, &OpenHDRC::rc16_changed, mavlink, &MavlinkTelemetry::rc16_changed);
+    connect(this, &OpenHDRC::rc17_changed, mavlink, &MavlinkTelemetry::rc17_changed);
+    connect(this, &OpenHDRC::rc18_changed, mavlink, &MavlinkTelemetry::rc18_changed);
 #endif
 
     QTimer *timer = new QTimer(this);
@@ -58,7 +86,9 @@ void OpenHDRC::setGroundIP(QString address) {
 
 
 void OpenHDRC::channelTrigger() {
-    emit channelUpdate(m_rc1, m_rc2, m_rc3, m_rc4, m_rc5, m_rc6, m_rc7, m_rc8, m_rc9, m_rc10);
+    emit channelUpdate(m_rc1, m_rc2, m_rc3, m_rc4, m_rc5, m_rc6, m_rc7, m_rc8, m_rc9, m_rc10
+                       ,m_rc11,m_rc12,m_rc13,m_rc14,m_rc15,m_rc16,m_rc17,m_rc18);
+/*this is Stuff Stephen wrote and interferes
 #if defined(ENABLE_RC)
     QSettings settings;
     auto enable_rc = settings.value("enable_rc", false).toBool();
@@ -105,6 +135,7 @@ void OpenHDRC::channelTrigger() {
         seqno++;
     }
 #endif
+*/
 }
 
 void OpenHDRC::processRCDatagrams() {
@@ -203,59 +234,117 @@ void OpenHDRC::set_selectedJoystick(int selectedJoystick) {
 void OpenHDRC::set_rc1(uint rc1) {
     m_rc1 = rc1;
     emit rc1_changed(m_rc1);
+    qDebug() << "Openhdrc::rc1=" << m_rc1;
 }
 
 void OpenHDRC::set_rc2(uint rc2) {
     m_rc2 = rc2;
     emit rc2_changed(m_rc2);
+    qDebug() << "Openhdrc::rc2=" << m_rc2;
 }
 
 void OpenHDRC::set_rc3(uint rc3) {
     m_rc3 = rc3;
     emit rc3_changed(m_rc3);
+    qDebug() << "Openhdrc::rc3=" << m_rc3;
 }
 
 void OpenHDRC::set_rc4(uint rc4) {
     m_rc4 = rc4;
     emit rc4_changed(m_rc4);
+    qDebug() << "Openhdrc::rc4=" << m_rc4;
 }
 
 
 void OpenHDRC::set_rc5(uint rc5) {
     m_rc5 = rc5;
     emit rc5_changed(m_rc5);
+    qDebug() << "Openhdrc::rc5=" << m_rc5;
 }
 
 void OpenHDRC::set_rc6(uint rc6) {
     m_rc6 = rc6;
     emit rc6_changed(m_rc6);
+    qDebug() << "Openhdrc::rc6=" << m_rc6;
 }
 
 void OpenHDRC::set_rc7(uint rc7) {
     m_rc7 = rc7;
     emit rc7_changed(m_rc7);
+    qDebug() << "Openhdrc::rc7=" << m_rc7;
 }
 
 void OpenHDRC::set_rc8(uint rc8) {
     m_rc8 = rc8;
     emit rc8_changed(m_rc8);
+    qDebug() << "Openhdrc::rc8=" << m_rc8;
 }
 
 void OpenHDRC::set_rc9(uint rc9) {
     m_rc9 = rc9;
     emit rc9_changed(m_rc9);
+    qDebug() << "Openhdrc::rc9=" << m_rc9;
 }
 
 void OpenHDRC::set_rc10(uint rc10) {
     m_rc10 = rc10;
     emit rc10_changed(m_rc10);
+    qDebug() << "Openhdrc::rc10=" << m_rc10;
+}
+
+void OpenHDRC::set_rc11(uint rc11) {
+    m_rc11 = rc11;
+    emit rc11_changed(m_rc11);
+    qDebug() << "Openhdrc::rc11=" << m_rc11;
+}
+
+void OpenHDRC::set_rc12(uint rc12) {
+    m_rc12 = rc12;
+    emit rc12_changed(m_rc12);
+    qDebug() << "Openhdrc::rc12=" << m_rc12;
+}
+
+void OpenHDRC::set_rc13(uint rc13) {
+    m_rc13 = rc13;
+    emit rc13_changed(m_rc13);
+    qDebug() << "Openhdrc::rc13=" << m_rc13;
+}
+
+void OpenHDRC::set_rc14(uint rc14) {
+    m_rc14 = rc14;
+    emit rc14_changed(m_rc14);
+    qDebug() << "Openhdrc::rc14=" << m_rc14;
+}
+
+void OpenHDRC::set_rc15(uint rc15) {
+    m_rc15 = rc15;
+    emit rc15_changed(m_rc15);
+    qDebug() << "Openhdrc::rc15=" << m_rc15;
+}
+
+void OpenHDRC::set_rc16(uint rc16) {
+    m_rc16 = rc16;
+    emit rc16_changed(m_rc16);
+    qDebug() << "Openhdrc::rc16=" << m_rc16;
+}
+
+void OpenHDRC::set_rc17(uint rc17) {
+    m_rc17 = rc17;
+    emit rc17_changed(m_rc17);
+    qDebug() << "Openhdrc::rc17=" << m_rc17;
+}
+
+void OpenHDRC::set_rc18(uint rc18) {
+    m_rc18 = rc18;
+    emit rc18_changed(m_rc18);
+    qDebug() << "Openhdrc::rc18=" << m_rc18;
 }
 
 void OpenHDRC::axisChanged(const int js, const int axis, const qreal value) {
     Q_UNUSED(js)
     Q_UNUSED(axis)
 
-    qDebug() << "OpenHDRC::axisChanged()";
+    //qDebug() << "OpenHDRC::axisChanged()";
     switch (axis) {
         case 0:
         set_rc1(m_util.map(value, -1, 1, 1000, 2000));

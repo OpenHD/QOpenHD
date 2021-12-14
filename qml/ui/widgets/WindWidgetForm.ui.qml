@@ -436,6 +436,7 @@ BaseWidget {
                 transform: Rotation {
                     origin.x: 3
                     origin.y: 20
+                    Behavior on angle {NumberAnimation { duration: settings.smoothing }}
                     angle: (settings.wind_plane_copter ? OpenHD.wind_direction : OpenHD.mav_wind_direction) - OpenHD.hdg - 180
                 }
             }

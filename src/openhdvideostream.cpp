@@ -788,6 +788,7 @@ void OpenHDVideoStream::_start() {
     s << "qmlglsink name=qmlglsink sync=false";
 
     m_pipeline = gst_parse_launch(pipeline->toUtf8(), &error);
+    qDebug() << "GSTREAMER PIPE=" << pipeline->toUtf8();
     if (error) {
         qDebug() << "gst_parse_launch error: " << error->message;
     }

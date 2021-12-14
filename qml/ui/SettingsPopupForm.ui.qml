@@ -129,10 +129,50 @@ Rectangle {
             Item {
                 height: 48
                 width: parent.width
+                visible: EnableRC
+                MouseArea {
+                    id: rcButtonMouseArea
+                    anchors.fill: parent
+                    onClicked: mainStackLayout.currentIndex = 2
+                }
+
+                Text {
+                    id: rcIcon
+                    text: "\uf11b"
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    font.family: "Font Awesome 5 Free"
+                    font.pixelSize: 18
+                    height: parent.height
+                    width: 24
+                    anchors.left: parent.left
+                    anchors.leftMargin: 12
+
+                    color: "#dde4ed"
+
+                }
+
+                Text {
+                    id: rcButton
+                    height: parent.height
+                    anchors.left: rcIcon.right
+                    anchors.leftMargin: 6
+
+                    text: qsTr("RC")
+                    font.pixelSize: 15
+                    horizontalAlignment: Text.AlignLeft
+                    verticalAlignment: Text.AlignVCenter
+                    color: mainStackLayout.currentIndex == 2 ? "#33aaff" : "#dde4ed"
+                }
+            }
+
+            Item {
+                height: 48
+                width: parent.width
                 MouseArea {
                     id: statusButtonMouseArea
                     anchors.fill: parent
-                    onClicked: mainStackLayout.currentIndex = 2
+                    onClicked: mainStackLayout.currentIndex = 3
                 }
 
                 Text {
@@ -161,7 +201,7 @@ Rectangle {
                     font.pixelSize: 15
                     horizontalAlignment: Text.AlignLeft
                     verticalAlignment: Text.AlignVCenter
-                    color: mainStackLayout.currentIndex == 2 ? "#33aaff" : "#dde4ed"
+                    color: mainStackLayout.currentIndex == 3 ? "#33aaff" : "#dde4ed"
                 }
             }
 
@@ -172,7 +212,7 @@ Rectangle {
                 MouseArea {
                     id: chartsButtonMouseArea
                     anchors.fill: parent
-                    onClicked: mainStackLayout.currentIndex = 3
+                    onClicked: mainStackLayout.currentIndex = 4
                 }
 
                 Text {
@@ -201,7 +241,7 @@ Rectangle {
                     font.pixelSize: 15
                     horizontalAlignment: Text.AlignLeft
                     verticalAlignment: Text.AlignVCenter
-                    color: mainStackLayout.currentIndex == 3 ? "#33aaff" : "#dde4ed"
+                    color: mainStackLayout.currentIndex == 4 ? "#33aaff" : "#dde4ed"
                 }
             }
 
@@ -211,7 +251,7 @@ Rectangle {
                 MouseArea {
                     id: powerButtonMouseArea
                     anchors.fill: parent
-                    onClicked: mainStackLayout.currentIndex = 4
+                    onClicked: mainStackLayout.currentIndex = 5
                 }
 
                 Text {
@@ -240,7 +280,7 @@ Rectangle {
                     font.pixelSize: 15
                     horizontalAlignment: Text.AlignLeft
                     verticalAlignment: Text.AlignVCenter
-                    color: mainStackLayout.currentIndex == 4 ? "#33aaff" : "#dde4ed"
+                    color: mainStackLayout.currentIndex == 5 ? "#33aaff" : "#dde4ed"
                 }
             }
 
@@ -252,7 +292,7 @@ Rectangle {
                 MouseArea {
                     id: sensorsButtonMouseArea
                     anchors.fill: parent
-                    onClicked: mainStackLayout.currentIndex = 5
+                    onClicked: mainStackLayout.currentIndex = 6
                 }
 
                 Text {
@@ -281,7 +321,7 @@ Rectangle {
                     font.pixelSize: 15
                     horizontalAlignment: Text.AlignLeft
                     verticalAlignment: Text.AlignVCenter
-                    color: mainStackLayout.currentIndex == 5 ? "#33aaff" : "#dde4ed"
+                    color: mainStackLayout.currentIndex == 6 ? "#33aaff" : "#dde4ed"
                 }
             }
 
@@ -291,7 +331,7 @@ Rectangle {
                 MouseArea {
                     id: aboutButtonMouseArea
                     anchors.fill: parent
-                    onClicked: mainStackLayout.currentIndex = 6
+                    onClicked: mainStackLayout.currentIndex = 7
                 }
 
                 Text {
@@ -320,7 +360,7 @@ Rectangle {
                     font.pixelSize: 15
                     horizontalAlignment: Text.AlignLeft
                     verticalAlignment: Text.AlignVCenter
-                    color: mainStackLayout.currentIndex == 6 ? "#33aaff" : "#dde4ed"
+                    color: mainStackLayout.currentIndex == 7 ? "#33aaff" : "#dde4ed"
                 }
             }
         }
@@ -360,6 +400,10 @@ Rectangle {
 
         GroundPiSettingsPanel {
             id: groundPiSettingsPanel
+        }
+
+        RcPanel {
+            id: rcPanel
         }
 
         StatusPanel {

@@ -298,7 +298,9 @@ BaseWidget {
                 altitudeRelMsl: settings.altitude_rel_msl
                 altitudeRange: settings.altitude_range
                 imperial: settings.enable_imperial
+                Behavior on altMsl {NumberAnimation { duration: settings.smoothing }}
                 altMsl: OpenHD.alt_msl
+                Behavior on altRel {NumberAnimation { duration: settings.smoothing }}
                 altRel: OpenHD.alt_rel
                 fontFamily: settings.font_text
             }

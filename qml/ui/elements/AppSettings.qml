@@ -37,6 +37,8 @@ Settings {
     property string color_caution: "yellow"
     property string font_text: "Sans Serif"
 
+    property int smoothing: 250
+
     property string bar_behavior: "red"
 
     property double ground_power_opacity: 1
