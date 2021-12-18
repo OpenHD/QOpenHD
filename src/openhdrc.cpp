@@ -46,7 +46,7 @@ OpenHDRC::OpenHDRC(QObject *parent): QObject(parent) {
    //THIS IS ENABLED BELOW FOR TESTING
    //TODO TURN OFF VIRTUAL JOYSTICK FOR RELEASE!!
     jinstance->setVirtualJoystickRange(1);
-    jinstance->setVirtualJoystickEnabled(true);
+    jinstance->setVirtualJoystickEnabled(false);
     //jinstance->setVirtualJoystickAxisSensibility(0.7) - from newer version
 
     connect(jinstance, &QJoysticks::countChanged, this, &OpenHDRC::connectedJoysticksChanged);

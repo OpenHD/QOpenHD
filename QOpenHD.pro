@@ -313,6 +313,7 @@ LinuxBuild {
 JetsonBuild {
     message("JetsonBuild")
     CONFIG += EnableMainVideo
+    CONFIG += EnableJoysticks
     CONFIG += EnablePiP
     #CONFIG += EnableLink
     #CONFIG += EnableCharts
@@ -339,6 +340,7 @@ RaspberryPiBuild {
     # replace that at some point but for now it isn't necessary.
     message("RaspberryPiBuild - config")
     CONFIG += EnableMainVideo
+    CONFIG += EnableJoysticks
     CONFIG += EnablePiP
     #CONFIG += EnableLink
     #CONFIG += EnableCharts
