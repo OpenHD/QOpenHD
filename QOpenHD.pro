@@ -265,6 +265,7 @@ MacBuild {
     LIBS += -framework VideoToolbox -framework CoreVideo -framework CoreMedia
     #CONFIG += EnableGamepads
     CONFIG += EnableJoysticks
+    CONFIG += EnableRC
     CONFIG += EnableSpeech
     CONFIG += EnableMainVideo
     CONFIG += EnablePiP
@@ -297,6 +298,7 @@ LinuxBuild {
     QT += x11extras
     #CONFIG += EnableGamepads
     CONFIG += EnableJoysticks
+    CONFIG += EnableRC
     CONFIG += EnableMainVideo
     CONFIG += EnablePiP
     CONFIG += EnableGStreamer
@@ -306,7 +308,6 @@ LinuxBuild {
     #CONFIG += EnableBlackbox
     #CONFIG += EnableVR
     #CONFIG += EnableLog
-    #CONFIG += EnableRC
     message("LinuxBuild - config")
 }
 
@@ -314,6 +315,7 @@ JetsonBuild {
     message("JetsonBuild")
     CONFIG += EnableMainVideo
     CONFIG += EnableJoysticks
+    CONFIG += EnableRC
     CONFIG += EnablePiP
     #CONFIG += EnableLink
     #CONFIG += EnableCharts
@@ -341,6 +343,7 @@ RaspberryPiBuild {
     message("RaspberryPiBuild - config")
     CONFIG += EnableMainVideo
     CONFIG += EnableJoysticks
+    CONFIG += EnableRC
     CONFIG += EnablePiP
     #CONFIG += EnableLink
     #CONFIG += EnableCharts
@@ -372,6 +375,7 @@ RaspberryPiBuild {
 WindowsBuild {
     #CONFIG += EnableGamepads
     CONFIG += EnableJoysticks
+    CONFIG += EnableRC
     CONFIG += EnableSpeech
     CONFIG += EnableMainVideo
     #CONFIG +- EnablePiP
@@ -393,6 +397,7 @@ WindowsBuild {
 AndroidBuild {
     #CONFIG += EnableGamepads
     CONFIG += EnableJoysticks
+    CONFIG += EnableRC
     CONFIG += EnableSpeech
     CONFIG += EnableMainVideo
     CONFIG += EnablePiP
