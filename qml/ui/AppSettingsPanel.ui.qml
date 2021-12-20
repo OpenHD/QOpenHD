@@ -2111,8 +2111,6 @@ Item {
                                     settings.video_h264 = false
                                     settings.video_h265 = true
                                 }
-                                console.log("h264-",settings.video_h264);
-                                console.log("h265-",settings.video_h265);
                             }
                         }
                     }
@@ -2152,8 +2150,6 @@ Item {
                                     settings.video_h265 = false
                                     settings.video_h264 = true
                                 }
-                                console.log("h264-",settings.video_h264);
-                                console.log("h265-",settings.video_h265);
                             }
                         }
                     }

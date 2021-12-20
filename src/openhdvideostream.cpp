@@ -743,6 +743,7 @@ void OpenHDVideoStream::_start() {
 
     QSettings settings;
     auto pipeline = new QString();
+    m_video_h264 = settings.value("video_h264", false).toBool();
     QTextStream s(pipeline);
 
     if (m_enable_videotest) {
@@ -754,9 +755,18 @@ void OpenHDVideoStream::_start() {
         qDebug() << "Listening on port" << m_video_port;
 
         if (m_enable_rtp || m_stream_type == StreamTypePiP) {
-            s << QString("udpsrc port=%1 caps=\"application/x-rtp, media=(string)video, clock-rate=(int)90000, encoding-name=(string)H264\" timeout=1000000000 !").arg(m_video_port);
-            s << "rtpjitterbuffer !";
-            s << "rtph264depay ! ";
+            if (m_video_h264 == true ){
+                qDebug() << "h264 video stream started";
+                s << QString("udpsrc port=%1 caps=\"application/x-rtp, media=(string)video, clock-rate=(int)90000, encoding-name=(string)H264\" timeout=1000000000 !").arg(m_video_port);
+                s << "rtpjitterbuffer !";
+                s << "rtph264depay ! ";
+            }
+            else { //we are h265.. it has its own verbose setting but not using it here
+                qDebug() << "h265 TEST video stream started";
+                s << QString("udpsrc port=%1 caps=\"application/x-rtp, encoding-name=(string)H265,payload=96\" timeout=1000000000 !").arg(m_video_port);
+                s << "h265parse !";
+                s << "rtph265depay ! ";
+            }
         } else {
             s << QString("udpsrc port=%1 timeout=1000000000 !").arg(m_video_port);
         }
@@ -841,17 +851,19 @@ void OpenHDVideoStream::_start() {
  * Checks every second if the enable_videotest setting has changed, if so we restart the
  * stream and let the the pipeline be reconstructed using whichever video source is now enabled.
  */
-void OpenHDVideoStream::_timer() {
+void OpenHDVideoStream::_timer() {    
     // skip everything until the video is known to have started at least once.
     if (firstRun) {
         return;
     }
+
     QSettings settings;
+
     auto _enable_videotest = settings.value("enable_videotest", false).toBool();
     auto _enable_software_video_decoder = settings.value("enable_software_video_decoder", false).toBool();
     auto _enable_rtp = settings.value("enable_rtp", true).toBool();
 
-    auto _enable_lte_video = settings.value("enable_lte_video", false).toBool();
+    auto _enable_lte_video = settings.value("enable_lte_video", false).toBool();   
 
     auto _show_pip_video = settings.value("show_pip_video", false).toBool();
 
@@ -868,7 +880,7 @@ void OpenHDVideoStream::_timer() {
             qDebug() << "Restarting main stream";
             stopVideo();
             m_enable_videotest = _enable_videotest;
-            m_enable_software_video_decoder = _enable_software_video_decoder;
+            m_enable_software_video_decoder = _enable_software_video_decoder;            
             m_enable_rtp = _enable_rtp;
             m_enable_lte_video= _enable_lte_video;
             m_video_port = _main_video_port;
