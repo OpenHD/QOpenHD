@@ -2080,6 +2080,84 @@ Item {
                         width: parent.width
                         height: rowHeight
                         color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                        visible: true
+
+                        Text {
+                            text: qsTr("Enable h264 restart of app probably required")
+                            font.weight: Font.Bold
+                            font.pixelSize: 13
+                            anchors.leftMargin: 8
+                            verticalAlignment: Text.AlignVCenter
+                            anchors.verticalCenter: parent.verticalCenter
+                            width: 224
+                            height: elementHeight
+                            anchors.left: parent.left
+                        }
+
+                        Switch {
+                            width: 32
+                            height: elementHeight
+                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                            anchors.right: parent.right
+                            anchors.verticalCenter: parent.verticalCenter
+                            checked: settings.video_h264
+                            onCheckedChanged: {
+                                if (checked === true ){
+                                    settings.video_h264 = true
+                                    settings.video_h265 = false
+                                }
+                                else {
+                                    settings.video_h264 = false
+                                    settings.video_h265 = true
+                                }
+                            }
+                        }
+                    }
+
+                    Rectangle {
+                        width: parent.width
+                        height: rowHeight
+                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                        visible: true
+
+                        Text {
+                            text: qsTr("Enable h265 restart of app probably required")
+                            font.weight: Font.Bold
+                            font.pixelSize: 13
+                            anchors.leftMargin: 8
+                            verticalAlignment: Text.AlignVCenter
+                            anchors.verticalCenter: parent.verticalCenter
+                            width: 224
+                            height: elementHeight
+                            anchors.left: parent.left
+                        }
+
+                        Switch {
+                            width: 32
+                            height: elementHeight
+                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                            anchors.right: parent.right
+                            anchors.verticalCenter: parent.verticalCenter
+                            checked: settings.video_h265
+                            onCheckedChanged: {
+                                if (checked === true ){
+                                    settings.video_h265 = true
+                                    settings.video_h264 = false
+                                }
+                                else {
+                                    settings.video_h265 = false
+                                    settings.video_h264 = true
+                                }
+                            }
+                        }
+                    }
+
+                    Rectangle {
+                        width: parent.width
+                        height: rowHeight
+                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
                         visible: EnablePiP
 
                         Text {

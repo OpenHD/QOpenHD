@@ -48,6 +48,8 @@ private:
     bool m_enable_pip_video = false;
     bool m_enable_lte_video = false;
 
+    bool m_video_h264 = true;
+
     enum StreamType m_stream_type;
 
     int m_video_port = 0;
