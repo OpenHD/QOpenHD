@@ -324,6 +324,8 @@ JetsonBuild {
     #CONFIG += EnableBlackbox
     #CONFIG += EnableVR
     #CONFIG += EnableLog //does not work due to filepath not set
+    CONFIG += EnableRC
+    CONFIG += EnableJoysticks
 
     CONFIG += EnableGStreamer
 
@@ -351,6 +353,8 @@ RaspberryPiBuild {
     #CONFIG += EnableBlackbox
     #CONFIG += EnableVR
     #CONFIG += EnableLog
+    CONFIG += EnableRC
+    CONFIG += EnableJoysticks
 
     CONFIG += EnableVideoRender
 
