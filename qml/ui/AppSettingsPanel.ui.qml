@@ -2083,7 +2083,7 @@ Item {
                         visible: true
 
                         Text {
-                            text: qsTr("Enable h264")
+                            text: qsTr("Enable h264 restart of app probably required")
                             font.weight: Font.Bold
                             font.pixelSize: 13
                             anchors.leftMargin: 8
@@ -2122,7 +2122,7 @@ Item {
                         visible: true
 
                         Text {
-                            text: qsTr("Enable h265")
+                            text: qsTr("Enable h265 restart of app probably required")
                             font.weight: Font.Bold
                             font.pixelSize: 13
                             anchors.leftMargin: 8
