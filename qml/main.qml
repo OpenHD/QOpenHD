@@ -21,7 +21,7 @@ ApplicationWindow {
     minimumHeight: 320
     minimumWidth: 480
     title: qsTr("Open.HD")
-    //color: "#00000000"
+    color: settings.app_background_transparent ? "#00000000" : "black"
 
     visibility: UseFullscreen ? "FullScreen" : "AutomaticVisibility"
 

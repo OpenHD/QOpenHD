@@ -21,6 +21,8 @@ Settings {
     property bool show_pip_video: false
     property double pip_video_opacity: 1
 
+    property bool app_background_transparent: false
+
     property bool enable_software_video_decoder: false
     property bool video_h264: true
     property bool video_h265: false
