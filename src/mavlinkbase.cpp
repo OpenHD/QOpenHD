@@ -207,17 +207,24 @@ void MavlinkBase::receive_RC_Update(uint rc1,uint rc2,uint rc3,uint rc4,uint rc5
 
 void MavlinkBase::sendRC () {
     QSettings settings;
-    int mavlink_sysid = settings.value("mavlink_sysid", m_util.default_mavlink_sysid()).toInt();
+    bool enable_rc = settings.value("enable_rc", m_util.default_mavlink_sysid()).toBool();
 
-    mavlink_message_t msg;
+    if (enable_rc == true){
+        int mavlink_sysid = settings.value("mavlink_sysid", m_util.default_mavlink_sysid()).toInt();
 
-    //TODO mavlink sysid is hard coded at 255... in app its default is 225
-    mavlink_msg_rc_channels_override_pack(255, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID, targetCompID, m_rc1, m_rc2, m_rc3, m_rc4, m_rc5, m_rc6, m_rc7, m_rc8, m_rc9, m_rc10, m_rc11, m_rc12, m_rc13, m_rc14, m_rc15, m_rc16, m_rc17, m_rc18);
+        mavlink_message_t msg;
 
-    uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
-    int len = mavlink_msg_to_send_buffer(buffer, &msg);
+        //TODO mavlink sysid is hard coded at 255... in app its default is 225
+        mavlink_msg_rc_channels_override_pack(255, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID, targetCompID, m_rc1, m_rc2, m_rc3, m_rc4, m_rc5, m_rc6, m_rc7, m_rc8, m_rc9, m_rc10, m_rc11, m_rc12, m_rc13, m_rc14, m_rc15, m_rc16, m_rc17, m_rc18);
 
-    sendData((char*)buffer, len);
+        uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
+        int len = mavlink_msg_to_send_buffer(buffer, &msg);
+
+        sendData((char*)buffer, len);
+    }
+    else {
+        return;
+    }
 
 }
 #endif

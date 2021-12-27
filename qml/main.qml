@@ -22,7 +22,7 @@ ApplicationWindow {
     minimumWidth: 480
     title: qsTr("Open.HD")
     color: settings.app_background_transparent ? "#00000000" : "black"
-    flags: Qt.WindowStaysOnTopHint| Qt.FramelessWindowHint| Qt.X11BypassWindowManagerHint;
+    //flags: Qt.WindowStaysOnTopHint| Qt.FramelessWindowHint| Qt.X11BypassWindowManagerHint;
     visibility: UseFullscreen ? "FullScreen" : "AutomaticVisibility"
 
     property bool initialised: false
