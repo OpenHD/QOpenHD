@@ -501,10 +501,14 @@ BaseWidget {
                 horizonRange: settings.horizon_range
                 horizonStep: settings.horizon_step
 
+                Behavior on pitch {NumberAnimation { duration: settings.smoothing }}
                 pitch: OpenHD.pitch
+                Behavior on roll {NumberAnimation { duration: settings.smoothing }}
                 roll: OpenHD.roll
 
+                Behavior on heading {NumberAnimation { duration: settings.smoothing }}
                 heading: OpenHD.hdg
+                Behavior on homeHeading {NumberAnimation { duration: settings.smoothing }}
                 homeHeading: OpenHD.home_heading
 
                 showHeadingLadderText: settings.heading_ladder_text

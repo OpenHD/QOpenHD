@@ -461,10 +461,14 @@ BaseWidget {
                 fpvActual:
                 fpvPipper:
 */
+                Behavior on pitch {NumberAnimation { duration: settings.smoothing }}
                 pitch: settings.fpv_dynamic ? OpenHD.pitch : 0.0
+                Behavior on roll {NumberAnimation { duration: settings.smoothing }}
                 roll: settings.fpv_dynamic ? OpenHD.roll : 0.0
 
+                Behavior on lateral {NumberAnimation { duration: settings.smoothing }}
                 lateral: settings.fpv_dynamic ? OpenHD.vehicle_vx_angle : 0.0
+                Behavior on vertical {NumberAnimation { duration: settings.smoothing }}
                 vertical: settings.fpv_dynamic ? OpenHD.vehicle_vz_angle : 0.0
 
                 // referencing the horizon so that fpv moves accurately
