@@ -758,70 +758,43 @@ void OpenHDVideoStream::_start() {
             if (m_video_h264 == true ){
                 qDebug() << "h264 video stream started";
                 s << QString("udpsrc port=%1 caps=\"application/x-rtp, media=(string)video, clock-rate=(int)90000, encoding-name=(string)H264\" timeout=1000000000 !").arg(m_video_port);
-                s << "rtpjitterbuffer !";
-                s << "rtph264depay ! ";
+                s << " rtpjitterbuffer !";
+                s << " rtph264depay !";
             } else { //we are h265.. it has its own verbose setting but not using it here
-                qDebug() << "h265 TEST video stream started";
+                qDebug() << "h265 video stream started";
                 s << QString("udpsrc port=%1 caps=\"application/x-rtp, encoding-name=(string)H265,payload=96\" timeout=1000000000 !").arg(m_video_port);
-                s << " rtph265depay ! ";
+                s << " rtph265depay !";
                 }
-        } else {
+         } else {
             s << QString("udpsrc port=%1 timeout=1000000000 !").arg(m_video_port);
         }
-        s << "queue !";
+        s << " queue !";
 
         if (m_enable_software_video_decoder) {
             qDebug() << "Forcing software decoder";
-            s << "h264parse !";
-            s << "avdec_h264 !";
+            s << " h264parse !";
+            s << " avdec_h264 !";
         } else {
             qDebug() << "Using hardware decoder, fallback to software if unavailable";
             if (m_video_h264 == true ){
-                s << "h264parse !";
-        } else {
+                s << " h264parse !";
+            } else {
                 s << " h265parse !";
-        }
+            }
             #if defined(__rasp_pi__)
-                s << "omxh264dec !";
+                s << " omxh264dec !";
             #else
                 if (m_video_h264 == true ){
-                        s << "decodebin3 !";
+                        s << " decodebin3 !";
                 } else {
-                        s << " nvv4l2decoder ! ";
-        } else {
-            s << QString("udpsrc port=%1 timeout=1000000000 !").arg(m_video_port);
-        }
-        s << "queue !";
-
-        if (m_enable_software_video_decoder) {
-            qDebug() << "Forcing software decoder";
-            s << "h264parse !";
-            s << "avdec_h264 !";
-        } else {
-            qDebug() << "Using hardware decoder, fallback to software if unavailable";
-            if (m_video_h264 == true ){
-                s << "h264parse !";
-        } else {
-                s << " h265parse !";
-        }
-            #if defined(__rasp_pi__)
-                s << "omxh264dec !";
-            #else
-                if (m_video_h264 == true ){
-                        s << "decodebin3 !";
-                } else {
-                        s << " nvv4l2decoder ! ";
+                        s << " omxh265dec !";
                 }
             #endif
         }
     }
-    s << "queue !";
-    if (m_video_h264 == true ){
-        s << "glupload ! glcolorconvert !";
-        s << "qmlglsink name=qmlglsink sync=false";
-    } else {
-        s << " nvoverlaysink sync=false";
-    }
+    s << " queue !";
+    s << " glupload ! glcolorconvert !";
+    s << " qmlglsink name=qmlglsink sync=false";
     m_pipeline = gst_parse_launch(pipeline->toUtf8(), &error);
     qDebug() << "GSTREAMER PIPE=" << pipeline->toUtf8();
     if (error) {
