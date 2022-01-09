@@ -222,7 +222,7 @@ iOSBuild {
     CONFIG += EnableMainVideo
     CONFIG += EnablePiP
     CONFIG += EnableVideoRender
-    #CONFIG += EnableLink
+    CONFIG += EnableLink
     #CONFIG += EnableCharts
     CONFIG += EnableADSB
     #CONFIG += EnableBlackbox
@@ -270,7 +270,7 @@ MacBuild {
     CONFIG += EnableMainVideo
     CONFIG += EnablePiP
     CONFIG += EnableVideoRender
-    #CONFIG += EnableLink
+    CONFIG += EnableLink
     #CONFIG += EnableCharts
     CONFIG += EnableADSB
     #CONFIG += EnableBlackbox
@@ -302,7 +302,7 @@ LinuxBuild {
     CONFIG += EnableMainVideo
     CONFIG += EnablePiP
     CONFIG += EnableGStreamer
-    #CONFIG += EnableLink
+    CONFIG += EnableLink
     #CONFIG += EnableCharts
     CONFIG += EnableADSB
     #CONFIG += EnableBlackbox
@@ -317,7 +317,7 @@ JetsonBuild {
     CONFIG += EnableJoysticks
     CONFIG += EnableRC
     CONFIG += EnablePiP
-    #CONFIG += EnableLink
+    CONFIG += EnableLink
     #CONFIG += EnableCharts
     CONFIG += EnableSpeech
     CONFIG += EnableADSB
@@ -345,7 +345,7 @@ RaspberryPiBuild {
     CONFIG += EnableJoysticks
     CONFIG += EnableRC
     CONFIG += EnablePiP
-    #CONFIG += EnableLink
+    CONFIG += EnableLink
     #CONFIG += EnableCharts
     CONFIG += EnableSpeech
     CONFIG += EnableADSB
@@ -379,7 +379,7 @@ WindowsBuild {
     CONFIG += EnableSpeech
     CONFIG += EnableMainVideo
     #CONFIG +- EnablePiP
-    #CONFIG += EnableLink
+    CONFIG += EnableLink
     CONFIG += EnableGStreamer
     #CONFIG += EnableCharts
     CONFIG += EnableADSB
@@ -401,7 +401,7 @@ AndroidBuild {
     CONFIG += EnableSpeech
     CONFIG += EnableMainVideo
     CONFIG += EnablePiP
-    #CONFIG += EnableLink
+    CONFIG += EnableLink
     CONFIG += EnableVideoRender
     #CONFIG += EnableCharts
     CONFIG += EnableADSB

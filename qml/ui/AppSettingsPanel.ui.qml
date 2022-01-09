@@ -2083,7 +2083,7 @@ Item {
                         visible: true
 
                         Text {
-                            text: qsTr("Enable h264 restart of app probably required")
+                            text: qsTr("Enable h264")
                             font.weight: Font.Bold
                             font.pixelSize: 13
                             anchors.leftMargin: 8
@@ -2122,7 +2122,7 @@ Item {
                         visible: true
 
                         Text {
-                            text: qsTr("Enable h265 restart of app probably required")
+                            text: qsTr("Enable h265")
                             font.weight: Font.Bold
                             font.pixelSize: 13
                             anchors.leftMargin: 8
@@ -2247,6 +2247,7 @@ Item {
                         width: parent.width
                         height: rowHeight
                         color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                        visible: false
 
                         Text {
                             text: qsTr("Background Transparent")
