@@ -864,7 +864,9 @@ void OpenHDVideoStream::_timer() {
     auto _enable_software_video_decoder = settings.value("enable_software_video_decoder", false).toBool();
     auto _enable_rtp = settings.value("enable_rtp", true).toBool();
 
-    auto _enable_lte_video = settings.value("enable_lte_video", false).toBool();   
+    auto _enable_lte_video = settings.value("enable_lte_video", false).toBool();
+
+    auto _video_h264 = settings.value("video_h264", false).toBool();
 
     auto _show_pip_video = settings.value("show_pip_video", false).toBool();
 
@@ -877,13 +879,14 @@ void OpenHDVideoStream::_timer() {
 
 
     if (m_stream_type == StreamTypeMain) {
-        if (_enable_videotest != m_enable_videotest || _enable_software_video_decoder != m_enable_software_video_decoder || _main_video_port != m_video_port || _enable_rtp != m_enable_rtp || _enable_lte_video != m_enable_lte_video) {
+        if (_enable_videotest != m_enable_videotest || _enable_software_video_decoder != m_enable_software_video_decoder || _main_video_port != m_video_port || _enable_rtp != m_enable_rtp || _enable_lte_video != m_enable_lte_video || _video_h264 != m_video_h264) {
             qDebug() << "Restarting main stream";
             stopVideo();
             m_enable_videotest = _enable_videotest;
             m_enable_software_video_decoder = _enable_software_video_decoder;            
             m_enable_rtp = _enable_rtp;
             m_enable_lte_video= _enable_lte_video;
+            m_video_h264= _video_h264;
             m_video_port = _main_video_port;
             startVideo();
         }
