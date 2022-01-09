@@ -681,6 +681,8 @@ void OpenHDVideoStream::init(QQmlApplicationEngine* engine = nullptr, enum Strea
 
     m_enable_lte_video = settings.value("enable_lte_video", false).toBool();
 
+    m_video_h264 = settings.value("video_h264", false).toBool();
+
     lastDataTimeout = QDateTime::currentMSecsSinceEpoch();
 
     QObject::connect(timer, &QTimer::timeout, this, &OpenHDVideoStream::_timer);
@@ -742,8 +744,7 @@ void OpenHDVideoStream::_start() {
     GError *error = nullptr;
 
     QSettings settings;
-    auto pipeline = new QString();
-    m_video_h264 = settings.value("video_h264", false).toBool();
+    auto pipeline = new QString();    
     QTextStream s(pipeline);
 
     if (m_enable_videotest) {
