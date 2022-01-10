@@ -35,6 +35,7 @@ public slots:
     void requested_ArmDisarm_Changed(int arm_disarm);
     void FC_Reboot_Shutdown_Changed(int reboot_shutdown);
 
+    #if defined(ENABLE_RC)
     void rc1_changed(uint rc1);
     void rc2_changed(uint rc2);
     void rc3_changed(uint rc3);
@@ -53,6 +54,7 @@ public slots:
     void rc16_changed(uint rc16);
     void rc17_changed(uint rc17);
     void rc18_changed(uint rc18);
+    #endif
 
 private slots:
     void onProcessMavlinkMessage(mavlink_message_t msg);
@@ -62,6 +64,7 @@ signals:
     void deleteMissionWaypoints();
     void addMissionWaypoint(const MissionWaypoint::WaypointInfo_t waypointInfo);
 
+    #if defined(ENABLE_RC)
     void update_RC_MavlinkBase(
                        uint rc1,
                        uint rc2,
@@ -82,6 +85,7 @@ signals:
                        uint rc17,
                        uint rc18
                                );
+    #endif
 
 private:
     bool pause_telemetry;
@@ -92,6 +96,7 @@ private:
     bool sent_autopilot_request=false;
     int ap_version=0;
 
+    #if defined(ENABLE_RC)
     uint m_rc1 = 0;
     uint m_rc2 = 0;
     uint m_rc3 = 0;
@@ -110,6 +115,7 @@ private:
     uint m_rc16 = 0;
     uint m_rc17 = 0;
     uint m_rc18 = 0;
+    #endif
 };
 
 #endif
