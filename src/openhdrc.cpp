@@ -212,12 +212,25 @@ void OpenHDRC::nameChanged(QString name) {
 void OpenHDRC::connectedJoysticksChanged() {
     qDebug() << "OpenHDRC::connectedJoysticksChanged()";
 
+    auto joystick_count=0;
+
     QJoysticks* instance = QJoysticks::getInstance();
 
     QList<QJoystickDevice*> l = instance->inputDevices();
 
     foreach(QJoystickDevice* joystick, l) {
         qDebug() << "Found joystick: " << joystick->name;
+
+        joystick_count=joystick_count+1;
+    }
+    if (joystick_count == 0){
+        qDebug() << "OpenHDRC::connectedJoysticksChanged() NO JOYSTICKS FOUND!";
+
+        set_rc1(0);
+        set_rc2(0);
+        set_rc3(0);
+        set_rc4(0);
+
     }
 }
 
@@ -395,6 +408,8 @@ void OpenHDRC::axisChanged(const int js, const int axis, const qreal value) {
 
 void OpenHDRC::connectedChanged(bool value) {
     Q_UNUSED(value)
+
+    qDebug() << "Joystick Connection Changed ";
 
     QSettings settings;
 
