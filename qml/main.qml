@@ -237,10 +237,10 @@ ApplicationWindow {
         }
 
         transform: Scale {
-            origin.x: 0
+            origin.x: 0 + (settings.stereo_osd_left_x)
             origin.y: hudOverlayGrid.height / 2
-            xScale: settings.stereo_enable ? 0.5 : 1.0
-            yScale: settings.stereo_enable ? 0.5 : 1.0
+            xScale: settings.stereo_enable ? 0.5*(settings.stereo_osd_size/100) : 1.0
+            yScale: settings.stereo_enable ? 0.5*(settings.stereo_osd_size/100) : 1.0
         }
 
         layer.enabled: true
@@ -249,10 +249,11 @@ ApplicationWindow {
 
     Rectangle {
         id: hudOverlayGridClone
-        anchors.right: parent.right
-        width: parent.width / 2
-        height: parent.height / 2
+
+        x: hudOverlayGrid.width / 2 + settings.stereo_osd_right_x
         anchors.verticalCenter: settings.stereo_enable ? parent.verticalCenter : undefined
+        width: (parent.width / 2)*(settings.stereo_osd_size/100)
+        height: (parent.height / 2)*(settings.stereo_osd_size/100)
         visible: settings.stereo_enable
         z: 3.0
         layer.enabled: settings.stereo_enable

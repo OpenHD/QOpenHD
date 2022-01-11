@@ -2244,6 +2244,166 @@ Item {
                             }
                         }                        
                     }
+
+
+                    Rectangle {
+                        width: parent.width
+                        height: rowHeight
+                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+
+                        Text {
+                            text: qsTr("Left Stereo OSD Position")
+                            font.weight: Font.Bold
+                            font.pixelSize: 13
+                            anchors.leftMargin: 8
+                            verticalAlignment: Text.AlignVCenter
+                            anchors.verticalCenter: parent.verticalCenter
+                            width: 224
+                            height: elementHeight
+                            anchors.left: parent.left
+                        }
+
+
+                        Text {
+                            text: Number(settings.stereo_osd_left_x).toLocaleString(Qt.locale(), 'f', 0) + "px";
+                            font.pixelSize: 16
+                            anchors.right: stereo_Left_X_Slider.left
+                            anchors.rightMargin: 12
+                            verticalAlignment: Text.AlignVCenter
+                            anchors.verticalCenter: parent.verticalCenter
+                            width: 32
+                            height: elementHeight
+
+                        }
+
+                        Slider {
+                            id: stereo_Left_X_Slider
+                            height: elementHeight
+                            width: 210
+                            font.pixelSize: 14
+                            anchors.right: parent.right
+                            anchors.verticalCenter: parent.verticalCenter
+                            to : 500
+                            from : -500
+                            stepSize: 25
+                            anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
+                            value: settings.stereo_osd_left_x
+
+                            // @disable-check M223
+                            onValueChanged: {
+                                // @disable-check M222
+                                settings.stereo_osd_left_x = stereo_Left_X_Slider.value
+                            }
+                        }
+                    }
+
+
+                    Rectangle {
+                        width: parent.width
+                        height: rowHeight
+                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+
+                        Text {
+                            text: qsTr("Right Stereo OSD Position")
+                            font.weight: Font.Bold
+                            font.pixelSize: 13
+                            anchors.leftMargin: 8
+                            verticalAlignment: Text.AlignVCenter
+                            anchors.verticalCenter: parent.verticalCenter
+                            width: 224
+                            height: elementHeight
+                            anchors.left: parent.left
+                        }
+
+
+                        Text {
+                            text: Number(settings.stereo_osd_right_x).toLocaleString(Qt.locale(), 'f', 0) + "px";
+                            font.pixelSize: 16
+                            anchors.right: stereo_Right_X_Slider.left
+                            anchors.rightMargin: 12
+                            verticalAlignment: Text.AlignVCenter
+                            anchors.verticalCenter: parent.verticalCenter
+                            width: 32
+                            height: elementHeight
+
+                        }
+
+                        Slider {
+                            id: stereo_Right_X_Slider
+                            height: elementHeight
+                            width: 210
+                            font.pixelSize: 14
+                            anchors.right: parent.right
+                            anchors.verticalCenter: parent.verticalCenter
+                            to : 500
+                            from : -500
+                            stepSize: 25
+                            anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
+                            value: settings.stereo_osd_right_x
+
+                            // @disable-check M223
+                            onValueChanged: {
+                                // @disable-check M222
+                                settings.stereo_osd_right_x = stereo_Right_X_Slider.value
+                            }
+                        }
+                    }
+
+
+                    Rectangle {
+                        width: parent.width
+                        height: rowHeight
+                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+
+                        Text {
+                            text: qsTr("Scale Stereo OSD")
+                            font.weight: Font.Bold
+                            font.pixelSize: 13
+                            anchors.leftMargin: 8
+                            verticalAlignment: Text.AlignVCenter
+                            anchors.verticalCenter: parent.verticalCenter
+                            width: 224
+                            height: elementHeight
+                            anchors.left: parent.left
+                        }
+
+
+                        Text {
+                            text: Number(settings.stereo_osd_size).toLocaleString(Qt.locale(), 'f', 0) + "%";
+                            font.pixelSize: 16
+                            anchors.right: stereo_Size_Slider.left
+                            anchors.rightMargin: 12
+                            verticalAlignment: Text.AlignVCenter
+                            anchors.verticalCenter: parent.verticalCenter
+                            width: 32
+                            height: elementHeight
+
+                        }
+
+                        Slider {
+                            id: stereo_Size_Slider
+                            height: elementHeight
+                            width: 210
+                            font.pixelSize: 14
+                            anchors.right: parent.right
+                            anchors.verticalCenter: parent.verticalCenter
+                            to : 100
+                            from : 50
+                            stepSize: 1
+                            anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
+                            value: settings.stereo_osd_size
+
+                            // @disable-check M223
+                            onValueChanged: {
+                                // @disable-check M222
+                                settings.stereo_osd_size = stereo_Size_Slider.value
+                            }
+                        }
+                    }
+
+
+
+
                 }
             }
         }
