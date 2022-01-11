@@ -146,6 +146,7 @@ signals:
 #if defined(ENABLE_JOYSTICKS)
     void selectedJoystickChanged(int selectedJoystick);
     void selectedJoystickNameChanged(QString selectedJoystickName);
+    void set_Joystick_Present(bool joystick_present);
 #endif
 
 
@@ -207,6 +208,7 @@ private:
     int m_selectedJoystick = -1;
     QJoystickDevice *currentJoystick = nullptr;
     QString m_selectedJoystickName;
+    bool m_joystick_present = false;
 #endif
 
 #if defined(ENABLE_SPEECH)
