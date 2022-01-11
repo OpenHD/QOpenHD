@@ -319,4 +319,7 @@ Settings {
     property bool stereo_enable: false
 
     property int stereo_mode: 0
+    property int stereo_osd_left_x: 0
+    property int stereo_osd_right_x: 0
+    property int stereo_osd_size: 0
 }
