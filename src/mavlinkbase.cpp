@@ -13,6 +13,7 @@
 #include <QFuture>
 
 #include <openhd/mavlink.h>
+#include "openhdrc.h"
 
 #include "util.h"
 #include "constants.h"
@@ -64,11 +65,11 @@ void MavlinkBase::onStarted() {
     connect(m_heartbeat_timer, &QTimer::timeout, this, &MavlinkBase::sendHeartbeat);
     m_heartbeat_timer->start(5000);
 
-    m_rc_timer = new QTimer(this);
     #if defined(ENABLE_RC)
+    m_rc_timer = new QTimer(this);        
     connect(m_rc_timer, &QTimer::timeout, this, &MavlinkBase::sendRC);
     #endif
-    m_rc_timer->start(20);
+
 
     emit setup();
 }
@@ -180,6 +181,19 @@ void MavlinkBase::sendHeartbeat() {
 }
 
 #if defined(ENABLE_RC)
+void MavlinkBase::joystick_Present_Changed(bool joystickPresent) {
+    qDebug() << "MavlinkBase::joystick_Present_Changed:"<< joystickPresent;
+    if (joystickPresent == true){
+        qDebug() << "MavlinkBase::joystick_Present_Changed: starting timer for RC msgs";
+        m_rc_timer->start(20);
+    }
+    else{
+        qDebug() << "MavlinkBase::joystick_Present_Changed: stopping timer for RC msgs";
+        m_rc_timer->stop();
+    }
+
+}
+
 void MavlinkBase::receive_RC_Update(uint rc1,uint rc2,uint rc3,uint rc4,uint rc5,uint rc6,uint rc7,uint rc8,
                                     uint rc9,uint rc10,uint rc11,uint rc12,uint rc13,uint rc14,uint rc15,uint rc16,uint rc17,uint rc18) {
 

@@ -71,6 +71,8 @@ OpenHDRC::OpenHDRC(QObject *parent): QObject(parent) {
     connect(this, &OpenHDRC::rc16_changed, mavlink, &MavlinkTelemetry::rc16_changed);
     connect(this, &OpenHDRC::rc17_changed, mavlink, &MavlinkTelemetry::rc17_changed);
     connect(this, &OpenHDRC::rc18_changed, mavlink, &MavlinkTelemetry::rc18_changed);
+
+    connect(this, &OpenHDRC::set_Joystick_Present, mavlink, &MavlinkBase::joystick_Present_Changed);
 #endif
 
     QTimer *timer = new QTimer(this);
@@ -225,12 +227,14 @@ void OpenHDRC::connectedJoysticksChanged() {
     }
     if (joystick_count == 0){
         qDebug() << "OpenHDRC::connectedJoysticksChanged() NO JOYSTICKS FOUND!";
+        m_joystick_present=false;
+        emit set_Joystick_Present(m_joystick_present);
 
-        set_rc1(0);
-        set_rc2(0);
-        set_rc3(0);
-        set_rc4(0);
-
+    }
+    else {
+        qDebug() << "OpenHDRC::connectedJoysticksChanged() At least 1 Joystick present!";
+        m_joystick_present=true;
+        emit set_Joystick_Present(m_joystick_present);
     }
 }
 

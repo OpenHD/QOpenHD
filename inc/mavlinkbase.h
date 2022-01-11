@@ -183,6 +183,7 @@ public slots:
                            uint rc17,
                            uint rc18
                            );
+    void joystick_Present_Changed(bool joystickPresent);
 #endif
 protected slots:
     void processMavlinkUDPDatagrams();
