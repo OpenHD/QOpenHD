@@ -7,8 +7,8 @@ import Qt.labs.settings 1.0
 import OpenHD 1.0
 
 Item {
-    property alias save: save
-    property alias showSavedCheckmark: savedCheckmark.visible
+    //property alias save: save
+    //property alias showSavedCheckmark: savedCheckmark.visible
     property bool isPreset: groundPiSettings.currentIndex == 0
 
     Layout.fillHeight: true
@@ -26,13 +26,6 @@ Item {
 
         TabButton {
             y: 0
-            text: qsTr("Presets")
-            width: implicitWidth
-            height: 48
-            font.pixelSize: 13
-        }
-        TabButton {
-            y: 0
             text: qsTr("General")
             width: implicitWidth
             height: 48
@@ -45,25 +38,13 @@ Item {
             font.pixelSize: 13
         }
         TabButton {
-            text: qsTr("Video")
+            text: qsTr("Camera")
             width: implicitWidth
             height: 48
             font.pixelSize: 13
         }
         TabButton {
-            text: qsTr("RC")
-            width: implicitWidth
-            height: 48
-            font.pixelSize: 13
-        }
-        TabButton {
-            text: qsTr("Hotspot")
-            width: implicitWidth
-            height: 48
-            font.pixelSize: 13
-        }
-        TabButton {
-            text: qsTr("Smart Sync")
+            text: qsTr("Ethernet")
             width: implicitWidth
             height: 48
             font.pixelSize: 13
@@ -90,12 +71,6 @@ Item {
 
         currentIndex: groundPiSettingsBar.currentIndex
 
-        GroundPiSettingsPresetView {
-            id: presetTab
-            Layout.fillHeight: true
-            Layout.fillWidth: true
-        }
-
         GroundPiSettingsListView {
             id: generalTab
             Layout.fillHeight: true
@@ -111,42 +86,26 @@ Item {
         }
 
         GroundPiSettingsListView {
-            id: videoTab
+            id: cameraTab
             Layout.fillHeight: true
             Layout.fillWidth: true
-            model: videoSettingsModel
+            model: cameraSettingsModel
         }
 
         GroundPiSettingsListView {
-            id: rcTab
+            id: ethernetTab
             Layout.fillHeight: true
             Layout.fillWidth: true
-            model: rcSettingsModel
-        }
-
-        GroundPiSettingsListView {
-            id: hotspotTab
-            model: hotspotSettingsModel
-            Layout.fillHeight: true
-            Layout.fillWidth: true
-        }
-
-        GroundPiSettingsListView {
-            id: smartSyncTab
-            model: smartSyncSettingsModel
-            Layout.fillHeight: true
-            Layout.fillWidth: true
+            model: ethernetSettingsModel
         }
 
         GroundPiSettingsListView {
             id: otherTab
-            model: otherSettingsModel
             Layout.fillHeight: true
             Layout.fillWidth: true
+            model: otherSettingsModel
         }
-
     }
-
 
     Rectangle {
         color: "#4c000000"
@@ -192,6 +151,7 @@ Item {
             }
 
             Button {
+                visible: false //button saved for later use
                 id: save
                 text: groundPiSettingsBar.currentIndex == 0 ? qsTr("Apply preset") : qsTr("Save")
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter

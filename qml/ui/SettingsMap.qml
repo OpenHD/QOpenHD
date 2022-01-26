@@ -42,7 +42,7 @@ Item {
 
     })
 
-    property var videoSettingsMap: ({
+    property var cameraSettingsMap: ({
         "BITRATE_PERCENT": {title: "Bitrate percent",
                             info: "On congested channels set lower value like 60% to avoid a delayed video stream. On free channels you may set this to a higher value like 75% to get a higher bitrate and thus image quality.",
                             itemType: "number",
@@ -483,7 +483,7 @@ Item {
                             itemType: "choice",
                             choiceValues:  [{title: "Encryption", value: "Encryption"},
                                             {title: "Range", value: "Range"}]},
-        "FREQ":            {title: "Frequency",
+        "frequency":            {title: "Frequency",
                             info: "REALTEK RTL8812/14AU cards DO NOT work with 2.4GHZ frequency. For those cards use a 5.8GHZ frequency",
                             itemType: "choice",
                             choiceValues:  [{title: "Auto", value: "auto"},
@@ -658,7 +658,7 @@ Item {
                                             falseValue: "N"},
     })
 
-    property var rcSettingsMap: ({
+    property var otherSettingsMap: ({
         "ChannelIPCamera":             {title: "Channel for camera switching",
                                         info: "This sets the RC channel that will be used to enable/disable the 2nd camera stream. If you need to configure a 2nd camera, use the Presets tab.",
                                         itemType: "number",
@@ -666,10 +666,7 @@ Item {
                                         upperLimit: 16,
                                         interval: 1,
                                         unit: ""},
-    })
 
-
-    property var smartSyncSettingsMap: ({
         "SmartSync_StartupMode":           {title: "SmartSync Startup Mode",
                                             info: "SmartSync_StartupMode=0 means air/ground will boot quickly but can trigger SmartSync with CH2 movement or GPIO# 26 Cross Connected.",
                                             itemType: "choice",
@@ -766,7 +763,7 @@ Item {
                                             {title: "5825", value: 5825}]},
     })
 
-    property var hotspotSettingsMap: ({
+    property var ethernetSettingsMap: ({
         "ETHERNET_HOTSPOT":                {title: "Enable ethernet hotspot",
                                             info: "An alternate way to connect to ground unit",
                                             itemType: "bool",

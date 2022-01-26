@@ -11,6 +11,8 @@ GroundPiSettingsPanelForm {
     property var pendingPreset: ({})
     property bool requireReboot: false
 
+/* for later use when saving settings
+
     save.onClicked: {
         requireReboot = false;
 
@@ -34,16 +36,19 @@ GroundPiSettingsPanelForm {
             showSavedCheckmark = false
         }
     }
+*/
 
     Timer {
         interval: 1000;
         running: true;
         repeat: true
         onTriggered: {
+            
+/*TODO for testing this is commented out             
             if (!openHDSettings.ground_available) {
                 return;
             }
-
+*/
             /*
              * Don't fetch settings if the drone is armed, this is an early implementation of
              * a "radio silence" feature to avoid doing any unnecessary automatic tasks that
@@ -95,28 +100,20 @@ GroundPiSettingsPanelForm {
 
     ListModel {
         dynamicRoles: true
-        id: videoSettingsModel
+        id: cameraSettingsModel
     }
 
     ListModel {
         dynamicRoles: true
-        id: rcSettingsModel
-    }
-
-    ListModel {
-        dynamicRoles: true
-        id: hotspotSettingsModel
-    }
-
-    ListModel {
-        dynamicRoles: true
-        id: smartSyncSettingsModel
+        id: ethernetSettingsModel
     }
 
     ListModel {
         dynamicRoles: true
         id: otherSettingsModel
     }
+
+/* for later use when saving settings
 
     Connections {
         target: openHDSettings
@@ -140,6 +137,7 @@ GroundPiSettingsPanelForm {
             showSavedCheckmark = true
         }
     }
+*/
 
     function configurePreset() {
         for (var setting in pendingPreset) {
@@ -151,14 +149,10 @@ GroundPiSettingsPanelForm {
                 model = generalSettingsModel;
             } else if (settingsMap.radioSettingsMap[setting] !== undefined) {
                 model = radioSettingsModel;
-            } else if (settingsMap.videoSettingsMap[setting] !== undefined) {
-                model = videoSettingsModel;
-            } else if (settingsMap.rcSettingsMap[setting] !== undefined) {
-                model = rcSettingsModel;
-            } else if (settingsMap.hotspotSettingsMap[setting] !== undefined) {
-                model = hotspotSettingsModel;
-            } else if (settingsMap.smartSyncSettingsMap[setting] !== undefined) {
-                model = smartSyncSettingsModel;
+            } else if (settingsMap.cameraSettingsMap[setting] !== undefined) {
+                model = cameraSettingsModel;
+            } else if (settingsMap.ethernetSettingsMap[setting] !== undefined) {
+                model = ethernetSettingsModel;
             } else {
                 model = otherSettingsModel;
             }
@@ -192,10 +186,8 @@ GroundPiSettingsPanelForm {
              */
             generalSettingsModel.clear();
             radioSettingsModel.clear();
-            videoSettingsModel.clear();
-            rcSettingsModel.clear();
-            hotspotSettingsModel.clear();
-            smartSyncSettingsModel.clear();
+            cameraSettingsModel.clear();
+            ethernetSettingsModel.clear();
             otherSettingsModel.clear();
 
             /*
@@ -306,14 +298,10 @@ GroundPiSettingsPanelForm {
                     _process(setting, initialValue, generalSettingsModel, settingsMap.generalSettingsMap, disabled);
                 } else if (settingsMap.radioSettingsMap[setting] !== undefined) {
                     _process(setting, initialValue, radioSettingsModel, settingsMap.radioSettingsMap, disabled);
-                } else if (settingsMap.videoSettingsMap[setting] !== undefined) {
-                    _process(setting, initialValue, videoSettingsModel, settingsMap.videoSettingsMap, disabled);
-                } else if (settingsMap.rcSettingsMap[setting] !== undefined) {
-                    _process(setting, initialValue, rcSettingsModel, settingsMap.rcSettingsMap, disabled);
-                } else if (settingsMap.hotspotSettingsMap[setting] !== undefined) {
-                    _process(setting, initialValue, hotspotSettingsModel, settingsMap.hotspotSettingsMap, disabled);
-                } else if (settingsMap.smartSyncSettingsMap[setting] !== undefined) {
-                    _process(setting, initialValue, smartSyncSettingsModel, settingsMap.smartSyncSettingsMap, disabled);
+                } else if (settingsMap.cameraSettingsMap[setting] !== undefined) {
+                    _process(setting, initialValue, cameraSettingsModel, settingsMap.cameraSettingsMap, disabled);
+                } else if (settingsMap.ethernetSettingsMap[setting] !== undefined) {
+                    _process(setting, initialValue, ethernetSettingsModel, settingsMap.ethernetSettingsMap, disabled);
                 } else {
                     /* setting not found in any mapping so add it to the "other" tab as-is, no processing
                        of any kind. This guarantees that newly added settings are never missing from the app.
@@ -404,10 +392,8 @@ GroundPiSettingsPanelForm {
         }
         _process(generalSettingsModel,   settingsMap.generalSettingsMap);
         _process(radioSettingsModel,     settingsMap.radioSettingsMap);
-        _process(videoSettingsModel,     settingsMap.videoSettingsMap);
-        _process(rcSettingsModel,        settingsMap.rcSettingsMap);
-        _process(hotspotSettingsModel,   settingsMap.hotspotSettingsMap);
-        _process(smartSyncSettingsModel, settingsMap.smartSyncSettingsMap);
+        _process(cameraSettingsModel,     settingsMap.cameraSettingsMap);
+        _process(ethernetSettingsModel,        settingsMap.ethernetSettingsMap);
 
         _process(otherSettingsModel, {});
 

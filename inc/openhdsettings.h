@@ -48,11 +48,13 @@ signals:
     void ground_available_changed(bool ground_available);
 
 public slots:
-    void processDatagrams();
+    void processLines(QString line); //might not need to be a slot
 
 private:
     void init();
     void _saveSettings(QVariantMap remoteSettings);
+
+    void fetchHelper(QString file);
 
     QUdpSocket *settingSocket = nullptr;
 
