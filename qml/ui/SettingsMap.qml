@@ -529,6 +529,43 @@ Item {
     })
 
     property var radioSettingsMap: ({
+                                        "wifi_type": {title: "Detected Type",
+                                                            info: "Discovered by OpenHD",
+                                                            itemType: "string"},
+                                        "wifi_vender": {title: "Detected Vender",
+                                                            info: "Discovered by OpenHD",
+                                                            itemType: "string"},
+                                        "wifi_name": {title: "Detected Name",
+                                                            info: "Discovered by OpenHD",
+                                                            itemType: "string"},
+                                        "wifi_mac": {title: "Detected MAC",
+                                                            info: "Discovered by OpenHD",
+                                                            itemType: "string"},
+                                        "wifi_use_for": {title: "Use For",
+                                                            info: "Discovered by OpenHD",
+                                                            itemType: "string"},
+                                        "wifi_wifi_client_ap_name": {title: "Client AP Name",
+                                                            info: "Discovered by OpenHD",
+                                                            itemType: "string"},
+                                        "wifi_wifi_client_password": {title: "Client AP Password",
+                                                            info: "Discovered by OpenHD",
+                                                            itemType: "string"},
+                                        "wifi_hotspot_channel": {title: "Hotspot Channel",
+                                                            info: "Discovered by OpenHD",
+                                                            itemType: "string"},
+                                        "wifi_hotspot_password": {title: "Hotspot Password",
+                                                            info: "Discovered by OpenHD",
+                                                            itemType: "string"},
+                                        "wifi_hotspot_band": {title: "Hotspot Band",
+                                                            info: "Discovered by OpenHD",
+                                                            itemType: "string"},
+
+
+
+
+
+
+
         "Bandwidth":       {title: "Radio bandwidth",
                             info: "For Atheros ONLY! Choose between 20mhz, 10mhz or 5mhz bandwidth at the expense of 1/4 or 1/2 of total available Datarate/Bitrate. Range can be increased significantly with 5/10mhz Narrowband",
                             itemType: "choice",
@@ -540,7 +577,7 @@ Item {
                             itemType: "choice",
                             choiceValues:  [{title: "Encryption", value: "Encryption"},
                                             {title: "Range", value: "Range"}]},
-        "frequency":            {title: "Frequency",
+        "wifi_frequency":            {title: "Frequency",
                             info: "REALTEK RTL8812/14AU cards DO NOT work with 2.4GHZ frequency. For those cards use a 5.8GHZ frequency",
                             itemType: "choice",
                             choiceValues:  [{title: "Auto", value: "auto"},
@@ -634,7 +671,7 @@ Item {
                                                {title: "19.5Mbps", value: 4},
                                                {title: "24Mbps/26Mbps (MCS)", value: 5},
                                                {title: "36Mbps/39Mbps (MCS)", value: 6}]},
-        "txpower":                         {title: "TX power",
+        "wifi_txpower":                         {title: "TX power",
                                             info: "Default is a good tested maximum. Increasing probably will not give you more range",
                                             itemType: "string"},
         "TxPowerAir":                      {title: "TX power (air)",
