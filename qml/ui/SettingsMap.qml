@@ -1,9 +1,14 @@
 import QtQuick 2.12
 
 /*
+ *
  * These are mappings for the raw settings key/value pairs provided by the ground station. We
  * give certain settings full readable titles, type information, and limits or ranges in order
  * to make them more visible and easier to deal with.
+
+ * For 2.1 we are dealing with multiple conf and template files so text is prepended to the setting string
+ * differentiate between which setting is grouped with which file. This is because some settings
+ * overlap such as "type" in the conf files
  *
  * Any settings not listed in these mappings will still end up in the "other" tab, allowing graceful
  * fallback if new settings are added on the ground station. Any settings that are *removed* from the
@@ -43,6 +48,9 @@ Item {
     })
 
     property var cameraSettingsMap: ({
+                                         "type": {title: "Detected Camera",
+                                                             info: "Discovered by OpenHD",
+                                                             itemType: "string"},
         "BITRATE_PERCENT": {title: "Bitrate percent",
                             info: "On congested channels set lower value like 60% to avoid a delayed video stream. On free channels you may set this to a higher value like 75% to get a higher bitrate and thus image quality.",
                             itemType: "number",
