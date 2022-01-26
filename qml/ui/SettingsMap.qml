@@ -48,7 +48,7 @@ Item {
     })
 
     property var cameraSettingsMap: ({
-                                         "type": {title: "Detected Camera",
+                                         "cam_type": {title: "Detected Camera",
                                                              info: "Discovered by OpenHD",
                                                              itemType: "string"},
         "BITRATE_PERCENT": {title: "Bitrate percent",
