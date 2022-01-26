@@ -134,16 +134,16 @@ void OpenHDSettings::fetchSettings() {
     loadStart = QDateTime::currentSecsSinceEpoch();
     loadTimer.start(1000);
 
-    fetchHelper("/home/pilotnbr1/Downloads/wifi.conf", "wifi_");
-    fetchHelper("/home/pilotnbr1/Downloads/camera.conf", "cam_");
-    fetchHelper("/home/pilotnbr1/Downloads/ethernet.conf", "ethenet_");
+    fetchHelper("/home/pilotnbr1/Downloads/wifi.conf", 0,"wifi_");
+    fetchHelper("/home/pilotnbr1/Downloads/camera.conf", 0,"cam_");
+    fetchHelper("/home/pilotnbr1/Downloads/ethernet.conf", 0,"ethenet_");
 
 
     emit allSettingsChanged(); // also configend=configend look into
 
 }
 
-void OpenHDSettings::fetchHelper(QString file, QString setting_prepend) {
+void OpenHDSettings::fetchHelper(QString file, int id, QString setting_prepend) {
     QFile inputFile(file);
     if (inputFile.open(QIODevice::ReadOnly))
     {
@@ -151,9 +151,19 @@ void OpenHDSettings::fetchHelper(QString file, QString setting_prepend) {
        while (!in.atEnd())
        {
           QString line = in.readLine();
+          //to keep handle multiples of hardware (wifi cards, cameras)
+          if (line.contains( "[WiFi Card]" || "[Camera]" )) {
+              id=id+1;
+          }
+
+          //find the values
           if (line.contains("=")){
-          qDebug() << "line:" << line;
-          processLines(line, setting_prepend);
+          //qDebug() << "line:" << line;
+              QString id_string = "";
+          if (id>0){
+              id_string = QString::number(id)+"_";
+          }
+          processLines(line, id_string, setting_prepend);
           }
        }
        inputFile.close();
@@ -161,7 +171,7 @@ void OpenHDSettings::fetchHelper(QString file, QString setting_prepend) {
 }
 
 
-void OpenHDSettings::processLines(QString line, QString setting_prepend) {
+void OpenHDSettings::processLines(QString line, QString id_string, QString setting_prepend) {
 
 
 
@@ -189,7 +199,7 @@ void OpenHDSettings::processLines(QString line, QString setting_prepend) {
             // ... leaving just the value remaining in the datagram
             auto val = line;
 qDebug() << "key=" << key << " val=" << val;
-            m_allSettings.insert(QString(setting_prepend+key), QVariant(val));
+            m_allSettings.insert(QString(setting_prepend+id_string+key), QVariant(val));
 
 
 }
