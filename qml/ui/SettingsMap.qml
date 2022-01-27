@@ -51,7 +51,7 @@ Item {
                                          "cam_type": {title: "Detected Type",
                                                              info: "Discovered by OpenHD",
                                                              itemType: "string"},
-                                         "cam_vender": {title: "Detected Vender",
+                                         "cam_vendor": {title: "Detected Vendor",
                                                              info: "Discovered by OpenHD",
                                                              itemType: "string"},
                                          "cam_name": {title: "Detected Name",
