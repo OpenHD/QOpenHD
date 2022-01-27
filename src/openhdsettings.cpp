@@ -136,7 +136,7 @@ void OpenHDSettings::fetchSettings() {
 
     fetchHelper("/home/pilotnbr1/Downloads/wifi.conf", 0,"wifi_");
     fetchHelper("/home/pilotnbr1/Downloads/camera.conf", 0,"cam_");
-    fetchHelper("/home/pilotnbr1/Downloads/ethernet.conf", 0,"ethenet_");
+    fetchHelper("/home/pilotnbr1/Downloads/ethernet.conf", 0,"ethernet_");
 
 
     emit allSettingsChanged(); // also configend=configend look into
@@ -151,16 +151,18 @@ void OpenHDSettings::fetchHelper(QString file, int id, QString setting_prepend) 
        while (!in.atEnd())
        {
           QString line = in.readLine();
+          qDebug() << "line:" << line;
+
           //to keep handle multiples of hardware (wifi cards, cameras)
-          if (line.contains( "[WiFi Card]" || "[Camera]" )) {
+          if (line.contains( "WiFi Card" )) {
               id=id+1;
+              qDebug() << "found a card or cam line: " << id;
           }
 
           //find the values
           if (line.contains("=")){
-          //qDebug() << "line:" << line;
               QString id_string = "";
-          if (id>0){
+          if (id>1){
               id_string = QString::number(id)+"_";
           }
           processLines(line, id_string, setting_prepend);
@@ -198,7 +200,7 @@ void OpenHDSettings::processLines(QString line, QString id_string, QString setti
             line.remove(0, split_location + 1);
             // ... leaving just the value remaining in the datagram
             auto val = line;
-qDebug() << "key=" << key << " val=" << val;
+qDebug() << "key=" << setting_prepend+id_string+key << " val=" << val;
             m_allSettings.insert(QString(setting_prepend+id_string+key), QVariant(val));
 
 
