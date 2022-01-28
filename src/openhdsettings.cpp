@@ -134,6 +134,7 @@ void OpenHDSettings::fetchSettings() {
     loadStart = QDateTime::currentSecsSinceEpoch();
     loadTimer.start(1000);
 
+    fetchHelper("/home/pilotnbr1/Downloads/general.conf", 0,"general_");
     fetchHelper("/home/pilotnbr1/Downloads/wifi.conf", 0,"wifi_");
     fetchHelper("/home/pilotnbr1/Downloads/camera.conf", 0,"cam_");
     fetchHelper("/home/pilotnbr1/Downloads/ethernet.conf", 0,"ethernet_");
