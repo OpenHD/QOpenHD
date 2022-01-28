@@ -172,6 +172,13 @@ Item {
             running: openHDSettings.loading || openHDSettings.saving
             visible: openHDSettings.loading || openHDSettings.saving
         }
+        Text {
+            id: note
+            text: "SETTINGS CHANGES ARE NOT WORKING YET..."
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.right: busyIndicator.left
+            font.pixelSize: 15
+        }
 
         Item {
             id: savedCheckmark
