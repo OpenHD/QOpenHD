@@ -200,6 +200,10 @@ GroundPiSettingsPanelForm {
              *
              */
             function _process(setting, initialValue, model, mapping, disabled) {
+                var order = mapping[setting]["order"];
+                if (order === undefined) {
+                    order = "";
+                }
                 var itemTitle = mapping[setting]["title"];
                 var itemInfo = mapping[setting]["info"];
                 if (itemInfo === undefined) {
@@ -247,7 +251,8 @@ GroundPiSettingsPanelForm {
 
                 configureWithSetting(setting, finalValue);
 
-                model.append({"title": itemTitle,
+                model.append({"order": order,
+                              "title": itemTitle,
                               "setting": setting,
                               "choiceValues": choiceValues,
                               "lowerLimit": lowerLimit,

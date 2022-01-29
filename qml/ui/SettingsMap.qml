@@ -19,13 +19,19 @@ import QtQuick 2.12
 Item {
     id: settingsMap
     property var generalSettingsMap: ({
-                                          "general_recording_storage": {title: "Recording Type",
+                                          "general_recording_storage": {
+                                              order: "A",
+                                              title: "Recording Type",
                                               info: "Discovered by OpenHD",
                                               itemType: "string"},
-                                          "general_recording_location": {title: "Recording Location",
+                                          "general_recording_location": {
+                                              order: "B",
+                                              title: "Recording Location",
                                               info: "Discovered by OpenHD",
                                               itemType: "string"},
-                                          "general_recording_trigger": {title: "Recording Trigger",
+                                          "general_recording_trigger": {
+                                              order: "C",
+                                              title: "Recording Trigger",
                                               info: "Discovered by OpenHD",
                                               itemType: "string"},
                                           "general_hotspot_video_type": {title: "Hotspot Video Distribution",
