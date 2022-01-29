@@ -170,7 +170,8 @@ Item {
             anchors.right: button_row.left
             anchors.rightMargin: 0
             running: openHDSettings.loading || openHDSettings.saving
-            visible: openHDSettings.loading || openHDSettings.saving
+            //visible: openHDSettings.loading || openHDSettings.saving
+            visible: false //button saved for later use
         }
         Text {
             id: note
