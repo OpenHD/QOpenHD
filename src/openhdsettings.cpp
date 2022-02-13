@@ -116,6 +116,17 @@ void OpenHDSettings::fetchSettings() {
     if (m_loading || m_saving) {
         return;
     }
+
+    //TODO
+    /* this is probably important to set
+          groundAddress = ip4Address.toString(); //this was from udp datagram host/sender
+
+          emit groundStationIPUpdated(groundAddress);
+
+   */
+  emit groundStationIPUpdated("127.0.0.1"); // this was made up for testing
+  set_ground_available(true);
+
     set_loading(true);
 
     qDebug() << "OpenHDSettings::fetchSettings()";
@@ -123,72 +134,76 @@ void OpenHDSettings::fetchSettings() {
     loadStart = QDateTime::currentSecsSinceEpoch();
     loadTimer.start(1000);
 
-    QByteArray r = QByteArray("RequestAllSettings");
-    QNetworkDatagram d(r);
-    settingSocket->writeDatagram(r, QHostAddress(groundAddress), SETTINGS_PORT);
+    fetchHelper("/home/pilotnbr1/Downloads/general.conf", 0,"general_");
+    fetchHelper("/home/pilotnbr1/Downloads/wifi.conf", 0,"wifi_");
+    fetchHelper("/home/pilotnbr1/Downloads/camera.conf", 0,"cam_");
+    fetchHelper("/home/pilotnbr1/Downloads/ethernet.conf", 0,"ethernet_");
+
+
+    emit allSettingsChanged(); // also configend=configend look into
+
+}
+
+void OpenHDSettings::fetchHelper(QString file, int id, QString setting_prepend) {
+    QFile inputFile(file);
+    if (inputFile.open(QIODevice::ReadOnly))
+    {
+       QTextStream in(&inputFile);
+       while (!in.atEnd())
+       {
+          QString line = in.readLine();
+          qDebug() << "line:" << line;
+
+          //to keep handle multiples of hardware (wifi cards, cameras)
+          if (line.contains( "WiFi Card" )) {
+              id=id+1;
+              qDebug() << "found a card or cam line: " << id;
+          }
+
+          //find the values
+          if (line.contains("=")){
+              QString id_string = "";
+          if (id>1){
+              id_string = QString::number(id)+"_";
+          }
+          processLines(line, id_string, setting_prepend);
+          }
+       }
+       inputFile.close();
+    }
 }
 
 
-void OpenHDSettings::processDatagrams() {
-    QByteArray datagram;
+void OpenHDSettings::processLines(QString line, QString id_string, QString setting_prepend) {
 
-    while (settingSocket->hasPendingDatagrams()) {
-        datagram.resize(int(settingSocket->pendingDatagramSize()));
 
-        QHostAddress _groundAddress;
 
-        settingSocket->readDatagram(datagram.data(), datagram.size(), &_groundAddress);
 
-        bool conversionOK = false;
-        QHostAddress ip4Address(_groundAddress.toIPv4Address(&conversionOK));
-        QString ip4String;
-        if (conversionOK) {
-            groundAddress = ip4Address.toString();
-
-            emit groundStationIPUpdated(groundAddress);
-            set_ground_available(true);
-        }
-
-        if (datagram == "ConfigRespConfigEnd=ConfigEnd") {
-            loadTimer.stop();
-            emit allSettingsChanged();
-            set_loading(false);
-        } else if (datagram.contains("SavedGround")) {
-            settingsCount -= 1;
-            if (settingsCount <= 0) {
-                set_saving(false);
-                saveTimer.stop();
-                emit savingSettingsFinished();
-            }
-        } else {
-            auto set = datagram.split('=');
+            auto set = line.split('=');
             auto key = set.first();         
             // eliminate any zero length keys coming from the server, which aren't real settings
             if (key.length() <= 0) {
                 return;
             }
 
-            // ignore non-settings messages
-            if (key.compare("GroundIP\n") == 0) {
-                continue;
-            }
+
 
             // remove ConfigResp from the beginning of each key
-            datagram.remove(0, 10);
+            //line.remove(0, 10);
             /*
              * Find the FIRST equals sign in the rest of the datagram. Everything
              * before it is the key and everything after it is the value
              */
-            auto split_location = datagram.indexOf("=");
+            auto split_location = line.indexOf("=");
             // copy just the key, without the equals sign and without altering the datagram
-            key = datagram.mid(0, split_location);
+            key = line.mid(0, split_location);
             // cut the entire key and the equals sign out of the datagram...
-            datagram.remove(0, split_location + 1);
+            line.remove(0, split_location + 1);
             // ... leaving just the value remaining in the datagram
-            auto val = datagram;
+            auto val = line;
+qDebug() << "key=" << setting_prepend+id_string+key << " val=" << val;
+            m_allSettings.insert(QString(setting_prepend+id_string+key), QVariant(val));
 
-            m_allSettings.insert(QString(key), QVariant(val));
-        }
-    }
+
 }
 
