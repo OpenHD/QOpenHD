@@ -11,7 +11,7 @@
 OpenHDSettings::OpenHDSettings(QObject *parent) : QObject(parent) {
     qDebug() << "OpenHDSettings::OpenHDSettings()";
 
-    #if defined(__rasp_pi__)
+    #if defined(__rasp_pi__)|| defined(__jetson__)
     groundAddress = "127.0.0.1";
     set_ground_available(true);
     #endif
@@ -134,10 +134,10 @@ void OpenHDSettings::fetchSettings() {
     loadStart = QDateTime::currentSecsSinceEpoch();
     loadTimer.start(1000);
 
-    fetchHelper("/home/pilotnbr1/Downloads/general.conf", 0,"general_");
-    fetchHelper("/home/pilotnbr1/Downloads/wifi.conf", 0,"wifi_");
-    fetchHelper("/home/pilotnbr1/Downloads/camera.conf", 0,"cam_");
-    fetchHelper("/home/pilotnbr1/Downloads/ethernet.conf", 0,"ethernet_");
+    fetchHelper("/conf/openhd/general.conf", 0,"general_");
+    fetchHelper("/conf/openhd/wifi.conf", 0,"wifi_");
+    fetchHelper("/conf/openhd/camera.conf", 0,"cam_");
+    fetchHelper("/conf/openhd/ethernet.conf", 0,"ethernet_");
 
 
     emit allSettingsChanged(); // also configend=configend look into

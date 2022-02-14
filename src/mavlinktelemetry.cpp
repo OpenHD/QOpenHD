@@ -44,7 +44,7 @@ MavlinkTelemetry::MavlinkTelemetry(QObject *parent): MavlinkBase(parent) {
     localPort = 14550;
 
 // FOR TESTING COMMANDS ON SITL THIS MUST BE UNCOMMENTED
-#if defined(__rasp_pi__)
+#if defined(__rasp_pi__)|| defined(__jetson__)
     groundAddress = "127.0.0.1";
 #endif
 

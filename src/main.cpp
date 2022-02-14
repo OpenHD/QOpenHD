@@ -122,7 +122,7 @@ int main(int argc, char *argv[]) {
     QCoreApplication::setApplicationName("Open.HD");
 
     auto manageSettings = new ManageSettings();
-    #if defined(__rasp_pi__)
+    #if defined(__rasp_pi__)|| defined(__jetson__)
     manageSettings->loadPiSettings();
     #endif
 
