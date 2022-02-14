@@ -31,7 +31,7 @@ void OpenHDTelemetry::onStarted() {
     qDebug() << "OpenHDTelemetry::onStarted()";
     telemetrySocket = new QUdpSocket(this);
 
-#if defined(__rasp_pi__)
+#if defined(__rasp_pi__)|| defined(__jetson__)
     telemetrySocket->bind(QHostAddress::Any, 5155);
 #else
     telemetrySocket->bind(QHostAddress::Any, 5154);

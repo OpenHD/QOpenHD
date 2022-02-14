@@ -15,7 +15,7 @@ StatusMicroservice::StatusMicroservice(QObject *parent, MicroserviceTarget targe
     targetCompID = MAV_COMP_ID_USER3;
     localPort = 14551;
 
-    #if defined(__rasp_pi__)
+    #if defined(__rasp_pi__)|| defined(__jetson__)
     groundAddress = "127.0.0.1";
     #endif
 

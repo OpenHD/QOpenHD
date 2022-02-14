@@ -387,7 +387,7 @@ ADSBSdr::ADSBSdr()
     : ADSBapi()
 {
     // we need to manage this properly
-    #if defined(__rasp_pi__)
+    #if defined(__rasp_pi__)|| defined(__jetson__)
     _groundAddress = "127.0.0.1";
     #endif
 

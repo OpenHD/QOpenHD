@@ -29,7 +29,7 @@ LinkMicroservice::LinkMicroservice(QObject *parent, MicroserviceTarget target, M
 
     localPort = 14551;
 
-    #if defined(__rasp_pi__)
+    #if defined(__rasp_pi__)|| defined(__jetson__)
     groundAddress = "127.0.0.1";
     #endif
 

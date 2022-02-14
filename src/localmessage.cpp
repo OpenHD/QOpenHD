@@ -1,7 +1,7 @@
 #include "localmessage.h"
 
 
-#if defined(__rasp_pi__)
+#if defined(__rasp_pi__)|| defined(__jetson__)
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/stat.h>

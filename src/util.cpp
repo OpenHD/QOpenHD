@@ -546,6 +546,9 @@ int OpenHDUtil::default_mavlink_sysid() {
     #if defined (__desktoplinux__)
         return 225;
     #endif
+    #if defined (__jetson__)
+        return 226;
+    #endif
 }
 
 #endif // UTIL_CPP

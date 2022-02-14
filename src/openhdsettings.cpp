@@ -11,7 +11,7 @@
 OpenHDSettings::OpenHDSettings(QObject *parent) : QObject(parent) {
     qDebug() << "OpenHDSettings::OpenHDSettings()";
 
-    #if defined(__rasp_pi__)
+    #if defined(__rasp_pi__)|| defined(__jetson__)
     groundAddress = "127.0.0.1";
     set_ground_available(true);
     #endif
