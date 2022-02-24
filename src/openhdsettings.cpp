@@ -134,7 +134,7 @@ void OpenHDSettings::fetchSettings() {
     loadStart = QDateTime::currentSecsSinceEpoch();
     loadTimer.start(1000);
 
-    fetchHelper("/conf/openhd/ground/general.conf", 0,"general_");
+    fetchHelper("/usr/local/share/openhd/general.template", 0,"general_");
     fetchHelper("/conf/openhd/ground/wifi.conf", 0,"wifi_");
     fetchHelper("/conf/openhd/ground/camera.conf", 0,"cam_");
     fetchHelper("/conf/openhd/ground/ethernet.conf", 0,"ethernet_");
