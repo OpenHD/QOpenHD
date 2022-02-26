@@ -21,6 +21,8 @@ EOF
 fi
 
 apt-get install -y gnupg
+apt-get install -y gnupg1
+apt-get install -y gnupg2
 apt-get install -y apt-transport-https curl
 curl -1sLf 'https://dl.cloudsmith.io/public/openhd/openhd-2-1/cfg/gpg/gpg.0AD501344F75A993.key' | apt-key add -
 
