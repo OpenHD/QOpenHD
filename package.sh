@@ -20,7 +20,7 @@ nameserver 8.8.4.4
 EOF
 fi
 
-sudo apt-get install -y apt-utils curl
+apt-get install -y apt-utils curl
 curl -1sLf 'https://dl.cloudsmith.io/public/openhd/openhd-2-1-testing/setup.deb.sh' | sudo -E bash && \
 curl -1sLf 'https://dl.cloudsmith.io/public/openhd/openhd-2-1/setup.deb.sh' | sudo -E bash && \
 apt update
