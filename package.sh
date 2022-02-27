@@ -25,7 +25,12 @@ apt-get install -y gnupg1
 apt-get install -y gnupg2
 apt-get install -y apt-transport-https curl
 apt-get install qt5-qmake
-apt-get install qt5-default
+if [[ "${DISTRO}" != "bullseye" ]]; then
+    apt-get install qt5-default
+fi
+if [[ "${DISTRO}" == "bullseye" ]]; then
+    apt-get install qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools
+fi
 
 curl -1sLf 'https://dl.cloudsmith.io/public/openhd/openhd-2-1-testing/setup.deb.sh' | sudo -E bash
 
