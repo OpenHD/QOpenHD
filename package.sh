@@ -20,6 +20,11 @@ nameserver 8.8.4.4
 EOF
 fi
 
+sudo apt-get install -y apt-utils curl
+curl -1sLf 'https://dl.cloudsmith.io/public/openhd/openhd-2-1-testing/setup.deb.sh' | sudo -E bash && \
+curl -1sLf 'https://dl.cloudsmith.io/public/openhd/openhd-2-1/setup.deb.sh' | sudo -E bash && \
+apt update
+
 apt-get install -y gnupg
 apt-get install -y gnupg1
 apt-get install -y gnupg2
@@ -29,16 +34,8 @@ if [[ "${DISTRO}" != "bullseye" ]]; then
     apt-get install qt5-default
 fi
 if [[ "${DISTRO}" == "bullseye" ]]; then
-    apt-get install qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools
+    apt-get install qtbase5-dev qtchooser qtbase5-dev-tools
 fi
-
-curl -1sLf 'https://dl.cloudsmith.io/public/openhd/openhd-2-1-testing/setup.deb.sh' | sudo -E bash
-
-
-echo "deb https://dl.cloudsmith.io/public/openhd/openhd-2-1-testing/deb/${OS} ${DISTRO} main" > /etc/apt/sources.list.d/openhd-2-1.list
-
-apt -y update
-
 
 if [[ "${OS}" == "raspbian" ]]; then
     PLATFORM_DEV_PACKAGES="openhd-qt"
