@@ -27,7 +27,7 @@ apt-get install -y apt-transport-https curl
 apt-get install qt5-qmake
 apt-get install qt5-default
 
-curl -1sLf 'https://dl.cloudsmith.io/public/openhd/openhd-2-1-testing/cfg/gpg/gpg.0AD501344F75A993.key' | apt-key add -
+curl -1sLf 'https://dl.cloudsmith.io/public/openhd/openhd-2-1-testing/setup.deb.sh' | sudo -E bash
 
 
 echo "deb https://dl.cloudsmith.io/public/openhd/openhd-2-1-testing/deb/${OS} ${DISTRO} main" > /etc/apt/sources.list.d/openhd-2-1.list
