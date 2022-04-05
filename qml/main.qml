@@ -23,7 +23,7 @@ ApplicationWindow {
     title: qsTr("Open.HD")
     //color: EnableMainVideo ? "black" : "#00000000"
     //color: "transparent" //Consti10 transparent background
-    color : "green"
+    color : "green" // make it green for testing
     //flags: Qt.WindowStaysOnTopHint| Qt.FramelessWindowHint| Qt.X11BypassWindowManagerHint;
     visibility: UseFullscreen ? "FullScreen" : "AutomaticVisibility"
 
