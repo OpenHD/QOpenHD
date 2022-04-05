@@ -2,7 +2,7 @@ import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
 
-import SortFilterProxyModel 0.2
+//import SortFilterProxyModel 0.2
 
 Item {
     ListView {
@@ -37,14 +37,14 @@ Item {
     }
 
 
-    SortFilterProxyModel {
+    /*SortFilterProxyModel {
         id: sortModel
         sourceModel: StatusLogModel
         sorters: RoleSorter {
             roleName: "timestamp";
             sortOrder: Qt.AscendingOrder
         }
-    }
+    }*/
 
 
     Component {

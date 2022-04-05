@@ -48,6 +48,9 @@ RCC_DIR      = $${OUT_PWD}/rcc
 #include ($$PWD/lib/SortFilterProxyModel/SortFilterProxyModel.pri)
 QT +=core
 
+# weird I have no idea what this one is for
+QT += qml
+
 # We need to include this one, needs to be explicitly installed via apt-get on Ubuntu
 QT += quick
 # Same for this one, install via apt-get
