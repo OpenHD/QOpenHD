@@ -18,9 +18,6 @@ include(platforms.pri)
 
 include(git.pri)
 
-include ($$PWD/lib/SortFilterProxyModel/SortFilterProxyModel.pri)
-
-
 CONFIG(debug, debug|release) {
     DESTDIR = $${OUT_PWD}/debug
 
@@ -45,6 +42,17 @@ RCC_DIR      = $${OUT_PWD}/rcc
 
 #QT += qml quick concurrent opengl gui
 #QT += positioning location
+
+#Not sure what exactly is going on here, but maybe this lib made it into qt official ?!!
+#since there is https://doc.qt.io/qt-5/qsortfilterproxymodel.html#details
+#include ($$PWD/lib/SortFilterProxyModel/SortFilterProxyModel.pri)
+QT +=core
+
+# We need to include this one, needs to be explicitly installed via apt-get on Ubuntu
+QT += quick
+# Same for this one, install via apt-get
+# https://doc.qt.io/qt-5/qgeocoordinate.html
+QT += positioning
 
 QT += concurrent opengl gui
 
