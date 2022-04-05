@@ -46,7 +46,9 @@ RCC_DIR      = $${OUT_PWD}/rcc
 #QT += qml quick concurrent opengl gui
 #QT += positioning location
 
-#QT_FOR_CONFIG += location-private
+QT += concurrent opengl gui
+
+QT_FOR_CONFIG += location-private
 #qtConfig(geoservices_mapboxgl): QT += sql opengl
 #qtConfig(geoservices_osm): QT += concurrent
 
