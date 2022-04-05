@@ -43,12 +43,12 @@ MOC_DIR      = $${OUT_PWD}/moc
 UI_DIR       = $${OUT_PWD}/ui
 RCC_DIR      = $${OUT_PWD}/rcc
 
-QT += qml quick concurrent opengl gui
-QT += positioning location
+#QT += qml quick concurrent opengl gui
+#QT += positioning location
 
-QT_FOR_CONFIG += location-private
-qtConfig(geoservices_mapboxgl): QT += sql opengl
-qtConfig(geoservices_osm): QT += concurrent
+#QT_FOR_CONFIG += location-private
+#qtConfig(geoservices_mapboxgl): QT += sql opengl
+#qtConfig(geoservices_osm): QT += concurrent
 
 INCLUDEPATH += $$PWD/inc
 INCLUDEPATH += $$PWD/lib
@@ -295,7 +295,7 @@ MacBuild {
 }
 
 LinuxBuild {
-    QT += x11extras
+    #QT += x11extras
     #CONFIG += EnableGamepads
     CONFIG += EnableJoysticks
     CONFIG += EnableRC
