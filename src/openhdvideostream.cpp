@@ -788,7 +788,9 @@ void OpenHDVideoStream::_start() {
                 if (m_video_h264 == true ){
                         s << " decodebin3 !";
                 } else {
-                        s << " omxh265dec !";
+                        //s << " omxh265dec !";
+                        //Consti10 - test
+                        s << " libde265dec !";
                 }
             #endif
         }
