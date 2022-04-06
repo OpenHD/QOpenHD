@@ -88,41 +88,45 @@ HEADERS += \
     inc/osd/drawingcanvas.h \
     inc/osd/flightpathvector.h \
 
+# All files for the Telemetry receiving / they should be "model's" in the mvp pattern, but not sure if any care was done
+# here in this regard
+# Aka these files should not depend on the OSD elements themselves
+SOURCES += \
+    src/telemetry/mavlinkbase.cpp \
+    src/telemetry/mavlinktelemetry.cpp \
+    src/telemetry/statuslogmodel.cpp \ # Not sure about this one
+
+HEADERS += \
+    src/telemetry/mavlinkbase.h \
+    src/telemetry/mavlinktelemetry.h \
+    src/telemetry/statuslogmodel.h \ # Not sure about this one
+
+
 # all other files, complete mess
 SOURCES += \
     src/FPS.cpp \
     src/blackboxmodel.cpp \
-    src/frskytelemetry.cpp \
     src/gpiomicroservice.cpp \
     src/linkmicroservice.cpp \
     src/localmessage.cpp \
     src/logger.cpp \
-    src/ltmtelemetry.cpp \
     src/main.cpp \
     src/managesettings.cpp \
-    src/mavlinkbase.cpp \
-    src/mavlinktelemetry.cpp \
     src/migration.cpp \
     src/missionwaypoint.cpp \
     src/missionwaypointmanager.cpp \
-    src/msptelemetry.cpp \
     src/openhd.cpp \
     src/openhdpi.cpp \
     src/openhdrc.cpp \
     src/openhdsettings.cpp \
-    src/openhdtelemetry.cpp \
     src/powermicroservice.cpp \
     src/qopenhdlink.cpp \
-    src/smartporttelemetry.cpp \
-    src/statuslogmodel.cpp \
     src/statusmicroservice.cpp \
     src/util.cpp \
-    src/vectortelemetry.cpp \
     src/QmlObjectListModel.cpp \
-    src/vroverlay.cpp
+    src/vroverlay.cpp # Disabled anyways
 
 RESOURCES += qml/qml.qrc
-
 
 HEADERS += \
     inc/FPS.h \
@@ -132,31 +136,22 @@ HEADERS += \
     inc/logger.h \
     inc/logger_t.h \
     inc/managesettings.h \
-    inc/mavlinkbase.h \
     inc/missionwaypoint.h \
     inc/missionwaypointmanager.h \
     inc/powermicroservice.h \
     inc/sharedqueue.h \
     inc/constants.h \
-    inc/frskytelemetry.h \
     inc/localmessage.h \
     inc/localmessage_t.h \
-    inc/ltmtelemetry.h \
-    inc/mavlinktelemetry.h \
     inc/migration.hpp \
-    inc/msptelemetry.h \
     inc/openhd.h \
     inc/openhdpi.h \
     inc/openhdrc.h \
     inc/openhdsettings.h \
-    inc/openhdtelemetry.h \
     inc/qopenhdlink.h \
-    inc/smartporttelemetry.h \
-    inc/statuslogmodel.h \
     inc/statusmicroservice.h \
     inc/util.h \
-    inc/vectortelemetry.h \
-    inc/vroverlay.h \
+    inc/vroverlay.h \ # Disabled anyways
     inc/wifibroadcast.h \
     inc/QmlObjectListModel.h
 

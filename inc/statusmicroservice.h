@@ -11,9 +11,9 @@
 
 #include "util.h"
 
-#include "mavlinkbase.h"
+#include "../../inc/telemetry/mavlinkbase.h"
 
-#include "statuslogmodel.h"
+#include "../../inc/telemetry/statuslogmodel.h"
 
 class QUdpSocket;
 

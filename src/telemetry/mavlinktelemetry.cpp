@@ -1,4 +1,4 @@
-#include "mavlinktelemetry.h"
+#include "../../inc/telemetry/mavlinktelemetry.h"
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <fcntl.h>

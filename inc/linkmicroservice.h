@@ -10,7 +10,7 @@
 
 #include "util.h"
 
-#include "mavlinkbase.h"
+#include "../../inc/telemetry/mavlinkbase.h"
 
 
 class QUdpSocket;

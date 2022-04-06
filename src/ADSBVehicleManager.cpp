@@ -11,7 +11,7 @@
 #include "localmessage.h"
 #include "logger.h"
 #include "openhd.h"
-#include "mavlinktelemetry.h"
+#include "../../inc/telemetry/mavlinktelemetry.h"
 
 #include <QDebug>
 

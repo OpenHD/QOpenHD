@@ -1,4 +1,4 @@
-#include "statuslogmodel.h"
+#include "../../inc/telemetry/statuslogmodel.h"
 
 
 static StatusLogModel* _instance = nullptr;
