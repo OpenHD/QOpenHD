@@ -16,7 +16,6 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "constants.h"
 
 #include "migration.hpp"
-#include "openhdtelemetry.h"
 #include "openhdrc.h"
 #include "openhdsettings.h"
 #include "openhdpi.h"
@@ -27,12 +26,6 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 //#if defined(ENABLE_LOG)
 #include "logger.h"
 //#endif
-
-#include "frskytelemetry.h"
-#include "msptelemetry.h"
-#include "ltmtelemetry.h"
-#include "vectortelemetry.h"
-#include "smartporttelemetry.h"
 
 #include "qopenhdlink.h"
 
@@ -235,14 +228,6 @@ int main(int argc, char *argv[]) {
     QFontDatabase::addApplicationFont(":/osdfonts/Visitor.ttf");
     QFontDatabase::addApplicationFont(":/osdfonts/ZolanMonoOblique.ttf");
 
-
-
-    qmlRegisterType<FrSkyTelemetry>("OpenHD", 1, 0, "FrSkyTelemetry");
-    qmlRegisterType<MSPTelemetry>("OpenHD", 1, 0, "MSPTelemetry");
-    qmlRegisterType<LTMTelemetry>("OpenHD", 1, 0, "LTMTelemetry");
-    qmlRegisterType<VectorTelemetry>("OpenHD", 1, 0, "VectorTelemetry");
-    qmlRegisterType<SmartportTelemetry>("OpenHD", 1, 0, "SmartportTelemetry");
-
     qmlRegisterType<OpenHDRC>("OpenHD", 1, 0, "OpenHDRC");
 
     qmlRegisterSingletonType<OpenHDPi>("OpenHD", 1, 0, "OpenHDPi", openHDPiSingletonProvider);
@@ -400,15 +385,6 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
     QObject::connect(openHDSettings, &OpenHDSettings::groundStationIPUpdated, mavlinkTelemetry, &MavlinkTelemetry::setGroundIP, Qt::QueuedConnection);
     mavlinkThread->start();
 
-
-    auto openhdTelemetry = OpenHDTelemetry::instance();
-    engine.rootContext()->setContextProperty("OpenHDTelemetry", openhdTelemetry);
-    //QThread *telemetryThread = new QThread();
-    //telemetryThread->setObjectName("openhdTelemetryThread");
-    //QObject::connect(telemetryThread, &QThread::started, openhdTelemetry, &OpenHDTelemetry::onStarted);
-    //openhdTelemetry->moveToThread(telemetryThread);
-    //telemetryThread->start();
-    openhdTelemetry->onStarted();
 
     auto airGPIOMicroservice = new GPIOMicroservice(nullptr, MicroserviceTargetAir, MavlinkTypeTCP);
     engine.rootContext()->setContextProperty("AirGPIOMicroservice", airGPIOMicroservice);
