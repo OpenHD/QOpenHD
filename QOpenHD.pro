@@ -103,7 +103,6 @@ SOURCES += \
 SOURCES += \
     app/FPS.cpp \
     app/blackboxmodel.cpp \
-    app/linkmicroservice.cpp \
     app/localmessage.cpp \
     app/logger.cpp \
     app/main.cpp \
@@ -114,10 +113,8 @@ SOURCES += \
     app/openhdpi.cpp \
     app/openhdrc.cpp \
     app/openhdsettings.cpp \
-    app/powermicroservice.cpp \
     app/qopenhdlink.cpp \
     app/statuslogmodel.cpp \
-    app/statusmicroservice.cpp \
     app/util.cpp \
     app/QmlObjectListModel.cpp \
     app/vroverlay.cpp
@@ -128,13 +125,11 @@ RESOURCES += qml/qml.qrc
 HEADERS += \
     app/FPS.h \
     app/blackboxmodel.h \
-    app/linkmicroservice.h \
     app/logger.h \
     app/logger_t.h \
     app/managesettings.h \
     app/osd_extra/missionwaypoint.h \
     app/osd_extra/missionwaypointmanager.h \
-    app/powermicroservice.h \
     app/sharedqueue.h \
     app/localmessage.h \
     app/localmessage_t.h \
@@ -144,7 +139,6 @@ HEADERS += \
     app/openhdsettings.h \
     app/qopenhdlink.h \
     app/statuslogmodel.h \
-    app/statusmicroservice.h \
     app/util.h \
     app/vroverlay.h \
     app/QmlObjectListModel.h
