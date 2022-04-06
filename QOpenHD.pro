@@ -489,12 +489,12 @@ EnableADSB {
     DEFINES += ENABLE_ADSB
 
     SOURCES += \
-    src/ADSBVehicleManager.cpp \
-    src/ADSBVehicle.cpp
+    app/adsb/ADSBVehicleManager.cpp \
+    app/adsb/ADSBVehicle.cpp
     
     HEADERS += \
-    inc/ADSBVehicleManager.h \
-    inc/ADSBVehicle.h
+    app/adsb/ADSBVehicleManager.h \
+    app/adsb/ADSBVehicle.h
 
 }
 
