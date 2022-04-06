@@ -60,12 +60,12 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "blackboxmodel.h"
 #endif
 
-#include "speedladder.h"
-#include "altitudeladder.h"
-#include "headingladder.h"
-#include "horizonladder.h"
-#include "flightpathvector.h"
-#include "drawingcanvas.h"
+#include "../../inc/osd/speedladder.h"
+#include "../../inc/osd/altitudeladder.h"
+#include "../../inc/osd/headingladder.h"
+#include "../../inc/osd/horizonladder.h"
+#include "../../inc/osd/flightpathvector.h"
+#include "../../inc/osd/drawingcanvas.h"
 #include "vroverlay.h"
 
 #include "managesettings.h"

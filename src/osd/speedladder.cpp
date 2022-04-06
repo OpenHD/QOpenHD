@@ -4,7 +4,8 @@
 
 #include "openhd.h"
 
-#include "speedladder.h"
+// TDOD dirty
+#include "../../inc/osd/speedladder.h"
 
 
 SpeedLadder::SpeedLadder(QQuickItem *parent): QQuickPaintedItem(parent) {
