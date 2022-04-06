@@ -151,7 +151,6 @@ HEADERS += \
     inc/statusmicroservice.h \
     inc/util.h \
     inc/vroverlay.h \
-    inc/wifibroadcast.h \
     inc/QmlObjectListModel.h
 
 DISTFILES += \
