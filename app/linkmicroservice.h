@@ -6,7 +6,6 @@
 
 
 #include <openhd/mavlink.h>
-#include "constants.h"
 
 #include "util.h"
 

@@ -6,12 +6,11 @@
 
 
 #include <openhd/mavlink.h>
-#include "constants.h"
 
 #include "util.h"
 
 #include "mavlinkbase.h"
-#include "ADSBVehicle.h"
+#include "../adsb/ADSBVehicle.h"
 
 #include "missionwaypoint.h"
 

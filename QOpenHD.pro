@@ -101,55 +101,53 @@ SOURCES += \
 
 # all other files, complete mess
 SOURCES += \
-    src/FPS.cpp \
-    src/blackboxmodel.cpp \
-    src/linkmicroservice.cpp \
-    src/localmessage.cpp \
-    src/logger.cpp \
-    src/main.cpp \
-    src/managesettings.cpp \
-    src/migration.cpp \
-    src/missionwaypoint.cpp \
-    src/missionwaypointmanager.cpp \
-    src/openhd.cpp \
-    src/openhdpi.cpp \
-    src/openhdrc.cpp \
-    src/openhdsettings.cpp \
-    src/powermicroservice.cpp \
-    src/qopenhdlink.cpp \
-    src/statuslogmodel.cpp \
-    src/statusmicroservice.cpp \
-    src/util.cpp \
-    src/QmlObjectListModel.cpp \
-    src/vroverlay.cpp
+    app/FPS.cpp \
+    app/blackboxmodel.cpp \
+    app/linkmicroservice.cpp \
+    app/localmessage.cpp \
+    app/logger.cpp \
+    app/main.cpp \
+    app/managesettings.cpp \
+    app/osd_extra/missionwaypoint.cpp \
+    app/osd_extra/missionwaypointmanager.cpp \
+    app/openhd.cpp \
+    app/openhdpi.cpp \
+    app/openhdrc.cpp \
+    app/openhdsettings.cpp \
+    app/powermicroservice.cpp \
+    app/qopenhdlink.cpp \
+    app/statuslogmodel.cpp \
+    app/statusmicroservice.cpp \
+    app/util.cpp \
+    app/QmlObjectListModel.cpp \
+    app/vroverlay.cpp
 
 RESOURCES += qml/qml.qrc
 
 
 HEADERS += \
-    inc/FPS.h \
-    inc/blackboxmodel.h \
-    inc/linkmicroservice.h \
-    inc/logger.h \
-    inc/logger_t.h \
-    inc/managesettings.h \
-    inc/missionwaypoint.h \
-    inc/missionwaypointmanager.h \
-    inc/powermicroservice.h \
-    inc/sharedqueue.h \
-    inc/localmessage.h \
-    inc/localmessage_t.h \
-    inc/migration.hpp \
-    inc/openhd.h \
-    inc/openhdpi.h \
-    inc/openhdrc.h \
-    inc/openhdsettings.h \
-    inc/qopenhdlink.h \
-    inc/statuslogmodel.h \
-    inc/statusmicroservice.h \
-    inc/util.h \
-    inc/vroverlay.h \
-    inc/QmlObjectListModel.h
+    app/FPS.h \
+    app/blackboxmodel.h \
+    app/linkmicroservice.h \
+    app/logger.h \
+    app/logger_t.h \
+    app/managesettings.h \
+    app/osd_extra/missionwaypoint.h \
+    app/osd_extra/missionwaypointmanager.h \
+    app/powermicroservice.h \
+    app/sharedqueue.h \
+    app/localmessage.h \
+    app/localmessage_t.h \
+    app/openhd.h \
+    app/openhdpi.h \
+    app/openhdrc.h \
+    app/openhdsettings.h \
+    app/qopenhdlink.h \
+    app/statuslogmodel.h \
+    app/statusmicroservice.h \
+    app/util.h \
+    app/vroverlay.h \
+    app/QmlObjectListModel.h
 
 DISTFILES += \
     android/AndroidManifest.xml \
@@ -251,10 +249,10 @@ iOSBuild {
         QT += multimedia
 
         HEADERS += \
-            inc/openhdapplevideo.h
+            app/streaming/openhdapplevideo.h
 
         SOURCES += \
-            src/openhdapplevideo.cpp
+            app/streaming/openhdapplevideo.cpp
     }
 
     HEADERS += \
@@ -524,10 +522,10 @@ EnableGStreamer {
     DEFINES += ENABLE_GSTREAMER
 
     SOURCES += \
-        src/openhdvideostream.cpp
+        app/streaming/openhdvideostream.cpp
 
     HEADERS += \
-        inc/openhdvideostream.h
+        app/streaming/openhdvideostream.h
 
     include ($$PWD/lib/VideoStreaming/VideoStreaming.pri)
 }
@@ -538,12 +536,12 @@ EnableVideoRender {
     DEFINES += ENABLE_VIDEO_RENDER
 
     HEADERS += \
-        inc/openhdvideo.h \
-        inc/openhdrender.h
+        app/streaming/openhdvideo.h \
+        app/streaming/openhdrender.h
 
     SOURCES += \
-        src/openhdvideo.cpp \
-        src/openhdrender.cpp \
+        app/streaming/openhdvideo.cpp \
+        app/streaming/openhdrender.cpp \
         $$PWD/lib/h264/h264_bitstream_parser.cc \
         $$PWD/lib/h264/h264_common.cc \
         $$PWD/lib/h264/pps_parser.cc \

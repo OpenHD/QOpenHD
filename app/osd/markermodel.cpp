@@ -3,7 +3,6 @@
 #include <QFutureWatcher>
 #include <QFuture>
 
-#include "constants.h"
 
 #include "markermodel.h"
 #include "adsb.h"

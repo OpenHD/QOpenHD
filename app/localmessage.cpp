@@ -13,8 +13,6 @@
 #include <QFutureWatcher>
 #include <QFuture>
 
-#include "constants.h"
-
 #include "localmessage_t.h"
 
 static LocalMessage* _instance = new LocalMessage();

@@ -16,7 +16,6 @@
 #include "openhdrc.h"
 
 #include "util.h"
-#include "constants.h"
 
 /*
  * Note: this class now has several crude hacks for handling the different sysid/compid combinations

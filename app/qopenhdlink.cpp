@@ -6,8 +6,6 @@
 #include <QFutureWatcher>
 #include <QFuture>
 
-#include "constants.h"
-
 #if defined(ENABLE_LINK)
 #include <nlohmann/json.hpp>
 #endif

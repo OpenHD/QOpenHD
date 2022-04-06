@@ -2,8 +2,6 @@
 #define BLACKBOXMODEL_H
 #include <QObject>
 #include <QtQuick>
-
-#include "constants.h"
 #include "util.h"
 
 #include <QAbstractListModel>

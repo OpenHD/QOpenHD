@@ -4,8 +4,6 @@
 #include <QObject>
 #include <QtQuick>
 
-#include "constants.h"
-
 class Logger: public QObject {
     Q_OBJECT
 

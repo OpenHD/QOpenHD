@@ -9,7 +9,6 @@
 
 #include "openhdapplevideo.h"
 #include "openhdrender.h"
-#include "constants.h"
 #include "localmessage.h"
 
 #include "sharedqueue.h"

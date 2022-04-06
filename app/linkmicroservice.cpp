@@ -15,7 +15,6 @@
 #include <openhd/mavlink.h>
 
 #include "util.h"
-#include "constants.h"
 
 #include "openhd.h"
 

@@ -13,9 +13,6 @@ const QVector<QString> permissions({"android.permission.INTERNET",
                                     "android.permission.ACCESS_FINE_LOCATION"});
 #endif
 
-#include "constants.h"
-
-#include "migration.hpp"
 #include "openhdrc.h"
 #include "openhdsettings.h"
 #include "openhdpi.h"
@@ -31,8 +28,6 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 
 #include "powermicroservice.h"
 
-#include "gpiomicroservice.h"
-
 #include "linkmicroservice.h"
 
 #include "statusmicroservice.h"
@@ -40,8 +35,8 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "statuslogmodel.h"
 
 #if defined(ENABLE_ADSB)
-#include "ADSBVehicleManager.h"
-#include "ADSBVehicle.h"
+#include "../app/adsb/ADSBVehicleManager.h"
+#include "../app/adsb/ADSBVehicle.h"
 #endif
 
 #include "missionwaypointmanager.h"
@@ -73,7 +68,7 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 
 #if defined(ENABLE_GSTREAMER)
 
-#include "openhdvideostream.h"
+#include "../app/streaming/openhdvideostream.h"
 
 #endif
 
@@ -128,8 +123,6 @@ int main(int argc, char *argv[]) {
     qputenv("QT_SCALE_FACTOR", scaleAsQByteArray);
 
     QApplication app(argc, argv);
-
-    Migration::instance()->run();
 
     auto util = new OpenHDUtil;
 
@@ -384,53 +377,6 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
     mavlinkTelemetry->moveToThread(mavlinkThread);
     QObject::connect(openHDSettings, &OpenHDSettings::groundStationIPUpdated, mavlinkTelemetry, &MavlinkTelemetry::setGroundIP, Qt::QueuedConnection);
     mavlinkThread->start();
-
-
-    auto airGPIOMicroservice = new GPIOMicroservice(nullptr, MicroserviceTargetAir, MavlinkTypeTCP);
-    engine.rootContext()->setContextProperty("AirGPIOMicroservice", airGPIOMicroservice);
-    //QThread *airGPIOThread = new QThread();
-    //airGPIOThread->setObjectName("airGPIOThread");
-    //QObject::connect(airGPIOThread, &QThread::started, airGPIOMicroservice, &GPIOMicroservice::onStarted);
-    //airGPIOMicroservice->moveToThread(airGPIOThread);
-    QObject::connect(openHDSettings, &OpenHDSettings::groundStationIPUpdated, airGPIOMicroservice, &GPIOMicroservice::setGroundIP, Qt::QueuedConnection);
-    //airGPIOThread->start();
-    airGPIOMicroservice->onStarted();
-
-    auto groundPowerMicroservice = new PowerMicroservice(nullptr, MicroserviceTargetGround, MavlinkTypeTCP);
-    engine.rootContext()->setContextProperty("GroundPowerMicroservice", groundPowerMicroservice);
-    //QThread *groundPowerThread = new QThread();
-    //groundPowerThread->setObjectName("groundPowerThread");
-    //QObject::connect(groundPowerThread, &QThread::started, groundPowerMicroservice, &PowerMicroservice::onStarted);
-    //groundPowerMicroservice->moveToThread(groundPowerThread);
-    QObject::connect(openHDSettings, &OpenHDSettings::groundStationIPUpdated, groundPowerMicroservice, &PowerMicroservice::setGroundIP, Qt::QueuedConnection);
-    //groundPowerThread->start();
-    groundPowerMicroservice->onStarted();
-
-
-    auto airPowerMicroservice = new PowerMicroservice(nullptr, MicroserviceTargetAir, MavlinkTypeTCP);
-    engine.rootContext()->setContextProperty("AirPowerMicroservice", airPowerMicroservice);
-    //QThread *airPowerThread = new QThread();
-    //QObject::connect(airPowerThread, &QThread::started, airPowerMicroservice, &PowerMicroservice::onStarted);
-    //airPowerMicroservice->moveToThread(airPowerThread);
-    QObject::connect(openHDSettings, &OpenHDSettings::groundStationIPUpdated, airPowerMicroservice, &PowerMicroservice::setGroundIP, Qt::QueuedConnection);
-    //airPowerThread->start();
-    airPowerMicroservice->onStarted();
-
-
-    auto groundStatusMicroservice = new StatusMicroservice(nullptr, MicroserviceTargetGround, MavlinkTypeTCP);
-    engine.rootContext()->setContextProperty("GroundStatusMicroservice", groundStatusMicroservice);
-    QObject::connect(openHDSettings, &OpenHDSettings::groundStationIPUpdated, groundStatusMicroservice, &StatusMicroservice::setGroundIP, Qt::QueuedConnection);
-    groundStatusMicroservice->onStarted();
-
-    auto airStatusMicroservice = new StatusMicroservice(nullptr, MicroserviceTargetAir, MavlinkTypeTCP);
-    engine.rootContext()->setContextProperty("AirStatusMicroservice", airStatusMicroservice);
-    QObject::connect(openHDSettings, &OpenHDSettings::groundStationIPUpdated, airStatusMicroservice, &StatusMicroservice::setGroundIP, Qt::QueuedConnection);
-    airStatusMicroservice->onStarted();
-
-    auto airLinkMicroservice = new LinkMicroservice(nullptr, MicroserviceTargetAir, MavlinkTypeTCP);
-    engine.rootContext()->setContextProperty("AirLinkMicroservice", airLinkMicroservice);
-    QObject::connect(openHDSettings, &OpenHDSettings::groundStationIPUpdated, airLinkMicroservice, &GPIOMicroservice::setGroundIP, Qt::QueuedConnection);
-    airLinkMicroservice->onStarted();
 
 
     auto statusLogModel = StatusLogModel::instance();

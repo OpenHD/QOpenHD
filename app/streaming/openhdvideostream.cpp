@@ -2,8 +2,6 @@
 
 #include "openhdvideostream.h"
 
-#include "constants.h"
-
 #include <QtConcurrent>
 #include <QtQuick>
 

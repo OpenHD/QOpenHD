@@ -2,8 +2,6 @@
 
 #include "openhdvideo.h"
 
-#include "constants.h"
-
 #include <QtConcurrent>
 #include <QtQuick>
 #include <QMutex>

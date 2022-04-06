@@ -183,24 +183,6 @@ ApplicationWindow {
         }
     }
 
-    Connections {
-        target: GroundStatusMicroservice
-        function onStatusMessage(sysid, message, level, timestamp) {
-            if (level <= settings.log_level) {
-                hudOverlayGrid.messageHUD.pushMessage(message, level)
-            }
-        }
-    }
-
-    Connections {
-        target: AirStatusMicroservice
-        function onStatusMessage(sysid, message, level, timestamp) {
-            if (level <= settings.log_level) {
-                hudOverlayGrid.messageHUD.pushMessage(message, level)
-            }
-        }
-    }
-
 
     // UI areas
 

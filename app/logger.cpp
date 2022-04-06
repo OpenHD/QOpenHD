@@ -13,7 +13,6 @@
 #include <QFutureWatcher>
 #include <QFuture>
 #include "localmessage.h"
-#include "constants.h"
 
 #include "logger_t.h"
 

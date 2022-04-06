@@ -4,7 +4,6 @@
 #include <QObject>
 #include <QtQuick>
 
-#include "constants.h"
 #include <nlohmann/json.hpp>
 
 
