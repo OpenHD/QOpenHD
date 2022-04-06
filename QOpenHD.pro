@@ -103,7 +103,6 @@ SOURCES += \
 SOURCES += \
     src/FPS.cpp \
     src/blackboxmodel.cpp \
-    src/gpiomicroservice.cpp \
     src/linkmicroservice.cpp \
     src/localmessage.cpp \
     src/logger.cpp \
@@ -130,7 +129,6 @@ RESOURCES += qml/qml.qrc
 HEADERS += \
     inc/FPS.h \
     inc/blackboxmodel.h \
-    inc/gpiomicroservice.h \
     inc/linkmicroservice.h \
     inc/logger.h \
     inc/logger_t.h \
