@@ -89,11 +89,14 @@ HEADERS += \
     inc/osd/flightpathvector.h \
 
 # I deleted all the "old" telemetry protocolls other than mavlink
+# and moved them into their own respective directories
 HEADERS += \
-    inc/mavlinktelemetry.h \
+    inc/telemetry/mavlinktelemetry.h \
+    inc/telemetry/mavlinkbase.h \
 
 SOURCES += \
-    src/mavlinktelemetry.cpp \
+    src/telemetry/mavlinktelemetry.cpp \
+    src/telemetry/mavlinkbase.cpp \
 
 # all other files, complete mess
 SOURCES += \
@@ -105,7 +108,6 @@ SOURCES += \
     src/logger.cpp \
     src/main.cpp \
     src/managesettings.cpp \
-    src/mavlinkbase.cpp \
     src/migration.cpp \
     src/missionwaypoint.cpp \
     src/missionwaypointmanager.cpp \
@@ -132,7 +134,6 @@ HEADERS += \
     inc/logger.h \
     inc/logger_t.h \
     inc/managesettings.h \
-    inc/mavlinkbase.h \
     inc/missionwaypoint.h \
     inc/missionwaypointmanager.h \
     inc/powermicroservice.h \
