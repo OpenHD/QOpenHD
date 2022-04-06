@@ -55,11 +55,13 @@ QT += qml
 QT += quick
 # Same for this one, install via apt-get
 # https://doc.qt.io/qt-5/qgeocoordinate.html
+# do not confuse this one with the external library from lib/GeographicLib-1.50
 QT += positioning
 
 QT += concurrent opengl gui
 
-QT_FOR_CONFIG += location-private
+# I had to remove them, they seem to be obsolete
+#QT_FOR_CONFIG += location-private
 #qtConfig(geoservices_mapboxgl): QT += sql opengl
 #qtConfig(geoservices_osm): QT += concurrent
 
@@ -69,21 +71,27 @@ INCLUDEPATH += $$PWD/lib/mavlink_generated/include/mavlink/v2.0
 
 INCLUDEPATH += $$PWD/lib/GeographicLib-1.50/include
 
-# All files for the OSD
+# All files for the OSD elements - these are QT QQuickPaintedItem's that are written in c++
 SOURCES += \
     src/osd/headingladder.cpp \
-    src/osd/horizonladder.cpp
+    src/osd/horizonladder.cpp \
+    src/osd/speedladder.cpp \
+    src/osd/altitudeladder.cpp \
 
+HEADERS += \
+    inc/osd/headingladder.h \
+    inc/osd/horizonladder.h \
+    inc/osd/speedladder.h \
+    inc/osd/altitudeladder.h \
+
+# all other files, complete mess
 SOURCES += \
     src/FPS.cpp \
-    src/altitudeladder.cpp \
     src/blackboxmodel.cpp \
     src/drawingcanvas.cpp \
     src/flightpathvector.cpp \
     src/frskytelemetry.cpp \
     src/gpiomicroservice.cpp \
-    #src/headingladder.cpp \
-    #src/horizonladder.cpp \
     src/linkmicroservice.cpp \
     src/localmessage.cpp \
     src/logger.cpp \
@@ -104,7 +112,6 @@ SOURCES += \
     src/powermicroservice.cpp \
     src/qopenhdlink.cpp \
     src/smartporttelemetry.cpp \
-    src/speedladder.cpp \
     src/statuslogmodel.cpp \
     src/statusmicroservice.cpp \
     src/util.cpp \
@@ -114,20 +121,13 @@ SOURCES += \
 
 RESOURCES += qml/qml.qrc
 
-# all for the OSD
-HEADERS += \
-    inc/osd/headingladder.h \
-    inc/osd/horizonladder.h
 
 HEADERS += \
     inc/FPS.h \
-    inc/altitudeladder.h \
     inc/blackboxmodel.h \
     inc/drawingcanvas.h \
     inc/gpiomicroservice.h \
     inc/flightpathvector.h \
-    #inc/headingladder.h \
-    #inc/horizonladder.h \
     inc/linkmicroservice.h \
     inc/logger.h \
     inc/logger_t.h \
@@ -152,7 +152,6 @@ HEADERS += \
     inc/openhdtelemetry.h \
     inc/qopenhdlink.h \
     inc/smartporttelemetry.h \
-    inc/speedladder.h \
     inc/statuslogmodel.h \
     inc/statusmicroservice.h \
     inc/util.h \
@@ -186,7 +185,7 @@ DISTFILES += \
     translations/QOpenHD_ro.ts \
     translations/QOpenHD_zh.ts
 
-
+# Not sure what stephen did here, I think the GeographicLib is manually included and build with QOpenHD
 SOURCES += \
     lib/GeographicLib-1.50/src/Accumulator.cpp \
     lib/GeographicLib-1.50/src/AlbersEqualArea.cpp \
