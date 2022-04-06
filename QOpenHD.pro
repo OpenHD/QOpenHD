@@ -67,36 +67,37 @@ QT += concurrent opengl gui
 
 INCLUDEPATH += $$PWD/inc
 INCLUDEPATH += $$PWD/lib
+INCLUDEPATH += $$PWD/app
 INCLUDEPATH += $$PWD/lib/mavlink_generated/include/mavlink/v2.0
 
 INCLUDEPATH += $$PWD/lib/GeographicLib-1.50/include
 
 # All files for the OSD elements - these are QT QQuickPaintedItem's that are written in c++
 SOURCES += \
-    src/osd/headingladder.cpp \
-    src/osd/horizonladder.cpp \
-    src/osd/speedladder.cpp \
-    src/osd/altitudeladder.cpp \
-    src/osd/drawingcanvas.cpp \
-    src/osd/flightpathvector.cpp \
+    app/osd/headingladder.cpp \
+    app/osd/horizonladder.cpp \
+    app/osd/speedladder.cpp \
+    app/osd/altitudeladder.cpp \
+    app/osd/drawingcanvas.cpp \
+    app/osd/flightpathvector.cpp \
 
 HEADERS += \
-    inc/osd/headingladder.h \
-    inc/osd/horizonladder.h \
-    inc/osd/speedladder.h \
-    inc/osd/altitudeladder.h \
-    inc/osd/drawingcanvas.h \
-    inc/osd/flightpathvector.h \
+    app/osd/headingladder.h \
+    app/osd/horizonladder.h \
+    app/osd/speedladder.h \
+    app/osd/altitudeladder.h \
+    app/osd/drawingcanvas.h \
+    app/osd/flightpathvector.h \
 
 # I deleted all the "old" telemetry protocolls other than mavlink
 # and moved them into their own respective directories
 HEADERS += \
-    inc/telemetry/mavlinktelemetry.h \
-    inc/telemetry/mavlinkbase.h \
+    app/telemetry/mavlinktelemetry.h \
+    app/telemetry/mavlinkbase.h \
 
 SOURCES += \
-    src/telemetry/mavlinktelemetry.cpp \
-    src/telemetry/mavlinkbase.cpp \
+    app/telemetry/mavlinktelemetry.cpp \
+    app/telemetry/mavlinkbase.cpp \
 
 # all other files, complete mess
 SOURCES += \

@@ -5,7 +5,7 @@
 #include "openhd.h"
 
 // TODO dirty
-#include "../../inc/osd/headingladder.h"
+#include "headingladder.h"
 
 
 HeadingLadder::HeadingLadder(QQuickItem *parent): QQuickPaintedItem(parent) {

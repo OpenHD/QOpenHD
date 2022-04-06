@@ -20,7 +20,7 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "openhdsettings.h"
 #include "openhdpi.h"
 #include "openhd.h"
-#include "../../inc/telemetry/mavlinktelemetry.h"
+#include "../app/telemetry/mavlinktelemetry.h"
 #include "localmessage.h"
 
 //#if defined(ENABLE_LOG)
@@ -53,12 +53,12 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "blackboxmodel.h"
 #endif
 
-#include "../../inc/osd/speedladder.h"
-#include "../../inc/osd/altitudeladder.h"
-#include "../../inc/osd/headingladder.h"
-#include "../../inc/osd/horizonladder.h"
-#include "../../inc/osd/flightpathvector.h"
-#include "../../inc/osd/drawingcanvas.h"
+#include "../../app/osd/speedladder.h"
+#include "../../app/osd/altitudeladder.h"
+#include "../../app/osd/headingladder.h"
+#include "../../app/osd/horizonladder.h"
+#include "../../app/osd/flightpathvector.h"
+#include "../../app/osd/drawingcanvas.h"
 #include "vroverlay.h"
 
 #include "managesettings.h"

@@ -5,7 +5,7 @@
 #include "openhd.h"
 
 // TODO dirty
-#include "../../inc/osd/altitudeladder.h"
+#include "altitudeladder.h"
 
 
 AltitudeLadder::AltitudeLadder(QQuickItem *parent): QQuickPaintedItem(parent) {

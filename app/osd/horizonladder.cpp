@@ -5,7 +5,7 @@
 #include "openhd.h"
 
 // TODO dirty
-#include "../../inc/osd/horizonladder.h"
+#include "horizonladder.h"
 
 
 HorizonLadder::HorizonLadder(QQuickItem *parent): QQuickPaintedItem(parent) {

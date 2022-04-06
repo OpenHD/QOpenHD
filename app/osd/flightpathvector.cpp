@@ -5,7 +5,7 @@
 #include "openhd.h"
 
 // TODO dirty
-#include "../../inc/osd/flightpathvector.h"
+#include "flightpathvector.h"
 
 
 FlightPathVector::FlightPathVector(QQuickItem *parent): QQuickPaintedItem(parent) {

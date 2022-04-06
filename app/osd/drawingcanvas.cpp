@@ -5,7 +5,7 @@
 #include "openhd.h"
 
 //TODO dirty
-#include "../../inc/osd/drawingcanvas.h"
+#include "drawingcanvas.h"
 
 
 DrawingCanvas::DrawingCanvas(QQuickItem *parent): QQuickPaintedItem(parent) {
