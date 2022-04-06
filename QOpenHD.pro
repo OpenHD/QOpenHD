@@ -77,19 +77,21 @@ SOURCES += \
     src/osd/horizonladder.cpp \
     src/osd/speedladder.cpp \
     src/osd/altitudeladder.cpp \
+    src/osd/drawingcanvas.cpp \
+    src/osd/flightpathvector.cpp \
 
 HEADERS += \
     inc/osd/headingladder.h \
     inc/osd/horizonladder.h \
     inc/osd/speedladder.h \
     inc/osd/altitudeladder.h \
+    inc/osd/drawingcanvas.h \
+    inc/osd/flightpathvector.h \
 
 # all other files, complete mess
 SOURCES += \
     src/FPS.cpp \
     src/blackboxmodel.cpp \
-    src/drawingcanvas.cpp \
-    src/flightpathvector.cpp \
     src/frskytelemetry.cpp \
     src/gpiomicroservice.cpp \
     src/linkmicroservice.cpp \
@@ -125,9 +127,7 @@ RESOURCES += qml/qml.qrc
 HEADERS += \
     inc/FPS.h \
     inc/blackboxmodel.h \
-    inc/drawingcanvas.h \
     inc/gpiomicroservice.h \
-    inc/flightpathvector.h \
     inc/linkmicroservice.h \
     inc/logger.h \
     inc/logger_t.h \
