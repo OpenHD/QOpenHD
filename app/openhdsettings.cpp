@@ -4,7 +4,7 @@
 #include <QThread>
 #include <QtConcurrent>
 
-#include "localmessage.h"
+#include "util/localmessage.h"
 
 #define SETTINGS_PORT 1011
 

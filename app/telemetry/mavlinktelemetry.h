@@ -7,12 +7,12 @@
 
 #include <openhd/mavlink.h>
 
-#include "util.h"
+#include "../util/util.h"
 
 #include "mavlinkbase.h"
 #include "../adsb/ADSBVehicle.h"
 
-#include "missionwaypoint.h"
+#include "../osd_extra/missionwaypoint.h"
 
 
 class QUdpSocket;

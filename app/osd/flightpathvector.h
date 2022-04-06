@@ -2,7 +2,6 @@
 #include <QQuickPaintedItem>
 #include <QPainter>
 
-//#include "openhd.h"
 
 class FlightPathVector : public QQuickPaintedItem {
     Q_OBJECT

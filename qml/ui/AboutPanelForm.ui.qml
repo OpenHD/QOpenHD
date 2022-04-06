@@ -109,7 +109,7 @@ Rectangle {
                 }
 
                 Text {
-                    text: AirStatusMicroservice.openHDVersion
+                    text: qsTr("Dummy")
                     anchors.left: airVersionID.right
                     anchors.horizontalCenter: airVersionID.horizontalCenter
                     height: 24
@@ -138,7 +138,7 @@ Rectangle {
                 }
 
                 Text {
-                    text: GroundStatusMicroservice.openHDVersion
+                    text: qsTr("Dummy")
                     anchors.left: groundVersionID.right
                     anchors.horizontalCenter: groundVersionID.horizontalCenter
                     height: 24

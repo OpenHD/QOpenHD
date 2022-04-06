@@ -12,7 +12,7 @@
 #include <QtConcurrent>
 #include <QFutureWatcher>
 #include <QFuture>
-#include "localmessage.h"
+#include "util/localmessage.h"
 
 #include "logger_t.h"
 

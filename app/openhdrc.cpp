@@ -1,7 +1,7 @@
 #include <QtNetwork>
 
 #include "openhdrc.h"
-#include "util.h"
+#include "util/util.h"
 
 #if defined(ENABLE_GAMEPADS)
 #include <QGamepad>

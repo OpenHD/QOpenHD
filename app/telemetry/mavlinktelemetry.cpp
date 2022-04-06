@@ -14,12 +14,11 @@
 
 #include <openhd/mavlink.h>
 
-#include "util.h"
+#include "../util/util.h"
 
 #include "openhd.h"
-#include "powermicroservice.h"
 
-#include "localmessage.h"
+#include "../util/localmessage.h"
 
 static MavlinkTelemetry* _instance = nullptr;
 

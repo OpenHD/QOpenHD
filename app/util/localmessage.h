@@ -4,6 +4,10 @@
 #include <QObject>
 #include <QtQuick>
 
+/**
+ * @brief Consti10 - This class allows the developer to easily log messages that are created during the run time
+ * of QOpenHD to be logged into the QOpenHD View itself - aka you can then find them in the messages view
+ */
 class LocalMessage: public QObject {
     Q_OBJECT
 

@@ -18,19 +18,13 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "openhdpi.h"
 #include "openhd.h"
 #include "../app/telemetry/mavlinktelemetry.h"
-#include "localmessage.h"
+#include "util/localmessage.h"
 
 //#if defined(ENABLE_LOG)
 #include "logger.h"
 //#endif
 
 #include "qopenhdlink.h"
-
-#include "powermicroservice.h"
-
-#include "linkmicroservice.h"
-
-#include "statusmicroservice.h"
 
 #include "statuslogmodel.h"
 
@@ -39,8 +33,8 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "../app/adsb/ADSBVehicle.h"
 #endif
 
-#include "missionwaypointmanager.h"
-#include "missionwaypoint.h"
+#include "osd_extra/missionwaypointmanager.h"
+#include "osd_extra/missionwaypoint.h"
 
 #include "QmlObjectListModel.h"
 
@@ -48,13 +42,13 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "blackboxmodel.h"
 #endif
 
-#include "../../app/osd/speedladder.h"
-#include "../../app/osd/altitudeladder.h"
-#include "../../app/osd/headingladder.h"
-#include "../../app/osd/horizonladder.h"
-#include "../../app/osd/flightpathvector.h"
-#include "../../app/osd/drawingcanvas.h"
-#include "vroverlay.h"
+#include "osd/speedladder.h"
+#include "osd/altitudeladder.h"
+#include "osd/headingladder.h"
+#include "osd/horizonladder.h"
+#include "osd/flightpathvector.h"
+#include "osd/drawingcanvas.h"
+#include "osd/vroverlay.h"
 
 #include "managesettings.h"
 
@@ -68,7 +62,7 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 
 #if defined(ENABLE_GSTREAMER)
 
-#include "../app/streaming/openhdvideostream.h"
+#include "videostreaming/openhdvideostream.h"
 
 #endif
 
@@ -88,7 +82,7 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #endif
 #endif
 
-#include "util.h"
+#include "util/util.h"
 
 #if defined(ENABLE_GSTREAMER)
 #include <gst/gst.h>

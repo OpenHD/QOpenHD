@@ -80,14 +80,18 @@ SOURCES += \
     app/osd/altitudeladder.cpp \
     app/osd/drawingcanvas.cpp \
     app/osd/flightpathvector.cpp \
+    app/osd/vroverlay.cpp \
 
 HEADERS += \
+    app/dummy.hpp \
     app/osd/headingladder.h \
     app/osd/horizonladder.h \
     app/osd/speedladder.h \
     app/osd/altitudeladder.h \
     app/osd/drawingcanvas.h \
     app/osd/flightpathvector.h \
+    app/osd/vroverlay.h \
+
 
 # I deleted all the "old" telemetry protocolls other than mavlink
 # and moved them into their own respective directories
@@ -103,8 +107,6 @@ SOURCES += \
 SOURCES += \
     app/FPS.cpp \
     app/blackboxmodel.cpp \
-    app/localmessage.cpp \
-    app/logger.cpp \
     app/main.cpp \
     app/managesettings.cpp \
     app/osd_extra/missionwaypoint.cpp \
@@ -115,33 +117,31 @@ SOURCES += \
     app/openhdsettings.cpp \
     app/qopenhdlink.cpp \
     app/statuslogmodel.cpp \
-    app/util.cpp \
     app/QmlObjectListModel.cpp \
-    app/vroverlay.cpp
+    app/logger.cpp \
+    app/util/util.cpp \
+    app/util/localmessage.cpp \
 
 RESOURCES += qml/qml.qrc
-
 
 HEADERS += \
     app/FPS.h \
     app/blackboxmodel.h \
-    app/logger.h \
-    app/logger_t.h \
     app/managesettings.h \
     app/osd_extra/missionwaypoint.h \
     app/osd_extra/missionwaypointmanager.h \
     app/sharedqueue.h \
-    app/localmessage.h \
-    app/localmessage_t.h \
     app/openhd.h \
     app/openhdpi.h \
     app/openhdrc.h \
     app/openhdsettings.h \
     app/qopenhdlink.h \
     app/statuslogmodel.h \
-    app/util.h \
-    app/vroverlay.h \
-    app/QmlObjectListModel.h
+    app/QmlObjectListModel.h \
+    app/logger.h \
+    app/logger_t.h \
+    app/util/localmessage.h \
+    app/util/util.h \
 
 DISTFILES += \
     android/AndroidManifest.xml \
@@ -162,6 +162,7 @@ DISTFILES += \
     android/src/org/freedesktop/gstreamer/androidmedia/GstAhcCallback.java \
     android/src/org/freedesktop/gstreamer/androidmedia/GstAhsCallback.java \
     android/src/org/freedesktop/gstreamer/androidmedia/GstAmcOnFrameAvailableListener.java \
+    app/osd_extra/Readme.txt \
     inc/osd/Readme.md \
     qml/qtquickcontrols2.conf \
     qml/ui/qmldir \
@@ -243,10 +244,10 @@ iOSBuild {
         QT += multimedia
 
         HEADERS += \
-            app/streaming/openhdapplevideo.h
+            app/videostreaming/openhdapplevideo.h
 
         SOURCES += \
-            app/streaming/openhdapplevideo.cpp
+            app/videostreaming/openhdapplevideo.cpp
     }
 
     HEADERS += \
@@ -516,10 +517,10 @@ EnableGStreamer {
     DEFINES += ENABLE_GSTREAMER
 
     SOURCES += \
-        app/streaming/openhdvideostream.cpp
+        app/videostreaming/openhdvideostream.cpp
 
     HEADERS += \
-        app/streaming/openhdvideostream.h
+        app/videostreaming/openhdvideostream.h
 
     include ($$PWD/lib/VideoStreaming/VideoStreaming.pri)
 }
@@ -530,12 +531,12 @@ EnableVideoRender {
     DEFINES += ENABLE_VIDEO_RENDER
 
     HEADERS += \
-        app/streaming/openhdvideo.h \
-        app/streaming/openhdrender.h
+        app/videostreaming/openhdvideo.h \
+        app/videostreaming/openhdrender.h
 
     SOURCES += \
-        app/streaming/openhdvideo.cpp \
-        app/streaming/openhdrender.cpp \
+        app/videostreaming/openhdvideo.cpp \
+        app/videostreaming/openhdrender.cpp \
         $$PWD/lib/h264/h264_bitstream_parser.cc \
         $$PWD/lib/h264/h264_common.cc \
         $$PWD/lib/h264/pps_parser.cc \

@@ -2,7 +2,7 @@
 #define BLACKBOXMODEL_H
 #include <QObject>
 #include <QtQuick>
-#include "util.h"
+#include "util/util.h"
 
 #include <QAbstractListModel>
 #include <QGeoCoordinate>

@@ -7,7 +7,7 @@
 
 #include <gst/gst.h>
 
-#include "localmessage.h"
+#include "../util/localmessage.h"
 
 #include "openhd.h"
 

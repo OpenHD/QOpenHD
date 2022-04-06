@@ -2,8 +2,6 @@
 #include <QQuickPaintedItem>
 #include <QPainter>
 
-//#include "openhd.h"
-
 class AltitudeLadder : public QQuickPaintedItem {
     Q_OBJECT
     Q_PROPERTY(QColor color READ color WRITE setColor NOTIFY colorChanged)

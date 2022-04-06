@@ -2,7 +2,7 @@
 
 #include "../../app/telemetry/mavlinktelemetry.h"
 //#include "openhdtelemetry.h"
-#include "localmessage.h"
+#include "util/localmessage.h"
 
 #include "blackboxmodel.h"
 

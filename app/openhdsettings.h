@@ -9,7 +9,7 @@
 #include <QVariant>
 #include <QtQuick>
 #include <QQmlPropertyMap>
-#include "util.h"
+#include "util/util.h"
 
 class QUdpSocket;
 

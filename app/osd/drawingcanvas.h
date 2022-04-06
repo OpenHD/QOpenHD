@@ -3,8 +3,6 @@
 #include <QPainter>
 #include <QSettings>
 
-//#include "openhd.h"
-
 class DrawingCanvas : public QQuickPaintedItem {
     Q_OBJECT
     Q_PROPERTY(QColor color READ color WRITE setColor NOTIFY colorChanged)

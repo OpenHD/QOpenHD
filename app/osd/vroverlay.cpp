@@ -3,7 +3,7 @@
 #include <QPainter>
 
 #include "openhd.h"
-#include "localmessage.h"
+#include "../util/localmessage.h"
 
 #include "vroverlay.h"
 

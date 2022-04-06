@@ -15,7 +15,7 @@
 #include <openhd/mavlink.h>
 #include "openhdrc.h"
 
-#include "util.h"
+#include "../util/util.h"
 
 /*
  * Note: this class now has several crude hacks for handling the different sysid/compid combinations
