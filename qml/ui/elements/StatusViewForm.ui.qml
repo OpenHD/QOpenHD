@@ -8,7 +8,7 @@ Item {
     ListView {
         id: messageList
 
-        model: sortModel
+        //model: sortModel
 
         anchors.fill: parent
 
