@@ -1,8 +1,9 @@
 #include <QQuickItem>
 #include <QQuickPaintedItem>
 #include <QPainter>
+#include <QSettings>
 
-#include "openhd.h"
+//#include "openhd.h"
 
 class DrawingCanvas : public QQuickPaintedItem {
     Q_OBJECT

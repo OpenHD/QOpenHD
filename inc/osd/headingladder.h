@@ -2,7 +2,7 @@
 #include <QQuickPaintedItem>
 #include <QPainter>
 
-#include "openhd.h"
+//#include "openhd.h"
 
 class HeadingLadder : public QQuickPaintedItem {
     Q_OBJECT
