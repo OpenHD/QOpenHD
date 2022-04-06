@@ -1,6 +1,7 @@
 #include "openhd.h"
 
-#include "../../inc/telemetry/mavlinktelemetry.h"
+#include "mavlinktelemetry.h"
+#include "openhdtelemetry.h"
 #include "localmessage.h"
 
 #include "blackboxmodel.h"
@@ -56,6 +57,8 @@ OpenHD::OpenHD(QObject *parent): QObject(parent) {
     connect(this, &OpenHD::requested_ArmDisarm_Changed, mavlink, &MavlinkTelemetry::requested_ArmDisarm_Changed);
     connect(this, &OpenHD::FC_Reboot_Shutdown_Changed, mavlink, &MavlinkTelemetry::FC_Reboot_Shutdown_Changed);
     connect(this, &OpenHD::request_Mission_Changed, mavlink, &MavlinkBase::request_Mission_Changed);
+    auto openhd = OpenHDTelemetry::instance();
+    connect(openhd, &OpenHDTelemetry::last_heartbeat_changed, this, &OpenHD::set_last_openhd_heartbeat);
 }
 
 

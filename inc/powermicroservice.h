@@ -11,8 +11,7 @@
 
 #include "util.h"
 
-// TODO dirty
-#include "../../inc/telemetry/mavlinkbase.h"
+#include "mavlinkbase.h"
 
 class QUdpSocket;
 

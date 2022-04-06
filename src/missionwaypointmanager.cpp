@@ -2,7 +2,7 @@
 #include "missionwaypointmanager.h"
 #include "localmessage.h"
 #include "openhd.h"
-#include "../../inc/telemetry/mavlinktelemetry.h"
+#include "mavlinktelemetry.h"
 
 #include <QDebug>
 

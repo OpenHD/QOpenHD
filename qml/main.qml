@@ -137,6 +137,27 @@ ApplicationWindow {
         }
     }
 
+
+    FrSkyTelemetry {
+        id: frskyTelemetry
+    }
+
+    //MSPTelemetry {
+    //    id: mspTelemetry
+    //}
+
+    SmartportTelemetry {
+        id: smartportTelemetry
+    }
+
+    LTMTelemetry {
+        id: ltmTelemetry
+    }
+
+    VectorTelemetry {
+        id: vectorTelemetry
+    }
+
     BlackBoxModel {
         id: blackBoxModel
     }
