@@ -10,7 +10,7 @@
 
 #include "util.h"
 
-#include "mavlinkbase.h"
+#include "../../inc/telemetry/mavlinkbase.h"
 #include "ADSBVehicle.h"
 
 #include "missionwaypoint.h"

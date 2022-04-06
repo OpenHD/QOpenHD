@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QtQuick>
 
-#include "mavlinkbase.h"
+#include "../../inc/telemetry/mavlinkbase.h"
 
 
 // matches struct defined in OpenHDMicroservice::StatusMicroservice

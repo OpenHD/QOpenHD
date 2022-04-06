@@ -1,6 +1,6 @@
 #include "openhd.h"
 
-#include "mavlinktelemetry.h"
+#include "../../inc/telemetry/mavlinktelemetry.h"
 //#include "openhdtelemetry.h"
 #include "localmessage.h"
 

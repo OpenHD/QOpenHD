@@ -20,7 +20,7 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "openhdsettings.h"
 #include "openhdpi.h"
 #include "openhd.h"
-#include "mavlinktelemetry.h"
+#include "../../inc/telemetry/mavlinktelemetry.h"
 #include "localmessage.h"
 
 //#if defined(ENABLE_LOG)
