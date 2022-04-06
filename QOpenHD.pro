@@ -106,7 +106,6 @@ SOURCES += \
 # all other files, complete mess
 SOURCES += \
     app/FPS.cpp \
-    app/blackboxmodel.cpp \
     app/main.cpp \
     app/managesettings.cpp \
     app/osd_extra/missionwaypoint.cpp \
@@ -126,7 +125,6 @@ RESOURCES += qml/qml.qrc
 
 HEADERS += \
     app/FPS.h \
-    app/blackboxmodel.h \
     app/managesettings.h \
     app/osd_extra/missionwaypoint.h \
     app/osd_extra/missionwaypointmanager.h \
@@ -231,7 +229,6 @@ iOSBuild {
     CONFIG += EnableLink
     #CONFIG += EnableCharts
     CONFIG += EnableADSB
-    #CONFIG += EnableBlackbox
     #CONFIG += EnableVR
     #CONFIG += EnableLog //does not work due to filepath not set
 
@@ -279,7 +276,6 @@ MacBuild {
     CONFIG += EnableLink
     #CONFIG += EnableCharts
     CONFIG += EnableADSB
-    #CONFIG += EnableBlackbox
     #CONFIG += EnableVR
     #CONFIG += EnableLog //does not work due to filepath not set
 
@@ -311,7 +307,6 @@ LinuxBuild {
     CONFIG += EnableLink
     #CONFIG += EnableCharts
     CONFIG += EnableADSB
-    #CONFIG += EnableBlackbox
     #CONFIG += EnableVR
     #CONFIG += EnableLog
     message("LinuxBuild - config")
@@ -327,7 +322,6 @@ JetsonBuild {
     #CONFIG += EnableCharts
     CONFIG += EnableSpeech
     CONFIG += EnableADSB
-    #CONFIG += EnableBlackbox
     #CONFIG += EnableVR
     #CONFIG += EnableLog //does not work due to filepath not set
     CONFIG += EnableRC
@@ -356,7 +350,6 @@ RaspberryPiBuild {
     CONFIG += EnableSpeech
     CONFIG += EnableADSB
     CONFIG += LimitADSBMax
-    #CONFIG += EnableBlackbox
     #CONFIG += EnableVR
     #CONFIG += EnableLog
     CONFIG += EnableRC
@@ -389,7 +382,6 @@ WindowsBuild {
     CONFIG += EnableGStreamer
     #CONFIG += EnableCharts
     CONFIG += EnableADSB
-    #CONFIG += EnableBlackbox
     #CONFIG += EnableVR
     #CONFIG += EnableLog
 
@@ -411,7 +403,6 @@ AndroidBuild {
     CONFIG += EnableVideoRender
     #CONFIG += EnableCharts
     CONFIG += EnableADSB
-    #CONFIG += EnableBlackbox
     #CONFIG += EnableVR
     #CONFIG += EnableLog
 
@@ -456,12 +447,6 @@ AndroidBuild {
         ANDROID_EXTRA_LIBS += $$PWD/lib/android/openssl/latest/arm/libcrypto_1_1.so \
                               $$PWD/lib/android/openssl/latest/arm/libssl_1_1.so
     #}
-}
-
-
-EnableBlackbox {
-    message("EnableBlackbox")
-    DEFINES += ENABLE_BLACKBOX
 }
 
 
