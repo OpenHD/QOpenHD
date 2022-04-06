@@ -139,7 +139,6 @@ HEADERS += \
     inc/missionwaypointmanager.h \
     inc/powermicroservice.h \
     inc/sharedqueue.h \
-    inc/constants.h \
     inc/localmessage.h \
     inc/localmessage_t.h \
     inc/migration.hpp \
