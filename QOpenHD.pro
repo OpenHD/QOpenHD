@@ -69,6 +69,10 @@ INCLUDEPATH += $$PWD/lib/mavlink_generated/include/mavlink/v2.0
 
 INCLUDEPATH += $$PWD/lib/GeographicLib-1.50/include
 
+# All files for the OSD
+SOURCES += \
+    src/osd/headingladder.cpp \
+    src/osd/horizonladder.cpp
 
 SOURCES += \
     src/FPS.cpp \
@@ -78,8 +82,8 @@ SOURCES += \
     src/flightpathvector.cpp \
     src/frskytelemetry.cpp \
     src/gpiomicroservice.cpp \
-    src/headingladder.cpp \
-    src/horizonladder.cpp \
+    #src/headingladder.cpp \
+    #src/horizonladder.cpp \
     src/linkmicroservice.cpp \
     src/localmessage.cpp \
     src/logger.cpp \
@@ -110,6 +114,11 @@ SOURCES += \
 
 RESOURCES += qml/qml.qrc
 
+# all for the OSD
+HEADERS += \
+    inc/osd/headingladder.h \
+    inc/osd/horizonladder.h
+
 HEADERS += \
     inc/FPS.h \
     inc/altitudeladder.h \
@@ -117,8 +126,8 @@ HEADERS += \
     inc/drawingcanvas.h \
     inc/gpiomicroservice.h \
     inc/flightpathvector.h \
-    inc/headingladder.h \
-    inc/horizonladder.h \
+    #inc/headingladder.h \
+    #inc/horizonladder.h \
     inc/linkmicroservice.h \
     inc/logger.h \
     inc/logger_t.h \
