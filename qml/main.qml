@@ -137,10 +137,6 @@ ApplicationWindow {
         }
     }
 
-    BlackBoxModel {
-        id: blackBoxModel
-    }
-
     Loader {
         anchors.fill: parent
         z: 1.0

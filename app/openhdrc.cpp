@@ -11,7 +11,7 @@
 #include <QJoysticks.h>
 #endif
 
-#include "../../app/telemetry/mavlinktelemetry.h"
+#include "telemetry/mavlinktelemetry.h"
 
 #define BUFLEN 21
 #define PORT 5565 // UDP port for OpenHD RC

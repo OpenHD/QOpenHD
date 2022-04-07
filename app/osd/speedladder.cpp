@@ -4,7 +4,6 @@
 
 #include "openhd.h"
 
-// TDOD dirty
 #include "speedladder.h"
 
 

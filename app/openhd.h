@@ -4,8 +4,6 @@
 #include <QObject>
 #include <QtQuick>
 
-#include "blackboxmodel.h"
-
 #if defined(ENABLE_SPEECH)
 #include <QtTextToSpeech/QTextToSpeech>
 #endif
@@ -21,9 +19,6 @@ public:
     void telemetryMessage(QString message, int level);
     void calculate_home_distance();
     void calculate_home_course();
-
-    Q_INVOKABLE void pauseBlackBox(bool pause, int index);
-    void updateBlackBoxModel();
 
     Q_INVOKABLE void set_Requested_Flight_Mode(int mode);
 
@@ -633,7 +628,6 @@ signals:
     void currentWaypointChanged (int current_waypoint);
     void totalWaypointsChanged (int total_waypoints);
 
-    void addBlackBoxObject(const BlackBox &blackbox);
     void pauseTelemetry(bool pause);
     void requested_Flight_Mode_Changed(int mode);
     void requested_ArmDisarm_Changed(int arm_disarm);
@@ -693,7 +687,7 @@ public:
 
     int m_satellites_visible = 0;
     double m_gps_hdop = 99.00;
-    unsigned int m_gps_fix_type = (unsigned int)GPS_FIX_TYPE_NO_GPS;
+    unsigned int m_gps_fix_type = (unsigned int)0;
 
     double m_roll = 0.0;
     double m_yaw = 0.0;

@@ -299,8 +299,8 @@ MacBuild {
 LinuxBuild {
     #QT += x11extras
     #CONFIG += EnableGamepads
-    CONFIG += EnableJoysticks
-    CONFIG += EnableRC
+    #CONFIG += EnableJoysticks
+    #CONFIG += EnableRC
     CONFIG += EnableMainVideo
     CONFIG += EnablePiP
     CONFIG += EnableGStreamer

@@ -1,10 +1,8 @@
 #include "openhd.h"
 
-#include "../../app/telemetry/mavlinktelemetry.h"
+#include "telemetry/mavlinktelemetry.h"
 //#include "openhdtelemetry.h"
 #include "util/localmessage.h"
-
-#include "blackboxmodel.h"
 
 #include <GeographicLib/Geodesic.hpp>
 
@@ -32,17 +30,8 @@ OpenHD::OpenHD(QObject *parent): QObject(parent) {
     set_ground_gpio({0, 0, 0, 0, 0, 0, 0, 0});
     set_air_gpio({0, 0, 0, 0, 0, 0, 0, 0});
 
-    #if defined(ENABLE_BLACKBOX)
-    auto blackBoxModel = BlackBoxModel::instance();
-    connect(this, &OpenHD::addBlackBoxObject, blackBoxModel, &BlackBoxModel::addBlackBoxObject);
-    connect(this, &OpenHD::playBlackBoxObject, blackBoxModel, &BlackBoxModel::playBlackBoxObject);
-    #endif
-
     timer = new QTimer(this);
     QObject::connect(timer, &QTimer::timeout, this, &OpenHD::updateFlightTimer);
-    #if defined(ENABLE_BLACKBOX)
-    QObject::connect(timer, &QTimer::timeout, this, &OpenHD::updateBlackBoxModel);
-    #endif
     timer->start(1000);
 
     auto mavlink = MavlinkTelemetry::instance();
@@ -262,25 +251,6 @@ void OpenHD::request_Mission(){
     emit request_Mission_Changed();
 }
 
-void OpenHD::pauseBlackBox(bool pause, int index){
-    //qDebug() << "OpenHD::pauseBlackBox";
-    m_pause_blackbox=pause;
-    emit pauseTelemetry(pause);
-    emit playBlackBoxObject(index);
-}
-
-void OpenHD::updateBlackBoxModel() {
-    if (m_pause_blackbox==false && m_armed == true){
-        //qDebug() << "updateBlackBoxModel() ";
-        emit addBlackBoxObject(BlackBox(m_flight_mode,m_flight_time,m_lat,m_lon,m_alt_msl,m_speed,
-                                        m_hdg,m_vsi,m_pitch,m_roll,m_throttle, m_control_pitch,m_control_roll,m_control_yaw,
-                                        m_control_throttle,m_current_signal_joystick_uplink,m_downlink_rssi,m_lost_packet_cnt_rc,
-                                        m_lost_packet_cnt_telemetry_up,m_skipped_packet_cnt,m_injection_fail_cnt,m_kbitrate,
-                                        m_kbitrate_measured,m_damaged_block_cnt,m_damaged_block_percent,m_lost_packet_cnt,
-                                        m_lost_packet_percent,m_cpuload_air,m_temp_air,m_battery_voltage,m_flight_mah,
-                                        m_home_distance,m_home_course,m_homelat,m_homelon,m_flight_time,m_flight_distance));
-    }
-}
 
 void OpenHD::set_boot_time(int boot_time) {
     m_boot_time = boot_time;

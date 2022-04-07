@@ -38,10 +38,6 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 
 #include "QmlObjectListModel.h"
 
-#if defined(ENABLE_BLACKBOX)
-#include "blackboxmodel.h"
-#endif
-
 #include "osd/speedladder.h"
 #include "osd/altitudeladder.h"
 #include "osd/headingladder.h"
@@ -230,8 +226,6 @@ int main(int argc, char *argv[]) {
 
     qmlRegisterUncreatableType<QmlObjectListModel>("OpenHD", 1, 0, "QmlObjectListModel", "Reference only");
 
-    qmlRegisterType<BlackBoxModel>("OpenHD", 1, 0, "BlackBoxModel");
-
     qmlRegisterType<SpeedLadder>("OpenHD", 1, 0, "SpeedLadder");
 
     qmlRegisterType<AltitudeLadder>("OpenHD", 1, 0, "AltitudeLadder");
@@ -382,15 +376,6 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
     engine.rootContext()->setContextProperty("EnableExampleWidget", QVariant(false));
     #endif
 
-    auto blackBoxModel = BlackBoxModel::instance();
-    engine.rootContext()->setContextProperty("BlackBoxModel", blackBoxModel);
-
-    #if defined(ENABLE_BLACKBOX)
-    engine.rootContext()->setContextProperty("EnableBlackbox", QVariant(true));
-    blackBoxModel->initBlackBoxModel();
-    #else
-    engine.rootContext()->setContextProperty("EnableBlackbox", QVariant(false));
-    #endif
 
     #if defined(ENABLE_VR)
     engine.rootContext()->setContextProperty("EnableVR", QVariant(true));

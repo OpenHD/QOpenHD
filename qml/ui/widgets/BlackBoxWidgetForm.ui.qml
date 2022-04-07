@@ -23,15 +23,6 @@ BaseWidget {
 
     property var count: 0
 
-    Connections {
-        target: BlackBoxModel
-        function onDataChanged() {
-            count = BlackBoxModel.rowCount()
-            blackboxmodel_count_text.text = Number(count).toLocaleString(
-                        Qt.locale(), 'f', 0)
-            blackbox_play_Slider.to = count
-        }
-    }
 
     property bool play_pause: true
     property bool telemetry_pause: false
