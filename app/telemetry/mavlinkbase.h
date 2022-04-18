@@ -9,6 +9,8 @@
 
 #include "../util/util.h"
 
+#include "OHDConnection.h"
+
 
 class QUdpSocket;
 
@@ -283,8 +285,9 @@ protected:
     uint m_rc16 = 0;
     uint m_rc17 = 0;
     uint m_rc18 = 0;
-
-
+    // ---------
+private:
+    std::unique_ptr<OHDConnection> mOHDConnection;
 };
 
 #endif

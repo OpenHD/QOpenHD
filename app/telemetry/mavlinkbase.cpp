@@ -24,11 +24,17 @@
  *
  */
 
+static constexpr auto MAVLINK_TCP_ADRESS="127.0.0.1";
+static constexpr auto MAVLINK_TCP_PORT=1234;
+
 MavlinkBase::MavlinkBase(QObject *parent,  MavlinkType mavlink_type): QObject(parent), m_ground_available(false), m_mavlink_type(mavlink_type) {
     qDebug() << "MavlinkBase::MavlinkBase()";
+    mOHDConnection=std::make_unique<OHDConnection>(nullptr,false);
 }
 
 void MavlinkBase::onStarted() {
+    /*m_mavlink_type= MavlinkTypeTCP;
+
     auto type = m_mavlink_type == MavlinkTypeTCP ? "TCP" : "UDP";
     qDebug() << "MavlinkBase::onStarted(" << type << ")";
 
@@ -47,7 +53,8 @@ void MavlinkBase::onStarted() {
             connect(mavlinkSocket, &QTcpSocket::readyRead, this, &MavlinkBase::processMavlinkTCPData);
             connect(mavlinkSocket, &QTcpSocket::connected, this, &MavlinkBase::onTCPConnected);
             connect(mavlinkSocket, &QTcpSocket::disconnected, this, &MavlinkBase::onTCPDisconnected);
-	        ((QTcpSocket*)mavlinkSocket)->connectToHost(groundAddress, groundTCPPort);
+            //((QTcpSocket*)mavlinkSocket)->connectToHost(groundAddress, groundTCPPort);
+            ((QTcpSocket*)mavlinkSocket)->connectToHost(MAVLINK_TCP_ADRESS, MAVLINK_TCP_PORT);
             tcpReconnectTimer = new QTimer(this);
             connect(tcpReconnectTimer, &QTimer::timeout, this, &MavlinkBase::reconnectTCP);
             tcpReconnectTimer->start(1000);
@@ -67,8 +74,7 @@ void MavlinkBase::onStarted() {
     #if defined(ENABLE_RC)
     m_rc_timer = new QTimer(this);        
     connect(m_rc_timer, &QTimer::timeout, this, &MavlinkBase::sendRC);
-    #endif
-
+    #endif*/
 
     emit setup();
 }
@@ -82,13 +88,14 @@ void MavlinkBase::onTCPDisconnected() {
 }
 
 void MavlinkBase::reconnectTCP() {
-    if (groundAddress.isEmpty()) {
-        return;
-    }
-
-    if (((QTcpSocket*)mavlinkSocket)->state() == QAbstractSocket::UnconnectedState) {
-        ((QTcpSocket*)mavlinkSocket)->connectToHost(groundAddress, groundTCPPort);
-    }
+    //qDebug() << "MavlinkBase::reconnectTCP- callback";
+    //if (groundAddress.isEmpty()) {
+    //    return;
+    //}
+    /*if (((QTcpSocket*)mavlinkSocket)->state() == QAbstractSocket::UnconnectedState) {
+        qDebug() << "MavlinkBase::reconnectTCP- reconnecting";
+        ((QTcpSocket*)mavlinkSocket)->connectToHost(MAVLINK_TCP_ADRESS, MAVLINK_TCP_PORT);
+    }*/
 }
 
 void MavlinkBase::setGroundIP(QString address) {
