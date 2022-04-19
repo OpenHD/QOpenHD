@@ -117,7 +117,7 @@ public:
 
     Q_INVOKABLE void fetchParameters();
 
-    void sendHeartbeat();
+    //void sendHeartbeat();
     void sendRC();
 
     Q_INVOKABLE void get_Mission_Items(int count);
@@ -140,7 +140,7 @@ public:
     void set_last_vfr(qint64 last_vfr);
 
 
-    Q_INVOKABLE void setGroundIP(QString address);   
+    //Q_INVOKABLE void setGroundIP(QString address);
 
 signals:
     void last_heartbeat_changed(qint64 last_heartbeat);
@@ -187,11 +187,11 @@ public slots:
     void joystick_Present_Changed(bool joystickPresent);
 #endif
 protected slots:
-    void processMavlinkUDPDatagrams();
-    void processMavlinkTCPData();
+    //void processMavlinkUDPDatagrams();
+    //void processMavlinkTCPData();
 
-    void onTCPDisconnected();
-    void onTCPConnected();    
+    //void onTCPDisconnected();
+    //void onTCPConnected();
 
 protected:
     void stateLoop();
@@ -237,9 +237,9 @@ protected:
 
     std::atomic<bool> m_ground_available;
     MavlinkType m_mavlink_type;
-    QAbstractSocket *mavlinkSocket = nullptr;
+    //QAbstractSocket *mavlinkSocket = nullptr;
 
-    mavlink_status_t r_mavlink_status;
+    //mavlink_status_t r_mavlink_status;
 
     qint64 m_last_heartbeat = -1;
     qint64 m_last_attitude = -1;
@@ -288,6 +288,7 @@ protected:
     // ---------
 private:
     std::unique_ptr<OHDConnection> mOHDConnection;
+    void hackProcessMavlinkMessge(mavlink_message_t msg);
 };
 
 #endif

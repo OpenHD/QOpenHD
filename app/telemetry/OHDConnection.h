@@ -5,10 +5,8 @@
 #include <QtQuick>
 //#include <QTimer>
 
-
 #include <openhd/mavlink.h>
 
-#include "../util/util.h"
 
 /**
  * @brief This is the one and only (mavlink telemetry) connection of QOpenHD to OpenHD
@@ -27,7 +25,7 @@
  *
  * If the connection to OpenHD is lost, this class should try and reconnect in intervalls until the connection has been re-established.
  *
- * NOTE: Since QOpenHD does the same, this one sends out mavlink heartbeat messages in reqular intervalls
+ * NOTE: Since QGroundControll does the same, this one sends out mavlink heartbeat messages in reqular intervalls
  */
 
 class OHDConnection : public QObject
@@ -70,9 +68,15 @@ private:
      * else, do nothing
      */
     void reconnectIfDisconnected();
+    /**
+     * @brief parseNewData parse the raw data coming from either UDP or TCP
+     */
     void parseNewData(const uint8_t* data, int data_len);
     MAV_MSG_CALLBACK callback=nullptr;
     mavlink_status_t receiveMavlinkStatus{};
+    /**
+     * @brief sendData send raw data (raw mavlink data) either via UDP or TCP
+     */
     void sendData(const uint8_t* data,int data_len);
 private:
     QTimer* reconnectTimer= nullptr;

@@ -30,6 +30,9 @@ static constexpr auto MAVLINK_TCP_PORT=1234;
 MavlinkBase::MavlinkBase(QObject *parent,  MavlinkType mavlink_type): QObject(parent), m_ground_available(false), m_mavlink_type(mavlink_type) {
     qDebug() << "MavlinkBase::MavlinkBase()";
     mOHDConnection=std::make_unique<OHDConnection>(nullptr,false);
+    mOHDConnection->registerNewMessageCalback([this](mavlink_message_t msg){
+        hackProcessMavlinkMessge(msg);
+    });
 }
 
 void MavlinkBase::onStarted() {
@@ -79,15 +82,15 @@ void MavlinkBase::onStarted() {
     emit setup();
 }
 
-void MavlinkBase::onTCPConnected() {
+/*void MavlinkBase::onTCPConnected() {
     qDebug() << "MavlinkBase::onTCPConnected()";
 }
 
 void MavlinkBase::onTCPDisconnected() {
     reconnectTCP();
-}
+}*/
 
-void MavlinkBase::reconnectTCP() {
+/*void MavlinkBase::reconnectTCP() {
     //qDebug() << "MavlinkBase::reconnectTCP- callback";
     //if (groundAddress.isEmpty()) {
     //    return;
@@ -96,9 +99,9 @@ void MavlinkBase::reconnectTCP() {
         qDebug() << "MavlinkBase::reconnectTCP- reconnecting";
         ((QTcpSocket*)mavlinkSocket)->connectToHost(MAVLINK_TCP_ADRESS, MAVLINK_TCP_PORT);
     }*/
-}
+//}
 
-void MavlinkBase::setGroundIP(QString address) {
+/*void MavlinkBase::setGroundIP(QString address) {
     if (!mavlinkSocket) {
         return;
     }
@@ -122,7 +125,7 @@ void MavlinkBase::setGroundIP(QString address) {
             }
         }
     }
-}
+}*/
 
 
 void MavlinkBase::set_loading(bool loading) {
@@ -138,7 +141,7 @@ void MavlinkBase::set_saving(bool saving) {
 
 
 void MavlinkBase::sendData(char* data, int len) {
-    switch (m_mavlink_type) {
+    /*switch (m_mavlink_type) {
         case MavlinkTypeUDP: {
             ((QUdpSocket*)mavlinkSocket)->writeDatagram((char*)data, len, QHostAddress(groundAddress), groundUDPPort);
             break;
@@ -149,7 +152,8 @@ void MavlinkBase::sendData(char* data, int len) {
             }
             break;
         }
-    }
+    }*/
+    qDebug()<<"MavlinkBase::sendData NOT IMPLEMENTED";
 }
 
 QVariantMap MavlinkBase::getAllParameters() {
@@ -172,7 +176,7 @@ void MavlinkBase::fetchParameters() {
 }
 
 
-void MavlinkBase::sendHeartbeat() {
+/*void MavlinkBase::sendHeartbeat() {
     QSettings settings;
     int mavlink_sysid = settings.value("mavlink_sysid", m_util.default_mavlink_sysid()).toInt();
 
@@ -184,7 +188,7 @@ void MavlinkBase::sendHeartbeat() {
     int len = mavlink_msg_to_send_buffer(buffer, &msg);
 
     sendData((char*)buffer, len);
-}
+}*/
 
 #if defined(ENABLE_RC)
 void MavlinkBase::joystick_Present_Changed(bool joystickPresent) {
@@ -408,7 +412,7 @@ void MavlinkBase::stateLoop() {
 }
 
 
-void MavlinkBase::processMavlinkTCPData() {
+/*void MavlinkBase::processMavlinkTCPData() {
     QByteArray data = mavlinkSocket->readAll();
     processData(data);
 }
@@ -427,10 +431,10 @@ void MavlinkBase::processMavlinkUDPDatagrams() {
         groundUDPPort = groundPort;
         processData(datagram);
     }
-}
+}*/
 
 
-void MavlinkBase::processData(QByteArray data) {
+/*void MavlinkBase::processData(QByteArray data) {
     typedef QByteArray::Iterator Iterator;
     mavlink_message_t msg;
 
@@ -440,9 +444,7 @@ void MavlinkBase::processData(QByteArray data) {
         uint8_t res = mavlink_parse_char(MAVLINK_COMM_0, (uint8_t)c, &msg, &r_mavlink_status);
 
         if (res) {
-            /*
-             * Not the target we're talking to, so reject it
-             */
+            //Not the target we're talking to, so reject it
             if (m_restrict_sysid && (msg.sysid != targetSysID)) {
                 return;
             }
@@ -471,7 +473,7 @@ void MavlinkBase::processData(QByteArray data) {
             }
         }
     }
-}
+}*/
 
 
 void MavlinkBase::set_last_heartbeat(qint64 last_heartbeat) {
@@ -617,4 +619,9 @@ void MavlinkBase::commandStateLoop() {
             break;
         }
     }
+}
+
+void MavlinkBase::hackProcessMavlinkMessge(mavlink_message_t msg){
+    qDebug()<<"MavlinkBase::hackProcessMavlinkMessge";
+    emit processMavlinkMessage(msg);
 }

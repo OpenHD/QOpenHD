@@ -359,12 +359,13 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
 
     auto mavlinkTelemetry = MavlinkTelemetry::instance();
     engine.rootContext()->setContextProperty("MavlinkTelemetry", mavlinkTelemetry);
-    QThread *mavlinkThread = new QThread();
+    /*QThread *mavlinkThread = new QThread();
     mavlinkThread->setObjectName("mavlinkTelemetryThread");
     QObject::connect(mavlinkThread, &QThread::started, mavlinkTelemetry, &MavlinkTelemetry::onStarted);
     mavlinkTelemetry->moveToThread(mavlinkThread);
-    QObject::connect(openHDSettings, &OpenHDSettings::groundStationIPUpdated, mavlinkTelemetry, &MavlinkTelemetry::setGroundIP, Qt::QueuedConnection);
-    mavlinkThread->start();
+    //QObject::connect(openHDSettings, &OpenHDSettings::groundStationIPUpdated, mavlinkTelemetry, &MavlinkTelemetry::setGroundIP, Qt::QueuedConnection);
+    mavlinkThread->start();*/
+    mavlinkTelemetry->onSetup();
 
 
     auto statusLogModel = StatusLogModel::instance();

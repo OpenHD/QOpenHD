@@ -9,7 +9,10 @@ OHDConnection::OHDConnection(QObject *parent,bool useTcp):QObject(parent),USE_TC
         connect(tcpClientSock, &QTcpSocket::disconnected, this, &OHDConnection::tcpDisconnected);
     }else{
         udpSocket = new QUdpSocket(this);
-        auto bindStatus = udpSocket->bind(QHostAddress::Any,QOPENHD_GROUND_CLIENT_UDP_PORT_IN);
+        //auto bindStatus = udpSocket->bind(QHostAddress::Any,QOPENHD_GROUND_CLIENT_UDP_PORT_IN);
+        // this is how it is done int QGroundCOntroll:
+        //  _telemetrySocket->bind(QHostAddress::LocalHost, 0, QUdpSocket::ShareAddress);
+        auto bindStatus = udpSocket->bind(QHostAddress::LocalHost,QOPENHD_GROUND_CLIENT_UDP_PORT_IN);
         if (!bindStatus) {
             qDebug() <<"Cannot bind UDP Socket";
         }
@@ -66,13 +69,13 @@ void OHDConnection::parseNewData(const uint8_t* data, int data_len){
     mavlink_message_t msg;
     for(int i=0;i<data_len;i++){
         uint8_t res = mavlink_parse_char(MAVLINK_COMM_0, (uint8_t)data[i], &msg, &receiveMavlinkStatus);
-         qDebug()<<"Got new mavlink message\n";
+        //qDebug()<<"Got new mavlink message";
         if (res) {
             if(callback!= nullptr){
-                qDebug()<<"Forwarding new mavlink message\n";
+                qDebug()<<"Forwarding new mavlink message";
                 callback(msg);
             }else{
-                qDebug()<<"OHDConnection::No callback set,did you forget to add it ?\n";
+                qDebug()<<"OHDConnection::No callback set,did you forget to add it ?";
             }
         }
     }
@@ -95,8 +98,16 @@ void OHDConnection::tcpDisconnected() {
 
 void OHDConnection::udpReadyRead() {
     qDebug() << "OHDConnection::udpReadyRead";
-    QByteArray data = udpSocket->readAll();
-    parseNewData((uint8_t*)data.data(),data.size());
+    QByteArray datagram;
+    while (udpSocket->hasPendingDatagrams()) {
+        datagram.resize(int(udpSocket->pendingDatagramSize()));
+        QHostAddress _groundAddress;
+        quint16 groundPort;
+        udpSocket->readDatagram(datagram.data(), datagram.size(), &_groundAddress, &groundPort);
+        parseNewData((uint8_t*)datagram.data(),datagram.size());
+    }
+    //QByteArray data = udpSocket->readAll();
+    //parseNewData((uint8_t*)data.data(),data.size());
 }
 
 void OHDConnection::sendData(const uint8_t* data,int data_len){
@@ -111,7 +122,7 @@ void OHDConnection::sendData(const uint8_t* data,int data_len){
 }
 
 void OHDConnection::onHeartbeat(){
-    qDebug() << "OHDConnection::onHeartbeat";
+    //qDebug() << "OHDConnection::onHeartbeat";
     mavlink_message_t msg;
     // values from QGroundControll
     mavlink_msg_heartbeat_pack(QOHD_MAVLINK_SYS_ID, 190, &msg,MAV_TYPE_GCS,            // MAV_TYPE
