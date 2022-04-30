@@ -35,6 +35,8 @@ public slots:
     void requested_ArmDisarm_Changed(int arm_disarm);
     void FC_Reboot_Shutdown_Changed(int reboot_shutdown);
 
+    void requested_Cam_Brightness_Changed(double brightness);
+
     #if defined(ENABLE_RC)
     void rc1_changed(uint rc1);
     void rc2_changed(uint rc2);
@@ -116,6 +118,8 @@ private:
     uint m_rc17 = 0;
     uint m_rc18 = 0;
     #endif
+
+    double m_brightness=50;
 };
 
 #endif

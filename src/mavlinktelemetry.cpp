@@ -44,9 +44,9 @@ MavlinkTelemetry::MavlinkTelemetry(QObject *parent): MavlinkBase(parent) {
     localPort = 14550;
 
 // FOR TESTING COMMANDS ON SITL THIS MUST BE UNCOMMENTED
-#if defined(__rasp_pi__)|| defined(__jetson__)
+//#if defined(__rasp_pi__)|| defined(__jetson__)
     groundAddress = "127.0.0.1";
-#endif
+//#endif
 
     connect(this, &MavlinkTelemetry::setup, this, &MavlinkTelemetry::onSetup);
 
@@ -200,6 +200,23 @@ void MavlinkTelemetry::rc18_changed(uint rc18) {
     qDebug() << "MavlinkTelemetry::rc18_changed="<< m_rc18;
 }
 #endif
+
+//------------------------------LIVE SETTINGS------------------------------
+void MavlinkTelemetry::requested_Cam_Brightness_Changed(double brightness) {
+    m_brightness=brightness;
+    qDebug() << "MavlinkTelemetry::requested_Cam_Brightness_Changed="<< m_brightness;
+
+    MavlinkCommand command(MavlinkCommandTypeLong);
+    command.command_id = OPENHD_CMD_SET_CAMERA_SETTINGS;
+    command.long_param1 = m_brightness;
+
+    sendCommand(command);
+
+}
+
+
+
+//---------------------------END LIVE SETTINGS-----------------------------
 
 void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
 
@@ -383,6 +400,7 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             break;
         }
         case MAVLINK_MSG_ID_PARAM_VALUE:{
+        qDebug() << "PARAM VALUE MESSAGES BEING RECIEVED";
             mavlink_param_value_t param;
             mavlink_msg_param_value_decode(&msg, &param);
 
