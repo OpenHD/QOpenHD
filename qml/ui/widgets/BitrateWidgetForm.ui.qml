@@ -237,7 +237,7 @@ BaseWidget {
 
         ColumnLayout{
             width:200
- //----------------------------live setting------------------------------------------
+            //----------------------------live setting------------------------------------------
 
             Item {
                 width: parent.width
@@ -253,8 +253,6 @@ BaseWidget {
                 }
                 Slider {
                     id: cam_brightness_Slider
-                    //live is false so that messages are sent until the drag is done
-                    live: false
                     orientation: Qt.Horizontal
                     from: 0
                     value: settings.cam_brightness
@@ -265,11 +263,13 @@ BaseWidget {
                     anchors.right: parent.right
                     width: parent.width - 96
 
-                    onValueChanged: {
-                        settings.cam_brightness = cam_brightness_Slider.value
-                        console.log("Cam brightness slider changed");
-//TODO only setup to test mavlink command
-                        MavlinkTelemetry.requested_Cam_Brightness_Changed(settings.cam_brightness);
+                    onPressedChanged: {
+                        if (cam_brightness_Slider.pressed==false){
+                            settings.cam_brightness = cam_brightness_Slider.value
+                            console.log("Cam brightness slider changed");
+                            //TODO only setup to test mavlink command
+                            MavlinkTelemetry.requested_Cam_Brightness_Changed(settings.cam_brightness);
+                        }
                     }
                 }
                 Text {
@@ -297,8 +297,6 @@ BaseWidget {
                 }
                 Slider {
                     id: cam_contrast_Slider
-                    //live is false so that messages are sent until the drag is done
-                    live: false
                     orientation: Qt.Horizontal
                     from: 0
                     value: settings.cam_contrast
@@ -309,11 +307,13 @@ BaseWidget {
                     anchors.right: parent.right
                     width: parent.width - 96
 
-                    onValueChanged: {
-                        settings.cam_contrast = cam_contrast_Slider.value
-                        console.log("Cam contrast slider changed");
-//TODO   Not wired to anything
-                     //   MavlinkTelemetry.requested_Cam_XXX_Changed(settings.cam_contrast);
+                    onPressedChanged: {
+                        if (cam_contrast_Slider.pressed==false){
+                            settings.cam_contrast = cam_contrast_Slider.value
+                            console.log("Cam contrast slider changed");
+                            //TODO   Not wired to anything
+                            //   MavlinkTelemetry.requested_Cam_XXX_Changed(settings.cam_contrast);
+                        }
                     }
                 }
                 Text {
@@ -341,8 +341,6 @@ BaseWidget {
                 }
                 Slider {
                     id: cam_saturation_Slider
-                    //live is false so that messages are sent until the drag is done
-                    live: false
                     orientation: Qt.Horizontal
                     from: 0
                     value: settings.cam_saturation
@@ -353,11 +351,13 @@ BaseWidget {
                     anchors.right: parent.right
                     width: parent.width - 96
 
-                    onValueChanged: {
-                        settings.cam_saturation = cam_saturation_Slider.value
-                        console.log("Cam saturation slider changed");
-//TODO   Not wired to anything
-                     //   MavlinkTelemetry.requested_Cam_XXX_Changed(settings.cam_saturation);
+                    onPressedChanged: {
+                        if (cam_saturation_Slider.pressed==false){
+                            settings.cam_saturation = cam_saturation_Slider.value
+                            console.log("Cam saturation slider changed");
+                            //TODO   Not wired to anything
+                            //   MavlinkTelemetry.requested_Cam_XXX_Changed(settings.cam_saturation);
+                        }
                     }
                 }
                 Text {
@@ -385,8 +385,6 @@ BaseWidget {
                 }
                 Slider {
                     id: cam_sharpness_Slider
-                    //live is false so that messages are sent until the drag is done
-                    live: false
                     orientation: Qt.Horizontal
                     from: 0
                     value: settings.cam_sharpness
@@ -397,11 +395,13 @@ BaseWidget {
                     anchors.right: parent.right
                     width: parent.width - 96
 
-                    onValueChanged: {
-                        settings.cam_sharpness = cam_sharpness_Slider.value
-                        console.log("Cam sharpness slider changed");
-//TODO   Not wired to anything
-                     //   MavlinkTelemetry.requested_Cam_XXX_Changed(settings.cam_sharpness);
+                    onPressedChanged: {
+                        if (cam_sharpness_Slider.pressed==false){
+                            settings.cam_sharpness = cam_sharpness_Slider.value
+                            console.log("Cam sharpness slider changed");
+                            //TODO   Not wired to anything
+                            //   MavlinkTelemetry.requested_Cam_XXX_Changed(settings.cam_sharpness);
+                        }
                     }
                 }
                 Text {
@@ -429,8 +429,6 @@ BaseWidget {
                 }
                 Slider {
                     id: vid_blocks_Slider
-                    //live is false so that messages are sent until the drag is done
-                    live: false
                     orientation: Qt.Horizontal
                     from: 1
                     value: settings.vid_blocks
@@ -441,11 +439,13 @@ BaseWidget {
                     anchors.right: parent.right
                     width: parent.width - 96
 
-                    onValueChanged: {
-                        settings.vid_blocks = vid_blocks_Slider.value
-                        console.log("Vid Blocks slider changed");
-//TODO   Not wired to anything
-                     //   MavlinkTelemetry.requested_Cam_XXX_Changed(settings.cam_sharpness);
+                    onPressedChanged: {
+                        if (vid_blocks_Slider.pressed==false){
+                            settings.vid_blocks = vid_blocks_Slider.value
+                            console.log("Vid Blocks slider changed");
+                            //TODO   Not wired to anything
+                            //   MavlinkTelemetry.requested_Cam_XXX_Changed(settings.cam_sharpness);
+                        }
                     }
                 }
                 Text {
@@ -473,8 +473,6 @@ BaseWidget {
                 }
                 Slider {
                     id: vid_block_length_Slider
-                    //live is false so that messages are sent until the drag is done
-                    live: false
                     orientation: Qt.Horizontal
                     from: 600
                     value: settings.vid_block_length
@@ -485,11 +483,13 @@ BaseWidget {
                     anchors.right: parent.right
                     width: parent.width - 96
 
-                    onValueChanged: {
-                        settings.vid_block_length = vid_block_length_Slider.value
-                        console.log("Vid block_length slider changed");
-//TODO   Not wired to anything
-                     //   MavlinkTelemetry.requested_Cam_XXX_Changed(settings.vid_block_length);
+                    onPressedChanged: {
+                        if (vid_block_length_Slider.pressed==false){
+                            settings.vid_block_length = vid_block_length_Slider.value
+                            console.log("Vid block_length slider changed");
+                            //TODO   Not wired to anything
+                            //   MavlinkTelemetry.requested_Cam_XXX_Changed(settings.vid_block_length);
+                        }
                     }
                 }
                 Text {
@@ -517,8 +517,6 @@ BaseWidget {
                 }
                 Slider {
                     id: vid_keyframerate_Slider
-                    //live is false so that messages are sent until the drag is done
-                    live: false
                     orientation: Qt.Horizontal
                     from: 2
                     value: settings.vid_keyframerate
@@ -529,11 +527,13 @@ BaseWidget {
                     anchors.right: parent.right
                     width: parent.width - 96
 
-                    onValueChanged: {
-                        settings.vid_keyframerate = vid_keyframerate_Slider.value
-                        console.log("Vid keyframerate slider changed");
-//TODO   Not wired to anything
-                     //   MavlinkTelemetry.requested_Cam_XXX_Changed(settings.vid_keyframerate);
+                    onPressedChanged: {
+                        if (vid_keyframerate_Slider.pressed==false){
+                            settings.vid_keyframerate = vid_keyframerate_Slider.value
+                            console.log("Vid keyframerate slider changed");
+                            //TODO   Not wired to anything
+                            //   MavlinkTelemetry.requested_Cam_XXX_Changed(settings.vid_keyframerate);
+                        }
                     }
                 }
                 Text {
@@ -561,8 +561,6 @@ BaseWidget {
                 }
                 Slider {
                     id: vid_fec_blocks_Slider
-                    //live is false so that messages are sent until the drag is done
-                    live: false
                     orientation: Qt.Horizontal
                     from: 0
                     value: settings.vid_fec_blocks
@@ -573,11 +571,13 @@ BaseWidget {
                     anchors.right: parent.right
                     width: parent.width - 96
 
-                    onValueChanged: {
-                        settings.vid_fec_blocks = vid_fec_blocks_Slider.value
-                        console.log("Vid fec_bocks slider changed");
-//TODO   Not wired to anything
-                     //   MavlinkTelemetry.requested_Cam_XXX_Changed(settings.vid_fec_blocks);
+                    onPressedChanged: {
+                        if (vid_fec_blocks_Slider.pressed==false){
+                            settings.vid_fec_blocks = vid_fec_blocks_Slider.value
+                            console.log("Vid fec_bocks slider changed");
+                            //TODO   Not wired to anything
+                            //   MavlinkTelemetry.requested_Cam_XXX_Changed(settings.vid_fec_blocks);
+                        }
                     }
                 }
                 Text {
@@ -591,7 +591,7 @@ BaseWidget {
                 }
             }
 
- //----------------------------end live settings----------------------------------
+            //----------------------------end live settings----------------------------------
             Item {
                 width: parent.width
                 height: 32
