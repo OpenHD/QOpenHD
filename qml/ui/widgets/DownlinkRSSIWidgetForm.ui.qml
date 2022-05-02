@@ -332,7 +332,7 @@ BaseWidget {
                 }
 
                 Text {
-                    text: Number(wifi_freq_Slider.hashedValue).toLocaleString(Qt.locale(), 'f', 0);
+                    text: Number(wifi_freq_Slider.hashedValue/1000).toLocaleString(Qt.locale(), 'f', 3);
                     anchors.left: wifi_freq_Slider.right
                     font.pixelSize: detailPanelFontPixels;
                     color: "white";
@@ -489,8 +489,6 @@ BaseWidget {
                 Slider {
                     id: wifi_bandwidth_Slider
                     orientation: Qt.Horizontal
-
-
 
                     height: parent.height
                     anchors.rightMargin: 0
