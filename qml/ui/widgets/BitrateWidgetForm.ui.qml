@@ -237,6 +237,361 @@ BaseWidget {
 
         ColumnLayout{
             width:200
+            //----------------------------live setting------------------------------------------
+
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("Cam Brightness")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Slider {
+                    id: cam_brightness_Slider
+                    orientation: Qt.Horizontal
+                    from: 0
+                    value: settings.cam_brightness
+                    to: 100
+                    stepSize: 1
+                    height: parent.height
+                    anchors.rightMargin: 0
+                    anchors.right: parent.right
+                    width: parent.width - 96
+
+                    onPressedChanged: {
+                        if (cam_brightness_Slider.pressed==false){
+                            settings.cam_brightness = cam_brightness_Slider.value
+                            console.log("Cam brightness slider changed");
+                            //TODO only setup to test mavlink command
+                            MavlinkTelemetry.requested_Cam_Brightness_Changed(settings.cam_brightness);
+                        }
+                    }
+                }
+                Text {
+                    text: Number(cam_brightness_Slider.value).toLocaleString(Qt.locale(), 'f', 0) + "%";
+                    anchors.left: cam_brightness_Slider.right
+                    font.pixelSize: detailPanelFontPixels;
+                    color: "white";
+                    font.bold: true;
+                    height: parent.height
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
+
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("Cam Contrast")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Slider {
+                    id: cam_contrast_Slider
+                    orientation: Qt.Horizontal
+                    from: 0
+                    value: settings.cam_contrast
+                    to: 100
+                    stepSize: 1
+                    height: parent.height
+                    anchors.rightMargin: 0
+                    anchors.right: parent.right
+                    width: parent.width - 96
+
+                    onPressedChanged: {
+                        if (cam_contrast_Slider.pressed==false){
+                            settings.cam_contrast = cam_contrast_Slider.value
+                            console.log("Cam contrast slider changed");
+                            //TODO   Not wired to anything
+                            //   MavlinkTelemetry.requested_Cam_XXX_Changed(settings.cam_contrast);
+                        }
+                    }
+                }
+                Text {
+                    text: Number(cam_contrast_Slider.value).toLocaleString(Qt.locale(), 'f', 0) + "%";
+                    anchors.left: cam_contrast_Slider.right
+                    font.pixelSize: detailPanelFontPixels;
+                    color: "white";
+                    font.bold: true;
+                    height: parent.height
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
+
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("Cam Saturation")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Slider {
+                    id: cam_saturation_Slider
+                    orientation: Qt.Horizontal
+                    from: 0
+                    value: settings.cam_saturation
+                    to: 100
+                    stepSize: 1
+                    height: parent.height
+                    anchors.rightMargin: 0
+                    anchors.right: parent.right
+                    width: parent.width - 96
+
+                    onPressedChanged: {
+                        if (cam_saturation_Slider.pressed==false){
+                            settings.cam_saturation = cam_saturation_Slider.value
+                            console.log("Cam saturation slider changed");
+                            //TODO   Not wired to anything
+                            //   MavlinkTelemetry.requested_Cam_XXX_Changed(settings.cam_saturation);
+                        }
+                    }
+                }
+                Text {
+                    text: Number(cam_saturation_Slider.value).toLocaleString(Qt.locale(), 'f', 0) + "%";
+                    anchors.left: cam_saturation_Slider.right
+                    font.pixelSize: detailPanelFontPixels;
+                    color: "white";
+                    font.bold: true;
+                    height: parent.height
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
+
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("Cam Sharpness")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Slider {
+                    id: cam_sharpness_Slider
+                    orientation: Qt.Horizontal
+                    from: 0
+                    value: settings.cam_sharpness
+                    to: 100
+                    stepSize: 1
+                    height: parent.height
+                    anchors.rightMargin: 0
+                    anchors.right: parent.right
+                    width: parent.width - 96
+
+                    onPressedChanged: {
+                        if (cam_sharpness_Slider.pressed==false){
+                            settings.cam_sharpness = cam_sharpness_Slider.value
+                            console.log("Cam sharpness slider changed");
+                            //TODO   Not wired to anything
+                            //   MavlinkTelemetry.requested_Cam_XXX_Changed(settings.cam_sharpness);
+                        }
+                    }
+                }
+                Text {
+                    text: Number(cam_sharpness_Slider.value).toLocaleString(Qt.locale(), 'f', 0) + "%";
+                    anchors.left: cam_sharpness_Slider.right
+                    font.pixelSize: detailPanelFontPixels;
+                    color: "white";
+                    font.bold: true;
+                    height: parent.height
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
+
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("Video Blocks")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Slider {
+                    id: vid_blocks_Slider
+                    orientation: Qt.Horizontal
+                    from: 1
+                    value: settings.vid_blocks
+                    to: 10
+                    stepSize: 1
+                    height: parent.height
+                    anchors.rightMargin: 0
+                    anchors.right: parent.right
+                    width: parent.width - 96
+
+                    onPressedChanged: {
+                        if (vid_blocks_Slider.pressed==false){
+                            settings.vid_blocks = vid_blocks_Slider.value
+                            console.log("Vid Blocks slider changed");
+                            //TODO   Not wired to anything
+                            //   MavlinkTelemetry.requested_Cam_XXX_Changed(settings.cam_sharpness);
+                        }
+                    }
+                }
+                Text {
+                    text: Number(vid_blocks_Slider.value).toLocaleString(Qt.locale(), 'f', 0);
+                    anchors.left: vid_blocks_Slider.right
+                    font.pixelSize: detailPanelFontPixels;
+                    color: "white";
+                    font.bold: true;
+                    height: parent.height
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
+
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("Block Length")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Slider {
+                    id: vid_block_length_Slider
+                    orientation: Qt.Horizontal
+                    from: 600
+                    value: settings.vid_block_length
+                    to: 2100
+                    stepSize: 12
+                    height: parent.height
+                    anchors.rightMargin: 0
+                    anchors.right: parent.right
+                    width: parent.width - 96
+
+                    onPressedChanged: {
+                        if (vid_block_length_Slider.pressed==false){
+                            settings.vid_block_length = vid_block_length_Slider.value
+                            console.log("Vid block_length slider changed");
+                            //TODO   Not wired to anything
+                            //   MavlinkTelemetry.requested_Cam_XXX_Changed(settings.vid_block_length);
+                        }
+                    }
+                }
+                Text {
+                    text: Number(vid_block_length_Slider.value).toLocaleString(Qt.locale(), 'f', 0);
+                    anchors.left: vid_block_length_Slider.right
+                    font.pixelSize: detailPanelFontPixels;
+                    color: "white";
+                    font.bold: true;
+                    height: parent.height
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
+
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("KeyFrame Rate")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Slider {
+                    id: vid_keyframerate_Slider
+                    orientation: Qt.Horizontal
+                    from: 2
+                    value: settings.vid_keyframerate
+                    to: 24
+                    stepSize: 1
+                    height: parent.height
+                    anchors.rightMargin: 0
+                    anchors.right: parent.right
+                    width: parent.width - 96
+
+                    onPressedChanged: {
+                        if (vid_keyframerate_Slider.pressed==false){
+                            settings.vid_keyframerate = vid_keyframerate_Slider.value
+                            console.log("Vid keyframerate slider changed");
+                            //TODO   Not wired to anything
+                            //   MavlinkTelemetry.requested_Cam_XXX_Changed(settings.vid_keyframerate);
+                        }
+                    }
+                }
+                Text {
+                    text: Number(vid_keyframerate_Slider.value).toLocaleString(Qt.locale(), 'f', 0);
+                    anchors.left: vid_keyframerate_Slider.right
+                    font.pixelSize: detailPanelFontPixels;
+                    color: "white";
+                    font.bold: true;
+                    height: parent.height
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
+
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("FEC Blocks")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Slider {
+                    id: vid_fec_blocks_Slider
+                    orientation: Qt.Horizontal
+                    from: 0
+                    value: settings.vid_fec_blocks
+                    to: 12
+                    stepSize: 1
+                    height: parent.height
+                    anchors.rightMargin: 0
+                    anchors.right: parent.right
+                    width: parent.width - 96
+
+                    onPressedChanged: {
+                        if (vid_fec_blocks_Slider.pressed==false){
+                            settings.vid_fec_blocks = vid_fec_blocks_Slider.value
+                            console.log("Vid fec_bocks slider changed");
+                            //TODO   Not wired to anything
+                            //   MavlinkTelemetry.requested_Cam_XXX_Changed(settings.vid_fec_blocks);
+                        }
+                    }
+                }
+                Text {
+                    text: Number(vid_fec_blocks_Slider.value).toLocaleString(Qt.locale(), 'f', 0);
+                    anchors.left: vid_fec_blocks_Slider.right
+                    font.pixelSize: detailPanelFontPixels;
+                    color: "white";
+                    font.bold: true;
+                    height: parent.height
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
+
+            //----------------------------end live settings----------------------------------
             Item {
                 width: parent.width
                 height: 32

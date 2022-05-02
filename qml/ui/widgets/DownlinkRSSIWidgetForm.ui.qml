@@ -238,6 +238,305 @@ BaseWidget {
 
         ColumnLayout{
             width:200
+
+            //-----------------------------Live SETTINGS BELOW ---------------------------
+            Item {
+                width: 230
+                height: 32
+                Text {
+                    text: qsTr("Frequency Auto")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 6
+                    anchors.right: parent.right
+                    checked: settings.wifi_freq_auto
+                    onCheckedChanged: settings.wifi_freq_auto = checked
+                }
+            }
+            /* TODO remove this eventually but here for testing.
+  commented out cuz some layout nussaince error was popping up
+            Button {
+                //this is for testing the new link microservice and freq change
+                visible: true
+                text: "Freq Test"
+                anchors.left: parent.left
+
+                onPressed: {
+                    OpenHD.setAirFREQ(5400);
+                }
+            }
+*/
+            Item {
+                visible: !settings.wifi_freq_auto
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("FREQ")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+
+                Slider {
+                    //TODO theres alot of ways to screw this up and request something the nic
+                    // is unable to do.
+                    id: wifi_freq_Slider
+                    orientation: Qt.Horizontal
+                    height: parent.height
+                    anchors.rightMargin: 0
+                    anchors.right: parent.right
+                    width: parent.width - 96
+
+                    property int sliderValue
+
+                    property var hashTable: [2412, 2417, 2422, 2427, 2432, 2437, 2442, 2447, 2452,
+                        2457, 2462, 2467, 2472, 2484, 5180, 5200, 5220, 5240,
+                        5745, 5765, 5785, 5805, 5825];
+
+                    readonly property int hashedValue: (() => hashTable[value])();
+
+                    from: 0;
+                    to: hashTable.length - 1;
+                    stepSize: 1
+
+                    value: sliderValue
+
+                    onPressedChanged: {
+                        if (wifi_freq_Slider.pressed==false){
+                            settings.wifi_freq = wifi_freq_Slider.hashedValue
+                            console.log("sending wifi_freq slider value:" + settings.wifi_freq);
+                            //TODO   Not wired to anything
+                            //   MavlinkTelemetry.requested_Cam_XXX_Changed(settings.wifi_freq);
+                        }
+                    }
+                    onHashedValueChanged: {
+                        //has to be set up like this to not break binding
+                        sliderValue=wifi_freq_Slider.value;
+                    }
+                    Component.onCompleted: {
+                        //this sets the intitial value of the slider. This is based
+                        //on the position within the table - not the value
+                        sliderValue= hashTable.indexOf(settings.wifi_freq);
+                    }
+                }
+
+                Text {
+                    text: Number(wifi_freq_Slider.hashedValue/1000).toLocaleString(Qt.locale(), 'f', 3);
+                    anchors.left: wifi_freq_Slider.right
+                    font.pixelSize: detailPanelFontPixels;
+                    color: "white";
+                    font.bold: true;
+                    height: parent.height
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
+
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("TX-Power Air")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Slider {
+                    id: wifi_power_air_Slider
+                    orientation: Qt.Horizontal
+                    from: 30
+                    value: settings.wifi_power_air
+                    to: 60
+                    stepSize: 1
+                    height: parent.height
+                    anchors.rightMargin: 0
+                    anchors.right: parent.right
+                    width: parent.width - 96
+
+                    onPressedChanged: {
+                        if (wifi_power_air_Slider.pressed==false){
+                            settings.wifi_power_air = wifi_power_air_Slider.value
+                            console.log("wifi_power_air slider changed");
+                            //TODO   Not wired to anything
+                            //   MavlinkTelemetry.requested_Cam_XXX_Changed(settings.wifi_power_air);
+                        }
+                    }
+                }
+                Text {
+                    text: Number(wifi_power_air_Slider.value).toLocaleString(Qt.locale(), 'f', 0);
+                    anchors.left: wifi_power_air_Slider.right
+                    font.pixelSize: detailPanelFontPixels;
+                    color: "white";
+                    font.bold: true;
+                    height: parent.height
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
+
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("TX-Power Gnd")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Slider {
+                    id: wifi_power_gnd_Slider
+                    orientation: Qt.Horizontal
+                    from: 30
+                    value: settings.wifi_power_gnd
+                    to: 60
+                    stepSize: 1
+                    height: parent.height
+                    anchors.rightMargin: 0
+                    anchors.right: parent.right
+                    width: parent.width - 96
+
+                    onPressedChanged: {
+                        if (wifi_power_gnd_Slider.pressed==false){
+                            settings.wifi_power_gnd = wifi_power_gnd_Slider.value
+                            console.log("wifi_power_gnd slider changed");
+                            //TODO   Not wired to anything
+                            //   MavlinkTelemetry.requested_Cam_XXX_Changed(settings.wifi_power_gnd);
+                        }
+                    }
+                }
+                Text {
+                    text: Number(wifi_power_gnd_Slider.value).toLocaleString(Qt.locale(), 'f', 0);
+                    anchors.left: wifi_power_gnd_Slider.right
+                    font.pixelSize: detailPanelFontPixels;
+                    color: "white";
+                    font.bold: true;
+                    height: parent.height
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
+
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("Data Rate")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Slider {
+                    id: wifi_data_rate_Slider
+                    orientation: Qt.Horizontal
+                    from: 1
+                    value: settings.wifi_data_rate
+                    to: 6
+                    stepSize: 1
+                    height: parent.height
+                    anchors.rightMargin: 0
+                    anchors.right: parent.right
+                    width: parent.width - 96
+
+                    onPressedChanged: {
+                        if (wifi_data_rate_Slider.pressed==false){
+                            settings.wifi_data_rate = wifi_data_rate_Slider.value
+                            console.log("wifi_data_rate slider changed");
+                            //TODO   Not wired to anything
+                            //   MavlinkTelemetry.requested_Cam_XXX_Changed(settings.wifi_data_rate);
+                        }
+                    }
+                }
+                Text {
+                    text: Number(wifi_data_rate_Slider.value).toLocaleString(Qt.locale(), 'f', 0);
+                    anchors.left: wifi_data_rate_Slider.right
+                    font.pixelSize: detailPanelFontPixels;
+                    color: "white";
+                    font.bold: true;
+                    height: parent.height
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
+
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("Bandwidth")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Slider {
+                    id: wifi_bandwidth_Slider
+                    orientation: Qt.Horizontal
+
+                    height: parent.height
+                    anchors.rightMargin: 0
+                    anchors.right: parent.right
+                    width: parent.width - 96
+
+                    property int sliderValue
+
+                    property var hashTable: [5 ,10 ,20];
+
+                    readonly property int hashedValue: (() => hashTable[value])();
+
+                    from: 0; to: hashTable.length - 1;
+                    stepSize: 1
+
+                    value: sliderValue
+
+                    onPressedChanged: {
+                        if (wifi_bandwidth_Slider.pressed==false){
+                            settings.wifi_bandwidth = wifi_bandwidth_Slider.hashedValue
+                            console.log("wifi_bandwidth slider changed");
+                            //TODO   Not wired to anything
+                            //   MavlinkTelemetry.requested_Cam_XXX_Changed(settings.wifi_bandwidth);
+                        }
+                    }
+                    onHashedValueChanged: {
+                        //has to be set up like this to not break binding
+                        sliderValue=wifi_bandwidth_Slider.value;
+                    }
+                    Component.onCompleted: {
+                        //this sets the intitial value of the slider. This is based
+                        //on the position within the table - not the value
+                        sliderValue= hashTable.indexOf(settings.wifi_bandwidth);
+                    }
+                }
+                Text {
+                    text: Number(wifi_bandwidth_Slider.hashedValue).toLocaleString(Qt.locale(), 'f', 0);
+                    anchors.left: wifi_bandwidth_Slider.right
+                    font.pixelSize: detailPanelFontPixels;
+                    color: "white";
+                    font.bold: true;
+                    height: parent.height
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
+            //----------------------------end live settings----------------------------------
+
+
             Connections {
                 target: OpenHD
                 function onWifiAdapter0Changed(received_packet_cnt, current_signal_dbm, signal_good) {
@@ -292,16 +591,6 @@ BaseWidget {
                     anchors.right: parent.right
                     verticalAlignment: Text.AlignVCenter
                 }
-            }           
-        }
-        Button {
-            //this is for testing the new link microservice and freq change
-            visible: false
-            text: "Freq Test"
-            anchors.centerIn: parent
-
-            onPressed: {
-                OpenHD.setAirFREQ(5400);
             }
         }
     }

@@ -65,6 +65,13 @@ Settings {
     property double uplink_rssi_warn: 0
     property double uplink_rssi_caution: 0
 
+    property bool wifi_freq_auto: true
+    property double wifi_freq: 5180
+    property double wifi_power_air: 54
+    property double wifi_power_gnd: 54
+    property double wifi_data_rate: 3
+    property double wifi_bandwidth: 20
+
     property bool show_rc_rssi: false
     property double rc_rssi_opacity: 1
     property double rc_rssi_size: 1
@@ -79,6 +86,16 @@ Settings {
     property bool bitrate_declutter: false
     property double bitrate_warn: 0
     property double bitrate_caution: 0
+
+    property double cam_brightness: 50
+    property double cam_contrast: 50
+    property double cam_saturation: 50
+    property double cam_sharpness: 50
+
+    property double vid_blocks: 8
+    property double vid_block_length: 1024
+    property double vid_keyframerate: 10
+    property double vid_fec_blocks: 4
 
     property bool show_air_battery: true
     property double air_battery_opacity: 1
