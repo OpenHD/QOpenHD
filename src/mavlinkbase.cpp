@@ -558,7 +558,6 @@ void MavlinkBase::commandStateLoop() {
 
             qDebug() << "SYSID=" << mavlink_sysid;
             qDebug() << "Target SYSID=" << targetSysID;
-            targetSysID=1;
 
             if (m_current_command->m_command_type == MavlinkCommandTypeLong) {
                 mavlink_msg_command_long_pack(mavlink_sysid, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID, targetCompID, m_current_command->command_id, m_current_command->long_confirmation, m_current_command->long_param1, m_current_command->long_param2, m_current_command->long_param3, m_current_command->long_param4, m_current_command->long_param5, m_current_command->long_param6, m_current_command->long_param7);
