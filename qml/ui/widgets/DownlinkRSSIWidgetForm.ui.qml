@@ -287,6 +287,7 @@ BaseWidget {
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
+
                 Slider {
                     //TODO theres alot of ways to screw this up and request something the nic
                     // is unable to do.
@@ -297,7 +298,7 @@ BaseWidget {
                     anchors.right: parent.right
                     width: parent.width - 96
 
-
+                    property int sliderValue
 
                     property var hashTable: [2412, 2417, 2422, 2427, 2432, 2437, 2442, 2447, 2452,
                         2457, 2462, 2467, 2472, 2484, 5180, 5200, 5220, 5240,
@@ -305,20 +306,31 @@ BaseWidget {
 
                     readonly property int hashedValue: (() => hashTable[value])();
 
-                    from: 0; to: hashTable.length - 1;
+                    from: 0;
+                    to: hashTable.length - 1;
                     stepSize: 1
 
-                    value: settings.wifi_freq
+                    value: sliderValue
 
                     onPressedChanged: {
                         if (wifi_freq_Slider.pressed==false){
                             settings.wifi_freq = wifi_freq_Slider.hashedValue
-                            console.log("wifi_freq slider changed");
+                            console.log("sending wifi_freq slider value:" + settings.wifi_freq);
                             //TODO   Not wired to anything
                             //   MavlinkTelemetry.requested_Cam_XXX_Changed(settings.wifi_freq);
                         }
                     }
+                    onHashedValueChanged: {
+                        //has to be set up like this to not break binding
+                        sliderValue=wifi_freq_Slider.value;
+                    }
+                    Component.onCompleted: {
+                        //this sets the intitial value of the slider. This is based
+                        //on the position within the table - not the value
+                        sliderValue= hashTable.indexOf(settings.wifi_freq);
+                    }
                 }
+
                 Text {
                     text: Number(wifi_freq_Slider.hashedValue).toLocaleString(Qt.locale(), 'f', 0);
                     anchors.left: wifi_freq_Slider.right
@@ -477,27 +489,45 @@ BaseWidget {
                 Slider {
                     id: wifi_bandwidth_Slider
                     orientation: Qt.Horizontal
-                    from: 5
-                    value: settings.wifi_bandwidth
-                    to: 20
-                    //TODO I dont think 15 is possible so that needs to be fixed
-                    stepSize: 5
+
+
+
                     height: parent.height
                     anchors.rightMargin: 0
                     anchors.right: parent.right
                     width: parent.width - 96
 
+                    property int sliderValue
+
+                    property var hashTable: [5 ,10 ,20];
+
+                    readonly property int hashedValue: (() => hashTable[value])();
+
+                    from: 0; to: hashTable.length - 1;
+                    stepSize: 1
+
+                    value: sliderValue
+
                     onPressedChanged: {
                         if (wifi_bandwidth_Slider.pressed==false){
-                            settings.wifi_bandwidth = wifi_bandwidth_Slider.value
+                            settings.wifi_bandwidth = wifi_bandwidth_Slider.hashedValue
                             console.log("wifi_bandwidth slider changed");
                             //TODO   Not wired to anything
                             //   MavlinkTelemetry.requested_Cam_XXX_Changed(settings.wifi_bandwidth);
                         }
                     }
+                    onHashedValueChanged: {
+                        //has to be set up like this to not break binding
+                        sliderValue=wifi_bandwidth_Slider.value;
+                    }
+                    Component.onCompleted: {
+                        //this sets the intitial value of the slider. This is based
+                        //on the position within the table - not the value
+                        sliderValue= hashTable.indexOf(settings.wifi_bandwidth);
+                    }
                 }
                 Text {
-                    text: Number(wifi_bandwidth_Slider.value).toLocaleString(Qt.locale(), 'f', 0);
+                    text: Number(wifi_bandwidth_Slider.hashedValue).toLocaleString(Qt.locale(), 'f', 0);
                     anchors.left: wifi_bandwidth_Slider.right
                     font.pixelSize: detailPanelFontPixels;
                     color: "white";
