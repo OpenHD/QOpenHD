@@ -16,7 +16,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           submodules: recursive
-          
+
       - name: Install Dependencies
         run: |
           sudo ./install_dep.sh
@@ -24,12 +24,3 @@ jobs:
         run: |
           cd OpenHD
           ./build_cmake.sh
-      #- name: Install
-      #  run: |
-      #    cd OpenHD/build
-      #    sudo cmake --install .
-      #- name: Build ninja
-      #  run: |
-      #    sudo apt -y install ninja-build
-      #    cd OpenHD
-      #    ./build_cmake.sh
