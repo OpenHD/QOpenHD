@@ -16,20 +16,7 @@ int main(int argc, char *argv[]) {
         if (!obj && url == objUrl)
             QCoreApplication::exit(-1);
     }, Qt::QueuedConnection);
-
-
-
-    auto groundStatusMicroservice = new StatusMicroservice(nullptr, MicroserviceTargetGround, MavlinkTypeTCP);
-    engine.rootContext()->setContextProperty("GroundStatusMicroservice", groundStatusMicroservice);
-    groundStatusMicroservice->onStarted();
-
-    auto airStatusMicroservice = new StatusMicroservice(nullptr, MicroserviceTargetAir, MavlinkTypeTCP);
-    engine.rootContext()->setContextProperty("AirStatusMicroservice", airStatusMicroservice);
-    airStatusMicroservice->onStarted();
-
-    auto statusLogModel = StatusLogModel::instance();
-    engine.rootContext()->setContextProperty("StatusLogModel", statusLogModel);
-
+    
     engine.load(url);
 
     return app.exec();
