@@ -3,7 +3,6 @@
 #include <QFontDatabase>
 
 
-#include "statusmicroservice.h"
 
 
 #include "statuslogmodel.h"
