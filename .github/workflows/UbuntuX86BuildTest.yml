@@ -1,0 +1,35 @@
+name: UbuntuX86BuildTest
+
+on: [push]
+
+env:
+  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+  BUILD_TYPE: Release
+
+jobs:
+  build:
+    #runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Checkout repository and submodules
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+          
+      - name: Install Dependencies
+        run: |
+          sudo ./install_dep.sh
+      - name: Build with make
+        run: |
+          cd OpenHD
+          ./build_cmake.sh
+      #- name: Install
+      #  run: |
+      #    cd OpenHD/build
+      #    sudo cmake --install .
+      #- name: Build ninja
+      #  run: |
+      #    sudo apt -y install ninja-build
+      #    cd OpenHD
+      #    ./build_cmake.sh

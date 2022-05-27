@@ -288,7 +288,6 @@ protected:
     // ---------
 private:
     std::unique_ptr<OHDConnection> mOHDConnection;
-    void hackProcessMavlinkMessge(mavlink_message_t msg);
 };
 
 #endif

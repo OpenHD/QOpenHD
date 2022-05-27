@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QtQuick>
 //#include <QTimer>
+#include <chrono>
 
 #include <openhd/mavlink.h>
 
@@ -84,6 +85,7 @@ private:
     QTimer* heartbeatTimer=nullptr;
     QTcpSocket *tcpClientSock = nullptr;
     QUdpSocket *udpSocket=nullptr;
+    std::chrono::steady_clock::time_point lastMavlinkMessage;
 private slots:
     // called by QT tcp socket
     void tcpReadyRead();

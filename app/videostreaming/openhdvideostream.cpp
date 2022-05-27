@@ -751,8 +751,8 @@ void OpenHDVideoStream::_start() {
         s << "video/x-raw,width=640,height=480 !";
         s << "queue !";
     } else {
+        m_video_port=5620; //TODO Consti10 HACK
         qDebug() << "Listening on port" << m_video_port;
-
         if (m_enable_rtp || m_stream_type == StreamTypePiP) {
             if (m_video_h264 == true ){
                 qDebug() << "h264 video stream started";
@@ -878,6 +878,8 @@ void OpenHDVideoStream::_timer() {
     if (m_enable_lte_video) {
         _main_video_port = 8000;
     }
+    // TODO Consti10 hack
+    _main_video_port=5620;
 
     auto _pip_video_port = settings.value("pip_video_port", pip_default_port).toInt();
 

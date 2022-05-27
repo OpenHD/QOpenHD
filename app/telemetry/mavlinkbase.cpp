@@ -31,7 +31,8 @@ MavlinkBase::MavlinkBase(QObject *parent,  MavlinkType mavlink_type): QObject(pa
     qDebug() << "MavlinkBase::MavlinkBase()";
     mOHDConnection=std::make_unique<OHDConnection>(nullptr,false);
     mOHDConnection->registerNewMessageCalback([this](mavlink_message_t msg){
-        hackProcessMavlinkMessge(msg);
+        //hackProcessMavlinkMessge(msg);
+        emit processMavlinkMessage(msg);
     });
 }
 
@@ -619,9 +620,4 @@ void MavlinkBase::commandStateLoop() {
             break;
         }
     }
-}
-
-void MavlinkBase::hackProcessMavlinkMessge(mavlink_message_t msg){
-    qDebug()<<"MavlinkBase::hackProcessMavlinkMessge";
-    emit processMavlinkMessage(msg);
 }

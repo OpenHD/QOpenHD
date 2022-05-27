@@ -66,13 +66,15 @@ void OHDConnection::sendMessage(mavlink_message_t msg){
 }
 
 void OHDConnection::parseNewData(const uint8_t* data, int data_len){
+    //qDebug()<<"OHDConnection::parseNewData"<<data_len;
     mavlink_message_t msg;
     for(int i=0;i<data_len;i++){
         uint8_t res = mavlink_parse_char(MAVLINK_COMM_0, (uint8_t)data[i], &msg, &receiveMavlinkStatus);
-        //qDebug()<<"Got new mavlink message";
         if (res) {
+            //qDebug()<<"Got new mavlink message";
+            lastMavlinkMessage=std::chrono::steady_clock::now();
             if(callback!= nullptr){
-                qDebug()<<"Forwarding new mavlink message";
+                //qDebug()<<"Forwarding new mavlink message";
                 callback(msg);
             }else{
                 qDebug()<<"OHDConnection::No callback set,did you forget to add it ?";
@@ -97,7 +99,7 @@ void OHDConnection::tcpDisconnected() {
 }
 
 void OHDConnection::udpReadyRead() {
-    qDebug() << "OHDConnection::udpReadyRead";
+    //qDebug() << "OHDConnection::udpReadyRead";
     QByteArray datagram;
     while (udpSocket->hasPendingDatagrams()) {
         datagram.resize(int(udpSocket->pendingDatagramSize()));
@@ -111,7 +113,7 @@ void OHDConnection::udpReadyRead() {
 }
 
 void OHDConnection::sendData(const uint8_t* data,int data_len){
-    qDebug() << "OHDConnection::sendData";
+    //qDebug() << "OHDConnection::sendData";
     if(USE_TCP){
         if (tcpClientSock->state() == QAbstractSocket::ConnectedState) {
             tcpClientSock->write((char*)data, data_len);

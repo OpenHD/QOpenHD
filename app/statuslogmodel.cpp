@@ -13,6 +13,10 @@ StatusLogModel* StatusLogModel::instance() {
 
 StatusLogModel::StatusLogModel(QObject *parent) {
     qDebug() << "StatusLogModel::StatusLogModel()";
+    StatusMessage msg{};
+    msg.message="Hello test";
+    msg.severity=0;
+    addMessage(msg);
 }
 
 

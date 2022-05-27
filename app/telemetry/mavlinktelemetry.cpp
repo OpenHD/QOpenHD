@@ -200,7 +200,7 @@ void MavlinkTelemetry::rc18_changed(uint rc18) {
 #endif
 
 void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
-    qDebug()<<"MavlinkTelemetry::onProcessMavlinkMessage";
+    //qDebug()<<"MavlinkTelemetry::onProcessMavlinkMessage";
 
     if(pause_telemetry==true){
         return;
