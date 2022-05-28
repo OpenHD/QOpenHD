@@ -21,8 +21,6 @@ EOF
 fi
 
 apt-get install -y apt-utils curl
-curl -1sLf 'https://dl.cloudsmith.io/public/openhd/openhd-2-1-testing/setup.deb.sh' | sudo -E bash && \
-curl -1sLf 'https://dl.cloudsmith.io/public/openhd/openhd-2-1/setup.deb.sh' | sudo -E bash && \
 apt update
 
 apt-get install -y gnupg
@@ -37,11 +35,6 @@ if [[ "${DISTRO}" == "bullseye" ]]; then
     apt-get install qtbase5-dev qtchooser qtbase5-dev-tools
 fi
 
-if [[ "${OS}" == "raspbian" ]]; then
-    PLATFORM_DEV_PACKAGES="openhd-qt"
-    PLATFORM_PACKAGES="-d openhd-qt"
-fi
-
 if [[ "${OS}" == "debian" ]]; then
     PLATFORM_DEV_PACKAGES="openhd-qt"
     PLATFORM_PACKAGES="-d openhd-qt"
@@ -52,7 +45,7 @@ if [[ "${OS}" == "ubuntu" ]] && [[ "${PACKAGE_ARCH}" == "armhf" || "${PACKAGE_AR
     PLATFORM_PACKAGES="-d openhd-qt-jetson-nano"
 fi
 
-apt -y install ${PLATFORM_DEV_PACKAGES} libgstreamer-plugins-base1.0-dev libgles2-mesa-dev libegl1-mesa-dev libgbm-dev libboost-dev libsdl2-dev libsdl1.2-dev
+apt -y install ${PLATFORM_DEV_PACKAGES} libgstreamer-plugins-base1.0-dev libgles2-mesa-dev libegl1-mesa-dev libgbm-dev libboost-dev libsdl2-dev libsdl1.2-dev qtdeclarative5-dev qtpositioning5-dev
 
 PACKAGE_NAME=qopenhd
 
@@ -64,7 +57,7 @@ mkdir -p ${TMPDIR}/usr/local/bin || exit 1
 mkdir -p ${TMPDIR}/etc/systemd/system || exit 1
 mkdir -p ${TMPDIR}/usr/local/share/openhd || exit 1
 
-/opt/${QT_VERSION}/bin/qmake
+qmake
 
 #make clean || exit 1
 
@@ -72,12 +65,6 @@ make -j4 || exit 1
 cp release/QOpenHD ${TMPDIR}/usr/local/bin/ || exit 1
 
 # included in the same package since it's sharing code and not independently versioned
-pushd OpenHDBoot
-/opt/${QT_VERSION}/bin/qmake
-#make clean || exit 1
-make -j4 || exit 1
-cp OpenHDBoot ${TMPDIR}/usr/local/bin/ || exit 1
-popd
 
 cp systemd/* ${TMPDIR}/etc/systemd/system/ || exit 1
 cp qt.json ${TMPDIR}/usr/local/share/openhd/ || exit 1
