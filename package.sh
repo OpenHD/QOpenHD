@@ -35,10 +35,6 @@ if [[ "${DISTRO}" == "bullseye" ]]; then
     apt-get install qtbase5-dev qtchooser qtbase5-dev-tools
 fi
 
-if [[ "${OS}" == "raspbian" ]]; then
-
-fi
-
 if [[ "${OS}" == "debian" ]]; then
     PLATFORM_DEV_PACKAGES="openhd-qt"
     PLATFORM_PACKAGES="-d openhd-qt"
