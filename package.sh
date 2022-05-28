@@ -21,8 +21,6 @@ EOF
 fi
 
 apt-get install -y apt-utils curl
-curl -1sLf 'https://dl.cloudsmith.io/public/openhd/openhd-2-1-testing/setup.deb.sh' | sudo -E bash && \
-curl -1sLf 'https://dl.cloudsmith.io/public/openhd/openhd-2-1/setup.deb.sh' | sudo -E bash && \
 apt update
 
 apt-get install -y gnupg
@@ -38,8 +36,7 @@ if [[ "${DISTRO}" == "bullseye" ]]; then
 fi
 
 if [[ "${OS}" == "raspbian" ]]; then
-    PLATFORM_DEV_PACKAGES="openhd-qt"
-    PLATFORM_PACKAGES="-d openhd-qt"
+
 fi
 
 if [[ "${OS}" == "debian" ]]; then
