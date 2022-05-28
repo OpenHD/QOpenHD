@@ -40,6 +40,12 @@ MOC_DIR      = $${OUT_PWD}/moc
 UI_DIR       = $${OUT_PWD}/ui
 RCC_DIR      = $${OUT_PWD}/rcc
 
+# from https://mavlink.io/en/mavgen_c/
+#You can supress the warnings in CMake using ...
+# and https://stackoverflow.com/questions/2987062/configuring-the-gcc-compiler-switches-in-qt-qtcreator-and-qmake
+QMAKE_CXXFLAGS += -Wno-address-of-packed-member
+QMAKE_CXXFLAGS += -Wno-cast-align
+
 #QT += qml quick concurrent opengl gui
 #QT += positioning location
 
