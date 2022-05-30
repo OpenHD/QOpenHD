@@ -18,6 +18,11 @@ class OpenHDVideoStream : public QObject
     Q_OBJECT
 
 public:
+    typedef enum VideoCodec {
+      VideoCodecH264,
+      VideoCodecH265,
+      VideoCodecMJPEG
+    } VideoCodec;
     OpenHDVideoStream(int &argc, char *argv[], QObject *parent = nullptr);
     virtual ~OpenHDVideoStream();
     void init(QQmlApplicationEngine * engine, enum StreamType stream_type);

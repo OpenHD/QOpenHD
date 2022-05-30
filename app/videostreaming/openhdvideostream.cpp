@@ -8,6 +8,7 @@
 #include <gst/gst.h>
 
 #include "../util/localmessage.h"
+#include <sstream>
 
 #include "openhd.h"
 
@@ -736,68 +737,75 @@ static gboolean PipelineCb(GstBus *bus, GstMessage *msg, gpointer data) {
     return TRUE;
 }
 
+// Find the qt window we can link the gstreamer output to
+static QQuickItem* find_qt_video_window(QQmlApplicationEngine *m_engine,const QString m_elementName){
+    QQuickItem *videoItem;
+    QQuickWindow *rootObject;
+    auto rootObjects = m_engine->rootObjects();
+    if (rootObjects.length() < 1) {
+        qDebug() << "Failed to obtain root object list!";
+        return nullptr;
+    }
+    rootObject = static_cast<QQuickWindow *>(rootObjects.first());
+    videoItem = rootObject->findChild<QQuickItem *>(m_elementName.toUtf8());
+    qDebug() << "Setting element on " << m_elementName;
+    if (videoItem == nullptr) {
+        qDebug() << "Failed to obtain video item pointer for " << m_elementName;
+        return nullptr;
+    }
+    return videoItem;
+}
+
+static void link_gstreamer_to_window(QQmlApplicationEngine *m_engine,const QString m_elementName,GstElement *qmlglsink){
+    QQuickItem *videoItem=find_qt_video_window(m_engine,m_elementName);
+    if(videoItem==nullptr){
+        return;
+    }
+    g_object_set(qmlglsink, "widget", videoItem, NULL);
+}
+
+/**
+ * @brief constructGstreamerPipeline for sw decoding of all OenHD supported video formats (h264,h265,mjpeg)
+ * The last element is a qmlglsink, such that the video can be rendered.
+ * @param enableVideoTest if true, a testsrc is created and the other parameters are omitted (no decoding)
+ * @param videoCodec the video codec the received rtp data is interpreted as
+ * @param udp_port the udp port to listen for rtp data
+ * @return the built pipeline, as a string
+ */
+static std::string constructGstreamerPipeline(bool enableVideoTest,OpenHDVideoStream::VideoCodec videoCodec,int udp_port){
+    std::stringstream ss;
+    if(enableVideoTest){
+        qDebug() << "Using video test\n";
+        ss << "videotestsrc pattern=smpte !";
+        ss << "video/x-raw,width=640,height=480 !";
+        ss << "queue !";
+    }else{
+        ss<<"udpsrc port="<<udp_port<<" ";
+
+        if(videoCodec==OpenHDVideoStream::VideoCodecH264){
+            ss<<"caps = \"application/x-rtp, media=(string)video, encoding-name=(string)H264, payload=(int)96\" ! rtph264depay ! ";
+        }else if(videoCodec==OpenHDVideoStream::VideoCodecH265){
+            ss<<"caps = \"application/x-rtp, media=(string)video, encoding-name=(string)H265\" ! rtph265depay ! ";
+        }else{
+            //m_video_codec==VideoCodecMJPEG
+            ss<<"caps = \"application/x-rtp, media=(string)video, encoding-name=(string)mjpeg\" ! rtpjpegdepay ! ";
+        }
+        ss<<"decodebin ! ";
+    }
+
+    ss << " glupload ! glcolorconvert !";
+    ss << " qmlglsink name=qmlglsink sync=false";
+    return ss.str();
+}
+
 void OpenHDVideoStream::_start() {
     qDebug() << "OpenHDVideoStream::_start()";
 
+    const auto pipeline=constructGstreamerPipeline(m_enable_videotest,OpenHDVideoStream::VideoCodecH264,5620);
+
     GError *error = nullptr;
-
-    QSettings settings;
-    auto pipeline = new QString();    
-    QTextStream s(pipeline);
-
-    if (m_enable_videotest) {
-        qDebug() << "Using video test";
-        s << "videotestsrc pattern=smpte !";
-        s << "video/x-raw,width=640,height=480 !";
-        s << "queue !";
-    } else {
-        m_video_port=5620; //TODO Consti10 HACK
-        qDebug() << "Listening on port" << m_video_port;
-        if (m_enable_rtp || m_stream_type == StreamTypePiP) {
-            if (m_video_h264 == true ){
-                qDebug() << "h264 video stream started";
-                s << QString("udpsrc port=%1 caps=\"application/x-rtp, media=(string)video, clock-rate=(int)90000, encoding-name=(string)H264\" timeout=1000000000 !").arg(m_video_port);
-                s << " rtpjitterbuffer !";
-                s << " rtph264depay !";
-            } else { //we are h265.. it has its own verbose setting but not using it here
-                qDebug() << "h265 video stream started";
-                s << QString("udpsrc port=%1 caps=\"application/x-rtp, encoding-name=(string)H265,payload=96\" timeout=1000000000 !").arg(m_video_port);
-                s << " rtph265depay !";
-                }
-         } else {
-            s << QString("udpsrc port=%1 timeout=1000000000 !").arg(m_video_port);
-        }
-        s << " queue !";
-
-        if (m_enable_software_video_decoder) {
-            qDebug() << "Forcing software decoder";
-            s << " h264parse !";
-            s << " avdec_h264 !";
-        } else {
-            qDebug() << "Using hardware decoder, fallback to software if unavailable";
-            if (m_video_h264 == true ){
-                s << " h264parse !";
-            } else {
-                s << " h265parse !";
-            }
-            #if defined(__rasp_pi__)
-                s << " omxh264dec !";
-            #else
-                if (m_video_h264 == true ){
-                        s << " decodebin3 !";
-                } else {
-                        //s << " omxh265dec !";
-                        //Consti10 - test
-                        s << " libde265dec !";
-                }
-            #endif
-        }
-    }
-    s << " queue !";
-    s << " glupload ! glcolorconvert !";
-    s << " qmlglsink name=qmlglsink sync=false";
-    m_pipeline = gst_parse_launch(pipeline->toUtf8(), &error);
-    qDebug() << "GSTREAMER PIPE=" << pipeline->toUtf8();
+    m_pipeline = gst_parse_launch(pipeline.c_str(), &error);
+    qDebug() << "GSTREAMER PIPE=" << pipeline.c_str();
     if (error) {
         qDebug() << "gst_parse_launch error: " << error->message;
     }
@@ -810,24 +818,7 @@ void OpenHDVideoStream::_start() {
     g_signal_connect(bus, "message", (GCallback)PipelineCb, this);
 
 
-    QQuickItem *videoItem;
-    QQuickWindow *rootObject;
-    auto rootObjects = m_engine->rootObjects();
-    if (rootObjects.length() < 1) {
-        qDebug() << "Failed to obtain root object list!";
-        LocalMessage::instance()->showMessage("Could not start video stream (E1)", 2);
-        return;
-    }
-    rootObject = static_cast<QQuickWindow *>(rootObjects.first());
-    videoItem = rootObject->findChild<QQuickItem *>(m_elementName.toUtf8());
-    qDebug() << "Setting element on " << m_elementName;
-    if (videoItem == nullptr) {
-        qDebug() << "Failed to obtain video item pointer for " << m_elementName;
-        LocalMessage::instance()->showMessage("Could not start video stream (E2)", 2);
-        return;
-    }
-    g_object_set(qmlglsink, "widget", videoItem, NULL);
-
+    link_gstreamer_to_window(m_engine,m_elementName,qmlglsink);
 
     /*
      * When the app first launches we have to wait for the QML element to be ready before the pipeline
@@ -837,7 +828,7 @@ void OpenHDVideoStream::_start() {
      */
     if (firstRun) {
         firstRun = false;
-        rootObject->scheduleRenderJob(new SetPlaying (m_pipeline), QQuickWindow::BeforeSynchronizingStage);
+        //rootObject->scheduleRenderJob(new SetPlaying (m_pipeline), QQuickWindow::BeforeSynchronizingStage);
     } else {
         gst_element_set_state (m_pipeline, GST_STATE_PLAYING);
     }
