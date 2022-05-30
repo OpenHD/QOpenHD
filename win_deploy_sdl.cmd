@@ -1,5 +1,0 @@
-
-SET DESTDIR_WIN=%~f1
-SET SDL_DIR=%~f2
-
-xcopy %SDL_DIR%\SDL2.dll %DESTDIR_WIN%\ /S/Y
