@@ -41,6 +41,9 @@ struct VideoStreamConfig{
     bool operator==(const VideoStreamConfig &o) const {
        return this->enable_videotest == o.enable_videotest && this->video_port == o.video_port && this->video_codec== o.video_codec;
      }
+    bool operator !=(const VideoStreamConfig &o) const {
+        return !(*this==o);
+    }
 };
 
 /**
@@ -50,51 +53,44 @@ struct VideoStreamConfig{
  * 1) Input -> a udp port from which rtp video data is received.
  * 2) Output -> a qml window ???? not sure yet exactly how to call that.
  */
-class OpenHDVideoStream : public QObject
-{
+class GstVideoStream : public QObject{
     Q_OBJECT
-
 public:
     /**
-     * @brief OpenHDVideoStream
-     * @param videoOutputWindow the window where the video is output to.
+     * The constructor is delayed, remember to use init().
      */
-    OpenHDVideoStream(QObject *parent = nullptr);
-    virtual ~OpenHDVideoStream();
-
+    GstVideoStream(QObject *parent = nullptr);
+    virtual ~GstVideoStream();
     /**
-     * @brief init
-     * @param videoStreamConfig the config for this video stream.
+     * @brief after setting the output window, this does not immediately start streaming -
+     * it starts a timer that checks in regular intervalls if any video-related settings (like the videoCodec) have changed
+     * and then starts / re-starts the decoding and display process.
      * @param videoOutputWindow the qt window where the decoded data is displayed.
+     * @param primaryStream primary and secondary stream use different UDP ports
      */
-    void init(QQuickItem* videoOutputWindow);
-    //VideoStreamConfig videoStreamConfig,
-
+    void init(QQuickItem* videoOutputWindow,bool primaryStream=true);
+    // for checking if video data actually arrives
+    // public because set by static method
     qint64 lastDataTimeout = 0;
-
-signals:
-    void videoRunning(bool running);
-
-public:
     void startVideo();
-    void stopVideo();
+    void stopVideoSafe();
 private:
     /**
      * @brief fired by m_timer.
      * Checks every second if the enable_videotest setting has changed, if so we restart the
      * stream and let the the pipeline be reconstructed using whichever video source is now enabled.
      */
-    void _timer() ;
+    void timerCallback();
     // Where the video is output to.
     QQuickItem* m_videoOutputWindow;
     // The gstreamer pipeline
     GstElement * m_pipeline=nullptr;
-
+    // the current configuration, is continously synced with settings
     VideoStreamConfig m_videoStreamConfig;
-
+    // runs every 1 second
     QTimer* timer = nullptr;
-
-    GMainLoop *mainLoop = nullptr;
+    bool m_isPrimaryStream=true;
+    bool firstCheck=true;
 };
 
 #endif // OpenHDVideoStream_H

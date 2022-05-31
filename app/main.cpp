@@ -302,10 +302,10 @@ int main(int argc, char *argv[]) {
 engine.rootContext()->setContextProperty("EnableGStreamer", QVariant(true));
 engine.rootContext()->setContextProperty("EnableVideoRender", QVariant(false));
 #if defined(ENABLE_MAIN_VIDEO)
-    OpenHDVideoStream* mainVideo = new OpenHDVideoStream();
+    GstVideoStream* mainVideo = new GstVideoStream();
 #endif
 #if defined(ENABLE_PIP)
-    OpenHDVideoStream* pipVideo = new OpenHDVideoStream();
+    GstVideoStream* pipVideo = new GstVideoStream();
 #endif
 #endif
 
@@ -481,7 +481,6 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
         throw std::runtime_error("Window not found");
     }
     mainVideo->init(windowPrimary);
-    //mainVideo->startVideo();
 #endif
 #if defined(ENABLE_PIP)
     const auto windowSecondary=QOpenHDVideoHelper::find_qt_video_window(&engine,false);
@@ -489,7 +488,6 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
         throw std::runtime_error("Window not found");
     }
     pipVideo->init(windowSecondary);
-    //pipVideo->startVideo();
 #endif
 #endif
 
@@ -562,10 +560,10 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
 
 #if defined(ENABLE_GSTREAMER) || defined(ENABLE_VIDEO_RENDER)
 #if defined(ENABLE_MAIN_VIDEO)
-    mainVideo->stopVideo();
+    mainVideo->stopVideoSafe();
 #endif
 #if defined(ENABLE_PIP)
-    pipVideo->stopVideo();
+    pipVideo->stopVideoSafe();
 #endif
 #endif
     return retval;
