@@ -1,6 +1,6 @@
 #if defined(ENABLE_GSTREAMER)
 
-#include "openhdvideostream.h"
+#include "gstvideostream.h"
 
 #include <QtConcurrent>
 #include <QtQuick>

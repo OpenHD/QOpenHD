@@ -503,12 +503,12 @@ EnableGStreamer {
     DEFINES += ENABLE_GSTREAMER
 
     SOURCES += \
-        app/videostreaming/openhdvideostream.cpp
+    app/videostreaming/gstvideostream.cpp
 
     HEADERS += \
-        app/videostreaming/openhdvideostream.h \
         app/videostreaming/QOpenHDVideoHelper.hpp \
-        app/videostreaming/gst_platform_include.h
+        app/videostreaming/gst_platform_include.h \
+    app/videostreaming/gstvideostream.h
 
     include ($$PWD/lib/VideoStreaming/VideoStreaming.pri)
 }

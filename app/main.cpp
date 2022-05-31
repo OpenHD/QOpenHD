@@ -61,7 +61,7 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 
 #if defined(ENABLE_GSTREAMER)
 
-#include "videostreaming/openhdvideostream.h"
+#include "videostreaming/gstvideostream.h"
 
 #endif
 

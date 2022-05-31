@@ -45,11 +45,10 @@ struct VideoStreamConfig{
 
 /**
  * Consti10
- * This video player works purely in software, but supports all the 3 OpenHD live video formats (h264,h265 and mjpeg).
+ * This video player works purely in software (Gstreamer), but supports all the 3 OpenHD live video formats (h264,h265 and mjpeg).
  * Its inputs and outputs are easily defined:
  * 1) Input -> a udp port from which rtp video data is received.
  * 2) Output -> a qml window ???? not sure yet exactly how to call that.
- * And processing is done via gstreamer.
  */
 class OpenHDVideoStream : public QObject
 {
