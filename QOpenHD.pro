@@ -98,8 +98,6 @@ HEADERS += \
     app/osd/drawingcanvas.h \
     app/osd/flightpathvector.h \
     app/osd/vroverlay.h \
-    app/videostreaming/GSTHelper.hpp \
-    app/videostreaming/GSTSomething.inc \
     app/videostreaming/Xtestvideoplayer.h \
     app/videostreaming/gst_platform_include.h
 
