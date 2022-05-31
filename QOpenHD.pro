@@ -370,16 +370,6 @@ RaspberryPiBuild {
     CONFIG += EnableVideoRender
 
     EnableVideoRender {
-        LIBS += -L/usr/lib/arm-linux-gnueabihf -L/opt/vc/lib/ -lbcm_host -lmmal -lmmal_util -lmmal_components -lmmal_core -lmmal_vc_client -lvcos -lvcsm -lvchostif -lvchiq_arm
-        QT += multimedia
-
-        INCLUDEPATH += /opt/vc/include
-
-        HEADERS += \
-            inc/openhdmmalvideo.h
-
-        SOURCES += \
-            src/openhdmmalvideo.cpp
     }
 }
 
