@@ -46,6 +46,9 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "osd/drawingcanvas.h"
 #include "osd/vroverlay.h"
 
+#include "videostreaming/QOpenHDVideoHelper.hpp"
+
+
 #include "managesettings.h"
 
 #if defined(ENABLE_RC)
@@ -473,11 +476,19 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
 
 #if defined(ENABLE_GSTREAMER)
 #if defined(ENABLE_MAIN_VIDEO)
-    mainVideo->init(&engine, StreamTypeMain);
+    const auto windowPrimary=QOpenHDVideoHelper::find_qt_video_window(&engine,true);
+    if(windowPrimary==nullptr){
+        throw std::runtime_error("Window not found");
+    }
+    mainVideo->init(windowPrimary);
     mainVideo->startVideo();
 #endif
 #if defined(ENABLE_PIP)
-    pipVideo->init(&engine, StreamTypePiP);
+    const auto windowSecondary=QOpenHDVideoHelper::find_qt_video_window(&engine,false);
+    if(windowSecondary==nullptr){
+        throw std::runtime_error("Window not found");
+    }
+    pipVideo->init(windowSecondary);
     pipVideo->startVideo();
 #endif
 #endif

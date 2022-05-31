@@ -87,7 +87,6 @@ SOURCES += \
     app/osd/drawingcanvas.cpp \
     app/osd/flightpathvector.cpp \
     app/osd/vroverlay.cpp \
-    app/videostreaming/Xtestvideoplayer.cpp
 
 HEADERS += \
     app/dummy.hpp \
@@ -98,8 +97,6 @@ HEADERS += \
     app/osd/drawingcanvas.h \
     app/osd/flightpathvector.h \
     app/osd/vroverlay.h \
-    app/videostreaming/Xtestvideoplayer.h \
-    app/videostreaming/gst_platform_include.h
 
 
 # I deleted all the "old" telemetry protocolls other than mavlink
@@ -506,12 +503,11 @@ EnableGStreamer {
 
     SOURCES += \
         app/videostreaming/openhdvideostream.cpp
-        app/videostreaming/Xtestvideoplayer.cpp
-
 
     HEADERS += \
-        app/videostreaming/openhdvideostream.h
-        app/videostreaming/Xtestvideoplayer.h
+        app/videostreaming/openhdvideostream.h \
+        app/videostreaming/QOpenHDVideoHelper.hpp \
+        app/videostreaming/gst_platform_include.h
 
     include ($$PWD/lib/VideoStreaming/VideoStreaming.pri)
 }
