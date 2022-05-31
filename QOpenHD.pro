@@ -125,7 +125,7 @@ SOURCES += \
     app/qopenhdlink.cpp \
     app/statuslogmodel.cpp \
     app/QmlObjectListModel.cpp \
-    app/logger.cpp \
+    app/util/logger.cpp \
     app/util/util.cpp \
     app/util/localmessage.cpp \
 
@@ -136,7 +136,7 @@ HEADERS += \
     app/managesettings.h \
     app/osd_extra/missionwaypoint.h \
     app/osd_extra/missionwaypointmanager.h \
-    app/sharedqueue.h \
+    app/util/sharedqueue.h \
     app/openhd.h \
     app/openhdpi.h \
     app/openhdrc.h \
@@ -144,8 +144,8 @@ HEADERS += \
     app/qopenhdlink.h \
     app/statuslogmodel.h \
     app/QmlObjectListModel.h \
-    app/logger.h \
-    app/logger_t.h \
+    app/util/logger.h \
+    app/util/logger_t.h \
     app/util/localmessage.h \
     app/util/util.h \
 
