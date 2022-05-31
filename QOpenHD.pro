@@ -113,7 +113,7 @@ SOURCES += \
 
 # all other files, complete mess
 SOURCES += \
-    app/FrequencyMonitor.cpp \
+    app/util/FrequencyMonitor.cpp \
     app/main.cpp \
     app/managesettings.cpp \
     app/osd_extra/missionwaypoint.cpp \
@@ -123,8 +123,8 @@ SOURCES += \
     app/openhdrc.cpp \
     app/openhdsettings.cpp \
     app/qopenhdlink.cpp \
-    app/statuslogmodel.cpp \
-    app/QmlObjectListModel.cpp \
+    app/util/statuslogmodel.cpp \
+    app/util/QmlObjectListModel.cpp \
     app/util/logger.cpp \
     app/util/util.cpp \
     app/util/localmessage.cpp \
@@ -132,7 +132,7 @@ SOURCES += \
 RESOURCES += qml/qml.qrc
 
 HEADERS += \
-    app/FrequencyMonitor.h \
+    app/util/FrequencyMonitor.h \
     app/managesettings.h \
     app/osd_extra/missionwaypoint.h \
     app/osd_extra/missionwaypointmanager.h \
@@ -142,8 +142,8 @@ HEADERS += \
     app/openhdrc.h \
     app/openhdsettings.h \
     app/qopenhdlink.h \
-    app/statuslogmodel.h \
-    app/QmlObjectListModel.h \
+    app/util/statuslogmodel.h \
+    app/util/QmlObjectListModel.h \
     app/util/logger.h \
     app/util/logger_t.h \
     app/util/localmessage.h \
@@ -169,6 +169,7 @@ DISTFILES += \
     android/src/org/freedesktop/gstreamer/androidmedia/GstAhsCallback.java \
     android/src/org/freedesktop/gstreamer/androidmedia/GstAmcOnFrameAvailableListener.java \
     app/osd_extra/Readme.txt \
+    app/util/README.md \
     app/videostreaming/README.md \
     app/videostreaming/legacy/README.md \
     inc/osd/Readme.md \

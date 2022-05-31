@@ -16,7 +16,6 @@ namespace QOpenHDVideoHelper{
  * @return nullptr if window cannot be found, the window to display video with otherwise.
  */
 static QQuickItem* find_qt_video_window(QQmlApplicationEngine *m_engine,const bool isMainStream=true){
-
     QString m_elementName;
     if(isMainStream){
          m_elementName = "mainVideoGStreamer";

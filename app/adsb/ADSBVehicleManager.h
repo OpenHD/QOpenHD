@@ -1,6 +1,6 @@
 #pragma once
 
-#include "QmlObjectListModel.h"
+#include "../util/QmlObjectListModel.h"
 #include "ADSBVehicle.h"
 
 #include <QThread>

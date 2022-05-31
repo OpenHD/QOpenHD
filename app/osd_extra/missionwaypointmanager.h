@@ -1,6 +1,6 @@
 #pragma once
 
-#include "QmlObjectListModel.h"
+#include "../util/QmlObjectListModel.h"
 #include "missionwaypoint.h"
 
 #include <QThread>

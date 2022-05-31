@@ -21,12 +21,12 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "util/localmessage.h"
 
 //#if defined(ENABLE_LOG)
-#include "logger.h"
+#include "util/logger.h"
 //#endif
 
 #include "qopenhdlink.h"
 
-#include "statuslogmodel.h"
+#include "util/statuslogmodel.h"
 
 #if defined(ENABLE_ADSB)
 #include "../app/adsb/ADSBVehicleManager.h"
@@ -36,7 +36,7 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "osd_extra/missionwaypointmanager.h"
 #include "osd_extra/missionwaypoint.h"
 
-#include "QmlObjectListModel.h"
+#include "util/QmlObjectListModel.h"
 
 #include "osd/speedladder.h"
 #include "osd/altitudeladder.h"
