@@ -56,7 +56,10 @@ class OpenHDVideoStream : public QObject
     Q_OBJECT
 
 public:
-
+    /**
+     * @brief OpenHDVideoStream
+     * @param videoOutputWindow the window where the video is output to.
+     */
     OpenHDVideoStream(QObject *parent = nullptr);
     virtual ~OpenHDVideoStream();
 
@@ -73,13 +76,10 @@ public:
 signals:
     void videoRunning(bool running);
 
-public slots:
+public:
     void startVideo();
     void stopVideo();
 
-private:
-    void _start();
-    void _stop();
     QString m_elementName;
 
     void _timer() ;

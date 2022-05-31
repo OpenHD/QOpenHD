@@ -6,7 +6,9 @@
 // (TODO: rn everythng except standart ubuntu has been deleted).
 // exposes a initGstreamerOrThrow() method that should be called before any actual gstreamer calls.
 
+#include "qglobal.h"
 #include <gst/gst.h>
+#include <QString>
 #include <stdexcept>
 
 /**
@@ -31,6 +33,21 @@ static void initQmlGlSinkOrThrow(){
     if(sink==nullptr){
         throw std::runtime_error("Cannot initialize gstreamer\n");
    }
+}
+
+// not sure, customize the path where gstreamer log is written to
+static void customizeGstreamerLogPath(){
+    char debuglevel[] = "*:3";
+    #if defined(__android__)
+    char logpath[] = "/sdcard";
+    #else
+    char logpath[] = "/tmp";
+    #endif
+    qputenv("GST_DEBUG", debuglevel);
+    QString file = QString("%1/%2").arg(logpath).arg("gstreamer-log.txt");
+    qputenv("GST_DEBUG_NO_COLOR", "1");
+    qputenv("GST_DEBUG_FILE", file.toStdString().c_str());
+    qputenv("GST_DEBUG_DUMP_DOT_DIR", logpath);
 }
 
 

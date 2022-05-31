@@ -14,24 +14,12 @@
 #include "QOpenHDVideoHelper.hpp"
 
 
-OpenHDVideoStream::OpenHDVideoStream(QObject * parent): QObject(parent), timer(new QTimer) {
+OpenHDVideoStream::OpenHDVideoStream(QObject *parent): QObject(parent), timer(new QTimer) {
     qDebug() << "OpenHDVideoStream::OpenHDVideoStream()";
+    //m_videoOutputWindow=videoOutputWindow;
+    //assert(m_videoOutputWindow!=nullptr);
 
-    char debuglevel[] = "*:3";
-    #if defined(__android__)
-    char logpath[] = "/sdcard";
-    #else
-    char logpath[] = "/tmp";
-    #endif
-
-    qputenv("GST_DEBUG", debuglevel);
-
-    QString file = QString("%1/%2").arg(logpath).arg("gstreamer-log.txt");
-
-    qputenv("GST_DEBUG_NO_COLOR", "1");
-    qputenv("GST_DEBUG_FILE", file.toStdString().c_str());
-    qputenv("GST_DEBUG_DUMP_DOT_DIR", logpath);
-
+    customizeGstreamerLogPath();
     initGstreamerOrThrow();
     initQmlGlSinkOrThrow();
 }
@@ -43,16 +31,16 @@ OpenHDVideoStream::~OpenHDVideoStream() {
 
 
 void OpenHDVideoStream::init(QQuickItem* videoOutputWindow) {
+    m_videoOutputWindow=videoOutputWindow;
+
     VideoStreamConfig videoStreamConfig{true,0,VideoCodecH264};
     m_videoStreamConfig=videoStreamConfig;
-    m_videoOutputWindow=videoOutputWindow;
 
     /*QSettings settings;
     m_enable_videotest = settings.value("enable_videotest", false).toBool();
 
     const int tmp_video_codec = settings.value("selectedVideoCodecPrimary", 0).toInt();
     m_video_codec=intToVideoCodec(tmp_video_codec);*/
-
 
     lastDataTimeout = QDateTime::currentMSecsSinceEpoch();
 
@@ -147,8 +135,8 @@ static std::string constructGstreamerPipeline(bool enableVideoTest,VideoCodec vi
     return ss.str();
 }
 
-void OpenHDVideoStream::_start() {
-    const auto pipeline=constructGstreamerPipeline(true,VideoCodecH264,5620);
+void OpenHDVideoStream::startVideo() {
+    const auto pipeline=constructGstreamerPipeline(m_videoStreamConfig.enable_videotest,m_videoStreamConfig.video_codec,m_videoStreamConfig.video_port);
 
     GError *error = nullptr;
     m_pipeline = gst_parse_launch(pipeline.c_str(), &error);
@@ -157,6 +145,7 @@ void OpenHDVideoStream::_start() {
         qDebug() << "gst_parse_launch error: " << error->message;
     }
     GstElement *qmlglsink = gst_bin_get_by_name(GST_BIN(m_pipeline), "qmlglsink");
+    assert(qmlglsink!=nullptr);
 
     GstBus *bus = gst_pipeline_get_bus (GST_PIPELINE(m_pipeline));
 
@@ -208,9 +197,9 @@ void OpenHDVideoStream::_timer() {
     _videoStreamConfig.video_port=OHDIntegration::OHD_VIDEO_GROUND_VIDEO_STREAM_1_UDP;
 
     if(!(m_videoStreamConfig==_videoStreamConfig)){
+        m_videoStreamConfig=_videoStreamConfig;
         startVideo();
     }
-
 
     auto currentTime = QDateTime::currentMSecsSinceEpoch();
 
@@ -230,23 +219,13 @@ void OpenHDVideoStream::_timer() {
 }
 
 
-void OpenHDVideoStream::startVideo() {
-    //QFuture<void> future = QtConcurrent::run(this, &OpenHDVideoStream::_start);
-    _start();
-}
-
-void OpenHDVideoStream::_stop() {
+void OpenHDVideoStream::stopVideo() {
     qDebug() << "OpenHDVideoStream::_stop()";
     if (m_pipeline != nullptr) {
         gst_element_set_state (m_pipeline, GST_STATE_NULL);
         //gst_object_unref (m_pipeline);
         g_main_loop_quit(mainLoop);
     }
-}
-
-void OpenHDVideoStream::stopVideo() {
-    //QFuture<void> future = QtConcurrent::run(this, &OpenHDVideoStream::_stop);
-    _stop();
 }
 
 
