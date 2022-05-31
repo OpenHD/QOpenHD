@@ -9,7 +9,9 @@
 #include <gst/gst.h>
 #include <stdexcept>
 
-
+/**
+ * @brief initGstreamer, throw a run time exception when failing
+ */
 static void initGstreamerOrThrow(){
     GError* error = nullptr;
     if (!gst_init_check(nullptr,nullptr, &error)) {
@@ -17,6 +19,9 @@ static void initGstreamerOrThrow(){
     }
 }
 
+/**
+ * @brief Not sure if still needed nowadays, init qml sink or throw run time exception ??!!
+ */
 static void initQmlGlSinkOrThrow(){
     /* If qmlgl plugin was dynamically linked, this will force GStreamer to go find it and
      * load it before the QML gets loaded in main.cpp (without this, Qt will complain that
