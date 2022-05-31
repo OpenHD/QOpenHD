@@ -113,7 +113,7 @@ SOURCES += \
 
 # all other files, complete mess
 SOURCES += \
-    app/FPS.cpp \
+    app/FrequencyMonitor.cpp \
     app/main.cpp \
     app/managesettings.cpp \
     app/osd_extra/missionwaypoint.cpp \
@@ -132,7 +132,7 @@ SOURCES += \
 RESOURCES += qml/qml.qrc
 
 HEADERS += \
-    app/FPS.h \
+    app/FrequencyMonitor.h \
     app/managesettings.h \
     app/osd_extra/missionwaypoint.h \
     app/osd_extra/missionwaypointmanager.h \

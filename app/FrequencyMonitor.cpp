@@ -48,7 +48,7 @@
 **
 ****************************************************************************/
 
-#include "FPS.h"
+#include "FrequencyMonitor.h"
 #include <QDebug>
 #include <QElapsedTimer>
 #include <QString>
