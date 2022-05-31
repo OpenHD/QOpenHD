@@ -24,6 +24,8 @@ Settings {
     property bool app_background_transparent: false
 
     property bool enable_software_video_decoder: false
+    // enably a test video source instead of decoding actual video data, if supported by the platform
+    property bool dev_enable_test_video:false
     // Video codec of the primary video stream (main window).
     property int selectedVideoCodecPrimary:0 //0==h264,1==h265,2==MJPEG, other (error) default to h264
     property bool enable_rtp: true

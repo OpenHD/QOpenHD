@@ -481,7 +481,7 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
         throw std::runtime_error("Window not found");
     }
     mainVideo->init(windowPrimary);
-    mainVideo->startVideo();
+    //mainVideo->startVideo();
 #endif
 #if defined(ENABLE_PIP)
     const auto windowSecondary=QOpenHDVideoHelper::find_qt_video_window(&engine,false);
@@ -489,7 +489,7 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
         throw std::runtime_error("Window not found");
     }
     pipVideo->init(windowSecondary);
-    pipVideo->startVideo();
+    //pipVideo->startVideo();
 #endif
 #endif
 

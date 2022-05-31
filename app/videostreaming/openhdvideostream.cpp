@@ -18,6 +18,9 @@ OpenHDVideoStream::OpenHDVideoStream(QObject *parent): QObject(parent), timer(ne
     qDebug() << "OpenHDVideoStream::OpenHDVideoStream()";
     //m_videoOutputWindow=videoOutputWindow;
     //assert(m_videoOutputWindow!=nullptr);
+    // developer testing
+    QSettings settings;
+    settings.setValue("dev_enable_test_video",false);
 
     customizeGstreamerLogPath();
     initGstreamerOrThrow();
@@ -35,12 +38,6 @@ void OpenHDVideoStream::init(QQuickItem* videoOutputWindow) {
 
     VideoStreamConfig videoStreamConfig{true,0,VideoCodecH264};
     m_videoStreamConfig=videoStreamConfig;
-
-    /*QSettings settings;
-    m_enable_videotest = settings.value("enable_videotest", false).toBool();
-
-    const int tmp_video_codec = settings.value("selectedVideoCodecPrimary", 0).toInt();
-    m_video_codec=intToVideoCodec(tmp_video_codec);*/
 
     lastDataTimeout = QDateTime::currentMSecsSinceEpoch();
 
@@ -114,7 +111,7 @@ static void link_gsteamer_to_qt_window(QQuickItem *qtOutWindow,GstElement *qmlgl
 static std::string constructGstreamerPipeline(bool enableVideoTest,VideoCodec videoCodec,int udp_port){
     std::stringstream ss;
     if(enableVideoTest){
-        qDebug() << "Using video test\n";
+        qDebug() << "Using video test";
         ss << "videotestsrc pattern=smpte !";
         ss << "video/x-raw,width=640,height=480 !";
         ss << "queue !";
@@ -136,8 +133,11 @@ static std::string constructGstreamerPipeline(bool enableVideoTest,VideoCodec vi
 }
 
 void OpenHDVideoStream::startVideo() {
+    if(m_pipeline!=nullptr){
+        stopVideo();
+        assert(m_pipeline==nullptr);
+    }
     const auto pipeline=constructGstreamerPipeline(m_videoStreamConfig.enable_videotest,m_videoStreamConfig.video_codec,m_videoStreamConfig.video_port);
-
     GError *error = nullptr;
     m_pipeline = gst_parse_launch(pipeline.c_str(), &error);
     qDebug() << "GSTREAMER PIPE=" << pipeline.c_str();
@@ -160,37 +160,36 @@ void OpenHDVideoStream::startVideo() {
      *
      * After that point we can just set the pipeline to GST_STATE_PLAYING directly.
      */
-    if (firstRun) {
+    /*if (firstRun) {
         firstRun = false;
         //rootObject->scheduleRenderJob(new SetPlaying (m_pipeline), QQuickWindow::BeforeSynchronizingStage);
     } else {
         gst_element_set_state (m_pipeline, GST_STATE_PLAYING);
-    }
+    }*/
+     gst_element_set_state (m_pipeline, GST_STATE_PLAYING);
 
     lastDataTimeout = QDateTime::currentMSecsSinceEpoch();
     OpenHD::instance()->set_main_video_running(false);
     OpenHD::instance()->set_pip_video_running(false);
 
-    mainLoop = g_main_loop_new(nullptr, FALSE);
-    g_main_loop_run(mainLoop);
+    //mainLoop = g_main_loop_new(nullptr, FALSE);
+    //g_main_loop_run(mainLoop);
 }
 
-/*
- * Fired by m_timer.
- *
- * Checks every second if the enable_videotest setting has changed, if so we restart the
- * stream and let the the pipeline be reconstructed using whichever video source is now enabled.
- */
-void OpenHDVideoStream::_timer() {    
-    // skip everything until the video is known to have started at least once.
-    if (firstRun) {
-        return;
+void OpenHDVideoStream::stopVideo() {
+    qDebug() << "OpenHDVideoStream::_stop()";
+    if (m_pipeline != nullptr) {
+        gst_element_set_state (m_pipeline, GST_STATE_NULL);
+        gst_object_unref (m_pipeline);
+        m_pipeline=nullptr;
+       // g_main_loop_quit(mainLoop);
     }
+}
 
+void OpenHDVideoStream::_timer() {    
     QSettings settings;
-
     VideoStreamConfig _videoStreamConfig;
-    _videoStreamConfig.enable_videotest=settings.value("enable_videotest", false).toBool();
+    _videoStreamConfig.enable_videotest=settings.value("dev_enable_test_video", false).toBool();
     const int tmp_video_codec = settings.value("selectedVideoCodecPrimary", 0).toInt();
     _videoStreamConfig.video_codec=intToVideoCodec(tmp_video_codec);
     //auto _main_video_port = settings.value("main_video_port", main_default_port).toInt();
@@ -201,7 +200,7 @@ void OpenHDVideoStream::_timer() {
         startVideo();
     }
 
-    auto currentTime = QDateTime::currentMSecsSinceEpoch();
+    const auto currentTime = QDateTime::currentMSecsSinceEpoch();
 
     /*if (currentTime - lastDataTimeout < 2500) {
         if (m_stream_type == StreamTypeMain) {
@@ -218,15 +217,6 @@ void OpenHDVideoStream::_timer() {
     }*/
 }
 
-
-void OpenHDVideoStream::stopVideo() {
-    qDebug() << "OpenHDVideoStream::_stop()";
-    if (m_pipeline != nullptr) {
-        gst_element_set_state (m_pipeline, GST_STATE_NULL);
-        //gst_object_unref (m_pipeline);
-        g_main_loop_quit(mainLoop);
-    }
-}
 
 
 #endif

@@ -79,15 +79,17 @@ signals:
 public:
     void startVideo();
     void stopVideo();
-
-    QString m_elementName;
-
+private:
+    /**
+     * @brief fired by m_timer.
+     * Checks every second if the enable_videotest setting has changed, if so we restart the
+     * stream and let the the pipeline be reconstructed using whichever video source is now enabled.
+     */
     void _timer() ;
     // Where the video is output to.
     QQuickItem* m_videoOutputWindow;
     // The gstreamer pipeline
-    GstElement * m_pipeline;
-    bool firstRun = true;
+    GstElement * m_pipeline=nullptr;
 
     VideoStreamConfig m_videoStreamConfig;
 
