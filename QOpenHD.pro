@@ -98,7 +98,10 @@ HEADERS += \
     app/osd/drawingcanvas.h \
     app/osd/flightpathvector.h \
     app/osd/vroverlay.h \
-    app/videostreaming/Xtestvideoplayer.h
+    app/videostreaming/GSTHelper.hpp \
+    app/videostreaming/GSTSomething.inc \
+    app/videostreaming/Xtestvideoplayer.h \
+    app/videostreaming/gst_platform_include.h
 
 
 # I deleted all the "old" telemetry protocolls other than mavlink
@@ -171,6 +174,7 @@ DISTFILES += \
     android/src/org/freedesktop/gstreamer/androidmedia/GstAhsCallback.java \
     android/src/org/freedesktop/gstreamer/androidmedia/GstAmcOnFrameAvailableListener.java \
     app/osd_extra/Readme.txt \
+    app/videostreaming/legacy/README.md \
     inc/osd/Readme.md \
     qml/qtquickcontrols2.conf \
     qml/ui/qmldir \

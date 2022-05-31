@@ -24,8 +24,8 @@ Settings {
     property bool app_background_transparent: false
 
     property bool enable_software_video_decoder: false
-    property bool video_h264: true
-    property bool video_h265: false
+    // Video codec of the primary video stream (main window).
+    property int selectedVideoCodecPrimary:0 //0==h264,1==h265,2==MJPEG, other (error) default to h264
     property bool enable_rtp: true
     property bool enable_lte_video: false
     property bool hide_watermark: true

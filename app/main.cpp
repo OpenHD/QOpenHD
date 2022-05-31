@@ -299,10 +299,10 @@ int main(int argc, char *argv[]) {
 engine.rootContext()->setContextProperty("EnableGStreamer", QVariant(true));
 engine.rootContext()->setContextProperty("EnableVideoRender", QVariant(false));
 #if defined(ENABLE_MAIN_VIDEO)
-    OpenHDVideoStream* mainVideo = new OpenHDVideoStream(argc, argv);
+    OpenHDVideoStream* mainVideo = new OpenHDVideoStream();
 #endif
 #if defined(ENABLE_PIP)
-    OpenHDVideoStream* pipVideo = new OpenHDVideoStream(argc, argv);
+    OpenHDVideoStream* pipVideo = new OpenHDVideoStream();
 #endif
 #endif
 

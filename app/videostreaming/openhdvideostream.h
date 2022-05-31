@@ -23,7 +23,12 @@ public:
       VideoCodecH265,
       VideoCodecMJPEG
     } VideoCodec;
-    OpenHDVideoStream(int &argc, char *argv[], QObject *parent = nullptr);
+    static VideoCodec intToVideoCodec(int videoCodec){
+        if(videoCodec==1)return VideoCodecH265;
+        if(videoCodec==2)return VideoCodecMJPEG;
+        return VideoCodecH265;
+    }
+    OpenHDVideoStream(QObject *parent = nullptr);
     virtual ~OpenHDVideoStream();
     void init(QQmlApplicationEngine * engine, enum StreamType stream_type);
 
@@ -48,20 +53,13 @@ private:
     bool firstRun = true;
 
     bool m_enable_videotest = false;
-    bool m_enable_software_video_decoder = false;
-    bool m_enable_rtp = true;
-    bool m_enable_pip_video = false;
-    bool m_enable_lte_video = false;
-
-    bool m_video_h264 = true;
-
+    int m_video_port = 0;
+    VideoCodec m_video_codec=VideoCodecH264;
     enum StreamType m_stream_type;
 
-    int m_video_port = 0;
-
-    int main_default_port = 5600;
-    int pip_default_port = 5601;
-    int lte_default_port = 8000;
+    const int main_default_port = 5600;
+    const int pip_default_port = 5601;
+    const int lte_default_port = 8000;
 
     QTimer* timer = nullptr;
 

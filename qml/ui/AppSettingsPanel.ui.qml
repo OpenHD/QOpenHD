@@ -2081,9 +2081,8 @@ Item {
                         height: rowHeight
                         color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
                         visible: true
-
                         Text {
-                            text: qsTr("Enable h264")
+                            text: qsTr("Video Codec")
                             font.weight: Font.Bold
                             font.pixelSize: 13
                             anchors.leftMargin: 8
@@ -2094,63 +2093,31 @@ Item {
                             anchors.left: parent.left
                         }
 
-                        Switch {
-                            width: 32
-                            height: elementHeight
-                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            checked: settings.video_h264
-                            onCheckedChanged: {
-                                if (checked === true ){
-                                    settings.video_h264 = true
-                                    settings.video_h265 = false
-                                }
-                                else {
-                                    settings.video_h264 = false
-                                    settings.video_h265 = true
-                                }
-                            }
-                        }
-                    }
-
-                    Rectangle {
-                        width: parent.width
-                        height: rowHeight
-                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-                        visible: true
-
-                        Text {
-                            text: qsTr("Enable h265")
-                            font.weight: Font.Bold
-                            font.pixelSize: 13
-                            anchors.leftMargin: 8
-                            verticalAlignment: Text.AlignVCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: 224
-                            height: elementHeight
-                            anchors.left: parent.left
-                        }
-
-                        Switch {
-                            width: 32
-                            height: elementHeight
-                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            checked: settings.video_h265
-                            onCheckedChanged: {
-                                if (checked === true ){
-                                    settings.video_h265 = true
-                                    settings.video_h264 = false
-                                }
-                                else {
-                                    settings.video_h265 = false
-                                    settings.video_h264 = true
-                                }
-                            }
+                        ComboBox {
+                          id: selectVideoCodecPrimary
+                          width: 320
+                          height: elementHeight
+                          anchors.right: parent.right
+                          anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                          anchors.verticalCenter: parent.verticalCenter
+                          anchors.horizontalCenter: parent.horizonatalCenter
+                          model: ListModel {
+                           id: cbItems
+                           ListElement { text: "H264"; }
+                           ListElement { text: "H265";  }
+                           ListElement { text: "MJPEG"; }
+                         }
+                          Component.onCompleted: {
+                              // out of bounds checking
+                              if(settings.selectedVideoCodecPrimary>2 || settings.selectedVideoCodecPrimary<0){
+                                  settings.selectedVideoCodecPrimary=0;
+                              }
+                              currentIndex = settings.selectedVideoCodecPrimary;
+                          }
+                         onCurrentIndexChanged:{
+                             console.debug("VideoCodec:"+cbItems.get(currentIndex).text + ", "+currentIndex)
+                             settings.selectedVideoCodecPrimary=currentIndex;
+                         }
                         }
                     }
 
