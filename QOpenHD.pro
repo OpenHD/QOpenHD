@@ -86,7 +86,6 @@ SOURCES += \
     app/osd/altitudeladder.cpp \
     app/osd/drawingcanvas.cpp \
     app/osd/flightpathvector.cpp \
-    app/osd/vroverlay.cpp \
 
 HEADERS += \
     app/dummy.hpp \
@@ -96,7 +95,6 @@ HEADERS += \
     app/osd/altitudeladder.h \
     app/osd/drawingcanvas.h \
     app/osd/flightpathvector.h \
-    app/osd/vroverlay.h \
 
 
 # I deleted all the "old" telemetry protocolls other than mavlink
