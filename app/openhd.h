@@ -676,7 +676,7 @@ public:
     int m_home_heading = 0; //this is actual global heading
     int m_home_course = 0; //this is the relative course from nose
 
-    int m_battery_percent = 0;
+    int m_battery_percent = 20; //TODO debug, set back to 0
     int m_ground_battery_percent = 0;
     int m_fc_battery_percent = 0;
     double m_battery_current = 0.0;
