@@ -1,11 +1,10 @@
+#include "flightpathvector.h"
+
 #include <QQuickItem>
 #include <QQuickPaintedItem>
 #include <QPainter>
 
 #include "openhd.h"
-
-// TODO dirty
-#include "flightpathvector.h"
 
 
 FlightPathVector::FlightPathVector(QQuickItem *parent): QQuickPaintedItem(parent) {

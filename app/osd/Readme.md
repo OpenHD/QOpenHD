@@ -1,8 +1,8 @@
-# Here are all the files for the OSD elements - these are QT QQuickPaintedItem's that are written in c++
+#Summary
+All files here are OSD elements that are written in c++ (though they might have corresponding qml files under qml/widgets ? \
+The reason they were written in c++ is Performance (pretty sure on this one).
+They generally all inherit from QQuickPaintedItem and draw stuff via QPainter.
 
-These elements should not have any dependencies - not even mavlink, for example
-But rather expose sett-ers for the different OSD values
+Note that only a small number of OSD elements is done in c++, the rest is qml.
 
-TODO: rn they depend on openhd.h -> I think this is something like a model for the OSD data, but not sure
 
-I think all the general text is rendered via drawingcanvas.h , but not sure ?!

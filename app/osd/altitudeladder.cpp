@@ -1,11 +1,10 @@
+#include "altitudeladder.h"
+
 #include <QQuickItem>
 #include <QQuickPaintedItem>
 #include <QPainter>
 
 #include "openhd.h"
-
-// TODO dirty
-#include "altitudeladder.h"
 
 
 AltitudeLadder::AltitudeLadder(QQuickItem *parent): QQuickPaintedItem(parent) {

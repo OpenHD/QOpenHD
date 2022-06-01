@@ -1,11 +1,10 @@
+#include "headingladder.h"
+
 #include <QQuickItem>
 #include <QQuickPaintedItem>
 #include <QPainter>
 
 #include "openhd.h"
-
-// TODO dirty
-#include "headingladder.h"
 
 
 HeadingLadder::HeadingLadder(QQuickItem *parent): QQuickPaintedItem(parent) {

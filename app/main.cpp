@@ -13,7 +13,7 @@ const QVector<QString> permissions({"android.permission.INTERNET",
                                     "android.permission.ACCESS_FINE_LOCATION"});
 #endif
 
-#include "openhdrc.h"
+#include "rc/openhdrc.h"
 #include "openhdsettings.h"
 #include "openhdpi.h"
 #include "openhd.h"

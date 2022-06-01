@@ -1,10 +1,10 @@
+#include "speedladder.h"
+
 #include <QQuickItem>
 #include <QQuickPaintedItem>
 #include <QPainter>
 
 #include "openhd.h"
-
-#include "speedladder.h"
 
 
 SpeedLadder::SpeedLadder(QQuickItem *parent): QQuickPaintedItem(parent) {

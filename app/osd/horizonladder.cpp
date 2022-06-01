@@ -1,11 +1,10 @@
+#include "horizonladder.h"
+
 #include <QQuickItem>
 #include <QQuickPaintedItem>
 #include <QPainter>
 
 #include "openhd.h"
-
-// TODO dirty
-#include "horizonladder.h"
 
 
 HorizonLadder::HorizonLadder(QQuickItem *parent): QQuickPaintedItem(parent) {

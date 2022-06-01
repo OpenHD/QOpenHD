@@ -1,11 +1,10 @@
+#include "drawingcanvas.h"
+
 #include <QQuickItem>
 #include <QQuickPaintedItem>
 #include <QPainter>
 
 #include "openhd.h"
-
-//TODO dirty
-#include "drawingcanvas.h"
 
 
 DrawingCanvas::DrawingCanvas(QQuickItem *parent): QQuickPaintedItem(parent) {
