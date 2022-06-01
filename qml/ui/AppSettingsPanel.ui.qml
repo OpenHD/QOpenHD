@@ -1818,38 +1818,7 @@ Item {
                         }
                     }
 
-                    Rectangle {
-                        width: parent.width
-                        height: rowHeight
-                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-                        visible: EnableBlackbox
 
-
-                        Text {
-                            text: qsTr("Show BlackBox")
-                            font.weight: Font.Bold
-                            font.pixelSize: 13
-                            anchors.leftMargin: 8
-                            verticalAlignment: Text.AlignVCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: 224
-                            height: elementHeight
-                            anchors.left: parent.left
-                        }
-
-                        Switch {
-                            width: 32
-                            height: elementHeight
-                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            checked: settings.show_blackbox
-                            onCheckedChanged: {
-                                settings.show_blackbox = checked;
-                            }
-                        }
-                    }
                     Rectangle {
                         width: parent.width
                         height: rowHeight
