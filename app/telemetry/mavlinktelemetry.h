@@ -12,8 +12,6 @@
 #include "mavlinkbase.h"
 
 #include "../adsb/ADSBVehicle.h"
-#include "../osd_extra/missionwaypoint.h"
-
 
 class QUdpSocket;
 
@@ -61,7 +59,6 @@ private slots:
 signals:
     void adsbVehicleUpdate(const ADSBVehicle::VehicleInfo_t vehicleInfo);
     void deleteMissionWaypoints();
-    void addMissionWaypoint(const MissionWaypoint::WaypointInfo_t waypointInfo);
 
     #if defined(ENABLE_RC)
     void update_RC_MavlinkBase(

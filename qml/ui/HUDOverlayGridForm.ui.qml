@@ -187,11 +187,6 @@ Item {
         source: EnablePiP ? "./widgets/VideoWidget.qml" : ""
     }
 
-    // + 2% cpu
-    MapWidget {
-        id: mapWidget
-    }
-
     // + 0% cpu
     GPIOWidget {
         id: gpioWidget

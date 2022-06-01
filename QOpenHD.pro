@@ -116,8 +116,6 @@ SOURCES += \
     app/util/FrequencyMonitor.cpp \
     app/main.cpp \
     app/managesettings.cpp \
-    app/osd_extra/missionwaypoint.cpp \
-    app/osd_extra/missionwaypointmanager.cpp \
     app/openhd.cpp \
     app/openhdpi.cpp \
     app/openhdrc.cpp \
@@ -134,8 +132,6 @@ RESOURCES += qml/qml.qrc
 HEADERS += \
     app/util/FrequencyMonitor.h \
     app/managesettings.h \
-    app/osd_extra/missionwaypoint.h \
-    app/osd_extra/missionwaypointmanager.h \
     app/util/sharedqueue.h \
     app/openhd.h \
     app/openhdpi.h \

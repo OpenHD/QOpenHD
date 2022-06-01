@@ -530,56 +530,6 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             break;
         }
         case MAVLINK_MSG_ID_MISSION_ITEM_INT:{
-            mavlink_mission_item_int_t item;
-            mavlink_msg_mission_item_int_decode(&msg, &item);
-
-            MissionWaypoint::WaypointInfo_t waypointInfo;
-
-            waypointInfo.availableFlags = 0;
-            waypointInfo.sequence = item.seq;
-
-            double lat=item.x / 1e7;
-            double lon=item.y / 1e7;
-
-            if (item.command == 22 ){
-                lat=OpenHD::instance()->get_home_lat();
-                lon=OpenHD::instance()->get_home_lon();
-            }
-
-            //early return on all lat/lon 0,0 that are not takeoff
-            if (lat==0 || lon ==0){
-                break;
-            }
-
-            waypointInfo.location.setLatitude(lat); // degE7 to deg
-            waypointInfo.location.setLongitude(lon); // degE7 to deg
-            waypointInfo.availableFlags |= MissionWaypoint::LocationAvailable;
-
-            waypointInfo.command = item.command;
-            waypointInfo.availableFlags |= MissionWaypoint::CommandAvailable;
-
-            waypointInfo.altitude = (double)item.z; // float to double
-            waypointInfo.availableFlags |= MissionWaypoint::AltitudeAvailable;
-
-            waypointInfo.heading = 99; // fake data
-            waypointInfo.availableFlags |= MissionWaypoint::HeadingAvailable;
-
-            waypointInfo.velocity = 99; // fake
-            waypointInfo.availableFlags |= MissionWaypoint::VelocityAvailable;
-
-            waypointInfo.verticalVel = 99; // fake
-            waypointInfo.availableFlags |= MissionWaypoint::VerticalVelAvailable;
-
-            if (item.seq>0){
-                emit addMissionWaypoint(waypointInfo);
-            }
-            //qDebug() << "emit waypoint = " << item.seq;
-
-            //if this is last waypoint we need to send an ack to the drone
-            if ((int)item.seq==m_total_waypoints){
-                send_Mission_Ack();
-            }
-
             break;
         }
         case MAVLINK_MSG_ID_GPS_GLOBAL_ORIGIN:{
