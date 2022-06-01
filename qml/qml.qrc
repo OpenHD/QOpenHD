@@ -144,10 +144,6 @@
         <file>ui/widgets/ExampleWidgetForm.ui.qml</file>
         <file>ui/widgets/RollWidgetForm.ui.qml</file>
         <file>ui/widgets/RollWidget.qml</file>
-        <file>ui/widgets/BlackBoxWidget.qml</file>
-        <file>ui/widgets/BlackBoxWidgetForm.ui.qml</file>
-        <file>ui/widgets/AdsbWidgetForm.ui.qml</file>
-        <file>ui/widgets/AdsbWidget.qml</file>
         <file>ui/PowerPanel.qml</file>
         <file>ui/PowerPanelForm.ui.qml</file>
         <file>ui/elements/LanguageSelect.qml</file>

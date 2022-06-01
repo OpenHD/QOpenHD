@@ -11,7 +11,6 @@
 
 #include "mavlinkbase.h"
 
-#include "../adsb/ADSBVehicle.h"
 
 class QUdpSocket;
 
@@ -57,8 +56,8 @@ private slots:
     void onProcessMavlinkMessage(mavlink_message_t msg);
 
 signals:
-    void adsbVehicleUpdate(const ADSBVehicle::VehicleInfo_t vehicleInfo);
-    void deleteMissionWaypoints();
+    //void adsbVehicleUpdate(const ADSBVehicle::VehicleInfo_t vehicleInfo);
+    //void deleteMissionWaypoints();
 
     #if defined(ENABLE_RC)
     void update_RC_MavlinkBase(

@@ -164,6 +164,7 @@ DISTFILES += \
     android/src/org/freedesktop/gstreamer/androidmedia/GstAhcCallback.java \
     android/src/org/freedesktop/gstreamer/androidmedia/GstAhsCallback.java \
     android/src/org/freedesktop/gstreamer/androidmedia/GstAmcOnFrameAvailableListener.java \
+    app/adsb/README.md \
     app/osd_extra/Readme.txt \
     app/telemetry/README.md \
     app/util/README.md \
@@ -236,7 +237,6 @@ iOSBuild {
     CONFIG += EnableVideoRender
     CONFIG += EnableLink
     #CONFIG += EnableCharts
-    CONFIG += EnableADSB
     #CONFIG += EnableVR
     #CONFIG += EnableLog //does not work due to filepath not set
 
@@ -283,7 +283,6 @@ MacBuild {
     CONFIG += EnableVideoRender
     CONFIG += EnableLink
     #CONFIG += EnableCharts
-    CONFIG += EnableADSB
     #CONFIG += EnableVR
     #CONFIG += EnableLog //does not work due to filepath not set
 
@@ -314,7 +313,6 @@ LinuxBuild {
     CONFIG += EnableGStreamer
     CONFIG += EnableLink
     #CONFIG += EnableCharts
-    CONFIG += EnableADSB
     #CONFIG += EnableVR
     #CONFIG += EnableLog
     message("LinuxBuild - config")
@@ -329,7 +327,6 @@ JetsonBuild {
     CONFIG += EnableLink
     #CONFIG += EnableCharts
     CONFIG += EnableSpeech
-    CONFIG += EnableADSB
     #CONFIG += EnableVR
     #CONFIG += EnableLog //does not work due to filepath not set
     CONFIG += EnableRC
@@ -356,7 +353,6 @@ RaspberryPiBuild {
     CONFIG += EnableLink
     #CONFIG += EnableCharts
     CONFIG += EnableSpeech
-    CONFIG += EnableADSB
     CONFIG += LimitADSBMax
     #CONFIG += EnableVR
     #CONFIG += EnableLog
@@ -379,7 +375,6 @@ WindowsBuild {
     CONFIG += EnableLink
     CONFIG += EnableGStreamer
     #CONFIG += EnableCharts
-    CONFIG += EnableADSB
     #CONFIG += EnableVR
     #CONFIG += EnableLog
 
@@ -400,7 +395,6 @@ AndroidBuild {
     CONFIG += EnableLink
     CONFIG += EnableVideoRender
     #CONFIG += EnableCharts
-    CONFIG += EnableADSB
     #CONFIG += EnableVR
     #CONFIG += EnableLog
 
@@ -457,26 +451,6 @@ EnableVR {
 EnableLog {
     message("EnableLog")
     DEFINES += ENABLE_LOG
-}
-
-
-EnableADSB {
-    message("EnableADSB")
-    DEFINES += ENABLE_ADSB
-
-    SOURCES += \
-    app/adsb/ADSBVehicleManager.cpp \
-    app/adsb/ADSBVehicle.cpp
-    
-    HEADERS += \
-    app/adsb/ADSBVehicleManager.h \
-    app/adsb/ADSBVehicle.h
-
-}
-
-LimitADSBMax {
-    message("LimitADSBMax")
-    DEFINES += LIMIT_ADSB_MAX
 }
 
 EnableCharts {

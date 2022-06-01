@@ -212,16 +212,6 @@ Item {
         id: rollWidget
     }
 
-    // + 0% cpu
-    BlackBoxWidget {
-        id: blackboxWidget
-    }
-
-    // + 0% cpu
-    AdsbWidget {
-        id: adsbWidget
-    }
-
     // UNTESTED CPU USAGE!!
     VROverlayWidget {
         id: vrOverlayWidget

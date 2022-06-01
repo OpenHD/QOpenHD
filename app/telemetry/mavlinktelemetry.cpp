@@ -506,27 +506,9 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             break;
         }
         case MAVLINK_MSG_ID_MISSION_CURRENT:{
-            mavlink_mission_current_t mission_current;
-            mavlink_msg_mission_current_decode(&msg, &mission_current);
-            auto current_waypoint=mission_current.seq;
-            //qDebug() << "Mission Current: " << current_waypoint;
-            OpenHD::instance()->setCurrentWaypoint(current_waypoint);
             break;
         }
         case MAVLINK_MSG_ID_MISSION_COUNT:{
-            mavlink_mission_count_t mission_count;
-            mavlink_msg_mission_count_decode(&msg, &mission_count);
-            m_total_waypoints=mission_count.count;
-            //qDebug() << "Mission Count: " << m_total_waypoints;
-            OpenHD::instance()->setTotalWaypoints(m_total_waypoints);
-            send_Mission_Ack();
-
-            //request each waypoint
-            if (m_total_waypoints>0){
-                emit deleteMissionWaypoints();
-                get_Mission_Items(m_total_waypoints);
-            }
-
             break;
         }
         case MAVLINK_MSG_ID_MISSION_ITEM_INT:{
@@ -736,47 +718,6 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             break;
         }
         case MAVLINK_MSG_ID_ADSB_VEHICLE: {
-            mavlink_adsb_vehicle_t adsbVehicleMsg;
-            static const int maxTimeSinceLastSeen = 15;
-
-            mavlink_msg_adsb_vehicle_decode(&msg, &adsbVehicleMsg);
-
-            // ignore report if more than 15 since last seen
-            if ((adsbVehicleMsg.flags & ADSB_FLAGS_VALID_COORDS) && adsbVehicleMsg.tslc <= maxTimeSinceLastSeen) {
-                ADSBVehicle::VehicleInfo_t vehicleInfo;
-
-                vehicleInfo.availableFlags = 0;
-                vehicleInfo.icaoAddress = adsbVehicleMsg.ICAO_address;
-
-                vehicleInfo.location.setLatitude(adsbVehicleMsg.lat / 1e7); // degE7 to deg 
-                vehicleInfo.location.setLongitude(adsbVehicleMsg.lon / 1e7); // degE7 to deg
-                vehicleInfo.availableFlags |= ADSBVehicle::LocationAvailable;
-
-                vehicleInfo.callsign = adsbVehicleMsg.callsign;
-                vehicleInfo.availableFlags |= ADSBVehicle::CallsignAvailable;
-
-                if (adsbVehicleMsg.flags & ADSB_FLAGS_VALID_ALTITUDE) {
-                    vehicleInfo.altitude = (double)adsbVehicleMsg.altitude / 1e3; // mm to m
-                    vehicleInfo.availableFlags |= ADSBVehicle::AltitudeAvailable;
-                }
-
-                if (adsbVehicleMsg.flags & ADSB_FLAGS_VALID_HEADING) {
-                    vehicleInfo.heading = (double)adsbVehicleMsg.heading / 100.0; // centideg to deg
-                    vehicleInfo.availableFlags |= ADSBVehicle::HeadingAvailable;
-                }
-
-                if (adsbVehicleMsg.flags & ADSB_FLAGS_VALID_VELOCITY) {
-                    vehicleInfo.velocity = (double)adsbVehicleMsg.hor_velocity * 0.036; // cm/s to km/h
-                    vehicleInfo.availableFlags |= ADSBVehicle::VelocityAvailable;
-                }
-
-                if (adsbVehicleMsg.flags & ADSB_FLAGS_VERTICAL_VELOCITY_VALID) {
-                    vehicleInfo.verticalVel = (double)adsbVehicleMsg.ver_velocity / 100; // cm/s to m/s 
-                    vehicleInfo.availableFlags |= ADSBVehicle::VerticalVelAvailable;
-                }
-
-                emit adsbVehicleUpdate(vehicleInfo);
-            }
             break;
         }
         default: {
