@@ -116,7 +116,7 @@ SOURCES += \
     app/managesettings.cpp \
     app/openhd.cpp \
     app/openhdpi.cpp \
-    app/openhdrc.cpp \
+    app/rc/openhdrc.cpp \
     app/openhdsettings.cpp \
     app/qopenhdlink.cpp \
     app/util/statuslogmodel.cpp \
@@ -133,7 +133,7 @@ HEADERS += \
     app/util/sharedqueue.h \
     app/openhd.h \
     app/openhdpi.h \
-    app/openhdrc.h \
+    app/rc/openhdrc.h \
     app/openhdsettings.h \
     app/qopenhdlink.h \
     app/util/statuslogmodel.h \

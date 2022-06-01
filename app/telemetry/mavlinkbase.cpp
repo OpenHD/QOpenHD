@@ -13,7 +13,7 @@
 #include <QFuture>
 
 #include <openhd/mavlink.h>
-#include "openhdrc.h"
+#include "../rc/openhdrc.h"
 
 #include "../util/util.h"
 
