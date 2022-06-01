@@ -212,11 +212,6 @@ Item {
         id: rollWidget
     }
 
-    // UNTESTED CPU USAGE!!
-    VROverlayWidget {
-        id: vrOverlayWidget
-    }
-
     MissionWidget {
         id: missionWidget
     }

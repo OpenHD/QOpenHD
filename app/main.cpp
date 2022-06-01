@@ -42,7 +42,6 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "osd/horizonladder.h"
 #include "osd/flightpathvector.h"
 #include "osd/drawingcanvas.h"
-#include "osd/vroverlay.h"
 
 #include "videostreaming/QOpenHDVideoHelper.hpp"
 
@@ -238,8 +237,6 @@ int main(int argc, char *argv[]) {
 
     qmlRegisterType<DrawingCanvas>("OpenHD", 1, 0, "DrawingCanvas");
 
-    qmlRegisterType<VROverlay>("OpenHD", 1, 0, "VROverlay");
-
 #if defined(ENABLE_VIDEO_RENDER)
 #if defined(__android__)
     qmlRegisterType<OpenHDAndroidVideo>("OpenHD", 1, 0, "OpenHDAndroidVideo");
@@ -378,29 +375,10 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
     #endif
 
 
-    #if defined(ENABLE_VR)
-    engine.rootContext()->setContextProperty("EnableVR", QVariant(true));
-    #else
-    engine.rootContext()->setContextProperty("EnableVR", QVariant(false));
-    #endif
-
-    #if defined(LIMIT_ADSB_MAX)
-    engine.rootContext()->setContextProperty("LimitADSBMax", QVariant(true));
-    #else
-    engine.rootContext()->setContextProperty("LimitADSBMax", QVariant(false));
-    #endif
-
     #if defined(ENABLE_LOG)
     engine.rootContext()->setContextProperty("EnableLog", QVariant(true));
     #else
     engine.rootContext()->setContextProperty("EnableLog", QVariant(false));
-    #endif
-
-    #if defined(ENABLE_ADSB)
-    auto adsbVehicleManager = ADSBVehicleManager::instance();
-    engine.rootContext()->setContextProperty("AdsbVehicleManager", adsbVehicleManager);
-    QObject::connect(openHDSettings, &OpenHDSettings::groundStationIPUpdated, adsbVehicleManager, &ADSBVehicleManager::setGroundIP, Qt::QueuedConnection);
-    adsbVehicleManager->onStarted();
     #endif
 
 
