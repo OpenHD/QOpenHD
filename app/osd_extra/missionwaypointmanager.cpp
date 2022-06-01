@@ -1,6 +1,5 @@
 
 #include "missionwaypointmanager.h"
-#include "../util/localmessage.h"
 #include "openhd.h"
 #include "../telemetry/mavlinktelemetry.h"
 

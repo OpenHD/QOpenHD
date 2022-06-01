@@ -15,10 +15,9 @@
 #include <openhd/mavlink.h>
 
 #include "../util/util.h"
+#include "../util/localmessage.h"
 
 #include "openhd.h"
-
-#include "../util/localmessage.h"
 
 static MavlinkTelemetry* _instance = nullptr;
 

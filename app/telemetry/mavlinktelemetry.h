@@ -10,8 +10,8 @@
 #include "../util/util.h"
 
 #include "mavlinkbase.h"
-#include "../adsb/ADSBVehicle.h"
 
+#include "../adsb/ADSBVehicle.h"
 #include "../osd_extra/missionwaypoint.h"
 
 

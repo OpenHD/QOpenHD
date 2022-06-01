@@ -12,8 +12,6 @@
 #include "OHDConnection.h"
 
 
-class QUdpSocket;
-
 typedef enum MavlinkType {
     MavlinkTypeUDP,
     MavlinkTypeTCP
