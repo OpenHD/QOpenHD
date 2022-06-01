@@ -48,7 +48,6 @@
         <file>ui/SettingsMap.qml</file>
         <file>ui/delegates/RangeSettingDelegate.ui.qml</file>
         <file>ui/GroundPiSettingsPanelForm.ui.qml</file>
-        <file>ui/AboutPanelForm.ui.qml</file>
         <file>ui/widgets/MessageHUDForm.ui.qml</file>
         <file>ui/widgets/MessageHUD.qml</file>
         <file>ui/widgets/MessageHUDRow.ui.qml</file>
@@ -67,7 +66,6 @@
         <file>ui/widgets/HorizonWidget.qml</file>
         <file>ui/widgets/HorizonWidgetForm.ui.qml</file>
         <file>ui/widgets/AirBatteryWidget.qml</file>
-        <file>ui/widgets/AirBatteryWidgetForm.ui.qml</file>
         <file>ui/widgets/FlightModeWidget.qml</file>
         <file>ui/widgets/FlightModeWidgetForm.ui.qml</file>
         <file>ui/widgets/GPSWidget.qml</file>
