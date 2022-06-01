@@ -3,9 +3,8 @@
 #include <QQuickItem>
 #include <QQuickPaintedItem>
 #include <QPainter>
-
-#include "openhd.h"
-
+#include <math.h>
+#include <QPainterPath>
 
 DrawingCanvas::DrawingCanvas(QQuickItem *parent): QQuickPaintedItem(parent) {
     //qDebug() << "DrawingCanvas::DrawingCanvas()";

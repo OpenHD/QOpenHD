@@ -1,6 +1,7 @@
+#include "openhdrc.h"
+
 #include <QtNetwork>
 
-#include "openhdrc.h"
 #include "util/util.h"
 
 #if defined(ENABLE_GAMEPADS)

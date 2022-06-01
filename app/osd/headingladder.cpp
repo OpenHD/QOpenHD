@@ -4,8 +4,6 @@
 #include <QQuickPaintedItem>
 #include <QPainter>
 
-#include "openhd.h"
-
 
 HeadingLadder::HeadingLadder(QQuickItem *parent): QQuickPaintedItem(parent) {
     qDebug() << "HeadingLadder::HeadingLadder()";

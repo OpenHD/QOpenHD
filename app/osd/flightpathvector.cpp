@@ -3,8 +3,7 @@
 #include <QQuickItem>
 #include <QQuickPaintedItem>
 #include <QPainter>
-
-#include "openhd.h"
+#include <math.h>
 
 
 FlightPathVector::FlightPathVector(QQuickItem *parent): QQuickPaintedItem(parent) {
