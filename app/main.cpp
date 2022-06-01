@@ -94,13 +94,12 @@ const QVector<QString> permissions({"android.permission.INTERNET",
     #endif
 #endif
 
-
 int main(int argc, char *argv[]) {
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
     QCoreApplication::setOrganizationName("Open.HD");
     QCoreApplication::setOrganizationDomain("open.hd");
-    QCoreApplication::setApplicationName("Open.HD");
+    QCoreApplication::setApplicationName("QOpenHD");
 
     auto manageSettings = new ManageSettings();
     #if defined(__rasp_pi__)|| defined(__jetson__)
@@ -476,18 +475,18 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
 
 #if defined(ENABLE_GSTREAMER)
 #if defined(ENABLE_MAIN_VIDEO)
-    const auto windowPrimary=QOpenHDVideoHelper::find_qt_video_window(&engine,true);
+    const auto windowPrimary=QOpenHDVideoHelper::find_qt_video_window(engine,true);
     if(windowPrimary==nullptr){
         throw std::runtime_error("Window not found");
     }
-    mainVideo->init(windowPrimary);
+    mainVideo->init(windowPrimary,true);
 #endif
 #if defined(ENABLE_PIP)
-    const auto windowSecondary=QOpenHDVideoHelper::find_qt_video_window(&engine,false);
+    const auto windowSecondary=QOpenHDVideoHelper::find_qt_video_window(engine,false);
     if(windowSecondary==nullptr){
         throw std::runtime_error("Window not found");
     }
-    pipVideo->init(windowSecondary);
+    pipVideo->init(windowSecondary,false);
 #endif
 #endif
 

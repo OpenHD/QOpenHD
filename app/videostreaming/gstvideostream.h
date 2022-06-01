@@ -68,7 +68,7 @@ public:
      * @param videoOutputWindow the qt window where the decoded data is displayed.
      * @param primaryStream primary and secondary stream use different UDP ports
      */
-    void init(QQuickItem* videoOutputWindow,bool primaryStream=true);
+    void init(QQuickItem* videoOutputWindow,bool primaryStream);
     // for checking if video data actually arrives
     // public because set by static method
     qint64 lastDataTimeout = 0;

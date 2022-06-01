@@ -9,10 +9,6 @@
 #include "gst_platform_include.h"
 #include "QOpenHDVideoHelper.hpp"
 
-static void link_gsteamer_to_qt_window(QQuickItem *qtOutWindow,GstElement *qmlglsink){
-      g_object_set(qmlglsink, "widget", qtOutWindow, NULL);
-}
-
 static VideoStreamConfig readVideoStreamConfigFromSettings(bool isPrimary){
     // read settings
     QSettings settings;
@@ -27,6 +23,10 @@ static VideoStreamConfig readVideoStreamConfigFromSettings(bool isPrimary){
          _videoStreamConfig.video_port=OHDIntegration::OHD_VIDEO_GROUND_VIDEO_STREAM_2_UDP;
     }
     return _videoStreamConfig;
+}
+
+static void link_gsteamer_to_qt_window(QQuickItem *qtOutWindow,GstElement *qmlglsink){
+      g_object_set(qmlglsink, "widget", qtOutWindow, NULL);
 }
 
 /**

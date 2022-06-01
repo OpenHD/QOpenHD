@@ -15,7 +15,7 @@ namespace QOpenHDVideoHelper{
  * @param isMainStream QOpenHD supports upt to 2 simultaneous streams, they each have their own respective window.
  * @return nullptr if window cannot be found, the window to display video with otherwise.
  */
-static QQuickItem* find_qt_video_window(QQmlApplicationEngine *m_engine,const bool isMainStream=true){
+static QQuickItem* find_qt_video_window(QQmlApplicationEngine& m_engine,const bool isMainStream=true){
     QString m_elementName;
     if(isMainStream){
          m_elementName = "mainVideoGStreamer";
@@ -24,7 +24,7 @@ static QQuickItem* find_qt_video_window(QQmlApplicationEngine *m_engine,const bo
     }
     QQuickItem *videoItem;
     QQuickWindow *rootObject;
-    auto rootObjects = m_engine->rootObjects();
+    auto rootObjects = m_engine.rootObjects();
     if (rootObjects.length() < 1) {
         qDebug() << "Failed to obtain root object list!";
         return nullptr;

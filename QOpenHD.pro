@@ -169,6 +169,7 @@ DISTFILES += \
     android/src/org/freedesktop/gstreamer/androidmedia/GstAhsCallback.java \
     android/src/org/freedesktop/gstreamer/androidmedia/GstAmcOnFrameAvailableListener.java \
     app/osd_extra/Readme.txt \
+    app/telemetry/README.md \
     app/util/README.md \
     app/videostreaming/README.md \
     app/videostreaming/legacy/README.md \
