@@ -9,13 +9,14 @@
 #include "gst_platform_include.h"
 #include "QOpenHDVideoHelper.hpp"
 
-static VideoStreamConfig readVideoStreamConfigFromSettings(bool isPrimary){
+
+static QOpenHDVideoHelper::VideoStreamConfig readVideoStreamConfigFromSettings(bool isPrimary){
     // read settings
     QSettings settings;
-    VideoStreamConfig _videoStreamConfig;
+    QOpenHDVideoHelper::VideoStreamConfig _videoStreamConfig;
     _videoStreamConfig.enable_videotest=settings.value("dev_enable_test_video", false).toBool();
     const int tmp_video_codec = settings.value("selectedVideoCodecPrimary", 0).toInt();
-    _videoStreamConfig.video_codec=intToVideoCodec(tmp_video_codec);
+    _videoStreamConfig.video_codec=QOpenHDVideoHelper::intToVideoCodec(tmp_video_codec);
     //auto _main_video_port = settings.value("main_video_port", main_default_port).toInt();
     if(isPrimary){
          _videoStreamConfig.video_port=OHDIntegration::OHD_VIDEO_GROUND_VIDEO_STREAM_1_UDP;
@@ -37,7 +38,7 @@ static void link_gsteamer_to_qt_window(QQuickItem *qtOutWindow,GstElement *qmlgl
  * @param udp_port the udp port to listen for rtp data
  * @return the built pipeline, as a string
  */
-static std::string constructGstreamerPipeline(bool enableVideoTest,VideoCodec videoCodec,int udp_port){
+static std::string constructGstreamerPipeline(bool enableVideoTest,QOpenHDVideoHelper::VideoCodec videoCodec,int udp_port){
     std::stringstream ss;
     if(enableVideoTest){
         qDebug() << "Using video test";
@@ -46,9 +47,9 @@ static std::string constructGstreamerPipeline(bool enableVideoTest,VideoCodec vi
         ss << "queue !";
     }else{
         ss<<"udpsrc port="<<udp_port<<" ";
-        if(videoCodec==VideoCodecH264){
+        if(videoCodec==QOpenHDVideoHelper::VideoCodecH264){
             ss<<"caps = \"application/x-rtp, media=(string)video, encoding-name=(string)H264, payload=(int)96\" ! rtph264depay ! ";
-        }else if(videoCodec==VideoCodecH265){
+        }else if(videoCodec==QOpenHDVideoHelper::VideoCodecH265){
             ss<<"caps = \"application/x-rtp, media=(string)video, encoding-name=(string)H265\" ! rtph265depay ! ";
         }else{
             //m_video_codec==VideoCodecMJPEG
@@ -188,7 +189,7 @@ void GstVideoStream::stopVideoSafe() {
 void GstVideoStream::timerCallback() {
     assert(m_videoOutputWindow!=nullptr);
     // read config from settings
-    const VideoStreamConfig _videoStreamConfig=readVideoStreamConfigFromSettings(m_isPrimaryStream);
+    const QOpenHDVideoHelper::VideoStreamConfig _videoStreamConfig=readVideoStreamConfigFromSettings(m_isPrimaryStream);
     // check if settings have changed or we haven't started anything at all yet
     if((m_videoStreamConfig!=_videoStreamConfig) || m_pipeline == nullptr){
         m_videoStreamConfig=_videoStreamConfig;
