@@ -8,6 +8,11 @@
 #include <QtTextToSpeech/QTextToSpeech>
 #endif
 
+/**
+ * So this is basically a really big "model" (in MVC pattern) class.
+ * While I'd like someone refactoring it (and it should probably reside in telemetry or at least be seperated into telemetry and non-telemetry stuff)
+ * since all the UI elements and their java script code use this class that's not feasible rn.
+ */
 class OpenHD : public QObject
 {
     Q_OBJECT

@@ -88,7 +88,6 @@ SOURCES += \
     app/osd/flightpathvector.cpp \
 
 HEADERS += \
-    app/dummy.hpp \
     app/osd/headingladder.h \
     app/osd/horizonladder.h \
     app/osd/speedladder.h \
