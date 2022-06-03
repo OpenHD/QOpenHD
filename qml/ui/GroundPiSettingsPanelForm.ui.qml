@@ -155,7 +155,7 @@ Item {
                 id: save
                 text: groundPiSettingsBar.currentIndex == 0 ? qsTr("Apply preset") : qsTr("Save")
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                enabled: !openHDSettings.loading && !openHDSettings.saving
+                //enabled: !openHDSettings.loading && !openHDSettings.saving
                 Layout.columnSpan: 1
                 font.pixelSize: 13
             }
@@ -169,7 +169,7 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: button_row.left
             anchors.rightMargin: 0
-            running: openHDSettings.loading || openHDSettings.saving
+            //running: openHDSettings.loading || openHDSettings.saving
             //visible: openHDSettings.loading || openHDSettings.saving
             visible: false //button saved for later use
         }

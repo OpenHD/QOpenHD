@@ -398,9 +398,9 @@ Rectangle {
             id: appSettingsPanel
         }
 
-        GroundPiSettingsPanel {
-            id: groundPiSettingsPanel
-        }
+        //GroundPiSettingsPanel {
+        //    id: groundPiSettingsPanel
+        //}
 
         RcPanel {
             id: rcPanel

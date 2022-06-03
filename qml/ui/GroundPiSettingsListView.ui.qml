@@ -9,7 +9,7 @@ import OpenHD 1.0
 ListView {
     id: groundListView
     clip: true
-    enabled: !openHDSettings.busy
+    //enabled: !openHDSettings.busy
 
     /* this little hack is necessary because inside the delegate's context, "model" means the
        individual item in the list rather than the entire ListModel, which the delegate needs

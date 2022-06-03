@@ -24,7 +24,7 @@ SettingsPopupForm {
     }*/
 
     function openSettings() {
-        openHDSettings.fetchSettings();
+        //openHDSettings.fetchSettings();
         visible = true
     }
 
