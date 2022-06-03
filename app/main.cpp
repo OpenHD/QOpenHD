@@ -15,7 +15,7 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 
 #include "rc/openhdrc.h"
 #include "openhdsettings.h"
-#include "openhdpi.h"
+#include "platform/openhdpi.h"
 #include "openhd.h"
 #include "../app/telemetry/mavlinktelemetry.h"
 #include "util/localmessage.h"
@@ -53,7 +53,7 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #endif
 
 #if defined(__ios__)
-#include "appleplatform.h"
+#include "platform/appleplatform.h"
 #endif
 
 #if defined(ENABLE_GSTREAMER)

@@ -43,7 +43,7 @@ private:
 signals:
     void brightness_changed(int brightness);
     void is_raspberry_pi_changed(bool is_raspberry_pi);
-     void undervolt_changed(bool undervolt);
+    void undervolt_changed(bool undervolt);
 };
 
 QObject *openHDPiSingletonProvider(QQmlEngine *engine, QJSEngine *scriptEngine);

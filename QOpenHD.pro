@@ -114,7 +114,7 @@ SOURCES += \
     app/main.cpp \
     app/managesettings.cpp \
     app/openhd.cpp \
-    app/openhdpi.cpp \
+    app/platform/openhdpi.cpp \
     app/rc/openhdrc.cpp \
     app/openhdsettings.cpp \
     app/qopenhdlink.cpp \
@@ -131,7 +131,7 @@ HEADERS += \
     app/managesettings.h \
     app/util/sharedqueue.h \
     app/openhd.h \
-    app/openhdpi.h \
+    app/platform/openhdpi.h \
     app/rc/openhdrc.h \
     app/openhdsettings.h \
     app/qopenhdlink.h \
@@ -163,6 +163,7 @@ DISTFILES += \
     android/src/org/freedesktop/gstreamer/androidmedia/GstAmcOnFrameAvailableListener.java \
     app/adsb/README.md \
     app/osd_extra/Readme.txt \
+    app/platform/README.md \
     app/telemetry/README.md \
     app/util/README.md \
     app/videostreaming/README.md \
@@ -253,10 +254,10 @@ iOSBuild {
     }
 
     HEADERS += \
-        src/appleplatform.h
+        src/platform/appleplatform.h
 
     SOURCES += \
-        src/appleplatform.mm
+        src/platform/appleplatform.mm
 
     EnableGStreamer {
         DEFINES += GST_GL_HAVE_WINDOW_EAGL=1
