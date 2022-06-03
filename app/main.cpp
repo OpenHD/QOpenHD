@@ -14,7 +14,6 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #endif
 
 #include "rc/openhdrc.h"
-#include "openhdsettings.h"
 #include "platform/openhdpi.h"
 #include "openhd.h"
 #include "../app/telemetry/mavlinktelemetry.h"
@@ -219,8 +218,6 @@ int main(int argc, char *argv[]) {
     qmlRegisterSingletonType<Logger>("OpenHD", 1, 0, "Logger", loggerSingletonProvider);
     //#endif
 
-    qmlRegisterType<OpenHDSettings>("OpenHD", 1,0, "OpenHDSettings");
-
     qmlRegisterType<QOpenHDLink>("OpenHD", 1,0, "QOpenHDLink");
 
     qmlRegisterUncreatableType<QmlObjectListModel>("OpenHD", 1, 0, "QmlObjectListModel", "Reference only");
@@ -340,28 +337,18 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
     engine.rootContext()->setContextProperty("ManageSettings", manageSettings);
 
 
-    auto openHDSettings = new OpenHDSettings();
-    engine.rootContext()->setContextProperty("openHDSettings", openHDSettings);
-
-
     auto openHDRC = new OpenHDRC();
-    QObject::connect(openHDSettings, &OpenHDSettings::groundStationIPUpdated, openHDRC, &OpenHDRC::setGroundIP, Qt::QueuedConnection);
+    //QObject::connect(openHDSettings, &OpenHDSettings::groundStationIPUpdated, openHDRC, &OpenHDRC::setGroundIP, Qt::QueuedConnection);
     engine.rootContext()->setContextProperty("openHDRC", openHDRC);
 
 
     auto link = new QOpenHDLink();
-    QObject::connect(openHDSettings, &OpenHDSettings::groundStationIPUpdated, link, &QOpenHDLink::setGroundIP, Qt::QueuedConnection);
+    //QObject::connect(openHDSettings, &OpenHDSettings::groundStationIPUpdated, link, &QOpenHDLink::setGroundIP, Qt::QueuedConnection);
     engine.rootContext()->setContextProperty("link", link);
 
 
     auto mavlinkTelemetry = MavlinkTelemetry::instance();
     engine.rootContext()->setContextProperty("MavlinkTelemetry", mavlinkTelemetry);
-    /*QThread *mavlinkThread = new QThread();
-    mavlinkThread->setObjectName("mavlinkTelemetryThread");
-    QObject::connect(mavlinkThread, &QThread::started, mavlinkTelemetry, &MavlinkTelemetry::onStarted);
-    mavlinkTelemetry->moveToThread(mavlinkThread);
-    //QObject::connect(openHDSettings, &OpenHDSettings::groundStationIPUpdated, mavlinkTelemetry, &MavlinkTelemetry::setGroundIP, Qt::QueuedConnection);
-    mavlinkThread->start();*/
     mavlinkTelemetry->onSetup();
 
 

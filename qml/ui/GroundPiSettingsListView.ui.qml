@@ -60,7 +60,7 @@ ListView {
                 if (busyIndicator.running) {
                     return;
                 } else {
-                    openHDSettings.fetchSettings();
+                    //XopenHDSettings.fetchSettings();
                 }
             }
         }
