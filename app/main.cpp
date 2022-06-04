@@ -150,10 +150,8 @@ int main(int argc, char *argv[]) {
 #endif
 
     QFontDatabase::addApplicationFont(":/resources/Font Awesome 5 Free-Solid-900.otf");
-
     QFontDatabase::addApplicationFont(":/resources/osdicons.ttf");
-
-    QFontDatabase::addApplicationFont(":/materialdesignicons-webfont.ttf");
+    QFontDatabase::addApplicationFont(":/resources/materialdesignicons-webfont.ttf");
 
 
     QFontDatabase::addApplicationFont(":/osdfonts/Acme-Regular.ttf");
