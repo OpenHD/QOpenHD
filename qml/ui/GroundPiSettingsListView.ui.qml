@@ -10,6 +10,7 @@ ListView {
     id: groundListView
     clip: true
     //enabled: !openHDSettings.busy
+    enabled:true
 
     /* this little hack is necessary because inside the delegate's context, "model" means the
        individual item in the list rather than the entire ListModel, which the delegate needs

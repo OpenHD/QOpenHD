@@ -8,6 +8,9 @@ import Qt.labs.settings 1.0
 import OpenHD 1.0
 
 
+/**
+ * @brief I think this is the main settings panel that is opened when you click the upper left icon.
+**/
 SettingsPopupForm {
     id: settings_form
     signal localMessage(var message, var level)

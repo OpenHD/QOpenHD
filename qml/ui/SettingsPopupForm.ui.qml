@@ -11,6 +11,7 @@ import OpenHD 1.0
 
 import "../ui" as Ui
 
+
 Rectangle {
     property alias settings_popup: settings_popup
     property alias closeButton: closeButton
@@ -26,6 +27,9 @@ Rectangle {
         propagateComposedEvents: false
     }
 
+    // This is the settings row on the left. When an item is clicked, the stack layout index is changed which
+    // means a different category is displayed.
+    // NOTE: when changing the n of elements in the panel, remember to change the indices
     Rectangle {
         id: sidebar
         width: 132
@@ -126,10 +130,10 @@ Rectangle {
                 }
             }
 
-            Item {
+            /*Item {
                 height: 48
                 width: parent.width
-                visible: EnableRC
+                visible: true
                 MouseArea {
                     id: rcButtonMouseArea
                     anchors.fill: parent
@@ -164,7 +168,7 @@ Rectangle {
                     verticalAlignment: Text.AlignVCenter
                     color: mainStackLayout.currentIndex == 2 ? "#33aaff" : "#dde4ed"
                 }
-            }
+            }*/
 
             Item {
                 height: 48
@@ -172,7 +176,7 @@ Rectangle {
                 MouseArea {
                     id: statusButtonMouseArea
                     anchors.fill: parent
-                    onClicked: mainStackLayout.currentIndex = 3
+                    onClicked: mainStackLayout.currentIndex = 2
                 }
 
                 Text {
@@ -201,11 +205,11 @@ Rectangle {
                     font.pixelSize: 15
                     horizontalAlignment: Text.AlignLeft
                     verticalAlignment: Text.AlignVCenter
-                    color: mainStackLayout.currentIndex == 3 ? "#33aaff" : "#dde4ed"
+                    color: mainStackLayout.currentIndex == 2 ? "#33aaff" : "#dde4ed"
                 }
             }
 
-            Item {
+            /*Item {
                 height: 48
                 width: parent.width
                 visible: EnableCharts
@@ -243,7 +247,7 @@ Rectangle {
                     verticalAlignment: Text.AlignVCenter
                     color: mainStackLayout.currentIndex == 4 ? "#33aaff" : "#dde4ed"
                 }
-            }
+            }*/
 
             Item {
                 height: 48
@@ -251,7 +255,7 @@ Rectangle {
                 MouseArea {
                     id: powerButtonMouseArea
                     anchors.fill: parent
-                    onClicked: mainStackLayout.currentIndex = 5
+                    onClicked: mainStackLayout.currentIndex = 3
                 }
 
                 Text {
@@ -280,12 +284,12 @@ Rectangle {
                     font.pixelSize: 15
                     horizontalAlignment: Text.AlignLeft
                     verticalAlignment: Text.AlignVCenter
-                    color: mainStackLayout.currentIndex == 5 ? "#33aaff" : "#dde4ed"
+                    color: mainStackLayout.currentIndex == 3 ? "#33aaff" : "#dde4ed"
                 }
             }
 
 
-            Item {
+            /*Item {
                 height: 48
                 width: parent.width
                 visible: false
@@ -323,7 +327,7 @@ Rectangle {
                     verticalAlignment: Text.AlignVCenter
                     color: mainStackLayout.currentIndex == 6 ? "#33aaff" : "#dde4ed"
                 }
-            }
+            }*/
 
             Item {
                 height: 48
@@ -331,7 +335,7 @@ Rectangle {
                 MouseArea {
                     id: aboutButtonMouseArea
                     anchors.fill: parent
-                    onClicked: mainStackLayout.currentIndex = 7
+                    onClicked: mainStackLayout.currentIndex = 4
                 }
 
                 Text {
@@ -360,7 +364,7 @@ Rectangle {
                     font.pixelSize: 15
                     horizontalAlignment: Text.AlignLeft
                     verticalAlignment: Text.AlignVCenter
-                    color: mainStackLayout.currentIndex == 7 ? "#33aaff" : "#dde4ed"
+                    color: mainStackLayout.currentIndex == 4 ? "#33aaff" : "#dde4ed"
                 }
             }
         }
@@ -398,29 +402,34 @@ Rectangle {
             id: appSettingsPanel
         }
 
+        // placeholder for settings via mavlink
+        TmpGroundPiSettingsPanel{
+            id: tmpGroundPiSettingsPanel
+        }
+
         //GroundPiSettingsPanel {
         //    id: groundPiSettingsPanel
         //}
 
-        RcPanel {
-            id: rcPanel
-        }
+        //RcPanel {
+        //    id: rcPanel
+        //}
 
         StatusPanel {
             id: statusPanel
         }
 
-        ChartsPanel {
-            id: chartsPanel
-        }
+        //ChartsPanel {
+        //    id: chartsPanel
+        //}
 
         PowerPanel {
             id: powerPanel
         }
 
-        SensorPanel {
-            id: sensorPanel
-        }
+        //SensorPanel {
+        //    id: sensorPanel
+        //}
 
         AboutPanel {
             id: aboutPanel

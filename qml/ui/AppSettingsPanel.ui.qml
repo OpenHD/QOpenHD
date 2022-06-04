@@ -13,7 +13,9 @@ import "elements";
 
 
 /*
- * This file should be refactored in a way that isn't so fragile and verbose. The rows are
+ * @brief I think this is the panel for app-specific settings, aka QOpenHD Settings.
+ * Note that OpenHD-Specific settings should not make it into here.
+ * @Stephen: This file should be refactored in a way that isn't so fragile and verbose. The rows are
  * all manually defined and every one of them has a manually vertical offset to position it
  * inside the scroll view.
  *
@@ -81,14 +83,6 @@ Item {
             visible: !IsRaspPi && !IsiOS
 
         }
-
-
-        /*TabButton {
-            text: qsTr("Joystick")
-            width: implicitWidth
-            height: 48
-            font.pixelSize: 13
-        }*/
     }
 
     StackLayout {
@@ -2150,241 +2144,6 @@ Item {
                         width: parent.width
                         height: rowHeight
                         color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-                        visible: true
-
-                        Text {
-                            text: qsTr("Enable stereo mode")
-                            font.weight: Font.Bold
-                            font.pixelSize: 13
-                            anchors.leftMargin: 8
-                            verticalAlignment: Text.AlignVCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: 224
-                            height: elementHeight
-                            anchors.left: parent.left
-                        }
-
-                        Switch {
-                            width: 32
-                            height: elementHeight
-                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            checked: settings.stereo_enable
-                            onCheckedChanged: settings.stereo_enable = checked
-                        }
-                    }
-
-                    Rectangle {
-                        width: parent.width
-                        height: rowHeight
-                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-                        visible: settings.stereo_enable && false
-
-                        Text {
-                            text: qsTr("Stereo OSD mode")
-                            font.weight: Font.Bold
-                            font.pixelSize: 13
-                            anchors.leftMargin: 8
-                            verticalAlignment: Text.AlignVCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: 224
-                            height: elementHeight
-                            anchors.left: parent.left
-                        }
-
-                        ComboBox {
-                            id: stereoDropdown
-                            height: elementHeight
-                            width: 320
-                            anchors.right: parent.right
-                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-                            anchors.verticalCenter: parent.verticalCenter
-                            anchors.horizontalCenter: parent.horizonatalCenter
-                            model: ListModel {
-                                id: stereo_list_model
-                                ListElement { text: "Side by side (no lens correction)"; mode: 0  }
-                                ListElement { text: "Google Daydream"; mode: 1 }
-                            }
-                            textRole: "text"
-                            // @disable-check M223
-                            Component.onCompleted: {
-                                // @disable-check M223
-                                for (var i = 0; i < model.count; i++) {
-                                    // @disable-check M222
-                                    var choice = model.get(i);
-                                    // @disable-check M223
-                                    if (choice.mode == settings.stereo_mode) {
-                                        currentIndex = i;
-                                    }
-                                }
-                            }
-                            onActivated: {
-                                settings.stereo_mode = stereo_list_model.get(currentIndex).mode
-                            }
-                        }
-                    }
-
-
-                    Rectangle {
-                        width: parent.width
-                        height: rowHeight
-                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                        Text {
-                            text: qsTr("Left Stereo OSD Position")
-                            font.weight: Font.Bold
-                            font.pixelSize: 13
-                            anchors.leftMargin: 8
-                            verticalAlignment: Text.AlignVCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: 224
-                            height: elementHeight
-                            anchors.left: parent.left
-                        }
-
-
-                        Text {
-                            text: Number(settings.stereo_osd_left_x).toLocaleString(Qt.locale(), 'f', 0) + "px";
-                            font.pixelSize: 16
-                            anchors.right: stereo_Left_X_Slider.left
-                            anchors.rightMargin: 12
-                            verticalAlignment: Text.AlignVCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: 32
-                            height: elementHeight
-
-                        }
-
-                        Slider {
-                            id: stereo_Left_X_Slider
-                            height: elementHeight
-                            width: 210
-                            font.pixelSize: 14
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            to : 500
-                            from : -500
-                            stepSize: 25
-                            anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
-                            value: settings.stereo_osd_left_x
-
-                            // @disable-check M223
-                            onValueChanged: {
-                                // @disable-check M222
-                                settings.stereo_osd_left_x = stereo_Left_X_Slider.value
-                            }
-                        }
-                    }
-
-
-                    Rectangle {
-                        width: parent.width
-                        height: rowHeight
-                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                        Text {
-                            text: qsTr("Right Stereo OSD Position")
-                            font.weight: Font.Bold
-                            font.pixelSize: 13
-                            anchors.leftMargin: 8
-                            verticalAlignment: Text.AlignVCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: 224
-                            height: elementHeight
-                            anchors.left: parent.left
-                        }
-
-
-                        Text {
-                            text: Number(settings.stereo_osd_right_x).toLocaleString(Qt.locale(), 'f', 0) + "px";
-                            font.pixelSize: 16
-                            anchors.right: stereo_Right_X_Slider.left
-                            anchors.rightMargin: 12
-                            verticalAlignment: Text.AlignVCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: 32
-                            height: elementHeight
-
-                        }
-
-                        Slider {
-                            id: stereo_Right_X_Slider
-                            height: elementHeight
-                            width: 210
-                            font.pixelSize: 14
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            to : 500
-                            from : -500
-                            stepSize: 25
-                            anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
-                            value: settings.stereo_osd_right_x
-
-                            // @disable-check M223
-                            onValueChanged: {
-                                // @disable-check M222
-                                settings.stereo_osd_right_x = stereo_Right_X_Slider.value
-                            }
-                        }
-                    }
-
-
-                    Rectangle {
-                        width: parent.width
-                        height: rowHeight
-                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                        Text {
-                            text: qsTr("Scale Stereo OSD")
-                            font.weight: Font.Bold
-                            font.pixelSize: 13
-                            anchors.leftMargin: 8
-                            verticalAlignment: Text.AlignVCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: 224
-                            height: elementHeight
-                            anchors.left: parent.left
-                        }
-
-
-                        Text {
-                            text: Number(settings.stereo_osd_size).toLocaleString(Qt.locale(), 'f', 0) + "%";
-                            font.pixelSize: 16
-                            anchors.right: stereo_Size_Slider.left
-                            anchors.rightMargin: 12
-                            verticalAlignment: Text.AlignVCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: 32
-                            height: elementHeight
-
-                        }
-
-                        Slider {
-                            id: stereo_Size_Slider
-                            height: elementHeight
-                            width: 210
-                            font.pixelSize: 14
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            to : 100
-                            from : 50
-                            stepSize: 1
-                            anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
-                            value: settings.stereo_osd_size
-
-                            // @disable-check M223
-                            onValueChanged: {
-                                // @disable-check M222
-                                settings.stereo_osd_size = stereo_Size_Slider.value
-                            }
-                        }
-                    }
-                    Rectangle {
-                        width: parent.width
-                        height: rowHeight
-                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
                         Text {
                             text: qsTr("DEV_ENABLE_TEST_VIDEO_SOURCE")
@@ -2408,9 +2167,6 @@ Item {
                             onCheckedChanged: settings.dev_enable_test_video = checked
                         }
                     }
-
-
-
                 }
             }
         }
@@ -2575,11 +2331,5 @@ Item {
                 }
             }
         }
-
-        /*Item {
-              id: joystickTab
-              width: parent.width
-              height: parent.height
-          }*/
     }
 }

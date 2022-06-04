@@ -9,7 +9,8 @@ import OpenHD 1.0
 ScrollView {
     id: presetScrollView
     contentHeight: presetColumn.height
-    enabled: !openHDSettings.busy
+    //enabled: !openHDSettings.busy
+    enabled: true
     clip: true
 
     property int currentSelectedPreset: 0

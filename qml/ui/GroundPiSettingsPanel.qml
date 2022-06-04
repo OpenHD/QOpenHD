@@ -74,7 +74,7 @@ GroundPiSettingsPanelForm {
             if (currentTime - lastSettingsLoad > 60000) {
                 lastSettingsLoad = currentTime;
                 console.log("Auto-fetching ground station settings");
-                openHDSettings.fetchSettings();
+                //ZopenHDSettings.fetchSettings();
             }
         }
     }
