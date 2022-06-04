@@ -17,6 +17,8 @@
 #include "../util/util.h"
 #include "../util/localmessage.h"
 
+#include "openhd_defines.hpp"
+
 #include "openhd.h"
 
 static MavlinkTelemetry* _instance = nullptr;
@@ -653,6 +655,18 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
         case MAVLINK_MSG_ID_ADSB_VEHICLE: {
             break;
         }
+    case MAVLINK_MSG_ID_OPENHD_SYSTEM_TELEMETRY:{
+        mavlink_openhd_system_telemetry_t ohd_sys_telemetry;
+        mavlink_msg_openhd_system_telemetry_decode(&msg,&ohd_sys_telemetry);
+        if(msg.sysid==OHD_SYS_ID_AIR){
+            OpenHD::instance()->set_cpuload_air(ohd_sys_telemetry.cpuload);
+            OpenHD::instance()->set_temp_air(ohd_sys_telemetry.temperature);
+        }else{
+            OpenHD::instance()->set_cpuload_gnd(ohd_sys_telemetry.cpuload);
+            OpenHD::instance()->set_temp_gnd(ohd_sys_telemetry.temperature);
+        }
+        break;
+    }
         default: {
             //printf("MavlinkTelemetry received unmatched message with ID %d, sequence: %d from component %d of system %d\n", msg.msgid, msg.seq, msg.compid, msg.sysid);
             qDebug()<<"MavlinkTelemetry received unmatched message with ID "<<msg.msgid
