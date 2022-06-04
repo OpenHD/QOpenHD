@@ -149,9 +149,9 @@ int main(int argc, char *argv[]) {
     qDebug() << "Finished initializing Pi";
 #endif
 
-    QFontDatabase::addApplicationFont(":/Font Awesome 5 Free-Solid-900.otf");
+    QFontDatabase::addApplicationFont(":/resources/Font Awesome 5 Free-Solid-900.otf");
 
-    QFontDatabase::addApplicationFont(":/osdicons.ttf");
+    QFontDatabase::addApplicationFont(":/resources/osdicons.ttf");
 
     QFontDatabase::addApplicationFont(":/materialdesignicons-webfont.ttf");
 

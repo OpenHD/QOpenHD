@@ -9,6 +9,7 @@ import OpenHD 1.0
 import Qt.labs.settings 1.0
 
 import "./widgets"
+import "../resources" as Resources
 
 Item {
     property alias messageHUD: messageHUD
@@ -21,7 +22,7 @@ Item {
         fillMode: Image.PreserveAspectFit
         z: 2.2
 
-        source: "../ic128.png"
+        source: "../resources/ic128.png"
         anchors.left: parent.left
         anchors.leftMargin: 8
         anchors.top: parent.top

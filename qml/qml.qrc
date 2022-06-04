@@ -29,9 +29,6 @@
     <qresource prefix="/">
         <file>main.qml</file>
         <file>qtquickcontrols2.conf</file>
-        <file>materialdesignicons-webfont.ttf</file>
-        <file>Font Awesome 5 Free-Solid-900.otf</file>
-        <file>ic.png</file>
         <file>ui/delegates/TextSettingDelegate.ui.qml</file>
         <file>ui/delegates/SwitchSettingDelegate.ui.qml</file>
         <file>ui/delegates/NumberSettingDelegate.ui.qml</file>
@@ -69,7 +66,6 @@
         <file>ui/widgets/BaseWidgetForm.ui.qml</file>
         <file>ui/widgets/FpvWidget.qml</file>
         <file>ui/widgets/FpvWidgetForm.ui.qml</file>
-        <file>osdicons.ttf</file>
         <file>ui/widgets/HeadingWidget.qml</file>
         <file>ui/widgets/HeadingWidgetForm.ui.qml</file>
         <file>ui/widgets/SpeedWidget.qml</file>
@@ -103,8 +99,6 @@
         <file>MainVideoRender.qml</file>
         <file>ui/widgets/VideoWidgetRenderForm.ui.qml</file>
         <file>ui/widgets/VideoWidgetAndroidForm.ui.qml</file>
-        <file>ic128.png</file>
-        <file>homemarker.png</file>
         <file>ui/widgets/FlightDistanceWidgetForm.ui.qml</file>
         <file>ui/widgets/FlightDistanceWidget.qml</file>
         <file>ui/widgets/FlightMahWidgetForm.ui.qml</file>
@@ -231,5 +225,11 @@
         <file>ui/configpopup/ChartsPanel.qml</file>
         <file>ui/configpopup/AppSettingsPanel.ui.qml</file>
         <file>ui/configpopup/AboutPanel.qml</file>
+        <file>resources/osdicons.ttf</file>
+        <file>resources/materialdesignicons-webfont.ttf</file>
+        <file>resources/ic128.png</file>
+        <file>resources/ic.png</file>
+        <file>resources/homemarker.png</file>
+        <file>resources/Font Awesome 5 Free-Solid-900.otf</file>
     </qresource>
 </RCC>
