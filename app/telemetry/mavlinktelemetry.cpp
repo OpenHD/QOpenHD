@@ -132,11 +132,11 @@ void MavlinkTelemetry::rc_value_changed(int channelIdx,uint channelValue){
 
 
 void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
-    //qDebug()<<"MavlinkTelemetry::onProcessMavlinkMessage";
+    qDebug()<<"MavlinkTelemetry::onProcessMavlinkMessage"<<msg.msgid;
 
-    if(pause_telemetry==true){
-        return;
-    }
+    //if(pause_telemetry==true){
+    //    return;
+    //}
 
     switch (msg.msgid) {
             case MAVLINK_MSG_ID_HEARTBEAT: {
@@ -654,7 +654,11 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             break;
         }
         default: {
-            printf("MavlinkTelemetry received unmatched message with ID %d, sequence: %d from component %d of system %d\n", msg.msgid, msg.seq, msg.compid, msg.sysid);
+            //printf("MavlinkTelemetry received unmatched message with ID %d, sequence: %d from component %d of system %d\n", msg.msgid, msg.seq, msg.compid, msg.sysid);
+            qDebug()<<"MavlinkTelemetry received unmatched message with ID "<<msg.msgid
+                   <<", sequence: "<<msg.seq
+                  <<" from component "<<msg.compid
+                 <<" of system "<<msg.sysid;
             break;
         }
     }

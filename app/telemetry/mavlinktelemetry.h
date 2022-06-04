@@ -31,7 +31,7 @@ public slots:
     void requested_ArmDisarm_Changed(int arm_disarm);
     void FC_Reboot_Shutdown_Changed(int reboot_shutdown);
 
-    // channelIdx: value between 0 and 17
+    // channelIdx: value between 0 and ??
     void rc_value_changed(int channelIdx,uint channelValue);
 
 private slots:

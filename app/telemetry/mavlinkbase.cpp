@@ -31,7 +31,6 @@ MavlinkBase::MavlinkBase(QObject *parent,  MavlinkType mavlink_type): QObject(pa
     qDebug() << "MavlinkBase::MavlinkBase()";
     mOHDConnection=std::make_unique<OHDConnection>(nullptr,false);
     mOHDConnection->registerNewMessageCalback([this](mavlink_message_t msg){
-        //hackProcessMavlinkMessge(msg);
         emit processMavlinkMessage(msg);
     });
 }
