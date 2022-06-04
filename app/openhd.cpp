@@ -139,7 +139,7 @@ void OpenHD::telemetryMessage(QString message, int level) {
 }
 
 void OpenHD::updateFlightTimer() {
-    if (m_armed == true && m_pause_blackbox == false) {
+    if (m_armed == true) {
         // check elapsed time since arming and update the UI-visible flight_time property
         int elapsed = flightTimeStart.elapsed() / 1000;
         auto hours = elapsed / 3600;
@@ -573,26 +573,6 @@ void OpenHD::set_mav_wind_direction(float mav_wind_direction) {
 void OpenHD::set_mav_wind_speed(float mav_wind_speed) {
     m_mav_wind_speed= mav_wind_speed;
      emit mav_wind_speed_changed(m_mav_wind_speed);
-}
-
-void OpenHD::set_control_pitch(int control_pitch) {
-    m_control_pitch = control_pitch;
-     emit control_pitch_changed(m_control_pitch);
-}
-
-void OpenHD::set_control_roll(int control_roll) {
-    m_control_roll = control_roll;
-     emit control_roll_changed(m_control_roll);
-}
-
-void OpenHD::set_control_yaw(int control_yaw) {
-    m_control_yaw = control_yaw;
-     emit control_yaw_changed(m_control_yaw);
-}
-
-void OpenHD::set_control_throttle(int control_throttle) {
-    m_control_throttle = control_throttle;
-     emit control_throttle_changed(m_control_throttle);
 }
 
 void OpenHD::setRcRssi(int rcRssi) {
@@ -1081,46 +1061,6 @@ void OpenHD::updateWind(){
     }
 }
 
-
-void OpenHD::setRCChannel1(int rcChannel1) {
-    mRCChannel1 = rcChannel1;
-    emit rcChannel1Changed(mRCChannel1);
-}
-
-void OpenHD::setRCChannel2(int rcChannel2) {
-    mRCChannel2 = rcChannel2;
-    emit rcChannel2Changed(mRCChannel2);
-}
-
-void OpenHD::setRCChannel3(int rcChannel3) {
-    mRCChannel3 = rcChannel3;
-    emit rcChannel3Changed(mRCChannel3);
-}
-
-void OpenHD::setRCChannel4(int rcChannel4) {
-    mRCChannel4 = rcChannel4;
-    emit rcChannel4Changed(mRCChannel4);
-}
-
-void OpenHD::setRCChannel5(int rcChannel5) {
-    mRCChannel5 = rcChannel5;
-    emit rcChannel5Changed(mRCChannel5);
-}
-
-void OpenHD::setRCChannel6(int rcChannel6) {
-    mRCChannel6 = rcChannel6;
-    emit rcChannel6Changed(mRCChannel6);
-}
-
-void OpenHD::setRCChannel7(int rcChannel7) {
-    mRCChannel7 = rcChannel7;
-    emit rcChannel7Changed(mRCChannel7);
-}
-
-void OpenHD::setRCChannel8(int rcChannel8) {
-    mRCChannel8 = rcChannel8;
-    emit rcChannel8Changed(mRCChannel8);
-}
 
 void OpenHD::setCurrentWaypoint(int current_waypoint) {
     m_current_waypoint = current_waypoint;

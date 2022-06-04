@@ -459,19 +459,11 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             mavlink_rc_channels_t rc_channels;
             mavlink_msg_rc_channels_decode(&msg, &rc_channels);
 
-            OpenHD::instance()->set_control_pitch(rc_channels.chan2_raw);
+            // TODO
+            /*OpenHD::instance()->set_control_pitch(rc_channels.chan2_raw);
             OpenHD::instance()->set_control_roll(rc_channels.chan1_raw);
             OpenHD::instance()->set_control_throttle(rc_channels.chan3_raw);
-            OpenHD::instance()->set_control_yaw(rc_channels.chan4_raw);
-
-            OpenHD::instance()->setRCChannel1(rc_channels.chan1_raw);
-            OpenHD::instance()->setRCChannel2(rc_channels.chan2_raw);
-            OpenHD::instance()->setRCChannel3(rc_channels.chan3_raw);
-            OpenHD::instance()->setRCChannel4(rc_channels.chan4_raw);
-            OpenHD::instance()->setRCChannel5(rc_channels.chan5_raw);
-            OpenHD::instance()->setRCChannel6(rc_channels.chan6_raw);
-            OpenHD::instance()->setRCChannel7(rc_channels.chan7_raw);
-            OpenHD::instance()->setRCChannel8(rc_channels.chan8_raw);
+            OpenHD::instance()->set_control_yaw(rc_channels.chan4_raw);*/
 
             auto rssi = static_cast<int>(static_cast<double>(rc_channels.rssi) / 255.0 * 100.0);
             OpenHD::instance()->setRcRssi(rssi);
