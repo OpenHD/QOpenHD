@@ -217,18 +217,14 @@ void MavlinkBase::sendRC () {
     }
     if (enable_rc == true){
         int mavlink_sysid = settings.value("mavlink_sysid", m_util.default_mavlink_sysid()).toInt();
-
         mavlink_message_t msg;
-
         //TODO mavlink sysid is hard coded at 255... in app its default is 225
         mavlink_msg_rc_channels_override_pack(255, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID, targetCompID,
                                               m_rc_values[0],m_rc_values[1],m_rc_values[2],m_rc_values[3],m_rc_values[4],m_rc_values[5],m_rc_values[6],m_rc_values[7],
                 m_rc_values[8],m_rc_values[9],m_rc_values[10],m_rc_values[11],m_rc_values[12],m_rc_values[13],m_rc_values[14],m_rc_values[15],
                 m_rc_values[16],m_rc_values[17]);
-
         uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
         int len = mavlink_msg_to_send_buffer(buffer, &msg);
-
         sendData((char*)buffer, len);
     }
     else {

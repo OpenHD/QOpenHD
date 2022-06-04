@@ -222,7 +222,7 @@
         <file>ui/configpopup/GroundPiSettingsListView.ui.qml</file>
         <file>ui/configpopup/ChartsPanelForm.ui.qml</file>
         <file>ui/configpopup/ChartsPanel.qml</file>
-        <file>ui/configpopup/AppSettingsPanel.ui.qml</file>
+        <file>ui/configpopup/AppSettingsPanel.qml</file>
         <file>ui/configpopup/AboutPanel.qml</file>
         <file>resources/osdicons.ttf</file>
         <file>resources/materialdesignicons-webfont.ttf</file>

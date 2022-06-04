@@ -72,31 +72,6 @@ public:
     float int_param7 = 0;
 };
 
-#if defined(ENABLE_RC)
-class MavlinkRC  {
-public:
-    uint ch1 = 0;
-    uint ch2 = 0;
-    uint ch3 = 0;
-    uint ch4 = 0;
-    uint ch5 = 0;
-    uint ch6 = 0;
-    uint ch7 = 0;
-    uint ch8 = 0;
-    uint ch9 = 0;
-    uint ch10 = 0;
-    uint ch11 = 0;
-    uint ch12 = 0;
-    uint ch13 = 0;
-    uint ch14 = 0;
-    uint ch15 = 0;
-    uint ch16 = 0;
-    uint ch17 = 0;
-    uint ch18 = 0;
-
-};
-#endif
-
 
 class MavlinkBase: public QObject {
     Q_OBJECT
@@ -247,7 +222,6 @@ protected:
 
     std::shared_ptr<MavlinkCommand> m_current_command;
 
-    uint m_rc1 = 0;
     std::array<uint,19> m_rc_values;
     // ---------
 private:
