@@ -9,6 +9,7 @@
 #include "qglobal.h"
 #include <gst/gst.h>
 #include <QString>
+#include <qquickitem.h>
 #include <stdexcept>
 
 /**
@@ -50,5 +51,16 @@ static void customizeGstreamerLogPath(){
     qputenv("GST_DEBUG_DUMP_DOT_DIR", logpath);
 }
 
+// link gstreamer qmlglsink to qt window
+static void link_gsteamer_to_qt_window(GstElement *qmlglsink,QQuickItem *qtOutWindow){
+      g_object_set(qmlglsink, "widget", qtOutWindow, NULL);
+}
+
+// find qmlglsink in gstreamer pipeline and link it to the window
+static void link_gstreamer_pipe_to_qt_window(GstElement * m_pipeline,QQuickItem *qtOutWindow){
+    GstElement *qmlglsink = gst_bin_get_by_name(GST_BIN(m_pipeline), "qmlglsink");
+    assert(qmlglsink!=nullptr);
+    link_gsteamer_to_qt_window(qmlglsink,qtOutWindow);
+}
 
 #endif // GST_PLATFORM_INCLUDE_H

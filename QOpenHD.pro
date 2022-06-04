@@ -477,7 +477,7 @@ EnableGStreamer {
 
     HEADERS += \
         app/videostreaming/QOpenHDVideoHelper.hpp \
-        app/videostreaming/gst_platform_include.h \
+    app/videostreaming/gst_helper.hpp \
     app/videostreaming/gstvideostream.h
 
     include ($$PWD/lib/VideoStreaming/VideoStreaming.pri)
