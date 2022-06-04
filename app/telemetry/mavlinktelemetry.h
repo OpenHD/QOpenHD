@@ -40,7 +40,6 @@ private slots:
 signals:
     //void adsbVehicleUpdate(const ADSBVehicle::VehicleInfo_t vehicleInfo);
     //void deleteMissionWaypoints();
-
     void update_RC_MavlinkBase(std::array<uint,19> rcValues);
 
 private:
