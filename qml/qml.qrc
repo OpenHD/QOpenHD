@@ -32,26 +32,15 @@
         <file>materialdesignicons-webfont.ttf</file>
         <file>Font Awesome 5 Free-Solid-900.otf</file>
         <file>ic.png</file>
-        <file>ui/LowerOverlayBar.qml</file>
-        <file>ui/LowerOverlayBarForm.ui.qml</file>
-        <file>ui/SettingsPopup.qml</file>
-        <file>ui/SettingsPopupForm.ui.qml</file>
-        <file>ui/UpperOverlayBar.qml</file>
-        <file>ui/UpperOverlayBarForm.ui.qml</file>
         <file>ui/delegates/TextSettingDelegate.ui.qml</file>
-        <file>ui/StatusPanelForm.ui.qml</file>
         <file>ui/delegates/SwitchSettingDelegate.ui.qml</file>
         <file>ui/delegates/NumberSettingDelegate.ui.qml</file>
-        <file>ui/AppSettingsPanel.ui.qml</file>
-        <file>ui/GroundPiSettingsListView.ui.qml</file>
         <file>ui/delegates/ChoiceSettingDelegate.ui.qml</file>
         <file>ui/SettingsMap.qml</file>
         <file>ui/delegates/RangeSettingDelegate.ui.qml</file>
-        <file>ui/GroundPiSettingsPanelForm.ui.qml</file>
         <file>ui/widgets/MessageHUDForm.ui.qml</file>
         <file>ui/widgets/MessageHUD.qml</file>
         <file>ui/widgets/MessageHUDRow.ui.qml</file>
-        <file>ui/AboutPanel.qml</file>
         <file>LICENSE_UI.txt</file>
         <file>ui/widgets/DownlinkRSSIWidget.qml</file>
         <file>ui/widgets/DownlinkRSSIWidgetForm.ui.qml</file>
@@ -93,7 +82,6 @@
         <file>ui/widgets/ThrottleWidgetForm.ui.qml</file>
         <file>ui/widgets/ArrowWidget.qml</file>
         <file>ui/widgets/ArrowWidgetForm.qml</file>
-        <file>ui/StatusPanel.qml</file>
         <file>ui/delegates/BaseDelegate.ui.qml</file>
         <file>ui/widgets/VideoWidget.qml</file>
         <file>ui/widgets/VideoWidgetGStreamerForm.ui.qml</file>
@@ -101,11 +89,8 @@
         <file>MainVideoGStreamer.qml</file>
         <file>ui/elements/SlideSwitchForm.ui.qml</file>
         <file>ui/elements/SlideSwitch.qml</file>
-        <file>ui/ArdupilotParameterMap.qml</file>
-        <file>ui/GroundPiSettingsPanel.qml</file>
         <file>ui/widgets/GroundPowerWidget.qml</file>
         <file>ui/widgets/GroundPowerWidgetForm.ui.qml</file>
-        <file>ui/GroundPiSettingsPresetView.ui.qml</file>
         <file>ui/PresetMap.qml</file>
         <file>ui/elements/ColoredCheckboxForm.ui.qml</file>
         <file>ui/elements/ColoredCheckbox.qml</file>
@@ -130,8 +115,6 @@
         <file>ui/widgets/VibrationWidgetForm.ui.qml</file>
         <file>ui/widgets/VsiWidgetForm.ui.qml</file>
         <file>ui/widgets/VsiWidget.qml</file>
-        <file>ui/ChartsPanel.qml</file>
-        <file>ui/ChartsPanelForm.ui.qml</file>
         <file>ui/elements/StatusView.qml</file>
         <file>ui/elements/StatusViewForm.ui.qml</file>
         <file>ui/widgets/WindWidgetForm.ui.qml</file>
@@ -142,12 +125,8 @@
         <file>ui/widgets/ExampleWidgetForm.ui.qml</file>
         <file>ui/widgets/RollWidgetForm.ui.qml</file>
         <file>ui/widgets/RollWidget.qml</file>
-        <file>ui/PowerPanel.qml</file>
-        <file>ui/PowerPanelForm.ui.qml</file>
         <file>ui/elements/LanguageSelect.qml</file>
         <file>ui/elements/LanguageSelectForm.ui.qml</file>
-        <file>ui/SensorPanel.qml</file>
-        <file>ui/SensorPanelForm.ui.qml</file>
         <file alias="round.png">../icons/round.png</file>
         <file>ui/elements/Card.qml</file>
         <file>ui/elements/CardForm.ui.qml</file>
@@ -233,8 +212,24 @@
         <file>ui/widgets/MissionWidgetForm.ui.qml</file>
         <file>ui/widgets/MissionWidget.qml</file>
         <file>ui/delegates/BoolSwitchSettingDelegate.ui.qml</file>
-        <file>ui/RcPanel.qml</file>
-        <file>ui/RcPanelForm.ui.qml</file>
-        <file>ui/TmpGroundPiSettingsPanel.qml</file>
+        <file>ui/configpopup/TmpGroundPiSettingsPanel.qml</file>
+        <file>ui/configpopup/StatusPanelForm.ui.qml</file>
+        <file>ui/configpopup/StatusPanel.qml</file>
+        <file>ui/configpopup/SettingsPopupForm.ui.qml</file>
+        <file>ui/configpopup/SettingsPopup.qml</file>
+        <file>ui/configpopup/SensorPanelForm.ui.qml</file>
+        <file>ui/configpopup/SensorPanel.qml</file>
+        <file>ui/configpopup/RcPanelForm.ui.qml</file>
+        <file>ui/configpopup/RcPanel.qml</file>
+        <file>ui/configpopup/PowerPanelForm.ui.qml</file>
+        <file>ui/configpopup/PowerPanel.qml</file>
+        <file>ui/configpopup/GroundPiSettingsPresetView.ui.qml</file>
+        <file>ui/configpopup/GroundPiSettingsPanelForm.ui.qml</file>
+        <file>ui/configpopup/GroundPiSettingsPanel.qml</file>
+        <file>ui/configpopup/GroundPiSettingsListView.ui.qml</file>
+        <file>ui/configpopup/ChartsPanelForm.ui.qml</file>
+        <file>ui/configpopup/ChartsPanel.qml</file>
+        <file>ui/configpopup/AppSettingsPanel.ui.qml</file>
+        <file>ui/configpopup/AboutPanel.qml</file>
     </qresource>
 </RCC>

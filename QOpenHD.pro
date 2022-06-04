@@ -123,7 +123,8 @@ SOURCES += \
     app/util/util.cpp \
     app/util/localmessage.cpp \
 
-RESOURCES += qml/qml.qrc
+RESOURCES += qml/qml.qrc \
+    qml/qml.qrc
 
 HEADERS += \
     app/util/FrequencyMonitor.h \
@@ -168,6 +169,8 @@ DISTFILES += \
     app/videostreaming/legacy/README.md \
     inc/osd/Readme.md \
     qml/qtquickcontrols2.conf \
+    qml/resources/README.md \
+    qml/ui/ConfigPopup/README.md \
     qml/ui/qmldir \
     translations/QOpenHD_it.ts \
     translations/QOpenHD_ro.ts \
