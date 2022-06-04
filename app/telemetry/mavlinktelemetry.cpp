@@ -134,7 +134,7 @@ void MavlinkTelemetry::rc_value_changed(int channelIdx,uint channelValue){
 
 
 void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
-    qDebug()<<"MavlinkTelemetry::onProcessMavlinkMessage"<<msg.msgid;
+    //qDebug()<<"MavlinkTelemetry::onProcessMavlinkMessage"<<msg.msgid;
 
     //if(pause_telemetry==true){
     //    return;
@@ -665,6 +665,18 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             OpenHD::instance()->set_cpuload_gnd(ohd_sys_telemetry.cpuload);
             OpenHD::instance()->set_temp_gnd(ohd_sys_telemetry.temperature);
         }
+        break;
+    }
+    case MAVLINK_MSG_ID_OPENHD_VERSION_MESSAGE:{
+        mavlink_openhd_version_message_t parsedMsg;
+        mavlink_msg_openhd_version_message_decode(&msg,&parsedMsg);
+        //OpenHD::instance()->set
+        break;
+    }
+    case MAVLINK_MSG_ID_OPENHD_WIFIBROADCAST_STATISTICS:{
+        mavlink_openhd_wifibroadcast_statistics_t parsedMsg;
+        mavlink_msg_openhd_wifibroadcast_statistics_decode(&msg,&parsedMsg);
+        OpenHD::instance()->wifiAdapter0Changed(parsedMsg.count_p_all,0,0);
         break;
     }
         default: {
