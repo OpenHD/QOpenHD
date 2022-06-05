@@ -10,13 +10,16 @@ StatusLogModel* StatusLogModel::instance() {
     return _instance;
 }
 
-
-StatusLogModel::StatusLogModel(QObject *parent) {
-    qDebug() << "StatusLogModel::StatusLogModel()";
+void StatusLogModel::populateWithExampleMessage(){
     StatusMessage msg{};
     msg.message="Hello test";
     msg.severity=0;
     addMessage(msg);
+}
+
+
+StatusLogModel::StatusLogModel(QObject *parent) {
+    qDebug() << "StatusLogModel::StatusLogModel()";
 }
 
 

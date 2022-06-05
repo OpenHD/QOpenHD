@@ -352,6 +352,7 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
 
     auto statusLogModel = StatusLogModel::instance();
     engine.rootContext()->setContextProperty("StatusLogModel", statusLogModel);
+    statusLogModel->populateWithExampleMessage();
 
     #if defined(ENABLE_EXAMPLE_WIDGET)
     engine.rootContext()->setContextProperty("EnableExampleWidget", QVariant(true));

@@ -26,6 +26,7 @@ Item {
             bottomMargin: 12
         }
 
-        source: EnableCharts ? "./elements/StatusChart.qml" : ""
+        //source: EnableCharts ? "./elements/StatusChart.qml" : ""
+        source: "./elements/StatusChart.qml";
     }
 }
