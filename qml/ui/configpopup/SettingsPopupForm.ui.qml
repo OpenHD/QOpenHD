@@ -171,7 +171,7 @@ Rectangle {
                     color: mainStackLayout.currentIndex == 2 ? "#33aaff" : "#dde4ed"
                 }
             }*/
-            // Something status
+            // Charts
             Item {
                 height: 48
                 width: parent.width
@@ -203,7 +203,7 @@ Rectangle {
                     anchors.left: statusIcon.right
                     anchors.leftMargin: 6
 
-                    text: qsTr("Status")
+                    text: qsTr("Graphs")
                     font.pixelSize: 15
                     horizontalAlignment: Text.AlignLeft
                     verticalAlignment: Text.AlignVCenter

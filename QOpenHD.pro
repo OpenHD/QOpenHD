@@ -169,6 +169,7 @@ DISTFILES += \
     qml/qtquickcontrols2.conf \
     qml/resources/README.md \
     qml/ui/ConfigPopup/README.md \
+    qml/ui/configpopup/legacy/README.md \
     qml/ui/qmldir \
     translations/QOpenHD_it.ts \
     translations/QOpenHD_ro.ts \
