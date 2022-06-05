@@ -204,8 +204,7 @@
         <file>ui/widgets/MissionWidget.qml</file>
         <file>ui/delegates/BoolSwitchSettingDelegate.ui.qml</file>
         <file>ui/configpopup/TmpGroundPiSettingsPanel.qml</file>
-        <file>ui/configpopup/StatusPanelForm.ui.qml</file>
-        <file>ui/configpopup/StatusPanel.qml</file>
+        <file>ui/configpopup/GraphStatusPanel.qml</file>
         <file>ui/configpopup/SettingsPopupForm.ui.qml</file>
         <file>ui/configpopup/SettingsPopup.qml</file>
         <file>ui/configpopup/SensorPanelForm.ui.qml</file>

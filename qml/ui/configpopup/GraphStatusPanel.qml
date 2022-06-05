@@ -1,7 +1,6 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
-import QtGraphicalEffects 1.12
 
 import Qt.labs.settings 1.0
 
@@ -29,10 +28,10 @@ Rectangle {
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 36
 
-        StatusView {
-            anchors.fill: parent
-            clip: true
-        }
+        //TelemetryGrahView {
+        //    anchors.fill: parent
+        //    clip: true
+        //}
     }
 
     Label {

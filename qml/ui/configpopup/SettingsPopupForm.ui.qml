@@ -416,7 +416,7 @@ Rectangle {
         //    id: rcPanel
         //}
 
-        StatusPanel {
+        GraphStatusPanel {
             id: statusPanel
         }
 
