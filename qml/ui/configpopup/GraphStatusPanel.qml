@@ -28,10 +28,14 @@ Rectangle {
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 36
 
-        //TelemetryGrahView {
-        //    anchors.fill: parent
-        //    clip: true
-        //}
+        /*LogMessagesStatusView {
+            anchors.fill: parent
+            clip: true
+        }*/
+        TelemetryGraphView {
+            anchors.fill: parent
+            clip: true
+        }
     }
 
     Label {

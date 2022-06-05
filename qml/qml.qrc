@@ -92,7 +92,6 @@
         <file>ui/elements/ColoredCheckbox.qml</file>
         <file>MainVideoAndroid.qml</file>
         <file>ui/FrequencyItem.qml</file>
-        <file>ui/elements/TelemetryGraphView.qml</file>
         <file>ui/widgets/GPIOWidget.qml</file>
         <file>ui/widgets/GPIOWidgetForm.ui.qml</file>
         <file>MainVideoRender.qml</file>
@@ -108,7 +107,6 @@
         <file>ui/widgets/VibrationWidgetForm.ui.qml</file>
         <file>ui/widgets/VsiWidgetForm.ui.qml</file>
         <file>ui/widgets/VsiWidget.qml</file>
-        <file>ui/elements/LogMessagesStatusView.qml</file>
         <file>ui/widgets/WindWidgetForm.ui.qml</file>
         <file>ui/widgets/WindWidget.qml</file>
         <file>ui/widgets/RcRSSIWidgetForm.ui.qml</file>
@@ -209,7 +207,6 @@
         <file>ui/configpopup/SettingsPopup.qml</file>
         <file>ui/configpopup/PowerPanelForm.ui.qml</file>
         <file>ui/configpopup/PowerPanel.qml</file>
-        <file>ui/configpopup/ChartsPanel.qml</file>
         <file>ui/configpopup/AppSettingsPanel.qml</file>
         <file>ui/configpopup/AboutPanel.qml</file>
         <file>resources/osdicons.ttf</file>
@@ -218,5 +215,7 @@
         <file>resources/ic.png</file>
         <file>resources/homemarker.png</file>
         <file>resources/Font Awesome 5 Free-Solid-900.otf</file>
+        <file>ui/configpopup/TelemetryGraphView.qml</file>
+        <file>ui/configpopup/LogMessagesStatusView.qml</file>
     </qresource>
 </RCC>
