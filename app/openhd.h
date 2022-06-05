@@ -76,9 +76,6 @@ public:
     void updateVehicleAngles();
     void updateWind();
 
-    Q_PROPERTY(QString gstreamer_version READ get_gstreamer_version NOTIFY gstreamer_version_changed)
-    QString get_gstreamer_version();
-
     Q_PROPERTY(QString qt_version READ get_qt_version NOTIFY qt_version_changed)
     QString get_qt_version();
 

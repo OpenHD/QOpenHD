@@ -51,6 +51,19 @@ static void customizeGstreamerLogPath(){
     qputenv("GST_DEBUG_DUMP_DOT_DIR", logpath);
 }
 
+QString get_gstreamer_version() {
+    guint major, minor, micro, nano;
+    gst_version(&major, &minor, &micro, &nano);
+    QString gst_ver = QString();
+    QTextStream s(&gst_ver);
+    s << major;
+    s << ".";
+    s << minor;
+    s << ".";
+    s << micro;
+    return gst_ver;
+}
+
 // link gstreamer qmlglsink to qt window
 static void link_gsteamer_to_qt_window(GstElement *qmlglsink,QQuickItem *qtOutWindow){
       g_object_set(qmlglsink, "widget", qtOutWindow, NULL);

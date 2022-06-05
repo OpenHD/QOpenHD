@@ -6,11 +6,7 @@
 
 #include <GeographicLib/Geodesic.hpp>
 
-
-#if defined(ENABLE_GSTREAMER)
-#include <gst/gst.h>
 #include<QDebug>
-#endif
 
 static OpenHD* _instance = nullptr;
 
@@ -72,31 +68,10 @@ void OpenHD::setEngine(QQmlApplicationEngine *engine) {
     m_engine = engine;
 }
 
-
-QString OpenHD::get_gstreamer_version() {
-#if defined(ENABLE_GSTREAMER)
-    guint major, minor, micro, nano;
-    gst_version(&major, &minor, &micro, &nano);
-    QString gst_ver = QString();
-    QTextStream s(&gst_ver);
-
-    s << major;
-    s << ".";
-    s << minor;
-    s << ".";
-    s << micro;
-
-    return gst_ver;
-#else
-    return "N/A";
-#endif
-}
-
 QString OpenHD::get_qt_version() {
     QString qt_ver = qVersion();
     return qt_ver;
 }
-
 
 void OpenHD::setWifiAdapter0(uint32_t received_packet_cnt, int8_t current_signal_dbm, int8_t signal_good) {
     emit wifiAdapter0Changed(received_packet_cnt, current_signal_dbm, signal_good);
