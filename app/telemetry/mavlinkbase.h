@@ -72,31 +72,6 @@ public:
     float int_param7 = 0;
 };
 
-#if defined(ENABLE_RC)
-class MavlinkRC  {
-public:
-    uint ch1 = 0;
-    uint ch2 = 0;
-    uint ch3 = 0;
-    uint ch4 = 0;
-    uint ch5 = 0;
-    uint ch6 = 0;
-    uint ch7 = 0;
-    uint ch8 = 0;
-    uint ch9 = 0;
-    uint ch10 = 0;
-    uint ch11 = 0;
-    uint ch12 = 0;
-    uint ch13 = 0;
-    uint ch14 = 0;
-    uint ch15 = 0;
-    uint ch16 = 0;
-    uint ch17 = 0;
-    uint ch18 = 0;
-
-};
-#endif
-
 
 class MavlinkBase: public QObject {
     Q_OBJECT
@@ -162,28 +137,10 @@ signals:
 public slots:
     void onStarted();    
     void request_Mission_Changed();
-#if defined(ENABLE_RC)
-    void receive_RC_Update(uint rc1,
-                           uint rc2,
-                           uint rc3,
-                           uint rc4,
-                           uint rc5,
-                           uint rc6,
-                           uint rc7,
-                           uint rc8,
-                           uint rc9,
-                           uint rc10,
-                           uint rc11,
-                           uint rc12,
-                           uint rc13,
-                           uint rc14,
-                           uint rc15,
-                           uint rc16,
-                           uint rc17,
-                           uint rc18
-                           );
+
+    // for RC
+    void receive_RC_Update(std::array<uint,19> rcValues);
     void joystick_Present_Changed(bool joystickPresent);
-#endif
 protected slots:
     //void processMavlinkUDPDatagrams();
     //void processMavlinkTCPData();
@@ -265,24 +222,7 @@ protected:
 
     std::shared_ptr<MavlinkCommand> m_current_command;
 
-    uint m_rc1 = 0;
-    uint m_rc2 = 0;
-    uint m_rc3 = 0;
-    uint m_rc4 = 0;
-    uint m_rc5 = 0;
-    uint m_rc6 = 0;
-    uint m_rc7 = 0;
-    uint m_rc8 = 0;
-    uint m_rc9 = 0;
-    uint m_rc10 = 0;
-    uint m_rc11 = 0;
-    uint m_rc12 = 0;
-    uint m_rc13 = 0;
-    uint m_rc14 = 0;
-    uint m_rc15 = 0;
-    uint m_rc16 = 0;
-    uint m_rc17 = 0;
-    uint m_rc18 = 0;
+    std::array<uint,19> m_rc_values;
     // ---------
 private:
     std::unique_ptr<OHDConnection> mOHDConnection;

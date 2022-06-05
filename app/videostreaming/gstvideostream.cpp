@@ -6,7 +6,7 @@
 #include <QtQuick>
 #include <sstream>
 
-#include "gst_platform_include.h"
+#include "gst_helper.hpp"
 #include "QOpenHDVideoHelper.hpp"
 
 
@@ -24,10 +24,6 @@ static QOpenHDVideoHelper::VideoStreamConfig readVideoStreamConfigFromSettings(b
          _videoStreamConfig.video_port=OHDIntegration::OHD_VIDEO_GROUND_VIDEO_STREAM_2_UDP;
     }
     return _videoStreamConfig;
-}
-
-static void link_gsteamer_to_qt_window(QQuickItem *qtOutWindow,GstElement *qmlglsink){
-      g_object_set(qmlglsink, "widget", qtOutWindow, NULL);
 }
 
 /**
@@ -152,15 +148,13 @@ void GstVideoStream::startVideo() {
     if (error) {
         qDebug() << "gst_parse_launch error: " << error->message;
     }
-    GstElement *qmlglsink = gst_bin_get_by_name(GST_BIN(m_pipeline), "qmlglsink");
-    assert(qmlglsink!=nullptr);
+
+    link_gstreamer_pipe_to_qt_window(m_pipeline,m_videoOutputWindow);
 
     GstBus *bus = gst_pipeline_get_bus (GST_PIPELINE(m_pipeline));
-
     gst_bus_add_signal_watch(bus);
     g_signal_connect(bus, "message", (GCallback)PipelineCb, this);
 
-    link_gsteamer_to_qt_window(m_videoOutputWindow,qmlglsink);
     /*
      * When the app first launches we have to wait for the QML element to be ready before the pipeline
      * starts pushing frames to it.

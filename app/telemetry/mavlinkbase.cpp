@@ -31,7 +31,6 @@ MavlinkBase::MavlinkBase(QObject *parent,  MavlinkType mavlink_type): QObject(pa
     qDebug() << "MavlinkBase::MavlinkBase()";
     mOHDConnection=std::make_unique<OHDConnection>(nullptr,false);
     mOHDConnection->registerNewMessageCalback([this](mavlink_message_t msg){
-        //hackProcessMavlinkMessge(msg);
         emit processMavlinkMessage(msg);
     });
 }
@@ -191,60 +190,40 @@ void MavlinkBase::fetchParameters() {
     sendData((char*)buffer, len);
 }*/
 
-#if defined(ENABLE_RC)
 void MavlinkBase::joystick_Present_Changed(bool joystickPresent) {
     qDebug() << "MavlinkBase::joystick_Present_Changed:"<< joystickPresent;
     if (joystickPresent == true){
-        qDebug() << "MavlinkBase::joystick_Present_Changed: starting timer for RC msgs";
-        m_rc_timer->start(20);
+        //qDebug() << "MavlinkBase::joystick_Present_Changed: starting timer for RC msgs";
+        //m_rc_timer->start(20);
     }
     else{
-        qDebug() << "MavlinkBase::joystick_Present_Changed: stopping timer for RC msgs";
-        m_rc_timer->stop();
+        //qDebug() << "MavlinkBase::joystick_Present_Changed: stopping timer for RC msgs";
+        //m_rc_timer->stop();
     }
 
 }
-
-void MavlinkBase::receive_RC_Update(uint rc1,uint rc2,uint rc3,uint rc4,uint rc5,uint rc6,uint rc7,uint rc8,
-                                    uint rc9,uint rc10,uint rc11,uint rc12,uint rc13,uint rc14,uint rc15,uint rc16,uint rc17,uint rc18) {
-
-    qDebug() << "MavlinkBase::receive_RC_Update="<< rc1;
-    m_rc1 = rc1;
-    m_rc2 = rc2;
-    m_rc3 = rc3;
-    m_rc4 = rc4;
-    m_rc5 = rc5;
-    m_rc6 = rc6;
-    m_rc7 = rc7;
-    m_rc8 = rc8;
-    m_rc9 = rc9;
-    m_rc10 = rc10;
-    m_rc11 = rc11;
-    m_rc12 = rc12;
-    m_rc13 = rc13;
-    m_rc14 = rc14;
-    m_rc15 = rc15;
-    m_rc16 = rc16;
-    m_rc17 = rc17;
-    m_rc18 = rc18;
-
+void MavlinkBase::receive_RC_Update(std::array<uint,19> rcValues) {
+    qDebug() << "MavlinkBase::receive_RC_Update=";
+     m_rc_values=rcValues;
 }
 
 void MavlinkBase::sendRC () {
     QSettings settings;
     bool enable_rc = settings.value("enable_rc", m_util.default_mavlink_sysid()).toBool();
-
+    //temporarily dsabled
+    if(true){
+        return;
+    }
     if (enable_rc == true){
         int mavlink_sysid = settings.value("mavlink_sysid", m_util.default_mavlink_sysid()).toInt();
-
         mavlink_message_t msg;
-
         //TODO mavlink sysid is hard coded at 255... in app its default is 225
-        mavlink_msg_rc_channels_override_pack(255, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID, targetCompID, m_rc1, m_rc2, m_rc3, m_rc4, m_rc5, m_rc6, m_rc7, m_rc8, m_rc9, m_rc10, m_rc11, m_rc12, m_rc13, m_rc14, m_rc15, m_rc16, m_rc17, m_rc18);
-
+        mavlink_msg_rc_channels_override_pack(255, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID, targetCompID,
+                                              m_rc_values[0],m_rc_values[1],m_rc_values[2],m_rc_values[3],m_rc_values[4],m_rc_values[5],m_rc_values[6],m_rc_values[7],
+                m_rc_values[8],m_rc_values[9],m_rc_values[10],m_rc_values[11],m_rc_values[12],m_rc_values[13],m_rc_values[14],m_rc_values[15],
+                m_rc_values[16],m_rc_values[17]);
         uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
         int len = mavlink_msg_to_send_buffer(buffer, &msg);
-
         sendData((char*)buffer, len);
     }
     else {
@@ -252,7 +231,6 @@ void MavlinkBase::sendRC () {
     }
 
 }
-#endif
 
 void MavlinkBase::requestAutopilotInfo() {
     qDebug() << "MavlinkBase::request_Autopilot_Info";

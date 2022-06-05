@@ -5,6 +5,9 @@
 #include <QUrl>
 #include <QVariant>
 
+/**
+ * @brief I think this one has some default values for different platforms.
+ */
 class ManageSettings : public QObject
 {
     Q_OBJECT

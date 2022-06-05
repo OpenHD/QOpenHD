@@ -17,6 +17,8 @@
 #include "../util/util.h"
 #include "../util/localmessage.h"
 
+#include "openhd_defines.hpp"
+
 #include "openhd.h"
 
 static MavlinkTelemetry* _instance = nullptr;
@@ -114,96 +116,29 @@ void MavlinkTelemetry::FC_Reboot_Shutdown_Changed(int reboot_shutdown) {
     //command.long_param2 = m_arm_disarm;
     sendCommand(command);
 }
-#if defined(ENABLE_RC)
+
 /*RC updates passing thru mavlink telemetry is really not required. But it does serve to agregate
   all of the rc inputs in one place and then send all of them in one go to mavlinkbase where they
   are actually sent
  */
+void MavlinkTelemetry::rc_value_changed(int channelIdx,uint channelValue){
+    if(channelIdx > 0 && channelIdx < m_rc_values.size()){
+        m_rc_values.at(channelIdx)=channelValue;
+        qDebug() << "MavlinkTelemetry::rc"<<channelIdx<<"="<< channelValue;
+         emit update_RC_MavlinkBase (m_rc_values);
+    }else{
+        qDebug()<<"Error mavlink channel out of bounds"<<channelIdx;
+    }
+}
 
-void MavlinkTelemetry::rc1_changed(uint rc1) {
-    m_rc1=rc1;
-    qDebug() << "MavlinkTelemetry::rc1_changed="<< m_rc1;
-    emit update_RC_MavlinkBase (m_rc1, m_rc2, m_rc3, m_rc4, m_rc5, m_rc6, m_rc7, m_rc8, m_rc9, m_rc10, m_rc11, m_rc12, m_rc13, m_rc14, m_rc15, m_rc16, m_rc17, m_rc18);
-}
-void MavlinkTelemetry::rc2_changed(uint rc2) {
-    m_rc2=rc2;
-    qDebug() << "MavlinkTelemetry::rc2_changed="<< m_rc2;
-    emit update_RC_MavlinkBase (m_rc1, m_rc2, m_rc3, m_rc4, m_rc5, m_rc6, m_rc7, m_rc8, m_rc9, m_rc10, m_rc11, m_rc12, m_rc13, m_rc14, m_rc15, m_rc16, m_rc17, m_rc18);
-}
-void MavlinkTelemetry::rc3_changed(uint rc3) {
-    m_rc3=rc3;
-    qDebug() << "MavlinkTelemetry::rc3_changed="<< m_rc3;
-    emit update_RC_MavlinkBase (m_rc1, m_rc2, m_rc3, m_rc4, m_rc5, m_rc6, m_rc7, m_rc8, m_rc9, m_rc10, m_rc11, m_rc12, m_rc13, m_rc14, m_rc15, m_rc16, m_rc17, m_rc18);
-}
-void MavlinkTelemetry::rc4_changed(uint rc4) {
-    m_rc4=rc4;
-    qDebug() << "MavlinkTelemetry::rc4_changed="<< m_rc4;
-    emit update_RC_MavlinkBase (m_rc1, m_rc2, m_rc3, m_rc4, m_rc5, m_rc6, m_rc7, m_rc8, m_rc9, m_rc10, m_rc11, m_rc12, m_rc13, m_rc14, m_rc15, m_rc16, m_rc17, m_rc18);
-}
-void MavlinkTelemetry::rc5_changed(uint rc5) {
-    m_rc5=rc5;
-    qDebug() << "MavlinkTelemetry::rc5_changed="<< m_rc5;
-}
-void MavlinkTelemetry::rc6_changed(uint rc6) {
-    m_rc6=rc6;
-    qDebug() << "MavlinkTelemetry::rc6_changed="<< m_rc6;
-}
-void MavlinkTelemetry::rc7_changed(uint rc7) {
-    m_rc7=rc7;
-    qDebug() << "MavlinkTelemetry::rc7_changed="<< m_rc7;
-}
-void MavlinkTelemetry::rc8_changed(uint rc8) {
-    m_rc8=rc8;
-    qDebug() << "MavlinkTelemetry::rc8_changed="<< m_rc8;
-}
-void MavlinkTelemetry::rc9_changed(uint rc9) {
-    m_rc9=rc9;
-    qDebug() << "MavlinkTelemetry::rc9_changed="<< m_rc9;
-}
-void MavlinkTelemetry::rc10_changed(uint rc10) {
-    m_rc10=rc10;
-    qDebug() << "MavlinkTelemetry::rc10_changed="<< m_rc10;
-}
-void MavlinkTelemetry::rc11_changed(uint rc11) {
-    m_rc11=rc11;
-    qDebug() << "MavlinkTelemetry::rc11_changed="<< m_rc11;
-}
-void MavlinkTelemetry::rc12_changed(uint rc12) {
-    m_rc12=rc12;
-    qDebug() << "MavlinkTelemetry::rc12_changed="<< m_rc12;
-}
-void MavlinkTelemetry::rc13_changed(uint rc13) {
-    m_rc13=rc13;
-    qDebug() << "MavlinkTelemetry::rc13_changed="<< m_rc13;
-}
-void MavlinkTelemetry::rc14_changed(uint rc14) {
-    m_rc14=rc14;
-    qDebug() << "MavlinkTelemetry::rc14_changed="<< m_rc14;
-}
-void MavlinkTelemetry::rc15_changed(uint rc15) {
-    m_rc15=rc15;
-    qDebug() << "MavlinkTelemetry::rc15_changed="<< m_rc15;
-}
-void MavlinkTelemetry::rc16_changed(uint rc16) {
-    m_rc16=rc16;
-    qDebug() << "MavlinkTelemetry::rc16_changed="<< m_rc16;
-}
-void MavlinkTelemetry::rc17_changed(uint rc17) {
-    m_rc17=rc17;
-    qDebug() << "MavlinkTelemetry::rc17_changed="<< m_rc17;
-}
-void MavlinkTelemetry::rc18_changed(uint rc18) {
-    m_rc18=rc18;
-    qDebug() << "MavlinkTelemetry::rc18_changed="<< m_rc18;
-}
-#endif
+
 
 void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
-    //qDebug()<<"MavlinkTelemetry::onProcessMavlinkMessage";
+    //qDebug()<<"MavlinkTelemetry::onProcessMavlinkMessage"<<msg.msgid;
 
-    if(pause_telemetry==true){
-        return;
-    }
+    //if(pause_telemetry==true){
+    //    return;
+    //}
 
     switch (msg.msgid) {
             case MAVLINK_MSG_ID_HEARTBEAT: {
@@ -524,19 +459,11 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             mavlink_rc_channels_t rc_channels;
             mavlink_msg_rc_channels_decode(&msg, &rc_channels);
 
-            OpenHD::instance()->set_control_pitch(rc_channels.chan2_raw);
+            // TODO
+            /*OpenHD::instance()->set_control_pitch(rc_channels.chan2_raw);
             OpenHD::instance()->set_control_roll(rc_channels.chan1_raw);
             OpenHD::instance()->set_control_throttle(rc_channels.chan3_raw);
-            OpenHD::instance()->set_control_yaw(rc_channels.chan4_raw);
-
-            OpenHD::instance()->setRCChannel1(rc_channels.chan1_raw);
-            OpenHD::instance()->setRCChannel2(rc_channels.chan2_raw);
-            OpenHD::instance()->setRCChannel3(rc_channels.chan3_raw);
-            OpenHD::instance()->setRCChannel4(rc_channels.chan4_raw);
-            OpenHD::instance()->setRCChannel5(rc_channels.chan5_raw);
-            OpenHD::instance()->setRCChannel6(rc_channels.chan6_raw);
-            OpenHD::instance()->setRCChannel7(rc_channels.chan7_raw);
-            OpenHD::instance()->setRCChannel8(rc_channels.chan8_raw);
+            OpenHD::instance()->set_control_yaw(rc_channels.chan4_raw);*/
 
             auto rssi = static_cast<int>(static_cast<double>(rc_channels.rssi) / 255.0 * 100.0);
             OpenHD::instance()->setRcRssi(rssi);
@@ -720,8 +647,41 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
         case MAVLINK_MSG_ID_ADSB_VEHICLE: {
             break;
         }
+    case MAVLINK_MSG_ID_OPENHD_SYSTEM_TELEMETRY:{
+        mavlink_openhd_system_telemetry_t ohd_sys_telemetry;
+        mavlink_msg_openhd_system_telemetry_decode(&msg,&ohd_sys_telemetry);
+        if(msg.sysid==OHD_SYS_ID_AIR){
+            OpenHD::instance()->set_cpuload_air(ohd_sys_telemetry.cpuload);
+            OpenHD::instance()->set_temp_air(ohd_sys_telemetry.temperature);
+        }else{
+            OpenHD::instance()->set_cpuload_gnd(ohd_sys_telemetry.cpuload);
+            OpenHD::instance()->set_temp_gnd(ohd_sys_telemetry.temperature);
+        }
+        break;
+    }
+    case MAVLINK_MSG_ID_OPENHD_VERSION_MESSAGE:{
+        mavlink_openhd_version_message_t parsedMsg;
+        mavlink_msg_openhd_version_message_decode(&msg,&parsedMsg);
+        QString version(parsedMsg.version);
+        if(msg.sysid==OHD_SYS_ID_AIR){
+            OpenHD::instance()->set_openhd_version_air(version);
+        }else{
+            OpenHD::instance()->set_openhd_version_ground(version);
+        }
+        break;
+    }
+    case MAVLINK_MSG_ID_OPENHD_WIFIBROADCAST_STATISTICS:{
+        mavlink_openhd_wifibroadcast_statistics_t parsedMsg;
+        mavlink_msg_openhd_wifibroadcast_statistics_decode(&msg,&parsedMsg);
+        OpenHD::instance()->setWifiAdapter0(parsedMsg.count_p_all,0,0);
+        break;
+    }
         default: {
-            printf("MavlinkTelemetry received unmatched message with ID %d, sequence: %d from component %d of system %d\n", msg.msgid, msg.seq, msg.compid, msg.sysid);
+            //printf("MavlinkTelemetry received unmatched message with ID %d, sequence: %d from component %d of system %d\n", msg.msgid, msg.seq, msg.compid, msg.sysid);
+            qDebug()<<"MavlinkTelemetry received unmatched message with ID "<<msg.msgid
+                   <<", sequence: "<<msg.seq
+                  <<" from component "<<msg.compid
+                 <<" of system "<<msg.sysid;
             break;
         }
     }

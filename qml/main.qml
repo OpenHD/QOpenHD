@@ -11,6 +11,7 @@ import OpenHD 1.0
 import "./ui"
 import "./ui/widgets"
 import "./ui/elements"
+import "./ui/configpopup"
 
 
 ApplicationWindow {
@@ -182,10 +183,10 @@ ApplicationWindow {
 
     // UI areas
 
-    UpperOverlayBar {
-        visible: !settings.stereo_enable
-        id: upperOverlayBar
-    }
+    //UpperOverlayBar {
+    //    visible: !settings.stereo_enable
+    //    id: upperOverlayBar
+    //}
 
     HUDOverlayGrid {
         id: hudOverlayGrid
@@ -238,10 +239,10 @@ ApplicationWindow {
         z: 5.0
     }
 
-    LowerOverlayBar {
-        visible: !settings.stereo_enable
-        id: lowerOverlayBar
-    }
+    //LowerOverlayBar {
+    //    visible: !settings.stereo_enable
+    //    id: lowerOverlayBar
+    //}
 
 
     SettingsPopup {

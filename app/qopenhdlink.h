@@ -9,6 +9,10 @@
 
 class QUdpSocket;
 
+/**
+ * @brief This is still here for legacy, I think this is what made sure that you can drag around elements on the tablet and sync their position with
+ * QOpenHD running on the ground station.
+ */
 class QOpenHDLink: public QObject {
     Q_OBJECT
 

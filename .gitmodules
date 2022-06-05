@@ -7,12 +7,13 @@
 [submodule "lib/qmdnsengine"]
 	path = lib/qmdnsengine
 	url = https://github.com/nitroshare/qmdnsengine.git
-[submodule "lib/mavlink"]
-	path = lib/mavlink
-	url = https://github.com/infincia/mavlink.git
 [submodule "lib/SortFilterProxyModel"]
 	path = lib/SortFilterProxyModel
 	url = https://github.com/OpenHD/SortFilterProxyModel.git
 [submodule "lib/android/openssl"]
 	path = lib/android/openssl
 	url = https://github.com/KDAB/android_openssl.git
+[submodule "lib/mavlink"]
+	path = lib/mavlink
+	url = git@github.com:OpenHD/mavlink.git
+	branch = xopenhd2

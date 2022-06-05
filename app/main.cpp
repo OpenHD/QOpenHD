@@ -14,8 +14,7 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #endif
 
 #include "rc/openhdrc.h"
-#include "openhdsettings.h"
-#include "openhdpi.h"
+#include "platform/openhdpi.h"
 #include "openhd.h"
 #include "../app/telemetry/mavlinktelemetry.h"
 #include "util/localmessage.h"
@@ -53,7 +52,7 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #endif
 
 #if defined(__ios__)
-#include "appleplatform.h"
+#include "platform/appleplatform.h"
 #endif
 
 #if defined(ENABLE_GSTREAMER)
@@ -150,11 +149,9 @@ int main(int argc, char *argv[]) {
     qDebug() << "Finished initializing Pi";
 #endif
 
-    QFontDatabase::addApplicationFont(":/Font Awesome 5 Free-Solid-900.otf");
-
-    QFontDatabase::addApplicationFont(":/osdicons.ttf");
-
-    QFontDatabase::addApplicationFont(":/materialdesignicons-webfont.ttf");
+    QFontDatabase::addApplicationFont(":/resources/Font Awesome 5 Free-Solid-900.otf");
+    QFontDatabase::addApplicationFont(":/resources/osdicons.ttf");
+    QFontDatabase::addApplicationFont(":/resources/materialdesignicons-webfont.ttf");
 
 
     QFontDatabase::addApplicationFont(":/osdfonts/Acme-Regular.ttf");
@@ -218,8 +215,6 @@ int main(int argc, char *argv[]) {
     //#if defined(ENABLE_LOG)
     qmlRegisterSingletonType<Logger>("OpenHD", 1, 0, "Logger", loggerSingletonProvider);
     //#endif
-
-    qmlRegisterType<OpenHDSettings>("OpenHD", 1,0, "OpenHDSettings");
 
     qmlRegisterType<QOpenHDLink>("OpenHD", 1,0, "QOpenHDLink");
 
@@ -340,28 +335,18 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
     engine.rootContext()->setContextProperty("ManageSettings", manageSettings);
 
 
-    auto openHDSettings = new OpenHDSettings();
-    engine.rootContext()->setContextProperty("openHDSettings", openHDSettings);
-
-
     auto openHDRC = new OpenHDRC();
-    QObject::connect(openHDSettings, &OpenHDSettings::groundStationIPUpdated, openHDRC, &OpenHDRC::setGroundIP, Qt::QueuedConnection);
+    //QObject::connect(openHDSettings, &OpenHDSettings::groundStationIPUpdated, openHDRC, &OpenHDRC::setGroundIP, Qt::QueuedConnection);
     engine.rootContext()->setContextProperty("openHDRC", openHDRC);
 
 
     auto link = new QOpenHDLink();
-    QObject::connect(openHDSettings, &OpenHDSettings::groundStationIPUpdated, link, &QOpenHDLink::setGroundIP, Qt::QueuedConnection);
+    //QObject::connect(openHDSettings, &OpenHDSettings::groundStationIPUpdated, link, &QOpenHDLink::setGroundIP, Qt::QueuedConnection);
     engine.rootContext()->setContextProperty("link", link);
 
 
     auto mavlinkTelemetry = MavlinkTelemetry::instance();
     engine.rootContext()->setContextProperty("MavlinkTelemetry", mavlinkTelemetry);
-    /*QThread *mavlinkThread = new QThread();
-    mavlinkThread->setObjectName("mavlinkTelemetryThread");
-    QObject::connect(mavlinkThread, &QThread::started, mavlinkTelemetry, &MavlinkTelemetry::onStarted);
-    mavlinkTelemetry->moveToThread(mavlinkThread);
-    //QObject::connect(openHDSettings, &OpenHDSettings::groundStationIPUpdated, mavlinkTelemetry, &MavlinkTelemetry::setGroundIP, Qt::QueuedConnection);
-    mavlinkThread->start();*/
     mavlinkTelemetry->onSetup();
 
 

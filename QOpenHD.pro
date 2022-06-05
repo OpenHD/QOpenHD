@@ -74,7 +74,8 @@ QT += concurrent opengl gui
 INCLUDEPATH += $$PWD/inc
 INCLUDEPATH += $$PWD/lib
 INCLUDEPATH += $$PWD/app
-INCLUDEPATH += $$PWD/lib/mavlink_generated/include/mavlink/v2.0
+#INCLUDEPATH += $$PWD/lib/mavlink_generated/include/mavlink/v2.0
+INCLUDEPATH += $$PWD/lib/c_library_v2_openhd
 
 INCLUDEPATH += $$PWD/lib/GeographicLib-1.50/include
 
@@ -88,13 +89,13 @@ SOURCES += \
     app/osd/flightpathvector.cpp \
 
 HEADERS += \
-    app/dummy.hpp \
     app/osd/headingladder.h \
     app/osd/horizonladder.h \
     app/osd/speedladder.h \
     app/osd/altitudeladder.h \
     app/osd/drawingcanvas.h \
     app/osd/flightpathvector.h \
+    app/telemetry/openhd_defines.hpp
 
 
 # I deleted all the "old" telemetry protocolls other than mavlink
@@ -115,9 +116,8 @@ SOURCES += \
     app/main.cpp \
     app/managesettings.cpp \
     app/openhd.cpp \
-    app/openhdpi.cpp \
+    app/platform/openhdpi.cpp \
     app/rc/openhdrc.cpp \
-    app/openhdsettings.cpp \
     app/qopenhdlink.cpp \
     app/util/statuslogmodel.cpp \
     app/util/QmlObjectListModel.cpp \
@@ -125,16 +125,16 @@ SOURCES += \
     app/util/util.cpp \
     app/util/localmessage.cpp \
 
-RESOURCES += qml/qml.qrc
+RESOURCES += qml/qml.qrc \
+    qml/qml.qrc
 
 HEADERS += \
     app/util/FrequencyMonitor.h \
     app/managesettings.h \
     app/util/sharedqueue.h \
     app/openhd.h \
-    app/openhdpi.h \
+    app/platform/openhdpi.h \
     app/rc/openhdrc.h \
-    app/openhdsettings.h \
     app/qopenhdlink.h \
     app/util/statuslogmodel.h \
     app/util/QmlObjectListModel.h \
@@ -164,12 +164,15 @@ DISTFILES += \
     android/src/org/freedesktop/gstreamer/androidmedia/GstAmcOnFrameAvailableListener.java \
     app/adsb/README.md \
     app/osd_extra/Readme.txt \
+    app/platform/README.md \
     app/telemetry/README.md \
     app/util/README.md \
     app/videostreaming/README.md \
     app/videostreaming/legacy/README.md \
     inc/osd/Readme.md \
     qml/qtquickcontrols2.conf \
+    qml/resources/README.md \
+    qml/ui/ConfigPopup/README.md \
     qml/ui/qmldir \
     translations/QOpenHD_it.ts \
     translations/QOpenHD_ro.ts \
@@ -254,10 +257,10 @@ iOSBuild {
     }
 
     HEADERS += \
-        src/appleplatform.h
+        src/platform/appleplatform.h
 
     SOURCES += \
-        src/appleplatform.mm
+        src/platform/appleplatform.mm
 
     EnableGStreamer {
         DEFINES += GST_GL_HAVE_WINDOW_EAGL=1
@@ -476,7 +479,7 @@ EnableGStreamer {
 
     HEADERS += \
         app/videostreaming/QOpenHDVideoHelper.hpp \
-        app/videostreaming/gst_platform_include.h \
+    app/videostreaming/gst_helper.hpp \
     app/videostreaming/gstvideostream.h
 
     include ($$PWD/lib/VideoStreaming/VideoStreaming.pri)

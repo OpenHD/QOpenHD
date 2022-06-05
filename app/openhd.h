@@ -8,6 +8,12 @@
 #include <QtTextToSpeech/QTextToSpeech>
 #endif
 
+/**
+ * So this is basically a really big "model" (in MVC pattern) class.
+ * While I'd like someone refactoring it (and it should probably reside in telemetry or at least be seperated into telemetry and non-telemetry stuff)
+ * since all the UI elements and their java script code use this class that's not feasible rn.
+ * And there are actually some advantages to having one (big) model, since then you only have to import one model into qml
+ */
 class OpenHD : public QObject
 {
     Q_OBJECT
@@ -69,9 +75,6 @@ public:
     void updateAppMahKm();
     void updateVehicleAngles();
     void updateWind();
-
-    Q_PROPERTY(QString gstreamer_version READ get_gstreamer_version NOTIFY gstreamer_version_changed)
-    QString get_gstreamer_version();
 
     Q_PROPERTY(QString qt_version READ get_qt_version NOTIFY qt_version_changed)
     QString get_qt_version();
@@ -204,18 +207,6 @@ public:
     Q_PROPERTY(double throttle MEMBER m_throttle WRITE set_throttle NOTIFY throttle_changed)
     void set_throttle(double throttle);
 
-    Q_PROPERTY(int control_pitch MEMBER m_control_pitch WRITE set_control_pitch NOTIFY control_pitch_changed)
-    void set_control_pitch(int control_pitch);
-
-    Q_PROPERTY(int control_roll MEMBER m_control_roll WRITE set_control_roll NOTIFY control_roll_changed)
-    void set_control_roll(int control_roll);
-
-    Q_PROPERTY(int control_yaw MEMBER m_control_yaw WRITE set_control_yaw NOTIFY control_yaw_changed)
-    void set_control_yaw(int control_yaw);
-
-    Q_PROPERTY(int control_throttle MEMBER m_control_throttle WRITE set_control_throttle NOTIFY control_throttle_changed)
-    void set_control_throttle(int control_throttle);
-
     Q_PROPERTY(float vibration_x MEMBER m_vibration_x WRITE set_vibration_x NOTIFY vibration_x_changed)
     void set_vibration_x(float vibration_x);
 
@@ -281,15 +272,17 @@ public:
     Q_PROPERTY(unsigned int lost_packet_cnt_telemetry_up MEMBER m_lost_packet_cnt_telemetry_up WRITE set_lost_packet_cnt_telemetry_up NOTIFY lost_packet_cnt_telemetry_up_changed)
     void set_lost_packet_cnt_telemetry_up(unsigned int lost_packet_cnt);
 
-
-
     Q_PROPERTY(unsigned int skipped_packet_cnt MEMBER m_skipped_packet_cnt WRITE set_skipped_packet_cnt NOTIFY skipped_packet_cnt_changed)
     void set_skipped_packet_cnt(unsigned int skipped_packet_cnt);
 
     Q_PROPERTY(unsigned int injection_fail_cnt MEMBER m_injection_fail_cnt WRITE set_injection_fail_cnt NOTIFY injection_fail_cnt_changed)
     void set_injection_fail_cnt(unsigned int injection_fail_cnt);
 
+    Q_PROPERTY(QString m_openhd_version_ground MEMBER m_openhd_version_ground WRITE set_openhd_version_ground NOTIFY openhd_version_ground_changed)
+    void set_openhd_version_ground(QString openhd_version_ground);
 
+    Q_PROPERTY(QString m_openhd_version_air MEMBER m_openhd_version_air WRITE set_openhd_version_air NOTIFY openhd_version_air_changed)
+    void set_openhd_version_air(QString openhd_version_air);
 
     Q_PROPERTY(double kbitrate MEMBER m_kbitrate WRITE set_kbitrate NOTIFY kbitrate_changed)
     void set_kbitrate(double kbitrate);
@@ -427,31 +420,6 @@ public:
     Q_PROPERTY(double vehicle_vz_angle MEMBER m_vehicle_vz_angle WRITE set_vehicle_vz_angle NOTIFY vehicle_vz_angle_changed)
     void set_vehicle_vz_angle(double vehicle_vz_angle);
 
-
-    Q_PROPERTY(int rcChannel1 MEMBER mRCChannel1 WRITE setRCChannel1 NOTIFY rcChannel1Changed)
-    void setRCChannel1(int rcChannel1);
-
-    Q_PROPERTY(int rcChannel2 MEMBER mRCChannel2 WRITE setRCChannel2 NOTIFY rcChannel2Changed)
-    void setRCChannel2(int rcChannel2);
-
-    Q_PROPERTY(int rcChannel3 MEMBER mRCChannel3 WRITE setRCChannel3 NOTIFY rcChannel3Changed)
-    void setRCChannel3(int rcChannel3);
-
-    Q_PROPERTY(int rcChannel4 MEMBER mRCChannel4 WRITE setRCChannel4 NOTIFY rcChannel4Changed)
-    void setRCChannel4(int rcChannel4);
-
-    Q_PROPERTY(int rcChannel5 MEMBER mRCChannel5 WRITE setRCChannel5 NOTIFY rcChannel5Changed)
-    void setRCChannel5(int rcChannel5);
-
-    Q_PROPERTY(int rcChannel6 MEMBER mRCChannel6 WRITE setRCChannel6 NOTIFY rcChannel6Changed)
-    void setRCChannel6(int rcChannel6);
-
-    Q_PROPERTY(int rcChannel7 MEMBER mRCChannel7 WRITE setRCChannel7 NOTIFY rcChannel7Changed)
-    void setRCChannel7(int rcChannel7);
-
-    Q_PROPERTY(int rcChannel8 MEMBER mRCChannel8 WRITE setRCChannel8 NOTIFY rcChannel8Changed)
-    void setRCChannel8(int rcChannel8);
-
     Q_PROPERTY(int current_waypoint MEMBER m_current_waypoint WRITE setCurrentWaypoint NOTIFY currentWaypointChanged)
     void setCurrentWaypoint(int current_waypoint);
 
@@ -521,11 +489,6 @@ signals:
 
     void throttle_changed(double throttle);
 
-    void control_pitch_changed(int control_pitch);
-    void control_roll_changed(int control_roll);
-    void control_yaw_changed(int control_yaw);
-    void control_throttle_changed(int control_throttle);
-
     void vibration_x_changed(float vibration_x);
     void vibration_y_changed(float vibration_y);
     void vibration_z_changed(float vibration_z);
@@ -573,6 +536,9 @@ signals:
     void air_undervolt_changed(bool air_undervolt);
     void cts_changed(bool cts);
 
+    void openhd_version_ground_changed(QString openhd_version_ground);
+    void openhd_version_air_changed(QString openhd_version_air);
+
     void flight_time_changed(QString flight_time);
 
     void flight_distance_changed(double flight_distance);
@@ -616,14 +582,7 @@ signals:
     void vehicle_vx_angle_changed(double vehicle_vx_angle);
     void vehicle_vz_angle_changed(double vehicle_vz_angle);
 
-    void rcChannel1Changed(int rcChanne1);
-    void rcChannel2Changed(int rcChanne2);
-    void rcChannel3Changed(int rcChanne3);
-    void rcChannel4Changed(int rcChanne4);
-    void rcChannel5Changed(int rcChanne5);
-    void rcChannel6Changed(int rcChanne6);
-    void rcChannel7Changed(int rcChanne7);
-    void rcChannel8Changed(int rcChanne8);
+    void rcChannelChanged(int channelIdx,int value);
 
     void currentWaypointChanged (int current_waypoint);
     void totalWaypointsChanged (int total_waypoints);
@@ -676,7 +635,7 @@ public:
     int m_home_heading = 0; //this is actual global heading
     int m_home_course = 0; //this is the relative course from nose
 
-    int m_battery_percent = 0;
+    int m_battery_percent = 20; //TODO debug, set back to 0
     int m_ground_battery_percent = 0;
     int m_fc_battery_percent = 0;
     double m_battery_current = 0.0;
@@ -694,11 +653,6 @@ public:
     double m_pitch = 0.0;
 
     double m_throttle = 0;
-
-    int m_control_pitch = 0;
-    int m_control_roll = 0;
-    int m_control_yaw = 0;
-    int m_control_throttle = 0;
 
     float m_vibration_x = 0.0;
     float m_vibration_y = 0.0;
@@ -810,19 +764,8 @@ public:
     double m_vehicle_vx_angle = 0.0;
     double m_vehicle_vz_angle = 0.0;
 
-    int mRCChannel1 = 0;
-    int mRCChannel2 = 0;
-    int mRCChannel3 = 0;
-    int mRCChannel4 = 0;
-    int mRCChannel5 = 0;
-    int mRCChannel6 = 0;
-    int mRCChannel7 = 0;
-    int mRCChannel8 = 0;
-
     int m_current_waypoint = 0;
     int m_total_waypoints = 0;
-
-    bool m_pause_blackbox = false;
 
     QTranslator m_translator;
 
@@ -833,6 +776,9 @@ public:
     int m_arm_disarm = 99;
 
     int m_reboot_shutdown=99;
+
+    QString m_openhd_version_ground="NA";
+    QString m_openhd_version_air="NA";
 };
 
 

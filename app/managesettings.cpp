@@ -14,7 +14,7 @@
 #include <QtAndroid>
 #endif
 
-#include "openhdpi.h"
+#include "platform/openhdpi.h"
 
 // Just for convenience
 using namespace inja;
