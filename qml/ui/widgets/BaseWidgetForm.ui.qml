@@ -84,7 +84,7 @@ Rectangle {
          */
 
         parent: Overlay.overlay
-        x: {
+        /*x: {
             if (!widgetDetailComponent.visible){
                 if (widgetBase.x > Math.round((parent.width - width) / 2)) {
                     return 24;
@@ -95,9 +95,7 @@ Rectangle {
         }
         y: {
             return parent.height - height - 64;
-        }
-
-
+        }*/
 
         contentItem: widgetDetailComponent
 
