@@ -52,6 +52,7 @@ Rectangle {
             width: parent.width
             anchors.top: parent.top
 
+            // QO
             Item {
                 height: 48
                 width: parent.width
@@ -84,14 +85,14 @@ Rectangle {
                     anchors.left: appIcon.right
                     anchors.leftMargin: 6
 
-                    text: qsTr("App")
+                    text: qsTr("QOpenHD")
                     font.pixelSize: 15
                     horizontalAlignment: Text.AlignLeft
                     verticalAlignment: Text.AlignVCenter
                     color: mainStackLayout.currentIndex == 0 ? "#33aaff" : "#dde4ed"
                 }
             }
-
+            // OpenHD Settings
             Item {
                 height: 48
                 width: parent.width
@@ -123,7 +124,7 @@ Rectangle {
                     anchors.left: groundIcon.right
                     anchors.leftMargin: 6
 
-                    text: qsTr("Ground")
+                    text: qsTr("OpenHD")
                     font.pixelSize: 15
                     horizontalAlignment: Text.AlignLeft
                     verticalAlignment: Text.AlignVCenter
@@ -170,7 +171,7 @@ Rectangle {
                     color: mainStackLayout.currentIndex == 2 ? "#33aaff" : "#dde4ed"
                 }
             }*/
-
+            // Something status
             Item {
                 height: 48
                 width: parent.width
@@ -249,7 +250,7 @@ Rectangle {
                     color: mainStackLayout.currentIndex == 4 ? "#33aaff" : "#dde4ed"
                 }
             }*/
-
+            // Power
             Item {
                 height: 48
                 width: parent.width
@@ -329,7 +330,7 @@ Rectangle {
                     color: mainStackLayout.currentIndex == 6 ? "#33aaff" : "#dde4ed"
                 }
             }*/
-
+            // About
             Item {
                 height: 48
                 width: parent.width

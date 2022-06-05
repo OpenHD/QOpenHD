@@ -335,7 +335,6 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
     engine.rootContext()->setContextProperty("MavlinkTelemetry", mavlinkTelemetry);
     mavlinkTelemetry->onSetup();
 
-
     auto statusLogModel = StatusLogModel::instance();
     engine.rootContext()->setContextProperty("StatusLogModel", statusLogModel);
     statusLogModel->populateWithExampleMessage();

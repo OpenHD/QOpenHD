@@ -9,7 +9,7 @@
 #endif
 
 /**
- * So this is basically a really big "model" (in MVC pattern) class.
+ * So this is basically a really big "model" and a small "controller" (in MVC pattern) class.
  * While I'd like someone refactoring it (and it should probably reside in telemetry or at least be seperated into telemetry and non-telemetry stuff)
  * since all the UI elements and their java script code use this class that's not feasible rn.
  * And there are actually some advantages to having one (big) model, since then you only have to import one model into qml
