@@ -62,7 +62,7 @@ ApplicationWindow {
 
     // we call back into QML from ManagedSettings to ensure that the live settings take effect
     // immediately, QSettings doesn't seem capable of doing it from C++
-    Connections {
+    /*Connections {
         target: ManageSettings
         function onSettingUpdated(key, value) {
             settings.setValue(key, value);
@@ -72,7 +72,7 @@ ApplicationWindow {
             settings_panel.visible = false;
             restartDialog.visible = true;
         }
-    }
+    }*/
 
     ColorPicker {
         id: colorPicker

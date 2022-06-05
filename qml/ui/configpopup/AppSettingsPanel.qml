@@ -2228,8 +2228,8 @@ Item {
                             selectFolder: false
                             defaultSuffix: "conf"
                             onAccepted: {
-                                ManageSettings.loadSettingsFile(fileDialog.fileUrl);
-                                settings.sync();
+                                //ManageSettings.loadSettingsFile(fileDialog.fileUrl);
+                                //settings.sync();
                             }
                             onRejected: {
                                 console.log("Canceled")
@@ -2280,7 +2280,7 @@ Item {
                                 console.log("Sa: " + saveDialog.fileUrl);
                                 settings.sync();
                                 // this is a folder path, the ManualSettings class chooses a filename to put there
-                                ManageSettings.saveSettingsFile(saveDialog.fileUrl);
+                                //ManageSettings.saveSettingsFile(saveDialog.fileUrl);
                             }
                             onRejected: {
                                 console.log("Canceled")

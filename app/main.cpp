@@ -45,8 +45,6 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "videostreaming/QOpenHDVideoHelper.hpp"
 
 
-#include "managesettings.h"
-
 #if defined(ENABLE_RC)
 #include "QJoysticks.h"
 #endif
@@ -96,11 +94,6 @@ int main(int argc, char *argv[]) {
     QCoreApplication::setOrganizationName("Open.HD");
     QCoreApplication::setOrganizationDomain("open.hd");
     QCoreApplication::setApplicationName("QOpenHD");
-
-    auto manageSettings = new ManageSettings();
-    #if defined(__rasp_pi__)|| defined(__jetson__)
-    manageSettings->loadPiSettings();
-    #endif
 
     QSettings settings;
 
@@ -331,8 +324,6 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
 
 
 #endif
-
-    engine.rootContext()->setContextProperty("ManageSettings", manageSettings);
 
 
     auto openHDRC = new OpenHDRC();

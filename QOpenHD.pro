@@ -114,7 +114,6 @@ SOURCES += \
 SOURCES += \
     app/util/FrequencyMonitor.cpp \
     app/main.cpp \
-    app/managesettings.cpp \
     app/openhd.cpp \
     app/platform/openhdpi.cpp \
     app/rc/openhdrc.cpp \
@@ -130,7 +129,6 @@ RESOURCES += qml/qml.qrc \
 
 HEADERS += \
     app/util/FrequencyMonitor.h \
-    app/managesettings.h \
     app/util/sharedqueue.h \
     app/openhd.h \
     app/platform/openhdpi.h \
