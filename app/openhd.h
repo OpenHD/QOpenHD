@@ -137,31 +137,6 @@ public:
     Q_PROPERTY(double lon MEMBER m_lon WRITE set_lon NOTIFY lon_changed)
     void set_lon(double lon);
 
-    double get_lat() {
-        return m_lat;
-    };
-    
-    double get_lon() { 
-        return m_lon;
-    };
-
-    double get_home_lat() {
-        return m_homelat;
-    };
-
-    double get_home_lon() {
-        return m_homelon;
-    };
-
-
-    double get_msl_alt() {
-        return m_alt_msl;
-    }
-
-    double get_hdg() {
-        return m_hdg;
-    }
-
     Q_PROPERTY(int satellites_visible MEMBER m_satellites_visible WRITE set_satellites_visible NOTIFY satellites_visible_changed)
     void set_satellites_visible(int satellites_visible);
 
@@ -779,6 +754,14 @@ public:
 
     QString m_openhd_version_ground="NA";
     QString m_openhd_version_air="NA";
+    // Quick and dirty code begin
+public:
+    QString m_last_ping_result="NA";
+    Q_INVOKABLE void pingOpenHDUnit(bool isAir);
+    Q_PROPERTY(QString home_distance MEMBER  m_last_ping_result WRITE set_last_ping_result NOTIFY last_ping_result_changed)
+    void set_last_ping_result(QString last_ping_result);
+signals:
+    void last_ping_result_changed(QString last_ping_result);
 };
 
 

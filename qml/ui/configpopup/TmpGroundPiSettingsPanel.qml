@@ -43,7 +43,7 @@ Item {
                     visible: true
 
                     Text {
-                        text: qsTr("Ping")
+                        text: qsTr("Ping Result: ")+OpenHD.m_last_ping_result
                         font.weight: Font.Bold
                         font.pixelSize: 13
                         anchors.leftMargin: 8
@@ -61,9 +61,9 @@ Item {
 
                         anchors.right: parent.right
                         anchors.verticalCenter: parent.verticalCenter
-                        text: qsTr("XXX")
+                        text: qsTr("Ping Ground")
                         onClicked: {
-
+                            OpenHD.pingOpenHDUnit(false)
                         }
                     }
                 }

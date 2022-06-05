@@ -1066,3 +1066,21 @@ void OpenHD::setFontFamily(QString fontFamily) {
     m_font = QFont(m_fontFamily, 11, QFont::Bold, false);
 
 }
+
+
+// quick dirty
+void OpenHD::pingOpenHDUnit(bool pingAir)
+{
+    qDebug()<<"Ping OpenHD "<<(pingAir ? "Air": "Ground");
+    set_last_ping_result("XXX");
+}
+
+void OpenHD::set_last_ping_result(QString last_ping_result)
+{
+    m_last_ping_result=last_ping_result;
+    emit last_ping_result_changed(last_ping_result);
+}
+
+
+
+
