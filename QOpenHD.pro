@@ -117,7 +117,6 @@ SOURCES += \
     app/openhd.cpp \
     app/platform/openhdpi.cpp \
     app/rc/openhdrc.cpp \
-    app/qopenhdlink.cpp \
     app/util/statuslogmodel.cpp \
     app/util/QmlObjectListModel.cpp \
     app/util/logger.cpp \
@@ -133,7 +132,6 @@ HEADERS += \
     app/openhd.h \
     app/platform/openhdpi.h \
     app/rc/openhdrc.h \
-    app/qopenhdlink.h \
     app/util/statuslogmodel.h \
     app/util/QmlObjectListModel.h \
     app/util/logger.h \

@@ -23,8 +23,6 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "util/logger.h"
 //#endif
 
-#include "qopenhdlink.h"
-
 #include "util/statuslogmodel.h"
 
 #if defined(ENABLE_ADSB)
@@ -209,8 +207,6 @@ int main(int argc, char *argv[]) {
     qmlRegisterSingletonType<Logger>("OpenHD", 1, 0, "Logger", loggerSingletonProvider);
     //#endif
 
-    qmlRegisterType<QOpenHDLink>("OpenHD", 1,0, "QOpenHDLink");
-
     qmlRegisterUncreatableType<QmlObjectListModel>("OpenHD", 1, 0, "QmlObjectListModel", "Reference only");
 
     qmlRegisterType<SpeedLadder>("OpenHD", 1, 0, "SpeedLadder");
@@ -329,12 +325,6 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
     auto openHDRC = new OpenHDRC();
     //QObject::connect(openHDSettings, &OpenHDSettings::groundStationIPUpdated, openHDRC, &OpenHDRC::setGroundIP, Qt::QueuedConnection);
     engine.rootContext()->setContextProperty("openHDRC", openHDRC);
-
-
-    auto link = new QOpenHDLink();
-    //QObject::connect(openHDSettings, &OpenHDSettings::groundStationIPUpdated, link, &QOpenHDLink::setGroundIP, Qt::QueuedConnection);
-    engine.rootContext()->setContextProperty("link", link);
-
 
     auto mavlinkTelemetry = MavlinkTelemetry::instance();
     engine.rootContext()->setContextProperty("MavlinkTelemetry", mavlinkTelemetry);
