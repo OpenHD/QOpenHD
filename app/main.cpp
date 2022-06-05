@@ -86,6 +86,67 @@ const QVector<QString> permissions({"android.permission.INTERNET",
     #endif
 #endif
 
+// Load all the fonts we use ?!
+static void load_fonts(){
+    QFontDatabase::addApplicationFont(":/resources/Font Awesome 5 Free-Solid-900.otf");
+    QFontDatabase::addApplicationFont(":/resources/osdicons.ttf");
+    QFontDatabase::addApplicationFont(":/resources/materialdesignicons-webfont.ttf");
+    //
+    QFontDatabase::addApplicationFont(":/osdfonts/Acme-Regular.ttf");
+    QFontDatabase::addApplicationFont(":/osdfonts/Aldrich-Regular.ttf");
+    QFontDatabase::addApplicationFont(":/osdfonts/AnonymousPro-Bold.ttf");
+    QFontDatabase::addApplicationFont(":/osdfonts/AnonymousPro-BoldItalic.ttf");
+    QFontDatabase::addApplicationFont(":/osdfonts/Archivo-Bold.ttf");
+    QFontDatabase::addApplicationFont(":/osdfonts/Archivo-Medium.ttf");
+    QFontDatabase::addApplicationFont(":/osdfonts/Archivo-Regular.ttf");
+    QFontDatabase::addApplicationFont(":/osdfonts/ArchivoBlack-Regular.ttf");
+    QFontDatabase::addApplicationFont(":/osdfonts/Armata-Regular.ttf");
+    QFontDatabase::addApplicationFont(":/osdfonts/Bangers-Regular.ttf");
+    QFontDatabase::addApplicationFont(":/osdfonts/BlackOpsOne-Regular.ttf");
+    QFontDatabase::addApplicationFont(":/osdfonts/Bungee-Regular.ttf");
+    QFontDatabase::addApplicationFont(":/osdfonts/Carbon-Bold.ttf");
+    QFontDatabase::addApplicationFont(":/osdfonts/Chicle-Regular.ttf");
+    QFontDatabase::addApplicationFont(":/osdfonts/Digital7SegmentDisplay.ttf");
+    QFontDatabase::addApplicationFont(":/osdfonts/DigitalDotDisplay.ttf");
+    QFontDatabase::addApplicationFont(":/osdfonts/DigitalSubwayTicker.ttf");
+    QFontDatabase::addApplicationFont(":/osdfonts/ExpletusSans-Bold.ttf");
+    QFontDatabase::addApplicationFont(":/osdfonts/FjallaOne-Regular.ttf");
+    QFontDatabase::addApplicationFont(":/osdfonts/FredokaOne-Regular.ttf");
+    QFontDatabase::addApplicationFont(":/osdfonts/GeostarFill-Regular.ttf");
+    QFontDatabase::addApplicationFont(":/osdfonts/Iceberg-Regular.ttf");
+    QFontDatabase::addApplicationFont(":/osdfonts/Iceland-Regular.ttf");
+    QFontDatabase::addApplicationFont(":/osdfonts/Jura-Bold.ttf");
+    QFontDatabase::addApplicationFont(":/osdfonts/KeaniaOne-Regular.ttf");
+    QFontDatabase::addApplicationFont(":/osdfonts/Larabie.ttf");
+    QFontDatabase::addApplicationFont(":/osdfonts/LuckiestGuy-Regular.ttf");
+    QFontDatabase::addApplicationFont(":/osdfonts/Merysha-Regular.ttf");
+    QFontDatabase::addApplicationFont(":/osdfonts/NixieOne-Regular.ttf");
+    QFontDatabase::addApplicationFont(":/osdfonts/Orbitron-Bold.ttf");
+    QFontDatabase::addApplicationFont(":/osdfonts/Orbitron-Regular.ttf");
+    QFontDatabase::addApplicationFont(":/osdfonts/Oxygen-Bold.ttf");
+    QFontDatabase::addApplicationFont(":/osdfonts/Oxygen-Regular.ttf");
+    QFontDatabase::addApplicationFont(":/osdfonts/PassionOne-Bold.ttf");
+    QFontDatabase::addApplicationFont(":/osdfonts/Quantico-Bold.ttf");
+    QFontDatabase::addApplicationFont(":/osdfonts/Quantico-Regular.ttf");
+    QFontDatabase::addApplicationFont(":/osdfonts/Quicksand-Bold.ttf");
+    QFontDatabase::addApplicationFont(":/osdfonts/Quicksand-Regular.ttf");
+    QFontDatabase::addApplicationFont(":/osdfonts/RammettoOne-Regular.ttf");
+    QFontDatabase::addApplicationFont(":/osdfonts/Rationale-Regular.ttf");
+    QFontDatabase::addApplicationFont(":/osdfonts/Righteous-Regular.ttf");
+    QFontDatabase::addApplicationFont(":/osdfonts/RobotoMono-Bold.ttf");
+    QFontDatabase::addApplicationFont(":/osdfonts/RobotoMono-Regular.ttf");
+    QFontDatabase::addApplicationFont(":/osdfonts/RussoOne-Regular.ttf");
+    QFontDatabase::addApplicationFont(":/osdfonts/ShareTech-Regular.ttf");
+    QFontDatabase::addApplicationFont(":/osdfonts/ShareTechMono-Regular.ttf");
+    QFontDatabase::addApplicationFont(":/osdfonts/SigmarOne-Regular.ttf");
+    QFontDatabase::addApplicationFont(":/osdfonts/Slackey-Regular.ttf");
+    QFontDatabase::addApplicationFont(":/osdfonts/UbuntuMono-Bold.ttf");
+    QFontDatabase::addApplicationFont(":/osdfonts/UbuntuMono-BoldItalic.ttf");
+    QFontDatabase::addApplicationFont(":/osdfonts/Visitor.ttf");
+    QFontDatabase::addApplicationFont(":/osdfonts/ZolanMonoOblique.ttf");
+}
+
+
 int main(int argc, char *argv[]) {
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
@@ -140,63 +201,7 @@ int main(int argc, char *argv[]) {
     qDebug() << "Finished initializing Pi";
 #endif
 
-    QFontDatabase::addApplicationFont(":/resources/Font Awesome 5 Free-Solid-900.otf");
-    QFontDatabase::addApplicationFont(":/resources/osdicons.ttf");
-    QFontDatabase::addApplicationFont(":/resources/materialdesignicons-webfont.ttf");
-
-
-    QFontDatabase::addApplicationFont(":/osdfonts/Acme-Regular.ttf");
-    QFontDatabase::addApplicationFont(":/osdfonts/Aldrich-Regular.ttf");
-    QFontDatabase::addApplicationFont(":/osdfonts/AnonymousPro-Bold.ttf");
-    QFontDatabase::addApplicationFont(":/osdfonts/AnonymousPro-BoldItalic.ttf");
-    QFontDatabase::addApplicationFont(":/osdfonts/Archivo-Bold.ttf");
-    QFontDatabase::addApplicationFont(":/osdfonts/Archivo-Medium.ttf");
-    QFontDatabase::addApplicationFont(":/osdfonts/Archivo-Regular.ttf");
-    QFontDatabase::addApplicationFont(":/osdfonts/ArchivoBlack-Regular.ttf");
-    QFontDatabase::addApplicationFont(":/osdfonts/Armata-Regular.ttf");
-    QFontDatabase::addApplicationFont(":/osdfonts/Bangers-Regular.ttf");
-    QFontDatabase::addApplicationFont(":/osdfonts/BlackOpsOne-Regular.ttf");
-    QFontDatabase::addApplicationFont(":/osdfonts/Bungee-Regular.ttf");
-    QFontDatabase::addApplicationFont(":/osdfonts/Carbon-Bold.ttf");
-    QFontDatabase::addApplicationFont(":/osdfonts/Chicle-Regular.ttf");
-    QFontDatabase::addApplicationFont(":/osdfonts/Digital7SegmentDisplay.ttf");
-    QFontDatabase::addApplicationFont(":/osdfonts/DigitalDotDisplay.ttf");
-    QFontDatabase::addApplicationFont(":/osdfonts/DigitalSubwayTicker.ttf");
-    QFontDatabase::addApplicationFont(":/osdfonts/ExpletusSans-Bold.ttf");
-    QFontDatabase::addApplicationFont(":/osdfonts/FjallaOne-Regular.ttf");
-    QFontDatabase::addApplicationFont(":/osdfonts/FredokaOne-Regular.ttf");
-    QFontDatabase::addApplicationFont(":/osdfonts/GeostarFill-Regular.ttf");
-    QFontDatabase::addApplicationFont(":/osdfonts/Iceberg-Regular.ttf");
-    QFontDatabase::addApplicationFont(":/osdfonts/Iceland-Regular.ttf");
-    QFontDatabase::addApplicationFont(":/osdfonts/Jura-Bold.ttf");
-    QFontDatabase::addApplicationFont(":/osdfonts/KeaniaOne-Regular.ttf");
-    QFontDatabase::addApplicationFont(":/osdfonts/Larabie.ttf");
-    QFontDatabase::addApplicationFont(":/osdfonts/LuckiestGuy-Regular.ttf");
-    QFontDatabase::addApplicationFont(":/osdfonts/Merysha-Regular.ttf");
-    QFontDatabase::addApplicationFont(":/osdfonts/NixieOne-Regular.ttf");
-    QFontDatabase::addApplicationFont(":/osdfonts/Orbitron-Bold.ttf");
-    QFontDatabase::addApplicationFont(":/osdfonts/Orbitron-Regular.ttf");
-    QFontDatabase::addApplicationFont(":/osdfonts/Oxygen-Bold.ttf");
-    QFontDatabase::addApplicationFont(":/osdfonts/Oxygen-Regular.ttf");
-    QFontDatabase::addApplicationFont(":/osdfonts/PassionOne-Bold.ttf");
-    QFontDatabase::addApplicationFont(":/osdfonts/Quantico-Bold.ttf");
-    QFontDatabase::addApplicationFont(":/osdfonts/Quantico-Regular.ttf");
-    QFontDatabase::addApplicationFont(":/osdfonts/Quicksand-Bold.ttf");
-    QFontDatabase::addApplicationFont(":/osdfonts/Quicksand-Regular.ttf");
-    QFontDatabase::addApplicationFont(":/osdfonts/RammettoOne-Regular.ttf");
-    QFontDatabase::addApplicationFont(":/osdfonts/Rationale-Regular.ttf");
-    QFontDatabase::addApplicationFont(":/osdfonts/Righteous-Regular.ttf");
-    QFontDatabase::addApplicationFont(":/osdfonts/RobotoMono-Bold.ttf");
-    QFontDatabase::addApplicationFont(":/osdfonts/RobotoMono-Regular.ttf");
-    QFontDatabase::addApplicationFont(":/osdfonts/RussoOne-Regular.ttf");
-    QFontDatabase::addApplicationFont(":/osdfonts/ShareTech-Regular.ttf");
-    QFontDatabase::addApplicationFont(":/osdfonts/ShareTechMono-Regular.ttf");
-    QFontDatabase::addApplicationFont(":/osdfonts/SigmarOne-Regular.ttf");
-    QFontDatabase::addApplicationFont(":/osdfonts/Slackey-Regular.ttf");
-    QFontDatabase::addApplicationFont(":/osdfonts/UbuntuMono-Bold.ttf");
-    QFontDatabase::addApplicationFont(":/osdfonts/UbuntuMono-BoldItalic.ttf");
-    QFontDatabase::addApplicationFont(":/osdfonts/Visitor.ttf");
-    QFontDatabase::addApplicationFont(":/osdfonts/ZolanMonoOblique.ttf");
+   load_fonts();
 
     qmlRegisterType<OpenHDRC>("OpenHD", 1, 0, "OpenHDRC");
 
