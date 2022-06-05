@@ -28,10 +28,6 @@ Rectangle {
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 36
 
-        /*LogMessagesStatusView {
-            anchors.fill: parent
-            clip: true
-        }*/
         TelemetryGraphView {
             anchors.fill: parent
             clip: true

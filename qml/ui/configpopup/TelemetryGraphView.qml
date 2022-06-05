@@ -6,6 +6,8 @@ import "../../ui" as Ui
 import "../elements"
 
 import QtCharts 2.3
+
+// Display telemetry values as a graph, panel to be used in UI
 Item {
     ScrollView {
         id: legend

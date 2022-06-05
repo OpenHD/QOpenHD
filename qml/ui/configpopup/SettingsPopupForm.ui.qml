@@ -333,7 +333,7 @@ Rectangle {
             id: logMessagesStatusView
         }
 
-         GraphStatusPanel{
+         TelemetryGraphViewPanel{
             id: statusPanel
         }
 
