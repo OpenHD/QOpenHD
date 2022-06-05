@@ -12,6 +12,7 @@
  * So this is basically a really big "model" (in MVC pattern) class.
  * While I'd like someone refactoring it (and it should probably reside in telemetry or at least be seperated into telemetry and non-telemetry stuff)
  * since all the UI elements and their java script code use this class that's not feasible rn.
+ * And there are actually some advantages to having one (big) model, since then you only have to import one model into qml
  */
 class OpenHD : public QObject
 {
@@ -274,15 +275,17 @@ public:
     Q_PROPERTY(unsigned int lost_packet_cnt_telemetry_up MEMBER m_lost_packet_cnt_telemetry_up WRITE set_lost_packet_cnt_telemetry_up NOTIFY lost_packet_cnt_telemetry_up_changed)
     void set_lost_packet_cnt_telemetry_up(unsigned int lost_packet_cnt);
 
-
-
     Q_PROPERTY(unsigned int skipped_packet_cnt MEMBER m_skipped_packet_cnt WRITE set_skipped_packet_cnt NOTIFY skipped_packet_cnt_changed)
     void set_skipped_packet_cnt(unsigned int skipped_packet_cnt);
 
     Q_PROPERTY(unsigned int injection_fail_cnt MEMBER m_injection_fail_cnt WRITE set_injection_fail_cnt NOTIFY injection_fail_cnt_changed)
     void set_injection_fail_cnt(unsigned int injection_fail_cnt);
 
+    Q_PROPERTY(QString m_openhd_version_ground MEMBER m_openhd_version_ground WRITE set_openhd_version_ground NOTIFY openhd_version_ground_changed)
+    void set_openhd_version_ground(QString openhd_version_ground);
 
+    Q_PROPERTY(QString m_openhd_version_air MEMBER m_openhd_version_air WRITE set_openhd_version_air NOTIFY openhd_version_air_changed)
+    void set_openhd_version_air(QString openhd_version_air);
 
     Q_PROPERTY(double kbitrate MEMBER m_kbitrate WRITE set_kbitrate NOTIFY kbitrate_changed)
     void set_kbitrate(double kbitrate);
@@ -536,6 +539,9 @@ signals:
     void air_undervolt_changed(bool air_undervolt);
     void cts_changed(bool cts);
 
+    void openhd_version_ground_changed(QString openhd_version_ground);
+    void openhd_version_air_changed(QString openhd_version_air);
+
     void flight_time_changed(QString flight_time);
 
     void flight_distance_changed(double flight_distance);
@@ -773,6 +779,9 @@ public:
     int m_arm_disarm = 99;
 
     int m_reboot_shutdown=99;
+
+    QString m_openhd_version_ground="NA";
+    QString m_openhd_version_air="NA";
 };
 
 

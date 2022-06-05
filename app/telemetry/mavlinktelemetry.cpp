@@ -662,13 +662,18 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
     case MAVLINK_MSG_ID_OPENHD_VERSION_MESSAGE:{
         mavlink_openhd_version_message_t parsedMsg;
         mavlink_msg_openhd_version_message_decode(&msg,&parsedMsg);
-        //OpenHD::instance()->set
+        QString version(parsedMsg.version);
+        if(msg.sysid==OHD_SYS_ID_AIR){
+            OpenHD::instance()->set_openhd_version_air(version);
+        }else{
+            OpenHD::instance()->set_openhd_version_ground(version);
+        }
         break;
     }
     case MAVLINK_MSG_ID_OPENHD_WIFIBROADCAST_STATISTICS:{
         mavlink_openhd_wifibroadcast_statistics_t parsedMsg;
         mavlink_msg_openhd_wifibroadcast_statistics_decode(&msg,&parsedMsg);
-        OpenHD::instance()->wifiAdapter0Changed(parsedMsg.count_p_all,0,0);
+        OpenHD::instance()->setWifiAdapter0(parsedMsg.count_p_all,0,0);
         break;
     }
         default: {

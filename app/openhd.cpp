@@ -715,6 +715,16 @@ void OpenHD::set_mah_km(int mah_km) {
     emit mah_km_changed(m_mah_km);
 }
 
+void OpenHD::set_openhd_version_air(QString openhd_version_air){
+    m_openhd_version_air=openhd_version_air;
+    emit openhd_version_air_changed(openhd_version_air);
+}
+
+void OpenHD::set_openhd_version_ground(QString openhd_version_ground){
+    m_openhd_version_ground=openhd_version_ground;
+    emit openhd_version_ground_changed(openhd_version_ground);
+}
+
 void OpenHD::set_last_openhd_heartbeat(qint64 last_openhd_heartbeat) {
     m_last_openhd_heartbeat = last_openhd_heartbeat;
     emit last_openhd_heartbeat_changed(m_last_openhd_heartbeat);

@@ -108,7 +108,7 @@ Rectangle {
                 }
 
                 Text {
-                    text: qsTr("Dummy")
+                    text: OpenHD.m_openhd_version_air
                     anchors.left: airVersionID.right
                     anchors.horizontalCenter: airVersionID.horizontalCenter
                     height: 24
@@ -137,7 +137,7 @@ Rectangle {
                 }
 
                 Text {
-                    text: qsTr("Dummy")
+                    text: OpenHD.m_openhd_version_ground
                     anchors.left: groundVersionID.right
                     anchors.horizontalCenter: groundVersionID.horizontalCenter
                     height: 24
