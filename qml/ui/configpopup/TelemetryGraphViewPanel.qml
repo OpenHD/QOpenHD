@@ -14,7 +14,7 @@ Rectangle {
     Layout.fillWidth: true
     color: "#eaeaea"
 
-
+    // hidden in here is the TelemetryGraphView ;)
     Rectangle {
         id: statusLog
         color: "#2a2a2a"

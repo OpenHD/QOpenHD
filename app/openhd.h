@@ -758,7 +758,7 @@ public:
 public:
     QString m_last_ping_result="NA";
     Q_INVOKABLE void pingOpenHDUnit(bool isAir);
-    Q_PROPERTY(QString home_distance MEMBER  m_last_ping_result WRITE set_last_ping_result NOTIFY last_ping_result_changed)
+    Q_PROPERTY(QString last_ping_result MEMBER  m_last_ping_result WRITE set_last_ping_result NOTIFY last_ping_result_changed)
     void set_last_ping_result(QString last_ping_result);
 signals:
     void last_ping_result_changed(QString last_ping_result);

@@ -43,7 +43,7 @@ Item {
                     visible: true
 
                     Text {
-                        text: qsTr("Ping Result: ")+OpenHD.m_last_ping_result
+                        text: OpenHD.m_last_ping_result //qsTr("Ping Result: ")+
                         font.weight: Font.Bold
                         font.pixelSize: 13
                         anchors.leftMargin: 8
