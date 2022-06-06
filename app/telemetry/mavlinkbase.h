@@ -226,6 +226,7 @@ protected:
     // ---------
 private:
     std::unique_ptr<OHDConnection> mOHDConnection;
+    int getQOpenHDSysId();
 };
 
 #endif
