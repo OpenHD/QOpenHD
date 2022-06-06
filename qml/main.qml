@@ -173,12 +173,6 @@ ApplicationWindow {
         z: 5.0
     }
 
-    //LowerOverlayBar {
-    //    visible: !settings.stereo_enable
-    //    id: lowerOverlayBar
-    //}
-
-
     SettingsPopup {
         id: settings_panel
         visible: false

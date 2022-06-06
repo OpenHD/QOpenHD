@@ -19,7 +19,7 @@ MessageHUDForm {
      * while the list is full, the oldest will disapper regardless of how old it is.
      *
      */
-    property var maxMessageCount: 3
+    property int maxMessageCount: 3
 
     function pushMessage(message, level, timeout) {
         // pop extra messages off at the zero index to cause the others to shift upward on-screen

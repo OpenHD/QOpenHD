@@ -15,7 +15,6 @@
 class QUdpSocket;
 
 
-
 class MavlinkTelemetry: public MavlinkBase {
     Q_OBJECT
 
@@ -41,7 +40,6 @@ signals:
     //void adsbVehicleUpdate(const ADSBVehicle::VehicleInfo_t vehicleInfo);
     //void deleteMissionWaypoints();
     void update_RC_MavlinkBase(std::array<uint,19> rcValues);
-
 private:
     bool pause_telemetry;
     int m_mode=0;
@@ -52,6 +50,8 @@ private:
     int ap_version=0;
 
     std::array<uint,19> m_rc_values{0};
+public:
+    void pingOpenHDSystem(bool air);
 };
 
 #endif

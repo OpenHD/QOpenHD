@@ -244,7 +244,6 @@ int main(int argc, char *argv[]) {
     QQmlApplicationEngine engine;
     auto openhd = OpenHD::instance();
     openhd->setEngine(&engine);
-    openhd->set_last_ping_result("LAA");
 
 #if defined(__android__)
     engine.rootContext()->setContextProperty("IsAndroid", QVariant(true));

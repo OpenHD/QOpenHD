@@ -140,7 +140,7 @@ void MavlinkBase::set_saving(bool saving) {
 }
 
 
-void MavlinkBase::sendData(char* data, int len) {
+void MavlinkBase::sendData(mavlink_message_t msg) {
     /*switch (m_mavlink_type) {
         case MavlinkTypeUDP: {
             ((QUdpSocket*)mavlinkSocket)->writeDatagram((char*)data, len, QHostAddress(groundAddress), groundUDPPort);
@@ -153,6 +153,7 @@ void MavlinkBase::sendData(char* data, int len) {
             break;
         }
     }*/
+    mOHDConnection->sendMessage(msg);
     qDebug()<<"MavlinkBase::sendData NOT IMPLEMENTED";
 }
 
@@ -168,11 +169,8 @@ void MavlinkBase::fetchParameters() {
 
     mavlink_message_t msg;
     mavlink_msg_param_request_list_pack(mavlink_sysid, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID, targetCompID);
+    sendData(msg);
 
-    uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
-    int len = mavlink_msg_to_send_buffer(buffer, &msg);
-
-    sendData((char*)buffer, len);
 }
 
 
@@ -200,8 +198,8 @@ void MavlinkBase::joystick_Present_Changed(bool joystickPresent) {
         //qDebug() << "MavlinkBase::joystick_Present_Changed: stopping timer for RC msgs";
         //m_rc_timer->stop();
     }
-
 }
+
 void MavlinkBase::receive_RC_Update(std::array<uint,19> rcValues) {
     qDebug() << "MavlinkBase::receive_RC_Update=";
      m_rc_values=rcValues;
@@ -222,9 +220,7 @@ void MavlinkBase::sendRC () {
                                               m_rc_values[0],m_rc_values[1],m_rc_values[2],m_rc_values[3],m_rc_values[4],m_rc_values[5],m_rc_values[6],m_rc_values[7],
                 m_rc_values[8],m_rc_values[9],m_rc_values[10],m_rc_values[11],m_rc_values[12],m_rc_values[13],m_rc_values[14],m_rc_values[15],
                 m_rc_values[16],m_rc_values[17]);
-        uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
-        int len = mavlink_msg_to_send_buffer(buffer, &msg);
-        sendData((char*)buffer, len);
+            sendData(msg);
     }
     else {
         return;
@@ -236,15 +232,9 @@ void MavlinkBase::requestAutopilotInfo() {
     qDebug() << "MavlinkBase::request_Autopilot_Info";
     QSettings settings;
     int mavlink_sysid = settings.value("mavlink_sysid", m_util.default_mavlink_sysid()).toInt();
-
     mavlink_message_t msg;
-
     mavlink_msg_autopilot_version_request_pack(mavlink_sysid, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID,targetCompID);
-
-    uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
-    int len = mavlink_msg_to_send_buffer(buffer, &msg);
-
-    sendData((char*)buffer, len);
+    sendData(msg);
 }
 
 
@@ -253,54 +243,31 @@ void MavlinkBase::request_Mission_Changed() {
 
     QSettings settings;
     int mavlink_sysid = settings.value("mavlink_sysid", m_util.default_mavlink_sysid()).toInt();
-
     mavlink_message_t msg;
-
     mavlink_msg_mission_request_list_pack(mavlink_sysid, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID,targetCompID,0);
-
-    uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
-    int len = mavlink_msg_to_send_buffer(buffer, &msg);
-
-    sendData((char*)buffer, len);
-
+    sendData(msg);
 }
 
 void MavlinkBase::get_Mission_Items(int total) {
     qDebug() << "MavlinkBase::get_Mission_Items total="<< total;
     QSettings settings;
     int mavlink_sysid = settings.value("mavlink_sysid", m_util.default_mavlink_sysid()).toInt();
-
     mavlink_message_t msg;
-
     int current_seq;
-
     for (current_seq = 1; current_seq < total; ++current_seq){
         //qDebug() << "MavlinkBase::get_Mission_Items current="<< current_seq;
-
         mavlink_msg_mission_request_int_pack(mavlink_sysid, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID,targetCompID,current_seq,0);
-
-        uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
-        int len = mavlink_msg_to_send_buffer(buffer, &msg);
-
-        sendData((char*)buffer, len);
+        sendData(msg);
     }
 }
 
 void MavlinkBase::send_Mission_Ack() {
     qDebug() << "MavlinkBase::send_Mission_Ack";
-
     QSettings settings;
     int mavlink_sysid = settings.value("mavlink_sysid", m_util.default_mavlink_sysid()).toInt();
-
     mavlink_message_t msg;
-
     mavlink_msg_mission_ack_pack(mavlink_sysid, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID,targetCompID,0,0);
-
-    uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
-    int len = mavlink_msg_to_send_buffer(buffer, &msg);
-
-    sendData((char*)buffer, len);
-
+    sendData(msg);
 }
 
 bool MavlinkBase::isConnectionLost() {
@@ -486,7 +453,6 @@ void MavlinkBase::setDataStreamRate(MAV_DATA_STREAM streamType, uint8_t hz) {
 
     int mavlink_sysid = settings.value("mavlink_sysid", m_util.default_mavlink_sysid()).toInt();
 
-
     mavlink_message_t msg;
     msg.sysid = mavlink_sysid;
     msg.compid = MAV_COMP_ID_MISSIONPLANNER;
@@ -497,11 +463,7 @@ void MavlinkBase::setDataStreamRate(MAV_DATA_STREAM streamType, uint8_t hz) {
      *
      */
     mavlink_msg_request_data_stream_pack(mavlink_sysid, MAV_COMP_ID_MISSIONPLANNER, &msg, 1, MAV_COMP_ID_AUTOPILOT1, streamType, hz, 1);
-
-    uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
-    int len = mavlink_msg_to_send_buffer(buffer, &msg);
-
-    sendData((char*)buffer, len);
+    sendData(msg);
 }
 
 
@@ -550,10 +512,7 @@ void MavlinkBase::commandStateLoop() {
             } else {
                 mavlink_msg_command_int_pack(mavlink_sysid, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID, targetCompID, m_current_command->int_frame, m_current_command->command_id, m_current_command->int_current, m_current_command->int_autocontinue, m_current_command->int_param1, m_current_command->int_param2, m_current_command->int_param3, m_current_command->int_param4, m_current_command->int_param5, m_current_command->int_param6, m_current_command->int_param7);          
             }
-            uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
-            int len = mavlink_msg_to_send_buffer(buffer, &msg);
-
-            sendData((char*)buffer, len);
+            sendData(msg);
 
             // now wait for ack
             m_command_state = MavlinkCommandStateWaitACK;

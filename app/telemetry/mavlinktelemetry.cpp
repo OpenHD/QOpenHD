@@ -686,3 +686,10 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
         }
     }
 }
+
+void MavlinkTelemetry::pingOpenHDSystem(bool air)
+{
+    mavlink_message_t msg;
+    mavlink_ping_t ping;
+    //mavlink_msg_ping_encode()
+}

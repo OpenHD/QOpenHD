@@ -154,7 +154,7 @@ protected:
     bool isConnectionLost();
     void resetParamVars();
     void processData(QByteArray data);
-    void sendData(char* data, int len);
+    void sendData(mavlink_message_t msg);
     void sendCommand(MavlinkCommand command);   
     void setDataStreamRate(MAV_DATA_STREAM streamType, uint8_t hz);
     void requestAutopilotInfo();
