@@ -16,6 +16,7 @@
 
 #include "../util/util.h"
 #include "../util/localmessage.h"
+#include <sstream>
 
 #include "openhd_defines.hpp"
 
@@ -135,11 +136,9 @@ void MavlinkTelemetry::rc_value_changed(int channelIdx,uint channelValue){
 
 void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
     //qDebug()<<"MavlinkTelemetry::onProcessMavlinkMessage"<<msg.msgid;
-
     //if(pause_telemetry==true){
     //    return;
     //}
-
     switch (msg.msgid) {
             case MAVLINK_MSG_ID_HEARTBEAT: {
                     mavlink_heartbeat_t heartbeat;
@@ -647,6 +646,21 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
         case MAVLINK_MSG_ID_ADSB_VEHICLE: {
             break;
         }
+    case MAVLINK_MSG_ID_PING:{
+        //qDebug()<<"Got ping message";
+        mavlink_ping_t ping;
+        mavlink_msg_ping_decode(&msg, &ping);
+        if(ping.seq==pingSequenceNumber && ping.target_system==getQOpenHDSysId()){
+            const auto delta=getTimeMicroseconds()-ping.time_usec;
+            const float deltaMs=delta/1000.0f;
+            std::stringstream ss;
+            ss<<deltaMs<<"ms";
+            OpenHD::instance()->set_last_ping_result(ss.str().c_str());
+        }else{
+            qDebug()<<"Got ping with seq:"<<ping.seq<<" and targetSys:"<<ping.target_system;
+        }
+        break;
+    }
     case MAVLINK_MSG_ID_OPENHD_SYSTEM_TELEMETRY:{
         mavlink_openhd_system_telemetry_t ohd_sys_telemetry;
         mavlink_msg_openhd_system_telemetry_decode(&msg,&ohd_sys_telemetry);
@@ -689,7 +703,14 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
 
 void MavlinkTelemetry::pingOpenHDSystem(bool air)
 {
+    pingSequenceNumber++;
     mavlink_message_t msg;
-    mavlink_ping_t ping;
-    //mavlink_msg_ping_encode()
+    mavlink_msg_ping_pack(getQOpenHDSysId(),0,&msg,getTimeMicroseconds(),pingSequenceNumber,0,0);
+    sendData(msg);
+}
+
+uint64_t MavlinkTelemetry::getTimeMicroseconds()
+{
+    const auto time=std::chrono::steady_clock::now().time_since_epoch();
+    return std::chrono::duration_cast<std::chrono::microseconds>(time).count();
 }

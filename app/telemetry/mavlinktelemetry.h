@@ -52,6 +52,8 @@ private:
     std::array<uint,19> m_rc_values{0};
 public:
     void pingOpenHDSystem(bool air);
+    int pingSequenceNumber=0;
+    uint64_t getTimeMicroseconds();
 };
 
 #endif

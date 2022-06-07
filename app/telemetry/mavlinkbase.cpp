@@ -111,7 +111,7 @@ void MavlinkBase::sendData(mavlink_message_t msg) {
         }
     }*/
     mOHDConnection->sendMessage(msg);
-    qDebug()<<"MavlinkBase::sendData NOT IMPLEMENTED";
+    //qDebug()<<"MavlinkBase::sendData NOT IMPLEMENTED";
 }
 
 QVariantMap MavlinkBase::getAllParameters() {
