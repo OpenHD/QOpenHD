@@ -647,9 +647,9 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             break;
         }
     case MAVLINK_MSG_ID_PING:{
-        //qDebug()<<"Got ping message";
         mavlink_ping_t ping;
         mavlink_msg_ping_decode(&msg, &ping);
+        qDebug()<<"Got ping message sender:"<<msg.sysid<<":"<<msg.compid<<" target:"<<ping.target_system<<":"<<ping.target_component<<"seq:"<<ping.seq;
         if(ping.seq==pingSequenceNumber && ping.target_system==getQOpenHDSysId()){
             const auto delta=getTimeMicroseconds()-ping.time_usec;
             const float deltaMs=delta/1000.0f;
