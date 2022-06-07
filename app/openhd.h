@@ -756,12 +756,16 @@ public:
     QString m_openhd_version_air="NA";
     // Quick and dirty code begin
 public:
-    QString m_last_ping_result="NA";
+    QString m_last_ping_result_openhd_air="NA";
+    Q_PROPERTY(QString last_ping_result_openhd_air MEMBER  m_last_ping_result_openhd_air WRITE set_last_ping_result_openhd_air NOTIFY last_ping_result_openhd_air_changed)
+    void set_last_ping_result_openhd_air(QString last_ping_result_openhd_air);
+     QString m_last_ping_result_openhd_ground="NA";
+    Q_PROPERTY(QString last_ping_result_openhd_ground MEMBER  m_last_ping_result_openhd_ground WRITE set_last_ping_result_openhd_ground NOTIFY last_ping_result_openhd_ground_changed)
+    void set_last_ping_result_openhd_ground(QString last_ping_result_openhd_ground);
     Q_INVOKABLE void pingOpenHDUnit(bool isAir);
-    Q_PROPERTY(QString last_ping_result MEMBER  m_last_ping_result WRITE set_last_ping_result NOTIFY last_ping_result_changed)
-    void set_last_ping_result(QString last_ping_result);
 signals:
-    void last_ping_result_changed(QString last_ping_result);
+    void last_ping_result_openhd_air_changed(QString last_ping_result_openhd_air);
+    void last_ping_result_openhd_ground_changed(QString last_ping_result_openhd_ground);
 };
 
 

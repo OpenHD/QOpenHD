@@ -655,7 +655,11 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             const float deltaMs=delta/1000.0f;
             std::stringstream ss;
             ss<<deltaMs<<"ms";
-            OpenHD::instance()->set_last_ping_result(ss.str().c_str());
+            if(msg.sysid==OHD_SYS_ID_AIR){
+                OpenHD::instance()->set_last_ping_result_openhd_air(ss.str().c_str());
+            }else{
+                OpenHD::instance()->set_last_ping_result_openhd_ground(ss.str().c_str());
+            }
         }else{
             qDebug()<<"Got ping with seq:"<<ping.seq<<" and targetSys:"<<ping.target_system;
         }

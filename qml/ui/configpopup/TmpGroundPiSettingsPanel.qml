@@ -20,12 +20,13 @@ Item {
     Layout.fillWidth: true
 
 
-    ScrollView {
-        id: xTestScrollView
+    ListView {
+        id: groundPiSettingsListView
         width: parent.width
         height: parent.height
         visible: true
         clip: true
+        orientation: ListView.Vertical
 
         Item {
             anchors.fill: parent
@@ -43,7 +44,46 @@ Item {
                     visible: true
 
                     Text {
-                        text: qsTr("Ping Result: ")+OpenHD.last_ping_result
+                        text: qsTr("Ping Result Air: ")+OpenHD.last_ping_result_openhd_air
+                        font.weight: Font.Bold
+                        font.pixelSize: 13
+                        anchors.leftMargin: 8
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 224
+                        height: 20
+                        anchors.left: parent.left
+                    }
+
+                    Button {
+                        width: 128
+                        height: 60
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: qsTr("Ping Air")
+                        onClicked: {
+                            OpenHD.pingOpenHDUnit(true)
+                        }
+                    }
+                }
+            }
+
+            Column {
+                id: manageColumnY
+                spacing: 0
+                anchors.left: parent.left
+                anchors.right: parent.right
+
+                Rectangle {
+                    width: parent.width
+                    height: 200
+                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                    visible: true
+
+                    Text {
+                        text: qsTr("Ping Result Ground: ")+OpenHD.last_ping_result_openhd_ground
                         font.weight: Font.Bold
                         font.pixelSize: 13
                         anchors.leftMargin: 8
@@ -56,14 +96,14 @@ Item {
 
                     Button {
                         width: 128
-                        height: 60
+                        height: 40
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
 
                         anchors.right: parent.right
                         anchors.verticalCenter: parent.verticalCenter
                         text: qsTr("Ping Ground")
                         onClicked: {
-                            OpenHD.pingOpenHDUnit(false)
+                            OpenHD.pingOpenHDUnit(true)
                         }
                     }
                 }
