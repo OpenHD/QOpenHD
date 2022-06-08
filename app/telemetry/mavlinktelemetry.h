@@ -49,7 +49,6 @@ private:
 public:
     void pingAllSystems();
     int pingSequenceNumber=0;
-    uint64_t getTimeMicroseconds();
 };
 
 #endif

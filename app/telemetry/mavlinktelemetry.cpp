@@ -19,6 +19,7 @@
 #include <sstream>
 
 #include "openhd_defines.hpp"
+#include "qopenhdmavlinkhelper.hpp"
 
 #include "openhd.h"
 
@@ -42,11 +43,6 @@ MavlinkTelemetry::MavlinkTelemetry(QObject *parent): MavlinkBase(parent) {
     m_restrict_compid = false;
     
     localPort = 14550;
-
-// FOR TESTING COMMANDS ON SITL THIS MUST BE UNCOMMENTED
-#if defined(__rasp_pi__)|| defined(__jetson__)
-    groundAddress = "127.0.0.1";
-#endif
 
     connect(this, &MavlinkTelemetry::setup, this, &MavlinkTelemetry::onSetup);
 
@@ -649,11 +645,11 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
     case MAVLINK_MSG_ID_PING:{
         mavlink_ping_t ping;
         mavlink_msg_ping_decode(&msg, &ping);
-        qDebug()<<"Got ping message sender:"<<msg.sysid<<":"<<msg.compid<<" target:"<<ping.target_system<<":"<<ping.target_component<<"seq:"<<ping.seq;
+        //qDebug()<<"Got ping message sender:"<<msg.sysid<<":"<<msg.compid<<" target:"<<ping.target_system<<":"<<ping.target_component<<"seq:"<<ping.seq;
         // We only process ping responses with our specific sys id and a matching sequence number.
         // Note that if the user clicks the ping multiple times in rapid succession, some pings might be dropped.
         if(ping.seq==pingSequenceNumber && ping.target_system==getQOpenHDSysId()){
-            const auto delta=getTimeMicroseconds()-ping.time_usec;
+            const auto delta=QOpenHDMavlinkHelper::getTimeMicroseconds()-ping.time_usec;
             const float deltaMs=delta/1000.0f;
             std::stringstream ss;
             ss<<deltaMs<<"ms";
@@ -668,7 +664,7 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
                 OpenHD::instance()->set_last_ping_result_flight_ctrl(ss.str().c_str());
             }
         }else{
-            qDebug()<<"Got ping with seq:"<<ping.seq<<" and targetSys:"<<ping.target_system;
+            qDebug()<<"Got ping message sender:"<<msg.sysid<<":"<<msg.compid<<" target:"<<ping.target_system<<":"<<ping.target_component<<"seq:"<<ping.seq;
         }
         break;
     }
@@ -720,12 +716,6 @@ void MavlinkTelemetry::pingAllSystems()
 {
     pingSequenceNumber++;
     mavlink_message_t msg;
-    mavlink_msg_ping_pack(getQOpenHDSysId(),0,&msg,getTimeMicroseconds(),pingSequenceNumber,0,0);
+    mavlink_msg_ping_pack(getQOpenHDSysId(),0,&msg,QOpenHDMavlinkHelper::getTimeMicroseconds(),pingSequenceNumber,0,0);
     sendData(msg);
-}
-
-uint64_t MavlinkTelemetry::getTimeMicroseconds()
-{
-    const auto time=std::chrono::steady_clock::now().time_since_epoch();
-    return std::chrono::duration_cast<std::chrono::microseconds>(time).count();
 }
