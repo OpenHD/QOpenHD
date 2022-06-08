@@ -17,7 +17,7 @@
  * 1) sending mavlink messages to OpenHD
  * 2) receiving mavlink messages from OpenHD
  *
- * The received mavlink messages can come from OpenHD itself (custom) or can be telemetry data from the Drone Flight Controller
+ * The received mavlink messages can come from OpenHD itself (Air or ground) or can be telemetry data from the Drone Flight Controller
  * connected to the OpenHD air unit.
  *
  * If we go for a single TCP or 2 udp connections (1 for send, one for receive) is not clear yet.
@@ -26,7 +26,7 @@
  *
  * If the connection to OpenHD is lost, this class should try and reconnect in intervalls until the connection has been re-established.
  *
- * NOTE: Since QGroundControll does the same, this one sends out mavlink heartbeat messages in reqular intervalls
+ * NOTE: Since QGroundControll does the same, this one sends out mavlink heartbeat messages in reqular intervalls.
  */
 
 class OHDConnection : public QObject

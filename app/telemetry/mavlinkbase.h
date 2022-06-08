@@ -12,17 +12,6 @@
 #include "OHDConnection.h"
 #include "mavlinkcommand.h"
 
-typedef enum MavlinkType {
-    MavlinkTypeUDP,
-    MavlinkTypeTCP
-} MavlinkType;
-
-typedef enum MicroserviceTarget {
-    MicroserviceTargetGround,
-    MicroserviceTargetAir,
-    MicroserviceTargetNone
-} MicroserviceTarget;
-
 typedef enum MavlinkState {
     MavlinkStateDisconnected,
     MavlinkStateConnected,
@@ -35,7 +24,7 @@ class MavlinkBase: public QObject {
     Q_OBJECT
 
 public:
-    explicit MavlinkBase(QObject *parent = nullptr, MavlinkType mavlink_type = MavlinkTypeUDP);
+    explicit MavlinkBase(QObject *parent = nullptr);
 
 
     Q_INVOKABLE QVariantMap getAllParameters();
@@ -95,17 +84,9 @@ signals:
 public slots:
     void onStarted();    
     void request_Mission_Changed();
-
     // for RC
     void receive_RC_Update(std::array<uint,19> rcValues);
     void joystick_Present_Changed(bool joystickPresent);
-protected slots:
-    //void processMavlinkUDPDatagrams();
-    //void processMavlinkTCPData();
-
-    //void onTCPDisconnected();
-    //void onTCPConnected();
-
 protected:
     void stateLoop();
     void commandStateLoop();
@@ -133,26 +114,12 @@ protected:
 
     bool m_loading = false;
     bool m_saving = false;
-
-    bool m_restrict_sysid = true;
-    bool m_restrict_compid = true;
-
 protected:
     OpenHDUtil m_util;
     quint8 targetSysID;
     quint8 targetCompID;
 
-    quint16 localPort = 14550;
-
-    QString groundAddress;
-    quint16 groundUDPPort = 14550;
-    quint16 groundTCPPort = 5761;
-
     std::atomic<bool> m_ground_available;
-    MavlinkType m_mavlink_type;
-    //QAbstractSocket *mavlinkSocket = nullptr;
-
-    //mavlink_status_t r_mavlink_status;
 
     qint64 m_last_heartbeat = -1;
     qint64 m_last_attitude = -1;
@@ -168,16 +135,10 @@ protected:
 
     QTimer* timer = nullptr;
     QTimer* m_heartbeat_timer = nullptr;
-
     QTimer* m_rc_timer = nullptr;
-
     QTimer* m_command_timer = nullptr;
-    QTimer* tcpReconnectTimer = nullptr;
-
     uint64_t m_last_boot = 0;
-
     uint64_t m_command_sent_timestamp = 0;
-
     std::shared_ptr<MavlinkCommand> m_current_command;
 
     std::array<uint,19> m_rc_values;

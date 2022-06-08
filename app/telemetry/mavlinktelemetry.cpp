@@ -35,15 +35,7 @@ MavlinkTelemetry* MavlinkTelemetry::instance() {
 MavlinkTelemetry::MavlinkTelemetry(QObject *parent): MavlinkBase(parent) {
     qDebug() << "MavlinkTelemetry::MavlinkTelemetry()";
 
-    requestSysIdSettings();
-    m_restrict_compid = false;
     targetCompID = MAV_COMP_ID_AUTOPILOT1;
-
-    m_restrict_sysid = false;
-    m_restrict_compid = false;
-    
-    localPort = 14550;
-
     connect(this, &MavlinkTelemetry::setup, this, &MavlinkTelemetry::onSetup);
 
 }
@@ -57,7 +49,6 @@ void MavlinkTelemetry::onSetup() {
 
     timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, &MavlinkTelemetry::stateLoop);
-    connect(timer, &QTimer::timeout, this, &MavlinkTelemetry::requestSysIdSettings);
     resetParamVars();
     timer->start(200);
 
@@ -67,13 +58,6 @@ void MavlinkTelemetry::onSetup() {
     #endif
 }
 
-void MavlinkTelemetry::requestSysIdSettings() {
-    //qDebug() << "requestTargetSysId called";
-    QSettings settings;
-    m_restrict_sysid = settings.value("filter_mavlink_telemetry", false).toBool();
-    targetSysID = settings.value("fc_mavlink_sysid", m_util.default_mavlink_sysid()).toInt();
-    //qDebug() << "requestTargetSysId="<<targetSysID;
-}
 
 void MavlinkTelemetry::pauseTelemetry(bool toggle) {
     pause_telemetry=toggle;
@@ -716,6 +700,6 @@ void MavlinkTelemetry::pingAllSystems()
 {
     pingSequenceNumber++;
     mavlink_message_t msg;
-    mavlink_msg_ping_pack(getQOpenHDSysId(),0,&msg,QOpenHDMavlinkHelper::getTimeMicroseconds(),pingSequenceNumber,0,0);
+    mavlink_msg_ping_pack(getQOpenHDSysId(),QOpenHDMavlinkHelper::getCompId(),&msg,QOpenHDMavlinkHelper::getTimeMicroseconds(),pingSequenceNumber,0,0);
     sendData(msg);
 }

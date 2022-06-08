@@ -522,33 +522,5 @@ void OpenHDUtil::keep_screen_on(bool on) {
 }
 #endif
 
-int OpenHDUtil::default_mavlink_sysid() {
-    #if defined (__macos__)
-        return 220;
-    #endif
-
-    #if defined (__ios__)
-        return 221;
-    #endif
-
-    #if defined (__android__)
-        return 222;
-    #endif
-
-    #if defined (__windows__)
-        return 223;
-    #endif
-
-    #if defined (__rasp_pi__)
-        return 224;
-    #endif
-
-    #if defined (__desktoplinux__)
-        return 225;
-    #endif
-    #if defined (__jetson__)
-        return 226;
-    #endif
-}
 
 #endif // UTIL_CPP

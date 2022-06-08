@@ -21,7 +21,6 @@ public:
 public slots:
     void onSetup();
     void pauseTelemetry(bool toggle);
-    void requestSysIdSettings();
     void requested_Flight_Mode_Changed(int mode);
     void requested_ArmDisarm_Changed(int arm_disarm);
     void FC_Reboot_Shutdown_Changed(int reboot_shutdown);

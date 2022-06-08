@@ -14,7 +14,7 @@
 
 #include <openhd/mavlink.h>
 #include "../rc/openhdrc.h"
-
+#include "qopenhdmavlinkhelper.hpp"
 #include "../util/util.h"
 
 /*
@@ -23,11 +23,7 @@
  * problems yet.
  *
  */
-
-static constexpr auto MAVLINK_TCP_ADRESS="127.0.0.1";
-static constexpr auto MAVLINK_TCP_PORT=1234;
-
-MavlinkBase::MavlinkBase(QObject *parent,  MavlinkType mavlink_type): QObject(parent), m_ground_available(false), m_mavlink_type(mavlink_type) {
+MavlinkBase::MavlinkBase(QObject *parent): QObject(parent), m_ground_available(false) {
     qDebug() << "MavlinkBase::MavlinkBase()";
     mOHDConnection=std::make_unique<OHDConnection>(nullptr,false);
     mOHDConnection->registerNewMessageCalback([this](mavlink_message_t msg){
@@ -38,52 +34,6 @@ MavlinkBase::MavlinkBase(QObject *parent,  MavlinkType mavlink_type): QObject(pa
 void MavlinkBase::onStarted() {
     emit setup();
 }
-
-/*void MavlinkBase::onTCPConnected() {
-    qDebug() << "MavlinkBase::onTCPConnected()";
-}
-
-void MavlinkBase::onTCPDisconnected() {
-    reconnectTCP();
-}*/
-
-/*void MavlinkBase::reconnectTCP() {
-    //qDebug() << "MavlinkBase::reconnectTCP- callback";
-    //if (groundAddress.isEmpty()) {
-    //    return;
-    //}
-    /*if (((QTcpSocket*)mavlinkSocket)->state() == QAbstractSocket::UnconnectedState) {
-        qDebug() << "MavlinkBase::reconnectTCP- reconnecting";
-        ((QTcpSocket*)mavlinkSocket)->connectToHost(MAVLINK_TCP_ADRESS, MAVLINK_TCP_PORT);
-    }*/
-//}
-
-/*void MavlinkBase::setGroundIP(QString address) {
-    if (!mavlinkSocket) {
-        return;
-    }
-    bool reconnect = false;
-    if (groundAddress != address) {
-        reconnect = true;
-    }
-
-    groundAddress = address;
-
-    if (reconnect) {
-        switch (m_mavlink_type) {
-            case MavlinkTypeTCP: {
-                if (((QTcpSocket*)mavlinkSocket)->state() == QAbstractSocket::ConnectedState) {
-                    ((QTcpSocket*)mavlinkSocket)->disconnectFromHost();
-                }
-                break;
-            }
-            default: {
-                break;
-            }
-        }
-    }
-}*/
-
 
 void MavlinkBase::set_loading(bool loading) {
     m_loading = loading;
@@ -96,22 +46,8 @@ void MavlinkBase::set_saving(bool saving) {
     emit savingChanged(m_saving);
 }
 
-
 void MavlinkBase::sendData(mavlink_message_t msg) {
-    /*switch (m_mavlink_type) {
-        case MavlinkTypeUDP: {
-            ((QUdpSocket*)mavlinkSocket)->writeDatagram((char*)data, len, QHostAddress(groundAddress), groundUDPPort);
-            break;
-        }
-        case MavlinkTypeTCP: {
-            if (((QTcpSocket*)mavlinkSocket)->state() == QAbstractSocket::ConnectedState) {
-                ((QTcpSocket*)mavlinkSocket)->write((char*)data, len);
-            }
-            break;
-        }
-    }*/
     mOHDConnection->sendMessage(msg);
-    //qDebug()<<"MavlinkBase::sendData NOT IMPLEMENTED";
 }
 
 QVariantMap MavlinkBase::getAllParameters() {
@@ -127,21 +63,6 @@ void MavlinkBase::fetchParameters() {
     sendData(msg);
 
 }
-
-
-/*void MavlinkBase::sendHeartbeat() {
-    QSettings settings;
-    int mavlink_sysid = settings.value("mavlink_sysid", m_util.default_mavlink_sysid()).toInt();
-
-    mavlink_message_t msg;
-
-    mavlink_msg_heartbeat_pack(mavlink_sysid, MAV_COMP_ID_MISSIONPLANNER, &msg, MAV_TYPE_GCS, MAV_AUTOPILOT_INVALID, 0, 0, 0);
-
-    uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
-    int len = mavlink_msg_to_send_buffer(buffer, &msg);
-
-    sendData((char*)buffer, len);
-}*/
 
 void MavlinkBase::joystick_Present_Changed(bool joystickPresent) {
     qDebug() << "MavlinkBase::joystick_Present_Changed:"<< joystickPresent;
@@ -162,16 +83,15 @@ void MavlinkBase::receive_RC_Update(std::array<uint,19> rcValues) {
 
 void MavlinkBase::sendRC () {
     QSettings settings;
-    bool enable_rc = settings.value("enable_rc", m_util.default_mavlink_sysid()).toBool();
+    bool enable_rc = settings.value("enable_rc", false).toBool();
     //temporarily dsabled
     if(true){
         return;
     }
     if (enable_rc == true){
-        int mavlink_sysid = settings.value("mavlink_sysid", m_util.default_mavlink_sysid()).toInt();
         mavlink_message_t msg;
         //TODO mavlink sysid is hard coded at 255... in app its default is 225
-        mavlink_msg_rc_channels_override_pack(255, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID, targetCompID,
+        mavlink_msg_rc_channels_override_pack(QOpenHDMavlinkHelper::getSysId(), MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID, targetCompID,
                                               m_rc_values[0],m_rc_values[1],m_rc_values[2],m_rc_values[3],m_rc_values[4],m_rc_values[5],m_rc_values[6],m_rc_values[7],
                 m_rc_values[8],m_rc_values[9],m_rc_values[10],m_rc_values[11],m_rc_values[12],m_rc_values[13],m_rc_values[14],m_rc_values[15],
                 m_rc_values[16],m_rc_values[17]);
@@ -193,9 +113,7 @@ void MavlinkBase::requestAutopilotInfo() {
 
 int MavlinkBase::getQOpenHDSysId()
 {
-    QSettings settings;
-    int mavlink_sysid = settings.value("mavlink_sysid", m_util.default_mavlink_sysid()).toInt();
-    return mavlink_sysid;
+    return QOpenHDMavlinkHelper::getSysId();
 }
 
 

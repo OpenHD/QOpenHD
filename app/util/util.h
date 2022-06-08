@@ -86,8 +86,6 @@ public:
     #if defined(__android__)
     Q_INVOKABLE void keep_screen_on(bool on);
     #endif
-
-    Q_INVOKABLE int default_mavlink_sysid();
 };
 
 #endif // UTIL_H
