@@ -11,10 +11,6 @@
 
 #include "mavlinkbase.h"
 
-
-class QUdpSocket;
-
-
 class MavlinkTelemetry: public MavlinkBase {
     Q_OBJECT
 

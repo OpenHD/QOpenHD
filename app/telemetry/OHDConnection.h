@@ -43,8 +43,7 @@ public:
      */
     void stop();
     /**
-     * @brief MAV_MSG_CALLBACK Callback that can be registered and is called every time a new message from the OpenHD
-     * Ground station has been parsed
+     * @brief MAV_MSG_CALLBACK Callback that can be registered and is called every time a new incoming mavlink message has been parsed.
      */
     typedef std::function<void(mavlink_message_t msg)> MAV_MSG_CALLBACK;
     void registerNewMessageCalback(MAV_MSG_CALLBACK cb);

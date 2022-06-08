@@ -1,0 +1,8 @@
+#ifndef QOPENHDMAVLINKHELPER_H
+#define QOPENHDMAVLINKHELPER_H
+
+namespace QOpenHDMavlinkHelper{
+
+}
+
+#endif // QOPENHDMAVLINKHELPER_H

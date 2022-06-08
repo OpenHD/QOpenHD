@@ -95,7 +95,8 @@ HEADERS += \
     app/osd/altitudeladder.h \
     app/osd/drawingcanvas.h \
     app/osd/flightpathvector.h \
-    app/telemetry/openhd_defines.hpp
+    app/telemetry/openhd_defines.hpp \
+    app/telemetry/qopenhdmavlinkhelper.hpp
 
 
 # I deleted all the "old" telemetry protocolls other than mavlink
@@ -104,11 +105,13 @@ HEADERS += \
     app/telemetry/OHDConnection.h \
     app/telemetry/mavlinktelemetry.h \
     app/telemetry/mavlinkbase.h \
+    app/telemetry/mavlinkcommand.h \
 
 SOURCES += \
     app/telemetry/OHDConnection.cpp \
     app/telemetry/mavlinktelemetry.cpp \
     app/telemetry/mavlinkbase.cpp \
+    app/telemetry/mavlinkcommand.cpp \
 
 # all other files, complete mess
 SOURCES += \

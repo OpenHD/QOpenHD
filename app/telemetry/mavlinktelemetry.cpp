@@ -663,6 +663,7 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
                 OpenHD::instance()->set_last_ping_result_openhd_ground(ss.str().c_str());
             }else{
                 // almost 100% from flight controller
+                // TODO make sure
                 //if(msg.compid==MAV_COMP_ID_AUTOPILOT1)
                 OpenHD::instance()->set_last_ping_result_flight_ctrl(ss.str().c_str());
             }
@@ -671,15 +672,17 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
         }
         break;
     }
-    case MAVLINK_MSG_ID_OPENHD_SYSTEM_TELEMETRY:{
-        mavlink_openhd_system_telemetry_t ohd_sys_telemetry;
-        mavlink_msg_openhd_system_telemetry_decode(&msg,&ohd_sys_telemetry);
+    case MAVLINK_MSG_ID_ONBOARD_COMPUTER_STATUS:{
+        mavlink_onboard_computer_status_t decoded;
+        mavlink_msg_onboard_computer_status_decode(&msg,&decoded);
         if(msg.sysid==OHD_SYS_ID_AIR){
-            OpenHD::instance()->set_cpuload_air(ohd_sys_telemetry.cpuload);
-            OpenHD::instance()->set_temp_air(ohd_sys_telemetry.temperature);
+            OpenHD::instance()->set_cpuload_air(decoded.cpu_cores[0]);
+            OpenHD::instance()->set_temp_air(decoded.temperature_core[0]);
+        }else if(msg.sysid==OHD_SYS_ID_GROUND){
+            OpenHD::instance()->set_cpuload_gnd(decoded.cpu_cores[0]);
+            OpenHD::instance()->set_temp_gnd(decoded.temperature_core[0]);
         }else{
-            OpenHD::instance()->set_cpuload_gnd(ohd_sys_telemetry.cpuload);
-            OpenHD::instance()->set_temp_gnd(ohd_sys_telemetry.temperature);
+            qDebug()<<"Sys tele with unknown sys id";
         }
         break;
     }
@@ -689,8 +692,10 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
         QString version(parsedMsg.version);
         if(msg.sysid==OHD_SYS_ID_AIR){
             OpenHD::instance()->set_openhd_version_air(version);
-        }else{
+        }else if(msg.sysid==OHD_SYS_ID_GROUND){
             OpenHD::instance()->set_openhd_version_ground(version);
+        }else{
+            qDebug()<<"OHD version with unknown sys id";
         }
         break;
     }
