@@ -1069,15 +1069,10 @@ void OpenHD::setFontFamily(QString fontFamily) {
 
 
 // quick dirty
-void OpenHD::pingOpenHDUnit(bool pingAir)
+void OpenHD::pingAllSystems()
 {
-    qDebug()<<"Ping OpenHD "<<(pingAir ? "Air": "Ground");
-    if(pingAir){
-        set_last_ping_result_openhd_air("Awaiting response");
-    }else{
-        set_last_ping_result_openhd_ground("Awaiting response");
-    }
-    MavlinkTelemetry::instance()->pingOpenHDSystem(pingAir);
+    qDebug()<<"Ping All Systems";
+    MavlinkTelemetry::instance()->pingAllSystems();
 }
 
 void OpenHD::set_last_ping_result_openhd_air(QString last_ping_result_openhd_air)
@@ -1089,6 +1084,12 @@ void OpenHD::set_last_ping_result_openhd_ground(QString last_ping_result_openhd_
 {
     m_last_ping_result_openhd_ground=last_ping_result_openhd_ground;
     emit last_ping_result_openhd_ground_changed(m_last_ping_result_openhd_ground);
+}
+
+void OpenHD::set_last_ping_result_flight_ctrl(QString last_ping_result_flight_ctrl)
+{
+    m_last_ping_result_flight_ctrl=last_ping_result_flight_ctrl;
+    emit last_ping_result_flight_ctrl_changed(m_last_ping_result_flight_ctrl);
 }
 
 

@@ -756,16 +756,22 @@ public:
     QString m_openhd_version_air="NA";
     // Quick and dirty code begin
 public:
+    Q_INVOKABLE void pingAllSystems();
+    // All these get set by the proper responses and can be used in UI
     QString m_last_ping_result_openhd_air="NA";
     Q_PROPERTY(QString last_ping_result_openhd_air MEMBER  m_last_ping_result_openhd_air WRITE set_last_ping_result_openhd_air NOTIFY last_ping_result_openhd_air_changed)
     void set_last_ping_result_openhd_air(QString last_ping_result_openhd_air);
-     QString m_last_ping_result_openhd_ground="NA";
+    QString m_last_ping_result_openhd_ground="NA";
     Q_PROPERTY(QString last_ping_result_openhd_ground MEMBER  m_last_ping_result_openhd_ground WRITE set_last_ping_result_openhd_ground NOTIFY last_ping_result_openhd_ground_changed)
     void set_last_ping_result_openhd_ground(QString last_ping_result_openhd_ground);
-    Q_INVOKABLE void pingOpenHDUnit(bool isAir);
+    //
+    QString m_last_ping_result_flight_ctrl="NA";
+    Q_PROPERTY(QString last_ping_result_flight_ctrl MEMBER  m_last_ping_result_flight_ctrl WRITE set_last_ping_result_flight_ctrl NOTIFY last_ping_result_flight_ctrl_changed)
+    void set_last_ping_result_flight_ctrl(QString last_ping_result_flight_ctrl);
 signals:
     void last_ping_result_openhd_air_changed(QString last_ping_result_openhd_air);
     void last_ping_result_openhd_ground_changed(QString last_ping_result_openhd_ground);
+    void last_ping_result_flight_ctrl_changed(QString last_ping_result_flight_ctrl);
 };
 
 

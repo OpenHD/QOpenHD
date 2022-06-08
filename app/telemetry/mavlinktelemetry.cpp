@@ -650,6 +650,8 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
         mavlink_ping_t ping;
         mavlink_msg_ping_decode(&msg, &ping);
         qDebug()<<"Got ping message sender:"<<msg.sysid<<":"<<msg.compid<<" target:"<<ping.target_system<<":"<<ping.target_component<<"seq:"<<ping.seq;
+        // We only process ping responses with our specific sys id and a matching sequence number.
+        // Note that if the user clicks the ping multiple times in rapid succession, some pings might be dropped.
         if(ping.seq==pingSequenceNumber && ping.target_system==getQOpenHDSysId()){
             const auto delta=getTimeMicroseconds()-ping.time_usec;
             const float deltaMs=delta/1000.0f;
@@ -657,8 +659,12 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             ss<<deltaMs<<"ms";
             if(msg.sysid==OHD_SYS_ID_AIR){
                 OpenHD::instance()->set_last_ping_result_openhd_air(ss.str().c_str());
-            }else{
+            }else if(msg.sysid==OHD_SYS_ID_GROUND){
                 OpenHD::instance()->set_last_ping_result_openhd_ground(ss.str().c_str());
+            }else{
+                // almost 100% from flight controller
+                //if(msg.compid==MAV_COMP_ID_AUTOPILOT1)
+                OpenHD::instance()->set_last_ping_result_flight_ctrl(ss.str().c_str());
             }
         }else{
             qDebug()<<"Got ping with seq:"<<ping.seq<<" and targetSys:"<<ping.target_system;
@@ -705,7 +711,7 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
     }
 }
 
-void MavlinkTelemetry::pingOpenHDSystem(bool air)
+void MavlinkTelemetry::pingAllSystems()
 {
     pingSequenceNumber++;
     mavlink_message_t msg;
