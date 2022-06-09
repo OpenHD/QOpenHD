@@ -9,7 +9,7 @@
 #endif
 
 /**
- * So this is basically a really big "model" (in MVC pattern) class.
+ * So this is basically a really big "model" and a small "controller" (in MVC pattern) class.
  * While I'd like someone refactoring it (and it should probably reside in telemetry or at least be seperated into telemetry and non-telemetry stuff)
  * since all the UI elements and their java script code use this class that's not feasible rn.
  * And there are actually some advantages to having one (big) model, since then you only have to import one model into qml
@@ -136,31 +136,6 @@ public:
 
     Q_PROPERTY(double lon MEMBER m_lon WRITE set_lon NOTIFY lon_changed)
     void set_lon(double lon);
-
-    double get_lat() {
-        return m_lat;
-    };
-    
-    double get_lon() { 
-        return m_lon;
-    };
-
-    double get_home_lat() {
-        return m_homelat;
-    };
-
-    double get_home_lon() {
-        return m_homelon;
-    };
-
-
-    double get_msl_alt() {
-        return m_alt_msl;
-    }
-
-    double get_hdg() {
-        return m_hdg;
-    }
 
     Q_PROPERTY(int satellites_visible MEMBER m_satellites_visible WRITE set_satellites_visible NOTIFY satellites_visible_changed)
     void set_satellites_visible(int satellites_visible);
@@ -779,6 +754,24 @@ public:
 
     QString m_openhd_version_ground="NA";
     QString m_openhd_version_air="NA";
+    // Quick and dirty code begin
+public:
+    Q_INVOKABLE void pingAllSystems();
+    // All these get set by the proper responses and can be used in UI
+    QString m_last_ping_result_openhd_air="NA";
+    Q_PROPERTY(QString last_ping_result_openhd_air MEMBER  m_last_ping_result_openhd_air WRITE set_last_ping_result_openhd_air NOTIFY last_ping_result_openhd_air_changed)
+    void set_last_ping_result_openhd_air(QString last_ping_result_openhd_air);
+    QString m_last_ping_result_openhd_ground="NA";
+    Q_PROPERTY(QString last_ping_result_openhd_ground MEMBER  m_last_ping_result_openhd_ground WRITE set_last_ping_result_openhd_ground NOTIFY last_ping_result_openhd_ground_changed)
+    void set_last_ping_result_openhd_ground(QString last_ping_result_openhd_ground);
+    //
+    QString m_last_ping_result_flight_ctrl="NA";
+    Q_PROPERTY(QString last_ping_result_flight_ctrl MEMBER  m_last_ping_result_flight_ctrl WRITE set_last_ping_result_flight_ctrl NOTIFY last_ping_result_flight_ctrl_changed)
+    void set_last_ping_result_flight_ctrl(QString last_ping_result_flight_ctrl);
+signals:
+    void last_ping_result_openhd_air_changed(QString last_ping_result_openhd_air);
+    void last_ping_result_openhd_ground_changed(QString last_ping_result_openhd_ground);
+    void last_ping_result_flight_ctrl_changed(QString last_ping_result_flight_ctrl);
 };
 
 

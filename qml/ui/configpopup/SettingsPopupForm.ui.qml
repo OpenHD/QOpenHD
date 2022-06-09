@@ -52,6 +52,7 @@ Rectangle {
             width: parent.width
             anchors.top: parent.top
 
+            // QOpenHD Settings
             Item {
                 height: 48
                 width: parent.width
@@ -84,14 +85,14 @@ Rectangle {
                     anchors.left: appIcon.right
                     anchors.leftMargin: 6
 
-                    text: qsTr("App")
+                    text: qsTr("QOpenHD")
                     font.pixelSize: 15
                     horizontalAlignment: Text.AlignLeft
                     verticalAlignment: Text.AlignVCenter
                     color: mainStackLayout.currentIndex == 0 ? "#33aaff" : "#dde4ed"
                 }
             }
-
+            // OpenHD Settings
             Item {
                 height: 48
                 width: parent.width
@@ -123,7 +124,7 @@ Rectangle {
                     anchors.left: groundIcon.right
                     anchors.leftMargin: 6
 
-                    text: qsTr("Ground")
+                    text: qsTr("OpenHD")
                     font.pixelSize: 15
                     horizontalAlignment: Text.AlignLeft
                     verticalAlignment: Text.AlignVCenter
@@ -131,57 +132,19 @@ Rectangle {
                 }
             }
 
-            /*Item {
+            // Log
+            Item {
                 height: 48
                 width: parent.width
                 visible: true
                 MouseArea {
-                    id: rcButtonMouseArea
+                    id: logButtonMouseArea
                     anchors.fill: parent
                     onClicked: mainStackLayout.currentIndex = 2
                 }
 
                 Text {
-                    id: rcIcon
-                    text: "\uf11b"
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                    font.family: "Font Awesome 5 Free"
-                    font.pixelSize: 18
-                    height: parent.height
-                    width: 24
-                    anchors.left: parent.left
-                    anchors.leftMargin: 12
-
-                    color: "#dde4ed"
-
-                }
-
-                Text {
-                    id: rcButton
-                    height: parent.height
-                    anchors.left: rcIcon.right
-                    anchors.leftMargin: 6
-
-                    text: qsTr("RC")
-                    font.pixelSize: 15
-                    horizontalAlignment: Text.AlignLeft
-                    verticalAlignment: Text.AlignVCenter
-                    color: mainStackLayout.currentIndex == 2 ? "#33aaff" : "#dde4ed"
-                }
-            }*/
-
-            Item {
-                height: 48
-                width: parent.width
-                MouseArea {
-                    id: statusButtonMouseArea
-                    anchors.fill: parent
-                    onClicked: mainStackLayout.currentIndex = 2
-                }
-
-                Text {
-                    id: statusIcon
+                    id: logIcon
                     text: "\uf0c9"
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
@@ -191,38 +154,36 @@ Rectangle {
                     width: 24
                     anchors.left: parent.left
                     anchors.leftMargin: 12
-
                     color: "#dde4ed"
 
                 }
 
                 Text {
-                    id: statusButton
+                    id: logButton
                     height: parent.height
-                    anchors.left: statusIcon.right
+                    anchors.left: logIcon.right
                     anchors.leftMargin: 6
 
-                    text: qsTr("Status")
+                    text: qsTr("Log")
                     font.pixelSize: 15
                     horizontalAlignment: Text.AlignLeft
                     verticalAlignment: Text.AlignVCenter
                     color: mainStackLayout.currentIndex == 2 ? "#33aaff" : "#dde4ed"
                 }
             }
-
-            /*Item {
+            // Graphs
+            Item {
                 height: 48
                 width: parent.width
-                visible: EnableCharts
                 MouseArea {
-                    id: chartsButtonMouseArea
+                    id: graphButtonMouseArea
                     anchors.fill: parent
-                    onClicked: mainStackLayout.currentIndex = 4
+                    onClicked: mainStackLayout.currentIndex = 3
                 }
 
                 Text {
-                    id: chartsIcon
-                    text: "\uf201"
+                    id: graphIcon
+                    text: "\uf0c9"
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                     font.family: "Font Awesome 5 Free"
@@ -231,32 +192,30 @@ Rectangle {
                     width: 24
                     anchors.left: parent.left
                     anchors.leftMargin: 12
-
                     color: "#dde4ed"
-
                 }
 
                 Text {
-                    id: chartsButton
+                    id: graphButton
                     height: parent.height
-                    anchors.left: chartsIcon.right
+                    anchors.left: graphIcon.right
                     anchors.leftMargin: 6
-
-                    text: qsTr("Charts")
+                    text: qsTr("Graphs")
                     font.pixelSize: 15
                     horizontalAlignment: Text.AlignLeft
                     verticalAlignment: Text.AlignVCenter
-                    color: mainStackLayout.currentIndex == 4 ? "#33aaff" : "#dde4ed"
+                    color: mainStackLayout.currentIndex == 3 ? "#33aaff" : "#dde4ed"
                 }
-            }*/
+            }
 
+            // Power
             Item {
                 height: 48
                 width: parent.width
                 MouseArea {
                     id: powerButtonMouseArea
                     anchors.fill: parent
-                    onClicked: mainStackLayout.currentIndex = 3
+                    onClicked: mainStackLayout.currentIndex = 4
                 }
 
                 Text {
@@ -285,58 +244,20 @@ Rectangle {
                     font.pixelSize: 15
                     horizontalAlignment: Text.AlignLeft
                     verticalAlignment: Text.AlignVCenter
-                    color: mainStackLayout.currentIndex == 3 ? "#33aaff" : "#dde4ed"
+                    color: mainStackLayout.currentIndex == 4 ? "#33aaff" : "#dde4ed"
                 }
             }
 
 
-            /*Item {
-                height: 48
-                width: parent.width
-                visible: false
-                MouseArea {
-                    id: sensorsButtonMouseArea
-                    anchors.fill: parent
-                    onClicked: mainStackLayout.currentIndex = 6
-                }
 
-                Text {
-                    id: sensorsIcon
-                    text: "\uf2c9"
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                    font.family: "Font Awesome 5 Free"
-                    font.pixelSize: 18
-                    height: parent.height
-                    width: 24
-                    anchors.left: parent.left
-                    anchors.leftMargin: 12
-
-                    color: "#dde4ed"
-
-                }
-
-                Text {
-                    id: sensorsButton
-                    height: parent.height
-                    anchors.left: sensorsIcon.right
-                    anchors.leftMargin: 6
-
-                    text: qsTr("Sensors")
-                    font.pixelSize: 15
-                    horizontalAlignment: Text.AlignLeft
-                    verticalAlignment: Text.AlignVCenter
-                    color: mainStackLayout.currentIndex == 6 ? "#33aaff" : "#dde4ed"
-                }
-            }*/
-
+            // About
             Item {
                 height: 48
                 width: parent.width
                 MouseArea {
                     id: aboutButtonMouseArea
                     anchors.fill: parent
-                    onClicked: mainStackLayout.currentIndex = 4
+                    onClicked: mainStackLayout.currentIndex = 5
                 }
 
                 Text {
@@ -365,7 +286,7 @@ Rectangle {
                     font.pixelSize: 15
                     horizontalAlignment: Text.AlignLeft
                     verticalAlignment: Text.AlignVCenter
-                    color: mainStackLayout.currentIndex == 4 ? "#33aaff" : "#dde4ed"
+                    color: mainStackLayout.currentIndex == 5 ? "#33aaff" : "#dde4ed"
                 }
             }
         }
@@ -408,29 +329,18 @@ Rectangle {
             id: tmpGroundPiSettingsPanel
         }
 
-        //GroundPiSettingsPanel {
-        //    id: groundPiSettingsPanel
-        //}
-
-        //RcPanel {
-        //    id: rcPanel
-        //}
-
-        StatusPanel {
-            id: statusPanel
+        LogMessagesStatusView{
+            id: logMessagesStatusView
         }
 
-        //ChartsPanel {
-        //    id: chartsPanel
-        //}
+         TelemetryGraphViewPanel{
+            id: statusPanel
+        }
 
         PowerPanel {
             id: powerPanel
         }
 
-        //SensorPanel {
-        //    id: sensorPanel
-        //}
 
         AboutPanel {
             id: aboutPanel

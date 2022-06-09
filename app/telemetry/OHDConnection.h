@@ -12,12 +12,12 @@
 /**
  * @brief This is the one and only (mavlink telemetry) connection of QOpenHD to OpenHD
  * (More specific, the OpenHD Ground Station - but since the Ground station forwards messages to the air pi,
- * one can indirectly also reach the air pi via this callback)
+ * one can indirectly also reach the air pi via the ground pi, as well as the mavlink FC connected to the air pi).
  * Its functionalities are simple:
  * 1) sending mavlink messages to OpenHD
  * 2) receiving mavlink messages from OpenHD
  *
- * The received mavlink messages can come from OpenHD itself (custom) or can be telemetry data from the Drone Flight Controller
+ * The received mavlink messages can come from OpenHD itself (Air or ground) or can be telemetry data from the Drone Flight Controller
  * connected to the OpenHD air unit.
  *
  * If we go for a single TCP or 2 udp connections (1 for send, one for receive) is not clear yet.
@@ -26,7 +26,7 @@
  *
  * If the connection to OpenHD is lost, this class should try and reconnect in intervalls until the connection has been re-established.
  *
- * NOTE: Since QGroundControll does the same, this one sends out mavlink heartbeat messages in reqular intervalls
+ * NOTE: Since QGroundControll does the same, this one sends out mavlink heartbeat messages in reqular intervalls.
  */
 
 class OHDConnection : public QObject
@@ -43,8 +43,7 @@ public:
      */
     void stop();
     /**
-     * @brief MAV_MSG_CALLBACK Callback that can be registered and is called every time a new message from the OpenHD
-     * Ground station has been parsed
+     * @brief MAV_MSG_CALLBACK Callback that can be registered and is called every time a new incoming mavlink message has been parsed.
      */
     typedef std::function<void(mavlink_message_t msg)> MAV_MSG_CALLBACK;
     void registerNewMessageCalback(MAV_MSG_CALLBACK cb);

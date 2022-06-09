@@ -23,6 +23,7 @@ public:
 
     static StatusLogModel* instance();
 
+    void populateWithExampleMessage();
 
     void addMessage(StatusMessage message);
 

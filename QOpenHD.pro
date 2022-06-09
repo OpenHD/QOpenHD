@@ -95,7 +95,8 @@ HEADERS += \
     app/osd/altitudeladder.h \
     app/osd/drawingcanvas.h \
     app/osd/flightpathvector.h \
-    app/telemetry/openhd_defines.hpp
+    app/telemetry/openhd_defines.hpp \
+    app/telemetry/qopenhdmavlinkhelper.hpp
 
 
 # I deleted all the "old" telemetry protocolls other than mavlink
@@ -104,21 +105,21 @@ HEADERS += \
     app/telemetry/OHDConnection.h \
     app/telemetry/mavlinktelemetry.h \
     app/telemetry/mavlinkbase.h \
+    app/telemetry/mavlinkcommand.h \
 
 SOURCES += \
     app/telemetry/OHDConnection.cpp \
     app/telemetry/mavlinktelemetry.cpp \
     app/telemetry/mavlinkbase.cpp \
+    app/telemetry/mavlinkcommand.cpp \
 
 # all other files, complete mess
 SOURCES += \
     app/util/FrequencyMonitor.cpp \
     app/main.cpp \
-    app/managesettings.cpp \
     app/openhd.cpp \
     app/platform/openhdpi.cpp \
     app/rc/openhdrc.cpp \
-    app/qopenhdlink.cpp \
     app/util/statuslogmodel.cpp \
     app/util/QmlObjectListModel.cpp \
     app/util/logger.cpp \
@@ -130,12 +131,10 @@ RESOURCES += qml/qml.qrc \
 
 HEADERS += \
     app/util/FrequencyMonitor.h \
-    app/managesettings.h \
     app/util/sharedqueue.h \
     app/openhd.h \
     app/platform/openhdpi.h \
     app/rc/openhdrc.h \
-    app/qopenhdlink.h \
     app/util/statuslogmodel.h \
     app/util/QmlObjectListModel.h \
     app/util/logger.h \
@@ -173,6 +172,8 @@ DISTFILES += \
     qml/qtquickcontrols2.conf \
     qml/resources/README.md \
     qml/ui/ConfigPopup/README.md \
+    qml/ui/configpopup/legacy/README.md \
+    qml/ui/elements/README.md \
     qml/ui/qmldir \
     translations/QOpenHD_it.ts \
     translations/QOpenHD_ro.ts \

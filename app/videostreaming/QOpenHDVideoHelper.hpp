@@ -20,7 +20,7 @@ static VideoCodec intToVideoCodec(int videoCodec){
     if(videoCodec==1)return VideoCodecH265;
     if(videoCodec==2)return VideoCodecMJPEG;
     qDebug() << "VideoCodec::intToVideoCodec::somethingWrong,using H264 as default";
-    return VideoCodecH265;
+    return VideoCodecH264;
 }
 
 /**
@@ -72,7 +72,6 @@ static QQuickItem* find_qt_video_window(QQmlApplicationEngine& m_engine,const bo
     }
     return videoItem;
 }
-
 
 
 }

@@ -1066,3 +1066,31 @@ void OpenHD::setFontFamily(QString fontFamily) {
     m_font = QFont(m_fontFamily, 11, QFont::Bold, false);
 
 }
+
+
+// quick dirty
+void OpenHD::pingAllSystems()
+{
+    qDebug()<<"Ping All Systems";
+    MavlinkTelemetry::instance()->pingAllSystems();
+}
+
+void OpenHD::set_last_ping_result_openhd_air(QString last_ping_result_openhd_air)
+{
+    m_last_ping_result_openhd_air=last_ping_result_openhd_air;
+    emit last_ping_result_openhd_air_changed(m_last_ping_result_openhd_air);
+}
+void OpenHD::set_last_ping_result_openhd_ground(QString last_ping_result_openhd_ground)
+{
+    m_last_ping_result_openhd_ground=last_ping_result_openhd_ground;
+    emit last_ping_result_openhd_ground_changed(m_last_ping_result_openhd_ground);
+}
+
+void OpenHD::set_last_ping_result_flight_ctrl(QString last_ping_result_flight_ctrl)
+{
+    m_last_ping_result_flight_ctrl=last_ping_result_flight_ctrl;
+    emit last_ping_result_flight_ctrl_changed(m_last_ping_result_flight_ctrl);
+}
+
+
+

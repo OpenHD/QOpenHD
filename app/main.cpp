@@ -23,8 +23,6 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "util/logger.h"
 //#endif
 
-#include "qopenhdlink.h"
-
 #include "util/statuslogmodel.h"
 
 #if defined(ENABLE_ADSB)
@@ -44,8 +42,6 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 
 #include "videostreaming/QOpenHDVideoHelper.hpp"
 
-
-#include "managesettings.h"
 
 #if defined(ENABLE_RC)
 #include "QJoysticks.h"
@@ -90,70 +86,12 @@ const QVector<QString> permissions({"android.permission.INTERNET",
     #endif
 #endif
 
-int main(int argc, char *argv[]) {
-    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-
-    QCoreApplication::setOrganizationName("Open.HD");
-    QCoreApplication::setOrganizationDomain("open.hd");
-    QCoreApplication::setApplicationName("QOpenHD");
-
-    auto manageSettings = new ManageSettings();
-    #if defined(__rasp_pi__)|| defined(__jetson__)
-    manageSettings->loadPiSettings();
-    #endif
-
-    QSettings settings;
-
-    double global_scale = settings.value("global_scale", 1.0).toDouble();
-
-    std::string global_scale_s = std::to_string(global_scale);
-    QByteArray scaleAsQByteArray(global_scale_s.c_str(), global_scale_s.length());
-    qputenv("QT_SCALE_FACTOR", scaleAsQByteArray);
-
-    QApplication app(argc, argv);
-
-    auto util = new OpenHDUtil;
-
-
-#if defined(__ios__)
-    auto applePlatform = ApplePlatform::instance();
-    applePlatform->disableScreenLock();
-    applePlatform->registerNotifications();
-#endif
-
-
-#if defined(__android__)
-    util->keep_screen_on(true);
-
-    for(const QString &permission : permissions) {
-        auto result = QtAndroid::checkPermission(permission);
-
-        if (result == QtAndroid::PermissionResult::Denied) {
-            auto resultHash = QtAndroid::requestPermissionsSync(QStringList({permission}));
-            if (resultHash[permission] == QtAndroid::PermissionResult::Denied) {
-                return 0;
-            }
-        }
-    }
-#endif
-
-#if defined(__rasp_pi__)
-    qDebug() << "Initializing Pi";
-    OpenHDPi pi;
-
-    // set persistent brightness level at startup
-    if (pi.is_raspberry_pi()) {
-        auto brightness = settings.value("brightness", 100).toInt();
-        pi.set_brightness(brightness);
-    }
-    qDebug() << "Finished initializing Pi";
-#endif
-
+// Load all the fonts we use ?!
+static void load_fonts(){
     QFontDatabase::addApplicationFont(":/resources/Font Awesome 5 Free-Solid-900.otf");
     QFontDatabase::addApplicationFont(":/resources/osdicons.ttf");
     QFontDatabase::addApplicationFont(":/resources/materialdesignicons-webfont.ttf");
-
-
+    //
     QFontDatabase::addApplicationFont(":/osdfonts/Acme-Regular.ttf");
     QFontDatabase::addApplicationFont(":/osdfonts/Aldrich-Regular.ttf");
     QFontDatabase::addApplicationFont(":/osdfonts/AnonymousPro-Bold.ttf");
@@ -206,6 +144,64 @@ int main(int argc, char *argv[]) {
     QFontDatabase::addApplicationFont(":/osdfonts/UbuntuMono-BoldItalic.ttf");
     QFontDatabase::addApplicationFont(":/osdfonts/Visitor.ttf");
     QFontDatabase::addApplicationFont(":/osdfonts/ZolanMonoOblique.ttf");
+}
+
+
+int main(int argc, char *argv[]) {
+    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+
+    QCoreApplication::setOrganizationName("Open.HD");
+    QCoreApplication::setOrganizationDomain("open.hd");
+    QCoreApplication::setApplicationName("QOpenHD");
+
+    QSettings settings;
+
+    double global_scale = settings.value("global_scale", 1.0).toDouble();
+
+    std::string global_scale_s = std::to_string(global_scale);
+    QByteArray scaleAsQByteArray(global_scale_s.c_str(), global_scale_s.length());
+    qputenv("QT_SCALE_FACTOR", scaleAsQByteArray);
+
+    QApplication app(argc, argv);
+
+    auto util = new OpenHDUtil;
+
+
+#if defined(__ios__)
+    auto applePlatform = ApplePlatform::instance();
+    applePlatform->disableScreenLock();
+    applePlatform->registerNotifications();
+#endif
+
+
+#if defined(__android__)
+    util->keep_screen_on(true);
+
+    for(const QString &permission : permissions) {
+        auto result = QtAndroid::checkPermission(permission);
+
+        if (result == QtAndroid::PermissionResult::Denied) {
+            auto resultHash = QtAndroid::requestPermissionsSync(QStringList({permission}));
+            if (resultHash[permission] == QtAndroid::PermissionResult::Denied) {
+                return 0;
+            }
+        }
+    }
+#endif
+
+#if defined(__rasp_pi__)
+    qDebug() << "Initializing Pi";
+    OpenHDPi pi;
+
+    // set persistent brightness level at startup
+    if (pi.is_raspberry_pi()) {
+        auto brightness = settings.value("brightness", 100).toInt();
+        pi.set_brightness(brightness);
+    }
+    qDebug() << "Finished initializing Pi";
+#endif
+
+   load_fonts();
 
     qmlRegisterType<OpenHDRC>("OpenHD", 1, 0, "OpenHDRC");
 
@@ -215,8 +211,6 @@ int main(int argc, char *argv[]) {
     //#if defined(ENABLE_LOG)
     qmlRegisterSingletonType<Logger>("OpenHD", 1, 0, "Logger", loggerSingletonProvider);
     //#endif
-
-    qmlRegisterType<QOpenHDLink>("OpenHD", 1,0, "QOpenHDLink");
 
     qmlRegisterUncreatableType<QmlObjectListModel>("OpenHD", 1, 0, "QmlObjectListModel", "Reference only");
 
@@ -332,26 +326,18 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
 
 #endif
 
-    engine.rootContext()->setContextProperty("ManageSettings", manageSettings);
-
 
     auto openHDRC = new OpenHDRC();
     //QObject::connect(openHDSettings, &OpenHDSettings::groundStationIPUpdated, openHDRC, &OpenHDRC::setGroundIP, Qt::QueuedConnection);
     engine.rootContext()->setContextProperty("openHDRC", openHDRC);
 
-
-    auto link = new QOpenHDLink();
-    //QObject::connect(openHDSettings, &OpenHDSettings::groundStationIPUpdated, link, &QOpenHDLink::setGroundIP, Qt::QueuedConnection);
-    engine.rootContext()->setContextProperty("link", link);
-
-
     auto mavlinkTelemetry = MavlinkTelemetry::instance();
     engine.rootContext()->setContextProperty("MavlinkTelemetry", mavlinkTelemetry);
     mavlinkTelemetry->onSetup();
 
-
     auto statusLogModel = StatusLogModel::instance();
     engine.rootContext()->setContextProperty("StatusLogModel", statusLogModel);
+    statusLogModel->populateWithExampleMessage();
 
     #if defined(ENABLE_EXAMPLE_WIDGET)
     engine.rootContext()->setContextProperty("EnableExampleWidget", QVariant(true));

@@ -11,11 +11,6 @@
 
 #include "mavlinkbase.h"
 
-
-class QUdpSocket;
-
-
-
 class MavlinkTelemetry: public MavlinkBase {
     Q_OBJECT
 
@@ -26,7 +21,6 @@ public:
 public slots:
     void onSetup();
     void pauseTelemetry(bool toggle);
-    void requestSysIdSettings();
     void requested_Flight_Mode_Changed(int mode);
     void requested_ArmDisarm_Changed(int arm_disarm);
     void FC_Reboot_Shutdown_Changed(int reboot_shutdown);
@@ -41,7 +35,6 @@ signals:
     //void adsbVehicleUpdate(const ADSBVehicle::VehicleInfo_t vehicleInfo);
     //void deleteMissionWaypoints();
     void update_RC_MavlinkBase(std::array<uint,19> rcValues);
-
 private:
     bool pause_telemetry;
     int m_mode=0;
@@ -52,6 +45,9 @@ private:
     int ap_version=0;
 
     std::array<uint,19> m_rc_values{0};
+public:
+    void pingAllSystems();
+    int pingSequenceNumber=0;
 };
 
 #endif

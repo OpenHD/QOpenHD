@@ -14,7 +14,7 @@
 
 #include <openhd/mavlink.h>
 #include "../rc/openhdrc.h"
-
+#include "qopenhdmavlinkhelper.hpp"
 #include "../util/util.h"
 
 /*
@@ -23,11 +23,7 @@
  * problems yet.
  *
  */
-
-static constexpr auto MAVLINK_TCP_ADRESS="127.0.0.1";
-static constexpr auto MAVLINK_TCP_PORT=1234;
-
-MavlinkBase::MavlinkBase(QObject *parent,  MavlinkType mavlink_type): QObject(parent), m_ground_available(false), m_mavlink_type(mavlink_type) {
+MavlinkBase::MavlinkBase(QObject *parent): QObject(parent), m_ground_available(false) {
     qDebug() << "MavlinkBase::MavlinkBase()";
     mOHDConnection=std::make_unique<OHDConnection>(nullptr,false);
     mOHDConnection->registerNewMessageCalback([this](mavlink_message_t msg){
@@ -36,97 +32,8 @@ MavlinkBase::MavlinkBase(QObject *parent,  MavlinkType mavlink_type): QObject(pa
 }
 
 void MavlinkBase::onStarted() {
-    /*m_mavlink_type= MavlinkTypeTCP;
-
-    auto type = m_mavlink_type == MavlinkTypeTCP ? "TCP" : "UDP";
-    qDebug() << "MavlinkBase::onStarted(" << type << ")";
-
-    switch (m_mavlink_type) {
-        case MavlinkTypeUDP: {
-            mavlinkSocket = new QUdpSocket(this);
-            auto bindStatus = mavlinkSocket->bind(QHostAddress::Any, localPort);
-            if (!bindStatus) {
-                emit bindError();
-            }
-            connect(mavlinkSocket, &QUdpSocket::readyRead, this, &MavlinkBase::processMavlinkUDPDatagrams);
-            break;
-        }
-        case MavlinkTypeTCP: {
-            mavlinkSocket = new QTcpSocket(this);
-            connect(mavlinkSocket, &QTcpSocket::readyRead, this, &MavlinkBase::processMavlinkTCPData);
-            connect(mavlinkSocket, &QTcpSocket::connected, this, &MavlinkBase::onTCPConnected);
-            connect(mavlinkSocket, &QTcpSocket::disconnected, this, &MavlinkBase::onTCPDisconnected);
-            //((QTcpSocket*)mavlinkSocket)->connectToHost(groundAddress, groundTCPPort);
-            ((QTcpSocket*)mavlinkSocket)->connectToHost(MAVLINK_TCP_ADRESS, MAVLINK_TCP_PORT);
-            tcpReconnectTimer = new QTimer(this);
-            connect(tcpReconnectTimer, &QTimer::timeout, this, &MavlinkBase::reconnectTCP);
-            tcpReconnectTimer->start(1000);
-            break;
-        }
-    }
-
-    m_command_timer = new QTimer(this);
-    connect(m_command_timer, &QTimer::timeout, this, &MavlinkBase::commandStateLoop);
-    m_command_timer->start(200);
-
-
-    m_heartbeat_timer = new QTimer(this);
-    connect(m_heartbeat_timer, &QTimer::timeout, this, &MavlinkBase::sendHeartbeat);
-    m_heartbeat_timer->start(5000);
-
-    #if defined(ENABLE_RC)
-    m_rc_timer = new QTimer(this);        
-    connect(m_rc_timer, &QTimer::timeout, this, &MavlinkBase::sendRC);
-    #endif*/
-
     emit setup();
 }
-
-/*void MavlinkBase::onTCPConnected() {
-    qDebug() << "MavlinkBase::onTCPConnected()";
-}
-
-void MavlinkBase::onTCPDisconnected() {
-    reconnectTCP();
-}*/
-
-/*void MavlinkBase::reconnectTCP() {
-    //qDebug() << "MavlinkBase::reconnectTCP- callback";
-    //if (groundAddress.isEmpty()) {
-    //    return;
-    //}
-    /*if (((QTcpSocket*)mavlinkSocket)->state() == QAbstractSocket::UnconnectedState) {
-        qDebug() << "MavlinkBase::reconnectTCP- reconnecting";
-        ((QTcpSocket*)mavlinkSocket)->connectToHost(MAVLINK_TCP_ADRESS, MAVLINK_TCP_PORT);
-    }*/
-//}
-
-/*void MavlinkBase::setGroundIP(QString address) {
-    if (!mavlinkSocket) {
-        return;
-    }
-    bool reconnect = false;
-    if (groundAddress != address) {
-        reconnect = true;
-    }
-
-    groundAddress = address;
-
-    if (reconnect) {
-        switch (m_mavlink_type) {
-            case MavlinkTypeTCP: {
-                if (((QTcpSocket*)mavlinkSocket)->state() == QAbstractSocket::ConnectedState) {
-                    ((QTcpSocket*)mavlinkSocket)->disconnectFromHost();
-                }
-                break;
-            }
-            default: {
-                break;
-            }
-        }
-    }
-}*/
-
 
 void MavlinkBase::set_loading(bool loading) {
     m_loading = loading;
@@ -139,21 +46,8 @@ void MavlinkBase::set_saving(bool saving) {
     emit savingChanged(m_saving);
 }
 
-
-void MavlinkBase::sendData(char* data, int len) {
-    /*switch (m_mavlink_type) {
-        case MavlinkTypeUDP: {
-            ((QUdpSocket*)mavlinkSocket)->writeDatagram((char*)data, len, QHostAddress(groundAddress), groundUDPPort);
-            break;
-        }
-        case MavlinkTypeTCP: {
-            if (((QTcpSocket*)mavlinkSocket)->state() == QAbstractSocket::ConnectedState) {
-                ((QTcpSocket*)mavlinkSocket)->write((char*)data, len);
-            }
-            break;
-        }
-    }*/
-    qDebug()<<"MavlinkBase::sendData NOT IMPLEMENTED";
+void MavlinkBase::sendData(mavlink_message_t msg) {
+    mOHDConnection->sendMessage(msg);
 }
 
 QVariantMap MavlinkBase::getAllParameters() {
@@ -163,32 +57,12 @@ QVariantMap MavlinkBase::getAllParameters() {
 
 
 void MavlinkBase::fetchParameters() {
-    QSettings settings;
-    int mavlink_sysid = settings.value("mavlink_sysid", m_util.default_mavlink_sysid()).toInt();
-
+    auto mavlink_sysid=getQOpenHDSysId();
     mavlink_message_t msg;
     mavlink_msg_param_request_list_pack(mavlink_sysid, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID, targetCompID);
+    sendData(msg);
 
-    uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
-    int len = mavlink_msg_to_send_buffer(buffer, &msg);
-
-    sendData((char*)buffer, len);
 }
-
-
-/*void MavlinkBase::sendHeartbeat() {
-    QSettings settings;
-    int mavlink_sysid = settings.value("mavlink_sysid", m_util.default_mavlink_sysid()).toInt();
-
-    mavlink_message_t msg;
-
-    mavlink_msg_heartbeat_pack(mavlink_sysid, MAV_COMP_ID_MISSIONPLANNER, &msg, MAV_TYPE_GCS, MAV_AUTOPILOT_INVALID, 0, 0, 0);
-
-    uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
-    int len = mavlink_msg_to_send_buffer(buffer, &msg);
-
-    sendData((char*)buffer, len);
-}*/
 
 void MavlinkBase::joystick_Present_Changed(bool joystickPresent) {
     qDebug() << "MavlinkBase::joystick_Present_Changed:"<< joystickPresent;
@@ -200,8 +74,8 @@ void MavlinkBase::joystick_Present_Changed(bool joystickPresent) {
         //qDebug() << "MavlinkBase::joystick_Present_Changed: stopping timer for RC msgs";
         //m_rc_timer->stop();
     }
-
 }
+
 void MavlinkBase::receive_RC_Update(std::array<uint,19> rcValues) {
     qDebug() << "MavlinkBase::receive_RC_Update=";
      m_rc_values=rcValues;
@@ -209,22 +83,19 @@ void MavlinkBase::receive_RC_Update(std::array<uint,19> rcValues) {
 
 void MavlinkBase::sendRC () {
     QSettings settings;
-    bool enable_rc = settings.value("enable_rc", m_util.default_mavlink_sysid()).toBool();
+    bool enable_rc = settings.value("enable_rc", false).toBool();
     //temporarily dsabled
     if(true){
         return;
     }
     if (enable_rc == true){
-        int mavlink_sysid = settings.value("mavlink_sysid", m_util.default_mavlink_sysid()).toInt();
         mavlink_message_t msg;
         //TODO mavlink sysid is hard coded at 255... in app its default is 225
-        mavlink_msg_rc_channels_override_pack(255, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID, targetCompID,
+        mavlink_msg_rc_channels_override_pack(QOpenHDMavlinkHelper::getSysId(), MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID, targetCompID,
                                               m_rc_values[0],m_rc_values[1],m_rc_values[2],m_rc_values[3],m_rc_values[4],m_rc_values[5],m_rc_values[6],m_rc_values[7],
                 m_rc_values[8],m_rc_values[9],m_rc_values[10],m_rc_values[11],m_rc_values[12],m_rc_values[13],m_rc_values[14],m_rc_values[15],
                 m_rc_values[16],m_rc_values[17]);
-        uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
-        int len = mavlink_msg_to_send_buffer(buffer, &msg);
-        sendData((char*)buffer, len);
+            sendData(msg);
     }
     else {
         return;
@@ -234,73 +105,44 @@ void MavlinkBase::sendRC () {
 
 void MavlinkBase::requestAutopilotInfo() {
     qDebug() << "MavlinkBase::request_Autopilot_Info";
-    QSettings settings;
-    int mavlink_sysid = settings.value("mavlink_sysid", m_util.default_mavlink_sysid()).toInt();
-
+    auto mavlink_sysid=getQOpenHDSysId();
     mavlink_message_t msg;
-
     mavlink_msg_autopilot_version_request_pack(mavlink_sysid, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID,targetCompID);
+    sendData(msg);
+}
 
-    uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
-    int len = mavlink_msg_to_send_buffer(buffer, &msg);
-
-    sendData((char*)buffer, len);
+int MavlinkBase::getQOpenHDSysId()
+{
+    return QOpenHDMavlinkHelper::getSysId();
 }
 
 
 void MavlinkBase::request_Mission_Changed() {
     qDebug() << "MavlinkBase::request_Mission_Changed";
-
-    QSettings settings;
-    int mavlink_sysid = settings.value("mavlink_sysid", m_util.default_mavlink_sysid()).toInt();
-
+    auto mavlink_sysid=getQOpenHDSysId();
     mavlink_message_t msg;
-
     mavlink_msg_mission_request_list_pack(mavlink_sysid, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID,targetCompID,0);
-
-    uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
-    int len = mavlink_msg_to_send_buffer(buffer, &msg);
-
-    sendData((char*)buffer, len);
-
+    sendData(msg);
 }
 
 void MavlinkBase::get_Mission_Items(int total) {
     qDebug() << "MavlinkBase::get_Mission_Items total="<< total;
-    QSettings settings;
-    int mavlink_sysid = settings.value("mavlink_sysid", m_util.default_mavlink_sysid()).toInt();
-
+    auto mavlink_sysid=getQOpenHDSysId();
     mavlink_message_t msg;
-
     int current_seq;
-
     for (current_seq = 1; current_seq < total; ++current_seq){
         //qDebug() << "MavlinkBase::get_Mission_Items current="<< current_seq;
-
         mavlink_msg_mission_request_int_pack(mavlink_sysid, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID,targetCompID,current_seq,0);
-
-        uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
-        int len = mavlink_msg_to_send_buffer(buffer, &msg);
-
-        sendData((char*)buffer, len);
+        sendData(msg);
     }
 }
 
 void MavlinkBase::send_Mission_Ack() {
     qDebug() << "MavlinkBase::send_Mission_Ack";
-
-    QSettings settings;
-    int mavlink_sysid = settings.value("mavlink_sysid", m_util.default_mavlink_sysid()).toInt();
-
+    auto mavlink_sysid=getQOpenHDSysId();
     mavlink_message_t msg;
-
     mavlink_msg_mission_ack_pack(mavlink_sysid, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID,targetCompID,0,0);
-
-    uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
-    int len = mavlink_msg_to_send_buffer(buffer, &msg);
-
-    sendData((char*)buffer, len);
-
+    sendData(msg);
 }
 
 bool MavlinkBase::isConnectionLost() {
@@ -481,27 +323,17 @@ void MavlinkBase::set_last_vfr(qint64 last_vfr) {
 }
 
 void MavlinkBase::setDataStreamRate(MAV_DATA_STREAM streamType, uint8_t hz) {
-
-    QSettings settings;
-
-    int mavlink_sysid = settings.value("mavlink_sysid", m_util.default_mavlink_sysid()).toInt();
-
-
+    auto mavlink_sysid=getQOpenHDSysId();
     mavlink_message_t msg;
     msg.sysid = mavlink_sysid;
     msg.compid = MAV_COMP_ID_MISSIONPLANNER;
-
     /*
      * This only sends the message to sysid 1 compid 1 because nothing else responds to this
      * message anyway, iNav uses a fixed rate and so does betaflight
      *
      */
     mavlink_msg_request_data_stream_pack(mavlink_sysid, MAV_COMP_ID_MISSIONPLANNER, &msg, 1, MAV_COMP_ID_AUTOPILOT1, streamType, hz, 1);
-
-    uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
-    int len = mavlink_msg_to_send_buffer(buffer, &msg);
-
-    sendData((char*)buffer, len);
+    sendData(msg);
 }
 
 
@@ -537,11 +369,7 @@ void MavlinkBase::commandStateLoop() {
         qDebug() << "CMD SEND";
             mavlink_message_t msg;
             m_command_sent_timestamp = QDateTime::currentMSecsSinceEpoch();
-
-            QSettings settings;
-
-            int mavlink_sysid = settings.value("mavlink_sysid", m_util.default_mavlink_sysid()).toInt();
-
+            auto mavlink_sysid=getQOpenHDSysId();
             //qDebug() << "SYSID=" << mavlink_sysid;
             //qDebug() << "Target SYSID=" << targetSysID;
 
@@ -550,10 +378,7 @@ void MavlinkBase::commandStateLoop() {
             } else {
                 mavlink_msg_command_int_pack(mavlink_sysid, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID, targetCompID, m_current_command->int_frame, m_current_command->command_id, m_current_command->int_current, m_current_command->int_autocontinue, m_current_command->int_param1, m_current_command->int_param2, m_current_command->int_param3, m_current_command->int_param4, m_current_command->int_param5, m_current_command->int_param6, m_current_command->int_param7);          
             }
-            uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
-            int len = mavlink_msg_to_send_buffer(buffer, &msg);
-
-            sendData((char*)buffer, len);
+            sendData(msg);
 
             // now wait for ack
             m_command_state = MavlinkCommandStateWaitACK;

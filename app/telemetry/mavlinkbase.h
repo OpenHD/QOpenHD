@@ -10,18 +10,7 @@
 #include "../util/util.h"
 
 #include "OHDConnection.h"
-
-
-typedef enum MavlinkType {
-    MavlinkTypeUDP,
-    MavlinkTypeTCP
-} MavlinkType;
-
-typedef enum MicroserviceTarget {
-    MicroserviceTargetGround,
-    MicroserviceTargetAir,
-    MicroserviceTargetNone
-} MicroserviceTarget;
+#include "mavlinkcommand.h"
 
 typedef enum MavlinkState {
     MavlinkStateDisconnected,
@@ -30,54 +19,12 @@ typedef enum MavlinkState {
     MavlinkStateIdle
 } MavlinkState;
 
-typedef enum MavlinkCommandState {
-    MavlinkCommandStateReady,
-    MavlinkCommandStateSend,
-    MavlinkCommandStateWaitACK,
-    MavlinkCommandStateDone,
-    MavlinkCommandStateFailed
-} MavlinkCommandState;
-
-typedef enum MavlinkCommandType {
-    MavlinkCommandTypeLong,
-    MavlinkCommandTypeInt
-} MavlinkCommandType;
-
-class MavlinkCommand  {
-public:
-    MavlinkCommand(MavlinkCommandType command_type) : m_command_type(command_type) {}
-    MavlinkCommandType m_command_type;
-    uint16_t command_id = 0;
-    uint8_t retry_count = 0;
-
-    uint8_t long_confirmation = 0;
-    float long_param1 = 0;
-    float long_param2 = 0;
-    float long_param3 = 0;
-    float long_param4 = 0;
-    float long_param5 = 0;
-    float long_param6 = 0;
-    float long_param7 = 0;
-
-
-    uint8_t int_frame = 0;
-    uint8_t int_current = 0;
-    uint8_t int_autocontinue = 0;
-    float int_param1 = 0;
-    float int_param2 = 0;
-    float int_param3 = 0;
-    float int_param4 = 0;
-    int   int_param5 = 0;
-    int   int_param6 = 0;
-    float int_param7 = 0;
-};
-
 
 class MavlinkBase: public QObject {
     Q_OBJECT
 
 public:
-    explicit MavlinkBase(QObject *parent = nullptr, MavlinkType mavlink_type = MavlinkTypeUDP);
+    explicit MavlinkBase(QObject *parent = nullptr);
 
 
     Q_INVOKABLE QVariantMap getAllParameters();
@@ -137,24 +84,16 @@ signals:
 public slots:
     void onStarted();    
     void request_Mission_Changed();
-
     // for RC
     void receive_RC_Update(std::array<uint,19> rcValues);
     void joystick_Present_Changed(bool joystickPresent);
-protected slots:
-    //void processMavlinkUDPDatagrams();
-    //void processMavlinkTCPData();
-
-    //void onTCPDisconnected();
-    //void onTCPConnected();
-
 protected:
     void stateLoop();
     void commandStateLoop();
     bool isConnectionLost();
     void resetParamVars();
     void processData(QByteArray data);
-    void sendData(char* data, int len);
+    void sendData(mavlink_message_t msg);
     void sendCommand(MavlinkCommand command);   
     void setDataStreamRate(MAV_DATA_STREAM streamType, uint8_t hz);
     void requestAutopilotInfo();
@@ -175,26 +114,12 @@ protected:
 
     bool m_loading = false;
     bool m_saving = false;
-
-    bool m_restrict_sysid = true;
-    bool m_restrict_compid = true;
-
 protected:
     OpenHDUtil m_util;
     quint8 targetSysID;
     quint8 targetCompID;
 
-    quint16 localPort = 14550;
-
-    QString groundAddress;
-    quint16 groundUDPPort = 14550;
-    quint16 groundTCPPort = 5761;
-
     std::atomic<bool> m_ground_available;
-    MavlinkType m_mavlink_type;
-    //QAbstractSocket *mavlinkSocket = nullptr;
-
-    //mavlink_status_t r_mavlink_status;
 
     qint64 m_last_heartbeat = -1;
     qint64 m_last_attitude = -1;
@@ -210,22 +135,18 @@ protected:
 
     QTimer* timer = nullptr;
     QTimer* m_heartbeat_timer = nullptr;
-
     QTimer* m_rc_timer = nullptr;
-
     QTimer* m_command_timer = nullptr;
-    QTimer* tcpReconnectTimer = nullptr;
-
     uint64_t m_last_boot = 0;
-
     uint64_t m_command_sent_timestamp = 0;
-
     std::shared_ptr<MavlinkCommand> m_current_command;
 
     std::array<uint,19> m_rc_values;
     // ---------
 private:
     std::unique_ptr<OHDConnection> mOHDConnection;
+public:
+    int getQOpenHDSysId();
 };
 
 #endif

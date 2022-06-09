@@ -2,8 +2,14 @@ import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
 
+import "../../ui" as Ui
+import "../elements"
+
+import OpenHD 1.0
+
 import QtCharts 2.3
 
+// Display telemetry values as a graph, panel to be used in UI
 Item {
     ScrollView {
         id: legend
@@ -409,3 +415,4 @@ Item {
         }
     }
 }
+

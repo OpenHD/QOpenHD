@@ -62,7 +62,7 @@ ApplicationWindow {
 
     // we call back into QML from ManagedSettings to ensure that the live settings take effect
     // immediately, QSettings doesn't seem capable of doing it from C++
-    Connections {
+    /*Connections {
         target: ManageSettings
         function onSettingUpdated(key, value) {
             settings.setValue(key, value);
@@ -72,7 +72,7 @@ ApplicationWindow {
             settings_panel.visible = false;
             restartDialog.visible = true;
         }
-    }
+    }*/
 
     ColorPicker {
         id: colorPicker
@@ -91,40 +91,6 @@ ApplicationWindow {
     }
 
     /*
-     * This is racing the QML Settings class, because it has a delay before it writes
-     * out the merged default+saved settings when it first loads. The delay in Settings
-     * has a purpose, but it makes it impossible to know when all of the settings have
-     * actually made it into the settings system, which makes it impossible for QSettings
-     * in c++ to read all of them.
-     */
-    Timer {
-        id: piSettingsTimer
-        running: false
-        interval: 1000
-        repeat: true
-
-        property int retries: 10
-
-        onTriggered: {
-            if (!ManageSettings.savePiSettings()) {
-                if (retries == 0) {
-                    /*
-                     * Exceeded the retry count, which means in a whole 10 seconds
-                     * Qt did not manage to get all of the default+changed settings written to
-                     * disk. This should never happen, that's a long time.
-                     */
-                    running = false;
-                    return;
-                }
-
-                retries = retries - 1;
-            }
-            // success
-            running = false;
-        }
-    }
-
-    /*
      * Local app settings. Uses the "user defaults" system on Mac/iOS, the Registry on Windows,
      * and equivalent settings systems on Linux and Android
      *
@@ -132,9 +98,7 @@ ApplicationWindow {
     AppSettings {
         id: settings
         Component.onCompleted: {
-            if (IsRaspPi) {
-                piSettingsTimer.start();
-            }
+            //
         }
     }
 
@@ -183,11 +147,6 @@ ApplicationWindow {
 
     // UI areas
 
-    //UpperOverlayBar {
-    //    visible: !settings.stereo_enable
-    //    id: upperOverlayBar
-    //}
-
     HUDOverlayGrid {
         id: hudOverlayGrid
         anchors.fill: parent
@@ -206,31 +165,6 @@ ApplicationWindow {
         layer.enabled: true
     }
 
-
-    Rectangle {
-        id: hudOverlayGridClone
-
-        x: hudOverlayGrid.width / 2 + settings.stereo_osd_right_x
-        anchors.verticalCenter: settings.stereo_enable ? parent.verticalCenter : undefined
-        width: (parent.width / 2)*(settings.stereo_osd_size/100)
-        height: (parent.height / 2)*(settings.stereo_osd_size/100)
-        visible: settings.stereo_enable
-        z: 3.0
-        layer.enabled: settings.stereo_enable
-        layer.samplerName: "hudOverlayGrid"
-        layer.effect: ShaderEffect {
-            id: shader
-            property variant cloneSource : hudOverlayGrid
-            fragmentShader: "
-                varying highp vec2 qt_TexCoord0;
-                uniform highp sampler2D cloneSource;
-                void main(void) {
-                    gl_FragColor =  texture2D(cloneSource, qt_TexCoord0);
-                }
-            "
-        }
-    }
-
     OSDCustomizer {
         id: osdCustomizer
 
@@ -238,12 +172,6 @@ ApplicationWindow {
         visible: false
         z: 5.0
     }
-
-    //LowerOverlayBar {
-    //    visible: !settings.stereo_enable
-    //    id: lowerOverlayBar
-    //}
-
 
     SettingsPopup {
         id: settings_panel

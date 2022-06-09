@@ -31,14 +31,14 @@ BaseWidgetForm {
     property string vCenterIdentifier: "%1_v_center".arg(widgetIdentifier);
     property double oldOpacity: 100;
 
-    Connections {
+    /*Connections {
         target: link
         function onWidgetLocation(widgetName, alignment, xOffset, yOffset, hCenter, vCenter, full) {
             if (widgetIdentifier === widgetName) {
                 setAlignment(alignment, xOffset, yOffset, hCenter, vCenter, false);
             }
         }
-    }
+    }*/
 
     Component.onCompleted: {
         loadAlignment();
@@ -80,7 +80,7 @@ BaseWidgetForm {
             var _hCenter = getHCenter();
             var _vCenter = getVCenter();
 
-            link.setWidgetLocation(widgetIdentifier, alignmentType, _xOffset, _yOffset, _hCenter, _vCenter)
+            //link.setWidgetLocation(widgetIdentifier, alignmentType, _xOffset, _yOffset, _hCenter, _vCenter)
         }
     }
 
@@ -240,7 +240,7 @@ BaseWidgetForm {
         var _hCenter = getHCenter();
         var _vCenter = getVCenter();
 
-        link.setWidgetLocation(widgetIdentifier, alignmentType, _xOffset, _yOffset, _hCenter, _vCenter)
+        //link.setWidgetLocation(widgetIdentifier, alignmentType, _xOffset, _yOffset, _hCenter, _vCenter)
     }
 
     /*

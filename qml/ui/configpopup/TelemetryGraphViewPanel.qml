@@ -1,7 +1,6 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
-import QtGraphicalEffects 1.12
 
 import Qt.labs.settings 1.0
 
@@ -15,7 +14,7 @@ Rectangle {
     Layout.fillWidth: true
     color: "#eaeaea"
 
-
+    // hidden in here is the TelemetryGraphView ;)
     Rectangle {
         id: statusLog
         color: "#2a2a2a"
@@ -29,7 +28,7 @@ Rectangle {
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 36
 
-        StatusView {
+        TelemetryGraphView {
             anchors.fill: parent
             clip: true
         }

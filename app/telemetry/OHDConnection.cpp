@@ -1,5 +1,7 @@
 #include "OHDConnection.h"
 
+#include "qopenhdmavlinkhelper.hpp"
+
 OHDConnection::OHDConnection(QObject *parent,bool useTcp):QObject(parent),USE_TCP(useTcp)
 {
     if(USE_TCP){
@@ -45,9 +47,9 @@ void OHDConnection::stop(){
 
 // called by the reconnect timer
 void OHDConnection::reconnectIfDisconnected(){
-    if (((QTcpSocket*)tcpClientSock)->state() == QAbstractSocket::UnconnectedState) {
+    if (tcpClientSock->state() == QAbstractSocket::UnconnectedState) {
         qDebug() << "OHDConnection::reconnectIfDisconnected";
-        ((QTcpSocket*)tcpClientSock)->connectToHost(QOPENHD_GROUND_CLIENT_TCP_ADDRESS, QOPENHD_GROUND_CLIENT_TCP_PORT);
+        tcpClientSock->connectToHost(QOPENHD_GROUND_CLIENT_TCP_ADDRESS, QOPENHD_GROUND_CLIENT_TCP_PORT);
     }
 }
 
@@ -60,8 +62,17 @@ void OHDConnection::registerNewMessageCalback(MAV_MSG_CALLBACK cb){
 }
 
 void OHDConnection::sendMessage(mavlink_message_t msg){
-    std::vector<uint8_t> buf(MAVLINK_MAX_PACKET_LEN);
-    auto size = mavlink_msg_to_send_buffer(buf.data(), &msg);
+    const auto sys_id=QOpenHDMavlinkHelper::getSysId();
+    const auto comp_id=QOpenHDMavlinkHelper::getCompId();
+    if(msg.sysid!=sys_id){
+        // probably a programming error, the message was not packed with the right sys id
+        qDebug()<<"WARN Sending message with sys id:"<<msg.sysid<<" instead of"<<sys_id;
+    }
+    if(msg.compid!=comp_id){
+        // probably a programming error, the message was not packed with the right comp id
+        qDebug()<<"WARN Sending message with comp id:"<<msg.compid<<" instead of"<<comp_id;
+    }
+    const auto buf=QOpenHDMavlinkHelper::mavlinkMessageToSendBuffer(msg);
     sendData(buf.data(),buf.size());
 }
 
@@ -127,7 +138,7 @@ void OHDConnection::onHeartbeat(){
     //qDebug() << "OHDConnection::onHeartbeat";
     mavlink_message_t msg;
     // values from QGroundControll
-    mavlink_msg_heartbeat_pack(QOHD_MAVLINK_SYS_ID, 190, &msg,MAV_TYPE_GCS,            // MAV_TYPE
+    mavlink_msg_heartbeat_pack(QOpenHDMavlinkHelper::getSysId(),QOpenHDMavlinkHelper::getCompId(), &msg,MAV_TYPE_GCS,            // MAV_TYPE
                                MAV_AUTOPILOT_INVALID,   // MAV_AUTOPILOT
                                MAV_MODE_MANUAL_ARMED,   // MAV_MODE
                                0,                       // custom mode

@@ -13,12 +13,11 @@ import "../elements"
 
 
 /*
- * @brief I think this is the panel for app-specific settings, aka QOpenHD Settings.
- * Note that OpenHD-Specific settings should not make it into here.
+ * @brief QOpenHD settings (Application-specific settings)
+ * !!!! Note that OpenHD-Specific settings should not make it into here. !!!
  * @Stephen: This file should be refactored in a way that isn't so fragile and verbose. The rows are
  * all manually defined and every one of them has a manually vertical offset to position it
  * inside the scroll view.
- *
  */
 Item {
     Layout.fillHeight: true
@@ -2228,8 +2227,8 @@ Item {
                             selectFolder: false
                             defaultSuffix: "conf"
                             onAccepted: {
-                                ManageSettings.loadSettingsFile(fileDialog.fileUrl);
-                                settings.sync();
+                                //ManageSettings.loadSettingsFile(fileDialog.fileUrl);
+                                //settings.sync();
                             }
                             onRejected: {
                                 console.log("Canceled")
@@ -2280,7 +2279,7 @@ Item {
                                 console.log("Sa: " + saveDialog.fileUrl);
                                 settings.sync();
                                 // this is a folder path, the ManualSettings class chooses a filename to put there
-                                ManageSettings.saveSettingsFile(saveDialog.fileUrl);
+                                //ManageSettings.saveSettingsFile(saveDialog.fileUrl);
                             }
                             onRejected: {
                                 console.log("Canceled")

@@ -16,8 +16,10 @@
 
 #include "../util/util.h"
 #include "../util/localmessage.h"
+#include <sstream>
 
 #include "openhd_defines.hpp"
+#include "qopenhdmavlinkhelper.hpp"
 
 #include "openhd.h"
 
@@ -33,20 +35,7 @@ MavlinkTelemetry* MavlinkTelemetry::instance() {
 MavlinkTelemetry::MavlinkTelemetry(QObject *parent): MavlinkBase(parent) {
     qDebug() << "MavlinkTelemetry::MavlinkTelemetry()";
 
-    requestSysIdSettings();
-    m_restrict_compid = false;
     targetCompID = MAV_COMP_ID_AUTOPILOT1;
-
-    m_restrict_sysid = false;
-    m_restrict_compid = false;
-    
-    localPort = 14550;
-
-// FOR TESTING COMMANDS ON SITL THIS MUST BE UNCOMMENTED
-#if defined(__rasp_pi__)|| defined(__jetson__)
-    groundAddress = "127.0.0.1";
-#endif
-
     connect(this, &MavlinkTelemetry::setup, this, &MavlinkTelemetry::onSetup);
 
 }
@@ -60,7 +49,6 @@ void MavlinkTelemetry::onSetup() {
 
     timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, &MavlinkTelemetry::stateLoop);
-    connect(timer, &QTimer::timeout, this, &MavlinkTelemetry::requestSysIdSettings);
     resetParamVars();
     timer->start(200);
 
@@ -70,13 +58,6 @@ void MavlinkTelemetry::onSetup() {
     #endif
 }
 
-void MavlinkTelemetry::requestSysIdSettings() {
-    //qDebug() << "requestTargetSysId called";
-    QSettings settings;
-    m_restrict_sysid = settings.value("filter_mavlink_telemetry", false).toBool();
-    targetSysID = settings.value("fc_mavlink_sysid", m_util.default_mavlink_sysid()).toInt();
-    //qDebug() << "requestTargetSysId="<<targetSysID;
-}
 
 void MavlinkTelemetry::pauseTelemetry(bool toggle) {
     pause_telemetry=toggle;
@@ -135,11 +116,9 @@ void MavlinkTelemetry::rc_value_changed(int channelIdx,uint channelValue){
 
 void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
     //qDebug()<<"MavlinkTelemetry::onProcessMavlinkMessage"<<msg.msgid;
-
     //if(pause_telemetry==true){
     //    return;
     //}
-
     switch (msg.msgid) {
             case MAVLINK_MSG_ID_HEARTBEAT: {
                     mavlink_heartbeat_t heartbeat;
@@ -647,15 +626,43 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
         case MAVLINK_MSG_ID_ADSB_VEHICLE: {
             break;
         }
-    case MAVLINK_MSG_ID_OPENHD_SYSTEM_TELEMETRY:{
-        mavlink_openhd_system_telemetry_t ohd_sys_telemetry;
-        mavlink_msg_openhd_system_telemetry_decode(&msg,&ohd_sys_telemetry);
-        if(msg.sysid==OHD_SYS_ID_AIR){
-            OpenHD::instance()->set_cpuload_air(ohd_sys_telemetry.cpuload);
-            OpenHD::instance()->set_temp_air(ohd_sys_telemetry.temperature);
+    case MAVLINK_MSG_ID_PING:{
+        mavlink_ping_t ping;
+        mavlink_msg_ping_decode(&msg, &ping);
+        //qDebug()<<"Got ping message sender:"<<msg.sysid<<":"<<msg.compid<<" target:"<<ping.target_system<<":"<<ping.target_component<<"seq:"<<ping.seq;
+        // We only process ping responses with our specific sys id and a matching sequence number.
+        // Note that if the user clicks the ping multiple times in rapid succession, some pings might be dropped.
+        if(ping.seq==pingSequenceNumber && ping.target_system==getQOpenHDSysId()){
+            const auto delta=QOpenHDMavlinkHelper::getTimeMicroseconds()-ping.time_usec;
+            const float deltaMs=delta/1000.0f;
+            std::stringstream ss;
+            ss<<deltaMs<<"ms";
+            if(msg.sysid==OHD_SYS_ID_AIR){
+                OpenHD::instance()->set_last_ping_result_openhd_air(ss.str().c_str());
+            }else if(msg.sysid==OHD_SYS_ID_GROUND){
+                OpenHD::instance()->set_last_ping_result_openhd_ground(ss.str().c_str());
+            }else{
+                // almost 100% from flight controller
+                // TODO make sure
+                //if(msg.compid==MAV_COMP_ID_AUTOPILOT1)
+                OpenHD::instance()->set_last_ping_result_flight_ctrl(ss.str().c_str());
+            }
         }else{
-            OpenHD::instance()->set_cpuload_gnd(ohd_sys_telemetry.cpuload);
-            OpenHD::instance()->set_temp_gnd(ohd_sys_telemetry.temperature);
+            qDebug()<<"Got ping message sender:"<<msg.sysid<<":"<<msg.compid<<" target:"<<ping.target_system<<":"<<ping.target_component<<"seq:"<<ping.seq;
+        }
+        break;
+    }
+    case MAVLINK_MSG_ID_ONBOARD_COMPUTER_STATUS:{
+        mavlink_onboard_computer_status_t decoded;
+        mavlink_msg_onboard_computer_status_decode(&msg,&decoded);
+        if(msg.sysid==OHD_SYS_ID_AIR){
+            OpenHD::instance()->set_cpuload_air(decoded.cpu_cores[0]);
+            OpenHD::instance()->set_temp_air(decoded.temperature_core[0]);
+        }else if(msg.sysid==OHD_SYS_ID_GROUND){
+            OpenHD::instance()->set_cpuload_gnd(decoded.cpu_cores[0]);
+            OpenHD::instance()->set_temp_gnd(decoded.temperature_core[0]);
+        }else{
+            qDebug()<<"Sys tele with unknown sys id";
         }
         break;
     }
@@ -665,8 +672,10 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
         QString version(parsedMsg.version);
         if(msg.sysid==OHD_SYS_ID_AIR){
             OpenHD::instance()->set_openhd_version_air(version);
-        }else{
+        }else if(msg.sysid==OHD_SYS_ID_GROUND){
             OpenHD::instance()->set_openhd_version_ground(version);
+        }else{
+            qDebug()<<"OHD version with unknown sys id";
         }
         break;
     }
@@ -685,4 +694,12 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             break;
         }
     }
+}
+
+void MavlinkTelemetry::pingAllSystems()
+{
+    pingSequenceNumber++;
+    mavlink_message_t msg;
+    mavlink_msg_ping_pack(getQOpenHDSysId(),QOpenHDMavlinkHelper::getCompId(),&msg,QOpenHDMavlinkHelper::getTimeMicroseconds(),pingSequenceNumber,0,0);
+    sendData(msg);
 }
