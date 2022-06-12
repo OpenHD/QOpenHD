@@ -28,8 +28,9 @@ public slots:
     // channelIdx: value between 0 and ??
     void rc_value_changed(int channelIdx,uint channelValue);
 
-private slots:
-    void onProcessMavlinkMessage(mavlink_message_t msg);
+//private slots:
+//    void onProcessMavlinkMessage(mavlink_message_t msg);
+    void onProcessMavlinkMessage(mavlink_message_t msg)override;
 
 signals:
     //void adsbVehicleUpdate(const ADSBVehicle::VehicleInfo_t vehicleInfo);

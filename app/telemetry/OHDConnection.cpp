@@ -1,6 +1,9 @@
 #include "OHDConnection.h"
 
 #include "qopenhdmavlinkhelper.hpp"
+#include "telemetry/openhd_defines.hpp"
+
+#include <mavsdk/log_callback.h>
 
 OHDConnection::OHDConnection(QObject *parent,bool useTcp):QObject(parent),USE_TCP(useTcp)
 {
@@ -14,13 +17,64 @@ OHDConnection::OHDConnection(QObject *parent,bool useTcp):QObject(parent),USE_TC
         //auto bindStatus = udpSocket->bind(QHostAddress::Any,QOPENHD_GROUND_CLIENT_UDP_PORT_IN);
         // this is how it is done int QGroundCOntroll:
         //  _telemetrySocket->bind(QHostAddress::LocalHost, 0, QUdpSocket::ShareAddress);
-        auto bindStatus = udpSocket->bind(QHostAddress::LocalHost,QOPENHD_GROUND_CLIENT_UDP_PORT_IN);
+        //auto bindStatus = udpSocket->bind(QHostAddress::LocalHost,QOPENHD_GROUND_CLIENT_UDP_PORT_IN);
+        auto bindStatus = udpSocket->bind(QHostAddress::Any,QOPENHD_GROUND_CLIENT_UDP_PORT_IN);
         if (!bindStatus) {
             qDebug() <<"Cannot bind UDP Socket";
         }
         connect(udpSocket, &QUdpSocket::readyRead, this, &OHDConnection::udpReadyRead);
     }
     start();
+    /*mavsdk=std::make_shared<mavsdk::Mavsdk>();
+    mavsdk::log::subscribe([](mavsdk::log::Level level,   // message severity level
+                              const std::string& message, // message text
+                              const std::string& file,    // source file from which the message was sent
+                              int line) {                 // line number in the source file
+      // process the log message in a way you like
+      qDebug()<<message.c_str();
+      // returning true from the callback disables printing the message to stdout
+      return level < mavsdk::log::Level::Warn;
+    });
+    mavsdk::ConnectionResult connection_result = mavsdk->add_udp_connection(QOPENHD_GROUND_CLIENT_UDP_PORT_IN);
+    std::stringstream ss;
+    ss<<"MAVSDK connection: " << connection_result;
+    qDebug()<<ss.str().c_str();
+    mavsdk->subscribe_on_new_system([this]() {
+        qDebug()<<"System found";
+        auto system = this->mavsdk->systems().back();
+        if(system->get_system_id()==OHD_SYS_ID_GROUND){
+            qDebug()<<"Found OHD Ground station";
+            systemOhdGround=system;
+        }else if(system->get_system_id()==OHD_SYS_ID_AIR){
+            qDebug()<<"Found OHD AIR station";
+        }
+
+        qDebug()<<"Sys id:"<<system->get_system_id();
+        if(system->get_system_id()==OHD_SYS_ID_GROUND){
+            passtroughOhdGround=std::make_shared<mavsdk::MavlinkPassthrough>(system);
+            qDebug()<<"XX:"<<passtroughOhdGround->get_target_sysid();
+            passtroughOhdGround->subscribe_message_async(MAVLINK_MSG_ID_ONBOARD_COMPUTER_STATUS,[](const mavlink_message_t& msg){
+                qDebug()<<"Got MAVLINK_MSG_ID_ONBOARD_COMPUTER_STATUS";
+            });
+            passtroughOhdGround->intercept_incoming_messages_async([this](mavlink_message_t& msg){
+                qDebug()<<"Intercept:Got message"<<msg.msgid;
+                if(this->callback!=nullptr){
+                     this->callback(msg);
+                }
+                return true;
+            });
+            passtroughOhdGround->intercept_outgoing_messages_async([](mavlink_message_t& msg){
+                qDebug()<<"Intercept:send message"<<msg.msgid;
+                return true;
+            });
+            paramOhdGround=std::make_unique<mavsdk::Param>(system);
+            auto result=paramOhdGround->get_param_float("ramba");
+            std::stringstream ss;
+            ss<<"param result:"<<result.first;
+            qDebug()<<ss.str().c_str();
+        }
+    });
+    start();*/
 }
 
 void OHDConnection::start(){
@@ -72,6 +126,12 @@ void OHDConnection::sendMessage(mavlink_message_t msg){
         // probably a programming error, the message was not packed with the right comp id
         qDebug()<<"WARN Sending message with comp id:"<<msg.compid<<" instead of"<<comp_id;
     }
+    if(mavsdk!=nullptr){
+        if(passtroughOhdGround!=nullptr){
+            passtroughOhdGround->send_message(msg);
+        }
+        return;
+    }
     const auto buf=QOpenHDMavlinkHelper::mavlinkMessageToSendBuffer(msg);
     sendData(buf.data(),buf.size());
 }
@@ -118,6 +178,10 @@ void OHDConnection::udpReadyRead() {
         quint16 groundPort;
         udpSocket->readDatagram(datagram.data(), datagram.size(), &_groundAddress, &groundPort);
         parseNewData((uint8_t*)datagram.data(),datagram.size());
+        foundSenderIp=_groundAddress.toString();
+        foundSenderPort=groundPort;
+        foundSenderHostAddress=_groundAddress;
+        //qDebug()<<"foundSenderIp:"<<foundSenderIp<<" foundSenderPort:"<<foundSenderPort;
     }
     //QByteArray data = udpSocket->readAll();
     //parseNewData((uint8_t*)data.data(),data.size());
@@ -130,12 +194,21 @@ void OHDConnection::sendData(const uint8_t* data,int data_len){
             tcpClientSock->write((char*)data, data_len);
         }
     }else{
-         udpSocket->writeDatagram((char*)data, data_len, QHostAddress(QOPENHD_GROUND_CLIENT_UDP_ADDRESS), QOPENHD_GROUND_CLIENT_UDP_PORT_OUT);
+        if(foundSenderIp.isEmpty() || foundSenderPort==-1){
+            qDebug()<<"Cannot send data, sender ip and port unknown"<<foundSenderIp<<":"<<foundSenderPort;
+            return;
+        }
+        if(udpSocket==nullptr){
+            qDebug()<<"Error send data udp socket null";
+            return;
+        }
+        udpSocket->writeDatagram((char*)data, data_len, QHostAddress(QOPENHD_GROUND_CLIENT_UDP_ADDRESS), QOPENHD_GROUND_CLIENT_UDP_PORT_OUT);
+        //udpSocket->writeDatagram((char*)data, data_len, foundSenderHostAddress, foundSenderPort); //QHostAddress(foundSenderIp)
     }
 }
 
 void OHDConnection::onHeartbeat(){
-    //qDebug() << "OHDConnection::onHeartbeat";
+    qDebug() << "OHDConnection::onHeartbeat";
     mavlink_message_t msg;
     // values from QGroundControll
     mavlink_msg_heartbeat_pack(QOpenHDMavlinkHelper::getSysId(),QOpenHDMavlinkHelper::getCompId(), &msg,MAV_TYPE_GCS,            // MAV_TYPE

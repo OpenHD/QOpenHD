@@ -43,7 +43,7 @@ MavlinkTelemetry::MavlinkTelemetry(QObject *parent): MavlinkBase(parent) {
 void MavlinkTelemetry::onSetup() {
     qDebug() << "MavlinkTelemetry::onSetup()";
 
-    connect(this, &MavlinkTelemetry::processMavlinkMessage, this, &MavlinkTelemetry::onProcessMavlinkMessage);
+    //connect(this, &MavlinkTelemetry::processMavlinkMessage, this, &MavlinkTelemetry::onProcessMavlinkMessage);
 
     pause_telemetry=false;
 
@@ -642,6 +642,7 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             }else if(msg.sysid==OHD_SYS_ID_GROUND){
                 OpenHD::instance()->set_last_ping_result_openhd_ground(ss.str().c_str());
             }else{
+                qDebug()<<"Got ping from fc";
                 // almost 100% from flight controller
                 // TODO make sure
                 //if(msg.compid==MAV_COMP_ID_AUTOPILOT1)

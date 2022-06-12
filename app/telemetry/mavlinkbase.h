@@ -61,6 +61,8 @@ public:
 
 
     //Q_INVOKABLE void setGroundIP(QString address);
+protected:
+    virtual void onProcessMavlinkMessage(mavlink_message_t msg)=0;
 
 signals:
     void last_heartbeat_changed(qint64 last_heartbeat);
@@ -69,7 +71,7 @@ signals:
     void last_gps_changed(qint64 last_gps);
     void last_vfr_changed(qint64 last_vfr);
     void setup();
-    void processMavlinkMessage(mavlink_message_t msg);
+    //void processMavlinkMessage(mavlink_message_t msg);
 
     void allParametersChanged();
 

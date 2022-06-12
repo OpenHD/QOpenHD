@@ -76,6 +76,9 @@ INCLUDEPATH += $$PWD/lib
 INCLUDEPATH += $$PWD/app
 #INCLUDEPATH += $$PWD/lib/mavlink_generated/include/mavlink/v2.0
 INCLUDEPATH += $$PWD/lib/c_library_v2_openhd
+# mavsdk - dirty
+INCLUDEPATH += /usr/local/include/mavsdk
+LIBS += -L/usr/local/lib -lmavsdk
 
 INCLUDEPATH += $$PWD/lib/GeographicLib-1.50/include
 
