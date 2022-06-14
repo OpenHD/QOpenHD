@@ -7,7 +7,7 @@
 
 OHDConnection::OHDConnection(QObject *parent,bool useTcp):QObject(parent),USE_TCP(useTcp)
 {
-    if(USE_TCP){
+    /*if(USE_TCP){
         tcpClientSock = new QTcpSocket(this);
         connect(tcpClientSock, &QTcpSocket::readyRead, this, &OHDConnection::tcpReadyRead);
         connect(tcpClientSock, &QTcpSocket::connected, this, &OHDConnection::tcpConnected);
@@ -24,8 +24,8 @@ OHDConnection::OHDConnection(QObject *parent,bool useTcp):QObject(parent),USE_TC
         }
         connect(udpSocket, &QUdpSocket::readyRead, this, &OHDConnection::udpReadyRead);
     }
-    start();
-    /*mavsdk=std::make_shared<mavsdk::Mavsdk>();
+    start();*/
+    mavsdk=std::make_shared<mavsdk::Mavsdk>();
     mavsdk::log::subscribe([](mavsdk::log::Level level,   // message severity level
                               const std::string& message, // message text
                               const std::string& file,    // source file from which the message was sent
@@ -48,7 +48,6 @@ OHDConnection::OHDConnection(QObject *parent,bool useTcp):QObject(parent),USE_TC
         }else if(system->get_system_id()==OHD_SYS_ID_AIR){
             qDebug()<<"Found OHD AIR station";
         }
-
         qDebug()<<"Sys id:"<<system->get_system_id();
         if(system->get_system_id()==OHD_SYS_ID_GROUND){
             passtroughOhdGround=std::make_shared<mavsdk::MavlinkPassthrough>(system);
@@ -57,24 +56,26 @@ OHDConnection::OHDConnection(QObject *parent,bool useTcp):QObject(parent),USE_TC
                 qDebug()<<"Got MAVLINK_MSG_ID_ONBOARD_COMPUTER_STATUS";
             });
             passtroughOhdGround->intercept_incoming_messages_async([this](mavlink_message_t& msg){
-                qDebug()<<"Intercept:Got message"<<msg.msgid;
+                //qDebug()<<"Intercept:Got message"<<msg.msgid;
                 if(this->callback!=nullptr){
                      this->callback(msg);
                 }
                 return true;
             });
             passtroughOhdGround->intercept_outgoing_messages_async([](mavlink_message_t& msg){
-                qDebug()<<"Intercept:send message"<<msg.msgid;
+                //qDebug()<<"Intercept:send message"<<msg.msgid;
                 return true;
             });
             paramOhdGround=std::make_unique<mavsdk::Param>(system);
-            auto result=paramOhdGround->get_param_float("ramba");
+        }else if(system->has_autopilot()){
+            telemetryFC=std::make_unique<mavsdk::Telemetry>(system);
+            auto res=telemetryFC->set_rate_attitude(60);
             std::stringstream ss;
-            ss<<"param result:"<<result.first;
-            qDebug()<<ss.str().c_str();
+            ss<<res;
+            qDebug()<<"Set rate result:"<<ss.str().c_str();
         }
     });
-    start();*/
+    start();
 }
 
 void OHDConnection::start(){
@@ -129,6 +130,8 @@ void OHDConnection::sendMessage(mavlink_message_t msg){
     if(mavsdk!=nullptr){
         if(passtroughOhdGround!=nullptr){
             passtroughOhdGround->send_message(msg);
+        }else{
+            qDebug()<<"MAVSDK ground unit not discovered";
         }
         return;
     }
@@ -202,13 +205,13 @@ void OHDConnection::sendData(const uint8_t* data,int data_len){
             qDebug()<<"Error send data udp socket null";
             return;
         }
-        udpSocket->writeDatagram((char*)data, data_len, QHostAddress(QOPENHD_GROUND_CLIENT_UDP_ADDRESS), QOPENHD_GROUND_CLIENT_UDP_PORT_OUT);
-        //udpSocket->writeDatagram((char*)data, data_len, foundSenderHostAddress, foundSenderPort); //QHostAddress(foundSenderIp)
+        //udpSocket->writeDatagram((char*)data, data_len, QHostAddress(QOPENHD_GROUND_CLIENT_UDP_ADDRESS), QOPENHD_GROUND_CLIENT_UDP_PORT_OUT);
+        udpSocket->writeDatagram((char*)data, data_len, foundSenderHostAddress, foundSenderPort); //QHostAddress(foundSenderIp)
     }
 }
 
 void OHDConnection::onHeartbeat(){
-    qDebug() << "OHDConnection::onHeartbeat";
+    //qDebug() << "OHDConnection::onHeartbeat";
     mavlink_message_t msg;
     // values from QGroundControll
     mavlink_msg_heartbeat_pack(QOpenHDMavlinkHelper::getSysId(),QOpenHDMavlinkHelper::getCompId(), &msg,MAV_TYPE_GCS,            // MAV_TYPE

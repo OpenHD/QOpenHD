@@ -35,6 +35,10 @@ CONFIG += qmltypes
 QML_IMPORT_NAME = OpenHD
 QML_IMPORT_MAJOR_VERSION = 1
 
+CONFIG += qmltypes
+QML_IMPORT_NAME = MavlinkTelemetry
+QML_IMPORT_MAJOR_VERSION = 1
+
 OBJECTS_DIR  = $${OUT_PWD}/obj
 MOC_DIR      = $${OUT_PWD}/moc
 UI_DIR       = $${OUT_PWD}/ui
@@ -107,13 +111,11 @@ HEADERS += \
 HEADERS += \
     app/telemetry/OHDConnection.h \
     app/telemetry/mavlinktelemetry.h \
-    app/telemetry/mavlinkbase.h \
     app/telemetry/mavlinkcommand.h \
 
 SOURCES += \
     app/telemetry/OHDConnection.cpp \
     app/telemetry/mavlinktelemetry.cpp \
-    app/telemetry/mavlinkbase.cpp \
     app/telemetry/mavlinkcommand.cpp \
 
 # all other files, complete mess

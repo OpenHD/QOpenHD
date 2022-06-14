@@ -72,8 +72,6 @@ OpenHDRC::OpenHDRC(QObject *parent): QObject(parent) {
     connect(this, &OpenHDRC::rc16_changed, mavlink, &MavlinkTelemetry::rc16_changed);
     connect(this, &OpenHDRC::rc17_changed, mavlink, &MavlinkTelemetry::rc17_changed);
     connect(this, &OpenHDRC::rc18_changed, mavlink, &MavlinkTelemetry::rc18_changed);
-
-    connect(this, &OpenHDRC::set_Joystick_Present, mavlink, &MavlinkBase::joystick_Present_Changed);
 #endif
 
     QTimer *timer = new QTimer(this);

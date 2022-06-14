@@ -48,11 +48,16 @@ public:
     float int_param7 = 0;
 };
 
-class MavlinkStateMachine{
+/*class XMavlinkCommandsender {
 public:
-private:
+    XMavlinkCommandsender(){
 
-};
+    }
+    // enqueue a command to be sent to the specific component.
+    // this is non-blocking -
+    //void enqueueCommand()
+   / void onMessageReceived(const mavlink_message_t& msg);
+};*/
 
 
 

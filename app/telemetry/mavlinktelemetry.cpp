@@ -23,41 +23,54 @@
 
 #include "openhd.h"
 
-static MavlinkTelemetry* _instance = nullptr;
 
 MavlinkTelemetry* MavlinkTelemetry::instance() {
-    if (_instance == nullptr) {
-        _instance = new MavlinkTelemetry();
-    }
-    return _instance;
+    static MavlinkTelemetry instance;
+    return &instance;
 }
 
-MavlinkTelemetry::MavlinkTelemetry(QObject *parent): MavlinkBase(parent) {
+MavlinkTelemetry::MavlinkTelemetry(QObject *parent){
     qDebug() << "MavlinkTelemetry::MavlinkTelemetry()";
-
+    mOHDConnection=std::make_unique<OHDConnection>(nullptr,false);
+    mOHDConnection->registerNewMessageCalback([this](mavlink_message_t msg){
+        //qDebug()<<"this->onProcessMavlinkMessage";
+        this->onProcessMavlinkMessage(msg);
+    });
     targetCompID = MAV_COMP_ID_AUTOPILOT1;
-    connect(this, &MavlinkTelemetry::setup, this, &MavlinkTelemetry::onSetup);
-
-}
-
-void MavlinkTelemetry::onSetup() {
-    qDebug() << "MavlinkTelemetry::onSetup()";
-
-    //connect(this, &MavlinkTelemetry::processMavlinkMessage, this, &MavlinkTelemetry::onProcessMavlinkMessage);
-
     pause_telemetry=false;
-
-    timer = new QTimer(this);
-    connect(timer, &QTimer::timeout, this, &MavlinkTelemetry::stateLoop);
-    resetParamVars();
-    timer->start(200);
-
-    #if defined(ENABLE_RC)
-    auto mavlink = MavlinkTelemetry::instance();
-    connect(this, &MavlinkTelemetry::update_RC_MavlinkBase, mavlink, &MavlinkBase::receive_RC_Update);
-    #endif
 }
 
+
+void MavlinkTelemetry::sendCommand(MavlinkCommand command)
+{
+    qDebug()<<"TODO sendCommand";
+}
+
+void MavlinkTelemetry::sendRC()
+{
+    QSettings settings;
+    bool enable_rc = settings.value("enable_rc", false).toBool();
+    //temporarily dsabled
+    if(true){
+        return;
+    }
+    if (enable_rc == true){
+        mavlink_message_t msg;
+        mavlink_msg_rc_channels_override_pack(QOpenHDMavlinkHelper::getSysId(), MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID, targetCompID,
+                                              m_rc_values[0],m_rc_values[1],m_rc_values[2],m_rc_values[3],m_rc_values[4],m_rc_values[5],m_rc_values[6],m_rc_values[7],
+                m_rc_values[8],m_rc_values[9],m_rc_values[10],m_rc_values[11],m_rc_values[12],m_rc_values[13],m_rc_values[14],m_rc_values[15],
+                m_rc_values[16],m_rc_values[17]);
+            sendData(msg);
+    }
+    else {
+        return;
+    }
+}
+
+void MavlinkTelemetry::sendData(mavlink_message_t msg)
+{
+    mOHDConnection->sendMessage(msg);
+}
 
 void MavlinkTelemetry::pauseTelemetry(bool toggle) {
     pause_telemetry=toggle;
@@ -67,7 +80,6 @@ void MavlinkTelemetry::pauseTelemetry(bool toggle) {
 void MavlinkTelemetry::requested_Flight_Mode_Changed(int mode) {
     m_mode=mode;
     qDebug() << "MavlinkTelemetry::requested_Flight_Mode_Changed="<< m_mode;
-
     MavlinkCommand command(MavlinkCommandTypeLong);
     command.command_id = MAV_CMD_DO_SET_MODE;
     command.long_param1 = MAV_MODE_FLAG_CUSTOM_MODE_ENABLED;
@@ -79,7 +91,6 @@ void MavlinkTelemetry::requested_Flight_Mode_Changed(int mode) {
 void MavlinkTelemetry::requested_ArmDisarm_Changed(int arm_disarm) {
     m_arm_disarm=arm_disarm;
     qDebug() << "MavlinkTelemetry::requested_ArmDisarm_Changed="<< m_arm_disarm;
-
     MavlinkCommand command(MavlinkCommandTypeLong);
     command.command_id = MAV_CMD_COMPONENT_ARM_DISARM ;
     command.long_param1 = m_arm_disarm;
@@ -120,133 +131,133 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
     //    return;
     //}
     switch (msg.msgid) {
-            case MAVLINK_MSG_ID_HEARTBEAT: {
-                    mavlink_heartbeat_t heartbeat;
-                    mavlink_msg_heartbeat_decode(&msg, &heartbeat);
+        case MAVLINK_MSG_ID_HEARTBEAT: {
+            mavlink_heartbeat_t heartbeat;
+            mavlink_msg_heartbeat_decode(&msg, &heartbeat);
 
-                    auto custom_mode = heartbeat.custom_mode;
+            auto custom_mode = heartbeat.custom_mode;
 
-                    auto autopilot = (MAV_AUTOPILOT)heartbeat.autopilot;
+            auto autopilot = (MAV_AUTOPILOT)heartbeat.autopilot;
 
-                    //upon first heartbeat find out if autopilot is ardupilot or "other"
-                    if (!sent_autopilot_request){
-                        requestAutopilotInfo();
-                        sent_autopilot_request=true;
+            //upon first heartbeat find out if autopilot is ardupilot or "other"
+            if (!sent_autopilot_request){
+                requestAutopilotInfo();
+                sent_autopilot_request=true;
+            }
+
+            switch (autopilot) {
+                case MAV_AUTOPILOT_PX4: {
+                    if (heartbeat.base_mode & MAV_MODE_FLAG_CUSTOM_MODE_ENABLED) {
+                        auto px4_mode = m_util.px4_mode_from_custom_mode(custom_mode);
+                        OpenHD::instance()->set_flight_mode(px4_mode);
                     }
-
-                    switch (autopilot) {
-                        case MAV_AUTOPILOT_PX4: {
-                            if (heartbeat.base_mode & MAV_MODE_FLAG_CUSTOM_MODE_ENABLED) {
-                                auto px4_mode = m_util.px4_mode_from_custom_mode(custom_mode);
-                                OpenHD::instance()->set_flight_mode(px4_mode);
-                            }
-                            break;
-                        }
-                        case MAV_AUTOPILOT_GENERIC:
-                        case MAV_AUTOPILOT_ARDUPILOTMEGA: {
-                            if (heartbeat.base_mode & MAV_MODE_FLAG_CUSTOM_MODE_ENABLED) {
-                                auto uav_type = heartbeat.type;
-
-                                switch (uav_type) {
-                                    case MAV_TYPE_GENERIC: {
-                                        break;
-                                    }
-                                    case MAV_TYPE_FIXED_WING: {
-                                        auto plane_mode = m_util.plane_mode_from_enum((PLANE_MODE)custom_mode);
-                                        OpenHD::instance()->set_flight_mode(plane_mode);
-
-                                        OpenHD::instance()->set_mav_type("ARDUPLANE");
-
-                                        /* autopilot detecton not reliable
-                                        if(ap_version>999){
-                                            OpenHD::instance()->set_mav_type("ARDUPLANE");
-                                            //qDebug() << "Mavlink Mav Type= ARDUPLANE";
-                                        }
-                                        else{
-                                            OpenHD::instance()->set_mav_type("UKNOWN PLANE");
-                                        }
-                                        */
-                                        break;
-                                    }
-                                    case MAV_TYPE_GROUND_ROVER: {
-                                        auto rover_mode = m_util.rover_mode_from_enum((ROVER_MODE)custom_mode);
-                                        OpenHD::instance()->set_flight_mode(rover_mode);
-                                        break;
-                                    }
-                                    case MAV_TYPE_QUADROTOR: {
-                                        auto copter_mode = m_util.copter_mode_from_enum((COPTER_MODE)custom_mode);
-                                        OpenHD::instance()->set_flight_mode(copter_mode);
-
-                                        OpenHD::instance()->set_mav_type("ARDUCOPTER");
-
-                                        /* autopilot detection not reliable
-                                        if(ap_version>999){
-                                            OpenHD::instance()->set_mav_type("ARDUCOPTER");
-                                            //qDebug() << "Mavlink Mav Type= ARDUCOPTER";
-                                        }
-                                        else {
-                                            OpenHD::instance()->set_mav_type("UNKNOWN COPTER");
-                                        }
-                                        */
-                                        break;
-                                    }
-                                    case MAV_TYPE_SUBMARINE: {
-                                        auto sub_mode = m_util.sub_mode_from_enum((SUB_MODE)custom_mode);
-                                        OpenHD::instance()->set_flight_mode(sub_mode);
-                                        break;
-                                    }
-                                    case MAV_TYPE_ANTENNA_TRACKER: {
-                                        auto tracker_mode = m_util.tracker_mode_from_enum((TRACKER_MODE)custom_mode);
-                                        //OpenHD::instance()->set_tracker_mode(tracker_mode);
-                                        break;
-                                    }
-                                    default: {
-                                        // do nothing
-                                    }
-                                }
-                            }
-                            break;
-                        }
-                        default: {
-                            // this returns to prevent heartbeats from devices other than an autopilot from setting
-                            // the armed/disarmed flag or resetting the last heartbeat timestamp
-                            return;
-                        }
-                    }
-
-                    //MAV_STATE state = (MAV_STATE)heartbeat.system_status;
-                    MAV_MODE_FLAG mode = (MAV_MODE_FLAG)heartbeat.base_mode;
-
-                    if (mode & MAV_MODE_FLAG_SAFETY_ARMED) {
-                        // armed
-                        OpenHD::instance()->set_armed(true);
-                    } else {
-                        OpenHD::instance()->set_armed(false);
-                    }
-
-                    qint64 current_timestamp = QDateTime::currentMSecsSinceEpoch();
-
-                    last_heartbeat_timestamp = current_timestamp;
                     break;
                 }
+                case MAV_AUTOPILOT_GENERIC:
+                case MAV_AUTOPILOT_ARDUPILOTMEGA: {
+                    if (heartbeat.base_mode & MAV_MODE_FLAG_CUSTOM_MODE_ENABLED) {
+                        auto uav_type = heartbeat.type;
+
+                        switch (uav_type) {
+                            case MAV_TYPE_GENERIC: {
+                                break;
+                            }
+                            case MAV_TYPE_FIXED_WING: {
+                                auto plane_mode = m_util.plane_mode_from_enum((PLANE_MODE)custom_mode);
+                                OpenHD::instance()->set_flight_mode(plane_mode);
+
+                                OpenHD::instance()->set_mav_type("ARDUPLANE");
+
+                                /* autopilot detecton not reliable
+                                if(ap_version>999){
+                                    OpenHD::instance()->set_mav_type("ARDUPLANE");
+                                    //qDebug() << "Mavlink Mav Type= ARDUPLANE";
+                                }
+                                else{
+                                    OpenHD::instance()->set_mav_type("UKNOWN PLANE");
+                                }
+                                */
+                                break;
+                            }
+                            case MAV_TYPE_GROUND_ROVER: {
+                                auto rover_mode = m_util.rover_mode_from_enum((ROVER_MODE)custom_mode);
+                                OpenHD::instance()->set_flight_mode(rover_mode);
+                                break;
+                            }
+                            case MAV_TYPE_QUADROTOR: {
+                                auto copter_mode = m_util.copter_mode_from_enum((COPTER_MODE)custom_mode);
+                                OpenHD::instance()->set_flight_mode(copter_mode);
+
+                                OpenHD::instance()->set_mav_type("ARDUCOPTER");
+
+                                /* autopilot detection not reliable
+                                if(ap_version>999){
+                                    OpenHD::instance()->set_mav_type("ARDUCOPTER");
+                                    //qDebug() << "Mavlink Mav Type= ARDUCOPTER";
+                                }
+                                else {
+                                    OpenHD::instance()->set_mav_type("UNKNOWN COPTER");
+                                }
+                                */
+                                break;
+                            }
+                            case MAV_TYPE_SUBMARINE: {
+                                auto sub_mode = m_util.sub_mode_from_enum((SUB_MODE)custom_mode);
+                                OpenHD::instance()->set_flight_mode(sub_mode);
+                                break;
+                            }
+                            case MAV_TYPE_ANTENNA_TRACKER: {
+                                auto tracker_mode = m_util.tracker_mode_from_enum((TRACKER_MODE)custom_mode);
+                                //OpenHD::instance()->set_tracker_mode(tracker_mode);
+                                break;
+                            }
+                            default: {
+                                // do nothing
+                            }
+                        }
+                    }
+                    break;
+                }
+                default: {
+                    // this returns to prevent heartbeats from devices other than an autopilot from setting
+                    // the armed/disarmed flag or resetting the last heartbeat timestamp
+                    return;
+                }
+            }
+
+            //MAV_STATE state = (MAV_STATE)heartbeat.system_status;
+            MAV_MODE_FLAG mode = (MAV_MODE_FLAG)heartbeat.base_mode;
+
+            if (mode & MAV_MODE_FLAG_SAFETY_ARMED) {
+                // armed
+                OpenHD::instance()->set_armed(true);
+            } else {
+                OpenHD::instance()->set_armed(false);
+            }
+
+            qint64 current_timestamp = QDateTime::currentMSecsSinceEpoch();
+
+            last_heartbeat_timestamp = current_timestamp;
+            break;
+        }
 
         case MAVLINK_MSG_ID_AUTOPILOT_VERSION: {
-        mavlink_autopilot_version_t autopilot_version;
-        mavlink_msg_autopilot_version_decode(&msg, &autopilot_version);
+            mavlink_autopilot_version_t autopilot_version;
+            mavlink_msg_autopilot_version_decode(&msg, &autopilot_version);
 
-        ap_version = autopilot_version.flight_sw_version;
-        auto ap_board_version = autopilot_version.board_version;
-        auto ap_os_version = autopilot_version.os_sw_version;
-        auto ap_product_id = autopilot_version.product_id;
-        auto ap_uid = autopilot_version.uid;
+            ap_version = autopilot_version.flight_sw_version;
+            auto ap_board_version = autopilot_version.board_version;
+            auto ap_os_version = autopilot_version.os_sw_version;
+            auto ap_product_id = autopilot_version.product_id;
+            auto ap_uid = autopilot_version.uid;
 
-        qDebug() << "MAVLINK AUTOPILOT VERSION=" <<  ap_version;
-        qDebug() << "MAVLINK AUTOPILOT board_version=" <<  ap_board_version;
-        qDebug() << "MAVLINK AUTOPILOT os_version=" <<  ap_os_version;
-        qDebug() << "MAVLINK AUTOPILOT product_id=" <<  ap_product_id;
-        qDebug() << "MAVLINK AUTOPILOT uid=" <<  ap_uid;
-        break;
-    }
+            qDebug() << "MAVLINK AUTOPILOT VERSION=" <<  ap_version;
+            qDebug() << "MAVLINK AUTOPILOT board_version=" <<  ap_board_version;
+            qDebug() << "MAVLINK AUTOPILOT os_version=" <<  ap_os_version;
+            qDebug() << "MAVLINK AUTOPILOT product_id=" <<  ap_product_id;
+            qDebug() << "MAVLINK AUTOPILOT uid=" <<  ap_uid;
+            break;
+        }
 
         case MAVLINK_MSG_ID_SYS_STATUS: {
             mavlink_sys_status_t sys_status;
@@ -295,7 +306,7 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             break;
         }
         case MAVLINK_MSG_ID_PARAM_VALUE:{
-            mavlink_param_value_t param;
+            /*mavlink_param_value_t param;
             mavlink_msg_param_value_decode(&msg, &param);
 
             parameterCount = param.param_count;
@@ -303,20 +314,20 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
 
             parameterLastReceivedTime = QDateTime::currentMSecsSinceEpoch();
 
-            QByteArray param_id(param.param_id, 16);
+            QByteArray param_id(param.param_id, 16);*/
             /*
              * If there's no null in the param_id array, the mavlink docs say it has to be exactly 16 characters,
              * so we add a null to the end and then continue. This guarantees that QString below will always find
              * a null terminator.
              *
              */
-            if (!param_id.contains('\0')) {
+            /*if (!param_id.contains('\0')) {
                param_id.append('\0');
             }
 
             QString s(param_id.data());
 
-            m_allParameters.insert(s, QVariant(param.param_value));
+            m_allParameters.insert(s, QVariant(param.param_value));*/
             break;
         }
         case MAVLINK_MSG_ID_GPS_RAW_INT:{
@@ -491,21 +502,21 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
         case MAVLINK_MSG_ID_TERRAIN_REPORT:{
             break;
         }
-    case MAVLINK_MSG_ID_WIND:{
-        //slight change to naming convention due to prexisting "wind" that is calculated by us..
-        mavlink_wind_t mav_wind;
-        mavlink_msg_wind_decode(&msg, &mav_wind);
+        case MAVLINK_MSG_ID_WIND:{
+            //slight change to naming convention due to prexisting "wind" that is calculated by us..
+            mavlink_wind_t mav_wind;
+            mavlink_msg_wind_decode(&msg, &mav_wind);
 
-        OpenHD::instance()->set_mav_wind_direction(mav_wind.direction);
-        OpenHD::instance()->set_mav_wind_speed(mav_wind.speed);
-
-
-        /*qDebug() << "Windmavdir: " << mav_wind.direction;
-        qDebug() << "Windmavspd: " << mav_wind.speed;*/
+            OpenHD::instance()->set_mav_wind_direction(mav_wind.direction);
+            OpenHD::instance()->set_mav_wind_speed(mav_wind.speed);
 
 
-        break;
-    }
+            /*qDebug() << "Windmavdir: " << mav_wind.direction;
+            qDebug() << "Windmavspd: " << mav_wind.speed;*/
+
+
+            break;
+        }
         case MAVLINK_MSG_ID_BATTERY_STATUS: {
             mavlink_battery_status_t battery_status;
             mavlink_msg_battery_status_decode(&msg, &battery_status);
@@ -562,18 +573,18 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             break;
         }
         case MAVLINK_MSG_ID_VIBRATION:{
-        mavlink_vibration_t vibration;
-        mavlink_msg_vibration_decode (&msg, &vibration);
+            mavlink_vibration_t vibration;
+            mavlink_msg_vibration_decode (&msg, &vibration);
 
-        OpenHD::instance()->set_vibration_x(vibration.vibration_x);
-        OpenHD::instance()->set_vibration_y(vibration.vibration_y);
-        OpenHD::instance()->set_vibration_z(vibration.vibration_z);
+            OpenHD::instance()->set_vibration_x(vibration.vibration_x);
+            OpenHD::instance()->set_vibration_y(vibration.vibration_y);
+            OpenHD::instance()->set_vibration_z(vibration.vibration_z);
 
-        OpenHD::instance()->set_clipping_x(vibration.clipping_0);
-        OpenHD::instance()->set_clipping_y(vibration.clipping_1);
-        OpenHD::instance()->set_clipping_z(vibration.clipping_2);
-            break;
-        }
+            OpenHD::instance()->set_clipping_x(vibration.clipping_0);
+            OpenHD::instance()->set_clipping_y(vibration.clipping_1);
+            OpenHD::instance()->set_clipping_z(vibration.clipping_2);
+                break;
+            }
         case MAVLINK_MSG_ID_SCALED_IMU2:{
             break;
         }
@@ -632,7 +643,7 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
         //qDebug()<<"Got ping message sender:"<<msg.sysid<<":"<<msg.compid<<" target:"<<ping.target_system<<":"<<ping.target_component<<"seq:"<<ping.seq;
         // We only process ping responses with our specific sys id and a matching sequence number.
         // Note that if the user clicks the ping multiple times in rapid succession, some pings might be dropped.
-        if(ping.seq==pingSequenceNumber && ping.target_system==getQOpenHDSysId()){
+        if(ping.seq==pingSequenceNumber && ping.target_system==QOpenHDMavlinkHelper::getSysId()){
             const auto delta=QOpenHDMavlinkHelper::getTimeMicroseconds()-ping.time_usec;
             const float deltaMs=delta/1000.0f;
             std::stringstream ss;
@@ -701,6 +712,116 @@ void MavlinkTelemetry::pingAllSystems()
 {
     pingSequenceNumber++;
     mavlink_message_t msg;
-    mavlink_msg_ping_pack(getQOpenHDSysId(),QOpenHDMavlinkHelper::getCompId(),&msg,QOpenHDMavlinkHelper::getTimeMicroseconds(),pingSequenceNumber,0,0);
+    mavlink_msg_ping_pack(QOpenHDMavlinkHelper::getSysId(),QOpenHDMavlinkHelper::getCompId(),&msg,QOpenHDMavlinkHelper::getTimeMicroseconds(),pingSequenceNumber,0,0);
     sendData(msg);
 }
+
+void MavlinkTelemetry::requestAllParameters()
+{
+    qDebug()<<"MavlinkTelemetry::requestAllParameters()";
+    if(mOHDConnection->paramOhdGround!=nullptr){
+        const auto result=mOHDConnection->paramOhdGround->get_all_params();
+        const auto customParam=mOHDConnection->paramOhdGround->get_param_int("OHD_UART_BAUD");
+        std::stringstream ss;
+        ss<<"param result:"<<result;
+         ss<<"\n"<<customParam.first<<":"<<customParam.second;
+        qDebug()<<ss.str().c_str();
+        if(customParam.first==mavsdk::Param::Result::Success){
+            auto tmp=mOHDConnection->paramOhdGround->set_param_int("OHD_UART_BAUD",33);
+            std::stringstream setResult;
+            setResult<<tmp;
+            qDebug()<<"Set param:"<<setResult.str().c_str();
+
+        }
+    }
+}
+
+void MavlinkTelemetry::setDataStreamRate(MAV_DATA_STREAM streamType, uint8_t hz) {
+    auto mavlink_sysid= QOpenHDMavlinkHelper::getSysId();
+    mavlink_message_t msg;
+    msg.sysid = mavlink_sysid;
+    msg.compid = MAV_COMP_ID_MISSIONPLANNER;
+    /*
+     * This only sends the message to sysid 1 compid 1 because nothing else responds to this
+     * message anyway, iNav uses a fixed rate and so does betaflight
+     *
+     */
+    mavlink_msg_request_data_stream_pack(mavlink_sysid, MAV_COMP_ID_MISSIONPLANNER, &msg, 1, MAV_COMP_ID_AUTOPILOT1, streamType, hz, 1);
+    sendData(msg);
+}
+
+void MavlinkTelemetry::requestAutopilotInfo()
+{
+    qDebug() << "MavlinkTelemetry::request_Autopilot_Info";
+    auto mavlink_sysid= QOpenHDMavlinkHelper::getSysId();
+    mavlink_message_t msg;
+    mavlink_msg_autopilot_version_request_pack(mavlink_sysid, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID,targetCompID);
+    sendData(msg);
+}
+
+void MavlinkTelemetry::get_Mission_Items(int count)
+{
+    qDebug() << "MavlinkBase::get_Mission_Items total="<< count;
+    auto mavlink_sysid= QOpenHDMavlinkHelper::getSysId();
+    mavlink_message_t msg;
+    int current_seq;
+    for (current_seq = 1; current_seq < count; ++current_seq){
+        //qDebug() << "MavlinkBase::get_Mission_Items current="<< current_seq;
+        mavlink_msg_mission_request_int_pack(mavlink_sysid, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID,targetCompID,current_seq,0);
+        sendData(msg);
+    }
+}
+
+void MavlinkTelemetry::send_Mission_Ack()
+{
+    qDebug() << "MavlinkBase::send_Mission_Ack";
+    auto mavlink_sysid= QOpenHDMavlinkHelper::getSysId();
+    mavlink_message_t msg;
+    mavlink_msg_mission_ack_pack(mavlink_sysid, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID,targetCompID,0,0);
+    sendData(msg);
+}
+
+void MavlinkTelemetry::request_Mission_Changed()
+{
+    qDebug() << "MavlinkTelemetry::request_Mission_Changed";
+    auto mavlink_sysid= QOpenHDMavlinkHelper::getSysId();
+    mavlink_message_t msg;
+    mavlink_msg_mission_request_list_pack(mavlink_sysid, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID,targetCompID,0);
+    sendData(msg);
+}
+
+bool MavlinkTelemetry::isConnectionLost() {
+    /* we want to know if a heartbeat has been received (not -1, the default)
+       but not in the last 5 seconds.*/
+    if (m_last_heartbeat > -1 && m_last_heartbeat < 5000) {
+        return false;
+    }
+    return true;
+}
+
+void MavlinkTelemetry::set_last_heartbeat(qint64 last_heartbeat) {
+    m_last_heartbeat = last_heartbeat;
+    emit last_heartbeat_changed(m_last_heartbeat);
+}
+
+void MavlinkTelemetry::set_last_attitude(qint64 last_attitude) {
+    m_last_attitude = last_attitude;
+    emit last_attitude_changed(m_last_attitude);
+}
+
+void MavlinkTelemetry::set_last_battery(qint64 last_battery) {
+    m_last_battery = last_battery;
+    emit last_battery_changed(m_last_battery);
+}
+
+void MavlinkTelemetry::set_last_gps(qint64 last_gps) {
+    m_last_gps = last_gps;
+    emit last_gps_changed(m_last_gps);
+}
+
+void MavlinkTelemetry::set_last_vfr(qint64 last_vfr) {
+    m_last_vfr = last_vfr;
+    emit last_vfr_changed(m_last_vfr);
+}
+
+

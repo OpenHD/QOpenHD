@@ -9,6 +9,7 @@ import QtQuick.Controls.Material 2.12
 import Qt.labs.settings 1.0
 
 import OpenHD 1.0
+import MavlinkTelemetry 1.0
 
 import "../../ui" as Ui
 import "../elements"
@@ -66,7 +67,7 @@ Item {
                         anchors.verticalCenter: parent.verticalCenter
                         text: qsTr("Ping All")
                         onClicked: {
-                            OpenHD.pingAllSystems();
+                            MavlinkTelemetry.pingAllSystems()
                         }
                     }
                 }
@@ -97,6 +98,37 @@ Item {
                         anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
                         anchors.right: parent.right
                         anchors.verticalCenter: parent.verticalCenter
+                    }
+                }
+
+
+                Rectangle {
+                    width: parent.width
+                    height: rowHeight
+                    visible: true
+
+                    Text {
+                        text: qsTr("Test1: ")
+                        font.weight: Font.Bold
+                        font.pixelSize: 13
+                        anchors.leftMargin: 8
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 224
+                        height: elementHeight
+                        anchors.left: parent.left
+                    }
+
+                    Button {
+                        width: 224
+                        height: elementHeight
+                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: qsTr("Test1B")
+                        onClicked: {
+                            MavlinkTelemetry.requestAllParameters()
+                        }
                     }
                 }
             }

@@ -10,7 +10,7 @@
 #include <mavsdk/mavsdk.h>
 #include <mavsdk/plugins/telemetry/telemetry.h>
 #include <mavsdk/plugins/mavlink_passthrough/mavlink_passthrough.h>
-#include <mavsdk/plugins/param/param.h>>
+#include <mavsdk/plugins/param/param.h>
 
 
 /**
@@ -89,13 +89,15 @@ private:
     QTcpSocket *tcpClientSock = nullptr;
     QUdpSocket *udpSocket=nullptr;
     std::chrono::steady_clock::time_point lastMavlinkMessage;
+    QString foundSenderIp="";
+    int foundSenderPort=-1;
+    QHostAddress foundSenderHostAddress=QHostAddress::Any;
+public:
     std::shared_ptr<mavsdk::Mavsdk> mavsdk=nullptr;
     std::shared_ptr<mavsdk::System> systemOhdGround;
     std::shared_ptr<mavsdk::MavlinkPassthrough> passtroughOhdGround;
     std::shared_ptr<mavsdk::Param> paramOhdGround;
-    QString foundSenderIp="";
-    int foundSenderPort=-1;
-    QHostAddress foundSenderHostAddress=QHostAddress::Any;
+    std::shared_ptr<mavsdk::Telemetry> telemetryFC;
 private slots:
     // called by QT tcp socket
     void tcpReadyRead();
