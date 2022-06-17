@@ -30,15 +30,6 @@ ApplicationWindow {
 
     property bool initialised: false
 
-
-    /* this is not used but must stay right here, it forces qmlglsink to completely
-       initialize the rendering system early. Without this, the next GstGLVideoItem
-       to be initialized, depending on the order they appear in the QML, will simply
-       not work on desktop linux. */
-    //Loader {
-    //    source: (EnableGStreamer && EnableMainVideo && EnablePiP)  ? "DummyVideoGStreamer.qml" : ""
-    //}
-
     function default_mavlink_sysid() {
         if (IsRaspPi) {
             return 220;
