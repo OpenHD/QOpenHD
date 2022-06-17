@@ -1,7 +1,7 @@
 
 
 linux {
-    linux-g++ | linux-g++-64 | linux-g++-32 | linux-clang {
+    linux-g++ | linux-g++-64 | linux-g++-32 | linux-clang | linux-rpi4-v3d-g++ {
         message("LinuxBuild")
         CONFIG += LinuxBuild
         DEFINES += __desktoplinux__
