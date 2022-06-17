@@ -109,15 +109,12 @@ void MavlinkTelemetry::FC_Reboot_Shutdown_Changed(int reboot_shutdown) {
     sendCommand(command);
 }
 
-/*RC updates passing thru mavlink telemetry is really not required. But it does serve to agregate
-  all of the rc inputs in one place and then send all of them in one go to mavlinkbase where they
-  are actually sent
- */
+
 void MavlinkTelemetry::rc_value_changed(int channelIdx,uint channelValue){
     if(channelIdx > 0 && channelIdx < m_rc_values.size()){
         m_rc_values.at(channelIdx)=channelValue;
         qDebug() << "MavlinkTelemetry::rc"<<channelIdx<<"="<< channelValue;
-         emit update_RC_MavlinkBase (m_rc_values);
+        emit update_RC_MavlinkBase (m_rc_values);
     }else{
         qDebug()<<"Error mavlink channel out of bounds"<<channelIdx;
     }
@@ -716,26 +713,6 @@ void MavlinkTelemetry::pingAllSystems()
     sendData(msg);
 }
 
-void MavlinkTelemetry::requestAllParameters()
-{
-    qDebug()<<"MavlinkTelemetry::requestAllParameters()";
-    if(mOHDConnection->paramOhdGround!=nullptr){
-        const auto result=mOHDConnection->paramOhdGround->get_all_params();
-        const auto customParam=mOHDConnection->paramOhdGround->get_param_int("OHD_UART_BAUD");
-        std::stringstream ss;
-        ss<<"param result:"<<result;
-         ss<<"\n"<<customParam.first<<":"<<customParam.second;
-        qDebug()<<ss.str().c_str();
-        if(customParam.first==mavsdk::Param::Result::Success){
-            auto tmp=mOHDConnection->paramOhdGround->set_param_int("OHD_UART_BAUD",33);
-            std::stringstream setResult;
-            setResult<<tmp;
-            qDebug()<<"Set param:"<<setResult.str().c_str();
-
-        }
-    }
-}
-
 void MavlinkTelemetry::setDataStreamRate(MAV_DATA_STREAM streamType, uint8_t hz) {
     auto mavlink_sysid= QOpenHDMavlinkHelper::getSysId();
     mavlink_message_t msg;
@@ -824,4 +801,27 @@ void MavlinkTelemetry::set_last_vfr(qint64 last_vfr) {
     emit last_vfr_changed(m_last_vfr);
 }
 
+void MavlinkTelemetry::requestAllParameters()
+{
+    if(mOHDConnection->paramOhdGround==nullptr){
+        return;
+    }
+    qDebug()<<"MavlinkTelemetry::requestAllParameters()";
+    {
+        // request all parameters
+         const auto result=mOHDConnection->paramOhdGround->get_all_params();
+         std::stringstream ss;
+         ss<<"Get all:"<<result;
+         qDebug()<<ss.str().c_str();
+    }
+    {
+        // request specific
+        //const auto customParam=mOHDConnection->paramOhdGround->get_param_int("OHD_UART_BAUD");
+        //const auto customParam=mOHDConnection->paramOhdGround->get_param_int("OHD_UART_NAME");
+        const auto customParam=mOHDConnection->paramOhdGround->get_param_custom("OHD_UART_NAME");
+        std::stringstream ss;
+        ss<<"Get specific: "<<customParam.first<<":"<<customParam.second;
+        qDebug()<<ss.str().c_str();
+    }
+}
 

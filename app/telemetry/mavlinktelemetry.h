@@ -75,7 +75,7 @@ private:
 signals:
     void update_RC_MavlinkBase(std::array<uint,19> rcValues);
 private:
-    bool pause_telemetry;
+    bool pause_telemetry=false;
     int m_mode=0;
     int m_arm_disarm=99;
     int m_reboot_shutdown=99;
