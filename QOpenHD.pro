@@ -237,7 +237,6 @@ iOSBuild {
     CONFIG += EnableMainVideo
     CONFIG += EnablePiP
     CONFIG += EnableVideoRender
-    CONFIG += EnableLink
     #CONFIG += EnableCharts
     #CONFIG += EnableVR
     #CONFIG += EnableLog //does not work due to filepath not set
@@ -283,7 +282,6 @@ MacBuild {
     CONFIG += EnableMainVideo
     CONFIG += EnablePiP
     CONFIG += EnableVideoRender
-    CONFIG += EnableLink
     #CONFIG += EnableCharts
     #CONFIG += EnableVR
     #CONFIG += EnableLog //does not work due to filepath not set
@@ -313,7 +311,6 @@ LinuxBuild {
     CONFIG += EnableMainVideo
     CONFIG += EnablePiP
     CONFIG += EnableGStreamer
-    CONFIG += EnableLink
     #CONFIG += EnableCharts
     #CONFIG += EnableVR
     #CONFIG += EnableLog
@@ -326,7 +323,6 @@ JetsonBuild {
     CONFIG += EnableJoysticks
     CONFIG += EnableRC
     CONFIG += EnablePiP
-    CONFIG += EnableLink
     #CONFIG += EnableCharts
     CONFIG += EnableSpeech
     #CONFIG += EnableVR
@@ -352,7 +348,6 @@ RaspberryPiBuild {
     CONFIG += EnableJoysticks
     CONFIG += EnableRC
     CONFIG += EnablePiP
-    CONFIG += EnableLink
     #CONFIG += EnableCharts
     CONFIG += EnableSpeech
     CONFIG += LimitADSBMax
@@ -374,7 +369,6 @@ WindowsBuild {
     CONFIG += EnableSpeech
     CONFIG += EnableMainVideo
     #CONFIG +- EnablePiP
-    CONFIG += EnableLink
     CONFIG += EnableGStreamer
     #CONFIG += EnableCharts
     #CONFIG += EnableVR
@@ -394,7 +388,6 @@ AndroidBuild {
     CONFIG += EnableSpeech
     CONFIG += EnableMainVideo
     CONFIG += EnablePiP
-    CONFIG += EnableLink
     CONFIG += EnableVideoRender
     #CONFIG += EnableCharts
     #CONFIG += EnableVR
@@ -516,11 +509,6 @@ EnableVideoRender {
 EnablePiP {
     message("EnablePiP")
     DEFINES += ENABLE_PIP
-}
-
-EnableLink {
-    message("EnableLink")
-    DEFINES += ENABLE_LINK
 }
 
 

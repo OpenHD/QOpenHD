@@ -388,12 +388,6 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
     engine.rootContext()->setContextProperty("UseFullscreen", QVariant(false));
 #endif
 
-#if defined(ENABLE_LINK)
-    engine.rootContext()->setContextProperty("EnableLink", QVariant(true));
-#else
-    engine.rootContext()->setContextProperty("EnableLink", QVariant(false));
-#endif
-
     engine.rootContext()->setContextProperty("QOPENHD_VERSION", QVariant(QOPENHD_VERSION));
 
     engine.load(QUrl(QLatin1String("qrc:/main.qml")));
