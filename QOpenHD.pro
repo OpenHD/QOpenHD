@@ -308,6 +308,7 @@ LinuxBuild {
     #CONFIG += EnableGamepads
     #CONFIG += EnableJoysticks
     #CONFIG += EnableRC
+    # Note: To compile without gstreamer, uncomment the 3 following - but then obviosly there is no video at all.
     CONFIG += EnableMainVideo
     CONFIG += EnablePiP
     CONFIG += EnableGStreamer
