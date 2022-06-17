@@ -483,7 +483,11 @@ EnableGStreamer {
     app/videostreaming/gst_helper.hpp \
     app/videostreaming/gstvideostream.h
 
-    include ($$PWD/lib/VideoStreaming/VideoStreaming.pri)
+    #include ($$PWD/lib/VideoStreaming/VideoStreaming.pri)
+
+    CONFIG += link_pkgconfig
+    PKGCONFIG   += gstreamer-1.0  gstreamer-video-1.0 gstreamer-gl-1.0
+
 }
 
 EnableVideoRender {
