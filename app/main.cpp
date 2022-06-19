@@ -67,6 +67,7 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #if defined(ENABLE_GSTREAMER)
 #include <gst/gst.h>
 #endif
+#include "xsettingsui.h""
 
 // SDL hack
 #ifdef Q_OS_WIN
@@ -253,6 +254,8 @@ int main(int argc, char *argv[]) {
     qmlRegisterType<FlightPathVector>("OpenHD", 1, 0, "FlightPathVector");
 
     qmlRegisterType<DrawingCanvas>("OpenHD", 1, 0, "DrawingCanvas");
+    // X testing
+    qmlRegisterType<XSettingsUI>("OpenHD", 1, 0, "XSettingsUI");
 
 #if defined(ENABLE_VIDEO_RENDER)
 #if defined(__android__)

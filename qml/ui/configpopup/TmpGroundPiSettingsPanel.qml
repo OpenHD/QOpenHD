@@ -20,10 +20,60 @@ Item {
     Layout.fillHeight: true
     Layout.fillWidth: true
 
+    //width: parent.width
+    //height: 600
+
     property int rowHeight: 64
     property int elementHeight: 48
 
-    ScrollView {
+    Component {
+        id: delegateX
+
+        Item {
+            id: item
+            width: 200
+            height: 64
+            Row {
+                anchors.fill: parent
+                spacing: 5
+
+                Label {
+                    text: name
+                    font.bold: true
+                }
+                Label {
+                    text: number
+                }
+                Button {
+                    text: "set"
+                }
+            }
+        }
+    }
+
+    ListModel {
+        id: modelX
+        ListElement {
+            name: "SomeName"
+            number: "SomeNumber"
+        }
+    }
+
+    ScrollView{
+        anchors.fill: parent
+        ListView {
+            width: parent.width
+            model: modelX
+            delegate: delegateX
+            //model: 20
+            //delegate: ItemDelegate {
+            //    text: "Item" + (index+1)
+            //    width:parent.width
+            //}
+        }
+    }
+
+    /*ScrollView {
         id: generalView
         width: parent.width
         height: parent.height
@@ -106,6 +156,7 @@ Item {
                     width: parent.width
                     height: rowHeight
                     visible: true
+                    color: Color.RED
 
                     Text {
                         text: qsTr("Test1: ")
@@ -131,10 +182,24 @@ Item {
                         }
                     }
                 }
+
+                Rectangle {
+                    width: parent.width
+                    height: 400
+                    visible: true
+                    color: Color.RED
+
+                    //XSettingsUI{
+                    //     id: xSettingsUI
+                    //     width: parent.width
+                    //     height: 400
+                    //     clip: false
+                    //}
+                }
             }
         }
 
 
 
-    }
+    }*/
 }

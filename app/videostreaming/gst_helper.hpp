@@ -11,6 +11,7 @@
 #include <QString>
 #include <qquickitem.h>
 #include <stdexcept>
+#include <sstream>
 
 /**
  * @brief initGstreamer, throw a run time exception when failing
@@ -18,7 +19,10 @@
 static void initGstreamerOrThrow(){
     GError* error = nullptr;
     if (!gst_init_check(nullptr,nullptr, &error)) {
-        throw std::runtime_error("Cannot initialize gstreamer\n");
+        std::stringstream ss;
+        ss<<"Cannot initialize gstreamer";
+        ss<<error->code<<":"<<error->message;
+        throw std::runtime_error(ss.str());
     }
 }
 

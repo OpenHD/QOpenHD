@@ -16,18 +16,7 @@ SettingsPopupForm {
     signal localMessage(var message, var level)
     signal settingsClosed
 
-    /*Connections {
-        target: openHDRC
-        onSelectedGamepadChanged: {
-            console.log("onSelectedGamepadChanged %1".arg(selectedGamepad));
-        }
-        onSelectedGamepadNameChanged: {
-            console.log("onSelectedGamepadNameChanged %1".arg(selectedGamepadName));
-        }
-    }*/
-
     function openSettings() {
-        //openHDSettings.fetchSettings();
         visible = true
     }
 
