@@ -242,7 +242,6 @@ iOSBuild {
     CONFIG += EnableMainVideo
     CONFIG += EnablePiP
     CONFIG += EnableVideoRender
-    CONFIG += EnableLink
     #CONFIG += EnableCharts
     #CONFIG += EnableVR
     #CONFIG += EnableLog //does not work due to filepath not set
@@ -288,7 +287,6 @@ MacBuild {
     CONFIG += EnableMainVideo
     CONFIG += EnablePiP
     CONFIG += EnableVideoRender
-    CONFIG += EnableLink
     #CONFIG += EnableCharts
     #CONFIG += EnableVR
     #CONFIG += EnableLog //does not work due to filepath not set
@@ -315,10 +313,10 @@ LinuxBuild {
     #CONFIG += EnableGamepads
     #CONFIG += EnableJoysticks
     #CONFIG += EnableRC
+    # Note: To compile without gstreamer, uncomment the 3 following - but then obviosly there is no video at all.
     CONFIG += EnableMainVideo
     CONFIG += EnablePiP
     CONFIG += EnableGStreamer
-    CONFIG += EnableLink
     #CONFIG += EnableCharts
     #CONFIG += EnableVR
     #CONFIG += EnableLog
@@ -331,7 +329,6 @@ JetsonBuild {
     CONFIG += EnableJoysticks
     CONFIG += EnableRC
     CONFIG += EnablePiP
-    CONFIG += EnableLink
     #CONFIG += EnableCharts
     CONFIG += EnableSpeech
     #CONFIG += EnableVR
@@ -357,7 +354,6 @@ RaspberryPiBuild {
     CONFIG += EnableJoysticks
     CONFIG += EnableRC
     CONFIG += EnablePiP
-    CONFIG += EnableLink
     #CONFIG += EnableCharts
     CONFIG += EnableSpeech
     CONFIG += LimitADSBMax
@@ -379,7 +375,6 @@ WindowsBuild {
     CONFIG += EnableSpeech
     CONFIG += EnableMainVideo
     #CONFIG +- EnablePiP
-    CONFIG += EnableLink
     CONFIG += EnableGStreamer
     #CONFIG += EnableCharts
     #CONFIG += EnableVR
@@ -399,7 +394,6 @@ AndroidBuild {
     CONFIG += EnableSpeech
     CONFIG += EnableMainVideo
     CONFIG += EnablePiP
-    CONFIG += EnableLink
     CONFIG += EnableVideoRender
     #CONFIG += EnableCharts
     #CONFIG += EnableVR
@@ -488,7 +482,11 @@ EnableGStreamer {
     app/videostreaming/gst_helper.hpp \
     app/videostreaming/gstvideostream.h
 
-    include ($$PWD/lib/VideoStreaming/VideoStreaming.pri)
+    #include ($$PWD/lib/VideoStreaming/VideoStreaming.pri)
+
+    CONFIG += link_pkgconfig
+    PKGCONFIG   += gstreamer-1.0  gstreamer-video-1.0 gstreamer-gl-1.0
+
 }
 
 EnableVideoRender {
@@ -517,11 +515,6 @@ EnableVideoRender {
 EnablePiP {
     message("EnablePiP")
     DEFINES += ENABLE_PIP
-}
-
-EnableLink {
-    message("EnableLink")
-    DEFINES += ENABLE_LINK
 }
 
 

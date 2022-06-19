@@ -81,7 +81,6 @@
         <file>ui/delegates/BaseDelegate.ui.qml</file>
         <file>ui/widgets/VideoWidget.qml</file>
         <file>ui/widgets/VideoWidgetGStreamerForm.ui.qml</file>
-        <file>DummyVideoGStreamer.qml</file>
         <file>MainVideoGStreamer.qml</file>
         <file>ui/elements/SlideSwitchForm.ui.qml</file>
         <file>ui/elements/SlideSwitch.qml</file>

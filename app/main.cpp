@@ -8,7 +8,6 @@
 const QVector<QString> permissions({"android.permission.INTERNET",
                                     "android.permission.WRITE_EXTERNAL_STORAGE",
                                     "android.permission.READ_EXTERNAL_STORAGE",
-
                                     "android.permission.ACCESS_NETWORK_STATE",
                                     "android.permission.ACCESS_FINE_LOCATION"});
 #endif
@@ -24,13 +23,6 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 //#endif
 
 #include "util/statuslogmodel.h"
-
-#if defined(ENABLE_ADSB)
-#include "../app/adsb/ADSBVehicleManager.h"
-#include "../app/adsb/ADSBVehicle.h"
-#endif
-
-
 #include "util/QmlObjectListModel.h"
 
 #include "osd/speedladder.h"
@@ -39,8 +31,6 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "osd/horizonladder.h"
 #include "osd/flightpathvector.h"
 #include "osd/drawingcanvas.h"
-
-#include "videostreaming/QOpenHDVideoHelper.hpp"
 
 
 #if defined(ENABLE_RC)
@@ -52,9 +42,8 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #endif
 
 #if defined(ENABLE_GSTREAMER)
-
+#include "videostreaming/QOpenHDVideoHelper.hpp"
 #include "videostreaming/gstvideostream.h"
-
 #endif
 
 #if defined(ENABLE_VIDEO_RENDER)
@@ -144,6 +133,45 @@ static void load_fonts(){
     QFontDatabase::addApplicationFont(":/osdfonts/UbuntuMono-BoldItalic.ttf");
     QFontDatabase::addApplicationFont(":/osdfonts/Visitor.ttf");
     QFontDatabase::addApplicationFont(":/osdfonts/ZolanMonoOblique.ttf");
+}
+
+// Write context properties for all platforms
+static void write_platform_context_properties(QQmlApplicationEngine& engine){
+#if defined(__android__)
+    engine.rootContext()->setContextProperty("IsAndroid", QVariant(true));
+#else
+    engine.rootContext()->setContextProperty("IsAndroid", QVariant(false));
+#endif
+
+#if defined(__ios__)
+    engine.rootContext()->setContextProperty("IsiOS", QVariant(true));
+#else
+    engine.rootContext()->setContextProperty("IsiOS", QVariant(false));
+#endif
+
+#if defined(__windows__)
+    engine.rootContext()->setContextProperty("IsWindows", QVariant(true));
+#else
+    engine.rootContext()->setContextProperty("IsWindows", QVariant(false));
+#endif
+
+#if defined(__desktoplinux__)
+    engine.rootContext()->setContextProperty("IsDesktopLinux", QVariant(true));
+#else
+    engine.rootContext()->setContextProperty("IsDesktopLinux", QVariant(false));
+#endif
+
+#if defined(__macos__)
+    engine.rootContext()->setContextProperty("IsMac", QVariant(true));
+#else
+    engine.rootContext()->setContextProperty("IsMac", QVariant(false));
+#endif
+
+#if defined(__rasp_pi__)
+    engine.rootContext()->setContextProperty("IsRaspPi", QVariant(true));
+#else
+    engine.rootContext()->setContextProperty("IsRaspPi", QVariant(false));
+#endif
 }
 
 
@@ -245,41 +273,7 @@ int main(int argc, char *argv[]) {
     auto openhd = OpenHD::instance();
     openhd->setEngine(&engine);
 
-#if defined(__android__)
-    engine.rootContext()->setContextProperty("IsAndroid", QVariant(true));
-#else
-    engine.rootContext()->setContextProperty("IsAndroid", QVariant(false));
-#endif
-
-#if defined(__ios__)
-    engine.rootContext()->setContextProperty("IsiOS", QVariant(true));
-#else
-    engine.rootContext()->setContextProperty("IsiOS", QVariant(false));
-#endif
-
-#if defined(__windows__)
-    engine.rootContext()->setContextProperty("IsWindows", QVariant(true));
-#else
-    engine.rootContext()->setContextProperty("IsWindows", QVariant(false));
-#endif
-
-#if defined(__desktoplinux__)
-    engine.rootContext()->setContextProperty("IsDesktopLinux", QVariant(true));
-#else
-    engine.rootContext()->setContextProperty("IsDesktopLinux", QVariant(false));
-#endif
-
-#if defined(__macos__)
-    engine.rootContext()->setContextProperty("IsMac", QVariant(true));
-#else
-    engine.rootContext()->setContextProperty("IsMac", QVariant(false));
-#endif
-
-#if defined(__rasp_pi__)
-    engine.rootContext()->setContextProperty("IsRaspPi", QVariant(true));
-#else
-    engine.rootContext()->setContextProperty("IsRaspPi", QVariant(false));
-#endif
+    write_platform_context_properties(engine);
 
 #if defined(ENABLE_GSTREAMER)
 engine.rootContext()->setContextProperty("EnableGStreamer", QVariant(true));
@@ -371,11 +365,6 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
     engine.rootContext()->setContextProperty("EnablePiP", QVariant(false));
 #endif
 
-#if defined(ENABLE_ADSB)
-    engine.rootContext()->setContextProperty("EnableADSB", QVariant(true));
-#else
-    engine.rootContext()->setContextProperty("EnableADSB", QVariant(false));
-#endif
 
 #if defined(ENABLE_CHARTS)
     engine.rootContext()->setContextProperty("EnableCharts", QVariant(true));
@@ -396,12 +385,6 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
     engine.rootContext()->setContextProperty("UseFullscreen", QVariant(true));
 #else
     engine.rootContext()->setContextProperty("UseFullscreen", QVariant(false));
-#endif
-
-#if defined(ENABLE_LINK)
-    engine.rootContext()->setContextProperty("EnableLink", QVariant(true));
-#else
-    engine.rootContext()->setContextProperty("EnableLink", QVariant(false));
 #endif
 
     engine.rootContext()->setContextProperty("QOPENHD_VERSION", QVariant(QOPENHD_VERSION));
