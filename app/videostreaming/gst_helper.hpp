@@ -23,8 +23,11 @@ static void initGstreamerOrThrow(){
         ss<<"Cannot initialize gstreamer";
         ss<<error->code<<":"<<error->message;
         g_error_free(error);
-        qDebug()<<ss.str().c_str();
-        throw std::runtime_error(ss.str());
+        {
+         // Such that it goes out of scope before throwing the runtime error
+         qDebug()<<ss.str().c_str();
+        }
+        throw std::runtime_error(ss.str().c_str());
     }
 }
 
