@@ -175,6 +175,7 @@ DISTFILES += \
     app/util/README.md \
     app/videostreaming/README.md \
     app/videostreaming/legacy/README.md \
+    extra_build_qmake.sh \
     inc/osd/Readme.md \
     qml/qtquickcontrols2.conf \
     qml/resources/README.md \
