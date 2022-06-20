@@ -79,9 +79,6 @@
         <file>ui/widgets/ArrowWidget.qml</file>
         <file>ui/widgets/ArrowWidgetForm.qml</file>
         <file>ui/delegates/BaseDelegate.ui.qml</file>
-        <file>ui/widgets/VideoWidget.qml</file>
-        <file>ui/widgets/VideoWidgetGStreamerForm.ui.qml</file>
-        <file>MainVideoGStreamer.qml</file>
         <file>ui/elements/SlideSwitchForm.ui.qml</file>
         <file>ui/elements/SlideSwitch.qml</file>
         <file>ui/widgets/GroundPowerWidget.qml</file>
@@ -89,13 +86,9 @@
         <file>ui/PresetMap.qml</file>
         <file>ui/elements/ColoredCheckboxForm.ui.qml</file>
         <file>ui/elements/ColoredCheckbox.qml</file>
-        <file>MainVideoAndroid.qml</file>
         <file>ui/FrequencyItem.qml</file>
         <file>ui/widgets/GPIOWidget.qml</file>
         <file>ui/widgets/GPIOWidgetForm.ui.qml</file>
-        <file>MainVideoRender.qml</file>
-        <file>ui/widgets/VideoWidgetRenderForm.ui.qml</file>
-        <file>ui/widgets/VideoWidgetAndroidForm.ui.qml</file>
         <file>ui/widgets/FlightDistanceWidgetForm.ui.qml</file>
         <file>ui/widgets/FlightDistanceWidget.qml</file>
         <file>ui/widgets/FlightMahWidgetForm.ui.qml</file>
@@ -216,5 +209,13 @@
         <file>resources/Font Awesome 5 Free-Solid-900.otf</file>
         <file>ui/configpopup/TelemetryGraphView.qml</file>
         <file>ui/configpopup/LogMessagesStatusView.qml</file>
+        <file>video/MainVideoAndroid.qml</file>
+        <file>video/MainVideoGStreamer.qml</file>
+        <file>video/MainVideoRender.qml</file>
+        <file>video/SecondaryVideoLoader.qml</file>
+        <file>video/VideoWidgetAndroidForm.ui.qml</file>
+        <file>video/VideoWidgetGStreamerForm.ui.qml</file>
+        <file>video/VideoWidgetRenderForm.ui.qml</file>
+        <file>video/MainVideoLoader.qml</file>
     </qresource>
 </RCC>

@@ -79,12 +79,13 @@ ApplicationWindow {
         }
     }
 
+
     Loader {
         anchors.fill: parent
         z: 1.0
         source: {
             if (EnableGStreamer && EnableMainVideo) {
-                return "MainVideoGStreamer.qml";
+                return "../video/MainVideoGStreamer.qml";
             }
             if (IsAndroid && EnableVideoRender && EnableMainVideo) {
                 return "MainVideoRender.qml";

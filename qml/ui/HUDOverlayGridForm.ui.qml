@@ -185,7 +185,7 @@ Item {
 
     // + 3% cpu
     Loader {
-        source: EnablePiP ? "./widgets/VideoWidget.qml" : ""
+        source: EnablePiP ? "./video/VideoWidget.qml" : ""
     }
 
     // + 0% cpu
