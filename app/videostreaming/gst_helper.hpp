@@ -13,6 +13,7 @@
 #include <stdexcept>
 #include <sstream>
 
+
 /**
  * @brief initGstreamer, throw a run time exception when failing
  */
@@ -23,10 +24,6 @@ static void initGstreamerOrThrow(){
         ss<<"Cannot initialize gstreamer";
         ss<<error->code<<":"<<error->message;
         g_error_free(error);
-        {
-         // Such that it goes out of scope before throwing the runtime error
-         qDebug()<<ss.str().c_str();
-        }
         throw std::runtime_error(ss.str().c_str());
     }
 }
@@ -35,12 +32,13 @@ static void initGstreamerOrThrow(){
  * @brief Not sure if still needed nowadays, init qml sink or throw run time exception ??!!
  */
 static void initQmlGlSinkOrThrow(){
-    /* If qmlgl plugin was dynamically linked, this will force GStreamer to go find it and
-     * load it before the QML gets loaded in main.cpp (without this, Qt will complain that
-     * it can't find org.freedesktop.gstreamer.GLVideoItem)
-     */
+    // Consti10: It doesn't complain for me !
+    // If qmlgl plugin was dynamically linked, this will force GStreamer to go find it and
+    // load it before the QML gets loaded in main.cpp (without this, Qt will complain that
+    // it can't find org.freedesktop.gstreamer.GLVideoItem)
     GstElement *sink = gst_element_factory_make("qmlglsink", NULL);
     if(sink==nullptr){
+        //qDebug()<<"Cannot initialize gstreamer - qmlsink not found";
         throw std::runtime_error("Cannot initialize gstreamer - qmlsink not found\n");
    }
 }
