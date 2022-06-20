@@ -7,11 +7,14 @@
 #include <chrono>
 
 #include <openhd/mavlink.h>
-/*#include <mavsdk/mavsdk.h>
+
+#ifdef X_USE_MAVSDK
+#include <mavsdk/mavsdk.h>
 #include <mavsdk/plugins/telemetry/telemetry.h>
 #include <mavsdk/plugins/mavlink_passthrough/mavlink_passthrough.h>
 #include <mavsdk/plugins/param/param.h>
-#include <mavsdk/log_callback.h>*/
+#include <mavsdk/log_callback.h>
+#endif //X_USE_MAVSDK
 
 
 /**
@@ -94,11 +97,13 @@ private:
     int foundSenderPort=-1;
     QHostAddress foundSenderHostAddress=QHostAddress::Any;
 public:
-    /*std::shared_ptr<mavsdk::Mavsdk> mavsdk=nullptr;
+    #ifdef X_USE_MAVSDK
+    std::shared_ptr<mavsdk::Mavsdk> mavsdk=nullptr;
     std::shared_ptr<mavsdk::System> systemOhdGround;
     std::shared_ptr<mavsdk::MavlinkPassthrough> passtroughOhdGround;
     std::shared_ptr<mavsdk::Param> paramOhdGround;
-    std::shared_ptr<mavsdk::Telemetry> telemetryFC;*/
+    std::shared_ptr<mavsdk::Telemetry> telemetryFC;
+    #endif //X_USE_MAVSDK
 private slots:
     // called by QT tcp socket
     void tcpReadyRead();

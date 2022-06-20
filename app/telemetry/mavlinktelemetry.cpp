@@ -803,7 +803,8 @@ void MavlinkTelemetry::set_last_vfr(qint64 last_vfr) {
 
 void MavlinkTelemetry::requestAllParameters()
 {
-    /*if(mOHDConnection->paramOhdGround==nullptr){
+#ifdef X_USE_MAVSDK
+    if(mOHDConnection->paramOhdGround==nullptr){
         return;
     }
     qDebug()<<"MavlinkTelemetry::requestAllParameters()";
@@ -822,6 +823,7 @@ void MavlinkTelemetry::requestAllParameters()
         std::stringstream ss;
         ss<<"Get specific: "<<customParam.first<<":"<<customParam.second;
         qDebug()<<ss.str().c_str();
-    }*/
+    }
+#endif //X_USE_MAVSDK
 }
 

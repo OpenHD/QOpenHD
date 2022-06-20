@@ -5,6 +5,7 @@
 
 OHDConnection::OHDConnection(QObject *parent,bool useTcp):QObject(parent),USE_TCP(useTcp)
 {
+#ifndef X_USE_MAVSDK
     if(USE_TCP){
         tcpClientSock = new QTcpSocket(this);
         connect(tcpClientSock, &QTcpSocket::readyRead, this, &OHDConnection::tcpReadyRead);
@@ -23,7 +24,9 @@ OHDConnection::OHDConnection(QObject *parent,bool useTcp):QObject(parent),USE_TC
         connect(udpSocket, &QUdpSocket::readyRead, this, &OHDConnection::udpReadyRead);
     }
     start();
-    /*mavsdk=std::make_shared<mavsdk::Mavsdk>();
+#endif //X_USE_MAVSDK
+#ifdef X_USE_MAVSDK
+    mavsdk=std::make_shared<mavsdk::Mavsdk>();
     mavsdk::log::subscribe([](mavsdk::log::Level level,   // message severity level
                               const std::string& message, // message text
                               const std::string& file,    // source file from which the message was sent
@@ -73,7 +76,8 @@ OHDConnection::OHDConnection(QObject *parent,bool useTcp):QObject(parent),USE_TC
             qDebug()<<"Set rate result:"<<ss.str().c_str();
         }
     });
-    start();*/
+    start();
+#endif //X_USE_MAVSDK
 }
 
 void OHDConnection::start(){
@@ -125,14 +129,16 @@ void OHDConnection::sendMessage(mavlink_message_t msg){
         // probably a programming error, the message was not packed with the right comp id
         qDebug()<<"WARN Sending message with comp id:"<<msg.compid<<" instead of"<<comp_id;
     }
-    /*if(mavsdk!=nullptr){
+#ifdef X_USE_MAVSDK
+    if(mavsdk!=nullptr){
         if(passtroughOhdGround!=nullptr){
             passtroughOhdGround->send_message(msg);
         }else{
             qDebug()<<"MAVSDK ground unit not discovered";
         }
         return;
-    }*/
+    }
+#endif //X_USE_MAVSDK
     const auto buf=QOpenHDMavlinkHelper::mavlinkMessageToSendBuffer(msg);
     sendData(buf.data(),buf.size());
 }
