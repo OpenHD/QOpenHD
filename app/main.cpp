@@ -175,6 +175,24 @@ static void write_platform_context_properties(QQmlApplicationEngine& engine){
 #endif
 }
 
+void write_other_context_properties(QQmlApplicationEngine& engine){
+#ifdef ENABLE_GSTREAMER
+    engine.rootContext()->setContextProperty("EnableGStreamer", QVariant(true));
+#else
+    engine.rootContext()->setContextProperty("EnableGStreamer", QVariant(false));
+#endif
+#ifdef ENABLE_VIDEO_RENDERER
+    engine.rootContext()->setContextProperty("EnableVideoRender", QVariant(true));
+#else
+     engine.rootContext()->setContextProperty("EnableVideoRender", QVariant(false));
+#endif
+#if defined(ENABLE_LOG)
+    engine.rootContext()->setContextProperty("EnableLog", QVariant(true));
+#else
+    engine.rootContext()->setContextProperty("EnableLog", QVariant(false));
+#endif
+}
+
 
 int main(int argc, char *argv[]) {
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
@@ -277,10 +295,9 @@ int main(int argc, char *argv[]) {
     openhd->setEngine(&engine);
 
     write_platform_context_properties(engine);
+    write_other_context_properties(engine);
 
 #if defined(ENABLE_GSTREAMER)
-engine.rootContext()->setContextProperty("EnableGStreamer", QVariant(true));
-engine.rootContext()->setContextProperty("EnableVideoRender", QVariant(false));
 #if defined(ENABLE_MAIN_VIDEO)
     GstVideoStream* mainVideo = new GstVideoStream();
 #endif
@@ -290,9 +307,6 @@ engine.rootContext()->setContextProperty("EnableVideoRender", QVariant(false));
 #endif
 
 #if defined(ENABLE_VIDEO_RENDER)
-engine.rootContext()->setContextProperty("EnableGStreamer", QVariant(false));
-engine.rootContext()->setContextProperty("EnableVideoRender", QVariant(true));
-
 #if defined(__android__)
 #if defined(ENABLE_MAIN_VIDEO)
 OpenHDAndroidVideo *mainVideo = new OpenHDAndroidVideo(OpenHDStreamTypeMain);
@@ -340,14 +354,6 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
     #else
     engine.rootContext()->setContextProperty("EnableExampleWidget", QVariant(false));
     #endif
-
-
-    #if defined(ENABLE_LOG)
-    engine.rootContext()->setContextProperty("EnableLog", QVariant(true));
-    #else
-    engine.rootContext()->setContextProperty("EnableLog", QVariant(false));
-    #endif
-
 
     engine.rootContext()->setContextProperty("OpenHDUtil", util);
 

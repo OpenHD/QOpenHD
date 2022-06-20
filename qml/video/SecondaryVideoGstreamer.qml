@@ -8,13 +8,14 @@ import OpenHD 1.0
 
 import org.freedesktop.gstreamer.GLVideoItem 1.0
 
-BaseWidget {
+Loader {
     width: 252
     height: 192
 
-    visible: settings.show_pip_video && isRunning
+    //visible: settings.show_pip_video && isRunning
+    visible : true
 
-    widgetIdentifier: "pip_video_widget"
+    /*widgetIdentifier: "pip_video_widget"
 
     defaultAlignment: 0
     defaultXOffset: 12
@@ -24,7 +25,8 @@ BaseWidget {
 
     hasWidgetDetail: true
 
-    widgetDetailComponent: ScrollView{
+    widgetDetailComponent:*/
+    ScrollView{
 
         contentHeight: videoSettingsColumn.height
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
@@ -40,7 +42,7 @@ BaseWidget {
                     color: "white"
                     height: parent.height
                     font.bold: true
-                    font.pixelSize: detailPanelFontPixels
+                    //font.pixelSize: detailPanelFontPixels
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }

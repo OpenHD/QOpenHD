@@ -22,9 +22,8 @@ ApplicationWindow {
     minimumHeight: 320
     minimumWidth: 480
     title: qsTr("Open.HD")
-    //color: EnableMainVideo ? "black" : "#00000000"
-    color: "transparent" //Consti10 transparent background
-    //color : "yellow" // make it yellow for testing, not green to avoid confusion with video renderer
+    //color: "transparent" //Consti10 transparent background
+    color : "yellow" // make it yellow for testing, not green to avoid confusion with video renderer
     //flags: Qt.WindowStaysOnTopHint| Qt.FramelessWindowHint| Qt.X11BypassWindowManagerHint;
     visibility: UseFullscreen ? "FullScreen" : "AutomaticVisibility"
 
@@ -85,8 +84,7 @@ ApplicationWindow {
         z: 1.0
         source: {
             if (EnableGStreamer && EnableMainVideo) {
-                //return "../video/MainVideoGStreamer.qml";
-                return "";
+                return "../video/MainVideoGStreamer.qml";
             }
             if (IsAndroid && EnableVideoRender && EnableMainVideo) {
                 return "MainVideoRender.qml";

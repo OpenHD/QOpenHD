@@ -213,8 +213,8 @@
         <file>video/MainVideoGStreamer.qml</file>
         <file>video/MainVideoRender.qml</file>
         <file>video/SecondaryVideoLoader.qml</file>
-        <file>video/VideoWidgetAndroidForm.ui.qml</file>
-        <file>video/VideoWidgetGStreamerForm.ui.qml</file>
-        <file>video/VideoWidgetRenderForm.ui.qml</file>
+        <file>video/SecondaryVideoAndroid.qml</file>
+        <file>video/SecondaryVideoGstreamer.qml</file>
+        <file>video/SecondaryVideoRenderer.qml</file>
     </qresource>
 </RCC>
