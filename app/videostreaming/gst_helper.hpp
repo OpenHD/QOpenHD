@@ -32,10 +32,10 @@ static void initGstreamerOrThrow(){
 // it can't find org.freedesktop.gstreamer.GLVideoItem)
 static void initQmlGlSinkOrThrow(){
 
-    if (!gst_element_register (plugin, "qmlglsink",
+    /*if (!gst_element_register (plugin, "qmlglsink",
               GST_RANK_NONE, GST_TYPE_QT_SINK)) {
          qDebug()<<"Cannot iregister gst qmlglsink";
-      }
+      }*/
 
     GstElement *sink = gst_element_factory_make("qmlglsink", NULL);
     if(sink==nullptr){
