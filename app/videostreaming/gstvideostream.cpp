@@ -63,7 +63,9 @@ GstVideoStream::GstVideoStream(QObject *parent): QObject(parent), timer(new QTim
     // developer testing
     //QSettings settings;
     //settings.setValue("dev_enable_test_video",true);
-    customizeGstreamerLogPath();
+    initGstreamerOrThrow();
+    initQmlGlSinkOrThrow();
+    //customizeGstreamerLogPath();
 }
 
 
@@ -74,8 +76,6 @@ GstVideoStream::~GstVideoStream() {
 
 
 void GstVideoStream::init(QQuickItem* videoOutputWindow,bool primaryStream) {
-    initGstreamerOrThrow();
-    initQmlGlSinkOrThrow();
     m_videoOutputWindow=videoOutputWindow;
     m_isPrimaryStream=primaryStream;
     m_videoStreamConfig=readVideoStreamConfigFromSettings(m_isPrimaryStream);

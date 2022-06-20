@@ -27,11 +27,10 @@ static void initGstreamerOrThrow(){
     }
 }
 
-/**
- * @brief Not sure if still needed nowadays, init qml sink or throw run time exception ??!!
- */
+// If qmlgl plugin was dynamically linked, this will force GStreamer to go find it and
+// load it before the QML gets loaded in main.cpp (without this, Qt will complain that
+// it can't find org.freedesktop.gstreamer.GLVideoItem)
 static void initQmlGlSinkOrThrow(){
-    // Consti10: It doesn't complain for me !
     // If qmlgl plugin was dynamically linked, this will force GStreamer to go find it and
     // load it before the QML gets loaded in main.cpp (without this, Qt will complain that
     // it can't find org.freedesktop.gstreamer.GLVideoItem)
