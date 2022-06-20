@@ -13,7 +13,6 @@
 #include <stdexcept>
 #include <sstream>
 
-
 /**
  * @brief initGstreamer, throw a run time exception when failing
  */
@@ -38,8 +37,8 @@ static void initQmlGlSinkOrThrow(){
     // it can't find org.freedesktop.gstreamer.GLVideoItem)
     GstElement *sink = gst_element_factory_make("qmlglsink", NULL);
     if(sink==nullptr){
-        //qDebug()<<"Cannot initialize gstreamer - qmlsink not found";
-        throw std::runtime_error("Cannot initialize gstreamer - qmlsink not found\n");
+        qDebug()<<"Cannot initialize gstreamer - qmlsink not found";
+        //throw std::runtime_error("Cannot initialize gstreamer - qmlsink not found\n");
    }
 }
 
