@@ -8,6 +8,7 @@ GstGLVideoItem {
     id: mainVideoGStreamer
     objectName: "mainVideoGStreamer"
 
+
     Text {
         id: watermark
         z: 2.0

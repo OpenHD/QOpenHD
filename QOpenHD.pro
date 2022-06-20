@@ -18,8 +18,6 @@ include(platforms.pri)
 
 include(git.pri)
 
-#include(qmlglsink.pri)
-
 CONFIG(debug, debug|release) {
     DESTDIR = $${OUT_PWD}/debug
 
@@ -492,6 +490,12 @@ EnableGStreamer {
 
     CONFIG += link_pkgconfig
     PKGCONFIG   += gstreamer-1.0  gstreamer-video-1.0 gstreamer-gl-1.0
+
+    #include(qmlglsink.pri)
+    #include(lib/gst-plugins-good/ext/qt/qtplugin.pro)
+    #QT += qitem
+    #QT += widgets
+    #QT += gui-private
 
 }
 
