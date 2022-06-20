@@ -70,7 +70,7 @@ static void customizeGstreamerLogPath(){
     qputenv("GST_DEBUG_DUMP_DOT_DIR", logpath);
 }
 
-QString get_gstreamer_version() {
+static QString get_gstreamer_version() {
     guint major, minor, micro, nano;
     gst_version(&major, &minor, &micro, &nano);
     QString gst_ver = QString();
