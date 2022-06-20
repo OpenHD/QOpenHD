@@ -216,6 +216,5 @@
         <file>video/VideoWidgetAndroidForm.ui.qml</file>
         <file>video/VideoWidgetGStreamerForm.ui.qml</file>
         <file>video/VideoWidgetRenderForm.ui.qml</file>
-        <file>video/MainVideoLoader.qml</file>
     </qresource>
 </RCC>

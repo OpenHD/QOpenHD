@@ -79,7 +79,7 @@ ApplicationWindow {
         }
     }
 
-
+    // Loads the proper (platform-dependent) video widget for the main (primary) video
     Loader {
         anchors.fill: parent
         z: 1.0
@@ -187,10 +187,6 @@ ApplicationWindow {
                     if (settings.stereo_enable) {
                         stereoHelpMessage.visible = true
                         stereoHelpTimer.start()
-                    }
-
-                    if (IsRaspPi) {
-                        piSettingsTimer.start();
                     }
                 }
             }
