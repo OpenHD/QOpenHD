@@ -181,6 +181,10 @@ void GstVideoStream::stopVideoSafe() {
 }
 
 void GstVideoStream::timerCallback() {
+    if(m_videoOutputWindow==nullptr){
+        qDebug()<<"no window, cannot start video";
+        return;
+    }
     assert(m_videoOutputWindow!=nullptr);
     // read config from settings
     const QOpenHDVideoHelper::VideoStreamConfig _videoStreamConfig=readVideoStreamConfigFromSettings(m_isPrimaryStream);

@@ -18,6 +18,8 @@ include(platforms.pri)
 
 include(git.pri)
 
+#include(qmlglsink.pri)
+
 CONFIG(debug, debug|release) {
     DESTDIR = $${OUT_PWD}/debug
 
@@ -183,6 +185,7 @@ DISTFILES += \
     qml/ui/configpopup/legacy/README.md \
     qml/ui/elements/README.md \
     qml/ui/qmldir \
+    qmlglsink.pri \
     translations/QOpenHD_it.ts \
     translations/QOpenHD_ro.ts \
     translations/QOpenHD_zh.ts

@@ -31,9 +31,12 @@ static void initGstreamerOrThrow(){
 // load it before the QML gets loaded in main.cpp (without this, Qt will complain that
 // it can't find org.freedesktop.gstreamer.GLVideoItem)
 static void initQmlGlSinkOrThrow(){
-    // If qmlgl plugin was dynamically linked, this will force GStreamer to go find it and
-    // load it before the QML gets loaded in main.cpp (without this, Qt will complain that
-    // it can't find org.freedesktop.gstreamer.GLVideoItem)
+
+    if (!gst_element_register (plugin, "qmlglsink",
+              GST_RANK_NONE, GST_TYPE_QT_SINK)) {
+         qDebug()<<"Cannot iregister gst qmlglsink";
+      }
+
     GstElement *sink = gst_element_factory_make("qmlglsink", NULL);
     if(sink==nullptr){
         qDebug()<<"Cannot initialize gstreamer - qmlsink not found";
