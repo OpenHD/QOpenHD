@@ -193,6 +193,7 @@ void write_other_context_properties(QQmlApplicationEngine& engine){
 #endif
 }
 
+#include "videostreaming/gst_helper.hpp""
 
 int main(int argc, char *argv[]) {
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
@@ -200,6 +201,8 @@ int main(int argc, char *argv[]) {
     QCoreApplication::setOrganizationName("Open.HD");
     QCoreApplication::setOrganizationDomain("open.hd");
     QCoreApplication::setApplicationName("QOpenHD");
+
+    initGstreamerExtra(argc,argv);
 
     QSettings settings;
 

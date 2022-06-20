@@ -27,6 +27,17 @@ static void initGstreamerOrThrow(){
     }
 }
 
+static void initGstreamerExtra(int argc,char* argv[]){
+    GError* error = nullptr;
+    if (!gst_init_check(&argc,&argv, &error)) {
+        std::stringstream ss;
+        ss<<"Cannot initialize gstreamer";
+        ss<<error->code<<":"<<error->message;
+        g_error_free(error);
+        throw std::runtime_error(ss.str().c_str());
+    }
+}
+
 // If qmlgl plugin was dynamically linked, this will force GStreamer to go find it and
 // load it before the QML gets loaded in main.cpp (without this, Qt will complain that
 // it can't find org.freedesktop.gstreamer.GLVideoItem)
