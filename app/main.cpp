@@ -66,8 +66,10 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 
 #if defined(ENABLE_GSTREAMER)
 #include <gst/gst.h>
+#include "videostreaming/gst_helper.hpp"
 #endif
-#include "xsettingsui.h""
+
+#include "xsettingsui.h"
 
 // SDL hack
 #ifdef Q_OS_WIN
@@ -193,8 +195,6 @@ void write_other_context_properties(QQmlApplicationEngine& engine){
 #endif
 }
 
-#include "videostreaming/gst_helper.hpp""
-
 int main(int argc, char *argv[]) {
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
@@ -203,6 +203,7 @@ int main(int argc, char *argv[]) {
     QCoreApplication::setApplicationName("QOpenHD");
 
     initGstreamerExtra(argc,argv);
+    initQmlGlSinkOrThrow();
 
     QSettings settings;
 
