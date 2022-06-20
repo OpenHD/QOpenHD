@@ -54,8 +54,16 @@ Item {
     ListModel {
         id: modelX
         ListElement {
-            name: "SomeName"
-            number: "SomeNumber"
+            name: "SomeName1"
+            number: "SomeNumber1"
+        }
+        ListElement {
+            name: "SomeName2"
+            number: "SomeNumber2"
+        }
+        ListElement {
+            name: "SomeName3"
+            number: "SomeNumber3"
         }
     }
 

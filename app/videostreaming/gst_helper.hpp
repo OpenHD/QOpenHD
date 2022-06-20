@@ -22,6 +22,8 @@ static void initGstreamerOrThrow(){
         std::stringstream ss;
         ss<<"Cannot initialize gstreamer";
         ss<<error->code<<":"<<error->message;
+        g_error_free(error);
+        qDebug()<<ss.str().c_str();
         throw std::runtime_error(ss.str());
     }
 }
@@ -36,7 +38,7 @@ static void initQmlGlSinkOrThrow(){
      */
     GstElement *sink = gst_element_factory_make("qmlglsink", NULL);
     if(sink==nullptr){
-        throw std::runtime_error("Cannot initialize gstreamer\n");
+        throw std::runtime_error("Cannot initialize gstreamer - qmlsink not found\n");
    }
 }
 
