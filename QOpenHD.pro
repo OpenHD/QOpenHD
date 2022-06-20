@@ -18,7 +18,7 @@ include(platforms.pri)
 
 include(git.pri)
 
-//include(qmlglsink.pri)
+#include(qmlglsink.pri)
 
 CONFIG(debug, debug|release) {
     DESTDIR = $${OUT_PWD}/debug
