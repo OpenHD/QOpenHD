@@ -3,8 +3,6 @@
 #include "qopenhdmavlinkhelper.hpp"
 #include "telemetry/openhd_defines.hpp"
 
-#include <mavsdk/log_callback.h>
-
 OHDConnection::OHDConnection(QObject *parent,bool useTcp):QObject(parent),USE_TCP(useTcp)
 {
     if(USE_TCP){

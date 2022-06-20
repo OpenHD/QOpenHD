@@ -10,7 +10,8 @@
 /*#include <mavsdk/mavsdk.h>
 #include <mavsdk/plugins/telemetry/telemetry.h>
 #include <mavsdk/plugins/mavlink_passthrough/mavlink_passthrough.h>
-#include <mavsdk/plugins/param/param.h>*/
+#include <mavsdk/plugins/param/param.h>
+#include <mavsdk/log_callback.h>*/
 
 
 /**
