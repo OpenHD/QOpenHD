@@ -88,6 +88,7 @@ INCLUDEPATH += $$PWD/lib/GeographicLib-1.50/include
 
 # All files for the OSD elements - these are QT QQuickPaintedItem's that are written in c++
 SOURCES += \
+    app/logging/logmessagesmodel.cpp \
     app/osd/headingladder.cpp \
     app/osd/horizonladder.cpp \
     app/osd/speedladder.cpp \
@@ -97,6 +98,7 @@ SOURCES += \
     app/xsettingsui.cpp
 
 HEADERS += \
+    app/logging/logmessagesmodel.h \
     app/osd/headingladder.h \
     app/osd/horizonladder.h \
     app/osd/speedladder.h \

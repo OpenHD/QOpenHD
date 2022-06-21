@@ -1,10 +1,23 @@
 import QtQuick 2.12
 
+// This UI Element shows log messages coming from the c++
+// Log model
 Item {
+
+    ListModel {
+        id: modelX
+        ListElement {
+            serverity: 0 // Severity of this log message.
+            log_tag: "AIR_PI" // string that tells where the message comes from (Ground, Air, ...)
+            log_text: "SomeText" // the actual log message
+        }
+    }
+
     ListView {
         id: messageList
 
         //model: sortModel
+        model: modelX
 
         anchors.fill: parent
 
@@ -19,16 +32,6 @@ Item {
     }
 
 
-    /*SortFilterProxyModel {
-        id: sortModel
-        sourceModel: StatusLogModel
-        sorters: RoleSorter {
-            roleName: "timestamp";
-            sortOrder: Qt.AscendingOrder
-        }
-    }*/
-
-
     Component {
         id: messageDelegate
 
@@ -36,8 +39,8 @@ Item {
             height: 16
 
             Text {
-                id: sysidText
-                text: sysid == 254 ? "[Ground]" : "[Air]"
+                id: log_tag_text_view
+                text: log_tag
                 font.pixelSize: 12
                 horizontalAlignment: Text.AlignRight
                 anchors.left: parent.left
@@ -63,21 +66,19 @@ Item {
                     } else if (severity == 7) {
                         return "#0000ea";
                     }
-
                     return "white";
                 }
-
                 font.bold: true
             }
             Text {
-                text: message
+                text: log_text
                 font.pixelSize: 12
-                anchors.left: sysidText.right
+                anchors.left:  log_tag_text_view.right
                 anchors.leftMargin: 12
                 anchors.top: parent.top
                 anchors.bottom: parent.bottom
                 anchors.right: parent.right
-                color: "white"
+                color: "red"
             }
         }
     }
