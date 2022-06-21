@@ -64,6 +64,8 @@ GstVideoStream::GstVideoStream(QObject *parent): QObject(parent), timer(new QTim
     // developer testing
     //QSettings settings;
     //settings.setValue("dev_enable_test_video",true);
+    // NOTE: the gstreamer init stuff should be already called via main - only this way we can
+    // pass in the parameters. Calling it again should have no effect then.
     initGstreamerOrThrow();
     initQmlGlSinkOrThrow();
     //customizeGstreamerLogPath();

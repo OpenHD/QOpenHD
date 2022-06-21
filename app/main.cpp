@@ -202,8 +202,10 @@ int main(int argc, char *argv[]) {
     QCoreApplication::setOrganizationDomain("open.hd");
     QCoreApplication::setApplicationName("QOpenHD");
 
-    initGstreamerExtra(argc,argv);
+#ifdef ENABLE_GSTREAMER
+    initGstreamerOrThrowExtra(argc,argv);
     initQmlGlSinkOrThrow();
+#endif //ENABLE_GSTREAMER
 
     QSettings settings;
 

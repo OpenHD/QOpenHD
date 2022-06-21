@@ -27,7 +27,10 @@ static void initGstreamerOrThrow(){
     }
 }
 
-static void initGstreamerExtra(int argc,char* argv[]){
+// Similar to above, but takes argc/ argv from command line.
+// This way it is possible to pass on extra stuff at run time onto gstreamer by launching
+// QOpenHD with some argc/ argvalues
+static void initGstreamerOrThrowExtra(int argc,char* argv[]){
     GError* error = nullptr;
     if (!gst_init_check(&argc,&argv, &error)) {
         std::stringstream ss;
@@ -42,12 +45,10 @@ static void initGstreamerExtra(int argc,char* argv[]){
 // load it before the QML gets loaded in main.cpp (without this, Qt will complain that
 // it can't find org.freedesktop.gstreamer.GLVideoItem)
 static void initQmlGlSinkOrThrow(){
-
     /*if (!gst_element_register (plugin, "qmlglsink",
               GST_RANK_NONE, GST_TYPE_QT_SINK)) {
          qDebug()<<"Cannot iregister gst qmlglsink";
       }*/
-
     GstElement *sink = gst_element_factory_make("qmlglsink", NULL);
     if(sink==nullptr){
         qDebug()<<"Cannot initialize gstreamer - qmlsink not found";
