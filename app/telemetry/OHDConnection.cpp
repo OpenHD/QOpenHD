@@ -185,9 +185,9 @@ void OHDConnection::udpReadyRead() {
         quint16 groundPort;
         udpSocket->readDatagram(datagram.data(), datagram.size(), &_groundAddress, &groundPort);
         parseNewData((uint8_t*)datagram.data(),datagram.size());
-        foundSenderIp=_groundAddress.toString();
         foundSenderPort=groundPort;
         foundSenderHostAddress=_groundAddress;
+        senderInfohasBeenFound=true;
         //qDebug()<<"foundSenderIp:"<<foundSenderIp<<" foundSenderPort:"<<foundSenderPort;
     }
     //QByteArray data = udpSocket->readAll();
@@ -201,8 +201,8 @@ void OHDConnection::sendData(const uint8_t* data,int data_len){
             tcpClientSock->write((char*)data, data_len);
         }
     }else{
-        if(foundSenderIp.isEmpty() || foundSenderPort==-1){
-            qDebug()<<"Cannot send data, sender ip and port unknown"<<foundSenderIp<<":"<<foundSenderPort;
+        if(!senderInfohasBeenFound){
+            qDebug()<<"Cannot send data, sender ip and port unknown";
             return;
         }
         if(udpSocket==nullptr){
@@ -210,7 +210,7 @@ void OHDConnection::sendData(const uint8_t* data,int data_len){
             return;
         }
         //udpSocket->writeDatagram((char*)data, data_len, QHostAddress(QOPENHD_GROUND_CLIENT_UDP_ADDRESS), QOPENHD_GROUND_CLIENT_UDP_PORT_OUT);
-        udpSocket->writeDatagram((char*)data, data_len, foundSenderHostAddress, foundSenderPort); //QHostAddress(foundSenderIp)
+        udpSocket->writeDatagram((char*)data, data_len, foundSenderHostAddress, foundSenderPort);
     }
 }
 

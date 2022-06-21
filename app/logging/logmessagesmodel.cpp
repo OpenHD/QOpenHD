@@ -10,13 +10,18 @@ LogMessagesModel &LogMessagesModel::instance()
     return *instance;
 }
 
+void LogMessagesModel::addLogMessage(LogMessageData logMessageData)
+{
+    LogMessagesModel::instance().addData(logMessageData);
+}
+
 LogMessagesModel::LogMessagesModel(QObject *parent) :
     QAbstractListModel(parent)
 {
     m_data
-        << LogMessageData{"tag1", "qrc:images/denmark.jpg"}
-        << LogMessageData{"tag2", "qrc:images/sweden.jpg"}
-        << LogMessageData{"tag3", "qrc:images/iceland.jpg"};
+        << LogMessageData{"tag1", "blablabla"}
+        << LogMessageData{"tag2", "xxxxxxx"}
+        << LogMessageData{"tag3", "yyyyyyy"};
 
     QTimer *growthTimer = new QTimer(this);
     connect(growthTimer, &QTimer::timeout, this, &LogMessagesModel::growPopulation);
@@ -84,6 +89,13 @@ void LogMessagesModel::removeData(int row)
     beginRemoveRows(QModelIndex(), row, row);
     m_data.removeAt(row);
     endRemoveRows();
+}
+
+void LogMessagesModel::addData(LogMessageData logMessageData)
+{
+    beginInsertRows(QModelIndex(), rowCount(), rowCount());
+    m_data.push_back(logMessageData);
+    endInsertRows();
 }
 
 void LogMessagesModel::growPopulation()

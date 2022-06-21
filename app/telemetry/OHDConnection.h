@@ -93,7 +93,8 @@ private:
     QTcpSocket *tcpClientSock = nullptr;
     QUdpSocket *udpSocket=nullptr;
     std::chrono::steady_clock::time_point lastMavlinkMessage;
-    QString foundSenderIp="";
+    // set to true when we know the address where to send messages to
+    bool senderInfohasBeenFound=false;
     int foundSenderPort=-1;
     QHostAddress foundSenderHostAddress=QHostAddress::Any;
 public:

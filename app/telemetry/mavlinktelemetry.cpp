@@ -16,6 +16,7 @@
 
 #include "../util/util.h"
 #include "../util/localmessage.h"
+#include "../logging/logmessagesmodel.h"
 #include <sstream>
 
 #include "openhd_defines.hpp"
@@ -693,6 +694,15 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
         mavlink_msg_openhd_wifibroadcast_statistics_decode(&msg,&parsedMsg);
         OpenHD::instance()->setWifiAdapter0(parsedMsg.count_p_all,0,0);
         break;
+    }
+    case MAVLINK_MSG_ID_OPENHD_LOG_MESSAGE:{
+        mavlink_openhd_log_message_t parsedMsg;
+        mavlink_msg_openhd_log_message_decode(&msg,&parsedMsg);
+        const QString message{parsedMsg.text};
+        const quint64 timestamp=parsedMsg.timestamp;
+        const quint8 severity=parsedMsg.severity;
+        qDebug()<<"Log message:"<<message;
+        LogMessagesModel::addLogMessage({"OHD",message,timestamp,log_severity_to_color(severity)});
     }
         default: {
             //printf("MavlinkTelemetry received unmatched message with ID %d, sequence: %d from component %d of system %d\n", msg.msgid, msg.seq, msg.compid, msg.sysid);

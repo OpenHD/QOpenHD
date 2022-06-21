@@ -14,8 +14,7 @@ static QOpenHDVideoHelper::VideoStreamConfig readVideoStreamConfigFromSettings(b
     // read settings
     QSettings settings;
     QOpenHDVideoHelper::VideoStreamConfig _videoStreamConfig;
-    //_videoStreamConfig.enable_videotest=settings.value("dev_enable_test_video", false).toBool();
-    _videoStreamConfig.enable_videotest=true;
+    _videoStreamConfig.enable_videotest=settings.value("dev_enable_test_video", true).toBool();
     const int tmp_video_codec = settings.value("selectedVideoCodecPrimary", 0).toInt();
     _videoStreamConfig.video_codec=QOpenHDVideoHelper::intToVideoCodec(tmp_video_codec);
     //auto _main_video_port = settings.value("main_video_port", main_default_port).toInt();
