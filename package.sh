@@ -97,6 +97,7 @@ rm ${PACKAGE_NAME}_${VERSION//v}_${PACKAGE_ARCH}.deb > /dev/null 2>&1
 ls -a
 fpm -a ${PACKAGE_ARCH} -s dir -t deb -n ${PACKAGE_NAME} -v ${VERSION//v} -C ${TMPDIR} \
   -p qopenhd_VERSION_ARCH.deb \
+  --after-install after-install.sh \
   -d "libboost-dev" \
   -d "gstreamer1.0-plugins-base" \
   -d "gstreamer1.0-plugins-good" \
