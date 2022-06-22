@@ -44,7 +44,7 @@ jobs:
             cd QOpenHD
             apt update
             apt -y install openhd-qt-jetson-nano
-            sudo QOpenHD/install_dep.sh
+            sudo bash QOpenHD/install_dep.sh
             ln -s /opt/Qt5.15.0 /opt/Qt5.15.4
             sudo ./package.sh arm64 ubuntu bionic
             ls -a
@@ -55,6 +55,21 @@ jobs:
         name: "QOpenHd"
         path: |
           QOpenHD/*.deb
+
+    - name: Push
+      id: push
+      uses: cloudsmith-io/action@master
+      with:
+        api-key: ${{ secrets.CLOUDSMITH_API_KEY }}
+        command: "push"
+        format: "deb"
+        owner: "openhd"
+        repo: "openhd-2-1-alpha"
+        distro: "ubuntu"
+        release: "bionic"
+        republish: "true" # needed ONLY if version is not changing
+        file: "QOpenHD/*.deb"
+       
 
       #- name: Install
       #  run: |

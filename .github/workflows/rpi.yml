@@ -40,7 +40,7 @@ jobs:
             ls -a
             cd /opt
             apt update
-            sudo QOpenHD/install_dep.sh
+            sudo bash QOpenHD/install_dep.sh
             cd /opt/QOpenHD
             sudo ./package.sh armhf raspbian bullseye
             ls -a
