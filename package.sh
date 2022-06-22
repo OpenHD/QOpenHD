@@ -83,7 +83,7 @@ else
     /opt/Qt5.15.4/bin/qmake  
 fi
 
-make -j2 || exit 1
+make || exit 1
 cp release/QOpenHD /tmp/qopenhd/usr/local/bin/ || exit 1
 ls -a
 # included in the same package since it's sharing code and not independently versioned
