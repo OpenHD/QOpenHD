@@ -19,6 +19,7 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo ./install_dep.sh
+          sudo bash install_dep_extra.sh
       - name: Build with make
         run: |
           ./build_qmake.sh
