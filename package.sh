@@ -28,7 +28,7 @@ apt-get install -y gnupg1
 apt-get install -y gnupg2
 apt-get install -y apt-transport-https curl
 if [[ "${DISTRO}" != "bullseye" ]]; then
-    apt-get install qt5-default
+    echo "..."
 fi
 if [[ "${DISTRO}" == "bullseye" ]]; then
     apt install -y openhd-qt-pi-bullseye
@@ -40,8 +40,8 @@ if [[ "${OS}" == "debian" ]]; then
 fi
 
 if [[ "${OS}" == "ubuntu" ]] && [[ "${PACKAGE_ARCH}" == "armhf" || "${PACKAGE_ARCH}" == "arm64" ]]; then
-    PLATFORM_DEV_PACKAGES="openhd-qt-jetson-nano"
-    PLATFORM_PACKAGES="-d openhd-qt-jetson-nano"
+    PLATFORM_DEV_PACKAGES="openhd-qt-jetson-nano-bionic"
+    PLATFORM_PACKAGES="-d openhd-qt-jetson-nano-bionic"
 fi
 
 apt -y install ${PLATFORM_DEV_PACKAGES} libgstreamer-plugins-base1.0-dev libgles2-mesa-dev libegl1-mesa-dev libgbm-dev libboost-dev libsdl2-dev libsdl1.2-dev

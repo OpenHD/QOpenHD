@@ -43,9 +43,8 @@ jobs:
             cd /opt
             cd QOpenHD
             apt update
-            apt -y install openhd-qt-jetson-nano
+            apt -y install openhd-qt-jetson-nano-bionic
             sudo bash install_dep.sh
-            ln -s /opt/Qt5.15.0 /opt/Qt5.15.4
             sudo ./package.sh arm64 ubuntu bionic
             ls -a
 
