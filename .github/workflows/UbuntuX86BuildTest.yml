@@ -9,21 +9,20 @@ env:
 jobs:
   build:
     runs-on: ubuntu-20.04
-
     steps:
-      - name: Checkout repository and submodules
-        uses: actions/checkout@v3
-        with:
-          submodules: recursive
+    - name: Checkout repository and submodules
+      uses: actions/checkout@v3
+      with:
+        submodules: recursive
 
-      - name: Install Dependencies
-        run: |
-          sudo QOpenHD/install_dep.sh
-          sudo QOpenHD/install_dep_extra.sh
-      - name: Build with make
-        run: |
-          sudo ./package.sh x86 ubuntu bionic
-          
+    - name: Install Dependencies
+      run: |
+        sudo QOpenHD/install_dep.sh
+        sudo QOpenHD/install_dep_extra.sh
+    - name: Build with make
+      run: |
+        sudo ./package.sh x86 ubuntu bionic
+
     - name: Push
       id: push
       uses: cloudsmith-io/action@master
