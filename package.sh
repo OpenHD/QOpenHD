@@ -75,7 +75,13 @@ mkdir -p /tmp/qopenhd/usr/local/share/openhd || exit 1
 
 ls -a
 ls /opt
-/opt/Qt5.15.4/bin/qmake  
+
+
+if [[ "${PACKAGE_ARCH}" == x86 ]]; then
+    qmake
+else
+    /opt/Qt5.15.4/bin/qmake  
+fi
 
 make -j4 || exit 1
 cp release/QOpenHD /tmp/qopenhd/usr/local/bin/ || exit 1
