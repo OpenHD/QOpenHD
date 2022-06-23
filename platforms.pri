@@ -1,7 +1,7 @@
 
 
 linux {
-    linux-g++ | linux-g++-64 | linux-g++-32 | linux-clang | linux-rpi4-v3d-g++ {
+    linux-g++ | linux-g++-64 | linux-jetson-nano-g++ | linux-g++-32 | linux-clang | linux-rpi4-v3d-g++ {
         message("LinuxBuild")
         CONFIG += LinuxBuild
         DEFINES += __desktoplinux__
@@ -11,13 +11,7 @@ linux {
             message("Linux clang")
             QMAKE_CXXFLAGS += -Qunused-arguments -fcolor-diagnostics
         }
-    } else : linux-jetson-nano-g++ {
-        message("JetsonBuild")
-        CONFIG += JetsonBuild
-        DEFINES += __STDC_LIMIT_MACROS __jetson__
-        LIBS += -lrt
-        message($$LIBS)
-    } else : linux-rpi-g++ | linux-rpi-vc4-g++ | linux-rasp-pi-g++ {
+     } else : linux-rpi-g++ | linux-rpi-vc4-g++ | linux-rasp-pi-g++ {
         message("RaspberryPiBuild")
         CONFIG += RaspberryPiBuild
         DEFINES += __STDC_LIMIT_MACROS __rasp_pi__
