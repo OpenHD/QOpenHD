@@ -19,7 +19,7 @@ jobs:
     - name: build Qopenhd
       run: |
         ls -a
-        apt update
+        sudo apt update
         sudo bash install_dep.sh
         sudo ./package.sh arm64 ubuntu bionic
         ls -a 
