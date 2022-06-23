@@ -5,6 +5,7 @@
 #include <QtConcurrent>
 #include <QProcess>
 #include <QProcessEnvironment>
+#include <qapplication.h>
 
 
 OpenHDPi::OpenHDPi(QObject *parent) : QObject(parent) {
@@ -33,6 +34,7 @@ void OpenHDPi::activate_console() {
 }
 
 void OpenHDPi::stop_app() {
+    qDebug()<<"Request stop app";
 #if defined (__rasp_pi__)
     qDebug() << "OpenHDPi::stop_app()";
     QString program = "/bin/systemctl";
@@ -42,6 +44,8 @@ void OpenHDPi::stop_app() {
     process->start(program, arguments);
     process->waitForFinished();
     #endif
+    qDebug()<<"Request stop end";
+    QApplication::quit();
 }
 
 
