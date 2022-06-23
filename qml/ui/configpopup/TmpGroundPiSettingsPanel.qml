@@ -47,6 +47,10 @@ Item {
                 Button {
                     text: "set"
                 }
+                TextInput {
+                    text: "ModifiedValue"
+                    cursorVisible: false
+                }
             }
         }
     }
