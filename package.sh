@@ -71,8 +71,10 @@ if [[ "${PACKAGE_ARCH}" == x86 ]]; then
 else
     /opt/Qt5.15.4/bin/qmake  
 fi
+echo "build with qmake done"
+make -j2 || exit 1
+echo "build with make done"
 
-make -j4 || exit 1
 cp release/QOpenHD /tmp/qopenhd/usr/local/bin/ || exit 1
 ls -a
 # included in the same package since it's sharing code and not independently versioned
