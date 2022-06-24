@@ -703,6 +703,7 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
         const quint8 severity=parsedMsg.severity;
         qDebug()<<"Log message:"<<message;
         LogMessagesModel::addLogMessage({"OHD",message,timestamp,log_severity_to_color(severity)});
+        break;
     }
         default: {
             //printf("MavlinkTelemetry received unmatched message with ID %d, sequence: %d from component %d of system %d\n", msg.msgid, msg.seq, msg.compid, msg.sysid);

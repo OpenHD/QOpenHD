@@ -95,6 +95,7 @@ SOURCES += \
     app/osd/altitudeladder.cpp \
     app/osd/drawingcanvas.cpp \
     app/osd/flightpathvector.cpp \
+    app/telemetry/settings/airpisettingsmodel.cpp \
     app/xsettingsui.cpp
 
 HEADERS += \
@@ -107,6 +108,7 @@ HEADERS += \
     app/osd/flightpathvector.h \
     app/telemetry/openhd_defines.hpp \
     app/telemetry/qopenhdmavlinkhelper.hpp \
+    app/telemetry/settings/airpisettingsmodel.h \
     app/xsettingsui.h
 
 
@@ -174,6 +176,7 @@ DISTFILES += \
     app/osd_extra/Readme.txt \
     app/platform/README.md \
     app/telemetry/README.md \
+    app/telemetry/settings/README.md \
     app/util/README.md \
     app/videostreaming/README.md \
     app/videostreaming/legacy/README.md \

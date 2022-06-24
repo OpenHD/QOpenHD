@@ -71,6 +71,7 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 
 #include "xsettingsui.h"
 #include "logging/logmessagesmodel.h"
+#include "telemetry/settings/airpisettingsmodel.h"
 
 // SDL hack
 #ifdef Q_OS_WIN
@@ -304,6 +305,7 @@ int main(int argc, char *argv[]) {
     write_platform_context_properties(engine);
     write_other_context_properties(engine);
     engine.rootContext()->setContextProperty("_logMessagesModel", &LogMessagesModel::instance());
+    engine.rootContext()->setContextProperty("_airPiSettingsModel", &AirPiSettingsModel::instance());
 
 
 #if defined(ENABLE_GSTREAMER)

@@ -37,12 +37,8 @@ public:
     QHash<int, QByteArray> roleNames() const override;
 
 public slots:
-    void duplicateData(int row);
     void removeData(int row);
     void addData(LogMessageData logMessageData);
-
-private slots:
-    void growPopulation();
 
 private: //members
     QVector< LogMessageData > m_data;

@@ -22,10 +22,6 @@ LogMessagesModel::LogMessagesModel(QObject *parent) :
         << LogMessageData{"tag1", "blablabla"}
         << LogMessageData{"tag2", "xxxxxxx"}
         << LogMessageData{"tag3", "yyyyyyy"};
-
-    QTimer *growthTimer = new QTimer(this);
-    connect(growthTimer, &QTimer::timeout, this, &LogMessagesModel::growPopulation);
-    growthTimer->start(2000);
 }
 
 int LogMessagesModel::rowCount( const QModelIndex& parent) const
@@ -55,7 +51,6 @@ QVariant LogMessagesModel::data(const QModelIndex &index, int role) const
         return QVariant();
 }
 
-//--> slide
 QHash<int, QByteArray> LogMessagesModel::roleNames() const
 {
     static QHash<int, QByteArray> mapping {
@@ -66,20 +61,7 @@ QHash<int, QByteArray> LogMessagesModel::roleNames() const
     };
     return mapping;
 }
-//<-- slide
 
-void LogMessagesModel::duplicateData(int row)
-{
-    if (row < 0 || row >= m_data.count())
-        return;
-
-    const LogMessageData data = m_data[row];
-    const int rowOfInsert = row + 1;
-
-    beginInsertRows(QModelIndex(), rowOfInsert, rowOfInsert);
-    m_data.insert(rowOfInsert, data);
-    endInsertRows();
-}
 
 void LogMessagesModel::removeData(int row)
 {
@@ -98,19 +80,3 @@ void LogMessagesModel::addData(LogMessageData logMessageData)
     endInsertRows();
 }
 
-void LogMessagesModel::growPopulation()
-{
-    /*const double growthFactor = 0.01 / RAND_MAX;
-
-    const int count = m_data.count();
-    for (int i = 0; i < count; ++i) {
-        m_data[i].population += m_data[i].population * qrand() * growthFactor;
-    }
-
-    // we've just updated all rows...
-    const QModelIndex startIndex = index(0, 0);
-    const QModelIndex endIndex   = index(count - 1, 0);
-
-    // ...but only the population field
-    emit dataChanged(startIndex, endIndex, QVector<int>() << PopulationRole);*/
-}
