@@ -1,4 +1,4 @@
-#ifndef OPENHD_H
+ #ifndef OPENHD_H
 #define OPENHD_H
 
 #include <QObject>

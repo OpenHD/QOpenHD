@@ -131,11 +131,8 @@ SOURCES += \
     app/openhd.cpp \
     app/platform/openhdpi.cpp \
     app/rc/openhdrc.cpp \
-    app/util/statuslogmodel.cpp \
     app/util/QmlObjectListModel.cpp \
-    app/util/logger.cpp \
     app/util/util.cpp \
-    app/util/localmessage.cpp \
 
 RESOURCES += qml/qml.qrc \
     qml/qml.qrc
@@ -146,11 +143,7 @@ HEADERS += \
     app/openhd.h \
     app/platform/openhdpi.h \
     app/rc/openhdrc.h \
-    app/util/statuslogmodel.h \
     app/util/QmlObjectListModel.h \
-    app/util/logger.h \
-    app/util/logger_t.h \
-    app/util/localmessage.h \
     app/util/util.h \
 
 DISTFILES += \

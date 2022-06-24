@@ -16,13 +16,7 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "platform/openhdpi.h"
 #include "openhd.h"
 #include "../app/telemetry/mavlinktelemetry.h"
-#include "util/localmessage.h"
 
-//#if defined(ENABLE_LOG)
-#include "util/logger.h"
-//#endif
-
-#include "util/statuslogmodel.h"
 #include "util/QmlObjectListModel.h"
 
 #include "osd/speedladder.h"
@@ -261,11 +255,7 @@ int main(int argc, char *argv[]) {
     qmlRegisterType<OpenHDRC>("OpenHD", 1, 0, "OpenHDRC");
 
     qmlRegisterSingletonType<OpenHDPi>("OpenHD", 1, 0, "OpenHDPi", openHDPiSingletonProvider);
-    qmlRegisterSingletonType<LocalMessage>("OpenHD", 1, 0, "LocalMessage", localMessageSingletonProvider);
-
-    //#if defined(ENABLE_LOG)
-    qmlRegisterSingletonType<Logger>("OpenHD", 1, 0, "Logger", loggerSingletonProvider);
-    //#endif
+    //qmlRegisterSingletonType<LocalMessage>("OpenHD", 1, 0, "LocalMessage", localMessageSingletonProvider);
 
     qmlRegisterUncreatableType<QmlObjectListModel>("OpenHD", 1, 0, "QmlObjectListModel", "Reference only");
 
@@ -355,10 +345,6 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
 
     auto mavlinkTelemetry = MavlinkTelemetry::instance();
     engine.rootContext()->setContextProperty("MavlinkTelemetry", mavlinkTelemetry);
-
-    auto statusLogModel = StatusLogModel::instance();
-    engine.rootContext()->setContextProperty("StatusLogModel", statusLogModel);
-    statusLogModel->populateWithExampleMessage();
 
     #if defined(ENABLE_EXAMPLE_WIDGET)
     engine.rootContext()->setContextProperty("EnableExampleWidget", QVariant(true));

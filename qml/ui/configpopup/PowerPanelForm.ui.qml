@@ -369,7 +369,26 @@ Rectangle {
                 */
             }
         }
-
     }
+    Button {
+        id: devCancelQOpenHD
+        width: 96
+        height: 48
+        anchors.right: parent.right
+        anchors.rightMargin: 12
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 6
+        font.pixelSize: 14
+        font.capitalization: Font.MixedCase
+        Material.accent: Material.Red
+        highlighted: true
+
+        text: qsTr("DEV! Cancel QOpenHD")
+
+        onPressed: {
+            OpenHDPi.stop_app()
+        }
+    }
+
 
 }

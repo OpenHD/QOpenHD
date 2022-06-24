@@ -15,7 +15,6 @@
 #include <openhd/mavlink.h>
 
 #include "../util/util.h"
-#include "../util/localmessage.h"
 #include "../logging/logmessagesmodel.h"
 #include <sstream>
 
@@ -702,7 +701,7 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
         const quint64 timestamp=parsedMsg.timestamp;
         const quint8 severity=parsedMsg.severity;
         qDebug()<<"Log message:"<<message;
-        LogMessagesModel::addLogMessage({"OHD",message,timestamp,log_severity_to_color(severity)});
+        LogMessagesModel::addLogMessage({"OHD",message,timestamp,LogMessagesModel::log_severity_to_color(severity)});
         break;
     }
         default: {

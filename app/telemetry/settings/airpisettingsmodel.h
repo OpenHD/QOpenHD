@@ -4,11 +4,6 @@
 #include <QObject>
 #include <QAbstractListModel>
 
-struct AirPiSettingData{
-    QString unique_id;
-    qint32 value;
-};
-
 
 class AirPiSettingsModel : public QAbstractListModel
 {
@@ -23,7 +18,10 @@ public:
     int rowCount(const QModelIndex& parent= QModelIndex()) const override;
     QVariant data( const QModelIndex& index, int role = Qt::DisplayRole ) const override;
     QHash<int, QByteArray> roleNames() const override;
-
+    struct AirPiSettingData{
+        QString unique_id;
+        qint32 value;
+    };
 public slots:
     void removeData(int row);
     void addData(AirPiSettingData data);
