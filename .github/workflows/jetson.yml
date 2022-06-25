@@ -25,12 +25,10 @@ jobs:
         sudo ./package.sh arm64 ubuntu bionic
         ls -a 
 
-
     - name: Upload to Github
       uses: 'actions/upload-artifact@v2'
       with:
-
-      name: "QopenHD"
+        name: "QopenHD"
         path: |
           *.deb
           *.log
