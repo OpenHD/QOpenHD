@@ -23,6 +23,17 @@ static VideoCodec intToVideoCodec(int videoCodec){
     return VideoCodecH264;
 }
 
+enum class VideoTestMode{
+    DISABLED, // disabled
+    RAW_VIDEO, // raw video into qmlglsink. Doesn't check video decoding capabilities, only qmlsink capabilities
+    RAW_VIDEO_ENCODE_DECODE // encode raw video, then decode it and then into qmlsink. When this passes, platform can do video decoding
+};
+static VideoTestMode videoTestModeFromInt(int value){
+    if(value==1)return VideoTestMode::RAW_VIDEO;
+    if(value==2)return VideoTestMode::RAW_VIDEO_ENCODE_DECODE;
+    return VideoTestMode::DISABLED;
+}
+
 /**
  * No matter if the underlying decoding is done hw accelerated or on any platform, video is always
  * a constant stream of rtp data to a specific udp port. This is the only information to start a
@@ -30,14 +41,18 @@ static VideoCodec intToVideoCodec(int videoCodec){
  */
 struct VideoStreamConfig{
     // when set to true, overwrites the rtp decoding, use a raw test video source (if possible). Only for developers.
-    bool enable_videotest = false;
+    // 0 = disabled
+    // 1 = raw video
+    // 2 = ra video encode and decode
+    // >2 disabled
+    VideoTestMode dev_test_video_mode = VideoTestMode::DISABLED;
     // the port where to receive rtp video data from
     int video_port = 0;
     // the video codec the received rtp data should be intepreted as.
     VideoCodec video_codec=VideoCodecH264;
     // 2 configs are equal if all members are exactly the same.
     bool operator==(const VideoStreamConfig &o) const {
-       return this->enable_videotest == o.enable_videotest && this->video_port == o.video_port && this->video_codec== o.video_codec;
+       return this->dev_test_video_mode == o.dev_test_video_mode && this->video_port == o.video_port && this->video_codec== o.video_codec;
      }
     bool operator !=(const VideoStreamConfig &o) const {
         return !(*this==o);

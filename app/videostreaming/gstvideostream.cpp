@@ -14,7 +14,7 @@ static QOpenHDVideoHelper::VideoStreamConfig readVideoStreamConfigFromSettings(b
     // read settings
     QSettings settings;
     QOpenHDVideoHelper::VideoStreamConfig _videoStreamConfig;
-    _videoStreamConfig.enable_videotest=settings.value("dev_enable_test_video", true).toBool();
+    _videoStreamConfig.dev_test_video_mode=QOpenHDVideoHelper::videoTestModeFromInt(settings.value("dev_test_video_mode", 0).toInt());
     const int tmp_video_codec = settings.value("selectedVideoCodecPrimary", 0).toInt();
     _videoStreamConfig.video_codec=QOpenHDVideoHelper::intToVideoCodec(tmp_video_codec);
     //auto _main_video_port = settings.value("main_video_port", main_default_port).toInt();
@@ -71,10 +71,17 @@ static std::string gst_create_video_decoder(const QOpenHDVideoHelper::VideoCodec
  * @param udp_port the udp port to listen for rtp data
  * @return the built pipeline, as a string
  */
-static std::string constructGstreamerPipeline(bool enableVideoTest,QOpenHDVideoHelper::VideoCodec videoCodec,int udp_port){
+static std::string constructGstreamerPipeline(const QOpenHDVideoHelper::VideoTestMode& dev_test_video_mode,QOpenHDVideoHelper::VideoCodec videoCodec,int udp_port){
     std::stringstream ss;
-    if(enableVideoTest){
-        ss<<QOpenHDVideoHelper::create_debug_encoded_data_producer(videoCodec);
+    if(dev_test_video_mode==QOpenHDVideoHelper::VideoTestMode::RAW_VIDEO){
+        ss << "videotestsrc pattern=smpte ! ";
+        ss << "video/x-raw,width=640,height=480 ! ";
+        ss << "queue ! ";
+        ss << "glupload ! glcolorconvert ! ";
+        ss << "qmlglsink name=qmlglsink sync=false";
+        return ss.str();
+    }else if(dev_test_video_mode==QOpenHDVideoHelper::VideoTestMode::RAW_VIDEO_ENCODE_DECODE){
+         ss<<QOpenHDVideoHelper::create_debug_encoded_data_producer(videoCodec);
     }else{
         ss<<"udpsrc port="<<udp_port<<" ";
         //ss<<"host=127.0.0.1 ";
@@ -88,26 +95,6 @@ static std::string constructGstreamerPipeline(bool enableVideoTest,QOpenHDVideoH
     ss << " glupload ! glcolorconvert !";
     ss << " qmlglsink name=qmlglsink sync=false";
 
-    /*if(enableVideoTest){
-        qDebug() << "Using video test";
-        ss << "videotestsrc pattern=smpte !";
-        ss << "video/x-raw,width=640,height=480 !";
-        ss << "queue ! ";
-    }else{
-        ss<<"udpsrc port="<<udp_port<<" ";
-        //ss<<"host=127.0.0.1 ";
-        if(videoCodec==QOpenHDVideoHelper::VideoCodecH264){
-            ss<<"caps = \"application/x-rtp, media=(string)video, encoding-name=(string)H264, payload=(int)96\" ! rtph264depay ! ";
-        }else if(videoCodec==QOpenHDVideoHelper::VideoCodecH265){
-            ss<<"caps = \"application/x-rtp, media=(string)video, encoding-name=(string)H265\" ! rtph265depay ! ";
-        }else{
-            //m_video_codec==VideoCodecMJPEG
-            ss<<"caps = \"application/x-rtp, media=(string)video, encoding-name=(string)mjpeg\" ! rtpjpegdepay ! ";
-        }
-        ss<<"decodebin ! ";
-    }
-    ss << " glupload ! glcolorconvert !";
-    ss << " qmlglsink name=qmlglsink sync=false";*/
     return ss.str();
 }
 
@@ -115,7 +102,7 @@ GstVideoStream::GstVideoStream(QObject *parent): QObject(parent), timer(new QTim
     qDebug() << "GstVideoStream::GstVideoStream()";
     // developer testing
     //QSettings settings;
-    //settings.setValue("dev_enable_test_video",true);
+    //settings.setValue("dev_test_video_mode",0);
     // NOTE: the gstreamer init stuff should be already called via main - only this way we can
     // pass in the parameters. Calling it again should have no effect then.
     initGstreamerOrThrow();
@@ -196,7 +183,7 @@ void GstVideoStream::startVideo() {
         stopVideoSafe();
         assert(m_pipeline==nullptr);
     }
-    const auto pipeline=constructGstreamerPipeline(m_videoStreamConfig.enable_videotest,m_videoStreamConfig.video_codec,m_videoStreamConfig.video_port);
+    const auto pipeline=constructGstreamerPipeline(m_videoStreamConfig.dev_test_video_mode,m_videoStreamConfig.video_codec,m_videoStreamConfig.video_port);
     GError *error = nullptr;
     m_pipeline = gst_parse_launch(pipeline.c_str(), &error);
     qDebug() << "GSTREAMER PIPE=" << pipeline.c_str();

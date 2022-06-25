@@ -42,7 +42,7 @@ public:
 private:
     /**
      * @brief fired by m_timer.
-     * Checks every second if the enable_videotest setting has changed, if so we restart the
+     * Checks every second if the video settings have changed, if so we restart the
      * stream and let the the pipeline be reconstructed using whichever video source is now enabled.
      */
     void timerCallback();
