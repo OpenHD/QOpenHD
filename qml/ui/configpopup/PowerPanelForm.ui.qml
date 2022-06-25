@@ -372,8 +372,6 @@ Rectangle {
     }
     Button {
         id: devCancelQOpenHD
-        width: 96
-        height: 48
         anchors.right: parent.right
         anchors.rightMargin: 12
         anchors.bottom: parent.bottom
