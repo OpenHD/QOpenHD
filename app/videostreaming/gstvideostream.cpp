@@ -62,24 +62,17 @@ static std::string gst_create_rtp_decoder(const QOpenHDVideoHelper::VideoCodec& 
 static std::string constructGstreamerPipeline(bool enableVideoTest,QOpenHDVideoHelper::VideoCodec videoCodec,int udp_port){
     std::stringstream ss;
     if(enableVideoTest){
-        ss<<"videotestsrc ! video/x-raw, format=I420,width=640,height=480,framerate=30/1 ! ";
-        ss<<"x264enc bitrate=5000 tune=zerolatency key-int-max=10 ! h264parse config-interval=-1 ! ";
-        ss<<"rtph264pay mtu=1024 ! ";
-        ss<<"queue ! ";
+        ss<<QOpenHDVideoHelper::create_debug_encoded_data_producer(videoCodec);
     }else{
         ss<<"udpsrc port="<<udp_port<<" ";
         //ss<<"host=127.0.0.1 ";
+        ss<<gst_create_caps(videoCodec);
     }
-    if(videoCodec==QOpenHDVideoHelper::VideoCodecH264){
-        //ss<<"caps = \"application/x-rtp, media=(string)video, encoding-name=(string)H264, payload=(int)96\" ! rtph264depay ! ";
-        ss<<" rtph264depay ! ";
-    }else if(videoCodec==QOpenHDVideoHelper::VideoCodecH265){
-        ss<<"caps = \"application/x-rtp, media=(string)video, encoding-name=(string)H265\" ! rtph265depay ! ";
-    }else{
-        //m_video_codec==VideoCodecMJPEG
-        ss<<"caps = \"application/x-rtp, media=(string)video, encoding-name=(string)mjpeg\" ! rtpjpegdepay ! ";
-    }
-    ss<<"decodebin ! ";
+
+    ss<<gst_create_rtp_decoder(videoCodec);
+
+    //ss<<"decodebin ! ";
+    ss<<"avdec_h264 ! ";
     ss << " glupload ! glcolorconvert !";
     ss << " qmlglsink name=qmlglsink sync=false";
 

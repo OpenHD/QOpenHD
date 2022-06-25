@@ -5,7 +5,7 @@
 #include <qquickitem.h>
 #include <qquickwindow.h>
 
-
+#include <sstream>
 
 namespace QOpenHDVideoHelper{
 
@@ -71,6 +71,24 @@ static QQuickItem* find_qt_video_window(QQmlApplicationEngine& m_engine,const bo
         return nullptr;
     }
     return videoItem;
+}
+
+// Creates a pipeline whose last element produces rtp h164,h265 or mjpeg data
+static std::string create_debug_encoded_data_producer(const QOpenHDVideoHelper::VideoCodec& videoCodec){
+    std::stringstream ss;
+    ss<<"videotestsrc ! video/x-raw, format=I420,width=640,height=480,framerate=30/1 ! ";
+    if(videoCodec==VideoCodecH264){
+        ss<<"x264enc bitrate=5000 tune=zerolatency key-int-max=10 ! h264parse config-interval=-1 ! ";
+        ss<<"rtph264pay mtu=1024 ! ";
+    }else if(videoCodec==VideoCodecH265){
+        ss<<"x265enc bitrate=5000 tune=zerolatency key-int-max=10 ! ";
+        ss<<"rtph265pay mtu=1024 ! ";
+    }else{
+        ss<<"jpegenc !";
+        ss << "rtpjpegpay mtu=1024 ! ";
+    }
+    ss<<"queue ! ";
+    return ss.str();
 }
 
 
