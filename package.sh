@@ -66,7 +66,6 @@ ls -a
 ls /opt
 
 
-
 if [[ "${PACKAGE_ARCH}" == x86 ]]; then
     qmake
 else

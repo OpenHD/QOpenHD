@@ -5,7 +5,6 @@
 #include <QtConcurrent>
 #include <QProcess>
 #include <QProcessEnvironment>
-#include <qapplication.h>
 
 
 OpenHDPi::OpenHDPi(QObject *parent) : QObject(parent) {
@@ -21,8 +20,19 @@ bool OpenHDPi::is_raspberry_pi() {
 #endif
 }
 
+void OpenHDPi::activate_console() {
+#if defined (__rasp_pi__)
+    qDebug() << "OpenHDPi::activate_console()";
+    QString program = "/bin/chvt";
+    QStringList arguments;
+    arguments << "12";
+    QProcess *process = new QProcess(this);
+    process->start(program, arguments);
+    process->waitForFinished();
+    #endif
+}
+
 void OpenHDPi::stop_app() {
-    qDebug()<<"Request stop app";
 #if defined (__rasp_pi__)
     qDebug() << "OpenHDPi::stop_app()";
     QString program = "/bin/systemctl";
@@ -32,8 +42,6 @@ void OpenHDPi::stop_app() {
     process->start(program, arguments);
     process->waitForFinished();
     #endif
-    qDebug()<<"Request stop end";
-    QApplication::quit();
 }
 
 
@@ -103,6 +111,38 @@ int OpenHDPi::get_brightness() {
      return -2;
 }
 
+void OpenHDPi::update_ground() {
+    FILE *fp;
+    FILE *fp2;
+    FILE *fp3;
+
+    int undervolt_gnd = 0;
+    int _ground_temp = 0;
+
+    fp2 = fopen("/sys/class/thermal/thermal_zone0/temp", "r");
+    fscanf(fp2, "%d", &_ground_temp);
+    fclose(fp2);
+    ground_temp = _ground_temp / 1000;
+
+    fp = fopen("/proc/stat","r");
+    fscanf(fp, "%*s %Lf %Lf %Lf %Lf", &a[0], &a[1], &a[2], &a[3]);
+    fclose(fp);
+
+    ground_load = (((b[0]+b[1]+b[2]) - (a[0]+a[1]+a[2])) / ((b[0]+b[1]+b[2]+b[3]) - (a[0]+a[1]+a[2]+a[3]))) * 100;
+
+    fp = fopen("/proc/stat","r");
+    fscanf(fp, "%*s %Lf %Lf %Lf %Lf", &b[0], &b[1], &b[2], &b[3]);
+    fclose(fp);
+
+    fp3 = fopen("/tmp/undervolt", "r");
+    if (fp3 == nullptr) {
+        return;
+    }
+    fscanf(fp3,"%d", &undervolt_gnd);
+    fclose(fp3);
+    m_undervolt = undervolt_gnd;
+    emit undervolt_changed(m_undervolt);
+}
 
 QObject *openHDPiSingletonProvider(QQmlEngine *engine, QJSEngine *scriptEngine) {
     Q_UNUSED(engine)

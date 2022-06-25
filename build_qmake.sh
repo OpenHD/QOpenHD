@@ -10,4 +10,4 @@ cd build
 
 qmake ..
 
-make -j2
+make -j4

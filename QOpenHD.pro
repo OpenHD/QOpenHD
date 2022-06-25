@@ -95,7 +95,6 @@ SOURCES += \
     app/osd/altitudeladder.cpp \
     app/osd/drawingcanvas.cpp \
     app/osd/flightpathvector.cpp \
-    app/telemetry/settings/airpisettingsmodel.cpp \
     app/xsettingsui.cpp
 
 HEADERS += \
@@ -108,7 +107,6 @@ HEADERS += \
     app/osd/flightpathvector.h \
     app/telemetry/openhd_defines.hpp \
     app/telemetry/qopenhdmavlinkhelper.hpp \
-    app/telemetry/settings/airpisettingsmodel.h \
     app/xsettingsui.h
 
 
@@ -131,8 +129,11 @@ SOURCES += \
     app/openhd.cpp \
     app/platform/openhdpi.cpp \
     app/rc/openhdrc.cpp \
+    app/util/statuslogmodel.cpp \
     app/util/QmlObjectListModel.cpp \
+    app/util/logger.cpp \
     app/util/util.cpp \
+    app/util/localmessage.cpp \
 
 RESOURCES += qml/qml.qrc \
     qml/qml.qrc
@@ -143,7 +144,11 @@ HEADERS += \
     app/openhd.h \
     app/platform/openhdpi.h \
     app/rc/openhdrc.h \
+    app/util/statuslogmodel.h \
     app/util/QmlObjectListModel.h \
+    app/util/logger.h \
+    app/util/logger_t.h \
+    app/util/localmessage.h \
     app/util/util.h \
 
 DISTFILES += \
@@ -169,7 +174,6 @@ DISTFILES += \
     app/osd_extra/Readme.txt \
     app/platform/README.md \
     app/telemetry/README.md \
-    app/telemetry/settings/README.md \
     app/util/README.md \
     app/videostreaming/README.md \
     app/videostreaming/legacy/README.md \
@@ -181,6 +185,7 @@ DISTFILES += \
     qml/ui/configpopup/legacy/README.md \
     qml/ui/elements/README.md \
     qml/ui/qmldir \
+    qmlglsink.pri \
     translations/QOpenHD_it.ts \
     translations/QOpenHD_ro.ts \
     translations/QOpenHD_zh.ts

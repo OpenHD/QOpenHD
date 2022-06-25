@@ -16,7 +16,13 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "platform/openhdpi.h"
 #include "openhd.h"
 #include "../app/telemetry/mavlinktelemetry.h"
+#include "util/localmessage.h"
 
+//#if defined(ENABLE_LOG)
+#include "util/logger.h"
+//#endif
+
+#include "util/statuslogmodel.h"
 #include "util/QmlObjectListModel.h"
 
 #include "osd/speedladder.h"
@@ -65,7 +71,6 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 
 #include "xsettingsui.h"
 #include "logging/logmessagesmodel.h"
-#include "telemetry/settings/airpisettingsmodel.h"
 
 // SDL hack
 #ifdef Q_OS_WIN
@@ -255,7 +260,11 @@ int main(int argc, char *argv[]) {
     qmlRegisterType<OpenHDRC>("OpenHD", 1, 0, "OpenHDRC");
 
     qmlRegisterSingletonType<OpenHDPi>("OpenHD", 1, 0, "OpenHDPi", openHDPiSingletonProvider);
-    //qmlRegisterSingletonType<LocalMessage>("OpenHD", 1, 0, "LocalMessage", localMessageSingletonProvider);
+    qmlRegisterSingletonType<LocalMessage>("OpenHD", 1, 0, "LocalMessage", localMessageSingletonProvider);
+
+    //#if defined(ENABLE_LOG)
+    qmlRegisterSingletonType<Logger>("OpenHD", 1, 0, "Logger", loggerSingletonProvider);
+    //#endif
 
     qmlRegisterUncreatableType<QmlObjectListModel>("OpenHD", 1, 0, "QmlObjectListModel", "Reference only");
 
@@ -295,7 +304,6 @@ int main(int argc, char *argv[]) {
     write_platform_context_properties(engine);
     write_other_context_properties(engine);
     engine.rootContext()->setContextProperty("_logMessagesModel", &LogMessagesModel::instance());
-    engine.rootContext()->setContextProperty("_airPiSettingsModel", &AirPiSettingsModel::instance());
 
 
 #if defined(ENABLE_GSTREAMER)
@@ -345,6 +353,10 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
 
     auto mavlinkTelemetry = MavlinkTelemetry::instance();
     engine.rootContext()->setContextProperty("MavlinkTelemetry", mavlinkTelemetry);
+
+    auto statusLogModel = StatusLogModel::instance();
+    engine.rootContext()->setContextProperty("StatusLogModel", statusLogModel);
+    statusLogModel->populateWithExampleMessage();
 
     #if defined(ENABLE_EXAMPLE_WIDGET)
     engine.rootContext()->setContextProperty("EnableExampleWidget", QVariant(true));
