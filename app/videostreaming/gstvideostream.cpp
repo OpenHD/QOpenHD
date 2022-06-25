@@ -26,6 +26,31 @@ static QOpenHDVideoHelper::VideoStreamConfig readVideoStreamConfigFromSettings(b
     return _videoStreamConfig;
 }
 
+static std::string gst_create_caps(const QOpenHDVideoHelper::VideoCodec& videoCodec){
+    std::stringstream ss;
+    if(videoCodec==QOpenHDVideoHelper::VideoCodecH264){
+        ss<<"caps = \"application/x-rtp, media=(string)video, encoding-name=(string)H264, payload=(int)96\" ! ";
+    }else if(videoCodec==QOpenHDVideoHelper::VideoCodecH265){
+        ss<<"caps = \"application/x-rtp, media=(string)video, encoding-name=(string)H265\" ! ";
+    }else{
+        ss<<"caps = \"application/x-rtp, media=(string)video, encoding-name=(string)mjpeg\" ! ";
+    }
+    return ss.str();
+}
+
+static std::string gst_create_rtp_decoder(const QOpenHDVideoHelper::VideoCodec& videoCodec){
+    std::stringstream ss;
+    if(videoCodec==QOpenHDVideoHelper::VideoCodecH264){
+        ss<<" rtph264depay !";
+    }else if(videoCodec==QOpenHDVideoHelper::VideoCodecH265){
+        ss<<" rtph265depay !";
+    }else{
+       ss<<" rtpjpegdepay !";
+    }
+    return ss.str();
+}
+
+
 /**
  * @brief constructGstreamerPipeline for sw decoding of all OenHD supported video formats (h264,h265,mjpeg)
  * The last element is a qmlglsink, such that the video can be rendered.
@@ -37,13 +62,35 @@ static QOpenHDVideoHelper::VideoStreamConfig readVideoStreamConfigFromSettings(b
 static std::string constructGstreamerPipeline(bool enableVideoTest,QOpenHDVideoHelper::VideoCodec videoCodec,int udp_port){
     std::stringstream ss;
     if(enableVideoTest){
+        ss<<"videotestsrc ! video/x-raw, format=I420,width=640,height=480,framerate=30/1 ! ";
+        ss<<"x264enc bitrate=5000 tune=zerolatency key-int-max=10 ! h264parse config-interval=-1 ! ";
+        ss<<"rtph264pay mtu=1024 ! ";
+        ss<<"queue ! ";
+    }else{
+        ss<<"udpsrc port="<<udp_port<<" ";
+        //ss<<"host=127.0.0.1 ";
+    }
+    if(videoCodec==QOpenHDVideoHelper::VideoCodecH264){
+        //ss<<"caps = \"application/x-rtp, media=(string)video, encoding-name=(string)H264, payload=(int)96\" ! rtph264depay ! ";
+        ss<<" rtph264depay ! ";
+    }else if(videoCodec==QOpenHDVideoHelper::VideoCodecH265){
+        ss<<"caps = \"application/x-rtp, media=(string)video, encoding-name=(string)H265\" ! rtph265depay ! ";
+    }else{
+        //m_video_codec==VideoCodecMJPEG
+        ss<<"caps = \"application/x-rtp, media=(string)video, encoding-name=(string)mjpeg\" ! rtpjpegdepay ! ";
+    }
+    ss<<"decodebin ! ";
+    ss << " glupload ! glcolorconvert !";
+    ss << " qmlglsink name=qmlglsink sync=false";
+
+    /*if(enableVideoTest){
         qDebug() << "Using video test";
         ss << "videotestsrc pattern=smpte !";
         ss << "video/x-raw,width=640,height=480 !";
-        ss << "queue !";
+        ss << "queue ! ";
     }else{
         ss<<"udpsrc port="<<udp_port<<" ";
-	//ss<<"host=127.0.0.1 ";
+        //ss<<"host=127.0.0.1 ";
         if(videoCodec==QOpenHDVideoHelper::VideoCodecH264){
             ss<<"caps = \"application/x-rtp, media=(string)video, encoding-name=(string)H264, payload=(int)96\" ! rtph264depay ! ";
         }else if(videoCodec==QOpenHDVideoHelper::VideoCodecH265){
@@ -55,7 +102,7 @@ static std::string constructGstreamerPipeline(bool enableVideoTest,QOpenHDVideoH
         ss<<"decodebin ! ";
     }
     ss << " glupload ! glcolorconvert !";
-    ss << " qmlglsink name=qmlglsink sync=false";
+    ss << " qmlglsink name=qmlglsink sync=false";*/
     return ss.str();
 }
 
