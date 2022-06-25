@@ -52,22 +52,11 @@ TMPDIR=/tmp/qopenhd/
 
 rm -rf /tmp/qopenhd/*
 
-            touch /etc/ld.so.conf.d/qt.conf
-            echo "/opt/Qt5.15.4/lib/" >/etc/ld.so.conf.d/qt.conf
-            sudo ldconfig
-            export PATH="$PATH:/opt/Qt5.15.4/bin/"
-            git clone https://github.com/GStreamer/gst-plugins-good
-            cd gst-plugins-good
-            git checkout 1.18.4
-            meson --prefix /usr build
-            ninja -C build
-            ninja -C build install
-            rm -Rf build
-            meson --prefix /tmp/qopenhd/usr build
-            ninja -C build
-            ninja -C build install
-            cd ..
-
+# link libraries and qt
+touch /etc/ld.so.conf.d/qt.conf
+echo "/opt/Qt5.15.4/lib/" > /etc/ld.so.conf.d/qt.conf
+sudo ldconfig
+export PATH="$PATH:/opt/Qt5.15.4/bin/"
 
 mkdir -p /tmp/qopenhd/usr/local/bin || exit 1
 mkdir -p /tmp/qopenhd/etc/systemd/system || exit 1
@@ -77,13 +66,16 @@ ls -a
 ls /opt
 
 
+
 if [[ "${PACKAGE_ARCH}" == x86 ]]; then
     qmake
 else
     /opt/Qt5.15.4/bin/qmake  
 fi
+echo "build with qmake done"
+make -j2 || exit 1
+echo "build with make done"
 
-make || exit 1
 cp release/QOpenHD /tmp/qopenhd/usr/local/bin/ || exit 1
 ls -a
 # included in the same package since it's sharing code and not independently versioned
@@ -107,6 +99,7 @@ fpm -a ${PACKAGE_ARCH} -s dir -t deb -n ${PACKAGE_NAME} -v ${VERSION//v} -C ${TM
   -d "gstreamer1.0-tools" \
   -d "gstreamer1.0-alsa" \
   -d "gstreamer1.0-pulseaudio" \
+  -d "gstreamer1.0-gl" \
   ${PLATFORM_PACKAGES} || exit 1
 
 #
