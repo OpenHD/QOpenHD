@@ -6,6 +6,10 @@
 #include <QProcess>
 #include <QProcessEnvironment>
 
+/**
+ * Please use this class only in case something really needs to be implemented platform-dependent.
+ * Utils for performing platform-specific actions and more.
+ */
 class OpenHDPi : public QObject {
     Q_OBJECT
 
@@ -19,31 +23,23 @@ public:
     void set_brightness(int brightness);
     int get_brightness();
 
-
-    Q_PROPERTY(bool undervolt MEMBER m_undervolt NOTIFY undervolt_changed)
-
-    Q_INVOKABLE void activate_console();
+    /**
+     * This terminates QOpenHD (aka the application itself) such that an advanced user can use the console.
+     */
     Q_INVOKABLE void stop_app();
+
+    // These are not needed anymore ?!
     Q_INVOKABLE void set_boot_mount_rw();
     Q_INVOKABLE void set_boot_mount_ro();
-
-    Q_INVOKABLE void update_ground();
-
-    int ground_load = 0;
-    int ground_temp = 0;
 
 private:
 #if defined(__rasp_pi__)
     QProcess *mountProcess = nullptr;
 #endif
 
-    bool m_undervolt = false;
-    long double a[4], b[4];
-
 signals:
     void brightness_changed(int brightness);
     void is_raspberry_pi_changed(bool is_raspberry_pi);
-    void undervolt_changed(bool undervolt);
 };
 
 QObject *openHDPiSingletonProvider(QQmlEngine *engine, QJSEngine *scriptEngine);

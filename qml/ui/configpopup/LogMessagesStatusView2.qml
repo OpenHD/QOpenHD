@@ -25,17 +25,6 @@ ListView {
             text: model.message
             anchors { left:tagView.right; verticalCenter: tagView.verticalCenter; leftMargin: 5 }
         }
-        MouseArea {
-            anchors.fill: parent
-            acceptedButtons: Qt.LeftButton | Qt.RightButton
-            onDoubleClicked: {
-                if (mouse.button === Qt.LeftButton) {
-                    _myModel.duplicateData(model.index);
-                } else if (mouse.button === Qt.RightButton) {
-                    _myModel.removeData(model.index);
-                }
-            }
-        }
     }
 }
 //}

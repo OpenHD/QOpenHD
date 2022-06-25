@@ -2145,7 +2145,7 @@ Item {
                         color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
                         Text {
-                            text: qsTr("DEV_ENABLE_TEST_VIDEO_SOURCE")
+                            text: qsTr("DEV_TEST_VIDEO_MODE")
                             font.weight: Font.Bold
                             font.pixelSize: 13
                             anchors.leftMargin: 8
@@ -2155,15 +2155,29 @@ Item {
                             height: elementHeight
                             anchors.left: parent.left
                         }
-
-                        Switch {
-                            width: 32
-                            height: elementHeight
-                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            checked: settings.dev_enable_test_video
-                            onCheckedChanged: settings.dev_enable_test_video = checked
+                        ComboBox {
+                          width: 320
+                          height: elementHeight
+                          anchors.right: parent.right
+                          anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                          anchors.verticalCenter: parent.verticalCenter
+                          anchors.horizontalCenter: parent.horizonatalCenter
+                          model: ListModel {
+                           ListElement { text: "DISABLE"; }
+                           ListElement { text: "RAW_VIDEO";  }
+                           ListElement { text: "RAW_DECODE_ENCODE"; }
+                         }
+                          Component.onCompleted: {
+                              // out of bounds checking
+                              if(settings.dev_test_video_mode>2 || settings.dev_test_video_mode<0){
+                                  settings.dev_test_video_mode=0;
+                              }
+                              currentIndex = settings.dev_test_video_mode;
+                          }
+                         onCurrentIndexChanged:{
+                             console.debug("Dev video testing::"+cbItems.get(currentIndex).text + ", "+currentIndex)
+                             settings.dev_test_video_mode=currentIndex;
+                         }
                         }
                     }
                 }

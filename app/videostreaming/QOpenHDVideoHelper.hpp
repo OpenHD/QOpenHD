@@ -5,7 +5,7 @@
 #include <qquickitem.h>
 #include <qquickwindow.h>
 
-
+#include <sstream>
 
 namespace QOpenHDVideoHelper{
 
@@ -23,6 +23,17 @@ static VideoCodec intToVideoCodec(int videoCodec){
     return VideoCodecH264;
 }
 
+enum class VideoTestMode{
+    DISABLED, // disabled
+    RAW_VIDEO, // raw video into qmlglsink. Doesn't check video decoding capabilities, only qmlsink capabilities
+    RAW_VIDEO_ENCODE_DECODE // encode raw video, then decode it and then into qmlsink. When this passes, platform can do video decoding
+};
+static VideoTestMode videoTestModeFromInt(int value){
+    if(value==1)return VideoTestMode::RAW_VIDEO;
+    if(value==2)return VideoTestMode::RAW_VIDEO_ENCODE_DECODE;
+    return VideoTestMode::DISABLED;
+}
+
 /**
  * No matter if the underlying decoding is done hw accelerated or on any platform, video is always
  * a constant stream of rtp data to a specific udp port. This is the only information to start a
@@ -30,14 +41,18 @@ static VideoCodec intToVideoCodec(int videoCodec){
  */
 struct VideoStreamConfig{
     // when set to true, overwrites the rtp decoding, use a raw test video source (if possible). Only for developers.
-    bool enable_videotest = false;
+    // 0 = disabled
+    // 1 = raw video
+    // 2 = ra video encode and decode
+    // >2 disabled
+    VideoTestMode dev_test_video_mode = VideoTestMode::DISABLED;
     // the port where to receive rtp video data from
     int video_port = 0;
     // the video codec the received rtp data should be intepreted as.
     VideoCodec video_codec=VideoCodecH264;
     // 2 configs are equal if all members are exactly the same.
     bool operator==(const VideoStreamConfig &o) const {
-       return this->enable_videotest == o.enable_videotest && this->video_port == o.video_port && this->video_codec== o.video_codec;
+       return this->dev_test_video_mode == o.dev_test_video_mode && this->video_port == o.video_port && this->video_codec== o.video_codec;
      }
     bool operator !=(const VideoStreamConfig &o) const {
         return !(*this==o);
@@ -71,6 +86,24 @@ static QQuickItem* find_qt_video_window(QQmlApplicationEngine& m_engine,const bo
         return nullptr;
     }
     return videoItem;
+}
+
+// Creates a pipeline whose last element produces rtp h164,h265 or mjpeg data
+static std::string create_debug_encoded_data_producer(const QOpenHDVideoHelper::VideoCodec& videoCodec){
+    std::stringstream ss;
+    ss<<"videotestsrc ! video/x-raw, format=I420,width=640,height=480,framerate=30/1 ! ";
+    if(videoCodec==VideoCodecH264){
+        ss<<"x264enc bitrate=5000 tune=zerolatency key-int-max=10 ! h264parse config-interval=-1 ! ";
+        ss<<"rtph264pay mtu=1024 ! ";
+    }else if(videoCodec==VideoCodecH265){
+        ss<<"x265enc bitrate=5000 tune=zerolatency key-int-max=10 ! ";
+        ss<<"rtph265pay mtu=1024 ! ";
+    }else{
+        ss<<"jpegenc !";
+        ss << "rtpjpegpay mtu=1024 ! ";
+    }
+    ss<<"queue ! ";
+    return ss.str();
 }
 
 
