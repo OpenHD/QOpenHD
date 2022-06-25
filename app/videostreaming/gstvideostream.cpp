@@ -43,6 +43,7 @@ static std::string constructGstreamerPipeline(bool enableVideoTest,QOpenHDVideoH
         ss << "queue !";
     }else{
         ss<<"udpsrc port="<<udp_port<<" ";
+	//ss<<"host=127.0.0.1 ";
         if(videoCodec==QOpenHDVideoHelper::VideoCodecH264){
             ss<<"caps = \"application/x-rtp, media=(string)video, encoding-name=(string)H264, payload=(int)96\" ! rtph264depay ! ";
         }else if(videoCodec==QOpenHDVideoHelper::VideoCodecH265){
