@@ -19,8 +19,11 @@ public:
     void set_brightness(int brightness);
     int get_brightness();
 
-    Q_INVOKABLE void activate_console();
+    /**
+     * This terminates QOpenHD (aka the application itself) such that an advanced user can use the console.
+     */
     Q_INVOKABLE void stop_app();
+    // These are not needed anymore ?!
     Q_INVOKABLE void set_boot_mount_rw();
     Q_INVOKABLE void set_boot_mount_ro();
 
