@@ -1,4 +1,6 @@
 name: Build Jetson Selfhosted
+=======
+
 
 on: [push]
 
@@ -24,10 +26,12 @@ jobs:
         sudo ./package.sh arm64 ubuntu bionic
         ls -a 
 
+
     - name: Upload to Github
       uses: 'actions/upload-artifact@v2'
       with:
-        name: "QopenHD"
+
+      name: "QopenHD"
         path: |
           *.deb
           *.log
@@ -47,6 +51,7 @@ jobs:
         republish: "true" # needed ONLY if version is not changing
         file: "*.deb"
         
+
       #- name: Install
       #  run: |
       #    cd OpenHD/build

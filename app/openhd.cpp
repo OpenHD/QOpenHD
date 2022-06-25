@@ -2,7 +2,6 @@
 
 #include "telemetry/mavlinktelemetry.h"
 //#include "openhdtelemetry.h"
-#include "util/localmessage.h"
 
 #include <GeographicLib/Geodesic.hpp>
 
@@ -139,7 +138,7 @@ void OpenHD::findGcsPosition() {
                 set_homelat(m_lat);
                 set_homelon(m_lon);                
                 gcs_position_set=true;
-                LocalMessage::instance()->showMessage("Home Position set by OpenHD", 7);
+                //LocalMessage::instance()->showMessage("Home Position set by OpenHD", 7);
             }
         }
         else if (m_armed==false){ //we are in flight and the app crashed
@@ -296,7 +295,7 @@ void OpenHD::set_armed(bool armed) {
         flightTimeStart.start();
 
         if (m_homelat == 0.0 && m_homelon == 0.0) {
-            LocalMessage::instance()->showMessage("No Home Position in OpenHD", 4);
+            //LocalMessage::instance()->showMessage("No Home Position in OpenHD", 4);
         }
     }
 
