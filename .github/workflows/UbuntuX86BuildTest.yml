@@ -9,16 +9,32 @@ env:
 jobs:
   build:
     runs-on: ubuntu-20.04
-
     steps:
-      - name: Checkout repository and submodules
-        uses: actions/checkout@v3
-        with:
-          submodules: recursive
+    - name: Checkout repository and submodules
+      uses: actions/checkout@v3
+      with:
+        submodules: recursive
 
-      - name: Install Dependencies
-        run: |
-          sudo ./install_dep.sh
-      - name: Build with make
-        run: |
-          ./build_qmake.sh
+    - name: Install Dependencies
+      run: |
+        ls -a
+        sudo bash install_dep.sh
+        sudo bash install_dep_extra.sh
+    - name: Build with make
+      run: |
+        sudo ./package.sh x86 ubuntu bionic
+
+    - name: Push
+      id: push
+      uses: cloudsmith-io/action@master
+      with:
+        api-key: ${{ secrets.CLOUDSMITH_API_KEY }}
+        command: "push"
+        format: "deb"
+        owner: "openhd"
+        repo: "openhd-2-1-alpha"
+        distro: "ubuntu"
+        release: "bionic"
+        republish: "true" # needed ONLY if version is not changing
+        file: "*.deb"
+       
