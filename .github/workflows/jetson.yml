@@ -1,5 +1,4 @@
 name: Build Jetson Selfhosted
-=======
 
 
 on: [push]
