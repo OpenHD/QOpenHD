@@ -41,15 +41,27 @@ static std::string gst_create_caps(const QOpenHDVideoHelper::VideoCodec& videoCo
 static std::string gst_create_rtp_decoder(const QOpenHDVideoHelper::VideoCodec& videoCodec){
     std::stringstream ss;
     if(videoCodec==QOpenHDVideoHelper::VideoCodecH264){
-        ss<<" rtph264depay !";
+        ss<<" rtph264depay ! ";
     }else if(videoCodec==QOpenHDVideoHelper::VideoCodecH265){
-        ss<<" rtph265depay !";
+        ss<<" rtph265depay ! ";
     }else{
-       ss<<" rtpjpegdepay !";
+       ss<<" rtpjpegdepay ! ";
     }
     return ss.str();
 }
 
+static std::string gst_create_video_decoder(const QOpenHDVideoHelper::VideoCodec& videoCodec){
+    std::stringstream ss;
+    if(videoCodec==QOpenHDVideoHelper::VideoCodecH264){
+        //NOTE: decodebin on rpi for h264 doesn't work ???!!
+       ss<<"avdec_h264 ! ";
+    }else if(videoCodec==QOpenHDVideoHelper::VideoCodecH265){
+        ss<<"decodebin ! ";
+    }else{
+       ss<<"decodebin ! ";
+    }
+    return ss.str();
+}
 
 /**
  * @brief constructGstreamerPipeline for sw decoding of all OenHD supported video formats (h264,h265,mjpeg)
@@ -68,11 +80,11 @@ static std::string constructGstreamerPipeline(bool enableVideoTest,QOpenHDVideoH
         //ss<<"host=127.0.0.1 ";
         ss<<gst_create_caps(videoCodec);
     }
-
+    // add rtp decoder
     ss<<gst_create_rtp_decoder(videoCodec);
+    // add video decoder
+    ss<<gst_create_video_decoder(videoCodec);
 
-    //ss<<"decodebin ! ";
-    ss<<"avdec_h264 ! ";
     ss << " glupload ! glcolorconvert !";
     ss << " qmlglsink name=qmlglsink sync=false";
 
