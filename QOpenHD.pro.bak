@@ -371,12 +371,12 @@ RaspberryPiBuild {
 
 WindowsBuild {
     #CONFIG += EnableGamepads
-    #CONFIG += EnableJoysticks
-    #CONFIG += EnableRC
-    #CONFIG += EnableSpeech
-    #CONFIG += EnableMainVideo
+    CONFIG += EnableJoysticks
+    CONFIG += EnableRC
+    CONFIG += EnableSpeech
+    CONFIG += EnableMainVideo
     #CONFIG +- EnablePiP
-    #CONFIG += EnableGStreamer
+    CONFIG += EnableGStreamer
     #CONFIG += EnableCharts
     #CONFIG += EnableVR
     #CONFIG += EnableLog
