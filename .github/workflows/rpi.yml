@@ -39,7 +39,9 @@ jobs:
         commands: |
             ls -a
             cd /opt
-            sudo rm /etc/apt/sources.list
+            rm /etc/apt/sources.list
+            touch /etc/apt/sources.list
+            echo "deb http://mirror.netcologne.de/raspbian/raspbian/ bullseye main contrib non-free" > /etc/apt/sources.list
             apt update
             sudo bash QOpenHD/install_dep.sh
             cd /opt/QOpenHD
