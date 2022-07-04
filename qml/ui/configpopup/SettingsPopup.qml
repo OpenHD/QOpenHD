@@ -22,9 +22,6 @@ SettingsPopupForm {
 
     closeButton.onClicked: {
         visible = false
-        //if (IsRaspPi) {
-            //ManageSettings.savePiSettings();
-        //}
         settings_form.settingsClosed()
     }
 }
