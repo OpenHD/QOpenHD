@@ -5,12 +5,19 @@
 #include <QAbstractListModel>
 
 
+// A qt wrapper around the mavlink extended / non-extended parameters protocoll.
+// Each settings component the user wants to change requires a new instance of this class.
 class AirPiSettingsModel : public QAbstractListModel
 {
     Q_OBJECT
 public:
-     static AirPiSettingsModel& instance();
+    static AirPiSettingsModel& instance();
     explicit AirPiSettingsModel(QObject *parent = nullptr);
+public:
+    void fetch_all_parameters();
+    //
+    void on_parameter_update(std::string param_id,QVariant value);
+
     enum Roles {
         UniqueIdRole = Qt::UserRole,
         ValueRole

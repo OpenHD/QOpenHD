@@ -9,8 +9,9 @@ AirPiSettingsModel &AirPiSettingsModel::instance()
 AirPiSettingsModel::AirPiSettingsModel(QObject *parent)
     : QAbstractListModel(parent)
 {
-    m_data.push_back({"Some setting bla",0});
-    m_data.push_back({"Some setting blu",1});
+    m_data.push_back({"VIDEO_WIDTH",0});
+    m_data.push_back({"VIDEO_HEIGHT",1});
+    m_data.push_back({"VIDEO_FPS",1});
 }
 
 int AirPiSettingsModel::rowCount(const QModelIndex &parent) const
