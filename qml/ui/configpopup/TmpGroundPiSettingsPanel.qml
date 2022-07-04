@@ -53,6 +53,7 @@ Item {
                 }
                 Button {
                     text: "SET"
+                    onClicked: _airPiSettingsModel.try_update_parameter( model.unique_id,0)
                 }
             }
         }

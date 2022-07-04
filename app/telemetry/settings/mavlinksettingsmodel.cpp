@@ -1,12 +1,13 @@
-#include "airpisettingsmodel.h"
+#include "mavlinksettingsmodel.h"
+#include "qdebug.h"
 
-AirPiSettingsModel &AirPiSettingsModel::instance()
+MavlinkSettingsModel &MavlinkSettingsModel::instance()
 {
-    static AirPiSettingsModel* instance=new AirPiSettingsModel();
+    static MavlinkSettingsModel* instance=new MavlinkSettingsModel();
     return *instance;
 }
 
-AirPiSettingsModel::AirPiSettingsModel(QObject *parent)
+MavlinkSettingsModel::MavlinkSettingsModel(QObject *parent)
     : QAbstractListModel(parent)
 {
     m_data.push_back({"VIDEO_WIDTH",0});
@@ -14,7 +15,12 @@ AirPiSettingsModel::AirPiSettingsModel(QObject *parent)
     m_data.push_back({"VIDEO_FPS",1});
 }
 
-int AirPiSettingsModel::rowCount(const QModelIndex &parent) const
+void MavlinkSettingsModel::try_update_parameter(QString param_id, qint32 value)
+{
+    qDebug()<<"try_update_parameter:"<<param_id<<","<<value;
+}
+
+int MavlinkSettingsModel::rowCount(const QModelIndex &parent) const
 {
     if (parent.isValid())
         return 0;
@@ -22,7 +28,7 @@ int AirPiSettingsModel::rowCount(const QModelIndex &parent) const
     return m_data.count();
 }
 
-QVariant AirPiSettingsModel::data(const QModelIndex &index, int role) const
+QVariant MavlinkSettingsModel::data(const QModelIndex &index, int role) const
 {
     if ( !index.isValid() )
         return QVariant();
@@ -37,7 +43,7 @@ QVariant AirPiSettingsModel::data(const QModelIndex &index, int role) const
         return QVariant();
 }
 
-QHash<int, QByteArray> AirPiSettingsModel::roleNames() const
+QHash<int, QByteArray> MavlinkSettingsModel::roleNames() const
 {
     static QHash<int, QByteArray> mapping {
         {UniqueIdRole, "unique_id"},
@@ -47,7 +53,7 @@ QHash<int, QByteArray> AirPiSettingsModel::roleNames() const
 }
 
 
-void AirPiSettingsModel::removeData(int row)
+void MavlinkSettingsModel::removeData(int row)
 {
     if (row < 0 || row >= m_data.count())
         return;
@@ -57,7 +63,7 @@ void AirPiSettingsModel::removeData(int row)
     endRemoveRows();
 }
 
-void AirPiSettingsModel::addData(AirPiSettingData data)
+void MavlinkSettingsModel::addData(MavlinkSettingsModel::SettingData data)
 {
     beginInsertRows(QModelIndex(), rowCount(), rowCount());
     m_data.push_back(data);
