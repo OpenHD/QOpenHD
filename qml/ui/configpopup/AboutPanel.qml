@@ -79,6 +79,7 @@ Rectangle {
 
 
     RowLayout {
+        id: groundAndAirCardsId
         anchors.right: parent.right
         anchors.rightMargin: 12
         anchors.top: infoPanel.bottom
@@ -193,8 +194,10 @@ Rectangle {
         }
     }
     Button{
+        anchors.top: groundAndAirCardsId.bottom
         anchors.left: parent.left
-        anchors.bottom: parent.bottom
+        //anchors.bottom: parent.bottom
+        anchors.margins: 10
         text: "Ping all systems"
         onClicked: OpenHD.pingAllSystems()
     }
