@@ -95,26 +95,48 @@ Rectangle {
             Layout.fillWidth: true
 
             cardName: qsTr("Air")
-            cardBody: Item {
-                Text {
-                    id: airVersionID
-                    text: qsTr("OpenHD Version:")
-                    anchors.left: parent.left
-                    anchors.top: parent.top
-                    height: 24
-                    font.pixelSize: 14
-                    font.bold: true
-                    leftPadding: 12
+            cardBody:
+            ColumnLayout {
+                // from https://doc.qt.io/qt-6/qml-qtquick-layouts-rowlayout.html
+                anchors.fill: parent
+                spacing: 6
+                RowLayout{
+                    Layout.fillWidth: true
+                    Layout.minimumHeight: 30
+                    spacing: 6
+                    Text {
+                        text: qsTr("OpenHD Version:")
+                        height: 24
+                        font.pixelSize: 14
+                        font.bold: true
+                        leftPadding: 12
+                    }
+                    Text {
+                        text: OpenHD.m_openhd_version_air
+                        height: 24
+                        width: 256
+                        font.pixelSize: 14
+                        leftPadding: 6
+                    }
                 }
-
-                Text {
-                    text: OpenHD.m_openhd_version_air
-                    anchors.left: airVersionID.right
-                    anchors.horizontalCenter: airVersionID.horizontalCenter
-                    height: 24
-                    width: 256
-                    font.pixelSize: 14
-                    leftPadding: 6
+                RowLayout{
+                    Layout.fillWidth: true
+                    Layout.minimumHeight: 30
+                    spacing: 6
+                    Text {
+                        text: qsTr("Last Ping:")
+                        height: 24
+                        font.pixelSize: 14
+                        font.bold: true
+                        leftPadding: 12
+                    }
+                    Text {
+                        text: OpenHD.last_ping_result_openhd_air
+                        height: 24
+                        width: 256
+                        font.pixelSize: 14
+                        leftPadding: 6
+                    }
                 }
             }
         }
@@ -124,30 +146,57 @@ Rectangle {
             height: 128
             Layout.fillWidth: true
             cardName: qsTr("Ground")
-            cardBody: Item {
-                Text {
-                    id: groundVersionID
-                    text: qsTr("OpenHD Version:")
-                    anchors.left: parent.left
-                    anchors.top: parent.top
-                    height: 24
-                    font.pixelSize: 14
-                    font.bold: true
-                    leftPadding: 12
+            cardBody:
+            ColumnLayout {
+                // from https://doc.qt.io/qt-6/qml-qtquick-layouts-rowlayout.html
+                anchors.fill: parent
+                spacing: 6
+                RowLayout{
+                    Layout.fillWidth: true
+                    Layout.minimumHeight: 30
+                    spacing: 6
+                    Text {
+                        text: qsTr("OpenHD Version:")
+                        height: 24
+                        font.pixelSize: 14
+                        font.bold: true
+                        leftPadding: 12
+                    }
+                    Text {
+                        text: OpenHD.m_openhd_version_ground
+                        height: 24
+                        width: 256
+                        font.pixelSize: 14
+                        leftPadding: 6
+                    }
                 }
-
-                Text {
-                    text: OpenHD.m_openhd_version_ground
-                    anchors.left: groundVersionID.right
-                    anchors.horizontalCenter: groundVersionID.horizontalCenter
-                    height: 24
-                    width: 256
-                    font.pixelSize: 14
-                    leftPadding: 6
+                RowLayout{
+                    Layout.fillWidth: true
+                    Layout.minimumHeight: 30
+                    spacing: 6
+                    Text {
+                        text: qsTr("Last Ping:")
+                        height: 24
+                        font.pixelSize: 14
+                        font.bold: true
+                        leftPadding: 12
+                    }
+                    Text {
+                        text: OpenHD.last_ping_result_openhd_ground
+                        height: 24
+                        width: 256
+                        font.pixelSize: 14
+                        leftPadding: 6
+                    }
                 }
             }
-
         }
+    }
+    Button{
+        anchors.left: parent.left
+        anchors.bottom: parent.bottom
+        text: "Ping all systems"
+        onClicked: OpenHD.pingAllSystems()
     }
 }
 

@@ -4,6 +4,14 @@
 #include <QObject>
 #include <QAbstractListModel>
 
+#ifndef X_USE_MAVSDK
+#define X_USE_MAVSDK
+#endif
+
+#ifdef X_USE_MAVSDK
+#include <mavsdk/mavsdk.h>
+#include <mavsdk/plugins/param/param.h>
+#endif //X_USE_MAVSDK
 
 // A qt wrapper around the mavlink extended / non-extended parameters protocoll.
 // Each settings component the user wants to change requires a new instance of this class.
@@ -13,10 +21,16 @@ class MavlinkSettingsModel : public QAbstractListModel
 public:
     static MavlinkSettingsModel& instance();
     explicit MavlinkSettingsModel(QObject *parent = nullptr);
+#ifdef X_USE_MAVSDK
 public:
-    void fetch_all_parameters();
-    //
-    Q_INVOKABLE void try_update_parameter(QString param_id,qint32 value);
+    void set_param_client(std::shared_ptr<mavsdk::Param> param_client);
+private:
+    std::shared_ptr<mavsdk::Param> param_client;
+#endif
+public:
+    Q_INVOKABLE void try_fetch_parameter(QString param_id);
+
+    Q_INVOKABLE void try_update_parameter(const QString param_id,QVariant value);
 
     enum Roles {
         UniqueIdRole = Qt::UserRole,
@@ -31,9 +45,10 @@ public:
     };
 public slots:
     void removeData(int row);
+    void updateData(std::optional<int> row,MavlinkSettingsModel::SettingData new_data);
     void addData(MavlinkSettingsModel::SettingData data);
 private:
-    QVector< MavlinkSettingsModel::SettingData > m_data;
+    QVector<MavlinkSettingsModel::SettingData> m_data;
 };
 
 #endif // MavlinkSettingsModel_H

@@ -37,23 +37,27 @@ Item {
                 spacing: 5
 
                 Label {
+                    width:150
                     text: model.unique_id
                     font.bold: true
                 }
                 Label {
+                    width:100
                     text: "Curr:"+model.value
                 }
                 Button {
                     text: "GET"
+                    onClicked: _airPiSettingsModel.try_fetch_parameter(model.unique_id)
                 }
                 TextInput {
-                    width: 50
+                    id: xTextInput
+                    width:100
                     text: ""+model.value
                     cursorVisible: false
                 }
                 Button {
                     text: "SET"
-                    onClicked: _airPiSettingsModel.try_update_parameter( model.unique_id,0)
+                    onClicked: _airPiSettingsModel.try_update_parameter( model.unique_id,xTextInput.text)
                 }
             }
         }
@@ -61,6 +65,13 @@ Item {
 
     ScrollView{
         anchors.fill: parent
+
+        /*Label{
+            width:200
+            height:64
+            text: "Not found yet"
+            visible: _airPiSettingsModel.rowCount() > 0
+        }*/
 
         ListView {
             width: parent.width

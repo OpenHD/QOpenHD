@@ -3,6 +3,8 @@
 #include "qopenhdmavlinkhelper.hpp"
 #include "telemetry/openhd_defines.hpp"
 
+#include "settings/mavlinksettingsmodel.h"
+
 OHDConnection::OHDConnection(QObject *parent,bool useTcp):QObject(parent),USE_TCP(useTcp)
 {
 #ifndef X_USE_MAVSDK
@@ -68,6 +70,9 @@ OHDConnection::OHDConnection(QObject *parent,bool useTcp):QObject(parent),USE_TC
                 return true;
             });
             paramOhdGround=std::make_unique<mavsdk::Param>(system);
+            paramOhdGround->late_init(1,true);
+            MavlinkSettingsModel::instance().set_param_client(paramOhdGround);
+
         }else if(system->has_autopilot()){
             telemetryFC=std::make_unique<mavsdk::Telemetry>(system);
             auto res=telemetryFC->set_rate_attitude(60);

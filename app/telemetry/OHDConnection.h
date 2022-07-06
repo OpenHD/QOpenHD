@@ -8,6 +8,8 @@
 
 #include <openhd/mavlink.h>
 
+#define X_USE_MAVSDK
+
 #ifdef X_USE_MAVSDK
 #include <mavsdk/mavsdk.h>
 #include <mavsdk/plugins/telemetry/telemetry.h>

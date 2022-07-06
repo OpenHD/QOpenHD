@@ -640,6 +640,7 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
         //qDebug()<<"Got ping message sender:"<<msg.sysid<<":"<<msg.compid<<" target:"<<ping.target_system<<":"<<ping.target_component<<"seq:"<<ping.seq;
         // We only process ping responses with our specific sys id and a matching sequence number.
         // Note that if the user clicks the ping multiple times in rapid succession, some pings might be dropped.
+        // Check if the ping is targeted at our system
         if(ping.seq==pingSequenceNumber && ping.target_system==QOpenHDMavlinkHelper::getSysId()){
             const auto delta=QOpenHDMavlinkHelper::getTimeMicroseconds()-ping.time_usec;
             const float deltaMs=delta/1000.0f;
