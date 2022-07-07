@@ -41,6 +41,9 @@ jobs:
         commands: |
           ls -a
           cd /opt/QOpenHD
+          rm /etc/apt/sources.list.d/nvidia-l4t-apt-source.list || true
+          sudo echo "deb https://repo.download.nvidia.com/jetson/common r32.6 main" > /etc/apt/sources.list.d/nvidia-l4t-apt-source2.list
+          sudo echo "deb https://repo.download.nvidia.com/jetson/t210 r32.6 main" > /etc/apt/sources.list.d/nvidia-l4t-apt-source.list
           apt update
           apt upgrade -y
           sudo bash install_dep.sh
