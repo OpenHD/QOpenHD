@@ -40,7 +40,7 @@ jobs:
         import_github_env: true
         commands: |
           ls -a
-          cd /opt/Qopenhd
+          cd /opt/QOpenHD
           apt update
           apt upgrade -y
           sudo bash install_dep.sh
@@ -60,4 +60,4 @@ jobs:
         distro: "ubuntu"
         release: "bionic"
         republish: "true" # needed ONLY if version is not changing
-        file: "Qopenhd/*.deb"
+        file: "QOpenHD/*.deb"
