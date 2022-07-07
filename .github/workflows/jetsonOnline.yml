@@ -45,7 +45,7 @@ jobs:
           sudo echo "deb https://repo.download.nvidia.com/jetson/common r32.6 main" > /etc/apt/sources.list.d/nvidia-l4t-apt-source2.list
           sudo echo "deb https://repo.download.nvidia.com/jetson/t210 r32.6 main" > /etc/apt/sources.list.d/nvidia-l4t-apt-source.list
           apt update
-          sudo apt install curl
+          sudo apt install -y curl
           curl -1sLf 'https://dl.cloudsmith.io/public/openhd/openhd-2-1-alpha/gpg.9D1C80E55B50390B.key' | apt-key add -
           curl -1sLf 'https://dl.cloudsmith.io/public/openhd/openhd-2-1-alpha/setup.deb.sh'
           sudo bash setup.deb.sh
