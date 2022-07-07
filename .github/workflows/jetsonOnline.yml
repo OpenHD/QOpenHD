@@ -51,7 +51,7 @@ jobs:
             'https://dl.cloudsmith.io/public/openhd/openhd-2-1-alpha/setup.deb.sh' \
             | sudo -E bash
           apt update
-          apt install openhd-qt-jetson-nano-bionic 
+          apt install -y openhd-qt-jetson-nano-bionic 
           apt upgrade -y
           sudo bash install_dep.sh
           sudo ./package.sh arm64 ubuntu bionic
