@@ -34,7 +34,7 @@ void MavlinkSettingsModel::set_param_client(std::shared_ptr<mavsdk::Param> param
 }
 #endif
 
-void MavlinkSettingsModel::try_fetch_all_parameters()
+bool MavlinkSettingsModel::try_fetch_all_parameters()
 {
     qDebug()<<"MavlinkSettingsModel::try_fetch_all_parameters()";
     if(param_client){
@@ -46,7 +46,11 @@ void MavlinkSettingsModel::try_fetch_all_parameters()
             MavlinkSettingsModel::SettingData data{QString(int_param.name.c_str()),int_param.value};
             addData(data);
         }
+        if(!params.int_params.empty()){
+            return true;
+        }
     }
+    return false;
 }
 
 void MavlinkSettingsModel::try_fetch_parameter(QString param_id)

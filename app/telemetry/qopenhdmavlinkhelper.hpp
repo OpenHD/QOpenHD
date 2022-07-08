@@ -21,6 +21,7 @@ static uint8_t getSysId(){
     return mavlink_sysid;
 }
 
+// Return: the mavlink comonent id of QOpenHD. We are basicalyy a mission planner lke QGroundControll, just with a slightly different feature set.
 static uint8_t getCompId(){
     return MAV_COMP_ID_MISSIONPLANNER;
 }

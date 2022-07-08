@@ -63,7 +63,7 @@ Rectangle {
         }
     }
 
-    ScrollView{
+    ColumnLayout {
         anchors.fill: parent
 
         /*Label{
@@ -73,19 +73,32 @@ Rectangle {
             visible: _airPiSettingsModel.rowCount() > 0
         }*/
 
-        /*Button {
-            height:64
+        Button {
+            height: 48
             id: fetchAllButtonId
             text:"FetchAll"
-            onClicked: _airPiSettingsModel.try_fetch_all_parameters()
-        }*/
-
-        ListView {
-            //top: fetchAllButtonId.bottom
-            width: parent.width
-            model: _airPiSettingsModel
-            delegate: delegateAirPiSettingsValue
+            onClicked: {
+                var result=_airPiSettingsModel.try_fetch_all_parameters()
+                /*visible=false;
+                if(result===true){
+                    visible=true;
+                }*/
+            }
         }
+        Rectangle{
+            width:parent.width
+            height: parent.height-64
 
+            ScrollView{
+                anchors.fill: parent
+
+                ListView {
+                    //top: fetchAllButtonId.bottom
+                    width: parent.width
+                    model: _airPiSettingsModel
+                    delegate: delegateAirPiSettingsValue
+                }
+            }
+        }
     }
 }
