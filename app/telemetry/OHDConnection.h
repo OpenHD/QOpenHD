@@ -123,6 +123,11 @@ private slots:
     void onHeartbeat();
 private:
     void onNewSystem(std::shared_ptr<mavsdk::System> system);
+public:
+    void request_openhd_version();
+    // send a command, to all connected systems
+    // doesn't reatransmitt
+    void send_command_long_oneshot(const mavlink_command_long_t& command);
 };
 
 #endif // OHDMAVLINKCONNECTION_H

@@ -242,6 +242,22 @@ void OHDConnection::sendData(const uint8_t* data,int data_len){
     }
 }
 
+void OHDConnection::request_openhd_version()
+{
+    mavlink_command_long_t command;
+    command.command=MAV_CMD_REQUEST_MESSAGE;
+    command.param1=static_cast<float>(MAVLINK_MSG_ID_OPENHD_VERSION_MESSAGE);
+    send_command_long_oneshot(command);
+}
+
+void OHDConnection::send_command_long_oneshot(const mavlink_command_long_t &command)
+{
+    mavlink_message_t msg;
+    mavlink_msg_command_long_encode(QOpenHDMavlinkHelper::getSysId(),QOpenHDMavlinkHelper::getCompId(), &msg,&command);
+    sendMessage(msg);
+}
+
+
 void OHDConnection::onHeartbeat(){
     //qDebug() << "OHDConnection::onHeartbeat";
     mavlink_message_t msg;

@@ -768,6 +768,8 @@ public:
     QString m_last_ping_result_flight_ctrl="NA";
     Q_PROPERTY(QString last_ping_result_flight_ctrl MEMBER  m_last_ping_result_flight_ctrl WRITE set_last_ping_result_flight_ctrl NOTIFY last_ping_result_flight_ctrl_changed)
     void set_last_ping_result_flight_ctrl(QString last_ping_result_flight_ctrl);
+public:
+    Q_INVOKABLE void request_version();
 signals:
     void last_ping_result_openhd_air_changed(QString last_ping_result_openhd_air);
     void last_ping_result_openhd_ground_changed(QString last_ping_result_openhd_ground);

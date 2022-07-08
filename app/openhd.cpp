@@ -1091,5 +1091,10 @@ void OpenHD::set_last_ping_result_flight_ctrl(QString last_ping_result_flight_ct
     emit last_ping_result_flight_ctrl_changed(m_last_ping_result_flight_ctrl);
 }
 
+void OpenHD::request_version()
+{
+    MavlinkTelemetry::instance()->request_openhd_version();
+}
+
 
 

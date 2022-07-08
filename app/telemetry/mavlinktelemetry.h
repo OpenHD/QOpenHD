@@ -88,6 +88,10 @@ private:
 public:
      Q_INVOKABLE void pingAllSystems();
      Q_INVOKABLE void requestAllParameters();
+    // one shot, result not quaranteed
+    Q_INVOKABLE void request_openhd_version(){
+        mOHDConnection->request_openhd_version();
+    }
 public:
     std::unique_ptr<OHDConnection> mOHDConnection;
     void sendData(mavlink_message_t msg);

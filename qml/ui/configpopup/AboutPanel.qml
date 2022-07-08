@@ -193,13 +193,23 @@ Rectangle {
             }
         }
     }
-    Button{
+    ColumnLayout{
+        Layout.fillWidth: true
+        Layout.minimumHeight: 30
+        spacing: 6
         anchors.top: groundAndAirCardsId.bottom
         anchors.left: parent.left
-        //anchors.bottom: parent.bottom
         anchors.margins: 10
-        text: "Ping all systems"
-        onClicked: OpenHD.pingAllSystems()
+        Button{
+            height: 24
+            text: "Ping all systems"
+            onClicked: OpenHD.pingAllSystems()
+        }
+        Button{
+            height: 24
+            text: "Request version"
+            onClicked: OpenHD.request_version()
+        }
     }
 }
 
