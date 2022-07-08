@@ -22,6 +22,8 @@ MavlinkSettingsModel::MavlinkSettingsModel(QObject *parent)
 #ifdef X_USE_MAVSDK
 void MavlinkSettingsModel::set_param_client(std::shared_ptr<mavsdk::Param> param_client1)
 {
+    // only allow adding the param client once it is discovered, do not overwrite it once discovered.
+    assert(this->param_client==nullptr);
     this->param_client=param_client1;
     auto params=param_client1->get_all_params();
     qDebug()<<"Got int params:"<<params.int_params.size();
@@ -34,7 +36,11 @@ void MavlinkSettingsModel::set_param_client(std::shared_ptr<mavsdk::Param> param
 
 void MavlinkSettingsModel::try_fetch_all_parameters()
 {
+    qDebug()<<"MavlinkSettingsModel::try_fetch_all_parameters()";
     if(param_client){
+        while(rowCount()>0){
+            removeData(rowCount()-1);
+        }
         const auto params=param_client->get_all_params();
         for(const auto& int_param:params.int_params){
             MavlinkSettingsModel::SettingData data{QString(int_param.name.c_str()),int_param.value};

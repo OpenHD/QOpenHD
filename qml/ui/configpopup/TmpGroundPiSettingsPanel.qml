@@ -72,6 +72,7 @@ Rectangle {
             text: "Not found yet"
             visible: _airPiSettingsModel.rowCount() > 0
         }*/
+
         /*Button {
             height:64
             id: fetchAllButtonId
@@ -80,10 +81,11 @@ Rectangle {
         }*/
 
         ListView {
-            //anchors.top: fetchAllButtonId.bottom
+            //top: fetchAllButtonId.bottom
             width: parent.width
             model: _airPiSettingsModel
             delegate: delegateAirPiSettingsValue
         }
+
     }
 }

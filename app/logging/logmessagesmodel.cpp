@@ -84,7 +84,7 @@ void LogMessagesModel::removeData(int row)
 
 void LogMessagesModel::addData(LogMessageData logMessageData)
 {
-    qDebug()<<"LogMessagesModel::addData"<<logMessageData.message;
+    //qDebug()<<"LogMessagesModel::addData"<<logMessageData.message;
     /*if(m_data.size()>=10){
         // remove oldest one
         removeData(0);
