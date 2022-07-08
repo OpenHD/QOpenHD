@@ -43,20 +43,28 @@ OHDConnection::OHDConnection(QObject *parent,bool useTcp):QObject(parent),USE_TC
     ss<<"MAVSDK connection: " << connection_result;
     qDebug()<<ss.str().c_str();
     mavsdk->subscribe_on_new_system([this]() {
-        qDebug()<<"System found";
         auto system = this->mavsdk->systems().back();
+        qDebug()<<"System found"<<(int)system->get_system_id();
         if(system->get_system_id()==OHD_SYS_ID_GROUND){
             qDebug()<<"Found OHD Ground station";
             systemOhdGround=system;
         }else if(system->get_system_id()==OHD_SYS_ID_AIR){
             qDebug()<<"Found OHD AIR station";
+            systemOhdAir=system;
+        }else if(system->has_autopilot()){
+            // we got the flight controller
+            telemetryFC=std::make_unique<mavsdk::Telemetry>(system);
+            auto res=telemetryFC->set_rate_attitude(60);
+            std::stringstream ss;
+            ss<<res;
+            qDebug()<<"Set rate result:"<<ss.str().c_str();
         }
         qDebug()<<"Sys id:"<<system->get_system_id();
         if(system->get_system_id()==OHD_SYS_ID_GROUND){
             passtroughOhdGround=std::make_shared<mavsdk::MavlinkPassthrough>(system);
             qDebug()<<"XX:"<<passtroughOhdGround->get_target_sysid();
             passtroughOhdGround->subscribe_message_async(MAVLINK_MSG_ID_ONBOARD_COMPUTER_STATUS,[](const mavlink_message_t& msg){
-                qDebug()<<"Got MAVLINK_MSG_ID_ONBOARD_COMPUTER_STATUS";
+                //qDebug()<<"Got MAVLINK_MSG_ID_ONBOARD_COMPUTER_STATUS";
             });
             passtroughOhdGround->intercept_incoming_messages_async([this](mavlink_message_t& msg){
                 //qDebug()<<"Intercept:Got message"<<msg.msgid;
@@ -73,12 +81,6 @@ OHDConnection::OHDConnection(QObject *parent,bool useTcp):QObject(parent),USE_TC
             paramOhdGround->late_init(1,true);
             MavlinkSettingsModel::instance().set_param_client(paramOhdGround);
 
-        }else if(system->has_autopilot()){
-            telemetryFC=std::make_unique<mavsdk::Telemetry>(system);
-            auto res=telemetryFC->set_rate_attitude(60);
-            std::stringstream ss;
-            ss<<res;
-            qDebug()<<"Set rate result:"<<ss.str().c_str();
         }
     });
     start();
@@ -139,7 +141,7 @@ void OHDConnection::sendMessage(mavlink_message_t msg){
         if(passtroughOhdGround!=nullptr){
             passtroughOhdGround->send_message(msg);
         }else{
-            qDebug()<<"MAVSDK ground unit not discovered";
+            qDebug()<<"MAVSDK passtroughOhdGround not created";
         }
         return;
     }

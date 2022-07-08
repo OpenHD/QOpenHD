@@ -10,7 +10,8 @@ ListView {
     width: parent.width
     height: parent.height
     model: _logMessagesModel
-    delegate: Rectangle {
+    delegate:
+    Rectangle {
         color: Qt.rgba(0.3,0.3,0.3)
         height: childrenRect.height
         width: parent.width

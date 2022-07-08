@@ -9,13 +9,12 @@ import QtQuick.Controls.Material 2.12
 import Qt.labs.settings 1.0
 
 import OpenHD 1.0
-import MavlinkTelemetry 1.0
 
 import "../../ui" as Ui
 import "../elements"
 
 // Temporary dummy
-Item {
+Rectangle {
 
     Layout.fillHeight: true
     Layout.fillWidth: true
@@ -43,7 +42,8 @@ Item {
                 }
                 Label {
                     width:100
-                    text: "Curr:"+model.value
+                    text: "Val: "+model.value
+                    font.bold: true
                 }
                 Button {
                     text: "GET"
@@ -72,8 +72,15 @@ Item {
             text: "Not found yet"
             visible: _airPiSettingsModel.rowCount() > 0
         }*/
+        /*Button {
+            height:64
+            id: fetchAllButtonId
+            text:"FetchAll"
+            onClicked: _airPiSettingsModel.try_fetch_all_parameters()
+        }*/
 
         ListView {
+            //anchors.top: fetchAllButtonId.bottom
             width: parent.width
             model: _airPiSettingsModel
             delegate: delegateAirPiSettingsValue

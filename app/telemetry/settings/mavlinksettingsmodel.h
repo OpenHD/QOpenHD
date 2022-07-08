@@ -28,6 +28,8 @@ private:
     std::shared_ptr<mavsdk::Param> param_client;
 #endif
 public:
+    Q_INVOKABLE void try_fetch_all_parameters();
+
     Q_INVOKABLE void try_fetch_parameter(QString param_id);
 
     Q_INVOKABLE void try_update_parameter(const QString param_id,QVariant value);

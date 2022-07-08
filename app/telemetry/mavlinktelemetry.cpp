@@ -618,10 +618,17 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             if (!param_id.contains('\0')) {
                param_id.append('\0');
             }
+            const QString s(param_id.data());
+            if(msg.sysid==OHD_SYS_ID_AIR || msg.sysid == OHD_SYS_ID_GROUND){
+                // the message is a log message from openhd
+                qDebug()<<"Log message from OpenHD:"<<s;
+                LogMessagesModel::addLogMessage({"OHD",s,0,LogMessagesModel::log_severity_to_color(statustext.severity)});
 
-            QString s(param_id.data());
-
-            OpenHD::instance()->messageReceived(s, statustext.severity);
+            }else{
+                // most likely from the flight controller, but can be someone else, too
+                 qDebug()<<"Log message from not OpenHD:"<<s;
+                 OpenHD::instance()->telemetryMessage(s, statustext.severity);
+            }
             break;
         }
         case MAVLINK_MSG_ID_ESC_TELEMETRY_1_TO_4: {
@@ -695,7 +702,7 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
         OpenHD::instance()->setWifiAdapter0(parsedMsg.count_p_all,0,0);
         break;
     }
-    case MAVLINK_MSG_ID_OPENHD_LOG_MESSAGE:{
+    /*case MAVLINK_MSG_ID_OPENHD_LOG_MESSAGE:{
         mavlink_openhd_log_message_t parsedMsg;
         mavlink_msg_openhd_log_message_decode(&msg,&parsedMsg);
         const QString message{parsedMsg.text};
@@ -704,7 +711,8 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
         qDebug()<<"Log message:"<<message;
         LogMessagesModel::addLogMessage({"OHD",message,timestamp,LogMessagesModel::log_severity_to_color(severity)});
         break;
-    }
+    }*/
+    break;
         default: {
             //printf("MavlinkTelemetry received unmatched message with ID %d, sequence: %d from component %d of system %d\n", msg.msgid, msg.seq, msg.compid, msg.sysid);
             qDebug()<<"MavlinkTelemetry received unmatched message with ID "<<msg.msgid

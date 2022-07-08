@@ -44,6 +44,10 @@ public slots:
     void addData(LogMessagesModel::LogMessageData logMessageData);
 private:
     QVector< LogMessageData > m_data;
+public:
+    // argh
+signals:
+    void signalAddLogMessage(LogMessagesModel::LogMessageData logMessageData);
 };
 
 #endif // LOGMESSAGESMODEL_H
