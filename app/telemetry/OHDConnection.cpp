@@ -38,53 +38,69 @@ OHDConnection::OHDConnection(QObject *parent,bool useTcp):QObject(parent),USE_TC
       // returning true from the callback disables printing the message to stdout
       return level < mavsdk::log::Level::Warn;
     });
+    // NOTE: subscribe before adding any connection(s)
+    mavsdk->subscribe_on_new_system([this]() {
+        // hacky, fucking hell. mavsdk might call this callback with more than 1 system added.
+        auto systems=mavsdk->systems();
+        for(int i=mavsdk_already_known_systems;i<systems.size();i++){
+            auto new_system=systems.at(i);
+            this->onNewSystem(new_system);
+        }
+        mavsdk_already_known_systems=systems.size();
+        //qDebug()<<this->mavsdk->systems().size();
+        //auto system = this->mavsdk->systems().back();
+        //this->onNewSystem(system);
+    });
     mavsdk::ConnectionResult connection_result = mavsdk->add_udp_connection(QOPENHD_GROUND_CLIENT_UDP_PORT_IN);
     std::stringstream ss;
     ss<<"MAVSDK connection: " << connection_result;
     qDebug()<<ss.str().c_str();
-    mavsdk->subscribe_on_new_system([this]() {
-        auto system = this->mavsdk->systems().back();
-        qDebug()<<"System found"<<(int)system->get_system_id();
-        if(system->get_system_id()==OHD_SYS_ID_GROUND){
-            qDebug()<<"Found OHD Ground station";
-            systemOhdGround=system;
-        }else if(system->get_system_id()==OHD_SYS_ID_AIR){
-            qDebug()<<"Found OHD AIR station";
-            systemOhdAir=system;
-        }else if(system->has_autopilot()){
-            // we got the flight controller
-            telemetryFC=std::make_unique<mavsdk::Telemetry>(system);
-            auto res=telemetryFC->set_rate_attitude(60);
-            std::stringstream ss;
-            ss<<res;
-            qDebug()<<"Set rate result:"<<ss.str().c_str();
-        }
-        qDebug()<<"Sys id:"<<system->get_system_id();
-        if(system->get_system_id()==OHD_SYS_ID_GROUND){
-            passtroughOhdGround=std::make_shared<mavsdk::MavlinkPassthrough>(system);
-            qDebug()<<"XX:"<<passtroughOhdGround->get_target_sysid();
-            passtroughOhdGround->subscribe_message_async(MAVLINK_MSG_ID_ONBOARD_COMPUTER_STATUS,[](const mavlink_message_t& msg){
-                //qDebug()<<"Got MAVLINK_MSG_ID_ONBOARD_COMPUTER_STATUS";
-            });
-            passtroughOhdGround->intercept_incoming_messages_async([this](mavlink_message_t& msg){
-                //qDebug()<<"Intercept:Got message"<<msg.msgid;
-                if(this->callback!=nullptr){
-                     this->callback(msg);
-                }
-                return true;
-            });
-            passtroughOhdGround->intercept_outgoing_messages_async([](mavlink_message_t& msg){
-                //qDebug()<<"Intercept:send message"<<msg.msgid;
-                return true;
-            });
-            paramOhdGround=std::make_unique<mavsdk::Param>(system);
-            paramOhdGround->late_init(1,true);
-            MavlinkSettingsModel::instance().set_param_client(paramOhdGround);
-
-        }
-    });
     start();
 #endif //X_USE_MAVSDK
+}
+
+void OHDConnection::onNewSystem(std::shared_ptr<mavsdk::System> system){
+    const auto components=system->component_ids();
+    qDebug()<<"System found"<<(int)system->get_system_id()<<" with components:"<<components.size();
+    for(const auto& component:components){
+        qDebug()<<"Component:"<<(int)component;
+    }
+    if(system->get_system_id()==OHD_SYS_ID_GROUND){
+        qDebug()<<"Found OHD Ground station";
+        systemOhdGround=system;
+        passtroughOhdGround=std::make_shared<mavsdk::MavlinkPassthrough>(system);
+        qDebug()<<"XX:"<<passtroughOhdGround->get_target_sysid();
+        passtroughOhdGround->subscribe_message_async(MAVLINK_MSG_ID_ONBOARD_COMPUTER_STATUS,[](const mavlink_message_t& msg){
+            //qDebug()<<"Got MAVLINK_MSG_ID_ONBOARD_COMPUTER_STATUS";
+        });
+        passtroughOhdGround->intercept_incoming_messages_async([this](mavlink_message_t& msg){
+            //qDebug()<<"Intercept:Got message"<<msg.msgid;
+            if(this->callback!=nullptr){
+                 this->callback(msg);
+            }
+            return true;
+        });
+        passtroughOhdGround->intercept_outgoing_messages_async([](mavlink_message_t& msg){
+            //qDebug()<<"Intercept:send message"<<msg.msgid;
+            return true;
+        });
+        paramOhdGround=std::make_shared<mavsdk::Param>(system);
+        paramOhdGround->late_init(1,true);
+        MavlinkSettingsModel::instance().set_param_client(paramOhdGround);
+        system->register_component_discovered_id_callback([](mavsdk::System::ComponentType comp_type, uint8_t comp_id){
+            qDebug()<<"Ground component discovered:"<<(int)comp_id;
+        });
+    }else if(system->get_system_id()==OHD_SYS_ID_AIR){
+        qDebug()<<"Found OHD AIR station";
+        systemOhdAir=system;
+    }else if(system->has_autopilot()){
+        // we got the flight controller
+        telemetryFC=std::make_unique<mavsdk::Telemetry>(system);
+        auto res=telemetryFC->set_rate_attitude(60);
+        std::stringstream ss;
+        ss<<res;
+        qDebug()<<"Set rate result:"<<ss.str().c_str();
+    }
 }
 
 void OHDConnection::start(){
