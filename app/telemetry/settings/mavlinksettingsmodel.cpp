@@ -41,6 +41,7 @@ bool MavlinkSettingsModel::try_fetch_all_parameters()
         while(rowCount()>0){
             removeData(rowCount()-1);
         }
+        qDebug()<<"Done removing old params";
         const auto params=param_client->get_all_params();
         for(const auto& int_param:params.int_params){
             MavlinkSettingsModel::SettingData data{QString(int_param.name.c_str()),int_param.value};
