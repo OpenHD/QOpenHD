@@ -54,7 +54,7 @@ static std::string gst_create_video_decoder(const QOpenHDVideoHelper::VideoCodec
     std::stringstream ss;
     if(videoCodec==QOpenHDVideoHelper::VideoCodecH264){
         //NOTE: decodebin on rpi for h264 doesn't work ???!!
-       ss<<"avdec_h264 ! ";
+       ss<<"avdec_h264 ! queue ! ";
     }else if(videoCodec==QOpenHDVideoHelper::VideoCodecH265){
         ss<<"decodebin ! ";
     }else{
