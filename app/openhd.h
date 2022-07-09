@@ -45,26 +45,6 @@ public:
 
     Q_INVOKABLE void switchToLanguage(const QString &language);
 
-    Q_INVOKABLE void setGroundGPIO(int pin, bool state) {
-        m_ground_gpio[pin] = state ? 1 : 0;
-        emit save_ground_gpio(m_ground_gpio);
-    }
-
-    Q_INVOKABLE void setAirGPIO(int pin, bool state) {
-        m_air_gpio[pin] = state ? 1 : 0;
-        emit save_air_gpio(m_air_gpio);
-    }
-
-    Q_INVOKABLE void setAirFREQ(int air_freq) {
-        qDebug() << "OPENHD setAirFREQ =" <<  air_freq;
-        m_air_freq = air_freq;
-        emit save_air_freq(m_air_freq);
-    }
-    Q_INVOKABLE void setGndFREQ(int gnd_freq) {
-        m_gnd_freq = gnd_freq;
-        emit save_gnd_freq(m_gnd_freq);
-    }
-
     /* public so that a QTimer can call it from main(), temporary fix due to some quirks with
        the way QTimer and QML singletons/context properties work */
     void updateFlightTimer();
@@ -149,9 +129,6 @@ public:
     Q_PROPERTY(int battery_percent MEMBER m_battery_percent WRITE set_battery_percent NOTIFY battery_percent_changed)
     void set_battery_percent(int battery_percent);
 
-    Q_PROPERTY(int ground_battery_percent MEMBER m_ground_battery_percent WRITE set_ground_battery_percent NOTIFY ground_battery_percent_changed)
-    void set_ground_battery_percent(int ground_battery_percent);
-
     Q_PROPERTY(int fc_battery_percent MEMBER m_fc_battery_percent WRITE set_fc_battery_percent NOTIFY fc_battery_percent_changed)
     void set_fc_battery_percent(int fc_battery_percent);
 
@@ -163,9 +140,6 @@ public:
 
     Q_PROPERTY(QString battery_gauge MEMBER m_battery_gauge WRITE set_battery_gauge NOTIFY battery_gauge_changed)
     void set_battery_gauge(QString battery_gauge);
-
-    Q_PROPERTY(QString ground_battery_gauge MEMBER m_ground_battery_gauge WRITE set_ground_battery_gauge NOTIFY ground_battery_gauge_changed)
-    void set_ground_battery_gauge(QString ground_battery_gauge);
 
     Q_PROPERTY(QString fc_battery_gauge MEMBER m_fc_battery_gauge WRITE set_fc_battery_gauge NOTIFY fc_battery_gauge_changed)
     void set_fc_battery_gauge(QString fc_battery_gauge);
@@ -253,12 +227,6 @@ public:
     Q_PROPERTY(unsigned int injection_fail_cnt MEMBER m_injection_fail_cnt WRITE set_injection_fail_cnt NOTIFY injection_fail_cnt_changed)
     void set_injection_fail_cnt(unsigned int injection_fail_cnt);
 
-    Q_PROPERTY(QString m_openhd_version_ground MEMBER m_openhd_version_ground WRITE set_openhd_version_ground NOTIFY openhd_version_ground_changed)
-    void set_openhd_version_ground(QString openhd_version_ground);
-
-    Q_PROPERTY(QString m_openhd_version_air MEMBER m_openhd_version_air WRITE set_openhd_version_air NOTIFY openhd_version_air_changed)
-    void set_openhd_version_air(QString openhd_version_air);
-
     Q_PROPERTY(double kbitrate MEMBER m_kbitrate WRITE set_kbitrate NOTIFY kbitrate_changed)
     void set_kbitrate(double kbitrate);
 
@@ -279,9 +247,6 @@ public:
 
     Q_PROPERTY(int lost_packet_percent MEMBER m_lost_packet_percent WRITE set_lost_packet_percent NOTIFY lost_packet_percent_changed)
     void set_lost_packet_percent(int lost_packet_percent);
-
-    Q_PROPERTY(bool air_undervolt MEMBER m_air_undervolt WRITE set_air_undervolt NOTIFY air_undervolt_changed)
-    void set_air_undervolt(bool air_undervolt);
 
 
     Q_PROPERTY(bool cts MEMBER m_cts WRITE set_cts NOTIFY cts_changed)
@@ -333,50 +298,6 @@ public:
     void set_pip_video_running(bool pip_video_running);
 
 
-    Q_PROPERTY(QList<int> ground_gpio MEMBER m_ground_gpio WRITE set_ground_gpio NOTIFY ground_gpio_changed)
-    void set_ground_gpio(QList<int> ground_gpio);
-
-    Q_PROPERTY(bool ground_gpio_busy MEMBER m_ground_gpio_busy WRITE set_ground_gpio_busy NOTIFY ground_gpio_busy_changed)
-    void set_ground_gpio_busy(bool ground_gpio_busy);
-
-    Q_PROPERTY(QList<int> air_gpio MEMBER m_air_gpio WRITE set_air_gpio NOTIFY air_gpio_changed)
-    void set_air_gpio(QList<int> air_gpio);
-
-    Q_PROPERTY(bool air_gpio_busy MEMBER m_air_gpio_busy WRITE set_air_gpio_busy NOTIFY air_gpio_busy_changed)
-    void set_air_gpio_busy(bool air_gpio_busy);
-
-    Q_PROPERTY(int air_freq MEMBER m_air_freq WRITE set_air_freq NOTIFY air_freq_changed)
-    void set_air_freq(int air_freq);
-
-    Q_PROPERTY(int gnd_freq MEMBER m_gnd_freq WRITE set_gnd_freq NOTIFY gnd_freq_changed)
-    void set_gnd_freq(int gnd_freq);
-
-    Q_PROPERTY(bool air_freq_busy MEMBER m_air_freq_busy WRITE set_air_freq_busy NOTIFY air_freq_busy_changed)
-    void set_air_freq_busy(bool air_freq_busy);
-
-    Q_PROPERTY(bool gnd_freq_busy MEMBER m_gnd_freq_busy WRITE set_gnd_freq_busy NOTIFY gnd_freq_busy_changed)
-    void set_gnd_freq_busy(bool gnd_freq_busy);
-
-    Q_PROPERTY(double ground_vin MEMBER m_ground_vin WRITE set_ground_vin NOTIFY ground_vin_changed)
-    void set_ground_vin(double ground_vin);
-
-    Q_PROPERTY(double ground_vout MEMBER m_ground_vout WRITE set_ground_vout NOTIFY ground_vout_changed)
-    void set_ground_vout(double ground_vout);
-
-    Q_PROPERTY(double ground_vbat MEMBER m_ground_vbat WRITE set_ground_vbat NOTIFY ground_vbat_changed)
-    void set_ground_vbat(double ground_vbat);
-
-    Q_PROPERTY(double ground_iout MEMBER m_ground_iout WRITE set_ground_iout NOTIFY ground_iout_changed)
-    void set_ground_iout(double ground_iout);
-
-
-
-    Q_PROPERTY(double air_vout MEMBER m_air_vout WRITE set_air_vout NOTIFY air_vout_changed)
-    void set_air_vout(double air_vout);
-
-    Q_PROPERTY(double air_iout MEMBER m_air_iout WRITE set_air_iout NOTIFY air_iout_changed)
-    void set_air_iout(double air_iout);
-
     Q_PROPERTY(double vehicle_vx_angle MEMBER m_vehicle_vx_angle WRITE set_vehicle_vx_angle NOTIFY vehicle_vx_angle_changed)
     void set_vehicle_vx_angle(double vehicle_vx_angle);
 
@@ -393,18 +314,6 @@ signals:
     // system
     void gstreamer_version_changed();
     void qt_version_changed();
-
-    void save_ground_gpio(QList<int> ground_gpio);
-    void save_air_gpio(QList<int> air_gpio);
-
-    void ground_gpio_busy_changed(bool ground_gpio_busy);
-    void air_gpio_busy_changed(bool air_gpio_busy);
-
-    void save_air_freq(int air_freq);
-    void save_gnd_freq(int gnd_freq);
-
-    void air_freq_busy_changed(bool air_freq_busy);
-    void gnd_freq_busy_changed(bool gnd_freq_busy);
 
     void wifiAdapter0Changed(unsigned int received_packet_cnt, int current_signal_dbm, int signal_good);
     void wifiAdapter1Changed(unsigned int received_packet_cnt, int current_signal_dbm, int signal_good);
@@ -435,12 +344,10 @@ signals:
     void home_course_changed(int home_course);
     void home_heading_changed(int home_heading);
     void battery_percent_changed(int battery_percent);
-    void ground_battery_percent_changed(int ground_battery_percent);
     void fc_battery_percent_changed(int fc_battery_percent);
     void battery_voltage_changed(double battery_voltage);
     void battery_current_changed(double battery_current);
     void battery_gauge_changed(QString battery_gauge);
-    void ground_battery_gauge_changed(QString ground_battery_gauge);
     void fc_battery_gauge_changed(QString fc_battery_gauge);
     void satellites_visible_changed(int satellites_visible);
     void gps_hdop_changed(double gps_hdop);
@@ -492,11 +399,7 @@ signals:
     void damaged_block_percent_changed(int damaged_block_percent);
     void lost_packet_cnt_changed(unsigned int lost_packet_cnt);
     void lost_packet_percent_changed(int lost_packet_percent);
-    void air_undervolt_changed(bool air_undervolt);
     void cts_changed(bool cts);
-
-    void openhd_version_ground_changed(QString openhd_version_ground);
-    void openhd_version_air_changed(QString openhd_version_air);
 
     void flight_time_changed(QString flight_time);
 
@@ -518,25 +421,6 @@ signals:
     void pip_video_running_changed(bool pip_video_running);
 
     void lte_video_running_changed(bool lte_video_running);
-
-    void ground_gpio_changed(QList<int> ground_gpio);
-    void air_gpio_changed(QList<int> air_gpio);
-
-    void air_freq_changed(int air_freq);
-    void gnd_freq_changed(int gnd_freq);
-
-    void air_reboot();
-    void air_shutdown();
-    void ground_reboot();
-    void ground_shutdown();
-
-    void ground_vin_changed(double ground_vin);
-    void ground_vout_changed(double ground_vout);
-    void ground_vbat_changed(double ground_vbat);
-    void ground_iout_changed(double ground_iout);
-
-    void air_vout_changed(double air_vout);
-    void air_iout_changed(double air_iout);
 
     void vehicle_vx_angle_changed(double vehicle_vx_angle);
     void vehicle_vz_angle_changed(double vehicle_vz_angle);
@@ -595,12 +479,10 @@ public:
     int m_home_course = 0; //this is the relative course from nose
 
     int m_battery_percent = 20; //TODO debug, set back to 0
-    int m_ground_battery_percent = 0;
     int m_fc_battery_percent = 0;
     double m_battery_current = 0.0;
     double m_battery_voltage = 0.0;
     QString m_battery_gauge = "\uf091";
-    QString m_ground_battery_gauge = "\uf091";
     QString m_fc_battery_gauge = "\uf091";
 
     int m_satellites_visible = 0;
@@ -658,7 +540,6 @@ public:
     unsigned int m_lost_packet_cnt = 0;
     int m_lost_packet_percent = 0;
 
-    bool m_air_undervolt = false;
     bool m_cts = false;
 
 
@@ -690,27 +571,7 @@ public:
     QElapsedTimer totalTime;
     QElapsedTimer flightTimeStart;
 
-    QList<int> m_ground_gpio;
-    QList<int> m_air_gpio;
-
-    bool m_ground_gpio_busy = false;
-    bool m_air_gpio_busy = false;
-
-    int m_air_freq;
-    int m_gnd_freq;
-
-    bool m_air_freq_busy = false;
-    bool m_gnd_freq_busy = false;
-
     QTimer* timer = nullptr;
-
-    double m_ground_vin = -1;
-    double m_ground_vout = -1;
-    double m_ground_vbat = -1;
-    double m_ground_iout = -1;
-
-    double m_air_vout = -1;
-    double m_air_iout = -1;
 
     double m_vehicle_vx_angle = 0.0;
     double m_vehicle_vz_angle = 0.0;
@@ -727,19 +588,9 @@ public:
     int m_arm_disarm = 99;
 
     int m_reboot_shutdown=99;
-
-    QString m_openhd_version_ground="NA";
-    QString m_openhd_version_air="NA";
     // Quick and dirty code begin
 public:
     Q_INVOKABLE void pingAllSystems();
-    // All these get set by the proper responses and can be used in UI
-    QString m_last_ping_result_openhd_air="NA";
-    Q_PROPERTY(QString last_ping_result_openhd_air MEMBER  m_last_ping_result_openhd_air WRITE set_last_ping_result_openhd_air NOTIFY last_ping_result_openhd_air_changed)
-    void set_last_ping_result_openhd_air(QString last_ping_result_openhd_air);
-    QString m_last_ping_result_openhd_ground="NA";
-    Q_PROPERTY(QString last_ping_result_openhd_ground MEMBER  m_last_ping_result_openhd_ground WRITE set_last_ping_result_openhd_ground NOTIFY last_ping_result_openhd_ground_changed)
-    void set_last_ping_result_openhd_ground(QString last_ping_result_openhd_ground);
     //
     QString m_last_ping_result_flight_ctrl="NA";
     Q_PROPERTY(QString last_ping_result_flight_ctrl MEMBER  m_last_ping_result_flight_ctrl WRITE set_last_ping_result_flight_ctrl NOTIFY last_ping_result_flight_ctrl_changed)
@@ -747,8 +598,6 @@ public:
 public:
     Q_INVOKABLE void request_version();
 signals:
-    void last_ping_result_openhd_air_changed(QString last_ping_result_openhd_air);
-    void last_ping_result_openhd_ground_changed(QString last_ping_result_openhd_ground);
     void last_ping_result_flight_ctrl_changed(QString last_ping_result_flight_ctrl);
 };
 

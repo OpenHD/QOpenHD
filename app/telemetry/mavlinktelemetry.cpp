@@ -655,9 +655,9 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             std::stringstream ss;
             ss<<deltaMs<<"ms";
             if(msg.sysid==OHD_SYS_ID_AIR){
-                OpenHD::instance()->set_last_ping_result_openhd_air(ss.str().c_str());
+                OHDSystemAir::instance().set_last_ping_result_openhd_air(ss.str().c_str());
             }else if(msg.sysid==OHD_SYS_ID_GROUND){
-                OpenHD::instance()->set_last_ping_result_openhd_ground(ss.str().c_str());
+                OHDSystemGround::instance().set_last_ping_result_openhd_ground(ss.str().c_str());
             }else{
                 qDebug()<<"Got ping from fc";
                 // almost 100% from flight controller
@@ -677,7 +677,6 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             OHDSystemAir::instance().set_cpuload_air(decoded.cpu_cores[0]);
             OHDSystemAir::instance().set_temp_air(decoded.temperature_core[0]);
         }else if(msg.sysid==OHD_SYS_ID_GROUND){
-            //OpenHD::instance()->set_cpuload_gnd(decoded.cpu_cores[0]);
             OHDSystemGround::instance().set_cpuload_gnd(decoded.cpu_cores[0]);
             OHDSystemGround::instance().set_temp_gnd(decoded.temperature_core[0]);
         }else{
@@ -690,9 +689,9 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
         mavlink_msg_openhd_version_message_decode(&msg,&parsedMsg);
         QString version(parsedMsg.version);
         if(msg.sysid==OHD_SYS_ID_AIR){
-            OpenHD::instance()->set_openhd_version_air(version);
+            OHDSystemAir::instance().set_openhd_version_air(version);
         }else if(msg.sysid==OHD_SYS_ID_GROUND){
-            OpenHD::instance()->set_openhd_version_ground(version);
+            OHDSystemGround::instance().set_openhd_version_ground(version);
         }else{
             qDebug()<<"OHD version with unknown sys id";
         }

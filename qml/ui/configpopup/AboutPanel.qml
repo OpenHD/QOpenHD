@@ -113,7 +113,7 @@ Rectangle {
                         leftPadding: 12
                     }
                     Text {
-                        text: OpenHD.m_openhd_version_air
+                        text: _ohdSystemAir.m_openhd_version_air
                         height: 24
                         width: 256
                         font.pixelSize: 14
@@ -132,7 +132,7 @@ Rectangle {
                         leftPadding: 12
                     }
                     Text {
-                        text: OpenHD.last_ping_result_openhd_air
+                        text: _ohdSystemAir.last_ping_result_openhd_air
                         height: 24
                         width: 256
                         font.pixelSize: 14
@@ -164,7 +164,7 @@ Rectangle {
                         leftPadding: 12
                     }
                     Text {
-                        text: OpenHD.m_openhd_version_ground
+                        text: _ohdSystemGround.m_openhd_version_ground
                         height: 24
                         width: 256
                         font.pixelSize: 14
@@ -183,7 +183,7 @@ Rectangle {
                         leftPadding: 12
                     }
                     Text {
-                        text: OpenHD.last_ping_result_openhd_ground
+                        text: _ohdSystemGround.last_ping_result_openhd_ground
                         height: 24
                         width: 256
                         font.pixelSize: 14
