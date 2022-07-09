@@ -65,7 +65,6 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "videostreaming/gst_helper.hpp"
 #endif
 
-#include "xsettingsui.h"
 #include "logging/logmessagesmodel.h"
 #include "telemetry/settings/mavlinksettingsmodel.h"
 
@@ -272,8 +271,6 @@ int main(int argc, char *argv[]) {
     qmlRegisterType<FlightPathVector>("OpenHD", 1, 0, "FlightPathVector");
 
     qmlRegisterType<DrawingCanvas>("OpenHD", 1, 0, "DrawingCanvas");
-    // X testing
-    qmlRegisterType<XSettingsUI>("OpenHD", 1, 0, "XSettingsUI");
 
 #if defined(ENABLE_VIDEO_RENDER)
 #if defined(__android__)
