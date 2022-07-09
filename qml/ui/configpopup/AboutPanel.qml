@@ -208,7 +208,7 @@ Rectangle {
         Button{
             height: 24
             text: "Request version"
-            onClicked: _mavlinkTelemetry.request_version()
+            onClicked: _mavlinkTelemetry.request_openhd_version()
         }
     }
 }

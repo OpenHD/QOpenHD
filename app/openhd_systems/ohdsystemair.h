@@ -21,38 +21,27 @@ public:
     void set_cpuload_air(int cpuload_air);
     Q_PROPERTY(int temp_air MEMBER m_temp_air WRITE set_temp_air NOTIFY temp_air_changed)
     void set_temp_air(int temp_air);
-    //
     Q_PROPERTY(QString m_openhd_version_air MEMBER m_openhd_version_air WRITE set_openhd_version_air NOTIFY openhd_version_air_changed)
     void set_openhd_version_air(QString openhd_version_air);
     Q_PROPERTY(bool air_undervolt MEMBER m_air_undervolt WRITE set_air_undervolt NOTIFY air_undervolt_changed)
     void set_air_undervolt(bool air_undervolt);
-
     Q_PROPERTY(QList<int> air_gpio MEMBER m_air_gpio WRITE set_air_gpio NOTIFY air_gpio_changed)
     void set_air_gpio(QList<int> air_gpio);
-
     Q_PROPERTY(bool air_gpio_busy MEMBER m_air_gpio_busy WRITE set_air_gpio_busy NOTIFY air_gpio_busy_changed)
     void set_air_gpio_busy(bool air_gpio_busy);
-
     Q_PROPERTY(int air_freq MEMBER m_air_freq WRITE set_air_freq NOTIFY air_freq_changed)
     void set_air_freq(int air_freq);
     Q_PROPERTY(bool air_freq_busy MEMBER m_air_freq_busy WRITE set_air_freq_busy NOTIFY air_freq_busy_changed)
     void set_air_freq_busy(bool air_freq_busy);
     Q_PROPERTY(double air_vout MEMBER m_air_vout WRITE set_air_vout NOTIFY air_vout_changed)
     void set_air_vout(double air_vout);
-
     Q_PROPERTY(double air_iout MEMBER m_air_iout WRITE set_air_iout NOTIFY air_iout_changed)
     void set_air_iout(double air_iout);
-
-    Q_INVOKABLE void setAirGPIO(int pin, bool state) {
-        m_air_gpio[pin] = state ? 1 : 0;
-        emit save_air_gpio(m_air_gpio);
-    }
-
-    Q_INVOKABLE void setAirFREQ(int air_freq) {
-        qDebug() << "OPENHD setAirFREQ =" <<  air_freq;
-        m_air_freq = air_freq;
-        emit save_air_freq(m_air_freq);
-    }
+    Q_PROPERTY(QString last_ping_result_openhd_air MEMBER  m_last_ping_result_openhd_air WRITE set_last_ping_result_openhd_air NOTIFY last_ping_result_openhd_air_changed)
+    void set_last_ping_result_openhd_air(QString last_ping_result_openhd_air);
+    //
+    Q_INVOKABLE void setAirGPIO(int pin, bool state);
+    Q_INVOKABLE void setAirFREQ(int air_freq);
 signals:
     void cpuload_air_changed(int cpuload_air);
     void temp_air_changed(int temp_air);
@@ -86,11 +75,8 @@ public:
     double m_air_vout = -1;
     double m_air_iout = -1;
     QString m_openhd_version_air="NA";
-public:
     // All these get set by the proper responses and can be used in UI
     QString m_last_ping_result_openhd_air="NA";
-    Q_PROPERTY(QString last_ping_result_openhd_air MEMBER  m_last_ping_result_openhd_air WRITE set_last_ping_result_openhd_air NOTIFY last_ping_result_openhd_air_changed)
-    void set_last_ping_result_openhd_air(QString last_ping_result_openhd_air);
 };
 
 #endif // OHDSYSTEMAIR_H

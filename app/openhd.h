@@ -583,7 +583,6 @@ public:
     int m_arm_disarm = 99;
 
     int m_reboot_shutdown=99;
-    // Quick and dirty code begin
 public:
     //
     QString m_last_ping_result_flight_ctrl="NA";

@@ -65,6 +65,17 @@ void OHDSystemAir::set_air_iout(double air_iout) {
     emit air_iout_changed(m_air_iout);
 }
 
+void OHDSystemAir::setAirGPIO(int pin, bool state) {
+    m_air_gpio[pin] = state ? 1 : 0;
+    emit save_air_gpio(m_air_gpio);
+}
+
+void OHDSystemAir::setAirFREQ(int air_freq) {
+    qDebug() << "OPENHD setAirFREQ =" <<  air_freq;
+    m_air_freq = air_freq;
+    emit save_air_freq(m_air_freq);
+}
+
 void OHDSystemAir::set_last_ping_result_openhd_air(QString last_ping_result_openhd_air)
 {
     m_last_ping_result_openhd_air=last_ping_result_openhd_air;
