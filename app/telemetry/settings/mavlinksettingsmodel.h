@@ -19,7 +19,9 @@ class MavlinkSettingsModel : public QAbstractListModel
 {
     Q_OBJECT
 public:
-    static MavlinkSettingsModel& instance();
+    static MavlinkSettingsModel& instanceAir();
+    static MavlinkSettingsModel& instanceGround();
+
     explicit MavlinkSettingsModel(QObject *parent = nullptr);
 #ifdef X_USE_MAVSDK
 public:

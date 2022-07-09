@@ -3,10 +3,15 @@
 
 #include <QVariant>
 
-MavlinkSettingsModel &MavlinkSettingsModel::instance()
+MavlinkSettingsModel &MavlinkSettingsModel::instanceAir()
 {
-    static MavlinkSettingsModel* instance=new MavlinkSettingsModel();
-    return *instance;
+    static MavlinkSettingsModel* instanceAir=new MavlinkSettingsModel();
+    return *instanceAir;
+}
+MavlinkSettingsModel &MavlinkSettingsModel::instanceGround()
+{
+    static MavlinkSettingsModel* instanceGround=new MavlinkSettingsModel();
+    return *instanceGround;
 }
 
 MavlinkSettingsModel::MavlinkSettingsModel(QObject *parent)
