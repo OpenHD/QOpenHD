@@ -614,26 +614,6 @@ void OpenHD::set_kbitrate_measured(double kbitrate_measured) {
     emit kbitrate_measured_changed(m_kbitrate_measured);
 }
 
-void OpenHD::set_cpuload_gnd(int cpuload_gnd) {
-    m_cpuload_gnd = cpuload_gnd;
-    emit cpuload_gnd_changed(m_cpuload_gnd);
-}
-
-void OpenHD::set_cpuload_air(int cpuload_air) {
-    m_cpuload_air = cpuload_air;
-    emit cpuload_air_changed(m_cpuload_air);
-}
-
-void OpenHD::set_temp_gnd(int temp_gnd) {
-    m_temp_gnd = temp_gnd;
-    emit temp_gnd_changed(m_temp_gnd);
-}
-
-void OpenHD::set_temp_air(int temp_air) {
-    m_temp_air = temp_air;
-    emit temp_air_changed(m_temp_air);
-}
-
 void OpenHD::set_damaged_block_cnt(unsigned int damaged_block_cnt) {
     m_damaged_block_cnt = damaged_block_cnt;
     emit damaged_block_cnt_changed(m_damaged_block_cnt);

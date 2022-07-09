@@ -22,7 +22,8 @@
 #include "qopenhdmavlinkhelper.hpp"
 
 #include "openhd.h"
-
+#include "openhd_systems/ohdsystemair.h"
+#include "openhd_systems/ohdsystemground.h"
 
 MavlinkTelemetry* MavlinkTelemetry::instance() {
     static MavlinkTelemetry instance;
@@ -673,11 +674,12 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
         mavlink_onboard_computer_status_t decoded;
         mavlink_msg_onboard_computer_status_decode(&msg,&decoded);
         if(msg.sysid==OHD_SYS_ID_AIR){
-            OpenHD::instance()->set_cpuload_air(decoded.cpu_cores[0]);
-            OpenHD::instance()->set_temp_air(decoded.temperature_core[0]);
+            OHDSystemAir::instance().set_cpuload_air(decoded.cpu_cores[0]);
+            OHDSystemAir::instance().set_temp_air(decoded.temperature_core[0]);
         }else if(msg.sysid==OHD_SYS_ID_GROUND){
-            OpenHD::instance()->set_cpuload_gnd(decoded.cpu_cores[0]);
-            OpenHD::instance()->set_temp_gnd(decoded.temperature_core[0]);
+            //OpenHD::instance()->set_cpuload_gnd(decoded.cpu_cores[0]);
+            OHDSystemGround::instance().set_cpuload_gnd(decoded.cpu_cores[0]);
+            OHDSystemGround::instance().set_temp_gnd(decoded.temperature_core[0]);
         }else{
             qDebug()<<"Sys tele with unknown sys id";
         }

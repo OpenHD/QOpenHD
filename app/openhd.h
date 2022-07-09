@@ -268,18 +268,6 @@ public:
     Q_PROPERTY(double kbitrate_measured MEMBER m_kbitrate_measured WRITE set_kbitrate_measured NOTIFY kbitrate_measured_changed)
     void set_kbitrate_measured(double kbitrate_measured);
 
-    Q_PROPERTY(int cpuload_gnd MEMBER m_cpuload_gnd WRITE set_cpuload_gnd NOTIFY cpuload_gnd_changed)
-    void set_cpuload_gnd(int cpuload_gnd);
-
-    Q_PROPERTY(int cpuload_air MEMBER m_cpuload_air WRITE set_cpuload_air NOTIFY cpuload_air_changed)
-    void set_cpuload_air(int cpuload_air);
-
-    Q_PROPERTY(int temp_gnd MEMBER m_temp_gnd WRITE set_temp_gnd NOTIFY temp_gnd_changed)
-    void set_temp_gnd(int temp_gnd);
-
-    Q_PROPERTY(int temp_air MEMBER m_temp_air WRITE set_temp_air NOTIFY temp_air_changed)
-    void set_temp_air(int temp_air);
-
     Q_PROPERTY(unsigned int damaged_block_cnt MEMBER m_damaged_block_cnt WRITE set_damaged_block_cnt NOTIFY damaged_block_cnt_changed)
     void set_damaged_block_cnt(unsigned int damaged_block_cnt);
 
@@ -500,10 +488,6 @@ signals:
     void kbitrate_changed(double kbitrate);
     void kbitrate_set_changed(double kbitrate_set);
     void kbitrate_measured_changed(double kbitrate_measured);
-    void cpuload_gnd_changed(int cpuload_gnd);
-    void temp_gnd_changed(int temp_gnd);
-    void cpuload_air_changed(int cpuload_air);
-    void temp_air_changed(int temp_air);
     void damaged_block_cnt_changed(unsigned int damaged_block_cnt);
     void damaged_block_percent_changed(int damaged_block_percent);
     void lost_packet_cnt_changed(unsigned int lost_packet_cnt);
@@ -667,14 +651,6 @@ public:
     int m_imu_temp = 0;
     int m_press_temp = 0;
     int m_esc_temp = 0;
-
-    int m_cpuload_gnd = 0;
-
-    int m_temp_gnd = 0;
-
-    int m_cpuload_air = 0;
-
-    int m_temp_air = 0;
 
     unsigned int m_damaged_block_cnt = 0;
     int m_damaged_block_percent = 0;

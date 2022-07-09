@@ -380,10 +380,10 @@ Item {
                 }
                 chart.skippedPacketsLast = OpenHD.skipped_packet_cnt;
 
-                airCPUAxis.append(chart.chartData, OpenHD.cpuload_air);
-                gndCPUAxis.append(chart.chartData, OpenHD.cpuload_gnd);
-                airTempAxis.append(chart.chartData, OpenHD.temp_air);
-                gndTempAxis.append(chart.chartData, OpenHD.temp_gnd);
+                airCPUAxis.append(chart.chartData, _ohdSystemAir.cpuload_air);
+                gndCPUAxis.append(chart.chartData, _ohdSystemGround.cpuload_gnd);
+                airTempAxis.append(chart.chartData, _ohdSystemAir.temp_air);
+                gndTempAxis.append(chart.chartData, _ohdSystemGround.temp_gnd);
                 downlinkRSSIAxis.append(chart.chartData, OpenHD.downlink_rssi);
                 uplinkRSSIAxis.append(chart.chartData, OpenHD.current_signal_joystick_uplink);
 
