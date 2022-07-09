@@ -203,12 +203,12 @@ Rectangle {
         Button{
             height: 24
             text: "Ping all systems"
-            onClicked: OpenHD.pingAllSystems()
+            onClicked: _mavlinkTelemetry.pingAllSystems()
         }
         Button{
             height: 24
             text: "Request version"
-            onClicked: OpenHD.request_version()
+            onClicked: _mavlinkTelemetry.request_version()
         }
     }
 }

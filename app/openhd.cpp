@@ -411,12 +411,6 @@ void OpenHD::set_lon(double lon) {
     emit lon_changed(m_lon);
 }
 
-void OpenHD::set_battery_percent(int battery_percent) {
-    m_battery_percent = battery_percent;
-    emit battery_percent_changed(m_battery_percent);
-}
-
-
 void OpenHD::set_fc_battery_percent(int fc_battery_percent) {
     m_fc_battery_percent = fc_battery_percent;
     emit fc_battery_percent_changed(m_fc_battery_percent);
@@ -430,11 +424,6 @@ void OpenHD::set_battery_voltage(double battery_voltage) {
 void OpenHD::set_battery_current(double battery_current) {
     m_battery_current = battery_current;
     emit battery_current_changed(m_battery_current);
-}
-
-void OpenHD::set_battery_gauge(QString battery_gauge) {
-    m_battery_gauge = battery_gauge;
-    emit battery_gauge_changed(m_battery_gauge);
 }
 
 void OpenHD::set_fc_battery_gauge(QString fc_battery_gauge) {
@@ -948,24 +937,12 @@ void OpenHD::setFontFamily(QString fontFamily) {
 
 }
 
-
-// quick dirty
-void OpenHD::pingAllSystems()
-{
-    qDebug()<<"Ping All Systems";
-    MavlinkTelemetry::instance()->pingAllSystems();
-}
-
 void OpenHD::set_last_ping_result_flight_ctrl(QString last_ping_result_flight_ctrl)
 {
     m_last_ping_result_flight_ctrl=last_ping_result_flight_ctrl;
     emit last_ping_result_flight_ctrl_changed(m_last_ping_result_flight_ctrl);
 }
 
-void OpenHD::request_version()
-{
-    MavlinkTelemetry::instance()->request_openhd_version();
-}
 
 
 

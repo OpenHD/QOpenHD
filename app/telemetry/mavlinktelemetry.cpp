@@ -274,9 +274,9 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             auto battery_cells = settings.value("battery_cells", QVariant(3)).toInt();
 
             int battery_percent = m_util.lipo_battery_voltage_to_percent(battery_cells, battery_voltage);
-            OpenHD::instance()->set_battery_percent(battery_percent);
+            //OpenHD::instance()->set_battery_percent(battery_percent);
             QString battery_gauge_glyph = m_util.battery_gauge_glyph_from_percentage(battery_percent);
-            OpenHD::instance()->set_battery_gauge(battery_gauge_glyph);
+            //OpenHD::instance()->set_battery_gauge(battery_gauge_glyph);
 
             qint64 current_timestamp = QDateTime::currentMSecsSinceEpoch();
 

@@ -97,8 +97,7 @@ SOURCES += \
     app/osd/altitudeladder.cpp \
     app/osd/drawingcanvas.cpp \
     app/osd/flightpathvector.cpp \
-    app/telemetry/settings/mavlinksettingsmodel.cpp \
-    app/xsettingsui.cpp
+    app/telemetry/settings/mavlinksettingsmodel.cpp
 
 HEADERS += \
     app/logging/logmessagesmodel.h \
@@ -112,8 +111,7 @@ HEADERS += \
     app/osd/flightpathvector.h \
     app/telemetry/openhd_defines.hpp \
     app/telemetry/qopenhdmavlinkhelper.hpp \
-    app/telemetry/settings/mavlinksettingsmodel.h \
-    app/xsettingsui.h
+    app/telemetry/settings/mavlinksettingsmodel.h
 
 
 # I deleted all the "old" telemetry protocolls other than mavlink
@@ -170,6 +168,7 @@ DISTFILES += \
     android/src/org/freedesktop/gstreamer/androidmedia/GstAhsCallback.java \
     android/src/org/freedesktop/gstreamer/androidmedia/GstAmcOnFrameAvailableListener.java \
     app/adsb/README.md \
+    app/openhd_systems/README.md \
     app/osd_extra/Readme.txt \
     app/platform/README.md \
     app/telemetry/README.md \

@@ -6,6 +6,7 @@
 
 /**
  * @brief This class contains information (basically like a model) about the OpenHD Air instance (if connected)
+ * NOTE: Please keep FC Telemetry data out of here, we have a seperate model for the FC !!!!
  * It uses QT signals to propagate changes of its data member(s) (Like weather the system is connected, usw).
  * QOpenHD can only talk to one OHD Air system at a time, so we can make this class a singleton.
  */

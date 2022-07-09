@@ -126,9 +126,6 @@ public:
     Q_PROPERTY(unsigned int gps_fix_type MEMBER m_gps_fix_type WRITE set_gps_fix_type NOTIFY gps_fix_type_changed)
     void set_gps_fix_type(unsigned int gps_fix_type);
 
-    Q_PROPERTY(int battery_percent MEMBER m_battery_percent WRITE set_battery_percent NOTIFY battery_percent_changed)
-    void set_battery_percent(int battery_percent);
-
     Q_PROPERTY(int fc_battery_percent MEMBER m_fc_battery_percent WRITE set_fc_battery_percent NOTIFY fc_battery_percent_changed)
     void set_fc_battery_percent(int fc_battery_percent);
 
@@ -137,9 +134,6 @@ public:
 
     Q_PROPERTY(double battery_current MEMBER m_battery_current WRITE set_battery_current NOTIFY battery_current_changed)
     void set_battery_current(double battery_current);
-
-    Q_PROPERTY(QString battery_gauge MEMBER m_battery_gauge WRITE set_battery_gauge NOTIFY battery_gauge_changed)
-    void set_battery_gauge(QString battery_gauge);
 
     Q_PROPERTY(QString fc_battery_gauge MEMBER m_fc_battery_gauge WRITE set_fc_battery_gauge NOTIFY fc_battery_gauge_changed)
     void set_fc_battery_gauge(QString fc_battery_gauge);
@@ -438,6 +432,7 @@ signals:
     void playBlackBoxObject(int index);
 
     void fontFamilyChanged(QString fontFamily);
+    void last_ping_result_flight_ctrl_changed(QString last_ping_result_flight_ctrl);
 
 private:
 #if defined(ENABLE_SPEECH)
@@ -590,15 +585,10 @@ public:
     int m_reboot_shutdown=99;
     // Quick and dirty code begin
 public:
-    Q_INVOKABLE void pingAllSystems();
     //
     QString m_last_ping_result_flight_ctrl="NA";
     Q_PROPERTY(QString last_ping_result_flight_ctrl MEMBER  m_last_ping_result_flight_ctrl WRITE set_last_ping_result_flight_ctrl NOTIFY last_ping_result_flight_ctrl_changed)
     void set_last_ping_result_flight_ctrl(QString last_ping_result_flight_ctrl);
-public:
-    Q_INVOKABLE void request_version();
-signals:
-    void last_ping_result_flight_ctrl_changed(QString last_ping_result_flight_ctrl);
 };
 
 

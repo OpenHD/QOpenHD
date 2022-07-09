@@ -347,7 +347,7 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
     engine.rootContext()->setContextProperty("openHDRC", openHDRC);
 
     auto mavlinkTelemetry = MavlinkTelemetry::instance();
-    engine.rootContext()->setContextProperty("MavlinkTelemetry", mavlinkTelemetry);
+    engine.rootContext()->setContextProperty("_mavlinkTelemetry", mavlinkTelemetry);
 
     #if defined(ENABLE_EXAMPLE_WIDGET)
     engine.rootContext()->setContextProperty("EnableExampleWidget", QVariant(true));
