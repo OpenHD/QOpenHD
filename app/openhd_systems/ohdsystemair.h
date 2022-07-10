@@ -10,7 +10,7 @@
 /**
  * @brief This class contains information (basically like a model) about the OpenHD Air instance (if connected)
  * NOTE: Please keep FC Telemetry data out of here, we have a seperate model for the FC !!!!
- * It uses QT signals to propagate changes of its data member(s) (Like weather the system is connected, usw).
+ * It uses QT signals to propagate changes of its data member(s) (Like cpu temperature, usw).
  * QOpenHD can only talk to one OHD Air system at a time, so we can make this class a singleton.
  */
 class OHDSystemAir : public QObject
@@ -47,6 +47,9 @@ public:
     // TODO somehow make the struct available to qt
     void set_wifi_adapter(unsigned int received_packet_count,int current_signal_dbm,int signal_good);
     //
+    Q_PROPERTY(int wifibroadcast_rssi MEMBER  m_wifibroadcast_rssi WRITE set_wifibroadcast_rssi NOTIFY wifibroadcast_rssi_changed)
+    void set_wifibroadcast_rssi(int wifibroadcast_rssi);
+    //
     Q_INVOKABLE void setAirGPIO(int pin, bool state);
     Q_INVOKABLE void setAirFREQ(int air_freq);
 signals:
@@ -71,6 +74,7 @@ signals:
     void air_iout_changed(double air_iout);
     void last_ping_result_openhd_air_changed(QString last_ping_result_openhd_air);
     void wifi_adapter_changed(unsigned int received_packet_count,int current_signal_dbm,int signal_good);
+    void wifibroadcast_rssi_changed(int wifibroadcast_rssi);
 public:
     int m_cpuload_air = 0;
     int m_temp_air = 0;
@@ -87,6 +91,8 @@ public:
     QString m_last_ping_result_openhd_air="NA";
     // Air unit only has one (wifibroadcast) wifi adapter
     WifiAdapter m_wifi_adapter;
+    // argh, dulicated but we need that for the qt u element
+    int m_wifibroadcast_rssi=-127;
 };
 
 #endif // OHDSYSTEMAIR_H

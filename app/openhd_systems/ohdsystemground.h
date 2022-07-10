@@ -8,7 +8,7 @@
 
 /**
  * @brief This class contains information (basically like a model) about the OpenHD Air instance (if connected)
- * It uses QT signals to propagate changes of its data member(s) (Like weather the system is connected, usw)
+ * It uses QT signals to propagate changes of its data member(s) (Like cpu temperature, usw).
  * QOpenHD can only talk to one OHD Ground system at a time, so we can make this class a singleton.
  */
 class OHDSystemGround : public QObject
@@ -51,6 +51,11 @@ public:
     void set_wifi_adapter1(unsigned int received_packet_count,int current_signal_dbm,int signal_good);
     void set_wifi_adapter2(unsigned int received_packet_count,int current_signal_dbm,int signal_good);
     void set_wifi_adapter3(unsigned int received_packet_count,int current_signal_dbm,int signal_good);
+    //
+    // This is the rssi of first /second adapter,
+    // TODO: I think this was the "best" rssi of all adapters
+    Q_PROPERTY(int downlink_rssi MEMBER m_downlink_rssi WRITE set_downlink_rssi NOTIFY downlink_rssi_changed)
+    void set_downlink_rssi(int downlink_rssi);
 signals:
     void cpuload_gnd_changed(int cpuload_gnd);
     void temp_gnd_changed(int temp_gnd);
@@ -70,10 +75,13 @@ signals:
     void save_gnd_freq(int gnd_freq);
     void gnd_freq_busy_changed(bool gnd_freq_busy);
     void gnd_freq_changed(int gnd_freq);
+    //
     void wifi_adapter0_changed(unsigned int received_packet_count,int current_signal_dbm,int signal_good);
     void wifi_adapter1_changed(unsigned int received_packet_count,int current_signal_dbm,int signal_good);
     void wifi_adapter2_changed(unsigned int received_packet_count,int current_signal_dbm,int signal_good);
     void wifi_adapter3_changed(unsigned int received_packet_count,int current_signal_dbm,int signal_good);
+    //
+    void downlink_rssi_changed(int downlink_rssi);
 public:
     int m_cpuload_gnd = 0;
     int m_temp_gnd = 0;
@@ -90,6 +98,8 @@ public:
     int m_gnd_freq;
     bool m_gnd_freq_busy = false;
     std::array<WifiAdapter,4> m_wifi_adapters;
+    //
+    int m_downlink_rssi = -127;
 };
 
 #endif // OHDSYSTEMGROUND_H

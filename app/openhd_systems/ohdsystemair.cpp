@@ -87,5 +87,12 @@ void OHDSystemAir::set_wifi_adapter(unsigned int received_packet_count, int curr
     m_wifi_adapter.received_packet_count=received_packet_count;
     m_wifi_adapter.current_signal_dbm=current_signal_dbm;
     m_wifi_adapter.signal_good=signal_good;
+    set_wifibroadcast_rssi(current_signal_dbm);
     emit wifi_adapter_changed(received_packet_count,current_signal_dbm,signal_good);
+}
+
+void OHDSystemAir::set_wifibroadcast_rssi(int wifibroadcast_rssi)
+{
+    m_wifibroadcast_rssi=wifibroadcast_rssi;
+    emit wifibroadcast_rssi_changed(wifibroadcast_rssi);
 }

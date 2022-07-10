@@ -196,12 +196,6 @@ public:
 
     // openhd
 
-    Q_PROPERTY(int downlink_rssi MEMBER m_downlink_rssi WRITE set_downlink_rssi NOTIFY downlink_rssi_changed)
-    void set_downlink_rssi(int downlink_rssi);
-
-    Q_PROPERTY(int current_signal_joystick_uplink MEMBER m_current_signal_joystick_uplink WRITE set_current_signal_joystick_uplink NOTIFY current_signal_joystick_uplink_changed)
-    void set_current_signal_joystick_uplink(int current_signal_joystick_uplink);
-
     Q_PROPERTY(unsigned int lost_packet_cnt_rc MEMBER m_lost_packet_cnt_rc WRITE set_lost_packet_cnt_rc NOTIFY lost_packet_cnt_rc_changed)
     void set_lost_packet_cnt_rc(unsigned int lost_packet_cnt_rc);
 
@@ -351,8 +345,6 @@ signals:
     void esc_temp_changed (int esc_temp);
 
     // openhd
-    void downlink_rssi_changed(int downlink_rssi);
-    void current_signal_joystick_uplink_changed(int current_signal_joystick_uplink);
     void lost_packet_cnt_rc_changed(unsigned int lost_packet_cnt_rc);
     void lost_packet_cnt_telemetry_up_changed(unsigned int lost_packet_cnt_telemetry_up);
 
@@ -383,11 +375,6 @@ signals:
     void last_telemetry_battery_changed(qint64 last_telemetry_battery);
     void last_telemetry_gps_changed(qint64 last_telemetry_gps);
     void last_telemetry_vfr_changed(qint64 last_telemetry_vfr);
-
-    void main_video_running_changed(bool main_video_running);
-    void pip_video_running_changed(bool pip_video_running);
-
-    void lte_video_running_changed(bool lte_video_running);
 
     void vehicle_vx_angle_changed(double vehicle_vx_angle);
     void vehicle_vz_angle_changed(double vehicle_vz_angle);
@@ -486,8 +473,6 @@ public:
 
     // openhd
 
-    int m_downlink_rssi = -127;
-    int m_current_signal_joystick_uplink = -127;
     unsigned int m_lost_packet_cnt_rc = 0;
     unsigned int m_lost_packet_cnt_telemetry_up = 0;
 

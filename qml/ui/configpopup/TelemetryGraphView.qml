@@ -385,7 +385,7 @@ Item {
                 airTempAxis.append(chart.chartData, _ohdSystemAir.temp_air);
                 gndTempAxis.append(chart.chartData, _ohdSystemGround.temp_gnd);
                 downlinkRSSIAxis.append(chart.chartData, OpenHD.downlink_rssi);
-                uplinkRSSIAxis.append(chart.chartData, OpenHD.current_signal_joystick_uplink);
+                uplinkRSSIAxis.append(chart.chartData, _ohdSystemAir.wifibroadcast_rssi);
 
                 bitrateAxis.append(chart.chartData, OpenHD.kbitrate / 1024);
 

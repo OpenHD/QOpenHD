@@ -326,7 +326,7 @@ BaseWidget {
             height: 24
             color: settings.color_text
 
-            text: OpenHD.downlink_rssi == -127 ? qsTr("N/A") : OpenHD.downlink_rssi
+            text: _ohdSystemGround.downlink_rssi == -127 ? qsTr("N/A") : _ohdSystemGround.downlink_rssi
             anchors.left: downlink_icon.right
             anchors.leftMargin: 3
             anchors.top: parent.top

@@ -517,16 +517,6 @@ void OpenHD::set_esc_temp(int esc_temp) {
     emit esc_temp_changed(m_esc_temp);
 }
 
-void OpenHD::set_downlink_rssi(int downlink_rssi) {
-    m_downlink_rssi = downlink_rssi;
-    emit downlink_rssi_changed(m_downlink_rssi);
-}
-
-void OpenHD::set_current_signal_joystick_uplink(int current_signal_joystick_uplink) {
-    m_current_signal_joystick_uplink = current_signal_joystick_uplink;
-    emit current_signal_joystick_uplink_changed(m_current_signal_joystick_uplink);
-}
-
 void OpenHD::set_lost_packet_cnt_rc(unsigned int lost_packet_cnt_rc) {
     m_lost_packet_cnt_rc = lost_packet_cnt_rc;
     emit lost_packet_cnt_rc_changed(m_lost_packet_cnt_rc);

@@ -701,7 +701,8 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
         mavlink_openhd_wifibroadcast_statistics_t parsedMsg;
         mavlink_msg_openhd_wifibroadcast_statistics_decode(&msg,&parsedMsg);
         //OpenHD::instance()->setWifiAdapter0(parsedMsg.count_p_all,0,0);
-        OHDSystemGround::instance().set_wifi_adapter0(parsedMsg.count_p_all,0,0);
+        OHDSystemGround::instance().set_wifi_adapter0(parsedMsg.count_p_all,13,1);
+        OHDSystemAir::instance().set_wifi_adapter(13,33,1);
         //qDebug()<<"kkkk"<<parsedMsg.count_p_all;
         break;
     }
