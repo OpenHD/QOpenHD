@@ -22,8 +22,8 @@ ApplicationWindow {
     minimumHeight: 320
     minimumWidth: 480
     title: qsTr("Open.HD")
-    //color: "transparent" //Consti10 transparent background
-    color : "yellow" // make it yellow for testing, not green to avoid confusion with video renderer
+    color: "transparent" //Consti10 transparent background
+    //color : "yellow" // make it yellow for testing, not green to avoid confusion with video renderer
     //flags: Qt.WindowStaysOnTopHint| Qt.FramelessWindowHint| Qt.X11BypassWindowManagerHint;
     visibility: UseFullscreen ? "FullScreen" : "AutomaticVisibility"
 
