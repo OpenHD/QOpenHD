@@ -10,5 +10,5 @@ Loader {
         return ""
     }
     // the video only shows up if this property is set to true
-    property bool isRunning: OpenHD.pip_video_running
+    property bool isRunning: false //OpenHD.pip_video_running
 }

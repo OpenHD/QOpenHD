@@ -5,6 +5,7 @@
 #include <QDebug>
 
 #include <openhd/mavlink.h>
+#include "wifiadapter.h"
 
 /**
  * @brief This class contains information (basically like a model) about the OpenHD Air instance (if connected)
@@ -42,6 +43,10 @@ public:
     Q_PROPERTY(QString last_ping_result_openhd_air MEMBER  m_last_ping_result_openhd_air WRITE set_last_ping_result_openhd_air NOTIFY last_ping_result_openhd_air_changed)
     void set_last_ping_result_openhd_air(QString last_ping_result_openhd_air);
     //
+    //Q_PROPERTY(QString wifi_adapter MEMBER  m_wifi_adapter WRITE set_wifi_adapter NOTIFY wifi_adapter_changed)
+    // TODO somehow make the struct available to qt
+    void set_wifi_adapter(unsigned int received_packet_count,int current_signal_dbm,int signal_good);
+    //
     Q_INVOKABLE void setAirGPIO(int pin, bool state);
     Q_INVOKABLE void setAirFREQ(int air_freq);
 signals:
@@ -64,7 +69,8 @@ signals:
 
     void air_vout_changed(double air_vout);
     void air_iout_changed(double air_iout);
-     void last_ping_result_openhd_air_changed(QString last_ping_result_openhd_air);
+    void last_ping_result_openhd_air_changed(QString last_ping_result_openhd_air);
+    void wifi_adapter_changed(unsigned int received_packet_count,int current_signal_dbm,int signal_good);
 public:
     int m_cpuload_air = 0;
     int m_temp_air = 0;
@@ -79,6 +85,8 @@ public:
     QString m_openhd_version_air="NA";
     // All these get set by the proper responses and can be used in UI
     QString m_last_ping_result_openhd_air="NA";
+    // Air unit only has one (wifibroadcast) wifi adapter
+    WifiAdapter m_wifi_adapter;
 };
 
 #endif // OHDSYSTEMAIR_H

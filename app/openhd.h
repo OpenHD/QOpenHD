@@ -34,13 +34,6 @@ public:
 
     Q_INVOKABLE void request_Mission();
 
-    void setWifiAdapter0(uint32_t received_packet_cnt, int8_t current_signal_dbm, int8_t signal_good);
-    void setWifiAdapter1(uint32_t received_packet_cnt, int8_t current_signal_dbm, int8_t signal_good);
-    void setWifiAdapter2(uint32_t received_packet_cnt, int8_t current_signal_dbm, int8_t signal_good);
-    void setWifiAdapter3(uint32_t received_packet_cnt, int8_t current_signal_dbm, int8_t signal_good);
-    void setWifiAdapter4(uint32_t received_packet_cnt, int8_t current_signal_dbm, int8_t signal_good);
-    void setWifiAdapter5(uint32_t received_packet_cnt, int8_t current_signal_dbm, int8_t signal_good);
-
     void setEngine(QQmlApplicationEngine *engine);
 
     Q_INVOKABLE void switchToLanguage(const QString &language);
@@ -297,14 +290,6 @@ signals:
     void gstreamer_version_changed();
     void qt_version_changed();
 
-    void wifiAdapter0Changed(unsigned int received_packet_cnt, int current_signal_dbm, int signal_good);
-    void wifiAdapter1Changed(unsigned int received_packet_cnt, int current_signal_dbm, int signal_good);
-    void wifiAdapter2Changed(unsigned int received_packet_cnt, int current_signal_dbm, int signal_good);
-    void wifiAdapter3Changed(unsigned int received_packet_cnt, int current_signal_dbm, int signal_good);
-    void wifiAdapter4Changed(unsigned int received_packet_cnt, int current_signal_dbm, int signal_good);
-    void wifiAdapter5Changed(unsigned int received_packet_cnt, int current_signal_dbm, int signal_good);
-
-
     // mavlink
     void boot_time_changed(int boot_time);
     void alt_rel_changed(double alt_rel);
@@ -524,8 +509,6 @@ public:
     int m_lost_packet_percent = 0;
 
     bool m_cts = false;
-
-
 
     QString m_flight_time = "00:00";
 

@@ -69,35 +69,6 @@ QString OpenHD::get_qt_version() {
     return qt_ver;
 }
 
-void OpenHD::setWifiAdapter0(uint32_t received_packet_cnt, int8_t current_signal_dbm, int8_t signal_good) {
-    emit wifiAdapter0Changed(received_packet_cnt, current_signal_dbm, signal_good);
-}
-
-
-void OpenHD::setWifiAdapter1(uint32_t received_packet_cnt, int8_t current_signal_dbm, int8_t signal_good) {
-    emit wifiAdapter1Changed(received_packet_cnt, current_signal_dbm, signal_good);
-}
-
-
-void OpenHD::setWifiAdapter2(uint32_t received_packet_cnt, int8_t current_signal_dbm, int8_t signal_good) {
-    emit wifiAdapter2Changed(received_packet_cnt, current_signal_dbm, signal_good);
-}
-
-
-void OpenHD::setWifiAdapter3(uint32_t received_packet_cnt, int8_t current_signal_dbm, int8_t signal_good) {
-    emit wifiAdapter3Changed(received_packet_cnt, current_signal_dbm, signal_good);
-}
-
-
-void OpenHD::setWifiAdapter4(uint32_t received_packet_cnt, int8_t current_signal_dbm, int8_t signal_good) {
-    emit wifiAdapter4Changed(received_packet_cnt, current_signal_dbm, signal_good);
-}
-
-
-void OpenHD::setWifiAdapter5(uint32_t received_packet_cnt, int8_t current_signal_dbm, int8_t signal_good) {
-    emit wifiAdapter5Changed(received_packet_cnt, current_signal_dbm, signal_good);
-}
-
 void OpenHD::telemetryMessage(QString message, int level) {
     emit messageReceived(message, level);
 #if defined(ENABLE_SPEECH)

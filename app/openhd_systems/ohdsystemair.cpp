@@ -81,3 +81,11 @@ void OHDSystemAir::set_last_ping_result_openhd_air(QString last_ping_result_open
     m_last_ping_result_openhd_air=last_ping_result_openhd_air;
     emit last_ping_result_openhd_air_changed(m_last_ping_result_openhd_air);
 }
+
+void OHDSystemAir::set_wifi_adapter(unsigned int received_packet_count, int current_signal_dbm, int signal_good)
+{
+    m_wifi_adapter.received_packet_count=received_packet_count;
+    m_wifi_adapter.current_signal_dbm=current_signal_dbm;
+    m_wifi_adapter.signal_good=signal_good;
+    emit wifi_adapter_changed(received_packet_count,current_signal_dbm,signal_good);
+}

@@ -103,6 +103,7 @@ HEADERS += \
     app/logging/logmessagesmodel.h \
     app/openhd_systems/ohdsystemair.h \
     app/openhd_systems/ohdsystemground.h \
+    app/openhd_systems/wifiadapter.h \
     app/osd/headingladder.h \
     app/osd/horizonladder.h \
     app/osd/speedladder.h \

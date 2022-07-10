@@ -65,6 +65,32 @@ void OHDSystemGround::set_last_ping_result_openhd_ground(QString last_ping_resul
     emit last_ping_result_openhd_ground_changed(m_last_ping_result_openhd_ground);
 }
 
+//  TODO register qt struct and make it nice
+void OHDSystemGround::set_wifi_adapter0(unsigned int received_packet_count, int current_signal_dbm, int signal_good){
+    m_wifi_adapters[0].received_packet_count=received_packet_count;
+    m_wifi_adapters[0].current_signal_dbm=current_signal_dbm;
+    m_wifi_adapters[0].signal_good=signal_good;
+    emit wifi_adapter0_changed(received_packet_count,current_signal_dbm,signal_good);
+}
+void OHDSystemGround::set_wifi_adapter1(unsigned int received_packet_count, int current_signal_dbm, int signal_good){
+    m_wifi_adapters[1].received_packet_count=received_packet_count;
+    m_wifi_adapters[1].current_signal_dbm=current_signal_dbm;
+    m_wifi_adapters[1].signal_good=signal_good;
+    emit wifi_adapter1_changed(received_packet_count,current_signal_dbm,signal_good);
+}
+void OHDSystemGround::set_wifi_adapter2(unsigned int received_packet_count, int current_signal_dbm, int signal_good){
+    m_wifi_adapters[2].received_packet_count=received_packet_count;
+    m_wifi_adapters[2].current_signal_dbm=current_signal_dbm;
+    m_wifi_adapters[2].signal_good=signal_good;
+    emit wifi_adapter2_changed(received_packet_count,current_signal_dbm,signal_good);
+}
+void OHDSystemGround::set_wifi_adapter3(unsigned int received_packet_count, int current_signal_dbm, int signal_good){
+    m_wifi_adapters[3].received_packet_count=received_packet_count;
+    m_wifi_adapters[3].current_signal_dbm=current_signal_dbm;
+    m_wifi_adapters[3].signal_good=signal_good;
+    emit wifi_adapter3_changed(received_packet_count,current_signal_dbm,signal_good);
+}
+
 void OHDSystemGround::set_ground_battery_percent(int ground_battery_percent) {
     m_ground_battery_percent = ground_battery_percent;
     emit ground_battery_percent_changed(m_ground_battery_percent);

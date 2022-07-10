@@ -3,6 +3,8 @@
 
 #include <QObject>
 #include <QDebug>
+#include "wifiadapter.h"
+#include <array>
 
 /**
  * @brief This class contains information (basically like a model) about the OpenHD Air instance (if connected)
@@ -44,6 +46,11 @@ public:
     void set_gnd_freq_busy(bool gnd_freq_busy);
     Q_PROPERTY(QString last_ping_result_openhd_ground MEMBER  m_last_ping_result_openhd_ground WRITE set_last_ping_result_openhd_ground NOTIFY last_ping_result_openhd_ground_changed)
     void set_last_ping_result_openhd_ground(QString last_ping_result_openhd_ground);
+    //
+    void set_wifi_adapter0(unsigned int received_packet_count,int current_signal_dbm,int signal_good);
+    void set_wifi_adapter1(unsigned int received_packet_count,int current_signal_dbm,int signal_good);
+    void set_wifi_adapter2(unsigned int received_packet_count,int current_signal_dbm,int signal_good);
+    void set_wifi_adapter3(unsigned int received_packet_count,int current_signal_dbm,int signal_good);
 signals:
     void cpuload_gnd_changed(int cpuload_gnd);
     void temp_gnd_changed(int temp_gnd);
@@ -63,6 +70,10 @@ signals:
     void save_gnd_freq(int gnd_freq);
     void gnd_freq_busy_changed(bool gnd_freq_busy);
     void gnd_freq_changed(int gnd_freq);
+    void wifi_adapter0_changed(unsigned int received_packet_count,int current_signal_dbm,int signal_good);
+    void wifi_adapter1_changed(unsigned int received_packet_count,int current_signal_dbm,int signal_good);
+    void wifi_adapter2_changed(unsigned int received_packet_count,int current_signal_dbm,int signal_good);
+    void wifi_adapter3_changed(unsigned int received_packet_count,int current_signal_dbm,int signal_good);
 public:
     int m_cpuload_gnd = 0;
     int m_temp_gnd = 0;
@@ -78,6 +89,7 @@ public:
     QString m_last_ping_result_openhd_ground="NA";
     int m_gnd_freq;
     bool m_gnd_freq_busy = false;
+    std::array<WifiAdapter,4> m_wifi_adapters;
 };
 
 #endif // OHDSYSTEMGROUND_H

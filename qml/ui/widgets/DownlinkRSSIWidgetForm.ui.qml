@@ -239,35 +239,25 @@ BaseWidget {
         ColumnLayout{
             width:200
             Connections {
-                target: OpenHD
-                function onWifiAdapter0Changed(received_packet_cnt, current_signal_dbm, signal_good) {
+                target: _ohdSystemGround
+                function wifi_adapter0_changed(received_packet_cnt, current_signal_dbm, signal_good) {
                     card0textlower.text = Number(current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
                     card0textlower.visible = true;
                 }
 
-                function onWifiAdapter1Changed(received_packet_cnt, current_signal_dbm, signal_good) {
+                function  wifi_adapter1_changed(received_packet_cnt, current_signal_dbm, signal_good) {
                     card1textlower.text = Number(current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
                     card1textlower.visible = true;
                 }
 
-                function onWifiAdapter2Changed(received_packet_cnt, current_signal_dbm, signal_good) {
+                function  wifi_adapter2_changed(received_packet_cnt, current_signal_dbm, signal_good) {
                     card2textlower.text = Number(current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
                     card2textlower.visible = true;
                 }
 
-                function onWifiAdapter3Changed(received_packet_cnt, current_signal_dbm, signal_good) {
+                function  wifi_adapter3_changed(received_packet_cnt, current_signal_dbm, signal_good) {
                     card3textlower.text = Number(current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
                     card3textlower.visible = true;
-                }
-
-                function onWifiAdapter4Changed(received_packet_cnt, current_signal_dbm, signal_good) {
-                    card4textlower.text = Number(current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
-                    card4textlower.visible = true;
-                }
-
-                function onWifiAdapter5Changed(received_packet_cnt, current_signal_dbm, signal_good) {
-                    card5textlower.text = Number(current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
-                    card5textlower.visible = true;
                 }
             }
 
@@ -531,70 +521,6 @@ BaseWidget {
 
                 Text {
                     id: card3textlower
-                    height: parent.height
-                    color: settings.color_text
-                    visible: false
-                    verticalAlignment: Text.AlignVCenter
-                    font.pixelSize: 14
-                    font.family: settings.font_text
-                    horizontalAlignment: Text.AlignLeft
-                    wrapMode: Text.NoWrap
-                    style: Text.Outline
-                    styleColor: settings.color_glow
-                }
-            }
-
-            Row {
-                height: 18
-                spacing: 6
-
-                Text {
-                    height: parent.height
-                    color: settings.color_shape
-                    text: "\uf381"
-                    visible: card4textlower.visible
-                    verticalAlignment: Text.AlignVCenter
-                    font.family: "Font Awesome 5 Free"
-                    font.pixelSize: 12
-                    horizontalAlignment: Text.AlignRight
-                    style: Text.Outline
-                    styleColor: settings.color_glow
-                }
-
-                Text {
-                    id: card4textlower
-                    height: parent.height
-                    color: settings.color_text
-                    visible: false
-                    verticalAlignment: Text.AlignVCenter
-                    font.pixelSize: 14
-                    font.family: settings.font_text
-                    horizontalAlignment: Text.AlignLeft
-                    wrapMode: Text.NoWrap
-                    style: Text.Outline
-                    styleColor: settings.color_glow
-                }
-            }
-
-            Row {
-                height: 18
-                spacing: 6
-
-                Text {
-                    height: parent.height
-                    color: settings.color_shape
-                    text: "\uf381"
-                    visible: card5textlower.visible
-                    verticalAlignment: Text.AlignVCenter
-                    font.family: "Font Awesome 5 Free"
-                    font.pixelSize: 12
-                    horizontalAlignment: Text.AlignRight
-                    style: Text.Outline
-                    styleColor: settings.color_glow
-                }
-
-                Text {
-                    id: card5textlower
                     height: parent.height
                     color: settings.color_text
                     visible: false
