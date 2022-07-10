@@ -64,6 +64,11 @@ void OpenHD::setEngine(QQmlApplicationEngine *engine) {
     m_engine = engine;
 }
 
+QString OpenHD::get_qt_version() {
+    QString qt_ver = qVersion();
+    return qt_ver;
+}
+
 void OpenHD::setWifiAdapter0(uint32_t received_packet_cnt, int8_t current_signal_dbm, int8_t signal_good) {
     emit wifiAdapter0Changed(received_packet_cnt, current_signal_dbm, signal_good);
 }
@@ -664,6 +669,21 @@ void OpenHD::set_last_telemetry_gps(qint64 last_telemetry_gps) {
 void OpenHD::set_last_telemetry_vfr(qint64 last_telemetry_vfr) {
     m_last_telemetry_vfr = last_telemetry_vfr;
     emit last_telemetry_vfr_changed(m_last_telemetry_vfr);
+}
+
+void OpenHD::set_main_video_running(bool main_video_running) {
+    m_main_video_running = main_video_running;
+    emit main_video_running_changed(m_main_video_running);
+}
+
+void OpenHD::set_pip_video_running(bool pip_video_running) {
+    m_pip_video_running = pip_video_running;
+    emit pip_video_running_changed(m_pip_video_running);
+}
+
+void OpenHD::set_lte_video_running(bool lte_video_running) {
+    m_lte_video_running = lte_video_running;
+    emit lte_video_running_changed(m_lte_video_running);
 }
 
 void OpenHD::set_vehicle_vx_angle(double vehicle_vx_angle) {

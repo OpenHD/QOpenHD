@@ -56,6 +56,10 @@ public:
     void updateVehicleAngles();
     void updateWind();
 
+    Q_PROPERTY(QString qt_version READ get_qt_version NOTIFY qt_version_changed)
+    QString get_qt_version();
+
+
     Q_PROPERTY(double home_distance MEMBER m_home_distance WRITE set_home_distance NOTIFY home_distance_changed)
     void set_home_distance(double home_distance);
 
@@ -197,6 +201,8 @@ public:
     Q_PROPERTY(QString fontFamily MEMBER m_fontFamily WRITE setFontFamily NOTIFY fontFamilyChanged)
     void setFontFamily(QString fontFamily);
 
+    // openhd
+
     Q_PROPERTY(int downlink_rssi MEMBER m_downlink_rssi WRITE set_downlink_rssi NOTIFY downlink_rssi_changed)
     void set_downlink_rssi(int downlink_rssi);
 
@@ -274,6 +280,18 @@ public:
     Q_PROPERTY(qint64 last_telemetry_vfr MEMBER m_last_telemetry_vfr WRITE set_last_telemetry_vfr NOTIFY last_telemetry_vfr_changed)
     void set_last_telemetry_vfr(qint64 last_telemetry_vfr);
 
+
+    Q_PROPERTY(bool main_video_running MEMBER m_main_video_running WRITE set_main_video_running NOTIFY main_video_running_changed)
+    void set_main_video_running(bool main_video_running);
+
+    Q_PROPERTY(bool lte_video_running MEMBER m_lte_video_running WRITE set_lte_video_running NOTIFY lte_video_running_changed)
+    void set_lte_video_running(bool lte_video_running);
+
+
+    Q_PROPERTY(bool pip_video_running MEMBER m_pip_video_running WRITE set_pip_video_running NOTIFY pip_video_running_changed)
+    void set_pip_video_running(bool pip_video_running);
+
+
     Q_PROPERTY(double vehicle_vx_angle MEMBER m_vehicle_vx_angle WRITE set_vehicle_vx_angle NOTIFY vehicle_vx_angle_changed)
     void set_vehicle_vx_angle(double vehicle_vx_angle);
 
@@ -287,12 +305,17 @@ public:
     void setTotalWaypoints(int total_waypoints);
 
 signals:
+    // system
+    void gstreamer_version_changed();
+    void qt_version_changed();
+
     void wifiAdapter0Changed(unsigned int received_packet_cnt, int current_signal_dbm, int signal_good);
     void wifiAdapter1Changed(unsigned int received_packet_cnt, int current_signal_dbm, int signal_good);
     void wifiAdapter2Changed(unsigned int received_packet_cnt, int current_signal_dbm, int signal_good);
     void wifiAdapter3Changed(unsigned int received_packet_cnt, int current_signal_dbm, int signal_good);
     void wifiAdapter4Changed(unsigned int received_packet_cnt, int current_signal_dbm, int signal_good);
     void wifiAdapter5Changed(unsigned int received_packet_cnt, int current_signal_dbm, int signal_good);
+
 
     // mavlink
     void boot_time_changed(int boot_time);
@@ -387,6 +410,11 @@ signals:
     void last_telemetry_battery_changed(qint64 last_telemetry_battery);
     void last_telemetry_gps_changed(qint64 last_telemetry_gps);
     void last_telemetry_vfr_changed(qint64 last_telemetry_vfr);
+
+    void main_video_running_changed(bool main_video_running);
+    void pip_video_running_changed(bool pip_video_running);
+
+    void lte_video_running_changed(bool lte_video_running);
 
     void vehicle_vx_angle_changed(double vehicle_vx_angle);
     void vehicle_vz_angle_changed(double vehicle_vz_angle);
@@ -530,6 +558,10 @@ public:
     qint64 m_last_telemetry_battery = -1;
     qint64 m_last_telemetry_gps = -1;
     qint64 m_last_telemetry_vfr = -1;
+
+    bool m_main_video_running = false;
+    bool m_pip_video_running = false;
+    bool m_lte_video_running = false;
 
     QElapsedTimer totalTime;
     QElapsedTimer flightTimeStart;
