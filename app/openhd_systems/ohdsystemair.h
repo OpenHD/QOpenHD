@@ -4,6 +4,8 @@
 #include <QObject>
 #include <QDebug>
 
+#include <openhd/mavlink.h>
+
 /**
  * @brief This class contains information (basically like a model) about the OpenHD Air instance (if connected)
  * NOTE: Please keep FC Telemetry data out of here, we have a seperate model for the FC !!!!
