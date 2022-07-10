@@ -172,7 +172,7 @@ Rectangle {
                 }
             }
             // Graphs
-            Item {
+            /*Item {
                 height: 48
                 width: parent.width
                 MouseArea {
@@ -206,7 +206,7 @@ Rectangle {
                     verticalAlignment: Text.AlignVCenter
                     color: mainStackLayout.currentIndex == 3 ? "#33aaff" : "#dde4ed"
                 }
-            }
+            }*/
 
             // Power
             Item {
@@ -215,7 +215,7 @@ Rectangle {
                 MouseArea {
                     id: powerButtonMouseArea
                     anchors.fill: parent
-                    onClicked: mainStackLayout.currentIndex = 4
+                    onClicked: mainStackLayout.currentIndex = 3
                 }
 
                 Text {
@@ -244,7 +244,7 @@ Rectangle {
                     font.pixelSize: 15
                     horizontalAlignment: Text.AlignLeft
                     verticalAlignment: Text.AlignVCenter
-                    color: mainStackLayout.currentIndex == 4 ? "#33aaff" : "#dde4ed"
+                    color: mainStackLayout.currentIndex == 3 ? "#33aaff" : "#dde4ed"
                 }
             }
 
@@ -257,7 +257,7 @@ Rectangle {
                 MouseArea {
                     id: aboutButtonMouseArea
                     anchors.fill: parent
-                    onClicked: mainStackLayout.currentIndex = 5
+                    onClicked: mainStackLayout.currentIndex = 4
                 }
 
                 Text {
@@ -286,7 +286,7 @@ Rectangle {
                     font.pixelSize: 15
                     horizontalAlignment: Text.AlignLeft
                     verticalAlignment: Text.AlignVCenter
-                    color: mainStackLayout.currentIndex == 5 ? "#33aaff" : "#dde4ed"
+                    color: mainStackLayout.currentIndex == 4 ? "#33aaff" : "#dde4ed"
                 }
             }
         }
@@ -333,14 +333,14 @@ Rectangle {
             id: logMessagesStatusView
         }
 
-         TelemetryGraphViewPanel{
-            id: statusPanel
-        }
+        // In legacy for now
+        //TelemetryGraphViewPanel{
+        //    id: statusPanel
+        //}
 
         PowerPanel {
             id: powerPanel
         }
-
 
         AboutPanel {
             id: aboutPanel
