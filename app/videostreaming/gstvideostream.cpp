@@ -93,7 +93,8 @@ static std::string constructGstreamerPipeline(const QOpenHDVideoHelper::VideoTes
 
     //ss << " glupload ! glcolorconvert !";
     //ss << " qmlglsink name=qmlglsink sync=false";
-    ss << " autovideosink";
+    ss << " kmssink";
+    //ss << " autovideosink";
 
     return ss.str();
 }
@@ -220,6 +221,13 @@ void GstVideoStream::stopVideoSafe() {
         gst_object_unref (m_pipeline);
         m_pipeline=nullptr;
     }
+}
+
+void GstVideoStream::rambazamba()
+{
+    const QOpenHDVideoHelper::VideoStreamConfig _videoStreamConfig=readVideoStreamConfigFromSettings(m_isPrimaryStream);
+     m_videoStreamConfig=_videoStreamConfig;
+    startVideo();
 }
 
 void GstVideoStream::timerCallback() {

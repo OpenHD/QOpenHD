@@ -39,6 +39,8 @@ public:
     qint64 lastDataTimeout = 0;
     void startVideo();
     void stopVideoSafe();
+
+    void rambazamba();
 private:
     /**
      * @brief fired by m_timer.
