@@ -91,8 +91,9 @@ static std::string constructGstreamerPipeline(const QOpenHDVideoHelper::VideoTes
     // add video decoder
     ss<<gst_create_video_decoder(videoCodec);
 
-    ss << " glupload ! glcolorconvert !";
-    ss << " qmlglsink name=qmlglsink sync=false";
+    //ss << " glupload ! glcolorconvert !";
+    //ss << " qmlglsink name=qmlglsink sync=false";
+    ss << " autovideosink";
 
     return ss.str();
 }
@@ -190,7 +191,7 @@ void GstVideoStream::startVideo() {
         qDebug() << "gst_parse_launch error: " << error->message;
     }
 
-    link_gstreamer_pipe_to_qt_window(m_pipeline,m_videoOutputWindow);
+    //link_gstreamer_pipe_to_qt_window(m_pipeline,m_videoOutputWindow);
 
     GstBus *bus = gst_pipeline_get_bus (GST_PIPELINE(m_pipeline));
     gst_bus_add_signal_watch(bus);
