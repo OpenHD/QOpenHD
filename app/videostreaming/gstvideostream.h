@@ -18,8 +18,8 @@
  * 1) Input -> a udp port from which rtp video data is received.
  * 2) Output -> a qml window ???? not sure yet exactly how to call that.
  */
-class GstVideoStream : public QObject{
-    Q_OBJECT
+class GstVideoStream /*: public QObject*/{
+    //Q_OBJECT
 public:
     /**
      * The constructor is delayed, remember to use init().

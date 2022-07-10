@@ -99,7 +99,7 @@ static std::string constructGstreamerPipeline(const QOpenHDVideoHelper::VideoTes
     return ss.str();
 }
 
-GstVideoStream::GstVideoStream(QObject *parent): QObject(parent), timer(new QTimer) {
+GstVideoStream::GstVideoStream(QObject *parent)/*: QObject(parent), timer(new QTimer)*/ {
     qDebug() << "GstVideoStream::GstVideoStream()";
     // developer testing
     //QSettings settings;
@@ -123,7 +123,7 @@ void GstVideoStream::init(QQuickItem* videoOutputWindow,bool primaryStream) {
     m_isPrimaryStream=primaryStream;
     m_videoStreamConfig=readVideoStreamConfigFromSettings(m_isPrimaryStream);
     lastDataTimeout = QDateTime::currentMSecsSinceEpoch();
-    QObject::connect(timer, &QTimer::timeout, this, &GstVideoStream::timerCallback);
+    //QObject::connect(timer, &QTimer::timeout, this, &GstVideoStream::timerCallback);
     timer->start(1000);
     qDebug() << "GstVideoStream::init()";
 }
@@ -212,6 +212,7 @@ void GstVideoStream::startVideo() {
     }*/
      gst_element_set_state (m_pipeline, GST_STATE_PLAYING);
     lastDataTimeout = QDateTime::currentMSecsSinceEpoch();
+    qDebug()<<"Gst running";
 }
 
 void GstVideoStream::stopVideoSafe() {
@@ -225,8 +226,9 @@ void GstVideoStream::stopVideoSafe() {
 
 void GstVideoStream::rambazamba()
 {
-    const QOpenHDVideoHelper::VideoStreamConfig _videoStreamConfig=readVideoStreamConfigFromSettings(m_isPrimaryStream);
+    const QOpenHDVideoHelper::VideoStreamConfig _videoStreamConfig=readVideoStreamConfigFromSettings(true);
      m_videoStreamConfig=_videoStreamConfig;
+     m_videoStreamConfig.dev_test_video_mode=QOpenHDVideoHelper::VideoTestMode::RAW_VIDEO_ENCODE_DECODE;
     startVideo();
 }
 

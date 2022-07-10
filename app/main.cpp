@@ -194,7 +194,8 @@ void write_other_context_properties(QQmlApplicationEngine& engine){
 
 int main(int argc, char *argv[]) {
 
-	GstVideoStream* mainVideo = new GstVideoStream();
+    initGstreamerOrThrowExtra(argc,argv);
+    GstVideoStream* mainVideo = new GstVideoStream();
     mainVideo->rambazamba();
     std::this_thread::sleep_for(std::chrono::seconds(10));
 
@@ -307,8 +308,6 @@ int main(int argc, char *argv[]) {
 #if defined(ENABLE_GSTREAMER)
 #if defined(ENABLE_MAIN_VIDEO)
     //GstVideoStream* mainVideo = new GstVideoStream();
-    //mainVideo->rambazamba();
-    //std::this_thread::sleep_for(std::chrono::seconds(10));
 #endif
 #if defined(ENABLE_PIP)
     GstVideoStream* pipVideo = new GstVideoStream();
@@ -368,14 +367,14 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
 
 #if defined(ENABLE_MAIN_VIDEO)
     engine.rootContext()->setContextProperty("EnableMainVideo", QVariant(true));
-    engine.rootContext()->setContextProperty("MainStream", mainVideo);
+    //engine.rootContext()->setContextProperty("MainStream", mainVideo);
 #else
     engine.rootContext()->setContextProperty("EnableMainVideo", QVariant(false));
 #endif
 
 #if defined(ENABLE_PIP)
     engine.rootContext()->setContextProperty("EnablePiP", QVariant(true));
-    engine.rootContext()->setContextProperty("PiPStream", pipVideo);
+    //engine.rootContext()->setContextProperty("PiPStream", pipVideo);
 #else
     engine.rootContext()->setContextProperty("EnablePiP", QVariant(false));
 #endif
@@ -419,7 +418,9 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
         qDebug()<<"Error primary window enabled but not found";
         //throw std::runtime_error("Window not found");
     }
-    mainVideo->init(windowPrimary,true);
+    //mainVideo->init(windowPrimary,true);
+    //mainVideo->init((QQuickItem*)mainVideo,true);
+    //mainVideo->rambazamba();
 #endif
 #if defined(ENABLE_PIP)
     const auto windowSecondary=QOpenHDVideoHelper::find_qt_video_window(engine,false);
