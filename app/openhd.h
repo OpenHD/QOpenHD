@@ -280,18 +280,6 @@ public:
     Q_PROPERTY(qint64 last_telemetry_vfr MEMBER m_last_telemetry_vfr WRITE set_last_telemetry_vfr NOTIFY last_telemetry_vfr_changed)
     void set_last_telemetry_vfr(qint64 last_telemetry_vfr);
 
-
-    Q_PROPERTY(bool main_video_running MEMBER m_main_video_running WRITE set_main_video_running NOTIFY main_video_running_changed)
-    void set_main_video_running(bool main_video_running);
-
-    Q_PROPERTY(bool lte_video_running MEMBER m_lte_video_running WRITE set_lte_video_running NOTIFY lte_video_running_changed)
-    void set_lte_video_running(bool lte_video_running);
-
-
-    Q_PROPERTY(bool pip_video_running MEMBER m_pip_video_running WRITE set_pip_video_running NOTIFY pip_video_running_changed)
-    void set_pip_video_running(bool pip_video_running);
-
-
     Q_PROPERTY(double vehicle_vx_angle MEMBER m_vehicle_vx_angle WRITE set_vehicle_vx_angle NOTIFY vehicle_vx_angle_changed)
     void set_vehicle_vx_angle(double vehicle_vx_angle);
 
@@ -558,10 +546,6 @@ public:
     qint64 m_last_telemetry_battery = -1;
     qint64 m_last_telemetry_gps = -1;
     qint64 m_last_telemetry_vfr = -1;
-
-    bool m_main_video_running = false;
-    bool m_pip_video_running = false;
-    bool m_lte_video_running = false;
 
     QElapsedTimer totalTime;
     QElapsedTimer flightTimeStart;
