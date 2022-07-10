@@ -193,6 +193,12 @@ void write_other_context_properties(QQmlApplicationEngine& engine){
 }
 
 int main(int argc, char *argv[]) {
+
+	GstVideoStream* mainVideo = new GstVideoStream();
+    mainVideo->rambazamba();
+    std::this_thread::sleep_for(std::chrono::seconds(10));
+
+
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
     QCoreApplication::setOrganizationName("Open.HD");
@@ -300,9 +306,9 @@ int main(int argc, char *argv[]) {
 
 #if defined(ENABLE_GSTREAMER)
 #if defined(ENABLE_MAIN_VIDEO)
-    GstVideoStream* mainVideo = new GstVideoStream();
-    mainVideo->rambazamba();
-    std::this_thread::sleep_for(std::chrono::seconds(10));
+    //GstVideoStream* mainVideo = new GstVideoStream();
+    //mainVideo->rambazamba();
+    //std::this_thread::sleep_for(std::chrono::seconds(10));
 #endif
 #if defined(ENABLE_PIP)
     GstVideoStream* pipVideo = new GstVideoStream();
