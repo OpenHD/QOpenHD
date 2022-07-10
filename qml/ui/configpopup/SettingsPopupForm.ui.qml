@@ -329,7 +329,7 @@ Rectangle {
             id: tmpGroundPiSettingsPanel
         }
 
-        LogMessagesStatusView2{
+        LogMessagesStatusView{
             id: logMessagesStatusView
         }
 
