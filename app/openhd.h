@@ -270,6 +270,8 @@ public:
     Q_PROPERTY(int total_waypoints MEMBER m_total_waypoints WRITE setTotalWaypoints NOTIFY totalWaypointsChanged)
     void setTotalWaypoints(int total_waypoints);
 
+    Q_PROPERTY(QString last_ping_result_flight_ctrl MEMBER  m_last_ping_result_flight_ctrl WRITE set_last_ping_result_flight_ctrl NOTIFY last_ping_result_flight_ctrl_changed)
+    void set_last_ping_result_flight_ctrl(QString last_ping_result_flight_ctrl);
 signals:
     // mavlink
     void boot_time_changed(int boot_time);
@@ -517,11 +519,7 @@ public:
     int m_arm_disarm = 99;
 
     int m_reboot_shutdown=99;
-public:
-    //
     QString m_last_ping_result_flight_ctrl="NA";
-    Q_PROPERTY(QString last_ping_result_flight_ctrl MEMBER  m_last_ping_result_flight_ctrl WRITE set_last_ping_result_flight_ctrl NOTIFY last_ping_result_flight_ctrl_changed)
-    void set_last_ping_result_flight_ctrl(QString last_ping_result_flight_ctrl);
 };
 
 

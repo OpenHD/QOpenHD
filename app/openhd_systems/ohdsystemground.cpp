@@ -4,6 +4,9 @@ OHDSystemGround::OHDSystemGround(QObject *parent)
     : QObject{parent}
 {
     set_ground_gpio({0, 0, 0, 0, 0, 0, 0, 0});
+    m_alive_timer = new QTimer(this);
+    QObject::connect(m_alive_timer, &QTimer::timeout, this, &OHDSystemGround::update_alive);
+    m_alive_timer->start(1000);
 }
 
 OHDSystemGround &OHDSystemGround::instance()
@@ -130,4 +133,14 @@ void OHDSystemGround::set_gnd_freq(int gnd_freq){
 void OHDSystemGround::set_gnd_freq_busy(bool gnd_freq_busy){
     m_gnd_freq_busy = gnd_freq_busy;
     emit gnd_freq_busy_changed(gnd_freq_busy);
+}
+
+void OHDSystemGround::update_alive()
+{
+    // TODO this is not correct
+    if(m_last_openhd_heartbeat==-1){
+        set_is_alive(false);
+    }else{
+        set_is_alive(false);
+    }
 }

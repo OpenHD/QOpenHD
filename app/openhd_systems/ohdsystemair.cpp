@@ -7,7 +7,7 @@ OHDSystemAir::OHDSystemAir(QObject *parent)
     set_air_gpio({0, 0, 0, 0, 0, 0, 0, 0});
     m_alive_timer = new QTimer(this);
     QObject::connect(m_alive_timer, &QTimer::timeout, this, &OHDSystemAir::update_alive);
-     m_alive_timer->start(1000);
+    m_alive_timer->start(1000);
 }
 
 OHDSystemAir& OHDSystemAir::instance()
@@ -113,5 +113,10 @@ void OHDSystemAir::set_wifibroadcast_rssi(int wifibroadcast_rssi)
 
 void OHDSystemAir::update_alive()
 {
-
+    // TODO this is not correct
+    if(m_last_openhd_heartbeat==-1){
+        set_is_alive(false);
+    }else{
+        set_is_alive(false);
+    }
 }
