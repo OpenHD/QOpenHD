@@ -34,7 +34,7 @@ OHDConnection::OHDConnection(QObject *parent,bool useTcp):QObject(parent),USE_TC
                               const std::string& file,    // source file from which the message was sent
                               int line) {                 // line number in the source file
       // process the log message in a way you like
-      qDebug()<<message.c_str();
+      qDebug()<<"MAVSDK::"<<message.c_str();
       // returning true from the callback disables printing the message to stdout
       return level < mavsdk::log::Level::Warn;
     });
