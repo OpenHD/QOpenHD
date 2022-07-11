@@ -709,9 +709,27 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
         mavlink_openhd_wifibroadcast_statistics_t parsedMsg;
         mavlink_msg_openhd_wifibroadcast_statistics_decode(&msg,&parsedMsg);
         //OpenHD::instance()->setWifiAdapter0(parsedMsg.count_p_all,0,0);
-        OHDSystemGround::instance().set_wifi_adapter0(parsedMsg.count_p_all,13,1);
-        OHDSystemAir::instance().set_wifi_adapter(13,33,1);
+        //OHDSystemGround::instance().set_wifi_adapter0(parsedMsg.count_p_all,13,1);
+        //OHDSystemAir::instance().set_wifi_adapter(13,33,1);
         //qDebug()<<"kkkk"<<parsedMsg.count_p_all;
+        break;
+    }
+    case MAVLINK_MSG_ID_OPENHD_WIFI_CARD:{
+        mavlink_openhd_wifi_card_t parsedMsg;
+        mavlink_msg_openhd_wifi_card_decode(&msg,&parsedMsg);
+        //qDebug()<<"Got MAVLINK_MSG_ID_OPENHD_WIFI_CARD";
+        if(msg.sysid==OHD_SYS_ID_AIR){
+            if(parsedMsg.card_index==0){
+                OHDSystemAir::instance().set_wifi_adapter(parsedMsg.count_p_received,parsedMsg.signal_millidBm,true);
+            }
+        }else if(msg.sysid==OHD_SYS_ID_GROUND){
+            if(parsedMsg.card_index==0){
+                OHDSystemGround::instance().set_wifi_adapter0(parsedMsg.count_p_received,parsedMsg.signal_millidBm,true);
+            }else if(parsedMsg.card_index==1){
+                OHDSystemGround::instance().set_wifi_adapter1(parsedMsg.count_p_received,parsedMsg.signal_millidBm,true);
+            }
+
+        }
         break;
     }
     /*case MAVLINK_MSG_ID_OPENHD_LOG_MESSAGE:{
