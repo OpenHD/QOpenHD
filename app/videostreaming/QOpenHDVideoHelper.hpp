@@ -50,9 +50,13 @@ struct VideoStreamConfig{
     int video_port = 0;
     // the video codec the received rtp data should be intepreted as.
     VideoCodec video_codec=VideoCodecH264;
+    // force sw decoding (if there is a difference on the platform)
+    // R.N this only makes a difference on RPI
+    bool enable_software_video_decoder=false;
     // 2 configs are equal if all members are exactly the same.
     bool operator==(const VideoStreamConfig &o) const {
-       return this->dev_test_video_mode == o.dev_test_video_mode && this->video_port == o.video_port && this->video_codec== o.video_codec;
+       return this->dev_test_video_mode == o.dev_test_video_mode && this->video_port == o.video_port && this->video_codec== o.video_codec
+               && this->enable_software_video_decoder==o.enable_software_video_decoder;
      }
     bool operator !=(const VideoStreamConfig &o) const {
         return !(*this==o);
