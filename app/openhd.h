@@ -49,10 +49,6 @@ public:
     void updateVehicleAngles();
     void updateWind();
 
-    Q_PROPERTY(QString qt_version READ get_qt_version NOTIFY qt_version_changed)
-    QString get_qt_version();
-
-
     Q_PROPERTY(double home_distance MEMBER m_home_distance WRITE set_home_distance NOTIFY home_distance_changed)
     void set_home_distance(double home_distance);
 
@@ -196,7 +192,7 @@ public:
 
     // openhd
 
-    Q_PROPERTY(unsigned int lost_packet_cnt_rc MEMBER m_lost_packet_cnt_rc WRITE set_lost_packet_cnt_rc NOTIFY lost_packet_cnt_rc_changed)
+    /*Q_PROPERTY(unsigned int lost_packet_cnt_rc MEMBER m_lost_packet_cnt_rc WRITE set_lost_packet_cnt_rc NOTIFY lost_packet_cnt_rc_changed)
     void set_lost_packet_cnt_rc(unsigned int lost_packet_cnt_rc);
 
     Q_PROPERTY(unsigned int lost_packet_cnt_telemetry_up MEMBER m_lost_packet_cnt_telemetry_up WRITE set_lost_packet_cnt_telemetry_up NOTIFY lost_packet_cnt_telemetry_up_changed)
@@ -229,9 +225,8 @@ public:
     Q_PROPERTY(int lost_packet_percent MEMBER m_lost_packet_percent WRITE set_lost_packet_percent NOTIFY lost_packet_percent_changed)
     void set_lost_packet_percent(int lost_packet_percent);
 
-
     Q_PROPERTY(bool cts MEMBER m_cts WRITE set_cts NOTIFY cts_changed)
-    void set_cts(bool cts);
+    void set_cts(bool cts);*/
 
 
     Q_PROPERTY(QString flight_time MEMBER m_flight_time WRITE set_flight_time NOTIFY flight_time_changed)
@@ -280,10 +275,6 @@ public:
     void setTotalWaypoints(int total_waypoints);
 
 signals:
-    // system
-    void gstreamer_version_changed();
-    void qt_version_changed();
-
     // mavlink
     void boot_time_changed(int boot_time);
     void alt_rel_changed(double alt_rel);
@@ -345,10 +336,10 @@ signals:
     void esc_temp_changed (int esc_temp);
 
     // openhd
-    void lost_packet_cnt_rc_changed(unsigned int lost_packet_cnt_rc);
-    void lost_packet_cnt_telemetry_up_changed(unsigned int lost_packet_cnt_telemetry_up);
+    //void lost_packet_cnt_rc_changed(unsigned int lost_packet_cnt_rc);
+    //void lost_packet_cnt_telemetry_up_changed(unsigned int lost_packet_cnt_telemetry_up);
 
-    void skipped_packet_cnt_changed(unsigned int skipped_packet_cnt);
+   // void skipped_packet_cnt_changed(unsigned int skipped_packet_cnt);
     void injection_fail_cnt_changed(unsigned int injection_fail_cnt);
 
     void kbitrate_changed(double kbitrate);
@@ -473,11 +464,11 @@ public:
 
     // openhd
 
-    unsigned int m_lost_packet_cnt_rc = 0;
-    unsigned int m_lost_packet_cnt_telemetry_up = 0;
+    //unsigned int m_lost_packet_cnt_rc = 0;
+    //unsigned int m_lost_packet_cnt_telemetry_up = 0;
 
-    unsigned int m_skipped_packet_cnt = 0;
-    unsigned int m_injection_fail_cnt = 0;
+    //unsigned int m_skipped_packet_cnt = 0;
+    //unsigned int m_injection_fail_cnt = 0;
 
     double m_kbitrate = 0.0;
     double m_kbitrate_measured = 0.0;
@@ -487,13 +478,11 @@ public:
     int m_press_temp = 0;
     int m_esc_temp = 0;
 
-    unsigned int m_damaged_block_cnt = 0;
-    int m_damaged_block_percent = 0;
-
-    unsigned int m_lost_packet_cnt = 0;
-    int m_lost_packet_percent = 0;
-
-    bool m_cts = false;
+    //unsigned int m_damaged_block_cnt = 0;
+    //int m_damaged_block_percent = 0;
+    //unsigned int m_lost_packet_cnt = 0;
+    //int m_lost_packet_percent = 0;
+    //bool m_cts = false;
 
     QString m_flight_time = "00:00";
 

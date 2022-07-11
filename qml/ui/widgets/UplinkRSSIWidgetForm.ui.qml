@@ -258,7 +258,7 @@ BaseWidget {
             height: 24
             color: settings.color_text
             opacity: settings.uplink_rssi_opacity
-            text: OpenHD.lost_packet_cnt_rc
+            text: "TODO"
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 0
             anchors.right: uplink_lost_packet_cnt_telemetry_up.left
@@ -281,7 +281,7 @@ BaseWidget {
             height: 24
             color: settings.color_text
             opacity: settings.uplink_rssi_opacity
-            text: OpenHD.lost_packet_cnt_telemetry_up
+            text: "TODO"
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 0
             anchors.right: parent.right

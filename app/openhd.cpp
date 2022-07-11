@@ -64,11 +64,6 @@ void OpenHD::setEngine(QQmlApplicationEngine *engine) {
     m_engine = engine;
 }
 
-QString OpenHD::get_qt_version() {
-    QString qt_ver = qVersion();
-    return qt_ver;
-}
-
 void OpenHD::telemetryMessage(QString message, int level) {
     emit messageReceived(message, level);
 #if defined(ENABLE_SPEECH)
@@ -517,7 +512,7 @@ void OpenHD::set_esc_temp(int esc_temp) {
     emit esc_temp_changed(m_esc_temp);
 }
 
-void OpenHD::set_lost_packet_cnt_rc(unsigned int lost_packet_cnt_rc) {
+/*void OpenHD::set_lost_packet_cnt_rc(unsigned int lost_packet_cnt_rc) {
     m_lost_packet_cnt_rc = lost_packet_cnt_rc;
     emit lost_packet_cnt_rc_changed(m_lost_packet_cnt_rc);
 }
@@ -575,7 +570,7 @@ void OpenHD::set_lost_packet_percent(int lost_packet_percent) {
 void OpenHD::set_cts(bool cts) {
     m_cts = cts;
     emit cts_changed(m_cts);
-}
+}*/
 
 void OpenHD::set_flight_time(QString flight_time) {
     m_flight_time = flight_time;

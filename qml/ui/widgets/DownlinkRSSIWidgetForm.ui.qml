@@ -274,7 +274,7 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Text {
-                    text: OpenHD.cts
+                    text: "todo"//OpenHD.cts
                     color: "white"
                     font.bold: true
                     height: parent.height
