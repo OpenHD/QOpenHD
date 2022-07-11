@@ -31,6 +31,7 @@ LogMessagesModel::LogMessagesModel(QObject *parent) :
     addData(LogMessageData{"tag4", "yyyyyyy"});
     addData(LogMessageData{"tag5", "yyyyyyy"});
     addData(LogMessageData{"tag6", "yyyyyyy"});
+    //connect(this, &LogMessagesModel::signalAddLogMessage, this, &LogMessagesModel::addData);
 }
 
 int LogMessagesModel::rowCount( const QModelIndex& parent) const
@@ -69,6 +70,12 @@ QHash<int, QByteArray> LogMessagesModel::roleNames() const
         {SeverityColorRole,"severity_color"}
     };
     return mapping;
+}
+
+void LogMessagesModel::addLogMessage(const QString tag, QString message,quint8 severity)
+{
+    LogMessageData data{tag,message,0,log_severity_to_color(severity)};
+    addData(data);
 }
 
 
