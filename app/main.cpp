@@ -355,7 +355,7 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
 
     engine.rootContext()->setContextProperty("OpenHDUtil", util);
 
-    engine.rootContext()->setContextProperty("OpenHD", OpenHD::instance());
+    engine.rootContext()->setContextProperty("OpenHD", &OpenHD::instance());
     engine.rootContext()->setContextProperty("_ohdSystemAir", &OHDSystemAir::instance());
     engine.rootContext()->setContextProperty("_ohdSystemGround", &OHDSystemGround::instance());
 

@@ -8,13 +8,9 @@
 #include <QDebug>
 #include "qopenhd.h"
 
-static OpenHD* _instance = nullptr;
-
-OpenHD* OpenHD::instance() {
-    if (_instance == nullptr) {
-        _instance = new OpenHD();
-    }
-    return _instance;
+OpenHD& OpenHD::instance() {
+    static OpenHD* instance = new OpenHD();
+    return *instance;
 }
 
 OpenHD::OpenHD(QObject *parent): QObject(parent) {
