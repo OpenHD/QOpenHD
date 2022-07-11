@@ -237,17 +237,9 @@ void GstVideoStream::timerCallback() {
     // check if we are getting video - TODO
     const auto currentTime = QDateTime::currentMSecsSinceEpoch();
     /*if (currentTime - lastDataTimeout < 2500) {
-        if (m_stream_type == StreamTypeMain) {
-            OpenHD::instance()->set_main_video_running(false);
-        } else {
-            OpenHD::instance()->set_pip_video_running(false);
-        }
+        // stream is not running
     } else {
-        if (m_stream_type == StreamTypeMain) {
-            OpenHD::instance()->set_main_video_running(true);
-        } else {
-            OpenHD::instance()->set_pip_video_running(true);
-        }
+        // stream is running
     }*/
 }
 

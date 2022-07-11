@@ -12,6 +12,11 @@ static uint64_t getTimeMicroseconds(){
     const auto time=std::chrono::steady_clock::now().time_since_epoch();
     return std::chrono::duration_cast<std::chrono::microseconds>(time).count();
 }
+// for the heartbeat
+static uint64_t getTimeMilliseconds(){
+    const auto time=std::chrono::steady_clock::now().time_since_epoch();
+    return std::chrono::duration_cast<std::chrono::milliseconds>(time).count();
+}
 
 // Return: The mavlink sys id of QOpenHD. By default, same as QGroundControl. However, in case one uses multiple ground controlls
 // with OpenHD (or QOpenHD AND QGroundCOntroll at the same time) this value needs to be changed

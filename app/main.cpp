@@ -359,7 +359,6 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
     engine.rootContext()->setContextProperty("_ohdSystemAir", &OHDSystemAir::instance());
     engine.rootContext()->setContextProperty("_ohdSystemGround", &OHDSystemGround::instance());
 
-
 #if defined(ENABLE_MAIN_VIDEO)
     engine.rootContext()->setContextProperty("EnableMainVideo", QVariant(true));
     engine.rootContext()->setContextProperty("MainStream", mainVideo);

@@ -1,5 +1,6 @@
 #include "ohdsystemair.h"
 #include "qdebug.h"
+#include "../telemetry/qopenhdmavlinkhelper.hpp"
 
 OHDSystemAir::OHDSystemAir(QObject *parent)
     : QObject{parent}
@@ -113,10 +114,14 @@ void OHDSystemAir::set_wifibroadcast_rssi(int wifibroadcast_rssi)
 
 void OHDSystemAir::update_alive()
 {
-    // TODO this is not correct
     if(m_last_openhd_heartbeat==-1){
         set_is_alive(false);
     }else{
-        set_is_alive(false);
+        // after 3 seconds, consider as "not alive"
+        if(QOpenHDMavlinkHelper::getTimeMilliseconds()-m_last_openhd_heartbeat> 3*1000){
+            set_is_alive(false);
+        }else{
+            set_is_alive(true);
+        }
     }
 }

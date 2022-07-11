@@ -132,6 +132,14 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
         case MAVLINK_MSG_ID_HEARTBEAT: {
             mavlink_heartbeat_t heartbeat;
             mavlink_msg_heartbeat_decode(&msg, &heartbeat);
+            const auto time_millis=QOpenHDMavlinkHelper::getTimeMilliseconds();
+            if(msg.sysid==OHD_SYS_ID_AIR){
+                OHDSystemAir::instance().set_last_openhd_heartbeat(time_millis);
+                return;
+            }else if(msg.sysid==OHD_SYS_ID_GROUND){
+                OHDSystemGround::instance().set_last_openhd_heartbeat(time_millis);
+                return;
+            }
 
             auto custom_mode = heartbeat.custom_mode;
 
