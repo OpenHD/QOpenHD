@@ -183,48 +183,6 @@ public:
     Q_PROPERTY(int esc_temp MEMBER m_esc_temp WRITE set_esc_temp NOTIFY esc_temp_changed)
     void set_esc_temp(int esc_temp);
 
-    //Q_PROPERTY(QString fontFamily MEMBER m_fontFamily WRITE setFontFamily NOTIFY fontFamilyChanged)
-    //void setFontFamily(QString fontFamily);
-
-    // openhd
-
-    /*Q_PROPERTY(unsigned int lost_packet_cnt_rc MEMBER m_lost_packet_cnt_rc WRITE set_lost_packet_cnt_rc NOTIFY lost_packet_cnt_rc_changed)
-    void set_lost_packet_cnt_rc(unsigned int lost_packet_cnt_rc);
-
-    Q_PROPERTY(unsigned int lost_packet_cnt_telemetry_up MEMBER m_lost_packet_cnt_telemetry_up WRITE set_lost_packet_cnt_telemetry_up NOTIFY lost_packet_cnt_telemetry_up_changed)
-    void set_lost_packet_cnt_telemetry_up(unsigned int lost_packet_cnt);
-
-    Q_PROPERTY(unsigned int skipped_packet_cnt MEMBER m_skipped_packet_cnt WRITE set_skipped_packet_cnt NOTIFY skipped_packet_cnt_changed)
-    void set_skipped_packet_cnt(unsigned int skipped_packet_cnt);
-
-    Q_PROPERTY(unsigned int injection_fail_cnt MEMBER m_injection_fail_cnt WRITE set_injection_fail_cnt NOTIFY injection_fail_cnt_changed)
-    void set_injection_fail_cnt(unsigned int injection_fail_cnt);
-
-    Q_PROPERTY(double kbitrate MEMBER m_kbitrate WRITE set_kbitrate NOTIFY kbitrate_changed)
-    void set_kbitrate(double kbitrate);
-
-    Q_PROPERTY(double kbitrate_set MEMBER m_kbitrate_set WRITE set_kbitrate_set NOTIFY kbitrate_set_changed)
-    void set_kbitrate_set(double kbitrate_set);
-
-    Q_PROPERTY(double kbitrate_measured MEMBER m_kbitrate_measured WRITE set_kbitrate_measured NOTIFY kbitrate_measured_changed)
-    void set_kbitrate_measured(double kbitrate_measured);
-
-    Q_PROPERTY(unsigned int damaged_block_cnt MEMBER m_damaged_block_cnt WRITE set_damaged_block_cnt NOTIFY damaged_block_cnt_changed)
-    void set_damaged_block_cnt(unsigned int damaged_block_cnt);
-
-    Q_PROPERTY(int damaged_block_percent MEMBER m_damaged_block_percent WRITE set_damaged_block_percent NOTIFY damaged_block_percent_changed)
-    void set_damaged_block_percent(int damaged_block_percent);
-
-    Q_PROPERTY(unsigned int lost_packet_cnt MEMBER m_lost_packet_cnt WRITE set_lost_packet_cnt NOTIFY lost_packet_cnt_changed)
-    void set_lost_packet_cnt(unsigned int lost_packet_cnt);
-
-    Q_PROPERTY(int lost_packet_percent MEMBER m_lost_packet_percent WRITE set_lost_packet_percent NOTIFY lost_packet_percent_changed)
-    void set_lost_packet_percent(int lost_packet_percent);
-
-    Q_PROPERTY(bool cts MEMBER m_cts WRITE set_cts NOTIFY cts_changed)
-    void set_cts(bool cts);*/
-
-
     Q_PROPERTY(QString flight_time MEMBER m_flight_time WRITE set_flight_time NOTIFY flight_time_changed)
     void set_flight_time(QString flight_time);
 
@@ -239,9 +197,6 @@ public:
 
     Q_PROPERTY(int mah_km MEMBER m_mah_km WRITE set_mah_km NOTIFY mah_km_changed)
     void set_mah_km(int mah_km);
-
-    //Q_PROPERTY(qint64 last_openhd_heartbeat MEMBER m_last_openhd_heartbeat WRITE set_last_openhd_heartbeat NOTIFY last_openhd_heartbeat_changed)
-    //void set_last_openhd_heartbeat(qint64 last_openhd_heartbeat);
 
     Q_PROPERTY(qint64 last_telemetry_heartbeat MEMBER m_last_telemetry_heartbeat WRITE set_last_telemetry_heartbeat NOTIFY last_telemetry_heartbeat_changed)
     void set_last_telemetry_heartbeat(qint64 last_telemetry_heartbeat);
@@ -333,13 +288,6 @@ signals:
     void press_temp_changed (int press_temp);
     void esc_temp_changed (int esc_temp);
 
-    // openhd
-    //void lost_packet_cnt_rc_changed(unsigned int lost_packet_cnt_rc);
-    //void lost_packet_cnt_telemetry_up_changed(unsigned int lost_packet_cnt_telemetry_up);
-
-   // void skipped_packet_cnt_changed(unsigned int skipped_packet_cnt);
-    void injection_fail_cnt_changed(unsigned int injection_fail_cnt);
-
     void kbitrate_changed(double kbitrate);
     void kbitrate_set_changed(double kbitrate_set);
     void kbitrate_measured_changed(double kbitrate_measured);
@@ -379,16 +327,7 @@ signals:
     void FC_Reboot_Shutdown_Changed(int reboot_shutdown);
     void request_Mission_Changed();
     void playBlackBoxObject(int index);
-
-    //void fontFamilyChanged(QString fontFamily);
     void last_ping_result_flight_ctrl_changed(QString last_ping_result_flight_ctrl);
-
-private:
-//#if defined(ENABLE_SPEECH)
-//    QTextToSpeech *m_speech;
-//#endif
-    //QString m_fontFamily;
-    //QFont m_font;
 
 public:
     // mavlink
@@ -459,14 +398,6 @@ public:
 
     int m_rcRssi = 0;
 
-    // openhd
-
-    //unsigned int m_lost_packet_cnt_rc = 0;
-    //unsigned int m_lost_packet_cnt_telemetry_up = 0;
-
-    //unsigned int m_skipped_packet_cnt = 0;
-    //unsigned int m_injection_fail_cnt = 0;
-
     double m_kbitrate = 0.0;
     double m_kbitrate_measured = 0.0;
     double m_kbitrate_set = 0.0;
@@ -474,12 +405,6 @@ public:
     int m_imu_temp = 0;
     int m_press_temp = 0;
     int m_esc_temp = 0;
-
-    //unsigned int m_damaged_block_cnt = 0;
-    //int m_damaged_block_percent = 0;
-    //unsigned int m_lost_packet_cnt = 0;
-    //int m_lost_packet_percent = 0;
-    //bool m_cts = false;
 
     QString m_flight_time = "00:00";
 
@@ -510,9 +435,6 @@ public:
 
     int m_current_waypoint = 0;
     int m_total_waypoints = 0;
-
-    //QTranslator m_translator;
-    //QQmlApplicationEngine *m_engine = nullptr;
 
     int m_mode = 0;
 
