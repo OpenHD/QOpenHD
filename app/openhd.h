@@ -1,12 +1,9 @@
  #ifndef OPENHD_H
 #define OPENHD_H
 
+#include <QElapsedTimer>
 #include <QObject>
-#include <QtQuick>
-
-#if defined(ENABLE_SPEECH)
-#include <QtTextToSpeech/QTextToSpeech>
-#endif
+#include <QTimer>
 
 /**
  * So this is basically a really big "model" and a small "controller" (in MVC pattern) class.
@@ -34,9 +31,8 @@ public:
 
     Q_INVOKABLE void request_Mission();
 
-    void setEngine(QQmlApplicationEngine *engine);
-
-    Q_INVOKABLE void switchToLanguage(const QString &language);
+    //void setEngine(QQmlApplicationEngine *engine);
+    //Q_INVOKABLE void switchToLanguage(const QString &language);
 
     /* public so that a QTimer can call it from main(), temporary fix due to some quirks with
        the way QTimer and QML singletons/context properties work */
@@ -187,8 +183,8 @@ public:
     Q_PROPERTY(int esc_temp MEMBER m_esc_temp WRITE set_esc_temp NOTIFY esc_temp_changed)
     void set_esc_temp(int esc_temp);
 
-    Q_PROPERTY(QString fontFamily MEMBER m_fontFamily WRITE setFontFamily NOTIFY fontFamilyChanged)
-    void setFontFamily(QString fontFamily);
+    //Q_PROPERTY(QString fontFamily MEMBER m_fontFamily WRITE setFontFamily NOTIFY fontFamilyChanged)
+    //void setFontFamily(QString fontFamily);
 
     // openhd
 
@@ -244,8 +240,8 @@ public:
     Q_PROPERTY(int mah_km MEMBER m_mah_km WRITE set_mah_km NOTIFY mah_km_changed)
     void set_mah_km(int mah_km);
 
-    Q_PROPERTY(qint64 last_openhd_heartbeat MEMBER m_last_openhd_heartbeat WRITE set_last_openhd_heartbeat NOTIFY last_openhd_heartbeat_changed)
-    void set_last_openhd_heartbeat(qint64 last_openhd_heartbeat);
+    //Q_PROPERTY(qint64 last_openhd_heartbeat MEMBER m_last_openhd_heartbeat WRITE set_last_openhd_heartbeat NOTIFY last_openhd_heartbeat_changed)
+    //void set_last_openhd_heartbeat(qint64 last_openhd_heartbeat);
 
     Q_PROPERTY(qint64 last_telemetry_heartbeat MEMBER m_last_telemetry_heartbeat WRITE set_last_telemetry_heartbeat NOTIFY last_telemetry_heartbeat_changed)
     void set_last_telemetry_heartbeat(qint64 last_telemetry_heartbeat);
@@ -359,7 +355,7 @@ signals:
     void app_mah_changed(int app_mah);
     void mah_km_changed(int mah_km);
 
-    void last_openhd_heartbeat_changed(qint64 last_openhd_heartbeat);
+    //void last_openhd_heartbeat_changed(qint64 last_openhd_heartbeat);
 
     void last_telemetry_heartbeat_changed(qint64 last_telemetry_heartbeat);
     void last_telemetry_attitude_changed(qint64 last_telemetry_attitude);
@@ -382,16 +378,15 @@ signals:
     void request_Mission_Changed();
     void playBlackBoxObject(int index);
 
-    void fontFamilyChanged(QString fontFamily);
+    //void fontFamilyChanged(QString fontFamily);
     void last_ping_result_flight_ctrl_changed(QString last_ping_result_flight_ctrl);
 
 private:
-#if defined(ENABLE_SPEECH)
-    QTextToSpeech *m_speech;
-#endif
-    QString m_fontFamily;
-
-    QFont m_font;
+//#if defined(ENABLE_SPEECH)
+//    QTextToSpeech *m_speech;
+//#endif
+    //QString m_fontFamily;
+    //QFont m_font;
 
 public:
     // mavlink
@@ -497,7 +492,6 @@ public:
     qint64 mahKmLastTime= 0;
     double total_mah= 0;
 
-    qint64 m_last_openhd_heartbeat = -1;
     qint64 m_last_telemetry_heartbeat = -1;
     qint64 m_last_telemetry_attitude = -1;
     qint64 m_last_telemetry_battery = -1;
@@ -515,9 +509,8 @@ public:
     int m_current_waypoint = 0;
     int m_total_waypoints = 0;
 
-    QTranslator m_translator;
-
-    QQmlApplicationEngine *m_engine = nullptr;
+    //QTranslator m_translator;
+    //QQmlApplicationEngine *m_engine = nullptr;
 
     int m_mode = 0;
 

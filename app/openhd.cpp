@@ -5,7 +5,8 @@
 
 #include <GeographicLib/Geodesic.hpp>
 
-#include<QDebug>
+#include <QDebug>
+#include "qopenhd.h"
 
 static OpenHD* _instance = nullptr;
 
@@ -17,10 +18,6 @@ OpenHD* OpenHD::instance() {
 }
 
 OpenHD::OpenHD(QObject *parent): QObject(parent) {
-
-#if defined(ENABLE_SPEECH)
-    m_speech = new QTextToSpeech(this);
-#endif
 
     timer = new QTimer(this);
     QObject::connect(timer, &QTimer::timeout, this, &OpenHD::updateFlightTimer);
@@ -43,36 +40,9 @@ OpenHD::OpenHD(QObject *parent): QObject(parent) {
 }
 
 
-void OpenHD::switchToLanguage(const QString &language) {
-    QLocale::setDefault(language);
-
-    if (!m_translator.isEmpty()) {
-        QCoreApplication::removeTranslator(&m_translator);
-    }
-
-    bool success = m_translator.load(":/translations/QOpenHD.qm");
-    if (!success) {
-        qDebug() << "Translation load failed";
-        return;
-    }
-    QCoreApplication::installTranslator(&m_translator);
-    m_engine->retranslate();
-}
-
-
-void OpenHD::setEngine(QQmlApplicationEngine *engine) {
-    m_engine = engine;
-}
-
 void OpenHD::telemetryMessage(QString message, int level) {
     emit messageReceived(message, level);
-#if defined(ENABLE_SPEECH)
-    QSettings settings;
-    auto enable_speech = settings.value("enable_speech", QVariant(0));
-    if (enable_speech == 1 && level <= 3) {
-        OpenHD::instance()->m_speech->say(message);
-    }
-#endif
+    QOpenHD::instance().textToSpeech_sayMessage(message);
 }
 
 void OpenHD::updateFlightTimer() {
@@ -235,18 +205,8 @@ void OpenHD::set_airspeed(double airspeed) {
 }
 
 void OpenHD::set_armed(bool armed) {
-#if defined(ENABLE_SPEECH)
-    QSettings settings;
-    auto enable_speech = settings.value("enable_speech", QVariant(0));
-
-    if (enable_speech == 1) {
-        if (armed && !m_armed) {
-            m_speech->say("armed");
-        } else if (!armed && m_armed) {
-            m_speech->say("disarmed");
-        }
-    }
-#endif
+    QString message=(armed && !m_armed) ? "armed" : "disarmed";
+    QOpenHD::instance().textToSpeech_sayMessage(message);
 
     if (armed && !m_armed) {
         /*
@@ -267,20 +227,14 @@ void OpenHD::set_armed(bool armed) {
 }
 
 void OpenHD::set_flight_mode(QString flight_mode) {
-#if defined(ENABLE_SPEECH)
-    if (m_flight_mode != flight_mode) {
-        m_speech->say(tr("%1 flight mode").arg(flight_mode));
-    }
-#endif
+    QString message=tr("%1 flight mode").arg(flight_mode);
+    QOpenHD::instance().textToSpeech_sayMessage(message);
     m_flight_mode = flight_mode;
-
     emit flight_mode_changed(m_flight_mode);
 }
 
 void OpenHD::set_mav_type(QString mav_type) {
-
     m_mav_type = mav_type;
-
     emit mav_type_changed(m_mav_type);
 }
 
@@ -597,11 +551,6 @@ void OpenHD::set_mah_km(int mah_km) {
     emit mah_km_changed(m_mah_km);
 }
 
-void OpenHD::set_last_openhd_heartbeat(qint64 last_openhd_heartbeat) {
-    m_last_openhd_heartbeat = last_openhd_heartbeat;
-    emit last_openhd_heartbeat_changed(m_last_openhd_heartbeat);
-}
-
 void OpenHD::set_last_telemetry_heartbeat(qint64 last_telemetry_heartbeat) {
     m_last_telemetry_heartbeat = last_telemetry_heartbeat;
     emit last_telemetry_heartbeat_changed(m_last_telemetry_heartbeat);
@@ -871,12 +820,6 @@ void OpenHD::setTotalWaypoints(int total_waypoints) {
     emit totalWaypointsChanged(m_total_waypoints);
 }
 
-void OpenHD::setFontFamily(QString fontFamily) {
-    m_fontFamily = fontFamily;
-    emit fontFamilyChanged(m_fontFamily);
-    m_font = QFont(m_fontFamily, 11, QFont::Bold, false);
-
-}
 
 void OpenHD::set_last_ping_result_flight_ctrl(QString last_ping_result_flight_ctrl)
 {

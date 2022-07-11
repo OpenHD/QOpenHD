@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QDebug>
+#include <QTimer>
 #include "wifiadapter.h"
 #include <array>
 
@@ -46,6 +47,10 @@ public:
     void set_gnd_freq_busy(bool gnd_freq_busy);
     Q_PROPERTY(QString last_ping_result_openhd_ground MEMBER  m_last_ping_result_openhd_ground WRITE set_last_ping_result_openhd_ground NOTIFY last_ping_result_openhd_ground_changed)
     void set_last_ping_result_openhd_ground(QString last_ping_result_openhd_ground);
+    Q_PROPERTY(qint64 last_openhd_heartbeat MEMBER m_last_openhd_heartbeat WRITE set_last_openhd_heartbeat NOTIFY last_openhd_heartbeat_changed)
+    void set_last_openhd_heartbeat(qint64 last_openhd_heartbeat);
+    Q_PROPERTY(bool is_alive MEMBER m_is_alive WRITE set_is_alive NOTIFY is_alive_changed)
+    void set_is_alive(bool alive);
     //
     void set_wifi_adapter0(unsigned int received_packet_count,int current_signal_dbm,int signal_good);
     void set_wifi_adapter1(unsigned int received_packet_count,int current_signal_dbm,int signal_good);
@@ -72,6 +77,8 @@ signals:
     void ground_vbat_changed(double ground_vbat);
     void ground_iout_changed(double ground_iout);
     void last_ping_result_openhd_ground_changed(QString last_ping_result_openhd_ground);
+    void last_openhd_heartbeat_changed(qint64 last_openhd_heartbeat);
+    void is_alive_changed(bool alive);
     void save_gnd_freq(int gnd_freq);
     void gnd_freq_busy_changed(bool gnd_freq_busy);
     void gnd_freq_changed(int gnd_freq);
@@ -95,11 +102,17 @@ public:
     double m_ground_iout = -1;
     QString m_openhd_version_ground="NA";
     QString m_last_ping_result_openhd_ground="NA";
+    qint64 m_last_openhd_heartbeat = -1;
+    bool m_is_alive=false; // see alive timer
     int m_gnd_freq;
     bool m_gnd_freq_busy = false;
     std::array<WifiAdapter,4> m_wifi_adapters;
     //
     int m_downlink_rssi = -127;
+private:
+    // Sets the alive boolean if no heartbeat / message has been received in the last X seconds
+    QTimer* m_alive_timer = nullptr;
+    void update_alive();
 };
 
 #endif // OHDSYSTEMGROUND_H

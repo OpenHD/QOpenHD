@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QDebug>
+#include <QTimer>
 
 #include <openhd/mavlink.h>
 #include "wifiadapter.h"
@@ -42,6 +43,10 @@ public:
     void set_air_iout(double air_iout);
     Q_PROPERTY(QString last_ping_result_openhd_air MEMBER  m_last_ping_result_openhd_air WRITE set_last_ping_result_openhd_air NOTIFY last_ping_result_openhd_air_changed)
     void set_last_ping_result_openhd_air(QString last_ping_result_openhd_air);
+    Q_PROPERTY(qint64 last_openhd_heartbeat MEMBER m_last_openhd_heartbeat WRITE set_last_openhd_heartbeat NOTIFY last_openhd_heartbeat_changed)
+    void set_last_openhd_heartbeat(qint64 last_openhd_heartbeat);
+    Q_PROPERTY(bool is_alive MEMBER m_is_alive WRITE set_is_alive NOTIFY is_alive_changed)
+    void set_is_alive(bool alive);
     //
     //Q_PROPERTY(QString wifi_adapter MEMBER  m_wifi_adapter WRITE set_wifi_adapter NOTIFY wifi_adapter_changed)
     // TODO somehow make the struct available to qt
@@ -73,6 +78,9 @@ signals:
     void air_vout_changed(double air_vout);
     void air_iout_changed(double air_iout);
     void last_ping_result_openhd_air_changed(QString last_ping_result_openhd_air);
+    void last_openhd_heartbeat_changed(qint64 last_openhd_heartbeat);
+    void is_alive_changed(bool alive);
+
     void wifi_adapter_changed(unsigned int received_packet_count,int current_signal_dbm,int signal_good);
     void wifibroadcast_rssi_changed(int wifibroadcast_rssi);
 public:
@@ -89,10 +97,16 @@ public:
     QString m_openhd_version_air="NA";
     // All these get set by the proper responses and can be used in UI
     QString m_last_ping_result_openhd_air="NA";
+    qint64 m_last_openhd_heartbeat = -1;
+    bool m_is_alive=false; // see alive timer
     // Air unit only has one (wifibroadcast) wifi adapter
     WifiAdapter m_wifi_adapter;
     // argh, dulicated but we need that for the qt u element
     int m_wifibroadcast_rssi=-127;
+private:
+    // Sets the alive boolean if no heartbeat / message has been received in the last X seconds
+    QTimer* m_alive_timer = nullptr;
+    void update_alive();
 };
 
 #endif // OHDSYSTEMAIR_H

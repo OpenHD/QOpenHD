@@ -67,6 +67,7 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 
 #include "logging/logmessagesmodel.h"
 #include "telemetry/settings/mavlinksettingsmodel.h"
+#include "qopenhd.h"
 
 // SDL hack
 #ifdef Q_OS_WIN
@@ -288,8 +289,8 @@ int main(int argc, char *argv[]) {
 #endif
 
     QQmlApplicationEngine engine;
-    auto openhd = OpenHD::instance();
-    openhd->setEngine(&engine);
+    engine.rootContext()->setContextProperty("_qopenhd", &QOpenHD::instance());
+    QOpenHD::instance().setEngine(&engine);
 
     write_platform_context_properties(engine);
     write_other_context_properties(engine);
@@ -354,7 +355,7 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
 
     engine.rootContext()->setContextProperty("OpenHDUtil", util);
 
-    engine.rootContext()->setContextProperty("OpenHD", openhd);
+    engine.rootContext()->setContextProperty("OpenHD", OpenHD::instance());
     engine.rootContext()->setContextProperty("_ohdSystemAir", &OHDSystemAir::instance());
     engine.rootContext()->setContextProperty("_ohdSystemGround", &OHDSystemGround::instance());
 

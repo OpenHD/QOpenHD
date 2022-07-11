@@ -17,6 +17,9 @@ Rectangle {
     Layout.fillWidth: true
     property alias license: license
 
+    property int rowHeight: 64
+    property int text_minHeight: 20
+
     color: "#eaeaea"
 
     Card {
@@ -100,10 +103,10 @@ Rectangle {
             ColumnLayout {
                 // from https://doc.qt.io/qt-6/qml-qtquick-layouts-rowlayout.html
                 anchors.fill: parent
-                spacing: 6
+                spacing: 2
                 RowLayout{
                     Layout.fillWidth: true
-                    Layout.minimumHeight: 30
+                    Layout.minimumHeight: text_minHeight
                     spacing: 6
                     Text {
                         text: qsTr("OpenHD Version:")
@@ -122,7 +125,7 @@ Rectangle {
                 }
                 RowLayout{
                     Layout.fillWidth: true
-                    Layout.minimumHeight: 30
+                    Layout.minimumHeight: text_minHeight
                     spacing: 6
                     Text {
                         text: qsTr("Last Ping:")
@@ -133,6 +136,25 @@ Rectangle {
                     }
                     Text {
                         text: _ohdSystemAir.last_ping_result_openhd_air
+                        height: 24
+                        width: 256
+                        font.pixelSize: 14
+                        leftPadding: 6
+                    }
+                }
+                RowLayout{
+                    Layout.fillWidth: true
+                    Layout.minimumHeight: text_minHeight
+                    spacing: 6
+                    Text {
+                        text: qsTr("Alive: ")
+                        height: 24
+                        font.pixelSize: 14
+                        font.bold: true
+                        leftPadding: 12
+                    }
+                    Text {
+                        text: _ohdSystemAir.is_alive ? "Y" : "N"
                         height: 24
                         width: 256
                         font.pixelSize: 14
@@ -151,10 +173,10 @@ Rectangle {
             ColumnLayout {
                 // from https://doc.qt.io/qt-6/qml-qtquick-layouts-rowlayout.html
                 anchors.fill: parent
-                spacing: 6
+                spacing: 2
                 RowLayout{
                     Layout.fillWidth: true
-                    Layout.minimumHeight: 30
+                    Layout.minimumHeight: text_minHeight
                     spacing: 6
                     Text {
                         text: qsTr("OpenHD Version:")
@@ -173,7 +195,7 @@ Rectangle {
                 }
                 RowLayout{
                     Layout.fillWidth: true
-                    Layout.minimumHeight: 30
+                    Layout.minimumHeight: text_minHeight
                     spacing: 6
                     Text {
                         text: qsTr("Last Ping:")
@@ -184,6 +206,25 @@ Rectangle {
                     }
                     Text {
                         text: _ohdSystemGround.last_ping_result_openhd_ground
+                        height: 24
+                        width: 256
+                        font.pixelSize: 14
+                        leftPadding: 6
+                    }
+                }
+                RowLayout{
+                    Layout.fillWidth: true
+                    Layout.minimumHeight: text_minHeight
+                    spacing: 6
+                    Text {
+                        text: qsTr("Alive: ")
+                        height: 24
+                        font.pixelSize: 14
+                        font.bold: true
+                        leftPadding: 12
+                    }
+                    Text {
+                        text: _ohdSystemGround.is_alive ? "Y" : "N"
                         height: 24
                         width: 256
                         font.pixelSize: 14

@@ -97,6 +97,7 @@ SOURCES += \
     app/osd/altitudeladder.cpp \
     app/osd/drawingcanvas.cpp \
     app/osd/flightpathvector.cpp \
+    app/qopenhd.cpp \
     app/telemetry/settings/mavlinksettingsmodel.cpp
 
 HEADERS += \
@@ -110,6 +111,7 @@ HEADERS += \
     app/osd/altitudeladder.h \
     app/osd/drawingcanvas.h \
     app/osd/flightpathvector.h \
+    app/qopenhd.h \
     app/telemetry/openhd_defines.hpp \
     app/telemetry/qopenhdmavlinkhelper.hpp \
     app/telemetry/settings/mavlinksettingsmodel.h

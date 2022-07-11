@@ -5,6 +5,9 @@ OHDSystemAir::OHDSystemAir(QObject *parent)
     : QObject{parent}
 {
     set_air_gpio({0, 0, 0, 0, 0, 0, 0, 0});
+    m_alive_timer = new QTimer(this);
+    QObject::connect(m_alive_timer, &QTimer::timeout, this, &OHDSystemAir::update_alive);
+     m_alive_timer->start(1000);
 }
 
 OHDSystemAir& OHDSystemAir::instance()
@@ -82,6 +85,17 @@ void OHDSystemAir::set_last_ping_result_openhd_air(QString last_ping_result_open
     emit last_ping_result_openhd_air_changed(m_last_ping_result_openhd_air);
 }
 
+void OHDSystemAir::set_last_openhd_heartbeat(qint64 last_openhd_heartbeat) {
+    m_last_openhd_heartbeat = last_openhd_heartbeat;
+    emit last_openhd_heartbeat_changed(m_last_openhd_heartbeat);
+}
+
+void OHDSystemAir::set_is_alive(bool alive)
+{
+    m_is_alive=alive;
+    emit is_alive_changed(alive);
+}
+
 void OHDSystemAir::set_wifi_adapter(unsigned int received_packet_count, int current_signal_dbm, int signal_good)
 {
     m_wifi_adapter.received_packet_count=received_packet_count;
@@ -95,4 +109,9 @@ void OHDSystemAir::set_wifibroadcast_rssi(int wifibroadcast_rssi)
 {
     m_wifibroadcast_rssi=wifibroadcast_rssi;
     emit wifibroadcast_rssi_changed(wifibroadcast_rssi);
+}
+
+void OHDSystemAir::update_alive()
+{
+
 }

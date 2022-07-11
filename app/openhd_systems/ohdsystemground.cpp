@@ -65,6 +65,17 @@ void OHDSystemGround::set_last_ping_result_openhd_ground(QString last_ping_resul
     emit last_ping_result_openhd_ground_changed(m_last_ping_result_openhd_ground);
 }
 
+void OHDSystemGround::set_last_openhd_heartbeat(qint64 last_openhd_heartbeat) {
+    m_last_openhd_heartbeat = last_openhd_heartbeat;
+    emit last_openhd_heartbeat_changed(m_last_openhd_heartbeat);
+}
+
+void OHDSystemGround::set_is_alive(bool alive)
+{
+    m_is_alive=alive;
+    emit is_alive_changed(alive);
+}
+
 //  TODO register qt struct and make it nice
 void OHDSystemGround::set_wifi_adapter0(unsigned int received_packet_count, int current_signal_dbm, int signal_good){
     m_wifi_adapters[0].received_packet_count=received_packet_count;
