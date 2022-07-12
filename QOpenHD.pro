@@ -83,6 +83,7 @@ INCLUDEPATH += $$PWD/lib/c_library_v2_openhd
 # mavsdk - dirty
 INCLUDEPATH += /usr/local/include/mavsdk
 LIBS += -L/usr/local/lib -lmavsdk
+INCLUDEPATH += /usr/include/mavsdk
 
 INCLUDEPATH += $$PWD/lib/GeographicLib-1.50/include
 
