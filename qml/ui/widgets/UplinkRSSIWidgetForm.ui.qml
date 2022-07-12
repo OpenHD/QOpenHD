@@ -215,8 +215,8 @@ BaseWidget {
             height: 24
             color: settings.color_text
 
-            text: OpenHD.current_signal_joystick_uplink
-                  == -127 ? qsTr("N/A") : OpenHD.current_signal_joystick_uplink
+            text: _ohdSystemAir.wifibroadcast_rssi
+                  == -127 ? qsTr("N/A") : _ohdSystemAir.wifibroadcast_rssi
             anchors.left: uplink_icon.right
             anchors.leftMargin: 3
             anchors.top: parent.top
@@ -258,7 +258,7 @@ BaseWidget {
             height: 24
             color: settings.color_text
             opacity: settings.uplink_rssi_opacity
-            text: OpenHD.lost_packet_cnt_rc
+            text: "TODO"
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 0
             anchors.right: uplink_lost_packet_cnt_telemetry_up.left
@@ -281,7 +281,7 @@ BaseWidget {
             height: 24
             color: settings.color_text
             opacity: settings.uplink_rssi_opacity
-            text: OpenHD.lost_packet_cnt_telemetry_up
+            text: "TODO"
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 0
             anchors.right: parent.right

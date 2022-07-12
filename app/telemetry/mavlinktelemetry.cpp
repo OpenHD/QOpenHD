@@ -22,7 +22,8 @@
 #include "qopenhdmavlinkhelper.hpp"
 
 #include "openhd.h"
-
+#include "openhd_systems/ohdsystemair.h"
+#include "openhd_systems/ohdsystemground.h"
 
 MavlinkTelemetry* MavlinkTelemetry::instance() {
     static MavlinkTelemetry instance;
@@ -131,6 +132,14 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
         case MAVLINK_MSG_ID_HEARTBEAT: {
             mavlink_heartbeat_t heartbeat;
             mavlink_msg_heartbeat_decode(&msg, &heartbeat);
+            const auto time_millis=QOpenHDMavlinkHelper::getTimeMilliseconds();
+            if(msg.sysid==OHD_SYS_ID_AIR){
+                OHDSystemAir::instance().set_last_openhd_heartbeat(time_millis);
+                return;
+            }else if(msg.sysid==OHD_SYS_ID_GROUND){
+                OHDSystemGround::instance().set_last_openhd_heartbeat(time_millis);
+                return;
+            }
 
             auto custom_mode = heartbeat.custom_mode;
 
@@ -146,7 +155,7 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
                 case MAV_AUTOPILOT_PX4: {
                     if (heartbeat.base_mode & MAV_MODE_FLAG_CUSTOM_MODE_ENABLED) {
                         auto px4_mode = m_util.px4_mode_from_custom_mode(custom_mode);
-                        OpenHD::instance()->set_flight_mode(px4_mode);
+                       OpenHD::instance().set_flight_mode(px4_mode);
                     }
                     break;
                 }
@@ -161,46 +170,46 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
                             }
                             case MAV_TYPE_FIXED_WING: {
                                 auto plane_mode = m_util.plane_mode_from_enum((PLANE_MODE)custom_mode);
-                                OpenHD::instance()->set_flight_mode(plane_mode);
+                               OpenHD::instance().set_flight_mode(plane_mode);
 
-                                OpenHD::instance()->set_mav_type("ARDUPLANE");
+                               OpenHD::instance().set_mav_type("ARDUPLANE");
 
                                 /* autopilot detecton not reliable
                                 if(ap_version>999){
-                                    OpenHD::instance()->set_mav_type("ARDUPLANE");
+                                   OpenHD::instance().set_mav_type("ARDUPLANE");
                                     //qDebug() << "Mavlink Mav Type= ARDUPLANE";
                                 }
                                 else{
-                                    OpenHD::instance()->set_mav_type("UKNOWN PLANE");
+                                   OpenHD::instance().set_mav_type("UKNOWN PLANE");
                                 }
                                 */
                                 break;
                             }
                             case MAV_TYPE_GROUND_ROVER: {
                                 auto rover_mode = m_util.rover_mode_from_enum((ROVER_MODE)custom_mode);
-                                OpenHD::instance()->set_flight_mode(rover_mode);
+                               OpenHD::instance().set_flight_mode(rover_mode);
                                 break;
                             }
                             case MAV_TYPE_QUADROTOR: {
                                 auto copter_mode = m_util.copter_mode_from_enum((COPTER_MODE)custom_mode);
-                                OpenHD::instance()->set_flight_mode(copter_mode);
+                               OpenHD::instance().set_flight_mode(copter_mode);
 
-                                OpenHD::instance()->set_mav_type("ARDUCOPTER");
+                               OpenHD::instance().set_mav_type("ARDUCOPTER");
 
                                 /* autopilot detection not reliable
                                 if(ap_version>999){
-                                    OpenHD::instance()->set_mav_type("ARDUCOPTER");
+                                   OpenHD::instance().set_mav_type("ARDUCOPTER");
                                     //qDebug() << "Mavlink Mav Type= ARDUCOPTER";
                                 }
                                 else {
-                                    OpenHD::instance()->set_mav_type("UNKNOWN COPTER");
+                                   OpenHD::instance().set_mav_type("UNKNOWN COPTER");
                                 }
                                 */
                                 break;
                             }
                             case MAV_TYPE_SUBMARINE: {
                                 auto sub_mode = m_util.sub_mode_from_enum((SUB_MODE)custom_mode);
-                                OpenHD::instance()->set_flight_mode(sub_mode);
+                               OpenHD::instance().set_flight_mode(sub_mode);
                                 break;
                             }
                             case MAV_TYPE_ANTENNA_TRACKER: {
@@ -227,9 +236,9 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
 
             if (mode & MAV_MODE_FLAG_SAFETY_ARMED) {
                 // armed
-                OpenHD::instance()->set_armed(true);
+               OpenHD::instance().set_armed(true);
             } else {
-                OpenHD::instance()->set_armed(false);
+               OpenHD::instance().set_armed(false);
             }
 
             qint64 current_timestamp = QDateTime::currentMSecsSinceEpoch();
@@ -261,21 +270,21 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             mavlink_msg_sys_status_decode(&msg, &sys_status);
 
             auto battery_voltage = (double)sys_status.voltage_battery / 1000.0;
-            OpenHD::instance()->set_battery_voltage(battery_voltage);
+           OpenHD::instance().set_battery_voltage(battery_voltage);
 
-            OpenHD::instance()->set_battery_current(sys_status.current_battery);
+           OpenHD::instance().set_battery_current(sys_status.current_battery);
 
-            OpenHD::instance()->updateAppMah();
+           OpenHD::instance().updateAppMah();
 
-            OpenHD::instance()->updateAppMahKm();
+           OpenHD::instance().updateAppMahKm();
 
             QSettings settings;
             auto battery_cells = settings.value("battery_cells", QVariant(3)).toInt();
 
             int battery_percent = m_util.lipo_battery_voltage_to_percent(battery_cells, battery_voltage);
-            OpenHD::instance()->set_battery_percent(battery_percent);
+            //OpenHD::instance()->set_battery_percent(battery_percent);
             QString battery_gauge_glyph = m_util.battery_gauge_glyph_from_percentage(battery_percent);
-            OpenHD::instance()->set_battery_gauge(battery_gauge_glyph);
+            //OpenHD::instance()->set_battery_gauge(battery_gauge_glyph);
 
             qint64 current_timestamp = QDateTime::currentMSecsSinceEpoch();
 
@@ -330,9 +339,9 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
         case MAVLINK_MSG_ID_GPS_RAW_INT:{
             mavlink_gps_raw_int_t gps_status;
             mavlink_msg_gps_raw_int_decode(&msg, &gps_status);
-            OpenHD::instance()->set_satellites_visible(gps_status.satellites_visible);
-            OpenHD::instance()->set_gps_hdop(gps_status.eph / 100.0);
-            OpenHD::instance()->set_gps_fix_type((unsigned int)gps_status.fix_type);
+           OpenHD::instance().set_satellites_visible(gps_status.satellites_visible);
+           OpenHD::instance().set_gps_hdop(gps_status.eph / 100.0);
+           OpenHD::instance().set_gps_fix_type((unsigned int)gps_status.fix_type);
             break;
         }
         case MAVLINK_MSG_ID_GPS_STATUS: {
@@ -344,14 +353,14 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
         case MAVLINK_MSG_ID_RAW_IMU:{
             mavlink_raw_imu_t raw_imu;
             mavlink_msg_raw_imu_decode(&msg, &raw_imu);
-            OpenHD::instance()->set_imu_temp((int)raw_imu.temperature/100);
+           OpenHD::instance().set_imu_temp((int)raw_imu.temperature/100);
             break;
         }
         case MAVLINK_MSG_ID_SCALED_PRESSURE:{
             mavlink_scaled_pressure_t scaled_pressure;
             mavlink_msg_scaled_pressure_decode(&msg, &scaled_pressure);
 
-            OpenHD::instance()->set_press_temp((int)scaled_pressure.temperature/100);
+           OpenHD::instance().set_press_temp((int)scaled_pressure.temperature/100);
             //qDebug() << "Temp:" <<  scaled_pressure.temperature;
             break;
         }
@@ -359,10 +368,10 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             mavlink_attitude_t attitude;
             mavlink_msg_attitude_decode (&msg, &attitude);
 
-            OpenHD::instance()->set_pitch((double)attitude.pitch *57.2958);
+           OpenHD::instance().set_pitch((double)attitude.pitch *57.2958);
             //qDebug() << "Pitch:" <<  attitude.pitch*57.2958;
 
-            OpenHD::instance()->set_roll((double)attitude.roll *57.2958);
+           OpenHD::instance().set_roll((double)attitude.roll *57.2958);
             //qDebug() << "Roll:" <<  attitude.roll*57.2958;
 
             qint64 current_timestamp = QDateTime::currentMSecsSinceEpoch();
@@ -377,37 +386,37 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             mavlink_global_position_int_t global_position;
             mavlink_msg_global_position_int_decode(&msg, &global_position);
 
-            OpenHD::instance()->set_lat((double)global_position.lat / 10000000.0);
-            OpenHD::instance()->set_lon((double)global_position.lon / 10000000.0);
+           OpenHD::instance().set_lat((double)global_position.lat / 10000000.0);
+           OpenHD::instance().set_lon((double)global_position.lon / 10000000.0);
 
-            OpenHD::instance()->set_boot_time(global_position.time_boot_ms);
+           OpenHD::instance().set_boot_time(global_position.time_boot_ms);
 
-            OpenHD::instance()->set_alt_rel(global_position.relative_alt/1000.0);
+           OpenHD::instance().set_alt_rel(global_position.relative_alt/1000.0);
             // qDebug() << "Altitude relative " << alt_rel;
-            OpenHD::instance()->set_alt_msl(global_position.alt/1000.0);
+           OpenHD::instance().set_alt_msl(global_position.alt/1000.0);
 
             // FOR INAV heading does not /100
             QSettings settings;
             auto _heading_inav = settings.value("heading_inav", false).toBool();
             if(_heading_inav==true){
-                OpenHD::instance()->set_hdg(global_position.hdg);
+               OpenHD::instance().set_hdg(global_position.hdg);
             }
             else{
-                OpenHD::instance()->set_hdg(global_position.hdg / 100);
+               OpenHD::instance().set_hdg(global_position.hdg / 100);
             }
-            OpenHD::instance()->set_vx(global_position.vx/100.0);
-            OpenHD::instance()->set_vy(global_position.vy/100.0);
-            OpenHD::instance()->set_vz(global_position.vz/100.0);
+           OpenHD::instance().set_vx(global_position.vx/100.0);
+           OpenHD::instance().set_vy(global_position.vy/100.0);
+           OpenHD::instance().set_vz(global_position.vz/100.0);
 
-            OpenHD::instance()->findGcsPosition();
-            OpenHD::instance()->calculate_home_distance();
-            OpenHD::instance()->calculate_home_course();
+           OpenHD::instance().findGcsPosition();
+           OpenHD::instance().calculate_home_distance();
+           OpenHD::instance().calculate_home_course();
 
-            OpenHD::instance()->updateFlightDistance();
+           OpenHD::instance().updateFlightDistance();
 
-            OpenHD::instance()->updateVehicleAngles();
+           OpenHD::instance().updateVehicleAngles();
 
-            OpenHD::instance()->updateWind();
+           OpenHD::instance().updateWind();
 
             qint64 current_timestamp = QDateTime::currentMSecsSinceEpoch();
 
@@ -420,7 +429,7 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             mavlink_msg_rc_channels_raw_decode(&msg, &rc_channels_raw);
 
             auto rssi = static_cast<int>(static_cast<double>(rc_channels_raw.rssi) / 255.0 * 100.0);
-            OpenHD::instance()->setRcRssi(rssi);
+           OpenHD::instance().setRcRssi(rssi);
 
             break;
         }
@@ -448,12 +457,12 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
 
             // TODO
             /*OpenHD::instance()->set_control_pitch(rc_channels.chan2_raw);
-            OpenHD::instance()->set_control_roll(rc_channels.chan1_raw);
-            OpenHD::instance()->set_control_throttle(rc_channels.chan3_raw);
-            OpenHD::instance()->set_control_yaw(rc_channels.chan4_raw);*/
+           OpenHD::instance().set_control_roll(rc_channels.chan1_raw);
+           OpenHD::instance().set_control_throttle(rc_channels.chan3_raw);
+           OpenHD::instance().set_control_yaw(rc_channels.chan4_raw);*/
 
             auto rssi = static_cast<int>(static_cast<double>(rc_channels.rssi) / 255.0 * 100.0);
-            OpenHD::instance()->setRcRssi(rssi);
+           OpenHD::instance().setRcRssi(rssi);
 
             /*qDebug() << "RC: " << rc_channels.chan1_raw
                                  << rc_channels.chan2_raw
@@ -471,17 +480,17 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             mavlink_vfr_hud_t vfr_hud;
             mavlink_msg_vfr_hud_decode (&msg, &vfr_hud);
 
-            OpenHD::instance()->set_throttle(vfr_hud.throttle);
+           OpenHD::instance().set_throttle(vfr_hud.throttle);
 
             auto airspeed = vfr_hud.airspeed*3.6;
-            OpenHD::instance()->set_airspeed(airspeed);
+           OpenHD::instance().set_airspeed(airspeed);
 
             auto speed = vfr_hud.groundspeed*3.6;
-            OpenHD::instance()->set_speed(speed);
+           OpenHD::instance().set_speed(speed);
             // qDebug() << "Speed- ground " << speed;
 
             auto vsi = vfr_hud.climb;
-            OpenHD::instance()->set_vsi(vsi);
+           OpenHD::instance().set_vsi(vsi);
             // qDebug() << "VSI- " << vsi;
 
             qint64 current_timestamp = QDateTime::currentMSecsSinceEpoch();
@@ -504,8 +513,8 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             mavlink_wind_t mav_wind;
             mavlink_msg_wind_decode(&msg, &mav_wind);
 
-            OpenHD::instance()->set_mav_wind_direction(mav_wind.direction);
-            OpenHD::instance()->set_mav_wind_speed(mav_wind.speed);
+           OpenHD::instance().set_mav_wind_direction(mav_wind.direction);
+           OpenHD::instance().set_mav_wind_speed(mav_wind.speed);
 
 
             /*qDebug() << "Windmavdir: " << mav_wind.direction;
@@ -518,7 +527,7 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             mavlink_battery_status_t battery_status;
             mavlink_msg_battery_status_decode(&msg, &battery_status);
 
-            OpenHD::instance()->set_flight_mah(battery_status.current_consumed);
+           OpenHD::instance().set_flight_mah(battery_status.current_consumed);
 
             int total_voltage = 0;
             int cell_count;
@@ -534,9 +543,9 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
 //                settings.sync();
 //            }
 
-            OpenHD::instance()->set_fc_battery_percent(battery_status.battery_remaining);
+           OpenHD::instance().set_fc_battery_percent(battery_status.battery_remaining);
             QString fc_battery_gauge_glyph = m_util.battery_gauge_glyph_from_percentage(battery_status.battery_remaining);
-            OpenHD::instance()->set_fc_battery_gauge(fc_battery_gauge_glyph);
+           OpenHD::instance().set_fc_battery_gauge(fc_battery_gauge_glyph);
             break;
         }
         case MAVLINK_MSG_ID_SENSOR_OFFSETS: {
@@ -573,13 +582,13 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             mavlink_vibration_t vibration;
             mavlink_msg_vibration_decode (&msg, &vibration);
 
-            OpenHD::instance()->set_vibration_x(vibration.vibration_x);
-            OpenHD::instance()->set_vibration_y(vibration.vibration_y);
-            OpenHD::instance()->set_vibration_z(vibration.vibration_z);
+           OpenHD::instance().set_vibration_x(vibration.vibration_x);
+           OpenHD::instance().set_vibration_y(vibration.vibration_y);
+           OpenHD::instance().set_vibration_z(vibration.vibration_z);
 
-            OpenHD::instance()->set_clipping_x(vibration.clipping_0);
-            OpenHD::instance()->set_clipping_y(vibration.clipping_1);
-            OpenHD::instance()->set_clipping_z(vibration.clipping_2);
+           OpenHD::instance().set_clipping_x(vibration.clipping_0);
+           OpenHD::instance().set_clipping_y(vibration.clipping_1);
+           OpenHD::instance().set_clipping_z(vibration.clipping_2);
                 break;
             }
         case MAVLINK_MSG_ID_SCALED_IMU2:{
@@ -600,8 +609,8 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
         case MAVLINK_MSG_ID_HOME_POSITION:{
             mavlink_home_position_t home_position;
             mavlink_msg_home_position_decode(&msg, &home_position);
-            OpenHD::instance()->set_homelat((double)home_position.latitude / 10000000.0);
-            OpenHD::instance()->set_homelon((double)home_position.longitude / 10000000.0);
+           OpenHD::instance().set_homelat((double)home_position.latitude / 10000000.0);
+           OpenHD::instance().set_homelon((double)home_position.longitude / 10000000.0);
             //LocalMessage::instance()->showMessage("Home Position set by Telemetry", 7);
             break;
         }
@@ -618,17 +627,24 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             if (!param_id.contains('\0')) {
                param_id.append('\0');
             }
+            const QString s(param_id.data());
+            if(msg.sysid==OHD_SYS_ID_AIR || msg.sysid == OHD_SYS_ID_GROUND){
+                // the message is a log message from openhd
+                qDebug()<<"Log message from OpenHD:"<<s;
+                LogMessagesModel::addLogMessage({"OHD",s,0,LogMessagesModel::log_severity_to_color(statustext.severity)});
 
-            QString s(param_id.data());
-
-            OpenHD::instance()->messageReceived(s, statustext.severity);
+            }else{
+                // most likely from the flight controller, but can be someone else, too
+                 qDebug()<<"Log message from not OpenHD:"<<s;
+                OpenHD::instance().telemetryMessage(s, statustext.severity);
+            }
             break;
         }
         case MAVLINK_MSG_ID_ESC_TELEMETRY_1_TO_4: {
             mavlink_esc_telemetry_1_to_4_t esc_telemetry;
             mavlink_msg_esc_telemetry_1_to_4_decode(&msg, &esc_telemetry);
 
-            OpenHD::instance()->set_esc_temp((int)esc_telemetry.temperature[0]);
+           OpenHD::instance().set_esc_temp((int)esc_telemetry.temperature[0]);
             break;
         }
         case MAVLINK_MSG_ID_ADSB_VEHICLE: {
@@ -640,24 +656,25 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
         //qDebug()<<"Got ping message sender:"<<msg.sysid<<":"<<msg.compid<<" target:"<<ping.target_system<<":"<<ping.target_component<<"seq:"<<ping.seq;
         // We only process ping responses with our specific sys id and a matching sequence number.
         // Note that if the user clicks the ping multiple times in rapid succession, some pings might be dropped.
+        // Check if the ping is targeted at our system
         if(ping.seq==pingSequenceNumber && ping.target_system==QOpenHDMavlinkHelper::getSysId()){
             const auto delta=QOpenHDMavlinkHelper::getTimeMicroseconds()-ping.time_usec;
             const float deltaMs=delta/1000.0f;
             std::stringstream ss;
             ss<<deltaMs<<"ms";
             if(msg.sysid==OHD_SYS_ID_AIR){
-                OpenHD::instance()->set_last_ping_result_openhd_air(ss.str().c_str());
+                OHDSystemAir::instance().set_last_ping_result_openhd_air(ss.str().c_str());
             }else if(msg.sysid==OHD_SYS_ID_GROUND){
-                OpenHD::instance()->set_last_ping_result_openhd_ground(ss.str().c_str());
+                OHDSystemGround::instance().set_last_ping_result_openhd_ground(ss.str().c_str());
             }else{
                 qDebug()<<"Got ping from fc";
                 // almost 100% from flight controller
                 // TODO make sure
                 //if(msg.compid==MAV_COMP_ID_AUTOPILOT1)
-                OpenHD::instance()->set_last_ping_result_flight_ctrl(ss.str().c_str());
+               OpenHD::instance().set_last_ping_result_flight_ctrl(ss.str().c_str());
             }
         }else{
-            qDebug()<<"Got ping message sender:"<<msg.sysid<<":"<<msg.compid<<" target:"<<ping.target_system<<":"<<ping.target_component<<"seq:"<<ping.seq;
+            //qDebug()<<"Got ping message sender:"<<msg.sysid<<":"<<msg.compid<<" target:"<<ping.target_system<<":"<<ping.target_component<<"seq:"<<ping.seq;
         }
         break;
     }
@@ -665,11 +682,11 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
         mavlink_onboard_computer_status_t decoded;
         mavlink_msg_onboard_computer_status_decode(&msg,&decoded);
         if(msg.sysid==OHD_SYS_ID_AIR){
-            OpenHD::instance()->set_cpuload_air(decoded.cpu_cores[0]);
-            OpenHD::instance()->set_temp_air(decoded.temperature_core[0]);
+            OHDSystemAir::instance().set_cpuload_air(decoded.cpu_cores[0]);
+            OHDSystemAir::instance().set_temp_air(decoded.temperature_core[0]);
         }else if(msg.sysid==OHD_SYS_ID_GROUND){
-            OpenHD::instance()->set_cpuload_gnd(decoded.cpu_cores[0]);
-            OpenHD::instance()->set_temp_gnd(decoded.temperature_core[0]);
+            OHDSystemGround::instance().set_cpuload_gnd(decoded.cpu_cores[0]);
+            OHDSystemGround::instance().set_temp_gnd(decoded.temperature_core[0]);
         }else{
             qDebug()<<"Sys tele with unknown sys id";
         }
@@ -680,9 +697,9 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
         mavlink_msg_openhd_version_message_decode(&msg,&parsedMsg);
         QString version(parsedMsg.version);
         if(msg.sysid==OHD_SYS_ID_AIR){
-            OpenHD::instance()->set_openhd_version_air(version);
+            OHDSystemAir::instance().set_openhd_version_air(version);
         }else if(msg.sysid==OHD_SYS_ID_GROUND){
-            OpenHD::instance()->set_openhd_version_ground(version);
+            OHDSystemGround::instance().set_openhd_version_ground(version);
         }else{
             qDebug()<<"OHD version with unknown sys id";
         }
@@ -691,10 +708,31 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
     case MAVLINK_MSG_ID_OPENHD_WIFIBROADCAST_STATISTICS:{
         mavlink_openhd_wifibroadcast_statistics_t parsedMsg;
         mavlink_msg_openhd_wifibroadcast_statistics_decode(&msg,&parsedMsg);
-        OpenHD::instance()->setWifiAdapter0(parsedMsg.count_p_all,0,0);
+        //OpenHD::instance()->setWifiAdapter0(parsedMsg.count_p_all,0,0);
+        //OHDSystemGround::instance().set_wifi_adapter0(parsedMsg.count_p_all,13,1);
+        //OHDSystemAir::instance().set_wifi_adapter(13,33,1);
+        //qDebug()<<"kkkk"<<parsedMsg.count_p_all;
         break;
     }
-    case MAVLINK_MSG_ID_OPENHD_LOG_MESSAGE:{
+    case MAVLINK_MSG_ID_OPENHD_WIFI_CARD:{
+        mavlink_openhd_wifi_card_t parsedMsg;
+        mavlink_msg_openhd_wifi_card_decode(&msg,&parsedMsg);
+        //qDebug()<<"Got MAVLINK_MSG_ID_OPENHD_WIFI_CARD";
+        if(msg.sysid==OHD_SYS_ID_AIR){
+            if(parsedMsg.card_index==0){
+                OHDSystemAir::instance().set_wifi_adapter(parsedMsg.count_p_received,parsedMsg.signal_millidBm,true);
+            }
+        }else if(msg.sysid==OHD_SYS_ID_GROUND){
+            if(parsedMsg.card_index==0){
+                OHDSystemGround::instance().set_wifi_adapter0(parsedMsg.count_p_received,parsedMsg.signal_millidBm,true);
+            }else if(parsedMsg.card_index==1){
+                OHDSystemGround::instance().set_wifi_adapter1(parsedMsg.count_p_received,parsedMsg.signal_millidBm,true);
+            }
+
+        }
+        break;
+    }
+    /*case MAVLINK_MSG_ID_OPENHD_LOG_MESSAGE:{
         mavlink_openhd_log_message_t parsedMsg;
         mavlink_msg_openhd_log_message_decode(&msg,&parsedMsg);
         const QString message{parsedMsg.text};
@@ -703,7 +741,8 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
         qDebug()<<"Log message:"<<message;
         LogMessagesModel::addLogMessage({"OHD",message,timestamp,LogMessagesModel::log_severity_to_color(severity)});
         break;
-    }
+    }*/
+    break;
         default: {
             //printf("MavlinkTelemetry received unmatched message with ID %d, sequence: %d from component %d of system %d\n", msg.msgid, msg.seq, msg.compid, msg.sysid);
             qDebug()<<"MavlinkTelemetry received unmatched message with ID "<<msg.msgid

@@ -38,7 +38,7 @@ BaseWidget {
             spacing: 6
             height:325
             Connections {
-                target: OpenHD
+                target: _ohdSystemAir
                 function onAir_gpio_changed(air_gpio) {
                     gpio1.checked = air_gpio[0] === 1
                     gpio1.unknownState = false
@@ -68,8 +68,8 @@ BaseWidget {
                 textColor: "white"
                 checkColor: "black"
                 unknownState: true
-                enabled: !OpenHD.air_gpio_busy
-                onCheckedChanged: OpenHD.setAirGPIO(0, checked)
+                enabled: !_ohdSystemAir.air_gpio_busy
+                onCheckedChanged: _ohdSystemAir.setAirGPIO(0, checked)
             }
 
             ColoredCheckbox {

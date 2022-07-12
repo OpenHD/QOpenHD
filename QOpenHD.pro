@@ -81,35 +81,40 @@ INCLUDEPATH += $$PWD/app
 #INCLUDEPATH += $$PWD/lib/mavlink_generated/include/mavlink/v2.0
 INCLUDEPATH += $$PWD/lib/c_library_v2_openhd
 # mavsdk - dirty
-#INCLUDEPATH += /usr/local/include/mavsdk
-#LIBS += -L/usr/local/lib -lmavsdk
+INCLUDEPATH += /usr/local/include/mavsdk
+LIBS += -L/usr/local/lib -lmavsdk
 
 INCLUDEPATH += $$PWD/lib/GeographicLib-1.50/include
 
 # All files for the OSD elements - these are QT QQuickPaintedItem's that are written in c++
 SOURCES += \
     app/logging/logmessagesmodel.cpp \
+    app/openhd_systems/ohdsystemair.cpp \
+    app/openhd_systems/ohdsystemground.cpp \
     app/osd/headingladder.cpp \
     app/osd/horizonladder.cpp \
     app/osd/speedladder.cpp \
     app/osd/altitudeladder.cpp \
     app/osd/drawingcanvas.cpp \
     app/osd/flightpathvector.cpp \
-    app/telemetry/settings/airpisettingsmodel.cpp \
-    app/xsettingsui.cpp
+    app/qopenhd.cpp \
+    app/telemetry/settings/mavlinksettingsmodel.cpp
 
 HEADERS += \
     app/logging/logmessagesmodel.h \
+    app/openhd_systems/ohdsystemair.h \
+    app/openhd_systems/ohdsystemground.h \
+    app/openhd_systems/wifiadapter.h \
     app/osd/headingladder.h \
     app/osd/horizonladder.h \
     app/osd/speedladder.h \
     app/osd/altitudeladder.h \
     app/osd/drawingcanvas.h \
     app/osd/flightpathvector.h \
+    app/qopenhd.h \
     app/telemetry/openhd_defines.hpp \
     app/telemetry/qopenhdmavlinkhelper.hpp \
-    app/telemetry/settings/airpisettingsmodel.h \
-    app/xsettingsui.h
+    app/telemetry/settings/mavlinksettingsmodel.h
 
 
 # I deleted all the "old" telemetry protocolls other than mavlink
@@ -166,6 +171,7 @@ DISTFILES += \
     android/src/org/freedesktop/gstreamer/androidmedia/GstAhsCallback.java \
     android/src/org/freedesktop/gstreamer/androidmedia/GstAmcOnFrameAvailableListener.java \
     app/adsb/README.md \
+    app/openhd_systems/README.md \
     app/osd_extra/Readme.txt \
     app/platform/README.md \
     app/telemetry/README.md \

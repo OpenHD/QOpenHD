@@ -5,25 +5,15 @@
 
 #include <GeographicLib/Geodesic.hpp>
 
-#include<QDebug>
+#include <QDebug>
+#include "qopenhd.h"
 
-static OpenHD* _instance = nullptr;
-
-OpenHD* OpenHD::instance() {
-    if (_instance == nullptr) {
-        _instance = new OpenHD();
-    }
-    return _instance;
+OpenHD& OpenHD::instance() {
+    static OpenHD* instance = new OpenHD();
+    return *instance;
 }
 
 OpenHD::OpenHD(QObject *parent): QObject(parent) {
-
-#if defined(ENABLE_SPEECH)
-    m_speech = new QTextToSpeech(this);
-#endif
-
-    set_ground_gpio({0, 0, 0, 0, 0, 0, 0, 0});
-    set_air_gpio({0, 0, 0, 0, 0, 0, 0, 0});
 
     timer = new QTimer(this);
     QObject::connect(timer, &QTimer::timeout, this, &OpenHD::updateFlightTimer);
@@ -46,70 +36,9 @@ OpenHD::OpenHD(QObject *parent): QObject(parent) {
 }
 
 
-void OpenHD::switchToLanguage(const QString &language) {
-    QLocale::setDefault(language);
-
-    if (!m_translator.isEmpty()) {
-        QCoreApplication::removeTranslator(&m_translator);
-    }
-
-    bool success = m_translator.load(":/translations/QOpenHD.qm");
-    if (!success) {
-        qDebug() << "Translation load failed";
-        return;
-    }
-    QCoreApplication::installTranslator(&m_translator);
-    m_engine->retranslate();
-}
-
-
-void OpenHD::setEngine(QQmlApplicationEngine *engine) {
-    m_engine = engine;
-}
-
-QString OpenHD::get_qt_version() {
-    QString qt_ver = qVersion();
-    return qt_ver;
-}
-
-void OpenHD::setWifiAdapter0(uint32_t received_packet_cnt, int8_t current_signal_dbm, int8_t signal_good) {
-    emit wifiAdapter0Changed(received_packet_cnt, current_signal_dbm, signal_good);
-}
-
-
-void OpenHD::setWifiAdapter1(uint32_t received_packet_cnt, int8_t current_signal_dbm, int8_t signal_good) {
-    emit wifiAdapter1Changed(received_packet_cnt, current_signal_dbm, signal_good);
-}
-
-
-void OpenHD::setWifiAdapter2(uint32_t received_packet_cnt, int8_t current_signal_dbm, int8_t signal_good) {
-    emit wifiAdapter2Changed(received_packet_cnt, current_signal_dbm, signal_good);
-}
-
-
-void OpenHD::setWifiAdapter3(uint32_t received_packet_cnt, int8_t current_signal_dbm, int8_t signal_good) {
-    emit wifiAdapter3Changed(received_packet_cnt, current_signal_dbm, signal_good);
-}
-
-
-void OpenHD::setWifiAdapter4(uint32_t received_packet_cnt, int8_t current_signal_dbm, int8_t signal_good) {
-    emit wifiAdapter4Changed(received_packet_cnt, current_signal_dbm, signal_good);
-}
-
-
-void OpenHD::setWifiAdapter5(uint32_t received_packet_cnt, int8_t current_signal_dbm, int8_t signal_good) {
-    emit wifiAdapter5Changed(received_packet_cnt, current_signal_dbm, signal_good);
-}
-
 void OpenHD::telemetryMessage(QString message, int level) {
     emit messageReceived(message, level);
-#if defined(ENABLE_SPEECH)
-    QSettings settings;
-    auto enable_speech = settings.value("enable_speech", QVariant(0));
-    if (enable_speech == 1 && level <= 3) {
-        OpenHD::instance()->m_speech->say(message);
-    }
-#endif
+    QOpenHD::instance().textToSpeech_sayMessage(message);
 }
 
 void OpenHD::updateFlightTimer() {
@@ -272,18 +201,8 @@ void OpenHD::set_airspeed(double airspeed) {
 }
 
 void OpenHD::set_armed(bool armed) {
-#if defined(ENABLE_SPEECH)
-    QSettings settings;
-    auto enable_speech = settings.value("enable_speech", QVariant(0));
-
-    if (enable_speech == 1) {
-        if (armed && !m_armed) {
-            m_speech->say("armed");
-        } else if (!armed && m_armed) {
-            m_speech->say("disarmed");
-        }
-    }
-#endif
+    QString message=(armed && !m_armed) ? "armed" : "disarmed";
+    QOpenHD::instance().textToSpeech_sayMessage(message);
 
     if (armed && !m_armed) {
         /*
@@ -304,20 +223,14 @@ void OpenHD::set_armed(bool armed) {
 }
 
 void OpenHD::set_flight_mode(QString flight_mode) {
-#if defined(ENABLE_SPEECH)
-    if (m_flight_mode != flight_mode) {
-        m_speech->say(tr("%1 flight mode").arg(flight_mode));
-    }
-#endif
+    QString message=tr("%1 flight mode").arg(flight_mode);
+    QOpenHD::instance().textToSpeech_sayMessage(message);
     m_flight_mode = flight_mode;
-
     emit flight_mode_changed(m_flight_mode);
 }
 
 void OpenHD::set_mav_type(QString mav_type) {
-
     m_mav_type = mav_type;
-
     emit mav_type_changed(m_mav_type);
 }
 
@@ -414,16 +327,6 @@ void OpenHD::set_lon(double lon) {
     emit lon_changed(m_lon);
 }
 
-void OpenHD::set_battery_percent(int battery_percent) {
-    m_battery_percent = battery_percent;
-    emit battery_percent_changed(m_battery_percent);
-}
-
-void OpenHD::set_ground_battery_percent(int ground_battery_percent) {
-    m_ground_battery_percent = ground_battery_percent;
-    emit ground_battery_percent_changed(m_ground_battery_percent);
-}
-
 void OpenHD::set_fc_battery_percent(int fc_battery_percent) {
     m_fc_battery_percent = fc_battery_percent;
     emit fc_battery_percent_changed(m_fc_battery_percent);
@@ -437,16 +340,6 @@ void OpenHD::set_battery_voltage(double battery_voltage) {
 void OpenHD::set_battery_current(double battery_current) {
     m_battery_current = battery_current;
     emit battery_current_changed(m_battery_current);
-}
-
-void OpenHD::set_battery_gauge(QString battery_gauge) {
-    m_battery_gauge = battery_gauge;
-    emit battery_gauge_changed(m_battery_gauge);
-}
-
-void OpenHD::set_ground_battery_gauge(QString ground_battery_gauge) {
-    m_ground_battery_gauge = ground_battery_gauge;
-    emit ground_battery_gauge_changed(m_ground_battery_gauge);
 }
 
 void OpenHD::set_fc_battery_gauge(QString fc_battery_gauge) {
@@ -569,17 +462,7 @@ void OpenHD::set_esc_temp(int esc_temp) {
     emit esc_temp_changed(m_esc_temp);
 }
 
-void OpenHD::set_downlink_rssi(int downlink_rssi) {
-    m_downlink_rssi = downlink_rssi;
-    emit downlink_rssi_changed(m_downlink_rssi);
-}
-
-void OpenHD::set_current_signal_joystick_uplink(int current_signal_joystick_uplink) {
-    m_current_signal_joystick_uplink = current_signal_joystick_uplink;
-    emit current_signal_joystick_uplink_changed(m_current_signal_joystick_uplink);
-}
-
-void OpenHD::set_lost_packet_cnt_rc(unsigned int lost_packet_cnt_rc) {
+/*void OpenHD::set_lost_packet_cnt_rc(unsigned int lost_packet_cnt_rc) {
     m_lost_packet_cnt_rc = lost_packet_cnt_rc;
     emit lost_packet_cnt_rc_changed(m_lost_packet_cnt_rc);
 }
@@ -614,26 +497,6 @@ void OpenHD::set_kbitrate_measured(double kbitrate_measured) {
     emit kbitrate_measured_changed(m_kbitrate_measured);
 }
 
-void OpenHD::set_cpuload_gnd(int cpuload_gnd) {
-    m_cpuload_gnd = cpuload_gnd;
-    emit cpuload_gnd_changed(m_cpuload_gnd);
-}
-
-void OpenHD::set_cpuload_air(int cpuload_air) {
-    m_cpuload_air = cpuload_air;
-    emit cpuload_air_changed(m_cpuload_air);
-}
-
-void OpenHD::set_temp_gnd(int temp_gnd) {
-    m_temp_gnd = temp_gnd;
-    emit temp_gnd_changed(m_temp_gnd);
-}
-
-void OpenHD::set_temp_air(int temp_air) {
-    m_temp_air = temp_air;
-    emit temp_air_changed(m_temp_air);
-}
-
 void OpenHD::set_damaged_block_cnt(unsigned int damaged_block_cnt) {
     m_damaged_block_cnt = damaged_block_cnt;
     emit damaged_block_cnt_changed(m_damaged_block_cnt);
@@ -654,15 +517,10 @@ void OpenHD::set_lost_packet_percent(int lost_packet_percent) {
     emit lost_packet_percent_changed(m_lost_packet_percent);
 }
 
-void OpenHD::set_air_undervolt(bool air_undervolt) {
-    m_air_undervolt = air_undervolt;
-    emit air_undervolt_changed(m_air_undervolt);
-}
-
 void OpenHD::set_cts(bool cts) {
     m_cts = cts;
     emit cts_changed(m_cts);
-}
+}*/
 
 void OpenHD::set_flight_time(QString flight_time) {
     m_flight_time = flight_time;
@@ -689,21 +547,6 @@ void OpenHD::set_mah_km(int mah_km) {
     emit mah_km_changed(m_mah_km);
 }
 
-void OpenHD::set_openhd_version_air(QString openhd_version_air){
-    m_openhd_version_air=openhd_version_air;
-    emit openhd_version_air_changed(openhd_version_air);
-}
-
-void OpenHD::set_openhd_version_ground(QString openhd_version_ground){
-    m_openhd_version_ground=openhd_version_ground;
-    emit openhd_version_ground_changed(openhd_version_ground);
-}
-
-void OpenHD::set_last_openhd_heartbeat(qint64 last_openhd_heartbeat) {
-    m_last_openhd_heartbeat = last_openhd_heartbeat;
-    emit last_openhd_heartbeat_changed(m_last_openhd_heartbeat);
-}
-
 void OpenHD::set_last_telemetry_heartbeat(qint64 last_telemetry_heartbeat) {
     m_last_telemetry_heartbeat = last_telemetry_heartbeat;
     emit last_telemetry_heartbeat_changed(m_last_telemetry_heartbeat);
@@ -727,92 +570,6 @@ void OpenHD::set_last_telemetry_gps(qint64 last_telemetry_gps) {
 void OpenHD::set_last_telemetry_vfr(qint64 last_telemetry_vfr) {
     m_last_telemetry_vfr = last_telemetry_vfr;
     emit last_telemetry_vfr_changed(m_last_telemetry_vfr);
-}
-
-void OpenHD::set_main_video_running(bool main_video_running) {
-    m_main_video_running = main_video_running;
-    emit main_video_running_changed(m_main_video_running);
-}
-
-void OpenHD::set_pip_video_running(bool pip_video_running) {
-    m_pip_video_running = pip_video_running;
-    emit pip_video_running_changed(m_pip_video_running);
-}
-
-void OpenHD::set_lte_video_running(bool lte_video_running) {
-    m_lte_video_running = lte_video_running;
-    emit lte_video_running_changed(m_lte_video_running);
-}
-
-void OpenHD::set_ground_gpio(QList<int> ground_gpio){
-    m_ground_gpio = ground_gpio;
-    emit ground_gpio_changed(m_ground_gpio);
-}
-
-void OpenHD::set_air_gpio(QList<int> air_gpio){
-    m_air_gpio = air_gpio;
-    emit air_gpio_changed(m_air_gpio);
-}
-
-void OpenHD::set_ground_gpio_busy(bool ground_gpio_busy){
-    m_ground_gpio_busy = ground_gpio_busy;
-    emit ground_gpio_busy_changed(ground_gpio_busy);
-}
-
-void OpenHD::set_air_gpio_busy(bool air_gpio_busy){
-    m_air_gpio_busy = air_gpio_busy;
-    emit air_gpio_busy_changed(air_gpio_busy);
-}
-
-void OpenHD::set_air_freq(int air_freq){
-    qDebug() << "OPENHD set_air_freq =" <<  air_freq;
-    m_air_freq = air_freq;
-    emit air_freq_changed(m_air_freq);
-}
-
-void OpenHD::set_gnd_freq(int gnd_freq){
-    m_gnd_freq = gnd_freq;
-    emit gnd_freq_changed(m_gnd_freq);
-}
-
-void OpenHD::set_air_freq_busy(bool air_freq_busy){
-    m_air_freq_busy = air_freq_busy;
-    emit air_freq_busy_changed(air_freq_busy);
-}
-
-void OpenHD::set_gnd_freq_busy(bool gnd_freq_busy){
-    m_gnd_freq_busy = gnd_freq_busy;
-    emit gnd_freq_busy_changed(gnd_freq_busy);
-}
-
-void OpenHD::set_ground_vin(double ground_vin) {
-    m_ground_vin = ground_vin;
-    emit ground_vin_changed(m_ground_vin);
-}
-
-void OpenHD::set_ground_vout(double ground_vout) {
-    m_ground_vout = ground_vout;
-    emit ground_vout_changed(m_ground_vout);
-}
-
-void OpenHD::set_ground_vbat(double ground_vbat) {
-    m_ground_vbat = ground_vbat;
-    emit ground_vbat_changed(m_ground_vbat);
-}
-
-void OpenHD::set_ground_iout(double ground_iout) {
-    m_ground_iout = ground_iout;
-    emit ground_iout_changed(m_ground_iout);
-}
-
-void OpenHD::set_air_vout(double air_vout) {
-    m_air_vout = air_vout;
-    emit air_vout_changed(m_air_vout);
-}
-
-void OpenHD::set_air_iout(double air_iout) {
-    m_air_iout = air_iout;
-    emit air_iout_changed(m_air_iout);
 }
 
 void OpenHD::set_vehicle_vx_angle(double vehicle_vx_angle) {
@@ -1059,37 +816,13 @@ void OpenHD::setTotalWaypoints(int total_waypoints) {
     emit totalWaypointsChanged(m_total_waypoints);
 }
 
-void OpenHD::setFontFamily(QString fontFamily) {
-    m_fontFamily = fontFamily;
-    emit fontFamilyChanged(m_fontFamily);
-    m_font = QFont(m_fontFamily, 11, QFont::Bold, false);
-
-}
-
-
-// quick dirty
-void OpenHD::pingAllSystems()
-{
-    qDebug()<<"Ping All Systems";
-    MavlinkTelemetry::instance()->pingAllSystems();
-}
-
-void OpenHD::set_last_ping_result_openhd_air(QString last_ping_result_openhd_air)
-{
-    m_last_ping_result_openhd_air=last_ping_result_openhd_air;
-    emit last_ping_result_openhd_air_changed(m_last_ping_result_openhd_air);
-}
-void OpenHD::set_last_ping_result_openhd_ground(QString last_ping_result_openhd_ground)
-{
-    m_last_ping_result_openhd_ground=last_ping_result_openhd_ground;
-    emit last_ping_result_openhd_ground_changed(m_last_ping_result_openhd_ground);
-}
 
 void OpenHD::set_last_ping_result_flight_ctrl(QString last_ping_result_flight_ctrl)
 {
     m_last_ping_result_flight_ctrl=last_ping_result_flight_ctrl;
     emit last_ping_result_flight_ctrl_changed(m_last_ping_result_flight_ctrl);
 }
+
 
 
 

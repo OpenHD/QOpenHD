@@ -250,7 +250,7 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Text {
-                    text: Number(OpenHD.kbitrate_measured/1024.0).toLocaleString(Qt.locale(), 'f', 1) + " Mbit";
+                    text: "todo"//Number(OpenHD.kbitrate_measured/1024.0).toLocaleString(Qt.locale(), 'f', 1) + " Mbit";
                     color: "white";
                     font.bold: true;
                     height: parent.height
@@ -272,7 +272,7 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Text {
-                    text: Number(OpenHD.kbitrate_set/1024.0).toLocaleString(Qt.locale(), 'f', 1) + " Mbit";
+                    text: "todo"//Number(OpenHD.kbitrate_set/1024.0).toLocaleString(Qt.locale(), 'f', 1) + " Mbit";
                     color: "white";
                     font.bold: true;
                     height: parent.height
@@ -295,7 +295,7 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Text {
-                    text: Number(OpenHD.skipped_packet_cnt).toLocaleString(Qt.locale(), 'f', 0);
+                    text: "todo" //Number(OpenHD.skipped_packet_cnt).toLocaleString(Qt.locale(), 'f', 0);
                     color: "white";
                     font.bold: true;
                     height: parent.height
@@ -318,7 +318,7 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Text {
-                    text: Number(OpenHD.injection_fail_cnt).toLocaleString(Qt.locale(), 'f', 0);
+                    text: "todo"//Number(OpenHD.injection_fail_cnt).toLocaleString(Qt.locale(), 'f', 0);
                     color: "white";
                     font.bold: true;
                     height: parent.height
@@ -343,7 +343,7 @@ BaseWidget {
             width: 84
             height: 48
             color: settings.color_text
-            text: Number(OpenHD.kbitrate/1024.0).toLocaleString(Qt.locale(), 'f', 1) + " Mbit";
+            text: "todo"//Number(OpenHD.kbitrate/1024.0).toLocaleString(Qt.locale(), 'f', 1) + " Mbit";
             anchors.verticalCenterOffset: 0
             anchors.left: camera_icon.right
             anchors.leftMargin: 6
@@ -364,13 +364,13 @@ BaseWidget {
             y: 0
             width: 24
             height: 48
-            color: {
+            /*color: {
                 if (OpenHD.kbitrate_measured <= 0.1) {
                     return settings.color_shape;
                 }
 
                 return (OpenHD.kbitrate / OpenHD.kbitrate_measured) >= 0.70 ? ((OpenHD.kbitrate / OpenHD.kbitrate_measured) >= 0.80 ? "#ff0000" : "#fbfd15") : settings.color_shape
-            }
+            }*/
             text: "\uf03d"
             anchors.left: parent.left
             anchors.leftMargin: -2
@@ -385,7 +385,7 @@ BaseWidget {
         Text {
             id: allDataText
             visible: settings.bitrate_show_skip_fail_count
-            text: Number(OpenHD.injection_fail_cnt).toLocaleString(Qt.locale(), 'f', 0) + "/" + Number(OpenHD.skipped_packet_cnt).toLocaleString(Qt.locale(), 'f', 0)
+            text: "todo"//Number(OpenHD.injection_fail_cnt).toLocaleString(Qt.locale(), 'f', 0) + "/" + Number(OpenHD.skipped_packet_cnt).toLocaleString(Qt.locale(), 'f', 0)
             color: settings.color_text
             anchors.top: kbitrate.bottom
             anchors.topMargin: -16

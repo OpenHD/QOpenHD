@@ -15,6 +15,8 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "rc/openhdrc.h"
 #include "platform/openhdpi.h"
 #include "openhd.h"
+#include "openhd_systems/ohdsystemair.h"
+#include "openhd_systems/ohdsystemground.h"
 #include "../app/telemetry/mavlinktelemetry.h"
 
 #include "util/QmlObjectListModel.h"
@@ -63,9 +65,9 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "videostreaming/gst_helper.hpp"
 #endif
 
-#include "xsettingsui.h"
 #include "logging/logmessagesmodel.h"
-#include "telemetry/settings/airpisettingsmodel.h"
+#include "telemetry/settings/mavlinksettingsmodel.h"
+#include "qopenhd.h"
 
 // SDL hack
 #ifdef Q_OS_WIN
@@ -270,8 +272,6 @@ int main(int argc, char *argv[]) {
     qmlRegisterType<FlightPathVector>("OpenHD", 1, 0, "FlightPathVector");
 
     qmlRegisterType<DrawingCanvas>("OpenHD", 1, 0, "DrawingCanvas");
-    // X testing
-    qmlRegisterType<XSettingsUI>("OpenHD", 1, 0, "XSettingsUI");
 
 #if defined(ENABLE_VIDEO_RENDER)
 #if defined(__android__)
@@ -289,13 +289,14 @@ int main(int argc, char *argv[]) {
 #endif
 
     QQmlApplicationEngine engine;
-    auto openhd = OpenHD::instance();
-    openhd->setEngine(&engine);
+    engine.rootContext()->setContextProperty("_qopenhd", &QOpenHD::instance());
+    QOpenHD::instance().setEngine(&engine);
 
     write_platform_context_properties(engine);
     write_other_context_properties(engine);
     engine.rootContext()->setContextProperty("_logMessagesModel", &LogMessagesModel::instance());
-    engine.rootContext()->setContextProperty("_airPiSettingsModel", &AirPiSettingsModel::instance());
+    engine.rootContext()->setContextProperty("_airPiSettingsModel", &MavlinkSettingsModel::instanceAir());
+    engine.rootContext()->setContextProperty("_groundPiSettingsModel", &MavlinkSettingsModel::instanceGround());
 
 
 #if defined(ENABLE_GSTREAMER)
@@ -344,7 +345,7 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
     engine.rootContext()->setContextProperty("openHDRC", openHDRC);
 
     auto mavlinkTelemetry = MavlinkTelemetry::instance();
-    engine.rootContext()->setContextProperty("MavlinkTelemetry", mavlinkTelemetry);
+    engine.rootContext()->setContextProperty("_mavlinkTelemetry", mavlinkTelemetry);
 
     #if defined(ENABLE_EXAMPLE_WIDGET)
     engine.rootContext()->setContextProperty("EnableExampleWidget", QVariant(true));
@@ -354,8 +355,9 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
 
     engine.rootContext()->setContextProperty("OpenHDUtil", util);
 
-    engine.rootContext()->setContextProperty("OpenHD", openhd);
-
+    engine.rootContext()->setContextProperty("OpenHD", &OpenHD::instance());
+    engine.rootContext()->setContextProperty("_ohdSystemAir", &OHDSystemAir::instance());
+    engine.rootContext()->setContextProperty("_ohdSystemGround", &OHDSystemGround::instance());
 
 #if defined(ENABLE_MAIN_VIDEO)
     engine.rootContext()->setContextProperty("EnableMainVideo", QVariant(true));
@@ -487,6 +489,7 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
 
 #endif
 
+     LogMessagesModel::instance().addLogMessage("QOpenHD","blablabla",0);
     const int retval = app.exec();
 
 #if defined(ENABLE_GSTREAMER) || defined(ENABLE_VIDEO_RENDER)

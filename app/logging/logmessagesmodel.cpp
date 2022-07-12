@@ -1,4 +1,5 @@
 #include "logmessagesmodel.h"
+#include "qdebug.h"
 
 #include <QByteArray>
 #include <QTimer>
@@ -12,16 +13,25 @@ LogMessagesModel &LogMessagesModel::instance()
 
 void LogMessagesModel::addLogMessage(LogMessageData logMessageData)
 {
-    LogMessagesModel::instance().addData(logMessageData);
+    //auto *myQObject = &LogMessagesModel::instance();
+    //QMetaObject::invokeMethod(myQObject
+    //                           , "addData"
+    //                           , Qt::AutoConnection // Can also use any other except DirectConnection
+    //                           , Q_ARG(LogMessagesModel::LogMessageData, logMessageData)); // And some more args if needed
+    //emit LogMessagesModel::instance().signalAddLogMessage(logMessageData);
+    //LogMessagesModel::instance().addData(logMessageData);
 }
 
 LogMessagesModel::LogMessagesModel(QObject *parent) :
     QAbstractListModel(parent)
 {
-    m_data
-        << LogMessageData{"tag1", "blablabla"}
-        << LogMessageData{"tag2", "xxxxxxx"}
-        << LogMessageData{"tag3", "yyyyyyy"};
+    addData(LogMessageData{"tag1", "blablabla"});
+    addData(LogMessageData{"tag2", "xxxxxxx"});
+    addData(LogMessageData{"tag3", "yyyyyyy"});
+    addData(LogMessageData{"tag4", "yyyyyyy"});
+    addData(LogMessageData{"tag5", "yyyyyyy"});
+    addData(LogMessageData{"tag6", "yyyyyyy"});
+    //connect(this, &LogMessagesModel::signalAddLogMessage, this, &LogMessagesModel::addData);
 }
 
 int LogMessagesModel::rowCount( const QModelIndex& parent) const
@@ -62,6 +72,12 @@ QHash<int, QByteArray> LogMessagesModel::roleNames() const
     return mapping;
 }
 
+void LogMessagesModel::addLogMessage(const QString tag, QString message,quint8 severity)
+{
+    LogMessageData data{tag,message,0,log_severity_to_color(severity)};
+    addData(data);
+}
+
 
 void LogMessagesModel::removeData(int row)
 {
@@ -75,6 +91,11 @@ void LogMessagesModel::removeData(int row)
 
 void LogMessagesModel::addData(LogMessageData logMessageData)
 {
+    //qDebug()<<"LogMessagesModel::addData"<<logMessageData.message;
+    /*if(m_data.size()>=10){
+        // remove oldest one
+        removeData(0);
+    }*/
     beginInsertRows(QModelIndex(), rowCount(), rowCount());
     m_data.push_back(logMessageData);
     endInsertRows();

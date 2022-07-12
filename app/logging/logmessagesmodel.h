@@ -39,11 +39,16 @@ public:
     static QColor log_severity_to_color(quint8 severity){
         return QColor{0,255,0,255};
     }
+    void addLogMessage(const QString tag,QString message,quint8 severity);
 public slots:
     void removeData(int row);
     void addData(LogMessagesModel::LogMessageData logMessageData);
 private:
     QVector< LogMessageData > m_data;
+public:
+    // argh
+signals:
+    void signalAddLogMessage(LogMessagesModel::LogMessageData logMessageData);
 };
 
 #endif // LOGMESSAGESMODEL_H

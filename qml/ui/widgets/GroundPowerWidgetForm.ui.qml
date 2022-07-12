@@ -260,7 +260,7 @@ BaseWidget {
             id: battery_percent
             y: 0
             color: settings.color_text
-            text: qsTr("%L1%").arg(OpenHD.ground_battery_percent)
+            text: qsTr("%L1%").arg(_ohdSystemGround.ground_battery_percent)
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: batteryGauge.right
             anchors.leftMargin: 0
@@ -277,7 +277,7 @@ BaseWidget {
             id: battery_amp_text
             visible: settings.ground_battery_show_voltage_current
             text: Number(
-                      (OpenHD.ground_iout < 0 ? 0 : OpenHD.ground_iout) / 1000.0).toLocaleString(
+                      (_ohdSystemGround.ground_iout < 0 ? 0 : _ohdSystemGround.ground_iout) / 1000.0).toLocaleString(
                       Qt.locale(), 'f', 1) + "A"
             color: settings.color_text
             anchors.bottom: battery_percent.top
@@ -296,7 +296,7 @@ BaseWidget {
             id: battery_volt_text
             visible: settings.ground_battery_show_voltage_current
             text: settings.ground_battery_show_single_cell ? Number(
-                                                                 ((OpenHD.ground_vbat < 0 ? 0 : OpenHD.ground_vbat / 1000.0)) / settings.ground_battery_cells).toLocaleString(Qt.locale(), 'f', 1) + "V" : Number((OpenHD.ground_vbat < 0 ? 0 : OpenHD.ground_vbat / 1000.0)).toLocaleString(
+                                                                 ((_ohdSystemGround.ground_vbat < 0 ? 0 : _ohdSystemGround.ground_vbat / 1000.0)) / settings.ground_battery_cells).toLocaleString(Qt.locale(), 'f', 1) + "V" : Number((_ohdSystemGround.ground_vbat < 0 ? 0 : _ohdSystemGround.ground_vbat / 1000.0)).toLocaleString(
                                                                  Qt.locale(),
                                                                  'f', 1) + "V"
             color: settings.color_text
@@ -319,13 +319,13 @@ BaseWidget {
             height: 48
             // @disable-check M223
             color: {
-                var percent = OpenHD.ground_battery_percent
+                var percent = _ohdSystemGround.ground_battery_percent
 
                 // 20% warning, 15% critical
                 return percent < 20 ? (percent < 15 ? "#ff0000" : "#fbfd15") : settings.color_shape
             }
             opacity: settings.ground_battery_opacity
-            text: OpenHD.ground_battery_gauge
+            text: _ohdSystemGround.ground_battery_gauge
             anchors.left: parent.left
             anchors.leftMargin: 12
             fontSizeMode: Text.VerticalFit

@@ -31,13 +31,13 @@ Item {
                     currentIndex = i;
                 }
             }
-            OpenHD.switchToLanguage(settings.locale);
+            _qopenhd.switchToLanguage(settings.locale);
         }
 
         onActivated: {
             settings.locale = locales.get(currentIndex).locale
 
-            OpenHD.switchToLanguage(settings.locale);
+            _qopenhd.switchToLanguage(settings.locale);
         }
     }
 }

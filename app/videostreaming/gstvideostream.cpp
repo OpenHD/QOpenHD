@@ -17,6 +17,7 @@ static QOpenHDVideoHelper::VideoStreamConfig readVideoStreamConfigFromSettings(b
     _videoStreamConfig.dev_test_video_mode=QOpenHDVideoHelper::videoTestModeFromInt(settings.value("dev_test_video_mode", 0).toInt());
     const int tmp_video_codec = settings.value("selectedVideoCodecPrimary", 0).toInt();
     _videoStreamConfig.video_codec=QOpenHDVideoHelper::intToVideoCodec(tmp_video_codec);
+    _videoStreamConfig.enable_software_video_decoder=settings.value("enable_software_video_decoder", 0).toBool();
     //auto _main_video_port = settings.value("main_video_port", main_default_port).toInt();
     if(isPrimary){
          _videoStreamConfig.video_port=OHDIntegration::OHD_VIDEO_GROUND_VIDEO_STREAM_1_UDP;
@@ -50,11 +51,16 @@ static std::string gst_create_rtp_decoder(const QOpenHDVideoHelper::VideoCodec& 
     return ss.str();
 }
 
-static std::string gst_create_video_decoder(const QOpenHDVideoHelper::VideoCodec& videoCodec){
+static std::string gst_create_video_decoder(const QOpenHDVideoHelper::VideoCodec& videoCodec,bool force_sw){
     std::stringstream ss;
+    // NOTE: force sw only has an effect on when decodebin does hw automatically, and on h264
     if(videoCodec==QOpenHDVideoHelper::VideoCodecH264){
         //NOTE: decodebin on rpi for h264 doesn't work ???!!
-       ss<<"avdec_h264 ! ";
+        if(force_sw){
+            ss<<"avdec_h264 ! queue ! ";
+        }else{
+            ss<<"decodebin ! ";
+        }
     }else if(videoCodec==QOpenHDVideoHelper::VideoCodecH265){
         ss<<"decodebin ! ";
     }else{
@@ -71,7 +77,7 @@ static std::string gst_create_video_decoder(const QOpenHDVideoHelper::VideoCodec
  * @param udp_port the udp port to listen for rtp data
  * @return the built pipeline, as a string
  */
-static std::string constructGstreamerPipeline(const QOpenHDVideoHelper::VideoTestMode& dev_test_video_mode,QOpenHDVideoHelper::VideoCodec videoCodec,int udp_port){
+static std::string constructGstreamerPipeline(const QOpenHDVideoHelper::VideoTestMode& dev_test_video_mode,QOpenHDVideoHelper::VideoCodec videoCodec,bool force_sw,int udp_port){
     std::stringstream ss;
     if(dev_test_video_mode==QOpenHDVideoHelper::VideoTestMode::RAW_VIDEO){
         ss << "videotestsrc pattern=smpte ! ";
@@ -84,13 +90,12 @@ static std::string constructGstreamerPipeline(const QOpenHDVideoHelper::VideoTes
          ss<<QOpenHDVideoHelper::create_debug_encoded_data_producer(videoCodec);
     }else{
         ss<<"udpsrc port="<<udp_port<<" ";
-        //ss<<"host=127.0.0.1 ";
         ss<<gst_create_caps(videoCodec);
     }
     // add rtp decoder
     ss<<gst_create_rtp_decoder(videoCodec);
     // add video decoder
-    ss<<gst_create_video_decoder(videoCodec);
+    ss<<gst_create_video_decoder(videoCodec,force_sw);
 
     ss << " glupload ! glcolorconvert !";
     ss << " qmlglsink name=qmlglsink sync=false";
@@ -183,7 +188,8 @@ void GstVideoStream::startVideo() {
         stopVideoSafe();
         assert(m_pipeline==nullptr);
     }
-    const auto pipeline=constructGstreamerPipeline(m_videoStreamConfig.dev_test_video_mode,m_videoStreamConfig.video_codec,m_videoStreamConfig.video_port);
+    const auto pipeline=constructGstreamerPipeline(m_videoStreamConfig.dev_test_video_mode,m_videoStreamConfig.video_codec,
+                                                   m_videoStreamConfig.enable_software_video_decoder,m_videoStreamConfig.video_port);
     GError *error = nullptr;
     m_pipeline = gst_parse_launch(pipeline.c_str(), &error);
     qDebug() << "GSTREAMER PIPE=" << pipeline.c_str();
@@ -214,12 +220,13 @@ void GstVideoStream::startVideo() {
 }
 
 void GstVideoStream::stopVideoSafe() {
-    qDebug() << "GstVideoStream::_stop()";
+    qDebug() << "GstVideoStream::stopVideoSafe()::begin";
     if (m_pipeline != nullptr) {
         gst_element_set_state (m_pipeline, GST_STATE_NULL);
         gst_object_unref (m_pipeline);
         m_pipeline=nullptr;
     }
+    qDebug() << "GstVideoStream::stopVideoSafe()::end";
 }
 
 void GstVideoStream::timerCallback() {
@@ -238,17 +245,9 @@ void GstVideoStream::timerCallback() {
     // check if we are getting video - TODO
     const auto currentTime = QDateTime::currentMSecsSinceEpoch();
     /*if (currentTime - lastDataTimeout < 2500) {
-        if (m_stream_type == StreamTypeMain) {
-            OpenHD::instance()->set_main_video_running(false);
-        } else {
-            OpenHD::instance()->set_pip_video_running(false);
-        }
+        // stream is not running
     } else {
-        if (m_stream_type == StreamTypeMain) {
-            OpenHD::instance()->set_main_video_running(true);
-        } else {
-            OpenHD::instance()->set_pip_video_running(true);
-        }
+        // stream is running
     }*/
 }
 

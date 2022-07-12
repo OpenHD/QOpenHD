@@ -8,11 +8,14 @@
 
 #include <openhd/mavlink.h>
 
+#define X_USE_MAVSDK
+
 #ifdef X_USE_MAVSDK
 #include <mavsdk/mavsdk.h>
 #include <mavsdk/plugins/telemetry/telemetry.h>
 #include <mavsdk/plugins/mavlink_passthrough/mavlink_passthrough.h>
 #include <mavsdk/plugins/param/param.h>
+//#include <mavsdk/plugins/comm>
 #include <mavsdk/log_callback.h>
 #endif //X_USE_MAVSDK
 
@@ -99,10 +102,14 @@ private:
     QHostAddress foundSenderHostAddress=QHostAddress::Any;
 public:
     #ifdef X_USE_MAVSDK
+    int mavsdk_already_known_systems=0;
     std::shared_ptr<mavsdk::Mavsdk> mavsdk=nullptr;
     std::shared_ptr<mavsdk::System> systemOhdGround;
+    std::shared_ptr<mavsdk::System> systemOhdAir;
     std::shared_ptr<mavsdk::MavlinkPassthrough> passtroughOhdGround;
+    //std::shared_ptr<mavsdk::C
     std::shared_ptr<mavsdk::Param> paramOhdGround;
+    std::shared_ptr<mavsdk::Param> paramOhdAir;
     std::shared_ptr<mavsdk::Telemetry> telemetryFC;
     #endif //X_USE_MAVSDK
 private slots:
@@ -114,6 +121,13 @@ private slots:
     void udpReadyRead();
     // called by heartbeat timer
     void onHeartbeat();
+private:
+    void onNewSystem(std::shared_ptr<mavsdk::System> system);
+public:
+    void request_openhd_version();
+    // send a command, to all connected systems
+    // doesn't reatransmitt
+    void send_command_long_oneshot(const mavlink_command_long_t& command);
 };
 
 #endif // OHDMAVLINKCONNECTION_H

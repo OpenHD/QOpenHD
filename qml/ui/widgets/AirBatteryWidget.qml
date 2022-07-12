@@ -350,7 +350,7 @@ BaseWidget {
                 return percent < 20 ? (percent < 15 ? "#ff0000" : "#fbfd15") : settings.color_shape
             }
             opacity: settings.air_battery_opacity
-            text: settings.air_battery_show_fc_percent ? OpenHD.fc_battery_gauge : OpenHD.battery_gauge
+            text: settings.air_battery_show_fc_percent ? OpenHD.fc_battery_gauge : OpenHD.fc_battery_gauge
             anchors.left: parent.left
             anchors.leftMargin: 12
             fontSizeMode: Text.VerticalFit

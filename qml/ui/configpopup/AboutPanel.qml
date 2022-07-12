@@ -17,6 +17,9 @@ Rectangle {
     Layout.fillWidth: true
     property alias license: license
 
+    property int rowHeight: 64
+    property int text_minHeight: 20
+
     color: "#eaeaea"
 
     Card {
@@ -79,6 +82,7 @@ Rectangle {
 
 
     RowLayout {
+        id: groundAndAirCardsId
         anchors.right: parent.right
         anchors.rightMargin: 12
         anchors.top: infoPanel.bottom
@@ -95,26 +99,67 @@ Rectangle {
             Layout.fillWidth: true
 
             cardName: qsTr("Air")
-            cardBody: Item {
-                Text {
-                    id: airVersionID
-                    text: qsTr("OpenHD Version:")
-                    anchors.left: parent.left
-                    anchors.top: parent.top
-                    height: 24
-                    font.pixelSize: 14
-                    font.bold: true
-                    leftPadding: 12
+            cardBody:
+            ColumnLayout {
+                // from https://doc.qt.io/qt-6/qml-qtquick-layouts-rowlayout.html
+                anchors.fill: parent
+                spacing: 2
+                RowLayout{
+                    Layout.fillWidth: true
+                    Layout.minimumHeight: text_minHeight
+                    spacing: 6
+                    Text {
+                        text: qsTr("OpenHD Version:")
+                        height: 24
+                        font.pixelSize: 14
+                        font.bold: true
+                        leftPadding: 12
+                    }
+                    Text {
+                        text: _ohdSystemAir.m_openhd_version_air
+                        height: 24
+                        width: 256
+                        font.pixelSize: 14
+                        leftPadding: 6
+                    }
                 }
-
-                Text {
-                    text: OpenHD.m_openhd_version_air
-                    anchors.left: airVersionID.right
-                    anchors.horizontalCenter: airVersionID.horizontalCenter
-                    height: 24
-                    width: 256
-                    font.pixelSize: 14
-                    leftPadding: 6
+                RowLayout{
+                    Layout.fillWidth: true
+                    Layout.minimumHeight: text_minHeight
+                    spacing: 6
+                    Text {
+                        text: qsTr("Last Ping:")
+                        height: 24
+                        font.pixelSize: 14
+                        font.bold: true
+                        leftPadding: 12
+                    }
+                    Text {
+                        text: _ohdSystemAir.last_ping_result_openhd_air
+                        height: 24
+                        width: 256
+                        font.pixelSize: 14
+                        leftPadding: 6
+                    }
+                }
+                RowLayout{
+                    Layout.fillWidth: true
+                    Layout.minimumHeight: text_minHeight
+                    spacing: 6
+                    Text {
+                        text: qsTr("Alive: ")
+                        height: 24
+                        font.pixelSize: 14
+                        font.bold: true
+                        leftPadding: 12
+                    }
+                    Text {
+                        text: _ohdSystemAir.is_alive ? "Y" : "N"
+                        height: 24
+                        width: 256
+                        font.pixelSize: 14
+                        leftPadding: 6
+                    }
                 }
             }
         }
@@ -124,29 +169,87 @@ Rectangle {
             height: 128
             Layout.fillWidth: true
             cardName: qsTr("Ground")
-            cardBody: Item {
-                Text {
-                    id: groundVersionID
-                    text: qsTr("OpenHD Version:")
-                    anchors.left: parent.left
-                    anchors.top: parent.top
-                    height: 24
-                    font.pixelSize: 14
-                    font.bold: true
-                    leftPadding: 12
+            cardBody:
+            ColumnLayout {
+                // from https://doc.qt.io/qt-6/qml-qtquick-layouts-rowlayout.html
+                anchors.fill: parent
+                spacing: 2
+                RowLayout{
+                    Layout.fillWidth: true
+                    Layout.minimumHeight: text_minHeight
+                    spacing: 6
+                    Text {
+                        text: qsTr("OpenHD Version:")
+                        height: 24
+                        font.pixelSize: 14
+                        font.bold: true
+                        leftPadding: 12
+                    }
+                    Text {
+                        text: _ohdSystemGround.m_openhd_version_ground
+                        height: 24
+                        width: 256
+                        font.pixelSize: 14
+                        leftPadding: 6
+                    }
                 }
-
-                Text {
-                    text: OpenHD.m_openhd_version_ground
-                    anchors.left: groundVersionID.right
-                    anchors.horizontalCenter: groundVersionID.horizontalCenter
-                    height: 24
-                    width: 256
-                    font.pixelSize: 14
-                    leftPadding: 6
+                RowLayout{
+                    Layout.fillWidth: true
+                    Layout.minimumHeight: text_minHeight
+                    spacing: 6
+                    Text {
+                        text: qsTr("Last Ping:")
+                        height: 24
+                        font.pixelSize: 14
+                        font.bold: true
+                        leftPadding: 12
+                    }
+                    Text {
+                        text: _ohdSystemGround.last_ping_result_openhd_ground
+                        height: 24
+                        width: 256
+                        font.pixelSize: 14
+                        leftPadding: 6
+                    }
+                }
+                RowLayout{
+                    Layout.fillWidth: true
+                    Layout.minimumHeight: text_minHeight
+                    spacing: 6
+                    Text {
+                        text: qsTr("Alive: ")
+                        height: 24
+                        font.pixelSize: 14
+                        font.bold: true
+                        leftPadding: 12
+                    }
+                    Text {
+                        text: _ohdSystemGround.is_alive ? "Y" : "N"
+                        height: 24
+                        width: 256
+                        font.pixelSize: 14
+                        leftPadding: 6
+                    }
                 }
             }
-
+        }
+    }
+    ColumnLayout{
+        Layout.fillWidth: true
+        Layout.minimumHeight: 30
+        spacing: 6
+        anchors.top: groundAndAirCardsId.bottom
+        anchors.left: parent.left
+        anchors.margins: 10
+        Button{
+            height: 24
+            text: "Ping all systems"
+            onClicked: _mavlinkTelemetry.pingAllSystems()
+        }
+        Button{
+            height: 24
+            text: "Request version"
+            onClicked: _mavlinkTelemetry.request_openhd_version()
         }
     }
 }
