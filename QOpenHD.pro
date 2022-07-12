@@ -81,6 +81,7 @@ INCLUDEPATH += $$PWD/app
 #INCLUDEPATH += $$PWD/lib/mavlink_generated/include/mavlink/v2.0
 INCLUDEPATH += $$PWD/lib/c_library_v2_openhd
 # mavsdk - dirty
+# We have the include path 2 times here, aparently release and debug install to different paths
 INCLUDEPATH += /usr/local/include/mavsdk
 LIBS += -L/usr/local/lib -lmavsdk
 INCLUDEPATH += /usr/include/mavsdk
