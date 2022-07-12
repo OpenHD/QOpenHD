@@ -7,7 +7,7 @@ apt -y install libgstreamer-plugins-base1.0-dev gstreamer1.0-plugins-good
 
 # they are needed to build and install mavsdk
 apt -y install pip
-apt -y pip install future
+pip install future
 
 # build and install mavsdk
 cd lib/MAVSDK
