@@ -14,3 +14,6 @@
 	path = lib/mavlink
 	url = git@github.com:OpenHD/mavlink.git
 	branch = xopenhd2
+[submodule "lib/MAVSDK"]
+	path = lib/MAVSDK
+	url = git@github.com:OpenHD/MAVSDK.git
