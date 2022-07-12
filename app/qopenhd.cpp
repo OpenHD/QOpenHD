@@ -1,6 +1,8 @@
 #include "qopenhd.h"
 #include <QCoreApplication>
 
+#include <QDebug>
+
 QOpenHD &QOpenHD::instance()
 {
     static QOpenHD instance=QOpenHD();
