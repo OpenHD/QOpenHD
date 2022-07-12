@@ -87,6 +87,10 @@ void MavlinkSettingsModel::try_update_parameter(const QString param_id,QVariant 
                     if(result==mavsdk::Param::Result::Success){
                         MavlinkSettingsModel::SettingData tmp{param_id,value_int};
                         updateData(std::nullopt,tmp);
+                    }else{
+                        std::stringstream ss;
+                        ss<<result;
+                        qDebug()<<"Updating param failed: "<<QString(ss.str().c_str());
                     }
                 }
             }

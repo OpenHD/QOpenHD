@@ -53,6 +53,7 @@ static std::string gst_create_rtp_decoder(const QOpenHDVideoHelper::VideoCodec& 
 
 static std::string gst_create_video_decoder(const QOpenHDVideoHelper::VideoCodec& videoCodec,bool force_sw){
     std::stringstream ss;
+    // NOTE: force sw only has an effect on when decodebin does hw automatically, and on h264
     if(videoCodec==QOpenHDVideoHelper::VideoCodecH264){
         //NOTE: decodebin on rpi for h264 doesn't work ???!!
         if(force_sw){
@@ -219,12 +220,13 @@ void GstVideoStream::startVideo() {
 }
 
 void GstVideoStream::stopVideoSafe() {
-    qDebug() << "GstVideoStream::_stop()";
+    qDebug() << "GstVideoStream::stopVideoSafe()::begin";
     if (m_pipeline != nullptr) {
         gst_element_set_state (m_pipeline, GST_STATE_NULL);
         gst_object_unref (m_pipeline);
         m_pipeline=nullptr;
     }
+    qDebug() << "GstVideoStream::stopVideoSafe()::end";
 }
 
 void GstVideoStream::timerCallback() {

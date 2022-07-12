@@ -166,7 +166,9 @@ void OHDConnection::sendMessage(mavlink_message_t msg){
         if(passtroughOhdGround!=nullptr){
             passtroughOhdGround->send_message(msg);
         }else{
-            qDebug()<<"MAVSDK passtroughOhdGround not created";
+            // If the passtrough is not created yet, a connection to the OHD ground unit has not yet been established.
+            //qDebug()<<"MAVSDK passtroughOhdGround not created";
+            qDebug()<<"No OHD Ground unit connected";
         }
         return;
     }
