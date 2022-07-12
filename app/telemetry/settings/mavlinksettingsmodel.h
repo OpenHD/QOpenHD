@@ -19,7 +19,9 @@ class MavlinkSettingsModel : public QAbstractListModel
 {
     Q_OBJECT
 public:
+    // R.N we have one instance for the air system (comp id camera0)
     static MavlinkSettingsModel& instanceAir();
+    // and one instance for the ground system
     static MavlinkSettingsModel& instanceGround();
 
     explicit MavlinkSettingsModel(QObject *parent = nullptr);
