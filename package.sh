@@ -27,9 +27,7 @@ apt-get install -y gnupg
 apt-get install -y gnupg1
 apt-get install -y gnupg2
 apt-get install -y apt-transport-https curl
-if [[ "${DISTRO}" != "bullseye" ]]; then
-    echo "..."
-fi
+
 if [[ "${DISTRO}" == "bullseye" ]]; then
     apt install -y openhd-qt-pi-bullseye
 fi
@@ -64,7 +62,6 @@ mkdir -p /tmp/qopenhd/usr/local/share/openhd || exit 1
 
 ls -a
 ls /opt
-
 
 
 if [[ "${PACKAGE_ARCH}" == x86 ]]; then
@@ -102,14 +99,3 @@ fpm -a ${PACKAGE_ARCH} -s dir -t deb -n ${PACKAGE_NAME} -v ${VERSION//v} -C ${TM
   -d "gstreamer1.0-pulseaudio" \
   -d "gstreamer1.0-gl" \
   ${PLATFORM_PACKAGES} || exit 1
-
-#
-# Only push to cloudsmith for tags. If you don't want something to be pushed to the repo, 
-# don't create a tag. You can build packages and test them locally without tagging.
-#
-git describe --exact-match HEAD > /dev/null 2>&1
-if [[ $? -eq 0 ]]; then
-    echo "normal"
-else
-    echo "testing"
-fi
