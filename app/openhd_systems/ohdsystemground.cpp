@@ -80,6 +80,20 @@ void OHDSystemGround::set_is_alive(bool alive)
     emit is_alive_changed(alive);
 }
 
+void OHDSystemGround::set_wifi_adapter(uint8_t index, unsigned int received_packet_count, int current_signal_dbm, int signal_good)
+{
+    if(index==0){
+        set_wifi_adapter0(received_packet_count,current_signal_dbm,signal_good);
+    }else if(index==1){
+        set_wifi_adapter1(received_packet_count,current_signal_dbm,signal_good);
+    }else if(index==2){
+        set_wifi_adapter2(received_packet_count,current_signal_dbm,signal_good);
+    }else if(index==3){
+        set_wifi_adapter3(received_packet_count,current_signal_dbm,signal_good);
+    }
+    //qDebug()<<QString::fromStdString(m_wifi_adapters[0].to_string(0));
+}
+
 //  TODO register qt struct and make it nice
 void OHDSystemGround::set_wifi_adapter0(unsigned int received_packet_count, int current_signal_dbm, int signal_good){
     m_wifi_adapters[0].received_packet_count=received_packet_count;
@@ -93,7 +107,6 @@ void OHDSystemGround::set_wifi_adapter1(unsigned int received_packet_count, int 
     m_wifi_adapters[1].current_signal_dbm=current_signal_dbm;
     m_wifi_adapters[1].signal_good=signal_good;
     emit wifi_adapter1_changed(received_packet_count,current_signal_dbm,signal_good);
-    set_downlink_rssi(current_signal_dbm);
 }
 void OHDSystemGround::set_wifi_adapter2(unsigned int received_packet_count, int current_signal_dbm, int signal_good){
     m_wifi_adapters[2].received_packet_count=received_packet_count;

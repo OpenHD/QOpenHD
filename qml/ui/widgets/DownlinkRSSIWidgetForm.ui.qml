@@ -284,16 +284,6 @@ BaseWidget {
                 }
             }           
         }
-        Button {
-            //this is for testing the new link microservice and freq change
-            visible: false
-            text: "Freq Test"
-            anchors.centerIn: parent
-
-            onPressed: {
-                OpenHD.setAirFREQ(5400);
-            }
-        }
     }
 
     Item {

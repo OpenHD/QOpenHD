@@ -717,18 +717,13 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
     case MAVLINK_MSG_ID_OPENHD_WIFI_CARD:{
         mavlink_openhd_wifi_card_t parsedMsg;
         mavlink_msg_openhd_wifi_card_decode(&msg,&parsedMsg);
-        //qDebug()<<"Got MAVLINK_MSG_ID_OPENHD_WIFI_CARD";
+        //qDebug()<<"Got MAVLINK_MSG_ID_OPENHD_WIFI_CARD"<<(int)parsedMsg.card_index<<" "<<(int)parsedMsg.signal_millidBm;
         if(msg.sysid==OHD_SYS_ID_AIR){
             if(parsedMsg.card_index==0){
                 OHDSystemAir::instance().set_wifi_adapter(parsedMsg.count_p_received,parsedMsg.signal_millidBm,true);
             }
         }else if(msg.sysid==OHD_SYS_ID_GROUND){
-            if(parsedMsg.card_index==0){
-                OHDSystemGround::instance().set_wifi_adapter0(parsedMsg.count_p_received,parsedMsg.signal_millidBm,true);
-            }else if(parsedMsg.card_index==1){
-                OHDSystemGround::instance().set_wifi_adapter1(parsedMsg.count_p_received,parsedMsg.signal_millidBm,true);
-            }
-
+             OHDSystemGround::instance().set_wifi_adapter(parsedMsg.card_index,parsedMsg.count_p_received,parsedMsg.signal_millidBm,true);
         }
         break;
     }

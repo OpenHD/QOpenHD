@@ -51,7 +51,8 @@ public:
     void set_last_openhd_heartbeat(qint64 last_openhd_heartbeat);
     Q_PROPERTY(bool is_alive MEMBER m_is_alive WRITE set_is_alive NOTIFY is_alive_changed)
     void set_is_alive(bool alive);
-    //
+    // calls the indexed method, we need that for qt signals to work
+    void set_wifi_adapter(uint8_t index,unsigned int received_packet_count,int current_signal_dbm,int signal_good);
     void set_wifi_adapter0(unsigned int received_packet_count,int current_signal_dbm,int signal_good);
     void set_wifi_adapter1(unsigned int received_packet_count,int current_signal_dbm,int signal_good);
     void set_wifi_adapter2(unsigned int received_packet_count,int current_signal_dbm,int signal_good);
