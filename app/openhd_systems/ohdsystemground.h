@@ -62,6 +62,18 @@ public:
     // TODO: I think this was the "best" rssi of all adapters
     Q_PROPERTY(int best_rx_rssi MEMBER m_best_rx_rssi WRITE set_best_rx_rssi NOTIFY best_rx_rssi_changed)
     void set_best_rx_rssi(int best_rx_rssi);
+    // temporary XYZ
+    Q_PROPERTY(int rx_packets_count MEMBER m_rx_packets_count WRITE set_rx_packets_count NOTIFY rx_packets_count_changed)
+    void set_rx_packets_count(int rx_packets_count){
+        m_rx_packets_count=rx_packets_count;
+        emit rx_packets_count_changed(rx_packets_count);
+    }
+    Q_PROPERTY(int tx_packets_count MEMBER m_tx_packets_count WRITE set_tx_packets_count NOTIFY tx_packets_count_changed)
+    void set_tx_packets_count(int tx_packets_count){
+        m_tx_packets_count=tx_packets_count;
+        emit tx_packets_count_changed(tx_packets_count);
+    }
+    // temporary XYZ
 signals:
     void cpuload_gnd_changed(int cpuload_gnd);
     void temp_gnd_changed(int temp_gnd);
@@ -90,6 +102,10 @@ signals:
     void wifi_adapter3_changed(unsigned int received_packet_count,int current_signal_dbm,int signal_good);
     //
     void best_rx_rssi_changed(int best_rx_rssi);
+    // temporary XYZ
+    void tx_packets_count_changed(int tx_packets_count);
+    void rx_packets_count_changed(int rx_packets_count);
+    // temporary XYZ
 public:
     int m_cpuload_gnd = 0;
     int m_temp_gnd = 0;
@@ -111,7 +127,10 @@ public:
     // If there is only one rx card, the rssi of this one card. If there is more than one rx card,
     // the rssi of whatever rx card currently reports the best rssi (aka whatever rx card currently has the best reception)
     int m_best_rx_rssi = -127;
-    // TODO current rx bitrate
+    // temporary XYZ
+    int m_rx_packets_count=-1;
+    int m_tx_packets_count=-1;
+    // temporary XYZ
 private:
     // Sets the alive boolean if no heartbeat / message has been received in the last X seconds
     QTimer* m_alive_timer = nullptr;

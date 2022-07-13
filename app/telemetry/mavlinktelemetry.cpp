@@ -693,6 +693,11 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             }
         }else if(msg.sysid==OHD_SYS_ID_GROUND){
              OHDSystemGround::instance().set_wifi_adapter(parsedMsg.card_index,parsedMsg.count_p_received,parsedMsg.signal_millidBm,true);
+             // hacky
+             if(parsedMsg.card_index==0){
+                 OHDSystemGround::instance().set_rx_packets_count(parsedMsg.count_p_received);
+                 OHDSystemGround::instance().set_tx_packets_count(parsedMsg.count_p_injected);
+             }
         }
         break;
     }
