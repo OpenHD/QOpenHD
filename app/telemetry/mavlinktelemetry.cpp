@@ -600,7 +600,8 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             if(msg.sysid==OHD_SYS_ID_AIR || msg.sysid == OHD_SYS_ID_GROUND){
                 // the message is a log message from openhd
                 //qDebug()<<"Log message from OpenHD:"<<s;
-                LogMessagesModel::instance().addLogMessage("OHD",s,statustext.severity);
+                const auto tag= (msg.sysid==OHD_SYS_ID_AIR) ? "OHDAir":"OHDGround";
+                LogMessagesModel::instance().addLogMessage(tag,s,statustext.severity);
 
             }else{
                 // most likely from the flight controller, but can be someone else, too
