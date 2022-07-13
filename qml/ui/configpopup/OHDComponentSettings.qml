@@ -19,29 +19,30 @@ Item {
     property int rowHeight: 64
     property int elementHeight: 48
 
+    // Tab bar for selecting items in stack layout
     TabBar {
-          id: bar
+          id: selectItemInStackLayoutBar
           width: parent.width
           TabButton {
-              text: qsTr("Video/Camera")
+              text: qsTr("Air/Camera")
           }
           TabButton {
               text: qsTr("Ground (TMP)")
           }
-          TabButton {
-              text: qsTr("Air (TMP)")
-          }
     }
 
-
+    // placed right below the top bar
     StackLayout {
           width: parent.width
-          currentIndex: bar.currentIndex
+          height: parent.height-selectItemInStackLayoutBar.height
+          anchors.top: selectItemInStackLayoutBar.bottom
+          //top: bar.bottom
+          currentIndex: selectItemInStackLayoutBar.currentIndex
           Item {
-              id: tabVideoCamera
-          }
-          Item {
-              id: tabAir
+              id: tabAirCamera
+              TmpGroundPiSettingsPanel{
+                  id: tmpGroundPiSettingsPanel
+              }
           }
           Item {
               id: tabGround
