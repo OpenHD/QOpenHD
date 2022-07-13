@@ -81,10 +81,11 @@ void LogMessagesModel::removeData(int row)
 void LogMessagesModel::addData(LogMessageData logMessageData)
 {
     //qDebug()<<"LogMessagesModel::addData"<<logMessageData.message;
-    /*if(m_data.size()>=10){
+    // We limit logging to X log messages here
+    if(m_data.size()>=30){
         // remove oldest one
         removeData(0);
-    }*/
+    }
     beginInsertRows(QModelIndex(), rowCount(), rowCount());
     m_data.push_back(logMessageData);
     endInsertRows();
