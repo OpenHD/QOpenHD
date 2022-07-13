@@ -312,28 +312,7 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             break;
         }
         case MAVLINK_MSG_ID_PARAM_VALUE:{
-            /*mavlink_param_value_t param;
-            mavlink_msg_param_value_decode(&msg, &param);
-
-            parameterCount = param.param_count;
-            parameterIndex = param.param_index;
-
-            parameterLastReceivedTime = QDateTime::currentMSecsSinceEpoch();
-
-            QByteArray param_id(param.param_id, 16);*/
-            /*
-             * If there's no null in the param_id array, the mavlink docs say it has to be exactly 16 characters,
-             * so we add a null to the end and then continue. This guarantees that QString below will always find
-             * a null terminator.
-             *
-             */
-            /*if (!param_id.contains('\0')) {
-               param_id.append('\0');
-            }
-
-            QString s(param_id.data());
-
-            m_allParameters.insert(s, QVariant(param.param_value));*/
+            // handled by params mavsdk
             break;
         }
         case MAVLINK_MSG_ID_GPS_RAW_INT:{
@@ -617,25 +596,15 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
         case MAVLINK_MSG_ID_STATUSTEXT: {
             mavlink_statustext_t statustext;
             mavlink_msg_statustext_decode(&msg, &statustext);
-            QByteArray param_id(statustext.text, 50);
-            /*
-             * If there's no null in the text array, the mavlink docs say it has to be exactly 50 characters,
-             * so we add a null to the end and then continue. This guarantees that QString below will always find
-             * a null terminator.
-             *
-             */
-            if (!param_id.contains('\0')) {
-               param_id.append('\0');
-            }
-            const QString s(param_id.data());
+            const QString s=QOpenHDMavlinkHelper::safe_string(statustext.text,sizeof(statustext.text));
             if(msg.sysid==OHD_SYS_ID_AIR || msg.sysid == OHD_SYS_ID_GROUND){
                 // the message is a log message from openhd
-                qDebug()<<"Log message from OpenHD:"<<s;
+                //qDebug()<<"Log message from OpenHD:"<<s;
                 LogMessagesModel::instance().addLogMessage("OHD",s,statustext.severity);
 
             }else{
                 // most likely from the flight controller, but can be someone else, too
-                 qDebug()<<"Log message from not OpenHD:"<<s;
+                 //qDebug()<<"Log message from not OpenHD:"<<s;
                 OpenHD::instance().telemetryMessage(s, statustext.severity);
             }
             break;
