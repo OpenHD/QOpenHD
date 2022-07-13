@@ -631,7 +631,7 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             if(msg.sysid==OHD_SYS_ID_AIR || msg.sysid == OHD_SYS_ID_GROUND){
                 // the message is a log message from openhd
                 qDebug()<<"Log message from OpenHD:"<<s;
-                LogMessagesModel::addLogMessage({"OHD",s,0,LogMessagesModel::log_severity_to_color(statustext.severity)});
+                LogMessagesModel::instance().addLogMessage("OHD",s,statustext.severity);
 
             }else{
                 // most likely from the flight controller, but can be someone else, too
@@ -739,7 +739,7 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
         const quint64 timestamp=parsedMsg.timestamp;
         const quint8 severity=parsedMsg.severity;
         qDebug()<<"Log message:"<<message;
-        LogMessagesModel::addLogMessage({"OHD",message,timestamp,LogMessagesModel::log_severity_to_color(severity)});
+        LogMessagesModel::instance().addLogMessage({"OHD",message,timestamp,LogMessagesModel::log_severity_to_color(severity)});
         break;
     }*/
     break;

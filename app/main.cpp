@@ -489,7 +489,7 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
 
 #endif
 
-     LogMessagesModel::instance().addLogMessage("QOpenHD","blablabla",0);
+     LogMessagesModel::instance().addLogMessage("QOpenHD","running",0);
     const int retval = app.exec();
 
 #if defined(ENABLE_GSTREAMER) || defined(ENABLE_VIDEO_RENDER)
