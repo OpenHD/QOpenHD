@@ -60,8 +60,8 @@ public:
     //
     // This is the rssi of first /second adapter,
     // TODO: I think this was the "best" rssi of all adapters
-    Q_PROPERTY(int downlink_rssi MEMBER m_downlink_rssi WRITE set_downlink_rssi NOTIFY downlink_rssi_changed)
-    void set_downlink_rssi(int downlink_rssi);
+    Q_PROPERTY(int best_rx_rssi MEMBER m_best_rx_rssi WRITE set_best_rx_rssi NOTIFY best_rx_rssi_changed)
+    void set_best_rx_rssi(int best_rx_rssi);
 signals:
     void cpuload_gnd_changed(int cpuload_gnd);
     void temp_gnd_changed(int temp_gnd);
@@ -89,7 +89,7 @@ signals:
     void wifi_adapter2_changed(unsigned int received_packet_count,int current_signal_dbm,int signal_good);
     void wifi_adapter3_changed(unsigned int received_packet_count,int current_signal_dbm,int signal_good);
     //
-    void downlink_rssi_changed(int downlink_rssi);
+    void best_rx_rssi_changed(int best_rx_rssi);
 public:
     int m_cpuload_gnd = 0;
     int m_temp_gnd = 0;
@@ -108,8 +108,10 @@ public:
     int m_gnd_freq;
     bool m_gnd_freq_busy = false;
     std::array<WifiAdapter,4> m_wifi_adapters;
-    //
-    int m_downlink_rssi = -127;
+    // If there is only one rx card, the rssi of this one card. If there is more than one rx card,
+    // the rssi of whatever rx card currently reports the best rssi (aka whatever rx card currently has the best reception)
+    int m_best_rx_rssi = -127;
+    // TODO current rx bitrate
 private:
     // Sets the alive boolean if no heartbeat / message has been received in the last X seconds
     QTimer* m_alive_timer = nullptr;

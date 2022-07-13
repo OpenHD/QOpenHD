@@ -325,8 +325,11 @@ Rectangle {
         }
 
         // placeholder for settings via mavlink
-        TmpGroundPiSettingsPanel{
-            id: tmpGroundPiSettingsPanel
+        //TmpGroundPiSettingsPanel{
+        //    id: tmpGroundPiSettingsPanel
+        //}
+        OHDComponentSettings {
+            id:  oHDComponentSettings
         }
 
         LogMessagesStatusView{

@@ -100,7 +100,8 @@ void OHDSystemGround::set_wifi_adapter0(unsigned int received_packet_count, int 
     m_wifi_adapters[0].current_signal_dbm=current_signal_dbm;
     m_wifi_adapters[0].signal_good=signal_good;
     emit wifi_adapter0_changed(received_packet_count,current_signal_dbm,signal_good);
-    set_downlink_rssi(current_signal_dbm);
+    // TODO figure out a way to calculate the best rssi
+    set_best_rx_rssi(current_signal_dbm);
 }
 void OHDSystemGround::set_wifi_adapter1(unsigned int received_packet_count, int current_signal_dbm, int signal_good){
     m_wifi_adapters[1].received_packet_count=received_packet_count;
@@ -121,10 +122,10 @@ void OHDSystemGround::set_wifi_adapter3(unsigned int received_packet_count, int 
     emit wifi_adapter3_changed(received_packet_count,current_signal_dbm,signal_good);
 }
 
-void OHDSystemGround::set_downlink_rssi(int downlink_rssi)
+void OHDSystemGround::set_best_rx_rssi(int best_rx_rssi)
 {
-    m_downlink_rssi = downlink_rssi;
-    emit downlink_rssi_changed(m_downlink_rssi);
+    m_best_rx_rssi = best_rx_rssi;
+    emit best_rx_rssi_changed(best_rx_rssi);
 }
 
 void OHDSystemGround::set_ground_battery_percent(int ground_battery_percent) {

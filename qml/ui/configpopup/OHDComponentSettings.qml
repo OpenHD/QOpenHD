@@ -11,6 +11,7 @@ import OpenHD 1.0
 import "../../ui" as Ui
 import "../elements"
 
+// Parent panel for OpenHD air and ground settings (!!!! NOT QOPENHD SETTINGS !!!)
 Item {
     Layout.fillHeight: true
     Layout.fillWidth: true
