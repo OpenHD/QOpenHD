@@ -26,7 +26,7 @@ Rectangle {
     property int elementHeight: 48
 
     Component {
-        id: delegateAirPiSettingsValue
+        id: delegateGroundPiSettingsValue
         Item {
             id: item
             width: 200
@@ -47,7 +47,7 @@ Rectangle {
                 }
                 Button {
                     text: "GET"
-                    onClicked: _airPiSettingsModel.try_fetch_parameter(model.unique_id)
+                    onClicked: _groundPiSettingsModel.try_fetch_parameter(model.unique_id)
                 }
                 TextInput {
                     id: xTextInput
@@ -57,7 +57,7 @@ Rectangle {
                 }
                 Button {
                     text: "SET"
-                    onClicked: _airPiSettingsModel.try_update_parameter( model.unique_id,xTextInput.text)
+                    onClicked: _groundPiSettingsModel.try_update_parameter( model.unique_id,xTextInput.text)
                 }
             }
         }
@@ -70,15 +70,15 @@ Rectangle {
             width:200
             height:64
             text: "Not found yet"
-            visible: _airPiSettingsModel.rowCount() > 0
+            visible: _groundPiSettingsModel.rowCount() > 0
         }*/
 
         Button {
             height: 48
             id: fetchAllButtonId
-            text:"FetchAllAir"
+            text:"FetchAllGround"
             onClicked: {
-                var result=_airPiSettingsModel.try_fetch_all_parameters()
+                var result=_groundPiSettingsModel.try_fetch_all_parameters()
                 /*visible=false;
                 if(result===true){
                     visible=true;
@@ -95,8 +95,8 @@ Rectangle {
                 ListView {
                     //top: fetchAllButtonId.bottom
                     width: parent.width
-                    model: _airPiSettingsModel
-                    delegate: delegateAirPiSettingsValue
+                    model: _groundPiSettingsModel
+                    delegate: delegateGroundPiSettingsValue
                 }
             }
         }

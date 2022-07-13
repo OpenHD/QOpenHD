@@ -38,14 +38,11 @@ Item {
           anchors.top: selectItemInStackLayoutBar.bottom
           //top: bar.bottom
           currentIndex: selectItemInStackLayoutBar.currentIndex
-          Item {
-              id: tabAirCamera
-              X1_AirSystemSettingsPanel{
-                  id: x1_AirSystemSettingsPanel
-              }
+          X1_AirSystemSettingsPanel{
+              id: x1_AirSystemSettingsPanel
           }
-          Item {
-              id: tabGround
+          X2_GroundSystemSettingsPanel{
+              id: x2_GroundSystemSettingsPanel
           }
       }
 
