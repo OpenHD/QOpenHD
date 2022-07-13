@@ -193,7 +193,7 @@
         <file>ui/widgets/MissionWidgetForm.ui.qml</file>
         <file>ui/widgets/MissionWidget.qml</file>
         <file>ui/delegates/BoolSwitchSettingDelegate.ui.qml</file>
-        <file>ui/configpopup/TmpGroundPiSettingsPanel.qml</file>
+        <file>ui/configpopup/X1_AirSystemSettingsPanel.qml</file>
         <file>ui/configpopup/SettingsPopupForm.ui.qml</file>
         <file>ui/configpopup/SettingsPopup.qml</file>
         <file>ui/configpopup/PowerPanelForm.ui.qml</file>

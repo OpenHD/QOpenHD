@@ -40,8 +40,8 @@ Item {
           currentIndex: selectItemInStackLayoutBar.currentIndex
           Item {
               id: tabAirCamera
-              TmpGroundPiSettingsPanel{
-                  id: tmpGroundPiSettingsPanel
+              X1_AirSystemSettingsPanel{
+                  id: x1_AirSystemSettingsPanel
               }
           }
           Item {
