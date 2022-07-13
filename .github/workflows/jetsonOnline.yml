@@ -17,6 +17,9 @@ jobs:
       with:
         submodules: recursive
         
+    - name: Install packages
+      run: sudo apt-get install -y sudo udev
+    
     - name: Emulating Jetson
       id: qemu
       uses: pguyot/arm-runner-action@1be4bc9de8a7ba3c1c4f5bf917c438e8dc97904b
