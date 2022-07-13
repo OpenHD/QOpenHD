@@ -63,6 +63,8 @@ mkdir -p /tmp/qopenhd/usr/local/share/openhd || exit 1
 ls -a
 ls /opt
 
+VER2=$(git rev-parse --short HEAD)
+
 
 if [[ "${PACKAGE_ARCH}" == x86 ]]; then
     qmake
@@ -80,7 +82,7 @@ ls -a
 cp systemd/* /tmp/qopenhd/etc/systemd/system/ || exit 1
 cp qt.json /tmp/qopenhd/usr/local/share/openhd/ || exit 1
 
-VERSION=2.1-$(date '+%m%d%H%M')
+VERSION="2.1-$(date '+%m%d%H%M')-${VER2}"
 
 rm ${PACKAGE_NAME}_${VERSION//v}_${PACKAGE_ARCH}.deb > /dev/null 2>&1
 ls -a
