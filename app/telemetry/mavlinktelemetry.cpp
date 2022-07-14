@@ -24,6 +24,7 @@
 #include "openhd.h"
 #include "openhd_systems/ohdsystemair.h"
 #include "openhd_systems/ohdsystemground.h"
+#include "openhd_systems/aohdsystem.h"
 
 MavlinkTelemetry* MavlinkTelemetry::instance() {
     static MavlinkTelemetry instance;
@@ -134,10 +135,10 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             mavlink_msg_heartbeat_decode(&msg, &heartbeat);
             const auto time_millis=QOpenHDMavlinkHelper::getTimeMilliseconds();
             if(msg.sysid==OHD_SYS_ID_AIR){
-                OHDSystemAir::instance().set_last_openhd_heartbeat(time_millis);
+                AOHDSystem::instanceAir().set_last_openhd_heartbeat(time_millis);
                 return;
             }else if(msg.sysid==OHD_SYS_ID_GROUND){
-                OHDSystemGround::instance().set_last_openhd_heartbeat(time_millis);
+                AOHDSystem::instanceGround().set_last_openhd_heartbeat(time_millis);
                 return;
             }
 
@@ -633,9 +634,9 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             std::stringstream ss;
             ss<<deltaMs<<"ms";
             if(msg.sysid==OHD_SYS_ID_AIR){
-                OHDSystemAir::instance().set_last_ping_result_openhd_air(ss.str().c_str());
+                AOHDSystem::instanceAir().set_last_ping_result_openhd(ss.str().c_str());
             }else if(msg.sysid==OHD_SYS_ID_GROUND){
-                OHDSystemGround::instance().set_last_ping_result_openhd_ground(ss.str().c_str());
+                AOHDSystem::instanceGround().set_last_ping_result_openhd(ss.str().c_str());
             }else{
                 qDebug()<<"Got ping from fc";
                 // almost 100% from flight controller
@@ -652,11 +653,11 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
         mavlink_onboard_computer_status_t decoded;
         mavlink_msg_onboard_computer_status_decode(&msg,&decoded);
         if(msg.sysid==OHD_SYS_ID_AIR){
-            OHDSystemAir::instance().set_cpuload_air(decoded.cpu_cores[0]);
-            OHDSystemAir::instance().set_temp_air(decoded.temperature_core[0]);
+            AOHDSystem::instanceAir().set_cpuload(decoded.cpu_cores[0]);
+            AOHDSystem::instanceAir().set_temp(decoded.temperature_core[0]);
         }else if(msg.sysid==OHD_SYS_ID_GROUND){
-            OHDSystemGround::instance().set_cpuload_gnd(decoded.cpu_cores[0]);
-            OHDSystemGround::instance().set_temp_gnd(decoded.temperature_core[0]);
+            AOHDSystem::instanceGround().set_cpuload(decoded.cpu_cores[0]);
+            AOHDSystem::instanceGround().set_temp(decoded.temperature_core[0]);
         }else{
             qDebug()<<"Sys tele with unknown sys id";
         }
@@ -667,9 +668,9 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
         mavlink_msg_openhd_version_message_decode(&msg,&parsedMsg);
         QString version(parsedMsg.version);
         if(msg.sysid==OHD_SYS_ID_AIR){
-            OHDSystemAir::instance().set_openhd_version_air(version);
+            AOHDSystem::instanceAir().set_openhd_version(version);
         }else if(msg.sysid==OHD_SYS_ID_GROUND){
-            OHDSystemGround::instance().set_openhd_version_ground(version);
+            AOHDSystem::instanceGround().set_openhd_version(version);
         }else{
             qDebug()<<"OHD version with unknown sys id";
         }
@@ -690,12 +691,12 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
         //qDebug()<<"Got MAVLINK_MSG_ID_OPENHD_WIFI_CARD"<<(int)parsedMsg.card_index<<" "<<(int)parsedMsg.signal_millidBm;
         if(msg.sysid==OHD_SYS_ID_AIR){
             if(parsedMsg.card_index==0){
-                OHDSystemAir::instance().set_wifi_adapter(parsedMsg.count_p_received,parsedMsg.signal_millidBm,true);
+               AOHDSystem::instanceAir().set_wifi_adapter(0,parsedMsg.count_p_received,parsedMsg.signal_millidBm,true);
             }else{
                 qDebug()<<"Error air can only have one card";
             }
         }else if(msg.sysid==OHD_SYS_ID_GROUND){
-             OHDSystemGround::instance().set_wifi_adapter(parsedMsg.card_index,parsedMsg.count_p_received,parsedMsg.signal_millidBm,true);
+             AOHDSystem::instanceGround().set_wifi_adapter(parsedMsg.card_index,parsedMsg.count_p_received,parsedMsg.signal_millidBm,true);
         }
         break;
     }
@@ -705,8 +706,8 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
         if(msg.sysid==OHD_SYS_ID_AIR){
 
         }else if(msg.sysid==OHD_SYS_ID_GROUND){
-            OHDSystemGround::instance().set_rx_packets_count(parsedMsg.count_wifi_packets_received);
-            OHDSystemGround::instance().set_tx_packets_count(parsedMsg.count_wifi_packets_injected);
+            AOHDSystem::instanceGround().set_wifi_rx_packets_count(parsedMsg.count_wifi_packets_received);
+            AOHDSystem::instanceGround().set_wifi_tx_packets_count(parsedMsg.count_wifi_packets_injected);
         }else{
             qDebug()<<"openhd msg from a non-openhd system";
         }

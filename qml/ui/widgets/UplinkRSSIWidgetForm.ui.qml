@@ -215,8 +215,8 @@ BaseWidget {
             height: 24
             color: settings.color_text
 
-            text: _ohdSystemAir.wifibroadcast_rssi
-                  == -127 ? qsTr("N/A") : _ohdSystemAir.wifibroadcast_rssi
+            text: _ohdSystemAir.best_rx_rssi
+                  == -127 ? qsTr("N/A") : _ohdSystemAir.best_rx_rssi
             anchors.left: uplink_icon.right
             anchors.leftMargin: 3
             anchors.top: parent.top

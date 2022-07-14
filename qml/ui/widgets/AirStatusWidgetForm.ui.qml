@@ -375,10 +375,10 @@ BaseWidget {
             width: 24
             height: 24
             color: {
-                if (_ohdSystemAir.cpuload_air >= settings.air_status_cpu_warn
+                if (_ohdSystemAir.cpuload >= settings.air_status_cpu_warn
                         || _ohdSystemAir.temp_air >= settings.air_status_temp_warn) {
                     return settings.color_warn
-                } else if (_ohdSystemAir.cpuload_air > settings.air_status_cpu_caution
+                } else if (_ohdSystemAir.cpuload > settings.air_status_cpu_caution
                            || _ohdSystemAir.temp_air > settings.air_status_temp_caution) {
                     return settings.color_caution
                 } else {
@@ -406,11 +406,11 @@ BaseWidget {
             width: 36
             height: 24
             color: {
-                if (_ohdSystemAir.cpuload_air >= settings.air_status_cpu_warn
+                if (_ohdSystemAir.cpuload >= settings.air_status_cpu_warn
                         || _ohdSystemAir.temp_air >= settings.air_status_temp_warn) {
                     widgetInner.visible = true
                     return settings.color_warn
-                } else if (_ohdSystemAir.cpuload_air > settings.air_status_cpu_caution
+                } else if (_ohdSystemAir.cpuload > settings.air_status_cpu_caution
                            || _ohdSystemAir.temp_air > settings.air_status_temp_caution) {
                     widgetInner.visible = true
                     return settings.color_caution
@@ -424,7 +424,7 @@ BaseWidget {
                 }
             }
             opacity: settings.air_status_opacity
-            text: Number(_ohdSystemAir.cpuload_air).toLocaleString(Qt.locale(),
+            text: Number(_ohdSystemAir.cpuload).toLocaleString(Qt.locale(),
                                                             'f', 0) + "%"
             anchors.right: temp_air.left
             anchors.rightMargin: 2
@@ -444,11 +444,11 @@ BaseWidget {
             width: 36
             height: 24
             color: {
-                if (_ohdSystemAir.cpuload_air >= settings.air_status_cpu_warn
+                if (_ohdSystemAir.cpuload >= settings.air_status_cpu_warn
                         || _ohdSystemAir.temp_air >= settings.air_status_temp_warn) {
                     widgetInner.visible = true
                     return settings.color_warn
-                } else if (_ohdSystemAir.cpuload_air > settings.air_status_cpu_caution
+                } else if (_ohdSystemAir.cpuload > settings.air_status_cpu_caution
                            || _ohdSystemAir.temp_air > settings.air_status_temp_caution) {
                     widgetInner.visible = true
                     return settings.color_caution

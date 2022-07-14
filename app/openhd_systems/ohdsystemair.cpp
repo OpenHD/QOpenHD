@@ -6,9 +6,9 @@ OHDSystemAir::OHDSystemAir(QObject *parent)
     : QObject{parent}
 {
     set_air_gpio({0, 0, 0, 0, 0, 0, 0, 0});
-    m_alive_timer = new QTimer(this);
+    /*m_alive_timer = new QTimer(this);
     QObject::connect(m_alive_timer, &QTimer::timeout, this, &OHDSystemAir::update_alive);
-    m_alive_timer->start(1000);
+    m_alive_timer->start(1000);*/
 }
 
 OHDSystemAir& OHDSystemAir::instance()
@@ -17,7 +17,7 @@ OHDSystemAir& OHDSystemAir::instance()
     return *instance;
 }
 
-void OHDSystemAir::set_cpuload_air(int cpuload_air) {
+/*void OHDSystemAir::set_cpuload_air(int cpuload_air) {
     m_cpuload_air = cpuload_air;
     emit cpuload_air_changed(m_cpuload_air);
 }
@@ -25,17 +25,17 @@ void OHDSystemAir::set_cpuload_air(int cpuload_air) {
 void OHDSystemAir::set_temp_air(int temp_air) {
     m_temp_air = temp_air;
     emit temp_air_changed(m_temp_air);
-}
+}*/
 
 void OHDSystemAir::set_air_undervolt(bool air_undervolt) {
     m_air_undervolt = air_undervolt;
     emit air_undervolt_changed(m_air_undervolt);
 }
 
-void OHDSystemAir::set_openhd_version_air(QString openhd_version_air){
+/*void OHDSystemAir::set_openhd_version_air(QString openhd_version_air){
     m_openhd_version_air=openhd_version_air;
     emit openhd_version_air_changed(openhd_version_air);
-}
+}*/
 
 void OHDSystemAir::set_air_gpio(QList<int> air_gpio){
     m_air_gpio = air_gpio;
@@ -80,7 +80,7 @@ void OHDSystemAir::setAirFREQ(int air_freq) {
     emit save_air_freq(m_air_freq);
 }
 
-void OHDSystemAir::set_last_ping_result_openhd_air(QString last_ping_result_openhd_air)
+/*void OHDSystemAir::set_last_ping_result_openhd_air(QString last_ping_result_openhd_air)
 {
     m_last_ping_result_openhd_air=last_ping_result_openhd_air;
     emit last_ping_result_openhd_air_changed(m_last_ping_result_openhd_air);
@@ -95,7 +95,7 @@ void OHDSystemAir::set_is_alive(bool alive)
 {
     m_is_alive=alive;
     emit is_alive_changed(alive);
-}
+}*/
 
 void OHDSystemAir::set_wifi_adapter(unsigned int received_packet_count, int current_signal_dbm, int signal_good)
 {
@@ -112,7 +112,7 @@ void OHDSystemAir::set_wifibroadcast_rssi(int wifibroadcast_rssi)
     emit wifibroadcast_rssi_changed(wifibroadcast_rssi);
 }
 
-void OHDSystemAir::update_alive()
+/*void OHDSystemAir::update_alive()
 {
     if(m_last_openhd_heartbeat==-1){
         set_is_alive(false);
@@ -124,4 +124,4 @@ void OHDSystemAir::update_alive()
             set_is_alive(true);
         }
     }
-}
+}*/
