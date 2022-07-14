@@ -18,7 +18,7 @@ jobs:
         submodules: recursive
         
     - name: Install packages
-      run: sudo apt-get install -y sudo udev
+      run: sudo apt-get install -y sudo udev gdisk
     
     - name: Emulating Jetson
       id: qemu
