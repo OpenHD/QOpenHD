@@ -376,10 +376,10 @@ BaseWidget {
             height: 24
             color: {
                 if (_ohdSystemAir.cpuload >= settings.air_status_cpu_warn
-                        || _ohdSystemAir.temp_air >= settings.air_status_temp_warn) {
+                        || _ohdSystemAir.temp >= settings.air_status_temp_warn) {
                     return settings.color_warn
                 } else if (_ohdSystemAir.cpuload > settings.air_status_cpu_caution
-                           || _ohdSystemAir.temp_air > settings.air_status_temp_caution) {
+                           || _ohdSystemAir.temp > settings.air_status_temp_caution) {
                     return settings.color_caution
                 } else {
                     return settings.color_shape
@@ -406,12 +406,12 @@ BaseWidget {
             width: 36
             height: 24
             color: {
-                if (_ohdSystemAir.cpuload >= settings.air_status_cpu_warn
-                        || _ohdSystemAir.temp_air >= settings.air_status_temp_warn) {
+                if (_ohdSystemAir.cpuload>= settings.air_status_cpu_warn
+                        || _ohdSystemAir.temp >= settings.air_status_temp_warn) {
                     widgetInner.visible = true
                     return settings.color_warn
                 } else if (_ohdSystemAir.cpuload > settings.air_status_cpu_caution
-                           || _ohdSystemAir.temp_air > settings.air_status_temp_caution) {
+                           || _ohdSystemAir.temp > settings.air_status_temp_caution) {
                     widgetInner.visible = true
                     return settings.color_caution
                 } else if (settings.air_status_declutter == true
@@ -445,11 +445,11 @@ BaseWidget {
             height: 24
             color: {
                 if (_ohdSystemAir.cpuload >= settings.air_status_cpu_warn
-                        || _ohdSystemAir.temp_air >= settings.air_status_temp_warn) {
+                        || _ohdSystemAir.temp >= settings.air_status_temp_warn) {
                     widgetInner.visible = true
                     return settings.color_warn
                 } else if (_ohdSystemAir.cpuload > settings.air_status_cpu_caution
-                           || _ohdSystemAir.temp_air > settings.air_status_temp_caution) {
+                           || _ohdSystemAir.temp > settings.air_status_temp_caution) {
                     widgetInner.visible = true
                     return settings.color_caution
                 } else if (settings.air_status_declutter == true
@@ -462,7 +462,7 @@ BaseWidget {
                 }
             }
             opacity: settings.air_status_opacity
-            text: Number(_ohdSystemAir.temp_air).toLocaleString(Qt.locale(),
+            text: Number(_ohdSystemAir.temp).toLocaleString(Qt.locale(),
                                                          'f', 0) + "°"
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: parent.right
