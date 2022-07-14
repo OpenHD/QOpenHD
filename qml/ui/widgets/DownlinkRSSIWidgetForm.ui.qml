@@ -392,7 +392,7 @@ BaseWidget {
         Text {
             id: extra_text
             visible: settings.downlink_rssi_show_lost_damaged ? true : false
-            text: "TX: " + Number(_ohdSystemGround.tx_packets_count).toLocaleString(Qt.locale(), 'f', 0)
+            text: "TX: " + Number(_ohdSystemGround.wifi_tx_packets_count).toLocaleString(Qt.locale(), 'f', 0)
             color: settings.color_text
             anchors.top: downlink_rssi.bottom
             //anchors.topMargin: -12
@@ -409,7 +409,7 @@ BaseWidget {
 
         Text {
             visible: settings.downlink_rssi_show_lost_damaged ? true : false
-            text: "RX: " + Number(_ohdSystemGround.rx_packets_count).toLocaleString(Qt.locale(), 'f', 0)
+            text: "RX: " + Number(_ohdSystemGround.wifi_rx_packets_count).toLocaleString(Qt.locale(), 'f', 0)
             color: settings.color_text
             anchors.top: extra_text.bottom
             anchors.topMargin: 0

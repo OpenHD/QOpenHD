@@ -116,6 +116,10 @@ void AOHDSystem::set_battery_gauge(QString battery_gauge) {
     emit battery_gauge_changed(m_battery_gauge);
 }
 
+void AOHDSystem::set_gpio(QList<int> gpio){
+    m_gpio = gpio;
+    emit gpio_changed(m_gpio);
+}
 void AOHDSystem::update_alive()
 {
     if(m_last_openhd_heartbeat==-1){

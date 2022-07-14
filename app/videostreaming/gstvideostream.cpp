@@ -51,6 +51,23 @@ static std::string gst_create_rtp_decoder(const QOpenHDVideoHelper::VideoCodec& 
     return ss.str();
 }
 
+static std::string gst_create_always_software_decoder(const QOpenHDVideoHelper::VideoCodec& videoCodec){
+    std::stringstream ss;
+    switch(videoCodec){
+        case QOpenHDVideoHelper::VideoCodecH264:{
+             ss<<"avdec_h264 ! ";
+        }break;
+        case QOpenHDVideoHelper::VideoCodecH265:{
+            ss<<"avdec_h265 ! ";
+        }break;
+        case QOpenHDVideoHelper::VideoCodecMJPEG:{
+            ss<<"avdec_mjpeg ! ";
+        }break;
+        default:assert(true);
+        }
+    return ss.str();
+}
+
 static std::string gst_create_video_decoder(const QOpenHDVideoHelper::VideoCodec& videoCodec,bool force_sw){
     std::stringstream ss;
     // NOTE: force sw only has an effect on when decodebin does hw automatically, and on h264

@@ -42,7 +42,7 @@ public:
      Q_PROPERTY(int best_rx_rssi MEMBER m_best_rx_rssi WRITE set_best_rx_rssi NOTIFY best_rx_rssi_changed)
      void set_best_rx_rssi(int best_rx_rssi);
      // both air and ground report outgoing and ingoing data via the wifibroadcast interface
-     Q_PROPERTY(int rx_packets_count MEMBER m_wifi_rx_packets_count WRITE set_wifi_rx_packets_count NOTIFY wifi_rx_packets_count_changed)
+     Q_PROPERTY(int wifi_rx_packets_count MEMBER m_wifi_rx_packets_count WRITE set_wifi_rx_packets_count NOTIFY wifi_rx_packets_count_changed)
      void set_wifi_rx_packets_count(int wifi_rx_packets_count);
      Q_PROPERTY(int wifi_tx_packets_count MEMBER m_wifi_tx_packets_count WRITE set_wifi_tx_packets_count NOTIFY wifi_tx_packets_count_changed)
      void set_wifi_tx_packets_count(int wifi_tx_packets_count);
@@ -58,7 +58,10 @@ public:
      Q_PROPERTY(int battery_percent MEMBER m_battery_percent WRITE set_battery_percent NOTIFY battery_percent_changed)
      void set_battery_percent(int battery_percent);
      Q_PROPERTY(QString battery_gauge MEMBER m_battery_gauge WRITE set_battery_gauge NOTIFY battery_gauge_changed)
-      void set_battery_gauge(QString battery_gauge);
+     void set_battery_gauge(QString battery_gauge);
+     // this is a placeholder for later
+     Q_PROPERTY(QList<int> gpio MEMBER m_gpio WRITE set_gpio NOTIFY gpio_changed)
+     void set_gpio(QList<int> gpio);
 signals:
      void cpuload_changed(int cpuload);
      void temp_changed(int temp);
@@ -77,6 +80,8 @@ signals:
      //
      void battery_percent_changed(int battery_percent);
      void battery_gauge_changed(QString battery_gauge);
+     //
+     void gpio_changed(QList<int> gpio);
 public:
      int m_cpuload = 0;
      int m_temp = 0;
@@ -92,6 +97,8 @@ public:
      //
      int m_battery_percent = 0;
      QString m_battery_gauge = "\uf091";
+     //
+     QList<int> m_gpio{0};
 private:
     // Sets the alive boolean if no heartbeat / message has been received in the last X seconds
     QTimer* m_alive_timer = nullptr;

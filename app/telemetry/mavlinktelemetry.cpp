@@ -704,7 +704,8 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
         mavlink_openhd_stats_total_all_streams_t parsedMsg;
         mavlink_msg_openhd_stats_total_all_streams_decode(&msg,&parsedMsg);
         if(msg.sysid==OHD_SYS_ID_AIR){
-
+            AOHDSystem::instanceAir().set_wifi_rx_packets_count(parsedMsg.count_wifi_packets_received);
+            AOHDSystem::instanceAir().set_wifi_tx_packets_count(parsedMsg.count_wifi_packets_injected);
         }else if(msg.sysid==OHD_SYS_ID_GROUND){
             AOHDSystem::instanceGround().set_wifi_rx_packets_count(parsedMsg.count_wifi_packets_received);
             AOHDSystem::instanceGround().set_wifi_tx_packets_count(parsedMsg.count_wifi_packets_injected);
