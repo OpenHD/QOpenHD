@@ -11,7 +11,7 @@
 /**
  * This class contains information (basically like a model) about one OpenHD Air or Ground instance (if connected).
  * A (Abstract) because it is only for functionalities that are always supported by both air and ground.
- * For example, both the air and  unit report the CPU usage and more, and this data has is made available to QT using a instance of this model.
+ * For example, both the air and ground unit report the CPU usage and more, and this data has is made available to QT using a instance of this model.
  * NOTE: FC telemetry has nothing to do here, as well as air / ground specific things.
  * NOTE: In QOpenHD, there are 2 instances of this model, named "_ohdSystemGround" and "_ohdSystemAir" (registered in main)
  * They each correspond to the apropriate singleton instance (instanceGround() and instanceAir() )

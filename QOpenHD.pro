@@ -101,6 +101,7 @@ SOURCES += \
     app/osd/drawingcanvas.cpp \
     app/osd/flightpathvector.cpp \
     app/qopenhd.cpp \
+    app/videostreaming/decodingstatistcs.cpp
 
 HEADERS += \
     app/logging/logmessagesmodel.h \
@@ -118,6 +119,7 @@ HEADERS += \
     app/telemetry/mavlink_include.h \
     app/telemetry/openhd_defines.hpp \
     app/telemetry/qopenhdmavlinkhelper.hpp \
+    app/videostreaming/decodingstatistcs.h
 
 
 # I deleted all the "old" telemetry protocolls other than mavlink
