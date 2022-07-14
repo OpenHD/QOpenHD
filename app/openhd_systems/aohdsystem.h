@@ -82,7 +82,7 @@ signals:
      void battery_gauge_changed(QString battery_gauge);
      //
      void gpio_changed(QList<int> gpio);
-public:
+private:
      int m_cpuload = 0;
      int m_temp = 0;
      QString m_openhd_version="NA";
