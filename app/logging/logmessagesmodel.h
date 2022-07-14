@@ -4,6 +4,9 @@
 #include <QAbstractListModel>
 #include <QColor>
 
+//TODO remove me
+#include "../telemetry/qopenhdmavlinkhelper.hpp"
+
 /**
  * @brief All OpenHD and QOpenHD Log messages are accumulated and processed here.
  * There is only one static instance of this class in the whole application, and this
@@ -23,7 +26,6 @@ public:
     };
 public:
     static  LogMessagesModel& instance();
-    static void addLogMessage(LogMessageData logMessageData);
     enum Roles {
         TagRole = Qt::UserRole,
         MessageRole,
@@ -40,15 +42,21 @@ public:
         return QColor{0,255,0,255};
     }
     void addLogMessage(const QString tag,QString message,quint8 severity);
+    // now this is really stupid, but aparently one cannot change the model from a non qt ui thread.
+    // Therefore, every time "addLogMessage" is called we emit a signal (signalAddLogMessage) that is connected to
+    // do_not_call_me_addLogMessage. This way, addData is called from the UI thread (or at least I think thats whats happening,
+    // all I know is that without this workaround this fuck doesn't work (the UI doesn't change).
+    void do_not_call_me_addLogMessage(QString tag,QString message,quint8 severity){
+        addData({tag,message,0,log_severity_to_color(severity)});
+    }
 public slots:
     void removeData(int row);
     void addData(LogMessagesModel::LogMessageData logMessageData);
 private:
     QVector< LogMessageData > m_data;
 public:
-    // argh
 signals:
-    void signalAddLogMessage(LogMessagesModel::LogMessageData logMessageData);
+    void signalAddLogMessage(QString tag,QString message,quint8 severity);
 };
 
 #endif // LOGMESSAGESMODEL_H

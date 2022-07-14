@@ -11,6 +11,7 @@ import OpenHD 1.0
 import "../../ui" as Ui
 import "../elements"
 
+// Parent panel for OpenHD air and ground settings (!!!! NOT QOPENHD SETTINGS !!!)
 Item {
     Layout.fillHeight: true
     Layout.fillWidth: true
@@ -18,32 +19,30 @@ Item {
     property int rowHeight: 64
     property int elementHeight: 48
 
+    // Tab bar for selecting items in stack layout
     TabBar {
-          id: bar
+          id: selectItemInStackLayoutBar
           width: parent.width
           TabButton {
-              text: qsTr("Video/Camera")
+              text: qsTr("Air/Camera")
           }
           TabButton {
               text: qsTr("Ground (TMP)")
           }
-          TabButton {
-              text: qsTr("Air (TMP)")
-          }
     }
 
-
+    // placed right below the top bar
     StackLayout {
           width: parent.width
-          currentIndex: bar.currentIndex
-          Item {
-              id: tabVideoCamera
+          height: parent.height-selectItemInStackLayoutBar.height
+          anchors.top: selectItemInStackLayoutBar.bottom
+          //top: bar.bottom
+          currentIndex: selectItemInStackLayoutBar.currentIndex
+          X1_AirSystemSettingsPanel{
+              id: x1_AirSystemSettingsPanel
           }
-          Item {
-              id: tabAir
-          }
-          Item {
-              id: tabGround
+          X2_GroundSystemSettingsPanel{
+              id: x2_GroundSystemSettingsPanel
           }
       }
 

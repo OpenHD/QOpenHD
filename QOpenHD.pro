@@ -78,17 +78,20 @@ QT += concurrent opengl gui
 INCLUDEPATH += $$PWD/inc
 INCLUDEPATH += $$PWD/lib
 INCLUDEPATH += $$PWD/app
-#INCLUDEPATH += $$PWD/lib/mavlink_generated/include/mavlink/v2.0
-INCLUDEPATH += $$PWD/lib/c_library_v2_openhd
+# Since mavlink is coming with MAVSDK, we don't need that anymore
+#INCLUDEPATH += $$PWD/lib/c_library_v2_openhd
 # mavsdk - dirty
+# We have the include path 2 times here, aparently release and debug install to different paths
 INCLUDEPATH += /usr/local/include/mavsdk
 LIBS += -L/usr/local/lib -lmavsdk
+INCLUDEPATH += /usr/include/mavsdk
 
 INCLUDEPATH += $$PWD/lib/GeographicLib-1.50/include
 
 # All files for the OSD elements - these are QT QQuickPaintedItem's that are written in c++
 SOURCES += \
     app/logging/logmessagesmodel.cpp \
+    app/openhd_systems/aohdsystem.cpp \
     app/openhd_systems/ohdsystemair.cpp \
     app/openhd_systems/ohdsystemground.cpp \
     app/osd/headingladder.cpp \
@@ -98,10 +101,11 @@ SOURCES += \
     app/osd/drawingcanvas.cpp \
     app/osd/flightpathvector.cpp \
     app/qopenhd.cpp \
-    app/telemetry/settings/mavlinksettingsmodel.cpp
+    app/videostreaming/decodingstatistcs.cpp
 
 HEADERS += \
     app/logging/logmessagesmodel.h \
+    app/openhd_systems/aohdsystem.h \
     app/openhd_systems/ohdsystemair.h \
     app/openhd_systems/ohdsystemground.h \
     app/openhd_systems/wifiadapter.h \
@@ -112,9 +116,10 @@ HEADERS += \
     app/osd/drawingcanvas.h \
     app/osd/flightpathvector.h \
     app/qopenhd.h \
+    app/telemetry/mavlink_include.h \
     app/telemetry/openhd_defines.hpp \
     app/telemetry/qopenhdmavlinkhelper.hpp \
-    app/telemetry/settings/mavlinksettingsmodel.h
+    app/videostreaming/decodingstatistcs.h
 
 
 # I deleted all the "old" telemetry protocolls other than mavlink
@@ -123,11 +128,14 @@ HEADERS += \
     app/telemetry/OHDConnection.h \
     app/telemetry/mavlinktelemetry.h \
     app/telemetry/mavlinkcommand.h \
+    app/telemetry/settings/mavlinksettingsmodel.h \
 
 SOURCES += \
     app/telemetry/OHDConnection.cpp \
     app/telemetry/mavlinktelemetry.cpp \
     app/telemetry/mavlinkcommand.cpp \
+    app/telemetry/settings/mavlinksettingsmodel.cpp \
+
 
 # all other files, complete mess
 SOURCES += \

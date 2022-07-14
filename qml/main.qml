@@ -138,13 +138,6 @@ ApplicationWindow {
         onLocalMessage: {
             hudOverlayGrid.messageHUD.pushMessage(message, level)
         }
-
-        onSettingsClosed: {
-            if (settings.stereo_enable) {
-                stereoHelpMessage.visible = true
-                stereoHelpTimer.start()
-            }
-        }
     }
 
     Shortcut {
@@ -162,52 +155,11 @@ ApplicationWindow {
             enabled: settings_panel.visible == false
             acceptedButtons: Qt.AllButtons
             onTapped: {
-                if (tapCount == 3) {
-                    settings.stereo_enable = !settings.stereo_enable
-                    if (settings.stereo_enable) {
-                        stereoHelpMessage.visible = true
-                        stereoHelpTimer.start()
-                    }
-                }
             }
             onLongPressed: {
-                if (settings.stereo_enable ) {
-                    return;
-                }
-
                 osdCustomizer.visible = true
             }
-
             grabPermissions: PointerHandler.CanTakeOverFromAnything
-        }
-    }
-
-    Text {
-        id: stereoHelpMessage
-        z: 2.0
-        color: "#89ffffff"
-        visible: false
-        font.pixelSize: 18
-        font.family: settings.font_text
-        text: qsTr("Rapidly tap between widgets to enable/disable stereo")
-        horizontalAlignment: Text.AlignHCenter
-        height: 24
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.top: parent.top
-        anchors.topMargin: 64
-        style: Text.Outline
-        styleColor: "black"
-    }
-
-    Timer {
-        id: stereoHelpTimer
-        running: false
-        interval: 4000
-        repeat: false
-
-        onTriggered: {
-            stereoHelpMessage.visible = false;
         }
     }
 }

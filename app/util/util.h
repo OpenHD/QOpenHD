@@ -3,7 +3,7 @@
 
 #include <QObject>
 
-#include <openhd/mavlink.h>
+#include "../telemetry/mavlink_include.h"
 
 #define M_PIf       3.14159265358979323846f
 

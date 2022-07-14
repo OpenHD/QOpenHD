@@ -43,10 +43,12 @@ bool MavlinkSettingsModel::try_fetch_all_parameters()
 {
     qDebug()<<"MavlinkSettingsModel::try_fetch_all_parameters()";
     if(param_client){
+        // first, remove anything the QT model has cached
         while(rowCount()>0){
             removeData(rowCount()-1);
         }
         qDebug()<<"Done removing old params";
+        // now fetch all params using mavsdk (this talks to the OHD system(s).
         const auto params=param_client->get_all_params();
         for(const auto& int_param:params.int_params){
             MavlinkSettingsModel::SettingData data{QString(int_param.name.c_str()),int_param.value};
@@ -55,6 +57,8 @@ bool MavlinkSettingsModel::try_fetch_all_parameters()
         if(!params.int_params.empty()){
             return true;
         }
+    }else{
+        // not dscovered yet
     }
     return false;
 }

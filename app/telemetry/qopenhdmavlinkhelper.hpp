@@ -3,7 +3,8 @@
 
 #include <chrono>
 #include <qsettings.h>
-#include <openhd/mavlink.h>
+#include "mavlink_include.h"
+#include <QByteArray>
 
 namespace QOpenHDMavlinkHelper{
 
@@ -37,6 +38,21 @@ static std::vector<uint8_t> mavlinkMessageToSendBuffer(const mavlink_message_t& 
     auto size = mavlink_msg_to_send_buffer(buf.data(), &msg);
     buf.resize(size);
     return buf;
+}
+
+static QString safe_string(const char* text,int text_size){
+     QByteArray param_id(text,text_size);
+     /*
+      * If there's no null in the text array, the mavlink docs say it has to be exactly 50 characters,
+      * so we add a null to the end and then continue. This guarantees that QString below will always find
+      * a null terminator.
+      *
+      */
+     if (!param_id.contains('\0')) {
+        param_id.append('\0');
+     }
+     QString s(param_id.data());
+     return s;
 }
 }
 

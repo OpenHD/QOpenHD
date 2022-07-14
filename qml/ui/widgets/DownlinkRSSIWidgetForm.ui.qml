@@ -186,7 +186,9 @@ BaseWidget {
                 width: parent.width
                 height: 32
                 Text {
-                    text: qsTr("Show lost/damaged")
+                    // Consti10 hack XYZ
+                    //text: qsTr("Show lost/damaged")
+                    text: qsTr("Show received/injected")
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -261,7 +263,7 @@ BaseWidget {
                 }
             }
 
-            Item {
+            /*Item {
                 width: parent.width
                 height: 32
                 Text {
@@ -282,17 +284,7 @@ BaseWidget {
                     anchors.right: parent.right
                     verticalAlignment: Text.AlignVCenter
                 }
-            }           
-        }
-        Button {
-            //this is for testing the new link microservice and freq change
-            visible: false
-            text: "Freq Test"
-            anchors.centerIn: parent
-
-            onPressed: {
-                OpenHD.setAirFREQ(5400);
-            }
+            }*/
         }
     }
 
@@ -326,7 +318,7 @@ BaseWidget {
             height: 24
             color: settings.color_text
 
-            text: _ohdSystemGround.downlink_rssi == -127 ? qsTr("N/A") : _ohdSystemGround.downlink_rssi
+            text: _ohdSystemGround.best_rx_rssi == -127 ? qsTr("N/A") : _ohdSystemGround.best_rx_rssi
             anchors.left: downlink_icon.right
             anchors.leftMargin: 3
             anchors.top: parent.top
@@ -361,8 +353,9 @@ BaseWidget {
             style: Text.Outline
             styleColor: settings.color_glow
         }
-
-        Text {
+// Consti10 temporary begin - r.n we only have the n of injected and received packets per card, no FEC statistics (and the fec statistics also have changed such
+// that what was displayed previosly doesn't make sense anymore
+        /*Text {
             id: extra_text
             visible: settings.downlink_rssi_show_lost_damaged ? true : false
             text: "D: " + Number(OpenHD.damaged_block_cnt).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" (%L1%)").arg(OpenHD.damaged_block_percent);
@@ -395,8 +388,43 @@ BaseWidget {
             elide: Text.ElideRight
             style: Text.Outline
             styleColor: settings.color_glow
+        }*/
+        Text {
+            id: extra_text
+            visible: settings.downlink_rssi_show_lost_damaged ? true : false
+            text: "TX: " + Number(_ohdSystemGround.wifi_tx_packets_count).toLocaleString(Qt.locale(), 'f', 0)
+            color: settings.color_text
+            anchors.top: downlink_rssi.bottom
+            //anchors.topMargin: -12
+            anchors.left: parent.left
+            verticalAlignment: Text.AlignVCenter
+            font.pixelSize: 12
+            font.family: settings.font_text
+            horizontalAlignment: Text.AlignLeft
+            wrapMode: Text.NoWrap
+            elide: Text.ElideRight
+            style: Text.Outline
+            styleColor: settings.color_glow
         }
 
+        Text {
+            visible: settings.downlink_rssi_show_lost_damaged ? true : false
+            text: "RX: " + Number(_ohdSystemGround.wifi_rx_packets_count).toLocaleString(Qt.locale(), 'f', 0)
+            color: settings.color_text
+            anchors.top: extra_text.bottom
+            anchors.topMargin: 0
+            anchors.left: extra_text.left
+            verticalAlignment: Text.AlignVCenter
+            font.pixelSize: 12
+            font.family: settings.font_text
+            horizontalAlignment: Text.AlignLeft
+            wrapMode: Text.NoWrap
+            elide: Text.ElideRight
+            style: Text.Outline
+            styleColor: settings.color_glow
+        }
+
+// Consti10 temporary end
         Column {
             anchors.left: widgetInner.right
             anchors.leftMargin: 15

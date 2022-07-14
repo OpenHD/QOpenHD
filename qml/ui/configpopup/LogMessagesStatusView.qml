@@ -8,6 +8,7 @@ import QtQuick.Controls 2.12
 
 // Uses the c++ logmessagemodel under app/logging/logmessagesmodel
 ListView {
+    id: logMessagesModelParentListView
     width: parent.width
     height: parent.height
     model: _logMessagesModel
@@ -15,7 +16,7 @@ ListView {
     Rectangle {
         color: Qt.rgba(0.3,0.3,0.3)
         height: childrenRect.height
-        width: parent.width
+        width: logMessagesModelParentListView.width //parent.width for some reason we cannot just use parent.width here
 
         Text {
             id: tagView

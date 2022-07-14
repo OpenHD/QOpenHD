@@ -325,7 +325,7 @@ BaseWidget {
                 return percent < 20 ? (percent < 15 ? "#ff0000" : "#fbfd15") : settings.color_shape
             }
             opacity: settings.ground_battery_opacity
-            text: _ohdSystemGround.ground_battery_gauge
+            text: _ohdSystemGround.battery_gauge
             anchors.left: parent.left
             anchors.leftMargin: 12
             fontSizeMode: Text.VerticalFit

@@ -17,6 +17,7 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "openhd.h"
 #include "openhd_systems/ohdsystemair.h"
 #include "openhd_systems/ohdsystemground.h"
+#include "openhd_systems/aohdsystem.h"
 #include "../app/telemetry/mavlinktelemetry.h"
 
 #include "util/QmlObjectListModel.h"
@@ -41,6 +42,8 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "videostreaming/QOpenHDVideoHelper.hpp"
 #include "videostreaming/gstvideostream.h"
 #endif
+
+#include "videostreaming/decodingstatistcs.h"
 
 #if defined(ENABLE_VIDEO_RENDER)
 #include "openhdvideo.h"
@@ -356,8 +359,11 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
     engine.rootContext()->setContextProperty("OpenHDUtil", util);
 
     engine.rootContext()->setContextProperty("OpenHD", &OpenHD::instance());
-    engine.rootContext()->setContextProperty("_ohdSystemAir", &OHDSystemAir::instance());
-    engine.rootContext()->setContextProperty("_ohdSystemGround", &OHDSystemGround::instance());
+    /*engine.rootContext()->setContextProperty("_ohdSystemAir", &OHDSystemAir::instance());
+    engine.rootContext()->setContextProperty("_ohdSystemGround", &OHDSystemGround::instance());*/
+    engine.rootContext()->setContextProperty("_ohdSystemAir", &AOHDSystem::instanceAir());
+    engine.rootContext()->setContextProperty("_ohdSystemGround", &AOHDSystem::instanceGround());
+    engine.rootContext()->setContextProperty("_decodingStatistics",&DecodingStatistcs::instance());
 
 #if defined(ENABLE_MAIN_VIDEO)
     engine.rootContext()->setContextProperty("EnableMainVideo", QVariant(true));
@@ -489,7 +495,7 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
 
 #endif
 
-     LogMessagesModel::instance().addLogMessage("QOpenHD","blablabla",0);
+     LogMessagesModel::instance().addLogMessage("QOpenHD","running",0);
     const int retval = app.exec();
 
 #if defined(ENABLE_GSTREAMER) || defined(ENABLE_VIDEO_RENDER)

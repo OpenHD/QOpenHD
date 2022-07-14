@@ -6,7 +6,7 @@
 //#include <QTimer>
 #include <chrono>
 
-#include <openhd/mavlink.h>
+#include "mavlink_include.h"
 
 #define X_USE_MAVSDK
 
@@ -124,6 +124,7 @@ private slots:
 private:
     void onNewSystem(std::shared_ptr<mavsdk::System> system);
 public:
+    // request the OpenHD version, both OpenHD air and ground unit will respond to that message.
     void request_openhd_version();
     // send a command, to all connected systems
     // doesn't reatransmitt

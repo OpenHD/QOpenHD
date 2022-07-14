@@ -77,7 +77,7 @@ compile_commands.json
 
 .idea/*
 build
-MAVSDK
+#MAVSDK
 
 
 

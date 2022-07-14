@@ -325,8 +325,11 @@ Rectangle {
         }
 
         // placeholder for settings via mavlink
-        TmpGroundPiSettingsPanel{
-            id: tmpGroundPiSettingsPanel
+        //X1_AirSystemSettingsPanel{
+        //    id: X1_AirSystemSettingsPanel
+        //}
+        OHDComponentSettings {
+            id:  oHDComponentSettings
         }
 
         LogMessagesStatusView{

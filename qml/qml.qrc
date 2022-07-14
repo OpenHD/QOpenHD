@@ -1,29 +1,29 @@
 <RCC>
-    <qresource lang="en" prefix="/translations">
+    <qresource prefix="/translations" lang="en">
         <file alias="QOpenHD.qm">../translations/QOpenHD_en.qm</file>
     </qresource>
-    <qresource lang="de" prefix="/translations">
+    <qresource prefix="/translations" lang="de">
         <file alias="QOpenHD.qm">../translations/QOpenHD_de.qm</file>
     </qresource>
-    <qresource lang="ru" prefix="/translations">
+    <qresource prefix="/translations" lang="ru">
         <file alias="QOpenHD.qm">../translations/QOpenHD_ru.qm</file>
     </qresource>
-    <qresource lang="es" prefix="/translations">
+    <qresource prefix="/translations" lang="es">
         <file alias="QOpenHD.qm">../translations/QOpenHD_es.qm</file>
     </qresource>
-    <qresource lang="fr" prefix="/translations">
+    <qresource prefix="/translations" lang="fr">
         <file alias="QOpenHD.qm">../translations/QOpenHD_fr.qm</file>
     </qresource>
-    <qresource lang="nl" prefix="/translations">
+    <qresource prefix="/translations" lang="nl">
         <file alias="QOpenHD.qm">../translations/QOpenHD_nl.qm</file>
     </qresource>
-    <qresource lang="ro" prefix="/translations">
+    <qresource prefix="/translations" lang="ro">
         <file alias="QOpenHD.qm">../translations/QOpenHD_ro.qm</file>
     </qresource>
-    <qresource lang="it" prefix="/translations">
+    <qresource prefix="/translations" lang="it">
         <file alias="QOpenHD.qm">../translations/QOpenHD_it.qm</file>
     </qresource>
-    <qresource lang="zh" prefix="/translations">
+    <qresource prefix="/translations" lang="zh">
         <file alias="QOpenHD.qm">../translations/QOpenHD_zh.qm</file>
     </qresource>
     <qresource prefix="/">
@@ -86,7 +86,6 @@
         <file>ui/PresetMap.qml</file>
         <file>ui/elements/ColoredCheckboxForm.ui.qml</file>
         <file>ui/elements/ColoredCheckbox.qml</file>
-        <file>ui/FrequencyItem.qml</file>
         <file>ui/widgets/GPIOWidget.qml</file>
         <file>ui/widgets/GPIOWidgetForm.ui.qml</file>
         <file>ui/widgets/FlightDistanceWidgetForm.ui.qml</file>
@@ -193,7 +192,7 @@
         <file>ui/widgets/MissionWidgetForm.ui.qml</file>
         <file>ui/widgets/MissionWidget.qml</file>
         <file>ui/delegates/BoolSwitchSettingDelegate.ui.qml</file>
-        <file>ui/configpopup/TmpGroundPiSettingsPanel.qml</file>
+        <file>ui/configpopup/X1_AirSystemSettingsPanel.qml</file>
         <file>ui/configpopup/SettingsPopupForm.ui.qml</file>
         <file>ui/configpopup/SettingsPopup.qml</file>
         <file>ui/configpopup/PowerPanelForm.ui.qml</file>
@@ -215,5 +214,6 @@
         <file>video/SecondaryVideoRenderer.qml</file>
         <file>ui/configpopup/LogMessagesStatusView.qml</file>
         <file>ui/configpopup/OHDComponentSettings.qml</file>
+        <file>ui/configpopup/X2_GroundSystemSettingsPanel.qml</file>
     </qresource>
 </RCC>
