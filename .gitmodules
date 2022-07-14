@@ -10,6 +10,3 @@
 [submodule "lib/android/openssl"]
 	path = lib/android/openssl
 	url = https://github.com/KDAB/android_openssl.git
-[submodule "lib/MAVSDK"]
-	path = lib/MAVSDK
-	url = git@github.com:OpenHD/MAVSDK.git
