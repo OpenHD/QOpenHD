@@ -263,7 +263,7 @@ BaseWidget {
                 }
             }
 
-            Item {
+            /*Item {
                 width: parent.width
                 height: 32
                 Text {
@@ -284,7 +284,7 @@ BaseWidget {
                     anchors.right: parent.right
                     verticalAlignment: Text.AlignVCenter
                 }
-            }           
+            }*/
         }
     }
 
