@@ -43,6 +43,8 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "videostreaming/gstvideostream.h"
 #endif
 
+#include "videostreaming/decodingstatistcs.h"
+
 #if defined(ENABLE_VIDEO_RENDER)
 #include "openhdvideo.h"
 #if defined(__android__)
@@ -361,6 +363,7 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
     engine.rootContext()->setContextProperty("_ohdSystemGround", &OHDSystemGround::instance());*/
     engine.rootContext()->setContextProperty("_ohdSystemAir", &AOHDSystem::instanceAir());
     engine.rootContext()->setContextProperty("_ohdSystemGround", &AOHDSystem::instanceGround());
+    engine.rootContext()->setContextProperty("_decodingStatistics",&DecodingStatistcs::instance());
 
 #if defined(ENABLE_MAIN_VIDEO)
     engine.rootContext()->setContextProperty("EnableMainVideo", QVariant(true));
