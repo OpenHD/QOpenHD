@@ -5,7 +5,7 @@
 #include <QDebug>
 #include <QTimer>
 
-#include <openhd/mavlink.h>
+#include "../telemetry/mavlink_include.h"
 #include "wifiadapter.h"
 
 /**

@@ -78,7 +78,7 @@ QT += concurrent opengl gui
 INCLUDEPATH += $$PWD/inc
 INCLUDEPATH += $$PWD/lib
 INCLUDEPATH += $$PWD/app
-#INCLUDEPATH += $$PWD/lib/mavlink_generated/include/mavlink/v2.0
+# Since mavlink is coming with MAVSDK, we don't need that anymore
 INCLUDEPATH += $$PWD/lib/c_library_v2_openhd
 # mavsdk - dirty
 # We have the include path 2 times here, aparently release and debug install to different paths
@@ -114,6 +114,7 @@ HEADERS += \
     app/osd/drawingcanvas.h \
     app/osd/flightpathvector.h \
     app/qopenhd.h \
+    app/telemetry/mavlink_include.h \
     app/telemetry/openhd_defines.hpp \
     app/telemetry/qopenhdmavlinkhelper.hpp \
     app/telemetry/settings/mavlinksettingsmodel.h

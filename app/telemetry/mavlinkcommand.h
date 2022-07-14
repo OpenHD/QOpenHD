@@ -3,7 +3,7 @@
 
 #include <QObject>
 #include <QtQuick>
-#include <openhd/mavlink.h>
+#include "mavlink_include.h"
 
 // This is from stephen, here for legacy but might get re-used to some degree
 typedef enum MavlinkCommandState {

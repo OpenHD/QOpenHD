@@ -3,7 +3,7 @@
 
 #include <chrono>
 #include <qsettings.h>
-#include <openhd/mavlink.h>
+#include "mavlink_include.h"
 #include <QByteArray>
 
 namespace QOpenHDMavlinkHelper{

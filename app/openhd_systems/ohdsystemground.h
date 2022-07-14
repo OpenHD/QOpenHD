@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QDebug>
 #include <QTimer>
+#include "../telemetry/mavlink_include.h"
 #include "wifiadapter.h"
 #include <array>
 

@@ -12,7 +12,7 @@
 #include <QFutureWatcher>
 #include <QFuture>
 
-#include <openhd/mavlink.h>
+#include "mavlink_include.h"
 
 #include "../util/util.h"
 #include "../logging/logmessagesmodel.h"

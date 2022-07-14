@@ -6,7 +6,7 @@
 //#include <QTimer>
 #include <chrono>
 
-#include <openhd/mavlink.h>
+#include "mavlink_include.h"
 
 #define X_USE_MAVSDK
 

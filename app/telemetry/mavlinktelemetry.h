@@ -5,7 +5,7 @@
 #include <QtQuick>
 #include <array>
 
-#include <openhd/mavlink.h>
+#include "mavlink_include.h"
 
 #include "../util/util.h"
 #include "OHDConnection.h"
