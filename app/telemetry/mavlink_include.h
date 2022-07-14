@@ -1,6 +1,8 @@
 #ifndef MAVLINK_INCLUDE_H
 #define MAVLINK_INCLUDE_H
 
-#include <openhd/mavlink.h>
+// if not mavsdk
+//#include <openhd/mavlink.h>
+#include <mavsdk/plugins/mavlink_passthrough/mavlink_passthrough.h>
 
 #endif // MAVLINK_INCLUDE_H
