@@ -691,17 +691,27 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
         if(msg.sysid==OHD_SYS_ID_AIR){
             if(parsedMsg.card_index==0){
                 OHDSystemAir::instance().set_wifi_adapter(parsedMsg.count_p_received,parsedMsg.signal_millidBm,true);
+            }else{
+                qDebug()<<"Error air can only have one card";
             }
         }else if(msg.sysid==OHD_SYS_ID_GROUND){
              OHDSystemGround::instance().set_wifi_adapter(parsedMsg.card_index,parsedMsg.count_p_received,parsedMsg.signal_millidBm,true);
-             // hacky
-             if(parsedMsg.card_index==0){
-                 OHDSystemGround::instance().set_rx_packets_count(parsedMsg.count_p_received);
-                 OHDSystemGround::instance().set_tx_packets_count(parsedMsg.count_p_injected);
-             }
         }
         break;
     }
+    case MAVLINK_MSG_ID_OPENHD_STATS_TOTAL_ALL_STREAMS:{
+        mavlink_openhd_stats_total_all_streams_t parsedMsg;
+        mavlink_msg_openhd_stats_total_all_streams_decode(&msg,&parsedMsg);
+        if(msg.sysid==OHD_SYS_ID_AIR){
+
+        }else if(msg.sysid==OHD_SYS_ID_GROUND){
+            OHDSystemGround::instance().set_rx_packets_count(parsedMsg.count_wifi_packets_received);
+            OHDSystemGround::instance().set_tx_packets_count(parsedMsg.count_wifi_packets_injected);
+        }else{
+            qDebug()<<"openhd msg from a non-openhd system";
+        }
+
+    }break;
     /*case MAVLINK_MSG_ID_OPENHD_LOG_MESSAGE:{
         mavlink_openhd_log_message_t parsedMsg;
         mavlink_msg_openhd_log_message_decode(&msg,&parsedMsg);
