@@ -186,8 +186,6 @@ BaseWidget {
                 width: parent.width
                 height: 32
                 Text {
-                    // Consti10 hack XYZ
-                    //text: qsTr("Show lost/damaged")
                     text: qsTr("Show received/injected")
                     color: "white"
                     height: parent.height
@@ -201,17 +199,16 @@ BaseWidget {
                     height: parent.height
                     anchors.rightMargin: 6
                     anchors.right: parent.right
-                    checked: settings.downlink_rssi_show_lost_damaged
-                    onCheckedChanged: settings.downlink_rssi_show_lost_damaged = checked
+                    checked: settings.downlink_show_received_injected_packets
+                    onCheckedChanged: settings.downlink_show_received_injected_packets = checked
                 }
             }
-
 
             Item {
                 width: parent.width
                 height: 32
                 Text {
-                    text: qsTr("Show all cards to right")
+                    text: qsTr("Show current bitrate")
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -224,8 +221,8 @@ BaseWidget {
                     height: parent.height
                     anchors.rightMargin: 6
                     anchors.right: parent.right
-                    checked: settings.downlink_cards_right
-                    onCheckedChanged: settings.downlink_cards_right = checked
+                    checked: settings.downlink_show_current_bitrate
+                    onCheckedChanged: settings.downlink_show_current_bitrate = checked
                 }
             }
         }
@@ -355,212 +352,50 @@ BaseWidget {
         }
 // Consti10 temporary begin - r.n we only have the n of injected and received packets per card, no FEC statistics (and the fec statistics also have changed such
 // that what was displayed previosly doesn't make sense anymore
-        /*Text {
-            id: extra_text
-            visible: settings.downlink_rssi_show_lost_damaged ? true : false
-            text: "D: " + Number(OpenHD.damaged_block_cnt).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" (%L1%)").arg(OpenHD.damaged_block_percent);
-            color: settings.color_text
+        ColumnLayout{
             anchors.top: downlink_rssi.bottom
-            //anchors.topMargin: -12
-            anchors.left: parent.left
-            verticalAlignment: Text.AlignVCenter
-            font.pixelSize: 12
-            font.family: settings.font_text
-            horizontalAlignment: Text.AlignLeft
-            wrapMode: Text.NoWrap
-            elide: Text.ElideRight
-            style: Text.Outline
-            styleColor: settings.color_glow
+            spacing:0
+            Text {
+                visible: settings.downlink_show_received_injected_packets ? true : false
+                text: "TX: " + Number(_ohdSystemGround.wifi_tx_packets_count).toLocaleString(Qt.locale(), 'f', 0)
+                color: settings.color_text
+                verticalAlignment: Text.AlignVCenter
+                font.pixelSize: 12
+                font.family: settings.font_text
+                horizontalAlignment: Text.AlignLeft
+                wrapMode: Text.NoWrap
+                elide: Text.ElideRight
+                style: Text.Outline
+                styleColor: settings.color_glow
+            }
+            Text {
+                visible: settings.downlink_show_received_injected_packets ? true : false
+                text: "RX: " + Number(_ohdSystemGround.wifi_rx_packets_count).toLocaleString(Qt.locale(), 'f', 0)
+                color: settings.color_text
+                verticalAlignment: Text.AlignVCenter
+                font.pixelSize: 12
+                font.family: settings.font_text
+                horizontalAlignment: Text.AlignLeft
+                wrapMode: Text.NoWrap
+                elide: Text.ElideRight
+                style: Text.Outline
+                styleColor: settings.color_glow
+            }
+            // RX (Ground in) bitrate
+            Text {
+                visible: settings.downlink_show_current_bitrate ? true : false
+                text: "XXX " + Number(_ohdSystemGround.wifi_rx_packets_count).toLocaleString(Qt.locale(), 'f', 0)+" mBit/s"
+                color: settings.color_text
+                verticalAlignment: Text.AlignVCenter
+                font.pixelSize: 12
+                font.family: settings.font_text
+                horizontalAlignment: Text.AlignLeft
+                wrapMode: Text.NoWrap
+                elide: Text.ElideRight
+                style: Text.Outline
+                styleColor: settings.color_glow
+            }
         }
-
-        Text {
-            visible: settings.downlink_rssi_show_lost_damaged ? true : false
-            text: "L: " + Number(OpenHD.lost_packet_cnt).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" (%L1%)").arg(OpenHD.lost_packet_percent);
-            color: settings.color_text
-            anchors.top: extra_text.bottom
-            anchors.topMargin: 0
-            anchors.left: extra_text.left
-            verticalAlignment: Text.AlignVCenter
-            font.pixelSize: 12
-            font.family: settings.font_text
-            horizontalAlignment: Text.AlignLeft
-            wrapMode: Text.NoWrap
-            elide: Text.ElideRight
-            style: Text.Outline
-            styleColor: settings.color_glow
-        }*/
-        Text {
-            id: extra_text
-            visible: settings.downlink_rssi_show_lost_damaged ? true : false
-            text: "TX: " + Number(_ohdSystemGround.wifi_tx_packets_count).toLocaleString(Qt.locale(), 'f', 0)
-            color: settings.color_text
-            anchors.top: downlink_rssi.bottom
-            //anchors.topMargin: -12
-            anchors.left: parent.left
-            verticalAlignment: Text.AlignVCenter
-            font.pixelSize: 12
-            font.family: settings.font_text
-            horizontalAlignment: Text.AlignLeft
-            wrapMode: Text.NoWrap
-            elide: Text.ElideRight
-            style: Text.Outline
-            styleColor: settings.color_glow
-        }
-
-        Text {
-            visible: settings.downlink_rssi_show_lost_damaged ? true : false
-            text: "RX: " + Number(_ohdSystemGround.wifi_rx_packets_count).toLocaleString(Qt.locale(), 'f', 0)
-            color: settings.color_text
-            anchors.top: extra_text.bottom
-            anchors.topMargin: 0
-            anchors.left: extra_text.left
-            verticalAlignment: Text.AlignVCenter
-            font.pixelSize: 12
-            font.family: settings.font_text
-            horizontalAlignment: Text.AlignLeft
-            wrapMode: Text.NoWrap
-            elide: Text.ElideRight
-            style: Text.Outline
-            styleColor: settings.color_glow
-        }
-
 // Consti10 temporary end
-        Column {
-            anchors.left: widgetInner.right
-            anchors.leftMargin: 15
-            anchors.top: widgetInner.top
-            anchors.topMargin: 12
-            spacing: 0
-
-            visible: settings.downlink_cards_right
-
-            Row {
-                height: 18
-                spacing: 6
-
-                Text {
-                    height: parent.height
-                    color: settings.color_shape
-                    text: "\uf381"
-                    visible: card0textlower.visible
-                    verticalAlignment: Text.AlignVCenter
-                    font.family: "Font Awesome 5 Free"
-                    font.pixelSize: 12
-                    horizontalAlignment: Text.AlignRight
-                    style: Text.Outline
-                    styleColor: settings.color_glow
-                }
-
-                Text {
-                    id: card0textlower
-                    height: parent.height
-                    color: settings.color_text
-                    visible: false
-                    verticalAlignment: Text.AlignVCenter
-                    font.pixelSize: 14
-                    font.family: settings.font_text
-                    horizontalAlignment: Text.AlignLeft
-                    wrapMode: Text.NoWrap
-                    style: Text.Outline
-                    styleColor: settings.color_glow
-                }
-            }
-
-            Row {
-                height: 18
-                spacing: 6
-
-                Text {
-                    height: parent.height
-                    color: settings.color_shape
-                    text: "\uf381"
-                    visible: card1textlower.visible
-                    verticalAlignment: Text.AlignVCenter
-                    font.family: "Font Awesome 5 Free"
-                    font.pixelSize: 12
-                    horizontalAlignment: Text.AlignRight
-                    style: Text.Outline
-                    styleColor: settings.color_glow
-                }
-
-                Text {
-                    id: card1textlower
-                    height: parent.height
-                    color: settings.color_text
-                    visible: false
-                    verticalAlignment: Text.AlignVCenter
-                    font.pixelSize: 14
-                    font.family: settings.font_text
-                    horizontalAlignment: Text.AlignLeft
-                    wrapMode: Text.NoWrap
-                    style: Text.Outline
-                    styleColor: settings.color_glow
-                }
-            }
-
-            Row {
-                height: 18
-                spacing: 6
-
-                Text {
-                    height: parent.height
-                    color: settings.color_shape
-                    text: "\uf381"
-                    visible: card2textlower.visible
-                    verticalAlignment: Text.AlignVCenter
-                    font.family: "Font Awesome 5 Free"
-                    font.pixelSize: 12
-                    horizontalAlignment: Text.AlignRight
-                    style: Text.Outline
-                    styleColor: settings.color_glow
-                }
-
-                Text {
-                    id: card2textlower
-                    height: parent.height
-                    color: settings.color_text
-                    visible: false
-                    verticalAlignment: Text.AlignVCenter
-                    font.pixelSize: 14
-                    font.family: settings.font_text
-                    horizontalAlignment: Text.AlignLeft
-                    wrapMode: Text.NoWrap
-                    style: Text.Outline
-                    styleColor: settings.color_glow
-                }
-            }
-
-            Row {
-                height: 18
-                spacing: 6
-
-                Text {
-                    height: parent.height
-                    color: settings.color_shape
-                    text: "\uf381"
-                    visible: card3textlower.visible
-                    verticalAlignment: Text.AlignVCenter
-                    font.family: "Font Awesome 5 Free"
-                    font.pixelSize: 12
-                    horizontalAlignment: Text.AlignRight
-                    style: Text.Outline
-                    styleColor: settings.color_glow
-                }
-
-                Text {
-                    id: card3textlower
-                    height: parent.height
-                    color: settings.color_text
-                    visible: false
-                    verticalAlignment: Text.AlignVCenter
-                    font.pixelSize: 14
-                    font.family: settings.font_text
-                    horizontalAlignment: Text.AlignLeft
-                    wrapMode: Text.NoWrap
-                    style: Text.Outline
-                    styleColor: settings.color_glow
-                }
-            }
-        }
     }
 }
