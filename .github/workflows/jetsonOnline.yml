@@ -36,7 +36,11 @@ jobs:
           ls -a
           cd /opt/QOpenHD
           apt update
-          sudo apt install -y curl
+          apt install -y curl
+          curl -1sLf 'https://dl.cloudsmith.io/public/openhd/openhd-2-1-alpha/gpg.9D1C80E55B50390B.key' | apt-key add -
+          curl -1sLf \
+            'https://dl.cloudsmith.io/public/openhd/openhd-2-1-alpha/setup.deb.sh' \
+            | sudo -E bash
           apt update
           apt install -y openhd-qt-jetson-nano-bionic 
           apt upgrade -y
