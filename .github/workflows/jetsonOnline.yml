@@ -67,7 +67,7 @@ jobs:
         file: "QOpenHD/*.deb"
   cleanup:
     runs-on: ubuntu-latest
-    needs: [build,fail]
+    needs: [build]
     if: always()
     steps:
       - name: Cleanup
