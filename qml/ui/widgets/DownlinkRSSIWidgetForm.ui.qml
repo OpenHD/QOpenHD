@@ -259,29 +259,33 @@ BaseWidget {
                     card3textlower.visible = true;
                 }
             }
-
-            /*Item {
-                width: parent.width
-                height: 32
-                Text {
-                    text: qsTr("CTS:")
-                    color: "white"
-                    font.bold: true
-                    height: parent.height
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Text {
-                    text: "todo"//OpenHD.cts
-                    color: "white"
-                    font.bold: true
-                    height: parent.height
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.right: parent.right
-                    verticalAlignment: Text.AlignVCenter
-                }
-            }*/
+            Text {
+                //Layout.alignment: left
+                text: "TX error:"+_ohdSystemGround.total_tx_error_count
+                color: "white"
+                font.bold: true
+                height: parent.height
+                font.pixelSize: detailPanelFontPixels
+                verticalAlignment: Text.AlignVCenter
+            }
+            Text {
+                //Layout.alignment: left
+                text: "Blocks lost:"+_ohdSystemGround.video_rx_blocks_lost
+                color: "white"
+                font.bold: true
+                height: parent.height
+                font.pixelSize: detailPanelFontPixels
+                verticalAlignment: Text.AlignVCenter
+            }
+            Text {
+                //Layout.alignment: left
+                text: "Blocks recovered:"+_ohdSystemGround.video_rx_blocks_recovered;
+                color: "white"
+                font.bold: true
+                height: parent.height
+                font.pixelSize: detailPanelFontPixels
+                verticalAlignment: Text.AlignVCenter
+            }
         }
     }
 
