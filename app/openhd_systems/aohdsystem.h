@@ -11,7 +11,7 @@
 /**
  * This class contains information (basically like a model) about one OpenHD Air or Ground instance (if connected).
  * A (Abstract) because it is only for functionalities that are always supported by both air and ground.
- * For example, both the air and ground unit report the CPU usage and more, and this data has is made available to QT using a instance of this model.
+ * For example, both the air and ground unit report the CPU usage and more, and this data is made available to QT UI using a instance of this model.
  * NOTE: FC telemetry has nothing to do here, as well as air / ground specific things.
  * NOTE: In QOpenHD, there are 2 instances of this model, named "_ohdSystemGround" and "_ohdSystemAir" (registered in main)
  * They each correspond to the apropriate singleton instance (instanceGround() and instanceAir() )
@@ -24,9 +24,11 @@ public:
      static AOHDSystem& instanceAir();
      static AOHDSystem& instanceGround();
 private:
-     const bool _is_air; // either true (for air) or false (for )
+     const bool _is_air; // either true (for air) or false (for ground)
 public:
      // These are for handling the slight differences regarding air/ ground properly, if there are any
+     // For examle, the onboard computer status is the same when coming from either air or ground,
+     // but the stats total are to be interpreted slightly different for air and ground.
      void process_x0(const  mavlink_onboard_computer_status_t& msg);
      void process_x1(const mavlink_openhd_wifibroadcast_wifi_card_t& msg);
      void process_x2(const mavlink_openhd_stats_total_all_wifibroadcast_streams_t& msg);
