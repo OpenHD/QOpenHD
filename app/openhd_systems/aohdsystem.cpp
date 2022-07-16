@@ -21,6 +21,27 @@ AOHDSystem &AOHDSystem::instanceGround()
     return ground;
 }
 
+void AOHDSystem::process_x0(const mavlink_onboard_computer_status_t &msg)
+{
+    set_cpuload(msg.cpu_cores[0]);
+    set_temp(msg.temperature_core[0]);
+}
+
+void AOHDSystem::process_x1(const mavlink_openhd_wifibroadcast_wifi_card_t &msg)
+{
+
+}
+
+void AOHDSystem::process_x2(const mavlink_openhd_stats_total_all_wifibroadcast_streams_t &msg)
+{
+
+}
+
+void AOHDSystem::process_x3(const mavlink_openhd_fec_link_rx_statistics_t &msg)
+{
+
+}
+
 void AOHDSystem::set_cpuload(int cpuload) {
     m_cpuload = cpuload;
     emit cpuload_changed(m_cpuload);

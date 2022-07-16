@@ -25,6 +25,12 @@ public:
      static AOHDSystem& instanceGround();
 private:
      const bool _is_air; // either true (for air) or false (for )
+public:
+     // These are for handling the slight differences regarding air/ ground properly, if there are any
+     void process_x0(const  mavlink_onboard_computer_status_t& msg);
+     void process_x1(const mavlink_openhd_wifibroadcast_wifi_card_t& msg);
+     void process_x2(const mavlink_openhd_stats_total_all_wifibroadcast_streams_t& msg);
+     void process_x3(const mavlink_openhd_fec_link_rx_statistics_t& msg);
      // QT Code pegin
 public:
      Q_PROPERTY(int cpuload MEMBER m_cpuload WRITE set_cpuload NOTIFY cpuload_changed)
