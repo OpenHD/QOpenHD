@@ -11,7 +11,7 @@
 /**
  * This class contains information (basically like a model) about one OpenHD Air or Ground instance (if connected).
  * A (Abstract) because it is only for functionalities that are always supported by both air and ground.
- * For example, both the air and ground unit report the CPU usage and more, and this data has is made available to QT using a instance of this model.
+ * For example, both the air and ground unit report the CPU usage and more, and this data is made available to QT UI using a instance of this model.
  * NOTE: FC telemetry has nothing to do here, as well as air / ground specific things.
  * NOTE: In QOpenHD, there are 2 instances of this model, named "_ohdSystemGround" and "_ohdSystemAir" (registered in main)
  * They each correspond to the apropriate singleton instance (instanceGround() and instanceAir() )
@@ -24,7 +24,15 @@ public:
      static AOHDSystem& instanceAir();
      static AOHDSystem& instanceGround();
 private:
-     const bool _is_air; // either true (for air) or false (for )
+     const bool _is_air; // either true (for air) or false (for ground)
+public:
+     // These are for handling the slight differences regarding air/ ground properly, if there are any
+     // For examle, the onboard computer status is the same when coming from either air or ground,
+     // but the stats total are to be interpreted slightly different for air and ground.
+     void process_x0(const  mavlink_onboard_computer_status_t& msg);
+     void process_x1(const mavlink_openhd_wifibroadcast_wifi_card_t& msg);
+     void process_x2(const mavlink_openhd_stats_total_all_wifibroadcast_streams_t& msg);
+     void process_x3(const mavlink_openhd_fec_link_rx_statistics_t& msg);
      // QT Code pegin
 public:
      Q_PROPERTY(int cpuload MEMBER m_cpuload WRITE set_cpuload NOTIFY cpuload_changed)
@@ -62,6 +70,18 @@ public:
      // this is a placeholder for later
      Q_PROPERTY(QList<int> gpio MEMBER m_gpio WRITE set_gpio NOTIFY gpio_changed)
      void set_gpio(QList<int> gpio);
+     //
+     Q_PROPERTY(QString curr_incoming_bitrate MEMBER m_curr_incoming_bitrate WRITE set_curr_incoming_bitrate NOTIFY curr_incoming_bitrate_changed)
+     void set_curr_incoming_bitrate(QString curr_incoming_bitrate);
+     Q_PROPERTY(QString curr_outgoing_video_bitrate MEMBER m_curr_outgoing_video_bitrate WRITE set_curr_outgoing_video_bitrate NOTIFY curr_outgoing_video_bitrate_changed)
+     void set_curr_outgoing_video_bitrate(QString curr_outgoing_video_bitrate);
+     Q_PROPERTY(int total_tx_error_count MEMBER m_total_tx_error_count WRITE set_total_tx_error_count NOTIFY total_tx_error_count_changed)
+     void set_total_tx_error_count(int total_tx_error_count);
+     // these are only active on the ground system, since they are created by the video rx-es
+     Q_PROPERTY(int video_rx_blocks_lost MEMBER m_video_rx_blocks_lost WRITE set_video_rx_blocks_lost NOTIFY video_rx_blocks_lost_changed)
+     void set_video_rx_blocks_lost(int video_rx_blocks_lost);
+     Q_PROPERTY(int video_rx_blocks_recovered MEMBER m_video_rx_blocks_recovered WRITE set_video_rx_blocks_recovered NOTIFY video_rx_blocks_recovered_changed)
+     void set_video_rx_blocks_recovered(int video_rx_blocks_recovered);
 signals:
      void cpuload_changed(int cpuload);
      void temp_changed(int temp);
@@ -82,6 +102,12 @@ signals:
      void battery_gauge_changed(QString battery_gauge);
      //
      void gpio_changed(QList<int> gpio);
+     void curr_incoming_bitrate_changed(QString curr_incoming_bitrate);
+     void curr_outgoing_video_bitrate_changed(QString curr_outgoing_video_bitrate);
+     void total_tx_error_count_changed(int total_tx_error_count);
+     // only on ground
+     void video_rx_blocks_lost_changed(int video_rx_blocks_lost);
+     void video_rx_blocks_recovered_changed(int video_rx_blocks_recovered);
 private:
      int m_cpuload = 0;
      int m_temp = 0;
@@ -92,6 +118,10 @@ private:
      int m_best_rx_rssi = -127;
      int m_wifi_rx_packets_count=-1;
      int m_wifi_tx_packets_count=-1;
+     int m_total_tx_error_count=-1;
+     // only on ground
+     int m_video_rx_blocks_lost=-1;
+     int m_video_rx_blocks_recovered=-1;
      // air always has only 1 wfibroadcast card, ground can have more than one
      std::array<WifiAdapter,4> m_wifi_adapters;
      //
@@ -99,6 +129,9 @@ private:
      QString m_battery_gauge = "\uf091";
      //
      QList<int> m_gpio{0};
+     //
+     QString m_curr_incoming_bitrate="Bitrate NA";
+     QString m_curr_outgoing_video_bitrate="Bitrate NA";
 private:
     // Sets the alive boolean if no heartbeat / message has been received in the last X seconds
     QTimer* m_alive_timer = nullptr;
