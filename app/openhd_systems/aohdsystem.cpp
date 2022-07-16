@@ -140,6 +140,8 @@ void AOHDSystem::set_wifi_adapter(uint8_t index, unsigned int received_packet_co
         set_wifi_adapter2(received_packet_count,current_signal_dbm,signal_good);
     }else if(index==3){
         set_wifi_adapter3(received_packet_count,current_signal_dbm,signal_good);
+    }else{
+        qDebug()<<"wifi adapter error index unsuported:"<<index;
     }
     //qDebug()<<QString::fromStdString(m_wifi_adapters[0].to_string(0));
 }
