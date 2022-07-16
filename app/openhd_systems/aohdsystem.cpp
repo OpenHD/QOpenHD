@@ -1,5 +1,15 @@
 #include "aohdsystem.h"
 #include "../telemetry/qopenhdmavlinkhelper.hpp"
+#include <string>
+
+static std::string bitrate_to_string(uint64_t bits_per_second){
+  const double mBits_per_second=static_cast<double>(bits_per_second)/(1000*1000);
+  if(mBits_per_second>1){
+    return std::to_string(mBits_per_second)+"mBit/s";
+  }
+  const double kBits_per_second=static_cast<double>(bits_per_second)/1000;
+  return std::to_string(kBits_per_second)+"kBit/s";
+}
 
 AOHDSystem::AOHDSystem(const bool is_air,QObject *parent)
     : QObject{parent},_is_air(is_air)
@@ -140,6 +150,12 @@ void AOHDSystem::set_battery_gauge(QString battery_gauge) {
 void AOHDSystem::set_gpio(QList<int> gpio){
     m_gpio = gpio;
     emit gpio_changed(m_gpio);
+}
+
+void AOHDSystem::set_curr_incoming_bitrate(QString curr_incoming_bitrate)
+{
+    m_curr_incoming_bitrate=curr_incoming_bitrate;
+    emit curr_incoming_bitrate_changed(curr_incoming_bitrate);
 }
 void AOHDSystem::update_alive()
 {

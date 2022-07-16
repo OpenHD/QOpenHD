@@ -384,7 +384,7 @@ BaseWidget {
             // RX (Ground in) bitrate
             Text {
                 visible: settings.downlink_show_current_bitrate ? true : false
-                text: "XXX " + Number(_ohdSystemGround.wifi_rx_packets_count).toLocaleString(Qt.locale(), 'f', 0)+" mBit/s"
+                text: _ohdSystemGround.curr_incoming_bitrate
                 color: settings.color_text
                 verticalAlignment: Text.AlignVCenter
                 font.pixelSize: 12

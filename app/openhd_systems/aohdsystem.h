@@ -70,6 +70,9 @@ public:
      // this is a placeholder for later
      Q_PROPERTY(QList<int> gpio MEMBER m_gpio WRITE set_gpio NOTIFY gpio_changed)
      void set_gpio(QList<int> gpio);
+     //
+     Q_PROPERTY(QString curr_incoming_bitrate MEMBER m_curr_incoming_bitrate WRITE set_curr_incoming_bitrate NOTIFY curr_incoming_bitrate_changed)
+     void set_curr_incoming_bitrate(QString curr_incoming_bitrate);
 signals:
      void cpuload_changed(int cpuload);
      void temp_changed(int temp);
@@ -90,6 +93,7 @@ signals:
      void battery_gauge_changed(QString battery_gauge);
      //
      void gpio_changed(QList<int> gpio);
+     void curr_incoming_bitrate_changed(QString curr_incoming_bitrate);
 private:
      int m_cpuload = 0;
      int m_temp = 0;
@@ -107,6 +111,8 @@ private:
      QString m_battery_gauge = "\uf091";
      //
      QList<int> m_gpio{0};
+     //
+     QString m_curr_incoming_bitrate="Bitrate NA";
 private:
     // Sets the alive boolean if no heartbeat / message has been received in the last X seconds
     QTimer* m_alive_timer = nullptr;
