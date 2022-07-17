@@ -82,7 +82,7 @@ ls -a
 cp systemd/* /tmp/qopenhd/etc/systemd/system/ || exit 1
 cp qt.json /tmp/qopenhd/usr/local/share/openhd/ || exit 1
 
-VERSION="2.2-evo-$(date '+%m%d%H%M')-${VER2}"
+VERSION="2.2.0-evo-$(date '+%m%d%H%M')-${VER2}"
 
 rm ${PACKAGE_NAME}_${VERSION}_${PACKAGE_ARCH}.deb > /dev/null 2>&1
 ls -a
