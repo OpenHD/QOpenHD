@@ -98,7 +98,7 @@ BaseWidget {
                     id: roll_size_Slider
                     orientation: Qt.Horizontal
                     from: .5
-                    value: settings.downlink_rssi_opacity
+                    value: settings.roll_opacity
                     to: 3
                     stepSize: .1
                     height: parent.height

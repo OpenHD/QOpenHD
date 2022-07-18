@@ -22,6 +22,7 @@ BaseWidget {
     defaultVCenter: false
 
     hasWidgetDetail: true
+    hasWidgetAction: true
 
     widgetDetailComponent: ScrollView {
 
@@ -184,6 +185,34 @@ BaseWidget {
             }
         }
     }
+    widgetActionComponent: ScrollView{
+
+        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+        clip: true
+
+        ColumnLayout{
+            width:200
+
+            Text {
+                //Layout.alignment: left
+                text: "TX error:"+_ohdSystemAir.total_tx_error_count
+                color: "white"
+                font.bold: true
+                height: parent.height
+                font.pixelSize: detailPanelFontPixels
+                verticalAlignment: Text.AlignVCenter
+            }
+            Text {
+                //Layout.alignment: left
+                text: "Rx tele:"+_ohdSystemAir.curr_incoming_tele_bitrate;
+                color: "white"
+                font.bold: true
+                height: parent.height
+                font.pixelSize: detailPanelFontPixels
+                verticalAlignment: Text.AlignVCenter
+            }
+        }
+    }
 
     Item {
         id: widgetInner
@@ -248,52 +277,6 @@ BaseWidget {
             wrapMode: Text.NoWrap
             elide: Text.ElideNone
             clip: false
-            style: Text.Outline
-            styleColor: settings.color_glow
-        }
-
-        Text {
-            id: uplink_lost_packet_cnt_rc
-            width: 64
-            height: 24
-            color: settings.color_text
-            opacity: settings.uplink_rssi_opacity
-            text: "TODO"
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: 0
-            anchors.right: uplink_lost_packet_cnt_telemetry_up.left
-            anchors.rightMargin: 10
-            verticalAlignment: Text.AlignVCenter
-            font.pixelSize: 14
-            font.family: settings.font_text
-            horizontalAlignment: Text.AlignRight
-            wrapMode: Text.NoWrap
-            elide: Text.ElideNone
-            clip: false
-            visible: false
-            style: Text.Outline
-            styleColor: settings.color_glow
-        }
-
-        Text {
-            id: uplink_lost_packet_cnt_telemetry_up
-            width: 64
-            height: 24
-            color: settings.color_text
-            opacity: settings.uplink_rssi_opacity
-            text: "TODO"
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: 0
-            anchors.right: parent.right
-            anchors.rightMargin: 8
-            horizontalAlignment: Text.AlignLeft
-            font.pixelSize: 14
-            font.family: settings.font_text
-            verticalAlignment: Text.AlignVCenter
-            wrapMode: Text.NoWrap
-            elide: Text.ElideRight
-            clip: false
-            visible: false
             style: Text.Outline
             styleColor: settings.color_glow
         }

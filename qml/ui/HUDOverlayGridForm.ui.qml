@@ -128,9 +128,9 @@ Item {
     }
 
     // + 0% cpu
-    RcRSSIWidget {
-        id: rcRSSIWidget
-    }
+    //RcRSSIWidget {
+    //    id: rcRSSIWidget
+    //}
 
     // + 12% cpu
     HorizonWidget {

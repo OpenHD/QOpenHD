@@ -40,24 +40,6 @@ BaseWidget {
         Column {
             id: downrssiSettingsColumn
 
-
-            /*            Shape {
-                id: line2
-                height: 32
-                width: parent.width
-
-                ShapePath {
-                    strokeColor: "white"
-                    strokeWidth: 2
-                    strokeStyle: ShapePath.SolidLine
-                    fillColor: "transparent"
-                    startX: 0
-                    startY: line2.height / 2
-                    PathLine { x: 0;           y: line2.height / 2 }
-                    PathLine { x: line2.width; y: line2.height / 2 }
-                }
-            }
-*/
             Item {
                 width: parent.width
                 height: 32
