@@ -92,8 +92,6 @@ INCLUDEPATH += $$PWD/lib/GeographicLib-1.50/include
 SOURCES += \
     app/logging/logmessagesmodel.cpp \
     app/openhd_systems/aohdsystem.cpp \
-    app/openhd_systems/ohdsystemair.cpp \
-    app/openhd_systems/ohdsystemground.cpp \
     app/osd/headingladder.cpp \
     app/osd/horizonladder.cpp \
     app/osd/speedladder.cpp \
@@ -106,8 +104,6 @@ SOURCES += \
 HEADERS += \
     app/logging/logmessagesmodel.h \
     app/openhd_systems/aohdsystem.h \
-    app/openhd_systems/ohdsystemair.h \
-    app/openhd_systems/ohdsystemground.h \
     app/openhd_systems/wifiadapter.h \
     app/osd/headingladder.h \
     app/osd/horizonladder.h \
