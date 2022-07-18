@@ -7,7 +7,7 @@ import Qt.labs.settings 1.0
 import OpenHD 1.0
 
 BaseWidget {
-    id: uplinkRSSIWidget
+    id: linkUpRSSIWidget
     width: 112
     height: 24
 

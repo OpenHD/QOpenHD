@@ -12,7 +12,7 @@ import "../../ui/elements"
 import "../elements"
 
 BaseWidget {
-    id: downlinkRSSIWidget
+    id: linkDownRSSIWidget
     width: 112
     height: 24
 

@@ -118,12 +118,12 @@ Item {
     }
 
     // + 0% cpu
-    DownlinkRSSIWidget {
+    LinkDownRSSIWidget {
         id: downlink
     }
 
     // + 0% cpu
-    UplinkRSSIWidget {
+    LinkUpRSSIWidget {
         id: uplink
     }
 
