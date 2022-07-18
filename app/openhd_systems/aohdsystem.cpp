@@ -55,11 +55,13 @@ void AOHDSystem::process_x1(const mavlink_openhd_wifibroadcast_wifi_card_t &msg)
 void AOHDSystem::process_x2(const mavlink_openhd_stats_total_all_wifibroadcast_streams_t &msg)
 {
     {
+        set_curr_incoming_tele_bitrate(QString(bitrate_to_string(msg.curr_telemetry_rx_bps).c_str()));
         auto total_rx_bitrate=msg.curr_telemetry_rx_bps;
         if(!_is_air){
             // ground
             total_rx_bitrate+=msg.curr_video0_bps;
             total_rx_bitrate+=msg.curr_video1_bps;
+            set_curr_incoming_video_bitrate(QString(bitrate_to_string(msg.curr_video0_bps).c_str()));
         }
         const auto bitrate_string=bitrate_to_string(total_rx_bitrate);
         set_curr_incoming_bitrate(QString(bitrate_string.c_str()));
@@ -193,6 +195,18 @@ void AOHDSystem::set_curr_incoming_bitrate(QString curr_incoming_bitrate)
 {
     m_curr_incoming_bitrate=curr_incoming_bitrate;
     emit curr_incoming_bitrate_changed(curr_incoming_bitrate);
+}
+
+void AOHDSystem::set_curr_incoming_video_bitrate(QString curr_incoming_video_bitrate)
+{
+    m_curr_incoming_video_bitrate=curr_incoming_video_bitrate;
+    emit curr_incoming_video_bitrate_changed(curr_incoming_video_bitrate);
+}
+
+void AOHDSystem::set_curr_incoming_tele_bitrate(QString curr_incoming_tele_bitrate)
+{
+    m_curr_incoming_tele_bitrate=curr_incoming_tele_bitrate;
+    emit curr_incoming_tele_bitrate_changed(curr_incoming_tele_bitrate);
 }
 
 void AOHDSystem::set_curr_outgoing_video_bitrate(QString curr_outgoing_video_bitrate)

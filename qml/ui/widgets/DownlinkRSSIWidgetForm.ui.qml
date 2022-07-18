@@ -286,6 +286,24 @@ BaseWidget {
                 font.pixelSize: detailPanelFontPixels
                 verticalAlignment: Text.AlignVCenter
             }
+            Text {
+                //Layout.alignment: left
+                text: "Rx tele:"+_ohdSystemGround.curr_incoming_tele_bitrate;
+                color: "white"
+                font.bold: true
+                height: parent.height
+                font.pixelSize: detailPanelFontPixels
+                verticalAlignment: Text.AlignVCenter
+            }
+            Text {
+                //Layout.alignment: left
+                text: "Rx video:"+_ohdSystemGround.curr_incoming_video_bitrate;
+                color: "white"
+                font.bold: true
+                height: parent.height
+                font.pixelSize: detailPanelFontPixels
+                verticalAlignment: Text.AlignVCenter
+            }
         }
     }
 

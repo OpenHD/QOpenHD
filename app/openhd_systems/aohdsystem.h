@@ -73,6 +73,11 @@ public:
      //
      Q_PROPERTY(QString curr_incoming_bitrate MEMBER m_curr_incoming_bitrate WRITE set_curr_incoming_bitrate NOTIFY curr_incoming_bitrate_changed)
      void set_curr_incoming_bitrate(QString curr_incoming_bitrate);
+     Q_PROPERTY(QString curr_incoming_video_bitrate MEMBER m_curr_incoming_video_bitrate WRITE set_curr_incoming_video_bitrate NOTIFY curr_incoming_video_bitrate_changed)
+     void set_curr_incoming_video_bitrate(QString curr_incoming_video_bitrate);
+     Q_PROPERTY(QString curr_incoming_tele_bitrate MEMBER m_curr_incoming_tele_bitrate WRITE set_curr_incoming_tele_bitrate NOTIFY curr_incoming_tele_bitrate_changed)
+     void set_curr_incoming_tele_bitrate(QString curr_incoming_tele_bitrate);
+     //
      Q_PROPERTY(QString curr_outgoing_video_bitrate MEMBER m_curr_outgoing_video_bitrate WRITE set_curr_outgoing_video_bitrate NOTIFY curr_outgoing_video_bitrate_changed)
      void set_curr_outgoing_video_bitrate(QString curr_outgoing_video_bitrate);
      Q_PROPERTY(int total_tx_error_count MEMBER m_total_tx_error_count WRITE set_total_tx_error_count NOTIFY total_tx_error_count_changed)
@@ -103,6 +108,9 @@ signals:
      //
      void gpio_changed(QList<int> gpio);
      void curr_incoming_bitrate_changed(QString curr_incoming_bitrate);
+     void curr_incoming_video_bitrate_changed(QString curr_incoming_video_bitrate);
+     void curr_incoming_tele_bitrate_changed(QString curr_incoming_tele_bitrate);
+
      void curr_outgoing_video_bitrate_changed(QString curr_outgoing_video_bitrate);
      void total_tx_error_count_changed(int total_tx_error_count);
      // only on ground
@@ -131,6 +139,8 @@ private:
      QList<int> m_gpio{0};
      //
      QString m_curr_incoming_bitrate="Bitrate NA";
+     QString m_curr_incoming_video_bitrate="Bitrate NA";
+     QString m_curr_incoming_tele_bitrate="Bitrate NA";
      QString m_curr_outgoing_video_bitrate="Bitrate NA";
 private:
     // Sets the alive boolean if no heartbeat / message has been received in the last X seconds
