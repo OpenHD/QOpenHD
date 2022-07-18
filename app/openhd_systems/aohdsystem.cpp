@@ -54,6 +54,7 @@ void AOHDSystem::process_x1(const mavlink_openhd_wifibroadcast_wifi_card_t &msg)
 
 void AOHDSystem::process_x2(const mavlink_openhd_stats_total_all_wifibroadcast_streams_t &msg)
 {
+    m_last_message_openhd_stats_total_all_wifibroadcast_streams=std::chrono::steady_clock::now();
     {
         set_curr_incoming_tele_bitrate(QString(bitrate_to_string(msg.curr_telemetry_rx_bps).c_str()));
         auto total_rx_bitrate=msg.curr_telemetry_rx_bps;
@@ -243,6 +244,16 @@ void AOHDSystem::update_alive()
             set_is_alive(false);
         }else{
             set_is_alive(true);
+        }
+    }
+    {
+        // If we don't get any bitrate updates, after 5 seconds go back to default
+        const auto delta=std::chrono::steady_clock::now()-m_last_message_openhd_stats_total_all_wifibroadcast_streams;
+        if(delta>std::chrono::seconds(5)){
+            set_curr_incoming_bitrate("Bitrate NA");
+            set_curr_incoming_tele_bitrate("Bitrate NA");
+            set_curr_incoming_video_bitrate("Bitrate NA");
+            set_curr_outgoing_video_bitrate("Bitrate NA");
         }
     }
 }
