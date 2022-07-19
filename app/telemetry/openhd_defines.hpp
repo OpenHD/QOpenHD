@@ -17,8 +17,9 @@ static constexpr auto OHD_GROUND_CLIENT_UDP_PORT_IN = 14551;
 //static constexpr auto OHD_GROUND_CLIENT_UDP_PORT_IN=58302;
 //}
 
-static constexpr auto OHD_COMP_ID_AIR_CAMERA=192;
-static constexpr auto OHD_COMP_ID_LINK_PARAM=100;
+// MAV_COMP_ID_CAMERA=100
+static constexpr auto OHD_COMP_ID_AIR_CAMERA=100;
+static constexpr auto OHD_COMP_ID_LINK_PARAM=192;
 
 
 #endif // OPENHD_DEFINES_H

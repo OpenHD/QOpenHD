@@ -76,7 +76,7 @@ Rectangle {
         Button {
             height: 48
             id: fetchAllButtonId
-            text:"FetchAllAir"
+            text:"FetchAll Camera"
             onClicked: {
                 var result=_airCameraSettingsModel.try_fetch_all_parameters()
                 /*visible=false;

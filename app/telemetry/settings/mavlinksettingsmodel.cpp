@@ -37,7 +37,7 @@ void MavlinkSettingsModel::set_param_client(std::shared_ptr<mavsdk::System> syst
     // only allow adding the param client once it is discovered, do not overwrite it once discovered.
     assert(this->param_client==nullptr);
     assert(system->get_system_id()==_sys_id);
-    auto param_client1=std::make_shared<mavsdk::Param>(system);//,100,true);
+    auto param_client1=std::make_shared<mavsdk::Param>(system,_comp_id,true);
     this->param_client=param_client1;
     auto params=param_client1->get_all_params();
     qDebug()<<"Got int params:"<<params.int_params.size();

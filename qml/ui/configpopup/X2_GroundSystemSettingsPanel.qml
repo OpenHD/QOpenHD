@@ -76,7 +76,7 @@ Rectangle {
         Button {
             height: 48
             id: fetchAllButtonId
-            text:"FetchAllGround"
+            text:"FetchAll Ground"
             onClicked: {
                 var result=_groundPiSettingsModel.try_fetch_all_parameters()
                 /*visible=false;
