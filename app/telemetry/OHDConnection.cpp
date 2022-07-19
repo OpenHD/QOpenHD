@@ -84,7 +84,7 @@ void OHDConnection::onNewSystem(std::shared_ptr<mavsdk::System> system){
             //qDebug()<<"Intercept:send message"<<msg.msgid;
             return true;
         });
-        paramOhdGround=std::make_shared<mavsdk::Param>(system,192,true);
+        paramOhdGround=std::make_shared<mavsdk::Param>(system);//,192,true);
         // MAV_COMP_ID_ONBOARD_COMPUTER2=192
         MavlinkSettingsModel::instanceGround().set_param_client(paramOhdGround);
         /*system->register_component_discovered_id_callback([](mavsdk::System::ComponentType comp_type, uint8_t comp_id){
@@ -93,7 +93,7 @@ void OHDConnection::onNewSystem(std::shared_ptr<mavsdk::System> system){
     }else if(system->get_system_id()==OHD_SYS_ID_AIR){
         qDebug()<<"Found OHD AIR station";
         systemOhdAir=system;
-        paramOhdAir=std::make_shared<mavsdk::Param>(system,100,true);
+        paramOhdAir=std::make_shared<mavsdk::Param>(system);//,100,true);
         // 100 is camera0
         MavlinkSettingsModel::instanceAir().set_param_client(paramOhdAir);
 
