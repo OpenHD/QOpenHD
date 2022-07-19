@@ -107,9 +107,6 @@ public:
     std::shared_ptr<mavsdk::System> systemOhdGround;
     std::shared_ptr<mavsdk::System> systemOhdAir;
     std::shared_ptr<mavsdk::MavlinkPassthrough> passtroughOhdGround;
-    //std::shared_ptr<mavsdk::C
-    std::shared_ptr<mavsdk::Param> paramOhdGround;
-    std::shared_ptr<mavsdk::Param> paramOhdAir;
     std::shared_ptr<mavsdk::Telemetry> telemetryFC;
     #endif //X_USE_MAVSDK
 private slots:

@@ -19,15 +19,18 @@ class MavlinkSettingsModel : public QAbstractListModel
 {
     Q_OBJECT
 public:
-    // R.N we have one instance for the air system (comp id camera0)
+    // R.N we have one instance for the camera (system air and comp_id==camera0)
+    // and one instance each for air and ground that does the rest (mostly interface)
+    static MavlinkSettingsModel& instanceAirCamera();
+    // general, air (mostly link)
     static MavlinkSettingsModel& instanceAir();
-    // and one instance for the ground system
+    // general, ground (mostly link)
     static MavlinkSettingsModel& instanceGround();
 
-    explicit MavlinkSettingsModel(QObject *parent = nullptr);
+    explicit MavlinkSettingsModel(uint8_t sys_id,uint8_t comp_id,QObject *parent = nullptr);
 #ifdef X_USE_MAVSDK
 public:
-    void set_param_client(std::shared_ptr<mavsdk::Param> param_client);
+    void set_param_client(std::shared_ptr<mavsdk::System> system);
 private:
     std::shared_ptr<mavsdk::Param> param_client;
 #endif
@@ -55,6 +58,8 @@ public slots:
     void addData(MavlinkSettingsModel::SettingData data);
 private:
     QVector<MavlinkSettingsModel::SettingData> m_data;
+    const uint8_t _sys_id;
+    const uint8_t _comp_id;
 };
 
 #endif // MavlinkSettingsModel_H

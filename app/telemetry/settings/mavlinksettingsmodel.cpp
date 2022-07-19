@@ -1,21 +1,28 @@
 #include "mavlinksettingsmodel.h"
 #include "qdebug.h"
+#include "../openhd_defines.hpp"
 
 #include <QVariant>
 
+MavlinkSettingsModel &MavlinkSettingsModel::instanceAirCamera()
+{
+    static MavlinkSettingsModel* instanceAirCamera=new MavlinkSettingsModel(OHD_SYS_ID_AIR,OHD_COMP_ID_AIR_CAMERA);
+    return *instanceAirCamera;
+}
+
 MavlinkSettingsModel &MavlinkSettingsModel::instanceAir()
 {
-    static MavlinkSettingsModel* instanceAir=new MavlinkSettingsModel();
+    static MavlinkSettingsModel* instanceAir=new MavlinkSettingsModel(OHD_SYS_ID_AIR,OHD_COMP_ID_LINK_PARAM);
     return *instanceAir;
 }
 MavlinkSettingsModel &MavlinkSettingsModel::instanceGround()
 {
-    static MavlinkSettingsModel* instanceGround=new MavlinkSettingsModel();
+    static MavlinkSettingsModel* instanceGround=new MavlinkSettingsModel(OHD_SYS_ID_GROUND,OHD_COMP_ID_LINK_PARAM);
     return *instanceGround;
 }
 
-MavlinkSettingsModel::MavlinkSettingsModel(QObject *parent)
-    : QAbstractListModel(parent)
+MavlinkSettingsModel::MavlinkSettingsModel(uint8_t sys_id,uint8_t comp_id,QObject *parent)
+    : QAbstractListModel(parent),_sys_id(sys_id),_comp_id(comp_id)
 {
 #ifndef X_USE_MAVSDK
     m_data.push_back({"VIDEO_WIDTH",0});
@@ -25,10 +32,12 @@ MavlinkSettingsModel::MavlinkSettingsModel(QObject *parent)
 }
 
 #ifdef X_USE_MAVSDK
-void MavlinkSettingsModel::set_param_client(std::shared_ptr<mavsdk::Param> param_client1)
+void MavlinkSettingsModel::set_param_client(std::shared_ptr<mavsdk::System> system)
 {
     // only allow adding the param client once it is discovered, do not overwrite it once discovered.
     assert(this->param_client==nullptr);
+    assert(system->get_system_id()==_sys_id);
+    auto param_client1=std::make_shared<mavsdk::Param>(system);//,100,true);
     this->param_client=param_client1;
     auto params=param_client1->get_all_params();
     qDebug()<<"Got int params:"<<params.int_params.size();

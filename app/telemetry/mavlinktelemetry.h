@@ -86,7 +86,6 @@ private:
     int pingSequenceNumber=0;
 public:
      Q_INVOKABLE void pingAllSystems();
-     Q_INVOKABLE void requestAllParameters();
     // one shot, result not quaranteed
     Q_INVOKABLE void request_openhd_version(){
         mOHDConnection->request_openhd_version();

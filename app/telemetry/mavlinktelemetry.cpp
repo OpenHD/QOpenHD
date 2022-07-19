@@ -826,29 +826,3 @@ void MavlinkTelemetry::set_last_vfr(qint64 last_vfr) {
     emit last_vfr_changed(m_last_vfr);
 }
 
-void MavlinkTelemetry::requestAllParameters()
-{
-#ifdef X_USE_MAVSDK
-    if(mOHDConnection->paramOhdGround==nullptr){
-        return;
-    }
-    qDebug()<<"MavlinkTelemetry::requestAllParameters()";
-    {
-        // request all parameters
-         const auto result=mOHDConnection->paramOhdGround->get_all_params();
-         std::stringstream ss;
-         ss<<"Get all:"<<result;
-         qDebug()<<ss.str().c_str();
-    }
-    {
-        // request specific
-        //const auto customParam=mOHDConnection->paramOhdGround->get_param_int("OHD_UART_BAUD");
-        //const auto customParam=mOHDConnection->paramOhdGround->get_param_int("OHD_UART_NAME");
-        const auto customParam=mOHDConnection->paramOhdGround->get_param_custom("OHD_UART_NAME");
-        std::stringstream ss;
-        ss<<"Get specific: "<<customParam.first<<":"<<customParam.second;
-        qDebug()<<ss.str().c_str();
-    }
-#endif //X_USE_MAVSDK
-}
-
