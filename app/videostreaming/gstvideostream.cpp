@@ -115,6 +115,8 @@ static std::string constructGstreamerPipeline(const QOpenHDVideoHelper::VideoTes
     // add video decoder
     ss<<gst_create_video_decoder(videoCodec,force_sw);
 
+    ss<<"! videoconvert n-threads=2 ! queue ! video/x-raw,fromat=RGBA !";
+
     ss << " glupload ! glcolorconvert !";
     ss << " qmlglsink name=qmlglsink sync=false";
 
@@ -183,6 +185,8 @@ static gboolean PipelineCb(GstBus *bus, GstMessage *msg, gpointer data) {
             break;
         }
         case GST_MESSAGE_TAG:{
+            //GstTagList* gstTagList;
+            //gst_message_parse_tag(msg,&gstTagList);
             break;
         }
         case GST_MESSAGE_BUFFERING:{
