@@ -22,8 +22,6 @@
 #include "qopenhdmavlinkhelper.hpp"
 
 #include "openhd.h"
-#include "openhd_systems/ohdsystemair.h"
-#include "openhd_systems/ohdsystemground.h"
 #include "openhd_systems/aohdsystem.h"
 
 MavlinkTelemetry* MavlinkTelemetry::instance() {

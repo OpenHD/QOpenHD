@@ -15,8 +15,6 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "rc/openhdrc.h"
 #include "platform/openhdpi.h"
 #include "openhd.h"
-#include "openhd_systems/ohdsystemair.h"
-#include "openhd_systems/ohdsystemground.h"
 #include "openhd_systems/aohdsystem.h"
 #include "../app/telemetry/mavlinktelemetry.h"
 
