@@ -115,7 +115,7 @@ static std::string constructGstreamerPipeline(const QOpenHDVideoHelper::VideoTes
     // add video decoder
     ss<<gst_create_video_decoder(videoCodec,force_sw);
 
-    ss<<" videoconvert n-threads=2 ! queue ! video/x-raw,fromat=RGBA !";
+    ss<<" videoconvert n-threads=2 ! queue ! video/x-raw,format=RGBA !";
 
     ss << " glupload ! glcolorconvert !";
     ss << " qmlglsink name=qmlglsink sync=false";
