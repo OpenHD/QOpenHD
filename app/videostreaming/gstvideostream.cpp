@@ -99,7 +99,7 @@ static std::string constructGstreamerPipeline(const QOpenHDVideoHelper::VideoTes
     std::stringstream ss;
     if(dev_test_video_mode==QOpenHDVideoHelper::VideoTestMode::RAW_VIDEO){
         ss << "videotestsrc pattern=smpte ! ";
-        ss << "video/x-raw,width=640,height=480 ! ";
+        ss << "video/x-raw,format=RGBA,width=640,height=480 ! ";
         ss << "queue ! ";
         ss << "glupload ! glcolorconvert ! ";
         ss << "qmlglsink name=qmlglsink sync=false";

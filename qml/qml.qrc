@@ -213,5 +213,6 @@
         <file>ui/configpopup/LogMessagesStatusView.qml</file>
         <file>ui/configpopup/OHDComponentSettings.qml</file>
         <file>ui/configpopup/X2_GroundSystemSettingsPanel.qml</file>
+        <file>ui/configpopup/X0_AirCameraSettingsPanel.qml</file>
     </qresource>
 </RCC>

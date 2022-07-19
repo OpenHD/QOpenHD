@@ -24,7 +24,10 @@ Item {
           id: selectItemInStackLayoutBar
           width: parent.width
           TabButton {
-              text: qsTr("Air/Camera")
+              text: qsTr("Air Camera")
+          }
+          TabButton {
+              text: qsTr("Air (TMP)")
           }
           TabButton {
               text: qsTr("Ground (TMP)")
@@ -38,6 +41,9 @@ Item {
           anchors.top: selectItemInStackLayoutBar.bottom
           //top: bar.bottom
           currentIndex: selectItemInStackLayoutBar.currentIndex
+          X0_AirCameraSettingsPanel{
+              id: x0_AirCameraSettingsPanel
+          }
           X1_AirSystemSettingsPanel{
               id: x1_AirSystemSettingsPanel
           }
