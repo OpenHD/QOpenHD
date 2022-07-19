@@ -153,13 +153,20 @@ void GstVideoStream::init(QQuickItem* videoOutputWindow,bool primaryStream) {
 
 static gboolean PipelineCb(GstBus *bus, GstMessage *msg, gpointer data) {
     auto instance = static_cast<GstVideoStream*>(data);
-
+    qDebug()<<"PipelineCb"<<QString(GST_MESSAGE_TYPE_NAME(msg));
     switch (GST_MESSAGE_TYPE(msg)){
     case GST_MESSAGE_EOS:{
             break;
         }
-        case GST_MESSAGE_ERROR:{
-            break;
+        case GST_MESSAGE_ERROR: {
+          gchar  *debug;
+          GError *error;
+          gst_message_parse_error (msg, &error, &debug);
+          g_free (debug);
+          qDebug()<<"Error:"<<QString(error->message);
+          g_printerr ("Error: %s\n", error->message);
+          g_error_free (error);
+          break;
         }
         case GST_MESSAGE_WARNING:{
             break;
@@ -198,6 +205,29 @@ static gboolean PipelineCb(GstBus *bus, GstMessage *msg, gpointer data) {
     return TRUE;
 }
 
+// https://gstreamer.freedesktop.org/documentation/application-development/basics/helloworld.html?gi-language=c
+static gboolean bus_call (GstBus *bus,GstMessage *msg,gpointer data){
+  qDebug()<<"bus_call"<<QString(GST_MESSAGE_TYPE_NAME(msg));
+  switch (GST_MESSAGE_TYPE (msg)) {
+    case GST_MESSAGE_EOS:
+      qDebug()<<"End of stream\n";
+      break;
+    case GST_MESSAGE_ERROR: {
+      gchar  *debug;
+      GError *error;
+      gst_message_parse_error (msg, &error, &debug);
+      g_free (debug);
+      qDebug()<<"Error:"<<QString(error->message);
+      g_printerr ("Error: %s\n", error->message);
+      g_error_free (error);
+      break;
+    }
+    default:
+      break;
+  }
+  return TRUE;
+}
+
 
 void GstVideoStream::startVideo() {
     if(m_pipeline!=nullptr){
@@ -218,7 +248,9 @@ void GstVideoStream::startVideo() {
 
     GstBus *bus = gst_pipeline_get_bus (GST_PIPELINE(m_pipeline));
     gst_bus_add_signal_watch(bus);
+    auto bus_watch_id = gst_bus_add_watch (bus, bus_call,this);
     g_signal_connect(bus, "message", (GCallback)PipelineCb, this);
+    gst_object_unref (bus);
 
     /*
      * When the app first launches we have to wait for the QML element to be ready before the pipeline
