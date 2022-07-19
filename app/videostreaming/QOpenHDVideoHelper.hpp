@@ -103,7 +103,7 @@ static std::string create_debug_encoded_data_producer(const QOpenHDVideoHelper::
         ss<<"x265enc bitrate=5000 tune=zerolatency key-int-max=10 ! ";
         ss<<"rtph265pay mtu=1024 ! ";
     }else{
-        ss<<"jpegenc !";
+        ss<<"jpegenc ! ";
         ss << "rtpjpegpay mtu=1024 ! ";
     }
     ss<<"queue ! ";

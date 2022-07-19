@@ -6,6 +6,9 @@
 #include <QTimer>
 
 /**
+ * NOTE: This class slowly has / is becoming the "Flight controller" (only) mavlink model, most of the OpenHD stuff has been refactored out here.
+ * However, renaming this model to "_fcModel" (rename "OpenHD" to "_fcModel" is a tedious task for one hour ;) so not done yet.
+ *
  * So this is basically a really big "model" and a small "controller" (in MVC pattern) class.
  * While I'd like someone refactoring it (and it should probably reside in telemetry or at least be seperated into telemetry and non-telemetry stuff)
  * since all the UI elements and their java script code use this class that's not feasible rn.

@@ -61,7 +61,9 @@ static std::string gst_create_always_software_decoder(const QOpenHDVideoHelper::
             ss<<"avdec_h265 ! ";
         }break;
         case QOpenHDVideoHelper::VideoCodecMJPEG:{
-            ss<<"avdec_mjpeg ! ";
+            // avdec_jpeg seems to not exist on some hardware
+            //ss<<"avdec_mjpeg ! ";
+            ss<<"decodebin force-sw-decoders=true ! ";
         }break;
         default:assert(true);
         }
@@ -69,16 +71,14 @@ static std::string gst_create_always_software_decoder(const QOpenHDVideoHelper::
 }
 
 static std::string gst_create_video_decoder(const QOpenHDVideoHelper::VideoCodec& videoCodec,bool force_sw){
+    if(force_sw){
+        return gst_create_always_software_decoder(videoCodec);
+    }
     std::stringstream ss;
     // NOTE: force sw only has an effect on when decodebin does hw automatically, and on h264
     if(videoCodec==QOpenHDVideoHelper::VideoCodecH264){
-        //NOTE: decodebin on rpi for h264 doesn't work ???!!
-        if(force_sw){
-            ss<<"avdec_h264 ! queue ! ";
-        }else{
-            ss<<" h264parse ! ";
-            ss<<"decodebin ! ";
-        }
+        //NOTE: decodebin on rpi for h264 only worked after we updated the kernel.
+        ss<<"decodebin ! ";
     }else if(videoCodec==QOpenHDVideoHelper::VideoCodecH265){
         ss<<"decodebin ! ";
     }else{
@@ -115,7 +115,7 @@ static std::string constructGstreamerPipeline(const QOpenHDVideoHelper::VideoTes
     // add video decoder
     ss<<gst_create_video_decoder(videoCodec,force_sw);
 
-    ss<<" videoconvert n-threads=2 ! queue ! video/x-raw,format=RGBA !";
+    //ss<<" videoconvert n-threads=2 ! queue ! video/x-raw,format=RGBA !";
 
     ss << " glupload ! glcolorconvert !";
     ss << " qmlglsink name=qmlglsink sync=false";
@@ -156,7 +156,7 @@ void GstVideoStream::init(QQuickItem* videoOutputWindow,bool primaryStream) {
 
 static gboolean PipelineCb(GstBus *bus, GstMessage *msg, gpointer data) {
     auto instance = static_cast<GstVideoStream*>(data);
-    qDebug()<<"PipelineCb"<<QString(GST_MESSAGE_TYPE_NAME(msg));
+    //qDebug()<<"PipelineCb"<<QString(GST_MESSAGE_TYPE_NAME(msg));
     switch (GST_MESSAGE_TYPE(msg)){
     case GST_MESSAGE_EOS:{
             break;
@@ -256,13 +256,13 @@ void GstVideoStream::startVideo() {
         qDebug() << "gst_parse_launch error: " << error->message;
     }
 
-    link_gstreamer_pipe_to_qt_window(m_pipeline,m_videoOutputWindow);
-
     GstBus *bus = gst_pipeline_get_bus (GST_PIPELINE(m_pipeline));
     gst_bus_add_signal_watch(bus);
     auto bus_watch_id = gst_bus_add_watch (bus, bus_call,this);
     g_signal_connect(bus, "message", (GCallback)PipelineCb, this);
     gst_object_unref (bus);
+
+    link_gstreamer_pipe_to_qt_window(m_pipeline,m_videoOutputWindow);
 
     /*
      * When the app first launches we have to wait for the QML element to be ready before the pipeline
