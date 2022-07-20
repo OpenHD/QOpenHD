@@ -22,7 +22,11 @@ jobs:
         sudo bash install_dep_extra.sh
     - name: Build with make
       run: |
-        sudo ./package.sh x86 ubuntu bionic
+        curl -1sLf \
+        'https://dl.cloudsmith.io/public/openhd/openhd-2-2-evo/setup.deb.sh' \
+        | sudo -E bash
+        sudo apt install -y mavsdk
+        sudo ./package.sh x86 ubuntu focal
 
     - name: Push
       id: push
