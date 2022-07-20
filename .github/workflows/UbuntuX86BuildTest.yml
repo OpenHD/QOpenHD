@@ -26,7 +26,7 @@ jobs:
         'https://dl.cloudsmith.io/public/openhd/openhd-2-2-evo/setup.deb.sh' \
         | sudo -E bash
         sudo apt install -y mavsdk
-        sudo ./package.sh x86 ubuntu focal
+        sudo ./package.sh x86_64 ubuntu focal
 
     - name: Push
       id: push

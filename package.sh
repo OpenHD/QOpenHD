@@ -66,7 +66,7 @@ ls /opt
 VER2=$(git rev-parse --short HEAD)
 
 
-if [[ "${PACKAGE_ARCH}" == x86 ]]; then
+if [[ "${PACKAGE_ARCH}" == x86_64 ]]; then
     qmake
 else
     /opt/Qt5.15.4/bin/qmake  
