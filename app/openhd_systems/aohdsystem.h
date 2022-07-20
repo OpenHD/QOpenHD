@@ -149,9 +149,6 @@ private:
     std::chrono::steady_clock::time_point m_last_message_openhd_stats_total_all_wifibroadcast_streams=std::chrono::steady_clock::now();
 };
 
-inline void AOHDSystem::set_wifi_tx_packets_count(int wifi_tx_packets_count){
-    m_wifi_tx_packets_count=wifi_tx_packets_count;
-    emit wifi_tx_packets_count_changed(wifi_tx_packets_count);
-}
+
 
 #endif // AOHDSYSTEM_H

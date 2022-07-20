@@ -125,6 +125,7 @@ Rectangle {
                     anchors.bottomMargin: 6
                     font.pixelSize: 14
                     font.capitalization: Font.MixedCase
+                    enabled: _ohdSystemAir.is_alive
 
                     onPressed: {
                         powerAction = PowerPanel.PowerAction.RebootAir
@@ -136,6 +137,7 @@ Rectangle {
                     id: airShutdown
                     width: 96
                     height: 48
+                    text: qsTr("Shutdown")
                     anchors.right: parent.right
                     anchors.rightMargin: 12
                     anchors.bottom: parent.bottom
@@ -144,8 +146,7 @@ Rectangle {
                     font.capitalization: Font.MixedCase
                     Material.accent: Material.Red
                     highlighted: true
-
-                    text: qsTr("Shutdown")
+                    enabled: _ohdSystemAir.is_alive
 
                     onPressed: {
                         powerAction = PowerPanel.PowerAction.ShutdownAir
@@ -277,6 +278,7 @@ Rectangle {
                     anchors.bottomMargin: 6
                     font.pixelSize: 14
                     font.capitalization: Font.MixedCase
+                    enabled: _ohdSystemGround.is_alive
 
                     onPressed: {
                         powerAction = PowerPanel.PowerAction.RebootGround
@@ -288,6 +290,7 @@ Rectangle {
                     id: groundShutdown
                     width: 96
                     height: 48
+                    text: qsTr("Shutdown")
                     anchors.right: parent.right
                     anchors.rightMargin: 12
                     anchors.bottom: parent.bottom
@@ -296,8 +299,7 @@ Rectangle {
                     font.capitalization: Font.MixedCase
                     Material.accent: Material.Red
                     highlighted: true
-
-                    text: qsTr("Shutdown")
+                    enabled: _ohdSystemGround.is_alive
 
                     onPressed: {
                         powerAction = PowerPanel.PowerAction.ShutdownGround

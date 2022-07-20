@@ -126,6 +126,9 @@ public:
     // send a command, to all connected systems
     // doesn't reatransmitt
     void send_command_long_oneshot(const mavlink_command_long_t& command);
+    // also doesn't retransmitt
+    void send_command_reboot(const uint8_t sys_id,bool reboot);
+    void send_command_ohd_reboot(bool air,bool reboot);
 };
 
 #endif // OHDMAVLINKCONNECTION_H

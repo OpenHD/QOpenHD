@@ -738,6 +738,11 @@ void MavlinkTelemetry::pingAllSystems()
     sendData(msg);
 }
 
+void MavlinkTelemetry::send_command_openhd_reboot(bool air, bool reboot)
+{
+   mOHDConnection->send_command_ohd_reboot(air,reboot);
+}
+
 void MavlinkTelemetry::setDataStreamRate(MAV_DATA_STREAM streamType, uint8_t hz) {
     auto mavlink_sysid= QOpenHDMavlinkHelper::getSysId();
     mavlink_message_t msg;

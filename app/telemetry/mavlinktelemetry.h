@@ -90,6 +90,7 @@ public:
     Q_INVOKABLE void request_openhd_version(){
         mOHDConnection->request_openhd_version();
     }
+    Q_INVOKABLE void send_command_openhd_reboot(bool air,bool reboot);
 public:
     std::unique_ptr<OHDConnection> mOHDConnection;
     void sendData(mavlink_message_t msg);

@@ -257,3 +257,8 @@ void AOHDSystem::update_alive()
         }
     }
 }
+
+void AOHDSystem::set_wifi_tx_packets_count(int wifi_tx_packets_count){
+    m_wifi_tx_packets_count=wifi_tx_packets_count;
+    emit wifi_tx_packets_count_changed(wifi_tx_packets_count);
+}
