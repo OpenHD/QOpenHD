@@ -58,7 +58,7 @@ bool MavlinkSettingsModel::try_fetch_all_parameters()
         }
         qDebug()<<"Done removing old params";
         // now fetch all params using mavsdk (this talks to the OHD system(s).
-        const auto params=param_client->get_all_params();
+        const auto params=param_client->get_all_params(true);
         for(const auto& int_param:params.int_params){
             MavlinkSettingsModel::SettingData data{QString(int_param.name.c_str()),int_param.value};
             addData(data);
