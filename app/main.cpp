@@ -68,6 +68,7 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 
 #include "logging/logmessagesmodel.h"
 #include "telemetry/settings/mavlinksettingsmodel.h"
+#include "telemetry/settings/synchronizedsettings.h"
 #include "qopenhd.h"
 
 // SDL hack
@@ -299,6 +300,7 @@ int main(int argc, char *argv[]) {
     engine.rootContext()->setContextProperty("_airCameraSettingsModel", &MavlinkSettingsModel::instanceAirCamera());
     engine.rootContext()->setContextProperty("_airPiSettingsModel", &MavlinkSettingsModel::instanceAir());
     engine.rootContext()->setContextProperty("_groundPiSettingsModel", &MavlinkSettingsModel::instanceGround());
+    engine.rootContext()->setContextProperty("_synchronizedSettings", &SynchronizedSettings::instance());
 
 #if defined(ENABLE_GSTREAMER)
 #if defined(ENABLE_MAIN_VIDEO)

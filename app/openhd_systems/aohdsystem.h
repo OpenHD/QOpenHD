@@ -116,6 +116,8 @@ signals:
      // only on ground
      void video_rx_blocks_lost_changed(int video_rx_blocks_lost);
      void video_rx_blocks_recovered_changed(int video_rx_blocks_recovered);
+public:
+     bool is_alive(){return m_is_alive;}
 private:
      int m_cpuload = 0;
      int m_temp = 0;

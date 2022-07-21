@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QAbstractListModel>
+#include <map>
 
 #ifndef X_USE_MAVSDK
 #define X_USE_MAVSDK
@@ -13,8 +14,10 @@
 #include <mavsdk/plugins/param/param.h>
 #endif //X_USE_MAVSDK
 
-// A qt wrapper around the mavlink extended / non-extended parameters protocoll.
-// Each settings component the user wants to change requires a new instance of this class.
+// A qt wrapper around the mavlink extended / non-extended parameters protocoll on the client
+// (the side that changes parameter(s) provided by a specific system & component).
+// For each of these components, you can use an instance of this class - see the singletons below for
+// current OpenHD mavlink settings components.
 class MavlinkSettingsModel : public QAbstractListModel
 {
     Q_OBJECT
@@ -27,6 +30,10 @@ public:
     // general, ground (mostly link)
     static MavlinkSettingsModel& instanceGround();
 
+    // parameters that need to be synchronized are white-listed
+    static std::map<std::string,void*> get_whitelisted_params();
+    bool is_param_whitelisted(const std::string param_id);
+
     explicit MavlinkSettingsModel(uint8_t sys_id,uint8_t comp_id,QObject *parent = nullptr);
 #ifdef X_USE_MAVSDK
 public:
@@ -37,9 +44,9 @@ private:
 public:
     Q_INVOKABLE bool try_fetch_all_parameters();
 
-    Q_INVOKABLE void try_fetch_parameter(QString param_id);
+    Q_INVOKABLE bool try_fetch_parameter(QString param_id);
 
-    Q_INVOKABLE void try_update_parameter(const QString param_id,QVariant value);
+    Q_INVOKABLE bool try_update_parameter(const QString param_id,QVariant value);
 
     enum Roles {
         UniqueIdRole = Qt::UserRole,

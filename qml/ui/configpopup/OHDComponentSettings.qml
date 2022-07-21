@@ -24,6 +24,9 @@ Item {
           id: selectItemInStackLayoutBar
           width: parent.width
           TabButton {
+              text: qsTr("WB Link freq")
+          }
+          TabButton {
               text: qsTr("Air Camera")
           }
           TabButton {
@@ -41,6 +44,9 @@ Item {
           anchors.top: selectItemInStackLayoutBar.bottom
           //top: bar.bottom
           currentIndex: selectItemInStackLayoutBar.currentIndex
+          XX_WBLinkSettings{
+              id: xX_WBLinkSettings
+          }
           X0_AirCameraSettingsPanel{
               id: x0_AirCameraSettingsPanel
           }

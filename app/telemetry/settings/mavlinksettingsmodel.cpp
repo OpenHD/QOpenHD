@@ -2,6 +2,7 @@
 #include "qdebug.h"
 #include "../openhd_defines.hpp"
 
+#include <QMessageBox>
 #include <QVariant>
 
 MavlinkSettingsModel &MavlinkSettingsModel::instanceAirCamera()
@@ -21,6 +22,28 @@ MavlinkSettingsModel &MavlinkSettingsModel::instanceGround()
     return *instanceGround;
 }
 
+std::map<std::string, void *> MavlinkSettingsModel::get_whitelisted_params()
+{
+    std::map<std::string,void*> ret{};
+    ret["WB_FREQUENCY"]=nullptr;
+    ret["WB_CHANNEL_W"]=nullptr;
+    ret["WB_MCS_INDEX"]=nullptr;
+    //ret[""]=nullptr;
+    return ret;
+}
+
+bool MavlinkSettingsModel::is_param_whitelisted(const std::string param_id)
+{
+    if(param_id.empty()){
+        return false;
+    }
+    const auto tmp=get_whitelisted_params();
+    if(tmp.find(param_id)!=tmp.end()){
+        return true;
+    }
+    return false;
+}
+
 MavlinkSettingsModel::MavlinkSettingsModel(uint8_t sys_id,uint8_t comp_id,QObject *parent)
     : QAbstractListModel(parent),_sys_id(sys_id),_comp_id(comp_id)
 {
@@ -31,26 +54,30 @@ MavlinkSettingsModel::MavlinkSettingsModel(uint8_t sys_id,uint8_t comp_id,QObjec
 #endif
 }
 
+static void makePopupMessage(QString message){
+    QMessageBox msgBox;
+    msgBox.setText(message);
+    msgBox.exec();
+}
+
 #ifdef X_USE_MAVSDK
 void MavlinkSettingsModel::set_param_client(std::shared_ptr<mavsdk::System> system)
 {
     // only allow adding the param client once it is discovered, do not overwrite it once discovered.
     assert(this->param_client==nullptr);
     assert(system->get_system_id()==_sys_id);
-    auto param_client1=std::make_shared<mavsdk::Param>(system,_comp_id,true);
-    this->param_client=param_client1;
-    auto params=param_client1->get_all_params();
-    qDebug()<<"Got int params:"<<params.int_params.size();
-    for(const auto& int_param:params.int_params){
-        MavlinkSettingsModel::SettingData data{QString(int_param.name.c_str()),int_param.value};
-        addData(data);
-    }
+    this->param_client=std::make_shared<mavsdk::Param>(system,_comp_id,true);
+    try_fetch_all_parameters();
 }
 #endif
 
 bool MavlinkSettingsModel::try_fetch_all_parameters()
 {
     qDebug()<<"MavlinkSettingsModel::try_fetch_all_parameters()";
+    if(param_client==nullptr){
+        // not discovered yet
+        makePopupMessage("OHD System not found");
+    }
     if(param_client){
         // first, remove anything the QT model has cached
         while(rowCount()>0){
@@ -72,7 +99,7 @@ bool MavlinkSettingsModel::try_fetch_all_parameters()
     return false;
 }
 
-void MavlinkSettingsModel::try_fetch_parameter(QString param_id)
+bool MavlinkSettingsModel::try_fetch_parameter(QString param_id)
 {
     qDebug()<<"try_fetch_parameter:"<<param_id;
     if(param_client){
@@ -81,11 +108,13 @@ void MavlinkSettingsModel::try_fetch_parameter(QString param_id)
             auto new_value=result.second;
             MavlinkSettingsModel::SettingData tmp{param_id,new_value};
             updateData(std::nullopt,tmp);
+            return true;
         }
     }
+    return false;
 }
 
-void MavlinkSettingsModel::try_update_parameter(const QString param_id,QVariant value)
+bool MavlinkSettingsModel::try_update_parameter(const QString param_id,QVariant value)
 {
     qDebug()<<"try_update_parameter:"<<param_id<<","<<value;
     int row=0;
@@ -100,15 +129,19 @@ void MavlinkSettingsModel::try_update_parameter(const QString param_id,QVariant 
                     if(result==mavsdk::Param::Result::Success){
                         MavlinkSettingsModel::SettingData tmp{param_id,value_int};
                         updateData(std::nullopt,tmp);
+                        return true;
                     }else{
                         std::stringstream ss;
-                        ss<<result;
-                        qDebug()<<"Updating param failed: "<<QString(ss.str().c_str());
+                        ss<<"Updating "<<param_id.toStdString()<<" to "<<value_int<<" failed: "<<result;
+                        qDebug()<<QString(ss.str().c_str());
+                        makePopupMessage(ss.str().c_str());
+                        return false;
                     }
                 }
             }
         }
     }
+    return false;
 }
 
 int MavlinkSettingsModel::rowCount(const QModelIndex &parent) const
@@ -180,6 +213,10 @@ void MavlinkSettingsModel::updateData(std::optional<int> row_opt, SettingData ne
 
 void MavlinkSettingsModel::addData(MavlinkSettingsModel::SettingData data)
 {
+    if(is_param_whitelisted(data.unique_id.toStdString())){
+        // never add whitelisted params to the simple model, they need synchronization
+        return;
+    }
     beginInsertRows(QModelIndex(), rowCount(), rowCount());
     m_data.push_back(data);
     endInsertRows();

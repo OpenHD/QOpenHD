@@ -257,7 +257,6 @@ void OHDConnection::request_openhd_version()
 }
 
 
-
 void OHDConnection::send_command_long_oneshot(const mavlink_command_long_t &command)
 {
     mavlink_message_t msg;

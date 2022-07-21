@@ -77,6 +77,7 @@ Rectangle {
             height: 48
             id: fetchAllButtonId
             text:"FetchAll Camera"
+            enabled: _ohdSystemAir.is_alive
             onClicked: {
                 var result=_airCameraSettingsModel.try_fetch_all_parameters()
                 /*visible=false;

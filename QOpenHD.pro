@@ -99,6 +99,7 @@ SOURCES += \
     app/osd/drawingcanvas.cpp \
     app/osd/flightpathvector.cpp \
     app/qopenhd.cpp \
+    app/telemetry/settings/synchronizedsettings.cpp \
     app/videostreaming/decodingstatistcs.cpp
 
 HEADERS += \
@@ -115,6 +116,7 @@ HEADERS += \
     app/telemetry/mavlink_include.h \
     app/telemetry/openhd_defines.hpp \
     app/telemetry/qopenhdmavlinkhelper.hpp \
+    app/telemetry/settings/synchronizedsettings.h \
     app/videostreaming/decodingstatistcs.h
 
 

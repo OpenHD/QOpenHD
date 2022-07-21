@@ -77,12 +77,9 @@ Rectangle {
             height: 48
             id: fetchAllButtonId
             text:"FetchAll Ground"
+            enabled: _ohdSystemGround.is_alive
             onClicked: {
                 var result=_groundPiSettingsModel.try_fetch_all_parameters()
-                /*visible=false;
-                if(result===true){
-                    visible=true;
-                }*/
             }
         }
         Rectangle{
