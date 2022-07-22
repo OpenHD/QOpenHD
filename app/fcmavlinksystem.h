@@ -203,9 +203,6 @@ public:
     Q_PROPERTY(int mah_km MEMBER m_mah_km WRITE set_mah_km NOTIFY mah_km_changed)
     void set_mah_km(int mah_km);
 
-    Q_PROPERTY(qint64 last_telemetry_heartbeat MEMBER m_last_telemetry_heartbeat WRITE set_last_telemetry_heartbeat NOTIFY last_telemetry_heartbeat_changed)
-    void set_last_telemetry_heartbeat(qint64 last_telemetry_heartbeat);
-
     Q_PROPERTY(qint64 last_telemetry_attitude MEMBER m_last_telemetry_attitude WRITE set_last_telemetry_attitude NOTIFY last_telemetry_attitude_changed)
     void set_last_telemetry_attitude(qint64 last_telemetry_attitude);
 
@@ -310,9 +307,6 @@ signals:
     void app_mah_changed(int app_mah);
     void mah_km_changed(int mah_km);
 
-    //void last_FCMavlinkSystem_heartbeat_changed(qint64 last_FCMavlinkSystem_heartbeat);
-
-    void last_telemetry_heartbeat_changed(qint64 last_telemetry_heartbeat);
     void last_telemetry_attitude_changed(qint64 last_telemetry_attitude);
     void last_telemetry_battery_changed(qint64 last_telemetry_battery);
     void last_telemetry_gps_changed(qint64 last_telemetry_gps);
@@ -419,7 +413,6 @@ public:
     qint64 mahKmLastTime= 0;
     double total_mah= 0;
 
-    qint64 m_last_telemetry_heartbeat = -1;
     qint64 m_last_telemetry_attitude = -1;
     qint64 m_last_telemetry_battery = -1;
     qint64 m_last_telemetry_gps = -1;
@@ -454,6 +447,22 @@ public:
     Q_INVOKABLE bool set_flight_mode(int mode);
     Q_INVOKABLE bool arm_fc(bool disarm=false);
     Q_INVOKABLE bool send_command_reboot(bool reboot);
+    // -----------------------
+public:
+    Q_PROPERTY(qint64 last_heartbeat MEMBER m_last_heartbeat WRITE set_last_heartbeat NOTIFY last_heartbeat_changed)
+    void set_last_heartbeat(qint64 last_heartbeat);
+    Q_PROPERTY(bool is_alive MEMBER m_is_alive WRITE set_is_alive NOTIFY is_alive_changed)
+    void set_is_alive(bool alive);
+    bool is_alive(){return m_is_alive;}
+public:
+    qint64 m_last_heartbeat = -1;
+    bool m_is_alive=false; // see alive timer
+    QTimer* m_alive_timer = nullptr;
+signals:
+    void last_heartbeat_changed(qint64 last_heartbeat);
+    void is_alive_changed(bool alive);
+private:
+    void update_alive();
 };
 
 

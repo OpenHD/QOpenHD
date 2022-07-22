@@ -312,14 +312,15 @@ Rectangle {
 
         Card {
             id: fcBox
-            visible: {
+            visible: true/*{
                 if(_fcMavlinkSystem.mav_type=="ARDUPLANE" || _fcMavlinkSystem.mav_type=="ARDUCOPTER"){
                     return true;
                 }
                 else{
                     return false;
                 }
-            }
+            }*/
+            enabled: _fcMavlinkSystem.is_alive
             height: 224
             Layout.fillWidth: true
             cardName: qsTr("Flight Controller")

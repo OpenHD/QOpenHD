@@ -2,6 +2,7 @@
 
 #include "telemetry/mavlinktelemetry.h"
 //#include "FCMavlinkSystemtelemetry.h"
+#include "telemetry/qopenhdmavlinkhelper.hpp"
 
 #include <GeographicLib/Geodesic.hpp>
 
@@ -19,8 +20,11 @@ FCMavlinkSystem::FCMavlinkSystem(QObject *parent): QObject(parent) {
     QObject::connect(timer, &QTimer::timeout, this, &FCMavlinkSystem::updateFlightTimer);
     timer->start(1000);
 
+    m_alive_timer = new QTimer(this);
+    QObject::connect(m_alive_timer, &QTimer::timeout, this, &FCMavlinkSystem::update_alive);
+    m_alive_timer->start(1000);
+
     auto mavlink = MavlinkTelemetry::instance();
-    connect(mavlink, &MavlinkTelemetry::last_heartbeat_changed, this, &FCMavlinkSystem::set_last_telemetry_heartbeat);
     connect(mavlink, &MavlinkTelemetry::last_attitude_changed, this, &FCMavlinkSystem::set_last_telemetry_attitude);
     connect(mavlink, &MavlinkTelemetry::last_battery_changed, this, &FCMavlinkSystem::set_last_telemetry_battery);
     connect(mavlink, &MavlinkTelemetry::last_gps_changed, this, &FCMavlinkSystem::set_last_telemetry_gps);
@@ -544,11 +548,6 @@ void FCMavlinkSystem::set_mah_km(int mah_km) {
     emit mah_km_changed(m_mah_km);
 }
 
-void FCMavlinkSystem::set_last_telemetry_heartbeat(qint64 last_telemetry_heartbeat) {
-    m_last_telemetry_heartbeat = last_telemetry_heartbeat;
-    emit last_telemetry_heartbeat_changed(m_last_telemetry_heartbeat);
-}
-
 void FCMavlinkSystem::set_last_telemetry_attitude(qint64 last_telemetry_attitude) {
     m_last_telemetry_attitude = last_telemetry_attitude;
     emit last_telemetry_attitude_changed(m_last_telemetry_attitude);
@@ -871,6 +870,30 @@ bool FCMavlinkSystem::send_command_reboot(bool reboot)
     return false;
 }
 
+void FCMavlinkSystem::set_last_heartbeat(qint64 last_heartbeat)
+{
+    m_last_heartbeat = last_heartbeat;
+    emit last_heartbeat_changed(m_last_heartbeat);
+}
 
+void FCMavlinkSystem::set_is_alive(bool alive)
+{
+    m_is_alive=alive;
+    emit is_alive_changed(alive);
+}
+
+void FCMavlinkSystem::update_alive()
+{
+    if(m_last_heartbeat==-1){
+        set_is_alive(false);
+    }else{
+        // after 3 seconds, consider as "not alive"
+        if(QOpenHDMavlinkHelper::getTimeMilliseconds()-m_last_heartbeat> 3*1000){
+            set_is_alive(false);
+        }else{
+            set_is_alive(true);
+        }
+    }
+}
 
 
