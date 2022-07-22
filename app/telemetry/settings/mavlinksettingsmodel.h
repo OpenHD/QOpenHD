@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QAbstractListModel>
 #include <map>
+#include <optional>
 
 #ifndef X_USE_MAVSDK
 #define X_USE_MAVSDK
@@ -14,7 +15,7 @@
 #include <mavsdk/plugins/param/param.h>
 #endif //X_USE_MAVSDK
 
-// A qt wrapper around the mavlink extended / non-extended parameters protocoll on the client
+// A QT wrapper around the mavlink extended / non-extended parameters protocoll on the client
 // (the side that changes parameter(s) provided by a specific system & component).
 // For each of these components, you can use an instance of this class - see the singletons below for
 // current OpenHD mavlink settings components.
@@ -42,6 +43,9 @@ private:
     std::shared_ptr<mavsdk::Param> param_client;
 #endif
 public:
+    std::optional<int> try_fetch_param_int_impl(const QString param_id);
+
+    // callable from QT
     Q_INVOKABLE bool try_fetch_all_parameters();
 
     Q_INVOKABLE bool try_fetch_parameter(QString param_id);

@@ -99,17 +99,27 @@ bool MavlinkSettingsModel::try_fetch_all_parameters()
     return false;
 }
 
-bool MavlinkSettingsModel::try_fetch_parameter(QString param_id)
+std::optional<int> MavlinkSettingsModel::try_fetch_param_int_impl(const QString param_id)
 {
-    qDebug()<<"try_fetch_parameter:"<<param_id;
+    qDebug()<<"try_fetch_param_implementation:"<<param_id;
     if(param_client){
         const auto result=param_client->get_param_int(param_id.toStdString());
         if(result.first==mavsdk::Param::Result::Success){
-            auto new_value=result.second;
-            MavlinkSettingsModel::SettingData tmp{param_id,new_value};
-            updateData(std::nullopt,tmp);
-            return true;
+             auto new_value=result.second;
+             return new_value;
         }
+    }
+    return std::nullopt;
+}
+
+bool MavlinkSettingsModel::try_fetch_parameter(QString param_id)
+{
+    qDebug()<<"try_fetch_parameter:"<<param_id;
+    auto new_value=try_fetch_param_int_impl(param_id);
+    if(new_value.has_value()){
+        MavlinkSettingsModel::SettingData tmp{param_id,new_value.value()};
+        updateData(std::nullopt,tmp);
+        return true;
     }
     return false;
 }
@@ -117,9 +127,11 @@ bool MavlinkSettingsModel::try_fetch_parameter(QString param_id)
 bool MavlinkSettingsModel::try_update_parameter(const QString param_id,QVariant value)
 {
     qDebug()<<"try_update_parameter:"<<param_id<<","<<value;
-    int row=0;
+    /*int row=0;
+    bool found=false;
     for(const auto& parameter: m_data){
         if(parameter.unique_id==param_id){
+            found=true;
             // we got this parameter
             if(param_client){
                 if(value.canConvert(QVariant::Type::Int)){
@@ -139,6 +151,23 @@ bool MavlinkSettingsModel::try_update_parameter(const QString param_id,QVariant 
                     }
                 }
             }
+        }
+    }
+    return false;*/
+    if(value.canConvert(QVariant::Type::Int)){
+        const int value_int=value.toInt();
+        qDebug()<<"Set"<<param_id<<" to "<<value_int;
+        const auto result=param_client->set_param_int(param_id.toStdString(),value_int);
+        if(result==mavsdk::Param::Result::Success){
+            MavlinkSettingsModel::SettingData tmp{param_id,value_int};
+            updateData(std::nullopt,tmp);
+            return true;
+        }else{
+            std::stringstream ss;
+            ss<<"Updating "<<param_id.toStdString()<<" to "<<value_int<<" failed: "<<result;
+            qDebug()<<QString(ss.str().c_str());
+            makePopupMessage(ss.str().c_str());
+            return false;
         }
     }
     return false;

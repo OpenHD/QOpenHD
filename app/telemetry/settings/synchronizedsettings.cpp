@@ -19,15 +19,14 @@ SynchronizedSettings& SynchronizedSettings::instance()
     return tmp;
 }
 
-bool SynchronizedSettings::get_param_air_and_ground(QString param_id)
+int SynchronizedSettings::get_param_int_air_and_ground_value(QString param_id)
 {
-    if(!MavlinkSettingsModel::instanceAir().try_fetch_parameter(param_id)){
-        return false;
+    qDebug()<<"get_param_air_and_ground_value "<<param_id;
+    auto value_ground=MavlinkSettingsModel::instanceGround().try_fetch_param_int_impl(param_id);
+    if(value_ground.has_value()){
+        return value_ground.value();
     }
-    if(!MavlinkSettingsModel::instanceGround().try_fetch_parameter(param_id)){
-        return false;
-    }
-    return true;
+    return -1;
 }
 
 static void makePopupMessage(QString message){
@@ -38,6 +37,7 @@ static void makePopupMessage(QString message){
 
 void SynchronizedSettings::change_param_air_and_ground(QString param_id,int value)
 {
+    qDebug()<<"SynchronizedSettings::change_param_air_and_ground: "<<param_id<<":"<<value;
     // sanity checking
     const bool air_and_ground_alive=AOHDSystem::instanceAir().is_alive() && AOHDSystem::instanceGround().is_alive();
     if(!air_and_ground_alive){

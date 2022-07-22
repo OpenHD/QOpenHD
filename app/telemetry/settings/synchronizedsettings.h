@@ -19,7 +19,16 @@ public:
 
     // Air and ground should always match, otherwise something weird has happenened.
     // Note that this would be "really" weird, since on not matching params there should be no connectivitiy.
-    Q_INVOKABLE bool get_param_air_and_ground(QString param_id);
+    Q_INVOKABLE int get_param_int_air_and_ground_value(QString param_id);
+    Q_INVOKABLE int get_param_int_air_and_ground_value_freq(){
+        return get_param_int_air_and_ground_value(PARAM_ID_WB_FREQ);
+    }
+    Q_INVOKABLE int get_param_int_air_and_ground_value_mcs(){
+        return get_param_int_air_and_ground_value(PARAM_ID_WB_MCS_INDEX);
+    }
+    Q_INVOKABLE int get_param_int_air_and_ground_value_channel_width(){
+        return get_param_int_air_and_ground_value(PARAM_ID_WB_CHANNEL_WIDTH);
+    }
 
     Q_INVOKABLE void change_param_air_and_ground(QString param_id,int value);
 
@@ -28,11 +37,11 @@ public:
     }
 
     Q_INVOKABLE void change_param_air_and_ground_mcs(int value){
-        change_param_air_and_ground(PARAM_ID_WB_CHANNEL_WIDTH,value);
+        change_param_air_and_ground(PARAM_ID_WB_MCS_INDEX,value);
     }
 
     Q_INVOKABLE void change_param_air_and_ground_channel_width(int value){
-        change_param_air_and_ground(PARAM_ID_WB_MCS_INDEX,value);
+        change_param_air_and_ground(PARAM_ID_WB_CHANNEL_WIDTH,value);
     }
 
 signals:

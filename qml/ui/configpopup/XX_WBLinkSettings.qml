@@ -122,26 +122,57 @@ ColumnLayout {
          ListElement {title: "40MHz (5G Atheros only,unsafe)"; value: 40}
     }
 
+    // https://stackoverflow.com/questions/41991438/how-do-i-find-a-particular-listelement-inside-a-listmodel-in-qml
+    //function find(model, criteria) {
+    //  for(var i = 0; i < model.count; ++i) if (criteria(model.get(i))) return model.get(i)
+    //  return null
+    //}
+    // For the models above (model with value) try to find the index of the first  item where model[i].value===value
+    function find_index(model,value){
+        for(var i = 0; i < model.count; ++i) if (model.get(i).value===value) return i
+        return -1
+    }
+    // try and update the combobox to the retrieved value(value != index)
+    function update_combobox(_combobox,_value){
+        var _index=find_index(_combobox.model,_value)
+        if(_index >= 0){
+            _combobox.currentIndex=_index;
+        }
+    }
+
     // Changing the wifi frequency, r.n only 5G
     RowLayout{
         Button{
             text: "Fetch"
+            onClicked: {
+                var _res=_synchronizedSettings.get_param_int_air_and_ground_value_freq()
+                //console.log("Got ",_res)
+                update_combobox(comboBoxFreq,_res);
+            }
         }
         ComboBox {
-            id: comboBox5G
+            id: comboBoxFreq
             Layout.minimumWidth : elementComboBoxWidth
             model: frequenciesModel
             textRole: "title"
         }
         Button{
             text: "Switch Frequency"
-            onClicked: _synchronizedSettings.change_param_air_and_ground_frequency(5200);
+            onClicked: {
+                var selectedValue=frequenciesModel.get(comboBoxFreq.currentIndex).value
+                _synchronizedSettings.change_param_air_and_ground_frequency(selectedValue);
+            }
         }
     }
 
     RowLayout{
         Button{
             text: "Fetch"
+            onClicked: {
+                var _res=_synchronizedSettings.get_param_int_air_and_ground_value_mcs()
+                //console.log("Got ",_res)
+                update_combobox(comboBoxMcsIndex,_res);
+            }
         }
         ComboBox {
             id: comboBoxMcsIndex
@@ -151,13 +182,21 @@ ColumnLayout {
         }
         Button{
             text: "Change MCS"
-            onClicked:  _synchronizedSettings.change_param_air_and_ground_mcs(0)
+            onClicked: {
+                 var selectedValue=mcsIndexModel.get(comboBoxMcsIndex.currentIndex).value
+                _synchronizedSettings.change_param_air_and_ground_mcs(selectedValue)
+            }
         }
     }
 
     RowLayout{
         Button{
             text: "Fetch"
+            onClicked: {
+                var _res=_synchronizedSettings.get_param_int_air_and_ground_value_channel_width()
+                //console.log("Got ",_res)
+                update_combobox(comboBoxChannelWidth,_res);
+            }
         }
         ComboBox {
             id: comboBoxChannelWidth
@@ -167,7 +206,10 @@ ColumnLayout {
         }
         Button{
             text: "Change Channel Width"
-            onClicked: _synchronizedSettings.change_param_air_and_ground_channel_width(0)
+            onClicked: {
+                 var selectedValue=channelWidthModel.get(comboBoxChannelWidth.currentIndex).value
+                _synchronizedSettings.change_param_air_and_ground_channel_width(selectedValue)
+            }
         }
     }
 }
