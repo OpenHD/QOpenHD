@@ -4,6 +4,9 @@
 #include <QElapsedTimer>
 #include <QObject>
 #include <QTimer>
+#include <mavsdk/mavsdk.h>
+#include <mavsdk/plugins/action/action.h>
+#include <mavsdk/plugins/telemetry/telemetry.h>
 
 /**
  * This used to be called OpenHD and was a mix of everything, it has become FCMavlinkSystem -
@@ -323,12 +326,6 @@ signals:
     void currentWaypointChanged (int current_waypoint);
     void totalWaypointsChanged (int total_waypoints);
 
-    void pauseTelemetry(bool pause);
-    void requested_Flight_Mode_Changed(int mode);
-    void requested_ArmDisarm_Changed(int arm_disarm);
-    void FC_Reboot_Shutdown_Changed(int reboot_shutdown);
-    void request_Mission_Changed();
-    void playBlackBoxObject(int index);
     void last_ping_result_flight_ctrl_changed(QString last_ping_result_flight_ctrl);
 
 public:
@@ -349,7 +346,8 @@ public:
 
     bool m_armed = false;
     QString m_flight_mode = "------";
-    QString m_mav_type = "UNKOWN";
+    //QString m_mav_type = "UNKOWN";
+    QString m_mav_type = "ARDUPLANE";
 
     double m_homelat = 0.0;
     double m_homelon = 0.0;
@@ -444,6 +442,17 @@ public:
 
     int m_reboot_shutdown=99;
     QString m_last_ping_result_flight_ctrl="NA";
+private:
+    // NOTE: Null until system discovered
+    std::shared_ptr<mavsdk::System> _system;
+    std::shared_ptr<mavsdk::Action> _action;
+    std::shared_ptr<mavsdk::Telemetry> _mavsdk_telemetry;
+public:
+    // Set the mavlink system reference, once discovered
+    void set_system(std::shared_ptr<mavsdk::System> system);
+    //
+    Q_INVOKABLE bool set_flight_mode(int mode);
+    Q_INVOKABLE bool arm_fc(bool disarm=false);
 };
 
 

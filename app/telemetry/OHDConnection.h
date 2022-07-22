@@ -107,7 +107,6 @@ public:
     std::shared_ptr<mavsdk::System> systemOhdGround;
     std::shared_ptr<mavsdk::System> systemOhdAir;
     std::shared_ptr<mavsdk::MavlinkPassthrough> passtroughOhdGround;
-    std::shared_ptr<mavsdk::Telemetry> telemetryFC;
     #endif //X_USE_MAVSDK
 private slots:
     // called by QT tcp socket

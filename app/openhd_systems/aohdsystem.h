@@ -9,7 +9,7 @@
 #include <array>
 //
 #include <mavsdk/mavsdk.h>
-#include <mavsdk/plugins/action/action.h>>
+#include <mavsdk/plugins/action/action.h>
 
 /**
  * Abstract OHD (Mavlink) system.

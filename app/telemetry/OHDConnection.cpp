@@ -3,6 +3,7 @@
 #include "qopenhdmavlinkhelper.hpp"
 #include "telemetry/openhd_defines.hpp"
 #include "../openhd_systems/aohdsystem.h"
+#include "../fcmavlinksystem.h"
 
 #include "settings/mavlinksettingsmodel.h"
 
@@ -99,11 +100,7 @@ void OHDConnection::onNewSystem(std::shared_ptr<mavsdk::System> system){
 
     }else if(system->has_autopilot()){
         // we got the flight controller
-        telemetryFC=std::make_unique<mavsdk::Telemetry>(system);
-        auto res=telemetryFC->set_rate_attitude(60);
-        std::stringstream ss;
-        ss<<res;
-        qDebug()<<"Set rate result:"<<ss.str().c_str();
+        FCMavlinkSystem::instance().set_system(system);
     }
     system->subscribe_is_connected([this,system](bool is_connected){
         qDebug()<<"System: "<<system->get_system_id()<<"connected: "<<(is_connected ? "Y" : "N");

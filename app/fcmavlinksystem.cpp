@@ -26,11 +26,6 @@ FCMavlinkSystem::FCMavlinkSystem(QObject *parent): QObject(parent) {
     connect(mavlink, &MavlinkTelemetry::last_gps_changed, this, &FCMavlinkSystem::set_last_telemetry_gps);
     connect(mavlink, &MavlinkTelemetry::last_vfr_changed, this, &FCMavlinkSystem::set_last_telemetry_vfr);
 
-    connect(this, &FCMavlinkSystem::pauseTelemetry, mavlink, &MavlinkTelemetry::pauseTelemetry);
-    connect(this, &FCMavlinkSystem::requested_Flight_Mode_Changed, mavlink, &MavlinkTelemetry::requested_Flight_Mode_Changed);
-    connect(this, &FCMavlinkSystem::requested_ArmDisarm_Changed, mavlink, &MavlinkTelemetry::requested_ArmDisarm_Changed);
-    connect(this, &FCMavlinkSystem::FC_Reboot_Shutdown_Changed, mavlink, &MavlinkTelemetry::FC_Reboot_Shutdown_Changed);
-    connect(this, &FCMavlinkSystem::request_Mission_Changed, mavlink, &MavlinkTelemetry::request_Mission_Changed);
     //auto FCMavlinkSystem = FCMavlinkSystemTelemetry::instance();
     //connect(FCMavlinkSystem, &FCMavlinkSystemTelemetry::last_heartbeat_changed, this, &FCMavlinkSystem::set_last_FCMavlinkSystem_heartbeat);
 }
@@ -132,26 +127,28 @@ void FCMavlinkSystem::updateAppMahKm() {
 
 void FCMavlinkSystem::set_Requested_Flight_Mode(int mode){
     //qDebug() << "FCMavlinkSystem::set_Requested_Flight_Mode="<< mode;
+    if(_action){
+
+    }
     m_mode=mode;
-    emit requested_Flight_Mode_Changed(m_mode);
+   // emit requested_Flight_Mode_Changed(m_mode);
 }
 
 void FCMavlinkSystem::set_Requested_ArmDisarm(int arm_disarm){
     qDebug() << "FCMavlinkSystem::set_Requested_ArmDisarm="<< arm_disarm;
     m_arm_disarm=arm_disarm;
-    emit requested_ArmDisarm_Changed(m_arm_disarm);
+    //emit requested_ArmDisarm_Changed(m_arm_disarm);
 }
 
 void FCMavlinkSystem::set_FC_Reboot_Shutdown(int reboot_shutdown){
     qDebug() << "FCMavlinkSystem::set_FC_Reboot_Shutdown="<< reboot_shutdown;
     m_reboot_shutdown=reboot_shutdown;
-    emit FC_Reboot_Shutdown_Changed(m_reboot_shutdown);
+    //emit FC_Reboot_Shutdown_Changed(m_reboot_shutdown);
 }
 
 void FCMavlinkSystem::request_Mission(){
     qDebug() << "FCMavlinkSystem::request_Mission=";
-
-    emit request_Mission_Changed();
+    //emit request_Mission_Changed();
 }
 
 
@@ -821,6 +818,41 @@ void FCMavlinkSystem::set_last_ping_result_flight_ctrl(QString last_ping_result_
 {
     m_last_ping_result_flight_ctrl=last_ping_result_flight_ctrl;
     emit last_ping_result_flight_ctrl_changed(m_last_ping_result_flight_ctrl);
+}
+
+void FCMavlinkSystem::set_system(std::shared_ptr<mavsdk::System> system)
+{
+    assert(_system==nullptr);
+    if(!_system->has_autopilot()){
+        qDebug()<<"FCMavlinkSystem::set_system WARNING no autopilot";
+    }
+    _system=system;
+    _action=std::make_shared<mavsdk::Action>(system);
+    _mavsdk_telemetry=std::make_shared<mavsdk::Telemetry>(system);
+    //
+    /*telemetryFC=std::make_unique<mavsdk::Telemetry>(system);
+    auto res=telemetryFC->set_rate_attitude(60);
+    std::stringstream ss;
+    ss<<res;
+    qDebug()<<"Set rate result:"<<ss.str().c_str();*/
+}
+
+bool FCMavlinkSystem::set_flight_mode(int mode)
+{
+    if(_action){
+        //const auto res=_action->
+    }
+}
+
+bool FCMavlinkSystem::arm_fc(bool disarm)
+{
+    if(_action){
+        const auto res=_action->arm();
+        if(res==mavsdk::Action::Result::Success){
+            return true;
+        }
+    }
+    return false;
 }
 
 
