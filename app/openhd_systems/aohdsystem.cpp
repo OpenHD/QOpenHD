@@ -324,7 +324,7 @@ bool AOHDSystem::send_command_long(mavsdk::Action::CommandLong command)
         return false;
     }
     const auto res=_action->send_command_long(command);
-    assert(command.target_system_id==(_is_air ? OHD_SYS_ID_AIR : OHD_SYS_ID_GROUND));
+    assert(command.target_system_id==get_own_sys_id());
     std::stringstream ss;
     ss<<"Action: "<<res;
     qDebug()<<QString(ss.str().c_str());
@@ -339,7 +339,7 @@ void AOHDSystem::set_system(std::shared_ptr<mavsdk::System> system)
 {
     // once discovered, the system never changes !
     assert(_system==nullptr);
-    assert(system->get_system_id()==(_is_air ? OHD_SYS_ID_AIR : OHD_SYS_ID_GROUND ));
+    assert(system->get_system_id()==get_own_sys_id());
     _system=system;
     _action=std::make_shared<mavsdk::Action>(system);
 }
@@ -347,7 +347,7 @@ void AOHDSystem::set_system(std::shared_ptr<mavsdk::System> system)
 bool AOHDSystem::send_command_reboot(bool reboot)
 {
     mavsdk::Action::CommandLong command{};
-    command.target_system_id= _is_air ? OHD_SYS_ID_AIR : OHD_SYS_ID_GROUND;
+    command.target_system_id= get_own_sys_id();
     command.target_component_id=0; // unused r.n
     command.command=MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN;
     command.params.maybe_param1=0;

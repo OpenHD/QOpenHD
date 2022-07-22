@@ -839,6 +839,7 @@ void FCMavlinkSystem::set_system(std::shared_ptr<mavsdk::System> system)
         FCMavlinkSystem::instance().set_hdg(heading.heading_deg);
     };
     _mavsdk_telemetry->subscribe_heading(cb_heading);
+    //_mavsdk_telemetry->subscribe_status_text()
     /*auto cb_flight_mode=[this](mavsdk::Telemetry::FlightMode flight_mode){
         flight_mode
     };

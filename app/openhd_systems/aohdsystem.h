@@ -30,7 +30,7 @@ public:
     static AOHDSystem& instanceGround();
 private:
      const bool _is_air; // either true (for air) or false (for ground)
-     uint8_t get_own_sys_id(){
+     uint8_t get_own_sys_id()const{
          return _is_air ? OHD_SYS_ID_AIR : OHD_SYS_ID_GROUND;
      }
 public:
@@ -40,6 +40,7 @@ public:
      //Process OpenHD custom flavour message(s) coming from either the OHD Air or Ground unit
      // Returns true if the passed message was processed (known message id), false otherwise
      bool process_message(const mavlink_message_t& msg);
+private:
      void process_x0(const  mavlink_onboard_computer_status_t& msg);
      void process_x1(const mavlink_openhd_wifibroadcast_wifi_card_t& msg);
      void process_x2(const mavlink_openhd_stats_total_all_wifibroadcast_streams_t& msg);
