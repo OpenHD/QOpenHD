@@ -72,7 +72,7 @@ else
     /opt/Qt5.15.4/bin/qmake  
 fi
 echo "build with qmake done"
-make -j2 || exit 1
+make -j$(nproc)|| exit 1
 echo "build with make done"
 
 cp release/QOpenHD /tmp/qopenhd/usr/local/bin/ || exit 1
