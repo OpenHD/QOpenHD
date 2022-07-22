@@ -130,19 +130,19 @@ PowerPanelForm {
                     var result=false
                     if (powerAction == PowerPanel.PowerAction.RebootGround) {
                         localMessage("Rebooting ground station", 6);
-                        result=_mavlinkTelemetry.send_command_openhd_reboot(false,true);
+                        result = _ohdSystemGround.send_command_reboot(true);
                     }
                     if (powerAction == PowerPanel.PowerAction.ShutdownGround) {
                         localMessage("Shutting down ground station", 6);
-                        result=_mavlinkTelemetry.send_command_openhd_reboot(false,false);
+                        result = _ohdSystemGround.send_command_reboot(false);
                     }
                     if (powerAction == PowerPanel.PowerAction.RebootAir) {
                         localMessage("Rebooting air pi", 6);
-                        result=_mavlinkTelemetry.send_command_openhd_reboot(true,true);
+                        result = _ohdSystemAir.send_command_reboot(true);
                     }
                     if (powerAction == PowerPanel.PowerAction.ShutdownAir) {
                         localMessage("Shutting down air pi", 6);
-                        result=_mavlinkTelemetry.send_command_openhd_reboot(true,false);
+                        result = _ohdSystemAir.send_command_reboot(false);
                     }
                     /*if (powerAction == PowerPanel.PowerAction.ShutdownFC) { //button commented out
                         localMessage("Shutting down Flight Controller", 6);

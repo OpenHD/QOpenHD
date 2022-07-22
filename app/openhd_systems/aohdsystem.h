@@ -7,6 +7,9 @@
 #include "../telemetry/mavlink_include.h"
 #include "wifiadapter.h"
 #include <array>
+//
+#include <mavsdk/mavsdk.h>
+#include <mavsdk/plugins/action/action.h>>
 
 /**
  * Abstract OHD (Mavlink) system.
@@ -22,8 +25,8 @@ class AOHDSystem : public QObject
     Q_OBJECT
 public:
     explicit AOHDSystem(const bool is_air,QObject *parent = nullptr);
-     static AOHDSystem& instanceAir();
-     static AOHDSystem& instanceGround();
+    static AOHDSystem& instanceAir();
+    static AOHDSystem& instanceGround();
 private:
      const bool _is_air; // either true (for air) or false (for ground)
 public:
@@ -150,6 +153,16 @@ private:
     QTimer* m_alive_timer = nullptr;
     void update_alive();
     std::chrono::steady_clock::time_point m_last_message_openhd_stats_total_all_wifibroadcast_streams=std::chrono::steady_clock::now();
+    // Model / fire and forget data only end
+private:
+     // NOTE: Null until discovered
+     std::shared_ptr<mavsdk::System> _system;
+     std::shared_ptr<mavsdk::Action> _action;
+     bool send_command_long(mavsdk::Action::CommandLong command);
+public:
+     // Set the mavlink system reference, once discovered
+     void set_system(std::shared_ptr<mavsdk::System> system);
+     Q_INVOKABLE bool send_command_reboot(bool reboot);
 };
 
 

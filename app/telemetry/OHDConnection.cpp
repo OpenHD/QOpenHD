@@ -2,6 +2,7 @@
 
 #include "qopenhdmavlinkhelper.hpp"
 #include "telemetry/openhd_defines.hpp"
+#include "../openhd_systems/aohdsystem.h"
 
 #include "settings/mavlinksettingsmodel.h"
 
@@ -85,7 +86,7 @@ void OHDConnection::onNewSystem(std::shared_ptr<mavsdk::System> system){
             return true;
         });
         MavlinkSettingsModel::instanceGround().set_param_client(system);
-        actionOhdGround=std::make_shared<mavsdk::Action>(system);
+        AOHDSystem::instanceGround().set_system(system);
         /*system->register_component_discovered_id_callback([](mavsdk::System::ComponentType comp_type, uint8_t comp_id){
             qDebug()<<"Ground component discovered:"<<(int)comp_id;
         });*/
@@ -94,7 +95,7 @@ void OHDConnection::onNewSystem(std::shared_ptr<mavsdk::System> system){
         systemOhdAir=system;
         MavlinkSettingsModel::instanceAir().set_param_client(system);
         MavlinkSettingsModel::instanceAirCamera().set_param_client(system);
-        actionOhdAir=std::make_shared<mavsdk::Action>(system);
+        AOHDSystem::instanceAir().set_system(system);
 
     }else if(system->has_autopilot()){
         // we got the flight controller
@@ -265,40 +266,6 @@ void OHDConnection::send_command_long_oneshot(const mavlink_command_long_t &comm
     mavlink_msg_command_long_encode(QOpenHDMavlinkHelper::getSysId(),QOpenHDMavlinkHelper::getCompId(), &msg,&command);
     sendMessage(msg);
 }
-
-void OHDConnection::send_command_reboot(const uint8_t target_sys_id,const bool reboot)
-{
-    //https://mavlink.io/en/messages/common.html#MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN
-    mavlink_command_long_t command{};
-    command.target_system=target_sys_id;
-    command.target_component=0; // unused r.n
-    command.command=MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN;
-    command.param1=0;
-    command.param2=(reboot ? 1 : 2);
-    send_command_long_oneshot(command);
-}
-
-bool OHDConnection::send_command_ohd_reboot(bool air, bool reboot)
-{
-    mavsdk::Action::CommandLong command{};
-    command.target_system_id= air ? OHD_SYS_ID_AIR : OHD_SYS_ID_GROUND;
-    command.target_component_id=0; // unused r.n
-    command.command=MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN;
-    command.params.maybe_param1=0;
-    command.params.maybe_param2=(reboot ? 1 : 2);
-    auto actionForSystem=air ? actionOhdAir : actionOhdGround;
-    if(actionForSystem){
-        const auto res=actionForSystem->send_command_long(command);
-        std::stringstream ss;
-        ss<<"Action: "<<res;
-        qDebug()<<QString(ss.str().c_str());
-        if(res==mavsdk::Action::Result::Success){
-            return true;
-        }
-    }
-    return false;
-}
-
 
 void OHDConnection::onHeartbeat(){
     //qDebug() << "OHDConnection::onHeartbeat";

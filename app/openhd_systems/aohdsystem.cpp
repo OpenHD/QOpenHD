@@ -1,5 +1,6 @@
 #include "aohdsystem.h"
 #include "../telemetry/qopenhdmavlinkhelper.hpp"
+#include "../telemetry/openhd_defines.hpp"
 #include <string>
 #include <sstream>
 
@@ -88,6 +89,11 @@ void AOHDSystem::process_x3(const mavlink_openhd_fec_link_rx_statistics_t &msg)
              set_video_rx_blocks_recovered(msg.count_blocks_recovered);
         }
     }
+}
+
+void AOHDSystem::set_wifi_tx_packets_count(int wifi_tx_packets_count){
+    m_wifi_tx_packets_count=wifi_tx_packets_count;
+    emit wifi_tx_packets_count_changed(wifi_tx_packets_count);
 }
 
 void AOHDSystem::set_cpuload(int cpuload) {
@@ -258,7 +264,39 @@ void AOHDSystem::update_alive()
     }
 }
 
-void AOHDSystem::set_wifi_tx_packets_count(int wifi_tx_packets_count){
-    m_wifi_tx_packets_count=wifi_tx_packets_count;
-    emit wifi_tx_packets_count_changed(wifi_tx_packets_count);
+bool AOHDSystem::send_command_long(mavsdk::Action::CommandLong command)
+{
+    if(!_action){
+        return false;
+    }
+    const auto res=_action->send_command_long(command);
+    assert(command.target_system_id==(_is_air ? OHD_SYS_ID_AIR : OHD_SYS_ID_GROUND));
+    std::stringstream ss;
+    ss<<"Action: "<<res;
+    qDebug()<<QString(ss.str().c_str());
+    if(res==mavsdk::Action::Result::Success){
+        return true;
+    }
+    return false;
+}
+
+
+void AOHDSystem::set_system(std::shared_ptr<mavsdk::System> system)
+{
+    // once discovered, the system never changes !
+    assert(_system==nullptr);
+    assert(system->get_system_id()==(_is_air ? OHD_SYS_ID_AIR : OHD_SYS_ID_GROUND ));
+    _system=system;
+    _action=std::make_shared<mavsdk::Action>(system);
+}
+
+bool AOHDSystem::send_command_reboot(bool reboot)
+{
+    mavsdk::Action::CommandLong command{};
+    command.target_system_id= _is_air ? OHD_SYS_ID_AIR : OHD_SYS_ID_GROUND;
+    command.target_component_id=0; // unused r.n
+    command.command=MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN;
+    command.params.maybe_param1=0;
+    command.params.maybe_param2=(reboot ? 1 : 2);
+    return send_command_long(command);
 }
