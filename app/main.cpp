@@ -14,7 +14,7 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 
 #include "rc/openhdrc.h"
 #include "platform/openhdpi.h"
-#include "openhd.h"
+#include "fcmavlinksystem.h"
 #include "openhd_systems/aohdsystem.h"
 #include "../app/telemetry/mavlinktelemetry.h"
 
@@ -358,7 +358,7 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
 
     engine.rootContext()->setContextProperty("OpenHDUtil", util);
 
-    engine.rootContext()->setContextProperty("OpenHD", &OpenHD::instance());
+    engine.rootContext()->setContextProperty("OpenHD", &FCMavlinkSystem::instance());
     /*engine.rootContext()->setContextProperty("_ohdSystemAir", &OHDSystemAir::instance());
     engine.rootContext()->setContextProperty("_ohdSystemGround", &OHDSystemGround::instance());*/
     engine.rootContext()->setContextProperty("_ohdSystemAir", &AOHDSystem::instanceAir());

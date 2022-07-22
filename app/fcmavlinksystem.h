@@ -1,26 +1,26 @@
- #ifndef OPENHD_H
-#define OPENHD_H
+#ifndef FC_MAVLINK_SYSTEM_H
+#define FC_MAVLINK_SYSTEM_H
 
 #include <QElapsedTimer>
 #include <QObject>
 #include <QTimer>
 
 /**
- * NOTE: This class slowly has / is becoming the "Flight controller" (only) mavlink model, most of the OpenHD stuff has been refactored out here.
- * However, renaming this model to "_fcModel" (rename "OpenHD" to "_fcModel" is a tedious task for one hour ;) so not done yet.
+ * NOTE: This class slowly has / is becoming the "Flight controller" (only) mavlink model, most of the FCMavlinkSystem stuff has been refactored out here.
+ * However, renaming this model to "_fcModel" (rename "FCMavlinkSystem" to "_fcModel" is a tedious task for one hour ;) so not done yet.
  *
  * So this is basically a really big "model" and a small "controller" (in MVC pattern) class.
  * While I'd like someone refactoring it (and it should probably reside in telemetry or at least be seperated into telemetry and non-telemetry stuff)
  * since all the UI elements and their java script code use this class that's not feasible rn.
  * And there are actually some advantages to having one (big) model, since then you only have to import one model into qml
  */
-class OpenHD : public QObject
+class FCMavlinkSystem : public QObject
 {
     Q_OBJECT
 
 public:
-    explicit OpenHD(QObject *parent = nullptr);
-    static OpenHD& instance();
+    explicit FCMavlinkSystem(QObject *parent = nullptr);
+    static FCMavlinkSystem& instance();
 
     void telemetryMessage(QString message, int level);
     void calculate_home_distance();
@@ -308,7 +308,7 @@ signals:
     void app_mah_changed(int app_mah);
     void mah_km_changed(int mah_km);
 
-    //void last_openhd_heartbeat_changed(qint64 last_openhd_heartbeat);
+    //void last_FCMavlinkSystem_heartbeat_changed(qint64 last_FCMavlinkSystem_heartbeat);
 
     void last_telemetry_heartbeat_changed(qint64 last_telemetry_heartbeat);
     void last_telemetry_attitude_changed(qint64 last_telemetry_attitude);
@@ -449,4 +449,4 @@ public:
 
 
 
-#endif // OPENHD_H
+#endif // FC_MAVLINK_SYSTEM_H

@@ -137,9 +137,9 @@ SOURCES += \
 
 # all other files, complete mess
 SOURCES += \
+    app/fcmavlinksystem.cpp \
     app/util/FrequencyMonitor.cpp \
     app/main.cpp \
-    app/openhd.cpp \
     app/platform/openhdpi.cpp \
     app/rc/openhdrc.cpp \
     app/util/QmlObjectListModel.cpp \
@@ -149,9 +149,9 @@ RESOURCES += qml/qml.qrc \
     qml/qml.qrc
 
 HEADERS += \
+    app/fcmavlinksystem.h \
     app/util/FrequencyMonitor.h \
     app/util/sharedqueue.h \
-    app/openhd.h \
     app/platform/openhdpi.h \
     app/rc/openhdrc.h \
     app/util/QmlObjectListModel.h \
