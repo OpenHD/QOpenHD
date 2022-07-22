@@ -127,21 +127,22 @@ PowerPanelForm {
 
 
                 onPressed: {
+                    var result=false
                     if (powerAction == PowerPanel.PowerAction.RebootGround) {
                         localMessage("Rebooting ground station", 6);
-                        _mavlinkTelemetry.send_command_openhd_reboot(false,true);
+                        result=_mavlinkTelemetry.send_command_openhd_reboot(false,true);
                     }
                     if (powerAction == PowerPanel.PowerAction.ShutdownGround) {
                         localMessage("Shutting down ground station", 6);
-                        _mavlinkTelemetry.send_command_openhd_reboot(false,false);
+                        result=_mavlinkTelemetry.send_command_openhd_reboot(false,false);
                     }
                     if (powerAction == PowerPanel.PowerAction.RebootAir) {
                         localMessage("Rebooting air pi", 6);
-                        _mavlinkTelemetry.send_command_openhd_reboot(true,true);
+                        result=_mavlinkTelemetry.send_command_openhd_reboot(true,true);
                     }
                     if (powerAction == PowerPanel.PowerAction.ShutdownAir) {
                         localMessage("Shutting down air pi", 6);
-                        _mavlinkTelemetry.send_command_openhd_reboot(true,false);
+                        result=_mavlinkTelemetry.send_command_openhd_reboot(true,false);
                     }
                     /*if (powerAction == PowerPanel.PowerAction.ShutdownFC) { //button commented out
                         localMessage("Shutting down Flight Controller", 6);
@@ -149,8 +150,13 @@ PowerPanelForm {
                     if (powerAction == PowerPanel.PowerAction.RebootFC) {
                         localMessage("Rebooting Flight Controller", 6);
                     }*/
+                    if(result){
+                        settings_panel.visible = false;
+                    }else{
+                        //TODO log error
+                    }
                     powerDialog.visible = false
-                    settings_panel.visible = false;
+                    //settings_panel.visible = false;
                 }
             }
         }

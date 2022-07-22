@@ -27,7 +27,7 @@ Item {
               text: qsTr("WB Link freq")
           }
           TabButton {
-              text: qsTr("Air Camera")
+              text: qsTr("Air Camera 1")
           }
           TabButton {
               text: qsTr("Air (TMP)")

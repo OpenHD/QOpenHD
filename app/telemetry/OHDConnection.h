@@ -15,7 +15,7 @@
 #include <mavsdk/plugins/telemetry/telemetry.h>
 #include <mavsdk/plugins/mavlink_passthrough/mavlink_passthrough.h>
 #include <mavsdk/plugins/param/param.h>
-//#include <mavsdk/plugins/comm>
+#include <mavsdk/plugins/action/action.h>
 #include <mavsdk/log_callback.h>
 #endif //X_USE_MAVSDK
 
@@ -108,6 +108,9 @@ public:
     std::shared_ptr<mavsdk::System> systemOhdAir;
     std::shared_ptr<mavsdk::MavlinkPassthrough> passtroughOhdGround;
     std::shared_ptr<mavsdk::Telemetry> telemetryFC;
+    //
+    std::shared_ptr<mavsdk::Action> actionOhdAir;
+    std::shared_ptr<mavsdk::Action> actionOhdGround;
     #endif //X_USE_MAVSDK
 private slots:
     // called by QT tcp socket
@@ -128,7 +131,7 @@ public:
     void send_command_long_oneshot(const mavlink_command_long_t& command);
     // also doesn't retransmitt
     void send_command_reboot(const uint8_t sys_id,bool reboot);
-    void send_command_ohd_reboot(bool air,bool reboot);
+    bool send_command_ohd_reboot(bool air,bool reboot);
 };
 
 #endif // OHDMAVLINKCONNECTION_H

@@ -85,6 +85,7 @@ void OHDConnection::onNewSystem(std::shared_ptr<mavsdk::System> system){
             return true;
         });
         MavlinkSettingsModel::instanceGround().set_param_client(system);
+        actionOhdGround=std::make_shared<mavsdk::Action>(system);
         /*system->register_component_discovered_id_callback([](mavsdk::System::ComponentType comp_type, uint8_t comp_id){
             qDebug()<<"Ground component discovered:"<<(int)comp_id;
         });*/
@@ -93,6 +94,7 @@ void OHDConnection::onNewSystem(std::shared_ptr<mavsdk::System> system){
         systemOhdAir=system;
         MavlinkSettingsModel::instanceAir().set_param_client(system);
         MavlinkSettingsModel::instanceAirCamera().set_param_client(system);
+        actionOhdAir=std::make_shared<mavsdk::Action>(system);
 
     }else if(system->has_autopilot()){
         // we got the flight controller
@@ -276,13 +278,25 @@ void OHDConnection::send_command_reboot(const uint8_t target_sys_id,const bool r
     send_command_long_oneshot(command);
 }
 
-void OHDConnection::send_command_ohd_reboot(bool air, bool reboot)
+bool OHDConnection::send_command_ohd_reboot(bool air, bool reboot)
 {
-    if(air){
-        send_command_reboot(OHD_SYS_ID_AIR,reboot);
-    }else{
-        send_command_reboot(OHD_SYS_ID_GROUND,reboot);
+    mavsdk::Action::CommandLong command{};
+    command.target_system_id= air ? OHD_SYS_ID_AIR : OHD_SYS_ID_GROUND;
+    command.target_component_id=0; // unused r.n
+    command.command=MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN;
+    command.params.maybe_param1=0;
+    command.params.maybe_param2=(reboot ? 1 : 2);
+    auto actionForSystem=air ? actionOhdAir : actionOhdGround;
+    if(actionForSystem){
+        const auto res=actionForSystem->send_command_long(command);
+        std::stringstream ss;
+        ss<<"Action: "<<res;
+        qDebug()<<QString(ss.str().c_str());
+        if(res==mavsdk::Action::Result::Success){
+            return true;
+        }
     }
+    return false;
 }
 
 
