@@ -12,6 +12,8 @@
 
 /**
  * Dirty, but for some reason stephen made translation(s) and a bit more work this way.
+ * This singleton is for handling Appplication (QOpenHD, NOT OpenHD) - specific things that
+ * need the QT Engine or some other quirks.
  */
 class QOpenHD : public QObject
 {

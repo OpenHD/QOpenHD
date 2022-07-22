@@ -294,7 +294,7 @@ BaseWidget {
 
         Text {
             id: temp_glyph
-            color: OpenHD.esc_temp >= settings.esc_temp_caution ? (OpenHD.esc_temp >= settings.esc_temp_warn ? settings.color_warn : settings.color_caution) : settings.color_shape
+            color: _fcMavlinkSystem.esc_temp >= settings.esc_temp_caution ? (_fcMavlinkSystem.esc_temp >= settings.esc_temp_warn ? settings.color_warn : settings.color_caution) : settings.color_shape
             opacity: settings.esc_temp_opacity
             text: "\uf613"
             anchors.left: parent.left
@@ -312,14 +312,14 @@ BaseWidget {
         Text {
             id: esc_temp
             color: {
-                if (OpenHD.esc_temp >= settings.esc_temp_warn) {
+                if (_fcMavlinkSystem.esc_temp >= settings.esc_temp_warn) {
                     widgetInner.visible = true
                     return settings.color_warn
-                } else if (OpenHD.esc_temp > settings.esc_temp_caution) {
+                } else if (_fcMavlinkSystem.esc_temp > settings.esc_temp_caution) {
                     widgetInner.visible = true
                     return settings.color_caution
                 } else if (settings.esc_temp_declutter == true
-                           && OpenHD.armed == true) {
+                           && _fcMavlinkSystem.armed == true) {
                     widgetInner.visible = false
                     return settings.color_text
                 } else {
@@ -328,7 +328,7 @@ BaseWidget {
                 }
             }
             opacity: settings.esc_temp_opacity
-            text: OpenHD.esc_temp == 0 ? qsTr("N/A") : OpenHD.esc_temp + "°"
+            text: _fcMavlinkSystem.esc_temp == 0 ? qsTr("N/A") : _fcMavlinkSystem.esc_temp + "°"
             anchors.left: temp_glyph.right
             anchors.leftMargin: 2
             anchors.bottom: parent.bottom

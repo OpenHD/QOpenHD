@@ -209,8 +209,8 @@ BaseWidget {
                 Text {
                     text: {
                         /* autopilot detection not reliable.. gets set in MavlinkTelemetry
-                        if(OpenHD.mav_type=="ARDUPLANE" || OpenHD.mav_type=="ARDUCOPTER"){
-                            return qsTr("Vehicle type: "+OpenHD.mav_type);
+                        if(_fcMavlinkSystem.mav_type=="ARDUPLANE" || _fcMavlinkSystem.mav_type=="ARDUCOPTER"){
+                            return qsTr("Vehicle type: "+_fcMavlinkSystem.mav_type);
                         }
                         else {
                             return qsTr("Only For Ardupilot...");
@@ -227,16 +227,16 @@ BaseWidget {
 
             ConfirmSlider {
 
-                visible: OpenHD.mav_type=="ARDUPLANE" || OpenHD.mav_type=="ARDUCOPTER"
-                text_off: OpenHD.armed ? qsTr("DISARM") : qsTr("ARM")
+                visible: _fcMavlinkSystem.mav_type=="ARDUPLANE" || _fcMavlinkSystem.mav_type=="ARDUCOPTER"
+                text_off: _fcMavlinkSystem.armed ? qsTr("DISARM") : qsTr("ARM")
 
-                msg_id: OpenHD.armed ? 0 : 1
+                msg_id: _fcMavlinkSystem.armed ? 0 : 1
 
                 onCheckedChanged: {
                     if (checked == true) {
 
                         //double check.... not really needed
-                        OpenHD.set_Requested_ArmDisarm(msg_id)
+                        _fcMavlinkSystem.set_Requested_ArmDisarm(msg_id)
                         //console.log("selected");
                     }
                 }
@@ -265,7 +265,7 @@ BaseWidget {
                 width: 24
                 height: 18
                 color: settings.color_text
-                text: OpenHD.throttle
+                text: _fcMavlinkSystem.throttle
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.bottom: parent.bottom
                 anchors.bottomMargin: 18

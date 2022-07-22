@@ -145,11 +145,9 @@ PowerPanelForm {
                     }
                     /*if (powerAction == PowerPanel.PowerAction.ShutdownFC) { //button commented out
                         localMessage("Shutting down Flight Controller", 6);
-                        OpenHD.set_FC_Reboot_Shutdown(2);
                     }
                     if (powerAction == PowerPanel.PowerAction.RebootFC) {
                         localMessage("Rebooting Flight Controller", 6);
-                        OpenHD.set_FC_Reboot_Shutdown(1);
                     }*/
                     powerDialog.visible = false
                     settings_panel.visible = false;

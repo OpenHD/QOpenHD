@@ -549,7 +549,7 @@ BaseWidget {
                     origin.x: 100
                     origin.y: 150
                     Behavior on angle {NumberAnimation { duration: settings.smoothing }}
-                    angle: settings.roll_sky_pointer ? 0 : (settings.roll_invert ? OpenHD.roll : OpenHD.roll * -1)
+                    angle: settings.roll_sky_pointer ? 0 : (settings.roll_invert ? _fcMavlinkSystem.roll : _fcMavlinkSystem.roll * -1)
                 }
             }
 
@@ -586,7 +586,7 @@ BaseWidget {
                     origin.x: 100
                     origin.y: 150
                     Behavior on angle {NumberAnimation { duration: settings.smoothing }}
-                    angle: settings.roll_sky_pointer ? (settings.roll_invert ? OpenHD.roll : OpenHD.roll * -1) : 0
+                    angle: settings.roll_sky_pointer ? (settings.roll_invert ? _fcMavlinkSystem.roll : _fcMavlinkSystem.roll * -1) : 0
                 }
             }
         }

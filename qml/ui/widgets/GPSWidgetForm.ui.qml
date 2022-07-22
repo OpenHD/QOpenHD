@@ -350,7 +350,7 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Text {
-                    text: Number(OpenHD.lat).toLocaleString(Qt.locale(), 'f', 6)
+                    text: Number(_fcMavlinkSystem.lat).toLocaleString(Qt.locale(), 'f', 6)
                     color: "white"
                     font.bold: true
                     height: parent.height
@@ -372,7 +372,7 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Text {
-                    text: Number(OpenHD.lon).toLocaleString(Qt.locale(), 'f', 6)
+                    text: Number(_fcMavlinkSystem.lon).toLocaleString(Qt.locale(), 'f', 6)
                     color: "white"
                     font.bold: true
                     height: parent.height
@@ -413,16 +413,16 @@ BaseWidget {
             y: 0
             width: 24
             height: 24
-            //     color: OpenHD.gps_fix_type >= 3 ? settings.color_text : (OpenHD.gps_fix_type < 2 ? "#ff0000" : "#fbfd15")
+            //     color: _fcMavlinkSystem.gps_fix_type >= 3 ? settings.color_text : (_fcMavlinkSystem.gps_fix_type < 2 ? "#ff0000" : "#fbfd15")
             color: {
-                if (OpenHD.gps_hdop >= settings.gps_warn) {
+                if (_fcMavlinkSystem.gps_hdop >= settings.gps_warn) {
                     widgetInner.visible = true
                     return settings.color_warn
-                } else if (OpenHD.gps_hdop > settings.gps_caution) {
+                } else if (_fcMavlinkSystem.gps_hdop > settings.gps_caution) {
                     widgetInner.visible = true
                     return settings.color_caution
                 } else if (settings.gps_declutter == true
-                           && OpenHD.armed == true) {
+                           && _fcMavlinkSystem.armed == true) {
                     widgetInner.visible = false
                     return settings.color_text
                 } else {
@@ -431,7 +431,7 @@ BaseWidget {
                 }
             }
             opacity: settings.gps_opacity
-            text: OpenHD.satellites_visible
+            text: _fcMavlinkSystem.satellites_visible
             anchors.right: gps_hdop.left
             anchors.rightMargin: 2
             elide: Text.ElideNone
@@ -449,14 +449,14 @@ BaseWidget {
             width: 48
             height: 24
             color: {
-                if (OpenHD.gps_hdop >= settings.gps_warn) {
+                if (_fcMavlinkSystem.gps_hdop >= settings.gps_warn) {
                     widgetInner.visible = true
                     return settings.color_warn
-                } else if (OpenHD.gps_hdop > settings.gps_caution) {
+                } else if (_fcMavlinkSystem.gps_hdop > settings.gps_caution) {
                     widgetInner.visible = true
                     return settings.color_caution
                 } else if (settings.gps_declutter == true
-                           && OpenHD.armed == true) {
+                           && _fcMavlinkSystem.armed == true) {
                     widgetInner.visible = false
                     return settings.color_text
                 } else {
@@ -465,7 +465,7 @@ BaseWidget {
                 }
             }
             opacity: settings.gps_opacity
-            text: qsTr("%L1").arg(OpenHD.gps_hdop)
+            text: qsTr("%L1").arg(_fcMavlinkSystem.gps_hdop)
             anchors.right: parent.right
             anchors.rightMargin: 0
             verticalAlignment: Text.AlignTop
@@ -507,7 +507,7 @@ BaseWidget {
                 Text {
                     id: lat_onscreen
                     visible: settings.gps_show_all
-                    text: Number(OpenHD.lat).toLocaleString(Qt.locale(), 'f', 6)
+                    text: Number(_fcMavlinkSystem.lat).toLocaleString(Qt.locale(), 'f', 6)
                     color: settings.color_text
                     opacity: settings.gps_opacity
                     font.bold: true
@@ -544,7 +544,7 @@ BaseWidget {
                 Text {
                     id: lon_onscreen
                     visible: settings.gps_show_all
-                    text: Number(OpenHD.lon).toLocaleString(Qt.locale(), 'f', 6)
+                    text: Number(_fcMavlinkSystem.lon).toLocaleString(Qt.locale(), 'f', 6)
                     color: settings.color_text
                     opacity: settings.gps_opacity
                     font.bold: true

@@ -224,7 +224,7 @@ BaseWidget {
             anchors.rightMargin: 0
             anchors.verticalCenter: widgetGlyph.verticalCenter
             text: Number(
-                      settings.enable_imperial ? (settings.speed_second_use_groundspeed ? OpenHD.speed * 0.621371 : OpenHD.airspeed * 0.621371) : (settings.speed_second_use_groundspeed ? OpenHD.speed : OpenHD.airspeed)).toLocaleString(
+                      settings.enable_imperial ? (settings.speed_second_use_groundspeed ? _fcMavlinkSystem.speed * 0.621371 : _fcMavlinkSystem.airspeed * 0.621371) : (settings.speed_second_use_groundspeed ? _fcMavlinkSystem.speed : _fcMavlinkSystem.airspeed)).toLocaleString(
                       Qt.locale(), 'f', 0)
             horizontalAlignment: Text.AlignRight
             verticalAlignment: Text.AlignVCenter

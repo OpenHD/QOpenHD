@@ -282,9 +282,9 @@ BaseWidget {
             y: 0
             color: settings.color_text
             text: settings.air_battery_show_fc_percent ? qsTr("%L1%").arg(
-                                                             OpenHD.fc_battery_percent) : qsTr(
+                                                             _fcMavlinkSystem.fc_battery_percent) : qsTr(
                                                              "%L1%").arg(
-                                                             OpenHD.battery_percent)
+                                                             _fcMavlinkSystem.battery_percent)
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: batteryGauge.right
             anchors.leftMargin: 0
@@ -300,7 +300,7 @@ BaseWidget {
         Text {
             id: battery_amp_text
             visible: settings.air_battery_show_voltage_current
-            text: Number(OpenHD.battery_current / 100.0).toLocaleString(
+            text: Number(_fcMavlinkSystem.battery_current / 100.0).toLocaleString(
                       Qt.locale(), 'f', 1) + "A"
             color: settings.color_text
             anchors.bottom: battery_percent.top
@@ -319,9 +319,9 @@ BaseWidget {
             id: battery_volt_text
             visible: settings.air_battery_show_voltage_current
             text: settings.air_battery_show_single_cell ? Number(
-                                                              (OpenHD.battery_voltage) / settings.battery_cells).toLocaleString(
+                                                              (_fcMavlinkSystem.battery_voltage) / settings.battery_cells).toLocaleString(
                                                               Qt.locale(),
-                                                              'f', 1) + "V" : Number(OpenHD.battery_voltage).toLocaleString(
+                                                              'f', 1) + "V" : Number(_fcMavlinkSystem.battery_voltage).toLocaleString(
                                                               Qt.locale(),
                                                               'f', 1) + "V"
             color: settings.color_text
@@ -343,14 +343,14 @@ BaseWidget {
             width: 36
             height: 48
             color: {
-                var percent = settings.air_battery_show_fc_percent ? OpenHD.fc_battery_percent : OpenHDUtil.lipo_battery_voltage_to_percent(
+                var percent = settings.air_battery_show_fc_percent ? _fcMavlinkSystem.fc_battery_percent : OpenHDUtil.lipo_battery_voltage_to_percent(
                                                                          settings.battery_cells,
-                                                                         OpenHD.battery_voltage)
+                                                                         _fcMavlinkSystem.battery_voltage)
                 // 20% warning, 15% critical
                 return percent < 20 ? (percent < 15 ? "#ff0000" : "#fbfd15") : settings.color_shape
             }
             opacity: settings.air_battery_opacity
-            text: settings.air_battery_show_fc_percent ? OpenHD.fc_battery_gauge : OpenHD.fc_battery_gauge
+            text: settings.air_battery_show_fc_percent ? _fcMavlinkSystem.fc_battery_gauge : _fcMavlinkSystem.fc_battery_gauge
             anchors.left: parent.left
             anchors.leftMargin: 12
             fontSizeMode: Text.VerticalFit

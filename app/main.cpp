@@ -358,9 +358,9 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
 
     engine.rootContext()->setContextProperty("OpenHDUtil", util);
 
-    engine.rootContext()->setContextProperty("OpenHD", &FCMavlinkSystem::instance());
-    /*engine.rootContext()->setContextProperty("_ohdSystemAir", &OHDSystemAir::instance());
-    engine.rootContext()->setContextProperty("_ohdSystemGround", &OHDSystemGround::instance());*/
+    // Regster all the QT Mavlink system model(s)
+    // it is a common practice for QT to prefix models from c++ with an underscore
+    engine.rootContext()->setContextProperty("_fcMavlinkSystem", &FCMavlinkSystem::instance());
     engine.rootContext()->setContextProperty("_ohdSystemAir", &AOHDSystem::instanceAir());
     engine.rootContext()->setContextProperty("_ohdSystemGround", &AOHDSystem::instanceGround());
     engine.rootContext()->setContextProperty("_decodingStatistics",&DecodingStatistcs::instance());

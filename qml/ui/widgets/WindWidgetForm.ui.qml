@@ -437,7 +437,7 @@ BaseWidget {
                     origin.x: 3
                     origin.y: 20
                     Behavior on angle {NumberAnimation { duration: settings.smoothing }}
-                    angle: (settings.wind_plane_copter ? OpenHD.wind_direction : OpenHD.mav_wind_direction) - OpenHD.hdg - 180
+                    angle: (settings.wind_plane_copter ? _fcMavlinkSystem.wind_direction : _fcMavlinkSystem.mav_wind_direction) - _fcMavlinkSystem.hdg - 180
                 }
             }
             Rectangle {
@@ -502,7 +502,7 @@ BaseWidget {
                 transform: Rotation {
                     origin.x: 25
                     origin.y: 25
-                    angle: (settings.wind_plane_copter ? OpenHD.wind_direction : OpenHD.mav_wind_direction - 10) - OpenHD.hdg - 190
+                    angle: (settings.wind_plane_copter ? _fcMavlinkSystem.wind_direction : _fcMavlinkSystem.mav_wind_direction - 10) - _fcMavlinkSystem.hdg - 190
                 }
             }
             Shape {
@@ -545,9 +545,9 @@ BaseWidget {
                         // @disable-check M223
 
                         //   var wind=getWindDirection();
-                        //  var wind_direction=wind.direction - OpenHD.hdg + 185;
+                        //  var wind_direction=wind.direction - _fcMavlinkSystem.hdg + 185;
                         //   return wind_direction;
-                        (settings.wind_plane_copter ? OpenHD.wind_direction : OpenHD.mav_wind_direction) - OpenHD.hdg - 170
+                        (settings.wind_plane_copter ? _fcMavlinkSystem.wind_direction : _fcMavlinkSystem.mav_wind_direction) - _fcMavlinkSystem.hdg - 170
                     }
                 }
             }
@@ -585,7 +585,7 @@ BaseWidget {
                 font.pixelSize: 12
                 text: {
                     // @disable-check M223
-                    Number(settings.enable_imperial ? (settings.wind_plane_copter ? OpenHD.wind_speed * 2.237 : OpenHD.mav_wind_speed * 2.237) : (settings.wind_plane_copter ? OpenHD.wind_speed * 3.6 : OpenHD.mav_wind_speed * 3.6)).toLocaleString(
+                    Number(settings.enable_imperial ? (settings.wind_plane_copter ? _fcMavlinkSystem.wind_speed * 2.237 : _fcMavlinkSystem.mav_wind_speed * 2.237) : (settings.wind_plane_copter ? _fcMavlinkSystem.wind_speed * 3.6 : _fcMavlinkSystem.mav_wind_speed * 3.6)).toLocaleString(
                                 Qt.locale(), 'f', 0)
                 } // @disable-check M222
                 anchors.fill: parent

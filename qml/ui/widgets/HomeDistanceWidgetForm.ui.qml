@@ -238,7 +238,7 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Text {
-                    text: Number(OpenHD.homelat).toLocaleString(Qt.locale(),
+                    text: Number(_fcMavlinkSystem.homelat).toLocaleString(Qt.locale(),
                                                                 'f', 6)
                     color: "white"
                     height: parent.height
@@ -261,7 +261,7 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Text {
-                    text: Number(OpenHD.homelon).toLocaleString(Qt.locale(),
+                    text: Number(_fcMavlinkSystem.homelon).toLocaleString(Qt.locale(),
                                                                 'f', 6)
                     color: "white"
                     height: parent.height
@@ -277,8 +277,8 @@ BaseWidget {
                 Text {
                     text: {
                         /* autopilot detection not reliable.. gets set in MavlinkTelemetry
-                        if(OpenHD.mav_type=="ARDUPLANE" || OpenHD.mav_type=="ARDUCOPTER"){
-                            return qsTr("Vehicle type: "+OpenHD.mav_type);
+                        if(_fcMavlinkSystem.mav_type=="ARDUPLANE" || _fcMavlinkSystem.mav_type=="ARDUCOPTER"){
+                            return qsTr("Vehicle type: "+_fcMavlinkSystem.mav_type);
                         }
                         else {
                             return qsTr("Only For Ardupilot...");
@@ -295,7 +295,7 @@ BaseWidget {
 
             ConfirmSlider {
 
-                visible: OpenHD.mav_type == "ARDUPLANE"
+                visible: _fcMavlinkSystem.mav_type == "ARDUPLANE"
 
                 text_off: qsTr("RTL")
                 msg_id: 11
@@ -304,7 +304,7 @@ BaseWidget {
                     if (checked == true) {
 
                         //double check.... not really needed
-                        OpenHD.set_Requested_Flight_Mode(msg_id)
+                        _fcMavlinkSystem.set_Requested_Flight_Mode(msg_id)
                         //console.log("selected");
                     }
                 }
@@ -313,7 +313,7 @@ BaseWidget {
             //-----------------------Split from plane to copter
             ConfirmSlider {
 
-                visible: OpenHD.mav_type == "ARDUCOPTER"
+                visible: _fcMavlinkSystem.mav_type == "ARDUCOPTER"
 
                 text_off: qsTr("RTL")
                 msg_id: 6
@@ -322,7 +322,7 @@ BaseWidget {
                     if (checked == true) {
 
                         //double check.... not really needed
-                        OpenHD.set_Requested_Flight_Mode(msg_id)
+                        _fcMavlinkSystem.set_Requested_Flight_Mode(msg_id)
                         //console.log("selected");
                     }
                 }
@@ -363,7 +363,7 @@ BaseWidget {
             opacity: settings.home_distance_opacity
             // @disable-check M222
             text: {
-                var distance = OpenHD.home_distance
+                var distance = _fcMavlinkSystem.home_distance
                 var unit = "m"
                 var use_imperial = settings.value("enable_imperial", false)
                 // QML settings can return strings for booleans on some platforms so we check

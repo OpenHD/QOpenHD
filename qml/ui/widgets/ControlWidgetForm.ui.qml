@@ -354,15 +354,15 @@ BaseWidget {
                 border.color: settings.color_glow
                 border.width: 1
 
-                visible: OpenHD.control_throttle < 1000 ? false : true
+                visible: _fcMavlinkSystem.control_throttle < 1000 ? false : true
 
                 transformOrigin: Item.Center
 
                 transform: Translate {
-                    x: settings.control_rev_yaw ? ((OpenHD.control_yaw - 1500) / 10)
-                                                  * -1 : (OpenHD.control_yaw - 1500) / 10
-                    y: settings.control_rev_throttle ? ((OpenHD.control_throttle - 2000) / 10)
-                                                       + 50 : ((OpenHD.control_throttle - 2000)
+                    x: settings.control_rev_yaw ? ((_fcMavlinkSystem.control_yaw - 1500) / 10)
+                                                  * -1 : (_fcMavlinkSystem.control_yaw - 1500) / 10
+                    y: settings.control_rev_throttle ? ((_fcMavlinkSystem.control_throttle - 2000) / 10)
+                                                       + 50 : ((_fcMavlinkSystem.control_throttle - 2000)
                                                                / 10) * -1 - 50
                 }
             }
@@ -378,15 +378,15 @@ BaseWidget {
                 border.color: settings.color_glow
                 border.width: 1
 
-                visible: OpenHD.control_throttle < 1000 ? false : true
+                visible: _fcMavlinkSystem.control_throttle < 1000 ? false : true
 
                 transformOrigin: Item.Center
 
                 transform: Translate {
-                    x: settings.control_rev_roll ? ((OpenHD.control_roll - 1500)
-                                                    / 10) * -1 : (OpenHD.control_roll - 1500) / 10
-                    y: settings.control_rev_pitch ? ((OpenHD.control_pitch - 1500) / 10)
-                                                    * -1 : (OpenHD.control_pitch - 1500) / 10
+                    x: settings.control_rev_roll ? ((_fcMavlinkSystem.control_roll - 1500)
+                                                    / 10) * -1 : (_fcMavlinkSystem.control_roll - 1500) / 10
+                    y: settings.control_rev_pitch ? ((_fcMavlinkSystem.control_pitch - 1500) / 10)
+                                                    * -1 : (_fcMavlinkSystem.control_pitch - 1500) / 10
                 }
             }
         }
@@ -463,14 +463,14 @@ BaseWidget {
                 border.width: 1
                 radius: width * 0.5
 
-                visible: OpenHD.control_throttle < 1000 ? false : true
+                visible: _fcMavlinkSystem.control_throttle < 1000 ? false : true
 
                 transformOrigin: Item.Center
 
                 transform: Translate {
-                    x: settings.control_rev_yaw ? (((OpenHD.control_yaw - 1500) / 10) / 2)
-                                                  * -1 : ((OpenHD.control_yaw - 1500) / 10) / 2
-                    y: settings.control_rev_throttle ? ((((OpenHD.control_throttle - 2000) / 10) * -1 - 50) / 2) * -1 : (((OpenHD.control_throttle - 2000) / 10) * -1 - 50) / 2
+                    x: settings.control_rev_yaw ? (((_fcMavlinkSystem.control_yaw - 1500) / 10) / 2)
+                                                  * -1 : ((_fcMavlinkSystem.control_yaw - 1500) / 10) / 2
+                    y: settings.control_rev_throttle ? ((((_fcMavlinkSystem.control_throttle - 2000) / 10) * -1 - 50) / 2) * -1 : (((_fcMavlinkSystem.control_throttle - 2000) / 10) * -1 - 50) / 2
                 }
             }
 
@@ -484,15 +484,15 @@ BaseWidget {
                 border.width: 1
                 radius: width * 0.5
 
-                visible: OpenHD.control_throttle < 1000 ? false : true
+                visible: _fcMavlinkSystem.control_throttle < 1000 ? false : true
 
                 transformOrigin: Item.Center
 
                 transform: Translate {
-                    x: settings.control_rev_roll ? (((OpenHD.control_roll - 1500) / 10) / 2)
-                                                   * -1 : ((OpenHD.control_roll - 1500) / 10) / 2
-                    y: settings.control_rev_pitch ? (((OpenHD.control_pitch - 1500) / 10) / 2)
-                                                    * -1 : ((OpenHD.control_pitch - 1500) / 10) / 2
+                    x: settings.control_rev_roll ? (((_fcMavlinkSystem.control_roll - 1500) / 10) / 2)
+                                                   * -1 : ((_fcMavlinkSystem.control_roll - 1500) / 10) / 2
+                    y: settings.control_rev_pitch ? (((_fcMavlinkSystem.control_pitch - 1500) / 10) / 2)
+                                                    * -1 : ((_fcMavlinkSystem.control_pitch - 1500) / 10) / 2
                 }
             }
         }

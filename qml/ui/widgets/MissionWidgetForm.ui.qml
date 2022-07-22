@@ -206,8 +206,8 @@ BaseWidget {
                 Text {
                     text: {
                         /* autopilot detection not reliable.. gets set in MavlinkTelemetry
-                        if(OpenHD.mav_type=="ARDUPLANE" || OpenHD.mav_type=="ARDUCOPTER"){
-                            return qsTr("Vehicle type: "+OpenHD.mav_type);
+                        if(_fcMavlinkSystem.mav_type=="ARDUPLANE" || _fcMavlinkSystem.mav_type=="ARDUCOPTER"){
+                            return qsTr("Vehicle type: "+_fcMavlinkSystem.mav_type);
                         }
                         else {
                             return qsTr("Only For Ardupilot...");
@@ -224,7 +224,7 @@ BaseWidget {
 
             ConfirmSlider {
 
-                visible: OpenHD.mav_type=="ARDUPLANE" || OpenHD.mav_type=="ARDUCOPTER"
+                visible: _fcMavlinkSystem.mav_type=="ARDUPLANE" || _fcMavlinkSystem.mav_type=="ARDUCOPTER"
                 text_off: qsTr("Request Mission")
 
                 msg_id: 43 //mission_request_list
@@ -233,7 +233,7 @@ BaseWidget {
                     if (checked == true) {
 
                         //double check.... not really needed
-                        OpenHD.request_Mission()
+                        _fcMavlinkSystem.request_Mission()
                         //console.log("Mission selected");
                     }
                 }
@@ -258,7 +258,7 @@ BaseWidget {
                 height: 14
                 color: settings.color_text
                 text: qsTr(
-                          "Mission") + ": " + OpenHD.current_waypoint + "/" + OpenHD.total_waypoints
+                          "Mission") + ": " + _fcMavlinkSystem.current_waypoint + "/" + _fcMavlinkSystem.total_waypoints
                 anchors.bottom: parent.bottom
                 anchors.bottomMargin: 0
                 verticalAlignment: Text.AlignBottom

@@ -217,8 +217,8 @@ BaseWidget {
             clip: true
             color: settings.color_text
             opacity: settings.mah_km_opacity
-            text: (OpenHD.mah_km > 0)
-                  && (OpenHD.mah_km < 999) ? OpenHD.mah_km + "mAh/km" : "---mAh/km"
+            text: (_fcMavlinkSystem.mah_km > 0)
+                  && (_fcMavlinkSystem.mah_km < 999) ? _fcMavlinkSystem.mah_km + "mAh/km" : "---mAh/km"
             anchors.right: parent.right
             anchors.rightMargin: 0
             verticalAlignment: Text.AlignVCenter

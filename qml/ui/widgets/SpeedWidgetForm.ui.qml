@@ -326,9 +326,9 @@ BaseWidget {
                 speedMinimum: settings.speed_minimum
                 speedRange: settings.speed_range
                 Behavior on speed {NumberAnimation { duration: settings.smoothing }}
-                speed: OpenHD.speed
+                speed: _fcMavlinkSystem.speed
                 Behavior on airspeed {NumberAnimation { duration: settings.smoothing }}
-                airspeed: OpenHD.airspeed
+                airspeed: _fcMavlinkSystem.airspeed
                 fontFamily: settings.font_text
             }
         }
@@ -347,7 +347,7 @@ BaseWidget {
                 yScale: settings.speed_size
             }
             text: Number(
-                      settings.enable_imperial ? (settings.speed_use_groundspeed ? OpenHD.speed * 0.621371 : OpenHD.airspeed * 0.621371) : (settings.speed_use_groundspeed ? OpenHD.speed : OpenHD.airspeed)).toLocaleString(
+                      settings.enable_imperial ? (settings.speed_use_groundspeed ? _fcMavlinkSystem.speed * 0.621371 : _fcMavlinkSystem.airspeed * 0.621371) : (settings.speed_use_groundspeed ? _fcMavlinkSystem.speed : _fcMavlinkSystem.airspeed)).toLocaleString(
                       Qt.locale(), 'f', 0)
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter

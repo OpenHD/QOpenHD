@@ -238,7 +238,7 @@ BaseWidget {
                 transform: Rotation {
                     origin.x: 32;
                     origin.y: 12;
-                    angle: settings.arrow_invert ? OpenHD.home_course : OpenHD.home_course-180
+                    angle: settings.arrow_invert ? _fcMavlinkSystem.home_course : _fcMavlinkSystem.home_course-180
                 }
             }
         }

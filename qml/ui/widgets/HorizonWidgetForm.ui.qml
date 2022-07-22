@@ -502,14 +502,14 @@ BaseWidget {
                 horizonStep: settings.horizon_step
 
                 Behavior on pitch {NumberAnimation { duration: settings.smoothing }}
-                pitch: OpenHD.pitch
+                pitch: _fcMavlinkSystem.pitch
                 Behavior on roll {NumberAnimation { duration: settings.smoothing }}
-                roll: OpenHD.roll
+                roll: _fcMavlinkSystem.roll
 
                 Behavior on heading {NumberAnimation { duration: settings.smoothing }}
-                heading: OpenHD.hdg
+                heading: _fcMavlinkSystem.hdg
                 Behavior on homeHeading {NumberAnimation { duration: settings.smoothing }}
-                homeHeading: OpenHD.home_heading
+                homeHeading: _fcMavlinkSystem.home_heading
 
                 showHeadingLadderText: settings.heading_ladder_text
                 showHorizonHeadingLadder: settings.show_horizon_heading_ladder

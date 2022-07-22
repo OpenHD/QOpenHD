@@ -282,7 +282,7 @@ BaseWidget {
                 maximumValue: settings.vsi_max
 
                 Behavior on value {NumberAnimation { duration: settings.smoothing }}
-                value: OpenHD.vsi
+                value: _fcMavlinkSystem.vsi
 
                 style: CircularGaugeStyle {
                     labelInset: outerRadius * -.3

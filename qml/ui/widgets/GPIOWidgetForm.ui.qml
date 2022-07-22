@@ -68,7 +68,7 @@ BaseWidget {
                 textColor: "white"
                 checkColor: "black"
                 unknownState: true
-                enabled: !_ohdSystemAir.air_gpio_busy
+                enabled: false//!_ohdSystemAir.air_gpio_busy
                 onCheckedChanged: _ohdSystemAir.setAirGPIO(0, checked)
             }
 
@@ -81,7 +81,7 @@ BaseWidget {
                 textColor: "white"
                 checkColor: "black"
                 unknownState: true
-                enabled: !OpenHD.air_gpio_busy
+                enabled: false//!OpenHD.air_gpio_busy
                 onCheckedChanged: OpenHD.setAirGPIO(1, checked)
             }
 
@@ -94,7 +94,7 @@ BaseWidget {
                 textColor: "white"
                 checkColor: "black"
                 unknownState: true
-                enabled: !OpenHD.air_gpio_busy
+                enabled: false//!OpenHD.air_gpio_busy
                 onCheckedChanged: OpenHD.setAirGPIO(2, checked)
             }
 
@@ -107,7 +107,7 @@ BaseWidget {
                 textColor: "white"
                 checkColor: "black"
                 unknownState: true
-                enabled: !OpenHD.air_gpio_busy
+                enabled: false//!OpenHD.air_gpio_busy
                 onCheckedChanged: OpenHD.setAirGPIO(3, checked)
             }
 
@@ -120,7 +120,7 @@ BaseWidget {
                 textColor: "white"
                 checkColor: "black"
                 unknownState: true
-                enabled: !OpenHD.air_gpio_busy
+                enabled: false//!OpenHD.air_gpio_busy
                 onCheckedChanged: OpenHD.setAirGPIO(4, checked)
             }
 
@@ -133,7 +133,7 @@ BaseWidget {
                 textColor: "white"
                 checkColor: "black"
                 unknownState: true
-                enabled: !OpenHD.air_gpio_busy
+                enabled: false//!OpenHD.air_gpio_busy
                 onCheckedChanged: OpenHD.setAirGPIO(5, checked)
             }
 
@@ -146,7 +146,7 @@ BaseWidget {
                 textColor: "white"
                 checkColor: "black"
                 unknownState: true
-                enabled: !OpenHD.air_gpio_busy
+                enabled: false//!OpenHD.air_gpio_busy
                 onCheckedChanged: OpenHD.setAirGPIO(6, checked)
             }
 
@@ -159,7 +159,7 @@ BaseWidget {
                 textColor: "white"
                 checkColor: "black"
                 unknownState: true
-                enabled: !OpenHD.air_gpio_busy
+                enabled: false//false//!OpenHD.air_gpio_busy
                 onCheckedChanged: OpenHD.setAirGPIO(7, checked)
             }
         }

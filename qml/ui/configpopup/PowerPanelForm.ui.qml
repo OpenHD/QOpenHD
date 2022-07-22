@@ -76,7 +76,7 @@ Rectangle {
                     }
 
                     Text {
-                        text: OpenHD.air_vout >= 0 ? (OpenHD.air_vout / 1000.0).toFixed(2) + "V" : "N/A"
+                        text: _fcMavlinkSystem.air_vout >= 0 ? (_fcMavlinkSystem.air_vout / 1000.0).toFixed(2) + "V" : "N/A"
                         height: 24
                         Layout.fillWidth: true
                         font.pixelSize: 14
@@ -101,7 +101,7 @@ Rectangle {
                     }
 
                     Text {
-                        text: OpenHD.air_iout >= 0 ? OpenHD.air_iout + "mA" : "N/A"
+                        text: _fcMavlinkSystem.air_iout >= 0 ? _fcMavlinkSystem.air_iout + "mA" : "N/A"
                         height: 24
                         Layout.fillWidth: true
                         font.pixelSize: 14
@@ -178,7 +178,7 @@ Rectangle {
                     }
 
                     Text {
-                        text: OpenHD.ground_vin >= 0 ? (OpenHD.ground_vin / 1000.0).toFixed(2) + "V": "N/A"
+                        text: "TOD"//OpenHD.ground_vin >= 0 ? (OpenHD.ground_vin / 1000.0).toFixed(2) + "V": "N/A"
                         height: 24
                         Layout.fillWidth: true
                         font.pixelSize: 14
@@ -203,7 +203,7 @@ Rectangle {
                     }
 
                     Text {
-                        text: OpenHD.ground_vout >= 0 ? (OpenHD.ground_vout / 1000.0).toFixed(2)  + "V" : "N/A"
+                        text: "TOD"//OpenHD.ground_vout >= 0 ? (OpenHD.ground_vout / 1000.0).toFixed(2)  + "V" : "N/A"
                         height: 24
                         Layout.fillWidth: true
                         font.pixelSize: 14
@@ -228,7 +228,7 @@ Rectangle {
                     }
 
                     Text {
-                        text: OpenHD.ground_iout >= 0 ? OpenHD.ground_iout + "mA" : "N/A"
+                        text: "TOD"//OpenHD.ground_iout >= 0 ? OpenHD.ground_iout + "mA" : "N/A"
                         height: 24
                         Layout.fillWidth: true
                         font.pixelSize: 14
@@ -253,7 +253,7 @@ Rectangle {
                     }
 
                     Text {
-                        text: OpenHD.ground_vbat >= 0 ? (OpenHD.ground_vbat / 1000.0).toFixed(2) + "V" : "N/A"
+                        text: "TOD"//OpenHD.ground_vbat >= 0 ? (OpenHD.ground_vbat / 1000.0).toFixed(2) + "V" : "N/A"
                         height: 24
                         Layout.fillWidth: true
                         font.pixelSize: 14
@@ -313,7 +313,7 @@ Rectangle {
         Card {
             id: fcBox
             visible: {
-                if(OpenHD.mav_type=="ARDUPLANE" || OpenHD.mav_type=="ARDUCOPTER"){
+                if(_fcMavlinkSystem.mav_type=="ARDUPLANE" || _fcMavlinkSystem.mav_type=="ARDUCOPTER"){
                     return true;
                 }
                 else{

@@ -415,7 +415,7 @@ BaseWidget {
                     widgetInner.visible = true
                     return settings.color_caution
                 } else if (settings.air_status_declutter == true
-                           && OpenHD.armed == true) {
+                           && _fcMavlinkSystem.armed == true) {
                     widgetInner.visible = false
                     return settings.color_text
                 } else {
@@ -453,7 +453,7 @@ BaseWidget {
                     widgetInner.visible = true
                     return settings.color_caution
                 } else if (settings.air_status_declutter == true
-                           && OpenHD.armed == true) {
+                           && _fcMavlinkSystem.armed == true) {
                     widgetInner.visible = false
                     return settings.color_text
                 } else {

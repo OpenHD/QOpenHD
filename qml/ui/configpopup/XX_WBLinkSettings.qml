@@ -146,6 +146,9 @@ ColumnLayout {
             text: "Fetch"
             onClicked: {
                 var _res=_synchronizedSettings.get_param_int_air_and_ground_value_freq()
+                if(_res>=0){
+                    buttonSwitchFreq.enabled=true
+                }
                 //console.log("Got ",_res)
                 update_combobox(comboBoxFreq,_res);
             }
@@ -158,6 +161,8 @@ ColumnLayout {
         }
         Button{
             text: "Switch Frequency"
+            id: buttonSwitchFreq
+            enabled: false
             onClicked: {
                 var selectedValue=frequenciesModel.get(comboBoxFreq.currentIndex).value
                 _synchronizedSettings.change_param_air_and_ground_frequency(selectedValue);
@@ -170,6 +175,9 @@ ColumnLayout {
             text: "Fetch"
             onClicked: {
                 var _res=_synchronizedSettings.get_param_int_air_and_ground_value_mcs()
+                if(_res>=0){
+                    buttonSwitchMCS.enabled=true
+                }
                 //console.log("Got ",_res)
                 update_combobox(comboBoxMcsIndex,_res);
             }
@@ -182,6 +190,8 @@ ColumnLayout {
         }
         Button{
             text: "Change MCS"
+            id: buttonSwitchMCS
+            enabled: false
             onClicked: {
                  var selectedValue=mcsIndexModel.get(comboBoxMcsIndex.currentIndex).value
                 _synchronizedSettings.change_param_air_and_ground_mcs(selectedValue)
@@ -194,6 +204,9 @@ ColumnLayout {
             text: "Fetch"
             onClicked: {
                 var _res=_synchronizedSettings.get_param_int_air_and_ground_value_channel_width()
+                if(_res>=0){
+                    buttonSwitchChannelWidth.enabled=true
+                }
                 //console.log("Got ",_res)
                 update_combobox(comboBoxChannelWidth,_res);
             }
@@ -206,6 +219,8 @@ ColumnLayout {
         }
         Button{
             text: "Change Channel Width"
+            id: buttonSwitchChannelWidth
+            enabled: false
             onClicked: {
                  var selectedValue=channelWidthModel.get(comboBoxChannelWidth.currentIndex).value
                 _synchronizedSettings.change_param_air_and_ground_channel_width(selectedValue)
