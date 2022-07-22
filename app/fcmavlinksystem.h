@@ -6,13 +6,12 @@
 #include <QTimer>
 
 /**
- * NOTE: This class slowly has / is becoming the "Flight controller" (only) mavlink model, most of the FCMavlinkSystem stuff has been refactored out here.
- * However, renaming this model to "_fcModel" (rename "FCMavlinkSystem" to "_fcModel" is a tedious task for one hour ;) so not done yet.
- *
- * So this is basically a really big "model" and a small "controller" (in MVC pattern) class.
- * While I'd like someone refactoring it (and it should probably reside in telemetry or at least be seperated into telemetry and non-telemetry stuff)
- * since all the UI elements and their java script code use this class that's not feasible rn.
- * And there are actually some advantages to having one (big) model, since then you only have to import one model into qml
+ * This used to be called OpenHD and was a mix of everything, it has become FCMavlinkSystem -
+ * A QT model for (fire and forget) data from the mavlink FC connected to the air unit.
+ * OpenHD only ever has one connected FC, so this can be a singleton, too.
+ * Also, note that nothing OpenHD specific should ever make it into here - OpenHD supports raw access to
+ * the Flight Controller, but it is NOT a Flight Controller ;)
+ * The corresponding qml element is called _fcMavlinkSystem.
  */
 class FCMavlinkSystem : public QObject
 {
