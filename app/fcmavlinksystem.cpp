@@ -855,6 +855,22 @@ bool FCMavlinkSystem::arm_fc(bool disarm)
     return false;
 }
 
+bool FCMavlinkSystem::send_command_reboot(bool reboot)
+{
+    if(_action){
+        mavsdk::Action::Result res{};
+        if(reboot){
+            res=_action->reboot();
+        }else{
+            res=_action->shutdown();
+        }
+        if(res==mavsdk::Action::Result::Success){
+            return true;
+        }
+    }
+    return false;
+}
+
 
 
 

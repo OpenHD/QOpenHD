@@ -128,37 +128,40 @@ PowerPanelForm {
 
                 onPressed: {
                     var result=false
+                    var messageForHUD="ERROR"
                     if (powerAction == PowerPanel.PowerAction.RebootGround) {
-                        localMessage("Rebooting ground station", 6);
+                        messageForHUD="Rebooting ground station"
                         result = _ohdSystemGround.send_command_reboot(true);
                     }
                     if (powerAction == PowerPanel.PowerAction.ShutdownGround) {
-                        localMessage("Shutting down ground station", 6);
+                        messageForHUD="Shutting down ground station"
                         result = _ohdSystemGround.send_command_reboot(false);
                     }
                     if (powerAction == PowerPanel.PowerAction.RebootAir) {
-                        localMessage("Rebooting air pi", 6);
+                        messageForHUD="Rebooting air pi"
                         result = _ohdSystemAir.send_command_reboot(true);
                     }
                     if (powerAction == PowerPanel.PowerAction.ShutdownAir) {
-                        localMessage("Shutting down air pi", 6);
+                        messageForHUD="Shutting down air pi"
                         result = _ohdSystemAir.send_command_reboot(false);
                     }
-                    /*if (powerAction == PowerPanel.PowerAction.ShutdownFC) { //button commented out
-                        localMessage("Shutting down Flight Controller", 6);
+                    if (powerAction == PowerPanel.PowerAction.ShutdownFC) { //button commented out
+                        messageForHUD="Shutting down Flight Controller"
+                        result = _fcMavlinkSystem.send_command_reboot(false);
                     }
                     if (powerAction == PowerPanel.PowerAction.RebootFC) {
-                        localMessage("Rebooting Flight Controller", 6);
-                    }*/
+                        messageForHUD="Rebooting Flight Controller"
+                        _fcMavlinkSystem.send_command_reboot(true);
+                    }
                     if(result){
                         settings_panel.visible = false;
                         powerDialog.visible = false
+                        localMessage(messageForHUD, 6);
                     }else{
                         console.log("Reboot/Shutdown failed, no response.")
-                        // TODO somehow dislay the "failed" message
-                        //groundButton.text="Failed, no response. Try again ?"
+                        messageForHUD="Reboot/Shutdown failed, no response"
+                        localMessage(messageForHUD, 4);
                     }
-                    //settings_panel.visible = false;
                 }
             }
         }

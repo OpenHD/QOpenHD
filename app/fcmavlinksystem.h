@@ -453,6 +453,7 @@ public:
     //
     Q_INVOKABLE bool set_flight_mode(int mode);
     Q_INVOKABLE bool arm_fc(bool disarm=false);
+    Q_INVOKABLE bool send_command_reboot(bool reboot);
 };
 
 
