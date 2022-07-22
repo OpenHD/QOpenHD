@@ -2326,7 +2326,7 @@ Item {
                             anchors.right: parent.right
                             anchors.verticalCenter: parent.verticalCenter
                             checked: settings.dev_show_whitelisted_params
-                            onCheckedChanged: settings.dev_show_whitelisted_params = dev_show_whitelisted_params
+                            onCheckedChanged: settings.dev_show_whitelisted_params = checked
                         }
                     }
 
