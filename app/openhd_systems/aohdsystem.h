@@ -9,6 +9,7 @@
 #include <array>
 
 /**
+ * Abstract OHD (Mavlink) system.
  * This class contains information (basically like a model) about one OpenHD Air or Ground instance (if connected).
  * A (Abstract) because it is only for functionalities that are always supported by both air and ground.
  * For example, both the air and ground unit report the CPU usage and more, and this data is made available to QT UI using a instance of this model.
