@@ -1,14 +1,18 @@
-name: SonarCloud
+name: SonarCloud_SimpleBuildTest
+
+# NOTE: This test only checks if the code in the repository builds under ubuntu x86 (dependencies installed)
+# Which is - simply put - the most basic test. If this test fails, there is something wrong with the code.
+
 on:
   push:
-    #branches:
-    #  - master
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:
   build:
     name: Build
-    runs-on: ubuntu-latest
+    #runs-on: ubuntu-18.04
+    #runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     env:
       SONAR_SCANNER_VERSION: 4.7.0.2747
       SONAR_SERVER_URL: "https://sonarcloud.io"
@@ -40,12 +44,16 @@ jobs:
           curl -sSLo $HOME/.sonar/build-wrapper-linux-x86.zip ${{ env.BUILD_WRAPPER_DOWNLOAD_URL }}
           unzip -o $HOME/.sonar/build-wrapper-linux-x86.zip -d $HOME/.sonar/
           echo "$HOME/.sonar/build-wrapper-linux-x86" >> $GITHUB_PATH
+      
+      ### build ###
       - name: Run build-wrapper
         run: |
           mkdir build
+          ./build_qmake.sh
           cd build
-          qmake ..
           build-wrapper-linux-x86-64 --out-dir ${{ env.BUILD_WRAPPER_OUT_DIR }} make clean
+      #############
+      
       - name: Run sonar-scanner
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
