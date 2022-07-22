@@ -3,6 +3,7 @@
 #include "../openhd_defines.hpp"
 
 #include <QMessageBox>
+#include <QSettings>
 #include <QVariant>
 
 MavlinkSettingsModel &MavlinkSettingsModel::instanceAirCamera()
@@ -25,6 +26,13 @@ MavlinkSettingsModel &MavlinkSettingsModel::instanceGround()
 std::map<std::string, void *> MavlinkSettingsModel::get_whitelisted_params()
 {
     std::map<std::string,void*> ret{};
+    //dev_show_whitelisted_params
+    QSettings settings;
+    const auto dev_show_whitelisted_params =settings.value("dev_show_whitelisted_params", false).toBool();
+    if(dev_show_whitelisted_params){
+        // no param whitelisted
+        return ret;
+    }
     ret["WB_FREQUENCY"]=nullptr;
     ret["WB_CHANNEL_W"]=nullptr;
     ret["WB_MCS_INDEX"]=nullptr;

@@ -2301,14 +2301,14 @@ Item {
                         }
                     }
 
+                    //
                     Rectangle {
                         width: parent.width
                         height: rowHeight
                         color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-                        visible: false
-
+                        visible: true
                         Text {
-                            text: qsTr("Reset all settings")
+                            text: qsTr("DEV_SHOW_WHITELISTED_PARAMS")
                             font.weight: Font.Bold
                             font.pixelSize: 13
                             anchors.leftMargin: 8
@@ -2318,29 +2318,19 @@ Item {
                             height: elementHeight
                             anchors.left: parent.left
                         }
-
-                        Button {
-                            id: resetButton
-                            width: 128
+                        Switch {
+                            width: 32
                             height: elementHeight
                             anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
 
                             anchors.right: parent.right
                             anchors.verticalCenter: parent.verticalCenter
-                            text: qsTr("Reset")
-                            Material.accent: Material.Red
-                            highlighted: true
-
-                            ToolTip.delay: 250
-                            ToolTip.timeout: 5000
-                            ToolTip.visible: pressed
-                            ToolTip.text: qsTr("Settings reset")
-
-                            onClicked: {
-                                //settings.clear()
-                            }
+                            checked: settings.dev_show_whitelisted_params
+                            onCheckedChanged: settings.dev_show_whitelisted_params = dev_show_whitelisted_params
                         }
                     }
+
+
                 }
             }
         }
