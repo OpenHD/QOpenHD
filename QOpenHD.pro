@@ -125,13 +125,11 @@ HEADERS += \
 HEADERS += \
     app/telemetry/OHDConnection.h \
     app/telemetry/mavlinktelemetry.h \
-    app/telemetry/mavlinkcommand.h \
     app/telemetry/settings/mavlinksettingsmodel.h \
 
 SOURCES += \
     app/telemetry/OHDConnection.cpp \
     app/telemetry/mavlinktelemetry.cpp \
-    app/telemetry/mavlinkcommand.cpp \
     app/telemetry/settings/mavlinksettingsmodel.cpp \
 
 
