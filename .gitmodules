@@ -1,1 +1,4 @@
 
+[submodule "lib/MAVSDK"]
+	path = lib/MAVSDK
+	url = https://github.com/OpenHD/MAVSDK.git
