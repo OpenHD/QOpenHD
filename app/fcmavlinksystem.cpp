@@ -822,10 +822,10 @@ void FCMavlinkSystem::set_last_ping_result_flight_ctrl(QString last_ping_result_
 void FCMavlinkSystem::set_system(std::shared_ptr<mavsdk::System> system)
 {
     assert(_system==nullptr);
+    _system=system;
     if(!_system->has_autopilot()){
         qDebug()<<"FCMavlinkSystem::set_system WARNING no autopilot";
     }
-    _system=system;
     _action=std::make_shared<mavsdk::Action>(system);
     _mavsdk_telemetry=std::make_shared<mavsdk::Telemetry>(system);
     //

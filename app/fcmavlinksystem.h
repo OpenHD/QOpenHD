@@ -437,9 +437,9 @@ public:
     QString m_last_ping_result_flight_ctrl="NA";
 private:
     // NOTE: Null until system discovered
-    std::shared_ptr<mavsdk::System> _system;
-    std::shared_ptr<mavsdk::Action> _action;
-    std::shared_ptr<mavsdk::Telemetry> _mavsdk_telemetry;
+    std::shared_ptr<mavsdk::System> _system=nullptr;
+    std::shared_ptr<mavsdk::Action> _action=nullptr;
+    std::shared_ptr<mavsdk::Telemetry> _mavsdk_telemetry=nullptr;
 public:
     // Set the mavlink system reference, once discovered
     void set_system(std::shared_ptr<mavsdk::System> system);

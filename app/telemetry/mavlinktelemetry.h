@@ -21,8 +21,6 @@ public:
 private:
     bool isConnectionLost();
     OpenHDUtil m_util;
-    quint8 targetSysID;
-    quint8 targetCompID;
     uint64_t m_last_boot = 0;
     qint64 m_last_heartbeat = -1;
     qint64 m_last_attitude = -1;

@@ -5,6 +5,7 @@
 #include <QtQuick>
 //#include <QTimer>
 #include <chrono>
+#include <mutex>
 
 #include "mavlink_include.h"
 
@@ -100,13 +101,14 @@ private:
     bool senderInfohasBeenFound=false;
     int foundSenderPort=-1;
     QHostAddress foundSenderHostAddress=QHostAddress::Any;
-public:
+private:
     #ifdef X_USE_MAVSDK
     int mavsdk_already_known_systems=0;
     std::shared_ptr<mavsdk::Mavsdk> mavsdk=nullptr;
     std::shared_ptr<mavsdk::System> systemOhdGround;
     std::shared_ptr<mavsdk::System> systemOhdAir;
     std::shared_ptr<mavsdk::MavlinkPassthrough> passtroughOhdGround;
+    std::mutex systems_mutex;
     #endif //X_USE_MAVSDK
 private slots:
     // called by QT tcp socket

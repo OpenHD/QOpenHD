@@ -42,6 +42,7 @@ OHDConnection::OHDConnection(QObject *parent,bool useTcp):QObject(parent),USE_TC
     });
     // NOTE: subscribe before adding any connection(s)
     mavsdk->subscribe_on_new_system([this]() {
+        std::lock_guard<std::mutex> lock(systems_mutex);
         // hacky, fucking hell. mavsdk might call this callback with more than 1 system added.
         auto systems=mavsdk->systems();
         for(int i=mavsdk_already_known_systems;i<systems.size();i++){

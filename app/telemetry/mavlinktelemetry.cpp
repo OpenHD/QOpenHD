@@ -36,7 +36,6 @@ MavlinkTelemetry::MavlinkTelemetry(QObject *parent){
         //qDebug()<<"this->onProcessMavlinkMessage";
         this->onProcessMavlinkMessage(msg);
     });
-    targetCompID = MAV_COMP_ID_AUTOPILOT1;
     pause_telemetry=false;
 }
 
@@ -50,7 +49,7 @@ void MavlinkTelemetry::sendRC()
     }
     if (enable_rc == true){
         mavlink_message_t msg;
-        mavlink_msg_rc_channels_override_pack(QOpenHDMavlinkHelper::getSysId(), MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID, targetCompID,
+        mavlink_msg_rc_channels_override_pack(QOpenHDMavlinkHelper::getSysId(), MAV_COMP_ID_MISSIONPLANNER, &msg, 1, 0,
                                               m_rc_values[0],m_rc_values[1],m_rc_values[2],m_rc_values[3],m_rc_values[4],m_rc_values[5],m_rc_values[6],m_rc_values[7],
                 m_rc_values[8],m_rc_values[9],m_rc_values[10],m_rc_values[11],m_rc_values[12],m_rc_values[13],m_rc_values[14],m_rc_values[15],
                 m_rc_values[16],m_rc_values[17]);
@@ -114,12 +113,23 @@ void MavlinkTelemetry::rc_value_changed(int channelIdx,uint channelValue){
 }
 
 
-
 void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
     //qDebug()<<"MavlinkTelemetry::onProcessMavlinkMessage"<<msg.msgid;
     //if(pause_telemetry==true){
     //    return;
     //}
+    if(msg.sysid==OHD_SYS_ID_AIR){
+        if(AOHDSystem::instanceAir().process_message(msg)){
+            // OHD specific message comsumed
+            return;
+        }
+    }
+    if(msg.sysid==OHD_SYS_ID_GROUND){
+        if(AOHDSystem::instanceGround().process_message(msg)){
+            // OHD specific message consumed
+            return;
+        }
+    }
     switch (msg.msgid) {
         case MAVLINK_MSG_ID_HEARTBEAT: {
             mavlink_heartbeat_t heartbeat;
@@ -131,6 +141,8 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             }else if(msg.sysid==OHD_SYS_ID_GROUND){
                 AOHDSystem::instanceGround().set_last_openhd_heartbeat(time_millis);
                 return;
+            }else{
+                FCMavlinkSystem::instance().set_last_heartbeat(time_millis);
             }
 
             auto custom_mode = heartbeat.custom_mode;
@@ -640,77 +652,6 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
         }
         break;
     }
-    case MAVLINK_MSG_ID_OPENHD_VERSION_MESSAGE:{
-        mavlink_openhd_version_message_t parsedMsg;
-        mavlink_msg_openhd_version_message_decode(&msg,&parsedMsg);
-        QString version(parsedMsg.version);
-        if(msg.sysid==OHD_SYS_ID_AIR){
-            AOHDSystem::instanceAir().set_openhd_version(version);
-        }else if(msg.sysid==OHD_SYS_ID_GROUND){
-            AOHDSystem::instanceGround().set_openhd_version(version);
-        }else{
-            qDebug()<<"OHD version with unknown sys id";
-        }
-        break;
-    }
-    case MAVLINK_MSG_ID_ONBOARD_COMPUTER_STATUS:{
-        mavlink_onboard_computer_status_t parsedMsg;
-        mavlink_msg_onboard_computer_status_decode(&msg,&parsedMsg);
-        if(msg.sysid==OHD_SYS_ID_AIR){
-            AOHDSystem::instanceAir().process_x0(parsedMsg);
-        }else if(msg.sysid==OHD_SYS_ID_GROUND){
-             AOHDSystem::instanceGround().process_x0(parsedMsg);
-        }else{
-            qDebug()<<"Onboard computer status from neither openhd air or ground unit";
-        }
-
-        break;
-    }
-    case MAVLINK_MSG_ID_OPENHD_WIFIBROADCAST_WIFI_CARD:{
-        mavlink_openhd_wifibroadcast_wifi_card_t parsedMsg;
-        mavlink_msg_openhd_wifibroadcast_wifi_card_decode(&msg,&parsedMsg);
-        //qDebug()<<"Got MAVLINK_MSG_ID_OPENHD_WIFI_CARD"<<(int)parsedMsg.card_index<<" "<<(int)parsedMsg.signal_millidBm;
-        if(msg.sysid==OHD_SYS_ID_AIR){
-            AOHDSystem::instanceAir().process_x1(parsedMsg);
-        }else if(msg.sysid==OHD_SYS_ID_GROUND){
-             AOHDSystem::instanceGround().process_x1(parsedMsg);
-        }else{
-            qDebug()<<"openhd msg from a non-openhd system";
-        }
-        break;
-    }
-    case MAVLINK_MSG_ID_OPENHD_STATS_TOTAL_ALL_WIFIBROADCAST_STREAMS:{
-        mavlink_openhd_stats_total_all_wifibroadcast_streams_t parsedMsg;
-        mavlink_msg_openhd_stats_total_all_wifibroadcast_streams_decode(&msg,&parsedMsg);
-        if(msg.sysid==OHD_SYS_ID_AIR){
-            AOHDSystem::instanceAir().process_x2(parsedMsg);
-        }else if(msg.sysid==OHD_SYS_ID_GROUND){
-             AOHDSystem::instanceGround().process_x2(parsedMsg);
-        }else{
-            qDebug()<<"openhd msg from a non-openhd system";
-        }
-    }break;
-    case MAVLINK_MSG_ID_OPENHD_FEC_LINK_RX_STATISTICS:{
-        mavlink_openhd_fec_link_rx_statistics_t parsedMsg;
-        mavlink_msg_openhd_fec_link_rx_statistics_decode(&msg,&parsedMsg);
-        if(msg.sysid==OHD_SYS_ID_AIR){
-            AOHDSystem::instanceAir().process_x3(parsedMsg);
-        }else if(msg.sysid==OHD_SYS_ID_GROUND){
-             AOHDSystem::instanceGround().process_x3(parsedMsg);
-        }else{
-            qDebug()<<"openhd msg from a non-openhd system";
-        }
-    }break;
-    /*case MAVLINK_MSG_ID_OPENHD_LOG_MESSAGE:{
-        mavlink_openhd_log_message_t parsedMsg;
-        mavlink_msg_openhd_log_message_decode(&msg,&parsedMsg);
-        const QString message{parsedMsg.text};
-        const quint64 timestamp=parsedMsg.timestamp;
-        const quint8 severity=parsedMsg.severity;
-        qDebug()<<"Log message:"<<message;
-        LogMessagesModel::instance().addLogMessage({"OHD",message,timestamp,LogMessagesModel::log_severity_to_color(severity)});
-        break;
-    }*/
     break;
         default: {
             //printf("MavlinkTelemetry received unmatched message with ID %d, sequence: %d from component %d of system %d\n", msg.msgid, msg.seq, msg.compid, msg.sysid);
@@ -748,41 +689,41 @@ void MavlinkTelemetry::setDataStreamRate(MAV_DATA_STREAM streamType, uint8_t hz)
 void MavlinkTelemetry::requestAutopilotInfo()
 {
     qDebug() << "MavlinkTelemetry::request_Autopilot_Info";
-    auto mavlink_sysid= QOpenHDMavlinkHelper::getSysId();
+    /*auto mavlink_sysid= QOpenHDMavlinkHelper::getSysId();
     mavlink_message_t msg;
     mavlink_msg_autopilot_version_request_pack(mavlink_sysid, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID,targetCompID);
-    sendData(msg);
+    sendData(msg);*/
 }
 
 void MavlinkTelemetry::get_Mission_Items(int count)
 {
     qDebug() << "MavlinkBase::get_Mission_Items total="<< count;
-    auto mavlink_sysid= QOpenHDMavlinkHelper::getSysId();
+    /*auto mavlink_sysid= QOpenHDMavlinkHelper::getSysId();
     mavlink_message_t msg;
     int current_seq;
     for (current_seq = 1; current_seq < count; ++current_seq){
         //qDebug() << "MavlinkBase::get_Mission_Items current="<< current_seq;
         mavlink_msg_mission_request_int_pack(mavlink_sysid, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID,targetCompID,current_seq,0);
         sendData(msg);
-    }
+    }*/
 }
 
 void MavlinkTelemetry::send_Mission_Ack()
 {
     qDebug() << "MavlinkBase::send_Mission_Ack";
-    auto mavlink_sysid= QOpenHDMavlinkHelper::getSysId();
+    /*auto mavlink_sysid= QOpenHDMavlinkHelper::getSysId();
     mavlink_message_t msg;
     mavlink_msg_mission_ack_pack(mavlink_sysid, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID,targetCompID,0,0);
-    sendData(msg);
+    sendData(msg);*/
 }
 
 void MavlinkTelemetry::request_Mission_Changed()
 {
     qDebug() << "MavlinkTelemetry::request_Mission_Changed";
-    auto mavlink_sysid= QOpenHDMavlinkHelper::getSysId();
+    /*auto mavlink_sysid= QOpenHDMavlinkHelper::getSysId();
     mavlink_message_t msg;
     mavlink_msg_mission_request_list_pack(mavlink_sysid, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID,targetCompID,0);
-    sendData(msg);
+    sendData(msg);*/
 }
 
 bool MavlinkTelemetry::isConnectionLost() {

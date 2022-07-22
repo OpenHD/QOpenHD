@@ -1,6 +1,5 @@
 #include "aohdsystem.h"
 #include "../telemetry/qopenhdmavlinkhelper.hpp"
-#include "../telemetry/openhd_defines.hpp"
 #include <string>
 #include <sstream>
 
@@ -36,6 +35,61 @@ AOHDSystem &AOHDSystem::instanceGround()
 {
     static AOHDSystem ground(false);
     return ground;
+}
+
+bool AOHDSystem::process_message(const mavlink_message_t &msg)
+{
+    if(msg.sysid != get_own_sys_id()){
+        qDebug()<<"AOHDSystem::process_message: wron sys id";
+        return false;
+    }
+    switch(msg.msgid){
+        case MAVLINK_MSG_ID_OPENHD_VERSION_MESSAGE:{
+            mavlink_openhd_version_message_t parsedMsg;
+            mavlink_msg_openhd_version_message_decode(&msg,&parsedMsg);
+            QString version(parsedMsg.version);
+            set_openhd_version(version);
+            return true;
+        }
+        case MAVLINK_MSG_ID_ONBOARD_COMPUTER_STATUS:{
+            mavlink_onboard_computer_status_t parsedMsg;
+            mavlink_msg_onboard_computer_status_decode(&msg,&parsedMsg);
+            process_x0(parsedMsg);
+            return true;
+            break;
+        }
+        case MAVLINK_MSG_ID_OPENHD_WIFIBROADCAST_WIFI_CARD:{
+            mavlink_openhd_wifibroadcast_wifi_card_t parsedMsg;
+            mavlink_msg_openhd_wifibroadcast_wifi_card_decode(&msg,&parsedMsg);
+            //qDebug()<<"Got MAVLINK_MSG_ID_OPENHD_WIFI_CARD"<<(int)parsedMsg.card_index<<" "<<(int)parsedMsg.signal_millidBm;
+            process_x1(parsedMsg);
+            return true;
+            break;
+        }
+        case MAVLINK_MSG_ID_OPENHD_STATS_TOTAL_ALL_WIFIBROADCAST_STREAMS:{
+            mavlink_openhd_stats_total_all_wifibroadcast_streams_t parsedMsg;
+            mavlink_msg_openhd_stats_total_all_wifibroadcast_streams_decode(&msg,&parsedMsg);
+            process_x2(parsedMsg);
+            return true;
+        }break;
+        case MAVLINK_MSG_ID_OPENHD_FEC_LINK_RX_STATISTICS:{
+            mavlink_openhd_fec_link_rx_statistics_t parsedMsg;
+            mavlink_msg_openhd_fec_link_rx_statistics_decode(&msg,&parsedMsg);
+            process_x3(parsedMsg);
+            return true;
+        }break;
+        /*case MAVLINK_MSG_ID_OPENHD_LOG_MESSAGE:{
+            mavlink_openhd_log_message_t parsedMsg;
+            mavlink_msg_openhd_log_message_decode(&msg,&parsedMsg);
+            const QString message{parsedMsg.text};
+            const quint64 timestamp=parsedMsg.timestamp;
+            const quint8 severity=parsedMsg.severity;
+            qDebug()<<"Log message:"<<message;
+            LogMessagesModel::instance().addLogMessage({"OHD",message,timestamp,LogMessagesModel::log_severity_to_color(severity)});
+            break;
+        }*/
+    }
+    return false;
 }
 
 void AOHDSystem::process_x0(const mavlink_onboard_computer_status_t &msg)
