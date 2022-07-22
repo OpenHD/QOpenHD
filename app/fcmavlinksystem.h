@@ -11,7 +11,7 @@
 /**
  * This used to be called OpenHD and was a mix of everything, it has become FCMavlinkSystem -
  * A QT model for (fire and forget) data from the mavlink FC connected to the air unit.
- * OpenHD only ever has one connected FC, so this can be a singleton, too.
+ * OpenHD always has only one connected FC, so this can be a singleton, too.
  * Also, note that nothing OpenHD specific should ever make it into here - OpenHD supports raw access to
  * the Flight Controller, but it is NOT a Flight Controller ;)
  * The corresponding qml element is called _fcMavlinkSystem.

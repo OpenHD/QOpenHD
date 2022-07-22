@@ -24,9 +24,9 @@
 #include "fcmavlinksystem.h"
 #include "openhd_systems/aohdsystem.h"
 
-MavlinkTelemetry* MavlinkTelemetry::instance() {
+MavlinkTelemetry& MavlinkTelemetry::instance() {
     static MavlinkTelemetry instance;
-    return &instance;
+    return instance;
 }
 
 MavlinkTelemetry::MavlinkTelemetry(QObject *parent){
@@ -350,16 +350,13 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
         case MAVLINK_MSG_ID_ATTITUDE:{
             mavlink_attitude_t attitude;
             mavlink_msg_attitude_decode (&msg, &attitude);
-
-           FCMavlinkSystem::instance().set_pitch((double)attitude.pitch *57.2958);
+            // handled by mavsdk
+            //FCMavlinkSystem::instance().set_pitch((double)attitude.pitch *57.2958);
             //qDebug() << "Pitch:" <<  attitude.pitch*57.2958;
-
-           FCMavlinkSystem::instance().set_roll((double)attitude.roll *57.2958);
+            //FCMavlinkSystem::instance().set_roll((double)attitude.roll *57.2958);
             //qDebug() << "Roll:" <<  attitude.roll*57.2958;
-
-            qint64 current_timestamp = QDateTime::currentMSecsSinceEpoch();
-
-            last_attitude_timestamp = current_timestamp;
+            //qint64 current_timestamp = QDateTime::currentMSecsSinceEpoch();
+            //last_attitude_timestamp = current_timestamp;
             break;
         }
         case MAVLINK_MSG_ID_LOCAL_POSITION_NED:{
@@ -379,14 +376,15 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
            FCMavlinkSystem::instance().set_alt_msl(global_position.alt/1000.0);
 
             // FOR INAV heading does not /100
-            QSettings settings;
+            //MAVSDK
+            /*QSettings settings;
             auto _heading_inav = settings.value("heading_inav", false).toBool();
             if(_heading_inav==true){
                FCMavlinkSystem::instance().set_hdg(global_position.hdg);
             }
             else{
                FCMavlinkSystem::instance().set_hdg(global_position.hdg / 100);
-            }
+            }*/
            FCMavlinkSystem::instance().set_vx(global_position.vx/100.0);
            FCMavlinkSystem::instance().set_vy(global_position.vy/100.0);
            FCMavlinkSystem::instance().set_vz(global_position.vz/100.0);
@@ -624,6 +622,9 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
         case MAVLINK_MSG_ID_ADSB_VEHICLE: {
             break;
         }
+    case MAVLINK_MSG_ID_EXTENDED_SYS_STATE:{
+        break;
+    }
     case MAVLINK_MSG_ID_PING:{
         mavlink_ping_t ping;
         mavlink_msg_ping_decode(&msg, &ping);

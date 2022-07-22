@@ -16,7 +16,7 @@ class MavlinkTelemetry : public QObject{
 
 public:
     explicit MavlinkTelemetry(QObject *parent = nullptr);
-    static MavlinkTelemetry* instance();
+    static MavlinkTelemetry& instance();
 // Stuff that used to be in mavlink base ---------------- begin
 private:
     bool isConnectionLost();

@@ -24,7 +24,7 @@ FCMavlinkSystem::FCMavlinkSystem(QObject *parent): QObject(parent) {
     QObject::connect(m_alive_timer, &QTimer::timeout, this, &FCMavlinkSystem::update_alive);
     m_alive_timer->start(1000);
 
-    auto mavlink = MavlinkTelemetry::instance();
+    auto mavlink = &MavlinkTelemetry::instance();
     connect(mavlink, &MavlinkTelemetry::last_attitude_changed, this, &FCMavlinkSystem::set_last_telemetry_attitude);
     connect(mavlink, &MavlinkTelemetry::last_battery_changed, this, &FCMavlinkSystem::set_last_telemetry_battery);
     connect(mavlink, &MavlinkTelemetry::last_gps_changed, this, &FCMavlinkSystem::set_last_telemetry_gps);
@@ -828,6 +828,23 @@ void FCMavlinkSystem::set_system(std::shared_ptr<mavsdk::System> system)
     }
     _action=std::make_shared<mavsdk::Action>(system);
     _mavsdk_telemetry=std::make_shared<mavsdk::Telemetry>(system);
+    auto cb_attituede=[this](mavsdk::Telemetry::EulerAngle angle){
+        //qDebug()<<"Got att euler";
+        FCMavlinkSystem::instance().set_pitch((double)angle.pitch_deg);
+         //qDebug() << "Pitch:" <<  attitude.pitch*57.2958;
+        FCMavlinkSystem::instance().set_roll((double)angle.roll_deg);
+    };
+    _mavsdk_telemetry->subscribe_attitude_euler(cb_attituede);
+    auto cb_heading=[this](mavsdk::Telemetry::Heading heading){
+        FCMavlinkSystem::instance().set_hdg(heading.heading_deg);
+    };
+    _mavsdk_telemetry->subscribe_heading(cb_heading);
+    /*auto cb_flight_mode=[this](mavsdk::Telemetry::FlightMode flight_mode){
+        flight_mode
+    };
+    _mavsdk_telemetry->subscribe_flight_mode(cb_flight_mode);*/
+    //_mavsdk_telemetry->subscribe_position()
+    //_mavsdk_telemetry->subscribe_home()
     //
     /*telemetryFC=std::make_unique<mavsdk::Telemetry>(system);
     auto res=telemetryFC->set_rate_attitude(60);
