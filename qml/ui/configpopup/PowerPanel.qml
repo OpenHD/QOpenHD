@@ -152,10 +152,12 @@ PowerPanelForm {
                     }*/
                     if(result){
                         settings_panel.visible = false;
+                        powerDialog.visible = false
                     }else{
-                        //TODO log error
+                        console.log("Reboot/Shutdown failed, no response.")
+                        // TODO somehow dislay the "failed" message
+                        //groundButton.text="Failed, no response. Try again ?"
                     }
-                    powerDialog.visible = false
                     //settings_panel.visible = false;
                 }
             }

@@ -40,12 +40,6 @@ MavlinkTelemetry::MavlinkTelemetry(QObject *parent){
     pause_telemetry=false;
 }
 
-
-void MavlinkTelemetry::sendCommand(MavlinkCommand command)
-{
-    qDebug()<<"TODO sendCommand";
-}
-
 void MavlinkTelemetry::sendRC()
 {
     QSettings settings;
@@ -80,33 +74,32 @@ void MavlinkTelemetry::pauseTelemetry(bool toggle) {
 void MavlinkTelemetry::requested_Flight_Mode_Changed(int mode) {
     m_mode=mode;
     qDebug() << "MavlinkTelemetry::requested_Flight_Mode_Changed="<< m_mode;
-    MavlinkCommand command(MavlinkCommandTypeLong);
+    /*MavlinkCommand command(MavlinkCommandTypeLong);
     command.command_id = MAV_CMD_DO_SET_MODE;
     command.long_param1 = MAV_MODE_FLAG_CUSTOM_MODE_ENABLED;
     command.long_param2 = m_mode;
-    sendCommand(command);
+    sendCommand(command);*/
 
 }
 
 void MavlinkTelemetry::requested_ArmDisarm_Changed(int arm_disarm) {
     m_arm_disarm=arm_disarm;
     qDebug() << "MavlinkTelemetry::requested_ArmDisarm_Changed="<< m_arm_disarm;
-    MavlinkCommand command(MavlinkCommandTypeLong);
+    /*MavlinkCommand command(MavlinkCommandTypeLong);
     command.command_id = MAV_CMD_COMPONENT_ARM_DISARM ;
     command.long_param1 = m_arm_disarm;
     //command.long_param2 = m_arm_disarm;
-    sendCommand(command);
+    sendCommand(command);*/
 }
 
 void MavlinkTelemetry::FC_Reboot_Shutdown_Changed(int reboot_shutdown) {
     m_reboot_shutdown=reboot_shutdown;
     qDebug() << "MavlinkTelemetry::FC_Reboot_Shutdown_Changed="<< m_reboot_shutdown;
-
-    MavlinkCommand command(MavlinkCommandTypeLong);
+    /*MavlinkCommand command(MavlinkCommandTypeLong);
     command.command_id = MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN ;
     command.long_param1 = m_reboot_shutdown;
     //command.long_param2 = m_arm_disarm;
-    sendCommand(command);
+    sendCommand(command);*/
 }
 
 

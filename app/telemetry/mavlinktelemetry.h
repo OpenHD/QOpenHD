@@ -9,7 +9,6 @@
 
 #include "../util/util.h"
 #include "OHDConnection.h"
-#include "mavlinkcommand.h"
 
 
 class MavlinkTelemetry : public QObject{
@@ -20,7 +19,6 @@ public:
     static MavlinkTelemetry* instance();
 // Stuff that used to be in mavlink base ---------------- begin
 private:
-    void sendCommand(MavlinkCommand command);
     bool isConnectionLost();
     OpenHDUtil m_util;
     quint8 targetSysID;
