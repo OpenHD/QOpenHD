@@ -463,66 +463,6 @@ void FCMavlinkSystem::set_esc_temp(int esc_temp) {
     emit esc_temp_changed(m_esc_temp);
 }
 
-/*void FCMavlinkSystem::set_lost_packet_cnt_rc(unsigned int lost_packet_cnt_rc) {
-    m_lost_packet_cnt_rc = lost_packet_cnt_rc;
-    emit lost_packet_cnt_rc_changed(m_lost_packet_cnt_rc);
-}
-
-void FCMavlinkSystem::set_lost_packet_cnt_telemetry_up(unsigned int lost_packet_cnt_telemetry_up) {
-    m_lost_packet_cnt_telemetry_up = lost_packet_cnt_telemetry_up;
-    emit lost_packet_cnt_telemetry_up_changed(m_lost_packet_cnt_telemetry_up);
-}
-
-void FCMavlinkSystem::set_skipped_packet_cnt(unsigned int skipped_packet_cnt) {
-    m_skipped_packet_cnt = skipped_packet_cnt;
-    emit skipped_packet_cnt_changed(skipped_packet_cnt);
-}
-
-void FCMavlinkSystem::set_injection_fail_cnt(unsigned int injection_fail_cnt) {
-    m_injection_fail_cnt = injection_fail_cnt;
-    emit injection_fail_cnt_changed(m_injection_fail_cnt);
-}
-
-void FCMavlinkSystem::set_kbitrate(double kbitrate) {
-    m_kbitrate = kbitrate;
-    emit kbitrate_changed(m_kbitrate);
-}
-
-void FCMavlinkSystem::set_kbitrate_set(double kbitrate_set) {
-    m_kbitrate_set = kbitrate_set;
-    emit kbitrate_set_changed(m_kbitrate_set);
-}
-
-void FCMavlinkSystem::set_kbitrate_measured(double kbitrate_measured) {
-    m_kbitrate_measured = kbitrate_measured;
-    emit kbitrate_measured_changed(m_kbitrate_measured);
-}
-
-void FCMavlinkSystem::set_damaged_block_cnt(unsigned int damaged_block_cnt) {
-    m_damaged_block_cnt = damaged_block_cnt;
-    emit damaged_block_cnt_changed(m_damaged_block_cnt);
-}
-
-void FCMavlinkSystem::set_damaged_block_percent(int damaged_block_percent) {
-    m_damaged_block_percent = damaged_block_percent;
-    emit damaged_block_percent_changed(m_damaged_block_percent);
-}
-
-void FCMavlinkSystem::set_lost_packet_cnt(unsigned int lost_packet_cnt) {
-    m_lost_packet_cnt = lost_packet_cnt;
-    emit lost_packet_cnt_changed(m_lost_packet_cnt);
-}
-
-void FCMavlinkSystem::set_lost_packet_percent(int lost_packet_percent) {
-    m_lost_packet_percent = lost_packet_percent;
-    emit lost_packet_percent_changed(m_lost_packet_percent);
-}
-
-void FCMavlinkSystem::set_cts(bool cts) {
-    m_cts = cts;
-    emit cts_changed(m_cts);
-}*/
-
 void FCMavlinkSystem::set_flight_time(QString flight_time) {
     m_flight_time = flight_time;
     emit flight_time_changed(m_flight_time);

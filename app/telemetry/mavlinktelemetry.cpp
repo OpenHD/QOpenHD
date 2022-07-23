@@ -123,8 +123,7 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             // OHD specific message comsumed
             return;
         }
-    }
-    if(msg.sysid==OHD_SYS_ID_GROUND){
+    } else if(msg.sysid==OHD_SYS_ID_GROUND){
         if(AOHDSystem::instanceGround().process_message(msg)){
             // OHD specific message consumed
             return;
