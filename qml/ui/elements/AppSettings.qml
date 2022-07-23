@@ -37,6 +37,7 @@ Settings {
     property bool enable_rtp: true
     property bool enable_lte_video: false
     property bool hide_watermark: true
+    property bool dev_jetson_force_omx: false
 
     property bool enable_speech: true
     property bool enable_imperial: false

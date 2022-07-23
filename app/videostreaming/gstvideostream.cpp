@@ -12,13 +12,7 @@
 
 static QOpenHDVideoHelper::VideoStreamConfig readVideoStreamConfigFromSettings(bool isPrimary){
     // read settings
-    QSettings settings;
-    QOpenHDVideoHelper::VideoStreamConfig _videoStreamConfig;
-    _videoStreamConfig.dev_test_video_mode=QOpenHDVideoHelper::videoTestModeFromInt(settings.value("dev_test_video_mode", 0).toInt());
-    const int tmp_video_codec = settings.value("selectedVideoCodecPrimary", 0).toInt();
-    _videoStreamConfig.video_codec=QOpenHDVideoHelper::intToVideoCodec(tmp_video_codec);
-    _videoStreamConfig.enable_software_video_decoder=settings.value("enable_software_video_decoder", 0).toBool();
-    //auto _main_video_port = settings.value("main_video_port", main_default_port).toInt();
+    QOpenHDVideoHelper::VideoStreamConfig _videoStreamConfig=QOpenHDVideoHelper::read_from_settings();
     if(isPrimary){
          _videoStreamConfig.video_port=OHDIntegration::OHD_VIDEO_GROUND_VIDEO_STREAM_1_UDP;
     }else{
@@ -70,7 +64,29 @@ static std::string gst_create_always_software_decoder(const QOpenHDVideoHelper::
     return ss.str();
 }
 
-static std::string gst_create_video_decoder(const QOpenHDVideoHelper::VideoCodec& videoCodec,bool force_sw){
+static std::string gst_create_jeston_test(const QOpenHDVideoHelper::VideoCodec& videoCodec){
+    switch(videoCodec){
+        case QOpenHDVideoHelper::VideoCodecH264:{
+             return "omxh264dec ! ";
+        }break;
+        case QOpenHDVideoHelper::VideoCodecH265:{
+            return "omxh265dec ! ";
+        }break;
+        case QOpenHDVideoHelper::VideoCodecMJPEG:{
+            // avdec_jpeg seems to not exist on some hardware
+            //ss<<"avdec_mjpeg ! ";
+            return "decodebin force-sw-decoders=true ! ";
+        }break;
+        default:
+        assert(true);
+        return "";
+   }
+}
+
+static std::string gst_create_video_decoder(const QOpenHDVideoHelper::VideoCodec& videoCodec,bool force_sw,bool dev_jetson){
+    if(dev_jetson){
+        return gst_create_jeston_test(videoCodec);
+    }
     if(force_sw){
         return gst_create_always_software_decoder(videoCodec);
     }
@@ -95,25 +111,25 @@ static std::string gst_create_video_decoder(const QOpenHDVideoHelper::VideoCodec
  * @param udp_port the udp port to listen for rtp data
  * @return the built pipeline, as a string
  */
-static std::string constructGstreamerPipeline(const QOpenHDVideoHelper::VideoTestMode& dev_test_video_mode,QOpenHDVideoHelper::VideoCodec videoCodec,bool force_sw,int udp_port){
+static std::string constructGstreamerPipeline(const QOpenHDVideoHelper::VideoStreamConfig& config){
     std::stringstream ss;
-    if(dev_test_video_mode==QOpenHDVideoHelper::VideoTestMode::RAW_VIDEO){
+    if(config.dev_test_video_mode==QOpenHDVideoHelper::VideoTestMode::RAW_VIDEO){
         ss << "videotestsrc pattern=smpte ! ";
         ss << "video/x-raw,format=RGBA,width=640,height=480 ! ";
         ss << "queue ! ";
         ss << "glupload ! glcolorconvert ! ";
         ss << "qmlglsink name=qmlglsink sync=false";
         return ss.str();
-    }else if(dev_test_video_mode==QOpenHDVideoHelper::VideoTestMode::RAW_VIDEO_ENCODE_DECODE){
-         ss<<QOpenHDVideoHelper::create_debug_encoded_data_producer(videoCodec);
+    }else if(config.dev_test_video_mode==QOpenHDVideoHelper::VideoTestMode::RAW_VIDEO_ENCODE_DECODE){
+        ss<<QOpenHDVideoHelper::create_debug_encoded_data_producer(config.video_codec);
     }else{
-        ss<<"udpsrc port="<<udp_port<<" ";
-        ss<<gst_create_caps(videoCodec);
+        ss<<"udpsrc port="<<config.video_port<<" ";
+        ss<<gst_create_caps(config.video_codec);
     }
     // add rtp decoder
-    ss<<gst_create_rtp_decoder(videoCodec);
+    ss<<gst_create_rtp_decoder(config.video_codec);
     // add video decoder
-    ss<<gst_create_video_decoder(videoCodec,force_sw);
+    ss<<gst_create_video_decoder(config.video_codec,config.enable_software_video_decoder,config.dev_jetson_force_omx);
 
     //ss<<" videoconvert n-threads=2 ! queue ! video/x-raw,format=RGBA !";
 
@@ -247,8 +263,7 @@ void GstVideoStream::startVideo() {
         stopVideoSafe();
         assert(m_pipeline==nullptr);
     }
-    const auto pipeline=constructGstreamerPipeline(m_videoStreamConfig.dev_test_video_mode,m_videoStreamConfig.video_codec,
-                                                   m_videoStreamConfig.enable_software_video_decoder,m_videoStreamConfig.video_port);
+    const auto pipeline=constructGstreamerPipeline(m_videoStreamConfig);
     GError *error = nullptr;
     m_pipeline = gst_parse_launch(pipeline.c_str(), &error);
     qDebug() << "GSTREAMER PIPE=" << pipeline.c_str();

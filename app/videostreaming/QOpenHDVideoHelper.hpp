@@ -1,6 +1,7 @@
 #ifndef QOPENHDVIDEOHELPER_H
 #define QOPENHDVIDEOHELPER_H
 
+#include <QSettings>
 #include <qqmlapplicationengine.h>
 #include <qquickitem.h>
 #include <qquickwindow.h>
@@ -53,15 +54,28 @@ struct VideoStreamConfig{
     // force sw decoding (if there is a difference on the platform)
     // R.N this only makes a difference on RPI
     bool enable_software_video_decoder=false;
+    // XX
+    bool dev_jetson_force_omx=false;
     // 2 configs are equal if all members are exactly the same.
     bool operator==(const VideoStreamConfig &o) const {
        return this->dev_test_video_mode == o.dev_test_video_mode && this->video_port == o.video_port && this->video_codec== o.video_codec
-               && this->enable_software_video_decoder==o.enable_software_video_decoder;
+               && this->enable_software_video_decoder==o.enable_software_video_decoder && this->dev_jetson_force_omx==o.dev_jetson_force_omx;
      }
     bool operator !=(const VideoStreamConfig &o) const {
         return !(*this==o);
     }
 };
+
+static VideoStreamConfig read_from_settings(){
+    QSettings settings;
+    QOpenHDVideoHelper::VideoStreamConfig _videoStreamConfig;
+    _videoStreamConfig.dev_test_video_mode=QOpenHDVideoHelper::videoTestModeFromInt(settings.value("dev_test_video_mode", 0).toInt());
+    const int tmp_video_codec = settings.value("selectedVideoCodecPrimary", 0).toInt();
+    _videoStreamConfig.video_codec=QOpenHDVideoHelper::intToVideoCodec(tmp_video_codec);
+    _videoStreamConfig.enable_software_video_decoder=settings.value("enable_software_video_decoder", 0).toBool();
+    _videoStreamConfig.dev_jetson_force_omx=settings.value("dev_jetson_force_omx",false).toBool();
+    return _videoStreamConfig;
+}
 
 /**
  * Find the qt window where video is output to.
