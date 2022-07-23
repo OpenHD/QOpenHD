@@ -36,8 +36,8 @@ FCMavlinkSystem::FCMavlinkSystem(QObject *parent): QObject(parent) {
 
 
 void FCMavlinkSystem::telemetryMessage(QString message, int level) {
-    emit messageReceived(message, level);
-    QOpenHD::instance().textToSpeech_sayMessage(message);
+    //emit messageReceived(message, level);
+    //QOpenHD::instance().textToSpeech_sayMessage(message);
 }
 
 void FCMavlinkSystem::updateFlightTimer() {
@@ -129,33 +129,6 @@ void FCMavlinkSystem::updateAppMahKm() {
 
 }
 
-void FCMavlinkSystem::set_Requested_Flight_Mode(int mode){
-    //qDebug() << "FCMavlinkSystem::set_Requested_Flight_Mode="<< mode;
-    if(_action){
-
-    }
-    m_mode=mode;
-   // emit requested_Flight_Mode_Changed(m_mode);
-}
-
-void FCMavlinkSystem::set_Requested_ArmDisarm(int arm_disarm){
-    qDebug() << "FCMavlinkSystem::set_Requested_ArmDisarm="<< arm_disarm;
-    m_arm_disarm=arm_disarm;
-    //emit requested_ArmDisarm_Changed(m_arm_disarm);
-}
-
-void FCMavlinkSystem::set_FC_Reboot_Shutdown(int reboot_shutdown){
-    qDebug() << "FCMavlinkSystem::set_FC_Reboot_Shutdown="<< reboot_shutdown;
-    m_reboot_shutdown=reboot_shutdown;
-    //emit FC_Reboot_Shutdown_Changed(m_reboot_shutdown);
-}
-
-void FCMavlinkSystem::request_Mission(){
-    qDebug() << "FCMavlinkSystem::request_Mission=";
-    //emit request_Mission_Changed();
-}
-
-
 void FCMavlinkSystem::set_boot_time(int boot_time) {
     m_boot_time = boot_time;
     emit boot_time_changed(m_boot_time);
@@ -202,9 +175,9 @@ void FCMavlinkSystem::set_airspeed(double airspeed) {
 }
 
 void FCMavlinkSystem::set_armed(bool armed) {
+    if(m_armed==armed)return;
     QString message=(armed && !m_armed) ? "armed" : "disarmed";
     QOpenHD::instance().textToSpeech_sayMessage(message);
-
     if (armed && !m_armed) {
         /*
          * Restart the flight timer when the vehicle transitions to the armed state.
@@ -213,17 +186,16 @@ void FCMavlinkSystem::set_armed(bool armed) {
          * vehicle is disarmed, causing it to appear to stop in the UI.
          */
         flightTimeStart.start();
-
         if (m_homelat == 0.0 && m_homelon == 0.0) {
             //LocalMessage::instance()->showMessage("No Home Position in FCMavlinkSystem", 4);
         }
     }
-
     m_armed = armed;
     emit armed_changed(m_armed);
 }
 
 void FCMavlinkSystem::set_flight_mode(QString flight_mode) {
+    if(flight_mode==m_flight_mode)return;
     QString message=tr("%1 flight mode").arg(flight_mode);
     QOpenHD::instance().textToSpeech_sayMessage(message);
     m_flight_mode = flight_mode;
@@ -779,6 +751,10 @@ void FCMavlinkSystem::set_system(std::shared_ptr<mavsdk::System> system)
         FCMavlinkSystem::instance().set_hdg(heading.heading_deg);
     };
     _mavsdk_telemetry->subscribe_heading(cb_heading);
+    auto cb_armed=[this](bool armed){
+        set_armed(armed);
+    };
+    _mavsdk_telemetry->subscribe_armed(cb_armed);
     //_mavsdk_telemetry->subscribe_status_text()
     /*auto cb_flight_mode=[this](mavsdk::Telemetry::FlightMode flight_mode){
         flight_mode
@@ -801,15 +777,38 @@ bool FCMavlinkSystem::set_flight_mode(int mode)
     }
 }
 
-bool FCMavlinkSystem::arm_fc(bool disarm)
+void FCMavlinkSystem::arm_fc_async(bool disarm)
+{
+    qDebug()<<"FCMavlinkSystem::arm_fc_async "<<(disarm ? "disarm" : "arm");
+    if(_action){
+        // We listen for the armed / disarmed changes directly
+        auto cb=[this](mavsdk::Action::Result res){
+            if(res!=mavsdk::Action::Result::Success){
+                std::stringstream ss;
+                ss<<"amr/disarm failed:"<<res;
+                qDebug()<<ss.str().c_str();
+            }
+        };
+        if(disarm){
+             _action->disarm_async(cb);
+        }else{
+             _action->arm_async(cb);
+        }
+    }else{
+        qDebug()<<"No action set";
+    }
+}
+
+void FCMavlinkSystem::send_return_to_launch_async()
 {
     if(_action){
-        const auto res=_action->arm();
-        if(res==mavsdk::Action::Result::Success){
-            return true;
-        }
+        auto cb=[](mavsdk::Action::Result res){
+            std::stringstream ss;
+            ss<<"send_return_to_launch: result: "<<res;
+            qDebug()<<ss.str().c_str();
+        };
+        _action->return_to_launch_async(cb);
     }
-    return false;
 }
 
 bool FCMavlinkSystem::send_command_reboot(bool reboot)

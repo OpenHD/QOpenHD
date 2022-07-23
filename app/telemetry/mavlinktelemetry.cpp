@@ -653,14 +653,20 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
         break;
     }
     break;
-        default: {
-            //printf("MavlinkTelemetry received unmatched message with ID %d, sequence: %d from component %d of system %d\n", msg.msgid, msg.seq, msg.compid, msg.sysid);
-            qDebug()<<"MavlinkTelemetry received unmatched message with ID "<<msg.msgid
-                   <<", sequence: "<<msg.seq
-                  <<" from component "<<msg.compid
-                 <<" of system "<<msg.sysid;
-            break;
-        }
+    // Commands and Params are done by mavsdk
+    case MAVLINK_MSG_ID_PARAM_EXT_ACK:
+    case MAVLINK_MSG_ID_PARAM_EXT_VALUE:
+    case MAVLINK_MSG_ID_COMMAND_ACK:
+    break;
+
+    default: {
+        //printf("MavlinkTelemetry received unmatched message with ID %d, sequence: %d from component %d of system %d\n", msg.msgid, msg.seq, msg.compid, msg.sysid);
+        qDebug()<<"MavlinkTelemetry received unmatched message with ID "<<msg.msgid
+               <<", sequence: "<<msg.seq
+              <<" from component "<<msg.compid
+             <<" of system "<<msg.sysid;
+        break;
+    }
     }
 }
 

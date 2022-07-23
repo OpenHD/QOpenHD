@@ -304,7 +304,7 @@ BaseWidget {
                     if (checked == true) {
 
                         //double check.... not really needed
-                        _fcMavlinkSystem.set_Requested_Flight_Mode(msg_id)
+                        _fcMavlinkSystem.send_return_to_launch_async()
                         //console.log("selected");
                     }
                 }
@@ -322,7 +322,7 @@ BaseWidget {
                     if (checked == true) {
 
                         //double check.... not really needed
-                        _fcMavlinkSystem.set_Requested_Flight_Mode(msg_id)
+                        fcMavlinkSystem.send_return_to_launch_async()
                         //console.log("selected");
                     }
                 }

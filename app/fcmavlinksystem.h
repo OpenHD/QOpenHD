@@ -28,14 +28,6 @@ public:
     void calculate_home_distance();
     void calculate_home_course();
 
-    Q_INVOKABLE void set_Requested_Flight_Mode(int mode);
-
-    Q_INVOKABLE void set_Requested_ArmDisarm(int mode);
-
-    Q_INVOKABLE void set_FC_Reboot_Shutdown(int reboot_shutdown);
-
-    Q_INVOKABLE void request_Mission();
-
     //void setEngine(QQmlApplicationEngine *engine);
     //Q_INVOKABLE void switchToLanguage(const QString &language);
 
@@ -445,7 +437,10 @@ public:
     void set_system(std::shared_ptr<mavsdk::System> system);
     //
     Q_INVOKABLE bool set_flight_mode(int mode);
-    Q_INVOKABLE bool arm_fc(bool disarm=false);
+    // Try to change the arming state. Once completed, since we listen to arm/disarm results,
+    // the armed status is changed. On failure, a message is pushed onto the HUD
+    Q_INVOKABLE void arm_fc_async(bool disarm=false);
+    Q_INVOKABLE void send_return_to_launch_async();
     Q_INVOKABLE bool send_command_reboot(bool reboot);
     // -----------------------
 public:

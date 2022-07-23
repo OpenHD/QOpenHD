@@ -234,9 +234,7 @@ BaseWidget {
 
                 onCheckedChanged: {
                     if (checked == true) {
-
-                        //double check.... not really needed
-                        _fcMavlinkSystem.set_Requested_ArmDisarm(msg_id)
+                        _fcMavlinkSystem.arm_fc_async(checked)
                         //console.log("selected");
                     }
                 }
