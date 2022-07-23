@@ -114,7 +114,8 @@ static std::string create_debug_encoded_data_producer(const QOpenHDVideoHelper::
         ss<<"x264enc bitrate=5000 tune=zerolatency key-int-max=10 ! h264parse config-interval=-1 ! ";
         ss<<"rtph264pay mtu=1024 ! ";
     }else if(videoCodec==VideoCodecH265){
-        ss<<"x265enc bitrate=5000 tune=zerolatency key-int-max=10 ! ";
+        //ss<<"x265enc bitrate=5000 tune=zerolatency key-int-max=10 ! ";
+        ss<<"x265enc bitrate=5000 tune=zerolatency ! ";
         ss<<"rtph265pay mtu=1024 ! ";
     }else{
         ss<<"jpegenc ! ";
