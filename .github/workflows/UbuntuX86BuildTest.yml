@@ -8,7 +8,7 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
     - name: Checkout repository and submodules
       uses: actions/checkout@v3
@@ -26,7 +26,7 @@ jobs:
         'https://dl.cloudsmith.io/public/openhd/openhd-2-2-evo/setup.deb.sh' \
         | sudo -E bash
         sudo apt install -y mavsdk
-        sudo ./package.sh x86_64 ubuntu focal
+        sudo ./package.sh x86_64 ubuntu jammy
 
     - name: Push
       id: push
@@ -38,7 +38,7 @@ jobs:
         owner: "openhd"
         repo: "openhd-2-2-evo"
         distro: "ubuntu"
-        release: "focal"
+        release: "jammy"
         republish: "true" # needed ONLY if version is not changing
         file: "*.deb"
        
