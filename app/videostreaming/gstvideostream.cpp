@@ -132,7 +132,7 @@ static std::string constructGstreamerPipeline(const QOpenHDVideoHelper::VideoStr
     ss<<gst_create_video_decoder(config.video_codec,config.enable_software_video_decoder,config.dev_jetson_force_omx);
 
     //ss<<" videoconvert n-threads=2 ! queue ! video/x-raw,format=RGBA !";
-
+    ss << " queue ! ";
     ss << " glupload ! glcolorconvert !";
     ss << " qmlglsink name=qmlglsink sync=false";
 
