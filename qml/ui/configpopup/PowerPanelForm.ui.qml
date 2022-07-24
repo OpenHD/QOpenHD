@@ -312,14 +312,7 @@ Rectangle {
 
         Card {
             id: fcBox
-            visible: true/*{
-                if(_fcMavlinkSystem.mav_type=="ARDUPLANE" || _fcMavlinkSystem.mav_type=="ARDUCOPTER"){
-                    return true;
-                }
-                else{
-                    return false;
-                }
-            }*/
+            visible: _fcMavlinkSystem.supports_basic_commands
             enabled: _fcMavlinkSystem.is_alive
             height: 224
             Layout.fillWidth: true

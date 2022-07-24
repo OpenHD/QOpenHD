@@ -744,6 +744,13 @@ void FCMavlinkSystem::set_last_ping_result_flight_ctrl(QString last_ping_result_
     emit last_ping_result_flight_ctrl_changed(m_last_ping_result_flight_ctrl);
 }
 
+void FCMavlinkSystem::set_supports_basic_commands(bool supports_basic_commands)
+{
+    if(m_supports_basic_commands==supports_basic_commands)return;
+    m_supports_basic_commands=supports_basic_commands;
+    emit supports_basic_commands_changed(supports_basic_commands);
+};
+
 void FCMavlinkSystem::set_system(std::shared_ptr<mavsdk::System> system)
 {
     // The system is set once when discovered, then should not change !!

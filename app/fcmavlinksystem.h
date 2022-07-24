@@ -228,6 +228,14 @@ public:
 
     Q_PROPERTY(QString last_ping_result_flight_ctrl MEMBER  m_last_ping_result_flight_ctrl WRITE set_last_ping_result_flight_ctrl NOTIFY last_ping_result_flight_ctrl_changed)
     void set_last_ping_result_flight_ctrl(QString last_ping_result_flight_ctrl);
+
+    // Set to true if this FC supports basic commands, like return to home usw
+    // R.N we only show those commands in the UI if this flag is set
+    // and the flag is set if the FC is PX4 or Ardupilot
+    // NOTE: this used to be done by .mav_type == "ARDUPLANE" ... in qml - please avoid that, just add another qt boolean here
+    // (for example is_copter, is_plane or similar)
+    Q_PROPERTY(bool supports_basic_commands MEMBER  m_supports_basic_commands WRITE set_supports_basic_commands NOTIFY supports_basic_commands_changed)
+    void set_supports_basic_commands(bool supports_basic_commands);
 signals:
     // mavlink
     void boot_time_changed(int boot_time);
@@ -320,7 +328,7 @@ signals:
     void totalWaypointsChanged (int total_waypoints);
 
     void last_ping_result_flight_ctrl_changed(QString last_ping_result_flight_ctrl);
-
+    void supports_basic_commands_changed(bool supports_basic_commands);
 public:
     // mavlink
     int m_boot_time = 0;
@@ -434,6 +442,7 @@ public:
 
     int m_reboot_shutdown=99;
     QString m_last_ping_result_flight_ctrl="NA";
+    bool m_supports_basic_commands=true;
 private:
     // NOTE: Null until system discovered
     std::shared_ptr<mavsdk::System> _system=nullptr;

@@ -79,8 +79,13 @@ bool AOHDSystem::process_message(const mavlink_message_t &msg)
             return true;
         }break;
         case MAVLINK_MSG_ID_HEARTBEAT:{
+            mavlink_heartbeat_t parsedMsg;
+            mavlink_msg_heartbeat_decode(&msg,&parsedMsg);
             const auto time_millis=QOpenHDMavlinkHelper::getTimeMilliseconds();
             set_last_openhd_heartbeat(time_millis);
+            if(parsedMsg.autopilot!=MAV_AUTOPILOT_INVALID){
+                qDebug()<<"Warning OpenHD systems should always set autopilot to none";
+            }
             return true;
         }break;
         /*case MAVLINK_MSG_ID_OPENHD_LOG_MESSAGE:{

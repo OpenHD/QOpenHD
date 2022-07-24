@@ -305,15 +305,7 @@ BaseWidget {
             Text {
                 height: 32
                 text: {
-                    /* autopilot detection not reliable.. gets set in MavlinkTelemetry
-                    if(_fcMavlinkSystem.mav_type=="ARDUPLANE" || _fcMavlinkSystem.mav_type=="ARDUCOPTER"){
-                        return qsTr("Vehicle type: "+_fcMavlinkSystem.mav_type);
-                    }
-                    else {
-                        return qsTr("Only For Ardupilot...");
-                    }
-                    */
-                    return qsTr("Only For Ardupilot...");
+                    return qsTr("Only For Ardupilot/PX4");
                 }
                 color: "white"
                 font.bold: true
@@ -323,7 +315,7 @@ BaseWidget {
 
             ConfirmSlider {
 
-                visible: _fcMavlinkSystem.mav_type == "ARDUPLANE"
+                visible: _fcMavlinkSystem.supports_basic_commands
 
                 text_off: qsTr("RTL")
                 msg_id: 11
@@ -339,7 +331,7 @@ BaseWidget {
             }
             ConfirmSlider {
 
-                visible: _fcMavlinkSystem.mav_type == "ARDUPLANE"
+                visible: _fcMavlinkSystem.supports_basic_commands
 
                 text_off: qsTr("MANUAL")
                 msg_id: 0
@@ -355,7 +347,7 @@ BaseWidget {
             }
             ConfirmSlider {
 
-                visible: _fcMavlinkSystem.mav_type == "ARDUPLANE"
+                visible: _fcMavlinkSystem.supports_basic_commands
 
                 text_off: qsTr("STABILIZE")
                 msg_id: 2
@@ -371,7 +363,7 @@ BaseWidget {
             }
             ConfirmSlider {
 
-                visible: _fcMavlinkSystem.mav_type == "ARDUPLANE"
+                visible: _fcMavlinkSystem.supports_basic_commands
 
                 text_off: qsTr("LOITER")
                 msg_id: 12
@@ -387,7 +379,7 @@ BaseWidget {
             }
             ConfirmSlider {
 
-                visible: _fcMavlinkSystem.mav_type == "ARDUPLANE"
+                visible: _fcMavlinkSystem.supports_basic_commands
 
                 text_off: qsTr("FBWA")
                 msg_id: 5
@@ -403,7 +395,7 @@ BaseWidget {
             }
             ConfirmSlider {
 
-                visible: _fcMavlinkSystem.mav_type == "ARDUPLANE"
+                visible: _fcMavlinkSystem.supports_basic_commands
 
                 text_off: qsTr("AUTO")
                 msg_id: 10
@@ -419,7 +411,7 @@ BaseWidget {
             }
             ConfirmSlider {
 
-                visible: _fcMavlinkSystem.mav_type == "ARDUPLANE"
+                visible: _fcMavlinkSystem.supports_basic_commands
 
                 text_off: qsTr("AUTOTUNE")
                 msg_id: 8

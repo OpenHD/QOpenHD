@@ -51,6 +51,37 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
     //if(pause_telemetry==true){
     //    return;
     //}
+    // Ping is special, since there is no component differentation - any component can ping all systems,
+    // but never a specific system
+    if(msg.msgid==MAVLINK_MSG_ID_PING){
+        mavlink_ping_t ping;
+        mavlink_msg_ping_decode(&msg, &ping);
+        //qDebug()<<"Got ping message sender:"<<msg.sysid<<":"<<msg.compid<<" target:"<<ping.target_system<<":"<<ping.target_component<<"seq:"<<ping.seq;
+        // We only process ping responses with our specific sys id and a matching sequence number.
+        // Note that if the user clicks the ping multiple times in rapid succession, some pings might be dropped.
+        // Check if the ping is targeted at our system
+        if(ping.seq==pingSequenceNumber && ping.target_system==QOpenHDMavlinkHelper::getSysId()){
+            const auto delta=QOpenHDMavlinkHelper::getTimeMicroseconds()-ping.time_usec;
+            const float deltaMs=delta/1000.0f;
+            std::stringstream ss;
+            ss<<deltaMs<<"ms";
+            if(msg.sysid==OHD_SYS_ID_AIR){
+                AOHDSystem::instanceAir().set_last_ping_result_openhd(ss.str().c_str());
+            }else if(msg.sysid==OHD_SYS_ID_GROUND){
+                AOHDSystem::instanceGround().set_last_ping_result_openhd(ss.str().c_str());
+            }else{
+                qDebug()<<"Got ping from fc";
+                // almost 100% from flight controller
+                //if(msg.compid==MAV_COMP_ID_AUTOPILOT1)
+               FCMavlinkSystem::instance().set_last_ping_result_flight_ctrl(ss.str().c_str());
+            }
+        }else{
+            //qDebug()<<"Got ping message sender:"<<msg.sysid<<":"<<msg.compid<<" target:"<<ping.target_system<<":"<<ping.target_component<<"seq:"<<ping.seq;
+        }
+        return;
+    }
+    // Other than ping, we seperate by sys ID's - there are up to 3 Systems - The OpenHD air unit, the OpenHD ground unit and the FC connected to the OHD air unit.
+    // The systems then (optionally) can seperate by components, but r.n this is not needed.
     if(msg.sysid==OHD_SYS_ID_AIR){
         if(AOHDSystem::instanceAir().process_message(msg)){
             // OHD specific message comsumed
@@ -71,6 +102,7 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
 
             }
         }else{
+             // we don't know the FC sys id yet.
             qDebug()<<"MavlinkTelemetry received unmatched message (FC not yet know) "<<QOpenHDMavlinkHelper::debug_mavlink_message(msg);
         }
     }
@@ -560,35 +592,6 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
     case MAVLINK_MSG_ID_EXTENDED_SYS_STATE:{
         break;
     }
-    case MAVLINK_MSG_ID_PING:{
-        mavlink_ping_t ping;
-        mavlink_msg_ping_decode(&msg, &ping);
-        //qDebug()<<"Got ping message sender:"<<msg.sysid<<":"<<msg.compid<<" target:"<<ping.target_system<<":"<<ping.target_component<<"seq:"<<ping.seq;
-        // We only process ping responses with our specific sys id and a matching sequence number.
-        // Note that if the user clicks the ping multiple times in rapid succession, some pings might be dropped.
-        // Check if the ping is targeted at our system
-        if(ping.seq==pingSequenceNumber && ping.target_system==QOpenHDMavlinkHelper::getSysId()){
-            const auto delta=QOpenHDMavlinkHelper::getTimeMicroseconds()-ping.time_usec;
-            const float deltaMs=delta/1000.0f;
-            std::stringstream ss;
-            ss<<deltaMs<<"ms";
-            if(msg.sysid==OHD_SYS_ID_AIR){
-                AOHDSystem::instanceAir().set_last_ping_result_openhd(ss.str().c_str());
-            }else if(msg.sysid==OHD_SYS_ID_GROUND){
-                AOHDSystem::instanceGround().set_last_ping_result_openhd(ss.str().c_str());
-            }else{
-                qDebug()<<"Got ping from fc";
-                // almost 100% from flight controller
-                // TODO make sure
-                //if(msg.compid==MAV_COMP_ID_AUTOPILOT1)
-               FCMavlinkSystem::instance().set_last_ping_result_flight_ctrl(ss.str().c_str());
-            }
-        }else{
-            //qDebug()<<"Got ping message sender:"<<msg.sysid<<":"<<msg.compid<<" target:"<<ping.target_system<<":"<<ping.target_component<<"seq:"<<ping.seq;
-        }
-        break;
-    }
-    break;
     // Commands and Params are done by mavsdk
     case MAVLINK_MSG_ID_PARAM_EXT_ACK:
     case MAVLINK_MSG_ID_PARAM_EXT_VALUE:

@@ -275,17 +275,7 @@ BaseWidget {
             Item {
                 height: 32
                 Text {
-                    text: {
-                        /* autopilot detection not reliable.. gets set in MavlinkTelemetry
-                        if(_fcMavlinkSystem.mav_type=="ARDUPLANE" || _fcMavlinkSystem.mav_type=="ARDUCOPTER"){
-                            return qsTr("Vehicle type: "+_fcMavlinkSystem.mav_type);
-                        }
-                        else {
-                            return qsTr("Only For Ardupilot...");
-                        }
-                        */
-                        return qsTr("Only For Ardupilot...");
-                    }
+                    text: "Only For Ardupilot/PX4"
                     color: "white"
                     font.bold: true
                     font.pixelSize: detailPanelFontPixels
@@ -295,7 +285,7 @@ BaseWidget {
 
             ConfirmSlider {
 
-                visible: _fcMavlinkSystem.mav_type == "ARDUPLANE"
+                visible: _fcMavlinkSystem.supports_basic_commands
 
                 text_off: qsTr("RTL")
                 msg_id: 11
