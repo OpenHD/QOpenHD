@@ -273,7 +273,7 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Text {
-                    text: "todo"//Number(OpenHD.kbitrate_set/1024.0).toLocaleString(Qt.locale(), 'f', 1) + " Mbit";
+                    text: _ohdSystemAir.curr_set_video_bitrate
                     color: "white";
                     font.bold: true;
                     height: parent.height

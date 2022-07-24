@@ -304,6 +304,13 @@ void AOHDSystem::set_video_rx_blocks_recovered(int video_rx_blocks_recovered)
     emit video_rx_blocks_recovered_changed(video_rx_blocks_recovered);
 }
 
+void AOHDSystem::set_curr_set_video_bitrate(QString curr_set_video_bitrate)
+{
+    if(m_curr_set_video_bitrate==curr_set_video_bitrate)return;
+    m_curr_set_video_bitrate=curr_set_video_bitrate;
+    emit curr_set_video_bitrate_changed(curr_set_video_bitrate);
+}
+
 void AOHDSystem::update_alive()
 {
     if(m_last_openhd_heartbeat==-1){

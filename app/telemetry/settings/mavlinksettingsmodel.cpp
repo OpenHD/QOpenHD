@@ -1,6 +1,8 @@
 #include "mavlinksettingsmodel.h"
 #include "qdebug.h"
 #include "../openhd_defines.hpp"
+//temporary
+#include "../../openhd_systems/aohdsystem.h"
 
 #include <QMessageBox>
 #include <QSettings>
@@ -222,6 +224,12 @@ void MavlinkSettingsModel::removeData(int row)
 
 void MavlinkSettingsModel::updateData(std::optional<int> row_opt, SettingData new_data)
 {
+    // hacyk tmp
+    {
+        if(new_data.unique_id=="V_BITRATE_MBITS"){
+            AOHDSystem::instanceAir().set_curr_set_video_bitrate_int(new_data.value);
+        }
+    }
     int row=-1;
     if(row_opt.has_value()){
         row=row_opt.value();
@@ -246,6 +254,11 @@ void MavlinkSettingsModel::updateData(std::optional<int> row_opt, SettingData ne
 
 void MavlinkSettingsModel::addData(MavlinkSettingsModel::SettingData data)
 {
+    {
+        if(data.unique_id=="V_BITRATE_MBITS"){
+            AOHDSystem::instanceAir().set_curr_set_video_bitrate_int(data.value);
+        }
+    }
     if(is_param_whitelisted(data.unique_id.toStdString())){
         // never add whitelisted params to the simple model, they need synchronization
         return;
