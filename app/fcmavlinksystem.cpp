@@ -216,6 +216,7 @@ void FCMavlinkSystem::set_flight_mode(QString flight_mode) {
 }
 
 void FCMavlinkSystem::set_mav_type(QString mav_type) {
+    if(m_mav_type==mav_type)return;
     m_mav_type = mav_type;
     emit mav_type_changed(m_mav_type);
 }

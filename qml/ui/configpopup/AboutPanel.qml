@@ -250,14 +250,14 @@ Rectangle {
                     Layout.minimumHeight: text_minHeight
                     spacing: 6
                     Text {
-                        text: qsTr("FC type:")
+                        text: qsTr("MAV type:")
                         height: 24
                         font.pixelSize: 14
                         font.bold: true
                         leftPadding: 12
                     }
                     Text {
-                        text: "TODO" //_ohdSystemGround.m_openhd_version
+                        text: _fcMavlinkSystem.mav_type
                         height: 24
                         width: 256
                         font.pixelSize: 14

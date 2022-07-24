@@ -83,16 +83,19 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
     // Other than ping, we seperate by sys ID's - there are up to 3 Systems - The OpenHD air unit, the OpenHD ground unit and the FC connected to the OHD air unit.
     // The systems then (optionally) can seperate by components, but r.n this is not needed.
     if(msg.sysid==OHD_SYS_ID_AIR){
+        // msg was produced by the OHD air unit
         if(AOHDSystem::instanceAir().process_message(msg)){
             // OHD specific message comsumed
             return;
         }
     } else if(msg.sysid==OHD_SYS_ID_GROUND){
+        // msg was produced by the OHD ground unit
         if(AOHDSystem::instanceGround().process_message(msg)){
             // OHD specific message consumed
             return;
         }
     }else {
+        // msg was neither produced by the OHD air nor ground unit, so almost 100% from the FC
         const auto fc_sys_id=FCMavlinkSystem::instance().get_fc_sys_id();
         if(fc_sys_id.has_value()){
             if(msg.sysid==fc_sys_id.value()){
@@ -129,6 +132,7 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
                         auto px4_mode = m_util.px4_mode_from_custom_mode(custom_mode);
                        FCMavlinkSystem::instance().set_flight_mode(px4_mode);
                     }
+                     FCMavlinkSystem::instance().set_mav_type("PX4?");
                     break;
                 }
                 case MAV_AUTOPILOT_GENERIC:
@@ -143,9 +147,7 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
                             case MAV_TYPE_FIXED_WING: {
                                 auto plane_mode = m_util.plane_mode_from_enum((PLANE_MODE)custom_mode);
                                FCMavlinkSystem::instance().set_flight_mode(plane_mode);
-
                                FCMavlinkSystem::instance().set_mav_type("ARDUPLANE");
-
                                 /* autopilot detecton not reliable
                                 if(ap_version>999){
                                    FCMavlinkSystem::instance().set_mav_type("ARDUPLANE");
@@ -165,9 +167,7 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
                             case MAV_TYPE_QUADROTOR: {
                                 auto copter_mode = m_util.copter_mode_from_enum((COPTER_MODE)custom_mode);
                                FCMavlinkSystem::instance().set_flight_mode(copter_mode);
-
                                FCMavlinkSystem::instance().set_mav_type("ARDUCOPTER");
-
                                 /* autopilot detection not reliable
                                 if(ap_version>999){
                                    FCMavlinkSystem::instance().set_mav_type("ARDUCOPTER");

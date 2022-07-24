@@ -347,8 +347,7 @@ public:
 
     bool m_armed = false;
     QString m_flight_mode = "------";
-    //QString m_mav_type = "UNKOWN";
-    QString m_mav_type = "ARDUPLANE";
+    QString m_mav_type = "UNKOWN";
 
     double m_homelat = 0.0;
     double m_homelon = 0.0;
