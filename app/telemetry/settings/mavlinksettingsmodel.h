@@ -6,14 +6,8 @@
 #include <map>
 #include <optional>
 
-#ifndef X_USE_MAVSDK
-#define X_USE_MAVSDK
-#endif
-
-#ifdef X_USE_MAVSDK
 #include <mavsdk/mavsdk.h>
 #include <mavsdk/plugins/param/param.h>
-#endif //X_USE_MAVSDK
 
 // A QT wrapper around the mavlink extended / non-extended parameters protocoll on the client
 // (the side that changes parameter(s) provided by a specific system & component).
@@ -36,12 +30,10 @@ public:
     bool is_param_whitelisted(const std::string param_id);
 
     explicit MavlinkSettingsModel(uint8_t sys_id,uint8_t comp_id,QObject *parent = nullptr);
-#ifdef X_USE_MAVSDK
 public:
     void set_param_client(std::shared_ptr<mavsdk::System> system);
 private:
     std::shared_ptr<mavsdk::Param> param_client;
-#endif
 public:
     std::optional<int> try_fetch_param_int_impl(const QString param_id);
 

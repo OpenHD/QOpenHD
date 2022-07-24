@@ -55,11 +55,9 @@ bool MavlinkSettingsModel::is_param_whitelisted(const std::string param_id)
 MavlinkSettingsModel::MavlinkSettingsModel(uint8_t sys_id,uint8_t comp_id,QObject *parent)
     : QAbstractListModel(parent),_sys_id(sys_id),_comp_id(comp_id)
 {
-#ifndef X_USE_MAVSDK
-    m_data.push_back({"VIDEO_WIDTH",0});
-    m_data.push_back({"VIDEO_HEIGHT",1});
-    m_data.push_back({"VIDEO_FPS",1});
-#endif
+    //m_data.push_back({"VIDEO_WIDTH",0});
+    //m_data.push_back({"VIDEO_HEIGHT",1});
+    //m_data.push_back({"VIDEO_FPS",1});
 }
 
 static void makePopupMessage(QString message){
@@ -68,7 +66,6 @@ static void makePopupMessage(QString message){
     msgBox.exec();
 }
 
-#ifdef X_USE_MAVSDK
 void MavlinkSettingsModel::set_param_client(std::shared_ptr<mavsdk::System> system)
 {
     // only allow adding the param client once it is discovered, do not overwrite it once discovered.
@@ -77,7 +74,6 @@ void MavlinkSettingsModel::set_param_client(std::shared_ptr<mavsdk::System> syst
     this->param_client=std::make_shared<mavsdk::Param>(system,_comp_id,true);
     try_fetch_all_parameters();
 }
-#endif
 
 bool MavlinkSettingsModel::try_fetch_all_parameters()
 {
