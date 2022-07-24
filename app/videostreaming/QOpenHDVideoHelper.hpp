@@ -106,7 +106,7 @@ static QQuickItem* find_qt_video_window(QQmlApplicationEngine& m_engine,const bo
     return videoItem;
 }
 
-// Creates a pipeline whose last element produces rtp h164,h265 or mjpeg data
+// Creates a pipeline whose last element produces rtp h264,h265 or mjpeg data
 static std::string create_debug_encoded_data_producer(const QOpenHDVideoHelper::VideoCodec& videoCodec){
     std::stringstream ss;
     ss<<"videotestsrc ! video/x-raw, format=I420,width=640,height=480,framerate=30/1 ! ";

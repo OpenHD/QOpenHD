@@ -36,80 +36,13 @@ MavlinkTelemetry::MavlinkTelemetry(QObject *parent){
         //qDebug()<<"this->onProcessMavlinkMessage";
         this->onProcessMavlinkMessage(msg);
     });
-    pause_telemetry=false;
 }
 
-void MavlinkTelemetry::sendRC()
-{
-    QSettings settings;
-    bool enable_rc = settings.value("enable_rc", false).toBool();
-    //temporarily dsabled
-    if(true){
-        return;
-    }
-    if (enable_rc == true){
-        mavlink_message_t msg;
-        mavlink_msg_rc_channels_override_pack(QOpenHDMavlinkHelper::getSysId(), MAV_COMP_ID_MISSIONPLANNER, &msg, 1, 0,
-                                              m_rc_values[0],m_rc_values[1],m_rc_values[2],m_rc_values[3],m_rc_values[4],m_rc_values[5],m_rc_values[6],m_rc_values[7],
-                m_rc_values[8],m_rc_values[9],m_rc_values[10],m_rc_values[11],m_rc_values[12],m_rc_values[13],m_rc_values[14],m_rc_values[15],
-                m_rc_values[16],m_rc_values[17]);
-            sendData(msg);
-    }
-    else {
-        return;
-    }
-}
+
 
 void MavlinkTelemetry::sendData(mavlink_message_t msg)
 {
     mOHDConnection->sendMessage(msg);
-}
-
-void MavlinkTelemetry::pauseTelemetry(bool toggle) {
-    pause_telemetry=toggle;
-    //qDebug() << "PAUSE TELEMTRY CALLED";
-}
-
-void MavlinkTelemetry::requested_Flight_Mode_Changed(int mode) {
-    m_mode=mode;
-    qDebug() << "MavlinkTelemetry::requested_Flight_Mode_Changed="<< m_mode;
-    /*MavlinkCommand command(MavlinkCommandTypeLong);
-    command.command_id = MAV_CMD_DO_SET_MODE;
-    command.long_param1 = MAV_MODE_FLAG_CUSTOM_MODE_ENABLED;
-    command.long_param2 = m_mode;
-    sendCommand(command);*/
-
-}
-
-void MavlinkTelemetry::requested_ArmDisarm_Changed(int arm_disarm) {
-    m_arm_disarm=arm_disarm;
-    qDebug() << "MavlinkTelemetry::requested_ArmDisarm_Changed="<< m_arm_disarm;
-    /*MavlinkCommand command(MavlinkCommandTypeLong);
-    command.command_id = MAV_CMD_COMPONENT_ARM_DISARM ;
-    command.long_param1 = m_arm_disarm;
-    //command.long_param2 = m_arm_disarm;
-    sendCommand(command);*/
-}
-
-void MavlinkTelemetry::FC_Reboot_Shutdown_Changed(int reboot_shutdown) {
-    m_reboot_shutdown=reboot_shutdown;
-    qDebug() << "MavlinkTelemetry::FC_Reboot_Shutdown_Changed="<< m_reboot_shutdown;
-    /*MavlinkCommand command(MavlinkCommandTypeLong);
-    command.command_id = MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN ;
-    command.long_param1 = m_reboot_shutdown;
-    //command.long_param2 = m_arm_disarm;
-    sendCommand(command);*/
-}
-
-
-void MavlinkTelemetry::rc_value_changed(int channelIdx,uint channelValue){
-    if(channelIdx > 0 && channelIdx < m_rc_values.size()){
-        m_rc_values.at(channelIdx)=channelValue;
-        qDebug() << "MavlinkTelemetry::rc"<<channelIdx<<"="<< channelValue;
-        emit update_RC_MavlinkBase (m_rc_values);
-    }else{
-        qDebug()<<"Error mavlink channel out of bounds"<<channelIdx;
-    }
 }
 
 
@@ -128,31 +61,35 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             // OHD specific message consumed
             return;
         }
+    }else {
+        const auto fc_sys_id=FCMavlinkSystem::instance().get_fc_sys_id();
+        if(fc_sys_id.has_value()){
+            if(msg.sysid==fc_sys_id.value()){
+                bool processed=FCMavlinkSystem::instance().process_message(msg);
+            }else{
+                qDebug()<<"MavlinkTelemetry received unmatched message "<<QOpenHDMavlinkHelper::debug_mavlink_message(msg);
+
+            }
+        }else{
+            qDebug()<<"MavlinkTelemetry received unmatched message (FC not yet know) "<<QOpenHDMavlinkHelper::debug_mavlink_message(msg);
+        }
     }
     switch (msg.msgid) {
         case MAVLINK_MSG_ID_HEARTBEAT: {
             mavlink_heartbeat_t heartbeat;
             mavlink_msg_heartbeat_decode(&msg, &heartbeat);
             const auto time_millis=QOpenHDMavlinkHelper::getTimeMilliseconds();
-            if(msg.sysid==OHD_SYS_ID_AIR){
-                AOHDSystem::instanceAir().set_last_openhd_heartbeat(time_millis);
-                return;
-            }else if(msg.sysid==OHD_SYS_ID_GROUND){
-                AOHDSystem::instanceGround().set_last_openhd_heartbeat(time_millis);
-                return;
-            }else{
-                FCMavlinkSystem::instance().set_last_heartbeat(time_millis);
-            }
+            FCMavlinkSystem::instance().set_last_heartbeat(time_millis);
 
             auto custom_mode = heartbeat.custom_mode;
 
             auto autopilot = (MAV_AUTOPILOT)heartbeat.autopilot;
 
             //upon first heartbeat find out if autopilot is ardupilot or "other"
-            if (!sent_autopilot_request){
+            /*if (!sent_autopilot_request){
                 requestAutopilotInfo();
                 sent_autopilot_request=true;
-            }
+            }*/
 
             switch (autopilot) {
                 case MAV_AUTOPILOT_PX4: {
@@ -246,7 +183,7 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
 
             qint64 current_timestamp = QDateTime::currentMSecsSinceEpoch();
 
-            last_heartbeat_timestamp = current_timestamp;
+            //last_heartbeat_timestamp = current_timestamp;
             break;
         }
 
@@ -254,13 +191,13 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             mavlink_autopilot_version_t autopilot_version;
             mavlink_msg_autopilot_version_decode(&msg, &autopilot_version);
 
-            ap_version = autopilot_version.flight_sw_version;
+            //ap_version = autopilot_version.flight_sw_version;
             auto ap_board_version = autopilot_version.board_version;
             auto ap_os_version = autopilot_version.os_sw_version;
             auto ap_product_id = autopilot_version.product_id;
             auto ap_uid = autopilot_version.uid;
 
-            qDebug() << "MAVLINK AUTOPILOT VERSION=" <<  ap_version;
+            //qDebug() << "MAVLINK AUTOPILOT VERSION=" <<  ap_version;
             qDebug() << "MAVLINK AUTOPILOT board_version=" <<  ap_board_version;
             qDebug() << "MAVLINK AUTOPILOT os_version=" <<  ap_os_version;
             qDebug() << "MAVLINK AUTOPILOT product_id=" <<  ap_product_id;
@@ -289,9 +226,8 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             QString battery_gauge_glyph = m_util.battery_gauge_glyph_from_percentage(battery_percent);
             //FCMavlinkSystem::instance()->set_battery_gauge(battery_gauge_glyph);
 
-            qint64 current_timestamp = QDateTime::currentMSecsSinceEpoch();
-
-            last_battery_timestamp = current_timestamp;
+            //qint64 current_timestamp = QDateTime::currentMSecsSinceEpoch();
+            //last_battery_timestamp = current_timestamp;
             break;
         }
 
@@ -300,7 +236,7 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             mavlink_msg_system_time_decode(&msg, &sys_time);
             uint32_t boot_time = sys_time.time_boot_ms;
 
-            if (boot_time < m_last_boot || m_last_boot == 0) {
+            /*if (boot_time < m_last_boot || m_last_boot == 0) {
                 m_last_boot = boot_time;
                 qDebug() << "setDataStreamRate and requestAutopilotInfo called";
                 setDataStreamRate(MAV_DATA_STREAM_EXTENDED_STATUS, 2);
@@ -310,7 +246,7 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
                 setDataStreamRate(MAV_DATA_STREAM_POSITION, 3);
                 setDataStreamRate(MAV_DATA_STREAM_RAW_SENSORS, 2);
                 setDataStreamRate(MAV_DATA_STREAM_RC_CHANNELS, 2);
-            }
+            }*/
 
             break;
         }
@@ -398,9 +334,9 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
 
            FCMavlinkSystem::instance().updateWind();
 
-            qint64 current_timestamp = QDateTime::currentMSecsSinceEpoch();
+            //qint64 current_timestamp = QDateTime::currentMSecsSinceEpoch();
 
-            last_gps_timestamp = current_timestamp;
+            //last_gps_timestamp = current_timestamp;
 
             break;
         }
@@ -473,9 +409,9 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
            FCMavlinkSystem::instance().set_vsi(vsi);
             // qDebug() << "VSI- " << vsi;
 
-            qint64 current_timestamp = QDateTime::currentMSecsSinceEpoch();
+            //qint64 current_timestamp = QDateTime::currentMSecsSinceEpoch();
 
-            last_vfr_timestamp = current_timestamp;
+            //last_vfr_timestamp = current_timestamp;
 
             break;
         }
@@ -607,7 +543,7 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             }else{
                 // most likely from the flight controller, but can be someone else, too
                  //qDebug()<<"Log message from not OpenHD:"<<s;
-                FCMavlinkSystem::instance().telemetryMessage(s, statustext.severity);
+                FCMavlinkSystem::instance().telemetryStatusMessage(s, statustext.severity);
             }
             break;
         }
@@ -676,93 +612,5 @@ void MavlinkTelemetry::pingAllSystems()
     mavlink_message_t msg;
     mavlink_msg_ping_pack(QOpenHDMavlinkHelper::getSysId(),QOpenHDMavlinkHelper::getCompId(),&msg,QOpenHDMavlinkHelper::getTimeMicroseconds(),pingSequenceNumber,0,0);
     sendData(msg);
-}
-
-void MavlinkTelemetry::setDataStreamRate(MAV_DATA_STREAM streamType, uint8_t hz) {
-    auto mavlink_sysid= QOpenHDMavlinkHelper::getSysId();
-    mavlink_message_t msg;
-    msg.sysid = mavlink_sysid;
-    msg.compid = MAV_COMP_ID_MISSIONPLANNER;
-    /*
-     * This only sends the message to sysid 1 compid 1 because nothing else responds to this
-     * message anyway, iNav uses a fixed rate and so does betaflight
-     *
-     */
-    mavlink_msg_request_data_stream_pack(mavlink_sysid, MAV_COMP_ID_MISSIONPLANNER, &msg, 1, MAV_COMP_ID_AUTOPILOT1, streamType, hz, 1);
-    sendData(msg);
-}
-
-void MavlinkTelemetry::requestAutopilotInfo()
-{
-    qDebug() << "MavlinkTelemetry::request_Autopilot_Info";
-    /*auto mavlink_sysid= QOpenHDMavlinkHelper::getSysId();
-    mavlink_message_t msg;
-    mavlink_msg_autopilot_version_request_pack(mavlink_sysid, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID,targetCompID);
-    sendData(msg);*/
-}
-
-void MavlinkTelemetry::get_Mission_Items(int count)
-{
-    qDebug() << "MavlinkBase::get_Mission_Items total="<< count;
-    /*auto mavlink_sysid= QOpenHDMavlinkHelper::getSysId();
-    mavlink_message_t msg;
-    int current_seq;
-    for (current_seq = 1; current_seq < count; ++current_seq){
-        //qDebug() << "MavlinkBase::get_Mission_Items current="<< current_seq;
-        mavlink_msg_mission_request_int_pack(mavlink_sysid, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID,targetCompID,current_seq,0);
-        sendData(msg);
-    }*/
-}
-
-void MavlinkTelemetry::send_Mission_Ack()
-{
-    qDebug() << "MavlinkBase::send_Mission_Ack";
-    /*auto mavlink_sysid= QOpenHDMavlinkHelper::getSysId();
-    mavlink_message_t msg;
-    mavlink_msg_mission_ack_pack(mavlink_sysid, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID,targetCompID,0,0);
-    sendData(msg);*/
-}
-
-void MavlinkTelemetry::request_Mission_Changed()
-{
-    qDebug() << "MavlinkTelemetry::request_Mission_Changed";
-    /*auto mavlink_sysid= QOpenHDMavlinkHelper::getSysId();
-    mavlink_message_t msg;
-    mavlink_msg_mission_request_list_pack(mavlink_sysid, MAV_COMP_ID_MISSIONPLANNER, &msg, targetSysID,targetCompID,0);
-    sendData(msg);*/
-}
-
-bool MavlinkTelemetry::isConnectionLost() {
-    /* we want to know if a heartbeat has been received (not -1, the default)
-       but not in the last 5 seconds.*/
-    if (m_last_heartbeat > -1 && m_last_heartbeat < 5000) {
-        return false;
-    }
-    return true;
-}
-
-void MavlinkTelemetry::set_last_heartbeat(qint64 last_heartbeat) {
-    m_last_heartbeat = last_heartbeat;
-    emit last_heartbeat_changed(m_last_heartbeat);
-}
-
-void MavlinkTelemetry::set_last_attitude(qint64 last_attitude) {
-    m_last_attitude = last_attitude;
-    emit last_attitude_changed(m_last_attitude);
-}
-
-void MavlinkTelemetry::set_last_battery(qint64 last_battery) {
-    m_last_battery = last_battery;
-    emit last_battery_changed(m_last_battery);
-}
-
-void MavlinkTelemetry::set_last_gps(qint64 last_gps) {
-    m_last_gps = last_gps;
-    emit last_gps_changed(m_last_gps);
-}
-
-void MavlinkTelemetry::set_last_vfr(qint64 last_vfr) {
-    m_last_vfr = last_vfr;
-    emit last_vfr_changed(m_last_vfr);
 }
 

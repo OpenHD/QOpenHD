@@ -179,6 +179,7 @@ DISTFILES += \
     app/osd_extra/Readme.txt \
     app/platform/README.md \
     app/telemetry/README.md \
+    app/telemetry/del.txt \
     app/telemetry/settings/README.md \
     app/util/README.md \
     app/videostreaming/README.md \

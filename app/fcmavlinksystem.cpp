@@ -14,6 +14,28 @@ FCMavlinkSystem& FCMavlinkSystem::instance() {
     return *instance;
 }
 
+bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
+{
+    if(!_system){
+        qDebug()<<"WARNING the system must be set before this model starts processing data";
+        return false;
+    }
+    const auto fc_sys_id=get_fc_sys_id().value();
+    if(fc_sys_id != msg.sysid){
+        qDebug()<<"Do not pass messages not coming from the FC to the FC model";
+        return false;
+    }
+    return true;
+}
+
+std::optional<uint8_t> FCMavlinkSystem::get_fc_sys_id()
+{
+    if(_system){
+        return _system->get_system_id();
+    }
+    return std::nullopt;
+}
+
 FCMavlinkSystem::FCMavlinkSystem(QObject *parent): QObject(parent) {
 
     timer = new QTimer(this);
@@ -23,19 +45,10 @@ FCMavlinkSystem::FCMavlinkSystem(QObject *parent): QObject(parent) {
     m_alive_timer = new QTimer(this);
     QObject::connect(m_alive_timer, &QTimer::timeout, this, &FCMavlinkSystem::update_alive);
     m_alive_timer->start(1000);
-
-    auto mavlink = &MavlinkTelemetry::instance();
-    connect(mavlink, &MavlinkTelemetry::last_attitude_changed, this, &FCMavlinkSystem::set_last_telemetry_attitude);
-    connect(mavlink, &MavlinkTelemetry::last_battery_changed, this, &FCMavlinkSystem::set_last_telemetry_battery);
-    connect(mavlink, &MavlinkTelemetry::last_gps_changed, this, &FCMavlinkSystem::set_last_telemetry_gps);
-    connect(mavlink, &MavlinkTelemetry::last_vfr_changed, this, &FCMavlinkSystem::set_last_telemetry_vfr);
-
-    //auto FCMavlinkSystem = FCMavlinkSystemTelemetry::instance();
-    //connect(FCMavlinkSystem, &FCMavlinkSystemTelemetry::last_heartbeat_changed, this, &FCMavlinkSystem::set_last_FCMavlinkSystem_heartbeat);
 }
 
 
-void FCMavlinkSystem::telemetryMessage(QString message, int level) {
+void FCMavlinkSystem::telemetryStatusMessage(QString message, int level) {
     //emit messageReceived(message, level);
     //QOpenHD::instance().textToSpeech_sayMessage(message);
 }
@@ -733,11 +746,13 @@ void FCMavlinkSystem::set_last_ping_result_flight_ctrl(QString last_ping_result_
 
 void FCMavlinkSystem::set_system(std::shared_ptr<mavsdk::System> system)
 {
+    // The system is set once when discovered, then should not change !!
     assert(_system==nullptr);
     _system=system;
     if(!_system->has_autopilot()){
         qDebug()<<"FCMavlinkSystem::set_system WARNING no autopilot";
     }
+    qDebug()<<"FCMavlinkSystem::set_system: FC SYS ID is:"<<(int)_system->get_system_id();
     _action=std::make_shared<mavsdk::Action>(system);
     _mavsdk_telemetry=std::make_shared<mavsdk::Telemetry>(system);
     auto cb_attituede=[this](mavsdk::Telemetry::EulerAngle angle){

@@ -39,6 +39,12 @@ OHDConnection::OHDConnection(QObject *parent,bool useTcp):QObject(parent),USE_TC
     qDebug()<<ss.str().c_str();
 }
 
+OHDConnection &OHDConnection::instance()
+{
+    static OHDConnection instance=new OHDConnection();
+    return instance;
+}
+
 void OHDConnection::onNewSystem(std::shared_ptr<mavsdk::System> system){
     const auto components=system->component_ids();
     qDebug()<<"System found"<<(int)system->get_system_id()<<" with components:"<<components.size();
@@ -66,23 +72,17 @@ void OHDConnection::onNewSystem(std::shared_ptr<mavsdk::System> system){
         });
         MavlinkSettingsModel::instanceGround().set_param_client(system);
         AOHDSystem::instanceGround().set_system(system);
-        /*system->register_component_discovered_id_callback([](mavsdk::System::ComponentType comp_type, uint8_t comp_id){
-            qDebug()<<"Ground component discovered:"<<(int)comp_id;
-        });*/
     }else if(system->get_system_id()==OHD_SYS_ID_AIR){
         qDebug()<<"Found OHD AIR station";
         systemOhdAir=system;
         MavlinkSettingsModel::instanceAir().set_param_client(system);
         MavlinkSettingsModel::instanceAirCamera().set_param_client(system);
         AOHDSystem::instanceAir().set_system(system);
-
     }else if(system->has_autopilot()){
+        qDebug()<<"Found FC";
         // we got the flight controller
         FCMavlinkSystem::instance().set_system(system);
     }
-    system->subscribe_is_connected([this,system](bool is_connected){
-        qDebug()<<"System: "<<system->get_system_id()<<"connected: "<<(is_connected ? "Y" : "N");
-    });
 }
 
 void OHDConnection::registerNewMessageCalback(MAV_MSG_CALLBACK cb){
@@ -137,7 +137,7 @@ void OHDConnection::send_command_long_oneshot(const mavlink_command_long_t &comm
     sendMessage(msg);
 }
 
-void OHDConnection::onHeartbeat(){
+void OHDConnection::sendMessageHeartbeat(){
     //qDebug() << "OHDConnection::onHeartbeat";
     mavlink_message_t msg;
     // values from QGroundControll

@@ -78,6 +78,11 @@ bool AOHDSystem::process_message(const mavlink_message_t &msg)
             process_x3(parsedMsg);
             return true;
         }break;
+        case MAVLINK_MSG_ID_HEARTBEAT:{
+            const auto time_millis=QOpenHDMavlinkHelper::getTimeMilliseconds();
+            set_last_openhd_heartbeat(time_millis);
+            return true;
+        }break;
         /*case MAVLINK_MSG_ID_OPENHD_LOG_MESSAGE:{
             mavlink_openhd_log_message_t parsedMsg;
             mavlink_msg_openhd_log_message_decode(&msg,&parsedMsg);

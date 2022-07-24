@@ -47,6 +47,7 @@ class OHDConnection : public QObject
 {
 public:
     OHDConnection(QObject *parent = nullptr,bool useTcp=true);
+    static OHDConnection& instance();
     /**
      * @brief MAV_MSG_CALLBACK Callback that can be registered and is called every time a new incoming mavlink message has been parsed.
      */
@@ -75,13 +76,13 @@ private:
     std::mutex systems_mutex;
     int mavsdk_already_known_systems=0;
     std::shared_ptr<mavsdk::Mavsdk> mavsdk=nullptr;
-    std::shared_ptr<mavsdk::System> systemOhdGround;
-    std::shared_ptr<mavsdk::System> systemOhdAir;
-    std::shared_ptr<mavsdk::MavlinkPassthrough> passtroughOhdGround;
-private slots:
-    // called by heartbeat timer
-    void onHeartbeat();
+    std::shared_ptr<mavsdk::System> systemOhdGround=nullptr;
+    std::shared_ptr<mavsdk::System> systemOhdAir=nullptr;
+    std::shared_ptr<mavsdk::MavlinkPassthrough> passtroughOhdGround=nullptr;
 private:
+    // obsolete
+    void sendMessageHeartbeat();
+    // called by mavsdk whenever a new system is detected
     void onNewSystem(std::shared_ptr<mavsdk::System> system);
 public:
     // request the OpenHD version, both OpenHD air and ground unit will respond to that message.

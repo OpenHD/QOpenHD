@@ -5,6 +5,7 @@
 #include <qsettings.h>
 #include "mavlink_include.h"
 #include <QByteArray>
+#include <sstream>
 
 namespace QOpenHDMavlinkHelper{
 
@@ -54,6 +55,16 @@ static QString safe_string(const char* text,int text_size){
      QString s(param_id.data());
      return s;
 }
+
+static QString debug_mavlink_message(const mavlink_message_t& msg){
+    std::stringstream ss;
+    ss<<"MavlinkMessage{id: "<<(int)msg.msgid
+                           <<", sequence: "<<(int)msg.seq
+                          <<" from component "<<(int)msg.compid
+                         <<" of system "<<(int)msg.sysid<<"}";
+    return ss.str().c_str();
+}
+
 }
 
 #endif // QOPENHDMAVLINKHELPER_H

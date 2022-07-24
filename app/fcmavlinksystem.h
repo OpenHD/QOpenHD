@@ -7,6 +7,7 @@
 #include <mavsdk/mavsdk.h>
 #include <mavsdk/plugins/action/action.h>
 #include <mavsdk/plugins/telemetry/telemetry.h>
+#include "telemetry/mavlink_include.h"
 
 /**
  * This used to be called OpenHD and was a mix of everything, it has become FCMavlinkSystem -
@@ -23,8 +24,14 @@ class FCMavlinkSystem : public QObject
 public:
     explicit FCMavlinkSystem(QObject *parent = nullptr);
     static FCMavlinkSystem& instance();
+    // Process a new telemetry message coming from the FC mavlink system
+    // return true if we know what to do with this message type (aka this message type has been consumed)
+    bool process_message(const mavlink_message_t& msg);
+    // mavlink sys id of the FC. Pretty much always 1, but it is not a hard requirement that FC always use a sys id of 1.
+    // If the FC has not been discovered yet (mavsdk::system not yet set), return std::nullopt.
+    std::optional<uint8_t> get_fc_sys_id();
 
-    void telemetryMessage(QString message, int level);
+    void telemetryStatusMessage(QString message, int level);
     void calculate_home_distance();
     void calculate_home_course();
 

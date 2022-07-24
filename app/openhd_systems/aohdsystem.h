@@ -34,13 +34,13 @@ private:
          return _is_air ? OHD_SYS_ID_AIR : OHD_SYS_ID_GROUND;
      }
 public:
-     // These are for handling the slight differences regarding air/ ground properly, if there are any
-     // For examle, the onboard computer status is the same when coming from either air or ground,
-     // but the stats total are to be interpreted slightly different for air and ground.
      //Process OpenHD custom flavour message(s) coming from either the OHD Air or Ground unit
      // Returns true if the passed message was processed (known message id), false otherwise
      bool process_message(const mavlink_message_t& msg);
 private:
+     // These are for handling the slight differences regarding air/ ground properly, if there are any
+     // For examle, the onboard computer status is the same when coming from either air or ground,
+     // but the stats total are to be interpreted slightly different for air and ground.
      void process_x0(const  mavlink_onboard_computer_status_t& msg);
      void process_x1(const mavlink_openhd_wifibroadcast_wifi_card_t& msg);
      void process_x2(const mavlink_openhd_stats_total_all_wifibroadcast_streams_t& msg);
