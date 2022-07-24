@@ -8,6 +8,7 @@
 #include <QSettings>
 #include <QVariant>
 
+
 MavlinkSettingsModel &MavlinkSettingsModel::instanceAirCamera()
 {
     static MavlinkSettingsModel* instanceAirCamera=new MavlinkSettingsModel(OHD_SYS_ID_AIR,OHD_COMP_ID_AIR_CAMERA);
@@ -198,6 +199,15 @@ QVariant MavlinkSettingsModel::data(const QModelIndex &index, int role) const
     }
     else if ( role == ValueRole )
         return data.value;
+    else if (role ==ExtraRole){
+        if(data.unique_id=="WB_TX_POWER_MW"){
+            //return true;
+            return "yes";
+        }else{
+            //return false;
+            return "no";
+        }
+    }
     else
         return QVariant();
 }
@@ -206,7 +216,8 @@ QHash<int, QByteArray> MavlinkSettingsModel::roleNames() const
 {
     static QHash<int, QByteArray> mapping {
         {UniqueIdRole, "unique_id"},
-        {ValueRole, "value"}
+        {ValueRole, "value"},
+        {ExtraRole, "extra"}
     };
     return mapping;
 }

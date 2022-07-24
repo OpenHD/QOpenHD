@@ -46,7 +46,8 @@ public:
 
     enum Roles {
         UniqueIdRole = Qt::UserRole,
-        ValueRole
+        ValueRole,
+        ExtraRole
     };
     int rowCount(const QModelIndex& parent= QModelIndex()) const override;
     QVariant data( const QModelIndex& index, int role = Qt::DisplayRole ) const override;

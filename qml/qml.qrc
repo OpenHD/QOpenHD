@@ -215,5 +215,6 @@
         <file>ui/configpopup/X2_GroundSystemSettingsPanel.qml</file>
         <file>ui/configpopup/X0_AirCameraSettingsPanel.qml</file>
         <file>ui/configpopup/XX_WBLinkSettings.qml</file>
+        <file>ui/configpopup/XX_MSettingsInput.qml</file>
     </qresource>
 </RCC>
