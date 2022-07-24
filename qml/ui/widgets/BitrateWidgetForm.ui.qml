@@ -250,7 +250,6 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Text {
-                    //text: "todo"//Number(OpenHD.kbitrate_measured/1024.0).toLocaleString(Qt.locale(), 'f', 1) + " Mbit";
                     text: _ohdSystemAir.curr_outgoing_video_bitrate
                     color: "white";
                     font.bold: true;
@@ -282,8 +281,8 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
             }
-
-            Item {
+            // We cannot get these stats from wifibroadcast, at least not on all cards
+            /*Item {
                 width: parent.width
                 height: 32
                 Text {
@@ -305,7 +304,6 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
             }
-
             Item {
                 width: parent.width
                 height: 32
@@ -327,7 +325,7 @@ BaseWidget {
                     anchors.right: parent.right
                     verticalAlignment: Text.AlignVCenter
                 }
-            }
+            }*/
         }
     }
 
