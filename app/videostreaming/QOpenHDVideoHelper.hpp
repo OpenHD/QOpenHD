@@ -130,8 +130,8 @@ static std::string create_debug_encoded_data_producer(const QOpenHDVideoHelper::
 
 // Must be in sync with OpenHD
 namespace OHDIntegration{
-static constexpr auto OHD_VIDEO_GROUND_VIDEO_STREAM_1_UDP = 5620; // first (primary) stream
-static constexpr auto OHD_VIDEO_GROUND_VIDEO_STREAM_2_UDP = 5621; // secondary stream
+static constexpr auto OHD_VIDEO_GROUND_VIDEO_STREAM_1_UDP = 5600; // first (primary) stream
+static constexpr auto OHD_VIDEO_GROUND_VIDEO_STREAM_2_UDP = 5601; // secondary stream
 }
 
 #endif // QOPENHDVIDEOHELPER_H
