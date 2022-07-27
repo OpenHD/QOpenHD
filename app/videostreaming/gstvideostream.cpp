@@ -113,6 +113,9 @@ static std::string gst_create_video_decoder(const QOpenHDVideoHelper::VideoCodec
  */
 static std::string constructGstreamerPipeline(const QOpenHDVideoHelper::VideoStreamConfig& config){
     std::stringstream ss;
+    if(config.hasExtraPipeline()){
+        return config.dev_extra_pipeline;
+    }
     if(config.dev_test_video_mode==QOpenHDVideoHelper::VideoTestMode::RAW_VIDEO){
         ss << "videotestsrc pattern=smpte ! ";
         ss << "video/x-raw,format=RGBA,width=640,height=480 ! ";
@@ -269,6 +272,12 @@ void GstVideoStream::startVideo() {
     qDebug() << "GSTREAMER PIPE=" << pipeline.c_str();
     if (error) {
         qDebug() << "gst_parse_launch error: " << error->message;
+        return;
+    }
+    if(!m_pipeline || !(GST_IS_PIPELINE(m_pipeline))){
+        qDebug()<<"Cannot construct pipeline";
+        m_pipeline = nullptr;
+        return;
     }
 
     GstBus *bus = gst_pipeline_get_bus (GST_PIPELINE(m_pipeline));

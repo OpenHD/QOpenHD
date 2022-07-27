@@ -38,6 +38,7 @@ Settings {
     property bool enable_lte_video: false
     property bool hide_watermark: true
     property bool dev_jetson_force_omx: false
+    property string dev_extra_pipeline: ""
 
     property bool enable_speech: true
     property bool enable_imperial: false
