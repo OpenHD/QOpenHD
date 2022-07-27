@@ -78,6 +78,11 @@ bool AOHDSystem::process_message(const mavlink_message_t &msg)
             process_x3(parsedMsg);
             return true;
         }break;
+        case MAVLINK_MSG_ID_OPENHD_ONBOARD_COMPUTER_STATUS_EXTENSION:{
+            mavlink_openhd_onboard_computer_status_extension_t parsedMsg;
+            mavlink_msg_openhd_onboard_computer_status_extension_decode(&msg,&parsedMsg);
+            return true;
+        }break;
         case MAVLINK_MSG_ID_HEARTBEAT:{
             mavlink_heartbeat_t parsedMsg;
             mavlink_msg_heartbeat_decode(&msg,&parsedMsg);
