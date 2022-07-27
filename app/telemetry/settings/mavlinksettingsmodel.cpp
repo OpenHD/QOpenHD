@@ -233,13 +233,34 @@ void MavlinkSettingsModel::removeData(int row)
     endRemoveRows();
 }
 
+// hacky, temporary
+static void hacky_set_video_codec_in_qopenhd(const MavlinkSettingsModel::SettingData& data){
+    if(data.unique_id=="VIDEO_FORMAT"){
+        const int video_codec_in_openhd=data.value;
+        if(video_codec_in_openhd==0 || video_codec_in_openhd==1 || video_codec_in_openhd==2){
+            QSettings settings;
+            const int tmp_video_codec = settings.value("selectedVideoCodecPrimary", 0).toInt();
+            if(tmp_video_codec!=video_codec_in_openhd){
+                // video codec mismatch, update the QOpenHD settings
+                settings.setValue("selectedVideoCodecPrimary",video_codec_in_openhd);
+                qDebug()<<"Changed video codec in QOpenHD to "<<video_codec_in_openhd;
+            }
+        }
+    }
+}
+static void hacky_set_curr_selected_video_bitrate_in_qopenhd(const MavlinkSettingsModel::SettingData& data){
+    if(data.unique_id=="V_BITRATE_MBITS"){
+        AOHDSystem::instanceAir().set_curr_set_video_bitrate_int(data.value);
+    }
+}
+
+
 void MavlinkSettingsModel::updateData(std::optional<int> row_opt, SettingData new_data)
 {
-    // hacyk tmp
     {
-        if(new_data.unique_id=="V_BITRATE_MBITS"){
-            AOHDSystem::instanceAir().set_curr_set_video_bitrate_int(new_data.value);
-        }
+        // temporary, dirty
+        hacky_set_curr_selected_video_bitrate_in_qopenhd(new_data);
+        hacky_set_video_codec_in_qopenhd(new_data);
     }
     int row=-1;
     if(row_opt.has_value()){
@@ -266,9 +287,9 @@ void MavlinkSettingsModel::updateData(std::optional<int> row_opt, SettingData ne
 void MavlinkSettingsModel::addData(MavlinkSettingsModel::SettingData data)
 {
     {
-        if(data.unique_id=="V_BITRATE_MBITS"){
-            AOHDSystem::instanceAir().set_curr_set_video_bitrate_int(data.value);
-        }
+        // temporary, dirty
+        hacky_set_curr_selected_video_bitrate_in_qopenhd(data);
+        hacky_set_video_codec_in_qopenhd(data);
     }
     if(is_param_whitelisted(data.unique_id.toStdString())){
         // never add whitelisted params to the simple model, they need synchronization
