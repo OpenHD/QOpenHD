@@ -22,6 +22,7 @@ BaseWidget {
     defaultVCenter: false
 
     hasWidgetDetail: true
+    hasWidgetAction: true
 
     widgetDetailComponent: ScrollView {
 
@@ -360,6 +361,27 @@ BaseWidget {
                     }
                 }
             }
+        }
+    }
+
+    widgetActionComponent: ScrollView{
+
+        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+        clip: true
+
+        ColumnLayout{
+            width:200
+
+            Text {
+                //Layout.alignment: left
+                text: "CPU freq: "+_ohdSystemAir.curr_cpu_freq_mhz
+                color: "white"
+                font.bold: true
+                height: parent.height
+                font.pixelSize: detailPanelFontPixels
+                verticalAlignment: Text.AlignVCenter
+            }
+
         }
     }
 

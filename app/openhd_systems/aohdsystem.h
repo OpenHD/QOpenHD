@@ -51,6 +51,8 @@ public:
      void set_cpuload(int cpuload);
      Q_PROPERTY(int temp MEMBER m_temp WRITE set_temp NOTIFY temp_changed)
      void set_temp(int temp);
+     Q_PROPERTY(int curr_cpu_freq_mhz MEMBER m_curr_cpu_freq_mhz WRITE set_curr_cpu_freq_mhz NOTIFY curr_cpu_freq_mhz_changed)
+     void set_curr_cpu_freq_mhz(int curr_cpu_freq_mhz);
      Q_PROPERTY(QString m_openhd_version MEMBER m_openhd_version WRITE set_openhd_version NOTIFY openhd_version_changed)
      void set_openhd_version(QString openhd_version_);
      Q_PROPERTY(QString last_ping_result_openhd MEMBER  m_last_ping_result_openhd WRITE set_last_ping_result_openhd NOTIFY last_ping_result_openhd_changed)
@@ -109,6 +111,7 @@ public:
 signals:
      void cpuload_changed(int cpuload);
      void temp_changed(int temp);
+     void curr_cpu_freq_mhz_changed(int curr_cpu_freq_mhz);
      void openhd_version_changed(QString openhd_version_);
      void last_ping_result_openhd_changed(QString last_ping_result_openhd);
      void last_openhd_heartbeat_changed(qint64 last_openhd_heartbeat);
@@ -142,6 +145,7 @@ public:
 private:
      int m_cpuload = 0;
      int m_temp = 0;
+     int m_curr_cpu_freq_mhz=0;
      QString m_openhd_version="NA";
      QString m_last_ping_result_openhd="NA";
      qint64 m_last_openhd_heartbeat = -1;
