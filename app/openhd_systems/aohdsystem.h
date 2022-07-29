@@ -112,10 +112,10 @@ public:
      // NOTE: hacky right now, since it is a param but we also want to display it in the HUD
      Q_PROPERTY(QString curr_set_video_bitrate MEMBER m_curr_set_video_bitrate WRITE set_curr_set_video_bitrate NOTIFY curr_set_video_bitrate_changed)
      void set_curr_set_video_bitrate(QString curr_set_video_bitrate);
-     void set_curr_set_video_bitrate_int(int value){
-         auto tmp=std::to_string(value)+" MBit/s";
-         set_curr_set_video_bitrate(tmp.c_str());
-     }
+     void set_curr_set_video_bitrate_int(int value);
+     Q_PROPERTY(QString curr_set_video_codec MEMBER m_curr_set_video_codec WRITE set_curr_set_video_codec NOTIFY curr_set_video_codec_changed)
+     void set_curr_set_video_codec(QString curr_set_video_codec);
+     void set_curr_set_video_codec_int(int value);
 signals:
      void cpuload_changed(int cpuload);
      void temp_changed(int temp);
@@ -153,6 +153,7 @@ signals:
      void video_rx_blocks_recovered_changed(int video_rx_blocks_recovered);
      //
      void curr_set_video_bitrate_changed(QString curr_set_video_bitrate);
+     void curr_set_video_codec_changed(QString curr_set_video_codec);
 public:
      bool is_alive(){return m_is_alive;}
 private:
@@ -186,6 +187,7 @@ private:
      QString m_curr_incoming_tele_bitrate="Bitrate NA";
      QString m_curr_outgoing_video_bitrate="Bitrate NA";
      QString m_curr_set_video_bitrate="NA";
+     QString m_curr_set_video_codec="Unknown";
 private:
     // Sets the alive boolean if no heartbeat / message has been received in the last X seconds
     QTimer* m_alive_timer = nullptr;

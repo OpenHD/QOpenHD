@@ -16,6 +16,13 @@ static std::string bitrate_to_string(uint64_t bits_per_second){
   ss<<kBits_per_second<<" kBit/s";
   return ss.str();
 }
+static std::string video_codec_to_string(int value){
+    if(value==0)return "h264";
+    if(value==1)return "h265";
+    if(value==2)return "mjpeg";
+    return "Unknown";
+}
+
 
 AOHDSystem::AOHDSystem(const bool is_air,QObject *parent)
     : QObject{parent},_is_air(is_air)
@@ -347,6 +354,23 @@ void AOHDSystem::set_curr_set_video_bitrate(QString curr_set_video_bitrate)
     if(m_curr_set_video_bitrate==curr_set_video_bitrate)return;
     m_curr_set_video_bitrate=curr_set_video_bitrate;
     emit curr_set_video_bitrate_changed(curr_set_video_bitrate);
+}
+
+void AOHDSystem::set_curr_set_video_bitrate_int(int value){
+    auto tmp=std::to_string(value)+" MBit/s";
+    set_curr_set_video_bitrate(tmp.c_str());
+}
+
+void AOHDSystem::set_curr_set_video_codec(QString curr_set_video_codec)
+{
+    if(m_curr_set_video_codec==curr_set_video_codec)return;
+    m_curr_set_video_codec=curr_set_video_codec;
+    emit curr_set_video_codec_changed(curr_set_video_codec);
+}
+
+void AOHDSystem::set_curr_set_video_codec_int(int value){
+    auto tmp=video_codec_to_string(value);
+    set_curr_set_video_codec(tmp.c_str());
 }
 
 void AOHDSystem::update_alive()
