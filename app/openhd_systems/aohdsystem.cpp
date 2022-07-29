@@ -113,6 +113,9 @@ void AOHDSystem::process_x0(const mavlink_onboard_computer_status_t &msg)
     set_temp(msg.temperature_core[0]);
     // temporary, we repurpose this value
     set_curr_cpu_freq_mhz(msg.storage_type[0]);
+    set_curr_isp_freq_mhz(msg.storage_type[1]);
+    set_curr_h264_freq_mhz(msg.storage_type[2]);
+    set_curr_core_freq_mhz(msg.storage_type[3]);
 }
 
 void AOHDSystem::process_x1(const mavlink_openhd_wifibroadcast_wifi_card_t &msg)

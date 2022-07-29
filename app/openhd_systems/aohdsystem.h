@@ -47,13 +47,13 @@ private:
      void process_x3(const mavlink_openhd_fec_link_rx_statistics_t& msg);
      // QT Code pegin
 public:
+     // these are mostly based on what rpi provides as stats
      Q_PROPERTY(int cpuload MEMBER m_cpuload WRITE set_cpuload NOTIFY cpuload_changed)
      void set_cpuload(int cpuload);
      Q_PROPERTY(int temp MEMBER m_temp WRITE set_temp NOTIFY temp_changed)
      void set_temp(int temp);
      Q_PROPERTY(int curr_cpu_freq_mhz MEMBER m_curr_cpu_freq_mhz WRITE set_curr_cpu_freq_mhz NOTIFY curr_cpu_freq_mhz_changed)
      void set_curr_cpu_freq_mhz(int curr_cpu_freq_mhz);
-     //
      Q_PROPERTY(int curr_isp_freq_mhz MEMBER m_curr_isp_freq_mhz WRITE set_curr_isp_freq_mhz NOTIFY curr_isp_freq_mhz_changed)
      void set_curr_isp_freq_mhz(int curr_isp_freq_mhz);
      Q_PROPERTY(int curr_h264_freq_mhz MEMBER m_curr_h264_freq_mhz WRITE set_curr_h264_freq_mhz NOTIFY curr_h264_freq_mhz_changed)
@@ -159,11 +159,9 @@ private:
      int m_cpuload = 0;
      int m_temp = 0;
      int m_curr_cpu_freq_mhz=-1;
-     //
      int m_curr_isp_freq_mhz=-1;
      int m_curr_h264_freq_mhz=-1;
      int m_curr_core_freq_mhz=-1;
-     //
      QString m_openhd_version="NA";
      QString m_last_ping_result_openhd="NA";
      qint64 m_last_openhd_heartbeat = -1;
