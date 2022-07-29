@@ -39,6 +39,9 @@ public:
     qint64 lastDataTimeout = 0;
     void startVideo();
     void stopVideoSafe();
+    // If we get error message(s) from gstreamer, we restart the stream in the hopes that fixes the issue
+    // e.g. a fucked decoder from corrupted packets
+    bool has_decoder_error=false;
 private:
     /**
      * @brief fired by m_timer.

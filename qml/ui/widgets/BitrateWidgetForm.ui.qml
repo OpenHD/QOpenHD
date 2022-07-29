@@ -241,7 +241,7 @@ BaseWidget {
                 width: parent.width
                 height: 32
                 Text {
-                    text: qsTr("Measured:")
+                    text: qsTr("Measured(Enc):")
                     color: "white"
                     font.bold: true
                     height: parent.height
@@ -263,7 +263,7 @@ BaseWidget {
                 width: parent.width
                 height: 32
                 Text {
-                    text: qsTr("Set:")
+                    text: qsTr("Set(Enc):")
                     color: "white"
                     font.bold: true
                     height: parent.height
@@ -337,28 +337,6 @@ BaseWidget {
         scale: settings.bitrate_size
 
         Text {
-            id: kbitrate
-            y: 0
-            width: 84
-            height: 48
-            color: settings.color_text
-            text: "todo"//Number(OpenHD.kbitrate/1024.0).toLocaleString(Qt.locale(), 'f', 1) + " Mbit";
-            anchors.verticalCenterOffset: 0
-            anchors.left: camera_icon.right
-            anchors.leftMargin: 6
-            anchors.verticalCenter: parent.verticalCenter
-            verticalAlignment: Text.AlignVCenter
-            elide: Text.ElideNone
-            wrapMode: Text.NoWrap
-            clip: false
-            horizontalAlignment: Text.AlignLeft
-            font.pixelSize: 18
-            font.family: settings.font_text
-            style: Text.Outline
-            styleColor: settings.color_glow
-        }
-
-        Text {
             id: camera_icon
             y: 0
             width: 24
@@ -382,6 +360,28 @@ BaseWidget {
         }
 
         Text {
+            id: kbitrate
+            y: 0
+            width: 84
+            height: 32
+            color: settings.color_text
+            text: _ohdSystemGround.curr_incoming_video_bitrate
+            anchors.verticalCenterOffset: 0
+            anchors.left: camera_icon.right
+            anchors.leftMargin: 6
+            anchors.verticalCenter: parent.verticalCenter
+            verticalAlignment: Text.AlignVCenter
+            elide: Text.ElideNone
+            wrapMode: Text.NoWrap
+            clip: false
+            horizontalAlignment: Text.AlignLeft
+            font.pixelSize: 14
+            font.family: settings.font_text
+            style: Text.Outline
+            styleColor: settings.color_glow
+        }
+
+        /*Text {
             id: allDataText
             visible: settings.bitrate_show_skip_fail_count
             text: "todo"//Number(OpenHD.injection_fail_cnt).toLocaleString(Qt.locale(), 'f', 0) + "/" + Number(OpenHD.skipped_packet_cnt).toLocaleString(Qt.locale(), 'f', 0)
@@ -397,6 +397,6 @@ BaseWidget {
             elide: Text.ElideRight
             style: Text.Outline
             styleColor: settings.color_glow
-        }
+        }*/
     }
 }

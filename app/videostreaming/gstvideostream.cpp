@@ -189,6 +189,7 @@ static gboolean PipelineCb(GstBus *bus, GstMessage *msg, gpointer data) {
           qDebug()<<"Error:"<<QString(error->message);
           g_printerr ("Error: %s\n", error->message);
           g_error_free (error);
+          instance->has_decoder_error=true;
           break;
         }
         case GST_MESSAGE_WARNING:{
@@ -327,6 +328,13 @@ void GstVideoStream::timerCallback() {
     if((m_videoStreamConfig!=_videoStreamConfig) || m_pipeline == nullptr){
         m_videoStreamConfig=_videoStreamConfig;
         startVideo();
+    }else{
+        if(has_decoder_error){
+            qDebug()<<"Decoder or pipeline error - restarting";
+            stopVideoSafe();
+            startVideo();
+            has_decoder_error=false;
+        }
     }
     // check if we are getting video - TODO
     const auto currentTime = QDateTime::currentMSecsSinceEpoch();

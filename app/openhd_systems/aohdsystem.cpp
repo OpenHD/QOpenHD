@@ -184,6 +184,27 @@ void AOHDSystem::set_curr_cpu_freq_mhz(int curr_cpu_freq_mhz)
     emit curr_cpu_freq_mhz_changed(curr_cpu_freq_mhz);
 }
 
+void AOHDSystem::set_curr_isp_freq_mhz(int curr_isp_freq_mhz)
+{
+    if(m_curr_isp_freq_mhz==curr_isp_freq_mhz)return;
+    m_curr_isp_freq_mhz=curr_isp_freq_mhz;
+    emit curr_isp_freq_mhz_changed(curr_isp_freq_mhz);
+}
+
+void AOHDSystem::set_curr_h264_freq_mhz(int curr_h264_freq_mhz)
+{
+    if(m_curr_h264_freq_mhz==curr_h264_freq_mhz)return;
+    m_curr_h264_freq_mhz=curr_h264_freq_mhz;
+    emit curr_h264_freq_mhz_changed(curr_h264_freq_mhz);
+}
+
+void AOHDSystem::set_curr_core_freq_mhz(int curr_core_freq_mhz)
+{
+    if(m_curr_core_freq_mhz==curr_core_freq_mhz)return;
+    m_curr_core_freq_mhz=curr_core_freq_mhz;
+    emit curr_core_freq_mhz_changed(curr_core_freq_mhz);
+}
+
 void AOHDSystem::set_openhd_version(QString openhd_version){
     m_openhd_version=openhd_version;
     emit openhd_version_changed(openhd_version);
