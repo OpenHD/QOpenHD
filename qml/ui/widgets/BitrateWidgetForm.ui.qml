@@ -281,6 +281,28 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
             }
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("Set(Enc):")
+                    color: "white"
+                    font.bold: true
+                    height: parent.height
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Text {
+                    text: _ohdSystemAir.curr_set_video_codec
+                    color: "white";
+                    font.bold: true;
+                    height: parent.height
+                    font.pixelSize: detailPanelFontPixels;
+                    anchors.right: parent.right
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
             // We cannot get these stats from wifibroadcast, at least not on all cards
             /*Item {
                 width: parent.width
