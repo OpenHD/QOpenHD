@@ -66,7 +66,8 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
     //}
     // Ping is special, since there is no component differentation - any component can ping all systems,
     // but never a specific system
-    if(msg.msgid==MAVLINK_MSG_ID_PING){
+    // Obsolete, rpelaced by timesync
+    /*if(msg.msgid==MAVLINK_MSG_ID_PING){
         mavlink_ping_t ping;
         mavlink_msg_ping_decode(&msg, &ping);
         //qDebug()<<"Got ping message sender:"<<msg.sysid<<":"<<msg.compid<<" target:"<<ping.target_system<<":"<<ping.target_component<<"seq:"<<ping.seq;
@@ -90,11 +91,11 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
             //qDebug()<<"Got ping message sender:"<<msg.sysid<<":"<<msg.compid<<" target:"<<ping.target_system<<":"<<ping.target_component<<"seq:"<<ping.seq;
         }
         return;
-    }
+    }*/
     if(msg.msgid==MAVLINK_MSG_ID_TIMESYNC){
         mavlink_timesync_t timesync;
         mavlink_msg_timesync_decode(&msg,&timesync);
-        if(timesync.ts1==0){
+        if(timesync.tc1==0){
             // someone (most likely the FC) wants to timesync with us, but we ignore it to save uplink bandwidth.
             return;
         }
@@ -633,6 +634,8 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
     case MAVLINK_MSG_ID_PARAM_EXT_ACK:
     case MAVLINK_MSG_ID_PARAM_EXT_VALUE:
     case MAVLINK_MSG_ID_COMMAND_ACK:
+    //TODO who sends out pings to us ?
+    case MAVLINK_MSG_ID_PING:
     break;
 
     default: {
@@ -648,10 +651,11 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
 
 void MavlinkTelemetry::pingAllSystems()
 {
-    pingSequenceNumber++;
+    // Obsolete, rpelaced by timesync
+    /*pingSequenceNumber++;
     mavlink_message_t msg;
     mavlink_msg_ping_pack(QOpenHDMavlinkHelper::getSysId(),QOpenHDMavlinkHelper::getCompId(),&msg,QOpenHDMavlinkHelper::getTimeMicroseconds(),pingSequenceNumber,0,0);
-    sendData(msg);
+    sendData(msg);*/
     // Ardupilot (and PX4?) don't support ping, but timesync
     // Here I just use a single timesync message to emulate a ping - they are almost the same
     {
