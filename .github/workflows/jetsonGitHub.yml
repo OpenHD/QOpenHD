@@ -22,10 +22,10 @@ jobs:
     
     - name: Emulating Jetson
       id: qemu
-      uses: pguyot/arm-runner-action@1be4bc9de8a7ba3c1c4f5bf917c438e8dc97904b
+      uses: actions/arm-runner-action@6e4147d2760fa642436b53d58e1ed8f75cc77b4b
       with:
         base_image: http://openhdfpv.org/wp-content/BaseImages/Open.HD-2.1-05221841-jetson-nano-4gb-bionic.img.zip
-        cpu: cortex-a53
+        cpu: cortex-a57
         bootpartition:
         rootpartition: 1
         image_additional_mb: 4000
