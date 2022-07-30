@@ -21,6 +21,7 @@ private:
     void onProcessMavlinkMessage(mavlink_message_t msg);
 private:
     int pingSequenceNumber=0;
+    int64_t lastTimeSyncOut=0;
 public:
      Q_INVOKABLE void pingAllSystems();
     // one shot, result not quaranteed

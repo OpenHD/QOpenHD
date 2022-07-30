@@ -29,6 +29,19 @@ MavlinkTelemetry& MavlinkTelemetry::instance() {
     return instance;
 }
 
+static std::string time_microseconds_readable(int64_t micros){
+    if(micros > 1000*1000){
+       float seconds=micros/1000.0f/1000.0f;
+       std::stringstream ss;
+       ss<<seconds<<"s";
+       return ss.str();
+    }
+    const float deltaMs=micros/1000.0f;
+    std::stringstream ss;
+    ss<<deltaMs<<"ms";
+    return ss.str();
+}
+
 MavlinkTelemetry::MavlinkTelemetry(QObject *parent){
     qDebug() << "MavlinkTelemetry::MavlinkTelemetry()";
     mOHDConnection=std::make_unique<OHDConnection>(nullptr,false);
@@ -62,21 +75,45 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
         // Check if the ping is targeted at our system
         if(ping.seq==pingSequenceNumber && ping.target_system==QOpenHDMavlinkHelper::getSysId()){
             const auto delta=QOpenHDMavlinkHelper::getTimeMicroseconds()-ping.time_usec;
-            const float deltaMs=delta/1000.0f;
-            std::stringstream ss;
-            ss<<deltaMs<<"ms";
+            const auto delta_readable=time_microseconds_readable(delta);
             if(msg.sysid==OHD_SYS_ID_AIR){
-                AOHDSystem::instanceAir().set_last_ping_result_openhd(ss.str().c_str());
+                AOHDSystem::instanceAir().set_last_ping_result_openhd(delta_readable.c_str());
             }else if(msg.sysid==OHD_SYS_ID_GROUND){
-                AOHDSystem::instanceGround().set_last_ping_result_openhd(ss.str().c_str());
+                AOHDSystem::instanceGround().set_last_ping_result_openhd(delta_readable.c_str());
             }else{
                 qDebug()<<"Got ping from fc";
                 // almost 100% from flight controller
                 //if(msg.compid==MAV_COMP_ID_AUTOPILOT1)
-               FCMavlinkSystem::instance().set_last_ping_result_flight_ctrl(ss.str().c_str());
+               FCMavlinkSystem::instance().set_last_ping_result_flight_ctrl(delta_readable.c_str());
             }
         }else{
             //qDebug()<<"Got ping message sender:"<<msg.sysid<<":"<<msg.compid<<" target:"<<ping.target_system<<":"<<ping.target_component<<"seq:"<<ping.seq;
+        }
+        return;
+    }
+    if(msg.msgid==MAVLINK_MSG_ID_TIMESYNC){
+        mavlink_timesync_t timesync;
+        mavlink_msg_timesync_decode(&msg,&timesync);
+        if(timesync.ts1==0){
+            // someone (most likely the FC) wants to timesync with us, but we ignore it to save uplink bandwidth.
+            return;
+        }
+        if(timesync.ts1==lastTimeSyncOut){
+            qDebug()<<"Got timesync response with we:"<<lastTimeSyncOut<<" msg tc1:"<<timesync.tc1<<" ts1:"<<timesync.ts1;
+            const auto delta=QOpenHDMavlinkHelper::getTimeMicroseconds()-timesync.ts1;
+            const auto delta_readable=time_microseconds_readable(delta);
+            if(msg.sysid==OHD_SYS_ID_AIR){
+                AOHDSystem::instanceAir().set_last_ping_result_openhd(delta_readable.c_str());
+            }else if(msg.sysid==OHD_SYS_ID_GROUND){
+                AOHDSystem::instanceGround().set_last_ping_result_openhd(delta_readable.c_str());
+            }else{
+                qDebug()<<"Got ping from fc";
+                // almost 100% from flight controller
+                //if(msg.compid==MAV_COMP_ID_AUTOPILOT1)
+               FCMavlinkSystem::instance().set_last_ping_result_flight_ctrl(delta_readable.c_str());
+            }
+        }else{
+            qDebug()<<"Got timesync but it doesn't match: we:"<<lastTimeSyncOut<<" msg tc1:"<<timesync.tc1<<" ts1:"<<timesync.ts1;
         }
         return;
     }
@@ -615,5 +652,17 @@ void MavlinkTelemetry::pingAllSystems()
     mavlink_message_t msg;
     mavlink_msg_ping_pack(QOpenHDMavlinkHelper::getSysId(),QOpenHDMavlinkHelper::getCompId(),&msg,QOpenHDMavlinkHelper::getTimeMicroseconds(),pingSequenceNumber,0,0);
     sendData(msg);
+    // Ardupilot (and PX4?) don't support ping, but timesync
+    // Here I just use a single timesync message to emulate a ping - they are almost the same
+    {
+        mavlink_message_t msg2;
+        mavlink_timesync_t timesync{};
+        timesync.tc1=0;
+        // NOTE: MAVSDK does time in nanoseconds by default
+        lastTimeSyncOut=QOpenHDMavlinkHelper::getTimeMicroseconds();
+        timesync.ts1=lastTimeSyncOut;
+        mavlink_msg_timesync_encode(QOpenHDMavlinkHelper::getSysId(),QOpenHDMavlinkHelper::getCompId(),&msg2,&timesync);
+        sendData(msg2);
+    }
 }
 

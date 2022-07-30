@@ -276,7 +276,7 @@ Rectangle {
                         leftPadding: 12
                     }
                     Text {
-                        text: "TODO"//_ohdSystemGround.last_ping_result_openhd
+                        text: _fcMavlinkSystem.last_ping_result_flight_ctrl
                         height: 24
                         width: 256
                         font.pixelSize: 14

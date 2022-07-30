@@ -796,7 +796,10 @@ void FCMavlinkSystem::set_system(std::shared_ptr<mavsdk::System> system)
 bool FCMavlinkSystem::set_flight_mode(int mode)
 {
     if(_action){
-        //const auto res=_action->
+        qDebug()<<"set_flight_mode:"<<mode;
+        //_action->
+    }else{
+        qDebug()<<"Cannot set_flight_mode";
     }
 }
 
