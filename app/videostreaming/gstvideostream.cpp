@@ -113,9 +113,9 @@ static std::string gst_create_video_decoder(const QOpenHDVideoHelper::VideoCodec
  */
 static std::string constructGstreamerPipeline(const QOpenHDVideoHelper::VideoStreamConfig& config){
     std::stringstream ss;
-    if(config.hasExtraPipeline()){
+    if(config.dev_enable_custom_pipeline){
         qDebug()<<"Warning using custom pipeline, dev only";
-        return config.dev_extra_pipeline;
+        return config.dev_custom_pipeline;
     }
     if(config.dev_test_video_mode==QOpenHDVideoHelper::VideoTestMode::RAW_VIDEO){
         ss << "videotestsrc pattern=smpte ! ";

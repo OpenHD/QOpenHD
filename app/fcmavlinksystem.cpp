@@ -813,6 +813,8 @@ void FCMavlinkSystem::arm_fc_async(bool disarm)
                 std::stringstream ss;
                 ss<<"amr/disarm failed:"<<res;
                 qDebug()<<ss.str().c_str();
+                emit messageReceived(ss.str().c_str(), 0);
+
             }
         };
         if(disarm){

@@ -2213,7 +2213,7 @@ Item {
                         color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
                         Text {
-                            text: qsTr("dev_extra_pipeline")
+                            text: qsTr("DEV_ENABLE_CUSTOM_PIPELINE")
                             font.weight: Font.Bold
                             font.pixelSize: 13
                             anchors.leftMargin: 8
@@ -2223,16 +2223,22 @@ Item {
                             height: elementHeight
                             anchors.left: parent.left
                         }
-                        TextInput {
-                            width: 200
+                        Switch {
+                            width: 32
                             height: elementHeight
                             anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
                             anchors.right: parent.right
                             anchors.verticalCenter: parent.verticalCenter
-                            text: settings.dev_extra_pipeline
-                            cursorVisible: true
-                            onTextChanged: settings.dev_extra_pipeline=text
+                            checked: settings.dev_enable_custom_pipeline
+                            onCheckedChanged: settings.dev_enable_custom_pipeline = checked
                         }
+                    }
+                    TextInput {
+                        width: parent.width
+                        height: rowHeight
+                        text: settings.dev_custom_pipeline
+                        cursorVisible: true
+                        onTextChanged: settings.dev_custom_pipeline=text
                     }
                     // temporary end
                 }

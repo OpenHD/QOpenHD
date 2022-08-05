@@ -57,18 +57,17 @@ struct VideoStreamConfig{
     // XX
     bool dev_jetson_force_omx=false;
     //
-    std::string dev_extra_pipeline="";
+    bool dev_enable_custom_pipeline=false;
+    std::string dev_custom_pipeline="";
     // 2 configs are equal if all members are exactly the same.
     bool operator==(const VideoStreamConfig &o) const {
        return this->dev_test_video_mode == o.dev_test_video_mode && this->video_port == o.video_port && this->video_codec== o.video_codec
                && this->enable_software_video_decoder==o.enable_software_video_decoder && this->dev_jetson_force_omx==o.dev_jetson_force_omx &&
-               this->dev_extra_pipeline==dev_extra_pipeline;
+               this->dev_enable_custom_pipeline==dev_enable_custom_pipeline &&
+               this->dev_custom_pipeline==dev_custom_pipeline;
      }
     bool operator !=(const VideoStreamConfig &o) const {
         return !(*this==o);
-    }
-    bool hasExtraPipeline()const{
-        return dev_extra_pipeline.length()>3;
     }
 };
 
@@ -80,7 +79,9 @@ static VideoStreamConfig read_from_settings(){
     _videoStreamConfig.video_codec=QOpenHDVideoHelper::intToVideoCodec(tmp_video_codec);
     _videoStreamConfig.enable_software_video_decoder=settings.value("enable_software_video_decoder", 0).toBool();
     _videoStreamConfig.dev_jetson_force_omx=settings.value("dev_jetson_force_omx",false).toBool();
-    _videoStreamConfig.dev_extra_pipeline=settings.value("dev_extra_pipeline","").toString().toStdString();
+    //
+    _videoStreamConfig.dev_enable_custom_pipeline=settings.value("dev_enable_custom_pipeline",false).toBool();
+    _videoStreamConfig.dev_custom_pipeline=settings.value("dev_custom_pipeline","").toString().toStdString();
     return _videoStreamConfig;
 }
 
