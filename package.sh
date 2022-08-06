@@ -28,6 +28,12 @@ apt-get install -y gnupg1
 apt-get install -y gnupg2
 apt-get install -y apt-transport-https curl
 
+if [[ "${DISTRO}" == "buster" ]]; then
+curl -1sLf \
+  'https://dl.cloudsmith.io/public/openhd/openhd-2-2-evo/setup.deb.sh' \
+  | sudo -E bash
+fi
+
 if [[ "${DISTRO}" == "bullseye" ]]; then
     apt install -y openhd-qt-pi-bullseye
 fi
