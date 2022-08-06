@@ -14,11 +14,4 @@ apt -y install rubygems libgemplugin-ruby
 apt -y install mavsdk
 apt -y install git meson fmt
 
-            touch /etc/ld.so.conf.d/qt.conf
-            echo "/opt/Qt5.15.0/lib/" >/etc/ld.so.conf.d/qt.conf
-            sudo ldconfig
-            export PATH="$PATH:/opt/Qt5.15.0/bin/"
-            cd /usr/bin
-            sudo ln -s /opt/Qt5.15.0/bin/qmake qmake
-
 gem install fpm

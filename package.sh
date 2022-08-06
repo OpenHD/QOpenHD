@@ -32,6 +32,10 @@ if [[ "${DISTRO}" == "bullseye" ]]; then
     apt install -y openhd-qt-pi-bullseye
 fi
 
+if [[ "${DISTRO}" == "buster" ]]; then
+    apt install -y openhd-qt 
+fi
+
 if [[ "${OS}" == "debian" ]]; then
     PLATFORM_DEV_PACKAGES="openhd-qt"
     PLATFORM_PACKAGES="-d openhd-qt"
@@ -50,11 +54,7 @@ TMPDIR=/tmp/qopenhd/
 
 rm -rf /tmp/qopenhd/*
 
-# link libraries and qt
-touch /etc/ld.so.conf.d/qt.conf
-echo "/opt/Qt5.15.4/lib/" > /etc/ld.so.conf.d/qt.conf
-sudo ldconfig
-export PATH="$PATH:/opt/Qt5.15.4/bin/"
+
 
 mkdir -p /tmp/qopenhd/usr/local/bin || exit 1
 mkdir -p /tmp/qopenhd/etc/systemd/system || exit 1
@@ -66,11 +66,27 @@ ls /opt
 VER2=$(git rev-parse --short HEAD)
 
 
-if [[ "${PACKAGE_ARCH}" == x86_64 ]]; then
-    qmake
-else
-    /opt/Qt5.15.4/bin/qmake  
+if [[ "${DISTRO}" == "bullseye" ]]; then
+    # link libraries and qt
+    touch /etc/ld.so.conf.d/qt.conf
+    echo "/opt/Qt5.15.4/lib/" >/etc/ld.so.conf.d/qt.conf
+    sudo ldconfig
+    export PATH="$PATH:/opt/Qt5.15.4/bin/"
+    cd /usr/bin
+    sudo ln -s /opt/Qt5.15.4/bin/qmake qmake
 fi
+
+if [[ "${DISTRO}" == "buster" ]]; then
+            touch /etc/ld.so.conf.d/qt.conf
+            echo "/opt/Qt5.15.0/lib/" >/etc/ld.so.conf.d/qt.conf
+            sudo ldconfig
+            export PATH="$PATH:/opt/Qt5.15.0/bin/"
+            cd /usr/bin
+            sudo ln -s /opt/Qt5.15.0/bin/qmake qmake
+fi
+
+qmake
+
 echo "build with qmake done"
 make -j$(nproc)|| exit 1
 echo "build with make done"
