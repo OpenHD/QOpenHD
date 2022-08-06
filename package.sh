@@ -34,6 +34,7 @@ fi
 
 if [[ "${DISTRO}" == "buster" ]]; then
     apt install -y openhd-qt 
+    echo"debug buster 1"
 fi
 
 if [[ "${OS}" == "debian" ]]; then
@@ -72,8 +73,7 @@ if [[ "${DISTRO}" == "bullseye" ]]; then
     echo "/opt/Qt5.15.4/lib/" >/etc/ld.so.conf.d/qt.conf
     sudo ldconfig
     export PATH="$PATH:/opt/Qt5.15.4/bin/"
-    cd /usr/bin
-    sudo ln -s /opt/Qt5.15.4/bin/qmake qmake
+    sudo ln -s /opt/Qt5.15.4/bin/qmake /usr/bin/qmake
 fi
 
 if [[ "${DISTRO}" == "buster" ]]; then
@@ -81,8 +81,8 @@ if [[ "${DISTRO}" == "buster" ]]; then
             echo "/opt/Qt5.15.0/lib/" >/etc/ld.so.conf.d/qt.conf
             sudo ldconfig
             export PATH="$PATH:/opt/Qt5.15.0/bin/"
-            cd /usr/bin
-            sudo ln -s /opt/Qt5.15.0/bin/qmake qmake
+            echo"debug buster 1"
+            sudo ln -s /opt/Qt5.15.0/bin/qmake /usr/bin/qmake
 fi
 
 qmake
