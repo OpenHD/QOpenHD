@@ -32,6 +32,11 @@ if [[ "${DISTRO}" == "buster" ]]; then
 curl -1sLf \
   'https://dl.cloudsmith.io/public/openhd/openhd-2-2-evo/setup.deb.sh' \
   | sudo -E bash
+apt -y install mavsdk
+apt -y install git meson fmt
+QT_VERSION=Qt5.15.0
+
+
 fi
 
 if [[ "${DISTRO}" == "bullseye" ]]; then
