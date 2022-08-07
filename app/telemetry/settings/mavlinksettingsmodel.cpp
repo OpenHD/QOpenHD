@@ -235,7 +235,7 @@ void MavlinkSettingsModel::removeData(int row)
 
 // hacky, temporary
 static void hacky_set_video_codec_in_qopenhd(const MavlinkSettingsModel::SettingData& data){
-    if(data.unique_id=="VIDEO_FORMAT"){
+    if(data.unique_id=="VIDEO_CODEC"){
         const int video_codec_in_openhd=data.value;
         AOHDSystem::instanceAir().set_curr_set_video_codec_int(video_codec_in_openhd);
         if(video_codec_in_openhd==0 || video_codec_in_openhd==1 || video_codec_in_openhd==2){
