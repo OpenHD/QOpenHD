@@ -27,20 +27,14 @@ apt-get install -y gnupg
 apt-get install -y gnupg1
 apt-get install -y gnupg2
 apt-get install -y apt-transport-https curl
-
-if [[ "${DISTRO}" == "buster" ]]; then
-curl -1sLf \
-  'https://dl.cloudsmith.io/public/openhd/openhd-2-2-evo/setup.deb.sh' \
-  | sudo -E bash
-apt -y install mavsdk
-apt -y install git meson fmt
-QT_VERSION=Qt5.15.0
-
-
 fi
 
 if [[ "${DISTRO}" == "bullseye" ]]; then
-    apt install -y openhd-qt-pi-bullseye
+    if [ "${BUILD_TYPE}" == "legacy" ]; then
+    apt install -y openhd-qt-pi-bullseye-legacy
+    else
+        apt install -y openhd-qt-pi-bullseye
+    fi
 fi
 
 if [[ "${DISTRO}" == "buster" ]]; then
@@ -108,7 +102,11 @@ ls -a
 cp systemd/* /tmp/qopenhd/etc/systemd/system/ || exit 1
 cp qt.json /tmp/qopenhd/usr/local/share/openhd/ || exit 1
 
-VERSION="2.2.0-evo-$(date '+%m%d%H%M')-${VER2}"
+if [ "${BUILD_TYPE}" == "legacy" ]; then
+    VERSION="2.2.0-evo-legacy-$(date '+%m%d%H%M')-${VER2}"
+else
+    VERSION="2.2.0-evo-$(date '+%m%d%H%M')-${VER2}"
+fi
 
 rm ${PACKAGE_NAME}_${VERSION}_${PACKAGE_ARCH}.deb > /dev/null 2>&1
 ls -a

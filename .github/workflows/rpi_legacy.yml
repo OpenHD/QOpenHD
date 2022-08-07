@@ -1,4 +1,4 @@
-name: Build RPI Legacy
+name: Build raspberry ONLINE
 
 on: [push]
 
@@ -21,35 +21,37 @@ jobs:
         remove-android: 'true'
         remove-haskell: 'true'
         overprovision-lvm: 'true'
+   
     - uses: actions/checkout@v2
       with:
         submodules: recursive
-    - uses: pguyot/arm-runner-action@v2
-      id: build_image
+        
+    - name: Emulating Raspberry Pi 4
+      id: qemu
+      uses: pguyot/arm-runner-action@1be4bc9de8a7ba3c1c4f5bf917c438e8dc97904b
       with:
-        base_image: https://downloads.raspberrypi.org/raspios_oldstable_armhf/images/raspios_oldstable_armhf-2022-04-07/2022-04-04-raspios-buster-armhf.img.xz
+        base_image: http://openhdfpv.org/wp-content/BaseImages/OpenHD-image-pi-bullseye-milestone--2.1-milestones-2022-05-28_1033.zip
         image_additional_mb: 4000
         copy_repository_path: /opt
         copy_artifact_path: QOpenHD
         import_github_env: true
-        cpu: cortex-a7
+        cpu: cortex-a53
         commands: |
             ls -a
             cd /opt
             apt update
-            sudo bash QOpenHD/install_dep_legacy.sh
+            sudo bash QOpenHD/install_dep.sh
             cd /opt/QOpenHD
-            sudo ./package.sh armhf raspbian buster
+            sudo ./package.sh armhf raspbian bullseye legacy
             ls -a
 
     - name: Upload to Github
       uses: 'actions/upload-artifact@v2'
       with:
-        name: "QOpenHD"
+        name: "QOpenHd"
         path: |
           QOpenHD/*.deb
-        if-no-files-found: error
-
+          
     - name: Push
       id: push
       uses: cloudsmith-io/action@master
@@ -60,7 +62,7 @@ jobs:
         owner: "openhd"
         repo: "openhd-2-2-evo"
         distro: "raspbian"
-        release: "buster"
+        release: "bullseye"
         republish: "true" # needed ONLY if version is not changing
         file: "QOpenHD/*.deb"
           
