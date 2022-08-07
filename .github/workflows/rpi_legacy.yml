@@ -1,4 +1,4 @@
-name: Build raspberry ONLINE
+name: Build raspberry Legacy
 
 on: [push]
 

@@ -27,7 +27,7 @@ apt-get install -y gnupg
 apt-get install -y gnupg1
 apt-get install -y gnupg2
 apt-get install -y apt-transport-https curl
-fi
+
 
 if [[ "${DISTRO}" == "bullseye" ]]; then
     if [ "${BUILD_TYPE}" == "legacy" ]; then
