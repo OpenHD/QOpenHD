@@ -39,7 +39,7 @@ jobs:
         commands: |
             ls -a
             cd /opt
-            rm /etc/apt/sources.list.d/openhd-openhd-2-1-alpha.list
+            rm -Rf /etc/apt/sources.list.d/openhd*
             apt-get clean
             rm -rf /var/lib/apt/lists/*
             curl -1sLf \
