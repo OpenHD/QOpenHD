@@ -103,9 +103,12 @@ cp systemd/* /tmp/qopenhd/etc/systemd/system/ || exit 1
 cp qt.json /tmp/qopenhd/usr/local/share/openhd/ || exit 1
 
 if [ "${BUILD_TYPE}" == "legacy" ]; then
-    VERSION="2.2.0-evo-legacy-$(date '+%m%d%H%M')-${VER2}"
+    VERSION="2.2.0-evo-$(date '+%m%d%H%M')-${VER2}"
+    PACKAGE_NAME=qopenhd-legacy
+
 else
     VERSION="2.2.0-evo-$(date '+%m%d%H%M')-${VER2}"
+    
 fi
 
 rm ${PACKAGE_NAME}_${VERSION}_${PACKAGE_ARCH}.deb > /dev/null 2>&1
