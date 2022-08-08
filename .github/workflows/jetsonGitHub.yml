@@ -35,7 +35,8 @@ jobs:
         commands: |
           ls -a
           cd /opt/QOpenHD
-          apt update
+          sudo apt update
+          sudo apt install curl
           wget https://dl.cloudsmith.io/public/openhd/openhd-2-2-evo/setup.deb.sh
           sudo bash setup.deb.sh
           sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
