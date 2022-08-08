@@ -4,7 +4,7 @@
 //temporary
 #include "../../openhd_systems/aohdsystem.h"
 
-#include <QMessageBox>
+#include "MessagePopup.h"
 #include <QSettings>
 #include <QVariant>
 
@@ -63,12 +63,6 @@ MavlinkSettingsModel::MavlinkSettingsModel(uint8_t sys_id,uint8_t comp_id,QObjec
     //m_data.push_back({"VIDEO_FPS",1});
 }
 
-static void makePopupMessage(QString message){
-    QMessageBox msgBox;
-    msgBox.setText(message);
-    msgBox.exec();
-}
-
 void MavlinkSettingsModel::set_param_client(std::shared_ptr<mavsdk::System> system)
 {
     // only allow adding the param client once it is discovered, do not overwrite it once discovered.
@@ -83,7 +77,7 @@ bool MavlinkSettingsModel::try_fetch_all_parameters()
     qDebug()<<"MavlinkSettingsModel::try_fetch_all_parameters()";
     if(param_client==nullptr){
         // not discovered yet
-        makePopupMessage("OHD System not found");
+        workaround::makePopupMessage("OHD System not found");
     }
     if(param_client){
         // first, remove anything the QT model has cached
@@ -192,7 +186,7 @@ bool MavlinkSettingsModel::try_update_parameter(const QString param_id,QVariant 
                         std::stringstream ss;
                         ss<<"Updating "<<param_id.toStdString()<<" to "<<value_int<<" failed: "<<result;
                         qDebug()<<QString(ss.str().c_str());
-                        makePopupMessage(ss.str().c_str());
+                        workaround::makePopupMessage(ss.str().c_str());
                         return false;
                     }
                 }
@@ -212,7 +206,7 @@ bool MavlinkSettingsModel::try_update_parameter(const QString param_id,QVariant 
             std::stringstream ss;
             ss<<"Updating "<<param_id.toStdString()<<" to "<<value_int<<" failed: "<<result;
             qDebug()<<QString(ss.str().c_str());
-            makePopupMessage(ss.str().c_str());
+            workaround::makePopupMessage(ss.str().c_str());
             return false;
         }
     }
@@ -294,7 +288,7 @@ static void hacky_set_video_codec_in_qopenhd(const MavlinkSettingsModel::Setting
                 // video codec mismatch, update the QOpenHD settings
                 settings.setValue("selectedVideoCodecPrimary",video_codec_in_openhd);
                 qDebug()<<"Changed video codec in QOpenHD to "<<video_codec_in_openhd;
-                makePopupMessage("Changed VideoCodec in QOpenHD");
+                workaround::makePopupMessage("Changed VideoCodec in QOpenHD");
             }
         }
     }

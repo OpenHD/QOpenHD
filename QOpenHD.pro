@@ -116,6 +116,7 @@ HEADERS += \
     app/telemetry/mavlink_include.h \
     app/telemetry/openhd_defines.hpp \
     app/telemetry/qopenhdmavlinkhelper.hpp \
+    app/telemetry/settings/MessagePopup.h \
     app/telemetry/settings/synchronizedsettings.h \
     app/videostreaming/decodingstatistcs.h
 
