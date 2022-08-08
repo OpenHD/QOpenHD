@@ -37,9 +37,9 @@ jobs:
           cd /opt/QOpenHD
           apt update
           apt install -y curl
-          curl -1sLf 'https://dl.cloudsmith.io/public/openhd/openhd-2-1-alpha/gpg.9D1C80E55B50390B.key' | apt-key add -
+          curl -1sLf 'https://dl.cloudsmith.io/public/openhd/openhd-2-2-evo/gpg.9D1C80E55B50390B.key' | apt-key add -
           curl -1sLf \
-            'https://dl.cloudsmith.io/public/openhd/openhd-2-1-alpha/setup.deb.sh' \
+            'https://dl.cloudsmith.io/public/openhd/openhd-2-2-evo/setup.deb.sh' \
             | sudo -E bash
           sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
           sudo add-apt-repository ppa:mhier/libboost-latest -y
