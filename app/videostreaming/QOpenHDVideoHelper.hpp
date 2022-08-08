@@ -63,8 +63,8 @@ struct VideoStreamConfig{
     bool operator==(const VideoStreamConfig &o) const {
        return this->dev_test_video_mode == o.dev_test_video_mode && this->video_port == o.video_port && this->video_codec== o.video_codec
                && this->enable_software_video_decoder==o.enable_software_video_decoder && this->dev_jetson_force_omx==o.dev_jetson_force_omx &&
-               this->dev_enable_custom_pipeline==dev_enable_custom_pipeline &&
-               this->dev_custom_pipeline==dev_custom_pipeline;
+               this->dev_enable_custom_pipeline==o.dev_enable_custom_pipeline &&
+               this->dev_custom_pipeline==o.dev_custom_pipeline;
      }
     bool operator !=(const VideoStreamConfig &o) const {
         return !(*this==o);
