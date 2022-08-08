@@ -79,13 +79,13 @@ if [[ "${DISTRO}" == "bullseye" ]]; then
     export PATH="$PATH:/opt/Qt5.15.4/bin/"
     sudo ln -s /opt/Qt5.15.4/bin/qmake /usr/bin/qmake
     /opt/Qt5.15.4/bin/qmake
-elif [[ "${DISTRO}" == "buster" ]]; then
+elif [[ "${DISTRO}" == "bionic" ]]; then
             touch /etc/ld.so.conf.d/qt.conf
-            sudo echo "/opt/Qt5.15.0/lib/" > /etc/ld.so.conf.d/qt.conf
+            sudo echo "/opt/Qt5.15.4/lib/" > /etc/ld.so.conf.d/qt.conf
             sudo ldconfig
-            export PATH="$PATH:/opt/Qt5.15.0/bin/"
-            sudo ln -s /opt/Qt5.15.0/bin/qmake /usr/bin/qmake
-            /opt/Qt5.15.0/bin/qmake
+            export PATH="$PATH:/opt/Qt5.15.4/bin/"
+            sudo ln -s /opt/Qt5.15.4/bin/qmake /usr/bin/qmake
+            /opt/Qt5.15.4/bin/qmake
 
 else
 qmake
