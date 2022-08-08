@@ -245,10 +245,12 @@ static void hacky_set_video_codec_in_qopenhd(const MavlinkSettingsModel::Setting
                 // video codec mismatch, update the QOpenHD settings
                 settings.setValue("selectedVideoCodecPrimary",video_codec_in_openhd);
                 qDebug()<<"Changed video codec in QOpenHD to "<<video_codec_in_openhd;
+                makePopupMessage("Changed VideoCodec in QOpenHD");
             }
         }
     }
 }
+
 static void hacky_set_curr_selected_video_bitrate_in_qopenhd(const MavlinkSettingsModel::SettingData& data){
     if(data.unique_id=="V_BITRATE_MBITS"){
         AOHDSystem::instanceAir().set_curr_set_video_bitrate_int(data.value);
