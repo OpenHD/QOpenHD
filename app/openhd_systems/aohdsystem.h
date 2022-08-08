@@ -203,6 +203,8 @@ public:
      // Set the mavlink system reference, once discovered
      void set_system(std::shared_ptr<mavsdk::System> system);
      Q_INVOKABLE bool send_command_reboot(bool reboot);
+     //
+     bool send_command_restart_interface();
 };
 
 

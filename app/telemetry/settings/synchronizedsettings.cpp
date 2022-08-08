@@ -74,3 +74,21 @@ void SynchronizedSettings::change_param_air_and_ground(QString param_id,int valu
     ss<<"Successfully changed "<<param_id.toStdString()<<" to "<<value<<" ,please repower air and ground unit";
     workaround:: makePopupMessage(ss.str().c_str());
 }
+
+void SynchronizedSettings::soft_restart(){
+    qDebug()<<"SynchronizedSettings::soft_restart()";
+    const bool air_and_ground_alive=AOHDSystem::instanceAir().is_alive() && AOHDSystem::instanceGround().is_alive();
+    if(!air_and_ground_alive){
+        workaround::makePopupMessage("Precondition: Air and Ground running and alive not given. Soft restart not possible.");
+        return;
+    }
+
+    const bool succ1=AOHDSystem::instanceAir().send_command_restart_interface();
+    if(!succ1){
+        workaround::makePopupMessage("Soft restart failed (Air), please manually power cycle your air and ground unit");
+    }
+    const bool succ2=AOHDSystem::instanceGround().send_command_restart_interface();
+    if(!succ2){
+        workaround::makePopupMessage("Soft restart failed (Ground), please manually power cycle your air and ground unit");
+    }
+}
