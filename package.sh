@@ -79,13 +79,13 @@ if [[ "${DISTRO}" == "bullseye" ]]; then
     export PATH="$PATH:/opt/Qt5.15.4/bin/"
     sudo ln -s /opt/Qt5.15.4/bin/qmake /usr/bin/qmake
     /opt/Qt5.15.4/bin/qmake
-elif [[ "${DISTRO}" == "buster" ]]; then
+elif [[ "${DISTRO}" == "bionic" ]]; then
             touch /etc/ld.so.conf.d/qt.conf
-            sudo echo "/opt/Qt5.15.0/lib/" > /etc/ld.so.conf.d/qt.conf
+            sudo echo "/opt/Qt5.15.4/lib/" > /etc/ld.so.conf.d/qt.conf
             sudo ldconfig
-            export PATH="$PATH:/opt/Qt5.15.0/bin/"
-            sudo ln -s /opt/Qt5.15.0/bin/qmake /usr/bin/qmake
-            /opt/Qt5.15.0/bin/qmake
+            export PATH="$PATH:/opt/Qt5.15.4/bin/"
+            sudo ln -s /opt/Qt5.15.4/bin/qmake /usr/bin/qmake
+            /opt/Qt5.15.4/bin/qmake
 
 else
 qmake
@@ -103,11 +103,11 @@ cp systemd/* /tmp/qopenhd/etc/systemd/system/ || exit 1
 cp qt.json /tmp/qopenhd/usr/local/share/openhd/ || exit 1
 
 if [ "${BUILD_TYPE}" == "legacy" ]; then
-    VERSION="2.2.0-evo-$(date '+%m%d%H%M')-${VER2}"
+    VERSION="2.2.1-evo-$(date '+%m%d%H%M')-${VER2}"
     PACKAGE_NAME=qopenhd-legacy
 
 else
-    VERSION="2.2.0-evo-$(date '+%m%d%H%M')-${VER2}"
+    VERSION="2.2.1-evo-$(date '+%m%d%H%M')-${VER2}"
     
 fi
 

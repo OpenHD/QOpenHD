@@ -1,4 +1,4 @@
-name: Build Jetson GitHub
+name: Build Jetson ONLINE
 
 on: [push]
 
@@ -8,7 +8,7 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-18.04
+    runs-on: [self-hosted, linux, X64]
     env:
       CLOUDSMITH_API_KEY: ${{ secrets.CLOUDSMITH_API_KEY }}
     steps:
@@ -22,7 +22,7 @@ jobs:
     
     - name: Emulating Jetson
       id: qemu
-      uses: actions/arm-runner-action@6e4147d2760fa642436b53d58e1ed8f75cc77b4b
+      uses: pguyot/arm-runner-action@1be4bc9de8a7ba3c1c4f5bf917c438e8dc97904b
       with:
         base_image: http://openhdfpv.org/wp-content/BaseImages/Open.HD-2.1-05221841-jetson-nano-4gb-bionic.img.zip
         cpu: cortex-a57
@@ -37,9 +37,9 @@ jobs:
           cd /opt/QOpenHD
           apt update
           apt install -y curl
-          curl -1sLf 'https://dl.cloudsmith.io/public/openhd/openhd-2-1-alpha/gpg.9D1C80E55B50390B.key' | apt-key add -
+          curl -1sLf 'https://dl.cloudsmith.io/public/openhd/openhd-2-2-evo/gpg.9D1C80E55B50390B.key' | apt-key add -
           curl -1sLf \
-            'https://dl.cloudsmith.io/public/openhd/openhd-2-1-alpha/setup.deb.sh' \
+            'https://dl.cloudsmith.io/public/openhd/openhd-2-2-evo/setup.deb.sh' \
             | sudo -E bash
           sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
           sudo add-apt-repository ppa:mhier/libboost-latest -y
@@ -51,6 +51,7 @@ jobs:
           sudo ./package.sh arm64 ubuntu bionic
           ls -a  
           
+
     - name: Push
       id: push
       uses: cloudsmith-io/action@master
