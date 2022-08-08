@@ -28,8 +28,17 @@ apt-get install -y gnupg1
 apt-get install -y gnupg2
 apt-get install -y apt-transport-https curl
 
+
 if [[ "${DISTRO}" == "bullseye" ]]; then
-    apt install -y openhd-qt-pi-bullseye
+    if [ "${BUILD_TYPE}" == "legacy" ]; then
+    apt install -y openhd-qt-pi-bullseye-legacy
+    else
+        apt install -y openhd-qt-pi-bullseye
+    fi
+fi
+
+if [[ "${DISTRO}" == "buster" ]]; then
+    apt install -y openhd-qt 
 fi
 
 if [[ "${OS}" == "debian" ]]; then
@@ -50,11 +59,7 @@ TMPDIR=/tmp/qopenhd/
 
 rm -rf /tmp/qopenhd/*
 
-# link libraries and qt
-touch /etc/ld.so.conf.d/qt.conf
-echo "/opt/Qt5.15.4/lib/" > /etc/ld.so.conf.d/qt.conf
-sudo ldconfig
-export PATH="$PATH:/opt/Qt5.15.4/bin/"
+
 
 mkdir -p /tmp/qopenhd/usr/local/bin || exit 1
 mkdir -p /tmp/qopenhd/etc/systemd/system || exit 1
@@ -66,13 +71,28 @@ ls /opt
 VER2=$(git rev-parse --short HEAD)
 
 
-if [[ "${PACKAGE_ARCH}" == x86 ]]; then
-    qmake
+if [[ "${DISTRO}" == "bullseye" ]]; then
+    # link libraries and qt
+    touch /etc/ld.so.conf.d/qt.conf
+    sudo echo "/opt/Qt5.15.4/lib/" > /etc/ld.so.conf.d/qt.conf
+    sudo ldconfig
+    export PATH="$PATH:/opt/Qt5.15.4/bin/"
+    sudo ln -s /opt/Qt5.15.4/bin/qmake /usr/bin/qmake
+    /opt/Qt5.15.4/bin/qmake
+elif [[ "${DISTRO}" == "buster" ]]; then
+            touch /etc/ld.so.conf.d/qt.conf
+            sudo echo "/opt/Qt5.15.0/lib/" > /etc/ld.so.conf.d/qt.conf
+            sudo ldconfig
+            export PATH="$PATH:/opt/Qt5.15.0/bin/"
+            sudo ln -s /opt/Qt5.15.0/bin/qmake /usr/bin/qmake
+            /opt/Qt5.15.0/bin/qmake
+
 else
-    /opt/Qt5.15.4/bin/qmake  
+qmake
 fi
+
 echo "build with qmake done"
-make -j2 || exit 1
+make -j$(nproc)|| exit 1
 echo "build with make done"
 
 cp release/QOpenHD /tmp/qopenhd/usr/local/bin/ || exit 1
@@ -82,11 +102,18 @@ ls -a
 cp systemd/* /tmp/qopenhd/etc/systemd/system/ || exit 1
 cp qt.json /tmp/qopenhd/usr/local/share/openhd/ || exit 1
 
-VERSION="2.2-evo-$(date '+%m%d%H%M')-${VER2}"
+if [ "${BUILD_TYPE}" == "legacy" ]; then
+    VERSION="2.2.0-evo-$(date '+%m%d%H%M')-${VER2}"
+    PACKAGE_NAME=qopenhd-legacy
 
-rm ${PACKAGE_NAME}_${VERSION//v}_${PACKAGE_ARCH}.deb > /dev/null 2>&1
+else
+    VERSION="2.2.0-evo-$(date '+%m%d%H%M')-${VER2}"
+    
+fi
+
+rm ${PACKAGE_NAME}_${VERSION}_${PACKAGE_ARCH}.deb > /dev/null 2>&1
 ls -a
-fpm -a ${PACKAGE_ARCH} -s dir -t deb -n ${PACKAGE_NAME} -v ${VERSION//v} -C ${TMPDIR} \
+fpm -a ${PACKAGE_ARCH} -s dir -t deb -n ${PACKAGE_NAME} -v ${VERSION} -C ${TMPDIR} \
   -p qopenhd_VERSION_ARCH.deb \
   --after-install after-install.sh \
   -d "mavsdk" \

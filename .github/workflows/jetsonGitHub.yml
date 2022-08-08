@@ -1,4 +1,4 @@
-name: Build Jetson ONLINE
+name: Build Jetson GitHub
 
 on: [push]
 
@@ -8,7 +8,7 @@ env:
 
 jobs:
   build:
-    runs-on: [self-hosted, linux, X64]
+    runs-on: ubuntu-18.04
     env:
       CLOUDSMITH_API_KEY: ${{ secrets.CLOUDSMITH_API_KEY }}
     steps:
@@ -22,7 +22,7 @@ jobs:
     
     - name: Emulating Jetson
       id: qemu
-      uses: pguyot/arm-runner-action@1be4bc9de8a7ba3c1c4f5bf917c438e8dc97904b
+      uses: actions/arm-runner-action@6e4147d2760fa642436b53d58e1ed8f75cc77b4b
       with:
         base_image: http://openhdfpv.org/wp-content/BaseImages/Open.HD-2.1-05221841-jetson-nano-4gb-bionic.img.zip
         cpu: cortex-a57
@@ -51,20 +51,19 @@ jobs:
           sudo ./package.sh arm64 ubuntu bionic
           ls -a  
           
-
-      #- name: Push
-      #id: push
-      #uses: cloudsmith-io/action@master
-        #with:
-        #api-key: ${{ secrets.CLOUDSMITH_API_KEY }}
-        #command: "push"
-        #format: "deb"
-        #owner: "openhd"
-        #repo: "openhd-2-2-evo"
-        #distro: "ubuntu"
-        #release: "bionic"
-        #republish: "true" # needed ONLY if version is not changing
-        #file: "QOpenHD/*.deb"
+    - name: Push
+      id: push
+      uses: cloudsmith-io/action@master
+      with:
+        api-key: ${{ secrets.CLOUDSMITH_API_KEY }}
+        command: "push"
+        format: "deb"
+        owner: "openhd"
+        repo: "openhd-2-2-evo"
+        distro: "ubuntu"
+        release: "bionic"
+        republish: "true" # needed ONLY if version is not changing
+        file: "QOpenHD/*.deb"
   cleanup:
     runs-on: ubuntu-latest
     needs: [build]

@@ -7,4 +7,4 @@ cd build
 #qmake ..
 ./../../../../opt/Qt5.15.4/bin/qmake ..
 
-make -j4
+make -j$(nproc)
