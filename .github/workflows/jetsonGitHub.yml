@@ -62,10 +62,4 @@ jobs:
         release: "bionic"
         republish: "true" # needed ONLY if version is not changing
         file: "QOpenHD/*.deb"
-  cleanup:
-    runs-on: ubuntu-latest
-    needs: [build]
-    if: always()
-    steps:
-      - name: Cleanup
-        run: losetup -d /dev/loop*
+
