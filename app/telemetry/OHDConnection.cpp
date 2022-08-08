@@ -2,32 +2,13 @@
 
 #include "qopenhdmavlinkhelper.hpp"
 #include "telemetry/openhd_defines.hpp"
+#include "../openhd_systems/aohdsystem.h"
+#include "../fcmavlinksystem.h"
 
 #include "settings/mavlinksettingsmodel.h"
 
 OHDConnection::OHDConnection(QObject *parent,bool useTcp):QObject(parent),USE_TCP(useTcp)
 {
-#ifndef X_USE_MAVSDK
-    if(USE_TCP){
-        tcpClientSock = new QTcpSocket(this);
-        connect(tcpClientSock, &QTcpSocket::readyRead, this, &OHDConnection::tcpReadyRead);
-        connect(tcpClientSock, &QTcpSocket::connected, this, &OHDConnection::tcpConnected);
-        connect(tcpClientSock, &QTcpSocket::disconnected, this, &OHDConnection::tcpDisconnected);
-    }else{
-        udpSocket = new QUdpSocket(this);
-        //auto bindStatus = udpSocket->bind(QHostAddress::Any,QOPENHD_GROUND_CLIENT_UDP_PORT_IN);
-        // this is how it is done int QGroundCOntroll:
-        //  _telemetrySocket->bind(QHostAddress::LocalHost, 0, QUdpSocket::ShareAddress);
-        //auto bindStatus = udpSocket->bind(QHostAddress::LocalHost,QOPENHD_GROUND_CLIENT_UDP_PORT_IN);
-        auto bindStatus = udpSocket->bind(QHostAddress::Any,QOPENHD_GROUND_CLIENT_UDP_PORT_IN);
-        if (!bindStatus) {
-            qDebug() <<"Cannot bind UDP Socket";
-        }
-        connect(udpSocket, &QUdpSocket::readyRead, this, &OHDConnection::udpReadyRead);
-    }
-    start();
-#endif //X_USE_MAVSDK
-#ifdef X_USE_MAVSDK
     mavsdk=std::make_shared<mavsdk::Mavsdk>();
     mavsdk::log::subscribe([](mavsdk::log::Level level,   // message severity level
                               const std::string& message, // message text
@@ -40,6 +21,7 @@ OHDConnection::OHDConnection(QObject *parent,bool useTcp):QObject(parent),USE_TC
     });
     // NOTE: subscribe before adding any connection(s)
     mavsdk->subscribe_on_new_system([this]() {
+        std::lock_guard<std::mutex> lock(systems_mutex);
         // hacky, fucking hell. mavsdk might call this callback with more than 1 system added.
         auto systems=mavsdk->systems();
         for(int i=mavsdk_already_known_systems;i<systems.size();i++){
@@ -55,8 +37,12 @@ OHDConnection::OHDConnection(QObject *parent,bool useTcp):QObject(parent),USE_TC
     std::stringstream ss;
     ss<<"MAVSDK connection: " << connection_result;
     qDebug()<<ss.str().c_str();
-    start();
-#endif //X_USE_MAVSDK
+}
+
+OHDConnection &OHDConnection::instance()
+{
+    static OHDConnection instance=new OHDConnection();
+    return instance;
 }
 
 void OHDConnection::onNewSystem(std::shared_ptr<mavsdk::System> system){
@@ -84,61 +70,18 @@ void OHDConnection::onNewSystem(std::shared_ptr<mavsdk::System> system){
             //qDebug()<<"Intercept:send message"<<msg.msgid;
             return true;
         });
-        paramOhdGround=std::make_shared<mavsdk::Param>(system);
-        // MAV_COMP_ID_ONBOARD_COMPUTER2=192
-        paramOhdGround->late_init(192,true);
-        MavlinkSettingsModel::instanceGround().set_param_client(paramOhdGround);
-        /*system->register_component_discovered_id_callback([](mavsdk::System::ComponentType comp_type, uint8_t comp_id){
-            qDebug()<<"Ground component discovered:"<<(int)comp_id;
-        });*/
+        MavlinkSettingsModel::instanceGround().set_param_client(system);
+        AOHDSystem::instanceGround().set_system(system);
     }else if(system->get_system_id()==OHD_SYS_ID_AIR){
         qDebug()<<"Found OHD AIR station";
         systemOhdAir=system;
-        paramOhdAir=std::make_shared<mavsdk::Param>(system);
-        // 100 is camera0
-        paramOhdAir->late_init(100,true);
-        MavlinkSettingsModel::instanceAir().set_param_client(paramOhdAir);
-
+        MavlinkSettingsModel::instanceAir().set_param_client(system);
+        MavlinkSettingsModel::instanceAirCamera().set_param_client(system);
+        AOHDSystem::instanceAir().set_system(system);
     }else if(system->has_autopilot()){
+        qDebug()<<"Found FC";
         // we got the flight controller
-        telemetryFC=std::make_unique<mavsdk::Telemetry>(system);
-        auto res=telemetryFC->set_rate_attitude(60);
-        std::stringstream ss;
-        ss<<res;
-        qDebug()<<"Set rate result:"<<ss.str().c_str();
-    }
-    system->subscribe_is_connected([this,system](bool is_connected){
-        qDebug()<<"System: "<<system->get_system_id()<<"connected: "<<(is_connected ? "Y" : "N");
-    });
-}
-
-void OHDConnection::start(){
-    // we only need a reconnection timer for tcp, in case of UDP it is safe to assume that
-    // we never loose the port (data might or might not arrive at it though)
-    if(USE_TCP){
-        reconnectTimer = new QTimer(this);
-        connect(reconnectTimer, &QTimer::timeout, this, &OHDConnection::reconnectIfDisconnected);
-        reconnectTimer->start(1000);
-    }
-    // the heartbeat timer runs regardless of TCP or UDP
-    heartbeatTimer = new QTimer(this);
-    connect(heartbeatTimer, &QTimer::timeout, this, &OHDConnection::onHeartbeat);
-    heartbeatTimer->start(1000);
-}
-
-void OHDConnection::stop(){
-    if(USE_TCP){
-        reconnectTimer->stop();
-        tcpClientSock->disconnectFromHost();
-    }
-    heartbeatTimer->stop();
-}
-
-// called by the reconnect timer
-void OHDConnection::reconnectIfDisconnected(){
-    if (tcpClientSock->state() == QAbstractSocket::UnconnectedState) {
-        qDebug() << "OHDConnection::reconnectIfDisconnected";
-        tcpClientSock->connectToHost(QOPENHD_GROUND_CLIENT_TCP_ADDRESS, QOPENHD_GROUND_CLIENT_TCP_PORT);
+        FCMavlinkSystem::instance().set_system(system);
     }
 }
 
@@ -161,96 +104,27 @@ void OHDConnection::sendMessage(mavlink_message_t msg){
         // probably a programming error, the message was not packed with the right comp id
         qDebug()<<"WARN Sending message with comp id:"<<msg.compid<<" instead of"<<comp_id;
     }
-#ifdef X_USE_MAVSDK
     if(mavsdk!=nullptr){
         if(passtroughOhdGround!=nullptr){
             passtroughOhdGround->send_message(msg);
         }else{
             // If the passtrough is not created yet, a connection to the OHD ground unit has not yet been established.
             //qDebug()<<"MAVSDK passtroughOhdGround not created";
-            qDebug()<<"No OHD Ground unit connected";
+            // only log it once, then not again to keep logcat clean
+            static bool first=true;
+            if(first){
+                qDebug()<<"No OHD Ground unit connected";
+                first=false;
+            }
         }
         return;
     }
-#endif //X_USE_MAVSDK
-    const auto buf=QOpenHDMavlinkHelper::mavlinkMessageToSendBuffer(msg);
-    sendData(buf.data(),buf.size());
 }
 
-void OHDConnection::parseNewData(const uint8_t* data, int data_len){
-    //qDebug()<<"OHDConnection::parseNewData"<<data_len;
-    mavlink_message_t msg;
-    for(int i=0;i<data_len;i++){
-        uint8_t res = mavlink_parse_char(MAVLINK_COMM_0, (uint8_t)data[i], &msg, &receiveMavlinkStatus);
-        if (res) {
-            //qDebug()<<"Got new mavlink message";
-            lastMavlinkMessage=std::chrono::steady_clock::now();
-            if(callback!= nullptr){
-                //qDebug()<<"Forwarding new mavlink message";
-                callback(msg);
-            }else{
-                qDebug()<<"OHDConnection::No callback set,did you forget to add it ?";
-            }
-        }
-    }
-}
-
-void OHDConnection::tcpReadyRead() {
-    qDebug() << "OHDConnection::tcpReadyRead";
-    QByteArray data = tcpClientSock->readAll();
-    parseNewData((uint8_t*)data.data(),data.size());
-}
-
-void OHDConnection::tcpConnected() {
-    qDebug() << "OHDConnection::tcpConnected";
-}
-
-void OHDConnection::tcpDisconnected() {
-    qDebug() << "OHDConnection::tcpDisconnected";
-    reconnectIfDisconnected();
-}
-
-void OHDConnection::udpReadyRead() {
-    //qDebug() << "OHDConnection::udpReadyRead";
-    QByteArray datagram;
-    while (udpSocket->hasPendingDatagrams()) {
-        datagram.resize(int(udpSocket->pendingDatagramSize()));
-        QHostAddress _groundAddress;
-        quint16 groundPort;
-        udpSocket->readDatagram(datagram.data(), datagram.size(), &_groundAddress, &groundPort);
-        parseNewData((uint8_t*)datagram.data(),datagram.size());
-        foundSenderPort=groundPort;
-        foundSenderHostAddress=_groundAddress;
-        senderInfohasBeenFound=true;
-        //qDebug()<<"foundSenderIp:"<<foundSenderIp<<" foundSenderPort:"<<foundSenderPort;
-    }
-    //QByteArray data = udpSocket->readAll();
-    //parseNewData((uint8_t*)data.data(),data.size());
-}
-
-void OHDConnection::sendData(const uint8_t* data,int data_len){
-    //qDebug() << "OHDConnection::sendData";
-    if(USE_TCP){
-        if (tcpClientSock->state() == QAbstractSocket::ConnectedState) {
-            tcpClientSock->write((char*)data, data_len);
-        }
-    }else{
-        if(!senderInfohasBeenFound){
-            qDebug()<<"Cannot send data, sender ip and port unknown";
-            return;
-        }
-        if(udpSocket==nullptr){
-            qDebug()<<"Error send data udp socket null";
-            return;
-        }
-        //udpSocket->writeDatagram((char*)data, data_len, QHostAddress(QOPENHD_GROUND_CLIENT_UDP_ADDRESS), QOPENHD_GROUND_CLIENT_UDP_PORT_OUT);
-        udpSocket->writeDatagram((char*)data, data_len, foundSenderHostAddress, foundSenderPort);
-    }
-}
 
 void OHDConnection::request_openhd_version()
 {
-    mavlink_command_long_t command;
+    mavlink_command_long_t command{};
     command.command=MAV_CMD_REQUEST_MESSAGE;
     command.param1=static_cast<float>(MAVLINK_MSG_ID_OPENHD_VERSION_MESSAGE);
     send_command_long_oneshot(command);
@@ -263,8 +137,7 @@ void OHDConnection::send_command_long_oneshot(const mavlink_command_long_t &comm
     sendMessage(msg);
 }
 
-
-void OHDConnection::onHeartbeat(){
+void OHDConnection::sendMessageHeartbeat(){
     //qDebug() << "OHDConnection::onHeartbeat";
     mavlink_message_t msg;
     // values from QGroundControll

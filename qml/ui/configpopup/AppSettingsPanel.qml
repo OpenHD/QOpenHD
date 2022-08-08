@@ -2180,6 +2180,67 @@ Item {
                          }
                         }
                     }
+                    // temporary
+                    Rectangle {
+                        width: parent.width
+                        height: rowHeight
+                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+
+                        Text {
+                            text: qsTr("DEV_JETSON_FORCE_OMX")
+                            font.weight: Font.Bold
+                            font.pixelSize: 13
+                            anchors.leftMargin: 8
+                            verticalAlignment: Text.AlignVCenter
+                            anchors.verticalCenter: parent.verticalCenter
+                            width: 224
+                            height: elementHeight
+                            anchors.left: parent.left
+                        }
+                        Switch {
+                            width: 32
+                            height: elementHeight
+                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                            anchors.right: parent.right
+                            anchors.verticalCenter: parent.verticalCenter
+                            checked: settings.dev_jetson_force_omx
+                            onCheckedChanged: settings.dev_jetson_force_omx = checked
+                        }
+                    }
+                    Rectangle {
+                        width: parent.width
+                        height: rowHeight
+                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+
+                        Text {
+                            text: qsTr("DEV_ENABLE_CUSTOM_PIPELINE")
+                            font.weight: Font.Bold
+                            font.pixelSize: 13
+                            anchors.leftMargin: 8
+                            verticalAlignment: Text.AlignVCenter
+                            anchors.verticalCenter: parent.verticalCenter
+                            width: 224
+                            height: elementHeight
+                            anchors.left: parent.left
+                        }
+                        Switch {
+                            width: 32
+                            height: elementHeight
+                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                            anchors.right: parent.right
+                            anchors.verticalCenter: parent.verticalCenter
+                            checked: settings.dev_enable_custom_pipeline
+                            onCheckedChanged: settings.dev_enable_custom_pipeline = checked
+                        }
+                    }
+                    TextInput {
+                        width: parent.width
+                        height: rowHeight
+                        text: settings.dev_custom_pipeline
+                        cursorVisible: true
+                        onTextChanged: settings.dev_custom_pipeline=text
+                    }
+                    // temporary end
                 }
             }
         }
@@ -2301,14 +2362,14 @@ Item {
                         }
                     }
 
+                    //
                     Rectangle {
                         width: parent.width
                         height: rowHeight
                         color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-                        visible: false
-
+                        visible: true
                         Text {
-                            text: qsTr("Reset all settings")
+                            text: qsTr("DEV_SHOW_WHITELISTED_PARAMS")
                             font.weight: Font.Bold
                             font.pixelSize: 13
                             anchors.leftMargin: 8
@@ -2318,29 +2379,19 @@ Item {
                             height: elementHeight
                             anchors.left: parent.left
                         }
-
-                        Button {
-                            id: resetButton
-                            width: 128
+                        Switch {
+                            width: 32
                             height: elementHeight
                             anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
 
                             anchors.right: parent.right
                             anchors.verticalCenter: parent.verticalCenter
-                            text: qsTr("Reset")
-                            Material.accent: Material.Red
-                            highlighted: true
-
-                            ToolTip.delay: 250
-                            ToolTip.timeout: 5000
-                            ToolTip.visible: pressed
-                            ToolTip.text: qsTr("Settings reset")
-
-                            onClicked: {
-                                //settings.clear()
-                            }
+                            checked: settings.dev_show_whitelisted_params
+                            onCheckedChanged: settings.dev_show_whitelisted_params = checked
                         }
                     }
+
+
                 }
             }
         }

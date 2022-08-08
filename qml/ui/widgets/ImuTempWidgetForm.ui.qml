@@ -294,7 +294,7 @@ BaseWidget {
 
         Text {
             id: temp_glyph
-            color: OpenHD.imu_temp >= settings.imu_temp_caution ? (OpenHD.imu_temp >= settings.imu_temp_warn ? settings.color_warn : settings.color_caution) : settings.color_shape
+            color: _fcMavlinkSystem.imu_temp >= settings.imu_temp_caution ? (_fcMavlinkSystem.imu_temp >= settings.imu_temp_warn ? settings.color_warn : settings.color_caution) : settings.color_shape
             opacity: settings.imu_temp_opacity
             text: "\uf5d2"
             anchors.left: parent.left
@@ -312,14 +312,14 @@ BaseWidget {
         Text {
             id: imu_temp
             color: {
-                if (OpenHD.imu_temp >= settings.imu_temp_warn) {
+                if (_fcMavlinkSystem.imu_temp >= settings.imu_temp_warn) {
                     widgetInner.visible = true
                     return settings.color_warn
-                } else if (OpenHD.imu_temp > settings.imu_temp_caution) {
+                } else if (_fcMavlinkSystem.imu_temp > settings.imu_temp_caution) {
                     widgetInner.visible = true
                     return settings.color_caution
                 } else if (settings.imu_temp_declutter == true
-                           && OpenHD.armed == true) {
+                           && _fcMavlinkSystem.armed == true) {
                     widgetInner.visible = false
                     return settings.color_text
                 } else {
@@ -328,7 +328,7 @@ BaseWidget {
                 }
             }
             opacity: settings.imu_temp_opacity
-            text: OpenHD.imu_temp == 0 ? qsTr("N/A") : OpenHD.imu_temp + "°"
+            text: _fcMavlinkSystem.imu_temp == 0 ? qsTr("N/A") : _fcMavlinkSystem.imu_temp + "°"
             anchors.left: temp_glyph.right
             anchors.leftMargin: 2
             anchors.bottom: parent.bottom

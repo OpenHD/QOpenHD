@@ -198,7 +198,7 @@ BaseWidget {
             height: 24
             color: settings.color_text
             opacity: settings.flight_timer_opacity
-            text: OpenHD.flight_time
+            text: _fcMavlinkSystem.flight_time
             elide: Text.ElideRight
             anchors.right: parent.right
             anchors.rightMargin: 8

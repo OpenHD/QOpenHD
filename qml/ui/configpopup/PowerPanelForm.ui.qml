@@ -76,7 +76,7 @@ Rectangle {
                     }
 
                     Text {
-                        text: OpenHD.air_vout >= 0 ? (OpenHD.air_vout / 1000.0).toFixed(2) + "V" : "N/A"
+                        text: _fcMavlinkSystem.air_vout >= 0 ? (_fcMavlinkSystem.air_vout / 1000.0).toFixed(2) + "V" : "N/A"
                         height: 24
                         Layout.fillWidth: true
                         font.pixelSize: 14
@@ -101,7 +101,7 @@ Rectangle {
                     }
 
                     Text {
-                        text: OpenHD.air_iout >= 0 ? OpenHD.air_iout + "mA" : "N/A"
+                        text: _fcMavlinkSystem.air_iout >= 0 ? _fcMavlinkSystem.air_iout + "mA" : "N/A"
                         height: 24
                         Layout.fillWidth: true
                         font.pixelSize: 14
@@ -125,6 +125,7 @@ Rectangle {
                     anchors.bottomMargin: 6
                     font.pixelSize: 14
                     font.capitalization: Font.MixedCase
+                    enabled: _ohdSystemAir.is_alive
 
                     onPressed: {
                         powerAction = PowerPanel.PowerAction.RebootAir
@@ -136,6 +137,7 @@ Rectangle {
                     id: airShutdown
                     width: 96
                     height: 48
+                    text: qsTr("Shutdown")
                     anchors.right: parent.right
                     anchors.rightMargin: 12
                     anchors.bottom: parent.bottom
@@ -144,8 +146,7 @@ Rectangle {
                     font.capitalization: Font.MixedCase
                     Material.accent: Material.Red
                     highlighted: true
-
-                    text: qsTr("Shutdown")
+                    enabled: _ohdSystemAir.is_alive
 
                     onPressed: {
                         powerAction = PowerPanel.PowerAction.ShutdownAir
@@ -177,7 +178,7 @@ Rectangle {
                     }
 
                     Text {
-                        text: OpenHD.ground_vin >= 0 ? (OpenHD.ground_vin / 1000.0).toFixed(2) + "V": "N/A"
+                        text: "TOD"//OpenHD.ground_vin >= 0 ? (OpenHD.ground_vin / 1000.0).toFixed(2) + "V": "N/A"
                         height: 24
                         Layout.fillWidth: true
                         font.pixelSize: 14
@@ -202,7 +203,7 @@ Rectangle {
                     }
 
                     Text {
-                        text: OpenHD.ground_vout >= 0 ? (OpenHD.ground_vout / 1000.0).toFixed(2)  + "V" : "N/A"
+                        text: "TOD"//OpenHD.ground_vout >= 0 ? (OpenHD.ground_vout / 1000.0).toFixed(2)  + "V" : "N/A"
                         height: 24
                         Layout.fillWidth: true
                         font.pixelSize: 14
@@ -227,7 +228,7 @@ Rectangle {
                     }
 
                     Text {
-                        text: OpenHD.ground_iout >= 0 ? OpenHD.ground_iout + "mA" : "N/A"
+                        text: "TOD"//OpenHD.ground_iout >= 0 ? OpenHD.ground_iout + "mA" : "N/A"
                         height: 24
                         Layout.fillWidth: true
                         font.pixelSize: 14
@@ -252,7 +253,7 @@ Rectangle {
                     }
 
                     Text {
-                        text: OpenHD.ground_vbat >= 0 ? (OpenHD.ground_vbat / 1000.0).toFixed(2) + "V" : "N/A"
+                        text: "TOD"//OpenHD.ground_vbat >= 0 ? (OpenHD.ground_vbat / 1000.0).toFixed(2) + "V" : "N/A"
                         height: 24
                         Layout.fillWidth: true
                         font.pixelSize: 14
@@ -277,6 +278,7 @@ Rectangle {
                     anchors.bottomMargin: 6
                     font.pixelSize: 14
                     font.capitalization: Font.MixedCase
+                    enabled: _ohdSystemGround.is_alive
 
                     onPressed: {
                         powerAction = PowerPanel.PowerAction.RebootGround
@@ -288,6 +290,7 @@ Rectangle {
                     id: groundShutdown
                     width: 96
                     height: 48
+                    text: qsTr("Shutdown")
                     anchors.right: parent.right
                     anchors.rightMargin: 12
                     anchors.bottom: parent.bottom
@@ -296,8 +299,7 @@ Rectangle {
                     font.capitalization: Font.MixedCase
                     Material.accent: Material.Red
                     highlighted: true
-
-                    text: qsTr("Shutdown")
+                    enabled: _ohdSystemGround.is_alive
 
                     onPressed: {
                         powerAction = PowerPanel.PowerAction.ShutdownGround
@@ -310,14 +312,8 @@ Rectangle {
 
         Card {
             id: fcBox
-            visible: {
-                if(OpenHD.mav_type=="ARDUPLANE" || OpenHD.mav_type=="ARDUCOPTER"){
-                    return true;
-                }
-                else{
-                    return false;
-                }
-            }
+            visible: _fcMavlinkSystem.supports_basic_commands
+            enabled: _fcMavlinkSystem.is_alive
             height: 224
             Layout.fillWidth: true
             cardName: qsTr("Flight Controller")

@@ -1,35 +1,39 @@
- #ifndef OPENHD_H
-#define OPENHD_H
+#ifndef FC_MAVLINK_SYSTEM_H
+#define FC_MAVLINK_SYSTEM_H
 
 #include <QElapsedTimer>
 #include <QObject>
 #include <QTimer>
+#include <mavsdk/mavsdk.h>
+#include <mavsdk/plugins/action/action.h>
+#include <mavsdk/plugins/telemetry/telemetry.h>
+#include "telemetry/mavlink_include.h"
 
 /**
- * So this is basically a really big "model" and a small "controller" (in MVC pattern) class.
- * While I'd like someone refactoring it (and it should probably reside in telemetry or at least be seperated into telemetry and non-telemetry stuff)
- * since all the UI elements and their java script code use this class that's not feasible rn.
- * And there are actually some advantages to having one (big) model, since then you only have to import one model into qml
+ * This used to be called OpenHD and was a mix of everything, it has become FCMavlinkSystem -
+ * A QT model for (fire and forget) data from the mavlink FC connected to the air unit.
+ * OpenHD always has only one connected FC, so this can be a singleton, too.
+ * Also, note that nothing OpenHD specific should ever make it into here - OpenHD supports raw access to
+ * the Flight Controller, but it is NOT a Flight Controller ;)
+ * The corresponding qml element is called _fcMavlinkSystem.
  */
-class OpenHD : public QObject
+class FCMavlinkSystem : public QObject
 {
     Q_OBJECT
 
 public:
-    explicit OpenHD(QObject *parent = nullptr);
-    static OpenHD& instance();
+    explicit FCMavlinkSystem(QObject *parent = nullptr);
+    static FCMavlinkSystem& instance();
+    // Process a new telemetry message coming from the FC mavlink system
+    // return true if we know what to do with this message type (aka this message type has been consumed)
+    bool process_message(const mavlink_message_t& msg);
+    // mavlink sys id of the FC. Pretty much always 1, but it is not a hard requirement that FC always use a sys id of 1.
+    // If the FC has not been discovered yet (mavsdk::system not yet set), return std::nullopt.
+    std::optional<uint8_t> get_fc_sys_id();
 
-    void telemetryMessage(QString message, int level);
+    void telemetryStatusMessage(QString message, int level);
     void calculate_home_distance();
     void calculate_home_course();
-
-    Q_INVOKABLE void set_Requested_Flight_Mode(int mode);
-
-    Q_INVOKABLE void set_Requested_ArmDisarm(int mode);
-
-    Q_INVOKABLE void set_FC_Reboot_Shutdown(int reboot_shutdown);
-
-    Q_INVOKABLE void request_Mission();
 
     //void setEngine(QQmlApplicationEngine *engine);
     //Q_INVOKABLE void switchToLanguage(const QString &language);
@@ -198,9 +202,6 @@ public:
     Q_PROPERTY(int mah_km MEMBER m_mah_km WRITE set_mah_km NOTIFY mah_km_changed)
     void set_mah_km(int mah_km);
 
-    Q_PROPERTY(qint64 last_telemetry_heartbeat MEMBER m_last_telemetry_heartbeat WRITE set_last_telemetry_heartbeat NOTIFY last_telemetry_heartbeat_changed)
-    void set_last_telemetry_heartbeat(qint64 last_telemetry_heartbeat);
-
     Q_PROPERTY(qint64 last_telemetry_attitude MEMBER m_last_telemetry_attitude WRITE set_last_telemetry_attitude NOTIFY last_telemetry_attitude_changed)
     void set_last_telemetry_attitude(qint64 last_telemetry_attitude);
 
@@ -227,6 +228,14 @@ public:
 
     Q_PROPERTY(QString last_ping_result_flight_ctrl MEMBER  m_last_ping_result_flight_ctrl WRITE set_last_ping_result_flight_ctrl NOTIFY last_ping_result_flight_ctrl_changed)
     void set_last_ping_result_flight_ctrl(QString last_ping_result_flight_ctrl);
+
+    // Set to true if this FC supports basic commands, like return to home usw
+    // R.N we only show those commands in the UI if this flag is set
+    // and the flag is set if the FC is PX4 or Ardupilot
+    // NOTE: this used to be done by .mav_type == "ARDUPLANE" ... in qml - please avoid that, just add another qt boolean here
+    // (for example is_copter, is_plane or similar)
+    Q_PROPERTY(bool supports_basic_commands MEMBER  m_supports_basic_commands WRITE set_supports_basic_commands NOTIFY supports_basic_commands_changed)
+    void set_supports_basic_commands(bool supports_basic_commands);
 signals:
     // mavlink
     void boot_time_changed(int boot_time);
@@ -305,9 +314,6 @@ signals:
     void app_mah_changed(int app_mah);
     void mah_km_changed(int mah_km);
 
-    //void last_openhd_heartbeat_changed(qint64 last_openhd_heartbeat);
-
-    void last_telemetry_heartbeat_changed(qint64 last_telemetry_heartbeat);
     void last_telemetry_attitude_changed(qint64 last_telemetry_attitude);
     void last_telemetry_battery_changed(qint64 last_telemetry_battery);
     void last_telemetry_gps_changed(qint64 last_telemetry_gps);
@@ -321,14 +327,8 @@ signals:
     void currentWaypointChanged (int current_waypoint);
     void totalWaypointsChanged (int total_waypoints);
 
-    void pauseTelemetry(bool pause);
-    void requested_Flight_Mode_Changed(int mode);
-    void requested_ArmDisarm_Changed(int arm_disarm);
-    void FC_Reboot_Shutdown_Changed(int reboot_shutdown);
-    void request_Mission_Changed();
-    void playBlackBoxObject(int index);
     void last_ping_result_flight_ctrl_changed(QString last_ping_result_flight_ctrl);
-
+    void supports_basic_commands_changed(bool supports_basic_commands);
 public:
     // mavlink
     int m_boot_time = 0;
@@ -419,7 +419,6 @@ public:
     qint64 mahKmLastTime= 0;
     double total_mah= 0;
 
-    qint64 m_last_telemetry_heartbeat = -1;
     qint64 m_last_telemetry_attitude = -1;
     qint64 m_last_telemetry_battery = -1;
     qint64 m_last_telemetry_gps = -1;
@@ -442,8 +441,40 @@ public:
 
     int m_reboot_shutdown=99;
     QString m_last_ping_result_flight_ctrl="NA";
+    bool m_supports_basic_commands=true;
+private:
+    // NOTE: Null until system discovered
+    std::shared_ptr<mavsdk::System> _system=nullptr;
+    std::shared_ptr<mavsdk::Action> _action=nullptr;
+    std::shared_ptr<mavsdk::Telemetry> _mavsdk_telemetry=nullptr;
+public:
+    // Set the mavlink system reference, once discovered
+    void set_system(std::shared_ptr<mavsdk::System> system);
+    //
+    Q_INVOKABLE bool set_flight_mode(int mode);
+    // Try to change the arming state. Once completed, since we listen to arm/disarm results,
+    // the armed status is changed. On failure, a message is pushed onto the HUD
+    Q_INVOKABLE void arm_fc_async(bool disarm=false);
+    Q_INVOKABLE void send_return_to_launch_async();
+    Q_INVOKABLE bool send_command_reboot(bool reboot);
+    // -----------------------
+public:
+    Q_PROPERTY(qint64 last_heartbeat MEMBER m_last_heartbeat WRITE set_last_heartbeat NOTIFY last_heartbeat_changed)
+    void set_last_heartbeat(qint64 last_heartbeat);
+    Q_PROPERTY(bool is_alive MEMBER m_is_alive WRITE set_is_alive NOTIFY is_alive_changed)
+    void set_is_alive(bool alive);
+    bool is_alive(){return m_is_alive;}
+public:
+    qint64 m_last_heartbeat = -1;
+    bool m_is_alive=false; // see alive timer
+    QTimer* m_alive_timer = nullptr;
+signals:
+    void last_heartbeat_changed(qint64 last_heartbeat);
+    void is_alive_changed(bool alive);
+private:
+    void update_alive();
 };
 
 
 
-#endif // OPENHD_H
+#endif // FC_MAVLINK_SYSTEM_H

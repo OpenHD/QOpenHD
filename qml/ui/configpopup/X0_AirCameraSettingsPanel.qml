@@ -25,31 +25,8 @@ Rectangle {
     property int rowHeight: 64
     property int elementHeight: 48
 
-    // OpenHD uses mW (milli watt) but the iw dev command run in OpenHD converts that to milli dBm
-    // Here I have the (at least theoretical) mapping
-    ListModel{
-        id: wifiCardTxPowerModel
-        ListElement {title: "10mW  (10dBm)"; value: 10}
-        ListElement {title: "25mW  (14dBm)"; value: 25}
-        ListElement {title: "100mW (20dBm)"; value: 100}
-        ListElement {title: "200mW (23dBm)"; value: 200}
-        ListElement {title: "500mW (27dBm)"; value: 500}
-        ListElement {title: "1000mW(30dBm)"; value: 1000}
-    }
-    function find_index(model,value){
-        for(var i = 0; i < model.count; ++i) if (model.get(i).value===value) return i
-        return -1
-    }
-    // try and update the combobox to the retrieved value(value != index)
-    function update_combobox(_combobox,_value){
-        var _index=find_index(_combobox.model,_value)
-        if(_index >= 0){
-            _combobox.currentIndex=_index;
-        }
-    }
-
     Component {
-        id: delegateGroundPiSettingsValue
+        id: delegateAirPiSettingsValue
         Item {
             id: item
             width: 200
@@ -70,7 +47,7 @@ Rectangle {
                 }
                 Button {
                     text: "GET"
-                    onClicked: _groundPiSettingsModel.try_fetch_parameter(model.unique_id)
+                    onClicked: _airCameraSettingsModel.try_fetch_parameter(model.unique_id)
                 }
                 TextInput {
                     id: xTextInput
@@ -80,7 +57,7 @@ Rectangle {
                 }
                 Button {
                     text: "SET"
-                    onClicked: _groundPiSettingsModel.try_update_parameter( model.unique_id,xTextInput.text)
+                    onClicked: _airCameraSettingsModel.try_update_parameter( model.unique_id,xTextInput.text)
                 }
             }
         }
@@ -93,16 +70,20 @@ Rectangle {
             width:200
             height:64
             text: "Not found yet"
-            visible: _groundPiSettingsModel.rowCount() > 0
+            visible: _airCameraSettingsModel.rowCount() > 0
         }*/
 
         Button {
             height: 48
             id: fetchAllButtonId
-            text:"FetchAll Ground"
-            enabled: _ohdSystemGround.is_alive
+            text:"FetchAll Camera"
+            enabled: _ohdSystemAir.is_alive
             onClicked: {
-                var result=_groundPiSettingsModel.try_fetch_all_parameters()
+                var result=_airCameraSettingsModel.try_fetch_all_parameters()
+                /*visible=false;
+                if(result===true){
+                    visible=true;
+                }*/
             }
         }
         Rectangle{
@@ -115,8 +96,8 @@ Rectangle {
                 ListView {
                     //top: fetchAllButtonId.bottom
                     width: parent.width
-                    model: _groundPiSettingsModel
-                    delegate: delegateGroundPiSettingsValue
+                    model: _airCameraSettingsModel
+                    delegate: delegateAirPiSettingsValue
                 }
             }
         }

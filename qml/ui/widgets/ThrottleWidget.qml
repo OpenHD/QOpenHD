@@ -13,7 +13,7 @@ ThrottleWidgetForm {
     }
 
     Connections {
-        target: OpenHD
+        target: _fcMavlinkSystem
 
         function onThrottleChanged(throttle) {
             gaugeAngle = map(throttle, 0, 100, 0, 180);

@@ -92,8 +92,6 @@ INCLUDEPATH += $$PWD/lib/GeographicLib-1.50/include
 SOURCES += \
     app/logging/logmessagesmodel.cpp \
     app/openhd_systems/aohdsystem.cpp \
-    app/openhd_systems/ohdsystemair.cpp \
-    app/openhd_systems/ohdsystemground.cpp \
     app/osd/headingladder.cpp \
     app/osd/horizonladder.cpp \
     app/osd/speedladder.cpp \
@@ -101,13 +99,12 @@ SOURCES += \
     app/osd/drawingcanvas.cpp \
     app/osd/flightpathvector.cpp \
     app/qopenhd.cpp \
+    app/telemetry/settings/synchronizedsettings.cpp \
     app/videostreaming/decodingstatistcs.cpp
 
 HEADERS += \
     app/logging/logmessagesmodel.h \
     app/openhd_systems/aohdsystem.h \
-    app/openhd_systems/ohdsystemair.h \
-    app/openhd_systems/ohdsystemground.h \
     app/openhd_systems/wifiadapter.h \
     app/osd/headingladder.h \
     app/osd/horizonladder.h \
@@ -119,6 +116,7 @@ HEADERS += \
     app/telemetry/mavlink_include.h \
     app/telemetry/openhd_defines.hpp \
     app/telemetry/qopenhdmavlinkhelper.hpp \
+    app/telemetry/settings/synchronizedsettings.h \
     app/videostreaming/decodingstatistcs.h
 
 
@@ -127,21 +125,19 @@ HEADERS += \
 HEADERS += \
     app/telemetry/OHDConnection.h \
     app/telemetry/mavlinktelemetry.h \
-    app/telemetry/mavlinkcommand.h \
     app/telemetry/settings/mavlinksettingsmodel.h \
 
 SOURCES += \
     app/telemetry/OHDConnection.cpp \
     app/telemetry/mavlinktelemetry.cpp \
-    app/telemetry/mavlinkcommand.cpp \
     app/telemetry/settings/mavlinksettingsmodel.cpp \
 
 
 # all other files, complete mess
 SOURCES += \
+    app/fcmavlinksystem.cpp \
     app/util/FrequencyMonitor.cpp \
     app/main.cpp \
-    app/openhd.cpp \
     app/platform/openhdpi.cpp \
     app/rc/openhdrc.cpp \
     app/util/QmlObjectListModel.cpp \
@@ -151,9 +147,9 @@ RESOURCES += qml/qml.qrc \
     qml/qml.qrc
 
 HEADERS += \
+    app/fcmavlinksystem.h \
     app/util/FrequencyMonitor.h \
     app/util/sharedqueue.h \
-    app/openhd.h \
     app/platform/openhdpi.h \
     app/rc/openhdrc.h \
     app/util/QmlObjectListModel.h \
@@ -183,6 +179,7 @@ DISTFILES += \
     app/osd_extra/Readme.txt \
     app/platform/README.md \
     app/telemetry/README.md \
+    app/telemetry/del.txt \
     app/telemetry/settings/README.md \
     app/util/README.md \
     app/videostreaming/README.md \

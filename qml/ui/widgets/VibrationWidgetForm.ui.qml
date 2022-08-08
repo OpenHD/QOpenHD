@@ -217,12 +217,12 @@ BaseWidget {
                         strokeStyle: ShapePath.SolidLine
                         fillColor: settings.color_shape
                         startX: 2
-                        startY: (40 + (OpenHD.vibration_x
-                                       > 0 ? OpenHD.vibration_x * -1 : OpenHD.vibration_x) * .4)
+                        startY: (40 + (_fcMavlinkSystem.vibration_x
+                                       > 0 ? _fcMavlinkSystem.vibration_x * -1 : _fcMavlinkSystem.vibration_x) * .4)
                         PathLine {
                             x: 10
-                            y: (40 + (OpenHD.vibration_x
-                                      > 0 ? OpenHD.vibration_x * -1 : OpenHD.vibration_x) * .4)
+                            y: (40 + (_fcMavlinkSystem.vibration_x
+                                      > 0 ? _fcMavlinkSystem.vibration_x * -1 : _fcMavlinkSystem.vibration_x) * .4)
                         }
                         PathLine {
                             x: 10
@@ -234,8 +234,8 @@ BaseWidget {
                         }
                         PathLine {
                             x: 2
-                            y: (40 + (OpenHD.vibration_x
-                                      > 0 ? OpenHD.vibration_x * -1 : OpenHD.vibration_x) * .4)
+                            y: (40 + (_fcMavlinkSystem.vibration_x
+                                      > 0 ? _fcMavlinkSystem.vibration_x * -1 : _fcMavlinkSystem.vibration_x) * .4)
                         }
                     }
 
@@ -302,12 +302,12 @@ BaseWidget {
                         strokeStyle: ShapePath.SolidLine
                         fillColor: settings.color_shape
                         startX: 2
-                        startY: (40 + (OpenHD.vibration_y
-                                       > 0 ? OpenHD.vibration_y * -1 : OpenHD.vibration_y) * .4)
+                        startY: (40 + (_fcMavlinkSystem.vibration_y
+                                       > 0 ? _fcMavlinkSystem.vibration_y * -1 : _fcMavlinkSystem.vibration_y) * .4)
                         PathLine {
                             x: 10
-                            y: (40 + (OpenHD.vibration_y
-                                      > 0 ? OpenHD.vibration_y * -1 : OpenHD.vibration_y) * .4)
+                            y: (40 + (_fcMavlinkSystem.vibration_y
+                                      > 0 ? _fcMavlinkSystem.vibration_y * -1 : _fcMavlinkSystem.vibration_y) * .4)
                         }
                         PathLine {
                             x: 10
@@ -319,8 +319,8 @@ BaseWidget {
                         }
                         PathLine {
                             x: 2
-                            y: (40 + (OpenHD.vibration_y
-                                      > 0 ? OpenHD.vibration_y * -1 : OpenHD.vibration_y) * .4)
+                            y: (40 + (_fcMavlinkSystem.vibration_y
+                                      > 0 ? _fcMavlinkSystem.vibration_y * -1 : _fcMavlinkSystem.vibration_y) * .4)
                         }
                     }
                     ShapePath {
@@ -386,12 +386,12 @@ BaseWidget {
                         strokeStyle: ShapePath.SolidLine
                         fillColor: settings.color_shape
                         startX: 2
-                        startY: (40 + (OpenHD.vibration_z
-                                       > 0 ? OpenHD.vibration_z * -1 : OpenHD.vibration_z) * .4)
+                        startY: (40 + (_fcMavlinkSystem.vibration_z
+                                       > 0 ? _fcMavlinkSystem.vibration_z * -1 : _fcMavlinkSystem.vibration_z) * .4)
                         PathLine {
                             x: 10
-                            y: (40 + (OpenHD.vibration_z
-                                      > 0 ? OpenHD.vibration_z * -1 : OpenHD.vibration_z) * .4)
+                            y: (40 + (_fcMavlinkSystem.vibration_z
+                                      > 0 ? _fcMavlinkSystem.vibration_z * -1 : _fcMavlinkSystem.vibration_z) * .4)
                         }
                         PathLine {
                             x: 10
@@ -403,8 +403,8 @@ BaseWidget {
                         }
                         PathLine {
                             x: 2
-                            y: (40 + (OpenHD.vibration_z
-                                      > 0 ? OpenHD.vibration_z * -1 : OpenHD.vibration_z) * .4)
+                            y: (40 + (_fcMavlinkSystem.vibration_z
+                                      > 0 ? _fcMavlinkSystem.vibration_z * -1 : _fcMavlinkSystem.vibration_z) * .4)
                         }
                     }
                     ShapePath {

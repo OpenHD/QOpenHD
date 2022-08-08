@@ -12,13 +12,7 @@
 
 static QOpenHDVideoHelper::VideoStreamConfig readVideoStreamConfigFromSettings(bool isPrimary){
     // read settings
-    QSettings settings;
-    QOpenHDVideoHelper::VideoStreamConfig _videoStreamConfig;
-    _videoStreamConfig.dev_test_video_mode=QOpenHDVideoHelper::videoTestModeFromInt(settings.value("dev_test_video_mode", 0).toInt());
-    const int tmp_video_codec = settings.value("selectedVideoCodecPrimary", 0).toInt();
-    _videoStreamConfig.video_codec=QOpenHDVideoHelper::intToVideoCodec(tmp_video_codec);
-    _videoStreamConfig.enable_software_video_decoder=settings.value("enable_software_video_decoder", 0).toBool();
-    //auto _main_video_port = settings.value("main_video_port", main_default_port).toInt();
+    QOpenHDVideoHelper::VideoStreamConfig _videoStreamConfig=QOpenHDVideoHelper::read_from_settings();
     if(isPrimary){
          _videoStreamConfig.video_port=OHDIntegration::OHD_VIDEO_GROUND_VIDEO_STREAM_1_UDP;
     }else{
@@ -61,23 +55,46 @@ static std::string gst_create_always_software_decoder(const QOpenHDVideoHelper::
             ss<<"avdec_h265 ! ";
         }break;
         case QOpenHDVideoHelper::VideoCodecMJPEG:{
-            ss<<"avdec_mjpeg ! ";
+            // avdec_jpeg seems to not exist on some hardware
+            //ss<<"avdec_mjpeg ! ";
+            ss<<"decodebin force-sw-decoders=true ! ";
         }break;
         default:assert(true);
         }
     return ss.str();
 }
 
-static std::string gst_create_video_decoder(const QOpenHDVideoHelper::VideoCodec& videoCodec,bool force_sw){
+static std::string gst_create_jeston_test(const QOpenHDVideoHelper::VideoCodec& videoCodec){
+    switch(videoCodec){
+        case QOpenHDVideoHelper::VideoCodecH264:{
+             return "omxh264dec ! ";
+        }break;
+        case QOpenHDVideoHelper::VideoCodecH265:{
+            return "omxh265dec ! ";
+        }break;
+        case QOpenHDVideoHelper::VideoCodecMJPEG:{
+            // avdec_jpeg seems to not exist on some hardware
+            //ss<<"avdec_mjpeg ! ";
+            return "decodebin force-sw-decoders=true ! ";
+        }break;
+        default:
+        assert(true);
+        return "";
+   }
+}
+
+static std::string gst_create_video_decoder(const QOpenHDVideoHelper::VideoCodec& videoCodec,bool force_sw,bool dev_jetson){
+    if(dev_jetson){
+        return gst_create_jeston_test(videoCodec);
+    }
+    if(force_sw){
+        return gst_create_always_software_decoder(videoCodec);
+    }
     std::stringstream ss;
     // NOTE: force sw only has an effect on when decodebin does hw automatically, and on h264
     if(videoCodec==QOpenHDVideoHelper::VideoCodecH264){
-        //NOTE: decodebin on rpi for h264 doesn't work ???!!
-        if(force_sw){
-            ss<<"avdec_h264 ! queue ! ";
-        }else{
-            ss<<"decodebin ! ";
-        }
+        //NOTE: decodebin on rpi for h264 only worked after we updated the kernel.
+        ss<<"decodebin ! ";
     }else if(videoCodec==QOpenHDVideoHelper::VideoCodecH265){
         ss<<"decodebin ! ";
     }else{
@@ -94,26 +111,32 @@ static std::string gst_create_video_decoder(const QOpenHDVideoHelper::VideoCodec
  * @param udp_port the udp port to listen for rtp data
  * @return the built pipeline, as a string
  */
-static std::string constructGstreamerPipeline(const QOpenHDVideoHelper::VideoTestMode& dev_test_video_mode,QOpenHDVideoHelper::VideoCodec videoCodec,bool force_sw,int udp_port){
+static std::string constructGstreamerPipeline(const QOpenHDVideoHelper::VideoStreamConfig& config){
     std::stringstream ss;
-    if(dev_test_video_mode==QOpenHDVideoHelper::VideoTestMode::RAW_VIDEO){
+    if(config.dev_enable_custom_pipeline){
+        qDebug()<<"Warning using custom pipeline, dev only";
+        return config.dev_custom_pipeline;
+    }
+    if(config.dev_test_video_mode==QOpenHDVideoHelper::VideoTestMode::RAW_VIDEO){
         ss << "videotestsrc pattern=smpte ! ";
-        ss << "video/x-raw,width=640,height=480 ! ";
+        ss << "video/x-raw,format=RGBA,width=640,height=480 ! ";
         ss << "queue ! ";
         ss << "glupload ! glcolorconvert ! ";
         ss << "qmlglsink name=qmlglsink sync=false";
         return ss.str();
-    }else if(dev_test_video_mode==QOpenHDVideoHelper::VideoTestMode::RAW_VIDEO_ENCODE_DECODE){
-         ss<<QOpenHDVideoHelper::create_debug_encoded_data_producer(videoCodec);
+    }else if(config.dev_test_video_mode==QOpenHDVideoHelper::VideoTestMode::RAW_VIDEO_ENCODE_DECODE){
+        ss<<QOpenHDVideoHelper::create_debug_encoded_data_producer(config.video_codec);
     }else{
-        ss<<"udpsrc port="<<udp_port<<" ";
-        ss<<gst_create_caps(videoCodec);
+        ss<<"udpsrc port="<<config.video_port<<" ";
+        ss<<gst_create_caps(config.video_codec);
     }
     // add rtp decoder
-    ss<<gst_create_rtp_decoder(videoCodec);
+    ss<<gst_create_rtp_decoder(config.video_codec);
     // add video decoder
-    ss<<gst_create_video_decoder(videoCodec,force_sw);
+    ss<<gst_create_video_decoder(config.video_codec,config.enable_software_video_decoder,config.dev_jetson_force_omx);
 
+    //ss<<" videoconvert n-threads=2 ! queue ! video/x-raw,format=RGBA !";
+    ss << " queue ! ";
     ss << " glupload ! glcolorconvert !";
     ss << " qmlglsink name=qmlglsink sync=false";
 
@@ -153,21 +176,38 @@ void GstVideoStream::init(QQuickItem* videoOutputWindow,bool primaryStream) {
 
 static gboolean PipelineCb(GstBus *bus, GstMessage *msg, gpointer data) {
     auto instance = static_cast<GstVideoStream*>(data);
-
+    //qDebug()<<"PipelineCb"<<QString(GST_MESSAGE_TYPE_NAME(msg));
     switch (GST_MESSAGE_TYPE(msg)){
     case GST_MESSAGE_EOS:{
             break;
         }
-        case GST_MESSAGE_ERROR:{
-            break;
+        case GST_MESSAGE_ERROR: {
+          gchar  *debug;
+          GError *error;
+          gst_message_parse_error (msg, &error, &debug);
+          g_free (debug);
+          qDebug()<<"Error:"<<QString(error->message);
+          g_printerr ("Error: %s\n", error->message);
+          g_error_free (error);
+          instance->has_decoder_error=true;
+          break;
         }
         case GST_MESSAGE_WARNING:{
+            gchar  *debug;
+            GError *error;
+            gst_message_parse_warning(msg, &error, &debug);
+            g_free (debug);
+            qDebug()<<"Error:"<<QString(error->message);
+            g_printerr ("Error: %s\n", error->message);
+            g_error_free (error);
             break;
         }
         case GST_MESSAGE_INFO:{
             break;
         }
         case GST_MESSAGE_TAG:{
+            //GstTagList* gstTagList;
+            //gst_message_parse_tag(msg,&gstTagList);
             break;
         }
         case GST_MESSAGE_BUFFERING:{
@@ -198,6 +238,29 @@ static gboolean PipelineCb(GstBus *bus, GstMessage *msg, gpointer data) {
     return TRUE;
 }
 
+// https://gstreamer.freedesktop.org/documentation/application-development/basics/helloworld.html?gi-language=c
+static gboolean bus_call (GstBus *bus,GstMessage *msg,gpointer data){
+  qDebug()<<"bus_call"<<QString(GST_MESSAGE_TYPE_NAME(msg));
+  switch (GST_MESSAGE_TYPE (msg)) {
+    case GST_MESSAGE_EOS:
+      qDebug()<<"End of stream\n";
+      break;
+    case GST_MESSAGE_ERROR: {
+      gchar  *debug;
+      GError *error;
+      gst_message_parse_error (msg, &error, &debug);
+      g_free (debug);
+      qDebug()<<"Error:"<<QString(error->message);
+      g_printerr ("Error: %s\n", error->message);
+      g_error_free (error);
+      break;
+    }
+    default:
+      break;
+  }
+  return TRUE;
+}
+
 
 void GstVideoStream::startVideo() {
     if(m_pipeline!=nullptr){
@@ -205,20 +268,27 @@ void GstVideoStream::startVideo() {
         stopVideoSafe();
         assert(m_pipeline==nullptr);
     }
-    const auto pipeline=constructGstreamerPipeline(m_videoStreamConfig.dev_test_video_mode,m_videoStreamConfig.video_codec,
-                                                   m_videoStreamConfig.enable_software_video_decoder,m_videoStreamConfig.video_port);
+    const auto pipeline=constructGstreamerPipeline(m_videoStreamConfig);
     GError *error = nullptr;
     m_pipeline = gst_parse_launch(pipeline.c_str(), &error);
     qDebug() << "GSTREAMER PIPE=" << pipeline.c_str();
     if (error) {
         qDebug() << "gst_parse_launch error: " << error->message;
+        return;
     }
-
-    link_gstreamer_pipe_to_qt_window(m_pipeline,m_videoOutputWindow);
+    if(!m_pipeline || !(GST_IS_PIPELINE(m_pipeline))){
+        qDebug()<<"Cannot construct pipeline";
+        m_pipeline = nullptr;
+        return;
+    }
 
     GstBus *bus = gst_pipeline_get_bus (GST_PIPELINE(m_pipeline));
     gst_bus_add_signal_watch(bus);
+    auto bus_watch_id = gst_bus_add_watch (bus, bus_call,this);
     g_signal_connect(bus, "message", (GCallback)PipelineCb, this);
+    gst_object_unref (bus);
+
+    link_gstreamer_pipe_to_qt_window(m_pipeline,m_videoOutputWindow);
 
     /*
      * When the app first launches we have to wait for the QML element to be ready before the pipeline
@@ -258,6 +328,13 @@ void GstVideoStream::timerCallback() {
     if((m_videoStreamConfig!=_videoStreamConfig) || m_pipeline == nullptr){
         m_videoStreamConfig=_videoStreamConfig;
         startVideo();
+    }else{
+        if(has_decoder_error){
+            qDebug()<<"Decoder or pipeline error - restarting";
+            stopVideoSafe();
+            startVideo();
+            has_decoder_error=false;
+        }
     }
     // check if we are getting video - TODO
     const auto currentTime = QDateTime::currentMSecsSinceEpoch();

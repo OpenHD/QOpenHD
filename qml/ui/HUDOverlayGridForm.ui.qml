@@ -118,19 +118,19 @@ Item {
     }
 
     // + 0% cpu
-    DownlinkRSSIWidget {
+    LinkDownRSSIWidget {
         id: downlink
     }
 
     // + 0% cpu
-    UplinkRSSIWidget {
+    LinkUpRSSIWidget {
         id: uplink
     }
 
     // + 0% cpu
-    RcRSSIWidget {
-        id: rcRSSIWidget
-    }
+    //RcRSSIWidget {
+    //    id: rcRSSIWidget
+    //}
 
     // + 12% cpu
     HorizonWidget {

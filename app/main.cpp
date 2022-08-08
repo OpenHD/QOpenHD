@@ -14,9 +14,7 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 
 #include "rc/openhdrc.h"
 #include "platform/openhdpi.h"
-#include "openhd.h"
-#include "openhd_systems/ohdsystemair.h"
-#include "openhd_systems/ohdsystemground.h"
+#include "fcmavlinksystem.h"
 #include "openhd_systems/aohdsystem.h"
 #include "../app/telemetry/mavlinktelemetry.h"
 
@@ -70,6 +68,7 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 
 #include "logging/logmessagesmodel.h"
 #include "telemetry/settings/mavlinksettingsmodel.h"
+#include "telemetry/settings/synchronizedsettings.h"
 #include "qopenhd.h"
 
 // SDL hack
@@ -298,9 +297,10 @@ int main(int argc, char *argv[]) {
     write_platform_context_properties(engine);
     write_other_context_properties(engine);
     engine.rootContext()->setContextProperty("_logMessagesModel", &LogMessagesModel::instance());
+    engine.rootContext()->setContextProperty("_airCameraSettingsModel", &MavlinkSettingsModel::instanceAirCamera());
     engine.rootContext()->setContextProperty("_airPiSettingsModel", &MavlinkSettingsModel::instanceAir());
     engine.rootContext()->setContextProperty("_groundPiSettingsModel", &MavlinkSettingsModel::instanceGround());
-
+    engine.rootContext()->setContextProperty("_synchronizedSettings", &SynchronizedSettings::instance());
 
 #if defined(ENABLE_GSTREAMER)
 #if defined(ENABLE_MAIN_VIDEO)
@@ -347,8 +347,7 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
     //QObject::connect(openHDSettings, &OpenHDSettings::groundStationIPUpdated, openHDRC, &OpenHDRC::setGroundIP, Qt::QueuedConnection);
     engine.rootContext()->setContextProperty("openHDRC", openHDRC);
 
-    auto mavlinkTelemetry = MavlinkTelemetry::instance();
-    engine.rootContext()->setContextProperty("_mavlinkTelemetry", mavlinkTelemetry);
+    engine.rootContext()->setContextProperty("_mavlinkTelemetry", &MavlinkTelemetry::instance());
 
     #if defined(ENABLE_EXAMPLE_WIDGET)
     engine.rootContext()->setContextProperty("EnableExampleWidget", QVariant(true));
@@ -358,9 +357,9 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
 
     engine.rootContext()->setContextProperty("OpenHDUtil", util);
 
-    engine.rootContext()->setContextProperty("OpenHD", &OpenHD::instance());
-    /*engine.rootContext()->setContextProperty("_ohdSystemAir", &OHDSystemAir::instance());
-    engine.rootContext()->setContextProperty("_ohdSystemGround", &OHDSystemGround::instance());*/
+    // Regster all the QT Mavlink system model(s)
+    // it is a common practice for QT to prefix models from c++ with an underscore
+    engine.rootContext()->setContextProperty("_fcMavlinkSystem", &FCMavlinkSystem::instance());
     engine.rootContext()->setContextProperty("_ohdSystemAir", &AOHDSystem::instanceAir());
     engine.rootContext()->setContextProperty("_ohdSystemGround", &AOHDSystem::instanceGround());
     engine.rootContext()->setContextProperty("_decodingStatistics",&DecodingStatistcs::instance());

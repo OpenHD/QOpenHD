@@ -1,6 +1,7 @@
 #ifndef QOPENHDVIDEOHELPER_H
 #define QOPENHDVIDEOHELPER_H
 
+#include <QSettings>
 #include <qqmlapplicationengine.h>
 #include <qquickitem.h>
 #include <qquickwindow.h>
@@ -53,15 +54,36 @@ struct VideoStreamConfig{
     // force sw decoding (if there is a difference on the platform)
     // R.N this only makes a difference on RPI
     bool enable_software_video_decoder=false;
+    // XX
+    bool dev_jetson_force_omx=false;
+    //
+    bool dev_enable_custom_pipeline=false;
+    std::string dev_custom_pipeline="";
     // 2 configs are equal if all members are exactly the same.
     bool operator==(const VideoStreamConfig &o) const {
        return this->dev_test_video_mode == o.dev_test_video_mode && this->video_port == o.video_port && this->video_codec== o.video_codec
-               && this->enable_software_video_decoder==o.enable_software_video_decoder;
+               && this->enable_software_video_decoder==o.enable_software_video_decoder && this->dev_jetson_force_omx==o.dev_jetson_force_omx &&
+               this->dev_enable_custom_pipeline==dev_enable_custom_pipeline &&
+               this->dev_custom_pipeline==dev_custom_pipeline;
      }
     bool operator !=(const VideoStreamConfig &o) const {
         return !(*this==o);
     }
 };
+
+static VideoStreamConfig read_from_settings(){
+    QSettings settings;
+    QOpenHDVideoHelper::VideoStreamConfig _videoStreamConfig;
+    _videoStreamConfig.dev_test_video_mode=QOpenHDVideoHelper::videoTestModeFromInt(settings.value("dev_test_video_mode", 0).toInt());
+    const int tmp_video_codec = settings.value("selectedVideoCodecPrimary", 0).toInt();
+    _videoStreamConfig.video_codec=QOpenHDVideoHelper::intToVideoCodec(tmp_video_codec);
+    _videoStreamConfig.enable_software_video_decoder=settings.value("enable_software_video_decoder", 0).toBool();
+    _videoStreamConfig.dev_jetson_force_omx=settings.value("dev_jetson_force_omx",false).toBool();
+    //
+    _videoStreamConfig.dev_enable_custom_pipeline=settings.value("dev_enable_custom_pipeline",false).toBool();
+    _videoStreamConfig.dev_custom_pipeline=settings.value("dev_custom_pipeline","").toString().toStdString();
+    return _videoStreamConfig;
+}
 
 /**
  * Find the qt window where video is output to.
@@ -92,7 +114,7 @@ static QQuickItem* find_qt_video_window(QQmlApplicationEngine& m_engine,const bo
     return videoItem;
 }
 
-// Creates a pipeline whose last element produces rtp h164,h265 or mjpeg data
+// Creates a pipeline whose last element produces rtp h264,h265 or mjpeg data
 static std::string create_debug_encoded_data_producer(const QOpenHDVideoHelper::VideoCodec& videoCodec){
     std::stringstream ss;
     ss<<"videotestsrc ! video/x-raw, format=I420,width=640,height=480,framerate=30/1 ! ";
@@ -100,10 +122,11 @@ static std::string create_debug_encoded_data_producer(const QOpenHDVideoHelper::
         ss<<"x264enc bitrate=5000 tune=zerolatency key-int-max=10 ! h264parse config-interval=-1 ! ";
         ss<<"rtph264pay mtu=1024 ! ";
     }else if(videoCodec==VideoCodecH265){
-        ss<<"x265enc bitrate=5000 tune=zerolatency key-int-max=10 ! ";
+        //ss<<"x265enc bitrate=5000 tune=zerolatency key-int-max=10 ! ";
+        ss<<"x265enc bitrate=5000 tune=zerolatency ! ";
         ss<<"rtph265pay mtu=1024 ! ";
     }else{
-        ss<<"jpegenc !";
+        ss<<"jpegenc ! ";
         ss << "rtpjpegpay mtu=1024 ! ";
     }
     ss<<"queue ! ";
@@ -115,8 +138,8 @@ static std::string create_debug_encoded_data_producer(const QOpenHDVideoHelper::
 
 // Must be in sync with OpenHD
 namespace OHDIntegration{
-static constexpr auto OHD_VIDEO_GROUND_VIDEO_STREAM_1_UDP = 5620; // first (primary) stream
-static constexpr auto OHD_VIDEO_GROUND_VIDEO_STREAM_2_UDP = 5621; // secondary stream
+static constexpr auto OHD_VIDEO_GROUND_VIDEO_STREAM_1_UDP = 5600; // first (primary) stream
+static constexpr auto OHD_VIDEO_GROUND_VIDEO_STREAM_2_UDP = 5601; // secondary stream
 }
 
 #endif // QOPENHDVIDEOHELPER_H

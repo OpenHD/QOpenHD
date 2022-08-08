@@ -21,6 +21,9 @@ Settings {
     property bool show_pip_video: false
     property double pip_video_opacity: 1
 
+    //WARNING: THIS ALLOWS THE USER TO MAKE BREAKING CHANGES
+    property bool dev_show_whitelisted_params: false
+
     property bool app_background_transparent: false
 
     property bool enable_software_video_decoder: false
@@ -34,6 +37,10 @@ Settings {
     property bool enable_rtp: true
     property bool enable_lte_video: false
     property bool hide_watermark: true
+    property bool dev_jetson_force_omx: false
+
+    property bool dev_enable_custom_pipeline: false
+    property string dev_custom_pipeline: ""
 
     property bool enable_speech: true
     property bool enable_imperial: false

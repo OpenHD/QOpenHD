@@ -12,7 +12,7 @@ import "../../ui/elements"
 import "../elements"
 
 BaseWidget {
-    id: downlinkRSSIWidget
+    id: linkDownRSSIWidget
     width: 112
     height: 24
 
@@ -40,24 +40,6 @@ BaseWidget {
         Column {
             id: downrssiSettingsColumn
 
-
-            /*            Shape {
-                id: line2
-                height: 32
-                width: parent.width
-
-                ShapePath {
-                    strokeColor: "white"
-                    strokeWidth: 2
-                    strokeStyle: ShapePath.SolidLine
-                    fillColor: "transparent"
-                    startX: 0
-                    startY: line2.height / 2
-                    PathLine { x: 0;           y: line2.height / 2 }
-                    PathLine { x: line2.width; y: line2.height / 2 }
-                }
-            }
-*/
             Item {
                 width: parent.width
                 height: 32
@@ -280,6 +262,24 @@ BaseWidget {
             Text {
                 //Layout.alignment: left
                 text: "Blocks recovered:"+_ohdSystemGround.video_rx_blocks_recovered;
+                color: "white"
+                font.bold: true
+                height: parent.height
+                font.pixelSize: detailPanelFontPixels
+                verticalAlignment: Text.AlignVCenter
+            }
+            Text {
+                //Layout.alignment: left
+                text: "Rx tele:"+_ohdSystemGround.curr_incoming_tele_bitrate;
+                color: "white"
+                font.bold: true
+                height: parent.height
+                font.pixelSize: detailPanelFontPixels
+                verticalAlignment: Text.AlignVCenter
+            }
+            Text {
+                //Layout.alignment: left
+                text: "Rx video:"+_ohdSystemGround.curr_incoming_video_bitrate;
                 color: "white"
                 font.bold: true
                 height: parent.height

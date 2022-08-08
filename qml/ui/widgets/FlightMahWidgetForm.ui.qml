@@ -240,8 +240,8 @@ BaseWidget {
             clip: false
             color: settings.color_text
             opacity: settings.mah_opacity
-            text: settings.flight_mah_use_telemetry ? OpenHD.flight_mah
-                                                      + "mAh" : OpenHD.app_mah + "mAh"
+            text: settings.flight_mah_use_telemetry ? _fcMavlinkSystem.flight_mah
+                                                      + "mAh" : _fcMavlinkSystem.app_mah + "mAh"
             anchors.right: parent.right
             anchors.rightMargin: 0
             verticalAlignment: Text.AlignVCenter

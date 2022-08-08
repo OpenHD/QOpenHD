@@ -4,6 +4,10 @@ import QtQuick.Layouts 1.12
 import QtQuick.Controls 2.12
 import Qt.labs.settings 1.0
 
+// This is a base implementation for all HUD widgets -
+// e.g. it exposes the dragging around, clicking once and clicking long action(s)
+// for clicking once, set hasWidgetDetail to true and provide the widgetDetailComponent
+// same for long press
 BaseWidgetForm {
     id: widgetBase
     Drag.active: dragging

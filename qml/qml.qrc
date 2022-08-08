@@ -39,12 +39,12 @@
         <file>ui/widgets/MessageHUD.qml</file>
         <file>ui/widgets/MessageHUDRow.ui.qml</file>
         <file>LICENSE_UI.txt</file>
-        <file>ui/widgets/DownlinkRSSIWidget.qml</file>
-        <file>ui/widgets/DownlinkRSSIWidgetForm.ui.qml</file>
+        <file>ui/widgets/LinkDownRSSIWidget.qml</file>
+        <file>ui/widgets/LinkDownRSSIWidgetForm.ui.qml</file>
         <file>ui/widgets/BitrateWidget.qml</file>
         <file>ui/widgets/BitrateWidgetForm.ui.qml</file>
-        <file>ui/widgets/UplinkRSSIWidget.qml</file>
-        <file>ui/widgets/UplinkRSSIWidgetForm.ui.qml</file>
+        <file>ui/widgets/LinkUpRSSIWidget.qml</file>
+        <file>ui/widgets/LinkUpRSSIWidgetForm.ui.qml</file>
         <file>ui/widgets/GroundStatusWidget.qml</file>
         <file>ui/widgets/GroundStatusWidgetForm.ui.qml</file>
         <file>ui/widgets/AirStatusWidget.qml</file>
@@ -100,8 +100,6 @@
         <file>ui/widgets/VsiWidget.qml</file>
         <file>ui/widgets/WindWidgetForm.ui.qml</file>
         <file>ui/widgets/WindWidget.qml</file>
-        <file>ui/widgets/RcRSSIWidgetForm.ui.qml</file>
-        <file>ui/widgets/RcRSSIWidget.qml</file>
         <file>ui/widgets/ExampleWidget.qml</file>
         <file>ui/widgets/RollWidgetForm.ui.qml</file>
         <file>ui/widgets/RollWidget.qml</file>
@@ -215,5 +213,8 @@
         <file>ui/configpopup/LogMessagesStatusView.qml</file>
         <file>ui/configpopup/OHDComponentSettings.qml</file>
         <file>ui/configpopup/X2_GroundSystemSettingsPanel.qml</file>
+        <file>ui/configpopup/X0_AirCameraSettingsPanel.qml</file>
+        <file>ui/configpopup/XX_WBLinkSettings.qml</file>
+        <file>ui/configpopup/XX_MSettingsInput.qml</file>
     </qresource>
 </RCC>

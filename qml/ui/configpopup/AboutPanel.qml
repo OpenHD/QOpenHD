@@ -233,6 +233,79 @@ Rectangle {
                 }
             }
         }
+
+        // ------------
+        Card {
+            id: flightControllBox
+            height: 128
+            Layout.fillWidth: true
+            cardName: qsTr("FC")
+            cardBody:
+            ColumnLayout {
+                // from https://doc.qt.io/qt-6/qml-qtquick-layouts-rowlayout.html
+                anchors.fill: parent
+                spacing: 2
+                RowLayout{
+                    Layout.fillWidth: true
+                    Layout.minimumHeight: text_minHeight
+                    spacing: 6
+                    Text {
+                        text: qsTr("MAV type:")
+                        height: 24
+                        font.pixelSize: 14
+                        font.bold: true
+                        leftPadding: 12
+                    }
+                    Text {
+                        text: _fcMavlinkSystem.mav_type
+                        height: 24
+                        width: 256
+                        font.pixelSize: 14
+                        leftPadding: 6
+                    }
+                }
+                RowLayout{
+                    Layout.fillWidth: true
+                    Layout.minimumHeight: text_minHeight
+                    spacing: 6
+                    Text {
+                        text: qsTr("Last Ping:")
+                        height: 24
+                        font.pixelSize: 14
+                        font.bold: true
+                        leftPadding: 12
+                    }
+                    Text {
+                        text: _fcMavlinkSystem.last_ping_result_flight_ctrl
+                        height: 24
+                        width: 256
+                        font.pixelSize: 14
+                        leftPadding: 6
+                    }
+                }
+                RowLayout{
+                    Layout.fillWidth: true
+                    Layout.minimumHeight: text_minHeight
+                    spacing: 6
+                    Text {
+                        text: qsTr("Alive: ")
+                        height: 24
+                        font.pixelSize: 14
+                        font.bold: true
+                        leftPadding: 12
+                    }
+                    Text {
+                        text: _fcMavlinkSystem.is_alive ? "Y" : "N"
+                        height: 24
+                        width: 256
+                        //color: _fcMavlinkSystem.is_alive ? "RED" : "GREEN"
+                        font.pixelSize: 14
+                        leftPadding: 6
+                    }
+                }
+            }
+        }
+        // --------------
     }
     ColumnLayout{
         Layout.fillWidth: true

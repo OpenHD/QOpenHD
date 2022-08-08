@@ -6,9 +6,14 @@
 #include <QTimer>
 #include "../telemetry/mavlink_include.h"
 #include "wifiadapter.h"
+#include "../telemetry/openhd_defines.hpp"
 #include <array>
+//
+#include <mavsdk/mavsdk.h>
+#include <mavsdk/plugins/action/action.h>
 
 /**
+ * Abstract OHD (Mavlink) system.
  * This class contains information (basically like a model) about one OpenHD Air or Ground instance (if connected).
  * A (Abstract) because it is only for functionalities that are always supported by both air and ground.
  * For example, both the air and ground unit report the CPU usage and more, and this data is made available to QT UI using a instance of this model.
@@ -21,11 +26,18 @@ class AOHDSystem : public QObject
     Q_OBJECT
 public:
     explicit AOHDSystem(const bool is_air,QObject *parent = nullptr);
-     static AOHDSystem& instanceAir();
-     static AOHDSystem& instanceGround();
+    static AOHDSystem& instanceAir();
+    static AOHDSystem& instanceGround();
 private:
      const bool _is_air; // either true (for air) or false (for ground)
+     uint8_t get_own_sys_id()const{
+         return _is_air ? OHD_SYS_ID_AIR : OHD_SYS_ID_GROUND;
+     }
 public:
+     //Process OpenHD custom flavour message(s) coming from either the OHD Air or Ground unit
+     // Returns true if the passed message was processed (known message id), false otherwise
+     bool process_message(const mavlink_message_t& msg);
+private:
      // These are for handling the slight differences regarding air/ ground properly, if there are any
      // For examle, the onboard computer status is the same when coming from either air or ground,
      // but the stats total are to be interpreted slightly different for air and ground.
@@ -35,10 +47,20 @@ public:
      void process_x3(const mavlink_openhd_fec_link_rx_statistics_t& msg);
      // QT Code pegin
 public:
+     // these are mostly based on what rpi provides as stats
      Q_PROPERTY(int cpuload MEMBER m_cpuload WRITE set_cpuload NOTIFY cpuload_changed)
      void set_cpuload(int cpuload);
      Q_PROPERTY(int temp MEMBER m_temp WRITE set_temp NOTIFY temp_changed)
      void set_temp(int temp);
+     Q_PROPERTY(int curr_cpu_freq_mhz MEMBER m_curr_cpu_freq_mhz WRITE set_curr_cpu_freq_mhz NOTIFY curr_cpu_freq_mhz_changed)
+     void set_curr_cpu_freq_mhz(int curr_cpu_freq_mhz);
+     Q_PROPERTY(int curr_isp_freq_mhz MEMBER m_curr_isp_freq_mhz WRITE set_curr_isp_freq_mhz NOTIFY curr_isp_freq_mhz_changed)
+     void set_curr_isp_freq_mhz(int curr_isp_freq_mhz);
+     Q_PROPERTY(int curr_h264_freq_mhz MEMBER m_curr_h264_freq_mhz WRITE set_curr_h264_freq_mhz NOTIFY curr_h264_freq_mhz_changed)
+     void set_curr_h264_freq_mhz(int curr_h264_freq_mhz);
+     Q_PROPERTY(int curr_core_freq_mhz MEMBER m_curr_core_freq_mhz WRITE set_curr_core_freq_mhz NOTIFY curr_core_freq_mhz_changed)
+     void set_curr_core_freq_mhz(int curr_core_freq_mhz);
+     //
      Q_PROPERTY(QString m_openhd_version MEMBER m_openhd_version WRITE set_openhd_version NOTIFY openhd_version_changed)
      void set_openhd_version(QString openhd_version_);
      Q_PROPERTY(QString last_ping_result_openhd MEMBER  m_last_ping_result_openhd WRITE set_last_ping_result_openhd NOTIFY last_ping_result_openhd_changed)
@@ -73,6 +95,11 @@ public:
      //
      Q_PROPERTY(QString curr_incoming_bitrate MEMBER m_curr_incoming_bitrate WRITE set_curr_incoming_bitrate NOTIFY curr_incoming_bitrate_changed)
      void set_curr_incoming_bitrate(QString curr_incoming_bitrate);
+     Q_PROPERTY(QString curr_incoming_video_bitrate MEMBER m_curr_incoming_video_bitrate WRITE set_curr_incoming_video_bitrate NOTIFY curr_incoming_video_bitrate_changed)
+     void set_curr_incoming_video_bitrate(QString curr_incoming_video_bitrate);
+     Q_PROPERTY(QString curr_incoming_tele_bitrate MEMBER m_curr_incoming_tele_bitrate WRITE set_curr_incoming_tele_bitrate NOTIFY curr_incoming_tele_bitrate_changed)
+     void set_curr_incoming_tele_bitrate(QString curr_incoming_tele_bitrate);
+     //
      Q_PROPERTY(QString curr_outgoing_video_bitrate MEMBER m_curr_outgoing_video_bitrate WRITE set_curr_outgoing_video_bitrate NOTIFY curr_outgoing_video_bitrate_changed)
      void set_curr_outgoing_video_bitrate(QString curr_outgoing_video_bitrate);
      Q_PROPERTY(int total_tx_error_count MEMBER m_total_tx_error_count WRITE set_total_tx_error_count NOTIFY total_tx_error_count_changed)
@@ -82,9 +109,22 @@ public:
      void set_video_rx_blocks_lost(int video_rx_blocks_lost);
      Q_PROPERTY(int video_rx_blocks_recovered MEMBER m_video_rx_blocks_recovered WRITE set_video_rx_blocks_recovered NOTIFY video_rx_blocks_recovered_changed)
      void set_video_rx_blocks_recovered(int video_rx_blocks_recovered);
+     // NOTE: hacky right now, since it is a param but we also want to display it in the HUD
+     Q_PROPERTY(QString curr_set_video_bitrate MEMBER m_curr_set_video_bitrate WRITE set_curr_set_video_bitrate NOTIFY curr_set_video_bitrate_changed)
+     void set_curr_set_video_bitrate(QString curr_set_video_bitrate);
+     void set_curr_set_video_bitrate_int(int value);
+     Q_PROPERTY(QString curr_set_video_codec MEMBER m_curr_set_video_codec WRITE set_curr_set_video_codec NOTIFY curr_set_video_codec_changed)
+     void set_curr_set_video_codec(QString curr_set_video_codec);
+     void set_curr_set_video_codec_int(int value);
 signals:
      void cpuload_changed(int cpuload);
      void temp_changed(int temp);
+     void curr_cpu_freq_mhz_changed(int curr_cpu_freq_mhz);
+     //
+     void curr_isp_freq_mhz_changed(int curr_isp_freq_mhz);
+     void curr_h264_freq_mhz_changed(int curr_h264_freq_mhz);
+     void curr_core_freq_mhz_changed(int curr_core_freq_mhz);
+     //
      void openhd_version_changed(QString openhd_version_);
      void last_ping_result_openhd_changed(QString last_ping_result_openhd);
      void last_openhd_heartbeat_changed(qint64 last_openhd_heartbeat);
@@ -103,14 +143,26 @@ signals:
      //
      void gpio_changed(QList<int> gpio);
      void curr_incoming_bitrate_changed(QString curr_incoming_bitrate);
+     void curr_incoming_video_bitrate_changed(QString curr_incoming_video_bitrate);
+     void curr_incoming_tele_bitrate_changed(QString curr_incoming_tele_bitrate);
+
      void curr_outgoing_video_bitrate_changed(QString curr_outgoing_video_bitrate);
      void total_tx_error_count_changed(int total_tx_error_count);
      // only on ground
      void video_rx_blocks_lost_changed(int video_rx_blocks_lost);
      void video_rx_blocks_recovered_changed(int video_rx_blocks_recovered);
+     //
+     void curr_set_video_bitrate_changed(QString curr_set_video_bitrate);
+     void curr_set_video_codec_changed(QString curr_set_video_codec);
+public:
+     bool is_alive(){return m_is_alive;}
 private:
      int m_cpuload = 0;
      int m_temp = 0;
+     int m_curr_cpu_freq_mhz=-1;
+     int m_curr_isp_freq_mhz=-1;
+     int m_curr_h264_freq_mhz=-1;
+     int m_curr_core_freq_mhz=-1;
      QString m_openhd_version="NA";
      QString m_last_ping_result_openhd="NA";
      qint64 m_last_openhd_heartbeat = -1;
@@ -131,16 +183,28 @@ private:
      QList<int> m_gpio{0};
      //
      QString m_curr_incoming_bitrate="Bitrate NA";
+     QString m_curr_incoming_video_bitrate="Bitrate NA";
+     QString m_curr_incoming_tele_bitrate="Bitrate NA";
      QString m_curr_outgoing_video_bitrate="Bitrate NA";
+     QString m_curr_set_video_bitrate="NA";
+     QString m_curr_set_video_codec="Unknown";
 private:
     // Sets the alive boolean if no heartbeat / message has been received in the last X seconds
     QTimer* m_alive_timer = nullptr;
     void update_alive();
+    std::chrono::steady_clock::time_point m_last_message_openhd_stats_total_all_wifibroadcast_streams=std::chrono::steady_clock::now();
+    // Model / fire and forget data only end
+private:
+     // NOTE: Null until discovered
+     std::shared_ptr<mavsdk::System> _system;
+     std::shared_ptr<mavsdk::Action> _action;
+     bool send_command_long(mavsdk::Action::CommandLong command);
+public:
+     // Set the mavlink system reference, once discovered
+     void set_system(std::shared_ptr<mavsdk::System> system);
+     Q_INVOKABLE bool send_command_reboot(bool reboot);
 };
 
-inline void AOHDSystem::set_wifi_tx_packets_count(int wifi_tx_packets_count){
-    m_wifi_tx_packets_count=wifi_tx_packets_count;
-    emit wifi_tx_packets_count_changed(wifi_tx_packets_count);
-}
+
 
 #endif // AOHDSYSTEM_H

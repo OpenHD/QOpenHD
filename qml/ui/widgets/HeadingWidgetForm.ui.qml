@@ -310,9 +310,9 @@ BaseWidget {
                 showHorizonHeadingLadder: settings.show_heading_ladder
                 showHorizonHome: settings.show_heading_ladder //you dont want a floating home icon
                 Behavior on heading {NumberAnimation { duration: settings.smoothing }}
-                heading: OpenHD.hdg
+                heading: _fcMavlinkSystem.hdg
                 Behavior on homeHeading {NumberAnimation { duration: settings.smoothing }}
-                homeHeading: OpenHD.home_heading
+                homeHeading: _fcMavlinkSystem.home_heading
                 color: settings.color_shape
                 glow: settings.color_glow
                 fontFamily: settings.font_text
@@ -335,7 +335,7 @@ BaseWidget {
                 xScale: settings.heading_size
                 yScale: settings.heading_size
             }
-            text: Number(OpenHD.hdg).toLocaleString(Qt.locale(), 'f', 0)
+            text: Number(_fcMavlinkSystem.hdg).toLocaleString(Qt.locale(), 'f', 0)
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             style: Text.Outline

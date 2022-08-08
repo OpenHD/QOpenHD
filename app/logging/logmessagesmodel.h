@@ -8,6 +8,8 @@
 #include "../telemetry/qopenhdmavlinkhelper.hpp"
 
 /**
+ * Note: This is for the "Log" list UI element, NOT for the HUD
+ * The HUD currently is done from qml, and old stephen code that should be ported to c++
  * @brief All OpenHD and QOpenHD Log messages are accumulated and processed here.
  * There is only one static instance of this class in the whole application, and this
  * model instance is registered in main() to be accessible by qml for display.

@@ -1,11 +1,11 @@
 Generally, we have 2 OpenHD systems (each wth their own unique mavlink system id and one or more component(s) 
 and the FC system (if connected)
 
-Note: r.n these classes are basically only models that expose (fire and forget) telemetry data coming from the OHD air / ground unit to qt.
-Not sure if it makes sense to change that design-wise.
+The air and ground unit are quite similar in their functionalities, at least in regards to their "fire and forget" mavlink telemetry data.
+(For example, air and ground both report the CPU usage the same way).
+That's why there is one class to handle them both, with slight differences (for example, air has no video rx-es and similar).
+It would be nicer from a developer perspective to have one common "shared" base class and 2 different impl. for air and ground,
+but unfortunately qt and their modeling / signal stuff doesn't work with inheritance.
 
-Also, they share quite a bit of common code - but I don't know how qt deals with memeber(s) on inheritance
+Note that these classes r.n are basically only "mavlink write & UI read" - models, you cannot find any settings ore more complicated stuff here.
 
-Note, however, that talking to the OpenHD Air unit requires the Ground unit in between,
-and talking to the FC requires both OpenHD Air and Ground unit(s) in between.
-(Just send the message to the OHD Ground unit, OpenHD will do the forwarding)

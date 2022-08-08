@@ -305,15 +305,7 @@ BaseWidget {
             Text {
                 height: 32
                 text: {
-                    /* autopilot detection not reliable.. gets set in MavlinkTelemetry
-                    if(OpenHD.mav_type=="ARDUPLANE" || OpenHD.mav_type=="ARDUCOPTER"){
-                        return qsTr("Vehicle type: "+OpenHD.mav_type);
-                    }
-                    else {
-                        return qsTr("Only For Ardupilot...");
-                    }
-                    */
-                    return qsTr("Only For Ardupilot...");
+                    return qsTr("Only For Ardupilot/PX4");
                 }
                 color: "white"
                 font.bold: true
@@ -323,7 +315,7 @@ BaseWidget {
 
             ConfirmSlider {
 
-                visible: OpenHD.mav_type == "ARDUPLANE"
+                visible: _fcMavlinkSystem.supports_basic_commands
 
                 text_off: qsTr("RTL")
                 msg_id: 11
@@ -332,14 +324,14 @@ BaseWidget {
                     if (checked == true) {
 
                         //double check.... not really needed
-                        OpenHD.set_Requested_Flight_Mode(msg_id)
+                        _fcMavlinkSystem.set_Requested_Flight_Mode(msg_id)
                         //console.log("selected");
                     }
                 }
             }
             ConfirmSlider {
 
-                visible: OpenHD.mav_type == "ARDUPLANE"
+                visible: _fcMavlinkSystem.supports_basic_commands
 
                 text_off: qsTr("MANUAL")
                 msg_id: 0
@@ -348,14 +340,14 @@ BaseWidget {
                     if (checked == true) {
 
                         //double check.... not really needed
-                        OpenHD.set_Requested_Flight_Mode(msg_id)
+                        _fcMavlinkSystem.set_Requested_Flight_Mode(msg_id)
                         //console.log("selected");
                     }
                 }
             }
             ConfirmSlider {
 
-                visible: OpenHD.mav_type == "ARDUPLANE"
+                visible: _fcMavlinkSystem.supports_basic_commands
 
                 text_off: qsTr("STABILIZE")
                 msg_id: 2
@@ -364,14 +356,14 @@ BaseWidget {
                     if (checked == true) {
 
                         //double check.... not really needed
-                        OpenHD.set_Requested_Flight_Mode(msg_id)
+                        _fcMavlinkSystem.set_Requested_Flight_Mode(msg_id)
                         //console.log("selected");
                     }
                 }
             }
             ConfirmSlider {
 
-                visible: OpenHD.mav_type == "ARDUPLANE"
+                visible: _fcMavlinkSystem.supports_basic_commands
 
                 text_off: qsTr("LOITER")
                 msg_id: 12
@@ -380,14 +372,14 @@ BaseWidget {
                     if (checked == true) {
 
                         //double check.... not really needed
-                        OpenHD.set_Requested_Flight_Mode(msg_id)
+                        _fcMavlinkSystem.set_Requested_Flight_Mode(msg_id)
                         //console.log("selected");
                     }
                 }
             }
             ConfirmSlider {
 
-                visible: OpenHD.mav_type == "ARDUPLANE"
+                visible: _fcMavlinkSystem.supports_basic_commands
 
                 text_off: qsTr("FBWA")
                 msg_id: 5
@@ -396,14 +388,14 @@ BaseWidget {
                     if (checked == true) {
 
                         //double check.... not really needed
-                        OpenHD.set_Requested_Flight_Mode(msg_id)
+                        _fcMavlinkSystem.set_Requested_Flight_Mode(msg_id)
                         //console.log("selected");
                     }
                 }
             }
             ConfirmSlider {
 
-                visible: OpenHD.mav_type == "ARDUPLANE"
+                visible: _fcMavlinkSystem.supports_basic_commands
 
                 text_off: qsTr("AUTO")
                 msg_id: 10
@@ -412,14 +404,14 @@ BaseWidget {
                     if (checked == true) {
 
                         //double check.... not really needed
-                        OpenHD.set_Requested_Flight_Mode(msg_id)
+                        _fcMavlinkSystem.set_Requested_Flight_Mode(msg_id)
                         //console.log("selected");
                     }
                 }
             }
             ConfirmSlider {
 
-                visible: OpenHD.mav_type == "ARDUPLANE"
+                visible: _fcMavlinkSystem.supports_basic_commands
 
                 text_off: qsTr("AUTOTUNE")
                 msg_id: 8
@@ -428,7 +420,7 @@ BaseWidget {
                     if (checked == true) {
 
                         //double check.... not really needed
-                        OpenHD.set_Requested_Flight_Mode(msg_id)
+                        _fcMavlinkSystem.set_Requested_Flight_Mode(msg_id)
                         //console.log("selected");
                     }
                 }
@@ -437,7 +429,7 @@ BaseWidget {
             //-----------------------Split from plane to copter
             ConfirmSlider {
 
-                visible: OpenHD.mav_type == "ARDUCOPTER"
+                visible: _fcMavlinkSystem.mav_type == "ARDUCOPTER"
 
                 text_off: qsTr("RTL")
                 msg_id: 6
@@ -446,14 +438,14 @@ BaseWidget {
                     if (checked == true) {
 
                         //double check.... not really needed
-                        OpenHD.set_Requested_Flight_Mode(msg_id)
+                        _fcMavlinkSystem.set_Requested_Flight_Mode(msg_id)
                         //console.log("selected");
                     }
                 }
             }
             ConfirmSlider {
 
-                visible: OpenHD.mav_type == "ARDUCOPTER"
+                visible: _fcMavlinkSystem.mav_type == "ARDUCOPTER"
 
                 text_off: qsTr("STABILIZE")
                 msg_id: 0
@@ -462,14 +454,14 @@ BaseWidget {
                     if (checked == true) {
 
                         //double check.... not really needed
-                        OpenHD.set_Requested_Flight_Mode(msg_id)
+                        _fcMavlinkSystem.set_Requested_Flight_Mode(msg_id)
                         //console.log("selected");
                     }
                 }
             }
             ConfirmSlider {
 
-                visible: OpenHD.mav_type == "ARDUCOPTER"
+                visible: _fcMavlinkSystem.mav_type == "ARDUCOPTER"
 
                 text_off: qsTr("ALT_HOLD")
                 msg_id: 2
@@ -478,14 +470,14 @@ BaseWidget {
                     if (checked == true) {
 
                         //double check.... not really needed
-                        OpenHD.set_Requested_Flight_Mode(msg_id)
+                        _fcMavlinkSystem.set_Requested_Flight_Mode(msg_id)
                         //console.log("selected");
                     }
                 }
             }
             ConfirmSlider {
 
-                visible: OpenHD.mav_type == "ARDUCOPTER"
+                visible: _fcMavlinkSystem.mav_type == "ARDUCOPTER"
 
                 text_off: qsTr("LOITER")
                 msg_id: 5
@@ -494,14 +486,14 @@ BaseWidget {
                     if (checked == true) {
 
                         //double check.... not really needed
-                        OpenHD.set_Requested_Flight_Mode(msg_id)
+                        _fcMavlinkSystem.set_Requested_Flight_Mode(msg_id)
                         //console.log("selected");
                     }
                 }
             }
             ConfirmSlider {
 
-                visible: OpenHD.mav_type == "ARDUCOPTER"
+                visible: _fcMavlinkSystem.mav_type == "ARDUCOPTER"
 
                 text_off: qsTr("POSHOLD")
                 msg_id: 16
@@ -510,14 +502,14 @@ BaseWidget {
                     if (checked == true) {
 
                         //double check.... not really needed
-                        OpenHD.set_Requested_Flight_Mode(msg_id)
+                        _fcMavlinkSystem.set_Requested_Flight_Mode(msg_id)
                         //console.log("selected");
                     }
                 }
             }
             ConfirmSlider {
 
-                visible: OpenHD.mav_type == "ARDUCOPTER"
+                visible: _fcMavlinkSystem.mav_type == "ARDUCOPTER"
 
                 text_off: qsTr("AUTO")
                 msg_id: 3
@@ -526,14 +518,14 @@ BaseWidget {
                     if (checked == true) {
 
                         //double check.... not really needed
-                        OpenHD.set_Requested_Flight_Mode(msg_id)
+                        _fcMavlinkSystem.set_Requested_Flight_Mode(msg_id)
                         //console.log("selected");
                     }
                 }
             }
             ConfirmSlider {
 
-                visible: OpenHD.mav_type == "ARDUCOPTER"
+                visible: _fcMavlinkSystem.mav_type == "ARDUCOPTER"
 
                 text_off: qsTr("AUTOTUNE")
                 msg_id: 15
@@ -542,7 +534,7 @@ BaseWidget {
                     if (checked == true) {
 
                         //double check.... not really needed
-                        OpenHD.set_Requested_Flight_Mode(msg_id)
+                        _fcMavlinkSystem.set_Requested_Flight_Mode(msg_id)
                         //console.log("selected");
                     }
                 }
@@ -597,7 +589,7 @@ BaseWidget {
                         }
                     }
                     onCheckedChanged: {
-                        OpenHD.set_Requested_Flight_Mode(0);
+                        _fcMavlinkSystem.set_Requested_Flight_Mode(0);
                     }
                 }
             }
@@ -633,7 +625,7 @@ BaseWidget {
             height: 48
             color: settings.color_text
             opacity: settings.flight_mode_opacity
-            text: OpenHD.armed ? "[" + OpenHD.flight_mode + "]" : OpenHD.flight_mode
+            text: _fcMavlinkSystem.armed ? "[" + _fcMavlinkSystem.flight_mode + "]" : _fcMavlinkSystem.flight_mode
             anchors.verticalCenter: parent.verticalCenter
             anchors.horizontalCenter: parent.horizontalCenter
             verticalAlignment: Text.AlignVCenter

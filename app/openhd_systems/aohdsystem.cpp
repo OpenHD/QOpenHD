@@ -16,6 +16,13 @@ static std::string bitrate_to_string(uint64_t bits_per_second){
   ss<<kBits_per_second<<" kBit/s";
   return ss.str();
 }
+static std::string video_codec_to_string(int value){
+    if(value==0)return "h264";
+    if(value==1)return "h265";
+    if(value==2)return "mjpeg";
+    return "Unknown";
+}
+
 
 AOHDSystem::AOHDSystem(const bool is_air,QObject *parent)
     : QObject{parent},_is_air(is_air)
@@ -37,10 +44,85 @@ AOHDSystem &AOHDSystem::instanceGround()
     return ground;
 }
 
+bool AOHDSystem::process_message(const mavlink_message_t &msg)
+{
+    if(msg.sysid != get_own_sys_id()){
+        qDebug()<<"AOHDSystem::process_message: wron sys id";
+        return false;
+    }
+    switch(msg.msgid){
+        case MAVLINK_MSG_ID_OPENHD_VERSION_MESSAGE:{
+            mavlink_openhd_version_message_t parsedMsg;
+            mavlink_msg_openhd_version_message_decode(&msg,&parsedMsg);
+            QString version(parsedMsg.version);
+            set_openhd_version(version);
+            return true;
+        }
+        case MAVLINK_MSG_ID_ONBOARD_COMPUTER_STATUS:{
+            mavlink_onboard_computer_status_t parsedMsg;
+            mavlink_msg_onboard_computer_status_decode(&msg,&parsedMsg);
+            process_x0(parsedMsg);
+            return true;
+            break;
+        }
+        case MAVLINK_MSG_ID_OPENHD_WIFIBROADCAST_WIFI_CARD:{
+            mavlink_openhd_wifibroadcast_wifi_card_t parsedMsg;
+            mavlink_msg_openhd_wifibroadcast_wifi_card_decode(&msg,&parsedMsg);
+            //qDebug()<<"Got MAVLINK_MSG_ID_OPENHD_WIFI_CARD"<<(int)parsedMsg.card_index<<" "<<(int)parsedMsg.signal_millidBm;
+            process_x1(parsedMsg);
+            return true;
+            break;
+        }
+        case MAVLINK_MSG_ID_OPENHD_STATS_TOTAL_ALL_WIFIBROADCAST_STREAMS:{
+            mavlink_openhd_stats_total_all_wifibroadcast_streams_t parsedMsg;
+            mavlink_msg_openhd_stats_total_all_wifibroadcast_streams_decode(&msg,&parsedMsg);
+            process_x2(parsedMsg);
+            return true;
+        }break;
+        case MAVLINK_MSG_ID_OPENHD_FEC_LINK_RX_STATISTICS:{
+            mavlink_openhd_fec_link_rx_statistics_t parsedMsg;
+            mavlink_msg_openhd_fec_link_rx_statistics_decode(&msg,&parsedMsg);
+            process_x3(parsedMsg);
+            return true;
+        }break;
+        case MAVLINK_MSG_ID_OPENHD_ONBOARD_COMPUTER_STATUS_EXTENSION:{
+            mavlink_openhd_onboard_computer_status_extension_t parsedMsg;
+            mavlink_msg_openhd_onboard_computer_status_extension_decode(&msg,&parsedMsg);
+            return true;
+        }break;
+        case MAVLINK_MSG_ID_HEARTBEAT:{
+            mavlink_heartbeat_t parsedMsg;
+            mavlink_msg_heartbeat_decode(&msg,&parsedMsg);
+            const auto time_millis=QOpenHDMavlinkHelper::getTimeMilliseconds();
+            set_last_openhd_heartbeat(time_millis);
+            if(parsedMsg.autopilot!=MAV_AUTOPILOT_INVALID){
+                qDebug()<<"Warning OpenHD systems should always set autopilot to none";
+            }
+            return true;
+        }break;
+        /*case MAVLINK_MSG_ID_OPENHD_LOG_MESSAGE:{
+            mavlink_openhd_log_message_t parsedMsg;
+            mavlink_msg_openhd_log_message_decode(&msg,&parsedMsg);
+            const QString message{parsedMsg.text};
+            const quint64 timestamp=parsedMsg.timestamp;
+            const quint8 severity=parsedMsg.severity;
+            qDebug()<<"Log message:"<<message;
+            LogMessagesModel::instance().addLogMessage({"OHD",message,timestamp,LogMessagesModel::log_severity_to_color(severity)});
+            break;
+        }*/
+    }
+    return false;
+}
+
 void AOHDSystem::process_x0(const mavlink_onboard_computer_status_t &msg)
 {
     set_cpuload(msg.cpu_cores[0]);
     set_temp(msg.temperature_core[0]);
+    // temporary, we repurpose this value
+    set_curr_cpu_freq_mhz(msg.storage_type[0]);
+    set_curr_isp_freq_mhz(msg.storage_type[1]);
+    set_curr_h264_freq_mhz(msg.storage_type[2]);
+    set_curr_core_freq_mhz(msg.storage_type[3]);
 }
 
 void AOHDSystem::process_x1(const mavlink_openhd_wifibroadcast_wifi_card_t &msg)
@@ -54,12 +136,15 @@ void AOHDSystem::process_x1(const mavlink_openhd_wifibroadcast_wifi_card_t &msg)
 
 void AOHDSystem::process_x2(const mavlink_openhd_stats_total_all_wifibroadcast_streams_t &msg)
 {
+    m_last_message_openhd_stats_total_all_wifibroadcast_streams=std::chrono::steady_clock::now();
     {
+        set_curr_incoming_tele_bitrate(QString(bitrate_to_string(msg.curr_telemetry_rx_bps).c_str()));
         auto total_rx_bitrate=msg.curr_telemetry_rx_bps;
         if(!_is_air){
             // ground
             total_rx_bitrate+=msg.curr_video0_bps;
             total_rx_bitrate+=msg.curr_video1_bps;
+            set_curr_incoming_video_bitrate(QString(bitrate_to_string(msg.curr_video0_bps).c_str()));
         }
         const auto bitrate_string=bitrate_to_string(total_rx_bitrate);
         set_curr_incoming_bitrate(QString(bitrate_string.c_str()));
@@ -87,6 +172,11 @@ void AOHDSystem::process_x3(const mavlink_openhd_fec_link_rx_statistics_t &msg)
     }
 }
 
+void AOHDSystem::set_wifi_tx_packets_count(int wifi_tx_packets_count){
+    m_wifi_tx_packets_count=wifi_tx_packets_count;
+    emit wifi_tx_packets_count_changed(wifi_tx_packets_count);
+}
+
 void AOHDSystem::set_cpuload(int cpuload) {
     m_cpuload = cpuload;
     emit cpuload_changed(m_cpuload);
@@ -95,6 +185,34 @@ void AOHDSystem::set_cpuload(int cpuload) {
 void AOHDSystem::set_temp(int temp) {
     m_temp = temp;
     emit temp_changed(m_temp);
+}
+
+void AOHDSystem::set_curr_cpu_freq_mhz(int curr_cpu_freq_mhz)
+{
+    if(m_curr_cpu_freq_mhz==curr_cpu_freq_mhz)return;
+    m_curr_cpu_freq_mhz=curr_cpu_freq_mhz;
+    emit curr_cpu_freq_mhz_changed(curr_cpu_freq_mhz);
+}
+
+void AOHDSystem::set_curr_isp_freq_mhz(int curr_isp_freq_mhz)
+{
+    if(m_curr_isp_freq_mhz==curr_isp_freq_mhz)return;
+    m_curr_isp_freq_mhz=curr_isp_freq_mhz;
+    emit curr_isp_freq_mhz_changed(curr_isp_freq_mhz);
+}
+
+void AOHDSystem::set_curr_h264_freq_mhz(int curr_h264_freq_mhz)
+{
+    if(m_curr_h264_freq_mhz==curr_h264_freq_mhz)return;
+    m_curr_h264_freq_mhz=curr_h264_freq_mhz;
+    emit curr_h264_freq_mhz_changed(curr_h264_freq_mhz);
+}
+
+void AOHDSystem::set_curr_core_freq_mhz(int curr_core_freq_mhz)
+{
+    if(m_curr_core_freq_mhz==curr_core_freq_mhz)return;
+    m_curr_core_freq_mhz=curr_core_freq_mhz;
+    emit curr_core_freq_mhz_changed(curr_core_freq_mhz);
 }
 
 void AOHDSystem::set_openhd_version(QString openhd_version){
@@ -195,6 +313,18 @@ void AOHDSystem::set_curr_incoming_bitrate(QString curr_incoming_bitrate)
     emit curr_incoming_bitrate_changed(curr_incoming_bitrate);
 }
 
+void AOHDSystem::set_curr_incoming_video_bitrate(QString curr_incoming_video_bitrate)
+{
+    m_curr_incoming_video_bitrate=curr_incoming_video_bitrate;
+    emit curr_incoming_video_bitrate_changed(curr_incoming_video_bitrate);
+}
+
+void AOHDSystem::set_curr_incoming_tele_bitrate(QString curr_incoming_tele_bitrate)
+{
+    m_curr_incoming_tele_bitrate=curr_incoming_tele_bitrate;
+    emit curr_incoming_tele_bitrate_changed(curr_incoming_tele_bitrate);
+}
+
 void AOHDSystem::set_curr_outgoing_video_bitrate(QString curr_outgoing_video_bitrate)
 {
     m_curr_outgoing_video_bitrate=curr_outgoing_video_bitrate;
@@ -219,6 +349,30 @@ void AOHDSystem::set_video_rx_blocks_recovered(int video_rx_blocks_recovered)
     emit video_rx_blocks_recovered_changed(video_rx_blocks_recovered);
 }
 
+void AOHDSystem::set_curr_set_video_bitrate(QString curr_set_video_bitrate)
+{
+    if(m_curr_set_video_bitrate==curr_set_video_bitrate)return;
+    m_curr_set_video_bitrate=curr_set_video_bitrate;
+    emit curr_set_video_bitrate_changed(curr_set_video_bitrate);
+}
+
+void AOHDSystem::set_curr_set_video_bitrate_int(int value){
+    auto tmp=std::to_string(value)+" MBit/s";
+    set_curr_set_video_bitrate(tmp.c_str());
+}
+
+void AOHDSystem::set_curr_set_video_codec(QString curr_set_video_codec)
+{
+    if(m_curr_set_video_codec==curr_set_video_codec)return;
+    m_curr_set_video_codec=curr_set_video_codec;
+    emit curr_set_video_codec_changed(curr_set_video_codec);
+}
+
+void AOHDSystem::set_curr_set_video_codec_int(int value){
+    auto tmp=video_codec_to_string(value);
+    set_curr_set_video_codec(tmp.c_str());
+}
+
 void AOHDSystem::update_alive()
 {
     if(m_last_openhd_heartbeat==-1){
@@ -231,4 +385,51 @@ void AOHDSystem::update_alive()
             set_is_alive(true);
         }
     }
+    {
+        // If we don't get any bitrate updates, after 5 seconds go back to default
+        const auto delta=std::chrono::steady_clock::now()-m_last_message_openhd_stats_total_all_wifibroadcast_streams;
+        if(delta>std::chrono::seconds(5)){
+            set_curr_incoming_bitrate("Bitrate NA");
+            set_curr_incoming_tele_bitrate("Bitrate NA");
+            set_curr_incoming_video_bitrate("Bitrate NA");
+            set_curr_outgoing_video_bitrate("Bitrate NA");
+        }
+    }
+}
+
+bool AOHDSystem::send_command_long(mavsdk::Action::CommandLong command)
+{
+    if(!_action){
+        return false;
+    }
+    const auto res=_action->send_command_long(command);
+    assert(command.target_system_id==get_own_sys_id());
+    std::stringstream ss;
+    ss<<"Action: "<<res;
+    qDebug()<<QString(ss.str().c_str());
+    if(res==mavsdk::Action::Result::Success){
+        return true;
+    }
+    return false;
+}
+
+
+void AOHDSystem::set_system(std::shared_ptr<mavsdk::System> system)
+{
+    // once discovered, the system never changes !
+    assert(_system==nullptr);
+    assert(system->get_system_id()==get_own_sys_id());
+    _system=system;
+    _action=std::make_shared<mavsdk::Action>(system);
+}
+
+bool AOHDSystem::send_command_reboot(bool reboot)
+{
+    mavsdk::Action::CommandLong command{};
+    command.target_system_id= get_own_sys_id();
+    command.target_component_id=0; // unused r.n
+    command.command=MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN;
+    command.params.maybe_param1=0;
+    command.params.maybe_param2=(reboot ? 1 : 2);
+    return send_command_long(command);
 }

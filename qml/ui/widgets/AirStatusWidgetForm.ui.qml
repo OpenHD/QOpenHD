@@ -22,6 +22,7 @@ BaseWidget {
     defaultVCenter: false
 
     hasWidgetDetail: true
+    hasWidgetAction: true
 
     widgetDetailComponent: ScrollView {
 
@@ -363,6 +364,54 @@ BaseWidget {
         }
     }
 
+    widgetActionComponent: ScrollView{
+
+        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+        clip: true
+
+        ColumnLayout{
+            width:200
+
+            Text {
+                //Layout.alignment: left
+                text: "CPU freq: "+_ohdSystemAir.curr_cpu_freq_mhz
+                color: "white"
+                font.bold: true
+                height: parent.height
+                font.pixelSize: detailPanelFontPixels
+                verticalAlignment: Text.AlignVCenter
+            }
+            Text {
+                //Layout.alignment: left
+                text: "ISP freq: "+_ohdSystemAir.curr_isp_freq_mhz
+                color: "white"
+                font.bold: true
+                height: parent.height
+                font.pixelSize: detailPanelFontPixels
+                verticalAlignment: Text.AlignVCenter
+            }
+            Text {
+                //Layout.alignment: left
+                text: "H264 freq: "+_ohdSystemAir.curr_h264_freq_mhz
+                color: "white"
+                font.bold: true
+                height: parent.height
+                font.pixelSize: detailPanelFontPixels
+                verticalAlignment: Text.AlignVCenter
+            }
+            Text {
+                //Layout.alignment: left
+                text: "Core freq: "+_ohdSystemAir.curr_core_freq_mhz
+                color: "white"
+                font.bold: true
+                height: parent.height
+                font.pixelSize: detailPanelFontPixels
+                verticalAlignment: Text.AlignVCenter
+            }
+
+        }
+    }
+
     Item {
         id: widgetInner
 
@@ -415,7 +464,7 @@ BaseWidget {
                     widgetInner.visible = true
                     return settings.color_caution
                 } else if (settings.air_status_declutter == true
-                           && OpenHD.armed == true) {
+                           && _fcMavlinkSystem.armed == true) {
                     widgetInner.visible = false
                     return settings.color_text
                 } else {
@@ -453,7 +502,7 @@ BaseWidget {
                     widgetInner.visible = true
                     return settings.color_caution
                 } else if (settings.air_status_declutter == true
-                           && OpenHD.armed == true) {
+                           && _fcMavlinkSystem.armed == true) {
                     widgetInner.visible = false
                     return settings.color_text
                 } else {

@@ -462,14 +462,14 @@ BaseWidget {
                 fpvPipper:
 */
                 Behavior on pitch {NumberAnimation { duration: settings.smoothing }}
-                pitch: settings.fpv_dynamic ? OpenHD.pitch : 0.0
+                pitch: settings.fpv_dynamic ? _fcMavlinkSystem.pitch : 0.0
                 Behavior on roll {NumberAnimation { duration: settings.smoothing }}
-                roll: settings.fpv_dynamic ? OpenHD.roll : 0.0
+                roll: settings.fpv_dynamic ? _fcMavlinkSystem.roll : 0.0
 
                 Behavior on lateral {NumberAnimation { duration: settings.smoothing }}
-                lateral: settings.fpv_dynamic ? OpenHD.vehicle_vx_angle : 0.0
+                lateral: settings.fpv_dynamic ? _fcMavlinkSystem.vehicle_vx_angle : 0.0
                 Behavior on vertical {NumberAnimation { duration: settings.smoothing }}
-                vertical: settings.fpv_dynamic ? OpenHD.vehicle_vz_angle : 0.0
+                vertical: settings.fpv_dynamic ? _fcMavlinkSystem.vehicle_vz_angle : 0.0
 
                 // referencing the horizon so that fpv moves accurately
                 horizonSpacing: settings.horizon_ladder_spacing

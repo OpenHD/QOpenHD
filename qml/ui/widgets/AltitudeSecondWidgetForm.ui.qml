@@ -224,7 +224,7 @@ BaseWidget {
             anchors.leftMargin: 0
             anchors.verticalCenter: widgetGlyph.verticalCenter
             text: Number(
-                      settings.enable_imperial ? (settings.altitude_second_msl_rel ? (OpenHD.alt_msl * 3.28) : (OpenHD.alt_rel * 3.28)) : (settings.altitude_second_msl_rel ? OpenHD.alt_msl : OpenHD.alt_rel)).toLocaleString(
+                      settings.enable_imperial ? (settings.altitude_second_msl_rel ? (_fcMavlinkSystem.alt_msl * 3.28) : (_fcMavlinkSystem.alt_rel * 3.28)) : (settings.altitude_second_msl_rel ? _fcMavlinkSystem.alt_msl : _fcMavlinkSystem.alt_rel)).toLocaleString(
                       Qt.locale(), 'f', 0)
             horizontalAlignment: Text.AlignRight
             verticalAlignment: Text.AlignVCenter

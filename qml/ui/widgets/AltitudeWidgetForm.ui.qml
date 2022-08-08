@@ -299,9 +299,9 @@ BaseWidget {
                 altitudeRange: settings.altitude_range
                 imperial: settings.enable_imperial
                 Behavior on altMsl {NumberAnimation { duration: settings.smoothing }}
-                altMsl: OpenHD.alt_msl
+                altMsl: _fcMavlinkSystem.alt_msl
                 Behavior on altRel {NumberAnimation { duration: settings.smoothing }}
-                altRel: OpenHD.alt_rel
+                altRel: _fcMavlinkSystem.alt_rel
                 fontFamily: settings.font_text
             }
         }
@@ -323,7 +323,7 @@ BaseWidget {
                     yScale: settings.altitude_size
                 }
                 text: Number(// @disable-check M222
-                             settings.enable_imperial ? (settings.altitude_rel_msl ? (OpenHD.alt_msl * 3.28) : (OpenHD.alt_rel * 3.28)) : (settings.altitude_rel_msl ? OpenHD.alt_msl : OpenHD.alt_rel)).toLocaleString(
+                             settings.enable_imperial ? (settings.altitude_rel_msl ? (_fcMavlinkSystem.alt_msl * 3.28) : (_fcMavlinkSystem.alt_rel * 3.28)) : (settings.altitude_rel_msl ? _fcMavlinkSystem.alt_msl : _fcMavlinkSystem.alt_rel)).toLocaleString(
                           Qt.locale(), 'f', 0) // @disable-check M222
                 anchors.fill: parent
                 horizontalAlignment: Text.AlignHCenter

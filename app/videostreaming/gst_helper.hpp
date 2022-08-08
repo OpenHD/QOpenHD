@@ -92,6 +92,10 @@ static void link_gsteamer_to_qt_window(GstElement *qmlglsink,QQuickItem *qtOutWi
 // find qmlglsink in gstreamer pipeline and link it to the window
 static void link_gstreamer_pipe_to_qt_window(GstElement * m_pipeline,QQuickItem *qtOutWindow){
     GstElement *qmlglsink = gst_bin_get_by_name(GST_BIN(m_pipeline), "qmlglsink");
+    if(!qmlglsink){
+        qDebug()<<"link_gstreamer_pipe_to_qt_window: no qmlglimagesink";
+        return;
+    }
     assert(qmlglsink!=nullptr);
     link_gsteamer_to_qt_window(qmlglsink,qtOutWindow);
 }

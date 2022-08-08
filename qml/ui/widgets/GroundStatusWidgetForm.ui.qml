@@ -22,6 +22,7 @@ BaseWidget {
     defaultVCenter: false
 
     hasWidgetDetail: true
+    hasWidgetAction: true
 
     widgetDetailComponent: ScrollView {
 
@@ -359,6 +360,53 @@ BaseWidget {
                     }
                 }
             }
+        }
+    }
+    widgetActionComponent: ScrollView{
+
+        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+        clip: true
+
+        ColumnLayout{
+            width:200
+
+            Text {
+                //Layout.alignment: left
+                text: "CPU freq: "+_ohdSystemGround.curr_cpu_freq_mhz
+                color: "white"
+                font.bold: true
+                height: parent.height
+                font.pixelSize: detailPanelFontPixels
+                verticalAlignment: Text.AlignVCenter
+            }
+            Text {
+                //Layout.alignment: left
+                text: "ISP freq: "+_ohdSystemGround.curr_isp_freq_mhz
+                color: "white"
+                font.bold: true
+                height: parent.height
+                font.pixelSize: detailPanelFontPixels
+                verticalAlignment: Text.AlignVCenter
+            }
+            Text {
+                //Layout.alignment: left
+                text: "H264 freq: "+_ohdSystemGround.curr_h264_freq_mhz
+                color: "white"
+                font.bold: true
+                height: parent.height
+                font.pixelSize: detailPanelFontPixels
+                verticalAlignment: Text.AlignVCenter
+            }
+            Text {
+                //Layout.alignment: left
+                text: "Core freq: "+_ohdSystemGround.curr_core_freq_mhz
+                color: "white"
+                font.bold: true
+                height: parent.height
+                font.pixelSize: detailPanelFontPixels
+                verticalAlignment: Text.AlignVCenter
+            }
+
         }
     }
 
