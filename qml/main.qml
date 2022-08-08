@@ -145,16 +145,16 @@ ApplicationWindow {
     // TODO make me less dirty / hacky
     Card {
         id: workaroundMessageBox
-        height: 240
-        width: 400
+        height: 200
+        width: 320
         z: 5.0
         anchors.centerIn: parent
         cardName: qsTr("QOpenHD")
         cardNameColor: "black"
         visible: _messageBoxInstance.show_to_user
         cardBody: Column {
-            height: restartDialog.height
-            width: restartDialog.width
+            height: 200
+            width: 320
             Text {
                 id: workaroundMessageBox_text
                 text: _messageBoxInstance.text
