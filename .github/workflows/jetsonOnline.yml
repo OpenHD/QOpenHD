@@ -52,7 +52,7 @@ jobs:
           ls -a  
           
 
-      - name: Push
+    - name: Push
       id: push
       uses: cloudsmith-io/action@master
         with:

@@ -34,7 +34,7 @@ jobs:
           *.log
         if-no-files-found: error
 
-      - name: Push
+    - name: Push
       id: push
       uses: cloudsmith-io/action@master
         with:

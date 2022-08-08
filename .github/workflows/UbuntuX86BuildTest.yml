@@ -20,6 +20,7 @@ jobs:
         ls -a
         sudo bash install_dep.sh
         sudo bash install_dep_extra.sh
+
     - name: Build with make
       run: |
         curl -1sLf \
@@ -27,7 +28,8 @@ jobs:
         | sudo -E bash
         sudo apt install -y mavsdk
         sudo ./package.sh x86_64 ubuntu focal
-      - name: Push
+    
+    - name: Push
       id: push
       uses: cloudsmith-io/action@master
         with:
