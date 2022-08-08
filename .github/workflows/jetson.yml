@@ -19,7 +19,14 @@ jobs:
         
     - name: build Qopenhd
       run: |
-        ls -a
+        apt update
+        apt install -y curl
+        rm -Rf /etc/apt/sources.list.d/openhd*
+        apt-get clean
+        rm -rf /var/lib/apt/lists/*
+        curl -1sLf \
+        'https://dl.cloudsmith.io/public/openhd/openhd-2-2-evo/setup.deb.sh' \
+        | sudo -E bash
         sudo apt update
         sudo bash install_dep.sh
         sudo ./package.sh arm64 ubuntu bionic
