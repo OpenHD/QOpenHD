@@ -70,6 +70,7 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "telemetry/settings/mavlinksettingsmodel.h"
 #include "telemetry/settings/synchronizedsettings.h"
 #include "qopenhd.h"
+#include "util/WorkaroundMessageBox.h"
 
 // SDL hack
 #ifdef Q_OS_WIN
@@ -363,6 +364,8 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
     engine.rootContext()->setContextProperty("_ohdSystemAir", &AOHDSystem::instanceAir());
     engine.rootContext()->setContextProperty("_ohdSystemGround", &AOHDSystem::instanceGround());
     engine.rootContext()->setContextProperty("_decodingStatistics",&DecodingStatistcs::instance());
+    // dirty
+    engine.rootContext()->setContextProperty("_messageBoxInstance", &workaround::MessageBox::instance());
 
 #if defined(ENABLE_MAIN_VIDEO)
     engine.rootContext()->setContextProperty("EnableMainVideo", QVariant(true));

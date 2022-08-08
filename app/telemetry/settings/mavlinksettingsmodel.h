@@ -35,11 +35,19 @@ public:
 private:
     std::shared_ptr<mavsdk::Param> param_client;
 public:
+    // Fetch a param value using mavsdk. Returns std::nullopt on failure,
+    // The param value otherwise.
     std::optional<int> try_fetch_param_int_impl(const QString param_id);
+    std::optional<std::string> try_fetch_param_string_impl(const QString param_id);
+    // Update a parameter (when calling this, it is not checked if the param is
+    // actually an int param (but the server will reject on mismatch anyways) so just
+    // make sure when calling this you are using a cached param / are sure about its type
+    //  Doesn't check if param is cached / correct type.
+    bool try_update_param_int_impl(const QString param_id,int value);
+    bool try_update_param_string_impl(const QString param_id,std::string value);
 
     // callable from QT
     Q_INVOKABLE bool try_fetch_all_parameters();
-
     Q_INVOKABLE bool try_fetch_parameter(QString param_id);
 
     Q_INVOKABLE bool try_update_parameter(const QString param_id,QVariant value);
@@ -53,8 +61,12 @@ public:
     QVariant data( const QModelIndex& index, int role = Qt::DisplayRole ) const override;
     QHash<int, QByteArray> roleNames() const override;
     struct SettingData{
+        // The unique parameter identifier
         QString unique_id;
-        qint32 value;
+        // We support int and string values - NOTHING ELSE ! Please keep it this way, there are reasons for it.
+        // On a side node, PX4 / ardupilot do it the same !
+        std::variant<int32_t,std::string> value;
+        //qint32 value;
     };
 public slots:
     void removeData(int row);

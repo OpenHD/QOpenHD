@@ -4,7 +4,7 @@
 //temporary
 #include "../../openhd_systems/aohdsystem.h"
 
-#include <QMessageBox>
+#include "../../util/WorkaroundMessageBox.h"
 #include <QSettings>
 #include <QVariant>
 
@@ -63,12 +63,6 @@ MavlinkSettingsModel::MavlinkSettingsModel(uint8_t sys_id,uint8_t comp_id,QObjec
     //m_data.push_back({"VIDEO_FPS",1});
 }
 
-static void makePopupMessage(QString message){
-    QMessageBox msgBox;
-    msgBox.setText(message);
-    msgBox.exec();
-}
-
 void MavlinkSettingsModel::set_param_client(std::shared_ptr<mavsdk::System> system)
 {
     // only allow adding the param client once it is discovered, do not overwrite it once discovered.
@@ -83,7 +77,7 @@ bool MavlinkSettingsModel::try_fetch_all_parameters()
     qDebug()<<"MavlinkSettingsModel::try_fetch_all_parameters()";
     if(param_client==nullptr){
         // not discovered yet
-        makePopupMessage("OHD System not found");
+        workaround::makePopupMessage("OHD System not found");
     }
     if(param_client){
         // first, remove anything the QT model has cached
@@ -97,6 +91,10 @@ bool MavlinkSettingsModel::try_fetch_all_parameters()
             MavlinkSettingsModel::SettingData data{QString(int_param.name.c_str()),int_param.value};
             addData(data);
         }
+        for(const auto& string_param:params.custom_params){
+            MavlinkSettingsModel::SettingData data{QString(string_param.name.c_str()),string_param.value};
+            addData(data);
+        }
         if(!params.int_params.empty()){
             return true;
         }
@@ -108,7 +106,7 @@ bool MavlinkSettingsModel::try_fetch_all_parameters()
 
 std::optional<int> MavlinkSettingsModel::try_fetch_param_int_impl(const QString param_id)
 {
-    qDebug()<<"try_fetch_param_implementation:"<<param_id;
+    qDebug()<<"try_fetch_param_int_impl:"<<param_id;
     if(param_client){
         const auto result=param_client->get_param_int(param_id.toStdString());
         if(result.first==mavsdk::Param::Result::Success){
@@ -117,6 +115,41 @@ std::optional<int> MavlinkSettingsModel::try_fetch_param_int_impl(const QString 
         }
     }
     return std::nullopt;
+}
+
+std::optional<std::string> MavlinkSettingsModel::try_fetch_param_string_impl(const QString param_id)
+{
+    qDebug()<<"try_fetch_param_string_impl:"<<param_id;
+    if(param_client){
+        const auto result=param_client->get_param_custom(param_id.toStdString());
+        if(result.first==mavsdk::Param::Result::Success){
+             auto new_value=result.second;
+             return new_value;
+        }
+    }
+    return std::nullopt;
+}
+
+bool MavlinkSettingsModel::try_update_param_int_impl(const QString param_id, int value)
+{
+    if(param_client){
+        const auto result=param_client->set_param_int(param_id.toStdString(),value);
+        if(result==mavsdk::Param::Result::Success){
+            return true;
+        }
+    }
+    return false;
+}
+
+bool MavlinkSettingsModel::try_update_param_string_impl(const QString param_id, std::string value)
+{
+    if(param_client){
+        const auto result=param_client->set_param_custom(param_id.toStdString(),value);
+        if(result==mavsdk::Param::Result::Success){
+            return true;
+        }
+    }
+    return false;
 }
 
 bool MavlinkSettingsModel::try_fetch_parameter(QString param_id)
@@ -153,7 +186,7 @@ bool MavlinkSettingsModel::try_update_parameter(const QString param_id,QVariant 
                         std::stringstream ss;
                         ss<<"Updating "<<param_id.toStdString()<<" to "<<value_int<<" failed: "<<result;
                         qDebug()<<QString(ss.str().c_str());
-                        makePopupMessage(ss.str().c_str());
+                        workaround::makePopupMessage(ss.str().c_str());
                         return false;
                     }
                 }
@@ -173,7 +206,7 @@ bool MavlinkSettingsModel::try_update_parameter(const QString param_id,QVariant 
             std::stringstream ss;
             ss<<"Updating "<<param_id.toStdString()<<" to "<<value_int<<" failed: "<<result;
             qDebug()<<QString(ss.str().c_str());
-            makePopupMessage(ss.str().c_str());
+            workaround::makePopupMessage(ss.str().c_str());
             return false;
         }
     }
@@ -197,9 +230,14 @@ QVariant MavlinkSettingsModel::data(const QModelIndex &index, int role) const
     if ( role == UniqueIdRole ){
         return data.unique_id;
     }
-    else if ( role == ValueRole )
-        return data.value;
-    else if (role ==ExtraRole){
+    else if ( role == ValueRole ){
+        if(std::holds_alternative<int32_t>(data.value)){
+            return std::get<int32_t>(data.value);
+        }
+        // We have either string or int, but assert to make it clear to someone reading the code
+        assert(std::holds_alternative<std::string>(data.value));
+        return QString(std::get<std::string>(data.value).c_str());
+   } else if (role ==ExtraRole){
         if(data.unique_id=="WB_TX_POWER_MW"){
             //return true;
             return "yes";
@@ -236,7 +274,12 @@ void MavlinkSettingsModel::removeData(int row)
 // hacky, temporary
 static void hacky_set_video_codec_in_qopenhd(const MavlinkSettingsModel::SettingData& data){
     if(data.unique_id=="VIDEO_CODEC"){
-        const int video_codec_in_openhd=data.value;
+        // Check if the param is still an int (should always be the case, but we don't want to crash in c++)
+        if(!std::holds_alternative<int32_t>(data.value)){
+            qDebug()<<"ERROR video codec setting messed up, fixme";
+            return;
+        }
+        const int video_codec_in_openhd=std::get<int32_t>(data.value);
         AOHDSystem::instanceAir().set_curr_set_video_codec_int(video_codec_in_openhd);
         if(video_codec_in_openhd==0 || video_codec_in_openhd==1 || video_codec_in_openhd==2){
             QSettings settings;
@@ -245,7 +288,7 @@ static void hacky_set_video_codec_in_qopenhd(const MavlinkSettingsModel::Setting
                 // video codec mismatch, update the QOpenHD settings
                 settings.setValue("selectedVideoCodecPrimary",video_codec_in_openhd);
                 qDebug()<<"Changed video codec in QOpenHD to "<<video_codec_in_openhd;
-                makePopupMessage("Changed VideoCodec in QOpenHD");
+                workaround::makePopupMessage("Changed VideoCodec in QOpenHD");
             }
         }
     }
@@ -253,7 +296,11 @@ static void hacky_set_video_codec_in_qopenhd(const MavlinkSettingsModel::Setting
 
 static void hacky_set_curr_selected_video_bitrate_in_qopenhd(const MavlinkSettingsModel::SettingData& data){
     if(data.unique_id=="V_BITRATE_MBITS"){
-        AOHDSystem::instanceAir().set_curr_set_video_bitrate_int(data.value);
+        if(!std::holds_alternative<int32_t>(data.value)){
+            qDebug()<<"ERROR video_bitrate setting messed up, fixme";
+            return;
+        }
+        AOHDSystem::instanceAir().set_curr_set_video_bitrate_int(std::get<int32_t>(data.value));
     }
 }
 
