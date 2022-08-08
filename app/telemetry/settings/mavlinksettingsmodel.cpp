@@ -4,7 +4,7 @@
 //temporary
 #include "../../openhd_systems/aohdsystem.h"
 
-#include "MessagePopup.h"
+#include "../../util/WorkaroundMessageBox.h"
 #include <QSettings>
 #include <QVariant>
 

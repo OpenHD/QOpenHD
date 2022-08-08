@@ -3,7 +3,7 @@
 #include "../../openhd_systems/aohdsystem.h"
 #include "mavlinksettingsmodel.h"
 
-#include "MessagePopup.h"
+#include "../../util/WorkaroundMessageBox.h"
 #include <sstream>
 
 
