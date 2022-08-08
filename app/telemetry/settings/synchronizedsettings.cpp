@@ -19,21 +19,36 @@ SynchronizedSettings& SynchronizedSettings::instance()
     return tmp;
 }
 
-int SynchronizedSettings::get_param_int_air_and_ground_value(QString param_id)
-{
-    qDebug()<<"get_param_air_and_ground_value "<<param_id;
-    auto value_ground=MavlinkSettingsModel::instanceGround().try_fetch_param_int_impl(param_id);
-    if(value_ground.has_value()){
-        return value_ground.value();
-    }
-    return -1;
-}
-
 static void makePopupMessage(QString message){
     QMessageBox msgBox;
     msgBox.setText(message);
     msgBox.exec();
 }
+
+int SynchronizedSettings::get_param_int_air_and_ground_value(QString param_id)
+{
+    qDebug()<<"get_param_air_and_ground_value "<<param_id;
+
+    const auto value_ground_opt=MavlinkSettingsModel::instanceGround().try_fetch_param_int_impl(param_id);
+    if(!value_ground_opt.has_value()){
+        makePopupMessage("Cannot fetch param from ground");
+        return -1;
+    }
+    const auto value_ground=value_ground_opt.value();
+    // Now that we have the value from the ground, fetch the value from the air
+    const auto value_air_opt=MavlinkSettingsModel::instanceAir().try_fetch_param_int_impl(param_id);
+    if(!value_air_opt.has_value()){
+        makePopupMessage("Cannot fetch param from air");
+        return value_ground;
+    }
+    const auto value_air=value_air_opt.value();
+    if(value_air!=value_ground){
+         makePopupMessage("Air and ground are out of sync - this should never happen. Please report");
+         return value_ground;
+    }
+    return value_ground;
+}
+
 
 void SynchronizedSettings::change_param_air_and_ground(QString param_id,int value)
 {
