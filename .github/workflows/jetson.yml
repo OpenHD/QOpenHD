@@ -37,7 +37,7 @@ jobs:
     - name: Push
       id: push
       uses: cloudsmith-io/action@master
-        with:
+      with:
         api-key: ${{ secrets.CLOUDSMITH_API_KEY }}
         command: "push"
         format: "deb"
