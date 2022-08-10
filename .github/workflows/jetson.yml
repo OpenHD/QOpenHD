@@ -1,8 +1,10 @@
 name: Build Jetson Selfhosted
 
 
-on: [push]
-
+on:
+  push:
+    branches: [ master, "2.0", "2.1-milestones" ]
+    
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
   BUILD_TYPE: Release
@@ -21,9 +23,9 @@ jobs:
       run: |
         sudo apt update
         sudo apt install -y curl
-        rm -Rf /etc/apt/sources.list.d/openhd*
-        apt-get clean
-        rm -rf /var/lib/apt/lists/*
+        sudo rm -Rf /etc/apt/sources.list.d/openhd*
+        sudo apt-get clean
+        sudo rm -rf /var/lib/apt/lists/*
         curl -1sLf \
         'https://dl.cloudsmith.io/public/openhd/openhd-2-2-evo/setup.deb.sh' \
         | sudo -E bash
