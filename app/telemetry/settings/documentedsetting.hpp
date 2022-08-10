@@ -13,9 +13,10 @@
 // Int: We can either specify a range (min and max value) or we can additionally make this an enum
 
 // Int parameters can have a range ([min_value,max_value] or even refer to an enum -
-// in which case they have a range and also expose to convert an int value (e.g. a value that
-// is not verbose to the user) into a string that is verbose to the user.
-// E.g. For video, 0==h264, 1==h265 and 2==mjpeg.
+// in which case they have a range and also expose the functionality to convert an int value (e.g. a value that
+// is not verbose to the user) into a string that is verbose to the user, or the other way around.
+// E.g. For video, 0==h264, 1==h265 and 2==mjpeg. => like a enum ;)
+// (but we cannot have compile time safety int this case, because the UI is in .qml)
 // We also commonly use a enum if we have an int that has a range of [0,1] -> aka disable / enable
 class ImprovedIntSetting{
 public:
