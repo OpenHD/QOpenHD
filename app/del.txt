@@ -20,3 +20,48 @@ function update_combobox(_combobox,_value){
         _combobox.currentIndex=_index;
     }
 }
+
+/*int row=0;
+bool found=false;
+for(const auto& parameter: m_data){
+    if(parameter.unique_id==param_id){
+        found=true;
+        // we got this parameter
+        if(param_client){
+            if(value.canConvert(QVariant::Type::Int)){
+                int value_int=value.toInt();
+                qDebug()<<"Set"<<param_id<<" to "<<value_int;
+                const auto result=param_client->set_param_int(param_id.toStdString(),value_int);
+                if(result==mavsdk::Param::Result::Success){
+                    MavlinkSettingsModel::SettingData tmp{param_id,value_int};
+                    updateData(std::nullopt,tmp);
+                    return true;
+                }else{
+                    std::stringstream ss;
+                    ss<<"Updating "<<param_id.toStdString()<<" to "<<value_int<<" failed: "<<result;
+                    qDebug()<<QString(ss.str().c_str());
+                    workaround::makePopupMessage(ss.str().c_str());
+                    return false;
+                }
+            }
+        }
+    }
+}
+return false;*/
+if(value.canConvert(QVariant::Type::Int)){
+    const int value_int=value.toInt();
+    qDebug()<<"Set"<<param_id<<" to "<<value_int;
+    const auto result=param_client->set_param_int(param_id.toStdString(),value_int);
+    if(result==mavsdk::Param::Result::Success){
+        MavlinkSettingsModel::SettingData tmp{param_id,value_int};
+        updateData(std::nullopt,tmp);
+        return true;
+    }else{
+        std::stringstream ss;
+        ss<<"Updating "<<param_id.toStdString()<<" to "<<value_int<<" failed: "<<result;
+        qDebug()<<QString(ss.str().c_str());
+        workaround::makePopupMessage(ss.str().c_str());
+        return false;
+    }
+}
+return false;

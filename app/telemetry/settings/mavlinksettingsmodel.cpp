@@ -104,9 +104,9 @@ bool MavlinkSettingsModel::try_fetch_all_parameters()
     return false;
 }
 
-std::optional<int> MavlinkSettingsModel::try_fetch_param_int_impl(const QString param_id)
+std::optional<int> MavlinkSettingsModel::try_get_param_int_impl(const QString param_id)
 {
-    qDebug()<<"try_fetch_param_int_impl:"<<param_id;
+    qDebug()<<"try_get_param_int_impl:"<<param_id;
     if(param_client){
         const auto result=param_client->get_param_int(param_id.toStdString());
         if(result.first==mavsdk::Param::Result::Success){
@@ -117,9 +117,9 @@ std::optional<int> MavlinkSettingsModel::try_fetch_param_int_impl(const QString 
     return std::nullopt;
 }
 
-std::optional<std::string> MavlinkSettingsModel::try_fetch_param_string_impl(const QString param_id)
+std::optional<std::string> MavlinkSettingsModel::try_get_param_string_impl(const QString param_id)
 {
-    qDebug()<<"try_fetch_param_string_impl:"<<param_id;
+    qDebug()<<"try_get_param_string_impl:"<<param_id;
     if(param_client){
         const auto result=param_client->get_param_custom(param_id.toStdString());
         if(result.first==mavsdk::Param::Result::Success){
@@ -130,7 +130,7 @@ std::optional<std::string> MavlinkSettingsModel::try_fetch_param_string_impl(con
     return std::nullopt;
 }
 
-bool MavlinkSettingsModel::try_update_param_int_impl(const QString param_id, int value)
+bool MavlinkSettingsModel::try_set_param_int_impl(const QString param_id, int value)
 {
     if(param_client){
         const auto result=param_client->set_param_int(param_id.toStdString(),value);
@@ -141,10 +141,10 @@ bool MavlinkSettingsModel::try_update_param_int_impl(const QString param_id, int
     return false;
 }
 
-bool MavlinkSettingsModel::try_update_param_string_impl(const QString param_id, std::string value)
+bool MavlinkSettingsModel::try_set_param_string_impl(const QString param_id,QString value)
 {
     if(param_client){
-        const auto result=param_client->set_param_custom(param_id.toStdString(),value);
+        const auto result=param_client->set_param_custom(param_id.toStdString(),value.toStdString());
         if(result==mavsdk::Param::Result::Success){
             return true;
         }
@@ -152,10 +152,21 @@ bool MavlinkSettingsModel::try_update_param_string_impl(const QString param_id, 
     return false;
 }
 
-bool MavlinkSettingsModel::try_fetch_parameter(QString param_id)
+bool MavlinkSettingsModel::try_refetch_parameter_int(QString param_id)
 {
     qDebug()<<"try_fetch_parameter:"<<param_id;
-    auto new_value=try_fetch_param_int_impl(param_id);
+    auto new_value=try_get_param_int_impl(param_id);
+    if(new_value.has_value()){
+        MavlinkSettingsModel::SettingData tmp{param_id,new_value.value()};
+        updateData(std::nullopt,tmp);
+        return true;
+    }
+    return false;
+}
+bool MavlinkSettingsModel::try_refetch_parameter_string(QString param_id)
+{
+    qDebug()<<"try_fetch_parameter:"<<param_id;
+    auto new_value=try_get_param_string_impl(param_id);
     if(new_value.has_value()){
         MavlinkSettingsModel::SettingData tmp{param_id,new_value.value()};
         updateData(std::nullopt,tmp);
@@ -164,51 +175,27 @@ bool MavlinkSettingsModel::try_fetch_parameter(QString param_id)
     return false;
 }
 
-bool MavlinkSettingsModel::try_update_parameter(const QString param_id,QVariant value)
+
+bool MavlinkSettingsModel::try_update_parameter_int(const QString param_id,int value)
 {
-    qDebug()<<"try_update_parameter:"<<param_id<<","<<value;
-    /*int row=0;
-    bool found=false;
-    for(const auto& parameter: m_data){
-        if(parameter.unique_id==param_id){
-            found=true;
-            // we got this parameter
-            if(param_client){
-                if(value.canConvert(QVariant::Type::Int)){
-                    int value_int=value.toInt();
-                    qDebug()<<"Set"<<param_id<<" to "<<value_int;
-                    const auto result=param_client->set_param_int(param_id.toStdString(),value_int);
-                    if(result==mavsdk::Param::Result::Success){
-                        MavlinkSettingsModel::SettingData tmp{param_id,value_int};
-                        updateData(std::nullopt,tmp);
-                        return true;
-                    }else{
-                        std::stringstream ss;
-                        ss<<"Updating "<<param_id.toStdString()<<" to "<<value_int<<" failed: "<<result;
-                        qDebug()<<QString(ss.str().c_str());
-                        workaround::makePopupMessage(ss.str().c_str());
-                        return false;
-                    }
-                }
-            }
-        }
+    qDebug()<<"try_update_parameter_int:"<<param_id<<","<<value;
+    const auto result=try_set_param_int_impl(param_id,value);
+    if(result){
+        MavlinkSettingsModel::SettingData tmp{param_id,value};
+        updateData(std::nullopt,tmp);
+        return true;
     }
-    return false;*/
-    if(value.canConvert(QVariant::Type::Int)){
-        const int value_int=value.toInt();
-        qDebug()<<"Set"<<param_id<<" to "<<value_int;
-        const auto result=param_client->set_param_int(param_id.toStdString(),value_int);
-        if(result==mavsdk::Param::Result::Success){
-            MavlinkSettingsModel::SettingData tmp{param_id,value_int};
-            updateData(std::nullopt,tmp);
-            return true;
-        }else{
-            std::stringstream ss;
-            ss<<"Updating "<<param_id.toStdString()<<" to "<<value_int<<" failed: "<<result;
-            qDebug()<<QString(ss.str().c_str());
-            workaround::makePopupMessage(ss.str().c_str());
-            return false;
-        }
+    return false;
+}
+
+bool MavlinkSettingsModel::try_update_parameter_string(const QString param_id,QString value)
+{
+    qDebug()<<"try_update_parameter_string:"<<param_id<<","<<value;
+    const auto result=try_set_param_string_impl(param_id,value);
+    if(result){
+        MavlinkSettingsModel::SettingData tmp{param_id,value.toStdString()};
+        updateData(std::nullopt,tmp);
+        return true;
     }
     return false;
 }
@@ -237,14 +224,22 @@ QVariant MavlinkSettingsModel::data(const QModelIndex &index, int role) const
         // We have either string or int, but assert to make it clear to someone reading the code
         assert(std::holds_alternative<std::string>(data.value));
         return QString(std::get<std::string>(data.value).c_str());
-   } else if (role ==ExtraRole){
-        if(data.unique_id=="WB_TX_POWER_MW"){
-            //return true;
-            return "yes";
-        }else{
-            //return false;
-            return "no";
+   } else if (role==ExtraValueRole){
+        if(std::holds_alternative<int>(data.value)){
+            auto value=std::get<int>(data.value);
+            std::stringstream ss;
+            ss<<"{"<<value<<"}";
+            return QString(ss.str().c_str());
         }
+        auto value=std::get<std::string>(data.value);
+        return QString(value.c_str());
+    } else if (role==ValueTypeRole){
+        if(std::holds_alternative<int>(data.value)){
+            return 0;
+        }
+        return 1;
+    } else if(role == ShortDescriptionRole){
+        return "?";
     }
     else
         return QVariant();
@@ -255,7 +250,9 @@ QHash<int, QByteArray> MavlinkSettingsModel::roleNames() const
     static QHash<int, QByteArray> mapping {
         {UniqueIdRole, "unique_id"},
         {ValueRole, "value"},
-        {ExtraRole, "extra"}
+        {ExtraValueRole, "extraValue"},
+        {ValueTypeRole,"valueType"},
+        {ShortDescriptionRole,"shortDescription"}
     };
     return mapping;
 }
@@ -316,6 +313,7 @@ void MavlinkSettingsModel::updateData(std::optional<int> row_opt, SettingData ne
     if(row_opt.has_value()){
         row=row_opt.value();
     }else{
+        // We need to find the row index for the given string id
         for(int i=0;i<m_data.size();i++){
             if(m_data.at(i).unique_id==new_data.unique_id){
                 row=i;
@@ -323,8 +321,10 @@ void MavlinkSettingsModel::updateData(std::optional<int> row_opt, SettingData ne
             }
         }
     }
-    if (row < 0 || row >= m_data.count())
-        return;
+    if (row < 0 || row >= m_data.count()){
+         // Param does not exst
+         return;
+    }
     if(m_data.at(row).unique_id!=new_data.unique_id){
         qDebug()<<"Argh";
         return;

@@ -47,7 +47,7 @@ Rectangle {
                 }
                 Button {
                     text: "GET"
-                    onClicked: _airCameraSettingsModel.try_fetch_parameter(model.unique_id)
+                    onClicked: _airCameraSettingsModel.try_refetch_parameter_int(model.unique_id)
                 }
                 TextInput {
                     id: xTextInput
@@ -57,7 +57,7 @@ Rectangle {
                 }
                 Button {
                     text: "SET"
-                    onClicked: _airCameraSettingsModel.try_update_parameter( model.unique_id,xTextInput.text)
+                    onClicked: _airCameraSettingsModel.try_parse_and_update_parameter_int(model.unique_id,xTextInput.text)
                 }
             }
         }

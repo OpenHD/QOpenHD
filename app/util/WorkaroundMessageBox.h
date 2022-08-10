@@ -22,6 +22,10 @@ class MessageBox: public QObject{
 public:
     explicit MessageBox(QObject *parent = nullptr);
     static MessageBox& instance();
+    Q_INVOKABLE void set_text_and_show(QString text){
+        set_text(text);
+        set_show_to_user(true);
+    }
 public:
     Q_PROPERTY(QString text MEMBER m_text WRITE set_text NOTIFY text_changed)
     void set_text(QString text);
@@ -47,8 +51,7 @@ private:
 }*/
 // NOTE: doesn't check if there is already a message being displayed right now
 static void makePopupMessage(QString message){
-    MessageBox::instance().set_text(message);
-    MessageBox::instance().set_show_to_user(true);
+    MessageBox::instance().set_text_and_show(message);
 }
 
 }

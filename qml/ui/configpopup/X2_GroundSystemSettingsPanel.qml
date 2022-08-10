@@ -25,6 +25,8 @@ Rectangle {
     property int rowHeight: 64
     property int elementHeight: 48
 
+    property int paramEditorWidth: 300
+
 
     Component {
         id: delegateGroundPiSettingsValue
@@ -47,8 +49,14 @@ Rectangle {
                     font.bold: true
                 }
                 Button {
+                    text: "EDIT"
+                    onClicked: {
+                        parameterEditor.setup_for_parameter(model.unique_id,model)
+                    }
+                }
+                /*Button {
                     text: "GET"
-                    onClicked: _groundPiSettingsModel.try_fetch_parameter(model.unique_id)
+                    onClicked: _groundPiSettingsModel.try_refetch_parameter_int(model.unique_id)
                 }
                 TextInput {
                     id: xTextInput
@@ -58,29 +66,31 @@ Rectangle {
                 }
                 Button {
                     text: "SET"
-                    onClicked: _groundPiSettingsModel.try_update_parameter( model.unique_id,xTextInput.text)
-                }
+                    onClicked: _groundPiSettingsModel.try_parse_and_update_parameter_int( model.unique_id,xTextInput.text)
+                }*/
             }
         }
     }
 
-    ColumnLayout {
-        anchors.fill: parent
 
-        /*Label{
-            width:200
-            height:64
-            text: "Not found yet"
-            visible: _groundPiSettingsModel.rowCount() > 0
-        }*/
+
+
+    // Left row: multiple colums of param value
+    ColumnLayout {
+        width: parent.width - paramEditorWidth
+        height:parent.height
 
         Button {
+            width: 100
             height: 48
             id: fetchAllButtonId
             text:"FetchAll Ground"
             enabled: _ohdSystemGround.is_alive
             onClicked: {
                 var result=_groundPiSettingsModel.try_fetch_all_parameters()
+                if(!result){
+                     _messageBoxInstance.set_text_and_show("Fetch all failed, please try again")
+                }
             }
         }
         Rectangle{
@@ -99,4 +109,12 @@ Rectangle {
             }
         }
     }
+
+    // Right row: the parameter edit element
+    ParameterEditor{
+        id: parameterEditor
+    }
+
+
+
 }
