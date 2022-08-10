@@ -5,6 +5,7 @@
 #include "../../openhd_systems/aohdsystem.h"
 
 #include "../../util/WorkaroundMessageBox.h"
+#include "documentedsetting.hpp"
 #include <QSettings>
 #include <QVariant>
 
@@ -54,6 +55,28 @@ bool MavlinkSettingsModel::is_param_whitelisted(const std::string param_id)
     }
     return false;
 }
+
+static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string param_id){
+    std::map<std::string,ImprovedIntSetting> map_improved_params;
+    map_improved_params["TEST_INT_0"]=ImprovedIntSetting::createEnumEnableDisable();
+
+    if(map_improved_params.find(param_id)!=map_improved_params.end()){
+        return map_improved_params[param_id];
+    }
+    return std::nullopt;
+}
+
+static std::optional<std::string> int_param_to_enum_string_if_known(const std::string param_id,int value){
+    const auto improved_opt=get_improved_for_int(param_id);
+    if(improved_opt.has_value()){
+        const auto& improved=improved_opt.value();
+        if(improved.has_enum_mapping()){
+            return improved.enum_value_to_string(value);
+        }
+    }
+    return std::nullopt;
+}
+
 
 MavlinkSettingsModel::MavlinkSettingsModel(uint8_t sys_id,uint8_t comp_id,QObject *parent)
     : QAbstractListModel(parent),_sys_id(sys_id),_comp_id(comp_id)
@@ -227,6 +250,10 @@ QVariant MavlinkSettingsModel::data(const QModelIndex &index, int role) const
    } else if (role==ExtraValueRole){
         if(std::holds_alternative<int>(data.value)){
             auto value=std::get<int>(data.value);
+            auto as_enum=int_param_to_enum_string_if_known(data.unique_id.toStdString(),value);
+            if(as_enum.has_value()){
+                return QString(as_enum.value().c_str());
+            }
             std::stringstream ss;
             ss<<"{"<<value<<"}";
             return QString(ss.str().c_str());

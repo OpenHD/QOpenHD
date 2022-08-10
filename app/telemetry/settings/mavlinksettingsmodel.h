@@ -72,7 +72,10 @@ public:
         // The value of this param, can be int or std::string (returns qint or qstring)
         ValueRole,
         // if possible, convert the internal value (e.g. a integer that responds to an enum) to a more readable
-        // value, e.g. the string for this enum. Always returns a qstring
+        // value, e.g. the string for this enum.
+        // In case the param is an int and we don't have enum mapping -> return the int as an string
+        // In case the param is an int and we do have enum mapping -> convert the int to the enum string, then return
+        // In case the param is an string, just return the string
         ExtraValueRole,
         // The internally stored type. 0==int, 1==std::string
         ValueTypeRole,

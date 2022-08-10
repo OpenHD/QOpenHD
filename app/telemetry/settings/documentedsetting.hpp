@@ -39,23 +39,25 @@ public:
     ImprovedIntSetting(int min_value_int,int max_value_int,std::vector<std::string> values_enum):
         min_value_int(min_value_int),max_value_int(max_value_int),values_enum(values_enum){
     }
-    const int min_value_int;
-    const int max_value_int;
-    bool is_in_range(int value){
-        return value>=min_value_int && value <=max_value_int;
-    }
+    ImprovedIntSetting()=default;
+   int min_value_int;
+   int max_value_int;
    // wrapped int enum
-   const std::vector<std::string> values_enum;
+   std::vector<std::string> values_enum;
+   //
+   bool is_in_range(int value)const{
+       return value>=min_value_int && value <=max_value_int;
+   }
    // return true if we can do enum mapping for this int (more verbose to the user)
-   bool has_enum_mapping(){
+   bool has_enum_mapping()const{
        return !values_enum.empty();
    }
    // enum mapping, returns "unknwon" if value is not in range.
-   std::string enum_value_to_string(int value){
+   std::string enum_value_to_string(int value)const{
        if(!is_in_range(value))return "unknown";
        return values_enum.at(value);
    }
-   int enum_value_from_string(std::string value){
+   int enum_value_from_string(std::string value)const{
        for(int i=0;i<values_enum.size();i++){
            if(values_enum.at(i)==value)return i;
        }

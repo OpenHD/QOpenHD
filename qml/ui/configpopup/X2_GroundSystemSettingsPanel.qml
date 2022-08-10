@@ -45,7 +45,8 @@ Rectangle {
                 }
                 Label {
                     width:100
-                    text: "Val: "+model.value
+                    //text: "Val: "+model.value
+                    text: "Val: "+model.extraValue
                     font.bold: true
                 }
                 Button {

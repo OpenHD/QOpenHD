@@ -39,6 +39,9 @@ Rectangle{
     property int paramValueType: 0 // 0==int, 1==string
 
     property int paramValueInt: 0
+    // only for int param
+    property string paramExtraValueInt: "0"
+
     property string paramValueString: "ValueString"
     property string shortParamDescription: "?"
 
@@ -70,8 +73,10 @@ Rectangle{
         shortParamDescription=model.shortDescription
         if(paramValueType==0){
             paramValueInt=model.value
+            paramExtraValueInt= model.extraValue
         }else{
             paramValueString=model.value
+            paramExtraValueInt= "Do not use me !!!!"
         }
         // Every time the user wants to enable the "advanced", he needs to re-do it for every param,
         // since advanced only makes sense in the rarest case(s), e.g. when QOpenHD and OpenHD are out of sync.
