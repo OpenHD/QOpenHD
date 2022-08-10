@@ -58,7 +58,7 @@ public:
        for(int i=0;i<values_enum.size();i++){
            if(values_enum.at(i)==value)return i;
        }
-       qDebug()<<"ImprovedIntSetting::enum_value_to_string not found, return 0"
+       qDebug()<<"ImprovedIntSetting::enum_value_to_string not found, return 0";
        return 0;
    }
 };
