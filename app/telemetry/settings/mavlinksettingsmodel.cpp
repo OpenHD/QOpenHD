@@ -59,6 +59,14 @@ bool MavlinkSettingsModel::is_param_whitelisted(const std::string param_id)
 static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string param_id){
     std::map<std::string,ImprovedIntSetting> map_improved_params;
     map_improved_params["TEST_INT_0"]=ImprovedIntSetting::createEnumEnableDisable();
+    {
+        std::vector<std::string> values{};
+        values.push_back("enum0");
+        values.push_back("enum1");
+        values.push_back("enum2");
+        values.push_back("enum3");
+        map_improved_params["TEST_INT_1"]=ImprovedIntSetting::createEnum(values);
+    }
 
     if(map_improved_params.find(param_id)!=map_improved_params.end()){
         return map_improved_params[param_id];
