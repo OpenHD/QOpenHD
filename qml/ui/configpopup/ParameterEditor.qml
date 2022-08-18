@@ -38,11 +38,16 @@ Rectangle{
 
     property int paramValueType: 0 // 0==int, 1==string
 
+    // These are only for int params, and also parially optional (e.g not every in param is range checked usw)
+    // int param begin -----------------------------
     property int paramValueInt: 0
-    // only for int param
     property string paramExtraValueInt: "0"
+    // int param end   -----------------------------
 
+    // only for string params begin
     property string paramValueString: "ValueString"
+    // only for string params end
+
     property string shortParamDescription: "?"
 
     // disable some checking we do for the user, should be used only in really rare cases
@@ -72,9 +77,12 @@ Rectangle{
          paramValueType=model.valueType
         shortParamDescription=model.shortDescription
         if(paramValueType==0){
+            // This is an int param
             paramValueInt=model.value
             paramExtraValueInt= model.extraValue
+            paramValueString="Do not use me !!!"
         }else{
+            // This is a string param
             paramValueString=model.value
             paramExtraValueInt= "Do not use me !!!!"
         }
