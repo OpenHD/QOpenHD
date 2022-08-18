@@ -30,26 +30,6 @@ ApplicationWindow {
 
     property bool initialised: false
 
-    function default_mavlink_sysid() {
-        if (IsRaspPi) {
-            return 220;
-        }
-        if (IsMac) {
-            return 221;
-        }
-        if (IsiOS) {
-            return 222;
-        }
-        if (IsAndroid) {
-            return 223;
-        }
-        if (IsWindows) {
-            return 224;
-        }
-        if (IsDesktopLinux) {
-            return 225;
-        }
-    }
 
     ColorPicker {
         id: colorPicker

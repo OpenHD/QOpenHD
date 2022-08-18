@@ -2,6 +2,7 @@ import QtQuick 2.12
 import Qt.labs.settings 1.0
 
 
+
 Settings {
     id: settings
 
@@ -14,7 +15,7 @@ Settings {
     property int lte_video_port: 8000
     property int battery_cells: 3
 
-    property int mavlink_sysid: default_mavlink_sysid()
+    property int mavlink_sysid: 225
     property int fc_mavlink_sysid: 1
     property bool filter_mavlink_telemetry: false
 
