@@ -318,7 +318,8 @@ void GstVideoStream::stopVideoSafe() {
 
 void GstVideoStream::timerCallback() {
     if(m_videoOutputWindow==nullptr){
-        qDebug()<<"no window, cannot start video";
+        // Most likely the qmlglsink is not found by qt - install gstreamer with qmlglsink enabled)
+        qDebug()<<"no qmlglsink window, cannot start video";
         return;
     }
     assert(m_videoOutputWindow!=nullptr);
