@@ -66,7 +66,9 @@ QT += quick
 # Same for this one, install via apt-get
 # https://doc.qt.io/qt-5/qgeocoordinate.html
 # do not confuse this one with the external library from lib/GeographicLib-1.50
-QT += positioning
+# Consti10 18.08.22 - can be removed, since I got rid of it as a dependency. However,
+# we might have to reintroduce it for the map feature - if possible, this should be avoided though.
+# QT += positioning
 
 QT += concurrent opengl gui
 
