@@ -5,7 +5,7 @@
 #include <QColor>
 
 //TODO remove me
-#include "../telemetry/qopenhdmavlinkhelper.hpp"
+//#include "../telemetry/qopenhdmavlinkhelper.hpp"
 
 /**
  * Note: This is for the "Log" list UI element, NOT for the HUD
