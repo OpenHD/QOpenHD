@@ -4,7 +4,6 @@
 #include <QObject>
 #include <QAbstractListModel>
 #include <map>
-#include <optional>
 
 #include <mavsdk/mavsdk.h>
 #include <mavsdk/plugins/param/param.h>

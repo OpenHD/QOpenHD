@@ -9,7 +9,6 @@
 #include "../telemetry/openhd_defines.hpp"
 #include <array>
 //
-#include <optional>
 #include <mavsdk/mavsdk.h>
 #include <mavsdk/plugins/action/action.h>
 
