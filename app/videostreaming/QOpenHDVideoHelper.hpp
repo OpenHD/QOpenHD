@@ -7,6 +7,7 @@
 #include <qquickwindow.h>
 
 #include <sstream>
+#include <fstream>
 
 namespace QOpenHDVideoHelper{
 
@@ -81,7 +82,24 @@ static VideoStreamConfig read_from_settings(){
     _videoStreamConfig.dev_jetson_force_omx=settings.value("dev_jetson_force_omx",false).toBool();
     //
     _videoStreamConfig.dev_enable_custom_pipeline=settings.value("dev_enable_custom_pipeline",false).toBool();
-    _videoStreamConfig.dev_custom_pipeline=settings.value("dev_custom_pipeline","").toString().toStdString();
+    // QML text input sucks, so we read a file. Not ideal, but for testing only anyways
+    {
+        _videoStreamConfig.dev_custom_pipeline="";
+        if(_videoStreamConfig.dev_enable_custom_pipeline){
+            std::ifstream file("/usr/local/share/qopenhd/custom_pipeline.txt");
+            if(file.is_open()){
+                std::stringstream buffer;
+                buffer << file.rdbuf();
+                _videoStreamConfig.dev_custom_pipeline=buffer.str();
+                //file.open(QIODevice::ReadWrite | QIODevice::Text);
+                //QString data =  file.readAll();
+                //_videoStreamConfig.dev_custom_pipeline=data.toStdString();
+            }else{
+                qDebug()<<"dev_enable_custom_pipeline but no file";
+            }
+        }
+    }
+    //_videoStreamConfig.dev_custom_pipeline=settings.value("dev_custom_pipeline","").toString().toStdString();
     return _videoStreamConfig;
 }
 

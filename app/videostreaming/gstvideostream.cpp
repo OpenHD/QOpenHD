@@ -65,7 +65,7 @@ static std::string gst_create_always_software_decoder(const QOpenHDVideoHelper::
 }
 
 static std::string gst_create_jeston_test(const QOpenHDVideoHelper::VideoCodec& videoCodec){
-    /*switch(videoCodec){
+    switch(videoCodec){
         case QOpenHDVideoHelper::VideoCodecH264:{
              return "omxh264dec ! ";
         }break;
@@ -80,8 +80,8 @@ static std::string gst_create_jeston_test(const QOpenHDVideoHelper::VideoCodec& 
         default:
         assert(true);
         return "";
-   }*/
-    return "nvv4l2decoder ! ";
+   }
+   //return "nvv4l2decoder ! ";
 }
 
 static std::string gst_create_video_decoder(const QOpenHDVideoHelper::VideoCodec& videoCodec,bool force_sw,bool dev_jetson){
