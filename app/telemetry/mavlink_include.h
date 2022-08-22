@@ -4,6 +4,7 @@
 // if not mavsdk
 //#include <openhd/mavlink.h>
 // We get mavlink from mavsdk
+#include <optional>
 #include <mavsdk/mavsdk.h>
 #include <mavsdk/plugins/mavlink_passthrough/mavlink_passthrough.h>
 

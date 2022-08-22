@@ -4,6 +4,7 @@
 #include <QElapsedTimer>
 #include <QObject>
 #include <QTimer>
+#include <optional>
 #include <mavsdk/mavsdk.h>
 #include <mavsdk/plugins/action/action.h>
 #include <mavsdk/plugins/telemetry/telemetry.h>
