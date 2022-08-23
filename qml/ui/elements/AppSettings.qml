@@ -39,9 +39,9 @@ Settings {
     property bool enable_lte_video: false
     property bool hide_watermark: true
     property bool dev_jetson_force_omx: false
-
+    // When this one is set to true, we read a file (where you can then write your custom rx gstreamer pipeline
+    // that ends with qmlglsink )
     property bool dev_enable_custom_pipeline: false
-    property string dev_custom_pipeline: ""
 
     property bool enable_speech: true
     property bool enable_imperial: false

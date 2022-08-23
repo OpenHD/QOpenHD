@@ -65,7 +65,7 @@ static std::string gst_create_always_software_decoder(const QOpenHDVideoHelper::
 }
 
 static std::string gst_create_jeston_test(const QOpenHDVideoHelper::VideoCodec& videoCodec){
-    switch(videoCodec){
+    /*switch(videoCodec){
         case QOpenHDVideoHelper::VideoCodecH264:{
              return "omxh264dec ! ";
         }break;
@@ -80,8 +80,8 @@ static std::string gst_create_jeston_test(const QOpenHDVideoHelper::VideoCodec& 
         default:
         assert(true);
         return "";
-   }
-   //return "nvv4l2decoder ! ";
+   }*/
+   return "nvv4l2decoder ! ";
 }
 
 static std::string gst_create_video_decoder(const QOpenHDVideoHelper::VideoCodec& videoCodec,bool force_sw,bool dev_jetson){
@@ -137,10 +137,13 @@ static std::string constructGstreamerPipeline(const QOpenHDVideoHelper::VideoStr
     ss<<gst_create_video_decoder(config.video_codec,config.enable_software_video_decoder,config.dev_jetson_force_omx);
 
     //ss<<" videoconvert n-threads=2 ! queue ! video/x-raw,format=RGBA !";
-    ss << " queue ! ";
-    ss << " glupload ! glcolorconvert !";
-    ss << " qmlglsink name=qmlglsink sync=false";
-
+    if(config.dev_jetson_force_omx){
+        ss<<"nvvidconv ! glupload  ! qmlglsink name=qmlglsink sync=false";
+    }else{
+        ss << " queue ! ";
+        ss << " glupload ! glcolorconvert !";
+        ss << " qmlglsink name=qmlglsink sync=false";
+    }
     return ss.str();
 }
 

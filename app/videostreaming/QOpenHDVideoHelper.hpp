@@ -91,9 +91,6 @@ static VideoStreamConfig read_from_settings(){
                 std::stringstream buffer;
                 buffer << file.rdbuf();
                 _videoStreamConfig.dev_custom_pipeline=buffer.str();
-                //file.open(QIODevice::ReadWrite | QIODevice::Text);
-                //QString data =  file.readAll();
-                //_videoStreamConfig.dev_custom_pipeline=data.toStdString();
             }else{
                 qDebug()<<"dev_enable_custom_pipeline but no file";
             }

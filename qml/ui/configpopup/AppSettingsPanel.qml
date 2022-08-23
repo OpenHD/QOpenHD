@@ -2233,13 +2233,6 @@ Item {
                             onCheckedChanged: settings.dev_enable_custom_pipeline = checked
                         }
                     }
-                    TextInput {
-                        width: parent.width
-                        height: rowHeight
-                        text: settings.dev_custom_pipeline
-                        cursorVisible: true
-                        onTextChanged: settings.dev_custom_pipeline=text
-                    }
                     // temporary end
                 }
             }
