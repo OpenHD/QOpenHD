@@ -81,7 +81,15 @@ static std::string gst_create_jeston_test(const QOpenHDVideoHelper::VideoCodec& 
         assert(true);
         return "";
    }*/
-   return "nvv4l2decoder ! ";
+   std::stringstream ss;
+   ss<<"nvv4l2decoder ";
+   if(videoCodec==QOpenHDVideoHelper::VideoCodec::VideoCodecMJPEG){
+       ss<<"mjpeg=true ";
+   }
+   // TODO enable by default ?!
+   //ss<<"enable-max-performance=true ";
+   ss<<"! ";
+   return ss.str();
 }
 
 static std::string gst_create_video_decoder(const QOpenHDVideoHelper::VideoCodec& videoCodec,bool force_sw,bool dev_jetson){
