@@ -82,6 +82,10 @@ static std::string gst_create_jeston_test(const QOpenHDVideoHelper::VideoCodec& 
         return "";
    }*/
    std::stringstream ss;
+   if(videoCodec==QOpenHDVideoHelper::VideoCodec::VideoCodecH265){
+       // WTF WTF
+       ss<<"h265parse ! ";
+   }
    ss<<"nvv4l2decoder ";
    if(videoCodec==QOpenHDVideoHelper::VideoCodec::VideoCodecMJPEG){
        ss<<"mjpeg=true ";
