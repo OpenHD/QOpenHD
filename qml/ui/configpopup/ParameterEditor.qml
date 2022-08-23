@@ -112,13 +112,13 @@ Rectangle{
             paramValueString=model.value
             paramExtraValueInt= "Do not use me !!!!"
         }
-        setup_spin_box()
-        setup_text_input()
+        setup_spin_box_int_param()
+        setup_text_input_string_param()
         parameterEditor.visible=true
     }
 
     // For int params we use the spin box
-    function setup_spin_box(){
+    function setup_spin_box_int_param(){
         if(holds_int_value()){
             spinBoxInputParamtypeInt.visible=true
             spinBoxInputParamtypeInt.from=param_int_min_value()
@@ -129,7 +129,7 @@ Rectangle{
         }
     }
     // for string params we use the text input
-    function setup_text_input(){
+    function setup_text_input_string_param(){
         if(holds_string_value()){
             textInputParamtypeString.visible=true
             textInputParamtypeString.text= paramValueString
@@ -264,10 +264,7 @@ Rectangle{
                 enableAdvanced=checkBoxEnableAdvanced.checked
                 // We need to refresh the input field, since aparently qt rejects values out of range
                 if(holds_int_value() && enableAdvanced){
-                    //console.log("Test:"+paramValueInt)
-                    spinBoxInputParamtypeInt.from=param_int_min_value()
-                    spinBoxInputParamtypeInt.to=param_int_max_value()
-                    spinBoxInputParamtypeInt.value=paramValueInt
+                    setup_spin_box_int_param()
                 }
             }
         }
