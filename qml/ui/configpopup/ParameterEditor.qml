@@ -67,6 +67,27 @@ Rectangle{
         return "(string)"
     }
 
+    function param_int_min_value(){
+        // Advanced passes all restrictions
+        if(enableAdvanced){
+            return -2147483648;
+        }
+        if(instanceMavlinkSettingsModel.has_int_enum_mapping(parameterId)){
+            return instanceMavlinkSettingsModel.int_enum_get_min(parameterId);
+        }
+        return 0;
+    }
+    function param_int_max_value(){
+        // Advanced passes all restrictions
+        if(enableAdvanced){
+            return 2147483647;
+        }
+        if(instanceMavlinkSettingsModel.has_int_enum_mapping(parameterId)){
+            return instanceMavlinkSettingsModel.int_enum_get_max(parameterId);
+        }
+        return 100000;
+    }
+
     function setup_for_parameter(param_id,model){
         console.log("setup_for_parameter"+param_id);
         if(model.unique_id !== param_id){
@@ -145,8 +166,8 @@ Rectangle{
             height: customHeight
             font.pixelSize: 14
             Layout.alignment: Qt.AlignCenter
-            from: 0
-            to: 2147483647
+            from: param_int_min_value()
+            to: param_int_max_value()
             stepSize: 1
             value: paramValueInt
             visible: holds_int_value()
@@ -216,7 +237,16 @@ Rectangle{
             //horizontalAlignment: Qt.AlignCenter
             text: qsTr("Advanced")
             Layout.alignment: Qt.AlignHCenter
-            onCheckStateChanged: enableAdvanced=checkBoxEnableAdvanced.checked
+            onCheckStateChanged: {
+                enableAdvanced=checkBoxEnableAdvanced.checked
+                // We need to refresh the input field, since aparently qt rejects values out of range
+                if(holds_int_value() && enableAdvanced){
+                    //console.log("Test:"+paramValueInt)
+                    spinBoxInputParamtypeInt.from=param_int_min_value()
+                    spinBoxInputParamtypeInt.to=param_int_max_value()
+                    spinBoxInputParamtypeInt.value=paramValueInt
+                }
+            }
         }
     }
 }

@@ -100,6 +100,12 @@ private:
     QVector<MavlinkSettingsModel::SettingData> m_data;
     const uint8_t _sys_id;
     const uint8_t _comp_id;
+public:
+    // These are for the UI to query more data about a specific param
+    Q_INVOKABLE bool has_int_enum_mapping(QString param_id)const;
+    Q_INVOKABLE QString int_enum_get_readable(QString param_id,int value)const;
+    Q_INVOKABLE int int_enum_get_max(QString param_id)const;
+    Q_INVOKABLE int int_enum_get_min(QString param_id)const;
 };
 
 #endif // MavlinkSettingsModel_H

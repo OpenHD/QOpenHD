@@ -55,25 +55,9 @@ Rectangle {
                         parameterEditor.setup_for_parameter(model.unique_id,model)
                     }
                 }
-                /*Button {
-                    text: "GET"
-                    onClicked: _groundPiSettingsModel.try_refetch_parameter_int(model.unique_id)
-                }
-                TextInput {
-                    id: xTextInput
-                    width:100
-                    text: ""+model.value
-                    cursorVisible: false
-                }
-                Button {
-                    text: "SET"
-                    onClicked: _groundPiSettingsModel.try_parse_and_update_parameter_int( model.unique_id,xTextInput.text)
-                }*/
             }
         }
     }
-
-
 
 
     // Left row: multiple colums of param value

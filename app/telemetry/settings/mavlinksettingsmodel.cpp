@@ -258,6 +258,7 @@ QVariant MavlinkSettingsModel::data(const QModelIndex &index, int role) const
    } else if (role==ExtraValueRole){
         if(std::holds_alternative<int>(data.value)){
             auto value=std::get<int>(data.value);
+            return int_enum_get_readable(data.unique_id,value);
             auto as_enum=int_param_to_enum_string_if_known(data.unique_id.toStdString(),value);
             if(as_enum.has_value()){
                 return QString(as_enum.value().c_str());
@@ -383,4 +384,48 @@ void MavlinkSettingsModel::addData(MavlinkSettingsModel::SettingData data)
     beginInsertRows(QModelIndex(), rowCount(), rowCount());
     m_data.push_back(data);
     endInsertRows();
+}
+
+bool MavlinkSettingsModel::has_int_enum_mapping(QString param_id)const
+{
+    const auto improved_opt=get_improved_for_int(param_id.toStdString());
+    if(improved_opt.has_value()){
+        if(improved_opt->has_enum_mapping()){
+            return true;
+        }
+    }
+    return false;
+}
+
+QString MavlinkSettingsModel::int_enum_get_readable(QString param_id, int value)const
+{
+    auto as_enum=int_param_to_enum_string_if_known(param_id.toStdString(),value);
+    if(as_enum.has_value()){
+        return QString(as_enum.value().c_str());
+    }
+    std::stringstream ss;
+    ss<<"{"<<value<<"}";
+    return QString(ss.str().c_str());
+}
+
+int MavlinkSettingsModel::int_enum_get_max(QString param_id)const
+{
+    const auto improved_opt=get_improved_for_int(param_id.toStdString());
+    if(improved_opt.has_value()){
+        if(improved_opt->has_enum_mapping()){
+            return improved_opt->max_value_int;
+        }
+    }
+    return 2147483647;
+}
+
+int MavlinkSettingsModel::int_enum_get_min(QString param_id)const
+{
+    const auto improved_opt=get_improved_for_int(param_id.toStdString());
+    if(improved_opt.has_value()){
+        if(improved_opt->has_enum_mapping()){
+            return improved_opt->min_value_int;
+        }
+    }
+    return -2147483648;
 }

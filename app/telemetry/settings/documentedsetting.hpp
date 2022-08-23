@@ -6,6 +6,7 @@
 #include <limits>
 #include <assert.h>
 #include <qdebug.h>
+#include <sstream>
 
 
 // This is a "one type fits all class" where we can make changing specific setting(s)
@@ -54,7 +55,11 @@ public:
    }
    // enum mapping, returns "unknwon" if value is not in range.
    std::string enum_value_to_string(int value)const{
-       if(!is_in_range(value))return "unknown";
+       if(!is_in_range(value)){
+           std::stringstream ss;
+           ss<<"?{"<<value<<"}?";
+           return ss.str();
+       }
        return values_enum.at(value);
    }
    int enum_value_from_string(std::string value)const{
