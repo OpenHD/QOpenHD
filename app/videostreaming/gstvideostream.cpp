@@ -112,6 +112,7 @@ static std::string gst_create_video_decoder(const QOpenHDVideoHelper::VideoCodec
     // NOTE: force sw only has an effect on when decodebin does hw automatically, and on h264
     if(videoCodec==QOpenHDVideoHelper::VideoCodecH264){
         //NOTE: decodebin on rpi for h264 only worked after we updated the kernel.
+        ss<<"h264parse ! ";
         ss<<"decodebin ! ";
     }else if(videoCodec==QOpenHDVideoHelper::VideoCodecH265){
         ss<<"decodebin ! ";
