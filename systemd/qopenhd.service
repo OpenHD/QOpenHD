@@ -4,6 +4,7 @@ After=multi-user.target
 
 [Service]
 Type=simple
+Environment="QT_QPA_EGLFS_KMS_ATOMIC=1"
 ExecStart=/usr/local/bin/QOpenHD
 User=root
 
