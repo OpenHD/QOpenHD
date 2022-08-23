@@ -29,7 +29,8 @@ Rectangle{
     //Layout.alignment: Qt.AlignRight || Qt.AlignTop
     // by default, invisble. Element becomes visible when user clicks on edit for a specific param
     visible: false
-
+    // We set a the ground pi instance as default (such that the qt editor code completion helps us a bit),
+    // but this can be replaced by the proper instance for air or camera
     property var instanceMavlinkSettingsModel: _groundPiSettingsModel
 
     property int customHeight: 50
@@ -75,6 +76,7 @@ Rectangle{
         if(instanceMavlinkSettingsModel.has_int_enum_mapping(parameterId)){
             return instanceMavlinkSettingsModel.int_enum_get_min(parameterId);
         }
+        // r.n all int params are unsigend
         return 0;
     }
     function param_int_max_value(){
@@ -85,7 +87,7 @@ Rectangle{
         if(instanceMavlinkSettingsModel.has_int_enum_mapping(parameterId)){
             return instanceMavlinkSettingsModel.int_enum_get_max(parameterId);
         }
-        return 100000;
+        return 2147483647;
     }
 
     function setup_for_parameter(param_id,model){

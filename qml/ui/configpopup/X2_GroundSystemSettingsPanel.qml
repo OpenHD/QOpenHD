@@ -46,7 +46,8 @@ Rectangle {
                 Label {
                     width:100
                     //text: "Val: "+model.value
-                    text: "Val: "+model.extraValue
+                    //text: "Val: "+model.extraValue
+                    text: model.extraValue
                     font.bold: true
                 }
                 Button {
@@ -99,6 +100,7 @@ Rectangle {
     ParameterEditor{
         id: parameterEditor
         total_width: 300
+        instanceMavlinkSettingsModel: _groundPiSettingsModel
     }
 
 
