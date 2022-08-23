@@ -88,6 +88,8 @@ static std::string gst_create_jeston_test(const QOpenHDVideoHelper::VideoCodec& 
    }
    // TODO enable by default ?!
    //ss<<"enable-max-performance=true ";
+   // does this help ?!
+   ss<<"enable-error-check=true ";
    ss<<"! ";
    return ss.str();
 }
