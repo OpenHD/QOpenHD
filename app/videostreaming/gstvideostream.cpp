@@ -321,6 +321,7 @@ void GstVideoStream::startVideo() {
 void GstVideoStream::stopVideoSafe() {
     qDebug() << "GstVideoStream::stopVideoSafe()::begin";
     if (m_pipeline != nullptr) {
+        gst_element_set_state(m_pipeline, GST_STATE_PAUSED);
         gst_element_set_state (m_pipeline, GST_STATE_NULL);
         gst_object_unref (m_pipeline);
         m_pipeline=nullptr;
