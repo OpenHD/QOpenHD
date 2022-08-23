@@ -134,10 +134,10 @@ static std::string constructGstreamerPipeline(const QOpenHDVideoHelper::VideoStr
     // add rtp decoder
     ss<<gst_create_rtp_decoder(config.video_codec);
     // add video decoder
-    ss<<gst_create_video_decoder(config.video_codec,config.enable_software_video_decoder,config.dev_jetson_force_omx);
+    ss<<gst_create_video_decoder(config.video_codec,config.enable_software_video_decoder,config.dev_jetson);
 
     //ss<<" videoconvert n-threads=2 ! queue ! video/x-raw,format=RGBA !";
-    if(config.dev_jetson_force_omx){
+    if(config.dev_jetson){
         ss<<"nvvidconv ! glupload  ! qmlglsink name=qmlglsink sync=false";
     }else{
         ss << " queue ! ";

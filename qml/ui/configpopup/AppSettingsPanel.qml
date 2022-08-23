@@ -2187,7 +2187,7 @@ Item {
                         color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
                         Text {
-                            text: qsTr("DEV_JETSON_FORCE_OMX")
+                            text: qsTr("DEV_JETSON")
                             font.weight: Font.Bold
                             font.pixelSize: 13
                             anchors.leftMargin: 8
@@ -2203,8 +2203,8 @@ Item {
                             anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
                             anchors.right: parent.right
                             anchors.verticalCenter: parent.verticalCenter
-                            checked: settings.dev_jetson_force_omx
-                            onCheckedChanged: settings.dev_jetson_force_omx = checked
+                            checked: settings.dev_jetson
+                            onCheckedChanged: settings.dev_jetson = checked
                         }
                     }
                     Rectangle {

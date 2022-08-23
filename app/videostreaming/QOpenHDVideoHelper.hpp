@@ -56,14 +56,14 @@ struct VideoStreamConfig{
     // R.N this only makes a difference on RPI
     bool enable_software_video_decoder=false;
     // XX
-    bool dev_jetson_force_omx=false;
+    bool dev_jetson=false;
     //
     bool dev_enable_custom_pipeline=false;
     std::string dev_custom_pipeline="";
     // 2 configs are equal if all members are exactly the same.
     bool operator==(const VideoStreamConfig &o) const {
        return this->dev_test_video_mode == o.dev_test_video_mode && this->video_port == o.video_port && this->video_codec== o.video_codec
-               && this->enable_software_video_decoder==o.enable_software_video_decoder && this->dev_jetson_force_omx==o.dev_jetson_force_omx &&
+               && this->enable_software_video_decoder==o.enable_software_video_decoder && this->dev_jetson==o.dev_jetson &&
                this->dev_enable_custom_pipeline==o.dev_enable_custom_pipeline &&
                this->dev_custom_pipeline==o.dev_custom_pipeline;
      }
@@ -79,7 +79,7 @@ static VideoStreamConfig read_from_settings(){
     const int tmp_video_codec = settings.value("selectedVideoCodecPrimary", 0).toInt();
     _videoStreamConfig.video_codec=QOpenHDVideoHelper::intToVideoCodec(tmp_video_codec);
     _videoStreamConfig.enable_software_video_decoder=settings.value("enable_software_video_decoder", 0).toBool();
-    _videoStreamConfig.dev_jetson_force_omx=settings.value("dev_jetson_force_omx",false).toBool();
+    _videoStreamConfig.dev_jetson=settings.value("dev_jetson",false).toBool();
     //
     _videoStreamConfig.dev_enable_custom_pipeline=settings.value("dev_enable_custom_pipeline",false).toBool();
     // QML text input sucks, so we read a file. Not ideal, but for testing only anyways
