@@ -94,8 +94,13 @@ Rectangle{
             console.log("Error wrong usage, pass in the right model");
             return;
         }
-         parameterId=param_id;
-         paramValueType=model.valueType
+        // Every time the user wants to enable the "advanced", he needs to re-do it for every param,
+        // since advanced only makes sense in the rarest case(s), e.g. when QOpenHD and OpenHD are out of sync.
+        checkBoxEnableAdvanced.checked=false
+        enableAdvanced=false;
+        // set param id and the value type this param holds
+        parameterId=param_id;
+        paramValueType=model.valueType
         shortParamDescription=model.shortDescription
         if(paramValueType==0){
             // This is an int param
@@ -107,12 +112,30 @@ Rectangle{
             paramValueString=model.value
             paramExtraValueInt= "Do not use me !!!!"
         }
-        // Every time the user wants to enable the "advanced", he needs to re-do it for every param,
-        // since advanced only makes sense in the rarest case(s), e.g. when QOpenHD and OpenHD are out of sync.
-        checkBoxEnableAdvanced.checked=false
-        enableAdvanced=false;
-
+        setup_spin_box()
+        setup_text_input()
         parameterEditor.visible=true
+    }
+
+    // For int params we use the spin box
+    function setup_spin_box(){
+        if(holds_int_value()){
+            spinBoxInputParamtypeInt.visible=true
+            spinBoxInputParamtypeInt.from=param_int_min_value()
+            spinBoxInputParamtypeInt.to=param_int_max_value()
+            spinBoxInputParamtypeInt.value=paramValueInt
+        }else{
+            spinBoxInputParamtypeInt.visible=false
+        }
+    }
+    // for string params we use the text input
+    function setup_text_input(){
+        if(holds_string_value()){
+            textInputParamtypeString.visible=true
+            textInputParamtypeString.text= paramValueString
+        }else{
+            textInputParamtypeString.visible=false
+        }
     }
 
 
