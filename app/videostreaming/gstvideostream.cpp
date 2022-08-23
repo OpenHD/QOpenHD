@@ -321,6 +321,8 @@ void GstVideoStream::startVideo() {
 void GstVideoStream::stopVideoSafe() {
     qDebug() << "GstVideoStream::stopVideoSafe()::begin";
     if (m_pipeline != nullptr) {
+        // Needed on jetson ?!
+        gst_element_send_event ((GstElement*)m_pipeline, gst_event_new_eos ());
         gst_element_set_state(m_pipeline, GST_STATE_PAUSED);
         gst_element_set_state (m_pipeline, GST_STATE_NULL);
         gst_object_unref (m_pipeline);
