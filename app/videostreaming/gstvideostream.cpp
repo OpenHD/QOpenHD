@@ -341,6 +341,12 @@ void GstVideoStream::stopVideoSafe() {
     qDebug() << "GstVideoStream::stopVideoSafe()::end";
 }
 
+void GstVideoStream::dev_restart_stream()
+{
+    // we just set decoder error to true, such that the timer will stop and then restart the video stream
+    has_decoder_error=true;
+}
+
 void GstVideoStream::timerCallback() {
     if(m_videoOutputWindow==nullptr){
         // Most likely the qmlglsink is not found by qt - install gstreamer with qmlglsink enabled)

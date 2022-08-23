@@ -42,6 +42,8 @@ public:
     // If we get error message(s) from gstreamer, we restart the stream in the hopes that fixes the issue
     // e.g. a fucked decoder from corrupted packets
     bool has_decoder_error=false;
+    // This is called when the user clicks the dev restart video
+    Q_INVOKABLE void dev_restart_stream();
 private:
     /**
      * @brief fired by m_timer.

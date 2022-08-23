@@ -306,6 +306,7 @@ int main(int argc, char *argv[]) {
 #if defined(ENABLE_GSTREAMER)
 #if defined(ENABLE_MAIN_VIDEO)
     GstVideoStream* mainVideo = new GstVideoStream();
+    engine.rootContext()->setContextProperty("_mainVideo", mainVideo);
 #endif
 #if defined(ENABLE_PIP)
     GstVideoStream* pipVideo = new GstVideoStream();
