@@ -19,7 +19,7 @@ Rectangle{
 
     property int total_width: 300
 
-    width: 300
+    width: total_width
     height: parent.height
     border.color: "black"
     border.width: 5

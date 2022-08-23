@@ -98,6 +98,7 @@ Rectangle {
     // Right row: the parameter edit element
     ParameterEditor{
         id: parameterEditor
+        total_width: 300
     }
 
 
