@@ -34,7 +34,7 @@ Rectangle{
 
     property int customHeight: 50
 
-    property string parameterId: "Param id"
+    property string parameterId: "PARAM_ID"
 
     property int paramValueType: 0 // 0==int, 1==string
 

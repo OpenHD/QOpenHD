@@ -165,6 +165,16 @@ static std::string constructGstreamerPipeline(const QOpenHDVideoHelper::VideoStr
     return ss.str();
 }
 
+static void debug_gstreamer_pipeline_state(GstElement *gst_pipeline){
+    assert(gst_pipeline!=nullptr);
+    GstState state;
+    GstState pending;
+    auto returnValue = gst_element_get_state(gst_pipeline, &state, &pending, 1000*1000*1000); // timeout in ns
+    if (returnValue == 0) {
+        qDebug()<<"Gstreamer most likely there is something wrong with the pipeline "<<returnValue;
+    }
+}
+
 GstVideoStream::GstVideoStream(QObject *parent): QObject(parent), timer(new QTimer) {
     qDebug() << "GstVideoStream::GstVideoStream()";
     // developer testing
@@ -312,18 +322,6 @@ void GstVideoStream::startVideo() {
 
     link_gstreamer_pipe_to_qt_window(m_pipeline,m_videoOutputWindow);
 
-    /*
-     * When the app first launches we have to wait for the QML element to be ready before the pipeline
-     * starts pushing frames to it.
-     *
-     * After that point we can just set the pipeline to GST_STATE_PLAYING directly.
-     */
-    /*if (firstRun) {
-        firstRun = false;
-        //rootObject->scheduleRenderJob(new SetPlaying (m_pipeline), QQuickWindow::BeforeSynchronizingStage);
-    } else {
-        gst_element_set_state (m_pipeline, GST_STATE_PLAYING);
-    }*/
      gst_element_set_state (m_pipeline, GST_STATE_PLAYING);
     lastDataTimeout = QDateTime::currentMSecsSinceEpoch();
 }
