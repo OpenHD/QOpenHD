@@ -16,7 +16,6 @@ class MavlinkTelemetry : public QObject{
 public:
     explicit MavlinkTelemetry(QObject *parent = nullptr);
     static MavlinkTelemetry& instance();
-    OpenHDUtil m_util;
 private:
     void onProcessMavlinkMessage(mavlink_message_t msg);
 private:

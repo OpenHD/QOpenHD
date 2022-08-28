@@ -10,9 +10,11 @@
 
 class OpenHDUtil: public QObject {
     Q_OBJECT
-
-public:
+private:
     explicit OpenHDUtil(QObject *parent = nullptr);
+public:
+    // Use singleton
+    static OpenHDUtil& instance();
 
     Q_INVOKABLE int lipo_battery_voltage_to_percent(int cells, double voltage);
     Q_INVOKABLE int lifepo4_battery_voltage_to_percent(int cells, double voltage);

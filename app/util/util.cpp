@@ -12,6 +12,12 @@
 
 OpenHDUtil::OpenHDUtil(QObject *parent): QObject(parent) { }
 
+OpenHDUtil &OpenHDUtil::instance()
+{
+    static OpenHDUtil util{};
+    return util;
+}
+
 
 int OpenHDUtil::lipo_battery_voltage_to_percent(int cells, double voltage) {
     double cell_voltage = voltage / static_cast<double>(cells);

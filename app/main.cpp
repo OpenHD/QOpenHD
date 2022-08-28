@@ -218,7 +218,7 @@ int main(int argc, char *argv[]) {
 
     QApplication app(argc, argv);
 
-    auto util = new OpenHDUtil;
+
 
 
 #if defined(__ios__)
@@ -229,7 +229,7 @@ int main(int argc, char *argv[]) {
 
 
 #if defined(__android__)
-    util->keep_screen_on(true);
+    OpenHDUtil::instance().keep_screen_on(true);
 
     for(const QString &permission : permissions) {
         auto result = QtAndroid::checkPermission(permission);
@@ -357,7 +357,7 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
     engine.rootContext()->setContextProperty("EnableExampleWidget", QVariant(false));
     #endif
 
-    engine.rootContext()->setContextProperty("OpenHDUtil", util);
+    engine.rootContext()->setContextProperty("OpenHDUtil", &OpenHDUtil::instance());
 
     // Regster all the QT Mavlink system model(s)
     // it is a common practice for QT to prefix models from c++ with an underscore
@@ -432,6 +432,12 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
     //pipVideo->init(windowSecondary,false);
 #endif
 #endif
+    // testing
+    /*QQuickWindow *rootObject = static_cast<QQuickWindow *>(engine.rootObjects());
+    if(rootObject){
+        rootObject->
+    }*/
+
 
 #if defined(ENABLE_VIDEO_RENDER)
     auto rootObjects = engine.rootObjects();
