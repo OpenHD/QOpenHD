@@ -121,11 +121,11 @@ static QQuickItem* find_qt_video_window(QQmlApplicationEngine& m_engine,const bo
     }
     rootObject = static_cast<QQuickWindow *>(rootObjects.first());
     videoItem = rootObject->findChild<QQuickItem *>(m_elementName.toUtf8());
-    qDebug() << "Setting element on " << m_elementName;
     if (videoItem == nullptr) {
         qDebug() << "Failed to obtain video item pointer for " << m_elementName;
         return nullptr;
     }
+    qDebug()<<"Found (qmlglsink) called"<<m_elementName;
     return videoItem;
 }
 
@@ -137,7 +137,6 @@ static std::string create_debug_encoded_data_producer(const QOpenHDVideoHelper::
         ss<<"x264enc bitrate=5000 tune=zerolatency key-int-max=10 ! h264parse config-interval=-1 ! ";
         ss<<"rtph264pay mtu=1024 ! ";
     }else if(videoCodec==VideoCodecH265){
-        //ss<<"x265enc bitrate=5000 tune=zerolatency key-int-max=10 ! ";
         ss<<"x265enc bitrate=5000 tune=zerolatency ! ";
         ss<<"rtph265pay mtu=1024 ! ";
     }else{

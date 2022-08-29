@@ -31,6 +31,15 @@ ApplicationWindow {
     property bool initialised: false
 
 
+    Squircle {
+        SequentialAnimation on t {
+            NumberAnimation { to: 1; duration: 2500; easing.type: Easing.InQuad }
+            NumberAnimation { to: 0; duration: 2500; easing.type: Easing.OutQuad }
+            loops: Animation.Infinite
+            running: true
+        }
+    }
+
     ColorPicker {
         id: colorPicker
         height: 264
@@ -81,14 +90,6 @@ ApplicationWindow {
                 return "MainVideoRender.qml";
             }
             return ""
-        }
-    }
-    Squircle {
-        SequentialAnimation on t {
-            NumberAnimation { to: 1; duration: 2500; easing.type: Easing.InQuad }
-            NumberAnimation { to: 0; duration: 2500; easing.type: Easing.OutQuad }
-            loops: Animation.Infinite
-            running: true
         }
     }
 
