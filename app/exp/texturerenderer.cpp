@@ -104,19 +104,20 @@ void TextureRenderer::paint()
      }else{
          texture=texture2;
      }
-    texture->bind();
+     //texture->bind();
+     glBindTexture(GL_TEXTURE_2D, texture->textureId());
 
-    glViewport(0, 0, m_viewportSize.width(), m_viewportSize.height());
+     glViewport(0, 0, m_viewportSize.width(), m_viewportSize.height());
 
     glDisable(GL_DEPTH_TEST);
-
     //glEnable(GL_BLEND);
     //glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
     m_program->release();
-    texture->release();
+    //texture->release();
+    glBindTexture(GL_TEXTURE_2D, 0);
 
     m_window->endExternalCommands();
 }
