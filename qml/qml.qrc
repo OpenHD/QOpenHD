@@ -216,6 +216,5 @@
         <file>ui/configpopup/X0_AirCameraSettingsPanel.qml</file>
         <file>ui/configpopup/XX_WBLinkSettings.qml</file>
         <file>ui/configpopup/ParameterEditor.qml</file>
-        <file>video/SquircleWidget.qml</file>
     </qresource>
 </RCC>

@@ -6,6 +6,7 @@
 #include <QtQuick/QQuickWindow>
 #include <QOpenGLShaderProgram>
 #include <QOpenGLFunctions>
+#include <chrono>
 
 //! [1]
 class SquircleRenderer : public QObject, protected QOpenGLFunctions
@@ -27,6 +28,7 @@ private:
     qreal m_t = 0.0;
     QOpenGLShaderProgram *m_program = nullptr;
     QQuickWindow *m_window = nullptr;
+    std::chrono::steady_clock::time_point last_frame=std::chrono::steady_clock::now();
 };
 //! [1]
 

@@ -47,7 +47,11 @@ void SquircleRenderer::init()
 //! [4] //! [5]
 void SquircleRenderer::paint()
 {
-     qDebug()<<" SquircleRenderer::paint()";
+     const auto delta=std::chrono::steady_clock::now()-last_frame;
+     last_frame=std::chrono::steady_clock::now();
+     const auto frame_time_us=std::chrono::duration_cast<std::chrono::microseconds>(delta).count();
+     const float frame_time_ms=((float)frame_time_us)/1000.0f;
+     qDebug()<<" SquircleRenderer::paint() frame time:"<<frame_time_ms<<"ms";
 
     // Play nice with the RHI. Not strictly needed when the scenegraph uses
     // OpenGL directly.
