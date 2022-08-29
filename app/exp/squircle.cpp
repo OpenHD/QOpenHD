@@ -12,24 +12,25 @@
 class CleanupJob : public QRunnable
 {
 public:
-    CleanupJob(SquircleRenderer *renderer) : m_renderer(renderer) { }
+    CleanupJob(TextureRenderer *renderer) : m_renderer(renderer) { }
     void run() override { delete m_renderer; }
 private:
-    SquircleRenderer *m_renderer;
+   TextureRenderer *m_renderer;
 };
 
-//! [7]
 Squircle::Squircle()
     : m_t(0)
     , m_renderer(nullptr)
+    ,timerAlwaysRedraw(new QTimer)
 {
     connect(this, &QQuickItem::windowChanged, this, &Squircle::handleWindowChanged);
+    QObject::connect(timerAlwaysRedraw, &QTimer::timeout, this, &Squircle::timerCallback);
+    timerAlwaysRedraw->start(5);
 }
-//! [7]
 
-//! [8]
 void Squircle::setT(qreal t)
 {
+    qDebug()<<"Set t:"<<t;
     if (t == m_t)
         return;
     m_t = t;
@@ -37,9 +38,7 @@ void Squircle::setT(qreal t)
     if (window())
         window()->update();
 }
-//! [8]
 
-//! [1]
 void Squircle::handleWindowChanged(QQuickWindow *win)
 {
     if (win) {
@@ -49,9 +48,7 @@ void Squircle::handleWindowChanged(QQuickWindow *win)
         win->setColor(Qt::black);
     }
 }
-//! [3]
 
-//! [6]
 void Squircle::cleanup()
 {
     delete m_renderer;
@@ -64,16 +61,39 @@ void Squircle::releaseResources()
     m_renderer = nullptr;
 }
 
-//! [9]
+
 void Squircle::sync()
 {
     if (!m_renderer) {
-        m_renderer = new SquircleRenderer();
-        connect(window(), &QQuickWindow::beforeRendering, m_renderer, &SquircleRenderer::init, Qt::DirectConnection);
-        connect(window(), &QQuickWindow::beforeRenderPassRecording, m_renderer, &SquircleRenderer::paint, Qt::DirectConnection);
+        //m_renderer = new SquircleRenderer();
+        m_renderer = new TextureRenderer();
+        connect(window(), &QQuickWindow::beforeRendering, this, &Squircle::m_QQuickWindow_beforeRendering, Qt::DirectConnection);
+        connect(window(), &QQuickWindow::beforeRenderPassRecording, this, &Squircle::m_QQuickWindow_beforeRenderPassRecording, Qt::DirectConnection);
     }
     m_renderer->setViewportSize(window()->size() * window()->devicePixelRatio());
     m_renderer->setT(m_t);
     m_renderer->setWindow(window());
 }
-//! [9]
+
+void Squircle::m_QQuickWindow_beforeRendering()
+{
+    if(m_renderer){
+        m_renderer->init();
+    }
+}
+
+void Squircle::m_QQuickWindow_beforeRenderPassRecording()
+{
+    if(m_renderer){
+        m_renderer->paint();
+    }
+}
+
+void Squircle::timerCallback()
+{
+    //qDebug()<<"Squircle::timerCallback()";
+    //if (window())
+    //    window()->update();
+}
+
+

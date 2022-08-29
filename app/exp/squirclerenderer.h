@@ -19,7 +19,6 @@ public:
     void setViewportSize(const QSize &size) { m_viewportSize = size; }
     void setWindow(QQuickWindow *window) { m_window = window; }
 
-public slots:
     void init();
     void paint();
 

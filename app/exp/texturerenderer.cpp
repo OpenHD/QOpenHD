@@ -37,10 +37,10 @@ void TextureRenderer::init()
                                                     "    i = floor(i * 20.) / 20.;"
                                                     "    gl_FragColor = vec4(coords * .5 + .5, i, i);"
                                                     "}");
-
         m_program->bindAttributeLocation("vertices", 0);
         m_program->link();
-
+        //
+        //texture=new QOpenGLTexture(QImage(QString(":/resources/ic128.png")).mirrored());
     }
 }
 

@@ -8,8 +8,10 @@
 #include <QtQuick/QQuickWindow>
 #include <QOpenGLShaderProgram>
 #include <QOpenGLFunctions>
+#include <QTimer>
 
 #include "squirclerenderer.h"
+#include "texturerenderer.h"
 
 //! [2]
 class Squircle : public QQuickItem
@@ -38,7 +40,15 @@ private:
     void releaseResources() override;
 
     qreal m_t;
-    SquircleRenderer *m_renderer;
+    //SquircleRenderer *m_renderer;
+    TextureRenderer* m_renderer;
+public slots:
+    void m_QQuickWindow_beforeRendering();
+    void m_QQuickWindow_beforeRenderPassRecording();
+private:
+    //
+    QTimer* timerAlwaysRedraw = nullptr;
+    void timerCallback();
 };
 //! [2]
 
