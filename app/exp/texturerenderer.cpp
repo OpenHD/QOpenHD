@@ -53,7 +53,8 @@ void TextureRenderer::init()
                                                     "}\n");
         m_program->link();
         //
-        texture=new QOpenGLTexture(QImage(QString(":/resources/ic128.png")).mirrored());
+        texture1=new QOpenGLTexture(QImage(QString(":/resources/ic128.png")).mirrored());
+        texture2=new QOpenGLTexture(QImage(QString(":/resources/ic128.png")));
         m_program->setUniformValue("texture", 0);
         pos = m_program->attributeLocation( "position");
         uvs = m_program->attributeLocation( "tx_coords");
@@ -79,6 +80,10 @@ void TextureRenderer::paint()
      const auto frame_time_us=std::chrono::duration_cast<std::chrono::microseconds>(delta).count();
      const float frame_time_ms=((float)frame_time_us)/1000.0f;
      qDebug()<<" SquircleRenderer::paint() frame time:"<<frame_time_ms<<"ms";
+     renderCount++;
+     if(renderCount>1){
+         renderCount=0;
+     }
 
     // Play nice with the RHI. Not strictly needed when the scenegraph uses
     // OpenGL directly.
@@ -93,6 +98,12 @@ void TextureRenderer::paint()
     glVertexAttribPointer(uvs, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)sizeof(vertices)); /// last is offset to loc in buf memory
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
+     QOpenGLTexture *texture;
+     if(renderCount==0){
+         texture=texture1;
+     }else{
+         texture=texture2;
+     }
     texture->bind();
 
     glViewport(0, 0, m_viewportSize.width(), m_viewportSize.height());

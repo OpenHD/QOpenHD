@@ -34,7 +34,9 @@ private:
     QQuickWindow *m_window = nullptr;
     std::chrono::steady_clock::time_point last_frame=std::chrono::steady_clock::now();
     //
-    QOpenGLTexture *texture = nullptr;
+    QOpenGLTexture *texture1 = nullptr;
+    QOpenGLTexture *texture2 = nullptr;
+    int renderCount=0;
     GLuint vbo;
     GLint pos;
     GLint uvs;
