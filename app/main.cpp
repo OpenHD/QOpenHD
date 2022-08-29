@@ -27,7 +27,7 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "osd/flightpathvector.h"
 #include "osd/drawingcanvas.h"
 //
-#include "exp/squircle.h"
+//#include "exp/squircle.h"
 
 
 #if defined(ENABLE_RC)
