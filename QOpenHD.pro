@@ -35,10 +35,6 @@ CONFIG += qmltypes
 QML_IMPORT_NAME = OpenHD
 QML_IMPORT_MAJOR_VERSION = 1
 
-CONFIG += qmltypes
-QML_IMPORT_NAME = MavlinkTelemetry
-QML_IMPORT_MAJOR_VERSION = 1
-
 OBJECTS_DIR  = $${OUT_PWD}/obj
 MOC_DIR      = $${OUT_PWD}/moc
 UI_DIR       = $${OUT_PWD}/ui
@@ -103,7 +99,9 @@ SOURCES += \
     app/qopenhd.cpp \
     app/telemetry/settings/synchronizedsettings.cpp \
     app/util/WorkaroundMessageBox.cpp \
-    app/videostreaming/decodingstatistcs.cpp
+    app/videostreaming/decodingstatistcs.cpp \
+    #app/exp/squircle.cpp \
+    #app/exp/squirclerenderer.cpp
 
 HEADERS += \
     app/logging/logmessagesmodel.h \
@@ -122,7 +120,9 @@ HEADERS += \
     app/telemetry/settings/documentedsetting.hpp \
     app/telemetry/settings/synchronizedsettings.h \
     app/util/WorkaroundMessageBox.h \
-    app/videostreaming/decodingstatistcs.h
+    app/videostreaming/decodingstatistcs.h \
+    #app/exp/squircle.h \
+    #app/exp/squirclerenderer.h
 
 
 # I deleted all the "old" telemetry protocolls other than mavlink
