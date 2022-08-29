@@ -4,10 +4,23 @@
 #include <QOpenGLContext>
 #include <QtCore/QRunnable>
 
+/// negative x,y is bottom left and first vertex
+//Consti10: Video was flipped horizontally (at least big buck bunny)
+static const GLfloat vertices[][4][3] =
+    {
+        { {-1.0, -1.0, 0.0}, { 1.0, -1.0, 0.0}, {-1.0, 1.0, 0.0}, {1.0, 1.0, 0.0} }
+    };
+static const GLfloat uv_coords[][4][2] =
+    {
+        //{ {0.0, 0.0}, {1.0, 0.0}, {0.0, 1.0}, {1.0, 1.0} }
+        { {1.0, 1.0}, {0.0, 1.0}, {1.0, 0.0}, {0.0, 0.0} }
+    };
+
 
 TextureRenderer::~TextureRenderer()
 {
     delete m_program;
+    glDeleteBuffers(1, &vbo);
 }
 //! [6]
 
@@ -22,25 +35,39 @@ void TextureRenderer::init()
 
         m_program = new QOpenGLShaderProgram();
         m_program->addCacheableShaderFromSourceCode(QOpenGLShader::Vertex,
-                                                    "attribute highp vec4 vertices;"
-                                                    "varying highp vec2 coords;"
-                                                    "void main() {"
-                                                    "    gl_Position = vertices;"
-                                                    "    coords = vertices.xy;"
-                                                    "}");
+                                                    "attribute vec3 position;\n"
+                                                    "attribute vec2 tx_coords;\n"
+                                                    "varying vec2 v_texCoord;\n"
+                                                    "void main() {  \n"
+                                                    "	gl_Position = vec4(position, 1.0);\n"
+                                                    "	v_texCoord = tx_coords;\n"
+                                                    "}\n");
+        //"	gl_FragColor = texture2D( texture, v_texCoord );\n"
+        //"	gl_FragColor = vec4(0.0,1.0,0.0,1.0);\n"
         m_program->addCacheableShaderFromSourceCode(QOpenGLShader::Fragment,
-                                                    "uniform lowp float t;"
-                                                    "varying highp vec2 coords;"
-                                                    "void main() {"
-                                                    "    lowp float i = 1. - (pow(abs(coords.x), 4.) + pow(abs(coords.y), 4.));"
-                                                    "    i = smoothstep(t - 0.8, t + 0.8, i);"
-                                                    "    i = floor(i * 20.) / 20.;"
-                                                    "    gl_FragColor = vec4(coords * .5 + .5, i, i);"
-                                                    "}");
-        m_program->bindAttributeLocation("vertices", 0);
+                                                    "precision mediump float;\n"
+                                                    "uniform sampler2D texture;\n"
+                                                    "varying vec2 v_texCoord;\n"
+                                                    "void main() {	\n"
+                                                    "	gl_FragColor = texture2D( texture, v_texCoord );\n"
+                                                    "}\n");
         m_program->link();
         //
-        //texture=new QOpenGLTexture(QImage(QString(":/resources/ic128.png")).mirrored());
+        texture=new QOpenGLTexture(QImage(QString(":/resources/ic128.png")).mirrored());
+        m_program->setUniformValue("texture", 0);
+        pos = m_program->attributeLocation( "position");
+        uvs = m_program->attributeLocation( "tx_coords");
+
+        glGenBuffers(1, &vbo);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices)+sizeof(uv_coords), 0, GL_STATIC_DRAW);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
+        glBufferSubData(GL_ARRAY_BUFFER, sizeof(vertices), sizeof(uv_coords), uv_coords);
+        glEnableVertexAttribArray(pos);
+        glEnableVertexAttribArray(uvs);
+        glVertexAttribPointer(pos, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+        glVertexAttribPointer(uvs, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)sizeof(vertices)); /// last is offset to loc in buf memory
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
 }
 
@@ -59,33 +86,26 @@ void TextureRenderer::paint()
 
     m_program->bind();
 
-    m_program->enableAttributeArray(0);
-
-    float values[] = {
-        -1, -1,
-        1, -1,
-        -1, 1,
-        1, 1
-    };
-
-    // This example relies on (deprecated) client-side pointers for the vertex
-    // input. Therefore, we have to make sure no vertex buffer is bound.
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glEnableVertexAttribArray(pos);
+    glEnableVertexAttribArray(uvs);
+    glVertexAttribPointer(pos, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+    glVertexAttribPointer(uvs, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)sizeof(vertices)); /// last is offset to loc in buf memory
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-    m_program->setAttributeArray(0, GL_FLOAT, values, 2);
-    m_program->setUniformValue("t", (float) m_t);
+    texture->bind();
 
     glViewport(0, 0, m_viewportSize.width(), m_viewportSize.height());
 
     glDisable(GL_DEPTH_TEST);
 
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+    //glEnable(GL_BLEND);
+    //glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-    m_program->disableAttributeArray(0);
     m_program->release();
+    texture->release();
 
     m_window->endExternalCommands();
 }

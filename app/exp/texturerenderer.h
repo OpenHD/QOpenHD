@@ -9,6 +9,7 @@
 #include <QOpenGLFunctions>
 #include <chrono>
 #include <QOpenGLTexture>
+#include <QOpenGLBuffer>
 
 //! [1]
 class TextureRenderer : public QObject, protected QOpenGLFunctions
@@ -33,7 +34,11 @@ private:
     QQuickWindow *m_window = nullptr;
     std::chrono::steady_clock::time_point last_frame=std::chrono::steady_clock::now();
     //
-    //QOpenGLTexture *texture = nullptr;
+    QOpenGLTexture *texture = nullptr;
+    GLuint vbo;
+    GLint pos;
+    GLint uvs;
+    //
 };
 //! [1]
 

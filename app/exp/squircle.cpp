@@ -30,7 +30,7 @@ Squircle::Squircle()
 
 void Squircle::setT(qreal t)
 {
-    qDebug()<<"Set t:"<<t;
+    //qDebug()<<"Set t:"<<t;
     if (t == m_t)
         return;
     m_t = t;
