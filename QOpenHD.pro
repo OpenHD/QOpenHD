@@ -76,6 +76,9 @@ QT += concurrent opengl gui
 INCLUDEPATH += $$PWD/inc
 INCLUDEPATH += $$PWD/lib
 INCLUDEPATH += $$PWD/app
+# argh
+INCLUDEPATH += $$PWD/app/exp
+# argh end
 # Since mavlink is coming with MAVSDK, we don't need that anymore
 #INCLUDEPATH += $$PWD/lib/c_library_v2_openhd
 # mavsdk - dirty
@@ -100,8 +103,8 @@ SOURCES += \
     app/telemetry/settings/synchronizedsettings.cpp \
     app/util/WorkaroundMessageBox.cpp \
     app/videostreaming/decodingstatistcs.cpp \
-    #app/exp/squircle.cpp \
-    #app/exp/squirclerenderer.cpp
+    app/exp/squircle.cpp \
+    app/exp/squirclerenderer.cpp
 
 HEADERS += \
     app/logging/logmessagesmodel.h \
@@ -121,8 +124,8 @@ HEADERS += \
     app/telemetry/settings/synchronizedsettings.h \
     app/util/WorkaroundMessageBox.h \
     app/videostreaming/decodingstatistcs.h \
-    #app/exp/squircle.h \
-    #app/exp/squirclerenderer.h
+    app/exp/squircle.h \
+    app/exp/squirclerenderer.h
 
 
 # I deleted all the "old" telemetry protocolls other than mavlink

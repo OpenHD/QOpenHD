@@ -60,7 +60,7 @@ ApplicationWindow {
     }
 
     // Loads the proper (platform-dependent) video widget for the main (primary) video
-    Loader {
+    /*Loader {
         anchors.fill: parent
         z: 1.0
         source: {
@@ -82,15 +82,15 @@ ApplicationWindow {
             }
             return ""
         }
-    }
-    /*Squircle {
+    }*/
+    Squircle {
         SequentialAnimation on t {
             NumberAnimation { to: 1; duration: 2500; easing.type: Easing.InQuad }
             NumberAnimation { to: 0; duration: 2500; easing.type: Easing.OutQuad }
             loops: Animation.Infinite
             running: true
         }
-    }*/
+    }
 
 
     // UI areas

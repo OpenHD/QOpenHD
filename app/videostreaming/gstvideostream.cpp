@@ -347,8 +347,11 @@ void GstVideoStream::dev_restart_stream()
 
 void GstVideoStream::timerCallback() {
     if(m_videoOutputWindow==nullptr){
-        // Most likely the qmlglsink is not found by qt - install gstreamer with qmlglsink enabled)
-        qDebug()<<"no qmlglsink window, cannot start video";
+        if(nTimesVideoQmlElementNotSet<10){
+            // Most likely the qmlglsink is not found by qt - install gstreamer with qmlglsink enabled)
+            qDebug()<<"no qmlglsink window, cannot start video";
+        }
+        nTimesVideoQmlElementNotSet++;
         return;
     }
     assert(m_videoOutputWindow!=nullptr);

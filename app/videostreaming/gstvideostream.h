@@ -61,6 +61,8 @@ private:
     QTimer* timer = nullptr;
     bool m_isPrimaryStream=true;
     bool firstCheck=true;
+    //
+    int nTimesVideoQmlElementNotSet=0;
 };
 
 #endif // OpenHDVideoStream_H
