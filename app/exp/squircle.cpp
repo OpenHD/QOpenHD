@@ -25,7 +25,7 @@ Squircle::Squircle()
 {
     connect(this, &QQuickItem::windowChanged, this, &Squircle::handleWindowChanged);
     QObject::connect(timerAlwaysRedraw, &QTimer::timeout, this, &Squircle::timerCallback);
-    timerAlwaysRedraw->start(5);
+    timerAlwaysRedraw->start(1000);
 }
 
 void Squircle::setT(qreal t)
@@ -71,7 +71,7 @@ void Squircle::sync()
         connect(window(), &QQuickWindow::beforeRenderPassRecording, this, &Squircle::m_QQuickWindow_beforeRenderPassRecording, Qt::DirectConnection);
     }
     m_renderer->setViewportSize(window()->size() * window()->devicePixelRatio());
-    m_renderer->setT(m_t);
+    //m_renderer->setT(m_t);
     m_renderer->setWindow(window());
 }
 

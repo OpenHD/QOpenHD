@@ -18,7 +18,6 @@ class TextureRenderer : public QObject, protected QOpenGLFunctions
 public:
     ~TextureRenderer();
 
-    void setT(qreal t) { m_t = t; }
     void setViewportSize(const QSize &size) { m_viewportSize = size; }
     void setWindow(QQuickWindow *window) { m_window = window; }
     // create and link the shaders
@@ -28,7 +27,6 @@ public:
 
 private:
     QSize m_viewportSize;
-    qreal m_t = 0.0;
     int m_index=0;
     QOpenGLShaderProgram *m_program = nullptr;
     QQuickWindow *m_window = nullptr;
