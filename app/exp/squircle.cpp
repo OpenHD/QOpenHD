@@ -45,7 +45,9 @@ void Squircle::handleWindowChanged(QQuickWindow *win)
         connect(win, &QQuickWindow::beforeSynchronizing, this, &Squircle::sync, Qt::DirectConnection);
         connect(win, &QQuickWindow::sceneGraphInvalidated, this, &Squircle::cleanup, Qt::DirectConnection);
         // Ensure we start with cleared to black. The squircle's blend mode relies on this.
-        win->setColor(Qt::black);
+        // We do not need that when rendering a texture, which is what we actually want (squircle is just the example where I started with,
+        // since I had to start somehow ;)
+        //win->setColor(Qt::black);
     }
 }
 

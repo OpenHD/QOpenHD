@@ -53,8 +53,19 @@ void TextureRenderer::init()
                                                     "}\n");
         m_program->link();
         //
-        texture1=new QOpenGLTexture(QImage(QString(":/resources/ic128.png")).mirrored());
-        texture2=new QOpenGLTexture(QImage(QString(":/resources/ic128.png")));
+        const int test_w=1280;
+        const int test_h=720;
+        QImage image1{test_w,test_h, QImage::Format_RGB888};
+        image1.fill(QColor(255, 0, 0));
+        QImage image2{test_w,test_h, QImage::Format_RGB888};
+        image2.fill(QColor(0, 255, 0));
+
+        /*QImage image1{QString(":/resources/ic128.png")};
+        image1=image1.mirrored();
+        QImage image2{QString(":/resources/ic128.png")};*/
+
+        texture1=std::make_unique<QOpenGLTexture>(image1);
+        texture2=std::make_unique<QOpenGLTexture>(image2);
         m_program->setUniformValue("texture", 0);
         pos = m_program->attributeLocation( "position");
         uvs = m_program->attributeLocation( "tx_coords");
@@ -97,14 +108,13 @@ void TextureRenderer::paint()
     glVertexAttribPointer(pos, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
     glVertexAttribPointer(uvs, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)sizeof(vertices)); /// last is offset to loc in buf memory
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-
+    // r.n we just swap between 2 textures
      QOpenGLTexture *texture;
      if(renderCount==0){
-         texture=texture1;
+         texture=texture1.get();
      }else{
-         texture=texture2;
+         texture=texture2.get();
      }
-     //texture->bind();
      glBindTexture(GL_TEXTURE_2D, texture->textureId());
 
      glViewport(0, 0, m_viewportSize.width(), m_viewportSize.height());
@@ -113,11 +123,11 @@ void TextureRenderer::paint()
 
      glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-    m_program->release();
-    //texture->release();
-    glBindTexture(GL_TEXTURE_2D, 0);
-    //
-    glEnable(GL_DEPTH_TEST);
+     m_program->release();
+     //texture->release();
+     glBindTexture(GL_TEXTURE_2D, 0);
+     //
+     glEnable(GL_DEPTH_TEST);
 
     m_window->endExternalCommands();
 }
