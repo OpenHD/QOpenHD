@@ -216,5 +216,6 @@
         <file>ui/configpopup/X0_AirCameraSettingsPanel.qml</file>
         <file>ui/configpopup/XX_WBLinkSettings.qml</file>
         <file>ui/configpopup/ParameterEditor.qml</file>
+        <file>ui/configpopup/AppDeveloperStatsPanel.qml</file>
     </qresource>
 </RCC>

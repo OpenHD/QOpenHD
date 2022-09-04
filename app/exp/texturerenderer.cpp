@@ -4,6 +4,8 @@
 #include <QOpenGLContext>
 #include <QtCore/QRunnable>
 
+#include <cmath>
+
 /// negative x,y is bottom left and first vertex
 //Consti10: Video was flipped horizontally (at least big buck bunny)
 static const GLfloat vertices[][4][3] =
@@ -53,8 +55,8 @@ void TextureRenderer::init()
                                                     "}\n");
         m_program->link();
         //
-        const int test_w=1280;
-        const int test_h=720;
+        const int test_w=640;
+        const int test_h=480;
         QImage image1{test_w,test_h, QImage::Format_RGB888};
         image1.fill(QColor(255, 0, 0));
         QImage image2{test_w,test_h, QImage::Format_RGB888};
@@ -117,7 +119,37 @@ void TextureRenderer::paint()
      }
      glBindTexture(GL_TEXTURE_2D, texture->textureId());
 
-     glViewport(0, 0, m_viewportSize.width(), m_viewportSize.height());
+     // We setup the viewport surch that we preserve the original ratio of the teture ( width / height).
+     // One could also just transform the vertex coordinates, but setting the vieport accordingly is easier.
+     const int surface_width=m_viewportSize.width();
+     const int surface_height=m_viewportSize.height();
+     const double surface_aspect_ratio=(double)surface_width / (double)surface_height;
+     const int texture_width=texture->width();
+     const int texture_height=texture->height();
+     const double texture_aspect_ratio=(double)texture_width / (double)texture_height;
+     qDebug()<<"Surface "<< surface_width<<"x"<<surface_height<<" ratio:"<<surface_aspect_ratio;
+     qDebug()<<"Texture "<<texture_width<<"x"<<texture_height<<" ratio:"<<texture_aspect_ratio;
+     int x_viewport_width=0;
+     int x_viewport_height=0;
+     if(surface_aspect_ratio>texture_aspect_ratio){
+         // we use the full height, and andjust the width.
+         // Example case: 16/9 (1.7) surface  and 4:3 (1.3) (video) texture
+         x_viewport_height=surface_height;
+         auto tmp= surface_height * texture_aspect_ratio;
+         x_viewport_width=std::lround(tmp);
+         int x_offset=(m_viewportSize.width()-x_viewport_width)/2;
+         qDebug()<<"Viewport <<"<<x_viewport_width<<"x"<<x_viewport_height;
+         glViewport(x_offset,0,x_viewport_width,x_viewport_height);
+     }else{
+          // we use the full width, and adjust the height
+         x_viewport_width=surface_width;
+         auto tmp= surface_width * (1.0/texture_aspect_ratio);
+         x_viewport_height=std::lround(tmp);
+         int y_offset=(m_viewportSize.height()-x_viewport_height)/2;
+          qDebug()<<"Viewport <<"<<x_viewport_width<<"x"<<x_viewport_height;
+          glViewport(0,y_offset,x_viewport_width,x_viewport_height);
+     }
+     //glViewport(0, 0, m_viewportSize.width(), m_viewportSize.height());
 
      glDisable(GL_DEPTH_TEST);
 
@@ -126,8 +158,9 @@ void TextureRenderer::paint()
      m_program->release();
      //texture->release();
      glBindTexture(GL_TEXTURE_2D, 0);
-     //
+     // make sure we leave how we started / such that Qt rendering works normally
      glEnable(GL_DEPTH_TEST);
+     glViewport(0, 0, m_viewportSize.width(), m_viewportSize.height());
 
     m_window->endExternalCommands();
 }
