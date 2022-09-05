@@ -8,6 +8,7 @@
 
 #include <QDebug>
 #include "qopenhd.h"
+#include "telemetry/telemetryutil.hpp""
 
 FCMavlinkSystem& FCMavlinkSystem::instance() {
     static FCMavlinkSystem* instance = new FCMavlinkSystem();
@@ -130,12 +131,12 @@ void FCMavlinkSystem::updateAppMahKm() {
     if (!totalTime.isValid()){
         totalTime.start();
     }
-    static OpenHDUtil::pt1Filter_t eFilterState;
+    static Telemetryutil::pt1Filter_t eFilterState;
     auto currentTimeMs = totalTime.elapsed();
     auto efficiencyTimeDelta = currentTimeMs - mahKmLastTime;
 
     if ( (m_gps_fix_type >= GPS_FIX_TYPE_2D_FIX) && (m_speed > 0) ) {
-        set_mah_km((int)OpenHDUtil::pt1FilterApply4(
+        set_mah_km((int)Telemetryutil::pt1FilterApply4(
                     &eFilterState, ((float)m_battery_current*10 / m_speed), 1, efficiencyTimeDelta * 1e-3f));
         mahKmLastTime = currentTimeMs;
     }
