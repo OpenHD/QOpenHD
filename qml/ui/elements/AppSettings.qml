@@ -314,7 +314,6 @@ Settings {
     property double adsb_size: 1
     property bool adsb_show_unknown_or_zero_alt: false
 
-    property bool show_vroverlay: false
     property double vroverlay_opacity: 1
     property double vroverlay_size: 1
     property bool vroverlay_invert_pitch: false

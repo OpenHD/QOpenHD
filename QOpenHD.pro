@@ -124,6 +124,7 @@ HEADERS += \
     app/telemetry/qopenhdmavlinkhelper.hpp \
     app/telemetry/settings/documentedsetting.hpp \
     app/telemetry/settings/synchronizedsettings.h \
+    app/telemetry/telemetryutil.hpp \
     app/util/WorkaroundMessageBox.h \
     app/videostreaming/decodingstatistcs.h \
     app/exp/squircle.h \
@@ -264,7 +265,6 @@ iOSBuild {
     CONFIG += EnablePiP
     CONFIG += EnableVideoRender
     #CONFIG += EnableCharts
-    #CONFIG += EnableVR
     #CONFIG += EnableLog //does not work due to filepath not set
 
     app_launch_images.files = $$PWD/icons/LaunchScreen.png $$files($$PWD/icons/LaunchScreen.storyboard)
@@ -309,7 +309,6 @@ MacBuild {
     CONFIG += EnablePiP
     CONFIG += EnableVideoRender
     #CONFIG += EnableCharts
-    #CONFIG += EnableVR
     #CONFIG += EnableLog //does not work due to filepath not set
 
     EnableVideoRender {
@@ -339,7 +338,6 @@ LinuxBuild {
     CONFIG += EnablePiP
     CONFIG += EnableGStreamer
     #CONFIG += EnableCharts
-    #CONFIG += EnableVR
     #CONFIG += EnableLog
     message("LinuxBuild - config")
 }
@@ -352,7 +350,6 @@ JetsonBuild {
     CONFIG += EnablePiP
     #CONFIG += EnableCharts
     CONFIG += EnableSpeech
-    #CONFIG += EnableVR
     #CONFIG += EnableLog //does not work due to filepath not set
     CONFIG += EnableRC
     CONFIG += EnableJoysticks
@@ -378,7 +375,6 @@ RaspberryPiBuild {
     #CONFIG += EnableCharts
     CONFIG += EnableSpeech
     CONFIG += LimitADSBMax
-    #CONFIG += EnableVR
     #CONFIG += EnableLog
     CONFIG += EnableRC
     CONFIG += EnableJoysticks
@@ -398,7 +394,6 @@ WindowsBuild {
     #CONFIG +- EnablePiP
     #CONFIG += EnableGStreamer
     #CONFIG += EnableCharts
-    #CONFIG += EnableVR
     #CONFIG += EnableLog
 
     DEFINES += GST_GL_HAVE_WINDOW_WIN32=1
@@ -417,7 +412,6 @@ AndroidBuild {
     CONFIG += EnablePiP
     CONFIG += EnableVideoRender
     #CONFIG += EnableCharts
-    #CONFIG += EnableVR
     #CONFIG += EnableLog
 
     EnableGStreamer {
@@ -461,12 +455,6 @@ AndroidBuild {
         ANDROID_EXTRA_LIBS += $$PWD/lib/android/openssl/latest/arm/libcrypto_1_1.so \
                               $$PWD/lib/android/openssl/latest/arm/libssl_1_1.so
     #}
-}
-
-
-EnableVR {
-    message("EnableVR")
-    DEFINES += ENABLE_VR
 }
 
 
