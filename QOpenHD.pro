@@ -91,7 +91,6 @@ INCLUDEPATH += $$PWD/lib/GeographicLib-1.50/include
 
 # All files for the OSD elements - these are QT QQuickPaintedItem's that are written in c++
 SOURCES += \
-    app/exp/texturerenderer.cpp \
     app/logging/logmessagesmodel.cpp \
     app/openhd_systems/aohdsystem.cpp \
     app/osd/headingladder.cpp \
@@ -105,10 +104,10 @@ SOURCES += \
     app/util/WorkaroundMessageBox.cpp \
     app/videostreaming/decodingstatistcs.cpp \
     app/exp/squircle.cpp \
-    app/exp/squirclerenderer.cpp
+    #app/exp/squirclerenderer.cpp
+    app/exp/texturerenderer.cpp \
 
 HEADERS += \
-    app/exp/texturerenderer.h \
     app/logging/logmessagesmodel.h \
     app/openhd_systems/aohdsystem.h \
     app/openhd_systems/wifiadapter.h \
@@ -128,7 +127,8 @@ HEADERS += \
     app/util/WorkaroundMessageBox.h \
     app/videostreaming/decodingstatistcs.h \
     app/exp/squircle.h \
-    app/exp/squirclerenderer.h
+    #app/exp/squirclerenderer.h
+    app/exp/texturerenderer.h \
 
 
 # I deleted all the "old" telemetry protocolls other than mavlink

@@ -28,15 +28,17 @@ Rectangle {
         anchors.top: groundAndAirCardsId.bottom
         anchors.left: parent.left
         anchors.margins: 10
-        Button{
+        Text{
             height: 24
-            text: "Ping all systems"
-            onClicked: _mavlinkTelemetry.pingAllSystems()
+            text: "QT main thread frame time:"
         }
+
         Button{
             height: 24
-            text: "Request version"
-            onClicked: _mavlinkTelemetry.request_openhd_version()
+            text: "Dummy1"
+            onClicked:{
+
+            }
         }
     }
 }

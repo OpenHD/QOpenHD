@@ -10,7 +10,7 @@
 #include <QOpenGLFunctions>
 #include <QTimer>
 
-#include "squirclerenderer.h"
+//#include "squirclerenderer.h"
 #include "texturerenderer.h"
 
 //! [2]

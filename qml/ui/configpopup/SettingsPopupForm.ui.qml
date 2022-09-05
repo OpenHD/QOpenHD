@@ -320,7 +320,7 @@ Rectangle {
                 Text {
                     id: developerStatsButton
                     height: parent.height
-                    anchors.left: aboutIcon.right
+                    anchors.left: developerStatsIcon.right
                     anchors.leftMargin: 6
 
                     text: qsTr("DEV")
