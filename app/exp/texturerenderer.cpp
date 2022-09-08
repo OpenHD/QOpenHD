@@ -34,6 +34,8 @@ void TextureRenderer::init()
         Q_ASSERT(rif->graphicsApi() == QSGRendererInterface::OpenGL);
 
         initializeOpenGLFunctions();
+        //gl_shaders=std::make_unique<GL_shaders>();
+        //gl_shaders->initialize();
 
         m_program = new QOpenGLShaderProgram();
         m_program->addCacheableShaderFromSourceCode(QOpenGLShader::Vertex,
@@ -55,8 +57,8 @@ void TextureRenderer::init()
                                                     "}\n");
         m_program->link();
         //
-        const int test_w=640;
-        const int test_h=480;
+        const int test_w=1280;
+        const int test_h=720;
         QImage image1{test_w,test_h, QImage::Format_RGB888};
         image1.fill(QColor(255, 0, 0));
         QImage image2{test_w,test_h, QImage::Format_RGB888};
@@ -92,7 +94,7 @@ void TextureRenderer::paint()
     last_frame=std::chrono::steady_clock::now();
     const auto frame_time_us=std::chrono::duration_cast<std::chrono::microseconds>(delta).count();
     const float frame_time_ms=((float)frame_time_us)/1000.0f;
-    qDebug()<<" SquircleRenderer::paint() frame time:"<<frame_time_ms<<"ms";
+    //qDebug()<<" TextureRenderer::paint() frame time:"<<frame_time_ms<<"ms";
     renderCount++;
     if(renderCount>1){
         renderCount=0;
@@ -120,6 +122,8 @@ void TextureRenderer::paint()
     }
     glBindTexture(GL_TEXTURE_2D, texture->textureId());
 
+    //gl_shaders->draw_rgb( texture->textureId());
+
     // We setup the viewport surch that we preserve the original ratio of the teture ( width / height).
     // One could also just transform the vertex coordinates, but setting the vieport accordingly is easier.
     const int surface_width=m_viewportSize.width();
@@ -128,8 +132,8 @@ void TextureRenderer::paint()
     const int texture_width=texture->width();
     const int texture_height=texture->height();
     const double texture_aspect_ratio=(double)texture_width / (double)texture_height;
-    qDebug()<<"Surface "<< surface_width<<"x"<<surface_height<<" ratio:"<<surface_aspect_ratio;
-    qDebug()<<"Texture "<<texture_width<<"x"<<texture_height<<" ratio:"<<texture_aspect_ratio;
+    //qDebug()<<"Surface "<< surface_width<<"x"<<surface_height<<" ratio:"<<surface_aspect_ratio;
+    //qDebug()<<"Texture "<<texture_width<<"x"<<texture_height<<" ratio:"<<texture_aspect_ratio;
     int x_viewport_width=0;
     int x_viewport_height=0;
     if(surface_aspect_ratio>texture_aspect_ratio){
@@ -139,7 +143,7 @@ void TextureRenderer::paint()
         auto tmp= surface_height * texture_aspect_ratio;
         x_viewport_width=std::lround(tmp);
         int x_offset=(m_viewportSize.width()-x_viewport_width)/2;
-        qDebug()<<"Viewport <<"<<x_viewport_width<<"x"<<x_viewport_height;
+        //qDebug()<<"Viewport <<"<<x_viewport_width<<"x"<<x_viewport_height;
         glViewport(x_offset,0,x_viewport_width,x_viewport_height);
     }else{
          // we use the full width, and adjust the height
@@ -147,17 +151,18 @@ void TextureRenderer::paint()
         auto tmp= surface_width * (1.0/texture_aspect_ratio);
         x_viewport_height=std::lround(tmp);
         int y_offset=(m_viewportSize.height()-x_viewport_height)/2;
-         qDebug()<<"Viewport <<"<<x_viewport_width<<"x"<<x_viewport_height;
+         //qDebug()<<"Viewport <<"<<x_viewport_width<<"x"<<x_viewport_height;
          glViewport(0,y_offset,x_viewport_width,x_viewport_height);
     }
     //glViewport(0, 0, m_viewportSize.width(), m_viewportSize.height());
 
     glDisable(GL_DEPTH_TEST);
 
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    //gl_shaders->draw_rgb(texture->textureId());
 
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     m_program->release();
-    //texture->release();
+
     glBindTexture(GL_TEXTURE_2D, 0);
     // make sure we leave how we started / such that Qt rendering works normally
     glEnable(GL_DEPTH_TEST);

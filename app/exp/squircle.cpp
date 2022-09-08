@@ -8,6 +8,7 @@
 #include <QOpenGLContext>
 #include <QtCore/QRunnable>
 
+#include "../util/qrenderstats.h"
 
 class CleanupJob : public QRunnable
 {
@@ -71,6 +72,8 @@ void Squircle::sync()
         m_renderer = new TextureRenderer();
         connect(window(), &QQuickWindow::beforeRendering, this, &Squircle::m_QQuickWindow_beforeRendering, Qt::DirectConnection);
         connect(window(), &QQuickWindow::beforeRenderPassRecording, this, &Squircle::m_QQuickWindow_beforeRenderPassRecording, Qt::DirectConnection);
+        //X
+        //QRenderStats::instance().registerOnWindow(window());
     }
     m_renderer->setViewportSize(window()->size() * window()->devicePixelRatio());
     //m_renderer->setT(m_t);

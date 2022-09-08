@@ -91,6 +91,7 @@ INCLUDEPATH += $$PWD/lib/GeographicLib-1.50/include
 
 # All files for the OSD elements - these are QT QQuickPaintedItem's that are written in c++
 SOURCES += \
+    app/exp/gl_shaders.cpp \
     app/logging/logmessagesmodel.cpp \
     app/openhd_systems/aohdsystem.cpp \
     app/osd/headingladder.cpp \
@@ -102,12 +103,14 @@ SOURCES += \
     app/qopenhd.cpp \
     app/telemetry/settings/synchronizedsettings.cpp \
     app/util/WorkaroundMessageBox.cpp \
+    app/util/qrenderstats.cpp \
     app/videostreaming/decodingstatistcs.cpp \
     app/exp/squircle.cpp \
     #app/exp/squirclerenderer.cpp
     app/exp/texturerenderer.cpp \
 
 HEADERS += \
+    app/exp/gl_shaders.h \
     app/logging/logmessagesmodel.h \
     app/openhd_systems/aohdsystem.h \
     app/openhd_systems/wifiadapter.h \
@@ -125,6 +128,7 @@ HEADERS += \
     app/telemetry/settings/synchronizedsettings.h \
     app/telemetry/telemetryutil.hpp \
     app/util/WorkaroundMessageBox.h \
+    app/util/qrenderstats.h \
     app/videostreaming/decodingstatistcs.h \
     app/exp/squircle.h \
     #app/exp/squirclerenderer.h

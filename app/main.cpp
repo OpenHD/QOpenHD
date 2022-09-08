@@ -28,6 +28,7 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "osd/drawingcanvas.h"
 //
 #include "exp/squircle.h"
+#include "util/qrenderstats.h"
 
 
 #if defined(ENABLE_RC)
@@ -212,16 +213,16 @@ int main(int argc, char *argv[]) {
 
     QSettings settings;
 
-    double global_scale = settings.value("global_scale", 1.0).toDouble();
-
-    std::string global_scale_s = std::to_string(global_scale);
+    const double global_scale = settings.value("global_scale", 1.0).toDouble();
+    const std::string global_scale_s = std::to_string(global_scale);
     QByteArray scaleAsQByteArray(global_scale_s.c_str(), global_scale_s.length());
     qputenv("QT_SCALE_FACTOR", scaleAsQByteArray);
 
+    // https://doc.qt.io/qt-6/qtquick-visualcanvas-scenegraph-renderer.html
+    //qputenv("QSG_VISUALIZE", "overdraw");
+   // QCoreApplication::setAttribute(Qt::AA_UseOpenGLES);
+
     QApplication app(argc, argv);
-
-
-
 
 #if defined(__ios__)
     auto applePlatform = ApplePlatform::instance();
@@ -257,7 +258,7 @@ int main(int argc, char *argv[]) {
     qDebug() << "Finished initializing Pi";
 #endif
 
-   load_fonts();
+    load_fonts();
 
     qmlRegisterType<OpenHDRC>("OpenHD", 1, 0, "OpenHDRC");
 
@@ -267,15 +268,10 @@ int main(int argc, char *argv[]) {
     qmlRegisterUncreatableType<QmlObjectListModel>("OpenHD", 1, 0, "QmlObjectListModel", "Reference only");
 
     qmlRegisterType<SpeedLadder>("OpenHD", 1, 0, "SpeedLadder");
-
     qmlRegisterType<AltitudeLadder>("OpenHD", 1, 0, "AltitudeLadder");
-
     qmlRegisterType<HeadingLadder>("OpenHD", 1, 0, "HeadingLadder");
-
     qmlRegisterType<HorizonLadder>("OpenHD", 1, 0, "HorizonLadder");
-
     qmlRegisterType<FlightPathVector>("OpenHD", 1, 0, "FlightPathVector");
-
     qmlRegisterType<DrawingCanvas>("OpenHD", 1, 0, "DrawingCanvas");
     //
     qmlRegisterType<Squircle>("OpenHD", 1, 0, "Squircle");
@@ -298,6 +294,8 @@ int main(int argc, char *argv[]) {
     QQmlApplicationEngine engine;
     engine.rootContext()->setContextProperty("_qopenhd", &QOpenHD::instance());
     QOpenHD::instance().setEngine(&engine);
+
+    engine.rootContext()->setContextProperty("_qrenderstats", &QRenderStats::instance());
 
     write_platform_context_properties(engine);
     write_other_context_properties(engine);

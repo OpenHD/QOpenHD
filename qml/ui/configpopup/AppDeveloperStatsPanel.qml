@@ -25,12 +25,12 @@ Rectangle {
         Layout.fillWidth: true
         Layout.minimumHeight: 30
         spacing: 6
-        anchors.top: groundAndAirCardsId.bottom
+        anchors.top: parent.top
         anchors.left: parent.left
         anchors.margins: 10
         Text{
             height: 24
-            text: "QT main thread frame time:"
+            text: "QT main thread frame time:"+_qrenderstats.main_render_stats
         }
 
         Button{

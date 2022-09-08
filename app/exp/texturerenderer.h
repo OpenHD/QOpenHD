@@ -12,6 +12,8 @@
 #include <QOpenGLBuffer>
 #include <memory>
 
+#include "gl_shaders.h"
+
 //! [1]
 class TextureRenderer : public QObject, protected QOpenGLFunctions
 {
@@ -35,6 +37,9 @@ private:
     //
     std::unique_ptr<QOpenGLTexture> texture1=nullptr;
     std::unique_ptr<QOpenGLTexture> texture2=nullptr;
+    //
+    std::unique_ptr<GL_shaders> gl_shaders=nullptr;
+    //
     int renderCount=0;
     GLuint vbo;
     GLint pos;
