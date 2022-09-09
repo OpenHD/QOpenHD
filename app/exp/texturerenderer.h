@@ -5,11 +5,9 @@
 #include <QObject>
 #include <QtQuick/QQuickItem>
 #include <QtQuick/QQuickWindow>
-#include <QOpenGLShaderProgram>
 #include <QOpenGLFunctions>
 #include <chrono>
 #include <QOpenGLTexture>
-#include <QOpenGLBuffer>
 #include <memory>
 
 #include "gl_shaders.h"
