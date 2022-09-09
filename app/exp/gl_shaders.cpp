@@ -248,13 +248,33 @@ void GL_shaders::initialize() {
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
+void GL_shaders::beforeDrawVboSetup(GLint pos, GLint uvs) {
+  glBindBuffer(GL_ARRAY_BUFFER, vbo);
+  glEnableVertexAttribArray(pos);
+  glEnableVertexAttribArray(uvs);
+  glVertexAttribPointer(pos, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+  glVertexAttribPointer(uvs, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)sizeof(vertices)); /// last is offset to loc in buf memory
+}
+void GL_shaders::afterDrawVboCleanup(GLint pos, GLint uvs) {
+  glDisableVertexAttribArray(pos);
+  glDisableVertexAttribArray(uvs);
+  glBindBuffer(GL_ARRAY_BUFFER,0);
+}
+
 void GL_shaders::draw_rgb(GLuint texture) {
   glUseProgram(rgba_shader.program);
+  glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, texture);
+  glUniform1i(rgba_shader.sampler,0);
+  beforeDrawVboSetup(rgba_shader.pos,rgba_shader.uvs);
+  //
   glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+  //
   glBindTexture(GL_TEXTURE_2D, 0);
+  afterDrawVboCleanup(rgba_shader.pos,rgba_shader.uvs);
   checkGlError("Draw RGBA texture");
 }
+
 
 void GL_shaders::draw_egl(GLuint texture) {
   glUseProgram(egl_shader.program);

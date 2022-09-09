@@ -31,7 +31,6 @@ public:
 private:
     QSize m_viewportSize;
     int m_index=0;
-    QOpenGLShaderProgram *m_program = nullptr;
     QQuickWindow *m_window = nullptr;
     std::chrono::steady_clock::time_point last_frame=std::chrono::steady_clock::now();
     //
@@ -40,10 +39,8 @@ private:
     //
     std::unique_ptr<GL_shaders> gl_shaders=nullptr;
     //
+    bool initialized=false;
     int renderCount=0;
-    GLuint vbo;
-    GLint pos;
-    GLint uvs;
     //
 };
 //! [1]

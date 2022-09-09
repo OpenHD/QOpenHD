@@ -21,44 +21,26 @@ static const GLfloat uv_coords[][4][2] =
 
 TextureRenderer::~TextureRenderer()
 {
-    delete m_program;
-    glDeleteBuffers(1, &vbo);
+    //delete m_program;
+    //glDeleteBuffers(1, &vbo);
 }
 //! [6]
 
 //! [4]
 void TextureRenderer::init()
 {
-    if (!m_program) {
+    if (!initialized) {
+        initialized=true;
         QSGRendererInterface *rif = m_window->rendererInterface();
         Q_ASSERT(rif->graphicsApi() == QSGRendererInterface::OpenGL);
 
         initializeOpenGLFunctions();
-        //gl_shaders=std::make_unique<GL_shaders>();
-        //gl_shaders->initialize();
+        gl_shaders=std::make_unique<GL_shaders>();
+        gl_shaders->initialize();
 
-        m_program = new QOpenGLShaderProgram();
-        m_program->addCacheableShaderFromSourceCode(QOpenGLShader::Vertex,
-                                                    "attribute vec3 position;\n"
-                                                    "attribute vec2 tx_coords;\n"
-                                                    "varying vec2 v_texCoord;\n"
-                                                    "void main() {  \n"
-                                                    "	gl_Position = vec4(position, 1.0);\n"
-                                                    "	v_texCoord = tx_coords;\n"
-                                                    "}\n");
-        //"	gl_FragColor = texture2D( texture, v_texCoord );\n"
-        //"	gl_FragColor = vec4(0.0,1.0,0.0,1.0);\n"
-        m_program->addCacheableShaderFromSourceCode(QOpenGLShader::Fragment,
-                                                    "precision mediump float;\n"
-                                                    "uniform sampler2D texture;\n"
-                                                    "varying vec2 v_texCoord;\n"
-                                                    "void main() {	\n"
-                                                    "	gl_FragColor = texture2D( texture, v_texCoord );\n"
-                                                    "}\n");
-        m_program->link();
         //
         const int test_w=1280;
-        const int test_h=720;
+        const int test_h=900;
         QImage image1{test_w,test_h, QImage::Format_RGB888};
         image1.fill(QColor(255, 0, 0));
         QImage image2{test_w,test_h, QImage::Format_RGB888};
@@ -70,20 +52,6 @@ void TextureRenderer::init()
 
         texture1=std::make_unique<QOpenGLTexture>(image1);
         texture2=std::make_unique<QOpenGLTexture>(image2);
-        m_program->setUniformValue("texture", 0);
-        pos = m_program->attributeLocation( "position");
-        uvs = m_program->attributeLocation( "tx_coords");
-
-        glGenBuffers(1, &vbo);
-        glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices)+sizeof(uv_coords), 0, GL_STATIC_DRAW);
-        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
-        glBufferSubData(GL_ARRAY_BUFFER, sizeof(vertices), sizeof(uv_coords), uv_coords);
-        glEnableVertexAttribArray(pos);
-        glEnableVertexAttribArray(uvs);
-        glVertexAttribPointer(pos, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
-        glVertexAttribPointer(uvs, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)sizeof(vertices)); /// last is offset to loc in buf memory
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
 }
 
@@ -96,33 +64,19 @@ void TextureRenderer::paint()
     const float frame_time_ms=((float)frame_time_us)/1000.0f;
     //qDebug()<<" TextureRenderer::paint() frame time:"<<frame_time_ms<<"ms";
     renderCount++;
-    if(renderCount>1){
-        renderCount=0;
-    }
 
    // Play nice with the RHI. Not strictly needed when the scenegraph uses
    // OpenGL directly.
     // Consti10: comp error, seems to work without, too
-   //m_window->beginExternalCommands();
+   m_window->beginExternalCommands();
 
-   m_program->bind();
-
-   glBindBuffer(GL_ARRAY_BUFFER, vbo);
-   glEnableVertexAttribArray(pos);
-   glEnableVertexAttribArray(uvs);
-   glVertexAttribPointer(pos, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
-   glVertexAttribPointer(uvs, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)sizeof(vertices)); /// last is offset to loc in buf memory
-   glBindBuffer(GL_ARRAY_BUFFER, 0);
    // r.n we just swap between 2 textures
-    QOpenGLTexture *texture;
-    if(renderCount==0){
-        texture=texture1.get();
-    }else{
-        texture=texture2.get();
-    }
-    glBindTexture(GL_TEXTURE_2D, texture->textureId());
-
-    //gl_shaders->draw_rgb( texture->textureId());
+   QOpenGLTexture *texture;
+   if(renderCount % 2==0){
+       texture=texture2.get();
+   }else{
+       texture=texture1.get();
+   }
 
     // We setup the viewport surch that we preserve the original ratio of the teture ( width / height).
     // One could also just transform the vertex coordinates, but setting the vieport accordingly is easier.
@@ -158,16 +112,12 @@ void TextureRenderer::paint()
 
     glDisable(GL_DEPTH_TEST);
 
-    //gl_shaders->draw_rgb(texture->textureId());
+    gl_shaders->draw_rgb( texture->textureId());
 
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-    m_program->release();
-
-    glBindTexture(GL_TEXTURE_2D, 0);
     // make sure we leave how we started / such that Qt rendering works normally
     glEnable(GL_DEPTH_TEST);
     glViewport(0, 0, m_viewportSize.width(), m_viewportSize.height());
 
-   //m_window->endExternalCommands();
+    m_window->endExternalCommands();
 }
 //! [5]
