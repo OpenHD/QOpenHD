@@ -225,26 +225,6 @@ void GL_shaders::initialize() {
   glBufferData(GL_ARRAY_BUFFER, sizeof(vertices)+sizeof(uv_coords), 0, GL_STATIC_DRAW);
   glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
   glBufferSubData(GL_ARRAY_BUFFER, sizeof(vertices), sizeof(uv_coords), uv_coords);
-  // Each shader program reads from this VBO object
-  glEnableVertexAttribArray(egl_shader.pos);
-  glEnableVertexAttribArray(egl_shader.uvs);
-  glVertexAttribPointer(egl_shader.pos, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
-  glVertexAttribPointer(egl_shader.uvs, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)sizeof(vertices)); /// last is offset to loc in buf memory
-  //
-  glEnableVertexAttribArray(rgba_shader.pos);
-  glEnableVertexAttribArray(rgba_shader.uvs);
-  glVertexAttribPointer(rgba_shader.pos, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
-  glVertexAttribPointer(rgba_shader.uvs, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)sizeof(vertices)); /// last is offset to loc in buf memory
-  //
-  glEnableVertexAttribArray(nv12_shader.pos);
-  glEnableVertexAttribArray(nv12_shader.uvs);
-  glVertexAttribPointer(nv12_shader.pos, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
-  glVertexAttribPointer(nv12_shader.uvs, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)sizeof(vertices)); /// last is offset to loc in buf memory
-  //
-  glEnableVertexAttribArray(yuv_420P_shader.pos);
-  glEnableVertexAttribArray(yuv_420P_shader.uvs);
-  glVertexAttribPointer(yuv_420P_shader.pos, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
-  glVertexAttribPointer(yuv_420P_shader.uvs, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)sizeof(vertices)); /// last is offset to loc in buf memory
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
