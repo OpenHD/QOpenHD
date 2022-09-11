@@ -68,15 +68,15 @@ void TextureRenderer::paint()
    // OpenGL directly.
     // Consti10: comp error, seems to work without, too
    m_window->beginExternalCommands();
+   //glClear(GL_COLOR_BUFFER_BIT |GL_DEPTH_BUFFER_BIT| GL_STENCIL_BUFFER_BIT);
 
    // r.n we just swap between 2 textures
    QOpenGLTexture *texture;
-   if(renderCount % 2==0){
-       texture=texture2.get();
-   }else{
+   if((renderCount/1) % 2==0){
        texture=texture1.get();
+   }else{
+       texture=texture2.get();
    }
-
     // We setup the viewport surch that we preserve the original ratio of the teture ( width / height).
     // One could also just transform the vertex coordinates, but setting the vieport accordingly is easier.
     const int surface_width=m_viewportSize.width();
@@ -111,7 +111,8 @@ void TextureRenderer::paint()
 
     glDisable(GL_DEPTH_TEST);
 
-    gl_shaders->draw_rgb( texture->textureId());
+    gl_shaders->draw_rgb(texture->textureId());
+    //gl_shaders->draw_YUV420P(texture->textureId(),texture->textureId(),texture->textureId());
 
     // make sure we leave how we started / such that Qt rendering works normally
     glEnable(GL_DEPTH_TEST);

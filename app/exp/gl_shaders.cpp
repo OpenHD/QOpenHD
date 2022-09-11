@@ -70,6 +70,7 @@ static const GLchar* fragment_shader_source_RGB =
     "out vec4 out_color;\n"
     "void main() {	\n"
     "	out_color = texture2D( s_texture, v_texCoord );\n"
+    "	out_color.a = 1.0;\n"
     //"	out_color = vec4(v_texCoord.x,1.0,0.0,1.0);\n"
     "}\n";
 static const GLchar* fragment_shader_source_YUV420P =
@@ -259,7 +260,9 @@ void GL_shaders::draw_rgb(GLuint texture) {
 void GL_shaders::draw_egl(GLuint texture) {
   glUseProgram(egl_shader.program);
   glBindTexture(GL_TEXTURE_EXTERNAL_OES,texture);
+  beforeDrawVboSetup(egl_shader.pos,egl_shader.uvs);
   glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+  afterDrawVboCleanup(egl_shader.pos,egl_shader.uvs);
   glBindTexture(GL_TEXTURE_EXTERNAL_OES,0);
   checkGlError("Draw EGL texture");
 }
@@ -274,7 +277,9 @@ void GL_shaders::draw_YUV420P(GLuint textureY, GLuint textureU, GLuint textureV)
     if(i==2)texture=textureV;
     glBindTexture(GL_TEXTURE_2D,texture);
   }
+  beforeDrawVboSetup(egl_shader.pos,egl_shader.uvs);
   glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+  afterDrawVboCleanup(egl_shader.pos,egl_shader.uvs);
   glBindTexture(GL_TEXTURE_2D, 0);
   checkGlError("Draw NV12 texture");
 }
@@ -288,7 +293,11 @@ void GL_shaders::draw_NV12(GLuint textureY, GLuint textureUV) {
     if(i==1)texture=textureUV;
     glBindTexture(GL_TEXTURE_2D,texture);
   }
+  beforeDrawVboSetup(nv12_shader.pos,nv12_shader.uvs);
+  //
   glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+  //
+  afterDrawVboCleanup(nv12_shader.pos,nv12_shader.uvs);
   glBindTexture(GL_TEXTURE_2D, 0);
   checkGlError("Draw NV12 texture");
 }

@@ -12,7 +12,6 @@
 
 #include "gl_shaders.h"
 
-//! [1]
 class TextureRenderer : public QObject, protected QOpenGLFunctions
 {
     Q_OBJECT
@@ -41,6 +40,5 @@ private:
     int renderCount=0;
     //
 };
-//! [1]
 
 #endif // TEXTURERENDERER_H
