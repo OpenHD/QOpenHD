@@ -56,15 +56,8 @@ static MGLViewptort calculate_viewport_video_fullscreen(int surface_width,int su
     return ret;
 }
 
-TextureRenderer::~TextureRenderer()
-{
-    //delete m_program;
-    //glDeleteBuffers(1, &vbo);
-}
-//! [6]
 
-//! [4]
-void TextureRenderer::init()
+void TextureRenderer::initGL()
 {
     if (!initialized) {
         initialized=true;
@@ -107,23 +100,31 @@ void TextureRenderer::paint()
     // Consti10: comp error, seems to work without, too
    m_window->beginExternalCommands();
    //glClear(GL_COLOR_BUFFER_BIT |GL_DEPTH_BUFFER_BIT| GL_STENCIL_BUFFER_BIT);
-
-   // r.n we just swap between 2 textures
-   QOpenGLTexture *texture;
-   if((renderCount/1) % 2==0){
-       texture=texture1.get();
-   }else{
-       texture=texture2.get();
+   AVFrame* new_frame=fetch_latest_decoded_frame();
+   if(new_frame!= nullptr){
+     // update the texture with this frame
+     m_display_stats.n_frames_rendered++;
+     update_texture_gl(new_frame);
    }
-    // We setup the viewport surch that we preserve the original ratio of the teture ( width / height).
-    // One could also just transform the vertex coordinates, but setting the vieport accordingly is easier.
-    const auto viewport=calculate_viewport_video_fullscreen(m_viewportSize.width(),m_viewportSize.height(),texture->width(),texture->height());
-    glViewport(viewport.x,viewport.y,viewport.width,viewport.height);
-
-    glDisable(GL_DEPTH_TEST);
-
-    gl_shaders->draw_rgb(texture->textureId());
-    //gl_shaders->draw_YUV420P(texture->textureId(),texture->textureId(),texture->textureId());
+   glDisable(GL_DEPTH_TEST);
+   if(yuv_420_p_sw_frame_texture.has_valid_image){
+       gl_shaders->draw_YUV420P(yuv_420_p_sw_frame_texture.textures[0],
+                                yuv_420_p_sw_frame_texture.textures[1],
+                                yuv_420_p_sw_frame_texture.textures[2]);
+   }else{
+    // r.n we just swap between 2 textures
+     QOpenGLTexture *texture;
+     if((renderCount/1) % 2==0){
+         texture=texture1.get();
+     }else{
+         texture=texture2.get();
+     }
+      // We setup the viewport surch that we preserve the original ratio of the teture ( width / height).
+      // One could also just transform the vertex coordinates, but setting the vieport accordingly is easier.
+      const auto viewport=calculate_viewport_video_fullscreen(m_viewportSize.width(),m_viewportSize.height(),texture->width(),texture->height());
+      glViewport(viewport.x,viewport.y,viewport.width,viewport.height);
+      gl_shaders->draw_rgb(texture->textureId());
+    }
 
     // make sure we leave how we started / such that Qt rendering works normally
     glEnable(GL_DEPTH_TEST);
@@ -131,4 +132,111 @@ void TextureRenderer::paint()
 
     m_window->endExternalCommands();
 }
-//! [5]
+
+int TextureRenderer::queue_new_frame_for_display(AVFrame *src_frame)
+{
+    assert(src_frame);
+      //std::cout<<"DRMPrimeOut::drmprime_out_display "<<src_frame->width<<"x"<<src_frame->height<<"\n";
+      if ((src_frame->flags & AV_FRAME_FLAG_CORRUPT) != 0) {
+        fprintf(stderr, "Discard corrupt frame: fmt=%d, ts=%" PRId64 "\n", src_frame->format, src_frame->pts);
+        return 0;
+      }
+      latest_frame_mutex.lock();
+      // We drop a frame that has (not yet) been consumed by the render thread to whatever is the newest available.
+      if(m_latest_frame!= nullptr){
+        av_frame_free(&m_latest_frame);
+        qDebug()<<"Dropping frame\n";
+        m_display_stats.n_frames_dropped++;
+      }
+      AVFrame *frame=frame = av_frame_alloc();
+      assert(frame);
+      if(av_frame_ref(frame, src_frame)!=0){
+        fprintf(stderr, "av_frame_ref error\n");
+        av_frame_free(&frame);
+        // don't forget to give up the lock
+        latest_frame_mutex.unlock();
+        return AVERROR(EINVAL);
+      }
+      m_latest_frame=frame;
+      latest_frame_mutex.unlock();
+      return 0;
+}
+
+void TextureRenderer::update_texture_yuv420p(AVFrame *frame)
+{
+    assert(frame);
+    assert(frame->format==AV_PIX_FMT_YUV420P);
+    qDebug()<<"update_texture_yuv420p\n";
+    for(int i=0;i<3;i++){
+      if(yuv_420_p_sw_frame_texture.textures[i]==0){
+        glGenTextures(1,&yuv_420_p_sw_frame_texture.textures[i]);
+        assert(yuv_420_p_sw_frame_texture.textures[i]>0);
+      }
+      GL_shaders::checkGlError("Xupload YUV420P");
+      glBindTexture(GL_TEXTURE_2D, yuv_420_p_sw_frame_texture.textures[i]);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+      glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+      bool use_tex_sub_image= false;
+      if(yuv_420_p_sw_frame_texture.last_width==frame->width &&
+          yuv_420_p_sw_frame_texture.last_height==frame->height){
+          //use_tex_sub_image= true;
+      }else{
+        yuv_420_p_sw_frame_texture.last_width=frame->width;
+        yuv_420_p_sw_frame_texture.last_height=frame->height;
+      }
+      if(i==0){
+        // Full Y plane
+        if(use_tex_sub_image){
+          glTexSubImage2D(GL_TEXTURE_2D,0,0,0,frame->width,frame->height,GL_LUMINANCE,GL_UNSIGNED_BYTE,frame->data[0]);
+        }else{
+          glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, frame->width, frame->height, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, frame->data[0]);
+        }
+      }else{
+        // half size U,V planes
+        if(use_tex_sub_image){
+          glTexSubImage2D(GL_TEXTURE_2D, 0,0,0, frame->width/2, frame->height/2, GL_LUMINANCE, GL_UNSIGNED_BYTE, frame->data[i]);
+        } else{
+          glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, frame->width/2, frame->height/2, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, frame->data[i]);
+        }
+      }
+      glBindTexture(GL_TEXTURE_2D,0);
+    }
+    yuv_420_p_sw_frame_texture.has_valid_image= true;
+    qDebug()<<"Colorspace:"<<av_color_space_name(frame->colorspace)<<"\n";
+    av_frame_free(&frame);
+    GL_shaders::checkGlError("upload YUV420P");
+}
+
+AVFrame *TextureRenderer::fetch_latest_decoded_frame()
+{
+    std::lock_guard<std::mutex> lock(latest_frame_mutex);
+     if(m_latest_frame!= nullptr) {
+       // Make a copy and write nullptr to the thread-shared variable such that
+       // it is not freed by the providing thread.
+       AVFrame* new_frame = m_latest_frame;
+       m_latest_frame = nullptr;
+       return new_frame;
+     }
+     return nullptr;
+}
+
+void TextureRenderer::update_texture_gl(AVFrame *frame)
+{
+    if(frame->format == AV_PIX_FMT_DRM_PRIME){
+        //EGLDisplay egl_display=eglGetCurrentDisplay();
+        //update_drm_prime_to_egl_texture(&egl_display, egl_frame_texture, frame);
+      }else if(frame->format==AV_PIX_FMT_CUDA){
+        //update_texture_cuda(frame);
+      }else if(frame->format==AV_PIX_FMT_YUV420P){
+        update_texture_yuv420p(frame);
+      }else if(frame->format==AV_PIX_FMT_VDPAU){
+        //update_texture_vdpau(frame);
+      }
+      else{
+        /*std::cerr << "Unimplemented to texture:" << safe_av_get_pix_fmt_name((AVPixelFormat)frame->format) << "\n";
+        print_hwframe_transfer_formats(frame->hw_frames_ctx);
+        av_frame_free(&frame);*/
+      }
+}
+

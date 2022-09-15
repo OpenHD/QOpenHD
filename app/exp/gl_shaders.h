@@ -6,8 +6,10 @@
 #define HELLO_DRMPRIME__GL_SHADERS_H_
 
 extern "C" {
+#include <GLES2/gl2.h>
 #include "glhelp.h"
 }
+#include <string>
 
 // Holds multiple GL programs that render different types of (Video) textures
 // All textures fill up the full gl viewport, adjust it accordingly to preserve video ratio.
@@ -54,8 +56,9 @@ class GL_shaders {
   GLuint vbo=0;
   void beforeDrawVboSetup(GLint pos,GLint uvs);
   void afterDrawVboCleanup(GLint pos,GLint uvs);
-  GLint common_get_shader_program(const char *vertex_shader_source, const char *fragment_shader_source);
  public:
+  static void checkGlError(const std::string& caller);
+  // needs to be called on the OpenGL thread and before the first use of any draw_XXX calls
   void initialize();
   // "normal" RGB(A) texture
   void draw_rgb(GLuint texture);

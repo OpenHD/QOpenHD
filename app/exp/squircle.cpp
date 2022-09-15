@@ -66,7 +66,8 @@ void Squircle::sync()
 {
     if (!m_renderer) {
         //m_renderer = new SquircleRenderer();
-        m_renderer = new TextureRenderer();
+        //m_renderer = new TextureRenderer();
+        m_renderer = &TextureRenderer::instance();
         connect(window(), &QQuickWindow::beforeRendering, this, &Squircle::m_QQuickWindow_beforeRendering, Qt::DirectConnection);
         connect(window(), &QQuickWindow::beforeRenderPassRecording, this, &Squircle::m_QQuickWindow_beforeRenderPassRecording, Qt::DirectConnection);
         //X
@@ -80,7 +81,7 @@ void Squircle::sync()
 void Squircle::m_QQuickWindow_beforeRendering()
 {
     if(m_renderer){
-        m_renderer->init();
+        m_renderer->initGL();
     }
 }
 

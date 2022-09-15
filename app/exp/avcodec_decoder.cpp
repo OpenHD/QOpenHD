@@ -6,6 +6,8 @@
 #include "ffmpeg_workaround_api_version.hpp"
 #include "util/time/TimeHelper.hpp"
 
+#include "texturerenderer.h"
+
 static enum AVPixelFormat wanted_hw_pix_fmt;
 
 static int hw_decoder_init(AVCodecContext *ctx, const enum AVHWDeviceType type){
@@ -118,6 +120,7 @@ int AVCodecDecoder::decode_and_wait_for_frame(AVPacket *packet)
 void AVCodecDecoder::on_new_frame(AVFrame *frame)
 {
     qDebug()<<"Got frame format:"<<QString(safe_av_get_pix_fmt_name((AVPixelFormat)frame->format).c_str());
+    TextureRenderer::instance().queue_new_frame_for_display(frame);
 }
 
 

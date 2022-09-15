@@ -9,8 +9,6 @@
 #include <cassert>
 #include "gl_shaders.h"
 
-#define GL_TEXTURE_EXTERNAL_OES           0x8D65
-
 static const char *GlErrorString(GLenum error ){
   switch ( error ){
     case GL_NO_ERROR:						return "GL_NO_ERROR";
@@ -25,7 +23,7 @@ static const char *GlErrorString(GLenum error ){
     default: return "unknown";
   }
 }
-static void checkGlError(const std::string& caller) {
+ void GL_shaders::checkGlError(const std::string& caller) {
   GLenum error;
   std::stringstream ss;
   ss<<"GLError:"<<caller.c_str();
@@ -129,7 +127,7 @@ static const GLfloat uv_coords[][4][2] =
         { {1.0, 1.0}, {0.0, 1.0}, {1.0, 0.0}, {0.0, 0.0} }
     };
 
-GLint GL_shaders::common_get_shader_program(const char *vertex_shader_source, const char *fragment_shader_source) {
+static GLint common_get_shader_program(const char *vertex_shader_source, const char *fragment_shader_source) {
   enum Consts {INFOLOG_LEN = 512};
   GLchar infoLog[INFOLOG_LEN];
   GLint fragment_shader;
@@ -174,8 +172,6 @@ GLint GL_shaders::common_get_shader_program(const char *vertex_shader_source, co
 }
 
 void GL_shaders::initialize() {
-  // QT crap
-  //initializeOpenGLFunctions();
   // Shader 1
   rgba_shader.program = common_get_shader_program(vertex_shader_source_all,fragment_shader_source_RGB);
   assert(rgba_shader.program!=0);
@@ -227,6 +223,7 @@ void GL_shaders::initialize() {
   glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
   glBufferSubData(GL_ARRAY_BUFFER, sizeof(vertices), sizeof(uv_coords), uv_coords);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
+  checkGlError("Create VBO");
 }
 
 void GL_shaders::beforeDrawVboSetup(GLint pos, GLint uvs) {
@@ -248,14 +245,11 @@ void GL_shaders::draw_rgb(GLuint texture) {
   glBindTexture(GL_TEXTURE_2D, texture);
   glUniform1i(rgba_shader.sampler,0);
   beforeDrawVboSetup(rgba_shader.pos,rgba_shader.uvs);
-  //
   glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-  //
   glBindTexture(GL_TEXTURE_2D, 0);
   afterDrawVboCleanup(rgba_shader.pos,rgba_shader.uvs);
   checkGlError("Draw RGBA texture");
 }
-
 
 void GL_shaders::draw_egl(GLuint texture) {
   glUseProgram(egl_shader.program);
@@ -268,6 +262,7 @@ void GL_shaders::draw_egl(GLuint texture) {
 }
 
 void GL_shaders::draw_YUV420P(GLuint textureY, GLuint textureU, GLuint textureV) {
+  checkGlError("B Draw YUV420 texture");
   glUseProgram(yuv_420P_shader.program);
   for(int i=0;i<3;i++){
     glActiveTexture(GL_TEXTURE0 + i);
@@ -277,11 +272,11 @@ void GL_shaders::draw_YUV420P(GLuint textureY, GLuint textureU, GLuint textureV)
     if(i==2)texture=textureV;
     glBindTexture(GL_TEXTURE_2D,texture);
   }
-  beforeDrawVboSetup(egl_shader.pos,egl_shader.uvs);
+  beforeDrawVboSetup(yuv_420P_shader.pos,yuv_420P_shader.uvs);
   glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-  afterDrawVboCleanup(egl_shader.pos,egl_shader.uvs);
+  afterDrawVboCleanup(yuv_420P_shader.pos,yuv_420P_shader.uvs);
   glBindTexture(GL_TEXTURE_2D, 0);
-  checkGlError("Draw NV12 texture");
+  checkGlError("Draw YUV420 texture");
 }
 
 void GL_shaders::draw_NV12(GLuint textureY, GLuint textureUV) {
@@ -294,9 +289,7 @@ void GL_shaders::draw_NV12(GLuint textureY, GLuint textureUV) {
     glBindTexture(GL_TEXTURE_2D,texture);
   }
   beforeDrawVboSetup(nv12_shader.pos,nv12_shader.uvs);
-  //
   glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-  //
   afterDrawVboCleanup(nv12_shader.pos,nv12_shader.uvs);
   glBindTexture(GL_TEXTURE_2D, 0);
   checkGlError("Draw NV12 texture");
