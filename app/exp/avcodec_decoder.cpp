@@ -128,10 +128,10 @@ void AVCodecDecoder::on_new_frame(AVFrame *frame)
 int AVCodecDecoder::lulatsch()
 {
     //const char* in_filename="/home/consti10/Desktop/hello_drmprime/in/rv1126.h265";
-    //const char* in_filename="/home/consti10/Desktop/hello_drmprime/in/rtp_h264.sdp";
+    const char* in_filename="/home/consti10/Desktop/hello_drmprime/in/rtp_h264.sdp";
     //std::string in_filename="empty";
 
-    char* in_filename="/home/openhd/hello_drmprime/in/rtp_h264.sdp";
+    //char* in_filename="/home/openhd/hello_drmprime/in/rtp_h264.sdp";
     //char* in_filename="/home/openhd/hello_drmprime/in/rv_1280x720_green_white.h265";
 
     // These options are needed for using the foo.sdp (rtp streaming)
@@ -156,6 +156,7 @@ int AVCodecDecoder::lulatsch()
 
     if (avformat_find_stream_info(input_ctx, NULL) < 0) {
         fprintf(stderr, "Cannot find input stream information.\n");
+        avformat_close_input(&input_ctx);
         return -1;
     }
 
@@ -164,6 +165,7 @@ int AVCodecDecoder::lulatsch()
     int ret = av_find_best_stream(input_ctx, AVMEDIA_TYPE_VIDEO, -1, -1,(AVCodec**) &decoder, 0);
     if (ret < 0) {
         fprintf(stderr, "Cannot find a video stream in the input file\n");
+        avformat_close_input(&input_ctx);
         return -1;
     }
     const int video_stream = ret;
@@ -185,6 +187,7 @@ int AVCodecDecoder::lulatsch()
         std::cout<<"H264 decode\n";
         if ((decoder = avcodec_find_decoder_by_name("h264_v4l2m2m")) == NULL) {
             fprintf(stderr, "Cannot find the h264 v4l2m2m decoder\n");
+            avformat_close_input(&input_ctx);
             return -1;
         }
         wanted_hw_pix_fmt = AV_PIX_FMT_DRM_PRIME;
@@ -234,7 +237,8 @@ int AVCodecDecoder::lulatsch()
 
     if (!(decoder_ctx = avcodec_alloc_context3(decoder))){
         std::cout<<"avcodec_alloc_context3 failed\n";
-        return AVERROR(ENOMEM);
+        avformat_close_input(&input_ctx);
+        return -1;
     }
     // From moonlight-qt. However, on PI, this doesn't seem to make any difference, at least for H265 decode.
     // (I never measured h264, but don't think there it is different).
@@ -245,8 +249,10 @@ int AVCodecDecoder::lulatsch()
     decoder_ctx->flags2 |= AV_CODEC_FLAG2_SHOW_ALL;
 
     AVStream *video = input_ctx->streams[video_stream];
-    if (avcodec_parameters_to_context(decoder_ctx, video->codecpar) < 0)
+    if (avcodec_parameters_to_context(decoder_ctx, video->codecpar) < 0){
+        avformat_close_input(&input_ctx);
         return -1;
+    }
 
     decoder_ctx->get_format  = get_hw_format;
 
@@ -269,6 +275,7 @@ int AVCodecDecoder::lulatsch()
 
     if ((ret = avcodec_open2(decoder_ctx, decoder, nullptr)) < 0) {
         fprintf(stderr, "Failed to open codec for stream #%u\n", video_stream);
+        avformat_close_input(&input_ctx);
         return -1;
     }
     AVPacket packet;
