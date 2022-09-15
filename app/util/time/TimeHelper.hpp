@@ -20,6 +20,14 @@ namespace MyTimeHelper{
     static std::chrono::steady_clock::duration abs(const std::chrono::steady_clock::duration& dur){
         return dur>=std::chrono::nanoseconds(0) ? dur : -dur;
     }
+    template <typename T>
+    std::string to_string_with_precision(const T a_value, const int n = 6)
+    {
+        std::ostringstream out;
+        out.precision(n);
+        out << std::fixed << a_value;
+        return out.str();
+    }
     // R stands for readable. Convert a std::chrono::duration into a readable format
     // Readable format is somewhat arbitrary, in this case readable means that for example
     // 1second has 'ms' resolution since for values that big ns resolution probably isn't needed
@@ -29,17 +37,17 @@ namespace MyTimeHelper{
         if(durAbsolute>=std::chrono::seconds(1)){
             // More than one second, print as decimal with ms resolution.
             const auto ms=std::chrono::duration_cast<std::chrono::milliseconds>(dur).count();
-            return std::to_string(ms/1000.0f)+"s";
+            return to_string_with_precision(ms/1000.0f,2)+"s";
         }
         if(durAbsolute>=std::chrono::milliseconds(1)){
             // More than one millisecond, print as decimal with us resolution
             const auto us=std::chrono::duration_cast<std::chrono::microseconds>(dur).count();
-            return std::to_string(us/1000.0f)+"ms";
+            return to_string_with_precision(us/1000.0f,2)+"ms";
         }
         if(durAbsolute>=std::chrono::microseconds(1)){
             // More than one microsecond, print as decimal with ns resolution
             const auto ns=std::chrono::duration_cast<std::chrono::nanoseconds>(dur).count();
-            return std::to_string(ns/1000.0f)+"us";
+            return to_string_with_precision(ns/1000.0f,2)+"us";
         }
         const auto ns=std::chrono::duration_cast<std::chrono::nanoseconds>(dur).count();
         return std::to_string(ns)+"ns";
