@@ -5,6 +5,9 @@
 #ifndef HELLO_DRMPRIME__COLOR_HELPER_H_
 #define HELLO_DRMPRIME__COLOR_HELPER_H_
 
+#include <cstring>
+#include <cstdint>
+
 static uint32_t create_pixel_rgba(uint8_t r,uint8_t g,uint8_t b,uint8_t a){
   uint8_t rgba[4];
   rgba[0]=r;

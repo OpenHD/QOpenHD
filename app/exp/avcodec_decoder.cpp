@@ -3,7 +3,7 @@
 #include <iostream>
 #include <sstream>
 
-#include "ffmpeg_workaround_api_version.hpp"
+#include "avcodec_helper.hpp"
 #include "util/time/TimeHelper.hpp"
 
 #include "texturerenderer.h"
@@ -127,8 +127,8 @@ void AVCodecDecoder::on_new_frame(AVFrame *frame)
 int AVCodecDecoder::lulatsch()
 {
     int ret;
-    //const char* in_filename="/home/consti10/Desktop/hello_drmprime/in/rv1126.h265";
-    const char* in_filename="/home/consti10/Desktop/hello_drmprime/in/rtp_h264.sdp";
+    const char* in_filename="/home/consti10/Desktop/hello_drmprime/in/rv1126.h265";
+    //const char* in_filename="/home/consti10/Desktop/hello_drmprime/in/rtp_h264.sdp";
 
     //const char* in_filename="/home/openhd/hello_drmprime/in/rtp_h264.sdp";
 

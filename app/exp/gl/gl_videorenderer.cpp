@@ -164,9 +164,9 @@ bool GL_VideoRenderer::update_texture_egl_external(AVFrame* frame) {
   EGLint * a = attribs;
   const EGLint * b = texgen_attrs;
   *a++ = EGL_WIDTH;
-  *a++ = av_frame_cropped_width(frame);
+  *a++ = x_av_frame_cropped_width(frame);
   *a++ = EGL_HEIGHT;
-  *a++ = av_frame_cropped_height(frame);
+  *a++ = x_av_frame_cropped_height(frame);
   *a++ = EGL_LINUX_DRM_FOURCC_EXT;
   *a++ = desc->layers[0].format;
   int i, j;

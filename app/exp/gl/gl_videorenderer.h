@@ -6,7 +6,7 @@
 #define HELLO_DRMPRIME__GL_VIDEORENDERER_H_
 
 #include <memory>
-#include "ffmpeg_workaround_api_version.hpp"
+#include "avcodec_helper.hpp"
 #include "gl_shaders.h"
 
 struct EGLFrameTexture{

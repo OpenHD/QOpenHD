@@ -5,7 +5,7 @@
 #include <thread>
 #include <memory>
 
-#include "helper_include_av.h"
+#include "avcodec_helper.hpp"
 
 class AVCodecDecoder : public QObject
 {

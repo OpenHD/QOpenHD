@@ -12,9 +12,6 @@
 
 #include "gl/gl_videorenderer.h"
 
-#include "helper_include_av.h"
-
-
 class TextureRenderer : public QObject
 {
     Q_OBJECT

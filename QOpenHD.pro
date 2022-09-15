@@ -98,8 +98,7 @@ LIBS += -lGLESv2 -lglfw -lEGL
 SOURCES += $$PWD/lib/geographiclib-c-2.0/src/geodesic.c \
     app/exp/avcodec_decoder.cpp
 HEADERS += $$PWD/lib/geographiclib-c-2.0/src/geodesic.c \
-    app/exp/avcodec_decoder.h \
-    app/exp/helper_include_av.h
+    app/exp/avcodec_decoder.h
 
 
 # All files for the OSD elements - these are QT QQuickPaintedItem's that are written in c++
