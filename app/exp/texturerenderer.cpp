@@ -89,8 +89,8 @@ void TextureRenderer::initGL()
         Q_ASSERT(rif->graphicsApi() == QSGRendererInterface::OpenGL);
 
         //initializeOpenGLFunctions();
-        gl_shaders=std::make_unique<GL_shaders>();
-        gl_shaders->initialize();
+        gl_video_renderer=std::make_unique<GL_VideoRenderer>();
+        gl_video_renderer->init_gl();
 
         //
         const int test_w=1280;
@@ -127,32 +127,15 @@ void TextureRenderer::paint()
    AVFrame* new_frame=fetch_latest_decoded_frame();
    if(new_frame!= nullptr){
      // update the texture with this frame
-     m_display_stats.n_frames_rendered++;
-     update_texture_gl(new_frame);
+     gl_video_renderer->update_texture_gl(new_frame);
+
    }
    glDisable(GL_DEPTH_TEST);
-   if(yuv_420_p_sw_frame_texture.has_valid_image){
-       gl_shaders->draw_YUV420P(yuv_420_p_sw_frame_texture.textures[0],
-                                yuv_420_p_sw_frame_texture.textures[1],
-                                yuv_420_p_sw_frame_texture.textures[2]);
-   }else{
-    // r.n we just swap between 2 textures
-     QOpenGLTexture *texture;
-     if((renderCount/1) % 2==0){
-         texture=texture1.get();
-     }else{
-         texture=texture2.get();
-     }
-      // We setup the viewport surch that we preserve the original ratio of the teture ( width / height).
-      // One could also just transform the vertex coordinates, but setting the vieport accordingly is easier.
-      const auto viewport=calculate_viewport_video_fullscreen(m_viewportSize.width(),m_viewportSize.height(),texture->width(),texture->height());
-      glViewport(viewport.x,viewport.y,viewport.width,viewport.height);
-      gl_shaders->draw_rgb(texture->textureId());
-    }
 
-    // make sure we leave how we started / such that Qt rendering works normally
-    glEnable(GL_DEPTH_TEST);
-    glViewport(0, 0, m_viewportSize.width(), m_viewportSize.height());
+   gl_video_renderer->draw_texture_gl();
+   // make sure we leave how we started / such that Qt rendering works normally
+   glEnable(GL_DEPTH_TEST);
+   glViewport(0, 0, m_viewportSize.width(), m_viewportSize.height());
 
     m_window->endExternalCommands();
 }
@@ -170,7 +153,7 @@ int TextureRenderer::queue_new_frame_for_display(AVFrame *src_frame)
       if(m_latest_frame!= nullptr){
         av_frame_free(&m_latest_frame);
         qDebug()<<"Dropping frame\n";
-        m_display_stats.n_frames_dropped++;
+        //m_display_stats.n_frames_dropped++;
       }
       AVFrame *frame=frame = av_frame_alloc();
       assert(frame);
@@ -186,125 +169,7 @@ int TextureRenderer::queue_new_frame_for_display(AVFrame *src_frame)
       return 0;
 }
 
-void TextureRenderer::update_texture_yuv420p(AVFrame *frame)
-{
-    assert(frame);
-    assert(frame->format==AV_PIX_FMT_YUV420P);
-    qDebug()<<"update_texture_yuv420p\n";
-    for(int i=0;i<3;i++){
-      if(yuv_420_p_sw_frame_texture.textures[i]==0){
-        glGenTextures(1,&yuv_420_p_sw_frame_texture.textures[i]);
-        assert(yuv_420_p_sw_frame_texture.textures[i]>0);
-      }
-      GL_shaders::checkGlError("Xupload YUV420P");
-      glBindTexture(GL_TEXTURE_2D, yuv_420_p_sw_frame_texture.textures[i]);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-      glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-      bool use_tex_sub_image= false;
-      if(yuv_420_p_sw_frame_texture.last_width==frame->width &&
-          yuv_420_p_sw_frame_texture.last_height==frame->height){
-          //use_tex_sub_image= true;
-      }else{
-        yuv_420_p_sw_frame_texture.last_width=frame->width;
-        yuv_420_p_sw_frame_texture.last_height=frame->height;
-      }
-      if(i==0){
-        // Full Y plane
-        if(use_tex_sub_image){
-          glTexSubImage2D(GL_TEXTURE_2D,0,0,0,frame->width,frame->height,GL_LUMINANCE,GL_UNSIGNED_BYTE,frame->data[0]);
-        }else{
-          glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, frame->width, frame->height, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, frame->data[0]);
-        }
-      }else{
-        // half size U,V planes
-        if(use_tex_sub_image){
-          glTexSubImage2D(GL_TEXTURE_2D, 0,0,0, frame->width/2, frame->height/2, GL_LUMINANCE, GL_UNSIGNED_BYTE, frame->data[i]);
-        } else{
-          glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, frame->width/2, frame->height/2, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, frame->data[i]);
-        }
-      }
-      glBindTexture(GL_TEXTURE_2D,0);
-    }
-    yuv_420_p_sw_frame_texture.has_valid_image= true;
-    qDebug()<<"Colorspace:"<<av_color_space_name(frame->colorspace)<<"\n";
-    av_frame_free(&frame);
-    GL_shaders::checkGlError("upload YUV420P");
-}
 
-bool TextureRenderer::update_texture_egl(AVFrame *frame)
-{
-    assert(frame);
-    assert(frame->format==AV_PIX_FMT_DRM_PRIME);
-    EGLDisplay egl_display=eglGetCurrentDisplay();
-    assert(egl_display);
-    auto before=std::chrono::steady_clock::now();
-    // We can now also give the frame back to av, since we are updating to a new one.
-    if(egl_frame_texture.av_frame!= nullptr){
-      av_frame_free(&egl_frame_texture.av_frame);
-    }
-    egl_frame_texture.av_frame=frame;
-    const AVDRMFrameDescriptor *desc = (AVDRMFrameDescriptor*)frame->data[0];
-    // Writing all the EGL attribs - I just copied and pasted it, and it works.
-    EGLint attribs[50];
-    EGLint * a = attribs;
-    const EGLint * b = texgen_attrs;
-    *a++ = EGL_WIDTH;
-    *a++ = av_frame_cropped_width(frame);
-    *a++ = EGL_HEIGHT;
-    *a++ = av_frame_cropped_height(frame);
-    *a++ = EGL_LINUX_DRM_FOURCC_EXT;
-    *a++ = desc->layers[0].format;
-    int i, j;
-    for (i = 0; i < desc->nb_layers; ++i) {
-      for (j = 0; j < desc->layers[i].nb_planes; ++j) {
-        const AVDRMPlaneDescriptor * const p = desc->layers[i].planes + j;
-        const AVDRMObjectDescriptor * const obj = desc->objects + p->object_index;
-        *a++ = *b++;
-        *a++ = obj->fd;
-        *a++ = *b++;
-        *a++ = p->offset;
-        *a++ = *b++;
-        *a++ = p->pitch;
-        if (obj->format_modifier == 0) {
-          b += 2;
-        }
-        else {
-          *a++ = *b++;
-          *a++ = (EGLint)(obj->format_modifier & 0xFFFFFFFF);
-          *a++ = *b++;
-          *a++ = (EGLint)(obj->format_modifier >> 32);
-        }
-      }
-    }
-    *a = EGL_NONE;
-    const EGLImage image = eglCreateImageKHR(egl_display,
-                                             EGL_NO_CONTEXT,
-                                             EGL_LINUX_DMA_BUF_EXT,
-                                             NULL, attribs);
-    if (!image) {
-      printf("Failed to create EGLImage %s\n", strerror(errno));
-      egl_frame_texture.has_valid_image= false;
-      //print_hwframe_transfer_formats(frame->hw_frames_ctx);
-      return false;
-    }
-    // Note that we do not have to delete and generate the texture (ID) every time we update the egl image backing.
-    if(egl_frame_texture.texture==0){
-      glGenTextures(1, &egl_frame_texture.texture);
-    }
-    glEnable(GL_TEXTURE_EXTERNAL_OES);
-    glBindTexture(GL_TEXTURE_EXTERNAL_OES, egl_frame_texture.texture);
-    glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glEGLImageTargetTexture2DOES(GL_TEXTURE_EXTERNAL_OES, image);
-    // I do not know exactly how that works, but we seem to be able to immediately delete the EGL image, as long as we don't give the frame
-    // back to the decoder I assume
-    eglDestroyImageKHR(egl_display, image);
-    auto delta=std::chrono::steady_clock::now()-before;
-    qDebug()<<"Creating texture took:"<<std::chrono::duration_cast<std::chrono::milliseconds>(delta).count()<<"ms";
-    egl_frame_texture.has_valid_image= true;
-    return true;
-}
 
 
 AVFrame *TextureRenderer::fetch_latest_decoded_frame()
@@ -320,22 +185,6 @@ AVFrame *TextureRenderer::fetch_latest_decoded_frame()
      return nullptr;
 }
 
-void TextureRenderer::update_texture_gl(AVFrame *frame)
-{
-    if(frame->format == AV_PIX_FMT_DRM_PRIME){
-        update_texture_egl(frame);
-      }else if(frame->format==AV_PIX_FMT_CUDA){
-        //update_texture_cuda(frame);
-      }else if(frame->format==AV_PIX_FMT_YUV420P){
-        update_texture_yuv420p(frame);
-      }else if(frame->format==AV_PIX_FMT_VDPAU){
-        //update_texture_vdpau(frame);
-      }
-      else{
-        /*std::cerr << "Unimplemented to texture:" << safe_av_get_pix_fmt_name((AVPixelFormat)frame->format) << "\n";
-        print_hwframe_transfer_formats(frame->hw_frames_ctx);
-        av_frame_free(&frame);*/
-    }
-}
+
 
 

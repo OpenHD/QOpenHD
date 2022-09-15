@@ -128,7 +128,9 @@ int AVCodecDecoder::lulatsch()
 {
     int ret;
     //const char* in_filename="/home/consti10/Desktop/hello_drmprime/in/rv1126.h265";
-    const char* in_filename="/home/openhd/hello_drmprime/in/rv1126.h265";
+    const char* in_filename="/home/consti10/Desktop/hello_drmprime/in/rtp_h264.sdp";
+
+    //const char* in_filename="/home/openhd/hello_drmprime/in/rtp_h264.sdp";
 
     // These options are needed for using the foo.sdp (rtp streaming)
     // https://stackoverflow.com/questions/20538698/minimum-sdp-for-making-a-h264-rtp-stream

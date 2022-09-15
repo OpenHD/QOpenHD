@@ -17,36 +17,36 @@ class GL_shaders {
  private:
   // Single RGB(A) texture
   struct RGBAShader{
-    GLuint program=0;
-    GLint pos=-1;
-    GLint uvs=-1;
-    GLint sampler=-1;
+	GLuint program=0;
+	GLint pos=-1;
+	GLint uvs=-1;
+	GLint sampler=-1;
   };
   // Single EGL external texture (We do not have to write our own YUV conversion(s), egl does it for us.
   // Any platform where we can get the (HW) - decoded frame to EGL (e.g. rpi) this is the easiest and best way.
   struct EGLShader{
-    GLuint program=0;
-    GLint pos=-1;
-    GLint uvs=-1;
+	GLuint program=0;
+	GLint pos=-1;
+	GLint uvs=-1;
   };
   // NV12
   // 2 separate planes (textures) : Y and U,V
   struct NV12Shader{
-    GLuint program=0;
-    GLint pos=-1;
-    GLint uvs=-1;
-    GLint s_texture_y=-1;
-    GLint s_texture_uv=-1;
+	GLuint program=0;
+	GLint pos=-1;
+	GLint uvs=-1;
+	GLint s_texture_y=-1;
+	GLint s_texture_uv=-1;
   };
   // YUV 420P (As defined in AV_PIX_FMT_YUV420P)
   // Y,U,V are in 3 separate planes (textures)
   struct YUV420PShader{
-    GLuint program=0;
-    GLint pos=-1;
-    GLint uvs=-1;
-    GLint s_texture_y=-1;
-    GLint s_texture_u=-1;
-    GLint s_texture_v=-1;
+	GLuint program=0;
+	GLint pos=-1;
+	GLint uvs=-1;
+	GLint s_texture_y=-1;
+	GLint s_texture_u=-1;
+	GLint s_texture_v=-1;
   };
   EGLShader egl_shader;
   RGBAShader rgba_shader;

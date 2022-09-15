@@ -104,7 +104,8 @@ HEADERS += $$PWD/lib/geographiclib-c-2.0/src/geodesic.c \
 
 # All files for the OSD elements - these are QT QQuickPaintedItem's that are written in c++
 SOURCES += \
-    app/exp/gl_shaders.cpp \
+    app/exp/gl/gl_shaders.cpp \
+    app/exp/gl/gl_videorenderer.cpp \
     app/logging/logmessagesmodel.cpp \
     app/openhd_systems/aohdsystem.cpp \
     app/osd/headingladder.cpp \
@@ -123,7 +124,8 @@ SOURCES += \
     app/exp/texturerenderer.cpp \
 
 HEADERS += \
-    app/exp/gl_shaders.h \
+    app/exp/gl/gl_shaders.h \
+    app/exp/gl/gl_videorenderer.h \
     app/logging/logmessagesmodel.h \
     app/openhd_systems/aohdsystem.h \
     app/openhd_systems/wifiadapter.h \
