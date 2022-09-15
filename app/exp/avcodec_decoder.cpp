@@ -202,10 +202,10 @@ int AVCodecDecoder::lulatsch()
             }
         }
 
-        wanted_hw_pix_fmt = AV_PIX_FMT_DRM_PRIME;
+        //wanted_hw_pix_fmt = AV_PIX_FMT_DRM_PRIME;
         //wanted_hw_pix_fmt = AV_PIX_FMT_CUDA;
         //wanted_hw_pix_fmt = AV_PIX_FMT_VAAPI;
-        //wanted_hw_pix_fmt = AV_PIX_FMT_YUV420P;
+        wanted_hw_pix_fmt = AV_PIX_FMT_YUV420P;
         //wanted_hw_pix_fmt = AV_PIX_FMT_VAAPI;
         //wanted_hw_pix_fmt = AV_PIX_FMT_VDPAU;
     }else if(decoder->id==AV_CODEC_ID_MJPEG){
@@ -241,7 +241,7 @@ int AVCodecDecoder::lulatsch()
     // needed for FFMPEG ?
     //decoder_ctx->extra_hw_frames = 10;
 
-    if (hw_decoder_init(decoder_ctx, kAvhwDeviceType) < 0){
+    /*if (hw_decoder_init(decoder_ctx, kAvhwDeviceType) < 0){
       std::cerr<<"HW decoder init failed,fallback to SW decode\n";
       // Use SW decode as fallback ?!
       //return -1;
@@ -250,7 +250,7 @@ int AVCodecDecoder::lulatsch()
         wanted_hw_pix_fmt=AV_PIX_FMT_YUVJ422P;
       }
       wanted_hw_pix_fmt=AV_PIX_FMT_YUV420P;
-    }
+    }*/
 
     // Consti10
     decoder_ctx->thread_count = 1;
@@ -269,7 +269,7 @@ int AVCodecDecoder::lulatsch()
             qDebug()<<"av_read_frame returned 0\n";
             break;
         }
-        const int limitedFrameRate=1;
+        const int limitedFrameRate=10;
         if (video_stream == packet.stream_index){
             if(limitedFrameRate!=-1){
                 const long frameDeltaNs=1000*1000*1000 / limitedFrameRate;

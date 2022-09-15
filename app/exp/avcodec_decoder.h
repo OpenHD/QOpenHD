@@ -30,16 +30,14 @@ public:
     void init(bool primaryStream);
 
 private:
-    //QTimer* timer = nullptr;
     AVCodecContext *decoder_ctx = nullptr;
     const AVCodec *decoder = nullptr;
-    //
-    int decode_and_wait_for_frame(AVPacket *packet);
     std::unique_ptr<std::thread> decode_thread=nullptr;
-
 private:
     void constant_decode();
     int lulatsch();
+    //
+    int decode_and_wait_for_frame(AVPacket *packet);
     void on_new_frame(AVFrame* frame);
 };
 

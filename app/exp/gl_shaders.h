@@ -2,15 +2,16 @@
 // Created by consti10 on 08.09.22.
 //
 
-#include <qopenglfunctions.h>
-
 #ifndef HELLO_DRMPRIME__GL_SHADERS_H_
 #define HELLO_DRMPRIME__GL_SHADERS_H_
 
+extern "C" {
+#include "glhelp.h"
+}
 
 // Holds multiple GL programs that render different types of (Video) textures
 // All textures fill up the full gl viewport, adjust it accordingly to preserve video ratio.
-class GL_shaders : protected QOpenGLFunctions{
+class GL_shaders {
  private:
   // Single RGB(A) texture
   struct RGBAShader{

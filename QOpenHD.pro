@@ -31,6 +31,9 @@ CONFIG(debug, debug|release) {
     DEFINES += QMLJSDEBUGGER
 }
 
+#https://doc.qt.io/qt-6/portingguide.html
+#DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x050F00
+
 CONFIG += qmltypes
 QML_IMPORT_NAME = OpenHD
 QML_IMPORT_MAJOR_VERSION = 1
@@ -88,6 +91,8 @@ LIBS += -L/usr/local/lib -lmavsdk
 INCLUDEPATH += /usr/include/mavsdk
 
 LIBS += -lavcodec -lavutil -lavformat
+# TODO dirty
+LIBS += -lGLESv2 -lglfw -lEGL
 
 # Geographic lib updated to c-2.0, so much cleaner
 SOURCES += $$PWD/lib/geographiclib-c-2.0/src/geodesic.c \

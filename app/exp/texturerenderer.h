@@ -5,14 +5,17 @@
 #include <QObject>
 #include <QtQuick/QQuickItem>
 #include <QtQuick/QQuickWindow>
-#include <QOpenGLFunctions>
-#include <chrono>
 #include <QOpenGLTexture>
 #include <memory>
+#include <chrono>
 
 #include "gl_shaders.h"
 
-class TextureRenderer : public QObject, protected QOpenGLFunctions
+/*extern "C" {
+#include "glhelp.h"
+}*/
+
+class TextureRenderer : public QObject/*, protected QOpenGLFunctions*/
 {
     Q_OBJECT
 public:

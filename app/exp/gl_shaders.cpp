@@ -175,7 +175,7 @@ GLint GL_shaders::common_get_shader_program(const char *vertex_shader_source, co
 
 void GL_shaders::initialize() {
   // QT crap
-  initializeOpenGLFunctions();
+  //initializeOpenGLFunctions();
   // Shader 1
   rgba_shader.program = common_get_shader_program(vertex_shader_source_all,fragment_shader_source_RGB);
   assert(rgba_shader.program!=0);

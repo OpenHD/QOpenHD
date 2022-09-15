@@ -1,9 +1,7 @@
 #include "texturerenderer.h"
-#include <QtQuick/qquickwindow.h>
-#include <QOpenGLShaderProgram>
-#include <QOpenGLContext>
 
 #include <cmath>
+
 
 /// negative x,y is bottom left and first vertex
 //Consti10: Video was flipped horizontally (at least big buck bunny)
@@ -73,7 +71,7 @@ void TextureRenderer::init()
         QSGRendererInterface *rif = m_window->rendererInterface();
         Q_ASSERT(rif->graphicsApi() == QSGRendererInterface::OpenGL);
 
-        initializeOpenGLFunctions();
+        //initializeOpenGLFunctions();
         gl_shaders=std::make_unique<GL_shaders>();
         gl_shaders->initialize();
 
