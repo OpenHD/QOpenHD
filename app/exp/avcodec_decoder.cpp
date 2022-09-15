@@ -129,10 +129,11 @@ int AVCodecDecoder::lulatsch()
 {
     //const char* in_filename="/home/consti10/Desktop/hello_drmprime/in/rv1126.h265";
     //const char* in_filename="/home/consti10/Desktop/hello_drmprime/in/rtp_h264.sdp";
+    const char* in_filename="/home/consti10/Desktop/hello_drmprime/in/jetson_test.h265";
     //std::string in_filename="empty";
 
     //char* in_filename="/home/openhd/hello_drmprime/in/rtp_h264.sdp";
-    char* in_filename="/home/openhd/hello_drmprime/in/rv_1280x720_green_white.h265";
+    //char* in_filename="/home/openhd/hello_drmprime/in/rv_1280x720_green_white.h265";
 
     // These options are needed for using the foo.sdp (rtp streaming)
     // https://stackoverflow.com/questions/20538698/minimum-sdp-for-making-a-h264-rtp-stream
