@@ -12,13 +12,13 @@
 
 // For some reaseon av_frame_cropped_width doesn't exit on ffmpeg default on ubuntu
 // but on rpi, it does !
-static int av_frame_cropped_width(const AVFrame* frame){
+/*static int av_frame_cropped_width(const AVFrame* frame){
   return frame->width;
 }
 
 static int av_frame_cropped_height(const AVFrame* frame){
   return frame->height;
-}
+}*/
 
 
 static std::string safe_av_hwdevice_get_type_name(enum AVHWDeviceType type){
