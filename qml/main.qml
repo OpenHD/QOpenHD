@@ -75,7 +75,8 @@ ApplicationWindow {
         z: 1.0
         source: {
             if (EnableGStreamer && EnableMainVideo) {
-                return "../video/MainVideoGStreamer.qml";
+               //return "../video/MainVideoGStreamer.qml";
+                return "";
             }
             if (IsAndroid && EnableVideoRender && EnableMainVideo) {
                 return "MainVideoRender.qml";

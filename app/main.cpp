@@ -314,8 +314,8 @@ int main(int argc, char *argv[]) {
 
 #if defined(ENABLE_GSTREAMER)
 #if defined(ENABLE_MAIN_VIDEO)
-    GstVideoStream* mainVideo = new GstVideoStream();
-    engine.rootContext()->setContextProperty("_mainVideo", mainVideo);
+    std::unique_ptr<GstVideoStream>  mainVideo=std::make_unique<GstVideoStream>();
+    engine.rootContext()->setContextProperty("_mainVideo", mainVideo.get());
 #endif
 #if defined(ENABLE_PIP)
     GstVideoStream* pipVideo = new GstVideoStream();
@@ -383,14 +383,12 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
 
 #if defined(ENABLE_MAIN_VIDEO)
     engine.rootContext()->setContextProperty("EnableMainVideo", QVariant(true));
-    engine.rootContext()->setContextProperty("MainStream", mainVideo);
 #else
     engine.rootContext()->setContextProperty("EnableMainVideo", QVariant(false));
 #endif
 
 #if defined(ENABLE_PIP)
     engine.rootContext()->setContextProperty("EnablePiP", QVariant(true));
-    engine.rootContext()->setContextProperty("PiPStream", pipVideo);
 #else
     engine.rootContext()->setContextProperty("EnablePiP", QVariant(false));
 #endif
@@ -522,7 +520,9 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
 
 #if defined(ENABLE_GSTREAMER) || defined(ENABLE_VIDEO_RENDER)
 #if defined(ENABLE_MAIN_VIDEO)
-    mainVideo->stopVideoSafe();
+    if(mainVideo!=nullptr){
+         mainVideo->stopVideoSafe();
+    }
 #endif
 #if defined(ENABLE_PIP)
     pipVideo->stopVideoSafe();
