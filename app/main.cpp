@@ -432,8 +432,11 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
     if(windowPrimary==nullptr){
         qDebug()<<"Error primary window enabled but not found";
         //throw std::runtime_error("Window not found");
+    }else{
+        if(mainVideo){
+            mainVideo->init(windowPrimary,true);
+        }
     }
-    mainVideo->init(windowPrimary,true);
 #endif
 #if defined(ENABLE_PIP)
     const auto windowSecondary=find_qt_video_window(engine,false);
