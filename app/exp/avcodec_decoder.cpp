@@ -53,7 +53,7 @@ void AVCodecDecoder::init(bool primaryStream)
     /*QObject::connect(timer, &QTimer::timeout, this, &AVCodecDecoder::lulatsch);
     timer->start(1000);*/
     qDebug() << "AVCodecDecoder::init()";
-    decode_thread = std::make_unique<std::thread>([this]{this->constant_decode();} );
+    //decode_thread = std::make_unique<std::thread>([this]{this->constant_decode();} );
 }
 
 void AVCodecDecoder::constant_decode()
