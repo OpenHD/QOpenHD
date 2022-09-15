@@ -24,6 +24,7 @@ private:
     //
     int decode_and_wait_for_frame(AVPacket *packet);
     void on_new_frame(AVFrame* frame);
+    int open_input_error_count=0;
 };
 
 #endif // AVCODEC_DECODER_H

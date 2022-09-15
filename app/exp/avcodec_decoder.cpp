@@ -126,11 +126,11 @@ void AVCodecDecoder::on_new_frame(AVFrame *frame)
 
 int AVCodecDecoder::lulatsch()
 {
-    int ret;
-    const char* in_filename="/home/consti10/Desktop/hello_drmprime/in/rv1126.h265";
+    //const char* in_filename="/home/consti10/Desktop/hello_drmprime/in/rv1126.h265";
     //const char* in_filename="/home/consti10/Desktop/hello_drmprime/in/rtp_h264.sdp";
+    //std::string in_filename="empty";
 
-    //const char* in_filename="/home/openhd/hello_drmprime/in/rtp_h264.sdp";
+    char* in_filename="/home/openhd/hello_drmprime/in/rtp_h264.sdp";
 
     // These options are needed for using the foo.sdp (rtp streaming)
     // https://stackoverflow.com/questions/20538698/minimum-sdp-for-making-a-h264-rtp-stream
@@ -146,6 +146,7 @@ int AVCodecDecoder::lulatsch()
     // open the input file
     if (avformat_open_input(&input_ctx,in_filename, NULL, &av_dictionary) != 0) {
         fprintf(stderr, "Cannot open input file '%s'\n", in_filename);
+        open_input_error_count++;
         return -1;
     }
 
@@ -156,7 +157,7 @@ int AVCodecDecoder::lulatsch()
 
     // find the video stream information
     //ret = av_find_best_stream(input_ctx, AVMEDIA_TYPE_VIDEO, -1, -1,(const AVCodec**) &decoder, 0);
-    ret = av_find_best_stream(input_ctx, AVMEDIA_TYPE_VIDEO, -1, -1,(AVCodec**) &decoder, 0);
+    int ret = av_find_best_stream(input_ctx, AVMEDIA_TYPE_VIDEO, -1, -1,(AVCodec**) &decoder, 0);
     if (ret < 0) {
         fprintf(stderr, "Cannot find a video stream in the input file\n");
         return -1;

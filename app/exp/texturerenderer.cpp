@@ -3,37 +3,6 @@
 
 #include <cmath>
 
-
-/// negative x,y is bottom left and first vertex
-//Consti10: Video was flipped horizontally (at least big buck bunny)
-static const GLfloat vertices[][4][3] =
-    {
-        { {-1.0, -1.0, 0.0}, { 1.0, -1.0, 0.0}, {-1.0, 1.0, 0.0}, {1.0, 1.0, 0.0} }
-    };
-static const GLfloat uv_coords[][4][2] =
-    {
-        //{ {0.0, 0.0}, {1.0, 0.0}, {0.0, 1.0}, {1.0, 1.0} }
-        { {1.0, 1.0}, {0.0, 1.0}, {1.0, 0.0}, {0.0, 0.0} }
-    };
-
-static EGLint texgen_attrs[] = {
-    EGL_DMA_BUF_PLANE0_FD_EXT,
-    EGL_DMA_BUF_PLANE0_OFFSET_EXT,
-    EGL_DMA_BUF_PLANE0_PITCH_EXT,
-    EGL_DMA_BUF_PLANE0_MODIFIER_LO_EXT,
-    EGL_DMA_BUF_PLANE0_MODIFIER_HI_EXT,
-    EGL_DMA_BUF_PLANE1_FD_EXT,
-    EGL_DMA_BUF_PLANE1_OFFSET_EXT,
-    EGL_DMA_BUF_PLANE1_PITCH_EXT,
-    EGL_DMA_BUF_PLANE1_MODIFIER_LO_EXT,
-    EGL_DMA_BUF_PLANE1_MODIFIER_HI_EXT,
-    EGL_DMA_BUF_PLANE2_FD_EXT,
-    EGL_DMA_BUF_PLANE2_OFFSET_EXT,
-    EGL_DMA_BUF_PLANE2_PITCH_EXT,
-    EGL_DMA_BUF_PLANE2_MODIFIER_LO_EXT,
-    EGL_DMA_BUF_PLANE2_MODIFIER_HI_EXT,
-};
-
 struct MGLViewptort{
     int x,y,width,height;
 };
