@@ -1,6 +1,10 @@
 #ifndef AVCODEC_DECODER_H
 #define AVCODEC_DECODER_H
 
+#include <qtimer.h>
+#include <thread>
+#include <memory>
+
 extern "C" {
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
@@ -18,10 +22,25 @@ extern "C" {
 #include "libavutil/pixdesc.h"
 }
 
-class AVCodecDecoder
+class AVCodecDecoder : public QObject
 {
 public:
-    AVCodecDecoder();
+    AVCodecDecoder(QObject *parent = nullptr);
+
+    void init(bool primaryStream);
+
+private:
+    //QTimer* timer = nullptr;
+    AVCodecContext *decoder_ctx = nullptr;
+    const AVCodec *decoder = nullptr;
+    //
+    int decode_and_wait_for_frame(AVPacket *packet);
+    std::unique_ptr<std::thread> decode_thread=nullptr;
+
+private:
+    void constant_decode();
+    int lulatsch();
+    void on_new_frame(AVFrame* frame);
 };
 
 #endif // AVCODEC_DECODER_H
