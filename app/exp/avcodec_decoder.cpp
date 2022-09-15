@@ -62,6 +62,7 @@ void AVCodecDecoder::constant_decode()
         qDebug()<<"Start decode";
         lulatsch();
         qDebug()<<"Decode stopped,restarting";
+        std::this_thread::sleep_for(std::chrono::seconds(1));
     }
 }
 
@@ -149,6 +150,7 @@ int AVCodecDecoder::lulatsch()
     if (avformat_open_input(&input_ctx,in_filename, NULL, &av_dictionary) != 0) {
         fprintf(stderr, "Cannot open input file '%s'\n", in_filename);
         open_input_error_count++;
+        avformat_close_input(&input_ctx);
         return -1;
     }
 
