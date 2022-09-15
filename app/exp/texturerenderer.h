@@ -14,6 +14,16 @@
 
 #include "helper_include_av.h"
 
+struct EGLFrameTexture{
+  // I think we need to keep the av frame reference around as long as we use the generated egl texture in opengl.
+  AVFrame* av_frame= nullptr;
+  // In contrast to "hwdectogl", created once, then re-used with each new egl image.
+  // needs to be bound to the "EGL external image" target
+  GLuint texture=0;
+  // set to true if the texture currently has a egl image backing it.
+  bool has_valid_image=false;
+};
+
 struct YUV420PSwFrameTexture{
   // Since we copy the data, we do not need to keep the av frame around
   //AVFrame* av_frame=nullptr;
@@ -29,10 +39,7 @@ class TextureRenderer : public QObject
     Q_OBJECT
 public:
 
-    static TextureRenderer& instance(){
-        static TextureRenderer renderer{};
-        return renderer;
-    }
+    static TextureRenderer& instance();
 
     void setViewportSize(const QSize &size) { m_viewportSize = size; }
     void setWindow(QQuickWindow *window) { m_window = window; }
@@ -60,6 +67,9 @@ private:
 private:
     YUV420PSwFrameTexture yuv_420_p_sw_frame_texture{};
     void update_texture_yuv420p(AVFrame* frame);
+    //
+    EGLFrameTexture egl_frame_texture{};
+
 private:
     std::mutex latest_frame_mutex;
     AVFrame* m_latest_frame=nullptr;

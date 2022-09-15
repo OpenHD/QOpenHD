@@ -57,6 +57,11 @@ static MGLViewptort calculate_viewport_video_fullscreen(int surface_width,int su
 }
 
 
+TextureRenderer &TextureRenderer::instance(){
+    static TextureRenderer renderer{};
+    return renderer;
+}
+
 void TextureRenderer::initGL()
 {
     if (!initialized) {
