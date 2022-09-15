@@ -88,6 +88,7 @@ private:
      AVFrame* fetch_latest_decoded_frame();
      // always called with the OpenGL context bound.
      void update_texture_gl(AVFrame* frame);
+     bool update_texture_egl(AVFrame* frame);
 };
 
 #endif // TEXTURERENDERER_H
