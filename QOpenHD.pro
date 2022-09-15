@@ -87,9 +87,13 @@ INCLUDEPATH += /usr/local/include/mavsdk
 LIBS += -L/usr/local/lib -lmavsdk
 INCLUDEPATH += /usr/include/mavsdk
 
+LIBS += -lavcodec -lavutil -lavformat
+
 # Geographic lib updated to c-2.0, so much cleaner
-SOURCES += $$PWD/lib/geographiclib-c-2.0/src/geodesic.c
-HEADERS += $$PWD/lib/geographiclib-c-2.0/src/geodesic.c
+SOURCES += $$PWD/lib/geographiclib-c-2.0/src/geodesic.c \
+    app/exp/avcodec_decoder.cpp
+HEADERS += $$PWD/lib/geographiclib-c-2.0/src/geodesic.c \
+    app/exp/avcodec_decoder.h
 
 
 # All files for the OSD elements - these are QT QQuickPaintedItem's that are written in c++

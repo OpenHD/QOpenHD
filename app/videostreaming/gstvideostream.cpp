@@ -144,7 +144,7 @@ static std::string constructGstreamerPipeline(const QOpenHDVideoHelper::VideoStr
         ss << "qmlglsink name=qmlglsink sync=false";
         return ss.str();
     }else if(config.dev_test_video_mode==QOpenHDVideoHelper::VideoTestMode::RAW_VIDEO_ENCODE_DECODE){
-        ss<<QOpenHDVideoHelper::create_debug_encoded_data_producer(config.video_codec);
+        ss<<create_debug_encoded_data_producer(config.video_codec);
     }else{
         ss<<"udpsrc port="<<config.video_port<<" ";
         ss<<gst_create_caps(config.video_codec);

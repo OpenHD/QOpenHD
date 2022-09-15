@@ -6,6 +6,9 @@ apt -y install libqt5concurrent5 libqt5core5a libqt5dbus5 libqt5designer5 libqt5
 apt -y install qt5-default
 apt -y install libgstreamer-plugins-base1.0-dev gstreamer1.0-plugins-good
 
+# NOT qmlglsink but something else ?!
+sudo apt-get install qtgstreamer-plugins-qt5
+
 # they are needed to build and install mavsdk
 apt -y install pip
 pip install future
