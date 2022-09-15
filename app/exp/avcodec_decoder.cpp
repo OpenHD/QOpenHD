@@ -140,6 +140,7 @@ int AVCodecDecoder::lulatsch()
     av_dict_set(&av_dictionary, "protocol_whitelist", "file,udp,rtp", 0);
     av_dict_set(&av_dictionary, "buffer_size", "212992", 0);
     av_dict_set(&av_dictionary,"max_delay","0",0);
+    av_dict_set(&av_dictionary,"reuse_sockets","1",0);
     /*av_dict_set_int(&av_dictionary, "stimeout", 1000000, 0);
     av_dict_set_int(&av_dictionary, "rw_timeout", 1000000, 0);*/
     av_dict_set_int(&av_dictionary, "reorder_queue_size", 1, 0);
