@@ -1,0 +1,50 @@
+CMake options
+  CONVERT_WARNINGS_TO_ERRORS = ON
+  BUILD_DOCUMENTATION = ON
+  BUILD_SHARED_LIBS = ON
+
+Targets
+  all test
+  doc (if BUILD_DOCUMENTATION and doxygen found)
+  dist (makes package_source and checks for unwanted files)
+  sanitize
+  stage-{doc,dist}
+  deploy-{doc,dist}
+  proj-example (uses version of library included in PROJ)
+  proj-export (copies source to PROJ)
+
+not supported:
+  install (distribution is via PROJ)
+  package
+
+Version update checks
+
+Add PROJECT_VERSION_SUFFIX = "-alpha" to
+  tar package of source
+
+Do not add PROJECT_VERSION_SUFFIX to
+  unpack directory for tar package
+  documentation
+
+Update version in
+  src/geodesic.h GEODESIC_VERSION_*
+  doc/geodesic-c.dox.in (date + update change log)
+  remove alpha versions in distrib-C
+
+PROJ integration...
+
+make stage-proj does
+PROJDIR=$HOME/git/PROJ
+cp -p src/geodesic.? $PROJDIR/src
+cp -p tests/geodtest.c $PROJDIR/src/tests/geodtest.cpp
+cp -P tests/geodsigntest.c $PROJDIR/src/tests/geodsigntest.cpp
+
+also changes needed in
+  docs/source/apps/geod.rst
+  docs/source/geodesic.rst
+  src/apps/geod_interface.cpp
+  src/init.cpp
+  src/tests/bin_geodtest.cmake
+
+R package geosphere:
+Robert J. Hijmans <r.hijmans@gmail.com>

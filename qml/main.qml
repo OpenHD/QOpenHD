@@ -26,6 +26,7 @@ ApplicationWindow {
     //color : "#2C3E50" // reduce KREBS
     color: settings.app_background_transparent ? "transparent" : "#2C3E50"
     //flags: Qt.WindowStaysOnTopHint| Qt.FramelessWindowHint| Qt.X11BypassWindowManagerHint;
+    //flags: Qt.WindowStaysOnTopHint| Qt.X11BypassWindowManagerHint;
     visibility: UseFullscreen ? "FullScreen" : "AutomaticVisibility"
 
     property bool initialised: false
