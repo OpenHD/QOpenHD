@@ -46,9 +46,6 @@ public slots:
     void m_QQuickWindow_beforeRendering();
     void m_QQuickWindow_beforeRenderPassRecording();
 private:
-    //
-    QTimer* timerAlwaysRedraw = nullptr;
-    void timerCallback();
 };
 //! [2]
 

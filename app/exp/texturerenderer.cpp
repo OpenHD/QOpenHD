@@ -41,9 +41,9 @@ void TextureRenderer::init()
         const int test_w=1280;
         const int test_h=900;
         QImage image1{test_w,test_h, QImage::Format_RGB888};
-        image1.fill(QColor(255, 0, 0));
         QImage image2{test_w,test_h, QImage::Format_RGB888};
-        image2.fill(QColor(0, 255, 0));
+        image1.fill(QColor(0, 255, 0));
+        image2.fill(QColor(0, 0, 255));
 
         /*QImage image1{QString(":/resources/ic128.png")};
         image1=image1.mirrored();

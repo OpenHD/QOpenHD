@@ -22,11 +22,8 @@ private:
 Squircle::Squircle()
     : m_t(0)
     , m_renderer(nullptr)
-    ,timerAlwaysRedraw(new QTimer)
 {
     connect(this, &QQuickItem::windowChanged, this, &Squircle::handleWindowChanged);
-    QObject::connect(timerAlwaysRedraw, &QTimer::timeout, this, &Squircle::timerCallback);
-    timerAlwaysRedraw->start(1000);
 }
 
 void Squircle::setT(qreal t)
@@ -94,11 +91,5 @@ void Squircle::m_QQuickWindow_beforeRenderPassRecording()
     }
 }
 
-void Squircle::timerCallback()
-{
-    //qDebug()<<"Squircle::timerCallback()";
-    //if (window())
-    //    window()->update();
-}
 
 

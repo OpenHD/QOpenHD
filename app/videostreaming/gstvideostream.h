@@ -13,10 +13,14 @@
 
 /**
  * Consti10
- * This video player works purely in software (Gstreamer), but supports all the 3 OpenHD live video formats (h264,h265 and mjpeg).
+ * This video player uses gstreamer + qmlglsink to display video inside qt.
+ * It supports all the 3 OpenHD live video formats (h264,h265 and mjpeg), by falling back to sw decode when hw decode is not available.
+ * Note that the qmlglsink path is not ideal, since for example on the rpi, each video frame is rendered 2x by OpenGl (first YUV->RGBA, then RGBA in the
+ * qt scenegraph composer).
  * Its inputs and outputs are easily defined:
- * 1) Input -> a udp port from which rtp video data is received.
- * 2) Output -> a qml window ???? not sure yet exactly how to call that.
+ * 1) Input -> a udp port from which rtp video data (h264,h265,mjpeg) is received.
+ * 2) Output -> a qmlglsink with the item registered in qt (qml,GstGLVideoItem).
+ * It allows dynamically changing the video resolution, framerate and/or video codec.
  */
 class GstVideoStream : public QObject{
     Q_OBJECT
