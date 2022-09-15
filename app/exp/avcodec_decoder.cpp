@@ -130,7 +130,8 @@ int AVCodecDecoder::lulatsch()
     //const char* in_filename="/home/consti10/Desktop/hello_drmprime/in/rtp_h264.sdp";
     //std::string in_filename="empty";
 
-    char* in_filename="/home/openhd/hello_drmprime/in/rtp_h264.sdp";
+    //char* in_filename="/home/openhd/hello_drmprime/in/rtp_h264.sdp";
+    char* in_filename="/home/openhd/hello_drmprime/in/rv_1280x720_green_white.h264";
 
     // These options are needed for using the foo.sdp (rtp streaming)
     // https://stackoverflow.com/questions/20538698/minimum-sdp-for-making-a-h264-rtp-stream
@@ -183,8 +184,8 @@ int AVCodecDecoder::lulatsch()
             fprintf(stderr, "Cannot find the h264 v4l2m2m decoder\n");
             return -1;
         }
-        //wanted_hw_pix_fmt = AV_PIX_FMT_DRM_PRIME;
-        wanted_hw_pix_fmt = AV_PIX_FMT_YUV420P;
+        wanted_hw_pix_fmt = AV_PIX_FMT_DRM_PRIME;
+        //wanted_hw_pix_fmt = AV_PIX_FMT_YUV420P;
     }
     else if(decoder->id==AV_CODEC_ID_H265){
         assert(decoder->id==AV_CODEC_ID_H265);
@@ -210,10 +211,10 @@ int AVCodecDecoder::lulatsch()
             }
         }
 
-        //wanted_hw_pix_fmt = AV_PIX_FMT_DRM_PRIME;
+        wanted_hw_pix_fmt = AV_PIX_FMT_DRM_PRIME;
         //wanted_hw_pix_fmt = AV_PIX_FMT_CUDA;
         //wanted_hw_pix_fmt = AV_PIX_FMT_VAAPI;
-        wanted_hw_pix_fmt = AV_PIX_FMT_YUV420P;
+        //wanted_hw_pix_fmt = AV_PIX_FMT_YUV420P;
         //wanted_hw_pix_fmt = AV_PIX_FMT_VAAPI;
         //wanted_hw_pix_fmt = AV_PIX_FMT_VDPAU;
     }else if(decoder->id==AV_CODEC_ID_MJPEG){
@@ -249,7 +250,7 @@ int AVCodecDecoder::lulatsch()
     // needed for FFMPEG ?
     //decoder_ctx->extra_hw_frames = 10;
 
-    /*if (hw_decoder_init(decoder_ctx, kAvhwDeviceType) < 0){
+    if (hw_decoder_init(decoder_ctx, kAvhwDeviceType) < 0){
       std::cerr<<"HW decoder init failed,fallback to SW decode\n";
       // Use SW decode as fallback ?!
       //return -1;
@@ -258,7 +259,7 @@ int AVCodecDecoder::lulatsch()
         wanted_hw_pix_fmt=AV_PIX_FMT_YUVJ422P;
       }
       wanted_hw_pix_fmt=AV_PIX_FMT_YUV420P;
-    }*/
+    }
 
     // Consti10
     decoder_ctx->thread_count = 1;
