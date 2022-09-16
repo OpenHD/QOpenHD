@@ -7,6 +7,7 @@
 #include <sstream>
 #include <iostream>
 #include <cassert>
+#include <vector>
 #include "gl_shaders.h"
 
 static const char *GlErrorString(GLenum error ){
@@ -261,36 +262,41 @@ void GL_shaders::draw_egl(GLuint texture) {
   checkGlError("Draw EGL texture");
 }
 
+static void bind_textures(std::vector<GLuint> textures){
+    for(int i=0;i<textures.size();i++){
+        glActiveTexture(GL_TEXTURE0 + i);
+        GLuint texture=textures[i];
+        glBindTexture(GL_TEXTURE_2D,texture);
+    }
+}
+static void unbind_textures(int n_textures){
+    for(int i=0;i<n_textures;i++){
+        glActiveTexture(GL_TEXTURE0 + i);
+        glBindTexture(GL_TEXTURE_2D,0);
+    }
+    // Overkill, but needed for QT
+    glActiveTexture(GL_TEXTURE0);
+}
+
 void GL_shaders::draw_YUV420P(GLuint textureY, GLuint textureU, GLuint textureV) {
   checkGlError("B Draw YUV420 texture");
   glUseProgram(yuv_420P_shader.program);
-  for(int i=0;i<3;i++){
-	glActiveTexture(GL_TEXTURE0 + i);
-	GLuint texture;
-	if(i==0)texture=textureY;
-	if(i==1)texture=textureU;
-	if(i==2)texture=textureV;
-	glBindTexture(GL_TEXTURE_2D,texture);
-  }
+  const std::vector<GLuint> textures{textureY,textureU,textureV};
+  bind_textures(textures);
   beforeDrawVboSetup(yuv_420P_shader.pos,yuv_420P_shader.uvs);
   glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
   afterDrawVboCleanup(yuv_420P_shader.pos,yuv_420P_shader.uvs);
-  glBindTexture(GL_TEXTURE_2D, 0);
+  unbind_textures(textures.size());
   checkGlError("Draw YUV420 texture");
 }
 
 void GL_shaders::draw_NV12(GLuint textureY, GLuint textureUV) {
   glUseProgram(nv12_shader.program);
-  for(int i=0;i<2;i++){
-	glActiveTexture(GL_TEXTURE0 + i);
-	GLuint texture;
-	if(i==0)texture=textureY;
-	if(i==1)texture=textureUV;
-	glBindTexture(GL_TEXTURE_2D,texture);
-  }
+  const std::vector<GLuint> textures{textureY,textureUV};
+  bind_textures(textures);
   beforeDrawVboSetup(nv12_shader.pos,nv12_shader.uvs);
   glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
   afterDrawVboCleanup(nv12_shader.pos,nv12_shader.uvs);
-  glBindTexture(GL_TEXTURE_2D, 0);
+  unbind_textures(textures.size());
   checkGlError("Draw NV12 texture");
 }
