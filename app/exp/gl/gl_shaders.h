@@ -54,8 +54,8 @@ class GL_shaders {
   NV12Shader nv12_shader;
   // All shaders use the same VBO for vertex / uv coordinates
   GLuint vbo=0;
-  void beforeDrawVboSetup(GLint pos,GLint uvs);
-  void afterDrawVboCleanup(GLint pos,GLint uvs);
+  void beforeDrawVboSetup(GLint pos,GLint uvs) const;
+  static void afterDrawVboCleanup(GLint pos,GLint uvs);
  public:
   static void checkGlError(const std::string& caller);
   // needs to be called on the OpenGL thread and before the first use of any draw_XXX calls
