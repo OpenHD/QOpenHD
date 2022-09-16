@@ -49,9 +49,9 @@ void GL_VideoRenderer::init_gl() {
 // https://stackoverflow.com/questions/9413845/ffmpeg-avframe-to-opengl-texture-without-yuv-to-rgb-soft-conversion
 // https://bugfreeblog.duckdns.org/2022/01/yuv420p-opengl-shader-conversion.html
 // https://stackoverflow.com/questions/30191911/is-it-possible-to-draw-yuv422-and-yuv420-texture-using-opengl
-void GL_VideoRenderer::update_texture_yuv420p(AVFrame* frame) {
+void GL_VideoRenderer::update_texture_yuv420P_yuv422P(AVFrame* frame) {
   assert(frame);
-  assert(frame->format==AV_PIX_FMT_YUV420P);
+  assert(frame->format==AV_PIX_FMT_YUV420P || frame->format==AV_PIX_FMT_YUVJ422P);
   for(int i=0;i<3;i++){
 	if(yuv_420_p_sw_frame_texture.textures[i]==0){
 	  glGenTextures(1,&yuv_420_p_sw_frame_texture.textures[i]);
@@ -59,8 +59,9 @@ void GL_VideoRenderer::update_texture_yuv420p(AVFrame* frame) {
 	}
 	GL_shaders::checkGlError("Xupload YUV420P");
 	glBindTexture(GL_TEXTURE_2D, yuv_420_p_sw_frame_texture.textures[i]);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	const auto test_texture_target=GL_TEXTURE_2D;
+	glTexParameteri(test_texture_target, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(test_texture_target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 	bool use_tex_sub_image= false;
 	if(yuv_420_p_sw_frame_texture.last_width==frame->width &&
@@ -73,16 +74,18 @@ void GL_VideoRenderer::update_texture_yuv420p(AVFrame* frame) {
 	if(i==0){
 	  // Full Y plane
 	  if(use_tex_sub_image){
-		glTexSubImage2D(GL_TEXTURE_2D,0,0,0,frame->width,frame->height,GL_LUMINANCE,GL_UNSIGNED_BYTE,frame->data[0]);
+		glTexSubImage2D(test_texture_target,0,0,0,frame->width,frame->height,GL_LUMINANCE,GL_UNSIGNED_BYTE,frame->data[0]);
 	  }else{
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, frame->width, frame->height, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, frame->data[0]);
+		glTexImage2D(test_texture_target, 0, GL_LUMINANCE, frame->width, frame->height, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, frame->data[0]);
 	  }
 	}else{
 	  // half size U,V planes
+	  const int frame_width=frame->format==AV_PIX_FMT_YUV420P ? frame->width / 2 : frame->width;
+	  const int frame_height=frame->height / 2;
 	  if(use_tex_sub_image){
-		glTexSubImage2D(GL_TEXTURE_2D, 0,0,0, frame->width/2, frame->height/2, GL_LUMINANCE, GL_UNSIGNED_BYTE, frame->data[i]);
+		glTexSubImage2D(test_texture_target, 0,0,0, frame_width, frame_height, GL_LUMINANCE, GL_UNSIGNED_BYTE, frame->data[i]);
 	  } else{
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, frame->width/2, frame->height/2, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, frame->data[i]);
+		glTexImage2D(test_texture_target, 0, GL_LUMINANCE, frame_width, frame_height, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, frame->data[i]);
 	  }
 	}
 	glBindTexture(GL_TEXTURE_2D,0);
@@ -235,7 +238,7 @@ void GL_VideoRenderer::update_texture_vdpau(AVFrame* hw_frame) {
 	av_frame_free(&hw_frame);
 	return;
   }
-  update_texture_yuv420p(sw_frame);
+  update_texture_yuv420P_yuv422P(sw_frame);
   //av_frame_free(&sw_frame);
   av_frame_free(&hw_frame);
 }
@@ -243,17 +246,15 @@ void GL_VideoRenderer::update_texture_vdpau(AVFrame* hw_frame) {
 // "Consumes" the given hw_frame (makes sure it is freed at the apropriate time / the previous one
 // is freed when updating to a new one.
 void GL_VideoRenderer::update_texture_gl(AVFrame *frame) {
-  curr_video_width=frame->width;
-  curr_video_height=frame->height;
   if(frame->format == AV_PIX_FMT_DRM_PRIME){
 	std::cout<<"update_texture_drm_prime\n";
 	update_texture_egl_external(frame);
   }else if(frame->format==AV_PIX_FMT_CUDA){
-	std::cout<<"update_texture_cuda\n";
+	std::cout<<"update_texture_CUDA\n";
 	update_texture_cuda(frame);
-  }else if(frame->format==AV_PIX_FMT_YUV420P){
-	std::cout<<"update_texture_yuv420p\n";
-	update_texture_yuv420p(frame);
+  }else if(frame->format==AV_PIX_FMT_YUV420P || frame->format==AV_PIX_FMT_YUVJ422P){
+	std::cout<<"update_texture_yuv420P / yuv422P\n";
+	update_texture_yuv420P_yuv422P(frame);
   }else if(frame->format==AV_PIX_FMT_VDPAU){
 	std::cout<<"update_texture_vdpau\n";
 	update_texture_vdpau(frame);

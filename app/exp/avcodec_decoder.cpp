@@ -132,8 +132,9 @@ void AVCodecDecoder::on_new_frame(AVFrame *frame)
 
 int AVCodecDecoder::lulatsch()
 {
-    const char* in_filename="/home/consti10/Desktop/hello_drmprime/in/rv1126.h265";
+    //const char* in_filename="/home/consti10/Desktop/hello_drmprime/in/rv1126.h265";
     //const char* in_filename="/home/consti10/Desktop/hello_drmprime/in/rtp_h264.sdp";
+    const char* in_filename="/home/consti10/Desktop/hello_drmprime/in/rtp_mjpeg.sdp";
     //const char* in_filename="/home/consti10/Desktop/hello_drmprime/in/jetson_test.h265";
     //const char* in_filename="/home/consti10/Desktop/hello_drmprime/in/uv_640x480.mjpeg";
     //const char* in_filename="empty";
@@ -266,7 +267,7 @@ int AVCodecDecoder::lulatsch()
     // needed for FFMPEG ?
     //decoder_ctx->extra_hw_frames = 10;
 
-    if (hw_decoder_init(decoder_ctx, kAvhwDeviceType) < 0){
+    /*if (hw_decoder_init(decoder_ctx, kAvhwDeviceType) < 0){
       std::cerr<<"HW decoder init failed,fallback to SW decode\n";
       // Use SW decode as fallback ?!
       //return -1;
@@ -275,7 +276,7 @@ int AVCodecDecoder::lulatsch()
         wanted_hw_pix_fmt=AV_PIX_FMT_YUVJ422P;
       }
       wanted_hw_pix_fmt=AV_PIX_FMT_YUV420P;
-    }
+    }*/
 
     // Consti10
     decoder_ctx->thread_count = 1;
