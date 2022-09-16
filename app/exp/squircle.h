@@ -23,12 +23,6 @@ class Squircle : public QQuickItem
 public:
     Squircle();
 
-    qreal t() const { return m_t; }
-    void setT(qreal t);
-
-signals:
-    void tChanged();
-
 public slots:
     void sync();
     void cleanup();
@@ -39,7 +33,6 @@ private slots:
 private:
     void releaseResources() override;
 
-    qreal m_t;
     //SquircleRenderer *m_renderer;
     TextureRenderer* m_renderer;
 public slots:

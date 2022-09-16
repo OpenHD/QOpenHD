@@ -19,23 +19,12 @@ private:
    TextureRenderer *m_renderer;
 };
 
-Squircle::Squircle()
-    : m_t(0)
-    , m_renderer(nullptr)
+Squircle::Squircle():
+    m_renderer(nullptr)
 {
     connect(this, &QQuickItem::windowChanged, this, &Squircle::handleWindowChanged);
 }
 
-void Squircle::setT(qreal t)
-{
-    //qDebug()<<"Set t:"<<t;
-    if (t == m_t)
-        return;
-    m_t = t;
-    emit tChanged();
-    if (window())
-        window()->update();
-}
 
 void Squircle::handleWindowChanged(QQuickWindow *win)
 {
