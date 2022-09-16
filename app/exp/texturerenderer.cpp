@@ -93,17 +93,16 @@ void TextureRenderer::paint()
     // Consti10: comp error, seems to work without, too
    m_window->beginExternalCommands();
    //glClear(GL_COLOR_BUFFER_BIT |GL_DEPTH_BUFFER_BIT| GL_STENCIL_BUFFER_BIT);
+   AVFrame* new_frame=fetch_latest_decoded_frame();
+   if(new_frame!= nullptr){
+     // update the texture with this frame
+     gl_video_renderer->update_texture_gl(new_frame);
+   }
    const auto video_tex_width=gl_video_renderer->curr_video_width;
    const auto video_tex_height=gl_video_renderer->curr_video_height;
    if(video_tex_width >0 && video_tex_height>0){
        const auto viewport=calculate_viewport_video_fullscreen(m_viewportSize.width(), m_viewportSize.height(),video_tex_width,video_tex_height);
        glViewport(viewport.x,viewport.y,viewport.width,viewport.height);
-   }
-
-   AVFrame* new_frame=fetch_latest_decoded_frame();
-   if(new_frame!= nullptr){
-     // update the texture with this frame
-     gl_video_renderer->update_texture_gl(new_frame);
    }
    glDisable(GL_DEPTH_TEST);
 

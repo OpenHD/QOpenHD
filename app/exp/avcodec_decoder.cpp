@@ -132,11 +132,11 @@ void AVCodecDecoder::on_new_frame(AVFrame *frame)
 
 int AVCodecDecoder::lulatsch()
 {
-    //const char* in_filename="/home/consti10/Desktop/hello_drmprime/in/rv1126.h265";
+    const char* in_filename="/home/consti10/Desktop/hello_drmprime/in/rv1126.h265";
     //const char* in_filename="/home/consti10/Desktop/hello_drmprime/in/rtp_h264.sdp";
-    const char* in_filename="/home/consti10/Desktop/hello_drmprime/in/jetson_test.h265";
+    //const char* in_filename="/home/consti10/Desktop/hello_drmprime/in/jetson_test.h265";
     //const char* in_filename="/home/consti10/Desktop/hello_drmprime/in/uv_640x480.mjpeg";
-    //std::string in_filename="empty";
+    //const char* in_filename="empty";
 
     //char* in_filename="/home/openhd/hello_drmprime/in/rtp_h264.sdp";
     //char* in_filename="/home/openhd/hello_drmprime/in/rv_1280x720_green_white.h265";
