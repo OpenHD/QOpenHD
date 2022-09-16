@@ -7,6 +7,7 @@
 #include "util/time/TimeHelper.hpp"
 
 #include "texturerenderer.h"
+#include "../videostreaming/QOpenHDVideoHelper.hpp"
 
 static enum AVPixelFormat wanted_hw_pix_fmt;
 
@@ -132,9 +133,22 @@ void AVCodecDecoder::on_new_frame(AVFrame *frame)
 
 int AVCodecDecoder::lulatsch()
 {
+    const auto settings = QOpenHDVideoHelper::read_from_settings();
+    std::string in_filename="";
+    if(settings.dev_test_video_mode==QOpenHDVideoHelper::VideoTestMode::DISABLED){
+        if(settings.video_codec==QOpenHDVideoHelper::VideoCodecH264){
+            in_filename="/home/consti10/Desktop/hello_drmprime/in/rtp_h264.sdp";
+        }else if(settings.video_codec==QOpenHDVideoHelper::VideoCodecH265){
+             in_filename="/home/consti10/Desktop/hello_drmprime/in/rtp_h265.sdp";
+        }else{
+             in_filename="/home/consti10/Desktop/hello_drmprime/in/rtp_mjpeg.sdp";
+        }
+    }else{
+       in_filename =  "/home/consti10/Desktop/hello_drmprime/in/jetson_test.h265";
+    }
     //const char* in_filename="/home/consti10/Desktop/hello_drmprime/in/rv1126.h265";
     //const char* in_filename="/home/consti10/Desktop/hello_drmprime/in/rtp_h264.sdp";
-    const char* in_filename="/home/consti10/Desktop/hello_drmprime/in/rtp_mjpeg.sdp";
+    //const char* in_filename="/home/consti10/Desktop/hello_drmprime/in/rtp_mjpeg.sdp";
     //const char* in_filename="/home/consti10/Desktop/hello_drmprime/in/jetson_test.h265";
     //const char* in_filename="/home/consti10/Desktop/hello_drmprime/in/uv_640x480.mjpeg";
     //const char* in_filename="empty";
@@ -155,8 +169,8 @@ int AVCodecDecoder::lulatsch()
     av_dict_set_int(&av_dictionary, "reorder_queue_size", 1, 0);
     AVFormatContext *input_ctx = nullptr;
     // open the input file
-    if (avformat_open_input(&input_ctx,in_filename, NULL, &av_dictionary) != 0) {
-        fprintf(stderr, "Cannot open input file '%s'\n", in_filename);
+    if (avformat_open_input(&input_ctx,in_filename.c_str(), NULL, &av_dictionary) != 0) {
+        fprintf(stderr, "Cannot open input file '%s'\n", in_filename.c_str());
         open_input_error_count++;
         avformat_close_input(&input_ctx);
         return -1;
@@ -225,10 +239,10 @@ int AVCodecDecoder::lulatsch()
             }
         }
 
-        wanted_hw_pix_fmt = AV_PIX_FMT_DRM_PRIME;
+        //wanted_hw_pix_fmt = AV_PIX_FMT_DRM_PRIME;
         //wanted_hw_pix_fmt = AV_PIX_FMT_CUDA;
         //wanted_hw_pix_fmt = AV_PIX_FMT_VAAPI;
-        //wanted_hw_pix_fmt = AV_PIX_FMT_YUV420P;
+        wanted_hw_pix_fmt = AV_PIX_FMT_YUV420P;
         //wanted_hw_pix_fmt = AV_PIX_FMT_VAAPI;
         //wanted_hw_pix_fmt = AV_PIX_FMT_VDPAU;
     }else if(decoder->id==AV_CODEC_ID_MJPEG){
