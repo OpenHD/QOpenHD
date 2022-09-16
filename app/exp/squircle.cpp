@@ -79,6 +79,8 @@ void Squircle::m_QQuickWindow_beforeRenderPassRecording()
     if(m_renderer){
         m_renderer->paint();
     }
+    // always trigger a repaint, otherwise QT "thinks" nothing has changed since it doesn't
+    // know about the OpenGL commands we do here
     window()->update();
 }
 
