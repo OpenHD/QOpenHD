@@ -203,6 +203,7 @@ void write_other_context_properties(QQmlApplicationEngine& engine){
 
 int main(int argc, char *argv[]) {
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    //QCoreApplication::setAttribute(Qt::AA_UseOpenGLES);
 
     QCoreApplication::setOrganizationName("Open.HD");
     QCoreApplication::setOrganizationDomain("open.hd");

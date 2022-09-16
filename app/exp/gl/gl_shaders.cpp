@@ -8,6 +8,7 @@
 #include <iostream>
 #include <cassert>
 #include <vector>
+#include <qdebug.h>
 #include "gl_shaders.h"
 
 static const char *GlErrorString(GLenum error ){
@@ -160,7 +161,7 @@ static GLint common_get_shader_program(const char *vertex_shader_source, const c
   glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &success);
   if (!success) {
 	glGetShaderInfoLog(vertex_shader, INFOLOG_LEN, NULL, infoLog);
-	printf("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n%s\n", infoLog);
+    qDebug()<<"ERROR::SHADER::VERTEX::COMPILATION_FAILED\n"<< infoLog<<"\n";
   }
 
   /* Fragment shader */
@@ -170,7 +171,7 @@ static GLint common_get_shader_program(const char *vertex_shader_source, const c
   glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &success);
   if (!success) {
 	glGetShaderInfoLog(fragment_shader, INFOLOG_LEN, NULL, infoLog);
-	printf("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n%s\n", infoLog);
+    qDebug()<<"ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n"<< infoLog<<"\n";
   }
 
   /* Link shaders */
