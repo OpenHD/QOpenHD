@@ -56,6 +56,11 @@ void AVCodecDecoder::init(bool primaryStream)
     //decode_thread = std::make_unique<std::thread>([this]{this->constant_decode();} );
 }
 
+void AVCodecDecoder::cancel()
+{
+    has_been_canceled=true;
+}
+
 void AVCodecDecoder::constant_decode()
 {
     while(true){
@@ -129,7 +134,8 @@ int AVCodecDecoder::lulatsch()
 {
     //const char* in_filename="/home/consti10/Desktop/hello_drmprime/in/rv1126.h265";
     //const char* in_filename="/home/consti10/Desktop/hello_drmprime/in/rtp_h264.sdp";
-    const char* in_filename="/home/consti10/Desktop/hello_drmprime/in/jetson_test.h265";
+    //const char* in_filename="/home/consti10/Desktop/hello_drmprime/in/jetson_test.h265";
+    const char* in_filename="/home/consti10/Desktop/hello_drmprime/in/uv_640x480.mjpeg";
     //std::string in_filename="empty";
 
     //char* in_filename="/home/openhd/hello_drmprime/in/rtp_h264.sdp";

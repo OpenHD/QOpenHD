@@ -327,49 +327,11 @@ int main(int argc, char *argv[]) {
   av_codec_decoder->init(true);
 
 
-#if defined(ENABLE_VIDEO_RENDER)
-#if defined(__android__)
-#if defined(ENABLE_MAIN_VIDEO)
-OpenHDAndroidVideo *mainVideo = new OpenHDAndroidVideo(OpenHDStreamTypeMain);
-#endif
-#if defined(ENABLE_PIP)
-OpenHDAndroidVideo *pipVideo = new OpenHDAndroidVideo(OpenHDStreamTypePiP);
-#endif
-#endif
-
-#if defined(__rasp_pi__)
-#if defined(ENABLE_MAIN_VIDEO)
-OpenHDMMALVideo *mainVideo = new OpenHDMMALVideo(OpenHDStreamTypeMain);
-#endif
-#if defined(ENABLE_PIP)
-OpenHDMMALVideo *pipVideo = new OpenHDMMALVideo(OpenHDStreamTypePiP);
-#endif
-#endif
-
-#if defined(__apple__)
-#if defined(ENABLE_MAIN_VIDEO)
-OpenHDAppleVideo *mainVideo = new OpenHDAppleVideo(OpenHDStreamTypeMain);
-#endif
-#if defined(ENABLE_PIP)
-OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
-#endif
-#endif
-
-
-#endif
-
-
     auto openHDRC = new OpenHDRC();
     //QObject::connect(openHDSettings, &OpenHDSettings::groundStationIPUpdated, openHDRC, &OpenHDRC::setGroundIP, Qt::QueuedConnection);
     engine.rootContext()->setContextProperty("openHDRC", openHDRC);
 
     engine.rootContext()->setContextProperty("_mavlinkTelemetry", &MavlinkTelemetry::instance());
-
-    #if defined(ENABLE_EXAMPLE_WIDGET)
-    engine.rootContext()->setContextProperty("EnableExampleWidget", QVariant(true));
-    #else
-    engine.rootContext()->setContextProperty("EnableExampleWidget", QVariant(false));
-    #endif
 
     engine.rootContext()->setContextProperty("OpenHDUtil", &OpenHDUtil::instance());
 
@@ -454,75 +416,10 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
     }*/
 
 
-#if defined(ENABLE_VIDEO_RENDER)
-    auto rootObjects = engine.rootObjects();
-    QQuickWindow *rootObject = static_cast<QQuickWindow *>(rootObjects.first());
-    QThread *mainVideoThread = new QThread();
-    mainVideoThread->setObjectName("mainVideoThread");
-    QThread *pipVideoThread = new QThread();
-    pipVideoThread->setObjectName("pipVideoThread");
-
-
-#if defined(__android__)
-#if defined(ENABLE_MAIN_VIDEO)
-    QQuickItem *mainRenderer = rootObject->findChild<QQuickItem *>("mainSurface");
-    mainVideo->setVideoOut((OpenHDRender*)mainRenderer);
-    QObject::connect(mainVideoThread, &QThread::started, mainVideo, &OpenHDAndroidVideo::onStarted);
-#endif
-
-#if defined(ENABLE_PIP)
-    QQuickItem *pipRenderer = rootObject->findChild<QQuickItem *>("pipSurface");
-    pipVideo->setVideoOut((OpenHDRender*)pipRenderer);
-    QObject::connect(pipVideoThread, &QThread::started, pipVideo, &OpenHDAndroidVideo::onStarted);
-#endif
-#endif
-
-#if defined(__rasp_pi__)
-#if defined(ENABLE_MAIN_VIDEO)
-    QQuickItem *mainRenderer = rootObject->findChild<QQuickItem *>("mainSurface");
-    mainVideo->setVideoOut((OpenHDRender*)mainRenderer);
-    QObject::connect(mainVideoThread, &QThread::started, mainVideo, &OpenHDMMALVideo::onStarted);
-#endif
-
-#if defined(ENABLE_PIP)
-    QQuickItem *pipRenderer = rootObject->findChild<QQuickItem *>("pipSurface");
-    pipVideo->setVideoOut((OpenHDRender*)pipRenderer);
-    QObject::connect(pipVideoThread, &QThread::started, pipVideo, &OpenHDMMALVideo::onStarted);
-#endif
-#endif
-
-
-#if defined(__apple__)
-#if defined(ENABLE_MAIN_VIDEO)
-    QQuickItem *mainRenderer = rootObject->findChild<QQuickItem *>("mainSurface");
-    mainVideo->setVideoOut((OpenHDRender*)mainRenderer);
-    QObject::connect(mainVideoThread, &QThread::started, mainVideo, &OpenHDAppleVideo::onStarted);
-#endif
-
-#if defined(ENABLE_PIP)
-    QQuickItem *pipRenderer = rootObject->findChild<QQuickItem *>("pipSurface");
-    pipVideo->setVideoOut((OpenHDRender*)pipRenderer);
-    QObject::connect(pipVideoThread, &QThread::started, pipVideo, &OpenHDAppleVideo::onStarted);
-#endif
-#endif
-
-
-#if defined(ENABLE_MAIN_VIDEO)
-    mainVideo->moveToThread(mainVideoThread);
-    mainVideoThread->start();
-#endif
-
-#if defined(ENABLE_PIP)
-    pipVideo->moveToThread(pipVideoThread);
-    pipVideoThread->start();
-#endif
-
-#endif
-
-     LogMessagesModel::instance().addLogMessage("QOpenHD","running",0);
+    LogMessagesModel::instance().addLogMessage("QOpenHD","running",0);
     const int retval = app.exec();
 
-#if defined(ENABLE_GSTREAMER) || defined(ENABLE_VIDEO_RENDER)
+#if defined(ENABLE_GSTREAMER)
 #if defined(ENABLE_MAIN_VIDEO)
     if(mainVideo!=nullptr){
          mainVideo->stopVideoSafe();

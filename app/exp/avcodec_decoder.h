@@ -14,6 +14,7 @@ public:
 
     void init(bool primaryStream);
 
+    void cancel();
 private:
     AVCodecContext *decoder_ctx = nullptr;
     const AVCodec *decoder = nullptr;
@@ -25,6 +26,7 @@ private:
     int decode_and_wait_for_frame(AVPacket *packet);
     void on_new_frame(AVFrame* frame);
     int open_input_error_count=0;
+    bool has_been_canceled=false;
 };
 
 #endif // AVCODEC_DECODER_H

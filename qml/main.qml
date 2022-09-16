@@ -78,19 +78,6 @@ ApplicationWindow {
                //return "../video/MainVideoGStreamer.qml";
                 return "";
             }
-            if (IsAndroid && EnableVideoRender && EnableMainVideo) {
-                return "MainVideoRender.qml";
-            }
-            if (IsRaspPi && EnableVideoRender && EnableMainVideo) {
-                return "MainVideoRender.qml";
-            }
-
-            if (IsMac && EnableVideoRender && EnableMainVideo) {
-                return "MainVideoRender.qml";
-            }
-            if (IsiOS && EnableVideoRender && EnableMainVideo) {
-                return "MainVideoRender.qml";
-            }
             return ""
         }
     }
