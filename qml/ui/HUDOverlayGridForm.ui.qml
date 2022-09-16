@@ -183,11 +183,6 @@ Item {
         //   scale: 0.7
     }
 
-    // + 3% cpu
-    Loader {
-        source: EnablePiP ? "../video/SecondaryVideoLoader.qml" : ""
-    }
-
     // + 0% cpu
     GPIOWidget {
         id: gpioWidget
