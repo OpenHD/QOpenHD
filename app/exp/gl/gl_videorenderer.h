@@ -43,6 +43,9 @@ class GL_VideoRenderer {
   void update_texture_gl(AVFrame* frame);
   // draw the latest updated video texture (or the alternating colors if no video texture is set)
   void draw_texture_gl();
+  //
+  int curr_video_width=0;
+  int curr_video_height=0;
  private:
   // Holds shaders for common video formats / upload techniques
   // Needs to be initialized on the GL thread.
