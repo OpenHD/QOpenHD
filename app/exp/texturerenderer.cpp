@@ -60,21 +60,6 @@ void TextureRenderer::initGL()
         //initializeOpenGLFunctions();
         gl_video_renderer=std::make_unique<GL_VideoRenderer>();
         gl_video_renderer->init_gl();
-
-        //
-        const int test_w=1280;
-        const int test_h=900;
-        QImage image1{test_w,test_h, QImage::Format_RGB888};
-        QImage image2{test_w,test_h, QImage::Format_RGB888};
-        image1.fill(QColor(0, 255, 0));
-        image2.fill(QColor(0, 0, 255));
-
-        /*QImage image1{QString(":/resources/ic128.png")};
-        image1=image1.mirrored();
-        QImage image2{QString(":/resources/ic128.png")};*/
-
-        texture1=std::make_unique<QOpenGLTexture>(image1);
-        texture2=std::make_unique<QOpenGLTexture>(image2);
     }
 }
 

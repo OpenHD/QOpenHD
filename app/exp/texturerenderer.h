@@ -27,23 +27,16 @@ public:
     void paint();
     //
     int queue_new_frame_for_display(AVFrame * src_frame);
-
 private:
     QSize m_viewportSize;
     int m_index=0;
     QQuickWindow *m_window = nullptr;
     std::chrono::steady_clock::time_point last_frame=std::chrono::steady_clock::now();
     //
-    std::unique_ptr<QOpenGLTexture> texture1=nullptr;
-    std::unique_ptr<QOpenGLTexture> texture2=nullptr;
-    //
     std::unique_ptr<GL_VideoRenderer> gl_video_renderer=nullptr;
     //
     bool initialized=false;
     int renderCount=0;
-    //
-private:
-
 private:
     std::mutex latest_frame_mutex;
     AVFrame* m_latest_frame=nullptr;
