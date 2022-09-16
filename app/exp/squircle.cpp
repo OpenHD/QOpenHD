@@ -79,6 +79,7 @@ void Squircle::m_QQuickWindow_beforeRenderPassRecording()
     if(m_renderer){
         m_renderer->paint();
     }
+    window()->update();
 }
 
 
