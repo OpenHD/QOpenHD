@@ -9,6 +9,10 @@ apt -y install libgstreamer-plugins-base1.0-dev gstreamer1.0-plugins-good
 # NOT qmlglsink but something else ?!
 sudo apt-get install qtgstreamer-plugins-qt5
 
+
+# now also ffmpeg / avcodec
+apt -y install libavcodec-dev libavformat-dev
+
 # they are needed to build and install mavsdk
 apt -y install pip
 pip install future
