@@ -130,6 +130,7 @@ int AVCodecDecoder::decode_and_wait_for_frame(AVPacket *packet)
     //qDebug()<<"Decode packet:"<<packet->pos<<" size:"<<packet->size<<" B";
     const auto beforeFeedFrame=std::chrono::steady_clock::now();
     const auto beforeFeedFrameUs=getTimeUs();
+    packet->pts=beforeFeedFrameUs;
     int ret = avcodec_send_packet(decoder_ctx, packet);
     if (ret < 0) {
         fprintf(stderr, "Error during decoding\n");
@@ -152,12 +153,17 @@ int AVCodecDecoder::decode_and_wait_for_frame(AVPacket *packet)
             break;
         }else if(ret==0){
             // we got a new frame
-            const auto x_delay=std::chrono::steady_clock::now()-beforeFeedFrame;
-            qDebug()<<"(True) decode delay:"<<((float)std::chrono::duration_cast<std::chrono::microseconds>(x_delay).count()/1000.0f)<<" ms";
+            if(!use_frame_timestamps_for_latency){
+                const auto x_delay=std::chrono::steady_clock::now()-beforeFeedFrame;
+                qDebug()<<"(True) decode delay:"<<((float)std::chrono::duration_cast<std::chrono::microseconds>(x_delay).count()/1000.0f)<<" ms";
+            }else{
+                const auto now=getTimeUs();
+                const auto delay_us=now-frame->pts;
+                qDebug()<<"(True) decode delay:"<<((float)delay_us/1000.0f)<<" ms";
+                //MLOGD<<"Frame pts:"<<frame->pts<<" Set to:"<<now<<"\n";
+                //frame->pts=now;
+            }
             gotFrame=true;
-            const auto now=getTimeUs();
-            //MLOGD<<"Frame pts:"<<frame->pts<<" Set to:"<<now<<"\n";
-            //frame->pts=now;
             frame->pts=beforeFeedFrameUs;
             // display frame
             on_new_frame(frame);
@@ -174,6 +180,7 @@ int AVCodecDecoder::decode_and_wait_for_frame(AVPacket *packet)
             if(std::chrono::steady_clock::now()-loopUntilFrameBegin > std::chrono::seconds(2)){
               qDebug()<<"Got no frame after X seconds. Break, but decode delay will be reported wrong";
               n_no_output_frame_after_x_seconds++;
+              use_frame_timestamps_for_latency=true;
               break;
             }
         }

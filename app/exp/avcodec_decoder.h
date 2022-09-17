@@ -37,6 +37,7 @@ private:
     bool has_been_canceled=false;
     bool request_restart=false;
     int n_no_output_frame_after_x_seconds=0;
+    bool use_frame_timestamps_for_latency=false;
 private:
     // Completely ineficient, but only way since QT settings callback(s) don't properly work
     // runs every 1 second
