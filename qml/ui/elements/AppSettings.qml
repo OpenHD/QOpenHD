@@ -42,6 +42,8 @@ Settings {
     // When this one is set to true, we read a file (where you can then write your custom rx gstreamer pipeline
     // that ends with qmlglsink )
     property bool dev_enable_custom_pipeline: false
+    // only for ffmpeg
+    property int dev_limit_fps_on_test_file: -1
 
     property bool enable_speech: true
     property bool enable_imperial: false

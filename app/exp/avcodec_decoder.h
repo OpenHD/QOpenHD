@@ -22,9 +22,16 @@ private:
     std::unique_ptr<std::thread> decode_thread=nullptr;
 private:
     void constant_decode();
+    // VOODO, will be documented at some point ;)
     int lulatsch();
-    //
+    // feed one frame to the decoder, then wait until the frame is returned
+    // (This gives the lowest latency on most decoders that have a "lockstep").
+    // If we didn't get a frame out for X seconds after feeding a frame more than X times,
+    // This will stop performing the lockstep. In this case, either the decoder cannot decode
+    // the video without buffering (which is bad, but some IP camera(s) create such a stream)
+    // or the underlying decode implementation (e.g. rpi foundation h264 !? investigate) has some quirks.
     int decode_and_wait_for_frame(AVPacket *packet);
+    // Called every time we get a new frame from the decoder, do what you wish here ;)
     void on_new_frame(AVFrame* frame);
     int open_input_error_count=0;
     bool has_been_canceled=false;

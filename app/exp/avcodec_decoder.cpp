@@ -200,7 +200,7 @@ int AVCodecDecoder::lulatsch()
             in_filename=settings.dev_custom_pipeline;
         }else{
             if(settings.video_codec==QOpenHDVideoHelper::VideoCodecH264){
-               in_filename="/home/consti10/Desktop/hello_drmprime/in/rv_1280x720_green_white.h264";
+               in_filename="/home/consti10/Desktop/hello_drmprime/in/jetson_test.h264";
             }else if(settings.video_codec==QOpenHDVideoHelper::VideoCodecH265){
                in_filename="/home/consti10/Desktop/hello_drmprime/in/jetson_test.h265";
             }else{
@@ -277,8 +277,8 @@ int AVCodecDecoder::lulatsch()
             avformat_close_input(&input_ctx);
             return -1;
         }*/
-        //wanted_hw_pix_fmt = AV_PIX_FMT_DRM_PRIME;
-        wanted_hw_pix_fmt = AV_PIX_FMT_YUV420P;
+        wanted_hw_pix_fmt = AV_PIX_FMT_DRM_PRIME;
+        //wanted_hw_pix_fmt = AV_PIX_FMT_YUV420P;
     }
     else if(decoder->id==AV_CODEC_ID_H265){
         assert(decoder->id==AV_CODEC_ID_H265);
@@ -303,11 +303,10 @@ int AVCodecDecoder::lulatsch()
                 break;
             }
         }
-
-        //wanted_hw_pix_fmt = AV_PIX_FMT_DRM_PRIME;
+        wanted_hw_pix_fmt = AV_PIX_FMT_DRM_PRIME;
         //wanted_hw_pix_fmt = AV_PIX_FMT_CUDA;
         //wanted_hw_pix_fmt = AV_PIX_FMT_VAAPI;
-        wanted_hw_pix_fmt = AV_PIX_FMT_YUV420P;
+        //wanted_hw_pix_fmt = AV_PIX_FMT_YUV420P;
         //wanted_hw_pix_fmt = AV_PIX_FMT_VAAPI;
         //wanted_hw_pix_fmt = AV_PIX_FMT_VDPAU;
     }else if(decoder->id==AV_CODEC_ID_MJPEG){
@@ -343,10 +342,12 @@ int AVCodecDecoder::lulatsch()
 
     decoder_ctx->get_format  = get_hw_format;
 
-    // needed for FFMPEG ?
-    //decoder_ctx->extra_hw_frames = 10;
-    if(settings.enable_software_video_decoder){
-        qDebug()<<"User wants SW decode";
+    if(settings.enable_software_video_decoder ||
+            // for mjpeg we always use sw decode r.n, since for some reason the "fallback" to sw decode doesn't work here
+            // and also the PI cannot do HW mjpeg decode anyways at least no one bothered to fix ffmpeg for it.
+            settings.video_codec==QOpenHDVideoHelper::VideoCodecMJPEG
+            ){
+        qDebug()<<"User wants SW decode / mjpeg";
         // SW decode is always YUV420 for H264/H265 and YUVJ22P for mjpeg
         if(is_mjpeg){
           wanted_hw_pix_fmt=AV_PIX_FMT_YUVJ422P;
@@ -396,7 +397,7 @@ int AVCodecDecoder::lulatsch()
         }
         const int limitedFrameRate=120;
         if (video_stream == packet.stream_index){
-            if(limitedFrameRate!=-1){
+            if(limitedFrameRate>0){
                 const long frameDeltaNs=1000*1000*1000 / limitedFrameRate;
                 while (std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now()-lastFrame).count()<frameDeltaNs){
                     // busy wait
@@ -408,7 +409,7 @@ int AVCodecDecoder::lulatsch()
             const uint64_t runTimeMs=std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now()-decodingStart).count();
             const double runTimeS=runTimeMs/1000.0f;
             const double fps=runTimeS==0 ? 0 : nFeedFrames/runTimeS;
-            qDebug()<<"Fake fps:"<<fps<<"\n";
+            qDebug()<<"Fake fps:"<<fps;
         }
         av_packet_unref(&packet);
     }
