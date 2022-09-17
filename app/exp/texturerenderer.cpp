@@ -103,46 +103,44 @@ void TextureRenderer::paint()
 int TextureRenderer::queue_new_frame_for_display(AVFrame *src_frame)
 {
     assert(src_frame);
-      //std::cout<<"DRMPrimeOut::drmprime_out_display "<<src_frame->width<<"x"<<src_frame->height<<"\n";
-      if ((src_frame->flags & AV_FRAME_FLAG_CORRUPT) != 0) {
-        fprintf(stderr, "Discard corrupt frame: fmt=%d, ts=%" PRId64 "\n", src_frame->format, src_frame->pts);
-        return 0;
-      }
-      latest_frame_mutex.lock();
-      // We drop a frame that has (not yet) been consumed by the render thread to whatever is the newest available.
-      if(m_latest_frame!= nullptr){
-        av_frame_free(&m_latest_frame);
-        qDebug()<<"Dropping frame\n";
-        //m_display_stats.n_frames_dropped++;
-      }
-      AVFrame *frame=frame = av_frame_alloc();
-      assert(frame);
-      if(av_frame_ref(frame, src_frame)!=0){
-        fprintf(stderr, "av_frame_ref error\n");
-        av_frame_free(&frame);
-        // don't forget to give up the lock
-        latest_frame_mutex.unlock();
-        return AVERROR(EINVAL);
-      }
-      m_latest_frame=frame;
-      latest_frame_mutex.unlock();
+    //std::cout<<"DRMPrimeOut::drmprime_out_display "<<src_frame->width<<"x"<<src_frame->height<<"\n";
+    if ((src_frame->flags & AV_FRAME_FLAG_CORRUPT) != 0) {
+      fprintf(stderr, "Discard corrupt frame: fmt=%d, ts=%" PRId64 "\n", src_frame->format, src_frame->pts);
       return 0;
+    }
+    latest_frame_mutex.lock();
+    // We drop a frame that has (not yet) been consumed by the render thread to whatever is the newest available.
+    if(m_latest_frame!= nullptr){
+      av_frame_free(&m_latest_frame);
+      qDebug()<<"Dropping frame";
+      //m_display_stats.n_frames_dropped++;
+    }
+    AVFrame *frame=frame = av_frame_alloc();
+    assert(frame);
+    if(av_frame_ref(frame, src_frame)!=0){
+      fprintf(stderr, "av_frame_ref error\n");
+      av_frame_free(&frame);
+      // don't forget to give up the lock
+      latest_frame_mutex.unlock();
+      return AVERROR(EINVAL);
+    }
+    m_latest_frame=frame;
+    latest_frame_mutex.unlock();
+    return 0;
 }
-
-
 
 
 AVFrame *TextureRenderer::fetch_latest_decoded_frame()
 {
     std::lock_guard<std::mutex> lock(latest_frame_mutex);
-     if(m_latest_frame!= nullptr) {
-       // Make a copy and write nullptr to the thread-shared variable such that
-       // it is not freed by the providing thread.
-       AVFrame* new_frame = m_latest_frame;
-       m_latest_frame = nullptr;
-       return new_frame;
-     }
-     return nullptr;
+    if(m_latest_frame!= nullptr) {
+      // Make a copy and write nullptr to the thread-shared variable such that
+      // it is not freed by the providing thread.
+      AVFrame* new_frame = m_latest_frame;
+      m_latest_frame = nullptr;
+      return new_frame;
+    }
+    return nullptr;
 }
 
 
