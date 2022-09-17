@@ -59,6 +59,7 @@ void TextureRenderer::initGL()
 
         //initializeOpenGLFunctions();
         gl_video_renderer=std::make_unique<GL_VideoRenderer>();
+        qDebug()<<gl_video_renderer->debug_info().c_str();
         gl_video_renderer->init_gl();
     }
 }

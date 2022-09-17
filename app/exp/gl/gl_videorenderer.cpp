@@ -283,3 +283,21 @@ void GL_VideoRenderer::draw_texture_gl() {
 	frameCount++;
   }
 }
+
+static std::string safe_glGetString(GLenum name){
+  const auto tmp= glGetString(name);
+  if(tmp==nullptr)return "Unknown";
+  return std::string((const char*)tmp); // NOLINT(modernize-return-braced-init-list)
+}
+std::string GL_VideoRenderer::debug_info() {
+  const auto gl_vendor= safe_glGetString(GL_VENDOR);
+  const auto gl_renderer= safe_glGetString(GL_RENDERER);
+  const auto gl_version= safe_glGetString(GL_VERSION);
+  const auto gl_shading_language_version= safe_glGetString(GL_SHADING_LANGUAGE_VERSION);
+  std::stringstream ss;
+  ss<<"GL_VENDOR    : "<< gl_vendor<<"\n";
+  ss<<"GL_RENDERER  : "<< gl_renderer<<"\n";
+  ss<<"GL_VERSION  : "<< gl_version<<"\n";
+  ss<<"GL_SHADING_LANGUAGE_VERSION : "<< gl_shading_language_version<<"\n";
+  return ss.str();
+}

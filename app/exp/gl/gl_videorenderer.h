@@ -40,12 +40,15 @@ class GL_VideoRenderer {
  public:
   // always called with the OpenGL context bound.
   void init_gl();
+  // MUST BE ! called from the gl thread, update the appropriate texture type with a new video frame
+  // (The old one will be freed if still around).
   void update_texture_gl(AVFrame* frame);
   // draw the latest updated video texture (or the alternating colors if no video texture is set)
   void draw_texture_gl();
   //
   int curr_video_width=0;
   int curr_video_height=0;
+  static std::string debug_info();
  private:
   // Holds shaders for common video formats / upload techniques
   // Needs to be initialized on the GL thread.
