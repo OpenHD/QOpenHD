@@ -403,7 +403,11 @@ int AVCodecDecoder::lulatsch()
             break;
         }
         if (video_stream == packet.stream_index){
-            const int limitedFrameRate=settings.dev_limit_fps_on_test_file;
+            int limitedFrameRate=settings.dev_limit_fps_on_test_file;
+            if(settings.dev_test_video_mode==QOpenHDVideoHelper::VideoTestMode::DISABLED){
+                // never limit the fps on decode when doing live streaming !
+                limitedFrameRate=-1;
+            }
             if(limitedFrameRate>0){
                 const long frameDeltaNs=1000*1000*1000 / limitedFrameRate;
                 while (std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now()-lastFrame).count()<frameDeltaNs){
@@ -413,10 +417,12 @@ int AVCodecDecoder::lulatsch()
             }
             ret = decode_and_wait_for_frame(&packet);
             nFeedFrames++;
-            const uint64_t runTimeMs=std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now()-decodingStart).count();
-            const double runTimeS=runTimeMs/1000.0f;
-            const double fps=runTimeS==0 ? 0 : nFeedFrames/runTimeS;
-            qDebug()<<"Fake fps:"<<fps;
+            if(limitedFrameRate>0){
+                const uint64_t runTimeMs=std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now()-decodingStart).count();
+                const double runTimeS=runTimeMs/1000.0f;
+                const double fps=runTimeS==0 ? 0 : nFeedFrames/runTimeS;
+                qDebug()<<"Fake fps:"<<fps;
+            }
         }
         av_packet_unref(&packet);
     }
