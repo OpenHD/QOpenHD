@@ -272,11 +272,11 @@ int AVCodecDecoder::lulatsch()
     bool is_mjpeg=false;
     if (decoder->id == AV_CODEC_ID_H264) {
         std::cout<<"H264 decode\n";
-        /*if ((decoder = avcodec_find_decoder_by_name("h264_v4l2m2m")) == NULL) {
+        if ((decoder = avcodec_find_decoder_by_name("h264_v4l2m2m")) == NULL) {
             fprintf(stderr, "Cannot find the h264 v4l2m2m decoder\n");
             avformat_close_input(&input_ctx);
             return -1;
-        }*/
+        }
         wanted_hw_pix_fmt = AV_PIX_FMT_DRM_PRIME;
         //wanted_hw_pix_fmt = AV_PIX_FMT_YUV420P;
     }
