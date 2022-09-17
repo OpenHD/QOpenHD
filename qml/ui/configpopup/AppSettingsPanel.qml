@@ -2203,6 +2203,39 @@ Item {
                             onCheckedChanged: settings.dev_enable_custom_pipeline = checked
                         }
                     }
+                    Rectangle {
+                        width: parent.width
+                        height: rowHeight
+                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+
+                        Text {
+                            text: qsTr("dev_limit_fps_on_test_file")
+                            font.weight: Font.Bold
+                            font.pixelSize: 13
+                            anchors.leftMargin: 8
+                            verticalAlignment: Text.AlignVCenter
+                            anchors.verticalCenter: parent.verticalCenter
+                            width: 224
+                            height: elementHeight
+                            anchors.left: parent.left
+                        }
+
+                        SpinBox {
+                            id: dev_limit_fps_on_test_fileSpinBox
+                            height: elementHeight
+                            width: 210
+                            font.pixelSize: 14
+                            anchors.right: parent.right
+                            anchors.verticalCenter: parent.verticalCenter
+                            from: -1
+                            to: 240
+                            stepSize: 1
+                            editable: true
+                            anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
+                            value: settings.dev_limit_fps_on_test_file
+                            onValueChanged: settings.dev_limit_fps_on_test_file = value
+                        }
+                    }
                     // temporary end
                 }
             }

@@ -149,17 +149,17 @@ int AVCodecDecoder::decode_and_wait_for_frame(AVPacket *packet)
     while (!gotFrame){
         ret = avcodec_receive_frame(decoder_ctx, frame);
         if(ret == AVERROR_EOF){
-            std::cout<<"Got EOF\n";
+            qDebug()<<"Got EOF";
             break;
         }else if(ret==0){
             // we got a new frame
             if(!use_frame_timestamps_for_latency){
                 const auto x_delay=std::chrono::steady_clock::now()-beforeFeedFrame;
-                qDebug()<<"(True) decode delay:"<<((float)std::chrono::duration_cast<std::chrono::microseconds>(x_delay).count()/1000.0f)<<" ms";
+                qDebug()<<"(True) decode delay(wait):"<<((float)std::chrono::duration_cast<std::chrono::microseconds>(x_delay).count()/1000.0f)<<" ms";
             }else{
                 const auto now=getTimeUs();
                 const auto delay_us=now-frame->pts;
-                qDebug()<<"(True) decode delay:"<<((float)delay_us/1000.0f)<<" ms";
+                qDebug()<<"(True) decode delay(nowait):"<<((float)delay_us/1000.0f)<<" ms";
                 //MLOGD<<"Frame pts:"<<frame->pts<<" Set to:"<<now<<"\n";
                 //frame->pts=now;
             }
@@ -266,7 +266,7 @@ int AVCodecDecoder::lulatsch()
     const int video_stream = ret;
 
     if(!(decoder->id==AV_CODEC_ID_H264 || decoder->id==AV_CODEC_ID_H265 || decoder->id==AV_CODEC_ID_MJPEG)){
-      std::cerr<<"We only do h264,h265 and mjpeg in this project\n";
+      qDebug()<<"We only do h264,h265 and mjpeg in this project";
       avformat_close_input(&input_ctx);
       return 0;
     }
@@ -278,7 +278,7 @@ int AVCodecDecoder::lulatsch()
 
     bool is_mjpeg=false;
     if (decoder->id == AV_CODEC_ID_H264) {
-        std::cout<<"H264 decode\n";
+        qDebug()<<"H264 decode";
         if ((decoder = avcodec_find_decoder_by_name("h264_v4l2m2m")) == NULL) {
             fprintf(stderr, "Cannot find the h264 v4l2m2m decoder\n");
             avformat_close_input(&input_ctx);
@@ -289,7 +289,7 @@ int AVCodecDecoder::lulatsch()
     }
     else if(decoder->id==AV_CODEC_ID_H265){
         assert(decoder->id==AV_CODEC_ID_H265);
-        std::cout<<"H265 decode\n";
+        qDebug()<<"H265 decode";
         for (int i = 0;; i++) {
             const AVCodecHWConfig *config = avcodec_get_hw_config(decoder, i);
             if (!config) {
@@ -302,7 +302,7 @@ int AVCodecDecoder::lulatsch()
             ss<<"HW config "<<i<<" ";
             ss<<"HW Device name: "<<safe_av_hwdevice_get_type_name(config->device_type);
             ss<<" PIX fmt: "<<safe_av_get_pix_fmt_name(config->pix_fmt)<<"\n";
-            std::cout<<ss.str();
+            qDebug()<<ss.str().c_str();
 
             if (config->methods & AV_CODEC_HW_CONFIG_METHOD_HW_DEVICE_CTX &&
                 config->device_type == kAvhwDeviceType) {
@@ -317,15 +317,15 @@ int AVCodecDecoder::lulatsch()
         //wanted_hw_pix_fmt = AV_PIX_FMT_VAAPI;
         //wanted_hw_pix_fmt = AV_PIX_FMT_VDPAU;
     }else if(decoder->id==AV_CODEC_ID_MJPEG){
-      std::cout<<"Codec mjpeg\n";
-      wanted_hw_pix_fmt=AV_PIX_FMT_YUVJ422P;
-      //wanted_hw_pix_fmt=AV_PIX_FMT_CUDA;
-      //wanted_hw_pix_fmt = AV_PIX_FMT_DRM_PRIME;
-      is_mjpeg= true;
+        qDebug()<<"Codec mjpeg";
+        wanted_hw_pix_fmt=AV_PIX_FMT_YUVJ422P;
+        //wanted_hw_pix_fmt=AV_PIX_FMT_CUDA;
+        //wanted_hw_pix_fmt = AV_PIX_FMT_DRM_PRIME;
+        is_mjpeg= true;
     }else{
-      std::cerr<<"We only do h264,h265 and mjpeg in this project\n";
-      avformat_close_input(&input_ctx);
-      return 0;
+        assert(true);
+        avformat_close_input(&input_ctx);
+        return 0;
     }
 
     if (!(decoder_ctx = avcodec_alloc_context3(decoder))){
@@ -402,8 +402,8 @@ int AVCodecDecoder::lulatsch()
             qDebug()<<"av_read_frame returned:"<<ret<<"\n";
             break;
         }
-        const int limitedFrameRate=120;
         if (video_stream == packet.stream_index){
+            const int limitedFrameRate=settings.dev_limit_fps_on_test_file;
             if(limitedFrameRate>0){
                 const long frameDeltaNs=1000*1000*1000 / limitedFrameRate;
                 while (std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now()-lastFrame).count()<frameDeltaNs){
