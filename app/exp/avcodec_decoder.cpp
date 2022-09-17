@@ -207,7 +207,7 @@ int AVCodecDecoder::lulatsch()
             in_filename=settings.dev_custom_pipeline;
         }else{
             if(settings.video_codec==QOpenHDVideoHelper::VideoCodecH264){
-               in_filename="/home/consti10/Desktop/hello_drmprime/in/jetson_test.h264";
+               in_filename="/home/consti10/Desktop/hello_drmprime/in/rpi.h264";
             }else if(settings.video_codec==QOpenHDVideoHelper::VideoCodecH265){
                in_filename="/home/consti10/Desktop/hello_drmprime/in/jetson_test.h265";
             }else{
