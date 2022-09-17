@@ -6,6 +6,7 @@
 #include <memory>
 
 #include "avcodec_helper.hpp"
+#include "../videostreaming/QOpenHDVideoHelper.hpp"
 
 class AVCodecDecoder : public QObject
 {
@@ -27,6 +28,14 @@ private:
     void on_new_frame(AVFrame* frame);
     int open_input_error_count=0;
     bool has_been_canceled=false;
+    bool request_restart=false;
+    int n_no_output_frame_after_x_seconds=0;
+private:
+    // Completely ineficient, but only way since QT settings callback(s) don't properly work
+    // runs every 1 second
+    std::unique_ptr<QTimer> timer_check_settings_changed = nullptr;
+    void timer_check_settings_changed_callback();
+    QOpenHDVideoHelper::VideoStreamConfig m_last_video_settings;
 };
 
 #endif // AVCODEC_DECODER_H

@@ -1,5 +1,6 @@
 #include "avcodec_decoder.h"
 #include "qdebug.h"
+#include <QFileInfo>
 #include <iostream>
 #include <sstream>
 
@@ -7,7 +8,6 @@
 #include "util/time/TimeHelper.hpp"
 
 #include "texturerenderer.h"
-#include "../videostreaming/QOpenHDVideoHelper.hpp"
 
 static enum AVPixelFormat wanted_hw_pix_fmt;
 
@@ -35,11 +35,50 @@ static enum AVPixelFormat get_hw_format(AVCodecContext *ctx,const enum AVPixelFo
           ret=*p;
         }
     }
-    std::cout<<"Supported (HW) pixel formats: "<<supported_formats.str()<<"\n";
+    qDebug()<<"Supported (HW) pixel formats: "<<supported_formats.str().c_str();
     if(ret==AV_PIX_FMT_NONE){
       fprintf(stderr, "Failed to get HW surface format. Wanted: %s\n", av_get_pix_fmt_name(wanted_hw_pix_fmt));
     }
     return ret;
+}
+
+// FFMPEG needs a ".sdp" file to do rtp udp h264,h265 or mjpeg
+// For MJPEG we map mjpeg to 26 (mjpeg), for h264/5 we map h264/5 to 96 (general)
+static std::string create_udp_rtp_sdp_file(const QOpenHDVideoHelper::VideoCodec& video_codec){
+    std::stringstream ss;
+    ss<<"c=IN IP4 127.0.0.1\n";
+    if(video_codec==QOpenHDVideoHelper::VideoCodec::VideoCodecMJPEG){
+         ss<<"m=video 5600 RTP/AVP 26\n";
+        ss<<"a=rtpmap:26 JPEG/90000\n";
+    }else{
+        ss<<"m=video 5600 RTP/AVP 96\n";
+        if(video_codec==QOpenHDVideoHelper::VideoCodec::VideoCodecH264){
+            ss<<"a=rtpmap:96 H264/90000\n";
+        }else{
+            assert(video_codec==QOpenHDVideoHelper::VideoCodec::VideoCodecH265);
+            ss<<"a=rtpmap:96 H265/90000\n";
+        }
+    }
+    return ss.str();
+}
+static void write_file_to_tmp(const std::string filename,const std::string content){
+    std::ofstream _t(filename);
+     _t << content;
+     _t.close();
+}
+
+static void write_udp_rtp_sdp_files_to_tmp(){
+    if(QFileInfo::exists("/tmp/rtp_h264.sdp")&&QFileInfo::exists("/tmp/rtp_h265.sdp")&&QFileInfo::exists("/tmp/rtp_mjpeg.sdp"))return;
+    write_file_to_tmp("/tmp/rtp_h264.sdp",create_udp_rtp_sdp_file(QOpenHDVideoHelper::VideoCodec::VideoCodecH264));
+    write_file_to_tmp("/tmp/rtp_h265.sdp",create_udp_rtp_sdp_file(QOpenHDVideoHelper::VideoCodec::VideoCodecH265));
+    write_file_to_tmp("/tmp/rtp_mjpeg.sdp",create_udp_rtp_sdp_file(QOpenHDVideoHelper::VideoCodec::VideoCodecMJPEG));
+}
+
+static std::string get_udp_rtp_sdp_filename(const QOpenHDVideoHelper::VideoCodec& video_codec){
+    write_udp_rtp_sdp_files_to_tmp();
+    if(video_codec==QOpenHDVideoHelper::VideoCodec::VideoCodecH264)return "/tmp/rtp_h264.sdp";
+    if(video_codec==QOpenHDVideoHelper::VideoCodec::VideoCodecH265)return "/tmp/rtp_h265.sdp";
+    return "/tmp/rtp_mjpeg.sdp";
 }
 
 
@@ -54,12 +93,25 @@ void AVCodecDecoder::init(bool primaryStream)
     /*QObject::connect(timer, &QTimer::timeout, this, &AVCodecDecoder::lulatsch);
     timer->start(1000);*/
     qDebug() << "AVCodecDecoder::init()";
+    m_last_video_settings=QOpenHDVideoHelper::read_from_settings();
     decode_thread = std::make_unique<std::thread>([this]{this->constant_decode();} );
+    timer_check_settings_changed=std::make_unique<QTimer>();
+    QObject::connect(timer_check_settings_changed.get(), &QTimer::timeout, this, &AVCodecDecoder::timer_check_settings_changed_callback);
+    timer_check_settings_changed->start(1000);
 }
 
 void AVCodecDecoder::cancel()
 {
     has_been_canceled=true;
+}
+
+void AVCodecDecoder::timer_check_settings_changed_callback()
+{
+    const auto new_settings=QOpenHDVideoHelper::read_from_settings();
+    if(m_last_video_settings!=new_settings){
+        request_restart=true;
+        m_last_video_settings=new_settings;
+    }
 }
 
 void AVCodecDecoder::constant_decode()
@@ -75,7 +127,7 @@ void AVCodecDecoder::constant_decode()
 int AVCodecDecoder::decode_and_wait_for_frame(AVPacket *packet)
 {
     AVFrame *frame = nullptr;
-    qDebug()<<"Decode packet:"<<packet->pos<<" size:"<<packet->size<<" B\n";
+    //qDebug()<<"Decode packet:"<<packet->pos<<" size:"<<packet->size<<" B";
     const auto beforeFeedFrame=std::chrono::steady_clock::now();
     const auto beforeFeedFrameUs=getTimeUs();
     int ret = avcodec_send_packet(decoder_ctx, packet);
@@ -101,7 +153,7 @@ int AVCodecDecoder::decode_and_wait_for_frame(AVPacket *packet)
         }else if(ret==0){
             // we got a new frame
             const auto x_delay=std::chrono::steady_clock::now()-beforeFeedFrame;
-            qDebug()<<"(True) decode delay:"<<((float)std::chrono::duration_cast<std::chrono::microseconds>(x_delay).count()/1000.0f)<<" ms\n";
+            qDebug()<<"(True) decode delay:"<<((float)std::chrono::duration_cast<std::chrono::microseconds>(x_delay).count()/1000.0f)<<" ms";
             gotFrame=true;
             const auto now=getTimeUs();
             //MLOGD<<"Frame pts:"<<frame->pts<<" Set to:"<<now<<"\n";
@@ -110,12 +162,18 @@ int AVCodecDecoder::decode_and_wait_for_frame(AVPacket *packet)
             // display frame
             on_new_frame(frame);
         }else{
-            std::cout<<"avcodec_receive_frame returned:"<<ret<<"\n";
+            if(n_no_output_frame_after_x_seconds>=2){
+                // note decode latency is now wrong
+                qDebug()<<"Skipping encode decode lockstep due to no frame for more than X seconds\n";
+                break;
+            }
+            //std::cout<<"avcodec_receive_frame returned:"<<ret<<"\n";
             // for some video files, the decoder does not output a frame every time a h264 frame has been fed
             // In this case, I unblock after X seconds, but we cannot measure the decode delay by using the before-after
             // approach. We can still measure it using the pts timestamp from av, but this one cannot necessarily be trusted 100%
             if(std::chrono::steady_clock::now()-loopUntilFrameBegin > std::chrono::seconds(2)){
-              std::cout<<"Go no frame after X seconds. Break, but decode delay will be reported wrong\n";
+              qDebug()<<"Got no frame after X seconds. Break, but decode delay will be reported wrong";
+              n_no_output_frame_after_x_seconds++;
               break;
             }
         }
@@ -136,20 +194,18 @@ int AVCodecDecoder::lulatsch()
     const auto settings = QOpenHDVideoHelper::read_from_settings();
     std::string in_filename="";
     if(settings.dev_test_video_mode==QOpenHDVideoHelper::VideoTestMode::DISABLED){
-        if(settings.video_codec==QOpenHDVideoHelper::VideoCodecH264){
-            in_filename="/home/consti10/Desktop/hello_drmprime/in/rtp_h264.sdp";
-        }else if(settings.video_codec==QOpenHDVideoHelper::VideoCodecH265){
-             in_filename="/home/consti10/Desktop/hello_drmprime/in/rtp_h265.sdp";
-        }else{
-             in_filename="/home/consti10/Desktop/hello_drmprime/in/rtp_mjpeg.sdp";
-        }
+        in_filename=get_udp_rtp_sdp_filename(settings.video_codec);
     }else{
-        if(settings.video_codec==QOpenHDVideoHelper::VideoCodecH264){
-           in_filename="/home/consti10/Desktop/hello_drmprime/in/rv_1280x720_green_white.h264";
-        }else if(settings.video_codec==QOpenHDVideoHelper::VideoCodecH265){
-           in_filename="/home/consti10/Desktop/hello_drmprime/in/jetson_test.h265";
+        if(settings.dev_enable_custom_pipeline){
+            in_filename=settings.dev_custom_pipeline;
         }else{
-           in_filename="/home/consti10/Desktop/hello_drmprime/in/uv_640x480.mjpeg";
+            if(settings.video_codec==QOpenHDVideoHelper::VideoCodecH264){
+               in_filename="/home/consti10/Desktop/hello_drmprime/in/rv_1280x720_green_white.h264";
+            }else if(settings.video_codec==QOpenHDVideoHelper::VideoCodecH265){
+               in_filename="/home/consti10/Desktop/hello_drmprime/in/jetson_test.h265";
+            }else{
+               in_filename="/home/consti10/Desktop/hello_drmprime/in/uv_640x480.mjpeg";
+            }
         }
     }
     //const char* in_filename="/home/consti10/Desktop/hello_drmprime/in/rv1126.h265";
@@ -161,6 +217,7 @@ int AVCodecDecoder::lulatsch()
 
     //char* in_filename="/home/openhd/hello_drmprime/in/rtp_h264.sdp";
     //char* in_filename="/home/openhd/hello_drmprime/in/rv_1280x720_green_white.h265";
+    //in_filename="/home/consti10/Desktop/hello_drmprime/in/Big_Buck_Bunny_1080_10s_1MB_h264.mp4";
 
     // These options are needed for using the foo.sdp (rtp streaming)
     // https://stackoverflow.com/questions/20538698/minimum-sdp-for-making-a-h264-rtp-stream
@@ -176,14 +233,17 @@ int AVCodecDecoder::lulatsch()
     AVFormatContext *input_ctx = nullptr;
     // open the input file
     if (avformat_open_input(&input_ctx,in_filename.c_str(), NULL, &av_dictionary) != 0) {
-        fprintf(stderr, "Cannot open input file '%s'\n", in_filename.c_str());
+        qDebug()<< "Cannot open input file ["<<in_filename.c_str()<<"]";
         open_input_error_count++;
         avformat_close_input(&input_ctx);
+        // sleep a bit before returning in this case, to not occupy a full CPU thread just trying
+        // to open a file/stream that doesn't exist / is ill-formated
+        std::this_thread::sleep_for(std::chrono::seconds(1));
         return -1;
     }
 
     if (avformat_find_stream_info(input_ctx, NULL) < 0) {
-        fprintf(stderr, "Cannot find input stream information.\n");
+        qDebug()<< "Cannot find input stream information.";
         avformat_close_input(&input_ctx);
         return -1;
     }
@@ -192,7 +252,7 @@ int AVCodecDecoder::lulatsch()
     //ret = av_find_best_stream(input_ctx, AVMEDIA_TYPE_VIDEO, -1, -1,(const AVCodec**) &decoder, 0);
     int ret = av_find_best_stream(input_ctx, AVMEDIA_TYPE_VIDEO, -1, -1,(AVCodec**) &decoder, 0);
     if (ret < 0) {
-        fprintf(stderr, "Cannot find a video stream in the input file\n");
+        qDebug()<< "Cannot find a video stream in the input file";
         avformat_close_input(&input_ctx);
         return -1;
     }
@@ -204,7 +264,6 @@ int AVCodecDecoder::lulatsch()
       return 0;
     }
 
-    //const AVHWDeviceType kAvhwDeviceType = av_hwdevice_find_type_by_name(hwdev);
     const AVHWDeviceType kAvhwDeviceType = AV_HWDEVICE_TYPE_DRM;
     //const AVHWDeviceType kAvhwDeviceType = AV_HWDEVICE_TYPE_VAAPI;
     //const AVHWDeviceType kAvhwDeviceType = AV_HWDEVICE_TYPE_CUDA;
@@ -264,7 +323,7 @@ int AVCodecDecoder::lulatsch()
     }
 
     if (!(decoder_ctx = avcodec_alloc_context3(decoder))){
-        std::cout<<"avcodec_alloc_context3 failed\n";
+        qDebug()<<"avcodec_alloc_context3 failed";
         avformat_close_input(&input_ctx);
         return -1;
     }
@@ -286,23 +345,33 @@ int AVCodecDecoder::lulatsch()
 
     // needed for FFMPEG ?
     //decoder_ctx->extra_hw_frames = 10;
+    if(settings.enable_software_video_decoder){
+        qDebug()<<"User wants SW decode";
+        // SW decode is always YUV420 for H264/H265 and YUVJ22P for mjpeg
+        if(is_mjpeg){
+          wanted_hw_pix_fmt=AV_PIX_FMT_YUVJ422P;
+        }else{
+          wanted_hw_pix_fmt=AV_PIX_FMT_YUV420P;
+        }
+    }else{
+        qDebug()<<"Try HW decode";
+        if (hw_decoder_init(decoder_ctx, kAvhwDeviceType) < 0){
+          qDebug()<<"HW decoder init failed,fallback to SW decode";
+          // Use SW decode as fallback ?!
+          //return -1;
+          // H264 and H265 sw decode is always YUV420P, MJPEG seems to be always YUVJ422P;
+          if(is_mjpeg){
+            wanted_hw_pix_fmt=AV_PIX_FMT_YUVJ422P;
+          }
+          wanted_hw_pix_fmt=AV_PIX_FMT_YUV420P;
+        }
+    }
 
-    /*if (hw_decoder_init(decoder_ctx, kAvhwDeviceType) < 0){
-      std::cerr<<"HW decoder init failed,fallback to SW decode\n";
-      // Use SW decode as fallback ?!
-      //return -1;
-      // H264 and H265 sw decode is always YUV420P, MJPEG seems to be always YUVJ422P;
-      if(is_mjpeg){
-        wanted_hw_pix_fmt=AV_PIX_FMT_YUVJ422P;
-      }
-      wanted_hw_pix_fmt=AV_PIX_FMT_YUV420P;
-    }*/
-
-    // Consti10
+    // A thread count of 1 reduces latency for both SW and HW decode
     decoder_ctx->thread_count = 1;
 
     if ((ret = avcodec_open2(decoder_ctx, decoder, nullptr)) < 0) {
-        fprintf(stderr, "Failed to open codec for stream #%u\n", video_stream);
+        qDebug()<<"Failed to open codec for stream "<< video_stream;
         avformat_close_input(&input_ctx);
         return -1;
     }
@@ -311,9 +380,18 @@ int AVCodecDecoder::lulatsch()
     const auto decodingStart=std::chrono::steady_clock::now();
     int nFeedFrames=0;
     auto lastFrame=std::chrono::steady_clock::now();
+    n_no_output_frame_after_x_seconds=0;
     while (ret >= 0) {
+        if(has_been_canceled){
+            break;
+        }
+        if(request_restart){
+            request_restart=false;
+            // Since we do streaming and SPS/PPS come in regular intervals, we can just cancel and restart at any time.
+            break;
+        }
         if ((ret = av_read_frame(input_ctx, &packet)) < 0){
-            qDebug()<<"av_read_frame returned 0\n";
+            qDebug()<<"av_read_frame returned:"<<ret<<"\n";
             break;
         }
         const int limitedFrameRate=120;

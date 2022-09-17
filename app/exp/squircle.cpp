@@ -54,8 +54,6 @@ void Squircle::releaseResources()
 void Squircle::sync()
 {
     if (!m_renderer) {
-        //m_renderer = new SquircleRenderer();
-        //m_renderer = new TextureRenderer();
         m_renderer = &TextureRenderer::instance();
         connect(window(), &QQuickWindow::beforeRendering, this, &Squircle::m_QQuickWindow_beforeRendering, Qt::DirectConnection);
         connect(window(), &QQuickWindow::beforeRenderPassRecording, this, &Squircle::m_QQuickWindow_beforeRenderPassRecording, Qt::DirectConnection);
@@ -63,7 +61,6 @@ void Squircle::sync()
         QRenderStats::instance().registerOnWindow(window());
     }
     m_renderer->setViewportSize(window()->size() * window()->devicePixelRatio());
-    //m_renderer->setT(m_t);
     m_renderer->setWindow(window());
 }
 
