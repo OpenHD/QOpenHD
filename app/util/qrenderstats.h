@@ -4,7 +4,7 @@
 #include <QObject>
 #include <qquickwindow.h>
 
-#include "time/TimeHelper.hpp"
+#include "../common_consti/TimeHelper.hpp"
 
 // Stats about the QT (QOpenHD) rendering.
 // Dirty right now.
