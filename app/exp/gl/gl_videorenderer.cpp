@@ -3,7 +3,7 @@
 //
 
 #include "gl_videorenderer.h"
-#include "color_helper.h"
+#include "../color_helper.h"
 #include <chrono>
 
 static EGLint texgen_attrs[] = {
