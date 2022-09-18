@@ -35,7 +35,7 @@ void QRenderStats::m_QQuickWindow_beforeRenderPassRecording()
     avgMainRenderFrameDelta.add(delta);
     if(avgMainRenderFrameDelta.getNSamples()>120){
         const auto main_stats=QString(avgMainRenderFrameDelta.getAvgReadable().c_str());
-        qDebug()<<"QRenderStats main frame time:"<<main_stats;
+        //qDebug()<<"QRenderStats main frame time:"<<main_stats;
         set_main_render_stats(main_stats);
         avgMainRenderFrameDelta.reset();
     }
