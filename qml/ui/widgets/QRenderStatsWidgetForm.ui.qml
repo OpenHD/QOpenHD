@@ -18,7 +18,7 @@ BaseWidget {
     widgetIdentifier: "q_render_stats_widget"
 
     defaultAlignment: 1
-    defaultXOffset: 700
+    defaultXOffset: 110
     defaultYOffset: 0
     defaultHCenter: false
     defaultVCenter: false
