@@ -93,6 +93,8 @@ INCLUDEPATH += /usr/include/mavsdk
 LIBS += -lavcodec -lavutil -lavformat
 # TODO dirty
 LIBS += -lGLESv2 -lglfw -lEGL
+# TODO exp
+LIBS += -ldrm
 
 # Geographic lib updated to c-2.0, so much cleaner
 SOURCES += $$PWD/lib/geographiclib-c-2.0/src/geodesic.c \
