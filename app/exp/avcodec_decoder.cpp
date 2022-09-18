@@ -301,10 +301,13 @@ int AVCodecDecoder::lulatsch()
     bool is_mjpeg=false;
     if (decoder->id == AV_CODEC_ID_H264) {
         qDebug()<<"H264 decode";
-        if ((decoder = avcodec_find_decoder_by_name("h264_v4l2m2m")) == NULL) {
-            fprintf(stderr, "Cannot find the h264 v4l2m2m decoder\n");
-            avformat_close_input(&input_ctx);
-            return -1;
+        if(!settings.enable_software_video_decoder){
+            // weird workaround needed for pi + DRM_PRIME
+            if ((decoder = avcodec_find_decoder_by_name("h264_v4l2m2m")) == NULL) {
+                fprintf(stderr, "Cannot find the h264 v4l2m2m decoder\n");
+                avformat_close_input(&input_ctx);
+                return -1;
+            }
         }
         wanted_hw_pix_fmt = AV_PIX_FMT_DRM_PRIME;
         //wanted_hw_pix_fmt = AV_PIX_FMT_YUV420P;
