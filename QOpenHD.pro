@@ -124,6 +124,8 @@ SOURCES += \
     app/exp/squircle.cpp \
     #app/exp/squirclerenderer.cpp
     app/exp/texturerenderer.cpp \
+    # xx
+    app/exp/drm_kms/drmprime_out.cpp \
 
 HEADERS += \
     app/exp/gl/gl_shaders.h \
@@ -150,6 +152,8 @@ HEADERS += \
     app/exp/squircle.h \
     #app/exp/squirclerenderer.h
     app/exp/texturerenderer.h \
+    # xx
+    app/exp/drm_kms/drmprime_out.h \
 
 
 # I deleted all the "old" telemetry protocolls other than mavlink

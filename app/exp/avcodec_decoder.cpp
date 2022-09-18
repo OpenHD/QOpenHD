@@ -9,9 +9,6 @@
 
 #include "texturerenderer.h"
 
-//exp
-#include <xf86drm.h>
-
 static enum AVPixelFormat wanted_hw_pix_fmt;
 
 static int hw_decoder_init(AVCodecContext *ctx, const enum AVHWDeviceType type){
@@ -86,9 +83,9 @@ static std::string get_udp_rtp_sdp_filename(const QOpenHDVideoHelper::VideoCodec
 
 
 AVCodecDecoder::AVCodecDecoder(QObject *parent):
-    QObject(parent)//, timer(new QTimer)
+    QObject(parent)
 {
-
+    drm_prime_out=std::make_unique<DRMPrimeOut>(1,false,false);
 }
 
 void AVCodecDecoder::init(bool primaryStream)
@@ -195,7 +192,7 @@ int AVCodecDecoder::decode_and_wait_for_frame(AVPacket *packet)
 void AVCodecDecoder::on_new_frame(AVFrame *frame)
 {
     qDebug()<<"Got frame format:"<<QString(safe_av_get_pix_fmt_name((AVPixelFormat)frame->format).c_str())<<" "<<frame->width<<"x"<<frame->height;
-    TextureRenderer::instance().queue_new_frame_for_display(frame);
+    /*TextureRenderer::instance().queue_new_frame_for_display(frame);
     if(last_frame_width==-1 || last_frame_height==-1){
         last_frame_width=frame->width;
         last_frame_height=frame->height;
@@ -206,7 +203,8 @@ void AVCodecDecoder::on_new_frame(AVFrame *frame)
             qDebug()<<"Need to restart the decoder, width / heght changed";
             request_restart=true;
         }
-    }
+    }*/
+    drm_prime_out->queue_new_frame_for_display(frame);
 }
 
 
@@ -240,14 +238,14 @@ int AVCodecDecoder::lulatsch()
     //char* in_filename="/home/openhd/hello_drmprime/in/rv_1280x720_green_white.h265";
     //in_filename="/home/consti10/Desktop/hello_drmprime/in/Big_Buck_Bunny_1080_10s_1MB_h264.mp4";
 
-    {
+    /*{
         int drm_fd=0;
         if ((drm_fd = drmOpen("vc4", NULL)) < 0) {
             qDebug()<<"Failed to open drm";
          }else{
             qDebug()<<"Opened drm";
         }
-    }
+    }*/
 
     // These options are needed for using the foo.sdp (rtp streaming)
     // https://stackoverflow.com/questions/20538698/minimum-sdp-for-making-a-h264-rtp-stream
