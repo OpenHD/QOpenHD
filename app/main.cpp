@@ -230,6 +230,8 @@ int main(int argc, char *argv[]) {
     //QLoggingCategory::setFilterRules("qt.scenegraph.time.texture=true");
     //QLoggingCategory::setFilterRules("qt.scenegraph.time.renderloop=true");
     QLoggingCategory::setFilterRules("qt.qpa.eglfs.*=true");
+    QLoggingCategory::setFilterRules("qt.qpa.egl*=true");
+
 
     QApplication app(argc, argv);
 

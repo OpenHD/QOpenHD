@@ -44,6 +44,9 @@ private:
     std::unique_ptr<QTimer> timer_check_settings_changed = nullptr;
     void timer_check_settings_changed_callback();
     QOpenHDVideoHelper::VideoStreamConfig m_last_video_settings;
+private:
+    int last_frame_width=-1;
+    int last_frame_height=-1;
 };
 
 #endif // AVCODEC_DECODER_H
