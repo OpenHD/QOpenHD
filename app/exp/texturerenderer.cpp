@@ -2,6 +2,7 @@
 #include "avcodec_helper.hpp"
 
 #include <cmath>
+#include <qsettings.h>
 
 struct MGLViewptort{
     int x,y,width,height;
@@ -44,6 +45,11 @@ static MGLViewptort calculate_viewport_video_fullscreen(int surface_width,int su
     return ret;
 }
 
+static bool get_dev_draw_alternating_rgb_dummy_frames(){
+    QSettings settings;
+    return settings.value("dev_draw_alternating_rgb_dummy_frames", false).toBool();
+}
+
 
 TextureRenderer &TextureRenderer::instance(){
     static TextureRenderer renderer{};
@@ -60,6 +66,7 @@ void TextureRenderer::initGL()
         gl_video_renderer=std::make_unique<GL_VideoRenderer>();
         qDebug()<<gl_video_renderer->debug_info().c_str();
         gl_video_renderer->init_gl();
+        dev_draw_alternating_rgb_dummy_frames=get_dev_draw_alternating_rgb_dummy_frames();
     }
 }
 
@@ -92,7 +99,7 @@ void TextureRenderer::paint()
    }
    glDisable(GL_DEPTH_TEST);
 
-   gl_video_renderer->draw_texture_gl(true);
+   gl_video_renderer->draw_texture_gl(dev_draw_alternating_rgb_dummy_frames);
    // make sure we leave how we started / such that Qt rendering works normally
    glEnable(GL_DEPTH_TEST);
    glViewport(0, 0, m_viewportSize.width(), m_viewportSize.height());

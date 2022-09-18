@@ -51,6 +51,7 @@ private:
         //AvgCalculator delay_until_swapped{"Delay until swapped"};
       };
     DisplayStats m_display_stats;
+    bool dev_draw_alternating_rgb_dummy_frames=false;
 };
 
 #endif // TEXTURERENDERER_H
