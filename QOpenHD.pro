@@ -17,6 +17,8 @@ TRANSLATIONS = translations/QOpenHD_en.ts \
 include(platforms.pri)
 
 include(git.pri)
+# exo
+include(lib/lqtutils_master/lqtutils.pri)
 
 CONFIG(debug, debug|release) {
     DESTDIR = $${OUT_PWD}/debug

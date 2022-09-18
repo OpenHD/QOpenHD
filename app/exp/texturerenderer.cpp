@@ -4,6 +4,8 @@
 #include <cmath>
 #include <qsettings.h>
 
+#include "../videostreaming/decodingstatistcs.h"
+
 struct MGLViewptort{
     int x,y,width,height;
 };
@@ -86,9 +88,20 @@ void TextureRenderer::paint()
    //glClear(GL_COLOR_BUFFER_BIT |GL_DEPTH_BUFFER_BIT| GL_STENCIL_BUFFER_BIT);
    AVFrame* new_frame=fetch_latest_decoded_frame();
    if(new_frame!= nullptr){
+     // Note : the update might free the frame, so we gotta store the timestamp before !
+     const auto frame_pts=new_frame->pts;
      // update the texture with this frame
      gl_video_renderer->update_texture_gl(new_frame);
      m_display_stats.n_frames_rendered++;
+     DecodingStatistcs::instance().set_n_rendered_frames(m_display_stats.n_frames_rendered);
+     const auto now_us=getTimeUs();
+     const auto delay_us=now_us-frame_pts;
+     m_display_stats.decode_and_render.add(std::chrono::microseconds(delay_us));
+     if(m_display_stats.decode_and_render.time_since_last_log()>std::chrono::seconds(3)){
+         DecodingStatistcs::instance().set_decode_and_render_time(m_display_stats.decode_and_render.getAvgReadable().c_str());
+         m_display_stats.decode_and_render.set_last_log();
+         m_display_stats.decode_and_render.reset();
+     }
    }
    const auto video_tex_width=gl_video_renderer->curr_video_width;
    const auto video_tex_height=gl_video_renderer->curr_video_height;
@@ -121,6 +134,7 @@ int TextureRenderer::queue_new_frame_for_display(AVFrame *src_frame)
       m_latest_frame=nullptr;
       qDebug()<<"Dropping frame";
       m_display_stats.n_frames_dropped++;
+      DecodingStatistcs::instance().set_n_dropped_frames(m_display_stats.n_frames_dropped);
     }
     AVFrame *frame=frame = av_frame_alloc();
     assert(frame);

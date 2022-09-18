@@ -33,6 +33,9 @@ private:
 public:
     Q_PROPERTY(QString main_render_stats MEMBER m_main_render_stats WRITE set_main_render_stats NOTIFY main_render_stats_changed)
     void set_main_render_stats(QString main_render_stats);
+    //
+    //Q_PROPERTY(QString decode_time MEMBER m_decode_time WRITE set_decode_time NOTIFY decode_time_changed)
+    //void set_main_render_stats(QString main_render_stats);
 signals:
     void main_render_stats_changed(QString main_render_stats);
 private:

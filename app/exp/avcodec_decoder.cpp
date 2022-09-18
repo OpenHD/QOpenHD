@@ -8,6 +8,7 @@
 #include "../common_consti/TimeHelper.hpp"
 
 #include "texturerenderer.h"
+#include "../videostreaming/decodingstatistcs.h"
 
 static enum AVPixelFormat wanted_hw_pix_fmt;
 
@@ -155,18 +156,26 @@ int AVCodecDecoder::decode_and_wait_for_frame(AVPacket *packet)
             // we got a new frame
             if(!use_frame_timestamps_for_latency){
                 const auto x_delay=std::chrono::steady_clock::now()-beforeFeedFrame;
-                qDebug()<<"(True) decode delay(wait):"<<((float)std::chrono::duration_cast<std::chrono::microseconds>(x_delay).count()/1000.0f)<<" ms";
+                //qDebug()<<"(True) decode delay(wait):"<<((float)std::chrono::duration_cast<std::chrono::microseconds>(x_delay).count()/1000.0f)<<" ms";
+                avg_decode_time.add(x_delay);
             }else{
-                const auto now=getTimeUs();
-                const auto delay_us=now-frame->pts;
-                qDebug()<<"(True) decode delay(nowait):"<<((float)delay_us/1000.0f)<<" ms";
+                const auto now_us=getTimeUs();
+                const auto delay_us=now_us-frame->pts;
+                //qDebug()<<"(True) decode delay(nowait):"<<((float)delay_us/1000.0f)<<" ms";
                 //MLOGD<<"Frame pts:"<<frame->pts<<" Set to:"<<now<<"\n";
                 //frame->pts=now;
+                avg_decode_time.add(std::chrono::microseconds(delay_us));
             }
             gotFrame=true;
             frame->pts=beforeFeedFrameUs;
             // display frame
             on_new_frame(frame);
+            if(avg_decode_time.time_since_last_log()>std::chrono::seconds(3)){
+                qDebug()<<"Avg Decode time:"<<avg_decode_time.getAvgReadable().c_str();
+                DecodingStatistcs::instance().set_decode_time(avg_decode_time.getAvgReadable().c_str());
+                avg_decode_time.set_last_log();
+                avg_decode_time.reset();
+            }
         }else{
             if(n_no_output_frame_after_x_seconds>=2){
                 // note decode latency is now wrong
@@ -416,6 +425,7 @@ int AVCodecDecoder::lulatsch()
     n_no_output_frame_after_x_seconds=0;
     last_frame_width=-1;
     last_frame_height=-1;
+    avg_decode_time.reset();
     while (ret >= 0) {
         if(has_been_canceled){
             break;

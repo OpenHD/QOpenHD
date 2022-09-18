@@ -12,6 +12,8 @@
 
 #include "gl/gl_videorenderer.h"
 
+#include "../common_consti/TimeHelper.hpp"
+
 class TextureRenderer : public QObject
 {
     Q_OBJECT
@@ -49,6 +51,7 @@ private:
         //AvgCalculator delay_until_uploaded{"Delay until uploaded"};
         // Delay between frame was given to the egl renderer <-> swap operation returned (it is handed over to the hw composer)
         //AvgCalculator delay_until_swapped{"Delay until swapped"};
+        AvgCalculator decode_and_render{"Decode and render"}; //Time picked up by GL Thread
       };
     DisplayStats m_display_stats;
     bool dev_draw_alternating_rgb_dummy_frames=false;

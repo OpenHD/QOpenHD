@@ -198,7 +198,7 @@ BaseWidget {
                 width: parent.width
                 height: 32
                 Text {
-                    text: qsTr("XXX:")
+                    text: qsTr("D:R:")
                     color: "white"
                     font.bold: true
                     height: parent.height
@@ -207,7 +207,7 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Text {
-                    text: _ohdSystemAir.curr_outgoing_video_bitrate
+                    text: _decodingStatistics.n_dropped_frames+":"+_decodingStatistics.n_rendered_frames
                     color: "white";
                     font.bold: true;
                     height: parent.height
@@ -220,7 +220,7 @@ BaseWidget {
                 width: parent.width
                 height: 32
                 Text {
-                    text: qsTr("YYY:")
+                    text: qsTr("DecT:")
                     color: "white"
                     font.bold: true
                     height: parent.height
@@ -229,7 +229,7 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Text {
-                    text: _ohdSystemAir.curr_set_video_bitrate
+                    text: _decodingStatistics.decode_time
                     color: "white";
                     font.bold: true;
                     height: parent.height
@@ -242,7 +242,7 @@ BaseWidget {
                 width: parent.width
                 height: 32
                 Text {
-                    text: qsTr("ZZZ:")
+                    text: qsTr("DecRT:")
                     color: "white"
                     font.bold: true
                     height: parent.height
@@ -251,7 +251,7 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Text {
-                    text: _ohdSystemAir.curr_set_video_codec
+                    text: _decodingStatistics.decode_and_render_time
                     color: "white";
                     font.bold: true;
                     height: parent.height

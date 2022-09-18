@@ -7,6 +7,7 @@
 
 #include "avcodec_helper.hpp"
 #include "../videostreaming/QOpenHDVideoHelper.hpp"
+#include "../common_consti/TimeHelper.hpp"
 
 //exp
 #include "drm_kms/drmprime_out.h"
@@ -41,6 +42,7 @@ private:
     bool request_restart=false;
     int n_no_output_frame_after_x_seconds=0;
     bool use_frame_timestamps_for_latency=false;
+    AvgCalculator avg_decode_time{"Decode"};
 private:
     // Completely ineficient, but only way since QT settings callback(s) don't properly work
     // runs every 1 second

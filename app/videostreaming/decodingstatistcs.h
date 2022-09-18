@@ -3,6 +3,9 @@
 
 #include <QObject>
 
+//#include <lqtutils_prop.h>
+#include "../../lib/lqtutils_master/lqtutils_prop.h"
+
 /**
  * @brief Simple QT model (signals) to expose QOpenHD decoding statistics to the UI.
  * singleton, corresponding qt name is "_decodingStatistics" (see main)
@@ -13,6 +16,10 @@
 class DecodingStatistcs : public QObject
 {
     Q_OBJECT
+    L_RW_PROP(QString, decode_time, set_decode_time, "?")
+    L_RW_PROP(QString, decode_and_render_time, set_decode_and_render_time, "?")
+    L_RW_PROP(int, n_dropped_frames, set_n_dropped_frames, -1)
+    L_RW_PROP(int, n_rendered_frames, set_n_rendered_frames, -1)
 public:
     explicit DecodingStatistcs(QObject *parent = nullptr);
     static DecodingStatistcs& instance();
