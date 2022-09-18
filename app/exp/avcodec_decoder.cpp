@@ -200,7 +200,7 @@ int AVCodecDecoder::decode_and_wait_for_frame(AVPacket *packet)
 
 void AVCodecDecoder::on_new_frame(AVFrame *frame)
 {
-    qDebug()<<"Got frame format:"<<QString(safe_av_get_pix_fmt_name((AVPixelFormat)frame->format).c_str())<<" "<<frame->width<<"x"<<frame->height;
+    //qDebug()<<"Got frame format:"<<QString(safe_av_get_pix_fmt_name((AVPixelFormat)frame->format).c_str())<<" "<<frame->width<<"x"<<frame->height;
     TextureRenderer::instance().queue_new_frame_for_display(frame);
     if(last_frame_width==-1 || last_frame_height==-1){
         last_frame_width=frame->width;
@@ -458,7 +458,7 @@ int AVCodecDecoder::lulatsch()
                 const uint64_t runTimeMs=std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now()-decodingStart).count();
                 const double runTimeS=runTimeMs/1000.0f;
                 const double fps=runTimeS==0 ? 0 : nFeedFrames/runTimeS;
-                qDebug()<<"Fake fps:"<<fps;
+                //qDebug()<<"Fake fps:"<<fps;
             }
         }
         av_packet_unref(&packet);

@@ -105,7 +105,7 @@ void GL_VideoRenderer::update_texture_yuv420P_yuv422P(AVFrame* frame) {
   glBindTexture(GL_TEXTURE_2D,0);
   GL_shaders::checkGlError("upload YUV420P");
   yuv_420_p_sw_frame_texture.has_valid_image= true;
-  std::cout<<"Colorspace:"<<av_color_space_name(frame->colorspace)<<"\n";
+  //std::cout<<"Colorspace:"<<av_color_space_name(frame->colorspace)<<"\n";
   av_frame_free(&frame);
   GL_shaders::checkGlError("upload YUV420P");
 }
@@ -263,16 +263,16 @@ void GL_VideoRenderer::update_texture_gl(AVFrame *frame) {
   curr_video_width=frame->width;
   curr_video_height=frame->height;
   if(frame->format == AV_PIX_FMT_DRM_PRIME){
-	std::cout<<"update_texture_drm_prime\n";
+    //std::cout<<"update_texture_drm_prime\n";
 	update_texture_egl_external(frame);
   }else if(frame->format==AV_PIX_FMT_CUDA){
-	std::cout<<"update_texture_CUDA\n";
+    //std::cout<<"update_texture_CUDA\n";
 	update_texture_cuda(frame);
   }else if(frame->format==AV_PIX_FMT_YUV420P || frame->format==AV_PIX_FMT_YUVJ422P){
-	std::cout<<"update_texture_yuv420P / yuv422P\n";
+    //std::cout<<"update_texture_yuv420P / yuv422P\n";
 	update_texture_yuv420P_yuv422P(frame);
   }else if(frame->format==AV_PIX_FMT_VDPAU){
-	std::cout<<"update_texture_vdpau\n";
+    //std::cout<<"update_texture_vdpau\n";
 	update_texture_vdpau(frame);
   }
   else{

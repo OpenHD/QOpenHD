@@ -29,8 +29,8 @@ void QRenderStats::m_QQuickWindow_beforeRenderPassRecording()
     renderPassBegin=std::chrono::steady_clock::now();
     const auto delta=std::chrono::steady_clock::now()-last_frame;
     last_frame=std::chrono::steady_clock::now();
-    const auto frame_time_us=std::chrono::duration_cast<std::chrono::microseconds>(delta).count();
-    const float frame_time_ms=((float)frame_time_us)/1000.0f;
+    //const auto frame_time_us=std::chrono::duration_cast<std::chrono::microseconds>(delta).count();
+    //const float frame_time_ms=((float)frame_time_us)/1000.0f;
     //qDebug()<<"QRenderStats main frame time:"<<frame_time_ms<<"ms";
     avgMainRenderFrameDelta.add(delta);
     if(avgMainRenderFrameDelta.getNSamples()>120){

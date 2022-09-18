@@ -132,7 +132,7 @@ int TextureRenderer::queue_new_frame_for_display(AVFrame *src_frame)
     if(m_latest_frame!= nullptr){
       av_frame_free(&m_latest_frame);
       m_latest_frame=nullptr;
-      qDebug()<<"Dropping frame";
+      //qDebug()<<"Dropping frame";
       m_display_stats.n_frames_dropped++;
       DecodingStatistcs::instance().set_n_dropped_frames(m_display_stats.n_frames_dropped);
     }
