@@ -192,6 +192,8 @@ int AVCodecDecoder::decode_and_wait_for_frame(AVPacket *packet)
               use_frame_timestamps_for_latency=true;
               break;
             }
+            // sleep a bit to not hog the CPU too much
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
     }
     av_frame_free(&frame);
@@ -335,7 +337,7 @@ int AVCodecDecoder::lulatsch()
             std::stringstream ss;
             ss<<"HW config "<<i<<" ";
             ss<<"HW Device name: "<<safe_av_hwdevice_get_type_name(config->device_type);
-            ss<<" PIX fmt: "<<safe_av_get_pix_fmt_name(config->pix_fmt)<<"\n";
+            ss<<" PIX fmt: "<<safe_av_get_pix_fmt_name(config->pix_fmt);
             qDebug()<<ss.str().c_str();
 
             if (config->methods & AV_CODEC_HW_CONFIG_METHOD_HW_DEVICE_CTX &&
