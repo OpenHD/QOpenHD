@@ -412,7 +412,7 @@ int AVCodecDecoder::lulatsch()
             break;
         }
         if ((ret = av_read_frame(input_ctx, &packet)) < 0){
-            qDebug()<<"av_read_frame returned:"<<ret<<"\n";
+            qDebug()<<"av_read_frame returned:"<<ret;
             break;
         }
         if (video_stream == packet.stream_index){
@@ -448,5 +448,4 @@ int AVCodecDecoder::lulatsch()
     avformat_close_input(&input_ctx);
 
     return 0;
-
 }
