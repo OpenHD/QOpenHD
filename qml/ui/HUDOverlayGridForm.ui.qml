@@ -92,6 +92,11 @@ Item {
         id: bitrate
     }
 
+    // exp
+    QRenderStatsWidget {
+        id: qRenderStatsWidget
+    }
+
     // + 0% cpu
     ImuTempWidget {
         id: imu_temp
