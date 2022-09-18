@@ -13,6 +13,8 @@
 //#include "squirclerenderer.h"
 #include "texturerenderer.h"
 
+#include "avcodec_decoder.h"
+
 //! [2]
 class Squircle : public QQuickItem
 {
@@ -37,6 +39,7 @@ public slots:
     void m_QQuickWindow_beforeRendering();
     void m_QQuickWindow_beforeRenderPassRecording();
 private:
+    std::unique_ptr<AVCodecDecoder> m_av_codec_decoder=nullptr;
 };
 //! [2]
 

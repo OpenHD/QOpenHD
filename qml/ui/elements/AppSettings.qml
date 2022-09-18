@@ -44,6 +44,7 @@ Settings {
     property bool dev_enable_custom_pipeline: false
     // only for ffmpeg
     property int dev_limit_fps_on_test_file: -1
+    property bool dev_draw_alternating_rgb_dummy_frames: false;
 
     property bool enable_speech: true
     property bool enable_imperial: false

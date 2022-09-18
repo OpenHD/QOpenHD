@@ -44,7 +44,7 @@ class GL_VideoRenderer {
   // (The old one will be freed if still around).
   void update_texture_gl(AVFrame* frame);
   // draw the latest updated video texture (or the alternating colors if no video texture is set)
-  void draw_texture_gl();
+  void draw_texture_gl(bool dev_draw_alternating_rgb_dummy_frames);
   // clean up any remaining frame(s) stuck in opengl
   // it is recommended to call this also from the gl thread to avoid mixing up threading
   void clean_video_textures_gl();

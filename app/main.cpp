@@ -45,7 +45,6 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #endif
 
 #include "videostreaming/decodingstatistcs.h"
-#include "exp/avcodec_decoder.h"
 
 
 #if defined(ENABLE_VIDEO_RENDER)
@@ -326,10 +325,6 @@ int main(int argc, char *argv[]) {
     GstVideoStream* pipVideo = new GstVideoStream();
 #endif
 #endif
-
-  AVCodecDecoder* av_codec_decoder=new AVCodecDecoder(nullptr);
-  av_codec_decoder->init(true);
-
 
     auto openHDRC = new OpenHDRC();
     //QObject::connect(openHDSettings, &OpenHDSettings::groundStationIPUpdated, openHDRC, &OpenHDRC::setGroundIP, Qt::QueuedConnection);

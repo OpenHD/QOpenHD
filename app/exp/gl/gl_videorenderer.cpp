@@ -282,7 +282,7 @@ void GL_VideoRenderer::update_texture_gl(AVFrame *frame) {
   }
 }
 
-void GL_VideoRenderer::draw_texture_gl() {
+void GL_VideoRenderer::draw_texture_gl(const bool dev_draw_alternating_rgb_dummy_frames) {
   if(egl_frame_texture.has_valid_image){
 	gl_shaders->draw_egl(egl_frame_texture.texture);
   }else if(cuda_frametexture.has_valid_image) {
@@ -300,9 +300,11 @@ void GL_VideoRenderer::draw_texture_gl() {
   }
   else{
 	// no valid video texture yet, alternating draw the rgb textures.
-	const auto rgb_texture=frameCount % 2==0? texture_rgb_blue:texture_rgb_green;
-	gl_shaders->draw_rgb(rgb_texture);
-	frameCount++;
+    if(dev_draw_alternating_rgb_dummy_frames){
+        const auto rgb_texture=frameCount % 2==0? texture_rgb_blue:texture_rgb_green;
+        gl_shaders->draw_rgb(rgb_texture);
+        frameCount++;
+    }
   }
 }
 

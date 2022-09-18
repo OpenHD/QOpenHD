@@ -23,11 +23,15 @@ Squircle::Squircle():
     m_renderer(nullptr)
 {
     connect(this, &QQuickItem::windowChanged, this, &Squircle::handleWindowChanged);
+    //
+    m_av_codec_decoder=std::make_unique<AVCodecDecoder>(nullptr);
+    m_av_codec_decoder->init(true);
 }
 
 
 void Squircle::handleWindowChanged(QQuickWindow *win)
 {
+    qDebug()<<"Squircle::handleWindowChanged";
     if (win) {
         connect(win, &QQuickWindow::beforeSynchronizing, this, &Squircle::sync, Qt::DirectConnection);
         connect(win, &QQuickWindow::sceneGraphInvalidated, this, &Squircle::cleanup, Qt::DirectConnection);
@@ -40,12 +44,14 @@ void Squircle::handleWindowChanged(QQuickWindow *win)
 
 void Squircle::cleanup()
 {
+     qDebug()<<"Squircle::cleanup";
     delete m_renderer;
     m_renderer = nullptr;
 }
 
 void Squircle::releaseResources()
 {
+     qDebug()<<"Squircle::Squircle::releaseResources";
     window()->scheduleRenderJob(new CleanupJob(m_renderer), QQuickWindow::BeforeSynchronizingStage);
     m_renderer = nullptr;
 }

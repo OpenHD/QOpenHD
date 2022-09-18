@@ -57,7 +57,6 @@ void TextureRenderer::initGL()
         QSGRendererInterface *rif = m_window->rendererInterface();
         Q_ASSERT(rif->graphicsApi() == QSGRendererInterface::OpenGL);
 
-        //initializeOpenGLFunctions();
         gl_video_renderer=std::make_unique<GL_VideoRenderer>();
         qDebug()<<gl_video_renderer->debug_info().c_str();
         gl_video_renderer->init_gl();
@@ -83,6 +82,7 @@ void TextureRenderer::paint()
    if(new_frame!= nullptr){
      // update the texture with this frame
      gl_video_renderer->update_texture_gl(new_frame);
+     m_display_stats.n_frames_rendered++;
    }
    const auto video_tex_width=gl_video_renderer->curr_video_width;
    const auto video_tex_height=gl_video_renderer->curr_video_height;
@@ -92,7 +92,7 @@ void TextureRenderer::paint()
    }
    glDisable(GL_DEPTH_TEST);
 
-   gl_video_renderer->draw_texture_gl();
+   gl_video_renderer->draw_texture_gl(true);
    // make sure we leave how we started / such that Qt rendering works normally
    glEnable(GL_DEPTH_TEST);
    glViewport(0, 0, m_viewportSize.width(), m_viewportSize.height());
@@ -112,8 +112,9 @@ int TextureRenderer::queue_new_frame_for_display(AVFrame *src_frame)
     // We drop a frame that has (not yet) been consumed by the render thread to whatever is the newest available.
     if(m_latest_frame!= nullptr){
       av_frame_free(&m_latest_frame);
+      m_latest_frame=nullptr;
       qDebug()<<"Dropping frame";
-      //m_display_stats.n_frames_dropped++;
+      m_display_stats.n_frames_dropped++;
     }
     AVFrame *frame=frame = av_frame_alloc();
     assert(frame);

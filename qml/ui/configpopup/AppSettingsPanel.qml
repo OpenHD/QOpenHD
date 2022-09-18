@@ -2183,32 +2183,6 @@ Item {
                         color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
                         Text {
-                            text: qsTr("DEV_ENABLE_CUSTOM_PIPELINE")
-                            font.weight: Font.Bold
-                            font.pixelSize: 13
-                            anchors.leftMargin: 8
-                            verticalAlignment: Text.AlignVCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: 224
-                            height: elementHeight
-                            anchors.left: parent.left
-                        }
-                        Switch {
-                            width: 32
-                            height: elementHeight
-                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            checked: settings.dev_enable_custom_pipeline
-                            onCheckedChanged: settings.dev_enable_custom_pipeline = checked
-                        }
-                    }
-                    Rectangle {
-                        width: parent.width
-                        height: rowHeight
-                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                        Text {
                             text: qsTr("dev_limit_fps_on_test_file")
                             font.weight: Font.Bold
                             font.pixelSize: 13
@@ -2234,6 +2208,32 @@ Item {
                             anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
                             value: settings.dev_limit_fps_on_test_file
                             onValueChanged: settings.dev_limit_fps_on_test_file = value
+                        }
+                    }
+                    Rectangle {
+                        width: parent.width
+                        height: rowHeight
+                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+
+                        Text {
+                            text: qsTr("dev_draw_alternating_rgb_dummy_frames")
+                            font.weight: Font.Bold
+                            font.pixelSize: 13
+                            anchors.leftMargin: 8
+                            verticalAlignment: Text.AlignVCenter
+                            anchors.verticalCenter: parent.verticalCenter
+                            width: 224
+                            height: elementHeight
+                            anchors.left: parent.left
+                        }
+                        Switch {
+                            width: 32
+                            height: elementHeight
+                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                            anchors.right: parent.right
+                            anchors.verticalCenter: parent.verticalCenter
+                            checked: settings.dev_draw_alternating_rgb_dummy_frames
+                            onCheckedChanged: settings.dev_draw_alternating_rgb_dummy_frames = checked
                         }
                     }
                     // temporary end
