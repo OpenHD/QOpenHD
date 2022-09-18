@@ -95,6 +95,7 @@ LIBS += -lavcodec -lavutil -lavformat
 LIBS += -lGLESv2 -lglfw -lEGL
 # TODO exp
 LIBS += -ldrm
+INCLUDEPATH += /usr/include/libdrm
 
 # Geographic lib updated to c-2.0, so much cleaner
 SOURCES += $$PWD/lib/geographiclib-c-2.0/src/geodesic.c \
