@@ -18,7 +18,7 @@ BaseWidget {
     widgetIdentifier: "q_render_stats_widget"
 
     defaultAlignment: 1
-    defaultXOffset: 400
+    defaultXOffset: 700
     defaultYOffset: 0
     defaultHCenter: false
     defaultVCenter: false
@@ -294,11 +294,11 @@ BaseWidget {
         scale: settings.qrenderstats_size
 
         Text {
-            id: camera_icon
+            id: qrenderstats_tm_icon
             y: 0
             width: 24
             height: 48
-            text: "\uf03d"
+            text: "QRS"
             anchors.left: parent.left
             anchors.leftMargin: -2
             verticalAlignment: Text.AlignVCenter
