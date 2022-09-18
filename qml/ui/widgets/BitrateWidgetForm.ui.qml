@@ -303,29 +303,6 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
             }
-            // Temporary
-            Item {
-                width: parent.width
-                height: 32
-                Text {
-                    text: qsTr("R:")
-                    color: "white"
-                    font.bold: true
-                    height: parent.height
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Text {
-                    text: _qrenderstats.main_render_stats
-                    color: "white";
-                    font.bold: true;
-                    height: parent.height
-                    font.pixelSize: detailPanelFontPixels;
-                    anchors.right: parent.right
-                    verticalAlignment: Text.AlignVCenter
-                }
-            }
             // We cannot get these stats from wifibroadcast, at least not on all cards
             /*Item {
                 width: parent.width
