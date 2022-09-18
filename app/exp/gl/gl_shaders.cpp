@@ -78,15 +78,19 @@ static const GLchar* fragment_shader_source_YUV420P =
 	"uniform sampler2D s_texture_y;\n"
 	"uniform sampler2D s_texture_u;\n"
 	"uniform sampler2D s_texture_v;\n"
-	"in vec2 v_texCoord;\n"
+	"in highp vec2 v_texCoord;\n"
 	"out vec4 out_color;\n"
 	"void main() {	\n"
-	"	float Y = texture2D(s_texture_y, v_texCoord).x;\n"
-	"	float U = texture2D(s_texture_u, v_texCoord).x;\n"
-	"	float V = texture2D(s_texture_v, v_texCoord).x;\n"
+	"	float Y = texture2D(s_texture_y, v_texCoord).r;\n"
+	"	float U = texture2D(s_texture_u, v_texCoord).r-0.5;\n"
+	"	float V = texture2D(s_texture_v, v_texCoord).r-0.5;\n"
 	"	vec3 yuv = vec3(Y, U, V);\n"
-	"	vec3 rgb;\n"
-	"// YUV offset \n"
+	"	mat3 colorMatrix = mat3(\n"
+	"                1,   0,       1.402,\n"
+	"                1,  -0.344,  -0.714,\n"
+	"                1,   1.772,   0);\n"
+	"	vec3 rgb=yuv*colorMatrix;\n"
+	/*"// YUV offset \n"
 	"const vec3 offset = vec3(0, -0.501960814, -0.501960814);\n"
 	"\n"
 	"// RGB coefficients \n"
@@ -98,7 +102,7 @@ static const GLchar* fragment_shader_source_YUV420P =
 	"    rgb.r = dot(yuv, Rcoeff);\n"
 	"    rgb.r = dot(yuv, Rcoeff);\n"
 	"    rgb.g = dot(yuv, Gcoeff);\n"
-	"    rgb.b = dot(yuv, Bcoeff);\n"
+	"    rgb.b = dot(yuv, Bcoeff);\n"*/
 	//"rgb.r=yuv.z;\n"
 	//"rgb.g*=0.000000001;\n"
 	//"rgb.b*=0.000000001;\n"
@@ -294,12 +298,21 @@ static void unbind_textures(int n_textures){
     // Overkill, but needed for QT
     glActiveTexture(GL_TEXTURE0);
 }
+// Set texture uniforms such that the first one is bound to uniform 0,
+// second one to uniform 1 etc
+static void set_uniforms_ascending(std::vector<GLint> uniforms){
+  for(unsigned int i=0;i<uniforms.size();i++){
+	glUniform1i(uniforms[i], i);
+  }
+}
 
 void GL_shaders::draw_YUV420P(GLuint textureY, GLuint textureU, GLuint textureV) {
   checkGlError("B Draw YUV420 texture");
   glUseProgram(yuv_420P_shader.program);
   const std::vector<GLuint> textures{textureY,textureU,textureV};
   bind_textures(textures);
+  const std::vector<GLint> uniforms{yuv_420P_shader.s_texture_y,yuv_420P_shader.s_texture_u,yuv_420P_shader.s_texture_v};
+  set_uniforms_ascending(uniforms);
   beforeDrawVboSetup(yuv_420P_shader.pos,yuv_420P_shader.uvs);
   glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
   afterDrawVboCleanup(yuv_420P_shader.pos,yuv_420P_shader.uvs);
@@ -311,6 +324,8 @@ void GL_shaders::draw_NV12(GLuint textureY, GLuint textureUV) {
   glUseProgram(nv12_shader.program);
   const std::vector<GLuint> textures{textureY,textureUV};
   bind_textures(textures);
+  const std::vector<GLint> uniforms{nv12_shader.s_texture_y,nv12_shader.s_texture_uv};
+  set_uniforms_ascending(uniforms);
   beforeDrawVboSetup(nv12_shader.pos,nv12_shader.uvs);
   glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
   afterDrawVboCleanup(nv12_shader.pos,nv12_shader.uvs);
