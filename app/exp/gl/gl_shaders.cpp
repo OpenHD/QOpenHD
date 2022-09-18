@@ -72,6 +72,8 @@ static const GLchar* fragment_shader_source_RGB =
 	"	out_color.a = 1.0;\n"
 	//"	out_color = vec4(v_texCoord.x,1.0,0.0,1.0);\n"
 	"}\n";
+// I think we always have BT601 ?
+// Copy paste constants from SDL
 static const GLchar* fragment_shader_source_YUV420P =
 	"#version 300 es\n"
 	"precision highp float;\n"
@@ -81,40 +83,20 @@ static const GLchar* fragment_shader_source_YUV420P =
 	"in highp vec2 v_texCoord;\n"
 	"out vec4 out_color;\n"
 	"void main() {	\n"
+	"	const vec3 offset = vec3(-0.0627451017, -0.501960814, -0.501960814);\n"
+	"	const vec3 Rcoeff = vec3(1.1644,  0.000,  1.596);\n"
+	"	const vec3 Gcoeff = vec3(1.1644, -0.3918, -0.813);\n"
+	"	const vec3 Bcoeff = vec3(1.1644,  2.0172,  0.000);\n"
 	"	float Y = texture2D(s_texture_y, v_texCoord).r;\n"
-	"	float U = texture2D(s_texture_u, v_texCoord).r-0.5;\n"
-	"	float V = texture2D(s_texture_v, v_texCoord).r-0.5;\n"
-	"	vec3 yuv = vec3(Y, U, V);\n"
-	"	mat3 colorMatrix = mat3(\n"
-	"                1,   0,       1.402,\n"
-	"                1,  -0.344,  -0.714,\n"
-	"                1,   1.772,   0);\n"
-	"	vec3 rgb=yuv*colorMatrix;\n"
-	/*"// YUV offset \n"
-	"const vec3 offset = vec3(0, -0.501960814, -0.501960814);\n"
-	"\n"
-	"// RGB coefficients \n"
-	"const vec3 Rcoeff = vec3(1,  0.000,  1.402);\n"
-	"const vec3 Gcoeff = vec3(1, -0.3441, -0.7141);\n"
-	"const vec3 Bcoeff = vec3(1,  1.772,  0.000);\n"
-//
-	"    yuv += offset;\n"
-	"    rgb.r = dot(yuv, Rcoeff);\n"
-	"    rgb.r = dot(yuv, Rcoeff);\n"
-	"    rgb.g = dot(yuv, Gcoeff);\n"
-	"    rgb.b = dot(yuv, Bcoeff);\n"*/
-	//"rgb.r=yuv.z;\n"
-	//"rgb.g*=0.000000001;\n"
-	//"rgb.b*=0.000000001;\n"
-	/*"	mat3 colorMatrix = mat3(\n"
-	"		1.1644f, 1.1644f, 1.1644f,\n"
-	"        0.0f, -0.3917f, 2.0172f,\n"
-	"        1.5960f, -0.8129f, 0.0f"
-	"		);\n"*/
-	/*"	mat3 colorMatrix = mat3(\n"
-	"		1,   0,       1.402,\n"
-	"		1,  -0.344,  -0.714,\n"
-	"		1,   1.772,   0);\n"*/
+	"	float U = texture2D(s_texture_u, v_texCoord).r;\n"
+	"	float V = texture2D(s_texture_v, v_texCoord).r;\n"
+	"	vec3 yuv=vec3(Y,U,V);\n"
+	"	vec3 rgb;\n"
+	"	// Do the color transform \n"
+	"	yuv += offset;\n"
+	"	rgb.r = dot(yuv, Rcoeff);\n"
+	"	rgb.g = dot(yuv, Gcoeff);\n"
+	"	rgb.b = dot(yuv, Bcoeff);\n"
 	"	out_color = vec4(rgb, 1.0);\n"
 	"}\n";
 static const GLchar* fragment_shader_source_NV12 =
@@ -146,7 +128,8 @@ static const GLfloat vertices[][4][3] =
 static const GLfloat uv_coords[][4][2] =
 	{
 		//{ {0.0, 0.0}, {1.0, 0.0}, {0.0, 1.0}, {1.0, 1.0} }
-		{ {1.0, 1.0}, {0.0, 1.0}, {1.0, 0.0}, {0.0, 0.0} }
+		//{ {1.0, 1.0}, {0.0, 1.0}, {1.0, 0.0}}//, {0.0, 0.0} }
+		{ {0.0, 1.0}, {1.0, 1.0}, {0.0, 0.0}, {1.0, 0.0} }
 	};
 
 static GLint common_get_shader_program(const char *vertex_shader_source, const char *fragment_shader_source) {
@@ -190,53 +173,48 @@ static GLint common_get_shader_program(const char *vertex_shader_source, const c
 
   glDeleteShader(vertex_shader);
   glDeleteShader(fragment_shader);
+  assert(shader_program!=0);
   return shader_program;
+}
+
+static GLint checked_glGetAttribLocation(GLuint program, const GLchar *name){
+  auto ret=glGetAttribLocation(program,name);
+  assert(ret>=0);
+  return ret;
+}
+static GLint checked_glGetUniformLocation(GLuint program, const GLchar *name){
+  auto ret= glGetUniformLocation(program,name);
+  assert(ret>=0);
+  return ret;
 }
 
 void GL_shaders::initialize() {
   // Shader 1
   rgba_shader.program = common_get_shader_program(vertex_shader_source_all,fragment_shader_source_RGB);
   assert(rgba_shader.program!=0);
-  rgba_shader.pos = glGetAttribLocation(rgba_shader.program, "position");
-  assert(rgba_shader.pos>=0);
-  rgba_shader.uvs = glGetAttribLocation(rgba_shader.program, "tex_coords");
-  assert(rgba_shader.uvs>=0);
-  rgba_shader.sampler = glGetUniformLocation(rgba_shader.program, "s_texture" );
-  assert(rgba_shader.sampler>=0);
+  rgba_shader.pos = checked_glGetAttribLocation(rgba_shader.program, "position");
+  rgba_shader.uvs = checked_glGetAttribLocation(rgba_shader.program, "tex_coords");
+  rgba_shader.sampler = checked_glGetUniformLocation(rgba_shader.program, "s_texture" );
   checkGlError("Create shader RGBA");
   // Shader 2
   egl_shader.program = common_get_shader_program(vertex_shader_source_all, fragment_shader_source_GL_OES_EGL_IMAGE_EXTERNAL);
-  assert(egl_shader.program!=0);
-  egl_shader.pos = glGetAttribLocation(egl_shader.program, "position");
-  assert(egl_shader.pos>=0);
-  egl_shader.uvs = glGetAttribLocation(egl_shader.program, "tex_coords");
-  assert(egl_shader.uvs>=0);
+  egl_shader.pos = checked_glGetAttribLocation(egl_shader.program, "position");
+  egl_shader.uvs = checked_glGetAttribLocation(egl_shader.program, "tex_coords");
   checkGlError("Create shader EGL");
   // Shader 3
   yuv_420P_shader.program= common_get_shader_program(vertex_shader_source_all, fragment_shader_source_YUV420P);
-  assert(yuv_420P_shader.program!=0);
-  yuv_420P_shader.pos = glGetAttribLocation(yuv_420P_shader.program, "position");
-  assert(yuv_420P_shader.pos>=0);
-  yuv_420P_shader.uvs = glGetAttribLocation(yuv_420P_shader.program, "tex_coords");
-  assert(yuv_420P_shader.uvs>=0);
-  yuv_420P_shader.s_texture_y=glGetUniformLocation(yuv_420P_shader.program, "s_texture_y");
-  yuv_420P_shader.s_texture_u=glGetUniformLocation(yuv_420P_shader.program, "s_texture_u");
-  yuv_420P_shader.s_texture_v=glGetUniformLocation(yuv_420P_shader.program, "s_texture_v");
-  assert(yuv_420P_shader.s_texture_y>=0);
-  assert(yuv_420P_shader.s_texture_u>=0);
-  assert(yuv_420P_shader.s_texture_v>=0);
+  yuv_420P_shader.pos = checked_glGetAttribLocation(yuv_420P_shader.program, "position");
+  yuv_420P_shader.uvs = checked_glGetAttribLocation(yuv_420P_shader.program, "tex_coords");
+  yuv_420P_shader.s_texture_y=checked_glGetUniformLocation(yuv_420P_shader.program, "s_texture_y");
+  yuv_420P_shader.s_texture_u=checked_glGetUniformLocation(yuv_420P_shader.program, "s_texture_u");
+  yuv_420P_shader.s_texture_v=checked_glGetUniformLocation(yuv_420P_shader.program, "s_texture_v");
   checkGlError("Create shader YUV420P");
   // Shader 4
   nv12_shader.program= common_get_shader_program(vertex_shader_source_all, fragment_shader_source_NV12);
-  assert(nv12_shader.program!=0);
-  nv12_shader.pos = glGetAttribLocation(nv12_shader.program, "position");
-  assert(nv12_shader.pos>=0);
-  nv12_shader.uvs = glGetAttribLocation(nv12_shader.program, "tex_coords");
-  assert(nv12_shader.uvs>=0);
-  nv12_shader.s_texture_y=glGetUniformLocation(nv12_shader.program, "s_texture_y");
-  nv12_shader.s_texture_uv=glGetUniformLocation(nv12_shader.program, "s_texture_uv");
-  assert(nv12_shader.s_texture_y>=0);
-  assert(nv12_shader.s_texture_uv>=0);
+  nv12_shader.pos = checked_glGetAttribLocation(nv12_shader.program, "position");
+  nv12_shader.uvs = checked_glGetAttribLocation(nv12_shader.program, "tex_coords");
+  nv12_shader.s_texture_y=checked_glGetUniformLocation(nv12_shader.program, "s_texture_y");
+  nv12_shader.s_texture_uv=checked_glGetUniformLocation(nv12_shader.program, "s_texture_uv");
   checkGlError("Create shader NV12");
   //
   glGenBuffers(1, &vbo);
