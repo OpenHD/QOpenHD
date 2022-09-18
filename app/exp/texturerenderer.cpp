@@ -70,7 +70,6 @@ void TextureRenderer::initGL()
     }
 }
 
-//! [4] //! [5]
 void TextureRenderer::paint()
 {
     const auto delta=std::chrono::steady_clock::now()-last_frame;
