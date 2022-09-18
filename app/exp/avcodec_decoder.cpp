@@ -400,6 +400,8 @@ int AVCodecDecoder::lulatsch()
     int nFeedFrames=0;
     auto lastFrame=std::chrono::steady_clock::now();
     n_no_output_frame_after_x_seconds=0;
+    last_frame_width=-1;
+    last_frame_height=-1;
     while (ret >= 0) {
         if(has_been_canceled){
             break;
