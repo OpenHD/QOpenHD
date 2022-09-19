@@ -36,7 +36,6 @@ Settings {
     // Video codec of the primary video stream (main window).
     property int selectedVideoCodecPrimary:0 //0==h264,1==h265,2==MJPEG, other (error) default to h264
     property bool enable_rtp: true
-    property bool enable_lte_video: false
     property bool hide_watermark: true
     property bool dev_jetson: false
     // When this one is set to true, we read a file (where you can then write your custom rx gstreamer pipeline
