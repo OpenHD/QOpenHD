@@ -1,3 +1,4 @@
+#if defined(ENABLE_GSTREAMER)
 #ifndef GST_PLATFORM_INCLUDE_H
 #define GST_PLATFORM_INCLUDE_H
 
@@ -149,3 +150,4 @@ static std::string create_debug_encoded_data_producer(const QOpenHDVideoHelper::
     return ss.str();
 }
 #endif // GST_PLATFORM_INCLUDE_H
+#endif
