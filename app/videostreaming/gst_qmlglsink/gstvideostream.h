@@ -9,7 +9,7 @@
 #include <QtQml>
 #include <gst/gst.h>
 
-#include "QOpenHDVideoHelper.hpp"
+#include "../QOpenHDVideoHelper.hpp"
 
 /**
  * Consti10

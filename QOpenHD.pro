@@ -321,7 +321,7 @@ LinuxBuild {
     # Note: To compile without gstreamer, uncomment the 3 following - but then obviosly there is no video at all.
     CONFIG += EnableMainVideo
     CONFIG += EnablePiP
-    CONFIG += EnableGStreamer
+    #CONFIG += EnableGStreamer
     #CONFIG += EnableCharts
     #CONFIG += EnableLog
     message("LinuxBuild - config")
@@ -469,12 +469,11 @@ EnableGStreamer {
     DEFINES += ENABLE_GSTREAMER
 
     SOURCES += \
-        app/videostreaming/gstvideostream.cpp
+        app/videostreaming/gst_qmlglsink/gstvideostream.cpp
 
     HEADERS += \
-        app/videostreaming/QOpenHDVideoHelper.hpp \
-        app/videostreaming/gst_helper.hpp \
-        app/videostreaming/gstvideostream.h
+        app/videostreaming/gst_qmlglsink/gst_helper.hpp \
+        app/videostreaming/gst_qmlglsink/gstvideostream.h
 
     #include ($$PWD/lib/VideoStreaming/VideoStreaming.pri)
 

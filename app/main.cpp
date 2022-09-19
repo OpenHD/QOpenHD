@@ -39,19 +39,16 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #endif
 
 #if defined(ENABLE_GSTREAMER)
-#include "videostreaming/QOpenHDVideoHelper.hpp"
-#include "videostreaming/gstvideostream.h"
+#include "videostreaming/gst_qmlglsink/gstvideostream.h"
+#include "videostreaming/gst_qmlglsink/gst_helper.hpp"
 #endif
 
+#include "videostreaming/QOpenHDVideoHelper.hpp"
 #include "videostreaming/decodingstatistcs.h"
 
 
 #include "util/util.h"
 
-#if defined(ENABLE_GSTREAMER)
-#include <gst/gst.h>
-#include "videostreaming/gst_helper.hpp"
-#endif
 
 #include "logging/logmessagesmodel.h"
 #include "telemetry/settings/mavlinksettingsmodel.h"

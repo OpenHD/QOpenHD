@@ -7,7 +7,6 @@
 #include <sstream>
 
 #include "gst_helper.hpp"
-#include "QOpenHDVideoHelper.hpp"
 
 
 static QOpenHDVideoHelper::VideoStreamConfig readVideoStreamConfigFromSettings(bool isPrimary){
