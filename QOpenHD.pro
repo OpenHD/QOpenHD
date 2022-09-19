@@ -248,7 +248,6 @@ iOSBuild {
     CONFIG += EnableSpeech
     CONFIG += EnableMainVideo
     CONFIG += EnablePiP
-    CONFIG += EnableVideoRender
     #CONFIG += EnableCharts
     #CONFIG += EnableLog //does not work due to filepath not set
 
@@ -256,16 +255,6 @@ iOSBuild {
     QMAKE_BUNDLE_DATA += app_launch_images
 
     QMAKE_ASSET_CATALOGS += $$PWD/icons/ios/Assets.xcassets
-
-    EnableVideoRender {
-        QT += multimedia
-
-        HEADERS += \
-            app/videostreaming/openhdapplevideo.h
-
-        SOURCES += \
-            app/videostreaming/openhdapplevideo.cpp
-    }
 
     HEADERS += \
         src/platform/appleplatform.h
@@ -292,19 +281,8 @@ MacBuild {
     CONFIG += EnableSpeech
     CONFIG += EnableMainVideo
     CONFIG += EnablePiP
-    CONFIG += EnableVideoRender
     #CONFIG += EnableCharts
     #CONFIG += EnableLog //does not work due to filepath not set
-
-    EnableVideoRender {
-        QT += multimedia
-
-        HEADERS += \
-            inc/openhdapplevideo.h
-
-        SOURCES += \
-            src/openhdapplevideo.cpp
-    }
 
     EnableGStreamer {
         DEFINES += GST_GL_HAVE_PLATFORM_CGL=1
@@ -363,11 +341,6 @@ RaspberryPiBuild {
     #CONFIG += EnableLog
     CONFIG += EnableRC
     CONFIG += EnableJoysticks
-
-    CONFIG += EnableVideoRender
-
-    EnableVideoRender {
-    }
 }
 
 WindowsBuild {
@@ -395,7 +368,6 @@ AndroidBuild {
     CONFIG += EnableSpeech
     CONFIG += EnableMainVideo
     CONFIG += EnablePiP
-    CONFIG += EnableVideoRender
     #CONFIG += EnableCharts
     #CONFIG += EnableLog
 
@@ -406,27 +378,6 @@ AndroidBuild {
         DEFINES += GST_GL_HAVE_PLATFORM_EGL=1
         DEFINES += GST_GL_HAVE_WINDOW_ANDROID=1
         DEFINES += HAVE_QT_ANDROID
-    }
-
-    EnableVideoRender {
-        LIBS += -lmediandk
-        LIBS += -landroid
-        QT += multimedia
-
-        HEADERS += \
-            inc/openhdandroidrender.h \
-            inc/openhdandroidvideo.h \
-            inc/androidsurfacetexture.h
-
-
-        SOURCES += \
-            src/openhdandroidrender.cpp \
-            src/openhdandroidvideo.cpp \
-            src/androidsurfacetexture.cpp
-
-        OTHER_FILES += \
-            $$PWD/android/src/org/openhd/OpenHDActivity.java \
-            $$PWD/android/src/org/openhd/SurfaceTextureListener.java
     }
     QT += androidextras
 
@@ -488,29 +439,6 @@ EnableGStreamer {
 
 }
 
-EnableVideoRender {
-    message("EnableVideoRender")
-
-    DEFINES += ENABLE_VIDEO_RENDER
-
-    HEADERS += \
-        app/videostreaming/openhdvideo.h \
-        app/videostreaming/openhdrender.h
-
-    SOURCES += \
-        app/videostreaming/openhdvideo.cpp \
-        app/videostreaming/openhdrender.cpp \
-        $$PWD/lib/h264/h264_bitstream_parser.cc \
-        $$PWD/lib/h264/h264_common.cc \
-        $$PWD/lib/h264/pps_parser.cc \
-        $$PWD/lib/h264/sps_parser.cc \
-        $$PWD/lib/h264/bit_buffer.cc \
-        $$PWD/lib/h264/checks.cc \
-        $$PWD/lib/h264/zero_memory.cc
-
-    INCLUDEPATH += $$PWD/lib/h264/
-}
-
 EnablePiP {
     message("EnablePiP")
     DEFINES += ENABLE_PIP
@@ -541,10 +469,6 @@ installer {
         EnableGStreamer {
             QMAKE_POST_LINK += $${BASEDIR}/tools/prepare_gstreamer_framework.sh $${DESTDIR}/gstwork $${DESTDIR}/$${TARGET}.app $${TARGET}
             QMAKE_POST_LINK += && cd $${DESTDIR}
-        }
-
-        EnableVideoRender {
-            QMAKE_POST_LINK += cd $${DESTDIR}
         }
 
         QMAKE_POST_LINK += && $$dirname(QMAKE_QMAKE)/macdeployqt $${TARGET}.app -appstore-compliant -qmldir=$${BASEDIR}/qml
