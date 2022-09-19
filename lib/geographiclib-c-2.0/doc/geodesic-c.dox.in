@@ -1,0 +1,421 @@
+// -*- text -*-
+/**
+ * \file geodesic-c.dox
+ * \brief Documentation for geodesic routines implemented in C
+ *
+ * Written by Charles Karney <charles@karney.com> and licensed under the
+ * MIT/X11 License.  For more information, see
+ * https://geographiclib.sourceforge.io/
+ **********************************************************************/
+
+/**
+\mainpage Geodesic routines implemented in C
+\author Charles F. F. Karney (charles@karney.com)
+\version @PROJECT_VERSION@
+\date 2022-04-21
+
+\section abstract-c Abstract
+
+This is a C implementation of the geodesic algorithms from
+<a href="../../index.html">GeographicLib</a>.  This
+is a self-contained library (requiring only the standard C math library)
+which makes it easy to do geodesic computations for an ellipsoid of
+revolution in a C program.  It is incorporated into
+<a href="https://proj.org/geodesic.html">PROJ</a> and many people might
+prefer to use these routines via PROJ.
+
+This an implementation in C of the geodesic algorithms described in
+- C. F. F. Karney,
+  <a href="https://doi.org/10.1007/s00190-012-0578-z">
+  Algorithms for geodesics</a>,
+  J. Geodesy <b>87</b>, 43--55 (2013);
+  <a href="../../geod-addenda.html">
+  addenda</a>.
+.
+Other links
+- Library documentation (all versions):
+  <a href="../">https://geographiclib.sourceforge.io/C</a>
+- GIT repository: https://github.com/geographiclib/geographiclib-c
+- Source distribution:
+  https://sourceforge.net/projects/geographiclib/files/distrib-C
+- GeographicLib:
+  <a href="../../index.html">https://geographiclib.sourceforge.io</a>
+- The library has been implemented in a few other <a
+  href="../../doc/library.html#languages">languages</a>.
+
+\section contents Contents
+ - \ref intro
+ - \ref proj
+ - \ref standalone
+ - \ref library
+ - \ref changes
+
+\page intro Introduction to the geodesic problem
+
+The shortest path between two points on the ellipsoid at (\e lat1, \e
+lon1) and (\e lat2, \e lon2) is called the geodesic.  Its length is
+\e s12 and the geodesic from point 1 to point 2 has forward azimuths
+\e azi1 and \e azi2 at the two end points.
+
+Traditionally two geodesic problems are considered:
+- the direct problem -- given \e lat1, \e lon1, \e s12, and \e azi1,
+  determine \e lat2, \e lon2, and \e azi2.  This is solved by the function
+  geod_direct().
+- the inverse problem -- given \e lat1, \e lon1, and \e lat2, \e lon2,
+  determine \e s12, \e azi1, and \e azi2.  This is solved by the function
+  geod_inverse().
+
+The ellipsoid is specified by its equatorial radius \e a (typically in
+meters) and flattening \e f.  The routines are accurate to round off with
+double precision arithmetic provided that |<i>f</i>| &lt; 1/50; for the
+WGS84 ellipsoid, the errors are less than 15 nanometers.  (Reasonably
+accurate results are obtained for |<i>f</i>| &lt; 1/5.)  For a prolate
+ellipsoid, specify \e f &lt; 0.
+
+The routines also calculate several other quantities of interest
+- \e S12 is the area between the geodesic from point 1 to point 2 and the
+  equator; i.e., it is the area, measured counter-clockwise, of the
+  quadrilateral with corners (\e lat1,\e lon1), (0,\e lon1), (0,\e lon2),
+  and (\e lat2,\e lon2).
+- \e m12, the reduced length of the geodesic is defined such that if
+  the initial azimuth is perturbed by \e dazi1 (radians) then the
+  second point is displaced by \e m12 \e dazi1 in the direction
+  perpendicular to the geodesic.  On a curved surface the reduced
+  length obeys a symmetry relation, \e m12 + \e m21 = 0.  On a flat
+  surface, we have \e m12 = \e s12.
+- \e M12 and \e M21 are geodesic scales.  If two geodesics are
+  parallel at point 1 and separated by a small distance \e dt, then
+  they are separated by a distance \e M12 \e dt at point 2.  \e M21
+  is defined similarly (with the geodesics being parallel to one
+  another at point 2).  On a flat surface, we have \e M12 = \e M21
+  = 1.
+- \e a12 is the arc length on the auxiliary sphere.  This is a
+  construct for converting the problem to one in spherical
+  trigonometry.  \e a12 is measured in degrees.  The spherical arc
+  length from one equator crossing to the next is always 180&deg;.
+
+If points 1, 2, and 3 lie on a single geodesic, then the following
+addition rules hold:
+- \e s13 = \e s12 + \e s23
+- \e a13 = \e a12 + \e a23
+- \e S13 = \e S12 + \e S23
+- \e m13 = \e m12 \e M23 + \e m23 \e M21
+- \e M13 = \e M12 \e M23 &minus; (1 &minus; \e M12 \e M21) \e
+  m23 / \e m12
+- \e M31 = \e M32 \e M21 &minus; (1 &minus; \e M23 \e M32) \e
+  m12 / \e m23
+
+The shortest distance returned by the solution of the inverse problem is
+(obviously) uniquely defined.  However, in a few special cases there are
+multiple azimuths which yield the same shortest distance.  Here is a
+catalog of those cases:
+- \e lat1 = &minus;\e lat2 (with neither point at a pole).  If \e azi1 = \e
+  azi2, the geodesic is unique.  Otherwise there are two geodesics and the
+  second one is obtained by setting [\e azi1, \e azi2] &rarr; [\e azi2, \e
+  azi1], [\e M12, \e M21] &rarr; [\e M21, \e M12], \e S12 &rarr; &minus;\e
+  S12.  (This occurs when the longitude difference is near &plusmn;180&deg;
+  for oblate ellipsoids.)
+- \e lon2 = \e lon1 &plusmn; 180&deg; (with neither point at a pole).  If \e
+  azi1 = 0&deg; or &plusmn;180&deg;, the geodesic is unique.  Otherwise
+  there are two geodesics and the second one is obtained by setting [\e
+  azi1, \e azi2] &rarr; [&minus;\e azi1, &minus;\e azi2], \e S12 &rarr;
+  &minus;\e S12.  (This occurs when \e lat2 is near &minus;\e lat1 for
+  prolate ellipsoids.)
+- Points 1 and 2 at opposite poles.  There are infinitely many geodesics
+  which can be generated by setting [\e azi1, \e azi2] &rarr; [\e azi1, \e
+  azi2] + [\e d, &minus;\e d], for arbitrary \e d.  (For spheres, this
+  prescription applies when points 1 and 2 are antipodal.)
+- \e s12 = 0 (coincident points).  There are infinitely many geodesics which
+  can be generated by setting [\e azi1, \e azi2] &rarr; [\e azi1, \e azi2] +
+  [\e d, \e d], for arbitrary \e d.
+
+The area of a geodesic polygon can be determined by summing &minus;\e
+S12 for successive edges of the polygon (\e S12 is negated so that
+clockwise traversal of a polygon gives a positive area).  However, if
+the polygon encircles a pole, the sum must be adjusted by
+&plusmn;<i>A</i>/2, where \e A is the area of the full ellipsoid, with
+the sign chosen to place the result in (&minus;<i>A</i>/2, <i>A</i>/2].
+
+The principal advantages of these algorithms over previous ones (e.g.,
+Vincenty, 1975) are
+- accurate to round off for |<i>f</i>| &lt; 1/50;
+- the solution of the inverse problem is always found;
+- differential and integral properties of geodesics are computed.
+
+\page proj Information for PROJ user
+
+The library is included as part of <a href="https://proj.org">PROJ</a>
+starting with version 4.9.0 (released in 2015), where it is used as the
+computational backend for
+<a href="https://proj.org/apps/geod.html">geod(1)</a> and to implement
+some projections.
+
+If PROJ is installed on your system, that you can compiled your
+application with <a href="https://www.cmake.org">cmake</a>.  A skeleton
+<code>CMakeLists.txt</code> is
+\include proj-example/CMakeLists.txt
+
+This compiles and links the sample code <code>proj-example.c</code>.
+\include proj-example.c
+
+In this example, PROJ provides the following
+ - access to the header file <code>geodesic.h</code>;
+ - access to the geodesic code bundled into the PROJ library;
+ - a mechanism for retrieving the parameters (equatorial radius and
+   flattening) defining the ellipsoid.
+
+To compile and run this example, do
+\verbatim
+cmake -B BUILD -S .
+cd BUILD
+make
+./proj-example
+\endverbatim
+which will print out 31 way points from Los Angeles to Christchurch
+starting with
+\verbatim
+latitude  longitude  azimuth
+33.94000 -118.41000 -136.41544
+31.49945 -121.08843 -137.86373
+29.00508 -123.62942 -139.14437
+...
+\endverbatim
+
+Other points to note for PROJ programmers:
+ - The shape of the ellipsoid is given by the flattening *f*.  *f* = 0
+   denotes a sphere.  *f* < 0 denotes a prolate ellipsoid.
+ - The size of the ellipsoid is given by the equatorial radius *a*.
+   This is usually given in meters.  However, any units may be used and
+   these are the units used for all distance-like quantites computed by
+   the geodesic routines.
+ - All angle like quantities are expressed in degrees, *not* radians.
+
+\page standalone Use as a standalone library
+
+The PROJ library (especially as provided as part of a Linux
+distribution) may lag behind the code documented here by about a year.
+
+Download the source code from as a tarball from
+
+- https://sourceforge.net/projects/geographiclib/files/distrib-C
+
+or check out the source code from
+
+- https://github.com/geographiclib/geographiclib-c
+
+Build the code with <a href="https://www.cmake.org">cmake</a>
+\verbatim
+cmake -B BUILD -S .
+cd BUILD
+make
+make test
+\endverbatim
+possibly including some options via <code>-D</code>:
+- <code>CONVERT_WARNINGS_TO_ERRORS</code> warnings are fatal (default ON)
+- <code>BUILD_DOCUMENTATION</code> look for doxgen and build
+  documentation (default ON)
+- <code>BUILD_SHARED_LIBS</code> make a shared (instead of static)
+  library (default ON)
+
+CMake code to *install* the library is not provided.
+
+The library consists of two files geodesic.c and geodesic.h.
+
+Licensed under the
+<a href="https://www.opensource.org/licenses/MIT">MIT/X11 License</a>; see
+<a href="../../html/LICENSE.txt">LICENSE.txt</a>.
+
+Also included are 3 small test programs:
+ - direct.c is a simple command line utility for solving the
+   direct geodesic problem;
+ - inverse.c is a simple command line utility for solving the
+   inverse geodesic problem;
+ - planimeter.c is a simple command line utility for computing the
+   area of a geodesic polygon given its vertices.
+ .
+Here, for example, is inverse.c
+\include inverse.c
+Use inverse, for example, with
+\verbatim
+echo -30 0 29.5 179.5 | ./tools/inverse \endverbatim
+
+\page library Library documentation
+
+To use the library put @code{.c}
+#include "geodesic.h"
+@endcode
+in your source code.  If you are using the library via PROJ, change
+this to @code{.c}
+#include <geodesic.h>
+@endcode
+
+The documention of the library is given in the header file, geodesic.h.
+Here is a brief summary of the functions.
+
+Simple geodesic problems:
+- Define a geod_geodesic object and initialize it with geod_init().
+- Call geod_direct() and geod_inverse() to solve the direct and inverse
+  geodesic problems.
+- geod_gendirect() and geod_geninverse() are more general versions of
+  these routines which allow additional quantites, \e a12, \e m12, \e
+  M12, \e M21, \e S12, to be computed.  You can also specify the
+  distance in the direct problem in terms of the arc length \e a12,
+  instead of the distance \e s12 using the ::GEOD_ARCMODE flag.
+  Additionally you can keep track of how many times a geodsic encircles
+  the ellipsoid with the ::GEOD_LONG_UNROLL flag.
+
+The library allows multiple points on a single geodesic line (specified
+by \e lat1, \e lon1, and \e azi1) to be computed efficiently as follows:
+- Define a geod_geodesicline object and initialize it with
+  geod_lineinit().
+- Call geod_position() or geod_genposition() to compute the position and
+  azimuth, \e lat2, \e lon2, and \e azi2, at a point a certain distance
+  \e s12 from the starting point.
+- Optionally, you can register the position of a point 3 by specifying
+  \e s13 or \e a13 using geod_setdistance() or geod_gensetdistance.
+- Alternatively, point 3 can be set up by initializing the
+  geod_geodesicline object with geod_directline(), geod_gendirectline(),
+  or geod_inverseline().
+
+Finally, the library provides a way to compute the area of a polygon.
+The polygon is defined by adding successively either vertices or edges.
+This is done "progressively", to allow the area to be tracked as the
+polygon "grows".
+- Define a geod_polygon object and initialize it with
+  geod_polygon_init().  You can declare that the object denotes a
+  polyline instead of a polygon, in which case the area computation is
+  skipped.
+- Add an initial point with geod_polygon_addpoint() and successively
+  vertices or edges with geod_polygon_addpoint() or
+  geod_polygon_addedge().
+- Call geod_polygon_compute() to return the length and area so far (with
+  polygons, but not polylines, being implicitly closed).  Additional
+  vertices or edges may be added subsequently.
+- Call geod_polygon_testpoint() or geod_polygon_testedge() to compute
+  the results if a vertex or edge were tentatively added.  This would
+  allow a graphical user interface to continuously update the area and
+  length as the cursor is moved which selecting the next vertex.
+- geod_polygon_clear() reinitializes the polygon.
+- geod_polygonarea() is a convenience function of computing the area
+  directly using arrays latitudes and longitudes.
+
+You can check the version of the geodesic library with, e.g.,
+@code{.c}
+#if GEODESIC_VERSION >= GEODESIC_VERSION_NUM(1,40,0)
+...
+#endif
+@endcode
+
+\page changes Change log
+
+ - <a href="../2.0/index.html">Version 2.0</a>
+   (released 2022-04-21)
+   - This is a major reorganization with the C library put into its own
+     git repository, https://github.com/geographiclib/geographiclib-c.
+     Despite this, there are only reasonably minor changes to the library
+     itself.
+   - Fix bug where the solution of the inverse geodesic problem with
+     &phi;<sub>1</sub> = 0 and &phi;<sub>2</sub> = nan was treated as
+     equatorial.
+   - Updated \ref library to provide a better guide to the use of this
+     library.
+   - Add documentation and an example of using solving geodesic problems
+     with PROJ.
+   - More careful treatment of &plusmn;0&deg; and &plusmn;180&deg;.
+     - These behave consistently with taking the limits
+       - &plusmn;0 means &plusmn;&epsilon; as &epsilon; &rarr; 0+
+       - &plusmn;180 means &plusmn;(180 &minus; &epsilon;) as &epsilon;
+         &rarr; 0+
+     - As a consequence, azimuths of +0&deg; and +180&deg; are reckoned to
+       be east-going, as far as tracking the longitude with ::GEOD_LONG_UNROLL
+       and the area goes, while azimuths &minus;0&deg; and &minus;180&deg;
+       are reckoned to be west-going.
+     - When computing longitude differences, if &lambda;<sub>2</sub>
+       &minus; &lambda;<sub>1</sub> = &plusmn;180&deg; (mod 360&deg;),
+       then the sign is picked depending on the sign of the difference.
+     - A separate test suite geodsigntest has been added to check this
+       treatment.
+
+ - <a href="../1.52/index.html">Version 1.52</a>
+   (released 2021-03-13)
+   - Be more aggressive in preventing negative s12 and m12 for short lines.
+   - Initialize reference argument to remquo.
+   - Work around inaccurate implementation of hypot with Visual Studio
+     (win32).
+
+ - <a href="../1.51/index.html">Version 1.51</a>
+   (released 2020-11-22)
+   - C99 is now required, so there's no need for private implementations
+     of various routines now defined in <code>math.h</code>.
+
+ - <a href="../1.50/index.html">Version 1.50</a>
+   (released 2019-09-22)
+   - Allow arbitrarily complex polygons in geod_polygon_*.  In the case
+     of self-intersecting polygons the area is accumulated
+     "algebraically", e.g., the areas of the 2 loops in a figure-8
+     polygon will partially cancel.
+   - Workaround bugs in fmod and sin in Visual Studio 10, 11, and 12 and
+     relax delta for GeodSolve59 in geodtest (tagged v1.49.1-c).
+   - Fix bug in geod_polygon_addedge which caused the count of pole
+     encirclings to be wrong, sometimes resulting in an incorrect area
+     if a polygon vertex had longitude = 0  (tagged v1.49.2-c).
+
+ - <a href="../1.49/index.html">Version 1.49</a>
+   (released 2017-10-05)
+   - Fix more warning messages from some compilers; add tests.
+
+ - <a href="../1.48/index.html">Version 1.48</a>
+   (released 2017-04-09)
+   - This is the version slated for the version of proj.4 after 4.9.4
+     (tagged v1.48.1-c).
+   - Fix warnings messages from some compilers.
+   - Change default range for longitude and azimuth to
+     (&minus;180&deg;, 180&deg;] (instead of
+     [&minus;180&deg;, 180&deg;)).
+
+ - <a href="../1.47/index.html">Version 1.47</a>
+   (released 2017-02-15)
+   - This is the version incorporated into proj.4 version 4.9.3 (tagged
+     v1.46.1-c).
+   - Fix the order of declarations, incorporating the patches in version
+     1.46.1.
+   - Improve accuracy of area calculation (fixing a flaw introduced in
+     version 1.46).
+
+ - <a href="../1.46/index.html">Version 1.46</a>
+   (released 2016-02-15)
+   - Add s13 and a13 to the geod_geodesicline struct.
+   - Add geod_directline, geod_gendirectline, and geod_inverseline.
+   - More accurate inverse solution when longitude difference is close
+     to 180&deg;.
+
+ - <a href="../1.45/index.html">Version 1.45</a>
+   (released 2015-09-30)
+   - The solution of the inverse problem now correctly returns NaNs if
+     one of the latitudes is a NaN.
+   - Include a test suite that can be run with "make test" after
+     configuring with cmake.
+   - Add geod_polygon_clear().
+
+ - <a href="../1.44/index.html">Version 1.44</a>
+   (released 2015-08-14)
+   - This is the version incorporated into proj.4 version 4.9.2.
+   - Improve accuracy of calculations by evaluating trigonometric
+     functions more carefully and replacing the series for the reduced
+     length with one with a smaller truncation error.
+   - The allowed ranges for longitudes and azimuths is now unlimited;
+     it used to be [&minus;540&deg;, 540&deg;).
+   - Enforce the restriction of latitude to [&minus;90&deg;, 90&deg;] by
+     returning NaNs if the latitude is outside this range.
+   - The inverse calculation sets \e s12 to zero for coincident points
+     at pole (instead of returning a tiny quantity).
+
+ - <a href="../1.40/index.html">Version 1.40</a>
+   (released 2014-12-18)
+   - This is the version incorporated into proj.4 version 4.9.1.
+
+ - <a href="../1.40/index.html">Version 1.32</a>
+   (released 2013-07-12)
+   - This is the version incorporated into proj.4 version 4.9.0.
+
+**********************************************************************/

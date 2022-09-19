@@ -356,6 +356,13 @@ void OpenHDRC::set_rc18(uint rc18) {
     qDebug() << "Openhdrc::rc18=" << m_rc18;
 }
 
+static uint rc_map(double input, double input_start, double input_end, uint16_t output_start, uint16_t output_end){
+    double input_range = input_end - input_start;
+    int output_range = output_end - output_start;
+
+    return (input - input_start)*output_range / input_range + output_start;
+}
+
 void OpenHDRC::axisChanged(const int js, const int axis, const qreal value) {
     Q_UNUSED(js)
     Q_UNUSED(axis)
@@ -363,43 +370,43 @@ void OpenHDRC::axisChanged(const int js, const int axis, const qreal value) {
     //qDebug() << "OpenHDRC::axisChanged()";
     switch (axis) {
         case 0:
-        set_rc1(OpenHDUtil::instance().map(value, -1, 1, 1000, 2000));
+        set_rc1(rc_map(value, -1, 1, 1000, 2000));
         break;
 
         case 1:
-        set_rc2(OpenHDUtil::instance().map(value, -1, 1, 1000, 2000));
+        set_rc2(rc_map(value, -1, 1, 1000, 2000));
         break;
 
         case 2:
-        set_rc3(OpenHDUtil::instance().map(value, -1, 1, 1000, 2000));
+        set_rc3(rc_map(value, -1, 1, 1000, 2000));
         break;
 
         case 3:
-        set_rc4(OpenHDUtil::instance().map(value, -1, 1, 1000, 2000));
+        set_rc4(rc_map(value, -1, 1, 1000, 2000));
         break;
 
         case 4:
-        set_rc5(OpenHDUtil::instance().map(value, -1, 1, 1000, 2000));
+        set_rc5(rc_map(value, -1, 1, 1000, 2000));
         break;
 
         case 5:
-        set_rc6(OpenHDUtil::instance().map(value, -1, 1, 1000, 2000));
+        set_rc6(rc_map(value, -1, 1, 1000, 2000));
         break;
 
         case 6:
-        set_rc7(OpenHDUtil::instance().map(value, -1, 1, 1000, 2000));
+        set_rc7(rc_map(value, -1, 1, 1000, 2000));
         break;
 
         case 7:
-        set_rc8(OpenHDUtil::instance().map(value, -1, 1, 1000, 2000));
+        set_rc8(rc_map(value, -1, 1, 1000, 2000));
         break;
 
         case 8:
-        set_rc9(OpenHDUtil::instance().map(value, -1, 1, 1000, 2000));
+        set_rc9(rc_map(value, -1, 1, 1000, 2000));
         break;
 
         case 9:
-        set_rc10(OpenHDUtil::instance().map(value, -1, 1, 1000, 2000));
+        set_rc10(rc_map(value, -1, 1, 1000, 2000));
         break;
 
         default:
@@ -429,19 +436,19 @@ void OpenHDRC::connectedChanged(bool value) {
 /* RC channel slots arranged in channel order */
 
 void OpenHDRC::axisLeftXChanged(double value) {
-    set_rc4(OpenHDUtil::instance().map(value, -1, 1, 1000, 2000));
+    set_rc4(rc_map(value, -1, 1, 1000, 2000));
 }
 
 void OpenHDRC::axisLeftYChanged(double value) {
-    set_rc3(OpenHDUtil::instance().map(value, -1, 1, 1000, 2000));
+    set_rc3(rc_map(value, -1, 1, 1000, 2000));
 }
 
 void OpenHDRC::axisRightYChanged(double value) {
-    set_rc2(OpenHDUtil::instance().map(value, -1, 1, 1000, 2000));
+    set_rc2(rc_map(value, -1, 1, 1000, 2000));
 }
 
 void OpenHDRC::axisRightXChanged(double value) {
-    set_rc1(OpenHDUtil::instance().map(value, -1, 1, 1000, 2000));
+    set_rc1(rc_map(value, -1, 1, 1000, 2000));
 }
 
 void OpenHDRC::buttonAChanged(bool value) {

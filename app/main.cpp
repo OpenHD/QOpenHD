@@ -26,7 +26,9 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "osd/horizonladder.h"
 #include "osd/flightpathvector.h"
 #include "osd/drawingcanvas.h"
-
+//
+#include "exp/squircle.h"
+#include "util/qrenderstats.h"
 
 #if defined(ENABLE_RC)
 #include "QJoysticks.h"
@@ -37,34 +39,16 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #endif
 
 #if defined(ENABLE_GSTREAMER)
-#include "videostreaming/QOpenHDVideoHelper.hpp"
-#include "videostreaming/gstvideostream.h"
+#include "videostreaming/gst_qmlglsink/gstvideostream.h"
+#include "videostreaming/gst_qmlglsink/gst_helper.hpp"
 #endif
 
+#include "videostreaming/QOpenHDVideoHelper.hpp"
 #include "videostreaming/decodingstatistcs.h"
 
-#if defined(ENABLE_VIDEO_RENDER)
-#include "openhdvideo.h"
-#if defined(__android__)
-#include "openhdandroidvideo.h"
-#include "openhdrender.h"
-#endif
-#if defined(__rasp_pi__)
-#include "openhdmmalvideo.h"
-#include "openhdrender.h"
-#endif
-#if defined(__apple__)
-#include "openhdapplevideo.h"
-#include "openhdrender.h"
-#endif
-#endif
 
 #include "util/util.h"
 
-#if defined(ENABLE_GSTREAMER)
-#include <gst/gst.h>
-#include "videostreaming/gst_helper.hpp"
-#endif
 
 #include "logging/logmessagesmodel.h"
 #include "telemetry/settings/mavlinksettingsmodel.h"
@@ -72,12 +56,6 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "qopenhd.h"
 #include "util/WorkaroundMessageBox.h"
 
-// SDL hack
-#ifdef Q_OS_WIN
-    #ifdef main
-        #undef main
-    #endif
-#endif
 
 // Load all the fonts we use ?!
 static void load_fonts(){
@@ -198,6 +176,7 @@ void write_other_context_properties(QQmlApplicationEngine& engine){
 
 int main(int argc, char *argv[]) {
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    //QCoreApplication::setAttribute(Qt::AA_UseOpenGLES);
 
     QCoreApplication::setOrganizationName("Open.HD");
     QCoreApplication::setOrganizationDomain("open.hd");
@@ -210,16 +189,24 @@ int main(int argc, char *argv[]) {
 
     QSettings settings;
 
-    double global_scale = settings.value("global_scale", 1.0).toDouble();
-
-    std::string global_scale_s = std::to_string(global_scale);
+    const double global_scale = settings.value("global_scale", 1.0).toDouble();
+    const std::string global_scale_s = std::to_string(global_scale);
     QByteArray scaleAsQByteArray(global_scale_s.c_str(), global_scale_s.length());
     qputenv("QT_SCALE_FACTOR", scaleAsQByteArray);
 
+    // https://doc.qt.io/qt-6/qtquick-visualcanvas-scenegraph-renderer.html
+    //qputenv("QSG_VISUALIZE", "overdraw");
+   // QCoreApplication::setAttribute(Qt::AA_UseOpenGLES);
+    //QLoggingCategory::setFilterRules("qt.scenegraph.*=true");
+    //QLoggingCategory::setFilterRules("qt.scenegraph.time.*=true");
+    //QLoggingCategory::setFilterRules("qt.scenegraph.general=true");
+    //QLoggingCategory::setFilterRules("qt.scenegraph.time.texture=true");
+    //QLoggingCategory::setFilterRules("qt.scenegraph.time.renderloop=true");
+    //QLoggingCategory::setFilterRules("qt.qpa.eglfs.*=true");
+    //QLoggingCategory::setFilterRules("qt.qpa.egl*=true");
+
+
     QApplication app(argc, argv);
-
-
-
 
 #if defined(__ios__)
     auto applePlatform = ApplePlatform::instance();
@@ -255,7 +242,7 @@ int main(int argc, char *argv[]) {
     qDebug() << "Finished initializing Pi";
 #endif
 
-   load_fonts();
+    load_fonts();
 
     qmlRegisterType<OpenHDRC>("OpenHD", 1, 0, "OpenHDRC");
 
@@ -265,16 +252,13 @@ int main(int argc, char *argv[]) {
     qmlRegisterUncreatableType<QmlObjectListModel>("OpenHD", 1, 0, "QmlObjectListModel", "Reference only");
 
     qmlRegisterType<SpeedLadder>("OpenHD", 1, 0, "SpeedLadder");
-
     qmlRegisterType<AltitudeLadder>("OpenHD", 1, 0, "AltitudeLadder");
-
     qmlRegisterType<HeadingLadder>("OpenHD", 1, 0, "HeadingLadder");
-
     qmlRegisterType<HorizonLadder>("OpenHD", 1, 0, "HorizonLadder");
-
     qmlRegisterType<FlightPathVector>("OpenHD", 1, 0, "FlightPathVector");
-
     qmlRegisterType<DrawingCanvas>("OpenHD", 1, 0, "DrawingCanvas");
+    //
+    qmlRegisterType<Squircle>("OpenHD", 1, 0, "Squircle");
 
 #if defined(ENABLE_VIDEO_RENDER)
 #if defined(__android__)
@@ -295,6 +279,8 @@ int main(int argc, char *argv[]) {
     engine.rootContext()->setContextProperty("_qopenhd", &QOpenHD::instance());
     QOpenHD::instance().setEngine(&engine);
 
+    engine.rootContext()->setContextProperty("_qrenderstats", &QRenderStats::instance());
+
     write_platform_context_properties(engine);
     write_other_context_properties(engine);
     engine.rootContext()->setContextProperty("_logMessagesModel", &LogMessagesModel::instance());
@@ -305,57 +291,20 @@ int main(int argc, char *argv[]) {
 
 #if defined(ENABLE_GSTREAMER)
 #if defined(ENABLE_MAIN_VIDEO)
-    GstVideoStream* mainVideo = new GstVideoStream();
-    engine.rootContext()->setContextProperty("_mainVideo", mainVideo);
+    std::unique_ptr<GstVideoStream>  mainVideo=nullptr;
+    //std::unique_ptr<GstVideoStream>  mainVideo=std::make_unique<GstVideoStream>();
+    //engine.rootContext()->setContextProperty("_mainVideo", mainVideo.get());
 #endif
 #if defined(ENABLE_PIP)
     GstVideoStream* pipVideo = new GstVideoStream();
 #endif
 #endif
 
-#if defined(ENABLE_VIDEO_RENDER)
-#if defined(__android__)
-#if defined(ENABLE_MAIN_VIDEO)
-OpenHDAndroidVideo *mainVideo = new OpenHDAndroidVideo(OpenHDStreamTypeMain);
-#endif
-#if defined(ENABLE_PIP)
-OpenHDAndroidVideo *pipVideo = new OpenHDAndroidVideo(OpenHDStreamTypePiP);
-#endif
-#endif
-
-#if defined(__rasp_pi__)
-#if defined(ENABLE_MAIN_VIDEO)
-OpenHDMMALVideo *mainVideo = new OpenHDMMALVideo(OpenHDStreamTypeMain);
-#endif
-#if defined(ENABLE_PIP)
-OpenHDMMALVideo *pipVideo = new OpenHDMMALVideo(OpenHDStreamTypePiP);
-#endif
-#endif
-
-#if defined(__apple__)
-#if defined(ENABLE_MAIN_VIDEO)
-OpenHDAppleVideo *mainVideo = new OpenHDAppleVideo(OpenHDStreamTypeMain);
-#endif
-#if defined(ENABLE_PIP)
-OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
-#endif
-#endif
-
-
-#endif
-
-
     auto openHDRC = new OpenHDRC();
     //QObject::connect(openHDSettings, &OpenHDSettings::groundStationIPUpdated, openHDRC, &OpenHDRC::setGroundIP, Qt::QueuedConnection);
     engine.rootContext()->setContextProperty("openHDRC", openHDRC);
 
     engine.rootContext()->setContextProperty("_mavlinkTelemetry", &MavlinkTelemetry::instance());
-
-    #if defined(ENABLE_EXAMPLE_WIDGET)
-    engine.rootContext()->setContextProperty("EnableExampleWidget", QVariant(true));
-    #else
-    engine.rootContext()->setContextProperty("EnableExampleWidget", QVariant(false));
-    #endif
 
     engine.rootContext()->setContextProperty("OpenHDUtil", &OpenHDUtil::instance());
 
@@ -370,14 +319,12 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
 
 #if defined(ENABLE_MAIN_VIDEO)
     engine.rootContext()->setContextProperty("EnableMainVideo", QVariant(true));
-    engine.rootContext()->setContextProperty("MainStream", mainVideo);
 #else
     engine.rootContext()->setContextProperty("EnableMainVideo", QVariant(false));
 #endif
 
 #if defined(ENABLE_PIP)
     engine.rootContext()->setContextProperty("EnablePiP", QVariant(true));
-    engine.rootContext()->setContextProperty("PiPStream", pipVideo);
 #else
     engine.rootContext()->setContextProperty("EnablePiP", QVariant(false));
 #endif
@@ -416,15 +363,18 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
 
 #if defined(ENABLE_GSTREAMER)
 #if defined(ENABLE_MAIN_VIDEO)
-    const auto windowPrimary=QOpenHDVideoHelper::find_qt_video_window(engine,true);
+    const auto windowPrimary=find_qt_video_window(engine,true);
     if(windowPrimary==nullptr){
         qDebug()<<"Error primary window enabled but not found";
         //throw std::runtime_error("Window not found");
+    }else{
+        if(mainVideo){
+            mainVideo->init(windowPrimary,true);
+        }
     }
-    mainVideo->init(windowPrimary,true);
 #endif
 #if defined(ENABLE_PIP)
-    const auto windowSecondary=QOpenHDVideoHelper::find_qt_video_window(engine,false);
+    const auto windowSecondary=find_qt_video_window(engine,false);
     if(windowSecondary==nullptr){
         qDebug()<<"Error secondary window enabled but not found";
         //throw std::runtime_error("Window not found");
@@ -439,77 +389,14 @@ OpenHDAppleVideo *pipVideo = new OpenHDAppleVideo(OpenHDStreamTypePiP);
     }*/
 
 
-#if defined(ENABLE_VIDEO_RENDER)
-    auto rootObjects = engine.rootObjects();
-    QQuickWindow *rootObject = static_cast<QQuickWindow *>(rootObjects.first());
-    QThread *mainVideoThread = new QThread();
-    mainVideoThread->setObjectName("mainVideoThread");
-    QThread *pipVideoThread = new QThread();
-    pipVideoThread->setObjectName("pipVideoThread");
-
-
-#if defined(__android__)
-#if defined(ENABLE_MAIN_VIDEO)
-    QQuickItem *mainRenderer = rootObject->findChild<QQuickItem *>("mainSurface");
-    mainVideo->setVideoOut((OpenHDRender*)mainRenderer);
-    QObject::connect(mainVideoThread, &QThread::started, mainVideo, &OpenHDAndroidVideo::onStarted);
-#endif
-
-#if defined(ENABLE_PIP)
-    QQuickItem *pipRenderer = rootObject->findChild<QQuickItem *>("pipSurface");
-    pipVideo->setVideoOut((OpenHDRender*)pipRenderer);
-    QObject::connect(pipVideoThread, &QThread::started, pipVideo, &OpenHDAndroidVideo::onStarted);
-#endif
-#endif
-
-#if defined(__rasp_pi__)
-#if defined(ENABLE_MAIN_VIDEO)
-    QQuickItem *mainRenderer = rootObject->findChild<QQuickItem *>("mainSurface");
-    mainVideo->setVideoOut((OpenHDRender*)mainRenderer);
-    QObject::connect(mainVideoThread, &QThread::started, mainVideo, &OpenHDMMALVideo::onStarted);
-#endif
-
-#if defined(ENABLE_PIP)
-    QQuickItem *pipRenderer = rootObject->findChild<QQuickItem *>("pipSurface");
-    pipVideo->setVideoOut((OpenHDRender*)pipRenderer);
-    QObject::connect(pipVideoThread, &QThread::started, pipVideo, &OpenHDMMALVideo::onStarted);
-#endif
-#endif
-
-
-#if defined(__apple__)
-#if defined(ENABLE_MAIN_VIDEO)
-    QQuickItem *mainRenderer = rootObject->findChild<QQuickItem *>("mainSurface");
-    mainVideo->setVideoOut((OpenHDRender*)mainRenderer);
-    QObject::connect(mainVideoThread, &QThread::started, mainVideo, &OpenHDAppleVideo::onStarted);
-#endif
-
-#if defined(ENABLE_PIP)
-    QQuickItem *pipRenderer = rootObject->findChild<QQuickItem *>("pipSurface");
-    pipVideo->setVideoOut((OpenHDRender*)pipRenderer);
-    QObject::connect(pipVideoThread, &QThread::started, pipVideo, &OpenHDAppleVideo::onStarted);
-#endif
-#endif
-
-
-#if defined(ENABLE_MAIN_VIDEO)
-    mainVideo->moveToThread(mainVideoThread);
-    mainVideoThread->start();
-#endif
-
-#if defined(ENABLE_PIP)
-    pipVideo->moveToThread(pipVideoThread);
-    pipVideoThread->start();
-#endif
-
-#endif
-
-     LogMessagesModel::instance().addLogMessage("QOpenHD","running",0);
+    LogMessagesModel::instance().addLogMessage("QOpenHD","running",0);
     const int retval = app.exec();
 
-#if defined(ENABLE_GSTREAMER) || defined(ENABLE_VIDEO_RENDER)
+#if defined(ENABLE_GSTREAMER)
 #if defined(ENABLE_MAIN_VIDEO)
-    mainVideo->stopVideoSafe();
+    if(mainVideo!=nullptr){
+         mainVideo->stopVideoSafe();
+    }
 #endif
 #if defined(ENABLE_PIP)
     pipVideo->stopVideoSafe();

@@ -343,9 +343,8 @@ BaseWidget {
             width: 36
             height: 48
             color: {
-                var percent = settings.air_battery_show_fc_percent ? _fcMavlinkSystem.fc_battery_percent : OpenHDUtil.lipo_battery_voltage_to_percent(
-                                                                         settings.battery_cells,
-                                                                         _fcMavlinkSystem.battery_voltage)
+                //TODO reintroduce the settings, but PLEASE FUCKING KEEP THE MV PATTERM
+                var percent = settings.air_battery_show_fc_percent ? _fcMavlinkSystem.fc_battery_percent :_fcMavlinkSystem.fc_battery_percent
                 // 20% warning, 15% critical
                 return percent < 20 ? (percent < 15 ? "#ff0000" : "#fbfd15") : settings.color_shape
             }
