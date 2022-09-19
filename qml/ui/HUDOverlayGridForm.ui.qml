@@ -138,9 +138,9 @@ Item {
     //}
 
     // + 12% cpu
-    //HorizonWidget {
-    //    id: horizonWidget
-    //}
+    HorizonWidget {
+        id: horizonWidget
+    }
 
     // + 7% cpu
     FpvWidget {
