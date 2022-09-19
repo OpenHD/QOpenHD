@@ -85,7 +85,7 @@ void RpiMMALDisplay::init(int video_width,int video_height)
            qDebug()<<"mmal_port_enable"<<mmal_status_to_string(status);
           return;
       }
-   qDebug()<<"MMAL ready ?!";
+   qDebug()<<"MMAL ready X?!";
 
 }
 
