@@ -30,7 +30,6 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "exp/squircle.h"
 #include "util/qrenderstats.h"
 
-
 #if defined(ENABLE_RC)
 #include "QJoysticks.h"
 #endif
@@ -47,22 +46,6 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "videostreaming/decodingstatistcs.h"
 
 
-#if defined(ENABLE_VIDEO_RENDER)
-#include "openhdvideo.h"
-#if defined(__android__)
-#include "openhdandroidvideo.h"
-#include "openhdrender.h"
-#endif
-#if defined(__rasp_pi__)
-#include "openhdmmalvideo.h"
-#include "openhdrender.h"
-#endif
-#if defined(__apple__)
-#include "openhdapplevideo.h"
-#include "openhdrender.h"
-#endif
-#endif
-
 #include "util/util.h"
 
 #if defined(ENABLE_GSTREAMER)
@@ -76,12 +59,6 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "qopenhd.h"
 #include "util/WorkaroundMessageBox.h"
 
-// SDL hack
-#ifdef Q_OS_WIN
-    #ifdef main
-        #undef main
-    #endif
-#endif
 
 // Load all the fonts we use ?!
 static void load_fonts(){
