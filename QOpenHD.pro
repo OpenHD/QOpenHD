@@ -93,6 +93,9 @@ LIBS += -lGLESv2 -lEGL
 #LIBS += -ldrm
 #INCLUDEPATH += /usr/include/libdrm
 
+PKGCONFIG += mmal
+
+
 # Geographic lib updated to c-2.0, so much cleaner
 SOURCES += $$PWD/lib/geographiclib-c-2.0/src/geodesic.c
 HEADERS += $$PWD/lib/geographiclib-c-2.0/src/geodesic.h
