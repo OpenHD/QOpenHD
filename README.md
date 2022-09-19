@@ -1,2 +1,0 @@
-# QOpenHD
-QOpenHD App
