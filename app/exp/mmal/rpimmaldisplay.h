@@ -12,8 +12,12 @@ class RpiMMALDisplay
 {
 public:
     RpiMMALDisplay();
+    static RpiMMALDisplay& instance();
 
-    static void test();
+    void test();
+private:
+    MMAL_COMPONENT_T* m_Renderer;
+    MMAL_PORT_T* m_InputPort;
 };
 
 #endif // RPIMMALDISPLAY_H
