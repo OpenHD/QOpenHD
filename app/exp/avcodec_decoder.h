@@ -10,7 +10,7 @@
 #include "../common_consti/TimeHelper.hpp"
 
 //exp
-#include "drm_kms/drmprime_out.h"
+//#include "drm_kms/drmprime_out.h"
 
 class AVCodecDecoder : public QObject
 {
@@ -53,7 +53,7 @@ private:
     int last_frame_width=-1;
     int last_frame_height=-1;
 private:
-    std::unique_ptr<DRMPrimeOut> drm_prime_out=nullptr;
+    //std::unique_ptr<DRMPrimeOut> drm_prime_out=nullptr;
 };
 
 #endif // AVCODEC_DECODER_H

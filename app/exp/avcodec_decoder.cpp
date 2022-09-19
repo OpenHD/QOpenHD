@@ -250,15 +250,6 @@ int AVCodecDecoder::lulatsch()
     //char* in_filename="/home/openhd/hello_drmprime/in/rv_1280x720_green_white.h265";
     //in_filename="/home/consti10/Desktop/hello_drmprime/in/Big_Buck_Bunny_1080_10s_1MB_h264.mp4";
 
-    /*{
-        int drm_fd=0;
-        if ((drm_fd = drmOpen("vc4", NULL)) < 0) {
-            qDebug()<<"Failed to open drm";
-         }else{
-            qDebug()<<"Opened drm";
-        }
-    }*/
-
     // These options are needed for using the foo.sdp (rtp streaming)
     // https://stackoverflow.com/questions/20538698/minimum-sdp-for-making-a-h264-rtp-stream
     // https://stackoverflow.com/questions/16658873/how-to-minimize-the-delay-in-a-live-streaming-with-ffmpeg

@@ -94,16 +94,14 @@ INCLUDEPATH += /usr/include/mavsdk
 
 LIBS += -lavcodec -lavutil -lavformat
 # TODO dirty
-LIBS += -lGLESv2 -lglfw -lEGL
+LIBS += -lGLESv2 -lEGL
 # TODO exp
-LIBS += -ldrm
-INCLUDEPATH += /usr/include/libdrm
+#LIBS += -ldrm
+#INCLUDEPATH += /usr/include/libdrm
 
 # Geographic lib updated to c-2.0, so much cleaner
-SOURCES += $$PWD/lib/geographiclib-c-2.0/src/geodesic.c \
-    app/exp/avcodec_decoder.cpp
-HEADERS += $$PWD/lib/geographiclib-c-2.0/src/geodesic.c \
-    app/exp/avcodec_decoder.h
+SOURCES += $$PWD/lib/geographiclib-c-2.0/src/geodesic.c
+HEADERS += $$PWD/lib/geographiclib-c-2.0/src/geodesic.h
 
 
 # All files for the OSD elements - these are QT QQuickPaintedItem's that are written in c++
@@ -124,10 +122,10 @@ SOURCES += \
     app/util/qrenderstats.cpp \
     app/videostreaming/decodingstatistcs.cpp \
     app/exp/squircle.cpp \
-    #app/exp/squirclerenderer.cpp
     app/exp/texturerenderer.cpp \
+    app/exp/avcodec_decoder.cpp
     # xx
-    app/exp/drm_kms/drmprime_out.cpp \
+    #app/exp/drm_kms/drmprime_out.cpp \
 
 HEADERS += \
     app/exp/gl/gl_shaders.h \
@@ -152,10 +150,10 @@ HEADERS += \
     app/util/qrenderstats.h \
     app/videostreaming/decodingstatistcs.h \
     app/exp/squircle.h \
-    #app/exp/squirclerenderer.h
     app/exp/texturerenderer.h \
+    app/exp/avcodec_decoder.h
     # xx
-    app/exp/drm_kms/drmprime_out.h \
+    #app/exp/drm_kms/drmprime_out.h \
 
 
 # I deleted all the "old" telemetry protocolls other than mavlink
