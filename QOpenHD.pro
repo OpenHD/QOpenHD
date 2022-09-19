@@ -76,6 +76,7 @@ QT += concurrent opengl gui
 
 INCLUDEPATH += $$PWD/lib
 INCLUDEPATH += $$PWD/app
+INCLUDEPATH += $$PWD/app/exp
 
 # Since mavlink is coming with MAVSDK, we don't need that anymore
 #INCLUDEPATH += $$PWD/lib/c_library_v2_openhd
