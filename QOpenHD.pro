@@ -17,7 +17,8 @@ TRANSLATIONS = translations/QOpenHD_en.ts \
 include(platforms.pri)
 
 include(git.pri)
-# exo
+# this library can be included via either .pri or cmake
+# since it is a library "specifically for qt"
 include(lib/lqtutils_master/lqtutils.pri)
 
 CONFIG(debug, debug|release) {
@@ -56,21 +57,16 @@ QMAKE_CXXFLAGS += -Wno-cast-align
 
 #Not sure what exactly is going on here, but maybe this lib made it into qt official ?!!
 #since there is https://doc.qt.io/qt-5/qsortfilterproxymodel.html#details
+# Consti10: Dependency removed
 #include ($$PWD/lib/SortFilterProxyModel/SortFilterProxyModel.pri)
+# Comes with pretty much any install
 QT +=core
 
-# weird I have no idea what this one is for
+# We need this for our qml files, available pretty much anywhere
 QT += qml
 
 # We need to include this one, needs to be explicitly installed via apt-get on Ubuntu
 QT += quick
-# Same for this one, install via apt-get
-# https://doc.qt.io/qt-5/qgeocoordinate.html
-# do not confuse this one with the external library from lib/GeographicLib-1.50
-# Consti10 18.08.22 - can be removed, since I got rid of it as a dependency. However,
-# we might have to reintroduce it for the map feature - if possible, this should be avoided though.
-# QT += positioning
-
 QT += concurrent opengl gui
 
 # I had to remove them, they seem to be obsolete
@@ -78,12 +74,9 @@ QT += concurrent opengl gui
 #qtConfig(geoservices_mapboxgl): QT += sql opengl
 #qtConfig(geoservices_osm): QT += concurrent
 
-INCLUDEPATH += $$PWD/inc
 INCLUDEPATH += $$PWD/lib
 INCLUDEPATH += $$PWD/app
-# argh
-INCLUDEPATH += $$PWD/app/exp
-# argh end
+
 # Since mavlink is coming with MAVSDK, we don't need that anymore
 #INCLUDEPATH += $$PWD/lib/c_library_v2_openhd
 # mavsdk - dirty
@@ -95,7 +88,7 @@ INCLUDEPATH += /usr/include/mavsdk
 LIBS += -lavcodec -lavutil -lavformat
 # TODO dirty
 LIBS += -lGLESv2 -lEGL
-# TODO exp
+# We might need this stuff once we can do drm/kms, fucking master problem
 #LIBS += -ldrm
 #INCLUDEPATH += /usr/include/libdrm
 
