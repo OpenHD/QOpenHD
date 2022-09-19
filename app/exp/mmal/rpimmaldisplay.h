@@ -14,7 +14,8 @@ public:
     RpiMMALDisplay();
     static RpiMMALDisplay& instance();
 
-    void test();
+    void init(int video_width=1280,int video_height=720);
+    void cleanup();
 private:
     MMAL_COMPONENT_T* m_Renderer;
     MMAL_PORT_T* m_InputPort;
