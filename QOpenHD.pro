@@ -120,6 +120,7 @@ SOURCES += \
     app/exp/avcodec_decoder.cpp
     # xx
     #app/exp/drm_kms/drmprime_out.cpp \
+    app/exp/mmal/rpimmaldisplay.cpp
 
 HEADERS += \
     app/exp/gl/gl_shaders.h \
@@ -148,6 +149,7 @@ HEADERS += \
     app/exp/avcodec_decoder.h
     # xx
     #app/exp/drm_kms/drmprime_out.h \
+    app/exp/mmal/rpimmaldisplay.h
 
 
 # I deleted all the "old" telemetry protocolls other than mavlink

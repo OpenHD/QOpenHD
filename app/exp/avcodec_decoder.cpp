@@ -87,6 +87,7 @@ AVCodecDecoder::AVCodecDecoder(QObject *parent):
     QObject(parent)
 {
     //drm_prime_out=std::make_unique<DRMPrimeOut>(1,false,false);
+    RpiMMALDisplay::test();
 }
 
 void AVCodecDecoder::init(bool primaryStream)
