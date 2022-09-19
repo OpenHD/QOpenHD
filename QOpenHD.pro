@@ -186,6 +186,7 @@ HEADERS += \
     app/util/util.h \
 
 DISTFILES += \
+    README.md \
     android/AndroidManifest.xml \
     android/build.gradle \
     android/gradle/wrapper/gradle-wrapper.jar \
