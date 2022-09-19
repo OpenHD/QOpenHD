@@ -12,8 +12,3 @@ DecodingStatistcs& DecodingStatistcs::instance()
     return stats;
 }
 
-void DecodingStatistcs::set_bitrate(int bitrate)
-{
-    m_bitrate=bitrate;
-    emit bitrate_changed(bitrate);
-}
