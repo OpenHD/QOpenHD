@@ -93,6 +93,7 @@ LIBS += -lGLESv2 -lEGL
 #LIBS += -ldrm
 #INCLUDEPATH += /usr/include/libdrm
 
+CONFIG += link_pkgconfig
 PKGCONFIG += mmal
 
 

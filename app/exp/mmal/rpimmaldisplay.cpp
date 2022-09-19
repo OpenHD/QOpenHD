@@ -10,5 +10,5 @@ RpiMMALDisplay::RpiMMALDisplay()
 
 void RpiMMALDisplay::test()
 {
-    qDebug()<<"Test MMAl";
+    qDebug()<<"Test MMAL";
 }
