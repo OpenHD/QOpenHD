@@ -120,10 +120,10 @@ SOURCES += \
     app/videostreaming/decodingstatistcs.cpp \
     app/exp/squircle.cpp \
     app/exp/texturerenderer.cpp \
-    app/exp/avcodec_decoder.cpp
+    app/exp/avcodec_decoder.cpp \
+    app/exp/mmal/rpimmaldisplay.cpp
     # xx
     #app/exp/drm_kms/drmprime_out.cpp \
-    app/exp/mmal/rpimmaldisplay.cpp
 
 HEADERS += \
     app/exp/gl/gl_shaders.h \
@@ -149,10 +149,10 @@ HEADERS += \
     app/videostreaming/decodingstatistcs.h \
     app/exp/squircle.h \
     app/exp/texturerenderer.h \
-    app/exp/avcodec_decoder.h
+    app/exp/avcodec_decoder.h \
+    app/exp/mmal/rpimmaldisplay.h
     # xx
     #app/exp/drm_kms/drmprime_out.h \
-    app/exp/mmal/rpimmaldisplay.h
 
 
 # I deleted all the "old" telemetry protocolls other than mavlink
