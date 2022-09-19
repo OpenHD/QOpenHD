@@ -25,6 +25,7 @@ public:
     // create and link the shaders
     void initGL(QQuickWindow *window);
     // draw function
+    // @param window: just needed to call the begin/end-externalCommands on it
     void paint(QQuickWindow *window);
     //
     int queue_new_frame_for_display(AVFrame * src_frame);
