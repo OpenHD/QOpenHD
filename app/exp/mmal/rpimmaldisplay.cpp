@@ -44,15 +44,47 @@ void RpiMMALDisplay::init(int video_width,int video_height)
 
    status = mmal_port_format_commit(m_InputPort);
    if (status != MMAL_SUCCESS) {
-       qDebug()<<"MMAL mmal_port_format_commit error";
+       qDebug()<<"MMAL mmal_port_format_commit error"<<mmal_status_to_string(status);
       return;
    }
 
    status = mmal_component_enable(m_Renderer);
    if (status != MMAL_SUCCESS) {
-       qDebug()<<"MMAL mmal_component_enable error";
+       qDebug()<<"MMAL mmal_component_enable error"<<mmal_status_to_string(status);
        return;
    }
+   {
+           MMAL_DISPLAYREGION_T dr = {};
+
+           dr.hdr.id = MMAL_PARAMETER_DISPLAYREGION;
+           dr.hdr.size = sizeof(MMAL_DISPLAYREGION_T);
+
+           dr.set |= MMAL_DISPLAY_SET_FULLSCREEN;
+           dr.fullscreen = MMAL_FALSE;
+
+           dr.set |= MMAL_DISPLAY_SET_MODE;
+           dr.mode = MMAL_DISPLAY_MODE_LETTERBOX;
+
+           dr.set |= MMAL_DISPLAY_SET_NOASPECT;
+           dr.noaspect = MMAL_TRUE;
+
+           dr.set |= MMAL_DISPLAY_SET_SRC_RECT;
+           dr.src_rect.x = 0;
+           dr.src_rect.y = 0;
+           dr.src_rect.width = video_width;
+           dr.src_rect.height = video_height;
+
+           status = mmal_port_parameter_set(m_InputPort, &dr.hdr);
+           if (status != MMAL_SUCCESS) {
+               qDebug()<<"mmal_port_parameter_set error"<<mmal_status_to_string(status);
+               return;
+           }
+   }
+   status = mmal_port_enable(m_InputPort, InputPortCallback);
+      if (status != MMAL_SUCCESS) {
+           qDebug()<<"mmal_port_enable"<<mmal_status_to_string(status);
+          return;
+      }
    qDebug()<<"MMAL ready ?!";
 
 }
@@ -66,4 +98,14 @@ void RpiMMALDisplay::cleanup()
         if (m_Renderer != nullptr) {
             mmal_component_destroy(m_Renderer);
         }
+}
+
+void RpiMMALDisplay::updateDisplayRegion()
+{
+
+}
+
+void RpiMMALDisplay::InputPortCallback(MMAL_PORT_T *port, MMAL_BUFFER_HEADER_T *buffer)
+{
+     mmal_buffer_header_release(buffer);
 }

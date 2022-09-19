@@ -16,9 +16,11 @@ public:
 
     void init(int video_width=1280,int video_height=720);
     void cleanup();
+    void updateDisplayRegion();
 private:
-    MMAL_COMPONENT_T* m_Renderer;
-    MMAL_PORT_T* m_InputPort;
+    MMAL_COMPONENT_T* m_Renderer=nullptr;
+    MMAL_PORT_T* m_InputPort=nullptr;
+    static void InputPortCallback(MMAL_PORT_T* port, MMAL_BUFFER_HEADER_T* buffer);
 };
 
 #endif // RPIMMALDISPLAY_H
