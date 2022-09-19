@@ -22,17 +22,15 @@ public:
     static TextureRenderer& instance();
 
     void setViewportSize(const QSize &size) { m_viewportSize = size; }
-    void setWindow(QQuickWindow *window) { m_window = window; }
     // create and link the shaders
-    void initGL();
+    void initGL(QQuickWindow *window);
     // draw function
-    void paint();
+    void paint(QQuickWindow *window);
     //
     int queue_new_frame_for_display(AVFrame * src_frame);
 private:
     QSize m_viewportSize;
     int m_index=0;
-    QQuickWindow *m_window = nullptr;
     std::chrono::steady_clock::time_point last_frame=std::chrono::steady_clock::now();
     //
     std::unique_ptr<GL_VideoRenderer> gl_video_renderer=nullptr;

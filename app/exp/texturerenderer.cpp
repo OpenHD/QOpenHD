@@ -58,11 +58,11 @@ TextureRenderer &TextureRenderer::instance(){
     return renderer;
 }
 
-void TextureRenderer::initGL()
+void TextureRenderer::initGL(QQuickWindow *window)
 {
     if (!initialized) {
         initialized=true;
-        QSGRendererInterface *rif = m_window->rendererInterface();
+        QSGRendererInterface *rif = window->rendererInterface();
         Q_ASSERT(rif->graphicsApi() == QSGRendererInterface::OpenGL);
 
         gl_video_renderer=std::make_unique<GL_VideoRenderer>();
@@ -72,7 +72,7 @@ void TextureRenderer::initGL()
     }
 }
 
-void TextureRenderer::paint()
+void TextureRenderer::paint(QQuickWindow *window)
 {
     const auto delta=std::chrono::steady_clock::now()-last_frame;
     last_frame=std::chrono::steady_clock::now();
@@ -84,7 +84,9 @@ void TextureRenderer::paint()
    // Play nice with the RHI. Not strictly needed when the scenegraph uses
    // OpenGL directly.
     // Consti10: comp error, seems to work without, too
-   m_window->beginExternalCommands();
+   if(window){
+       window->beginExternalCommands();
+   }
    //glClear(GL_COLOR_BUFFER_BIT |GL_DEPTH_BUFFER_BIT| GL_STENCIL_BUFFER_BIT);
    AVFrame* new_frame=fetch_latest_decoded_frame();
    if(new_frame!= nullptr){
@@ -116,7 +118,9 @@ void TextureRenderer::paint()
    glEnable(GL_DEPTH_TEST);
    glViewport(0, 0, m_viewportSize.width(), m_viewportSize.height());
 
-    m_window->endExternalCommands();
+   if(window){
+       window->endExternalCommands();
+   }
 }
 
 int TextureRenderer::queue_new_frame_for_display(AVFrame *src_frame)

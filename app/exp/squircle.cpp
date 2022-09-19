@@ -67,20 +67,19 @@ void Squircle::sync()
         QRenderStats::instance().registerOnWindow(window());
     }
     m_renderer->setViewportSize(window()->size() * window()->devicePixelRatio());
-    m_renderer->setWindow(window());
 }
 
 void Squircle::m_QQuickWindow_beforeRendering()
 {
     if(m_renderer){
-        m_renderer->initGL();
+        m_renderer->initGL(window());
     }
 }
 
 void Squircle::m_QQuickWindow_beforeRenderPassRecording()
 {
     if(m_renderer){
-        m_renderer->paint();
+        m_renderer->paint(window());
     }
     // always trigger a repaint, otherwise QT "thinks" nothing has changed since it doesn't
     // know about the OpenGL commands we do here
