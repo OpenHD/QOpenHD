@@ -241,6 +241,11 @@ int AVCodecDecoder::lulatsch()
             }
         }
     }
+    {
+     const AVCodec* tmp_decoder = avcodec_find_decoder_by_name("h264_mmal");
+     qDebug()<<"Found mmal:"<<(tmp_decoder==nullptr ? "N" : "Y");
+    }
+
     //const char* in_filename="/home/consti10/Desktop/hello_drmprime/in/rv1126.h265";
     //const char* in_filename="/home/consti10/Desktop/hello_drmprime/in/rtp_h264.sdp";
     //const char* in_filename="/home/consti10/Desktop/hello_drmprime/in/rtp_mjpeg.sdp";
@@ -438,7 +443,6 @@ int AVCodecDecoder::lulatsch()
 
         }else{
         if (video_stream == packet.stream_index){
-            qDebug()<<"Got av frame\n";
             int limitedFrameRate=settings.dev_limit_fps_on_test_file;
             if(settings.dev_test_video_mode==QOpenHDVideoHelper::VideoTestMode::DISABLED){
                 // never limit the fps on decode when doing live streaming !
