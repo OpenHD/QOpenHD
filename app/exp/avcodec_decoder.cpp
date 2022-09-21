@@ -242,8 +242,8 @@ int AVCodecDecoder::lulatsch()
         }
     }
     {
-     const AVCodec* tmp_decoder = avcodec_find_decoder_by_name("h264_mmal");
-     qDebug()<<"Found mmal:"<<(tmp_decoder==nullptr ? "N" : "Y");
+     //const AVCodec* tmp_decoder = avcodec_find_decoder_by_name("h264_mmal");
+     //qDebug()<<"Found mmal:"<<(tmp_decoder==nullptr ? "N" : "Y");
     }
 
     //const char* in_filename="/home/consti10/Desktop/hello_drmprime/in/rv1126.h265";
@@ -312,14 +312,18 @@ int AVCodecDecoder::lulatsch()
         qDebug()<<"H264 decode";
         if(!settings.enable_software_video_decoder){
             // weird workaround needed for pi + DRM_PRIME
-            if ((decoder = avcodec_find_decoder_by_name("h264_v4l2m2m")) == NULL) {
+            /*if ((decoder = avcodec_find_decoder_by_name("h264_v4l2m2m")) == NULL) {
                 fprintf(stderr, "Cannot find the h264 v4l2m2m decoder\n");
                 avformat_close_input(&input_ctx);
                 return -1;
-            }
+            }*/
+            decoder = avcodec_find_decoder_by_name("h264_mmal");
+            assert(decoder);
+            //wanted_hw_pix_fmt = AV_PIX_FMT_DRM_PRIME;
+            wanted_hw_pix_fmt = AV_PIX_FMT_MMAL;
+        }else{
+            wanted_hw_pix_fmt = AV_PIX_FMT_YUV420P;
         }
-        wanted_hw_pix_fmt = AV_PIX_FMT_DRM_PRIME;
-        //wanted_hw_pix_fmt = AV_PIX_FMT_YUV420P;
     }
     else if(decoder->id==AV_CODEC_ID_H265){
         qDebug()<<"H265 decode";
