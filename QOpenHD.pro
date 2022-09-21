@@ -97,6 +97,8 @@ CONFIG += link_pkgconfig
 packagesExist(mmal) {
    PKGCONFIG += mmal
    CONFIG += mmal
+
+   PKCONFIG += mmal_util mmal_core mmal_components
 }
 
 
