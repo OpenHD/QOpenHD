@@ -68,15 +68,14 @@ Item {
 
         TabButton {
             text: qsTr("Video")
-            width: (EnableMainVideo || EnablePiP) ? implicitWidth : 0
+            width: implicitWidth
             height: 48
             font.pixelSize: 13
-            visible: (EnableMainVideo || EnablePiP)
         }
 
         TabButton {
             text: qsTr("Manage")
-            width: (!IsRaspPi && !IsiOS) ? implicitWidth : 0
+            width: implicitWidth
             height: 48
             font.pixelSize: 13
             visible: !IsRaspPi && !IsiOS
@@ -1933,8 +1932,7 @@ Item {
             contentHeight: videoColumn.height
 
             clip: true
-            visible: (EnableMainVideo || EnablePiP) && appSettingsBar.currentIndex == 4
-
+            visible: appSettingsBar.currentIndex == 4
 
             Item {
                 anchors.fill: parent
@@ -2019,36 +2017,6 @@ Item {
                          }
                         }
                     }
-
-                    Rectangle {
-                        width: parent.width
-                        height: rowHeight
-                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-                        visible: EnablePiP
-
-                        Text {
-                            text: qsTr("Enable PiP")
-                            font.weight: Font.Bold
-                            font.pixelSize: 13
-                            anchors.leftMargin: 8
-                            verticalAlignment: Text.AlignVCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: 224
-                            height: elementHeight
-                            anchors.left: parent.left
-                        }
-
-                        Switch {
-                            width: 32
-                            height: elementHeight
-                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            checked: settings.show_pip_video
-                            onCheckedChanged: settings.show_pip_video = checked
-                        }
-                    }                   
 
                     Rectangle {
                         width: parent.width

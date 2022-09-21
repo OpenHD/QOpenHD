@@ -248,7 +248,6 @@ iOSBuild {
     #CONFIG += EnableGamepads
     CONFIG += EnableSpeech
     CONFIG += EnableMainVideo
-    CONFIG += EnablePiP
     #CONFIG += EnableCharts
     #CONFIG += EnableLog //does not work due to filepath not set
 
@@ -281,7 +280,6 @@ MacBuild {
     CONFIG += EnableRC
     CONFIG += EnableSpeech
     CONFIG += EnableMainVideo
-    CONFIG += EnablePiP
     #CONFIG += EnableCharts
     #CONFIG += EnableLog //does not work due to filepath not set
 
@@ -299,7 +297,6 @@ LinuxBuild {
     #CONFIG += EnableRC
     # Note: To compile without gstreamer, uncomment the 3 following - but then obviosly there is no video at all.
     CONFIG += EnableMainVideo
-    CONFIG += EnablePiP
     #CONFIG += EnableGStreamer
     #CONFIG += EnableCharts
     #CONFIG += EnableLog
@@ -311,7 +308,6 @@ JetsonBuild {
     CONFIG += EnableMainVideo
     CONFIG += EnableJoysticks
     CONFIG += EnableRC
-    CONFIG += EnablePiP
     #CONFIG += EnableCharts
     CONFIG += EnableSpeech
     #CONFIG += EnableLog //does not work due to filepath not set
@@ -335,7 +331,6 @@ RaspberryPiBuild {
     CONFIG += EnableMainVideo
     CONFIG += EnableJoysticks
     CONFIG += EnableRC
-    CONFIG += EnablePiP
     #CONFIG += EnableCharts
     CONFIG += EnableSpeech
     CONFIG += LimitADSBMax
@@ -350,7 +345,6 @@ WindowsBuild {
     #CONFIG += EnableRC
     #CONFIG += EnableSpeech
     #CONFIG += EnableMainVideo
-    #CONFIG +- EnablePiP
     #CONFIG += EnableGStreamer
     #CONFIG += EnableCharts
     #CONFIG += EnableLog
@@ -368,7 +362,6 @@ AndroidBuild {
     CONFIG += EnableRC
     CONFIG += EnableSpeech
     CONFIG += EnableMainVideo
-    CONFIG += EnablePiP
     #CONFIG += EnableCharts
     #CONFIG += EnableLog
 
@@ -427,8 +420,6 @@ EnableGStreamer {
         app/videostreaming/gst_qmlglsink/gst_helper.hpp \
         app/videostreaming/gst_qmlglsink/gstvideostream.h
 
-    #include ($$PWD/lib/VideoStreaming/VideoStreaming.pri)
-
     CONFIG += link_pkgconfig
     PKGCONFIG   += gstreamer-1.0  gstreamer-video-1.0 gstreamer-gl-1.0
 
@@ -438,11 +429,6 @@ EnableGStreamer {
     #QT += widgets
     #QT += gui-private
 
-}
-
-EnablePiP {
-    message("EnablePiP")
-    DEFINES += ENABLE_PIP
 }
 
 

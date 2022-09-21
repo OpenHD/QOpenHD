@@ -323,12 +323,6 @@ int main(int argc, char *argv[]) {
     engine.rootContext()->setContextProperty("EnableMainVideo", QVariant(false));
 #endif
 
-#if defined(ENABLE_PIP)
-    engine.rootContext()->setContextProperty("EnablePiP", QVariant(true));
-#else
-    engine.rootContext()->setContextProperty("EnablePiP", QVariant(false));
-#endif
-
 
 #if defined(ENABLE_CHARTS)
     engine.rootContext()->setContextProperty("EnableCharts", QVariant(true));
