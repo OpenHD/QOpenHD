@@ -1947,7 +1947,7 @@ Item {
                         width: parent.width
                         height: rowHeight
                         color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-                        visible: EnableGStreamer
+                        visible: true
 
                         Text {
                             text: qsTr("Always use software video decoder")

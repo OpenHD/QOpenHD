@@ -205,7 +205,7 @@ int AVCodecDecoder::decode_and_wait_for_frame(AVPacket *packet)
 void AVCodecDecoder::on_new_frame(AVFrame *frame)
 {
 
-    //qDebug()<<"Got frame format:"<<QString(safe_av_get_pix_fmt_name((AVPixelFormat)frame->format).c_str())<<" "<<frame->width<<"x"<<frame->height;
+    qDebug()<<"Got frame format:"<<QString(safe_av_get_pix_fmt_name((AVPixelFormat)frame->format).c_str())<<" "<<frame->width<<"x"<<frame->height;
     RpiMMALDisplay::instance().display_frame(frame);
     return;
     TextureRenderer::instance().queue_new_frame_for_display(frame);
