@@ -122,10 +122,10 @@ void AVCodecDecoder::timer_check_settings_changed_callback()
 void AVCodecDecoder::constant_decode()
 {
 #ifdef HAVE_MMAL
-    if(true){
-        //x_run();
+    /*if(true){
+        x_run();
         return;
-    }
+    }*/
 #endif
     while(true){
         qDebug()<<"Start decode";
