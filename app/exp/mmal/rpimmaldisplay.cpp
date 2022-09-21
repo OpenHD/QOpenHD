@@ -133,7 +133,6 @@ void RpiMMALDisplay::init(int video_width,int video_height)
           return;
       }
    qDebug()<<"MMAL ready X?!";
-
 }
 
 void RpiMMALDisplay::cleanup()
