@@ -406,11 +406,11 @@ int AVCodecDecoder::lulatsch()
     // A thread count of 1 reduces latency for both SW and HW decode
     decoder_ctx->thread_count = 1;
 
-    /*if ((ret = avcodec_open2(decoder_ctx, decoder, nullptr)) < 0) {
+   if ((ret = avcodec_open2(decoder_ctx, decoder, nullptr)) < 0) {
         qDebug()<<"Failed to open codec for stream "<< video_stream;
         avformat_close_input(&input_ctx);
         return -1;
-    }*/
+    }
     AVPacket packet;
     // actual decoding and dump the raw data
     const auto decodingStart=std::chrono::steady_clock::now();
@@ -433,7 +433,7 @@ int AVCodecDecoder::lulatsch()
             qDebug()<<"av_read_frame returned:"<<ret;
             break;
         }
-        if(true){
+        if(false){
              qDebug()<<"Got "<<debug_av_packet(&packet).c_str();
 
         }else{

@@ -299,8 +299,7 @@ BaseWidget {
             width: 24
             height: 48
             text: "QRS"
-            anchors.left: parent.left
-            anchors.leftMargin: -2
+            anchors.centerIn: parent
             verticalAlignment: Text.AlignVCenter
             font.family: "Font Awesome 5 Free"
             font.pixelSize: 18

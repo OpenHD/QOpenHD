@@ -70,9 +70,13 @@ ApplicationWindow {
         z: 1.0
         source: {
             if (EnableGStreamer && EnableMainVideo) {
-               //return "../video/MainVideoGStreamer.qml";
-                return "";
+                return "../video/MainVideoGStreamer.qml";
+                //return "";
             }
+            if(EnableAVCodec){
+
+            }
+
             return ""
         }
     }

@@ -428,8 +428,11 @@ EnableGStreamer {
     #QT += qitem
     #QT += widgets
     #QT += gui-private
-
 }
+ENABLE_AVCODEC{
+    DEFINES += ENABLE_AVCODEC
+}
+
 
 
 EnableRC {
