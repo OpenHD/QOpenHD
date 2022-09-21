@@ -102,5 +102,20 @@ static std::string all_formats_to_string(const enum AVPixelFormat *pix_fmts){
   return ss.str();
 }
 
+static std::string av_packet_flags_to_string(int flags){
+    if(flags & AV_PKT_FLAG_KEY){
+        return "AV_PKT_FLAG_KEY";
+    }
+    return std::to_string(flags);
+}
+
+static std::string debug_av_packet(const AVPacket* packet){
+    std::stringstream ss;
+    ss<<"AVPacket size:"<<packet->size<<",";
+    ss<<" flags:"<<av_packet_flags_to_string(packet->flags)<<",";
+    ss<<" side data elements:"<<packet->side_data_elems;
+    return ss.str();
+}
+
 
 #endif //HELLO_DRMPRIME__AVCODEC_HELPER_HPP_

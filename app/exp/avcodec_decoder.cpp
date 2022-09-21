@@ -87,8 +87,8 @@ AVCodecDecoder::AVCodecDecoder(QObject *parent):
     QObject(parent)
 {
     //drm_prime_out=std::make_unique<DRMPrimeOut>(1,false,false);
-    RpiMMALDisplay::instance().init();
-    RpiMMALDisplay::instance().cleanup();
+    //RpiMMALDisplay::instance().init();
+    //RpiMMALDisplay::instance().cleanup();
 }
 
 void AVCodecDecoder::init(bool primaryStream)
@@ -317,7 +317,6 @@ int AVCodecDecoder::lulatsch()
         //wanted_hw_pix_fmt = AV_PIX_FMT_YUV420P;
     }
     else if(decoder->id==AV_CODEC_ID_H265){
-        assert(decoder->id==AV_CODEC_ID_H265);
         qDebug()<<"H265 decode";
         for (int i = 0;; i++) {
             const AVCodecHWConfig *config = avcodec_get_hw_config(decoder, i);
@@ -407,11 +406,11 @@ int AVCodecDecoder::lulatsch()
     // A thread count of 1 reduces latency for both SW and HW decode
     decoder_ctx->thread_count = 1;
 
-    if ((ret = avcodec_open2(decoder_ctx, decoder, nullptr)) < 0) {
+    /*if ((ret = avcodec_open2(decoder_ctx, decoder, nullptr)) < 0) {
         qDebug()<<"Failed to open codec for stream "<< video_stream;
         avformat_close_input(&input_ctx);
         return -1;
-    }
+    }*/
     AVPacket packet;
     // actual decoding and dump the raw data
     const auto decodingStart=std::chrono::steady_clock::now();
@@ -434,7 +433,12 @@ int AVCodecDecoder::lulatsch()
             qDebug()<<"av_read_frame returned:"<<ret;
             break;
         }
+        if(true){
+             qDebug()<<"Got "<<debug_av_packet(&packet).c_str();
+
+        }else{
         if (video_stream == packet.stream_index){
+            qDebug()<<"Got av frame\n";
             int limitedFrameRate=settings.dev_limit_fps_on_test_file;
             if(settings.dev_test_video_mode==QOpenHDVideoHelper::VideoTestMode::DISABLED){
                 // never limit the fps on decode when doing live streaming !
@@ -455,6 +459,7 @@ int AVCodecDecoder::lulatsch()
                 const double fps=runTimeS==0 ? 0 : nFeedFrames/runTimeS;
                 //qDebug()<<"Fake fps:"<<fps;
             }
+        }
         }
         av_packet_unref(&packet);
     }
