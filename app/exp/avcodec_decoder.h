@@ -11,7 +11,7 @@
 
 #ifdef HAVE_MMAL
 #include "mmal/rpimmaldisplay.h"
-#include "mmal/graph_decode_render.h"
+//#include "mmal/graph_decode_render.h"
 #endif
 //exp
 //#include "drm_kms/drmprime_out.h"

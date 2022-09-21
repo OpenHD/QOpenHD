@@ -1,13 +1,7 @@
-
-extern "C"{
-#include "bcm_host.h"
-#include "mmal.h"
-#include "util/mmal_graph.h"
-#include "util/mmal_default_components.h"
-#include "util/mmal_util_params.h"
-#include <stdio.h>
-#include "interface/vcos/vcos.h"
-}
+#include <interface/mmal/mmal.h>
+#include <interface/mmal/util/mmal_util.h>
+#include <interface/mmal/util/mmal_util_params.h>
+#include <interface/mmal/util/mmal_default_components.h>
 
 
 #define CHECK_STATUS(status, msg) if (status != MMAL_SUCCESS) { fprintf(stderr, msg"\n"); goto error; }
@@ -76,7 +70,7 @@ static void control_callback(MMAL_PORT_T *port, MMAL_BUFFER_HEADER_T *buffer)
    fprintf(stderr,"control cb. status %u\n", ctx->status);
 }
 
-static void x_run() {
+static int x_run() {
 
     MMAL_STATUS_T status;
     MMAL_GRAPH_T *graph = 0;

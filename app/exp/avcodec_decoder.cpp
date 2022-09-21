@@ -123,7 +123,7 @@ void AVCodecDecoder::constant_decode()
 {
 #ifdef HAVE_MMAL
     if(true){
-        x_run();
+        //x_run();
         return;
     }
 #endif
