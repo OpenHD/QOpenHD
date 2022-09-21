@@ -373,6 +373,8 @@ int AVCodecDecoder::lulatsch()
         avformat_close_input(&input_ctx);
         return -1;
     }
+     RpiMMALDisplay::instance().prepareDecoderContext(decoder_ctx,&av_dictionary);
+
     // From moonlight-qt. However, on PI, this doesn't seem to make any difference, at least for H265 decode.
     // (I never measured h264, but don't think there it is different).
     // Always request low delay decoding

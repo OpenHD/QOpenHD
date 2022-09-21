@@ -16,6 +16,14 @@ public:
     RpiMMALDisplay();
     static RpiMMALDisplay& instance();
 
+    bool prepareDecoderContext(AVCodecContext* context, AVDictionary** options);
+    //void renderFrame(AVFrame* frame);
+
+    //void setupBackground(PDECODER_PARAMETERS params);
+    //void updateDisplayRegion();
+
+
+
     void init(int video_width=1280,int video_height=720);
     void cleanup();
     void updateDisplayRegion();
@@ -24,6 +32,9 @@ private:
     MMAL_COMPONENT_T* m_Renderer=nullptr;
     MMAL_PORT_T* m_InputPort=nullptr;
     static void InputPortCallback(MMAL_PORT_T* port, MMAL_BUFFER_HEADER_T* buffer);
+    //
+    int m_VideoWidth, m_VideoHeight;
+    int m_LastWindowPosX, m_LastWindowPosY;
 };
 
 #endif // RPIMMALDISPLAY_H
