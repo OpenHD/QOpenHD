@@ -115,7 +115,7 @@ void RpiMMALDisplay::display_frame(AVFrame *frame)
 
     status = mmal_port_send_buffer(m_InputPort, buffer);
     if (status != MMAL_SUCCESS) {
-        qDebug()<<"mmal_port_send_buffer() failed: "<<mmal_status_to_string(status));
+        qDebug()<<"mmal_port_send_buffer() failed: "<<mmal_status_to_string(status);
     }
     else {
         // Prevent the buffer from being freed during av_frame_free()
