@@ -24,7 +24,7 @@ static void control_callback(MMAL_PORT_T *port, MMAL_BUFFER_HEADER_T *buffer)
    /* Done with the event, recycle it */
    mmal_buffer_header_release(buffer);
 
-   qDebug()<<"control cb. status"<< ctx->status;
+   //qDebug()<<"control cb. status"<< ctx->status;
 }
 
 RpiMMALDisplay::RpiMMALDisplay()
@@ -170,5 +170,6 @@ void RpiMMALDisplay::display_frame(AVFrame *frame)
 
 void RpiMMALDisplay::InputPortCallback(MMAL_PORT_T *port, MMAL_BUFFER_HEADER_T *buffer)
 {
+    qDebug()<<"RpiMMALDisplay::InputPortCallback";
      mmal_buffer_header_release(buffer);
 }
