@@ -9,7 +9,7 @@
 #include "../videostreaming/QOpenHDVideoHelper.hpp"
 #include "../common_consti/TimeHelper.hpp"
 
-//#include "mmal/rpimmaldisplay.h"
+#include "mmal/rpimmaldisplay.h"
 //exp
 //#include "drm_kms/drmprime_out.h"
 

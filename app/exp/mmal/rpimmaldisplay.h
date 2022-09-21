@@ -17,6 +17,7 @@ public:
     void init(int video_width=1280,int video_height=720);
     void cleanup();
     void updateDisplayRegion();
+    void display_frame(AVFrame* frame);
 private:
     MMAL_COMPONENT_T* m_Renderer=nullptr;
     MMAL_PORT_T* m_InputPort=nullptr;

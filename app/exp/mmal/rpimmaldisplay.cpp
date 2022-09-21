@@ -105,6 +105,26 @@ void RpiMMALDisplay::updateDisplayRegion()
 
 }
 
+void RpiMMALDisplay::display_frame(AVFrame *frame)
+{
+    MMAL_BUFFER_HEADER_T* buffer = (MMAL_BUFFER_HEADER_T*)frame->data[3];
+    MMAL_STATUS_T status;
+
+    // Update the destination display region in case the window moved
+    updateDisplayRegion();
+
+    status = mmal_port_send_buffer(m_InputPort, buffer);
+    if (status != MMAL_SUCCESS) {
+        qDebug()<<"mmal_port_send_buffer() failed: "<<mmal_status_to_string(status));
+    }
+    else {
+        // Prevent the buffer from being freed during av_frame_free()
+        // until rendering is complete. The reference is dropped in
+        // InputPortCallback().
+        mmal_buffer_header_acquire(buffer);
+    }
+}
+
 void RpiMMALDisplay::InputPortCallback(MMAL_PORT_T *port, MMAL_BUFFER_HEADER_T *buffer)
 {
      mmal_buffer_header_release(buffer);
