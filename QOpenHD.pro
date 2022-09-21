@@ -101,8 +101,8 @@ packagesExist(mmal) {
 
 
 # Geographic lib updated to c-2.0, so much cleaner
-SOURCES += $$PWD/lib/geographiclib-c-2.0/src/geodesic.c
-HEADERS += $$PWD/lib/geographiclib-c-2.0/src/geodesic.h
+SOURCES += $$PWD/lib/geographiclib-c-2.0/src/geodesic.c \
+HEADERS += $$PWD/lib/geographiclib-c-2.0/src/geodesic.h \
 
 
 # All files for the OSD elements - these are QT QQuickPaintedItem's that are written in c++
@@ -437,6 +437,8 @@ mmal {
     DEFINES += HAVE_MMAL
     SOURCES += app/exp/mmal/rpimmaldisplay.cpp
     HEADERS += app/exp/mmal/rpimmaldisplay.h
+
+    HEADERS += app/exp/mmal/graph_decode_render.h
 }
 
 
