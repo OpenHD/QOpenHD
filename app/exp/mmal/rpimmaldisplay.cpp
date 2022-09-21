@@ -3,6 +3,30 @@
 #include <qdebug.h>
 
 
+static void control_callback(MMAL_PORT_T *port, MMAL_BUFFER_HEADER_T *buffer)
+{
+   struct CONTEXT_T *ctx = (struct CONTEXT_T *)port->userdata;
+
+   switch (buffer->cmd)
+   {
+   case MMAL_EVENT_EOS:
+      /* Only sink component generate EOS events */
+      break;
+   case MMAL_EVENT_ERROR:
+       qDebug()<<"control_callback got error";
+      /* Something went wrong. Signal this to the application */
+      ctx->status = *(MMAL_STATUS_T *)buffer->data;
+      break;
+   default:
+      break;
+   }
+
+   /* Done with the event, recycle it */
+   mmal_buffer_header_release(buffer);
+
+   qDebug()<<"control cb. status"<< ctx->status;
+}
+
 RpiMMALDisplay::RpiMMALDisplay()
 {
 
