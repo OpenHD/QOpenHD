@@ -15,7 +15,7 @@ static void control_callback(MMAL_PORT_T *port, MMAL_BUFFER_HEADER_T *buffer)
    case MMAL_EVENT_ERROR:
        qDebug()<<"control_callback got error";
       /* Something went wrong. Signal this to the application */
-      ctx->status = *(MMAL_STATUS_T *)buffer->data;
+      //ctx->status = *(MMAL_STATUS_T *)buffer->data;
       break;
    default:
       break;
