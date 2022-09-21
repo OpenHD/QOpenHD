@@ -94,7 +94,10 @@ LIBS += -lGLESv2 -lEGL
 #INCLUDEPATH += /usr/include/libdrm
 
 CONFIG += link_pkgconfig
-PKGCONFIG += mmal
+packagesExist(mmal) {
+   PKGCONFIG += mmal
+   CONFIG += mmal
+}
 
 
 # Geographic lib updated to c-2.0, so much cleaner
@@ -122,7 +125,6 @@ SOURCES += \
     app/exp/squircle.cpp \
     app/exp/texturerenderer.cpp \
     app/exp/avcodec_decoder.cpp \
-    app/exp/mmal/rpimmaldisplay.cpp
     # xx
     #app/exp/drm_kms/drmprime_out.cpp \
 
@@ -151,7 +153,6 @@ HEADERS += \
     app/exp/squircle.h \
     app/exp/texturerenderer.h \
     app/exp/avcodec_decoder.h \
-    app/exp/mmal/rpimmaldisplay.h
     # xx
     #app/exp/drm_kms/drmprime_out.h \
 
@@ -429,8 +430,13 @@ EnableGStreamer {
     #QT += widgets
     #QT += gui-private
 }
-ENABLE_AVCODEC{
-    DEFINES += ENABLE_AVCODEC
+
+mmal {
+    message(MMAL renderer selected)
+
+    DEFINES += HAVE_MMAL
+    SOURCES += app/exp/mmal/rpimmaldisplay.cpp
+    HEADERS += app/exp/mmal/rpimmaldisplay.h
 }
 
 

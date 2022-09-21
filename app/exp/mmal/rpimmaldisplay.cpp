@@ -121,6 +121,7 @@ void RpiMMALDisplay::init(int video_width,int video_height)
                qDebug()<<"mmal_port_parameter_set error"<<mmal_status_to_string(status);
                return;
            }
+           updateDisplayRegion();
    }
    status = mmal_port_enable(m_InputPort, InputPortCallback);
       if (status != MMAL_SUCCESS) {
@@ -144,7 +145,55 @@ void RpiMMALDisplay::cleanup()
 
 void RpiMMALDisplay::updateDisplayRegion()
 {
+    /*MMAL_STATUS_T status;
+        int currentPosX, currentPosY;
+        MMAL_DISPLAYREGION_T dr;
 
+        dr.hdr.id = MMAL_PARAMETER_DISPLAYREGION;
+        dr.hdr.size = sizeof(MMAL_DISPLAYREGION_T);
+        dr.set = MMAL_DISPLAY_SET_DEST_RECT;
+
+        SDL_GetWindowPosition(m_Window, &currentPosX, &currentPosY);
+
+        if ((SDL_GetWindowFlags(m_Window) & SDL_WINDOW_INPUT_FOCUS) == 0) {
+            dr.dest_rect.x = 0;
+            dr.dest_rect.y = 0;
+            dr.dest_rect.width = 0;
+            dr.dest_rect.height = 0;
+
+            // Force a re-evaluation next time
+            m_LastWindowPosX = -1;
+            m_LastWindowPosY = -1;
+        }
+        else if (m_LastWindowPosX != currentPosX || m_LastWindowPosY != currentPosY) {
+            SDL_Rect src, dst;
+            src.x = src.y = 0;
+            src.w = m_VideoWidth;
+            src.h = m_VideoHeight;
+            dst.x = dst.y = 0;
+            SDL_GetWindowSize(m_Window, &dst.w, &dst.h);
+
+            StreamUtils::scaleSourceToDestinationSurface(&src, &dst);
+
+            dr.dest_rect.x = currentPosX + dst.x;
+            dr.dest_rect.y = currentPosY + dst.y;
+            dr.dest_rect.width = dst.w;
+            dr.dest_rect.height = dst.h;
+
+            m_LastWindowPosX = currentPosX;
+            m_LastWindowPosY = currentPosY;
+        }
+        else {
+            // Nothing to do
+            return;
+        }
+
+        status = mmal_port_parameter_set(m_InputPort, &dr.hdr);
+        if (status != MMAL_SUCCESS) {
+            SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
+                        "mmal_port_parameter_set() failed: %x (%s)",
+                        status, mmal_status_to_string(status));
+        }*/
 }
 
 void RpiMMALDisplay::display_frame(AVFrame *frame)
