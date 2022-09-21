@@ -442,9 +442,6 @@ mmal {
 
     HEADERS += \
         app/exp/mmal/rpimmaldisplay.h \
-        #app/exp/mmal/graph_decode_render.h \
-
-    #INCLUDEPATH += /opt/vc/include/interface/mmal
 }
 
 
