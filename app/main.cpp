@@ -375,9 +375,6 @@ int main(int argc, char *argv[]) {
          mainVideo->stopVideoSafe();
     }
 #endif
-#if defined(ENABLE_PIP)
-    pipVideo->stopVideoSafe();
-#endif
 #endif
     return retval;
 
