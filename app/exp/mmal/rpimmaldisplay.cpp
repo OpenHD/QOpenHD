@@ -139,6 +139,7 @@ void RpiMMALDisplay::display_frame(AVFrame *frame)
         // InputPortCallback().
         mmal_buffer_header_acquire(buffer);
     }
+    qDebug()<<"RpiMMALDisplay::display_frame";
 }
 
 void RpiMMALDisplay::InputPortCallback(MMAL_PORT_T *port, MMAL_BUFFER_HEADER_T *buffer)
