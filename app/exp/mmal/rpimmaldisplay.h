@@ -24,7 +24,7 @@ public:
 
 
 
-    void init(int video_width=1280,int video_height=720);
+    void init(int video_width=1920,int video_height=1080);
     void cleanup();
     void updateDisplayRegion();
     void display_frame(AVFrame* frame);
