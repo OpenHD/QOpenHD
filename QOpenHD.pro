@@ -436,9 +436,9 @@ mmal {
 
     DEFINES += HAVE_MMAL
     SOURCES += app/exp/mmal/rpimmaldisplay.cpp
-    HEADERS += app/exp/mmal/rpimmaldisplay.h
-
-    HEADERS += app/exp/mmal/graph_decode_render.h
+    HEADERS += \
+        app/exp/mmal/rpimmaldisplay.h \
+        app/exp/mmal/graph_decode_render.h \
 }
 
 
