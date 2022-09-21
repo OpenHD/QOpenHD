@@ -1,5 +1,8 @@
 #include "rpimmaldisplay.h"
 
+
+#include "bcm_host.h"
+
 #include <qdebug.h>
 
 
@@ -60,6 +63,7 @@ bool RpiMMALDisplay::prepareDecoderContext(AVCodecContext *context, AVDictionary
 void RpiMMALDisplay::init(int video_width,int video_height)
 {
     qDebug()<<"Test MMAL";
+    bcm_host_init();
     MMAL_STATUS_T status;
     status = mmal_component_create(MMAL_COMPONENT_DEFAULT_VIDEO_RENDERER, &m_Renderer);
    if (status != MMAL_SUCCESS) {
