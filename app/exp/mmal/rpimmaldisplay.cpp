@@ -100,7 +100,7 @@ void RpiMMALDisplay::init(int video_width,int video_height)
        return;
    }
    {
-           MMAL_DISPLAYREGION_T dr = {};
+           /*MMAL_DISPLAYREGION_T dr = {};
 
            dr.hdr.id = MMAL_PARAMETER_DISPLAYREGION;
            dr.hdr.size = sizeof(MMAL_DISPLAYREGION_T);
@@ -124,7 +124,7 @@ void RpiMMALDisplay::init(int video_width,int video_height)
            if (status != MMAL_SUCCESS) {
                qDebug()<<"mmal_port_parameter_set error"<<mmal_status_to_string(status);
                return;
-           }
+           }*/
            updateDisplayRegion();
    }
    status = mmal_port_enable(m_InputPort, InputPortCallback);
