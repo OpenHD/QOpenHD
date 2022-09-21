@@ -30,28 +30,6 @@ bool RpiMMALDisplay::prepareDecoderContext(AVCodecContext *context, AVDictionary
         return true;
 }
 
-void RpiMMALDisplay::renderFrame(AVFrame *frame)
-{
-    MMAL_BUFFER_HEADER_T* buffer = (MMAL_BUFFER_HEADER_T*)frame->data[3];
-    MMAL_STATUS_T status;
-
-    // Update the destination display region in case the window moved
-    updateDisplayRegion();
-
-    status = mmal_port_send_buffer(m_InputPort, buffer);
-    if (status != MMAL_SUCCESS) {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                     "mmal_port_send_buffer() failed: %x (%s)",
-                     status, mmal_status_to_string(status));
-    }
-    else {
-        // Prevent the buffer from being freed during av_frame_free()
-        // until rendering is complete. The reference is dropped in
-        // InputPortCallback().
-        mmal_buffer_header_acquire(buffer);
-    }
-}
-
 
 void RpiMMALDisplay::init(int video_width,int video_height)
 {
