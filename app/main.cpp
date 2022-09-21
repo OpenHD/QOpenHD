@@ -295,9 +295,6 @@ int main(int argc, char *argv[]) {
     //std::unique_ptr<GstVideoStream>  mainVideo=std::make_unique<GstVideoStream>();
     //engine.rootContext()->setContextProperty("_mainVideo", mainVideo.get());
 #endif
-#if defined(ENABLE_PIP)
-    GstVideoStream* pipVideo = new GstVideoStream();
-#endif
 #endif
 
     auto openHDRC = new OpenHDRC();
@@ -367,21 +364,7 @@ int main(int argc, char *argv[]) {
         }
     }
 #endif
-#if defined(ENABLE_PIP)
-    const auto windowSecondary=find_qt_video_window(engine,false);
-    if(windowSecondary==nullptr){
-        qDebug()<<"Error secondary window enabled but not found";
-        //throw std::runtime_error("Window not found");
-    }
-    //pipVideo->init(windowSecondary,false);
 #endif
-#endif
-    // testing
-    /*QQuickWindow *rootObject = static_cast<QQuickWindow *>(engine.rootObjects());
-    if(rootObject){
-        rootObject->
-    }*/
-
 
     LogMessagesModel::instance().addLogMessage("QOpenHD","running",0);
     const int retval = app.exec();
