@@ -8,6 +8,8 @@
 #include <interface/mmal/util/mmal_default_components.h>
 
 
+#include "avcodec_helper.hpp"
+
 class RpiMMALDisplay
 {
 public:
