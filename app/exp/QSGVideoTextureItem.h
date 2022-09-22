@@ -14,8 +14,9 @@
 
 #include "avcodec_decoder.h"
 
-// Hoock into the QT Scene graph and draw video directly without the "intermediate" rgba texture as
-// required with (for examle) qmlglsink. See the qt "Squircle" documentation
+// Hoock into the QT Scene graph and draw video directly with (custom) OpenGL.
+// This is the only way to skip the the "intermediate" rgba texture as
+// required (for examle) qmlglsink. See the qt "Squircle" documentation
 class QSGVideoTextureItem : public QQuickItem
 {
     Q_OBJECT

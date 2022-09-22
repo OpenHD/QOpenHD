@@ -171,7 +171,7 @@ void RpiMMALDisplay::updateDisplayRegion()
     //dr.set |= MMAL_DISPLAY_SET_LAYER;
     //dr.layer = -128;
     //dr.layer = 0;
-    status = mmal_port_parameter_get(m_InputPort, &dr.hdr);
+    //status = mmal_port_parameter_get(m_InputPort, &dr.hdr);
 
     status = mmal_port_parameter_set(m_InputPort, &dr.hdr);
     if (status != MMAL_SUCCESS) {
