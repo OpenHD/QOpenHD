@@ -114,6 +114,8 @@ void AVCodecDecoder::timer_check_settings_changed_callback()
 {
     const auto new_settings=QOpenHDVideoHelper::read_from_settings();
     if(m_last_video_settings!=new_settings){
+        // We just request a restart from the video (break out of the current constant_decode() loop,
+        // and restart with the new settings.
         request_restart=true;
         m_last_video_settings=new_settings;
     }
@@ -307,8 +309,8 @@ int AVCodecDecoder::open_and_decode_until_error()
     av_dict_set(&av_dictionary, "buffer_size", "212992", 0);
     av_dict_set(&av_dictionary,"max_delay","0",0);
     av_dict_set(&av_dictionary,"reuse_sockets","1",0);
-    /*av_dict_set_int(&av_dictionary, "stimeout", 1000000, 0);
-    av_dict_set_int(&av_dictionary, "rw_timeout", 1000000, 0);*/
+    //av_dict_set_int(&av_dictionary, "stimeout", 1000000, 0);
+    //av_dict_set_int(&av_dictionary, "rw_timeout", 1000000, 0);
     av_dict_set_int(&av_dictionary, "reorder_queue_size", 1, 0);
     AVFormatContext *input_ctx = nullptr;
     // open the input file
