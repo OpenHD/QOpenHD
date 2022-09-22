@@ -338,3 +338,11 @@ std::string GL_VideoRenderer::debug_info() {
   ss<<"GL_SHADING_LANGUAGE_VERSION : "<< gl_shading_language_version<<"\n";
   return ss.str();
 }
+
+
+std::vector<int> GL_VideoRenderer::supported_av_hw_formats()
+{
+    std::vector<int> ret;
+    ret.push_back(AV_PIX_FMT_DRM_PRIME);
+    return ret;
+}
