@@ -46,7 +46,8 @@ bool RpiMMALDisplay::prepareDecoderContext(AVCodecContext *context, AVDictionary
     // FFmpeg defaults this to 10 which is too large to fit in the default 64 MB VRAM split.
         // Reducing to 2 seems to work fine for our bitstreams (max of 1 buffered frame needed).
         //av_dict_set_int(options, "extra_buffers", 2, 0);
-        //XX
+        // We set the GPU memory, so we have space, mre buffers here don#t hurt and can provide a benefit
+        // for some streams
         av_dict_set_int(options, "extra_buffers", 10, 0);
 
         // MMAL seems to dislike certain initial width and height values, but it seems okay
@@ -223,5 +224,5 @@ void RpiMMALDisplay::display_frame(AVFrame *frame)
 void RpiMMALDisplay::InputPortCallback(MMAL_PORT_T *port, MMAL_BUFFER_HEADER_T *buffer)
 {
     qDebug()<<"RpiMMALDisplay::InputPortCallback";
-     mmal_buffer_header_release(buffer);
+    mmal_buffer_header_release(buffer);
 }

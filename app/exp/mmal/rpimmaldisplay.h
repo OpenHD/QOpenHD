@@ -34,7 +34,7 @@ private:
     static void InputPortCallback(MMAL_PORT_T* port, MMAL_BUFFER_HEADER_T* buffer);
     //
     int m_VideoWidth, m_VideoHeight;
-    int m_LastWindowPosX, m_LastWindowPosY;
+    int m_lastScreenWidth,m_lastScreenHeight;
 };
 
 #endif // RPIMMALDISPLAY_H

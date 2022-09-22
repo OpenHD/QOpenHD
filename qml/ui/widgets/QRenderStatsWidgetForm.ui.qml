@@ -8,6 +8,9 @@ import Qt.labs.settings 1.0
 
 import OpenHD 1.0
 
+// Action widget: Opened when the user (short) clicks on the widget
+// Detail widget: Opened when the user long clicks on the widget
+
 BaseWidget {
     id: qRenderStatsWidget
     width: 112
@@ -25,6 +28,9 @@ BaseWidget {
 
     hasWidgetDetail: true
     hasWidgetAction: true
+
+    // We display quite a lot of text, and this one is only for development anyways
+    widgetActionWidth: 500
 
     //----------------------------- DETAIL BELOW ----------------------------------
 
@@ -193,7 +199,7 @@ BaseWidget {
         clip: true
 
         ColumnLayout{
-            width:200
+            width:400
             Item {
                 width: parent.width
                 height: 32
