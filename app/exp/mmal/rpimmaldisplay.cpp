@@ -170,8 +170,8 @@ void RpiMMALDisplay::updateDisplayRegion()
     MMAL_DISPLAYREGION_T dr = {};
     dr.hdr.id = MMAL_PARAMETER_DISPLAYREGION;
     dr.hdr.size = sizeof(MMAL_DISPLAYREGION_T);
-    //dr.set |= MMAL_DISPLAY_SET_LAYER;
-    //dr.layer = -128;
+    dr.set |= MMAL_DISPLAY_SET_LAYER;
+    dr.layer = -128;
     //dr.layer = 0;
     //status = mmal_port_parameter_get(m_InputPort, &dr.hdr);
 
