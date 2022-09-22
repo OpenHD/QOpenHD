@@ -168,7 +168,8 @@ void RpiMMALDisplay::updateDisplayRegion()
     qDebug()<<"updateDisplayRegion::begin";
     MMAL_STATUS_T status;
     MMAL_DISPLAYREGION_T dr = {};
-    dr.fullscreen=1;
+    dr.hdr.id = MMAL_PARAMETER_DISPLAYREGION;
+    dr.hdr.size = sizeof(MMAL_DISPLAYREGION_T);
     //dr.set |= MMAL_DISPLAY_SET_LAYER;
     //dr.layer = -128;
     //dr.layer = 0;
