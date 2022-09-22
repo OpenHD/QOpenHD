@@ -260,20 +260,6 @@ int main(int argc, char *argv[]) {
     //
     qmlRegisterType<QSGVideoTextureItem>("OpenHD", 1, 0, "QSGVideoTextureItem");
 
-#if defined(ENABLE_VIDEO_RENDER)
-#if defined(__android__)
-    qmlRegisterType<OpenHDAndroidVideo>("OpenHD", 1, 0, "OpenHDAndroidVideo");
-    qmlRegisterType<OpenHDRender>("OpenHD", 1, 0, "OpenHDRender");
-#endif
-#if defined(__rasp_pi__)
-    qmlRegisterType<OpenHDMMALVideo>("OpenHD", 1, 0, "OpenHDMMALVideo");
-    qmlRegisterType<OpenHDRender>("OpenHD", 1, 0, "OpenHDRender");
-#endif
-#if defined(__apple__)
-    qmlRegisterType<OpenHDAppleVideo>("OpenHD", 1, 0, "OpenHDAppleVideo");
-    qmlRegisterType<OpenHDRender>("OpenHD", 1, 0, "OpenHDRender");
-#endif
-#endif
 
     QQmlApplicationEngine engine;
     engine.rootContext()->setContextProperty("_qopenhd", &QOpenHD::instance());
@@ -298,7 +284,6 @@ int main(int argc, char *argv[]) {
 #endif
 
     auto openHDRC = new OpenHDRC();
-    //QObject::connect(openHDSettings, &OpenHDSettings::groundStationIPUpdated, openHDRC, &OpenHDRC::setGroundIP, Qt::QueuedConnection);
     engine.rootContext()->setContextProperty("openHDRC", openHDRC);
 
     engine.rootContext()->setContextProperty("_mavlinkTelemetry", &MavlinkTelemetry::instance());
