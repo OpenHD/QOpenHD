@@ -8,8 +8,7 @@ import Qt.labs.settings 1.0
 
 import OpenHD 1.0
 
-// Action widget: Opened when the user (short) clicks on the widget
-// Detail widget: Opened when the user long clicks on the widget
+// For development, shows some decoding and QT rendering statistics (when applicable)
 
 BaseWidget {
     id: qRenderStatsWidget

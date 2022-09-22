@@ -8,6 +8,8 @@ import Qt.labs.settings 1.0
 // e.g. it exposes the dragging around, clicking once and clicking long action(s)
 // for clicking once, set hasWidgetDetail to true and provide the widgetDetailComponent
 // same for long press
+// Action widget: Opened when the user (short) clicks on the widget
+// Detail widget: Opened when the user long clicks on the widget
 BaseWidgetForm {
     id: widgetBase
     Drag.active: dragging
