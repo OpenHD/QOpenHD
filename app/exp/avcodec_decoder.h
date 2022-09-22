@@ -9,6 +9,8 @@
 #include "../videostreaming/QOpenHDVideoHelper.hpp"
 #include "../common_consti/TimeHelper.hpp"
 
+#include <mutex>
+
 #ifdef HAVE_MMAL
 #include "mmal/rpimmaldisplay.h"
 //#include "mmal/graph_decode_render.h"
@@ -58,6 +60,11 @@ private:
     int last_frame_height=-1;
 private:
     //std::unique_ptr<DRMPrimeOut> drm_prime_out=nullptr;
+private:
+    std::unique_ptr<std::thread> m_pull_frames_from_ffmpeg_thread=nullptr;
+    std::mutex m_ffmpeg_dequeue_or_queue_mutex;
+    bool test_dequeue_fames=false;
+    void dequeue_frames_test();
 };
 
 #endif // AVCODEC_DECODER_H

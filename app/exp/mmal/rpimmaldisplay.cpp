@@ -126,6 +126,22 @@ void RpiMMALDisplay::init(int video_width,int video_height)
                qDebug()<<"mmal_port_parameter_set error"<<mmal_status_to_string(status);
                return;
            }*/
+           // EXP set layer begin
+
+            MMAL_DISPLAYREGION_T dr = {};
+            dr.set | = MMAL_DISPLAY_SET_LAYER;
+            dr.layer = -128;
+
+            status = mmal_port_parameter_set(m_InputPort, &dr.hdr);
+            if (status != MMAL_SUCCESS) {
+                qDebug()<<"X mmal_port_parameter_set error"<<mmal_status_to_string(status);
+                return;
+            }else{
+                qDebug()<<"X mmal set layer";
+            }
+
+
+
            updateDisplayRegion();
    }
    status = mmal_port_enable(m_InputPort, InputPortCallback);
@@ -202,6 +218,7 @@ void RpiMMALDisplay::updateDisplayRegion()
 
 void RpiMMALDisplay::display_frame(AVFrame *frame)
 {
+    assert(frame->format==AV_PIX_FMT_MMAL);
     MMAL_BUFFER_HEADER_T* buffer = (MMAL_BUFFER_HEADER_T*)frame->data[3];
     MMAL_STATUS_T status;
 

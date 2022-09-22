@@ -13,6 +13,8 @@ extern "C" {
 
 // Holds multiple GL programs that render different types of (Video) textures
 // All textures fill up the full gl viewport, adjust it accordingly to preserve video ratio.
+// Note that the dependency on ffmpeg / av_codec* is avoidable here and therefore please keep it this way
+// (Ony depend on OpenGL (ES) )
 class GL_shaders {
  private:
   // Single RGB(A) texture

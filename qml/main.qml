@@ -73,9 +73,8 @@ ApplicationWindow {
                 return "../video/MainVideoGStreamer.qml";
                 //return "";
             }
-            if(EnableAVCodec){
-
-            }
+            //if(EnableAVCodec){
+            //}
 
             return ""
         }

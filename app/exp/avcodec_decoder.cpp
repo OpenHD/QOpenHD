@@ -119,6 +119,24 @@ void AVCodecDecoder::timer_check_settings_changed_callback()
     }
 }
 
+void AVCodecDecoder::dequeue_frames_test()
+{
+    while(test_dequeue_fames){
+        //qDebug()<<"XXX";
+        AVFrame* frame= av_frame_alloc();
+        assert(frame);
+        m_ffmpeg_dequeue_or_queue_mutex.lock();
+        const int ret = avcodec_receive_frame(decoder_ctx, frame);
+        m_ffmpeg_dequeue_or_queue_mutex.unlock();
+        if(ret==0){
+            qDebug()<<"XXX got frame";
+            on_new_frame(frame);
+        }
+        av_frame_free(&frame);
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    }
+}
+
 void AVCodecDecoder::constant_decode()
 {
 #ifdef HAVE_MMAL
@@ -135,6 +153,8 @@ void AVCodecDecoder::constant_decode()
     }
 }
 
+
+
 int AVCodecDecoder::decode_and_wait_for_frame(AVPacket *packet)
 {
     AVFrame *frame = nullptr;
@@ -142,23 +162,29 @@ int AVCodecDecoder::decode_and_wait_for_frame(AVPacket *packet)
     const auto beforeFeedFrame=std::chrono::steady_clock::now();
     const auto beforeFeedFrameUs=getTimeUs();
     packet->pts=beforeFeedFrameUs;
-    int ret = avcodec_send_packet(decoder_ctx, packet);
-    if (ret < 0) {
+    m_ffmpeg_dequeue_or_queue_mutex.lock();
+    const int ret_avcodec_send_packet = avcodec_send_packet(decoder_ctx, packet);
+    m_ffmpeg_dequeue_or_queue_mutex.unlock();
+    if (ret_avcodec_send_packet < 0) {
         fprintf(stderr, "Error during decoding\n");
-        return ret;
+        return ret_avcodec_send_packet;
     }
     // alloc output frame(s)
     if (!(frame = av_frame_alloc())) {
-        fprintf(stderr, "Can not alloc frame\n");
-        ret = AVERROR(ENOMEM);
+        // NOTE: It is a common practice to not care about OOM, and this is the best approach in my opinion.
+        // but ffmpeg uses malloc and returns error codes, so we keep this practice here.
+        qDebug()<<"can not alloc frame";
         av_frame_free(&frame);
-        return ret;
+        return AVERROR(ENOMEM);
     }
+    int ret=0;
     // Poll until we get the frame out
     const auto loopUntilFrameBegin=std::chrono::steady_clock::now();
     bool gotFrame=false;
     while (!gotFrame){
+        m_ffmpeg_dequeue_or_queue_mutex.lock();
         ret = avcodec_receive_frame(decoder_ctx, frame);
+        m_ffmpeg_dequeue_or_queue_mutex.unlock();
         if(ret == AVERROR_EOF){
             qDebug()<<"Got EOF";
             break;
@@ -447,6 +473,8 @@ int AVCodecDecoder::lulatsch()
     last_frame_width=-1;
     last_frame_height=-1;
     avg_decode_time.reset();
+    test_dequeue_fames=true;
+    m_pull_frames_from_ffmpeg_thread=std::make_unique<std::thread>([this]{this->dequeue_frames_test();});
     while (ret >= 0) {
         if(has_been_canceled){
             break;
@@ -489,6 +517,9 @@ int AVCodecDecoder::lulatsch()
         }
         av_packet_unref(&packet);
     }
+    test_dequeue_fames=false;
+    m_pull_frames_from_ffmpeg_thread->join();
+    m_pull_frames_from_ffmpeg_thread=nullptr;
     // flush the decoder - not needed
     packet.data = NULL;
     packet.size = 0;
