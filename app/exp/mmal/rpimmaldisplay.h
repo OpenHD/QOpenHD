@@ -28,6 +28,8 @@ public:
     void cleanup();
     void updateDisplayRegion();
     void display_frame(AVFrame* frame);
+
+    void display_mmal_frame(MMAL_BUFFER_HEADER_T* buffer);
 private:
     MMAL_COMPONENT_T* m_Renderer=nullptr;
     MMAL_PORT_T* m_InputPort=nullptr;

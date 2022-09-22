@@ -220,6 +220,11 @@ void RpiMMALDisplay::display_frame(AVFrame *frame)
 {
     assert(frame->format==AV_PIX_FMT_MMAL);
     MMAL_BUFFER_HEADER_T* buffer = (MMAL_BUFFER_HEADER_T*)frame->data[3];
+    display_mmal_frame(buffer);
+}
+
+void RpiMMALDisplay::display_mmal_frame(MMAL_BUFFER_HEADER_T *buffer)
+{
     MMAL_STATUS_T status;
 
     // Update the destination display region in case the window moved
@@ -235,7 +240,7 @@ void RpiMMALDisplay::display_frame(AVFrame *frame)
         // InputPortCallback().
         mmal_buffer_header_acquire(buffer);
     }
-    qDebug()<<"RpiMMALDisplay::display_frame";
+    qDebug()<<"RpiMMALDisplay::display_mmal_frame";
 }
 
 void RpiMMALDisplay::InputPortCallback(MMAL_PORT_T *port, MMAL_BUFFER_HEADER_T *buffer)
