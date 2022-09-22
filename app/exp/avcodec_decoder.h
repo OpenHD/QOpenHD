@@ -10,6 +10,7 @@
 #include "../common_consti/TimeHelper.hpp"
 
 #include <mutex>
+#include <deque>
 
 #ifdef HAVE_MMAL
 #include "mmal/rpimmaldisplay.h"
@@ -68,6 +69,14 @@ private:
     //std::mutex m_ffmpeg_dequeue_or_queue_mutex;
     bool test_dequeue_fames=false;
     void dequeue_frames_test();
+    // This should catch the cases where timestamps are modified by the decoder
+    // and therefore the measured value is garbage
+private:
+    // timestamp used during feed frame
+    void add_fed_timestamp(int64_t ts);
+    bool check_is_a_valid_timestamp(int64_t ts);
+    static constexpr auto MAX_FED_TIMESTAMPS_QUEUE_SIZE=100;
+    std::deque<int64_t> m_fed_timestamps_queue;
 };
 
 #endif // AVCODEC_DECODER_H

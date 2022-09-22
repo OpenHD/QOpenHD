@@ -154,6 +154,15 @@ int TextureRenderer::queue_new_frame_for_display(AVFrame *src_frame)
     return 0;
 }
 
+void TextureRenderer::remove_queued_frame_if_avalable()
+{
+    std::lock_guard<std::mutex> lock(latest_frame_mutex);
+    if(m_latest_frame!= nullptr) {
+      av_frame_free(&m_latest_frame);
+      m_latest_frame = nullptr;
+    }
+}
+
 
 AVFrame *TextureRenderer::fetch_latest_decoded_frame()
 {

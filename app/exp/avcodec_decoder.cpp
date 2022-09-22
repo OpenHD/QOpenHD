@@ -164,6 +164,8 @@ int AVCodecDecoder::decode_and_wait_for_frame(AVPacket *packet)
     const auto beforeFeedFrame=std::chrono::steady_clock::now();
     const auto beforeFeedFrameUs=getTimeUs();
     packet->pts=beforeFeedFrameUs;
+    add_fed_timestamp(packet->pts);
+
     //m_ffmpeg_dequeue_or_queue_mutex.lock();
     const int ret_avcodec_send_packet = avcodec_send_packet(decoder_ctx, packet);
     //m_ffmpeg_dequeue_or_queue_mutex.unlock();
@@ -191,6 +193,16 @@ int AVCodecDecoder::decode_and_wait_for_frame(AVPacket *packet)
             qDebug()<<"Got EOF";
             break;
         }else if(ret==0){
+
+            {
+                const auto tmp=frame->pts;
+                const bool valid=check_is_a_valid_timestamp(tmp);
+                if(valid){
+                    qDebug()<<"Is a valid timestamp";
+                }else{
+                    qDebug()<<"Is not a valid timestamp";
+                }
+            }
             // we got a new frame
             if(!use_frame_timestamps_for_latency){
                 const auto x_delay=std::chrono::steady_clock::now()-beforeFeedFrame;
@@ -540,4 +552,20 @@ int AVCodecDecoder::open_and_decode_until_error()
     avformat_close_input(&input_ctx);
     qDebug()<<"avformat_close_input_done";
     return 0;
+}
+
+void AVCodecDecoder::add_fed_timestamp(int64_t ts)
+{
+    m_fed_timestamps_queue.push_back(ts);
+    if(m_fed_timestamps_queue.size()>=MAX_FED_TIMESTAMPS_QUEUE_SIZE){
+        m_fed_timestamps_queue.pop_front();
+    }
+}
+
+bool AVCodecDecoder::check_is_a_valid_timestamp(int64_t ts)
+{
+    for(const auto& el:m_fed_timestamps_queue){
+        if(el==ts)return true;
+    }
+    return false;
 }

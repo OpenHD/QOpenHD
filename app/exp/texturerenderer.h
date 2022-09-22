@@ -27,8 +27,11 @@ public:
     // draw function
     // @param window: just needed to call the begin/end-externalCommands on it
     void paint(QQuickWindow *window);
-    //
+    // adds a new frame to be picked up by the GL thread
     int queue_new_frame_for_display(AVFrame * src_frame);
+    // remoe the currently queued frame if there is one (be carefull to not forget that the
+    // GL thread can pick up a queued frame at any time).
+    void remove_queued_frame_if_avalable();
 private:
     QSize m_viewportSize;
     int m_index=0;
