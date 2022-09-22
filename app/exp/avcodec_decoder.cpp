@@ -185,6 +185,7 @@ int AVCodecDecoder::decode_and_wait_for_frame(AVPacket *packet)
     // Poll until we get the frame out
     const auto loopUntilFrameBegin=std::chrono::steady_clock::now();
     bool gotFrame=false;
+    int n_times_we_tried_getting_a_frame_this_time=0;
     while (!gotFrame){
         //m_ffmpeg_dequeue_or_queue_mutex.lock();
         ret = avcodec_receive_frame(decoder_ctx, frame);
@@ -231,7 +232,9 @@ int AVCodecDecoder::decode_and_wait_for_frame(AVPacket *packet)
                 // note decode latency is now wrong
                 qDebug()<<"Skipping encode decode lockstep due to no frame for more than X seconds\n";
                 DecodingStatistcs::instance().set_doing_wait_for_frame_decode("No");
-                break;
+                if(n_times_we_tried_getting_a_frame_this_time>4){
+                    break;
+                }
             }
             //std::cout<<"avcodec_receive_frame returned:"<<ret<<"\n";
             // for some video files, the decoder does not output a frame every time a h264 frame has been fed
@@ -246,6 +249,7 @@ int AVCodecDecoder::decode_and_wait_for_frame(AVPacket *packet)
             // sleep a bit to not hog the CPU too much
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
+        n_times_we_tried_getting_a_frame_this_time++;
     }
     av_frame_free(&frame);
     return 0;
