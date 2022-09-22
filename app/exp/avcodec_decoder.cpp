@@ -242,10 +242,14 @@ void AVCodecDecoder::on_new_frame(AVFrame *frame)
 {
 
     qDebug()<<"Got frame format:"<<QString(safe_av_get_pix_fmt_name((AVPixelFormat)frame->format).c_str())<<" "<<frame->width<<"x"<<frame->height;
+    if(frame->format==AV_PIX_FMT_MMAL){
 #ifdef HAVE_MMAL
-    RpiMMALDisplay::instance().display_frame(frame);
-    return;
+        RpiMMALDisplay::instance().display_frame(frame);
+        return;
+#else
+            qDebug()<<"WARNING do not configure the decoder with mmal without the mmal renderer";
 #endif
+    }
     TextureRenderer::instance().queue_new_frame_for_display(frame);
     if(last_frame_width==-1 || last_frame_height==-1){
         last_frame_width=frame->width;

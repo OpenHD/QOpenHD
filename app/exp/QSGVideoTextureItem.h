@@ -14,6 +14,7 @@
 
 #include "avcodec_decoder.h"
 
+// QSG stands for QT Screne Graph (an abbreviation they recommend)
 // Hoock into the QT Scene graph and draw video directly with (custom) OpenGL.
 // This is the only way to skip the the "intermediate" rgba texture as
 // required (for examle) qmlglsink. See the qt "Squircle" documentation
