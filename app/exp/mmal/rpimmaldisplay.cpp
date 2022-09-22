@@ -100,55 +100,12 @@ void RpiMMALDisplay::init(int video_width,int video_height)
        qDebug()<<"MMAL mmal_component_enable error"<<mmal_status_to_string(status);
        return;
    }
-   {
-           /*MMAL_DISPLAYREGION_T dr = {};
-
-           dr.hdr.id = MMAL_PARAMETER_DISPLAYREGION;
-           dr.hdr.size = sizeof(MMAL_DISPLAYREGION_T);
-
-           dr.set |= MMAL_DISPLAY_SET_FULLSCREEN;
-           dr.fullscreen = MMAL_FALSE;
-
-           dr.set |= MMAL_DISPLAY_SET_MODE;
-           dr.mode = MMAL_DISPLAY_MODE_LETTERBOX;
-
-           dr.set |= MMAL_DISPLAY_SET_NOASPECT;
-           dr.noaspect = MMAL_TRUE;
-
-           dr.set |= MMAL_DISPLAY_SET_SRC_RECT;
-           dr.src_rect.x = 0;
-           dr.src_rect.y = 0;
-           dr.src_rect.width = video_width;
-           dr.src_rect.height = video_height;
-
-           status = mmal_port_parameter_set(m_InputPort, &dr.hdr);
-           if (status != MMAL_SUCCESS) {
-               qDebug()<<"mmal_port_parameter_set error"<<mmal_status_to_string(status);
-               return;
-           }*/
-           // EXP set layer begin
-
-            /*MMAL_DISPLAYREGION_T dr = {};
-            //dr.set |= MMAL_DISPLAY_SET_LAYER;
-            //dr.layer = -128;
-            //dr.layer = 0;
-            status = mmal_port_parameter_get(m_InputPort, &dr.hdr);
-
-            status = mmal_port_parameter_set(m_InputPort, &dr.hdr);
-            if (status != MMAL_SUCCESS) {
-                qDebug()<<"X mmal_port_parameter_set error"<<mmal_status_to_string(status);
-                return;
-            }else{
-                qDebug()<<"X mmal set layer";
-            }*/
-   }
    status = mmal_port_enable(m_InputPort, InputPortCallback);
-      if (status != MMAL_SUCCESS) {
-           qDebug()<<"mmal_port_enable"<<mmal_status_to_string(status);
-          return;
-      }
-      updateDisplayRegion();
-
+   if (status != MMAL_SUCCESS) {
+        qDebug()<<"mmal_port_enable"<<mmal_status_to_string(status);
+       return;
+   }
+   updateDisplayRegion();
    qDebug()<<"MMAL ready X?!";
 }
 
@@ -175,9 +132,15 @@ void RpiMMALDisplay::updateDisplayRegion()
     dr.layer = -128;
     //dr.layer = 0;
     //status = mmal_port_parameter_get(m_InputPort, &dr.hdr);
-
+    // Not sure if that makes a difference, but tell the composer that his layer is
+    // fully opaque such that it doesn't need to compose anything below it.
     dr.set |= MMAL_DISPLAY_SET_ALPHA;
     dr.alpha= 255;
+
+    // In case the video doesn't exactly fill the screen (ratio mismatch)
+    // Add black bars to the side or to the top
+    dr.set |=  MMAL_DISPLAY_SET_MODE;
+    dr.mode =  MMAL_DISPLAY_MODE_LETTERBOX
 
     const int screen_width=2560;
     const int screen_height=1440;
@@ -193,59 +156,11 @@ void RpiMMALDisplay::updateDisplayRegion()
         qDebug()<<"X mmal set layer";
     }
     qDebug()<<"updateDisplayRegion::end";
-    /*MMAL_STATUS_T status;
-        int currentPosX, currentPosY;
-        MMAL_DISPLAYREGION_T dr;
-
-        dr.hdr.id = MMAL_PARAMETER_DISPLAYREGION;
-        dr.hdr.size = sizeof(MMAL_DISPLAYREGION_T);
-        dr.set = MMAL_DISPLAY_SET_DEST_RECT;
-
-        SDL_GetWindowPosition(m_Window, &currentPosX, &currentPosY);
-
-        if ((SDL_GetWindowFlags(m_Window) & SDL_WINDOW_INPUT_FOCUS) == 0) {
-            dr.dest_rect.x = 0;
-            dr.dest_rect.y = 0;
-            dr.dest_rect.width = 0;
-            dr.dest_rect.height = 0;
-
-            // Force a re-evaluation next time
-            m_LastWindowPosX = -1;
-            m_LastWindowPosY = -1;
-        }
-        else if (m_LastWindowPosX != currentPosX || m_LastWindowPosY != currentPosY) {
-            SDL_Rect src, dst;
-            src.x = src.y = 0;
-            src.w = m_VideoWidth;
-            src.h = m_VideoHeight;
-            dst.x = dst.y = 0;
-            SDL_GetWindowSize(m_Window, &dst.w, &dst.h);
-
-            StreamUtils::scaleSourceToDestinationSurface(&src, &dst);
-
-            dr.dest_rect.x = currentPosX + dst.x;
-            dr.dest_rect.y = currentPosY + dst.y;
-            dr.dest_rect.width = dst.w;
-            dr.dest_rect.height = dst.h;
-
-            m_LastWindowPosX = currentPosX;
-            m_LastWindowPosY = currentPosY;
-        }
-        else {
-            // Nothing to do
-            return;
-        }
-
-        status = mmal_port_parameter_set(m_InputPort, &dr.hdr);
-        if (status != MMAL_SUCCESS) {
-            SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
-                        "mmal_port_parameter_set() failed: %x (%s)",
-                        status, mmal_status_to_string(status));
-        }*/
 }
 
 void RpiMMALDisplay::display_frame(AVFrame *frame)
 {
+    assert(frame);
     assert(frame->format==AV_PIX_FMT_MMAL);
     MMAL_BUFFER_HEADER_T* buffer = (MMAL_BUFFER_HEADER_T*)frame->data[3];
     display_mmal_frame(buffer);

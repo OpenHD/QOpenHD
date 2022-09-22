@@ -274,8 +274,8 @@ int AVCodecDecoder::open_and_decode_until_error()
         }else{
             if(settings.video_codec==QOpenHDVideoHelper::VideoCodecH264){
                //in_filename="/home/consti10/Desktop/hello_drmprime/in/rpi_1080.h264";
-               //in_filename="/home/consti10/Desktop/hello_drmprime/in/rv_1280x720_green_white.h264";
-                in_filename="/home/consti10/Desktop/hello_drmprime/in/Big_Buck_Bunny_1080_10s_1MB_h264.mp4";
+                in_filename="/home/consti10/Desktop/hello_drmprime/in/rv_1280x720_green_white.h264";
+                //in_filename="/home/consti10/Desktop/hello_drmprime/in/Big_Buck_Bunny_1080_10s_1MB_h264.mp4";
             }else if(settings.video_codec==QOpenHDVideoHelper::VideoCodecH265){
                 //in_filename="/home/consti10/Desktop/hello_drmprime/in/jetson_test.h265";
                 //in_filename="/home/consti10/Desktop/hello_drmprime/in/Big_Buck_Bunny_1080_10s_1MB_h265.mp4";
