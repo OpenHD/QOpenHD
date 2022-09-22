@@ -130,7 +130,8 @@ void RpiMMALDisplay::init(int video_width,int video_height)
 
             MMAL_DISPLAYREGION_T dr = {};
             dr.set |= MMAL_DISPLAY_SET_LAYER;
-            dr.layer = -128;
+            //dr.layer = -128;
+            dr.layer = 0;
 
             status = mmal_port_parameter_set(m_InputPort, &dr.hdr);
             if (status != MMAL_SUCCESS) {
