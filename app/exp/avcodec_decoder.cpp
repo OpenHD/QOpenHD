@@ -230,6 +230,7 @@ int AVCodecDecoder::decode_and_wait_for_frame(AVPacket *packet)
             if(n_no_output_frame_after_x_seconds>=2){
                 // note decode latency is now wrong
                 qDebug()<<"Skipping encode decode lockstep due to no frame for more than X seconds\n";
+                DecodingStatistcs::instance().set_doing_wait_for_frame_decode("No");
                 break;
             }
             //std::cout<<"avcodec_receive_frame returned:"<<ret<<"\n";
@@ -497,6 +498,7 @@ int AVCodecDecoder::open_and_decode_until_error()
     avg_decode_time.reset();
     test_dequeue_fames=true;
     //m_pull_frames_from_ffmpeg_thread=std::make_unique<std::thread>([this]{this->dequeue_frames_test();});
+    DecodingStatistcs::instance().set_doing_wait_for_frame_decode("Yes");
     while (ret >= 0) {
         if(has_been_canceled){
             break;
