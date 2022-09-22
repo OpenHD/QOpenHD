@@ -175,6 +175,9 @@ void RpiMMALDisplay::updateDisplayRegion()
     //dr.layer = 0;
     //status = mmal_port_parameter_get(m_InputPort, &dr.hdr);
 
+    dr.set |= MMAL_DISPLAY_SET_ALPHA;
+    dr.alpha= 255;
+
     const int screen_width=2560;
     const int screen_height=1440;
     const int video_width=1920;
