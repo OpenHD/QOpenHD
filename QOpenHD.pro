@@ -69,11 +69,6 @@ QT += qml
 QT += quick
 QT += concurrent opengl gui
 
-# I had to remove them, they seem to be obsolete
-#QT_FOR_CONFIG += location-private
-#qtConfig(geoservices_mapboxgl): QT += sql opengl
-#qtConfig(geoservices_osm): QT += concurrent
-
 INCLUDEPATH += $$PWD/lib
 INCLUDEPATH += $$PWD/app
 INCLUDEPATH += $$PWD/app/exp
