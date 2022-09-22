@@ -140,7 +140,7 @@ void RpiMMALDisplay::updateDisplayRegion()
     // In case the video doesn't exactly fill the screen (ratio mismatch)
     // Add black bars to the side or to the top
     dr.set |=  MMAL_DISPLAY_SET_MODE;
-    dr.mode =  MMAL_DISPLAY_MODE_LETTERBOX
+    dr.mode =  MMAL_DISPLAY_MODE_LETTERBOX;
 
     const int screen_width=2560;
     const int screen_height=1440;
