@@ -17,12 +17,12 @@
 
 // Hoock into the QT Scene graph and draw video directly without the "intermediate" rgba texture as
 // required with qmlglsink. See the qt "Squircle" documentation
-class Squircle : public QQuickItem
+class QSGVideoTextureItem : public QQuickItem
 {
     Q_OBJECT
     QML_ELEMENT
 public:
-    Squircle();
+    QSGVideoTextureItem();
 
 public slots:
     void sync();

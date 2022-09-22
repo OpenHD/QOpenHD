@@ -110,6 +110,7 @@ HEADERS += $$PWD/lib/geographiclib-c-2.0/src/geodesic.h \
 
 # All files for the OSD elements - these are QT QQuickPaintedItem's that are written in c++
 SOURCES += \
+    app/exp/QSGVideoTextureItem.cpp \
     app/exp/gl/gl_shaders.cpp \
     app/exp/gl/gl_videorenderer.cpp \
     app/logging/logmessagesmodel.cpp \
@@ -125,13 +126,13 @@ SOURCES += \
     app/util/WorkaroundMessageBox.cpp \
     app/util/qrenderstats.cpp \
     app/videostreaming/decodingstatistcs.cpp \
-    app/exp/squircle.cpp \
     app/exp/texturerenderer.cpp \
     app/exp/avcodec_decoder.cpp \
     # xx
     #app/exp/drm_kms/drmprime_out.cpp \
 
 HEADERS += \
+    app/exp/QSGVideoTextureItem.h \
     app/exp/gl/gl_shaders.h \
     app/exp/gl/gl_videorenderer.h \
     app/logging/logmessagesmodel.h \
@@ -153,7 +154,6 @@ HEADERS += \
     app/util/WorkaroundMessageBox.h \
     app/util/qrenderstats.h \
     app/videostreaming/decodingstatistcs.h \
-    app/exp/squircle.h \
     app/exp/texturerenderer.h \
     app/exp/avcodec_decoder.h \
     # xx
