@@ -194,16 +194,7 @@ int AVCodecDecoder::decode_and_wait_for_frame(AVPacket *packet)
             qDebug()<<"Got EOF";
             break;
         }else if(ret==0){
-
-            {
-                const auto tmp=frame->pts;
-                const bool valid=check_is_a_valid_timestamp(tmp);
-                if(valid){
-                    qDebug()<<"Is a valid timestamp";
-                }else{
-                    qDebug()<<"Is not a valid timestamp";
-                }
-            }
+            debug_is_valid_timestamp(frame->pts);
             // we got a new frame
             if(!use_frame_timestamps_for_latency){
                 const auto x_delay=std::chrono::steady_clock::now()-beforeFeedFrame;
@@ -227,7 +218,7 @@ int AVCodecDecoder::decode_and_wait_for_frame(AVPacket *packet)
                 avg_decode_time.set_last_log();
                 avg_decode_time.reset();
             }
-        }else{
+        }else if(ret==AVERROR(EAGAIN)){
             if(n_no_output_frame_after_x_seconds>=2){
                 // note decode latency is now wrong
                 qDebug()<<"Skipping encode decode lockstep due to no frame for more than X seconds\n";
@@ -248,6 +239,8 @@ int AVCodecDecoder::decode_and_wait_for_frame(AVPacket *packet)
             }
             // sleep a bit to not hog the CPU too much
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        }else{
+            qDebug()<<"Got unlikely / weird error:"<<ret;
         }
         n_times_we_tried_getting_a_frame_this_time++;
     }
@@ -574,4 +567,14 @@ bool AVCodecDecoder::check_is_a_valid_timestamp(int64_t ts)
         if(el==ts)return true;
     }
     return false;
+}
+
+void AVCodecDecoder::debug_is_valid_timestamp(int64_t ts)
+{
+    const bool valid=check_is_a_valid_timestamp(ts);
+    if(valid){
+        qDebug()<<"Is a valid timestamp";
+    }else{
+        qDebug()<<"Is not a valid timestamp";
+    }
 }

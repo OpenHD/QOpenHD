@@ -75,6 +75,7 @@ private:
     // timestamp used during feed frame
     void add_fed_timestamp(int64_t ts);
     bool check_is_a_valid_timestamp(int64_t ts);
+    void debug_is_valid_timestamp(int64_t ts);
     // Must be big enough to catch frame buffering+1, small enough to fit in memory
     // and be searchable with a for loop. !00 sounds like a good fit.
     static constexpr auto MAX_FED_TIMESTAMPS_QUEUE_SIZE=100;
