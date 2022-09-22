@@ -523,6 +523,7 @@ int AVCodecDecoder::open_and_decode_until_error()
         }
         av_packet_unref(&packet);
     }
+    qDebug()<<"Broke out of the queue_data_dequeue_frame loop";
     test_dequeue_fames=false;
     m_pull_frames_from_ffmpeg_thread->join();
     m_pull_frames_from_ffmpeg_thread=nullptr;
