@@ -32,8 +32,8 @@ ApplicationWindow {
     property bool initialised: false
 
 
-    Squircle {
-        id: my_squircle
+    QSGVideoTextureItem {
+        id: my_QSGVideoTextureItem
     }
 
     ColorPicker {

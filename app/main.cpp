@@ -258,7 +258,7 @@ int main(int argc, char *argv[]) {
     qmlRegisterType<FlightPathVector>("OpenHD", 1, 0, "FlightPathVector");
     qmlRegisterType<DrawingCanvas>("OpenHD", 1, 0, "DrawingCanvas");
     //
-    qmlRegisterType<QSGVideoTextureItem>("OpenHD", 1, 0, "Squircle");
+    qmlRegisterType<QSGVideoTextureItem>("OpenHD", 1, 0, "QSGVideoTextureItem");
 
 #if defined(ENABLE_VIDEO_RENDER)
 #if defined(__android__)

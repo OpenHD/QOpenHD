@@ -31,7 +31,7 @@ QSGVideoTextureItem::QSGVideoTextureItem():
 
 void QSGVideoTextureItem::handleWindowChanged(QQuickWindow *win)
 {
-    qDebug()<<"Squircle::handleWindowChanged";
+    qDebug()<<"QSGVideoTextureItem::handleWindowChanged";
     if (win) {
         connect(win, &QQuickWindow::beforeSynchronizing, this, &QSGVideoTextureItem::sync, Qt::DirectConnection);
         connect(win, &QQuickWindow::sceneGraphInvalidated, this, &QSGVideoTextureItem::cleanup, Qt::DirectConnection);
@@ -44,14 +44,14 @@ void QSGVideoTextureItem::handleWindowChanged(QQuickWindow *win)
 
 void QSGVideoTextureItem::cleanup()
 {
-     qDebug()<<"Squircle::cleanup";
+     qDebug()<<"QSGVideoTextureItem::cleanup";
     delete m_renderer;
     m_renderer = nullptr;
 }
 
 void QSGVideoTextureItem::releaseResources()
 {
-     qDebug()<<"Squircle::Squircle::releaseResources";
+     qDebug()<<"QSGVideoTextureItem::releaseResources";
     window()->scheduleRenderJob(new CleanupJob(m_renderer), QQuickWindow::BeforeSynchronizingStage);
     m_renderer = nullptr;
 }
