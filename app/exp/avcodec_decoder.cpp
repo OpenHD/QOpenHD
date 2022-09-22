@@ -127,9 +127,9 @@ void AVCodecDecoder::dequeue_frames_test()
         //qDebug()<<"XXX";
         AVFrame* frame= av_frame_alloc();
         assert(frame);
-        m_ffmpeg_dequeue_or_queue_mutex.lock();
+        //m_ffmpeg_dequeue_or_queue_mutex.lock();
         const int ret = avcodec_receive_frame(decoder_ctx, frame);
-        m_ffmpeg_dequeue_or_queue_mutex.unlock();
+        //m_ffmpeg_dequeue_or_queue_mutex.unlock();
         if(ret==0){
             qDebug()<<"XXX got frame";
             on_new_frame(frame);
@@ -164,9 +164,9 @@ int AVCodecDecoder::decode_and_wait_for_frame(AVPacket *packet)
     const auto beforeFeedFrame=std::chrono::steady_clock::now();
     const auto beforeFeedFrameUs=getTimeUs();
     packet->pts=beforeFeedFrameUs;
-    m_ffmpeg_dequeue_or_queue_mutex.lock();
+    //m_ffmpeg_dequeue_or_queue_mutex.lock();
     const int ret_avcodec_send_packet = avcodec_send_packet(decoder_ctx, packet);
-    m_ffmpeg_dequeue_or_queue_mutex.unlock();
+    //m_ffmpeg_dequeue_or_queue_mutex.unlock();
     if (ret_avcodec_send_packet < 0) {
         fprintf(stderr, "Error during decoding\n");
         return ret_avcodec_send_packet;
@@ -184,9 +184,9 @@ int AVCodecDecoder::decode_and_wait_for_frame(AVPacket *packet)
     const auto loopUntilFrameBegin=std::chrono::steady_clock::now();
     bool gotFrame=false;
     while (!gotFrame){
-        m_ffmpeg_dequeue_or_queue_mutex.lock();
+        //m_ffmpeg_dequeue_or_queue_mutex.lock();
         ret = avcodec_receive_frame(decoder_ctx, frame);
-        m_ffmpeg_dequeue_or_queue_mutex.unlock();
+        //m_ffmpeg_dequeue_or_queue_mutex.unlock();
         if(ret == AVERROR_EOF){
             qDebug()<<"Got EOF";
             break;
@@ -480,7 +480,7 @@ int AVCodecDecoder::open_and_decode_until_error()
     last_frame_height=-1;
     avg_decode_time.reset();
     test_dequeue_fames=true;
-    m_pull_frames_from_ffmpeg_thread=std::make_unique<std::thread>([this]{this->dequeue_frames_test();});
+    //m_pull_frames_from_ffmpeg_thread=std::make_unique<std::thread>([this]{this->dequeue_frames_test();});
     while (ret >= 0) {
         if(has_been_canceled){
             break;
@@ -525,8 +525,8 @@ int AVCodecDecoder::open_and_decode_until_error()
     }
     qDebug()<<"Broke out of the queue_data_dequeue_frame loop";
     test_dequeue_fames=false;
-    m_pull_frames_from_ffmpeg_thread->join();
-    m_pull_frames_from_ffmpeg_thread=nullptr;
+    //m_pull_frames_from_ffmpeg_thread->join();
+    //m_pull_frames_from_ffmpeg_thread=nullptr;
     // flush the decoder - not needed
     packet.data = NULL;
     packet.size = 0;
