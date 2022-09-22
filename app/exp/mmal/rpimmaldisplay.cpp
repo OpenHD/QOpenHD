@@ -128,7 +128,7 @@ void RpiMMALDisplay::init(int video_width,int video_height)
            }*/
            // EXP set layer begin
 
-            MMAL_DISPLAYREGION_T dr = {};
+            /*MMAL_DISPLAYREGION_T dr = {};
             //dr.set |= MMAL_DISPLAY_SET_LAYER;
             //dr.layer = -128;
             //dr.layer = 0;
@@ -140,17 +140,15 @@ void RpiMMALDisplay::init(int video_width,int video_height)
                 return;
             }else{
                 qDebug()<<"X mmal set layer";
-            }
-
-
-
-           updateDisplayRegion();
+            }*/
    }
    status = mmal_port_enable(m_InputPort, InputPortCallback);
       if (status != MMAL_SUCCESS) {
            qDebug()<<"mmal_port_enable"<<mmal_status_to_string(status);
           return;
       }
+      updateDisplayRegion();
+
    qDebug()<<"MMAL ready X?!";
 }
 
@@ -167,6 +165,22 @@ void RpiMMALDisplay::cleanup()
 
 void RpiMMALDisplay::updateDisplayRegion()
 {
+    qDebug()<<"updateDisplayRegion::begin";
+    MMAL_STATUS_T status;
+    MMAL_DISPLAYREGION_T dr = {};
+    //dr.set |= MMAL_DISPLAY_SET_LAYER;
+    //dr.layer = -128;
+    //dr.layer = 0;
+    status = mmal_port_parameter_get(m_InputPort, &dr.hdr);
+
+    status = mmal_port_parameter_set(m_InputPort, &dr.hdr);
+    if (status != MMAL_SUCCESS) {
+        qDebug()<<"X mmal_port_parameter_set error"<<mmal_status_to_string(status);
+        return;
+    }else{
+        qDebug()<<"X mmal set layer";
+    }
+    qDebug()<<"updateDisplayRegion::end";
     /*MMAL_STATUS_T status;
         int currentPosX, currentPosY;
         MMAL_DISPLAYREGION_T dr;
