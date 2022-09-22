@@ -17,12 +17,6 @@ public:
     static RpiMMALDisplay& instance();
 
     bool prepareDecoderContext(AVCodecContext* context, AVDictionary** options);
-    //void renderFrame(AVFrame* frame);
-
-    //void setupBackground(PDECODER_PARAMETERS params);
-    //void updateDisplayRegion();
-
-
 
     void init(int video_width=1920,int video_height=1080);
     void cleanup();

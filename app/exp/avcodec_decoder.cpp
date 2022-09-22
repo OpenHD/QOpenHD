@@ -277,7 +277,7 @@ int AVCodecDecoder::open_and_decode_until_error()
                 in_filename="/home/consti10/Desktop/hello_drmprime/in/rv_1280x720_green_white.h264";
                 //in_filename="/home/consti10/Desktop/hello_drmprime/in/Big_Buck_Bunny_1080_10s_1MB_h264.mp4";
             }else if(settings.video_codec==QOpenHDVideoHelper::VideoCodecH265){
-                //in_filename="/home/consti10/Desktop/hello_drmprime/in/jetson_test.h265";
+                in_filename="/home/consti10/Desktop/hello_drmprime/in/jetson_test.h265";
                 //in_filename="/home/consti10/Desktop/hello_drmprime/in/Big_Buck_Bunny_1080_10s_1MB_h265.mp4";
             }else{
                //in_filename="/home/consti10/Desktop/hello_drmprime/in/uv_640x480.mjpeg";
@@ -528,12 +528,12 @@ int AVCodecDecoder::open_and_decode_until_error()
     //m_pull_frames_from_ffmpeg_thread->join();
     //m_pull_frames_from_ffmpeg_thread=nullptr;
     // flush the decoder - not needed
-    packet.data = NULL;
-    packet.size = 0;
-    ret = decode_and_wait_for_frame(&packet);
-
+    //packet.data = NULL;
+    //packet.size = 0;
+    //ret = decode_and_wait_for_frame(&packet);
     avcodec_free_context(&decoder_ctx);
+    qDebug()<<"avcodec_free_context done";
     avformat_close_input(&input_ctx);
-
+    qDebug()<<"avformat_close_input_done";
     return 0;
 }
