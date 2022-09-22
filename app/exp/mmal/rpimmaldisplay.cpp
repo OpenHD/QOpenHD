@@ -170,6 +170,7 @@ void RpiMMALDisplay::updateDisplayRegion()
     MMAL_DISPLAYREGION_T dr = {};
     dr.hdr.id = MMAL_PARAMETER_DISPLAYREGION;
     dr.hdr.size = sizeof(MMAL_DISPLAYREGION_T);
+    // We need to go lower than -127 since that is where QT decides to go on.
     dr.set |= MMAL_DISPLAY_SET_LAYER;
     dr.layer = -128;
     //dr.layer = 0;
