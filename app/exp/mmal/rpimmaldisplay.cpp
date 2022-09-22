@@ -123,6 +123,9 @@ void RpiMMALDisplay::cleanup()
 void RpiMMALDisplay::updateDisplayRegion()
 {
     qDebug()<<"updateDisplayRegion::begin";
+    if(!display_region_needs_update){
+        return;
+    }
     MMAL_STATUS_T status;
     MMAL_DISPLAYREGION_T dr = {};
     dr.hdr.id = MMAL_PARAMETER_DISPLAYREGION;
@@ -155,6 +158,7 @@ void RpiMMALDisplay::updateDisplayRegion()
     }else{
         qDebug()<<"X mmal set layer";
     }
+    display_region_needs_update=false;
     qDebug()<<"updateDisplayRegion::end";
 }
 

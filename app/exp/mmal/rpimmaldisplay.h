@@ -37,6 +37,7 @@ private:
     //
     int m_VideoWidth, m_VideoHeight;
     int m_lastScreenWidth,m_lastScreenHeight;
+    bool display_region_needs_update=true;
 };
 
 #endif // RPIMMALDISPLAY_H
