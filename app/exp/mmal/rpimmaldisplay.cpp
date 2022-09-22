@@ -168,10 +168,17 @@ void RpiMMALDisplay::updateDisplayRegion()
     qDebug()<<"updateDisplayRegion::begin";
     MMAL_STATUS_T status;
     MMAL_DISPLAYREGION_T dr = {};
+    dr.fullscreen=1;
     //dr.set |= MMAL_DISPLAY_SET_LAYER;
     //dr.layer = -128;
     //dr.layer = 0;
     //status = mmal_port_parameter_get(m_InputPort, &dr.hdr);
+
+    const int screen_width=2560;
+    const int screen_height=1440;
+    const int video_width=1920;
+    const int video_height=1080;
+
 
     status = mmal_port_parameter_set(m_InputPort, &dr.hdr);
     if (status != MMAL_SUCCESS) {
