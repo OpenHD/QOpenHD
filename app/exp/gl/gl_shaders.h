@@ -70,6 +70,8 @@ class GL_shaders {
   void draw_YUV420P(GLuint textureY,GLuint textureU,GLuint textureV);
   // Y has its own texture, UV are interleaved in the same texture.
   void draw_NV12(GLuint textureY,GLuint textureUV);
+  //
+  static void debug_set_swap_interval(int interval);
 };
 
 #endif //HELLO_DRMPRIME__GL_SHADERS_H_

@@ -310,3 +310,12 @@ void GL_shaders::draw_NV12(GLuint textureY, GLuint textureUV) {
   unbind_textures(textures.size());
   checkGlError("Draw NV12 texture");
 }
+
+void GL_shaders::debug_set_swap_interval(int interval)
+{
+    auto res=eglSwapInterval(eglGetCurrentDisplay(),interval);
+    if(!res){
+        std::cerr<<"Cannot set swap interval of "<<interval<<"\n";
+    }
+
+}

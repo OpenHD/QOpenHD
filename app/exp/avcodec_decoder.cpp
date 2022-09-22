@@ -147,7 +147,7 @@ void AVCodecDecoder::constant_decode()
 #endif
     while(true){
         qDebug()<<"Start decode";
-        lulatsch();
+        open_and_decode_until_error();
         qDebug()<<"Decode stopped,restarting";
         std::this_thread::sleep_for(std::chrono::seconds(1));
     }
@@ -260,7 +260,7 @@ void AVCodecDecoder::on_new_frame(AVFrame *frame)
 }
 
 
-int AVCodecDecoder::lulatsch()
+int AVCodecDecoder::open_and_decode_until_error()
 {
     const auto settings = QOpenHDVideoHelper::read_from_settings();
     std::string in_filename="";
@@ -272,12 +272,14 @@ int AVCodecDecoder::lulatsch()
         }else{
             if(settings.video_codec==QOpenHDVideoHelper::VideoCodecH264){
                //in_filename="/home/consti10/Desktop/hello_drmprime/in/rpi_1080.h264";
-               in_filename="/home/consti10/Desktop/hello_drmprime/in/rv_1280x720_green_white.h264";
+               //in_filename="/home/consti10/Desktop/hello_drmprime/in/rv_1280x720_green_white.h264";
+                in_filename="/home/consti10/Desktop/hello_drmprime/in/Big_Buck_Bunny_1080_10s_1MB_h264.mp4";
             }else if(settings.video_codec==QOpenHDVideoHelper::VideoCodecH265){
-                in_filename="/home/consti10/Desktop/hello_drmprime/in/jetson_test.h265";
+                //in_filename="/home/consti10/Desktop/hello_drmprime/in/jetson_test.h265";
                 //in_filename="/home/consti10/Desktop/hello_drmprime/in/Big_Buck_Bunny_1080_10s_1MB_h265.mp4";
             }else{
-               in_filename="/home/consti10/Desktop/hello_drmprime/in/uv_640x480.mjpeg";
+               //in_filename="/home/consti10/Desktop/hello_drmprime/in/uv_640x480.mjpeg";
+               in_filename="/home/consti10/Desktop/hello_drmprime/in/Big_Buck_Bunny_1080.mjpeg";
             }
         }
     }
@@ -395,7 +397,8 @@ int AVCodecDecoder::lulatsch()
         //wanted_hw_pix_fmt = AV_PIX_FMT_VDPAU;
     }else if(decoder->id==AV_CODEC_ID_MJPEG){
         qDebug()<<"Codec mjpeg";
-        wanted_hw_pix_fmt=AV_PIX_FMT_YUVJ422P;
+        //wanted_hw_pix_fmt=AV_PIX_FMT_YUVJ422P;
+        wanted_hw_pix_fmt=AV_PIX_FMT_YUVJ420P;
         //wanted_hw_pix_fmt=AV_PIX_FMT_CUDA;
         //wanted_hw_pix_fmt = AV_PIX_FMT_DRM_PRIME;
         is_mjpeg= true;
@@ -438,7 +441,8 @@ int AVCodecDecoder::lulatsch()
         qDebug()<<"User wants SW decode / mjpeg";
         // SW decode is always YUV420 for H264/H265 and YUVJ22P for mjpeg
         if(is_mjpeg){
-          wanted_hw_pix_fmt=AV_PIX_FMT_YUVJ422P;
+          //wanted_hw_pix_fmt=AV_PIX_FMT_YUVJ422P;
+            wanted_hw_pix_fmt=AV_PIX_FMT_YUVJ420P;
         }else{
           wanted_hw_pix_fmt=AV_PIX_FMT_YUV420P;
         }

@@ -116,6 +116,19 @@ static std::string debug_av_packet(const AVPacket* packet){
     ss<<" side data elements:"<<packet->side_data_elems;
     return ss.str();
 }
+static bool is_AV_PIX_FMT_YUV420P(int format){
+    // ffmpeg still has YUVJ420 even though marked as to be removed, and we get it in case of mjpeg decode
+    return format==AV_PIX_FMT_YUV420P || format==AV_PIX_FMT_YUVJ420P;
+}
+static bool is_AV_PIX_FMT_YUV422P(int format){
+    // ffmpeg still has YUVJ420 even though marked as to be removed, and we get it in case of mjpeg decode
+    return format==AV_PIX_FMT_YUV422P || format==AV_PIX_FMT_YUVJ422P;
+}
+
+
+static bool is_AV_PIX_FMT_YUV42XP( int format){
+    return is_AV_PIX_FMT_YUV420P(format) || is_AV_PIX_FMT_YUV422P(format);
+}
 
 
 #endif //HELLO_DRMPRIME__AVCODEC_HELPER_HPP_

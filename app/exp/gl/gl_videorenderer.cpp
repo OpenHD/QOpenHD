@@ -51,7 +51,7 @@ void GL_VideoRenderer::init_gl() {
 // https://stackoverflow.com/questions/30191911/is-it-possible-to-draw-yuv422-and-yuv420-texture-using-opengl
 void GL_VideoRenderer::update_texture_yuv420P_yuv422P(AVFrame* frame) {
   assert(frame);
-  assert(frame->format==AV_PIX_FMT_YUV420P || frame->format==AV_PIX_FMT_YUVJ422P);
+  assert(is_AV_PIX_FMT_YUV42XP(frame->format));
   /*if(false){
 	if(yuv_420_p_sw_frame_texture.sdl_texture== nullptr){
 	  yuv_420_p_sw_frame_texture.sdl_texture = SDL_CreateTexture(sdl_renderer,
@@ -78,7 +78,9 @@ void GL_VideoRenderer::update_texture_yuv420P_yuv422P(AVFrame* frame) {
   }*/
   const GLuint frame_width=frame->width;
   const GLuint frame_height=frame->height;
-  const GLuint uv_width=frame_width/2;
+  // 420 has half width, 422 has full width
+  const GLuint uv_width= is_AV_PIX_FMT_YUV420P(frame->format) ? frame_width/2 : frame_width;
+  // both 420 and 422 have half height
   const GLuint uv_height=frame_height/2;
   GLuint widths[3] = {
 	  frame_width,
@@ -169,7 +171,6 @@ bool GL_VideoRenderer::update_texture_egl_external(AVFrame* frame) {
   assert(frame->format==AV_PIX_FMT_DRM_PRIME);
   EGLDisplay egl_display=eglGetCurrentDisplay();
   assert(egl_display);
-  auto before=std::chrono::steady_clock::now();
   // We can now also give the frame back to av, since we are updating to a new one.
   if(egl_frame_texture.av_frame!= nullptr){
 	av_frame_free(&egl_frame_texture.av_frame);
@@ -231,8 +232,6 @@ bool GL_VideoRenderer::update_texture_egl_external(AVFrame* frame) {
   // I do not know exactly how that works, but we seem to be able to immediately delete the EGL image, as long as we don't give the frame
   // back to the decoder I assume
   eglDestroyImageKHR(egl_display, image);
-  auto delta=std::chrono::steady_clock::now()-before;
-  //std::cout<<"Creating texture took:"<<std::chrono::duration_cast<std::chrono::milliseconds>(delta).count()<<"ms\n";
   egl_frame_texture.has_valid_image= true;
   return true;
 }
@@ -268,7 +267,7 @@ void GL_VideoRenderer::update_texture_gl(AVFrame *frame) {
   }else if(frame->format==AV_PIX_FMT_CUDA){
     //std::cout<<"update_texture_CUDA\n";
 	update_texture_cuda(frame);
-  }else if(frame->format==AV_PIX_FMT_YUV420P || frame->format==AV_PIX_FMT_YUVJ422P){
+  }else if(is_AV_PIX_FMT_YUV42XP(frame->format)){
     //std::cout<<"update_texture_yuv420P / yuv422P\n";
 	update_texture_yuv420P_yuv422P(frame);
   }else if(frame->format==AV_PIX_FMT_VDPAU){
@@ -283,6 +282,7 @@ void GL_VideoRenderer::update_texture_gl(AVFrame *frame) {
 }
 
 void GL_VideoRenderer::draw_texture_gl(const bool dev_draw_alternating_rgb_dummy_frames) {
+  //GL_shaders::debug_set_swap_interval(0);
   if(egl_frame_texture.has_valid_image){
 	gl_shaders->draw_egl(egl_frame_texture.texture);
   }else if(cuda_frametexture.has_valid_image) {

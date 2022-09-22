@@ -309,8 +309,7 @@ BaseWidget {
             font.family: "Font Awesome 5 Free"
             font.pixelSize: 18
             horizontalAlignment: Text.AlignRight
-            style: Text.Outline
-            styleColor: settings.color_glow
+            color: "white"
         }
     }
 }
