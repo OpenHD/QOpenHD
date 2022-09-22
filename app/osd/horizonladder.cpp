@@ -5,6 +5,7 @@
 #include <QPainter>
 #include <math.h>
 
+#include "debug_overdraw.hpp"
 
 HorizonLadder::HorizonLadder(QQuickItem *parent): QQuickPaintedItem(parent) {
     qDebug() << "HorizonLadder::HorizonLadder()";
@@ -15,6 +16,9 @@ HorizonLadder::HorizonLadder(QQuickItem *parent): QQuickPaintedItem(parent) {
 
 void HorizonLadder::paint(QPainter* painter) {
     painter->save();
+    if(ENABLE_DEBUG_OVERDRAW){
+        setFillColor(QColor::fromRgb(0,255,0,200));
+    }
 
     // How the heck can I just clear the FBO with a solid color ?
     /*if(true){
@@ -59,9 +63,9 @@ void HorizonLadder::paint(QPainter* painter) {
     painter->rotate(roll*-1);
     painter->translate((width()/2)*-1,(height()/2)*-1);
 
-    auto pos_x= width()/2;
-    auto pos_y= height()/2;
-    auto width_ladder= 100*horizonWidth;
+    const auto pos_x= width()/2;
+    const auto pos_y= height()/2;
+    const auto width_ladder= 100*horizonWidth;
 
     auto px = pos_x - width_ladder / 2;
 

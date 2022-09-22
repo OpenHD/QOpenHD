@@ -5,6 +5,7 @@
 #include <QPainter>
 #include <math.h>
 
+#include "debug_overdraw.hpp"
 
 AltitudeLadder::AltitudeLadder(QQuickItem *parent): QQuickPaintedItem(parent) {
     qDebug() << "AltitudeLadder::AltitudeLadder()";
@@ -14,6 +15,9 @@ AltitudeLadder::AltitudeLadder(QQuickItem *parent): QQuickPaintedItem(parent) {
 void AltitudeLadder::paint(QPainter* painter) {
     //qDebug()<<"AltitudeLadder::paint";
     painter->save();
+    if(ENABLE_DEBUG_OVERDRAW){
+        setFillColor(QColor::fromRgb(0,255,0,128));
+    }
 
     QFont font("sans-serif", 10, QFont::Bold, false);
 

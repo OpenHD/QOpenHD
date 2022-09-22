@@ -5,6 +5,7 @@
 #include <QPainter>
 #include <math.h>
 
+#include "debug_overdraw.hpp"
 
 FlightPathVector::FlightPathVector(QQuickItem *parent): QQuickPaintedItem(parent) {
     qDebug() << "FlightPathVector::FlightPathVector()";
@@ -13,6 +14,9 @@ FlightPathVector::FlightPathVector(QQuickItem *parent): QQuickPaintedItem(parent
 
 void FlightPathVector::paint(QPainter* painter) {
     painter->save();
+    if(ENABLE_DEBUG_OVERDRAW){
+        setFillColor(QColor::fromRgb(255,0,0,128));
+    }
 
     //QFont font("sans-serif", 10, QFont::Bold, false);
 

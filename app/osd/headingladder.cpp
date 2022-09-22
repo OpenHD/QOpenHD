@@ -4,6 +4,7 @@
 #include <QQuickPaintedItem>
 #include <QPainter>
 
+#include "debug_overdraw.hpp"
 
 HeadingLadder::HeadingLadder(QQuickItem *parent): QQuickPaintedItem(parent) {
     qDebug() << "HeadingLadder::HeadingLadder()";
@@ -12,6 +13,9 @@ HeadingLadder::HeadingLadder(QQuickItem *parent): QQuickPaintedItem(parent) {
 
 void HeadingLadder::paint(QPainter* painter) {
     painter->save();
+    if(ENABLE_DEBUG_OVERDRAW){
+        setFillColor(QColor::fromRgb(0,255,0,128));
+    }
 
     // ticks up/down position
     auto y = 25;
