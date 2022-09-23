@@ -104,10 +104,6 @@ static VideoStreamConfig read_from_settings(){
     return _videoStreamConfig;
 }
 
-static std::string video_stream_config_as_string(){
-    std::stringstream ss;
-}
-
 }
 
 // Must be in sync with OpenHD

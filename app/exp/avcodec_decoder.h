@@ -11,6 +11,8 @@
 
 #include <mutex>
 #include <deque>
+#include <optional>
+#include <queue>
 
 #ifdef HAVE_MMAL
 #include "mmal/rpimmaldisplay.h"
@@ -80,6 +82,13 @@ private:
     // and be searchable with a for loop. !00 sounds like a good fit.
     static constexpr auto MAX_FED_TIMESTAMPS_QUEUE_SIZE=100;
     std::deque<int64_t> m_fed_timestamps_queue;
+private:
+    void fetch_frame_or_feed_input_packet();
+    void enqueue_av_packet(AVPacket packet);
+    std::optional<AVPacket> fetch_av_packet_if_available();
+    std::mutex m_av_packet_queue_mutex;
+    std::queue<AVPacket> m_av_packet_queue;
+    bool keep_fetching_frames_or_input_packets=false;
 };
 
 #endif // AVCODEC_DECODER_H

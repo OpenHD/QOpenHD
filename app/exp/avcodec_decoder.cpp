@@ -221,7 +221,7 @@ int AVCodecDecoder::decode_and_wait_for_frame(AVPacket *packet)
         }else if(ret==AVERROR(EAGAIN)){
             if(n_no_output_frame_after_x_seconds>=2){
                 // note decode latency is now wrong
-                qDebug()<<"Skipping encode decode lockstep due to no frame for more than X seconds\n";
+                qDebug()<<"Skipping decode lockstep due to no frame for more than X seconds\n";
                 DecodingStatistcs::instance().set_doing_wait_for_frame_decode("No");
                 if(n_times_we_tried_getting_a_frame_this_time>4){
                     break;
@@ -248,6 +248,73 @@ int AVCodecDecoder::decode_and_wait_for_frame(AVPacket *packet)
     return 0;
 }
 
+
+void AVCodecDecoder::fetch_frame_or_feed_input_packet(){
+    while(keep_fetching_frames_or_input_packets){
+        AVFrame* frame= av_frame_alloc();
+        assert(frame);
+        const int ret = avcodec_receive_frame(decoder_ctx, frame);
+        //m_ffmpeg_dequeue_or_queue_mutex.unlock();
+        if(ret == AVERROR_EOF){
+            qDebug()<<"Got EOF";
+            av_frame_free(&frame);
+            return;
+        }else if(ret==0){
+            debug_is_valid_timestamp(frame->pts);
+            // we got a new frame
+            const auto now_us=getTimeUs();
+            const auto delay_us=now_us-frame->pts;
+            //qDebug()<<"(True) decode delay(nowait):"<<((float)delay_us/1000.0f)<<" ms";
+            //MLOGD<<"Frame pts:"<<frame->pts<<" Set to:"<<now<<"\n";
+            //frame->pts=now;
+            avg_decode_time.add(std::chrono::microseconds(delay_us));
+            // display frame
+            on_new_frame(frame);
+
+            if(avg_decode_time.time_since_last_log()>std::chrono::seconds(3)){
+                qDebug()<<"Avg Decode time:"<<avg_decode_time.getAvgReadable().c_str();
+                DecodingStatistcs::instance().set_decode_time(avg_decode_time.getAvgReadable().c_str());
+                avg_decode_time.set_last_log();
+                avg_decode_time.reset();
+            }
+            av_frame_free(&frame);
+            frame= av_frame_alloc();
+        }else if(ret==AVERROR(EAGAIN)){
+            qDebug()<<"Needs more data";
+            // Get more encoded data
+            auto packet=fetch_av_packet_if_available();
+            if(packet!=std::nullopt){
+                const int ret_avcodec_send_packet = avcodec_send_packet(decoder_ctx, &packet.value());
+                if (ret_avcodec_send_packet < 0) {
+                    qDebug()<<"Error during send packet";
+                }
+                av_packet_unref(&packet.value());
+            }
+        }else{
+            qDebug()<<"Weird decoder error:"<<ret;
+        }
+    }
+}
+
+void AVCodecDecoder::enqueue_av_packet(AVPacket packet)
+{
+     std::lock_guard<std::mutex> lock(m_av_packet_queue_mutex);
+     m_av_packet_queue.push(packet);
+}
+
+std::optional<AVPacket> AVCodecDecoder::fetch_av_packet_if_available()
+{
+     std::lock_guard<std::mutex> lock(m_av_packet_queue_mutex);
+     if(m_av_packet_queue.size()>=1){
+         AVPacket packet=m_av_packet_queue.front();
+         const auto beforeFeedFrameUs=getTimeUs();
+         packet.pts=beforeFeedFrameUs;
+         m_av_packet_queue.pop();
+         return packet;
+     }
+     return std::nullopt;
+}
+
 void AVCodecDecoder::on_new_frame(AVFrame *frame)
 {
 
@@ -257,7 +324,7 @@ void AVCodecDecoder::on_new_frame(AVFrame *frame)
         RpiMMALDisplay::instance().display_frame(frame);
         return;
 #else
-            qDebug()<<"WARNING do not configure the decoder with mmal without the mmal renderer";
+        qDebug()<<"WARNING do not configure the decoder with mmal without the mmal renderer";
 #endif
     }
     TextureRenderer::instance().queue_new_frame_for_display(frame);
@@ -495,6 +562,8 @@ int AVCodecDecoder::open_and_decode_until_error()
     avg_decode_time.reset();
     test_dequeue_fames=true;
     //m_pull_frames_from_ffmpeg_thread=std::make_unique<std::thread>([this]{this->dequeue_frames_test();});
+    keep_fetching_frames_or_input_packets=true;
+    std::unique_ptr<std::thread> tmp_thread=std::make_unique<std::thread>([this]{this->fetch_frame_or_feed_input_packet();});
     DecodingStatistcs::instance().set_doing_wait_for_frame_decode("Yes");
     while (ret >= 0) {
         if(has_been_canceled){
@@ -526,7 +595,9 @@ int AVCodecDecoder::open_and_decode_until_error()
                 }
                 lastFrame=std::chrono::steady_clock::now();
             }
-            ret = decode_and_wait_for_frame(&packet);
+            //ret = decode_and_wait_for_frame(&packet);
+            enqueue_av_packet(packet);
+
             nFeedFrames++;
             if(limitedFrameRate>0){
                 const uint64_t runTimeMs=std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now()-decodingStart).count();
@@ -536,9 +607,13 @@ int AVCodecDecoder::open_and_decode_until_error()
             }
         }
         }
-        av_packet_unref(&packet);
+        //av_packet_unref(&packet);
     }
     qDebug()<<"Broke out of the queue_data_dequeue_frame loop";
+    keep_fetching_frames_or_input_packets=false;
+    tmp_thread->join();
+    tmp_thread=nullptr;
+
     test_dequeue_fames=false;
     //m_pull_frames_from_ffmpeg_thread->join();
     //m_pull_frames_from_ffmpeg_thread=nullptr;
