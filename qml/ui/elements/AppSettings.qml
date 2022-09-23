@@ -2,6 +2,7 @@ import QtQuick 2.12
 import Qt.labs.settings 1.0
 
 
+
 Settings {
     id: settings
 
@@ -14,7 +15,7 @@ Settings {
     property int lte_video_port: 8000
     property int battery_cells: 3
 
-    property int mavlink_sysid: default_mavlink_sysid()
+    property int mavlink_sysid: 225
     property int fc_mavlink_sysid: 1
     property bool filter_mavlink_telemetry: false
 
@@ -35,12 +36,14 @@ Settings {
     // Video codec of the primary video stream (main window).
     property int selectedVideoCodecPrimary:0 //0==h264,1==h265,2==MJPEG, other (error) default to h264
     property bool enable_rtp: true
-    property bool enable_lte_video: false
     property bool hide_watermark: true
-    property bool dev_jetson_force_omx: false
-
+    property bool dev_jetson: false
+    // When this one is set to true, we read a file (where you can then write your custom rx gstreamer pipeline
+    // that ends with qmlglsink )
     property bool dev_enable_custom_pipeline: false
-    property string dev_custom_pipeline: ""
+    // only for ffmpeg
+    property int dev_limit_fps_on_test_file: -1
+    property bool dev_draw_alternating_rgb_dummy_frames: false;
 
     property bool enable_speech: true
     property bool enable_imperial: false
@@ -94,6 +97,14 @@ Settings {
     property bool bitrate_declutter: false
     property double bitrate_warn: 0
     property double bitrate_caution: 0
+    //
+    property bool qrenderstats_show: true
+    property double qrenderstats_opacity: 1
+    property double qrenderstats_size: 1
+    property bool qrenderstats_declutter: false
+    property double qrenderstats_warn: 0
+    property double qrenderstats_caution: 0
+
 
     property bool show_air_battery: true
     property double air_battery_opacity: 1
@@ -210,7 +221,9 @@ Settings {
     property double heading_width: 250
     property bool show_heading_ladder: true
 
-    property bool show_fpv: true
+    // false by default for now, since it has a big performance hit. As soon as we have merged it with the art. horizon,
+    // we have at least 1 FBO less and can probably enable it by default again
+    property bool show_flight_path_vector: true
     property bool fpv_dynamic: true    
     property int fpv_sensitivity: 5
     property double fpv_opacity: 1
@@ -313,7 +326,6 @@ Settings {
     property double adsb_size: 1
     property bool adsb_show_unknown_or_zero_alt: false
 
-    property bool show_vroverlay: false
     property double vroverlay_opacity: 1
     property double vroverlay_size: 1
     property bool vroverlay_invert_pitch: false

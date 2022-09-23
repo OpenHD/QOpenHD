@@ -17,6 +17,9 @@ TRANSLATIONS = translations/QOpenHD_en.ts \
 include(platforms.pri)
 
 include(git.pri)
+# this library can be included via either .pri or cmake
+# since it is a library "specifically for qt"
+include(lib/lqtutils_master/lqtutils.pri)
 
 CONFIG(debug, debug|release) {
     DESTDIR = $${OUT_PWD}/debug
@@ -31,12 +34,11 @@ CONFIG(debug, debug|release) {
     DEFINES += QMLJSDEBUGGER
 }
 
-CONFIG += qmltypes
-QML_IMPORT_NAME = OpenHD
-QML_IMPORT_MAJOR_VERSION = 1
+#https://doc.qt.io/qt-6/portingguide.html
+#DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x050F00
 
 CONFIG += qmltypes
-QML_IMPORT_NAME = MavlinkTelemetry
+QML_IMPORT_NAME = OpenHD
 QML_IMPORT_MAJOR_VERSION = 1
 
 OBJECTS_DIR  = $${OUT_PWD}/obj
@@ -55,29 +57,22 @@ QMAKE_CXXFLAGS += -Wno-cast-align
 
 #Not sure what exactly is going on here, but maybe this lib made it into qt official ?!!
 #since there is https://doc.qt.io/qt-5/qsortfilterproxymodel.html#details
+# Consti10: Dependency removed
 #include ($$PWD/lib/SortFilterProxyModel/SortFilterProxyModel.pri)
+# Comes with pretty much any install
 QT +=core
 
-# weird I have no idea what this one is for
+# We need this for our qml files, available pretty much anywhere
 QT += qml
 
 # We need to include this one, needs to be explicitly installed via apt-get on Ubuntu
 QT += quick
-# Same for this one, install via apt-get
-# https://doc.qt.io/qt-5/qgeocoordinate.html
-# do not confuse this one with the external library from lib/GeographicLib-1.50
-QT += positioning
-
 QT += concurrent opengl gui
 
-# I had to remove them, they seem to be obsolete
-#QT_FOR_CONFIG += location-private
-#qtConfig(geoservices_mapboxgl): QT += sql opengl
-#qtConfig(geoservices_osm): QT += concurrent
-
-INCLUDEPATH += $$PWD/inc
 INCLUDEPATH += $$PWD/lib
 INCLUDEPATH += $$PWD/app
+INCLUDEPATH += $$PWD/app/exp
+
 # Since mavlink is coming with MAVSDK, we don't need that anymore
 #INCLUDEPATH += $$PWD/lib/c_library_v2_openhd
 # mavsdk - dirty
@@ -86,10 +81,33 @@ INCLUDEPATH += /usr/local/include/mavsdk
 LIBS += -L/usr/local/lib -lmavsdk
 INCLUDEPATH += /usr/include/mavsdk
 
-INCLUDEPATH += $$PWD/lib/GeographicLib-1.50/include
+LIBS += -lavcodec -lavutil -lavformat
+# TODO dirty
+LIBS += -lGLESv2 -lEGL
+# We might need this stuff once we can do drm/kms, fucking master problem
+#LIBS += -ldrm
+#INCLUDEPATH += /usr/include/libdrm
+
+CONFIG += link_pkgconfig
+packagesExist(mmal) {
+   PKGCONFIG += mmal
+   CONFIG += mmal
+
+   PKCONFIG += mmal_util mmal_core mmal_components
+}
+
+
+# Geographic lib updated to c-2.0, so much cleaner
+SOURCES += $$PWD/lib/geographiclib-c-2.0/src/geodesic.c
+HEADERS += $$PWD/lib/geographiclib-c-2.0/src/geodesic.h \
+    app/osd/debug_overdraw.hpp
+
 
 # All files for the OSD elements - these are QT QQuickPaintedItem's that are written in c++
 SOURCES += \
+    app/exp/QSGVideoTextureItem.cpp \
+    app/exp/gl/gl_shaders.cpp \
+    app/exp/gl/gl_videorenderer.cpp \
     app/logging/logmessagesmodel.cpp \
     app/openhd_systems/aohdsystem.cpp \
     app/osd/headingladder.cpp \
@@ -101,9 +119,17 @@ SOURCES += \
     app/qopenhd.cpp \
     app/telemetry/settings/synchronizedsettings.cpp \
     app/util/WorkaroundMessageBox.cpp \
-    app/videostreaming/decodingstatistcs.cpp
+    app/util/qrenderstats.cpp \
+    app/videostreaming/decodingstatistcs.cpp \
+    app/exp/texturerenderer.cpp \
+    app/exp/avcodec_decoder.cpp \
+    # xx
+    #app/exp/drm_kms/drmprime_out.cpp \
 
 HEADERS += \
+    app/exp/QSGVideoTextureItem.h \
+    app/exp/gl/gl_shaders.h \
+    app/exp/gl/gl_videorenderer.h \
     app/logging/logmessagesmodel.h \
     app/openhd_systems/aohdsystem.h \
     app/openhd_systems/wifiadapter.h \
@@ -117,10 +143,16 @@ HEADERS += \
     app/telemetry/mavlink_include.h \
     app/telemetry/openhd_defines.hpp \
     app/telemetry/qopenhdmavlinkhelper.hpp \
-    app/telemetry/settings/MessagePopup.hpp \
+    app/telemetry/settings/documentedsetting.hpp \
     app/telemetry/settings/synchronizedsettings.h \
+    app/telemetry/telemetryutil.hpp \
     app/util/WorkaroundMessageBox.h \
-    app/videostreaming/decodingstatistcs.h
+    app/util/qrenderstats.h \
+    app/videostreaming/decodingstatistcs.h \
+    app/exp/texturerenderer.h \
+    app/exp/avcodec_decoder.h \
+    # xx
+    #app/exp/drm_kms/drmprime_out.h \
 
 
 # I deleted all the "old" telemetry protocolls other than mavlink
@@ -159,6 +191,7 @@ HEADERS += \
     app/util/util.h \
 
 DISTFILES += \
+    README.md \
     android/AndroidManifest.xml \
     android/build.gradle \
     android/gradle/wrapper/gradle-wrapper.jar \
@@ -178,11 +211,11 @@ DISTFILES += \
     android/src/org/freedesktop/gstreamer/androidmedia/GstAhsCallback.java \
     android/src/org/freedesktop/gstreamer/androidmedia/GstAmcOnFrameAvailableListener.java \
     app/adsb/README.md \
+    app/exp/gl/README.md \
     app/openhd_systems/README.md \
     app/osd_extra/Readme.txt \
     app/platform/README.md \
     app/telemetry/README.md \
-    app/telemetry/del.txt \
     app/telemetry/settings/README.md \
     app/util/README.md \
     app/videostreaming/README.md \
@@ -199,47 +232,6 @@ DISTFILES += \
     translations/QOpenHD_ro.ts \
     translations/QOpenHD_zh.ts
 
-# Not sure what stephen did here, I think the GeographicLib is manually included and build with QOpenHD
-SOURCES += \
-    lib/GeographicLib-1.50/src/Accumulator.cpp \
-    lib/GeographicLib-1.50/src/AlbersEqualArea.cpp \
-    lib/GeographicLib-1.50/src/AzimuthalEquidistant.cpp \
-    lib/GeographicLib-1.50/src/CassiniSoldner.cpp \
-    lib/GeographicLib-1.50/src/CircularEngine.cpp \
-    lib/GeographicLib-1.50/src/DMS.cpp \
-    lib/GeographicLib-1.50/src/Ellipsoid.cpp \
-    lib/GeographicLib-1.50/src/EllipticFunction.cpp \
-    lib/GeographicLib-1.50/src/GARS.cpp \
-    lib/GeographicLib-1.50/src/GeoCoords.cpp \
-    lib/GeographicLib-1.50/src/Geocentric.cpp \
-    lib/GeographicLib-1.50/src/Geodesic.cpp \
-    lib/GeographicLib-1.50/src/GeodesicExact.cpp \
-    lib/GeographicLib-1.50/src/GeodesicExactC4.cpp \
-    lib/GeographicLib-1.50/src/GeodesicLine.cpp \
-    lib/GeographicLib-1.50/src/GeodesicLineExact.cpp \
-    lib/GeographicLib-1.50/src/Geohash.cpp \
-    lib/GeographicLib-1.50/src/Geoid.cpp \
-    lib/GeographicLib-1.50/src/Georef.cpp \
-    lib/GeographicLib-1.50/src/Gnomonic.cpp \
-    lib/GeographicLib-1.50/src/GravityCircle.cpp \
-    lib/GeographicLib-1.50/src/GravityModel.cpp \
-    lib/GeographicLib-1.50/src/LambertConformalConic.cpp \
-    lib/GeographicLib-1.50/src/LocalCartesian.cpp \
-    lib/GeographicLib-1.50/src/MGRS.cpp \
-    lib/GeographicLib-1.50/src/MagneticCircle.cpp \
-    lib/GeographicLib-1.50/src/MagneticModel.cpp \
-    lib/GeographicLib-1.50/src/Math.cpp \
-    lib/GeographicLib-1.50/src/NormalGravity.cpp \
-    lib/GeographicLib-1.50/src/OSGB.cpp \
-    lib/GeographicLib-1.50/src/PolarStereographic.cpp \
-    lib/GeographicLib-1.50/src/PolygonArea.cpp \
-    lib/GeographicLib-1.50/src/Rhumb.cpp \
-    lib/GeographicLib-1.50/src/SphericalEngine.cpp \
-    lib/GeographicLib-1.50/src/TransverseMercator.cpp \
-    lib/GeographicLib-1.50/src/TransverseMercatorExact.cpp \
-    lib/GeographicLib-1.50/src/UTMUPS.cpp \
-    lib/GeographicLib-1.50/src/Utility.cpp
-
 
 iOSBuild {
     QMAKE_INFO_PLIST    = ios/Info.plist
@@ -255,26 +247,13 @@ iOSBuild {
     #CONFIG += EnableGamepads
     CONFIG += EnableSpeech
     CONFIG += EnableMainVideo
-    CONFIG += EnablePiP
-    CONFIG += EnableVideoRender
     #CONFIG += EnableCharts
-    #CONFIG += EnableVR
     #CONFIG += EnableLog //does not work due to filepath not set
 
     app_launch_images.files = $$PWD/icons/LaunchScreen.png $$files($$PWD/icons/LaunchScreen.storyboard)
     QMAKE_BUNDLE_DATA += app_launch_images
 
     QMAKE_ASSET_CATALOGS += $$PWD/icons/ios/Assets.xcassets
-
-    EnableVideoRender {
-        QT += multimedia
-
-        HEADERS += \
-            app/videostreaming/openhdapplevideo.h
-
-        SOURCES += \
-            app/videostreaming/openhdapplevideo.cpp
-    }
 
     HEADERS += \
         src/platform/appleplatform.h
@@ -300,21 +279,8 @@ MacBuild {
     CONFIG += EnableRC
     CONFIG += EnableSpeech
     CONFIG += EnableMainVideo
-    CONFIG += EnablePiP
-    CONFIG += EnableVideoRender
     #CONFIG += EnableCharts
-    #CONFIG += EnableVR
     #CONFIG += EnableLog //does not work due to filepath not set
-
-    EnableVideoRender {
-        QT += multimedia
-
-        HEADERS += \
-            inc/openhdapplevideo.h
-
-        SOURCES += \
-            src/openhdapplevideo.cpp
-    }
 
     EnableGStreamer {
         DEFINES += GST_GL_HAVE_PLATFORM_CGL=1
@@ -330,10 +296,8 @@ LinuxBuild {
     #CONFIG += EnableRC
     # Note: To compile without gstreamer, uncomment the 3 following - but then obviosly there is no video at all.
     CONFIG += EnableMainVideo
-    CONFIG += EnablePiP
-    CONFIG += EnableGStreamer
+    #CONFIG += EnableGStreamer
     #CONFIG += EnableCharts
-    #CONFIG += EnableVR
     #CONFIG += EnableLog
     message("LinuxBuild - config")
 }
@@ -343,10 +307,8 @@ JetsonBuild {
     CONFIG += EnableMainVideo
     CONFIG += EnableJoysticks
     CONFIG += EnableRC
-    CONFIG += EnablePiP
     #CONFIG += EnableCharts
     CONFIG += EnableSpeech
-    #CONFIG += EnableVR
     #CONFIG += EnableLog //does not work due to filepath not set
     CONFIG += EnableRC
     CONFIG += EnableJoysticks
@@ -368,19 +330,12 @@ RaspberryPiBuild {
     CONFIG += EnableMainVideo
     CONFIG += EnableJoysticks
     CONFIG += EnableRC
-    CONFIG += EnablePiP
     #CONFIG += EnableCharts
     CONFIG += EnableSpeech
     CONFIG += LimitADSBMax
-    #CONFIG += EnableVR
     #CONFIG += EnableLog
     CONFIG += EnableRC
     CONFIG += EnableJoysticks
-
-    CONFIG += EnableVideoRender
-
-    EnableVideoRender {
-    }
 }
 
 WindowsBuild {
@@ -389,10 +344,8 @@ WindowsBuild {
     #CONFIG += EnableRC
     #CONFIG += EnableSpeech
     #CONFIG += EnableMainVideo
-    #CONFIG +- EnablePiP
     #CONFIG += EnableGStreamer
     #CONFIG += EnableCharts
-    #CONFIG += EnableVR
     #CONFIG += EnableLog
 
     DEFINES += GST_GL_HAVE_WINDOW_WIN32=1
@@ -408,10 +361,7 @@ AndroidBuild {
     CONFIG += EnableRC
     CONFIG += EnableSpeech
     CONFIG += EnableMainVideo
-    CONFIG += EnablePiP
-    CONFIG += EnableVideoRender
     #CONFIG += EnableCharts
-    #CONFIG += EnableVR
     #CONFIG += EnableLog
 
     EnableGStreamer {
@@ -421,27 +371,6 @@ AndroidBuild {
         DEFINES += GST_GL_HAVE_PLATFORM_EGL=1
         DEFINES += GST_GL_HAVE_WINDOW_ANDROID=1
         DEFINES += HAVE_QT_ANDROID
-    }
-
-    EnableVideoRender {
-        LIBS += -lmediandk
-        LIBS += -landroid
-        QT += multimedia
-
-        HEADERS += \
-            inc/openhdandroidrender.h \
-            inc/openhdandroidvideo.h \
-            inc/androidsurfacetexture.h
-
-
-        SOURCES += \
-            src/openhdandroidrender.cpp \
-            src/openhdandroidvideo.cpp \
-            src/androidsurfacetexture.cpp
-
-        OTHER_FILES += \
-            $$PWD/android/src/org/openhd/OpenHDActivity.java \
-            $$PWD/android/src/org/openhd/SurfaceTextureListener.java
     }
     QT += androidextras
 
@@ -455,12 +384,6 @@ AndroidBuild {
         ANDROID_EXTRA_LIBS += $$PWD/lib/android/openssl/latest/arm/libcrypto_1_1.so \
                               $$PWD/lib/android/openssl/latest/arm/libssl_1_1.so
     #}
-}
-
-
-EnableVR {
-    message("EnableVR")
-    DEFINES += ENABLE_VR
 }
 
 
@@ -490,14 +413,11 @@ EnableGStreamer {
     DEFINES += ENABLE_GSTREAMER
 
     SOURCES += \
-        app/videostreaming/gstvideostream.cpp
+        app/videostreaming/gst_qmlglsink/gstvideostream.cpp
 
     HEADERS += \
-        app/videostreaming/QOpenHDVideoHelper.hpp \
-        app/videostreaming/gst_helper.hpp \
-        app/videostreaming/gstvideostream.h
-
-    #include ($$PWD/lib/VideoStreaming/VideoStreaming.pri)
+        app/videostreaming/gst_qmlglsink/gst_helper.hpp \
+        app/videostreaming/gst_qmlglsink/gstvideostream.h
 
     CONFIG += link_pkgconfig
     PKGCONFIG   += gstreamer-1.0  gstreamer-video-1.0 gstreamer-gl-1.0
@@ -507,36 +427,19 @@ EnableGStreamer {
     #QT += qitem
     #QT += widgets
     #QT += gui-private
-
 }
 
-EnableVideoRender {
-    message("EnableVideoRender")
+mmal {
+    message(MMAL renderer selected)
 
-    DEFINES += ENABLE_VIDEO_RENDER
+    DEFINES += HAVE_MMAL
+
+    SOURCES += app/exp/mmal/rpimmaldisplay.cpp
 
     HEADERS += \
-        app/videostreaming/openhdvideo.h \
-        app/videostreaming/openhdrender.h
-
-    SOURCES += \
-        app/videostreaming/openhdvideo.cpp \
-        app/videostreaming/openhdrender.cpp \
-        $$PWD/lib/h264/h264_bitstream_parser.cc \
-        $$PWD/lib/h264/h264_common.cc \
-        $$PWD/lib/h264/pps_parser.cc \
-        $$PWD/lib/h264/sps_parser.cc \
-        $$PWD/lib/h264/bit_buffer.cc \
-        $$PWD/lib/h264/checks.cc \
-        $$PWD/lib/h264/zero_memory.cc
-
-    INCLUDEPATH += $$PWD/lib/h264/
+        app/exp/mmal/rpimmaldisplay.h \
 }
 
-EnablePiP {
-    message("EnablePiP")
-    DEFINES += ENABLE_PIP
-}
 
 
 EnableRC {
@@ -563,10 +466,6 @@ installer {
         EnableGStreamer {
             QMAKE_POST_LINK += $${BASEDIR}/tools/prepare_gstreamer_framework.sh $${DESTDIR}/gstwork $${DESTDIR}/$${TARGET}.app $${TARGET}
             QMAKE_POST_LINK += && cd $${DESTDIR}
-        }
-
-        EnableVideoRender {
-            QMAKE_POST_LINK += cd $${DESTDIR}
         }
 
         QMAKE_POST_LINK += && $$dirname(QMAKE_QMAKE)/macdeployqt $${TARGET}.app -appstore-compliant -qmldir=$${BASEDIR}/qml

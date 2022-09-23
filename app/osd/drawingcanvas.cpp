@@ -6,6 +6,8 @@
 #include <math.h>
 #include <QPainterPath>
 
+#include "debug_overdraw.hpp"
+
 DrawingCanvas::DrawingCanvas(QQuickItem *parent): QQuickPaintedItem(parent) {
     //qDebug() << "DrawingCanvas::DrawingCanvas()";
     setRenderTarget(RenderTarget::FramebufferObject);
@@ -19,6 +21,9 @@ DrawingCanvas::DrawingCanvas(QQuickItem *parent): QQuickPaintedItem(parent) {
 
 void DrawingCanvas::paint(QPainter* painter) {
     painter->save();
+    if(ENABLE_DEBUG_OVERDRAW){
+        setFillColor(QColor::fromRgb(255,0,0,128));
+    }
 
     if (m_draw_request=="adsb"){ //statis for now, but here for future build out
     auto pos_x= 130;//the middle

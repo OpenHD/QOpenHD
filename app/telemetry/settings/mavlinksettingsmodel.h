@@ -37,25 +37,50 @@ private:
 public:
     // Fetch a param value using mavsdk. Returns std::nullopt on failure,
     // The param value otherwise.
-    std::optional<int> try_fetch_param_int_impl(const QString param_id);
-    std::optional<std::string> try_fetch_param_string_impl(const QString param_id);
-    // Update a parameter (when calling this, it is not checked if the param is
-    // actually an int param (but the server will reject on mismatch anyways) so just
-    // make sure when calling this you are using a cached param / are sure about its type
-    //  Doesn't check if param is cached / correct type.
-    bool try_update_param_int_impl(const QString param_id,int value);
-    bool try_update_param_string_impl(const QString param_id,std::string value);
+    // Does not update the cached parameter !
+    std::optional<int> try_get_param_int_impl(const QString param_id);
+    std::optional<std::string> try_get_param_string_impl(const QString param_id);
+    // Set a param value using mavsd. This means we send the "SET" command to the server
+    // and get its response (ok or rejected) or - in rare -cases - timeout.
+    // Returns true on success, false otherwise
+    bool try_set_param_int_impl(const QString param_id,int value);
+    bool try_set_param_string_impl(const QString param_id,QString value);
 
-    // callable from QT
+    // callable from QT.
+    // re-fetch all parameters from the server. Clears the cache, then re-fetches the whole parameter set.
     Q_INVOKABLE bool try_fetch_all_parameters();
-    Q_INVOKABLE bool try_fetch_parameter(QString param_id);
+    // re-fetch a specific parameter from the server, Updates the parameter set accordingly.
+    Q_INVOKABLE bool try_refetch_parameter_int(QString param_id);
+    Q_INVOKABLE bool try_refetch_parameter_string(QString param_id);
 
-    Q_INVOKABLE bool try_update_parameter(const QString param_id,QVariant value);
+    // updates the parameter on the server (unless server rejects / rare timeout)
+    // then updates the internal cached parameter, if successfull.
+    Q_INVOKABLE bool try_update_parameter_int(const QString param_id,int value);
+    Q_INVOKABLE bool try_update_parameter_string(const QString param_id,QString value);
+    // dirty
+    Q_INVOKABLE bool try_parse_and_update_parameter_int(const QString param_id,QVariant value){
+        if(value.canConvert(QVariant::Type::Int)){
+            const int value_int=value.toInt();
+            return try_update_parameter_int(param_id,value_int);
+        }
+        return false;
+    }
 
     enum Roles {
+        // The unique string id of this param
         UniqueIdRole = Qt::UserRole,
+        // The value of this param, can be int or std::string (returns qint or qstring)
         ValueRole,
-        ExtraRole
+        // if possible, convert the internal value (e.g. a integer that responds to an enum) to a more readable
+        // value, e.g. the string for this enum.
+        // In case the param is an int and we don't have enum mapping -> return the int as an string
+        // In case the param is an int and we do have enum mapping -> convert the int to the enum string, then return
+        // In case the param is an string, just return the string
+        ExtraValueRole,
+        // The internally stored type. 0==int, 1==std::string
+        ValueTypeRole,
+        // A description for this parameter. Not all parameters are documented yet, in this case this will return "?"
+        ShortDescriptionRole
     };
     int rowCount(const QModelIndex& parent= QModelIndex()) const override;
     QVariant data( const QModelIndex& index, int role = Qt::DisplayRole ) const override;
@@ -76,6 +101,12 @@ private:
     QVector<MavlinkSettingsModel::SettingData> m_data;
     const uint8_t _sys_id;
     const uint8_t _comp_id;
+public:
+    // These are for the UI to query more data about a specific param
+    Q_INVOKABLE bool has_int_enum_mapping(QString param_id)const;
+    Q_INVOKABLE QString int_enum_get_readable(QString param_id,int value)const;
+    Q_INVOKABLE int int_enum_get_max(QString param_id)const;
+    Q_INVOKABLE int int_enum_get_min(QString param_id)const;
 };
 
 #endif // MavlinkSettingsModel_H

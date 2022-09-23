@@ -5,6 +5,7 @@
 #include <QPainter>
 #include <math.h>
 
+#include "debug_overdraw.hpp"
 
 SpeedLadder::SpeedLadder(QQuickItem *parent): QQuickPaintedItem(parent) {
     qDebug() << "SpeedLadder::SpeedLadder()";
@@ -13,6 +14,9 @@ SpeedLadder::SpeedLadder(QQuickItem *parent): QQuickPaintedItem(parent) {
 
 void SpeedLadder::paint(QPainter* painter) {
     painter->save();
+    if(ENABLE_DEBUG_OVERDRAW){
+        setFillColor(QColor::fromRgb(0,255,0,128));
+    }
 
     painter->setFont(m_font);
 

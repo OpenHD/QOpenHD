@@ -12,7 +12,8 @@ import OpenHD 1.0
 import "../../ui" as Ui
 import "../elements"
 
-
+// We use a stack layout here, but the row on the left (that selects the items inside the stack layout) is custom
+// (Becasue of the immages I assume, TODO clean this up / use proper layouting)
 Rectangle {
     property alias settings_popup: settings_popup
     property alias closeButton: closeButton
@@ -289,6 +290,46 @@ Rectangle {
                     color: mainStackLayout.currentIndex == 4 ? "#33aaff" : "#dde4ed"
                 }
             }
+
+            // Developer stats
+            Item {
+                height: 48
+                width: parent.width
+                MouseArea {
+                    id: developerStatsButtonMouseArea
+                    anchors.fill: parent
+                    onClicked: mainStackLayout.currentIndex = 5
+                }
+
+                Text {
+                    id: developerStatsIcon
+                    text: "\uf05a"
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    font.family: "Font Awesome 5 Free"
+                    font.pixelSize: 18
+                    height: parent.height
+                    width: 24
+                    anchors.left: parent.left
+                    anchors.leftMargin: 12
+
+                    color: "#dde4ed"
+
+                }
+
+                Text {
+                    id: developerStatsButton
+                    height: parent.height
+                    anchors.left: developerStatsIcon.right
+                    anchors.leftMargin: 6
+
+                    text: qsTr("DEV")
+                    font.pixelSize: 15
+                    horizontalAlignment: Text.AlignLeft
+                    verticalAlignment: Text.AlignVCenter
+                    color: mainStackLayout.currentIndex == 5 ? "#33aaff" : "#dde4ed"
+                }
+            }
         }
 
         Button {
@@ -324,10 +365,6 @@ Rectangle {
             id: appSettingsPanel
         }
 
-        // placeholder for settings via mavlink
-        //X1_AirSystemSettingsPanel{
-        //    id: X1_AirSystemSettingsPanel
-        //}
         OHDComponentSettings {
             id:  oHDComponentSettings
         }
@@ -348,6 +385,11 @@ Rectangle {
         AboutPanel {
             id: aboutPanel
         }
+
+        AppDeveloperStatsPanel {
+            id: appDeveloperStatsPanel
+        }
+
     }
 }
 

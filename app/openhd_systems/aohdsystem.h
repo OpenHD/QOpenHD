@@ -28,16 +28,14 @@ public:
     explicit AOHDSystem(const bool is_air,QObject *parent = nullptr);
     static AOHDSystem& instanceAir();
     static AOHDSystem& instanceGround();
+    //Process OpenHD custom flavour message(s) coming from either the OHD Air or Ground unit
+    // Returns true if the passed message was processed (known message id), false otherwise
+    bool process_message(const mavlink_message_t& msg);
 private:
      const bool _is_air; // either true (for air) or false (for ground)
      uint8_t get_own_sys_id()const{
          return _is_air ? OHD_SYS_ID_AIR : OHD_SYS_ID_GROUND;
-     }
-public:
-     //Process OpenHD custom flavour message(s) coming from either the OHD Air or Ground unit
-     // Returns true if the passed message was processed (known message id), false otherwise
-     bool process_message(const mavlink_message_t& msg);
-private:
+     }     
      // These are for handling the slight differences regarding air/ ground properly, if there are any
      // For examle, the onboard computer status is the same when coming from either air or ground,
      // but the stats total are to be interpreted slightly different for air and ground.
@@ -203,6 +201,8 @@ public:
      // Set the mavlink system reference, once discovered
      void set_system(std::shared_ptr<mavsdk::System> system);
      Q_INVOKABLE bool send_command_reboot(bool reboot);
+     //
+     bool send_command_restart_interface();
 };
 
 

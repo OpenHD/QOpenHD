@@ -68,15 +68,14 @@ Item {
 
         TabButton {
             text: qsTr("Video")
-            width: (EnableMainVideo || EnablePiP) ? implicitWidth : 0
+            width: implicitWidth
             height: 48
             font.pixelSize: 13
-            visible: (EnableMainVideo || EnablePiP)
         }
 
         TabButton {
             text: qsTr("Manage")
-            width: (!IsRaspPi && !IsiOS) ? implicitWidth : 0
+            width: implicitWidth
             height: 48
             font.pixelSize: 13
             visible: !IsRaspPi && !IsiOS
@@ -1339,8 +1338,8 @@ Item {
 
                             anchors.right: parent.right
                             anchors.verticalCenter: parent.verticalCenter
-                            checked: settings.show_fpv
-                            onCheckedChanged: settings.show_fpv = checked
+                            checked: settings.show_flight_path_vector
+                            onCheckedChanged: settings.show_flight_path_vector = checked
                         }
                     }
 
@@ -1779,15 +1778,13 @@ Item {
                             }
                         }
                     }
-
                     Rectangle {
                         width: parent.width
                         height: rowHeight
                         color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-                        visible: EnableExampleWidget
 
                         Text {
-                            text: qsTr("Show example widget")
+                            text: qsTr("Show QT Render stats")
                             font.weight: Font.Bold
                             font.pixelSize: 13
                             anchors.leftMargin: 8
@@ -1805,8 +1802,10 @@ Item {
 
                             anchors.right: parent.right
                             anchors.verticalCenter: parent.verticalCenter
-                            checked: settings.show_example_widget
-                            onCheckedChanged: settings.show_example_widget = checked
+                            checked: settings.qrenderstats_show
+                            onCheckedChanged: {
+                                settings.qrenderstats_show = checked;
+                            }
                         }
                     }
                 }
@@ -1933,8 +1932,7 @@ Item {
             contentHeight: videoColumn.height
 
             clip: true
-            visible: (EnableMainVideo || EnablePiP) && appSettingsBar.currentIndex == 4
-
+            visible: appSettingsBar.currentIndex == 4
 
             Item {
                 anchors.fill: parent
@@ -1949,7 +1947,7 @@ Item {
                         width: parent.width
                         height: rowHeight
                         color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-                        visible: EnableGStreamer
+                        visible: true
 
                         Text {
                             text: qsTr("Always use software video decoder")
@@ -2024,65 +2022,6 @@ Item {
                         width: parent.width
                         height: rowHeight
                         color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-                        visible: EnablePiP
-
-                        Text {
-                            text: qsTr("Enable PiP")
-                            font.weight: Font.Bold
-                            font.pixelSize: 13
-                            anchors.leftMargin: 8
-                            verticalAlignment: Text.AlignVCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: 224
-                            height: elementHeight
-                            anchors.left: parent.left
-                        }
-
-                        Switch {
-                            width: 32
-                            height: elementHeight
-                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            checked: settings.show_pip_video
-                            onCheckedChanged: settings.show_pip_video = checked
-                        }
-                    }
-
-                    Rectangle {
-                        width: parent.width
-                        height: rowHeight
-                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                        Text {
-                            text: qsTr("Enable LTE")
-                            font.weight: Font.Bold
-                            font.pixelSize: 13
-                            anchors.leftMargin: 8
-                            verticalAlignment: Text.AlignVCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: 224
-                            height: elementHeight
-                            anchors.left: parent.left
-                        }
-
-                        Switch {
-                            width: 32
-                            height: elementHeight
-                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            checked: settings.enable_lte_video
-                            onCheckedChanged: settings.enable_lte_video = checked
-                        }
-                    }
-
-                    Rectangle {
-                        width: parent.width
-                        height: rowHeight
-                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
                         visible: EnableMainVideo
 
                         Text {
@@ -2113,7 +2052,7 @@ Item {
                         width: parent.width
                         height: rowHeight
                         color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-                        visible: false
+                        visible: true
 
                         Text {
                             text: qsTr("Background Transparent")
@@ -2187,7 +2126,7 @@ Item {
                         color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
                         Text {
-                            text: qsTr("DEV_JETSON_FORCE_OMX")
+                            text: qsTr("DEV_JETSON")
                             font.weight: Font.Bold
                             font.pixelSize: 13
                             anchors.leftMargin: 8
@@ -2203,8 +2142,8 @@ Item {
                             anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
                             anchors.right: parent.right
                             anchors.verticalCenter: parent.verticalCenter
-                            checked: settings.dev_jetson_force_omx
-                            onCheckedChanged: settings.dev_jetson_force_omx = checked
+                            checked: settings.dev_jetson
+                            onCheckedChanged: settings.dev_jetson = checked
                         }
                     }
                     Rectangle {
@@ -2213,7 +2152,40 @@ Item {
                         color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
                         Text {
-                            text: qsTr("DEV_ENABLE_CUSTOM_PIPELINE")
+                            text: qsTr("dev_limit_fps_on_test_file")
+                            font.weight: Font.Bold
+                            font.pixelSize: 13
+                            anchors.leftMargin: 8
+                            verticalAlignment: Text.AlignVCenter
+                            anchors.verticalCenter: parent.verticalCenter
+                            width: 224
+                            height: elementHeight
+                            anchors.left: parent.left
+                        }
+
+                        SpinBox {
+                            id: dev_limit_fps_on_test_fileSpinBox
+                            height: elementHeight
+                            width: 210
+                            font.pixelSize: 14
+                            anchors.right: parent.right
+                            anchors.verticalCenter: parent.verticalCenter
+                            from: -1
+                            to: 240
+                            stepSize: 1
+                            editable: true
+                            anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
+                            value: settings.dev_limit_fps_on_test_file
+                            onValueChanged: settings.dev_limit_fps_on_test_file = value
+                        }
+                    }
+                    Rectangle {
+                        width: parent.width
+                        height: rowHeight
+                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+
+                        Text {
+                            text: qsTr("dev_draw_alternating_rgb_dummy_frames")
                             font.weight: Font.Bold
                             font.pixelSize: 13
                             anchors.leftMargin: 8
@@ -2229,16 +2201,9 @@ Item {
                             anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
                             anchors.right: parent.right
                             anchors.verticalCenter: parent.verticalCenter
-                            checked: settings.dev_enable_custom_pipeline
-                            onCheckedChanged: settings.dev_enable_custom_pipeline = checked
+                            checked: settings.dev_draw_alternating_rgb_dummy_frames
+                            onCheckedChanged: settings.dev_draw_alternating_rgb_dummy_frames = checked
                         }
-                    }
-                    TextInput {
-                        width: parent.width
-                        height: rowHeight
-                        text: settings.dev_custom_pipeline
-                        cursorVisible: true
-                        onTextChanged: settings.dev_custom_pipeline=text
                     }
                     // temporary end
                 }
@@ -2262,105 +2227,6 @@ Item {
                     spacing: 0
                     anchors.left: parent.left
                     anchors.right: parent.right
-
-                    Rectangle {
-                        width: parent.width
-                        height: rowHeight
-                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-                        visible: !IsRaspPi
-
-                        Text {
-                            text: qsTr("Load settings from file")
-                            font.weight: Font.Bold
-                            font.pixelSize: 13
-                            anchors.leftMargin: 8
-                            verticalAlignment: Text.AlignVCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: 224
-                            height: elementHeight
-                            anchors.left: parent.left
-                        }
-
-                        Button {
-                            width: 128
-                            height: elementHeight
-                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            text: qsTr("Load")
-                            onClicked: {
-                                fileDialog.open();
-                            }
-                        }
-
-                        FileDialog {
-                            id: fileDialog
-                            title: qsTr("Select settings file")
-                            folder: shortcuts.home
-                            selectMultiple: false
-                            selectFolder: false
-                            defaultSuffix: "conf"
-                            onAccepted: {
-                                //ManageSettings.loadSettingsFile(fileDialog.fileUrl);
-                                //settings.sync();
-                            }
-                            onRejected: {
-                                console.log("Canceled")
-                            }
-                        }
-                    }
-
-                    Rectangle {
-                        width: parent.width
-                        height: rowHeight
-                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-                        visible: !IsRaspPi
-
-                        Text {
-                            text: qsTr("Save settings to file")
-                            font.weight: Font.Bold
-                            font.pixelSize: 13
-                            anchors.leftMargin: 8
-                            verticalAlignment: Text.AlignVCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: 224
-                            height: elementHeight
-                            anchors.left: parent.left
-                        }
-
-                        Button {
-                            width: 128
-                            height: elementHeight
-                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            text: qsTr("Save")
-                            onClicked: {
-                                saveDialog.open();
-                            }
-                        }
-
-                        FileDialog {
-                            id: saveDialog
-                            title: qsTr("Select location")
-                            folder: shortcuts.home + "/qopenhd.conf";
-                            selectMultiple: false
-                            selectFolder: false
-                            selectExisting: false
-
-                            onAccepted: {
-                                console.log("Sa: " + saveDialog.fileUrl);
-                                settings.sync();
-                                // this is a folder path, the ManualSettings class chooses a filename to put there
-                                //ManageSettings.saveSettingsFile(saveDialog.fileUrl);
-                            }
-                            onRejected: {
-                                console.log("Canceled")
-                            }
-                        }
-                    }
 
                     //
                     Rectangle {

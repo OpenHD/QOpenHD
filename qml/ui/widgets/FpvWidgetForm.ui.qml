@@ -12,7 +12,7 @@ BaseWidget {
     width: 50
     height: 55
 
-    visible: settings.show_fpv
+    visible: settings.show_flight_path_vector
 
     widgetIdentifier: "fpv_widget"
 
@@ -430,7 +430,7 @@ BaseWidget {
 
         anchors.centerIn: parent
 
-        visible: settings.show_fpv
+        visible: settings.show_flight_path_vector
         opacity: settings.fpv_opacity
 
         Item {
@@ -438,7 +438,7 @@ BaseWidget {
 
             anchors.centerIn: parent
 
-            visible: settings.show_fpv
+            visible: settings.show_flight_path_vector
 
             //transform: Scale { origin.x: 0; origin.y: 0; xScale: settings.fpv_size ; yScale: settings.fpv_size}
             FlightPathVector {

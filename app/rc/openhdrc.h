@@ -189,8 +189,6 @@ private slots:
     void buttonGuideChanged(bool value);
 
 private:
-    OpenHDUtil m_util;
-
     QUdpSocket *rcSocket = nullptr;
 
     QString groundAddress;

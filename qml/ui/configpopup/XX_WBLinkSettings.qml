@@ -227,4 +227,11 @@ ColumnLayout {
             }
         }
     }
+    Button{
+        text: "SOFT RESTART"
+        id: softRestartButton
+        onClicked:{
+            _synchronizedSettings.soft_restart()
+        }
+    }
 }

@@ -203,18 +203,15 @@
         <file>resources/ic.png</file>
         <file>resources/homemarker.png</file>
         <file>resources/Font Awesome 5 Free-Solid-900.otf</file>
-        <file>video/MainVideoAndroid.qml</file>
         <file>video/MainVideoGStreamer.qml</file>
-        <file>video/MainVideoRender.qml</file>
-        <file>video/SecondaryVideoLoader.qml</file>
-        <file>video/SecondaryVideoAndroid.qml</file>
-        <file>video/SecondaryVideoGstreamer.qml</file>
-        <file>video/SecondaryVideoRenderer.qml</file>
         <file>ui/configpopup/LogMessagesStatusView.qml</file>
         <file>ui/configpopup/OHDComponentSettings.qml</file>
         <file>ui/configpopup/X2_GroundSystemSettingsPanel.qml</file>
         <file>ui/configpopup/X0_AirCameraSettingsPanel.qml</file>
         <file>ui/configpopup/XX_WBLinkSettings.qml</file>
-        <file>ui/configpopup/XX_MSettingsInput.qml</file>
+        <file>ui/configpopup/ParameterEditor.qml</file>
+        <file>ui/configpopup/AppDeveloperStatsPanel.qml</file>
+        <file>ui/widgets/QRenderStatsWidget.qml</file>
+        <file>ui/widgets/QRenderStatsWidgetForm.ui.qml</file>
     </qresource>
 </RCC>

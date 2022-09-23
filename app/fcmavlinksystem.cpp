@@ -4,10 +4,11 @@
 //#include "FCMavlinkSystemtelemetry.h"
 #include "telemetry/qopenhdmavlinkhelper.hpp"
 
-#include <GeographicLib/Geodesic.hpp>
-
 #include <QDebug>
 #include "qopenhd.h"
+#include "telemetry/telemetryutil.hpp"
+
+#include <geographiclib-c-2.0/src/geodesic.h>
 
 FCMavlinkSystem& FCMavlinkSystem::instance() {
     static FCMavlinkSystem* instance = new FCMavlinkSystem();
@@ -130,12 +131,12 @@ void FCMavlinkSystem::updateAppMahKm() {
     if (!totalTime.isValid()){
         totalTime.start();
     }
-    static OpenHDUtil::pt1Filter_t eFilterState;
+    static Telemetryutil::pt1Filter_t eFilterState;
     auto currentTimeMs = totalTime.elapsed();
     auto efficiencyTimeDelta = currentTimeMs - mahKmLastTime;
 
     if ( (m_gps_fix_type >= GPS_FIX_TYPE_2D_FIX) && (m_speed > 0) ) {
-        set_mah_km((int)OpenHDUtil::pt1FilterApply4(
+        set_mah_km((int)Telemetryutil::pt1FilterApply4(
                     &eFilterState, ((float)m_battery_current*10 / m_speed), 1, efficiencyTimeDelta * 1e-3f));
         mahKmLastTime = currentTimeMs;
     }
@@ -241,12 +242,15 @@ void FCMavlinkSystem::set_homelon(double homelon) {
 void FCMavlinkSystem::calculate_home_distance() {
     // if home lat/long are zero the calculation will be wrong so we skip it
     if (m_armed && m_homelat != 0.0 && m_homelon != 0.0) {
-        GeographicLib::Math::real s12;
-        GeographicLib::Math::real azi1;
-        GeographicLib::Math::real azi2;
+        double s12;
+        double azi1;
+        double azi2;
 
-        GeographicLib::Geodesic geod(GeographicLib::Constants::WGS84_a(), GeographicLib::Constants::WGS84_f());
-        geod.Inverse(m_homelat, m_homelon, m_lat, m_lon, s12, azi1, azi2);
+        geod_geodesic geod{};
+        // from https://manpages.ubuntu.com/manpages/bionic/man3/geodesic.3.html
+        const double a = 6378137, f = 1/298.257223563; /* WGS84 */
+        geod_init(&geod,a,f);
+        geod_inverse(&geod,m_homelat,m_homelon,m_lat,m_lon,&s12,&azi1,&azi2);
 
         /* todo: this could be easily extended to save the azimuth as well, which gives us the direction
            home for free as a result of the calculation above.

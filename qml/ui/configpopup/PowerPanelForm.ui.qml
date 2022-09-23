@@ -383,6 +383,23 @@ Rectangle {
             OpenHDPi.stop_app()
         }
     }
+    Button {
+        id: devRestartVideo
+        anchors.right: parent.right
+        anchors.rightMargin: 12
+        anchors.bottom: devCancelQOpenHD.top
+        anchors.bottomMargin: 6
+        font.pixelSize: 14
+        font.capitalization: Font.MixedCase
+        Material.accent: Material.Orange
+        highlighted: true
+
+        text: qsTr("DEV! Restart video")
+
+        onPressed: {
+            _mainVideo.dev_restart_stream()
+        }
+    }
 
 
 }

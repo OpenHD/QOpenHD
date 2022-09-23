@@ -25,28 +25,8 @@ Rectangle {
     property int rowHeight: 64
     property int elementHeight: 48
 
-    // OpenHD uses mW (milli watt) but the iw dev command run in OpenHD converts that to milli dBm
-    // Here I have the (at least theoretical) mapping
-    ListModel{
-        id: wifiCardTxPowerModel
-        ListElement {title: "10mW  (10dBm)"; value: 10}
-        ListElement {title: "25mW  (14dBm)"; value: 25}
-        ListElement {title: "100mW (20dBm)"; value: 100}
-        ListElement {title: "200mW (23dBm)"; value: 200}
-        ListElement {title: "500mW (27dBm)"; value: 500}
-        ListElement {title: "1000mW(30dBm)"; value: 1000}
-    }
-    function find_index(model,value){
-        for(var i = 0; i < model.count; ++i) if (model.get(i).value===value) return i
-        return -1
-    }
-    // try and update the combobox to the retrieved value(value != index)
-    function update_combobox(_combobox,_value){
-        var _index=find_index(_combobox.model,_value)
-        if(_index >= 0){
-            _combobox.currentIndex=_index;
-        }
-    }
+    property int paramEditorWidth: 300
+
 
     Component {
         id: delegateGroundPiSettingsValue
@@ -65,44 +45,38 @@ Rectangle {
                 }
                 Label {
                     width:100
-                    text: "Val: "+model.value
+                    //text: "Val: "+model.value
+                    //text: "Val: "+model.extraValue
+                    text: model.extraValue
                     font.bold: true
                 }
                 Button {
-                    text: "GET"
-                    onClicked: _groundPiSettingsModel.try_fetch_parameter(model.unique_id)
-                }
-                TextInput {
-                    id: xTextInput
-                    width:100
-                    text: ""+model.value
-                    cursorVisible: false
-                }
-                Button {
-                    text: "SET"
-                    onClicked: _groundPiSettingsModel.try_update_parameter( model.unique_id,xTextInput.text)
+                    text: "EDIT"
+                    onClicked: {
+                        parameterEditor.setup_for_parameter(model.unique_id,model)
+                    }
                 }
             }
         }
     }
 
-    ColumnLayout {
-        anchors.fill: parent
 
-        /*Label{
-            width:200
-            height:64
-            text: "Not found yet"
-            visible: _groundPiSettingsModel.rowCount() > 0
-        }*/
+    // Left row: multiple colums of param value
+    ColumnLayout {
+        width: parent.width - paramEditorWidth
+        height:parent.height
 
         Button {
+            width: 100
             height: 48
             id: fetchAllButtonId
             text:"FetchAll Ground"
             enabled: _ohdSystemGround.is_alive
             onClicked: {
                 var result=_groundPiSettingsModel.try_fetch_all_parameters()
+                if(!result){
+                     _messageBoxInstance.set_text_and_show("Fetch all failed, please try again")
+                }
             }
         }
         Rectangle{
@@ -121,4 +95,14 @@ Rectangle {
             }
         }
     }
+
+    // Right row: the parameter edit element
+    ParameterEditor{
+        id: parameterEditor
+        total_width: 300
+        instanceMavlinkSettingsModel: _groundPiSettingsModel
+    }
+
+
+
 }

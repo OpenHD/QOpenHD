@@ -25,8 +25,11 @@ Rectangle {
     property int rowHeight: 64
     property int elementHeight: 48
 
+    property int paramEditorWidth: 300
+
+
     Component {
-        id: delegateAirPiSettingsValue
+        id: delegateCamera0SettingsValue
         Item {
             id: item
             width: 200
@@ -42,48 +45,38 @@ Rectangle {
                 }
                 Label {
                     width:100
-                    text: "Val: "+model.value
+                    //text: "Val: "+model.value
+                    //text: "Val: "+model.extraValue
+                    text: model.extraValue
                     font.bold: true
                 }
                 Button {
-                    text: "GET"
-                    onClicked: _airCameraSettingsModel.try_fetch_parameter(model.unique_id)
-                }
-                TextInput {
-                    id: xTextInput
-                    width:100
-                    text: ""+model.value
-                    cursorVisible: false
-                }
-                Button {
-                    text: "SET"
-                    onClicked: _airCameraSettingsModel.try_update_parameter( model.unique_id,xTextInput.text)
+                    text: "EDIT"
+                    onClicked: {
+                        parameterEditor.setup_for_parameter(model.unique_id,model)
+                    }
                 }
             }
         }
     }
 
-    ColumnLayout {
-        anchors.fill: parent
 
-        /*Label{
-            width:200
-            height:64
-            text: "Not found yet"
-            visible: _airCameraSettingsModel.rowCount() > 0
-        }*/
+    // Left row: multiple colums of param value
+    ColumnLayout {
+        width: parent.width - paramEditorWidth
+        height:parent.height
 
         Button {
+            width: 100
             height: 48
             id: fetchAllButtonId
-            text:"FetchAll Camera"
+            text:"FetchAll Camera1"
             enabled: _ohdSystemAir.is_alive
             onClicked: {
                 var result=_airCameraSettingsModel.try_fetch_all_parameters()
-                /*visible=false;
-                if(result===true){
-                    visible=true;
-                }*/
+                if(!result){
+                     _messageBoxInstance.set_text_and_show("Fetch all failed, please try again")
+                }
             }
         }
         Rectangle{
@@ -97,9 +90,19 @@ Rectangle {
                     //top: fetchAllButtonId.bottom
                     width: parent.width
                     model: _airCameraSettingsModel
-                    delegate: delegateAirPiSettingsValue
+                    delegate: delegateCamera0SettingsValue
                 }
             }
         }
     }
+
+    // Right row: the parameter edit element
+    ParameterEditor{
+        id: parameterEditor
+        total_width: 300
+        instanceMavlinkSettingsModel: _airCameraSettingsModel
+    }
+
+
+
 }

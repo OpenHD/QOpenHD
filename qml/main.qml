@@ -23,31 +23,17 @@ ApplicationWindow {
     minimumWidth: 480
     title: qsTr("Open.HD")
     //color: "transparent" //Consti10 transparent background
-    color : "#2C3E50" // reduce KREBS
+    //color : "#2C3E50" // reduce KREBS
+    color: settings.app_background_transparent ? "transparent" : "#2C3E50"
     //flags: Qt.WindowStaysOnTopHint| Qt.FramelessWindowHint| Qt.X11BypassWindowManagerHint;
+    //flags: Qt.WindowStaysOnTopHint| Qt.X11BypassWindowManagerHint;
     visibility: UseFullscreen ? "FullScreen" : "AutomaticVisibility"
 
     property bool initialised: false
 
-    function default_mavlink_sysid() {
-        if (IsRaspPi) {
-            return 220;
-        }
-        if (IsMac) {
-            return 221;
-        }
-        if (IsiOS) {
-            return 222;
-        }
-        if (IsAndroid) {
-            return 223;
-        }
-        if (IsWindows) {
-            return 224;
-        }
-        if (IsDesktopLinux) {
-            return 225;
-        }
+
+    QSGVideoTextureItem {
+        id: my_QSGVideoTextureItem
     }
 
     ColorPicker {
@@ -85,20 +71,11 @@ ApplicationWindow {
         source: {
             if (EnableGStreamer && EnableMainVideo) {
                 return "../video/MainVideoGStreamer.qml";
+                //return "";
             }
-            if (IsAndroid && EnableVideoRender && EnableMainVideo) {
-                return "MainVideoRender.qml";
-            }
-            if (IsRaspPi && EnableVideoRender && EnableMainVideo) {
-                return "MainVideoRender.qml";
-            }
+            //if(EnableAVCodec){
+            //}
 
-            if (IsMac && EnableVideoRender && EnableMainVideo) {
-                return "MainVideoRender.qml";
-            }
-            if (IsiOS && EnableVideoRender && EnableMainVideo) {
-                return "MainVideoRender.qml";
-            }
             return ""
         }
     }
