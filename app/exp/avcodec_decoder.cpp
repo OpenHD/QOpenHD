@@ -565,7 +565,10 @@ int AVCodecDecoder::open_and_decode_until_error()
     test_dequeue_fames=true;
     //m_pull_frames_from_ffmpeg_thread=std::make_unique<std::thread>([this]{this->dequeue_frames_test();});
     keep_fetching_frames_or_input_packets=true;
-    std::unique_ptr<std::thread> tmp_thread=std::make_unique<std::thread>([this]{this->fetch_frame_or_feed_input_packet();});
+    std::unique_ptr<std::thread> tmp_thread=nullptr;
+    if(enable_wtf){
+        tmp_thread=std::make_unique<std::thread>([this]{this->fetch_frame_or_feed_input_packet();});
+    }
     DecodingStatistcs::instance().set_doing_wait_for_frame_decode("Yes");
     while (ret >= 0) {
         if(has_been_canceled){
@@ -597,9 +600,11 @@ int AVCodecDecoder::open_and_decode_until_error()
                     }
                     lastFrame=std::chrono::steady_clock::now();
                 }
-                //ret = decode_and_wait_for_frame(&packet);
-                enqueue_av_packet(packet);
-
+                if(enable_wtf){
+                    enqueue_av_packet(packet);
+                }else{
+                    ret = decode_and_wait_for_frame(&packet);
+                }
                 nFeedFrames++;
                 if(limitedFrameRate>0){
                     const uint64_t runTimeMs=std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now()-decodingStart).count();
@@ -609,17 +614,21 @@ int AVCodecDecoder::open_and_decode_until_error()
                 }
             }
         }
-        if(keep_fetching_frames_or_input_packets==false){
-            qDebug()<<"Decoder encountered an error";
-            break;
+        if(enable_wtf){
+            if(keep_fetching_frames_or_input_packets==false){
+                qDebug()<<"Decoder encountered an error";
+                break;
+            }
+        }else{
+            av_packet_unref(&packet);
         }
-        //av_packet_unref(&packet);
     }
     qDebug()<<"Broke out of the queue_data_dequeue_frame loop";
     keep_fetching_frames_or_input_packets=false;
-    tmp_thread->join();
-    tmp_thread=nullptr;
-
+    if(tmp_thread){
+        tmp_thread->join();
+        tmp_thread=nullptr;
+    }
     test_dequeue_fames=false;
     //m_pull_frames_from_ffmpeg_thread->join();
     //m_pull_frames_from_ffmpeg_thread=nullptr;
