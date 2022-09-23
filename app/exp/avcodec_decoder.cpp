@@ -257,8 +257,7 @@ void AVCodecDecoder::fetch_frame_or_feed_input_packet(){
         //m_ffmpeg_dequeue_or_queue_mutex.unlock();
         if(ret == AVERROR_EOF){
             qDebug()<<"Got EOF";
-            av_frame_free(&frame);
-            return;
+            keep_fetching_frames_or_input_packets=false;
         }else if(ret==0){
             debug_is_valid_timestamp(frame->pts);
             // we got a new frame
@@ -289,9 +288,12 @@ void AVCodecDecoder::fetch_frame_or_feed_input_packet(){
                     qDebug()<<"Error during send packet";
                 }
                 av_packet_unref(&packet.value());
+            }else{
+                std::this_thread::sleep_for(std::chrono::milliseconds(1));
             }
         }else{
             qDebug()<<"Weird decoder error:"<<ret;
+            keep_fetching_frames_or_input_packets=false;
         }
     }
 }
@@ -582,30 +584,34 @@ int AVCodecDecoder::open_and_decode_until_error()
              qDebug()<<"Got "<<debug_av_packet(&packet).c_str();
 
         }else{
-        if (video_stream == packet.stream_index){
-            int limitedFrameRate=settings.dev_limit_fps_on_test_file;
-            if(settings.dev_test_video_mode==QOpenHDVideoHelper::VideoTestMode::DISABLED){
-                // never limit the fps on decode when doing live streaming !
-                limitedFrameRate=-1;
-            }
-            if(limitedFrameRate>0){
-                const long frameDeltaNs=1000*1000*1000 / limitedFrameRate;
-                while (std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now()-lastFrame).count()<frameDeltaNs){
-                    // busy wait
+            if (video_stream == packet.stream_index){
+                int limitedFrameRate=settings.dev_limit_fps_on_test_file;
+                if(settings.dev_test_video_mode==QOpenHDVideoHelper::VideoTestMode::DISABLED){
+                    // never limit the fps on decode when doing live streaming !
+                    limitedFrameRate=-1;
                 }
-                lastFrame=std::chrono::steady_clock::now();
-            }
-            //ret = decode_and_wait_for_frame(&packet);
-            enqueue_av_packet(packet);
+                if(limitedFrameRate>0){
+                    const long frameDeltaNs=1000*1000*1000 / limitedFrameRate;
+                    while (std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now()-lastFrame).count()<frameDeltaNs){
+                        // busy wait
+                    }
+                    lastFrame=std::chrono::steady_clock::now();
+                }
+                //ret = decode_and_wait_for_frame(&packet);
+                enqueue_av_packet(packet);
 
-            nFeedFrames++;
-            if(limitedFrameRate>0){
-                const uint64_t runTimeMs=std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now()-decodingStart).count();
-                const double runTimeS=runTimeMs/1000.0f;
-                const double fps=runTimeS==0 ? 0 : nFeedFrames/runTimeS;
-                //qDebug()<<"Fake fps:"<<fps;
+                nFeedFrames++;
+                if(limitedFrameRate>0){
+                    const uint64_t runTimeMs=std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now()-decodingStart).count();
+                    const double runTimeS=runTimeMs/1000.0f;
+                    const double fps=runTimeS==0 ? 0 : nFeedFrames/runTimeS;
+                    //qDebug()<<"Fake fps:"<<fps;
+                }
             }
         }
+        if(keep_fetching_frames_or_input_packets==false){
+            qDebug()<<"Decoder encountered an error";
+            break;
         }
         //av_packet_unref(&packet);
     }
