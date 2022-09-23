@@ -277,9 +277,9 @@ int main(int argc, char *argv[]) {
 
 #if defined(ENABLE_GSTREAMER)
 #if defined(ENABLE_MAIN_VIDEO)
-    std::unique_ptr<GstVideoStream>  mainVideo=nullptr;
-    //std::unique_ptr<GstVideoStream>  mainVideo=std::make_unique<GstVideoStream>();
-    //engine.rootContext()->setContextProperty("_mainVideo", mainVideo.get());
+    //std::unique_ptr<GstVideoStream>  mainVideo=nullptr;
+    std::unique_ptr<GstVideoStream>  mainVideo=std::make_unique<GstVideoStream>();
+    engine.rootContext()->setContextProperty("_mainVideo", mainVideo.get());
 #endif
 #endif
 

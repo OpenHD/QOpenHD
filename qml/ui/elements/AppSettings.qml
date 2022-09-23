@@ -221,7 +221,7 @@ Settings {
     property double heading_width: 250
     property bool show_heading_ladder: true
 
-    property bool show_fpv: true
+    property bool show_flight_path_vector: true
     property bool fpv_dynamic: true    
     property int fpv_sensitivity: 5
     property double fpv_opacity: 1

@@ -1338,8 +1338,8 @@ Item {
 
                             anchors.right: parent.right
                             anchors.verticalCenter: parent.verticalCenter
-                            checked: settings.show_fpv
-                            onCheckedChanged: settings.show_fpv = checked
+                            checked: settings.show_flight_path_vector
+                            onCheckedChanged: settings.show_flight_path_vector = checked
                         }
                     }
 
