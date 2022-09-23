@@ -83,7 +83,7 @@ private:
     static constexpr auto MAX_FED_TIMESTAMPS_QUEUE_SIZE=100;
     std::deque<int64_t> m_fed_timestamps_queue;
 private:
-    const bool enable_wtf=false;
+    const bool enable_wtf=true;
     void fetch_frame_or_feed_input_packet();
     void enqueue_av_packet(AVPacket packet);
     std::optional<AVPacket> fetch_av_packet_if_available();
