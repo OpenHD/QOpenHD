@@ -44,20 +44,20 @@ RpiMMALDisplay &RpiMMALDisplay::instance()
 bool RpiMMALDisplay::prepareDecoderContext(AVCodecContext *context, AVDictionary **options)
 {
     // FFmpeg defaults this to 10 which is too large to fit in the default 64 MB VRAM split.
-        // Reducing to 2 seems to work fine for our bitstreams (max of 1 buffered frame needed).
-        //av_dict_set_int(options, "extra_buffers", 2, 0);
-        // We set the GPU memory, so we have space, mre buffers here don#t hurt and can provide a benefit
-        // for some streams
-        av_dict_set_int(options, "extra_buffers", 10, 0);
+    // Reducing to 2 seems to work fine for our bitstreams (max of 1 buffered frame needed).
+    //av_dict_set_int(options, "extra_buffers", 2, 0);
+    // We set the GPU memory, so we have space, mre buffers here don#t hurt and can provide a benefit
+    // for some streams
+    av_dict_set_int(options, "extra_buffers", 10, 0);
 
-        // MMAL seems to dislike certain initial width and height values, but it seems okay
-        // with getting zero for the width and height. We'll zero them all the time to be safe.
-        context->width = 0;
-        context->height = 0;
+    // MMAL seems to dislike certain initial width and height values, but it seems okay
+    // with getting zero for the width and height. We'll zero them all the time to be safe.
+    context->width = 0;
+    context->height = 0;
 
-        qDebug()<<"Using MMAL renderer";
+    qDebug()<<"Using MMAL renderer";
 
-        return true;
+    return true;
 }
 
 
@@ -126,6 +126,9 @@ void RpiMMALDisplay::updateDisplayRegion()
     if(!display_region_needs_update){
         return;
     }
+    // We don't need to set anything in regards to source or dest recangle by using the
+    // "letterbox" mode - if the video ratio doesn't match the screen, black bars will be added
+    // while filling as much area as possible.
     MMAL_STATUS_T status;
     MMAL_DISPLAYREGION_T dr = {};
     dr.hdr.id = MMAL_PARAMETER_DISPLAYREGION;

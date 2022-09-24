@@ -259,6 +259,10 @@ void GL_VideoRenderer::update_texture_vdpau(AVFrame* hw_frame) {
 // "Consumes" the given hw_frame (makes sure it is freed at the apropriate time / the previous one
 // is freed when updating to a new one.
 void GL_VideoRenderer::update_texture_gl(AVFrame *frame) {
+  // We have a new frame and we update (one of the HW/SW) textures with it that will then
+  // be rendered - make sure to discard anything that is still "on the screen" in case the
+  // format has changed in between calls
+  mark_all_video_textures_as_without();
   curr_video_width=frame->width;
   curr_video_height=frame->height;
   if(frame->format == AV_PIX_FMT_DRM_PRIME){
@@ -319,6 +323,13 @@ void GL_VideoRenderer::clean_video_textures_gl()
     yuv_420_p_sw_frame_texture.has_valid_image=false;
     curr_video_width=0;
     curr_video_height=0;
+}
+
+void GL_VideoRenderer::mark_all_video_textures_as_without()
+{
+    egl_frame_texture.has_valid_image=false;
+    cuda_frametexture.has_valid_image=false;
+    yuv_420_p_sw_frame_texture.has_valid_image=false;
 }
 
 static std::string safe_glGetString(GLenum name){

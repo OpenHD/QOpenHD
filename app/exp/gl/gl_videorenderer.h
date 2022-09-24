@@ -50,6 +50,8 @@ class GL_VideoRenderer {
   // it is recommended to call this also from the gl thread to avoid mixing up threading
   void clean_video_textures_gl();
   //
+  void mark_all_video_textures_as_without();
+  //
   int curr_video_width=0;
   int curr_video_height=0;
   static std::string debug_info();

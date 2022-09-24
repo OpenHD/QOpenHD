@@ -43,6 +43,23 @@ static enum AVPixelFormat get_hw_format(AVCodecContext *ctx,const enum AVPixelFo
     return ret;
 }
 
+// For SW decode, we support YUV420 | YUV422 and their (mjpeg) abbreviates since
+// we can always copy and render these formats via OpenGL - and when we are doing SW decode
+// we most likely are on a (fast) x86 platform where we can copy those formats via CPU
+// relatively easily, at least the resolutions common in OpenHD
+static enum AVPixelFormat get_sw_format(AVCodecContext *ctx,const enum AVPixelFormat *pix_fmts){
+    const enum AVPixelFormat *p;
+    qDebug()<<"All (SW) pixel formats:"<<all_formats_to_string(pix_fmts).c_str();
+    for (p = pix_fmts; *p != -1; p++) {
+        const AVPixelFormat tmp=*p;
+        if(tmp==AV_PIX_FMT_YUV420P || tmp==AV_PIX_FMT_YUV422P || tmp==AV_PIX_FMT_YUVJ422P || tmp==AV_PIX_FMT_YUVJ422P){
+            return tmp;
+        }
+    }
+    qDebug()<<"Weird, we should be able to do SW decoding on all platforms";
+    return AV_PIX_FMT_NONE;
+}
+
 // FFMPEG needs a ".sdp" file to do rtp udp h264,h265 or mjpeg
 // For MJPEG we map mjpeg to 26 (mjpeg), for h264/5 we map h264/5 to 96 (general)
 static std::string create_udp_rtp_sdp_file(const QOpenHDVideoHelper::VideoCodec& video_codec){
@@ -319,10 +336,15 @@ std::optional<AVPacket> AVCodecDecoder::fetch_av_packet_if_available()
 
 void AVCodecDecoder::on_new_frame(AVFrame *frame)
 {
-
-    qDebug()<<"Got frame format:"<<QString(safe_av_get_pix_fmt_name((AVPixelFormat)frame->format).c_str())<<" "<<frame->width<<"x"<<frame->height;
+    {
+        std::stringstream ss;
+        ss<<safe_av_get_pix_fmt_name((AVPixelFormat)frame->format)<<" "<<frame->width<<"x"<<frame->height;
+        DecodingStatistcs::instance().set_primary_stream_frame_format(QString(ss.str().c_str()));
+        qDebug()<<"Got frame:"<<ss.str().c_str();
+    }
     if(frame->format==AV_PIX_FMT_MMAL){
 #ifdef HAVE_MMAL
+        TextureRenderer::instance().clear_all_video_textures_next_frame();
         RpiMMALDisplay::instance().display_frame(frame);
         return;
 #else
@@ -363,8 +385,8 @@ int AVCodecDecoder::open_and_decode_until_error()
                 in_filename="/home/consti10/Desktop/hello_drmprime/in/jetson_test.h265";
                 //in_filename="/home/consti10/Desktop/hello_drmprime/in/Big_Buck_Bunny_1080_10s_1MB_h265.mp4";
             }else{
-               //in_filename="/home/consti10/Desktop/hello_drmprime/in/uv_640x480.mjpeg";
-               in_filename="/home/consti10/Desktop/hello_drmprime/in/Big_Buck_Bunny_1080.mjpeg";
+               in_filename="/home/consti10/Desktop/hello_drmprime/in/uv_640x480.mjpeg";
+               //in_filename="/home/consti10/Desktop/hello_drmprime/in/Big_Buck_Bunny_1080.mjpeg";
             }
         }
     }
@@ -434,9 +456,11 @@ int AVCodecDecoder::open_and_decode_until_error()
     //const AVHWDeviceType kAvhwDeviceType = AV_HWDEVICE_TYPE_CUDA;
     //const AVHWDeviceType kAvhwDeviceType = AV_HWDEVICE_TYPE_VDPAU;
 
+
     bool is_mjpeg=false;
     if (decoder->id == AV_CODEC_ID_H264) {
         qDebug()<<"H264 decode";
+        qDebug()<<all_hw_configs_for_this_codec(decoder).c_str();
         if(!settings.enable_software_video_decoder){
             // weird workaround needed for pi + DRM_PRIME
             /*if ((decoder = avcodec_find_decoder_by_name("h264_v4l2m2m")) == NULL) {
@@ -482,8 +506,9 @@ int AVCodecDecoder::open_and_decode_until_error()
         //wanted_hw_pix_fmt = AV_PIX_FMT_VDPAU;
     }else if(decoder->id==AV_CODEC_ID_MJPEG){
         qDebug()<<"Codec mjpeg";
-        //wanted_hw_pix_fmt=AV_PIX_FMT_YUVJ422P;
-        wanted_hw_pix_fmt=AV_PIX_FMT_YUVJ420P;
+        qDebug()<<all_hw_configs_for_this_codec(decoder).c_str();
+        wanted_hw_pix_fmt=AV_PIX_FMT_YUVJ422P;
+        //wanted_hw_pix_fmt=AV_PIX_FMT_YUVJ420P;
         //wanted_hw_pix_fmt=AV_PIX_FMT_CUDA;
         //wanted_hw_pix_fmt = AV_PIX_FMT_DRM_PRIME;
         is_mjpeg= true;
@@ -516,23 +541,16 @@ int AVCodecDecoder::open_and_decode_until_error()
         return -1;
     }
 
-    decoder_ctx->get_format  = get_hw_format;
-
     if(settings.enable_software_video_decoder ||
             // for mjpeg we always use sw decode r.n, since for some reason the "fallback" to sw decode doesn't work here
             // and also the PI cannot do HW mjpeg decode anyways at least no one bothered to fix ffmpeg for it.
             settings.video_codec==QOpenHDVideoHelper::VideoCodecMJPEG
             ){
         qDebug()<<"User wants SW decode / mjpeg";
-        // SW decode is always YUV420 for H264/H265 and YUVJ22P for mjpeg
-        if(is_mjpeg){
-          //wanted_hw_pix_fmt=AV_PIX_FMT_YUVJ422P;
-            wanted_hw_pix_fmt=AV_PIX_FMT_YUVJ420P;
-        }else{
-          wanted_hw_pix_fmt=AV_PIX_FMT_YUV420P;
-        }
+        decoder_ctx->get_format  = get_sw_format;
     }else{
         qDebug()<<"Try HW decode";
+        decoder_ctx->get_format  = get_hw_format;
         if (hw_decoder_init(decoder_ctx, kAvhwDeviceType) < 0){
           qDebug()<<"HW decoder init failed,fallback to SW decode";
           // Use SW decode as fallback ?!
@@ -565,7 +583,10 @@ int AVCodecDecoder::open_and_decode_until_error()
     test_dequeue_fames=true;
     //m_pull_frames_from_ffmpeg_thread=std::make_unique<std::thread>([this]{this->dequeue_frames_test();});
     keep_fetching_frames_or_input_packets=true;
-    std::unique_ptr<std::thread> tmp_thread=std::make_unique<std::thread>([this]{this->fetch_frame_or_feed_input_packet();});
+    std::unique_ptr<std::thread> tmp_thread=nullptr;
+    if(enable_wtf){
+        tmp_thread=std::make_unique<std::thread>([this]{this->fetch_frame_or_feed_input_packet();});
+    }
     DecodingStatistcs::instance().set_doing_wait_for_frame_decode("Yes");
     while (ret >= 0) {
         if(has_been_canceled){
@@ -597,9 +618,11 @@ int AVCodecDecoder::open_and_decode_until_error()
                     }
                     lastFrame=std::chrono::steady_clock::now();
                 }
-                //ret = decode_and_wait_for_frame(&packet);
-                enqueue_av_packet(packet);
-
+                if(enable_wtf){
+                    enqueue_av_packet(packet);
+                }else{
+                    ret = decode_and_wait_for_frame(&packet);
+                }
                 nFeedFrames++;
                 if(limitedFrameRate>0){
                     const uint64_t runTimeMs=std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now()-decodingStart).count();
@@ -609,17 +632,21 @@ int AVCodecDecoder::open_and_decode_until_error()
                 }
             }
         }
-        if(keep_fetching_frames_or_input_packets==false){
-            qDebug()<<"Decoder encountered an error";
-            break;
+        if(enable_wtf){
+            if(keep_fetching_frames_or_input_packets==false){
+                qDebug()<<"Decoder encountered an error";
+                break;
+            }
+        }else{
+            av_packet_unref(&packet);
         }
-        //av_packet_unref(&packet);
     }
     qDebug()<<"Broke out of the queue_data_dequeue_frame loop";
     keep_fetching_frames_or_input_packets=false;
-    tmp_thread->join();
-    tmp_thread=nullptr;
-
+    if(tmp_thread){
+        tmp_thread->join();
+        tmp_thread=nullptr;
+    }
     test_dequeue_fames=false;
     //m_pull_frames_from_ffmpeg_thread->join();
     //m_pull_frames_from_ffmpeg_thread=nullptr;
@@ -627,6 +654,8 @@ int AVCodecDecoder::open_and_decode_until_error()
     //packet.data = NULL;
     //packet.size = 0;
     //ret = decode_and_wait_for_frame(&packet);
+    DecodingStatistcs::instance().set_decode_time("-1");
+    DecodingStatistcs::instance().set_primary_stream_frame_format("-1");
     avcodec_free_context(&decoder_ctx);
     qDebug()<<"avcodec_free_context done";
     avformat_close_input(&input_ctx);
