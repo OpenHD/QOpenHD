@@ -90,6 +90,9 @@ void TextureRenderer::paint(QQuickWindow *window)
    if(m_clear_all_video_textures_next_frame){
        remove_queued_frame_if_avalable();
        gl_video_renderer->clean_video_textures_gl();
+       DecodingStatistcs::instance().set_n_dropped_frames(-1);
+       DecodingStatistcs::instance().set_n_rendered_frames(-1);
+       DecodingStatistcs::instance().set_decode_and_render_time("-1");
        m_clear_all_video_textures_next_frame=false;
    }
    //glClear(GL_COLOR_BUFFER_BIT |GL_DEPTH_BUFFER_BIT| GL_STENCIL_BUFFER_BIT);
