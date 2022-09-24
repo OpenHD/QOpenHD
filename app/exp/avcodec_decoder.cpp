@@ -43,6 +43,23 @@ static enum AVPixelFormat get_hw_format(AVCodecContext *ctx,const enum AVPixelFo
     return ret;
 }
 
+// For SW decode, we support YUV420 | YUV422 and their (mjpeg) abbreviates since
+// we can always copy and render these formats via OpenGL - and when we are doing SW decode
+// we most likely are on a (fast) x86 platform where we can copy those formats via CPU
+// relatively easily, at least the resolutions common in OpenHD
+static enum AVPixelFormat get_sw_format(AVCodecContext *ctx,const enum AVPixelFormat *pix_fmts){
+    const enum AVPixelFormat *p;
+    qDebug()<<"All (SW) pixel formats:"<<all_formats_to_string(pix_fmts).c_str();
+    for (p = pix_fmts; *p != -1; p++) {
+        const AVPixelFormat tmp=*p;
+        if(tmp==AV_PIX_FMT_YUV420P || tmp==AV_PIX_FMT_YUV422P || tmp==AV_PIX_FMT_YUVJ422P || tmp==AV_PIX_FMT_YUVJ422P){
+            return tmp;
+        }
+    }
+    qDebug()<<"Weird, we should be able to do SW decoding on all platforms";
+    return AV_PIX_FMT_NONE;
+}
+
 // FFMPEG needs a ".sdp" file to do rtp udp h264,h265 or mjpeg
 // For MJPEG we map mjpeg to 26 (mjpeg), for h264/5 we map h264/5 to 96 (general)
 static std::string create_udp_rtp_sdp_file(const QOpenHDVideoHelper::VideoCodec& video_codec){
@@ -434,6 +451,7 @@ int AVCodecDecoder::open_and_decode_until_error()
     //const AVHWDeviceType kAvhwDeviceType = AV_HWDEVICE_TYPE_CUDA;
     //const AVHWDeviceType kAvhwDeviceType = AV_HWDEVICE_TYPE_VDPAU;
 
+
     bool is_mjpeg=false;
     if (decoder->id == AV_CODEC_ID_H264) {
         qDebug()<<"H264 decode";
@@ -518,23 +536,16 @@ int AVCodecDecoder::open_and_decode_until_error()
         return -1;
     }
 
-    decoder_ctx->get_format  = get_hw_format;
-
     if(settings.enable_software_video_decoder ||
             // for mjpeg we always use sw decode r.n, since for some reason the "fallback" to sw decode doesn't work here
             // and also the PI cannot do HW mjpeg decode anyways at least no one bothered to fix ffmpeg for it.
             settings.video_codec==QOpenHDVideoHelper::VideoCodecMJPEG
             ){
         qDebug()<<"User wants SW decode / mjpeg";
-        // SW decode is always YUV420 for H264/H265 and YUVJ22P for mjpeg
-        if(is_mjpeg){
-            wanted_hw_pix_fmt=AV_PIX_FMT_YUVJ422P;
-            //wanted_hw_pix_fmt=AV_PIX_FMT_YUVJ420P;
-        }else{
-          wanted_hw_pix_fmt=AV_PIX_FMT_YUV420P;
-        }
+        decoder_ctx->get_format  = get_sw_format;
     }else{
         qDebug()<<"Try HW decode";
+        decoder_ctx->get_format  = get_hw_format;
         if (hw_decoder_init(decoder_ctx, kAvhwDeviceType) < 0){
           qDebug()<<"HW decoder init failed,fallback to SW decode";
           // Use SW decode as fallback ?!
