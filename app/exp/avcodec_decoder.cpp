@@ -339,7 +339,7 @@ void AVCodecDecoder::on_new_frame(AVFrame *frame)
     {
         std::stringstream ss;
         ss<<safe_av_get_pix_fmt_name((AVPixelFormat)frame->format)<<" "<<frame->width<<"x"<<frame->height;
-        DecodingStatistcs::set_primary_stream_frame_format(ss.str.c_str());
+        DecodingStatistcs::instance().set_primary_stream_frame_format(QString(ss.str().c_str()));
         qDebug()<<"Got frame:"<<ss.str().c_str();
     }
     if(frame->format==AV_PIX_FMT_MMAL){
@@ -654,6 +654,7 @@ int AVCodecDecoder::open_and_decode_until_error()
     //packet.data = NULL;
     //packet.size = 0;
     //ret = decode_and_wait_for_frame(&packet);
+    DecodingStatistcs::instance().set_primary_stream_frame_format("-1");
     avcodec_free_context(&decoder_ctx);
     qDebug()<<"avcodec_free_context done";
     avformat_close_input(&input_ctx);

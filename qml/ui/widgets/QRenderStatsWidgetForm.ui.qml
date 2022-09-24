@@ -30,7 +30,7 @@ BaseWidget {
 
     // We display quite a lot of text, and this one is only for development anyways
     widgetActionWidth: 500
-    widgetActionHeight: 220
+    widgetActionHeight: 300
 
     //----------------------------- DETAIL BELOW ----------------------------------
 
@@ -303,6 +303,28 @@ BaseWidget {
                 }
                 Text {
                     text: _decodingStatistics.doing_wait_for_frame_decode
+                    color: "white";
+                    font.bold: true;
+                    height: parent.height
+                    font.pixelSize: detailPanelFontPixels;
+                    anchors.right: parent.right
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("Format:")
+                    color: "white"
+                    font.bold: true
+                    height: parent.height
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Text {
+                    text: _decodingStatistics.primary_stream_frame_format
                     color: "white";
                     font.bold: true;
                     height: parent.height
