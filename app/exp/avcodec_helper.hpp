@@ -102,6 +102,27 @@ static std::string all_formats_to_string(const enum AVPixelFormat *pix_fmts){
   return ss.str();
 }
 
+static std::string all_hw_configs_for_this_codec(const AVCodec *decoder){
+    std::stringstream ss;
+    ss<<"all_hw_configs_for_this_codec:\n";
+    for (int i = 0;; i++) {
+        const AVCodecHWConfig *config = avcodec_get_hw_config(decoder, i);
+        if (!config) {
+            if(i==0){
+                ss<<"Codec does not support any HW configurations";
+                return ss.str();
+            }else{
+                return ss.str();
+            }
+
+        }
+        ss<<"HW config "<<i<<" ";
+        ss<<"HW Device name: "<<safe_av_hwdevice_get_type_name(config->device_type);
+        ss<<" PIX fmt: "<<safe_av_get_pix_fmt_name(config->pix_fmt);
+        ss<<"\n";
+    }
+}
+
 static std::string av_packet_flags_to_string(int flags){
     if(flags & AV_PKT_FLAG_KEY){
         return "AV_PKT_FLAG_KEY";

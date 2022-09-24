@@ -126,6 +126,9 @@ void RpiMMALDisplay::updateDisplayRegion()
     if(!display_region_needs_update){
         return;
     }
+    // We don't need to set anything in regards to source or dest recangle by using the
+    // "letterbox" mode - if the video ratio doesn't match the screen, black bars will be added
+    // while filling as much area as possible.
     MMAL_STATUS_T status;
     MMAL_DISPLAYREGION_T dr = {};
     dr.hdr.id = MMAL_PARAMETER_DISPLAYREGION;

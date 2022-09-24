@@ -363,8 +363,8 @@ int AVCodecDecoder::open_and_decode_until_error()
                 in_filename="/home/consti10/Desktop/hello_drmprime/in/jetson_test.h265";
                 //in_filename="/home/consti10/Desktop/hello_drmprime/in/Big_Buck_Bunny_1080_10s_1MB_h265.mp4";
             }else{
-               //in_filename="/home/consti10/Desktop/hello_drmprime/in/uv_640x480.mjpeg";
-               in_filename="/home/consti10/Desktop/hello_drmprime/in/Big_Buck_Bunny_1080.mjpeg";
+               in_filename="/home/consti10/Desktop/hello_drmprime/in/uv_640x480.mjpeg";
+               //in_filename="/home/consti10/Desktop/hello_drmprime/in/Big_Buck_Bunny_1080.mjpeg";
             }
         }
     }
@@ -437,6 +437,7 @@ int AVCodecDecoder::open_and_decode_until_error()
     bool is_mjpeg=false;
     if (decoder->id == AV_CODEC_ID_H264) {
         qDebug()<<"H264 decode";
+        qDebug()<<all_hw_configs_for_this_codec(decoder).c_str();
         if(!settings.enable_software_video_decoder){
             // weird workaround needed for pi + DRM_PRIME
             /*if ((decoder = avcodec_find_decoder_by_name("h264_v4l2m2m")) == NULL) {
@@ -482,8 +483,9 @@ int AVCodecDecoder::open_and_decode_until_error()
         //wanted_hw_pix_fmt = AV_PIX_FMT_VDPAU;
     }else if(decoder->id==AV_CODEC_ID_MJPEG){
         qDebug()<<"Codec mjpeg";
-        //wanted_hw_pix_fmt=AV_PIX_FMT_YUVJ422P;
-        wanted_hw_pix_fmt=AV_PIX_FMT_YUVJ420P;
+        qDebug()<<all_hw_configs_for_this_codec(decoder).c_str();
+        wanted_hw_pix_fmt=AV_PIX_FMT_YUVJ422P;
+        //wanted_hw_pix_fmt=AV_PIX_FMT_YUVJ420P;
         //wanted_hw_pix_fmt=AV_PIX_FMT_CUDA;
         //wanted_hw_pix_fmt = AV_PIX_FMT_DRM_PRIME;
         is_mjpeg= true;
@@ -526,8 +528,8 @@ int AVCodecDecoder::open_and_decode_until_error()
         qDebug()<<"User wants SW decode / mjpeg";
         // SW decode is always YUV420 for H264/H265 and YUVJ22P for mjpeg
         if(is_mjpeg){
-          //wanted_hw_pix_fmt=AV_PIX_FMT_YUVJ422P;
-            wanted_hw_pix_fmt=AV_PIX_FMT_YUVJ420P;
+            wanted_hw_pix_fmt=AV_PIX_FMT_YUVJ422P;
+            //wanted_hw_pix_fmt=AV_PIX_FMT_YUVJ420P;
         }else{
           wanted_hw_pix_fmt=AV_PIX_FMT_YUV420P;
         }
