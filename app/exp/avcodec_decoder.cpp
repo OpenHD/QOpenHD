@@ -462,10 +462,13 @@ int AVCodecDecoder::open_and_decode_until_error()
                 avformat_close_input(&input_ctx);
                 return -1;
             }*/
-            decoder = avcodec_find_decoder_by_name("h264_mmal");
-            assert(decoder);
-            //wanted_hw_pix_fmt = AV_PIX_FMT_DRM_PRIME;
-            wanted_hw_pix_fmt = AV_PIX_FMT_MMAL;
+            auto tmp = avcodec_find_decoder_by_name("h264_mmal");
+            if(tmp!=nullptr){
+                decoder = tmp;
+                 wanted_hw_pix_fmt = AV_PIX_FMT_MMAL;
+            }else{
+                wanted_hw_pix_fmt = AV_PIX_FMT_YUV420P;
+            }
         }else{
             wanted_hw_pix_fmt = AV_PIX_FMT_YUV420P;
         }
