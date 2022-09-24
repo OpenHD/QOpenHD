@@ -22,6 +22,7 @@ class DecodingStatistcs : public QObject
     L_RW_PROP(int, n_rendered_frames, set_n_rendered_frames, -1)
     L_RW_PROP(int, udp_rx_bitrate, set_udp_rx_bitrate, -1)
     L_RW_PROP(QString, doing_wait_for_frame_decode, set_doing_wait_for_frame_decode, "?")
+    L_RW_PROP(QString, primary_stream_frame_format, set_primary_stream_frame_format, "?")
 public:
     explicit DecodingStatistcs(QObject *parent = nullptr);
     static DecodingStatistcs& instance();

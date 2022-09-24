@@ -336,8 +336,12 @@ std::optional<AVPacket> AVCodecDecoder::fetch_av_packet_if_available()
 
 void AVCodecDecoder::on_new_frame(AVFrame *frame)
 {
-
-    qDebug()<<"Got frame format:"<<QString(safe_av_get_pix_fmt_name((AVPixelFormat)frame->format).c_str())<<" "<<frame->width<<"x"<<frame->height;
+    {
+        std::stringstream ss;
+        ss<<safe_av_get_pix_fmt_name((AVPixelFormat)frame->format)<<" "<<frame->width<<"x"<<frame->height;
+        DecodingStatistcs::set_primary_stream_frame_format(ss.str.c_str());
+        qDebug()<<"Got frame:"<<ss.str().c_str();
+    }
     if(frame->format==AV_PIX_FMT_MMAL){
 #ifdef HAVE_MMAL
         TextureRenderer::instance().clear_all_video_textures_next_frame();
