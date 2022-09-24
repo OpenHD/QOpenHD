@@ -158,12 +158,6 @@ void AVCodecDecoder::dequeue_frames_test()
 
 void AVCodecDecoder::constant_decode()
 {
-#ifdef HAVE_MMAL
-    /*if(true){
-        x_run();
-        return;
-    }*/
-#endif
     while(true){
         qDebug()<<"Start decode";
         open_and_decode_until_error();
