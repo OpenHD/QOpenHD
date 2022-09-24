@@ -3,7 +3,7 @@ name: Build Jetson Selfhosted
 
 on:
   push:
-    branches: [ master, "2.0", "2.2.3-evo ]
+    branches: [ master, "2.0", "2.2.3-evo" ]
     
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
