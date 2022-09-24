@@ -1,4 +1,4 @@
-name: UbuntuX86BuildTest # Basic test that checks if QOpenHD compiles on x86 ubuntu
+name: UbuntuX86
 
 on: [push]
 
