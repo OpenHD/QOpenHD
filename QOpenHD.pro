@@ -99,8 +99,7 @@ packagesExist(mmal) {
 
 # Geographic lib updated to c-2.0, so much cleaner
 SOURCES += $$PWD/lib/geographiclib-c-2.0/src/geodesic.c
-HEADERS += $$PWD/lib/geographiclib-c-2.0/src/geodesic.h \
-    app/osd/debug_overdraw.hpp
+HEADERS += $$PWD/lib/geographiclib-c-2.0/src/geodesic.h
 
 
 # All files for the OSD elements - these are QT QQuickPaintedItem's that are written in c++
@@ -139,6 +138,7 @@ HEADERS += \
     app/osd/altitudeladder.h \
     app/osd/drawingcanvas.h \
     app/osd/flightpathvector.h \
+    app/osd/debug_overdraw.hpp \
     app/qopenhd.h \
     app/telemetry/mavlink_include.h \
     app/telemetry/openhd_defines.hpp \
