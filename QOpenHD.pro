@@ -96,25 +96,15 @@ packagesExist(mmal) {
    PKCONFIG += mmal_util mmal_core mmal_components
 }
 
-
-# Geographic lib updated to c-2.0, so much cleaner
-SOURCES += $$PWD/lib/geographiclib-c-2.0/src/geodesic.c
-HEADERS += $$PWD/lib/geographiclib-c-2.0/src/geodesic.h
-
-
-# All files for the OSD elements - these are QT QQuickPaintedItem's that are written in c++
+# All Generic files. NOTE: During development, when you create new files, QT Creater will add them to the
+# "first SOURCES / HEADERS it can find in the .pro, which is here". This is why (as an example) geographic lib,
+# which is a library, comes after the generic files here.
 SOURCES += \
     app/exp/QSGVideoTextureItem.cpp \
     app/exp/gl/gl_shaders.cpp \
     app/exp/gl/gl_videorenderer.cpp \
     app/logging/logmessagesmodel.cpp \
     app/openhd_systems/aohdsystem.cpp \
-    app/osd/headingladder.cpp \
-    app/osd/horizonladder.cpp \
-    app/osd/speedladder.cpp \
-    app/osd/altitudeladder.cpp \
-    app/osd/drawingcanvas.cpp \
-    app/osd/flightpathvector.cpp \
     app/qopenhd.cpp \
     app/telemetry/settings/synchronizedsettings.cpp \
     app/util/WorkaroundMessageBox.cpp \
@@ -132,13 +122,6 @@ HEADERS += \
     app/logging/logmessagesmodel.h \
     app/openhd_systems/aohdsystem.h \
     app/openhd_systems/wifiadapter.h \
-    app/osd/headingladder.h \
-    app/osd/horizonladder.h \
-    app/osd/speedladder.h \
-    app/osd/altitudeladder.h \
-    app/osd/drawingcanvas.h \
-    app/osd/flightpathvector.h \
-    app/osd/debug_overdraw.hpp \
     app/qopenhd.h \
     app/telemetry/mavlink_include.h \
     app/telemetry/openhd_defines.hpp \
@@ -154,6 +137,29 @@ HEADERS += \
     # xx
     #app/exp/drm_kms/drmprime_out.h \
 
+
+# Geographic lib updated to c-2.0, so much cleaner
+SOURCES += $$PWD/lib/geographiclib-c-2.0/src/geodesic.c
+HEADERS += $$PWD/lib/geographiclib-c-2.0/src/geodesic.h
+
+
+# All files for the OSD elements - these are QT QQuickPaintedItem's that are written in c++
+SOURCES += \
+    app/osd/headingladder.cpp \
+    app/osd/horizonladder.cpp \
+    app/osd/speedladder.cpp \
+    app/osd/altitudeladder.cpp \
+    app/osd/drawingcanvas.cpp \
+    app/osd/flightpathvector.cpp \
+
+HEADERS += \
+    app/osd/headingladder.h \
+    app/osd/horizonladder.h \
+    app/osd/speedladder.h \
+    app/osd/altitudeladder.h \
+    app/osd/drawingcanvas.h \
+    app/osd/flightpathvector.h \
+    app/osd/debug_overdraw.hpp \
 
 # I deleted all the "old" telemetry protocolls other than mavlink
 # and moved them into their own respective directories
