@@ -32,6 +32,12 @@ public:
     // remoe the currently queued frame if there is one (be carefull to not forget that the
     // GL thread can pick up a queued frame at any time).
     void remove_queued_frame_if_avalable();
+    // If we switch from a decode method that requires OpenGL to a decode method
+    // that uses the HW composer, we need to become "transparent" again - or rather
+    // not draw any video with OpenGL, which will have the same effect
+    void clear_all_video_textures_next_frame(){
+        m_clear_all_video_textures_next_frame=true;
+    }
 private:
     QSize m_viewportSize;
     int m_index=0;
@@ -57,6 +63,7 @@ private:
       };
     DisplayStats m_display_stats;
     bool dev_draw_alternating_rgb_dummy_frames=false;
+    bool m_clear_all_video_textures_next_frame=false;
 };
 
 #endif // TEXTURERENDERER_H

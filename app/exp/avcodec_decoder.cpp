@@ -340,6 +340,7 @@ void AVCodecDecoder::on_new_frame(AVFrame *frame)
     qDebug()<<"Got frame format:"<<QString(safe_av_get_pix_fmt_name((AVPixelFormat)frame->format).c_str())<<" "<<frame->width<<"x"<<frame->height;
     if(frame->format==AV_PIX_FMT_MMAL){
 #ifdef HAVE_MMAL
+        TextureRenderer::instance().clear_all_video_textures_next_frame();
         RpiMMALDisplay::instance().display_frame(frame);
         return;
 #else
