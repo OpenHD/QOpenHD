@@ -1,6 +1,5 @@
-Code for decoding and then displaying video via QT.
-RN I've tested sw decoding via gstreamer on standard linux.
-NOTE: For hw-accelerated h265 on rpi we will need ffmpeg and some quite complicated windowing stuff.
-Since we therefore already have to deal with ffmpeg, it would be worth checking out if ffmpeg simplifies decoding on other platforms, too.
-##TODO 
-we need platform-dependent hw-accelerated methods here, but this is a lot of work and the legacy code is not maintainable, therefore not directly usable.
+We got 2 approaches for live video streaming:
+
+1) gstreamer and qmlglsink - deprecated for multiple reasons
+2) ffmpeg (avcodec) and custom renderer(s) for various ways to then display the decoded video on the screen
+(Best), similar to how moonlight-qt does things.
