@@ -56,6 +56,7 @@ jobs:
           apt update
           apt install -y openhd-qt-jetson-nano-bionic 
           apt upgrade -y
+          apt install -y ruby-backports
           sudo bash install_dep.sh
           sudo ./package.sh arm64 ubuntu bionic
           ls -a  
