@@ -422,12 +422,12 @@ int AVCodecDecoder::open_and_decode_until_error()
     //
     //av_dict_set(&av_dictionary,"sync","ext",0);
     //
-    //av_dict_set_int(&av_dictionary, "probesize", 32, 0);
-    //av_dict_set_int(&av_dictionary, "analyzeduration", 0, 0); // Is in microseconds
+    av_dict_set_int(&av_dictionary, "probesize", 32, 0);
+    av_dict_set_int(&av_dictionary, "analyzeduration", 1000*100, 0); // Is in microseconds
 
     // I think those values are in seconds ?
-    //av_dict_set_int(&av_dictionary, "rw_timeout", 10, 0);
-    //av_dict_set_int(&av_dictionary, "stimeout", 10, 0);
+    av_dict_set_int(&av_dictionary, "rw_timeout", 1000*100, 0); //microseconds
+    av_dict_set_int(&av_dictionary, "stimeout", 1000*100, 0); //microseconds
     //av_dict_set_int(&av_dictionary, "rw_timeout", 0, 0);
     //av_dict_set_int(&av_dictionary, "stimeout",0, 0);
     av_dict_set_int(&av_dictionary,"rtbufsize",0,0);
