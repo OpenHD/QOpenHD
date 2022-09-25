@@ -46,6 +46,12 @@ static std::string safe_av_hwdevice_get_type_name(enum AVHWDeviceType type){
   return {tmp};
 }
 
+static std::string av_error_as_string(int err){
+    char buf[1024];
+    av_make_error_string(buf,1024,err);
+    return std::string(buf);
+}
+
 static std::string safe_av_get_pix_fmt_name(enum AVPixelFormat pix_fmt){
   auto tmp= av_get_pix_fmt_name(pix_fmt);
   if(tmp== nullptr){

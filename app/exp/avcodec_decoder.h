@@ -90,6 +90,10 @@ private:
     std::mutex m_av_packet_queue_mutex;
     std::queue<AVPacket> m_av_packet_queue;
     bool keep_fetching_frames_or_input_packets=false;
+private:
+    // EXP manual RTP
+    AVCodecParserContext *m_pCodecPaser=nullptr;
+    void parse_rtp_test();
 };
 
 #endif // AVCODEC_DECODER_H

@@ -27,6 +27,7 @@ ApplicationWindow {
     color: settings.app_background_transparent ? "transparent" : "#2C3E50"
     //flags: Qt.WindowStaysOnTopHint| Qt.FramelessWindowHint| Qt.X11BypassWindowManagerHint;
     //flags: Qt.WindowStaysOnTopHint| Qt.X11BypassWindowManagerHint;
+    //visibility: "FullScreen"
     visibility: UseFullscreen ? "FullScreen" : "AutomaticVisibility"
 
     property bool initialised: false
@@ -167,7 +168,7 @@ ApplicationWindow {
     Shortcut {
         sequence: "Ctrl+F12"
         onActivated: {
-            OpenHDPi.stop_app()
+            _qopenhd.quit_qopenhd()
         }
     }
 

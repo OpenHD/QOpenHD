@@ -380,7 +380,7 @@ Rectangle {
         text: qsTr("DEV! Cancel QOpenHD")
 
         onPressed: {
-            OpenHDPi.stop_app()
+            _qopenhd.quit_qopenhd()
         }
     }
     Button {

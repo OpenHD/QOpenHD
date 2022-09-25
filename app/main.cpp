@@ -13,7 +13,6 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #endif
 
 #include "rc/openhdrc.h"
-#include "platform/openhdpi.h"
 #include "fcmavlinksystem.h"
 #include "openhd_systems/aohdsystem.h"
 #include "../app/telemetry/mavlinktelemetry.h"
@@ -245,9 +244,6 @@ int main(int argc, char *argv[]) {
     load_fonts();
 
     qmlRegisterType<OpenHDRC>("OpenHD", 1, 0, "OpenHDRC");
-
-    qmlRegisterSingletonType<OpenHDPi>("OpenHD", 1, 0, "OpenHDPi", openHDPiSingletonProvider);
-    //qmlRegisterSingletonType<LocalMessage>("OpenHD", 1, 0, "LocalMessage", localMessageSingletonProvider);
 
     qmlRegisterUncreatableType<QmlObjectListModel>("OpenHD", 1, 0, "QmlObjectListModel", "Reference only");
 

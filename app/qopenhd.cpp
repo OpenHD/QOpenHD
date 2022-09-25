@@ -2,6 +2,7 @@
 #include <QCoreApplication>
 
 #include <QDebug>
+#include <qapplication.h>
 
 QOpenHD &QOpenHD::instance()
 {
@@ -64,4 +65,17 @@ void QOpenHD::textToSpeech_sayMessage(QString message)
 #else
     qDebug()<<"TextToSpeech disabled, msg:"<<message;
 #endif
+}
+
+void QOpenHD::quit_qopenhd()
+{
+    qDebug()<<"quit_qopenhd() begin";
+    QApplication::quit();
+    qDebug()<<"quit_qopenhd() end";
+}
+
+void QOpenHD::disable_service_and_quit()
+{
+    // TODO
+    quit_qopenhd();
 }
