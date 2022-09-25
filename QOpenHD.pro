@@ -179,7 +179,6 @@ SOURCES += \
     app/fcmavlinksystem.cpp \
     app/util/FrequencyMonitor.cpp \
     app/main.cpp \
-    app/platform/openhdpi.cpp \
     app/rc/openhdrc.cpp \
     app/util/QmlObjectListModel.cpp \
     app/util/util.cpp \
@@ -191,7 +190,6 @@ HEADERS += \
     app/fcmavlinksystem.h \
     app/util/FrequencyMonitor.h \
     app/util/sharedqueue.h \
-    app/platform/openhdpi.h \
     app/rc/openhdrc.h \
     app/util/QmlObjectListModel.h \
     app/util/util.h \
