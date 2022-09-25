@@ -422,8 +422,8 @@ int AVCodecDecoder::open_and_decode_until_error()
     //
     //av_dict_set(&av_dictionary,"sync","ext",0);
     //
-    av_dict_set_int(&av_dictionary, "probesize", 32, 0);
-    av_dict_set_int(&av_dictionary, "analyzeduration", 1000*100, 0); // Is in microseconds
+    //av_dict_set_int(&av_dictionary, "probesize", 32, 0);
+    //av_dict_set_int(&av_dictionary, "analyzeduration", 1000*100, 0); // Is in microseconds
 
     // I think those values are in seconds ?
     av_dict_set_int(&av_dictionary, "rw_timeout", 1000*100, 0); //microseconds
@@ -455,7 +455,7 @@ int AVCodecDecoder::open_and_decode_until_error()
         std::this_thread::sleep_for(std::chrono::seconds(1));
         return -1;
     }
-    qDebug()<<"done avformat_open_input";
+    qDebug()<<"done avformat_open_input["<<in_filename.c_str()<<"]";
 
     if (avformat_find_stream_info(input_ctx, NULL) < 0) {
         qDebug()<< "Cannot find input stream information.";
