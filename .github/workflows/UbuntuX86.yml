@@ -20,17 +20,14 @@ jobs:
         ls -a
         sudo apt update
         sudo apt install -y curl
-        sudo add-apt-repository ppa:beineri/opt-qt-5.15.4-focal
-        sudo apt update
-        sudo apt upgrade -y 
         sudo rm -Rf /etc/apt/sources.list.d/openhd*
         sudo apt-get clean
         sudo rm -rf /var/lib/apt/lists/*
         curl -1sLf \
         'https://dl.cloudsmith.io/public/openhd/openhd-2-2-evo/setup.deb.sh' \
         | sudo -E bash
-        sudo bash install_dep.sh
-        sudo bash install_dep_extra.sh
+        sudo bash install_dep_ubuntu20.sh
+        
 
     - name: Build with make
       run: |
