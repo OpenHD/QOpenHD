@@ -26,6 +26,13 @@ public:
     Q_PROPERTY(QString fontFamily MEMBER m_fontFamily WRITE setFontFamily NOTIFY fontFamilyChanged)
     void setFontFamily(QString fontFamily);
     void textToSpeech_sayMessage(QString message);
+
+    // This only terminates the App, on most OpenHD images the system service will then restart
+    // QOpenHD. Can be usefully for debugging, if something's wrong with the app and you need to restart it
+    Q_INVOKABLE void quit_qopenhd();
+    // This not only quits qopenhd, but also disables the autostart service
+    // (until next reboot)
+    Q_INVOKABLE void disable_service_and_quit();
 signals:
     void fontFamilyChanged(QString fontFamily);
 private:
