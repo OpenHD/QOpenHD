@@ -432,7 +432,7 @@ int AVCodecDecoder::open_and_decode_until_error()
     //av_dict_set_int(&av_dictionary, "stimeout",0, 0);
     av_dict_set_int(&av_dictionary,"rtbufsize",0,0);
     av_dict_set_int(&av_dictionary,"max_interleave_delta",1,0); //in microseconds
-    av_dict_set_int(&av_dictionary,"max_streams",1,0);
+    //av_dict_set_int(&av_dictionary,"max_streams",1,0);
 
     av_dict_set_int(&av_dictionary, "stimeout", 0, 0);
     av_dict_set_int(&av_dictionary, "rw_timeout", 0, 0);
