@@ -78,10 +78,11 @@ void GL_VideoRenderer::update_texture_yuv420P_yuv422P(AVFrame* frame) {
   }*/
   const GLuint frame_width=frame->width;
   const GLuint frame_height=frame->height;
-  // 420 has half width, 422 has full width
-  const GLuint uv_width= is_AV_PIX_FMT_YUV420P(frame->format) ? frame_width/2 : frame_width;
-  // both 420 and 422 have half height
-  const GLuint uv_height=frame_height/2;
+  // Both 420 and 422 have half width
+  const GLuint uv_width= frame_width/2;
+  // 420 has half height, 422 has full height
+  const GLuint uv_height=is_AV_PIX_FMT_YUV420P(frame->format) ? frame_height/2 : frame_height;
+  //std::cerr<<"UV width x height"<<uv_width<<"x"<<uv_height<<"\n";
   GLuint widths[3] = {
 	  frame_width,
 	  uv_width,
