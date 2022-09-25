@@ -348,7 +348,7 @@ void AVCodecDecoder::on_new_frame(AVFrame *frame)
         std::stringstream ss;
         ss<<safe_av_get_pix_fmt_name((AVPixelFormat)frame->format)<<" "<<frame->width<<"x"<<frame->height;
         DecodingStatistcs::instance().set_primary_stream_frame_format(QString(ss.str().c_str()));
-        qDebug()<<"Got frame:"<<ss.str().c_str();
+        //qDebug()<<"Got frame:"<<ss.str().c_str();
     }
     if(frame->format==AV_PIX_FMT_MMAL){
 #ifdef HAVE_MMAL
@@ -637,10 +637,9 @@ int AVCodecDecoder::open_and_decode_until_error()
             }
             break;
         }
-        qDebug()<<"Got av_packet"<<debug_av_packet(&packet).c_str();
+        //qDebug()<<"Got av_packet"<<debug_av_packet(&packet).c_str();
         if(false){
              qDebug()<<"Got "<<debug_av_packet(&packet).c_str();
-
         }else{
             if (video_stream == packet.stream_index){
                 int limitedFrameRate=settings.dev_limit_fps_on_test_file;
