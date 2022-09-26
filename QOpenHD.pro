@@ -103,6 +103,8 @@ SOURCES += \
     app/exp/QSGVideoTextureItem.cpp \
     app/exp/gl/gl_shaders.cpp \
     app/exp/gl/gl_videorenderer.cpp \
+    app/exp/rtp/ParseRTP.cpp \
+    app/exp/rtp/rtpreceiver.cpp \
     app/logging/logmessagesmodel.cpp \
     app/openhd_systems/aohdsystem.cpp \
     app/qopenhd.cpp \
@@ -112,6 +114,7 @@ SOURCES += \
     app/videostreaming/decodingstatistcs.cpp \
     app/exp/texturerenderer.cpp \
     app/exp/avcodec_decoder.cpp \
+    app/common_consti/UDPReceiver.cpp \
     # xx
     #app/exp/drm_kms/drmprime_out.cpp \
 
@@ -119,6 +122,9 @@ HEADERS += \
     app/exp/QSGVideoTextureItem.h \
     app/exp/gl/gl_shaders.h \
     app/exp/gl/gl_videorenderer.h \
+    app/exp/rtp/ParseRTP.h \
+    app/exp/rtp/RTP.hpp \
+    app/exp/rtp/rtpreceiver.h \
     app/logging/logmessagesmodel.h \
     app/openhd_systems/aohdsystem.h \
     app/openhd_systems/wifiadapter.h \
@@ -134,6 +140,7 @@ HEADERS += \
     app/videostreaming/decodingstatistcs.h \
     app/exp/texturerenderer.h \
     app/exp/avcodec_decoder.h \
+    app/common_consti/UDPReceiver.h \
     # xx
     #app/exp/drm_kms/drmprime_out.h \
 

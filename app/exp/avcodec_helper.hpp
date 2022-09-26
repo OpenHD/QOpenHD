@@ -59,6 +59,13 @@ static std::string safe_av_get_pix_fmt_name(enum AVPixelFormat pix_fmt){
   }
   return {tmp};
 }
+static std::string safe_av_get_colorspace_name(enum AVColorSpace val){
+  auto tmp= av_get_colorspace_name(val);
+  if(tmp== nullptr){
+	return "null";
+  }
+  return {tmp};
+}
 
 static std::string all_av_hwframe_transfer_formats(AVBufferRef *hwframe_ctx){
   std::stringstream ss;

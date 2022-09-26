@@ -9,6 +9,8 @@
 #include "../videostreaming/QOpenHDVideoHelper.hpp"
 #include "../common_consti/TimeHelper.hpp"
 
+#include "rtp/rtpreceiver.h"
+
 #include <mutex>
 #include <deque>
 #include <optional>
@@ -94,6 +96,8 @@ private:
     // EXP manual RTP
     AVCodecParserContext *m_pCodecPaser=nullptr;
     void parse_rtp_test();
+private:
+    std::unique_ptr<RTPReceiver> m_rtp_reciever=nullptr;
 };
 
 #endif // AVCODEC_DECODER_H

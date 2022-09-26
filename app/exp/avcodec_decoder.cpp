@@ -70,10 +70,10 @@ static std::string create_udp_rtp_sdp_file(const QOpenHDVideoHelper::VideoCodec&
     //ss<<"width=1280\n";
     //ss<<"height=720\n";
     if(video_codec==QOpenHDVideoHelper::VideoCodec::VideoCodecMJPEG){
-         ss<<"m=video 5600 RTP/AVP 26\n";
+         ss<<"m=video 5600 RTP/UDP 26\n";
         ss<<"a=rtpmap:26 JPEG/90000\n";
     }else{
-        ss<<"m=video 5600 RTP/AVP 96\n";
+        ss<<"m=video 5600 RTP/UDP 96\n";
         if(video_codec==QOpenHDVideoHelper::VideoCodec::VideoCodecH264){
             ss<<"a=rtpmap:96 H264/90000\n";
         }else{
@@ -116,6 +116,8 @@ AVCodecDecoder::AVCodecDecoder(QObject *parent):
 
 void AVCodecDecoder::init(bool primaryStream)
 {
+    m_rtp_reciever=std::make_unique<RTPReceiver>();
+    if(true)return;
     /*QObject::connect(timer, &QTimer::timeout, this, &AVCodecDecoder::lulatsch);
     timer->start(1000);*/
     qDebug() << "AVCodecDecoder::init()";
@@ -406,8 +408,7 @@ int AVCodecDecoder::open_and_decode_until_error()
 
         }
     }
-    //av_log_set_level(AV_LOG_TRACE);
-
+    av_log_set_level(AV_LOG_TRACE);
 
     // These options are needed for using the foo.sdp (rtp streaming)
     // https://stackoverflow.com/questions/20538698/minimum-sdp-for-making-a-h264-rtp-stream
@@ -434,8 +435,8 @@ int AVCodecDecoder::open_and_decode_until_error()
     av_dict_set_int(&av_dictionary,"max_interleave_delta",1,0); //in microseconds
     //av_dict_set_int(&av_dictionary,"max_streams",1,0);
 
-    av_dict_set_int(&av_dictionary, "stimeout", 0, 0);
-    av_dict_set_int(&av_dictionary, "rw_timeout", 0, 0);
+    av_dict_set(&av_dictionary, "rtsp_transport", "udp", 0);
+
     AVFormatContext *input_ctx = nullptr;
     input_ctx=avformat_alloc_context();
     assert(input_ctx);
