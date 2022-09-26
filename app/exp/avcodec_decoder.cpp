@@ -73,7 +73,7 @@ AVCodecDecoder::AVCodecDecoder(QObject *parent):
 
 void AVCodecDecoder::init(bool primaryStream)
 {
-    m_rtp_reciever=std::make_unique<RTPReceiver>(5600,true);
+    //m_rtp_reciever=std::make_unique<RTPReceiver>(5600,true);
     //if(true)return;
     qDebug() << "AVCodecDecoder::init()";
     m_last_video_settings=QOpenHDVideoHelper::read_from_settings();
@@ -705,6 +705,9 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp()
          fprintf(stderr, "Could not open %s\n");
          exit(1);
      }
+
+     m_rtp_receiver=std::make_unique<RTPReceiver>(5600,settings.video_codec==1);
+
      static constexpr auto INBUF_SIZE=4096;
      uint8_t inbuf[INBUF_SIZE + AV_INPUT_BUFFER_PADDING_SIZE];
      memset(inbuf + INBUF_SIZE, 0, AV_INPUT_BUFFER_PADDING_SIZE);
@@ -718,7 +721,7 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp()
      do {
          std::shared_ptr<std::vector<uint8_t>> buf=nullptr;
          while(buf==nullptr){
-             buf=m_rtp_reciever->get_data();
+             buf=m_rtp_receiver->get_data();
          }
          qDebug()<<"Got decode data";
          pkt->data=buf->data();
@@ -750,6 +753,7 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp()
                  break;
          }*/
      } while (!eof);
+      m_rtp_receiver=nullptr;
 }
 
 void AVCodecDecoder::add_fed_timestamp(int64_t ts)
