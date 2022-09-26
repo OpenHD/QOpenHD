@@ -60,49 +60,6 @@ static enum AVPixelFormat get_sw_format(AVCodecContext *ctx,const enum AVPixelFo
     return AV_PIX_FMT_NONE;
 }
 
-// FFMPEG needs a ".sdp" file to do rtp udp h264,h265 or mjpeg
-// For MJPEG we map mjpeg to 26 (mjpeg), for h264/5 we map h264/5 to 96 (general)
-static std::string create_udp_rtp_sdp_file(const QOpenHDVideoHelper::VideoCodec& video_codec){
-    std::stringstream ss;
-    ss<<"c=IN IP4 127.0.0.1\n";
-    //ss<<"v=0\n";
-    //ss<<"t=0 0\n";
-    //ss<<"width=1280\n";
-    //ss<<"height=720\n";
-    if(video_codec==QOpenHDVideoHelper::VideoCodec::VideoCodecMJPEG){
-         ss<<"m=video 5600 RTP/UDP 26\n";
-        ss<<"a=rtpmap:26 JPEG/90000\n";
-    }else{
-        ss<<"m=video 5600 RTP/UDP 96\n";
-        if(video_codec==QOpenHDVideoHelper::VideoCodec::VideoCodecH264){
-            ss<<"a=rtpmap:96 H264/90000\n";
-        }else{
-            assert(video_codec==QOpenHDVideoHelper::VideoCodec::VideoCodecH265);
-            ss<<"a=rtpmap:96 H265/90000\n";
-        }
-    }
-    return ss.str();
-}
-static void write_file_to_tmp(const std::string filename,const std::string content){
-    std::ofstream _t(filename);
-     _t << content;
-     _t.close();
-}
-
-static void write_udp_rtp_sdp_files_to_tmp(){
-    if(QFileInfo::exists("/tmp/rtp_h264.sdp")&&QFileInfo::exists("/tmp/rtp_h265.sdp")&&QFileInfo::exists("/tmp/rtp_mjpeg.sdp"))return;
-    write_file_to_tmp("/tmp/rtp_h264.sdp",create_udp_rtp_sdp_file(QOpenHDVideoHelper::VideoCodec::VideoCodecH264));
-    write_file_to_tmp("/tmp/rtp_h265.sdp",create_udp_rtp_sdp_file(QOpenHDVideoHelper::VideoCodec::VideoCodecH265));
-    write_file_to_tmp("/tmp/rtp_mjpeg.sdp",create_udp_rtp_sdp_file(QOpenHDVideoHelper::VideoCodec::VideoCodecMJPEG));
-}
-
-static std::string get_udp_rtp_sdp_filename(const QOpenHDVideoHelper::VideoCodec& video_codec){
-    write_udp_rtp_sdp_files_to_tmp();
-    if(video_codec==QOpenHDVideoHelper::VideoCodec::VideoCodecH264)return "/tmp/rtp_h264.sdp";
-    if(video_codec==QOpenHDVideoHelper::VideoCodec::VideoCodecH265)return "/tmp/rtp_h265.sdp";
-    return "/tmp/rtp_mjpeg.sdp";
-}
-
 
 AVCodecDecoder::AVCodecDecoder(QObject *parent):
     QObject(parent)
@@ -381,7 +338,7 @@ int AVCodecDecoder::open_and_decode_until_error()
     const auto settings = QOpenHDVideoHelper::read_from_settings();
     std::string in_filename="";
     if(settings.dev_test_video_mode==QOpenHDVideoHelper::VideoTestMode::DISABLED){
-        in_filename=get_udp_rtp_sdp_filename(settings.video_codec);
+        in_filename=QOpenHDVideoHelper::get_udp_rtp_sdp_filename(settings.video_codec);
         //in_filename="rtp://192.168.0.1:5600";
     }else{
         if(settings.dev_enable_custom_pipeline){
