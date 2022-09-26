@@ -217,6 +217,10 @@ Item {
         id: missionWidget
     }
 
+    MapWidget {
+        id: mapWidget
+    }
+
     ExampleWidget {
         id: exampleWidget
     }
