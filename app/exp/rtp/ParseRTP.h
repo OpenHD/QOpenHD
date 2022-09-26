@@ -11,7 +11,7 @@
 #include "RTP.hpp"
 
 /*********************************************
- ** Parses a stream of rtp h26X data into NALUs
+ ** Parses a stream of rtp h264 / h265 data into NALUs
 **********************************************/
 
 static constexpr const auto NALU_MAXLEN=1024*1024;
@@ -30,12 +30,14 @@ public:
     void parseRTPH264toNALU(const uint8_t* rtp_data, const size_t data_length);
     // parse rtp h265 packet to NALU
     void parseRTPH265toNALU(const uint8_t* rtp_data, const size_t data_length);
-    // copy data_len bytes into the mNALU_DATA buffer at the current position
-    // and increase mNALU_DATA_LENGTH by data_len
-    void appendNALUData(const uint8_t* data, size_t data_len);
     // reset mNALU_DATA_LENGTH to 0
     void reset();
 private:
+    // copy data_len bytes into the mNALU_DATA buffer at the current position
+    // and increase mNALU_DATA_LENGTH by data_len
+    void appendNALUData(const uint8_t* data, size_t data_len);
+    // Write 0,0,0,1 into the start of the NALU buffer and set the length to 4
+    void write_h264_h265_nalu_start();
     // Properly calls the cb function
     // Resets the mNALU_DATA_LENGTH to 0
     void forwardNALU(const std::chrono::steady_clock::time_point creationTime,const bool isH265=false);
@@ -50,12 +52,13 @@ private:
     // E.g for a fu-a NALU the time point when the start fu-a was received, not when its end is received
     std::chrono::steady_clock::time_point timePointStartOfReceivingNALU;
 private:
-    // reconstruct a single nalu, either from a "single" or "aggregated" rtp packet (not from a fragmented packet)
+    // reconstruct and forward a single nalu, either from a "single" or "aggregated" rtp packet (not from a fragmented packet)
     // data should point to the nalu_header_t, size includes the nalu_header_t size and the following bytes that make up the nalu
-    void h264_copy_one_nalu(const uint8_t* data,int data_size);
-    // reconstruct a single nalu, either froma a "single" or "aggregated" rtp packet (not from a fragmented packet)
-    // data should point to "just" the rtp payload ?!
-    void h265_copy_one_nalu(const uint8_t* data,int data_size);
+    void h264_reconstruct_and_forward_one_nalu(const uint8_t* data,int data_size);
+    // forwardt a single nalu, either froma a "single" or "aggregated" rtp packet (not from a fragmented packet)
+    // ( In contrast to h264 we don't need the stupid reconstruction with h265)
+    // data should point to "just" the rtp payload
+    void h265_forward_one_nalu(const uint8_t* data,int data_size);
 };
 
 #endif //LIVE_VIDEO_10MS_ANDROID_PARSERTP_H

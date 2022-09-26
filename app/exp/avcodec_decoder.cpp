@@ -116,10 +116,8 @@ AVCodecDecoder::AVCodecDecoder(QObject *parent):
 
 void AVCodecDecoder::init(bool primaryStream)
 {
-    m_rtp_reciever=std::make_unique<RTPReceiver>();
+    m_rtp_reciever=std::make_unique<RTPReceiver>(5600);
     if(true)return;
-    /*QObject::connect(timer, &QTimer::timeout, this, &AVCodecDecoder::lulatsch);
-    timer->start(1000);*/
     qDebug() << "AVCodecDecoder::init()";
     m_last_video_settings=QOpenHDVideoHelper::read_from_settings();
     decode_thread = std::make_unique<std::thread>([this]{this->constant_decode();} );

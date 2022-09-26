@@ -9,7 +9,7 @@
 class RTPReceiver
 {
 public:
-    RTPReceiver();
+    RTPReceiver(int port);
 private:
     std::unique_ptr<UDPReceiver> m_udp_receiver=nullptr;
     std::unique_ptr<RTPDecoder> m_rtp_decoder=nullptr;

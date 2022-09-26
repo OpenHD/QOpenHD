@@ -176,11 +176,6 @@ public:
     std::size_t getFuPayloadSize()const{
         return rtpPayloadSize-(sizeof(nalu_header_t) + sizeof(fu_header_t));
     }
-    //
-    uint16_t get_sdpa_nalu_size(int offset)const{
-        const uint16_t* sdpa_nalu_size=(const uint16_t*) &rtpPayload[offset];
-        return htons(*sdpa_nalu_size);
-    }
 };
 
 class RTPPacketH265: public RTPPacket{

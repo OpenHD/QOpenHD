@@ -43,7 +43,7 @@ bool RTPDecoder::validateRTPPacket(const rtp_header_t& rtp_header) {
     return true;
 }
 
-void RTPDecoder::h264_copy_one_nalu(const uint8_t *data,const int data_size)
+void RTPDecoder::h264_reconstruct_and_forward_one_nalu(const uint8_t *data,const int data_size)
 {
     assert(data_size>sizeof(nalu_header_t));
     const nalu_header_t& nalu_header=*(const nalu_header_t*) &data[0];
@@ -53,41 +53,16 @@ void RTPDecoder::h264_copy_one_nalu(const uint8_t *data,const int data_size)
         std::cerr<<"Got full NALU - clearing missing packet flag";
         flagPacketHasGoneMissing= false;
     }
-    // full nalu
-    mNALU_DATA[0]=0;
-    mNALU_DATA[1]=0;
-    mNALU_DATA[2]=0;
-    mNALU_DATA[3]=1;
-    mNALU_DATA_LENGTH=4;
+    write_h264_h265_nalu_start();
     const uint8_t h264_nal_header = (uint8_t )(nalu_header.type & 0x1f)
                                     | (nalu_header.nri << 5)
                                     | (nalu_header.f << 7);
     mNALU_DATA[4]=h264_nal_header;
     mNALU_DATA_LENGTH++;
-    memcpy(&mNALU_DATA[mNALU_DATA_LENGTH], &data[1], (size_t)data_size - 1);
-    mNALU_DATA_LENGTH+= data_size - 1;
+    appendNALUData(&data[1], (size_t)data_size - 1);
     // forward via callback
     forwardNALU(timePointStartOfReceivingNALU);
     // reset length after forwarding
-    mNALU_DATA_LENGTH=0;
-}
-
-void RTPDecoder::h265_copy_one_nalu(const uint8_t *data, int data_size)
-{
-    timePointStartOfReceivingNALU=std::chrono::steady_clock::now();
-    if(flagPacketHasGoneMissing){
-        std::cerr<<"Got full NALU - clearing missing packet flag";
-        flagPacketHasGoneMissing= false;
-    }
-    mNALU_DATA[0]=0;
-    mNALU_DATA[1]=0;
-    mNALU_DATA[2]=0;
-    mNALU_DATA[3]=1;
-    mNALU_DATA_LENGTH=4;
-    // I do not know what about the 'DONL' field but it seems to be never present
-    // copy the NALU header and NALU data, other than h264 here nothing has to be 'reconstructed'
-    appendNALUData(data, data_size);
-    forwardNALU(timePointStartOfReceivingNALU,true);
     mNALU_DATA_LENGTH=0;
 }
 
@@ -145,7 +120,7 @@ void RTPDecoder::parseRTPH264toNALU(const uint8_t* rtp_data, const size_t data_l
         }
     } else if(nalu_header.type>0 && nalu_header.type<24){
         qDebug()<<"Got RTP H264 type [1..23] (single) payload size:"<<rtpPacket.rtpPayloadSize;
-        h264_copy_one_nalu(rtpPacket.rtpPayload,rtpPacket.rtpPayloadSize);
+        h264_reconstruct_and_forward_one_nalu(rtpPacket.rtpPayload,rtpPacket.rtpPayloadSize);
     }else if(nalu_header.type==24){
         qDebug()<<"Got RTP H264 type 24 (aggregated NALUs) payload size:"<<rtpPacket.rtpPayloadSize;
         const uint8_t* rtp_payload=rtpPacket.rtpPayload;
@@ -159,7 +134,7 @@ void RTPDecoder::parseRTPH264toNALU(const uint8_t* rtp_data, const size_t data_l
             const uint8_t* actual_nalu_data_p=&rtp_payload[offset+1+2];
             const auto actual_nalu_size=nalu_size;
             qDebug()<<"XNALU of size:"<<(int)actual_nalu_size;
-            h264_copy_one_nalu(actual_nalu_data_p,actual_nalu_size);
+            h264_reconstruct_and_forward_one_nalu(actual_nalu_data_p,actual_nalu_size);
             offset+=2+actual_nalu_size;
             if(!(rtp_payload_size>offset+3)){
                 break;
@@ -175,6 +150,21 @@ void RTPDecoder::parseRTPH264toNALU(const uint8_t* rtp_data, const size_t data_l
 #define FU_START(v) (v & 0x80)
 #define FU_END(v)	(v & 0x40)
 #define FU_NAL(v)	(v & 0x3F)
+
+void RTPDecoder::h265_forward_one_nalu(const uint8_t *data, int data_size)
+{
+    timePointStartOfReceivingNALU=std::chrono::steady_clock::now();
+    if(flagPacketHasGoneMissing){
+        std::cerr<<"Got full NALU - clearing missing packet flag";
+        flagPacketHasGoneMissing= false;
+    }
+    write_h264_h265_nalu_start();
+    // I do not know what about the 'DONL' field but it seems to be never present
+    // copy the NALU header and NALU data, other than h264 here nothing has to be 'reconstructed'
+    appendNALUData(data, data_size);
+    forwardNALU(timePointStartOfReceivingNALU,true);
+    mNALU_DATA_LENGTH=0;
+}
 
 void RTPDecoder::parseRTPH265toNALU(const uint8_t* rtp_data, const size_t data_length){
     // 12 rtp header bytes and 1 nalu_header_t type byte
@@ -206,7 +196,7 @@ void RTPDecoder::parseRTPH265toNALU(const uint8_t* rtp_data, const size_t data_l
             const uint8_t* actual_nalu_data_p=&rtp_payload[offset+1+2];
             const auto actual_nalu_size=nalu_size;
             qDebug()<<"XNALU of size:"<<(int)actual_nalu_size;
-            h265_copy_one_nalu(actual_nalu_data_p,actual_nalu_size);
+            h265_forward_one_nalu(actual_nalu_data_p,actual_nalu_size);
             offset+=2+actual_nalu_size;
             if(!(rtp_payload_size>offset+3)){
                 break;
@@ -254,7 +244,7 @@ void RTPDecoder::parseRTPH265toNALU(const uint8_t* rtp_data, const size_t data_l
     }else{
         // single NAL unit
         qDebug()<<"Got RTP H265 type any (single) payload size:"<<rtpPacket.rtpPayloadSize;
-        h265_copy_one_nalu(rtpPacket.rtpPayload,rtpPacket.rtpPayloadSize);
+        h265_forward_one_nalu(rtpPacket.rtpPayload,rtpPacket.rtpPayloadSize);
     }
 }
 
@@ -269,5 +259,14 @@ void RTPDecoder::forwardNALU(const std::chrono::steady_clock::time_point creatio
 void RTPDecoder::appendNALUData(const uint8_t *data, size_t data_len) {
     memcpy(&mNALU_DATA[mNALU_DATA_LENGTH],data,data_len);
     mNALU_DATA_LENGTH+=data_len;
+}
+
+void RTPDecoder::write_h264_h265_nalu_start()
+{
+    mNALU_DATA[0]=0;
+    mNALU_DATA[1]=0;
+    mNALU_DATA[2]=0;
+    mNALU_DATA[3]=1;
+    mNALU_DATA_LENGTH=4;
 }
 
