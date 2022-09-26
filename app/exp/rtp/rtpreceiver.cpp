@@ -20,6 +20,23 @@ RTPReceiver::RTPReceiver(int port,bool is_h265):
 }
 
 
+std::shared_ptr<std::vector<uint8_t> > RTPReceiver::get_data()
+{
+    std::lock_guard<std::mutex> lock(m_data_mutex);
+    if(m_data.size()<=0)return nullptr;
+    auto ret=m_data.front();
+    m_data.pop();
+    return ret;
+}
+
+void RTPReceiver::queue_data(std::shared_ptr<std::vector<uint8_t>> data)
+{
+    std::lock_guard<std::mutex> lock(m_data_mutex);
+    if(m_data.size()>100)m_data.pop();
+    m_data.push(data);
+}
+
+
 void RTPReceiver::udp_raw_data_callback(const uint8_t *payload, const std::size_t payloadSize)
 {
     qDebug()<<"Got UDP data "<<payloadSize;
@@ -36,7 +53,7 @@ void RTPReceiver::nalu_data_callback(const uint8_t *nalu_data, const int nalu_da
     qDebug()<<"Got RTP "<<nalu_data_size;
 
     std::vector<uint8_t> tmp(nalu_data,nalu_data+nalu_data_size);
-    qDebug()<<StringHelper::vectorAsString(tmp).c_str()<<"\n";
+    //qDebug()<<StringHelper::vectorAsString(tmp).c_str()<<"\n";
 
     if(m_out_file==nullptr){
         std::stringstream ss;
@@ -50,4 +67,8 @@ void RTPReceiver::nalu_data_callback(const uint8_t *nalu_data, const int nalu_da
     }
     m_out_file->write((const char*)nalu_data,nalu_data_size);
     m_out_file->flush();
+
+    auto copy=std::make_shared<std::vector<uint8_t>>(nalu_data,nalu_data+nalu_data_size);
+    queue_data(copy);
 }
+

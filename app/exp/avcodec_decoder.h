@@ -98,6 +98,9 @@ private:
     void parse_rtp_test();
 private:
     std::unique_ptr<RTPReceiver> m_rtp_reciever=nullptr;
+private:
+    void open_and_decode_until_error_custom_rtp();
+    AVCodecParserContext *parser;
 };
 
 #endif // AVCODEC_DECODER_H

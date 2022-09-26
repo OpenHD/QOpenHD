@@ -116,8 +116,8 @@ AVCodecDecoder::AVCodecDecoder(QObject *parent):
 
 void AVCodecDecoder::init(bool primaryStream)
 {
-    m_rtp_reciever=std::make_unique<RTPReceiver>(5600,false);
-    if(true)return;
+    m_rtp_reciever=std::make_unique<RTPReceiver>(5600,true);
+    //if(true)return;
     qDebug() << "AVCodecDecoder::init()";
     m_last_video_settings=QOpenHDVideoHelper::read_from_settings();
     decode_thread = std::make_unique<std::thread>([this]{this->constant_decode();} );
@@ -164,7 +164,8 @@ void AVCodecDecoder::constant_decode()
 {
     while(true){
         qDebug()<<"Start decode";
-        open_and_decode_until_error();
+        //open_and_decode_until_error();
+        open_and_decode_until_error_custom_rtp();
         qDebug()<<"Decode stopped,restarting";
         std::this_thread::sleep_for(std::chrono::seconds(1));
     }
@@ -698,6 +699,102 @@ int AVCodecDecoder::open_and_decode_until_error()
     avformat_close_input(&input_ctx);
     qDebug()<<"avformat_close_input_done";
     return 0;
+}
+
+
+void AVCodecDecoder::open_and_decode_until_error_custom_rtp()
+{
+     const auto settings = QOpenHDVideoHelper::read_from_settings();
+     if(settings.video_codec==QOpenHDVideoHelper::VideoCodecH264){
+         decoder = avcodec_find_decoder(AV_CODEC_ID_H264);
+     }else if(settings.video_codec==QOpenHDVideoHelper::VideoCodecH265){
+         decoder = avcodec_find_decoder(AV_CODEC_ID_H265);
+     }else{
+         decoder = avcodec_find_decoder(AV_CODEC_ID_MJPEG);
+     }
+     if (!decoder) {
+         fprintf(stderr, "Codec not found\n");
+         exit(1);
+     }
+     parser = av_parser_init(decoder->id);
+     if (!parser) {
+         fprintf(stderr, "parser not found\n");
+         exit(1);
+     }
+     decoder_ctx = avcodec_alloc_context3(decoder);
+     if (!decoder_ctx) {
+         fprintf(stderr, "Could not allocate video codec context\n");
+         exit(1);
+     }
+     if (avcodec_open2(decoder_ctx, decoder, NULL) < 0) {
+         fprintf(stderr, "Could not open codec\n");
+         exit(1);
+     }
+     FILE *f;
+     std::string in_filename;
+     if(settings.video_codec==QOpenHDVideoHelper::VideoCodecH264){
+          in_filename="/home/consti10/Desktop/hello_drmprime/in/rpi_1080.h264";
+     }else if(settings.video_codec==QOpenHDVideoHelper::VideoCodecH265){
+           //in_filename="/tmp/x_raw_h265.h265";
+           in_filename="/home/consti10/Desktop/hello_drmprime/in/jetson_test.h265";
+           //in_filename="/home/consti10/Desktop/hello_drmprime/in/Big_Buck_Bunny_1080_10s_1MB_h265.mp4";
+     }else{
+        in_filename="/home/consti10/Desktop/hello_drmprime/in/uv_640x480.mjpeg";
+        //in_filename="/home/consti10/Desktop/hello_drmprime/in/Big_Buck_Bunny_1080.mjpeg";
+     }
+
+     f = fopen(in_filename.c_str(), "rb");
+     if (!f) {
+         fprintf(stderr, "Could not open %s\n");
+         exit(1);
+     }
+     static constexpr auto INBUF_SIZE=4096;
+     uint8_t inbuf[INBUF_SIZE + AV_INPUT_BUFFER_PADDING_SIZE];
+     memset(inbuf + INBUF_SIZE, 0, AV_INPUT_BUFFER_PADDING_SIZE);
+
+     uint8_t *data;
+     size_t   data_size;
+     int ret;
+     int eof;
+     AVPacket *pkt=av_packet_alloc();
+     assert(pkt!=nullptr);
+     do {
+         std::shared_ptr<std::vector<uint8_t>> buf=nullptr;
+         while(buf==nullptr){
+             buf=m_rtp_reciever->get_data();
+         }
+         qDebug()<<"Got decode data";
+         data=buf->data();
+         data_size=buf->size();
+         pkt->data=buf->data();
+         pkt->size=buf->size();
+         decode_and_wait_for_frame(pkt);
+         // read raw data from the input file
+         /*data_size = fread(inbuf, 1, INBUF_SIZE, f);
+
+         if (ferror(f))
+             break;
+         eof = !data_size;
+
+         //use the parser to split the data into frames
+         data = inbuf;
+         while (data_size > 0 || eof) {
+             ret = av_parser_parse2(parser, decoder_ctx, &pkt->data, &pkt->size,
+                                    data, data_size, AV_NOPTS_VALUE, AV_NOPTS_VALUE, 0);
+             if (ret < 0) {
+                 fprintf(stderr, "Error while parsing\n");
+                 exit(1);
+             }
+             data      += ret;
+             data_size -= ret;
+
+             if (pkt->size){
+                 decode_and_wait_for_frame(pkt);
+                 //std::this_thread::sleep_for(std::chrono::milliseconds(100));
+             }else if (eof)
+                 break;
+         }*/
+     } while (!eof);
 }
 
 void AVCodecDecoder::add_fed_timestamp(int64_t ts)
