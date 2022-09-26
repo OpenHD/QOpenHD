@@ -22,8 +22,8 @@ RTPReceiver::RTPReceiver(int port)
 void RTPReceiver::udp_raw_data_callback(const uint8_t *payload, const std::size_t payloadSize)
 {
     qDebug()<<"Got UDP data "<<payloadSize;
-    m_rtp_decoder->parseRTPH264toNALU(payload,payloadSize);
-    //m_rtp_decoder->parseRTPH265toNALU(payload,payloadSize);
+    //m_rtp_decoder->parseRTPH264toNALU(payload,payloadSize);
+    m_rtp_decoder->parseRTPH265toNALU(payload,payloadSize);
 }
 
 
@@ -31,6 +31,8 @@ void RTPReceiver::nalu_data_callback(const uint8_t *nalu_data, const int nalu_da
 {
     qDebug()<<"Got RTP "<<nalu_data_size;
 
-    //std::vector<uint8_t> tmp(nalu_data,nalu_data+nalu_data_size);
-    //qDebug()<<StringHelper::vectorAsString(tmp).c_str();
+    std::vector<uint8_t> tmp(nalu_data,nalu_data+nalu_data_size);
+    qDebug()<<StringHelper::vectorAsString(tmp).c_str()<<"\n";
+
+    //m_out_file.write((const char*)nalu_data,nalu_data_size);
 }
