@@ -23,10 +23,7 @@ jobs:
         sudo rm -Rf /etc/apt/sources.list.d/openhd*
         sudo apt-get clean
         sudo rm -rf /var/lib/apt/lists/*
-        curl -1sLf \
-        'https://dl.cloudsmith.io/public/openhd/openhd-2-2-evo/setup.deb.sh' \
-        | sudo -E bash
-        sudo bash install_dep_ubuntu20.sh
+        sudo bash install_dep_ubuntu20_release.sh
         
 
     - name: Build with make
@@ -34,7 +31,6 @@ jobs:
         curl -1sLf \
         'https://dl.cloudsmith.io/public/openhd/openhd-2-2-evo/setup.deb.sh' \
         | sudo -E bash
-        sudo apt install -y mavsdk
         sudo ./package.sh x86_64 ubuntu focal
     
     - name: Push
