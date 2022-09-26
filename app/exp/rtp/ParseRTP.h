@@ -36,8 +36,8 @@ private:
     // copy data_len bytes into the mNALU_DATA buffer at the current position
     // and increase mNALU_DATA_LENGTH by data_len
     void append_nalu_data(const uint8_t* data, size_t data_len);
-    // Write 0,0,0,1 into the start of the NALU buffer and set the length to 4
-    void write_h264_h265_nalu_start();
+    // Write 0,0,0,1 (or 0,0,1) into the start of the NALU buffer and set the length to 4 / 3
+    void write_h264_h265_nalu_start(bool use_4_bytes=true);
     // Properly calls the cb function
     // Resets the mNALU_DATA_LENGTH to 0
     void forwardNALU(const std::chrono::steady_clock::time_point creationTime,const bool isH265=false);
@@ -58,7 +58,7 @@ private:
     // forward a single nalu, either froma a "single" or "aggregated" rtp packet (not from a fragmented packet)
     // ( In contrast to h264 we don't need the stupid reconstruction with h265)
     // data should point to "just" the rtp payload
-    void h265_forward_one_nalu(const uint8_t* data,int data_size);
+    void h265_forward_one_nalu(const uint8_t* data,int data_size,bool write_4_bytes_for_start_code=true);
 };
 
 #endif //LIVE_VIDEO_10MS_ANDROID_PARSERTP_H

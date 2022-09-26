@@ -4,7 +4,8 @@
 
 #include "../common_consti/StringHelper.hpp"
 
-RTPReceiver::RTPReceiver(int port)
+RTPReceiver::RTPReceiver(int port,bool is_h265):
+    is_h265(is_h265)
 {
 
     m_rtp_decoder=std::make_unique<RTPDecoder>([this](const uint8_t *nalu_data, const int nalu_data_size){
@@ -22,8 +23,11 @@ RTPReceiver::RTPReceiver(int port)
 void RTPReceiver::udp_raw_data_callback(const uint8_t *payload, const std::size_t payloadSize)
 {
     qDebug()<<"Got UDP data "<<payloadSize;
-    //m_rtp_decoder->parseRTPH264toNALU(payload,payloadSize);
-    m_rtp_decoder->parseRTPH265toNALU(payload,payloadSize);
+    if(is_h265){
+        m_rtp_decoder->parseRTPH265toNALU(payload,payloadSize);
+    }else{
+        m_rtp_decoder->parseRTPH264toNALU(payload,payloadSize);
+    }
 }
 
 
@@ -34,5 +38,16 @@ void RTPReceiver::nalu_data_callback(const uint8_t *nalu_data, const int nalu_da
     std::vector<uint8_t> tmp(nalu_data,nalu_data+nalu_data_size);
     qDebug()<<StringHelper::vectorAsString(tmp).c_str()<<"\n";
 
-    //m_out_file.write((const char*)nalu_data,nalu_data_size);
+    if(m_out_file==nullptr){
+        std::stringstream ss;
+        ss<<"/tmp/received_rtp.";
+        if(is_h265){
+            ss<<"h265";
+        }else{
+            ss<<"h264";
+        }
+        m_out_file=std::make_unique<std::ofstream>(ss.str());
+    }
+    m_out_file->write((const char*)nalu_data,nalu_data_size);
+    m_out_file->flush();
 }

@@ -148,14 +148,14 @@ void RTPDecoder::parseRTPH264toNALU(const uint8_t* rtp_data, const size_t data_l
 #define FU_END(v)	(v & 0x40)
 #define FU_NAL(v)	(v & 0x3F)
 
-void RTPDecoder::h265_forward_one_nalu(const uint8_t *data, int data_size)
+void RTPDecoder::h265_forward_one_nalu(const uint8_t *data, int data_size,bool write_4_bytes_for_start_code)
 {
     timePointStartOfReceivingNALU=std::chrono::steady_clock::now();
     if(flagPacketHasGoneMissing){
         std::cerr<<"Got full NALU - clearing missing packet flag";
         flagPacketHasGoneMissing= false;
     }
-    write_h264_h265_nalu_start();
+    write_h264_h265_nalu_start(write_4_bytes_for_start_code);
     // I do not know what about the 'DONL' field but it seems to be never present
     // copy the NALU header and NALU data, other than h264 here nothing has to be 'reconstructed'
     append_nalu_data(data, data_size);
@@ -221,7 +221,7 @@ void RTPDecoder::parseRTPH265toNALU(const uint8_t* rtp_data, const size_t data_l
                 std::cerr<<"Got fu-a start - clearing missing packet flag";
                 flagPacketHasGoneMissing=false;
             }
-            write_h264_h265_nalu_start();
+            write_h264_h265_nalu_start(false);
             // copy header and reconstruct ?!!!
             const uint8_t* ptr=&rtp_data[sizeof(rtp_header_t)];
             uint8_t variableNoIdea=rtp_data[sizeof(rtp_header_t) + sizeof(nal_unit_header_h265_t)];
@@ -239,7 +239,7 @@ void RTPDecoder::parseRTPH265toNALU(const uint8_t* rtp_data, const size_t data_l
     }else{
         // single NAL unit
         qDebug()<<"Got RTP H265 type any (single) payload size:"<<rtpPacket.rtpPayloadSize;
-        h265_forward_one_nalu(rtpPacket.rtpPayload,rtpPacket.rtpPayloadSize);
+        h265_forward_one_nalu(rtpPacket.rtpPayload,rtpPacket.rtpPayloadSize,false);
     }
 }
 
@@ -256,12 +256,19 @@ void RTPDecoder::append_nalu_data(const uint8_t *data, size_t data_len) {
     mNALU_DATA_LENGTH+=data_len;
 }
 
-void RTPDecoder::write_h264_h265_nalu_start()
+void RTPDecoder::write_h264_h265_nalu_start(const bool use_4_bytes)
 {
-    mNALU_DATA[0]=0;
-    mNALU_DATA[1]=0;
-    mNALU_DATA[2]=0;
-    mNALU_DATA[3]=1;
-    mNALU_DATA_LENGTH=4;
+    if(use_4_bytes){
+        mNALU_DATA[0]=0;
+        mNALU_DATA[1]=0;
+        mNALU_DATA[2]=0;
+        mNALU_DATA[3]=1;
+        mNALU_DATA_LENGTH=4;
+    }else{
+        mNALU_DATA[0]=0;
+        mNALU_DATA[1]=0;
+        mNALU_DATA[2]=1;
+        mNALU_DATA_LENGTH=3;
+    }
 }
 
