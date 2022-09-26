@@ -712,7 +712,7 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp()
      uint8_t *data;
      size_t   data_size;
      int ret;
-     int eof;
+     int eof = 0;
      AVPacket *pkt=av_packet_alloc();
      assert(pkt!=nullptr);
      do {
@@ -721,8 +721,6 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp()
              buf=m_rtp_reciever->get_data();
          }
          qDebug()<<"Got decode data";
-         data=buf->data();
-         data_size=buf->size();
          pkt->data=buf->data();
          pkt->size=buf->size();
          decode_and_wait_for_frame(pkt);
