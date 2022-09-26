@@ -12,6 +12,7 @@ RTPDecoder::RTPDecoder(NALU_DATA_CALLBACK cb): cb(std::move(cb)){
 
 void RTPDecoder::reset(){
     mNALU_DATA_LENGTH=0;
+    lastSequenceNumber=-1;
     //nalu_data.reserve(NALU::NALU_MAXLEN);
 }
 
@@ -241,6 +242,20 @@ void RTPDecoder::parseRTPH265toNALU(const uint8_t* rtp_data, const size_t data_l
         qDebug()<<"Got RTP H265 type any (single) payload size:"<<rtpPacket.rtpPayloadSize;
         h265_forward_one_nalu(rtpPacket.rtpPayload,rtpPacket.rtpPayloadSize,false);
     }
+}
+
+// MJPEG
+void RTPDecoder::parse_rtp_mjpeg(const uint8_t *rtp_data, const size_t data_length)
+{
+    // 12 rtp header bytes and 8 main header bytes
+    if(data_length <= sizeof(rtp_header_t)+8){
+        std::cerr<<"Not enough rtp mjpeg data";
+        return;
+    }
+    qDebug()<<"Got rtp mjpeg data";
+    const RTP::RTPPacket rtpPacket(rtp_data,data_length);
+    const jpeg_main_header_t& jpeg_main_header=*(jpeg_main_header_t*)rtpPacket.rtpPayload;
+    qDebug()<<"X:"<<jpeg_main_header.type;
 }
 
 void RTPDecoder::forwardNALU(const std::chrono::steady_clock::time_point creationTime,const bool isH265) {

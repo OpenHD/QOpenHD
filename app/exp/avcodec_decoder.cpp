@@ -121,8 +121,8 @@ void AVCodecDecoder::constant_decode()
 {
     while(true){
         qDebug()<<"Start decode";
-        //open_and_decode_until_error();
-        open_and_decode_until_error_custom_rtp();
+        open_and_decode_until_error();
+        //open_and_decode_until_error_custom_rtp();
         qDebug()<<"Decode stopped,restarting";
         std::this_thread::sleep_for(std::chrono::seconds(1));
     }

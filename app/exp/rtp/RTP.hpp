@@ -71,6 +71,7 @@ static_assert(sizeof(rtp_header_t)==12);
 
 //******************************************************** H264 ********************************************************
 // https://tools.ietf.org/html/rfc6184
+// https://www.rfc-editor.org/rfc/rfc6184#section-1.3
 //+---------------+
 //|0|1|2|3|4|5|6|7|
 //+-+-+-+-+-+-+-+-+
@@ -99,17 +100,18 @@ typedef struct fu_header_t {
 static_assert(sizeof(fu_header_t)==1);
 
 //******************************************************** H265 ********************************************************
-// defined in 1.1.4.  NAL Unit Header https://tools.ietf.org/html/rfc7798
+// https://tools.ietf.org/html/rfc7798
+// defined in 1.1.4.  NAL Unit Header
 //  +---------------+---------------+
 //  |0|1|2|3|4|5|6|7|0|1|2|3|4|5|6|7|
 //  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 //  |F|   Type    |  LayerId  | TID |
 //  +-------------+-----------------+
 struct nal_unit_header_h265_t{
-    uint8_t f:      1;
-    uint8_t type:   6;
-    uint8_t layerId:6;
-    uint8_t tid:    3;
+    uint8_t f:      1; //1st byte
+    uint8_t type:   6; //1st byte
+    uint8_t layerId:6; //2nd byte
+    uint8_t tid:    3; //2nd byte
 }__attribute__ ((packed));
 static_assert(sizeof(nal_unit_header_h265_t)==2);
 // defined in 4.4.3 FU Header
@@ -124,6 +126,54 @@ struct fu_header_h265_t{
     uint8_t s:1;
 }__attribute__ ((packed));
 static_assert(sizeof(fu_header_h265_t)==1);
+
+
+// ******************************************************** MJPEG ********************************************************
+// https://datatracker.ietf.org/doc/html/rfc2435
+// https://datatracker.ietf.org/doc/html/rfc2435#section-3.1
+// 0                   1                   2                   3
+// 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+//+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//| Type-specific |              Fragment Offset                  |
+//+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//|      Type     |       Q       |     Width     |     Height    |
+//+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+struct jpeg_main_header_t{
+     uint8_t type_specific:8;
+     uint32_t fragment_offset:24;
+     uint8_t type:8;
+     uint8_t q:8;
+     uint8_t width:8;
+     uint8_t height:8;
+};
+// https://datatracker.ietf.org/doc/html/rfc2435#section-3.1.7
+//  0                   1                   2                   3
+//  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+// |       Restart Interval        |F|L|       Restart Count       |
+// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+struct jpeg_restart_marker_header_t{
+    uint16_t restart_interval;
+    uint16_t f;
+    uint16_t l;
+    uint16_t restart_count;
+};
+// https://datatracker.ietf.org/doc/html/rfc2435#section-3.1.8
+//   0                   1                   2                   3
+//   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+// |      MBZ      |   Precision   |             Length            |
+// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+// |                    Quantization Table Data                    |
+// |                              ...                              |
+// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+struct jpeg_quant_table_header_t{
+    uint16_t mbz;
+    uint16_t precision;
+    uint16_t length;
+    // quantization table data
+};
+
 
 // Unfortunately the payload header is the same for h264 and h265 (they don't have a type for it and catch
 // them both with a "generic" type.
