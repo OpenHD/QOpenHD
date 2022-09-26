@@ -1,7 +1,7 @@
-import QtQuick 2.12
-import QtQuick.Window 2.12
-import QtQuick.Layouts 1.12
-import QtLocation 5.15
+import QtQuick 2.0
+import QtQuick.Window 2.14
+//import QtLocation 15.5
+//import QtPositioning 15.5
 
 import "../elements";
 

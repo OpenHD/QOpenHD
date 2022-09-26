@@ -215,5 +215,6 @@
         <file>ui/widgets/QRenderStatsWidgetForm.ui.qml</file>
         <file>ui/widgets/MapWidget.qml</file>
         <file>ui/widgets/MapWidgetForm.ui.qml</file>
+        <file>ui/elements/MapComponent.qml</file>
     </qresource>
 </RCC>
