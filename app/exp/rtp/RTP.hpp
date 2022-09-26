@@ -160,7 +160,7 @@ class RTPPacketH264: public RTPPacket{
 public:
     using RTPPacket::RTPPacket;
     // reference to the NALU header if packet type is H264
-    const nalu_header_t& getNALUHeaderH264(int offset=0)const{
+    const nalu_header_t& getNALUHeaderH264()const{
         assert(rtpPayloadSize >= sizeof(nalu_header_t));
         return *(nalu_header_t*)rtpPayload;
     }

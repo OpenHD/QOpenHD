@@ -107,7 +107,7 @@ void RTPDecoder::parseRTPH264toNALU(const uint8_t* rtp_data, const size_t data_l
             const uint8_t h264_nal_header = (uint8_t)(fu_header.type & 0x1f)
                                             | (nalu_header.nri << 5)
                                             | (nalu_header.f << 7);
-            mNALU_DATA[4]=h264_nal_header;
+            mNALU_DATA[mNALU_DATA_LENGTH]=h264_nal_header;
             mNALU_DATA_LENGTH++;
             append_nalu_data(fu_payload, fu_payload_size);
         } else {
@@ -188,10 +188,11 @@ void RTPDecoder::parseRTPH265toNALU(const uint8_t* rtp_data, const size_t data_l
         while(true){
             // the size of the (n-th) nalu starts at offset+1 (1 byte STAP-A NAL HDR )
             // WTF DOND ?!
-            const uint16_t* nalu_size_network=(const uint16_t*)&rtp_payload[offset+1+1];
+            const int don_offset=1;
+            const uint16_t* nalu_size_network=(const uint16_t*)&rtp_payload[offset+don_offset+1];
             const uint16_t nalu_size= htons(*nalu_size_network);
             // While the NALU HDR of the (n-th) nalu starts at offset+3 (1 byte STAP-A NAL HDR, 2 bytes nalu size)
-            const uint8_t* actual_nalu_data_p=&rtp_payload[offset+1+2];
+            const uint8_t* actual_nalu_data_p=&rtp_payload[offset+don_offset+1+2];
             const auto actual_nalu_size=nalu_size;
             qDebug()<<"XNALU of size:"<<(int)actual_nalu_size;
             h265_forward_one_nalu(actual_nalu_data_p,actual_nalu_size);

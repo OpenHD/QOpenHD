@@ -415,7 +415,7 @@ int AVCodecDecoder::open_and_decode_until_error()
     // https://stackoverflow.com/questions/16658873/how-to-minimize-the-delay-in-a-live-streaming-with-ffmpeg
     AVDictionary* av_dictionary=nullptr;
     av_dict_set(&av_dictionary, "protocol_whitelist", "file,udp,rtp", 0);
-    av_dict_set(&av_dictionary, "buffer_size", "212992", 0);
+    /*av_dict_set(&av_dictionary, "buffer_size", "212992", 0);
     av_dict_set_int(&av_dictionary,"max_delay",0,0);
     av_dict_set(&av_dictionary,"reuse_sockets","1",0);
     av_dict_set_int(&av_dictionary, "reorder_queue_size", 0, 0);
@@ -435,7 +435,7 @@ int AVCodecDecoder::open_and_decode_until_error()
     av_dict_set_int(&av_dictionary,"max_interleave_delta",1,0); //in microseconds
     //av_dict_set_int(&av_dictionary,"max_streams",1,0);
 
-    av_dict_set(&av_dictionary, "rtsp_transport", "udp", 0);
+    av_dict_set(&av_dictionary, "rtsp_transport", "udp", 0);*/
 
     AVFormatContext *input_ctx = nullptr;
     input_ctx=avformat_alloc_context();
@@ -444,7 +444,7 @@ int AVCodecDecoder::open_and_decode_until_error()
     input_ctx->flags |= AVFMT_FLAG_FLUSH_PACKETS;
     input_ctx->flags |= AVFMT_FLAG_NOBUFFER;*/
     //input_ctx->avio_flags = AVIO_FLAG_DIRECT;
-    input_ctx->flags = AVFMT_FLAG_NOBUFFER;// | AVFMT_FLAG_FLUSH_PACKETS;
+    //input_ctx->flags |= AVFMT_FLAG_NOBUFFER;// | AVFMT_FLAG_FLUSH_PACKETS;
 
     // open the input file
     if (avformat_open_input(&input_ctx,in_filename.c_str(), NULL, &av_dictionary) != 0) {
@@ -472,7 +472,7 @@ int AVCodecDecoder::open_and_decode_until_error()
         avformat_close_input(&input_ctx);
         return -1;
     }
-    qDebug()<<"done av_find_best_stream";
+    qDebug()<<"done av_find_best_stream:"<<ret;
     const int video_stream = ret;
 
     if(!(decoder->id==AV_CODEC_ID_H264 || decoder->id==AV_CODEC_ID_H265 || decoder->id==AV_CODEC_ID_MJPEG)){
