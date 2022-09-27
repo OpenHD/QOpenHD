@@ -120,8 +120,8 @@ void AVCodecDecoder::constant_decode()
 {
     while(!m_should_terminate){
         qDebug()<<"Start decode";
-        //open_and_decode_until_error();
-        open_and_decode_until_error_custom_rtp();
+        open_and_decode_until_error();
+        //open_and_decode_until_error_custom_rtp();
         qDebug()<<"Decode stopped,restarting";
         std::this_thread::sleep_for(std::chrono::seconds(1));
     }
@@ -432,9 +432,10 @@ int AVCodecDecoder::open_and_decode_until_error()
         return -1;
     }
     qDebug()<<"done avformat_find_stream_info";
+    int ret=0;
     // find the video stream information
     //int ret = av_find_best_stream(input_ctx, AVMEDIA_TYPE_VIDEO, -1, -1,(const AVCodec**) &decoder, 0);
-    int ret = av_find_best_stream(input_ctx, AVMEDIA_TYPE_VIDEO, -1, -1,(AVCodec**) &decoder, 0);
+    ret = av_find_best_stream(input_ctx, AVMEDIA_TYPE_VIDEO, -1, -1,(AVCodec**) &decoder, 0);
     if (ret < 0) {
         qDebug()<< "Cannot find a video stream in the input file";
         avformat_close_input(&input_ctx);
@@ -567,7 +568,7 @@ int AVCodecDecoder::open_and_decode_until_error()
     decoder_ctx->thread_count = 1;
 
    if ((ret = avcodec_open2(decoder_ctx, decoder, nullptr)) < 0) {
-        qDebug()<<"Failed to open codec for stream "<< video_stream;
+        qDebug()<<"Failed to open codec for stream ";//<< video_stream;
         avformat_close_input(&input_ctx);
         return -1;
     }
@@ -606,10 +607,11 @@ int AVCodecDecoder::open_and_decode_until_error()
         if(false){
              qDebug()<<"Got "<<debug_av_packet(&packet).c_str();
         }else{
-            std::vector<uint8_t> as_buff(packet.data,packet.data+packet.size);
-            qDebug()<<"Packet:"<<StringHelper::vectorAsString(as_buff).c_str()<<"\n";
+            //std::vector<uint8_t> as_buff(packet.data,packet.data+packet.size);
+            //qDebug()<<"Packet:"<<StringHelper::vectorAsString(as_buff).c_str()<<"\n";
 
             if (video_stream == packet.stream_index){
+            //if(true){
                 int limitedFrameRate=settings.dev_limit_fps_on_test_file;
                 if(settings.dev_test_video_mode==QOpenHDVideoHelper::VideoTestMode::DISABLED){
                     // never limit the fps on decode when doing live streaming !

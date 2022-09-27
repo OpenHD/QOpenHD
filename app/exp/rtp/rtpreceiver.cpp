@@ -80,10 +80,11 @@ void RTPReceiver::udp_raw_data_callback(const uint8_t *payload, const std::size_
 
 void RTPReceiver::nalu_data_callback(const std::chrono::steady_clock::time_point creation_time,const uint8_t *nalu_data, const int nalu_data_size)
 {
-    qDebug()<<"Got RTP "<<nalu_data_size;
-
-    std::vector<uint8_t> tmp(nalu_data,nalu_data+nalu_data_size);
-    //qDebug()<<StringHelper::vectorAsString(tmp).c_str()<<"\n";
+    //qDebug()<<"Got NALU "<<nalu_data_size;
+    {
+        //std::vector<uint8_t> tmp(nalu_data,nalu_data+nalu_data_size);
+        //qDebug()<<StringHelper::vectorAsString(tmp).c_str()<<"\n";
+    }
     if(m_out_file!=nullptr){
         m_out_file->write((const char*)nalu_data,nalu_data_size);
         m_out_file->flush();
