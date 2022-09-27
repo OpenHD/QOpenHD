@@ -52,7 +52,7 @@ static enum AVPixelFormat get_sw_format(AVCodecContext *ctx,const enum AVPixelFo
     qDebug()<<"All (SW) pixel formats:"<<all_formats_to_string(pix_fmts).c_str();
     for (p = pix_fmts; *p != -1; p++) {
         const AVPixelFormat tmp=*p;
-        if(tmp==AV_PIX_FMT_YUV420P || tmp==AV_PIX_FMT_YUV422P || tmp==AV_PIX_FMT_YUVJ422P || tmp==AV_PIX_FMT_YUVJ422P){
+        if(tmp==AV_PIX_FMT_YUV420P || tmp==AV_PIX_FMT_YUV422P || tmp==AV_PIX_FMT_YUVJ422P || tmp==AV_PIX_FMT_YUVJ420P){
             return tmp;
         }
     }
@@ -395,6 +395,8 @@ int AVCodecDecoder::open_and_decode_until_error()
 
     av_dict_set(&av_dictionary, "rtsp_transport", "udp", 0);*/
 
+    av_dict_set(&av_dictionary,"timeout",0,0);
+
     AVFormatContext *input_ctx = nullptr;
     input_ctx=avformat_alloc_context();
     assert(input_ctx);
@@ -403,6 +405,10 @@ int AVCodecDecoder::open_and_decode_until_error()
     input_ctx->flags |= AVFMT_FLAG_NOBUFFER;*/
     //input_ctx->avio_flags = AVIO_FLAG_DIRECT;
     //input_ctx->flags |= AVFMT_FLAG_NOBUFFER;// | AVFMT_FLAG_FLUSH_PACKETS;
+
+    //input_ctx->flags |= AVFMT_FLAG_NOFILLIN;
+    //input_ctx->flags |= AVFMT_FLAG_NOPARSE;
+    //input_ctx->flags |= AVFMT_FLAG_NONBLOCK;
 
     // open the input file
     if (avformat_open_input(&input_ctx,in_filename.c_str(), NULL, &av_dictionary) != 0) {
@@ -423,7 +429,7 @@ int AVCodecDecoder::open_and_decode_until_error()
     }
     qDebug()<<"done avformat_find_stream_info";
     // find the video stream information
-    //ret = av_find_best_stream(input_ctx, AVMEDIA_TYPE_VIDEO, -1, -1,(const AVCodec**) &decoder, 0);
+    //int ret = av_find_best_stream(input_ctx, AVMEDIA_TYPE_VIDEO, -1, -1,(const AVCodec**) &decoder, 0);
     int ret = av_find_best_stream(input_ctx, AVMEDIA_TYPE_VIDEO, -1, -1,(AVCodec**) &decoder, 0);
     if (ret < 0) {
         qDebug()<< "Cannot find a video stream in the input file";
@@ -600,6 +606,9 @@ int AVCodecDecoder::open_and_decode_until_error()
         if(false){
              qDebug()<<"Got "<<debug_av_packet(&packet).c_str();
         }else{
+            std::vector<uint8_t> as_buff(packet.data,packet.data+packet.size);
+            qDebug()<<"Packet:"<<StringHelper::vectorAsString(as_buff).c_str()<<"\n";
+
             if (video_stream == packet.stream_index){
                 int limitedFrameRate=settings.dev_limit_fps_on_test_file;
                 if(settings.dev_test_video_mode==QOpenHDVideoHelper::VideoTestMode::DISABLED){
