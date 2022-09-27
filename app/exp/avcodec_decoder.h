@@ -29,8 +29,6 @@ public:
     AVCodecDecoder(QObject *parent = nullptr);
 
     void init(bool primaryStream);
-
-    void cancel();
 private:
     AVCodecContext *decoder_ctx = nullptr;
     const AVCodec *decoder = nullptr;
@@ -49,10 +47,10 @@ private:
     // the video without buffering (which is bad, but some IP camera(s) create such a stream)
     // or the underlying decode implementation (e.g. rpi foundation h264 !? investigate) has some quirks.
     int decode_and_wait_for_frame(AVPacket *packet);
+    int decode_config_data(AVPacket *packet);
     // Called every time we get a new frame from the decoder, do what you wish here ;)
     void on_new_frame(AVFrame* frame);
     int open_input_error_count=0;
-    bool has_been_canceled=false;
     bool request_restart=false;
     int n_no_output_frame_after_x_seconds=0;
     bool use_frame_timestamps_for_latency=false;

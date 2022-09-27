@@ -122,6 +122,7 @@ HEADERS += \
     app/exp/QSGVideoTextureItem.h \
     app/exp/gl/gl_shaders.h \
     app/exp/gl/gl_videorenderer.h \
+    app/exp/nalu/KeyFrameFinder.hpp \
     app/exp/nalu/NALUnitType.hpp \
     app/exp/rtp/ParseRTP.h \
     app/exp/rtp/RTP.hpp \

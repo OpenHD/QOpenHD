@@ -7,7 +7,7 @@
 RTPReceiver::RTPReceiver(int port,bool is_h265):
     is_h265(is_h265)
 {
-
+    m_keyframe_finder=std::make_unique<KeyFrameFinder>();
     m_rtp_decoder=std::make_unique<RTPDecoder>([this](const std::chrono::steady_clock::time_point creation_time,const uint8_t *nalu_data, const int nalu_data_size){
         this->nalu_data_callback(creation_time,nalu_data,nalu_data_size);
     });
@@ -17,6 +17,11 @@ RTPReceiver::RTPReceiver(int port,bool is_h265):
         };
     m_udp_receiver=std::make_unique<UDPReceiver>(port,"V_REC",cb);
     m_udp_receiver->startReceiving();
+}
+
+RTPReceiver::~RTPReceiver()
+{
+    m_udp_receiver->stopReceiving();
 }
 
 
@@ -29,10 +34,25 @@ std::shared_ptr<std::vector<uint8_t> > RTPReceiver::get_data()
     return ret;
 }
 
+std::unique_ptr<std::vector<uint8_t>> RTPReceiver::get_config_data()
+{
+     std::lock_guard<std::mutex> lock(m_data_mutex);
+     if(m_keyframe_finder->allKeyFramesAvailable(is_h265)){
+         return m_keyframe_finder->get_keyframe_data(is_h265);
+     }
+     return nullptr;
+}
+
 void RTPReceiver::queue_data(std::shared_ptr<std::vector<uint8_t>> data)
 {
     std::lock_guard<std::mutex> lock(m_data_mutex);
-    if(m_data.size()>100)m_data.pop();
+    {
+        NALU nalu(data->data(),data->size(),is_h265);
+        if(m_keyframe_finder->saveIfKeyFrame(nalu)){
+            return;
+        }
+    }
+    if(m_data.size()>30)m_data.pop();
     m_data.push(data);
 }
 

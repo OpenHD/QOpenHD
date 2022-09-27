@@ -11,13 +11,17 @@
 #include <queue>
 
 #include "../nalu/NALU.hpp"
+#include "../nalu/KeyFrameFinder.hpp"
 
 class RTPReceiver
 {
 public:
     RTPReceiver(int port,bool is_h265);
+    ~RTPReceiver();
 
     std::shared_ptr<std::vector<uint8_t>> get_data();
+
+    std::unique_ptr<std::vector<uint8_t>> get_config_data();
 private:
     std::unique_ptr<UDPReceiver> m_udp_receiver=nullptr;
     std::unique_ptr<RTPDecoder> m_rtp_decoder=nullptr;
@@ -34,6 +38,8 @@ private:
     std::queue<std::shared_ptr<std::vector<uint8_t>>> m_data;
 
     void queue_data(std::shared_ptr<std::vector<uint8_t>> data);
+private:
+    std::unique_ptr<KeyFrameFinder> m_keyframe_finder;
 };
 
 #endif // RTPRECEIVER_H

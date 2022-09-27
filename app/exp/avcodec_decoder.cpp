@@ -10,8 +10,6 @@
 #include "texturerenderer.h"
 #include "../videostreaming/decodingstatistcs.h"
 
-static enum AVPixelFormat wanted_hw_pix_fmt;
-
 static int hw_decoder_init(AVCodecContext *ctx, const enum AVHWDeviceType type){
     int err = 0;
     ctx->hw_frames_ctx = NULL;
@@ -24,6 +22,7 @@ static int hw_decoder_init(AVCodecContext *ctx, const enum AVHWDeviceType type){
     return err;
 }
 
+static enum AVPixelFormat wanted_hw_pix_fmt;
 static enum AVPixelFormat get_hw_format(AVCodecContext *ctx,const enum AVPixelFormat *pix_fmts){
     const enum AVPixelFormat *p;
     AVPixelFormat ret=AV_PIX_FMT_NONE;
@@ -81,11 +80,6 @@ void AVCodecDecoder::init(bool primaryStream)
     timer_check_settings_changed=std::make_unique<QTimer>();
     QObject::connect(timer_check_settings_changed.get(), &QTimer::timeout, this, &AVCodecDecoder::timer_check_settings_changed_callback);
     timer_check_settings_changed->start(1000);
-}
-
-void AVCodecDecoder::cancel()
-{
-    has_been_canceled=true;
 }
 
 void AVCodecDecoder::timer_check_settings_changed_callback()
@@ -219,6 +213,12 @@ int AVCodecDecoder::decode_and_wait_for_frame(AVPacket *packet)
     }
     av_frame_free(&frame);
     return 0;
+}
+
+int AVCodecDecoder::decode_config_data(AVPacket *packet)
+{
+     const int ret_avcodec_send_packet = avcodec_send_packet(decoder_ctx, packet);
+     return ret_avcodec_send_packet;
 }
 
 
@@ -586,9 +586,6 @@ int AVCodecDecoder::open_and_decode_until_error()
     }
     DecodingStatistcs::instance().set_doing_wait_for_frame_decode("Yes");
     while (ret >= 0) {
-        if(has_been_canceled){
-            break;
-        }
         if(request_restart){
             request_restart=false;
             // Since we do streaming and SPS/PPS come in regular intervals, we can just cancel and restart at any time.
@@ -668,6 +665,7 @@ int AVCodecDecoder::open_and_decode_until_error()
 }
 
 
+// https://ffmpeg.org/doxygen/3.3/decode_video_8c-example.html
 void AVCodecDecoder::open_and_decode_until_error_custom_rtp()
 {
      av_log_set_level(AV_LOG_TRACE);
@@ -715,7 +713,7 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp()
          fprintf(stderr, "Could not open %s\n");
          exit(1);
      }
-
+     qDebug()<<"AVCodecDecoder::open_and_decode_until_error_custom_rtp()-begin loop";
      m_rtp_receiver=std::make_unique<RTPReceiver>(5600,settings.video_codec==1);
 
      static constexpr auto INBUF_SIZE=4096;
@@ -728,15 +726,40 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp()
      int eof = 0;
      AVPacket *pkt=av_packet_alloc();
      assert(pkt!=nullptr);
+     bool has_keyframe_data=false;
+
      do {
-         std::shared_ptr<std::vector<uint8_t>> buf=nullptr;
-         while(buf==nullptr){
-             buf=m_rtp_receiver->get_data();
+         //std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+         if(!has_keyframe_data){
+              std::unique_ptr<std::vector<uint8_t>> keyframe_buf=nullptr;
+              while(keyframe_buf==nullptr){
+                  if(request_restart){
+                      request_restart=false;
+                      goto finish;
+                  }
+                  std::this_thread::sleep_for(std::chrono::milliseconds(100));
+                  keyframe_buf=m_rtp_receiver->get_config_data();
+              }
+              qDebug()<<"Got decode data (before keyframe)";
+              pkt->data=keyframe_buf->data();
+              pkt->size=keyframe_buf->size();
+              decode_config_data(pkt);
+              has_keyframe_data=true;
+              continue;
+         }else{
+             std::shared_ptr<std::vector<uint8_t>> buf=nullptr;
+             while(buf==nullptr){
+                 if(request_restart){
+                     request_restart=false;
+                     goto finish;
+                 }
+                 buf=m_rtp_receiver->get_data();
+             }
+             qDebug()<<"Got decode data (after keyframe)";
+             pkt->data=buf->data();
+             pkt->size=buf->size();
+             decode_and_wait_for_frame(pkt);
          }
-         qDebug()<<"Got decode data";
-         pkt->data=buf->data();
-         pkt->size=buf->size();
-         decode_and_wait_for_frame(pkt);
          // read raw data from the input file
          /*data_size = fread(inbuf, 1, INBUF_SIZE, f);
 
@@ -757,13 +780,19 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp()
              data_size -= ret;
 
              if (pkt->size){
+                 qDebug()<<"Feeding:"<<debug_av_packet(pkt).c_str();
+
                  decode_and_wait_for_frame(pkt);
-                 //std::this_thread::sleep_for(std::chrono::milliseconds(100));
+                 std::this_thread::sleep_for(std::chrono::milliseconds(3000));
              }else if (eof)
                  break;
          }*/
      } while (!eof);
-      m_rtp_receiver=nullptr;
+finish:
+     qDebug()<<"AVCodecDecoder::open_and_decode_until_error_custom_rtp()-end loop";
+     m_rtp_receiver=nullptr;
+     fclose(f);
+     avcodec_free_context(&decoder_ctx);
 }
 
 void AVCodecDecoder::add_fed_timestamp(int64_t ts)

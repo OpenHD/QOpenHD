@@ -222,7 +222,8 @@ void RTPDecoder::parseRTPH265toNALU(const uint8_t* rtp_data, const size_t data_l
                 std::cerr<<"Got fu-a start - clearing missing packet flag";
                 flagPacketHasGoneMissing=false;
             }
-            write_h264_h265_nalu_start(false);
+            //write_h264_h265_nalu_start(false);
+            write_h264_h265_nalu_start();
             // copy header and reconstruct ?!!!
             const uint8_t* ptr=&rtp_data[sizeof(rtp_header_t)];
             uint8_t variableNoIdea=rtp_data[sizeof(rtp_header_t) + sizeof(nal_unit_header_h265_t)];
@@ -240,7 +241,8 @@ void RTPDecoder::parseRTPH265toNALU(const uint8_t* rtp_data, const size_t data_l
     }else{
         // single NAL unit
         qDebug()<<"Got RTP H265 type any (single) payload size:"<<rtpPacket.rtpPayloadSize;
-        h265_forward_one_nalu(rtpPacket.rtpPayload,rtpPacket.rtpPayloadSize,false);
+        //h265_forward_one_nalu(rtpPacket.rtpPayload,rtpPacket.rtpPayloadSize,false);
+        h265_forward_one_nalu(rtpPacket.rtpPayload,rtpPacket.rtpPayloadSize,true);
     }
 }
 
