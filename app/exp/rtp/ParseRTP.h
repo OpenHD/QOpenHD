@@ -13,6 +13,7 @@
 /*********************************************
  ** Parses a stream of rtp h264 / h265 data into NALUs.
  ** No rtp jitterbuffer or similar - this decreases latency, but removes any rtp packet re-ordering capabilities.
+ ** No special dependencies other than std library.
 **********************************************/
 
 static constexpr const auto NALU_MAXLEN=1024*1024;
@@ -20,6 +21,8 @@ typedef std::function<void(const std::chrono::steady_clock::time_point creation_
 
 class RTPDecoder{
 public:
+    // NALUs are passed on via the callback, one by one.
+    // (Each time the callback is called, it contains exactly one NALU prefixed with the 0,0,0,1 start code)
     RTPDecoder(NALU_DATA_CALLBACK cb);
 public:
     // check if a packet is missing by using the rtp sequence number and
@@ -38,8 +41,8 @@ public:
 private:
     // Write 0,0,0,1 (or 0,0,1) into the start of the NALU buffer and set the length to 4 / 3
     void write_h264_h265_nalu_start(bool use_4_bytes=true);
-    // copy data_len bytes into the mNALU_DATA buffer at the current position
-    // and increase mNALU_DATA_LENGTH by data_len
+    // copy data_len bytes into the data buffer at the current position
+    // and increase its size by data_len
     void append_nalu_data(const uint8_t* data, size_t data_len);
     // Properly calls the cb function (if not null)
     // Resets the m_nalu_data_length to 0

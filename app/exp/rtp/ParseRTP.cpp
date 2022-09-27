@@ -13,6 +13,7 @@ RTPDecoder::RTPDecoder(NALU_DATA_CALLBACK cb): m_cb(std::move(cb)){
 void RTPDecoder::reset(){
     m_nalu_data_length=0;
     lastSequenceNumber=-1;
+    flagPacketHasGoneMissing=false;
     //nalu_data.reserve(NALU::NALU_MAXLEN);
 }
 
