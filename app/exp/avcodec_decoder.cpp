@@ -120,8 +120,8 @@ void AVCodecDecoder::constant_decode()
 {
     while(!m_should_terminate){
         qDebug()<<"Start decode";
-        open_and_decode_until_error();
-        //open_and_decode_until_error_custom_rtp();
+        //open_and_decode_until_error();
+        open_and_decode_until_error_custom_rtp();
         qDebug()<<"Decode stopped,restarting";
         std::this_thread::sleep_for(std::chrono::seconds(1));
     }
@@ -700,24 +700,6 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp()
          fprintf(stderr, "Could not open codec\n");
          exit(1);
      }
-     FILE *f;
-     std::string in_filename;
-     if(settings.video_codec==QOpenHDVideoHelper::VideoCodecH264){
-          in_filename="/home/consti10/Desktop/hello_drmprime/in/rpi_1080.h264";
-     }else if(settings.video_codec==QOpenHDVideoHelper::VideoCodecH265){
-           //in_filename="/tmp/x_raw_h265.h265";
-           in_filename="/home/consti10/Desktop/hello_drmprime/in/jetson_test.h265";
-           //in_filename="/home/consti10/Desktop/hello_drmprime/in/Big_Buck_Bunny_1080_10s_1MB_h265.mp4";
-     }else{
-        in_filename="/home/consti10/Desktop/hello_drmprime/in/uv_640x480.mjpeg";
-        //in_filename="/home/consti10/Desktop/hello_drmprime/in/Big_Buck_Bunny_1080.mjpeg";
-     }
-
-     f = fopen(in_filename.c_str(), "rb");
-     if (!f) {
-         fprintf(stderr, "Could not open %s\n");
-         exit(1);
-     }
      qDebug()<<"AVCodecDecoder::open_and_decode_until_error_custom_rtp()-begin loop";
      m_rtp_receiver=std::make_unique<RTPReceiver>(5600,settings.video_codec==1);
 
@@ -765,38 +747,10 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp()
              pkt->size=buf->size();
              decode_and_wait_for_frame(pkt);
          }
-         // read raw data from the input file
-         /*data_size = fread(inbuf, 1, INBUF_SIZE, f);
-
-         if (ferror(f))
-             break;
-         eof = !data_size;
-
-         //use the parser to split the data into frames
-         data = inbuf;
-         while (data_size > 0 || eof) {
-             ret = av_parser_parse2(parser, decoder_ctx, &pkt->data, &pkt->size,
-                                    data, data_size, AV_NOPTS_VALUE, AV_NOPTS_VALUE, 0);
-             if (ret < 0) {
-                 fprintf(stderr, "Error while parsing\n");
-                 exit(1);
-             }
-             data      += ret;
-             data_size -= ret;
-
-             if (pkt->size){
-                 qDebug()<<"Feeding:"<<debug_av_packet(pkt).c_str();
-
-                 decode_and_wait_for_frame(pkt);
-                 std::this_thread::sleep_for(std::chrono::milliseconds(3000));
-             }else if (eof)
-                 break;
-         }*/
      } while (!eof);
 finish:
      qDebug()<<"AVCodecDecoder::open_and_decode_until_error_custom_rtp()-end loop";
      m_rtp_receiver=nullptr;
-     fclose(f);
      avcodec_free_context(&decoder_ctx);
 }
 

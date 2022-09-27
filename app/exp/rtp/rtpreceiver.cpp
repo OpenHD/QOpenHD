@@ -7,7 +7,7 @@
 RTPReceiver::RTPReceiver(int port,bool is_h265):
     is_h265(is_h265)
 {
-    if(false){
+    if(true){
         // Debug write raw data to file
         std::stringstream ss;
         ss<<"/tmp/received_rtp.";
