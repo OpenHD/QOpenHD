@@ -703,19 +703,19 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp()
      qDebug()<<"AVCodecDecoder::open_and_decode_until_error_custom_rtp()-begin loop";
      m_rtp_receiver=std::make_unique<RTPReceiver>(5600,settings.video_codec==1);
 
-     static constexpr auto INBUF_SIZE=4096;
-     uint8_t inbuf[INBUF_SIZE + AV_INPUT_BUFFER_PADDING_SIZE];
-     memset(inbuf + INBUF_SIZE, 0, AV_INPUT_BUFFER_PADDING_SIZE);
-
-     uint8_t *data;
-     size_t   data_size;
      int ret;
-     int eof = 0;
      AVPacket *pkt=av_packet_alloc();
      assert(pkt!=nullptr);
      bool has_keyframe_data=false;
-
-     do {
+     while(true){
+         if(request_restart){
+             request_restart=false;
+             goto finish;
+         }
+         if(m_rtp_receiver->config_has_changed_during_decode){
+             qDebug()<<"Break/Restart,config has changed during decode";
+             goto finish;
+         }
          //std::this_thread::sleep_for(std::chrono::milliseconds(3000));
          if(!has_keyframe_data){
               std::unique_ptr<std::vector<uint8_t>> keyframe_buf=nullptr;
@@ -747,7 +747,7 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp()
              pkt->size=buf->size();
              decode_and_wait_for_frame(pkt);
          }
-     } while (!eof);
+     }
 finish:
      qDebug()<<"AVCodecDecoder::open_and_decode_until_error_custom_rtp()-end loop";
      m_rtp_receiver=nullptr;

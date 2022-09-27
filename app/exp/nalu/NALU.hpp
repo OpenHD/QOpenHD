@@ -17,6 +17,7 @@
 #include <variant>
 #include <optional>
 #include <assert.h>
+#include <memory>
 
 #include "NALUnitType.hpp"
 
@@ -122,7 +123,32 @@ public:
        assert(IS_H265_PACKET);
        return get_nal_unit_type()==NALUnitType::H265::NAL_UNIT_VPS;
    }
+   bool is_aud()const{
+       if(IS_H265_PACKET){
+           return get_nal_unit_type()==NALUnitType::H265::NAL_UNIT_ACCESS_UNIT_DELIMITER;
+       }
+       return (get_nal_unit_type() == NALUnitType::H264::NAL_UNIT_TYPE_AUD);
+   }
+   bool is_sei()const{
+       if(IS_H265_PACKET){
+           return get_nal_unit_type()==NALUnitType::H265::NAL_UNIT_PREFIX_SEI || get_nal_unit_type()==NALUnitType::H265::NAL_UNIT_SUFFIX_SEI;
+       }
+       return (get_nal_unit_type() == NALUnitType::H264::NAL_UNIT_TYPE_SEI);
+   }
+   bool is_config(){
+       return isSPS() || isPPS() || (IS_H265_PACKET && isVPS());
+   }
 };
+
+/*class NALUBuffer:public NALU{
+public:
+    NALUBuffer(const NALU& nalu):
+        NALU(nalu.getData(),nalu.getSize(),nalu.IS_H265_PACKET,nalu.creationTime){
+        copy=std::make_unique()
+    }
+private:
+    std::unique_ptr<std::vector<uint8_t>> copy;
+};*/
 
 
 #endif //LIVE_VIDEO_10MS_ANDROID_NALU_H

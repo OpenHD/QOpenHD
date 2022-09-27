@@ -22,6 +22,7 @@ public:
     std::shared_ptr<std::vector<uint8_t>> get_data();
 
     std::unique_ptr<std::vector<uint8_t>> get_config_data();
+    bool config_has_changed_during_decode=false;
 private:
     std::unique_ptr<UDPReceiver> m_udp_receiver=nullptr;
     std::unique_ptr<RTPDecoder> m_rtp_decoder=nullptr;

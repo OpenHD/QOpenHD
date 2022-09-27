@@ -7,7 +7,7 @@
 RTPReceiver::RTPReceiver(int port,bool is_h265):
     is_h265(is_h265)
 {
-    if(true){
+    if(false){
         // Debug write raw data to file
         std::stringstream ss;
         ss<<"/tmp/received_rtp.";
@@ -22,10 +22,9 @@ RTPReceiver::RTPReceiver(int port,bool is_h265):
     m_rtp_decoder=std::make_unique<RTPDecoder>([this](const std::chrono::steady_clock::time_point creation_time,const uint8_t *nalu_data, const int nalu_data_size){
         this->nalu_data_callback(creation_time,nalu_data,nalu_data_size);
     });
-    const auto cb = [this](const uint8_t *payload, const std::size_t payloadSize)mutable {
-          this->udp_raw_data_callback(payload,payloadSize);
-        };
-    m_udp_receiver=std::make_unique<UDPReceiver>(port,"V_REC",cb);
+    m_udp_receiver=std::make_unique<UDPReceiver>(port,"V_REC",[this](const uint8_t *payload, const std::size_t payloadSize){
+        this->udp_raw_data_callback(payload,payloadSize);
+    });
     m_udp_receiver->startReceiving();
 }
 
@@ -56,14 +55,21 @@ std::unique_ptr<std::vector<uint8_t>> RTPReceiver::get_config_data()
 void RTPReceiver::queue_data(std::shared_ptr<std::vector<uint8_t>> data)
 {
     std::lock_guard<std::mutex> lock(m_data_mutex);
+    NALU nalu(data->data(),data->size(),is_h265);
     if(m_keyframe_finder->allKeyFramesAvailable(is_h265)){
+        if(!m_keyframe_finder->check_is_still_same_config_data(nalu)){
+            config_has_changed_during_decode=true;
+            return;
+        }
          // If we have all config data, start storing video frames
-        if(m_data.size()>30)m_data.pop();
+        if(nalu.is_config())return;
+        if(nalu.is_aud())return;
+        if(nalu.is_sei())return;
+        if(m_data.size()>20)m_data.pop();
         m_data.push(data);
         return;
     }
     // We don't have all config data yet, drop anything that is not config data.
-    NALU nalu(data->data(),data->size(),is_h265);
     m_keyframe_finder->saveIfKeyFrame(nalu);
 }
 

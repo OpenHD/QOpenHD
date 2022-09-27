@@ -63,7 +63,19 @@ public:
         std::memcpy(ret->data()+SPS->getSize(),PPS->getData(),PPS->getSize());
         return ret;
     }
-
+    // returns false if the config data (SPS,PPS,optional VPS) has changed
+    // true otherwise
+    bool check_is_still_same_config_data(const NALU &nalu){
+        assert(allKeyFramesAvailable(nalu.IS_H265_PACKET));
+        if(nalu.isSPS()){
+            return compare(nalu,*SPS);
+        }else if(nalu.isPPS()){
+            return compare(nalu,*PPS);
+        }else if(nalu.IS_H265_PACKET && nalu.isVPS()){
+            return compare(nalu,*VPS);
+        }
+        return true;
+    }
     //SPS
     const NALU& getCSD0()const{
         return *SPS;
@@ -81,6 +93,11 @@ public:
         VPS=nullptr;
     }
 public:
+    static bool compare(const NALU& n1,const NALU& n2){
+        if(n1.getSize()!=n2.getSize())return false;
+        const int res=std::memcmp(n1.getData(),n2.getData(),n1.getSize());
+        return res==0;
+    }
 
 };
 
