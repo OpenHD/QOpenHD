@@ -82,6 +82,9 @@ void AVCodecDecoder::terminate()
     timer_check_settings_changed=nullptr;
     m_should_terminate=true;
     request_restart=true;
+    if(decode_thread){
+        decode_thread->join();
+    }
 }
 
 void AVCodecDecoder::timer_check_settings_changed_callback()

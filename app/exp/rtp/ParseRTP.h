@@ -24,7 +24,6 @@ public:
     // NALUs are passed on via the callback, one by one.
     // (Each time the callback is called, it contains exactly one NALU prefixed with the 0,0,0,1 start code)
     RTPDecoder(NALU_DATA_CALLBACK cb);
-public:
     // check if a packet is missing by using the rtp sequence number and
     // if the payload is dynamic (h264 or h265)
     // Returns false if payload is wrong
@@ -54,6 +53,8 @@ private:
     //TDOD: What shall we do if a start, middle or end of fu-a is missing ?
     int lastSequenceNumber=-1;
     bool flagPacketHasGoneMissing=false;
+    // each time there is a "gap" between packets, this counter is increased
+    int m_n_gaps=0;
     // This time point is as 'early as possible' to debug the parsing time as accurately as possible.
     // E.g for a fu-a NALU the time point when the start fu-a was received, not when its end is received
     std::chrono::steady_clock::time_point timePointStartOfReceivingNALU;

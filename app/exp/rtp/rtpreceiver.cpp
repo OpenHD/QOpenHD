@@ -22,7 +22,6 @@ RTPReceiver::RTPReceiver(int port,bool is_h265):
     m_rtp_decoder=std::make_unique<RTPDecoder>([this](const std::chrono::steady_clock::time_point creation_time,const uint8_t *nalu_data, const int nalu_data_size){
         this->nalu_data_callback(creation_time,nalu_data,nalu_data_size);
     });
-
     const auto cb = [this](const uint8_t *payload, const std::size_t payloadSize)mutable {
           this->udp_raw_data_callback(payload,payloadSize);
         };
@@ -68,10 +67,9 @@ void RTPReceiver::queue_data(std::shared_ptr<std::vector<uint8_t>> data)
     m_keyframe_finder->saveIfKeyFrame(nalu);
 }
 
-
 void RTPReceiver::udp_raw_data_callback(const uint8_t *payload, const std::size_t payloadSize)
 {
-    qDebug()<<"Got UDP data "<<payloadSize;
+    //qDebug()<<"Got UDP data "<<payloadSize;
     if(is_h265){
         m_rtp_decoder->parseRTPH265toNALU(payload,payloadSize);
         //m_rtp_decoder->parse_rtp_mjpeg(payload,payloadSize);
@@ -90,7 +88,6 @@ void RTPReceiver::nalu_data_callback(const std::chrono::steady_clock::time_point
         m_out_file->write((const char*)nalu_data,nalu_data_size);
         m_out_file->flush();
     }
-
     auto copy=std::make_shared<std::vector<uint8_t>>(nalu_data,nalu_data+nalu_data_size);
     queue_data(copy);
 }

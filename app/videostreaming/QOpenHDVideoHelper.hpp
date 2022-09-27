@@ -43,11 +43,7 @@ static VideoTestMode videoTestModeFromInt(int value){
  * QOpenHD video stream, except the output mechanism (can be int qt via GL, drm/kms, ...)
  */
 struct VideoStreamConfig{
-    // when set to true, overwrites the rtp decoding, use a raw test video source (if possible). Only for developers.
-    // 0 = disabled
-    // 1 = raw video
-    // 2 = ra video encode and decode
-    // >2 disabled
+    // used for testing and development.
     VideoTestMode dev_test_video_mode = VideoTestMode::DISABLED;
     // the port where to receive rtp video data from
     int video_port = 0;
@@ -157,6 +153,7 @@ static void write_udp_rtp_sdp_files_to_tmp(){
     write_file_to_tmp("/tmp/rtp_mjpeg.sdp",create_udp_rtp_sdp_file(QOpenHDVideoHelper::VideoCodec::VideoCodecMJPEG));
 }
 static std::string get_udp_rtp_sdp_filename(const QOpenHDVideoHelper::VideoCodec& video_codec){
+    // Make sure the sdp files exist (writing a file and then giving it to avcodec is easier than other alternatives).
     write_udp_rtp_sdp_files_to_tmp();
     if(video_codec==QOpenHDVideoHelper::VideoCodec::VideoCodecH264)return "/tmp/rtp_h264.sdp";
     if(video_codec==QOpenHDVideoHelper::VideoCodec::VideoCodecH265)return "/tmp/rtp_h265.sdp";

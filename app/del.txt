@@ -65,3 +65,14 @@ if(value.canConvert(QVariant::Type::Int)){
     }
 }
 return false;
+
+
+
+srand(time(NULL));   // Initialization, should only be called once.
+------------------------------
+int r = rand();      // Returns a pseudo-random integer between 0 and RAND_MAX.
+r = r % 10;
+if(r==0){
+    qDebug()<<"Emulate dropped frame";
+    return;
+}

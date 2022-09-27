@@ -35,6 +35,9 @@ private:
     const AVCodec *decoder = nullptr;
     std::unique_ptr<std::thread> decode_thread=nullptr;
 private:
+    // The logic of this decode "machine" is simple:
+    // Always decode,and completely restart the decoding in case an error occurs
+    // or the settings changed (e.g. a switch of the video codec).
     void constant_decode();
     // Since we are basically doing connectionless live streaming, where config data comes in regular intervals,
     // The easiest approach here is to just "open" the stream, then decode until an error occurs
@@ -48,6 +51,7 @@ private:
     // the video without buffering (which is bad, but some IP camera(s) create such a stream)
     // or the underlying decode implementation (e.g. rpi foundation h264 !? investigate) has some quirks.
     int decode_and_wait_for_frame(AVPacket *packet);
+    // Just send data to the codec, do not check or wait for a frame
     int decode_config_data(AVPacket *packet);
     // Called every time we get a new frame from the decoder, do what you wish here ;)
     void on_new_frame(AVFrame* frame);
@@ -61,7 +65,8 @@ private:
     AvgCalculator avg_decode_time{"Decode"};
 private:
     // Completely ineficient, but only way since QT settings callback(s) don't properly work
-    // runs every 1 second
+    // runs every 1 second, reads the settings and checks if they differ from the previosly
+    // read settings. In case they differ, request a complete restart from the decoder.
     std::unique_ptr<QTimer> timer_check_settings_changed = nullptr;
     void timer_check_settings_changed_callback();
     QOpenHDVideoHelper::VideoStreamConfig m_last_video_settings;

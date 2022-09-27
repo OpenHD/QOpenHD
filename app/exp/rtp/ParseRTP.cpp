@@ -8,12 +8,14 @@
 #include <qdebug.h>
 
 RTPDecoder::RTPDecoder(NALU_DATA_CALLBACK cb): m_cb(std::move(cb)){
+
 }
 
 void RTPDecoder::reset(){
     m_nalu_data_length=0;
     lastSequenceNumber=-1;
     flagPacketHasGoneMissing=false;
+    m_n_gaps=0;
     //nalu_data.reserve(NALU::NALU_MAXLEN);
 }
 
@@ -24,6 +26,7 @@ bool RTPDecoder::validateRTPPacket(const rtp_header_t& rtp_header) {
     }
     // Testing regarding sequence numbers.This stuff can be removed without issues
     const int seqNr=rtp_header.getSequence();
+    qDebug()<<"Sequence:"<<seqNr<<" gaps:"<<m_n_gaps;
     if(seqNr==lastSequenceNumber){
         // duplicate. This should never happen for 'normal' rtp streams, but can be usefully when testing bitrates
         // (Since you can send the same packet multiple times to emulate a higher bitrate)
@@ -37,8 +40,9 @@ bool RTPDecoder::validateRTPPacket(const rtp_header_t& rtp_header) {
         // Don't forget that the sequence number loops every UINT16_MAX packets
         if(seqNr != ((lastSequenceNumber+1) % UINT16_MAX)){
             // We are missing a Packet !
-            std::cerr<<"missing a packet. Last:"<<lastSequenceNumber<<" Curr:"<<seqNr<<" Diff:"<<(seqNr-(int)lastSequenceNumber);
-            //flagPacketHasGoneMissing=true;
+            qDebug()<<"missing a packet. Last:"<<lastSequenceNumber<<" Curr:"<<seqNr<<" Diff:"<<(seqNr-(int)lastSequenceNumber)<<" total:"<<m_n_gaps;
+            flagPacketHasGoneMissing=true;
+            m_n_gaps++;
         }
     }
     lastSequenceNumber=seqNr;
