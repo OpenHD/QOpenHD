@@ -68,14 +68,20 @@ AVCodecDecoder::AVCodecDecoder(QObject *parent):
 
 void AVCodecDecoder::init(bool primaryStream)
 {
-    //m_rtp_reciever=std::make_unique<RTPReceiver>(5600,true);
-    //if(true)return;
     qDebug() << "AVCodecDecoder::init()";
     m_last_video_settings=QOpenHDVideoHelper::read_from_settings();
     decode_thread = std::make_unique<std::thread>([this]{this->constant_decode();} );
     timer_check_settings_changed=std::make_unique<QTimer>();
     QObject::connect(timer_check_settings_changed.get(), &QTimer::timeout, this, &AVCodecDecoder::timer_check_settings_changed_callback);
     timer_check_settings_changed->start(1000);
+}
+
+void AVCodecDecoder::terminate()
+{
+    timer_check_settings_changed->stop();
+    timer_check_settings_changed=nullptr;
+    m_should_terminate=true;
+    request_restart=true;
 }
 
 void AVCodecDecoder::timer_check_settings_changed_callback()
@@ -109,7 +115,7 @@ void AVCodecDecoder::dequeue_frames_test()
 
 void AVCodecDecoder::constant_decode()
 {
-    while(true){
+    while(!m_should_terminate){
         qDebug()<<"Start decode";
         //open_and_decode_until_error();
         open_and_decode_until_error_custom_rtp();
@@ -117,7 +123,6 @@ void AVCodecDecoder::constant_decode()
         std::this_thread::sleep_for(std::chrono::seconds(1));
     }
 }
-
 
 
 int AVCodecDecoder::decode_and_wait_for_frame(AVPacket *packet)

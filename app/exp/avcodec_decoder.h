@@ -29,6 +29,7 @@ public:
     AVCodecDecoder(QObject *parent = nullptr);
 
     void init(bool primaryStream);
+    void terminate();
 private:
     AVCodecContext *decoder_ctx = nullptr;
     const AVCodec *decoder = nullptr;
@@ -51,7 +52,10 @@ private:
     // Called every time we get a new frame from the decoder, do what you wish here ;)
     void on_new_frame(AVFrame* frame);
     int open_input_error_count=0;
+    // simle restart, e.g. when the video codec or the video resolution has changed
     bool request_restart=false;
+    // Completely stop (Exit QOpenHD)
+    bool m_should_terminate=false;
     int n_no_output_frame_after_x_seconds=0;
     bool use_frame_timestamps_for_latency=false;
     AvgCalculator avg_decode_time{"Decode"};

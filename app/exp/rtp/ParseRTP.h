@@ -35,17 +35,17 @@ public:
     // reset to defaults
     void reset();
 private:
+    // Write 0,0,0,1 (or 0,0,1) into the start of the NALU buffer and set the length to 4 / 3
+    void write_h264_h265_nalu_start(bool use_4_bytes=true);
     // copy data_len bytes into the mNALU_DATA buffer at the current position
     // and increase mNALU_DATA_LENGTH by data_len
     void append_nalu_data(const uint8_t* data, size_t data_len);
-    // Write 0,0,0,1 (or 0,0,1) into the start of the NALU buffer and set the length to 4 / 3
-    void write_h264_h265_nalu_start(bool use_4_bytes=true);
-    // Properly calls the cb function
-    // Resets the mNALU_DATA_LENGTH to 0
-    void forwardNALU(const std::chrono::steady_clock::time_point creationTime,const bool isH265=false);
-    const NALU_DATA_CALLBACK cb;
-    std::array<uint8_t,NALU_MAXLEN> mNALU_DATA;
-    size_t mNALU_DATA_LENGTH=0;
+    // Properly calls the cb function (if not null)
+    // Resets the m_nalu_data_length to 0
+    void forwardNALU(const bool isH265=false);
+    const NALU_DATA_CALLBACK m_cb;
+    std::array<uint8_t,NALU_MAXLEN> m_nalu_data;
+    size_t m_nalu_data_length=0;
 private:
     //TDOD: What shall we do if a start, middle or end of fu-a is missing ?
     int lastSequenceNumber=-1;
