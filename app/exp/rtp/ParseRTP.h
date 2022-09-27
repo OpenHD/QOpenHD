@@ -15,7 +15,7 @@
 **********************************************/
 
 static constexpr const auto NALU_MAXLEN=1024*1024;
-typedef std::function<void(const uint8_t* nalu_data,const int nalu_data_size)> NALU_DATA_CALLBACK;
+typedef std::function<void(const std::chrono::steady_clock::time_point creation_time,const uint8_t* nalu_data,const int nalu_data_size)> NALU_DATA_CALLBACK;
 
 class RTPDecoder{
 public:

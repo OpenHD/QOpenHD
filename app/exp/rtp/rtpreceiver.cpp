@@ -8,8 +8,8 @@ RTPReceiver::RTPReceiver(int port,bool is_h265):
     is_h265(is_h265)
 {
 
-    m_rtp_decoder=std::make_unique<RTPDecoder>([this](const uint8_t *nalu_data, const int nalu_data_size){
-        this->nalu_data_callback(nalu_data,nalu_data_size);
+    m_rtp_decoder=std::make_unique<RTPDecoder>([this](const std::chrono::steady_clock::time_point creation_time,const uint8_t *nalu_data, const int nalu_data_size){
+        this->nalu_data_callback(creation_time,nalu_data,nalu_data_size);
     });
 
     const auto cb = [this](const uint8_t *payload, const std::size_t payloadSize)mutable {
@@ -49,7 +49,7 @@ void RTPReceiver::udp_raw_data_callback(const uint8_t *payload, const std::size_
 }
 
 
-void RTPReceiver::nalu_data_callback(const uint8_t *nalu_data, const int nalu_data_size)
+void RTPReceiver::nalu_data_callback(const std::chrono::steady_clock::time_point creation_time,const uint8_t *nalu_data, const int nalu_data_size)
 {
     qDebug()<<"Got RTP "<<nalu_data_size;
 
