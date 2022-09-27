@@ -18,13 +18,14 @@ public:
 
     bool prepareDecoderContext(AVCodecContext* context, AVDictionary** options);
 
-    void init(int video_width=1920,int video_height=1080);
     void cleanup();
     void updateDisplayRegion();
     void display_frame(AVFrame* frame);
 
     void display_mmal_frame(MMAL_BUFFER_HEADER_T* buffer);
 private:
+    void init(int video_width,int video_height);
+
     MMAL_COMPONENT_T* m_Renderer=nullptr;
     MMAL_PORT_T* m_InputPort=nullptr;
     static void InputPortCallback(MMAL_PORT_T* port, MMAL_BUFFER_HEADER_T* buffer);
@@ -32,6 +33,8 @@ private:
     int m_VideoWidth, m_VideoHeight;
     int m_lastScreenWidth,m_lastScreenHeight;
     bool display_region_needs_update=true;
+
+    bool has_been_initialized=false;
 };
 
 #endif // RPIMMALDISPLAY_H

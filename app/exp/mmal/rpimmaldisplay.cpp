@@ -46,8 +46,9 @@ bool RpiMMALDisplay::prepareDecoderContext(AVCodecContext *context, AVDictionary
     // FFmpeg defaults this to 10 which is too large to fit in the default 64 MB VRAM split.
     // Reducing to 2 seems to work fine for our bitstreams (max of 1 buffered frame needed).
     //av_dict_set_int(options, "extra_buffers", 2, 0);
-    // We set the GPU memory, so we have space, mre buffers here don#t hurt and can provide a benefit
-    // for some streams
+    // Consti10: We set the GPU memory, so we don't need to be scared, and also OpenHD does
+    // not specify in any way that the stream generated at the air needs to have no frame buffering
+    // (Since a webcam for example might not offer this option).
     av_dict_set_int(options, "extra_buffers", 10, 0);
 
     // MMAL seems to dislike certain initial width and height values, but it seems okay
@@ -169,6 +170,10 @@ void RpiMMALDisplay::display_frame(AVFrame *frame)
 {
     assert(frame);
     assert(frame->format==AV_PIX_FMT_MMAL);
+    if(!has_been_initialized){
+        init(frame->width,frame->height);
+        has_been_initialized=true;
+    }
     MMAL_BUFFER_HEADER_T* buffer = (MMAL_BUFFER_HEADER_T*)frame->data[3];
     display_mmal_frame(buffer);
 }

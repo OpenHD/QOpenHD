@@ -64,10 +64,6 @@ AVCodecDecoder::AVCodecDecoder(QObject *parent):
     QObject(parent)
 {
     //drm_prime_out=std::make_unique<DRMPrimeOut>(1,false,false);
-    //RpiMMALDisplay::instance().init();
-#ifdef HAVE_MMAL
-    RpiMMALDisplay::instance().init();
-#endif
 }
 
 void AVCodecDecoder::init(bool primaryStream)
@@ -449,7 +445,6 @@ int AVCodecDecoder::open_and_decode_until_error()
     //const AVHWDeviceType kAvhwDeviceType = AV_HWDEVICE_TYPE_VAAPI;
     //const AVHWDeviceType kAvhwDeviceType = AV_HWDEVICE_TYPE_CUDA;
     //const AVHWDeviceType kAvhwDeviceType = AV_HWDEVICE_TYPE_VDPAU;
-
 
     bool is_mjpeg=false;
     if (decoder->id == AV_CODEC_ID_H264) {
