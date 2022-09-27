@@ -1,0 +1,176 @@
+# add executable
+#add_executable(main main.cc)
+
+# link executable to webrtc library
+# Since the webrtc library has public include directories
+# we will use those link directories when building `main`
+#target_link_libraries(main LINK_PUBLIC webrtc)
+
+find_library(GTEST_LIBRARY gtest)
+find_library(GMOCK_LIBRARY gmock)
+
+include_directories(PUBLIC ../src)
+include_directories(PUBLIC ../webrtc)
+
+# MacOS requirements
+include_directories(PUBLIC /usr/local/include)
+link_directories(/usr/local/lib)
+
+add_executable(h265_profile_tier_level_parser_unittest h265_profile_tier_level_parser_unittest.cc)
+add_test(h265_profile_tier_level_parser_unittest h265_profile_tier_level_parser_unittest)
+#target_include_directories(h265_profile_tier_level_parser_unittest PUBLIC /usr/local/include ${CMAKE_CURRENT_SOURCE_DIR} webrtc)
+
+add_executable(h265_common_unittest h265_common_unittest.cc)
+add_test(h265_common_unittest h265_common_unittest)
+target_link_libraries(h265_common_unittest PUBLIC h265nal)
+target_link_libraries(h265_common_unittest PUBLIC ${GTEST_LIBRARY} gtest_main)
+target_link_libraries(h265_common_unittest PUBLIC ${GMOCK_LIBRARY} gmock_main)
+
+add_executable(h265_utils_unittest h265_utils_unittest.cc)
+add_test(h265_utils_unittest h265_utils_unittest)
+target_link_libraries(h265_utils_unittest PUBLIC h265nal)
+target_link_libraries(h265_utils_unittest PUBLIC ${GTEST_LIBRARY} gtest_main)
+target_link_libraries(h265_utils_unittest PUBLIC ${GMOCK_LIBRARY} gmock_main)
+
+target_link_libraries(h265_profile_tier_level_parser_unittest PUBLIC h265nal)
+target_link_libraries(h265_profile_tier_level_parser_unittest PUBLIC ${GTEST_LIBRARY} gtest_main)
+target_link_libraries(h265_profile_tier_level_parser_unittest PUBLIC ${GMOCK_LIBRARY} gmock_main)
+
+add_executable(h265_sub_layer_hrd_parameters_parser_unittest h265_sub_layer_hrd_parameters_parser_unittest.cc)
+add_test(h265_sub_layer_hrd_parameters_parser_unittest h265_sub_layer_hrd_parameters_parser_unittest)
+target_link_libraries(h265_sub_layer_hrd_parameters_parser_unittest PUBLIC h265nal)
+target_link_libraries(h265_sub_layer_hrd_parameters_parser_unittest PUBLIC ${GTEST_LIBRARY} gtest_main)
+target_link_libraries(h265_sub_layer_hrd_parameters_parser_unittest PUBLIC ${GMOCK_LIBRARY} gmock_main)
+
+add_executable(h265_hrd_parameters_parser_unittest h265_hrd_parameters_parser_unittest.cc)
+add_test(h265_hrd_parameters_parser_unittest h265_hrd_parameters_parser_unittest)
+target_link_libraries(h265_hrd_parameters_parser_unittest PUBLIC h265nal)
+target_link_libraries(h265_hrd_parameters_parser_unittest PUBLIC ${GTEST_LIBRARY} gtest_main)
+target_link_libraries(h265_hrd_parameters_parser_unittest PUBLIC ${GMOCK_LIBRARY} gmock_main)
+
+add_executable(h265_vps_parser_unittest h265_vps_parser_unittest.cc)
+add_test(h265_vps_parser_unittest h265_vps_parser_unittest)
+target_link_libraries(h265_vps_parser_unittest PUBLIC h265nal)
+target_link_libraries(h265_vps_parser_unittest PUBLIC ${GTEST_LIBRARY} gtest_main)
+target_link_libraries(h265_vps_parser_unittest PUBLIC ${GMOCK_LIBRARY} gmock_main)
+
+add_executable(h265_vui_parameters_parser_unittest h265_vui_parameters_parser_unittest.cc)
+add_test(h265_vui_parameters_parser_unittest h265_vui_parameters_parser_unittest)
+target_link_libraries(h265_vui_parameters_parser_unittest PUBLIC h265nal)
+target_link_libraries(h265_vui_parameters_parser_unittest PUBLIC ${GTEST_LIBRARY} gtest_main)
+target_link_libraries(h265_vui_parameters_parser_unittest PUBLIC ${GMOCK_LIBRARY} gmock_main)
+
+add_executable(h265_pred_weight_table_parser_unittest h265_pred_weight_table_parser_unittest.cc)
+add_test(h265_pred_weight_table_parser_unittest h265_pred_weight_table_parser_unittest)
+target_link_libraries(h265_pred_weight_table_parser_unittest PUBLIC h265nal)
+target_link_libraries(h265_pred_weight_table_parser_unittest PUBLIC ${GTEST_LIBRARY} gtest_main)
+target_link_libraries(h265_pred_weight_table_parser_unittest PUBLIC ${GMOCK_LIBRARY} gmock_main)
+
+add_executable(h265_st_ref_pic_set_parser_unittest h265_st_ref_pic_set_parser_unittest.cc)
+add_test(h265_st_ref_pic_set_parser_unittest h265_st_ref_pic_set_parser_unittest)
+target_link_libraries(h265_st_ref_pic_set_parser_unittest PUBLIC h265nal)
+target_link_libraries(h265_st_ref_pic_set_parser_unittest PUBLIC ${GTEST_LIBRARY} gtest_main)
+target_link_libraries(h265_st_ref_pic_set_parser_unittest PUBLIC ${GMOCK_LIBRARY} gmock_main)
+
+add_executable(h265_sps_multilayer_extension_parser_unittest h265_sps_multilayer_extension_parser_unittest.cc)
+add_test(h265_sps_multilayer_extension_parser_unittest h265_sps_multilayer_extension_parser_unittest)
+target_link_libraries(h265_sps_multilayer_extension_parser_unittest PUBLIC h265nal)
+target_link_libraries(h265_sps_multilayer_extension_parser_unittest PUBLIC ${GTEST_LIBRARY} gtest_main)
+target_link_libraries(h265_sps_multilayer_extension_parser_unittest PUBLIC ${GMOCK_LIBRARY} gmock_main)
+
+add_executable(h265_sps_3d_extension_parser_unittest h265_sps_3d_extension_parser_unittest.cc)
+add_test(h265_sps_3d_extension_parser_unittest h265_sps_3d_extension_parser_unittest)
+target_link_libraries(h265_sps_3d_extension_parser_unittest PUBLIC h265nal)
+target_link_libraries(h265_sps_3d_extension_parser_unittest PUBLIC ${GTEST_LIBRARY} gtest_main)
+target_link_libraries(h265_sps_3d_extension_parser_unittest PUBLIC ${GMOCK_LIBRARY} gmock_main)
+
+add_executable(h265_sps_range_extension_parser_unittest h265_sps_range_extension_parser_unittest.cc)
+add_test(h265_sps_range_extension_parser_unittest h265_sps_range_extension_parser_unittest)
+target_link_libraries(h265_sps_range_extension_parser_unittest PUBLIC h265nal)
+target_link_libraries(h265_sps_range_extension_parser_unittest PUBLIC ${GTEST_LIBRARY} gtest_main)
+target_link_libraries(h265_sps_range_extension_parser_unittest PUBLIC ${GMOCK_LIBRARY} gmock_main)
+
+add_executable(h265_sps_scc_extension_parser_unittest h265_sps_scc_extension_parser_unittest.cc)
+add_test(h265_sps_scc_extension_parser_unittest h265_sps_scc_extension_parser_unittest)
+target_link_libraries(h265_sps_scc_extension_parser_unittest PUBLIC h265nal)
+target_link_libraries(h265_sps_scc_extension_parser_unittest PUBLIC ${GTEST_LIBRARY} gtest_main)
+target_link_libraries(h265_sps_scc_extension_parser_unittest PUBLIC ${GMOCK_LIBRARY} gmock_main)
+
+add_executable(h265_scaling_list_data_parser_unittest h265_scaling_list_data_parser_unittest.cc)
+add_test(h265_scaling_list_data_parser_unittest h265_scaling_list_data_parser_unittest)
+target_link_libraries(h265_scaling_list_data_parser_unittest PUBLIC h265nal)
+target_link_libraries(h265_scaling_list_data_parser_unittest PUBLIC ${GTEST_LIBRARY} gtest_main)
+target_link_libraries(h265_scaling_list_data_parser_unittest PUBLIC ${GMOCK_LIBRARY} gmock_main)
+
+add_executable(h265_sps_parser_unittest h265_sps_parser_unittest.cc)
+add_test(h265_sps_parser_unittest h265_sps_parser_unittest)
+target_link_libraries(h265_sps_parser_unittest PUBLIC h265nal)
+target_link_libraries(h265_sps_parser_unittest PUBLIC ${GTEST_LIBRARY} gtest_main)
+target_link_libraries(h265_sps_parser_unittest PUBLIC ${GMOCK_LIBRARY} gmock_main)
+
+add_executable(h265_pps_scc_extension_parser_unittest h265_pps_scc_extension_parser_unittest.cc)
+add_test(h265_pps_scc_extension_parser_unittest h265_pps_scc_extension_parser_unittest)
+target_link_libraries(h265_pps_scc_extension_parser_unittest PUBLIC h265nal)
+target_link_libraries(h265_pps_scc_extension_parser_unittest PUBLIC ${GTEST_LIBRARY} gtest_main)
+target_link_libraries(h265_pps_scc_extension_parser_unittest PUBLIC ${GMOCK_LIBRARY} gmock_main)
+
+add_executable(h265_pps_parser_unittest h265_pps_parser_unittest.cc)
+add_test(h265_pps_parser_unittest h265_pps_parser_unittest)
+target_link_libraries(h265_pps_parser_unittest PUBLIC h265nal)
+target_link_libraries(h265_pps_parser_unittest PUBLIC ${GTEST_LIBRARY} gtest_main)
+target_link_libraries(h265_pps_parser_unittest PUBLIC ${GMOCK_LIBRARY} gmock_main)
+
+add_executable(h265_aud_parser_unittest h265_aud_parser_unittest.cc)
+add_test(h265_aud_parser_unittest h265_aud_parser_unittest)
+target_link_libraries(h265_aud_parser_unittest PUBLIC h265nal)
+target_link_libraries(h265_aud_parser_unittest PUBLIC ${GTEST_LIBRARY} gtest_main)
+target_link_libraries(h265_aud_parser_unittest PUBLIC ${GMOCK_LIBRARY} gmock_main)
+
+if(H265NAL_SMALL_FOOTPRINT)
+  message(STATUS "test: small footprint selected")
+
+else()
+  message(STATUS "test: normal footprint selected")
+  add_compile_definitions(RTP_DEFINE)
+  add_executable(h265_rtp_single_parser_unittest h265_rtp_single_parser_unittest.cc)
+  add_test(h265_rtp_single_parser_unittest h265_rtp_single_parser_unittest)
+  target_link_libraries(h265_rtp_single_parser_unittest PUBLIC h265nal)
+  target_link_libraries(h265_rtp_single_parser_unittest PUBLIC ${GTEST_LIBRARY} gtest_main)
+  target_link_libraries(h265_rtp_single_parser_unittest PUBLIC ${GMOCK_LIBRARY} gmock_main)
+
+  add_executable(h265_rtp_parser_unittest h265_rtp_parser_unittest.cc)
+  add_test(h265_rtp_parser_unittest h265_rtp_parser_unittest)
+  target_link_libraries(h265_rtp_parser_unittest PUBLIC h265nal)
+  target_link_libraries(h265_rtp_parser_unittest PUBLIC ${GTEST_LIBRARY} gtest_main)
+  target_link_libraries(h265_rtp_parser_unittest PUBLIC ${GMOCK_LIBRARY} gmock_main)
+
+  add_executable(h265_rtp_ap_parser_unittest h265_rtp_ap_parser_unittest.cc)
+  add_test(h265_rtp_ap_parser_unittest h265_rtp_ap_parser_unittest)
+  target_link_libraries(h265_rtp_ap_parser_unittest PUBLIC h265nal)
+  target_link_libraries(h265_rtp_ap_parser_unittest PUBLIC ${GTEST_LIBRARY} gtest_main)
+  target_link_libraries(h265_rtp_ap_parser_unittest PUBLIC ${GMOCK_LIBRARY} gmock_main)
+
+  add_executable(h265_rtp_fu_parser_unittest h265_rtp_fu_parser_unittest.cc)
+  add_test(h265_rtp_fu_parser_unittest h265_rtp_fu_parser_unittest)
+  target_link_libraries(h265_rtp_fu_parser_unittest PUBLIC h265nal)
+  target_link_libraries(h265_rtp_fu_parser_unittest PUBLIC ${GTEST_LIBRARY} gtest_main)
+  target_link_libraries(h265_rtp_fu_parser_unittest PUBLIC ${GMOCK_LIBRARY} gmock_main)
+endif()
+
+add_executable(h265_slice_parser_unittest h265_slice_parser_unittest.cc)
+add_test(h265_slice_parser_unittest h265_slice_parser_unittest)
+target_link_libraries(h265_slice_parser_unittest PUBLIC h265nal)
+target_link_libraries(h265_slice_parser_unittest PUBLIC ${GTEST_LIBRARY} gtest_main)
+target_link_libraries(h265_slice_parser_unittest PUBLIC ${GMOCK_LIBRARY} gmock_main)
+
+add_executable(h265_bitstream_parser_unittest h265_bitstream_parser_unittest.cc)
+add_test(h265_bitstream_parser_unittest h265_bitstream_parser_unittest)
+target_link_libraries(h265_bitstream_parser_unittest PUBLIC h265nal)
+target_link_libraries(h265_bitstream_parser_unittest PUBLIC ${GTEST_LIBRARY} gtest_main)
+target_link_libraries(h265_bitstream_parser_unittest PUBLIC ${GMOCK_LIBRARY} gmock_main)
+
+add_executable(h265_nal_unit_parser_unittest h265_nal_unit_parser_unittest.cc)
+add_test(h265_nal_unit_parser_unittest h265_nal_unit_parser_unittest)
+target_link_libraries(h265_nal_unit_parser_unittest PUBLIC h265nal)
+target_link_libraries(h265_nal_unit_parser_unittest PUBLIC ${GTEST_LIBRARY} gtest_main)
+target_link_libraries(h265_nal_unit_parser_unittest PUBLIC ${GMOCK_LIBRARY} gmock_main)

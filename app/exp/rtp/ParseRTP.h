@@ -30,9 +30,9 @@ public:
     void parseRTPH264toNALU(const uint8_t* rtp_data, const size_t data_length);
     // parse rtp h265 packet to NALU
     void parseRTPH265toNALU(const uint8_t* rtp_data, const size_t data_length);
-    //
+    // exp
     void parse_rtp_mjpeg(const uint8_t* rtp_data, const size_t data_length);
-    // reset mNALU_DATA_LENGTH to 0
+    // reset to defaults
     void reset();
 private:
     // copy data_len bytes into the mNALU_DATA buffer at the current position

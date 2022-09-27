@@ -121,8 +121,8 @@ void AVCodecDecoder::constant_decode()
 {
     while(true){
         qDebug()<<"Start decode";
-        open_and_decode_until_error();
-        //open_and_decode_until_error_custom_rtp();
+        //open_and_decode_until_error();
+        open_and_decode_until_error_custom_rtp();
         qDebug()<<"Decode stopped,restarting";
         std::this_thread::sleep_for(std::chrono::seconds(1));
     }
@@ -670,6 +670,7 @@ int AVCodecDecoder::open_and_decode_until_error()
 
 void AVCodecDecoder::open_and_decode_until_error_custom_rtp()
 {
+     av_log_set_level(AV_LOG_TRACE);
      const auto settings = QOpenHDVideoHelper::read_from_settings();
      if(settings.video_codec==QOpenHDVideoHelper::VideoCodecH264){
          decoder = avcodec_find_decoder(AV_CODEC_ID_H264);
