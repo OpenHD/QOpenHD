@@ -55,7 +55,7 @@ public:
     };
     // tmp
     NALU(const uint8_t* data1,size_t data_len1,const bool IS_H265_PACKET1=false,const std::chrono::steady_clock::time_point creationTime=std::chrono::steady_clock::now()):
-            data(data1),data_len(data_len1),creationTime{creationTime},IS_H265_PACKET(IS_H265_PACKET1)
+            data(data1),data_len(data_len1),IS_H265_PACKET(IS_H265_PACKET1),creationTime{creationTime}
     {
         assert(hasValidPrefix());
         assert(getSize()>=getMinimumNaluSize(IS_H265_PACKET1));

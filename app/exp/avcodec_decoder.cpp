@@ -703,7 +703,11 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp()
      qDebug()<<"AVCodecDecoder::open_and_decode_until_error_custom_rtp()-begin loop";
      m_rtp_receiver=std::make_unique<RTPReceiver>(5600,settings.video_codec==1);
 
-     int ret;
+     n_no_output_frame_after_x_seconds=0;
+     last_frame_width=-1;
+     last_frame_height=-1;
+     avg_decode_time.reset();
+     test_dequeue_fames=true;
      AVPacket *pkt=av_packet_alloc();
      assert(pkt!=nullptr);
      bool has_keyframe_data=false;
