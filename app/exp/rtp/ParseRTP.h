@@ -11,7 +11,8 @@
 #include "RTP.hpp"
 
 /*********************************************
- ** Parses a stream of rtp h264 / h265 data into NALUs
+ ** Parses a stream of rtp h264 / h265 data into NALUs.
+ ** No rtp jitterbuffer or similar - this decreases latency, but removes any rtp packet re-ordering capabilities.
 **********************************************/
 
 static constexpr const auto NALU_MAXLEN=1024*1024;
