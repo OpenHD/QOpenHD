@@ -19,9 +19,9 @@ public:
     RTPReceiver(int port,bool is_h265);
     ~RTPReceiver();
 
-    std::shared_ptr<std::vector<uint8_t>> get_data();
+    std::shared_ptr<NALU> get_data();
 
-    std::unique_ptr<std::vector<uint8_t>> get_config_data();
+    std::shared_ptr<std::vector<uint8_t>> get_config_data();
     bool config_has_changed_during_decode=false;
 private:
     std::unique_ptr<UDPReceiver> m_udp_receiver=nullptr;
@@ -36,9 +36,9 @@ private:
     const bool is_h265;
 private:
     std::mutex m_data_mutex;
-    std::queue<std::shared_ptr<std::vector<uint8_t>>> m_data;
+    std::queue<std::shared_ptr<NALU>> m_data;
 
-    void queue_data(std::shared_ptr<std::vector<uint8_t>> data);
+    void queue_data(const uint8_t* nalu_data,const std::size_t nalu_data_len);
 private:
     std::unique_ptr<KeyFrameFinder> m_keyframe_finder;
 };

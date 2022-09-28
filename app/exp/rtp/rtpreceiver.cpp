@@ -34,7 +34,7 @@ RTPReceiver::~RTPReceiver()
 }
 
 
-std::shared_ptr<std::vector<uint8_t> > RTPReceiver::get_data()
+ std::shared_ptr<NALU> RTPReceiver::get_data()
 {
     std::lock_guard<std::mutex> lock(m_data_mutex);
     if(m_data.size()<=0)return nullptr;
@@ -43,7 +43,7 @@ std::shared_ptr<std::vector<uint8_t> > RTPReceiver::get_data()
     return ret;
 }
 
-std::unique_ptr<std::vector<uint8_t>> RTPReceiver::get_config_data()
+std::shared_ptr<std::vector<uint8_t>> RTPReceiver::get_config_data()
 {
      std::lock_guard<std::mutex> lock(m_data_mutex);
      if(m_keyframe_finder->allKeyFramesAvailable(is_h265)){
@@ -52,10 +52,10 @@ std::unique_ptr<std::vector<uint8_t>> RTPReceiver::get_config_data()
      return nullptr;
 }
 
-void RTPReceiver::queue_data(std::shared_ptr<std::vector<uint8_t>> data)
+void RTPReceiver::queue_data(const uint8_t* nalu_data,const std::size_t nalu_data_len)
 {
     std::lock_guard<std::mutex> lock(m_data_mutex);
-    NALU nalu(data->data(),data->size(),is_h265);
+    NALU nalu(nalu_data,nalu_data_len,is_h265);
     if(m_keyframe_finder->allKeyFramesAvailable(is_h265)){
         if(!m_keyframe_finder->check_is_still_same_config_data(nalu)){
             config_has_changed_during_decode=true;
@@ -66,7 +66,7 @@ void RTPReceiver::queue_data(std::shared_ptr<std::vector<uint8_t>> data)
         if(nalu.is_aud())return;
         if(nalu.is_sei())return;
         if(m_data.size()>20)m_data.pop();
-        m_data.push(data);
+        m_data.push(std::make_shared<NALU>(nalu));
         return;
     }
     // We don't have all config data yet, drop anything that is not config data.
@@ -95,7 +95,6 @@ void RTPReceiver::nalu_data_callback(const std::chrono::steady_clock::time_point
         m_out_file->write((const char*)nalu_data,nalu_data_size);
         m_out_file->flush();
     }
-    auto copy=std::make_shared<std::vector<uint8_t>>(nalu_data,nalu_data+nalu_data_size);
-    queue_data(copy);
+    queue_data(nalu_data,nalu_data_size);
 }
 

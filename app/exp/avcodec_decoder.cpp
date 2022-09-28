@@ -98,41 +98,33 @@ void AVCodecDecoder::timer_check_settings_changed_callback()
     }
 }
 
-void AVCodecDecoder::dequeue_frames_test()
-{
-    while(test_dequeue_fames){
-        //qDebug()<<"XXX";
-        AVFrame* frame= av_frame_alloc();
-        assert(frame);
-        //m_ffmpeg_dequeue_or_queue_mutex.lock();
-        const int ret = avcodec_receive_frame(decoder_ctx, frame);
-        //m_ffmpeg_dequeue_or_queue_mutex.unlock();
-        if(ret==0){
-            qDebug()<<"XXX got frame";
-            on_new_frame(frame);
-        }
-        av_frame_free(&frame);
-        std::this_thread::sleep_for(std::chrono::milliseconds(1));
-    }
-}
-
 void AVCodecDecoder::constant_decode()
 {
     while(!m_should_terminate){
         qDebug()<<"Start decode";
-        //open_and_decode_until_error();
-        open_and_decode_until_error_custom_rtp();
+        open_and_decode_until_error();
+        //open_and_decode_until_error_custom_rtp();
         qDebug()<<"Decode stopped,restarting";
         std::this_thread::sleep_for(std::chrono::seconds(1));
     }
 }
 
 
-int AVCodecDecoder::decode_and_wait_for_frame(AVPacket *packet)
+int AVCodecDecoder::decode_and_wait_for_frame(AVPacket *packet,std::optional<std::chrono::steady_clock::time_point> parse_time)
 {
     AVFrame *frame = nullptr;
     //qDebug()<<"Decode packet:"<<packet->pos<<" size:"<<packet->size<<" B";
     const auto beforeFeedFrame=std::chrono::steady_clock::now();
+    if(parse_time!=std::nullopt){
+        const auto delay=beforeFeedFrame-parse_time.value();
+        avg_parse_time.add(delay);
+        if(avg_parse_time.time_since_last_log()>std::chrono::seconds(3)){
+            qDebug()<<"Avg parse time:"<<avg_parse_time.getAvgReadable().c_str();
+            DecodingStatistcs::instance().set_parse_and_enqueue_time(avg_parse_time.getAvgReadable().c_str());
+            avg_parse_time.set_last_log();
+            avg_parse_time.reset();
+        }
+    }
     const auto beforeFeedFrameUs=getTimeUs();
     packet->pts=beforeFeedFrameUs;
     add_fed_timestamp(packet->pts);
@@ -226,8 +218,43 @@ int AVCodecDecoder::decode_config_data(AVPacket *packet)
 }
 
 
+bool AVCodecDecoder::feed_rtp_frame_if_available()
+{
+    auto frame=m_rtp_receiver->get_data();
+    if(frame){
+        {
+            // parsing delay
+            const auto delay=std::chrono::steady_clock::now()-frame->creationTime;
+            avg_parse_time.add(delay);
+            if(avg_parse_time.time_since_last_log()>std::chrono::seconds(3)){
+                qDebug()<<"Avg parse time:"<<avg_parse_time.getAvgReadable().c_str();
+                DecodingStatistcs::instance().set_parse_and_enqueue_time(avg_parse_time.getAvgReadable().c_str());
+                avg_parse_time.set_last_log();
+                avg_parse_time.reset();
+            }
+        }
+        AVPacket *pkt=av_packet_alloc();
+        pkt->data=(uint8_t*)frame->getData();
+        pkt->size=frame->getSize();
+        const auto beforeFeedFrameUs=getTimeUs();
+        pkt->pts=beforeFeedFrameUs;
+        add_fed_timestamp(pkt->pts);
+        avcodec_send_packet(decoder_ctx, pkt);
+        av_packet_free(&pkt);
+        return true;
+    }
+    return false;
+}
+
 void AVCodecDecoder::fetch_frame_or_feed_input_packet(){
+    AVPacket *pkt=av_packet_alloc();
+    bool keep_fetching_frames_or_input_packets=true;
     while(keep_fetching_frames_or_input_packets){
+        if(request_restart){
+            keep_fetching_frames_or_input_packets=false;
+            request_restart=false;
+            continue;
+        }
         AVFrame* frame= av_frame_alloc();
         assert(frame);
         const int ret = avcodec_receive_frame(decoder_ctx, frame);
@@ -256,16 +283,10 @@ void AVCodecDecoder::fetch_frame_or_feed_input_packet(){
             av_frame_free(&frame);
             frame= av_frame_alloc();
         }else if(ret==AVERROR(EAGAIN)){
-            qDebug()<<"Needs more data";
+            //qDebug()<<"Needs more data";
             // Get more encoded data
-            auto packet=fetch_av_packet_if_available();
-            if(packet!=std::nullopt){
-                const int ret_avcodec_send_packet = avcodec_send_packet(decoder_ctx, &packet.value());
-                if (ret_avcodec_send_packet < 0) {
-                    qDebug()<<"Error during send packet";
-                }
-                av_packet_unref(&packet.value());
-            }else{
+            const bool success=feed_rtp_frame_if_available();
+            if(!success){
                 std::this_thread::sleep_for(std::chrono::milliseconds(1));
             }
         }else{
@@ -273,35 +294,7 @@ void AVCodecDecoder::fetch_frame_or_feed_input_packet(){
             keep_fetching_frames_or_input_packets=false;
         }
     }
-}
-
-void AVCodecDecoder::enqueue_av_packet(AVPacket packet)
-{
-     std::lock_guard<std::mutex> lock(m_av_packet_queue_mutex);
-     m_av_packet_queue.push(packet);
-}
-
-std::optional<AVPacket> AVCodecDecoder::fetch_av_packet_if_available()
-{
-     std::lock_guard<std::mutex> lock(m_av_packet_queue_mutex);
-     if(m_av_packet_queue.size()>=1){
-         AVPacket packet=m_av_packet_queue.front();
-         const auto beforeFeedFrameUs=getTimeUs();
-         packet.pts=beforeFeedFrameUs;
-         m_av_packet_queue.pop();
-         return packet;
-     }
-     return std::nullopt;
-}
-
-void AVCodecDecoder::parse_rtp_test()
-{
-    if(m_pCodecPaser==nullptr){
-        m_pCodecPaser = av_parser_init(AV_CODEC_ID_H265);
-        assert(m_pCodecPaser);
-    }
-    //const int ret = av_parser_parse2(m_pCodecPaser, m_codec_ctx, &pkt->data,&pkt->size,
-    //                                       m_packet.data,m_packet.size, AV_NOPTS_VALUE, AV_NOPTS_VALUE, 0);
+    av_packet_free(&pkt);
 }
 
 void AVCodecDecoder::on_new_frame(AVFrame *frame)
@@ -352,13 +345,13 @@ int AVCodecDecoder::open_and_decode_until_error()
             const bool consti_testing=true;
             if(consti_testing){
                 if(settings.video_codec==QOpenHDVideoHelper::VideoCodecH264){
-                     in_filename="/tmp/x_raw_h264.h264";
-                    //in_filename="/home/consti10/Desktop/hello_drmprime/in/rpi_1080.h264";
+                     //in_filename="/tmp/x_raw_h264.h264";
+                    in_filename="/home/consti10/Desktop/hello_drmprime/in/rpi_1080.h264";
                     //in_filename="/home/consti10/Desktop/hello_drmprime/in/rv_1280x720_green_white.h264";
                     //in_filename="/home/consti10/Desktop/hello_drmprime/in/Big_Buck_Bunny_1080_10s_1MB_h264.mp4";
                 }else if(settings.video_codec==QOpenHDVideoHelper::VideoCodecH265){
-                      in_filename="/tmp/x_raw_h265.h265";
-                    //in_filename="/home/consti10/Desktop/hello_drmprime/in/jetson_test.h265";
+                      //in_filename="/tmp/x_raw_h265.h265";
+                    in_filename="/home/consti10/Desktop/hello_drmprime/in/jetson_test.h265";
                     //in_filename="/home/consti10/Desktop/hello_drmprime/in/Big_Buck_Bunny_1080_10s_1MB_h265.mp4";
                 }else{
                    in_filename="/home/consti10/Desktop/hello_drmprime/in/uv_640x480.mjpeg";
@@ -479,26 +472,7 @@ int AVCodecDecoder::open_and_decode_until_error()
     }
     else if(decoder->id==AV_CODEC_ID_H265){
         qDebug()<<"H265 decode";
-        for (int i = 0;; i++) {
-            const AVCodecHWConfig *config = avcodec_get_hw_config(decoder, i);
-            if (!config) {
-                fprintf(stderr, "Decoder %s does not support device type %s.\n",
-                        decoder->name, safe_av_hwdevice_get_type_name(kAvhwDeviceType).c_str());
-                //return -1;
-                break;
-            }
-            std::stringstream ss;
-            ss<<"HW config "<<i<<" ";
-            ss<<"HW Device name: "<<safe_av_hwdevice_get_type_name(config->device_type);
-            ss<<" PIX fmt: "<<safe_av_get_pix_fmt_name(config->pix_fmt);
-            qDebug()<<ss.str().c_str();
-
-            if (config->methods & AV_CODEC_HW_CONFIG_METHOD_HW_DEVICE_CTX &&
-                config->device_type == kAvhwDeviceType) {
-                wanted_hw_pix_fmt = config->pix_fmt;
-                break;
-            }
-        }
+        qDebug()<<all_hw_configs_for_this_codec(decoder).c_str();
         wanted_hw_pix_fmt = AV_PIX_FMT_DRM_PRIME;
         //wanted_hw_pix_fmt = AV_PIX_FMT_CUDA;
         //wanted_hw_pix_fmt = AV_PIX_FMT_VAAPI;
@@ -581,13 +555,6 @@ int AVCodecDecoder::open_and_decode_until_error()
     last_frame_width=-1;
     last_frame_height=-1;
     avg_decode_time.reset();
-    test_dequeue_fames=true;
-    //m_pull_frames_from_ffmpeg_thread=std::make_unique<std::thread>([this]{this->dequeue_frames_test();});
-    keep_fetching_frames_or_input_packets=true;
-    std::unique_ptr<std::thread> tmp_thread=nullptr;
-    if(enable_wtf){
-        tmp_thread=std::make_unique<std::thread>([this]{this->fetch_frame_or_feed_input_packet();});
-    }
     DecodingStatistcs::instance().set_doing_wait_for_frame_decode("Yes");
     while (ret >= 0) {
         if(request_restart){
@@ -624,11 +591,7 @@ int AVCodecDecoder::open_and_decode_until_error()
                     }
                     lastFrame=std::chrono::steady_clock::now();
                 }
-                if(enable_wtf){
-                    enqueue_av_packet(packet);
-                }else{
-                    ret = decode_and_wait_for_frame(&packet);
-                }
+                ret = decode_and_wait_for_frame(&packet);
                 nFeedFrames++;
                 if(limitedFrameRate>0){
                     const uint64_t runTimeMs=std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now()-decodingStart).count();
@@ -638,22 +601,9 @@ int AVCodecDecoder::open_and_decode_until_error()
                 }
             }
         }
-        if(enable_wtf){
-            if(keep_fetching_frames_or_input_packets==false){
-                qDebug()<<"Decoder encountered an error";
-                break;
-            }
-        }else{
-            av_packet_unref(&packet);
-        }
+         av_packet_unref(&packet);
     }
     qDebug()<<"Broke out of the queue_data_dequeue_frame loop";
-    keep_fetching_frames_or_input_packets=false;
-    if(tmp_thread){
-        tmp_thread->join();
-        tmp_thread=nullptr;
-    }
-    test_dequeue_fames=false;
     //m_pull_frames_from_ffmpeg_thread->join();
     //m_pull_frames_from_ffmpeg_thread=nullptr;
     // flush the decoder - not needed
@@ -707,7 +657,6 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp()
      last_frame_width=-1;
      last_frame_height=-1;
      avg_decode_time.reset();
-     test_dequeue_fames=true;
      AVPacket *pkt=av_packet_alloc();
      assert(pkt!=nullptr);
      bool has_keyframe_data=false;
@@ -722,7 +671,7 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp()
          }
          //std::this_thread::sleep_for(std::chrono::milliseconds(3000));
          if(!has_keyframe_data){
-              std::unique_ptr<std::vector<uint8_t>> keyframe_buf=nullptr;
+              std::shared_ptr<std::vector<uint8_t>> keyframe_buf=nullptr;
               while(keyframe_buf==nullptr){
                   if(request_restart){
                       request_restart=false;
@@ -738,18 +687,20 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp()
               has_keyframe_data=true;
               continue;
          }else{
-             std::shared_ptr<std::vector<uint8_t>> buf=nullptr;
+            std::shared_ptr<NALU> buf=nullptr;
              while(buf==nullptr){
+                 std::this_thread::sleep_for(std::chrono::milliseconds(1));
                  if(request_restart){
                      request_restart=false;
                      goto finish;
                  }
                  buf=m_rtp_receiver->get_data();
              }
-             qDebug()<<"Got decode data (after keyframe)";
-             pkt->data=buf->data();
-             pkt->size=buf->size();
-             decode_and_wait_for_frame(pkt);
+             //qDebug()<<"Got decode data (after keyframe)";
+             pkt->data=(uint8_t*)buf->getData();
+             pkt->size=buf->getSize();
+             decode_and_wait_for_frame(pkt,buf->creationTime);
+             //fetch_frame_or_feed_input_packet();
          }
      }
 finish:

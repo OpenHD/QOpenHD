@@ -7,7 +7,6 @@
 
 //https://github.com/Dash-Industry-Forum/Conformance-and-reference-source/blob/master/conformance/TSValidator/h264bitstream/h264_stream.h
 
-
 #include <cstring>
 #include <string>
 #include <chrono>
@@ -28,12 +27,6 @@
  * The constructor of the NALU does some really basic validation - make sure the parser never produces a NALU where this validation would fail
  */
 class NALU{
-private:
-    static uint8_t* makeOwnedCopy(const uint8_t* data,size_t data_len){
-        auto ret=new uint8_t[data_len];
-        std::memcpy(ret,data,data_len);
-        return ret;
-    }
 public:
     // test video white iceland: Max 1024*117. Video might not be decodable if its NALU buffers size exceed the limit
     // But a buffer size of 1MB accounts for 60fps video of up to 60MB/s or 480 Mbit/s. That should be plenty !
@@ -43,12 +36,12 @@ public:
     // Copy constructor allocates new buffer for data (heavy)
     NALU(const NALU& nalu):
     ownedData(std::vector<uint8_t>(nalu.getData(),nalu.getData()+nalu.getSize())),
-    data(ownedData->data()),data_len(nalu.getSize()),creationTime(nalu.creationTime),IS_H265_PACKET(nalu.IS_H265_PACKET){
+    data(ownedData->data()),data_len(nalu.getSize()),IS_H265_PACKET(nalu.IS_H265_PACKET),creationTime(nalu.creationTime){
         //MLOGD<<"NALU copy constructor";
     }
     // Default constructor does not allocate a new buffer,only stores some pointer (light)
     NALU(const NALU_BUFFER& data1,const size_t data_length,const bool IS_H265_PACKET1=false,const std::chrono::steady_clock::time_point creationTime=std::chrono::steady_clock::now()):
-            data(data1.data()),data_len(data_length),creationTime{creationTime},IS_H265_PACKET(IS_H265_PACKET1){
+            data(data1.data()),data_len(data_length),IS_H265_PACKET(IS_H265_PACKET1),creationTime{creationTime}{
         // Validate correctness of NALU (make sure parser never forwards NALUs where this assertion fails)
         assert(hasValidPrefix());
         assert(getSize()>=getMinimumNaluSize(IS_H265_PACKET1));
@@ -140,15 +133,6 @@ public:
    }
 };
 
-/*class NALUBuffer:public NALU{
-public:
-    NALUBuffer(const NALU& nalu):
-        NALU(nalu.getData(),nalu.getSize(),nalu.IS_H265_PACKET,nalu.creationTime){
-        copy=std::make_unique()
-    }
-private:
-    std::unique_ptr<std::vector<uint8_t>> copy;
-};*/
 
 
 #endif //LIVE_VIDEO_10MS_ANDROID_NALU_H

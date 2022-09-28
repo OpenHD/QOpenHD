@@ -44,7 +44,7 @@ public:
         }
         return SPS != nullptr && PPS != nullptr;
     }
-    std::unique_ptr<std::vector<uint8_t>> get_keyframe_data(const bool IS_H265=false){
+    std::shared_ptr<std::vector<uint8_t>> get_keyframe_data(const bool IS_H265=false){
         assert(allKeyFramesAvailable(IS_H265));
         if(IS_H265){
             // Looks like avcodec wants the VPS before sps and pps
@@ -58,11 +58,11 @@ public:
             return ret;
         }
         const auto size=SPS->getSize()+PPS->getSize();
-        auto ret=std::make_unique<std::vector<uint8_t>>(size);
+        auto ret=std::make_shared<std::vector<uint8_t>>(size);
         std::memcpy(ret->data(),SPS->getData(),SPS->getSize());
         std::memcpy(ret->data()+SPS->getSize(),PPS->getData(),PPS->getSize());
         return ret;
-    }
+    }    
     // returns false if the config data (SPS,PPS,optional VPS) has changed
     // true otherwise
     bool check_is_still_same_config_data(const NALU &nalu){

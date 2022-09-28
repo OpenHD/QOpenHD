@@ -50,7 +50,7 @@ private:
     // This will stop performing the lockstep. In this case, either the decoder cannot decode
     // the video without buffering (which is bad, but some IP camera(s) create such a stream)
     // or the underlying decode implementation (e.g. rpi foundation h264 !? investigate) has some quirks.
-    int decode_and_wait_for_frame(AVPacket *packet);
+    int decode_and_wait_for_frame(AVPacket *packet,std::optional<std::chrono::steady_clock::time_point> parse_time=std::nullopt);
     // Just send data to the codec, do not check or wait for a frame
     int decode_config_data(AVPacket *packet);
     // Called every time we get a new frame from the decoder, do what you wish here ;)
@@ -63,6 +63,7 @@ private:
     int n_no_output_frame_after_x_seconds=0;
     bool use_frame_timestamps_for_latency=false;
     AvgCalculator avg_decode_time{"Decode"};
+    AvgCalculator avg_parse_time{"Parse"};
 private:
     // Completely ineficient, but only way since QT settings callback(s) don't properly work
     // runs every 1 second, reads the settings and checks if they differ from the previosly
@@ -76,13 +77,6 @@ private:
 private:
     //std::unique_ptr<DRMPrimeOut> drm_prime_out=nullptr;
 private:
-    //std::unique_ptr<std::thread> m_pull_frames_from_ffmpeg_thread=nullptr;
-    //std::mutex m_ffmpeg_dequeue_or_queue_mutex;
-    bool test_dequeue_fames=false;
-    void dequeue_frames_test();
-    // This should catch the cases where timestamps are modified by the decoder
-    // and therefore the measured value is garbage
-private:
     // timestamp used during feed frame
     void add_fed_timestamp(int64_t ts);
     bool check_is_a_valid_timestamp(int64_t ts);
@@ -92,22 +86,13 @@ private:
     static constexpr auto MAX_FED_TIMESTAMPS_QUEUE_SIZE=100;
     std::deque<int64_t> m_fed_timestamps_queue;
 private:
-    const bool enable_wtf=false;
     void fetch_frame_or_feed_input_packet();
-    void enqueue_av_packet(AVPacket packet);
-    std::optional<AVPacket> fetch_av_packet_if_available();
-    std::mutex m_av_packet_queue_mutex;
-    std::queue<AVPacket> m_av_packet_queue;
-    bool keep_fetching_frames_or_input_packets=false;
-private:
-    // EXP manual RTP
-    AVCodecParserContext *m_pCodecPaser=nullptr;
-    void parse_rtp_test();
 private:
     std::unique_ptr<RTPReceiver> m_rtp_receiver=nullptr;
 private:
     void open_and_decode_until_error_custom_rtp();
     AVCodecParserContext *parser;
+    bool feed_rtp_frame_if_available();
 };
 
 #endif // AVCODEC_DECODER_H

@@ -147,7 +147,9 @@ static std::string debug_av_packet(const AVPacket* packet){
     std::stringstream ss;
     ss<<"AVPacket size:"<<packet->size<<",";
     ss<<" flags:"<<av_packet_flags_to_string(packet->flags)<<",";
-    ss<<" side data elements:"<<packet->side_data_elems;
+    ss<<" side data elements:"<<packet->side_data_elems<<",";
+    ss<<" pts:"<<packet->pts<<",";
+    ss<<" dts:"<<packet->dts<<"";
     return ss.str();
 }
 static bool is_AV_PIX_FMT_YUV420P(int format){
@@ -163,6 +165,17 @@ static bool is_AV_PIX_FMT_YUV422P(int format){
 static bool is_AV_PIX_FMT_YUV42XP( int format){
     return is_AV_PIX_FMT_YUV420P(format) || is_AV_PIX_FMT_YUV422P(format);
 }
+
+/*struct XBestDecoder{
+    const AVCodec *decoder;
+    bool is_hw;
+    enum AVPixelFormat wanted_hw_pix_fmt;
+    AVHWDeviceType kAvhwDeviceType;
+};
+
+static XBestDecoder find_best_decoder(const AVCodec *decoder){
+
+}*/
 
 
 #endif //HELLO_DRMPRIME__AVCODEC_HELPER_HPP_
