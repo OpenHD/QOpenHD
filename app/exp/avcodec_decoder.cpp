@@ -680,6 +680,13 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp(const QOpenHDVideoHe
          }else{
              wanted_hw_pix_fmt = AV_PIX_FMT_YUV420P;
          }
+     }else if(decoder->id==AV_CODEC_ID_H265){
+         qDebug()<<"H265 decode";
+         if(!settings.enable_software_video_decoder){
+             qDebug()<<all_hw_configs_for_this_codec(decoder).c_str();
+             wanted_hw_pix_fmt = AV_PIX_FMT_DRM_PRIME;
+             use_pi_hw_decode=true;
+         }
      }
      // ------------------------------------
      decoder_ctx = avcodec_alloc_context3(decoder);
