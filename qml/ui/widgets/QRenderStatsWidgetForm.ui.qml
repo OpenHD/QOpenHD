@@ -250,7 +250,7 @@ BaseWidget {
                 width: parent.width
                 height: 32
                 Text {
-                    text: qsTr("Parse&EnqueueT:")
+                    text: qsTr("Parse&EnqT:")
                     color: "white"
                     font.bold: true
                     height: parent.height
