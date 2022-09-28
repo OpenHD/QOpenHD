@@ -664,7 +664,7 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp(const QOpenHDVideoHe
          exit(1);
      }
      // ----------------------
-     bool use_pi_hw_decode_mmal=false;
+     bool use_pi_hw_decode=false;
      if (decoder->id == AV_CODEC_ID_H264) {
          qDebug()<<"H264 decode";
          qDebug()<<all_hw_configs_for_this_codec(decoder).c_str();
@@ -673,7 +673,7 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp(const QOpenHDVideoHe
              if(tmp!=nullptr){
                  decoder = tmp;
                   wanted_hw_pix_fmt = AV_PIX_FMT_MMAL;
-                  use_pi_hw_decode_mmal=true;
+                  use_pi_hw_decode=true;
              }else{
                  wanted_hw_pix_fmt = AV_PIX_FMT_YUV420P;
              }
@@ -702,7 +702,7 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp(const QOpenHDVideoHe
     decoder_ctx->flags2 |= AV_CODEC_FLAG2_SHOW_ALL;
     // --------------------------------------
     // --------------------------------------
-    if(use_pi_hw_decode_mmal){
+    if(use_pi_hw_decode){
         decoder_ctx->get_format  = get_hw_format;
         if (hw_decoder_init(decoder_ctx, AV_HWDEVICE_TYPE_DRM) < 0){
           qDebug()<<"HW decoder init failed,fallback to SW decode";
