@@ -689,6 +689,7 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp(const QOpenHDVideoHe
      }
      // ----------------------------------
 #ifdef HAVE_MMAL
+     AVDictionary* av_dictionary=nullptr;
      RpiMMALDisplay::instance().prepareDecoderContext(decoder_ctx,&av_dictionary);
 #endif
 
