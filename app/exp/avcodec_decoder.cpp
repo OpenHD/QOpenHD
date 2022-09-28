@@ -102,8 +102,21 @@ void AVCodecDecoder::constant_decode()
 {
     while(!m_should_terminate){
         qDebug()<<"Start decode";
-        open_and_decode_until_error();
-        //open_and_decode_until_error_custom_rtp();
+         const auto settings = QOpenHDVideoHelper::read_from_settings();
+         bool do_custom_rtp=settings.dev_use_low_latency_parser_when_possible;
+         if(settings.video_codec==QOpenHDVideoHelper::VideoCodecMJPEG){
+             // we got no support for mjpeg in our custom rtp parser
+             do_custom_rtp=false;
+         }
+         if(settings.dev_test_video_mode!=QOpenHDVideoHelper::VideoTestMode::DISABLED){
+             // file playback always goes via non-custom rtp parser (since it is not rtp)
+             do_custom_rtp=false;
+         }
+         if(do_custom_rtp){
+             open_and_decode_until_error_custom_rtp(settings);
+         }else{
+             open_and_decode_until_error(settings);
+         }
         qDebug()<<"Decode stopped,restarting";
         std::this_thread::sleep_for(std::chrono::seconds(1));
     }
@@ -127,7 +140,7 @@ int AVCodecDecoder::decode_and_wait_for_frame(AVPacket *packet,std::optional<std
     }
     const auto beforeFeedFrameUs=getTimeUs();
     packet->pts=beforeFeedFrameUs;
-    add_fed_timestamp(packet->pts);
+    timestamp_add_fed(packet->pts);
 
     //m_ffmpeg_dequeue_or_queue_mutex.lock();
     const int ret_avcodec_send_packet = avcodec_send_packet(decoder_ctx, packet);
@@ -238,12 +251,17 @@ bool AVCodecDecoder::feed_rtp_frame_if_available()
         pkt->size=frame->getSize();
         const auto beforeFeedFrameUs=getTimeUs();
         pkt->pts=beforeFeedFrameUs;
-        add_fed_timestamp(pkt->pts);
+        timestamp_add_fed(pkt->pts);
         avcodec_send_packet(decoder_ctx, pkt);
         av_packet_free(&pkt);
         return true;
     }
     return false;
+}
+
+bool AVCodecDecoder::create_decoder_context(const QOpenHDVideoHelper::VideoStreamConfig settings)
+{
+
 }
 
 void AVCodecDecoder::fetch_frame_or_feed_input_packet(){
@@ -263,7 +281,7 @@ void AVCodecDecoder::fetch_frame_or_feed_input_packet(){
             qDebug()<<"Got EOF";
             keep_fetching_frames_or_input_packets=false;
         }else if(ret==0){
-            debug_is_valid_timestamp(frame->pts);
+            timestamp_debug_valid(frame->pts);
             // we got a new frame
             const auto now_us=getTimeUs();
             const auto delay_us=now_us-frame->pts;
@@ -329,10 +347,21 @@ void AVCodecDecoder::on_new_frame(AVFrame *frame)
     //drm_prime_out->queue_new_frame_for_display(frame);
 }
 
-
-int AVCodecDecoder::open_and_decode_until_error()
+void AVCodecDecoder::reset_before_decode_start()
 {
-    const auto settings = QOpenHDVideoHelper::read_from_settings();
+    n_no_output_frame_after_x_seconds=0;
+    last_frame_width=-1;
+    last_frame_height=-1;
+    avg_decode_time.reset();
+    avg_parse_time.reset();
+    DecodingStatistcs::instance().set_doing_wait_for_frame_decode("Yes");
+    last_frame_width=-1;
+    last_frame_height=-1;
+    m_fed_timestamps_queue.clear();
+}
+
+int AVCodecDecoder::open_and_decode_until_error(const QOpenHDVideoHelper::VideoStreamConfig settings)
+{
     std::string in_filename="";
     if(settings.dev_test_video_mode==QOpenHDVideoHelper::VideoTestMode::DISABLED){
         in_filename=QOpenHDVideoHelper::get_udp_rtp_sdp_filename(settings.video_codec);
@@ -410,7 +439,6 @@ int AVCodecDecoder::open_and_decode_until_error()
     // open the input file
     if (avformat_open_input(&input_ctx,in_filename.c_str(), NULL, &av_dictionary) != 0) {
         qDebug()<< "Cannot open input file ["<<in_filename.c_str()<<"]";
-        open_input_error_count++;
         avformat_close_input(&input_ctx);
         // sleep a bit before returning in this case, to not occupy a full CPU thread just trying
         // to open a file/stream that doesn't exist / is ill-formated
@@ -551,11 +579,7 @@ int AVCodecDecoder::open_and_decode_until_error()
     const auto decodingStart=std::chrono::steady_clock::now();
     int nFeedFrames=0;
     auto lastFrame=std::chrono::steady_clock::now();
-    n_no_output_frame_after_x_seconds=0;
-    last_frame_width=-1;
-    last_frame_height=-1;
-    avg_decode_time.reset();
-    DecodingStatistcs::instance().set_doing_wait_for_frame_decode("Yes");
+    reset_before_decode_start();
     while (ret >= 0) {
         if(request_restart){
             request_restart=false;
@@ -621,16 +645,14 @@ int AVCodecDecoder::open_and_decode_until_error()
 
 
 // https://ffmpeg.org/doxygen/3.3/decode_video_8c-example.html
-void AVCodecDecoder::open_and_decode_until_error_custom_rtp()
+void AVCodecDecoder::open_and_decode_until_error_custom_rtp(const QOpenHDVideoHelper::VideoStreamConfig settings)
 {
      av_log_set_level(AV_LOG_TRACE);
-     const auto settings = QOpenHDVideoHelper::read_from_settings();
+     assert(settings.video_codec==QOpenHDVideoHelper::VideoCodecH264 || settings.video_codec==QOpenHDVideoHelper::VideoCodecH265);
      if(settings.video_codec==QOpenHDVideoHelper::VideoCodecH264){
          decoder = avcodec_find_decoder(AV_CODEC_ID_H264);
      }else if(settings.video_codec==QOpenHDVideoHelper::VideoCodecH265){
          decoder = avcodec_find_decoder(AV_CODEC_ID_H265);
-     }else{
-         decoder = avcodec_find_decoder(AV_CODEC_ID_MJPEG);
      }
      if (!decoder) {
          fprintf(stderr, "Codec not found\n");
@@ -653,10 +675,7 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp()
      qDebug()<<"AVCodecDecoder::open_and_decode_until_error_custom_rtp()-begin loop";
      m_rtp_receiver=std::make_unique<RTPReceiver>(5600,settings.video_codec==1);
 
-     n_no_output_frame_after_x_seconds=0;
-     last_frame_width=-1;
-     last_frame_height=-1;
-     avg_decode_time.reset();
+     reset_before_decode_start();
      AVPacket *pkt=av_packet_alloc();
      assert(pkt!=nullptr);
      bool has_keyframe_data=false;
@@ -709,7 +728,7 @@ finish:
      avcodec_free_context(&decoder_ctx);
 }
 
-void AVCodecDecoder::add_fed_timestamp(int64_t ts)
+void AVCodecDecoder::timestamp_add_fed(int64_t ts)
 {
     m_fed_timestamps_queue.push_back(ts);
     if(m_fed_timestamps_queue.size()>=MAX_FED_TIMESTAMPS_QUEUE_SIZE){
@@ -717,7 +736,7 @@ void AVCodecDecoder::add_fed_timestamp(int64_t ts)
     }
 }
 
-bool AVCodecDecoder::check_is_a_valid_timestamp(int64_t ts)
+bool AVCodecDecoder::timestamp_check_valid(int64_t ts)
 {
     for(const auto& el:m_fed_timestamps_queue){
         if(el==ts)return true;
@@ -725,9 +744,9 @@ bool AVCodecDecoder::check_is_a_valid_timestamp(int64_t ts)
     return false;
 }
 
-void AVCodecDecoder::debug_is_valid_timestamp(int64_t ts)
+void AVCodecDecoder::timestamp_debug_valid(int64_t ts)
 {
-    const bool valid=check_is_a_valid_timestamp(ts);
+    const bool valid=timestamp_check_valid(ts);
     if(valid){
         qDebug()<<"Is a valid timestamp";
     }else{

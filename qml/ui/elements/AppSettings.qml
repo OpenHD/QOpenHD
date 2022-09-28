@@ -44,6 +44,8 @@ Settings {
     // only for ffmpeg
     property int dev_limit_fps_on_test_file: -1
     property bool dev_draw_alternating_rgb_dummy_frames: false;
+    // r.n only works on h264 / h265 and on select video stream(s)
+    property bool dev_use_low_latency_parser_when_possible: false;
 
     property bool enable_speech: true
     property bool enable_imperial: false

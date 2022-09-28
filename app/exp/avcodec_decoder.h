@@ -27,8 +27,9 @@ class AVCodecDecoder : public QObject
 {
 public:
     AVCodecDecoder(QObject *parent = nullptr);
-
+    // called when app is created
     void init(bool primaryStream);
+    // called when app terminates
     void terminate();
 private:
     AVCodecContext *decoder_ctx = nullptr;
@@ -43,7 +44,7 @@ private:
     // The easiest approach here is to just "open" the stream, then decode until an error occurs
     // and do this in a loop. The "decode until error" is needed because due to the fact that the input stream
     // might be incomplete, we cannot quarantee that the decoder won't encounter any errors.
-    int open_and_decode_until_error();
+    int open_and_decode_until_error(const QOpenHDVideoHelper::VideoStreamConfig settings);
     // feed one frame to the decoder, then wait until the frame is returned
     // (This gives the lowest latency on most decoders that have a "lockstep").
     // If we didn't get a frame out for X seconds after feeding a frame more than X times,
@@ -55,7 +56,6 @@ private:
     int decode_config_data(AVPacket *packet);
     // Called every time we get a new frame from the decoder, do what you wish here ;)
     void on_new_frame(AVFrame* frame);
-    int open_input_error_count=0;
     // simle restart, e.g. when the video codec or the video resolution has changed
     bool request_restart=false;
     // Completely stop (Exit QOpenHD)
@@ -78,9 +78,9 @@ private:
     //std::unique_ptr<DRMPrimeOut> drm_prime_out=nullptr;
 private:
     // timestamp used during feed frame
-    void add_fed_timestamp(int64_t ts);
-    bool check_is_a_valid_timestamp(int64_t ts);
-    void debug_is_valid_timestamp(int64_t ts);
+    void timestamp_add_fed(int64_t ts);
+    bool timestamp_check_valid(int64_t ts);
+    void timestamp_debug_valid(int64_t ts);
     // Must be big enough to catch frame buffering+1, small enough to fit in memory
     // and be searchable with a for loop. !00 sounds like a good fit.
     static constexpr auto MAX_FED_TIMESTAMPS_QUEUE_SIZE=100;
@@ -90,9 +90,13 @@ private:
 private:
     std::unique_ptr<RTPReceiver> m_rtp_receiver=nullptr;
 private:
-    void open_and_decode_until_error_custom_rtp();
+    void open_and_decode_until_error_custom_rtp(const QOpenHDVideoHelper::VideoStreamConfig settings);
     AVCodecParserContext *parser;
     bool feed_rtp_frame_if_available();
+private:
+    bool create_decoder_context(const QOpenHDVideoHelper::VideoStreamConfig settings);
+private:
+    void reset_before_decode_start();
 };
 
 #endif // AVCODEC_DECODER_H
