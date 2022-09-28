@@ -663,11 +663,56 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp(const QOpenHDVideoHe
          fprintf(stderr, "parser not found\n");
          exit(1);
      }
+     // ----------------------
+     bool use_pi_hw_decode_mmal=false;
+     if (decoder->id == AV_CODEC_ID_H264) {
+         qDebug()<<"H264 decode";
+         qDebug()<<all_hw_configs_for_this_codec(decoder).c_str();
+         if(!settings.enable_software_video_decoder){
+             auto tmp = avcodec_find_decoder_by_name("h264_mmal");
+             if(tmp!=nullptr){
+                 decoder = tmp;
+                  wanted_hw_pix_fmt = AV_PIX_FMT_MMAL;
+                  use_pi_hw_decode_mmal=true;
+             }else{
+                 wanted_hw_pix_fmt = AV_PIX_FMT_YUV420P;
+             }
+         }else{
+             wanted_hw_pix_fmt = AV_PIX_FMT_YUV420P;
+         }
+     }
+     // ------------------------------------
      decoder_ctx = avcodec_alloc_context3(decoder);
      if (!decoder_ctx) {
          fprintf(stderr, "Could not allocate video codec context\n");
          exit(1);
      }
+     // ----------------------------------
+#ifdef HAVE_MMAL
+     RpiMMALDisplay::instance().prepareDecoderContext(decoder_ctx,&av_dictionary);
+#endif
+
+    // From moonlight-qt. However, on PI, this doesn't seem to make any difference, at least for H265 decode.
+    // (I never measured h264, but don't think there it is different).
+    // Always request low delay decoding
+    decoder_ctx->flags |= AV_CODEC_FLAG_LOW_DELAY;
+    // Allow display of corrupt frames and frames missing references
+    decoder_ctx->flags |= AV_CODEC_FLAG_OUTPUT_CORRUPT;
+    decoder_ctx->flags2 |= AV_CODEC_FLAG2_SHOW_ALL;
+    // --------------------------------------
+    // --------------------------------------
+    if(use_pi_hw_decode_mmal){
+        decoder_ctx->get_format  = get_hw_format;
+        if (hw_decoder_init(decoder_ctx, AV_HWDEVICE_TYPE_DRM) < 0){
+          qDebug()<<"HW decoder init failed,fallback to SW decode";
+          assert(true);
+        }
+    }
+    // A thread count of 1 reduces latency for both SW and HW decode
+    decoder_ctx->thread_count = 1;
+
+    // ---------------------------------------
+
      if (avcodec_open2(decoder_ctx, decoder, NULL) < 0) {
          fprintf(stderr, "Could not open codec\n");
          exit(1);
