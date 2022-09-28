@@ -759,7 +759,7 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp(const QOpenHDVideoHe
               has_keyframe_data=true;
               continue;
          }else{
-            std::shared_ptr<NALU> buf=nullptr;
+            /*std::shared_ptr<NALU> buf=nullptr;
              while(buf==nullptr){
                  // do not peg the cpu completely here
                  std::this_thread::sleep_for(std::chrono::milliseconds(5));
@@ -772,8 +772,8 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp(const QOpenHDVideoHe
              //qDebug()<<"Got decode data (after keyframe)";
              pkt->data=(uint8_t*)buf->getData();
              pkt->size=buf->getSize();
-             decode_and_wait_for_frame(pkt,buf->creationTime);
-             //fetch_frame_or_feed_input_packet();
+             decode_and_wait_for_frame(pkt,buf->creationTime);*/
+             fetch_frame_or_feed_input_packet();
          }
      }
 finish:
