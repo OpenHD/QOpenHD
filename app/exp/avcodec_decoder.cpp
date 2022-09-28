@@ -761,7 +761,8 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp(const QOpenHDVideoHe
          }else{
             std::shared_ptr<NALU> buf=nullptr;
              while(buf==nullptr){
-                 std::this_thread::sleep_for(std::chrono::milliseconds(1));
+                 // do not peg the cpu completely here
+                 std::this_thread::sleep_for(std::chrono::milliseconds(5));
                  if(request_restart){
                      request_restart=false;
                      goto finish;

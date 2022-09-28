@@ -123,10 +123,10 @@ void RpiMMALDisplay::cleanup()
 
 void RpiMMALDisplay::updateDisplayRegion()
 {
-    qDebug()<<"updateDisplayRegion::begin";
     if(!display_region_needs_update){
         return;
     }
+    qDebug()<<"updateDisplayRegion::begin";
     // We don't need to set anything in regards to source or dest recangle by using the
     // "letterbox" mode - if the video ratio doesn't match the screen, black bars will be added
     // while filling as much area as possible.
@@ -195,11 +195,11 @@ void RpiMMALDisplay::display_mmal_frame(MMAL_BUFFER_HEADER_T *buffer)
         // InputPortCallback().
         mmal_buffer_header_acquire(buffer);
     }
-    qDebug()<<"RpiMMALDisplay::display_mmal_frame";
+    //qDebug()<<"RpiMMALDisplay::display_mmal_frame";
 }
 
 void RpiMMALDisplay::InputPortCallback(MMAL_PORT_T *port, MMAL_BUFFER_HEADER_T *buffer)
 {
-    qDebug()<<"RpiMMALDisplay::InputPortCallback";
+    //qDebug()<<"RpiMMALDisplay::InputPortCallback";
     mmal_buffer_header_release(buffer);
 }
