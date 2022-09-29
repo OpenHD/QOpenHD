@@ -16,7 +16,6 @@ struct CONTEXT_T {
     MMAL_QUEUE_T *queue;
 };
 
-
 class RPIMMALDecoder
 {
 public:

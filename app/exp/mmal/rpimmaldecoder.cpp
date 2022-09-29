@@ -161,20 +161,6 @@ void RPIMMALDecoder::initialize(const uint8_t *config_data, const int config_dat
         return;
     }
 
-
-
-    MMAL_ES_FORMAT_T *format_out = m_decoder->output[0]->format;
-
-    qDebug("%s\n", m_decoder->output[0]->name);
-    qDebug(" type: %i, fourcc: %4.4s\n", format_out->type, (char *)&format_out->encoding);
-    qDebug(" bitrate: %i, framed: %i\n", format_out->bitrate,
-                      !!(format_out->flags & MMAL_ES_FORMAT_FLAG_FRAMED));
-    qDebug(" extra data: %i, %p\n", format_out->extradata_size, format_out->extradata);
-    qDebug(" width: %i, height: %i, (%i,%i,%i,%i)\n",
-                      format_out->es->video.width, format_out->es->video.height,
-                      format_out->es->video.crop.x, format_out->es->video.crop.y,
-                      format_out->es->video.crop.width, format_out->es->video.crop.height);
-
     /*
      * Size of the input buffers used for h264 data. These only need to be large enough for the
      * largest NAL unit we will likely feed to the decoder, 512KB seems ok in testing but may
@@ -191,16 +177,33 @@ void RPIMMALDecoder::initialize(const uint8_t *config_data, const int config_dat
         return;
     }
 
+    MMAL_ES_FORMAT_T *format_out = m_decoder->output[0]->format;
+
+    qDebug("%s\n", m_decoder->output[0]->name);
+    qDebug(" type: %i, fourcc: %4.4s\n", format_out->type, (char *)&format_out->encoding);
+    qDebug(" bitrate: %i, framed: %i\n", format_out->bitrate,
+                      !!(format_out->flags & MMAL_ES_FORMAT_FLAG_FRAMED));
+    qDebug(" extra data: %i, %p\n", format_out->extradata_size, format_out->extradata);
+    qDebug(" width: %i, height: %i, (%i,%i,%i,%i)\n",
+                      format_out->es->video.width, format_out->es->video.height,
+                      format_out->es->video.crop.x, format_out->es->video.crop.y,
+                      format_out->es->video.crop.width, format_out->es->video.crop.height);
+
     /*
      * Decoded frame buffers, these have to be large enough to hold an entire raw frame. The h264 decoder
      * can't decode anything much larger than 1080p, but a single 1080p YUV420 frame is about 3.2MB
      * so we add some extra margin on top of that.
      */
-    m_decoder->output[0]->buffer_num = 5;
+    /*m_decoder->output[0]->buffer_num = 5;
     m_decoder->output[0]->buffer_size = 3500000;
     m_pool_out = mmal_port_pool_create(m_decoder->output[0],
                                        m_decoder->output[0]->buffer_num,
-                                       m_decoder->output[0]->buffer_size);
+                                       m_decoder->output[0]->buffer_size);*/
+    m_decoder->output[0]->buffer_num = m_decoder->output[0]->buffer_num_min;
+    m_decoder->output[0]->buffer_size = m_decoder->output[0]->buffer_size_min;
+    m_pool_out = mmal_port_pool_create(m_decoder->output[0],
+                                        m_decoder->output[0]->buffer_num,
+                                        m_decoder->output[0]->buffer_size);
 
     if (!m_pool_out) {
         qDebug() << "failed to create input pool in MMAL";
