@@ -1,5 +1,7 @@
 #include "rpimmaldecoder.h"
 
+#include <qdebug.h>
+
 
 
 RPIMMALDecoder::RPIMMALDecoder()
