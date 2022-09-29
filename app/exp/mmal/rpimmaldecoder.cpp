@@ -108,6 +108,11 @@ void RPIMMALDecoder::initialize(const uint8_t *config_data, const int config_dat
         qDebug() << "Failed to set zero copy on input port";
         return;
     }
+    m_status = mmal_port_parameter_set_boolean(m_decoder->output[0], MMAL_PARAMETER_ZERO_COPY, MMAL_TRUE);
+    if (m_status != MMAL_SUCCESS) {
+        qDebug() << "Failed to set zero copy on output port";
+        return;
+    }
 
     m_status = mmal_port_format_commit(m_decoder->input[0]);
     if (m_status != MMAL_SUCCESS) {
@@ -167,7 +172,7 @@ void RPIMMALDecoder::initialize(const uint8_t *config_data, const int config_dat
     qDebug(" width: %i, height: %i, (%i,%i,%i,%i)\n",
                       format_out->es->video.width, format_out->es->video.height,
                       format_out->es->video.crop.x, format_out->es->video.crop.y,
-                      format_out->es->video.crop.width, format_out->es->video.crop.height);
+                      format_out->es->video.crop.width, format_out->es->video.crop.height);*/
 
     /*
      * Size of the input buffers used for h264 data. These only need to be large enough for the
@@ -190,7 +195,7 @@ void RPIMMALDecoder::initialize(const uint8_t *config_data, const int config_dat
      * can't decode anything much larger than 1080p, but a single 1080p YUV420 frame is about 3.2MB
      * so we add some extra margin on top of that.
      */
-    m_decoder->output[0]->buffer_num = 15;
+    m_decoder->output[0]->buffer_num = 5;
     m_decoder->output[0]->buffer_size = 3500000;
     m_pool_out = mmal_port_pool_create(m_decoder->output[0],
                                        m_decoder->output[0]->buffer_num,
