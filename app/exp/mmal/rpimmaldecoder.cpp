@@ -47,6 +47,10 @@ void RPIMMALDecoder::on_input_callback(MMAL_PORT_T *port, MMAL_BUFFER_HEADER_T *
 }
 
 void RPIMMALDecoder::on_output_callback(MMAL_PORT_T *port, MMAL_BUFFER_HEADER_T *buffer){
+    if(!buffer->cmd){
+        on_new_frame(buffer);
+        return;
+    }
     /* Queue the decoded video frame so renderLoop can get it */
     mmal_queue_put(queue, buffer);
     /* Signal the renderLoop */
