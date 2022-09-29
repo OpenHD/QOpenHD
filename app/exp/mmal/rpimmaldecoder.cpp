@@ -107,6 +107,12 @@ void RPIMMALDecoder::initialize(const uint8_t *config_data, const int config_dat
     format_in->es->video.frame_rate.den = 1;
     format_in->es->video.par.num = 1;
     format_in->es->video.par.den = 1;
+
+    format_in->es->video.crop.x = 0;
+    format_in->es->video.crop.y = 0;
+    format_in->es->video.crop.width = width;
+    format_in->es->video.crop.height = height;
+
     /*
      * If the data is known to be framed then the following flag should be set:
      */
