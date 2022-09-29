@@ -247,6 +247,8 @@ void RPIMMALDecoder::feed_frame(const uint8_t *frame_data, const int frame_data_
 
         if ((buffer = mmal_queue_get(m_pool_in->queue)) != nullptr) {
 
+            qDebug()<<"RPIMMALDecoder::feed_frame:got buffer,send";
+
             memcpy(buffer->data,frame_data, frame_data_size);
             buffer->length = frame_data_size;
 
@@ -282,6 +284,7 @@ void RPIMMALDecoder::output_frame_loop()
 
     while (true) {
         vcos_semaphore_wait(&m_context.out_semaphore);
+        qDebug()<<"RPIMMALDecoder::output_frame_loop after semaphore";
 
 
         /* Get decoded frame */
