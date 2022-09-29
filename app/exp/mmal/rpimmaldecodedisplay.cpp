@@ -1,5 +1,7 @@
 #include "rpimmaldecodedisplay.h"
 
+#include "../../common_consti/TimeHelper.hpp"
+
 #include <qdebug.h>
 
 
@@ -95,5 +97,34 @@ void RPIMMalDecodeDisplay::initialize(const uint8_t *config_data, const int conf
 
 void RPIMMalDecodeDisplay::feed_frame(const uint8_t *frame_data, const int frame_data_size)
 {
+    qDebug()<<"RPIMMALDecoder::feed_frame";
 
+    MMAL_BUFFER_HEADER_T *buffer;
+
+    while (true) {
+        vcos_semaphore_wait(&m_context.semaphore);
+
+        if ((buffer = mmal_queue_get(m_pool_in->queue)) != nullptr) {
+
+            qDebug()<<"RPIMMALDecoder::feed_frame:got buffer,send";
+
+            memcpy(buffer->data,frame_data, frame_data_size);
+            buffer->length = frame_data_size;
+
+            buffer->offset = 0;
+
+            buffer->flags |= MMAL_BUFFER_HEADER_FLAG_FRAME_END;
+
+            buffer->pts = buffer->dts = MMAL_TIME_UNKNOWN;
+            // used to measure decode latency
+            buffer->pts = getTimeUs();
+
+            m_status = mmal_port_send_buffer(m_decoder->input[0], buffer);
+            if (m_status != MMAL_SUCCESS) {
+                qDebug()<<"Cannot feed frame ?!";
+                break;
+            }
+            break;
+        }
+    }
 }
