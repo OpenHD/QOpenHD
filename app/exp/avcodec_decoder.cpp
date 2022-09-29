@@ -131,16 +131,10 @@ int AVCodecDecoder::decode_and_wait_for_frame(AVPacket *packet,std::optional<std
     if(parse_time!=std::nullopt){
         const auto delay=beforeFeedFrame-parse_time.value();
         avg_parse_time.add(delay);
-        avg_parse_time.do_in_intervals(std::chrono::seconds(3),[](const std::string name,const std::string message){
-            qDebug()<<name.c_str()<<message.c_str();
+        avg_parse_time.custom_print_in_intervals(std::chrono::seconds(3),[](const std::string name,const std::string message){
+            qDebug()<<name.c_str()<<":"<<message.c_str();
             DecodingStatistcs::instance().set_parse_and_enqueue_time(message.c_str());
         });
-        /*if(avg_parse_time.time_since_last_log()>std::chrono::seconds(3)){
-            qDebug()<<"Avg parse time:"<<avg_parse_time.getAvgReadable().c_str();
-            DecodingStatistcs::instance().set_parse_and_enqueue_time(avg_parse_time.getAvgReadable().c_str());
-            avg_parse_time.set_last_log();
-            avg_parse_time.reset();
-        }*/
     }
     const auto beforeFeedFrameUs=getTimeUs();
     packet->pts=beforeFeedFrameUs;
@@ -192,12 +186,10 @@ int AVCodecDecoder::decode_and_wait_for_frame(AVPacket *packet,std::optional<std
             frame->pts=beforeFeedFrameUs;
             // display frame
             on_new_frame(frame);
-            if(avg_decode_time.time_since_last_log()>std::chrono::seconds(3)){
-                qDebug()<<"Avg Decode time:"<<avg_decode_time.getAvgReadable().c_str();
-                DecodingStatistcs::instance().set_decode_time(avg_decode_time.getAvgReadable().c_str());
-                avg_decode_time.set_last_log();
-                avg_decode_time.reset();
-            }
+            avg_decode_time.custom_print_in_intervals(std::chrono::seconds(3),[](const std::string name,const std::string message){
+                qDebug()<<name.c_str()<<":"<<message.c_str();
+                DecodingStatistcs::instance().set_decode_time(message.c_str());
+            });
         }else if(ret==AVERROR(EAGAIN)){
             if(n_no_output_frame_after_x_seconds>=2){
                 // note decode latency is now wrong
@@ -243,12 +235,10 @@ bool AVCodecDecoder::feed_rtp_frame_if_available()
             // parsing delay
             const auto delay=std::chrono::steady_clock::now()-frame->creationTime;
             avg_parse_time.add(delay);
-            if(avg_parse_time.time_since_last_log()>std::chrono::seconds(3)){
-                qDebug()<<"Avg parse time:"<<avg_parse_time.getAvgReadable().c_str();
-                DecodingStatistcs::instance().set_parse_and_enqueue_time(avg_parse_time.getAvgReadable().c_str());
-                avg_parse_time.set_last_log();
-                avg_parse_time.reset();
-            }
+            avg_parse_time.custom_print_in_intervals(std::chrono::seconds(3),[](const std::string name,const std::string message){
+                qDebug()<<name.c_str()<<":"<<message.c_str();
+                DecodingStatistcs::instance().set_parse_and_enqueue_time(message.c_str());
+            });
         }
         AVPacket *pkt=av_packet_alloc();
         pkt->data=(uint8_t*)frame->getData();
@@ -295,13 +285,10 @@ void AVCodecDecoder::fetch_frame_or_feed_input_packet(){
             avg_decode_time.add(std::chrono::microseconds(delay_us));
             // display frame
             on_new_frame(frame);
-
-            if(avg_decode_time.time_since_last_log()>std::chrono::seconds(3)){
-                qDebug()<<"Avg Decode time:"<<avg_decode_time.getAvgReadable().c_str();
-                DecodingStatistcs::instance().set_decode_time(avg_decode_time.getAvgReadable().c_str());
-                avg_decode_time.set_last_log();
-                avg_decode_time.reset();
-            }
+            avg_decode_time.custom_print_in_intervals(std::chrono::seconds(3),[](const std::string name,const std::string message){
+                qDebug()<<name.c_str()<<":"<<message.c_str();
+                 DecodingStatistcs::instance().set_decode_time(message.c_str());
+            });
             av_frame_free(&frame);
             frame= av_frame_alloc();
         }else if(ret==AVERROR(EAGAIN)){
@@ -333,11 +320,9 @@ void AVCodecDecoder::on_new_frame(AVFrame *frame)
         const auto before=std::chrono::steady_clock::now();
         RpiMMALDisplay::instance().display_frame(frame);
         avg_send_mmal_frame_to_display.add(std::chrono::steady_clock::now()-before);
-        if(avg_send_mmal_frame_to_display.time_since_last_log()>std::chrono::seconds(3)){
-            qDebug()<<"Avg MMAL send frame"<<avg_send_mmal_frame_to_display.getAvgReadable().c_str();
-            avg_send_mmal_frame_to_display.set_last_log();
-            avg_send_mmal_frame_to_display.reset();
-        }
+        avg_send_mmal_frame_to_display.custom_print_in_intervals(std::chrono::seconds(3),[](const std::string name,const std::string message){
+            qDebug()<<name.c_str()<<":"<<message.c_str();
+        });
         return;
 #else
         qDebug()<<"WARNING do not configure the decoder with mmal without the mmal renderer";
