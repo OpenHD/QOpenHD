@@ -314,8 +314,8 @@ void RPIMMALDecoder::on_new_frame(MMAL_BUFFER_HEADER_T *buffer)
     qDebug()<<"RPIMMALDecoder::on_new_frame";
     RpiMMALDisplay::instance().extra_init(640,480);
     //RpiMMALDisplay::instance().display_mmal_frame(buffer);
-    const auto delay_us=getTimeUs()-buffer->pts;
-    qDebug()<<"Decode time:"<<MyTimeHelper::R(std::chrono::microseconds(delay_us));
+    const int64_t delay_us=getTimeUs()-buffer->pts;
+    qDebug()<<"Decode time:"<<MyTimeHelper::R(std::chrono::microseconds((uint64_t)delay_us));
 
     mmal_buffer_header_release(buffer);
 }
