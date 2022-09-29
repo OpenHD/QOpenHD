@@ -73,26 +73,23 @@ void RPIMMalDecodeDisplay::initialize(const uint8_t *config_data, const int conf
     }
      vcos_semaphore_create(&m_context.semaphore, "example", 1);
 
-     MMAL_STATUS_T status;
-
      /* Create the graph */
-    /*status = mmal_graph_create(&m_graph, 0);
-    CHECK_STATUS(status, "failed to create graph");
+    m_status = mmal_graph_create(&m_graph, 0);
+    CHECK_STATUS(m_status, "failed to create graph");
 
     status = mmal_graph_new_component(graph, MMAL_COMPONENT_DEFAULT_VIDEO_DECODER, &m_decoder);
-    CHECK_STATUS(status, "failed to create decoder");
+    CHECK_STATUS(m_status, "failed to create decoder");
 
     status = mmal_graph_new_component(graph, MMAL_COMPONENT_DEFAULT_VIDEO_RENDERER, &m_renderer);
-    CHECK_STATUS(status, "failed to create renderer");*/
+    CHECK_STATUS(m_status, "failed to create renderer");
 
 
     /* Enable control port so we can receive events from the component */
     m_decoder->control->userdata = (struct MMAL_PORT_USERDATA_T*)(void *)&m_context;
-    status = mmal_port_enable(m_decoder->control, control_callback);
-    CHECK_STATUS(status, "failed to enable control port");
+    m_status = mmal_port_enable(m_decoder->control, control_callback);
+    CHECK_STATUS(m_status, "failed to enable control port");
 
 }
-
 
 
 void RPIMMalDecodeDisplay::feed_frame(const uint8_t *frame_data, const int frame_data_size)
