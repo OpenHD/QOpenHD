@@ -187,7 +187,7 @@ void RpiMMALDisplay::extra_init(int width, int height)
 
 void RpiMMALDisplay::extra_set_format(MMAL_ES_FORMAT_T *format_out)
 {
-    mmal_format_full_copy(m_decoder->output[0]->format, format_out);
+    mmal_format_full_copy(m_InputPort->format, format_out);
     auto status = mmal_port_format_commit(m_InputPort);
     if (status != MMAL_SUCCESS) {
         qDebug()<<"RpiMMALDisplay::extra_set_format::error"<<mmal_status_to_string(status);
