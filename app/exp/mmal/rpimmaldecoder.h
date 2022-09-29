@@ -26,6 +26,8 @@ public:
 
     void initialize(const uint8_t* config_data,const int config_data_size,int width,int height,int fps);
 
+    void uninitialize();
+
     void feed_frame(const uint8_t* frame_data,const int frame_data_size);
 
     // Called every time we got a frame from the decoder
@@ -44,6 +46,7 @@ private:
 
 private:
     std::unique_ptr<std::thread> m_dqueue_frames_thread=nullptr;
+    bool keep_dequeueing_frames=true;
 };
 
 #endif // RPIMMALDECODER_H

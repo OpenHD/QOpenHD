@@ -234,7 +234,17 @@ void RPIMMALDecoder::initialize(const uint8_t *config_data, const int config_dat
         return;
     }
     qDebug()<<"RPIMMALDecoder init done successfully()";
+    keep_dequeueing_frames=true;
     m_dqueue_frames_thread=std::make_unique<std::thread>([this]{this->output_frame_loop();} );
+}
+
+void RPIMMALDecoder::uninitialize()
+{
+    keep_dequeueing_frames=false;
+    if(m_dqueue_frames_thread!=nullptr){
+        m_dqueue_frames_thread->join();
+        m_dqueue_frames_thread=nullptr;
+    }
 }
 
 void RPIMMALDecoder::feed_frame(const uint8_t *frame_data, const int frame_data_size)
@@ -283,7 +293,7 @@ void RPIMMALDecoder::output_frame_loop()
     MMAL_BUFFER_HEADER_T *buffer;
     MMAL_STATUS_T status = MMAL_EINVAL;
 
-    while (true) {
+    while (keep_dequeueing_frames) {
         vcos_semaphore_wait(&m_context.out_semaphore);
         qDebug()<<"RPIMMALDecoder::output_frame_loop after semaphore";
 
