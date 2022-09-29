@@ -326,7 +326,10 @@ void AVCodecDecoder::on_new_frame(AVFrame *frame)
     if(frame->format==AV_PIX_FMT_MMAL){
 #ifdef HAVE_MMAL
         TextureRenderer::instance().clear_all_video_textures_next_frame();
+        const auto before=std::chrono::steady_clock::now();
         RpiMMALDisplay::instance().display_frame(frame);
+        avg_send_mmal_frame_to_display.add(std::chrono::steady_clock::now()-before);
+        avg_send_mmal_frame_to_display.printInIntervals(30);
         return;
 #else
         qDebug()<<"WARNING do not configure the decoder with mmal without the mmal renderer";

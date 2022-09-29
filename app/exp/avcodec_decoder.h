@@ -64,6 +64,7 @@ private:
     bool use_frame_timestamps_for_latency=false;
     AvgCalculator avg_decode_time{"Decode"};
     AvgCalculator avg_parse_time{"Parse"};
+    AvgCalculator avg_send_mmal_frame_to_display{"MMAL send frame"};
 private:
     // Completely ineficient, but only way since QT settings callback(s) don't properly work
     // runs every 1 second, reads the settings and checks if they differ from the previosly
