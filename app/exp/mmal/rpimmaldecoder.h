@@ -26,6 +26,8 @@ public:
     // Called every time we got a frame from the decoder
     void on_new_frame(MMAL_BUFFER_HEADER_T* buffer);
 
+    void on_new_something(MMAL_BUFFER_HEADER_T* buffer);
+
     void output_frame_loop();
 
 private:
