@@ -329,7 +329,11 @@ void AVCodecDecoder::on_new_frame(AVFrame *frame)
         const auto before=std::chrono::steady_clock::now();
         RpiMMALDisplay::instance().display_frame(frame);
         avg_send_mmal_frame_to_display.add(std::chrono::steady_clock::now()-before);
-        avg_send_mmal_frame_to_display.printInIntervals(30);
+        if(avg_send_mmal_frame_to_display.time_since_last_log()>std::chrono::seconds(3)){
+            qDebug()<<"Avg MMAL send frame"<<avg_send_mmal_frame_to_display.getAvgReadable().c_str();
+            avg_send_mmal_frame_to_display.set_last_log();
+            avg_send_mmal_frame_to_display.reset();
+        }
         return;
 #else
         qDebug()<<"WARNING do not configure the decoder with mmal without the mmal renderer";
