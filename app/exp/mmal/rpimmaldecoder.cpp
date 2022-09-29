@@ -250,7 +250,7 @@ void RPIMMALDecoder::output_frame_loop()
             if (buffer->cmd) {
 
                 if (buffer->cmd == MMAL_EVENT_FORMAT_CHANGED) {
-                    qDebug()<<"Got MMAL_EVENT_FORMAT_CHANGED";"
+                    qDebug()<<"Got MMAL_EVENT_FORMAT_CHANGED";
                 }
                 mmal_buffer_header_release(buffer);
             } else {
