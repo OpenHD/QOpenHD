@@ -229,6 +229,35 @@ void RPIMMALDecoder::initialize(const uint8_t *config_data, const int config_dat
     }
 }
 
+void RPIMMALDecoder::feed_frame(const uint8_t *frame_data, const int frame_data_size)
+{
+    MMAL_BUFFER_HEADER_T *buffer;
+
+    while (true) {
+        vcos_semaphore_wait(&m_context.in_semaphore);
+
+        if ((buffer = mmal_queue_get(m_pool_in->queue)) != nullptr) {
+
+            memcpy(buffer->data,frame_data, nal.length());
+            buffer->length = frame_data_size;
+
+            buffer->offset = 0;
+
+            buffer->flags |= MMAL_BUFFER_HEADER_FLAG_FRAME_END;
+
+            buffer->pts = buffer->dts = MMAL_TIME_UNKNOWN;
+
+
+            m_status = mmal_port_send_buffer(m_decoder->input[0], buffer);
+            if (m_status != MMAL_SUCCESS) {
+                qDebug()<<"Cannot feed frame ?!";
+                break;
+            }
+            break;
+        }
+    }
+}
+
 
 
 void RPIMMALDecoder::on_new_frame(MMAL_BUFFER_HEADER_T *buffer)

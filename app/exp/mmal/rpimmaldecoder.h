@@ -24,6 +24,8 @@ public:
 
     void initialize(const uint8_t* config_data,const int config_data_size,int width,int height,int fps);
 
+    void feed_frame(const uint8_t* frame_data,const int frame_data_size);
+
     // Called every time we got a frame from the decoder
     void on_new_frame(MMAL_BUFFER_HEADER_T* buffer);
 

@@ -754,7 +754,7 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp(const QOpenHDVideoHe
               }
               qDebug()<<"Got decode data (before keyframe)";
 #ifdef HAVE_MMALX
-
+              RPIMMALDecoder::instance().initialize(keyframe_buf->data(),keyframe_buf->size(),1280,720,30);
 #else
               pkt->data=keyframe_buf->data();
               pkt->size=keyframe_buf->size();
@@ -774,6 +774,7 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp(const QOpenHDVideoHe
                  buf=m_rtp_receiver->get_data();
              }
 #ifdef HAVE_MMALX
+              RPIMMALDecoder::instance().feed_frame(buf->getData(),buf->getSize());
 #else
              //qDebug()<<"Got decode data (after keyframe)";
              pkt->data=(uint8_t*)buf->getData();
