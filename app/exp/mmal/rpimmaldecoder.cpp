@@ -172,7 +172,7 @@ void RPIMMALDecoder::initialize(const uint8_t *config_data, const int config_dat
     qDebug(" width: %i, height: %i, (%i,%i,%i,%i)\n",
                       format_out->es->video.width, format_out->es->video.height,
                       format_out->es->video.crop.x, format_out->es->video.crop.y,
-                      format_out->es->video.crop.width, format_out->es->video.crop.height);*/
+                      format_out->es->video.crop.width, format_out->es->video.crop.height);
 
     /*
      * Size of the input buffers used for h264 data. These only need to be large enough for the
