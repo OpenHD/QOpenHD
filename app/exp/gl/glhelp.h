@@ -3,8 +3,12 @@
 
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
+
+#ifndef GL_FALSE
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
+#endif
+
 #include <cassert>
 
 /// Some gl extensions that don't seem to be part of raspberry gl. 
