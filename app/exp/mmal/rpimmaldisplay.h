@@ -25,6 +25,8 @@ public:
     void display_mmal_frame(MMAL_BUFFER_HEADER_T* buffer);
 
     void extra_init(int width,int height);
+
+    void extra_set_format(MMAL_ES_FORMAT_T *format_out);
 private:
     void init(int video_width,int video_height);
 

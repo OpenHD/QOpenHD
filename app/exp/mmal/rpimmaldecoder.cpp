@@ -219,6 +219,7 @@ void RPIMMALDecoder::initialize(const uint8_t *config_data, const int config_dat
                                        m_decoder->output[0]->buffer_num,
                                        m_decoder->output[0]->buffer_size);*/
     //format_out->encoding = MMAL_ENCODING_OPAQUE;
+
     m_decoder->output[0]->buffer_num = m_decoder->output[0]->buffer_num_min+10;
     m_decoder->output[0]->buffer_size = m_decoder->output[0]->buffer_size_min;
     m_pool_out = mmal_port_pool_create(m_decoder->output[0],
@@ -370,6 +371,9 @@ void RPIMMALDecoder::output_frame_loop()
                             m_decoder->output[0]->buffer_size);
 
                     status = mmal_port_enable(m_decoder->output[0], output_callback);
+
+                    RpiMMALDisplay::instance().extra_init(640,480);
+                    RpiMMALDisplay::instance().extra_set_format(event->format);
                 }
                 mmal_buffer_header_release(buffer);
             } else {

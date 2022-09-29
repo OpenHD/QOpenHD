@@ -53,7 +53,7 @@ void RpiMMALDisplay::init(int video_width,int video_height)
 
    m_InputPort = m_Renderer->input[0];
 
-   // Actually, we do not need to set anything here, mmal does that all for us
+   // For some reason we need that ?!
    m_InputPort->format->encoding = MMAL_ENCODING_OPAQUE;
    m_InputPort->format->es->video.width = video_width;
    m_InputPort->format->es->video.height = video_width;
@@ -183,6 +183,17 @@ void RpiMMALDisplay::extra_init(int width, int height)
         init(width,height);
         has_been_initialized=true;
     }
+}
+
+void RpiMMALDisplay::extra_set_format(MMAL_ES_FORMAT_T *format_out)
+{
+    mmal_format_full_copy(m_decoder->output[0]->format, format_out);
+    auto status = mmal_port_format_commit(m_InputPort);
+    if (status != MMAL_SUCCESS) {
+        qDebug()<<"RpiMMALDisplay::extra_set_format::error"<<mmal_status_to_string(status);
+       return;
+    }
+    qDebug()<<"RpiMMALDisplay::extra_set_format::success"<<mmal_status_to_string(status);
 }
 
 void RpiMMALDisplay::InputPortCallback(MMAL_PORT_T *port, MMAL_BUFFER_HEADER_T *buffer)
