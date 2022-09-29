@@ -23,6 +23,8 @@ public:
     void display_frame(AVFrame* frame);
 
     void display_mmal_frame(MMAL_BUFFER_HEADER_T* buffer);
+
+    void extra_init(int width,int height);
 private:
     void init(int video_width,int video_height);
 

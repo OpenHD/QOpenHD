@@ -199,6 +199,14 @@ void RpiMMALDisplay::display_mmal_frame(MMAL_BUFFER_HEADER_T *buffer)
     //qDebug()<<"RpiMMALDisplay::display_mmal_frame";
 }
 
+void RpiMMALDisplay::extra_init(int width, int height)
+{
+    if(!has_been_initialized){
+        init(width,height);
+        has_been_initialized=true;
+    }
+}
+
 void RpiMMALDisplay::InputPortCallback(MMAL_PORT_T *port, MMAL_BUFFER_HEADER_T *buffer)
 {
     //qDebug()<<"RpiMMALDisplay::InputPortCallback";
