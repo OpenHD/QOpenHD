@@ -96,8 +96,9 @@ packagesExist(mmal) {
    PKCONFIG += mmal_core
    PKCONFIG += mmal_components
    PKCONFIG += mmal_util
-
+   # crude, looks like the mmal headers pull in this path / need it
    INCLUDEPATH += /opt/vc/include/
+   INCLUDEPATH += /opt/vc/include/interface/mmal
 }
 
 # All Generic files. NOTE: During development, when you create new files, QT Creater will add them to the
