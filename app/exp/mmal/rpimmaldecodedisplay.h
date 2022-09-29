@@ -6,8 +6,8 @@
 #include "interface/mmal/util/mmal_default_components.h"
 #include "interface/vcos/vcos.h"
 
-#include "interface/mmal/util/mmal_graph.h"
-#include "interface/mmal/util/mmal_util_params.h"
+//#include "interface/mmal/util/mmal_graph.h"
+//#include "interface/mmal/util/mmal_util_params.h"
 
 #include <cstdint>
 
@@ -32,7 +32,7 @@ public:
 
     CONTEXT_T m_context;
 
-    MMAL_GRAPH_T *m_graph = 0;
+    //MMAL_GRAPH_T *m_graph = 0;
     MMAL_COMPONENT_T *m_decoder = 0;
     MMAL_COMPONENT_T *m_renderer=0;
 
