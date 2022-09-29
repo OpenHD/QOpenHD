@@ -23,8 +23,7 @@ static void log_video_format(MMAL_ES_FORMAT_T *format){
  * Callback from the input port.
  * Buffer has been consumed and is available to be used again.
  */
-static void input_callback(MMAL_PORT_T *port, MMAL_BUFFER_HEADER_T *buffer)
-{
+static void input_callback(MMAL_PORT_T *port, MMAL_BUFFER_HEADER_T *buffer){
    RPIMMALDecoder* ctx=(RPIMMALDecoder*)port->userdata;
    ctx->on_input_callback(port,buffer);
 }
@@ -33,8 +32,7 @@ static void input_callback(MMAL_PORT_T *port, MMAL_BUFFER_HEADER_T *buffer)
  * Callback from the output port.
  * Buffer has been produced by the port and is available for processing.
  */
-static void output_callback(MMAL_PORT_T *port, MMAL_BUFFER_HEADER_T *buffer)
-{
+static void output_callback(MMAL_PORT_T *port, MMAL_BUFFER_HEADER_T *buffer){
     RPIMMALDecoder* ctx=(RPIMMALDecoder*)port->userdata;
     ctx->on_output_callback(port,buffer);
 }
@@ -48,8 +46,7 @@ void RPIMMALDecoder::on_input_callback(MMAL_PORT_T *port, MMAL_BUFFER_HEADER_T *
     vcos_semaphore_post(&in_semaphore);
 }
 
-void RPIMMALDecoder::on_output_callback(MMAL_PORT_T *port, MMAL_BUFFER_HEADER_T *buffer)
-{
+void RPIMMALDecoder::on_output_callback(MMAL_PORT_T *port, MMAL_BUFFER_HEADER_T *buffer){
     /* Queue the decoded video frame so renderLoop can get it */
     mmal_queue_put(queue, buffer);
     /* Signal the renderLoop */
@@ -314,10 +311,10 @@ void RPIMMALDecoder::on_new_frame(MMAL_BUFFER_HEADER_T *buffer)
 }
 
 
-void RPIMMALDecoder::on_new_buffer_anything(MMAL_BUFFER_HEADER_T *buffer)
+/*void RPIMMALDecoder::on_new_buffer_anything(MMAL_BUFFER_HEADER_T *buffer)
 {
     qDebug()<<"RPIMMALDecoder::on_new_buffer_anything";
-}
+}*/
 
 
 void RPIMMALDecoder::output_frame_loop()
