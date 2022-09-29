@@ -234,6 +234,7 @@ void RPIMMALDecoder::initialize(const uint8_t *config_data, const int config_dat
         return;
     }
     qDebug()<<"RPIMMALDecoder init done successfully()";
+    m_dqueue_frames_thread=std::make_unique<std::thread>([this]{this->output_frame_loop();} );
 }
 
 void RPIMMALDecoder::feed_frame(const uint8_t *frame_data, const int frame_data_size)

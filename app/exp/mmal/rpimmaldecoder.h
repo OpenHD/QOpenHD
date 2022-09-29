@@ -7,6 +7,8 @@
 #include "interface/vcos/vcos.h"
 
 #include <cstdint>
+#include <thread>
+#include <memory>
 
 struct CONTEXT_T {
     VCOS_SEMAPHORE_T in_semaphore;
@@ -39,6 +41,9 @@ private:
 
     MMAL_POOL_T *m_pool_in = 0;
     MMAL_POOL_T *m_pool_out = 0;
+
+private:
+    std::unique_ptr<std::thread> m_dqueue_frames_thread=nullptr;
 };
 
 #endif // RPIMMALDECODER_H
