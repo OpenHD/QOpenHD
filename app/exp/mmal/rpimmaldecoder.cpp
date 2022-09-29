@@ -397,11 +397,11 @@ void RPIMMALDecoder::output_frame_loop()
         }
 
         /* Send empty buffers to the output port of the decoder */
-        /*while ((buffer = mmal_queue_get(m_pool_out->queue)) != nullptr) {
+        while ((buffer = mmal_queue_get(m_pool_out->queue)) != nullptr) {
             m_status = mmal_port_send_buffer(m_decoder->output[0], buffer);
             if (m_status != MMAL_SUCCESS) {
                 qDebug() << "failed to send output buffer back to decoder output";
             }
-        }*/
+        }
     }
 }
