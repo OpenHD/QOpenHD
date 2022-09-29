@@ -4,8 +4,6 @@
 #include "QSGVideoTextureItem.h"
 
 #include <QtQuick/qquickwindow.h>
-#include <QOpenGLShaderProgram>
-#include <QOpenGLContext>
 #include <QtCore/QRunnable>
 
 #include "../util/qrenderstats.h"
