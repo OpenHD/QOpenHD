@@ -13,11 +13,11 @@
 
 
 /** Context for our application */
-static struct CONTEXT_T {
+struct CONTEXT_T {
     VCOS_SEMAPHORE_T semaphore;
     MMAL_QUEUE_T *queue;
     MMAL_STATUS_T status;
-} context;
+};
 
 class RPIMMalDecodeDisplay
 {
