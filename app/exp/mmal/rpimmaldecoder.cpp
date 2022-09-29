@@ -2,6 +2,8 @@
 
 #include "rpimmaldisplay.h"
 
+#include "../../common_consti/TimeHelper.hpp"
+
 #include <qdebug.h>
 
 
@@ -293,6 +295,8 @@ void RPIMMALDecoder::feed_frame(const uint8_t *frame_data, const int frame_data_
 
             buffer->pts = buffer->dts = MMAL_TIME_UNKNOWN;
 
+            buffer->pts = getTimeUs();
+
 
             m_status = mmal_port_send_buffer(m_decoder->input[0], buffer);
             if (m_status != MMAL_SUCCESS) {
@@ -310,6 +314,9 @@ void RPIMMALDecoder::on_new_frame(MMAL_BUFFER_HEADER_T *buffer)
     qDebug()<<"RPIMMALDecoder::on_new_frame";
     RpiMMALDisplay::instance().extra_init(640,480);
     //RpiMMALDisplay::instance().display_mmal_frame(buffer);
+    const auto delay_us=getTimeUs()-buffer->pts;
+    qDebug()<<"Decode time:"<<MyTimeHelper::R(std::chrono::microseconds(delay_us));
+
     mmal_buffer_header_release(buffer);
 }
 
