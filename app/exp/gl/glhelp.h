@@ -4,9 +4,7 @@
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
 // Crude hack for QT on the rpi. Fucking hell, how annyoing this QT crap with redefining opengl is !
-#ifndef GL_FALSE
 #include <GLES2/gl2.h>
-#endif
 #include <GLES2/gl2ext.h>
 
 #include <cassert>
