@@ -35,9 +35,6 @@ private:
 
     MMAL_POOL_T *m_pool_in = 0;
     MMAL_POOL_T *m_pool_out = 0;
-
-private:
-    bool initialized_mmal=false;
 };
 
 #endif // RPIMMALDECODER_H
