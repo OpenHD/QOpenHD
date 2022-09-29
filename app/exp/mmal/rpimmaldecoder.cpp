@@ -291,10 +291,10 @@ void RPIMMALDecoder::feed_frame(const uint8_t *frame_data, const int frame_data_
 
             buffer->offset = 0;
 
-            //buffer->flags |= MMAL_BUFFER_HEADER_FLAG_FRAME_END;
+            buffer->flags |= MMAL_BUFFER_HEADER_FLAG_FRAME_END;
 
             buffer->pts = buffer->dts = MMAL_TIME_UNKNOWN;
-
+            // used to measure decode latency
             buffer->pts = getTimeUs();
 
 
