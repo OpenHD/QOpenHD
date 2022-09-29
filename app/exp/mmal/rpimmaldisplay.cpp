@@ -53,7 +53,8 @@ void RpiMMALDisplay::init(int video_width,int video_height)
 
    m_InputPort = m_Renderer->input[0];
 
-   /*m_InputPort->format->encoding = MMAL_ENCODING_OPAQUE;
+   // Actually, we do not need to set anything here, mmal does that all for us
+   m_InputPort->format->encoding = MMAL_ENCODING_OPAQUE;
    m_InputPort->format->es->video.width = video_width;
    m_InputPort->format->es->video.height = video_width;
    m_InputPort->format->es->video.crop.x = 0;
@@ -70,7 +71,7 @@ void RpiMMALDisplay::init(int video_width,int video_height)
    if (status != MMAL_SUCCESS) {
        qDebug()<<"MMAL mmal_port_format_commit error"<<mmal_status_to_string(status);
       return;
-   }*/
+   }
 
    status = mmal_component_enable(m_Renderer);
    if (status != MMAL_SUCCESS) {
