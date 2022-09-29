@@ -93,7 +93,9 @@ packagesExist(mmal) {
    PKGCONFIG += mmal
    CONFIG += mmal
 
-   PKCONFIG += mmal_util mmal_core mmal_components
+   PKCONFIG += mmal_core
+   PKCONFIG += mmal_components
+   PKCONFIG += mmal_util
 }
 
 # All Generic files. NOTE: During development, when you create new files, QT Creater will add them to the
