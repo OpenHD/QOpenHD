@@ -755,6 +755,7 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp(const QOpenHDVideoHe
               qDebug()<<"Got decode data (before keyframe)";
 #ifdef HAVE_MMAL
               RPIMMALDecoder::instance().initialize(keyframe_buf->data(),keyframe_buf->size(),1280,720,30);
+               has_keyframe_data=true;
 #else
               pkt->data=keyframe_buf->data();
               pkt->size=keyframe_buf->size();
