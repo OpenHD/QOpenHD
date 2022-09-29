@@ -97,8 +97,8 @@ packagesExist(mmal) {
    PKCONFIG += mmal_components
    PKCONFIG += mmal_util
    # crude, looks like the mmal headers pull in those paths / need them
-   #INCLUDEPATH += /opt/vc/include/
-   #INCLUDEPATH += /opt/vc/include/interface/mmal
+   INCLUDEPATH += /opt/vc/include/
+   INCLUDEPATH += /opt/vc/include/interface/mmal
 }
 
 # All Generic files. NOTE: During development, when you create new files, QT Creater will add them to the
@@ -454,12 +454,12 @@ mmal {
 
     SOURCES += app/exp/mmal/rpimmaldisplay.cpp \
         app/exp/mmal/rpimmaldecoder.cpp \
-        #app/exp/mmal/rpimmaldecodedisplay.cpp \
+        app/exp/mmal/rpimmaldecodedisplay.cpp \
 
     HEADERS += \
         app/exp/mmal/rpimmaldisplay.h \
         app/exp/mmal/rpimmaldecoder.h \
-        #app/exp/mmal/rpimmaldecodedisplay.h \
+        app/exp/mmal/rpimmaldecodedisplay.h \
 }
 
 
