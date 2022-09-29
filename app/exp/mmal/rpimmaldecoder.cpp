@@ -137,7 +137,6 @@ void RPIMMALDecoder::initialize(const uint8_t *config_data, const int config_dat
         return;
     }
 
-
     /*
      * Don't infer timestamps from the framerate
      */
