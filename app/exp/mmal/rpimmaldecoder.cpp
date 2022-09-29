@@ -259,7 +259,6 @@ void RPIMMALDecoder::feed_frame(const uint8_t *frame_data, const int frame_data_
 }
 
 
-
 void RPIMMALDecoder::on_new_frame(MMAL_BUFFER_HEADER_T *buffer)
 {
     RpiMMALDisplay::instance().display_mmal_frame(buffer);
