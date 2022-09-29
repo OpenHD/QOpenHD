@@ -20,6 +20,8 @@ class RPIMMALDecoder
 public:
     RPIMMALDecoder();
 
+    static RPIMMALDecoder& instance();
+
     void initialize(const uint8_t* config_data,const int config_data_size,int width,int height,int fps);
 
     // Called every time we got a frame from the decoder

@@ -1,5 +1,7 @@
 #include "rpimmaldecoder.h"
 
+#include "rpimmaldisplay.h"
+
 #include <qdebug.h>
 
 
@@ -7,6 +9,13 @@
 RPIMMALDecoder::RPIMMALDecoder()
 {
 
+}
+
+RPIMMALDecoder &RPIMMALDecoder::instance()
+{
+
+    static RPIMMALDecoder instance;
+    return instance;
 }
 
 void RPIMMALDecoder::initialize(const uint8_t *config_data, const int config_data_size,int width,int height,int fps)
@@ -63,5 +72,5 @@ void RPIMMALDecoder::initialize(const uint8_t *config_data, const int config_dat
 
 void RPIMMALDecoder::on_new_frame(MMAL_BUFFER_HEADER_T *buffer)
 {
-
+    RpiMMALDisplay::instance().display_mmal_frame(buffer);
 }
