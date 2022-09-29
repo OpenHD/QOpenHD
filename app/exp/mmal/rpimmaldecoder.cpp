@@ -327,6 +327,9 @@ void RPIMMALDecoder::on_new_frame(MMAL_BUFFER_HEADER_T *buffer)
 
 void RPIMMALDecoder::on_new_something(MMAL_BUFFER_HEADER_T *buffer)
 {
+    qDebug()<<"RPIMMALDecoder::on_new_something()";
+    MMAL_STATUS_T status = MMAL_EINVAL;
+
     if (buffer->cmd) {
         if (buffer->cmd == MMAL_EVENT_FORMAT_CHANGED) {
             qDebug()<<"Got MMAL_EVENT_FORMAT_CHANGED";
@@ -369,6 +372,8 @@ void RPIMMALDecoder::on_new_something(MMAL_BUFFER_HEADER_T *buffer)
 
             RpiMMALDisplay::instance().extra_init(640,480);
             RpiMMALDisplay::instance().extra_set_format(event->format);
+        }else{
+            qDebug()<<"Unknown buffer cmd";
         }
         mmal_buffer_header_release(buffer);
     } else {
@@ -379,16 +384,9 @@ void RPIMMALDecoder::on_new_something(MMAL_BUFFER_HEADER_T *buffer)
 }
 
 
-/*void RPIMMALDecoder::on_new_buffer_anything(MMAL_BUFFER_HEADER_T *buffer)
-{
-    qDebug()<<"RPIMMALDecoder::on_new_buffer_anything";
-}*/
-
-
 void RPIMMALDecoder::output_frame_loop()
 {
     MMAL_BUFFER_HEADER_T *buffer;
-    MMAL_STATUS_T status = MMAL_EINVAL;
 
     while (keep_dequeueing_frames) {
         vcos_semaphore_wait(&out_semaphore);
