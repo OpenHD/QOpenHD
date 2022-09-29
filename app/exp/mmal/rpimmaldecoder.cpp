@@ -236,6 +236,7 @@ void RPIMMALDecoder::on_new_frame(MMAL_BUFFER_HEADER_T *buffer)
     RpiMMALDisplay::instance().display_mmal_frame(buffer);
 }
 
+
 void RPIMMALDecoder::output_frame_loop()
 {
     MMAL_BUFFER_HEADER_T *buffer;

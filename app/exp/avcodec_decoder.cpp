@@ -753,10 +753,14 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp(const QOpenHDVideoHe
                   keyframe_buf=m_rtp_receiver->get_config_data();
               }
               qDebug()<<"Got decode data (before keyframe)";
+#ifdef HAVE_MMALX
+
+#else
               pkt->data=keyframe_buf->data();
               pkt->size=keyframe_buf->size();
               decode_config_data(pkt);
               has_keyframe_data=true;
+#endif
               continue;
          }else{
             std::shared_ptr<NALU> buf=nullptr;
@@ -769,11 +773,14 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp(const QOpenHDVideoHe
                  }
                  buf=m_rtp_receiver->get_data();
              }
+#ifdef HAVE_MMALX
+#else
              //qDebug()<<"Got decode data (after keyframe)";
              pkt->data=(uint8_t*)buf->getData();
              pkt->size=buf->getSize();
              decode_and_wait_for_frame(pkt,buf->creationTime);
              //fetch_frame_or_feed_input_packet();
+#endif
          }
      }
 finish:
