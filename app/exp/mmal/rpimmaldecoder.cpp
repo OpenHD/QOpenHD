@@ -25,13 +25,8 @@ static void log_video_format(MMAL_ES_FORMAT_T *format){
  */
 static void input_callback(MMAL_PORT_T *port, MMAL_BUFFER_HEADER_T *buffer)
 {
-   struct CONTEXT_T *ctx = (struct CONTEXT_T *)port->userdata;
-
-   /* The decoder is done with the data, just recycle the buffer header into its pool */
-   mmal_buffer_header_release(buffer);
-
-   /* Signal the prcocessFrame function */
-   vcos_semaphore_post(&ctx->in_semaphore);
+   RPIMMALDecoder* ctx=(RPIMMALDecoder*)port->userdata;
+   ctx->on_input_callback(port,buffer);
 }
 
 /*
@@ -40,14 +35,28 @@ static void input_callback(MMAL_PORT_T *port, MMAL_BUFFER_HEADER_T *buffer)
  */
 static void output_callback(MMAL_PORT_T *port, MMAL_BUFFER_HEADER_T *buffer)
 {
-   struct CONTEXT_T *ctx = (struct CONTEXT_T *)port->userdata;
-
-   /* Queue the decoded video frame so renderLoop can get it */
-   mmal_queue_put(ctx->queue, buffer);
-
-   /* Signal the renderLoop */
-   vcos_semaphore_post(&ctx->out_semaphore);
+    RPIMMALDecoder* ctx=(RPIMMALDecoder*)port->userdata;
+    ctx->on_output_callback(port,buffer);
 }
+
+void RPIMMALDecoder::on_input_callback(MMAL_PORT_T *port, MMAL_BUFFER_HEADER_T *buffer)
+{
+    /* The decoder is done with the data, just recycle the buffer header into its pool */
+    mmal_buffer_header_release(buffer);
+
+    /* Signal the prcocessFrame function */
+    vcos_semaphore_post(&in_semaphore);
+}
+
+void RPIMMALDecoder::on_output_callback(MMAL_PORT_T *port, MMAL_BUFFER_HEADER_T *buffer)
+{
+    /* Queue the decoded video frame so renderLoop can get it */
+    mmal_queue_put(queue, buffer);
+    /* Signal the renderLoop */
+    vcos_semaphore_post(&out_semaphore);
+}
+
+
 
 RPIMMALDecoder::RPIMMALDecoder()
 {
@@ -74,8 +83,8 @@ void RPIMMALDecoder::initialize(const uint8_t *config_data, const int config_dat
      * which prevents us from having to loop and burn CPU time, and also ensures that
      * there is no delay before using the available buffer.
      */
-    vcos_semaphore_create(&m_context.in_semaphore, "qopenhd_in", 1);
-    vcos_semaphore_create(&m_context.out_semaphore, "qopenhd_out", 1);
+    vcos_semaphore_create(&in_semaphore, "qopenhd_in", 1);
+    vcos_semaphore_create(&out_semaphore, "qopenhd_out", 1);
 
     m_status = mmal_component_create(MMAL_COMPONENT_DEFAULT_VIDEO_DECODER, &m_decoder);
 
@@ -222,13 +231,13 @@ void RPIMMALDecoder::initialize(const uint8_t *config_data, const int config_dat
         return;
     }
 
-    m_context.queue = mmal_queue_create();
+    queue = mmal_queue_create();
 
     /*
      * Provide a context pointer that will be passed back to us in the input and output callbacks
      */
-    m_decoder->input[0]->userdata = (MMAL_PORT_USERDATA_T *)&m_context;
-    m_decoder->output[0]->userdata = (MMAL_PORT_USERDATA_T *)&m_context;
+    m_decoder->input[0]->userdata = (MMAL_PORT_USERDATA_T *)this;
+    m_decoder->output[0]->userdata = (MMAL_PORT_USERDATA_T *)this;
 
 
     m_status = mmal_port_enable(m_decoder->input[0], input_callback);
@@ -303,6 +312,7 @@ void RPIMMALDecoder::on_new_frame(MMAL_BUFFER_HEADER_T *buffer)
     RpiMMALDisplay::instance().display_mmal_frame(buffer);
     mmal_buffer_header_release(buffer);
 }
+
 
 void RPIMMALDecoder::on_new_buffer_anything(MMAL_BUFFER_HEADER_T *buffer)
 {

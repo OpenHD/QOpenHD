@@ -10,12 +10,6 @@
 #include <thread>
 #include <memory>
 
-struct CONTEXT_T {
-    VCOS_SEMAPHORE_T in_semaphore;
-    VCOS_SEMAPHORE_T out_semaphore;
-    MMAL_QUEUE_T *queue;
-};
-
 class RPIMMALDecoder
 {
 public:
@@ -32,13 +26,9 @@ public:
     // Called every time we got a frame from the decoder
     void on_new_frame(MMAL_BUFFER_HEADER_T* buffer);
 
-    void on_new_buffer_anything(MMAL_BUFFER_HEADER_T *buffer);
-
     void output_frame_loop();
 
 private:
-    struct CONTEXT_T m_context;
-
     MMAL_STATUS_T m_status = MMAL_EINVAL;
     MMAL_COMPONENT_T *m_decoder = 0;
 
@@ -48,6 +38,15 @@ private:
 private:
     std::unique_ptr<std::thread> m_dqueue_frames_thread=nullptr;
     bool keep_dequeueing_frames=true;
+
+private:
+    VCOS_SEMAPHORE_T in_semaphore;
+    VCOS_SEMAPHORE_T out_semaphore;
+    MMAL_QUEUE_T *queue;
+public:
+    void on_input_callback(MMAL_PORT_T *port, MMAL_BUFFER_HEADER_T *buffer);
+    void on_output_callback(MMAL_PORT_T *port, MMAL_BUFFER_HEADER_T *buffer);
+
 };
 
 #endif // RPIMMALDECODER_H
