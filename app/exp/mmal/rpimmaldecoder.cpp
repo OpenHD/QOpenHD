@@ -238,7 +238,7 @@ void RPIMMALDecoder::feed_frame(const uint8_t *frame_data, const int frame_data_
 
         if ((buffer = mmal_queue_get(m_pool_in->queue)) != nullptr) {
 
-            memcpy(buffer->data,frame_data, nal.length());
+            memcpy(buffer->data,frame_data, frame_data_size);
             buffer->length = frame_data_size;
 
             buffer->offset = 0;
