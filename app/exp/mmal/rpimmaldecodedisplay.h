@@ -6,9 +6,8 @@
 #include "interface/mmal/util/mmal_default_components.h"
 #include "interface/vcos/vcos.h"
 
-#include "util/mmal_graph.h"
-#include "util/mmal_default_components.h"
-#include "util/mmal_util_params.h"
+#include "interface/mmal/util/mmal_graph.h"
+#include "interface/mmal/util/mmal_util_params.h"
 
 
 class rpimmaldecodedisplay
