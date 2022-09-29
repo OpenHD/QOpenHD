@@ -316,20 +316,41 @@ void RPIMMALDecoder::output_frame_loop()
         /* Get decoded frame */
         while ((buffer = mmal_queue_get(m_context.queue)) != NULL) {
             if (buffer->cmd) {
-
                 if (buffer->cmd == MMAL_EVENT_FORMAT_CHANGED) {
                     qDebug()<<"Got MMAL_EVENT_FORMAT_CHANGED";
                     MMAL_EVENT_FORMAT_CHANGED_T *event = mmal_event_format_changed_get(buffer);
-                    if (event){
-                       qDebug( "----------Port format changed----------\n");
-                       log_video_format(m_decoder->output[0]->format);
-                       qDebug( "-----------------to---------------------\n");
-                       log_video_format(event->format);
-                       qDebug( " buffers num (opt %i, min %i), size (opt %i, min: %i)\n",
-                                event->buffer_num_recommended, event->buffer_num_min,
-                                event->buffer_size_recommended, event->buffer_size_min);
-                       qDebug( "----------------------------------------\n");
+                    assert(event);
+
+                    qDebug( "----------Port format changed----------\n");
+                    log_video_format(m_decoder->output[0]->format);
+                    qDebug( "-----------------to---------------------\n");
+                    log_video_format(event->format);
+                    qDebug( " buffers num (opt %i, min %i), size (opt %i, min: %i)\n",
+                             event->buffer_num_recommended, event->buffer_num_min,
+                             event->buffer_size_recommended, event->buffer_size_min);
+                    qDebug( "----------------------------------------\n");
+
+                    /*Assume we can't reuse the buffers, so have to disable, destroy
+                      pool, create new pool, enable port, feed in buffers.*/
+                    status = mmal_port_disable(m_decoder->output[0]);
+
+                    //Clear the queue of all buffers
+                    while(mmal_queue_length(m_pool_out->queue) != m_pool_out->headers_num) {
+                        MMAL_BUFFER_HEADER_T *buf;
+                        vcos_semaphore_wait(&m_context.out_semaphore);
+                        buf = mmal_queue_get(m_context.queue);
+                        mmal_buffer_header_release(buf);
                     }
+
+                    mmal_port_pool_destroy(m_decoder->output[0], m_pool_out);
+                    status = mmal_format_full_copy(m_decoder->output[0]->format, event->format);
+                    status = mmal_port_format_commit(m_decoder->output[0]);
+
+                    m_pool_out = mmal_port_pool_create(m_decoder->output[0],
+                            m_decoder->output[0]->buffer_num,
+                            m_decoder->output[0]->buffer_size);
+
+                    status = mmal_port_enable(m_decoder->output[0], output_callback);
                 }
                 mmal_buffer_header_release(buffer);
             } else {
