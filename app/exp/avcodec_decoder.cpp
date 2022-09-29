@@ -10,6 +10,10 @@
 #include "texturerenderer.h"
 #include "../videostreaming/decodingstatistcs.h"
 
+#ifdef HAVE_MMAL
+#include "mmal/rpimmaldecodedisplay.h"
+#endif
+
 static int hw_decoder_init(AVCodecContext *ctx, const enum AVHWDeviceType type){
     int err = 0;
     ctx->hw_frames_ctx = NULL;
