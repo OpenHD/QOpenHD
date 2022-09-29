@@ -299,7 +299,7 @@ void RPIMMALDecoder::feed_frame(const uint8_t *frame_data, const int frame_data_
 void RPIMMALDecoder::on_new_frame(MMAL_BUFFER_HEADER_T *buffer)
 {
     qDebug()<<"RPIMMALDecoder::on_new_frame";
-    RPIMMALDisplay::instance().extra_init(640,480);
+     RpiMMALDisplay::instance().extra_init(640,480);
     RpiMMALDisplay::instance().display_mmal_frame(buffer);
 }
 
