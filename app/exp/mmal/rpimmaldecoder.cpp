@@ -363,7 +363,6 @@ void RPIMMALDecoder::output_frame_loop()
 
                     m_decoder->output[0]->buffer_num = m_decoder->output[0]->buffer_num_min+10;
 
-
                     status = mmal_port_format_commit(m_decoder->output[0]);
 
                     m_pool_out = mmal_port_pool_create(m_decoder->output[0],
