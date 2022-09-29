@@ -447,10 +447,12 @@ mmal {
 
     DEFINES += HAVE_MMAL
 
-    SOURCES += app/exp/mmal/rpimmaldisplay.cpp
+    SOURCES += app/exp/mmal/rpimmaldisplay.cpp \
+        app/exp/mmal/rpimmaldecoder.cpp \
 
     HEADERS += \
         app/exp/mmal/rpimmaldisplay.h \
+        app/exp/mmal/rpimmaldecoder.h \
 }
 
 
