@@ -423,6 +423,9 @@ int AVCodecDecoder::open_and_decode_until_error(const QOpenHDVideoHelper::VideoS
 
     av_dict_set(&av_dictionary,"timeout",0,0);
 
+    // For decode ?!
+    av_dict_set_int(&av_dictionary, "extra_buffers", 10, 0);
+
     AVFormatContext *input_ctx = nullptr;
     input_ctx=avformat_alloc_context();
     assert(input_ctx);
@@ -753,7 +756,7 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp(const QOpenHDVideoHe
                   keyframe_buf=m_rtp_receiver->get_config_data();
               }
               qDebug()<<"Got decode data (before keyframe)";
-#ifdef HAVE_MMAL
+#ifdef HAVE_MMALX
               RPIMMALDecoder::instance().initialize(keyframe_buf->data(),keyframe_buf->size(),640,480,30);
               has_keyframe_data=true;
 #else
@@ -774,7 +777,7 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp(const QOpenHDVideoHe
                  }
                  buf=m_rtp_receiver->get_data();
              }
-#ifdef HAVE_MMAL
+#ifdef HAVE_MMALX
               RPIMMALDecoder::instance().feed_frame(buf->getData(),buf->getSize());
 #else
              //qDebug()<<"Got decode data (after keyframe)";
