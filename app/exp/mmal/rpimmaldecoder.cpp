@@ -51,6 +51,7 @@ RPIMMALDecoder &RPIMMALDecoder::instance()
 
 void RPIMMALDecoder::initialize(const uint8_t *config_data, const int config_data_size,int width,int height,int fps)
 {
+    qDebug()<<"RPIMMALDecoder::initialize";
     if (!initialized_mmal) {
         initialized_mmal = true;
         bcm_host_init();
@@ -232,10 +233,13 @@ void RPIMMALDecoder::initialize(const uint8_t *config_data, const int config_dat
         qDebug() << "failed to enable decoder in MMAL";
         return;
     }
+    qDebug()<<"RPIMMALDecoder init done successfully()";
 }
 
 void RPIMMALDecoder::feed_frame(const uint8_t *frame_data, const int frame_data_size)
 {
+    qDebug()<<"RPIMMALDecoder::feed_frame";
+
     MMAL_BUFFER_HEADER_T *buffer;
 
     while (true) {
@@ -266,6 +270,7 @@ void RPIMMALDecoder::feed_frame(const uint8_t *frame_data, const int frame_data_
 
 void RPIMMALDecoder::on_new_frame(MMAL_BUFFER_HEADER_T *buffer)
 {
+    qDebug()<<"RPIMMALDecoder::on_new_frame";
     RpiMMALDisplay::instance().display_mmal_frame(buffer);
 }
 
