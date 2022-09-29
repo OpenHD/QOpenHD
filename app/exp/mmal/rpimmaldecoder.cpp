@@ -211,6 +211,8 @@ void RPIMMALDecoder::initialize(const uint8_t *config_data, const int config_dat
     m_pool_out = mmal_port_pool_create(m_decoder->output[0],
                                        m_decoder->output[0]->buffer_num,
                                        m_decoder->output[0]->buffer_size);*/
+    format_out->encoding = MMAL_ENCODING_OPAQUE;
+
     m_decoder->output[0]->buffer_num = m_decoder->output[0]->buffer_num_min;
     m_decoder->output[0]->buffer_size = m_decoder->output[0]->buffer_size_min;
     m_pool_out = mmal_port_pool_create(m_decoder->output[0],

@@ -149,11 +149,10 @@ void RpiMMALDisplay::updateDisplayRegion()
     dr.set |=  MMAL_DISPLAY_SET_MODE;
     dr.mode =  MMAL_DISPLAY_MODE_LETTERBOX;
 
-    const int screen_width=2560;
+    /*const int screen_width=2560;
     const int screen_height=1440;
     const int video_width=1920;
-    const int video_height=1080;
-
+    const int video_height=1080;*/
 
     status = mmal_port_parameter_set(m_InputPort, &dr.hdr);
     if (status != MMAL_SUCCESS) {
