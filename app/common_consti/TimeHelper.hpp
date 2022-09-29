@@ -164,6 +164,16 @@ public:
     void set_last_log(){
         last_log=std::chrono::steady_clock::now();
     }
+    typedef std::function<void(const std::string name,const std::string message)> DO_CB;
+    void do_in_intervals(const std::chrono::steady_clock::duration interval_duration_size,DO_CB cb,bool resetSamples=true){
+        const auto timeSinceLastLog=std::chrono::steady_clock::now()-last_log;
+        if(timeSinceLastLog>interval_duration_size){
+            auto tmp=getAvgReadable();
+            cb(name,tmp);
+            if(resetSamples)reset();
+            last_log=std::chrono::steady_clock::now();
+        }
+    }
 };
 
 
