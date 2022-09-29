@@ -7,6 +7,18 @@
 
 static bool initialized_mmal=false;
 
+
+static void log_video_format(MMAL_ES_FORMAT_T *format){
+   if (format->type != MMAL_ES_TYPE_VIDEO)
+      return;
+
+   qDebug("fourcc: %4.4s, width: %i, height: %i, (%i,%i,%i,%i)\n",
+            (char *)&format->encoding,
+            format->es->video.width, format->es->video.height,
+            format->es->video.crop.x, format->es->video.crop.y,
+            format->es->video.crop.width, format->es->video.crop.height);
+}
+
 /*
  * Callback from the input port.
  * Buffer has been consumed and is available to be used again.
@@ -307,6 +319,17 @@ void RPIMMALDecoder::output_frame_loop()
 
                 if (buffer->cmd == MMAL_EVENT_FORMAT_CHANGED) {
                     qDebug()<<"Got MMAL_EVENT_FORMAT_CHANGED";
+                    MMAL_EVENT_FORMAT_CHANGED_T *event = mmal_event_format_changed_get(buffer);
+                    if (event){
+                       qDebug( "----------Port format changed----------\n");
+                       log_video_format(m_decoder->output[0]->format);
+                       qDebug( "-----------------to---------------------\n");
+                       log_video_format(event->format);
+                       qDebug( " buffers num (opt %i, min %i), size (opt %i, min: %i)\n",
+                                event->buffer_num_recommended, event->buffer_num_min,
+                                event->buffer_size_recommended, event->buffer_size_min);
+                       qDebug( "----------------------------------------\n");
+                    }
                 }
                 mmal_buffer_header_release(buffer);
             } else {
