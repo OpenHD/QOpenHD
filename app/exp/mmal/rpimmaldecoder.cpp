@@ -47,16 +47,15 @@ void RPIMMALDecoder::on_input_callback(MMAL_PORT_T *port, MMAL_BUFFER_HEADER_T *
 }
 
 void RPIMMALDecoder::on_output_callback(MMAL_PORT_T *port, MMAL_BUFFER_HEADER_T *buffer){
-    if(!buffer->cmd){
+    /*if(!buffer->cmd){
         on_new_frame(buffer);
         return;
-    }
+    }*/
     /* Queue the decoded video frame so renderLoop can get it */
     mmal_queue_put(queue, buffer);
     /* Signal the renderLoop */
     vcos_semaphore_post(&out_semaphore);
 }
-
 
 
 RPIMMALDecoder::RPIMMALDecoder()
@@ -67,7 +66,7 @@ RPIMMALDecoder::RPIMMALDecoder()
 RPIMMALDecoder &RPIMMALDecoder::instance()
 {
 
-    static RPIMMALDecoder instance;
+    static RPIMMALDecoder instance{};
     return instance;
 }
 
@@ -78,7 +77,6 @@ void RPIMMALDecoder::initialize(const uint8_t *config_data, const int config_dat
         initialized_mmal = true;
         bcm_host_init();
     }
-
     /*
      * Used to signal the input function and the output loop that a buffer is ready,
      * which prevents us from having to loop and burn CPU time, and also ensures that
@@ -103,8 +101,10 @@ void RPIMMALDecoder::initialize(const uint8_t *config_data, const int config_dat
     format_in->encoding = MMAL_ENCODING_H264;
     format_in->es->video.width = VCOS_ALIGN_UP(width, 32);
     format_in->es->video.height = VCOS_ALIGN_UP(height, 16);
-    format_in->es->video.frame_rate.num = 24000;
-    format_in->es->video.frame_rate.den = 1001;
+    format_in->es->video.frame_rate.num = fps;
+    format_in->es->video.frame_rate.den = 1;
+    format_in->es->video.par.num = 1;
+    format_in->es->video.par.den = 1;
     /*
      * If the data is known to be framed then the following flag should be set:
      */
@@ -219,8 +219,7 @@ void RPIMMALDecoder::initialize(const uint8_t *config_data, const int config_dat
                                        m_decoder->output[0]->buffer_num,
                                        m_decoder->output[0]->buffer_size);*/
     //format_out->encoding = MMAL_ENCODING_OPAQUE;
-
-    m_decoder->output[0]->buffer_num = m_decoder->output[0]->buffer_num_min;
+    m_decoder->output[0]->buffer_num = m_decoder->output[0]->buffer_num_min+10;
     m_decoder->output[0]->buffer_size = m_decoder->output[0]->buffer_size_min;
     m_pool_out = mmal_port_pool_create(m_decoder->output[0],
                                         m_decoder->output[0]->buffer_num,
