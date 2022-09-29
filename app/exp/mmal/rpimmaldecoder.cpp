@@ -303,7 +303,6 @@ void RPIMMALDecoder::feed_frame(const uint8_t *frame_data, const int frame_data_
             // used to measure decode latency
             buffer->pts = getTimeUs();
 
-
             m_status = mmal_port_send_buffer(m_decoder->input[0], buffer);
             if (m_status != MMAL_SUCCESS) {
                 qDebug()<<"Cannot feed frame ?!";
@@ -380,7 +379,6 @@ void RPIMMALDecoder::on_new_something(MMAL_BUFFER_HEADER_T *buffer)
         // buffer is released by the renderer when it finishes with the frame
         on_new_frame(buffer);
     }
-
 }
 
 
@@ -399,11 +397,11 @@ void RPIMMALDecoder::output_frame_loop()
         }
 
         /* Send empty buffers to the output port of the decoder */
-        while ((buffer = mmal_queue_get(m_pool_out->queue)) != nullptr) {
+        /*while ((buffer = mmal_queue_get(m_pool_out->queue)) != nullptr) {
             m_status = mmal_port_send_buffer(m_decoder->output[0], buffer);
             if (m_status != MMAL_SUCCESS) {
                 qDebug() << "failed to send output buffer back to decoder output";
             }
-        }
+        }*/
     }
 }
