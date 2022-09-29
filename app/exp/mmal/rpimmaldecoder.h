@@ -17,6 +17,15 @@ class RPIMMALDecoder
 {
 public:
     RPIMMALDecoder();
+
+private:
+    struct CONTEXT_T m_context;
+
+    MMAL_STATUS_T m_status = MMAL_EINVAL;
+    MMAL_COMPONENT_T *m_decoder = 0;
+
+    MMAL_POOL_T *m_pool_in = 0;
+    MMAL_POOL_T *m_pool_out = 0;
 };
 
 #endif // RPIMMALDECODER_H
