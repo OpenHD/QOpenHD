@@ -449,10 +449,12 @@ mmal {
 
     SOURCES += app/exp/mmal/rpimmaldisplay.cpp \
         app/exp/mmal/rpimmaldecoder.cpp \
+        app/exp/mmal/rpimmaldecodedisplay.cpp \
 
     HEADERS += \
         app/exp/mmal/rpimmaldisplay.h \
         app/exp/mmal/rpimmaldecoder.h \
+        app/exp/mmal/rpimmaldecodedisplay.h \
 }
 
 
