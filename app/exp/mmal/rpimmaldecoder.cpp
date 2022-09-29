@@ -278,7 +278,7 @@ void RPIMMALDecoder::feed_frame(const uint8_t *frame_data, const int frame_data_
     MMAL_BUFFER_HEADER_T *buffer;
 
     while (true) {
-        vcos_semaphore_wait(&m_context.in_semaphore);
+        vcos_semaphore_wait(&in_semaphore);
 
         if ((buffer = mmal_queue_get(m_pool_in->queue)) != nullptr) {
 
@@ -326,12 +326,12 @@ void RPIMMALDecoder::output_frame_loop()
     MMAL_STATUS_T status = MMAL_EINVAL;
 
     while (keep_dequeueing_frames) {
-        vcos_semaphore_wait(&m_context.out_semaphore);
+        vcos_semaphore_wait(&out_semaphore);
         qDebug()<<"RPIMMALDecoder::output_frame_loop after semaphore";
 
 
         /* Get decoded frame */
-        while ((buffer = mmal_queue_get(m_context.queue)) != NULL) {
+        while ((buffer = mmal_queue_get(queue)) != NULL) {
             if (buffer->cmd) {
                 if (buffer->cmd == MMAL_EVENT_FORMAT_CHANGED) {
                     qDebug()<<"Got MMAL_EVENT_FORMAT_CHANGED";
@@ -354,8 +354,8 @@ void RPIMMALDecoder::output_frame_loop()
                     //Clear the queue of all buffers
                     while(mmal_queue_length(m_pool_out->queue) != m_pool_out->headers_num) {
                         MMAL_BUFFER_HEADER_T *buf;
-                        vcos_semaphore_wait(&m_context.out_semaphore);
-                        buf = mmal_queue_get(m_context.queue);
+                        vcos_semaphore_wait(&out_semaphore);
+                        buf = mmal_queue_get(queue);
                         mmal_buffer_header_release(buf);
                     }
 
