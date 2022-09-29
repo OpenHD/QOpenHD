@@ -1,6 +1,6 @@
 #include "rpimmaldecoder.h"
 
-rpimmaldecoder::rpimmaldecoder()
+RPIMMALDecoder::RPIMMALDecoder()
 {
 
 }
