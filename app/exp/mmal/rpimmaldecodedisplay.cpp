@@ -74,14 +74,14 @@ void RPIMMalDecodeDisplay::initialize(const uint8_t *config_data, const int conf
      MMAL_STATUS_T status;
 
      /* Create the graph */
-    //status = mmal_graph_create(&m_graph, 0);
-    //CHECK_STATUS(status, "failed to create graph");
+    /*status = mmal_graph_create(&m_graph, 0);
+    CHECK_STATUS(status, "failed to create graph");
 
     status = mmal_graph_new_component(graph, MMAL_COMPONENT_DEFAULT_VIDEO_DECODER, &m_decoder);
     CHECK_STATUS(status, "failed to create decoder");
 
     status = mmal_graph_new_component(graph, MMAL_COMPONENT_DEFAULT_VIDEO_RENDERER, &m_renderer);
-    CHECK_STATUS(status, "failed to create renderer");
+    CHECK_STATUS(status, "failed to create renderer");*/
 
 
     /* Enable control port so we can receive events from the component */
