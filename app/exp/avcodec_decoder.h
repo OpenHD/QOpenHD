@@ -19,7 +19,7 @@
 #ifdef HAVE_MMAL
 #include "mmal/rpimmaldisplay.h"
 #include "mmal/rpimmaldecoder.h"
-#include "mmal/rpimmaldecodedisplay.h"
+//#include "mmal/rpimmaldecodedisplay.h"
 #endif
 //exp
 //#include "drm_kms/drmprime_out.h"
