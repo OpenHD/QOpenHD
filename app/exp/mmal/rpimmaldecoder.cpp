@@ -235,3 +235,36 @@ void RPIMMALDecoder::on_new_frame(MMAL_BUFFER_HEADER_T *buffer)
 {
     RpiMMALDisplay::instance().display_mmal_frame(buffer);
 }
+
+void RPIMMALDecoder::output_frame_loop()
+{
+    MMAL_BUFFER_HEADER_T *buffer;
+    MMAL_STATUS_T status = MMAL_EINVAL;
+
+    while (true) {
+        vcos_semaphore_wait(&m_context.out_semaphore);
+
+
+        /* Get decoded frame */
+        while ((buffer = mmal_queue_get(m_context.queue)) != NULL) {
+            if (buffer->cmd) {
+
+                if (buffer->cmd == MMAL_EVENT_FORMAT_CHANGED) {
+                    qDebug()<<"Got MMAL_EVENT_FORMAT_CHANGED";"
+                }
+                mmal_buffer_header_release(buffer);
+            } else {
+                // buffer is released by the renderer when it finishes with the frame
+                on_new_frame(buffer);
+            }
+        }
+
+        /* Send empty buffers to the output port of the decoder */
+        while ((buffer = mmal_queue_get(m_pool_out->queue)) != nullptr) {
+            m_status = mmal_port_send_buffer(m_decoder->output[0], buffer);
+            if (m_status != MMAL_SUCCESS) {
+                //qDebug() << "failed to send output buffer";
+            }
+        }
+    }
+}

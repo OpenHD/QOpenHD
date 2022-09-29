@@ -27,6 +27,8 @@ public:
     // Called every time we got a frame from the decoder
     void on_new_frame(MMAL_BUFFER_HEADER_T* buffer);
 
+    void output_frame_loop();
+
 private:
     struct CONTEXT_T m_context;
 
