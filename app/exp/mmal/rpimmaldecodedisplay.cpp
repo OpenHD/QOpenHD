@@ -139,7 +139,6 @@ void RPIMMalDecodeDisplay::initialize(const uint8_t *config_data, const int conf
     m_status = mmal_port_enable(m_decoder->input[0], input_callback);
     CHECK_STATUS(m_status, "failed to enable input port")
 
-
     // connect them up - this propagates port settings from outputs to inputs
     m_status = mmal_graph_new_connection(m_graph, m_decoder->output[0], m_renderer->input[0],  0, NULL);
     CHECK_STATUS(m_status, "failed to connect decoder to renderer");
@@ -151,13 +150,14 @@ void RPIMMalDecodeDisplay::initialize(const uint8_t *config_data, const int conf
     m_status = mmal_graph_enable(m_graph, NULL, NULL);
     CHECK_STATUS(m_status, "failed to enable graph");
 
-
+    qDebug()<<"RPIMMalDecodeDisplay::initialize::done";
 }
 
 
 void RPIMMalDecodeDisplay::feed_frame(const uint8_t *frame_data, const int frame_data_size)
 {
     qDebug()<<"RPIMMALDecoder::feed_frame";
+    if(true)return;
 
     MMAL_BUFFER_HEADER_T *buffer;
 
