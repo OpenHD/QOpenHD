@@ -228,7 +228,7 @@ void RPIMMalDecodeDisplay::updateDisplayRegion()
 
     status = mmal_port_parameter_set(m_renderer->input[0], &dr.hdr);
     if (status != MMAL_SUCCESS) {
-        qDebug()<<"X mmal_port_parameter_set error"<<mmal_status_to_string(status);
+        qDebug()<<"X mmal_port_parameter_set error";
         return;
     }else{
         qDebug()<<"X mmal set layer";
