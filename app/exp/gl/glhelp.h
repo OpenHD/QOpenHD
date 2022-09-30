@@ -6,7 +6,9 @@
 // Crude hack for QT on the rpi. Fucking hell, how annyoing this QT crap with redefining opengl is !
 //#include "/usr/include/GLES2/gl2.h"
 //#include "/usr/include/GLES2/gl2ext.h"
-#include <GLES2/gl2.h>
+//#include <GLES2/gl2.h>
+#include "/usr/include/arm-linux-gnueabihf/qt5/QtGui/qopengl.h"
+
 #include <GLES2/gl2ext.h>
 //#include <GLES3/gl32.h>
 //#include <GLES3/gl3ext.h>
