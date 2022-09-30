@@ -5,6 +5,23 @@
 
 #include <qdebug.h>
 
+// Callback from the control port.
+// Component is sending us an event.
+static void render_control_callback(MMAL_PORT_T *port, MMAL_BUFFER_HEADER_T *buffer){
+    switch (buffer->cmd){
+        case MMAL_EVENT_EOS:
+            break;
+        case MMAL_EVENT_ERROR:
+            qDebug()<<"decoder_control_callback error";
+            break;
+        default:
+            break;
+    }
+    /* Done with the event, recycle it */
+    mmal_buffer_header_release(buffer);
+    qDebug("control cb. status %s\n",mmal_status_to_string(*(MMAL_STATUS_T*)buffer->data));
+}
+
 
 RpiMMALDisplay::RpiMMALDisplay()
 {
@@ -83,6 +100,14 @@ void RpiMMALDisplay::init(int video_width,int video_height)
         qDebug()<<"mmal_port_enable"<<mmal_status_to_string(status);
        return;
    }
+
+   status = mmal_port_enable(m_Renderer->control, render_control_callback);
+   if (m_status != MMAL_SUCCESS) {
+       qDebug() << "failed to set controll callback in MMAL";
+       return;
+   }
+
+
    updateDisplayRegion();
    qDebug()<<"MMAL ready X?!";
 }
