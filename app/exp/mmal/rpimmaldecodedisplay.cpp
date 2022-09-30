@@ -94,8 +94,8 @@ void RPIMMalDecodeDisplay::initialize(const uint8_t *config_data, const int conf
     format_in = m_decoder->input[0]->format;
     format_in->type = MMAL_ES_TYPE_VIDEO;
     format_in->encoding = MMAL_ENCODING_H264;
-    format_in->es->video.width = 1280;
-    format_in->es->video.height = 720;
+    format_in->es->video.width = width;
+    format_in->es->video.height = height;
     format_in->es->video.frame_rate.num = 25;
     format_in->es->video.frame_rate.den = 1;
     format_in->es->video.par.num = 1;
@@ -105,19 +105,20 @@ void RPIMMalDecodeDisplay::initialize(const uint8_t *config_data, const int conf
 
 
 
-    SOURCE_READ_CODEC_CONFIG_DATA(codec_header_bytes, codec_header_bytes_size);
-    m_status = mmal_format_extradata_alloc(format_in, codec_header_bytes_size);
+    //SOURCE_READ_CODEC_CONFIG_DATA(codec_header_bytes, codec_header_bytes_size);
+    //m_status = mmal_format_extradata_alloc(format_in, codec_header_bytes_size);
+    m_status = mmal_format_extradata_alloc(format_in, config_data_size);
     CHECK_STATUS(m_status, "failed to allocate extradata");
-    format_in->extradata_size = codec_header_bytes_size;
-    if (format_in->extradata_size)
-      memcpy(format_in->extradata, codec_header_bytes, format_in->extradata_size);
-
+    //format_in->extradata_size = codec_header_bytes_size;
+    format_in->extradata_size = config_data_size;
+    if (format_in->extradata_size){
+        memcpy(format_in->extradata, config_data, format_in->extradata_size);
+    }
 
     m_status = mmal_port_format_commit(m_decoder->input[0]);
     CHECK_STATUS(m_status, "failed to commit format");
 
-
-    m_status = mmal_port_format_commit(decoder->output[0]);
+    m_status = mmal_port_format_commit(m_decoder->output[0]);
     CHECK_STATUS(status, "failed to commit format");
 
     m_decoder->input[0]->buffer_num = m_decoder->input[0]->buffer_num_min;
