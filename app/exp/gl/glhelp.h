@@ -7,7 +7,12 @@
 //#include "/usr/include/GLES2/gl2.h"
 //#include "/usr/include/GLES2/gl2ext.h"
 #include <GLES2/gl2.h>
+//#include <GLES2/gl2ext.h>
+
+#ifndef GL_GLES_PROTOTYPES
 #include <GLES2/gl2ext.h>
+#endif
+
 //#include <GLES3/gl32.h>
 //#include <GLES3/gl3ext.h>
 
