@@ -10,6 +10,8 @@
 
 #include "avcodec_helper.hpp"
 
+// MMAL display, works with avcodec mmal wrapper (but this wrapper sucks), does not work with the rpimmaldecoder (yet)
+// Which is why r.n the all in one rpimmaldecodedisplay is used
 class RpiMMALDisplay
 {
 public:

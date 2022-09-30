@@ -782,6 +782,12 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp(const QOpenHDVideoHe
 #ifdef HAVE_MMAL
               //RPIMMALDecoder::instance().feed_frame(buf->getData(),buf->getSize());
               RPIMMalDecodeDisplay::instance().feed_frame(buf->getData(),buf->getSize());
+              const auto delay=std::chrono::steady_clock::now()-buf->creationTime;
+              avg_parse_time.add(delay);
+              avg_parse_time.custom_print_in_intervals(std::chrono::seconds(3),[](const std::string name,const std::string message){
+                  qDebug()<<name.c_str()<<":"<<message.c_str();
+                  DecodingStatistcs::instance().set_parse_and_enqueue_time(message.c_str());
+              });
 #else
              //qDebug()<<"Got decode data (after keyframe)";
              pkt->data=(uint8_t*)buf->getData();

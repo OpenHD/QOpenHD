@@ -18,7 +18,7 @@ struct CONTEXT_T {
     MMAL_QUEUE_T *queue;
     MMAL_STATUS_T status;
 };
-
+// MMAL Decode and MMAL Display all in one.
 class RPIMMalDecodeDisplay
 {
 public:

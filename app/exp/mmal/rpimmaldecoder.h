@@ -10,6 +10,7 @@
 #include <thread>
 #include <memory>
 
+// MMAL decode, for some reason I couldn't figure out how to link this instead of the avcodec mmal wrapper to the "RpiMMALDisplay" code
 class RPIMMALDecoder
 {
 public:
