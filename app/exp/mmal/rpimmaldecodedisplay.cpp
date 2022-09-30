@@ -121,13 +121,16 @@ void RPIMMalDecodeDisplay::initialize(const uint8_t *config_data, const int conf
     m_status = mmal_port_format_commit(m_decoder->output[0]);
     CHECK_STATUS(m_status, "failed to commit format");
 
-    m_decoder->input[0]->buffer_num = m_decoder->input[0]->buffer_num_min;
-    qDebug()<<"Decoder buffer_num_min"<<m_decoder->input[0]->buffer_num_min;
+    qDebug()<<"Decoder input buffer_num_min"<<m_decoder->input[0]->buffer_num_min;
+    //m_decoder->input[0]->buffer_num = m_decoder->input[0]->buffer_num_min;
+    m_decoder->input[0]->buffer_num = 15;
 
     //m_decoder->input[0]->buffer_size = m_decoder->input[0]->buffer_size_min+1024;
     m_decoder->input[0]->buffer_size = 1024*1024;
 
-    m_decoder->output[0]->buffer_num = m_decoder->output[0]->buffer_num_min;
+    qDebug()<<"Decoder output buffer_num_min"<<m_decoder->output[0]->buffer_num_min;
+    //m_decoder->output[0]->buffer_num = m_decoder->output[0]->buffer_num_min;
+    m_decoder->output[0]->buffer_num = 6;
     m_decoder->output[0]->buffer_size = m_decoder->output[0]->buffer_size_min;
 
     m_pool_in = mmal_pool_create(m_decoder->input[0]->buffer_num,m_decoder->input[0]->buffer_size);
