@@ -6,7 +6,7 @@
 #include "interface/mmal/util/mmal_default_components.h"
 #include "interface/vcos/vcos.h"
 
-#include "interface/mmal/util/mmal_connection.h"
+#include "/opt/vc/include/interface/mmal/util/mmal_connection.h"
 
 #include "interface/mmal/util/mmal_graph.h"
 //#include "interface/mmal/util/mmal_util_params.h"
