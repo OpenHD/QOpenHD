@@ -252,13 +252,13 @@ void GL_shaders::draw_rgb(GLuint texture) {
 }
 
 void GL_shaders::draw_egl(GLuint texture) {
-  /*glUseProgram(egl_shader.program);
+  glUseProgram(egl_shader.program);
   glBindTexture(GL_TEXTURE_EXTERNAL_OES,texture);
   beforeDrawVboSetup(egl_shader.pos,egl_shader.uvs);
   glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
   afterDrawVboCleanup(egl_shader.pos,egl_shader.uvs);
   glBindTexture(GL_TEXTURE_EXTERNAL_OES,0);
-  checkGlError("Draw EGL texture");*/
+  checkGlError("Draw EGL texture");
 }
 
 static void bind_textures(std::vector<GLuint> textures){

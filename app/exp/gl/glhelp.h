@@ -40,7 +40,7 @@ EGLBoolean eglDestroyImageKHR(EGLDisplay dpy, EGLImageKHR image)
 }
 
 
-/*void glEGLImageTargetTexture2DOES(GLenum target, GLeglImageOES image) __attribute__((weak)); // May not be in libEGL symbol table, resolve manually :(
+void glEGLImageTargetTexture2DOES(GLenum target, GLeglImageOES image) __attribute__((weak)); // May not be in libEGL symbol table, resolve manually :(
 void glEGLImageTargetTexture2DOES(GLenum target, GLeglImageOES image)
 {
 	static PFNGLEGLIMAGETARGETTEXTURE2DOESPROC imageTargetTexture2DOES = 0;
@@ -49,7 +49,7 @@ void glEGLImageTargetTexture2DOES(GLenum target, GLeglImageOES image)
 		assert(imageTargetTexture2DOES);
 	}
 	imageTargetTexture2DOES(target, image);
-}*/
+}
 /// END Gl Extensions --------------------------------------------------
 
 
