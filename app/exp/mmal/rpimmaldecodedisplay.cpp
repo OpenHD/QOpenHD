@@ -103,7 +103,7 @@ void RPIMMalDecodeDisplay::initialize(const uint8_t *config_data, const int conf
     /* If the data is known to be framed then the following flag should be set:*/
      //format_in->flags |= MMAL_ES_FORMAT_FLAG_FRAMED;
 
-
+    qDebug()<<"X1";
 
     //SOURCE_READ_CODEC_CONFIG_DATA(codec_header_bytes, codec_header_bytes_size);
     //m_status = mmal_format_extradata_alloc(format_in, codec_header_bytes_size);
@@ -129,24 +129,27 @@ void RPIMMalDecodeDisplay::initialize(const uint8_t *config_data, const int conf
 
     m_pool_in = mmal_pool_create(m_decoder->input[0]->buffer_num,m_decoder->input[0]->buffer_size);
 
-    /*context.queue = mmal_queue_create();
+    qDebug()<<"X2";
+
+    m_context.queue = mmal_queue_create();
 
     // Store a reference to our context in each port (will be used during callbacks)
-    decoder->input[0]->userdata = (struct MMAL_PORT_USERDATA_T*)(void *)&context;
+    m_decoder->input[0]->userdata = (struct MMAL_PORT_USERDATA_T*)(void *)&m_context;
 
-    status = mmal_port_enable(decoder->input[0], input_callback);
-    CHECK_STATUS(status, "failed to enable input port")
+    m_status = mmal_port_enable(m_decoder->input[0], input_callback);
+    CHECK_STATUS(m_status, "failed to enable input port")
 
 
     // connect them up - this propagates port settings from outputs to inputs
-    status = mmal_graph_new_connection(graph, decoder->output[0], renderer->input[0],  0, NULL);
-    CHECK_STATUS(status, "failed to connect decoder to renderer");
+    m_status = mmal_graph_new_connection(graph, decoder->output[0], renderer->input[0],  0, NULL);
+    CHECK_STATUS(m_status, "failed to connect decoder to renderer");
 
+    qDebug()<<"X3";
 
      // Start playback
     fprintf(stderr, "start");
     m_status = mmal_graph_enable(m_graph, NULL, NULL);
-    CHECK_STATUS(status, "failed to enable graph");*/
+    CHECK_STATUS(m_status, "failed to enable graph");
 
 
 }
