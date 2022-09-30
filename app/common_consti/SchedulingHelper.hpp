@@ -5,6 +5,7 @@
 #ifndef WIFIBROADCAST_SCHEDULINGHELPER_H
 #define WIFIBROADCAST_SCHEDULINGHELPER_H
 
+#include <cassert>
 #include <pthread.h>
 #include <sys/resource.h>
 #include <stdio.h>
