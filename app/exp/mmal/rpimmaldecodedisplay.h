@@ -30,6 +30,8 @@ public:
 
     void feed_frame(const uint8_t* frame_data,const int frame_data_size);
 
+    void cleanup();
+
     CONTEXT_T m_context;
 
     MMAL_STATUS_T m_status = MMAL_EINVAL;

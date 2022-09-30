@@ -196,6 +196,26 @@ void RPIMMalDecodeDisplay::feed_frame(const uint8_t *frame_data, const int frame
     }
 }
 
+void RPIMMalDecodeDisplay::cleanup()
+{
+    // Stop everything. Not strictly necessary since mmal_component_destroy()
+    //will do that anyway
+    mmal_port_disable(m_decoder->input[0]);
+    mmal_port_disable(m_decoder->control);
+
+    // Stop everything
+    fprintf(stderr, "stop");
+    mmal_graph_disable(m_graph);
+
+    // Cleanup everything
+    if (m_decoder)
+        mmal_component_release(m_decoder);
+    if (m_renderer)
+        mmal_component_release(m_renderer);
+    if (m_graph)
+        mmal_graph_destroy(m_graph);
+}
+
 void RPIMMalDecodeDisplay::updateDisplayRegion()
 {
     if(!display_region_needs_update){
