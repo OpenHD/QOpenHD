@@ -788,6 +788,7 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp(const QOpenHDVideoHe
                   qDebug()<<name.c_str()<<":"<<message.c_str();
                   DecodingStatistcs::instance().set_parse_and_enqueue_time(message.c_str());
               });
+              TextureRenderer::instance().clear_all_video_textures_next_frame();
 #else
              //qDebug()<<"Got decode data (after keyframe)";
              pkt->data=(uint8_t*)buf->getData();
@@ -802,6 +803,72 @@ finish:
      m_rtp_receiver=nullptr;
      avcodec_free_context(&decoder_ctx);
 }
+
+#ifdef HAVE_MMAL
+void AVCodecDecoder::open_and_decode_until_error_custom_rtp_and_mmal_direct(const QOpenHDVideoHelper::VideoStreamConfig settings)
+{
+    qDebug()<<"AVCodecDecoder::open_and_decode_until_error_custom_rtp_and_mmal_direct";
+    assert(settings.video_codec==QOpenHDVideoHelper::VideoCodecH264);
+    assert(settings.enable_software_video_decoder==false);
+    assert(settings.dev_test_video_mode==QOpenHDVideoHelper::VideoTestMode::DISABLED);
+
+    m_rtp_receiver=std::make_unique<RTPReceiver>(5600,settings.video_codec==1);
+
+    reset_before_decode_start();
+    bool has_keyframe_data=false;
+    while(true){
+        if(request_restart){
+            request_restart=false;
+            goto finish;
+        }
+        if(m_rtp_receiver->config_has_changed_during_decode){
+            qDebug()<<"Break/Restart,config has changed during decode";
+            goto finish;
+        }
+        //std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+        if(!has_keyframe_data){
+             std::shared_ptr<std::vector<uint8_t>> keyframe_buf=nullptr;
+             while(keyframe_buf==nullptr){
+                 if(request_restart){
+                     request_restart=false;
+                     goto finish;
+                 }
+                 std::this_thread::sleep_for(std::chrono::milliseconds(100));
+                 keyframe_buf=m_rtp_receiver->get_config_data();
+             }
+             qDebug()<<"Got decode data (before keyframe)";
+             //RPIMMALDecoder::instance().initialize(keyframe_buf->data(),keyframe_buf->size(),640,480,30);
+             RPIMMalDecodeDisplay::instance().initialize(keyframe_buf->data(),keyframe_buf->size(),640,480,30);
+             has_keyframe_data=true;
+             continue;
+        }else{
+           std::shared_ptr<NALU> buf=nullptr;
+            while(buf==nullptr){
+                // do not peg the cpu completely here
+                std::this_thread::sleep_for(std::chrono::milliseconds(5));
+                if(request_restart){
+                    request_restart=false;
+                    goto finish;
+                }
+                buf=m_rtp_receiver->get_data();
+            }
+             //RPIMMALDecoder::instance().feed_frame(buf->getData(),buf->getSize());
+             RPIMMalDecodeDisplay::instance().feed_frame(buf->getData(),buf->getSize());
+             const auto delay=std::chrono::steady_clock::now()-buf->creationTime;
+             avg_parse_time.add(delay);
+             avg_parse_time.custom_print_in_intervals(std::chrono::seconds(3),[](const std::string name,const std::string message){
+                 qDebug()<<name.c_str()<<":"<<message.c_str();
+                 DecodingStatistcs::instance().set_parse_and_enqueue_time(message.c_str());
+             });
+             TextureRenderer::instance().clear_all_video_textures_next_frame();
+        }
+    }
+finish:
+    qDebug()<<"AVCodecDecoder::open_and_decode_until_error_custom_rtp_and_mmal_direct-end loop";
+    m_rtp_receiver=nullptr;
+}
+#endif
+
 
 void AVCodecDecoder::timestamp_add_fed(int64_t ts)
 {

@@ -99,6 +99,9 @@ private:
     bool create_decoder_context(const QOpenHDVideoHelper::VideoStreamConfig settings);
 private:
     void reset_before_decode_start();
+#ifdef HAVE_MMAL
+    void open_and_decode_until_error_custom_rtp_and_mmal_direct(const QOpenHDVideoHelper::VideoStreamConfig settings);
+#endif
 };
 
 #endif // AVCODEC_DECODER_H
