@@ -119,7 +119,7 @@ void RPIMMalDecodeDisplay::initialize(const uint8_t *config_data, const int conf
     CHECK_STATUS(m_status, "failed to commit format");
 
     m_status = mmal_port_format_commit(m_decoder->output[0]);
-    CHECK_STATUS(status, "failed to commit format");
+    CHECK_STATUS(m_status, "failed to commit format");
 
     m_decoder->input[0]->buffer_num = m_decoder->input[0]->buffer_num_min;
     m_decoder->input[0]->buffer_size = m_decoder->input[0]->buffer_size_min;
