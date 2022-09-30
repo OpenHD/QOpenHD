@@ -141,7 +141,7 @@ void RPIMMalDecodeDisplay::initialize(const uint8_t *config_data, const int conf
 
 
     // connect them up - this propagates port settings from outputs to inputs
-    m_status = mmal_graph_new_connection(graph, decoder->output[0], renderer->input[0],  0, NULL);
+    m_status = mmal_graph_new_connection(m_graph, m_decoder->output[0], m_renderer->input[0],  0, NULL);
     CHECK_STATUS(m_status, "failed to connect decoder to renderer");
 
     qDebug()<<"X3";
