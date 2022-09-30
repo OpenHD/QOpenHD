@@ -755,7 +755,7 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp(const QOpenHDVideoHe
                   std::this_thread::sleep_for(std::chrono::milliseconds(100));
                   keyframe_buf=m_rtp_receiver->get_config_data();
               }
-              qDebug()<<"Got decode data (before keyframe)";RPIMMalDecodeDisplay
+              qDebug()<<"Got decode data (before keyframe)";
 #ifdef HAVE_MMAL
               //RPIMMALDecoder::instance().initialize(keyframe_buf->data(),keyframe_buf->size(),640,480,30);
               RPIMMalDecodeDisplay::instance().initialize(keyframe_buf->data(),keyframe_buf->size(),640,480,30);
