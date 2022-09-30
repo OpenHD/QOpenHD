@@ -157,7 +157,7 @@ void RPIMMalDecodeDisplay::initialize(const uint8_t *config_data, const int conf
 void RPIMMalDecodeDisplay::feed_frame(const uint8_t *frame_data, const int frame_data_size)
 {
     qDebug()<<"RPIMMALDecoder::feed_frame";
-    if(true)return;
+    //if(true)return;
 
     MMAL_BUFFER_HEADER_T *buffer;
 
