@@ -19,6 +19,7 @@ struct CONTEXT_T {
     MMAL_STATUS_T status;
 };
 // MMAL Decode and MMAL Display all in one.
+// Based on https://github.com/t-moe/rpi_mmal_examples/blob/master/graph_decode_render.c
 class RPIMMalDecodeDisplay
 {
 public:
