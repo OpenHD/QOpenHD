@@ -122,6 +122,8 @@ void RPIMMalDecodeDisplay::initialize(const uint8_t *config_data, const int conf
     CHECK_STATUS(m_status, "failed to commit format");
 
     m_decoder->input[0]->buffer_num = m_decoder->input[0]->buffer_num_min;
+    qDebug()<<"Decoder buffer_num_min"<<m_decoder->input[0]->buffer_num_min;
+
     //m_decoder->input[0]->buffer_size = m_decoder->input[0]->buffer_size_min+1024;
     m_decoder->input[0]->buffer_size = 1024*1024;
 
@@ -152,6 +154,7 @@ void RPIMMalDecodeDisplay::initialize(const uint8_t *config_data, const int conf
     CHECK_STATUS(m_status, "failed to enable graph");
 
     qDebug()<<"RPIMMalDecodeDisplay::initialize::done";
+    updateDisplayRegion();
 }
 
 
@@ -188,4 +191,48 @@ void RPIMMalDecodeDisplay::feed_frame(const uint8_t *frame_data, const int frame
             break;
         }
     }
+}
+
+void RPIMMalDecodeDisplay::updateDisplayRegion()
+{
+    if(!display_region_needs_update){
+        return;
+    }
+    qDebug()<<"updateDisplayRegion::begin";
+    // We don't need to set anything in regards to source or dest recangle by using the
+    // "letterbox" mode - if the video ratio doesn't match the screen, black bars will be added
+    // while filling as much area as possible.
+    MMAL_STATUS_T status;
+    MMAL_DISPLAYREGION_T dr = {};
+    dr.hdr.id = MMAL_PARAMETER_DISPLAYREGION;
+    dr.hdr.size = sizeof(MMAL_DISPLAYREGION_T);
+    // We need to go lower than -127 since that is where QT decides to go on.
+    dr.set |= MMAL_DISPLAY_SET_LAYER;
+    dr.layer = -128;
+    //dr.layer = 0;
+    //status = mmal_port_parameter_get(m_InputPort, &dr.hdr);
+    // Not sure if that makes a difference, but tell the composer that his layer is
+    // fully opaque such that it doesn't need to compose anything below it.
+    dr.set |= MMAL_DISPLAY_SET_ALPHA;
+    dr.alpha= 255;
+
+    // In case the video doesn't exactly fill the screen (ratio mismatch)
+    // Add black bars to the side or to the top
+    dr.set |=  MMAL_DISPLAY_SET_MODE;
+    dr.mode =  MMAL_DISPLAY_MODE_LETTERBOX;
+
+    /*const int screen_width=2560;
+    const int screen_height=1440;
+    const int video_width=1920;
+    const int video_height=1080;*/
+
+    status = mmal_port_parameter_set(m_renderer->input[0], &dr.hdr);
+    if (status != MMAL_SUCCESS) {
+        qDebug()<<"X mmal_port_parameter_set error"<<mmal_status_to_string(status);
+        return;
+    }else{
+        qDebug()<<"X mmal set layer";
+    }
+    display_region_needs_update=false;
+    qDebug()<<"updateDisplayRegion::end";
 }

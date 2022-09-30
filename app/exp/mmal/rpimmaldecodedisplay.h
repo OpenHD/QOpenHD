@@ -41,6 +41,10 @@ public:
 
     MMAL_ES_FORMAT_T * format_in=0;
 
+private:
+    void updateDisplayRegion();
+    bool display_region_needs_update=true;
+
 };
 
 #endif // RPIMMALDECODEDISPLAY_H
