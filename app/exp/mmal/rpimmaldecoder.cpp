@@ -276,6 +276,12 @@ void RPIMMALDecoder::initialize(const uint8_t *config_data, const int config_dat
         return;
     }
 
+    m_status = mmal_port_enable(m_decoder->control, decoder_control_callback);
+    if (m_status != MMAL_SUCCESS) {
+        qDebug() << "failed to set controll callback in MMAL";
+        return;
+    }
+
     m_status = mmal_component_enable(m_decoder);
 
     if (m_status != MMAL_SUCCESS) {
