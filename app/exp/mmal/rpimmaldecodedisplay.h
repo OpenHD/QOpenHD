@@ -39,6 +39,8 @@ public:
     MMAL_COMPONENT_T *m_renderer=0;
     MMAL_POOL_T *m_pool_in = 0;
 
+    MMAL_ES_FORMAT_T * format_in=0;
+
 };
 
 #endif // RPIMMALDECODEDISPLAY_H
