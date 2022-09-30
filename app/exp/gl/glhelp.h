@@ -6,15 +6,11 @@
 // Crude hack for QT on the rpi. Fucking hell, how annyoing this QT crap with redefining opengl is !
 //#include "/usr/include/GLES2/gl2.h"
 //#include "/usr/include/GLES2/gl2ext.h"
-#include <GLES2/gl2.h>
+//#include <GLES2/gl2.h>
 //#include <GLES2/gl2ext.h>
 
-#ifndef GL_GLES_PROTOTYPES
-#include <GLES2/gl2ext.h>
-#endif
-
-//#include <GLES3/gl32.h>
-//#include <GLES3/gl3ext.h>
+#include <GLES3/gl32.h>
+#include <GLES3/gl3ext.h>
 
 #include <cassert>
 
@@ -44,7 +40,7 @@ EGLBoolean eglDestroyImageKHR(EGLDisplay dpy, EGLImageKHR image)
 }
 
 
-void glEGLImageTargetTexture2DOES(GLenum target, GLeglImageOES image) __attribute__((weak)); // May not be in libEGL symbol table, resolve manually :(
+/*void glEGLImageTargetTexture2DOES(GLenum target, GLeglImageOES image) __attribute__((weak)); // May not be in libEGL symbol table, resolve manually :(
 void glEGLImageTargetTexture2DOES(GLenum target, GLeglImageOES image)
 {
 	static PFNGLEGLIMAGETARGETTEXTURE2DOESPROC imageTargetTexture2DOES = 0;
@@ -53,7 +49,7 @@ void glEGLImageTargetTexture2DOES(GLenum target, GLeglImageOES image)
 		assert(imageTargetTexture2DOES);
 	}
 	imageTargetTexture2DOES(target, image);
-}
+}*/
 /// END Gl Extensions --------------------------------------------------
 
 

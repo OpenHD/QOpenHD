@@ -225,7 +225,7 @@ bool GL_VideoRenderer::update_texture_egl_external(AVFrame* frame) {
   if(egl_frame_texture.texture==0){
 	glGenTextures(1, &egl_frame_texture.texture);
   }
-  glEnable(GL_TEXTURE_EXTERNAL_OES);
+  /*glEnable(GL_TEXTURE_EXTERNAL_OES);
   glBindTexture(GL_TEXTURE_EXTERNAL_OES, egl_frame_texture.texture);
   glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -233,7 +233,7 @@ bool GL_VideoRenderer::update_texture_egl_external(AVFrame* frame) {
   // I do not know exactly how that works, but we seem to be able to immediately delete the EGL image, as long as we don't give the frame
   // back to the decoder I assume
   eglDestroyImageKHR(egl_display, image);
-  egl_frame_texture.has_valid_image= true;
+  egl_frame_texture.has_valid_image= true;*/
   return true;
 }
 
