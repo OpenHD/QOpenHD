@@ -6,7 +6,7 @@
 #include "../color_helper.h"
 #include <chrono>
 
-static EGLint texgen_attrs[] = {
+/*static EGLint texgen_attrs[] = {
 	EGL_DMA_BUF_PLANE0_FD_EXT,
 	EGL_DMA_BUF_PLANE0_OFFSET_EXT,
 	EGL_DMA_BUF_PLANE0_PITCH_EXT,
@@ -22,7 +22,7 @@ static EGLint texgen_attrs[] = {
 	EGL_DMA_BUF_PLANE2_PITCH_EXT,
 	EGL_DMA_BUF_PLANE2_MODIFIER_LO_EXT,
 	EGL_DMA_BUF_PLANE2_MODIFIER_HI_EXT,
-};
+};*/
 
 static void create_rgba_texture(GLuint& tex_id,uint32_t color_rgba){
   assert(tex_id==0);
@@ -170,7 +170,7 @@ void GL_VideoRenderer::update_texture_cuda(AVFrame *frame) {
 bool GL_VideoRenderer::update_texture_egl_external(AVFrame* frame) {
   assert(frame);
   assert(frame->format==AV_PIX_FMT_DRM_PRIME);
-  EGLDisplay egl_display=eglGetCurrentDisplay();
+  /*EGLDisplay egl_display=eglGetCurrentDisplay();
   assert(egl_display);
   // We can now also give the frame back to av, since we are updating to a new one.
   if(egl_frame_texture.av_frame!= nullptr){
@@ -225,7 +225,7 @@ bool GL_VideoRenderer::update_texture_egl_external(AVFrame* frame) {
   if(egl_frame_texture.texture==0){
 	glGenTextures(1, &egl_frame_texture.texture);
   }
-  /*glEnable(GL_TEXTURE_EXTERNAL_OES);
+  glEnable(GL_TEXTURE_EXTERNAL_OES);
   glBindTexture(GL_TEXTURE_EXTERNAL_OES, egl_frame_texture.texture);
   glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
