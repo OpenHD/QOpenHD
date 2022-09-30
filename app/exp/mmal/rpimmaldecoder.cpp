@@ -38,6 +38,23 @@ static void output_callback(MMAL_PORT_T *port, MMAL_BUFFER_HEADER_T *buffer){
     RPIMMALDecoder* ctx=(RPIMMALDecoder*)port->userdata;
     ctx->on_output_callback(port,buffer);
 }
+// Callback from the control port.
+// Component is sending us an event.
+static void decoder_control_callback(MMAL_PORT_T *port, MMAL_BUFFER_HEADER_T *buffer){
+    switch (buffer->cmd){
+        case MMAL_EVENT_EOS:
+            break;
+        case MMAL_EVENT_ERROR:
+            qDebug()<<"decoder_control_callback error";
+            break;
+        default:
+            break;
+    }
+    /* Done with the event, recycle it */
+    mmal_buffer_header_release(buffer);
+    qDebug("control cb. status %s\n",mmal_status_to_string(*(MMAL_STATUS_T*)buffer->data));
+}
+
 
 void RPIMMALDecoder::on_input_callback(MMAL_PORT_T *port, MMAL_BUFFER_HEADER_T *buffer)
 {
