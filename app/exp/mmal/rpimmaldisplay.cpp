@@ -102,7 +102,7 @@ void RpiMMALDisplay::init(int video_width,int video_height)
    }
 
    status = mmal_port_enable(m_Renderer->control, render_control_callback);
-   if (m_status != MMAL_SUCCESS) {
+   if (status != MMAL_SUCCESS) {
        qDebug() << "failed to set controll callback in MMAL";
        return;
    }
