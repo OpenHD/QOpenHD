@@ -11,6 +11,7 @@
 #include <memory>
 
 // MMAL decode, for some reason I couldn't figure out how to link this instead of the avcodec mmal wrapper to the "RpiMMALDisplay" code
+// Aka this class works (decode) but I cannot display the generated data (yet) which is why this code is unused
 class RPIMMALDecoder
 {
 public:
