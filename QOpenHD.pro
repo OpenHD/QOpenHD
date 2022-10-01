@@ -21,6 +21,9 @@ include(git.pri)
 # since it is a library "specifically for qt"
 include(lib/lqtutils_master/lqtutils.pri)
 
+# shamelessly taken from moonlight-qt
+include(lib/h264bitstream/h264bitstream.pri)
+
 CONFIG(debug, debug|release) {
     DESTDIR = $${OUT_PWD}/debug
 
@@ -241,6 +244,7 @@ DISTFILES += \
     app/videostreaming/legacy/README.md \
     extra_build_qmake.sh \
     inc/osd/Readme.md \
+    lib/h264nal/h264nal.pri \
     qml/qtquickcontrols2.conf \
     qml/resources/README.md \
     qml/ui/ConfigPopup/README.md \
