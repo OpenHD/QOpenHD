@@ -59,7 +59,7 @@ struct VideoStreamConfig{
     std::string dev_custom_pipeline="";
     //
     int dev_limit_fps_on_test_file=-1;
-    bool dev_use_low_latency_parser_when_possible=false;
+    bool dev_use_low_latency_parser_when_possible=true;
     // 2 configs are equal if all members are exactly the same.
     bool operator==(const VideoStreamConfig &o) const {
        return this->dev_test_video_mode == o.dev_test_video_mode && this->video_port == o.video_port && this->video_codec== o.video_codec
@@ -85,7 +85,7 @@ static VideoStreamConfig read_from_settings(){
     //
     _videoStreamConfig.dev_enable_custom_pipeline=settings.value("dev_enable_custom_pipeline",false).toBool();
     _videoStreamConfig.dev_limit_fps_on_test_file=settings.value("dev_limit_fps_on_test_file",-1).toInt();
-    _videoStreamConfig.dev_use_low_latency_parser_when_possible=settings.value("dev_use_low_latency_parser_when_possible",false).toBool();
+    _videoStreamConfig.dev_use_low_latency_parser_when_possible=settings.value("dev_use_low_latency_parser_when_possible",true).toBool();
     // QML text input sucks, so we read a file. Not ideal, but for testing only anyways
     {
         _videoStreamConfig.dev_custom_pipeline="";

@@ -789,7 +789,6 @@ finish:
      avcodec_free_context(&decoder_ctx);
 }
 
-#define HAVE_MMAL
 #ifdef HAVE_MMAL
 void AVCodecDecoder::open_and_decode_until_error_custom_rtp_and_mmal_direct(const QOpenHDVideoHelper::VideoStreamConfig settings)
 {

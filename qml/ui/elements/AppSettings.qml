@@ -25,7 +25,7 @@ Settings {
     //WARNING: THIS ALLOWS THE USER TO MAKE BREAKING CHANGES
     property bool dev_show_whitelisted_params: false
 
-    property bool app_background_transparent: false
+    property bool app_background_transparent: true
 
     property bool enable_software_video_decoder: false
     // enably a test video source instead of decoding actual video data, if supported by the platform
@@ -45,7 +45,7 @@ Settings {
     property int dev_limit_fps_on_test_file: -1
     property bool dev_draw_alternating_rgb_dummy_frames: false;
     // r.n only works on h264 / h265 and on select video stream(s)
-    property bool dev_use_low_latency_parser_when_possible: false;
+    property bool dev_use_low_latency_parser_when_possible: true;
 
     property bool enable_speech: true
     property bool enable_imperial: false
