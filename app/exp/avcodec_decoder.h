@@ -92,6 +92,9 @@ private:
 private:
     std::unique_ptr<RTPReceiver> m_rtp_receiver=nullptr;
 private:
+    // Custom rtp parse (and therefore limited to h264 and h265)
+    // AND always goes the avcodec decode route (SW decode or avcodec mmal decode).
+    // Used for SW decode, for MMAL h264 we go the custom rtp WITHOUT avcodec route by default !
     void open_and_decode_until_error_custom_rtp(const QOpenHDVideoHelper::VideoStreamConfig settings);
     bool feed_rtp_frame_if_available();
 private:
