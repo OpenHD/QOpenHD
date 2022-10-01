@@ -11,23 +11,14 @@
 #ifndef COMMON_VIDEO_H264_SPS_PARSER_H_
 #define COMMON_VIDEO_H264_SPS_PARSER_H_
 
-#if __cplusplus >= 201703L
-    #include <optional>
-    namespace opt = std;
-    #define RETURN_EMPTY_ON_FAIL(x) \
-      if (!(x)) {                   \
-        return std::optional::nullopt;       \
-      }
-#else
-    #include <boost/optional.hpp>
-    #include <boost/optional/optional.hpp>
-    namespace opt = boost;
-    #define RETURN_EMPTY_ON_FAIL(x) \
-      if (!(x)) {                   \
-        return boost::none;       \
-      }
-    #define OPT_NONE boost::none
-#endif
+#include <optional>
+namespace opt = std;
+#define RETURN_EMPTY_ON_FAIL(x) \
+  if (!(x)) {                   \
+    return std::optional::nullopt;       \
+  }
+
+#include <cstdint>
 
 namespace rtc {
 class BitBuffer;
