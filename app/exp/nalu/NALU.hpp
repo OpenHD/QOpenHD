@@ -137,7 +137,8 @@ public:
    }
    std::array<int,2> sps_get_width_height()const{
        assert(isSPS());
-       auto _sps = webrtc::SpsParser::ParseSps(getData() + webrtc::H264::kNaluTypeSize, getSize() - webrtc::H264::kNaluTypeSize);
+       const auto offset_for_webrtc=4+webrtc::H264::kNaluTypeSize;
+       auto _sps = webrtc::SpsParser::ParseSps(getData() + offset_for_webrtc, getSize() - offset_for_webrtc);
        if(_sps){
            const int width=_sps->width;
            const int height=_sps->height;
