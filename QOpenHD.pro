@@ -22,7 +22,11 @@ include(git.pri)
 include(lib/lqtutils_master/lqtutils.pri)
 
 # shamelessly taken from moonlight-qt
-include(lib/h264bitstream/h264bitstream.pro)
+#include(lib/h264bitstream/h264bitstream/h264bitstream.pro)
+
+# just using the something something webrtc from stephen was the easiest solution.
+include(lib/h264/h264.pri)
+
 
 CONFIG(debug, debug|release) {
     DESTDIR = $${OUT_PWD}/debug
