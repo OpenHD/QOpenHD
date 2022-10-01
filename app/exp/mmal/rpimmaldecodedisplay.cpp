@@ -77,7 +77,7 @@ bool RPIMMalDecodeDisplay::initialize(const uint8_t *config_data, const int conf
 
     //
     // Set format of video decoder input port
-    format_in = m_decoder->input[0]->format;
+    MMAL_ES_FORMAT_T* format_in = m_decoder->input[0]->format;
     format_in->type = MMAL_ES_TYPE_VIDEO;
     format_in->encoding = MMAL_ENCODING_H264;
     format_in->es->video.width = width;
