@@ -21,6 +21,8 @@
     #define OPT_NONE boost::none
 #endif
 
+#include <cstdint>
+
 namespace rtc {
 class BitBuffer;
 }
