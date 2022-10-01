@@ -6,7 +6,6 @@
 #define HELLO_DRMPRIME__GL_SHADERS_H_
 
 extern "C" {
-#include <GLES2/gl2.h>
 #include "glhelp.h"
 }
 #include <string>

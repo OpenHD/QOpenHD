@@ -5,30 +5,23 @@
 
 #include <qdebug.h>
 
-
-static void control_callback(MMAL_PORT_T *port, MMAL_BUFFER_HEADER_T *buffer)
-{
-   struct CONTEXT_T *ctx = (struct CONTEXT_T *)port->userdata;
-
-   switch (buffer->cmd)
-   {
-   case MMAL_EVENT_EOS:
-      /* Only sink component generate EOS events */
-      break;
-   case MMAL_EVENT_ERROR:
-       qDebug()<<"control_callback got error";
-      /* Something went wrong. Signal this to the application */
-      //ctx->status = *(MMAL_STATUS_T *)buffer->data;
-      break;
-   default:
-      break;
-   }
-
-   /* Done with the event, recycle it */
-   mmal_buffer_header_release(buffer);
-
-   //qDebug()<<"control cb. status"<< ctx->status;
+// Callback from the control port.
+// Component is sending us an event.
+static void render_control_callback(MMAL_PORT_T *port, MMAL_BUFFER_HEADER_T *buffer){
+    switch (buffer->cmd){
+        case MMAL_EVENT_EOS:
+            break;
+        case MMAL_EVENT_ERROR:
+            qDebug()<<"decoder_control_callback error";
+            break;
+        default:
+            break;
+    }
+    /* Done with the event, recycle it */
+    mmal_buffer_header_release(buffer);
+    qDebug("control cb. status %s\n",mmal_status_to_string(*(MMAL_STATUS_T*)buffer->data));
 }
+
 
 RpiMMALDisplay::RpiMMALDisplay()
 {
@@ -46,8 +39,9 @@ bool RpiMMALDisplay::prepareDecoderContext(AVCodecContext *context, AVDictionary
     // FFmpeg defaults this to 10 which is too large to fit in the default 64 MB VRAM split.
     // Reducing to 2 seems to work fine for our bitstreams (max of 1 buffered frame needed).
     //av_dict_set_int(options, "extra_buffers", 2, 0);
-    // We set the GPU memory, so we have space, mre buffers here don#t hurt and can provide a benefit
-    // for some streams
+    // Consti10: We set the GPU memory, so we don't need to be scared, and also OpenHD does
+    // not specify in any way that the stream generated at the air needs to have no frame buffering
+    // (Since a webcam for example might not offer this option).
     av_dict_set_int(options, "extra_buffers", 10, 0);
 
     // MMAL seems to dislike certain initial width and height values, but it seems okay
@@ -76,6 +70,7 @@ void RpiMMALDisplay::init(int video_width,int video_height)
 
    m_InputPort = m_Renderer->input[0];
 
+   // For some reason we need that ?!
    m_InputPort->format->encoding = MMAL_ENCODING_OPAQUE;
    m_InputPort->format->es->video.width = video_width;
    m_InputPort->format->es->video.height = video_width;
@@ -105,6 +100,14 @@ void RpiMMALDisplay::init(int video_width,int video_height)
         qDebug()<<"mmal_port_enable"<<mmal_status_to_string(status);
        return;
    }
+
+   status = mmal_port_enable(m_Renderer->control, render_control_callback);
+   if (status != MMAL_SUCCESS) {
+       qDebug() << "failed to set controll callback in MMAL";
+       return;
+   }
+
+
    updateDisplayRegion();
    qDebug()<<"MMAL ready X?!";
 }
@@ -122,10 +125,10 @@ void RpiMMALDisplay::cleanup()
 
 void RpiMMALDisplay::updateDisplayRegion()
 {
-    qDebug()<<"updateDisplayRegion::begin";
     if(!display_region_needs_update){
         return;
     }
+    qDebug()<<"updateDisplayRegion::begin";
     // We don't need to set anything in regards to source or dest recangle by using the
     // "letterbox" mode - if the video ratio doesn't match the screen, black bars will be added
     // while filling as much area as possible.
@@ -148,11 +151,10 @@ void RpiMMALDisplay::updateDisplayRegion()
     dr.set |=  MMAL_DISPLAY_SET_MODE;
     dr.mode =  MMAL_DISPLAY_MODE_LETTERBOX;
 
-    const int screen_width=2560;
+    /*const int screen_width=2560;
     const int screen_height=1440;
     const int video_width=1920;
-    const int video_height=1080;
-
+    const int video_height=1080;*/
 
     status = mmal_port_parameter_set(m_InputPort, &dr.hdr);
     if (status != MMAL_SUCCESS) {
@@ -169,6 +171,10 @@ void RpiMMALDisplay::display_frame(AVFrame *frame)
 {
     assert(frame);
     assert(frame->format==AV_PIX_FMT_MMAL);
+    if(!has_been_initialized){
+        init(frame->width,frame->height);
+        has_been_initialized=true;
+    }
     MMAL_BUFFER_HEADER_T* buffer = (MMAL_BUFFER_HEADER_T*)frame->data[3];
     display_mmal_frame(buffer);
 }
@@ -182,19 +188,39 @@ void RpiMMALDisplay::display_mmal_frame(MMAL_BUFFER_HEADER_T *buffer)
 
     status = mmal_port_send_buffer(m_InputPort, buffer);
     if (status != MMAL_SUCCESS) {
-        qDebug()<<"mmal_port_send_buffer() failed: "<<mmal_status_to_string(status);
+        qDebug()<<"RpiMMALDisplay::display_mmal_frame::send_buffer error:"<<mmal_status_to_string(status);
     }
     else {
+        qDebug()<<"RpiMMALDisplay::display_mmal_frame::send_buffer success";
         // Prevent the buffer from being freed during av_frame_free()
         // until rendering is complete. The reference is dropped in
         // InputPortCallback().
         mmal_buffer_header_acquire(buffer);
     }
-    qDebug()<<"RpiMMALDisplay::display_mmal_frame";
+    //qDebug()<<"RpiMMALDisplay::display_mmal_frame";
+}
+
+void RpiMMALDisplay::extra_init(int width, int height)
+{
+    if(!has_been_initialized){
+        init(width,height);
+        has_been_initialized=true;
+    }
+}
+
+void RpiMMALDisplay::extra_set_format(MMAL_ES_FORMAT_T *format_out)
+{
+    mmal_format_full_copy(m_InputPort->format, format_out);
+    auto status = mmal_port_format_commit(m_InputPort);
+    if (status != MMAL_SUCCESS) {
+        qDebug()<<"RpiMMALDisplay::extra_set_format::error"<<mmal_status_to_string(status);
+       return;
+    }
+    qDebug()<<"RpiMMALDisplay::extra_set_format::success"<<mmal_status_to_string(status);
 }
 
 void RpiMMALDisplay::InputPortCallback(MMAL_PORT_T *port, MMAL_BUFFER_HEADER_T *buffer)
 {
-    qDebug()<<"RpiMMALDisplay::InputPortCallback";
+    //qDebug()<<"RpiMMALDisplay::InputPortCallback";
     mmal_buffer_header_release(buffer);
 }

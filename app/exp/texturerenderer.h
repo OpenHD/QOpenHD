@@ -5,7 +5,6 @@
 #include <QObject>
 #include <QtQuick/QQuickItem>
 #include <QtQuick/QQuickWindow>
-#include <QOpenGLTexture>
 #include <memory>
 #include <chrono>
 #include <mutex>

@@ -3,8 +3,15 @@
 
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
+// Crude hack for QT on the rpi. Fucking hell, how annyoing this QT crap with redefining opengl is !
+//#include "/usr/include/GLES2/gl2.h"
+//#include "/usr/include/GLES2/gl2ext.h"
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
+
+//#include <GLES3/gl32.h>
+//#include <GLES3/gl3ext.h>
+
 #include <cassert>
 
 /// Some gl extensions that don't seem to be part of raspberry gl. 

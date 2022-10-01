@@ -200,6 +200,30 @@ BaseWidget {
 
         ColumnLayout{
             width:400
+            // QT main thread render time (E.g. OpenGL frame time), independent of decoding
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("QT FT:")
+                    color: "white"
+                    font.bold: true
+                    height: parent.height
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Text {
+                    text: _qrenderstats.main_render_stats
+                    color: "white";
+                    font.bold: true;
+                    height: parent.height
+                    font.pixelSize: detailPanelFontPixels;
+                    anchors.right: parent.right
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
+            // Decoding related
             Item {
                 width: parent.width
                 height: 32
@@ -214,6 +238,28 @@ BaseWidget {
                 }
                 Text {
                     text: _decodingStatistics.n_dropped_frames+":"+_decodingStatistics.n_rendered_frames
+                    color: "white";
+                    font.bold: true;
+                    height: parent.height
+                    font.pixelSize: detailPanelFontPixels;
+                    anchors.right: parent.right
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("Parse&EnqT:")
+                    color: "white"
+                    font.bold: true
+                    height: parent.height
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Text {
+                    text: _decodingStatistics.parse_and_enqueue_time
                     color: "white";
                     font.bold: true;
                     height: parent.height
@@ -265,30 +311,7 @@ BaseWidget {
                     anchors.right: parent.right
                     verticalAlignment: Text.AlignVCenter
                 }
-            }
-            // Temporary
-            Item {
-                width: parent.width
-                height: 32
-                Text {
-                    text: qsTr("R:")
-                    color: "white"
-                    font.bold: true
-                    height: parent.height
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Text {
-                    text: _qrenderstats.main_render_stats
-                    color: "white";
-                    font.bold: true;
-                    height: parent.height
-                    font.pixelSize: detailPanelFontPixels;
-                    anchors.right: parent.right
-                    verticalAlignment: Text.AlignVCenter
-                }
-            }
+            }            
             Item {
                 width: parent.width
                 height: 32

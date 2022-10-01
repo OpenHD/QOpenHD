@@ -2163,6 +2163,32 @@ Item {
                             onCheckedChanged: settings.dev_draw_alternating_rgb_dummy_frames = checked
                         }
                     }
+                    Rectangle {
+                        width: parent.width
+                        height: rowHeight
+                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+
+                        Text {
+                            text: qsTr("dev_use_low_latency_parser_when_possible")
+                            font.weight: Font.Bold
+                            font.pixelSize: 13
+                            anchors.leftMargin: 8
+                            verticalAlignment: Text.AlignVCenter
+                            anchors.verticalCenter: parent.verticalCenter
+                            width: 224
+                            height: elementHeight
+                            anchors.left: parent.left
+                        }
+                        Switch {
+                            width: 32
+                            height: elementHeight
+                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                            anchors.right: parent.right
+                            anchors.verticalCenter: parent.verticalCenter
+                            checked: settings.dev_use_low_latency_parser_when_possible
+                            onCheckedChanged: settings.dev_use_low_latency_parser_when_possible = checked
+                        }
+                    }
                     // temporary end
                 }
             }

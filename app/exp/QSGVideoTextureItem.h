@@ -6,8 +6,6 @@
 
 #include <QtQuick/QQuickItem>
 #include <QtQuick/QQuickWindow>
-#include <QOpenGLShaderProgram>
-#include <QOpenGLFunctions>
 #include <QTimer>
 
 #include "texturerenderer.h"

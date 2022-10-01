@@ -16,6 +16,7 @@
 class DecodingStatistcs : public QObject
 {
     Q_OBJECT
+    L_RW_PROP(QString, parse_and_enqueue_time, set_parse_and_enqueue_time, "?")
     L_RW_PROP(QString, decode_time, set_decode_time, "?")
     L_RW_PROP(QString, decode_and_render_time, set_decode_and_render_time, "?")
     L_RW_PROP(int, n_dropped_frames, set_n_dropped_frames, -1)

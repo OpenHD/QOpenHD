@@ -93,7 +93,12 @@ packagesExist(mmal) {
    PKGCONFIG += mmal
    CONFIG += mmal
 
-   PKCONFIG += mmal_util mmal_core mmal_components
+   PKCONFIG += mmal_core
+   PKCONFIG += mmal_components
+   PKCONFIG += mmal_util
+   # crude, looks like the mmal headers pull in those paths / need them
+   INCLUDEPATH += /opt/vc/include/
+   INCLUDEPATH += /opt/vc/include/interface/mmal
 }
 
 # All Generic files. NOTE: During development, when you create new files, QT Creater will add them to the
@@ -103,6 +108,8 @@ SOURCES += \
     app/exp/QSGVideoTextureItem.cpp \
     app/exp/gl/gl_shaders.cpp \
     app/exp/gl/gl_videorenderer.cpp \
+    app/exp/rtp/ParseRTP.cpp \
+    app/exp/rtp/rtpreceiver.cpp \
     app/logging/logmessagesmodel.cpp \
     app/openhd_systems/aohdsystem.cpp \
     app/qopenhd.cpp \
@@ -112,6 +119,7 @@ SOURCES += \
     app/videostreaming/decodingstatistcs.cpp \
     app/exp/texturerenderer.cpp \
     app/exp/avcodec_decoder.cpp \
+    app/common_consti/UDPReceiver.cpp \
     # xx
     #app/exp/drm_kms/drmprime_out.cpp \
 
@@ -119,6 +127,11 @@ HEADERS += \
     app/exp/QSGVideoTextureItem.h \
     app/exp/gl/gl_shaders.h \
     app/exp/gl/gl_videorenderer.h \
+    app/exp/nalu/KeyFrameFinder.hpp \
+    app/exp/nalu/NALUnitType.hpp \
+    app/exp/rtp/ParseRTP.h \
+    app/exp/rtp/RTP.hpp \
+    app/exp/rtp/rtpreceiver.h \
     app/logging/logmessagesmodel.h \
     app/openhd_systems/aohdsystem.h \
     app/openhd_systems/wifiadapter.h \
@@ -134,6 +147,7 @@ HEADERS += \
     app/videostreaming/decodingstatistcs.h \
     app/exp/texturerenderer.h \
     app/exp/avcodec_decoder.h \
+    app/common_consti/UDPReceiver.h \
     # xx
     #app/exp/drm_kms/drmprime_out.h \
 
@@ -216,6 +230,7 @@ DISTFILES += \
     android/src/org/freedesktop/gstreamer/androidmedia/GstAmcOnFrameAvailableListener.java \
     app/adsb/README.md \
     app/exp/gl/README.md \
+    app/exp/mmal/README.md \
     app/openhd_systems/README.md \
     app/osd_extra/Readme.txt \
     app/platform/README.md \
@@ -438,10 +453,14 @@ mmal {
 
     DEFINES += HAVE_MMAL
 
-    SOURCES += app/exp/mmal/rpimmaldisplay.cpp
+    SOURCES += app/exp/mmal/rpimmaldisplay.cpp \
+        app/exp/mmal/rpimmaldecoder.cpp \
+        app/exp/mmal/rpimmaldecodedisplay.cpp \
 
     HEADERS += \
         app/exp/mmal/rpimmaldisplay.h \
+        app/exp/mmal/rpimmaldecoder.h \
+        app/exp/mmal/rpimmaldecodedisplay.h \
 }
 
 

@@ -8,6 +8,7 @@
 
 #include <sstream>
 #include <fstream>
+#include <qfileinfo.h>
 
 namespace QOpenHDVideoHelper{
 
@@ -42,11 +43,7 @@ static VideoTestMode videoTestModeFromInt(int value){
  * QOpenHD video stream, except the output mechanism (can be int qt via GL, drm/kms, ...)
  */
 struct VideoStreamConfig{
-    // when set to true, overwrites the rtp decoding, use a raw test video source (if possible). Only for developers.
-    // 0 = disabled
-    // 1 = raw video
-    // 2 = ra video encode and decode
-    // >2 disabled
+    // used for testing and development.
     VideoTestMode dev_test_video_mode = VideoTestMode::DISABLED;
     // the port where to receive rtp video data from
     int video_port = 0;
@@ -62,13 +59,15 @@ struct VideoStreamConfig{
     std::string dev_custom_pipeline="";
     //
     int dev_limit_fps_on_test_file=-1;
+    bool dev_use_low_latency_parser_when_possible=true;
     // 2 configs are equal if all members are exactly the same.
     bool operator==(const VideoStreamConfig &o) const {
        return this->dev_test_video_mode == o.dev_test_video_mode && this->video_port == o.video_port && this->video_codec== o.video_codec
                && this->enable_software_video_decoder==o.enable_software_video_decoder && this->dev_jetson==o.dev_jetson &&
                this->dev_enable_custom_pipeline==o.dev_enable_custom_pipeline &&
                this->dev_custom_pipeline==o.dev_custom_pipeline &&
-               this->dev_limit_fps_on_test_file == o.dev_limit_fps_on_test_file;
+               this->dev_limit_fps_on_test_file == o.dev_limit_fps_on_test_file &&
+               this->dev_use_low_latency_parser_when_possible == o.dev_use_low_latency_parser_when_possible;
      }
     bool operator !=(const VideoStreamConfig &o) const {
         return !(*this==o);
@@ -86,6 +85,7 @@ static VideoStreamConfig read_from_settings(){
     //
     _videoStreamConfig.dev_enable_custom_pipeline=settings.value("dev_enable_custom_pipeline",false).toBool();
     _videoStreamConfig.dev_limit_fps_on_test_file=settings.value("dev_limit_fps_on_test_file",-1).toInt();
+    _videoStreamConfig.dev_use_low_latency_parser_when_possible=settings.value("dev_use_low_latency_parser_when_possible",true).toBool();
     // QML text input sucks, so we read a file. Not ideal, but for testing only anyways
     {
         _videoStreamConfig.dev_custom_pipeline="";
@@ -117,6 +117,50 @@ static std::string get_default_openhd_test_file(const VideoCodec video_codec){
        in_filename<<"uv_640x480.mjpeg";
     }
     return in_filename.str();
+}
+
+//
+
+// FFMPEG needs a ".sdp" file to do rtp udp h264,h265 or mjpeg
+// For MJPEG we map mjpeg to 26 (mjpeg), for h264/5 we map h264/5 to 96 (general)
+static std::string create_udp_rtp_sdp_file(const QOpenHDVideoHelper::VideoCodec& video_codec){
+    std::stringstream ss;
+    ss<<"c=IN IP4 127.0.0.1\n";
+    //ss<<"v=0\n";
+    //ss<<"t=0 0\n";
+    //ss<<"width=1280\n";
+    //ss<<"height=720\n";
+    if(video_codec==QOpenHDVideoHelper::VideoCodec::VideoCodecMJPEG){
+         ss<<"m=video 5600 RTP/UDP 26\n";
+        ss<<"a=rtpmap:26 JPEG/90000\n";
+    }else{
+        ss<<"m=video 5600 RTP/UDP 96\n";
+        if(video_codec==QOpenHDVideoHelper::VideoCodec::VideoCodecH264){
+            ss<<"a=rtpmap:96 H264/90000\n";
+        }else{
+            assert(video_codec==QOpenHDVideoHelper::VideoCodec::VideoCodecH265);
+            ss<<"a=rtpmap:96 H265/90000\n";
+        }
+    }
+    return ss.str();
+}
+static void write_file_to_tmp(const std::string filename,const std::string content){
+    std::ofstream _t(filename);
+     _t << content;
+     _t.close();
+}
+static void write_udp_rtp_sdp_files_to_tmp(){
+    if(QFileInfo::exists("/tmp/rtp_h264.sdp")&&QFileInfo::exists("/tmp/rtp_h265.sdp")&&QFileInfo::exists("/tmp/rtp_mjpeg.sdp"))return;
+    write_file_to_tmp("/tmp/rtp_h264.sdp",create_udp_rtp_sdp_file(QOpenHDVideoHelper::VideoCodec::VideoCodecH264));
+    write_file_to_tmp("/tmp/rtp_h265.sdp",create_udp_rtp_sdp_file(QOpenHDVideoHelper::VideoCodec::VideoCodecH265));
+    write_file_to_tmp("/tmp/rtp_mjpeg.sdp",create_udp_rtp_sdp_file(QOpenHDVideoHelper::VideoCodec::VideoCodecMJPEG));
+}
+static std::string get_udp_rtp_sdp_filename(const QOpenHDVideoHelper::VideoCodec& video_codec){
+    // Make sure the sdp files exist (writing a file and then giving it to avcodec is easier than other alternatives).
+    write_udp_rtp_sdp_files_to_tmp();
+    if(video_codec==QOpenHDVideoHelper::VideoCodec::VideoCodecH264)return "/tmp/rtp_h264.sdp";
+    if(video_codec==QOpenHDVideoHelper::VideoCodec::VideoCodecH265)return "/tmp/rtp_h265.sdp";
+    return "/tmp/rtp_mjpeg.sdp";
 }
 
 }
