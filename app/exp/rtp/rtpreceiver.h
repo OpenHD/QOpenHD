@@ -23,6 +23,9 @@ public:
 
     std::shared_ptr<std::vector<uint8_t>> get_config_data();
     bool config_has_changed_during_decode=false;
+    // get width height using the config data (SPS)
+    // do not call that if there is no config data
+    std::array<int,2> sps_get_width_height();
 private:
     std::unique_ptr<UDPReceiver> m_udp_receiver=nullptr;
     std::unique_ptr<RTPDecoder> m_rtp_decoder=nullptr;

@@ -9,6 +9,7 @@
 #include <vector>
 #include <memory>
 #include <qdebug.h>
+#include <array>
 
 // Takes a continuous stream of NALUs and save SPS / PPS data
 // For later use
@@ -91,6 +92,10 @@ public:
         SPS=nullptr;
         PPS=nullptr;
         VPS=nullptr;
+    }
+    std::array<int,2> sps_get_width_height()const{
+        assert(SPS!=nullptr);
+        return {640,480};
     }
 public:
     static bool compare(const NALU& n1,const NALU& n2){

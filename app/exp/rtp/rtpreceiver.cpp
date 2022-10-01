@@ -52,6 +52,11 @@ std::shared_ptr<std::vector<uint8_t>> RTPReceiver::get_config_data()
      return nullptr;
 }
 
+std::array<int, 2> RTPReceiver::sps_get_width_height(){
+    std::lock_guard<std::mutex> lock(m_data_mutex);
+    return m_keyframe_finder->sps_get_width_height();
+}
+
 void RTPReceiver::queue_data(const uint8_t* nalu_data,const std::size_t nalu_data_len)
 {
     std::lock_guard<std::mutex> lock(m_data_mutex);

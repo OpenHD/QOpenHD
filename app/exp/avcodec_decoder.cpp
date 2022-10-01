@@ -117,7 +117,17 @@ void AVCodecDecoder::constant_decode()
              do_custom_rtp=false;
          }
          if(do_custom_rtp){
+#ifdef HAVE_MMAL
+             if(settings.dev_test_video_mode==QOpenHDVideoHelper::VideoTestMode::DISABLED
+                     && settings.enable_software_video_decoder==false
+                     && settings.video_codec==QOpenHDVideoHelper::VideoCodecH264){
+                 open_and_decode_until_error_custom_rtp_and_mmal_direct(settings);
+             }else{
+                 open_and_decode_until_error_custom_rtp(settings);
+             }
+#else
              open_and_decode_until_error_custom_rtp(settings);
+#endif
          }else{
              open_and_decode_until_error(settings);
          }
@@ -661,11 +671,6 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp(const QOpenHDVideoHe
          fprintf(stderr, "Codec not found\n");
          exit(1);
      }
-     parser = av_parser_init(decoder->id);
-     if (!parser) {
-         fprintf(stderr, "parser not found\n");
-         exit(1);
-     }
      // ----------------------
      bool use_pi_hw_decode=false;
      if (decoder->id == AV_CODEC_ID_H264) {
@@ -756,17 +761,10 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp(const QOpenHDVideoHe
                   keyframe_buf=m_rtp_receiver->get_config_data();
               }
               qDebug()<<"Got decode data (before keyframe)";
-#ifdef HAVE_MMAL
-              //RPIMMALDecoder::instance().initialize(keyframe_buf->data(),keyframe_buf->size(),640,480,30);
-              RPIMMalDecodeDisplay::instance().initialize(keyframe_buf->data(),keyframe_buf->size(),640,480,30);
-              has_keyframe_data=true;
-
-#else
               pkt->data=keyframe_buf->data();
               pkt->size=keyframe_buf->size();
               decode_config_data(pkt);
               has_keyframe_data=true;
-#endif
               continue;
          }else{
             std::shared_ptr<NALU> buf=nullptr;
@@ -779,23 +777,11 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp(const QOpenHDVideoHe
                  }
                  buf=m_rtp_receiver->get_data();
              }
-#ifdef HAVE_MMAL
-              //RPIMMALDecoder::instance().feed_frame(buf->getData(),buf->getSize());
-              RPIMMalDecodeDisplay::instance().feed_frame(buf->getData(),buf->getSize());
-              const auto delay=std::chrono::steady_clock::now()-buf->creationTime;
-              avg_parse_time.add(delay);
-              avg_parse_time.custom_print_in_intervals(std::chrono::seconds(3),[](const std::string name,const std::string message){
-                  qDebug()<<name.c_str()<<":"<<message.c_str();
-                  DecodingStatistcs::instance().set_parse_and_enqueue_time(message.c_str());
-              });
-              TextureRenderer::instance().clear_all_video_textures_next_frame();
-#else
              //qDebug()<<"Got decode data (after keyframe)";
              pkt->data=(uint8_t*)buf->getData();
              pkt->size=buf->getSize();
              decode_and_wait_for_frame(pkt,buf->creationTime);
              //fetch_frame_or_feed_input_packet();
-#endif
          }
      }
 finish:
@@ -812,9 +798,11 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp_and_mmal_direct(cons
     assert(settings.enable_software_video_decoder==false);
     assert(settings.dev_test_video_mode==QOpenHDVideoHelper::VideoTestMode::DISABLED);
 
-    m_rtp_receiver=std::make_unique<RTPReceiver>(5600,settings.video_codec==1);
+    m_rtp_receiver=std::make_unique<RTPReceiver>(5600,false);
 
     reset_before_decode_start();
+    DecodingStatistcs::instance().set_primary_stream_frame_format("MMAL waiting");
+
     bool has_keyframe_data=false;
     while(true){
         if(request_restart){
@@ -838,7 +826,13 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp_and_mmal_direct(cons
              }
              qDebug()<<"Got decode data (before keyframe)";
              //RPIMMALDecoder::instance().initialize(keyframe_buf->data(),keyframe_buf->size(),640,480,30);
-             RPIMMalDecodeDisplay::instance().initialize(keyframe_buf->data(),keyframe_buf->size(),640,480,30);
+             const auto w_h=m_rtp_receiver->sps_get_width_height();
+             {
+                 std::stringstream ss;
+                 ss<<"MMAL "<<w_h[0]<<"x"<<w_h[1];
+                 DecodingStatistcs::instance().set_primary_stream_frame_format(ss.str().c_str());
+             }
+             RPIMMalDecodeDisplay::instance().initialize(keyframe_buf->data(),keyframe_buf->size(),,w_h[0], w_h[1],30);
              has_keyframe_data=true;
              continue;
         }else{
