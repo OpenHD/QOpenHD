@@ -707,7 +707,6 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp(const QOpenHDVideoHe
      AVDictionary* av_dictionary=nullptr;
      RpiMMALDisplay::instance().prepareDecoderContext(decoder_ctx,&av_dictionary);
 #endif
-
     // From moonlight-qt. However, on PI, this doesn't seem to make any difference, at least for H265 decode.
     // (I never measured h264, but don't think there it is different).
     // Always request low delay decoding
@@ -790,6 +789,7 @@ finish:
      avcodec_free_context(&decoder_ctx);
 }
 
+#define HAVE_MMAL
 #ifdef HAVE_MMAL
 void AVCodecDecoder::open_and_decode_until_error_custom_rtp_and_mmal_direct(const QOpenHDVideoHelper::VideoStreamConfig settings)
 {
@@ -799,11 +799,13 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp_and_mmal_direct(cons
     assert(settings.dev_test_video_mode==QOpenHDVideoHelper::VideoTestMode::DISABLED);
 
     m_rtp_receiver=std::make_unique<RTPReceiver>(5600,false);
+    std::unique_ptr<RPIMMalDecodeDisplay> mmal_decode_display=std::make_unique<RPIMMalDecodeDisplay>();
 
     reset_before_decode_start();
     DecodingStatistcs::instance().set_primary_stream_frame_format("MMAL waiting");
 
     bool has_keyframe_data=false;
+    int feed_frame_error_count=0;
     while(true){
         if(request_restart){
             request_restart=false;
@@ -811,6 +813,11 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp_and_mmal_direct(cons
         }
         if(m_rtp_receiver->config_has_changed_during_decode){
             qDebug()<<"Break/Restart,config has changed during decode";
+            goto finish;
+        }
+        if(feed_frame_error_count>10){
+            // Decoder clearly unhealthy, use a full restart to fix it
+            qDebug()<<"MMAL Direct decoder unhealthy-restart";
             goto finish;
         }
         //std::this_thread::sleep_for(std::chrono::milliseconds(3000));
@@ -832,7 +839,7 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp_and_mmal_direct(cons
                  ss<<"MMAL "<<w_h[0]<<"x"<<w_h[1];
                  DecodingStatistcs::instance().set_primary_stream_frame_format(ss.str().c_str());
              }
-             RPIMMalDecodeDisplay::instance().initialize(keyframe_buf->data(),keyframe_buf->size(),w_h[0], w_h[1],30);
+             mmal_decode_display->initialize(keyframe_buf->data(),keyframe_buf->size(),w_h[0], w_h[1],30);
              has_keyframe_data=true;
              continue;
         }else{
@@ -847,7 +854,10 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp_and_mmal_direct(cons
                 buf=m_rtp_receiver->get_data();
             }
              //RPIMMALDecoder::instance().feed_frame(buf->getData(),buf->getSize());
-             RPIMMalDecodeDisplay::instance().feed_frame(buf->getData(),buf->getSize());
+             const bool feed_frame_success=mmal_decode_display->feed_frame(buf->getData(),buf->getSize());
+             if(!feed_frame_success){
+                 feed_frame_error_count++;
+             }
              const auto delay=std::chrono::steady_clock::now()-buf->creationTime;
              avg_parse_time.add(delay);
              avg_parse_time.custom_print_in_intervals(std::chrono::seconds(3),[](const std::string name,const std::string message){
@@ -860,6 +870,8 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp_and_mmal_direct(cons
 finish:
     qDebug()<<"AVCodecDecoder::open_and_decode_until_error_custom_rtp_and_mmal_direct-end loop";
     m_rtp_receiver=nullptr;
+    mmal_decode_display->cleanup();
+    mmal_decode_display=nullptr;
 }
 #endif
 

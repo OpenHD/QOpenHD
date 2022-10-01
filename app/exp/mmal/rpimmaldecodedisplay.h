@@ -25,11 +25,9 @@ class RPIMMalDecodeDisplay
 public:
     RPIMMalDecodeDisplay();
 
-    static RPIMMalDecodeDisplay& instance();
+    bool initialize(const uint8_t* config_data,const int config_data_size,int width,int height,int fps);
 
-    void initialize(const uint8_t* config_data,const int config_data_size,int width,int height,int fps);
-
-    void feed_frame(const uint8_t* frame_data,const int frame_data_size);
+    bool feed_frame(const uint8_t* frame_data,const int frame_data_size);
 
     void cleanup();
 

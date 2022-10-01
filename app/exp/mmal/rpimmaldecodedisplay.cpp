@@ -7,7 +7,7 @@
 
 static bool initialized=false;
 
-#define CHECK_STATUS(status, msg) if (status != MMAL_SUCCESS) { fprintf(stderr, msg"\n"); return; }
+#define CHECK_STATUS(status, msg) if (status != MMAL_SUCCESS) { fprintf(stderr, msg"\n"); return false; }
 
 // Callback from the decoder input port.
 // Buffer has been consumed and is available to be used again.
@@ -51,16 +51,7 @@ RPIMMalDecodeDisplay::RPIMMalDecodeDisplay()
 }
 
 
-RPIMMalDecodeDisplay &RPIMMalDecodeDisplay::instance()
-{
-
-    static RPIMMalDecodeDisplay instance{};
-    return instance;
-}
-
-
-
-void RPIMMalDecodeDisplay::initialize(const uint8_t *config_data, const int config_data_size, int width, int height, int fps)
+bool RPIMMalDecodeDisplay::initialize(const uint8_t *config_data, const int config_data_size, int width, int height, int fps)
 {
     if(!initialized){
         initialized=true;
@@ -153,10 +144,11 @@ void RPIMMalDecodeDisplay::initialize(const uint8_t *config_data, const int conf
 
     qDebug()<<"RPIMMalDecodeDisplay::initialize::done";
     updateDisplayRegion();
+    return true;
 }
 
 
-void RPIMMalDecodeDisplay::feed_frame(const uint8_t *frame_data, const int frame_data_size)
+bool RPIMMalDecodeDisplay::feed_frame(const uint8_t *frame_data, const int frame_data_size)
 {
     //qDebug()<<"RPIMMALDecoder::feed_frame";
     //if(true)return;
@@ -184,15 +176,20 @@ void RPIMMalDecodeDisplay::feed_frame(const uint8_t *frame_data, const int frame
             m_status = mmal_port_send_buffer(m_decoder->input[0], buffer);
             if (m_status != MMAL_SUCCESS) {
                 qDebug()<<"Cannot feed frame ?!";
+                return false;
                 break;
             }
             break;
         }
     }
+    return true;
 }
 
 void RPIMMalDecodeDisplay::cleanup()
 {
+    if(!m_graph){
+        return;
+    }
     // Stop everything. Not strictly necessary since mmal_component_destroy()
     //will do that anyway
     mmal_port_disable(m_decoder->input[0]);
