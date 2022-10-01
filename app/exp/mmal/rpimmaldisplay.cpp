@@ -189,8 +189,6 @@ void RpiMMALDisplay::display_mmal_frame(MMAL_BUFFER_HEADER_T *buffer)
     status = mmal_port_send_buffer(m_InputPort, buffer);
     if (status != MMAL_SUCCESS) {
         qDebug()<<"RpiMMALDisplay::display_mmal_frame::send_buffer error:"<<mmal_status_to_string(status);
-        // added for mmal decoder, not ffmpeg
-         //mmal_buffer_header_release(buffer);
     }
     else {
         qDebug()<<"RpiMMALDisplay::display_mmal_frame::send_buffer success";
