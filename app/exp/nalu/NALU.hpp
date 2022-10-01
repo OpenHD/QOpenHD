@@ -137,6 +137,8 @@ public:
    }
    std::array<int,2> sps_get_width_height()const{
        assert(isSPS());
+       // r.n we only support fetching with and height from sps for h264 (and only need it in this case anyways)
+       assert(!IS_H265_PACKET);
        const auto offset_for_webrtc=4+webrtc::H264::kNaluTypeSize;
        auto _sps = webrtc::SpsParser::ParseSps(getData() + offset_for_webrtc, getSize() - offset_for_webrtc);
        if(_sps){
