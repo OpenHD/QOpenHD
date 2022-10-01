@@ -11,15 +11,8 @@
 #ifndef COMMON_VIDEO_H264_PPS_PARSER_H_
 #define COMMON_VIDEO_H264_PPS_PARSER_H_
 
-#if __cplusplus >= 201703L
-    #include <optional>
-    namespace opt = std;
-#else
-    #include <boost/optional.hpp>
-    #include <boost/optional/optional.hpp>
-    namespace opt = boost;
-    #define OPT_NONE boost::none
-#endif
+#include <optional>
+namespace opt = std;
 
 #include <cstdint>
 
