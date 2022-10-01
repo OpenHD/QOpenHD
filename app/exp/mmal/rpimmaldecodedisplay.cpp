@@ -69,7 +69,6 @@ bool RPIMMalDecodeDisplay::initialize(const uint8_t *config_data, const int conf
     m_status = mmal_graph_new_component(m_graph, MMAL_COMPONENT_DEFAULT_VIDEO_RENDERER, &m_renderer);
     CHECK_STATUS(m_status, "failed to create renderer");
 
-
     /* Enable control port so we can receive events from the component */
     m_decoder->control->userdata = (struct MMAL_PORT_USERDATA_T*)(void *)&m_context;
     m_status = mmal_port_enable(m_decoder->control, control_callback);
