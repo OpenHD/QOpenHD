@@ -22,7 +22,7 @@ include(git.pri)
 include(lib/lqtutils_master/lqtutils.pri)
 
 # shamelessly taken from moonlight-qt
-include(lib/h264bitstream/h264bitstream.pri)
+include(lib/h264bitstream/h264bitstream.pro)
 
 CONFIG(debug, debug|release) {
     DESTDIR = $${OUT_PWD}/debug

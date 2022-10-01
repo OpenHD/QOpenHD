@@ -17,7 +17,7 @@ CONFIG += staticlib
 CONFIG += warn_off
 
 # Include global qmake defs
-include(../globaldefs.pri)
+#include(../globaldefs.pri)
 
 # Older GCC versions defaulted to GNU89
 *-g++ {
