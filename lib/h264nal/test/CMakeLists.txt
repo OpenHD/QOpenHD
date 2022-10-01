@@ -1,0 +1,157 @@
+# add executable
+#add_executable(main main.cc)
+
+# link executable to webrtc library
+# Since the webrtc library has public include directories
+# we will use those link directories when building `main`
+#target_link_libraries(main LINK_PUBLIC webrtc)
+
+find_library(GTEST_LIBRARY gtest)
+find_library(GMOCK_LIBRARY gmock)
+
+include_directories(PUBLIC ../src)
+include_directories(PUBLIC ../webrtc)
+
+# MacOS requirements
+include_directories(PUBLIC /usr/local/include)
+link_directories(/usr/local/lib)
+
+add_executable(h264_common_unittest h264_common_unittest.cc)
+add_test(h264_common_unittest h264_common_unittest)
+target_link_libraries(h264_common_unittest PUBLIC h264nal)
+target_link_libraries(h264_common_unittest PUBLIC ${GTEST_LIBRARY} gtest_main)
+target_link_libraries(h264_common_unittest PUBLIC ${GMOCK_LIBRARY} gmock_main)
+
+add_executable(h264_hrd_parameters_parser_unittest h264_hrd_parameters_parser_unittest.cc)
+add_test(h264_hrd_parameters_parser_unittest h264_hrd_parameters_parser_unittest)
+target_link_libraries(h264_hrd_parameters_parser_unittest PUBLIC h264nal)
+target_link_libraries(h264_hrd_parameters_parser_unittest PUBLIC ${GTEST_LIBRARY} gtest_main)
+target_link_libraries(h264_hrd_parameters_parser_unittest PUBLIC ${GMOCK_LIBRARY} gmock_main)
+
+add_executable(h264_vui_parameters_parser_unittest h264_vui_parameters_parser_unittest.cc)
+add_test(h264_vui_parameters_parser_unittest h264_vui_parameters_parser_unittest)
+target_link_libraries(h264_vui_parameters_parser_unittest PUBLIC h264nal)
+target_link_libraries(h264_vui_parameters_parser_unittest PUBLIC ${GTEST_LIBRARY} gtest_main)
+target_link_libraries(h264_vui_parameters_parser_unittest PUBLIC ${GMOCK_LIBRARY} gmock_main)
+
+add_executable(h264_sps_parser_unittest h264_sps_parser_unittest.cc)
+add_test(h264_sps_parser_unittest h264_sps_parser_unittest)
+target_link_libraries(h264_sps_parser_unittest PUBLIC h264nal)
+target_link_libraries(h264_sps_parser_unittest PUBLIC ${GTEST_LIBRARY} gtest_main)
+target_link_libraries(h264_sps_parser_unittest PUBLIC ${GMOCK_LIBRARY} gmock_main)
+
+add_executable(h264_pps_parser_unittest h264_pps_parser_unittest.cc)
+add_test(h264_pps_parser_unittest h264_pps_parser_unittest)
+target_link_libraries(h264_pps_parser_unittest PUBLIC h264nal)
+target_link_libraries(h264_pps_parser_unittest PUBLIC ${GTEST_LIBRARY} gtest_main)
+target_link_libraries(h264_pps_parser_unittest PUBLIC ${GMOCK_LIBRARY} gmock_main)
+
+add_executable(h264_ref_pic_list_modification_parser_unittest h264_ref_pic_list_modification_parser_unittest.cc)
+add_test(h264_ref_pic_list_modification_parser_unittest h264_ref_pic_list_modification_parser_unittest)
+target_link_libraries(h264_ref_pic_list_modification_parser_unittest PUBLIC h264nal)
+target_link_libraries(h264_ref_pic_list_modification_parser_unittest PUBLIC ${GTEST_LIBRARY} gtest_main)
+target_link_libraries(h264_ref_pic_list_modification_parser_unittest PUBLIC ${GMOCK_LIBRARY} gmock_main)
+
+add_executable(h264_pred_weight_table_parser_unittest h264_pred_weight_table_parser_unittest.cc)
+add_test(h264_pred_weight_table_parser_unittest h264_pred_weight_table_parser_unittest)
+target_link_libraries(h264_pred_weight_table_parser_unittest PUBLIC h264nal)
+target_link_libraries(h264_pred_weight_table_parser_unittest PUBLIC ${GTEST_LIBRARY} gtest_main)
+target_link_libraries(h264_pred_weight_table_parser_unittest PUBLIC ${GMOCK_LIBRARY} gmock_main)
+
+add_executable(h264_dec_ref_pic_marking_parser_unittest h264_dec_ref_pic_marking_parser_unittest.cc)
+add_test(h264_dec_ref_pic_marking_parser_unittest h264_dec_ref_pic_marking_parser_unittest)
+target_link_libraries(h264_dec_ref_pic_marking_parser_unittest PUBLIC h264nal)
+target_link_libraries(h264_dec_ref_pic_marking_parser_unittest PUBLIC ${GTEST_LIBRARY} gtest_main)
+target_link_libraries(h264_dec_ref_pic_marking_parser_unittest PUBLIC ${GMOCK_LIBRARY} gmock_main)
+
+if(H264NAL_SMALL_FOOTPRINT)
+  message(STATUS "test: small footprint selected")
+
+else()
+  message(STATUS "test: normal footprint selected")
+  add_compile_definitions(RTP_DEFINE)
+
+  add_executable(h264_rtp_single_parser_unittest h264_rtp_single_parser_unittest.cc)
+  add_test(h264_rtp_single_parser_unittest h264_rtp_single_parser_unittest)
+  target_link_libraries(h264_rtp_single_parser_unittest PUBLIC h264nal)
+  target_link_libraries(h264_rtp_single_parser_unittest PUBLIC ${GTEST_LIBRARY} gtest_main)
+  target_link_libraries(h264_rtp_single_parser_unittest PUBLIC ${GMOCK_LIBRARY} gmock_main)
+
+  add_executable(h264_rtp_stapa_parser_unittest h264_rtp_stapa_parser_unittest.cc)
+  add_test(h264_rtp_stapa_parser_unittest h264_rtp_stapa_parser_unittest)
+  target_link_libraries(h264_rtp_stapa_parser_unittest PUBLIC h264nal)
+  target_link_libraries(h264_rtp_stapa_parser_unittest PUBLIC ${GTEST_LIBRARY} gtest_main)
+  target_link_libraries(h264_rtp_stapa_parser_unittest PUBLIC ${GMOCK_LIBRARY} gmock_main)
+
+  add_executable(h264_rtp_fua_parser_unittest h264_rtp_fua_parser_unittest.cc)
+  add_test(h264_rtp_fua_parser_unittest h264_rtp_fua_parser_unittest)
+  target_link_libraries(h264_rtp_fua_parser_unittest PUBLIC h264nal)
+  target_link_libraries(h264_rtp_fua_parser_unittest PUBLIC ${GTEST_LIBRARY} gtest_main)
+  target_link_libraries(h264_rtp_fua_parser_unittest PUBLIC ${GMOCK_LIBRARY} gmock_main)
+
+  add_executable(h264_rtp_parser_unittest h264_rtp_parser_unittest.cc)
+  add_test(h264_rtp_parser_unittest h264_rtp_parser_unittest)
+  target_link_libraries(h264_rtp_parser_unittest PUBLIC h264nal)
+  target_link_libraries(h264_rtp_parser_unittest PUBLIC ${GTEST_LIBRARY} gtest_main)
+  target_link_libraries(h264_rtp_parser_unittest PUBLIC ${GMOCK_LIBRARY} gmock_main)
+endif()
+
+add_executable(h264_slice_header_parser_unittest h264_slice_header_parser_unittest.cc)
+add_test(h264_slice_header_parser_unittest h264_slice_header_parser_unittest)
+target_link_libraries(h264_slice_header_parser_unittest PUBLIC h264nal)
+target_link_libraries(h264_slice_header_parser_unittest PUBLIC ${GTEST_LIBRARY} gtest_main)
+target_link_libraries(h264_slice_header_parser_unittest PUBLIC ${GMOCK_LIBRARY} gmock_main)
+
+add_executable(h264_slice_header_in_scalable_extension_parser_unittest h264_slice_header_in_scalable_extension_parser_unittest.cc)
+add_test(h264_slice_header_in_scalable_extension_parser_unittest h264_slice_header_in_scalable_extension_parser_unittest)
+target_link_libraries(h264_slice_header_in_scalable_extension_parser_unittest PUBLIC h264nal)
+target_link_libraries(h264_slice_header_in_scalable_extension_parser_unittest PUBLIC ${GTEST_LIBRARY} gtest_main)
+target_link_libraries(h264_slice_header_in_scalable_extension_parser_unittest PUBLIC ${GMOCK_LIBRARY} gmock_main)
+
+add_executable(h264_slice_layer_without_partitioning_rbsp_parser_unittest h264_slice_layer_without_partitioning_rbsp_parser_unittest.cc)
+add_test(h264_slice_layer_without_partitioning_rbsp_parser_unittest h264_slice_layer_without_partitioning_rbsp_parser_unittest)
+target_link_libraries(h264_slice_layer_without_partitioning_rbsp_parser_unittest PUBLIC h264nal)
+target_link_libraries(h264_slice_layer_without_partitioning_rbsp_parser_unittest PUBLIC ${GTEST_LIBRARY} gtest_main)
+target_link_libraries(h264_slice_layer_without_partitioning_rbsp_parser_unittest PUBLIC ${GMOCK_LIBRARY} gmock_main)
+
+add_executable(h264_slice_layer_extension_rbsp_parser_unittest h264_slice_layer_extension_rbsp_parser_unittest.cc)
+add_test(h264_slice_layer_extension_rbsp_parser_unittest h264_slice_layer_extension_rbsp_parser_unittest)
+target_link_libraries(h264_slice_layer_extension_rbsp_parser_unittest PUBLIC h264nal)
+target_link_libraries(h264_slice_layer_extension_rbsp_parser_unittest PUBLIC ${GTEST_LIBRARY} gtest_main)
+target_link_libraries(h264_slice_layer_extension_rbsp_parser_unittest PUBLIC ${GMOCK_LIBRARY} gmock_main)
+
+add_executable(h264_subset_sps_parser_unittest h264_subset_sps_parser_unittest.cc)
+add_test(h264_subset_sps_parser_unittest h264_subset_sps_parser_unittest)
+target_link_libraries(h264_subset_sps_parser_unittest PUBLIC h264nal)
+target_link_libraries(h264_subset_sps_parser_unittest PUBLIC ${GTEST_LIBRARY} gtest_main)
+target_link_libraries(h264_subset_sps_parser_unittest PUBLIC ${GMOCK_LIBRARY} gmock_main)
+
+add_executable(h264_sps_svc_extension_parser_unittest h264_sps_svc_extension_parser_unittest.cc)
+add_test(h264_sps_svc_extension_parser_unittest h264_sps_svc_extension_parser_unittest)
+target_link_libraries(h264_sps_svc_extension_parser_unittest PUBLIC h264nal)
+target_link_libraries(h264_sps_svc_extension_parser_unittest PUBLIC ${GTEST_LIBRARY} gtest_main)
+target_link_libraries(h264_sps_svc_extension_parser_unittest PUBLIC ${GMOCK_LIBRARY} gmock_main)
+
+add_executable(h264_bitstream_parser_unittest h264_bitstream_parser_unittest.cc)
+add_test(h264_bitstream_parser_unittest h264_bitstream_parser_unittest)
+target_link_libraries(h264_bitstream_parser_unittest PUBLIC h264nal)
+target_link_libraries(h264_bitstream_parser_unittest PUBLIC ${GTEST_LIBRARY} gtest_main)
+target_link_libraries(h264_bitstream_parser_unittest PUBLIC ${GMOCK_LIBRARY} gmock_main)
+
+add_executable(h264_prefix_nal_unit_parser_unittest h264_prefix_nal_unit_parser_unittest.cc)
+add_test(h264_prefix_nal_unit_parser_unittest h264_prefix_nal_unit_parser_unittest)
+target_link_libraries(h264_prefix_nal_unit_parser_unittest PUBLIC h264nal)
+target_link_libraries(h264_prefix_nal_unit_parser_unittest PUBLIC ${GTEST_LIBRARY} gtest_main)
+target_link_libraries(h264_prefix_nal_unit_parser_unittest PUBLIC ${GMOCK_LIBRARY} gmock_main)
+
+add_executable(h264_nal_unit_header_svc_extension_parser_unittest h264_nal_unit_header_svc_extension_parser_unittest.cc)
+add_test(h264_nal_unit_header_svc_extension_parser_unittest h264_nal_unit_header_svc_extension_parser_unittest)
+target_link_libraries(h264_nal_unit_header_svc_extension_parser_unittest PUBLIC h264nal)
+target_link_libraries(h264_nal_unit_header_svc_extension_parser_unittest PUBLIC ${GTEST_LIBRARY} gtest_main)
+target_link_libraries(h264_nal_unit_header_svc_extension_parser_unittest PUBLIC ${GMOCK_LIBRARY} gmock_main)
+
+add_executable(h264_nal_unit_parser_unittest h264_nal_unit_parser_unittest.cc)
+add_test(h264_nal_unit_parser_unittest h264_nal_unit_parser_unittest)
+target_link_libraries(h264_nal_unit_parser_unittest PUBLIC h264nal)
+target_link_libraries(h264_nal_unit_parser_unittest PUBLIC ${GTEST_LIBRARY} gtest_main)
+target_link_libraries(h264_nal_unit_parser_unittest PUBLIC ${GMOCK_LIBRARY} gmock_main)
