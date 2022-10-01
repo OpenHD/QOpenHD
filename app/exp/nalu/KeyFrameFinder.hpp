@@ -95,7 +95,7 @@ public:
     }
     std::array<int,2> sps_get_width_height()const{
         assert(SPS!=nullptr);
-        return {640,480};
+        return SPS->sps_get_width_height();
     }
 public:
     static bool compare(const NALU& n1,const NALU& n2){

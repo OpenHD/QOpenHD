@@ -131,6 +131,10 @@ public:
    bool is_config(){
        return isSPS() || isPPS() || (IS_H265_PACKET && isVPS());
    }
+   std::array<int,2> sps_get_width_height()const{
+       assert(isSPS());
+       return {640,480};
+   }
 };
 
 
