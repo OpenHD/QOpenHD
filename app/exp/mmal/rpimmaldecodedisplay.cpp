@@ -9,40 +9,35 @@ static bool initialized=false;
 
 #define CHECK_STATUS(status, msg) if (status != MMAL_SUCCESS) { fprintf(stderr, msg"\n"); return; }
 
-/** Callback from the decoder input port.
- * Buffer has been consumed and is available to be used again. */
+// Callback from the decoder input port.
+// Buffer has been consumed and is available to be used again.
 static void input_callback(MMAL_PORT_T *port, MMAL_BUFFER_HEADER_T *buffer)
 {
     struct CONTEXT_T *ctx = (struct CONTEXT_T *)port->userdata;
 
-    /* The decoder is done with the data, just recycle the buffer header into its pool */
+    //The decoder is done with the data, just recycle the buffer header into its pool
     mmal_buffer_header_release(buffer);
 
-    /* Kick the processing thread */
+    // Kick the processing thread
     vcos_semaphore_post(&ctx->semaphore);
-
-    //fprintf(stderr,"decoder input callback\n");
 }
 
-/** Callback from the control port.
- * Component is sending us an event. */
+// Callback from the control port.
+// Component is sending us an event.
 static void control_callback(MMAL_PORT_T *port, MMAL_BUFFER_HEADER_T *buffer)
 {
    struct CONTEXT_T *ctx = (struct CONTEXT_T *)port->userdata;
-
-   switch (buffer->cmd)
-   {
+   switch (buffer->cmd){
    case MMAL_EVENT_EOS:
-      /* Only sink component generate EOS events */
+      // Only sink component generate EOS events
       break;
    case MMAL_EVENT_ERROR:
-      /* Something went wrong. Signal this to the application */
+      // Something went wrong. Signal this to the application
       ctx->status = *(MMAL_STATUS_T *)buffer->data;
       break;
    default:
       break;
    }
-
    /* Done with the event, recycle it */
    mmal_buffer_header_release(buffer);
 
