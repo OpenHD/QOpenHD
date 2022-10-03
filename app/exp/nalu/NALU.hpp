@@ -20,6 +20,11 @@
 
 #include "NALUnitType.hpp"
 
+// dependency could be easily removed again
+#include <h264_common.h>
+#include <sps_parser.h>
+#include <pps_parser.h>
+
 /**
  * A NALU either contains H264 data (default) or H265 data
  * NOTE: Only when copy constructing a NALU it owns the data, else it only holds a data pointer (that might get overwritten by the parser if you hold onto a NALU)
@@ -133,6 +138,15 @@ public:
    }
    std::array<int,2> sps_get_width_height()const{
        assert(isSPS());
+       // r.n we only support fetching with and height from sps for h264 (and only need it in this case anyways)
+       assert(!IS_H265_PACKET);
+       const auto offset_for_webrtc=4+webrtc::H264::kNaluTypeSize;
+       auto _sps = webrtc::SpsParser::ParseSps(getData() + offset_for_webrtc, getSize() - offset_for_webrtc);
+       if(_sps){
+           const int width=_sps->width;
+           const int height=_sps->height;
+           return {width,height};
+       }
        return {640,480};
    }
 };

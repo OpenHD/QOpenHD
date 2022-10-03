@@ -69,7 +69,6 @@ bool RPIMMalDecodeDisplay::initialize(const uint8_t *config_data, const int conf
     m_status = mmal_graph_new_component(m_graph, MMAL_COMPONENT_DEFAULT_VIDEO_RENDERER, &m_renderer);
     CHECK_STATUS(m_status, "failed to create renderer");
 
-
     /* Enable control port so we can receive events from the component */
     m_decoder->control->userdata = (struct MMAL_PORT_USERDATA_T*)(void *)&m_context;
     m_status = mmal_port_enable(m_decoder->control, control_callback);
@@ -77,7 +76,7 @@ bool RPIMMalDecodeDisplay::initialize(const uint8_t *config_data, const int conf
 
     //
     // Set format of video decoder input port
-    format_in = m_decoder->input[0]->format;
+    MMAL_ES_FORMAT_T* format_in = m_decoder->input[0]->format;
     format_in->type = MMAL_ES_TYPE_VIDEO;
     format_in->encoding = MMAL_ENCODING_H264;
     format_in->es->video.width = width;
@@ -187,7 +186,9 @@ bool RPIMMalDecodeDisplay::feed_frame(const uint8_t *frame_data, const int frame
 
 void RPIMMalDecodeDisplay::cleanup()
 {
+    qDebug()<<"RPIMMalDecodeDisplay::cleanup() begin";
     if(!m_graph){
+        qDebug()<<"RPIMMalDecodeDisplay::cleanup() no graph";
         return;
     }
     // Stop everything. Not strictly necessary since mmal_component_destroy()
@@ -198,14 +199,17 @@ void RPIMMalDecodeDisplay::cleanup()
     // Stop everything
     fprintf(stderr, "stop");
     mmal_graph_disable(m_graph);
-
     // Cleanup everything
-    if (m_decoder)
+    if (m_decoder){
         mmal_component_release(m_decoder);
-    if (m_renderer)
+    }
+    if (m_renderer){
         mmal_component_release(m_renderer);
-    if (m_graph)
+    }
+    if (m_graph){
         mmal_graph_destroy(m_graph);
+    }
+    qDebug()<<"RPIMMalDecodeDisplay::cleanup() end";
 }
 
 void RPIMMalDecodeDisplay::updateDisplayRegion()

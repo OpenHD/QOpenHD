@@ -82,11 +82,15 @@ void AVCodecDecoder::init(bool primaryStream)
 
 void AVCodecDecoder::terminate()
 {
+    // Stop the timer, which can be done (almost) immediately (it's runnable doesn't block)
     timer_check_settings_changed->stop();
     timer_check_settings_changed=nullptr;
+    // This will stop the constant_decode as soon as the current running decode_until_error loop returns
     m_should_terminate=true;
+    // This will break out of a running "decode until error" loop if there is one currently running
     request_restart=true;
     if(decode_thread){
+        // Wait for everything to cleanup and stop
         decode_thread->join();
     }
 }
@@ -118,6 +122,8 @@ void AVCodecDecoder::constant_decode()
          }
          if(do_custom_rtp){
 #ifdef HAVE_MMAL
+             // When we have mmal at compile time, we can do the "even more optimized" path for h264 decode on pi
+             // (but only for h264 HW decode and rtp)
              if(settings.dev_test_video_mode==QOpenHDVideoHelper::VideoTestMode::DISABLED
                      && settings.enable_software_video_decoder==false
                      && settings.video_codec==QOpenHDVideoHelper::VideoCodecH264){
@@ -126,6 +132,7 @@ void AVCodecDecoder::constant_decode()
                  open_and_decode_until_error_custom_rtp(settings);
              }
 #else
+             // Does h264 and h265 custom rtp parse, but uses avcodec for decode
              open_and_decode_until_error_custom_rtp(settings);
 #endif
          }else{
@@ -668,8 +675,8 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp(const QOpenHDVideoHe
          decoder = avcodec_find_decoder(AV_CODEC_ID_H265);
      }
      if (!decoder) {
-         fprintf(stderr, "Codec not found\n");
-         exit(1);
+         qDebug()<< "AVCodecDecoder::open_and_decode_until_error_custom_rtp: Codec not found";
+         return;
      }
      // ----------------------
      bool use_pi_hw_decode=false;
@@ -680,8 +687,8 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp(const QOpenHDVideoHe
              auto tmp = avcodec_find_decoder_by_name("h264_mmal");
              if(tmp!=nullptr){
                  decoder = tmp;
-                  wanted_hw_pix_fmt = AV_PIX_FMT_MMAL;
-                  use_pi_hw_decode=true;
+                 wanted_hw_pix_fmt = AV_PIX_FMT_MMAL;
+                 use_pi_hw_decode=true;
              }else{
                  wanted_hw_pix_fmt = AV_PIX_FMT_YUV420P;
              }
@@ -692,6 +699,7 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp(const QOpenHDVideoHe
          qDebug()<<"H265 decode";
          if(!settings.enable_software_video_decoder){
              qDebug()<<all_hw_configs_for_this_codec(decoder).c_str();
+             // HW format used by rpi h265 HW decoder
              wanted_hw_pix_fmt = AV_PIX_FMT_DRM_PRIME;
              use_pi_hw_decode=true;
          }
@@ -699,8 +707,8 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp(const QOpenHDVideoHe
      // ------------------------------------
      decoder_ctx = avcodec_alloc_context3(decoder);
      if (!decoder_ctx) {
-         fprintf(stderr, "Could not allocate video codec context\n");
-         exit(1);
+         qDebug()<< "AVCodecDecoder::open_and_decode_until_error_custom_rtp: Could not allocate video codec context";
+         return;
      }
      // ----------------------------------
 #ifdef HAVE_MMAL
@@ -730,7 +738,8 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp(const QOpenHDVideoHe
 
      if (avcodec_open2(decoder_ctx, decoder, NULL) < 0) {
          fprintf(stderr, "Could not open codec\n");
-         exit(1);
+         avcodec_free_context(&decoder_ctx);
+         return;
      }
      qDebug()<<"AVCodecDecoder::open_and_decode_until_error_custom_rtp()-begin loop";
      m_rtp_receiver=std::make_unique<RTPReceiver>(5600,settings.video_codec==1);

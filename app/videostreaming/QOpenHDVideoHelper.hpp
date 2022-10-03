@@ -49,8 +49,7 @@ struct VideoStreamConfig{
     int video_port = 0;
     // the video codec the received rtp data should be intepreted as.
     VideoCodec video_codec=VideoCodecH264;
-    // force sw decoding (if there is a difference on the platform)
-    // R.N this only makes a difference on RPI
+    // force sw decoding (only makes a difference if on this platform/compile-time configuration a HW decoder is chosen by default)
     bool enable_software_video_decoder=false;
     // XX
     bool dev_jetson=false;
@@ -118,8 +117,6 @@ static std::string get_default_openhd_test_file(const VideoCodec video_codec){
     }
     return in_filename.str();
 }
-
-//
 
 // FFMPEG needs a ".sdp" file to do rtp udp h264,h265 or mjpeg
 // For MJPEG we map mjpeg to 26 (mjpeg), for h264/5 we map h264/5 to 96 (general)
