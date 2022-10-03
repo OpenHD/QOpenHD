@@ -186,7 +186,9 @@ bool RPIMMalDecodeDisplay::feed_frame(const uint8_t *frame_data, const int frame
 
 void RPIMMalDecodeDisplay::cleanup()
 {
+    qDebug()<<"RPIMMalDecodeDisplay::cleanup() begin";
     if(!m_graph){
+        qDebug()<<"RPIMMalDecodeDisplay::cleanup() no graph";
         return;
     }
     // Stop everything. Not strictly necessary since mmal_component_destroy()
@@ -197,14 +199,17 @@ void RPIMMalDecodeDisplay::cleanup()
     // Stop everything
     fprintf(stderr, "stop");
     mmal_graph_disable(m_graph);
-
     // Cleanup everything
-    if (m_decoder)
+    if (m_decoder){
         mmal_component_release(m_decoder);
-    if (m_renderer)
+    }
+    if (m_renderer){
         mmal_component_release(m_renderer);
-    if (m_graph)
+    }
+    if (m_graph){
         mmal_graph_destroy(m_graph);
+    }
+    qDebug()<<"RPIMMalDecodeDisplay::cleanup() end";
 }
 
 void RPIMMalDecodeDisplay::updateDisplayRegion()
