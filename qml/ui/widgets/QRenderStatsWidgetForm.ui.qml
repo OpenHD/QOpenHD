@@ -30,7 +30,7 @@ BaseWidget {
 
     // We display quite a lot of text, and this one is only for development anyways
     widgetActionWidth: 500
-    widgetActionHeight: 300
+    widgetActionHeight: 400
 
     //----------------------------- DETAIL BELOW ----------------------------------
 
@@ -199,7 +199,7 @@ BaseWidget {
         clip: true
 
         ColumnLayout{
-            width:400
+            width: 400
             // QT main thread render time (E.g. OpenGL frame time), independent of decoding
             Item {
                 width: parent.width
@@ -348,6 +348,28 @@ BaseWidget {
                 }
                 Text {
                     text: _decodingStatistics.primary_stream_frame_format
+                    color: "white";
+                    font.bold: true;
+                    height: parent.height
+                    font.pixelSize: detailPanelFontPixels;
+                    anchors.right: parent.right
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("Decoding type:")
+                    color: "white"
+                    font.bold: true
+                    height: parent.height
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Text {
+                    text: _decodingStatistics.decoding_type
                     color: "white";
                     font.bold: true;
                     height: parent.height

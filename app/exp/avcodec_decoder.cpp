@@ -335,6 +335,8 @@ void AVCodecDecoder::on_new_frame(AVFrame *frame)
         DecodingStatistcs::instance().set_primary_stream_frame_format(QString(ss.str().c_str()));
         //qDebug()<<"Got frame:"<<ss.str().c_str();
     }
+    // Once we got the first frame, reduce the log level
+    av_log_set_level(AV_LOG_WARNING);
     if(frame->format==AV_PIX_FMT_MMAL){
 #ifdef HAVE_MMAL
         TextureRenderer::instance().clear_all_video_textures_next_frame();
@@ -375,6 +377,7 @@ void AVCodecDecoder::reset_before_decode_start()
     last_frame_width=-1;
     last_frame_height=-1;
     m_fed_timestamps_queue.clear();
+    DecodingStatistcs::instance().set_decoding_type("?");
 }
 
 int AVCodecDecoder::open_and_decode_until_error(const QOpenHDVideoHelper::VideoStreamConfig settings)
@@ -564,6 +567,7 @@ int AVCodecDecoder::open_and_decode_until_error(const QOpenHDVideoHelper::VideoS
         return -1;
     }
 
+    std::string selected_decoding_type="?";
     if(settings.enable_software_video_decoder ||
             // for mjpeg we always use sw decode r.n, since for some reason the "fallback" to sw decode doesn't work here
             // and also the PI cannot do HW mjpeg decode anyways at least no one bothered to fix ffmpeg for it.
@@ -571,11 +575,13 @@ int AVCodecDecoder::open_and_decode_until_error(const QOpenHDVideoHelper::VideoS
             ){
         qDebug()<<"User wants SW decode / mjpeg";
         decoder_ctx->get_format  = get_sw_format;
+        selected_decoding_type="SW";
     }else{
         qDebug()<<"Try HW decode";
         decoder_ctx->get_format  = get_hw_format;
         if (hw_decoder_init(decoder_ctx, kAvhwDeviceType) < 0){
           qDebug()<<"HW decoder init failed,fallback to SW decode";
+          selected_decoding_type="SW(HW failed)";
           // Use SW decode as fallback ?!
           //return -1;
           // H264 and H265 sw decode is always YUV420P, MJPEG seems to be always YUVJ422P;
@@ -583,6 +589,8 @@ int AVCodecDecoder::open_and_decode_until_error(const QOpenHDVideoHelper::VideoS
             wanted_hw_pix_fmt=AV_PIX_FMT_YUVJ422P;
           }
           wanted_hw_pix_fmt=AV_PIX_FMT_YUV420P;
+        }else{
+            selected_decoding_type="HW";
         }
     }
 
@@ -600,6 +608,7 @@ int AVCodecDecoder::open_and_decode_until_error(const QOpenHDVideoHelper::VideoS
     int nFeedFrames=0;
     auto lastFrame=std::chrono::steady_clock::now();
     reset_before_decode_start();
+    DecodingStatistcs::instance().set_decoding_type(selected_decoding_type.c_str());
     while (ret >= 0) {
         if(request_restart){
             request_restart=false;
@@ -702,6 +711,8 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp(const QOpenHDVideoHe
              // HW format used by rpi h265 HW decoder
              wanted_hw_pix_fmt = AV_PIX_FMT_DRM_PRIME;
              use_pi_hw_decode=true;
+         }else{
+
          }
      }
      // ------------------------------------
@@ -724,12 +735,18 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp(const QOpenHDVideoHe
     decoder_ctx->flags2 |= AV_CODEC_FLAG2_SHOW_ALL;
     // --------------------------------------
     // --------------------------------------
+    std::string selected_decoding_type="?";
     if(use_pi_hw_decode){
         decoder_ctx->get_format  = get_hw_format;
         if (hw_decoder_init(decoder_ctx, AV_HWDEVICE_TYPE_DRM) < 0){
           qDebug()<<"HW decoder init failed,fallback to SW decode";
+          selected_decoding_type="SW(HW failed)";
           assert(true);
+        }else{
+            selected_decoding_type="HW";
         }
+    }else{
+        selected_decoding_type="SW";
     }
     // A thread count of 1 reduces latency for both SW and HW decode
     decoder_ctx->thread_count = 1;
@@ -745,6 +762,7 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp(const QOpenHDVideoHe
      m_rtp_receiver=std::make_unique<RTPReceiver>(5600,settings.video_codec==1);
 
      reset_before_decode_start();
+     DecodingStatistcs::instance().set_decoding_type(selected_decoding_type.c_str());
      AVPacket *pkt=av_packet_alloc();
      assert(pkt!=nullptr);
      bool has_keyframe_data=false;
@@ -811,6 +829,7 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp_and_mmal_direct(cons
 
     reset_before_decode_start();
     DecodingStatistcs::instance().set_primary_stream_frame_format("MMAL waiting");
+    DecodingStatistcs::instance().set_decoding_type("HW");
 
     bool has_keyframe_data=false;
     int feed_frame_error_count=0;
