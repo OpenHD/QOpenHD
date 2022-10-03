@@ -67,6 +67,9 @@ private:
     // ( In contrast to h264 we don't need the stupid reconstruction with h265)
     // data should point to "just" the rtp payload
     void h265_forward_one_nalu(const uint8_t* data,int data_size,bool write_4_bytes_for_start_code=true);
+
+    // wtf
+    bool check_has_valid_prefix(bool use_4_bytes_start_code);
 };
 
 #endif //LIVE_VIDEO_10MS_ANDROID_PARSERTP_H

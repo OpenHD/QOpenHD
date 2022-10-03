@@ -267,13 +267,19 @@ void RTPDecoder::parse_rtp_mjpeg(const uint8_t *rtp_data, const size_t data_leng
 
 void RTPDecoder::forwardNALU(const bool isH265) {
     if(m_cb!= nullptr){
+        if(!check_has_valid_prefix(true)){
+            return;
+        }
         m_cb(timePointStartOfReceivingNALU,m_nalu_data.data(),m_nalu_data_length);
     }
     m_nalu_data_length=0;
 }
 
-
 void RTPDecoder::append_nalu_data(const uint8_t *data, size_t data_len) {
+    if(m_nalu_data_length+data_len>m_nalu_data.size()){
+        qDebug()<<"Weird - not enugh space to write NALU. curr_size:"<<m_nalu_data_length<<" append:"<<data_len;
+        return;
+    }
     memcpy(&m_nalu_data[m_nalu_data_length],data,data_len);
     m_nalu_data_length+=data_len;
 }
@@ -293,4 +299,32 @@ void RTPDecoder::write_h264_h265_nalu_start(const bool use_4_bytes)
         m_nalu_data_length=3;
     }
 }
+
+bool RTPDecoder::check_has_valid_prefix(bool use_4_bytes_start_code)
+{
+    if(m_nalu_data_length<5){
+        qDebug()<<"Not a valid nalu - less than 5 bytes";
+        return false;
+    }
+    if(use_4_bytes_start_code){
+        const bool valid= m_nalu_data[0]==0 &&
+        m_nalu_data[1]==0 &&
+        m_nalu_data[2]==0 &&
+        m_nalu_data[3]==1;
+        if(!valid){
+            qDebug()<<"Not a valid nalu - missing start code (4 bytes)";
+        }
+        return valid;
+    }else{
+        const bool valid= m_nalu_data[0]==0 &&
+        m_nalu_data[1]==0 &&
+        m_nalu_data[2]==1;
+        if(!valid){
+            qDebug()<<"Not a valid nalu - missing start code (3 bytes)";
+        }
+        return valid;
+    }
+}
+
+
 
