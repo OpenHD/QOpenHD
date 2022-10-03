@@ -20,6 +20,7 @@
 
 #include "NALUnitType.hpp"
 
+// dependency could be easily removed again
 #include <h264_common.h>
 #include <sps_parser.h>
 #include <pps_parser.h>
