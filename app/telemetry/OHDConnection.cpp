@@ -78,7 +78,8 @@ void OHDConnection::onNewSystem(std::shared_ptr<mavsdk::System> system){
         MavlinkSettingsModel::instanceAir().set_param_client(system);
         MavlinkSettingsModel::instanceAirCamera().set_param_client(system);
         AOHDSystem::instanceAir().set_system(system);
-    }else if(system->has_autopilot()){
+    }//else if(system->has_autopilot()){
+    else {
         qDebug()<<"Found FC";
         // we got the flight controller
         FCMavlinkSystem::instance().set_system(system);

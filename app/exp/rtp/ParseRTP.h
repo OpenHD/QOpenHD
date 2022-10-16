@@ -54,8 +54,10 @@ private:
     //TDOD: What shall we do if a start, middle or end of fu-a is missing ?
     int lastSequenceNumber=-1;
     bool flagPacketHasGoneMissing=false;
+public:
     // each time there is a "gap" between packets, this counter is increased
     int m_n_gaps=0;
+    int m_n_lost_packets=0;
     // This time point is as 'early as possible' to debug the parsing time as accurately as possible.
     // E.g for a fu-a NALU the time point when the start fu-a was received, not when its end is received
     std::chrono::steady_clock::time_point timePointStartOfReceivingNALU;
@@ -67,9 +69,11 @@ private:
     // ( In contrast to h264 we don't need the stupid reconstruction with h265)
     // data should point to "just" the rtp payload
     void h265_forward_one_nalu(const uint8_t* data,int data_size,bool write_4_bytes_for_start_code=true);
-
     // wtf
     bool check_has_valid_prefix(bool use_4_bytes_start_code);
+    // we can clear the missing packet flag when we either receive the first packet of a fragmented rtp packet or
+    // a non-fragmented rtp packet
+    //void clear_missing_packet_flag();
 };
 
 #endif //LIVE_VIDEO_10MS_ANDROID_PARSERTP_H

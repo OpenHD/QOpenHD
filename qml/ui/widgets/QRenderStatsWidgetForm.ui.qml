@@ -378,6 +378,50 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
             }
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("Rtp parse n gaps:")
+                    color: "white"
+                    font.bold: true
+                    height: parent.height
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Text {
+                    text: _decodingStatistics.n_missing_rtp_video_packets+""
+                    color: "white";
+                    font.bold: true;
+                    height: parent.height
+                    font.pixelSize: detailPanelFontPixels;
+                    anchors.right: parent.right
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("RTP QOHD measured:")
+                    color: "white"
+                    font.bold: true
+                    height: parent.height
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Text {
+                    text: _decodingStatistics.rtp_measured_bitrate
+                    color: "white";
+                    font.bold: true;
+                    height: parent.height
+                    font.pixelSize: detailPanelFontPixels;
+                    anchors.right: parent.right
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
         }
     }
 

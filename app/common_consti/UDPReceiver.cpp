@@ -60,7 +60,7 @@ void UDPReceiver::receiveFromUDPLoop() {
     int recvBufferSize=0;
     socklen_t len=sizeof(recvBufferSize);
     getsockopt(mSocket, SOL_SOCKET, SO_RCVBUF, &recvBufferSize, &len);
-    std::cout<<"Default socket recv buffer is "<<StringHelper::memorySizeReadable(recvBufferSize)<<"\n";
+    std::cerr<<"Default socket recv buffer is "<<StringHelper::memorySizeReadable(recvBufferSize)<<"\n";
 
     if(WANTED_RCVBUF_SIZE>(size_t)recvBufferSize){
         recvBufferSize=WANTED_RCVBUF_SIZE;

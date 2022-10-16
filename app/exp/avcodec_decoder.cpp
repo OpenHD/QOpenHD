@@ -214,7 +214,7 @@ int AVCodecDecoder::decode_and_wait_for_frame(AVPacket *packet,std::optional<std
         }else if(ret==AVERROR(EAGAIN)){
             if(n_no_output_frame_after_x_seconds>=2){
                 // note decode latency is now wrong
-                qDebug()<<"Skipping decode lockstep due to no frame for more than X seconds\n";
+                //qDebug()<<"Skipping decode lockstep due to no frame for more than X seconds\n";
                 DecodingStatistcs::instance().set_doing_wait_for_frame_decode("No");
                 if(n_times_we_tried_getting_a_frame_this_time>4){
                     break;

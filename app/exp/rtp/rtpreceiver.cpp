@@ -4,6 +4,8 @@
 
 #include "../common_consti/StringHelper.hpp"
 
+#include "../../videostreaming/decodingstatistcs.h"
+
 RTPReceiver::RTPReceiver(int port,bool is_h265):
     is_h265(is_h265)
 {
@@ -24,7 +26,8 @@ RTPReceiver::RTPReceiver(int port,bool is_h265):
     });
     m_udp_receiver=std::make_unique<UDPReceiver>(port,"V_REC",[this](const uint8_t *payload, const std::size_t payloadSize){
         this->udp_raw_data_callback(payload,payloadSize);
-    });
+        DecodingStatistcs::instance().set_n_missing_rtp_video_packets(m_rtp_decoder->m_n_gaps);
+    },1024*1024*50);
     m_udp_receiver->startReceiving();
 }
 
@@ -70,7 +73,11 @@ void RTPReceiver::queue_data(const uint8_t* nalu_data,const std::size_t nalu_dat
         if(nalu.is_config())return;
         if(nalu.is_aud())return;
         if(nalu.is_sei())return;
-        if(m_data.size()>20)m_data.pop();
+        if(m_data.size()>20){
+            n_dropped_frames++;
+            qDebug()<<"Dropping frame, total:"<<n_dropped_frames;
+            m_data.pop();
+        }
         m_data.push(std::make_shared<NALU>(nalu));
         return;
     }
@@ -100,6 +107,9 @@ void RTPReceiver::nalu_data_callback(const std::chrono::steady_clock::time_point
         m_out_file->write((const char*)nalu_data,nalu_data_size);
         m_out_file->flush();
     }
+    m_rtp_bitrate.addBytes(nalu_data_size,[](std::string bitrate){
+        DecodingStatistcs::instance().set_rtp_measured_bitrate(bitrate.c_str());
+    });
     queue_data(nalu_data,nalu_data_size);
 }
 

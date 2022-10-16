@@ -39,6 +39,17 @@ EGLBoolean eglDestroyImageKHR(EGLDisplay dpy, EGLImageKHR image)
 	return destroyImageProc(dpy, image);
 }
 
+/*void glDebugMessageCallbackKHR(GLDEBUGPROCKHR callback, const void *userParam) __attribute__((weak)); // May not be in libEGL symbol table, resolve manually :(
+void glDebugMessageCallbackKHR(GLDEBUGPROCKHR callback, const void *userParam)
+{
+	static PFNGLDEBUGMESSAGECALLBACKKHRPROC debugMessageCallbackProc = 0;
+	if(!debugMessageCallbackProc) {
+		debugMessageCallbackProc = (PFNGLDEBUGMESSAGECALLBACKKHRPROC)eglGetProcAddress("glDebugMessageCallbackKHR");
+	  	assert(debugMessageCallbackProc);
+	}
+	debugMessageCallbackProc(callback, userParam);
+}*/
+
 
 void glEGLImageTargetTexture2DOES(GLenum target, GLeglImageOES image) __attribute__((weak)); // May not be in libEGL symbol table, resolve manually :(
 void glEGLImageTargetTexture2DOES(GLenum target, GLeglImageOES image)

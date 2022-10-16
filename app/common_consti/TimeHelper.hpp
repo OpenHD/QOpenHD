@@ -13,6 +13,8 @@
 #include <iostream>
 #include "StringHelper.hpp"
 
+#include <QDebug>
+
 // This file holds various classes/namespaces usefully for measuring and comparing
 // latency samples
 
@@ -20,15 +22,6 @@ namespace MyTimeHelper{
     static std::chrono::steady_clock::duration abs(const std::chrono::steady_clock::duration& dur){
         return dur>=std::chrono::nanoseconds(0) ? dur : -dur;
     }
-    template <typename T>
-    std::string to_string_with_precision(const T a_value, const int n = 6)
-    {
-        std::ostringstream out;
-        out.precision(n);
-        out << std::fixed << a_value;
-        return out.str();
-    }
-
     // R stands for readable. Convert a std::chrono::duration into a readable format
     // Readable format is somewhat arbitrary, in this case readable means that for example
     // 1second has 'ms' resolution since for values that big ns resolution probably isn't needed
@@ -38,17 +31,17 @@ namespace MyTimeHelper{
         if(durAbsolute>=std::chrono::seconds(1)){
             // More than one second, print as decimal with ms resolution.
             const auto ms=std::chrono::duration_cast<std::chrono::milliseconds>(dur).count();
-            return to_string_with_precision(ms/1000.0f,2)+"s";
+            return StringHelper::to_string_with_precision(ms/1000.0f,2)+"s";
         }
         if(durAbsolute>=std::chrono::milliseconds(1)){
             // More than one millisecond, print as decimal with us resolution
             const auto us=std::chrono::duration_cast<std::chrono::microseconds>(dur).count();
-            return to_string_with_precision(us/1000.0f,2)+"ms";
+            return StringHelper::to_string_with_precision(us/1000.0f,2)+"ms";
         }
         if(durAbsolute>=std::chrono::microseconds(1)){
             // More than one microsecond, print as decimal with ns resolution
             const auto ns=std::chrono::duration_cast<std::chrono::nanoseconds>(dur).count();
-            return to_string_with_precision(ns/1000.0f,2)+"us";
+            return StringHelper::to_string_with_precision(ns/1000.0f,2)+"us";
         }
         const auto ns=std::chrono::duration_cast<std::chrono::nanoseconds>(dur).count();
         return std::to_string(ns)+"ns";
@@ -368,30 +361,48 @@ static uint64_t __attribute__((unused)) getTimeMs(){
     return getTimeUs()/1000;
 }
 
+// Helper to calculate current bitrate in intervals
 class BitrateCalculator{
 private:
     uint64_t nBytes;
-    std::chrono::steady_clock::time_point begin;
-    bool firstTime=true;
+    //
+    bool first_time=true;
+    std::chrono::steady_clock::time_point last_caluclation;
 public:
-    void addBytes(uint64_t bytes){
+    typedef std::function<void(const std::string bitrate)> CUSTOM_PRINT_CB;
+    void addBytes(uint64_t bytes,CUSTOM_PRINT_CB cb=nullptr,const std::chrono::steady_clock::duration interval_duration_size=std::chrono::seconds(1)){
         nBytes+=bytes;
-        if(firstTime){
-            begin=std::chrono::steady_clock::now();
-            firstTime=false;
+        calculate_in_intervals(interval_duration_size,cb);
+    }
+private:
+    void calculate_in_intervals(const std::chrono::steady_clock::duration interval_duration_size=std::chrono::seconds(1),CUSTOM_PRINT_CB cb=nullptr){
+        if(first_time){
+            first_time=false;
+            last_caluclation=std::chrono::steady_clock::now();
+            return;
         }
-        const auto delta=std::chrono::steady_clock::now()-begin;
+        const auto delta=std::chrono::steady_clock::now()-last_caluclation;
         if(delta>=std::chrono::seconds(1)){
-            const double bytesPerSecond=nBytes/(std::chrono::duration_cast<std::chrono::milliseconds>(delta).count()/1000.0);
-            const double mBytesPerSecond=bytesPerSecond/1024.0/1024.0;
-            const double mBitsPerSecond=mBytesPerSecond*8.0;
-            // avoid garbled output in multi thread
-            std::stringstream ss;
-            ss<<"Avg Bitrate:"<<mBitsPerSecond<<" MBit/s\n";
-            std::cout<<ss.str();
+            const int bits_per_second=(nBytes*8)/(std::chrono::duration_cast<std::chrono::milliseconds>(delta).count()/1000.0);
+            //const double bytesPerSecond=nBytes/(std::chrono::duration_cast<std::chrono::milliseconds>(delta).count()/1000.0);
+            //const double mBytesPerSecond=bytesPerSecond/1024.0/1024.0;
+            //const double mBitsPerSecond=mBytesPerSecond*8.0;
+            if(cb==nullptr){
+                // avoid garbled output in multi thread
+                std::stringstream ss;
+                ss<<"Avg Bitrate:"<<StringHelper::bitrate_to_string(bits_per_second);
+                qDebug()<<ss.str().c_str();
+            }else{
+                auto tmp=StringHelper::bitrate_to_string(bits_per_second);
+                cb(tmp);
+            }
             nBytes=0;
-            begin=std::chrono::steady_clock::now();
+            last_caluclation=std::chrono::steady_clock::now();
         }
+    }
+    // return: bitrate in bits per second for the given data and time "delta".
+    static double calculate_bitrate_bps(uint64_t n_bytes,std::chrono::steady_clock::duration delta){
+        return n_bytes*8 /(std::chrono::duration_cast<std::chrono::milliseconds>(delta).count()/1000.0);
     }
 };
 

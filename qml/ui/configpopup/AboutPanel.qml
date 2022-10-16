@@ -51,7 +51,7 @@ Rectangle {
                     id: title
                     height: 48
                     color: "#ff3a3a3a"
-                    text: qsTr("QOpenHD")
+                    text: qsTr("QOpenHD-local")
                     font.pixelSize: 36
                 }
             }

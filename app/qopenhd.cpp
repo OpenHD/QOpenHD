@@ -4,6 +4,8 @@
 #include <QDebug>
 #include <qapplication.h>
 
+#include "common_consti/openhd-util.hpp"
+
 QOpenHD &QOpenHD::instance()
 {
     static QOpenHD instance=QOpenHD();
@@ -76,6 +78,7 @@ void QOpenHD::quit_qopenhd()
 
 void QOpenHD::disable_service_and_quit()
 {
-    // TODO
+
+    OHDUtil::run_command("sudo systemctl stop qopenhd",{""},true);
     quit_qopenhd();
 }

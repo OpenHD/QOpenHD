@@ -13,6 +13,8 @@
 #include "../nalu/NALU.hpp"
 #include "../nalu/KeyFrameFinder.hpp"
 
+#include "../../common_consti/TimeHelper.hpp"
+
 class RTPReceiver
 {
 public:
@@ -44,6 +46,8 @@ private:
     void queue_data(const uint8_t* nalu_data,const std::size_t nalu_data_len);
 private:
     std::unique_ptr<KeyFrameFinder> m_keyframe_finder;
+    int n_dropped_frames=0;
+    BitrateCalculator m_rtp_bitrate;
 };
 
 #endif // RTPRECEIVER_H

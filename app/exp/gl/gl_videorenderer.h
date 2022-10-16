@@ -55,7 +55,7 @@ class GL_VideoRenderer {
   int curr_video_width=0;
   int curr_video_height=0;
   static std::string debug_info();
-  static void debug_set_swap_interval(int interval);
+  //static void debug_set_swap_interval(int interval);
   // Get all the AV_PIX_FMT_XX values (HW or software) we can do.
   // The order in which the formats are returned is the order they should be queried during decode
   // (E.g. the first one is the "best" and should be used when possible, ...)

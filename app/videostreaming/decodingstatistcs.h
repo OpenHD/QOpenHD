@@ -26,6 +26,9 @@ class DecodingStatistcs : public QObject
     L_RW_PROP(QString, primary_stream_frame_format, set_primary_stream_frame_format, "?")
     // SW or HW decode
     L_RW_PROP(QString, decoding_type, set_decoding_type, "?")
+    L_RW_PROP(int, n_missing_rtp_video_packets, set_n_missing_rtp_video_packets, -1)
+    // In QOpenHD (rtp udp receiver) measured bitrate
+    L_RW_PROP(QString, rtp_measured_bitrate, set_rtp_measured_bitrate, "-1")
 public:
     explicit DecodingStatistcs(QObject *parent = nullptr);
     static DecodingStatistcs& instance();
