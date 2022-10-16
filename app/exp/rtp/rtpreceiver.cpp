@@ -88,6 +88,10 @@ void RTPReceiver::queue_data(const uint8_t* nalu_data,const std::size_t nalu_dat
 void RTPReceiver::udp_raw_data_callback(const uint8_t *payload, const std::size_t payloadSize)
 {
     //qDebug()<<"Got UDP data "<<payloadSize;
+    /*if(m_packet_drop_emulator.drop_packet()){
+        qDebug()<<"Emulate - Dropping packet";
+        return;
+    }*/
     if(is_h265){
         m_rtp_decoder->parseRTPH265toNALU(payload,payloadSize);
         //m_rtp_decoder->parse_rtp_mjpeg(payload,payloadSize);

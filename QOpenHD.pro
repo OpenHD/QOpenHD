@@ -128,6 +128,7 @@ SOURCES += \
     #app/exp/drm_kms/drmprime_out.cpp \
 
 HEADERS += \
+    app/common_consti/EmulatedPacketDrop.hpp \
     app/exp/QSGVideoTextureItem.h \
     app/exp/gl/gl_shaders.h \
     app/exp/gl/gl_videorenderer.h \

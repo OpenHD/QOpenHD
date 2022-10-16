@@ -14,6 +14,7 @@
 #include "../nalu/KeyFrameFinder.hpp"
 
 #include "../../common_consti/TimeHelper.hpp"
+#include "../../common_consti/EmulatedPacketDrop.hpp"
 
 class RTPReceiver
 {
@@ -48,6 +49,7 @@ private:
     std::unique_ptr<KeyFrameFinder> m_keyframe_finder;
     int n_dropped_frames=0;
     BitrateCalculator m_rtp_bitrate;
+    PacketDropEmulator m_packet_drop_emulator{10};
 };
 
 #endif // RTPRECEIVER_H

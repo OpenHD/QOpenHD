@@ -42,7 +42,7 @@ bool RTPDecoder::validateRTPPacket(const rtp_header_t& rtp_header) {
         if(seqNr != ((lastSequenceNumber+1) % (UINT16_MAX+1))){
             // We are missing a Packet !
             qDebug()<<"missing a packet. Last:"<<lastSequenceNumber<<" Curr:"<<seqNr<<" Diff:"<<(seqNr-(int)lastSequenceNumber)<<" total:"<<m_n_gaps;
-            flagPacketHasGoneMissing=true;
+            //flagPacketHasGoneMissing=true;
             m_n_gaps++;
             const auto gap_size=seqNr-(int)lastSequenceNumber;
             m_n_lost_packets+=gap_size;
