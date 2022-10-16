@@ -15,7 +15,9 @@ static int diff_between_packets(int last_packet,int curr_packet){
     if(curr_packet<last_packet){
         qDebug()<<"Assuming overflow";
         // We probably have overflown the uin16_t range of rtp
-        return curr_packet+UINT16_MAX-last_packet;
+        const auto diff=curr_packet+UINT16_MAX+1-last_packet;
+        qDebug()<<"last:"<<last_packet<<" curr:"<<curr_packet<<" diff:"<<diff;
+        return diff;
     }else{
         return curr_packet-last_packet;
     }
