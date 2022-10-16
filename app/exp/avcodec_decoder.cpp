@@ -759,7 +759,7 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp(const QOpenHDVideoHe
          return;
      }
      qDebug()<<"AVCodecDecoder::open_and_decode_until_error_custom_rtp()-begin loop";
-     m_rtp_receiver=std::make_unique<RTPReceiver>(5600,settings.video_codec==1);
+     m_rtp_receiver=std::make_unique<RTPReceiver>(5600,settings.video_codec==1,settings.dev_feed_incomplete_frames_to_decoder);
 
      reset_before_decode_start();
      DecodingStatistcs::instance().set_decoding_type(selected_decoding_type.c_str());
@@ -824,7 +824,7 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp_and_mmal_direct(cons
     assert(settings.enable_software_video_decoder==false);
     assert(settings.dev_test_video_mode==QOpenHDVideoHelper::VideoTestMode::DISABLED);
 
-    m_rtp_receiver=std::make_unique<RTPReceiver>(5600,false);
+    m_rtp_receiver=std::make_unique<RTPReceiver>(5600,false,settings.dev_feed_incomplete_frames_to_decoder);
     std::unique_ptr<RPIMMalDecodeDisplay> mmal_decode_display=std::make_unique<RPIMMalDecodeDisplay>();
 
     reset_before_decode_start();

@@ -5,19 +5,21 @@
 #include <qdebug.h>
 #include <time.h>
 
+#include <random>
+
 // emulating packet drop "as" when using wifibroadcast (no matter weather it is with or without FEC) is not that easy.
 
 // Drops a specific percentage of packets, this doesn't eumlate the "big gaps" behaviour
 class PacketDropEmulator{
 public:
     PacketDropEmulator(int percentage_dropped_packets):m_percentage_dropped_packets(percentage_dropped_packets){
-        srand(time(NULL));
+
     }
     // Returns true if you should drop this packet, false otherwise
     bool drop_packet(){
-        int r = rand();      // Returns a pseudo-random integer between 0 and RAND_MAX.
-        r = r % m_percentage_dropped_packets;
-        if(r==0){
+        const int number=next_random_number_0_100();
+        qDebug()<<"Number is:"<<number;
+        if(m_percentage_dropped_packets>number){
             // drop packet
             n_dropped_packets++;
             log();
@@ -35,6 +37,11 @@ private:
     const int m_percentage_dropped_packets;
     int n_dropped_packets=0;
     int n_forwarded_packets=0;
+    int next_random_number_0_100(){
+        return m_dist100(m_mt);
+    }
+    std::mt19937 m_mt;
+    std::uniform_int_distribution<> m_dist100{0,100};
 };
 
 #endif // EMULATEDPACKETDROP_H

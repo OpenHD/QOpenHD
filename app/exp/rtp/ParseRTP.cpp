@@ -8,7 +8,21 @@
 #include <qdebug.h>
 
 
-RTPDecoder::RTPDecoder(NALU_DATA_CALLBACK cb): m_cb(std::move(cb)){
+static int diff_between_packets(int last_packet,int curr_packet){
+    if(last_packet==curr_packet){
+        qDebug()<<"Duplicate?!";
+    }
+    if(curr_packet<last_packet){
+        qDebug()<<"Assuming overflow";
+        // We probably have overflown the uin16_t range of rtp
+        return curr_packet+UINT16_MAX-last_packet;
+    }else{
+        return curr_packet-last_packet;
+    }
+}
+
+
+RTPDecoder::RTPDecoder(NALU_DATA_CALLBACK cb,bool feed_incomplete_frames): m_cb(std::move(cb)),m_feed_incomplete_frames(feed_incomplete_frames){
 }
 
 void RTPDecoder::reset(){
@@ -37,15 +51,24 @@ bool RTPDecoder::validateRTPPacket(const rtp_header_t& rtp_header) {
         // first packet in stream
         flagPacketHasGoneMissing=false;
     }else{
+        curr_packet_diff=diff_between_packets(lastSequenceNumber,seqNr);
+        if(curr_packet_diff!=1){
+            qDebug()<<"X diff:"<<diff_between_packets(lastSequenceNumber,seqNr);
+        }
         // Don't forget that the sequence number loops every UINT16_MAX packets
         //if(seqNr != ((lastSequenceNumber+1) % UINT16_MAX)){
         if(seqNr != ((lastSequenceNumber+1) % (UINT16_MAX+1))){
             // We are missing a Packet !
             qDebug()<<"missing a packet. Last:"<<lastSequenceNumber<<" Curr:"<<seqNr<<" Diff:"<<(seqNr-(int)lastSequenceNumber)<<" total:"<<m_n_gaps;
-            //flagPacketHasGoneMissing=true;
+            flagPacketHasGoneMissing=true;
             m_n_gaps++;
             const auto gap_size=seqNr-(int)lastSequenceNumber;
             m_n_lost_packets+=gap_size;
+            // Feed it anyways (buggy / hacky)
+            if(m_feed_incomplete_frames){
+                qDebug()<<"Ignoring missing packet flag";
+                flagPacketHasGoneMissing=false;
+            }
         }
     }
     lastSequenceNumber=seqNr;
@@ -122,6 +145,12 @@ void RTPDecoder::parseRTPH264toNALU(const uint8_t* rtp_data, const size_t data_l
         } else {
             //MLOGD<<"Middle of fu-a";
             // middle of fu-a
+            // experiment
+            /*if(curr_packet_diff>1){
+                qDebug()<<"Doing werid things";
+                //m_nalu_data_length+=(curr_packet_diff-1)*1024;
+                append_empty((curr_packet_diff-1)*1024);
+            }*/
             append_nalu_data(fu_payload, fu_payload_size);
         }
     } else if(nalu_header.type>0 && nalu_header.type<24){
@@ -287,6 +316,15 @@ void RTPDecoder::append_nalu_data(const uint8_t *data, size_t data_len) {
     }
     memcpy(&m_nalu_data[m_nalu_data_length],data,data_len);
     m_nalu_data_length+=data_len;
+}
+
+void RTPDecoder::append_empty(size_t data_len)
+{
+    if(m_nalu_data_length+data_len>m_nalu_data.size()){
+        qDebug()<<"Weird - not enugh space to write NALU. curr_size:"<<m_nalu_data_length<<" append:"<<data_len;
+        return;
+    }
+    std::memset(&m_nalu_data[m_nalu_data_length],0,data_len);
 }
 
 void RTPDecoder::write_h264_h265_nalu_start(const bool use_4_bytes)

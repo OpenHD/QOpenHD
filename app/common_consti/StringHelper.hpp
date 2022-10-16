@@ -56,17 +56,15 @@ public:
     }
 
     static std::string bitrate_to_string(uint64_t bits_per_second){
-      const double mBits_per_second=static_cast<double>(bits_per_second)/(1000*1000);
-      std::stringstream ss;
-      if(mBits_per_second>1){
-          ss.precision(3);
-          ss<<mBits_per_second<<" mBit/s";
-          return ss.str();
+      if(bits_per_second>1024*1024){
+          const double mbits=static_cast<double>(bits_per_second)/(1024.0*1024.0);
+          return to_string_with_precision(mbits,1)+" mBit/s";
       }
-      const double kBits_per_second=static_cast<double>(bits_per_second)/1000;
-      ss.precision(3);
-      ss<<kBits_per_second<<" kBit/s";
-      return ss.str();
+      if(bits_per_second>1024){
+          const double kbits=static_cast<double>(bits_per_second)/(1024.0);
+          return to_string_with_precision(kbits,2)+" kBit/s";
+      }
+      return std::to_string(bits_per_second)+" Bit/s";
     }
 
     /*static std::string bitrate_readable(const int bits_per_second){
