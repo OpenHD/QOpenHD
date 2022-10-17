@@ -35,7 +35,7 @@ AOHDSystem &AOHDSystem::instanceGround()
     return ground;
 }
 
-void AOHDSystem::reqister_for_qml(QQmlContext *qml_context)
+void AOHDSystem::register_for_qml(QQmlContext *qml_context)
 {
     qml_context->setContextProperty("_ohdSystemAir", &AOHDSystem::instanceAir());
     qml_context->setContextProperty("_ohdSystemGround", &AOHDSystem::instanceGround());

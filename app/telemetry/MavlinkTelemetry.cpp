@@ -188,7 +188,7 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg)
 }
 
 
-void MavlinkTelemetry::pingAllSystems()
+void MavlinkTelemetry::ping_all_systems()
 {
     mavlink_message_t msg;
     mavlink_timesync_t timesync{};

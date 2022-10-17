@@ -317,7 +317,7 @@ Rectangle {
         Button{
             height: 24
             text: "Ping all systems"
-            onClicked: _mavlinkTelemetry.pingAllSystems()
+            onClicked: _mavlinkTelemetry.ping_all_systems()
         }
         Button{
             height: 24

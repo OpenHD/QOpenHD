@@ -31,7 +31,7 @@ public:
     static AOHDSystem& instanceAir();
     static AOHDSystem& instanceGround();
     // Called in main.cpp to egister the models for qml
-    static void reqister_for_qml(QQmlContext* qml_context);
+    static void register_for_qml(QQmlContext* qml_context);
     //Process OpenHD custom flavour message(s) coming from either the OHD Air or Ground unit
     // Returns true if the passed message was processed (known message id), false otherwise
     bool process_message(const mavlink_message_t& msg);
@@ -197,7 +197,7 @@ private:
     std::chrono::steady_clock::time_point m_last_message_openhd_stats_total_all_wifibroadcast_streams=std::chrono::steady_clock::now();
     // Model / fire and forget data only end
 private:
-     // NOTE: Null until discovered
+     // NOTE: nullptr until discovered !!
      std::shared_ptr<mavsdk::System> _system;
      std::shared_ptr<mavsdk::Action> _action;
      bool send_command_long(mavsdk::Action::CommandLong command);

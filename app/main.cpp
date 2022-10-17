@@ -288,8 +288,8 @@ int main(int argc, char *argv[]) {
 
     // Regster all the QT Mavlink system model(s)
     // it is a common practice for QT to prefix models from c++ with an underscore
-    FCMavlinkSystem::reqister_for_qml(engine.rootContext());
-    AOHDSystem::reqister_for_qml(engine.rootContext());
+    FCMavlinkSystem::register_for_qml(engine.rootContext());
+    AOHDSystem::register_for_qml(engine.rootContext());
     engine.rootContext()->setContextProperty("_decodingStatistics",&DecodingStatistcs::instance());
     // dirty
     engine.rootContext()->setContextProperty("_messageBoxInstance", &workaround::MessageBox::instance());

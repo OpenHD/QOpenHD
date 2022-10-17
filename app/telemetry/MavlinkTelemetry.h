@@ -26,15 +26,10 @@
  * Its functionalities are simple:
  * 1) sending mavlink messages to OpenHD
  * 2) receiving mavlink messages from OpenHD
- *
- * The received mavlink messages can come from OpenHD itself (Air or ground) or can be telemetry data from the Drone Flight Controller
- * connected to the OpenHD air unit.
- *
- * If we go for a single TCP or 2 udp connections (1 for send, one for receive) is not clear yet.
- *
- * The pulic methods of this class won't change regardeless.
- *
- * If the connection to OpenHD is lost, this class should try and reconnect in intervalls until the connection has been re-established.
+ * 3) Handling the mavsdk "system discovery" for our OpenHD mavlink network, which is defined by
+ *      a) OHD Air unit (own sys id)
+ *      b) OHD Ground unit (own sys id)
+ *      c) Optional FC connected to the air unit
  */
 class MavlinkTelemetry : public QObject
 {
@@ -45,8 +40,10 @@ public:
     // Called in main.cpp such that we can call the couple of Q_INVOCABLE methods
     static void register_for_qml(QQmlContext* qml_context);
     /**
-     * @brief sendMessage send a message to the OHD Ground station. If no connection has been established (yet), this should return immediately.
-     * @param msg the message to send to the OHD Ground Station
+     * Send a message to the OHD ground unit. If no connection has been established (yet), this should return immediately.
+     * The message can be aimed at either the OHD ground unit, the OHD air unit (forwarded by OpenHD) or the FC connected to the
+     * OHD air unit (forwarded by OpenHD).
+     * @param msg the message to send.
      */
     void sendMessage(mavlink_message_t msg);
 private:
@@ -65,12 +62,14 @@ private:
     std::shared_ptr<mavsdk::System> systemOhdGround=nullptr;
     std::shared_ptr<mavsdk::System> systemOhdAir=nullptr;
     std::shared_ptr<mavsdk::MavlinkPassthrough> passtroughOhdGround=nullptr;
-private:
     // called by mavsdk whenever a new system is detected
     void onNewSystem(std::shared_ptr<mavsdk::System> system);
+    // Called every time we get a mavlink message (from any system). Intended to be used for message types that don't
+    // work with mavsdk / their subscription based pattern.
+    void onProcessMavlinkMessage(mavlink_message_t msg);
 public:
-    // ping all the systems (using timesync, since "ping" is deprecated
-    Q_INVOKABLE void pingAllSystems();
+    // ping all the systems (using timesync, since "ping" is deprecated)
+    Q_INVOKABLE void ping_all_systems();
     // request the OpenHD version, both OpenHD air and ground unit will respond to that message.
     Q_INVOKABLE void request_openhd_version();
     // send a command, to all connected systems
@@ -79,8 +78,6 @@ public:
 private:
     int pingSequenceNumber=0;
     int64_t lastTimeSyncOut=0;
-private:
-    void onProcessMavlinkMessage(mavlink_message_t msg);
 };
 
 #endif // OHDMAVLINKCONNECTION_H

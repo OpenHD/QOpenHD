@@ -26,7 +26,7 @@ public:
     // singleton for accessing the model from c++
     static FCMavlinkSystem& instance();
     // Called in main.cpp to egister the models for qml
-    static void reqister_for_qml(QQmlContext* qml_context);
+    static void register_for_qml(QQmlContext* qml_context);
 public:
     // Process a new telemetry message coming from the FC mavlink system
     // return true if we know what to do with this message type (aka this message type has been consumed)
