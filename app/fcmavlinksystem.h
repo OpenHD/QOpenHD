@@ -297,15 +297,6 @@ signals:
     void press_temp_changed (int press_temp);
     void esc_temp_changed (int esc_temp);
 
-    void kbitrate_changed(double kbitrate);
-    void kbitrate_set_changed(double kbitrate_set);
-    void kbitrate_measured_changed(double kbitrate_measured);
-    void damaged_block_cnt_changed(unsigned int damaged_block_cnt);
-    void damaged_block_percent_changed(int damaged_block_percent);
-    void lost_packet_cnt_changed(unsigned int lost_packet_cnt);
-    void lost_packet_percent_changed(int lost_packet_percent);
-    void cts_changed(bool cts);
-
     void flight_time_changed(QString flight_time);
 
     void flight_distance_changed(double flight_distance);
