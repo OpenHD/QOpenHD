@@ -183,13 +183,11 @@ HEADERS += \
 # I deleted all the "old" telemetry protocolls other than mavlink
 # and moved them into their own respective directories
 HEADERS += \
-    app/telemetry/OHDConnection.h \
-    app/telemetry/mavlinktelemetry.h \
+    app/telemetry/MavlinkTelemetry.h \
     app/telemetry/settings/mavlinksettingsmodel.h \
 
 SOURCES += \
-    app/telemetry/OHDConnection.cpp \
-    app/telemetry/mavlinktelemetry.cpp \
+    app/telemetry/MavlinkTelemetry.cpp \
     app/telemetry/settings/mavlinksettingsmodel.cpp \
 
 

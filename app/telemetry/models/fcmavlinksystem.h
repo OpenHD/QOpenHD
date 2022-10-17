@@ -34,7 +34,12 @@ public:
     // mavlink sys id of the FC. Pretty much always 1, but it is not a hard requirement that FC always use a sys id of 1.
     // If the FC has not been discovered yet (mavsdk::system not yet set), return std::nullopt.
     std::optional<uint8_t> get_fc_sys_id();
-
+    // Set the mavlink system reference, once discovered.
+    // If we can get a telemetry value (e.g. the altitude) by subscribing to a mavlink message this is preferred over
+    // manually parsing the message, and we register the callbacks to mavsdk when this is called (since we need the "system"
+    // reference for it)
+    void set_system(std::shared_ptr<mavsdk::System> system);
+public:
     void telemetryStatusMessage(QString message, int level);
     void calculate_home_distance();
     void calculate_home_course();
@@ -443,8 +448,6 @@ private:
     std::shared_ptr<mavsdk::Action> _action=nullptr;
     std::shared_ptr<mavsdk::Telemetry> _mavsdk_telemetry=nullptr;
 public:
-    // Set the mavlink system reference, once discovered
-    void set_system(std::shared_ptr<mavsdk::System> system);
     //
     Q_INVOKABLE bool set_flight_mode(int mode);
     // Try to change the arming state. Once completed, since we listen to arm/disarm results,

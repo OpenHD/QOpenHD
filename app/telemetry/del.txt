@@ -28,3 +28,21 @@ void MavlinkTelemetry::rc_value_changed(int channelIdx,uint channelValue){
         return;
     }
 }*/
+
+case MAVLINK_MSG_ID_STATUSTEXT: {
+    mavlink_statustext_t statustext;
+    mavlink_msg_statustext_decode(&msg, &statustext);
+    const QString s=QOpenHDMavlinkHelper::safe_string(statustext.text,sizeof(statustext.text));
+    if(msg.sysid==OHD_SYS_ID_AIR || msg.sysid == OHD_SYS_ID_GROUND){
+        // the message is a log message from openhd
+        //qDebug()<<"Log message from OpenHD:"<<s;
+        const auto tag= (msg.sysid==OHD_SYS_ID_AIR) ? "OHDAir":"OHDGround";
+        LogMessagesModel::instance().addLogMessage(tag,s,statustext.severity);
+
+    }else{
+        // most likely from the flight controller, but can be someone else, too
+         //qDebug()<<"Log message from not OpenHD:"<<s;
+        FCMavlinkSystem::instance().telemetryStatusMessage(s, statustext.severity);
+    }
+    break;
+}

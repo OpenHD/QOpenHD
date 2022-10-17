@@ -65,6 +65,19 @@ static QString debug_mavlink_message(const mavlink_message_t& msg){
     return ss.str().c_str();
 }
 
+static std::string time_microseconds_readable(int64_t micros){
+    if(micros > 1000*1000){
+       float seconds=micros/1000.0f/1000.0f;
+       std::stringstream ss;
+       ss<<seconds<<"s";
+       return ss.str();
+    }
+    const float deltaMs=micros/1000.0f;
+    std::stringstream ss;
+    ss<<deltaMs<<"ms";
+    return ss.str();
+}
+
 }
 
 #endif // QOPENHDMAVLINKHELPER_H

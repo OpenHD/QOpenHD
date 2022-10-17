@@ -15,7 +15,7 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "rc/openhdrc.h"
 #include "telemetry/models/fcmavlinksystem.h"
 #include "telemetry/models/aohdsystem.h"
-#include "../app/telemetry/mavlinktelemetry.h"
+#include "telemetry/MavlinkTelemetry.h"
 
 #include "util/QmlObjectListModel.h"
 
@@ -282,7 +282,7 @@ int main(int argc, char *argv[]) {
     auto openHDRC = new OpenHDRC();
     engine.rootContext()->setContextProperty("openHDRC", openHDRC);
 
-    engine.rootContext()->setContextProperty("_mavlinkTelemetry", &MavlinkTelemetry::instance());
+    MavlinkTelemetry::register_for_qml(engine.rootContext());
 
     engine.rootContext()->setContextProperty("OpenHDUtil", &OpenHDUtil::instance());
 

@@ -35,20 +35,15 @@
  * The pulic methods of this class won't change regardeless.
  *
  * If the connection to OpenHD is lost, this class should try and reconnect in intervalls until the connection has been re-established.
- *
- * NOTE: Since QGroundControll does the same, this one sends out mavlink heartbeat messages in reqular intervalls.
  */
-
-class OHDConnection : public QObject
+class MavlinkTelemetry : public QObject
 {
+    Q_OBJECT
 public:
-    OHDConnection(QObject *parent = nullptr,bool useTcp=true);
-    static OHDConnection& instance();
-    /**
-     * @brief MAV_MSG_CALLBACK Callback that can be registered and is called every time a new incoming mavlink message has been parsed.
-     */
-    typedef std::function<void(mavlink_message_t msg)> MAV_MSG_CALLBACK;
-    void registerNewMessageCalback(MAV_MSG_CALLBACK cb);
+    MavlinkTelemetry(QObject *parent = nullptr);
+    static MavlinkTelemetry& instance();
+    // Called in main.cpp such that we can call the couple of Q_INVOCABLE methods
+    static void register_for_qml(QQmlContext* qml_context);
     /**
      * @brief sendMessage send a message to the OHD Ground station. If no connection has been established (yet), this should return immediately.
      * @param msg the message to send to the OHD Ground Station
@@ -63,11 +58,6 @@ private:
     static constexpr auto QOPENHD_GROUND_CLIENT_UDP_ADDRESS="127.0.0.1";
     static constexpr auto QOPENHD_GROUND_CLIENT_UDP_PORT_IN=14550;
     static constexpr auto QOPENHD_GROUND_CLIENT_UDP_PORT_OUT=14551;
-    MAV_MSG_CALLBACK callback=nullptr;
-private:
-    static constexpr auto HARTBEAT_INTERVALL_SECONDS=1;
-    QTimer* heartbeatTimer=nullptr;
-    std::chrono::steady_clock::time_point lastMavlinkMessage;
 private:
     std::mutex systems_mutex;
     int mavsdk_already_known_systems=0;
@@ -76,16 +66,21 @@ private:
     std::shared_ptr<mavsdk::System> systemOhdAir=nullptr;
     std::shared_ptr<mavsdk::MavlinkPassthrough> passtroughOhdGround=nullptr;
 private:
-    // obsolete
-    void sendMessageHeartbeat();
     // called by mavsdk whenever a new system is detected
     void onNewSystem(std::shared_ptr<mavsdk::System> system);
 public:
+    // ping all the systems (using timesync, since "ping" is deprecated
+    Q_INVOKABLE void pingAllSystems();
     // request the OpenHD version, both OpenHD air and ground unit will respond to that message.
-    void request_openhd_version();
+    Q_INVOKABLE void request_openhd_version();
     // send a command, to all connected systems
     // doesn't reatransmitt
     void send_command_long_oneshot(const mavlink_command_long_t& command);
+private:
+    int pingSequenceNumber=0;
+    int64_t lastTimeSyncOut=0;
+private:
+    void onProcessMavlinkMessage(mavlink_message_t msg);
 };
 
 #endif // OHDMAVLINKCONNECTION_H
