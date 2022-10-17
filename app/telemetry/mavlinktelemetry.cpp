@@ -93,6 +93,7 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg) {
         }
         return;
     }*/
+    // We use timesync to ping the OpenHD systems and the FC ourselves.
     if(msg.msgid==MAVLINK_MSG_ID_TIMESYNC){
         mavlink_timesync_t timesync;
         mavlink_msg_timesync_decode(&msg,&timesync);

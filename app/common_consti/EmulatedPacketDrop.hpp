@@ -17,8 +17,9 @@ public:
     }
     // Returns true if you should drop this packet, false otherwise
     bool drop_packet(){
-        const int number=next_random_number_0_100();
-        qDebug()<<"Number is:"<<number;
+        const auto number=next_random_number_0_100();
+        //qDebug()<<"Number is:"<<number;
+        n_totoal_packets++;
         if(m_percentage_dropped_packets>number){
             // drop packet
             n_dropped_packets++;
@@ -30,13 +31,14 @@ public:
         return false;
     }
     void log(){
-        const double perc_dropped=(double)n_dropped_packets / (n_dropped_packets+n_forwarded_packets)*100.0;
+        const double perc_dropped=(double)n_dropped_packets / (n_totoal_packets)*100.0;
         qDebug()<<"N dropped:"<<n_dropped_packets<<",forwarded:"<<n_forwarded_packets<<"Perc:"<<perc_dropped;
     }
 private:
     const int m_percentage_dropped_packets;
     int n_dropped_packets=0;
     int n_forwarded_packets=0;
+    int n_totoal_packets=0;
     int next_random_number_0_100(){
         return m_dist100(m_mt);
     }

@@ -104,6 +104,7 @@ private:
 //#define HAVE_MMAL
 #ifdef HAVE_MMAL
     // Since this version of mmal decode (direct) does not use avcodec, we have a special impl. for it
+    // Note that the official specs for the rpi h264 decoder are level 4.0 - aka 1080p@30, 720p@68 and max 20Mbit/s bitrate
     void open_and_decode_until_error_custom_rtp_and_mmal_direct(const QOpenHDVideoHelper::VideoStreamConfig settings);
 #else
     void open_and_decode_until_error_custom_rtp_and_mmal_direct(const QOpenHDVideoHelper::VideoStreamConfig settings){

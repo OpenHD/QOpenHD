@@ -78,7 +78,10 @@ void OHDConnection::onNewSystem(std::shared_ptr<mavsdk::System> system){
         MavlinkSettingsModel::instanceAir().set_param_client(system);
         MavlinkSettingsModel::instanceAirCamera().set_param_client(system);
         AOHDSystem::instanceAir().set_system(system);
-    }//else if(system->has_autopilot()){
+    }
+    // mavsdk doesn't report iNAV as being an "autopilot", so for now we just assume that if we have a mavlink system that has not one of the
+    // pre-defined OpenHD sys id's it is the one FC system (connected on the air pi).
+    //else if(system->has_autopilot()){
     else {
         qDebug()<<"Found FC";
         // we got the flight controller
