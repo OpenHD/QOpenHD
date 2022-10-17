@@ -1,12 +1,11 @@
 #include "fcmavlinksystem.h"
 
-#include "telemetry/mavlinktelemetry.h"
-//#include "FCMavlinkSystemtelemetry.h"
-#include "telemetry/qopenhdmavlinkhelper.hpp"
+#include "../mavlinktelemetry.h"
+#include "../qopenhdmavlinkhelper.hpp"
 
 #include <QDebug>
 #include "qopenhd.h"
-#include "telemetry/telemetryutil.hpp"
+#include "../telemetryutil.hpp"
 
 #include <geographiclib-c-2.0/src/geodesic.h>
 

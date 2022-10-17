@@ -8,7 +8,7 @@
 #include <mavsdk/mavsdk.h>
 #include <mavsdk/plugins/action/action.h>
 #include <mavsdk/plugins/telemetry/telemetry.h>
-#include "telemetry/mavlink_include.h"
+#include "..//mavlink_include.h"
 
 /**
  * This used to be called OpenHD and was a mix of everything, it has become FCMavlinkSystem -

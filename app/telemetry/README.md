@@ -1,2 +1,1 @@
-Code for communicating with the OpenHD ground unit via telemetry, 
-as well as parsing mavlink messages and storing them in the OpenHD humungus singleton.
+Code for communicating and storing telemetry data for the OpenHD air unit, OpenHD ground unit and the FC connected to the OHD air unit

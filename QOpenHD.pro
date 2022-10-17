@@ -195,7 +195,7 @@ SOURCES += \
 
 # all other files, complete mess
 SOURCES += \
-    app/fcmavlinksystem.cpp \
+    app/telemetry/models/fcmavlinksystem.cpp \
     app/util/FrequencyMonitor.cpp \
     app/main.cpp \
     app/rc/openhdrc.cpp \
@@ -206,7 +206,7 @@ RESOURCES += qml/qml.qrc \
     qml/qml.qrc
 
 HEADERS += \
-    app/fcmavlinksystem.h \
+    app/telemetry/models/fcmavlinksystem.h \
     app/util/FrequencyMonitor.h \
     app/util/sharedqueue.h \
     app/rc/openhdrc.h \
