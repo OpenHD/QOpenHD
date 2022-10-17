@@ -41,7 +41,7 @@ MavlinkTelemetry::MavlinkTelemetry(QObject *parent):QObject(parent),USE_TCP(fals
 
 MavlinkTelemetry &MavlinkTelemetry::instance()
 {
-    static MavlinkTelemetry instance=new MavlinkTelemetry();
+    static MavlinkTelemetry instance{};
     return instance;
 }
 
@@ -92,18 +92,6 @@ void MavlinkTelemetry::onNewSystem(std::shared_ptr<mavsdk::System> system){
     }
 }
 
-void MavlinkTelemetry::pingAllSystems()
-{
-    mavlink_message_t msg;
-    mavlink_timesync_t timesync{};
-    timesync.tc1=0;
-    // NOTE: MAVSDK does time in nanoseconds by default
-    lastTimeSyncOut=QOpenHDMavlinkHelper::getTimeMicroseconds();
-    timesync.ts1=lastTimeSyncOut;
-    mavlink_msg_timesync_encode(QOpenHDMavlinkHelper::getSysId(),QOpenHDMavlinkHelper::getCompId(),&msg,&timesync);
-    sendMessage(msg);
-}
-
 void MavlinkTelemetry::sendMessage(mavlink_message_t msg){
     const auto sys_id=QOpenHDMavlinkHelper::getSysId();
     const auto comp_id=QOpenHDMavlinkHelper::getCompId();
@@ -115,6 +103,8 @@ void MavlinkTelemetry::sendMessage(mavlink_message_t msg){
         // probably a programming error, the message was not packed with the right comp id
         qDebug()<<"WARN Sending message with comp id:"<<msg.compid<<" instead of"<<comp_id;
     }
+    assert(mavsdk!=nullptr);
+    std::lock_guard<std::mutex> lock(systems_mutex);
     if(passtroughOhdGround!=nullptr){
         passtroughOhdGround->send_message(msg);
     }else{
@@ -127,21 +117,6 @@ void MavlinkTelemetry::sendMessage(mavlink_message_t msg){
             //first=false;
         }
     }
-}
-
-void MavlinkTelemetry::request_openhd_version()
-{
-    mavlink_command_long_t command{};
-    command.command=MAV_CMD_REQUEST_MESSAGE;
-    command.param1=static_cast<float>(MAVLINK_MSG_ID_OPENHD_VERSION_MESSAGE);
-    send_command_long_oneshot(command);
-}
-
-void MavlinkTelemetry::send_command_long_oneshot(const mavlink_command_long_t &command)
-{
-    mavlink_message_t msg;
-    mavlink_msg_command_long_encode(QOpenHDMavlinkHelper::getSysId(),QOpenHDMavlinkHelper::getCompId(), &msg,&command);
-    sendMessage(msg);
 }
 
 void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg)
@@ -210,4 +185,32 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg)
             qDebug()<<"MavlinkTelemetry received unmatched message (FC not yet known) "<<QOpenHDMavlinkHelper::debug_mavlink_message(msg);
         }
     }
+}
+
+
+void MavlinkTelemetry::pingAllSystems()
+{
+    mavlink_message_t msg;
+    mavlink_timesync_t timesync{};
+    timesync.tc1=0;
+    // NOTE: MAVSDK does time in nanoseconds by default
+    lastTimeSyncOut=QOpenHDMavlinkHelper::getTimeMicroseconds();
+    timesync.ts1=lastTimeSyncOut;
+    mavlink_msg_timesync_encode(QOpenHDMavlinkHelper::getSysId(),QOpenHDMavlinkHelper::getCompId(),&msg,&timesync);
+    sendMessage(msg);
+}
+
+void MavlinkTelemetry::request_openhd_version()
+{
+    mavlink_command_long_t command{};
+    command.command=MAV_CMD_REQUEST_MESSAGE;
+    command.param1=static_cast<float>(MAVLINK_MSG_ID_OPENHD_VERSION_MESSAGE);
+    send_command_long_oneshot(command);
+}
+
+void MavlinkTelemetry::send_command_long_oneshot(const mavlink_command_long_t &command)
+{
+    mavlink_message_t msg;
+    mavlink_msg_command_long_encode(QOpenHDMavlinkHelper::getSysId(),QOpenHDMavlinkHelper::getCompId(), &msg,&command);
+    sendMessage(msg);
 }
