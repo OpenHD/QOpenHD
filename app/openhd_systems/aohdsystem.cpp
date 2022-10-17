@@ -34,6 +34,12 @@ AOHDSystem &AOHDSystem::instanceGround()
     return ground;
 }
 
+void AOHDSystem::reqister_for_qml(QQmlContext *qml_context)
+{
+    qml_context->setContextProperty("_ohdSystemAir", &AOHDSystem::instanceAir());
+    qml_context->setContextProperty("_ohdSystemGround", &AOHDSystem::instanceGround());
+}
+
 bool AOHDSystem::process_message(const mavlink_message_t &msg)
 {
     if(msg.sysid != get_own_sys_id()){

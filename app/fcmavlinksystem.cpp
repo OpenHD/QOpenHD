@@ -15,6 +15,12 @@ FCMavlinkSystem& FCMavlinkSystem::instance() {
     return *instance;
 }
 
+void FCMavlinkSystem::reqister_for_qml(QQmlContext *qml_context)
+{
+    qml_context->setContextProperty("_fcMavlinkSystem", &FCMavlinkSystem::instance());
+}
+
+
 bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
 {
     //qDebug()<<"FCMavlinkSystem::process_message";
@@ -27,6 +33,7 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         qDebug()<<"Do not pass messages not coming from the FC to the FC model";
         return false;
     }
+
     return true;
 }
 
@@ -782,7 +789,7 @@ void FCMavlinkSystem::set_system(std::shared_ptr<mavsdk::System> system)
     auto cb_armed=[this](bool armed){
         set_armed(armed);
     };
-    _mavsdk_telemetry->subscribe_armed(cb_armed);
+    _mavsdk_telemetry->subscribe_armed(cb_armed);    
     //_mavsdk_telemetry->subscribe_status_text()
     /*auto cb_flight_mode=[this](mavsdk::Telemetry::FlightMode flight_mode){
         flight_mode

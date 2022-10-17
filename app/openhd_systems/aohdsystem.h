@@ -8,6 +8,7 @@
 #include "wifiadapter.h"
 #include "../telemetry/openhd_defines.hpp"
 #include <array>
+#include <QQmlContext>
 //
 #include <mavsdk/mavsdk.h>
 #include <mavsdk/plugins/action/action.h>
@@ -26,8 +27,11 @@ class AOHDSystem : public QObject
     Q_OBJECT
 public:
     explicit AOHDSystem(const bool is_air,QObject *parent = nullptr);
+    // Singletons for accessing the models from c++
     static AOHDSystem& instanceAir();
     static AOHDSystem& instanceGround();
+    // Called in main.cpp to egister the models for qml
+    static void reqister_for_qml(QQmlContext* qml_context);
     //Process OpenHD custom flavour message(s) coming from either the OHD Air or Ground unit
     // Returns true if the passed message was processed (known message id), false otherwise
     bool process_message(const mavlink_message_t& msg);
