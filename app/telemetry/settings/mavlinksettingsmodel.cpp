@@ -2,7 +2,7 @@
 #include "qdebug.h"
 #include "../openhd_defines.hpp"
 //temporary
-#include "../../openhd_systems/aohdsystem.h"
+#include "../models/aohdsystem.h"
 
 #include "../../util/WorkaroundMessageBox.h"
 #include "documentedsetting.hpp"

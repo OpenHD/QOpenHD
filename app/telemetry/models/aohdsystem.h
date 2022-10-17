@@ -4,9 +4,9 @@
 #include <QObject>
 #include <QDebug>
 #include <QTimer>
-#include "../telemetry/mavlink_include.h"
+#include "../mavlink_include.h"
 #include "wifiadapter.h"
-#include "../telemetry/openhd_defines.hpp"
+#include "../openhd_defines.hpp"
 #include <array>
 #include <QQmlContext>
 //

@@ -14,7 +14,7 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 
 #include "rc/openhdrc.h"
 #include "fcmavlinksystem.h"
-#include "openhd_systems/aohdsystem.h"
+#include "telemetry/models/aohdsystem.h"
 #include "../app/telemetry/mavlinktelemetry.h"
 
 #include "util/QmlObjectListModel.h"

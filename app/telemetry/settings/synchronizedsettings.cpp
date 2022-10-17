@@ -1,6 +1,6 @@
 #include "synchronizedsettings.h"
 
-#include "../../openhd_systems/aohdsystem.h"
+#include "../models/aohdsystem.h"
 #include "mavlinksettingsmodel.h"
 
 #include "../../util/WorkaroundMessageBox.h"

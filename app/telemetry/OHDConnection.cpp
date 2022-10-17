@@ -2,7 +2,7 @@
 
 #include "qopenhdmavlinkhelper.hpp"
 #include "telemetry/openhd_defines.hpp"
-#include "../openhd_systems/aohdsystem.h"
+#include "models/aohdsystem.h"
 #include "../fcmavlinksystem.h"
 
 #include "settings/mavlinksettingsmodel.h"

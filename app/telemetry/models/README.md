@@ -7,5 +7,5 @@ That's why there is one class to handle them both, with slight differences (for 
 It would be nicer from a developer perspective to have one common "shared" base class and 2 different impl. for air and ground,
 but unfortunately qt and their modeling / signal stuff doesn't work with inheritance.
 
-Note that these classes r.n are basically only "mavlink write & UI read" - models, you cannot find any settings ore more complicated stuff here.
+For the one and only FC (the FC connected to the Air unit, but for which OpenHD provides direct access to) we also have a model (quite dirty right now).
 

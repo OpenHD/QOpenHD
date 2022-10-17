@@ -22,7 +22,7 @@
 #include "qopenhdmavlinkhelper.hpp"
 
 #include "fcmavlinksystem.h"
-#include "openhd_systems/aohdsystem.h"
+#include "models/aohdsystem.h"
 #include "telemetryutil.hpp"
 
 MavlinkTelemetry& MavlinkTelemetry::instance() {

@@ -1,9 +1,10 @@
 #include "aohdsystem.h"
-#include "../telemetry/qopenhdmavlinkhelper.hpp"
+
+#include "../qopenhdmavlinkhelper.hpp"
+#include "../../common_consti/StringHelper.hpp"
+
 #include <string>
 #include <sstream>
-
-#include "../common_consti/StringHelper.hpp"
 
 
 static std::string video_codec_to_string(int value){

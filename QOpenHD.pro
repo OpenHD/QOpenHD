@@ -115,7 +115,7 @@ SOURCES += \
     app/exp/rtp/ParseRTP.cpp \
     app/exp/rtp/rtpreceiver.cpp \
     app/logging/logmessagesmodel.cpp \
-    app/openhd_systems/aohdsystem.cpp \
+    app/telemetry/models/aohdsystem.cpp \
     app/qopenhd.cpp \
     app/telemetry/settings/synchronizedsettings.cpp \
     app/util/WorkaroundMessageBox.cpp \
@@ -138,7 +138,7 @@ HEADERS += \
     app/exp/rtp/RTP.hpp \
     app/exp/rtp/rtpreceiver.h \
     app/logging/logmessagesmodel.h \
-    app/openhd_systems/aohdsystem.h \
+    app/telemetry/models/aohdsystem.h \
     app/openhd_systems/wifiadapter.h \
     app/qopenhd.h \
     app/telemetry/mavlink_include.h \
