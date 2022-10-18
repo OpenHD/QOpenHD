@@ -17,6 +17,10 @@
  * Also, note that nothing OpenHD specific should ever make it into here - OpenHD supports raw access to
  * the Flight Controller, but it is NOT a Flight Controller ;)
  * The corresponding qml element is called _fcMavlinkSystem.
+ *
+ * NOTE: R.n we are using both the mavsdk "subscription" pattern for a couble of values and the humungus
+ * mavlink message type switch-case (legacy). This is a bit confusing, not sure if we should either not
+ * use mavsdk subscriptions at all or use them as much as possible.
  */
 class FCMavlinkSystem : public QObject
 {
@@ -211,17 +215,14 @@ public:
     Q_PROPERTY(int mah_km MEMBER m_mah_km WRITE set_mah_km NOTIFY mah_km_changed)
     void set_mah_km(int mah_km);
 
-    Q_PROPERTY(qint64 last_telemetry_attitude MEMBER m_last_telemetry_attitude WRITE set_last_telemetry_attitude NOTIFY last_telemetry_attitude_changed)
+    /*Q_PROPERTY(qint64 last_telemetry_attitude MEMBER m_last_telemetry_attitude WRITE set_last_telemetry_attitude NOTIFY last_telemetry_attitude_changed)
     void set_last_telemetry_attitude(qint64 last_telemetry_attitude);
-
     Q_PROPERTY(qint64 last_telemetry_battery MEMBER m_last_telemetry_battery WRITE set_last_telemetry_battery NOTIFY last_telemetry_battery_changed)
     void set_last_telemetry_battery(qint64 last_telemetry_battery);
-
     Q_PROPERTY(qint64 last_telemetry_gps MEMBER m_last_telemetry_gps WRITE set_last_telemetry_gps NOTIFY last_telemetry_gps_changed)
     void set_last_telemetry_gps(qint64 last_telemetry_gps);
-
     Q_PROPERTY(qint64 last_telemetry_vfr MEMBER m_last_telemetry_vfr WRITE set_last_telemetry_vfr NOTIFY last_telemetry_vfr_changed)
-    void set_last_telemetry_vfr(qint64 last_telemetry_vfr);
+    void set_last_telemetry_vfr(qint64 last_telemetry_vfr);*/
 
     Q_PROPERTY(double vehicle_vx_angle MEMBER m_vehicle_vx_angle WRITE set_vehicle_vx_angle NOTIFY vehicle_vx_angle_changed)
     void set_vehicle_vx_angle(double vehicle_vx_angle);
@@ -419,10 +420,10 @@ public:
     qint64 mahKmLastTime= 0;
     double total_mah= 0;
 
-    qint64 m_last_telemetry_attitude = -1;
+    /*qint64 m_last_telemetry_attitude = -1;
     qint64 m_last_telemetry_battery = -1;
     qint64 m_last_telemetry_gps = -1;
-    qint64 m_last_telemetry_vfr = -1;
+    qint64 m_last_telemetry_vfr = -1;*/
 
     QElapsedTimer totalTime;
     QElapsedTimer flightTimeStart;

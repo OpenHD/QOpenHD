@@ -79,6 +79,12 @@ OpenHDRC::OpenHDRC(QObject *parent): QObject(parent) {
 
 }
 
+OpenHDRC &OpenHDRC::instance()
+{
+    static OpenHDRC instance{};
+    return instance;
+}
+
 
 void OpenHDRC::setGroundIP(QString address) {
     groundAddress = address;

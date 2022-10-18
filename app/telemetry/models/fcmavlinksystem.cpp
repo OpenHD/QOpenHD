@@ -435,25 +435,11 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
             mavlink_battery_status_t battery_status;
             mavlink_msg_battery_status_decode(&msg, &battery_status);
 
-           FCMavlinkSystem::instance().set_flight_mah(battery_status.current_consumed);
-
-            int total_voltage = 0;
-            int cell_count;
-            for (cell_count = 0; ( (cell_count < MAVLINK_MSG_BATTERY_STATUS_FIELD_VOLTAGES_LEN)
-                                 && (battery_status.voltages[cell_count] != UINT16_MAX) ); cell_count++) {
-                total_voltage += battery_status.voltages[cell_count];
-            }
-
-//            QSettings settings;
-//            if (cell_count && (cell_count != settings.value("battery_cells", QVariant(3)).toInt()) ) {
-//                LocalMessage::instance()->showMessage("Battery Cells updated by Telemetry", 7);
-//                settings.setValue("battery_cells", QVariant(cell_count));
-//                settings.sync();
-//            }
-
-           FCMavlinkSystem::instance().set_fc_battery_percent(battery_status.battery_remaining);
-            QString fc_battery_gauge_glyph = Telemetryutil::battery_gauge_glyph_from_percentage(battery_status.battery_remaining);
-           FCMavlinkSystem::instance().set_fc_battery_gauge(fc_battery_gauge_glyph);
+            FCMavlinkSystem::instance().set_flight_mah(battery_status.current_consumed);
+            FCMavlinkSystem::instance().set_fc_battery_percent(battery_status.battery_remaining);
+            //QString fc_battery_gauge_glyph = Telemetryutil::battery_gauge_glyph_from_percentage(battery_status.battery_remaining);
+            QString fc_battery_gauge_glyph = Telemetryutil::battery_gauge_glyph_from_percentage(99);
+            FCMavlinkSystem::instance().set_fc_battery_gauge(fc_battery_gauge_glyph);
             break;
         }
         case MAVLINK_MSG_ID_SENSOR_OFFSETS: {
@@ -901,12 +887,12 @@ void FCMavlinkSystem::set_yaw(double yaw) {
 
 void FCMavlinkSystem::set_throttle(double throttle) {
     m_throttle = throttle;
-     emit throttle_changed(m_throttle);
+    emit throttle_changed(m_throttle);
 }
 
 void FCMavlinkSystem::set_vibration_x(float vibration_x) {
     m_vibration_x= vibration_x;
-     emit vibration_x_changed(m_vibration_x);
+    emit vibration_x_changed(m_vibration_x);
 }
 
 void FCMavlinkSystem::set_vibration_y(float vibration_y) {
@@ -1009,25 +995,22 @@ void FCMavlinkSystem::set_mah_km(int mah_km) {
     emit mah_km_changed(m_mah_km);
 }
 
-void FCMavlinkSystem::set_last_telemetry_attitude(qint64 last_telemetry_attitude) {
+/*void FCMavlinkSystem::set_last_telemetry_attitude(qint64 last_telemetry_attitude) {
     m_last_telemetry_attitude = last_telemetry_attitude;
     emit last_telemetry_attitude_changed(m_last_telemetry_attitude);
 }
-
 void FCMavlinkSystem::set_last_telemetry_battery(qint64 last_telemetry_battery) {
     m_last_telemetry_battery = last_telemetry_battery;
     emit last_telemetry_battery_changed(m_last_telemetry_battery);
 }
-
 void FCMavlinkSystem::set_last_telemetry_gps(qint64 last_telemetry_gps) {
     m_last_telemetry_gps = last_telemetry_gps;
     emit last_telemetry_gps_changed(m_last_telemetry_gps);
 }
-
 void FCMavlinkSystem::set_last_telemetry_vfr(qint64 last_telemetry_vfr) {
     m_last_telemetry_vfr = last_telemetry_vfr;
     emit last_telemetry_vfr_changed(m_last_telemetry_vfr);
-}
+}*/
 
 void FCMavlinkSystem::set_vehicle_vx_angle(double vehicle_vx_angle) {
     m_vehicle_vx_angle = vehicle_vx_angle;
