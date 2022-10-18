@@ -215,15 +215,6 @@ public:
     Q_PROPERTY(int mah_km MEMBER m_mah_km WRITE set_mah_km NOTIFY mah_km_changed)
     void set_mah_km(int mah_km);
 
-    /*Q_PROPERTY(qint64 last_telemetry_attitude MEMBER m_last_telemetry_attitude WRITE set_last_telemetry_attitude NOTIFY last_telemetry_attitude_changed)
-    void set_last_telemetry_attitude(qint64 last_telemetry_attitude);
-    Q_PROPERTY(qint64 last_telemetry_battery MEMBER m_last_telemetry_battery WRITE set_last_telemetry_battery NOTIFY last_telemetry_battery_changed)
-    void set_last_telemetry_battery(qint64 last_telemetry_battery);
-    Q_PROPERTY(qint64 last_telemetry_gps MEMBER m_last_telemetry_gps WRITE set_last_telemetry_gps NOTIFY last_telemetry_gps_changed)
-    void set_last_telemetry_gps(qint64 last_telemetry_gps);
-    Q_PROPERTY(qint64 last_telemetry_vfr MEMBER m_last_telemetry_vfr WRITE set_last_telemetry_vfr NOTIFY last_telemetry_vfr_changed)
-    void set_last_telemetry_vfr(qint64 last_telemetry_vfr);*/
-
     Q_PROPERTY(double vehicle_vx_angle MEMBER m_vehicle_vx_angle WRITE set_vehicle_vx_angle NOTIFY vehicle_vx_angle_changed)
     void set_vehicle_vx_angle(double vehicle_vx_angle);
 
@@ -314,11 +305,6 @@ signals:
     void flight_mah_changed(int flight_mah);
     void app_mah_changed(int app_mah);
     void mah_km_changed(int mah_km);
-
-    void last_telemetry_attitude_changed(qint64 last_telemetry_attitude);
-    void last_telemetry_battery_changed(qint64 last_telemetry_battery);
-    void last_telemetry_gps_changed(qint64 last_telemetry_gps);
-    void last_telemetry_vfr_changed(qint64 last_telemetry_vfr);
 
     void vehicle_vx_angle_changed(double vehicle_vx_angle);
     void vehicle_vz_angle_changed(double vehicle_vz_angle);

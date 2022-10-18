@@ -995,23 +995,6 @@ void FCMavlinkSystem::set_mah_km(int mah_km) {
     emit mah_km_changed(m_mah_km);
 }
 
-/*void FCMavlinkSystem::set_last_telemetry_attitude(qint64 last_telemetry_attitude) {
-    m_last_telemetry_attitude = last_telemetry_attitude;
-    emit last_telemetry_attitude_changed(m_last_telemetry_attitude);
-}
-void FCMavlinkSystem::set_last_telemetry_battery(qint64 last_telemetry_battery) {
-    m_last_telemetry_battery = last_telemetry_battery;
-    emit last_telemetry_battery_changed(m_last_telemetry_battery);
-}
-void FCMavlinkSystem::set_last_telemetry_gps(qint64 last_telemetry_gps) {
-    m_last_telemetry_gps = last_telemetry_gps;
-    emit last_telemetry_gps_changed(m_last_telemetry_gps);
-}
-void FCMavlinkSystem::set_last_telemetry_vfr(qint64 last_telemetry_vfr) {
-    m_last_telemetry_vfr = last_telemetry_vfr;
-    emit last_telemetry_vfr_changed(m_last_telemetry_vfr);
-}*/
-
 void FCMavlinkSystem::set_vehicle_vx_angle(double vehicle_vx_angle) {
     m_vehicle_vx_angle = vehicle_vx_angle;
     emit vehicle_vx_angle_changed(m_vehicle_vx_angle);
