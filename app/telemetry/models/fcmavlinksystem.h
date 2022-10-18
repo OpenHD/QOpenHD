@@ -10,6 +10,9 @@
 #include <mavsdk/plugins/telemetry/telemetry.h>
 #include "..//mavlink_include.h"
 
+// Really nice, this way we don't have to write all the setters / getters / signals ourselves !
+#include "../../../lib/lqtutils_master/lqtutils_prop.h"
+
 /**
  * This used to be called OpenHD and was a mix of everything, it has become FCMavlinkSystem -
  * A QT model for (fire and forget) data from the mavlink FC connected to the air unit.
@@ -25,6 +28,11 @@
 class FCMavlinkSystem : public QObject
 {
     Q_OBJECT
+    L_RW_PROP(double, battery_current, set_battery_current, 0)
+    L_RW_PROP(double, battery_voltage, set_battery_voltage, 0)
+    L_RW_PROP(int, battery_percent, set_battery_percent, 0)
+    // same as battery_percent, but as an "icon"
+    L_RW_PROP(QString, battery_percent_gauge, set_battery_percent_gauge, "\uf091")
 public:
     explicit FCMavlinkSystem(QObject *parent = nullptr);
     // singleton for accessing the model from c++
@@ -128,7 +136,7 @@ public:
     Q_PROPERTY(unsigned int gps_fix_type MEMBER m_gps_fix_type WRITE set_gps_fix_type NOTIFY gps_fix_type_changed)
     void set_gps_fix_type(unsigned int gps_fix_type);
 
-    Q_PROPERTY(int fc_battery_percent MEMBER m_fc_battery_percent WRITE set_fc_battery_percent NOTIFY fc_battery_percent_changed)
+    /*Q_PROPERTY(int fc_battery_percent MEMBER m_fc_battery_percent WRITE set_fc_battery_percent NOTIFY fc_battery_percent_changed)
     void set_fc_battery_percent(int fc_battery_percent);
 
     Q_PROPERTY(double battery_voltage MEMBER m_battery_voltage WRITE set_battery_voltage NOTIFY battery_voltage_changed)
@@ -138,7 +146,7 @@ public:
     void set_battery_current(double battery_current);
 
     Q_PROPERTY(QString fc_battery_gauge MEMBER m_fc_battery_gauge WRITE set_fc_battery_gauge NOTIFY fc_battery_gauge_changed)
-    void set_fc_battery_gauge(QString fc_battery_gauge);
+    void set_fc_battery_gauge(QString fc_battery_gauge);*/
 
     Q_PROPERTY(double pitch MEMBER m_pitch WRITE set_pitch NOTIFY pitch_changed)
     void set_pitch(double pitch);
@@ -258,12 +266,6 @@ signals:
     void home_distance_changed(double home_distance);
     void home_course_changed(int home_course);
     void home_heading_changed(int home_heading);
-    void battery_percent_changed(int battery_percent);
-    void fc_battery_percent_changed(int fc_battery_percent);
-    void battery_voltage_changed(double battery_voltage);
-    void battery_current_changed(double battery_current);
-    void battery_gauge_changed(QString battery_gauge);
-    void fc_battery_gauge_changed(QString fc_battery_gauge);
     void satellites_visible_changed(int satellites_visible);
     void gps_hdop_changed(double gps_hdop);
     void gps_fix_type_changed(unsigned int gps_fix_type);
@@ -347,13 +349,6 @@ public:
     int m_home_heading = 0; //this is actual global heading
     int m_home_course = 0; //this is the relative course from nose
 
-    int m_battery_percent = 20; //TODO debug, set back to 0
-    int m_fc_battery_percent = 0;
-    double m_battery_current = 0.0;
-    double m_battery_voltage = 0.0;
-    QString m_battery_gauge = "\uf091";
-    QString m_fc_battery_gauge = "\uf091";
-
     int m_satellites_visible = 0;
     double m_gps_hdop = 99.00;
     unsigned int m_gps_fix_type = (unsigned int)0;
@@ -405,11 +400,6 @@ public:
     qint64 mahLastTime= 0;
     qint64 mahKmLastTime= 0;
     double total_mah= 0;
-
-    /*qint64 m_last_telemetry_attitude = -1;
-    qint64 m_last_telemetry_battery = -1;
-    qint64 m_last_telemetry_gps = -1;
-    qint64 m_last_telemetry_vfr = -1;*/
 
     QElapsedTimer totalTime;
     QElapsedTimer flightTimeStart;

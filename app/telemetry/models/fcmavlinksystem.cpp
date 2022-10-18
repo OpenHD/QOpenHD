@@ -436,10 +436,9 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
             mavlink_msg_battery_status_decode(&msg, &battery_status);
 
             FCMavlinkSystem::instance().set_flight_mah(battery_status.current_consumed);
-            FCMavlinkSystem::instance().set_fc_battery_percent(battery_status.battery_remaining);
-            //QString fc_battery_gauge_glyph = Telemetryutil::battery_gauge_glyph_from_percentage(battery_status.battery_remaining);
-            QString fc_battery_gauge_glyph = Telemetryutil::battery_gauge_glyph_from_percentage(99);
-            FCMavlinkSystem::instance().set_fc_battery_gauge(fc_battery_gauge_glyph);
+            FCMavlinkSystem::instance().set_battery_percent(battery_status.battery_remaining);
+            QString fc_battery_gauge_glyph = Telemetryutil::battery_gauge_glyph_from_percentage(battery_status.battery_remaining);
+            FCMavlinkSystem::instance().set_battery_percent_gauge(fc_battery_gauge_glyph);
             break;
         }
         case MAVLINK_MSG_ID_SENSOR_OFFSETS: {
@@ -835,7 +834,7 @@ void FCMavlinkSystem::set_lon(double lon) {
     emit lon_changed(m_lon);
 }
 
-void FCMavlinkSystem::set_fc_battery_percent(int fc_battery_percent) {
+/*void FCMavlinkSystem::set_fc_battery_percent(int fc_battery_percent) {
     m_fc_battery_percent = fc_battery_percent;
     emit fc_battery_percent_changed(m_fc_battery_percent);
 }
@@ -853,7 +852,7 @@ void FCMavlinkSystem::set_battery_current(double battery_current) {
 void FCMavlinkSystem::set_fc_battery_gauge(QString fc_battery_gauge) {
     m_fc_battery_gauge = fc_battery_gauge;
     emit fc_battery_gauge_changed(m_fc_battery_gauge);
-}
+}*/
 
 void FCMavlinkSystem::set_satellites_visible(int satellites_visible) {
     m_satellites_visible = satellites_visible;
