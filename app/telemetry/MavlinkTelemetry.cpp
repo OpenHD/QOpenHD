@@ -89,13 +89,15 @@ void MavlinkTelemetry::onNewSystem(std::shared_ptr<mavsdk::System> system){
         qDebug()<<"Found FC";
         // we got the flight controller
         FCMavlinkSystem::instance().set_system(system);
-
-        passtroughOhdGround=std::make_shared<mavsdk::MavlinkPassthrough>(system);
-        passtroughOhdGround->intercept_incoming_messages_async([this](mavlink_message_t& msg){
-            //qDebug()<<"Intercept:Got message"<<msg.msgid;
-            onProcessMavlinkMessage(msg);
-            return true;
-        });
+        // hacky, for SITL testing
+        if(passtroughOhdGround==nullptr){
+            passtroughOhdGround=std::make_shared<mavsdk::MavlinkPassthrough>(system);
+            passtroughOhdGround->intercept_incoming_messages_async([this](mavlink_message_t& msg){
+                //qDebug()<<"Intercept:Got message"<<msg.msgid;
+                onProcessMavlinkMessage(msg);
+                return true;
+            });
+        }
     }
 }
 
