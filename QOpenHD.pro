@@ -139,7 +139,7 @@ HEADERS += \
     app/exp/rtp/rtpreceiver.h \
     app/logging/logmessagesmodel.h \
     app/telemetry/models/aohdsystem.h \
-    app/openhd_systems/wifiadapter.h \
+    app/telemetry/models/wifiadapter.h \
     app/qopenhd.h \
     app/telemetry/mavlink_include.h \
     app/telemetry/openhd_defines.hpp \

@@ -1240,18 +1240,14 @@ void FCMavlinkSystem::set_last_heartbeat(qint64 last_heartbeat)
     emit last_heartbeat_changed(m_last_heartbeat);
 }
 
-void FCMavlinkSystem::set_is_alive(bool alive)
-{
-    m_is_alive=alive;
-    emit is_alive_changed(alive);
-}
-
 void FCMavlinkSystem::update_alive()
 {
     if(m_last_heartbeat==-1){
+        // we did not get any heartbeat (yet)
         set_is_alive(false);
     }else{
         // after 3 seconds, consider as "not alive"
+        // (aka if we did not get a heartbeat in the last 3 seconds, we consider the FC as not being alive)
         if(QOpenHDMavlinkHelper::getTimeMilliseconds()-m_last_heartbeat> 3*1000){
             set_is_alive(false);
         }else{

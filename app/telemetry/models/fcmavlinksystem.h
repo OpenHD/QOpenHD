@@ -40,8 +40,10 @@ class FCMavlinkSystem : public QObject
     // mixed
     L_RW_PROP(double, throttle, set_throttle, 0)
     L_RW_PROP(float,vibration_x,set_vibration_x,0)
-     L_RW_PROP(float,vibration_y,set_vibration_y,0)
-     L_RW_PROP(float,vibration_z,set_vibration_z,0)
+    L_RW_PROP(float,vibration_y,set_vibration_y,0)
+    L_RW_PROP(float,vibration_z,set_vibration_z,0)
+    // see alive timer
+    L_RW_PROP(bool,is_alive,set_is_alive,false)
 public:
     explicit FCMavlinkSystem(QObject *parent = nullptr);
     // singleton for accessing the model from c++
@@ -64,9 +66,6 @@ public:
     void telemetryStatusMessage(QString message, int level);
     void calculate_home_distance();
     void calculate_home_course();
-
-    //void setEngine(QQmlApplicationEngine *engine);
-    //Q_INVOKABLE void switchToLanguage(const QString &language);
 
     /* public so that a QTimer can call it from main(), temporary fix due to some quirks with
        the way QTimer and QML singletons/context properties work */
@@ -398,12 +397,8 @@ public:
 public:
     Q_PROPERTY(qint64 last_heartbeat MEMBER m_last_heartbeat WRITE set_last_heartbeat NOTIFY last_heartbeat_changed)
     void set_last_heartbeat(qint64 last_heartbeat);
-    Q_PROPERTY(bool is_alive MEMBER m_is_alive WRITE set_is_alive NOTIFY is_alive_changed)
-    void set_is_alive(bool alive);
-    bool is_alive(){return m_is_alive;}
 public:
     qint64 m_last_heartbeat = -1;
-    bool m_is_alive=false; // see alive timer
     QTimer* m_alive_timer = nullptr;
 signals:
     void last_heartbeat_changed(qint64 last_heartbeat);
