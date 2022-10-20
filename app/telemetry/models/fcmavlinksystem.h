@@ -380,10 +380,6 @@ public:
 
     int m_rcRssi = 0;
 
-    double m_kbitrate = 0.0;
-    double m_kbitrate_measured = 0.0;
-    double m_kbitrate_set = 0.0;
-
     int m_imu_temp = 0;
     int m_press_temp = 0;
     int m_esc_temp = 0;

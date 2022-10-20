@@ -260,7 +260,7 @@ BaseWidget {
             id: battery_percent
             y: 0
             color: settings.color_text
-            text: qsTr("%L1%").arg(_ohdSystemGround.ground_battery_percent)
+            text: qsTr("%L1%").arg(_ohdSystemGround.battery_percent)
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: batteryGauge.right
             anchors.leftMargin: 0
@@ -319,7 +319,7 @@ BaseWidget {
             height: 48
             // @disable-check M223
             color: {
-                var percent = _ohdSystemGround.ground_battery_percent
+                var percent = _ohdSystemGround.battery_percent
 
                 // 20% warning, 15% critical
                 return percent < 20 ? (percent < 15 ? "#ff0000" : "#fbfd15") : settings.color_shape
