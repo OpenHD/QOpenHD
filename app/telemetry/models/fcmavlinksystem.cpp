@@ -824,41 +824,6 @@ void FCMavlinkSystem::set_gps_fix_type(unsigned int gps_fix_type) {
     emit gps_fix_type_changed(m_gps_fix_type);
 }
 
-void FCMavlinkSystem::set_pitch(double pitch) {
-    m_pitch = pitch;
-    emit pitch_changed(m_pitch);
-}
-
-void FCMavlinkSystem::set_roll(double roll) {
-    m_roll = roll;
-    emit roll_changed(m_roll);
-}
-
-void FCMavlinkSystem::set_yaw(double yaw) {
-    m_yaw = yaw;
-    emit yaw_changed(m_yaw);
-}
-
-void FCMavlinkSystem::set_throttle(double throttle) {
-    m_throttle = throttle;
-    emit throttle_changed(m_throttle);
-}
-
-void FCMavlinkSystem::set_vibration_x(float vibration_x) {
-    m_vibration_x= vibration_x;
-    emit vibration_x_changed(m_vibration_x);
-}
-
-void FCMavlinkSystem::set_vibration_y(float vibration_y) {
-    m_vibration_y= vibration_y;
-     emit vibration_y_changed(m_vibration_y);
-}
-
-void FCMavlinkSystem::set_vibration_z(float vibration_z) {
-    m_vibration_z= vibration_z;
-     emit vibration_z_changed(m_vibration_z);
-}
-
 void FCMavlinkSystem::set_clipping_x(float clipping_x) {
     m_clipping_x= clipping_x;
      emit clipping_x_changed(m_clipping_x);
