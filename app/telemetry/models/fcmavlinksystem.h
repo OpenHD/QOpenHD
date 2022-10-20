@@ -387,7 +387,6 @@ private:
     std::shared_ptr<mavsdk::Telemetry> _mavsdk_telemetry=nullptr;
 public:
     //
-    Q_INVOKABLE bool set_flight_mode(int mode);
     // Try to change the arming state. Once completed, since we listen to arm/disarm results,
     // the armed status is changed. On failure, a message is pushed onto the HUD
     Q_INVOKABLE void arm_fc_async(bool disarm=false);

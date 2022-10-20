@@ -1172,16 +1172,6 @@ void FCMavlinkSystem::set_supports_basic_commands(bool supports_basic_commands)
     emit supports_basic_commands_changed(supports_basic_commands);
 };
 
-bool FCMavlinkSystem::set_flight_mode(int mode)
-{
-    if(_action){
-        qDebug()<<"set_flight_mode:"<<mode;
-        //_action->
-    }else{
-        qDebug()<<"Cannot set_flight_mode";
-    }
-}
-
 void FCMavlinkSystem::arm_fc_async(bool disarm)
 {
     qDebug()<<"FCMavlinkSystem::arm_fc_async "<<(disarm ? "disarm" : "arm");
