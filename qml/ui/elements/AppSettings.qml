@@ -26,6 +26,10 @@ Settings {
     property bool dev_show_whitelisted_params: false
 
     property bool app_background_transparent: true
+    // devices that use drm/kms (e.g. rpi) are always fullscreen anyways
+    // aka this setting only has an effect when running QOpenHD on a PC, and there also
+    // pretty much only during development
+    property bool app_explicit_window_fullscreen: false
 
     property bool enable_software_video_decoder: false
     // enably a test video source instead of decoding actual video data, if supported by the platform
@@ -45,7 +49,9 @@ Settings {
     property int dev_limit_fps_on_test_file: -1
     property bool dev_draw_alternating_rgb_dummy_frames: false;
     // r.n only works on h264 / h265 and on select video stream(s)
+    // does not work on mjpeg, but as far as I can see, mjpeg doesn't suffer from the "one frame buffering" issue in avcodec
     property bool dev_use_low_latency_parser_when_possible: true;
+    property bool dev_feed_incomplete_frames_to_decoder:false;
 
     property bool enable_speech: true
     property bool enable_imperial: false

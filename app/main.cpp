@@ -13,9 +13,9 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #endif
 
 #include "rc/openhdrc.h"
-#include "fcmavlinksystem.h"
-#include "openhd_systems/aohdsystem.h"
-#include "../app/telemetry/mavlinktelemetry.h"
+#include "telemetry/models/fcmavlinksystem.h"
+#include "telemetry/models/aohdsystem.h"
+#include "telemetry/MavlinkTelemetry.h"
 
 #include "util/QmlObjectListModel.h"
 
@@ -282,15 +282,20 @@ int main(int argc, char *argv[]) {
     auto openHDRC = new OpenHDRC();
     engine.rootContext()->setContextProperty("openHDRC", openHDRC);
 
+    //MavlinkTelemetry::register_for_qml(engine.rootContext());
     engine.rootContext()->setContextProperty("_mavlinkTelemetry", &MavlinkTelemetry::instance());
 
     engine.rootContext()->setContextProperty("OpenHDUtil", &OpenHDUtil::instance());
 
     // Regster all the QT Mavlink system model(s)
     // it is a common practice for QT to prefix models from c++ with an underscore
+    //FCMavlinkSystem::register_for_qml(engine.rootContext());
     engine.rootContext()->setContextProperty("_fcMavlinkSystem", &FCMavlinkSystem::instance());
+
+    //AOHDSystem::register_for_qml(engine.rootContext());
     engine.rootContext()->setContextProperty("_ohdSystemAir", &AOHDSystem::instanceAir());
     engine.rootContext()->setContextProperty("_ohdSystemGround", &AOHDSystem::instanceGround());
+
     engine.rootContext()->setContextProperty("_decodingStatistics",&DecodingStatistcs::instance());
     // dirty
     engine.rootContext()->setContextProperty("_messageBoxInstance", &workaround::MessageBox::instance());

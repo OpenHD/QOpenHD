@@ -4,10 +4,14 @@
 #include <QElapsedTimer>
 #include <QObject>
 #include <QTimer>
+#include <QQmlContext>
 #include <mavsdk/mavsdk.h>
 #include <mavsdk/plugins/action/action.h>
 #include <mavsdk/plugins/telemetry/telemetry.h>
-#include "telemetry/mavlink_include.h"
+#include "..//mavlink_include.h"
+
+// Really nice, this way we don't have to write all the setters / getters / signals ourselves !
+#include "../../../lib/lqtutils_master/lqtutils_prop.h"
 
 /**
  * This used to be called OpenHD and was a mix of everything, it has become FCMavlinkSystem -
@@ -16,27 +20,52 @@
  * Also, note that nothing OpenHD specific should ever make it into here - OpenHD supports raw access to
  * the Flight Controller, but it is NOT a Flight Controller ;)
  * The corresponding qml element is called _fcMavlinkSystem.
+ *
+ * NOTE: R.n we are using both the mavsdk "subscription" pattern for a couble of values and the humungus
+ * mavlink message type switch-case (legacy). This is a bit confusing, not sure if we should either not
+ * use mavsdk subscriptions at all or use them as much as possible.
  */
 class FCMavlinkSystem : public QObject
 {
     Q_OBJECT
-
+    L_RW_PROP(double, battery_current, set_battery_current, 0)
+    L_RW_PROP(double, battery_voltage, set_battery_voltage, 0)
+    L_RW_PROP(int, battery_percent, set_battery_percent, 0)
+    // same as battery_percent, but as an "icon"
+    L_RW_PROP(QString, battery_percent_gauge, set_battery_percent_gauge, "\uf091")
+    // roll, pitch and yaw
+    L_RW_PROP(double, pitch, set_pitch, 0)
+    L_RW_PROP(double, roll, set_roll, 0)
+    L_RW_PROP(double, yaw, set_yaw, 0)
+    // mixed
+    L_RW_PROP(double, throttle, set_throttle, 0)
+    L_RW_PROP(float,vibration_x,set_vibration_x,0)
+    L_RW_PROP(float,vibration_y,set_vibration_y,0)
+    L_RW_PROP(float,vibration_z,set_vibration_z,0)
+    // see alive timer
+    L_RW_PROP(bool,is_alive,set_is_alive,false)
 public:
     explicit FCMavlinkSystem(QObject *parent = nullptr);
+    // singleton for accessing the model from c++
     static FCMavlinkSystem& instance();
+    // Called in main.cpp to egister the models for qml
+    static void register_for_qml(QQmlContext* qml_context);
+public:
     // Process a new telemetry message coming from the FC mavlink system
     // return true if we know what to do with this message type (aka this message type has been consumed)
     bool process_message(const mavlink_message_t& msg);
     // mavlink sys id of the FC. Pretty much always 1, but it is not a hard requirement that FC always use a sys id of 1.
     // If the FC has not been discovered yet (mavsdk::system not yet set), return std::nullopt.
     std::optional<uint8_t> get_fc_sys_id();
-
+    // Set the mavlink system reference, once discovered.
+    // If we can get a telemetry value (e.g. the altitude) by subscribing to a mavlink message this is preferred over
+    // manually parsing the message, and we register the callbacks to mavsdk when this is called (since we need the "system"
+    // reference for it)
+    void set_system(std::shared_ptr<mavsdk::System> system);
+public:
     void telemetryStatusMessage(QString message, int level);
     void calculate_home_distance();
     void calculate_home_course();
-
-    //void setEngine(QQmlApplicationEngine *engine);
-    //Q_INVOKABLE void switchToLanguage(const QString &language);
 
     /* public so that a QTimer can call it from main(), temporary fix due to some quirks with
        the way QTimer and QML singletons/context properties work */
@@ -115,39 +144,6 @@ public:
     Q_PROPERTY(unsigned int gps_fix_type MEMBER m_gps_fix_type WRITE set_gps_fix_type NOTIFY gps_fix_type_changed)
     void set_gps_fix_type(unsigned int gps_fix_type);
 
-    Q_PROPERTY(int fc_battery_percent MEMBER m_fc_battery_percent WRITE set_fc_battery_percent NOTIFY fc_battery_percent_changed)
-    void set_fc_battery_percent(int fc_battery_percent);
-
-    Q_PROPERTY(double battery_voltage MEMBER m_battery_voltage WRITE set_battery_voltage NOTIFY battery_voltage_changed)
-    void set_battery_voltage(double battery_voltage);
-
-    Q_PROPERTY(double battery_current MEMBER m_battery_current WRITE set_battery_current NOTIFY battery_current_changed)
-    void set_battery_current(double battery_current);
-
-    Q_PROPERTY(QString fc_battery_gauge MEMBER m_fc_battery_gauge WRITE set_fc_battery_gauge NOTIFY fc_battery_gauge_changed)
-    void set_fc_battery_gauge(QString fc_battery_gauge);
-
-    Q_PROPERTY(double pitch MEMBER m_pitch WRITE set_pitch NOTIFY pitch_changed)
-    void set_pitch(double pitch);
-
-    Q_PROPERTY(double roll MEMBER m_roll WRITE set_roll NOTIFY roll_changed)
-    void set_roll(double roll);
-
-    Q_PROPERTY(double yaw MEMBER m_yaw WRITE set_yaw NOTIFY pitch_changed)
-    void set_yaw(double yaw);
-
-    Q_PROPERTY(double throttle MEMBER m_throttle WRITE set_throttle NOTIFY throttle_changed)
-    void set_throttle(double throttle);
-
-    Q_PROPERTY(float vibration_x MEMBER m_vibration_x WRITE set_vibration_x NOTIFY vibration_x_changed)
-    void set_vibration_x(float vibration_x);
-
-    Q_PROPERTY(float vibration_y MEMBER m_vibration_y WRITE set_vibration_y NOTIFY vibration_y_changed)
-    void set_vibration_y(float vibration_y);
-
-    Q_PROPERTY(float vibration_z MEMBER m_vibration_z WRITE set_vibration_z NOTIFY vibration_z_changed)
-    void set_vibration_z(float vibration_z);
-
     Q_PROPERTY(float clipping_x MEMBER m_clipping_x WRITE set_clipping_x NOTIFY clipping_x_changed)
     void set_clipping_x(float clipping_x);
 
@@ -202,18 +198,6 @@ public:
     Q_PROPERTY(int mah_km MEMBER m_mah_km WRITE set_mah_km NOTIFY mah_km_changed)
     void set_mah_km(int mah_km);
 
-    Q_PROPERTY(qint64 last_telemetry_attitude MEMBER m_last_telemetry_attitude WRITE set_last_telemetry_attitude NOTIFY last_telemetry_attitude_changed)
-    void set_last_telemetry_attitude(qint64 last_telemetry_attitude);
-
-    Q_PROPERTY(qint64 last_telemetry_battery MEMBER m_last_telemetry_battery WRITE set_last_telemetry_battery NOTIFY last_telemetry_battery_changed)
-    void set_last_telemetry_battery(qint64 last_telemetry_battery);
-
-    Q_PROPERTY(qint64 last_telemetry_gps MEMBER m_last_telemetry_gps WRITE set_last_telemetry_gps NOTIFY last_telemetry_gps_changed)
-    void set_last_telemetry_gps(qint64 last_telemetry_gps);
-
-    Q_PROPERTY(qint64 last_telemetry_vfr MEMBER m_last_telemetry_vfr WRITE set_last_telemetry_vfr NOTIFY last_telemetry_vfr_changed)
-    void set_last_telemetry_vfr(qint64 last_telemetry_vfr);
-
     Q_PROPERTY(double vehicle_vx_angle MEMBER m_vehicle_vx_angle WRITE set_vehicle_vx_angle NOTIFY vehicle_vx_angle_changed)
     void set_vehicle_vx_angle(double vehicle_vx_angle);
 
@@ -257,21 +241,15 @@ signals:
     void home_distance_changed(double home_distance);
     void home_course_changed(int home_course);
     void home_heading_changed(int home_heading);
-    void battery_percent_changed(int battery_percent);
-    void fc_battery_percent_changed(int fc_battery_percent);
-    void battery_voltage_changed(double battery_voltage);
-    void battery_current_changed(double battery_current);
-    void battery_gauge_changed(QString battery_gauge);
-    void fc_battery_gauge_changed(QString fc_battery_gauge);
     void satellites_visible_changed(int satellites_visible);
     void gps_hdop_changed(double gps_hdop);
     void gps_fix_type_changed(unsigned int gps_fix_type);
-    void pitch_changed(double pitch);
+    /*void pitch_changed(double pitch);
     void roll_changed(double roll);
-    void yaw_changed(double yaw);
+    void yaw_changed(double yaw);*/
     void messageReceived(QString message, int level);
 
-    void throttle_changed(double throttle);
+    //void throttle_changed(double throttle);
 
     void vibration_x_changed(float vibration_x);
     void vibration_y_changed(float vibration_y);
@@ -297,15 +275,6 @@ signals:
     void press_temp_changed (int press_temp);
     void esc_temp_changed (int esc_temp);
 
-    void kbitrate_changed(double kbitrate);
-    void kbitrate_set_changed(double kbitrate_set);
-    void kbitrate_measured_changed(double kbitrate_measured);
-    void damaged_block_cnt_changed(unsigned int damaged_block_cnt);
-    void damaged_block_percent_changed(int damaged_block_percent);
-    void lost_packet_cnt_changed(unsigned int lost_packet_cnt);
-    void lost_packet_percent_changed(int lost_packet_percent);
-    void cts_changed(bool cts);
-
     void flight_time_changed(QString flight_time);
 
     void flight_distance_changed(double flight_distance);
@@ -313,11 +282,6 @@ signals:
     void flight_mah_changed(int flight_mah);
     void app_mah_changed(int app_mah);
     void mah_km_changed(int mah_km);
-
-    void last_telemetry_attitude_changed(qint64 last_telemetry_attitude);
-    void last_telemetry_battery_changed(qint64 last_telemetry_battery);
-    void last_telemetry_gps_changed(qint64 last_telemetry_gps);
-    void last_telemetry_vfr_changed(qint64 last_telemetry_vfr);
 
     void vehicle_vx_angle_changed(double vehicle_vx_angle);
     void vehicle_vz_angle_changed(double vehicle_vz_angle);
@@ -360,26 +324,9 @@ public:
     int m_home_heading = 0; //this is actual global heading
     int m_home_course = 0; //this is the relative course from nose
 
-    int m_battery_percent = 20; //TODO debug, set back to 0
-    int m_fc_battery_percent = 0;
-    double m_battery_current = 0.0;
-    double m_battery_voltage = 0.0;
-    QString m_battery_gauge = "\uf091";
-    QString m_fc_battery_gauge = "\uf091";
-
     int m_satellites_visible = 0;
     double m_gps_hdop = 99.00;
     unsigned int m_gps_fix_type = (unsigned int)0;
-
-    double m_roll = 0.0;
-    double m_yaw = 0.0;
-    double m_pitch = 0.0;
-
-    double m_throttle = 0;
-
-    float m_vibration_x = 0.0;
-    float m_vibration_y = 0.0;
-    float m_vibration_z = 0.0;
 
     float m_clipping_x = 0.0;
     float m_clipping_y = 0.0;
@@ -398,10 +345,6 @@ public:
 
     int m_rcRssi = 0;
 
-    double m_kbitrate = 0.0;
-    double m_kbitrate_measured = 0.0;
-    double m_kbitrate_set = 0.0;
-
     int m_imu_temp = 0;
     int m_press_temp = 0;
     int m_esc_temp = 0;
@@ -418,11 +361,6 @@ public:
     qint64 mahLastTime= 0;
     qint64 mahKmLastTime= 0;
     double total_mah= 0;
-
-    qint64 m_last_telemetry_attitude = -1;
-    qint64 m_last_telemetry_battery = -1;
-    qint64 m_last_telemetry_gps = -1;
-    qint64 m_last_telemetry_vfr = -1;
 
     QElapsedTimer totalTime;
     QElapsedTimer flightTimeStart;
@@ -448,10 +386,7 @@ private:
     std::shared_ptr<mavsdk::Action> _action=nullptr;
     std::shared_ptr<mavsdk::Telemetry> _mavsdk_telemetry=nullptr;
 public:
-    // Set the mavlink system reference, once discovered
-    void set_system(std::shared_ptr<mavsdk::System> system);
     //
-    Q_INVOKABLE bool set_flight_mode(int mode);
     // Try to change the arming state. Once completed, since we listen to arm/disarm results,
     // the armed status is changed. On failure, a message is pushed onto the HUD
     Q_INVOKABLE void arm_fc_async(bool disarm=false);
@@ -461,12 +396,8 @@ public:
 public:
     Q_PROPERTY(qint64 last_heartbeat MEMBER m_last_heartbeat WRITE set_last_heartbeat NOTIFY last_heartbeat_changed)
     void set_last_heartbeat(qint64 last_heartbeat);
-    Q_PROPERTY(bool is_alive MEMBER m_is_alive WRITE set_is_alive NOTIFY is_alive_changed)
-    void set_is_alive(bool alive);
-    bool is_alive(){return m_is_alive;}
 public:
     qint64 m_last_heartbeat = -1;
-    bool m_is_alive=false; // see alive timer
     QTimer* m_alive_timer = nullptr;
 signals:
     void last_heartbeat_changed(qint64 last_heartbeat);

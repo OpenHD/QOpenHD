@@ -59,6 +59,10 @@ struct VideoStreamConfig{
     //
     int dev_limit_fps_on_test_file=-1;
     bool dev_use_low_latency_parser_when_possible=true;
+    // feed incomplete frame(s) to the decoder, in contrast to only only feeding intact frames,
+    // but not caring about missing previous frames
+    bool dev_feed_incomplete_frames_to_decoder=false;
+
     // 2 configs are equal if all members are exactly the same.
     bool operator==(const VideoStreamConfig &o) const {
        return this->dev_test_video_mode == o.dev_test_video_mode && this->video_port == o.video_port && this->video_codec== o.video_codec
@@ -66,7 +70,8 @@ struct VideoStreamConfig{
                this->dev_enable_custom_pipeline==o.dev_enable_custom_pipeline &&
                this->dev_custom_pipeline==o.dev_custom_pipeline &&
                this->dev_limit_fps_on_test_file == o.dev_limit_fps_on_test_file &&
-               this->dev_use_low_latency_parser_when_possible == o.dev_use_low_latency_parser_when_possible;
+               this->dev_use_low_latency_parser_when_possible == o.dev_use_low_latency_parser_when_possible &&
+               this->dev_feed_incomplete_frames_to_decoder == o.dev_feed_incomplete_frames_to_decoder;
      }
     bool operator !=(const VideoStreamConfig &o) const {
         return !(*this==o);

@@ -26,32 +26,24 @@
  * Its functionalities are simple:
  * 1) sending mavlink messages to OpenHD
  * 2) receiving mavlink messages from OpenHD
- *
- * The received mavlink messages can come from OpenHD itself (Air or ground) or can be telemetry data from the Drone Flight Controller
- * connected to the OpenHD air unit.
- *
- * If we go for a single TCP or 2 udp connections (1 for send, one for receive) is not clear yet.
- *
- * The pulic methods of this class won't change regardeless.
- *
- * If the connection to OpenHD is lost, this class should try and reconnect in intervalls until the connection has been re-established.
- *
- * NOTE: Since QGroundControll does the same, this one sends out mavlink heartbeat messages in reqular intervalls.
+ * 3) Handling the mavsdk "system discovery" for our OpenHD mavlink network, which is defined by
+ *      a) OHD Air unit (own sys id)
+ *      b) OHD Ground unit (own sys id)
+ *      c) Optional FC connected to the air unit
  */
-
-class OHDConnection : public QObject
+class MavlinkTelemetry : public QObject
 {
+    Q_OBJECT
 public:
-    OHDConnection(QObject *parent = nullptr,bool useTcp=true);
-    static OHDConnection& instance();
+    MavlinkTelemetry(QObject *parent = nullptr);
+    static MavlinkTelemetry& instance();
+    // Called in main.cpp such that we can call the couple of Q_INVOCABLE methods
+    static void register_for_qml(QQmlContext* qml_context);
     /**
-     * @brief MAV_MSG_CALLBACK Callback that can be registered and is called every time a new incoming mavlink message has been parsed.
-     */
-    typedef std::function<void(mavlink_message_t msg)> MAV_MSG_CALLBACK;
-    void registerNewMessageCalback(MAV_MSG_CALLBACK cb);
-    /**
-     * @brief sendMessage send a message to the OHD Ground station. If no connection has been established (yet), this should return immediately.
-     * @param msg the message to send to the OHD Ground Station
+     * Send a message to the OHD ground unit. If no connection has been established (yet), this should return immediately.
+     * The message can be aimed at either the OHD ground unit, the OHD air unit (forwarded by OpenHD) or the FC connected to the
+     * OHD air unit (forwarded by OpenHD).
+     * @param msg the message to send.
      */
     void sendMessage(mavlink_message_t msg);
 private:
@@ -63,11 +55,6 @@ private:
     static constexpr auto QOPENHD_GROUND_CLIENT_UDP_ADDRESS="127.0.0.1";
     static constexpr auto QOPENHD_GROUND_CLIENT_UDP_PORT_IN=14550;
     static constexpr auto QOPENHD_GROUND_CLIENT_UDP_PORT_OUT=14551;
-    MAV_MSG_CALLBACK callback=nullptr;
-private:
-    static constexpr auto HARTBEAT_INTERVALL_SECONDS=1;
-    QTimer* heartbeatTimer=nullptr;
-    std::chrono::steady_clock::time_point lastMavlinkMessage;
 private:
     std::mutex systems_mutex;
     int mavsdk_already_known_systems=0;
@@ -75,17 +62,27 @@ private:
     std::shared_ptr<mavsdk::System> systemOhdGround=nullptr;
     std::shared_ptr<mavsdk::System> systemOhdAir=nullptr;
     std::shared_ptr<mavsdk::MavlinkPassthrough> passtroughOhdGround=nullptr;
-private:
-    // obsolete
-    void sendMessageHeartbeat();
+    // urgh, mavsdk is really annoying in this regard. In case of OpenHD, the telemetry from the drone
+    // always comes through via the OHD Ground unit, so we have the passtroughOhdGround. However, if there is no
+    // OpenHD running (e.g. only the SITL during development) we never get the OHD ground system, and therefore the ground passtrough
+    // is never created. hacky workaround that for now
+    std::shared_ptr<mavsdk::MavlinkPassthrough> passtroughFromFC=nullptr;
     // called by mavsdk whenever a new system is detected
     void onNewSystem(std::shared_ptr<mavsdk::System> system);
+    // Called every time we get a mavlink message (from any system). Intended to be used for message types that don't
+    // work with mavsdk / their subscription based pattern.
+    void onProcessMavlinkMessage(mavlink_message_t msg);
 public:
+    // ping all the systems (using timesync, since "ping" is deprecated)
+    Q_INVOKABLE void ping_all_systems();
     // request the OpenHD version, both OpenHD air and ground unit will respond to that message.
-    void request_openhd_version();
+    Q_INVOKABLE void request_openhd_version();
     // send a command, to all connected systems
     // doesn't reatransmitt
     void send_command_long_oneshot(const mavlink_command_long_t& command);
+private:
+    int pingSequenceNumber=0;
+    int64_t lastTimeSyncOut=0;
 };
 
 #endif // OHDMAVLINKCONNECTION_H

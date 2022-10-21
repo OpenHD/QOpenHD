@@ -51,7 +51,7 @@ Rectangle {
                     id: title
                     height: 48
                     color: "#ff3a3a3a"
-                    text: qsTr("QOpenHD")
+                    text: qsTr("QOpenHD-local")
                     font.pixelSize: 36
                 }
             }
@@ -317,7 +317,7 @@ Rectangle {
         Button{
             height: 24
             text: "Ping all systems"
-            onClicked: _mavlinkTelemetry.pingAllSystems()
+            onClicked: _mavlinkTelemetry.ping_all_systems()
         }
         Button{
             height: 24

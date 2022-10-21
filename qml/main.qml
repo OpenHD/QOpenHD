@@ -22,6 +22,8 @@ ApplicationWindow {
     minimumHeight: 320
     minimumWidth: 480
     title: qsTr("Open.HD")
+    // Transparent background is needed when the video is not rendered via (OpenGL) inside QT,
+    // but rather done independently by using a pipeline that directly goes to the HW composer (e.g. mmal on pi).
     //color: "transparent" //Consti10 transparent background
     //color : "#2C3E50" // reduce KREBS
     color: settings.app_background_transparent ? "transparent" : "#2C3E50"
@@ -29,9 +31,6 @@ ApplicationWindow {
     //flags: Qt.WindowStaysOnTopHint| Qt.X11BypassWindowManagerHint;
     //visibility: "FullScreen"
     visibility: UseFullscreen ? "FullScreen" : "AutomaticVisibility"
-
-    property bool initialised: false
-
 
     QSGVideoTextureItem {
         id: my_QSGVideoTextureItem
@@ -165,6 +164,7 @@ ApplicationWindow {
         }
     }
 
+    // Allows closing QOpenHD via a keyboard shortcut
     Shortcut {
         sequence: "Ctrl+F12"
         onActivated: {

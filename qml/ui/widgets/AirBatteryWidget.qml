@@ -344,12 +344,14 @@ BaseWidget {
             height: 48
             color: {
                 //TODO reintroduce the settings, but PLEASE FUCKING KEEP THE MV PATTERM
-                var percent = settings.air_battery_show_fc_percent ? _fcMavlinkSystem.fc_battery_percent :_fcMavlinkSystem.fc_battery_percent
+                //var percent = settings.air_battery_show_fc_percent ? _fcMavlinkSystem.fc_battery_percent :_fcMavlinkSystem.fc_battery_percent
+                var percent =  _fcMavlinkSystem.battery_percent
                 // 20% warning, 15% critical
                 return percent < 20 ? (percent < 15 ? "#ff0000" : "#fbfd15") : settings.color_shape
             }
             opacity: settings.air_battery_opacity
-            text: settings.air_battery_show_fc_percent ? _fcMavlinkSystem.fc_battery_percent : _fcMavlinkSystem.fc_battery_gauge
+            //text: settings.air_battery_show_fc_percent ? _fcMavlinkSystem.fc_battery_percent : _fcMavlinkSystem.fc_battery_gauge
+            text: _fcMavlinkSystem.battery_percent_gauge
             anchors.left: parent.left
             anchors.leftMargin: 12
             fontSizeMode: Text.VerticalFit

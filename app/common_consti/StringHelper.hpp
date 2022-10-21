@@ -32,6 +32,15 @@ public:
         return ss.str();
     }
 
+    template <typename T>
+    static std::string to_string_with_precision(const T a_value, const int n = 6)
+    {
+        std::ostringstream out;
+        out.precision(n);
+        out << std::fixed << a_value;
+        return out.str();
+    }
+
     static std::string memorySizeReadable(const size_t sizeBytes){
         // more than one MB
         if(sizeBytes>1024*1024){
@@ -45,6 +54,34 @@ public:
         }
         return std::to_string(sizeBytes)+"B";
     }
+
+    static std::string bitrate_to_string(uint64_t bits_per_second){
+      if(bits_per_second>1024*1024){
+          const double mbits=static_cast<double>(bits_per_second)/(1024.0*1024.0);
+          return to_string_with_precision(mbits,1)+" mBit/s";
+      }
+      if(bits_per_second>1024){
+          const double kbits=static_cast<double>(bits_per_second)/(1024.0);
+          return to_string_with_precision(kbits,2)+" kBit/s";
+      }
+      return std::to_string(bits_per_second)+" Bit/s";
+    }
+
+    /*static std::string bitrate_readable(const int bits_per_second){
+         std::stringstream ss;
+         ss.precision(3);
+        if(bits_per_second>1024*1024){
+            double mbits_per_second=(float)bits_per_second /1024.0 / 1024.0;
+            ss<<mbits_per_second<<"MBit/s";
+            return ss.str();
+        }
+        // more than one KB
+        if(bits_per_second>1024){
+            float sizeKB=(float)bits_per_second /1024.0;
+            return std::to_string(sizeKB)+"kB";
+        }
+        return std::to_string(sizeBytes)+"B";
+    }*/
 };
 
 

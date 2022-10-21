@@ -4,7 +4,9 @@
 
 #include "../common_consti/StringHelper.hpp"
 
-RTPReceiver::RTPReceiver(int port,bool is_h265):
+#include "../../videostreaming/decodingstatistcs.h"
+
+RTPReceiver::RTPReceiver(int port,bool is_h265,bool feed_incomplete_frames):
     is_h265(is_h265)
 {
     if(false){
@@ -21,10 +23,11 @@ RTPReceiver::RTPReceiver(int port,bool is_h265):
     m_keyframe_finder=std::make_unique<KeyFrameFinder>();
     m_rtp_decoder=std::make_unique<RTPDecoder>([this](const std::chrono::steady_clock::time_point creation_time,const uint8_t *nalu_data, const int nalu_data_size){
         this->nalu_data_callback(creation_time,nalu_data,nalu_data_size);
-    });
+    },feed_incomplete_frames);
     m_udp_receiver=std::make_unique<UDPReceiver>(port,"V_REC",[this](const uint8_t *payload, const std::size_t payloadSize){
         this->udp_raw_data_callback(payload,payloadSize);
-    });
+        DecodingStatistcs::instance().set_n_missing_rtp_video_packets(m_rtp_decoder->m_n_gaps);
+    },UDPReceiver::BIG_UDP_RECEIVE_BUFFER_SIZE);
     m_udp_receiver->startReceiving();
 }
 
@@ -70,7 +73,11 @@ void RTPReceiver::queue_data(const uint8_t* nalu_data,const std::size_t nalu_dat
         if(nalu.is_config())return;
         if(nalu.is_aud())return;
         if(nalu.is_sei())return;
-        if(m_data.size()>20)m_data.pop();
+        if(m_data.size()>20){
+            n_dropped_frames++;
+            qDebug()<<"Dropping frame, total:"<<n_dropped_frames;
+            m_data.pop();
+        }
         m_data.push(std::make_shared<NALU>(nalu));
         return;
     }
@@ -81,6 +88,13 @@ void RTPReceiver::queue_data(const uint8_t* nalu_data,const std::size_t nalu_dat
 void RTPReceiver::udp_raw_data_callback(const uint8_t *payload, const std::size_t payloadSize)
 {
     //qDebug()<<"Got UDP data "<<payloadSize;
+    /*if(m_packet_drop_emulator.drop_packet()){
+        qDebug()<<"Emulate - Dropping packet";
+        return;
+    }*/
+    m_rtp_bitrate.addBytes(payloadSize,[](std::string bitrate){
+        DecodingStatistcs::instance().set_rtp_measured_bitrate(bitrate.c_str());
+    });
     if(is_h265){
         m_rtp_decoder->parseRTPH265toNALU(payload,payloadSize);
         //m_rtp_decoder->parse_rtp_mjpeg(payload,payloadSize);

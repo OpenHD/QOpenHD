@@ -380,7 +380,7 @@ Rectangle {
         text: qsTr("DEV! Cancel QOpenHD")
 
         onPressed: {
-            _qopenhd.quit_qopenhd()
+            _qopenhd.disable_service_and_quit()
         }
     }
     Button {

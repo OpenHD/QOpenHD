@@ -15,8 +15,8 @@
 #include "make_unique.hpp"
 
 UDPReceiver::UDPReceiver(int port,std::string name,DATA_CALLBACK  onDataReceivedCallbackX,
-size_t WANTED_RCVBUF_SIZEX,const bool ENABLE_NONBLOCKINGX):
-        mPort(port),mName(std::move(name)),onDataReceivedCallback(std::move(onDataReceivedCallbackX)),WANTED_RCVBUF_SIZE(WANTED_RCVBUF_SIZEX),ENABLE_NONBLOCKING(ENABLE_NONBLOCKINGX){
+size_t wanted_receive_buff_size_btyes,const bool ENABLE_NONBLOCKINGX):
+        mPort(port),mName(std::move(name)),onDataReceivedCallback(std::move(onDataReceivedCallbackX)),WANTED_RCVBUF_SIZE_BYTES(wanted_receive_buff_size_btyes),ENABLE_NONBLOCKING(ENABLE_NONBLOCKINGX){
 }
 
 long UDPReceiver::getNReceivedBytes()const {
@@ -43,10 +43,35 @@ void UDPReceiver::stopReceiving() {
 	//std::cout<<"UDPReceiver avgDeltaBetween(recvfrom) "<<avgDeltaBetweenPackets.getAvgReadable()<<"\n";
 }
 
+// increase the UDP receive buffer size, needed for high bandwidth (at ~>20MBit/s the "default"
+// udp receive buffer size is often not enough and the OS might (silently) drop packets on localhost)
+static void increase_socket_recv_buff_size(int sockfd, const int wanted_rcvbuff_size_bytes) {
+  int recvBufferSize=0;
+  socklen_t len=sizeof(recvBufferSize);
+  getsockopt(sockfd, SOL_SOCKET, SO_RCVBUF, &recvBufferSize, &len);
+  {
+    std::stringstream ss;
+    ss<<"Default UDP socket recv buffer size:"<<StringHelper::memorySizeReadable(recvBufferSize)<<" wanted:"<<StringHelper::memorySizeReadable(wanted_rcvbuff_size_bytes)<<"\n";
+    std::cerr<<ss.str();
+  }
+  // We never decrease the socket receive buffer size, only increase it when neccessary
+  if(wanted_rcvbuff_size_bytes>(size_t)recvBufferSize){
+    int wanted_size=wanted_rcvbuff_size_bytes;
+    recvBufferSize=wanted_rcvbuff_size_bytes;
+    if(setsockopt(sockfd, SOL_SOCKET, SO_RCVBUF, &wanted_size,len)) {
+      std::cerr<<"Cannot increase UDP buffer size to "<<StringHelper::memorySizeReadable(wanted_rcvbuff_size_bytes)<<"\n";
+    }
+    // Fetch it again to double check
+    recvBufferSize=-1;
+    getsockopt(sockfd, SOL_SOCKET, SO_RCVBUF, &recvBufferSize, &len);
+    std::cerr<<"UDP Wanted "<<StringHelper::memorySizeReadable(wanted_rcvbuff_size_bytes)<<" Set "<<StringHelper::memorySizeReadable(recvBufferSize)<<"\n";
+  }
+}
+
 void UDPReceiver::receiveFromUDPLoop() {
     mSocket=socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
     if (mSocket == -1) {
-        //std::cout<<"Error creating socket\n";
+        std::cerr<<"Error creating socket\n";
         return;
     }
     int enable = 1;
@@ -56,20 +81,7 @@ void UDPReceiver::receiveFromUDPLoop() {
     if(setsockopt(mSocket,SOL_SOCKET,SO_REUSEPORT,&enable,sizeof(int))<0){
         std::cout<<"Error setting SO_REUSEPORT\n";
     }
-
-    int recvBufferSize=0;
-    socklen_t len=sizeof(recvBufferSize);
-    getsockopt(mSocket, SOL_SOCKET, SO_RCVBUF, &recvBufferSize, &len);
-    std::cout<<"Default socket recv buffer is "<<StringHelper::memorySizeReadable(recvBufferSize)<<"\n";
-
-    if(WANTED_RCVBUF_SIZE>(size_t)recvBufferSize){
-        recvBufferSize=WANTED_RCVBUF_SIZE;
-        if(setsockopt(mSocket, SOL_SOCKET, SO_RCVBUF, &WANTED_RCVBUF_SIZE,len)) {
-            std::cout<<"Cannot increase buffer size to "<<StringHelper::memorySizeReadable(WANTED_RCVBUF_SIZE)<<"\n";
-        }
-        getsockopt(mSocket, SOL_SOCKET, SO_RCVBUF, &recvBufferSize, &len);
-        std::cout<<"Wanted "<<StringHelper::memorySizeReadable(WANTED_RCVBUF_SIZE)<<" Set "<<StringHelper::memorySizeReadable(recvBufferSize)<<"\n";
-    }
+    increase_socket_recv_buff_size(mSocket,WANTED_RCVBUF_SIZE_BYTES);
     struct sockaddr_in myaddr;
     memset((uint8_t *) &myaddr, 0, sizeof(myaddr));
     myaddr.sin_family = AF_INET;

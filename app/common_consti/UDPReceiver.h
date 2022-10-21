@@ -27,7 +27,7 @@ public:
      * guaranteed that the size is actually increased. Use 0 to leave the buffer size untouched
      */
     UDPReceiver(int port,std::string name,DATA_CALLBACK onDataReceivedCallbackX,
-	size_t WANTED_RCVBUF_SIZEX=0,const bool ENABLE_NONBLOCKINGX=false);
+    size_t wanted_receive_buff_size_btyes=0,const bool ENABLE_NONBLOCKINGX=false);
     /**
      * Start receiver thread,which opens UDP port
      */
@@ -40,12 +40,14 @@ public:
     long getNReceivedBytes()const;
     std::string getSourceIPAddress()const;
     int getPort()const;
+    static constexpr auto BIG_UDP_RECEIVE_BUFFER_SIZE=1024*1024*50;
+    static constexpr auto MEDIUM_UDP_RECEIVE_BUFFER_SIZE=1024*1024*25;
 private:
     void receiveFromUDPLoop();
     const int mPort;
     const std::string mName;
     const DATA_CALLBACK onDataReceivedCallback=nullptr;
-    const size_t WANTED_RCVBUF_SIZE;
+    const size_t WANTED_RCVBUF_SIZE_BYTES;
     ///We need this reference to stop the receiving thread
     int mSocket=0;
     std::string senderIP="0.0.0.0";

@@ -217,9 +217,9 @@ Item {
         id: missionWidget
     }
 
-    MapWidget {
-        id: mapWidget
-    }
+    //MapWidget {
+    //    id: mapWidget
+    //}
 
     ExampleWidget {
         id: exampleWidget

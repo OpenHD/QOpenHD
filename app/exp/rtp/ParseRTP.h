@@ -24,7 +24,7 @@ class RTPDecoder{
 public:
     // NALUs are passed on via the callback, one by one.
     // (Each time the callback is called, it contains exactly one NALU prefixed with the 0,0,0,1 start code)
-    RTPDecoder(NALU_DATA_CALLBACK cb);
+    RTPDecoder(NALU_DATA_CALLBACK cb,bool feed_incomplete_frames);
     // check if a packet is missing by using the rtp sequence number and
     // if the payload is dynamic (h264 or h265)
     // Returns false if payload is wrong
@@ -44,18 +44,22 @@ private:
     // copy data_len bytes into the data buffer at the current position
     // and increase its size by data_len
     void append_nalu_data(const uint8_t* data, size_t data_len);
+    void append_empty(size_t data_len);
     // Properly calls the cb function (if not null)
     // Resets the m_nalu_data_length to 0
     void forwardNALU(const bool isH265=false);
     const NALU_DATA_CALLBACK m_cb;
     std::array<uint8_t,NALU_MAXLEN> m_nalu_data;
     size_t m_nalu_data_length=0;
+    bool m_feed_incomplete_frames;
 private:
     //TDOD: What shall we do if a start, middle or end of fu-a is missing ?
     int lastSequenceNumber=-1;
     bool flagPacketHasGoneMissing=false;
+public:
     // each time there is a "gap" between packets, this counter is increased
     int m_n_gaps=0;
+    int m_n_lost_packets=0;
     // This time point is as 'early as possible' to debug the parsing time as accurately as possible.
     // E.g for a fu-a NALU the time point when the start fu-a was received, not when its end is received
     std::chrono::steady_clock::time_point timePointStartOfReceivingNALU;
@@ -67,9 +71,12 @@ private:
     // ( In contrast to h264 we don't need the stupid reconstruction with h265)
     // data should point to "just" the rtp payload
     void h265_forward_one_nalu(const uint8_t* data,int data_size,bool write_4_bytes_for_start_code=true);
-
     // wtf
     bool check_has_valid_prefix(bool use_4_bytes_start_code);
+    // we can clear the missing packet flag when we either receive the first packet of a fragmented rtp packet or
+    // a non-fragmented rtp packet
+    //void clear_missing_packet_flag();
+    int curr_packet_diff=0;
 };
 
 #endif //LIVE_VIDEO_10MS_ANDROID_PARSERTP_H

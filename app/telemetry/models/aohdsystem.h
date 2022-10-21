@@ -4,13 +4,16 @@
 #include <QObject>
 #include <QDebug>
 #include <QTimer>
-#include "../telemetry/mavlink_include.h"
+#include "../mavlink_include.h"
 #include "wifiadapter.h"
-#include "../telemetry/openhd_defines.hpp"
+#include "../openhd_defines.hpp"
 #include <array>
+#include <QQmlContext>
 //
 #include <mavsdk/mavsdk.h>
 #include <mavsdk/plugins/action/action.h>
+
+#include "../../../lib/lqtutils_master/lqtutils_prop.h"
 
 /**
  * Abstract OHD (Mavlink) system.
@@ -24,10 +27,15 @@
 class AOHDSystem : public QObject
 {
     Q_OBJECT
+    // Packet
+    //L_RW_PROP(QString, video0_tx_bitrate, set_video0_tx_bitrate, "Bitrate NA")
 public:
     explicit AOHDSystem(const bool is_air,QObject *parent = nullptr);
+    // Singletons for accessing the models from c++
     static AOHDSystem& instanceAir();
     static AOHDSystem& instanceGround();
+    // Called in main.cpp to egister the models for qml
+    static void register_for_qml(QQmlContext* qml_context);
     //Process OpenHD custom flavour message(s) coming from either the OHD Air or Ground unit
     // Returns true if the passed message was processed (known message id), false otherwise
     bool process_message(const mavlink_message_t& msg);
@@ -184,6 +192,7 @@ private:
      QString m_curr_incoming_video_bitrate="Bitrate NA";
      QString m_curr_incoming_tele_bitrate="Bitrate NA";
      QString m_curr_outgoing_video_bitrate="Bitrate NA";
+     //
      QString m_curr_set_video_bitrate="NA";
      QString m_curr_set_video_codec="Unknown";
 private:
@@ -193,7 +202,7 @@ private:
     std::chrono::steady_clock::time_point m_last_message_openhd_stats_total_all_wifibroadcast_streams=std::chrono::steady_clock::now();
     // Model / fire and forget data only end
 private:
-     // NOTE: Null until discovered
+     // NOTE: nullptr until discovered !!
      std::shared_ptr<mavsdk::System> _system;
      std::shared_ptr<mavsdk::Action> _action;
      bool send_command_long(mavsdk::Action::CommandLong command);

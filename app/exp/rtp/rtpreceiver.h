@@ -13,10 +13,13 @@
 #include "../nalu/NALU.hpp"
 #include "../nalu/KeyFrameFinder.hpp"
 
+#include "../../common_consti/TimeHelper.hpp"
+#include "../../common_consti/EmulatedPacketDrop.hpp"
+
 class RTPReceiver
 {
 public:
-    RTPReceiver(int port,bool is_h265);
+    RTPReceiver(int port,bool is_h265,bool feed_incomplete_frames);
     ~RTPReceiver();
 
     std::shared_ptr<NALU> get_data();
@@ -44,6 +47,9 @@ private:
     void queue_data(const uint8_t* nalu_data,const std::size_t nalu_data_len);
 private:
     std::unique_ptr<KeyFrameFinder> m_keyframe_finder;
+    int n_dropped_frames=0;
+    BitrateCalculator m_rtp_bitrate;
+    PacketDropEmulator m_packet_drop_emulator{1};
 };
 
 #endif // RTPRECEIVER_H

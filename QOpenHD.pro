@@ -115,7 +115,7 @@ SOURCES += \
     app/exp/rtp/ParseRTP.cpp \
     app/exp/rtp/rtpreceiver.cpp \
     app/logging/logmessagesmodel.cpp \
-    app/openhd_systems/aohdsystem.cpp \
+    app/telemetry/models/aohdsystem.cpp \
     app/qopenhd.cpp \
     app/telemetry/settings/synchronizedsettings.cpp \
     app/util/WorkaroundMessageBox.cpp \
@@ -128,6 +128,7 @@ SOURCES += \
     #app/exp/drm_kms/drmprime_out.cpp \
 
 HEADERS += \
+    app/common_consti/EmulatedPacketDrop.hpp \
     app/exp/QSGVideoTextureItem.h \
     app/exp/gl/gl_shaders.h \
     app/exp/gl/gl_videorenderer.h \
@@ -137,8 +138,8 @@ HEADERS += \
     app/exp/rtp/RTP.hpp \
     app/exp/rtp/rtpreceiver.h \
     app/logging/logmessagesmodel.h \
-    app/openhd_systems/aohdsystem.h \
-    app/openhd_systems/wifiadapter.h \
+    app/telemetry/models/aohdsystem.h \
+    app/telemetry/models/wifiadapter.h \
     app/qopenhd.h \
     app/telemetry/mavlink_include.h \
     app/telemetry/openhd_defines.hpp \
@@ -182,19 +183,17 @@ HEADERS += \
 # I deleted all the "old" telemetry protocolls other than mavlink
 # and moved them into their own respective directories
 HEADERS += \
-    app/telemetry/OHDConnection.h \
-    app/telemetry/mavlinktelemetry.h \
+    app/telemetry/MavlinkTelemetry.h \
     app/telemetry/settings/mavlinksettingsmodel.h \
 
 SOURCES += \
-    app/telemetry/OHDConnection.cpp \
-    app/telemetry/mavlinktelemetry.cpp \
+    app/telemetry/MavlinkTelemetry.cpp \
     app/telemetry/settings/mavlinksettingsmodel.cpp \
 
 
 # all other files, complete mess
 SOURCES += \
-    app/fcmavlinksystem.cpp \
+    app/telemetry/models/fcmavlinksystem.cpp \
     app/util/FrequencyMonitor.cpp \
     app/main.cpp \
     app/rc/openhdrc.cpp \
@@ -205,7 +204,7 @@ RESOURCES += qml/qml.qrc \
     qml/qml.qrc
 
 HEADERS += \
-    app/fcmavlinksystem.h \
+    app/telemetry/models/fcmavlinksystem.h \
     app/util/FrequencyMonitor.h \
     app/util/sharedqueue.h \
     app/rc/openhdrc.h \

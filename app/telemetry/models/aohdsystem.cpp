@@ -1,21 +1,12 @@
 #include "aohdsystem.h"
-#include "../telemetry/qopenhdmavlinkhelper.hpp"
+
+#include "../qopenhdmavlinkhelper.hpp"
+#include "../../common_consti/StringHelper.hpp"
+
 #include <string>
 #include <sstream>
 
-static std::string bitrate_to_string(uint64_t bits_per_second){
-  const double mBits_per_second=static_cast<double>(bits_per_second)/(1000*1000);
-  std::stringstream ss;
-  if(mBits_per_second>1){
-      ss.precision(3);
-      ss<<mBits_per_second<<" mBit/s";
-      return ss.str();
-  }
-  const double kBits_per_second=static_cast<double>(bits_per_second)/1000;
-  ss.precision(3);
-  ss<<kBits_per_second<<" kBit/s";
-  return ss.str();
-}
+
 static std::string video_codec_to_string(int value){
     if(value==0)return "h264";
     if(value==1)return "h265";
@@ -42,6 +33,12 @@ AOHDSystem &AOHDSystem::instanceGround()
 {
     static AOHDSystem ground(false);
     return ground;
+}
+
+void AOHDSystem::register_for_qml(QQmlContext *qml_context)
+{
+    qml_context->setContextProperty("_ohdSystemAir", &AOHDSystem::instanceAir());
+    qml_context->setContextProperty("_ohdSystemGround", &AOHDSystem::instanceGround());
 }
 
 bool AOHDSystem::process_message(const mavlink_message_t &msg)
@@ -138,18 +135,18 @@ void AOHDSystem::process_x2(const mavlink_openhd_stats_total_all_wifibroadcast_s
 {
     m_last_message_openhd_stats_total_all_wifibroadcast_streams=std::chrono::steady_clock::now();
     {
-        set_curr_incoming_tele_bitrate(QString(bitrate_to_string(msg.curr_telemetry_rx_bps).c_str()));
+        set_curr_incoming_tele_bitrate(QString(StringHelper::bitrate_to_string(msg.curr_telemetry_rx_bps).c_str()));
         auto total_rx_bitrate=msg.curr_telemetry_rx_bps;
         if(!_is_air){
             // ground
             total_rx_bitrate+=msg.curr_video0_bps;
             total_rx_bitrate+=msg.curr_video1_bps;
-            set_curr_incoming_video_bitrate(QString(bitrate_to_string(msg.curr_video0_bps).c_str()));
+            set_curr_incoming_video_bitrate(QString(StringHelper::bitrate_to_string(msg.curr_video0_bps).c_str()));
         }
-        const auto bitrate_string=bitrate_to_string(total_rx_bitrate);
+        const auto bitrate_string=StringHelper::bitrate_to_string(total_rx_bitrate);
         set_curr_incoming_bitrate(QString(bitrate_string.c_str()));
         if(_is_air){
-            set_curr_outgoing_video_bitrate(bitrate_to_string(msg.curr_video0_bps).c_str());
+            set_curr_outgoing_video_bitrate(StringHelper::bitrate_to_string(msg.curr_video0_bps).c_str());
         }
     }
     set_wifi_rx_packets_count(msg.count_wifi_packets_received);

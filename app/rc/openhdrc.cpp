@@ -12,7 +12,6 @@
 #include <QJoysticks.h>
 #endif
 
-#include "telemetry/mavlinktelemetry.h"
 
 #define BUFLEN 21
 #define PORT 5565 // UDP port for OpenHD RC
@@ -78,6 +77,12 @@ OpenHDRC::OpenHDRC(QObject *parent): QObject(parent) {
     connect(timer, &QTimer::timeout, this, &OpenHDRC::channelTrigger);
     timer->start(15); // about 60Hz
 
+}
+
+OpenHDRC &OpenHDRC::instance()
+{
+    static OpenHDRC instance{};
+    return instance;
 }
 
 
