@@ -13,6 +13,8 @@
 #include <mavsdk/mavsdk.h>
 #include <mavsdk/plugins/action/action.h>
 
+#include "../../../lib/lqtutils_master/lqtutils_prop.h"
+
 /**
  * Abstract OHD (Mavlink) system.
  * This class contains information (basically like a model) about one OpenHD Air or Ground instance (if connected).
@@ -25,6 +27,8 @@
 class AOHDSystem : public QObject
 {
     Q_OBJECT
+    // Packet
+    //L_RW_PROP(QString, video0_tx_bitrate, set_video0_tx_bitrate, "Bitrate NA")
 public:
     explicit AOHDSystem(const bool is_air,QObject *parent = nullptr);
     // Singletons for accessing the models from c++
@@ -188,6 +192,7 @@ private:
      QString m_curr_incoming_video_bitrate="Bitrate NA";
      QString m_curr_incoming_tele_bitrate="Bitrate NA";
      QString m_curr_outgoing_video_bitrate="Bitrate NA";
+     //
      QString m_curr_set_video_bitrate="NA";
      QString m_curr_set_video_codec="Unknown";
 private:

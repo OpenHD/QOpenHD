@@ -27,7 +27,7 @@ RTPReceiver::RTPReceiver(int port,bool is_h265,bool feed_incomplete_frames):
     m_udp_receiver=std::make_unique<UDPReceiver>(port,"V_REC",[this](const uint8_t *payload, const std::size_t payloadSize){
         this->udp_raw_data_callback(payload,payloadSize);
         DecodingStatistcs::instance().set_n_missing_rtp_video_packets(m_rtp_decoder->m_n_gaps);
-    },1024*1024*50);
+    },UDPReceiver::BIG_UDP_RECEIVE_BUFFER_SIZE);
     m_udp_receiver->startReceiving();
 }
 

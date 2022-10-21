@@ -212,6 +212,10 @@ int AVCodecDecoder::decode_and_wait_for_frame(AVPacket *packet,std::optional<std
                 DecodingStatistcs::instance().set_decode_time(message.c_str());
             });
         }else if(ret==AVERROR(EAGAIN)){
+            // TODO FIXME REMOVE
+            if(true){
+                break;
+            }
             if(n_no_output_frame_after_x_seconds>=2){
                 // note decode latency is now wrong
                 //qDebug()<<"Skipping decode lockstep due to no frame for more than X seconds\n";
@@ -234,6 +238,7 @@ int AVCodecDecoder::decode_and_wait_for_frame(AVPacket *packet,std::optional<std
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }else{
             qDebug()<<"Got unlikely / weird error:"<<ret;
+            break;
         }
         n_times_we_tried_getting_a_frame_this_time++;
     }
@@ -336,7 +341,7 @@ void AVCodecDecoder::on_new_frame(AVFrame *frame)
         //qDebug()<<"Got frame:"<<ss.str().c_str();
     }
     // Once we got the first frame, reduce the log level
-    av_log_set_level(AV_LOG_WARNING);
+    //av_log_set_level(AV_LOG_WARNING);
     if(frame->format==AV_PIX_FMT_MMAL){
 #ifdef HAVE_MMAL
         TextureRenderer::instance().clear_all_video_textures_next_frame();
