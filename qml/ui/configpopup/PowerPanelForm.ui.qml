@@ -380,11 +380,13 @@ Rectangle {
         text: qsTr("DEV! Cancel QOpenHD")
 
         onPressed: {
+            // disables the service (such that qopenhd doesn't get restarted), then quits qopenhd
+            // NOTE: only works on images where the QT auto restart service is active
             _qopenhd.disable_service_and_quit()
         }
     }
     Button {
-        id: devRestartVideo
+        id: devRestartQOpenHD
         anchors.right: parent.right
         anchors.rightMargin: 12
         anchors.bottom: devCancelQOpenHD.top
@@ -394,10 +396,11 @@ Rectangle {
         Material.accent: Material.Orange
         highlighted: true
 
-        text: qsTr("DEV! Restart video")
+        text: qsTr("DEV! Restart QOpenHD")
 
         onPressed: {
-            _mainVideo.dev_restart_stream()
+              // Will be restarted by the service
+             _qopenhd.quit_qopenhd()
         }
     }
 
