@@ -341,7 +341,7 @@ void AVCodecDecoder::on_new_frame(AVFrame *frame)
         //qDebug()<<"Got frame:"<<ss.str().c_str();
     }
     // Once we got the first frame, reduce the log level
-    //av_log_set_level(AV_LOG_WARNING);
+    av_log_set_level(AV_LOG_WARNING);
     if(frame->format==AV_PIX_FMT_MMAL){
 #ifdef HAVE_MMAL
         TextureRenderer::instance().clear_all_video_textures_next_frame();
