@@ -63,6 +63,10 @@ Rectangle{
         return paramValueType==1;
     }
 
+    function holds_string_value_type_video_resoltuion_framerate(){
+        return paramValueType==1 && parameterId=="V_FORMAT"
+    }
+
     function get_param_type_readable(){
         if(holds_int_value())return "(int)"
         return "(string)"
@@ -203,6 +207,32 @@ Rectangle{
             }
         }
 
+        // temporary, todo refactor me
+        ListModel{
+             id: videoResolutionFrameratePresets
+             ListElement {title: "640x480@30"; value: 1}
+             ListElement {title: "640x480@60"; value: 2}
+             ListElement {title: "640x480@90"; value: 3}
+             ListElement {title: "1280x720@30"; value: 4}
+             ListElement {title: "1280x720@60"; value: 5}
+             ListElement {title: "1920x1080@30"; value: 6}
+        }
+
+        ComboBox {
+            id: comboBoxPredefinedInputVideoResolutionFramerate
+            height: customHeight
+            font.pixelSize: 14
+            Layout.alignment: Qt.AlignCenter
+            model: videoResolutionFrameratePresets
+            textRole: "title"
+            Layout.minimumWidth : total_width*0.8
+            onCurrentIndexChanged: {
+                var current=videoResolutionFrameratePresets.get(currentIndex).title
+                console.debug(current)
+                textInputParamtypeString.text=current
+            }
+            visible: holds_string_value()
+        }
 
         // if holds string
         TextInput{
