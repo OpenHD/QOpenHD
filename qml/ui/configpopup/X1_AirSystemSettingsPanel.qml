@@ -85,6 +85,8 @@ Rectangle {
 
             ScrollView{
                 anchors.fill: parent
+                ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+                ScrollBar.vertical.policy: ScrollBar.AlwaysOn
 
                 ListView {
                     //top: fetchAllButtonId.bottom
