@@ -3,8 +3,10 @@
 #include <qdebug.h>
 
 #include "../common_consti/StringHelper.hpp"
+#include "../common_consti/openhd-util.hpp"
 
 #include "../../videostreaming/decodingstatistcs.h"
+#include "common_consti/openhd-util.hpp"
 
 RTPReceiver::RTPReceiver(int port,bool is_h265,bool feed_incomplete_frames):
     is_h265(is_h265)
@@ -24,6 +26,9 @@ RTPReceiver::RTPReceiver(int port,bool is_h265,bool feed_incomplete_frames):
     m_rtp_decoder=std::make_unique<RTPDecoder>([this](const std::chrono::steady_clock::time_point creation_time,const uint8_t *nalu_data, const int nalu_data_size){
         this->nalu_data_callback(creation_time,nalu_data,nalu_data_size);
     },feed_incomplete_frames);
+    // Increase the OS max UDP buffer size (only works as root) such that the UDP receiver
+    // doesn't fail when requesting a bigger UDP buffer size
+    OHDUtil::run_command("sysctl ",{"-w","net.core.rmem_max=26214400"});
     m_udp_receiver=std::make_unique<UDPReceiver>(port,"V_REC",[this](const uint8_t *payload, const std::size_t payloadSize){
         this->udp_raw_data_callback(payload,payloadSize);
         DecodingStatistcs::instance().set_n_missing_rtp_video_packets(m_rtp_decoder->m_n_gaps);
