@@ -228,7 +228,7 @@ Rectangle{
             Layout.minimumWidth : total_width*0.8
             onCurrentIndexChanged: {
                 var current=videoResolutionFrameratePresets.get(currentIndex).title
-                console.debug(current)
+                //console.debug(current)
                 textInputParamtypeString.text=current
             }
             visible: holds_string_value()
