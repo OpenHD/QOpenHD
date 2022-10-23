@@ -55,6 +55,7 @@ Rectangle {
                     onClicked: {
                         parameterEditor.setup_for_parameter(model.unique_id,model)
                     }
+                    enabled: !model.read_only
                 }
             }
         }
@@ -85,6 +86,8 @@ Rectangle {
 
             ScrollView{
                 anchors.fill: parent
+                ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+                ScrollBar.vertical.policy: ScrollBar.AlwaysOn
 
                 ListView {
                     //top: fetchAllButtonId.bottom

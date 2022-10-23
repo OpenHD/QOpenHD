@@ -27,7 +27,9 @@ public:
 
     // parameters that need to be synchronized are white-listed
     static std::map<std::string,void*> get_whitelisted_params();
-    bool is_param_whitelisted(const std::string param_id);
+    bool is_param_whitelisted(const std::string param_id)const;
+    // workaround read only
+    bool is_param_read_only(const std::string param_id)const;
 
     explicit MavlinkSettingsModel(uint8_t sys_id,uint8_t comp_id,QObject *parent = nullptr);
 public:
@@ -80,7 +82,10 @@ public:
         // The internally stored type. 0==int, 1==std::string
         ValueTypeRole,
         // A description for this parameter. Not all parameters are documented yet, in this case this will return "?"
-        ShortDescriptionRole
+        ShortDescriptionRole,
+        // Weather this parameter is read-only (we repurpose the malink parameter protocoll in this regard here)
+        // Default true, only if a parameter is in the read-only whitelist it is marked as read-only
+        ReadOnlyRole
     };
     int rowCount(const QModelIndex& parent= QModelIndex()) const override;
     QVariant data( const QModelIndex& index, int role = Qt::DisplayRole ) const override;
