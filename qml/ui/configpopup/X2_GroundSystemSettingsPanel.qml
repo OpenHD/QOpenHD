@@ -56,6 +56,7 @@ Rectangle {
                         parameterEditor.setup_for_parameter(model.unique_id,model)
                     }
                 }
+                enabled: !model.read_only
             }
         }
     }

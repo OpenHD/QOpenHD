@@ -44,7 +44,7 @@ std::map<std::string, void *> MavlinkSettingsModel::get_whitelisted_params()
     return ret;
 }
 
-bool MavlinkSettingsModel::is_param_whitelisted(const std::string param_id)
+bool MavlinkSettingsModel::is_param_whitelisted(const std::string param_id)const
 {
     if(param_id.empty()){
         return false;
@@ -54,6 +54,14 @@ bool MavlinkSettingsModel::is_param_whitelisted(const std::string param_id)
         return true;
     }
     return false;
+}
+
+bool MavlinkSettingsModel::is_param_read_only(const std::string param_id)const
+{
+    bool ret=false;
+    if(param_id.compare("V_CAM_TYPE") == 0)ret=true;
+    qDebug()<<"Param"<<param_id.c_str()<<"Read-only:"<<(ret==false ? "N":"Y");
+    return ret;
 }
 
 static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string param_id){
@@ -283,6 +291,8 @@ QVariant MavlinkSettingsModel::data(const QModelIndex &index, int role) const
         return 1;
     } else if(role == ShortDescriptionRole){
         return "?";
+    } else if(role ==ReadOnlyRole){
+        return is_param_read_only({data.unique_id.toStdString()});
     }
     else
         return QVariant();
@@ -295,7 +305,8 @@ QHash<int, QByteArray> MavlinkSettingsModel::roleNames() const
         {ValueRole, "value"},
         {ExtraValueRole, "extraValue"},
         {ValueTypeRole,"valueType"},
-        {ShortDescriptionRole,"shortDescription"}
+        {ShortDescriptionRole,"shortDescription"},
+        {ReadOnlyRole,"read_only"}
     };
     return mapping;
 }

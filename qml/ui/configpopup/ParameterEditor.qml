@@ -117,6 +117,11 @@ Rectangle{
             // This is a string param
             paramValueString=model.value
             paramExtraValueInt= "Do not use me !!!!"
+            if(holds_string_value_type_video_resoltuion_framerate()){
+                comboBoxPredefinedInputVideoResolutionFramerate.visible=true
+            }else{
+                 comboBoxPredefinedInputVideoResolutionFramerate.visible=false
+            }
         }
         setup_spin_box_int_param()
         setup_text_input_string_param()
@@ -231,7 +236,7 @@ Rectangle{
                 //console.debug(current)
                 textInputParamtypeString.text=current
             }
-            visible: holds_string_value()
+            visible:holds_string_value_type_video_resoltuion_framerate()
         }
 
         // if holds string
