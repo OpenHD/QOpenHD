@@ -104,6 +104,8 @@ Rectangle{
         // since advanced only makes sense in the rarest case(s), e.g. when QOpenHD and OpenHD are out of sync.
         checkBoxEnableAdvanced.checked=false
         enableAdvanced=false;
+        // disable by default, enable only in case it is needed
+        comboBoxPredefinedInputVideoResolutionFramerate.visible=false
         // set param id and the value type this param holds
         parameterId=param_id;
         paramValueType=model.valueType
@@ -119,8 +121,6 @@ Rectangle{
             paramExtraValueInt= "Do not use me !!!!"
             if(holds_string_value_type_video_resoltuion_framerate()){
                 comboBoxPredefinedInputVideoResolutionFramerate.visible=true
-            }else{
-                 comboBoxPredefinedInputVideoResolutionFramerate.visible=false
             }
         }
         setup_spin_box_int_param()
