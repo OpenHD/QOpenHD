@@ -55,7 +55,7 @@ bool RTPDecoder::validateRTPPacket(const rtp_header_t& rtp_header) {
     }else{
         curr_packet_diff=diff_between_packets(lastSequenceNumber,seqNr);
         if(curr_packet_diff!=1){
-            qDebug()<<"X diff:"<<diff_between_packets(lastSequenceNumber,seqNr);
+            //qDebug()<<"X diff:"<<diff_between_packets(lastSequenceNumber,seqNr);
         }
         // Don't forget that the sequence number loops every UINT16_MAX packets
         //if(seqNr != ((lastSequenceNumber+1) % UINT16_MAX)){
