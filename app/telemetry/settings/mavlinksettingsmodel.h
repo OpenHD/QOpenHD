@@ -9,6 +9,7 @@
 #include <mavsdk/mavsdk.h>
 #include <mavsdk/plugins/param/param.h>
 
+
 // A QT wrapper around the mavlink extended / non-extended parameters protocoll on the client
 // (the side that changes parameter(s) provided by a specific system & component).
 // For each of these components, you can use an instance of this class - see the singletons below for
@@ -112,6 +113,13 @@ public:
     Q_INVOKABLE QString int_enum_get_readable(QString param_id,int value)const;
     Q_INVOKABLE int int_enum_get_max(QString param_id)const;
     Q_INVOKABLE int int_enum_get_min(QString param_id)const;
+    //
+    // TODO find a better solution
+    // R.n we return 2 lists of the same size (strings for the keys, ints for the values that correspond to the keys)
+    //aka both lists always have the same size
+    // Should only be called when we actually have an enum mapping for this param
+    Q_INVOKABLE QStringList get_enum_keys_for_int_param(QString param_id)const;
+    Q_INVOKABLE QList<int> get_enum_values_for_int_param(QString param_id)const;
 };
 
 #endif // MavlinkSettingsModel_H

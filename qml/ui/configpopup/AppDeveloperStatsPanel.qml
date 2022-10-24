@@ -10,7 +10,7 @@ import OpenHD 1.0
 import "../../ui" as Ui
 import "../elements"
 
-// Dirty here i place stuff that one might want to read, but that changes quite often during development
+// Dirty here i place stuff that can be usefaully during development
 Rectangle {
     id: elementAppDeveloperStats
     Layout.fillHeight: true

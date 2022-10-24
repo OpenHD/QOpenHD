@@ -104,6 +104,8 @@ Rectangle{
         // since advanced only makes sense in the rarest case(s), e.g. when QOpenHD and OpenHD are out of sync.
         checkBoxEnableAdvanced.checked=false
         enableAdvanced=false;
+        // disable by default, enable only in case it is needed
+        comboBoxPredefinedInputVideoResolutionFramerate.visible=false
         // set param id and the value type this param holds
         parameterId=param_id;
         paramValueType=model.valueType
@@ -119,8 +121,6 @@ Rectangle{
             paramExtraValueInt= "Do not use me !!!!"
             if(holds_string_value_type_video_resoltuion_framerate()){
                 comboBoxPredefinedInputVideoResolutionFramerate.visible=true
-            }else{
-                 comboBoxPredefinedInputVideoResolutionFramerate.visible=false
             }
         }
         setup_spin_box_int_param()
@@ -131,14 +131,48 @@ Rectangle{
     // For int params we use the spin box
     function setup_spin_box_int_param(){
         if(holds_int_value()){
-            spinBoxInputParamtypeInt.visible=true
-            spinBoxInputParamtypeInt.from=param_int_min_value()
-            spinBoxInputParamtypeInt.to=param_int_max_value()
-            spinBoxInputParamtypeInt.value=paramValueInt
+            // If we can treat this int value as an enum, this is the most verbose for the user
+             if(instanceMavlinkSettingsModel.has_int_enum_mapping(parameterId)){
+                 console.log("Int parameter has int enum mapping")
+                 spinBoxInputParamtypeInt.visible=false
+                 intEnumDynamicComboBox.visible=true
+                 // Populate the model with the key,value pairs for this enum
+                 const keys=instanceMavlinkSettingsModel.get_enum_keys_for_int_param(parameterId)
+                 const values=instanceMavlinkSettingsModel.get_enum_values_for_int_param(parameterId);
+                 intEnumDynamicListModel.clear()
+                 var currently_selected_index=-1;
+                 for (var i = 0; i < keys.length; i++) {
+                     var key=keys[i];
+                     var value=values[i];
+                     console.log(key,value);
+                     intEnumDynamicListModel.append({title: key, value: value})
+                     if(value===paramValueInt){
+                         currently_selected_index=i;
+                     }
+                 }
+                 if(currently_selected_index==-1){
+                     // We are missing a description for this int value, add row
+                     var new_key="Unknown("+paramValueInt+")"
+                     intEnumDynamicListModel.append({title: new_key, value: paramValueInt})
+                     currently_selected_index=intEnumDynamicListModel.count-1
+                 }
+                 intEnumDynamicComboBox.currentIndex=currently_selected_index
+                 console.log("Curr index:",currently_selected_index);
+             }else{
+                 // Less verbose
+                 console.log("Int parameter has no int enum mapping")
+                 intEnumDynamicComboBox.visible=false
+                 spinBoxInputParamtypeInt.visible=true
+                 spinBoxInputParamtypeInt.from=param_int_min_value()
+                 spinBoxInputParamtypeInt.to=param_int_max_value()
+                 spinBoxInputParamtypeInt.value=paramValueInt
+             }
         }else{
             spinBoxInputParamtypeInt.visible=false
+            intEnumDynamicComboBox.visible=false;
         }
     }
+
     // for string params we use the text input
     function setup_text_input_string_param(){
         if(holds_string_value()){
@@ -183,17 +217,6 @@ Rectangle{
         }
 
         // Value edit part begin
-        // if holds int
-        /*TextInput {
-            id: textInputParamtypeInt
-            horizontalAlignment: Qt.AlignCenter
-            height: customHeight
-            text: paramValueInt
-            cursorVisible: false
-            visible: holds_int_value()
-            validator: IntValidator {bottom: 0; top: 2147483647} //2,147,483,647==int32 max
-            Layout.alignment: Qt.AlignCenter
-        }*/
 
         SpinBox {
             id: spinBoxInputParamtypeInt
@@ -239,6 +262,24 @@ Rectangle{
             visible:holds_string_value_type_video_resoltuion_framerate()
         }
 
+        ListModel{
+             id: intEnumDynamicListModel
+             ListElement {title: "I SHOULD NEVER APPEAR"; value: 0}
+        }
+        ComboBox {
+            id: intEnumDynamicComboBox
+            height: customHeight
+            font.pixelSize: 14
+            Layout.alignment: Qt.AlignCenter
+            model: intEnumDynamicListModel
+            textRole: "title"
+            Layout.minimumWidth : total_width*0.8
+            onCurrentIndexChanged: {
+            }
+            visible:true
+        }
+
+
         // if holds string
         TextInput{
             id: textInputParamtypeString
@@ -270,10 +311,15 @@ Rectangle{
                 onClicked: {
                     var res=false;
                     if(paramValueType==0){
+                        var value_int;
+                        if(intEnumDynamicComboBox.visible){
+                            value_int=intEnumDynamicListModel.get(intEnumDynamicComboBox.currentIndex).value
+                        }else{
+                            value_int=spinBoxInputParamtypeInt.value
+                        }
                         //var value_int_as_string=spinBoxInputParamtypeInt.text
                         //var value_int = parseInt(value_int_as_string)
                         //console.log("UI set int:{"+value_int_as_string+"}={"+value_int+"}")
-                        var value_int=spinBoxInputParamtypeInt.value
                         console.log("UI set int:{"+value_int+"}")
                         res=instanceMavlinkSettingsModel.try_update_parameter_int(parameterId,value_int)
                     }else{

@@ -69,6 +69,20 @@ public:
        qDebug()<<"ImprovedIntSetting::enum_value_to_string not found, return 0";
        return 0;
    }
+   QStringList int_enum_keys()const{
+       QStringList ret{};
+       for(int i=0;i<values_enum.size();i++){
+           ret.append(QString{values_enum[i].c_str()});
+       }
+       return ret;
+   }
+   QList<int> int_enum_values()const{
+       QList<int> ret;
+       for(int i=0;i<values_enum.size();i++){
+           ret.append(i);
+       }
+       return ret;
+   }
 };
 
 

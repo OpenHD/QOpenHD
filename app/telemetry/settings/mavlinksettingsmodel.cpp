@@ -60,7 +60,7 @@ bool MavlinkSettingsModel::is_param_read_only(const std::string param_id)const
 {
     bool ret=false;
     if(param_id.compare("V_CAM_TYPE") == 0)ret=true;
-    qDebug()<<"Param"<<param_id.c_str()<<"Read-only:"<<(ret==false ? "N":"Y");
+    //qDebug()<<"Param"<<param_id.c_str()<<"Read-only:"<<(ret==false ? "N":"Y");
     return ret;
 }
 
@@ -81,6 +81,8 @@ static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string 
         map_improved_params["V_E_STREAMING"]=ImprovedIntSetting::createEnumEnableDisable();
         auto fc_uart_conn_values=std::vector<std::string>{"disable","serial0","serial1","ttyUSB0","ttyACM0","ttyACM1"};
         map_improved_params["FC_UART_CONN"]=ImprovedIntSetting::createEnum(fc_uart_conn_values);
+        //
+        map_improved_params["V_OS_CAM_CONFIG"]=ImprovedIntSetting::createEnum( std::vector<std::string>{"mmal","libcamera","libcamera-ardu"});
 
     }
     if(map_improved_params.find(param_id)!=map_improved_params.end()){
@@ -290,7 +292,7 @@ QVariant MavlinkSettingsModel::data(const QModelIndex &index, int role) const
         }
         return 1;
     } else if(role == ShortDescriptionRole){
-        return "?";
+        return "TODO";
     } else if(role ==ReadOnlyRole){
         return is_param_read_only({data.unique_id.toStdString()});
     }
@@ -446,4 +448,32 @@ int MavlinkSettingsModel::int_enum_get_min(QString param_id)const
         }
     }
     return -2147483648;
+}
+
+QStringList MavlinkSettingsModel::get_enum_keys_for_int_param(QString param_id) const
+{
+    const auto improved_opt=get_improved_for_int(param_id.toStdString());
+    if(improved_opt.has_value()){
+        const auto improved=improved_opt.value();
+        if(improved.has_enum_mapping()){
+            return improved.int_enum_keys();
+        }
+    }
+    qDebug()<<"Error no enum mapping for this int param";
+    QStringList ret{"Err(0)"};
+    return ret;
+}
+
+QList<int> MavlinkSettingsModel::get_enum_values_for_int_param(QString param_id) const
+{
+    const auto improved_opt=get_improved_for_int(param_id.toStdString());
+    if(improved_opt.has_value()){
+        const auto improved=improved_opt.value();
+        if(improved.has_enum_mapping()){
+            return improved.int_enum_values();
+        }
+    }
+    qDebug()<<"Error no enum mapping for this int param";
+    QList<int> ret{0};
+    return ret;
 }
