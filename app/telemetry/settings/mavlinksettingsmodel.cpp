@@ -60,7 +60,7 @@ bool MavlinkSettingsModel::is_param_read_only(const std::string param_id)const
 {
     bool ret=false;
     if(param_id.compare("V_CAM_TYPE") == 0)ret=true;
-    qDebug()<<"Param"<<param_id.c_str()<<"Read-only:"<<(ret==false ? "N":"Y");
+    //qDebug()<<"Param"<<param_id.c_str()<<"Read-only:"<<(ret==false ? "N":"Y");
     return ret;
 }
 
@@ -292,7 +292,7 @@ QVariant MavlinkSettingsModel::data(const QModelIndex &index, int role) const
         }
         return 1;
     } else if(role == ShortDescriptionRole){
-        return "?";
+        return "TODO";
     } else if(role ==ReadOnlyRole){
         return is_param_read_only({data.unique_id.toStdString()});
     }
