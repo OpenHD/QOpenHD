@@ -447,3 +447,29 @@ int MavlinkSettingsModel::int_enum_get_min(QString param_id)const
     }
     return -2147483648;
 }
+
+QStringList MavlinkSettingsModel::get_enum_keys_for_param(QString param_id) const
+{
+    const auto improved_opt=get_improved_for_int(param_id.toStdString());
+    if(improved_opt.has_value()){
+        const auto improved=improved_opt.value();
+        if(improved.has_enum_mapping()){
+            return improved.int_enum_keys();
+        }
+    }
+    QStringList ret{"Test1","Test2"};
+    return ret;
+}
+
+QList<int> MavlinkSettingsModel::get_enum_values_for_param(QString param_id) const
+{
+    const auto improved_opt=get_improved_for_int(param_id.toStdString());
+    if(improved_opt.has_value()){
+        const auto improved=improved_opt.value();
+        if(improved.has_enum_mapping()){
+            return improved.int_enum_values();
+        }
+    }
+    QList<int> ret{99,100};
+    return ret;
+}
