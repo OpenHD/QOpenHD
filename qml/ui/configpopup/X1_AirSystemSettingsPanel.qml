@@ -71,7 +71,7 @@ Rectangle {
             width: 100
             height: 48
             id: fetchAllButtonId
-            text:"FetchAll Air"
+            text:"ReFetch All Air"
             enabled: _ohdSystemAir.is_alive
             onClicked: {
                 var result=_airPiSettingsModel.try_fetch_all_parameters()

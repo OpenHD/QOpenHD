@@ -54,8 +54,6 @@ Rectangle{
     // disable some checking we do for the user, should be used only in really rare cases
     property bool enableAdvanced: false
 
-    property var m_curr_model;
-
 
     function holds_int_value(){
         return paramValueType==0;
@@ -98,7 +96,6 @@ Rectangle{
 
     function setup_for_parameter(param_id,model){
         console.log("setup_for_parameter"+param_id);
-        m_curr_model=model;
         if(model.unique_id !== param_id){
             console.log("Error wrong usage, pass in the right model");
             return;
@@ -135,13 +132,13 @@ Rectangle{
     function setup_spin_box_int_param(){
         if(holds_int_value()){
             // If we can treat this int value as an enum, this is the most verbose for the user
-             if(_groundPiSettingsModel.has_int_enum_mapping(parameterId)){
+             if(instanceMavlinkSettingsModel.has_int_enum_mapping(parameterId)){
                  console.log("Int parameter has int enum mapping")
                  spinBoxInputParamtypeInt.visible=false
                  intEnumDynamicComboBox.visible=true
                  // Populate the model with the key,value pairs for this enum
-                 const keys=_groundPiSettingsModel.get_enum_keys_for_param(parameterId)
-                 const values=_groundPiSettingsModel.get_enum_values_for_param(parameterId);
+                 const keys=instanceMavlinkSettingsModel.get_enum_keys_for_int_param(parameterId)
+                 const values=instanceMavlinkSettingsModel.get_enum_values_for_int_param(parameterId);
                  intEnumDynamicListModel.clear()
                  var currently_selected_index=-1;
                  for (var i = 0; i < keys.length; i++) {

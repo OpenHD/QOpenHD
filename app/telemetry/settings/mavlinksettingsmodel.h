@@ -118,8 +118,8 @@ public:
     // R.n we return 2 lists of the same size (strings for the keys, ints for the values that correspond to the keys)
     //aka both lists always have the same size
     // Should only be called when we actually have an enum mapping for this param
-    Q_INVOKABLE QStringList get_enum_keys_for_param(QString param_id)const;
-    Q_INVOKABLE QList<int> get_enum_values_for_param(QString param_id)const;
+    Q_INVOKABLE QStringList get_enum_keys_for_int_param(QString param_id)const;
+    Q_INVOKABLE QList<int> get_enum_values_for_int_param(QString param_id)const;
 };
 
 #endif // MavlinkSettingsModel_H

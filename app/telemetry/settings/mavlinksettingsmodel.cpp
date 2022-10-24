@@ -81,6 +81,8 @@ static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string 
         map_improved_params["V_E_STREAMING"]=ImprovedIntSetting::createEnumEnableDisable();
         auto fc_uart_conn_values=std::vector<std::string>{"disable","serial0","serial1","ttyUSB0","ttyACM0","ttyACM1"};
         map_improved_params["FC_UART_CONN"]=ImprovedIntSetting::createEnum(fc_uart_conn_values);
+        //
+        map_improved_params["V_OS_CAM_CONFIG"]=ImprovedIntSetting::createEnum( std::vector<std::string>{"mmal","libcamera","libcamera-ardu"});
 
     }
     if(map_improved_params.find(param_id)!=map_improved_params.end()){
@@ -448,7 +450,7 @@ int MavlinkSettingsModel::int_enum_get_min(QString param_id)const
     return -2147483648;
 }
 
-QStringList MavlinkSettingsModel::get_enum_keys_for_param(QString param_id) const
+QStringList MavlinkSettingsModel::get_enum_keys_for_int_param(QString param_id) const
 {
     const auto improved_opt=get_improved_for_int(param_id.toStdString());
     if(improved_opt.has_value()){
@@ -457,11 +459,12 @@ QStringList MavlinkSettingsModel::get_enum_keys_for_param(QString param_id) cons
             return improved.int_enum_keys();
         }
     }
-    QStringList ret{"Test1","Test2"};
+    qDebug()<<"Error no enum mapping for this int param";
+    QStringList ret{"Err(0)"};
     return ret;
 }
 
-QList<int> MavlinkSettingsModel::get_enum_values_for_param(QString param_id) const
+QList<int> MavlinkSettingsModel::get_enum_values_for_int_param(QString param_id) const
 {
     const auto improved_opt=get_improved_for_int(param_id.toStdString());
     if(improved_opt.has_value()){
@@ -470,6 +473,7 @@ QList<int> MavlinkSettingsModel::get_enum_values_for_param(QString param_id) con
             return improved.int_enum_values();
         }
     }
-    QList<int> ret{99,100};
+    qDebug()<<"Error no enum mapping for this int param";
+    QList<int> ret{0};
     return ret;
 }
