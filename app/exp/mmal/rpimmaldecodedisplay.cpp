@@ -160,6 +160,10 @@ bool RPIMMalDecodeDisplay::feed_frame(const uint8_t *frame_data, const int frame
         if ((buffer = mmal_queue_get(m_pool_in->queue)) != nullptr) {
 
             //qDebug()<<"RPIMMALDecoder::feed_frame:got buffer,send";
+            if(frame_data_size>buffer->alloc_size){
+                qDebug()<<"RPIMMalDecodeDisplay::feed_frame MMAL buffer not big enough for frame (weird), dropping";
+                return false;
+            }
 
             memcpy(buffer->data,frame_data, frame_data_size);
             buffer->length = frame_data_size;
