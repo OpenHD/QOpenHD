@@ -871,7 +871,7 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp_and_mmal_direct(cons
                  ss<<"MMAL "<<w_h[0]<<"x"<<w_h[1];
                  DecodingStatistcs::instance().set_primary_stream_frame_format(ss.str().c_str());
              }
-             mmal_decode_display->initialize(keyframe_buf->data(),keyframe_buf->size(),w_h[0], w_h[1],30);
+             mmal_decode_display->initialize(keyframe_buf->data(),keyframe_buf->size(),w_h[0], w_h[1],60);
              has_keyframe_data=true;
              continue;
         }else{

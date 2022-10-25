@@ -81,7 +81,7 @@ bool RPIMMalDecodeDisplay::initialize(const uint8_t *config_data, const int conf
     format_in->encoding = MMAL_ENCODING_H264;
     format_in->es->video.width = width;
     format_in->es->video.height = height;
-    format_in->es->video.frame_rate.num = 25;
+    format_in->es->video.frame_rate.num = fps;
     format_in->es->video.frame_rate.den = 1;
     format_in->es->video.par.num = 1;
     format_in->es->video.par.den = 1;
