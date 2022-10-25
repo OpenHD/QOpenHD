@@ -216,8 +216,12 @@ Rectangle{
             Layout.alignment: Qt.AlignCenter
         }
 
-        // Value edit part begin
+// Value edit part begin
 
+        // Type int only begin --------------------------
+        // For int values that do not have an enum mapping, we use a SpinBox such that the user can either
+        // use the +/- to edit the value (for touch screen users) but also allows the user to
+        // type in an int value directly with the keyboard.
         SpinBox {
             id: spinBoxInputParamtypeInt
             height: customHeight
@@ -234,7 +238,27 @@ Rectangle{
 
             }
         }
+        // And for int values that do have an enum mapping we use a more verbose combo box and a dynamically updated model
+        // The best example is the typical yes/no, or uart1,uart2,uart3,...
+        ListModel{
+             id: intEnumDynamicListModel
+             ListElement {title: "I SHOULD NEVER APPEAR"; value: 0}
+        }
+        ComboBox {
+            id: intEnumDynamicComboBox
+            height: customHeight
+            font.pixelSize: 14
+            Layout.alignment: Qt.AlignCenter
+            model: intEnumDynamicListModel
+            textRole: "title"
+            Layout.minimumWidth : total_width*0.8
+            onCurrentIndexChanged: {
+            }
+            visible:false
+        }
+        // Type int only end --------------------------
 
+        // Type string only begin --------------------------
         // temporary, todo refactor me
         ListModel{
              id: videoResolutionFrameratePresets
@@ -262,24 +286,6 @@ Rectangle{
             visible:holds_string_value_type_video_resoltuion_framerate()
         }
 
-        ListModel{
-             id: intEnumDynamicListModel
-             ListElement {title: "I SHOULD NEVER APPEAR"; value: 0}
-        }
-        ComboBox {
-            id: intEnumDynamicComboBox
-            height: customHeight
-            font.pixelSize: 14
-            Layout.alignment: Qt.AlignCenter
-            model: intEnumDynamicListModel
-            textRole: "title"
-            Layout.minimumWidth : total_width*0.8
-            onCurrentIndexChanged: {
-            }
-            visible:true
-        }
-
-
         // if holds string
         TextInput{
             id: textInputParamtypeString
@@ -290,7 +296,9 @@ Rectangle{
             visible: holds_string_value()
             Layout.alignment: Qt.AlignCenter
         }
-        //Value edit part end
+        // Type string only end --------------------------
+
+//Value edit part end
 
         RowLayout{
             width:parent.width
