@@ -28,7 +28,9 @@
 class FCMavlinkSystem : public QObject
 {
     Q_OBJECT
-    // These members can be written&read from c++, but only readable from qml (which is a common recommendation for QT application(s)).
+    // These members can be written & read from c++, but are only readable from qml (which is a common recommendation for QT application(s)).
+    // Aka we just set them in c++ by calling the setter declared from the macro, which then emits the changed signal if needed
+    // and therefore updates the corresponding UI element in QT
     L_RO_PROP(double, battery_current, set_battery_current, 0)
     L_RO_PROP(double, battery_voltage, set_battery_voltage, 0)
     L_RO_PROP(int, battery_percent, set_battery_percent, 0)
@@ -75,7 +77,17 @@ class FCMavlinkSystem : public QObject
     L_RO_PROP(int,esc_temp,set_esc_temp,0);
     L_RO_PROP(QString,flight_time,set_flight_time,"00:00")
     L_RO_PROP(double,flight_distance,set_flight_distance,0)
-    L_RO_PROP(double,lateral_speed,set_lateral_speed,0)
+    L_RO_PROP(double,lateral_speed,set_lateral_speed,0)  
+    L_RO_PROP(double,home_distance,set_home_distance,0)
+    L_RO_PROP(int,boot_time,set_boot_time,0)
+    L_RO_PROP(int,hdg,set_hdg,0)
+    L_RO_PROP(double,speed,set_speed,0)
+    //
+    L_RO_PROP(double,airspeed,set_airspeed,0)
+    L_RO_PROP(float,clipping_x,set_clipping_x,0.0)
+    L_RO_PROP(float,clipping_y,set_clipping_y,0.0)
+    L_RO_PROP(float,clipping_z,set_clipping_z,0.0)
+    L_RO_PROP(float,vsi,set_vsi,0.0)
 public:
     explicit FCMavlinkSystem(QObject *parent = nullptr);
     // singleton for accessing the model from c++
@@ -110,26 +122,11 @@ public:
     void updateVehicleAngles();
     void updateWind();
 
-    Q_PROPERTY(double home_distance MEMBER m_home_distance WRITE set_home_distance NOTIFY home_distance_changed)
-    void set_home_distance(double home_distance);
-
     Q_PROPERTY(int home_course MEMBER m_home_course WRITE set_home_course NOTIFY home_course_changed)
     void set_home_course(int home_course);
 
     Q_PROPERTY(int home_heading MEMBER m_home_heading WRITE set_home_heading NOTIFY home_heading_changed)
     void set_home_heading(int home_heading);
-
-    Q_PROPERTY(int boot_time MEMBER m_boot_time WRITE set_boot_time NOTIFY boot_time_changed)
-    void set_boot_time(int boot_time);
-
-    Q_PROPERTY(int hdg MEMBER m_hdg WRITE set_hdg NOTIFY hdg_changed)
-    void set_hdg(int hdg);
-
-    Q_PROPERTY(double speed MEMBER m_speed WRITE set_speed NOTIFY speed_changed)
-    void set_speed(double speed);
-
-    Q_PROPERTY(double airspeed MEMBER m_airspeed WRITE set_airspeed NOTIFY airspeed_changed)
-    void set_airspeed(double airspeed);
 
     Q_PROPERTY(bool armed MEMBER m_armed WRITE set_armed NOTIFY armed_changed)
     void set_armed(bool armed);
@@ -145,18 +142,6 @@ public:
 
     Q_PROPERTY(double homelon MEMBER m_homelon WRITE set_homelon NOTIFY homelon_changed)
     void set_homelon(double homelon);
-
-    Q_PROPERTY(float clipping_x MEMBER m_clipping_x WRITE set_clipping_x NOTIFY clipping_x_changed)
-    void set_clipping_x(float clipping_x);
-
-    Q_PROPERTY(float clipping_y MEMBER m_clipping_y WRITE set_clipping_y NOTIFY clipping_y_changed)
-    void set_clipping_y(float clipping_y);
-
-    Q_PROPERTY(float clipping_z MEMBER m_clipping_z WRITE set_clipping_z NOTIFY clipping_z_changed)
-    void set_clipping_z(float clipping_z);
-
-    Q_PROPERTY(float vsi MEMBER m_vsi WRITE set_vsi NOTIFY vsi_changed)
-    void set_vsi(float vsi);
 
     Q_PROPERTY(int current_waypoint MEMBER m_current_waypoint WRITE setCurrentWaypoint NOTIFY currentWaypointChanged)
     void setCurrentWaypoint(int current_waypoint);
@@ -176,16 +161,11 @@ public:
     void set_supports_basic_commands(bool supports_basic_commands);
 signals:
     // mavlink
-    void boot_time_changed(int boot_time);
-    void hdg_changed(int hdg);
-    void speed_changed(double speed);
-    void airspeed_changed(double airspeed);
     void armed_changed(bool armed);
     void flight_mode_changed(QString flight_mode);
     void mav_type_changed(QString mav_type);
     void homelat_changed(double homelat);
     void homelon_changed(double homelon);
-    void home_distance_changed(double home_distance);
     void home_course_changed(int home_course);
     void home_heading_changed(int home_heading);
     void messageReceived(QString message, int level);
@@ -196,14 +176,6 @@ signals:
     void vibration_y_changed(float vibration_y);
     void vibration_z_changed(float vibration_z);
 
-    void clipping_x_changed(float clipping_x);
-    void clipping_y_changed(float clipping_y);
-    void clipping_z_changed(float clipping_z);
-
-    void vsi_changed(float vsi);
-
-    void rcRssiChanged(int rcRssi);
-
     void rcChannelChanged(int channelIdx,int value);
 
     void currentWaypointChanged (int current_waypoint);
@@ -213,13 +185,6 @@ signals:
     void supports_basic_commands_changed(bool supports_basic_commands);
 public:
     // mavlink
-    int m_boot_time = 0;
-
-    int m_hdg = 000;
-
-    double m_speed = 0;
-    double m_airspeed = 0;
-
     bool m_armed = false;
     QString m_flight_mode = "------";
     QString m_mav_type = "UNKOWN";
@@ -229,20 +194,10 @@ public:
     bool gcs_position_set = false;
     int gps_quality_count = 0;
 
-    double m_home_distance = 0.0;
     int m_home_heading = 0; //this is actual global heading
     int m_home_course = 0; //this is the relative course from nose
 
-    float m_clipping_x = 0.0;
-    float m_clipping_y = 0.0;
-    float m_clipping_z = 0.0;
-
-    float m_vsi = 0.0;
-
     double speed_last_time = 0.0;
-
-
-    int m_rcRssi = 0;
 
     qint64 flightDistanceLastTime= 0;
     long total_dist= 0;

@@ -634,26 +634,6 @@ void FCMavlinkSystem::updateAppMahKm() {
 
 }
 
-void FCMavlinkSystem::set_boot_time(int boot_time) {
-    m_boot_time = boot_time;
-    emit boot_time_changed(m_boot_time);
-}
-
-void FCMavlinkSystem::set_hdg(int hdg) {
-    m_hdg = hdg;
-    emit hdg_changed(m_hdg);
-}
-
-void FCMavlinkSystem::set_speed(double speed) {
-    m_speed = speed;
-    emit speed_changed(m_speed);
-}
-
-void FCMavlinkSystem::set_airspeed(double airspeed) {
-    m_airspeed = airspeed;
-    emit airspeed_changed(m_airspeed);
-}
-
 void FCMavlinkSystem::set_armed(bool armed) {
     if(m_armed==armed)return;
     QString message=(armed && !m_armed) ? "armed" : "disarmed";
@@ -731,11 +711,6 @@ void FCMavlinkSystem::calculate_home_distance() {
     }
 }
 
-void FCMavlinkSystem::set_home_distance(double home_distance) {
-    m_home_distance = home_distance;
-    emit home_distance_changed(home_distance);
-}
-
 void FCMavlinkSystem::calculate_home_course() {
 
     //qDebug() << "Home lat lon " << m_homelat << " :" << m_homelon;
@@ -772,26 +747,6 @@ void FCMavlinkSystem::set_home_heading(int home_heading) {
     if (home_heading >= 360) home_heading -=360;
     m_home_heading = home_heading;
     emit home_heading_changed(home_heading);
-}
-
-void FCMavlinkSystem::set_clipping_x(float clipping_x) {
-    m_clipping_x= clipping_x;
-     emit clipping_x_changed(m_clipping_x);
-}
-
-void FCMavlinkSystem::set_clipping_y(float clipping_y) {
-    m_clipping_y= clipping_y;
-     emit clipping_y_changed(m_clipping_y);
-}
-
-void FCMavlinkSystem::set_clipping_z(float clipping_z) {
-    m_clipping_z= clipping_z;
-     emit clipping_z_changed(m_clipping_z);
-}
-
-void FCMavlinkSystem::set_vsi(float vsi) {
-    m_vsi= vsi;
-     emit vsi_changed(m_vsi);
 }
 
 void FCMavlinkSystem::updateVehicleAngles(){
