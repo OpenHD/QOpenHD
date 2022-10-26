@@ -79,6 +79,7 @@ void RTPReceiver::queue_data(const uint8_t* nalu_data,const std::size_t nalu_dat
         if(nalu.is_config())return;
         if(nalu.is_aud())return;
         if(nalu.is_sei())return;
+        if(nalu.is_dps())return;
         if(m_data.size()>MAX_DATA_QUEUE_SIZE){
             // The decoder cannot keep up with the incoming stream, this should never happen - if it happens,
             // The easiest thing to do is to just drop this frame (we cannot just remove the oldest, not yet fed frame from the queue,

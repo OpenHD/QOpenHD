@@ -133,6 +133,13 @@ public:
        }
        return (get_nal_unit_type() == NALUnitType::H264::NAL_UNIT_TYPE_SEI);
    }
+   bool is_dps()const{
+       if(IS_H265_PACKET){
+           // doesn't exist in h265
+           return false;
+       }
+       return (get_nal_unit_type() == NALUnitType::H264::NAL_UNIT_TYPE_DPS);
+   }
    bool is_config(){
        return isSPS() || isPPS() || (IS_H265_PACKET && isVPS());
    }
