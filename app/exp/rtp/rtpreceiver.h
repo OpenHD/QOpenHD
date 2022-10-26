@@ -43,6 +43,7 @@ private:
 private:
     std::mutex m_data_mutex;
     std::queue<std::shared_ptr<NALU>> m_data;
+    static constexpr auto MAX_DATA_QUEUE_SIZE=20;
 
     void queue_data(const uint8_t* nalu_data,const std::size_t nalu_data_len);
 private:

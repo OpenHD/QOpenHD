@@ -81,7 +81,7 @@ bool RPIMMalDecodeDisplay::initialize(const uint8_t *config_data, const int conf
     format_in->encoding = MMAL_ENCODING_H264;
     format_in->es->video.width = width;
     format_in->es->video.height = height;
-    format_in->es->video.frame_rate.num = 25;
+    format_in->es->video.frame_rate.num = fps;
     format_in->es->video.frame_rate.den = 1;
     format_in->es->video.par.num = 1;
     format_in->es->video.par.den = 1;
@@ -160,8 +160,15 @@ bool RPIMMalDecodeDisplay::feed_frame(const uint8_t *frame_data, const int frame
         if ((buffer = mmal_queue_get(m_pool_in->queue)) != nullptr) {
 
             //qDebug()<<"RPIMMALDecoder::feed_frame:got buffer,send";
+            int n_bytes_to_copy=frame_data_size;
+            // Since I do not know how to put this buffer back into the queue, I decided to just copy
+            // as much as possible and then feed the frame to the decoder in case we exceed the allocated buffer size.
+            if(frame_data_size>buffer->alloc_size){
+                qDebug()<<"RPIMMalDecodeDisplay::feed_frame MMAL buffer not big enough for frame (weird), dropping";
+                n_bytes_to_copy=buffer->alloc_size;
+            }
 
-            memcpy(buffer->data,frame_data, frame_data_size);
+            memcpy(buffer->data,frame_data, n_bytes_to_copy);
             buffer->length = frame_data_size;
 
             buffer->offset = 0;

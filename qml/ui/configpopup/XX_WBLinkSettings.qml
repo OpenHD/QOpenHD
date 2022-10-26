@@ -234,4 +234,10 @@ ColumnLayout {
             _synchronizedSettings.soft_restart()
         }
     }
+    Text{
+        text:
+"To change these parameters, make sure your ground and air unit are alive and well.\nAlso, it is not recommended to change them during flight.
+To apply a change, you need to click either soft restart or power cycle your air and ground unit manually"
+    }
+
 }

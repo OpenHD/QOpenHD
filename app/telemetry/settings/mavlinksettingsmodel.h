@@ -82,7 +82,7 @@ public:
         ExtraValueRole,
         // The internally stored type. 0==int, 1==std::string
         ValueTypeRole,
-        // A description for this parameter. Not all parameters are documented yet, in this case this will return "?"
+        // A description for this parameter. Not all parameters are documented yet, in this case this will return "TODO"
         ShortDescriptionRole,
         // Weather this parameter is read-only (we repurpose the malink parameter protocoll in this regard here)
         // Default true, only if a parameter is in the read-only whitelist it is marked as read-only
@@ -97,7 +97,6 @@ public:
         // We support int and string values - NOTHING ELSE ! Please keep it this way, there are reasons for it.
         // On a side node, PX4 / ardupilot do it the same !
         std::variant<int32_t,std::string> value;
-        //qint32 value;
     };
 public slots:
     void removeData(int row);

@@ -13,10 +13,11 @@ static int diff_between_packets(int last_packet,int curr_packet){
         qDebug()<<"Duplicate?!";
     }
     if(curr_packet<last_packet){
-        qDebug()<<"Assuming overflow";
+        // This is not neccessarily an error, the rtp seq nr is of type uint16_t and therefore loops around in regular intervals
+        //qDebug()<<"Assuming overflow";
         // We probably have overflown the uin16_t range of rtp
         const auto diff=curr_packet+UINT16_MAX+1-last_packet;
-        qDebug()<<"last:"<<last_packet<<" curr:"<<curr_packet<<" diff:"<<diff;
+        //qDebug()<<"last:"<<last_packet<<" curr:"<<curr_packet<<" diff:"<<diff;
         return diff;
     }else{
         return curr_packet-last_packet;

@@ -153,7 +153,7 @@ int AVCodecDecoder::decode_and_wait_for_frame(AVPacket *packet,std::optional<std
         const auto delay=beforeFeedFrame-parse_time.value();
         avg_parse_time.add(delay);
         avg_parse_time.custom_print_in_intervals(std::chrono::seconds(3),[](const std::string name,const std::string message){
-            qDebug()<<name.c_str()<<":"<<message.c_str();
+            //qDebug()<<name.c_str()<<":"<<message.c_str();
             DecodingStatistcs::instance().set_parse_and_enqueue_time(message.c_str());
         });
     }
@@ -208,7 +208,7 @@ int AVCodecDecoder::decode_and_wait_for_frame(AVPacket *packet,std::optional<std
             // display frame
             on_new_frame(frame);
             avg_decode_time.custom_print_in_intervals(std::chrono::seconds(3),[](const std::string name,const std::string message){
-                qDebug()<<name.c_str()<<":"<<message.c_str();
+                //qDebug()<<name.c_str()<<":"<<message.c_str();
                 DecodingStatistcs::instance().set_decode_time(message.c_str());
             });
         }else if(ret==AVERROR(EAGAIN)){
@@ -262,7 +262,7 @@ bool AVCodecDecoder::feed_rtp_frame_if_available()
             const auto delay=std::chrono::steady_clock::now()-frame->creationTime;
             avg_parse_time.add(delay);
             avg_parse_time.custom_print_in_intervals(std::chrono::seconds(3),[](const std::string name,const std::string message){
-                qDebug()<<name.c_str()<<":"<<message.c_str();
+                //qDebug()<<name.c_str()<<":"<<message.c_str();
                 DecodingStatistcs::instance().set_parse_and_enqueue_time(message.c_str());
             });
         }
@@ -312,7 +312,7 @@ void AVCodecDecoder::fetch_frame_or_feed_input_packet(){
             // display frame
             on_new_frame(frame);
             avg_decode_time.custom_print_in_intervals(std::chrono::seconds(3),[](const std::string name,const std::string message){
-                qDebug()<<name.c_str()<<":"<<message.c_str();
+                 //qDebug()<<name.c_str()<<":"<<message.c_str();
                  DecodingStatistcs::instance().set_decode_time(message.c_str());
             });
             av_frame_free(&frame);
@@ -871,7 +871,7 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp_and_mmal_direct(cons
                  ss<<"MMAL "<<w_h[0]<<"x"<<w_h[1];
                  DecodingStatistcs::instance().set_primary_stream_frame_format(ss.str().c_str());
              }
-             mmal_decode_display->initialize(keyframe_buf->data(),keyframe_buf->size(),w_h[0], w_h[1],30);
+             mmal_decode_display->initialize(keyframe_buf->data(),keyframe_buf->size(),w_h[0], w_h[1],60);
              has_keyframe_data=true;
              continue;
         }else{
@@ -893,7 +893,7 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp_and_mmal_direct(cons
              const auto delay=std::chrono::steady_clock::now()-buf->creationTime;
              avg_parse_time.add(delay);
              avg_parse_time.custom_print_in_intervals(std::chrono::seconds(3),[](const std::string name,const std::string message){
-                 qDebug()<<name.c_str()<<":"<<message.c_str();
+                 //qDebug()<<name.c_str()<<":"<<message.c_str();
                  DecodingStatistcs::instance().set_parse_and_enqueue_time(message.c_str());
              });
              TextureRenderer::instance().clear_all_video_textures_next_frame();

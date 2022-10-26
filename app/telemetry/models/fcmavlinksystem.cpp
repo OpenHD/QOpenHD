@@ -315,8 +315,8 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
             mavlink_rc_channels_raw_t rc_channels_raw;
             mavlink_msg_rc_channels_raw_decode(&msg, &rc_channels_raw);
 
-            auto rssi = static_cast<int>(static_cast<double>(rc_channels_raw.rssi) / 255.0 * 100.0);
-            FCMavlinkSystem::instance().setRcRssi(rssi);
+            const auto rssi = static_cast<int>(static_cast<double>(rc_channels_raw.rssi) / 255.0 * 100.0);
+            FCMavlinkSystem::instance().set_rc_rssi(rssi);
             break;
         }
         case MAVLINK_MSG_ID_SERVO_OUTPUT_RAW:{
@@ -345,8 +345,8 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
            FCMavlinkSystem::instance().set_control_roll(rc_channels.chan1_raw);
            FCMavlinkSystem::instance().set_control_throttle(rc_channels.chan3_raw);
            FCMavlinkSystem::instance().set_control_yaw(rc_channels.chan4_raw);*/
-           auto rssi = static_cast<int>(static_cast<double>(rc_channels.rssi) / 255.0 * 100.0);
-           FCMavlinkSystem::instance().setRcRssi(rssi);
+           const auto rssi = static_cast<int>(static_cast<double>(rc_channels.rssi) / 255.0 * 100.0);
+           FCMavlinkSystem::instance().set_rc_rssi(rssi);
             /*qDebug() << "RC: " << rc_channels.chan1_raw
                                  << rc_channels.chan2_raw
                                  << rc_channels.chan3_raw
@@ -634,51 +634,6 @@ void FCMavlinkSystem::updateAppMahKm() {
 
 }
 
-void FCMavlinkSystem::set_boot_time(int boot_time) {
-    m_boot_time = boot_time;
-    emit boot_time_changed(m_boot_time);
-}
-
-void FCMavlinkSystem::set_alt_rel(double alt_rel) {
-    m_alt_rel = alt_rel;
-    emit alt_rel_changed(m_alt_rel);
-}
-
-void FCMavlinkSystem::set_alt_msl(double alt_msl) {
-    m_alt_msl = alt_msl;
-    emit alt_msl_changed(m_alt_msl);
-}
-
-void FCMavlinkSystem::set_vx(double vx) {
-    m_vx = vx;
-    emit vx_changed(m_vx);
-}
-
-void FCMavlinkSystem::set_vy(double vy) {
-    m_vy = vy;
-    emit vy_changed(m_vy);
-}
-
-void FCMavlinkSystem::set_vz(double vz) {
-    m_vz = vz;
-    emit vz_changed(m_vz);
-}
-
-void FCMavlinkSystem::set_hdg(int hdg) {
-    m_hdg = hdg;
-    emit hdg_changed(m_hdg);
-}
-
-void FCMavlinkSystem::set_speed(double speed) {
-    m_speed = speed;
-    emit speed_changed(m_speed);
-}
-
-void FCMavlinkSystem::set_airspeed(double airspeed) {
-    m_airspeed = airspeed;
-    emit airspeed_changed(m_airspeed);
-}
-
 void FCMavlinkSystem::set_armed(bool armed) {
     if(m_armed==armed)return;
     QString message=(armed && !m_armed) ? "armed" : "disarmed";
@@ -756,11 +711,6 @@ void FCMavlinkSystem::calculate_home_distance() {
     }
 }
 
-void FCMavlinkSystem::set_home_distance(double home_distance) {
-    m_home_distance = home_distance;
-    emit home_distance_changed(home_distance);
-}
-
 void FCMavlinkSystem::calculate_home_course() {
 
     //qDebug() << "Home lat lon " << m_homelat << " :" << m_homelon;
@@ -797,131 +747,6 @@ void FCMavlinkSystem::set_home_heading(int home_heading) {
     if (home_heading >= 360) home_heading -=360;
     m_home_heading = home_heading;
     emit home_heading_changed(home_heading);
-}
-
-void FCMavlinkSystem::set_lat(double lat) {
-    m_lat = lat;
-    emit lat_changed(m_lat);
-}
-
-void FCMavlinkSystem::set_lon(double lon) {
-    m_lon = lon;
-    emit lon_changed(m_lon);
-}
-
-void FCMavlinkSystem::set_satellites_visible(int satellites_visible) {
-    m_satellites_visible = satellites_visible;
-    emit satellites_visible_changed(m_satellites_visible);
-}
-
-void FCMavlinkSystem::set_gps_hdop(double gps_hdop) {
-    m_gps_hdop = gps_hdop;
-    emit gps_hdop_changed(m_gps_hdop);
-}
-
-void FCMavlinkSystem::set_gps_fix_type(unsigned int gps_fix_type) {
-    m_gps_fix_type = gps_fix_type;
-    emit gps_fix_type_changed(m_gps_fix_type);
-}
-
-void FCMavlinkSystem::set_clipping_x(float clipping_x) {
-    m_clipping_x= clipping_x;
-     emit clipping_x_changed(m_clipping_x);
-}
-
-void FCMavlinkSystem::set_clipping_y(float clipping_y) {
-    m_clipping_y= clipping_y;
-     emit clipping_y_changed(m_clipping_y);
-}
-
-void FCMavlinkSystem::set_clipping_z(float clipping_z) {
-    m_clipping_z= clipping_z;
-     emit clipping_z_changed(m_clipping_z);
-}
-
-void FCMavlinkSystem::set_vsi(float vsi) {
-    m_vsi= vsi;
-     emit vsi_changed(m_vsi);
-}
-
-void FCMavlinkSystem::set_lateral_speed(double lateral_speed) {
-    m_lateral_speed= lateral_speed;
-     emit lateral_speed_changed(m_lateral_speed);
-}
-
-void FCMavlinkSystem::set_wind_speed(double wind_speed) {
-    m_wind_speed= wind_speed;
-     emit wind_speed_changed(m_wind_speed);
-}
-
-void FCMavlinkSystem::set_wind_direction(double wind_direction) {
-    m_wind_direction= wind_direction;
-     emit wind_direction_changed(m_wind_direction);
-}
-
-void FCMavlinkSystem::set_mav_wind_direction(float mav_wind_direction) {
-    m_mav_wind_direction= mav_wind_direction;
-     emit mav_wind_direction_changed(m_mav_wind_direction);
-}
-
-void FCMavlinkSystem::set_mav_wind_speed(float mav_wind_speed) {
-    m_mav_wind_speed= mav_wind_speed;
-     emit mav_wind_speed_changed(m_mav_wind_speed);
-}
-
-void FCMavlinkSystem::setRcRssi(int rcRssi) {
-    m_rcRssi = rcRssi;
-    emit rcRssiChanged(m_rcRssi);
-}
-
-void FCMavlinkSystem::set_imu_temp(int imu_temp) {
-    m_imu_temp = imu_temp;
-    emit imu_temp_changed(m_imu_temp);
-}
-
-void FCMavlinkSystem::set_press_temp(int press_temp) {
-    m_press_temp = press_temp;
-    emit press_temp_changed(m_press_temp);
-}
-
-void FCMavlinkSystem::set_esc_temp(int esc_temp) {
-    m_esc_temp = esc_temp;
-    emit esc_temp_changed(m_esc_temp);
-}
-
-void FCMavlinkSystem::set_flight_time(QString flight_time) {
-    m_flight_time = flight_time;
-    emit flight_time_changed(m_flight_time);
-}
-
-void FCMavlinkSystem::set_flight_distance(double flight_distance) {
-    m_flight_distance = flight_distance;
-    emit flight_distance_changed(m_flight_distance);
-}
-
-void FCMavlinkSystem::set_flight_mah(double flight_mah) {
-    m_flight_mah = flight_mah;
-    emit flight_mah_changed(m_flight_mah);
-}
-
-void FCMavlinkSystem::set_app_mah(double app_mah) {
-    m_app_mah = app_mah;
-    emit app_mah_changed(m_app_mah);
-}
-
-void FCMavlinkSystem::set_mah_km(int mah_km) {
-    m_mah_km = mah_km;
-    emit mah_km_changed(m_mah_km);
-}
-
-void FCMavlinkSystem::set_vehicle_vx_angle(double vehicle_vx_angle) {
-    m_vehicle_vx_angle = vehicle_vx_angle;
-    emit vehicle_vx_angle_changed(m_vehicle_vx_angle);
-}
-
-void FCMavlinkSystem::set_vehicle_vz_angle(double vehicle_vz_angle) {
-    m_vehicle_vz_angle = vehicle_vz_angle;
-    emit vehicle_vz_angle_changed(m_vehicle_vz_angle);
 }
 
 void FCMavlinkSystem::updateVehicleAngles(){

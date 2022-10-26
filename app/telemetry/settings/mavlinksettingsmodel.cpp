@@ -79,6 +79,19 @@ static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string 
         map_improved_params["VIDEO_CODEC"]=ImprovedIntSetting::createEnum( std::vector<std::string>{"h264","h265","mjpeg"});
         map_improved_params["V_AIR_RECORDING"]=ImprovedIntSetting::createEnumEnableDisable();
         map_improved_params["V_E_STREAMING"]=ImprovedIntSetting::createEnumEnableDisable();
+        auto fc_uart_baud_rates=std::vector<std::string>{
+                "9600",
+                "19200",
+                "38400",
+                "57600",
+                "115200",
+                "230400",
+                "460800",
+                "500000",
+                "576000",
+                "921600",
+                "1000000"
+        };
         auto fc_uart_conn_values=std::vector<std::string>{"disable","serial0","serial1","ttyUSB0","ttyACM0","ttyACM1"};
         map_improved_params["FC_UART_CONN"]=ImprovedIntSetting::createEnum(fc_uart_conn_values);
         //
