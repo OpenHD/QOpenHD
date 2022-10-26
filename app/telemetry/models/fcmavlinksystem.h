@@ -45,6 +45,37 @@ class FCMavlinkSystem : public QObject
     L_RO_PROP(float,vibration_z,set_vibration_z,0)
     // see alive timer
     L_RO_PROP(bool,is_alive,set_is_alive,false)
+    //
+    L_RO_PROP(double,lat,set_lat,0.0)
+    L_RO_PROP(double,lon,set_lon,0.0)
+    L_RO_PROP(int,satellites_visible,set_satellites_visible,0)
+    L_RO_PROP(double,gps_hdop,set_gps_hdop,99.0)
+    L_RO_PROP(int,gps_fix_type,set_gps_fix_type,0)
+    L_RO_PROP(double,vx,set_vx,0.0)
+    L_RO_PROP(double,vy,set_vy,0.0)
+    L_RO_PROP(double,vz,set_vz,0.0)
+    //
+    L_RO_PROP(double,alt_rel,set_alt_rel,0.0)
+    L_RO_PROP(double,alt_msl,set_alt_msl,0.0)
+    L_RO_PROP(int,flight_mah,set_flight_mah,0)
+    L_RO_PROP(int,app_mah,set_app_mah,0)
+    L_RO_PROP(int,mah_km,set_mah_km,0)
+    //
+    L_RO_PROP(double,vehicle_vx_angle,set_vehicle_vx_angle,0.0);
+    L_RO_PROP(double,vehicle_vy_angle,set_vehicle_vy_angle,0.0);
+    L_RO_PROP(double,vehicle_vz_angle,set_vehicle_vz_angle,0.0);
+    ////
+    L_RO_PROP(double,wind_speed,set_wind_speed,0)
+    L_RO_PROP(double,wind_direction,set_wind_direction,0)
+    L_RO_PROP(float,mav_wind_direction,set_mav_wind_direction,0)
+    L_RO_PROP(float,mav_wind_speed,set_mav_wind_speed,0)
+    L_RO_PROP(int,rc_rssi,set_rc_rssi,0);
+    L_RO_PROP(int,imu_temp,set_imu_temp,0);
+    L_RO_PROP(int,press_temp,set_press_temp,0);
+    L_RO_PROP(int,esc_temp,set_esc_temp,0);
+    L_RO_PROP(QString,flight_time,set_flight_time,"00:00")
+    L_RO_PROP(double,flight_distance,set_flight_distance,0)
+    L_RO_PROP(double,lateral_speed,set_lateral_speed,0)
 public:
     explicit FCMavlinkSystem(QObject *parent = nullptr);
     // singleton for accessing the model from c++
@@ -91,21 +122,6 @@ public:
     Q_PROPERTY(int boot_time MEMBER m_boot_time WRITE set_boot_time NOTIFY boot_time_changed)
     void set_boot_time(int boot_time);
 
-    Q_PROPERTY(double alt_rel MEMBER m_alt_rel WRITE set_alt_rel NOTIFY alt_rel_changed)
-    void set_alt_rel(double alt_rel);
-
-    Q_PROPERTY(double alt_msl MEMBER m_alt_msl WRITE set_alt_msl NOTIFY alt_msl_changed)
-    void set_alt_msl(double alt_msl);
-
-    Q_PROPERTY(double vx MEMBER m_vx WRITE set_vx NOTIFY vx_changed)
-    void set_vx(double vx);
-
-    Q_PROPERTY(double vy MEMBER m_vy WRITE set_vy NOTIFY vy_changed)
-    void set_vy(double vy);
-
-    Q_PROPERTY(double vz MEMBER m_vz WRITE set_vz NOTIFY vz_changed)
-    void set_vz(double vz);
-
     Q_PROPERTY(int hdg MEMBER m_hdg WRITE set_hdg NOTIFY hdg_changed)
     void set_hdg(int hdg);
 
@@ -130,21 +146,6 @@ public:
     Q_PROPERTY(double homelon MEMBER m_homelon WRITE set_homelon NOTIFY homelon_changed)
     void set_homelon(double homelon);
 
-    Q_PROPERTY(double lat MEMBER m_lat WRITE set_lat NOTIFY lat_changed)
-    void set_lat(double lat);
-
-    Q_PROPERTY(double lon MEMBER m_lon WRITE set_lon NOTIFY lon_changed)
-    void set_lon(double lon);
-
-    Q_PROPERTY(int satellites_visible MEMBER m_satellites_visible WRITE set_satellites_visible NOTIFY satellites_visible_changed)
-    void set_satellites_visible(int satellites_visible);
-
-    Q_PROPERTY(double gps_hdop MEMBER m_gps_hdop WRITE set_gps_hdop NOTIFY gps_hdop_changed)
-    void set_gps_hdop(double gps_hdop);
-
-    Q_PROPERTY(unsigned int gps_fix_type MEMBER m_gps_fix_type WRITE set_gps_fix_type NOTIFY gps_fix_type_changed)
-    void set_gps_fix_type(unsigned int gps_fix_type);
-
     Q_PROPERTY(float clipping_x MEMBER m_clipping_x WRITE set_clipping_x NOTIFY clipping_x_changed)
     void set_clipping_x(float clipping_x);
 
@@ -156,54 +157,6 @@ public:
 
     Q_PROPERTY(float vsi MEMBER m_vsi WRITE set_vsi NOTIFY vsi_changed)
     void set_vsi(float vsi);
-
-    Q_PROPERTY(double lateral_speed MEMBER m_lateral_speed WRITE set_lateral_speed NOTIFY lateral_speed_changed)
-    void set_lateral_speed(double lateral_speed);
-
-    Q_PROPERTY(double wind_speed MEMBER m_wind_speed WRITE set_wind_speed NOTIFY wind_speed_changed)
-    void set_wind_speed(double wind_speed);
-
-    Q_PROPERTY(double wind_direction MEMBER m_wind_direction WRITE set_wind_direction NOTIFY wind_direction_changed)
-    void set_wind_direction(double wind_direction);
-
-    Q_PROPERTY(float mav_wind_direction MEMBER m_mav_wind_direction WRITE set_mav_wind_direction NOTIFY mav_wind_direction_changed)
-    void set_mav_wind_direction(float mav_wind_direction);
-
-    Q_PROPERTY(float mav_wind_speed MEMBER m_mav_wind_speed WRITE set_mav_wind_speed NOTIFY mav_wind_speed_changed)
-    void set_mav_wind_speed(float mav_wind_speed);
-
-    Q_PROPERTY(int rcRssi MEMBER m_rcRssi WRITE setRcRssi NOTIFY rcRssiChanged)
-    void setRcRssi(int rcRssi);
-
-    Q_PROPERTY(int imu_temp MEMBER m_imu_temp WRITE set_imu_temp NOTIFY imu_temp_changed)
-    void set_imu_temp(int imu_temp);
-
-    Q_PROPERTY(int press_temp MEMBER m_press_temp WRITE set_press_temp NOTIFY press_temp_changed)
-    void set_press_temp(int press_temp);
-
-    Q_PROPERTY(int esc_temp MEMBER m_esc_temp WRITE set_esc_temp NOTIFY esc_temp_changed)
-    void set_esc_temp(int esc_temp);
-
-    Q_PROPERTY(QString flight_time MEMBER m_flight_time WRITE set_flight_time NOTIFY flight_time_changed)
-    void set_flight_time(QString flight_time);
-
-    Q_PROPERTY(double flight_distance MEMBER m_flight_distance WRITE set_flight_distance NOTIFY flight_distance_changed)
-    void set_flight_distance(double flight_distance);
-
-    Q_PROPERTY(double flight_mah MEMBER m_flight_mah WRITE set_flight_mah NOTIFY flight_mah_changed)
-    void set_flight_mah(double flight_mah);
-
-    Q_PROPERTY(double app_mah MEMBER m_app_mah WRITE set_app_mah NOTIFY app_mah_changed)
-    void set_app_mah(double app_mah);
-
-    Q_PROPERTY(int mah_km MEMBER m_mah_km WRITE set_mah_km NOTIFY mah_km_changed)
-    void set_mah_km(int mah_km);
-
-    Q_PROPERTY(double vehicle_vx_angle MEMBER m_vehicle_vx_angle WRITE set_vehicle_vx_angle NOTIFY vehicle_vx_angle_changed)
-    void set_vehicle_vx_angle(double vehicle_vx_angle);
-
-    Q_PROPERTY(double vehicle_vz_angle MEMBER m_vehicle_vz_angle WRITE set_vehicle_vz_angle NOTIFY vehicle_vz_angle_changed)
-    void set_vehicle_vz_angle(double vehicle_vz_angle);
 
     Q_PROPERTY(int current_waypoint MEMBER m_current_waypoint WRITE setCurrentWaypoint NOTIFY currentWaypointChanged)
     void setCurrentWaypoint(int current_waypoint);
@@ -224,11 +177,6 @@ public:
 signals:
     // mavlink
     void boot_time_changed(int boot_time);
-    void alt_rel_changed(double alt_rel);
-    void alt_msl_changed(double alt_msl);
-    void vx_changed(double vx);
-    void vy_changed(double vy);
-    void vz_changed(double vz);
     void hdg_changed(int hdg);
     void speed_changed(double speed);
     void airspeed_changed(double airspeed);
@@ -237,17 +185,9 @@ signals:
     void mav_type_changed(QString mav_type);
     void homelat_changed(double homelat);
     void homelon_changed(double homelon);
-    void lat_changed(double lat);
-    void lon_changed(double lon);
     void home_distance_changed(double home_distance);
     void home_course_changed(int home_course);
     void home_heading_changed(int home_heading);
-    void satellites_visible_changed(int satellites_visible);
-    void gps_hdop_changed(double gps_hdop);
-    void gps_fix_type_changed(unsigned int gps_fix_type);
-    /*void pitch_changed(double pitch);
-    void roll_changed(double roll);
-    void yaw_changed(double yaw);*/
     void messageReceived(QString message, int level);
 
     //void throttle_changed(double throttle);
@@ -262,30 +202,7 @@ signals:
 
     void vsi_changed(float vsi);
 
-    void lateral_speed_changed(double lateral_speed);
-
-    void wind_speed_changed(double wind_speed);
-    void wind_direction_changed(double wind_direction);
-
-    void mav_wind_direction_changed(float mav_wind_direction);
-    void mav_wind_speed_changed(float mav_wind_speed);
-
     void rcRssiChanged(int rcRssi);
-
-    void imu_temp_changed (int imu_temp);
-    void press_temp_changed (int press_temp);
-    void esc_temp_changed (int esc_temp);
-
-    void flight_time_changed(QString flight_time);
-
-    void flight_distance_changed(double flight_distance);
-
-    void flight_mah_changed(int flight_mah);
-    void app_mah_changed(int app_mah);
-    void mah_km_changed(int mah_km);
-
-    void vehicle_vx_angle_changed(double vehicle_vx_angle);
-    void vehicle_vz_angle_changed(double vehicle_vz_angle);
 
     void rcChannelChanged(int channelIdx,int value);
 
@@ -297,13 +214,6 @@ signals:
 public:
     // mavlink
     int m_boot_time = 0;
-
-    double m_alt_rel = 0;
-    double m_alt_msl = 0;
-
-    double m_vx = 0;
-    double m_vy = 0;
-    double m_vz = 0;
 
     int m_hdg = 000;
 
@@ -319,15 +229,9 @@ public:
     bool gcs_position_set = false;
     int gps_quality_count = 0;
 
-    double m_lat = 0.0;
-    double m_lon = 0.0;
     double m_home_distance = 0.0;
     int m_home_heading = 0; //this is actual global heading
     int m_home_course = 0; //this is the relative course from nose
-
-    int m_satellites_visible = 0;
-    double m_gps_hdop = 99.00;
-    unsigned int m_gps_fix_type = (unsigned int)0;
 
     float m_clipping_x = 0.0;
     float m_clipping_y = 0.0;
@@ -335,30 +239,14 @@ public:
 
     float m_vsi = 0.0;
 
-    double m_lateral_speed = 0.0;
-
-    double m_wind_direction = 0.0;
-    double m_wind_speed = 0.0;
     double speed_last_time = 0.0;
 
-    float m_mav_wind_direction = 0.0;
-    float m_mav_wind_speed = 0.0;
 
     int m_rcRssi = 0;
 
-    int m_imu_temp = 0;
-    int m_press_temp = 0;
-    int m_esc_temp = 0;
-
-    QString m_flight_time = "00:00";
-
-    double m_flight_distance = 0.0;
     qint64 flightDistanceLastTime= 0;
     long total_dist= 0;
 
-    int m_flight_mah = 0;
-    int m_app_mah = 0;
-    int m_mah_km = 0;
     qint64 mahLastTime= 0;
     qint64 mahKmLastTime= 0;
     double total_mah= 0;
@@ -367,9 +255,6 @@ public:
     QElapsedTimer flightTimeStart;
 
     QTimer* timer = nullptr;
-
-    double m_vehicle_vx_angle = 0.0;
-    double m_vehicle_vz_angle = 0.0;
 
     int m_current_waypoint = 0;
     int m_total_waypoints = 0;
