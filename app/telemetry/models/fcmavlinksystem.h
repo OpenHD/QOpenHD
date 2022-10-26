@@ -28,22 +28,23 @@
 class FCMavlinkSystem : public QObject
 {
     Q_OBJECT
-    L_RW_PROP(double, battery_current, set_battery_current, 0)
-    L_RW_PROP(double, battery_voltage, set_battery_voltage, 0)
-    L_RW_PROP(int, battery_percent, set_battery_percent, 0)
+    // These members can be written&read from c++, but only readable from qml (which is a common recommendation for QT application(s)).
+    L_RO_PROP(double, battery_current, set_battery_current, 0)
+    L_RO_PROP(double, battery_voltage, set_battery_voltage, 0)
+    L_RO_PROP(int, battery_percent, set_battery_percent, 0)
     // same as battery_percent, but as an "icon"
-    L_RW_PROP(QString, battery_percent_gauge, set_battery_percent_gauge, "\uf091")
+    L_RO_PROP(QString, battery_percent_gauge, set_battery_percent_gauge, "\uf091")
     // roll, pitch and yaw
-    L_RW_PROP(double, pitch, set_pitch, 0)
-    L_RW_PROP(double, roll, set_roll, 0)
-    L_RW_PROP(double, yaw, set_yaw, 0)
+    L_RO_PROP(double, pitch, set_pitch, 0)
+    L_RO_PROP(double, roll, set_roll, 0)
+    L_RO_PROP(double, yaw, set_yaw, 0)
     // mixed
-    L_RW_PROP(double, throttle, set_throttle, 0)
-    L_RW_PROP(float,vibration_x,set_vibration_x,0)
-    L_RW_PROP(float,vibration_y,set_vibration_y,0)
-    L_RW_PROP(float,vibration_z,set_vibration_z,0)
+    L_RO_PROP(double, throttle, set_throttle, 0)
+    L_RO_PROP(float,vibration_x,set_vibration_x,0)
+    L_RO_PROP(float,vibration_y,set_vibration_y,0)
+    L_RO_PROP(float,vibration_z,set_vibration_z,0)
     // see alive timer
-    L_RW_PROP(bool,is_alive,set_is_alive,false)
+    L_RO_PROP(bool,is_alive,set_is_alive,false)
 public:
     explicit FCMavlinkSystem(QObject *parent = nullptr);
     // singleton for accessing the model from c++
