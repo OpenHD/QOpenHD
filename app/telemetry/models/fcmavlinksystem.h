@@ -31,6 +31,19 @@ class FCMavlinkSystem : public QObject
     // These members can be written & read from c++, but are only readable from qml (which is a common recommendation for QT application(s)).
     // Aka we just set them in c++ by calling the setter declared from the macro, which then emits the changed signal if needed
     // and therefore updates the corresponding UI element in QT
+    // Note that this macro is short for the following common pattern:
+    //
+    // private:
+    //    int m_some_value=0;
+    // signals:
+    //    some_value_changed(int some_value)
+    // public:
+    // void set_some_value(int value){
+    //    if(m_some_value==value)return;
+    //    m_some_value=value;
+    //    emit some-value_changed();
+    // }
+    //
     L_RO_PROP(double, battery_current, set_battery_current, 0)
     L_RO_PROP(double, battery_voltage, set_battery_voltage, 0)
     L_RO_PROP(int, battery_percent, set_battery_percent, 0)
