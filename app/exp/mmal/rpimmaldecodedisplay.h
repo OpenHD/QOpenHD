@@ -24,7 +24,9 @@ class RPIMMalDecodeDisplay
 {
 public:
     RPIMMalDecodeDisplay();
-
+    // Config data: SPS and PPS
+    // width and height: well, for some reason mmal wants the w and height even though it could infer that from the sps/pps
+    // similar for fps, seems to have no effect anyways.
     bool initialize(const uint8_t* config_data,const int config_data_size,int width,int height,int fps);
 
     bool feed_frame(const uint8_t* frame_data,const int frame_data_size);
