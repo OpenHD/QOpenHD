@@ -40,6 +40,7 @@ std::map<std::string, void *> MavlinkSettingsModel::get_whitelisted_params()
     ret["WB_FREQUENCY"]=nullptr;
     ret["WB_CHANNEL_W"]=nullptr;
     ret["WB_MCS_INDEX"]=nullptr;
+    ret["CONFIG_BOOT_AIR"]=nullptr;
     //ret[""]=nullptr;
     return ret;
 }
@@ -96,6 +97,7 @@ static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string 
         map_improved_params["FC_UART_CONN"]=ImprovedIntSetting::createEnum(fc_uart_conn_values);
         //
         map_improved_params["V_OS_CAM_CONFIG"]=ImprovedIntSetting::createEnum( std::vector<std::string>{"mmal","libcamera","libcamera-ardu"});
+        map_improved_params["CONFIG_BOOT_AIR"]=ImprovedIntSetting::createEnumEnableDisable();
 
     }
     if(map_improved_params.find(param_id)!=map_improved_params.end()){
