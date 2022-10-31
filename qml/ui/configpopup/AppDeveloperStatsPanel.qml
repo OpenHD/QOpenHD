@@ -28,10 +28,6 @@ Rectangle {
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.margins: 10
-        Text{
-            height: 24
-            text: "QT main thread frame time:"+_qrenderstats.main_render_stats
-        }
 
         Button{
             height: 24
