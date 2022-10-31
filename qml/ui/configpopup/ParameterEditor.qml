@@ -123,7 +123,20 @@ Rectangle{
             // This is a string param
             paramValueString=model.value
             paramExtraValueInt= "Do not use me !!!!"
+            // Temporary, we have a string input where we also have a couple of predefined inputs
             if(holds_string_value_type_video_resoltuion_framerate()){
+                var currently_selected_index=-1;
+                 for (var i = 0; i < videoResolutionFrameratePresets.count; i++) {
+                     var title=videoResolutionFrameratePresets.get(i).title;
+                     console.log("Title:"+title);
+                     if(title===paramValueString){
+                         currently_selected_index=i;
+                     }
+                 }
+                 console.log("currently_selected_index:"+currently_selected_index);
+                 if(currently_selected_index!=-1){
+                     comboBoxPredefinedInputVideoResolutionFramerate.currentIndex=currently_selected_index;
+                 }
                 comboBoxPredefinedInputVideoResolutionFramerate.visible=true
             }
         }
@@ -266,12 +279,12 @@ Rectangle{
         // temporary, todo refactor me
         ListModel{
              id: videoResolutionFrameratePresets
-             ListElement {title: "640x480@30"; value: 1}
-             ListElement {title: "640x480@60"; value: 2}
-             ListElement {title: "640x480@90"; value: 3}
-             ListElement {title: "1280x720@30"; value: 4}
-             ListElement {title: "1280x720@60"; value: 5}
-             ListElement {title: "1920x1080@30"; value: 6}
+             ListElement {title: "640x480@30"; value: 0}
+             ListElement {title: "640x480@60"; value: 1}
+             ListElement {title: "640x480@90"; value: 2}
+             ListElement {title: "1280x720@30"; value: 3}
+             ListElement {title: "1280x720@60"; value: 4}
+             ListElement {title: "1920x1080@30"; value: 5}
         }
 
         ComboBox {
