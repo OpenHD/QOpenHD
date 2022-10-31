@@ -119,6 +119,10 @@ public:
     // Should only be called when we actually have an enum mapping for this param
     Q_INVOKABLE QStringList get_enum_keys_for_int_param(QString param_id)const;
     Q_INVOKABLE QList<int> get_enum_values_for_int_param(QString param_id)const;
+    // For some parameters, we have a string that should be displayed to the user after he clicks
+    // "save" just too be sure he understands the risks
+    // When there is no need for a warning, this method just returns an empty string
+    Q_INVOKABLE QString get_warning_before_safe(QString param_id);
 };
 
 #endif // MavlinkSettingsModel_H

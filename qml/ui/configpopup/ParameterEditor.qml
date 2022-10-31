@@ -54,6 +54,9 @@ Rectangle{
     // disable some checking we do for the user, should be used only in really rare cases
     property bool enableAdvanced: false
 
+    // Warning has been shown at least once for this param.
+    property bool warning_for_this_param_shown:false
+
 
     function holds_int_value(){
         return paramValueType==0;
@@ -110,6 +113,7 @@ Rectangle{
         parameterId=param_id;
         paramValueType=model.valueType
         shortParamDescription=model.shortDescription
+        warning_for_this_param_shown=false;
         if(paramValueType==0){
             // This is an int param
             paramValueInt=model.value
@@ -144,7 +148,7 @@ Rectangle{
                  for (var i = 0; i < keys.length; i++) {
                      var key=keys[i];
                      var value=values[i];
-                     console.log(key,value);
+                     //console.log(key,value);
                      intEnumDynamicListModel.append({title: key, value: value})
                      if(value===paramValueInt){
                          currently_selected_index=i;
@@ -317,6 +321,15 @@ Rectangle{
                 text: "Save"
                 Layout.alignment: Qt.AlignRight
                 onClicked: {
+                    var warning_string=instanceMavlinkSettingsModel.get_warning_before_safe(parameterId);
+                    if(warning_string!==""){
+                        if(!warning_for_this_param_shown){
+                            warning_for_this_param_shown=true;
+                            console.log("Show extra dialog before actually saving:"+warning_string);
+                            _messageBoxInstance.set_text_and_show(warning_string);
+                            return;
+                        }
+                    }
                     var res=false;
                     if(paramValueType==0){
                         var value_int;

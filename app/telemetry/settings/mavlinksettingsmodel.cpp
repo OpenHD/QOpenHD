@@ -61,6 +61,7 @@ bool MavlinkSettingsModel::is_param_read_only(const std::string param_id)const
 {
     bool ret=false;
     if(param_id.compare("V_CAM_TYPE") == 0)ret=true;
+    if(param_id.compare("V_CAM_SENSOR") == 0)ret=true;
     //qDebug()<<"Param"<<param_id.c_str()<<"Read-only:"<<(ret==false ? "N":"Y");
     return ret;
 }
@@ -95,6 +96,36 @@ static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string 
         };
         auto fc_uart_conn_values=std::vector<std::string>{"disable","serial0","serial1","ttyUSB0","ttyACM0","ttyACM1"};
         map_improved_params["FC_UART_CONN"]=ImprovedIntSetting::createEnum(fc_uart_conn_values);
+        // rpicamsrc only for now
+        auto gst_awb_modes=std::vector<std::string>{
+                    "OFF",
+                    "AUTO",
+                    "SUNLIGHT",
+                    "CLOUDY",
+                    "SHADE",
+                    "TUNGSTEN",
+                    "FLUORESCENT",
+                    "INCANDESCENT",
+                    "FLASH",
+                    "HORIZON"
+        };
+        auto gst_exposure_modes=std::vector<std::string>{
+                     "OFF",
+                     "AUTO",
+                     "NIGHT",
+                     "NIGHTPREVIEW",
+                     "BACKLIGHT",
+                     "SPOTLIGHT",
+                     "SPORTS",
+                     "SNOW",
+                     "BEACH",
+                     "VERYLONG",
+                     "FIXEDFPS",
+                     "ANTISHAKE",
+                     "FIREWORKS",
+        };
+        map_improved_params["V_AWB_MODE"]=ImprovedIntSetting::createEnum(gst_awb_modes);
+        map_improved_params["V_EXP_MODE"]=ImprovedIntSetting::createEnum(gst_exposure_modes);
         //
         map_improved_params["V_OS_CAM_CONFIG"]=ImprovedIntSetting::createEnum( std::vector<std::string>{"mmal","libcamera","libcamera-ardu"});
         map_improved_params["CONFIG_BOOT_AIR"]=ImprovedIntSetting::createEnumEnableDisable();
@@ -491,4 +522,13 @@ QList<int> MavlinkSettingsModel::get_enum_values_for_int_param(QString param_id)
     qDebug()<<"Error no enum mapping for this int param";
     QList<int> ret{0};
     return ret;
+}
+
+QString MavlinkSettingsModel::get_warning_before_safe(const QString param_id)
+{
+    if(param_id=="V_OS_CAM_CONFIG"){
+        return "WARNING: Changing this parameter will perform some special operations and then automatically reboot the air pi\n"
+               "Make sure your rpi has stable power and is not flying";
+    }
+    return "";
 }
