@@ -126,6 +126,20 @@ static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string 
         };
         map_improved_params["V_AWB_MODE"]=ImprovedIntSetting::createEnum(gst_awb_modes);
         map_improved_params["V_EXP_MODE"]=ImprovedIntSetting::createEnum(gst_exposure_modes);
+        auto baud_rate_items=std::vector<ImprovedIntSetting::Item>{
+                {"9600",9600},
+                {"19200",19200},
+                {"38400",38400},
+                {"57600",57600},
+                {"115200",115200},
+                {"230400",230400},
+                {"460800",460800},
+                {"500000",500000},
+                {"576000",576000},
+                {"921600",921600},
+                {"1000000",1000000},
+        };
+        map_improved_params["FC_UART_BAUD"]=ImprovedIntSetting(0,1000000,baud_rate_items);
         //
         map_improved_params["V_OS_CAM_CONFIG"]=ImprovedIntSetting::createEnum( std::vector<std::string>{"mmal","libcamera","libcamera-ardu"});
         map_improved_params["CONFIG_BOOT_AIR"]=ImprovedIntSetting::createEnumEnableDisable();
@@ -142,7 +156,7 @@ static std::optional<std::string> int_param_to_enum_string_if_known(const std::s
     if(improved_opt.has_value()){
         const auto& improved=improved_opt.value();
         if(improved.has_enum_mapping()){
-            return improved.enum_value_to_string(value);
+            return improved.value_to_string(value);
         }
     }
     return std::nullopt;
@@ -528,7 +542,7 @@ QString MavlinkSettingsModel::get_warning_before_safe(const QString param_id)
 {
     if(param_id=="V_OS_CAM_CONFIG"){
         return "WARNING: Changing this parameter will perform some special operations and then automatically reboot the air pi\n"
-               "Make sure your rpi has stable power and is not flying";
+               "Click save again to proceed.";
     }
     return "";
 }
