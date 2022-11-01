@@ -33,6 +33,9 @@ public:
     // This not only quits qopenhd, but also disables the autostart service
     // (until next reboot)
     Q_INVOKABLE void disable_service_and_quit();
+    // Develoment only
+    Q_INVOKABLE void restart_local_oenhd_service();
+    Q_INVOKABLE void run_dhclient_eth0();
 signals:
     void fontFamilyChanged(QString fontFamily);
 private:

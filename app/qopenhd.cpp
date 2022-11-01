@@ -82,3 +82,14 @@ void QOpenHD::disable_service_and_quit()
     OHDUtil::run_command("sudo systemctl stop qopenhd",{""},true);
     quit_qopenhd();
 }
+
+void QOpenHD::restart_local_oenhd_service()
+{
+    OHDUtil::run_command("sudo systemctl stop openhd",{""},true);
+    OHDUtil::run_command("sudo systemctl start openhd",{""},true);
+}
+
+void QOpenHD::run_dhclient_eth0()
+{
+    OHDUtil::run_command("sudo dhclient eth0",{""},true);
+}
