@@ -74,6 +74,7 @@ Rectangle {
             text:"ReFetch All Air"
             enabled: _ohdSystemAir.is_alive
             onClicked: {
+                parameterEditor.visible=false
                 var result=_airPiSettingsModel.try_fetch_all_parameters()
                 if(!result){
                      _messageBoxInstance.set_text_and_show("Fetch all failed, please try again")

@@ -31,9 +31,17 @@ Rectangle {
 
         Button{
             height: 24
-            text: "Dummy1"
+            text: "Restart local OHD service"
             onClicked:{
+                _qopenhd.restart_local_oenhd_service()
+            }
+        }
 
+        Button{
+            height: 24
+            text: "Run dhclient eth0 (might block UI for N seconds)"
+            onClicked:{
+                _qopenhd.run_dhclient_eth0()
             }
         }
     }
