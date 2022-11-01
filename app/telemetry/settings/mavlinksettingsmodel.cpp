@@ -541,8 +541,7 @@ QList<int> MavlinkSettingsModel::get_enum_values_for_int_param(QString param_id)
 QString MavlinkSettingsModel::get_warning_before_safe(const QString param_id)
 {
     if(param_id=="V_OS_CAM_CONFIG"){
-        return "WARNING: Changing this parameter will perform some special operations and then automatically reboot the air pi\n"
-               "Click save again to proceed.";
+        return "WARNING: Changing this parameter will perform some special operations and then automatically reboot the air pi";
     }
     return "";
 }
