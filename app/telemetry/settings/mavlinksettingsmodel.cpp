@@ -62,6 +62,7 @@ bool MavlinkSettingsModel::is_param_read_only(const std::string param_id)const
     bool ret=false;
     if(param_id.compare("V_CAM_TYPE") == 0)ret=true;
     if(param_id.compare("V_CAM_SENSOR") == 0)ret=true;
+    if(param_id.compare("BOARD_TYPE") == 0)ret=true;
     //qDebug()<<"Param"<<param_id.c_str()<<"Read-only:"<<(ret==false ? "N":"Y");
     return ret;
 }
