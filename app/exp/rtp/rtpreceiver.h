@@ -51,6 +51,10 @@ private:
     int n_dropped_frames=0;
     BitrateCalculator m_rtp_bitrate;
     PacketDropEmulator m_packet_drop_emulator{1};
+private:
+    // Calculate fps, but note that this actually calculates the non-sps / pps / vps NALUs per second
+    int m_n_nalus_since_last=0;
+    std::chrono::steady_clock::time_point m_last_n_nalus_recalculation;
 };
 
 #endif // RTPRECEIVER_H

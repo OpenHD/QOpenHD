@@ -80,6 +80,19 @@ void RTPReceiver::queue_data(const uint8_t* nalu_data,const std::size_t nalu_dat
         if(nalu.is_aud())return;
         if(nalu.is_sei())return;
         if(nalu.is_dps())return;
+        // recalculate rough fps in X seconds intervalls:
+        const auto diff=std::chrono::steady_clock::now()-m_last_n_nalus_recalculation;
+        if(diff>=std::chrono::seconds(4)){
+            m_n_nalus_since_last++;
+            const double runTimeS=std::chrono::duration_cast<std::chrono::milliseconds>(diff).count()/1000.0f;
+            const float fps=(float)m_n_nalus_since_last==0 ? 0 : m_n_nalus_since_last/runTimeS;
+            const auto fps_as_string=StringHelper::to_string_with_precision(fps,2)+"fps";
+            DecodingStatistcs::instance().set_estimate_rtp_fps({fps_as_string.c_str()});
+            m_n_nalus_since_last=0;
+            m_last_n_nalus_recalculation=std::chrono::steady_clock::now();
+        }else{
+            m_n_nalus_since_last++;
+        }
         if(m_data.size()>MAX_DATA_QUEUE_SIZE){
             // The decoder cannot keep up with the incoming stream, this should never happen - if it happens,
             // The easiest thing to do is to just drop this frame (we cannot just remove the oldest, not yet fed frame from the queue,
