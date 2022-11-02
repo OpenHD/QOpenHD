@@ -14,6 +14,10 @@
 // (the side that changes parameter(s) provided by a specific system & component).
 // For each of these components, you can use an instance of this class - see the singletons below for
 // current OpenHD mavlink settings components.
+// NOTE: R.n the enum / parameter validation needs to be duplicated in both OpenHD and QOpenHD.
+// Eventually we'l migrate to the proper way, which is fetching something like this:
+// https://github.com/mavlink/mavlink/blob/master/component_metadata/parameter.schema.json
+// once from openhd
 class MavlinkSettingsModel : public QAbstractListModel
 {
     Q_OBJECT
@@ -43,11 +47,6 @@ public:
     // Does not update the cached parameter !
     std::optional<int> try_get_param_int_impl(const QString param_id);
     std::optional<std::string> try_get_param_string_impl(const QString param_id);
-    // Set a param value using mavsd. This means we send the "SET" command to the server
-    // and get its response (ok or rejected) or - in rare -cases - timeout.
-    // Returns true on success, false otherwise
-    bool try_set_param_int_impl(const QString param_id,int value);
-    bool try_set_param_string_impl(const QString param_id,QString value);
 
     // callable from QT.
     // re-fetch all parameters from the server. Clears the cache, then re-fetches the whole parameter set.
@@ -56,18 +55,17 @@ public:
     Q_INVOKABLE bool try_refetch_parameter_int(QString param_id);
     Q_INVOKABLE bool try_refetch_parameter_string(QString param_id);
 
-    // updates the parameter on the server (unless server rejects / rare timeout)
-    // then updates the internal cached parameter, if successfull.
+    // Set a param value using mavsdk. This means we send the "SET" command to the server
+    // and get its response (ok or rejected) or - in rare -cases - timeout.
+    // Returns true on success, false otherwise
+    // NOTE: This does not update the value cached in the QT model on the ground, use try_update_parameter..() instead
+    bool try_set_param_int_impl(const QString param_id,int value);
+    bool try_set_param_string_impl(const QString param_id,QString value);
+
+    // first updates the parameter on the server via MAVSDK (unless server rejects / rare timeout)
+    // then updates the internal cached parameter (if previous update was successfull).
     Q_INVOKABLE bool try_update_parameter_int(const QString param_id,int value);
     Q_INVOKABLE bool try_update_parameter_string(const QString param_id,QString value);
-    // dirty
-    Q_INVOKABLE bool try_parse_and_update_parameter_int(const QString param_id,QVariant value){
-        if(value.canConvert(QVariant::Type::Int)){
-            const int value_int=value.toInt();
-            return try_update_parameter_int(param_id,value_int);
-        }
-        return false;
-    }
 
     enum Roles {
         // The unique string id of this param
@@ -104,8 +102,8 @@ public slots:
     void addData(MavlinkSettingsModel::SettingData data);
 private:
     QVector<MavlinkSettingsModel::SettingData> m_data;
-    const uint8_t _sys_id;
-    const uint8_t _comp_id;
+    const uint8_t m_sys_id;
+    const uint8_t m_comp_id;
 public:
     // These are for the UI to query more data about a specific param
     Q_INVOKABLE bool has_int_enum_mapping(QString param_id)const;
@@ -119,8 +117,8 @@ public:
     // Should only be called when we actually have an enum mapping for this param
     Q_INVOKABLE QStringList get_enum_keys_for_int_param(QString param_id)const;
     Q_INVOKABLE QList<int> get_enum_values_for_int_param(QString param_id)const;
-    // For some parameters, we have a string that should be displayed to the user after he clicks
-    // "save" just too be sure he understands the risks
+    // For some parameters, we have a string that is displayed to the user when he wants to edit this param
+    // just too be sure he understands the risks
     // When there is no need for a warning, this method just returns an empty string
     Q_INVOKABLE QString get_warning_before_safe(QString param_id);
 };

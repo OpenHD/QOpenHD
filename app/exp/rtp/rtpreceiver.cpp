@@ -82,7 +82,7 @@ void RTPReceiver::queue_data(const uint8_t* nalu_data,const std::size_t nalu_dat
         if(nalu.is_dps())return;
         // recalculate rough fps in X seconds intervalls:
         m_estimate_fps_calculator.on_new_frame();
-        if(m_estimate_fps_calculator.time_since_last_recalculation()>std::chrono::seconds(4)){
+        if(m_estimate_fps_calculator.time_since_last_recalculation()>std::chrono::seconds(2)){
             const auto fps=m_estimate_fps_calculator.recalculate_fps_and_clear();
             const auto fps_as_string=StringHelper::to_string_with_precision(fps,2)+"fps";
             DecodingStatistcs::instance().set_estimate_rtp_fps({fps_as_string.c_str()});

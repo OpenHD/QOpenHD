@@ -270,6 +270,15 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
+                text: "Rx video:"+_ohdSystemGround.curr_incoming_video_bitrate;
+                color: "white"
+                font.bold: true
+                height: parent.height
+                font.pixelSize: detailPanelFontPixels
+                verticalAlignment: Text.AlignVCenter
+            }
+            Text {
+                //Layout.alignment: left
                 text: "Rx tele:"+_ohdSystemGround.curr_incoming_tele_bitrate;
                 color: "white"
                 font.bold: true
@@ -279,7 +288,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: "Rx video:"+_ohdSystemGround.curr_incoming_video_bitrate;
+                text: "Tx tele:"+_ohdSystemGround.curr_telemetry_tx_pps
                 color: "white"
                 font.bold: true
                 height: parent.height

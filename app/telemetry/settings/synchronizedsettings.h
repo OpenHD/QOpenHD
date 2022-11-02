@@ -6,6 +6,9 @@
 // Helper for settings that MUST STAY IN SYNC on the ground and air pi, since otherwise the wifibroadcast link is lost
 // and the user needs to manually recover the link
 // It does not fix the 2 general's problem (this is a unfixable problem) but it makes it really unlikely to happen.
+// TODO: I think for these 3 (only) parameters that need to be kept in sync in evo, we should find a better way
+// (e.g. exposing the param only on the ground, and having a more advanced wifibroadcast imlementation that establishes a connection/
+// handles frequency changes itself)
 class SynchronizedSettings : public QObject
 {
     Q_OBJECT

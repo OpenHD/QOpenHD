@@ -13,7 +13,8 @@ import "../elements"
 
 // Dirty. This is opened up every time the user wants to change a parameter.
 // R.n it supports int and string parameters.
-// TODO: int enum(s), proper int ranges, string enum(s)
+// int parameters can have sequential (0,1,2,..) or custom (1000Mhz,2000Mhz,3000Mhz) enums,
+// which is much more verbose to the user.
 
 Rectangle{
 
