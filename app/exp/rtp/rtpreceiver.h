@@ -53,6 +53,7 @@ private:
     PacketDropEmulator m_packet_drop_emulator{1};
 private:
     // Calculate fps, but note that this actually calculates the non-sps / pps / vps NALUs per second
+    FPSCalculator m_estimate_fps_calculator{};
     int m_n_nalus_since_last=0;
     std::chrono::steady_clock::time_point m_last_n_nalus_recalculation;
 };
