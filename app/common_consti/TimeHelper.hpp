@@ -406,6 +406,27 @@ private:
     }
 };
 
+class FPSCalculator{
+private:
+    int m_n_frames_since_last=0;
+    std::chrono::steady_clock::time_point m_last_n_nalus_recalculation=std::chrono::steady_clock::now();
+public:
+    float recalculate_fps_and_clear(){
+        const auto diff=std::chrono::steady_clock::now()-m_last_n_nalus_recalculation;
+        const double runTimeS=std::chrono::duration_cast<std::chrono::milliseconds>(diff).count()/1000.0f;
+        const float fps=(float)m_n_frames_since_last==0 ? 0 : m_n_frames_since_last/runTimeS;
+        m_n_frames_since_last=0;
+        m_last_n_nalus_recalculation=std::chrono::steady_clock::now();
+        return fps;
+    }
+    void on_new_frame(){
+        m_n_frames_since_last++;
+    }
+    std::chrono::steady_clock::duration time_since_last_recalculation(){
+        return std::chrono::steady_clock::now()-m_last_n_nalus_recalculation;
+    }
+};
+
 static void busySleep(const long microseconds){
     const auto start=getTimeUs();
     while ((getTimeUs()-start)<microseconds){
