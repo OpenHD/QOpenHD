@@ -5,7 +5,7 @@
 #include "../models/aohdsystem.h"
 
 #include "../../util/WorkaroundMessageBox.h"
-#include "documentedsetting.hpp"
+#include "improvedintsetting.hpp"
 #include <QSettings>
 #include <QVariant>
 
@@ -164,7 +164,7 @@ static std::optional<std::string> int_param_to_enum_string_if_known(const std::s
 
 
 MavlinkSettingsModel::MavlinkSettingsModel(uint8_t sys_id,uint8_t comp_id,QObject *parent)
-    : QAbstractListModel(parent),_sys_id(sys_id),_comp_id(comp_id)
+    : QAbstractListModel(parent),m_sys_id(sys_id),m_comp_id(comp_id)
 {
     //m_data.push_back({"VIDEO_WIDTH",0});
     //m_data.push_back({"VIDEO_HEIGHT",1});
@@ -175,8 +175,8 @@ void MavlinkSettingsModel::set_param_client(std::shared_ptr<mavsdk::System> syst
 {
     // only allow adding the param client once it is discovered, do not overwrite it once discovered.
     assert(this->param_client==nullptr);
-    assert(system->get_system_id()==_sys_id);
-    this->param_client=std::make_shared<mavsdk::Param>(system,_comp_id,true);
+    assert(system->get_system_id()==m_sys_id);
+    this->param_client=std::make_shared<mavsdk::Param>(system,m_comp_id,true);
     try_fetch_all_parameters();
 }
 
@@ -238,28 +238,6 @@ std::optional<std::string> MavlinkSettingsModel::try_get_param_string_impl(const
     return std::nullopt;
 }
 
-bool MavlinkSettingsModel::try_set_param_int_impl(const QString param_id, int value)
-{
-    if(param_client){
-        const auto result=param_client->set_param_int(param_id.toStdString(),value);
-        if(result==mavsdk::Param::Result::Success){
-            return true;
-        }
-    }
-    return false;
-}
-
-bool MavlinkSettingsModel::try_set_param_string_impl(const QString param_id,QString value)
-{
-    if(param_client){
-        const auto result=param_client->set_param_custom(param_id.toStdString(),value.toStdString());
-        if(result==mavsdk::Param::Result::Success){
-            return true;
-        }
-    }
-    return false;
-}
-
 bool MavlinkSettingsModel::try_refetch_parameter_int(QString param_id)
 {
     qDebug()<<"try_fetch_parameter:"<<param_id;
@@ -283,6 +261,27 @@ bool MavlinkSettingsModel::try_refetch_parameter_string(QString param_id)
     return false;
 }
 
+bool MavlinkSettingsModel::try_set_param_int_impl(const QString param_id, int value)
+{
+    if(param_client){
+        const auto result=param_client->set_param_int(param_id.toStdString(),value);
+        if(result==mavsdk::Param::Result::Success){
+            return true;
+        }
+    }
+    return false;
+}
+
+bool MavlinkSettingsModel::try_set_param_string_impl(const QString param_id,QString value)
+{
+    if(param_client){
+        const auto result=param_client->set_param_custom(param_id.toStdString(),value.toStdString());
+        if(result==mavsdk::Param::Result::Success){
+            return true;
+        }
+    }
+    return false;
+}
 
 bool MavlinkSettingsModel::try_update_parameter_int(const QString param_id,int value)
 {
