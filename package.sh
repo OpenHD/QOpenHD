@@ -117,13 +117,4 @@ fpm -a ${PACKAGE_ARCH} -s dir -t deb -n ${PACKAGE_NAME} -v ${VERSION} -C ${TMPDI
   -p qopenhd_VERSION_ARCH.deb \
   --after-install after-install.sh \
   -d "mavsdk" \
-  -d "gstreamer1.0-plugins-base" \
-  -d "gstreamer1.0-plugins-good" \
-  -d "gstreamer1.0-plugins-bad" \
-  -d "gstreamer1.0-plugins-ugly" \
-  -d "gstreamer1.0-libav" \
-  -d "gstreamer1.0-tools" \
-  -d "gstreamer1.0-alsa" \
-  -d "gstreamer1.0-pulseaudio" \
-  -d "gstreamer1.0-gl" \
   ${PLATFORM_PACKAGES} || exit 1
