@@ -1,4 +1,4 @@
-name: UbuntuX86
+name: build_package_x86
 
 on: [push]
 
