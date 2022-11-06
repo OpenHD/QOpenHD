@@ -299,7 +299,7 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
             FCMavlinkSystem::instance().set_vy(global_position.vy/100.0);
             FCMavlinkSystem::instance().set_vz(global_position.vz/100.0);
 
-            FCMavlinkSystem::instance().findGcsPosition();
+            //FCMavlinkSystem::instance().findGcsPosition();
             FCMavlinkSystem::instance().calculate_home_distance();
             FCMavlinkSystem::instance().calculate_home_course();
 
@@ -561,7 +561,7 @@ void FCMavlinkSystem::updateFlightTimer() {
         set_flight_time(s);
     }
 }
-
+/*
 void FCMavlinkSystem::findGcsPosition() {
     if (gcs_position_set==false){
         //only attempt to set gcs home position if hdop<3m and unarmed
@@ -581,7 +581,7 @@ void FCMavlinkSystem::findGcsPosition() {
         }
     }
 }
-
+*/
 void FCMavlinkSystem::updateFlightDistance() {
     if (m_gps_hdop > 20 || m_lat == 0.0){
         //do not pollute distance if we have bad data
@@ -732,7 +732,7 @@ void FCMavlinkSystem::set_homelon(double homelon) {
 
 void FCMavlinkSystem::calculate_home_distance() {
     // if home lat/long are zero the calculation will be wrong so we skip it
-    if (m_armed && m_homelat != 0.0 && m_homelon != 0.0) {
+    if (m_homelat != 0.0 && m_homelon != 0.0) {
         double s12;
         double azi1;
         double azi2;
@@ -749,8 +749,7 @@ void FCMavlinkSystem::calculate_home_distance() {
         set_home_distance(s12);
     } else {
         /*
-         * If the system isn't armed we don't want to calculate anything as the home position
-         * will be wrong or zero
+         * If the system doesnt have home pos just show "0"
          */
         set_home_distance(0.0);
     }
