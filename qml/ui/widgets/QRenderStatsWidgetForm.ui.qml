@@ -20,8 +20,8 @@ BaseWidget {
     widgetIdentifier: "q_render_stats_widget"
 
     defaultAlignment: 1
-    defaultXOffset: 110
-    defaultYOffset: 0
+    defaultXOffset: 256
+    defaultYOffset: 24
     defaultHCenter: false
     defaultVCenter: false
 
@@ -30,7 +30,7 @@ BaseWidget {
 
     // We display quite a lot of text, and this one is only for development anyways
     widgetActionWidth: 500
-    widgetActionHeight: 400
+    widgetActionHeight: 500
 
     //----------------------------- DETAIL BELOW ----------------------------------
 
@@ -414,6 +414,28 @@ BaseWidget {
                 }
                 Text {
                     text: _decodingStatistics.rtp_measured_bitrate
+                    color: "white";
+                    font.bold: true;
+                    height: parent.height
+                    font.pixelSize: detailPanelFontPixels;
+                    anchors.right: parent.right
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("estimate fps:")
+                    color: "white"
+                    font.bold: true
+                    height: parent.height
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Text {
+                    text: _decodingStatistics.estimate_rtp_fps
                     color: "white";
                     font.bold: true;
                     height: parent.height

@@ -36,6 +36,7 @@ RpiMMALDisplay &RpiMMALDisplay::instance()
 
 bool RpiMMALDisplay::prepareDecoderContext(AVCodecContext *context, AVDictionary **options)
 {
+    // From moonlight-qt (not applicable here)
     // FFmpeg defaults this to 10 which is too large to fit in the default 64 MB VRAM split.
     // Reducing to 2 seems to work fine for our bitstreams (max of 1 buffered frame needed).
     //av_dict_set_int(options, "extra_buffers", 2, 0);

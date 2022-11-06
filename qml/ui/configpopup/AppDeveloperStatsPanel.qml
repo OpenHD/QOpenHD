@@ -10,7 +10,7 @@ import OpenHD 1.0
 import "../../ui" as Ui
 import "../elements"
 
-// Dirty here i place stuff that one might want to read, but that changes quite often during development
+// Dirty here i place stuff that can be usefaully during development
 Rectangle {
     id: elementAppDeveloperStats
     Layout.fillHeight: true
@@ -28,16 +28,20 @@ Rectangle {
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.margins: 10
-        Text{
+
+        Button{
             height: 24
-            text: "QT main thread frame time:"+_qrenderstats.main_render_stats
+            text: "Restart local OHD service"
+            onClicked:{
+                _qopenhd.restart_local_oenhd_service()
+            }
         }
 
         Button{
             height: 24
-            text: "Dummy1"
+            text: "Run dhclient eth0 (might block UI for N seconds)"
             onClicked:{
-
+                _qopenhd.run_dhclient_eth0()
             }
         }
     }

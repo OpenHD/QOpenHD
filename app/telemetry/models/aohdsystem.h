@@ -27,8 +27,10 @@
 class AOHDSystem : public QObject
 {
     Q_OBJECT
-    // Packet
-    //L_RW_PROP(QString, video0_tx_bitrate, set_video0_tx_bitrate, "Bitrate NA")
+    // NOTE: I wrote this class before I knew about the lqutils macros, which is why they are used sparingly here
+    L_RO_PROP(QString,curr_video0_tx_pps,set_curr_video0_tx_pps,"-1pps")
+    L_RO_PROP(QString,curr_video1_tx_pps,set_curr_video1_tx_pps,"-1pps")
+    L_RO_PROP(QString,curr_telemetry_tx_pps,set_curr_telemetry_tx_pps,"-1pps")
 public:
     explicit AOHDSystem(const bool is_air,QObject *parent = nullptr);
     // Singletons for accessing the models from c++

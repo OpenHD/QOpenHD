@@ -144,7 +144,7 @@ HEADERS += \
     app/telemetry/mavlink_include.h \
     app/telemetry/openhd_defines.hpp \
     app/telemetry/qopenhdmavlinkhelper.hpp \
-    app/telemetry/settings/documentedsetting.hpp \
+    app/telemetry/settings/improvedintsetting.hpp \
     app/telemetry/settings/synchronizedsettings.h \
     app/telemetry/telemetryutil.hpp \
     app/util/WorkaroundMessageBox.h \
@@ -251,6 +251,7 @@ DISTFILES += \
     qml/ui/configpopup/legacy/README.md \
     qml/ui/elements/README.md \
     qml/ui/qmldir \
+    tools/usefull_commands.md \
     translations/QOpenHD_it.ts \
     translations/QOpenHD_ro.ts \
     translations/QOpenHD_zh.ts

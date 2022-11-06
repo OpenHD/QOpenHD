@@ -142,7 +142,11 @@ void AOHDSystem::process_x2(const mavlink_openhd_stats_total_all_wifibroadcast_s
             total_rx_bitrate+=msg.curr_video0_bps;
             total_rx_bitrate+=msg.curr_video1_bps;
             set_curr_incoming_video_bitrate(QString(StringHelper::bitrate_to_string(msg.curr_video0_bps).c_str()));
+        }else{
+            set_curr_video0_tx_pps((std::to_string(msg.curr_video0_tx_pps)+"pps").c_str());
+            set_curr_video1_tx_pps((std::to_string(msg.curr_video1_tx_pps)+"pps").c_str());
         }
+        set_curr_telemetry_tx_pps((std::to_string(msg.curr_telemetry_tx_pps)+"pps").c_str());
         const auto bitrate_string=StringHelper::bitrate_to_string(total_rx_bitrate);
         set_curr_incoming_bitrate(QString(bitrate_string.c_str()));
         if(_is_air){

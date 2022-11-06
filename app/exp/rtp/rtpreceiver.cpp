@@ -74,14 +74,26 @@ void RTPReceiver::queue_data(const uint8_t* nalu_data,const std::size_t nalu_dat
             config_has_changed_during_decode=true;
             return;
         }
-         // If we have all config data, start storing video frames
+        // If we have all config data, start storing video frames
+        // We can drop things we don't need for decoding frames though
         if(nalu.is_config())return;
         if(nalu.is_aud())return;
         if(nalu.is_sei())return;
-        if(m_data.size()>20){
+        if(nalu.is_dps())return;
+        // recalculate rough fps in X seconds intervalls:
+        m_estimate_fps_calculator.on_new_frame();
+        if(m_estimate_fps_calculator.time_since_last_recalculation()>std::chrono::seconds(2)){
+            const auto fps=m_estimate_fps_calculator.recalculate_fps_and_clear();
+            const auto fps_as_string=StringHelper::to_string_with_precision(fps,2)+"fps";
+            DecodingStatistcs::instance().set_estimate_rtp_fps({fps_as_string.c_str()});
+        }
+        if(m_data.size()>MAX_DATA_QUEUE_SIZE){
+            // The decoder cannot keep up with the incoming stream, this should never happen - if it happens,
+            // The easiest thing to do is to just drop this frame (we cannot just remove the oldest, not yet fed frame from the queue,
+            // since h264 relies on previus frames.
             n_dropped_frames++;
-            qDebug()<<"Dropping frame, total:"<<n_dropped_frames;
-            m_data.pop();
+            qDebug()<<"Dropping incoming frame, total:"<<n_dropped_frames;
+            return;
         }
         m_data.push(std::make_shared<NALU>(nalu));
         return;

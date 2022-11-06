@@ -81,12 +81,13 @@ bool RPIMMalDecodeDisplay::initialize(const uint8_t *config_data, const int conf
     format_in->encoding = MMAL_ENCODING_H264;
     format_in->es->video.width = width;
     format_in->es->video.height = height;
-    format_in->es->video.frame_rate.num = 25;
+    format_in->es->video.frame_rate.num = fps;
     format_in->es->video.frame_rate.den = 1;
     format_in->es->video.par.num = 1;
     format_in->es->video.par.den = 1;
-    /* If the data is known to be framed then the following flag should be set:*/
-     //format_in->flags |= MMAL_ES_FORMAT_FLAG_FRAMED;
+    // We don't need this, since we set MMAL_BUFFER_HEADER_FLAG_FRAME_END for each frame
+    // If the data is known to be framed then the following flag should be set:
+    //format_in->flags |= MMAL_ES_FORMAT_FLAG_FRAMED;
 
     qDebug()<<"X1";
 
@@ -111,6 +112,7 @@ bool RPIMMalDecodeDisplay::initialize(const uint8_t *config_data, const int conf
     m_decoder->input[0]->buffer_num = 15;
 
     //m_decoder->input[0]->buffer_size = m_decoder->input[0]->buffer_size_min+1024;
+    // 1MByte is completely overkill, that would be 480 Mbit/s at 60fps ;)
     m_decoder->input[0]->buffer_size = 1024*1024;
 
     qDebug()<<"Decoder output buffer_num_min"<<m_decoder->output[0]->buffer_num_min;
@@ -160,12 +162,21 @@ bool RPIMMalDecodeDisplay::feed_frame(const uint8_t *frame_data, const int frame
         if ((buffer = mmal_queue_get(m_pool_in->queue)) != nullptr) {
 
             //qDebug()<<"RPIMMALDecoder::feed_frame:got buffer,send";
+            int n_bytes_to_copy=frame_data_size;
+            // Since I do not know how to put this buffer back into the queue, I decided to just copy
+            // as much as possible and then feed the frame to the decoder in case we exceed the allocated buffer size.
+            // Note that we allocate input buffers of size 1024*124 bytes, which should be enough for "everything".
+            if(frame_data_size>buffer->alloc_size){
+                qDebug()<<"RPIMMalDecodeDisplay::feed_frame MMAL buffer not big enough for frame (weird), dropping";
+                n_bytes_to_copy=buffer->alloc_size;
+            }
 
-            memcpy(buffer->data,frame_data, frame_data_size);
+            memcpy(buffer->data,frame_data, n_bytes_to_copy);
             buffer->length = frame_data_size;
 
             buffer->offset = 0;
-
+            // Don't forget this flag, without it the decoder will parse this data again
+            // and create at least one additional frame of latency
             buffer->flags |= MMAL_BUFFER_HEADER_FLAG_FRAME_END;
 
             buffer->pts = buffer->dts = MMAL_TIME_UNKNOWN;

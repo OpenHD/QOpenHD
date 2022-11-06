@@ -52,6 +52,7 @@ private:
     std::array<uint8_t,NALU_MAXLEN> m_nalu_data;
     size_t m_nalu_data_length=0;
     bool m_feed_incomplete_frames;
+    int m_total_n_fragments_for_current_fu=0;
 private:
     //TDOD: What shall we do if a start, middle or end of fu-a is missing ?
     int lastSequenceNumber=-1;

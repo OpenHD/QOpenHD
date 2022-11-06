@@ -13,10 +13,11 @@ static int diff_between_packets(int last_packet,int curr_packet){
         qDebug()<<"Duplicate?!";
     }
     if(curr_packet<last_packet){
-        qDebug()<<"Assuming overflow";
+        // This is not neccessarily an error, the rtp seq nr is of type uint16_t and therefore loops around in regular intervals
+        //qDebug()<<"Assuming overflow";
         // We probably have overflown the uin16_t range of rtp
         const auto diff=curr_packet+UINT16_MAX+1-last_packet;
-        qDebug()<<"last:"<<last_packet<<" curr:"<<curr_packet<<" diff:"<<diff;
+        //qDebug()<<"last:"<<last_packet<<" curr:"<<curr_packet<<" diff:"<<diff;
         return diff;
     }else{
         return curr_packet-last_packet;
@@ -55,7 +56,7 @@ bool RTPDecoder::validateRTPPacket(const rtp_header_t& rtp_header) {
     }else{
         curr_packet_diff=diff_between_packets(lastSequenceNumber,seqNr);
         if(curr_packet_diff!=1){
-            qDebug()<<"X diff:"<<diff_between_packets(lastSequenceNumber,seqNr);
+            //qDebug()<<"X diff:"<<diff_between_packets(lastSequenceNumber,seqNr);
         }
         // Don't forget that the sequence number loops every UINT16_MAX packets
         //if(seqNr != ((lastSequenceNumber+1) % UINT16_MAX)){
@@ -127,10 +128,14 @@ void RTPDecoder::parseRTPH264toNALU(const uint8_t* rtp_data, const size_t data_l
                 // To better measure latency we can actually use the timestamp from when the first bytes for this packet were received
                 forwardNALU();
             }
+            m_total_n_fragments_for_current_fu++;
+            //qDebug()<<"N fragments for this fu:"<<m_total_n_fragments_for_current_fu;
+            m_total_n_fragments_for_current_fu=0;
             m_nalu_data_length=0;
         } else if (fu_header.s == 1) {
             //MLOGD<<"Start of fu-a";
             timePointStartOfReceivingNALU=std::chrono::steady_clock::now();
+            m_total_n_fragments_for_current_fu=0;
             // Beginning of new fu sequence - we can remove the 'drop packet' flag
             if(flagPacketHasGoneMissing){
                 std::cerr<<"Got fu-a start - clearing missing packet flag\n";
@@ -154,6 +159,7 @@ void RTPDecoder::parseRTPH264toNALU(const uint8_t* rtp_data, const size_t data_l
                 append_empty((curr_packet_diff-1)*1024);
             }*/
             append_nalu_data(fu_payload, fu_payload_size);
+            m_total_n_fragments_for_current_fu++;
         }
     } else if(nalu_header.type>0 && nalu_header.type<24){
         //qDebug()<<"Got RTP H264 type [1..23] (single) payload size:"<<rtpPacket.rtpPayloadSize;

@@ -21,6 +21,19 @@
 // We also commonly use a enum if we have an int that has a range of [0,1] -> aka disable / enable
 class ImprovedIntSetting{
 public:
+    // For normal enums, we default to increasing values starting at 0, but some parameters
+    // (e.g. baud rate) require a type of enum where the first value is not 0, but (as an example) 9600baud
+    struct Item{
+        const std::string name;
+        const int value;
+    };
+    static std::vector<Item> convert_to_default_items(const std::vector<std::string>& values){
+        std::vector<Item> ret{};
+        for(int i=0;i<values.size();i++){
+            ret.push_back(Item{values[i],i});
+        }
+        return ret;
+    }
     //r.n no params that can take negative values
     static ImprovedIntSetting createRangeOnly(int min_value=0,int max_value=std::numeric_limits<int>::max()){
         return ImprovedIntSetting(min_value,max_value,{});
@@ -28,7 +41,7 @@ public:
     static ImprovedIntSetting createEnum(std::vector<std::string> values){
         // single enum would make no sense ?!
         assert(values.size()>1);
-        return ImprovedIntSetting(0,values.size()-1,values);
+        return ImprovedIntSetting(0,values.size()-1,convert_to_default_items(values));
     }
     static ImprovedIntSetting createEnumEnableDisable(){
         std::vector<std::string> values{};
@@ -37,37 +50,42 @@ public:
         return createEnum(values);
     }
 public:
-    ImprovedIntSetting(int min_value_int,int max_value_int,std::vector<std::string> values_enum):
-        min_value_int(min_value_int),max_value_int(max_value_int),values_enum(values_enum){
+    ImprovedIntSetting(int min_value_int,int max_value_int,std::vector<Item> values_enum1):
+        min_value_int(min_value_int),max_value_int(max_value_int),
+        values_enum(values_enum1){
     }
     ImprovedIntSetting()=default;
    int min_value_int;
    int max_value_int;
    // wrapped int enum
-   std::vector<std::string> values_enum;
-   //
-   bool is_in_range(int value)const{
-       return value>=min_value_int && value <=max_value_int;
-   }
+   std::vector<Item> values_enum;
    // return true if we can do enum mapping for this int (more verbose to the user)
    bool has_enum_mapping()const{
        return !values_enum.empty();
    }
-   // enum mapping, returns "unknwon" if value is not in range.
-   std::string enum_value_to_string(int value)const{
-       if(!is_in_range(value)){
-           std::stringstream ss;
-           ss<<"?{"<<value<<"}?";
-           return ss.str();
+   // enum mapping, returns the int value as a string (wrapped in ?{..}) if we cannot find
+   // a mapping for it
+   std::string value_to_string(int value)const{
+       for(const auto& item:values_enum){
+           if(item.value==value)return item.name;
        }
-       return values_enum.at(value);
+       std::stringstream ss;
+       ss<<"?{"<<value<<"}?";
+       return ss.str();
    }
-   int enum_value_from_string(std::string value)const{
-       for(int i=0;i<values_enum.size();i++){
-           if(values_enum.at(i)==value)return i;
+   QStringList int_enum_keys()const{
+       QStringList ret{};
+       for(const auto& item:values_enum){
+            ret.append(QString{item.name.c_str()});
        }
-       qDebug()<<"ImprovedIntSetting::enum_value_to_string not found, return 0";
-       return 0;
+       return ret;
+   }
+   QList<int> int_enum_values()const{
+       QList<int> ret;
+       for(const auto& item:values_enum){
+            ret.append(item.value);
+       }
+       return ret;
    }
 };
 

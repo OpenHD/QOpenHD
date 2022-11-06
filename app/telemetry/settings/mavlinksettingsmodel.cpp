@@ -5,7 +5,7 @@
 #include "../models/aohdsystem.h"
 
 #include "../../util/WorkaroundMessageBox.h"
-#include "documentedsetting.hpp"
+#include "improvedintsetting.hpp"
 #include <QSettings>
 #include <QVariant>
 
@@ -40,11 +40,12 @@ std::map<std::string, void *> MavlinkSettingsModel::get_whitelisted_params()
     ret["WB_FREQUENCY"]=nullptr;
     ret["WB_CHANNEL_W"]=nullptr;
     ret["WB_MCS_INDEX"]=nullptr;
+    ret["CONFIG_BOOT_AIR"]=nullptr;
     //ret[""]=nullptr;
     return ret;
 }
 
-bool MavlinkSettingsModel::is_param_whitelisted(const std::string param_id)
+bool MavlinkSettingsModel::is_param_whitelisted(const std::string param_id)const
 {
     if(param_id.empty()){
         return false;
@@ -54,6 +55,16 @@ bool MavlinkSettingsModel::is_param_whitelisted(const std::string param_id)
         return true;
     }
     return false;
+}
+
+bool MavlinkSettingsModel::is_param_read_only(const std::string param_id)const
+{
+    bool ret=false;
+    if(param_id.compare("V_CAM_TYPE") == 0)ret=true;
+    if(param_id.compare("V_CAM_SENSOR") == 0)ret=true;
+    if(param_id.compare("BOARD_TYPE") == 0)ret=true;
+    //qDebug()<<"Param"<<param_id.c_str()<<"Read-only:"<<(ret==false ? "N":"Y");
+    return ret;
 }
 
 static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string param_id){
@@ -71,9 +82,69 @@ static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string 
         map_improved_params["VIDEO_CODEC"]=ImprovedIntSetting::createEnum( std::vector<std::string>{"h264","h265","mjpeg"});
         map_improved_params["V_AIR_RECORDING"]=ImprovedIntSetting::createEnumEnableDisable();
         map_improved_params["V_E_STREAMING"]=ImprovedIntSetting::createEnumEnableDisable();
+        auto fc_uart_baud_rates=std::vector<std::string>{
+                "9600",
+                "19200",
+                "38400",
+                "57600",
+                "115200",
+                "230400",
+                "460800",
+                "500000",
+                "576000",
+                "921600",
+                "1000000"
+        };
         auto fc_uart_conn_values=std::vector<std::string>{"disable","serial0","serial1","ttyUSB0","ttyACM0","ttyACM1"};
         map_improved_params["FC_UART_CONN"]=ImprovedIntSetting::createEnum(fc_uart_conn_values);
-
+        // rpicamsrc only for now
+        auto gst_awb_modes=std::vector<std::string>{
+                    "OFF",
+                    "AUTO",
+                    "SUNLIGHT",
+                    "CLOUDY",
+                    "SHADE",
+                    "TUNGSTEN",
+                    "FLUORESCENT",
+                    "INCANDESCENT",
+                    "FLASH",
+                    "HORIZON"
+        };
+        auto gst_exposure_modes=std::vector<std::string>{
+                     "OFF",
+                     "AUTO",
+                     "NIGHT",
+                     "NIGHTPREVIEW",
+                     "BACKLIGHT",
+                     "SPOTLIGHT",
+                     "SPORTS",
+                     "SNOW",
+                     "BEACH",
+                     "VERYLONG",
+                     "FIXEDFPS",
+                     "ANTISHAKE",
+                     "FIREWORKS",
+        };
+        map_improved_params["V_AWB_MODE"]=ImprovedIntSetting::createEnum(gst_awb_modes);
+        map_improved_params["V_EXP_MODE"]=ImprovedIntSetting::createEnum(gst_exposure_modes);
+        auto baud_rate_items=std::vector<ImprovedIntSetting::Item>{
+                {"9600",9600},
+                {"19200",19200},
+                {"38400",38400},
+                {"57600",57600},
+                {"115200",115200},
+                {"230400",230400},
+                {"460800",460800},
+                {"500000",500000},
+                {"576000",576000},
+                {"921600",921600},
+                {"1000000",1000000},
+        };
+        map_improved_params["FC_UART_BAUD"]=ImprovedIntSetting(0,1000000,baud_rate_items);
+        //
+        map_improved_params["V_OS_CAM_CONFIG"]=ImprovedIntSetting::createEnum( std::vector<std::string>{"rpicam(mmal)","libcamera","libcamera_imx477"});
+        map_improved_params["CONFIG_BOOT_AIR"]=ImprovedIntSetting::createEnumEnableDisable();
+        map_improved_params["I_WIFI_HOTSPOT_E"]=ImprovedIntSetting::createEnumEnableDisable();
     }
     if(map_improved_params.find(param_id)!=map_improved_params.end()){
         return map_improved_params[param_id];
@@ -86,7 +157,7 @@ static std::optional<std::string> int_param_to_enum_string_if_known(const std::s
     if(improved_opt.has_value()){
         const auto& improved=improved_opt.value();
         if(improved.has_enum_mapping()){
-            return improved.enum_value_to_string(value);
+            return improved.value_to_string(value);
         }
     }
     return std::nullopt;
@@ -94,7 +165,7 @@ static std::optional<std::string> int_param_to_enum_string_if_known(const std::s
 
 
 MavlinkSettingsModel::MavlinkSettingsModel(uint8_t sys_id,uint8_t comp_id,QObject *parent)
-    : QAbstractListModel(parent),_sys_id(sys_id),_comp_id(comp_id)
+    : QAbstractListModel(parent),m_sys_id(sys_id),m_comp_id(comp_id)
 {
     //m_data.push_back({"VIDEO_WIDTH",0});
     //m_data.push_back({"VIDEO_HEIGHT",1});
@@ -105,8 +176,8 @@ void MavlinkSettingsModel::set_param_client(std::shared_ptr<mavsdk::System> syst
 {
     // only allow adding the param client once it is discovered, do not overwrite it once discovered.
     assert(this->param_client==nullptr);
-    assert(system->get_system_id()==_sys_id);
-    this->param_client=std::make_shared<mavsdk::Param>(system,_comp_id,true);
+    assert(system->get_system_id()==m_sys_id);
+    this->param_client=std::make_shared<mavsdk::Param>(system,m_comp_id,true);
     try_fetch_all_parameters();
 }
 
@@ -168,28 +239,6 @@ std::optional<std::string> MavlinkSettingsModel::try_get_param_string_impl(const
     return std::nullopt;
 }
 
-bool MavlinkSettingsModel::try_set_param_int_impl(const QString param_id, int value)
-{
-    if(param_client){
-        const auto result=param_client->set_param_int(param_id.toStdString(),value);
-        if(result==mavsdk::Param::Result::Success){
-            return true;
-        }
-    }
-    return false;
-}
-
-bool MavlinkSettingsModel::try_set_param_string_impl(const QString param_id,QString value)
-{
-    if(param_client){
-        const auto result=param_client->set_param_custom(param_id.toStdString(),value.toStdString());
-        if(result==mavsdk::Param::Result::Success){
-            return true;
-        }
-    }
-    return false;
-}
-
 bool MavlinkSettingsModel::try_refetch_parameter_int(QString param_id)
 {
     qDebug()<<"try_fetch_parameter:"<<param_id;
@@ -213,6 +262,27 @@ bool MavlinkSettingsModel::try_refetch_parameter_string(QString param_id)
     return false;
 }
 
+bool MavlinkSettingsModel::try_set_param_int_impl(const QString param_id, int value)
+{
+    if(param_client){
+        const auto result=param_client->set_param_int(param_id.toStdString(),value);
+        if(result==mavsdk::Param::Result::Success){
+            return true;
+        }
+    }
+    return false;
+}
+
+bool MavlinkSettingsModel::try_set_param_string_impl(const QString param_id,QString value)
+{
+    if(param_client){
+        const auto result=param_client->set_param_custom(param_id.toStdString(),value.toStdString());
+        if(result==mavsdk::Param::Result::Success){
+            return true;
+        }
+    }
+    return false;
+}
 
 bool MavlinkSettingsModel::try_update_parameter_int(const QString param_id,int value)
 {
@@ -282,7 +352,9 @@ QVariant MavlinkSettingsModel::data(const QModelIndex &index, int role) const
         }
         return 1;
     } else if(role == ShortDescriptionRole){
-        return "?";
+        return "TODO";
+    } else if(role ==ReadOnlyRole){
+        return is_param_read_only({data.unique_id.toStdString()});
     }
     else
         return QVariant();
@@ -295,7 +367,8 @@ QHash<int, QByteArray> MavlinkSettingsModel::roleNames() const
         {ValueRole, "value"},
         {ExtraValueRole, "extraValue"},
         {ValueTypeRole,"valueType"},
-        {ShortDescriptionRole,"shortDescription"}
+        {ShortDescriptionRole,"shortDescription"},
+        {ReadOnlyRole,"read_only"}
     };
     return mapping;
 }
@@ -435,4 +508,40 @@ int MavlinkSettingsModel::int_enum_get_min(QString param_id)const
         }
     }
     return -2147483648;
+}
+
+QStringList MavlinkSettingsModel::get_enum_keys_for_int_param(QString param_id) const
+{
+    const auto improved_opt=get_improved_for_int(param_id.toStdString());
+    if(improved_opt.has_value()){
+        const auto improved=improved_opt.value();
+        if(improved.has_enum_mapping()){
+            return improved.int_enum_keys();
+        }
+    }
+    qDebug()<<"Error no enum mapping for this int param";
+    QStringList ret{"Err(0)"};
+    return ret;
+}
+
+QList<int> MavlinkSettingsModel::get_enum_values_for_int_param(QString param_id) const
+{
+    const auto improved_opt=get_improved_for_int(param_id.toStdString());
+    if(improved_opt.has_value()){
+        const auto improved=improved_opt.value();
+        if(improved.has_enum_mapping()){
+            return improved.int_enum_values();
+        }
+    }
+    qDebug()<<"Error no enum mapping for this int param";
+    QList<int> ret{0};
+    return ret;
+}
+
+QString MavlinkSettingsModel::get_warning_before_safe(const QString param_id)
+{
+    if(param_id=="V_OS_CAM_CONFIG"){
+        return "WARNING: Changing this parameter will perform some special operations and then automatically reboot the air pi";
+    }
+    return "";
 }

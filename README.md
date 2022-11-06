@@ -6,7 +6,7 @@ It is responsible for displaying the (main) video stream to the user, composed w
 
 As the name suspects, it is based on QT (5.15.X).
 
-![temporary_screenshot](https://github.com/OpenHD/QOpenHD/blob/consti-test-render/wiki/temporary_screenshot.png)
+![temporary_screenshot](https://github.com/OpenHD/QOpenHD/blob/2.2.3-evo/wiki/temporary_screenshot.png)
 
 # Compiling:
 We have a CI setup that checks compilation on ubuntu. You can look at the steps it performs to build and run QOpenHD.

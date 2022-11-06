@@ -55,6 +55,7 @@ Rectangle {
                     onClicked: {
                         parameterEditor.setup_for_parameter(model.unique_id,model)
                     }
+                    enabled: !model.read_only
                 }
             }
         }
@@ -70,9 +71,10 @@ Rectangle {
             width: 100
             height: 48
             id: fetchAllButtonId
-            text:"FetchAll Air"
+            text:"ReFetch All Air"
             enabled: _ohdSystemAir.is_alive
             onClicked: {
+                parameterEditor.visible=false
                 var result=_airPiSettingsModel.try_fetch_all_parameters()
                 if(!result){
                      _messageBoxInstance.set_text_and_show("Fetch all failed, please try again")
@@ -85,6 +87,8 @@ Rectangle {
 
             ScrollView{
                 anchors.fill: parent
+                ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+                ScrollBar.vertical.policy: ScrollBar.AlwaysOn
 
                 ListView {
                     //top: fetchAllButtonId.bottom
