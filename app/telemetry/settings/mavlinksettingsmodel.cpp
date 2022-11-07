@@ -546,3 +546,11 @@ QString MavlinkSettingsModel::get_warning_before_safe(const QString param_id)
     }
     return "";
 }
+
+bool MavlinkSettingsModel::get_param_requires_manual_reboot(QString param_id)
+{
+    if(param_id=="ENABLE_JOY_RC"){
+        return true;
+    }
+    return false;
+}
