@@ -7,7 +7,7 @@
 
 #include "settings/mavlinksettingsmodel.h"
 
-MavlinkTelemetry::MavlinkTelemetry(QObject *parent):QObject(parent),USE_TCP(false)
+MavlinkTelemetry::MavlinkTelemetry(QObject *parent):QObject(parent)
 {
     mavsdk=std::make_shared<mavsdk::Mavsdk>();
     mavsdk::log::subscribe([](mavsdk::log::Level level,   // message severity level
