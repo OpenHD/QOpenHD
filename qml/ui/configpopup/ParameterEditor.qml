@@ -358,6 +358,9 @@ Rectangle{
                         console.log("Update failed")
                         _messageBoxInstance.set_text_and_show("Update failed")
                     }else{
+                        if(instanceMavlinkSettingsModel.get_param_requires_manual_reboot(parameterId)){
+                            _messageBoxInstance.set_text_and_show("Please reboot to apply")
+                        }
                         parameterEditor.visible=false
                     }
                 }

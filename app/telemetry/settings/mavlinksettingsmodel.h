@@ -121,6 +121,8 @@ public:
     // just too be sure he understands the risks
     // When there is no need for a warning, this method just returns an empty string
     Q_INVOKABLE QString get_warning_before_safe(QString param_id);
+
+    Q_INVOKABLE bool get_param_requires_manual_reboot(QString param_id);
 };
 
 #endif // MavlinkSettingsModel_H

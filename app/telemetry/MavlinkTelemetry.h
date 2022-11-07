@@ -3,7 +3,6 @@
 
 #include <QObject>
 #include <QtQuick>
-//#include <QTimer>
 #include <chrono>
 #include <mutex>
 
@@ -47,15 +46,10 @@ public:
      */
     void sendMessage(mavlink_message_t msg);
 private:
-    // I am still not sure if we shall use TCP or UDP for the connection between QOpenHD
-    // and OpenHD.
-    const bool USE_TCP;
-    static constexpr auto QOPENHD_GROUND_CLIENT_TCP_ADDRESS="127.0.0.1";
-    static constexpr auto QOPENHD_GROUND_CLIENT_TCP_PORT=1234;
-    static constexpr auto QOPENHD_GROUND_CLIENT_UDP_ADDRESS="127.0.0.1";
+    // We follow the same practice as QGrouncontroll: Listen for incoming data on a specific UDP port,
+    // -> as soon as we got the first packet, we know the address to send data to for bidirectional communication
     static constexpr auto QOPENHD_GROUND_CLIENT_UDP_PORT_IN=14550;
-    static constexpr auto QOPENHD_GROUND_CLIENT_UDP_PORT_OUT=14551;
-private:
+    // workaround systems discovery is not thread safe
     std::mutex systems_mutex;
     int mavsdk_already_known_systems=0;
     std::shared_ptr<mavsdk::Mavsdk> mavsdk=nullptr;

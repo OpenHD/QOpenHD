@@ -70,6 +70,7 @@ bool MavlinkSettingsModel::is_param_read_only(const std::string param_id)const
 static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string param_id){
     std::map<std::string,ImprovedIntSetting> map_improved_params;
     map_improved_params["TEST_INT_0"]=ImprovedIntSetting::createEnumEnableDisable();
+    map_improved_params["ENABLE_JOY_RC"]=ImprovedIntSetting::createEnumEnableDisable();
     {
         std::vector<std::string> values{};
         values.push_back("enum0");
@@ -544,4 +545,12 @@ QString MavlinkSettingsModel::get_warning_before_safe(const QString param_id)
         return "WARNING: Changing this parameter will perform some special operations and then automatically reboot the air pi";
     }
     return "";
+}
+
+bool MavlinkSettingsModel::get_param_requires_manual_reboot(QString param_id)
+{
+    if(param_id=="ENABLE_JOY_RC"){
+        return true;
+    }
+    return false;
 }
