@@ -3,7 +3,7 @@
 
 #include <chrono>
 #include <qsettings.h>
-#include "mavlink_include.h"
+#include "mavsdk_include.h"
 #include <QByteArray>
 #include <sstream>
 

@@ -6,15 +6,7 @@
 #include <chrono>
 #include <mutex>
 
-#include "mavlink_include.h"
-
-#include <mavsdk/mavsdk.h>
-#include <mavsdk/plugins/telemetry/telemetry.h>
-#include <mavsdk/plugins/mavlink_passthrough/mavlink_passthrough.h>
-#include <mavsdk/plugins/param/param.h>
-#include <mavsdk/plugins/action/action.h>
-#include <mavsdk/log_callback.h>
-
+#include "mavsdk_include.h"
 
 /**
  * Changed: Used to have custom UDP and TCP stuff, but now just uses MAVSDK - MAVSDK already has both TCP and UDP support.

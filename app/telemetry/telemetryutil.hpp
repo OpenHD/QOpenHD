@@ -3,7 +3,7 @@
 
 #include <QString>
 
-#include "../telemetry/mavlink_include.h"
+#include "../telemetry/mavsdk_include.h"
 
 // Various utility methods for telemetry that are static and take simple imputs.
 namespace Telemetryutil{

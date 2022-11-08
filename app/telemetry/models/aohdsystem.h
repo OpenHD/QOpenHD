@@ -4,14 +4,11 @@
 #include <QObject>
 #include <QDebug>
 #include <QTimer>
-#include "../mavlink_include.h"
+#include "../mavsdk_include.h"
 #include "wifiadapter.h"
 #include "../openhd_defines.hpp"
 #include <array>
 #include <QQmlContext>
-//
-#include <mavsdk/mavsdk.h>
-#include <mavsdk/plugins/action/action.h>
 
 #include "../../../lib/lqtutils_master/lqtutils_prop.h"
 

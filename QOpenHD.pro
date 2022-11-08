@@ -87,7 +87,7 @@ INCLUDEPATH += /usr/include/mavsdk
 
 
 # Avcodec decode and display, all sources
-#include(app/exp/avcodec_video.pri)
+include(app/exp/avcodec_video.pri)
 
 
 # All Generic files. NOTE: During development, when you create new files, QT Creater will add them to the
@@ -105,10 +105,10 @@ SOURCES += \
 HEADERS += \
     app/common_consti/EmulatedPacketDrop.hpp \
     app/logging/logmessagesmodel.h \
+    app/telemetry/mavsdk_include.h \
     app/telemetry/models/aohdsystem.h \
     app/telemetry/models/wifiadapter.h \
     app/qopenhd.h \
-    app/telemetry/mavlink_include.h \
     app/telemetry/openhd_defines.hpp \
     app/telemetry/qopenhdmavlinkhelper.hpp \
     app/telemetry/settings/improvedintsetting.hpp \
