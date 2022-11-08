@@ -1,48 +1,16 @@
 #ifndef OPENHD_UTIL_H
 #define OPENHD_UTIL_H
 
-#include <sstream>
+#include <array>
 #include <iostream>
-#include <cctype>
-#include <cstdlib>
-#include <vector>
-#include <memory>
 #include <optional>
 #include <string>
-#include <regex>
-#include <csignal>
-#include <thread>
-#include <arpa/inet.h>
-#include <regex>
-#include <unistd.h>
+#include <vector>
+#include <sstream>
+#include <memory>
+
 
 namespace OHDUtil {
-
-// Converts all letters in the given string to uppercase
-static std::string to_uppercase(std::string input) {
-  for (char &it: input) {
-	// https://cplusplus.com/reference/cctype/toupper/
-	it = toupper((unsigned char)it); // NOLINT(cppcoreguidelines-narrowing-conversions)
-  }
-  return input;
-}
-
-// from https://stackoverflow.com/questions/874134/find-out-if-string-ends-with-another-string-in-c
-static bool endsWith(const std::string& str, const std::string& suffix){
-  return str.size() >= suffix.size() && 0 == str.compare(str.size()-suffix.size(), suffix.size(), suffix);
-}
-static bool startsWith(const std::string& str, const std::string& prefix){
-  return str.size() >= prefix.size() && 0 == str.compare(0, prefix.size(), prefix);
-}
-
-// Converts both strings to uppercase, then checks if
-// s1 contains s2 (we can find s2 in s1).
-// Returns true if (after uppercase) s1 contains s2, false otherwise
-static bool contains_after_uppercase(const std::string& s1,const std::string& s2){
-  const auto s1_upper=OHDUtil::to_uppercase(s1);
-  const auto s2_upper=OHDUtil::to_uppercase(s2);
-  return s1_upper.find(s2_upper)!= std::string::npos;
-}
 
 /**
  * Utility to execute a command on the command line.
@@ -62,7 +30,7 @@ static bool run_command(const std::string &command, const std::vector<std::strin
   if(print_debug){
 	std::stringstream log;
 	log<< "run command begin [" << ss.str() << "]\n";
-	std::cout<<log.str();
+    std::cout<<log.str();
   }
   // Some weird locale issue ?!
   // https://man7.org/linux/man-pages/man3/system.3.html
@@ -104,92 +72,11 @@ static std::optional<std::string> run_command_out(const char* command){
   return raw_value;
 }
 
-// i use this one during testing a lot, when a module's functionality uses a start() / stop()
-// pattern with its own thread. This keeps the current thread alive, until a sigterm (CTR+X) happens
-static void keep_alive_until_sigterm(){
-  static bool quit=false;
-  signal(SIGTERM, [](int sig){ quit= true;});
-  while (!quit){
-	std::this_thread::sleep_for(std::chrono::seconds(1));
-	std::cout<<"keep_alive_until_sigterm\n";
-  }
-}
-// Tries to extract a valid ip from the given input string.
-// Returns std::nullopt on error, otherwise a always "valid" ip in string from
-/*static bool createValidIp(const std::string input){
-  // Regex expression for validating IPv4
-  std::regex regex_ipv4("(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])");
-  if (regex_match(input, regex_ipv4))
-	return true;
-  return false;
-}*/
-// based on https://man7.org/linux/man-pages/man3/inet_pton.3.html
-static bool is_valid_ip(const std::string& ip){
-  unsigned char buf[sizeof(struct in6_addr)];
-  auto result= inet_pton(AF_INET,ip.c_str(), buf);
-  return result==1;
-}
-
 static std::string yes_or_no(bool yes){
   return (yes ? "Y" : "N");
 }
 
-// from https://stackoverflow.com/questions/3339200/get-string-between-2-strings
-static std::string string_in_between(const std::string& start,const std::string& end,const std::string& value){
-  std::regex base_regex(start + "(.*)" + end);
-  std::smatch base_match;
-  std::string matched;
-  if (std::regex_search(value, base_match, base_regex)) {
-	// The first sub_match is the whole string; the next
-	// sub_match is the first parenthesized expression.
-	if (base_match.size() == 2) {
-	  matched = base_match[1].str();
-	}
-  }
-  std::stringstream ss;
-  ss<<"Given:{"<<value<<"}\n";
-  ss<<"Result:{"<<matched<<"}\n";
-  std::cout <<ss.str();
-  return matched;
-}
 
-// From https://stackoverflow.com/questions/3214297/how-can-my-c-c-application-determine-if-the-root-user-is-executing-the-command
-// Returns true if the caller is running as root.
-static bool check_root(const bool print_debug=true){
-  const auto uid=getuid();
-  const bool root= uid ? false:true;
-  std::stringstream ss;
-  if(print_debug){
-	ss<<"UID is:["<<uid<<"] root:"<<OHDUtil::yes_or_no(root)<<"\n";
-  }
-  std::cout<<ss.str();
-  return root;
-}
-
-static void terminate_if_not_root(){
-  if(!check_root(false)){
-	std::cout<<"ERROR not root,terminating. Run OpenHD with root privileges.\n";
-	exit(EXIT_FAILURE);
-  }
-}
-
-// Example: "export OHD_DISCOVER_CAMERAS_DEBUG=1"
-// -> then this method will return true if you query "OHD_DISCOVER_CAMERAS_DEBUG"
-static bool get_ohd_env_variable_bool(const char* name){
-  if (const char* env_p = std::getenv(name)) {
-	if (std::string(env_p) == "1") {
-	  return true;
-	}
-  }
-  return false;
-}
-
-static bool get_ohd_env_variable_bool(const std::string& name){
-  if(OHDUtil::contains_after_uppercase(name,"OHD_")){
-	std::cout<<"Please prefix OpenHD env variables with {OHD_}\n";
-  }
-  return get_ohd_env_variable_bool(name.c_str());
-}
 
 }
 
