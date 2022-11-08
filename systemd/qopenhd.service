@@ -8,6 +8,7 @@ Environment="QT_QPA_EGLFS_KMS_ATOMIC=1"
 ExecStart=/usr/local/bin/QOpenHD
 User=root
 Restart=always
+RestartSec=3
 
 [Install]
 WantedBy=multi-user.target
