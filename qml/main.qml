@@ -32,9 +32,9 @@ ApplicationWindow {
     //visibility: "FullScreen"
     visibility: UseFullscreen ? "FullScreen" : "AutomaticVisibility"
 
-    QSGVideoTextureItem {
-        id: my_QSGVideoTextureItem
-    }
+    //QSGVideoTextureItem {
+    //    id: my_QSGVideoTextureItem
+    //}
 
     ColorPicker {
         id: colorPicker
