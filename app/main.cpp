@@ -26,7 +26,7 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "osd/flightpathvector.h"
 #include "osd/drawingcanvas.h"
 //
-#include "exp/QSGVideoTextureItem.h"
+//#include "exp/QSGVideoTextureItem.h"
 #include "util/qrenderstats.h"
 
 #if defined(ENABLE_RC)
@@ -254,7 +254,7 @@ int main(int argc, char *argv[]) {
     qmlRegisterType<FlightPathVector>("OpenHD", 1, 0, "FlightPathVector");
     qmlRegisterType<DrawingCanvas>("OpenHD", 1, 0, "DrawingCanvas");
     //
-    qmlRegisterType<QSGVideoTextureItem>("OpenHD", 1, 0, "QSGVideoTextureItem");
+    //qmlRegisterType<QSGVideoTextureItem>("OpenHD", 1, 0, "QSGVideoTextureItem");
 
 
     QQmlApplicationEngine engine;
