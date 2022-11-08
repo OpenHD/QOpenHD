@@ -8,9 +8,7 @@ SOURCES += \
     $$PWD/rtp/rtpreceiver.cpp \
     $$PWD/texturerenderer.cpp \
     $$PWD/avcodec_decoder.cpp \
-	
-
-
+    $$PWD/udp/UDPReceiver.cpp \
 
 HEADERS += \
     $$PWD/QSGVideoTextureItem.h \
@@ -23,6 +21,8 @@ HEADERS += \
     $$PWD/rtp/rtpreceiver.h \
     $$PWD/texturerenderer.h \
     $$PWD/avcodec_decoder.h \
+    $$PWD/udp/UDPReceiver.h \
+
 
 CONFIG += link_pkgconfig
 packagesExist(mmal) {
@@ -36,6 +36,7 @@ packagesExist(mmal) {
    INCLUDEPATH += /opt/vc/include/
    INCLUDEPATH += /opt/vc/include/interface/mmal
 }
+
 
 mmal {
     message(MMAL renderer selected)

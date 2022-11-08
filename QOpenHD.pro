@@ -107,7 +107,6 @@ SOURCES += \
     app/util/WorkaroundMessageBox.cpp \
     app/util/qrenderstats.cpp \
     app/videostreaming/decodingstatistcs.cpp \
-    app/common_consti/UDPReceiver.cpp \
 
 HEADERS += \
     app/common_consti/EmulatedPacketDrop.hpp \
@@ -124,7 +123,6 @@ HEADERS += \
     app/util/WorkaroundMessageBox.h \
     app/util/qrenderstats.h \
     app/videostreaming/decodingstatistcs.h \
-    app/common_consti/UDPReceiver.h \
 
 
 # Geographic lib updated to c-2.0, so much cleaner
