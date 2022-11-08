@@ -85,15 +85,9 @@ INCLUDEPATH += /usr/local/include/mavsdk
 LIBS += -L/usr/local/lib -lmavsdk
 INCLUDEPATH += /usr/include/mavsdk
 
-LIBS += -lavcodec -lavutil -lavformat
-# TODO dirty
-LIBS += -lGLESv2 -lEGL
-# We might need this stuff once we can do drm/kms, fucking master problem
-#LIBS += -ldrm
-#INCLUDEPATH += /usr/include/libdrm
 
 # Avcodec decode and display, all sources
-#include(app/exp/avcodec_video.pri)
+include(app/exp/avcodec_video.pri)
 
 
 # All Generic files. NOTE: During development, when you create new files, QT Creater will add them to the

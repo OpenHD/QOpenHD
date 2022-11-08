@@ -1,5 +1,10 @@
 INCLUDEPATH += $$PWD
 
+LIBS += -lavcodec -lavutil -lavformat
+# TODO dirty
+LIBS += -lGLESv2 -lEGL
+
+
 SOURCES += \
     $$PWD/QSGVideoTextureItem.cpp \
     $$PWD/gl/gl_shaders.cpp \
