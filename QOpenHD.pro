@@ -93,7 +93,7 @@ LIBS += -lGLESv2 -lEGL
 #INCLUDEPATH += /usr/include/libdrm
 
 # Avcodec decode and display, all sources
-include(app/exp/avcodec_video.pri)
+#include(app/exp/avcodec_video.pri)
 
 
 # All Generic files. NOTE: During development, when you create new files, QT Creater will add them to the
