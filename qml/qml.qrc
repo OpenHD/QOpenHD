@@ -216,5 +216,6 @@
         <file>ui/widgets/MapWidget.qml</file>
         <file>ui/widgets/MapWidgetForm.ui.qml</file>
         <file>ui/elements/MapComponent.qml</file>
+        <file>ui/configpopup/RcInfoPanel.qml</file>
     </qresource>
 </RCC>

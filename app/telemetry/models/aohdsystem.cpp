@@ -97,6 +97,23 @@ bool AOHDSystem::process_message(const mavlink_message_t &msg)
             }
             return true;
         }break;
+        case MAVLINK_MSG_ID_RC_CHANNELS_OVERRIDE:{
+             mavlink_rc_channels_override_t parsedMsg;
+             mavlink_msg_rc_channels_override_decode(&msg,&parsedMsg);
+             set_curr_joystick_pos0(parsedMsg.chan1_raw);
+             set_curr_joystick_pos1(parsedMsg.chan2_raw);
+             set_curr_joystick_pos2(parsedMsg.chan3_raw);
+             set_curr_joystick_pos3(parsedMsg.chan4_raw);
+             set_curr_joystick_pos4(parsedMsg.chan5_raw);
+             set_curr_joystick_pos5(parsedMsg.chan6_raw);
+             set_curr_joystick_pos6(parsedMsg.chan7_raw);
+             set_curr_joystick_pos7(parsedMsg.chan8_raw);
+             set_curr_joystick_pos8(parsedMsg.chan9_raw);
+             set_curr_joystick_pos9(parsedMsg.chan10_raw);
+             set_curr_joystick_pos10(parsedMsg.chan11_raw);
+             set_curr_joystick_pos11(parsedMsg.chan12_raw);
+             return true;
+        };break;
         /*case MAVLINK_MSG_ID_OPENHD_LOG_MESSAGE:{
             mavlink_openhd_log_message_t parsedMsg;
             mavlink_msg_openhd_log_message_decode(&msg,&parsedMsg);

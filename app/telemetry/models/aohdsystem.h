@@ -31,6 +31,19 @@ class AOHDSystem : public QObject
     L_RO_PROP(QString,curr_video0_tx_pps,set_curr_video0_tx_pps,"-1pps")
     L_RO_PROP(QString,curr_video1_tx_pps,set_curr_video1_tx_pps,"-1pps")
     L_RO_PROP(QString,curr_telemetry_tx_pps,set_curr_telemetry_tx_pps,"-1pps")
+    // temporary
+    L_RO_PROP(int,curr_joystick_pos0,set_curr_joystick_pos0,-1)
+    L_RO_PROP(int,curr_joystick_pos1,set_curr_joystick_pos1,-1)
+    L_RO_PROP(int,curr_joystick_pos2,set_curr_joystick_pos2,-1)
+    L_RO_PROP(int,curr_joystick_pos3,set_curr_joystick_pos3,-1)
+    L_RO_PROP(int,curr_joystick_pos4,set_curr_joystick_pos4,-1)
+    L_RO_PROP(int,curr_joystick_pos5,set_curr_joystick_pos5,-1)
+    L_RO_PROP(int,curr_joystick_pos6,set_curr_joystick_pos6,-1)
+    L_RO_PROP(int,curr_joystick_pos7,set_curr_joystick_pos7,-1)
+    L_RO_PROP(int,curr_joystick_pos8,set_curr_joystick_pos8,-1)
+    L_RO_PROP(int,curr_joystick_pos9,set_curr_joystick_pos9,-1)
+    L_RO_PROP(int,curr_joystick_pos10,set_curr_joystick_pos10,-1)
+    L_RO_PROP(int,curr_joystick_pos11,set_curr_joystick_pos11,-1)
 public:
     explicit AOHDSystem(const bool is_air,QObject *parent = nullptr);
     // Singletons for accessing the models from c++

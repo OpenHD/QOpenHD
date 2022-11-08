@@ -330,6 +330,44 @@ Rectangle {
                     color: mainStackLayout.currentIndex == 5 ? "#33aaff" : "#dde4ed"
                 }
             }
+            // RC
+            Item {
+                height: 48
+                width: parent.width
+                MouseArea {
+                    id: rcButtonMouseArea
+                    anchors.fill: parent
+                    onClicked: mainStackLayout.currentIndex = 6
+                }
+
+                Text {
+                    id: rcIcon
+                    text: "\uf05a"
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    font.family: "Font Awesome 5 Free"
+                    font.pixelSize: 18
+                    height: parent.height
+                    width: 24
+                    anchors.left: parent.left
+                    anchors.leftMargin: 12
+
+                    color: "#dde4ed"
+                }
+
+                Text {
+                    id: rcButton
+                    height: parent.height
+                    anchors.left: rcIcon.right
+                    anchors.leftMargin: 6
+
+                    text: qsTr("RC")
+                    font.pixelSize: 15
+                    horizontalAlignment: Text.AlignLeft
+                    verticalAlignment: Text.AlignVCenter
+                    color: mainStackLayout.currentIndex == 6 ? "#33aaff" : "#dde4ed"
+                }
+            }
         }
 
         Button {
@@ -388,6 +426,10 @@ Rectangle {
 
         AppDeveloperStatsPanel {
             id: appDeveloperStatsPanel
+        }
+
+        RcInfoPanel {
+            id: rcInfoPanel
         }
 
     }
