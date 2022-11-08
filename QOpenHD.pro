@@ -92,28 +92,14 @@ LIBS += -lGLESv2 -lEGL
 #LIBS += -ldrm
 #INCLUDEPATH += /usr/include/libdrm
 
-CONFIG += link_pkgconfig
-packagesExist(mmal) {
-   PKGCONFIG += mmal
-   CONFIG += mmal
+# Avcodec decode and display, all sources
+include(app/exp/avcodec_video.pri)
 
-   PKCONFIG += mmal_core
-   PKCONFIG += mmal_components
-   PKCONFIG += mmal_util
-   # crude, looks like the mmal headers pull in those paths / need them
-   INCLUDEPATH += /opt/vc/include/
-   INCLUDEPATH += /opt/vc/include/interface/mmal
-}
 
 # All Generic files. NOTE: During development, when you create new files, QT Creater will add them to the
 # "first SOURCES / HEADERS it can find in the .pro, which is here". This is why (as an example) geographic lib,
 # which is a library, comes after the generic files here.
 SOURCES += \
-    app/exp/QSGVideoTextureItem.cpp \
-    app/exp/gl/gl_shaders.cpp \
-    app/exp/gl/gl_videorenderer.cpp \
-    app/exp/rtp/ParseRTP.cpp \
-    app/exp/rtp/rtpreceiver.cpp \
     app/logging/logmessagesmodel.cpp \
     app/telemetry/models/aohdsystem.cpp \
     app/qopenhd.cpp \
@@ -121,22 +107,10 @@ SOURCES += \
     app/util/WorkaroundMessageBox.cpp \
     app/util/qrenderstats.cpp \
     app/videostreaming/decodingstatistcs.cpp \
-    app/exp/texturerenderer.cpp \
-    app/exp/avcodec_decoder.cpp \
     app/common_consti/UDPReceiver.cpp \
-    # xx
-    #app/exp/drm_kms/drmprime_out.cpp \
 
 HEADERS += \
     app/common_consti/EmulatedPacketDrop.hpp \
-    app/exp/QSGVideoTextureItem.h \
-    app/exp/gl/gl_shaders.h \
-    app/exp/gl/gl_videorenderer.h \
-    app/exp/nalu/KeyFrameFinder.hpp \
-    app/exp/nalu/NALUnitType.hpp \
-    app/exp/rtp/ParseRTP.h \
-    app/exp/rtp/RTP.hpp \
-    app/exp/rtp/rtpreceiver.h \
     app/logging/logmessagesmodel.h \
     app/telemetry/models/aohdsystem.h \
     app/telemetry/models/wifiadapter.h \
@@ -150,11 +124,7 @@ HEADERS += \
     app/util/WorkaroundMessageBox.h \
     app/util/qrenderstats.h \
     app/videostreaming/decodingstatistcs.h \
-    app/exp/texturerenderer.h \
-    app/exp/avcodec_decoder.h \
     app/common_consti/UDPReceiver.h \
-    # xx
-    #app/exp/drm_kms/drmprime_out.h \
 
 
 # Geographic lib updated to c-2.0, so much cleaner
@@ -232,8 +202,6 @@ DISTFILES += \
     android/src/org/freedesktop/gstreamer/androidmedia/GstAhsCallback.java \
     android/src/org/freedesktop/gstreamer/androidmedia/GstAmcOnFrameAvailableListener.java \
     app/adsb/README.md \
-    app/exp/gl/README.md \
-    app/exp/mmal/README.md \
     app/openhd_systems/README.md \
     app/osd_extra/Readme.txt \
     app/platform/README.md \
@@ -452,23 +420,6 @@ EnableGStreamer {
     #QT += widgets
     #QT += gui-private
 }
-
-mmal {
-    message(MMAL renderer selected)
-
-    DEFINES += HAVE_MMAL
-
-    SOURCES += app/exp/mmal/rpimmaldisplay.cpp \
-        app/exp/mmal/rpimmaldecoder.cpp \
-        app/exp/mmal/rpimmaldecodedisplay.cpp \
-
-    HEADERS += \
-        app/exp/mmal/rpimmaldisplay.h \
-        app/exp/mmal/rpimmaldecoder.h \
-        app/exp/mmal/rpimmaldecodedisplay.h \
-}
-
-
 
 EnableRC {
     message("EnableRC")
