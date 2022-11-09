@@ -5,10 +5,7 @@
 #include <QObject>
 #include <QTimer>
 #include <QQmlContext>
-#include <mavsdk/mavsdk.h>
-#include <mavsdk/plugins/action/action.h>
-#include <mavsdk/plugins/telemetry/telemetry.h>
-#include "..//mavlink_include.h"
+#include "../mavsdk_include.h"
 
 // Really nice, this way we don't have to write all the setters / getters / signals ourselves !
 #include "../../../lib/lqtutils_master/lqtutils_prop.h"

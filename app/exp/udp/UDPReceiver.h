@@ -11,8 +11,6 @@
 #include <atomic>
 #include <functional>
 #include <chrono>
-//#include "TimeHelper.hpp"
-//
 
 //Starts a new thread that continuously checks for new data on UDP port
 class UDPReceiver {

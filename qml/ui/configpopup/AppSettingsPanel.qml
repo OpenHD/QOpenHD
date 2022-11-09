@@ -2084,32 +2084,6 @@ Item {
                         color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
                         Text {
-                            text: qsTr("DEV_JETSON")
-                            font.weight: Font.Bold
-                            font.pixelSize: 13
-                            anchors.leftMargin: 8
-                            verticalAlignment: Text.AlignVCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: 224
-                            height: elementHeight
-                            anchors.left: parent.left
-                        }
-                        Switch {
-                            width: 32
-                            height: elementHeight
-                            anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            checked: settings.dev_jetson
-                            onCheckedChanged: settings.dev_jetson = checked
-                        }
-                    }
-                    Rectangle {
-                        width: parent.width
-                        height: rowHeight
-                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                        Text {
                             text: qsTr("dev_limit_fps_on_test_file")
                             font.weight: Font.Bold
                             font.pixelSize: 13

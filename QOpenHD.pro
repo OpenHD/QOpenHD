@@ -85,35 +85,16 @@ INCLUDEPATH += /usr/local/include/mavsdk
 LIBS += -L/usr/local/lib -lmavsdk
 INCLUDEPATH += /usr/include/mavsdk
 
-LIBS += -lavcodec -lavutil -lavformat
-# TODO dirty
-LIBS += -lGLESv2 -lEGL
-# We might need this stuff once we can do drm/kms, fucking master problem
-#LIBS += -ldrm
-#INCLUDEPATH += /usr/include/libdrm
 
-CONFIG += link_pkgconfig
-packagesExist(mmal) {
-   PKGCONFIG += mmal
-   CONFIG += mmal
+# Avcodec decode and display, all sources
+# Replaced gstreamer for now
+include(app/exp/avcodec_video.pri)
 
-   PKCONFIG += mmal_core
-   PKCONFIG += mmal_components
-   PKCONFIG += mmal_util
-   # crude, looks like the mmal headers pull in those paths / need them
-   INCLUDEPATH += /opt/vc/include/
-   INCLUDEPATH += /opt/vc/include/interface/mmal
-}
 
 # All Generic files. NOTE: During development, when you create new files, QT Creater will add them to the
 # "first SOURCES / HEADERS it can find in the .pro, which is here". This is why (as an example) geographic lib,
 # which is a library, comes after the generic files here.
 SOURCES += \
-    app/exp/QSGVideoTextureItem.cpp \
-    app/exp/gl/gl_shaders.cpp \
-    app/exp/gl/gl_videorenderer.cpp \
-    app/exp/rtp/ParseRTP.cpp \
-    app/exp/rtp/rtpreceiver.cpp \
     app/logging/logmessagesmodel.cpp \
     app/telemetry/models/aohdsystem.cpp \
     app/qopenhd.cpp \
@@ -121,27 +102,14 @@ SOURCES += \
     app/util/WorkaroundMessageBox.cpp \
     app/util/qrenderstats.cpp \
     app/videostreaming/decodingstatistcs.cpp \
-    app/exp/texturerenderer.cpp \
-    app/exp/avcodec_decoder.cpp \
-    app/common_consti/UDPReceiver.cpp \
-    # xx
-    #app/exp/drm_kms/drmprime_out.cpp \
 
 HEADERS += \
     app/common_consti/EmulatedPacketDrop.hpp \
-    app/exp/QSGVideoTextureItem.h \
-    app/exp/gl/gl_shaders.h \
-    app/exp/gl/gl_videorenderer.h \
-    app/exp/nalu/KeyFrameFinder.hpp \
-    app/exp/nalu/NALUnitType.hpp \
-    app/exp/rtp/ParseRTP.h \
-    app/exp/rtp/RTP.hpp \
-    app/exp/rtp/rtpreceiver.h \
     app/logging/logmessagesmodel.h \
+    app/telemetry/mavsdk_include.h \
     app/telemetry/models/aohdsystem.h \
     app/telemetry/models/wifiadapter.h \
     app/qopenhd.h \
-    app/telemetry/mavlink_include.h \
     app/telemetry/openhd_defines.hpp \
     app/telemetry/qopenhdmavlinkhelper.hpp \
     app/telemetry/settings/improvedintsetting.hpp \
@@ -150,11 +118,6 @@ HEADERS += \
     app/util/WorkaroundMessageBox.h \
     app/util/qrenderstats.h \
     app/videostreaming/decodingstatistcs.h \
-    app/exp/texturerenderer.h \
-    app/exp/avcodec_decoder.h \
-    app/common_consti/UDPReceiver.h \
-    # xx
-    #app/exp/drm_kms/drmprime_out.h \
 
 
 # Geographic lib updated to c-2.0, so much cleaner
@@ -196,7 +159,6 @@ SOURCES += \
     app/telemetry/models/fcmavlinksystem.cpp \
     app/util/FrequencyMonitor.cpp \
     app/main.cpp \
-    app/rc/openhdrc.cpp \
     app/util/QmlObjectListModel.cpp \
     app/util/util.cpp \
 
@@ -207,7 +169,6 @@ HEADERS += \
     app/telemetry/models/fcmavlinksystem.h \
     app/util/FrequencyMonitor.h \
     app/util/sharedqueue.h \
-    app/rc/openhdrc.h \
     app/util/QmlObjectListModel.h \
     app/util/util.h \
 
@@ -232,8 +193,6 @@ DISTFILES += \
     android/src/org/freedesktop/gstreamer/androidmedia/GstAhsCallback.java \
     android/src/org/freedesktop/gstreamer/androidmedia/GstAmcOnFrameAvailableListener.java \
     app/adsb/README.md \
-    app/exp/gl/README.md \
-    app/exp/mmal/README.md \
     app/openhd_systems/README.md \
     app/osd_extra/Readme.txt \
     app/platform/README.md \
@@ -300,7 +259,6 @@ MacBuild {
     LIBS += -framework VideoToolbox -framework CoreVideo -framework CoreMedia
     #CONFIG += EnableGamepads
     CONFIG += EnableJoysticks
-    CONFIG += EnableRC
     CONFIG += EnableSpeech
     CONFIG += EnableMainVideo
     #CONFIG += EnableCharts
@@ -314,28 +272,14 @@ MacBuild {
 }
 
 LinuxBuild {
-    #QT += x11extras
-    #CONFIG += EnableGamepads
-    #CONFIG += EnableJoysticks
-    #CONFIG += EnableRC
-    # Note: To compile without gstreamer, uncomment the 3 following - but then obviosly there is no video at all.
     CONFIG += EnableMainVideo
-    #CONFIG += EnableGStreamer
-    #CONFIG += EnableCharts
-    #CONFIG += EnableLog
     message("LinuxBuild - config")
 }
 
 JetsonBuild {
     message("JetsonBuild")
     CONFIG += EnableMainVideo
-    CONFIG += EnableJoysticks
-    CONFIG += EnableRC
-    #CONFIG += EnableCharts
     CONFIG += EnableSpeech
-    #CONFIG += EnableLog //does not work due to filepath not set
-    CONFIG += EnableRC
-    CONFIG += EnableJoysticks
 
     CONFIG += EnableGStreamer
 
@@ -345,27 +289,9 @@ JetsonBuild {
     }
 }
 
-RaspberryPiBuild {
-    # we don't enable video here because hello_video handles it,
-    # and we dont enable gamepads or joysticks because those are already
-    # handled by another process running on the ground station. We could
-    # replace that at some point but for now it isn't necessary.
-    message("RaspberryPiBuild - config")
-    CONFIG += EnableMainVideo
-    CONFIG += EnableJoysticks
-    CONFIG += EnableRC
-    #CONFIG += EnableCharts
-    CONFIG += EnableSpeech
-    CONFIG += LimitADSBMax
-    #CONFIG += EnableLog
-    CONFIG += EnableRC
-    CONFIG += EnableJoysticks
-}
 
 WindowsBuild {
     #CONFIG += EnableGamepads
-    #CONFIG += EnableJoysticks
-    #CONFIG += EnableRC
     #CONFIG += EnableSpeech
     #CONFIG += EnableMainVideo
     #CONFIG += EnableGStreamer
@@ -380,9 +306,7 @@ WindowsBuild {
 }
 
 AndroidBuild {
-    #CONFIG += EnableGamepads
     CONFIG += EnableJoysticks
-    CONFIG += EnableRC
     CONFIG += EnableSpeech
     CONFIG += EnableMainVideo
     #CONFIG += EnableCharts
@@ -410,17 +334,6 @@ AndroidBuild {
     #}
 }
 
-
-EnableLog {
-    message("EnableLog")
-    DEFINES += ENABLE_LOG
-}
-
-EnableCharts {
-    message("EnableCharts")
-    DEFINES += ENABLE_CHARTS
-    QT += charts
-}
 
 EnableSpeech {
     message("EnableSpeech")
@@ -451,40 +364,6 @@ EnableGStreamer {
     #QT += qitem
     #QT += widgets
     #QT += gui-private
-}
-
-mmal {
-    message(MMAL renderer selected)
-
-    DEFINES += HAVE_MMAL
-
-    SOURCES += app/exp/mmal/rpimmaldisplay.cpp \
-        app/exp/mmal/rpimmaldecoder.cpp \
-        app/exp/mmal/rpimmaldecodedisplay.cpp \
-
-    HEADERS += \
-        app/exp/mmal/rpimmaldisplay.h \
-        app/exp/mmal/rpimmaldecoder.h \
-        app/exp/mmal/rpimmaldecodedisplay.h \
-}
-
-
-
-EnableRC {
-    message("EnableRC")
-    DEFINES += ENABLE_RC
-
-    EnableGamepads {
-        message("EnableGamepads")
-        DEFINES += ENABLE_GAMEPADS
-        QT += gamepad
-    }
-
-    EnableJoysticks {
-        message("EnableJoysticks")
-        DEFINES += ENABLE_JOYSTICKS
-        include ($$PWD/QJoysticks/QJoysticks.pri)
-    }
 }
 
 

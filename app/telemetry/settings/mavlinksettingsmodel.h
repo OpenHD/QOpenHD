@@ -6,8 +6,7 @@
 #include <map>
 #include <optional>
 
-#include <mavsdk/mavsdk.h>
-#include <mavsdk/plugins/param/param.h>
+#include "../mavsdk_include.h"
 
 
 // A QT wrapper around the mavlink extended / non-extended parameters protocoll on the client

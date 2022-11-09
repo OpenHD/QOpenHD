@@ -5,34 +5,13 @@
 #ifndef RV1126_RV1109_V2_2_0_20210825_HELPER_H
 #define RV1126_RV1109_V2_2_0_20210825_HELPER_H
 
-#include <cstdio>
-#include <cstdlib>
-#include <cerrno>
-#include <resolv.h>
-#include <cstring>
-#include <utime.h>
-#include <unistd.h>
-#include <getopt.h>
-#include <endian.h>
-#include <fcntl.h>
-#include <ctime>
-#include <sys/mman.h>
-#include <string>
-#include <vector>
-#include <chrono>
-#include <cstdarg>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <netinet/ether.h>
-#include <netpacket/packet.h>
-#include <termio.h>
-#include <sys/ioctl.h>
-#include <net/if.h>
-#include <iostream>
-#include <memory>
-#include <cassert>
 
+#include <algorithm>
+#include <array>
+#include <cassert>
+#include <cstdint>
+#include <memory>
+#include <vector>
 namespace GenericHelper{
     // fill buffer with random bytes
     static void fillBufferWithRandomData(std::vector<uint8_t>& data){

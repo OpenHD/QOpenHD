@@ -306,7 +306,6 @@ void AVCodecDecoder::fetch_frame_or_feed_input_packet(){
             const auto now_us=getTimeUs();
             const auto delay_us=now_us-frame->pts;
             //qDebug()<<"(True) decode delay(nowait):"<<((float)delay_us/1000.0f)<<" ms";
-            //MLOGD<<"Frame pts:"<<frame->pts<<" Set to:"<<now<<"\n";
             //frame->pts=now;
             avg_decode_time.add(std::chrono::microseconds(delay_us));
             // display frame
