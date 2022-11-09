@@ -10,7 +10,7 @@ import OpenHD 1.0
 import "../../ui" as Ui
 import "../elements"
 
-// For joystick debugging
+// For joystick debugging. For ease of use, we have a simple model in c++ for it
 Rectangle {
     id: rcInfoPanel
     Layout.fillHeight: true
@@ -34,53 +34,33 @@ Rectangle {
             text: qsTr("Values read by OpenHD (not QOpenHD) from your Joystick RC if enabled. range: 1000-2000, unused:65535")
         }
 
-        Text {
-            id: curr0
-            text: qsTr("1  (channel): ")+_ohdSystemGround.curr_joystick_pos0
-        }
-        Text {
-            id: curr1
-            text: qsTr("2  (channel): ")+_ohdSystemGround.curr_joystick_pos1
-        }
-        Text {
-            id: curr2
-            text: qsTr("3  (channel): ")+_ohdSystemGround.curr_joystick_pos2
-        }
-        Text {
-            id: curr3
-            text: qsTr("4  (channel): ")+_ohdSystemGround.curr_joystick_pos3
-        }
-        Text {
-            id: curr4
-            text: qsTr("5  (channel): ")+_ohdSystemGround.curr_joystick_pos4
-        }
-        Text {
-            id: curr5
-            text: qsTr("6  (channel): ")+_ohdSystemGround.curr_joystick_pos5
-        }
-        Text {
-            id: curr6
-            text: qsTr("7  (channel): ")+_ohdSystemGround.curr_joystick_pos6
-        }
-        Text {
-            id: curr7
-            text: qsTr("8  (channel): ")+_ohdSystemGround.curr_joystick_pos7
-        }
-        Text {
-            id: curr8
-            text: qsTr("9  (channel): ")+_ohdSystemGround.curr_joystick_pos8
-        }
-        Text {
-            id: curr9
-            text: qsTr("10 (channel): ")+_ohdSystemGround.curr_joystick_pos9
-        }
-        Text {
-            id: curr10
-            text: qsTr("11 (channel): ")+_ohdSystemGround.curr_joystick_pos10
-        }
-        Text {
-            id: curr11
-            text: qsTr("12 (channel): ")+_ohdSystemGround.curr_joystick_pos11
+        Repeater {
+               model: _rcchannelsmodelground
+               RowLayout{
+                   Layout.fillWidth: true
+                   Layout.minimumHeight: 20
+                   Text {
+                       id: text
+                       text: get_description()+model.curr_value
+                   }
+                   ProgressBar {
+                       id: progressBar
+                       // mavlink rc is in pwm, 1000 is min, 2000 is max
+                       from: 1000
+                       to: 2000
+                       Layout.fillWidth: true
+                       value: model.curr_value
+                   }
+                   // To the user we display the more verbose "start counting at channel 1", even though we use normal array indices in c++
+                   function get_description(){
+                       var channel_index_plus_1=index+1;
+                       // add an additional space for values <10
+                       if(channel_index_plus_1>=10){
+                           return channel_index_plus_1+" (channel):";
+                       }
+                       return channel_index_plus_1+"  (channel):";
+                   }
+               }
         }
     }
 }
