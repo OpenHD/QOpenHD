@@ -3,6 +3,8 @@
 #include "../qopenhdmavlinkhelper.hpp"
 #include "../../common_consti/StringHelper.hpp"
 
+#include "rcchannelsmodel.h"
+
 #include <string>
 #include <sstream>
 
@@ -112,6 +114,9 @@ bool AOHDSystem::process_message(const mavlink_message_t &msg)
              set_curr_joystick_pos9(parsedMsg.chan10_raw);
              set_curr_joystick_pos10(parsedMsg.chan11_raw);
              set_curr_joystick_pos11(parsedMsg.chan12_raw);
+             m_curr_rc_channel_values=mavlink_msg_rc_channels_override_to_array(parsedMsg);
+             emit curr_rc_channel_values_changed(get_curr_joystick_values());
+             RCChannelsModel::instanceGround().update_all_channels(mavlink_msg_rc_channels_override_to_array(parsedMsg));
              return true;
         };break;
         /*case MAVLINK_MSG_ID_OPENHD_LOG_MESSAGE:{
@@ -463,4 +468,51 @@ bool AOHDSystem::send_command_restart_interface()
      command.params.maybe_param2=0;
      command.params.maybe_param3=1;
      return send_command_long(command);
+}
+
+QList<int> AOHDSystem::get_curr_joystick_values()
+{
+    return rc_channels_to_qt_list(m_curr_rc_channel_values);
+}
+
+int AOHDSystem::get_curr_joystick_value(int index)
+{
+    auto tmp=get_curr_joystick_values();
+    if(index<tmp.size()){
+        return tmp.at(index);
+    }
+    return -1;
+}
+
+AOHDSystem::RC_CHANNELS AOHDSystem::mavlink_msg_rc_channels_override_to_array(const mavlink_rc_channels_override_t &parsedMsg)
+{
+    RC_CHANNELS ret{};
+    ret[0]=parsedMsg.chan1_raw;
+    ret[1]=parsedMsg.chan2_raw;
+    ret[2]=parsedMsg.chan3_raw;
+    ret[3]=parsedMsg.chan4_raw;
+    ret[4]=parsedMsg.chan5_raw;
+    ret[5]=parsedMsg.chan6_raw;
+    ret[6]=parsedMsg.chan7_raw;
+    ret[7]=parsedMsg.chan8_raw;
+    ret[8]=parsedMsg.chan9_raw;
+    ret[9]=parsedMsg.chan10_raw;
+    ret[10]=parsedMsg.chan11_raw;
+    ret[11]=parsedMsg.chan12_raw;
+    ret[12]=parsedMsg.chan13_raw;
+    ret[13]=parsedMsg.chan14_raw;
+    ret[14]=parsedMsg.chan15_raw;
+    ret[15]=parsedMsg.chan16_raw;
+    ret[16]=parsedMsg.chan17_raw;
+    ret[17]=parsedMsg.chan18_raw;
+    return ret;
+}
+
+QList<int> AOHDSystem::rc_channels_to_qt_list(const RC_CHANNELS &channels)
+{
+    QList<int> values{};
+    for(int i=0;i<channels.size();i++){
+        values.append(channels[i]);
+    }
+    return values;
 }

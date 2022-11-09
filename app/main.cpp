@@ -15,6 +15,7 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "telemetry/models/fcmavlinksystem.h"
 #include "telemetry/models/aohdsystem.h"
 #include "telemetry/MavlinkTelemetry.h"
+#include "telemetry/models/rcchannelsmodel.h"
 
 #include "util/QmlObjectListModel.h"
 
@@ -277,6 +278,8 @@ int main(int argc, char *argv[]) {
     // it is a common practice for QT to prefix models from c++ with an underscore
     //FCMavlinkSystem::register_for_qml(engine.rootContext());
     engine.rootContext()->setContextProperty("_fcMavlinkSystem", &FCMavlinkSystem::instance());
+
+    engine.rootContext()->setContextProperty("_rcchannelsmodelground", &RCChannelsModel::instanceGround());
 
     //AOHDSystem::register_for_qml(engine.rootContext());
     engine.rootContext()->setContextProperty("_ohdSystemAir", &AOHDSystem::instanceAir());

@@ -98,6 +98,7 @@ SOURCES += \
     app/logging/logmessagesmodel.cpp \
     app/telemetry/models/aohdsystem.cpp \
     app/qopenhd.cpp \
+    app/telemetry/models/rcchannelsmodel.cpp \
     app/telemetry/settings/synchronizedsettings.cpp \
     app/util/WorkaroundMessageBox.cpp \
     app/util/qrenderstats.cpp \
@@ -108,6 +109,7 @@ HEADERS += \
     app/logging/logmessagesmodel.h \
     app/telemetry/mavsdk_include.h \
     app/telemetry/models/aohdsystem.h \
+    app/telemetry/models/rcchannelsmodel.h \
     app/telemetry/models/wifiadapter.h \
     app/qopenhd.h \
     app/telemetry/openhd_defines.hpp \

@@ -224,6 +224,16 @@ public:
      Q_INVOKABLE bool send_command_reboot(bool reboot);
      //
      bool send_command_restart_interface();
+public:
+     Q_INVOKABLE QList<int> get_curr_joystick_values();
+     Q_INVOKABLE int get_curr_joystick_value(int index);
+     using RC_CHANNELS=std::array<int,18>;
+signals:
+     void curr_rc_channel_values_changed(QList<int>);
+private:
+     RC_CHANNELS m_curr_rc_channel_values{-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1};
+     static RC_CHANNELS mavlink_msg_rc_channels_override_to_array(const mavlink_rc_channels_override_t& data);
+     static QList<int> rc_channels_to_qt_list(const RC_CHANNELS& channels);
 };
 
 
