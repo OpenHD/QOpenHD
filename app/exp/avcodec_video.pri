@@ -28,7 +28,8 @@ HEADERS += \
     $$PWD/avcodec_decoder.h \
     $$PWD/udp/UDPReceiver.h \
 
-
+# Search for mmal at compile time, when found, we can do the "best" path video to display on rpi -
+# note that you have to use a config with fkms for mmal to work !
 CONFIG += link_pkgconfig
 packagesExist(mmal) {
    PKGCONFIG += mmal
