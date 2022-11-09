@@ -34,6 +34,11 @@ Rectangle {
             text: qsTr("Values read by OpenHD (not QOpenHD) from your Joystick RC if enabled. range: 1000-2000, unused:65535")
         }
 
+        Text {
+            id: alive
+            text: qsTr("alive:"+(_rcchannelsmodelground.is_alive ? "Y":"N"));
+        }
+
         Repeater {
                model: _rcchannelsmodelground
                RowLayout{
