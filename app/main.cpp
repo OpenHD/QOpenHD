@@ -12,7 +12,6 @@ const QVector<QString> permissions({"android.permission.INTERNET",
                                     "android.permission.ACCESS_FINE_LOCATION"});
 #endif
 
-#include "rc/openhdrc.h"
 #include "telemetry/models/fcmavlinksystem.h"
 #include "telemetry/models/aohdsystem.h"
 #include "telemetry/MavlinkTelemetry.h"
@@ -29,9 +28,6 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "exp/QSGVideoTextureItem.h"
 #include "util/qrenderstats.h"
 
-#if defined(ENABLE_RC)
-#include "QJoysticks.h"
-#endif
 
 #if defined(__ios__)
 #include "platform/appleplatform.h"
@@ -166,11 +162,6 @@ void write_other_context_properties(QQmlApplicationEngine& engine){
 #else
      engine.rootContext()->setContextProperty("EnableVideoRender", QVariant(false));
 #endif
-#if defined(ENABLE_LOG)
-    engine.rootContext()->setContextProperty("EnableLog", QVariant(true));
-#else
-    engine.rootContext()->setContextProperty("EnableLog", QVariant(false));
-#endif
 }
 
 int main(int argc, char *argv[]) {
@@ -243,8 +234,6 @@ int main(int argc, char *argv[]) {
 
     load_fonts();
 
-    qmlRegisterType<OpenHDRC>("OpenHD", 1, 0, "OpenHDRC");
-
     qmlRegisterUncreatableType<QmlObjectListModel>("OpenHD", 1, 0, "QmlObjectListModel", "Reference only");
 
     qmlRegisterType<SpeedLadder>("OpenHD", 1, 0, "SpeedLadder");
@@ -278,9 +267,6 @@ int main(int argc, char *argv[]) {
     engine.rootContext()->setContextProperty("_mainVideo", mainVideo.get());
 #endif
 #endif
-
-    auto openHDRC = new OpenHDRC();
-    engine.rootContext()->setContextProperty("openHDRC", openHDRC);
 
     //MavlinkTelemetry::register_for_qml(engine.rootContext());
     engine.rootContext()->setContextProperty("_mavlinkTelemetry", &MavlinkTelemetry::instance());

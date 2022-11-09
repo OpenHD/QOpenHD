@@ -28,7 +28,7 @@ class AOHDSystem : public QObject
     L_RO_PROP(QString,curr_video0_tx_pps,set_curr_video0_tx_pps,"-1pps")
     L_RO_PROP(QString,curr_video1_tx_pps,set_curr_video1_tx_pps,"-1pps")
     L_RO_PROP(QString,curr_telemetry_tx_pps,set_curr_telemetry_tx_pps,"-1pps")
-    // temporary
+    // temporary, they come from openhd which talks to a joystick if there is one connected
     L_RO_PROP(int,curr_joystick_pos0,set_curr_joystick_pos0,-1)
     L_RO_PROP(int,curr_joystick_pos1,set_curr_joystick_pos1,-1)
     L_RO_PROP(int,curr_joystick_pos2,set_curr_joystick_pos2,-1)

@@ -87,6 +87,7 @@ INCLUDEPATH += /usr/include/mavsdk
 
 
 # Avcodec decode and display, all sources
+# Replaced gstreamer for now
 include(app/exp/avcodec_video.pri)
 
 
@@ -158,7 +159,6 @@ SOURCES += \
     app/telemetry/models/fcmavlinksystem.cpp \
     app/util/FrequencyMonitor.cpp \
     app/main.cpp \
-    app/rc/openhdrc.cpp \
     app/util/QmlObjectListModel.cpp \
     app/util/util.cpp \
 
@@ -169,7 +169,6 @@ HEADERS += \
     app/telemetry/models/fcmavlinksystem.h \
     app/util/FrequencyMonitor.h \
     app/util/sharedqueue.h \
-    app/rc/openhdrc.h \
     app/util/QmlObjectListModel.h \
     app/util/util.h \
 
@@ -260,7 +259,6 @@ MacBuild {
     LIBS += -framework VideoToolbox -framework CoreVideo -framework CoreMedia
     #CONFIG += EnableGamepads
     CONFIG += EnableJoysticks
-    CONFIG += EnableRC
     CONFIG += EnableSpeech
     CONFIG += EnableMainVideo
     #CONFIG += EnableCharts
@@ -274,28 +272,14 @@ MacBuild {
 }
 
 LinuxBuild {
-    #QT += x11extras
-    #CONFIG += EnableGamepads
-    #CONFIG += EnableJoysticks
-    #CONFIG += EnableRC
-    # Note: To compile without gstreamer, uncomment the 3 following - but then obviosly there is no video at all.
     CONFIG += EnableMainVideo
-    #CONFIG += EnableGStreamer
-    #CONFIG += EnableCharts
-    #CONFIG += EnableLog
     message("LinuxBuild - config")
 }
 
 JetsonBuild {
     message("JetsonBuild")
     CONFIG += EnableMainVideo
-    CONFIG += EnableJoysticks
-    CONFIG += EnableRC
-    #CONFIG += EnableCharts
     CONFIG += EnableSpeech
-    #CONFIG += EnableLog //does not work due to filepath not set
-    CONFIG += EnableRC
-    CONFIG += EnableJoysticks
 
     CONFIG += EnableGStreamer
 
@@ -305,27 +289,9 @@ JetsonBuild {
     }
 }
 
-RaspberryPiBuild {
-    # we don't enable video here because hello_video handles it,
-    # and we dont enable gamepads or joysticks because those are already
-    # handled by another process running on the ground station. We could
-    # replace that at some point but for now it isn't necessary.
-    message("RaspberryPiBuild - config")
-    CONFIG += EnableMainVideo
-    CONFIG += EnableJoysticks
-    CONFIG += EnableRC
-    #CONFIG += EnableCharts
-    CONFIG += EnableSpeech
-    CONFIG += LimitADSBMax
-    #CONFIG += EnableLog
-    CONFIG += EnableRC
-    CONFIG += EnableJoysticks
-}
 
 WindowsBuild {
     #CONFIG += EnableGamepads
-    #CONFIG += EnableJoysticks
-    #CONFIG += EnableRC
     #CONFIG += EnableSpeech
     #CONFIG += EnableMainVideo
     #CONFIG += EnableGStreamer
@@ -340,9 +306,7 @@ WindowsBuild {
 }
 
 AndroidBuild {
-    #CONFIG += EnableGamepads
     CONFIG += EnableJoysticks
-    CONFIG += EnableRC
     CONFIG += EnableSpeech
     CONFIG += EnableMainVideo
     #CONFIG += EnableCharts
@@ -370,17 +334,6 @@ AndroidBuild {
     #}
 }
 
-
-EnableLog {
-    message("EnableLog")
-    DEFINES += ENABLE_LOG
-}
-
-EnableCharts {
-    message("EnableCharts")
-    DEFINES += ENABLE_CHARTS
-    QT += charts
-}
 
 EnableSpeech {
     message("EnableSpeech")
@@ -411,23 +364,6 @@ EnableGStreamer {
     #QT += qitem
     #QT += widgets
     #QT += gui-private
-}
-
-EnableRC {
-    message("EnableRC")
-    DEFINES += ENABLE_RC
-
-    EnableGamepads {
-        message("EnableGamepads")
-        DEFINES += ENABLE_GAMEPADS
-        QT += gamepad
-    }
-
-    EnableJoysticks {
-        message("EnableJoysticks")
-        DEFINES += ENABLE_JOYSTICKS
-        include ($$PWD/QJoysticks/QJoysticks.pri)
-    }
 }
 
 
