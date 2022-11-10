@@ -92,6 +92,7 @@ INCLUDEPATH += /usr/include/mavsdk
 # However, this can be usefully for figuring out compiler issue(s) on different platform(s)
 # NOTE: QT Creator is quite bad at figuring out changes here, you might need a "full" rebuild or manualy delete
 # the build dir/cache, then rebuild
+# NOTE: You manually have to uncomment 3 lines in qml/main.qml too for now (if you choose to uncomment below)
 include(app/exp/avcodec_video.pri)
 
 
