@@ -158,5 +158,16 @@ while (data_size > 0 || eof) {
     return;
 }*/
 
-
+Loader {
+    //source: {
+        if (QOPENHD_ENABLE_VIDEO_VIA_AVCODEC) {
+            console.log("Loading QSGVideoTextureItem")
+            //return "QSGVideoTextureItem";
+            QSGVideoTextureItem {
+                id: my_QSGVideoTextureItem
+            }
+        }
+        return ""
+    //}
+}
 

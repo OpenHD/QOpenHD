@@ -32,6 +32,10 @@ ApplicationWindow {
     //visibility: "FullScreen"
     visibility: UseFullscreen ? "FullScreen" : "AutomaticVisibility"
 
+    // If AVCODEC is enabled at compile time, load the corresponding video element - note that this
+    // element hoocks directly into the QT render thread, and therefore cannot be scaled, repositioned or similar
+    // TODO: use a loader, but I cannot figure out how - you manually have to uncomment the following lines
+    // Comment out if QOPENHD_ENABLE_VIDEO_VIA_AVCODEC is not set
     QSGVideoTextureItem {
         id: my_QSGVideoTextureItem
     }

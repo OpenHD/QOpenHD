@@ -58,3 +58,5 @@ mmal {
         app/exp/mmal/rpimmaldecoder.h \
         app/exp/mmal/rpimmaldecodedisplay.h \
 }
+# can be used in c++, also set to be exposed in qml
+DEFINES += QOPENHD_ENABLE_VIDEO_VIA_AVCODEC
