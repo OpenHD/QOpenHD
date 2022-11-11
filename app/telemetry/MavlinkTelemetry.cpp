@@ -6,6 +6,7 @@
 #include "models/fcmavlinksystem.h"
 
 #include "settings/mavlinksettingsmodel.h"
+#include "../logging/logmessagesmodel.h"
 
 MavlinkTelemetry::MavlinkTelemetry(QObject *parent):QObject(parent)
 {
@@ -16,6 +17,9 @@ MavlinkTelemetry::MavlinkTelemetry(QObject *parent):QObject(parent)
                               int line) {                 // line number in the source file
       // process the log message in a way you like
       qDebug()<<"MAVSDK::"<<message.c_str();
+      //if(level>=mavsdk::log::Level::Warn){
+      //    LogMessagesModel::instance().addLogMessage("",message.c_str(),3);
+      //}
       // returning true from the callback disables printing the message to stdout
       return level < mavsdk::log::Level::Warn;
     });
