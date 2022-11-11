@@ -6,7 +6,9 @@
 RCChannelsModel::RCChannelsModel(QObject *parent)
     : QAbstractListModel(parent)
 {
-
+    m_alive_timer = std::make_unique<QTimer>(this);
+    QObject::connect(m_alive_timer.get(), &QTimer::timeout, this, &RCChannelsModel::update_alive);
+    m_alive_timer->start(1000);
 }
 
 RCChannelsModel &RCChannelsModel::instanceGround()
@@ -56,4 +58,16 @@ void RCChannelsModel::update_all_channels(const RC_CHANNELS &channels)
     for(int i=0;i<channels.size();i++){
         updateData(i,channels[i]);
     }
+    m_last_update=std::chrono::steady_clock::now();
 }
+
+void RCChannelsModel::update_alive()
+{
+    const auto delay_since_last=std::chrono::steady_clock::now()-m_last_update;
+    if(delay_since_last<std::chrono::seconds(2)){
+        set_is_alive(true);
+    }else{
+        set_is_alive(false);
+    }
+}
+

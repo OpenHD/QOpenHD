@@ -88,6 +88,11 @@ INCLUDEPATH += /usr/include/mavsdk
 
 # Avcodec decode and display, all sources
 # Replaced gstreamer for now
+# Uncomment the line below to build without avcodec (you won't have any video decoding capabilities in this case though)
+# However, this can be usefully for figuring out compiler issue(s) on different platform(s)
+# NOTE: QT Creator is quite bad at figuring out changes here, you might need a "full" rebuild or manualy delete
+# the build dir/cache, then rebuild
+# NOTE: You manually have to uncomment 3 lines in qml/main.qml too for now (if you choose to uncomment below)
 include(app/exp/avcodec_video.pri)
 
 

@@ -5,7 +5,6 @@
 #ifndef LIVEVIDEO10MS_TIMEHELPER_HPP
 #define LIVEVIDEO10MS_TIMEHELPER_HPP
 
-#include <sys/time.h>
 #include <chrono>
 #include <deque>
 #include <algorithm>
@@ -351,10 +350,8 @@ nanosecondsToTimePointSteadyClock(std::chrono::nanoseconds nanoseconds){
 
 
 static uint64_t __attribute__((unused)) getTimeUs(){
-    struct timeval time;
-    gettimeofday(&time, NULL);
-    uint64_t micros = (time.tv_sec * ((uint64_t)1000*1000)) + ((uint64_t)time.tv_usec);
-    return micros;
+    const auto time=std::chrono::steady_clock::now().time_since_epoch();
+    return std::chrono::duration_cast<std::chrono::microseconds>(time).count();
 }
 
 static uint64_t __attribute__((unused)) getTimeMs(){

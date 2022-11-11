@@ -26,7 +26,9 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "osd/flightpathvector.h"
 #include "osd/drawingcanvas.h"
 //
+#ifdef QOPENHD_ENABLE_VIDEO_VIA_AVCODEC
 #include "exp/QSGVideoTextureItem.h"
+#endif
 #include "util/qrenderstats.h"
 
 
@@ -243,11 +245,15 @@ int main(int argc, char *argv[]) {
     qmlRegisterType<HorizonLadder>("OpenHD", 1, 0, "HorizonLadder");
     qmlRegisterType<FlightPathVector>("OpenHD", 1, 0, "FlightPathVector");
     qmlRegisterType<DrawingCanvas>("OpenHD", 1, 0, "DrawingCanvas");
-    //
-    qmlRegisterType<QSGVideoTextureItem>("OpenHD", 1, 0, "QSGVideoTextureItem");
-
 
     QQmlApplicationEngine engine;
+#ifdef QOPENHD_ENABLE_VIDEO_VIA_AVCODEC
+    // QT doesn't have the define(s) from c++
+    engine.rootContext()->setContextProperty("QOPENHD_ENABLE_VIDEO_VIA_AVCODEC", QVariant(true));
+    qmlRegisterType<QSGVideoTextureItem>("OpenHD", 1, 0, "QSGVideoTextureItem");
+#else
+    engine.rootContext()->setContextProperty("QOPENHD_ENABLE_VIDEO_VIA_AVCODEC", QVariant(false));
+#endif
     engine.rootContext()->setContextProperty("_qopenhd", &QOpenHD::instance());
     QOpenHD::instance().setEngine(&engine);
 

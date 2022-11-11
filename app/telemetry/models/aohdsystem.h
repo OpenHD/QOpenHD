@@ -28,19 +28,6 @@ class AOHDSystem : public QObject
     L_RO_PROP(QString,curr_video0_tx_pps,set_curr_video0_tx_pps,"-1pps")
     L_RO_PROP(QString,curr_video1_tx_pps,set_curr_video1_tx_pps,"-1pps")
     L_RO_PROP(QString,curr_telemetry_tx_pps,set_curr_telemetry_tx_pps,"-1pps")
-    // temporary, they come from openhd which talks to a joystick if there is one connected
-    L_RO_PROP(int,curr_joystick_pos0,set_curr_joystick_pos0,-1)
-    L_RO_PROP(int,curr_joystick_pos1,set_curr_joystick_pos1,-1)
-    L_RO_PROP(int,curr_joystick_pos2,set_curr_joystick_pos2,-1)
-    L_RO_PROP(int,curr_joystick_pos3,set_curr_joystick_pos3,-1)
-    L_RO_PROP(int,curr_joystick_pos4,set_curr_joystick_pos4,-1)
-    L_RO_PROP(int,curr_joystick_pos5,set_curr_joystick_pos5,-1)
-    L_RO_PROP(int,curr_joystick_pos6,set_curr_joystick_pos6,-1)
-    L_RO_PROP(int,curr_joystick_pos7,set_curr_joystick_pos7,-1)
-    L_RO_PROP(int,curr_joystick_pos8,set_curr_joystick_pos8,-1)
-    L_RO_PROP(int,curr_joystick_pos9,set_curr_joystick_pos9,-1)
-    L_RO_PROP(int,curr_joystick_pos10,set_curr_joystick_pos10,-1)
-    L_RO_PROP(int,curr_joystick_pos11,set_curr_joystick_pos11,-1)
 public:
     explicit AOHDSystem(const bool is_air,QObject *parent = nullptr);
     // Singletons for accessing the models from c++
@@ -225,15 +212,8 @@ public:
      //
      bool send_command_restart_interface();
 public:
-     Q_INVOKABLE QList<int> get_curr_joystick_values();
-     Q_INVOKABLE int get_curr_joystick_value(int index);
      using RC_CHANNELS=std::array<int,18>;
-signals:
-     void curr_rc_channel_values_changed(QList<int>);
-private:
-     RC_CHANNELS m_curr_rc_channel_values{-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1};
      static RC_CHANNELS mavlink_msg_rc_channels_override_to_array(const mavlink_rc_channels_override_t& data);
-     static QList<int> rc_channels_to_qt_list(const RC_CHANNELS& channels);
 };
 
 
