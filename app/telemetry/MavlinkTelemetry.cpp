@@ -17,11 +17,17 @@ MavlinkTelemetry::MavlinkTelemetry(QObject *parent):QObject(parent)
                               int line) {                 // line number in the source file
       // process the log message in a way you like
       qDebug()<<"MAVSDK::"<<message.c_str();
+      // Annoying, but no better way - we manually parse the mavlink statustext messages. The problem here is that
+      // mavsdk doesn't tell if it is a message from a mavlink system or internal, and also not the system id such that
+      // we can create the proper tag for the message
+      // Dirty fix,we only want messages from "mavlink" displayed, not internal MAVSDK log messages.
+      //if(message.find("MAVLink: warning:")!=std::string::npos){
       //if(level>=mavsdk::log::Level::Warn){
-      //    LogMessagesModel::instance().addLogMessage("",message.c_str(),3);
+      //    LogMessagesModel::instance().addLogMessage("T",message.c_str(),0);
       //}
       // returning true from the callback disables printing the message to stdout
-      return level < mavsdk::log::Level::Warn;
+      //return level < mavsdk::log::Level::Warn;
+      return true;
     });
     // NOTE: subscribe before adding any connection(s)
     mavsdk->subscribe_on_new_system([this]() {

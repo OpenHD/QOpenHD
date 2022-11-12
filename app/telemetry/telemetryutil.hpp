@@ -437,6 +437,19 @@ static float pt1FilterApply4(Telemetryutil::pt1Filter_t *filter, float input, fl
     return filter->state;
 }
 
+struct XLogMessage{
+    std::string message;
+    int level;
+};
+static XLogMessage statustext_convert(const mavlink_statustext_t& parsedMsg){
+    QByteArray tmp_msg(parsedMsg.text,50);
+    if (!tmp_msg.contains('\0')) {
+       tmp_msg.append('\0');
+    }
+    std::string s(tmp_msg.data());
+    return XLogMessage{s,parsedMsg.severity};
+}
+
 
 }
 

@@ -2,11 +2,14 @@
 
 #include "../qopenhdmavlinkhelper.hpp"
 #include "../../common_consti/StringHelper.hpp"
+#include "../telemetryutil.hpp"
 
 #include "rcchannelsmodel.h"
 
 #include <string>
 #include <sstream>
+
+#include <logging/logmessagesmodel.h>
 
 
 static std::string video_codec_to_string(int value){
@@ -105,6 +108,15 @@ bool AOHDSystem::process_message(const mavlink_message_t &msg)
              RCChannelsModel::instanceGround().update_all_channels(mavlink_msg_rc_channels_override_to_array(parsedMsg));
              return true;
         };break;
+        case MAVLINK_MSG_ID_STATUSTEXT:{
+             mavlink_statustext_t parsedMsg;
+             mavlink_msg_statustext_decode(&msg,&parsedMsg);
+             auto tmp=Telemetryutil::statustext_convert(parsedMsg);
+             if(tmp.level>=3){
+                 LogMessagesModel::instance().addLogMessage(_is_air ? "OHD[A]":"OHD[G]",tmp.message.c_str(),tmp.level);
+             }
+             return true;
+        }break;
         /*case MAVLINK_MSG_ID_OPENHD_LOG_MESSAGE:{
             mavlink_openhd_log_message_t parsedMsg;
             mavlink_msg_openhd_log_message_decode(&msg,&parsedMsg);
