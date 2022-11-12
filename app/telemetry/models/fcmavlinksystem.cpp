@@ -10,6 +10,8 @@
 
 #include <QDateTime>
 
+#include <logging/logmessagesmodel.h>
+
 FCMavlinkSystem& FCMavlinkSystem::instance() {
     static FCMavlinkSystem* instance = new FCMavlinkSystem();
     return *instance;
@@ -482,10 +484,15 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
             //LocalMessage::instance()->showMessage("Home Position set by Telemetry", 7);
             break;
         }
-        case MAVLINK_MSG_ID_STATUSTEXT: {
-            // handled by mavsdk
-            break;
-        }
+    case MAVLINK_MSG_ID_STATUSTEXT:{
+         mavlink_statustext_t parsedMsg;
+         mavlink_msg_statustext_decode(&msg,&parsedMsg);
+         auto tmp=Telemetryutil::statustext_convert(parsedMsg);
+         if(tmp.level>=3){
+            LogMessagesModel::instance().addLogMessage("FC",tmp.message.c_str(),tmp.level);
+         }
+         return true;
+    }break;
         case MAVLINK_MSG_ID_ESC_TELEMETRY_1_TO_4: {
             mavlink_esc_telemetry_1_to_4_t esc_telemetry;
             mavlink_msg_esc_telemetry_1_to_4_decode(&msg, &esc_telemetry);
