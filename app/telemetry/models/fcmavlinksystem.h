@@ -132,11 +132,7 @@ public:
     void calculate_home_distance();
     void calculate_home_course();
 
-    /* public so that a QTimer can call it from main(), temporary fix due to some quirks with
-       the way QTimer and QML singletons/context properties work */
     void updateFlightTimer();
-
-    void findGcsPosition();
     void updateFlightDistance();
     void updateVehicleAngles();
     void updateWind();
