@@ -213,7 +213,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: "Tx video0:"+_ohdSystemGround.curr_video0_tx_pps
+                text: "Tx video0:"+_ohdSystemAir.curr_video0_tx_pps
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -297,6 +297,23 @@ BaseWidget {
             clip: false
             style: Text.Outline
             styleColor: settings.color_glow
+        }
+        ColumnLayout{
+            anchors.top: uplink_rssi.bottom
+            spacing:0
+            Text {
+                visible: true
+                text: "Loss: " + _ohdSystemAir.curr_rx_packet_loss_perc+"%"
+                color: settings.color_text
+                verticalAlignment: Text.AlignVCenter
+                font.pixelSize: 12
+                font.family: settings.font_text
+                horizontalAlignment: Text.AlignLeft
+                wrapMode: Text.NoWrap
+                elide: Text.ElideRight
+                style: Text.Outline
+                styleColor: settings.color_glow
+            }
         }
     }
 }

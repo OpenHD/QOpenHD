@@ -181,6 +181,7 @@ void AOHDSystem::process_x2(const mavlink_openhd_stats_total_all_wifibroadcast_s
         total_tx_error_count+=msg.count_video_tx_injections_error_hint;
         set_total_tx_error_count(total_tx_error_count);
     }
+    set_curr_rx_packet_loss_perc(msg.unused_0);
 }
 
 void AOHDSystem::process_x3(const mavlink_openhd_fec_link_rx_statistics_t &msg)
