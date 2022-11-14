@@ -182,28 +182,6 @@ BaseWidget {
                                                         checked)
                 }
             }
-
-            Item {
-                width: parent.width
-                height: 32
-                Text {
-                    text: qsTr("Use telemetry data")
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Switch {
-                    width: 32
-                    height: parent.height
-                    anchors.rightMargin: 6
-                    anchors.right: parent.right
-                    checked: settings.flight_mah_use_telemetry
-                    onCheckedChanged: settings.flight_mah_use_telemetry = checked
-                }
-            }
         }
     }
 
@@ -240,8 +218,7 @@ BaseWidget {
             clip: false
             color: settings.color_text
             opacity: settings.mah_opacity
-            text: settings.flight_mah_use_telemetry ? _fcMavlinkSystem.flight_mah
-                                                      + "mAh" : _fcMavlinkSystem.app_mah + "mAh"
+            text:  _fcMavlinkSystem.battery_consumed_mah+ "mAh"
             anchors.right: parent.right
             anchors.rightMargin: 0
             verticalAlignment: Text.AlignVCenter

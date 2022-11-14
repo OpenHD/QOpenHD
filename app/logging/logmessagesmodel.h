@@ -26,6 +26,12 @@ public:
         quint64 timestamp=0;
         QColor severity_color{0,255,0,255};
     };
+    // See https://mavlink.io/en/messages/common.html#MAV_SEVERITY
+    // We use error, warning, info and debug
+    static constexpr auto X_MAV_SEVERITY_ERROR=3;
+    static constexpr auto X_MAV_SEVERITY_WARNING=4;
+    static constexpr auto X_MAV_SEVERITY_INFO=6;
+    static constexpr auto X_MAV_SEVERITY_DEBUG=7;
 public:
     static  LogMessagesModel& instance();
     enum Roles {
@@ -39,10 +45,8 @@ public:
     int rowCount(const QModelIndex& parent= QModelIndex()) const override;
     QVariant data( const QModelIndex& index, int role = Qt::DisplayRole ) const override;
     QHash<int, QByteArray> roleNames() const override;
-    static QColor log_severity_to_color(quint8 severity){
-        return QColor{0,255,0,255};
-    }
-    void addLogMessage(const QString tag,QString message,quint8 severity);
+    static QColor log_severity_to_color(quint8 severity);
+    void addLogMessage(const QString tag,QString message,quint8 severity=X_MAV_SEVERITY_DEBUG);
     // now this is really stupid, but aparently one cannot change the model from a non qt ui thread.
     // Therefore, every time "addLogMessage" is called we emit a signal (signalAddLogMessage) that is connected to
     // do_not_call_me_addLogMessage. This way, addData is called from the UI thread (or at least I think thats whats happening,

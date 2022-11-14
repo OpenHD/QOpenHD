@@ -13,7 +13,6 @@ Settings {
     property int main_video_port: 5600
     property int pip_video_port: 5601
     property int lte_video_port: 8000
-    property int battery_cells: 3
 
     property int mavlink_sysid: 225
     property int fc_mavlink_sysid: 1
@@ -118,7 +117,6 @@ Settings {
     property double air_battery_opacity: 1
     property bool air_battery_show_voltage_current: false
     property bool air_battery_show_single_cell: false
-    property bool air_battery_show_fc_percent: false
     property double air_battery_size: 1
 
     property bool show_ground_battery: false
@@ -156,7 +154,6 @@ Settings {
     property double flight_distance_size: 1
 
     property bool show_flight_mah: true
-    property bool flight_mah_use_telemetry: true
     property double mah_opacity: 1
     property double mah_size: 1
 

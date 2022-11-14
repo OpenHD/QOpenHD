@@ -43,9 +43,14 @@ class FCMavlinkSystem : public QObject
     //
     L_RO_PROP(double, battery_current, set_battery_current, 0)
     L_RO_PROP(double, battery_voltage, set_battery_voltage, 0)
+    // legacy, not commonly supported by FCs
+    L_RO_PROP(double, battery_voltage_single_cell, set_battery_voltage_single_cell, 0)
     L_RO_PROP(int, battery_percent, set_battery_percent, 0)
     // same as battery_percent, but as an "icon"
     L_RO_PROP(QString, battery_percent_gauge, set_battery_percent_gauge, "\uf091")
+    // not directly battery, but similar
+    L_RO_PROP(int,battery_consumed_mah,set_battery_battery_consumed_mah,0)
+    L_RO_PROP(int,battery_consumed_mah_per_km,set_battery_consumed_mah_per_km,0)
     // roll, pitch and yaw
     L_RO_PROP(double, pitch, set_pitch, 0)
     L_RO_PROP(double, roll, set_roll, 0)
@@ -69,9 +74,6 @@ class FCMavlinkSystem : public QObject
     //
     L_RO_PROP(double,alt_rel,set_alt_rel,0.0)
     L_RO_PROP(double,alt_msl,set_alt_msl,0.0)
-    L_RO_PROP(int,flight_mah,set_flight_mah,0)
-    L_RO_PROP(int,app_mah,set_app_mah,0)
-    L_RO_PROP(int,mah_km,set_mah_km,0)
     //
     L_RO_PROP(double,vehicle_vx_angle,set_vehicle_vx_angle,0.0);
     L_RO_PROP(double,vehicle_vy_angle,set_vehicle_vy_angle,0.0);
@@ -98,6 +100,14 @@ class FCMavlinkSystem : public QObject
     L_RO_PROP(float,clipping_y,set_clipping_y,0.0)
     L_RO_PROP(float,clipping_z,set_clipping_z,0.0)
     L_RO_PROP(float,vsi,set_vsi,0.0)
+    //
+    // Set to true if this FC supports basic commands, like return to home usw
+    // R.N we only show those commands in the UI if this flag is set
+    // and the flag is set if the FC is PX4 or Ardupilot
+    // NOTE: this used to be done by .mav_type == "ARDUPLANE" ... in qml - please avoid that, just add another qt boolean here
+    // (for example is_copter, is_plane or similar)
+    L_RO_PROP(QString, last_ping_result_flight_ctrl,set_last_ping_result_flight_ctrl,"NA")
+    L_RO_PROP(bool,supports_basic_commands,set_supports_basic_commands,true)
 public:
     explicit FCMavlinkSystem(QObject *parent = nullptr);
     // singleton for accessing the model from c++
@@ -127,8 +137,6 @@ public:
 
     void findGcsPosition();
     void updateFlightDistance();
-    void updateAppMah();
-    void updateAppMahKm();
     void updateVehicleAngles();
     void updateWind();
 
@@ -158,17 +166,6 @@ public:
 
     Q_PROPERTY(int total_waypoints MEMBER m_total_waypoints WRITE setTotalWaypoints NOTIFY totalWaypointsChanged)
     void setTotalWaypoints(int total_waypoints);
-
-    Q_PROPERTY(QString last_ping_result_flight_ctrl MEMBER  m_last_ping_result_flight_ctrl WRITE set_last_ping_result_flight_ctrl NOTIFY last_ping_result_flight_ctrl_changed)
-    void set_last_ping_result_flight_ctrl(QString last_ping_result_flight_ctrl);
-
-    // Set to true if this FC supports basic commands, like return to home usw
-    // R.N we only show those commands in the UI if this flag is set
-    // and the flag is set if the FC is PX4 or Ardupilot
-    // NOTE: this used to be done by .mav_type == "ARDUPLANE" ... in qml - please avoid that, just add another qt boolean here
-    // (for example is_copter, is_plane or similar)
-    Q_PROPERTY(bool supports_basic_commands MEMBER  m_supports_basic_commands WRITE set_supports_basic_commands NOTIFY supports_basic_commands_changed)
-    void set_supports_basic_commands(bool supports_basic_commands);
 signals:
     // mavlink
     void armed_changed(bool armed);
@@ -180,19 +177,10 @@ signals:
     void home_heading_changed(int home_heading);
     void messageReceived(QString message, int level);
 
-    //void throttle_changed(double throttle);
-
-    void vibration_x_changed(float vibration_x);
-    void vibration_y_changed(float vibration_y);
-    void vibration_z_changed(float vibration_z);
-
     void rcChannelChanged(int channelIdx,int value);
 
     void currentWaypointChanged (int current_waypoint);
     void totalWaypointsChanged (int total_waypoints);
-
-    void last_ping_result_flight_ctrl_changed(QString last_ping_result_flight_ctrl);
-    void supports_basic_commands_changed(bool supports_basic_commands);
 public:
     // mavlink
     bool m_armed = false;
@@ -212,10 +200,6 @@ public:
     qint64 flightDistanceLastTime= 0;
     long total_dist= 0;
 
-    qint64 mahLastTime= 0;
-    qint64 mahKmLastTime= 0;
-    double total_mah= 0;
-
     QElapsedTimer totalTime;
     QElapsedTimer flightTimeStart;
 
@@ -229,8 +213,6 @@ public:
     int m_arm_disarm = 99;
 
     int m_reboot_shutdown=99;
-    QString m_last_ping_result_flight_ctrl="NA";
-    bool m_supports_basic_commands=true;
 private:
     // NOTE: Null until system discovered
     std::shared_ptr<mavsdk::System> _system=nullptr;
