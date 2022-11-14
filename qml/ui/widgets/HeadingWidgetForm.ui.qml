@@ -218,27 +218,6 @@ BaseWidget {
                 width: 230
                 height: 32
                 Text {
-                    text: qsTr("UAV is iNav < 2.6")
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Switch {
-                    width: 32
-                    height: parent.height
-                    anchors.rightMargin: 12
-                    anchors.right: parent.right
-                    checked: settings.heading_inav
-                    onCheckedChanged: settings.heading_inav = checked
-                }
-            }
-            Item {
-                width: 230
-                height: 32
-                Text {
                     text: qsTr("Show ticks")
                     color: "white"
                     height: parent.height

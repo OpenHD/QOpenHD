@@ -41,8 +41,8 @@ class FCMavlinkSystem : public QObject
     //    emit some-value_changed();
     // }
     //
-    L_RO_PROP(double, battery_current, set_battery_current, -1)
-    L_RO_PROP(double, battery_voltage, set_battery_voltage, -1)
+    L_RO_PROP(double, battery_current_ampere, set_battery_current_ampere, -1)
+    L_RO_PROP(double, battery_voltage_volt, set_battery_voltage_volt, -1)
     // legacy, not commonly supported by FCs
     L_RO_PROP(double, battery_voltage_single_cell, set_battery_voltage_single_cell, -1)
     L_RO_PROP(int, battery_percent, set_battery_percent, 0)
@@ -174,12 +174,14 @@ signals:
     void home_heading_changed(int home_heading);
     void messageReceived(QString message, int level);
 
-    void rcChannelChanged(int channelIdx,int value);
-
     void currentWaypointChanged (int current_waypoint);
     void totalWaypointsChanged (int total_waypoints);
-public:
-    // mavlink
+private:
+    // NOTE: Null until system discovered
+    std::shared_ptr<mavsdk::System> _system=nullptr;
+    std::shared_ptr<mavsdk::Action> _action=nullptr;
+    std::shared_ptr<mavsdk::Telemetry> _mavsdk_telemetry=nullptr;
+    // other members
     bool m_armed = false;
     QString m_flight_mode = "------";
 
@@ -199,7 +201,7 @@ public:
     QElapsedTimer totalTime;
     QElapsedTimer flightTimeStart;
 
-    QTimer* timer = nullptr;
+    QTimer* m_flight_time_timer = nullptr;
 
     int m_current_waypoint = 0;
     int m_total_waypoints = 0;
@@ -209,11 +211,10 @@ public:
     int m_arm_disarm = 99;
 
     int m_reboot_shutdown=99;
-private:
-    // NOTE: Null until system discovered
-    std::shared_ptr<mavsdk::System> _system=nullptr;
-    std::shared_ptr<mavsdk::Action> _action=nullptr;
-    std::shared_ptr<mavsdk::Telemetry> _mavsdk_telemetry=nullptr;
+    //
+    QTimer* m_alive_timer = nullptr;
+    qint64 m_last_heartbeat = -1;
+    void update_alive();
 public:
     //
     // Try to change the arming state. Once completed, since we listen to arm/disarm results,
@@ -222,11 +223,6 @@ public:
     Q_INVOKABLE void send_return_to_launch_async();
     Q_INVOKABLE bool send_command_reboot(bool reboot);
     // -----------------------
-public:
-    QTimer* m_alive_timer = nullptr;
-private:
-    qint64 m_last_heartbeat = -1;
-    void update_alive();
 };
 
 

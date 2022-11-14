@@ -276,7 +276,7 @@ BaseWidget {
         Text {
             id: battery_amp_text
             visible: settings.air_battery_show_voltage_current
-            text: Number(_fcMavlinkSystem.battery_current / 100.0).toLocaleString(
+            text: Number(_fcMavlinkSystem.battery_current_ampere).toLocaleString(
                       Qt.locale(), 'f', 1) + "A"
             color: settings.color_text
             anchors.bottom: battery_percent.top
@@ -297,7 +297,9 @@ BaseWidget {
             text: settings.air_battery_show_single_cell ? Number(
                                                               _fcMavlinkSystem.battery_voltage_single_cell).toLocaleString(
                                                               Qt.locale(),
-                                                              'f', 1) + "V" : Number(_fcMavlinkSystem.battery_voltage).toLocaleString(
+                                                              'f', 1) + "V" :
+                                                          Number(
+                                                              _fcMavlinkSystem.battery_voltage_volt).toLocaleString(
                                                               Qt.locale(),
                                                               'f', 1) + "V"
             color: settings.color_text

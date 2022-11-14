@@ -217,7 +217,6 @@ Settings {
     property bool show_horizon_heading_ladder: true
     property bool show_horizon_home: true
 
-    property bool heading_inav: false //shared between heading and horizon
     property bool heading_ladder_text: true //shared between heading and horizon
 
     property bool show_heading: true

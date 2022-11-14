@@ -12,6 +12,16 @@
 
 #include <logging/logmessagesmodel.h>
 
+FCMavlinkSystem::FCMavlinkSystem(QObject *parent): QObject(parent) {
+    m_flight_time_timer = new QTimer(this);
+    QObject::connect(m_flight_time_timer, &QTimer::timeout, this, &FCMavlinkSystem::updateFlightTimer);
+    m_flight_time_timer->start(1000);
+
+    m_alive_timer = new QTimer(this);
+    QObject::connect(m_alive_timer, &QTimer::timeout, this, &FCMavlinkSystem::update_alive);
+    m_alive_timer->start(1000);
+}
+
 FCMavlinkSystem& FCMavlinkSystem::instance() {
     static FCMavlinkSystem* instance = new FCMavlinkSystem();
     return *instance;
@@ -191,12 +201,9 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         case MAVLINK_MSG_ID_SYS_STATUS: {
             mavlink_sys_status_t sys_status;
             mavlink_msg_sys_status_decode(&msg, &sys_status);
-
-            auto battery_voltage = (double)sys_status.voltage_battery / 1000.0;
-            set_battery_voltage(battery_voltage);
-
-            set_battery_current(sys_status.current_battery);
-
+            const auto battery_voltage_v = (double)sys_status.voltage_battery / 1000.0;
+            set_battery_voltage_volt(battery_voltage_v);
+            set_battery_current_ampere((double)sys_status.current_battery/100.0);
             // TODO XX
             break;
         }
@@ -276,16 +283,6 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
             set_alt_rel(global_position.relative_alt/1000.0);
             // qDebug() << "Altitude relative " << alt_rel;
             set_alt_msl(global_position.alt/1000.0);
-            // FOR INAV heading does not /100
-            //MAVSDK
-            /*QSettings settings;
-            auto _heading_inav = settings.value("heading_inav", false).toBool();
-            if(_heading_inav==true){
-               set_hdg(global_position.hdg);
-            }
-            else{
-               set_hdg(global_position.hdg / 100);
-            }*/
             set_vx(global_position.vx/100.0);
             set_vy(global_position.vy/100.0);
             set_vz(global_position.vz/100.0);
@@ -405,7 +402,7 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
             const QString fc_battery_gauge_glyph = Telemetryutil::battery_gauge_glyph_from_percentage(battery_status.battery_remaining);
             set_battery_percent_gauge(fc_battery_gauge_glyph);
             // we always use the first cell
-            set_battery_voltage_single_cell(battery_status.voltages[0]);
+            set_battery_voltage_single_cell((double)battery_status.voltages[0]/1000.0);
             break;
         }
         case MAVLINK_MSG_ID_SENSOR_OFFSETS: {
@@ -522,18 +519,6 @@ std::optional<uint8_t> FCMavlinkSystem::get_fc_sys_id()
     }
     return std::nullopt;
 }
-
-FCMavlinkSystem::FCMavlinkSystem(QObject *parent): QObject(parent) {
-
-    timer = new QTimer(this);
-    QObject::connect(timer, &QTimer::timeout, this, &FCMavlinkSystem::updateFlightTimer);
-    timer->start(1000);
-
-    m_alive_timer = new QTimer(this);
-    QObject::connect(m_alive_timer, &QTimer::timeout, this, &FCMavlinkSystem::update_alive);
-    m_alive_timer->start(1000);
-}
-
 
 void FCMavlinkSystem::telemetryStatusMessage(QString message, int level) {
     //emit messageReceived(message, level);

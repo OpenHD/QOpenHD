@@ -435,30 +435,6 @@ BaseWidget {
                     onCheckedChanged: settings.heading_ladder_text = checked
                 }
             }
-            Item {
-                width: 230
-                height: 32
-                visible: settings.show_horizon_heading_ladder
-                Text {
-                    text: qsTr("UAV is iNav")
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Switch {
-                    x: 190
-                    y: 0
-                    width: 32
-                    height: parent.height
-                    anchors.rightMargin: 8
-                    anchors.right: parent.right
-                    checked: settings.heading_inav
-                    onCheckedChanged: settings.heading_inav = checked
-                }
-            }
         }
     }
 
