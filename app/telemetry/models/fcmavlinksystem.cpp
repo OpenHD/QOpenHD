@@ -571,17 +571,12 @@ void FCMavlinkSystem::set_homelat(double homelat) {
     m_homelat = homelat;
     gcs_position_set = true;
     emit homelat_changed(m_homelat);
-    QSettings settings;
-    settings.value("home_saved_lat", QVariant(0)) = m_homelat;
-
 }
 
 void FCMavlinkSystem::set_homelon(double homelon) {
     m_homelon = homelon;
     gcs_position_set = true;
     emit homelon_changed(m_homelon);
-    QSettings settings;
-    settings.value("home_saved_lon", QVariant(0)) = m_homelon;
 }
 
 void FCMavlinkSystem::calculate_home_distance() {
