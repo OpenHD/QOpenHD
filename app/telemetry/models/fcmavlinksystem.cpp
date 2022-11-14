@@ -80,7 +80,7 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
             mavlink_heartbeat_t heartbeat;
             mavlink_msg_heartbeat_decode(&msg, &heartbeat);
             const auto time_millis=QOpenHDMavlinkHelper::getTimeMilliseconds();
-            FCMavlinkSystem::instance().set_last_heartbeat(time_millis);
+            m_last_heartbeat=time_millis;
             const auto custom_mode = heartbeat.custom_mode;
             const auto autopilot = (MAV_AUTOPILOT)heartbeat.autopilot;
             //upon first heartbeat find out if autopilot is ardupilot or "other"
@@ -400,11 +400,12 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         case MAVLINK_MSG_ID_BATTERY_STATUS: {
             mavlink_battery_status_t battery_status;
             mavlink_msg_battery_status_decode(&msg, &battery_status);
-
-            FCMavlinkSystem::instance().set_battery_battery_consumed_mah(battery_status.current_consumed);
-            FCMavlinkSystem::instance().set_battery_percent(battery_status.battery_remaining);
-            QString fc_battery_gauge_glyph = Telemetryutil::battery_gauge_glyph_from_percentage(battery_status.battery_remaining);
-            FCMavlinkSystem::instance().set_battery_percent_gauge(fc_battery_gauge_glyph);
+            set_battery_battery_consumed_mah(battery_status.current_consumed);
+            set_battery_percent(battery_status.battery_remaining);
+            const QString fc_battery_gauge_glyph = Telemetryutil::battery_gauge_glyph_from_percentage(battery_status.battery_remaining);
+            set_battery_percent_gauge(fc_battery_gauge_glyph);
+            // we always use the first cell
+            set_battery_voltage_single_cell(battery_status.voltages[0]);
             break;
         }
         case MAVLINK_MSG_ID_SENSOR_OFFSETS: {
@@ -603,12 +604,6 @@ void FCMavlinkSystem::set_flight_mode(QString flight_mode) {
     QOpenHD::instance().textToSpeech_sayMessage(message);
     m_flight_mode = flight_mode;
     emit flight_mode_changed(m_flight_mode);
-}
-
-void FCMavlinkSystem::set_mav_type(QString mav_type) {
-    if(m_mav_type==mav_type)return;
-    m_mav_type = mav_type;
-    emit mav_type_changed(m_mav_type);
 }
 
 void FCMavlinkSystem::set_homelat(double homelat) {
@@ -976,12 +971,6 @@ bool FCMavlinkSystem::send_command_reboot(bool reboot)
         }
     }
     return false;
-}
-
-void FCMavlinkSystem::set_last_heartbeat(qint64 last_heartbeat)
-{
-    m_last_heartbeat = last_heartbeat;
-    emit last_heartbeat_changed(m_last_heartbeat);
 }
 
 void FCMavlinkSystem::update_alive()

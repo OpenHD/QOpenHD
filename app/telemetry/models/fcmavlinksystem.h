@@ -41,16 +41,16 @@ class FCMavlinkSystem : public QObject
     //    emit some-value_changed();
     // }
     //
-    L_RO_PROP(double, battery_current, set_battery_current, 0)
-    L_RO_PROP(double, battery_voltage, set_battery_voltage, 0)
+    L_RO_PROP(double, battery_current, set_battery_current, -1)
+    L_RO_PROP(double, battery_voltage, set_battery_voltage, -1)
     // legacy, not commonly supported by FCs
-    L_RO_PROP(double, battery_voltage_single_cell, set_battery_voltage_single_cell, 0)
+    L_RO_PROP(double, battery_voltage_single_cell, set_battery_voltage_single_cell, -1)
     L_RO_PROP(int, battery_percent, set_battery_percent, 0)
     // same as battery_percent, but as an "icon"
     L_RO_PROP(QString, battery_percent_gauge, set_battery_percent_gauge, "\uf091")
     // not directly battery, but similar
-    L_RO_PROP(int,battery_consumed_mah,set_battery_battery_consumed_mah,0)
-    L_RO_PROP(int,battery_consumed_mah_per_km,set_battery_consumed_mah_per_km,0)
+    L_RO_PROP(int,battery_consumed_mah,set_battery_battery_consumed_mah,-1)
+    L_RO_PROP(int,battery_consumed_mah_per_km,set_battery_consumed_mah_per_km,-1)
     // roll, pitch and yaw
     L_RO_PROP(double, pitch, set_pitch, 0)
     L_RO_PROP(double, roll, set_roll, 0)
@@ -101,6 +101,7 @@ class FCMavlinkSystem : public QObject
     L_RO_PROP(float,clipping_z,set_clipping_z,0.0)
     L_RO_PROP(float,vsi,set_vsi,0.0)
     //
+    L_RO_PROP(QString,mav_type,set_mav_type,"UNKNOWN");
     // Set to true if this FC supports basic commands, like return to home usw
     // R.N we only show those commands in the UI if this flag is set
     // and the flag is set if the FC is PX4 or Ardupilot
@@ -152,9 +153,6 @@ public:
     Q_PROPERTY(QString flight_mode MEMBER m_flight_mode WRITE set_flight_mode NOTIFY flight_mode_changed)
     void set_flight_mode(QString flight_mode);
 
-    Q_PROPERTY(QString mav_type MEMBER m_mav_type WRITE set_mav_type NOTIFY mav_type_changed)
-    void set_mav_type(QString mav_type);
-
     Q_PROPERTY(double homelat MEMBER m_homelat WRITE set_homelat NOTIFY homelat_changed)
     void set_homelat(double homelat);
 
@@ -170,7 +168,6 @@ signals:
     // mavlink
     void armed_changed(bool armed);
     void flight_mode_changed(QString flight_mode);
-    void mav_type_changed(QString mav_type);
     void homelat_changed(double homelat);
     void homelon_changed(double homelon);
     void home_course_changed(int home_course);
@@ -185,7 +182,6 @@ public:
     // mavlink
     bool m_armed = false;
     QString m_flight_mode = "------";
-    QString m_mav_type = "UNKOWN";
 
     double m_homelat = 0.0;
     double m_homelon = 0.0;
@@ -227,15 +223,9 @@ public:
     Q_INVOKABLE bool send_command_reboot(bool reboot);
     // -----------------------
 public:
-    Q_PROPERTY(qint64 last_heartbeat MEMBER m_last_heartbeat WRITE set_last_heartbeat NOTIFY last_heartbeat_changed)
-    void set_last_heartbeat(qint64 last_heartbeat);
-public:
-    qint64 m_last_heartbeat = -1;
     QTimer* m_alive_timer = nullptr;
-signals:
-    void last_heartbeat_changed(qint64 last_heartbeat);
-    void is_alive_changed(bool alive);
 private:
+    qint64 m_last_heartbeat = -1;
     void update_alive();
 };
 
