@@ -98,8 +98,10 @@ echo "build with make done"
 cp release/QOpenHD /tmp/qopenhd/usr/local/bin/ || exit 1
 ls -a
 # included in the same package since it's sharing code and not independently versioned
-
+if [[ "${PACKAGE_ARCH}" != "x86_64" ]]; then
 cp systemd/* /tmp/qopenhd/etc/systemd/system/ || exit 1
+fi
+
 cp qt.json /tmp/qopenhd/usr/local/share/openhd/ || exit 1
 
 if [ "${BUILD_TYPE}" == "legacy" ]; then
