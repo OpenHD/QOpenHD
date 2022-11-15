@@ -7,6 +7,7 @@ import Qt.labs.settings 1.0
 
 import OpenHD 1.0
 
+// Contains the selector on the left and a stack view for the panels on the right
 Rectangle {
     id: settings_form
 

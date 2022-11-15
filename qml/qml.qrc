@@ -33,7 +33,6 @@
         <file>ui/delegates/SwitchSettingDelegate.ui.qml</file>
         <file>ui/delegates/NumberSettingDelegate.ui.qml</file>
         <file>ui/delegates/ChoiceSettingDelegate.ui.qml</file>
-        <file>ui/SettingsMap.qml</file>
         <file>ui/delegates/RangeSettingDelegate.ui.qml</file>
         <file>ui/widgets/MessageHUDForm.ui.qml</file>
         <file>ui/widgets/MessageHUD.qml</file>
@@ -83,7 +82,6 @@
         <file>ui/elements/SlideSwitch.qml</file>
         <file>ui/widgets/GroundPowerWidget.qml</file>
         <file>ui/widgets/GroundPowerWidgetForm.ui.qml</file>
-        <file>ui/PresetMap.qml</file>
         <file>ui/elements/ColoredCheckboxForm.ui.qml</file>
         <file>ui/elements/ColoredCheckbox.qml</file>
         <file>ui/widgets/GPIOWidget.qml</file>
