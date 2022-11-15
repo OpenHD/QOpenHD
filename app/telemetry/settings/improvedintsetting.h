@@ -9,10 +9,8 @@
 #include <sstream>
 
 
-// This is a "one type fits all class" where we can make changing specific setting(s)
+// This is a "one type fits many class" where we can make changing specific int setting(s)
 // more comfortable for the user.
-// Int: We can either specify a range (min and max value) or we can additionally make this an enum
-
 // Int parameters can have a range ([min_value,max_value] or even refer to an enum -
 // in which case they have a range and also expose the functionality to convert an int value (e.g. a value that
 // is not verbose to the user) into a string that is verbose to the user, or the other way around.

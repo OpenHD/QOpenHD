@@ -157,7 +157,7 @@ static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string&
 static std::optional<ImprovedStringSetting> get_improved_for_string(const std::string param_id){
     std::map<std::string,ImprovedStringSetting> map_improved_params;
     const auto choices_video_res_framerate=std::vector<std::string>{
-            "640x480@30XX",
+            "640x480@30",
             "640x480@60",
             "640x480@90",
             "1280x720@30",
