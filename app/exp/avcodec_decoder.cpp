@@ -482,11 +482,11 @@ int AVCodecDecoder::open_and_decode_until_error(const QOpenHDVideoHelper::VideoS
     qDebug()<<"done avformat_find_stream_info";
     int ret=0;
     // find the video stream information
-    #if LIBAVFORMAT_VERSION_MAJOR <= 59 && LIBAVFORMAT_VERSION_MICRO < 100
+#ifdef LIBAVFORMAT_VERSION_MAJOR <= 59 && LIBAVFORMAT_VERSION_MICRO < 100
         ret = av_find_best_stream(input_ctx, AVMEDIA_TYPE_VIDEO, -1, -1,(AVCodec**) &decoder, 0);
-    #else
+#else
         ret = av_find_best_stream(input_ctx, AVMEDIA_TYPE_VIDEO, -1, -1,(const AVCodec**) &decoder, 0);
-    #endif
+#endif
     if (ret < 0) {
         qDebug()<< "Cannot find a video stream in the input file";
         avformat_close_input(&input_ctx);
