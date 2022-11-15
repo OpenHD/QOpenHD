@@ -26,6 +26,8 @@ Rectangle {
     // We set a the ground pi instance as default (such that the qt editor code completion helps us a bit),
     // but this should be replaced by the proper instance for air or camera
     property var m_instanceMavlinkSettingsModel: _groundPiSettingsModel
+    // figure out if the system is alive
+    property var m_instanceCheckIsAvlie: _ohdSystemGround
 
     property string m_name: "undefined"
 
@@ -73,7 +75,7 @@ Rectangle {
         anchors.top: parent.top
         id: fetchAllButtonId
         text:"ReFetch All "+m_name
-        enabled: _ohdSystemAir.is_alive
+        enabled: m_instanceCheckIsAvlie.is_alive
         onClicked: {
             parameterEditor.visible=false
             var result=m_instanceMavlinkSettingsModel.try_fetch_all_parameters()

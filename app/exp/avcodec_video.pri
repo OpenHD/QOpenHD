@@ -31,7 +31,8 @@ HEADERS += \
     $$PWD/udp/UDPReceiver.h \
 
 # Search for mmal at compile time, when found, we can do the "best" path video to display on rpi -
-# note that you have to use a config with fkms for mmal to work !
+# note that you then have to use a /boot/config.txt with fkms for mmal to work (default in OpenHD image,
+# but not in raspbian)
 CONFIG += link_pkgconfig
 packagesExist(mmal) {
    PKGCONFIG += mmal
@@ -51,14 +52,15 @@ mmal {
 
     DEFINES += HAVE_MMAL
 
-    SOURCES += app/exp/mmal/rpimmaldisplay.cpp \
-        app/exp/mmal/rpimmaldecoder.cpp \
-        app/exp/mmal/rpimmaldecodedisplay.cpp \
+    SOURCES += \
+         $$PWD/mmal/rpimmaldisplay.cpp \
+         $$PWD/mmal/rpimmaldecoder.cpp \
+         $$PWD/mmal/rpimmaldecodedisplay.cpp \
 
     HEADERS += \
-        app/exp/mmal/rpimmaldisplay.h \
-        app/exp/mmal/rpimmaldecoder.h \
-        app/exp/mmal/rpimmaldecodedisplay.h \
+         $$PWD/mmal/rpimmaldisplay.h \
+         $$PWD/mmal/rpimmaldecoder.h \
+         $$PWD/mmal/rpimmaldecodedisplay.h \
 }
 # can be used in c++, also set to be exposed in qml
 DEFINES += QOPENHD_ENABLE_VIDEO_VIA_AVCODEC
