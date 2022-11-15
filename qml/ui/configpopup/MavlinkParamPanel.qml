@@ -13,17 +13,13 @@ import OpenHD 1.0
 import "../../ui" as Ui
 import "../elements"
 
-// Temporary dummy
+// Contains a list of all the settings on the left, and opens up a parameter editor instance on
+// the right if the user wants to edit any mavlink settings
 Rectangle {
 
     Layout.fillHeight: true
     Layout.fillWidth: true
 
-    //width: parent.width
-    //height: 600
-
-    property int rowHeight: 64
-    property int elementHeight: 48
 
     property int paramEditorWidth: 300
 
@@ -60,8 +56,10 @@ Rectangle {
                 Button {
                     text: "EDIT"
                     onClicked: {
+                        // this initializes and opens up the param editor
                         parameterEditor.setup_for_parameter(model.unique_id,model)
                     }
+                    // gray out the button for read-only params
                     enabled: !model.read_only
                 }
             }
@@ -69,46 +67,46 @@ Rectangle {
     }
 
 
-    // Left row: multiple colums of param value
-    ColumnLayout {
-        width: parent.width - paramEditorWidth
-        height:parent.height
-
-        Button {
-            width: 100
-            height: 48
-            id: fetchAllButtonId
-            text:"ReFetch All "+m_name
-            enabled: _ohdSystemAir.is_alive
-            onClicked: {
-                parameterEditor.visible=false
-                var result=m_instanceMavlinkSettingsModel.try_fetch_all_parameters()
-                if(!result){
-                     _messageBoxInstance.set_text_and_show("Fetch all failed, please try again")
-                }
-            }
-        }
-        Rectangle{
-            width:parent.width
-            height: parent.height-64
-
-            ScrollView{
-                anchors.fill: parent
-                ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
-                ScrollBar.vertical.policy: ScrollBar.AlwaysOn
-
-                ListView {
-                    id: listView
-                    //top: fetchAllButtonId.bottom
-                    width: parent.width
-                    model: m_instanceMavlinkSettingsModel
-                    delegate: delegateCamera0SettingsValue
-                }
+    // Refetch all button
+    Button {
+        height: 48
+        anchors.top: parent.top
+        id: fetchAllButtonId
+        text:"ReFetch All "+m_name
+        enabled: _ohdSystemAir.is_alive
+        onClicked: {
+            parameterEditor.visible=false
+            var result=m_instanceMavlinkSettingsModel.try_fetch_all_parameters()
+            if(!result){
+                 _messageBoxInstance.set_text_and_show("Fetch all failed, please try again")
             }
         }
     }
 
-    // Right row: the parameter edit element
+    // Left part: multiple colums of param value
+    Rectangle{
+        id: scrollViewRectangle
+        width: parent.width - paramEditorWidth
+        height: parent.height-64
+        anchors.top: fetchAllButtonId.bottom
+        anchors.bottom: parent.bottom
+
+        ScrollView{
+            anchors.fill: parent
+            ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+            ScrollBar.vertical.policy: ScrollBar.AlwaysOn
+
+            ListView {
+                id: listView
+                //top: fetchAllButtonId.bottom
+                width: parent.width
+                model: m_instanceMavlinkSettingsModel
+                delegate: delegateCamera0SettingsValue
+            }
+        }
+    }
+
+    // Right part: the parameter edit element
     MavlinkParamEditor{
         id: parameterEditor
         total_width: paramEditorWidth
