@@ -82,7 +82,7 @@ public:
         // A description for this parameter. Not all parameters are documented yet, in this case this will return "TODO"
         ShortDescriptionRole,
         // Weather this parameter is read-only (we repurpose the malink parameter protocoll in this regard here)
-        // Default true, only if a parameter is in the read-only whitelist it is marked as read-only
+        // Default false, only if a parameter is in the read-only whitelist it is marked as read-only
         ReadOnlyRole
     };
     int rowCount(const QModelIndex& parent= QModelIndex()) const override;

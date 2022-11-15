@@ -33,7 +33,8 @@ Rectangle {
 
         Text {
             id: decr
-            text: qsTr("Values read by OpenHD (not QOpenHD) from your Joystick RC if enabled. range: 1000-2000, unused:65535")
+            text: qsTr("Values read by OpenHD (not QOpenHD) from your Joystick RC if enabled.\nrange: 1000-2000(pwm), unused:65535, not set:-1")
+            width:parent.width
         }
 
         Text {
