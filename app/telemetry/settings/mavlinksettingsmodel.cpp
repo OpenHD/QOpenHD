@@ -1,11 +1,12 @@
 #include "mavlinksettingsmodel.h"
 #include "qdebug.h"
 #include "../openhd_defines.hpp"
-//temporary
 #include "../models/aohdsystem.h"
 
 #include "../../util/WorkaroundMessageBox.h"
 #include "improvedintsetting.h"
+#include "improvedstringsetting.h"
+
 #include <QSettings>
 #include <QVariant>
 
@@ -67,7 +68,7 @@ bool MavlinkSettingsModel::is_param_read_only(const std::string param_id)const
     return ret;
 }
 
-static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string param_id){
+static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string& param_id){
     std::map<std::string,ImprovedIntSetting> map_improved_params;
     map_improved_params["TEST_INT_0"]=ImprovedIntSetting::createEnumEnableDisable();
     map_improved_params["ENABLE_JOY_RC"]=ImprovedIntSetting::createEnumEnableDisable();
@@ -147,6 +148,23 @@ static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string 
         map_improved_params["CONFIG_BOOT_AIR"]=ImprovedIntSetting::createEnumEnableDisable();
         map_improved_params["I_WIFI_HOTSPOT_E"]=ImprovedIntSetting::createEnumEnableDisable();
     }
+    if(map_improved_params.find(param_id)!=map_improved_params.end()){
+        return map_improved_params[param_id];
+    }
+    return std::nullopt;
+}
+
+static std::optional<ImprovedStringSetting> get_improved_for_string(const std::string param_id){
+    std::map<std::string,ImprovedStringSetting> map_improved_params;
+    const auto choices_video_res_framerate=std::vector<std::string>{
+            "640x480@30XX",
+            "640x480@60",
+            "640x480@90",
+            "1280x720@30",
+            "1280x720@60",
+            "1920x1080@30",
+    };
+    map_improved_params["V_FORMAT"]=ImprovedStringSetting::create_from_keys_only(choices_video_res_framerate);
     if(map_improved_params.find(param_id)!=map_improved_params.end()){
         return map_improved_params[param_id];
     }
@@ -548,6 +566,38 @@ QList<int> MavlinkSettingsModel::int_param_get_enum_values(QString param_id) con
     }
     qDebug()<<"Error no enum mapping for this int param";
     QList<int> ret{0};
+    return ret;
+}
+
+
+bool MavlinkSettingsModel::string_param_has_enum(QString param_id) const
+{
+    const auto improved_opt=get_improved_for_string(param_id.toStdString());
+    if(improved_opt.has_value()){
+        return true;
+    }
+    return false;
+}
+
+QStringList MavlinkSettingsModel::string_param_get_enum_keys(QString param_id) const
+{
+    const auto improved_opt=get_improved_for_string(param_id.toStdString());
+    if(improved_opt.has_value()){
+        return improved_opt->enum_keys();
+    }
+    qDebug()<<"Error no enum mapping for this int param";
+    QStringList ret{"ERROR_KEYS"};
+    return ret;
+}
+
+QStringList MavlinkSettingsModel::string_param_get_enum_values(QString param_id) const
+{
+    const auto improved_opt=get_improved_for_string(param_id.toStdString());
+    if(improved_opt.has_value()){
+        return improved_opt->enum_values();
+    }
+    qDebug()<<"Error no enum mapping for this int param";
+    QStringList ret{"ERROR_VALUES"};
     return ret;
 }
 

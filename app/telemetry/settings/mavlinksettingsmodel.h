@@ -119,6 +119,12 @@ public:
     // Should only be called when we actually have an enum mapping for this param
     Q_INVOKABLE QStringList int_param_get_enum_keys(QString param_id)const;
     Q_INVOKABLE QList<int> int_param_get_enum_values(QString param_id)const;
+
+    // similar to above, find a better solution
+    Q_INVOKABLE bool string_param_has_enum(QString param_id)const;
+    Q_INVOKABLE QStringList string_param_get_enum_keys(QString param_id)const;
+    Q_INVOKABLE QStringList string_param_get_enum_values(QString param_id)const;
+
     // For some parameters, we have a string that is displayed to the user when he wants to edit this param
     // just too be sure he understands the risks
     // When there is no need for a warning, this method just returns an empty string

@@ -64,10 +64,6 @@ Rectangle{
         return paramValueType==1;
     }
 
-    function holds_string_value_type_video_resoltuion_framerate(){
-        return paramValueType==1 && parameterId=="V_FORMAT"
-    }
-
     function get_param_type_readable(){
         if(holds_int_value())return "(int)"
         return "(string)"
@@ -106,7 +102,7 @@ Rectangle{
         checkBoxEnableAdvanced.checked=false
         enableAdvanced=false;
         // disable by default, enable only in case it is needed
-        comboBoxPredefinedInputVideoResolutionFramerate.visible=false
+        stringEnumDynamicComboBox.visible=false
         // set param id and the value type this param holds
         parameterId=param_id;
         paramValueType=model.valueType
@@ -124,23 +120,8 @@ Rectangle{
         }else{
             // This is a string param
             paramValueString=model.value
+            paramValueInt=-1
             paramExtraValueInt= "Do not use me !!!!"
-            // Temporary, we have a string input where we also have a couple of predefined inputs
-            if(holds_string_value_type_video_resoltuion_framerate()){
-                var currently_selected_index=-1;
-                 for (var i = 0; i < videoResolutionFrameratePresets.count; i++) {
-                     var title=videoResolutionFrameratePresets.get(i).title;
-                     console.log("Title:"+title);
-                     if(title===paramValueString){
-                         currently_selected_index=i;
-                     }
-                 }
-                 console.log("currently_selected_index:"+currently_selected_index);
-                 if(currently_selected_index!=-1){
-                     comboBoxPredefinedInputVideoResolutionFramerate.currentIndex=currently_selected_index;
-                 }
-                comboBoxPredefinedInputVideoResolutionFramerate.visible=true
-            }
         }
         setup_spin_box_int_param()
         setup_text_input_string_param()
@@ -152,7 +133,7 @@ Rectangle{
         if(holds_int_value()){
             // If we can treat this int value as an enum, this is the most verbose for the user
              if(instanceMavlinkSettingsModel.int_param_has_enum_keys_values(parameterId)){
-                 console.log("Int parameter has int enum mapping")
+                 console.log(parameterId+" has int enum mapping")
                  spinBoxInputParamtypeInt.visible=false
                  intEnumDynamicComboBox.visible=true
                  // Populate the model with the key,value pairs for this enum
@@ -172,6 +153,7 @@ Rectangle{
                  if(currently_selected_index==-1){
                      // We are missing a description for this int value, add row
                      var new_key="Unknown("+paramValueInt+")"
+                     console.log("Adding missing dummy description :"+new_key+" "+paramValueInt)
                      intEnumDynamicListModel.append({title: new_key, value: paramValueInt})
                      currently_selected_index=intEnumDynamicListModel.count-1
                  }
@@ -195,10 +177,38 @@ Rectangle{
     // for string params we use the text input
     function setup_text_input_string_param(){
         if(holds_string_value()){
+            if(instanceMavlinkSettingsModel.string_param_has_enum(parameterId)){
+                console.log(parameterId+" has string enum mapping")
+                // Populate the model with the key,value pairs for this enum
+                const keys=instanceMavlinkSettingsModel.string_param_get_enum_keys(parameterId)
+                const values=instanceMavlinkSettingsModel.string_param_get_enum_values(parameterId);
+                stringEnumDynamicListModel.clear();
+                var currently_selected_index=-1;
+                for (var i = 0; i < keys.length; i++) {
+                    var key=keys[i];
+                    var value=values[i];
+                    console.log(key,value);
+                    stringEnumDynamicListModel.append({title: key, value: value})
+                    if(value===paramValueString){
+                        currently_selected_index=i;
+                    }
+                }
+                console.log("currently_selected_index:"+currently_selected_index);
+                if(currently_selected_index==-1){
+                    var new_key="{"+paramValueString+"}"
+                    console.log("Adding missing dummy description :"+new_key+" "+paramValueString)
+                    stringEnumDynamicListModel.append({title: new_key, value: paramValueString})
+                    currently_selected_index=stringEnumDynamicListModel.count-1
+                }
+                stringEnumDynamicComboBox.currentIndex=currently_selected_index
+                console.log("Curr index:",currently_selected_index);
+                stringEnumDynamicComboBox.visible=true;
+            }
             textInputParamtypeString.visible=true
             textInputParamtypeString.text= paramValueString
         }else{
             textInputParamtypeString.visible=false
+            stringEnumDynamicComboBox.visible=false
         }
     }
 
@@ -210,15 +220,14 @@ Rectangle{
         spacing: 10
 
         Label{
-            width: total_width
             height: customHeight
             text: "Parameter editor"
-            horizontalAlignment: Qt.AlignCenter
             font.bold: true
+            horizontalAlignment: Qt.AlignCenter
+            Layout.alignment: Qt.AlignCenter
         }
 
         Label{
-            //width: total_width
             height:customHeight
             text: qsTr(parameterId+" "+get_param_type_readable())
             horizontalAlignment: Qt.AlignCenter
@@ -229,9 +238,9 @@ Rectangle{
             width: total_width
             height:customHeight
             id: textDescription
+            text: qsTr("Description: "+shortParamDescription)
             //horizontalAlignment: Qt.AlignCenter
             horizontalAlignment: Text.AlignHCenter
-            text: qsTr("Description: "+shortParamDescription)
             Layout.alignment: Qt.AlignCenter
         }
 
@@ -278,46 +287,44 @@ Rectangle{
         // Type int only end --------------------------
 
         // Type string only begin --------------------------
-        // temporary, todo refactor me
+        // if we have a mapping / pre-selected recommended choices
         ListModel{
-             id: videoResolutionFrameratePresets
-             ListElement {title: "640x480@30"; value: 0}
-             ListElement {title: "640x480@60"; value: 1}
-             ListElement {title: "640x480@90"; value: 2}
-             ListElement {title: "1280x720@30"; value: 3}
-             ListElement {title: "1280x720@60"; value: 4}
-             ListElement {title: "1920x1080@30"; value: 5}
+             id: stringEnumDynamicListModel
+             ListElement {title: "I SHOULD NEVER APPEAR"; value:"ERROR"}
         }
 
         ComboBox {
-            id: comboBoxPredefinedInputVideoResolutionFramerate
+            id: stringEnumDynamicComboBox
             height: customHeight
             font.pixelSize: 14
             Layout.alignment: Qt.AlignCenter
-            model: videoResolutionFrameratePresets
+            model: stringEnumDynamicListModel
             textRole: "title"
             Layout.minimumWidth : total_width*0.8
             onCurrentIndexChanged: {
-                var current=videoResolutionFrameratePresets.get(currentIndex).title
-                //console.debug(current)
-                textInputParamtypeString.text=current
+                console.debug("currentIndex:"+currentIndex)
+                if(currentIndex>=0){
+                    // no idea why this is needed
+                    const new_param_value=stringEnumDynamicListModel.get(currentIndex).value
+                    console.debug("new_param_value:"+new_param_value)
+                    textInputParamtypeString.text=new_param_value
+                }
             }
-            visible:holds_string_value_type_video_resoltuion_framerate()
+            visible:false
         }
 
-        // if holds string
+        // for strings, we always show the text input
         TextInput{
             id: textInputParamtypeString
             horizontalAlignment: Qt.AlignCenter
             height: customHeight
             text: paramValueString
             cursorVisible: false
-            visible: holds_string_value()
+            visible: false
             Layout.alignment: Qt.AlignCenter
         }
         // Type string only end --------------------------
-
-//Value edit part end
+        //Value edit part end
 
         RowLayout{
             width:parent.width
