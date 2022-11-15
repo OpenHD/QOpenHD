@@ -100,6 +100,8 @@ SOURCES += \
     app/telemetry/models/aohdsystem.cpp \
     app/qopenhd.cpp \
     app/telemetry/models/rcchannelsmodel.cpp \
+    app/telemetry/settings/improvedintsetting.cpp \
+    app/telemetry/settings/improvedstringsetting.cpp \
     app/telemetry/settings/synchronizedsettings.cpp \
     app/util/WorkaroundMessageBox.cpp \
     app/util/qrenderstats.cpp \
@@ -115,7 +117,8 @@ HEADERS += \
     app/qopenhd.h \
     app/telemetry/openhd_defines.hpp \
     app/telemetry/qopenhdmavlinkhelper.hpp \
-    app/telemetry/settings/improvedintsetting.hpp \
+    app/telemetry/settings/improvedintsetting.h \
+    app/telemetry/settings/improvedstringsetting.h \
     app/telemetry/settings/synchronizedsettings.h \
     app/telemetry/telemetryutil.hpp \
     app/util/WorkaroundMessageBox.h \

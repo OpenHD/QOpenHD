@@ -5,7 +5,7 @@
 #include "../models/aohdsystem.h"
 
 #include "../../util/WorkaroundMessageBox.h"
-#include "improvedintsetting.hpp"
+#include "improvedintsetting.h"
 #include <QSettings>
 #include <QVariant>
 
