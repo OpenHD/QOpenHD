@@ -363,8 +363,8 @@ Rectangle {
             id: appSettingsPanel
         }
 
-        OHDComponentSettings {
-            id:  oHDComponentSettings
+        MavlinkAllSettingsPanel {
+            id:  mavlinkAllSettingsPanel
         }
 
         LogMessagesStatusView{

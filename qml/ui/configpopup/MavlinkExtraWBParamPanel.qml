@@ -12,6 +12,8 @@ import OpenHD 1.0
 
 import "../../ui" as Ui
 import "../elements"
+
+// Dirty, for the 3 mavlink settings that need to be kept in sync on both air and ground
 ColumnLayout {
     Layout.fillHeight: true
     Layout.fillWidth: true

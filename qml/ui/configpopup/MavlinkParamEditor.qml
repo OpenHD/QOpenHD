@@ -78,8 +78,8 @@ Rectangle{
         if(enableAdvanced){
             return -2147483648;
         }
-        if(instanceMavlinkSettingsModel.has_int_enum_mapping(parameterId)){
-            return instanceMavlinkSettingsModel.int_enum_get_min(parameterId);
+        if(instanceMavlinkSettingsModel.int_param_has_min_max(parameterId)){
+            return instanceMavlinkSettingsModel.int_param_get_min_value(parameterId);
         }
         // r.n all int params are unsigend
         return 0;
@@ -89,8 +89,8 @@ Rectangle{
         if(enableAdvanced){
             return 2147483647;
         }
-        if(instanceMavlinkSettingsModel.has_int_enum_mapping(parameterId)){
-            return instanceMavlinkSettingsModel.int_enum_get_max(parameterId);
+        if(instanceMavlinkSettingsModel.int_param_has_min_max(parameterId)){
+            return instanceMavlinkSettingsModel.int_param_get_max_value(parameterId);
         }
         return 2147483647;
     }
@@ -151,13 +151,13 @@ Rectangle{
     function setup_spin_box_int_param(){
         if(holds_int_value()){
             // If we can treat this int value as an enum, this is the most verbose for the user
-             if(instanceMavlinkSettingsModel.has_int_enum_mapping(parameterId)){
+             if(instanceMavlinkSettingsModel.int_param_has_enum_keys_values(parameterId)){
                  console.log("Int parameter has int enum mapping")
                  spinBoxInputParamtypeInt.visible=false
                  intEnumDynamicComboBox.visible=true
                  // Populate the model with the key,value pairs for this enum
-                 const keys=instanceMavlinkSettingsModel.get_enum_keys_for_int_param(parameterId)
-                 const values=instanceMavlinkSettingsModel.get_enum_values_for_int_param(parameterId);
+                 const keys=instanceMavlinkSettingsModel.int_param_get_enum_keys(parameterId)
+                 const values=instanceMavlinkSettingsModel.int_param_get_enum_values(parameterId);
                  intEnumDynamicListModel.clear()
                  var currently_selected_index=-1;
                  for (var i = 0; i < keys.length; i++) {

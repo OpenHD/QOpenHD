@@ -467,17 +467,6 @@ void MavlinkSettingsModel::addData(MavlinkSettingsModel::SettingData data)
     endInsertRows();
 }
 
-bool MavlinkSettingsModel::has_int_enum_mapping(QString param_id)const
-{
-    const auto improved_opt=get_improved_for_int(param_id.toStdString());
-    if(improved_opt.has_value()){
-        if(improved_opt->has_enum_mapping()){
-            return true;
-        }
-    }
-    return false;
-}
-
 QString MavlinkSettingsModel::int_enum_get_readable(QString param_id, int value)const
 {
     auto as_enum=int_param_to_enum_string_if_known(param_id.toStdString(),value);
@@ -489,7 +478,17 @@ QString MavlinkSettingsModel::int_enum_get_readable(QString param_id, int value)
     return QString(ss.str().c_str());
 }
 
-int MavlinkSettingsModel::int_enum_get_max(QString param_id)const
+bool MavlinkSettingsModel::int_param_has_min_max(QString param_id) const
+{
+    const auto improved_opt=get_improved_for_int(param_id.toStdString());
+    if(improved_opt.has_value()){
+        // min max is a requirement for int param
+        return true;
+    }
+    return false;
+}
+
+int MavlinkSettingsModel::int_param_get_min_value(QString param_id)const
 {
     const auto improved_opt=get_improved_for_int(param_id.toStdString());
     if(improved_opt.has_value()){
@@ -500,7 +499,7 @@ int MavlinkSettingsModel::int_enum_get_max(QString param_id)const
     return 2147483647;
 }
 
-int MavlinkSettingsModel::int_enum_get_min(QString param_id)const
+int MavlinkSettingsModel::int_param_get_max_value(QString param_id)const
 {
     const auto improved_opt=get_improved_for_int(param_id.toStdString());
     if(improved_opt.has_value()){
@@ -511,7 +510,18 @@ int MavlinkSettingsModel::int_enum_get_min(QString param_id)const
     return -2147483648;
 }
 
-QStringList MavlinkSettingsModel::get_enum_keys_for_int_param(QString param_id) const
+bool MavlinkSettingsModel::int_param_has_enum_keys_values(QString param_id)const
+{
+    const auto improved_opt=get_improved_for_int(param_id.toStdString());
+    if(improved_opt.has_value()){
+        if(improved_opt->has_enum_mapping()){
+            return true;
+        }
+    }
+    return false;
+}
+
+QStringList MavlinkSettingsModel::int_param_get_enum_keys(QString param_id) const
 {
     const auto improved_opt=get_improved_for_int(param_id.toStdString());
     if(improved_opt.has_value()){
@@ -519,13 +529,15 @@ QStringList MavlinkSettingsModel::get_enum_keys_for_int_param(QString param_id) 
         if(improved.has_enum_mapping()){
             return improved.int_enum_keys();
         }
+        qDebug()<<"Error no enum mapping for this int param";
+    }else{
+        qDebug()<<"Error not an int param";
     }
-    qDebug()<<"Error no enum mapping for this int param";
     QStringList ret{"Err(0)"};
     return ret;
 }
 
-QList<int> MavlinkSettingsModel::get_enum_values_for_int_param(QString param_id) const
+QList<int> MavlinkSettingsModel::int_param_get_enum_values(QString param_id) const
 {
     const auto improved_opt=get_improved_for_int(param_id.toStdString());
     if(improved_opt.has_value()){

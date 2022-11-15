@@ -188,7 +188,6 @@
         <file>ui/widgets/MissionWidgetForm.ui.qml</file>
         <file>ui/widgets/MissionWidget.qml</file>
         <file>ui/delegates/BoolSwitchSettingDelegate.ui.qml</file>
-        <file>ui/configpopup/X1_AirSystemSettingsPanel.qml</file>
         <file>ui/configpopup/PowerPanelForm.ui.qml</file>
         <file>ui/configpopup/PowerPanel.qml</file>
         <file>ui/configpopup/AppSettingsPanel.qml</file>
@@ -201,11 +200,10 @@
         <file>resources/Font Awesome 5 Free-Solid-900.otf</file>
         <file>video/MainVideoGStreamer.qml</file>
         <file>ui/configpopup/LogMessagesStatusView.qml</file>
-        <file>ui/configpopup/OHDComponentSettings.qml</file>
-        <file>ui/configpopup/X2_GroundSystemSettingsPanel.qml</file>
-        <file>ui/configpopup/X0_AirCameraSettingsPanel.qml</file>
-        <file>ui/configpopup/XX_WBLinkSettings.qml</file>
-        <file>ui/configpopup/ParameterEditor.qml</file>
+        <file>ui/configpopup/MavlinkAllSettingsPanel.qml</file>
+        <file>ui/configpopup/MavlinkParamPanel.qml</file>
+        <file>ui/configpopup/MavlinkExtraWBParamPanel.qml</file>
+        <file>ui/configpopup/MavlinkParamEditor.qml</file>
         <file>ui/configpopup/AppDeveloperStatsPanel.qml</file>
         <file>ui/widgets/QRenderStatsWidget.qml</file>
         <file>ui/widgets/QRenderStatsWidgetForm.ui.qml</file>

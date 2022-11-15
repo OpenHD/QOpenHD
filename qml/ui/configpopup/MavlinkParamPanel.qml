@@ -27,6 +27,12 @@ Rectangle {
 
     property int paramEditorWidth: 300
 
+    // We set a the ground pi instance as default (such that the qt editor code completion helps us a bit),
+    // but this should be replaced by the proper instance for air or camera
+    property var m_instanceMavlinkSettingsModel: _groundPiSettingsModel
+
+    property string m_name: "undefined"
+
 
     Component {
         id: delegateCamera0SettingsValue
@@ -72,11 +78,11 @@ Rectangle {
             width: 100
             height: 48
             id: fetchAllButtonId
-            text:"ReFetch All Camera1"
+            text:"ReFetch All "+m_name
             enabled: _ohdSystemAir.is_alive
             onClicked: {
                 parameterEditor.visible=false
-                var result=_airCameraSettingsModel.try_fetch_all_parameters()
+                var result=m_instanceMavlinkSettingsModel.try_fetch_all_parameters()
                 if(!result){
                      _messageBoxInstance.set_text_and_show("Fetch all failed, please try again")
                 }
@@ -95,7 +101,7 @@ Rectangle {
                     id: listView
                     //top: fetchAllButtonId.bottom
                     width: parent.width
-                    model: _airCameraSettingsModel
+                    model: m_instanceMavlinkSettingsModel
                     delegate: delegateCamera0SettingsValue
                 }
             }
@@ -103,10 +109,10 @@ Rectangle {
     }
 
     // Right row: the parameter edit element
-    ParameterEditor{
+    MavlinkParamEditor{
         id: parameterEditor
         total_width: paramEditorWidth
-        instanceMavlinkSettingsModel: _airCameraSettingsModel
+        instanceMavlinkSettingsModel: m_instanceMavlinkSettingsModel
     }
 
 

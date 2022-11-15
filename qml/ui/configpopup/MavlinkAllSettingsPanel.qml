@@ -44,17 +44,23 @@ Item {
           anchors.top: selectItemInStackLayoutBar.bottom
           //top: bar.bottom
           currentIndex: selectItemInStackLayoutBar.currentIndex
-          XX_WBLinkSettings{
+          MavlinkExtraWBParamPanel{
               id: xX_WBLinkSettings
           }
-          X0_AirCameraSettingsPanel{
+          MavlinkParamPanel{
               id: x0_AirCameraSettingsPanel
+              m_name: "Camera1"
+              m_instanceMavlinkSettingsModel: _airCameraSettingsModel
           }
-          X1_AirSystemSettingsPanel{
-              id: x1_AirSystemSettingsPanel
+          MavlinkParamPanel{
+              id: x1_AirSettingsPanel
+              m_name: "Air"
+              m_instanceMavlinkSettingsModel: _airPiSettingsModel
           }
-          X2_GroundSystemSettingsPanel{
-              id: x2_GroundSystemSettingsPanel
+          MavlinkParamPanel{
+              id: x2_GroundSettingsPanel
+              m_name: "Ground"
+              m_instanceMavlinkSettingsModel: _groundPiSettingsModel
           }
       }
 
