@@ -113,12 +113,9 @@ ApplicationWindow {
         z: 5.0
     }
 
-    SettingsPopup {
+    ConfigPopup {
         id: settings_panel
         visible: false
-        onLocalMessage: {
-            hudOverlayGrid.messageHUD.pushMessage(message, level)
-        }
     }
 
     // We need this one to display popup messages to the user on platforms that don't support

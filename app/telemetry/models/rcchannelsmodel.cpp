@@ -9,6 +9,7 @@ RCChannelsModel::RCChannelsModel(QObject *parent)
     m_alive_timer = std::make_unique<QTimer>(this);
     QObject::connect(m_alive_timer.get(), &QTimer::timeout, this, &RCChannelsModel::update_alive);
     m_alive_timer->start(1000);
+    assert(m_data.size()==18);
 }
 
 RCChannelsModel &RCChannelsModel::instanceGround()

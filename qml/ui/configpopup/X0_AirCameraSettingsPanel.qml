@@ -32,7 +32,8 @@ Rectangle {
         id: delegateCamera0SettingsValue
         Item {
             id: item
-            width: 200
+            width: listView.width
+            //width: ListView.view.width
             height: 64
             Row {
                 anchors.fill: parent
@@ -91,6 +92,7 @@ Rectangle {
                 ScrollBar.vertical.policy: ScrollBar.AlwaysOn
 
                 ListView {
+                    id: listView
                     //top: fetchAllButtonId.bottom
                     width: parent.width
                     model: _airCameraSettingsModel
@@ -103,7 +105,7 @@ Rectangle {
     // Right row: the parameter edit element
     ParameterEditor{
         id: parameterEditor
-        total_width: 300
+        total_width: paramEditorWidth
         instanceMavlinkSettingsModel: _airCameraSettingsModel
     }
 

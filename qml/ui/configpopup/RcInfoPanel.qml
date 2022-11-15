@@ -19,7 +19,9 @@ Rectangle {
     property int rowHeight: 64
     property int text_minHeight: 20
 
+
     color: "#eaeaea"
+
 
     ColumnLayout{
         Layout.fillWidth: true
@@ -44,17 +46,21 @@ Rectangle {
                RowLayout{
                    Layout.fillWidth: true
                    Layout.minimumHeight: 20
+                   //implicitWidth: parent.implicitWidth
                    Text {
                        id: text
                        text: get_description()+model.curr_value
+                       Layout.minimumWidth: 100
                    }
                    ProgressBar {
                        id: progressBar
                        // mavlink rc is in pwm, 1000 is min, 2000 is max
                        from: 1000
                        to: 2000
-                       Layout.fillWidth: true
                        value: model.curr_value
+                       //Layout.maximumWidth: 600
+                       Layout.minimumWidth: 300
+                       //Layout.fillWidth: true
                    }
                    // To the user we display the more verbose "start counting at channel 1", even though we use normal array indices in c++
                    function get_description(){
