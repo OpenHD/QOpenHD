@@ -51,16 +51,19 @@ Item {
               id: x0_AirCameraSettingsPanel
               m_name: "Camera1"
               m_instanceMavlinkSettingsModel: _airCameraSettingsModel
+              m_instanceCheckIsAvlie: _ohdSystemAir
           }
           MavlinkParamPanel{
               id: x1_AirSettingsPanel
               m_name: "Air"
               m_instanceMavlinkSettingsModel: _airPiSettingsModel
+              m_instanceCheckIsAvlie: _ohdSystemAir
           }
           MavlinkParamPanel{
               id: x2_GroundSettingsPanel
               m_name: "Ground"
               m_instanceMavlinkSettingsModel: _groundPiSettingsModel
+              m_instanceCheckIsAvlie: _ohdSystemGround
           }
       }
 
