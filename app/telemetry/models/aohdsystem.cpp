@@ -112,9 +112,7 @@ bool AOHDSystem::process_message(const mavlink_message_t &msg)
              mavlink_statustext_t parsedMsg;
              mavlink_msg_statustext_decode(&msg,&parsedMsg);
              auto tmp=Telemetryutil::statustext_convert(parsedMsg);
-             if(tmp.level>=3){
-                 LogMessagesModel::instance().addLogMessage(_is_air ? "OHD[A]":"OHD[G]",tmp.message.c_str(),tmp.level);
-             }
+             LogMessagesModel::instance().addLogMessage(_is_air ? "OHD[A]":"OHD[G]",tmp.message.c_str(),tmp.level);
              return true;
         }break;
         /*case MAVLINK_MSG_ID_OPENHD_LOG_MESSAGE:{
@@ -181,6 +179,7 @@ void AOHDSystem::process_x2(const mavlink_openhd_stats_total_all_wifibroadcast_s
         total_tx_error_count+=msg.count_video_tx_injections_error_hint;
         set_total_tx_error_count(total_tx_error_count);
     }
+    set_curr_rx_packet_loss_perc(msg.unused_0);
 }
 
 void AOHDSystem::process_x3(const mavlink_openhd_fec_link_rx_statistics_t &msg)

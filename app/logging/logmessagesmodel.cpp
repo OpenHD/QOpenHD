@@ -61,6 +61,16 @@ QHash<int, QByteArray> LogMessagesModel::roleNames() const
     return mapping;
 }
 
+QColor LogMessagesModel::log_severity_to_color(quint8 severity){
+    if(severity<=X_MAV_SEVERITY_ERROR){
+        return QColor{255,0,0,255};//red
+    }
+    if(severity<=X_MAV_SEVERITY_WARNING){
+        return QColor{255, 165, 0,255};//orange
+    }
+    return QColor{0,255,0,255};//green
+}
+
 void LogMessagesModel::addLogMessage(const QString tag, QString message,quint8 severity){
     //qDebug()<<"Add log message:"<<tag<<message;
     // See .h documentation, here we have to emit a signal instead of modifying the model directly.

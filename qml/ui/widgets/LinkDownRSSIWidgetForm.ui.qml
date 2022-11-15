@@ -369,6 +369,19 @@ BaseWidget {
             anchors.top: downlink_rssi.bottom
             spacing:0
             Text {
+                visible: true
+                text: "Loss: " + _ohdSystemGround.curr_rx_packet_loss_perc+"%"
+                color: settings.color_text
+                verticalAlignment: Text.AlignVCenter
+                font.pixelSize: 12
+                font.family: settings.font_text
+                horizontalAlignment: Text.AlignLeft
+                wrapMode: Text.NoWrap
+                elide: Text.ElideRight
+                style: Text.Outline
+                styleColor: settings.color_glow
+            }
+            Text {
                 visible: settings.downlink_show_received_injected_packets ? true : false
                 text: "TX: " + Number(_ohdSystemGround.wifi_tx_packets_count).toLocaleString(Qt.locale(), 'f', 0)
                 color: settings.color_text

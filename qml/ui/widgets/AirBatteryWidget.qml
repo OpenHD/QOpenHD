@@ -227,27 +227,6 @@ BaseWidget {
                     onCheckedChanged: settings.air_battery_show_single_cell = checked
                 }
             }
-            Item {
-                width: 230
-                height: 32
-                Text {
-                    text: qsTr("Use telemetry percentage")
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Switch {
-                    width: 32
-                    height: parent.height
-                    anchors.rightMargin: 6
-                    anchors.right: parent.right
-                    checked: settings.air_battery_show_fc_percent
-                    onCheckedChanged: settings.air_battery_show_fc_percent = checked
-                }
-            }
         }
     }
 
@@ -281,10 +260,7 @@ BaseWidget {
             id: battery_percent
             y: 0
             color: settings.color_text
-            text: settings.air_battery_show_fc_percent ? qsTr("%L1%").arg(
-                                                             _fcMavlinkSystem.fc_battery_percent) : qsTr(
-                                                             "%L1%").arg(
-                                                             _fcMavlinkSystem.battery_percent)
+            text:  qsTr("%L1%").arg( _fcMavlinkSystem.battery_percent)
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: batteryGauge.right
             anchors.leftMargin: 0
@@ -300,7 +276,7 @@ BaseWidget {
         Text {
             id: battery_amp_text
             visible: settings.air_battery_show_voltage_current
-            text: Number(_fcMavlinkSystem.battery_current / 100.0).toLocaleString(
+            text: Number(_fcMavlinkSystem.battery_current_ampere).toLocaleString(
                       Qt.locale(), 'f', 1) + "A"
             color: settings.color_text
             anchors.bottom: battery_percent.top
@@ -319,9 +295,11 @@ BaseWidget {
             id: battery_volt_text
             visible: settings.air_battery_show_voltage_current
             text: settings.air_battery_show_single_cell ? Number(
-                                                              (_fcMavlinkSystem.battery_voltage) / settings.battery_cells).toLocaleString(
+                                                              _fcMavlinkSystem.battery_voltage_single_cell).toLocaleString(
                                                               Qt.locale(),
-                                                              'f', 1) + "V" : Number(_fcMavlinkSystem.battery_voltage).toLocaleString(
+                                                              'f', 1) + "V" :
+                                                          Number(
+                                                              _fcMavlinkSystem.battery_voltage_volt).toLocaleString(
                                                               Qt.locale(),
                                                               'f', 1) + "V"
             color: settings.color_text
@@ -344,13 +322,11 @@ BaseWidget {
             height: 48
             color: {
                 //TODO reintroduce the settings, but PLEASE FUCKING KEEP THE MV PATTERM
-                //var percent = settings.air_battery_show_fc_percent ? _fcMavlinkSystem.fc_battery_percent :_fcMavlinkSystem.fc_battery_percent
                 var percent =  _fcMavlinkSystem.battery_percent
                 // 20% warning, 15% critical
                 return percent < 20 ? (percent < 15 ? "#ff0000" : "#fbfd15") : settings.color_shape
             }
             opacity: settings.air_battery_opacity
-            //text: settings.air_battery_show_fc_percent ? _fcMavlinkSystem.fc_battery_percent : _fcMavlinkSystem.fc_battery_gauge
             text: _fcMavlinkSystem.battery_percent_gauge
             anchors.left: parent.left
             anchors.leftMargin: 12

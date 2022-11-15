@@ -28,6 +28,7 @@ class AOHDSystem : public QObject
     L_RO_PROP(QString,curr_video0_tx_pps,set_curr_video0_tx_pps,"-1pps")
     L_RO_PROP(QString,curr_video1_tx_pps,set_curr_video1_tx_pps,"-1pps")
     L_RO_PROP(QString,curr_telemetry_tx_pps,set_curr_telemetry_tx_pps,"-1pps")
+    L_RO_PROP(int,curr_rx_packet_loss_perc,set_curr_rx_packet_loss_perc,-1)
 public:
     explicit AOHDSystem(const bool is_air,QObject *parent = nullptr);
     // Singletons for accessing the models from c++

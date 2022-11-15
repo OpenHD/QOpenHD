@@ -21,10 +21,6 @@ include(git.pri)
 # since it is a library "specifically for qt"
 include(lib/lqtutils_master/lqtutils.pri)
 
-# just using the something something webrtc from stephen was the easiest solution.
-include(lib/h264/h264.pri)
-
-
 CONFIG(debug, debug|release) {
     DESTDIR = $${OUT_PWD}/debug
 

@@ -347,7 +347,7 @@ int main(int argc, char *argv[]) {
 #endif
 #endif
 
-    LogMessagesModel::instance().addLogMessage("QOpenHD","running",0);
+    LogMessagesModel::instance().addLogMessage("QOpenHD","running");
     const int retval = app.exec();
 
 #if defined(ENABLE_GSTREAMER)
