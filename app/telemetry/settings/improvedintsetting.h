@@ -9,10 +9,8 @@
 #include <sstream>
 
 
-// This is a "one type fits all class" where we can make changing specific setting(s)
+// This is a "one type fits many class" where we can make changing specific int setting(s)
 // more comfortable for the user.
-// Int: We can either specify a range (min and max value) or we can additionally make this an enum
-
 // Int parameters can have a range ([min_value,max_value] or even refer to an enum -
 // in which case they have a range and also expose the functionality to convert an int value (e.g. a value that
 // is not verbose to the user) into a string that is verbose to the user, or the other way around.
@@ -27,38 +25,21 @@ public:
         const std::string name;
         const int value;
     };
-    static std::vector<Item> convert_to_default_items(const std::vector<std::string>& values){
-        std::vector<Item> ret{};
-        for(int i=0;i<values.size();i++){
-            ret.push_back(Item{values[i],i});
-        }
-        return ret;
-    }
-    //r.n no params that can take negative values
-    static ImprovedIntSetting createRangeOnly(int min_value=0,int max_value=std::numeric_limits<int>::max()){
-        return ImprovedIntSetting(min_value,max_value,{});
-    }
-    static ImprovedIntSetting createEnum(std::vector<std::string> values){
-        // single enum would make no sense ?!
-        assert(values.size()>1);
-        return ImprovedIntSetting(0,values.size()-1,convert_to_default_items(values));
-    }
-    static ImprovedIntSetting createEnumEnableDisable(){
-        std::vector<std::string> values{};
-        values.push_back("Disable"); // False == disabled == 0
-        values.push_back("Enable"); // 1==enabled
-        return createEnum(values);
-    }
-public:
-    ImprovedIntSetting(int min_value_int,int max_value_int,std::vector<Item> values_enum1):
-        min_value_int(min_value_int),max_value_int(max_value_int),
-        values_enum(values_enum1){
-    }
+
+    ImprovedIntSetting(int min_value_int,int max_value_int,std::vector<Item> values_enum1);
     ImprovedIntSetting()=default;
-   int min_value_int;
-   int max_value_int;
-   // wrapped int enum
-   std::vector<Item> values_enum;
+public:
+    // helper to create a mapping where first element =0,second element =1, ...
+    static std::vector<Item> convert_to_default_items(const std::vector<std::string>& values);
+
+    //r.n no params that can take negative values
+    static ImprovedIntSetting createRangeOnly(int min_value=0,int max_value=std::numeric_limits<int>::max());
+    //
+    static ImprovedIntSetting createEnum(std::vector<std::string> values);
+    // helper for an enum where 0==Disable and 1==Enable
+    static ImprovedIntSetting createEnumEnableDisable();
+
+public:
    // return true if we can do enum mapping for this int (more verbose to the user)
    bool has_enum_mapping()const{
        return !values_enum.empty();
@@ -87,6 +68,11 @@ public:
        }
        return ret;
    }
+public:
+   int min_value_int;
+   int max_value_int;
+   // wrapped int enum
+   std::vector<Item> values_enum;
 };
 
 

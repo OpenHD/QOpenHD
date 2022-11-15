@@ -82,7 +82,7 @@ public:
         // A description for this parameter. Not all parameters are documented yet, in this case this will return "TODO"
         ShortDescriptionRole,
         // Weather this parameter is read-only (we repurpose the malink parameter protocoll in this regard here)
-        // Default true, only if a parameter is in the read-only whitelist it is marked as read-only
+        // Default false, only if a parameter is in the read-only whitelist it is marked as read-only
         ReadOnlyRole
     };
     int rowCount(const QModelIndex& parent= QModelIndex()) const override;
@@ -104,18 +104,27 @@ private:
     const uint8_t m_sys_id;
     const uint8_t m_comp_id;
 public:
-    // These are for the UI to query more data about a specific param
-    Q_INVOKABLE bool has_int_enum_mapping(QString param_id)const;
+    // These are for the UI to query more data about a specific params
     Q_INVOKABLE QString int_enum_get_readable(QString param_id,int value)const;
-    Q_INVOKABLE int int_enum_get_max(QString param_id)const;
-    Q_INVOKABLE int int_enum_get_min(QString param_id)const;
-    //
+    // if possible, the UI should populate for a full enum key-value int parameter if possible,
+    // and only fall back to the min max checking if such a mapping is not available.
+    Q_INVOKABLE bool int_param_has_min_max(QString param_id)const;
+    Q_INVOKABLE int int_param_get_min_value(QString param_id)const;
+    Q_INVOKABLE int int_param_get_max_value(QString param_id)const;
+    // enum key - value mapping
+    Q_INVOKABLE bool int_param_has_enum_keys_values(QString param_id)const;
     // TODO find a better solution
     // R.n we return 2 lists of the same size (strings for the keys, ints for the values that correspond to the keys)
     //aka both lists always have the same size
     // Should only be called when we actually have an enum mapping for this param
-    Q_INVOKABLE QStringList get_enum_keys_for_int_param(QString param_id)const;
-    Q_INVOKABLE QList<int> get_enum_values_for_int_param(QString param_id)const;
+    Q_INVOKABLE QStringList int_param_get_enum_keys(QString param_id)const;
+    Q_INVOKABLE QList<int> int_param_get_enum_values(QString param_id)const;
+
+    // similar to above, find a better solution
+    Q_INVOKABLE bool string_param_has_enum(QString param_id)const;
+    Q_INVOKABLE QStringList string_param_get_enum_keys(QString param_id)const;
+    Q_INVOKABLE QStringList string_param_get_enum_values(QString param_id)const;
+
     // For some parameters, we have a string that is displayed to the user when he wants to edit this param
     // just too be sure he understands the risks
     // When there is no need for a warning, this method just returns an empty string

@@ -1,24 +1,19 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
-import QtQuick.Controls.Material 2.12
+import QtQuick.Dialogs 1.3
 import QtQuick.Layouts 1.12
 import QtQuick.Window 2.12
-
 import Qt.labs.settings 1.0
 
 import OpenHD 1.0
 
-
-import "../../ui" as Ui
-import "../elements"
-
-// We use a stack layout here, but the row on the left (that selects the items inside the stack layout) is custom
-// (Becasue of the immages I assume, TODO clean this up / use proper layouting)
+// Contains the selector on the left and a stack view for the panels on the right
 Rectangle {
-    property alias settings_popup: settings_popup
-    property alias closeButton: closeButton
+    id: settings_form
 
-    id: settings_popup
+    function openSettings() {
+        visible = true
+    }
 
     anchors.fill: parent
 
@@ -172,42 +167,6 @@ Rectangle {
                     color: mainStackLayout.currentIndex == 2 ? "#33aaff" : "#dde4ed"
                 }
             }
-            // Graphs
-            /*Item {
-                height: 48
-                width: parent.width
-                MouseArea {
-                    id: graphButtonMouseArea
-                    anchors.fill: parent
-                    onClicked: mainStackLayout.currentIndex = 3
-                }
-
-                Text {
-                    id: graphIcon
-                    text: "\uf0c9"
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                    font.family: "Font Awesome 5 Free"
-                    font.pixelSize: 18
-                    height: parent.height
-                    width: 24
-                    anchors.left: parent.left
-                    anchors.leftMargin: 12
-                    color: "#dde4ed"
-                }
-
-                Text {
-                    id: graphButton
-                    height: parent.height
-                    anchors.left: graphIcon.right
-                    anchors.leftMargin: 6
-                    text: qsTr("Graphs")
-                    font.pixelSize: 15
-                    horizontalAlignment: Text.AlignLeft
-                    verticalAlignment: Text.AlignVCenter
-                    color: mainStackLayout.currentIndex == 3 ? "#33aaff" : "#dde4ed"
-                }
-            }*/
 
             // Power
             Item {
@@ -383,6 +342,7 @@ Rectangle {
             anchors.left: parent.left
             anchors.leftMargin: 12
             font.pixelSize: 13
+            onClicked: settings_form.visible=false
         }
     }
 
@@ -403,18 +363,13 @@ Rectangle {
             id: appSettingsPanel
         }
 
-        OHDComponentSettings {
-            id:  oHDComponentSettings
+        MavlinkAllSettingsPanel {
+            id:  mavlinkAllSettingsPanel
         }
 
         LogMessagesStatusView{
             id: logMessagesStatusView
         }
-
-        // In legacy for now
-        //TelemetryGraphViewPanel{
-        //    id: statusPanel
-        //}
 
         PowerPanel {
             id: powerPanel
@@ -435,10 +390,3 @@ Rectangle {
     }
 }
 
-/*##^##
-Designer {
-    D{i:2;anchors_height:480;anchors_width:376;anchors_x:0}D{i:3;anchors_x:0}D{i:4;anchors_height:360;anchors_width:99}
-D{i:5;anchors_width:99}D{i:1;anchors_height:200;anchors_width:200}D{i:7;anchors_width:0}
-D{i:8;anchors_width:400}D{i:9;anchors_width:0}D{i:6;anchors_height:360;anchors_width:400}
-}
-##^##*/
