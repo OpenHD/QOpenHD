@@ -38,7 +38,12 @@ void RTPDecoder::reset(){
 
 bool RTPDecoder::validateRTPPacket(const rtp_header_t& rtp_header) {
     if(rtp_header.payload!=RTP_PAYLOAD_TYPE_GENERIC){
-        std::cerr<<"Unsupported payload type "<<(int)rtp_header.payload;
+        if(std::chrono::steady_clock::now()-m_last_log_wrong_rtp_payload_time>std::chrono::seconds(3)){
+            // For some reason uvgRtp uses 106 for h264
+            // accept it anways, some rtp impl are a bit weird in this regard. Limit logging to not flood the log completely
+            qDebug()<<"Unsupported payload type "<<(int)rtp_header.payload;
+            m_last_log_wrong_rtp_payload_time=std::chrono::steady_clock::now();
+        }
         //return false;
     }
     // Testing regarding sequence numbers.This stuff can be removed without issues
@@ -165,7 +170,7 @@ void RTPDecoder::parseRTPH264toNALU(const uint8_t* rtp_data, const size_t data_l
         //qDebug()<<"Got RTP H264 type [1..23] (single) payload size:"<<rtpPacket.rtpPayloadSize;
         h264_reconstruct_and_forward_one_nalu(rtpPacket.rtpPayload,rtpPacket.rtpPayloadSize);
     }else if(nalu_header.type==24){
-        //qDebug()<<"Got RTP H264 type 24 (aggregated NALUs) payload size:"<<rtpPacket.rtpPayloadSize;
+       //qDebug()<<"Got RTP H264 type 24 (aggregated NALUs) payload size:"<<rtpPacket.rtpPayloadSize;
         const uint8_t* rtp_payload=rtpPacket.rtpPayload;
         const auto rtp_payload_size=rtpPacket.rtpPayloadSize;
         int offset=0;

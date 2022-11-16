@@ -35,6 +35,7 @@ public:
             qDebug()<<"VPS found";
             return true;
         }
+        //qDebug()<<"not a keyframe"<<(int)nalu.getDataWithoutPrefix()[0];
         return false;
     }
     // H264 needs sps and pps

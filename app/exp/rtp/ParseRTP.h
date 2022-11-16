@@ -78,6 +78,8 @@ private:
     // a non-fragmented rtp packet
     //void clear_missing_packet_flag();
     int curr_packet_diff=0;
+private:
+    std::chrono::steady_clock::time_point m_last_log_wrong_rtp_payload_time=std::chrono::steady_clock::now();
 };
 
 #endif //LIVE_VIDEO_10MS_ANDROID_PARSERTP_H
