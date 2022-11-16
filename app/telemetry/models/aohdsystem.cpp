@@ -180,6 +180,7 @@ void AOHDSystem::process_x2(const mavlink_openhd_stats_total_all_wifibroadcast_s
         set_total_tx_error_count(total_tx_error_count);
     }
     set_curr_rx_packet_loss_perc(msg.unused_0);
+    set_curr_n_of_big_gaps(msg.unused_1);
 }
 
 void AOHDSystem::process_x3(const mavlink_openhd_fec_link_rx_statistics_t &msg)

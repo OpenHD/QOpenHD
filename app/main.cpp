@@ -45,9 +45,6 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "videostreaming/decodingstatistcs.h"
 
 
-#include "util/util.h"
-
-
 #include "logging/logmessagesmodel.h"
 #include "telemetry/settings/mavlinksettingsmodel.h"
 #include "telemetry/settings/synchronizedsettings.h"
@@ -277,8 +274,6 @@ int main(int argc, char *argv[]) {
 
     //MavlinkTelemetry::register_for_qml(engine.rootContext());
     engine.rootContext()->setContextProperty("_mavlinkTelemetry", &MavlinkTelemetry::instance());
-
-    engine.rootContext()->setContextProperty("OpenHDUtil", &OpenHDUtil::instance());
 
     // Regster all the QT Mavlink system model(s)
     // it is a common practice for QT to prefix models from c++ with an underscore
