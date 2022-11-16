@@ -8,6 +8,13 @@
 #include "../../videostreaming/decodingstatistcs.h"
 #include "common_consti/openhd-util.hpp"
 
+constexpr auto LOCAL_ADDRESS = "127.0.0.1";
+
+/*void rtp_receive_hook(void *arg, uvgrtp::frame::rtp_frame *frame){
+    RTPReceiver* self=(RTPReceiver*) arg;
+    self->uvgrtp_rtp_receive_hook(arg,frame);
+}*/
+
 RTPReceiver::RTPReceiver(int port,bool is_h265,bool feed_incomplete_frames):
     is_h265(is_h265)
 {
@@ -34,11 +41,26 @@ RTPReceiver::RTPReceiver(int port,bool is_h265,bool feed_incomplete_frames):
         DecodingStatistcs::instance().set_n_missing_rtp_video_packets(m_rtp_decoder->m_n_gaps);
     },UDPReceiver::BIG_UDP_RECEIVE_BUFFER_SIZE);
     m_udp_receiver->startReceiving();
+    /*m_session = m_ctx.create_session(LOCAL_ADDRESS);
+    int flags = RCE_RECEIVE_ONLY;
+    m_receiver = m_session->create_stream(port, is_h265 ? RTP_FORMAT_H265 : RTP_FORMAT_H264, flags);
+    if (!m_receiver || m_receiver->install_receive_hook(this, rtp_receive_hook) != RTP_OK){
+        qDebug() << "Failed to install RTP reception hook";
+    }*/
 }
 
 RTPReceiver::~RTPReceiver()
 {
-    m_udp_receiver->stopReceiving();
+   if(m_udp_receiver){
+       m_udp_receiver->stopReceiving();
+   }
+   /*if (m_receiver){
+       m_session->destroy_stream(m_receiver);
+   }
+   if (m_session){
+       // Session must be destroyed manually
+       m_ctx.destroy_session(m_session);
+   }*/
 }
 
 
@@ -68,6 +90,7 @@ std::array<int, 2> RTPReceiver::sps_get_width_height(){
 void RTPReceiver::queue_data(const uint8_t* nalu_data,const std::size_t nalu_data_len)
 {
     std::lock_guard<std::mutex> lock(m_data_mutex);
+    qDebug()<<"Got frame2";
     NALU nalu(nalu_data,nalu_data_len,is_h265);
     if(m_keyframe_finder->allKeyFramesAvailable(is_h265)){
         if(!m_keyframe_finder->check_is_still_same_config_data(nalu)){
@@ -101,6 +124,13 @@ void RTPReceiver::queue_data(const uint8_t* nalu_data,const std::size_t nalu_dat
     // We don't have all config data yet, drop anything that is not config data.
     m_keyframe_finder->saveIfKeyFrame(nalu);
 }
+
+
+/*void RTPReceiver::uvgrtp_rtp_receive_hook(void *arg, uvgrtp::frame::rtp_frame *frame)
+{
+    nalu_data_callback(std::chrono::steady_clock::now(),frame->payload,frame->payload_len-frame->padding_len);
+    (void)uvgrtp::frame::dealloc_frame(frame);
+}*/
 
 void RTPReceiver::udp_raw_data_callback(const uint8_t *payload, const std::size_t payloadSize)
 {

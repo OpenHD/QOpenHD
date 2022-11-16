@@ -41,39 +41,54 @@ public:
     // Copy constructor allocates new buffer for data (heavy)
     NALU(const NALU& nalu):
     ownedData(std::vector<uint8_t>(nalu.getData(),nalu.getData()+nalu.getSize())),
-    data(ownedData->data()),data_len(nalu.getSize()),IS_H265_PACKET(nalu.IS_H265_PACKET),creationTime(nalu.creationTime){
+    m_data(ownedData->data()),m_data_len(nalu.getSize()),IS_H265_PACKET(nalu.IS_H265_PACKET),creationTime(nalu.creationTime){
         //MLOGD<<"NALU copy constructor";
+        m_nalu_prefix_size=get_nalu_prefix_size();
     }
     // Default constructor does not allocate a new buffer,only stores some pointer (light)
     NALU(const NALU_BUFFER& data1,const size_t data_length,const bool IS_H265_PACKET1=false,const std::chrono::steady_clock::time_point creationTime=std::chrono::steady_clock::now()):
-            data(data1.data()),data_len(data_length),IS_H265_PACKET(IS_H265_PACKET1),creationTime{creationTime}{
+            m_data(data1.data()),m_data_len(data_length),IS_H265_PACKET(IS_H265_PACKET1),creationTime{creationTime}{
         // Validate correctness of NALU (make sure parser never forwards NALUs where this assertion fails)
         assert(hasValidPrefix());
         assert(getSize()>=getMinimumNaluSize(IS_H265_PACKET1));
+        m_nalu_prefix_size=get_nalu_prefix_size();
     };
     // tmp
     NALU(const uint8_t* data1,size_t data_len1,const bool IS_H265_PACKET1=false,const std::chrono::steady_clock::time_point creationTime=std::chrono::steady_clock::now()):
-            data(data1),data_len(data_len1),IS_H265_PACKET(IS_H265_PACKET1),creationTime{creationTime}
+            m_data(data1),m_data_len(data_len1),IS_H265_PACKET(IS_H265_PACKET1),creationTime{creationTime}
     {
         assert(hasValidPrefix());
         assert(getSize()>=getMinimumNaluSize(IS_H265_PACKET1));
+        m_nalu_prefix_size=get_nalu_prefix_size();
     }
+    // tmp, for data with 001 prefix instead of 0001
     ~NALU()= default;
 private:
     // With the default constructor a NALU does not own its memory. This saves us one memcpy. However, storing a NALU after the lifetime of the
     // Non-owned memory expired is also needed in some places, so the copy-constructor creates a copy of the non-owned data and stores it in a optional buffer
     // WARNING: Order is important here (Initializer list). Declare before data pointer
     const std::optional<std::vector<uint8_t>> ownedData={};
-    const uint8_t* data;
-    const size_t data_len;
+    const uint8_t* m_data;
+    const size_t m_data_len;
+    int m_nalu_prefix_size;
 public:
     const bool IS_H265_PACKET;
     // creation time is used to measure latency
     const std::chrono::steady_clock::time_point creationTime;
 public:
     // returns true if starts with 0001, false otherwise
+    bool hasValidPrefixLong()const{
+        return m_data[0]==0 && m_data[1]==0 &&m_data[2]==0 &&m_data[3]==1;
+    }
+    bool hasValidPrefixShort()const{
+        return m_data[0]==0 && m_data[1]==0 &&m_data[2]==1;
+    }
     bool hasValidPrefix()const{
-        return data[0]==0 && data[1]==0 &&data[2]==0 &&data[3]==1;
+        return hasValidPrefixLong() || hasValidPrefixShort();
+    }
+    int get_nalu_prefix_size()const{
+        if(hasValidPrefixLong())return 4;
+        return 3;
     }
     static std::size_t getMinimumNaluSize(const bool isH265){
         // 4 bytes prefix, 1 byte header for h264, 2 byte header for h265
@@ -82,26 +97,26 @@ public:
 public:
     // pointer to the NALU data with 0001 prefix
     const uint8_t* getData()const{
-        return data;
+        return m_data;
     }
     // size of the NALU data with 0001 prefix
     const size_t getSize()const{
-        return data_len;
+        return m_data_len;
     }
     //pointer to the NALU data without 0001 prefix
     const uint8_t* getDataWithoutPrefix()const{
-        return &getData()[4];
+        return &getData()[m_nalu_prefix_size];
     }
     //size of the NALU data without 0001 prefix
     const ssize_t getDataSizeWithoutPrefix()const{
-        return getSize()-4;
+        return getSize()-m_nalu_prefix_size;
     }
     // return the nal unit type (quick)
    int get_nal_unit_type()const{
        if(IS_H265_PACKET){
-           return (getData()[4] & 0x7E)>>1;
+           return (getDataWithoutPrefix()[0] & 0x7E)>>1;
        }
-       return getData()[4]&0x1f;
+       return getDataWithoutPrefix()[0]&0x1f;
    }
 public:
    bool isSPS()const{
@@ -147,8 +162,8 @@ public:
        assert(isSPS());
        // r.n we only support fetching with and height from sps for h264 (and only need it in this case anyways)
        assert(!IS_H265_PACKET);
-       const auto offset_for_webrtc=4+webrtc::H264::kNaluTypeSize;
-       auto _sps = webrtc::SpsParser::ParseSps(getData() + offset_for_webrtc, getSize() - offset_for_webrtc);
+       const auto offset_for_webrtc=webrtc::H264::kNaluTypeSize;
+       auto _sps = webrtc::SpsParser::ParseSps(getDataWithoutPrefix() + offset_for_webrtc, getDataSizeWithoutPrefix() - offset_for_webrtc);
        if(_sps){
            const int width=_sps->width;
            const int height=_sps->height;

@@ -46,6 +46,9 @@ packagesExist(mmal) {
    INCLUDEPATH += /opt/vc/include/interface/mmal
 }
 
+# experimental
+#INCLUDEPATH += /usr/local/include/uvgrtp
+#LIBS += -L/usr/local/lib -luvgrtp
 
 mmal {
     message(MMAL renderer selected)
