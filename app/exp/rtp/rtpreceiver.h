@@ -16,7 +16,11 @@
 #include "../../common_consti/TimeHelper.hpp"
 #include "../../common_consti/EmulatedPacketDrop.hpp"
 
-//#include <uvgrtp/lib.hh>
+//#define OPENHD_USE_LIB_UVGRTP
+
+#ifdef OPENHD_USE_LIB_UVGRTP
+#include <uvgrtp/lib.hh>
+#endif
 
 class RTPReceiver
 {
@@ -56,12 +60,14 @@ private:
 private:
     // Calculate fps, but note that this actually calculates the non-sps / pps / vps NALUs per second
     FPSCalculator m_estimate_fps_calculator{};
-/*private:
+#ifdef OPENHD_USE_LIB_UVGRTP
+private:
     uvgrtp::context m_ctx;
     uvgrtp::session *m_session;
     uvgrtp::media_stream *m_receiver;
 public:
-    void uvgrtp_rtp_receive_hook(void *arg, uvgrtp::frame::rtp_frame *frame);*/
+    void uvgrtp_rtp_receive_hook(void *arg, uvgrtp::frame::rtp_frame *frame);
+#endif
 };
 
 #endif // RTPRECEIVER_H

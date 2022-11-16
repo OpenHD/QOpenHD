@@ -8,12 +8,15 @@
 #include "../../videostreaming/decodingstatistcs.h"
 #include "common_consti/openhd-util.hpp"
 
-constexpr auto LOCAL_ADDRESS = "127.0.0.1";
+//constexpr auto LOCAL_ADDRESS = "127.0.0.1";
+constexpr auto LOCAL_ADDRESS = "10.42.0.1";
 
-/*void rtp_receive_hook(void *arg, uvgrtp::frame::rtp_frame *frame){
+#ifdef OPENHD_USE_LIB_UVGRTP
+void rtp_receive_hook(void *arg, uvgrtp::frame::rtp_frame *frame){
     RTPReceiver* self=(RTPReceiver*) arg;
     self->uvgrtp_rtp_receive_hook(arg,frame);
-}*/
+}
+#endif
 
 RTPReceiver::RTPReceiver(int port,bool is_h265,bool feed_incomplete_frames):
     is_h265(is_h265)
@@ -54,13 +57,15 @@ RTPReceiver::~RTPReceiver()
    if(m_udp_receiver){
        m_udp_receiver->stopReceiving();
    }
-   /*if (m_receiver){
+#ifdef OPENHD_USE_LIB_UVGRTP
+   if (m_receiver){
        m_session->destroy_stream(m_receiver);
    }
    if (m_session){
        // Session must be destroyed manually
        m_ctx.destroy_session(m_session);
-   }*/
+   }
+#endif
 }
 
 
@@ -90,7 +95,7 @@ std::array<int, 2> RTPReceiver::sps_get_width_height(){
 void RTPReceiver::queue_data(const uint8_t* nalu_data,const std::size_t nalu_data_len)
 {
     std::lock_guard<std::mutex> lock(m_data_mutex);
-    qDebug()<<"Got frame2";
+    //qDebug()<<"Got frame2";
     NALU nalu(nalu_data,nalu_data_len,is_h265);
     if(m_keyframe_finder->allKeyFramesAvailable(is_h265)){
         if(!m_keyframe_finder->check_is_still_same_config_data(nalu)){
@@ -125,12 +130,13 @@ void RTPReceiver::queue_data(const uint8_t* nalu_data,const std::size_t nalu_dat
     m_keyframe_finder->saveIfKeyFrame(nalu);
 }
 
-
-/*void RTPReceiver::uvgrtp_rtp_receive_hook(void *arg, uvgrtp::frame::rtp_frame *frame)
+#ifdef OPENHD_USE_LIB_UVGRTP
+void RTPReceiver::uvgrtp_rtp_receive_hook(void *arg, uvgrtp::frame::rtp_frame *frame)
 {
     nalu_data_callback(std::chrono::steady_clock::now(),frame->payload,frame->payload_len-frame->padding_len);
     (void)uvgrtp::frame::dealloc_frame(frame);
-}*/
+}
+#endif
 
 void RTPReceiver::udp_raw_data_callback(const uint8_t *payload, const std::size_t payloadSize)
 {
@@ -152,7 +158,7 @@ void RTPReceiver::udp_raw_data_callback(const uint8_t *payload, const std::size_
 
 void RTPReceiver::nalu_data_callback(const std::chrono::steady_clock::time_point creation_time,const uint8_t *nalu_data, const int nalu_data_size)
 {
-    //qDebug()<<"Got NALU "<<nalu_data_size;
+    qDebug()<<"Got NALU "<<nalu_data_size;
     {
         //std::vector<uint8_t> tmp(nalu_data,nalu_data+nalu_data_size);
         //qDebug()<<StringHelper::vectorAsString(tmp).c_str()<<"\n";

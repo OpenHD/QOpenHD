@@ -80,6 +80,7 @@ public:
     bool hasValidPrefixLong()const{
         return m_data[0]==0 && m_data[1]==0 &&m_data[2]==0 &&m_data[3]==1;
     }
+    // returns true if starts with 001 (short prefix), false otherwise
     bool hasValidPrefixShort()const{
         return m_data[0]==0 && m_data[1]==0 &&m_data[2]==1;
     }
