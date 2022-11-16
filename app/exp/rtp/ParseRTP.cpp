@@ -38,7 +38,12 @@ void RTPDecoder::reset(){
 
 bool RTPDecoder::validateRTPPacket(const rtp_header_t& rtp_header) {
     if(rtp_header.payload!=RTP_PAYLOAD_TYPE_GENERIC){
-        std::cerr<<"Unsupported payload type "<<(int)rtp_header.payload;
+        if(std::chrono::steady_clock::now()-m_last_log_wrong_rtp_payload_time>std::chrono::seconds(3)){
+            // For some reason uvgRtp uses 106 for h264
+            // accept it anways, some rtp impl are a bit weird in this regard. Limit logging to not flood the log completely
+            qDebug()<<"Unsupported payload type "<<(int)rtp_header.payload;
+            m_last_log_wrong_rtp_payload_time=std::chrono::steady_clock::now();
+        }
         //return false;
     }
     // Testing regarding sequence numbers.This stuff can be removed without issues
