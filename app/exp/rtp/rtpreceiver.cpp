@@ -33,6 +33,14 @@ RTPReceiver::RTPReceiver(int port,bool is_h265,bool feed_incomplete_frames):
         m_out_file=std::make_unique<std::ofstream>(ss.str());
     }
     m_keyframe_finder=std::make_unique<KeyFrameFinder>();
+#ifdef OPENHD_USE_LIB_UVGRTP
+    m_session = m_ctx.create_session(LOCAL_ADDRESS);
+    int flags = RCE_RECEIVE_ONLY;
+    m_receiver = m_session->create_stream(port, is_h265 ? RTP_FORMAT_H265 : RTP_FORMAT_H264, flags);
+    if (!m_receiver || m_receiver->install_receive_hook(this, rtp_receive_hook) != RTP_OK){
+        qDebug() << "Failed to install RTP reception hook";
+    }
+#else
     m_rtp_decoder=std::make_unique<RTPDecoder>([this](const std::chrono::steady_clock::time_point creation_time,const uint8_t *nalu_data, const int nalu_data_size){
         this->nalu_data_callback(creation_time,nalu_data,nalu_data_size);
     },feed_incomplete_frames);
@@ -44,12 +52,7 @@ RTPReceiver::RTPReceiver(int port,bool is_h265,bool feed_incomplete_frames):
         DecodingStatistcs::instance().set_n_missing_rtp_video_packets(m_rtp_decoder->m_n_gaps);
     },UDPReceiver::BIG_UDP_RECEIVE_BUFFER_SIZE);
     m_udp_receiver->startReceiving();
-    /*m_session = m_ctx.create_session(LOCAL_ADDRESS);
-    int flags = RCE_RECEIVE_ONLY;
-    m_receiver = m_session->create_stream(port, is_h265 ? RTP_FORMAT_H265 : RTP_FORMAT_H264, flags);
-    if (!m_receiver || m_receiver->install_receive_hook(this, rtp_receive_hook) != RTP_OK){
-        qDebug() << "Failed to install RTP reception hook";
-    }*/
+#endif
 }
 
 RTPReceiver::~RTPReceiver()
@@ -158,7 +161,7 @@ void RTPReceiver::udp_raw_data_callback(const uint8_t *payload, const std::size_
 
 void RTPReceiver::nalu_data_callback(const std::chrono::steady_clock::time_point creation_time,const uint8_t *nalu_data, const int nalu_data_size)
 {
-    qDebug()<<"Got NALU "<<nalu_data_size;
+    //qDebug()<<"Got NALU "<<nalu_data_size;
     {
         //std::vector<uint8_t> tmp(nalu_data,nalu_data+nalu_data_size);
         //qDebug()<<StringHelper::vectorAsString(tmp).c_str()<<"\n";

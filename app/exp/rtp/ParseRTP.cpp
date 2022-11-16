@@ -167,10 +167,10 @@ void RTPDecoder::parseRTPH264toNALU(const uint8_t* rtp_data, const size_t data_l
             m_total_n_fragments_for_current_fu++;
         }
     } else if(nalu_header.type>0 && nalu_header.type<24){
-        qDebug()<<"Got RTP H264 type [1..23] (single) payload size:"<<rtpPacket.rtpPayloadSize;
+        //qDebug()<<"Got RTP H264 type [1..23] (single) payload size:"<<rtpPacket.rtpPayloadSize;
         h264_reconstruct_and_forward_one_nalu(rtpPacket.rtpPayload,rtpPacket.rtpPayloadSize);
     }else if(nalu_header.type==24){
-       qDebug()<<"Got RTP H264 type 24 (aggregated NALUs) payload size:"<<rtpPacket.rtpPayloadSize;
+       //qDebug()<<"Got RTP H264 type 24 (aggregated NALUs) payload size:"<<rtpPacket.rtpPayloadSize;
         const uint8_t* rtp_payload=rtpPacket.rtpPayload;
         const auto rtp_payload_size=rtpPacket.rtpPayloadSize;
         int offset=0;
