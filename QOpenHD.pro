@@ -166,7 +166,6 @@ SOURCES += \
     app/util/FrequencyMonitor.cpp \
     app/main.cpp \
     app/util/QmlObjectListModel.cpp \
-    app/util/util.cpp \
 
 RESOURCES += qml/qml.qrc \
     qml/qml.qrc
@@ -176,7 +175,6 @@ HEADERS += \
     app/util/FrequencyMonitor.h \
     app/util/sharedqueue.h \
     app/util/QmlObjectListModel.h \
-    app/util/util.h \
 
 DISTFILES += \
     README.md \

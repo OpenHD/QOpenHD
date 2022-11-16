@@ -295,6 +295,15 @@ BaseWidget {
                 font.pixelSize: detailPanelFontPixels
                 verticalAlignment: Text.AlignVCenter
             }
+            Text {
+                //Layout.alignment: left
+                text: "curr gaps:"+_ohdSystemGround.curr_n_of_big_gaps
+                color: "white"
+                font.bold: true
+                height: parent.height
+                font.pixelSize: detailPanelFontPixels
+                verticalAlignment: Text.AlignVCenter
+            }
         }
     }
 

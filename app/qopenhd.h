@@ -46,6 +46,10 @@ private:
 #if defined(ENABLE_SPEECH)
     QTextToSpeech *m_speech;
 #endif
+public:
+#if defined(__android__)
+    Q_INVOKABLE void keep_screen_on(bool on);
+#endif
 };
 
 #endif // QOPENHD_H
