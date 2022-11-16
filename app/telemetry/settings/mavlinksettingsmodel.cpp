@@ -97,7 +97,7 @@ static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string&
                 "921600",
                 "1000000"
         };
-        auto fc_uart_conn_values=std::vector<std::string>{"disable","serial0","serial1","ttyUSB0","ttyACM0","ttyACM1"};
+        auto fc_uart_conn_values=std::vector<std::string>{"disable","serial0","serial1","ttyUSB0","ttyACM0","ttyACM1", "ttyS7"};
         map_improved_params["FC_UART_CONN"]=ImprovedIntSetting::createEnum(fc_uart_conn_values);
         // rpicamsrc only for now
         auto gst_awb_modes=std::vector<std::string>{
