@@ -88,10 +88,10 @@ static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string&
         map_improved_params["V_VERT_FLIP"]=ImprovedIntSetting::createEnumEnableDisable();
 
         map_improved_params["V_CAM_ROT_DEG"]=ImprovedIntSetting(0,270,{
-           ImprovedIntSetting::Item{"0%(disable)",0},
-           ImprovedIntSetting::Item{"90%",90},
-           ImprovedIntSetting::Item{"180%",180},
-           ImprovedIntSetting::Item{"270%",270}
+           ImprovedIntSetting::Item{"0°(disable)",0},
+           ImprovedIntSetting::Item{"90°",90},
+           ImprovedIntSetting::Item{"180°",180},
+           ImprovedIntSetting::Item{"270°",270}
        });
         map_improved_params["V_INTRA_REFRESH"]=ImprovedIntSetting(-1,2130706433,{
            ImprovedIntSetting::Item{"NONE",-1},
@@ -100,7 +100,6 @@ static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string&
            ImprovedIntSetting::Item{"BOTH",2},
            ImprovedIntSetting::Item{"CYCLIC_ROWS",2130706433}
        });
-
 
         auto fc_uart_baud_rates=std::vector<std::string>{
                 "9600",
