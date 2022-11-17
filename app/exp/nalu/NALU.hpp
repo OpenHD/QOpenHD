@@ -24,6 +24,7 @@
 #include <h264_common.h>
 #include <sps_parser.h>
 #include <pps_parser.h>
+#include <qdebug.h>
 
 /**
  * A NALU either contains H264 data (default) or H265 data
@@ -158,6 +159,22 @@ public:
    }
    bool is_config(){
        return isSPS() || isPPS() || (IS_H265_PACKET && isVPS());
+   }
+   // keyframe / IDR frame
+   bool is_keyframe()const{
+       const auto nut=get_nal_unit_type();
+       if(IS_H265_PACKET){
+           return false;
+       }
+       if(nut==NALUnitType::H264::NAL_UNIT_TYPE_CODED_SLICE_IDR){
+           return true;
+       }
+       return false;
+   }
+   bool is_frame_but_not_keyframe()const{
+       const auto nut=get_nal_unit_type();
+       if(IS_H265_PACKET)return false;
+       return (nut==NALUnitType::H264::NAL_UNIT_TYPE_CODED_SLICE_NON_IDR);
    }
    std::array<int,2> sps_get_width_height()const{
        assert(isSPS());
