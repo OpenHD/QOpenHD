@@ -28,6 +28,7 @@ class DecodingStatistcs : public QObject
     // In QOpenHD (rtp udp receiver) measured bitrate
     L_RO_PROP(QString, rtp_measured_bitrate, set_rtp_measured_bitrate, "-1")
     L_RO_PROP(QString, estimate_rtp_fps, set_estimate_rtp_fps, "-1")
+    L_RO_PROP(int, estimate_keyframe_interval, set_estimate_keyframe_interval, -1)
 public:
     explicit DecodingStatistcs(QObject *parent = nullptr);
     static DecodingStatistcs& instance();

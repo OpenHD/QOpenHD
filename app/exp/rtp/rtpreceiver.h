@@ -68,6 +68,9 @@ private:
 public:
     void uvgrtp_rtp_receive_hook(void *arg, uvgrtp::frame::rtp_frame *frame);
 #endif
+private:
+    int n_frames_non_idr=0;
+    int n_frames_idr=0;
 };
 
 #endif // RTPRECEIVER_H

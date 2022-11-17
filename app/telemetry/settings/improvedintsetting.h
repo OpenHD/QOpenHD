@@ -39,6 +39,7 @@ public:
     // helper for an enum where 0==Disable and 1==Enable
     static ImprovedIntSetting createEnumEnableDisable();
 
+    static ImprovedIntSetting createEnumSimple(std::vector<std::pair<std::string,int>> values);
 public:
    // return true if we can do enum mapping for this int (more verbose to the user)
    bool has_enum_mapping()const{
