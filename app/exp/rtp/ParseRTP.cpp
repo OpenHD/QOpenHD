@@ -52,7 +52,7 @@ bool RTPDecoder::validateRTPPacket(const rtp_header_t& rtp_header) {
     if(seqNr==lastSequenceNumber){
         // duplicate. This should never happen for 'normal' rtp streams, but can be usefully when testing bitrates
         // (Since you can send the same packet multiple times to emulate a higher bitrate)
-        std::cerr<<"Same seqNr";
+        qDebug()<<"Same seqNr";
         return false;
     }
     if(lastSequenceNumber==-1){
@@ -67,7 +67,7 @@ bool RTPDecoder::validateRTPPacket(const rtp_header_t& rtp_header) {
         //if(seqNr != ((lastSequenceNumber+1) % UINT16_MAX)){
         if(seqNr != ((lastSequenceNumber+1) % (UINT16_MAX+1))){
             // We are missing a Packet !
-            qDebug()<<"missing a packet. Last:"<<lastSequenceNumber<<" Curr:"<<seqNr<<" Diff:"<<(seqNr-(int)lastSequenceNumber)<<" total:"<<m_n_gaps;
+            //qDebug()<<"missing a packet. Last:"<<lastSequenceNumber<<" Curr:"<<seqNr<<" Diff:"<<(seqNr-(int)lastSequenceNumber)<<" total:"<<m_n_gaps;
             flagPacketHasGoneMissing=true;
             m_n_gaps++;
             const auto gap_size=seqNr-(int)lastSequenceNumber;
@@ -90,7 +90,7 @@ void RTPDecoder::h264_reconstruct_and_forward_one_nalu(const uint8_t *data,const
     timePointStartOfReceivingNALU=std::chrono::steady_clock::now();
     // Full NALU - we can remove the 'drop packet' flag
     if(flagPacketHasGoneMissing){
-        std::cerr<<"Got full NALU - clearing missing packet flag\n";
+        qDebug()<<"Got full NALU - clearing missing packet flag";
         flagPacketHasGoneMissing= false;
     }
     write_h264_h265_nalu_start();
@@ -110,7 +110,7 @@ void RTPDecoder::h264_reconstruct_and_forward_one_nalu(const uint8_t *data,const
 void RTPDecoder::parseRTPH264toNALU(const uint8_t* rtp_data, const size_t data_length){
     //12 rtp header bytes and 1 nalu_header_t type byte
     if(data_length <= sizeof(rtp_header_t)+sizeof(nalu_header_t)){
-        std::cerr<<"Not enough rtp data";
+        qDebug()<<"Not enough rtp data";
         return;
     }
     //MLOGD<<"Got rtp data";
@@ -143,7 +143,7 @@ void RTPDecoder::parseRTPH264toNALU(const uint8_t* rtp_data, const size_t data_l
             m_total_n_fragments_for_current_fu=0;
             // Beginning of new fu sequence - we can remove the 'drop packet' flag
             if(flagPacketHasGoneMissing){
-                std::cerr<<"Got fu-a start - clearing missing packet flag\n";
+                //qDebug()<<"Got fu-a start - clearing missing packet flag";
                 flagPacketHasGoneMissing=false;
             }
             // start of fu-a
@@ -189,7 +189,7 @@ void RTPDecoder::parseRTPH264toNALU(const uint8_t* rtp_data, const size_t data_l
             }
         }
     }else{
-        std::cerr<<"Got unsupported H264 RTP packet. NALU type:"<<(int)nalu_header.type<<"\n";
+        qDebug()<<"Got unsupported H264 RTP packet. NALU type:"<<(int)nalu_header.type;
     }
 }
 
@@ -203,7 +203,7 @@ void RTPDecoder::h265_forward_one_nalu(const uint8_t *data, int data_size,bool w
 {
     timePointStartOfReceivingNALU=std::chrono::steady_clock::now();
     if(flagPacketHasGoneMissing){
-        std::cerr<<"Got full NALU - clearing missing packet flag";
+        //qDebug()<<"Got full NALU - clearing missing packet flag";
         flagPacketHasGoneMissing= false;
     }
     write_h264_h265_nalu_start(write_4_bytes_for_start_code);
@@ -217,7 +217,7 @@ void RTPDecoder::h265_forward_one_nalu(const uint8_t *data, int data_size,bool w
 void RTPDecoder::parseRTPH265toNALU(const uint8_t* rtp_data, const size_t data_length){
     // 12 rtp header bytes and 1 nalu_header_t type byte
     if(data_length <= sizeof(rtp_header_t)+sizeof(nal_unit_header_h265_t)){
-        std::cerr<<"Not enough rtp data";
+        qDebug()<<"Not enough rtp data";
         return;
     }
     //MLOGD<<"Got rtp data";
@@ -228,7 +228,7 @@ void RTPDecoder::parseRTPH265toNALU(const uint8_t* rtp_data, const size_t data_l
     }
     const auto& nal_unit_header_h265=rtpPacket.getNALUHeaderH265();
     if (nal_unit_header_h265.type > 50){
-        std::cerr<<"Unsupported (HEVC) NAL type "<<(int)nal_unit_header_h265.type;
+        qDebug()<<"Unsupported (HEVC) NAL type "<<(int)nal_unit_header_h265.type;
         return;
     }
     if(nal_unit_header_h265.type==48){
@@ -269,7 +269,7 @@ void RTPDecoder::parseRTPH265toNALU(const uint8_t* rtp_data, const size_t data_l
             //MLOGD<<"Bytes "<<StringHelper::vectorAsString(std::vector<uint8_t>(rtp_data,rtp_data+data_length));
             timePointStartOfReceivingNALU=std::chrono::steady_clock::now();
             if(flagPacketHasGoneMissing){
-                std::cerr<<"Got fu-a start - clearing missing packet flag";
+                qDebug()<<"Got fu-a start - clearing missing packet flag";
                 flagPacketHasGoneMissing=false;
             }
             //write_h264_h265_nalu_start(false);
@@ -301,7 +301,7 @@ void RTPDecoder::parse_rtp_mjpeg(const uint8_t *rtp_data, const size_t data_leng
 {
     // 12 rtp header bytes and 8 main header bytes
     if(data_length <= sizeof(rtp_header_t)+8){
-        std::cerr<<"Not enough rtp mjpeg data";
+        qDebug()<<"Not enough rtp mjpeg data";
         return;
     }
     //qDebug()<<"Got rtp mjpeg data";
