@@ -1,3 +1,5 @@
+import QtQuick 2.0
+
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
@@ -26,7 +28,7 @@ Rectangle {
                     ee1.visible=false
                     ee2.visible=true
                 }
-                }
+         }
     }
     Image {
         id: ee2
@@ -40,7 +42,7 @@ Rectangle {
                     ee2.visible=false
                     ee3.visible=true
                 }
-                }
+        }
     }
     Image {
         id: ee3
@@ -54,7 +56,7 @@ Rectangle {
                     ee3.visible=false
                     ee4.visible=true
                 }
-                }
+        }
     }
     Image {
         id: ee4
@@ -68,6 +70,6 @@ Rectangle {
                     ee4.visible=false
                     ee1.visible=true
                 }
-                }
+        }
     }
 }
