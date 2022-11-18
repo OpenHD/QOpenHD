@@ -11,6 +11,8 @@ import OpenHD 1.0
 Rectangle {
     id: settings_form
 
+    property int eeInt : 0
+
     function openSettings() {
         visible = true
     }
@@ -218,6 +220,15 @@ Rectangle {
                     id: aboutButtonMouseArea
                     anchors.fill: parent
                     onClicked: mainStackLayout.currentIndex = 4
+                    if (eeInt > 8){
+                            eeItem.visible = true
+                            eeInt = 0
+                        }
+                        else{
+                            eeItem.visible = false
+                            eeInt = eeInt+1
+
+                        }
                 }
 
                 Text {
@@ -326,7 +337,47 @@ Rectangle {
                     verticalAlignment: Text.AlignVCenter
                     color: mainStackLayout.currentIndex == 6 ? "#33aaff" : "#dde4ed"
                 }
+                
             }
+                       Item {
+                id: eeItem
+                visible: false
+                height: 48
+                width: parent.width
+                MouseArea {
+                    id: eeButtonMouseArea
+                    anchors.fill: parent
+                    onClicked: mainStackLayout.currentIndex = 7
+                }
+
+                Text {
+                    id: eeIcon
+                    text: "\uf05a"
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    font.family: "Font Awesome 5 Free"
+                    font.pixelSize: 18
+                    height: parent.height
+                    width: 24
+                    anchors.left: parent.left
+                    anchors.leftMargin: 12
+
+                    color: "#dde4ed"
+                }
+
+                Text {
+                    id: eeButton
+                    height: parent.height
+                    anchors.left: eeIcon.right
+                    anchors.leftMargin: 6
+
+                    text: qsTr("EasterEgg")
+                    font.pixelSize: 15
+                    horizontalAlignment: Text.AlignLeft
+                    verticalAlignment: Text.AlignVCenter
+                    color: mainStackLayout.currentIndex == 7 ? "#33aaff" : "#dde4ed"
+                }
+
         }
 
         Button {
@@ -385,6 +436,9 @@ Rectangle {
 
         RcInfoPanel {
             id: rcInfoPanel
+        }
+        Eepanel {
+            id: eePanel
         }
 
     }
