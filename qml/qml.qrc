@@ -1,6 +1,8 @@
 <RCC>
     <qresource prefix="/translations" lang="en">
         <file alias="QOpenHD.qm">../translations/QOpenHD_en.qm</file>
+        <file>ui/configpopup/ConfigPopup.qml</file>
+        <file>qml.qrc</file>
     </qresource>
     <qresource prefix="/translations" lang="de">
         <file alias="QOpenHD.qm">../translations/QOpenHD_de.qm</file>
