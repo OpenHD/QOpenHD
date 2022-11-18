@@ -84,9 +84,9 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         qDebug()<<"Do not pass messages not coming from the FC to the FC model";
         return false;
     }
-    if(std::chrono::steady_clock::now()-m_last_update_rate_mavlink_message_global_position_int>std::chrono::seconds(3)){
-        set_curr_update_rate_mavlink_message_global_position_int(m_n_messages_global_position_int_since_last_update/3);
-        m_n_messages_global_position_int_since_last_update=0;
+    if(std::chrono::steady_clock::now()-m_last_update_update_rate_mavlink_message_attitude>std::chrono::seconds(3)){
+        set_curr_update_rate_mavlink_message_attitude(m_n_messages_update_rate_mavlink_message_attitude/3);
+        m_n_messages_update_rate_mavlink_message_attitude=0;
     }
     switch (msg.msgid) {
         case MAVLINK_MSG_ID_HEARTBEAT: {
@@ -262,13 +262,8 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         case MAVLINK_MSG_ID_ATTITUDE:{
             mavlink_attitude_t attitude;
             mavlink_msg_attitude_decode (&msg, &attitude);
-            // handled by mavsdk
-            //set_pitch((double)attitude.pitch *57.2958);
-            //qDebug() << "Pitch:" <<  attitude.pitch*57.2958;
-            //set_roll((double)attitude.roll *57.2958);
-            //qDebug() << "Roll:" <<  attitude.roll*57.2958;
-            //qint64 current_timestamp = QDateTime::currentMSecsSinceEpoch();
-            //last_attitude_timestamp = current_timestamp;
+            // handled by mavsdk attitude_euler callback
+            m_n_messages_update_rate_mavlink_message_attitude++;
             break;
         }
         case MAVLINK_MSG_ID_LOCAL_POSITION_NED:{
@@ -277,28 +272,20 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         case MAVLINK_MSG_ID_GLOBAL_POSITION_INT: {
             mavlink_global_position_int_t global_position;
             mavlink_msg_global_position_int_decode(&msg, &global_position);
-
             set_lat((double)global_position.lat / 10000000.0);
             set_lon((double)global_position.lon / 10000000.0);
-
             set_boot_time(global_position.time_boot_ms);
-
             set_alt_rel(global_position.relative_alt/1000.0);
             // qDebug() << "Altitude relative " << alt_rel;
             set_alt_msl(global_position.alt/1000.0);
             set_vx(global_position.vx/100.0);
             set_vy(global_position.vy/100.0);
             set_vz(global_position.vz/100.0);
-
-            FCMavlinkSystem::instance().calculate_home_distance();
-            FCMavlinkSystem::instance().calculate_home_course();
-
-            FCMavlinkSystem::instance().updateFlightDistance();
-
-            FCMavlinkSystem::instance().updateVehicleAngles();
-
-            FCMavlinkSystem::instance().updateWind();
-            m_n_messages_global_position_int_since_last_update++;
+            calculate_home_distance();
+            calculate_home_course();
+            updateFlightDistance();
+            updateVehicleAngles();
+            updateWind();
             break;
         }
         case MAVLINK_MSG_ID_RC_CHANNELS_RAW:{
@@ -385,7 +372,8 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
             set_battery_percent(battery_status.battery_remaining);
             const QString fc_battery_gauge_glyph = Telemetryutil::battery_gauge_glyph_from_percentage(battery_status.battery_remaining);
             set_battery_percent_gauge(fc_battery_gauge_glyph);
-            // we always use the first cell
+            // we always use the first cell for the "single volt" value. However, not sure how many people have the HW on their air
+            // battery to measure the voltage of a single cell (which is what this would be for)
             set_battery_voltage_single_cell((double)battery_status.voltages[0]/1000.0);
             break;
         }
@@ -460,11 +448,11 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
          LogMessagesModel::instance().addLogMessage("FC",tmp.message.c_str(),tmp.level);
          return true;
     }break;
-        case MAVLINK_MSG_ID_ESC_TELEMETRY_1_TO_4: {
+    case MAVLINK_MSG_ID_ESC_TELEMETRY_1_TO_4: {
             mavlink_esc_telemetry_1_to_4_t esc_telemetry;
             mavlink_msg_esc_telemetry_1_to_4_decode(&msg, &esc_telemetry);
 
-           set_esc_temp((int)esc_telemetry.temperature[0]);
+            set_esc_temp((int)esc_telemetry.temperature[0]);
             break;
         }
         case MAVLINK_MSG_ID_ADSB_VEHICLE: {
