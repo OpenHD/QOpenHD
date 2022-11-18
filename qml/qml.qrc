@@ -212,5 +212,9 @@
         <file>ui/elements/MapComponent.qml</file>
         <file>ui/configpopup/RcInfoPanel.qml</file>
         <file>ui/configpopup/ConfigPopup.qml</file>
+        <file>resources/master1.png</file>
+        <file>resources/master2.png</file>
+        <file>resources/master3.png</file>
+        <file>resources/master4.png</file>
     </qresource>
 </RCC>
