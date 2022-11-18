@@ -109,6 +109,9 @@ class FCMavlinkSystem : public QObject
     // (for example is_copter, is_plane or similar)
     L_RO_PROP(QString, last_ping_result_flight_ctrl,set_last_ping_result_flight_ctrl,"NA")
     L_RO_PROP(bool,supports_basic_commands,set_supports_basic_commands,true)
+    // update rate: here we keep track of how often we get the "MAVLINK_MSG_ID_ATTITUDE" messages.
+    // (since it controlls the art. horizon). This is pretty much the only thing we perhaps need to manually set the update rate on
+    L_RO_PROP(int,curr_update_rate_mavlink_message_attitude,set_curr_update_rate_mavlink_message_attitude,-1)
 public:
     explicit FCMavlinkSystem(QObject *parent = nullptr);
     // singleton for accessing the model from c++
@@ -211,6 +214,8 @@ private:
     QTimer* m_alive_timer = nullptr;
     qint64 m_last_heartbeat = -1;
     void update_alive();
+    std::chrono::steady_clock::time_point m_last_update_update_rate_mavlink_message_attitude=std::chrono::steady_clock::now();
+    int m_n_messages_update_rate_mavlink_message_attitude=0;
 public:
     //
     // Try to change the arming state. Once completed, since we listen to arm/disarm results,

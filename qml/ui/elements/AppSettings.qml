@@ -63,6 +63,7 @@ Settings {
     property string color_caution: "yellow"
     property string font_text: "Sans Serif"
 
+    // animation smoothing value, in ms
     property int smoothing: 250
 
     property string bar_behavior: "red"

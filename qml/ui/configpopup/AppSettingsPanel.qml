@@ -602,7 +602,7 @@ Item {
                         color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
                         Text {
-                            text: qsTr("Animation Smoothing")
+                            text: qsTr("Animation Smoothing,0 to disable")
                             font.weight: Font.Bold
                             font.pixelSize: 13
                             anchors.leftMargin: 8
@@ -613,9 +613,8 @@ Item {
                             anchors.left: parent.left
                         }
 
-
                         Text {
-                            text: Number(settings.smoothing).toLocaleString(Qt.locale(), 'f', 0) + "x";
+                            text: Number(settings.smoothing).toLocaleString(Qt.locale(), 'f', 0) + "ms";
                             font.pixelSize: 16
                             anchors.right: smoothing_Slider.left
                             anchors.rightMargin: 12
