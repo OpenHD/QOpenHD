@@ -297,7 +297,7 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
             break;
         }
         case MAVLINK_MSG_ID_RC_CHANNELS_RAW:{
-            qDebug()<<"Got message RC channels raw";
+            //qDebug()<<"Got message RC channels raw";
             mavlink_rc_channels_raw_t rc_channels_raw;
             mavlink_msg_rc_channels_raw_decode(&msg, &rc_channels_raw);
             //const auto rssi = static_cast<int>(static_cast<double>(rc_channels_raw.rssi) / 255.0 * 100.0);
