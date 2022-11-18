@@ -84,6 +84,10 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         qDebug()<<"Do not pass messages not coming from the FC to the FC model";
         return false;
     }
+    if(std::chrono::steady_clock::now()-m_last_update_rate_mavlink_message_global_position_int>std::chrono::seconds(3)){
+        set_curr_update_rate_mavlink_message_global_position_int(m_n_messages_global_position_int_since_last_update/3);
+        m_n_messages_global_position_int_since_last_update=0;
+    }
     switch (msg.msgid) {
         case MAVLINK_MSG_ID_HEARTBEAT: {
             mavlink_heartbeat_t heartbeat;
@@ -294,6 +298,7 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
             FCMavlinkSystem::instance().updateVehicleAngles();
 
             FCMavlinkSystem::instance().updateWind();
+            m_n_messages_global_position_int_since_last_update++;
             break;
         }
         case MAVLINK_MSG_ID_RC_CHANNELS_RAW:{
