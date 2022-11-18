@@ -218,5 +218,6 @@
         <file>resources/master2.png</file>
         <file>resources/master3.png</file>
         <file>resources/master4.png</file>
+        <file>ui/configpopup/Eepanel.qml</file>
     </qresource>
 </RCC>

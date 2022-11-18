@@ -436,9 +436,9 @@ Rectangle {
         RcInfoPanel {
             id: rcInfoPanel
         }
-        //Eepanel {
-        //    id: eePanel
-        //}
+        Eepanel {
+            id: eePanel
+        }
     }
 }
 
