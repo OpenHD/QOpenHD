@@ -294,9 +294,9 @@ BaseWidget {
 
         Text {
             id: temp_glyph
-            color: _fcMavlinkSystem.press_temp >= settings.press_temp_caution ? (_fcMavlinkSystem.press_temp >= settings.press_temp_warn ? settings.color_warn : settings.color_caution) : settings.color_shape
+            color: _fcMavlinkSystem.preasure_sensor_temperature_degree >= settings.press_temp_caution ? (_fcMavlinkSystem.preasure_sensor_temperature_degree >= settings.press_temp_warn ? settings.color_warn : settings.color_caution) : settings.color_shape
             opacity: settings.press_temp_opacity
-            text: _fcMavlinkSystem.press_temp >= settings.press_temp_caution ? (_fcMavlinkSystem.press_temp >= settings.press_temp_warn ? "\uf2c7" : "\uf2c9") : "\uf2cb"
+            text: _fcMavlinkSystem.preasure_sensor_temperature_degree >= settings.press_temp_caution ? (_fcMavlinkSystem.preasure_sensor_temperature_degree >= settings.press_temp_warn ? "\uf2c7" : "\uf2c9") : "\uf2cb"
             anchors.left: parent.left
             anchors.bottom: parent.bottom
             font.family: "Font Awesome 5 Free"
@@ -312,10 +312,10 @@ BaseWidget {
         Text {
             id: press_temp
             color: {
-                if (_fcMavlinkSystem.press_temp >= settings.press_temp_warn) {
+                if (_fcMavlinkSystem.preasure_sensor_temperature_degree >= settings.press_temp_warn) {
                     widgetInner.visible = true
                     return settings.color_warn
-                } else if (_fcMavlinkSystem.press_temp > settings.press_temp_caution) {
+                } else if (_fcMavlinkSystem.preasure_sensor_temperature_degree > settings.press_temp_caution) {
                     widgetInner.visible = true
                     return settings.color_caution
                 } else if (settings.press_temp_declutter == true
@@ -328,7 +328,7 @@ BaseWidget {
                 }
             }
             opacity: settings.press_temp_opacity
-            text: _fcMavlinkSystem.press_temp == 0 ? qsTr("N/A") : _fcMavlinkSystem.press_temp + "°"
+            text: _fcMavlinkSystem.preasure_sensor_temperature_degree == 0 ? qsTr("N/A") : _fcMavlinkSystem.preasure_sensor_temperature_degree + "°"
             anchors.left: temp_glyph.right
             anchors.leftMargin: 2
             anchors.bottom: parent.bottom

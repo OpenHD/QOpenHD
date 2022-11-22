@@ -44,5 +44,9 @@ Rectangle {
                 _qopenhd.run_dhclient_eth0()
             }
         }
+        Text {
+            id: test1
+            text: qsTr("Art Horizon mavlink update rate:"+_fcMavlinkSystem.curr_update_rate_mavlink_message_attitude+" Hz")
+        }
     }
 }

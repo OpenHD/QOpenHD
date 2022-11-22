@@ -84,9 +84,14 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         qDebug()<<"Do not pass messages not coming from the FC to the FC model";
         return false;
     }
-    if(std::chrono::steady_clock::now()-m_last_update_update_rate_mavlink_message_attitude>std::chrono::seconds(3)){
-        set_curr_update_rate_mavlink_message_attitude(m_n_messages_update_rate_mavlink_message_attitude/3);
+    if(std::chrono::steady_clock::now()-m_last_update_update_rate_mavlink_message_attitude>std::chrono::seconds(2)){
+        const auto delta=std::chrono::steady_clock::now()-m_last_update_update_rate_mavlink_message_attitude;
+        const float message_rate_hz=m_n_messages_update_rate_mavlink_message_attitude/
+                static_cast<float>(std::chrono::duration_cast<std::chrono::milliseconds>(delta).count()/1000.0);
+        qDebug()<<"Updates:"<<m_n_messages_update_rate_mavlink_message_attitude<<" Rate:"<<message_rate_hz<<" Hz";
+        set_curr_update_rate_mavlink_message_attitude(message_rate_hz);
         m_n_messages_update_rate_mavlink_message_attitude=0;
+        m_last_update_update_rate_mavlink_message_attitude=std::chrono::steady_clock::now();
     }
     switch (msg.msgid) {
         case MAVLINK_MSG_ID_HEARTBEAT: {
@@ -249,13 +254,13 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         case MAVLINK_MSG_ID_RAW_IMU:{
             mavlink_raw_imu_t raw_imu;
             mavlink_msg_raw_imu_decode(&msg, &raw_imu);
-            set_imu_temp((int)raw_imu.temperature/100);
+            set_imu_temp_degree((int)raw_imu.temperature/100);
             break;
         }
         case MAVLINK_MSG_ID_SCALED_PRESSURE:{
             mavlink_scaled_pressure_t scaled_pressure;
             mavlink_msg_scaled_pressure_decode(&msg, &scaled_pressure);
-            set_press_temp((int)scaled_pressure.temperature/100);
+            set_preasure_sensor_temperature_degree((int)scaled_pressure.temperature/100);
             //qDebug() << "Temp:" <<  scaled_pressure.temperature;
             break;
         }

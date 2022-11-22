@@ -29,6 +29,9 @@ HEADERS += \
     $$PWD/texturerenderer.h \
     $$PWD/avcodec_decoder.h \
     $$PWD/udp/UDPReceiver.h \
+    $$PWD/readerwriterqueue/atomicops.h \
+    $$PWD/readerwriterqueue/readerwritercircularbuffer.h \
+    $$PWD/readerwriterqueue/readerwriterqueue.h \
 
 # Search for mmal at compile time, when found, we can do the "best" path video to display on rpi -
 # note that you then have to use a /boot/config.txt with fkms for mmal to work (default in OpenHD image,
