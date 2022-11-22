@@ -72,6 +72,8 @@ static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string&
     std::map<std::string,ImprovedIntSetting> map_improved_params;
     map_improved_params["TEST_INT_0"]=ImprovedIntSetting::createEnumEnableDisable();
     map_improved_params["ENABLE_JOY_RC"]=ImprovedIntSetting::createEnumEnableDisable();
+    map_improved_params["VARIABLE_BITRATE"]=ImprovedIntSetting::createEnumEnableDisable();
+    map_improved_params["FC_UART_FLWCTL"]=ImprovedIntSetting::createEnumEnableDisable();
     {
         std::vector<std::string> values{};
         values.push_back("enum0");

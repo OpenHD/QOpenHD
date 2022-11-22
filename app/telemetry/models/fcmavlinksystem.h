@@ -84,8 +84,8 @@ class FCMavlinkSystem : public QObject
     L_RO_PROP(float,mav_wind_direction,set_mav_wind_direction,0)
     L_RO_PROP(float,mav_wind_speed,set_mav_wind_speed,0)
     L_RO_PROP(int,rc_rssi,set_rc_rssi,0);
-    L_RO_PROP(int,imu_temp,set_imu_temp,0);
-    L_RO_PROP(int,press_temp,set_press_temp,0);
+    L_RO_PROP(int,imu_temp_degree,set_imu_temp_degree,0);
+    L_RO_PROP(int,preasure_sensor_temperature_degree,set_preasure_sensor_temperature_degree,0)
     L_RO_PROP(int,esc_temp,set_esc_temp,0);
     L_RO_PROP(QString,flight_time,set_flight_time,"00:00")
     L_RO_PROP(double,flight_distance,set_flight_distance,0)
@@ -111,7 +111,7 @@ class FCMavlinkSystem : public QObject
     L_RO_PROP(bool,supports_basic_commands,set_supports_basic_commands,true)
     // update rate: here we keep track of how often we get the "MAVLINK_MSG_ID_ATTITUDE" messages.
     // (since it controlls the art. horizon). This is pretty much the only thing we perhaps need to manually set the update rate on
-    L_RO_PROP(int,curr_update_rate_mavlink_message_attitude,set_curr_update_rate_mavlink_message_attitude,-1)
+    L_RO_PROP(float,curr_update_rate_mavlink_message_attitude,set_curr_update_rate_mavlink_message_attitude,-1)
 public:
     explicit FCMavlinkSystem(QObject *parent = nullptr);
     // singleton for accessing the model from c++

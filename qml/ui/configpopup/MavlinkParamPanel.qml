@@ -40,7 +40,7 @@ Rectangle {
             //width: ListView.view.width
             height: 64
             Row {
-                anchors.fill: parent
+                //anchors.fill: parent
                 spacing: 5
 
                 Label {
@@ -94,14 +94,20 @@ Rectangle {
         anchors.bottom: parent.bottom
 
         ScrollView{
+            //height: parent.height
             anchors.fill: parent
+
+            contentWidth: availableWidth
+
             ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
             ScrollBar.vertical.policy: ScrollBar.AlwaysOn
+            // allow dragging without using the vertical scroll bar
+            ScrollBar.vertical.interactive: true
 
             ListView {
                 id: listView
                 //top: fetchAllButtonId.bottom
-                width: parent.width
+                //width: parent.width
                 model: m_instanceMavlinkSettingsModel
                 delegate: delegateCamera0SettingsValue
             }
