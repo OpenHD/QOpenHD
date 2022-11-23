@@ -8,8 +8,8 @@
 #include "../../videostreaming/decodingstatistcs.h"
 #include "common_consti/openhd-util.hpp"
 
-//constexpr auto LOCAL_ADDRESS = "127.0.0.1";
-constexpr auto LOCAL_ADDRESS = "10.42.0.1";
+constexpr auto LOCAL_ADDRESS = "127.0.0.1";
+//constexpr auto LOCAL_ADDRESS = "10.42.0.1";
 
 #ifdef OPENHD_USE_LIB_UVGRTP
 void rtp_receive_hook(void *arg, uvgrtp::frame::rtp_frame *frame){
@@ -148,6 +148,7 @@ void RTPReceiver::queue_data(const uint8_t* nalu_data,const std::size_t nalu_dat
 #ifdef OPENHD_USE_LIB_UVGRTP
 void RTPReceiver::uvgrtp_rtp_receive_hook(void *arg, uvgrtp::frame::rtp_frame *frame)
 {
+    qDebug()<<"Got uvg data:"<<frame->payload_len-frame->padding_len<<" padding:"<<frame->padding_len;
     nalu_data_callback(std::chrono::steady_clock::now(),frame->payload,frame->payload_len-frame->padding_len);
     (void)uvgrtp::frame::dealloc_frame(frame);
 }
