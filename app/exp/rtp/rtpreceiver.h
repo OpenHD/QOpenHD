@@ -15,6 +15,7 @@
 
 #include "../../common_consti/TimeHelper.hpp"
 #include "../../common_consti/EmulatedPacketDrop.hpp"
+#include "../readerwriterqueue/readerwritercircularbuffer.h"
 
 //#define OPENHD_USE_LIB_UVGRTP
 
@@ -28,7 +29,9 @@ public:
     RTPReceiver(int port,bool is_h265,bool feed_incomplete_frames);
     ~RTPReceiver();
 
-    std::shared_ptr<NALU> get_data();
+    // Returns the oldest frame if available.
+    // if timeout >0, wait for up to timeout for a new frame
+    std::shared_ptr<NALU> get_data(std::chrono::microseconds timeout=std::chrono::microseconds(0));
 
     std::shared_ptr<std::vector<uint8_t>> get_config_data();
     bool config_has_changed_during_decode=false;
@@ -48,9 +51,8 @@ private:
     const bool is_h265;
 private:
     std::mutex m_data_mutex;
-    std::queue<std::shared_ptr<NALU>> m_data;
-    static constexpr auto MAX_DATA_QUEUE_SIZE=20;
-
+    // space for up to 20 NALUs to account for "weird" cases, fifo anyways
+    moodycamel::BlockingReaderWriterCircularBuffer<std::shared_ptr<NALU>> m_data_queue{20};
     void queue_data(const uint8_t* nalu_data,const std::size_t nalu_data_len);
 private:
     std::unique_ptr<KeyFrameFinder> m_keyframe_finder;

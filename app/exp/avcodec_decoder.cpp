@@ -803,12 +803,11 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp(const QOpenHDVideoHe
             std::shared_ptr<NALU> buf=nullptr;
              while(buf==nullptr){
                  // do not peg the cpu completely here
-                 std::this_thread::sleep_for(std::chrono::milliseconds(5));
+                 buf=m_rtp_receiver->get_data(std::chrono::milliseconds(kDefaultFrameTimeout));
                  if(request_restart){
                      request_restart=false;
                      goto finish;
                  }
-                 buf=m_rtp_receiver->get_data();
              }
              //qDebug()<<"Got decode data (after keyframe)";
              pkt->data=(uint8_t*)buf->getData();
@@ -880,12 +879,11 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp_and_mmal_direct(cons
            std::shared_ptr<NALU> buf=nullptr;
             while(buf==nullptr){
                 // do not peg the cpu completely here
-                std::this_thread::sleep_for(std::chrono::milliseconds(5));
+                buf=m_rtp_receiver->get_data(std::chrono::milliseconds(kDefaultFrameTimeout));
                 if(request_restart){
                     request_restart=false;
                     goto finish;
                 }
-                buf=m_rtp_receiver->get_data();
             }
              //RPIMMALDecoder::instance().feed_frame(buf->getData(),buf->getSize());
              const bool feed_frame_success=mmal_decode_display->feed_frame(buf->getData(),buf->getSize());
