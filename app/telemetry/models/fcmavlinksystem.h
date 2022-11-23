@@ -86,6 +86,7 @@ class FCMavlinkSystem : public QObject
     L_RO_PROP(int,rc_rssi,set_rc_rssi,0);
     L_RO_PROP(int,imu_temp_degree,set_imu_temp_degree,0);
     L_RO_PROP(int,preasure_sensor_temperature_degree,set_preasure_sensor_temperature_degree,0)
+    L_RO_PROP(int,airspeed_sensor_temperature_degree,set_airspeed_sensor_temperature_degree,99)
     L_RO_PROP(int,esc_temp,set_esc_temp,0);
     L_RO_PROP(QString,flight_time,set_flight_time,"00:00")
     L_RO_PROP(double,flight_distance,set_flight_distance,0)

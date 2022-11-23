@@ -176,6 +176,13 @@ Settings {
     property double press_temp_warn: 75
     property double press_temp_caution: 60
 
+    property bool show_airspeed_temp: false
+    property double airspeed_temp_opacity: 1
+    property double airspeed_temp_size: 1
+    property bool airspeed_temp_declutter: false
+    property double airspeed_temp_warn: 0
+    property double airspeed_temp_caution: 10
+
     property bool show_esc_temp: false
     property double esc_temp_opacity: 1
     property double esc_temp_size: 1
