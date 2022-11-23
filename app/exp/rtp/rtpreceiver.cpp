@@ -75,7 +75,7 @@ RTPReceiver::~RTPReceiver()
  std::shared_ptr<NALU> RTPReceiver::get_data(std::chrono::microseconds timeout)
 {
     std::shared_ptr<NALU> ret=nullptr;
-    qDebug()<<"get_data size_estimate:"<<m_data_queue.size_approx();
+    //qDebug()<<"get_data size_estimate:"<<m_data_queue.size_approx();
     if(timeout>std::chrono::microseconds(0)){
         //m_data_queue.try_dequeue(ret);
         m_data_queue.wait_dequeue_timed(ret,timeout);
@@ -134,7 +134,7 @@ void RTPReceiver::queue_data(const uint8_t* nalu_data,const std::size_t nalu_dat
             const auto fps_as_string=StringHelper::to_string_with_precision(fps,2)+"fps";
             DecodingStatistcs::instance().set_estimate_rtp_fps({fps_as_string.c_str()});
         }
-        qDebug()<<"Queue size:"<<m_data_queue.size_approx();
+        //qDebug()<<"Queue size:"<<m_data_queue.size_approx();
         if(!m_data_queue.try_enqueue(std::make_shared<NALU>(nalu))){
             n_dropped_frames++;
             qDebug()<<"Dropping incoming frame, total:"<<n_dropped_frames;
