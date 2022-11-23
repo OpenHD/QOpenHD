@@ -107,6 +107,10 @@ Item {
         id: press_temp
     }
 
+    AirspeedTempWidget {
+        id: airspeed_temp
+    }
+
     // + 0% cpu
     EscTempWidget {
         id: esc_temp
