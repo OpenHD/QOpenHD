@@ -351,6 +351,14 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
             //last_vfr_timestamp = current_timestamp;
             break;
         }
+        case MAVLINK_MSG_ID_HIGH_LATENCY2:{
+            mavlink_high_latency2_t high_latency2;
+            mavlink_msg_high_latency2_decode(&msg, &high_latency2);
+            auto airspeed_temp = high_latency2.temperature_air;
+            set_airspeed_sensor_temperature_degree(airspeed_temp);
+            qDebug() << "Airspeed Sensor Temp- " << airspeed_temp;
+            break;
+        }
         case MAVLINK_MSG_ID_TIMESYNC:{
             break;
         }
