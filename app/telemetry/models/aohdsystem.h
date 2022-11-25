@@ -29,7 +29,14 @@ class AOHDSystem : public QObject
     L_RO_PROP(QString,curr_video1_tx_pps,set_curr_video1_tx_pps,"-1pps")
     L_RO_PROP(QString,curr_telemetry_tx_pps,set_curr_telemetry_tx_pps,"-1pps")
     L_RO_PROP(int,curr_rx_packet_loss_perc,set_curr_rx_packet_loss_perc,-1)
-     L_RO_PROP(int,curr_n_of_big_gaps,set_curr_n_of_big_gaps,-1)
+    L_RO_PROP(int,curr_n_of_big_gaps,set_curr_n_of_big_gaps,-1)
+    // Video bitrate(s)
+    // only valid on air (where data is produced)
+    L_RO_PROP(QString,curr_video0_measured_encoder_bitrate,set_curr_video0_measured_encoder_bitrate,"N/A")
+    // only valid on air (where data is produced), includes FEC overhead
+    L_RO_PROP(QString,curr_video0_injected_bitrate,set_curr_video0_injected_bitrate,"N/A")
+    // only valid on ground (where data is received)
+    L_RO_PROP(QString,curr_video0_received_bitrate_with_fec,set_curr_video0_received_bitrate_with_fec,"N/A")
 public:
     explicit AOHDSystem(const bool is_air,QObject *parent = nullptr);
     // Singletons for accessing the models from c++
@@ -48,7 +55,7 @@ private:
      // These are for handling the slight differences regarding air/ ground properly, if there are any
      // For examle, the onboard computer status is the same when coming from either air or ground,
      // but the stats total are to be interpreted slightly different for air and ground.
-     void process_x0(const  mavlink_onboard_computer_status_t& msg);
+     void process_x0(const mavlink_onboard_computer_status_t& msg);
      void process_x1(const mavlink_openhd_wifibroadcast_wifi_card_t& msg);
      void process_x2(const mavlink_openhd_stats_total_all_wifibroadcast_streams_t& msg);
      void process_x3(const mavlink_openhd_fec_link_rx_statistics_t& msg);
@@ -102,13 +109,9 @@ public:
      //
      Q_PROPERTY(QString curr_incoming_bitrate MEMBER m_curr_incoming_bitrate WRITE set_curr_incoming_bitrate NOTIFY curr_incoming_bitrate_changed)
      void set_curr_incoming_bitrate(QString curr_incoming_bitrate);
-     Q_PROPERTY(QString curr_incoming_video_bitrate MEMBER m_curr_incoming_video_bitrate WRITE set_curr_incoming_video_bitrate NOTIFY curr_incoming_video_bitrate_changed)
-     void set_curr_incoming_video_bitrate(QString curr_incoming_video_bitrate);
      Q_PROPERTY(QString curr_incoming_tele_bitrate MEMBER m_curr_incoming_tele_bitrate WRITE set_curr_incoming_tele_bitrate NOTIFY curr_incoming_tele_bitrate_changed)
      void set_curr_incoming_tele_bitrate(QString curr_incoming_tele_bitrate);
      //
-     Q_PROPERTY(QString curr_outgoing_video_bitrate MEMBER m_curr_outgoing_video_bitrate WRITE set_curr_outgoing_video_bitrate NOTIFY curr_outgoing_video_bitrate_changed)
-     void set_curr_outgoing_video_bitrate(QString curr_outgoing_video_bitrate);
      Q_PROPERTY(int total_tx_error_count MEMBER m_total_tx_error_count WRITE set_total_tx_error_count NOTIFY total_tx_error_count_changed)
      void set_total_tx_error_count(int total_tx_error_count);
      // these are only active on the ground system, since they are created by the video rx-es
@@ -150,10 +153,8 @@ signals:
      //
      void gpio_changed(QList<int> gpio);
      void curr_incoming_bitrate_changed(QString curr_incoming_bitrate);
-     void curr_incoming_video_bitrate_changed(QString curr_incoming_video_bitrate);
      void curr_incoming_tele_bitrate_changed(QString curr_incoming_tele_bitrate);
 
-     void curr_outgoing_video_bitrate_changed(QString curr_outgoing_video_bitrate);
      void total_tx_error_count_changed(int total_tx_error_count);
      // only on ground
      void video_rx_blocks_lost_changed(int video_rx_blocks_lost);
@@ -190,9 +191,7 @@ private:
      QList<int> m_gpio{0};
      //
      QString m_curr_incoming_bitrate="Bitrate NA";
-     QString m_curr_incoming_video_bitrate="Bitrate NA";
      QString m_curr_incoming_tele_bitrate="Bitrate NA";
-     QString m_curr_outgoing_video_bitrate="Bitrate NA";
      //
      QString m_curr_set_video_bitrate="NA";
      QString m_curr_set_video_codec="Unknown";

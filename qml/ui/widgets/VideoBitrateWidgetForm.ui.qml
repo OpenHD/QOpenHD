@@ -61,7 +61,7 @@ BaseWidget {
                 height: 42
                 Text {
                     id: bitrateSettingsTitle
-                    text: qsTr("BITRATE")
+                    text: qsTr("Video Bitrates")
                     color: "white"
                     height: parent.height - 10
                     width: parent.width
@@ -294,7 +294,7 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Text {
-                    text: _ohdSystemAir.curr_outgoing_video_bitrate
+                    text: _ohdSystemAir.curr_video0_measured_encoder_bitrate
                     color: "white";
                     font.bold: true;
                     height: parent.height
@@ -316,8 +316,7 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Text {
-                    // TODO fixme
-                    text: _ohdSystemGround.curr_incoming_video_bitrate
+                    text: _ohdSystemAir.curr_video0_injected_bitrate
                     color: "white";
                     font.bold: true;
                     height: parent.height
@@ -341,13 +340,6 @@ BaseWidget {
             y: 0
             width: 24
             height: 48
-            /*color: {
-                if (OpenHD.kbitrate_measured <= 0.1) {
-                    return settings.color_shape;
-                }
-
-                return (OpenHD.kbitrate / OpenHD.kbitrate_measured) >= 0.70 ? ((OpenHD.kbitrate / OpenHD.kbitrate_measured) >= 0.80 ? "#ff0000" : "#fbfd15") : settings.color_shape
-            }*/
             text: "\uf03d"
             anchors.left: parent.left
             anchors.leftMargin: -2
@@ -365,7 +357,7 @@ BaseWidget {
             width: 84
             height: 32
             color: settings.color_text
-            text: _ohdSystemGround.curr_incoming_video_bitrate
+            text: _ohdSystemGround.curr_video0_received_bitrate_with_fec
             anchors.verticalCenterOffset: 0
             anchors.left: camera_icon.right
             anchors.leftMargin: 6

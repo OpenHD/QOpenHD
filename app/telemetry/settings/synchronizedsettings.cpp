@@ -53,9 +53,10 @@ void SynchronizedSettings::change_param_air_and_ground(QString param_id,int valu
         workaround::makePopupMessage("Precondition: Air and Ground running and alive not given. Change not possible.");
         return;
     }
+    const MavlinkSettingsModel::ExtraRetransmitParams extra_retransmit_params{std::chrono::milliseconds(100),10};
     // First change it on the air and wait for ack - if failed, return. MAVSDK does 3 retransmission(s) until acked so it is really unlikely that
     // we set the value and all 3 ack's are lost (which would be the generals problem and then the frequenies are out of sync).
-    const bool air_success=MavlinkSettingsModel::instanceAir().try_set_param_int_impl(param_id,value);
+    const bool air_success=MavlinkSettingsModel::instanceAir().try_set_param_int_impl(param_id,value,extra_retransmit_params);
     if(!air_success){
         std::stringstream ss;
         ss<<"Air rejected "<<param_id.toStdString()<<":"<<value<<" nothing changed";

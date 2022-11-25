@@ -305,15 +305,17 @@ bool MavlinkSettingsModel::try_refetch_parameter_string(QString param_id)
     return false;
 }
 
-bool MavlinkSettingsModel::try_set_param_int_impl(const QString param_id, int value,std::optional<std::chrono::milliseconds> timeout)
+bool MavlinkSettingsModel::try_set_param_int_impl(const QString param_id, int value,std::optional<ExtraRetransmitParams> extra_retransmit_params)
 {
     if(param_client){
-        if(timeout){
-            param_client->set_timeout(std::chrono::duration_cast<std::chrono::milliseconds>(timeout.value()).count()/1000.0);
-            param_client->set_n_retransmissions(3);
+        if(extra_retransmit_params.has_value()){
+            const double timeout_s=std::chrono::duration_cast<std::chrono::milliseconds>(extra_retransmit_params.value().retransmit_timeout).count()/1000.0;
+            param_client->set_timeout(timeout_s);
+            param_client->set_n_retransmissions(extra_retransmit_params.value().n_retransmissions);
         }
         const auto result=param_client->set_param_int(param_id.toStdString(),value);
-        if(timeout){
+        if(extra_retransmit_params.has_value()){
+            // restores defaults
             param_client->set_timeout(-1);
             param_client->set_n_retransmissions(3);
         }
@@ -324,10 +326,20 @@ bool MavlinkSettingsModel::try_set_param_int_impl(const QString param_id, int va
     return false;
 }
 
-bool MavlinkSettingsModel::try_set_param_string_impl(const QString param_id,QString value)
+bool MavlinkSettingsModel::try_set_param_string_impl(const QString param_id,QString value,std::optional<ExtraRetransmitParams> extra_retransmit_params)
 {
     if(param_client){
+        if(extra_retransmit_params.has_value()){
+            const double timeout_s=std::chrono::duration_cast<std::chrono::milliseconds>(extra_retransmit_params.value().retransmit_timeout).count()/1000.0;
+            param_client->set_timeout(timeout_s);
+            param_client->set_n_retransmissions(extra_retransmit_params.value().n_retransmissions);
+        }
         const auto result=param_client->set_param_custom(param_id.toStdString(),value.toStdString());
+        if(extra_retransmit_params.has_value()){
+            // restores defaults
+            param_client->set_timeout(-1);
+            param_client->set_n_retransmissions(3);
+        }
         if(result==mavsdk::Param::Result::Success){
             return true;
         }

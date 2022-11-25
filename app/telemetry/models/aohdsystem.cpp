@@ -159,7 +159,7 @@ void AOHDSystem::process_x2(const mavlink_openhd_stats_total_all_wifibroadcast_s
             // ground
             total_rx_bitrate+=msg.curr_video0_bps;
             total_rx_bitrate+=msg.curr_video1_bps;
-            set_curr_incoming_video_bitrate(QString(StringHelper::bitrate_to_string(msg.curr_video0_bps).c_str()));
+            //set_curr_incoming_video_bitrate(QString(StringHelper::bitrate_to_string(msg.curr_video0_bps).c_str()));
         }else{
             set_curr_video0_tx_pps((std::to_string(msg.curr_video0_tx_pps)+"pps").c_str());
             set_curr_video1_tx_pps((std::to_string(msg.curr_video1_tx_pps)+"pps").c_str());
@@ -168,7 +168,7 @@ void AOHDSystem::process_x2(const mavlink_openhd_stats_total_all_wifibroadcast_s
         const auto bitrate_string=StringHelper::bitrate_to_string(total_rx_bitrate);
         set_curr_incoming_bitrate(QString(bitrate_string.c_str()));
         if(_is_air){
-            set_curr_outgoing_video_bitrate(StringHelper::bitrate_to_string(msg.curr_video0_bps).c_str());
+            //set_curr_outgoing_video_bitrate(StringHelper::bitrate_to_string(msg.curr_video0_bps).c_str());
         }
     }
     set_wifi_rx_packets_count(msg.count_wifi_packets_received);
@@ -334,22 +334,10 @@ void AOHDSystem::set_curr_incoming_bitrate(QString curr_incoming_bitrate)
     emit curr_incoming_bitrate_changed(curr_incoming_bitrate);
 }
 
-void AOHDSystem::set_curr_incoming_video_bitrate(QString curr_incoming_video_bitrate)
-{
-    m_curr_incoming_video_bitrate=curr_incoming_video_bitrate;
-    emit curr_incoming_video_bitrate_changed(curr_incoming_video_bitrate);
-}
-
 void AOHDSystem::set_curr_incoming_tele_bitrate(QString curr_incoming_tele_bitrate)
 {
     m_curr_incoming_tele_bitrate=curr_incoming_tele_bitrate;
     emit curr_incoming_tele_bitrate_changed(curr_incoming_tele_bitrate);
-}
-
-void AOHDSystem::set_curr_outgoing_video_bitrate(QString curr_outgoing_video_bitrate)
-{
-    m_curr_outgoing_video_bitrate=curr_outgoing_video_bitrate;
-    emit curr_outgoing_video_bitrate_changed(curr_outgoing_video_bitrate);
 }
 
 void AOHDSystem::set_total_tx_error_count(int total_tx_error_count)
@@ -412,8 +400,8 @@ void AOHDSystem::update_alive()
         if(delta>std::chrono::seconds(5)){
             set_curr_incoming_bitrate("Bitrate NA");
             set_curr_incoming_tele_bitrate("Bitrate NA");
-            set_curr_incoming_video_bitrate("Bitrate NA");
-            set_curr_outgoing_video_bitrate("Bitrate NA");
+            //set_curr_incoming_video_bitrate("Bitrate NA");
+            //set_curr_outgoing_video_bitrate("Bitrate NA");
         }
     }
 }
