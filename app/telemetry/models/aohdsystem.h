@@ -37,6 +37,17 @@ class AOHDSystem : public QObject
     L_RO_PROP(QString,curr_video0_injected_bitrate,set_curr_video0_injected_bitrate,"N/A")
     // only valid on ground (where data is received)
     L_RO_PROP(QString,curr_video0_received_bitrate_with_fec,set_curr_video0_received_bitrate_with_fec,"N/A")
+    // --------- SOC statistics, generic for both air and ground
+    L_RO_PROP(int,curr_cpuload_perc,set_curr_cpuload_perc,0)
+    L_RO_PROP(int,curr_soc_temp_degree,set_curr_soc_temp_degree,0)
+    L_RO_PROP(int,curr_cpu_freq_mhz,set_curr_cpu_freq_mhz,0)
+    L_RO_PROP(int,curr_isp_freq_mhz,set_curr_isp_freq_mhz,0)
+    L_RO_PROP(int,curr_h264_freq_mhz,set_curr_h264_freq_mhz,0)
+    L_RO_PROP(int,curr_core_freq_mhz,set_curr_core_freq_mhz,0)
+    //L_RO_PROP(int,,set_,0)
+    L_RO_PROP(QString,openhd_version,set_openhd_version,"N/A")
+    L_RO_PROP(QString,last_ping_result_openhd,set_last_ping_result_openhd,"N/A")
+    // WB / Monitor mode link statistics, generic for both air and ground (incoming / outgoing)
 public:
     explicit AOHDSystem(const bool is_air,QObject *parent = nullptr);
     // Singletons for accessing the models from c++
@@ -56,29 +67,11 @@ private:
      // For examle, the onboard computer status is the same when coming from either air or ground,
      // but the stats total are to be interpreted slightly different for air and ground.
      void process_x0(const mavlink_onboard_computer_status_t& msg);
-     void process_x1(const mavlink_openhd_wifibroadcast_wifi_card_t& msg);
-     void process_x2(const mavlink_openhd_stats_total_all_wifibroadcast_streams_t& msg);
-     void process_x3(const mavlink_openhd_fec_link_rx_statistics_t& msg);
-     // QT Code pegin
+     void process_x1(const mavlink_openhd_stats_monitor_mode_wifi_card_t& msg);
+     void process_x2(const mavlink_openhd_stats_monitor_mode_wifi_link_t& msg);
+     void process_x3(const mavlink_openhd_stats_wb_video_air_t& msg);
+     void process_x4(const mavlink_openhd_stats_wb_video_ground_t& msg);
 public:
-     // these are mostly based on what rpi provides as stats
-     Q_PROPERTY(int cpuload MEMBER m_cpuload WRITE set_cpuload NOTIFY cpuload_changed)
-     void set_cpuload(int cpuload);
-     Q_PROPERTY(int temp MEMBER m_temp WRITE set_temp NOTIFY temp_changed)
-     void set_temp(int temp);
-     Q_PROPERTY(int curr_cpu_freq_mhz MEMBER m_curr_cpu_freq_mhz WRITE set_curr_cpu_freq_mhz NOTIFY curr_cpu_freq_mhz_changed)
-     void set_curr_cpu_freq_mhz(int curr_cpu_freq_mhz);
-     Q_PROPERTY(int curr_isp_freq_mhz MEMBER m_curr_isp_freq_mhz WRITE set_curr_isp_freq_mhz NOTIFY curr_isp_freq_mhz_changed)
-     void set_curr_isp_freq_mhz(int curr_isp_freq_mhz);
-     Q_PROPERTY(int curr_h264_freq_mhz MEMBER m_curr_h264_freq_mhz WRITE set_curr_h264_freq_mhz NOTIFY curr_h264_freq_mhz_changed)
-     void set_curr_h264_freq_mhz(int curr_h264_freq_mhz);
-     Q_PROPERTY(int curr_core_freq_mhz MEMBER m_curr_core_freq_mhz WRITE set_curr_core_freq_mhz NOTIFY curr_core_freq_mhz_changed)
-     void set_curr_core_freq_mhz(int curr_core_freq_mhz);
-     //
-     Q_PROPERTY(QString m_openhd_version MEMBER m_openhd_version WRITE set_openhd_version NOTIFY openhd_version_changed)
-     void set_openhd_version(QString openhd_version_);
-     Q_PROPERTY(QString last_ping_result_openhd MEMBER  m_last_ping_result_openhd WRITE set_last_ping_result_openhd NOTIFY last_ping_result_openhd_changed)
-     void set_last_ping_result_openhd(QString last_ping_result_openhd);
      Q_PROPERTY(qint64 last_openhd_heartbeat MEMBER m_last_openhd_heartbeat WRITE set_last_openhd_heartbeat NOTIFY last_openhd_heartbeat_changed)
      void set_last_openhd_heartbeat(qint64 last_openhd_heartbeat);
      Q_PROPERTY(bool is_alive MEMBER m_is_alive WRITE set_is_alive NOTIFY is_alive_changed)
@@ -127,16 +120,7 @@ public:
      void set_curr_set_video_codec(QString curr_set_video_codec);
      void set_curr_set_video_codec_int(int value);
 signals:
-     void cpuload_changed(int cpuload);
-     void temp_changed(int temp);
-     void curr_cpu_freq_mhz_changed(int curr_cpu_freq_mhz);
      //
-     void curr_isp_freq_mhz_changed(int curr_isp_freq_mhz);
-     void curr_h264_freq_mhz_changed(int curr_h264_freq_mhz);
-     void curr_core_freq_mhz_changed(int curr_core_freq_mhz);
-     //
-     void openhd_version_changed(QString openhd_version_);
-     void last_ping_result_openhd_changed(QString last_ping_result_openhd);
      void last_openhd_heartbeat_changed(qint64 last_openhd_heartbeat);
      void is_alive_changed(bool alive);
      void best_rx_rssi_changed(int best_rx_rssi);
@@ -165,14 +149,6 @@ signals:
 public:
      bool is_alive(){return m_is_alive;}
 private:
-     int m_cpuload = 0;
-     int m_temp = 0;
-     int m_curr_cpu_freq_mhz=-1;
-     int m_curr_isp_freq_mhz=-1;
-     int m_curr_h264_freq_mhz=-1;
-     int m_curr_core_freq_mhz=-1;
-     QString m_openhd_version="NA";
-     QString m_last_ping_result_openhd="NA";
      qint64 m_last_openhd_heartbeat = -1;
      bool m_is_alive=false; // see alive timer
      int m_best_rx_rssi = -127;
