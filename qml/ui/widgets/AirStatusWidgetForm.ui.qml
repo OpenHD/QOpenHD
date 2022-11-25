@@ -374,7 +374,7 @@ BaseWidget {
 
             Text {
                 //Layout.alignment: left
-                text: "CPU freq: "+_ohdSystemAir.curr_cpu_freq_mhz
+                text: "CPU freq: "+_ohdSystemAir.curr_cpu_freq_mhz+" Mhz"
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -383,7 +383,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: "ISP freq: "+_ohdSystemAir.curr_isp_freq_mhz
+                text: "ISP freq: "+_ohdSystemAir.curr_isp_freq_mhz+" Mhz"
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -392,7 +392,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: "H264 freq: "+_ohdSystemAir.curr_h264_freq_mhz
+                text: "H264 freq: "+_ohdSystemAir.curr_h264_freq_mhz+" Mhz"
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -401,14 +401,13 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: "Core freq: "+_ohdSystemAir.curr_core_freq_mhz
+                text: "Core freq: "+_ohdSystemAir.curr_core_freq_mhz+" Mhz"
                 color: "white"
                 font.bold: true
                 height: parent.height
                 font.pixelSize: detailPanelFontPixels
                 verticalAlignment: Text.AlignVCenter
             }
-
         }
     }
 
