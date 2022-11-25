@@ -39,7 +39,8 @@ public:
 public:
     void set_param_client(std::shared_ptr<mavsdk::System> system);
 private:
-    std::shared_ptr<mavsdk::Param> param_client;
+    std::shared_ptr<mavsdk::Param> param_client=nullptr;
+    std::shared_ptr<mavsdk::System> m_system=nullptr;
 public:
     // Fetch a param value using mavsdk. Returns std::nullopt on failure,
     // The param value otherwise.
@@ -58,7 +59,7 @@ public:
     // and get its response (ok or rejected) or - in rare -cases - timeout.
     // Returns true on success, false otherwise
     // NOTE: This does not update the value cached in the QT model on the ground, use try_update_parameter..() instead
-    bool try_set_param_int_impl(const QString param_id,int value);
+    bool try_set_param_int_impl(const QString param_id,int value,std::optional<std::chrono::milliseconds> timeout=std::nullopt);
     bool try_set_param_string_impl(const QString param_id,QString value);
 
     // first updates the parameter on the server via MAVSDK (unless server rejects / rare timeout)
