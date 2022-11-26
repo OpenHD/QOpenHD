@@ -24,9 +24,9 @@ static QString bitrate_to_qstring(int64_t bitrate_bits_per_second){
 }
 static QString us_min_max_avg_to_string(int32_t min_us,int32_t max_us,int32_t avg_us){
     std::stringstream ss;
-    ss<<"Avg:"<<MyTimeHelper::R(std::chrono::microseconds(avg_us))<<", ";
     ss<<"Min:"<<MyTimeHelper::R(std::chrono::microseconds(min_us))<<", ";
     ss<<"Max:"<<MyTimeHelper::R(std::chrono::microseconds(max_us));
+    ss<<"Avg:"<<MyTimeHelper::R(std::chrono::microseconds(avg_us))<<", ";
     return QString(ss.str().c_str());
 }
 static QString min_max_avg_to_string(int32_t min,int32_t max,int32_t avg){
