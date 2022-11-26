@@ -356,7 +356,7 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
             mavlink_msg_high_latency2_decode(&msg, &high_latency2);
             auto airspeed_temp = high_latency2.temperature_air;
             set_airspeed_sensor_temperature_degree(airspeed_temp);
-            qDebug() << "Airspeed Sensor Temp- " << airspeed_temp;
+            //qDebug() << "Airspeed Sensor Temp- " << airspeed_temp;
             break;
         }
         case MAVLINK_MSG_ID_TIMESYNC:{
@@ -421,7 +421,7 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         mavlink_aoa_ssa_t aoa;
         mavlink_msg_aoa_ssa_decode(&msg, &aoa);
         set_aoa(aoa.AOA);
-        qDebug() << "AOA- " << aoa.AOA;
+        //qDebug() << "AOA- " << aoa.AOA;
             break;
         }
         case MAVLINK_MSG_ID_VIBRATION:{
