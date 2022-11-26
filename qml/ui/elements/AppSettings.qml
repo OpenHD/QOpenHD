@@ -353,6 +353,14 @@ Settings {
     property double mission_opacity: 1
     property double mission_size: 1
 
+    property bool show_aoa: false
+    property double aoa_opacity: 1
+    property double aoa_size: 1
+    property bool aoa_declutter: false
+    property double aoa_warn: 10
+    property double aoa_caution: 8
+    property double aoa_max: 20
+
     property bool show_example_widget: false
 
     property bool stereo_enable: false

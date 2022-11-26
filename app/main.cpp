@@ -25,6 +25,7 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "osd/horizonladder.h"
 #include "osd/flightpathvector.h"
 #include "osd/drawingcanvas.h"
+#include "osd/aoagauge.h"
 //
 #ifdef QOPENHD_ENABLE_VIDEO_VIA_AVCODEC
 #include "exp/QSGVideoTextureItem.h"
@@ -242,6 +243,7 @@ int main(int argc, char *argv[]) {
     qmlRegisterType<HorizonLadder>("OpenHD", 1, 0, "HorizonLadder");
     qmlRegisterType<FlightPathVector>("OpenHD", 1, 0, "FlightPathVector");
     qmlRegisterType<DrawingCanvas>("OpenHD", 1, 0, "DrawingCanvas");
+    qmlRegisterType<AoaGauge>("OpenHD", 1, 0, "AoaGauge");
 
     QQmlApplicationEngine engine;
 #ifdef QOPENHD_ENABLE_VIDEO_VIA_AVCODEC

@@ -1,31 +1,31 @@
 <RCC>
-    <qresource prefix="/translations" lang="en">
+    <qresource lang="en" prefix="/translations">
         <file alias="QOpenHD.qm">../translations/QOpenHD_en.qm</file>
         <file>ui/configpopup/ConfigPopup.qml</file>
         <file>qml.qrc</file>
     </qresource>
-    <qresource prefix="/translations" lang="de">
+    <qresource lang="de" prefix="/translations">
         <file alias="QOpenHD.qm">../translations/QOpenHD_de.qm</file>
     </qresource>
-    <qresource prefix="/translations" lang="ru">
+    <qresource lang="ru" prefix="/translations">
         <file alias="QOpenHD.qm">../translations/QOpenHD_ru.qm</file>
     </qresource>
-    <qresource prefix="/translations" lang="es">
+    <qresource lang="es" prefix="/translations">
         <file alias="QOpenHD.qm">../translations/QOpenHD_es.qm</file>
     </qresource>
-    <qresource prefix="/translations" lang="fr">
+    <qresource lang="fr" prefix="/translations">
         <file alias="QOpenHD.qm">../translations/QOpenHD_fr.qm</file>
     </qresource>
-    <qresource prefix="/translations" lang="nl">
+    <qresource lang="nl" prefix="/translations">
         <file alias="QOpenHD.qm">../translations/QOpenHD_nl.qm</file>
     </qresource>
-    <qresource prefix="/translations" lang="ro">
+    <qresource lang="ro" prefix="/translations">
         <file alias="QOpenHD.qm">../translations/QOpenHD_ro.qm</file>
     </qresource>
-    <qresource prefix="/translations" lang="it">
+    <qresource lang="it" prefix="/translations">
         <file alias="QOpenHD.qm">../translations/QOpenHD_it.qm</file>
     </qresource>
-    <qresource prefix="/translations" lang="zh">
+    <qresource lang="zh" prefix="/translations">
         <file alias="QOpenHD.qm">../translations/QOpenHD_zh.qm</file>
     </qresource>
     <qresource prefix="/">
@@ -219,5 +219,9 @@
         <file>resources/master3.png</file>
         <file>resources/master4.png</file>
         <file>ui/configpopup/Eepanel.qml</file>
+        <file>ui/widgets/AirspeedTempWidget.qml</file>
+        <file>ui/widgets/AirspeedTempWidgetForm.ui.qml</file>
+        <file>ui/widgets/AoaWidget.qml</file>
+        <file>ui/widgets/AoaWidgetForm.ui.qml</file>
     </qresource>
 </RCC>

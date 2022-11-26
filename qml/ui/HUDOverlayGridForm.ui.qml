@@ -221,6 +221,10 @@ Item {
         id: missionWidget
     }
 
+    AoaWidget {
+        id: aoaWidget
+    }
+
     //MapWidget {
     //    id: mapWidget
     //}

@@ -418,6 +418,10 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
             break;
         }
         case MAVLINK_MSG_ID_AOA_SSA: {
+        mavlink_aoa_ssa_t aoa;
+        mavlink_msg_aoa_ssa_decode(&msg, &aoa);
+        set_aoa(aoa.AOA);
+        qDebug() << "AOA- " << aoa.AOA;
             break;
         }
         case MAVLINK_MSG_ID_VIBRATION:{

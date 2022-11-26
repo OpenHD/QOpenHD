@@ -57,7 +57,7 @@ void AltitudeLadder::paint(QPainter* painter) {
                 painter->setPen(m_color);
 
                 if (k > alt + 5 || k < alt - 5) {
-                    painter->drawText(x_label, y + 6, QString::number(k));
+                    painter->drawText(x_label, y + 6, QString::number(k-10));
                 }
             }
 

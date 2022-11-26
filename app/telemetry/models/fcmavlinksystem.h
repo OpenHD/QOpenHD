@@ -101,6 +101,7 @@ class FCMavlinkSystem : public QObject
     L_RO_PROP(float,clipping_y,set_clipping_y,0.0)
     L_RO_PROP(float,clipping_z,set_clipping_z,0.0)
     L_RO_PROP(float,vsi,set_vsi,0.0)
+    L_RO_PROP(float,aoa,set_aoa,0.0)
     //
     L_RO_PROP(QString,mav_type,set_mav_type,"UNKNOWN");
     // Set to true if this FC supports basic commands, like return to home usw
