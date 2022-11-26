@@ -2,6 +2,7 @@
 
 #include "../qopenhdmavlinkhelper.hpp"
 #include "../../common_consti/StringHelper.hpp"
+#include "../../common_consti/TimeHelper.hpp"
 #include "../telemetryutil.hpp"
 
 #include "rcchannelsmodel.h"
@@ -20,6 +21,20 @@ static std::string video_codec_to_string(int value){
 }
 static QString bitrate_to_qstring(int64_t bitrate_bits_per_second){
     return QString{StringHelper::bitrate_to_string(bitrate_bits_per_second).c_str()};
+}
+static QString us_min_max_avg_to_string(int32_t min_us,int32_t max_us,int32_t avg_us){
+    std::stringstream ss;
+    ss<<"Avg:"<<MyTimeHelper::R(std::chrono::microseconds(avg_us))<<", ";
+    ss<<"Min:"<<MyTimeHelper::R(std::chrono::microseconds(min_us))<<", ";
+    ss<<"Max:"<<MyTimeHelper::R(std::chrono::microseconds(max_us));
+    return QString(ss.str().c_str());
+}
+static QString min_max_avg_to_string(int32_t min,int32_t max,int32_t avg){
+    std::stringstream ss;
+    ss<<"min:"<<min<<", ";
+    ss<<"max:"<<max<<", ";
+    ss<<"avg:"<<avg;
+    return QString(ss.str().c_str());
 }
 
 
@@ -170,6 +185,10 @@ void AOHDSystem::process_x3(const mavlink_openhd_stats_wb_video_air_t &msg){
     }
     set_curr_video0_measured_encoder_bitrate(bitrate_to_qstring(msg.curr_measured_encoder_bitrate));
     set_curr_video0_injected_bitrate(bitrate_to_qstring(msg.curr_injected_bitrate));
+    set_curr_video0_fec_encode_time_avg_min_max(
+                us_min_max_avg_to_string(msg.curr_fec_encode_time_min_ms,msg.curr_fec_encode_time_max_ms,msg.curr_fec_encode_time_avg_ms));
+    set_curr_video0_fec_block_length_min_max_avg(
+                min_max_avg_to_string(msg.curr_fec_block_size_min,msg.curr_fec_block_size_max,msg.curr_fec_block_size_avg));
 }
 
 void AOHDSystem::process_x4(const mavlink_openhd_stats_wb_video_ground_t &msg){
@@ -183,6 +202,8 @@ void AOHDSystem::process_x4(const mavlink_openhd_stats_wb_video_ground_t &msg){
     set_video0_count_blocks_recovered(msg.count_blocks_recovered);
     set_video0_count_fragments_recovered(msg.count_fragments_recovered);
     set_video0_count_blocks_total(msg.count_blocks_total);
+    set_curr_video0_fec_decode_time_avg_min_max(
+                us_min_max_avg_to_string(msg.curr_fec_decode_time_min_ms,msg.curr_fec_decode_time_max_ms,msg.curr_fec_decode_time_avg_ms));
 }
 
 /*void AOHDSystem::process_x1(const mavlink_openhd_wifibroadcast_wifi_card_t &msg)
