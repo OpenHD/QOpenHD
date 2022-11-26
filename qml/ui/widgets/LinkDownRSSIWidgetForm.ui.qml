@@ -252,7 +252,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: "Blocks lost:"+_ohdSystemGround.video_rx_blocks_lost
+                text: "Blocks lost:"+_ohdSystemGround.video0_count_blocks_lost
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -261,13 +261,23 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: "Blocks recovered:"+_ohdSystemGround.video_rx_blocks_recovered;
+                text: "Blocks recovered:"+_ohdSystemGround.video0_count_blocks_recovered;
                 color: "white"
                 font.bold: true
                 height: parent.height
                 font.pixelSize: detailPanelFontPixels
                 verticalAlignment: Text.AlignVCenter
             }
+            Text {
+                //Layout.alignment: left
+                text: "Fragments recovered:"+_ohdSystemGround.video0_count_fragments_recovered;
+                color: "white"
+                font.bold: true
+                height: parent.height
+                font.pixelSize: detailPanelFontPixels
+                verticalAlignment: Text.AlignVCenter
+            }
+
             Text {
                 //Layout.alignment: left
                 text: "Rx video:"+_ohdSystemGround.curr_incoming_video_bitrate;

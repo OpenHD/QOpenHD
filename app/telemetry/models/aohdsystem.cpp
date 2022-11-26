@@ -179,6 +179,10 @@ void AOHDSystem::process_x4(const mavlink_openhd_stats_wb_video_ground_t &msg){
          return;
     }
     set_curr_video0_received_bitrate_with_fec(bitrate_to_qstring(msg.curr_incoming_bitrate));
+    set_video0_count_blocks_lost(msg.count_blocks_lost);
+    set_video0_count_blocks_recovered(msg.count_blocks_recovered);
+    set_video0_count_fragments_recovered(msg.count_fragments_recovered);
+    set_video0_count_blocks_total(msg.count_blocks_total);
 }
 
 /*void AOHDSystem::process_x1(const mavlink_openhd_wifibroadcast_wifi_card_t &msg)
@@ -244,11 +248,6 @@ void AOHDSystem::set_last_openhd_heartbeat(qint64 last_openhd_heartbeat) {
     emit last_openhd_heartbeat_changed(m_last_openhd_heartbeat);
 }
 
-void AOHDSystem::set_is_alive(bool alive)
-{
-    m_is_alive=alive;
-    emit is_alive_changed(alive);
-}
 
 void AOHDSystem::set_best_rx_rssi(int best_rx_rssi)
 {
@@ -305,16 +304,6 @@ void AOHDSystem::set_wifi_adapter3(unsigned int received_packet_count, int curre
     emit wifi_adapter3_changed(received_packet_count,current_signal_dbm,signal_good);
 }
 
-void AOHDSystem::set_battery_percent(int battery_percent) {
-    m_battery_percent = battery_percent;
-    emit battery_percent_changed(m_battery_percent);
-}
-
-void AOHDSystem::set_battery_gauge(QString battery_gauge) {
-    m_battery_gauge = battery_gauge;
-    emit battery_gauge_changed(m_battery_gauge);
-}
-
 void AOHDSystem::set_gpio(QList<int> gpio){
     m_gpio = gpio;
     emit gpio_changed(m_gpio);
@@ -338,17 +327,6 @@ void AOHDSystem::set_total_tx_error_count(int total_tx_error_count)
     emit total_tx_error_count_changed(total_tx_error_count);
 }
 
-void AOHDSystem::set_video_rx_blocks_lost(int video_rx_blocks_lost)
-{
-    m_video_rx_blocks_lost=video_rx_blocks_lost;
-    emit video_rx_blocks_lost_changed(video_rx_blocks_lost);
-}
-
-void AOHDSystem::set_video_rx_blocks_recovered(int video_rx_blocks_recovered)
-{
-    m_video_rx_blocks_recovered=video_rx_blocks_recovered;
-    emit video_rx_blocks_recovered_changed(video_rx_blocks_recovered);
-}
 
 void AOHDSystem::set_curr_set_video_bitrate(QString curr_set_video_bitrate)
 {
