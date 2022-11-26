@@ -77,22 +77,20 @@ bool AOHDSystem::process_message(const mavlink_message_t &msg)
             QString version(parsedMsg.version);
             set_openhd_version(version);
             return true;
-        }
+        }break;
         case MAVLINK_MSG_ID_ONBOARD_COMPUTER_STATUS:{
             mavlink_onboard_computer_status_t parsedMsg;
             mavlink_msg_onboard_computer_status_decode(&msg,&parsedMsg);
             process_x0(parsedMsg);
             return true;
-            break;
-        }
+        }break;
         case MAVLINK_MSG_ID_OPENHD_STATS_MONITOR_MODE_WIFI_CARD:{
             mavlink_openhd_stats_monitor_mode_wifi_card_t parsedMsg;
             mavlink_msg_openhd_stats_monitor_mode_wifi_card_decode(&msg,&parsedMsg);
             //qDebug()<<"Got MAVLINK_MSG_ID_OPENHD_WIFI_CARD"<<(int)parsedMsg.card_index<<" "<<(int)parsedMsg.signal_millidBm;
             process_x1(parsedMsg);
             return true;
-            break;
-        }
+        }break;
         case MAVLINK_MSG_ID_OPENHD_STATS_MONITOR_MODE_WIFI_LINK:{
             mavlink_openhd_stats_monitor_mode_wifi_link_t parsedMsg;
             mavlink_msg_openhd_stats_monitor_mode_wifi_link_decode(&msg,&parsedMsg);
@@ -186,7 +184,7 @@ void AOHDSystem::process_x3(const mavlink_openhd_stats_wb_video_air_t &msg){
     set_curr_video0_measured_encoder_bitrate(bitrate_to_qstring(msg.curr_measured_encoder_bitrate));
     set_curr_video0_injected_bitrate(bitrate_to_qstring(msg.curr_injected_bitrate));
     set_curr_video0_fec_encode_time_avg_min_max(
-                us_min_max_avg_to_string(msg.curr_fec_encode_time_min_ms,msg.curr_fec_encode_time_max_ms,msg.curr_fec_encode_time_avg_ms));
+                us_min_max_avg_to_string(msg.curr_fec_encode_time_min_us,msg.curr_fec_encode_time_max_us,msg.curr_fec_encode_time_avg_us));
     set_curr_video0_fec_block_length_min_max_avg(
                 min_max_avg_to_string(msg.curr_fec_block_size_min,msg.curr_fec_block_size_max,msg.curr_fec_block_size_avg));
 }
@@ -203,7 +201,7 @@ void AOHDSystem::process_x4(const mavlink_openhd_stats_wb_video_ground_t &msg){
     set_video0_count_fragments_recovered(msg.count_fragments_recovered);
     set_video0_count_blocks_total(msg.count_blocks_total);
     set_curr_video0_fec_decode_time_avg_min_max(
-                us_min_max_avg_to_string(msg.curr_fec_decode_time_min_ms,msg.curr_fec_decode_time_max_ms,msg.curr_fec_decode_time_avg_ms));
+                us_min_max_avg_to_string(msg.curr_fec_decode_time_min_us,msg.curr_fec_decode_time_max_us,msg.curr_fec_decode_time_avg_us));
 }
 
 /*void AOHDSystem::process_x1(const mavlink_openhd_wifibroadcast_wifi_card_t &msg)
