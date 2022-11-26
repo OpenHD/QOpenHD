@@ -195,7 +195,7 @@ BaseWidget {
 
             Text {
                 //Layout.alignment: left
-                text: "TX error:"+_ohdSystemAir.total_tx_error_count
+                text: "TX error/dropped: "+_ohdSystemAir.count_tx_inj_error_hint+" "+_ohdSystemAir.count_tx_dropped_packets
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -204,7 +204,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: "Rx tele:"+_ohdSystemAir.curr_incoming_tele_bitrate;
+                text: "Tx video0: "+_ohdSystemAir.curr_video0_injected_pps
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -213,7 +213,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: "Tx video0:"+_ohdSystemAir.curr_video0_tx_pps
+                text: "Tx tele: "+_ohdSystemAir.curr_telemetry_tx_pps
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -222,16 +222,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: "Tx tele:"+_ohdSystemGround.curr_telemetry_tx_pps
-                color: "white"
-                font.bold: true
-                height: parent.height
-                font.pixelSize: detailPanelFontPixels
-                verticalAlignment: Text.AlignVCenter
-            }
-            Text {
-                //Layout.alignment: left
-                text: "curr gaps:"+_ohdSystemAir.curr_n_of_big_gaps
+                text: "Rx tele: "+_ohdSystemAir.curr_telemetry_rx_pps;
                 color: "white"
                 font.bold: true
                 height: parent.height

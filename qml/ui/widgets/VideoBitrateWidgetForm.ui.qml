@@ -39,23 +39,6 @@ BaseWidget {
         Column {
             id: bitrateSettingsColumn
 
-            /*            Shape {
-                id: line
-                height: 32
-                width: parent.width
-
-                ShapePath {
-                    strokeColor: "white"
-                    strokeWidth: 2
-                    strokeStyle: ShapePath.SolidLine
-                    fillColor: "transparent"
-                    startX: 0
-                    startY: line.height / 2
-                    PathLine { x: 0;          y: line.height / 2 }
-                    PathLine { x: line.width; y: line.height / 2 }
-                }
-            }
-*/
             Item {
                 width: parent.width
                 height: 42
@@ -208,7 +191,7 @@ BaseWidget {
                 width: parent.width
                 height: 32
                 Text {
-                    text: qsTr("Show skip / fail count")
+                    text: qsTr("Disable video tx error warning")
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -221,8 +204,8 @@ BaseWidget {
                     height: parent.height
                     anchors.rightMargin: 6
                     anchors.right: parent.right
-                    checked: settings.bitrate_show_skip_fail_count
-                    onCheckedChanged: settings.bitrate_show_skip_fail_count = checked
+                    checked: settings.disable_video_tx_overloaded_warning
+                    onCheckedChanged: settings.disable_video_tx_overloaded_warning = checked
                 }
             }
         }
@@ -372,23 +355,14 @@ BaseWidget {
             style: Text.Outline
             styleColor: settings.color_glow
         }
-
-        /*Text {
-            id: allDataText
-            visible: settings.bitrate_show_skip_fail_count
-            text: "todo"//Number(OpenHD.injection_fail_cnt).toLocaleString(Qt.locale(), 'f', 0) + "/" + Number(OpenHD.skipped_packet_cnt).toLocaleString(Qt.locale(), 'f', 0)
-            color: settings.color_text
-            anchors.top: kbitrate.bottom
-            anchors.topMargin: -16
-            anchors.left: parent.left
-            verticalAlignment: Text.AlignVCenter
+        Text{
+            id: video_rate_warning
+            text: "TX error, reduce bitrate"
+            color: "red"
+            anchors.top: camera_icon.bottom
+            anchors.left: camera_icon.left
             font.pixelSize: 14
-            font.family: settings.font_text
-            horizontalAlignment: Text.AlignLeft
-            wrapMode: Text.NoWrap
-            elide: Text.ElideRight
-            style: Text.Outline
-            styleColor: settings.color_glow
-        }*/
+            visible: (!settings.disable_video_tx_overloaded_warning) && _ohdSystemAir.tx_is_currently_dropping_packets
+        }
     }
 }
