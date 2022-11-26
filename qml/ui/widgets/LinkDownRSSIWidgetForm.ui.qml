@@ -289,7 +289,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: "Rx tele:"+_ohdSystemGround.curr_incoming_tele_bitrate;
+                text: "Rx tele:"+_ohdSystemGround.curr_telemetry_rx_pps;
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -298,7 +298,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: "Tx tele:"+_ohdSystemGround.curr_telemetry_tx_pps
+                text: "Tx tele:"+_ohdSystemGround.curr_telemetry_tx_pps;
                 color: "white"
                 font.bold: true
                 height: parent.height

@@ -81,19 +81,25 @@ bool AOHDSystem::process_message(const mavlink_message_t &msg)
         case MAVLINK_MSG_ID_ONBOARD_COMPUTER_STATUS:{
             mavlink_onboard_computer_status_t parsedMsg;
             mavlink_msg_onboard_computer_status_decode(&msg,&parsedMsg);
-            process_x0(parsedMsg);
+            process_onboard_computer_status(parsedMsg);
             return true;
         }break;
         case MAVLINK_MSG_ID_OPENHD_STATS_MONITOR_MODE_WIFI_CARD:{
             mavlink_openhd_stats_monitor_mode_wifi_card_t parsedMsg;
             mavlink_msg_openhd_stats_monitor_mode_wifi_card_decode(&msg,&parsedMsg);
             //qDebug()<<"Got MAVLINK_MSG_ID_OPENHD_WIFI_CARD"<<(int)parsedMsg.card_index<<" "<<(int)parsedMsg.signal_millidBm;
-            process_x1(parsedMsg);
+            process_x0(parsedMsg);
             return true;
         }break;
         case MAVLINK_MSG_ID_OPENHD_STATS_MONITOR_MODE_WIFI_LINK:{
             mavlink_openhd_stats_monitor_mode_wifi_link_t parsedMsg;
             mavlink_msg_openhd_stats_monitor_mode_wifi_link_decode(&msg,&parsedMsg);
+            process_x1(parsedMsg);
+            return true;
+        }break;
+        case MAVLINK_MSG_ID_OPENHD_STATS_TELEMETRY:{
+            mavlink_openhd_stats_telemetry_t parsedMsg;
+            mavlink_msg_openhd_stats_telemetry_decode(&msg,&parsedMsg);
             process_x2(parsedMsg);
             return true;
         }break;
@@ -151,7 +157,7 @@ bool AOHDSystem::process_message(const mavlink_message_t &msg)
     return false;
 }
 
-void AOHDSystem::process_x0(const mavlink_onboard_computer_status_t &msg)
+void AOHDSystem::process_onboard_computer_status(const mavlink_onboard_computer_status_t &msg)
 {
     set_curr_cpuload_perc(msg.cpu_cores[0]);
     set_curr_soc_temp_degree(msg.temperature_core[0]);
@@ -162,7 +168,7 @@ void AOHDSystem::process_x0(const mavlink_onboard_computer_status_t &msg)
     set_curr_core_freq_mhz(msg.storage_type[3]);
 }
 
-void AOHDSystem::process_x1(const mavlink_openhd_stats_monitor_mode_wifi_card_t &msg){
+void AOHDSystem::process_x0(const mavlink_openhd_stats_monitor_mode_wifi_card_t &msg){
     if(_is_air && msg.card_index>1){
         qDebug()<<"Air only has 1 wifibroadcats card";
         return;
@@ -171,8 +177,18 @@ void AOHDSystem::process_x1(const mavlink_openhd_stats_monitor_mode_wifi_card_t 
     set_wifi_adapter(msg.card_index,msg.count_p_received,msg.rx_rssi,true);
 }
 
-void AOHDSystem::process_x2(const mavlink_openhd_stats_monitor_mode_wifi_link_t &msg){
-     qDebug()<<"Got mavlink_openhd_stats_monitor_mode_wifi_link_t";
+void AOHDSystem::process_x1(const mavlink_openhd_stats_monitor_mode_wifi_link_t &msg){
+    qDebug()<<"Got mavlink_openhd_stats_monitor_mode_wifi_link_t";
+    set_curr_rx_packet_loss_perc(msg.curr_rx_packet_loss);
+}
+
+void AOHDSystem::process_x2(const mavlink_openhd_stats_telemetry_t &msg)
+{
+    qDebug()<<"Got mavlink_openhd_stats_telemetry_t";
+    set_curr_telemetry_rx_pps(QString((std::to_string(msg.curr_rx_pps)+"pps").c_str()));
+    set_curr_telemetry_tx_pps(QString((std::to_string(msg.curr_tx_pps)+"pps").c_str()));
+    set_curr_telemetry_rx_bps(bitrate_to_qstring(msg.curr_rx_bps));
+    set_curr_telemetry_tx_bps(bitrate_to_qstring(msg.curr_tx_bps));
 }
 
 void AOHDSystem::process_x3(const mavlink_openhd_stats_wb_video_air_t &msg){
@@ -346,24 +362,9 @@ void AOHDSystem::set_total_tx_error_count(int total_tx_error_count)
     emit total_tx_error_count_changed(total_tx_error_count);
 }
 
-
-void AOHDSystem::set_curr_set_video_bitrate(QString curr_set_video_bitrate)
-{
-    if(m_curr_set_video_bitrate==curr_set_video_bitrate)return;
-    m_curr_set_video_bitrate=curr_set_video_bitrate;
-    emit curr_set_video_bitrate_changed(curr_set_video_bitrate);
-}
-
 void AOHDSystem::set_curr_set_video_bitrate_int(int value){
     auto tmp=std::to_string(value)+" MBit/s";
     set_curr_set_video_bitrate(tmp.c_str());
-}
-
-void AOHDSystem::set_curr_set_video_codec(QString curr_set_video_codec)
-{
-    if(m_curr_set_video_codec==curr_set_video_codec)return;
-    m_curr_set_video_codec=curr_set_video_codec;
-    emit curr_set_video_codec_changed(curr_set_video_codec);
 }
 
 void AOHDSystem::set_curr_set_video_codec_int(int value){
