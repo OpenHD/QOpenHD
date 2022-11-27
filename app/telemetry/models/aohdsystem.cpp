@@ -11,6 +11,7 @@
 #include <sstream>
 
 #include <logging/logmessagesmodel.h>
+#include <logging/hudlogmessagesmodel.h>
 
 
 static std::string video_codec_to_string(int value){
@@ -313,11 +314,14 @@ void AOHDSystem::update_alive()
     if(m_last_openhd_heartbeat==-1){
         set_is_alive(false);
     }else{
+        const auto elapsed_since_last_heartbeat=QOpenHDMavlinkHelper::getTimeMilliseconds()-m_last_openhd_heartbeat;
         // after 3 seconds, consider as "not alive"
-        if(QOpenHDMavlinkHelper::getTimeMilliseconds()-m_last_openhd_heartbeat> 3*1000){
-            set_is_alive(false);
-        }else{
-            set_is_alive(true);
+        const bool alive=elapsed_since_last_heartbeat< 3*1000;
+        if(alive != m_is_alive){
+            // message when state changes
+            send_message_hud_connection(alive);
+            //
+            set_is_alive(alive);
         }
     }
     {
@@ -402,3 +406,20 @@ AOHDSystem::RC_CHANNELS AOHDSystem::mavlink_msg_rc_channels_override_to_array(co
     ret[17]=parsedMsg.chan18_raw;
     return ret;
 }
+
+void AOHDSystem::send_message_hud_connection(bool connected){
+    std::stringstream message;
+    if(_is_air){
+        message << "Air unit ";
+    }else{
+        message << "Ground unit ";
+    }
+    if(connected){
+        message << "connected";
+        HUDLogMessagesModel::instance().add_message_info(message.str().c_str());
+    }else{
+        message << "disconnected";
+        HUDLogMessagesModel::instance().add_message_warning(message.str().c_str());
+    }
+}
+

@@ -29,17 +29,21 @@ BaseWidget {
         id: widgetInner
 
         anchors.fill: parent
+        anchors.bottom: parent.bottom
 
         ListView {
             id: messageListView
             anchors.fill: parent
-            model: messageModel
+            model: _hudLogMessagesModel
             interactive: false
-
+            // https://wiki.qt.io/How_to_make_QML_ListView_align_bottom-to-top
+            rotation: 180
 
             clip: true
             delegate: MessageHUDRow {
                 width: messageListView.width
+                // bottom fix
+                rotation: 180
             }
 
             // @disable-check M221
@@ -73,9 +77,3 @@ BaseWidget {
         }
     }
 }
-
-/*##^##
-Designer {
-    D{i:1;anchors_height:72;anchors_width:300}
-}
-##^##*/
