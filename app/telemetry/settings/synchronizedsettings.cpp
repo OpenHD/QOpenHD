@@ -53,9 +53,10 @@ void SynchronizedSettings::change_param_air_and_ground(QString param_id,int valu
         workaround::makePopupMessage("Precondition: Air and Ground running and alive not given. Change not possible.");
         return;
     }
+    const MavlinkSettingsModel::ExtraRetransmitParams extra_retransmit_params{std::chrono::milliseconds(100),10};
     // First change it on the air and wait for ack - if failed, return. MAVSDK does 3 retransmission(s) until acked so it is really unlikely that
     // we set the value and all 3 ack's are lost (which would be the generals problem and then the frequenies are out of sync).
-    const bool air_success=MavlinkSettingsModel::instanceAir().try_set_param_int_impl(param_id,value);
+    const bool air_success=MavlinkSettingsModel::instanceAir().try_set_param_int_impl(param_id,value,extra_retransmit_params);
     if(!air_success){
         std::stringstream ss;
         ss<<"Air rejected "<<param_id.toStdString()<<":"<<value<<" nothing changed";
@@ -71,24 +72,7 @@ void SynchronizedSettings::change_param_air_and_ground(QString param_id,int valu
         return;
     }
     std::stringstream ss;
-    ss<<"Successfully changed "<<param_id.toStdString()<<" to "<<value<<" ,please repower air and ground unit";
+    ss<<"Successfully changed "<<param_id.toStdString()<<" to "<<value<<" ,might take up to 3 seconds until applied";
     workaround:: makePopupMessage(ss.str().c_str());
 }
 
-void SynchronizedSettings::soft_restart(){
-    qDebug()<<"SynchronizedSettings::soft_restart()";
-    const bool air_and_ground_alive=AOHDSystem::instanceAir().is_alive() && AOHDSystem::instanceGround().is_alive();
-    if(!air_and_ground_alive){
-        workaround::makePopupMessage("Precondition: Air and Ground running and alive not given. Soft restart not possible.");
-        return;
-    }
-
-    const bool succ1=AOHDSystem::instanceAir().send_command_restart_interface();
-    if(!succ1){
-        workaround::makePopupMessage("Soft restart failed (Air), please manually power cycle your air and ground unit");
-    }
-    const bool succ2=AOHDSystem::instanceGround().send_command_restart_interface();
-    if(!succ2){
-        workaround::makePopupMessage("Soft restart failed (Ground), please manually power cycle your air and ground unit");
-    }
-}

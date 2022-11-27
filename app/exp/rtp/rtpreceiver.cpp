@@ -8,8 +8,8 @@
 #include "../../videostreaming/decodingstatistcs.h"
 #include "common_consti/openhd-util.hpp"
 
-//constexpr auto LOCAL_ADDRESS = "127.0.0.1";
-constexpr auto LOCAL_ADDRESS = "10.42.0.1";
+constexpr auto LOCAL_ADDRESS = "127.0.0.1";
+//constexpr auto LOCAL_ADDRESS = "10.42.0.1";
 
 #ifdef OPENHD_USE_LIB_UVGRTP
 void rtp_receive_hook(void *arg, uvgrtp::frame::rtp_frame *frame){
@@ -72,12 +72,16 @@ RTPReceiver::~RTPReceiver()
 }
 
 
- std::shared_ptr<NALU> RTPReceiver::get_data()
+ std::shared_ptr<NALU> RTPReceiver::get_data(std::chrono::microseconds timeout)
 {
-    std::lock_guard<std::mutex> lock(m_data_mutex);
-    if(m_data.size()<=0)return nullptr;
-    auto ret=m_data.front();
-    m_data.pop();
+    std::shared_ptr<NALU> ret=nullptr;
+    //qDebug()<<"get_data size_estimate:"<<m_data_queue.size_approx();
+    if(timeout>std::chrono::microseconds(0)){
+        //m_data_queue.try_dequeue(ret);
+        m_data_queue.wait_dequeue_timed(ret,timeout);
+    }else{
+        m_data_queue.try_dequeue(ret);
+    }
     return ret;
 }
 
@@ -130,24 +134,21 @@ void RTPReceiver::queue_data(const uint8_t* nalu_data,const std::size_t nalu_dat
             const auto fps_as_string=StringHelper::to_string_with_precision(fps,2)+"fps";
             DecodingStatistcs::instance().set_estimate_rtp_fps({fps_as_string.c_str()});
         }
-        if(m_data.size()>MAX_DATA_QUEUE_SIZE){
-            // The decoder cannot keep up with the incoming stream, this should never happen - if it happens,
-            // The easiest thing to do is to just drop this frame (we cannot just remove the oldest, not yet fed frame from the queue,
-            // since h264 relies on previus frames.
+        //qDebug()<<"Queue size:"<<m_data_queue.size_approx();
+        if(!m_data_queue.try_enqueue(std::make_shared<NALU>(nalu))){
             n_dropped_frames++;
             qDebug()<<"Dropping incoming frame, total:"<<n_dropped_frames;
-            return;
         }
-        m_data.push(std::make_shared<NALU>(nalu));
-        return;
+    }else{
+        // We don't have all config data yet, drop anything that is not config data.
+        m_keyframe_finder->saveIfKeyFrame(nalu);
     }
-    // We don't have all config data yet, drop anything that is not config data.
-    m_keyframe_finder->saveIfKeyFrame(nalu);
 }
 
 #ifdef OPENHD_USE_LIB_UVGRTP
 void RTPReceiver::uvgrtp_rtp_receive_hook(void *arg, uvgrtp::frame::rtp_frame *frame)
 {
+    qDebug()<<"Got uvg data:"<<frame->payload_len-frame->padding_len<<" padding:"<<frame->padding_len;
     nalu_data_callback(std::chrono::steady_clock::now(),frame->payload,frame->payload_len-frame->padding_len);
     (void)uvgrtp::frame::dealloc_frame(frame);
 }

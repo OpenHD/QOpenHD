@@ -66,6 +66,7 @@ private:
     AvgCalculator avg_decode_time{"Decode"};
     AvgCalculator avg_parse_time{"Parse&Enqueue"};
     AvgCalculator avg_send_mmal_frame_to_display{"MMAL send frame"};
+    static constexpr std::chrono::milliseconds kDefaultFrameTimeout{33*2};
 private:
     // Completely ineficient, but only way since QT settings callback(s) don't properly work
     // runs every 1 second, reads the settings and checks if they differ from the previosly

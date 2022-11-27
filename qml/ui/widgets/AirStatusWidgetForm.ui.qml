@@ -374,7 +374,7 @@ BaseWidget {
 
             Text {
                 //Layout.alignment: left
-                text: "CPU freq: "+_ohdSystemAir.curr_cpu_freq_mhz
+                text: "CPU freq: "+_ohdSystemAir.curr_cpu_freq_mhz+" Mhz"
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -383,7 +383,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: "ISP freq: "+_ohdSystemAir.curr_isp_freq_mhz
+                text: "ISP freq: "+_ohdSystemAir.curr_isp_freq_mhz+" Mhz"
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -392,7 +392,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: "H264 freq: "+_ohdSystemAir.curr_h264_freq_mhz
+                text: "H264 freq: "+_ohdSystemAir.curr_h264_freq_mhz+" Mhz"
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -401,14 +401,13 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: "Core freq: "+_ohdSystemAir.curr_core_freq_mhz
+                text: "Core freq: "+_ohdSystemAir.curr_core_freq_mhz+" Mhz"
                 color: "white"
                 font.bold: true
                 height: parent.height
                 font.pixelSize: detailPanelFontPixels
                 verticalAlignment: Text.AlignVCenter
             }
-
         }
     }
 
@@ -424,11 +423,11 @@ BaseWidget {
             width: 24
             height: 24
             color: {
-                if (_ohdSystemAir.cpuload >= settings.air_status_cpu_warn
-                        || _ohdSystemAir.temp >= settings.air_status_temp_warn) {
+                if (_ohdSystemAir.curr_cpuload_perc >= settings.air_status_cpu_warn
+                        || _ohdSystemAir.curr_soc_temp_degree >= settings.air_status_temp_warn) {
                     return settings.color_warn
-                } else if (_ohdSystemAir.cpuload > settings.air_status_cpu_caution
-                           || _ohdSystemAir.temp > settings.air_status_temp_caution) {
+                } else if (_ohdSystemAir.curr_cpuload_perc > settings.air_status_cpu_caution
+                           || _ohdSystemAir.curr_soc_temp_degree > settings.air_status_temp_caution) {
                     return settings.color_caution
                 } else {
                     return settings.color_shape
@@ -455,12 +454,12 @@ BaseWidget {
             width: 36
             height: 24
             color: {
-                if (_ohdSystemAir.cpuload>= settings.air_status_cpu_warn
-                        || _ohdSystemAir.temp >= settings.air_status_temp_warn) {
+                if (_ohdSystemAir.curr_cpuload_perc>= settings.air_status_cpu_warn
+                        || _ohdSystemAir.curr_soc_temp_degree >= settings.air_status_temp_warn) {
                     widgetInner.visible = true
                     return settings.color_warn
-                } else if (_ohdSystemAir.cpuload > settings.air_status_cpu_caution
-                           || _ohdSystemAir.temp > settings.air_status_temp_caution) {
+                } else if (_ohdSystemAir.curr_cpuload_perc > settings.air_status_cpu_caution
+                           || _ohdSystemAir.curr_soc_temp_degree > settings.air_status_temp_caution) {
                     widgetInner.visible = true
                     return settings.color_caution
                 } else if (settings.air_status_declutter == true
@@ -473,7 +472,7 @@ BaseWidget {
                 }
             }
             opacity: settings.air_status_opacity
-            text: Number(_ohdSystemAir.cpuload).toLocaleString(Qt.locale(),
+            text: Number(_ohdSystemAir.curr_cpuload_perc).toLocaleString(Qt.locale(),
                                                             'f', 0) + "%"
             anchors.right: temp_air.left
             anchors.rightMargin: 2
@@ -493,12 +492,12 @@ BaseWidget {
             width: 36
             height: 24
             color: {
-                if (_ohdSystemAir.cpuload >= settings.air_status_cpu_warn
-                        || _ohdSystemAir.temp >= settings.air_status_temp_warn) {
+                if (_ohdSystemAir.curr_cpuload_perc >= settings.air_status_cpu_warn
+                        || _ohdSystemAir.curr_soc_temp_degree >= settings.air_status_temp_warn) {
                     widgetInner.visible = true
                     return settings.color_warn
-                } else if (_ohdSystemAir.cpuload > settings.air_status_cpu_caution
-                           || _ohdSystemAir.temp > settings.air_status_temp_caution) {
+                } else if (_ohdSystemAir.curr_cpuload_perc > settings.air_status_cpu_caution
+                           || _ohdSystemAir.curr_soc_temp_degree > settings.air_status_temp_caution) {
                     widgetInner.visible = true
                     return settings.color_caution
                 } else if (settings.air_status_declutter == true
@@ -511,7 +510,7 @@ BaseWidget {
                 }
             }
             opacity: settings.air_status_opacity
-            text: Number(_ohdSystemAir.temp).toLocaleString(Qt.locale(),
+            text: Number(_ohdSystemAir.curr_soc_temp_degree).toLocaleString(Qt.locale(),
                                                          'f', 0) + "°"
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: parent.right
