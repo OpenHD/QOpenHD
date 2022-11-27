@@ -407,14 +407,14 @@ AOHDSystem::RC_CHANNELS AOHDSystem::mavlink_msg_rc_channels_override_to_array(co
     return ret;
 }
 
-void AOHDSystem::send_message_hud_connection(bool recovered){
+void AOHDSystem::send_message_hud_connection(bool connected){
     std::stringstream message;
     if(_is_air){
         message << "Air unit ";
     }else{
         message << "Ground unit ";
     }
-    if(recovered){
+    if(connected){
         message << "connected";
         HUDLogMessagesModel::instance().add_message_info(message.str().c_str());
     }else{

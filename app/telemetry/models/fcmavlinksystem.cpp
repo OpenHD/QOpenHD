@@ -899,11 +899,11 @@ bool FCMavlinkSystem::send_command_reboot(bool reboot)
     return false;
 }
 
-void FCMavlinkSystem::send_message_hud_connection(bool recovered)
+void FCMavlinkSystem::send_message_hud_connection(bool connected)
 {
     std::stringstream message;
     message << "FC ";
-    if(recovered){
+    if(connected){
         message << "connected";
         HUDLogMessagesModel::instance().add_message_info(message.str().c_str());
     }else{
