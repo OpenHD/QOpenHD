@@ -139,6 +139,7 @@ SOURCES += \
     app/osd/altitudeladder.cpp \
     app/osd/drawingcanvas.cpp \
     app/osd/flightpathvector.cpp \
+    app/osd/aoagauge.cpp \
 
 HEADERS += \
     app/osd/headingladder.h \
@@ -148,6 +149,7 @@ HEADERS += \
     app/osd/drawingcanvas.h \
     app/osd/flightpathvector.h \
     app/osd/debug_overdraw.hpp \
+    app/osd/aoagauge.h \
 
 # I deleted all the "old" telemetry protocolls other than mavlink
 # and moved them into their own respective directories

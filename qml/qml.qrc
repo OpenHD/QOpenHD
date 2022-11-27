@@ -221,5 +221,7 @@
         <file>ui/configpopup/Eepanel.qml</file>
         <file>ui/widgets/AirspeedTempWidget.qml</file>
         <file>ui/widgets/AirspeedTempWidgetForm.ui.qml</file>
+        <file>ui/widgets/AoaWidget.qml</file>
+        <file>ui/widgets/AoaWidgetForm.ui.qml</file>
     </qresource>
 </RCC>
