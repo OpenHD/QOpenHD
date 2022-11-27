@@ -6,10 +6,9 @@
 HUDLogMessagesModel::HUDLogMessagesModel(QObject *parent)
     :  QAbstractListModel(parent)
 {
-    addData(HUDLogMessagesModel::Element{"message_hello",0});
-    addData(HUDLogMessagesModel::Element{"message_hello2",0,std::chrono::steady_clock::now()+std::chrono::seconds(2)});
-    addData(HUDLogMessagesModel::Element{"message_hello3",0,std::chrono::steady_clock::now()+std::chrono::seconds(3)});
-
+    //addData(HUDLogMessagesModel::Element{"message_hello",0});
+    //addData(HUDLogMessagesModel::Element{"message_hello2",0,std::chrono::steady_clock::now()+std::chrono::seconds(2)});
+    //addData(HUDLogMessagesModel::Element{"message_hello3",0,std::chrono::steady_clock::now()+std::chrono::seconds(3)});
     connect(this, &HUDLogMessagesModel::signalAddLogMessage, this, &HUDLogMessagesModel::do_not_call_me_addLogMessage);
     m_cleanup_timer = new QTimer(this);
     QObject::connect(m_cleanup_timer, &QTimer::timeout, this, &HUDLogMessagesModel::handle_cleanup);

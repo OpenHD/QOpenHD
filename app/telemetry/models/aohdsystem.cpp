@@ -11,6 +11,7 @@
 #include <sstream>
 
 #include <logging/logmessagesmodel.h>
+#include <logging/hudlogmessagesmodel.h>
 
 
 static std::string video_codec_to_string(int value){
@@ -313,11 +314,26 @@ void AOHDSystem::update_alive()
     if(m_last_openhd_heartbeat==-1){
         set_is_alive(false);
     }else{
+        const auto elapsed_since_last_heartbeat=QOpenHDMavlinkHelper::getTimeMilliseconds()-m_last_openhd_heartbeat;
         // after 3 seconds, consider as "not alive"
-        if(QOpenHDMavlinkHelper::getTimeMilliseconds()-m_last_openhd_heartbeat> 3*1000){
-            set_is_alive(false);
-        }else{
-            set_is_alive(true);
+        const bool alive=elapsed_since_last_heartbeat< 3*1000;
+        if(alive != m_is_alive){
+            // message when state changes
+            HUDLogMessagesModel::Element message;
+            message.severity=3;
+            if(_is_air){
+                message.message="Air unit ";
+            }else{
+                message.message="Ground unit ";
+            }
+            if(alive){
+                message.message+="found";
+            }else{
+                message.message+="lost";
+            }
+            HUDLogMessagesModel::instance().addData(message);
+            //
+            set_is_alive(alive);
         }
     }
     {
