@@ -40,7 +40,6 @@ public:
         TimestampRole,
         SeverityColorRole
     };
-
     explicit  LogMessagesModel(QObject *parent = nullptr);
     int rowCount(const QModelIndex& parent= QModelIndex()) const override;
     QVariant data( const QModelIndex& index, int role = Qt::DisplayRole ) const override;

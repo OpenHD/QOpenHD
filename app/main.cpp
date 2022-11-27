@@ -47,6 +47,7 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 
 
 #include "logging/logmessagesmodel.h"
+#include "logging/hudlogmessagesmodel.h""
 #include "telemetry/settings/mavlinksettingsmodel.h"
 #include "telemetry/settings/synchronizedsettings.h"
 #include "qopenhd.h"
@@ -261,6 +262,8 @@ int main(int argc, char *argv[]) {
     write_platform_context_properties(engine);
     write_other_context_properties(engine);
     engine.rootContext()->setContextProperty("_logMessagesModel", &LogMessagesModel::instance());
+    engine.rootContext()->setContextProperty("_hudLogMessagesModel", &HUDLogMessagesModel::instance());
+
     engine.rootContext()->setContextProperty("_airCameraSettingsModel", &MavlinkSettingsModel::instanceAirCamera());
     engine.rootContext()->setContextProperty("_airPiSettingsModel", &MavlinkSettingsModel::instanceAir());
     engine.rootContext()->setContextProperty("_groundPiSettingsModel", &MavlinkSettingsModel::instanceGround());

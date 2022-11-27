@@ -70,7 +70,7 @@ Item {
         anchors.top: parent.top
         anchors.bottom: parent.bottom
         width: parent.width - 24
-        text: model.text
+        text: model.message
         leftPadding: 6
         rightPadding: 0
         style: Text.Outline

@@ -33,7 +33,7 @@ BaseWidget {
         ListView {
             id: messageListView
             anchors.fill: parent
-            model: messageModel
+            model: _hudLogMessagesModel
             interactive: false
 
 
