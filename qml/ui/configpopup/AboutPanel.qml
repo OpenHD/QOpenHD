@@ -116,7 +116,7 @@ Rectangle {
                         leftPadding: 12
                     }
                     Text {
-                        text: _ohdSystemAir.m_openhd_version
+                        text: _ohdSystemAir.openhd_version
                         height: 24
                         width: 256
                         font.pixelSize: 14
@@ -186,7 +186,7 @@ Rectangle {
                         leftPadding: 12
                     }
                     Text {
-                        text: _ohdSystemGround.m_openhd_version
+                        text: _ohdSystemGround.openhd_version
                         height: 24
                         width: 256
                         font.pixelSize: 14

@@ -46,10 +46,6 @@ public:
     Q_INVOKABLE void change_param_air_and_ground_channel_width(int value){
         change_param_air_and_ground(PARAM_ID_WB_CHANNEL_WIDTH,value);
     }
-    // Makes it easy to apply ohd interface. On failure, tells the user to manually re-power the air and ground unit.
-    Q_INVOKABLE void soft_restart();
-signals:
-
 };
 
 #endif // SynchronizedSettings_H

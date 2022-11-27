@@ -423,11 +423,11 @@ BaseWidget {
             height: 24
             color: {
 
-                if (_ohdSystemGround.cpuload>= settings.ground_status_cpu_warn
-                        || _ohdSystemGround.temp>= settings.ground_status_temp_warn) {
+                if (_ohdSystemGround.curr_cpuload_perc>= settings.ground_status_cpu_warn
+                        || _ohdSystemGround.curr_soc_temp_degree>= settings.ground_status_temp_warn) {
                     return settings.color_warn
-                } else if (_ohdSystemGround.cpuload > settings.ground_status_cpu_caution
-                           || _ohdSystemGround.temp> settings.ground_status_temp_caution) {
+                } else if (_ohdSystemGround.curr_cpuload_perc > settings.ground_status_cpu_caution
+                           || _ohdSystemGround.curr_soc_temp_degree> settings.ground_status_temp_caution) {
                     return settings.color_caution
                 } else {
                     return settings.color_shape
@@ -454,12 +454,12 @@ BaseWidget {
             width: 36
             height: 24
             color: {
-                if (_ohdSystemGround.cpuload>= settings.ground_status_cpu_warn
-                        || _ohdSystemGround.temp>= settings.ground_status_temp_warn) {
+                if (_ohdSystemGround.curr_cpuload_perc>= settings.ground_status_cpu_warn
+                        || _ohdSystemGround.curr_soc_temp_degree>= settings.ground_status_temp_warn) {
                     widgetInner.visible = true
                     return settings.color_warn
-                } else if (_ohdSystemGround.cpuload> settings.ground_status_cpu_caution
-                           || _ohdSystemGround.temp> settings.ground_status_temp_caution) {
+                } else if (_ohdSystemGround.curr_cpuload_perc> settings.ground_status_cpu_caution
+                           || _ohdSystemGround.curr_soc_temp_degree> settings.ground_status_temp_caution) {
                     widgetInner.visible = true
                     return settings.color_caution
                 } else if (settings.ground_status_declutter == true
@@ -472,7 +472,7 @@ BaseWidget {
                 }
             }
             opacity: settings.ground_status_opacity
-            text: Number(_ohdSystemGround.cpuload).toLocaleString(Qt.locale(),
+            text: Number(_ohdSystemGround.curr_cpuload_perc).toLocaleString(Qt.locale(),
                                                             'f', 0) + "%"
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: temp_gnd.left
@@ -493,12 +493,12 @@ BaseWidget {
             width: 36
             height: 24
             color: {
-                if (_ohdSystemGround.cpuload>= settings.ground_status_cpu_warn
-                        || _ohdSystemGround.temp >= settings.ground_status_temp_warn) {
+                if (_ohdSystemGround.curr_cpuload_perc>= settings.ground_status_cpu_warn
+                        || _ohdSystemGround.curr_soc_temp_degree >= settings.ground_status_temp_warn) {
                     widgetInner.visible = true
                     return settings.color_warn
-                } else if (_ohdSystemGround.cpuload> settings.ground_status_cpu_caution
-                           || _ohdSystemGround.temp > settings.ground_status_temp_caution) {
+                } else if (_ohdSystemGround.curr_cpuload_perc> settings.ground_status_cpu_caution
+                           || _ohdSystemGround.curr_soc_temp_degree > settings.ground_status_temp_caution) {
                     widgetInner.visible = true
                     return settings.color_caution
                 } else if (settings.ground_status_declutter == true
@@ -511,7 +511,7 @@ BaseWidget {
                 }
             }
             opacity: settings.ground_status_opacity
-            text: Number(_ohdSystemGround.temp).toLocaleString(Qt.locale(),
+            text: Number(_ohdSystemGround.curr_soc_temp_degree).toLocaleString(Qt.locale(),
                                                          'f', 0) + "°"
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: parent.right

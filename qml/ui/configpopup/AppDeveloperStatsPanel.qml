@@ -37,16 +37,30 @@ Rectangle {
             }
         }
 
-        Button{
+        /*Button{
             height: 24
             text: "Run dhclient eth0 (might block UI for N seconds)"
             onClicked:{
                 _qopenhd.run_dhclient_eth0()
             }
-        }
+        }*/
         Text {
             id: test1
             text: qsTr("Art Horizon mavlink update rate:"+_fcMavlinkSystem.curr_update_rate_mavlink_message_attitude+" Hz")
+        }
+        // air
+        Text {
+            id: test2
+            text: qsTr("video0 FEC encode:  "+_ohdSystemAir.curr_video0_fec_encode_time_avg_min_max)
+        }
+        Text {
+            id: test4
+            text: qsTr("video0 FEC block length:  "+_ohdSystemAir.curr_video0_fec_block_length_min_max_avg)
+        }
+        // ground
+        Text {
+            id: test3
+            text: qsTr("video0 FEC decode:  "+_ohdSystemGround.curr_video0_fec_decode_time_avg_min_max)
         }
     }
 }
