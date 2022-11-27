@@ -76,7 +76,8 @@ class AOHDSystem : public QObject
     L_RO_PROP(QString,curr_set_video_bitrate,set_curr_set_video_bitrate,"N/A")
     L_RO_PROP(QString,curr_set_video_codec,set_curr_set_video_codec,"N/A")
     //
-    L_RO_PROP(int,best_rx_rssi,set_best_rx_rssi,-127)
+    L_RO_PROP(int,current_rx_rssi,set_current_rx_rssi,-128)
+    //
     L_RO_PROP(int,wifi_rx_packets_count,wifi_rx_packets_count,-1)
     L_RO_PROP(int,wifi_tx_packets_count,wifi_tx_packets_count,-1)
 public:
