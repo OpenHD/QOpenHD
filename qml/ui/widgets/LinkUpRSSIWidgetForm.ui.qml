@@ -195,7 +195,7 @@ BaseWidget {
 
             Text {
                 //Layout.alignment: left
-                text: "TX error/dropped: "+_ohdSystemAir.count_tx_inj_error_hint+" "+_ohdSystemAir.count_tx_dropped_packets
+                text: "TX error/dropped: "+_ohdSystemGround.count_tx_inj_error_hint+" "+_ohdSystemGround.count_tx_dropped_packets
                 color: "white"
                 font.bold: true
                 height: parent.height
