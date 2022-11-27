@@ -162,6 +162,7 @@ public:
      static RC_CHANNELS mavlink_msg_rc_channels_override_to_array(const mavlink_rc_channels_override_t& data);
 private:
      int64_t x_last_dropped_packets=-1;
+     void send_message_hud_connection(bool recovered);
 };
 
 

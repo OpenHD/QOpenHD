@@ -11,8 +11,8 @@ MessageHUDForm {
         running: true
         repeat: true
         onTriggered: {
-            console.log("Timer message hud")
-
+            // Something something stephen legacy UI
+            // console.log("Timer message hud")
             // DIRTY
             /*
              * Resize the list view to fit the number of messages on-screen, this ensures that

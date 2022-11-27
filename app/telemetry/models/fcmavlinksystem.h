@@ -226,6 +226,8 @@ public:
     Q_INVOKABLE void send_return_to_launch_async();
     Q_INVOKABLE bool send_command_reboot(bool reboot);
     // -----------------------
+private:
+    void send_message_hud_connection(bool recovered);
 };
 
 

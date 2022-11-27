@@ -21,6 +21,22 @@ HUDLogMessagesModel &HUDLogMessagesModel::instance()
     return instance;
 }
 
+void HUDLogMessagesModel::add_message_info(QString message)
+{
+    HUDLogMessagesModel::Element element{};
+    element.message=message;
+    element.severity=6;
+    addData(element);
+}
+
+void HUDLogMessagesModel::add_message_warning(QString message)
+{
+    HUDLogMessagesModel::Element element{};
+    element.message=message;
+    element.severity=4;
+    addData(element);
+}
+
 int HUDLogMessagesModel::rowCount( const QModelIndex& parent) const
 {
     if (parent.isValid())
@@ -78,7 +94,7 @@ void HUDLogMessagesModel::addData(HUDLogMessagesModel::Element logMessageData)
 
 void HUDLogMessagesModel::handle_cleanup()
 {
-    qDebug()<<"timer";
+    //qDebug()<<"timer";
     for(int i=0;i<m_data.size();i++){
         const auto& el=m_data.at(i);
         const auto age=std::chrono::steady_clock::now()-el.added_time_point;

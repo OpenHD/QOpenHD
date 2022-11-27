@@ -11,6 +11,7 @@
 #include <QDateTime>
 
 #include <logging/logmessagesmodel.h>
+#include <logging/hudlogmessagesmodel.h>
 
 FCMavlinkSystem::FCMavlinkSystem(QObject *parent): QObject(parent) {
     m_flight_time_timer = new QTimer(this);
@@ -898,18 +899,33 @@ bool FCMavlinkSystem::send_command_reboot(bool reboot)
     return false;
 }
 
+void FCMavlinkSystem::send_message_hud_connection(bool recovered)
+{
+    std::stringstream message;
+    message << "FC ";
+    if(recovered){
+        message << "connected";
+        HUDLogMessagesModel::instance().add_message_info(message.str().c_str());
+    }else{
+        message << "disconnected";
+        HUDLogMessagesModel::instance().add_message_warning(message.str().c_str());
+    }
+}
+
 void FCMavlinkSystem::update_alive()
 {
     if(m_last_heartbeat==-1){
         // we did not get any heartbeat (yet)
         set_is_alive(false);
     }else{
+        const auto elapsed_since_last_heartbeat=QOpenHDMavlinkHelper::getTimeMilliseconds()-m_last_heartbeat;
         // after 3 seconds, consider as "not alive"
-        // (aka if we did not get a heartbeat in the last 3 seconds, we consider the FC as not being alive)
-        if(QOpenHDMavlinkHelper::getTimeMilliseconds()-m_last_heartbeat> 3*1000){
-            set_is_alive(false);
-        }else{
-            set_is_alive(true);
+        const bool alive=elapsed_since_last_heartbeat< 3*1000;
+        if(alive != m_is_alive){
+            // message when state changes
+            send_message_hud_connection(alive);
+            //
+            set_is_alive(alive);
         }
     }
 }

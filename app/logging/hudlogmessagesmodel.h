@@ -20,12 +20,16 @@ class HUDLogMessagesModel : public QAbstractListModel
     Q_OBJECT
 public:
     explicit HUDLogMessagesModel(QObject *parent = nullptr);
+    static HUDLogMessagesModel& instance();
+
+    void add_message_info(QString message);
+    void add_message_warning(QString message);
+private:
     struct Element{
         QString message;
         int severity;
         std::chrono::steady_clock::time_point added_time_point=std::chrono::steady_clock::now();
     };
-    static HUDLogMessagesModel& instance();
     enum Roles {
         MessageRole =Qt::UserRole,
         LevelRole

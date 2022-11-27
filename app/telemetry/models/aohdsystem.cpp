@@ -319,19 +319,7 @@ void AOHDSystem::update_alive()
         const bool alive=elapsed_since_last_heartbeat< 3*1000;
         if(alive != m_is_alive){
             // message when state changes
-            HUDLogMessagesModel::Element message;
-            message.severity=3;
-            if(_is_air){
-                message.message="Air unit ";
-            }else{
-                message.message="Ground unit ";
-            }
-            if(alive){
-                message.message+="found";
-            }else{
-                message.message+="lost";
-            }
-            HUDLogMessagesModel::instance().addData(message);
+            send_message_hud_connection(alive);
             //
             set_is_alive(alive);
         }
@@ -418,3 +406,20 @@ AOHDSystem::RC_CHANNELS AOHDSystem::mavlink_msg_rc_channels_override_to_array(co
     ret[17]=parsedMsg.chan18_raw;
     return ret;
 }
+
+void AOHDSystem::send_message_hud_connection(bool recovered){
+    std::stringstream message;
+    if(_is_air){
+        message << "Air unit ";
+    }else{
+        message << "Ground unit ";
+    }
+    if(recovered){
+        message << "connected";
+        HUDLogMessagesModel::instance().add_message_info(message.str().c_str());
+    }else{
+        message << "disconnected";
+        HUDLogMessagesModel::instance().add_message_warning(message.str().c_str());
+    }
+}
+
