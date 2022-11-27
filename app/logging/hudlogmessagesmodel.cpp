@@ -73,7 +73,7 @@ void HUDLogMessagesModel::removeData(int row)
     if (row < 0 || row >= m_data.count())
         return;
 
-    qDebug()<<"Removing "<<row;
+    //qDebug()<<"Removing "<<row;
     beginRemoveRows(QModelIndex(), row, row);
     m_data.removeAt(row);
     endRemoveRows();

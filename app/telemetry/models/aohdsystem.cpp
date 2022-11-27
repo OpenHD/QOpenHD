@@ -273,7 +273,7 @@ void AOHDSystem::set_wifi_adapter0(unsigned int received_packet_count, int curre
     m_wifi_adapters[0].signal_good=signal_good;
     emit wifi_adapter0_changed(received_packet_count,current_signal_dbm,signal_good);
     // TODO figure out a way to calculate the best rssi
-    set_best_rx_rssi(current_signal_dbm);
+    set_current_rx_rssi(current_signal_dbm);
 }
 void AOHDSystem::set_wifi_adapter1(unsigned int received_packet_count, int current_signal_dbm, int signal_good){
     m_wifi_adapters[1].received_packet_count=received_packet_count;

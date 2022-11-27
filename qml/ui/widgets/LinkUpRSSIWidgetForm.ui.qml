@@ -262,8 +262,8 @@ BaseWidget {
             height: 24
             color: settings.color_text
 
-            text: _ohdSystemAir.best_rx_rssi
-                  == -127 ? qsTr("N/A") : _ohdSystemAir.best_rx_rssi
+            text: _ohdSystemAir.current_rx_rssi
+                  <= -127 ? qsTr("N/A") : _ohdSystemAir.current_rx_rssi
             anchors.left: uplink_icon.right
             anchors.leftMargin: 3
             anchors.top: parent.top
