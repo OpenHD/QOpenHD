@@ -24,7 +24,6 @@ Item {
         font.family: "Font Awesome 5 Free"
         font.pixelSize: 18
 
-        // @disable-check M223
         color: {
             switch (model.level) {
             case 0: return "#fa0000"; // error
@@ -39,7 +38,6 @@ Item {
             }
         }
 
-        // @disable-check M223
         text: {
             switch (model.level) {
 
