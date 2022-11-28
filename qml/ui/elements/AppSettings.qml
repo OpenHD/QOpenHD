@@ -100,7 +100,7 @@ Settings {
 
     property bool show_bitrate: true
     property double bitrate_opacity: 1
-    property bool bitrate_show_skip_fail_count: false
+    property bool disable_video_tx_overloaded_warning: false
     property double bitrate_size: 1
     property bool bitrate_declutter: false
     property double bitrate_warn: 0

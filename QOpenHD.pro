@@ -96,6 +96,7 @@ include(app/exp/avcodec_video.pri)
 # "first SOURCES / HEADERS it can find in the .pro, which is here". This is why (as an example) geographic lib,
 # which is a library, comes after the generic files here.
 SOURCES += \
+    app/logging/hudlogmessagesmodel.cpp \
     app/logging/logmessagesmodel.cpp \
     app/telemetry/models/aohdsystem.cpp \
     app/qopenhd.cpp \
@@ -109,6 +110,8 @@ SOURCES += \
 
 HEADERS += \
     app/common_consti/EmulatedPacketDrop.hpp \
+    app/logging/hudlogmessagesmodel.h \
+    app/logging/loghelper.h \
     app/logging/logmessagesmodel.h \
     app/telemetry/mavsdk_include.h \
     app/telemetry/models/aohdsystem.h \
@@ -199,6 +202,7 @@ DISTFILES += \
     android/src/org/freedesktop/gstreamer/androidmedia/GstAhsCallback.java \
     android/src/org/freedesktop/gstreamer/androidmedia/GstAmcOnFrameAvailableListener.java \
     app/adsb/README.md \
+    app/logging/README.txt \
     app/openhd_systems/README.md \
     app/osd_extra/Readme.txt \
     app/platform/README.md \

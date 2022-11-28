@@ -9,7 +9,7 @@
 
 /**
  * Note: This is for the "Log" list UI element, NOT for the HUD
- * The HUD currently is done from qml, and old stephen code that should be ported to c++
+ * Here we can display much more log messages / do not need to worry about spamming the user.
  * @brief All OpenHD and QOpenHD Log messages are accumulated and processed here.
  * There is only one static instance of this class in the whole application, and this
  * model instance is registered in main() to be accessible by qml for display.
@@ -40,7 +40,6 @@ public:
         TimestampRole,
         SeverityColorRole
     };
-
     explicit  LogMessagesModel(QObject *parent = nullptr);
     int rowCount(const QModelIndex& parent= QModelIndex()) const override;
     QVariant data( const QModelIndex& index, int role = Qt::DisplayRole ) const override;

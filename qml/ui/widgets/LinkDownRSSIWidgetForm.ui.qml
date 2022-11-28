@@ -243,7 +243,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: "TX error:"+_ohdSystemGround.total_tx_error_count
+                text: "TX error/dropped: "+_ohdSystemAir.count_tx_inj_error_hint+" "+_ohdSystemAir.count_tx_dropped_packets
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -252,7 +252,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: "Blocks lost:"+_ohdSystemGround.video_rx_blocks_lost
+                text: "Blocks lost: "+_ohdSystemGround.video0_count_blocks_lost
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -261,7 +261,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: "Blocks recovered:"+_ohdSystemGround.video_rx_blocks_recovered;
+                text: "Blocks recovered: "+_ohdSystemGround.video0_count_blocks_recovered;
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -270,7 +270,17 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: "Rx video:"+_ohdSystemGround.curr_incoming_video_bitrate;
+                text: "Fragments recovered: "+_ohdSystemGround.video0_count_fragments_recovered;
+                color: "white"
+                font.bold: true
+                height: parent.height
+                font.pixelSize: detailPanelFontPixels
+                verticalAlignment: Text.AlignVCenter
+            }
+
+            Text {
+                //Layout.alignment: left
+                text: "Rx video0: "+_ohdSystemGround.curr_video0_received_bitrate_with_fec;
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -279,7 +289,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: "Rx tele:"+_ohdSystemGround.curr_incoming_tele_bitrate;
+                text: "Rx tele: "+_ohdSystemGround.curr_telemetry_rx_bps;
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -288,16 +298,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: "Tx tele:"+_ohdSystemGround.curr_telemetry_tx_pps
-                color: "white"
-                font.bold: true
-                height: parent.height
-                font.pixelSize: detailPanelFontPixels
-                verticalAlignment: Text.AlignVCenter
-            }
-            Text {
-                //Layout.alignment: left
-                text: "curr gaps:"+_ohdSystemGround.curr_n_of_big_gaps
+                text: "Tx tele: "+_ohdSystemGround.curr_telemetry_tx_pps;
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -337,7 +338,7 @@ BaseWidget {
             height: 24
             color: settings.color_text
 
-            text: _ohdSystemGround.best_rx_rssi == -127 ? qsTr("N/A") : _ohdSystemGround.best_rx_rssi
+            text: _ohdSystemGround.current_rx_rssi <= -127 ? qsTr("N/A") : _ohdSystemGround.current_rx_rssi
             anchors.left: downlink_icon.right
             anchors.leftMargin: 3
             anchors.top: parent.top
@@ -417,9 +418,9 @@ BaseWidget {
                 styleColor: settings.color_glow
             }
             // RX (Ground in) bitrate
-            Text {
+            /*Text {
                 visible: settings.downlink_show_current_bitrate ? true : false
-                text: _ohdSystemGround.curr_incoming_bitrate
+                text: _ohdSystemGround.
                 color: settings.color_text
                 verticalAlignment: Text.AlignVCenter
                 font.pixelSize: 12
@@ -429,7 +430,7 @@ BaseWidget {
                 elide: Text.ElideRight
                 style: Text.Outline
                 styleColor: settings.color_glow
-            }
+            }*/
         }
 // Consti10 temporary end
     }

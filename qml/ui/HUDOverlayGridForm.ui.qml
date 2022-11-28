@@ -88,7 +88,7 @@ Item {
     }
 
     // + 0% cpu
-    BitrateWidget {
+    VideoBitrateWidget {
         id: bitrate
     }
 
