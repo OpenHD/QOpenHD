@@ -24,6 +24,7 @@ jobs:
         sudo apt-get clean
         sudo rm -rf /var/lib/apt/lists/*
         sudo apt upgrade -y
+        sudo add-apt-repository universe
         sudo bash install_dep_ubuntu22_release.sh
         
 
