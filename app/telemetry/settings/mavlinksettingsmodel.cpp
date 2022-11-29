@@ -78,6 +78,7 @@ static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string&
     map_improved_params["WB_E_STBC"]=ImprovedIntSetting::createEnumEnableDisable();
     map_improved_params["WB_E_LDPC"]=ImprovedIntSetting::createEnumEnableDisable();
     map_improved_params["WB_E_SHORT_GUARD"]=ImprovedIntSetting::createEnumEnableDisable();
+    map_improved_params["RTL8812AU_PWR_I"]=ImprovedIntSetting::createRangeOnly(0,63);
     {
         std::vector<std::string> values{};
         values.push_back("enum0");
