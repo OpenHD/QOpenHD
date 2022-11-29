@@ -1,4 +1,4 @@
-name: build_package_x86
+name: build_package_x86_22
 
 on: [push]
 
@@ -23,6 +23,9 @@ jobs:
         sudo rm -Rf /etc/apt/sources.list.d/openhd*
         sudo apt-get clean
         sudo rm -rf /var/lib/apt/lists/*
+        sudo apt upgrade -y
+        sudo apt remove libunwind-13-dev 
+        sudo apt install -y libunwind-dev libgstreamer-plugins-base1.0-dev
         sudo bash install_dep_ubuntu22_release.sh
         
 
