@@ -78,7 +78,7 @@ static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string&
     map_improved_params["WB_E_STBC"]=ImprovedIntSetting::createEnumEnableDisable();
     map_improved_params["WB_E_LDPC"]=ImprovedIntSetting::createEnumEnableDisable();
     map_improved_params["WB_E_SHORT_GUARD"]=ImprovedIntSetting::createEnumEnableDisable();
-    map_improved_params["RTL8812AU_PWR_I"]=ImprovedIntSetting::createRangeOnly(0,63);
+    //map_improved_params["RTL8812AU_PWR_I"]=ImprovedIntSetting::createRangeOnly(0,63);
     {
         std::vector<std::string> values{};
         values.push_back("enum0");
@@ -658,6 +658,9 @@ QString MavlinkSettingsModel::get_warning_before_safe(const QString param_id)
 bool MavlinkSettingsModel::get_param_requires_manual_reboot(QString param_id)
 {
     if(param_id=="ENABLE_JOY_RC"){
+        return true;
+    }
+    if(param_id=="RTL8812AU_PWR_I"){
         return true;
     }
     return false;
