@@ -660,5 +660,8 @@ bool MavlinkSettingsModel::get_param_requires_manual_reboot(QString param_id)
     if(param_id=="ENABLE_JOY_RC"){
         return true;
     }
+    if(param_id=="RTL8812AU_PWR_I"){
+        return true;
+    }
     return false;
 }
