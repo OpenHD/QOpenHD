@@ -544,7 +544,7 @@ BaseWidget {
         }
     }
 
-    /*
+    /* This was related to making the map appear round
     Item {
             id: mask
             anchors.fill: widgetInner

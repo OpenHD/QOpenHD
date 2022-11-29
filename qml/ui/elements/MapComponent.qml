@@ -27,12 +27,12 @@ Map {
     property int track_count: 0;
     property int track_skip: 1;
     property int track_limit: 100; //max number of drone track points before it starts averaging
-
+/* TODO mission waypoints- needs factoring
     Connections {
         //this deletes the lines drawn between mission waypoints
         target: MissionWaypointManager
         function onMapDeleteWaypoints(){
-            console.log("onMapDeleteWaypoints from polyline");
+            console.log("Map component: onMapDeleteWaypoints from polyline");
 
             var waypoint_track_count = waypointTrack.pathLength();
 
@@ -43,20 +43,20 @@ Map {
             }
         }
     }
-
+*/
     center {
-        latitude: OpenHD.lat == 0.0 ? userLat : followDrone ? OpenHD.lat : 9000
-        longitude: OpenHD.lon == 0.0 ? userLon : followDrone ? OpenHD.lon : 9000
+        latitude: _fcMavlinkSystem.lat == 0.0 ? userLat : followDrone ? _fcMavlinkSystem.lat : 9000
+        longitude: _fcMavlinkSystem.lon == 0.0 ? userLon : followDrone ? _fcMavlinkSystem.lon : 9000
     }
 
     onSupportedMapTypesChanged: {
-        console.log("supported map types has changed")
+        console.log("Map component: supported map types has changed")
         variantDropdown.model = map.supportedMapTypes
     }
 
     onMapReadyChanged: {
         //needed to intitialize adsb api coordinates
-        console.log("map is ready");
+        console.log("Map component: is ready");
         findMapBounds();
     }
 
@@ -66,8 +66,8 @@ Map {
 
     function findMapBounds(){
         var center_coord = map.toCoordinate(Qt.point(map.width/2,map.height/2))
-        //console.log("my center",center_coord.latitude, center_coord.longitude);
-        if (EnableADSB) {
+        console.log("Map component: center",center_coord.latitude, center_coord.longitude);
+        if (false) {
             AdsbVehicleManager.newMapCenter(center_coord);
         }
     }
@@ -89,11 +89,11 @@ Map {
         // always remove last point unless it was significant
         if (track_count != 0) {
             droneTrack.removeCoordinate(droneTrack.pathLength());
-            //console.log("total points=", droneTrack.pathLength());
+            console.log("Map component: total points=", droneTrack.pathLength());
         }
 
         // always add the current location so drone looks like its connected to line
-        droneTrack.addCoordinate(QtPositioning.coordinate(OpenHD.lat, OpenHD.lon));
+        droneTrack.addCoordinate(QtPositioning.coordinate(_fcMavlinkSystem.lat, _fcMavlinkSystem.lon));
 
         track_count = track_count + 1;
 
@@ -123,10 +123,10 @@ Map {
 
     MapCircle {
         center {
-            latitude: OpenHD.lat
-            longitude: OpenHD.lon
+            latitude: _fcMavlinkSystem.lat
+            longitude: _fcMavlinkSystem.lon
         }
-        radius: OpenHD.gps_hdop
+        radius: _fcMavlinkSystem.gps_hdop
         color: 'red'
         opacity: .3
     }
@@ -136,21 +136,21 @@ Map {
         anchorPoint.x: imageSmallMap.width / 2
         anchorPoint.y: imageSmallMap.height
         coordinate {
-            latitude: OpenHD.homelat
-            longitude: OpenHD.homelon
+            latitude: _fcMavlinkSystem.homelat
+            longitude: _fcMavlinkSystem.homelon
         }
 
         sourceItem: Image {
             id: imageSmallMap
-            source: "/homemarker.png"
+            source: "qrc:/resources/homemarker.png"
         }
     }
 
     MapRectangle {
         id: adsbSquare
-        topLeft : EnableADSB ? AdsbVehicleManager.apiMapCenter.atDistanceAndAzimuth(settings.adsb_distance_limit, 315, 0.0) : QtPositioning.coordinate(0, 0)
-        bottomRight: EnableADSB ? AdsbVehicleManager.apiMapCenter.atDistanceAndAzimuth(settings.adsb_distance_limit, 135, 0.0) : QtPositioning.coordinate(0, 0)
-        enabled: EnableADSB
+        topLeft : false ? AdsbVehicleManager.apiMapCenter.atDistanceAndAzimuth(settings.adsb_distance_limit, 315, 0.0) : QtPositioning.coordinate(0, 0)
+        bottomRight: false ? AdsbVehicleManager.apiMapCenter.atDistanceAndAzimuth(settings.adsb_distance_limit, 135, 0.0) : QtPositioning.coordinate(0, 0)
+        enabled: false
         visible: settings.adsb_api_openskynetwork
         color: "white"
         border.color: "red"
@@ -161,9 +161,10 @@ Map {
 
     MapItemView {
         id: markerMapView
-        model: AdsbVehicleManager.adsbVehicles
+//TODO ADSB needs refactor
+//        model: AdsbVehicleManager.adsbVehicles
         delegate: markerComponentDelegate
-        visible: EnableADSB
+        visible: false
 
         Component {
             id: markerComponentDelegate
@@ -293,7 +294,8 @@ Map {
 
     MapItemView {
         id: waypointMapView
-        model: MissionWaypointManager.missionWaypoints
+// TODO missions refactor
+//        model: MissionWaypointManager.missionWaypoints
         delegate: waypointComponent
 
 
@@ -416,7 +418,7 @@ Map {
 
     MapQuickItem {
         id: dronemarker
-        coordinate: QtPositioning.coordinate(OpenHD.lat, OpenHD.lon)
+        coordinate: QtPositioning.coordinate(_fcMavlinkSystem.lat, _fcMavlinkSystem.lon)
 
         onCoordinateChanged: {
             addDroneTrack();
@@ -447,7 +449,7 @@ Map {
             transform: Rotation {
                 origin.x: 0;
                 origin.y: 0;
-                angle: settings.map_orientation ? 0 : OpenHD.hdg
+                angle: settings.map_orientation ? 0 : _fcMavlinkSystem.hdg
             }
         }
     }

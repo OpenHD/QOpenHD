@@ -225,9 +225,9 @@ Item {
         id: aoaWidget
     }
 
-    //MapWidget {
-    //    id: mapWidget
-    //}
+    MapWidget {
+        id: mapWidget
+    }
 
     ExampleWidget {
         id: exampleWidget
