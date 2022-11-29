@@ -23,7 +23,7 @@ jobs:
         sudo rm -Rf /etc/apt/sources.list.d/openhd*
         sudo apt-get clean
         sudo rm -rf /var/lib/apt/lists/*
-        sudo bash install_dep_ubuntu20_release.sh
+        sudo bash install_dep_ubuntu22_release.sh
         
 
     - name: Build with make
