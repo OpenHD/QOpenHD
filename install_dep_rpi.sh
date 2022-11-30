@@ -5,7 +5,7 @@
 apt install -y gnupg gnupg1 gnupg2 apt-transport-https curl apt-utils  libgles2-mesa-dev libegl1-mesa-dev libgbm-dev libboost-dev libsdl2-dev libsdl1.2-dev
 
 #install qt
-apt install -y openhd-qt-pi-bullseye
+apt install -y openhd-qt
 
 
 # Install all the dependencies needed to build QOpenHD from source
