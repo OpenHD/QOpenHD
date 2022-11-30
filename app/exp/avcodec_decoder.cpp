@@ -880,6 +880,7 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp_and_mmal_direct(cons
             while(buf==nullptr){
                 // TODO wtf
                 //buf=m_rtp_receiver->get_data(std::chrono::milliseconds(kDefaultFrameTimeout));
+                 std::this_thread::sleep_for(std::chrono::milliseconds(5));
                 buf=m_rtp_receiver->get_data(std::chrono::milliseconds(0));
                 if(request_restart){
                     request_restart=false;
