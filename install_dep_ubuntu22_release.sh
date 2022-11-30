@@ -5,7 +5,7 @@ apt install -y gnupg gnupg1 gnupg2 apt-transport-https curl apt-utils libgles2-m
 
 # Install all the dependencies needed to build QOpenHD from source.
 
-apt install -y openhd-qt-x86-jammy 
+apt install -y openhd-qt 
 
 # While we keep the gstreamer code in (in case we want to enable it anyways for the jetson) we have it disabled at compile time by default
 #apt -y install libgstreamer-plugins-base1.0-dev gstreamer1.0-plugins-good
