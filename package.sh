@@ -26,7 +26,7 @@ ls /opt
 VER2=$(git rev-parse --short HEAD)
 
 
-if [[ "${DISTRO}" == "bullseye" ]] || [[ "${DISTRO}" == "bionic" ]] || [[ "${DISTRO}" == "jammy" ]]; then
+if [[ "${DISTRO}" == "bullseye" ]] || [[ "${DISTRO}" == "bionic" ]] ; then
     # link libraries and qt
     touch /etc/ld.so.conf.d/qt.conf
     sudo echo "/opt/Qt5.15.4/lib/" > /etc/ld.so.conf.d/qt.conf
@@ -34,6 +34,14 @@ if [[ "${DISTRO}" == "bullseye" ]] || [[ "${DISTRO}" == "bionic" ]] || [[ "${DIS
     export PATH="$PATH:/opt/Qt5.15.4/bin/"
     sudo ln -s /opt/Qt5.15.4/bin/qmake /usr/bin/qmake
     /opt/Qt5.15.4/bin/qmake
+elif [[ "${DISTRO}" == "jammy" ]] ; then
+# link libraries and qt
+    touch /etc/ld.so.conf.d/qt.conf
+    sudo echo "/opt/Qt5.15.7/lib/" > /etc/ld.so.conf.d/qt.conf
+    sudo ldconfig
+    export PATH="$PATH:/opt/Qt5.15.7/bin/"
+    sudo ln -s /opt/Qt5.15.7/bin/qmake /usr/bin/qmake
+    /opt/Qt5.15.7/bin/qmake
 else
 qmake
 fi
