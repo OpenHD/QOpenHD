@@ -481,10 +481,10 @@ BaseWidget {
                 pitch: _fcMavlinkSystem.pitch
                 Behavior on roll {NumberAnimation { duration: settings.smoothing }}
                 roll: _fcMavlinkSystem.roll
-
-                Behavior on heading {NumberAnimation { duration: settings.smoothing }}
+                //turned off data smoothing because of compass wrapping issue
+                //Behavior on heading {NumberAnimation { duration: settings.smoothing }}
                 heading: _fcMavlinkSystem.hdg
-                Behavior on homeHeading {NumberAnimation { duration: settings.smoothing }}
+                //Behavior on homeHeading {NumberAnimation { duration: settings.smoothing }}
                 homeHeading: _fcMavlinkSystem.home_heading
 
                 showHeadingLadderText: settings.heading_ladder_text
