@@ -136,6 +136,9 @@ public:
     Q_INVOKABLE QString get_warning_before_safe(QString param_id);
 
     Q_INVOKABLE bool get_param_requires_manual_reboot(QString param_id);
+
+private:
+    QString get_short_description(QString param_id)const;
 };
 
 #endif // MavlinkSettingsModel_H

@@ -51,6 +51,7 @@ Rectangle{
     // only for string params end
 
     property string shortParamDescription: "?"
+    property bool m_has_param_description: false
 
     // disable some checking we do for the user, should be used only in really rare cases
     property bool enableAdvanced: false
@@ -107,6 +108,11 @@ Rectangle{
         parameterId=param_id;
         paramValueType=model.valueType
         shortParamDescription=model.shortDescription
+        if(shortParamDescription==="TODO"){
+            m_has_param_description=false;
+        }else{
+            m_has_param_description=true;
+        }
         var warning_string=instanceMavlinkSettingsModel.get_warning_before_safe(parameterId);
         if(warning_string!==""){
             console.log("Show extra dialog before actually saving:"+warning_string);
@@ -125,7 +131,19 @@ Rectangle{
         }
         setup_spin_box_int_param()
         setup_text_input_string_param()
+        set_description_enabled(false)
         parameterEditor.visible=true
+    }
+
+    function show_description(show_description){
+        set_description_enabled(true)
+    }
+    function set_description_enabled(enabled){
+        if(enabled){
+            descriptionMessageBox.visible=true
+        }else{
+            descriptionMessageBox.visible=false;
+        }
     }
 
     // For int params we use the spin box
@@ -234,14 +252,29 @@ Rectangle{
             // dafuq https://stackoverflow.com/questions/35799944/text-type-alignment
             Layout.alignment: Qt.AlignCenter
         }
-        Text {
-            width: total_width
+        Button {
+            width: 300
             height:customHeight
-            id: textDescription
-            text: qsTr("Description: "+shortParamDescription)
+            id: buttonOpenDescription
+            flat: true
+            //text: qsTr("Description: "+shortParamDescription)
+            text: qsTr("Description")
             //horizontalAlignment: Qt.AlignCenter
-            horizontalAlignment: Text.AlignHCenter
+            //horizontalAlignment: Text.AlignHCenter
             Layout.alignment: Qt.AlignCenter
+            onClicked: show_description()
+            //palette {
+            //    button: "green"
+            //}
+            Material.background:Material.LightBlue
+            visible: m_has_param_description
+        }
+        Text{
+            width: 300
+            height:customHeight
+            Layout.alignment: Qt.AlignCenter
+            text: "Description TODO"
+            visible: !m_has_param_description
         }
 
 // Value edit part begin
@@ -370,6 +403,7 @@ Rectangle{
                         }
                         parameterEditor.visible=false
                     }
+                    set_description_enabled(false)
                 }
             }
         }
@@ -385,6 +419,68 @@ Rectangle{
                 // We need to refresh the input field, since aparently qt rejects values out of range
                 if(holds_int_value() && enableAdvanced){
                     setup_spin_box_int_param()
+                }
+            }
+        }
+    }
+
+    // Dirty, popup card that contains the param description
+    // TODO: FUCKING ANNOYING QT UI FIXME
+    property int m_description_message_box_width:320
+    property int m_description_message_box_height:320
+    property int m_description_message_box_footer_width:140
+    property int m_description_message_box_footer_height:48
+    Card {
+        id: descriptionMessageBox
+        width: m_description_message_box_width
+        height: m_description_message_box_height
+        z: 5.0
+        anchors.centerIn: parent
+        cardName: qsTr("Param description")
+        cardNameColor: "black"
+        visible: false
+        cardBody: Column {
+            width: m_description_message_box_width
+            height: m_description_message_box_height-m_description_message_box_footer_height
+            ScrollView{
+                //anchors.fill: parent
+                width: m_description_message_box_width-20
+                height: m_description_message_box_height-48-48
+                contentWidth: availableWidth
+                ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+                ScrollBar.vertical.policy: ScrollBar.AlwaysOn
+                // allow dragging without using the vertical scroll bar
+                ScrollBar.vertical.interactive: true
+                Text {
+                    id: descriptionMessageBox_text
+                    text: shortParamDescription
+                    width: parent.width
+                    height:parent.height
+                    leftPadding: 12
+                    rightPadding: 12
+                    wrapMode: Text.WordWrap
+                    font.pixelSize: 15
+                }
+            }
+        }
+        hasFooter: true
+        cardFooter: Item {
+            anchors.fill: parent
+            Button {
+                id: descriptionMessageBox_button
+                height: 48
+                width: 140
+                anchors.right: parent.right
+                anchors.rightMargin: 12
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: 6
+                font.pixelSize: 14
+                font.capitalization: Font.MixedCase
+                Material.accent: Material.Green
+                highlighted: true
+                text:  qsTr("Okay")
+                onPressed: {
+                    descriptionMessageBox.visible=false
                 }
             }
         }
