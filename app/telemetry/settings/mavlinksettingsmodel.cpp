@@ -417,7 +417,8 @@ QVariant MavlinkSettingsModel::data(const QModelIndex &index, int role) const
         }
         return 1;
     } else if(role == ShortDescriptionRole){
-        return "TODO";
+        QString ret=get_short_description(data.unique_id);
+        return ret;
     } else if(role ==ReadOnlyRole){
         return is_param_read_only({data.unique_id.toStdString()});
     }
@@ -650,7 +651,7 @@ QStringList MavlinkSettingsModel::string_param_get_enum_values(QString param_id)
 QString MavlinkSettingsModel::get_warning_before_safe(const QString param_id)
 {
     if(param_id=="V_OS_CAM_CONFIG"){
-        return "WARNING: Changing this parameter will perform some special operations and then automatically reboot the air pi";
+        return "WARNING: Changing this parameter will perform some special operations and then automatically reboot the air pi after a 3second delay";
     }
     return "";
 }
@@ -664,4 +665,53 @@ bool MavlinkSettingsModel::get_param_requires_manual_reboot(QString param_id)
         return true;
     }
     return false;
+}
+
+QString MavlinkSettingsModel::get_short_description(const QString param_id)const
+{
+    if(param_id=="V_BITRATE_MBITS"){
+        return "Camera encoder bitrate, does not include FEC overhead. Supported by most cameras, but some encoders do not properly respond to this value."
+               "Note1: Your final transmitted bitrate also depends on WB_V_FEC_PERC (FEC overhead, in percent). You can find the actual measured rate(s) in the OSD"
+               "Note2: The MCS index under WB_LINK_FREQ controlls how much data can be transmitted. If you have TX errors(shown in OSD) you need to either "
+               "decrease the encoder bitrate, decrease the WB_V_FEC_PERC or (if possible) increase MCS index";
+    }
+    if(param_id=="WB_V_FEC_PERC"){
+        return "WB Video FEC overhead, in percent. Increases link stability, but also the required link bandwidth (MCS index). In low RF noise environments, you should decrease this value, e.g. to 20%";
+    }
+    if(param_id=="WB_V_FEC_BLK_L"){
+        return "WB Video FEC block length, previous FEC_K. Increasing this value improves link stability for free, but can create additional latency.";
+    }
+    if(param_id=="WB_TX_POWER_MW"){
+        return "TX power (dynamic) if supported by your wfi card (not supported on rtl8812au). Value is in mW (milli Watt). Seperate for air and ground. See"
+               "RTL8812AU_PWR_I for rtl8812au max power";
+    }
+    if(param_id=="RTL8812AU_PWR_I"){
+        return "Unitless power index for RTL8812AU. Leave at 0 to use WB_TX_POWER_MW instead, which doesn't give max power though.[0..58/63] REQUIRES REBOOT TO BE APPLIED";
+    }
+    if(param_id=="V_OS_CAM_CONFIG"){
+        return "If your connected CSI camera is not detected (e.g. you see a dummy camera stream) you need to select the apropriate config here. Air will automatically reboot"
+               " when you change this parameter";
+    }
+    if(param_id=="VARIABLE_BITRATE"){
+        return "Work in progress. Reduce video encoder bitrate if TX injections fail. Does not take the received packets into account (yet)";
+    }
+    if(param_id=="FC_UART_BAUD"){
+        return "RPI HW UART baud rate, needs to match the UART baud rate set on your FC";
+    }
+    if(param_id=="FC_UART_CONN"){
+        return "Enable / disable UART for telemetry from/to your FC";
+    }
+    if(param_id=="V_FORMAT"){
+        return "Video WIDTHxHEIGHT@FPS. You can enter any value you want here, but if you select a video format that is not supported by your camera, the video stream will stop";
+    }
+    if(param_id=="VIDEO_CODEC"){
+        return "Video codec. If your camera/ground station does not support HW accelerated encoding/decoding of the selected codec,it'l default to SW encode/decode. A reboot (air&ground) is recommended after chaning this parameter.";
+    }
+    if(param_id=="V_MJPEG_QUALITY"){
+        return "Active if video codec== mjpeg. MJPEG has no encoder bitrate, only an arbitratry quality parameter (0..100)";
+    }
+    if(param_id=="ENABLE_JOY_RC"){
+        return "Only enable joystick rc if you actually use it to save cpu / bandwidth. If enabled, you can connect a joystick to your ground station for RC. REQUIRES REBOOT!";
+    }
+    return "TODO";
 }

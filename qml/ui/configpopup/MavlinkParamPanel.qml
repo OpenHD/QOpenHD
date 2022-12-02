@@ -33,7 +33,7 @@ Rectangle {
 
 
     Component {
-        id: delegateCamera0SettingsValue
+        id: delegateMavlinkSettingsValue
         Item {
             id: item
             width: listView.width
@@ -84,6 +84,17 @@ Rectangle {
             }
         }
     }
+    /*Button {
+        height: 48
+        anchors.top: fetchAllButtonId.top
+        anchors.left: fetchAllButtonId.right
+        id: infoButton
+        text:"Info"
+        enabled: true
+        onClicked: {
+
+        }
+    }*/
 
     // Left part: multiple colums of param value
     Rectangle{
@@ -109,7 +120,7 @@ Rectangle {
                 //top: fetchAllButtonId.bottom
                 //width: parent.width
                 model: m_instanceMavlinkSettingsModel
-                delegate: delegateCamera0SettingsValue
+                delegate: delegateMavlinkSettingsValue
             }
         }
     }
