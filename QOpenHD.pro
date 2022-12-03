@@ -96,23 +96,32 @@ include(app/exp/avcodec_video.pri)
 # "first SOURCES / HEADERS it can find in the .pro, which is here". This is why (as an example) geographic lib,
 # which is a library, comes after the generic files here.
 SOURCES += \
+    app/adsb/adsb.cpp \
+    app/adsb/markermodel.cpp \
     app/logging/hudlogmessagesmodel.cpp \
     app/logging/logmessagesmodel.cpp \
+    app/adsb/ADSBVehicle.cpp \
+    app/adsb/ADSBVehicleManager.cpp \
     app/telemetry/models/aohdsystem.cpp \
     app/qopenhd.cpp \
     app/telemetry/models/rcchannelsmodel.cpp \
     app/telemetry/settings/improvedintsetting.cpp \
     app/telemetry/settings/improvedstringsetting.cpp \
     app/telemetry/settings/synchronizedsettings.cpp \
+    app/util/QmlObjectListModel.cpp \
     app/util/WorkaroundMessageBox.cpp \
     app/util/qrenderstats.cpp \
     app/videostreaming/decodingstatistcs.cpp \
 
 HEADERS += \
+    app/adsb/adsb.h \
+    app/adsb/markermodel.h \
     app/common_consti/EmulatedPacketDrop.hpp \
     app/logging/hudlogmessagesmodel.h \
     app/logging/loghelper.h \
     app/logging/logmessagesmodel.h \
+    app/adsb/ADSBVehicle.h \
+    app/adsb/ADSBVehicleManager.h \
     app/telemetry/mavsdk_include.h \
     app/telemetry/models/aohdsystem.h \
     app/telemetry/models/rcchannelsmodel.h \
@@ -124,6 +133,7 @@ HEADERS += \
     app/telemetry/settings/improvedstringsetting.h \
     app/telemetry/settings/synchronizedsettings.h \
     app/telemetry/telemetryutil.hpp \
+    app/util/QmlObjectListModel.h \
     app/util/WorkaroundMessageBox.h \
     app/util/qrenderstats.h \
     app/videostreaming/decodingstatistcs.h \
@@ -132,6 +142,8 @@ HEADERS += \
 # Geographic lib updated to c-2.0, so much cleaner
 SOURCES += $$PWD/lib/geographiclib-c-2.0/src/geodesic.c
 HEADERS += $$PWD/lib/geographiclib-c-2.0/src/geodesic.h
+
+QT += positioning
 
 
 # All files for the OSD elements - these are QT QQuickPaintedItem's that are written in c++
@@ -170,7 +182,6 @@ SOURCES += \
     app/telemetry/models/fcmavlinksystem.cpp \
     app/util/FrequencyMonitor.cpp \
     app/main.cpp \
-    app/util/QmlObjectListModel.cpp \
 
 RESOURCES += qml/qml.qrc \
     qml/qml.qrc
@@ -179,7 +190,6 @@ HEADERS += \
     app/telemetry/models/fcmavlinksystem.h \
     app/util/FrequencyMonitor.h \
     app/util/sharedqueue.h \
-    app/util/QmlObjectListModel.h \
 
 DISTFILES += \
     README.md \

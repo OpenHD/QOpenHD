@@ -229,6 +229,10 @@ Item {
         id: mapWidget
     }
 
+    AdsbWidget {
+        id: adsbWidget
+    }
+
     ExampleWidget {
         id: exampleWidget
     }
