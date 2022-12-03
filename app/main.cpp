@@ -313,17 +313,17 @@ engine.rootContext()->setContextProperty("LimitADSBMax", QVariant(true));
 //#endif
 
 #ifdef QOPENHD_ENABLE_ADSB_LIBRARY
+engine.rootContext()->setContextProperty("QOPENHD_ENABLE_ADSB_LIBRARY", QVariant(true));
+engine.rootContext()->setContextProperty("EnableADSB", QVariant(true));
 auto adsbVehicleManager = ADSBVehicleManager::instance();
 engine.rootContext()->setContextProperty("AdsbVehicleManager", adsbVehicleManager);
 //QObject::connect(openHDSettings, &OpenHDSettings::groundStationIPUpdated, adsbVehicleManager, &ADSBVehicleManager::setGroundIP, Qt::QueuedConnection);
 adsbVehicleManager->onStarted();
+#else
+engine.rootContext()->setContextProperty("QOPENHD_ENABLE_ADSB_LIBRARY", QVariant(false));
+engine.rootContext()->setContextProperty("EnableADSB", QVariant(false));
 #endif
 
-//#if defined(ENABLE_ADSB)
-    engine.rootContext()->setContextProperty("EnableADSB", QVariant(true));
-//#else
-//    engine.rootContext()->setContextProperty("EnableADSB", QVariant(false));
-//#endif
 
 #if defined(ENABLE_CHARTS)
     engine.rootContext()->setContextProperty("EnableCharts", QVariant(true));
