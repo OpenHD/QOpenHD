@@ -94,7 +94,7 @@ private:
      const bool _is_air; // either true (for air) or false (for ground)
      uint8_t get_own_sys_id()const{
          return _is_air ? OHD_SYS_ID_AIR : OHD_SYS_ID_GROUND;
-     }     
+     }
      // These are for handling the slight differences regarding air/ ground properly, if there are any
      // For examle, the onboard computer status is the same when coming from either air or ground,
      // but the stats total are to be interpreted slightly different for air and ground.

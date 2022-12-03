@@ -14,13 +14,13 @@
 class QmlObjectListModel : public QAbstractListModel
 {
     Q_OBJECT
-    
+
 public:
     QmlObjectListModel(QObject* parent = nullptr);
     ~QmlObjectListModel() override;
-    
+
     Q_PROPERTY(int count READ count NOTIFY countChanged)
-    
+
     /// Returns true if any of the items in the list are dirty. Requires each object to have
     /// a dirty property and dirtyChanged signal.
     Q_PROPERTY(bool dirty READ dirty WRITE setDirty NOTIFY dirtyChanged)
@@ -28,7 +28,7 @@ public:
     Q_INVOKABLE QObject* get(int index);
 
     // Property accessors
-    
+
     int         count               () const;
     bool        dirty               () const { return _dirty; }
 
@@ -61,10 +61,10 @@ public:
 signals:
     void countChanged               (int count);
     void dirtyChanged               (bool dirtyChanged);
-    
+
 private slots:
     void _childDirtyChanged         (bool dirty);
-    
+
 private:
     // Overrides from QAbstractListModel
     int         rowCount    (const QModelIndex & parent = QModelIndex()) const override;
@@ -76,11 +76,12 @@ private:
 
 private:
     QList<QObject*> _objectList;
-    
+
     bool _dirty;
     bool _skipDirtyFirstItem;
     bool _externalBeginResetModel;
-        
+
     static const int ObjectRole;
     static const int TextRole;
 };
+
