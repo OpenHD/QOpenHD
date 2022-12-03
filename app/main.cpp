@@ -53,8 +53,10 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "qopenhd.h"
 #include "util/WorkaroundMessageBox.h"
 
+#ifdef QOPENHD_ENABLE_ADSB_LIBRARY
 #include "adsb/ADSBVehicleManager.h"
 #include "adsb/ADSBVehicle.h"
+#endif
 
 
 // Load all the fonts we use ?!
@@ -310,12 +312,12 @@ engine.rootContext()->setContextProperty("LimitADSBMax", QVariant(true));
 //engine.rootContext()->setContextProperty("LimitADSBMax", QVariant(false));
 //#endif
 
-//#if defined(ENABLE_ADSB)
+#ifdef QOPENHD_ENABLE_ADSB_LIBRARY
 auto adsbVehicleManager = ADSBVehicleManager::instance();
 engine.rootContext()->setContextProperty("AdsbVehicleManager", adsbVehicleManager);
 //QObject::connect(openHDSettings, &OpenHDSettings::groundStationIPUpdated, adsbVehicleManager, &ADSBVehicleManager::setGroundIP, Qt::QueuedConnection);
 adsbVehicleManager->onStarted();
-//#endif
+#endif
 
 //#if defined(ENABLE_ADSB)
     engine.rootContext()->setContextProperty("EnableADSB", QVariant(true));

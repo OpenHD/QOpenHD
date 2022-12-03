@@ -91,17 +91,15 @@ INCLUDEPATH += /usr/include/mavsdk
 # NOTE: You manually have to uncomment 3 lines in qml/main.qml too for now (if you choose to uncomment below)
 include(app/exp/avcodec_video.pri)
 
+# adsb library
+include(app/adsb/adsb_lib.pri)
 
 # All Generic files. NOTE: During development, when you create new files, QT Creater will add them to the
 # "first SOURCES / HEADERS it can find in the .pro, which is here". This is why (as an example) geographic lib,
 # which is a library, comes after the generic files here.
 SOURCES += \
-    app/adsb/adsb.cpp \
-    app/adsb/markermodel.cpp \
     app/logging/hudlogmessagesmodel.cpp \
     app/logging/logmessagesmodel.cpp \
-    app/adsb/ADSBVehicle.cpp \
-    app/adsb/ADSBVehicleManager.cpp \
     app/telemetry/models/aohdsystem.cpp \
     app/qopenhd.cpp \
     app/telemetry/models/rcchannelsmodel.cpp \
@@ -114,14 +112,10 @@ SOURCES += \
     app/videostreaming/decodingstatistcs.cpp \
 
 HEADERS += \
-    app/adsb/adsb.h \
-    app/adsb/markermodel.h \
     app/common_consti/EmulatedPacketDrop.hpp \
     app/logging/hudlogmessagesmodel.h \
     app/logging/loghelper.h \
     app/logging/logmessagesmodel.h \
-    app/adsb/ADSBVehicle.h \
-    app/adsb/ADSBVehicleManager.h \
     app/telemetry/mavsdk_include.h \
     app/telemetry/models/aohdsystem.h \
     app/telemetry/models/rcchannelsmodel.h \
@@ -211,7 +205,7 @@ DISTFILES += \
     android/src/org/freedesktop/gstreamer/androidmedia/GstAhcCallback.java \
     android/src/org/freedesktop/gstreamer/androidmedia/GstAhsCallback.java \
     android/src/org/freedesktop/gstreamer/androidmedia/GstAmcOnFrameAvailableListener.java \
-    app/adsb/README.md \
+    app/adsb/adsb_lib.pri \
     app/logging/README.txt \
     app/openhd_systems/README.md \
     app/osd_extra/Readme.txt \
