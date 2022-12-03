@@ -91,6 +91,8 @@ INCLUDEPATH += /usr/include/mavsdk
 # NOTE: You manually have to uncomment 3 lines in qml/main.qml too for now (if you choose to uncomment below)
 include(app/exp/avcodec_video.pri)
 
+# adsb library
+include(app/adsb/adsb_lib.pri)
 
 # All Generic files. NOTE: During development, when you create new files, QT Creater will add them to the
 # "first SOURCES / HEADERS it can find in the .pro, which is here". This is why (as an example) geographic lib,
@@ -104,6 +106,7 @@ SOURCES += \
     app/telemetry/settings/improvedintsetting.cpp \
     app/telemetry/settings/improvedstringsetting.cpp \
     app/telemetry/settings/synchronizedsettings.cpp \
+    app/util/QmlObjectListModel.cpp \
     app/util/WorkaroundMessageBox.cpp \
     app/util/qrenderstats.cpp \
     app/videostreaming/decodingstatistcs.cpp \
@@ -124,6 +127,7 @@ HEADERS += \
     app/telemetry/settings/improvedstringsetting.h \
     app/telemetry/settings/synchronizedsettings.h \
     app/telemetry/telemetryutil.hpp \
+    app/util/QmlObjectListModel.h \
     app/util/WorkaroundMessageBox.h \
     app/util/qrenderstats.h \
     app/videostreaming/decodingstatistcs.h \
@@ -132,6 +136,8 @@ HEADERS += \
 # Geographic lib updated to c-2.0, so much cleaner
 SOURCES += $$PWD/lib/geographiclib-c-2.0/src/geodesic.c
 HEADERS += $$PWD/lib/geographiclib-c-2.0/src/geodesic.h
+
+QT += positioning
 
 
 # All files for the OSD elements - these are QT QQuickPaintedItem's that are written in c++
@@ -170,7 +176,6 @@ SOURCES += \
     app/telemetry/models/fcmavlinksystem.cpp \
     app/util/FrequencyMonitor.cpp \
     app/main.cpp \
-    app/util/QmlObjectListModel.cpp \
 
 RESOURCES += qml/qml.qrc \
     qml/qml.qrc
@@ -179,7 +184,6 @@ HEADERS += \
     app/telemetry/models/fcmavlinksystem.h \
     app/util/FrequencyMonitor.h \
     app/util/sharedqueue.h \
-    app/util/QmlObjectListModel.h \
 
 DISTFILES += \
     README.md \
@@ -201,7 +205,7 @@ DISTFILES += \
     android/src/org/freedesktop/gstreamer/androidmedia/GstAhcCallback.java \
     android/src/org/freedesktop/gstreamer/androidmedia/GstAhsCallback.java \
     android/src/org/freedesktop/gstreamer/androidmedia/GstAmcOnFrameAvailableListener.java \
-    app/adsb/README.md \
+    app/adsb/adsb_lib.pri \
     app/logging/README.txt \
     app/openhd_systems/README.md \
     app/osd_extra/Readme.txt \

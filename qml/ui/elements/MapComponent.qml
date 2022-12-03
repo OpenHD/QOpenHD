@@ -66,10 +66,10 @@ Map {
 
     function findMapBounds(){
         var center_coord = map.toCoordinate(Qt.point(map.width/2,map.height/2))
-        console.log("Map component: center",center_coord.latitude, center_coord.longitude);
-        if (false) {
-            AdsbVehicleManager.newMapCenter(center_coord);
-        }
+        //console.log("Map component: center",center_coord.latitude, center_coord.longitude);
+
+        AdsbVehicleManager.newMapCenter(center_coord);
+
     }
 
     PositionSource {
@@ -89,7 +89,7 @@ Map {
         // always remove last point unless it was significant
         if (track_count != 0) {
             droneTrack.removeCoordinate(droneTrack.pathLength());
-            console.log("Map component: total points=", droneTrack.pathLength());
+            //console.log("Map component: total points=", droneTrack.pathLength());
         }
 
         // always add the current location so drone looks like its connected to line
@@ -148,9 +148,9 @@ Map {
 
     MapRectangle {
         id: adsbSquare
-        topLeft : false ? AdsbVehicleManager.apiMapCenter.atDistanceAndAzimuth(settings.adsb_distance_limit, 315, 0.0) : QtPositioning.coordinate(0, 0)
-        bottomRight: false ? AdsbVehicleManager.apiMapCenter.atDistanceAndAzimuth(settings.adsb_distance_limit, 135, 0.0) : QtPositioning.coordinate(0, 0)
-        enabled: false
+        topLeft : AdsbVehicleManager.apiMapCenter.atDistanceAndAzimuth(settings.adsb_distance_limit, 315, 0.0)
+        bottomRight: AdsbVehicleManager.apiMapCenter.atDistanceAndAzimuth(settings.adsb_distance_limit, 135, 0.0)
+        //enabled: false
         visible: settings.adsb_api_openskynetwork
         color: "white"
         border.color: "red"
@@ -162,9 +162,9 @@ Map {
     MapItemView {
         id: markerMapView
 //TODO ADSB needs refactor
-//        model: AdsbVehicleManager.adsbVehicles
+        model: AdsbVehicleManager.adsbVehicles
         delegate: markerComponentDelegate
-        visible: false
+        //visible: false
 
         Component {
             id: markerComponentDelegate

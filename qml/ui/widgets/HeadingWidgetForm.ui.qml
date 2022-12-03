@@ -288,9 +288,10 @@ BaseWidget {
                 showHeadingLadderText: settings.heading_ladder_text
                 showHorizonHeadingLadder: settings.show_heading_ladder
                 showHorizonHome: settings.show_heading_ladder //you dont want a floating home icon
-                Behavior on heading {NumberAnimation { duration: settings.smoothing }}
+                //turned off data smoothing because of compass wrapping issue
+                //Behavior on heading {NumberAnimation { duration: settings.smoothing }}
                 heading: _fcMavlinkSystem.hdg
-                Behavior on homeHeading {NumberAnimation { duration: settings.smoothing }}
+                //Behavior on homeHeading {NumberAnimation { duration: settings.smoothing }}
                 homeHeading: _fcMavlinkSystem.home_heading
                 color: settings.color_shape
                 glow: settings.color_glow

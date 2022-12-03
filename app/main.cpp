@@ -47,11 +47,16 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 
 
 #include "logging/logmessagesmodel.h"
-#include "logging/hudlogmessagesmodel.h""
+#include "logging/hudlogmessagesmodel.h"
 #include "telemetry/settings/mavlinksettingsmodel.h"
 #include "telemetry/settings/synchronizedsettings.h"
 #include "qopenhd.h"
 #include "util/WorkaroundMessageBox.h"
+
+#ifdef QOPENHD_ENABLE_ADSB_LIBRARY
+#include "adsb/ADSBVehicleManager.h"
+#include "adsb/ADSBVehicle.h"
+#endif
 
 
 // Load all the fonts we use ?!
@@ -299,6 +304,24 @@ int main(int argc, char *argv[]) {
     engine.rootContext()->setContextProperty("EnableMainVideo", QVariant(true));
 #else
     engine.rootContext()->setContextProperty("EnableMainVideo", QVariant(false));
+#endif
+
+//#if defined(LIMIT_ADSB_MAX)
+engine.rootContext()->setContextProperty("LimitADSBMax", QVariant(true));
+//#else
+//engine.rootContext()->setContextProperty("LimitADSBMax", QVariant(false));
+//#endif
+
+#ifdef QOPENHD_ENABLE_ADSB_LIBRARY
+engine.rootContext()->setContextProperty("QOPENHD_ENABLE_ADSB_LIBRARY", QVariant(true));
+engine.rootContext()->setContextProperty("EnableADSB", QVariant(true));
+auto adsbVehicleManager = ADSBVehicleManager::instance();
+engine.rootContext()->setContextProperty("AdsbVehicleManager", adsbVehicleManager);
+//QObject::connect(openHDSettings, &OpenHDSettings::groundStationIPUpdated, adsbVehicleManager, &ADSBVehicleManager::setGroundIP, Qt::QueuedConnection);
+adsbVehicleManager->onStarted();
+#else
+engine.rootContext()->setContextProperty("QOPENHD_ENABLE_ADSB_LIBRARY", QVariant(false));
+engine.rootContext()->setContextProperty("EnableADSB", QVariant(false));
 #endif
 
 
