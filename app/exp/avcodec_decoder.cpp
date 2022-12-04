@@ -830,7 +830,7 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp_and_mmal_direct(cons
     assert(settings.enable_software_video_decoder==false);
     assert(settings.dev_test_video_mode==QOpenHDVideoHelper::VideoTestMode::DISABLED);
 
-    m_rtp_receiver=std::make_unique<RTPReceiver>(settings.video_port,settings.udp_rtp_input_ip_address,false,settings.dev_feed_incomplete_frames_to_decoder);
+    m_rtp_receiver=std::make_unique<RTPReceiver>(settings.udp_rtp_input_port,settings.udp_rtp_input_ip_address,false,settings.dev_feed_incomplete_frames_to_decoder);
     std::unique_ptr<RPIMMalDecodeDisplay> mmal_decode_display=std::make_unique<RPIMMalDecodeDisplay>();
 
     reset_before_decode_start();
