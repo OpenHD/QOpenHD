@@ -12,6 +12,10 @@
 
 namespace QOpenHDVideoHelper{
 
+// Must be in sync with OpenHD
+static constexpr auto kDefault_udp_rtp_input_ip_address="127.0.0.1";
+static constexpr auto kDefault_udp_rtp_input_port=5600;
+
 // OpenHD supported video codecs
 typedef enum VideoCodec {
   VideoCodecH264=0,
@@ -45,8 +49,10 @@ static VideoTestMode videoTestModeFromInt(int value){
 struct VideoStreamConfig{
     // used for testing and development.
     VideoTestMode dev_test_video_mode = VideoTestMode::DISABLED;
-    // the port where to receive rtp video data from
-    int video_port = 0;
+    // the ip address where we receive udp rtp video data from
+    std::string udp_rtp_input_ip_address=kDefault_udp_rtp_input_ip_address;
+    // the port where to receive udp rtp video data from
+    int udp_rtp_input_port = kDefault_udp_rtp_input_port;
     // the video codec the received rtp data should be intepreted as.
     VideoCodec video_codec=VideoCodecH264;
     // force sw decoding (only makes a difference if on this platform/compile-time configuration a HW decoder is chosen by default)
@@ -65,13 +71,14 @@ struct VideoStreamConfig{
 
     // 2 configs are equal if all members are exactly the same.
     bool operator==(const VideoStreamConfig &o) const {
-       return this->dev_test_video_mode == o.dev_test_video_mode && this->video_port == o.video_port && this->video_codec== o.video_codec
+       return this->dev_test_video_mode == o.dev_test_video_mode && this->udp_rtp_input_port == o.udp_rtp_input_port && this->video_codec== o.video_codec
                && this->enable_software_video_decoder==o.enable_software_video_decoder && this->dev_jetson==o.dev_jetson &&
                this->dev_enable_custom_pipeline==o.dev_enable_custom_pipeline &&
                this->dev_custom_pipeline==o.dev_custom_pipeline &&
                this->dev_limit_fps_on_test_file == o.dev_limit_fps_on_test_file &&
                this->dev_use_low_latency_parser_when_possible == o.dev_use_low_latency_parser_when_possible &&
-               this->dev_feed_incomplete_frames_to_decoder == o.dev_feed_incomplete_frames_to_decoder;
+               this->dev_feed_incomplete_frames_to_decoder == o.dev_feed_incomplete_frames_to_decoder &&
+               this->udp_rtp_input_ip_address==o.udp_rtp_input_ip_address;
      }
     bool operator !=(const VideoStreamConfig &o) const {
         return !(*this==o);
@@ -82,6 +89,10 @@ static VideoStreamConfig read_from_settings(){
     QSettings settings;
     QOpenHDVideoHelper::VideoStreamConfig _videoStreamConfig;
     _videoStreamConfig.dev_test_video_mode=QOpenHDVideoHelper::videoTestModeFromInt(settings.value("dev_test_video_mode", 0).toInt());
+    //
+    _videoStreamConfig.udp_rtp_input_port=settings.value("dev_stream0_udp_rtp_input_port", kDefault_udp_rtp_input_port).toInt();
+    _videoStreamConfig.udp_rtp_input_ip_address=settings.value("dev_stream0_udp_rtp_input_ip_address",kDefault_udp_rtp_input_ip_address).toString().toStdString();
+
     const int tmp_video_codec = settings.value("selectedVideoCodecPrimary", 0).toInt();
     _videoStreamConfig.video_codec=QOpenHDVideoHelper::intToVideoCodec(tmp_video_codec);
     _videoStreamConfig.enable_software_video_decoder=settings.value("enable_software_video_decoder", 0).toBool();
@@ -125,22 +136,22 @@ static std::string get_default_openhd_test_file(const VideoCodec video_codec){
 
 // FFMPEG needs a ".sdp" file to do rtp udp h264,h265 or mjpeg
 // For MJPEG we map mjpeg to 26 (mjpeg), for h264/5 we map h264/5 to 96 (general)
-static std::string create_udp_rtp_sdp_file(const QOpenHDVideoHelper::VideoCodec& video_codec){
+static std::string create_udp_rtp_sdp_file(const VideoStreamConfig& video_stream_config){
     std::stringstream ss;
-    ss<<"c=IN IP4 127.0.0.1\n";
+    ss<<"c=IN IP4 "<<video_stream_config.udp_rtp_input_ip_address<<"\n";
     //ss<<"v=0\n";
     //ss<<"t=0 0\n";
     //ss<<"width=1280\n";
     //ss<<"height=720\n";
-    if(video_codec==QOpenHDVideoHelper::VideoCodec::VideoCodecMJPEG){
-         ss<<"m=video 5600 RTP/UDP 26\n";
+    if(video_stream_config.video_codec==QOpenHDVideoHelper::VideoCodec::VideoCodecMJPEG){
+         ss<<"m=video "<<video_stream_config.udp_rtp_input_port<<" RTP/UDP 26\n";
         ss<<"a=rtpmap:26 JPEG/90000\n";
     }else{
-        ss<<"m=video 5600 RTP/UDP 96\n";
-        if(video_codec==QOpenHDVideoHelper::VideoCodec::VideoCodecH264){
+        ss<<"m=video "<<video_stream_config.udp_rtp_input_port<<" RTP/UDP 96\n";
+        if(video_stream_config.video_codec==QOpenHDVideoHelper::VideoCodec::VideoCodecH264){
             ss<<"a=rtpmap:96 H264/90000\n";
         }else{
-            assert(video_codec==QOpenHDVideoHelper::VideoCodec::VideoCodecH265);
+            assert(video_stream_config.video_codec==QOpenHDVideoHelper::VideoCodec::VideoCodecH265);
             ss<<"a=rtpmap:96 H265/90000\n";
         }
     }
@@ -151,26 +162,16 @@ static void write_file_to_tmp(const std::string filename,const std::string conte
      _t << content;
      _t.close();
 }
-static void write_udp_rtp_sdp_files_to_tmp(){
-    if(QFileInfo::exists("/tmp/rtp_h264.sdp")&&QFileInfo::exists("/tmp/rtp_h265.sdp")&&QFileInfo::exists("/tmp/rtp_mjpeg.sdp"))return;
-    write_file_to_tmp("/tmp/rtp_h264.sdp",create_udp_rtp_sdp_file(QOpenHDVideoHelper::VideoCodec::VideoCodecH264));
-    write_file_to_tmp("/tmp/rtp_h265.sdp",create_udp_rtp_sdp_file(QOpenHDVideoHelper::VideoCodec::VideoCodecH265));
-    write_file_to_tmp("/tmp/rtp_mjpeg.sdp",create_udp_rtp_sdp_file(QOpenHDVideoHelper::VideoCodec::VideoCodecMJPEG));
+static constexpr auto kRTP_FILENAME="/tmp/rtp_custom.sdp";
+
+static void write_udp_rtp_sdp_file_to_tmp(const VideoStreamConfig& video_stream_config){
+     write_file_to_tmp(kRTP_FILENAME,create_udp_rtp_sdp_file(video_stream_config));
 }
-static std::string get_udp_rtp_sdp_filename(const QOpenHDVideoHelper::VideoCodec& video_codec){
-    // Make sure the sdp files exist (writing a file and then giving it to avcodec is easier than other alternatives).
-    write_udp_rtp_sdp_files_to_tmp();
-    if(video_codec==QOpenHDVideoHelper::VideoCodec::VideoCodecH264)return "/tmp/rtp_h264.sdp";
-    if(video_codec==QOpenHDVideoHelper::VideoCodec::VideoCodecH265)return "/tmp/rtp_h265.sdp";
-    return "/tmp/rtp_mjpeg.sdp";
+static std::string get_udp_rtp_sdp_filename(const VideoStreamConfig& video_stream_config){
+    write_udp_rtp_sdp_file_to_tmp(video_stream_config);
+    return kRTP_FILENAME;
 }
 
-}
-
-// Must be in sync with OpenHD
-namespace OHDIntegration{
-static constexpr auto OHD_VIDEO_GROUND_VIDEO_STREAM_1_UDP = 5600; // first (primary) stream
-static constexpr auto OHD_VIDEO_GROUND_VIDEO_STREAM_2_UDP = 5601; // secondary stream
 }
 
 #endif // QOPENHDVIDEOHELPER_H

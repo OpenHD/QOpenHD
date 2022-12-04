@@ -2248,6 +2248,68 @@ Item {
                         }
                     }
                     // temporary end
+                    Rectangle {
+                        width: parent.width
+                        height: rowHeight
+                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+
+                        Text {
+                            text: qsTr("dev_stream0_udp_rtp_input_port")
+                            font.weight: Font.Bold
+                            font.pixelSize: 13
+                            anchors.leftMargin: 8
+                            verticalAlignment: Text.AlignVCenter
+                            anchors.verticalCenter: parent.verticalCenter
+                            width: 224
+                            height: elementHeight
+                            anchors.left: parent.left
+                        }
+                        SpinBox {
+                            id: dev_stream0_udp_rtp_input_port_input
+                            height: elementHeight
+                            width: 210
+                            font.pixelSize: 14
+                            anchors.right: parent.right
+                            anchors.verticalCenter: parent.verticalCenter
+                            stepSize: 1
+                            editable: true
+                            from:0
+                            to: 100000
+                            anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
+                            value: settings.dev_stream0_udp_rtp_input_port
+                            onValueChanged: settings.dev_stream0_udp_rtp_input_port = value
+                        }
+                    }
+                    Rectangle {
+                        width: parent.width
+                        height: rowHeight
+                        color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+
+                        Text {
+                            text: qsTr("dev_stream0_udp_rtp_input_ip_address")
+                            font.weight: Font.Bold
+                            font.pixelSize: 13
+                            anchors.leftMargin: 8
+                            verticalAlignment: Text.AlignVCenter
+                            anchors.verticalCenter: parent.verticalCenter
+                            width: 224
+                            height: elementHeight
+                            anchors.left: parent.left
+                        }
+                        TextInput{
+                            id: dev_stream0_udp_rtp_input_ip_address_ti
+                            height: elementHeight
+                            width: 210
+                            font.pixelSize: 14
+                            anchors.right: parent.right
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
+                            text: settings.dev_stream0_udp_rtp_input_ip_address
+                            onEditingFinished: {
+                                settings.dev_stream0_udp_rtp_input_ip_address = dev_stream0_udp_rtp_input_ip_address_ti.text
+                            }
+                        }
+                    }
                 }
             }
         }

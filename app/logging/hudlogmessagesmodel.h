@@ -1,8 +1,8 @@
 #ifndef HUDLOGMESSAGESMODEL_H
 #define HUDLOGMESSAGESMODEL_H
 
+#include <QAbstractListModel>
 #include <QObject>
-#include <qabstractitemmodel.h>
 #include <qcolor.h>
 #include <qtimer.h>
 

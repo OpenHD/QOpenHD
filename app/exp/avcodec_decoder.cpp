@@ -388,7 +388,7 @@ int AVCodecDecoder::open_and_decode_until_error(const QOpenHDVideoHelper::VideoS
 {
     std::string in_filename="";
     if(settings.dev_test_video_mode==QOpenHDVideoHelper::VideoTestMode::DISABLED){
-        in_filename=QOpenHDVideoHelper::get_udp_rtp_sdp_filename(settings.video_codec);
+        in_filename=QOpenHDVideoHelper::get_udp_rtp_sdp_filename(settings);
         //in_filename="rtp://192.168.0.1:5600";
     }else{
         if(settings.dev_enable_custom_pipeline){
@@ -766,7 +766,7 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp(const QOpenHDVideoHe
          return;
      }
      qDebug()<<"AVCodecDecoder::open_and_decode_until_error_custom_rtp()-begin loop";
-     m_rtp_receiver=std::make_unique<RTPReceiver>(5600,settings.video_codec==1,settings.dev_feed_incomplete_frames_to_decoder);
+     m_rtp_receiver=std::make_unique<RTPReceiver>(settings.udp_rtp_input_port,settings.udp_rtp_input_ip_address,settings.video_codec==1,settings.dev_feed_incomplete_frames_to_decoder);
 
      reset_before_decode_start();
      DecodingStatistcs::instance().set_decoding_type(selected_decoding_type.c_str());
@@ -830,7 +830,7 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp_and_mmal_direct(cons
     assert(settings.enable_software_video_decoder==false);
     assert(settings.dev_test_video_mode==QOpenHDVideoHelper::VideoTestMode::DISABLED);
 
-    m_rtp_receiver=std::make_unique<RTPReceiver>(5600,false,settings.dev_feed_incomplete_frames_to_decoder);
+    m_rtp_receiver=std::make_unique<RTPReceiver>(settings.video_port,settings.udp_rtp_input_ip_address,false,settings.dev_feed_incomplete_frames_to_decoder);
     std::unique_ptr<RPIMMalDecodeDisplay> mmal_decode_display=std::make_unique<RPIMMalDecodeDisplay>();
 
     reset_before_decode_start();

@@ -10,9 +10,8 @@ Settings {
 
     property string locale: "en"
 
-    property int main_video_port: 5600
-    property int pip_video_port: 5601
-    property int lte_video_port: 8000
+    property int dev_stream0_udp_rtp_input_port: 5600
+    property string dev_stream0_udp_rtp_input_ip_address: "127.0.0.1"
 
     property int mavlink_sysid: 225
     property int fc_mavlink_sysid: 1
