@@ -26,7 +26,7 @@
 class RTPReceiver
 {
 public:
-    RTPReceiver(int port,bool is_h265,bool feed_incomplete_frames);
+    RTPReceiver(int port,std::string ip,bool is_h265,bool feed_incomplete_frames);
     ~RTPReceiver();
 
     // Returns the oldest frame if available.

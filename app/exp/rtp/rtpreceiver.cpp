@@ -7,9 +7,8 @@
 
 #include "../../videostreaming/decodingstatistcs.h"
 #include "common_consti/openhd-util.hpp"
+#include "videostreaming/QOpenHDVideoHelper.hpp"
 
-constexpr auto LOCAL_ADDRESS = "127.0.0.1";
-//constexpr auto LOCAL_ADDRESS = "10.42.0.1";
 
 #ifdef OPENHD_USE_LIB_UVGRTP
 void rtp_receive_hook(void *arg, uvgrtp::frame::rtp_frame *frame){
@@ -18,9 +17,15 @@ void rtp_receive_hook(void *arg, uvgrtp::frame::rtp_frame *frame){
 }
 #endif
 
-RTPReceiver::RTPReceiver(int port,bool is_h265,bool feed_incomplete_frames):
+RTPReceiver::RTPReceiver(const int port,const std::string ip,bool is_h265,bool feed_incomplete_frames):
     is_h265(is_h265)
 {
+    if(ip!=std::string(QOpenHDVideoHelper::kDefault_udp_rtp_input_ip_address)){
+        qWarning()<<"Using non-default dev_stream0_udp_rtp_input_ip_address";
+    }
+    if(port!=QOpenHDVideoHelper::kDefault_udp_rtp_input_port){
+        qWarning()<<"Using non-default udp_rtp_input_port";
+    }
     if(false){
         // Debug write raw data to file
         std::stringstream ss;
@@ -34,7 +39,7 @@ RTPReceiver::RTPReceiver(int port,bool is_h265,bool feed_incomplete_frames):
     }
     m_keyframe_finder=std::make_unique<KeyFrameFinder>();
 #ifdef OPENHD_USE_LIB_UVGRTP
-    m_session = m_ctx.create_session(LOCAL_ADDRESS);
+    m_session = m_ctx.create_session(ip.c_str());
     int flags = RCE_RECEIVE_ONLY;
     m_receiver = m_session->create_stream(port, is_h265 ? RTP_FORMAT_H265 : RTP_FORMAT_H264, flags);
     if (!m_receiver || m_receiver->install_receive_hook(this, rtp_receive_hook) != RTP_OK){
@@ -47,7 +52,7 @@ RTPReceiver::RTPReceiver(int port,bool is_h265,bool feed_incomplete_frames):
     // Increase the OS max UDP buffer size (only works as root) such that the UDP receiver
     // doesn't fail when requesting a bigger UDP buffer size
     OHDUtil::run_command("sysctl ",{"-w","net.core.rmem_max=26214400"});
-    m_udp_receiver=std::make_unique<UDPReceiver>(port,"V_REC",[this](const uint8_t *payload, const std::size_t payloadSize){
+    m_udp_receiver=std::make_unique<UDPReceiver>(UDPReceiver::IpAndPort{ip,port},"V_REC",[this](const uint8_t *payload, const std::size_t payloadSize){
         this->udp_raw_data_callback(payload,payloadSize);
         DecodingStatistcs::instance().set_n_missing_rtp_video_packets(m_rtp_decoder->m_n_gaps);
     },UDPReceiver::BIG_UDP_RECEIVE_BUFFER_SIZE);

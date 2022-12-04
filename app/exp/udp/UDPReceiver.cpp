@@ -12,9 +12,13 @@
 #include <sys/resource.h>
 #include <iostream>
 
-UDPReceiver::UDPReceiver(int port,std::string name,DATA_CALLBACK  onDataReceivedCallbackX,
+#include <qdebug.h>
+
+UDPReceiver::UDPReceiver(IpAndPort ip_and_port,std::string name,DATA_CALLBACK  onDataReceivedCallbackX,
 size_t wanted_receive_buff_size_btyes,const bool ENABLE_NONBLOCKINGX):
-        mPort(port),mName(std::move(name)),onDataReceivedCallback(std::move(onDataReceivedCallbackX)),WANTED_RCVBUF_SIZE_BYTES(wanted_receive_buff_size_btyes),ENABLE_NONBLOCKING(ENABLE_NONBLOCKINGX){
+    m_ip_and_port(ip_and_port),
+    mName(std::move(name)),onDataReceivedCallback(std::move(onDataReceivedCallbackX)),WANTED_RCVBUF_SIZE_BYTES(wanted_receive_buff_size_btyes),ENABLE_NONBLOCKING(ENABLE_NONBLOCKINGX){
+    qDebug()<<"UDPReceiver "<<QString(name.c_str())<<"with"<<QString(ip_and_port.udp_ip_address.c_str())<<":"<<ip_and_port.udp_port;
 }
 
 long UDPReceiver::getNReceivedBytes()const {
@@ -83,10 +87,11 @@ void UDPReceiver::receiveFromUDPLoop() {
     struct sockaddr_in myaddr;
     memset((uint8_t *) &myaddr, 0, sizeof(myaddr));
     myaddr.sin_family = AF_INET;
-    myaddr.sin_addr.s_addr = htonl(INADDR_ANY);
-    myaddr.sin_port = htons(mPort);
+    myaddr.sin_port = htons(m_ip_and_port.udp_port);
+    //myaddr.sin_addr.s_addr = htonl(INADDR_ANY);
+    inet_aton(m_ip_and_port.udp_ip_address.c_str(), (in_addr *) &myaddr.sin_addr.s_addr);
     if (bind(mSocket, (struct sockaddr *) &myaddr, sizeof(myaddr)) == -1) {
-        std::cerr<<"Error binding Port; "<<mPort<<"\n";
+        std::cerr<<"Error binding to "<<m_ip_and_port.udp_ip_address<<":"<<m_ip_and_port.udp_port<<"\n";
         return;
     }
     //wrap into unique pointer to avoid running out of stack
@@ -134,5 +139,5 @@ void UDPReceiver::receiveFromUDPLoop() {
 }
 
 int UDPReceiver::getPort() const {
-    return mPort;
+    return m_ip_and_port.udp_port;
 }

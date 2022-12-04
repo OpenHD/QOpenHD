@@ -16,6 +16,10 @@
 class UDPReceiver {
 public:
     typedef std::function<void(const uint8_t[],size_t)> DATA_CALLBACK;
+    struct IpAndPort{
+        std::string udp_ip_address="127.0.0.1";
+        int udp_port=5600;
+    };
 public:
     /**
      * @param port : The port to listen on
@@ -24,7 +28,7 @@ public:
      * If @param WANTED_RCVBUF_SIZE is bigger than the size allocated by the OS a bigger buffer is requested, but it is not
      * guaranteed that the size is actually increased. Use 0 to leave the buffer size untouched
      */
-    UDPReceiver(int port,std::string name,DATA_CALLBACK onDataReceivedCallbackX,
+    UDPReceiver(IpAndPort ip_and_port,std::string name,DATA_CALLBACK onDataReceivedCallbackX,
     size_t wanted_receive_buff_size_btyes=0,const bool ENABLE_NONBLOCKINGX=false);
     /**
      * Start receiver thread,which opens UDP port
@@ -42,7 +46,7 @@ public:
     static constexpr auto MEDIUM_UDP_RECEIVE_BUFFER_SIZE=1024*1024*25;
 private:
     void receiveFromUDPLoop();
-    const int mPort;
+    const IpAndPort m_ip_and_port;
     const std::string mName;
     const DATA_CALLBACK onDataReceivedCallback=nullptr;
     const size_t WANTED_RCVBUF_SIZE_BYTES;
