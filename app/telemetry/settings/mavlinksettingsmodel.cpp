@@ -172,6 +172,8 @@ static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string&
                                                                                "libcamera_ardu","libcamera_imx519"});
         map_improved_params["CONFIG_BOOT_AIR"]=ImprovedIntSetting::createEnumEnableDisable();
         map_improved_params["I_WIFI_HOTSPOT_E"]=ImprovedIntSetting::createEnumEnableDisable();
+        auto values_WB_TX_PWR_LEVEL=std::vector<std::string>{"LOW(<=25mW)","MEDIUM","HIGH(!DANGER!)","MAX(!DANGER!)"};
+        map_improved_params["WB_TX_PWR_LEVEL"]=ImprovedIntSetting::createEnum(values_WB_TX_PWR_LEVEL);
     }
     if(map_improved_params.find(param_id)!=map_improved_params.end()){
         return map_improved_params[param_id];
@@ -713,5 +715,20 @@ QString MavlinkSettingsModel::get_short_description(const QString param_id)const
     if(param_id=="ENABLE_JOY_RC"){
         return "Only enable joystick rc if you actually use it to save cpu / bandwidth. If enabled, you can connect a joystick to your ground station for RC. REQUIRES REBOOT!";
     }
+    if(param_id=="WB_TX_PWR_LEVEL"){
+        return "OpenHD tx power level (r.n only implemented for RTL8812au). LOW:default, <=25mW, legal in all countries. For MEDIUM, HIGH and MAX read the Wiki";
+    }
+    if(param_id=="V_AIR_RECORDING"){
+        return "Record video data locally on your air unit. You can find the files under /home/openhd/Videos";
+    }
+    if(param_id=="V_E_STREAMING"){
+        return "enable / disable streaming for this camera. Note that this setting is persistent - once you disable streaming for a camera, you won't have video"
+               " until you re-enable streaming. On by default";
+    }
+    if(param_id=="V_KEYFRAME_I"){
+        return "keyframe / instantaneous decode refresh interval, in frames. E.g. if set to 15, every 15th frame will be a key frame. Higher values result in better image compression, but increase the likeliness of microfreezes.";
+    }
+    //if(param_id==""){
+    //}
     return "TODO";
 }

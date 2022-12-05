@@ -19,8 +19,8 @@ ApplicationWindow {
     visible: true
     width: 800
     height: 480
-    minimumHeight: 320
     minimumWidth: 480
+    minimumHeight: 320
     title: qsTr("Open.HD")
     // Transparent background is needed when the video is not rendered via (OpenGL) inside QT,
     // but rather done independently by using a pipeline that directly goes to the HW composer (e.g. mmal on pi).

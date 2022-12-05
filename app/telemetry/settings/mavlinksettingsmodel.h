@@ -16,7 +16,6 @@
 // NOTE: R.n the enum / parameter validation needs to be duplicated in both OpenHD and QOpenHD.
 // Eventually we'l migrate to the proper way, which is fetching something like this:
 // https://github.com/mavlink/mavlink/blob/master/component_metadata/parameter.schema.json
-// once from openhd
 class MavlinkSettingsModel : public QAbstractListModel
 {
     Q_OBJECT
