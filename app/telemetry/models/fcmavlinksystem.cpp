@@ -88,7 +88,7 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         const auto delta=std::chrono::steady_clock::now()-m_last_update_update_rate_mavlink_message_attitude;
         const float message_rate_hz=m_n_messages_update_rate_mavlink_message_attitude/
                 static_cast<float>(std::chrono::duration_cast<std::chrono::milliseconds>(delta).count()/1000.0);
-        qDebug()<<"Updates:"<<m_n_messages_update_rate_mavlink_message_attitude<<" Rate:"<<message_rate_hz<<" Hz";
+        //qDebug()<<"Updates:"<<m_n_messages_update_rate_mavlink_message_attitude<<" Rate:"<<message_rate_hz<<" Hz";
         set_curr_update_rate_mavlink_message_attitude(message_rate_hz);
         m_n_messages_update_rate_mavlink_message_attitude=0;
         m_last_update_update_rate_mavlink_message_attitude=std::chrono::steady_clock::now();
