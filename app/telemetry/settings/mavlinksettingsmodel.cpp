@@ -170,7 +170,7 @@ static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string&
         //55: 380-400 mW
         //58: 420-450 mW
         auto values_WB_TX_PWR_LEVEL=std::vector<ImprovedIntSetting::Item>{
-            {"LOW(<=25mW)[19]",19},
+            {"LOW(~25mW)[19]",22},
             {"MEDIUM [37]",37},
             {"HIGH [53]",53},
             {"MAX1(!DANGER!)[58]",58},
@@ -741,7 +741,7 @@ QString MavlinkSettingsModel::get_short_description(const QString param_id)const
         return "Only enable joystick rc if you actually use it to save cpu / bandwidth. If enabled, you can connect a joystick to your ground station for RC. REQUIRES REBOOT!";
     }
     if(param_id=="WB_TX_PWR_IDX_O"){
-        return "RTL8812AU TX power index (unitless). LOW:default,<=25mW, legal in all countries."
+        return "RTL8812AU TX power index (unitless). LOW:default,~25mW, legal in most countries."
                " NOTE: Too high power settings can overload your RF circuits and create packet loss/ destroy your card. Read the Wiki before changing the TX Power";
     }
     if(param_id=="V_AIR_RECORDING"){
