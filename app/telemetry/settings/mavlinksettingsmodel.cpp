@@ -213,6 +213,7 @@ static std::optional<ImprovedStringSetting> get_improved_for_string(const std::s
             "640x480@60",
             "640x480@90",
             "1280x720@30",
+            "1280x720@49",
             "1280x720@60",
             "1920x1080@30",
     };
