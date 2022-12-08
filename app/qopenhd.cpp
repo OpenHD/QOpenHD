@@ -94,6 +94,12 @@ void QOpenHD::run_dhclient_eth0()
     OHDUtil::run_command("sudo dhclient eth0",{""},true);
 }
 
+QString QOpenHD::show_local_ip()
+{
+    auto res=OHDUtil::run_command_out("hostname -I");
+    return QString(res->c_str());
+}
+
 #if defined(__android__)
 void QOpenHD::keep_screen_on(bool on)
 {

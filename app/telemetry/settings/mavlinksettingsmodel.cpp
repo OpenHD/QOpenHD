@@ -107,20 +107,6 @@ static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string&
            ImprovedIntSetting::Item{"BOTH",2},
            ImprovedIntSetting::Item{"CYCLIC_ROWS",2130706433}
        });
-
-        auto fc_uart_baud_rates=std::vector<std::string>{
-                "9600",
-                "19200",
-                "38400",
-                "57600",
-                "115200",
-                "230400",
-                "460800",
-                "500000",
-                "576000",
-                "921600",
-                "1000000"
-        };
         auto fc_uart_conn_values=std::vector<std::string>{"disable","serial0","serial1","ttyUSB0","ttyACM0","ttyACM1", "ttyS7"};
         map_improved_params["FC_UART_CONN"]=ImprovedIntSetting::createEnum(fc_uart_conn_values);
         // rpicamsrc only for now
@@ -172,8 +158,13 @@ static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string&
                                                                                "libcamera_ardu","libcamera_imx519"});
         map_improved_params["CONFIG_BOOT_AIR"]=ImprovedIntSetting::createEnumEnableDisable();
         map_improved_params["I_WIFI_HOTSPOT_E"]=ImprovedIntSetting::createEnumEnableDisable();
-        auto values_WB_TX_PWR_LEVEL=std::vector<std::string>{"LOW(<=25mW)","MEDIUM","HIGH(!DANGER!)","MAX(!DANGER!)"};
-        map_improved_params["WB_TX_PWR_LEVEL"]=ImprovedIntSetting::createEnum(values_WB_TX_PWR_LEVEL);
+        auto values_WB_TX_PWR_LEVEL=std::vector<ImprovedIntSetting::Item>{
+            {"LOW(<=25mW)",19},
+            {"MEDIUM",37},
+            {"HIGH(!DANGER!)",58},
+            {"MAX(!DANGER!)",63},
+        };
+        map_improved_params["WB_TX_PWR_IDX_O"]=ImprovedIntSetting(0,63,values_WB_TX_PWR_LEVEL);
     }
     if(map_improved_params.find(param_id)!=map_improved_params.end()){
         return map_improved_params[param_id];
@@ -701,7 +692,7 @@ QString MavlinkSettingsModel::get_short_description(const QString param_id)const
         return "RPI HW UART baud rate, needs to match the UART baud rate set on your FC";
     }
     if(param_id=="FC_UART_CONN"){
-        return "Enable / disable UART for telemetry from/to your FC";
+        return "Enable / disable UART for telemetry from/to your FC. Make sure FC_UART_BAUD matches your FC. See the wiki for more info.";
     }
     if(param_id=="V_FORMAT"){
         return "Video WIDTHxHEIGHT@FPS. You can enter any value you want here, but if you select a video format that is not supported by your camera, the video stream will stop";
