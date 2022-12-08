@@ -170,7 +170,7 @@ static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string&
         //55: 380-400 mW
         //58: 420-450 mW
         auto values_WB_TX_PWR_LEVEL=std::vector<ImprovedIntSetting::Item>{
-            {"LOW(~25mW)[19]",22},
+            {"LOW(~25mW)[22]",22},
             {"MEDIUM [37]",37},
             {"HIGH [53]",53},
             {"MAX1(!DANGER!)[58]",58},
