@@ -107,20 +107,6 @@ static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string&
            ImprovedIntSetting::Item{"BOTH",2},
            ImprovedIntSetting::Item{"CYCLIC_ROWS",2130706433}
        });
-
-        auto fc_uart_baud_rates=std::vector<std::string>{
-                "9600",
-                "19200",
-                "38400",
-                "57600",
-                "115200",
-                "230400",
-                "460800",
-                "500000",
-                "576000",
-                "921600",
-                "1000000"
-        };
         auto fc_uart_conn_values=std::vector<std::string>{"disable","serial0","serial1","ttyUSB0","ttyACM0","ttyACM1", "ttyS7"};
         map_improved_params["FC_UART_CONN"]=ImprovedIntSetting::createEnum(fc_uart_conn_values);
         // rpicamsrc only for now
@@ -172,8 +158,47 @@ static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string&
                                                                                "libcamera_ardu","libcamera_imx519"});
         map_improved_params["CONFIG_BOOT_AIR"]=ImprovedIntSetting::createEnumEnableDisable();
         map_improved_params["I_WIFI_HOTSPOT_E"]=ImprovedIntSetting::createEnumEnableDisable();
-        auto values_WB_TX_PWR_LEVEL=std::vector<std::string>{"LOW(<=25mW)","MEDIUM","HIGH(!DANGER!)","MAX(!DANGER!)"};
-        map_improved_params["WB_TX_PWR_LEVEL"]=ImprovedIntSetting::createEnum(values_WB_TX_PWR_LEVEL);
+        // Measurements of @Marcel Essers:
+        //19: 10-12 mW
+        //25: 25-30 mW
+        //30: 45-50 mW
+        //35: 70-80 mW
+        //37: 100-110 mW
+        //40: 120-140 mW
+        //45: 200-230 mW
+        //50: 280- 320 mW
+        //55: 380-400 mW
+        //58: 420-450 mW
+        auto values_WB_TX_PWR_LEVEL=std::vector<ImprovedIntSetting::Item>{
+            {"LOW(~25mW)[22]",22},
+            {"MEDIUM [37]",37},
+            {"HIGH [53]",53},
+            {"MAX1(!DANGER!)[58]",58},
+            {"MAX2(!DANGER!)[63]",63},
+        };
+        map_improved_params["WB_TX_PWR_IDX_O"]=ImprovedIntSetting(0,63,values_WB_TX_PWR_LEVEL);
+        {
+            auto default_values=std::vector<ImprovedIntSetting::Item>{
+                {"AUTO (Default)",0},
+                {"FEC_K=8",8},
+                {"FEC_K=10",10},
+                {"FEC_K=12",12},
+                {"FEC_K=16",16},
+                {"FEC_K=20",20},
+            };
+            map_improved_params["WB_V_FEC_BLK_L"]=ImprovedIntSetting(0,128,default_values);
+        }
+        {
+            auto default_values=std::vector<ImprovedIntSetting::Item>{
+                {"10%",10},
+                {"20% (low interf)",20},
+                {"30%",30},
+                {"40%",40},
+                {"50% (high interf)",50},
+                {"100%",100},
+            };
+            map_improved_params["WB_V_FEC_PERC"]=ImprovedIntSetting(0,100,default_values);
+        }
     }
     if(map_improved_params.find(param_id)!=map_improved_params.end()){
         return map_improved_params[param_id];
@@ -188,6 +213,7 @@ static std::optional<ImprovedStringSetting> get_improved_for_string(const std::s
             "640x480@60",
             "640x480@90",
             "1280x720@30",
+            "1280x720@49",
             "1280x720@60",
             "1920x1080@30",
     };
@@ -681,7 +707,7 @@ QString MavlinkSettingsModel::get_short_description(const QString param_id)const
         return "WB Video FEC overhead, in percent. Increases link stability, but also the required link bandwidth (MCS index). In low RF noise environments, you should decrease this value, e.g. to 20%";
     }
     if(param_id=="WB_V_FEC_BLK_L"){
-        return "WB Video FEC block length, previous FEC_K. Increasing this value improves link stability for free, but can create additional latency.";
+        return "Default AUTO (Uses biggest block sizes possible while not adding any latency).Otherwise: WB Video FEC block length, previous FEC_K. Increasing this value can improve link stability for free, but can create additional latency.";
     }
     if(param_id=="WB_TX_POWER_MW"){
         return "TX power (dynamic) if supported by your wfi card (not supported on rtl8812au). Value is in mW (milli Watt). Seperate for air and ground. See"
@@ -701,7 +727,7 @@ QString MavlinkSettingsModel::get_short_description(const QString param_id)const
         return "RPI HW UART baud rate, needs to match the UART baud rate set on your FC";
     }
     if(param_id=="FC_UART_CONN"){
-        return "Enable / disable UART for telemetry from/to your FC";
+        return "Enable / disable UART for telemetry from/to your FC. Make sure FC_UART_BAUD matches your FC. See the wiki for more info.";
     }
     if(param_id=="V_FORMAT"){
         return "Video WIDTHxHEIGHT@FPS. You can enter any value you want here, but if you select a video format that is not supported by your camera, the video stream will stop";
@@ -715,8 +741,9 @@ QString MavlinkSettingsModel::get_short_description(const QString param_id)const
     if(param_id=="ENABLE_JOY_RC"){
         return "Only enable joystick rc if you actually use it to save cpu / bandwidth. If enabled, you can connect a joystick to your ground station for RC. REQUIRES REBOOT!";
     }
-    if(param_id=="WB_TX_PWR_LEVEL"){
-        return "OpenHD tx power level (r.n only implemented for RTL8812au). LOW:default, <=25mW, legal in all countries. For MEDIUM, HIGH and MAX read the Wiki";
+    if(param_id=="WB_TX_PWR_IDX_O"){
+        return "RTL8812AU TX power index (unitless). LOW:default,~25mW, legal in most countries."
+               " NOTE: Too high power settings can overload your RF circuits and create packet loss/ destroy your card. Read the Wiki before changing the TX Power";
     }
     if(param_id=="V_AIR_RECORDING"){
         return "Record video data locally on your air unit. You can find the files under /home/openhd/Videos";

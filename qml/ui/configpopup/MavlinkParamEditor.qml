@@ -150,7 +150,8 @@ Rectangle{
     function setup_spin_box_int_param(){
         if(holds_int_value()){
             // If we can treat this int value as an enum, this is the most verbose for the user
-             if(instanceMavlinkSettingsModel.int_param_has_enum_keys_values(parameterId)){
+            // unless the user explicitly wants raw access to the param (enable advanced)
+             if(instanceMavlinkSettingsModel.int_param_has_enum_keys_values(parameterId) && !enableAdvanced){
                  console.log(parameterId+" has int enum mapping")
                  spinBoxInputParamtypeInt.visible=false
                  intEnumDynamicComboBox.visible=true
@@ -170,7 +171,7 @@ Rectangle{
                  }
                  if(currently_selected_index==-1){
                      // We are missing a description for this int value, add row
-                     var new_key="Unknown("+paramValueInt+")"
+                     var new_key="Unknown ("+paramValueInt+")"
                      console.log("Adding missing dummy description :"+new_key+" "+paramValueInt)
                      intEnumDynamicListModel.append({title: new_key, value: paramValueInt})
                      currently_selected_index=intEnumDynamicListModel.count-1
@@ -416,10 +417,9 @@ Rectangle{
             Layout.alignment: Qt.AlignHCenter
             onCheckStateChanged: {
                 enableAdvanced=checkBoxEnableAdvanced.checked
-                // We need to refresh the input field, since aparently qt rejects values out of range
-                if(holds_int_value() && enableAdvanced){
-                    setup_spin_box_int_param()
-                }
+                // Completely re-fresh the UI - the user has now more direct access to the parameter(s)
+                setup_spin_box_int_param()
+                setup_text_input_string_param()
             }
         }
     }

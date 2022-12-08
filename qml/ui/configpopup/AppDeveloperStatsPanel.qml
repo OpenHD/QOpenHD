@@ -36,6 +36,15 @@ Rectangle {
                 _qopenhd.restart_local_oenhd_service()
             }
         }
+        Button{
+            id: local_ip_button
+            height: 24
+            text: "Show local IP"
+            onClicked:{
+                var text=_qopenhd.show_local_ip()
+                local_ip_button.text=text
+            }
+        }
 
         /*Button{
             height: 24
