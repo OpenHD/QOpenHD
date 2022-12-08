@@ -420,6 +420,10 @@ Rectangle{
                 if(holds_int_value() && enableAdvanced){
                     setup_spin_box_int_param()
                 }
+                //if(enableAdvanced && holds_int_value() && !spinBoxInputParamtypeInt.visible){
+                //    spinBoxInputParamtypeInt.visible=true
+                //    spinBoxInputParamtypeInt.value=paramValueInt
+                //}
             }
         }
     }
