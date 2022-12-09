@@ -59,7 +59,7 @@ fi
 
 cp qt.json /tmp/qopenhd/usr/local/share/openhd/ || exit 1
 
-VERSION="2.2.3-evo-$(date '+%m%d%H%M')-${VER2}"
+VERSION="2.2.4-evo-$(date '+%m%d%H%M')-${VER2}"
 
 
 rm ${PACKAGE_NAME}_${VERSION}_${PACKAGE_ARCH}.deb > /dev/null 2>&1
