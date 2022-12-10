@@ -19,7 +19,7 @@ Other platforms than Linux are not supported right now.
 
 # MavSDK
 QOpenHD relies on MavSDK library. After recursively cloning qopenhd build this library:
-`cd lib/MAVSDK
-cmake -Bbuild/default -DCMAKE_BUILD_TYPE=Release -H.
-cmake --build build/default -j4
-sudo cmake --build build/default --target install`
+`cd lib/MAVSDK`
+`cmake -Bbuild/default -DCMAKE_BUILD_TYPE=Release -H.`
+`cmake --build build/default -j4`
+`sudo cmake --build build/default --target install`
