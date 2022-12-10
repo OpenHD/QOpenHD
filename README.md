@@ -17,3 +17,9 @@ Other platforms than Linux are not supported right now.
 2) While QOpenHD is the default companion app, OpenHD MUST NOT assume there is a QOpenHD instance somewhere that initiates voodo settings / setup processes
 ( This is in contrast to OpenHD /QOpenHD releases before the "evo" series.) As a result of this limitation, Both OpenHD and QOpenHD can be developed independently from each other, and debugging becomes a lot easier.
 
+# MavSDK
+QOpenHD relies on MavSDK library. After recursively cloning qopenhd build this library:
+`cd lib/MAVSDK
+cmake -Bbuild/default -DCMAKE_BUILD_TYPE=Release -H.
+cmake --build build/default -j4
+sudo cmake --build build/default --target install`
