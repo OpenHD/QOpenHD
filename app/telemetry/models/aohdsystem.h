@@ -164,8 +164,11 @@ public:
 private:
      int64_t x_last_dropped_packets=-1;
      void send_message_hud_connection(bool connected);
-private:
-     Q_INVOKABLE bool request_channel_scan();
+public:
+     // 0: 2.4G and 5.8G
+     // 1: 2.4G only
+     // 2: 5.8G only
+     Q_INVOKABLE bool request_channel_scan(int freq_band);
 };
 
 

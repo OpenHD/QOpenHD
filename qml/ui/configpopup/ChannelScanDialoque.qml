@@ -97,9 +97,10 @@ max 30 seconds, usually less"
             visible: m_curr_index==0
             onPressed: {
                 if(m_curr_index==0){
-                    m_curr_index++;
-                    var how_many_freq_bands=comboBoxWhichFrequencyToScan.currentValue
+                    var how_many_freq_bands=comboBoxWhichFrequencyToScan.currentIndex
                    console.log("Initate channel scan "+how_many_freq_bands)
+                    _ohdSystemGround.request_channel_scan(how_many_freq_bands)
+                    m_curr_index++;
                 }else{
                      dialoqueStartChannelScan.visible=false;
                 }
