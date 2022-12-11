@@ -69,6 +69,8 @@ public:
 private:
     int pingSequenceNumber=0;
     int64_t lastTimeSyncOut=0;
+private:
+    std::chrono::steady_clock::time_point m_last_time_version_requested=std::chrono::steady_clock::now();
 };
 
 #endif // OHDMAVLINKCONNECTION_H

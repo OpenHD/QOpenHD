@@ -169,6 +169,12 @@ public:
      // 1: 2.4G only
      // 2: 5.8G only
      Q_INVOKABLE bool request_channel_scan(int freq_band);
+public:
+     // Ditry, until we have send command with retransmissions
+     // request version if not set yet, but no more than x times
+     bool should_request_version();
+private:
+     int m_n_times_version_has_been_requested=0;
 };
 
 

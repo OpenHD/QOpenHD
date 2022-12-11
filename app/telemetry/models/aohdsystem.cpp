@@ -433,3 +433,12 @@ bool AOHDSystem::request_channel_scan(const int freq_band)
     qDebug()<<"Channels can: "<<freq_band;
 }
 
+bool AOHDSystem::should_request_version()
+{
+    if(m_openhd_version=="N/A" &&  m_n_times_version_has_been_requested<10){
+         m_n_times_version_has_been_requested++;
+        return true;
+    }
+    return false;
+}
+

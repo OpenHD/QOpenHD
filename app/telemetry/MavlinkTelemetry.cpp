@@ -204,6 +204,14 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg)
             qDebug()<<"MavlinkTelemetry received unmatched message (FC not yet known) "<<QOpenHDMavlinkHelper::debug_mavlink_message(msg);
         }
     }
+    /*const auto elapsed_version_request=std::chrono::steady_clock::now()-m_last_time_version_requested;
+    if(elapsed_version_request>std::chrono::seconds(1)){
+        m_last_time_version_requested=std::chrono::steady_clock::now();
+        if(AOHDSystem::instanceAir().should_request_version()  || AOHDSystem::instanceGround().should_request_version()){
+            request_openhd_version();
+        }
+    }*/
+
 }
 
 void MavlinkTelemetry::ping_all_systems()
