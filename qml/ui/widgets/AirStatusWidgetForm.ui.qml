@@ -209,45 +209,6 @@ BaseWidget {
                 width: parent.width
                 height: 32
                 Text {
-                    text: qsTr("Warn CPU")
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Text {
-                    text: settings.air_status_cpu_warn
-                    color: settings.color_warn
-                    height: parent.height
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.right
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Slider {
-                    id: air_status_cpu_warn_Slider
-                    orientation: Qt.Horizontal
-                    from: 50
-                    value: settings.air_status_cpu_warn
-                    to: 100
-                    stepSize: 1
-                    height: parent.height
-                    anchors.rightMargin: 0
-                    anchors.right: parent.right
-                    width: parent.width - 96
-
-                    onValueChanged: {
-                        settings.air_status_cpu_warn = Math.round(
-                                    air_status_cpu_warn_Slider.value * 10) / 10.0
-                    }
-                }
-            }
-            Item {
-                width: parent.width
-                height: 32
-                Text {
                     text: qsTr("Caution CPU")
                     color: "white"
                     height: parent.height
@@ -268,9 +229,9 @@ BaseWidget {
                 Slider {
                     id: air_status_cpu_caution_Slider
                     orientation: Qt.Horizontal
-                    from: 20
                     value: settings.air_status_cpu_caution
-                    to: 49
+                    from: 20
+                    to: 100
                     stepSize: 1
                     height: parent.height
                     anchors.rightMargin: 0
@@ -287,7 +248,7 @@ BaseWidget {
                 width: parent.width
                 height: 32
                 Text {
-                    text: qsTr("Warn Temp")
+                    text: qsTr("Warn CPU")
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -296,7 +257,7 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Text {
-                    text: settings.air_status_temp_warn
+                    text: settings.air_status_cpu_warn
                     color: settings.color_warn
                     height: parent.height
                     font.bold: true
@@ -305,11 +266,11 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Slider {
-                    id: air_status_temp_warn_Slider
+                    id: air_status_cpu_warn_Slider
                     orientation: Qt.Horizontal
-                    from: 50
-                    value: settings.air_status_temp_warn
-                    to: 150
+                    value: settings.air_status_cpu_warn
+                    from: 20
+                    to: 100
                     stepSize: 1
                     height: parent.height
                     anchors.rightMargin: 0
@@ -317,8 +278,8 @@ BaseWidget {
                     width: parent.width - 96
 
                     onValueChanged: {
-                        settings.air_status_temp_warn = Math.round(
-                                    air_status_temp_warn_Slider.value * 10) / 10.0
+                        settings.air_status_cpu_warn = Math.round(
+                                    air_status_cpu_warn_Slider.value * 10) / 10.0
                     }
                 }
             }
@@ -346,9 +307,9 @@ BaseWidget {
                 Slider {
                     id: air_status_temp_caution_Slider
                     orientation: Qt.Horizontal
-                    from: 20
                     value: settings.air_status_temp_caution
-                    to: 49
+                    from: 20
+                    to: 100
                     stepSize: 1
                     height: parent.height
                     anchors.rightMargin: 0
@@ -358,6 +319,45 @@ BaseWidget {
                     onValueChanged: {
                         settings.air_status_temp_caution = Math.round(
                                     air_status_temp_caution_Slider.value * 10) / 10.0
+                    }
+                }
+            }
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("Warn Temp")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Text {
+                    text: settings.air_status_temp_warn
+                    color: settings.color_warn
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.right
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Slider {
+                    id: air_status_temp_warn_Slider
+                    orientation: Qt.Horizontal
+                    value: settings.air_status_temp_warn
+                    from: 20
+                    to: 100
+                    stepSize: 1
+                    height: parent.height
+                    anchors.rightMargin: 0
+                    anchors.right: parent.right
+                    width: parent.width - 96
+
+                    onValueChanged: {
+                        settings.air_status_temp_warn = Math.round(
+                                    air_status_temp_warn_Slider.value * 10) / 10.0
                     }
                 }
             }

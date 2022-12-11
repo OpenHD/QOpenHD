@@ -164,6 +164,8 @@ public:
 private:
      int64_t x_last_dropped_packets=-1;
      void send_message_hud_connection(bool connected);
+private:
+     Q_INVOKABLE bool request_channel_scan();
 };
 
 

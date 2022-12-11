@@ -423,3 +423,12 @@ void AOHDSystem::send_message_hud_connection(bool connected){
     }
 }
 
+
+bool AOHDSystem::request_channel_scan()
+{
+    if(_is_air){
+        qDebug()<<"Channels scan is a ground station feature";
+        return false;
+    }
+}
+

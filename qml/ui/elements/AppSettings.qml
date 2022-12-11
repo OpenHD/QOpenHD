@@ -204,8 +204,8 @@ Settings {
     property bool air_status_declutter: false
     property double air_status_cpu_warn: 70
     property double air_status_cpu_caution: 80
-    property double air_status_temp_warn: 60
-    property double air_status_temp_caution: 50
+    property double air_status_temp_warn: 70
+    property double air_status_temp_caution: 60
 
     property bool show_message_hud: true
     property double message_hud_opacity: 1
