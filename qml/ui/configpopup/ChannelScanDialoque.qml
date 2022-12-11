@@ -36,7 +36,7 @@ Card {
         width: 320
         Text {
             id: dialoqueStartChannelScan_text
-            text: "Initiate Channel Scan. Might take more than 1 minute if you are not specifying 2.4G / 5.8G and your RX card supports both 2.4G / 5.8G. Otherwise,it'l take
+            text: "Initiate Channel Scan. Might take more than 1 minute if you are not specifying the generic band below. Otherwise,it'l take
 max 30 seconds, usually less"
             width: parent.width
             height: parent.height-100

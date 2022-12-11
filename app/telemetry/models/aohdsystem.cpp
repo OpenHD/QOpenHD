@@ -431,6 +431,11 @@ bool AOHDSystem::request_channel_scan(const int freq_band)
         return false;
     }
     qDebug()<<"Channels can: "<<freq_band;
+    mavlink_command_long_t command{};
+    command.command=MAV_CMD_REQUEST_MESSAGE;
+    command.param1=static_cast<float>(MAVLINK_MSG_ID_OPENHD_VERSION_MESSAGE);
+    //send_command_long_oneshot(command);
+    return true;
 }
 
 bool AOHDSystem::should_request_version()
