@@ -164,6 +164,12 @@ public:
 private:
      int64_t x_last_dropped_packets=-1;
      void send_message_hud_connection(bool connected);
+public:
+     // Ditry, until we have send command with retransmissions
+     // request version if not set yet, but no more than x times
+     bool should_request_version();
+private:
+     int m_n_times_version_has_been_requested=0;
 };
 
 

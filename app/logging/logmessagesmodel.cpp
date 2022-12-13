@@ -5,6 +5,8 @@
 #include <QTimer>
 #include <cstdlib>
 
+#include "hudlogmessagesmodel.h""
+
 LogMessagesModel &LogMessagesModel::instance()
 {
     static LogMessagesModel* instance=new LogMessagesModel();
@@ -90,6 +92,10 @@ void LogMessagesModel::removeData(int row)
 
 void LogMessagesModel::addData(LogMessageData logMessageData)
 {
+    // hacky temporary
+    if(logMessageData.message.contains("Scanning ")){
+        HUDLogMessagesModel::instance().add_message_info(logMessageData.message);
+    }
     //qDebug()<<"LogMessagesModel::addData"<<logMessageData.message;
     // We limit logging to X log messages here
     if(m_data.size()>=30){

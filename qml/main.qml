@@ -118,13 +118,17 @@ ApplicationWindow {
         visible: false
     }
 
+    ChannelScanDialoque{
+         id: dialoqueStartChannelScan
+    }
+
     // We need this one to display popup messages to the user on platforms that don't support
     // QMessageBox (e.g. eglfs) since QMessageBox wants to open a new window
     // TODO make me less dirty / hacky
     Card {
         id: workaroundMessageBox
-        height: 200
-        width: 320
+        width: 360
+        height: 340
         z: 5.0
         anchors.centerIn: parent
         cardName: qsTr("QOpenHD")
