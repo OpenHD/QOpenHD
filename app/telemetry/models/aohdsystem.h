@@ -165,11 +165,6 @@ private:
      int64_t x_last_dropped_packets=-1;
      void send_message_hud_connection(bool connected);
 public:
-     // 0: 2.4G and 5.8G
-     // 1: 2.4G only
-     // 2: 5.8G only
-     Q_INVOKABLE bool request_channel_scan(int freq_band);
-public:
      // Ditry, until we have send command with retransmissions
      // request version if not set yet, but no more than x times
      bool should_request_version();

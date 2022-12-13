@@ -99,8 +99,12 @@ max 30 seconds, usually less"
                 if(m_curr_index==0){
                     var how_many_freq_bands=comboBoxWhichFrequencyToScan.currentIndex
                    console.log("Initate channel scan "+how_many_freq_bands)
-                    _ohdSystemGround.request_channel_scan(how_many_freq_bands)
-                    m_curr_index++;
+                    var result=_mavlinkTelemetry.request_channel_scan(how_many_freq_bands)
+                    if(result){
+                         m_curr_index++;
+                    }else{
+                        console.log("Cannot initiate channel scan");
+                    }
                 }else{
                      dialoqueStartChannelScan.visible=false;
                 }

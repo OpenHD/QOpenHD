@@ -423,21 +423,6 @@ void AOHDSystem::send_message_hud_connection(bool connected){
     }
 }
 
-
-bool AOHDSystem::request_channel_scan(const int freq_band)
-{
-    if(_is_air){
-        qDebug()<<"Channels scan is a ground station feature";
-        return false;
-    }
-    qDebug()<<"Channels can: "<<freq_band;
-    mavlink_command_long_t command{};
-    command.command=MAV_CMD_REQUEST_MESSAGE;
-    command.param1=static_cast<float>(MAVLINK_MSG_ID_OPENHD_VERSION_MESSAGE);
-    //send_command_long_oneshot(command);
-    return true;
-}
-
 bool AOHDSystem::should_request_version()
 {
     if(m_openhd_version=="N/A" &&  m_n_times_version_has_been_requested<10){

@@ -35,8 +35,9 @@ public:
      * The message can be aimed at either the OHD ground unit, the OHD air unit (forwarded by OpenHD) or the FC connected to the
      * OHD air unit (forwarded by OpenHD).
      * @param msg the message to send.
+     * @return true on success (this does not mean the message was received, but rather the message was sent out via the lossy connection)
      */
-    void sendMessage(mavlink_message_t msg);
+    bool sendMessage(mavlink_message_t msg);
 private:
     // We follow the same practice as QGrouncontroll: Listen for incoming data on a specific UDP port,
     // -> as soon as we got the first packet, we know the address to send data to for bidirectional communication
@@ -65,12 +66,17 @@ public:
     Q_INVOKABLE void request_openhd_version();
     // send a command, to all connected systems
     // doesn't reatransmitt
-    void send_command_long_oneshot(const mavlink_command_long_t& command);
+    bool send_command_long_oneshot(const mavlink_command_long_t& command);
 private:
     int pingSequenceNumber=0;
     int64_t lastTimeSyncOut=0;
 private:
     std::chrono::steady_clock::time_point m_last_time_version_requested=std::chrono::steady_clock::now();
+public:
+    // 0: 2.4G and 5.8G
+    // 1: 2.4G only
+    // 2: 5.8G only
+    Q_INVOKABLE bool request_channel_scan(int freq_band);
 };
 
 #endif // OHDMAVLINKCONNECTION_H

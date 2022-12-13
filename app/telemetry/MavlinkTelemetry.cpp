@@ -111,7 +111,7 @@ void MavlinkTelemetry::onNewSystem(std::shared_ptr<mavsdk::System> system){
     }
 }
 
-void MavlinkTelemetry::sendMessage(mavlink_message_t msg){
+bool MavlinkTelemetry::sendMessage(mavlink_message_t msg){
     const auto sys_id=QOpenHDMavlinkHelper::getSysId();
     const auto comp_id=QOpenHDMavlinkHelper::getCompId();
     if(msg.sysid!=sys_id){
@@ -126,6 +126,7 @@ void MavlinkTelemetry::sendMessage(mavlink_message_t msg){
     std::lock_guard<std::mutex> lock(systems_mutex);
     if(passtroughOhdGround!=nullptr){
         passtroughOhdGround->send_message(msg);
+        return true;
     }else{
         // If the passtrough is not created yet, a connection to the OHD ground unit has not yet been established.
         //qDebug()<<"MAVSDK passtroughOhdGround not created";
@@ -136,6 +137,7 @@ void MavlinkTelemetry::sendMessage(mavlink_message_t msg){
             //first=false;
         }
     }
+    return false;
 }
 
 void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg)
@@ -234,9 +236,20 @@ void MavlinkTelemetry::request_openhd_version()
     send_command_long_oneshot(command);
 }
 
-void MavlinkTelemetry::send_command_long_oneshot(const mavlink_command_long_t &command)
+bool MavlinkTelemetry::send_command_long_oneshot(const mavlink_command_long_t &command)
 {
     mavlink_message_t msg;
     mavlink_msg_command_long_encode(QOpenHDMavlinkHelper::getSysId(),QOpenHDMavlinkHelper::getCompId(), &msg,&command);
-    sendMessage(msg);
+    return sendMessage(msg);
+}
+
+bool MavlinkTelemetry::request_channel_scan(int freq_band)
+{
+    qDebug()<<"Channels can: "<<freq_band;
+    mavlink_command_long_t command{};
+    // channel scan is always done by teh ground unit
+    command.target_system=OHD_SYS_ID_GROUND;
+    command.command=OPENHD_CMD_INITIATE_CHANNEL_SEARCH;
+    command.param1=static_cast<float>(freq_band);
+    return send_command_long_oneshot(command);
 }
