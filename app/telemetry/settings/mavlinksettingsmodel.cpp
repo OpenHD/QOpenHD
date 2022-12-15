@@ -142,6 +142,12 @@ static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string&
         };
         map_improved_params["V_AWB_MODE"]=ImprovedIntSetting::createEnum(gst_awb_modes);
         map_improved_params["V_EXP_MODE"]=ImprovedIntSetting::createEnum(gst_exposure_modes);
+        {
+            auto values_metering_mode=std::vector<std::string>{
+                    "AVERAGE","SPOT","BACKLIST","MATRIX"
+            };
+            map_improved_params["V_METERING_MODE"]=ImprovedIntSetting::createEnum(values_metering_mode);
+        }
         auto baud_rate_items=std::vector<ImprovedIntSetting::Item>{
                 {"9600",9600},
                 {"19200",19200},
