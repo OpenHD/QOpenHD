@@ -8,14 +8,6 @@
 
 #include "../util/qrenderstats.h"
 
-class CleanupJob : public QRunnable
-{
-public:
-    CleanupJob(TextureRenderer *renderer) : m_renderer(renderer) { }
-    void run() override { delete m_renderer; }
-private:
-   TextureRenderer *m_renderer;
-};
 
 QSGVideoTextureItem::QSGVideoTextureItem():
     m_renderer(nullptr)
@@ -32,7 +24,7 @@ void QSGVideoTextureItem::handleWindowChanged(QQuickWindow *win)
     qDebug()<<"QSGVideoTextureItem::handleWindowChanged";
     if (win) {
         connect(win, &QQuickWindow::beforeSynchronizing, this, &QSGVideoTextureItem::sync, Qt::DirectConnection);
-        connect(win, &QQuickWindow::sceneGraphInvalidated, this, &QSGVideoTextureItem::cleanup, Qt::DirectConnection);
+        //connect(win, &QQuickWindow::sceneGraphInvalidated, this, &QSGVideoTextureItem::cleanup, Qt::DirectConnection);
         // Ensure we start with cleared to black. The squircle's blend mode relies on this.
         // We do not need that when rendering a texture, which is what we actually want (squircle is just the example where I started with,
         // since I had to start somehow ;)
@@ -40,18 +32,14 @@ void QSGVideoTextureItem::handleWindowChanged(QQuickWindow *win)
     }
 }
 
-void QSGVideoTextureItem::cleanup()
-{
-     qDebug()<<"QSGVideoTextureItem::cleanup";
-    delete m_renderer;
-    m_renderer = nullptr;
-}
 
 void QSGVideoTextureItem::releaseResources()
 {
      qDebug()<<"QSGVideoTextureItem::releaseResources";
-    window()->scheduleRenderJob(new CleanupJob(m_renderer), QQuickWindow::BeforeSynchronizingStage);
-    m_renderer = nullptr;
+     /*if(m_renderer){
+         delete(m_renderer);
+         m_renderer=nullptr;
+     }*/
 }
 
 

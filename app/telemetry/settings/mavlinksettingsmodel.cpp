@@ -177,7 +177,9 @@ static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string&
             {"MEDIUM [37]",37},
             {"HIGH [53]",53},
             {"MAX1(!DANGER!)[58]",58},
-            {"MAX2(!DANGER!)[63]",63},
+            // Intentionally disabled, since it creates unusably high packet loss
+            // (e.g. the rf circuit is over-amplified)
+            //{"MAX2(!DANGER!)[63]",63},
         };
         map_improved_params["WB_TX_PWR_IDX_O"]=ImprovedIntSetting(0,63,values_WB_TX_PWR_LEVEL);
         {

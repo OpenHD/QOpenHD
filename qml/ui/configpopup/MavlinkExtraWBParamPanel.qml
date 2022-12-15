@@ -81,7 +81,7 @@ ColumnLayout {
         ListElement {title: "2692Mhz [X] (Atheros)"; value: 2692}
         ListElement {title: "2712Mhz [X] (Atheros)"; value: 2712}
         // 5G begin
-        ListElement {title: "5180Mhz [36]"; value: 5180}
+        ListElement {title: "5180Mhz [36] (DEFAULT)"; value: 5180}
         ListElement {title: "5200Mhz [40]"; value: 5200}
         ListElement {title: "5220Mhz [44]"; value: 5220}
         ListElement {title: "5240Mhz [48]"; value: 5240}

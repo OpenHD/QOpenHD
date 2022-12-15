@@ -66,8 +66,13 @@ void FCMavlinkSystem::set_system(std::shared_ptr<mavsdk::System> system)
     //_mavsdk_telemetry->subscribe_position()
     //_mavsdk_telemetry->subscribe_home()
     //
-    /*auto res=_mavsdk_telemetry->set_rate_attitude(60);
-    std::stringstream ss;
+    /*auto cb_rate=[this](mavsdk::Telemetry::Result res){
+        std::stringstream ss;
+        ss<<res;
+        qDebug()<<"Set rate async result:"<<ss.str().c_str();
+    };
+    _mavsdk_telemetry->set_rate_attitude_async(60,cb_rate);*/
+    /*std::stringstream ss;
     ss<<res;
     qDebug()<<"Set rate result:"<<ss.str().c_str();*/
 }
