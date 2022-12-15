@@ -792,5 +792,8 @@ QString MavlinkSettingsModel::get_short_description(const QString param_id)const
     if(param_id=="V_INTRA_REFRESH"){
         return "Experimental,Default NONE, Type of Intra Refresh to use";
     }
+    if(param_id=="V_METERING_MODE"){
+        return " Camera exposure metering mode to use. Default average.";
+    }
     return "TODO";
 }
