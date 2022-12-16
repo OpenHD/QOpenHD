@@ -163,8 +163,32 @@ static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string&
         };
         map_improved_params["FC_UART_BAUD"]=ImprovedIntSetting(0,1000000,baud_rate_items);
         //
-        map_improved_params["V_OS_CAM_CONFIG"]=ImprovedIntSetting::createEnum( std::vector<std::string>{"rpicam(mmal)","libcamera","libcamera_imx477",
-                                                                               "libcamera_ardu","libcamera_imx519"});
+        {
+            // Needs to match OpenHD
+            //   MMAL = 0, // raspivid / gst-rpicamsrc
+            //   LIBCAMERA, // "normal" libcamera (autodetect)
+            //   LIBCAMERA_IMX477, // "normal" libcamera, explicitly set to imx477 detection only
+            //   LIBCAMERA_ARDUCAM, // pivariety libcamera (arducam special)
+            //   LIBCAMERA_IMX519, // Arducam imx519 without autofocus
+            //   VEYE_327, // Veye IMX290/IMX327 (older versions)
+            //   VEYE_CSIMX307, // Veye IMX307
+            //   VEYE_CSSC132, //Veye SC132
+            //   VEYE_MVCAM, // Veye MV Cameras
+            //   VEYE_CAM2M // Veye IMX327 (never versions), VEYE series with 200W resolution
+            auto cam_config_items=std::vector<std::string>{
+                    "Legacy(MMAL)",
+                    "LIBCAMERA",
+                    "LIBCAMERA_IMX477",
+                    "LIBCAMERA_ARDU",
+                    "LIBCAMERA_IMX519",
+                    "VEYE_327",
+                    "VEYE_CSIMX307",
+                    "VEYE_CSSC132",
+                    "VEYE_MVCAM",
+                    "VEYE_CAM2M"
+            };
+            map_improved_params["V_OS_CAM_CONFIG"]=ImprovedIntSetting::createEnum(cam_config_items);
+        }
         map_improved_params["CONFIG_BOOT_AIR"]=ImprovedIntSetting::createEnumEnableDisable();
         map_improved_params["I_WIFI_HOTSPOT_E"]=ImprovedIntSetting::createEnumEnableDisable();
         // Measurements of @Marcel Essers:

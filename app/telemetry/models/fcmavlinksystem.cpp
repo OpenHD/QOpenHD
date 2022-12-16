@@ -863,6 +863,10 @@ void FCMavlinkSystem::arm_fc_async(bool disarm)
                 ss<<"amr/disarm failed:"<<res;
                 qDebug()<<ss.str().c_str();
                 emit messageReceived(ss.str().c_str(), 0);
+                HUDLogMessagesModel::instance().add_message_warning("Arm FC failed");
+            }else{
+                qDebug()<<"Successfully armed FC";
+                HUDLogMessagesModel::instance().add_message_info("FC armed");
             }
         };
         if(disarm){
@@ -882,6 +886,11 @@ void FCMavlinkSystem::send_return_to_launch_async()
             std::stringstream ss;
             ss<<"send_return_to_launch: result: "<<res;
             qDebug()<<ss.str().c_str();
+            if(res==mavsdk::Action::Result::Success){
+                 HUDLogMessagesModel::instance().add_message_info("RTL set");
+            }else{
+                HUDLogMessagesModel::instance().add_message_warning("RTL failed");
+            }
         };
         _action->return_to_launch_async(cb);
     }

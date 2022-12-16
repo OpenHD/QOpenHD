@@ -13,7 +13,7 @@ Card {
     height: 340
     z: 5.0
     anchors.centerIn: parent
-    cardName: qsTr("Channel Scan")
+    cardName: qsTr("Find Air Unit")
     cardNameColor: "black"
     visible: false
 
@@ -36,7 +36,7 @@ Card {
         width: 320
         Text {
             id: dialoqueStartChannelScan_text
-            text: "Initiate Channel Scan. Might take more than 1 minute if you are not specifying the generic band below. Otherwise,it'l take
+            text: "Initiate Channel Scan (Find a running air unit). Might take more than 1 minute if you are not specifying the generic band below. Otherwise,it'l take
 max 30 seconds, usually less"
             width: parent.width
             height: parent.height-100
