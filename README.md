@@ -16,4 +16,3 @@ Other platforms than Linux are not supported right now.
 1) QOpenHD is not OpenHD (main). It can talk to a running OpenHD main instance (ground and/or air) via Mavlink and rceives the (primary / secondary / ++) video streams. 
 2) While QOpenHD is the default companion app, OpenHD MUST NOT assume there is a QOpenHD instance somewhere that initiates voodo settings / setup processes
 ( This is in contrast to OpenHD /QOpenHD releases before the "evo" series.) As a result of this limitation, Both OpenHD and QOpenHD can be developed independently from each other, and debugging becomes a lot easier.
-
