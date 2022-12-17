@@ -222,7 +222,7 @@ public:
     //
     // Try to change the arming state. Once completed, since we listen to arm/disarm results,
     // the armed status is changed. On failure, a message is pushed onto the HUD
-    Q_INVOKABLE void arm_fc_async(bool disarm=false);
+    Q_INVOKABLE void arm_fc_async(bool arm=false);
     Q_INVOKABLE void send_return_to_launch_async();
     Q_INVOKABLE bool send_command_reboot(bool reboot);
     // -----------------------

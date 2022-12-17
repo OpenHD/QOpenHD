@@ -847,9 +847,9 @@ void FCMavlinkSystem::setTotalWaypoints(int total_waypoints) {
 }
 
 
-void FCMavlinkSystem::arm_fc_async(bool disarm)
+void FCMavlinkSystem::arm_fc_async(bool arm)
 {
-    qDebug()<<"FCMavlinkSystem::arm_fc_async "<<(disarm ? "disarm" : "arm");
+    qDebug()<<"FCMavlinkSystem::arm_fc_async "<<(arm ? "arm" : "disarm");
     if(_action){
         // We listen for the armed / disarmed changes directly
         auto cb=[this](mavsdk::Action::Result res){
@@ -860,10 +860,10 @@ void FCMavlinkSystem::arm_fc_async(bool disarm)
                 emit messageReceived(ss.str().c_str(), 0);
             }
         };
-        if(disarm){
-             _action->disarm_async(cb);
-        }else{
+        if(arm){
              _action->arm_async(cb);
+        }else{
+             _action->disarm_async(cb);
         }
     }else{
         qDebug()<<"No action set";
