@@ -226,7 +226,7 @@ public:
     Q_INVOKABLE void arm_fc_async(bool arm=false);
     Q_INVOKABLE void send_return_to_launch_async();
     Q_INVOKABLE bool send_command_reboot(bool reboot);
-    Q_INVOKABLE void pass_cmd_long(long cmd_msg);
+    Q_INVOKABLE void flight_mode_cmd(long cmd_msg);
     // -----------------------
 private:
     void send_message_hud_connection(bool connected);

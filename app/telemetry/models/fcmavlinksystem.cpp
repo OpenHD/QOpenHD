@@ -913,50 +913,25 @@ void FCMavlinkSystem::send_message_hud_connection(bool connected)
     }
 }
 
-void FCMavlinkSystem::pass_cmd_long(long cmd_msg) {
+void FCMavlinkSystem::flight_mode_cmd(long cmd_msg) {
     if (_pass_thru){
         mavsdk::MavlinkPassthrough::Result res{};
-
-        qDebug() << "pass_cmd_long CMD:" << cmd_msg;
-        qDebug() << "pass_cmd_long our sysid:" << _pass_thru->get_our_sysid();
-        qDebug() << "pass_cmd_long our comp id:" << _pass_thru->get_our_compid();
-        qDebug() << "pass_cmd_long target id:" << _pass_thru->get_target_sysid();
-        qDebug() << "pass_cmd_long target compid:" << _pass_thru->get_target_compid();
-
-
-
 /*
-
-        //mavlink_command_long_t msg;
-        mavlink_message_t msg;
-
-        mavlink_msg_command_long_pack(
-                    _pass_thru->get_our_sysid(), //source system
-                    _pass_thru->get_our_compid(), // source component
-                    &msg,
-                    _pass_thru->get_target_sysid(), // target sys
-                    _pass_thru->get_target_compid(), // target component
-                    11, // actual message code
-                    1, //ack
-                    0, //param 1
-                    0, //param 2
-                    0, //param 3
-                    0, //param 4
-                    0, //parma 5
-                    0, //parma 6
-                    0  //param 7
-                    );
-
-                    */
+        qDebug() << "flight_mode_cmd CMD:" << cmd_msg;
+        qDebug() << "flight_mode_cmd our sysid:" << _pass_thru->get_our_sysid();
+        qDebug() << "flight_mode_cmd our comp id:" << _pass_thru->get_our_compid();
+        qDebug() << "flight_mode_cmd target id:" << _pass_thru->get_target_sysid();
+        qDebug() << "flight_mode_cmd target compid:" << _pass_thru->get_target_compid();
+*/
         mavsdk::MavlinkPassthrough::CommandLong cmd;
 
-        cmd.command = cmd_msg;
+        cmd.command = MAV_CMD_DO_SET_MODE;
 
         cmd.target_sysid= _pass_thru->get_target_sysid();
         cmd.target_compid=_pass_thru->get_target_compid();
 
-        cmd.param1=0;
-        cmd.param2=0;
+        cmd.param1=MAV_MODE_FLAG_CUSTOM_MODE_ENABLED;
+        cmd.param2=cmd_msg;
         cmd.param3=0;
         cmd.param4=0;
         cmd.param5=0;
@@ -965,18 +940,15 @@ void FCMavlinkSystem::pass_cmd_long(long cmd_msg) {
 
         _pass_thru->send_command_long(cmd);
 
-
-
         //result is not really used right now as mavsdk will output errors
         //----here for future use----
         if(res==mavsdk::MavlinkPassthrough::Result::Success){
-            qDebug() << "pass_cmd_long Success!";
+            qDebug() << "flight_mode_cmd Success!";
         }
         else {
-            qDebug() << "pass_cmd_long Something went wrong!";
+            qDebug() << "flight_mode_cmd Something went wrong!";
         }
     }
-
 }
 
 void FCMavlinkSystem::update_alive()

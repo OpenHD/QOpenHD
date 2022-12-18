@@ -318,21 +318,127 @@ BaseWidget {
                 visible: _fcMavlinkSystem.supports_basic_commands
 
                 text_off: qsTr("RTL")
-                msg_id: 14
+                msg_id: {
+                    if (_fcMavlinkSystem.mav_type == "ARDUCOPTER"){
+                        return 6;
+                    }
+                    else {
+                        return 11;
+                    }
+                }
 
                 onCheckedChanged: {
                     if (checked == true) {
 
                         //double check.... not really needed
                         //_fcMavlinkSystem.set_Requested_Flight_Mode(msg_id);
-                        _fcMavlinkSystem.pass_cmd_long(msg_id);
+                        _fcMavlinkSystem.flight_mode_cmd(msg_id);
                         console.log("FLIGHT MODE MSD ID=");
                     }
                 }
             }
+
             ConfirmSlider {
 
                 visible: _fcMavlinkSystem.supports_basic_commands
+
+                text_off: qsTr("STABILIZE")
+                msg_id: {
+                    if (_fcMavlinkSystem.mav_type == "ARDUCOPTER"){
+                        return 0;
+                    }
+                    else {
+                        return 2;
+                    }
+                }
+
+                onCheckedChanged: {
+                    if (checked == true) {
+
+                        //double check.... not really needed
+                        _fcMavlinkSystem.flight_mode_cmd(msg_id);
+                        //console.log("selected");
+                    }
+                }
+            }
+
+            ConfirmSlider {
+
+                visible: _fcMavlinkSystem.supports_basic_commands
+
+                text_off: qsTr("LOITER")
+                msg_id: {
+                    if (_fcMavlinkSystem.mav_type == "ARDUCOPTER"){
+                        return 5;
+                    }
+                    else {
+                        return 12;
+                    }
+                }
+
+                onCheckedChanged: {
+                    if (checked == true) {
+
+                        //double check.... not really needed
+                        _fcMavlinkSystem.flight_mode_cmd(msg_id);
+                        //console.log("selected");
+                    }
+                }
+            }
+
+            ConfirmSlider {
+
+                visible: _fcMavlinkSystem.supports_basic_commands
+
+                text_off: qsTr("AUTO")
+                msg_id: {
+                    if (_fcMavlinkSystem.mav_type == "ARDUCOPTER"){
+                        return 3;
+                    }
+                    else {
+                        return 10;
+                    }
+                }
+
+                onCheckedChanged: {
+                    if (checked == true) {
+
+                        //double check.... not really needed
+                        _fcMavlinkSystem.flight_mode_cmd(msg_id);
+                        //console.log("selected");
+                    }
+                }
+            }
+
+            ConfirmSlider {
+
+                visible: _fcMavlinkSystem.supports_basic_commands
+
+                text_off: qsTr("AUTOTUNE")
+                msg_id: {
+                    if (_fcMavlinkSystem.mav_type == "ARDUCOPTER"){
+                        return 15;
+                    }
+                    else {
+                        return 8;
+                    }
+                }
+
+                onCheckedChanged: {
+                    if (checked == true) {
+
+                        //double check.... not really needed
+                        _fcMavlinkSystem.flight_mode_cmd(msg_id);
+                        //console.log("selected");
+                    }
+                }
+            }
+
+            //-----------------------Split from plane to copter
+
+            ConfirmSlider {
+
+                visible: _fcMavlinkSystem.mav_type == "ARDUPLANE"
 
                 text_off: qsTr("MANUAL")
                 msg_id: 0
@@ -341,46 +447,15 @@ BaseWidget {
                     if (checked == true) {
 
                         //double check.... not really needed
-                        _fcMavlinkSystem.pass_cmd_long(msg_id);
+                        _fcMavlinkSystem.flight_mode_cmd(msg_id);
                         //console.log("selected");
                     }
                 }
             }
+
             ConfirmSlider {
 
-                visible: _fcMavlinkSystem.supports_basic_commands
-
-                text_off: qsTr("STABILIZE")
-                msg_id: 2
-
-                onCheckedChanged: {
-                    if (checked == true) {
-
-                        //double check.... not really needed
-                        _fcMavlinkSystem.pass_cmd_long(msg_id);
-                        //console.log("selected");
-                    }
-                }
-            }
-            ConfirmSlider {
-
-                visible: _fcMavlinkSystem.supports_basic_commands
-
-                text_off: qsTr("LOITER")
-                msg_id: 12
-
-                onCheckedChanged: {
-                    if (checked == true) {
-
-                        //double check.... not really needed
-                        _fcMavlinkSystem.pass_cmd_long(msg_id);
-                        //console.log("selected");
-                    }
-                }
-            }
-            ConfirmSlider {
-
-                visible: _fcMavlinkSystem.supports_basic_commands
+                visible: _fcMavlinkSystem.mav_type == "ARDUPLANE"
 
                 text_off: qsTr("FBWA")
                 msg_id: 5
@@ -389,77 +464,12 @@ BaseWidget {
                     if (checked == true) {
 
                         //double check.... not really needed
-                        _fcMavlinkSystem.pass_cmd_long(msg_id);
-                        //console.log("selected");
-                    }
-                }
-            }
-            ConfirmSlider {
-
-                visible: _fcMavlinkSystem.supports_basic_commands
-
-                text_off: qsTr("AUTO")
-                msg_id: 10
-
-                onCheckedChanged: {
-                    if (checked == true) {
-
-                        //double check.... not really needed
-                        _fcMavlinkSystem.pass_cmd_long(msg_id);
-                        //console.log("selected");
-                    }
-                }
-            }
-            ConfirmSlider {
-
-                visible: _fcMavlinkSystem.supports_basic_commands
-
-                text_off: qsTr("AUTOTUNE")
-                msg_id: 8
-
-                onCheckedChanged: {
-                    if (checked == true) {
-
-                        //double check.... not really needed
-                        _fcMavlinkSystem.pass_cmd_long(msg_id);
+                        _fcMavlinkSystem.flight_mode_cmd(msg_id);
                         //console.log("selected");
                     }
                 }
             }
 
-            //-----------------------Split from plane to copter
-            ConfirmSlider {
-
-                visible: _fcMavlinkSystem.mav_type == "ARDUCOPTER"
-
-                text_off: qsTr("RTL")
-                msg_id: 6
-
-                onCheckedChanged: {
-                    if (checked == true) {
-
-                        //double check.... not really needed
-                        _fcMavlinkSystem.pass_cmd_long(msg_id);
-                        //console.log("selected");
-                    }
-                }
-            }
-            ConfirmSlider {
-
-                visible: _fcMavlinkSystem.mav_type == "ARDUCOPTER"
-
-                text_off: qsTr("STABILIZE")
-                msg_id: 0
-
-                onCheckedChanged: {
-                    if (checked == true) {
-
-                        //double check.... not really needed
-                        _fcMavlinkSystem.pass_cmd_long(msg_id);
-                        //console.log("selected");
-                    }
-                }
-            }
             ConfirmSlider {
 
                 visible: _fcMavlinkSystem.mav_type == "ARDUCOPTER"
@@ -471,23 +481,7 @@ BaseWidget {
                     if (checked == true) {
 
                         //double check.... not really needed
-                        _fcMavlinkSystem.pass_cmd_long(msg_id);
-                        //console.log("selected");
-                    }
-                }
-            }
-            ConfirmSlider {
-
-                visible: _fcMavlinkSystem.mav_type == "ARDUCOPTER"
-
-                text_off: qsTr("LOITER")
-                msg_id: 5
-
-                onCheckedChanged: {
-                    if (checked == true) {
-
-                        //double check.... not really needed
-                        _fcMavlinkSystem.pass_cmd_long(msg_id);
+                        _fcMavlinkSystem.flight_mode_cmd(msg_id);
                         //console.log("selected");
                     }
                 }
@@ -503,7 +497,7 @@ BaseWidget {
                     if (checked == true) {
 
                         //double check.... not really needed
-                        _fcMavlinkSystem.pass_cmd_long(msg_id);
+                        _fcMavlinkSystem.flight_mode_cmd(msg_id);
                         //console.log("selected");
                     }
                 }
@@ -512,89 +506,18 @@ BaseWidget {
 
                 visible: _fcMavlinkSystem.mav_type == "ARDUCOPTER"
 
-                text_off: qsTr("AUTO")
-                msg_id: 3
+                text_off: qsTr("ACRO")
+                msg_id: 1
 
                 onCheckedChanged: {
                     if (checked == true) {
 
                         //double check.... not really needed
-                        _fcMavlinkSystem.pass_cmd_long(msg_id);
+                        _fcMavlinkSystem.flight_mode_cmd(msg_id);
                         //console.log("selected");
                     }
                 }
-            }
-            ConfirmSlider {
-
-                visible: _fcMavlinkSystem.mav_type == "ARDUCOPTER"
-
-                text_off: qsTr("AUTOTUNE")
-                msg_id: 15
-
-                onCheckedChanged: {
-                    if (checked == true) {
-
-                        //double check.... not really needed
-                        _fcMavlinkSystem.pass_cmd_long(msg_id);
-                        //console.log("selected");
-                    }
-                }
-            }
-
-
-            /*
-
-            Column{//needs this column or buttons dont select
-                id:flightmodeButtonColumn
-
-                ButtonGroup {
-                    buttons: flightmodeButtonColumn.children
-
-                }
-
-                RadioButton {
-                    id: control
-                    width: 230
-                    contentItem: Text {
-                        text: qsTr("Manual")
-                        //font: control.font
-                        //opacity: enabled ? 1.0 : 0.3
-                        color: "white"
-
-                        height: parent.height
-                        font.bold: true
-                        //font.pixelSize: detailPanelFontPixels
-                        anchors.verticalCenter: parent.verticalCenter
-                        verticalAlignment: Text.AlignVCenter
-                        anchors.left: parent.left
-
-                    }
-
-                    indicator: Rectangle {
-                        implicitWidth: 28
-                        implicitHeight: 28
-                        x: 160
-                        y: parent.height / 2 - height / 2
-                        radius: 16
-                        color: "transparent"
-                        border.color: control.down ? "#15a4ef" : "#ffffff"
-
-                        Rectangle {
-                            width: 16
-                            height: 16
-                            x: 6
-                            y: 6
-                            radius: 8
-                            color: "#15a4ef"
-                            visible: control.checked
-                        }
-                    }
-                    onCheckedChanged: {
-                        _fcMavlinkSystem.set_Requested_Flight_Mode(0);
-                    }
-                }
-            }
-            */
+            }            
         }
     }
 
