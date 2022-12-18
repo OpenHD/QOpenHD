@@ -288,35 +288,24 @@ BaseWidget {
                 visible: _fcMavlinkSystem.supports_basic_commands
 
                 text_off: qsTr("RTL")
-                msg_id: 11
+                msg_id: {
+                        if (_fcMavlinkSystem.mav_type == "ARDUCOPTER"){
+                            return 6;
+                        }
+                        else {
+                            return 11;
+                        }
+                }
 
                 onCheckedChanged: {
                     if (checked == true) {
 
                         //double check.... not really needed
-                        _fcMavlinkSystem.send_return_to_launch_async()
+                        _fcMavlinkSystem.flight_mode_cmd(msg_id);
                         //console.log("selected");
                     }
                 }
-            }
-
-            //-----------------------Split from plane to copter
-            ConfirmSlider {
-
-                visible: _fcMavlinkSystem.mav_type == "ARDUCOPTER"
-
-                text_off: qsTr("RTL")
-                msg_id: 6
-
-                onCheckedChanged: {
-                    if (checked == true) {
-
-                        //double check.... not really needed
-                        fcMavlinkSystem.send_return_to_launch_async()
-                        //console.log("selected");
-                    }
-                }
-            }
+            }            
         }
     }
 
