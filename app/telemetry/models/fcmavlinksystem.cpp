@@ -48,7 +48,7 @@ void FCMavlinkSystem::set_system(std::shared_ptr<mavsdk::System> system)
     auto cb_attituede=[this](mavsdk::Telemetry::EulerAngle angle){
         //qDebug()<<"Got att euler";
         set_pitch((double)angle.pitch_deg);
-         //qDebug() << "Pitch:" <<  attitude.pitch*57.2958;
+        //qDebug() << "Pitch:" <<  attitude.pitch*57.2958;
         set_roll((double)angle.roll_deg);
     };
     _mavsdk_telemetry->subscribe_attitude_euler(cb_attituede);
@@ -96,40 +96,40 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         m_last_update_update_rate_mavlink_message_attitude=std::chrono::steady_clock::now();
     }
     switch (msg.msgid) {
-        case MAVLINK_MSG_ID_HEARTBEAT: {
-            mavlink_heartbeat_t heartbeat;
-            mavlink_msg_heartbeat_decode(&msg, &heartbeat);
-            const auto time_millis=QOpenHDMavlinkHelper::getTimeMilliseconds();
-            m_last_heartbeat=time_millis;
-            const auto custom_mode = heartbeat.custom_mode;
-            const auto autopilot = (MAV_AUTOPILOT)heartbeat.autopilot;
-            //upon first heartbeat find out if autopilot is ardupilot or "other"
-            /*if (!sent_autopilot_request){
+    case MAVLINK_MSG_ID_HEARTBEAT: {
+        mavlink_heartbeat_t heartbeat;
+        mavlink_msg_heartbeat_decode(&msg, &heartbeat);
+        const auto time_millis=QOpenHDMavlinkHelper::getTimeMilliseconds();
+        m_last_heartbeat=time_millis;
+        const auto custom_mode = heartbeat.custom_mode;
+        const auto autopilot = (MAV_AUTOPILOT)heartbeat.autopilot;
+        //upon first heartbeat find out if autopilot is ardupilot or "other"
+        /*if (!sent_autopilot_request){
                 requestAutopilotInfo();
                 sent_autopilot_request=true;
             }*/
-            switch (autopilot) {
-                case MAV_AUTOPILOT_PX4: {
-                    if (heartbeat.base_mode & MAV_MODE_FLAG_CUSTOM_MODE_ENABLED) {
-                        auto px4_mode = Telemetryutil::px4_mode_from_custom_mode(custom_mode);
-                       set_flight_mode(px4_mode);
-                    }
-                     set_mav_type("PX4?");
+        switch (autopilot) {
+        case MAV_AUTOPILOT_PX4: {
+            if (heartbeat.base_mode & MAV_MODE_FLAG_CUSTOM_MODE_ENABLED) {
+                auto px4_mode = Telemetryutil::px4_mode_from_custom_mode(custom_mode);
+                set_flight_mode(px4_mode);
+            }
+            set_mav_type("PX4?");
+            break;
+        }
+        case MAV_AUTOPILOT_GENERIC:
+        case MAV_AUTOPILOT_ARDUPILOTMEGA: {
+            if (heartbeat.base_mode & MAV_MODE_FLAG_CUSTOM_MODE_ENABLED) {
+                auto uav_type = heartbeat.type;
+                switch (uav_type) {
+                case MAV_TYPE_GENERIC: {
                     break;
                 }
-                case MAV_AUTOPILOT_GENERIC:
-                case MAV_AUTOPILOT_ARDUPILOTMEGA: {
-                    if (heartbeat.base_mode & MAV_MODE_FLAG_CUSTOM_MODE_ENABLED) {
-                        auto uav_type = heartbeat.type;
-                        switch (uav_type) {
-                            case MAV_TYPE_GENERIC: {
-                                break;
-                            }
-                            case MAV_TYPE_FIXED_WING: {
-                                auto plane_mode = Telemetryutil::plane_mode_from_enum((PLANE_MODE)custom_mode);
-                               set_flight_mode(plane_mode);
-                               set_mav_type("ARDUPLANE");
-                                /* autopilot detecton not reliable
+                case MAV_TYPE_FIXED_WING: {
+                    auto plane_mode = Telemetryutil::plane_mode_from_enum((PLANE_MODE)custom_mode);
+                    set_flight_mode(plane_mode);
+                    set_mav_type("ARDUPLANE");
+                    /* autopilot detecton not reliable
                                 if(ap_version>999){
                                    set_mav_type("ARDUPLANE");
                                     //qDebug() << "Mavlink Mav Type= ARDUPLANE";
@@ -138,18 +138,18 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
                                    set_mav_type("UKNOWN PLANE");
                                 }
                                 */
-                                break;
-                            }
-                            case MAV_TYPE_GROUND_ROVER: {
-                                auto rover_mode = Telemetryutil::rover_mode_from_enum((ROVER_MODE)custom_mode);
-                               set_flight_mode(rover_mode);
-                                break;
-                            }
-                            case MAV_TYPE_QUADROTOR: {
-                                auto copter_mode = Telemetryutil::copter_mode_from_enum((COPTER_MODE)custom_mode);
-                               set_flight_mode(copter_mode);
-                               set_mav_type("ARDUCOPTER");
-                                /* autopilot detection not reliable
+                    break;
+                }
+                case MAV_TYPE_GROUND_ROVER: {
+                    auto rover_mode = Telemetryutil::rover_mode_from_enum((ROVER_MODE)custom_mode);
+                    set_flight_mode(rover_mode);
+                    break;
+                }
+                case MAV_TYPE_QUADROTOR: {
+                    auto copter_mode = Telemetryutil::copter_mode_from_enum((COPTER_MODE)custom_mode);
+                    set_flight_mode(copter_mode);
+                    set_mav_type("ARDUCOPTER");
+                    /* autopilot detection not reliable
                                 if(ap_version>999){
                                    set_mav_type("ARDUCOPTER");
                                     //qDebug() << "Mavlink Mav Type= ARDUCOPTER";
@@ -158,71 +158,107 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
                                    set_mav_type("UNKNOWN COPTER");
                                 }
                                 */
-                                break;
-                            }
-                            case MAV_TYPE_SUBMARINE: {
-                                auto sub_mode = Telemetryutil::sub_mode_from_enum((SUB_MODE)custom_mode);
-                               set_flight_mode(sub_mode);
-                                break;
-                            }
-                            case MAV_TYPE_ANTENNA_TRACKER: {
-                                auto tracker_mode = Telemetryutil::tracker_mode_from_enum((TRACKER_MODE)custom_mode);
-                                //FCMavlinkSystem::instance()->set_tracker_mode(tracker_mode);
-                                break;
-                            }
-                            default: {
-                                // do nothing
-                            }
-                        }
-                    }
+                    break;
+                }
+                case MAV_TYPE_HELICOPTER: {
+                    auto copter_mode = Telemetryutil::copter_mode_from_enum((COPTER_MODE)custom_mode);
+                    set_flight_mode(copter_mode);
+                    set_mav_type("ARDUCOPTER");
+                    break;
+                }
+                case MAV_TYPE_HEXAROTOR: {
+                    auto copter_mode = Telemetryutil::copter_mode_from_enum((COPTER_MODE)custom_mode);
+                    set_flight_mode(copter_mode);
+                    set_mav_type("ARDUCOPTER");
+                    break;
+                }
+                case MAV_TYPE_OCTOROTOR: {
+                    auto copter_mode = Telemetryutil::copter_mode_from_enum((COPTER_MODE)custom_mode);
+                    set_flight_mode(copter_mode);
+                    set_mav_type("ARDUCOPTER");
+                    break;
+                }
+                case MAV_TYPE_TRICOPTER: {
+                    auto copter_mode = Telemetryutil::copter_mode_from_enum((COPTER_MODE)custom_mode);
+                    set_flight_mode(copter_mode);
+                    set_mav_type("ARDUCOPTER");
+                    break;
+                }
+                case MAV_TYPE_DECAROTOR: {
+                    auto copter_mode = Telemetryutil::copter_mode_from_enum((COPTER_MODE)custom_mode);
+                    set_flight_mode(copter_mode);
+                    set_mav_type("ARDUCOPTER");
+                    break;
+                }
+                case MAV_TYPE_DODECAROTOR: {
+                    auto copter_mode = Telemetryutil::copter_mode_from_enum((COPTER_MODE)custom_mode);
+                    set_flight_mode(copter_mode);
+                    set_mav_type("ARDUCOPTER");
+                    break;
+                }
+                case MAV_TYPE_SUBMARINE: {
+                    auto sub_mode = Telemetryutil::sub_mode_from_enum((SUB_MODE)custom_mode);
+                    set_flight_mode(sub_mode);
+                    break;
+                }
+                case MAV_TYPE_ANTENNA_TRACKER: {
+                    auto tracker_mode = Telemetryutil::tracker_mode_from_enum((TRACKER_MODE)custom_mode);
+                    //FCMavlinkSystem::instance()->set_tracker_mode(tracker_mode);
                     break;
                 }
                 default: {
-                    // this returns to prevent heartbeats from devices other than an autopilot from setting
-                    // the armed/disarmed flag or resetting the last heartbeat timestamp
-                    qDebug()<<"Weird heartbeat";
+                    // do nothing
+                }
                 }
             }
-            //MAV_STATE state = (MAV_STATE)heartbeat.system_status;
-            MAV_MODE_FLAG mode = (MAV_MODE_FLAG)heartbeat.base_mode;
-            if (mode & MAV_MODE_FLAG_SAFETY_ARMED) {
-                // armed
-               set_armed(true);
-            } else {
-               set_armed(false);
-            }
             break;
         }
-        case MAVLINK_MSG_ID_AUTOPILOT_VERSION: {
-            mavlink_autopilot_version_t autopilot_version;
-            mavlink_msg_autopilot_version_decode(&msg, &autopilot_version);
-            //ap_version = autopilot_version.flight_sw_version;
-            auto ap_board_version = autopilot_version.board_version;
-            auto ap_os_version = autopilot_version.os_sw_version;
-            auto ap_product_id = autopilot_version.product_id;
-            auto ap_uid = autopilot_version.uid;
-            //qDebug() << "MAVLINK AUTOPILOT VERSION=" <<  ap_version;
-            qDebug() << "MAVLINK AUTOPILOT board_version=" <<  ap_board_version;
-            qDebug() << "MAVLINK AUTOPILOT os_version=" <<  ap_os_version;
-            qDebug() << "MAVLINK AUTOPILOT product_id=" <<  ap_product_id;
-            qDebug() << "MAVLINK AUTOPILOT uid=" <<  ap_uid;
-            break;
+        default: {
+            // this returns to prevent heartbeats from devices other than an autopilot from setting
+            // the armed/disarmed flag or resetting the last heartbeat timestamp
+            qDebug()<<"Weird heartbeat";
         }
-        case MAVLINK_MSG_ID_SYS_STATUS: {
-            mavlink_sys_status_t sys_status;
-            mavlink_msg_sys_status_decode(&msg, &sys_status);
-            const auto battery_voltage_v = (double)sys_status.voltage_battery / 1000.0;
-            set_battery_voltage_volt(battery_voltage_v);
-            set_battery_current_ampere((double)sys_status.current_battery/100.0);
-            // TODO XX
-            break;
         }
+        //MAV_STATE state = (MAV_STATE)heartbeat.system_status;
+        MAV_MODE_FLAG mode = (MAV_MODE_FLAG)heartbeat.base_mode;
+        if (mode & MAV_MODE_FLAG_SAFETY_ARMED) {
+            // armed
+            set_armed(true);
+        } else {
+            set_armed(false);
+        }
+        break;
+    }
+    case MAVLINK_MSG_ID_AUTOPILOT_VERSION: {
+        mavlink_autopilot_version_t autopilot_version;
+        mavlink_msg_autopilot_version_decode(&msg, &autopilot_version);
+        //ap_version = autopilot_version.flight_sw_version;
+        auto ap_board_version = autopilot_version.board_version;
+        auto ap_os_version = autopilot_version.os_sw_version;
+        auto ap_product_id = autopilot_version.product_id;
+        auto ap_uid = autopilot_version.uid;
+        //qDebug() << "MAVLINK AUTOPILOT VERSION=" <<  ap_version;
+        qDebug() << "MAVLINK AUTOPILOT board_version=" <<  ap_board_version;
+        qDebug() << "MAVLINK AUTOPILOT os_version=" <<  ap_os_version;
+        qDebug() << "MAVLINK AUTOPILOT product_id=" <<  ap_product_id;
+        qDebug() << "MAVLINK AUTOPILOT uid=" <<  ap_uid;
+        break;
+    }
+    case MAVLINK_MSG_ID_SYS_STATUS: {
+        mavlink_sys_status_t sys_status;
+        mavlink_msg_sys_status_decode(&msg, &sys_status);
+        const auto battery_voltage_v = (double)sys_status.voltage_battery / 1000.0;
+        set_battery_voltage_volt(battery_voltage_v);
+        set_battery_current_ampere((double)sys_status.current_battery/100.0);
+        // TODO XX
+        break;
+    }
 
-        case MAVLINK_MSG_ID_SYSTEM_TIME:{
-            mavlink_system_time_t sys_time;
-            mavlink_msg_system_time_decode(&msg, &sys_time);
-            uint32_t boot_time = sys_time.time_boot_ms;
-            /*if (boot_time < m_last_boot || m_last_boot == 0) {
+    case MAVLINK_MSG_ID_SYSTEM_TIME:{
+        mavlink_system_time_t sys_time;
+        mavlink_msg_system_time_decode(&msg, &sys_time);
+        uint32_t boot_time = sys_time.time_boot_ms;
+        /*if (boot_time < m_last_boot || m_last_boot == 0) {
                 m_last_boot = boot_time;
                 qDebug() << "setDataStreamRate and requestAutopilotInfo called";
                 setDataStreamRate(MAV_DATA_STREAM_EXTENDED_STATUS, 2);
@@ -233,99 +269,99 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
                 setDataStreamRate(MAV_DATA_STREAM_RAW_SENSORS, 2);
                 setDataStreamRate(MAV_DATA_STREAM_RC_CHANNELS, 2);
             }*/
-            break;
-        }
-        case MAVLINK_MSG_ID_PARAM_VALUE:{
-            // handled by params mavsdk
-            break;
-        }
-        case MAVLINK_MSG_ID_GPS_RAW_INT:{
-            mavlink_gps_raw_int_t gps_status;
-            mavlink_msg_gps_raw_int_decode(&msg, &gps_status);
-            set_satellites_visible(gps_status.satellites_visible);
-            set_gps_hdop(gps_status.eph / 100.0);
-            set_gps_fix_type((unsigned int)gps_status.fix_type);
-            break;
-        }
-        case MAVLINK_MSG_ID_GPS_STATUS: {
-            break;
-        }
-        case MAVLINK_MSG_ID_SCALED_IMU:{
-            break;
-        }
-        case MAVLINK_MSG_ID_RAW_IMU:{
-            mavlink_raw_imu_t raw_imu;
-            mavlink_msg_raw_imu_decode(&msg, &raw_imu);
-            set_imu_temp_degree((int)raw_imu.temperature/100);
-            break;
-        }
-        case MAVLINK_MSG_ID_SCALED_PRESSURE:{
-            mavlink_scaled_pressure_t scaled_pressure;
-            mavlink_msg_scaled_pressure_decode(&msg, &scaled_pressure);
-            set_preasure_sensor_temperature_degree((int)scaled_pressure.temperature/100);
-            //qDebug() << "Temp:" <<  scaled_pressure.temperature;
-            break;
-        }
-        case MAVLINK_MSG_ID_ATTITUDE:{
-            mavlink_attitude_t attitude;
-            mavlink_msg_attitude_decode (&msg, &attitude);
-            // handled by mavsdk attitude_euler callback
-            m_n_messages_update_rate_mavlink_message_attitude++;
-            break;
-        }
-        case MAVLINK_MSG_ID_LOCAL_POSITION_NED:{
-            break;
-        }
-        case MAVLINK_MSG_ID_GLOBAL_POSITION_INT: {
-            mavlink_global_position_int_t global_position;
-            mavlink_msg_global_position_int_decode(&msg, &global_position);
-            set_lat((double)global_position.lat / 10000000.0);
-            set_lon((double)global_position.lon / 10000000.0);
-            set_boot_time(global_position.time_boot_ms);
-            set_alt_rel(global_position.relative_alt/1000.0);
-            // qDebug() << "Altitude relative " << alt_rel;
-            set_alt_msl(global_position.alt/1000.0);
-            set_vx(global_position.vx/100.0);
-            set_vy(global_position.vy/100.0);
-            set_vz(global_position.vz/100.0);
-            calculate_home_distance();
-            calculate_home_course();
-            updateFlightDistance();
-            updateVehicleAngles();
-            updateWind();
-            break;
-        }
-        case MAVLINK_MSG_ID_RC_CHANNELS_RAW:{
-            //qDebug()<<"Got message RC channels raw";
-            mavlink_rc_channels_raw_t rc_channels_raw;
-            mavlink_msg_rc_channels_raw_decode(&msg, &rc_channels_raw);
-            //const auto rssi = static_cast<int>(static_cast<double>(rc_channels_raw.rssi) / 255.0 * 100.0);
-            //set_rc_rssi(rssi);
-            break;
-        }
-        case MAVLINK_MSG_ID_SERVO_OUTPUT_RAW:{
-            break;
-        }
-        case MAVLINK_MSG_ID_MISSION_CURRENT:{
-            break;
-        }
-        case MAVLINK_MSG_ID_MISSION_COUNT:{
-            break;
-        }
-        case MAVLINK_MSG_ID_MISSION_ITEM_INT:{
-            break;
-        }
-        case MAVLINK_MSG_ID_GPS_GLOBAL_ORIGIN:{
-            break;
-        }
-        case MAVLINK_MSG_ID_NAV_CONTROLLER_OUTPUT:{
-            break;
-        }
-        case MAVLINK_MSG_ID_RC_CHANNELS:{
-            mavlink_rc_channels_t rc_channels;
-            mavlink_msg_rc_channels_decode(&msg, &rc_channels);
-            // TODO
-           /*qDebug() << "RC: " << rc_channels.chan1_raw
+        break;
+    }
+    case MAVLINK_MSG_ID_PARAM_VALUE:{
+        // handled by params mavsdk
+        break;
+    }
+    case MAVLINK_MSG_ID_GPS_RAW_INT:{
+        mavlink_gps_raw_int_t gps_status;
+        mavlink_msg_gps_raw_int_decode(&msg, &gps_status);
+        set_satellites_visible(gps_status.satellites_visible);
+        set_gps_hdop(gps_status.eph / 100.0);
+        set_gps_fix_type((unsigned int)gps_status.fix_type);
+        break;
+    }
+    case MAVLINK_MSG_ID_GPS_STATUS: {
+        break;
+    }
+    case MAVLINK_MSG_ID_SCALED_IMU:{
+        break;
+    }
+    case MAVLINK_MSG_ID_RAW_IMU:{
+        mavlink_raw_imu_t raw_imu;
+        mavlink_msg_raw_imu_decode(&msg, &raw_imu);
+        set_imu_temp_degree((int)raw_imu.temperature/100);
+        break;
+    }
+    case MAVLINK_MSG_ID_SCALED_PRESSURE:{
+        mavlink_scaled_pressure_t scaled_pressure;
+        mavlink_msg_scaled_pressure_decode(&msg, &scaled_pressure);
+        set_preasure_sensor_temperature_degree((int)scaled_pressure.temperature/100);
+        //qDebug() << "Temp:" <<  scaled_pressure.temperature;
+        break;
+    }
+    case MAVLINK_MSG_ID_ATTITUDE:{
+        mavlink_attitude_t attitude;
+        mavlink_msg_attitude_decode (&msg, &attitude);
+        // handled by mavsdk attitude_euler callback
+        m_n_messages_update_rate_mavlink_message_attitude++;
+        break;
+    }
+    case MAVLINK_MSG_ID_LOCAL_POSITION_NED:{
+        break;
+    }
+    case MAVLINK_MSG_ID_GLOBAL_POSITION_INT: {
+        mavlink_global_position_int_t global_position;
+        mavlink_msg_global_position_int_decode(&msg, &global_position);
+        set_lat((double)global_position.lat / 10000000.0);
+        set_lon((double)global_position.lon / 10000000.0);
+        set_boot_time(global_position.time_boot_ms);
+        set_alt_rel(global_position.relative_alt/1000.0);
+        // qDebug() << "Altitude relative " << alt_rel;
+        set_alt_msl(global_position.alt/1000.0);
+        set_vx(global_position.vx/100.0);
+        set_vy(global_position.vy/100.0);
+        set_vz(global_position.vz/100.0);
+        calculate_home_distance();
+        calculate_home_course();
+        updateFlightDistance();
+        updateVehicleAngles();
+        updateWind();
+        break;
+    }
+    case MAVLINK_MSG_ID_RC_CHANNELS_RAW:{
+        //qDebug()<<"Got message RC channels raw";
+        mavlink_rc_channels_raw_t rc_channels_raw;
+        mavlink_msg_rc_channels_raw_decode(&msg, &rc_channels_raw);
+        //const auto rssi = static_cast<int>(static_cast<double>(rc_channels_raw.rssi) / 255.0 * 100.0);
+        //set_rc_rssi(rssi);
+        break;
+    }
+    case MAVLINK_MSG_ID_SERVO_OUTPUT_RAW:{
+        break;
+    }
+    case MAVLINK_MSG_ID_MISSION_CURRENT:{
+        break;
+    }
+    case MAVLINK_MSG_ID_MISSION_COUNT:{
+        break;
+    }
+    case MAVLINK_MSG_ID_MISSION_ITEM_INT:{
+        break;
+    }
+    case MAVLINK_MSG_ID_GPS_GLOBAL_ORIGIN:{
+        break;
+    }
+    case MAVLINK_MSG_ID_NAV_CONTROLLER_OUTPUT:{
+        break;
+    }
+    case MAVLINK_MSG_ID_RC_CHANNELS:{
+        mavlink_rc_channels_t rc_channels;
+        mavlink_msg_rc_channels_decode(&msg, &rc_channels);
+        // TODO
+        /*qDebug() << "RC: " << rc_channels.chan1_raw
                                  << rc_channels.chan2_raw
                                  << rc_channels.chan3_raw
                                  << rc_channels.chan4_raw
@@ -335,160 +371,160 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
                                  << rc_channels.chan8_raw
                                  << rc_channels.chan9_raw
                                  << rc_channels.chan10_raw;*/
-            break;
-        }
-        case MAVLINK_MSG_ID_VFR_HUD:{
-            mavlink_vfr_hud_t vfr_hud;
-            mavlink_msg_vfr_hud_decode (&msg, &vfr_hud);
-            set_throttle(vfr_hud.throttle);
-            auto airspeed = vfr_hud.airspeed*3.6;
-            set_airspeed(airspeed);
-            auto speed = vfr_hud.groundspeed*3.6;
-            set_speed(speed);
-            // qDebug() << "Speed- ground " << speed;
-            auto vsi = vfr_hud.climb;
-            set_vsi(vsi);
-            // qDebug() << "VSI- " << vsi;
-            //qint64 current_timestamp = QDateTime::currentMSecsSinceEpoch();
-            //last_vfr_timestamp = current_timestamp;
-            break;
-        }
-        case MAVLINK_MSG_ID_HIGH_LATENCY2:{
-            mavlink_high_latency2_t high_latency2;
-            mavlink_msg_high_latency2_decode(&msg, &high_latency2);
-            auto airspeed_temp = high_latency2.temperature_air;
-            set_airspeed_sensor_temperature_degree(airspeed_temp);
-            //qDebug() << "Airspeed Sensor Temp- " << airspeed_temp;
-            break;
-        }
-        case MAVLINK_MSG_ID_TIMESYNC:{
-            break;
-        }
-        case MAVLINK_MSG_ID_POWER_STATUS:{
-            break;
-        }
-        case MAVLINK_MSG_ID_TERRAIN_REPORT:{
-            break;
-        }
-        case MAVLINK_MSG_ID_WIND:{
-            //slight change to naming convention due to prexisting "wind" that is calculated by us..
-            mavlink_wind_t mav_wind;
-            mavlink_msg_wind_decode(&msg, &mav_wind);
-            set_mav_wind_direction(mav_wind.direction);
-            set_mav_wind_speed(mav_wind.speed);
-            /*qDebug() << "Windmavdir: " << mav_wind.direction;
+        break;
+    }
+    case MAVLINK_MSG_ID_VFR_HUD:{
+        mavlink_vfr_hud_t vfr_hud;
+        mavlink_msg_vfr_hud_decode (&msg, &vfr_hud);
+        set_throttle(vfr_hud.throttle);
+        auto airspeed = vfr_hud.airspeed*3.6;
+        set_airspeed(airspeed);
+        auto speed = vfr_hud.groundspeed*3.6;
+        set_speed(speed);
+        // qDebug() << "Speed- ground " << speed;
+        auto vsi = vfr_hud.climb;
+        set_vsi(vsi);
+        // qDebug() << "VSI- " << vsi;
+        //qint64 current_timestamp = QDateTime::currentMSecsSinceEpoch();
+        //last_vfr_timestamp = current_timestamp;
+        break;
+    }
+    case MAVLINK_MSG_ID_HIGH_LATENCY2:{
+        mavlink_high_latency2_t high_latency2;
+        mavlink_msg_high_latency2_decode(&msg, &high_latency2);
+        auto airspeed_temp = high_latency2.temperature_air;
+        set_airspeed_sensor_temperature_degree(airspeed_temp);
+        //qDebug() << "Airspeed Sensor Temp- " << airspeed_temp;
+        break;
+    }
+    case MAVLINK_MSG_ID_TIMESYNC:{
+        break;
+    }
+    case MAVLINK_MSG_ID_POWER_STATUS:{
+        break;
+    }
+    case MAVLINK_MSG_ID_TERRAIN_REPORT:{
+        break;
+    }
+    case MAVLINK_MSG_ID_WIND:{
+        //slight change to naming convention due to prexisting "wind" that is calculated by us..
+        mavlink_wind_t mav_wind;
+        mavlink_msg_wind_decode(&msg, &mav_wind);
+        set_mav_wind_direction(mav_wind.direction);
+        set_mav_wind_speed(mav_wind.speed);
+        /*qDebug() << "Windmavdir: " << mav_wind.direction;
             qDebug() << "Windmavspd: " << mav_wind.speed;*/
-            break;
-        }
-        case MAVLINK_MSG_ID_BATTERY_STATUS: {
-            mavlink_battery_status_t battery_status;
-            mavlink_msg_battery_status_decode(&msg, &battery_status);
-            set_battery_battery_consumed_mah(battery_status.current_consumed);
-            set_battery_percent(battery_status.battery_remaining);
-            const QString fc_battery_gauge_glyph = Telemetryutil::battery_gauge_glyph_from_percentage(battery_status.battery_remaining);
-            set_battery_percent_gauge(fc_battery_gauge_glyph);
-            // we always use the first cell for the "single volt" value. However, not sure how many people have the HW on their air
-            // battery to measure the voltage of a single cell (which is what this would be for)
-            set_battery_voltage_single_cell((double)battery_status.voltages[0]/1000.0);
-            break;
-        }
-        case MAVLINK_MSG_ID_SENSOR_OFFSETS: {
-            break;
-        }
-        case MAVLINK_MSG_ID_MEMINFO: {
-            break;
-        }
-        case MAVLINK_MSG_ID_MOUNT_STATUS: {
-            break;
-        }
-        case MAVLINK_MSG_ID_AHRS: {
-            break;
-        }
-        case MAVLINK_MSG_ID_HWSTATUS: {
-            break;
-        }
-        case MAVLINK_MSG_ID_AHRS2: {
-            break;
-        }
-        case MAVLINK_MSG_ID_AHRS3: {
-            break;
-        }
-        case MAVLINK_MSG_ID_MAG_CAL_REPORT: {
-            break;
-        }
-        case MAVLINK_MSG_ID_EKF_STATUS_REPORT: {
-            break;
-        }
-        case MAVLINK_MSG_ID_AOA_SSA: {
+        break;
+    }
+    case MAVLINK_MSG_ID_BATTERY_STATUS: {
+        mavlink_battery_status_t battery_status;
+        mavlink_msg_battery_status_decode(&msg, &battery_status);
+        set_battery_battery_consumed_mah(battery_status.current_consumed);
+        set_battery_percent(battery_status.battery_remaining);
+        const QString fc_battery_gauge_glyph = Telemetryutil::battery_gauge_glyph_from_percentage(battery_status.battery_remaining);
+        set_battery_percent_gauge(fc_battery_gauge_glyph);
+        // we always use the first cell for the "single volt" value. However, not sure how many people have the HW on their air
+        // battery to measure the voltage of a single cell (which is what this would be for)
+        set_battery_voltage_single_cell((double)battery_status.voltages[0]/1000.0);
+        break;
+    }
+    case MAVLINK_MSG_ID_SENSOR_OFFSETS: {
+        break;
+    }
+    case MAVLINK_MSG_ID_MEMINFO: {
+        break;
+    }
+    case MAVLINK_MSG_ID_MOUNT_STATUS: {
+        break;
+    }
+    case MAVLINK_MSG_ID_AHRS: {
+        break;
+    }
+    case MAVLINK_MSG_ID_HWSTATUS: {
+        break;
+    }
+    case MAVLINK_MSG_ID_AHRS2: {
+        break;
+    }
+    case MAVLINK_MSG_ID_AHRS3: {
+        break;
+    }
+    case MAVLINK_MSG_ID_MAG_CAL_REPORT: {
+        break;
+    }
+    case MAVLINK_MSG_ID_EKF_STATUS_REPORT: {
+        break;
+    }
+    case MAVLINK_MSG_ID_AOA_SSA: {
         mavlink_aoa_ssa_t aoa;
         mavlink_msg_aoa_ssa_decode(&msg, &aoa);
         set_aoa(aoa.AOA);
         //qDebug() << "AOA- " << aoa.AOA;
-            break;
-        }
-        case MAVLINK_MSG_ID_VIBRATION:{
-            mavlink_vibration_t vibration;
-            mavlink_msg_vibration_decode (&msg, &vibration);
-           set_vibration_x(vibration.vibration_x);
-           set_vibration_y(vibration.vibration_y);
-           set_vibration_z(vibration.vibration_z);
-           set_clipping_x(vibration.clipping_0);
-           set_clipping_y(vibration.clipping_1);
-           set_clipping_z(vibration.clipping_2);
-                break;
-            }
-        case MAVLINK_MSG_ID_SCALED_IMU2:{
-            break;
-        }
-        case MAVLINK_MSG_ID_SCALED_IMU3:{
-            break;
-        }
-        case MAVLINK_MSG_ID_SIMSTATE:{
-            break;
-        }
-        case MAVLINK_MSG_ID_POSITION_TARGET_GLOBAL_INT:{
-            break;
-        }
-        case MAVLINK_MSG_ID_SCALED_PRESSURE2:{
-            break;
-        }
-        case MAVLINK_MSG_ID_HOME_POSITION:{
-            mavlink_home_position_t home_position;
-            mavlink_msg_home_position_decode(&msg, &home_position);
-            set_homelat((double)home_position.latitude / 10000000.0);
-            set_homelon((double)home_position.longitude / 10000000.0);
-            //LocalMessage::instance()->showMessage("Home Position set by Telemetry", 7);
-            break;
-        }
+        break;
+    }
+    case MAVLINK_MSG_ID_VIBRATION:{
+        mavlink_vibration_t vibration;
+        mavlink_msg_vibration_decode (&msg, &vibration);
+        set_vibration_x(vibration.vibration_x);
+        set_vibration_y(vibration.vibration_y);
+        set_vibration_z(vibration.vibration_z);
+        set_clipping_x(vibration.clipping_0);
+        set_clipping_y(vibration.clipping_1);
+        set_clipping_z(vibration.clipping_2);
+        break;
+    }
+    case MAVLINK_MSG_ID_SCALED_IMU2:{
+        break;
+    }
+    case MAVLINK_MSG_ID_SCALED_IMU3:{
+        break;
+    }
+    case MAVLINK_MSG_ID_SIMSTATE:{
+        break;
+    }
+    case MAVLINK_MSG_ID_POSITION_TARGET_GLOBAL_INT:{
+        break;
+    }
+    case MAVLINK_MSG_ID_SCALED_PRESSURE2:{
+        break;
+    }
+    case MAVLINK_MSG_ID_HOME_POSITION:{
+        mavlink_home_position_t home_position;
+        mavlink_msg_home_position_decode(&msg, &home_position);
+        set_homelat((double)home_position.latitude / 10000000.0);
+        set_homelon((double)home_position.longitude / 10000000.0);
+        //LocalMessage::instance()->showMessage("Home Position set by Telemetry", 7);
+        break;
+    }
     case MAVLINK_MSG_ID_STATUSTEXT:{
-         mavlink_statustext_t parsedMsg;
-         mavlink_msg_statustext_decode(&msg,&parsedMsg);
-         auto tmp=Telemetryutil::statustext_convert(parsedMsg);
-         LogMessagesModel::instance().addLogMessage("FC",tmp.message.c_str(),tmp.level);
-         return true;
+        mavlink_statustext_t parsedMsg;
+        mavlink_msg_statustext_decode(&msg,&parsedMsg);
+        auto tmp=Telemetryutil::statustext_convert(parsedMsg);
+        LogMessagesModel::instance().addLogMessage("FC",tmp.message.c_str(),tmp.level);
+        return true;
     }break;
     case MAVLINK_MSG_ID_ESC_TELEMETRY_1_TO_4: {
-            mavlink_esc_telemetry_1_to_4_t esc_telemetry;
-            mavlink_msg_esc_telemetry_1_to_4_decode(&msg, &esc_telemetry);
+        mavlink_esc_telemetry_1_to_4_t esc_telemetry;
+        mavlink_msg_esc_telemetry_1_to_4_decode(&msg, &esc_telemetry);
 
-            set_esc_temp((int)esc_telemetry.temperature[0]);
-            break;
-        }
-        case MAVLINK_MSG_ID_ADSB_VEHICLE: {
-            break;
-        }
+        set_esc_temp((int)esc_telemetry.temperature[0]);
+        break;
+    }
+    case MAVLINK_MSG_ID_ADSB_VEHICLE: {
+        break;
+    }
     case MAVLINK_MSG_ID_EXTENDED_SYS_STATE:{
         break;
     }
-    // Commands and Params are done by mavsdk
+        // Commands and Params are done by mavsdk
     case MAVLINK_MSG_ID_PARAM_EXT_ACK:
     case MAVLINK_MSG_ID_PARAM_EXT_VALUE:
     case MAVLINK_MSG_ID_COMMAND_ACK:
-    //TODO who sends out pings to us ?
+        //TODO who sends out pings to us ?
     case MAVLINK_MSG_ID_PING:
-    break;
+        break;
     case MAVLINK_MSG_ID_AIRSPEED_AUTOCAL:
-    break;
+        break;
     default: {
         //printf("MavlinkTelemetry received unmatched message with ID %d, sequence: %d from component %d of system %d\n", msg.msgid, msg.seq, msg.compid, msg.sysid);
         qDebug()<<"MavlinkTelemetry received unmatched message with ID "<<msg.msgid
@@ -863,9 +899,9 @@ void FCMavlinkSystem::arm_fc_async(bool arm)
             }
         };
         if(arm){
-             _action->arm_async(cb);
+            _action->arm_async(cb);
         }else{
-             _action->disarm_async(cb);
+            _action->disarm_async(cb);
         }
     }else{
         qDebug()<<"No action set";
@@ -916,7 +952,7 @@ void FCMavlinkSystem::send_message_hud_connection(bool connected)
 void FCMavlinkSystem::flight_mode_cmd(long cmd_msg) {
     if (_pass_thru){
         mavsdk::MavlinkPassthrough::Result res{};
-/*
+        /*
         qDebug() << "flight_mode_cmd CMD:" << cmd_msg;
         qDebug() << "flight_mode_cmd our sysid:" << _pass_thru->get_our_sysid();
         qDebug() << "flight_mode_cmd our comp id:" << _pass_thru->get_our_compid();
