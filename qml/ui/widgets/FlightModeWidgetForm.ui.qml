@@ -278,6 +278,13 @@ BaseWidget {
         PLANE_MODE_LOITER=12,
         PLANE_MODE_TAKEOFF=13
 
+VTOL
+00017     17 : 'QSTABILIZE',
+00018     18 : 'QHOVER',
+00019     19 : 'QLOITER',
+00020     20 : 'QLAND',
+00021     21 : 'QRTL',
+
        COPTER_MODE_STABILIZE=0
        COPTER_MODE_ACRO=1
        COPTER_MODE_ALT_HOLD=2
@@ -314,7 +321,6 @@ BaseWidget {
             }
 
             ConfirmSlider {
-
                 visible: _fcMavlinkSystem.supports_basic_commands
 
                 text_off: qsTr("RTL")
@@ -322,15 +328,12 @@ BaseWidget {
                     if (_fcMavlinkSystem.mav_type == "ARDUCOPTER"){
                         return 6;
                     }
-                    else {
+                    if (_fcMavlinkSystem.mav_type == "ARDUPLANE" || "VTOL"){
                         return 11;
                     }
                 }
-
                 onCheckedChanged: {
                     if (checked == true) {
-
-                        //double check.... not really needed
                         //_fcMavlinkSystem.set_Requested_Flight_Mode(msg_id);
                         _fcMavlinkSystem.flight_mode_cmd(msg_id);
                         console.log("FLIGHT MODE MSD ID=");
@@ -339,7 +342,6 @@ BaseWidget {
             }
 
             ConfirmSlider {
-
                 visible: _fcMavlinkSystem.supports_basic_commands
 
                 text_off: qsTr("STABILIZE")
@@ -347,23 +349,18 @@ BaseWidget {
                     if (_fcMavlinkSystem.mav_type == "ARDUCOPTER"){
                         return 0;
                     }
-                    else {
+                    if (_fcMavlinkSystem.mav_type == "ARDUPLANE" || "VTOL"){
                         return 2;
                     }
                 }
-
                 onCheckedChanged: {
                     if (checked == true) {
-
-                        //double check.... not really needed
                         _fcMavlinkSystem.flight_mode_cmd(msg_id);
-                        //console.log("selected");
                     }
                 }
             }
 
             ConfirmSlider {
-
                 visible: _fcMavlinkSystem.supports_basic_commands
 
                 text_off: qsTr("LOITER")
@@ -371,23 +368,38 @@ BaseWidget {
                     if (_fcMavlinkSystem.mav_type == "ARDUCOPTER"){
                         return 5;
                     }
-                    else {
+                    if (_fcMavlinkSystem.mav_type == "ARDUPLANE" || "VTOL"){
                         return 12;
                     }
                 }
 
                 onCheckedChanged: {
                     if (checked == true) {
-
-                        //double check.... not really needed
                         _fcMavlinkSystem.flight_mode_cmd(msg_id);
-                        //console.log("selected");
                     }
                 }
             }
 
             ConfirmSlider {
+                visible: _fcMavlinkSystem.supports_basic_commands
 
+                text_off: qsTr("CIRCLE")
+                msg_id: {
+                    if (_fcMavlinkSystem.mav_type == "ARDUCOPTER"){
+                        return 7;
+                    }
+                    if (_fcMavlinkSystem.mav_type == "ARDUPLANE" || "VTOL"){
+                        return 1;
+                    }
+                }
+                onCheckedChanged: {
+                    if (checked == true) {
+                        _fcMavlinkSystem.flight_mode_cmd(msg_id);
+                    }
+                }
+            }
+
+            ConfirmSlider {
                 visible: _fcMavlinkSystem.supports_basic_commands
 
                 text_off: qsTr("AUTO")
@@ -395,23 +407,19 @@ BaseWidget {
                     if (_fcMavlinkSystem.mav_type == "ARDUCOPTER"){
                         return 3;
                     }
-                    else {
+                    if (_fcMavlinkSystem.mav_type == "ARDUPLANE" || "VTOL"){
                         return 10;
                     }
                 }
 
                 onCheckedChanged: {
                     if (checked == true) {
-
-                        //double check.... not really needed
                         _fcMavlinkSystem.flight_mode_cmd(msg_id);
-                        //console.log("selected");
                     }
                 }
             }
 
             ConfirmSlider {
-
                 visible: _fcMavlinkSystem.supports_basic_commands
 
                 text_off: qsTr("AUTOTUNE")
@@ -419,59 +427,141 @@ BaseWidget {
                     if (_fcMavlinkSystem.mav_type == "ARDUCOPTER"){
                         return 15;
                     }
-                    else {
+                    if (_fcMavlinkSystem.mav_type == "ARDUPLANE" || "VTOL"){
                         return 8;
                     }
                 }
 
                 onCheckedChanged: {
                     if (checked == true) {
-
-                        //double check.... not really needed
                         _fcMavlinkSystem.flight_mode_cmd(msg_id);
-                        //console.log("selected");
                     }
                 }
             }
 
-            //-----------------------Split from plane to copter
+  //-----------------------DIFFERNT from plane to copter to vtol
 
             ConfirmSlider {
-
-                visible: _fcMavlinkSystem.mav_type == "ARDUPLANE"
-
+                visible: {
+                    if (_fcMavlinkSystem.mav_type == "ARDUPLANE" || "VTOL"){
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
                 text_off: qsTr("MANUAL")
                 msg_id: 0
 
                 onCheckedChanged: {
                     if (checked == true) {
-
-                        //double check.... not really needed
                         _fcMavlinkSystem.flight_mode_cmd(msg_id);
-                        //console.log("selected");
                     }
                 }
             }
 
             ConfirmSlider {
-
-                visible: _fcMavlinkSystem.mav_type == "ARDUPLANE"
-
+                visible: {
+                    if (_fcMavlinkSystem.mav_type == "ARDUPLANE" || "VTOL"){
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
                 text_off: qsTr("FBWA")
                 msg_id: 5
 
                 onCheckedChanged: {
                     if (checked == true) {
-
-                        //double check.... not really needed
                         _fcMavlinkSystem.flight_mode_cmd(msg_id);
-                        //console.log("selected");
                     }
                 }
             }
 
             ConfirmSlider {
+                visible: {
+                    if (_fcMavlinkSystem.mav_type == "ARDUPLANE" || "VTOL"){
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
 
+                text_off: qsTr("FBWB")
+                msg_id: 6
+
+                onCheckedChanged: {
+                    if (checked == true) {
+                        _fcMavlinkSystem.flight_mode_cmd(msg_id);
+                    }
+                }
+            }
+
+            ConfirmSlider {
+                visible: _fcMavlinkSystem.mav_type == "VTOL"
+
+                text_off: qsTr("QSTABILIZE")
+                msg_id: 17
+
+                onCheckedChanged: {
+                    if (checked == true) {
+                        _fcMavlinkSystem.flight_mode_cmd(msg_id);
+                    }
+                }
+            }
+
+            ConfirmSlider {
+                visible: _fcMavlinkSystem.mav_type == "VTOL"
+
+                text_off: qsTr("QHOVER")
+                msg_id: 18
+
+                onCheckedChanged: {
+                    if (checked == true) {
+                        _fcMavlinkSystem.flight_mode_cmd(msg_id);
+                    }
+                }
+            }
+
+            ConfirmSlider {
+                visible: _fcMavlinkSystem.mav_type == "VTOL"
+
+                text_off: qsTr("QLOITER")
+                msg_id: 19
+
+                onCheckedChanged: {
+                    if (checked == true) {
+                        _fcMavlinkSystem.flight_mode_cmd(msg_id);
+                    }
+                }
+            }
+
+            ConfirmSlider {
+                visible: _fcMavlinkSystem.mav_type == "VTOL"
+
+                text_off: qsTr("QLAND")
+                msg_id: 20
+
+                onCheckedChanged: {
+                    if (checked == true) {
+                        _fcMavlinkSystem.flight_mode_cmd(msg_id);
+                    }
+                }
+            }
+
+            ConfirmSlider {
+                visible: _fcMavlinkSystem.mav_type == "VTOL"
+
+                text_off: qsTr("QRTL")
+                msg_id: 21
+
+                onCheckedChanged: {
+                    if (checked == true) {
+                        _fcMavlinkSystem.flight_mode_cmd(msg_id);
+                    }
+                }
+            }
+
+            ConfirmSlider {
                 visible: _fcMavlinkSystem.mav_type == "ARDUCOPTER"
 
                 text_off: qsTr("ALT_HOLD")
@@ -479,15 +569,11 @@ BaseWidget {
 
                 onCheckedChanged: {
                     if (checked == true) {
-
-                        //double check.... not really needed
                         _fcMavlinkSystem.flight_mode_cmd(msg_id);
-                        //console.log("selected");
                     }
                 }
             }
             ConfirmSlider {
-
                 visible: _fcMavlinkSystem.mav_type == "ARDUCOPTER"
 
                 text_off: qsTr("POSHOLD")
@@ -495,15 +581,11 @@ BaseWidget {
 
                 onCheckedChanged: {
                     if (checked == true) {
-
-                        //double check.... not really needed
                         _fcMavlinkSystem.flight_mode_cmd(msg_id);
-                        //console.log("selected");
                     }
                 }
             }
             ConfirmSlider {
-
                 visible: _fcMavlinkSystem.mav_type == "ARDUCOPTER"
 
                 text_off: qsTr("ACRO")
@@ -511,13 +593,10 @@ BaseWidget {
 
                 onCheckedChanged: {
                     if (checked == true) {
-
-                        //double check.... not really needed
                         _fcMavlinkSystem.flight_mode_cmd(msg_id);
-                        //console.log("selected");
                     }
                 }
-            }            
+            }
         }
     }
 
