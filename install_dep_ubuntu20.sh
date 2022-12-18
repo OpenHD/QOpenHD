@@ -4,7 +4,7 @@
 
 # Add our own repository to install a custom QT5.15.4
 curl -1sLf \
-  'https://dl.cloudsmith.io/public/openhd/openhd-2-2-dev/setup.deb.sh' \
+  'https://dl.cloudsmith.io/public/openhd/openhd-2-2-evo/setup.deb.sh' \
   | sudo -E bash
 apt install openhd-qt-x86-focal ruby 
 gem install fpm
