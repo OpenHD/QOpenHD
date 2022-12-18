@@ -68,13 +68,8 @@ void FCMavlinkSystem::set_system(std::shared_ptr<mavsdk::System> system)
     //_mavsdk_telemetry->subscribe_position()
     //_mavsdk_telemetry->subscribe_home()
     //
-    /*auto cb_rate=[this](mavsdk::Telemetry::Result res){
-        std::stringstream ss;
-        ss<<res;
-        qDebug()<<"Set rate async result:"<<ss.str().c_str();
-    };
-    _mavsdk_telemetry->set_rate_attitude_async(60,cb_rate);*/
-    /*std::stringstream ss;
+    /*auto res=_mavsdk_telemetry->set_rate_attitude(60);
+    std::stringstream ss;
     ss<<res;
     qDebug()<<"Set rate result:"<<ss.str().c_str();*/
 }
@@ -199,6 +194,36 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
                     auto copter_mode = Telemetryutil::copter_mode_from_enum((COPTER_MODE)custom_mode);
                     set_flight_mode(copter_mode);
                     set_mav_type("ARDUCOPTER");
+                    break;
+                }
+                case MAV_TYPE_VTOL_FIXEDROTOR: {
+                    auto plane_mode = Telemetryutil::plane_mode_from_enum((PLANE_MODE)custom_mode);
+                    set_flight_mode(plane_mode);
+                    set_mav_type("VTOL");
+                    break;
+                }
+                case MAV_TYPE_VTOL_TAILSITTER: {
+                    auto plane_mode = Telemetryutil::plane_mode_from_enum((PLANE_MODE)custom_mode);
+                    set_flight_mode(plane_mode);
+                    set_mav_type("VTOL");
+                    break;
+                }
+                case MAV_TYPE_VTOL_TILTROTOR: {
+                    auto plane_mode = Telemetryutil::plane_mode_from_enum((PLANE_MODE)custom_mode);
+                    set_flight_mode(plane_mode);
+                    set_mav_type("VTOL");
+                    break;
+                }
+                case MAV_TYPE_VTOL_TAILSITTER_DUOROTOR: {
+                    auto plane_mode = Telemetryutil::plane_mode_from_enum((PLANE_MODE)custom_mode);
+                    set_flight_mode(plane_mode);
+                    set_mav_type("VTOL");
+                    break;
+                }
+                case MAV_TYPE_VTOL_TAILSITTER_QUADROTOR: {
+                    auto plane_mode = Telemetryutil::plane_mode_from_enum((PLANE_MODE)custom_mode);
+                    set_flight_mode(plane_mode);
+                    set_mav_type("VTOL");
                     break;
                 }
                 case MAV_TYPE_SUBMARINE: {
@@ -901,10 +926,6 @@ void FCMavlinkSystem::arm_fc_async(bool arm)
                 ss<<"amr/disarm failed:"<<res;
                 qDebug()<<ss.str().c_str();
                 emit messageReceived(ss.str().c_str(), 0);
-                HUDLogMessagesModel::instance().add_message_warning("Arm FC failed");
-            }else{
-                qDebug()<<"Successfully armed FC";
-                HUDLogMessagesModel::instance().add_message_info("FC armed");
             }
         };
         if(arm){
@@ -924,11 +945,6 @@ void FCMavlinkSystem::send_return_to_launch_async()
             std::stringstream ss;
             ss<<"send_return_to_launch: result: "<<res;
             qDebug()<<ss.str().c_str();
-            if(res==mavsdk::Action::Result::Success){
-                 HUDLogMessagesModel::instance().add_message_info("RTL set");
-            }else{
-                HUDLogMessagesModel::instance().add_message_warning("RTL failed");
-            }
         };
         _action->return_to_launch_async(cb);
     }
@@ -1018,5 +1034,4 @@ void FCMavlinkSystem::update_alive()
         }
     }
 }
-
 

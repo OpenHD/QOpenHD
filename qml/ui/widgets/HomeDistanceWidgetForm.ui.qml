@@ -284,7 +284,6 @@ BaseWidget {
             }
 
             ConfirmSlider {
-
                 visible: _fcMavlinkSystem.supports_basic_commands
 
                 text_off: qsTr("RTL")
@@ -296,16 +295,27 @@ BaseWidget {
                             return 11;
                         }
                 }
+                onCheckedChanged: {
+                    if (checked == true) {
+
+                        _fcMavlinkSystem.flight_mode_cmd(msg_id);
+                    }
+                }
+            }
+
+            ConfirmSlider {
+                visible: _fcMavlinkSystem.mav_type == "VTOL"
+
+                text_off: qsTr("QRTL")
+                msg_id: 21
 
                 onCheckedChanged: {
                     if (checked == true) {
 
-                        //double check.... not really needed
                         _fcMavlinkSystem.flight_mode_cmd(msg_id);
-                        //console.log("selected");
                     }
                 }
-            }            
+            }
         }
     }
 
