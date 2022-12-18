@@ -817,7 +817,11 @@ QString MavlinkSettingsModel::get_short_description(const QString param_id)const
         return "Experimental,Default NONE, Type of Intra Refresh to use";
     }
     if(param_id=="V_METERING_MODE"){
-        return " Camera exposure metering mode to use. Default average.";
+        return "Camera exposure metering mode to use. Default average.";
+    }
+    if(param_id=="I_WIFI_HOTSPOT_E"){
+        return "Enable/disable wifi hotspot such that you can connect to your air/ground unit via normal WiFi. Frequency is always the opposite of your WB link, e.g. "
+               "2.4G if your wb link is 5.8G and opposite. However, disable hotspot during flight !";
     }
     return "TODO";
 }
