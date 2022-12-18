@@ -221,11 +221,13 @@ BaseWidget {
                 text_off: _fcMavlinkSystem.armed ? qsTr("DISARM") : qsTr("ARM")
 
                 onCheckedChanged: {
-                    if (_fcMavlinkSystem.armed == true) {
-                        _fcMavlinkSystem.arm_fc_async(false)
-                    }
-                    else {
-                       _fcMavlinkSystem.arm_fc_async(true)
+                    if (checked == true){ //must be true since switch reverts to false
+                        if (_fcMavlinkSystem.armed == true) {
+                            _fcMavlinkSystem.arm_fc_async(false)
+                        }
+                        else {
+                            _fcMavlinkSystem.arm_fc_async(true)
+                        }
                     }
                 }
             }
