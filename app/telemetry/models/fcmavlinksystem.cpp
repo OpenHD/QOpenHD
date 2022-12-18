@@ -43,6 +43,8 @@ void FCMavlinkSystem::set_system(std::shared_ptr<mavsdk::System> system)
     qDebug()<<"FCMavlinkSystem::set_system: FC SYS ID is:"<<(int)_system->get_system_id();
     _action=std::make_shared<mavsdk::Action>(system);
     _mavsdk_telemetry=std::make_shared<mavsdk::Telemetry>(system);
+    _pass_thru=std::make_shared<mavsdk::MavlinkPassthrough>(system);
+
     auto cb_attituede=[this](mavsdk::Telemetry::EulerAngle angle){
         //qDebug()<<"Got att euler";
         set_pitch((double)angle.pitch_deg);
@@ -909,6 +911,72 @@ void FCMavlinkSystem::send_message_hud_connection(bool connected)
         message << "disconnected";
         HUDLogMessagesModel::instance().add_message_warning(message.str().c_str());
     }
+}
+
+void FCMavlinkSystem::pass_cmd_long(long cmd_msg) {
+    if (_pass_thru){
+        mavsdk::MavlinkPassthrough::Result res{};
+
+        qDebug() << "pass_cmd_long CMD:" << cmd_msg;
+        qDebug() << "pass_cmd_long our sysid:" << _pass_thru->get_our_sysid();
+        qDebug() << "pass_cmd_long our comp id:" << _pass_thru->get_our_compid();
+        qDebug() << "pass_cmd_long target id:" << _pass_thru->get_target_sysid();
+        qDebug() << "pass_cmd_long target compid:" << _pass_thru->get_target_compid();
+
+
+
+/*
+
+        //mavlink_command_long_t msg;
+        mavlink_message_t msg;
+
+        mavlink_msg_command_long_pack(
+                    _pass_thru->get_our_sysid(), //source system
+                    _pass_thru->get_our_compid(), // source component
+                    &msg,
+                    _pass_thru->get_target_sysid(), // target sys
+                    _pass_thru->get_target_compid(), // target component
+                    11, // actual message code
+                    1, //ack
+                    0, //param 1
+                    0, //param 2
+                    0, //param 3
+                    0, //param 4
+                    0, //parma 5
+                    0, //parma 6
+                    0  //param 7
+                    );
+
+                    */
+        mavsdk::MavlinkPassthrough::CommandLong cmd;
+
+        cmd.command = cmd_msg;
+
+        cmd.target_sysid= _pass_thru->get_target_sysid();
+        cmd.target_compid=_pass_thru->get_target_compid();
+
+        cmd.param1=0;
+        cmd.param2=0;
+        cmd.param3=0;
+        cmd.param4=0;
+        cmd.param5=0;
+        cmd.param6=0;
+        cmd.param7=0;
+
+        _pass_thru->send_command_long(cmd);
+
+
+
+        //result is not really used right now as mavsdk will output errors
+        //----here for future use----
+        if(res==mavsdk::MavlinkPassthrough::Result::Success){
+            qDebug() << "pass_cmd_long Success!";
+        }
+        else {
+            qDebug() << "pass_cmd_long Something went wrong!";
+        }
+    }
+
 }
 
 void FCMavlinkSystem::update_alive()

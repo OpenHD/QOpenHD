@@ -318,14 +318,15 @@ BaseWidget {
                 visible: _fcMavlinkSystem.supports_basic_commands
 
                 text_off: qsTr("RTL")
-                msg_id: 11
+                msg_id: 14
 
                 onCheckedChanged: {
                     if (checked == true) {
 
                         //double check.... not really needed
-                        _fcMavlinkSystem.set_Requested_Flight_Mode(msg_id)
-                        //console.log("selected");
+                        //_fcMavlinkSystem.set_Requested_Flight_Mode(msg_id);
+                        _fcMavlinkSystem.pass_cmd_long(msg_id);
+                        console.log("FLIGHT MODE MSD ID=");
                     }
                 }
             }
@@ -340,7 +341,7 @@ BaseWidget {
                     if (checked == true) {
 
                         //double check.... not really needed
-                        _fcMavlinkSystem.set_Requested_Flight_Mode(msg_id)
+                        _fcMavlinkSystem.pass_cmd_long(msg_id);
                         //console.log("selected");
                     }
                 }
@@ -356,7 +357,7 @@ BaseWidget {
                     if (checked == true) {
 
                         //double check.... not really needed
-                        _fcMavlinkSystem.set_Requested_Flight_Mode(msg_id)
+                        _fcMavlinkSystem.pass_cmd_long(msg_id);
                         //console.log("selected");
                     }
                 }
@@ -372,7 +373,7 @@ BaseWidget {
                     if (checked == true) {
 
                         //double check.... not really needed
-                        _fcMavlinkSystem.set_Requested_Flight_Mode(msg_id)
+                        _fcMavlinkSystem.pass_cmd_long(msg_id);
                         //console.log("selected");
                     }
                 }
@@ -388,7 +389,7 @@ BaseWidget {
                     if (checked == true) {
 
                         //double check.... not really needed
-                        _fcMavlinkSystem.set_Requested_Flight_Mode(msg_id)
+                        _fcMavlinkSystem.pass_cmd_long(msg_id);
                         //console.log("selected");
                     }
                 }
@@ -404,7 +405,7 @@ BaseWidget {
                     if (checked == true) {
 
                         //double check.... not really needed
-                        _fcMavlinkSystem.set_Requested_Flight_Mode(msg_id)
+                        _fcMavlinkSystem.pass_cmd_long(msg_id);
                         //console.log("selected");
                     }
                 }
@@ -420,7 +421,7 @@ BaseWidget {
                     if (checked == true) {
 
                         //double check.... not really needed
-                        _fcMavlinkSystem.set_Requested_Flight_Mode(msg_id)
+                        _fcMavlinkSystem.pass_cmd_long(msg_id);
                         //console.log("selected");
                     }
                 }
@@ -438,7 +439,7 @@ BaseWidget {
                     if (checked == true) {
 
                         //double check.... not really needed
-                        _fcMavlinkSystem.set_Requested_Flight_Mode(msg_id)
+                        _fcMavlinkSystem.pass_cmd_long(msg_id);
                         //console.log("selected");
                     }
                 }
@@ -454,7 +455,7 @@ BaseWidget {
                     if (checked == true) {
 
                         //double check.... not really needed
-                        _fcMavlinkSystem.set_Requested_Flight_Mode(msg_id)
+                        _fcMavlinkSystem.pass_cmd_long(msg_id);
                         //console.log("selected");
                     }
                 }
@@ -470,7 +471,7 @@ BaseWidget {
                     if (checked == true) {
 
                         //double check.... not really needed
-                        _fcMavlinkSystem.set_Requested_Flight_Mode(msg_id)
+                        _fcMavlinkSystem.pass_cmd_long(msg_id);
                         //console.log("selected");
                     }
                 }
@@ -486,7 +487,7 @@ BaseWidget {
                     if (checked == true) {
 
                         //double check.... not really needed
-                        _fcMavlinkSystem.set_Requested_Flight_Mode(msg_id)
+                        _fcMavlinkSystem.pass_cmd_long(msg_id);
                         //console.log("selected");
                     }
                 }
@@ -502,7 +503,7 @@ BaseWidget {
                     if (checked == true) {
 
                         //double check.... not really needed
-                        _fcMavlinkSystem.set_Requested_Flight_Mode(msg_id)
+                        _fcMavlinkSystem.pass_cmd_long(msg_id);
                         //console.log("selected");
                     }
                 }
@@ -518,7 +519,7 @@ BaseWidget {
                     if (checked == true) {
 
                         //double check.... not really needed
-                        _fcMavlinkSystem.set_Requested_Flight_Mode(msg_id)
+                        _fcMavlinkSystem.pass_cmd_long(msg_id);
                         //console.log("selected");
                     }
                 }
@@ -534,7 +535,7 @@ BaseWidget {
                     if (checked == true) {
 
                         //double check.... not really needed
-                        _fcMavlinkSystem.set_Requested_Flight_Mode(msg_id)
+                        _fcMavlinkSystem.pass_cmd_long(msg_id);
                         //console.log("selected");
                     }
                 }

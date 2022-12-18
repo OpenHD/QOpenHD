@@ -182,6 +182,7 @@ private:
     std::shared_ptr<mavsdk::System> _system=nullptr;
     std::shared_ptr<mavsdk::Action> _action=nullptr;
     std::shared_ptr<mavsdk::Telemetry> _mavsdk_telemetry=nullptr;
+    std::shared_ptr<mavsdk::MavlinkPassthrough> _pass_thru=nullptr;
     // other members
     bool m_armed = false;
     QString m_flight_mode = "------";
@@ -225,6 +226,7 @@ public:
     Q_INVOKABLE void arm_fc_async(bool arm=false);
     Q_INVOKABLE void send_return_to_launch_async();
     Q_INVOKABLE bool send_command_reboot(bool reboot);
+    Q_INVOKABLE void pass_cmd_long(long cmd_msg);
     // -----------------------
 private:
     void send_message_hud_connection(bool connected);

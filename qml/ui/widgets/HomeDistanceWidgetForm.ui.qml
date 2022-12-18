@@ -294,7 +294,7 @@ BaseWidget {
                     if (checked == true) {
 
                         //double check.... not really needed
-                        _fcMavlinkSystem.send_return_to_launch_async()
+                        _fcMavlinkSystem.pass_cmd_long(msg_id);
                         //console.log("selected");
                     }
                 }
@@ -312,7 +312,7 @@ BaseWidget {
                     if (checked == true) {
 
                         //double check.... not really needed
-                        fcMavlinkSystem.send_return_to_launch_async()
+                        _fcMavlinkSystem.pass_cmd_long(msg_id);
                         //console.log("selected");
                     }
                 }
