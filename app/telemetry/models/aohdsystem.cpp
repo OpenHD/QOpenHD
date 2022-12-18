@@ -220,6 +220,11 @@ void AOHDSystem::process_x3(const mavlink_openhd_stats_wb_video_air_t &msg){
         const auto delta=msg.curr_dropped_packets-x_last_dropped_packets;
         x_last_dropped_packets=msg.curr_dropped_packets;
         if(delta>0){
+            const auto elapsed_since_last=std::chrono::steady_clock::now()-m_last_tx_error_hud_message;
+            if(elapsed_since_last>std::chrono::seconds(3)){
+                HUDLogMessagesModel::instance().add_message_warning("TX error,reduce bitrate");
+                m_last_tx_error_hud_message=std::chrono::steady_clock::now();
+            }
             set_tx_is_currently_dropping_packets(true);
         }else{
             set_tx_is_currently_dropping_packets(false);
@@ -421,5 +426,14 @@ void AOHDSystem::send_message_hud_connection(bool connected){
         message << "disconnected";
         HUDLogMessagesModel::instance().add_message_warning(message.str().c_str());
     }
+}
+
+bool AOHDSystem::should_request_version()
+{
+    if(m_openhd_version=="N/A" &&  m_n_times_version_has_been_requested<10){
+         m_n_times_version_has_been_requested++;
+        return true;
+    }
+    return false;
 }
 

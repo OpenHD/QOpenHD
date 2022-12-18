@@ -84,6 +84,19 @@ Rectangle {
             }
         }
     }
+    Button {
+        height: 48
+        anchors.top: parent.top
+        anchors.left: fetchAllButtonId.right
+        anchors.leftMargin: 20
+        id: fetchAllButtonInfoId
+        text:"INFO"
+        Material.background:Material.LightBlue
+        onClicked: {
+            var text="Refresh your complete parameter set by fetching it from the openhd air/ground unit. Might need a couple of tries"
+            _messageBoxInstance.set_text_and_show(text)
+        }
+    }
     /*Button {
         height: 48
         anchors.top: fetchAllButtonId.top

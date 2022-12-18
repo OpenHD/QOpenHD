@@ -13,6 +13,7 @@ import OpenHD 1.0
 import "../../ui" as Ui
 import "../elements"
 
+
 // Dirty, for the 3 mavlink settings that need to be kept in sync on both air and ground
 ColumnLayout {
     Layout.fillHeight: true
@@ -27,83 +28,83 @@ ColumnLayout {
 
     ListModel{
         id: frequenciesModel
-        ListElement {title: "2312 (Atheros)"; value: 2312}
-        ListElement {title: "2317 (Atheros)"; value: 2317}
-        ListElement {title: "2322 (Atheros)"; value: 2322}
-        ListElement {title: "2327 (Atheros)"; value: 2327}
-        ListElement {title: "2332 (Atheros)"; value: 2332}
-        ListElement {title: "2337 (Atheros)"; value: 2337}
-        ListElement {title: "2342 (Atheros)"; value: 2342}
-        ListElement {title: "2347 (Atheros)"; value: 2347}
-        ListElement {title: "2352 (Atheros)"; value: 2352}
-        ListElement {title: "2357 (Atheros)"; value: 2357}
-        ListElement {title: "2362 (Atheros)"; value: 2362}
-        ListElement {title: "2367 (Atheros)"; value: 2367}
-        ListElement {title: "2372 (Atheros)"; value: 2372}
-        ListElement {title: "2377 (Atheros)"; value: 2377}
-        ListElement {title: "2382 (Atheros)"; value: 2382}
-        ListElement {title: "2387 (Atheros)"; value: 2387}
-        ListElement {title: "2392 (Atheros)"; value: 2392}
-        ListElement {title: "2397 (Atheros)"; value: 2397}
-        ListElement {title: "2402 (Atheros)"; value: 2402}
-        ListElement {title: "2407 (Atheros)"; value: 2407}
-        ListElement {title: "1  2412 (Ralink/Atheros)"; value: 2412}
-        ListElement {title: "2  2417 (Ralink/Atheros)"; value: 2417}
-        ListElement {title: "3  2422 (Ralink/Atheros)"; value: 2422}
-        ListElement {title: "4  2427 (Ralink/Atheros)"; value: 2427}
-        ListElement {title: "5  2432 (Ralink/Atheros)"; value: 2432}
-        ListElement {title: "6  2437 (Ralink/Atheros)"; value: 2437}
-        ListElement {title: "7  2442 (Ralink/Atheros)"; value: 2442}
-        ListElement {title: "8  2447 (Ralink/Atheros)"; value: 2447}
-        ListElement {title: "9  2452 (Ralink/Atheros)"; value: 2452}
-        ListElement {title: "10 2457 (Ralink/Atheros)"; value: 2457}
-        ListElement {title: "11 2462 (Ralink/Atheros)"; value: 2462}
-        ListElement {title: "12 2467 (Ralink/Atheros)"; value: 2467}
-        ListElement {title: "13 2472 (Ralink/Atheros)"; value: 2472}
-        ListElement {title: "14 2484 (Ralink/Atheros)"; value: 2484}
-        ListElement {title: "2477 (Atheros)"; value: 2477}
-        ListElement {title: "2482 (Atheros)"; value: 2482}
-        ListElement {title: "2487 (Atheros)"; value: 2487}
-        ListElement {title: "2489 (Atheros)"; value: 2489}
-        ListElement {title: "2492 (Atheros)"; value: 2492}
-        ListElement {title: "2494 (Atheros)"; value: 2494}
-        ListElement {title: "2497 (Atheros)"; value: 2497}
-        ListElement {title: "2499 (Atheros)"; value: 2499}
-        ListElement {title: "2512 (Atheros)"; value: 2512}
-        ListElement {title: "2532 (Atheros)"; value: 2532}
-        ListElement {title: "2572 (Atheros)"; value: 2572}
-        ListElement {title: "2592 (Atheros)"; value: 2592}
-        ListElement {title: "2612 (Atheros)"; value: 2612}
-        ListElement {title: "2632 (Atheros)"; value: 2632}
-        ListElement {title: "2652 (Atheros)"; value: 2652}
-        ListElement {title: "2672 (Atheros)"; value: 2672}
-        ListElement {title: "2692 (Atheros)"; value: 2692}
-        ListElement {title: "2712 (Atheros)"; value: 2712}
+        ListElement {title: "2312Mhz [X] (Atheros)"; value: 2312}
+        ListElement {title: "2317Mhz [X] (Atheros)"; value: 2317}
+        ListElement {title: "2322Mhz [X] (Atheros)"; value: 2322}
+        ListElement {title: "2327Mhz [X] (Atheros)"; value: 2327}
+        ListElement {title: "2332Mhz [X] (Atheros)"; value: 2332}
+        ListElement {title: "2337Mhz [X] (Atheros)"; value: 2337}
+        ListElement {title: "2342Mhz [X] (Atheros)"; value: 2342}
+        ListElement {title: "2347Mhz [X] (Atheros)"; value: 2347}
+        ListElement {title: "2352Mhz [X] (Atheros)"; value: 2352}
+        ListElement {title: "2357Mhz [X] (Atheros)"; value: 2357}
+        ListElement {title: "2362Mhz [X] (Atheros)"; value: 2362}
+        ListElement {title: "2367Mhz [X] (Atheros)"; value: 2367}
+        ListElement {title: "2372Mhz [X] (Atheros)"; value: 2372}
+        ListElement {title: "2377Mhz [X] (Atheros)"; value: 2377}
+        ListElement {title: "2382Mhz [X] (Atheros)"; value: 2382}
+        ListElement {title: "2387Mhz [X] (Atheros)"; value: 2387}
+        ListElement {title: "2392Mhz [X] (Atheros)"; value: 2392}
+        ListElement {title: "2397Mhz [X] (Atheros)"; value: 2397}
+        ListElement {title: "2402Mhz [X] (Atheros)"; value: 2402}
+        ListElement {title: "2407Mhz [X] (Atheros)"; value: 2407}
+        ListElement {title: "2412Mhz [1] (Ralink/Atheros)"; value: 2412}
+        ListElement {title: "2417Mhz [2]  (Ralink/Atheros)"; value: 2417}
+        ListElement {title: "2422Mhz [3]  (Ralink/Atheros)"; value: 2422}
+        ListElement {title: "2427Mhz [4]  (Ralink/Atheros)"; value: 2427}
+        ListElement {title: "2432Mhz [5]  (Ralink/Atheros)"; value: 2432}
+        ListElement {title: "2437Mhz [6]  (Ralink/Atheros)"; value: 2437}
+        ListElement {title: "2442Mhz [7]  (Ralink/Atheros)"; value: 2442}
+        ListElement {title: "2447Mhz [8]  (Ralink/Atheros)"; value: 2447}
+        ListElement {title: "2452Mhz [9]  (Ralink/Atheros)"; value: 2452}
+        ListElement {title: "2457Mhz [10] (Ralink/Atheros)"; value: 2457}
+        ListElement {title: "2462Mhz [11] (Ralink/Atheros)"; value: 2462}
+        ListElement {title: "2467Mhz [12] (Ralink/Atheros)"; value: 2467}
+        ListElement {title: "2472Mhz [13] (Ralink/Atheros)"; value: 2472}
+        ListElement {title: "2484Mhz [14] (Ralink/Atheros)"; value: 2484}
+        ListElement {title: "2477Mhz [X] (Atheros)"; value: 2477}
+        ListElement {title: "2482Mhz [X] (Atheros)"; value: 2482}
+        ListElement {title: "2487Mhz [X] (Atheros)"; value: 2487}
+        ListElement {title: "2489Mhz [X] (Atheros)"; value: 2489}
+        ListElement {title: "2492Mhz [X] (Atheros)"; value: 2492}
+        ListElement {title: "2494Mhz [X] (Atheros)"; value: 2494}
+        ListElement {title: "2497Mhz [X] (Atheros)"; value: 2497}
+        ListElement {title: "2499Mhz [X] (Atheros)"; value: 2499}
+        ListElement {title: "2512Mhz [X] (Atheros)"; value: 2512}
+        ListElement {title: "2532Mhz [X] (Atheros)"; value: 2532}
+        ListElement {title: "2572Mhz [X] (Atheros)"; value: 2572}
+        ListElement {title: "2592Mhz [X] (Atheros)"; value: 2592}
+        ListElement {title: "2612Mhz [X] (Atheros)"; value: 2612}
+        ListElement {title: "2632Mhz [X] (Atheros)"; value: 2632}
+        ListElement {title: "2652Mhz [X] (Atheros)"; value: 2652}
+        ListElement {title: "2672Mhz [X] (Atheros)"; value: 2672}
+        ListElement {title: "2692Mhz [X] (Atheros)"; value: 2692}
+        ListElement {title: "2712Mhz [X] (Atheros)"; value: 2712}
         // 5G begin
-        ListElement {title: "36  5180"; value: 5180}
-        ListElement {title: "40  5200"; value: 5200}
-        ListElement {title: "44  5220"; value: 5220}
-        ListElement {title: "48  5240"; value: 5240}
-        ListElement {title: "52  5260 (DFS RADAR)"; value: 5260}
-        ListElement {title: "56  5280 (DFS RADAR)"; value: 5280}
-        ListElement {title: "60  5300 (DFS RADAR)"; value: 5300}
-        ListElement {title: "64  5320 (DFS RADAR)"; value: 5320}
-        ListElement {title: "100 5500 (DFS RADAR)"; value: 5500}
-        ListElement {title: "104 5520 (DFS RADAR)"; value: 5520}
-        ListElement {title: "108 5540 (DFS RADAR)"; value: 5540}
-        ListElement {title: "112 5560 (DFS RADAR)"; value: 5560}
-        ListElement {title: "116 5580 (DFS RADAR)"; value: 5580}
-        ListElement {title: "120 5600 (DFS RADAR)"; value: 5600}
-        ListElement {title: "124 5620 (DFS RADAR)"; value: 5620}
-        ListElement {title: "128 5640 (DFS RADAR)"; value: 5640}
-        ListElement {title: "132 5660 (DFS RADAR)"; value: 5660}
-        ListElement {title: "136 5680 (DFS RADAR)"; value: 5680}
-        ListElement {title: "140 5700 (DFS RADAR)"; value: 5700}
-        ListElement {title: "149 5745"; value: 5745}
-        ListElement {title: "153 5765"; value: 5765}
-        ListElement {title: "157 5785"; value: 5785}
-        ListElement {title: "161 5805"; value: 5805}
-        ListElement {title: "165 5825"; value: 5825}
+        ListElement {title: "5180Mhz [36] (DEFAULT)"; value: 5180}
+        ListElement {title: "5200Mhz [40]"; value: 5200}
+        ListElement {title: "5220Mhz [44]"; value: 5220}
+        ListElement {title: "5240Mhz [48]"; value: 5240}
+        ListElement {title: "5260Mhz [52]  (DFS RADAR)"; value: 5260}
+        ListElement {title: "5280Mhz [56]  (DFS RADAR)"; value: 5280}
+        ListElement {title: "5300Mhz [60]  (DFS RADAR)"; value: 5300}
+        ListElement {title: "5320Mhz [64]  (DFS RADAR)"; value: 5320}
+        ListElement {title: "5500Mhz [100] (DFS RADAR)"; value: 5500}
+        ListElement {title: "5520Mhz [104] (DFS RADAR)"; value: 5520}
+        ListElement {title: "5540Mhz [108] (DFS RADAR)"; value: 5540}
+        ListElement {title: "5560Mhz [112] (DFS RADAR)"; value: 5560}
+        ListElement {title: "5580Mhz [116] (DFS RADAR)"; value: 5580}
+        ListElement {title: "5600Mhz [120] (DFS RADAR)"; value: 5600}
+        ListElement {title: "5620Mhz [124] (DFS RADAR)"; value: 5620}
+        ListElement {title: "5640Mhz [128] (DFS RADAR)"; value: 5640}
+        ListElement {title: "5660Mhz [132] (DFS RADAR)"; value: 5660}
+        ListElement {title: "5680Mhz [136] (DFS RADAR)"; value: 5680}
+        ListElement {title: "5700Mhz [140] (DFS RADAR)"; value: 5700}
+        ListElement {title: "5745Mhz [149]"; value: 5745}
+        ListElement {title: "5765Mhz [153]"; value: 5765}
+        ListElement {title: "5785Mhz [157]"; value: 5785}
+        ListElement {title: "5805Mhz [161]"; value: 5805}
+        ListElement {title: "5825Mhz [165]"; value: 5825}
     }
 
     ListModel{
@@ -118,10 +119,8 @@ ColumnLayout {
 
     ListModel{
         id: channelWidthModel
-         //ListElement {title: "5MHz"; value: 10}
-         //ListElement {title: "10MHz"; value: 20}
          ListElement {title: "20MHz"; value: 20}
-         ListElement {title: "40MHz (5G Atheros only,unsafe)"; value: 40}
+         ListElement {title: "40MHz"; value: 40}
     }
 
     // https://stackoverflow.com/questions/41991438/how-do-i-find-a-particular-listelement-inside-a-listmodel-in-qml
@@ -139,6 +138,25 @@ ColumnLayout {
         var _index=find_index(_combobox.model,_value)
         if(_index >= 0){
             _combobox.currentIndex=_index;
+        }
+    }
+
+    RowLayout{
+        Button{
+            text: "Find Air unit"
+            onClicked: {
+                dialoqueStartChannelScan.m_curr_index=0
+               dialoqueStartChannelScan.visible=true
+            }
+        }
+        Button{
+            text: "INFO"
+            Material.background:Material.LightBlue
+            onClicked: {
+                var text="Scan all channels for a running Air unit. Might take up to 30seconds to complete (openhd supports a ton of channels,
+and we need to listen on each of them for a short timespan)"
+                _messageBoxInstance.set_text_and_show(text)
+            }
         }
     }
 
@@ -170,6 +188,15 @@ ColumnLayout {
                 _synchronizedSettings.change_param_air_and_ground_frequency(selectedValue);
             }
         }
+        Button{
+            text: "INFO"
+            Material.background:Material.LightBlue
+            onClicked: {
+                var text="Frequency in Mhz and channel number. [X] - Not a legal wifi frequency, AR9271 does them anyways. (DFS-RADAR) - also used by commercial plane(s) weather radar.
+It is your responsibility to only change the frequency to values allowd in your country. You can use a frequency analyzer on your phone or the packet loss to find the best channel for your environemnt."
+                _messageBoxInstance.set_text_and_show(text)
+            }
+        }
     }
 
     RowLayout{
@@ -199,6 +226,14 @@ ColumnLayout {
                 _synchronizedSettings.change_param_air_and_ground_mcs(selectedValue)
             }
         }
+        Button{
+            text: "INFO"
+            Material.background:Material.LightBlue
+            onClicked: {
+                var text="Recommended 3 (Default). The MCS index controlls the available bandwidth. Higher MCS index - higher bandwidth, but less range. Not all cards support changing it."
+                _messageBoxInstance.set_text_and_show(text)
+            }
+        }
     }
 
     RowLayout{
@@ -226,6 +261,15 @@ ColumnLayout {
             onClicked: {
                  var selectedValue=channelWidthModel.get(comboBoxChannelWidth.currentIndex).value
                 _synchronizedSettings.change_param_air_and_ground_channel_width(selectedValue)
+            }
+        }
+        Button{
+            text: "INFO"
+            Material.background:Material.LightBlue
+            onClicked: {
+                var text="Recommended 20Mhz (Default). A bigger channel width gives more bandwidth, but greatly increases interference and reduces range (sensitivity).
+Leave default (20Mhz width)."
+                _messageBoxInstance.set_text_and_show(text)
             }
         }
     }

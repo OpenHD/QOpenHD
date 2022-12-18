@@ -41,7 +41,9 @@ std::map<std::string, void *> MavlinkSettingsModel::get_whitelisted_params()
     ret["WB_FREQUENCY"]=nullptr;
     ret["WB_CHANNEL_W"]=nullptr;
     ret["WB_MCS_INDEX"]=nullptr;
+    //
     ret["CONFIG_BOOT_AIR"]=nullptr;
+    ret["WB_MAX_D_BZ"]=nullptr;
     //ret[""]=nullptr;
     return ret;
 }
@@ -64,6 +66,7 @@ bool MavlinkSettingsModel::is_param_read_only(const std::string param_id)const
     if(param_id.compare("V_CAM_TYPE") == 0)ret=true;
     if(param_id.compare("V_CAM_SENSOR") == 0)ret=true;
     if(param_id.compare("BOARD_TYPE") == 0)ret=true;
+    if(param_id.compare("WB_N_RX_CARDS")== 0)ret=true;
     //qDebug()<<"Param"<<param_id.c_str()<<"Read-only:"<<(ret==false ? "N":"Y");
     return ret;
 }
@@ -139,6 +142,12 @@ static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string&
         };
         map_improved_params["V_AWB_MODE"]=ImprovedIntSetting::createEnum(gst_awb_modes);
         map_improved_params["V_EXP_MODE"]=ImprovedIntSetting::createEnum(gst_exposure_modes);
+        {
+            auto values_metering_mode=std::vector<std::string>{
+                    "AVERAGE","SPOT","BACKLIST","MATRIX"
+            };
+            map_improved_params["V_METERING_MODE"]=ImprovedIntSetting::createEnum(values_metering_mode);
+        }
         auto baud_rate_items=std::vector<ImprovedIntSetting::Item>{
                 {"9600",9600},
                 {"19200",19200},
@@ -154,8 +163,32 @@ static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string&
         };
         map_improved_params["FC_UART_BAUD"]=ImprovedIntSetting(0,1000000,baud_rate_items);
         //
-        map_improved_params["V_OS_CAM_CONFIG"]=ImprovedIntSetting::createEnum( std::vector<std::string>{"rpicam(mmal)","libcamera","libcamera_imx477",
-                                                                               "libcamera_ardu","libcamera_imx519"});
+        {
+            // Needs to match OpenHD
+            //   MMAL = 0, // raspivid / gst-rpicamsrc
+            //   LIBCAMERA, // "normal" libcamera (autodetect)
+            //   LIBCAMERA_IMX477, // "normal" libcamera, explicitly set to imx477 detection only
+            //   LIBCAMERA_ARDUCAM, // pivariety libcamera (arducam special)
+            //   LIBCAMERA_IMX519, // Arducam imx519 without autofocus
+            //   VEYE_327, // Veye IMX290/IMX327 (older versions)
+            //   VEYE_CSIMX307, // Veye IMX307
+            //   VEYE_CSSC132, //Veye SC132
+            //   VEYE_MVCAM, // Veye MV Cameras
+            //   VEYE_CAM2M // Veye IMX327 (never versions), VEYE series with 200W resolution
+            auto cam_config_items=std::vector<std::string>{
+                    "Legacy(MMAL)",
+                    "LIBCAMERA",
+                    "LIBCAMERA_IMX477",
+                    "LIBCAMERA_ARDU",
+                    "LIBCAMERA_IMX519",
+                    "VEYE_327",
+                    "VEYE_CSIMX307",
+                    "VEYE_CSSC132",
+                    "VEYE_MVCAM",
+                    "VEYE_CAM2M"
+            };
+            map_improved_params["V_OS_CAM_CONFIG"]=ImprovedIntSetting::createEnum(cam_config_items);
+        }
         map_improved_params["CONFIG_BOOT_AIR"]=ImprovedIntSetting::createEnumEnableDisable();
         map_improved_params["I_WIFI_HOTSPOT_E"]=ImprovedIntSetting::createEnumEnableDisable();
         // Measurements of @Marcel Essers:
@@ -174,7 +207,9 @@ static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string&
             {"MEDIUM [37]",37},
             {"HIGH [53]",53},
             {"MAX1(!DANGER!)[58]",58},
-            {"MAX2(!DANGER!)[63]",63},
+            // Intentionally disabled, since it creates unusably high packet loss
+            // (e.g. the rf circuit is over-amplified)
+            //{"MAX2(!DANGER!)[63]",63},
         };
         map_improved_params["WB_TX_PWR_IDX_O"]=ImprovedIntSetting(0,63,values_WB_TX_PWR_LEVEL);
         {
@@ -704,7 +739,9 @@ QString MavlinkSettingsModel::get_short_description(const QString param_id)const
                "decrease the encoder bitrate, decrease the WB_V_FEC_PERC or (if possible) increase MCS index";
     }
     if(param_id=="WB_V_FEC_PERC"){
-        return "WB Video FEC overhead, in percent. Increases link stability, but also the required link bandwidth (MCS index). In low RF noise environments, you should decrease this value, e.g. to 20%";
+        return "WB Video FEC overhead, in percent. Increases link stability, but also the required link bandwidth (watch out for tx errors). "
+               "The best value depends on your rf environment - recommended is about ~20% in low rf enironemnts(e.g. nature), and ~50% in high rf noise environments(populated areas)."
+               "Note that your rf interference/ packet loss will increase during flight, it is not recommended to decrase this value below 20%.";
     }
     if(param_id=="WB_V_FEC_BLK_L"){
         return "Default AUTO (Uses biggest block sizes possible while not adding any latency).Otherwise: WB Video FEC block length, previous FEC_K. Increasing this value can improve link stability for free, but can create additional latency.";
@@ -755,7 +792,32 @@ QString MavlinkSettingsModel::get_short_description(const QString param_id)const
     if(param_id=="V_KEYFRAME_I"){
         return "keyframe / instantaneous decode refresh interval, in frames. E.g. if set to 15, every 15th frame will be a key frame. Higher values result in better image compression, but increase the likeliness of microfreezes.";
     }
-    //if(param_id==""){
-    //}
+    if(param_id=="V_VERT_FLIP"){
+        return "Flip video vertically";
+    }
+    if(param_id=="V_HORIZ_FLIP"){
+        return "Flip video horizontally";
+    }
+    if(param_id=="V_CAM_ROT_DEGREE"){
+        return "Rotate video by 90 degree increments";
+    }
+    if(param_id=="V_AWB_MODE"){
+        return "AWB Automatic white balance mode";
+    }
+    if(param_id=="V_EXP_MODE"){
+        return "EXP Exposure mode";
+    }
+    if(param_id=="V_BRIGHNTESS"){
+        return "Image capture brightness, [0..100], default 50, but recommended to tune AWB or EXP instead";
+    }
+    if(param_id=="V_ISO"){
+        return "ISO value to use (0 = Auto)";
+    }
+    if(param_id=="V_INTRA_REFRESH"){
+        return "Experimental,Default NONE, Type of Intra Refresh to use";
+    }
+    if(param_id=="V_METERING_MODE"){
+        return " Camera exposure metering mode to use. Default average.";
+    }
     return "TODO";
 }
