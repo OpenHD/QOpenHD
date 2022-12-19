@@ -5,8 +5,11 @@
 #include <qapplication.h>
 
 #include "common_consti/openhd-util.hpp"
+#if defined(ENABLE_SPEECH)
 #include <QTextToSpeech>
 #include <QVoice>
+#include <qsettings.h>
+#endif
 
 QOpenHD &QOpenHD::instance()
 {
@@ -81,9 +84,12 @@ void QOpenHD::setFontFamily(QString fontFamily) {
 void QOpenHD::textToSpeech_sayMessage(QString message)
 {
 #if defined(ENABLE_SPEECH)  
-    //m_speech->setVolume(m_volume/100.0);
-    qDebug() << "QOpenHD::textToSpeech_sayMessage say:" << message;
-    m_speech->say(message);
+    QSettings settings;
+    if (settings.value("enable_speech", false).toBool() == true){
+        //m_speech->setVolume(m_volume/100.0);
+        qDebug() << "QOpenHD::textToSpeech_sayMessage say:" << message;
+        m_speech->say(message);
+    }
 #else
     qDebug()<<"TextToSpeech disabled, msg:"<<message;
 #endif
