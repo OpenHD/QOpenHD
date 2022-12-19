@@ -22,6 +22,11 @@ public:
     explicit HUDLogMessagesModel(QObject *parent = nullptr);
     static HUDLogMessagesModel& instance();
 
+    // add new message to be shown on the HUD
+    // the message will dissappear after a specific amount of time or when a new message
+    // pushes it out (more than MAX_N_ELEMENTS messages)
+    void add_message(int severity,QString message);
+    // These are just utility for common severity levels
     void add_message_info(QString message);
     void add_message_warning(QString message);
 private:
@@ -37,10 +42,8 @@ private:
     int rowCount(const QModelIndex& parent= QModelIndex()) const override;
     QVariant data( const QModelIndex& index, int role = Qt::DisplayRole ) const override;
     QHash<int, QByteArray> roleNames() const override;
-    //
-    void do_not_call_me_addLogMessage(QString tag,QString message,quint8 severity){
-        //addData({tag,message,0,log_severity_to_color(severity)});
-    }
+    // see logmessagesmodel to why this workaround is needed
+    void do_not_call_me_addLogMessage(int severity,QString message);
 public slots:
     void removeData(int row);
     void addData(HUDLogMessagesModel::Element logMessageData);
@@ -51,7 +54,7 @@ private:
     static constexpr int MAX_N_ELEMENTS=4;
 public:
 signals:
-    void signalAddLogMessage(QString tag,QString message,quint8 severity);
+    void signalAddLogMessage(int severity,QString message);
 };
 
 #endif // HUDLOGMESSAGESMODEL_H
