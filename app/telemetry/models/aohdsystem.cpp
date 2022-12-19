@@ -13,6 +13,8 @@
 #include <logging/logmessagesmodel.h>
 #include <logging/hudlogmessagesmodel.h>
 
+#include "../../qopenhd.h"
+
 
 static std::string video_codec_to_string(int value){
     if(value==0)return "h264";
@@ -422,6 +424,7 @@ void AOHDSystem::send_message_hud_connection(bool connected){
     if(connected){
         message << "connected";
         HUDLogMessagesModel::instance().add_message_info(message.str().c_str());
+        //QOpenHD::instance().textToSpeech_sayMessage(message.str().c_str());
     }else{
         message << "disconnected";
         HUDLogMessagesModel::instance().add_message_warning(message.str().c_str());

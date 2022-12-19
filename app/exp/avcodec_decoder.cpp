@@ -70,6 +70,11 @@ AVCodecDecoder::AVCodecDecoder(QObject *parent):
     //drm_prime_out=std::make_unique<DRMPrimeOut>(1,false,false);
 }
 
+AVCodecDecoder::~AVCodecDecoder()
+{
+    terminate();
+}
+
 void AVCodecDecoder::init(bool primaryStream)
 {
     qDebug() << "AVCodecDecoder::init()";

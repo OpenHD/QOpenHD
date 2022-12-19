@@ -28,6 +28,7 @@ class AVCodecDecoder : public QObject
 {
 public:
     AVCodecDecoder(QObject *parent = nullptr);
+    ~AVCodecDecoder();
     // called when app is created
     void init(bool primaryStream);
     // called when app terminates
