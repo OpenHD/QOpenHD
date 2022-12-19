@@ -286,6 +286,7 @@ MacBuild {
 
 LinuxBuild {
     CONFIG += EnableMainVideo
+    CONFIG += EnableSpeech
     message("LinuxBuild - config")
 }
 
