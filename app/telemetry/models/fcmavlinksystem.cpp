@@ -1037,7 +1037,7 @@ void FCMavlinkSystem::update_alive()
     }else{
         const auto elapsed_since_last_heartbeat=QOpenHDMavlinkHelper::getTimeMilliseconds()-m_last_heartbeat;
         // after 3 seconds, consider as "not alive"
-        const bool alive=elapsed_since_last_heartbeat< 3*1000;
+        const bool alive=elapsed_since_last_heartbeat< 4*1000;
         if(alive != m_is_alive){
             // message when state changes
             send_message_hud_connection(alive);
