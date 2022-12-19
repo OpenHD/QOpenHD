@@ -5,6 +5,8 @@
 #include <qapplication.h>
 
 #include "common_consti/openhd-util.hpp"
+#include <QTextToSpeech>
+#include <QVoice>
 
 QOpenHD &QOpenHD::instance()
 {
@@ -17,6 +19,31 @@ QOpenHD::QOpenHD(QObject *parent)
 {
 #if defined(ENABLE_SPEECH)
     m_speech = new QTextToSpeech(this);
+
+    QStringList engines = QTextToSpeech::availableEngines();
+    qDebug() << "Available SPEECH engines:";
+    for (auto engine : engines) {
+        qDebug() << "  " << engine;
+    }
+    // List the available locales.
+//    qDebug() << "Available locales:";
+    for (auto locale : m_speech->availableLocales()) {
+//        qDebug() << "  " << locale;
+    }
+    // Set locale.
+    m_speech->setLocale(QLocale(QLocale::English, QLocale::LatinScript, QLocale::UnitedStates));
+    // List the available voices.
+//    qDebug() << "Available voices:";
+    for (auto voice : m_speech->availableVoices()) {
+//        qDebug() << "  " << voice.name();
+    }
+    // Display properties.
+    qDebug() << "Locale:" << m_speech->locale();
+    qDebug() << "Pitch:" << m_speech->pitch();
+    qDebug() << "Rate:" << m_speech->rate();
+    qDebug() << "Voice:" << m_speech->voice().name();
+    qDebug() << "Volume:" << m_speech->volume();
+    qDebug() << "State:" << m_speech->state();
 #endif
 }
 
@@ -53,17 +80,10 @@ void QOpenHD::setFontFamily(QString fontFamily) {
 
 void QOpenHD::textToSpeech_sayMessage(QString message)
 {
-#if defined(ENABLE_SPEECH)
-    QSettings settings;
-    auto enable_speech = settings.value("enable_speech", QVariant(0));
-
-    if (enable_speech == 1) {
-        if (armed && !m_armed) {
-            m_speech->say("armed");
-        } else if (!armed && m_armed) {
-            m_speech->say("disarmed");
-        }
-    }
+#if defined(ENABLE_SPEECH)  
+    //m_speech->setVolume(m_volume/100.0);
+    qDebug() << "QOpenHD::textToSpeech_sayMessage say:" << message;
+    m_speech->say(message);
 #else
     qDebug()<<"TextToSpeech disabled, msg:"<<message;
 #endif
