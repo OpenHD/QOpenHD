@@ -622,15 +622,48 @@ VTOL
             style: Text.Outline
             styleColor: settings.color_glow
         }
-
         Text {
             id: flight_mode_text
             height: 48
             color: settings.color_text
             opacity: settings.flight_mode_opacity
-            text: _fcMavlinkSystem.armed ? "[" + _fcMavlinkSystem.flight_mode + "]" : _fcMavlinkSystem.flight_mode
+            text: _fcMavlinkSystem.flight_mode
             anchors.verticalCenter: parent.verticalCenter
             anchors.horizontalCenter: parent.horizontalCenter
+            verticalAlignment: Text.AlignVCenter
+            font.pixelSize: 24
+            font.family: settings.font_text
+            elide: Text.ElideRight
+            style: Text.Outline
+            styleColor: settings.color_glow
+        }
+        Text {
+            id:left_bracket
+            height: 48
+            visible: _fcMavlinkSystem.armed
+            color: "red"
+            text: "["
+            opacity: settings.flight_mode_opacity
+            anchors.left: parent.left
+            //anchors.verticalCenter: parent.verticalCenter
+            //anchors.horizontalCenter: parent.horizontalCenter
+            verticalAlignment: Text.AlignVCenter
+            font.pixelSize: 24
+            font.family: settings.font_text
+            elide: Text.ElideRight
+            style: Text.Outline
+            styleColor: settings.color_glow
+        }
+        Text {
+            id:right_bracket
+            height: 48
+            visible: _fcMavlinkSystem.armed
+            color: "red"
+            text: "]"
+            opacity: settings.flight_mode_opacity
+            anchors.right: parent.right
+            //anchors.verticalCenter: parent.verticalCenter
+            //anchors.horizontalCenter: parent.horizontalCenter
             verticalAlignment: Text.AlignVCenter
             font.pixelSize: 24
             font.family: settings.font_text
