@@ -1,7 +1,12 @@
 #!/usr/bin/env bash
 
 # Install all the dependencies needed to build QOpenHD from source.
-
+curl -1sLf \
+  'https://dl.cloudsmith.io/public/openhd/openhd-2-2-evo/setup.deb.sh' \
+  | sudo -E bash
+curl -1sLf \
+  'https://dl.cloudsmith.io/public/openhd/openhd-2-2-dev/setup.deb.sh' \
+  | sudo -E bash
 apt install -y openhd-qt 
 
 # While we keep the gstreamer code in (in case we want to enable it anyways for the jetson) we have it disabled at compile time by default
