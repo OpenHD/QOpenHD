@@ -230,6 +230,7 @@ public:
     // -----------------------
 private:
     void send_message_hud_connection(bool connected);
+    void send_message_arm_change(bool armed);
 };
 
 

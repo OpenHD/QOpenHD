@@ -56,6 +56,7 @@ void FCMavlinkSystem::set_system(std::shared_ptr<mavsdk::System> system)
         set_hdg(heading.heading_deg);
     };
     _mavsdk_telemetry->subscribe_heading(cb_heading);
+    //TODO ---THIS LOOKS WRONG HERE "headin" and "armed" together
     auto cb_armed=[this](bool armed){
         set_armed(armed);
     };
@@ -618,9 +619,7 @@ void FCMavlinkSystem::updateFlightDistance() {
 
 
 void FCMavlinkSystem::set_armed(bool armed) {
-    if(m_armed==armed)return;
-    QString message=(armed && !m_armed) ? "armed" : "disarmed";
-    QOpenHD::instance().textToSpeech_sayMessage(message);
+    if(m_armed==armed)return; //there has been no change so exit
     if (armed && !m_armed) {
         /*
          * Restart the flight timer when the vehicle transitions to the armed state.
@@ -635,6 +634,19 @@ void FCMavlinkSystem::set_armed(bool armed) {
     }
     m_armed = armed;
     emit armed_changed(m_armed);
+
+    send_message_arm_change(armed);
+}
+
+void FCMavlinkSystem::send_message_arm_change(bool armed){
+    qDebug() << "FCMavlinkSystem::send_message_arm_change: " << armed;
+    if (armed){
+        HUDLogMessagesModel::instance().add_message_warning("ARMED!");
+        QOpenHD::instance().textToSpeech_sayMessage("Armed");
+    }else {
+        HUDLogMessagesModel::instance().add_message_info("Disarmed");
+        QOpenHD::instance().textToSpeech_sayMessage("Disarmed");
+    }
 }
 
 void FCMavlinkSystem::set_flight_mode(QString flight_mode) {
@@ -939,7 +951,7 @@ void FCMavlinkSystem::arm_fc_async(bool arm)
 }
 
 void FCMavlinkSystem::send_return_to_launch_async()
-{
+{ //TODO ------this probably only works for px4---------
     if(_action){
         auto cb=[](mavsdk::Action::Result res){
             std::stringstream ss;
