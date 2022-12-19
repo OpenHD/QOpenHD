@@ -21,20 +21,19 @@ HUDLogMessagesModel &HUDLogMessagesModel::instance()
     return instance;
 }
 
+void HUDLogMessagesModel::add_message(int severity, QString message)
+{
+    emit signalAddLogMessage(severity,message);
+}
+
 void HUDLogMessagesModel::add_message_info(QString message)
 {
-    HUDLogMessagesModel::Element element{};
-    element.message=message;
-    element.severity=6;
-    addData(element);
+    add_message(6,message);
 }
 
 void HUDLogMessagesModel::add_message_warning(QString message)
 {
-    HUDLogMessagesModel::Element element{};
-    element.message=message;
-    element.severity=4;
-    addData(element);
+     add_message(4,message);
 }
 
 int HUDLogMessagesModel::rowCount( const QModelIndex& parent) const
@@ -66,6 +65,13 @@ QHash<int, QByteArray> HUDLogMessagesModel::roleNames() const
         {LevelRole, "level"}
     };
     return mapping;
+}
+
+void HUDLogMessagesModel::do_not_call_me_addLogMessage(int severity, QString message){
+    HUDLogMessagesModel::Element element{};
+    element.message=message;
+    element.severity=severity;
+    addData(element);
 }
 
 void HUDLogMessagesModel::removeData(int row)
