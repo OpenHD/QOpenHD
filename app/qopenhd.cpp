@@ -5,9 +5,11 @@
 #include <qapplication.h>
 
 #include "common_consti/openhd-util.hpp"
+#if defined(ENABLE_SPEECH)
 #include <QTextToSpeech>
 #include <QVoice>
 #include <qsettings.h>
+#endif
 
 QOpenHD &QOpenHD::instance()
 {
