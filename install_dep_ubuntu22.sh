@@ -1,6 +1,17 @@
 #!/usr/bin/env bash
 
-#build mavsdk
+#ffmpeg / avcodec
+apt -y install libavcodec-dev libavformat-dev
+# Note on pi / your PC this should be already installed, be carefully to pick the right one otherwise
+apt -y install libgles2-mesa-dev
+
+# they are needed to build and install mavsdk
+apt -y install pip
+pip install future
+
+# build and install mavsdk
+
+
 cd lib/MAVSDK
 cmake -Bbuild/default -DCMAKE_BUILD_TYPE=Release -H.
 cmake --build build/default -j4
@@ -11,6 +22,9 @@ ls /usr/local/include/mavsdk
 ls /usr/local/lib
 
 cd ../../
+
+
+
 
 # Install all the dependencies needed to build QOpenHD from source.
 curl -1sLf \
@@ -38,13 +52,3 @@ sudo ln -s /opt/Qt5.15.7/bin/qmake qmake
 #sudo apt-get install qtgstreamer-plugins-qt5
 
 
-# now also ffmpeg / avcodec
-apt -y install libavcodec-dev libavformat-dev
-# Note on pi / your PC this should be already installed, be carefully to pick the right one otherwise
-apt -y install libgles2-mesa-dev
-
-# they are needed to build and install mavsdk
-apt -y install pip
-pip install future
-
-# build and install mavsdk
