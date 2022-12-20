@@ -13,6 +13,8 @@
 #include <logging/logmessagesmodel.h>
 #include <logging/hudlogmessagesmodel.h>
 
+#include "../../qopenhd.h"
+
 
 static std::string video_codec_to_string(int value){
     if(value==0)return "h264";
@@ -321,7 +323,7 @@ void AOHDSystem::update_alive()
     }else{
         const auto elapsed_since_last_heartbeat=QOpenHDMavlinkHelper::getTimeMilliseconds()-m_last_openhd_heartbeat;
         // after 3 seconds, consider as "not alive"
-        const bool alive=elapsed_since_last_heartbeat< 3*1000;
+        const bool alive=elapsed_since_last_heartbeat< 4*1000;
         if(alive != m_is_alive){
             // message when state changes
             send_message_hud_connection(alive);
@@ -422,6 +424,7 @@ void AOHDSystem::send_message_hud_connection(bool connected){
     if(connected){
         message << "connected";
         HUDLogMessagesModel::instance().add_message_info(message.str().c_str());
+        //QOpenHD::instance().textToSpeech_sayMessage(message.str().c_str());
     }else{
         message << "disconnected";
         HUDLogMessagesModel::instance().add_message_warning(message.str().c_str());
