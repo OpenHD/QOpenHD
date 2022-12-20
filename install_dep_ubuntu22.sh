@@ -1,5 +1,17 @@
 #!/usr/bin/env bash
 
+#build mavsdk
+cd lib/MAVSDK
+cmake -Bbuild/default -DCMAKE_BUILD_TYPE=Release -H.
+cmake --build build/default -j4
+sudo cmake --build build/default --target install
+sudo ldconfig
+
+ls /usr/local/include/mavsdk
+ls /usr/local/lib
+
+cd ../../
+
 # Install all the dependencies needed to build QOpenHD from source.
 curl -1sLf \
   'https://dl.cloudsmith.io/public/openhd/openhd-2-2-evo/setup.deb.sh' \
@@ -36,13 +48,3 @@ apt -y install pip
 pip install future
 
 # build and install mavsdk
-cd lib/MAVSDK
-cmake -Bbuild/default -DCMAKE_BUILD_TYPE=Release -H.
-cmake --build build/default -j4
-sudo cmake --build build/default --target install
-sudo ldconfig
-
-ls /usr/local/include/mavsdk
-ls /usr/local/lib
-
-cd ../../
