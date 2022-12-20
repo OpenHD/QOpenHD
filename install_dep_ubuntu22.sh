@@ -9,6 +9,17 @@ curl -1sLf \
   | sudo -E bash
 apt install -y openhd-qt 
 
+#linking qt for x86 jammy
+
+rm /etc/ld.so.conf.d/qt.conf
+touch /etc/ld.so.conf.d/qt.conf
+echo "/opt/Qt5.15.7/lib/" >/etc/ld.so.conf.d/qt.conf
+sudo ldconfig
+export PATH="$PATH:/opt/Qt5.15.7/bin/"
+cd /usr/bin
+rm -f qmake
+sudo ln -s /opt/Qt5.15.7/bin/qmake qmake
+
 # While we keep the gstreamer code in (in case we want to enable it anyways for the jetson) we have it disabled at compile time by default
 #apt -y install libgstreamer-plugins-base1.0-dev gstreamer1.0-plugins-good
 # NOT qmlglsink but something else ?! DEFINITELY not qmlglsink or doesn't work anyways
