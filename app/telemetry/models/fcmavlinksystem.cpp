@@ -1047,3 +1047,14 @@ void FCMavlinkSystem::update_alive()
     }
 }
 
+void FCMavlinkSystem::test_set_data_stream_rates(MAV_DATA_STREAM streamType, uint8_t hz)
+{
+    mavlink_request_data_stream_t tmp;
+    tmp.target_system=1;
+    tmp.target_component=MAV_COMP_ID_AUTOPILOT1;
+    tmp.req_message_rate=hz;
+    tmp.req_stream_id=streamType;
+    tmp.start_stop=1;
+    mavlink_message_t msg;
+    mavlink_msg_request_data_stream_encode(0,0,&msg,&tmp);
+}
