@@ -67,6 +67,7 @@ bool MavlinkSettingsModel::is_param_read_only(const std::string param_id)const
     if(param_id.compare("V_CAM_SENSOR") == 0)ret=true;
     if(param_id.compare("BOARD_TYPE") == 0)ret=true;
     if(param_id.compare("WB_N_RX_CARDS")== 0)ret=true;
+    if(param_id.compare("V_N_CAMERAS")== 0)ret=true;
     //qDebug()<<"Param"<<param_id.c_str()<<"Read-only:"<<(ret==false ? "N":"Y");
     return ret;
 }
@@ -747,8 +748,7 @@ QString MavlinkSettingsModel::get_short_description(const QString param_id)const
         return "Default AUTO (Uses biggest block sizes possible while not adding any latency).Otherwise: WB Video FEC block length, previous FEC_K. Increasing this value can improve link stability for free, but can create additional latency.";
     }
     if(param_id=="WB_TX_POWER_MW"){
-        return "TX power (dynamic) if supported by your wfi card (not supported on rtl8812au). Value is in mW (milli Watt). Seperate for air and ground. See"
-               "RTL8812AU_PWR_I for rtl8812au max power";
+        return "TX power in mW (milli Watt), changing this value might or might not have any effect, depending on your card & driver. 1000mW=1W";
     }
     if(param_id=="RTL8812AU_PWR_I"){
         return "Unitless power index for RTL8812AU. Leave at 0 to use WB_TX_POWER_MW instead, which doesn't give max power though.[0..58/63] REQUIRES REBOOT TO BE APPLIED";

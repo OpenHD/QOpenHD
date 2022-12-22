@@ -234,6 +234,12 @@ void MavlinkTelemetry::request_openhd_version()
     command.command=MAV_CMD_REQUEST_MESSAGE;
     command.param1=static_cast<float>(MAVLINK_MSG_ID_OPENHD_VERSION_MESSAGE);
     send_command_long_oneshot(command);
+    /*if(passtroughOhdGround){
+        mavsdk::MavlinkPassthrough::CommandLong cmd;
+        cmd.command=MAV_CMD_REQUEST_MESSAGE;
+        cmd.param1=static_cast<float>(MAVLINK_MSG_ID_OPENHD_VERSION_MESSAGE);
+        passtroughOhdGround->send_command_long(cmd);
+    }*/
 }
 
 bool MavlinkTelemetry::send_command_long_oneshot(const mavlink_command_long_t &command)
