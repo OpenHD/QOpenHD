@@ -109,6 +109,7 @@ ColumnLayout {
 
     ListModel{
         id: mcsIndexModel
+         ListElement{title: "~4Mbps         (MCS0)"; value: 0}
         ListElement {title: "5.5Mbps/6.5Mbps(MCS1)"; value: 1}
         ListElement {title: "11Mbps/13Mbps  (MCS2)"; value: 2}
         ListElement {title: "12Mbps/13Mbps  (MCS3)"; value: 3}
