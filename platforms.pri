@@ -1,7 +1,7 @@
 
 
 linux {
-    linux-g++ | linux-g++-64 | linux-g++-32 | linux-clang | linux-jetson-nano-g++ | linux-rpi4-v3d-g++ | linux-rpi-g++ | linux-rpi-vc4-g++ | linux-rasp-pi-g++ {
+    linux-g++ | linux-g++-64 | linux-g++-32 | linux-clang | linux-jetson-nano-g++| linux-RK3566-g++ | linux-rpi4-v3d-g++ | linux-rpi-g++ | linux-rpi-vc4-g++ | linux-rasp-pi-g++ {
         message("LinuxBuild")
         CONFIG += LinuxBuild
         DEFINES += __desktoplinux__
