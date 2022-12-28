@@ -6,7 +6,7 @@
 curl -1sLf \
   'https://dl.cloudsmith.io/public/openhd/openhd-2-2-evo/setup.deb.sh' \
   | sudo -E bash
- ruby 
+apt install -y ruby 
 gem install fpm
 
 
