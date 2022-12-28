@@ -35,7 +35,7 @@ if [[ "${DISTRO}" == "bullseye" ]] || [[ "${DISTRO}" == "bionic" ]] ; then
     sudo ln -s /opt/Qt5.15.4/bin/qmake /usr/bin/qmake
     /opt/Qt5.15.4/bin/qmake
 elif [[ "${DISTRO}" == "jammy" ]] ; then
-    if [[ "${BUILD_TYPE}" =! "debug" ]] ; then
+    if [[ "${BUILD_TYPE}" != "debug" ]] ; then
     # link libraries and qt
     touch /etc/ld.so.conf.d/qt.conf
     sudo echo "/opt/Qt5.15.7/lib/" > /etc/ld.so.conf.d/qt.conf
