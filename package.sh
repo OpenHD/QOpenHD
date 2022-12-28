@@ -43,6 +43,8 @@ elif [[ "${DISTRO}" == "jammy" ]] ; then
     export PATH="$PATH:/opt/Qt5.15.7/bin/"
     sudo ln -s /opt/Qt5.15.7/bin/qmake /usr/bin/qmake
     /opt/Qt5.15.7/bin/qmake
+    else
+    qmake
     fi
 else
 qmake
