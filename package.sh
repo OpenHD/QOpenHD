@@ -34,6 +34,9 @@ if [[ "${DISTRO}" == "bullseye" ]] || [[ "${DISTRO}" == "bionic" ]] ; then
     export PATH="$PATH:/opt/Qt5.15.4/bin/"
     sudo ln -s /opt/Qt5.15.4/bin/qmake /usr/bin/qmake
     /opt/Qt5.15.4/bin/qmake
+    echo "build with qmake done"
+    make -j$(nproc)|| exit 1
+    echo "build with make done"
 elif [[ "${DISTRO}" == "jammy" ]] ; then
     if [[ "${BUILD_TYPE}" != "debug" ]] ; then
     # link libraries and qt
@@ -45,14 +48,18 @@ elif [[ "${DISTRO}" == "jammy" ]] ; then
     /opt/Qt5.15.7/bin/qmake
     else
     qmake
+    echo "build with qmake done"
+    make -j2 || exit 1
+    echo "build with make done"
     fi
 else
 qmake
-fi
-
 echo "build with qmake done"
 make -j$(nproc)|| exit 1
 echo "build with make done"
+fi
+
+
 
 cp release/QOpenHD /tmp/qopenhd/usr/local/bin/ || exit 1
 
