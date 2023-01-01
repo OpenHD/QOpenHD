@@ -57,6 +57,11 @@ ScrollView {
                     Image {
                         width: 100; height: 100
                         source: portrait; anchors.horizontalCenter: parent.horizontalCenter
+                        MouseArea {
+                        anchors.fill: parent
+                            onClicked: {
+                            console.log("initial test 1")
+                            }
                     }
                     Text { text: name; anchors.horizontalCenter: parent.horizontalCenter }
                 }
