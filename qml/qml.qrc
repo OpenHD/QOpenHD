@@ -227,5 +227,10 @@
         <file>ui/widgets/AdsbWidget.qml</file>
         <file>ui/widgets/AdsbWidgetForm.ui.qml</file>
         <file>ui/configpopup/ChannelScanDialoque.qml</file>
+        <file>ui/configpopup/MavlinkSetupPiCameraPanel.qml</file>
+        <file>resources/cameras/portrait.png</file>
+        <file>ui/configpopup/PiCameraConfigListOriginal.qml</file>
+        <file>ui/configpopup/PiCameraConfigListArducam.qml</file>
+        <file>ui/configpopup/PiCameraConfigListVeye.qml</file>
     </qresource>
 </RCC>
