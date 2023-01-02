@@ -55,7 +55,7 @@ ScrollView {
             height: 24
             text: "Disable RC and Reboot"
             onClicked: {
-                _groundPiSettingsModel.try_update_parameter_int("ENABLE_JOY_RC",1)
+                _groundPiSettingsModel.try_update_parameter_int("ENABLE_JOY_RC",0)
                 _qopenhd.quit_qopenhd()
             }
         }
@@ -64,7 +64,7 @@ ScrollView {
             height: 24
             text: "Enable RC and Reboot"
             onClicked: {
-                _groundPiSettingsModel.try_update_parameter_int("ENABLE_JOY_RC",0)
+                _groundPiSettingsModel.try_update_parameter_int("ENABLE_JOY_RC",1)
                 _qopenhd.quit_qopenhd()
             }
         }

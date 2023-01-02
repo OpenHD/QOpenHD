@@ -20,7 +20,7 @@ ScrollView {
     clip:true
     ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
     ScrollBar.vertical.policy: ScrollBar.AlwaysOff
-    contentHeight: gridViewRaspberry.height+gridViewArducam.height+gridViewVeye.height+200
+    contentHeight: gridViewRaspberry.height+gridViewArducam.height+gridViewVeye.height+gridViewOther.height+250
 
     ColumnLayout {
         id: columnLayout
@@ -61,23 +61,28 @@ ScrollView {
         width: columnLayout.width-15
         height: 150
         model: PiCameraConfigListOriginal {}
-        highlight: Rectangle { color: "lightsteelblue"; radius: 5 }
+        highlight: Rectangle {
+            color: "lightsteelblue"
+            opacity: 0.7
+            radius: 5
+            focus:true
+            clip: true
+                }
                 delegate: Column {
                     Image {
-                        width: 100; height: 100
+                        width: 120; height: 100
                         source: portrait; anchors.horizontalCenter: parent.horizontalCenter
                         MouseArea {
                         anchors.fill: parent
                             onClicked: {
-                            setCurrentItem(mouseX, mouseY)
-                            console.log(gridViewRaspberry.activeFocusChanged(1))
-                            console.log("initial test 1")
+                            console.log(aString)
                             }
                         }
                     }
+                    property string aString: raspOverlay
                     Text { text: name; anchors.horizontalCenter: parent.horizontalCenter }
                 }
-                cellWidth: 120
+                cellWidth: 130
 
     }
 
@@ -98,19 +103,26 @@ ScrollView {
         model: PiCameraConfigListArducam {}
                 delegate: Column {
                     Image {
-                        width: 100; height: 100
+                        width: 120; height: 100
                         source: portrait; anchors.horizontalCenter: parent.horizontalCenter
+                        MouseArea {
+                        anchors.fill: parent
+                            onClicked: {
+                            console.log(aString)
+                            }
+                        }
                     }
+                    property string aString: raspOverlay
                     Text { text: name; anchors.horizontalCenter: parent.horizontalCenter }
                 }
-                cellWidth: 120
+                cellWidth: 130
     }
 
     Text {
         id: supplier3
         x: 15
         y: gridViewArducam.y+gridViewArducam.height
-        text: qsTr("Arducam Veye")
+        text: qsTr("Veye Imaging")
         font.pixelSize: 15
     }
 
@@ -119,16 +131,53 @@ ScrollView {
         x: 15
         y: gridViewArducam.y+gridViewArducam.height+30
         width: columnLayout.width-15
-        height: 300
+        height: 150
         model: PiCameraConfigListVeye {}
                 delegate: Column {
                     Image {
-                        width: 100; height: 100
+                        width: 120; height: 100
                         source: portrait; anchors.horizontalCenter: parent.horizontalCenter
+                        MouseArea {
+                        anchors.fill: parent
+                            onClicked: {
+                            console.log(aString)
+                            }
+                        }
                     }
+                    property string aString: raspOverlay
                     Text { text: name; anchors.horizontalCenter: parent.horizontalCenter }
                 }
-                cellWidth: 120
+                cellWidth: 130
+    }
+    Text {
+        id: supplier4
+        x: 15
+        y: gridViewVeye.y+gridViewVeye.height
+        text: qsTr("Other Cameras")
+        font.pixelSize: 15
+    }
+    GridView {
+        id: gridViewOther
+        x: 15
+        y: gridViewVeye.y+gridViewVeye.height+30
+        width: columnLayout.width-15
+        height: 150
+        model: PiCameraConfigListOther {}
+                delegate: Column {
+                    Image {
+                        width: 120; height: 100
+                        source: portrait; anchors.horizontalCenter: parent.horizontalCenter
+                        MouseArea {
+                        anchors.fill: parent
+                            onClicked: {
+                            console.log(aString)
+                            }
+                        }
+                    }
+                    property string aString: raspOverlay
+                    Text { text: name; anchors.horizontalCenter: parent.horizontalCenter }
+                }
+                cellWidth: 130
     }
 
 }

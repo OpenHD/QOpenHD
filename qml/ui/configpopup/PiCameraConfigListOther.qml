@@ -3,19 +3,19 @@ import QtQuick 2.15
 ListModel {
 
     ListElement {
-        name: "IMX477(und mini)"
+        name: "CSI HDMI"
         portrait: "../../resources/cameras/portrait.png"
-        raspOverlay: "libcamera_imx477"
+        raspOverlay: "notImplementedYet"
     }
     ListElement {
-        name: "LowLight"
+        name: "Debug Camera"
         portrait: "../../resources/cameras/portrait.png"
-        raspOverlay: "libcamera_arducam"
+        raspOverlay: "notNeeded"
     }
     ListElement {
-        name: "IMX519"
+        name: "IP Camera"
         portrait: "../../resources/cameras/portrait.png"
-        raspOverlay: "libcamera_imx519"
+        raspOverlay: "notNeeded"
     }
 
 }
