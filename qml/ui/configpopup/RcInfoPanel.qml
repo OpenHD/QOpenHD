@@ -1,4 +1,5 @@
 import QtQuick 2.12
+import QtQuick.Window 2.0
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
 import QtGraphicalEffects 1.12
@@ -10,41 +11,59 @@ import OpenHD 1.0
 import "../../ui" as Ui
 import "../elements"
 
+ScrollView {
+    anchors.fill: parent
+    clip:true
+    contentHeight: 800
+    width: parent.width
+
 // For joystick debugging. For ease of use, we have a simple model in c++ for it
-Rectangle {
-    id: rcInfoPanel
-    Layout.fillHeight: true
-    Layout.fillWidth: true
-
-    property int rowHeight: 64
-    property int text_minHeight: 20
-
-
-    color: "#eaeaea"
-
+    Rectangle{
+    id: backgroundRect
+    width: parent.width
+    height: parent.height
+    color : "#eaeaea"
+    }
 
     ColumnLayout{
-        Layout.fillWidth: true
+        width: parent.width
         Layout.minimumHeight: 30
         spacing: 6
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.margins: 10
 
-        Text {
-            id: decr
-            text: qsTr("Values read by OpenHD (not QOpenHD) from your Joystick RC if enabled.\nrange: 1000-2000(pwm), unused:65535, not set:-1")
-            width:parent.width
+
+        Card {
+            id: infoBox
+            height: 90
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.rightMargin: 30
+            Layout.fillWidth: true
+            cardName: qsTr("OpenHD RC")
+            cardBody:
+                    Text {
+                        text: qsTr("Here you can view the values which OpenHD reads \nfrom your Joystick when it is enabled")
+                        height: 24
+                        font.pixelSize: 14
+                        leftPadding: 12
+                    }
         }
 
-        Text {
-            id: alive
-            text: qsTr("alive:"+(_rcchannelsmodelground.is_alive ? "Y":"N"));
+        Button{
+            visible: !_rcchannelsmodelground.is_alive
+            height: 24
+            text: "Enable RC and Reboot"
+            onClicked: {
+            //here we need to enable RC and do a reboot
+            }
         }
 
         Repeater {
                model: _rcchannelsmodelground
                RowLayout{
+                   visible: _rcchannelsmodelground.is_alive
                    Layout.fillWidth: true
                    Layout.minimumHeight: 20
                    //implicitWidth: parent.implicitWidth
@@ -74,5 +93,19 @@ Rectangle {
                    }
                }
         }
+        Card {
+            id: valuesCard
+            height: 70
+            width: 190
+            cardBody:
+                    Text {
+                        text: qsTr("ranges: 1000-2000(pwm) \nunused: 65535, \nnot set: -1")
+                        height: 24
+                        font.pixelSize: 14
+                        topPadding: -30
+                        leftPadding: 12
+                    }
+        }
     }
 }
+
