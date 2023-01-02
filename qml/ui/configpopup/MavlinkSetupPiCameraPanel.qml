@@ -1,7 +1,6 @@
 import QtQuick 2.0
 
 import QtQuick 2.12
-import QtQuick.Window 2.0
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
 import QtQuick.Dialogs 1.0
@@ -15,6 +14,8 @@ import "../../ui" as Ui
 import "../elements"
 
 
+// Dirty, for the 3 mavlink settings that need to be kept in sync on both air and ground
+
 ScrollView {
     anchors.fill: parent
     clip:true
@@ -24,7 +25,7 @@ ScrollView {
         id: columnLayout
         x: 0
         y: 0
-        width: parent.width
+        width: maximumWidth
         height: maximumHeight
     }
 
@@ -49,10 +50,9 @@ ScrollView {
         id: gridViewRaspberry
         x: 15
         y: 120
-        width: columnLayout.width-15
+        width: columnLayout.width
         height: 150
         model: PiCameraConfigListOriginal {}
-        highlight: Rectangle { color: "lightsteelblue"; radius: 5 }
                 delegate: Column {
                     Image {
                         width: 100; height: 100
@@ -60,11 +60,8 @@ ScrollView {
                         MouseArea {
                         anchors.fill: parent
                             onClicked: {
-                            setCurrentItem(mouseX, mouseY)
-                            console.log(gridViewRaspberry.activeFocusChanged(1))
                             console.log("initial test 1")
                             }
-                        }
                     }
                     Text { text: name; anchors.horizontalCenter: parent.horizontalCenter }
                 }
@@ -109,7 +106,7 @@ ScrollView {
         id: gridViewVeye
         x: 15
         y: gridViewArducam.y+gridViewArducam.height+30
-        width: columnLayout.width-15
+        width: columnLayout.width
         height: 300
         model: PiCameraConfigListVeye {}
                 delegate: Column {
@@ -123,3 +120,9 @@ ScrollView {
     }
 
 }
+
+/*##^##
+Designer {
+    D{i:0;autoSize:true;formeditorZoom:0.66;height:480;width:640}
+}
+##^##*/
