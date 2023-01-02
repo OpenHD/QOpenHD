@@ -22,11 +22,10 @@ Rectangle{
 
     width: total_width
     height: parent.height
-    border.color: "black"
-    border.width: 5
-
     anchors.right: parent.right;
     anchors.top: parent.top
+    color: "#333c4c"
+
     //Layout.alignment: Qt.AlignRight || Qt.AlignTop
     // by default, invisble. Element becomes visible when user clicks on edit for a specific param
     visible: false
@@ -235,20 +234,27 @@ Rectangle{
     ColumnLayout{
         width: parent.width
         height:parent.height
-
+        anchors.top: parent.top
+        anchors.topMargin: 15
         spacing: 10
 
         Label{
             height: customHeight
             text: "Parameter editor"
+            color: "white"
             font.bold: true
+            font.pixelSize: 18
             horizontalAlignment: Qt.AlignCenter
             Layout.alignment: Qt.AlignCenter
         }
 
         Label{
             height:customHeight
+            anchors.top: parent.top
+            anchors.topMargin: 30
+            font.pixelSize: 12
             text: qsTr(parameterId+" "+get_param_type_readable())
+            color: "white"
             horizontalAlignment: Qt.AlignCenter
             // dafuq https://stackoverflow.com/questions/35799944/text-type-alignment
             Layout.alignment: Qt.AlignCenter

@@ -20,7 +20,6 @@ Rectangle {
     Layout.fillHeight: true
     Layout.fillWidth: true
 
-
     property int paramEditorWidth: 300
 
     // We set a the ground pi instance as default (such that the qt editor code completion helps us a bit),
