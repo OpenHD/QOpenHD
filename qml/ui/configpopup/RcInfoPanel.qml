@@ -50,13 +50,22 @@ ScrollView {
                         leftPadding: 12
                     }
         }
-
+        Button{
+            visible: _rcchannelsmodelground.is_alive
+            height: 24
+            text: "Disable RC and Reboot"
+            onClicked: {
+                _groundPiSettingsModel.try_update_parameter_int("ENABLE_JOY_RC",1)
+                _qopenhd.quit_qopenhd()
+            }
+        }
         Button{
             visible: !_rcchannelsmodelground.is_alive
             height: 24
             text: "Enable RC and Reboot"
             onClicked: {
-            //here we need to enable RC and do a reboot
+                _groundPiSettingsModel.try_update_parameter_int("ENABLE_JOY_RC",0)
+                _qopenhd.quit_qopenhd()
             }
         }
 

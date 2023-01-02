@@ -124,7 +124,7 @@ Rectangle {
             contentWidth: availableWidth
 
             ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
-            ScrollBar.vertical.policy: ScrollBar.AlwaysOn
+            ScrollBar.vertical.policy: ScrollBar.AlwaysOff
             // allow dragging without using the vertical scroll bar
             ScrollBar.vertical.interactive: true
 
