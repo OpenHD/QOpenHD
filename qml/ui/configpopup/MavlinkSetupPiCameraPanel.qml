@@ -61,13 +61,13 @@ ScrollView {
         width: columnLayout.width-15
         height: 150
         model: PiCameraConfigListOriginal {}
-        highlight: Rectangle {
-            color: "lightsteelblue"
-            opacity: 0.7
-            radius: 5
-            focus:true
-            clip: true
-                }
+  //      highlight: Rectangle {
+  //          color: "lightsteelblue"
+  //          opacity: 0.7
+  //          radius: 5
+  //          focus:true
+  //          clip: true
+  //              }
                 delegate: Column {
                     Image {
                         width: 120; height: 100
