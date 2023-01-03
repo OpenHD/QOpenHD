@@ -46,6 +46,8 @@ elif [[ "${DISTRO}" == "jammy" ]] ; then
     export PATH="$PATH:/opt/Qt5.15.7/bin/"
     sudo ln -s /opt/Qt5.15.7/bin/qmake /usr/bin/qmake
     /opt/Qt5.15.7/bin/qmake
+    ls -a     /opt/Qt5.15.7/bin
+    echo "debug point"
     else
     qmake
     echo "build with qmake done"
