@@ -1,4 +1,5 @@
 #!/bin/bash
+QT_VERSION=Qt5.15.7
 
 export LC_ALL=C.UTF-8
 export LANG=C.UTF-8
@@ -36,9 +37,8 @@ if [[ "${DISTRO}" == "bullseye" ]] || [[ "${DISTRO}" == "bionic" ]] ; then
     echo "build with qmake done"
     make -j$(nproc)|| exit 1
     echo "build with make done"
-elif [[ "${DISTRO}" == "jammy" ]] ; then
+elif [[ "${DISTRO}" == "jammy" ]] && [[ "${BUILD_TYPE}" = "debug" ]] ; then
     QT_VERSION=Qt5.15.7
-    if [[ "${BUILD_TYPE}" = "debug" ]] ; then
     # link libraries and qt
     touch /etc/ld.so.conf.d/qt.conf
     sudo echo "/opt/Qt5.15.7/lib/" > /etc/ld.so.conf.d/qt.conf
