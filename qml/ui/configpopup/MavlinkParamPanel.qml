@@ -19,6 +19,10 @@ Rectangle {
 
     Layout.fillHeight: true
     Layout.fillWidth: true
+    anchors.top: parent.top
+    anchors.topMargin: 15
+    anchors.left: parent.left
+    anchors.leftMargin: 15
 
     property int paramEditorWidth: 300
 
@@ -107,7 +111,6 @@ Rectangle {
 
         }
     }*/
-
     // Left part: multiple colums of param value
     Rectangle{
         id: scrollViewRectangle
@@ -118,9 +121,11 @@ Rectangle {
 
         ScrollView{
             //height: parent.height
+            anchors.top:parent.top
+            anchors.topMargin: 30
             anchors.fill: parent
-
             contentWidth: availableWidth
+            clip: true
 
             ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
             ScrollBar.vertical.policy: ScrollBar.AlwaysOff

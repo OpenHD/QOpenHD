@@ -1,8 +1,9 @@
 import QtQuick 2.12
-import QtQuick.Controls 2.12
+import QtQuick.Controls 2.4
 import QtQuick.Layouts 1.12
 import QtQuick.Dialogs 1.0
 import QtQuick.Controls.Material 2.12
+import QtQuick.Controls.Styles 1.4
 
 import Qt.labs.settings 1.0
 
@@ -24,6 +25,7 @@ Rectangle{
     height: parent.height
     anchors.right: parent.right;
     anchors.top: parent.top
+    anchors.topMargin: -15
     color: "#333c4c"
 
     //Layout.alignment: Qt.AlignRight || Qt.AlignTop
@@ -99,7 +101,6 @@ Rectangle{
         }
         // Every time the user wants to enable the "advanced", he needs to re-do it for every param,
         // since advanced only makes sense in the rarest case(s), e.g. when QOpenHD and OpenHD are out of sync.
-        checkBoxEnableAdvanced.checked=false
         enableAdvanced=false;
         // disable by default, enable only in case it is needed
         stringEnumDynamicComboBox.visible=false
@@ -300,8 +301,44 @@ Rectangle{
             stepSize: 1
             value: paramValueInt
             visible: holds_int_value()
-
             editable: true
+            up.indicator: Rectangle {
+                    height: parent.height/1.5
+                    anchors.right: parent.right
+                    anchors.top: parent.top
+                    implicitHeight: parent.implicitHeight
+                    implicitWidth: 30
+                    color: "#333c4c"
+                    Text {
+                        text: "\uF054"
+                        color: "white"
+                        anchors.left: parent.left
+                        anchors.leftMargin: 15
+                        anchors.top: parent.top
+                        anchors.topMargin: -10
+                        font.pixelSize: 30
+
+                    }
+                }
+            down.indicator: Rectangle {
+                    height: parent.height / 1.5
+                    anchors.left: parent.left
+                    anchors.top: parent.top
+                    implicitHeight: parent.implicitHeight
+                    implicitWidth: 30
+                    color: "#333c4c"
+                    Text {
+                        text: "\uF053"
+                        color: "white"
+                        anchors.left: parent.left
+                        anchors.leftMargin: 5
+                        anchors.top: parent.top
+                        anchors.topMargin: -10
+                        font.pixelSize: 30
+                    }
+                }
+
+
             onValueChanged: {
 
             }
@@ -373,10 +410,13 @@ Rectangle{
             Layout.alignment: Qt.AlignHCenter
 
             Button{
-                text: "Cancel"
+                text: "Advanced"
                 Layout.alignment: Qt.AlignLeft
                 onClicked: {
-                    parameterEditor.visible=false
+                    enableAdvanced=true
+                    // Completely re-fresh the UI - the user has now more direct access to the parameter(s)
+                    setup_spin_box_int_param()
+                    setup_text_input_string_param()
                 }
             }
             Button{
@@ -412,20 +452,6 @@ Rectangle{
                     }
                     set_description_enabled(false)
                 }
-            }
-        }
-        CheckBox{
-            width: total_width
-            height:customHeight
-            id: checkBoxEnableAdvanced
-            //horizontalAlignment: Qt.AlignCenter
-            text: qsTr("Advanced")
-            Layout.alignment: Qt.AlignHCenter
-            onCheckStateChanged: {
-                enableAdvanced=checkBoxEnableAdvanced.checked
-                // Completely re-fresh the UI - the user has now more direct access to the parameter(s)
-                setup_spin_box_int_param()
-                setup_text_input_string_param()
             }
         }
     }
