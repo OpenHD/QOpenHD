@@ -4,17 +4,17 @@ ListModel {
 
     ListElement {
         name: "Veye IMX290"
-        portrait: "../../resources/cameras/veye290.png"
+        portrait: "../../resources/cameras/veyeIMX290.png"
         raspOverlay: "veye327"
     }
     ListElement {
         name: "Veye IMX327"
-        portrait: "../../resources/cameras/veye327.png"
+        portrait: "../../resources/cameras/veyeIMX327.png"
         raspOverlay: "veyecam2m"
     }
     ListElement {
         name: "Veye IMX462"
-        portrait: "../../resources/cameras/veye462.png"
+        portrait: "../../resources/cameras/veyeIMX462.png"
         raspOverlay: "veyecam2m"
     }
     ListElement {
@@ -24,7 +24,7 @@ ListModel {
     }
     ListElement {
         name: "CS-MIPI-IMX307"
-        portrait: "../../resources/cameras/veye307.png"
+        portrait: "../../resources/cameras/veyeIMX307.png"
         raspOverlay: "csimx307"
     }
 
