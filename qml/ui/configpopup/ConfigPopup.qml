@@ -25,6 +25,52 @@ Rectangle {
         anchors.fill: parent
         propagateComposedEvents: false
     }
+    Rectangle {
+        id: spacerTopSpacer
+        width: 132
+        visible: true
+        anchors.left: parent.left
+        anchors.leftMargin: -1
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: -1
+        anchors.top: parent.top
+        anchors.topMargin: -1
+        color: "#fafafa"
+
+        clip: true
+
+        Column {
+            width: parent.width
+            anchors.top: parent.top
+
+            // Close
+            Item {
+                height: 48
+                width: parent.width
+
+                MouseArea {
+                    id: appMouseAreaClose
+                    anchors.fill: parent
+                    onClicked: settings_form.visible=false
+
+                }
+
+                Text {
+                    id: closeButton
+                    height: parent.height
+                    anchors.top: parent.top
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.leftMargin: parent.width/2-font.pixelSize/2+10
+                    anchors.topMargin:-5
+
+                    text: "\uF053"
+                    font.pixelSize: 40
+                    color: "#333c4c"
+                }
+            }
+        }
+  }
 
     // This is the settings row on the left. When an item is clicked, the stack layout index is changed which
     // means a different category is displayed.
@@ -38,7 +84,7 @@ Rectangle {
         anchors.bottom: parent.bottom
         anchors.bottomMargin: -1
         anchors.top: parent.top
-        anchors.topMargin: -1
+        anchors.topMargin: 48
         color: "#333c4c"
         radius: 0
         border.width: 1
@@ -377,22 +423,6 @@ Rectangle {
                   color: mainStackLayout.currentIndex == 7 ? "#33aaff" : "#dde4ed"
               }
             }
-        }
-
-        Button {
-            id: closeButton
-            y: 0
-            height: 48
-            leftPadding: 6
-            text: qsTr("Close")
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: 6
-            anchors.right: parent.right
-            anchors.rightMargin: 12
-            anchors.left: parent.left
-            anchors.leftMargin: 12
-            font.pixelSize: 13
-            onClicked: settings_form.visible=false
         }
     }
 

@@ -26,6 +26,9 @@ Item {
           TabButton {
               text: qsTr("WB Link freq")
           }
+        //   TabButton {
+        //       text: qsTr("Air Camera Select")
+        //   }
           TabButton {
               text: qsTr("Air Camera 1")
           }
@@ -47,20 +50,23 @@ Item {
           MavlinkExtraWBParamPanel{
               id: xX_WBLinkSettings
           }
+        //   MavlinkSetupPiCameraPanel{
+        //       id: x1_WBPiCameraSettings
+        //   }
           MavlinkParamPanel{
-              id: x0_AirCameraSettingsPanel
+              id: x1_AirCameraSettingsPanel
               m_name: "Camera1"
               m_instanceMavlinkSettingsModel: _airCameraSettingsModel
               m_instanceCheckIsAvlie: _ohdSystemAir
           }
           MavlinkParamPanel{
-              id: x1_AirSettingsPanel
+              id: x2_AirSettingsPanel
               m_name: "Air"
               m_instanceMavlinkSettingsModel: _airPiSettingsModel
               m_instanceCheckIsAvlie: _ohdSystemAir
           }
           MavlinkParamPanel{
-              id: x2_GroundSettingsPanel
+              id: x3_GroundSettingsPanel
               m_name: "Ground"
               m_instanceMavlinkSettingsModel: _groundPiSettingsModel
               m_instanceCheckIsAvlie: _ohdSystemGround

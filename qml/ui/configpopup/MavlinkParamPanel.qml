@@ -19,6 +19,10 @@ Rectangle {
 
     Layout.fillHeight: true
     Layout.fillWidth: true
+    anchors.top: parent.top
+    anchors.topMargin: 15
+    anchors.left: parent.left
+    anchors.leftMargin: 15
 
 
     property int paramEditorWidth: 300
@@ -36,7 +40,6 @@ Rectangle {
         id: delegateMavlinkSettingsValue
         Item {
             id: item
-            width: listView.width
             //width: ListView.view.width
             height: 64
             Row {
@@ -49,7 +52,7 @@ Rectangle {
                     font.bold: true
                 }
                 Label {
-                    width:100
+                    width:150
                     //text: "Val: "+model.value
                     //text: "Val: "+model.extraValue
                     text: model.extraValue
@@ -108,7 +111,6 @@ Rectangle {
 
         }
     }*/
-
     // Left part: multiple colums of param value
     Rectangle{
         id: scrollViewRectangle
@@ -119,19 +121,21 @@ Rectangle {
 
         ScrollView{
             //height: parent.height
+            anchors.top:parent.top
+            anchors.topMargin: 30
             anchors.fill: parent
-
             contentWidth: availableWidth
+            clip: true
 
             ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
-            ScrollBar.vertical.policy: ScrollBar.AlwaysOn
+            ScrollBar.vertical.policy: ScrollBar.AlwaysOff
             // allow dragging without using the vertical scroll bar
             ScrollBar.vertical.interactive: true
 
             ListView {
                 id: listView
                 //top: fetchAllButtonId.bottom
-                //width: parent.width
+                width: parent.width
                 model: m_instanceMavlinkSettingsModel
                 delegate: delegateMavlinkSettingsValue
             }
