@@ -17,7 +17,7 @@ import "./ui/configpopup"
 ApplicationWindow {
     id: applicationWindow
     visible: true
-    width: 800
+    width: 850
     height: 480
     minimumWidth: 480
     minimumHeight: 320

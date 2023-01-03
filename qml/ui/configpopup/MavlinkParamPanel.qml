@@ -24,6 +24,7 @@ Rectangle {
     anchors.left: parent.left
     anchors.leftMargin: 15
 
+
     property int paramEditorWidth: 300
 
     // We set a the ground pi instance as default (such that the qt editor code completion helps us a bit),
@@ -39,7 +40,6 @@ Rectangle {
         id: delegateMavlinkSettingsValue
         Item {
             id: item
-            width: listView.width
             //width: ListView.view.width
             height: 64
             Row {
@@ -52,7 +52,7 @@ Rectangle {
                     font.bold: true
                 }
                 Label {
-                    width:100
+                    width:150
                     //text: "Val: "+model.value
                     //text: "Val: "+model.extraValue
                     text: model.extraValue
@@ -135,7 +135,7 @@ Rectangle {
             ListView {
                 id: listView
                 //top: fetchAllButtonId.bottom
-                //width: parent.width
+                width: parent.width
                 model: m_instanceMavlinkSettingsModel
                 delegate: delegateMavlinkSettingsValue
             }
