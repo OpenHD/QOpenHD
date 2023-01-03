@@ -228,10 +228,24 @@
         <file>ui/widgets/AdsbWidgetForm.ui.qml</file>
         <file>ui/configpopup/ChannelScanDialoque.qml</file>
         <file>ui/configpopup/MavlinkSetupPiCameraPanel.qml</file>
-        <file>resources/cameras/portrait.png</file>
         <file>ui/configpopup/PiCameraConfigListOriginal.qml</file>
         <file>ui/configpopup/PiCameraConfigListArducam.qml</file>
         <file>ui/configpopup/PiCameraConfigListVeye.qml</file>
         <file>ui/configpopup/PiCameraConfigListOther.qml</file>
+        <file>resources/cameras/ArduIMX462.png</file>
+        <file>resources/cameras/ArduIMX477.png</file>
+        <file>resources/cameras/ArduIMX519.png</file>
+        <file>resources/cameras/otherHDMI.png</file>
+        <file>resources/cameras/otherIP.png</file>
+        <file>resources/cameras/otherTest.png</file>
+        <file>resources/cameras/raspHq.png</file>
+        <file>resources/cameras/raspOther.png</file>
+        <file>resources/cameras/raspV1.png</file>
+        <file>resources/cameras/raspV2.png</file>
+        <file>resources/cameras/veye290.png</file>
+        <file>resources/cameras/veye327.png</file>
+        <file>resources/cameras/veye462.png</file>
+        <file>resources/cameras/veyeIMX307.png</file>
+        <file>resources/cameras/veyeSC132.png</file>
     </qresource>
 </RCC>
