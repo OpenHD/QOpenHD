@@ -1,7 +1,5 @@
 #!/bin/bash
 
-QT_VERSION=Qt5.15.4
-
 export LC_ALL=C.UTF-8
 export LANG=C.UTF-8
 
@@ -27,6 +25,7 @@ VER2=$(git rev-parse --short HEAD)
 
 
 if [[ "${DISTRO}" == "bullseye" ]] || [[ "${DISTRO}" == "bionic" ]] ; then
+    QT_VERSION=Qt5.15.4
     # link libraries and qt
     touch /etc/ld.so.conf.d/qt.conf
     sudo echo "/opt/Qt5.15.4/lib/" > /etc/ld.so.conf.d/qt.conf
@@ -38,7 +37,8 @@ if [[ "${DISTRO}" == "bullseye" ]] || [[ "${DISTRO}" == "bionic" ]] ; then
     make -j$(nproc)|| exit 1
     echo "build with make done"
 elif [[ "${DISTRO}" == "jammy" ]] ; then
-    if [[ "${BUILD_TYPE}" != "debug" ]] ; then
+    QT_VERSION=Qt5.15.7
+    if [[ "${BUILD_TYPE}" = "debug" ]] ; then
     # link libraries and qt
     touch /etc/ld.so.conf.d/qt.conf
     sudo echo "/opt/Qt5.15.7/lib/" > /etc/ld.so.conf.d/qt.conf
