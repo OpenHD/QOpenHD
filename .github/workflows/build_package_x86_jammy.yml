@@ -36,14 +36,14 @@ jobs:
 
     - name: Build with make
       run: |
-        rm -f /etc/ld.so.conf.d/qt.conf
-        touch /etc/ld.so.conf.d/qt.conf
-        echo "/opt/Qt5.15.7/lib/" >/etc/ld.so.conf.d/qt.conf
-        ldconfig
+        sudo rm -f /etc/ld.so.conf.d/qt.conf
+        sudo touch /etc/ld.so.conf.d/qt.conf
+        sudo echo "/opt/Qt5.15.7/lib/" >/etc/ld.so.conf.d/qt.conf
+        sudo ldconfig
         export PATH="$PATH:/opt/Qt5.15.7/bin/"
         cd /usr/bin
-        rm -f qmake
-        ln -s /opt/Qt5.15.7/bin/qmake qmake
+        sudo rm -f qmake
+        sudo ln -s /opt/Qt5.15.7/bin/qmake qmake
         echo "QT successfully linked"   
         sudo ./package.sh x86_64 ubuntu jammy
     
