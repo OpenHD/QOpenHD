@@ -39,26 +39,20 @@ if [[ "${DISTRO}" == "bullseye" ]] || [[ "${DISTRO}" == "bionic" ]] ; then
     echo "build with make done"
 elif [[ "${DISTRO}" == "jammy" ]] && [[ "${BUILD_TYPE}" = "debug" ]] ; then
     QT_VERSION=Qt5.15.7
-    # link libraries and qt
     touch /etc/ld.so.conf.d/qt.conf
     sudo echo "/opt/Qt5.15.7/lib/" > /etc/ld.so.conf.d/qt.conf
     sudo ldconfig
     export PATH="$PATH:/opt/Qt5.15.7/bin/"
-    sudo ln -s /opt/Qt5.15.7/bin/qmake /usr/bin/qmake
-    /opt/Qt5.15.7/bin/qmake
-    ls -a     /opt/Qt5.15.7/bin
-    echo "debug point"
-    else
+    sudo ln -s /opt/Qt5.15.7/bin/qmake /usr/bin/qmake  
     qmake
     echo "build with qmake done"
     make -j2 || exit 1
     echo "build with make done"
-    fi
 else
-qmake
-echo "build with qmake done"
-make -j$(nproc)|| exit 1
-echo "build with make done"
+    qmake
+    echo "build with qmake done"
+    make -j$(nproc)|| exit 1
+    echo "build with make done"
 fi
 
 
