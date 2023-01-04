@@ -57,15 +57,15 @@ Rectangle {
 
                 Text {
                     id: closeButton
+                    text: "\uE312"
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    font.family: "Font Awesome 5 Free"
+                    font.pixelSize: 32
                     height: parent.height
-                    anchors.top: parent.top
+                    width: 22
                     anchors.left: parent.left
-                    anchors.right: parent.right
-                    anchors.leftMargin: parent.width/2-font.pixelSize/2+10
-                    anchors.topMargin:-5
-
-                    text: "\uF053"
-                    font.pixelSize: 40
+                    anchors.leftMargin: parent.width/2-font.pixelSize/2
                     color: "#333c4c"
                 }
             }
@@ -109,7 +109,7 @@ Rectangle {
 
                 Text {
                     id: appIcon
-                    text: "\f053"
+                    text: "\uf013"
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                     font.family: "Font Awesome 5 Free"
