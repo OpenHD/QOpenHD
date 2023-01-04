@@ -109,7 +109,7 @@ Rectangle {
 
                 Text {
                     id: appIcon
-                    text: "\uf013"
+                    text: "\f053"
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                     font.family: "Font Awesome 5 Free"
