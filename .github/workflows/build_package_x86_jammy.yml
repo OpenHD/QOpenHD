@@ -41,9 +41,8 @@ jobs:
         sudo sh -c 'echo "/opt/Qt5.15.7/lib/" >/etc/ld.so.conf.d/qt.conf'
         sudo ldconfig
         export PATH="$PATH:/opt/Qt5.15.7/bin/"
-        cd /usr/bin
-        sudo rm -f qmake
-        sudo ln -s /opt/Qt5.15.7/bin/qmake qmake
+        sudo rm -f /usr/bin/qmake
+        sudo ln -s /opt/Qt5.15.7/bin/qmake /usr/bin/qmake
         echo "QT successfully linked"   
         sudo ./package.sh x86_64 ubuntu jammy
     
