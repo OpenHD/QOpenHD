@@ -57,11 +57,11 @@ Rectangle {
 
                 Text {
                     id: closeButton
-                    text: "\uE312"
+                    text: "\uf060"
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                     font.family: "Font Awesome 5 Free"
-                    font.pixelSize: 32
+                    font.pixelSize: 22
                     height: parent.height
                     width: 22
                     anchors.left: parent.left
