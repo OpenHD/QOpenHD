@@ -22,6 +22,7 @@ Settings {
 
     //WARNING: THIS ALLOWS THE USER TO MAKE BREAKING CHANGES
     property bool dev_show_whitelisted_params: false
+    property bool dev_show_advanced_button: false
 
     property bool app_background_transparent: true
     // devices that use drm/kms (e.g. rpi) are always fullscreen anyways

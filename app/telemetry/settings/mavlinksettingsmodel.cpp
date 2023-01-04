@@ -10,7 +10,6 @@
 #include <QSettings>
 #include <QVariant>
 
-
 MavlinkSettingsModel &MavlinkSettingsModel::instanceAirCamera()
 {
     static MavlinkSettingsModel* instanceAirCamera=new MavlinkSettingsModel(OHD_SYS_ID_AIR,OHD_COMP_ID_AIR_CAMERA);
