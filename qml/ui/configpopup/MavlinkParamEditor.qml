@@ -411,6 +411,7 @@ Rectangle{
 
             Button{
                 text: "Advanced"
+                visible: false
                 Layout.alignment: Qt.AlignLeft
                 onClicked: {
                     enableAdvanced=true
