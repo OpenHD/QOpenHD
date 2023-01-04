@@ -12,7 +12,6 @@ import "../../ui" as Ui
 import "../elements"
 
 ScrollView {
-    anchors.fill: parent
     clip:true
     contentHeight: 800
     width: parent.width
@@ -29,17 +28,15 @@ ScrollView {
         width: parent.width
         Layout.minimumHeight: 30
         spacing: 6
-        anchors.top: parent.top
-        anchors.left: parent.left
-        anchors.margins: 10
+        Layout.topMargin: 15
 
 
         Card {
             id: infoBox
             height: 90
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.rightMargin: 30
+            Layout.topMargin: 15
+            Layout.leftMargin: 15
+            Layout.rightMargin: 15
             Layout.fillWidth: true
             cardName: qsTr("OpenHD RC")
             cardBody:
@@ -51,6 +48,10 @@ ScrollView {
                     }
         }
         Button{
+            Layout.topMargin: 15
+            Layout.leftMargin: 15
+            Layout.rightMargin: 15
+            Layout.fillWidth: true
             visible: _rcchannelsmodelground.is_alive
             height: 24
             text: "Disable RC and Reboot"
@@ -60,6 +61,9 @@ ScrollView {
             }
         }
         Button{
+            Layout.topMargin: 15
+            Layout.leftMargin: 15
+            Layout.rightMargin: 15
             visible: !_rcchannelsmodelground.is_alive
             height: 24
             text: "Enable RC and Reboot"
@@ -104,6 +108,9 @@ ScrollView {
         }
         Card {
             id: valuesCard
+            Layout.topMargin: 15
+            Layout.leftMargin: 15
+            Layout.rightMargin: 15
             height: 70
             width: 190
             cardBody:

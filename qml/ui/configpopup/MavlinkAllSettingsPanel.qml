@@ -13,8 +13,6 @@ import "../elements"
 
 // Parent panel for OpenHD Mavlink air and ground settings (!!!! NOT QOPENHD SETTINGS !!!)
 Item {
-    Layout.fillHeight: true
-    Layout.fillWidth: true
 
     property int rowHeight: 64
     property int elementHeight: 48

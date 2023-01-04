@@ -251,7 +251,6 @@ Rectangle{
 
         Label{
             height:customHeight
-            anchors.top: parent.top
             anchors.topMargin: 30
             font.pixelSize: 12
             text: qsTr(parameterId+" "+get_param_type_readable())
@@ -281,7 +280,8 @@ Rectangle{
             width: 300
             height:customHeight
             Layout.alignment: Qt.AlignCenter
-            text: "Description TODO"
+            color: "white"
+            text: "Description not availble"
             visible: !m_has_param_description
         }
 
@@ -302,39 +302,43 @@ Rectangle{
             value: paramValueInt
             visible: holds_int_value()
             editable: true
+            contentItem: TextInput {
+                    text: paramValueInt
+                    color: "white"
+                    selectionColor: "white"
+                    selectedTextColor: "white"
+                    anchors.fill: parent
+                    inputMethodHints: Qt.ImhFormattedNumbersOnly
+                    horizontalAlignment: Text.AlignHCenter
+                    Layout.leftMargin: -100
+                }
             up.indicator: Rectangle {
                     height: parent.height/1.5
                     anchors.right: parent.right
                     anchors.top: parent.top
-                    implicitHeight: parent.implicitHeight
-                    implicitWidth: 30
                     color: "#333c4c"
                     Text {
                         text: "\uF054"
                         color: "white"
-                        anchors.left: parent.left
-                        anchors.leftMargin: 15
-                        anchors.top: parent.top
-                        anchors.topMargin: -10
                         font.pixelSize: 30
+                        anchors.fill: parent
+
 
                     }
                 }
             down.indicator: Rectangle {
                     height: parent.height / 1.5
-                    anchors.left: parent.left
-                    anchors.top: parent.top
-                    implicitHeight: parent.implicitHeight
                     implicitWidth: 30
                     color: "#333c4c"
                     Text {
                         text: "\uF053"
                         color: "white"
                         anchors.left: parent.left
-                        anchors.leftMargin: 5
+                        anchors.leftMargin: -10
                         anchors.top: parent.top
-                        anchors.topMargin: -10
                         font.pixelSize: 30
+                        anchors.fill: parent
+
                     }
                 }
 
