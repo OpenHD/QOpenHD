@@ -2,7 +2,6 @@ import QtQuick 2.0
 
 import QtQuick 2.12
 import QtQuick.Controls 2.12
-import QtQuick.Layouts 1.12
 import QtQuick.Dialogs 1.0
 import QtQuick.Controls.Material 2.12
 
@@ -16,14 +15,6 @@ import "../elements"
 // Contains a list of all the settings on the left, and opens up a parameter editor instance on
 // the right if the user wants to edit any mavlink settings
 Rectangle {
-
-    Layout.fillHeight: true
-    Layout.fillWidth: true
-    anchors.top: parent.top
-    anchors.topMargin: 15
-    anchors.left: parent.left
-    anchors.leftMargin: 15
-
 
     property int paramEditorWidth: 300
 

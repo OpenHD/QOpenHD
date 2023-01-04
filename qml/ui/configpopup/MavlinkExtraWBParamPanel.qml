@@ -18,10 +18,6 @@ import "../elements"
 ColumnLayout {
     Layout.fillHeight: true
     Layout.fillWidth: true
-    anchors.top: parent.top
-    anchors.topMargin: 15
-    anchors.left: parent.left
-    anchors.leftMargin: 15
 
     //width: parent.width
     //height: 600
