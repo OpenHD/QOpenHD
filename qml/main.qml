@@ -40,6 +40,20 @@ ApplicationWindow {
         id: my_QSGVideoTextureItem
     }
 
+    // Loads the proper (platform-dependent) video widget for the main (primary) video
+    // Legacy, left in here because we might re-introduce gstreamer for video
+    Loader {
+        anchors.fill: parent
+        z: 1.0
+        rotation: settings.video_rotation
+        source: {
+            if (EnableGStreamer && EnableMainVideo) {
+                return "../video/MainVideoGStreamer.qml";
+            }
+            return ""
+        }
+    }
+
     ColorPicker {
         id: colorPicker
         height: 264
@@ -67,24 +81,6 @@ ApplicationWindow {
             //
         }
     }
-
-    // Loads the proper (platform-dependent) video widget for the main (primary) video
-    Loader {
-        anchors.fill: parent
-        z: 1.0
-        rotation: settings.video_rotation
-        source: {
-            if (EnableGStreamer && EnableMainVideo) {
-                return "../video/MainVideoGStreamer.qml";
-                //return "";
-            }
-            //if(EnableAVCodec){
-            //}
-
-            return ""
-        }
-    }
-
 
     // UI areas
 
