@@ -18,6 +18,7 @@ Item {
 
     property int rowHeight: 64
     property int elementHeight: 48
+    property int elementComboBoxWidth: 300
 
     // Tab bar for selecting items in stack layout
     TabBar {
