@@ -12,7 +12,7 @@ import "../../ui" as Ui
 import "../elements"
 
 ScrollView {
-    //id: appVideoSettingsView
+    id: appVideoSettingsView
     width: parent.width
     height: parent.height
     contentHeight: videoColumn.height
