@@ -78,13 +78,12 @@ RTPReceiver::~RTPReceiver()
 }
 
 
- std::shared_ptr<NALU> RTPReceiver::get_data(std::chrono::microseconds timeout)
+ std::shared_ptr<NALU> RTPReceiver::get_next_frame(std::optional<std::chrono::microseconds> timeout)
 {
     std::shared_ptr<NALU> ret=nullptr;
     //qDebug()<<"get_data size_estimate:"<<m_data_queue.size_approx();
-    if(timeout>std::chrono::microseconds(0)){
-        //m_data_queue.try_dequeue(ret);
-        m_data_queue.wait_dequeue_timed(ret,timeout);
+    if(timeout!=std::nullopt){
+        m_data_queue.wait_dequeue_timed(ret,timeout.value());
     }else{
         m_data_queue.try_dequeue(ret);
     }
