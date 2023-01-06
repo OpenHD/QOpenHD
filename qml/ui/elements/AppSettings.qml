@@ -7,6 +7,8 @@ Settings {
     id: settings
 
     property double global_scale: 1.0
+    property double video_rotation: 0
+    property double osd_rotation: 0
 
     property string locale: "en"
 

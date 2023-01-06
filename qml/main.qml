@@ -72,6 +72,7 @@ ApplicationWindow {
     Loader {
         anchors.fill: parent
         z: 1.0
+        rotation: settings.video_rotation
         source: {
             if (EnableGStreamer && EnableMainVideo) {
                 return "../video/MainVideoGStreamer.qml";
@@ -91,6 +92,7 @@ ApplicationWindow {
         id: hudOverlayGrid
         anchors.fill: parent
         z: 3.0
+        rotation: settings.osd_rotation
         onSettingsButtonClicked: {
             settings_panel.openSettings();
         }
