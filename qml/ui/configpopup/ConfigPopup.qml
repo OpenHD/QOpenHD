@@ -15,6 +15,11 @@ Rectangle {
 
     function openSettings() {
         visible = true
+        focus = true
+    }
+
+    function showAppSettings(i) {
+        console.log("TEST show app settings:"+i);
     }
 
     anchors.fill: parent
@@ -52,7 +57,6 @@ Rectangle {
                     id: appMouseAreaClose
                     anchors.fill: parent
                     onClicked: settings_form.visible=false
-
                 }
 
                 Text {
@@ -444,7 +448,7 @@ Rectangle {
         }
 
         MavlinkAllSettingsPanel {
-            id:  mavlinkAllSettingsPanel
+            id:  mavlinkAllSettingsPanel //this is "openhd" menu
         }
 
         LogMessagesStatusView{
