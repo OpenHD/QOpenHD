@@ -53,28 +53,23 @@ Rectangle {
                 height: 48
                 width: parent.width
 
-                MouseArea {
-                    id: appMouseAreaClose
-                    anchors.fill: parent
-                    onClicked: settings_form.visible=false
-                }
-
-                Text {
+                Button{
                     id: closeButton
                     text: "\uf060"
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
                     font.family: "Font Awesome 5 Free"
                     font.pixelSize: 22
-                    height: parent.height
-                    width: 22
-                    anchors.left: parent.left
-                    anchors.leftMargin: parent.width/2-font.pixelSize/2
-                    color: "#333c4c"
+                    height: 35
+                    width: 35
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.horizontalCenter: parent.horizontalCenter
+
+                    onClicked: {
+                        settings_form.visible=false
+                    }
                 }
             }
         }
-  }
+    }
 
     // This is the settings row on the left. When an item is clicked, the stack layout index is changed which
     // means a different category is displayed.
