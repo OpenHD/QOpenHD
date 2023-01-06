@@ -63,6 +63,14 @@ Rectangle {
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.horizontalCenter: parent.horizontalCenter
 
+                    background: Rectangle {
+                        opacity: enabled ? 1 : 0.3
+                        //border.color: control.down ? "#17a81a" : "#21be2b"
+                        //border.width: 1
+                        radius: 5
+                        //later this can be changed to focus
+                        color: closeButton.hovered ? "grey" : "white" // I update background color by this
+                    }
                     onClicked: {
                         settings_form.visible=false
                     }
