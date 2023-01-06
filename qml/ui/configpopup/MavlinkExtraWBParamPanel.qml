@@ -134,10 +134,6 @@ ScrollView {
             }
 
             // https://stackoverflow.com/questions/41991438/how-do-i-find-a-particular-listelement-inside-a-listmodel-in-qml
-            //function find(model, criteria) {
-            //  for(var i = 0; i < model.count; ++i) if (criteria(model.get(i))) return model.get(i)
-            //  return null
-            //}
             // For the models above (model with value) try to find the index of the first  item where model[i].value===value
             function find_index(model,value){
                 for(var i = 0; i < model.count; ++i) if (model.get(i).value===value) return i
@@ -313,7 +309,6 @@ Leave default (20Mhz width)."
                     "To change these parameters, make sure your ground and air unit are alive and well.\nAlso, it is not recommended to change them during flight.
 Changing these params is only possible if both your air and ground unit support them\nA change might take up to 3 seconds to be applied."
             }
-
         }
     }
 }
