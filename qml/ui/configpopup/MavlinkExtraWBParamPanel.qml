@@ -21,6 +21,20 @@ ScrollView {
 
     clip: true
 
+    // https://stackoverflow.com/questions/41991438/how-do-i-find-a-particular-listelement-inside-a-listmodel-in-qml
+    // For the models above (model with value) try to find the index of the first  item where model[i].value===value
+    function find_index(model,value){
+        for(var i = 0; i < model.count; ++i) if (model.get(i).value===value) return i
+        return -1
+    }
+    // try and update the combobox to the retrieved value(value != index)
+    function update_combobox(_combobox,_value){
+        var _index=find_index(_combobox.model,_value)
+        if(_index >= 0){
+            _combobox.currentIndex=_index;
+        }
+    }
+
     Item {
         anchors.fill: parent
 
@@ -133,19 +147,6 @@ ScrollView {
                 ListElement {title: "40MHz"; value: 40}
             }
 
-            // https://stackoverflow.com/questions/41991438/how-do-i-find-a-particular-listelement-inside-a-listmodel-in-qml
-            // For the models above (model with value) try to find the index of the first  item where model[i].value===value
-            function find_index(model,value){
-                for(var i = 0; i < model.count; ++i) if (model.get(i).value===value) return i
-                return -1
-            }
-            // try and update the combobox to the retrieved value(value != index)
-            function update_combobox(_combobox,_value){
-                var _index=find_index(_combobox.model,_value)
-                if(_index >= 0){
-                    _combobox.currentIndex=_index;
-                }
-            }
             Rectangle {
                 width: parent.width
                 height: rowHeight
