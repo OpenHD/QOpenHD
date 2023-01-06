@@ -204,14 +204,15 @@ void ADSBapi::mapBoundsChanged(QGeoCoordinate center_coord) {
 }
 
 void ADSBInternet::requestData(void) {
-    qDebug() << "------------------>ADSBInternet::requestData<------------------------";
-    _adsb_api_openskynetwork = _settings.value("adsb_api_openskynetwork").toBool();
-    _show_adsb_internet = _settings.value("show_adsb").toBool();
-
     // If openskynetwork is disabled by settings don't make the request and return
     if (!_adsb_api_openskynetwork || !_show_adsb_internet) {
         return;
     }
+    qDebug() << "------------------>ADSBInternet::requestData<------------------------";
+    _adsb_api_openskynetwork = _settings.value("adsb_api_openskynetwork").toBool();
+    _show_adsb_internet = _settings.value("show_adsb").toBool();
+
+
 
     adsb_url= "https://opensky-network.org/api/states/all?lamin="+lowerr_lat+"&lomin="+upperl_lon+"&lamax="+upperl_lat+"&lomax="+lowerr_lon;
 

@@ -13,18 +13,24 @@ import OpenHD 1.0
 import "../../ui" as Ui
 import "../elements"
 
+ScrollView {
+    id:mavlinkExtraWBParamPanel
+    width: parent.width
+    height: parent.height
+    contentHeight: wbParamColumn.height
 
-// Dirty, for the 3 mavlink settings that need to be kept in sync on both air and ground
-ColumnLayout {
-    Layout.fillHeight: true
-    Layout.fillWidth: true
+    clip: true
 
-    //width: parent.width
-    //height: 600
+    Item {
+        anchors.fill: parent
 
-    property int rowHeight: 64
-    property int elementHeight: 48
-    property int elementComboBoxWidth: 250
+        Column {
+            id:wbParamColumn
+            spacing: 0
+            anchors.left: parent.left
+            anchors.right: parent.right
+
+            // Dirty, for the 3 mavlink settings that need to be kept in sync on both air and ground
 
     // NOTE: WHile it would be possible to do the 2.4G frequencie(s) in 5Mhz increments (and OpenHD accepts those values)
     // We do not expose them here, since it incredibly pollutes the UI and gives the user the false perception of there being a lot of 2.4G Channels
@@ -110,178 +116,204 @@ ColumnLayout {
         ListElement {title: "5825Mhz [165]"; value: 5825}
     }
 
-    ListModel{
-        id: mcsIndexModel
-         ListElement{title: "~4Mbps         (MCS0)"; value: 0}
-        ListElement {title: "5.5Mbps/6.5Mbps(MCS1)"; value: 1}
-        ListElement {title: "11Mbps/13Mbps  (MCS2)"; value: 2}
-        ListElement {title: "12Mbps/13Mbps  (MCS3)"; value: 3}
-        ListElement {title: "19.5Mbps       (MCS4)"; value: 4}
-        ListElement {title: "24Mbps/26Mbps  (MCS5)"; value: 5}
-        ListElement {title: "36Mbps/39Mbps  (MCS6)"; value: 6}
-    }
-
-    ListModel{
-        id: channelWidthModel
-         ListElement {title: "20MHz"; value: 20}
-         ListElement {title: "40MHz"; value: 40}
-    }
-
-    // https://stackoverflow.com/questions/41991438/how-do-i-find-a-particular-listelement-inside-a-listmodel-in-qml
-    //function find(model, criteria) {
-    //  for(var i = 0; i < model.count; ++i) if (criteria(model.get(i))) return model.get(i)
-    //  return null
-    //}
-    // For the models above (model with value) try to find the index of the first  item where model[i].value===value
-    function find_index(model,value){
-        for(var i = 0; i < model.count; ++i) if (model.get(i).value===value) return i
-        return -1
-    }
-    // try and update the combobox to the retrieved value(value != index)
-    function update_combobox(_combobox,_value){
-        var _index=find_index(_combobox.model,_value)
-        if(_index >= 0){
-            _combobox.currentIndex=_index;
-        }
-    }
-
-    RowLayout{
-        Button{
-            text: "Find Air unit"
-            onClicked: {
-                dialoqueStartChannelScan.m_curr_index=0
-               dialoqueStartChannelScan.visible=true
+            ListModel{
+                id: mcsIndexModel
+                ListElement{title: "~4Mbps         (MCS0)"; value: 0}
+                ListElement {title: "5.5Mbps/6.5Mbps(MCS1)"; value: 1}
+                ListElement {title: "11Mbps/13Mbps  (MCS2)"; value: 2}
+                ListElement {title: "12Mbps/13Mbps  (MCS3)"; value: 3}
+                ListElement {title: "19.5Mbps       (MCS4)"; value: 4}
+                ListElement {title: "24Mbps/26Mbps  (MCS5)"; value: 5}
+                ListElement {title: "36Mbps/39Mbps  (MCS6)"; value: 6}
             }
-        }
-        Button{
-            text: "INFO"
-            Material.background:Material.LightBlue
-            onClicked: {
-                var text="Scan all channels for a running Air unit. Might take up to 30seconds to complete (openhd supports a ton of channels,
+
+            ListModel{
+                id: channelWidthModel
+                ListElement {title: "20MHz"; value: 20}
+                ListElement {title: "40MHz"; value: 40}
+            }
+
+            // https://stackoverflow.com/questions/41991438/how-do-i-find-a-particular-listelement-inside-a-listmodel-in-qml
+            //function find(model, criteria) {
+            //  for(var i = 0; i < model.count; ++i) if (criteria(model.get(i))) return model.get(i)
+            //  return null
+            //}
+            // For the models above (model with value) try to find the index of the first  item where model[i].value===value
+            function find_index(model,value){
+                for(var i = 0; i < model.count; ++i) if (model.get(i).value===value) return i
+                return -1
+            }
+            // try and update the combobox to the retrieved value(value != index)
+            function update_combobox(_combobox,_value){
+                var _index=find_index(_combobox.model,_value)
+                if(_index >= 0){
+                    _combobox.currentIndex=_index;
+                }
+            }
+            Rectangle {
+                width: parent.width
+                height: rowHeight
+                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+
+                RowLayout{
+                    anchors.verticalCenter: parent.verticalCenter
+                    Button{
+                        text: "Find Air unit"
+                        onClicked: {
+                            dialoqueStartChannelScan.m_curr_index=0
+                            dialoqueStartChannelScan.visible=true
+                        }
+                    }
+                    Button{
+                        text: "INFO"
+                        Material.background:Material.LightBlue
+                        onClicked: {
+                            var text="Scan all channels for a running Air unit. Might take up to 30seconds to complete (openhd supports a ton of channels,
 and we need to listen on each of them for a short timespan)"
-                _messageBoxInstance.set_text_and_show(text)
-            }
-        }
-    }
-
-    // Changing the wifi frequency, r.n only 5G
-    RowLayout{
-        Button{
-            text: "Fetch"
-            onClicked: {
-                var _res=_synchronizedSettings.get_param_int_air_and_ground_value_freq()
-                if(_res>=0){
-                    buttonSwitchFreq.enabled=true
+                            _messageBoxInstance.set_text_and_show(text)
+                        }
+                    }
                 }
-                //console.log("Got ",_res)
-                update_combobox(comboBoxFreq,_res);
             }
-        }
-        ComboBox {
-            id: comboBoxFreq
-            Layout.minimumWidth : elementComboBoxWidth
-            model: frequenciesModel
-            textRole: "title"
-        }
-        Button{
-            text: "Switch Frequency"
-            id: buttonSwitchFreq
-            enabled: false
-            onClicked: {
-                var selectedValue=frequenciesModel.get(comboBoxFreq.currentIndex).value
-                _synchronizedSettings.change_param_air_and_ground_frequency(selectedValue);
-            }
-        }
-        Button{
-            text: "INFO"
-            Material.background:Material.LightBlue
-            onClicked: {
-                var text="Frequency in Mhz and channel number. [X] - Not a legal wifi frequency, AR9271 does them anyways. (DFS-RADAR) - also used by commercial plane(s) weather radar.
+
+            // Changing the wifi frequency, r.n only 5G
+            Rectangle {
+                width: parent.width
+                height: rowHeight
+                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+
+                RowLayout{
+                    anchors.verticalCenter: parent.verticalCenter
+                    Button{
+                        text: "Fetch"
+                        onClicked: {
+                            var _res=_synchronizedSettings.get_param_int_air_and_ground_value_freq()
+                            if(_res>=0){
+                                buttonSwitchFreq.enabled=true
+                            }
+                            //console.log("Got ",_res)
+                            update_combobox(comboBoxFreq,_res);
+                        }
+                    }
+                    ComboBox {
+                        id: comboBoxFreq
+                        model: frequenciesModel
+                        textRole: "title"
+                        implicitWidth:  elementComboBoxWidth
+                    }
+                    Button{
+                        text: "Switch Frequency"
+                        id: buttonSwitchFreq
+                        enabled: false
+                        onClicked: {
+                            var selectedValue=frequenciesModel.get(comboBoxFreq.currentIndex).value
+                            _synchronizedSettings.change_param_air_and_ground_frequency(selectedValue);
+                        }
+                    }
+                    Button{
+                        text: "INFO"
+                        Material.background:Material.LightBlue
+                        onClicked: {
+                            var text="Frequency in Mhz and channel number. [X] - Not a legal wifi frequency, AR9271 does them anyways. (DFS-RADAR) - also used by commercial plane(s) weather radar.
 It is your responsibility to only change the frequency to values allowd in your country. You can use a frequency analyzer on your phone or the packet loss to find the best channel for your environemnt."
-                _messageBoxInstance.set_text_and_show(text)
-            }
-        }
-    }
-
-    RowLayout{
-        Button{
-            text: "Fetch"
-            onClicked: {
-                var _res=_synchronizedSettings.get_param_int_air_and_ground_value_mcs()
-                if(_res>=0){
-                    buttonSwitchMCS.enabled=true
+                            _messageBoxInstance.set_text_and_show(text)
+                        }
+                    }
                 }
-                //console.log("Got ",_res)
-                update_combobox(comboBoxMcsIndex,_res);
             }
-        }
-        ComboBox {
-            id: comboBoxMcsIndex
-            Layout.minimumWidth : elementComboBoxWidth
-            model: mcsIndexModel
-            textRole: "title"
-        }
-        Button{
-            text: "Change MCS"
-            id: buttonSwitchMCS
-            enabled: false
-            onClicked: {
-                 var selectedValue=mcsIndexModel.get(comboBoxMcsIndex.currentIndex).value
-                _synchronizedSettings.change_param_air_and_ground_mcs(selectedValue)
-            }
-        }
-        Button{
-            text: "INFO"
-            Material.background:Material.LightBlue
-            onClicked: {
-                var text="Recommended 3 (Default). The MCS index controlls the available bandwidth. Higher MCS index - higher bandwidth, but less range. Not all cards support changing it."
-                _messageBoxInstance.set_text_and_show(text)
-            }
-        }
-    }
+            Rectangle {
+                width: parent.width
+                height: rowHeight
+                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
-    RowLayout{
-        Button{
-            text: "Fetch"
-            onClicked: {
-                var _res=_synchronizedSettings.get_param_int_air_and_ground_value_channel_width()
-                if(_res>=0){
-                    buttonSwitchChannelWidth.enabled=true
+                RowLayout{
+                    anchors.verticalCenter: parent.verticalCenter
+                    Button{
+                        text: "Fetch"
+                        onClicked: {
+                            var _res=_synchronizedSettings.get_param_int_air_and_ground_value_mcs()
+                            if(_res>=0){
+                                buttonSwitchMCS.enabled=true
+                            }
+                            //console.log("Got ",_res)
+                            update_combobox(comboBoxMcsIndex,_res);
+                        }
+                    }
+                    ComboBox {
+                        id: comboBoxMcsIndex
+                        model: mcsIndexModel
+                        textRole: "title"
+                        implicitWidth:  elementComboBoxWidth
+                    }
+                    Button{
+                        text: "Change MCS"
+                        id: buttonSwitchMCS
+                        enabled: false
+                        onClicked: {
+                            var selectedValue=mcsIndexModel.get(comboBoxMcsIndex.currentIndex).value
+                            _synchronizedSettings.change_param_air_and_ground_mcs(selectedValue)
+                        }
+                    }
+                    Button{
+                        text: "INFO"
+                        Material.background:Material.LightBlue
+                        onClicked: {
+                            var text="Recommended 3 (Default). The MCS index controlls the available bandwidth. Higher MCS index - higher bandwidth, but less range. Not all cards support changing it."
+                            _messageBoxInstance.set_text_and_show(text)
+                        }
+                    }
                 }
-                //console.log("Got ",_res)
-                update_combobox(comboBoxChannelWidth,_res);
             }
-        }
-        ComboBox {
-            id: comboBoxChannelWidth
-            Layout.minimumWidth : elementComboBoxWidth
-            model: channelWidthModel
-            textRole: "title"
-        }
-        Button{
-            text: "Change Channel Width"
-            id: buttonSwitchChannelWidth
-            enabled: false
-            onClicked: {
-                 var selectedValue=channelWidthModel.get(comboBoxChannelWidth.currentIndex).value
-                _synchronizedSettings.change_param_air_and_ground_channel_width(selectedValue)
-            }
-        }
-        Button{
-            text: "INFO"
-            Material.background:Material.LightBlue
-            onClicked: {
-                var text="Recommended 20Mhz (Default). A bigger channel width gives more bandwidth, but greatly increases interference and reduces range (sensitivity).
+            Rectangle {
+                width: parent.width
+                height: rowHeight
+                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+
+                RowLayout{
+                    anchors.verticalCenter: parent.verticalCenter
+                    Button{
+                        text: "Fetch"
+                        onClicked: {
+                            var _res=_synchronizedSettings.get_param_int_air_and_ground_value_channel_width()
+                            if(_res>=0){
+                                buttonSwitchChannelWidth.enabled=true
+                            }
+                            //console.log("Got ",_res)
+                            update_combobox(comboBoxChannelWidth,_res);
+                        }
+                    }
+                    ComboBox {
+                        id: comboBoxChannelWidth
+                        model: channelWidthModel
+                        textRole: "title"
+                        implicitWidth:  elementComboBoxWidth
+                    }
+                    Button{
+                        text: "Change Channel Width"
+                        id: buttonSwitchChannelWidth
+                        enabled: false
+                        onClicked: {
+                            var selectedValue=channelWidthModel.get(comboBoxChannelWidth.currentIndex).value
+                            _synchronizedSettings.change_param_air_and_ground_channel_width(selectedValue)
+                        }
+                    }
+                    Button{
+                        text: "INFO"
+                        Material.background:Material.LightBlue
+                        onClicked: {
+                            var text="Recommended 20Mhz (Default). A bigger channel width gives more bandwidth, but greatly increases interference and reduces range (sensitivity).
 Leave default (20Mhz width)."
-                _messageBoxInstance.set_text_and_show(text)
+                            _messageBoxInstance.set_text_and_show(text)
+                        }
+                    }
+                }
             }
+            Text{
+                text:
+                    "To change these parameters, make sure your ground and air unit are alive and well.\nAlso, it is not recommended to change them during flight.
+Changing these params is only possible if both your air and ground unit support them\nA change might take up to 3 seconds to be applied."
+            }
+
         }
     }
-
-    Text{
-        text:
-"To change these parameters, make sure your ground and air unit are alive and well.\nAlso, it is not recommended to change them during flight.
-Changing these params is only possible if both your air and ground unit support them\nA change might take up to 3 seconds to be applied."
-    }
-
 }
