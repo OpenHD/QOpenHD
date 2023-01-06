@@ -84,7 +84,7 @@ Item {
         }
 
         TabButton {
-            text: qsTr("Manage")
+            text: qsTr("Dev")
             width: implicitWidth
             height: 48
             font.pixelSize: 13
