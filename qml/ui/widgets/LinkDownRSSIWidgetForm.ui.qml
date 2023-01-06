@@ -168,7 +168,7 @@ BaseWidget {
                 width: parent.width
                 height: 32
                 Text {
-                    text: qsTr("Show received/injected")
+                    text: qsTr("Show dBm per card")
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -181,12 +181,12 @@ BaseWidget {
                     height: parent.height
                     anchors.rightMargin: 6
                     anchors.right: parent.right
-                    checked: settings.downlink_show_received_injected_packets
-                    onCheckedChanged: settings.downlink_show_received_injected_packets = checked
+                    checked: settings.downlink_show_dbm_and_packets_per_card
+                    onCheckedChanged: settings.downlink_show_dbm_and_packets_per_card = checked
                 }
             }
 
-            Item {
+            /*Item {
                 width: parent.width
                 height: 32
                 Text {
@@ -206,7 +206,7 @@ BaseWidget {
                     checked: settings.downlink_show_current_bitrate
                     onCheckedChanged: settings.downlink_show_current_bitrate = checked
                 }
-            }
+            }*/
         }
     }
 
@@ -219,28 +219,6 @@ BaseWidget {
 
         ColumnLayout{
             width:200
-            Connections {
-                target: _ohdSystemGround
-                function wifi_adapter0_changed(received_packet_cnt, current_signal_dbm, signal_good) {
-                    card0textlower.text = Number(current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
-                    card0textlower.visible = true;
-                }
-
-                function  wifi_adapter1_changed(received_packet_cnt, current_signal_dbm, signal_good) {
-                    card1textlower.text = Number(current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
-                    card1textlower.visible = true;
-                }
-
-                function  wifi_adapter2_changed(received_packet_cnt, current_signal_dbm, signal_good) {
-                    card2textlower.text = Number(current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
-                    card2textlower.visible = true;
-                }
-
-                function  wifi_adapter3_changed(received_packet_cnt, current_signal_dbm, signal_good) {
-                    card3textlower.text = Number(current_signal_dbm).toLocaleString(Qt.locale(), 'f', 0) + qsTr(" dBm");
-                    card3textlower.visible = true;
-                }
-            }
             Text {
                 //Layout.alignment: left
                 text: "TX error/dropped: "+_ohdSystemAir.count_tx_inj_error_hint+" "+_ohdSystemAir.count_tx_dropped_packets
@@ -417,10 +395,10 @@ BaseWidget {
                 style: Text.Outline
                 styleColor: settings.color_glow
             }
-            // RX (Ground in) bitrate
-            /*Text {
-                visible: settings.downlink_show_current_bitrate ? true : false
-                text: _ohdSystemGround.
+            // dBm and packets for card index 0
+            Text {
+                visible: settings.downlink_show_dbm_and_packets_per_card  && _wifi_card_gnd0.alive
+                text: "[1] " + _wifi_card_gnd0.n_received_packets + " " + _wifi_card_gnd0.curr_rx_rssi_dbm + " dBm"
                 color: settings.color_text
                 verticalAlignment: Text.AlignVCenter
                 font.pixelSize: 12
@@ -430,7 +408,49 @@ BaseWidget {
                 elide: Text.ElideRight
                 style: Text.Outline
                 styleColor: settings.color_glow
-            }*/
+            }
+            // dBm and packets for card index 1
+            Text {
+                visible: settings.downlink_show_dbm_and_packets_per_card  && _wifi_card_gnd1.alive
+                text: "[2] "  + _wifi_card_gnd1.n_received_packets + " " + _wifi_card_gnd1.curr_rx_rssi_dbm + " dBm"
+                color: settings.color_text
+                verticalAlignment: Text.AlignVCenter
+                font.pixelSize: 12
+                font.family: settings.font_text
+                horizontalAlignment: Text.AlignLeft
+                wrapMode: Text.NoWrap
+                elide: Text.ElideRight
+                style: Text.Outline
+                styleColor: settings.color_glow
+            }
+            // dBm and packets for card index 2
+            Text {
+                visible: settings.downlink_show_dbm_and_packets_per_card && _wifi_card_gnd2.alive
+                text: "[3] " + _wifi_card_gnd2.n_received_packets + " " + _wifi_card_gnd2.curr_rx_rssi_dbm + " dBm"
+                color: settings.color_text
+                verticalAlignment: Text.AlignVCenter
+                font.pixelSize: 12
+                font.family: settings.font_text
+                horizontalAlignment: Text.AlignLeft
+                wrapMode: Text.NoWrap
+                elide: Text.ElideRight
+                style: Text.Outline
+                styleColor: settings.color_glow
+            }
+            // dBm and packets for card index 3
+            Text {
+                visible: settings.downlink_show_dbm_and_packets_per_card && _wifi_card_gnd3.alive
+                text: "[4] " + _wifi_card_gnd3.n_received_packets + " " + _wifi_card_gnd3.curr_rx_rssi_dbm + " dBm"
+                color: settings.color_text
+                verticalAlignment: Text.AlignVCenter
+                font.pixelSize: 12
+                font.family: settings.font_text
+                horizontalAlignment: Text.AlignLeft
+                wrapMode: Text.NoWrap
+                elide: Text.ElideRight
+                style: Text.Outline
+                styleColor: settings.color_glow
+            }
         }
 // Consti10 temporary end
     }

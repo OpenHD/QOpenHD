@@ -103,6 +103,7 @@ SOURCES += \
     app/telemetry/models/aohdsystem.cpp \
     app/qopenhd.cpp \
     app/telemetry/models/rcchannelsmodel.cpp \
+    app/telemetry/models/wificard.cpp \
     app/telemetry/settings/improvedintsetting.cpp \
     app/telemetry/settings/improvedstringsetting.cpp \
     app/telemetry/settings/synchronizedsettings.cpp \
@@ -119,8 +120,8 @@ HEADERS += \
     app/telemetry/mavsdk_include.h \
     app/telemetry/models/aohdsystem.h \
     app/telemetry/models/rcchannelsmodel.h \
-    app/telemetry/models/wifiadapter.h \
     app/qopenhd.h \
+    app/telemetry/models/wificard.h \
     app/telemetry/openhd_defines.hpp \
     app/telemetry/qopenhdmavlinkhelper.hpp \
     app/telemetry/settings/improvedintsetting.h \

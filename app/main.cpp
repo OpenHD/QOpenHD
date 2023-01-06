@@ -14,6 +14,7 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 
 #include "telemetry/models/fcmavlinksystem.h"
 #include "telemetry/models/aohdsystem.h"
+#include "telemetry/models/wificard.h"
 #include "telemetry/MavlinkTelemetry.h"
 #include "telemetry/models/rcchannelsmodel.h"
 
@@ -295,6 +296,13 @@ int main(int argc, char *argv[]) {
     //AOHDSystem::register_for_qml(engine.rootContext());
     engine.rootContext()->setContextProperty("_ohdSystemAir", &AOHDSystem::instanceAir());
     engine.rootContext()->setContextProperty("_ohdSystemGround", &AOHDSystem::instanceGround());
+    // wifi cards
+    engine.rootContext()->setContextProperty("_wifi_card_gnd0", &WiFiCard::instance_gnd(0));
+    engine.rootContext()->setContextProperty("_wifi_card_gnd1", &WiFiCard::instance_gnd(1));
+    engine.rootContext()->setContextProperty("_wifi_card_gnd2", &WiFiCard::instance_gnd(2));
+    engine.rootContext()->setContextProperty("_wifi_card_gnd3", &WiFiCard::instance_gnd(3));
+    //
+    engine.rootContext()->setContextProperty("_wifi_card_air", &WiFiCard::instance_air());
 
     engine.rootContext()->setContextProperty("_decodingStatistics",&DecodingStatistcs::instance());
     // dirty
