@@ -12,7 +12,7 @@ import "../../ui" as Ui
 import "../elements"
 
 ScrollView {
-    //id: appScreenSettingsView
+    id: appScreenSettingsView
     width: parent.width
     height: parent.height
     contentHeight: screenColumn.height
