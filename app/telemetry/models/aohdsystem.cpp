@@ -4,7 +4,7 @@
 #include "../../common_consti/StringHelper.hpp"
 #include "../../common_consti/TimeHelper.hpp"
 #include "../telemetryutil.hpp"
-
+#include "wificard.h"
 #include "rcchannelsmodel.h"
 
 #include <string>
@@ -93,7 +93,7 @@ bool AOHDSystem::process_message(const mavlink_message_t &msg)
         case MAVLINK_MSG_ID_OPENHD_STATS_MONITOR_MODE_WIFI_CARD:{
             mavlink_openhd_stats_monitor_mode_wifi_card_t parsedMsg;
             mavlink_msg_openhd_stats_monitor_mode_wifi_card_decode(&msg,&parsedMsg);
-            //qDebug()<<"Got MAVLINK_MSG_ID_OPENHD_WIFI_CARD"<<(int)parsedMsg.card_index<<" "<<(int)parsedMsg.signal_millidBm;
+            //qDebug()<<"Got MAVLINK_MSG_ID_OPENHD_WIFI_CARD"<<(int)parsedMsg.card_index<<" "<<(int)parsedMsg.rx_rssi;
             process_x0(parsedMsg);
             return true;
         }break;
@@ -180,7 +180,27 @@ void AOHDSystem::process_x0(const mavlink_openhd_stats_monitor_mode_wifi_card_t 
         return;
     }
     //qDebug()<<"Got mavlink_openhd_stats_monitor_mode_wifi_card_t";
-    set_wifi_adapter(msg.card_index,msg.count_p_received,msg.rx_rssi,true);
+    if(_is_air){
+        if(msg.card_index!=0){
+            qDebug()<<"Air only has 1 wifibroadcats card";
+            return;
+        }
+        auto& card=WiFiCard::instance_air();
+        card.set_alive(true);
+        card.set_curr_rx_rssi_dbm(msg.rx_rssi);
+        card.set_n_received_packets(msg.count_p_received);
+        set_current_rx_rssi(msg.rx_rssi);
+    }else{
+        if(msg.card_index<0 || msg.card_index>=4){
+            qDebug()<<"Gnd invalid card index"<<msg.card_index;
+            return;
+        }
+        auto& card=WiFiCard::instance_gnd(msg.card_index);
+        card.set_alive(true);
+        card.set_curr_rx_rssi_dbm(msg.rx_rssi);
+        card.set_n_received_packets(msg.count_p_received);
+        set_current_rx_rssi(WiFiCard::helper_get_gnd_curr_best_rssi());
+    }
 }
 
 void AOHDSystem::process_x1(const mavlink_openhd_stats_monitor_mode_wifi_link_t &msg){
@@ -257,49 +277,6 @@ void AOHDSystem::set_last_openhd_heartbeat(qint64 last_openhd_heartbeat) {
     emit last_openhd_heartbeat_changed(m_last_openhd_heartbeat);
 }
 
-void AOHDSystem::set_wifi_adapter(uint8_t index, unsigned int received_packet_count, int current_signal_dbm, int signal_good)
-{
-    if(index==0){
-        set_wifi_adapter0(received_packet_count,current_signal_dbm,signal_good);
-    }else if(index==1){
-        set_wifi_adapter1(received_packet_count,current_signal_dbm,signal_good);
-    }else if(index==2){
-        set_wifi_adapter2(received_packet_count,current_signal_dbm,signal_good);
-    }else if(index==3){
-        set_wifi_adapter3(received_packet_count,current_signal_dbm,signal_good);
-    }else{
-        qDebug()<<"wifi adapter error index unsuported:"<<index;
-    }
-    //qDebug()<<QString::fromStdString(m_wifi_adapters[0].to_string(0));
-}
-
-//  TODO register qt struct and make it nice
-void AOHDSystem::set_wifi_adapter0(unsigned int received_packet_count, int current_signal_dbm, int signal_good){
-    m_wifi_adapters[0].received_packet_count=received_packet_count;
-    m_wifi_adapters[0].current_signal_dbm=current_signal_dbm;
-    m_wifi_adapters[0].signal_good=signal_good;
-    emit wifi_adapter0_changed(received_packet_count,current_signal_dbm,signal_good);
-    // TODO figure out a way to calculate the best rssi
-    set_current_rx_rssi(current_signal_dbm);
-}
-void AOHDSystem::set_wifi_adapter1(unsigned int received_packet_count, int current_signal_dbm, int signal_good){
-    m_wifi_adapters[1].received_packet_count=received_packet_count;
-    m_wifi_adapters[1].current_signal_dbm=current_signal_dbm;
-    m_wifi_adapters[1].signal_good=signal_good;
-    emit wifi_adapter1_changed(received_packet_count,current_signal_dbm,signal_good);
-}
-void AOHDSystem::set_wifi_adapter2(unsigned int received_packet_count, int current_signal_dbm, int signal_good){
-    m_wifi_adapters[2].received_packet_count=received_packet_count;
-    m_wifi_adapters[2].current_signal_dbm=current_signal_dbm;
-    m_wifi_adapters[2].signal_good=signal_good;
-    emit wifi_adapter2_changed(received_packet_count,current_signal_dbm,signal_good);
-}
-void AOHDSystem::set_wifi_adapter3(unsigned int received_packet_count, int current_signal_dbm, int signal_good){
-    m_wifi_adapters[3].received_packet_count=received_packet_count;
-    m_wifi_adapters[3].current_signal_dbm=current_signal_dbm;
-    m_wifi_adapters[3].signal_good=signal_good;
-    emit wifi_adapter3_changed(received_packet_count,current_signal_dbm,signal_good);
-}
 
 void AOHDSystem::set_gpio(QList<int> gpio){
     m_gpio = gpio;

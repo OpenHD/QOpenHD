@@ -5,7 +5,6 @@
 #include <QDebug>
 #include <QTimer>
 #include "../mavsdk_include.h"
-#include "wifiadapter.h"
 #include "../openhd_defines.hpp"
 #include <array>
 #include <QQmlContext>
@@ -108,12 +107,6 @@ public:
      Q_PROPERTY(qint64 last_openhd_heartbeat MEMBER m_last_openhd_heartbeat WRITE set_last_openhd_heartbeat NOTIFY last_openhd_heartbeat_changed)
      void set_last_openhd_heartbeat(qint64 last_openhd_heartbeat);
      //
-     // calls the indexed method, we need that for qt signals to work
-     void set_wifi_adapter(uint8_t index,unsigned int received_packet_count,int current_signal_dbm,int signal_good);
-     void set_wifi_adapter0(unsigned int received_packet_count,int current_signal_dbm,int signal_good);
-     void set_wifi_adapter1(unsigned int received_packet_count,int current_signal_dbm,int signal_good);
-     void set_wifi_adapter2(unsigned int received_packet_count,int current_signal_dbm,int signal_good);
-     void set_wifi_adapter3(unsigned int received_packet_count,int current_signal_dbm,int signal_good);
      // this is a placeholder for later
      Q_PROPERTY(QList<int> gpio MEMBER m_gpio WRITE set_gpio NOTIFY gpio_changed)
      void set_gpio(QList<int> gpio);
@@ -124,18 +117,10 @@ public:
 signals:
      //
      void last_openhd_heartbeat_changed(qint64 last_openhd_heartbeat);
-     // air only 1
-     void wifi_adapter0_changed(unsigned int received_packet_count,int current_signal_dbm,int signal_good);
-     void wifi_adapter1_changed(unsigned int received_packet_count,int current_signal_dbm,int signal_good);
-     void wifi_adapter2_changed(unsigned int received_packet_count,int current_signal_dbm,int signal_good);
-     void wifi_adapter3_changed(unsigned int received_packet_count,int current_signal_dbm,int signal_good);
      //
      void gpio_changed(QList<int> gpio);
 private:
      qint64 m_last_openhd_heartbeat = -1;
-     // air always has only 1 wfibroadcast card, ground can have more than one
-     std::array<WifiAdapter,4> m_wifi_adapters;
-     //
      QList<int> m_gpio{0};
      //
      QString m_curr_incoming_bitrate="Bitrate NA";

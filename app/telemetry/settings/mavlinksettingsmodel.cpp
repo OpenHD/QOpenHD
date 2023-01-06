@@ -220,6 +220,7 @@ static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string&
                 {"FEC_K=12",12},
                 {"FEC_K=16",16},
                 {"FEC_K=20",20},
+                {"FEC_K=50",50},
             };
             map_improved_params["WB_V_FEC_BLK_L"]=ImprovedIntSetting(0,128,default_values);
         }
@@ -233,6 +234,29 @@ static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string&
                 {"100%",100},
             };
             map_improved_params["WB_V_FEC_PERC"]=ImprovedIntSetting(0,100,default_values);
+        }
+        {
+            auto default_values=std::vector<ImprovedIntSetting::Item>{
+                {"2MBit/s",2},
+                {"4MBit/s",4},
+                {"6MBit/s",6},
+                {"8MBit/s (default)",8},
+                {"10MBit/s (high)",10},
+                {"14MBit/s (high)",14},
+                {"18MBit/s (high)",18},
+            };
+            map_improved_params["V_BITRATE_MBITS"]=ImprovedIntSetting(1,100,default_values);
+        }
+        {
+            auto default_values=std::vector<ImprovedIntSetting::Item>{
+                {"5  (good recovery)",5},
+                {"8  (good recovery)",8},
+                {"10 (medium recovery)",10},
+                {"15 (medium recovery)",15},
+                {"20 (bad recovery)",20},
+                {"30 (bad recovery)",30},
+            };
+            map_improved_params["V_KEYFRAME_I"]=ImprovedIntSetting(0,100,default_values);
         }
     }
     if(map_improved_params.find(param_id)!=map_improved_params.end()){
@@ -769,7 +793,7 @@ QString MavlinkSettingsModel::get_short_description(const QString param_id)const
         return "Video WIDTHxHEIGHT@FPS. You can enter any value you want here, but if you select a video format that is not supported by your camera, the video stream will stop";
     }
     if(param_id=="VIDEO_CODEC"){
-        return "Video codec. If your camera/ground station does not support HW accelerated encoding/decoding of the selected codec,it'l default to SW encode/decode. A reboot (air&ground) is recommended after chaning this parameter.";
+        return "Video codec. If your camera/ground station does not support HW accelerated encoding/decoding of the selected codec,it'l default to SW encode/decode. A reboot (air&ground) is recommended after changing this parameter.";
     }
     if(param_id=="V_MJPEG_QUALITY"){
         return "Active if video codec== mjpeg. MJPEG has no encoder bitrate, only an arbitratry quality parameter (0..100)";

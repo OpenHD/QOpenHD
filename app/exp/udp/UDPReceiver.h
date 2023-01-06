@@ -11,14 +11,21 @@
 #include <atomic>
 #include <functional>
 #include <chrono>
+#include <optional>
+#include <sstream>
 
 //Starts a new thread that continuously checks for new data on UDP port
 class UDPReceiver {
 public:
     typedef std::function<void(const uint8_t[],size_t)> DATA_CALLBACK;
     struct IpAndPort{
-        std::string udp_ip_address="127.0.0.1";
+        std::optional<std::string> udp_ip_address="127.0.0.1";
         int udp_port=5600;
+        std::string to_string()const{
+            std::stringstream ss;
+            ss<<udp_ip_address.value_or("INADDR_ANY")<<":"<<udp_port;
+            return ss.str();
+        }
     };
 public:
     /**

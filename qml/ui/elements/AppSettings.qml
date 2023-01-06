@@ -78,7 +78,7 @@ Settings {
     property double downlink_rssi_opacity: 1
     //property bool downlink_rssi_show_lost_damaged: false
     //Const10
-    property bool downlink_show_received_injected_packets: false
+    property bool downlink_show_dbm_and_packets_per_card: false
     property bool downlink_show_current_bitrate: false
     property bool downlink_cards_right: false
     property double downlink_rssi_size: 1
