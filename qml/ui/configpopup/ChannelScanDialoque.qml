@@ -31,6 +31,14 @@ Card {
         ListElement {title: "All 5.8G channels"; value: 2}
     }
 
+    // like dji, we use 20 or 40Mhz bandwidth(s) but never 5 or 10
+    ListModel{
+        id: model_bandwidth_all_or_20_or_40
+        ListElement {title: "20Mhz and 40Mhz (slow)"; value: 0}
+        ListElement {title: "20Mhz only"; value: 1}
+        ListElement {title: "40Mhz only"; value: 2}
+    }
+
     cardBody: Item{
         height: 200
         width: 320
@@ -51,20 +59,30 @@ max 30 seconds, usually less"
             //height: 100
             anchors.top: dialoqueStartChannelScan_text.bottom
             id: comboBoxWhichFrequencyToScan
-
             model: model_chann_2G_or_5G
             textRole: "title"
-
             Material.background: {
-
                 (comboBoxWhichFrequencyToScan.currentIndex===0) ? Material.Orange : Material.Green
             }
-
             visible: m_curr_index==0
-
             onCurrentIndexChanged: {
             }
         }
+        ComboBox {
+            width: parent.width
+            //height: 100
+            anchors.top: comboBoxWhichFrequencyToScan.bottom
+            id: comboBoxWhichChannelWidthsToScan
+            model: model_bandwidth_all_or_20_or_40
+            textRole: "title"
+            Material.background: {
+                (comboBoxWhichChannelWidthsToScan.currentIndex===0) ? Material.Orange : Material.Green
+            }
+            visible: m_curr_index==0
+            onCurrentIndexChanged: {
+            }
+        }
+
 
         Text{
             id: dialoqueStartChannelScan_text2
@@ -98,8 +116,9 @@ max 30 seconds, usually less"
             onPressed: {
                 if(m_curr_index==0){
                     var how_many_freq_bands=comboBoxWhichFrequencyToScan.currentIndex
-                   console.log("Initate channel scan "+how_many_freq_bands)
-                    var result=_mavlinkTelemetry.request_channel_scan(how_many_freq_bands)
+                    var how_many_bandwidths=comboBoxWhichChannelWidthsToScan.currentIndex
+                    console.log("Initate channel scan "+how_many_freq_bands+","+how_many_bandwidths)
+                    var result=_mavlinkTelemetry.request_channel_scan(how_many_freq_bands,how_many_bandwidths)
                     if(result){
                          m_curr_index++;
                     }else{
