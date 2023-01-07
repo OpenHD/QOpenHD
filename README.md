@@ -30,6 +30,6 @@ QOpenHD relies on MavSDK library. After recursively cloning qopenhd build this l
 
 After that, you can build QOpenHD by either opening it in QT Creator (recommended) or building it with the following commands:
 
-mkdir build
-cd build
-qmake ..
+`mkdir build`
+`cd build`
+`qmake ..`
