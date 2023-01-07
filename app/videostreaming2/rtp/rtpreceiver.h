@@ -30,8 +30,9 @@ public:
     ~RTPReceiver();
 
     // Returns the oldest frame if available.
-    // if timeout >0, wait for up to timeout for a new frame
-    std::shared_ptr<NALU> get_data(std::chrono::microseconds timeout=std::chrono::microseconds(0));
+    // (nullptr on failure)
+    // The timeout is optional
+    std::shared_ptr<NALU> get_next_frame(std::optional<std::chrono::microseconds> timeout=std::nullopt);
 
     std::shared_ptr<std::vector<uint8_t>> get_config_data();
     bool config_has_changed_during_decode=false;

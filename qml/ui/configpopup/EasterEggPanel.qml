@@ -13,7 +13,7 @@ import "../../ui" as Ui
 import "../elements"
 
 Rectangle {
-    id: eePanel
+    id: easterEgPanel
     color: "#eaeaea"
 
     Image {

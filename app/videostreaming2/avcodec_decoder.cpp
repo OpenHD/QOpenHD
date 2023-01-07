@@ -260,7 +260,7 @@ int AVCodecDecoder::decode_config_data(AVPacket *packet)
 
 bool AVCodecDecoder::feed_rtp_frame_if_available()
 {
-    auto frame=m_rtp_receiver->get_data();
+    auto frame=m_rtp_receiver->get_next_frame();
     if(frame){
         {
             // parsing delay
@@ -808,7 +808,7 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp(const QOpenHDVideoHe
             std::shared_ptr<NALU> buf=nullptr;
              while(buf==nullptr){
                  // do not peg the cpu completely here
-                 buf=m_rtp_receiver->get_data(std::chrono::milliseconds(kDefaultFrameTimeout));
+                 buf=m_rtp_receiver->get_next_frame(std::chrono::milliseconds(kDefaultFrameTimeout));
                  if(request_restart){
                      request_restart=false;
                      goto finish;
@@ -885,8 +885,8 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp_and_mmal_direct(cons
             while(buf==nullptr){
                 // TODO wtf
                 //buf=m_rtp_receiver->get_data(std::chrono::milliseconds(kDefaultFrameTimeout));
-                 std::this_thread::sleep_for(std::chrono::milliseconds(5));
-                buf=m_rtp_receiver->get_data(std::chrono::milliseconds(0));
+                std::this_thread::sleep_for(std::chrono::milliseconds(5));
+                buf=m_rtp_receiver->get_next_frame(std::nullopt);
                 if(request_restart){
                     request_restart=false;
                     goto finish;

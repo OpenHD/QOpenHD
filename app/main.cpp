@@ -29,7 +29,7 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "osd/aoagauge.h"
 //
 #ifdef QOPENHD_ENABLE_VIDEO_VIA_AVCODEC
-#include "exp/QSGVideoTextureItem.h"
+#include "videostreaming2/QSGVideoTextureItem.h"
 #endif
 #include "util/qrenderstats.h"
 

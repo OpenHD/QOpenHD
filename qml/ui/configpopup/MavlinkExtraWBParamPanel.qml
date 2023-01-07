@@ -229,49 +229,6 @@ It is your responsibility to only change the frequency to values allowd in your 
                     Button{
                         text: "Fetch"
                         onClicked: {
-                            var _res=_synchronizedSettings.get_param_int_air_and_ground_value_mcs()
-                            if(_res>=0){
-                                buttonSwitchMCS.enabled=true
-                            }
-                            //console.log("Got ",_res)
-                            update_combobox(comboBoxMcsIndex,_res);
-                        }
-                    }
-                    ComboBox {
-                        id: comboBoxMcsIndex
-                        model: mcsIndexModel
-                        textRole: "title"
-                        implicitWidth:  elementComboBoxWidth
-                    }
-                    Button{
-                        text: "Change MCS"
-                        id: buttonSwitchMCS
-                        enabled: false
-                        onClicked: {
-                            var selectedValue=mcsIndexModel.get(comboBoxMcsIndex.currentIndex).value
-                            _synchronizedSettings.change_param_air_and_ground_mcs(selectedValue)
-                        }
-                    }
-                    Button{
-                        text: "INFO"
-                        Material.background:Material.LightBlue
-                        onClicked: {
-                            var text="Recommended 3 (Default). The MCS index controlls the available bandwidth. Higher MCS index - higher bandwidth, but less range. Not all cards support changing it."
-                            _messageBoxInstance.set_text_and_show(text)
-                        }
-                    }
-                }
-            }
-            Rectangle {
-                width: parent.width
-                height: rowHeight
-                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                RowLayout{
-                    anchors.verticalCenter: parent.verticalCenter
-                    Button{
-                        text: "Fetch"
-                        onClicked: {
                             var _res=_synchronizedSettings.get_param_int_air_and_ground_value_channel_width()
                             if(_res>=0){
                                 buttonSwitchChannelWidth.enabled=true
@@ -301,6 +258,49 @@ It is your responsibility to only change the frequency to values allowd in your 
                         onClicked: {
                             var text="Recommended 20Mhz (Default). A bigger channel width gives more bandwidth, but greatly increases interference and reduces range (sensitivity).
 Leave default (20Mhz width)."
+                            _messageBoxInstance.set_text_and_show(text)
+                        }
+                    }
+                }
+            }
+            Rectangle {
+                width: parent.width
+                height: rowHeight
+                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+
+                RowLayout{
+                    anchors.verticalCenter: parent.verticalCenter
+                    Button{
+                        text: "Fetch"
+                        onClicked: {
+                            var _res=_synchronizedSettings.get_param_int_air_and_ground_value_mcs()
+                            if(_res>=0){
+                                buttonSwitchMCS.enabled=true
+                            }
+                            //console.log("Got ",_res)
+                            update_combobox(comboBoxMcsIndex,_res);
+                        }
+                    }
+                    ComboBox {
+                        id: comboBoxMcsIndex
+                        model: mcsIndexModel
+                        textRole: "title"
+                        implicitWidth:  elementComboBoxWidth
+                    }
+                    Button{
+                        text: "Change MCS"
+                        id: buttonSwitchMCS
+                        enabled: false
+                        onClicked: {
+                            var selectedValue=mcsIndexModel.get(comboBoxMcsIndex.currentIndex).value
+                            _synchronizedSettings.change_param_air_and_ground_mcs(selectedValue)
+                        }
+                    }
+                    Button{
+                        text: "INFO"
+                        Material.background:Material.LightBlue
+                        onClicked: {
+                            var text="Recommended 3 (Default). The MCS index controlls the available bandwidth. Higher MCS index - higher bandwidth, but less range. Not all cards support changing it."
                             _messageBoxInstance.set_text_and_show(text)
                         }
                     }

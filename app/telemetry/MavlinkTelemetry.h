@@ -73,10 +73,12 @@ private:
 private:
     std::chrono::steady_clock::time_point m_last_time_version_requested=std::chrono::steady_clock::now();
 public:
+    // freq_bands:
     // 0: 2.4G and 5.8G
     // 1: 2.4G only
     // 2: 5.8G only
-    Q_INVOKABLE bool request_channel_scan(int freq_band);
+    // similar for channel widths
+    Q_INVOKABLE bool request_channel_scan(int freq_bands,int channel_widths);
 };
 
 #endif // OHDMAVLINKCONNECTION_H

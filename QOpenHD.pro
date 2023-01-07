@@ -89,7 +89,7 @@ INCLUDEPATH += /usr/include/mavsdk
 # NOTE: QT Creator is quite bad at figuring out changes here, you might need a "full" rebuild or manualy delete
 # the build dir/cache, then rebuild
 # NOTE: You manually have to uncomment 3 lines in qml/main.qml too for now (if you choose to uncomment below)
-include(app/exp/avcodec_video.pri)
+include(app/videostreaming2/avcodec_video.pri)
 
 # adsb library
 include(app/adsb/adsb_lib.pri)
