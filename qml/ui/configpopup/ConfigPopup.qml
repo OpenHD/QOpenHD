@@ -16,6 +16,8 @@ Rectangle {
     function openSettings() {
         visible = true
         focus = true
+
+        sidebar.x = -1
     }
 
     function showAppSettings(i) {
@@ -47,7 +49,6 @@ Rectangle {
         Column {
             width: parent.width
             anchors.top: parent.top
-
             // Close
             Item {
                 height: 48
@@ -84,8 +85,9 @@ Rectangle {
         id: sidebar
         width: 132
         visible: true
-        anchors.left: parent.left
-        anchors.leftMargin: -1
+        x:-300 //for animation
+        //anchors.left: parent.left
+        //anchors.leftMargin: -1
         anchors.bottom: parent.bottom
         anchors.bottomMargin: -1
         anchors.top: parent.top
@@ -96,6 +98,15 @@ Rectangle {
         border.color: "#4c000000"
 
         clip: true
+
+        Behavior on x {
+            NumberAnimation {
+                //This specifies how long the animation takes
+                duration: 600
+                //This selects an easing curve to interpolate with, the default is Easing.Linear
+                easing.type: Easing.OutBounce
+            }
+        }
 
         Column {
             width: parent.width
