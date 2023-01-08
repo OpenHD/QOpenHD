@@ -253,5 +253,6 @@
         <file>ui/configpopup/AppScreenSettingsView.qml</file>
         <file>ui/configpopup/AppVideoSettingsView.qml</file>
         <file>ui/configpopup/AppManageSettingsView.qml</file>
+        <file>ui/configpopup/GgAppSettingsPanel.qml</file>
     </qresource>
 </RCC>

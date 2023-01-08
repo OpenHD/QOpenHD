@@ -54,6 +54,7 @@ Settings {
     property bool dev_use_low_latency_parser_when_possible: true;
     property bool dev_feed_incomplete_frames_to_decoder:false;
 
+    property bool goggle_layout: false
     property bool enable_speech: true
     property bool enable_imperial: false
     property bool enable_rc: false

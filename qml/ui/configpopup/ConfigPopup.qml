@@ -15,9 +15,29 @@ Rectangle {
 
     function openSettings() {
         visible = true
-        focus = true
+        focus = true        
+        sidebar.x = -1 //animation for sidebar
+        if (settings.goggle_layout==true){
+            mainStackLayout.visible=false
+            mainStackLayout.currentIndex=1
+        }
+        else {
+            mainStackLayout.visible=true
+            mainStackLayout.currentIndex=0
+        }
+    }
 
-        sidebar.x = -1
+    function closeSettings() {                       settings_form.visible=false
+        sidebar.x = -300 //animation for sidebar
+        if (settings.goggle_layout==true){ //reset stuff
+            mainStackLayout.visible=false
+            mainStackLayout.currentIndex=1
+            sidebar.opacity=1
+        }
+        else {
+            mainStackLayout.visible=true
+            mainStackLayout.currentIndex=0
+        }
     }
 
     function showAppSettings(i) {
@@ -49,7 +69,7 @@ Rectangle {
         Column {
             width: parent.width
             anchors.top: parent.top
-            // Close
+            // Close Button
             Item {
                 height: 48
                 width: parent.width
@@ -65,14 +85,13 @@ Rectangle {
                     anchors.horizontalCenter: parent.horizontalCenter
 
                     background: Rectangle {
-                        opacity: .5
+                        opacity: .3
                         radius: 5
                         //later this can be changed to focus
                         color: closeButton.hovered ? "grey" : "white" // I update background color by this
                     }
                     onClicked: {
-                        settings_form.visible=false
-                        sidebar.x = -300 //animation for sidebar
+                        closeSettings();
                     }
                 }
             }
@@ -86,7 +105,7 @@ Rectangle {
         id: sidebar
         width: 132
         visible: true
-        x:-300 //for animation
+        //x:-300 //for animation
         //anchors.left: parent.left
         //anchors.leftMargin: -1
         anchors.bottom: parent.bottom
@@ -94,18 +113,22 @@ Rectangle {
         anchors.top: parent.top
         anchors.topMargin: 48
         color: "#333c4c"
-        radius: 0
         border.width: 1
         border.color: "#4c000000"
 
         clip: true
 
-        Behavior on x {
+        Behavior on x { //when settings are opened animation
             NumberAnimation {
-                //This specifies how long the animation takes
                 duration: 600
-                //This selects an easing curve to interpolate with, the default is Easing.Linear
-                easing.type: Easing.OutBounce
+                easing.type: Easing.OutBack
+            }
+        }
+
+        Behavior on opacity { //fade when menu is selected
+            NumberAnimation {
+                duration: 700
+                easing.type: Easing.OutBack
             }
         }
 
@@ -147,16 +170,25 @@ Rectangle {
                         font.pixelSize: 15
                         horizontalAlignment: Text.AlignLeft
                         verticalAlignment: Text.AlignVCenter
-                        color: mainStackLayout.currentIndex == 0 ? "#33aaff" : "#dde4ed"
+                        color: mainStackLayout.currentIndex == 0 ? "#33aaff" :
+                            mainStackLayout.currentIndex == 1 ? "#33aaff" : "#dde4ed"
                     }
                     background: Rectangle {
-                        opacity: .5
+                        opacity: .3
                         radius: 5
-                        //later this can be changed to focus
                         color: appSettingsBtn.hovered ? "grey" : "transparent" // I update background color by this
                     }
                     onClicked: {
-                        mainStackLayout.currentIndex = 0
+                        if (settings.goggle_layout==true){
+                            mainStackLayout.currentIndex = 1
+                            mainStackLayout.visible=true
+                            sidebar.opacity = .5 //animation for sidebar fade
+                            mainStackLayout.activeFocus
+                            ggAppSettingsPanel.openAppMenu()
+                        }
+                        else{
+                            mainStackLayout.currentIndex = 0
+                       }
                     }
                 }
             }
@@ -194,16 +226,15 @@ Rectangle {
                         font.pixelSize: 15
                         horizontalAlignment: Text.AlignLeft
                         verticalAlignment: Text.AlignVCenter
-                        color: mainStackLayout.currentIndex == 1 ? "#33aaff" : "#dde4ed"
+                        color: mainStackLayout.currentIndex == 2 ? "#33aaff" : "#dde4ed"
                     }
                     background: Rectangle {
-                        opacity: .5
+                        opacity: .3
                         radius: 5
-                        //later this can be changed to focus
                         color: openhdSettingsBtn.hovered ? "grey" : "transparent" // I update background color by this
                     }
                     onClicked: {
-                        mainStackLayout.currentIndex = 1
+                        mainStackLayout.currentIndex = 2
                     }
                 }
             }
@@ -243,16 +274,15 @@ Rectangle {
                         font.pixelSize: 15
                         horizontalAlignment: Text.AlignLeft
                         verticalAlignment: Text.AlignVCenter
-                        color: mainStackLayout.currentIndex == 2 ? "#33aaff" : "#dde4ed"
+                        color: mainStackLayout.currentIndex == 3 ? "#33aaff" : "#dde4ed"
                     }
                     background: Rectangle {
-                        opacity: .5
+                        opacity: .3
                         radius: 5
-                        //later this can be changed to focus
                         color: logBtn.hovered ? "grey" : "transparent" // I update background color by this
                     }
                     onClicked: {
-                        mainStackLayout.currentIndex = 2
+                        mainStackLayout.currentIndex = 3
                     }
                 }
             }
@@ -291,16 +321,15 @@ Rectangle {
                         font.pixelSize: 15
                         horizontalAlignment: Text.AlignLeft
                         verticalAlignment: Text.AlignVCenter
-                        color: mainStackLayout.currentIndex == 3 ? "#33aaff" : "#dde4ed"
+                        color: mainStackLayout.currentIndex == 4 ? "#33aaff" : "#dde4ed"
                     }
                     background: Rectangle {
-                        opacity: .5
+                        opacity: .3
                         radius: 5
-                        //later this can be changed to focus
                         color: powerSettingsBtn.hovered ? "grey" : "transparent" // I update background color by this
                     }
                     onClicked: {
-                        mainStackLayout.currentIndex = 3
+                        mainStackLayout.currentIndex = 4
                     }
                 }
             }
@@ -339,16 +368,15 @@ Rectangle {
                         font.pixelSize: 15
                         horizontalAlignment: Text.AlignLeft
                         verticalAlignment: Text.AlignVCenter
-                        color: mainStackLayout.currentIndex == 4 ? "#33aaff" : "#dde4ed"
+                        color: mainStackLayout.currentIndex == 5 ? "#33aaff" : "#dde4ed"
                     }
                     background: Rectangle {
-                        opacity: .5
+                        opacity: .3
                         radius: 5
-                        //later this can be changed to focus
                         color: aboutBtn.hovered ? "grey" : "transparent" // I update background color by this
                     }
                     onClicked: {
-                        mainStackLayout.currentIndex = 4
+                        mainStackLayout.currentIndex = 5
                         if (eeInt > 8){
                             eeItem.visible = true
                             eeInt = 0
@@ -397,9 +425,8 @@ Rectangle {
                         color: mainStackLayout.currentIndex == 5 ? "#33aaff" : "#dde4ed"
                     }
                     background: Rectangle {
-                        opacity: .5
+                        opacity: .3
                         radius: 5
-                        //later this can be changed to focus
                         color: devStatsBtn.hovered ? "grey" : "transparent" // I update background color by this
                     }
                     onClicked: {
@@ -445,13 +472,12 @@ Rectangle {
                         color: mainStackLayout.currentIndex == 6 ? "#33aaff" : "#dde4ed"
                     }
                     background: Rectangle {
-                        opacity: .5
+                        opacity: .3
                         radius: 5
-                        //later this can be changed to focus
                         color: rcSettingsBtn.hovered ? "grey" : "transparent" // I update background color by this
                     }
                     onClicked: {
-                        mainStackLayout.currentIndex = 6
+                        mainStackLayout.currentIndex = 7
                     }
                 }
             }
@@ -496,13 +522,13 @@ Rectangle {
                         color: mainStackLayout.currentIndex == 7 ? "#33aaff" : "#dde4ed"
                     }
                     background: Rectangle {
-                        opacity: .5
+                        opacity: .3
                         radius: 5
                         //later this can be changed to focus
                         color: eeBtn.hovered ? "grey" : "transparent" // I update background color by this
                     }
                     onClicked: {
-                        mainStackLayout.currentIndex = 6
+                        mainStackLayout.currentIndex = 7
                     }
                 }
             }
@@ -516,14 +542,17 @@ Rectangle {
         anchors.bottomMargin: 0
         anchors.right: parent.right
         anchors.rightMargin: 0
-        anchors.left: sidebar.right
-        anchors.leftMargin: 0
+        anchors.left: settings.goggle_layout ? sidebar.left : sidebar.right
+        anchors.leftMargin: settings.goggle_layout ? 50 : -1
+        anchors.topMargin: settings.goggle_layout ? 48 : 0
         anchors.top: parent.top
-        anchors.topMargin: 0
-
 
         AppSettingsPanel {
             id: appSettingsPanel
+        }
+
+        GgAppSettingsPanel {
+            id: ggAppSettingsPanel
         }
 
         MavlinkAllSettingsPanel {
@@ -549,6 +578,7 @@ Rectangle {
         RcInfoPanel {
             id: rcInfoPanel
         }
+
         EasterEggPanel {
             id: eePanel
         }
