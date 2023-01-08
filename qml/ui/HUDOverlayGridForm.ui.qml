@@ -15,6 +15,11 @@ Item {
     property alias messageHUD: messageHUD
     signal settingsButtonClicked
 
+    function mainMenuClosed() {
+        console.log("mainMenuClosed");
+        settingsButton.forceActiveFocus()
+    }
+
     Image {
         id: settingsButton
         width: 48
@@ -32,8 +37,7 @@ Item {
                 if (event.key == Qt.Key_Return) {
                     console.log("enter was pressed");
                     event.accepted = true;
-                    hudOverlayGrid.settingsButtonClicked();
-                                settingsButton.focus=false;
+                    hudOverlayGrid.settingsButtonClicked()
                 }
             }
         MouseArea {

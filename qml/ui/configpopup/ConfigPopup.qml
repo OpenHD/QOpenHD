@@ -7,13 +7,19 @@ import Qt.labs.settings 1.0
 
 import OpenHD 1.0
 
-// Contains the selector on the left and a stack view for the panels on the right
-//if goggles enabled/disbaled we show different current index in the stack
+/*  -Contains the selector on the left and a stack view for the panels on the right
+*   -if goggles enabled/disbaled we show different current index in the stack
+*   -all menu open/closes should go through the functions when possible to ensure transfer
+*   of focus
+*/
 
 Rectangle {
     id: settings_form
 
     property int eeInt : 0
+    //this bool is needed to track where focus came from when certain menus are open
+    //someone tries to navigate down from close button..without you get focus in wrong place
+    property bool closeReachedFromAppSettings: false
 
     function openSettings() {
         visible = true
@@ -31,22 +37,20 @@ Rectangle {
         }
     }
 
-    function closeSettings() {                       settings_form.visible=false
+    function closeSettings() {
+        settings_form.visible=false
         sidebar.x = -300 //animation for sidebar
         if (settings.goggle_layout==true){ //reset stuff
             mainStackLayout.visible=false
             mainStackLayout.currentIndex=1
             sidebar.opacity=1
-//TODO give focus back to the main menu btn
+            hudOverlayGrid.mainMenuClosed()//used to return focus to menu btn
+            closeReachedFromAppSettings=false
         }
         else {
             mainStackLayout.visible=true
             mainStackLayout.currentIndex=0
         }
-    }
-
-    function showAppSettings(i) {
-        console.log("config popup reached. App settings index:"+i);
     }
 
     anchors.fill: parent
@@ -103,10 +107,15 @@ Rectangle {
                                         closeSettings()
                                         else if (event.key === Qt.Key_Return)
                                         closeButton.clicked()
-//TODO needs logic so it knows which menu to go down to
-//probably means it needs to know where focus came from
-                                        else if (event.key === Qt.Key_Minus)
-                                        appSettingsBtn.forceActiveFocus()
+                                        else if (event.key === Qt.Key_Minus){
+                                            //logic so it knows which menu to go down to
+                                            if(closeReachedFromAppSettings==true){
+                                                ggAppSettingsPanel.openAppMenu()
+                                            }
+                                            else{
+                                                appSettingsBtn.forceActiveFocus()
+                                            }
+                                        }
                                     }
                 }
             }
@@ -651,15 +660,15 @@ Rectangle {
         anchors.top: parent.top
 
         AppSettingsPanel {
-            id: appSettingsPanel
+            id: appSettingsPanel //normal view for qopenhd settings
         }
 
         GgAppSettingsPanel {
-            id: ggAppSettingsPanel
+            id: ggAppSettingsPanel //goggle view for qopenhd settings
         }
 
         MavlinkAllSettingsPanel {
-            id:  mavlinkAllSettingsPanel //this is "openhd" menu
+            id:  mavlinkAllSettingsPanel //"openhd" menu view
         }
 
         LogMessagesStatusView{
