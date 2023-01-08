@@ -72,6 +72,7 @@ Rectangle {
                     }
                     onClicked: {
                         settings_form.visible=false
+                        sidebar.x = -300 //animation for sidebar
                     }
                 }
             }
