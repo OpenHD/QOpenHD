@@ -33,38 +33,40 @@ Item {
     function openAppMenu(){
         console.log("openAppMenu reached");
         appSettingsBar.x = 0
+        zeroBtn.forceActiveFocus()
     }
 
-    Keys.onPressed: (event)=> {
-                        if (event.key == Qt.Key_Return) {
-                            console.log("enter was pressed from menu");
-                            event.accepted = true;
-                        }
-                    }
+    function closeAppMenu(){
+        console.log("closeAppMenu reached");
+        appSettingsStack.visible=false //reset and cleanup
+        appSettingsBar.x = -300
+        appSettingsBtn.forceActiveFocus()
+        sidebar.opacity=1
+    }
 
-        TabBar {
-            id: appSettingsBar
+    TabBar {
+        id: appSettingsBar
 
-            height: parent.height
-            width: 100
-            x:-300 //for animation
-            anchors.top: parent.top            
-            background: Rectangle {
-                color: "#333c4c"
-                border.width: 1
-                border.color: "#4c000000"
-                }
-            clip: false
-            onActiveFocusChanged: {
-                console.log("ggAppSettingsPanel focus changed");
+        height: parent.height
+        width: 100
+        x:-300 //for animation
+        anchors.top: parent.top
+        background: Rectangle {
+            color: "#333c4c"
+            border.width: 1
+            border.color: "#4c000000"
+        }
+        clip: false
+        onActiveFocusChanged: {
+            console.log("ggAppSettingsPanel focus changed");
+        }
+
+        Behavior on x { //when settings are opened animation
+            NumberAnimation {
+                duration: 800
+                easing.type: Easing.OutBack
             }
-
-            Behavior on x { //when settings are opened animation
-                NumberAnimation {
-                    duration: 700
-                    easing.type: Easing.OutBack
-                }
-            }
+        }
 
         TabButton {
             id: zeroBtn //numbered based on index number
@@ -80,10 +82,24 @@ Item {
                 verticalAlignment: Text.AlignVCenter
             }
             background: Rectangle {
-                color: appSettingsBar.currentIndex == 0 ? "grey" : "transparent"
+                color: appSettingsBar.currentIndex == 0 ? "grey" :
+                                                          zeroBtn.activeFocus ? "grey" : "transparent"
                 opacity: .3
             }
-            onClicked: {appSettingsStack.visible=true}
+            onClicked: {
+                appSettingsStack.visible=true
+                appSettingsBar.currentIndex = 0
+            }
+            Keys.onPressed: (event)=> {
+                                if (event.key === Qt.Key_Escape)
+                                closeAppMenu()
+                                else if (event.key === Qt.Key_Return)
+                                zeroBtn.clicked()
+                                else if (event.key === Qt.Key_Equal)
+                                closeButton.forceActiveFocus()
+                                else if (event.key === Qt.Key_Minus)
+                                oneBtn.forceActiveFocus()
+                            }
         }
 
         TabButton {
@@ -103,10 +119,24 @@ Item {
                 verticalAlignment: Text.AlignVCenter
             }
             background: Rectangle {
-                color: appSettingsBar.currentIndex == 1 ? "grey" : "transparent"
+                color: appSettingsBar.currentIndex == 1 ? "grey" :
+                                                          oneBtn.activeFocus ? "grey" : "transparent"
                 opacity: .3
             }
-            onClicked: {appSettingsStack.visible=true}
+            onClicked: {
+                appSettingsStack.visible=true
+                appSettingsBar.currentIndex = 1
+            }
+            Keys.onPressed: (event)=> {
+                                if (event.key === Qt.Key_Escape)
+                                closeAppMenu()
+                                else if (event.key === Qt.Key_Return)
+                                oneBtn.clicked()
+                                else if (event.key === Qt.Key_Equal)
+                                zeroBtn.forceActiveFocus()
+                                else if (event.key === Qt.Key_Minus)
+                                twoBtn.forceActiveFocus()
+                            }
         }
 
         TabButton {
@@ -124,10 +154,24 @@ Item {
                 verticalAlignment: Text.AlignVCenter
             }
             background: Rectangle {
-                color: appSettingsBar.currentIndex == 2 ? "grey" : "transparent"
+                color: appSettingsBar.currentIndex == 2 ? "grey" :
+                                                          twoBtn.activeFocus ? "grey" : "transparent"
                 opacity: .3
             }
-            onClicked: {appSettingsStack.visible=true}
+            onClicked: {
+                appSettingsStack.visible=true
+                appSettingsBar.currentIndex = 2
+            }
+            Keys.onPressed: (event)=> {
+                                if (event.key === Qt.Key_Escape)
+                                closeAppMenu()
+                                else if (event.key === Qt.Key_Return)
+                                twoBtn.clicked()
+                                else if (event.key === Qt.Key_Equal)
+                                oneBtn.forceActiveFocus()
+                                else if (event.key === Qt.Key_Minus)
+                                threeBtn.forceActiveFocus()
+                            }
         }
 
         TabButton {
@@ -145,10 +189,24 @@ Item {
                 verticalAlignment: Text.AlignVCenter
             }
             background: Rectangle {
-                color: appSettingsBar.currentIndex == 3 ? "grey" : "transparent"
+                color: appSettingsBar.currentIndex == 3 ? "grey" :
+                                                          threeBtn.activeFocus ? "grey" : "transparent"
                 opacity: .3
             }
-            onClicked: {appSettingsStack.visible=true}
+            onClicked: {
+                appSettingsStack.visible=true
+                appSettingsBar.currentIndex = 3
+            }
+            Keys.onPressed: (event)=> {
+                                if (event.key === Qt.Key_Escape)
+                                closeAppMenu()
+                                else if (event.key === Qt.Key_Return)
+                                threeBtn.clicked()
+                                else if (event.key === Qt.Key_Equal)
+                                twoBtn.forceActiveFocus()
+                                else if (event.key === Qt.Key_Minus)
+                                fourBtn.forceActiveFocus()
+                            }
         }
 
         TabButton {
@@ -166,10 +224,24 @@ Item {
                 verticalAlignment: Text.AlignVCenter
             }
             background: Rectangle {
-                color: appSettingsBar.currentIndex == 4 ? "grey" : "transparent"
+                color: appSettingsBar.currentIndex == 4 ? "grey" :
+                                                          fourBtn.activeFocus ? "grey" : "transparent"
                 opacity: .3
             }
-            onClicked: {appSettingsStack.visible=true}
+            onClicked: {
+                appSettingsStack.visible=true
+                appSettingsBar.currentIndex = 4
+            }
+            Keys.onPressed: (event)=> {
+                                if (event.key === Qt.Key_Escape)
+                                closeAppMenu()
+                                else if (event.key === Qt.Key_Return)
+                                fourBtn.clicked()
+                                else if (event.key === Qt.Key_Equal)
+                                threeBtn.forceActiveFocus()
+                                else if (event.key === Qt.Key_Minus)
+                                fiveBtn.forceActiveFocus()
+                            }
         }
 
         TabButton {
@@ -187,27 +259,41 @@ Item {
                 verticalAlignment: Text.AlignVCenter
             }
             background: Rectangle {
-                color: appSettingsBar.currentIndex == 5 ? "grey" : "transparent"
+                color: appSettingsBar.currentIndex == 5 ? "grey" :
+                                                          fiveBtn.activeFocus ? "grey" : "transparent"
                 opacity: .3
             }
-            onClicked: {appSettingsStack.visible=true}
+            onClicked: {
+                appSettingsStack.visible=true
+                appSettingsBar.currentIndex = 5
+            }
+            Keys.onPressed: (event)=> {
+                                if (event.key === Qt.Key_Escape)
+                                closeAppMenu()
+                                else if (event.key === Qt.Key_Return)
+                                fiveBtn.clicked()
+                                else if (event.key === Qt.Key_Equal)
+                                fourBtn.forceActiveFocus()
+                                // else if (event.key === Qt.Key_Minus)
+                                // twoBtn.forceActiveFocus()
+                            }
         }
     }
 
-        StackLayout {
-            id: appSettingsStack
-            anchors.top: parent.top
-            anchors.topMargin: 0
-            anchors.right: parent.right
-            anchors.rightMargin: 0
-            anchors.left: appSettingsBar.right
-            anchors.leftMargin: 0
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: 0
-            visible: false
+    StackLayout {
+        id: appSettingsStack
+        anchors.top: parent.top
+        anchors.topMargin: 0
+        anchors.right: parent.right
+        anchors.rightMargin: 0
+        anchors.left: appSettingsBar.right
+        anchors.leftMargin: 0
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 0
+        visible: false
 
         currentIndex:     {
-           // console.log("index:"+appSettingsBar.currentIndex);
+            // console.log("index:"+appSettingsBar.currentIndex);
             // for future use to set focus for goggle support
             showAppSettings(appSettingsBar.currentIndex);
 
