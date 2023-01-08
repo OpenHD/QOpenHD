@@ -8,7 +8,7 @@
 #include "debug_overdraw.hpp"
 
 SpeedLadder::SpeedLadder(QQuickItem *parent): QQuickPaintedItem(parent) {
-    qDebug() << "SpeedLadder::SpeedLadder()";
+    //qDebug() << "SpeedLadder::SpeedLadder()";
     setRenderTarget(RenderTarget::FramebufferObject);
 }
 

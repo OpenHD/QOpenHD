@@ -8,7 +8,7 @@
 #include "debug_overdraw.hpp"
 
 HorizonLadder::HorizonLadder(QQuickItem *parent): QQuickPaintedItem(parent) {
-    qDebug() << "HorizonLadder::HorizonLadder()";
+    //qDebug() << "HorizonLadder::HorizonLadder()";
     setRenderTarget(RenderTarget::FramebufferObject);
 
     m_font.setPixelSize(14);

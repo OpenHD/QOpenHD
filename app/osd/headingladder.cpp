@@ -7,7 +7,7 @@
 #include "debug_overdraw.hpp"
 
 HeadingLadder::HeadingLadder(QQuickItem *parent): QQuickPaintedItem(parent) {
-    qDebug() << "HeadingLadder::HeadingLadder()";
+    //qDebug() << "HeadingLadder::HeadingLadder()";
     setRenderTarget(RenderTarget::FramebufferObject);
 }
 

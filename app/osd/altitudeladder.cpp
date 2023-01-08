@@ -8,7 +8,7 @@
 #include "debug_overdraw.hpp"
 
 AltitudeLadder::AltitudeLadder(QQuickItem *parent): QQuickPaintedItem(parent) {
-    qDebug() << "AltitudeLadder::AltitudeLadder()";
+    //qDebug() << "AltitudeLadder::AltitudeLadder()";
     setRenderTarget(RenderTarget::FramebufferObject);
 }
 
