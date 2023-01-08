@@ -8,16 +8,16 @@ As the name suspects, it is based on QT (5.15.X).
 
 ![temporary_screenshot](https://github.com/OpenHD/QOpenHD/blob/2.2.x-evo/wiki/temporary_screenshot.png)
 
-# Compiling:
-We have a CI setup that checks compilation on ubuntu. You can look at the steps it performs to build and run QOpenHD.
-Other platforms than Linux are not supported right now.
-
 # Developer Design Overview (incomplete)
 1) QOpenHD is not OpenHD (main). It can talk to a running OpenHD main instance (ground and/or air) via Mavlink and rceives the (primary / secondary / ++) video streams. 
 2) While QOpenHD is the default companion app, OpenHD MUST NOT assume there is a QOpenHD instance somewhere that initiates voodo settings / setup processes
 ( This is in contrast to OpenHD /QOpenHD releases before the "evo" series.) As a result of this limitation, Both OpenHD and QOpenHD can be developed independently from each other, and debugging becomes a lot easier.
 
-# Building / MAVSDK
+# Compiling:
+We have a CI setup that checks compilation on ubuntu. You can look at the steps it performs to build and run QOpenHD.
+Other platforms than Linux are not supported right now.
+
+# Manual Building / MAVSDK
 QOpenHD relies on MAVSDK library. After recursively cloning qopenhd build this library:
 
 `cd lib/MAVSDK`
