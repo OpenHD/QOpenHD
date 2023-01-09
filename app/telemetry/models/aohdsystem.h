@@ -8,6 +8,7 @@
 #include "../openhd_defines.hpp"
 #include <array>
 #include <QQmlContext>
+#include <atomic>
 
 #include "../../../lib/lqtutils_master/lqtutils_prop.h"
 
@@ -104,24 +105,13 @@ private:
      void process_x3(const mavlink_openhd_stats_wb_video_air_t& msg);
      void process_x4(const mavlink_openhd_stats_wb_video_ground_t& msg);
 public:
-     Q_PROPERTY(qint64 last_openhd_heartbeat MEMBER m_last_openhd_heartbeat WRITE set_last_openhd_heartbeat NOTIFY last_openhd_heartbeat_changed)
-     void set_last_openhd_heartbeat(qint64 last_openhd_heartbeat);
-     //
-     // this is a placeholder for later
-     Q_PROPERTY(QList<int> gpio MEMBER m_gpio WRITE set_gpio NOTIFY gpio_changed)
-     void set_gpio(QList<int> gpio);
      //
      // NOTE: hacky right now, since it is a param but we also want to display it in the HUD
      void set_curr_set_video_bitrate_int(int value);
      void set_curr_set_video_codec_int(int value);
-signals:
-     //
-     void last_openhd_heartbeat_changed(qint64 last_openhd_heartbeat);
-     //
-     void gpio_changed(QList<int> gpio);
 private:
-     qint64 m_last_openhd_heartbeat = -1;
-     QList<int> m_gpio{0};
+     std::atomic<int32_t> m_last_heartbeat_ms = -1;
+     std::atomic<int32_t> m_last_message_ms= -1;
      //
      QString m_curr_incoming_bitrate="Bitrate NA";
      QString m_curr_incoming_tele_bitrate="Bitrate NA";
@@ -143,9 +133,6 @@ public:
      Q_INVOKABLE bool send_command_reboot(bool reboot);
      //
      bool send_command_restart_interface();
-public:
-     using RC_CHANNELS=std::array<int,18>;
-     static RC_CHANNELS mavlink_msg_rc_channels_override_to_array(const mavlink_rc_channels_override_t& data);
 private:
      int64_t x_last_dropped_packets=-1;
      void send_message_hud_connection(bool connected);
