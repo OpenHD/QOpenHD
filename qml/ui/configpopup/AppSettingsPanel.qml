@@ -104,9 +104,6 @@ Item {
 
         currentIndex:     {
            // console.log("index:"+appSettingsBar.currentIndex);
-            // for future use to set focus for goggle support
-            showAppSettings(appSettingsBar.currentIndex);
-
             return appSettingsBar.currentIndex;
         }
 

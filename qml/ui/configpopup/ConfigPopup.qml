@@ -19,11 +19,12 @@ Rectangle {
     property int eeInt : 0
     //this bool is needed to track where focus came from when certain menus are open
     //someone tries to navigate down from close button..without you get focus in wrong place
-    property bool closeReachedFromAppSettings: false
+    property bool fromSubMenu
 
     function openSettings() {
         visible = true
-        focus = true        
+        focus = true
+        fromSubMenu=false
         sidebar.x = -1 //animation for sidebar
         appSettingsBtn.forceActiveFocus()
 
@@ -45,7 +46,7 @@ Rectangle {
             mainStackLayout.currentIndex=1
             sidebar.opacity=1
             hudOverlayGrid.mainMenuClosed()//used to return focus to menu btn
-            closeReachedFromAppSettings=false
+            fromSubMenu=false
         }
         else {
             mainStackLayout.visible=true
@@ -108,9 +109,12 @@ Rectangle {
                                         else if (event.key === Qt.Key_Return)
                                         closeButton.clicked()
                                         else if (event.key === Qt.Key_Minus){
-                                            //logic so it knows which menu to go down to
-                                            if(closeReachedFromAppSettings==true){
+ //TODO Probably dont need "fromSubMenu"
+                                            if(fromSubMenu==true){
+                                                if(mainStackLayout.currentIndex === 1 || mainStackLayout.currentIndex === 0)
                                                 ggAppSettingsPanel.openAppMenu()
+                                                else
+                                                ggMavlinkAllSettingsPanel.openMenu()
                                             }
                                             else{
                                                 appSettingsBtn.forceActiveFocus()
@@ -202,7 +206,8 @@ Rectangle {
                                                         appSettingsBtn.activeFocus ? "grey" : "transparent"
                     }
                     onClicked: {
-                        if (settings.goggle_layout==true){
+                        fromSubMenu=false
+                        if (settings.goggle_layout==true){                           
                             mainStackLayout.currentIndex = 1
                             mainStackLayout.visible=true
                             sidebar.opacity = .5 //animation for sidebar fade
@@ -225,7 +230,7 @@ Rectangle {
                 }
             }
 
-            // OpenHD Settings - MavlinkAllSettingsPanel INDEX 2
+            // OpenHD Settings - MavlinkAllSettingsPanel INDEX 2 AND 3 !!
             Item {
                 height: 48
                 width: parent.width
@@ -258,7 +263,8 @@ Rectangle {
                         font.pixelSize: 15
                         horizontalAlignment: Text.AlignLeft
                         verticalAlignment: Text.AlignVCenter
-                        color: mainStackLayout.currentIndex == 2 ? "#33aaff" : "#dde4ed"
+                        color: mainStackLayout.currentIndex == 2 ? "#33aaff" :
+                                                                   mainStackLayout.currentIndex == 3 ? "#33aaff" : "#dde4ed"
                     }
                     background: Rectangle {
                         opacity: .3
@@ -267,7 +273,16 @@ Rectangle {
                                                            openhdSettingsBtn.activeFocus ? "grey" : "transparent"
                     }
                     onClicked: {
-                        mainStackLayout.currentIndex = 2
+                        fromSubMenu=false
+                        if (settings.goggle_layout==true){
+                            mainStackLayout.currentIndex = 3
+                            mainStackLayout.visible=true
+                            sidebar.opacity = .5 //animation for sidebar fade
+                            ggMavlinkAllSettingsPanel.openMenu()
+                        }
+                        else{
+                            mainStackLayout.currentIndex = 2
+                       }
                     }
                     Keys.onPressed: (event)=> {
                                         if (event.key === Qt.Key_Escape)
@@ -283,7 +298,7 @@ Rectangle {
                 }
             }
 
-            // Log INDEX 3
+            // Log INDEX 4
             Item {
                 height: 48
                 width: parent.width
@@ -318,7 +333,7 @@ Rectangle {
                         font.pixelSize: 15
                         horizontalAlignment: Text.AlignLeft
                         verticalAlignment: Text.AlignVCenter
-                        color: mainStackLayout.currentIndex == 3 ? "#33aaff" : "#dde4ed"
+                        color: mainStackLayout.currentIndex == 4 ? "#33aaff" : "#dde4ed"
                     }
                     background: Rectangle {
                         opacity: .3
@@ -327,7 +342,7 @@ Rectangle {
                                                 logBtn.activeFocus ? "grey" : "transparent"
                     }
                     onClicked: {
-                        mainStackLayout.currentIndex = 3
+                        mainStackLayout.currentIndex = 4
                     }
                     Keys.onPressed: (event)=> {
                                         if (event.key === Qt.Key_Escape)
@@ -342,7 +357,7 @@ Rectangle {
                 }
             }
 
-            // Power INDEX 4
+            // Power INDEX 5
             Item {
                 height: 48
                 width: parent.width
@@ -376,7 +391,7 @@ Rectangle {
                         font.pixelSize: 15
                         horizontalAlignment: Text.AlignLeft
                         verticalAlignment: Text.AlignVCenter
-                        color: mainStackLayout.currentIndex == 4 ? "#33aaff" : "#dde4ed"
+                        color: mainStackLayout.currentIndex == 5 ? "#33aaff" : "#dde4ed"
                     }
                     background: Rectangle {
                         opacity: .3
@@ -385,7 +400,7 @@ Rectangle {
                                                           powerSettingsBtn.activeFocus ? "grey" : "transparent"
                     }
                     onClicked: {
-                        mainStackLayout.currentIndex = 4
+                        mainStackLayout.currentIndex = 5
                     }
                     Keys.onPressed: (event)=> {
                                         if (event.key === Qt.Key_Escape)
@@ -400,7 +415,7 @@ Rectangle {
                 }
             }
 
-            // About INDEX 5
+            // About INDEX 6
             Item {
                 height: 48
                 width: parent.width
@@ -434,7 +449,7 @@ Rectangle {
                         font.pixelSize: 15
                         horizontalAlignment: Text.AlignLeft
                         verticalAlignment: Text.AlignVCenter
-                        color: mainStackLayout.currentIndex == 5 ? "#33aaff" : "#dde4ed"
+                        color: mainStackLayout.currentIndex == 6 ? "#33aaff" : "#dde4ed"
                     }
                     background: Rectangle {
                         opacity: .3
@@ -443,8 +458,8 @@ Rectangle {
                                                   aboutBtn.activeFocus ? "grey" : "transparent"
                     }
                     onClicked: {
-                        mainStackLayout.currentIndex = 5
-                        if (eeInt > 8){
+                        mainStackLayout.currentIndex = 6
+                        if (eeInt > 9){
                             eeItem.visible = true
                             eeInt = 0
                         }else{
@@ -465,7 +480,7 @@ Rectangle {
                 }
             }
 
-            // Developer stats INDEX 6
+            // Developer stats INDEX 7
             Item {
                 height: 48
                 width: parent.width
@@ -499,7 +514,7 @@ Rectangle {
                         font.pixelSize: 15
                         horizontalAlignment: Text.AlignLeft
                         verticalAlignment: Text.AlignVCenter
-                        color: mainStackLayout.currentIndex == 6 ? "#33aaff" : "#dde4ed"
+                        color: mainStackLayout.currentIndex == 7 ? "#33aaff" : "#dde4ed"
                     }
                     background: Rectangle {
                         opacity: .3
@@ -508,7 +523,7 @@ Rectangle {
                                                      devStatsBtn.activeFocus ? "grey" : "transparent"
                     }
                     onClicked: {
-                        mainStackLayout.currentIndex = 6
+                        mainStackLayout.currentIndex = 7
                     }
                     Keys.onPressed: (event)=> {
                                         if (event.key === Qt.Key_Escape)
@@ -523,7 +538,7 @@ Rectangle {
                 }
             }
 
-            // RC INDEX 7
+            // RC INDEX 8
             Item {
                 height: 48
                 width: parent.width
@@ -557,7 +572,7 @@ Rectangle {
                         font.pixelSize: 15
                         horizontalAlignment: Text.AlignLeft
                         verticalAlignment: Text.AlignVCenter
-                        color: mainStackLayout.currentIndex == 7 ? "#33aaff" : "#dde4ed"
+                        color: mainStackLayout.currentIndex == 8 ? "#33aaff" : "#dde4ed"
                     }
                     background: Rectangle {
                         opacity: .3
@@ -566,7 +581,7 @@ Rectangle {
                                                        rcSettingsBtn.activeFocus ? "grey" : "transparent"
                     }
                     onClicked: {
-                        mainStackLayout.currentIndex = 7
+                        mainStackLayout.currentIndex = 8
                     }
                     Keys.onPressed: (event)=> {
                                         if (event.key === Qt.Key_Escape)
@@ -583,7 +598,7 @@ Rectangle {
                                     }
                 }
             }
-            // EASTER EGG INDEX 8
+            // EASTER EGG INDEX 9
             Item {
                 id: eeItem
                 visible: false
@@ -621,7 +636,7 @@ Rectangle {
                         font.pixelSize: 15
                         horizontalAlignment: Text.AlignLeft
                         verticalAlignment: Text.AlignVCenter
-                        color: mainStackLayout.currentIndex == 7 ? "#33aaff" : "#dde4ed"
+                        color: mainStackLayout.currentIndex == 9 ? "#33aaff" : "#dde4ed"
                     }
                     background: Rectangle {
                         opacity: .3
@@ -630,7 +645,7 @@ Rectangle {
                                                eeBtn.activeFocus ? "grey" : "transparent"
                     }
                     onClicked: {
-                        mainStackLayout.currentIndex = 7
+                        mainStackLayout.currentIndex = 9
                     }
                     Keys.onPressed: (event)=> {
                                         if (event.key === Qt.Key_Escape)
@@ -660,15 +675,19 @@ Rectangle {
         anchors.top: parent.top
 
         AppSettingsPanel {
-            id: appSettingsPanel //normal view for qopenhd settings
+            id: appSettingsPanel //app normal view for qopenhd settings
         }
 
         GgAppSettingsPanel {
-            id: ggAppSettingsPanel //goggle view for qopenhd settings
+            id: ggAppSettingsPanel //app goggle view for qopenhd settings
         }
 
         MavlinkAllSettingsPanel {
-            id:  mavlinkAllSettingsPanel //"openhd" menu view
+            id:  mavlinkAllSettingsPanel //"openhd" normal menu view
+        }
+
+        GgMavlinkAllSettingsPanel {
+            id:  ggMavlinkAllSettingsPanel //"openhd" goggle menu view
         }
 
         LogMessagesStatusView{

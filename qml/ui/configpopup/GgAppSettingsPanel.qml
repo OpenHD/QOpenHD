@@ -22,8 +22,10 @@ import "../elements"
  * THIS FILE IS THE GOGGLE VERSION MENU THEME
  */
 
+//TODO override the tabbar blue line at the bottom of active tab..doesnt move now
+//and put on side of tab
+
 Item {
-    id:contentHolder
     Layout.fillHeight: true
     Layout.fillWidth: true
 
@@ -31,17 +33,21 @@ Item {
     property int elementHeight: 48
 
     function openAppMenu(){
-        console.log("openAppMenu reached");
-        appSettingsBar.x = 0
+        //console.log("openAppMenu reached");
+        if(fromSubMenu==false){//first time opening menu
+        appSettingsBar.x = 0 //app menu slide in animation
+        }
+        fromSubMenu=false //reset this
         zeroBtn.forceActiveFocus()
     }
 
     function closeAppMenu(){
         console.log("closeAppMenu reached");
         appSettingsStack.visible=false //reset and cleanup
-        appSettingsBar.x = -300
+        fromSubMenu=false
         appSettingsBtn.forceActiveFocus()
-        sidebar.opacity=1
+        appSettingsBar.x = -300 //app menu slide away animation
+        sidebar.opacity=1 //main menu fade back in
     }
 
     TabBar {
@@ -95,8 +101,10 @@ Item {
                                 closeAppMenu()
                                 else if (event.key === Qt.Key_Return)
                                 zeroBtn.clicked()
-                                else if (event.key === Qt.Key_Equal)
+                                else if (event.key === Qt.Key_Equal){
                                 closeButton.forceActiveFocus()
+                                fromSubMenu=true
+                                }
                                 else if (event.key === Qt.Key_Minus)
                                 oneBtn.forceActiveFocus()
                             }
@@ -108,7 +116,6 @@ Item {
             width: 100
             height: 48
             font.pixelSize: 13
-            //anchors.left:  parent.left
             anchors.top: zeroBtn.bottom
             anchors.horizontalCenter: parent.horizontalCenter
 
@@ -294,9 +301,6 @@ Item {
 
         currentIndex:     {
             // console.log("index:"+appSettingsBar.currentIndex);
-            // for future use to set focus for goggle support
-            showAppSettings(appSettingsBar.currentIndex);
-
             return appSettingsBar.currentIndex;
         }
 

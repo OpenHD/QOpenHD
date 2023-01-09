@@ -254,5 +254,6 @@
         <file>ui/configpopup/AppVideoSettingsView.qml</file>
         <file>ui/configpopup/AppManageSettingsView.qml</file>
         <file>ui/configpopup/GgAppSettingsPanel.qml</file>
+        <file>ui/configpopup/GgMavlinkAllSettingsPanel.qml</file>
     </qresource>
 </RCC>
