@@ -25,16 +25,16 @@ Item {
     function openMenu(){
         //console.log("openMenu OpenHD/MAVLINK reached");
         if(fromSubMenu==false){//first time opening menu
-        selectItemInStackLayoutBar.visible=true
-        selectItemInStackLayoutBar.x = 0 //app menu slide in animation
+            selectItemInStackLayoutBar.visible=true
+            selectItemInStackLayoutBar.x = 0 //app menu slide in animation
         }
         fromSubMenu=false //reset this
-        zeroBtn.forceActiveFocus()
+        zeroBtnOhd.forceActiveFocus()
     }
 
     function closeMenu(){
         console.log("closeMenu OpenHD/MAVLINK reached");
-        selectItemInStackLayoutBar.visible=false //reset and cleanup
+        ohdSettingsStack.visible=false //reset and cleanup
         fromSubMenu=false
         openhdSettingsBtn.forceActiveFocus()
         selectItemInStackLayoutBar.x = -300 //app menu slide away animation
@@ -43,207 +43,214 @@ Item {
 
     // Tab bar for selecting items in stack layout
     TabBar {
-          id: selectItemInStackLayoutBar
+        id: selectItemInStackLayoutBar
 
-          height: parent.height
-          width: 100
-          x:-300 //for animation
-          anchors.top: parent.top
-          background: Rectangle {
-              color: "#333c4c"
-              border.width: 1
-              border.color: "#4c000000"
-          }
-          clip: false
-          onActiveFocusChanged: {
-              console.log("ggAppSettingsPanel focus changed");
-          }
+        height: parent.height
+        width: 100
+        x:-300 //for animation
+        anchors.top: parent.top
+        background: Rectangle {
+            color: "#333c4c"
+            border.width: 1
+            border.color: "#4c000000"
+        }
+        clip: false
+        onActiveFocusChanged: {
+            //console.log("ggAppSettingsPanel focus changed");
+        }
 
-          Behavior on x { //when settings are opened animation
-              NumberAnimation {
-                  duration: 800
-                  easing.type: Easing.OutBack
-              }
-          }
+        Behavior on x { //when settings are opened animation
+            NumberAnimation {
+                duration: 800
+                easing.type: Easing.OutBack
+            }
+        }
 
 
 
-          TabButton {
-              id: zeroBtn //numbered based on index number
-              text: qsTr("WB Link freq")
-              width: 100
-              height: 48
-              font.pixelSize: 13
-              anchors.horizontalCenter: parent.horizontalCenter
-              contentItem: Text {
-                  text: zeroBtn.text
-                  color: selectItemInStackLayoutBar.currentIndex == 0 ? "#33aaff" :"#dde4ed"
-                  horizontalAlignment: Text.AlignHCenter
-                  verticalAlignment: Text.AlignVCenter
-              }
-              background: Rectangle {
-                  color: selectItemInStackLayoutBar.currentIndex == 0 ? "grey" :
-                                                            zeroBtn.activeFocus ? "grey" : "transparent"
-                  opacity: .3
-              }
-              onClicked: {
-                  selectItemInStackLayoutBar.visible=true
-                  selectItemInStackLayoutBar.currentIndex = 0
-              }
-              Keys.onPressed: (event)=> {
-                                  if (event.key === Qt.Key_Escape)
-                                  closeMenu()
-                                  else if (event.key === Qt.Key_Return)
-                                  zeroBtn.clicked()
-                                  else if (event.key === Qt.Key_Equal){
-                                      closeButton.forceActiveFocus()
-                                      fromSubMenu=true
-                                  }
-                                  else if (event.key === Qt.Key_Minus)
-                                  oneBtn.forceActiveFocus()
-                              }
-          }
-          TabButton {              
-              id: oneBtn //numbered based on index number
-              text: qsTr("Air Camera 1")
-              width: 100
-              height: 48
-              font.pixelSize: 13
-              anchors.horizontalCenter: parent.horizontalCenter
-              anchors.top: zeroBtn.bottom
-              contentItem: Text {
-                  text: oneBtn.text
-                  color: selectItemInStackLayoutBar.currentIndex == 1 ? "#33aaff" :"#dde4ed"
-                  horizontalAlignment: Text.AlignHCenter
-                  verticalAlignment: Text.AlignVCenter
-              }
-              background: Rectangle {
-                  color: selectItemInStackLayoutBar.currentIndex == 1 ? "grey" :
-                                                            oneBtn.activeFocus ? "grey" : "transparent"
-                  opacity: .3
-              }
-              onClicked: {
-                  selectItemInStackLayoutBar.visible=true
-                  selectItemInStackLayoutBar.currentIndex = 1
-              }
-              Keys.onPressed: (event)=> {
-                                  if (event.key === Qt.Key_Escape)
-                                  closeMenu()
-                                  else if (event.key === Qt.Key_Return)
-                                  oneBtn.clicked()
-                                  else if (event.key === Qt.Key_Equal){
-                                      zeroBtn.forceActiveFocus()
-                                  }
-                                  else if (event.key === Qt.Key_Minus)
-                                  twoBtn.forceActiveFocus()
-                              }
-          }
-          TabButton {              
-              id: twoBtn //numbered based on index number
-              text: qsTr("Air (TMP)")
-              width: 100
-              height: 48
-              font.pixelSize: 13
-              anchors.horizontalCenter: parent.horizontalCenter
-              anchors.top: oneBtn.bottom
-              contentItem: Text {
-                  text: twoBtn.text
-                  color: selectItemInStackLayoutBar.currentIndex == 2 ? "#33aaff" :"#dde4ed"
-                  horizontalAlignment: Text.AlignHCenter
-                  verticalAlignment: Text.AlignVCenter
-              }
-              background: Rectangle {
-                  color: selectItemInStackLayoutBar.currentIndex == 2 ? "grey" :
-                                                            twoBtn.activeFocus ? "grey" : "transparent"
-                  opacity: .3
-              }
-              onClicked: {
-                  selectItemInStackLayoutBar.visible=true
-                  selectItemInStackLayoutBar.currentIndex = 2
-              }
-              Keys.onPressed: (event)=> {
-                                  if (event.key === Qt.Key_Escape)
-                                  closeMenu()
-                                  else if (event.key === Qt.Key_Return)
-                                  twoBtn.clicked()
-                                  else if (event.key === Qt.Key_Equal){
-                                      oneBtn.forceActiveFocus()
-                                  }
-                                  else if (event.key === Qt.Key_Minus)
-                                  threeBtn.forceActiveFocus()
-                              }
-          }
-          TabButton {              
-              id: threeBtn //numbered based on index number
-              text: qsTr("Ground (TMP)")
-              width: 100
-              height: 48
-              font.pixelSize: 13
-              anchors.horizontalCenter: parent.horizontalCenter
-              anchors.top: twoBtn.bottom
-              contentItem: Text {
-                  text: threeBtn.text
-                  color: selectItemInStackLayoutBar.currentIndex == 3 ? "#33aaff" :"#dde4ed"
-                  horizontalAlignment: Text.AlignHCenter
-                  verticalAlignment: Text.AlignVCenter
-              }
-              background: Rectangle {
-                  color: selectItemInStackLayoutBar.currentIndex == 3 ? "grey" :
-                                                            threeBtn.activeFocus ? "grey" : "transparent"
-                  opacity: .3
-              }
-              onClicked: {
-                  selectItemInStackLayoutBar.visible=true
-                  selectItemInStackLayoutBar.currentIndex = 3
-              }
-              Keys.onPressed: (event)=> {
-                                  if (event.key === Qt.Key_Escape)
-                                  closeMenu()
-                                  else if (event.key === Qt.Key_Return)
-                                  threeBtn.clicked()
-                                  else if (event.key === Qt.Key_Equal){
-                                      twoBtn.forceActiveFocus()
-                                  }
-                                  //else if (event.key === Qt.Key_Minus)
-                                  //twoBtn.forceActiveFocus()
-                              }
-          }
+        TabButton {
+            id: zeroBtnOhd //numbered based on index number
+            text: qsTr("WB Link freq")
+            width: 100
+            height: 48
+            font.pixelSize: 13
+            anchors.horizontalCenter: parent.horizontalCenter
+            contentItem: Text {
+                text: zeroBtnOhd.text
+                color: selectItemInStackLayoutBar.currentIndex == 0 ? "#33aaff" :"#dde4ed"
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+            }
+            background: Rectangle {
+                color: selectItemInStackLayoutBar.currentIndex == 0 ? "grey" :
+                                                                      zeroBtnOhd.activeFocus ? "grey" : "transparent"
+                opacity: .3
+            }
+            onClicked: {
+                ohdSettingsStack.visible=true
+                selectItemInStackLayoutBar.currentIndex = 0
+            }
+            Keys.onPressed: (event)=> {
+                                if (event.key === Qt.Key_Escape)
+                                closeMenu()
+                                else if (event.key === Qt.Key_Return)
+                                zeroBtnOhd.clicked()
+                                else if (event.key === Qt.Key_Equal){
+                                    closeButton.forceActiveFocus()
+                                    fromSubMenu=true
+                                }
+                                else if (event.key === Qt.Key_Minus)
+                                oneBtnOhd.forceActiveFocus()
+                            }
+        }
+        TabButton {
+            id: oneBtnOhd //numbered based on index number
+            text: qsTr("Air Camera 1")
+            width: 100
+            height: 48
+            font.pixelSize: 13
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.top: zeroBtnOhd.bottom
+            contentItem: Text {
+                text: oneBtnOhd.text
+                color: selectItemInStackLayoutBar.currentIndex == 1 ? "#33aaff" :"#dde4ed"
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+            }
+            background: Rectangle {
+                color: selectItemInStackLayoutBar.currentIndex == 1 ? "grey" :
+                                                                      oneBtnOhd.activeFocus ? "grey" : "transparent"
+                opacity: .3
+            }
+            onClicked: {
+                ohdSettingsStack.visible=true
+                selectItemInStackLayoutBar.currentIndex = 1
+            }
+            Keys.onPressed: (event)=> {
+                                if (event.key === Qt.Key_Escape)
+                                closeMenu()
+                                else if (event.key === Qt.Key_Return)
+                                oneBtnOhd.clicked()
+                                else if (event.key === Qt.Key_Equal){
+                                    zeroBtnOhd.forceActiveFocus()
+                                }
+                                else if (event.key === Qt.Key_Minus)
+                                twoBtnOhd.forceActiveFocus()
+                            }
+        }
+        TabButton {
+            id: twoBtnOhd //numbered based on index number
+            text: qsTr("Air (TMP)")
+            width: 100
+            height: 48
+            font.pixelSize: 13
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.top: oneBtnOhd.bottom
+            contentItem: Text {
+                text: twoBtnOhd.text
+                color: selectItemInStackLayoutBar.currentIndex == 2 ? "#33aaff" :"#dde4ed"
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+            }
+            background: Rectangle {
+                color: selectItemInStackLayoutBar.currentIndex == 2 ? "grey" :
+                                                                      twoBtnOhd.activeFocus ? "grey" : "transparent"
+                opacity: .3
+            }
+            onClicked: {
+                ohdSettingsStack.visible=true
+                selectItemInStackLayoutBar.currentIndex = 2
+            }
+            Keys.onPressed: (event)=> {
+                                if (event.key === Qt.Key_Escape)
+                                closeMenu()
+                                else if (event.key === Qt.Key_Return)
+                                twoBtnOhd.clicked()
+                                else if (event.key === Qt.Key_Equal){
+                                    oneBtnOhd.forceActiveFocus()
+                                }
+                                else if (event.key === Qt.Key_Minus)
+                                threeBtnOhd.forceActiveFocus()
+                            }
+        }
+        TabButton {
+            id: threeBtnOhd //numbered based on index number
+            text: qsTr("Ground (TMP)")
+            width: 100
+            height: 48
+            font.pixelSize: 13
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.top: twoBtnOhd.bottom
+            contentItem: Text {
+                text: threeBtnOhd.text
+                color: selectItemInStackLayoutBar.currentIndex == 3 ? "#33aaff" :"#dde4ed"
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+            }
+            background: Rectangle {
+                color: selectItemInStackLayoutBar.currentIndex == 3 ? "grey" :
+                                                                      threeBtnOhd.activeFocus ? "grey" : "transparent"
+                opacity: .3
+            }
+            onClicked: {
+                ohdSettingsStack.visible=true
+                selectItemInStackLayoutBar.currentIndex = 3
+            }
+            Keys.onPressed: (event)=> {
+                                if (event.key === Qt.Key_Escape)
+                                closeMenu()
+                                else if (event.key === Qt.Key_Return)
+                                threeBtnOhd.clicked()
+                                else if (event.key === Qt.Key_Equal){
+                                    twoBtnOhd.forceActiveFocus()
+                                }
+                                //else if (event.key === Qt.Key_Minus)
+                                //twoBtnOhd.forceActiveFocus()
+                            }
+        }
     }
 
     // placed right below the top bar
     StackLayout {
-          width: parent.width
-          height: parent.height-selectItemInStackLayoutBar.height
-          anchors.top: selectItemInStackLayoutBar.bottom
-          anchors.topMargin: 15
-          anchors.left: selectItemInStackLayoutBar.left
-          anchors.leftMargin: 15
-          anchors.bottom: parent.bottom
-          currentIndex: selectItemInStackLayoutBar.currentIndex
-          MavlinkExtraWBParamPanel{
-              id: xX_WBLinkSettings
-          }
-        //   MavlinkSetupPiCameraPanel{
-        //       id: x1_WBPiCameraSettings
-        //   }
-          MavlinkParamPanel{
-              id: x1_AirCameraSettingsPanel
-              m_name: "Camera1"
-              m_instanceMavlinkSettingsModel: _airCameraSettingsModel
-              m_instanceCheckIsAvlie: _ohdSystemAir
-          }
-          MavlinkParamPanel{
-              id: x2_AirSettingsPanel
-              m_name: "Air"
-              m_instanceMavlinkSettingsModel: _airPiSettingsModel
-              m_instanceCheckIsAvlie: _ohdSystemAir
-          }
-          MavlinkParamPanel{
-              id: x3_GroundSettingsPanel
-              m_name: "Ground"
-              m_instanceMavlinkSettingsModel: _groundPiSettingsModel
-              m_instanceCheckIsAvlie: _ohdSystemGround
-          }
-      }
+        id: ohdSettingsStack
+        anchors.top: parent.top
+        anchors.topMargin: 0
+        anchors.right: parent.right
+        anchors.rightMargin: 0
+        anchors.left: selectItemInStackLayoutBar.right
+        anchors.leftMargin: 0
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 0
+        visible: false
+        //currentIndex: selectItemInStackLayoutBar.currentIndex
+        currentIndex:     {
+            console.log("ohd index:"+selectItemInStackLayoutBar.currentIndex);
+            return selectItemInStackLayoutBar.currentIndex;
+        }
 
+        MavlinkExtraWBParamPanel{
+            id: xX_WBLinkSettings
+        }
+
+        MavlinkParamPanel{
+            id: x1_AirCameraSettingsPanel
+            m_name: "Camera1"
+            m_instanceMavlinkSettingsModel: _airCameraSettingsModel
+            m_instanceCheckIsAvlie: _ohdSystemAir
+        }
+
+        MavlinkParamPanel{
+            id: x2_AirSettingsPanel
+            m_name: "Air"
+            m_instanceMavlinkSettingsModel: _airPiSettingsModel
+            m_instanceCheckIsAvlie: _ohdSystemAir
+        }
+
+        MavlinkParamPanel{
+            id: x3_GroundSettingsPanel
+            m_name: "Ground"
+            m_instanceMavlinkSettingsModel: _groundPiSettingsModel
+            m_instanceCheckIsAvlie: _ohdSystemGround
+        }
+    }
 }

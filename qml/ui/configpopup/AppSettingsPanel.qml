@@ -43,7 +43,7 @@ Item {
         anchors.top: parent.top
         clip: true
         onActiveFocusChanged: {
-            console.log("menu focus changed");
+            //console.log("menu focus changed");
         }
 
         TabButton {

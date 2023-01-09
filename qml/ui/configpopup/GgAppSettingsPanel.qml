@@ -64,7 +64,7 @@ Item {
         }
         clip: false
         onActiveFocusChanged: {
-            console.log("ggAppSettingsPanel focus changed");
+            //console.log("ggAppSettingsPanel focus changed");
         }
 
         Behavior on x { //when settings are opened animation
@@ -300,7 +300,7 @@ Item {
         visible: false
 
         currentIndex:     {
-            // console.log("index:"+appSettingsBar.currentIndex);
+            // console.log("qopenhd app index:"+appSettingsBar.currentIndex);
             return appSettingsBar.currentIndex;
         }
 
