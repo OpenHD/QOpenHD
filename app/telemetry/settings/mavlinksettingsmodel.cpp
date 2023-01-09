@@ -258,6 +258,7 @@ static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string&
             };
             map_improved_params["V_KEYFRAME_I"]=ImprovedIntSetting(0,100,default_values);
         }
+        map_improved_params["I_ETH_HOTSPOT_E"]=ImprovedIntSetting::createEnumEnableDisable();
     }
     if(map_improved_params.find(param_id)!=map_improved_params.end()){
         return map_improved_params[param_id];
@@ -748,7 +749,7 @@ bool MavlinkSettingsModel::get_param_requires_manual_reboot(QString param_id)
     if(param_id=="ENABLE_JOY_RC"){
         return true;
     }
-    if(param_id=="RTL8812AU_PWR_I"){
+    if(param_id=="I_ETH_HOTSPOT_E"){
         return true;
     }
     return false;
@@ -843,8 +844,12 @@ QString MavlinkSettingsModel::get_short_description(const QString param_id)const
         return "Camera exposure metering mode to use. Default average.";
     }
     if(param_id=="I_WIFI_HOTSPOT_E"){
-        return "Enable/disable wifi hotspot such that you can connect to your air/ground unit via normal WiFi. Frequency is always the opposite of your WB link, e.g. "
+        return "Enable/Disable WiFi hotspot such that you can connect to your air/ground unit via normal WiFi. Frequency is always the opposite of your WB link, e.g. "
                "2.4G if your wb link is 5.8G and opposite. However, disable hotspot during flight !";
+    }
+    if(param_id=="I_ETH_HOTSPOT_E"){
+        return "Enable/Disable ethernet hotspot. When enabled, your rpi becomes a DHCPD server and starts forwarding video & telemetry if you connect a device via ethernet."
+               "Requires Reboot to be applied !";
     }
     return "TODO";
 }

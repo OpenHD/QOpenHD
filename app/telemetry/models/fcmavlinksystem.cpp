@@ -96,12 +96,12 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         m_n_messages_update_rate_mavlink_message_attitude=0;
         m_last_update_update_rate_mavlink_message_attitude=std::chrono::steady_clock::now();
     }
+    m_last_message_ms=QOpenHDMavlinkHelper::getTimeMilliseconds();
     switch (msg.msgid) {
     case MAVLINK_MSG_ID_HEARTBEAT: {
         mavlink_heartbeat_t heartbeat;
         mavlink_msg_heartbeat_decode(&msg, &heartbeat);
-        const auto time_millis=QOpenHDMavlinkHelper::getTimeMilliseconds();
-        m_last_heartbeat=time_millis;
+        m_last_heartbeat_ms=QOpenHDMavlinkHelper::getTimeMilliseconds();
         const auto custom_mode = heartbeat.custom_mode;
         const auto autopilot = (MAV_AUTOPILOT)heartbeat.autopilot;
         //upon first heartbeat find out if autopilot is ardupilot or "other"
@@ -1031,11 +1031,11 @@ void FCMavlinkSystem::flight_mode_cmd(long cmd_msg) {
 
 void FCMavlinkSystem::update_alive()
 {
-    if(m_last_heartbeat==-1){
+    if(m_last_heartbeat_ms==-1){
         // we did not get any heartbeat (yet)
         set_is_alive(false);
     }else{
-        const auto elapsed_since_last_heartbeat=QOpenHDMavlinkHelper::getTimeMilliseconds()-m_last_heartbeat;
+        const auto elapsed_since_last_heartbeat=QOpenHDMavlinkHelper::getTimeMilliseconds()-m_last_heartbeat_ms;
         // after 3 seconds, consider as "not alive"
         const bool alive=elapsed_since_last_heartbeat< 4*1000;
         if(alive != m_is_alive){

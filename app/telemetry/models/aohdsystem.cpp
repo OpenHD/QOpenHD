@@ -76,6 +76,7 @@ bool AOHDSystem::process_message(const mavlink_message_t &msg)
         qDebug()<<"AOHDSystem::process_message: wron sys id";
         return false;
     }
+    m_last_message_ms=QOpenHDMavlinkHelper::getTimeMilliseconds();
     switch(msg.msgid){
         case MAVLINK_MSG_ID_OPENHD_VERSION_MESSAGE:{
             mavlink_openhd_version_message_t parsedMsg;
@@ -129,8 +130,7 @@ bool AOHDSystem::process_message(const mavlink_message_t &msg)
         case MAVLINK_MSG_ID_HEARTBEAT:{
             mavlink_heartbeat_t parsedMsg;
             mavlink_msg_heartbeat_decode(&msg,&parsedMsg);
-            const auto time_millis=QOpenHDMavlinkHelper::getTimeMilliseconds();
-            set_last_openhd_heartbeat(time_millis);
+            m_last_heartbeat_ms=QOpenHDMavlinkHelper::getTimeMilliseconds();
             if(parsedMsg.autopilot!=MAV_AUTOPILOT_INVALID){
                 qDebug()<<"Warning OpenHD systems should always set autopilot to none";
             }
@@ -139,7 +139,7 @@ bool AOHDSystem::process_message(const mavlink_message_t &msg)
         case MAVLINK_MSG_ID_RC_CHANNELS_OVERRIDE:{
              mavlink_rc_channels_override_t parsedMsg;
              mavlink_msg_rc_channels_override_decode(&msg,&parsedMsg);
-             RCChannelsModel::instanceGround().update_all_channels(mavlink_msg_rc_channels_override_to_array(parsedMsg));
+             RCChannelsModel::instanceGround().update_all_channels(Telemetryutil::mavlink_msg_rc_channels_override_to_array(parsedMsg));
              return true;
         };break;
         case MAVLINK_MSG_ID_STATUSTEXT:{
@@ -271,18 +271,6 @@ void AOHDSystem::process_x4(const mavlink_openhd_stats_wb_video_ground_t &msg){
                 us_min_max_avg_to_string(msg.curr_fec_decode_time_min_us,msg.curr_fec_decode_time_max_us,msg.curr_fec_decode_time_avg_us));
 }
 
-
-void AOHDSystem::set_last_openhd_heartbeat(qint64 last_openhd_heartbeat) {
-    m_last_openhd_heartbeat = last_openhd_heartbeat;
-    emit last_openhd_heartbeat_changed(m_last_openhd_heartbeat);
-}
-
-
-void AOHDSystem::set_gpio(QList<int> gpio){
-    m_gpio = gpio;
-    emit gpio_changed(m_gpio);
-}
-
 void AOHDSystem::set_curr_set_video_bitrate_int(int value){
     auto tmp=std::to_string(value)+" MBit/s";
     set_curr_set_video_bitrate(tmp.c_str());
@@ -295,10 +283,10 @@ void AOHDSystem::set_curr_set_video_codec_int(int value){
 
 void AOHDSystem::update_alive()
 {
-    if(m_last_openhd_heartbeat==-1){
+    if(m_last_heartbeat_ms==-1){
         set_is_alive(false);
     }else{
-        const auto elapsed_since_last_heartbeat=QOpenHDMavlinkHelper::getTimeMilliseconds()-m_last_openhd_heartbeat;
+        const auto elapsed_since_last_heartbeat=QOpenHDMavlinkHelper::getTimeMilliseconds()-m_last_heartbeat_ms;
         // after 3 seconds, consider as "not alive"
         const bool alive=elapsed_since_last_heartbeat< 4*1000;
         if(alive != m_is_alive){
@@ -365,30 +353,6 @@ bool AOHDSystem::send_command_restart_interface()
      command.params.maybe_param2=0;
      command.params.maybe_param3=1;
      return send_command_long(command);
-}
-
-AOHDSystem::RC_CHANNELS AOHDSystem::mavlink_msg_rc_channels_override_to_array(const mavlink_rc_channels_override_t &parsedMsg)
-{
-    RC_CHANNELS ret{};
-    ret[0]=parsedMsg.chan1_raw;
-    ret[1]=parsedMsg.chan2_raw;
-    ret[2]=parsedMsg.chan3_raw;
-    ret[3]=parsedMsg.chan4_raw;
-    ret[4]=parsedMsg.chan5_raw;
-    ret[5]=parsedMsg.chan6_raw;
-    ret[6]=parsedMsg.chan7_raw;
-    ret[7]=parsedMsg.chan8_raw;
-    ret[8]=parsedMsg.chan9_raw;
-    ret[9]=parsedMsg.chan10_raw;
-    ret[10]=parsedMsg.chan11_raw;
-    ret[11]=parsedMsg.chan12_raw;
-    ret[12]=parsedMsg.chan13_raw;
-    ret[13]=parsedMsg.chan14_raw;
-    ret[14]=parsedMsg.chan15_raw;
-    ret[15]=parsedMsg.chan16_raw;
-    ret[16]=parsedMsg.chan17_raw;
-    ret[17]=parsedMsg.chan18_raw;
-    return ret;
 }
 
 void AOHDSystem::send_message_hud_connection(bool connected){
