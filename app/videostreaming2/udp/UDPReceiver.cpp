@@ -1,6 +1,7 @@
 
 #include "UDPReceiver.h"
 #include "../../common_consti/StringHelper.hpp"
+#include "common_consti/SchedulingHelper.hpp"
 #include <arpa/inet.h>
 #include <utility>
 #include <vector>
@@ -15,9 +16,14 @@
 #include <qdebug.h>
 
 UDPReceiver::UDPReceiver(IpAndPort ip_and_port,std::string name,DATA_CALLBACK  onDataReceivedCallbackX,
-size_t wanted_receive_buff_size_btyes,const bool ENABLE_NONBLOCKINGX):
-    m_ip_and_port(ip_and_port),
-    mName(std::move(name)),onDataReceivedCallback(std::move(onDataReceivedCallbackX)),WANTED_RCVBUF_SIZE_BYTES(wanted_receive_buff_size_btyes),ENABLE_NONBLOCKING(ENABLE_NONBLOCKINGX){
+size_t wanted_receive_buff_size_btyes,const bool ENABLE_NONBLOCKINGX,const bool set_sched_param_max_realtime)
+    : m_ip_and_port(ip_and_port),
+    mName(std::move(name)),
+    onDataReceivedCallback(std::move(onDataReceivedCallbackX)),
+    WANTED_RCVBUF_SIZE_BYTES(wanted_receive_buff_size_btyes),
+    ENABLE_NONBLOCKING(ENABLE_NONBLOCKINGX),
+    m_set_sched_param_max_realtime(set_sched_param_max_realtime)
+{
     qDebug()<<"UDPReceiver "<<mName.c_str()<<"with "<<m_ip_and_port.to_string().c_str();
 }
 
@@ -31,7 +37,12 @@ std::string UDPReceiver::getSourceIPAddress()const {
 
 void UDPReceiver::startReceiving() {
     receiving=true;
-    mUDPReceiverThread=std::make_unique<std::thread>([this]{this->receiveFromUDPLoop();} );
+    mUDPReceiverThread=std::make_unique<std::thread>([this]{
+        if(m_set_sched_param_max_realtime){
+            SchedulingHelper::setThreadParamsMaxRealtime();
+        }
+        this->receiveFromUDPLoop();}
+    );
 }
 
 void UDPReceiver::stopReceiving() {
