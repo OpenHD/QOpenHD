@@ -886,10 +886,11 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp_and_mmal_direct(cons
         }else{
            std::shared_ptr<NALU> buf=nullptr;
             while(buf==nullptr){
-                // TODO wtf
-                //buf=m_rtp_receiver->get_data(std::chrono::milliseconds(kDefaultFrameTimeout));
-                std::this_thread::sleep_for(std::chrono::milliseconds(5));
-                buf=m_rtp_receiver->get_next_frame(std::nullopt);
+                // for some weird reason, rpi scheduling requires this thread to use a really low timeout to
+                // not create unwanted latency
+                buf=m_rtp_receiver->get_data(std::chrono::milliseconds(5));
+                //std::this_thread::sleep_for(std::chrono::milliseconds(5));
+                //buf=m_rtp_receiver->get_next_frame(std::nullopt);
                 if(request_restart){
                     request_restart=false;
                     goto finish;
