@@ -9,6 +9,7 @@
 
 #include "texturerenderer.h"
 #include "../videostreaming/decodingstatistcs.h"
+#include "common_consti/SchedulingHelper.hpp"
 
 #ifdef HAVE_MMAL
 #include "mmal/rpimmaldecodedisplay.h"
@@ -688,7 +689,9 @@ int AVCodecDecoder::open_and_decode_until_error(const QOpenHDVideoHelper::VideoS
 // https://ffmpeg.org/doxygen/3.3/decode_video_8c-example.html
 void AVCodecDecoder::open_and_decode_until_error_custom_rtp(const QOpenHDVideoHelper::VideoStreamConfig settings)
 {
-     av_log_set_level(AV_LOG_TRACE);
+    // This thread pulls frame(s) from the rtp decoder and therefore should have high priority
+    SchedulingHelper::setThreadParamsMaxRealtime();
+    av_log_set_level(AV_LOG_TRACE);
      assert(settings.video_codec==QOpenHDVideoHelper::VideoCodecH264 || settings.video_codec==QOpenHDVideoHelper::VideoCodecH265);
      if(settings.video_codec==QOpenHDVideoHelper::VideoCodecH264){
          decoder = avcodec_find_decoder(AV_CODEC_ID_H264);
