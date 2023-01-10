@@ -271,6 +271,7 @@ int main(int argc, char *argv[]) {
     engine.rootContext()->setContextProperty("_hudLogMessagesModel", &HUDLogMessagesModel::instance());
 
     engine.rootContext()->setContextProperty("_airCameraSettingsModel", &MavlinkSettingsModel::instanceAirCamera());
+    engine.rootContext()->setContextProperty("_airCameraSettingsModel2", &MavlinkSettingsModel::instanceAirCamera2());
     engine.rootContext()->setContextProperty("_airPiSettingsModel", &MavlinkSettingsModel::instanceAir());
     engine.rootContext()->setContextProperty("_groundPiSettingsModel", &MavlinkSettingsModel::instanceGround());
     engine.rootContext()->setContextProperty("_synchronizedSettings", &SynchronizedSettings::instance());
