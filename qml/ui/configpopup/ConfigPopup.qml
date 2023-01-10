@@ -8,9 +8,16 @@ import Qt.labs.settings 1.0
 import OpenHD 1.0
 
 /*  -Contains the selector on the left and a stack view for the panels on the right
-*   -if goggles enabled/disbaled we show different current index in the stack
+*   -Navigation: 1 main menu -> 2 submenus (each with 2 themes) -> controls
+*   -Keyboard keys are "return" =select , "esc" =back , "=" =up/plus , "-" =down/minus
+*   -if goggles enabled/disabled we show different current index in the stack which points
+*   either the 2 "standard" submenus or the 2 goggle theme submenus
+*   -The open/close functions are needed as focus cannot be directly assigned from
+*   one qml to another, so effectively its passed thru functions.
 *   -all menu open/closes should go through the functions when possible to ensure transfer
-*   of focus
+*   of focus AND tracking if focus went to close btn from a sub menu or main menu.
+*   IF focus is not tracked to close btn its possible to move curser from submenu to close btn then
+*   back to the main menu (which is behind sub menu) and you lose curser.
 */
 
 Rectangle {
@@ -109,12 +116,12 @@ Rectangle {
                                         else if (event.key === Qt.Key_Return)
                                         closeButton.clicked()
                                         else if (event.key === Qt.Key_Minus){
- //TODO Probably dont need "fromSubMenu"
+                    //logic to prevent curser going to main menu from close btn after submenu
                                             if(fromSubMenu==true){
                                                 if(mainStackLayout.currentIndex === 1 || mainStackLayout.currentIndex === 0)
-                                                ggAppSettingsPanel.openAppMenu()
+                                                ggAppSettingsPanel.openAppPanel()
                                                 else
-                                                ggMavlinkAllSettingsPanel.openMenu()
+                                                ggMavlinkAllSettingsPanel.openOhdPanel()
                                             }
                                             else{
                                                 appSettingsBtn.forceActiveFocus()
@@ -211,7 +218,7 @@ Rectangle {
                             mainStackLayout.currentIndex = 1
                             mainStackLayout.visible=true
                             sidebar.opacity = .5 //animation for sidebar fade
-                            ggAppSettingsPanel.openAppMenu()
+                            ggAppSettingsPanel.openAppPanel()
                         }
                         else{
                             mainStackLayout.currentIndex = 0
@@ -278,7 +285,7 @@ Rectangle {
                             mainStackLayout.currentIndex = 3
                             mainStackLayout.visible=true
                             sidebar.opacity = .5 //animation for sidebar fade
-                            ggMavlinkAllSettingsPanel.openMenu()
+                            ggMavlinkAllSettingsPanel.openOhdPanel()
                         }
                         else{
                             mainStackLayout.currentIndex = 2
@@ -342,6 +349,7 @@ Rectangle {
                                                 logBtn.activeFocus ? "grey" : "transparent"
                     }
                     onClicked: {
+                        mainStackLayout.visible=true
                         mainStackLayout.currentIndex = 4
                     }
                     Keys.onPressed: (event)=> {
@@ -400,6 +408,7 @@ Rectangle {
                                                           powerSettingsBtn.activeFocus ? "grey" : "transparent"
                     }
                     onClicked: {
+                        mainStackLayout.visible=true
                         mainStackLayout.currentIndex = 5
                     }
                     Keys.onPressed: (event)=> {
@@ -458,6 +467,7 @@ Rectangle {
                                                   aboutBtn.activeFocus ? "grey" : "transparent"
                     }
                     onClicked: {
+                        mainStackLayout.visible=true
                         mainStackLayout.currentIndex = 6
                         if (eeInt > 9){
                             eeItem.visible = true
@@ -523,6 +533,7 @@ Rectangle {
                                                      devStatsBtn.activeFocus ? "grey" : "transparent"
                     }
                     onClicked: {
+                        mainStackLayout.visible=true
                         mainStackLayout.currentIndex = 7
                     }
                     Keys.onPressed: (event)=> {
@@ -581,6 +592,7 @@ Rectangle {
                                                        rcSettingsBtn.activeFocus ? "grey" : "transparent"
                     }
                     onClicked: {
+                        mainStackLayout.visible=true
                         mainStackLayout.currentIndex = 8
                     }
                     Keys.onPressed: (event)=> {
@@ -645,6 +657,7 @@ Rectangle {
                                                eeBtn.activeFocus ? "grey" : "transparent"
                     }
                     onClicked: {
+                        mainStackLayout.visible=true
                         mainStackLayout.currentIndex = 9
                     }
                     Keys.onPressed: (event)=> {
@@ -670,7 +683,7 @@ Rectangle {
         anchors.right: parent.right
         anchors.rightMargin: 0
         anchors.left: settings.goggle_layout ? sidebar.left : sidebar.right
-        anchors.leftMargin: settings.goggle_layout ? 50 : -1
+        anchors.leftMargin: settings.goggle_layout ? 132 : -1
         anchors.topMargin: settings.goggle_layout ? 48 : 0
         anchors.top: parent.top
 

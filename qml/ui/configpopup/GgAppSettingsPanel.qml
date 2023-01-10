@@ -32,17 +32,17 @@ Item {
     property int rowHeight: 64
     property int elementHeight: 48
 
-    function openAppMenu(){
-        //console.log("openAppMenu reached");
+    function openAppPanel(){
+        //console.log("openAppPanel reached");
         if(fromSubMenu==false){//first time opening menu
-        appSettingsBar.x = 0 //app menu slide in animation
+        appSettingsBar.x = -80 //app menu slide in animation
         }
         fromSubMenu=false //reset this
         zeroBtn.forceActiveFocus()
     }
 
-    function closeAppMenu(){
-        console.log("closeAppMenu reached");
+    function closeAppPanel(){
+        console.log("closeAppPanel reached");
         appSettingsStack.visible=false //reset and cleanup
         fromSubMenu=false
         appSettingsBtn.forceActiveFocus()
@@ -98,7 +98,7 @@ Item {
             }
             Keys.onPressed: (event)=> {
                                 if (event.key === Qt.Key_Escape)
-                                closeAppMenu()
+                                closeAppPanel()
                                 else if (event.key === Qt.Key_Return)
                                 zeroBtn.clicked()
                                 else if (event.key === Qt.Key_Equal){
@@ -136,7 +136,7 @@ Item {
             }
             Keys.onPressed: (event)=> {
                                 if (event.key === Qt.Key_Escape)
-                                closeAppMenu()
+                                closeAppPanel()
                                 else if (event.key === Qt.Key_Return)
                                 oneBtn.clicked()
                                 else if (event.key === Qt.Key_Equal)
@@ -171,7 +171,7 @@ Item {
             }
             Keys.onPressed: (event)=> {
                                 if (event.key === Qt.Key_Escape)
-                                closeAppMenu()
+                                closeAppPanel()
                                 else if (event.key === Qt.Key_Return)
                                 twoBtn.clicked()
                                 else if (event.key === Qt.Key_Equal)
@@ -206,7 +206,7 @@ Item {
             }
             Keys.onPressed: (event)=> {
                                 if (event.key === Qt.Key_Escape)
-                                closeAppMenu()
+                                closeAppPanel()
                                 else if (event.key === Qt.Key_Return)
                                 threeBtn.clicked()
                                 else if (event.key === Qt.Key_Equal)
@@ -241,7 +241,7 @@ Item {
             }
             Keys.onPressed: (event)=> {
                                 if (event.key === Qt.Key_Escape)
-                                closeAppMenu()
+                                closeAppPanel()
                                 else if (event.key === Qt.Key_Return)
                                 fourBtn.clicked()
                                 else if (event.key === Qt.Key_Equal)
@@ -276,7 +276,7 @@ Item {
             }
             Keys.onPressed: (event)=> {
                                 if (event.key === Qt.Key_Escape)
-                                closeAppMenu()
+                                closeAppPanel()
                                 else if (event.key === Qt.Key_Return)
                                 fiveBtn.clicked()
                                 else if (event.key === Qt.Key_Equal)

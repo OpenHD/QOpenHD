@@ -22,18 +22,18 @@ Item {
     property int elementHeight: 48
     property int elementComboBoxWidth: 300
 
-    function openMenu(){
-        //console.log("openMenu OpenHD/MAVLINK reached");
+    function openOhdPanel(){
+        //console.log("openOhdPanel OpenHD/MAVLINK reached");
         if(fromSubMenu==false){//first time opening menu
             selectItemInStackLayoutBar.visible=true
-            selectItemInStackLayoutBar.x = 0 //app menu slide in animation
+            selectItemInStackLayoutBar.x = -80 //app menu slide in animation
         }
         fromSubMenu=false //reset this
         zeroBtnOhd.forceActiveFocus()
     }
 
-    function closeMenu(){
-        console.log("closeMenu OpenHD/MAVLINK reached");
+    function closeOhdPanel(){
+        console.log("closeOhdPanel OpenHD/MAVLINK reached");
         ohdSettingsStack.visible=false //reset and cleanup
         fromSubMenu=false
         openhdSettingsBtn.forceActiveFocus()
@@ -92,7 +92,7 @@ Item {
             }
             Keys.onPressed: (event)=> {
                                 if (event.key === Qt.Key_Escape)
-                                closeMenu()
+                                closeOhdPanel()
                                 else if (event.key === Qt.Key_Return)
                                 zeroBtnOhd.clicked()
                                 else if (event.key === Qt.Key_Equal){
@@ -128,7 +128,7 @@ Item {
             }
             Keys.onPressed: (event)=> {
                                 if (event.key === Qt.Key_Escape)
-                                closeMenu()
+                                closeOhdPanel()
                                 else if (event.key === Qt.Key_Return)
                                 oneBtnOhd.clicked()
                                 else if (event.key === Qt.Key_Equal){
@@ -163,7 +163,7 @@ Item {
             }
             Keys.onPressed: (event)=> {
                                 if (event.key === Qt.Key_Escape)
-                                closeMenu()
+                                closeOhdPanel()
                                 else if (event.key === Qt.Key_Return)
                                 twoBtnOhd.clicked()
                                 else if (event.key === Qt.Key_Equal){
@@ -198,7 +198,7 @@ Item {
             }
             Keys.onPressed: (event)=> {
                                 if (event.key === Qt.Key_Escape)
-                                closeMenu()
+                                closeOhdPanel()
                                 else if (event.key === Qt.Key_Return)
                                 threeBtnOhd.clicked()
                                 else if (event.key === Qt.Key_Equal){
@@ -224,7 +224,7 @@ Item {
         visible: false
         //currentIndex: selectItemInStackLayoutBar.currentIndex
         currentIndex:     {
-            console.log("ohd index:"+selectItemInStackLayoutBar.currentIndex);
+            //console.log("ohd index:"+selectItemInStackLayoutBar.currentIndex);
             return selectItemInStackLayoutBar.currentIndex;
         }
 
