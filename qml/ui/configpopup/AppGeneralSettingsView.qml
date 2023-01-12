@@ -253,6 +253,7 @@ ScrollView {
                     onValueChanged: settings.dev_qopenhd_n_cameras = value
                 }
             }
+
         }
     }
 }

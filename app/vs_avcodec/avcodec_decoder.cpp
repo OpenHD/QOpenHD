@@ -8,7 +8,7 @@
 #include "../common_consti/TimeHelper.hpp"
 
 #include "texturerenderer.h"
-#include "../videostreaming/decodingstatistcs.h"
+#include "../vs_util/decodingstatistcs.h"
 #include "common_consti/SchedulingHelper.hpp"
 
 #ifdef HAVE_MMAL

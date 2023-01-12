@@ -1,4 +1,4 @@
-#if defined(ENABLE_GSTREAMER)
+#if defined(QOPENHD_ENABLE_GSTREAMER)
 
 #include "gstvideostream.h"
 
@@ -7,18 +7,6 @@
 #include <sstream>
 
 #include "gst_helper.hpp"
-
-
-static QOpenHDVideoHelper::VideoStreamConfig readVideoStreamConfigFromSettings(bool isPrimary){
-    // read settings
-    QOpenHDVideoHelper::VideoStreamConfig _videoStreamConfig=QOpenHDVideoHelper::read_from_settings();
-    if(isPrimary){
-         _videoStreamConfig.video_port=OHDIntegration::OHD_VIDEO_GROUND_VIDEO_STREAM_1_UDP;
-    }else{
-         _videoStreamConfig.video_port=OHDIntegration::OHD_VIDEO_GROUND_VIDEO_STREAM_2_UDP;
-    }
-    return _videoStreamConfig;
-}
 
 static std::string gst_create_caps(const QOpenHDVideoHelper::VideoCodec& videoCodec){
     std::stringstream ss;
@@ -145,7 +133,7 @@ static std::string constructGstreamerPipeline(const QOpenHDVideoHelper::VideoStr
     }else if(config.dev_test_video_mode==QOpenHDVideoHelper::VideoTestMode::RAW_VIDEO_ENCODE_DECODE){
         ss<<create_debug_encoded_data_producer(config.video_codec);
     }else{
-        ss<<"udpsrc port="<<config.video_port<<" ";
+        ss<<"udpsrc port="<<config.udp_rtp_input_port<<" ";
         ss<<gst_create_caps(config.video_codec);
     }
     // add rtp decoder
@@ -174,29 +162,29 @@ static void debug_gstreamer_pipeline_state(GstElement *gst_pipeline){
     }
 }
 
-GstVideoStream::GstVideoStream(QObject *parent): QObject(parent), timer(new QTimer) {
+GstVideoStream::GstVideoStream(bool is_primary,QObject *parent)
+    : QObject(parent),
+      timer(new QTimer),
+      m_isPrimaryStream(is_primary)
+{
     qDebug() << "GstVideoStream::GstVideoStream()";
-    // developer testing
-    //QSettings settings;
-    //settings.setValue("dev_test_video_mode",0);
-    // NOTE: the gstreamer init stuff should be already called via main - only this way we can
-    // pass in the parameters. Calling it again should have no effect then.
-    initGstreamerOrThrow();
-    initQmlGlSinkOrThrow();
-    //customizeGstreamerLogPath();
+    // NOTE: the gstreamer init stuff should be already called via main !
 }
-
 
 GstVideoStream::~GstVideoStream() {
     stopVideoSafe();
+    if(timer){
+        timer->stop();
+        delete timer;
+    }
     qDebug() << "GstVideoStream::~GstVideoStream()";
 }
 
 
-void GstVideoStream::init(QQuickItem* videoOutputWindow,bool primaryStream) {
+void GstVideoStream::init(QQuickItem* videoOutputWindow) {
+    assert(videoOutputWindow);
     m_videoOutputWindow=videoOutputWindow;
-    m_isPrimaryStream=primaryStream;
-    m_videoStreamConfig=readVideoStreamConfigFromSettings(m_isPrimaryStream);
+    m_videoStreamConfig=QOpenHDVideoHelper::read_from_settings2(m_isPrimaryStream);
     lastDataTimeout = QDateTime::currentMSecsSinceEpoch();
     QObject::connect(timer, &QTimer::timeout, this, &GstVideoStream::timerCallback);
     timer->start(1000);
@@ -294,6 +282,7 @@ static gboolean bus_call (GstBus *bus,GstMessage *msg,gpointer data){
 
 
 void GstVideoStream::startVideo() {
+    qDebug()<<"GstVideoStream::startVideo() begin";
     if(m_pipeline!=nullptr){
         //qDebug()<<"You probably forgot to call stopVideo";
         stopVideoSafe();
@@ -302,7 +291,7 @@ void GstVideoStream::startVideo() {
     const auto pipeline=constructGstreamerPipeline(m_videoStreamConfig);
     GError *error = nullptr;
     m_pipeline = gst_parse_launch(pipeline.c_str(), &error);
-    qDebug() << "GSTREAMER PIPE=" << pipeline.c_str();
+    qDebug() << "GSTREAMER PIPE=[" << pipeline.c_str()<<"]";
     if (error) {
         qDebug() << "gst_parse_launch error: " << error->message;
         return;
@@ -323,6 +312,7 @@ void GstVideoStream::startVideo() {
 
      gst_element_set_state (m_pipeline, GST_STATE_PLAYING);
     lastDataTimeout = QDateTime::currentMSecsSinceEpoch();
+    qDebug()<<"GstVideoStream::startVideo() end";
 }
 
 void GstVideoStream::stopVideoSafe() {
@@ -355,7 +345,7 @@ void GstVideoStream::timerCallback() {
     }
     assert(m_videoOutputWindow!=nullptr);
     // read config from settings
-    const QOpenHDVideoHelper::VideoStreamConfig _videoStreamConfig=readVideoStreamConfigFromSettings(m_isPrimaryStream);
+    const QOpenHDVideoHelper::VideoStreamConfig _videoStreamConfig=QOpenHDVideoHelper::read_from_settings2(m_isPrimaryStream);
     // check if settings have changed or we haven't started anything at all yet
     if((m_videoStreamConfig!=_videoStreamConfig) || m_pipeline == nullptr){
         m_videoStreamConfig=_videoStreamConfig;

@@ -312,7 +312,7 @@ Rectangle{
                     horizontalAlignment: Text.AlignHCenter
                     Layout.leftMargin: -100
                 }
-            up.indicator: Rectangle {
+            /*up.indicator: Rectangle {
                     height: parent.height/1.5
                     anchors.right: parent.right
                     anchors.top: parent.top
@@ -322,8 +322,6 @@ Rectangle{
                         color: "white"
                         font.pixelSize: 30
                         anchors.fill: parent
-
-
                     }
                 }
             down.indicator: Rectangle {
@@ -338,11 +336,8 @@ Rectangle{
                         anchors.top: parent.top
                         font.pixelSize: 30
                         anchors.fill: parent
-
                     }
-                }
-
-
+                }*/
             onValueChanged: {
 
             }

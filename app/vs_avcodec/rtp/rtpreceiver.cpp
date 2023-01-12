@@ -5,9 +5,9 @@
 #include "../common_consti/StringHelper.hpp"
 #include "../common_consti/openhd-util.hpp"
 
-#include "../../videostreaming/decodingstatistcs.h"
+#include "../../vs_util/decodingstatistcs.h"
 #include "common_consti/openhd-util.hpp"
-#include "videostreaming/QOpenHDVideoHelper.hpp"
+#include "vs_util/QOpenHDVideoHelper.hpp"
 
 
 #ifdef OPENHD_USE_LIB_UVGRTP
