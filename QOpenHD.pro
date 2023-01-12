@@ -92,7 +92,7 @@ include(app/vs_avcodec/avcodec_video.pri)
 
 # Gstreamer / qmlglsink decode and display, all sources
 # r.n only used for secondary video and for primary video only on platforms we cannot do primary video via QSG / avcodec
-include(app/vs_gst_qmlglsink/gst_video.pri)
+#include(app/vs_gst_qmlglsink/gst_video.pri)
 
 # adsb library
 include(app/adsb/adsb_lib.pri)
