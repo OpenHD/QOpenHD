@@ -20,6 +20,8 @@ gem install fpm
 apt -y install libavcodec-dev libavformat-dev
 # Note on pi / your PC this should be already installed, be carefully to pick the right one otherwise
 apt -y install libgles2-mesa-dev
+apt -y install libgstreamer-plugins-base1.0-dev gstreamer1.0-plugins-good qtgstreamer-plugins-qt5
+
 
 # they are needed to build and install mavsdk
 apt -y install pip

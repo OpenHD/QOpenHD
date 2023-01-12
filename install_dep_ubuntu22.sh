@@ -46,9 +46,6 @@ cd /usr/bin
 rm -f qmake
 sudo ln -s /opt/Qt5.15.7/bin/qmake qmake
 
-# While we keep the gstreamer code in (in case we want to enable it anyways for the jetson) we have it disabled at compile time by default
-#apt -y install libgstreamer-plugins-base1.0-dev gstreamer1.0-plugins-good
-# NOT qmlglsink but something else ?! DEFINITELY not qmlglsink or doesn't work anyways
-#sudo apt-get install qtgstreamer-plugins-qt5
+apt -y install libgstreamer-plugins-base1.0-dev gstreamer1.0-plugins-good qtgstreamer-plugins-qt5
 
 

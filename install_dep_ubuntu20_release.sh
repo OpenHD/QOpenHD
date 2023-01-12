@@ -25,6 +25,8 @@ gem install fpm
 
 # now also ffmpeg / avcodec
 apt -y install libavcodec-dev libavformat-dev
+apt -y install libgstreamer-plugins-base1.0-dev gstreamer1.0-plugins-good qtgstreamer-plugins-qt5
+
 # Note on pi / your PC this should be already installed, be carefully to pick the right one otherwise
 apt -y install libgles2-mesa-dev
 
