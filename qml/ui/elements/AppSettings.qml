@@ -371,4 +371,6 @@ Settings {
     property int stereo_osd_left_x: 0
     property int stereo_osd_right_x: 0
     property int stereo_osd_size: 0
+
+    property int dev_qopenhd_n_cameras:1
 }

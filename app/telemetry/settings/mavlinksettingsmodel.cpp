@@ -16,6 +16,12 @@ MavlinkSettingsModel &MavlinkSettingsModel::instanceAirCamera()
     return *instanceAirCamera;
 }
 
+MavlinkSettingsModel &MavlinkSettingsModel::instanceAirCamera2()
+{
+    static MavlinkSettingsModel instanceAirCamera2{OHD_SYS_ID_AIR,OHD_COMP_ID_AIR_CAMERA+1};
+    return instanceAirCamera2;
+}
+
 MavlinkSettingsModel &MavlinkSettingsModel::instanceAir()
 {
     static MavlinkSettingsModel* instanceAir=new MavlinkSettingsModel(OHD_SYS_ID_AIR,OHD_COMP_ID_LINK_PARAM);

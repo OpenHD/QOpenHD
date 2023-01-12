@@ -1,4 +1,4 @@
-#if defined(ENABLE_GSTREAMER)
+#ifdef QOPENHD_ENABLE_GSTREAMER
 
 #ifndef OpenHDVideoStream_H
 #define OpenHDVideoStream_H
@@ -9,7 +9,7 @@
 #include <QtQml>
 #include <gst/gst.h>
 
-#include "../QOpenHDVideoHelper.hpp"
+#include "../vs_util/QOpenHDVideoHelper.hpp"
 
 /**
  * Consti10
@@ -27,8 +27,9 @@ class GstVideoStream : public QObject{
 public:
     /**
      * The constructor is delayed, remember to use init().
+     * @param is_primary: weather to use the settings for primary or secondary video stream
      */
-    GstVideoStream(QObject *parent = nullptr);
+    GstVideoStream(bool is_primary,QObject *parent = nullptr);
     virtual ~GstVideoStream();
     /**
      * @brief after setting the output window, this does not immediately start streaming -
@@ -37,7 +38,7 @@ public:
      * @param videoOutputWindow the qt window where the decoded data is displayed.
      * @param primaryStream primary and secondary stream use different UDP ports
      */
-    void init(QQuickItem* videoOutputWindow,bool primaryStream);
+    void init(QQuickItem* videoOutputWindow);
     // for checking if video data actually arrives
     // public because set by static method
     qint64 lastDataTimeout = 0;
@@ -63,7 +64,7 @@ private:
     QOpenHDVideoHelper::VideoStreamConfig m_videoStreamConfig;
     // runs every 1 second
     QTimer* timer = nullptr;
-    bool m_isPrimaryStream=true;
+    const bool m_isPrimaryStream;
     bool firstCheck=true;
     //
     int nTimesVideoQmlElementNotSet=0;
