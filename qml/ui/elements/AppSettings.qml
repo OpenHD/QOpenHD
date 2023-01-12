@@ -25,6 +25,10 @@ Settings {
     //WARNING: THIS ALLOWS THE USER TO MAKE BREAKING CHANGES
     property bool dev_show_whitelisted_params: false
     property bool dev_show_advanced_button: false
+    //WARNING: THIS makes the RC panel visible
+
+    property bool app_show_RC: false
+
 
     property bool app_background_transparent: true
     // devices that use drm/kms (e.g. rpi) are always fullscreen anyways
