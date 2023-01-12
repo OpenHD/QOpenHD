@@ -119,6 +119,22 @@ static VideoStreamConfig read_from_settings(){
     return _videoStreamConfig;
 }
 
+static VideoStreamConfig tmp_get_secondary_confg(){
+    QOpenHDVideoHelper::VideoStreamConfig videoStreamConfig{};
+    videoStreamConfig.video_codec=VideoCodecH264;
+    videoStreamConfig.udp_rtp_input_port=5601;
+    return videoStreamConfig;
+}
+
+static VideoStreamConfig read_from_settings2(bool is_primary){
+    if(is_primary){
+        // primary video (full screen)
+        return read_from_settings();
+    }
+    return tmp_get_secondary_confg();
+    assert(false);
+}
+
 // For OpenHD images, these files are copied over by the image builder and therefore can
 // be used for testing / validation
 static std::string get_default_openhd_test_file(const VideoCodec video_codec){

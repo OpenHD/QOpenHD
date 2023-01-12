@@ -5,7 +5,7 @@
 #include <QTimer>
 #include <cstdlib>
 
-#include "hudlogmessagesmodel.h""
+#include "hudlogmessagesmodel.h"
 
 LogMessagesModel &LogMessagesModel::instance()
 {

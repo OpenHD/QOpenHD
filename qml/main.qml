@@ -32,23 +32,51 @@ ApplicationWindow {
     //visibility: "FullScreen"
     visibility: UseFullscreen ? "FullScreen" : "AutomaticVisibility"
 
-    // If AVCODEC is enabled at compile time, load the corresponding video element - note that this
-    // element hoocks directly into the QT render thread, and therefore cannot be scaled, repositioned or similar
-    // TODO: use a loader, but I cannot figure out how - you manually have to uncomment the following lines
-    // if QOPENHD_ENABLE_VIDEO_VIA_AVCODEC is not set
-    QSGVideoTextureItem {
-        id: my_QSGVideoTextureItem
+    /*
+     * Local app settings. Uses the "user defaults" system on Mac/iOS, the Registry on Windows,
+     * and equivalent settings systems on Linux and Android
+     *
+     */
+    AppSettings {
+        id: settings
+        Component.onCompleted: {
+            //
+        }
     }
 
     // Loads the proper (platform-dependent) video widget for the main (primary) video
-    // Legacy, left in here because we might re-introduce gstreamer for video
+    // primary video is always full-screen and behind the HUD OSD Elements
     Loader {
         anchors.fill: parent
         z: 1.0
         rotation: settings.video_rotation
         source: {
-            if (EnableGStreamer && EnableMainVideo) {
+            // If we have avcodec at compile time, we prefer it over qmlglsink since it provides lower latency
+            // (not really avcodec itself, but in this namespace we have 1) the preferred sw decode path and
+            // 2) also the mmal rpi path )
+            if(QOPENHD_ENABLE_VIDEO_VIA_AVCODEC){
+                return "../video/MainVideoQSG.qml";
+            }
+            // Fallback / windows or similar
+            if(QOPENHD_ENABLE_GSTREAMER){
                 return "../video/MainVideoGStreamer.qml";
+            }
+            return ""
+        }
+    }
+
+    // Loads the proper (platform-dependent) video widget for the secondary video, if enabled.
+    // Secondary video is always in the lower left corner, and not full screen. And r.n we only have a gstreamer - qmlglsink
+    // implementation for it
+    Loader {
+        z: 2.0
+        rotation: settings.video_rotation
+        width: 320
+        height: 240
+        anchors.bottom: parent.bottom
+        source: {
+            if (QOPENHD_ENABLE_GSTREAMER && settings.dev_qopenhd_n_cameras>1) {
+                return "../video/SecondaryVideoGStreamer.qml";
             }
             return ""
         }
@@ -68,18 +96,6 @@ ApplicationWindow {
         width: 400
         z: 5.0
         anchors.centerIn: parent
-    }
-
-    /*
-     * Local app settings. Uses the "user defaults" system on Mac/iOS, the Registry on Windows,
-     * and equivalent settings systems on Linux and Android
-     *
-     */
-    AppSettings {
-        id: settings
-        Component.onCompleted: {
-            //
-        }
     }
 
     // UI areas

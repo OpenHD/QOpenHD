@@ -27,11 +27,12 @@ Item {
           TabButton {
               text: qsTr("WB Link freq")
           }
-        //   TabButton {
-        //       text: qsTr("Air Camera Select")
-        //   }
           TabButton {
               text: qsTr("Air Camera 1")
+          }
+          TabButton {
+              text: qsTr("Air Camera 2")
+              enabled: settings.dev_qopenhd_n_cameras>1
           }
           TabButton {
               text: qsTr("Air (TMP)")
@@ -61,6 +62,13 @@ Item {
               id: x1_AirCameraSettingsPanel
               m_name: "Camera1"
               m_instanceMavlinkSettingsModel: _airCameraSettingsModel
+              m_instanceCheckIsAvlie: _ohdSystemAir
+          }
+          // exp
+          MavlinkParamPanel{
+              id: x1_AirCameraSettingsPanel2
+              m_name: "Camera2"
+              m_instanceMavlinkSettingsModel: _airCameraSettingsModel2
               m_instanceCheckIsAvlie: _ohdSystemAir
           }
           MavlinkParamPanel{

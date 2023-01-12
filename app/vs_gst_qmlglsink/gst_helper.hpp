@@ -1,4 +1,5 @@
-#if defined(ENABLE_GSTREAMER)
+#ifdef QOPENHD_ENABLE_GSTREAMER
+
 #ifndef GST_PLATFORM_INCLUDE_H
 #define GST_PLATFORM_INCLUDE_H
 
@@ -7,7 +8,7 @@
 // (TODO: rn everythng except standart ubuntu has been deleted).
 // exposes a initGstreamerOrThrow() method that should be called before any actual gstreamer calls.
 
-#include "../QOpenHDVideoHelper.hpp"
+#include "../vs_util/QOpenHDVideoHelper.hpp"
 #include "qglobal.h"
 #include <gst/gst.h>
 #include <QString>
@@ -47,6 +48,7 @@ static void initGstreamerOrThrowExtra(int argc,char* argv[]){
 // If qmlgl plugin was dynamically linked, this will force GStreamer to go find it and
 // load it before the QML gets loaded in main.cpp (without this, Qt will complain that
 // it can't find org.freedesktop.gstreamer.GLVideoItem)
+// From https://github.com/GStreamer/gst-examples/blob/b27bcc187e867897dcd169cd46f8d9bc403210e8/playback/player/qt/main.cpp#L51
 static void initQmlGlSinkOrThrow(){
     /*if (!gst_element_register (plugin, "qmlglsink",
               GST_RANK_NONE, GST_TYPE_QT_SINK)) {
@@ -55,8 +57,11 @@ static void initQmlGlSinkOrThrow(){
     GstElement *sink = gst_element_factory_make("qmlglsink", NULL);
     if(sink==nullptr){
         qDebug()<<"Cannot initialize gstreamer - qmlsink not found";
-        //throw std::runtime_error("Cannot initialize gstreamer - qmlsink not found\n");
-   }
+        throw std::runtime_error("Cannot initialize gstreamer - qmlsink not found\n");
+   }else{
+        qDebug()<<"initQmlGlSinkOrThrow() success";
+    }
+    gst_object_unref(sink);
 }
 
 // not sure, customize the path where gstreamer log is written to
@@ -89,7 +94,7 @@ static QString get_gstreamer_version() {
 
 // link gstreamer qmlglsink to qt window
 static void link_gsteamer_to_qt_window(GstElement *qmlglsink,QQuickItem *qtOutWindow){
-      g_object_set(qmlglsink, "widget", qtOutWindow, NULL);
+      g_object_set(qmlglsink, "widget", gpointer(qtOutWindow), NULL);
 }
 
 // find qmlglsink in gstreamer pipeline and link it to the window
@@ -113,7 +118,7 @@ static QQuickItem* find_qt_video_window(QQmlApplicationEngine& m_engine,const bo
     if(isMainStream){
          m_elementName = "mainVideoGStreamer";
     }else{
-         m_elementName = "pipVideoGStreamer";
+         m_elementName = "secondaryVideoGStreamer";
     }
     QQuickItem *videoItem;
     QQuickWindow *rootObject;
