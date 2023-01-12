@@ -1,5 +1,3 @@
-#if defined(QOPENHD_ENABLE_GSTREAMER)
-
 #include "gstvideostream.h"
 
 #include <QtConcurrent>
@@ -368,5 +366,3 @@ void GstVideoStream::timerCallback() {
 }
 
 
-
-#endif
