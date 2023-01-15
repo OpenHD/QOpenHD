@@ -265,6 +265,7 @@ static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string&
             };
             map_improved_params["V_KEYFRAME_I"]=ImprovedIntSetting(0,100,default_values);
         }
+         map_improved_params["V_FORCE_SW_ENC"]=ImprovedIntSetting::createEnumEnableDisable();
         map_improved_params["I_ETH_HOTSPOT_E"]=ImprovedIntSetting::createEnumEnableDisable();
     }
     if(map_improved_params.find(param_id)!=map_improved_params.end()){
@@ -285,6 +286,7 @@ static std::optional<ImprovedStringSetting> get_improved_for_string(const std::s
             "1920x1080@30",
     };
     map_improved_params["V_FORMAT"]=ImprovedStringSetting::create_from_keys_only(choices_video_res_framerate);
+    //
     if(map_improved_params.find(param_id)!=map_improved_params.end()){
         return map_improved_params[param_id];
     }
@@ -876,6 +878,9 @@ QString MavlinkSettingsModel::get_short_description(const QString param_id)const
     if(param_id=="I_ETH_HOTSPOT_E"){
         return "Enable/Disable ethernet hotspot. When enabled, your rpi becomes a DHCPD server and starts forwarding video & telemetry if you connect a device via ethernet."
                "Requires Reboot to be applied !";
+    }
+    if(param_id=="V_FORCE_SW_ENC"){
+        return "Force SW encode for the given USB camera, only enable if your camera supports outputting an appropriate raw format.";
     }
     return "TODO";
 }
