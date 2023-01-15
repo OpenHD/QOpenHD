@@ -265,7 +265,9 @@ static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string&
             };
             map_improved_params["V_KEYFRAME_I"]=ImprovedIntSetting(0,100,default_values);
         }
-         map_improved_params["V_FORCE_SW_ENC"]=ImprovedIntSetting::createEnumEnableDisable();
+        map_improved_params["V_FORCE_SW_ENC"]=ImprovedIntSetting::createEnumEnableDisable();
+        map_improved_params["V_SWITCH_CAM"]=ImprovedIntSetting::createEnumEnableDisable();
+
         map_improved_params["I_ETH_HOTSPOT_E"]=ImprovedIntSetting::createEnumEnableDisable();
     }
     if(map_improved_params.find(param_id)!=map_improved_params.end()){
@@ -881,6 +883,9 @@ QString MavlinkSettingsModel::get_short_description(const QString param_id)const
     }
     if(param_id=="V_FORCE_SW_ENC"){
         return "Force SW encode for the given USB camera, only enable if your camera supports outputting an appropriate raw format.";
+    }
+    if(param_id=="V_SWITCH_CAM"){
+        return "Requires reboot. Switch primary and secondary camera.";
     }
     return "TODO";
 }
