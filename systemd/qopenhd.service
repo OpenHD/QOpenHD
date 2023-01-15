@@ -5,7 +5,7 @@ After=multi-user.target
 [Service]
 Type=simple
 Environment="QT_QPA_EGLFS_KMS_ATOMIC=1"
-Environment="QT_QPA_EGLFS_KMS_CONFIG=/usr/local/share/qopenhd/qt.json"
+Environment="QT_QPA_EGLFS_KMS_CONFIG=/usr/local/share/qopenhd/rpi_qt_eglfs_kms_config.json"
 ExecStart=/usr/local/bin/QOpenHD
 User=root
 Restart=always
