@@ -6,7 +6,7 @@
 #include "../telemetryutil.hpp"
 #include "wificard.h"
 #include "rcchannelsmodel.h"
-#include "aircameramodel.h"
+#include "camerastreammodel.h"
 
 #include <string>
 #include <sstream>
@@ -222,19 +222,18 @@ void AOHDSystem::process_x3(const mavlink_openhd_stats_wb_video_air_t &msg){
     }
     // TODO not the most cleanest approach to update another model from here
     if(msg.link_index==0 || msg.link_index==1){
-        auto& cam=AirCameraModel::instance(msg.link_index);
+        auto& cam=CameraStreamModel::instance(msg.link_index);
         cam.set_curr_video_measured_encoder_bitrate(bitrate_to_qstring(msg.curr_measured_encoder_bitrate));
         cam.set_curr_video_injected_bitrate(bitrate_to_qstring(msg.curr_injected_bitrate));
+        cam.set_curr_video0_injected_pps(pps_to_string(msg.curr_injected_pps));
+        cam.set_curr_video0_dropped_packets(msg.curr_dropped_packets);
+        cam.set_curr_video0_fec_encode_time_avg_min_max(
+                    us_min_max_avg_to_string(msg.curr_fec_encode_time_min_us,msg.curr_fec_encode_time_max_us,msg.curr_fec_encode_time_avg_us));
+        cam.set_curr_video0_fec_block_length_min_max_avg(
+                    min_max_avg_to_string(msg.curr_fec_block_size_min,msg.curr_fec_block_size_max,msg.curr_fec_block_size_avg));
     }
-    // r.n we only suport stats for the primary video stream
-    if(msg.link_index!=0)return;
-    set_curr_video0_injected_pps(pps_to_string(msg.curr_injected_pps));
-    set_curr_video0_dropped_packets(msg.curr_dropped_packets);
-    set_curr_video0_fec_encode_time_avg_min_max(
-                us_min_max_avg_to_string(msg.curr_fec_encode_time_min_us,msg.curr_fec_encode_time_max_us,msg.curr_fec_encode_time_avg_us));
-    set_curr_video0_fec_block_length_min_max_avg(
-                min_max_avg_to_string(msg.curr_fec_block_size_min,msg.curr_fec_block_size_max,msg.curr_fec_block_size_avg));
     // dirty
+    if(msg.link_index!=0)return;
     if(x_last_dropped_packets<0){
         x_last_dropped_packets=msg.curr_dropped_packets;
     }else{
@@ -259,15 +258,16 @@ void AOHDSystem::process_x4(const mavlink_openhd_stats_wb_video_ground_t &msg){
          qDebug()<<"warning got mavlink_openhd_stats_wb_video_ground from air";
          return;
     }
-    // r.n we only suport stats for the primary video stream
-    if(msg.link_index!=0)return;
-    set_curr_video0_received_bitrate_with_fec(bitrate_to_qstring(msg.curr_incoming_bitrate));
-    set_video0_count_blocks_lost(msg.count_blocks_lost);
-    set_video0_count_blocks_recovered(msg.count_blocks_recovered);
-    set_video0_count_fragments_recovered(msg.count_fragments_recovered);
-    set_video0_count_blocks_total(msg.count_blocks_total);
-    set_curr_video0_fec_decode_time_avg_min_max(
-                us_min_max_avg_to_string(msg.curr_fec_decode_time_min_us,msg.curr_fec_decode_time_max_us,msg.curr_fec_decode_time_avg_us));
+    if(msg.link_index==0 || msg.link_index==1){
+        auto& cam=CameraStreamModel::instance(msg.link_index);
+        cam.set_curr_video0_received_bitrate_with_fec(bitrate_to_qstring(msg.curr_incoming_bitrate));
+        cam.set_video0_count_blocks_lost(msg.count_blocks_lost);
+        cam.set_video0_count_blocks_recovered(msg.count_blocks_recovered);
+        cam.set_video0_count_fragments_recovered(msg.count_fragments_recovered);
+        cam.set_video0_count_blocks_total(msg.count_blocks_total);
+        cam.set_curr_video0_fec_decode_time_avg_min_max(
+                    us_min_max_avg_to_string(msg.curr_fec_decode_time_min_us,msg.curr_fec_decode_time_max_us,msg.curr_fec_decode_time_avg_us));
+    }
 }
 
 void AOHDSystem::update_alive()

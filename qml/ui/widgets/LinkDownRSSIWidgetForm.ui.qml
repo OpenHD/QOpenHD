@@ -230,7 +230,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: "Blocks lost: "+_ohdSystemGround.video0_count_blocks_lost
+                text: "Blocks lost: "+_cameraStreamModelPrimary.video0_count_blocks_lost
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -239,7 +239,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: "Blocks recovered: "+_ohdSystemGround.video0_count_blocks_recovered;
+                text: "Blocks recovered: "+_cameraStreamModelPrimary.video0_count_blocks_recovered;
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -248,7 +248,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: "Fragments recovered: "+_ohdSystemGround.video0_count_fragments_recovered;
+                text: "Fragments recovered: "+_cameraStreamModelPrimary.video0_count_fragments_recovered;
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -258,7 +258,7 @@ BaseWidget {
 
             Text {
                 //Layout.alignment: left
-                text: "Rx video0: "+_ohdSystemGround.curr_video0_received_bitrate_with_fec;
+                text: "Rx video0: "+_cameraStreamModelPrimary.curr_video0_received_bitrate_with_fec;
                 color: "white"
                 font.bold: true
                 height: parent.height

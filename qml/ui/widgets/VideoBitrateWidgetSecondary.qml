@@ -210,7 +210,7 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Text {
-                    text: _airCameraModelSecondary.curr_set_video_codec
+                    text: _cameraStreamModelSecondary.curr_set_video_codec
                     color: "white";
                     font.bold: true;
                     height: parent.height
@@ -232,7 +232,7 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Text {
-                    text: _airCameraModelSecondary.curr_set_video_bitrate
+                    text: _cameraStreamModelSecondary.curr_set_video_bitrate
                     color: "white";
                     font.bold: true;
                     height: parent.height
@@ -254,7 +254,7 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Text {
-                    text: _airCameraModelSecondary.curr_video_measured_encoder_bitrate
+                    text: _cameraStreamModelSecondary.curr_video_measured_encoder_bitrate
                     color: "white";
                     font.bold: true;
                     height: parent.height
@@ -276,7 +276,7 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Text {
-                    text: _airCameraModelSecondary.curr_video_injected_bitrate
+                    text: _cameraStreamModelSecondary.curr_video_injected_bitrate
                     color: "white";
                     font.bold: true;
                     height: parent.height
@@ -317,7 +317,7 @@ BaseWidget {
             width: 84
             height: 32
             color: settings.color_text
-            text: _ohdSystemGround.curr_video0_received_bitrate_with_fec
+            text: _cameraStreamModelSecondary.curr_video0_received_bitrate_with_fec
             anchors.verticalCenterOffset: 0
             anchors.left: camera_icon.right
             anchors.leftMargin: 6

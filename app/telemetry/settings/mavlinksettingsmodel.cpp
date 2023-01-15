@@ -2,7 +2,7 @@
 #include "qdebug.h"
 #include "../openhd_defines.hpp"
 #include "../models/aohdsystem.h"
-#include "../models/aircameramodel.h"
+#include "../models/camerastreammodel.h"
 
 #include "../../util/WorkaroundMessageBox.h"
 #include "improvedintsetting.h"
@@ -555,7 +555,7 @@ static void hacky_set_video_codec_in_qopenhd(const int comp_id,const MavlinkSett
         }
         const int video_codec_in_openhd=std::get<int32_t>(data.value);
         if(comp_id==OHD_COMP_ID_AIR_CAMERA_PRIMARY){
-            AirCameraModel::instance(0).set_curr_set_video_codec_int(video_codec_in_openhd);
+            CameraStreamModel::instance(0).set_curr_set_video_codec_int(video_codec_in_openhd);
             if(video_codec_in_openhd==0 || video_codec_in_openhd==1 || video_codec_in_openhd==2){
                 QSettings settings;
                 const int tmp_video_codec = settings.value("selectedVideoCodecPrimary", 0).toInt();
@@ -567,7 +567,7 @@ static void hacky_set_video_codec_in_qopenhd(const int comp_id,const MavlinkSett
                 }
             }
         }else if(comp_id==OHD_COMP_ID_AIR_CAMERA_SECONDARY){
-             AirCameraModel::instance(1).set_curr_set_video_codec_int(video_codec_in_openhd);
+             CameraStreamModel::instance(1).set_curr_set_video_codec_int(video_codec_in_openhd);
             if(video_codec_in_openhd==0 || video_codec_in_openhd==1 || video_codec_in_openhd==2){
                 QSettings settings;
                 const int tmp_video_codec = settings.value("selectedVideoCodecSecondary", 0).toInt();
@@ -590,9 +590,9 @@ static void hacky_set_curr_selected_video_bitrate_in_qopenhd(const int comp_id,c
         }
         const int value=std::get<int32_t>(data.value);
         if(comp_id==OHD_COMP_ID_AIR_CAMERA_PRIMARY){
-            AirCameraModel::instance(0).set_curr_set_video_bitrate_int(value);
+            CameraStreamModel::instance(0).set_curr_set_video_bitrate_int(value);
         }else if(comp_id==OHD_COMP_ID_AIR_CAMERA_SECONDARY){
-             AirCameraModel::instance(1).set_curr_set_video_bitrate_int(value);
+             CameraStreamModel::instance(1).set_curr_set_video_bitrate_int(value);
         }
     }
 }

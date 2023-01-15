@@ -99,9 +99,9 @@ Item {
     VideoBitrateWidgetPrimary {
         id: bitrate1
     }
-    //VideoBitrateWidgetSecondary {
-    //    id: bitrate2
-    //}
+    VideoBitrateWidgetSecondary {
+        id: bitrate2
+    }
 
     // exp
     QRenderStatsWidget {

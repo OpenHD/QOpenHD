@@ -13,7 +13,7 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #endif
 
 #include "telemetry/models/fcmavlinksystem.h"
-#include "telemetry/models/aircameramodel.h"
+#include "telemetry/models/camerastreammodel.h"
 #include "telemetry/models/aohdsystem.h"
 #include "telemetry/models/wificard.h"
 #include "telemetry/MavlinkTelemetry.h"
@@ -287,8 +287,8 @@ int main(int argc, char *argv[]) {
     engine.rootContext()->setContextProperty("_ohdSystemAir", &AOHDSystem::instanceAir());
     engine.rootContext()->setContextProperty("_ohdSystemGround", &AOHDSystem::instanceGround());
     //
-    engine.rootContext()->setContextProperty("_airCameraModelPrimary", &AirCameraModel::instance(0));
-    engine.rootContext()->setContextProperty("_airCameraModelSecondary", &AirCameraModel::instance(1));
+    engine.rootContext()->setContextProperty("_cameraStreamModelPrimary", &CameraStreamModel::instance(0));
+    engine.rootContext()->setContextProperty("_cameraStreamModelSecondary", &CameraStreamModel::instance(1));
     // wifi cards
     engine.rootContext()->setContextProperty("_wifi_card_gnd0", &WiFiCard::instance_gnd(0));
     engine.rootContext()->setContextProperty("_wifi_card_gnd1", &WiFiCard::instance_gnd(1));

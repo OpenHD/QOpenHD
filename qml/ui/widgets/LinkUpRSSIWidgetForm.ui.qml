@@ -204,7 +204,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: "Tx video0: "+_ohdSystemAir.curr_video0_injected_pps
+                text: "Tx video0: "+_cameraStreamModelPrimary.curr_video0_injected_pps
                 color: "white"
                 font.bold: true
                 height: parent.height
