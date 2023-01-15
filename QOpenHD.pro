@@ -103,6 +103,7 @@ include(app/adsb/adsb_lib.pri)
 SOURCES += \
     app/logging/hudlogmessagesmodel.cpp \
     app/logging/logmessagesmodel.cpp \
+    app/telemetry/models/aircameramodel.cpp \
     app/telemetry/models/aohdsystem.cpp \
     app/qopenhd.cpp \
     app/telemetry/models/rcchannelsmodel.cpp \
@@ -121,6 +122,7 @@ HEADERS += \
     app/logging/loghelper.h \
     app/logging/logmessagesmodel.h \
     app/telemetry/mavsdk_include.h \
+    app/telemetry/models/aircameramodel.h \
     app/telemetry/models/aohdsystem.h \
     app/telemetry/models/rcchannelsmodel.h \
     app/qopenhd.h \

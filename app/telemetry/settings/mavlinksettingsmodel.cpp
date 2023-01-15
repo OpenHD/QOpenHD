@@ -2,6 +2,7 @@
 #include "qdebug.h"
 #include "../openhd_defines.hpp"
 #include "../models/aohdsystem.h"
+#include "../models/aircameramodel.h"
 
 #include "../../util/WorkaroundMessageBox.h"
 #include "improvedintsetting.h"
@@ -554,7 +555,7 @@ static void hacky_set_video_codec_in_qopenhd(const int comp_id,const MavlinkSett
         }
         const int video_codec_in_openhd=std::get<int32_t>(data.value);
         if(comp_id==OHD_COMP_ID_AIR_CAMERA_PRIMARY){
-            AOHDSystem::instanceAir().set_curr_set_video_codec_int(video_codec_in_openhd);
+            AirCameraModel::instance(0).set_curr_set_video_codec_int(video_codec_in_openhd);
             if(video_codec_in_openhd==0 || video_codec_in_openhd==1 || video_codec_in_openhd==2){
                 QSettings settings;
                 const int tmp_video_codec = settings.value("selectedVideoCodecPrimary", 0).toInt();
@@ -566,6 +567,7 @@ static void hacky_set_video_codec_in_qopenhd(const int comp_id,const MavlinkSett
                 }
             }
         }else if(comp_id==OHD_COMP_ID_AIR_CAMERA_SECONDARY){
+             AirCameraModel::instance(1).set_curr_set_video_codec_int(video_codec_in_openhd);
             if(video_codec_in_openhd==0 || video_codec_in_openhd==1 || video_codec_in_openhd==2){
                 QSettings settings;
                 const int tmp_video_codec = settings.value("selectedVideoCodecSecondary", 0).toInt();
@@ -580,13 +582,18 @@ static void hacky_set_video_codec_in_qopenhd(const int comp_id,const MavlinkSett
     }
 }
 
-static void hacky_set_curr_selected_video_bitrate_in_qopenhd(const MavlinkSettingsModel::SettingData& data){
+static void hacky_set_curr_selected_video_bitrate_in_qopenhd(const int comp_id,const MavlinkSettingsModel::SettingData& data){
     if(data.unique_id=="V_BITRATE_MBITS"){
         if(!std::holds_alternative<int32_t>(data.value)){
             qDebug()<<"ERROR video_bitrate setting messed up, fixme";
             return;
         }
-        AOHDSystem::instanceAir().set_curr_set_video_bitrate_int(std::get<int32_t>(data.value));
+        const int value=std::get<int32_t>(data.value);
+        if(comp_id==OHD_COMP_ID_AIR_CAMERA_PRIMARY){
+            AirCameraModel::instance(0).set_curr_set_video_bitrate_int(value);
+        }else if(comp_id==OHD_COMP_ID_AIR_CAMERA_SECONDARY){
+             AirCameraModel::instance(1).set_curr_set_video_bitrate_int(value);
+        }
     }
 }
 
@@ -595,7 +602,7 @@ void MavlinkSettingsModel::updateData(std::optional<int> row_opt, SettingData ne
 {
     {
         // temporary, dirty
-        hacky_set_curr_selected_video_bitrate_in_qopenhd(new_data);
+        hacky_set_curr_selected_video_bitrate_in_qopenhd(m_comp_id,new_data);
         hacky_set_video_codec_in_qopenhd(m_comp_id,new_data);
     }
     int row=-1;
@@ -627,7 +634,7 @@ void MavlinkSettingsModel::addData(MavlinkSettingsModel::SettingData data)
 {
     {
         // temporary, dirty
-        hacky_set_curr_selected_video_bitrate_in_qopenhd(data);
+        hacky_set_curr_selected_video_bitrate_in_qopenhd(m_comp_id,data);
         hacky_set_video_codec_in_qopenhd(m_comp_id,data);
     }
     if(is_param_whitelisted(data.unique_id.toStdString())){

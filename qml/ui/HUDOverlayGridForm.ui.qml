@@ -95,10 +95,13 @@ Item {
         id: flight_mah_km
     }
 
-    // + 0% cpu
-    VideoBitrateWidget {
-        id: bitrate
+
+    VideoBitrateWidgetPrimary {
+        id: bitrate1
     }
+    //VideoBitrateWidgetSecondary {
+    //    id: bitrate2
+    //}
 
     // exp
     QRenderStatsWidget {

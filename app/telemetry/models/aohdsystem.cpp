@@ -6,6 +6,7 @@
 #include "../telemetryutil.hpp"
 #include "wificard.h"
 #include "rcchannelsmodel.h"
+#include "aircameramodel.h"
 
 #include <string>
 #include <sstream>
@@ -16,12 +17,6 @@
 #include "../../qopenhd.h"
 
 
-static std::string video_codec_to_string(int value){
-    if(value==0)return "h264";
-    if(value==1)return "h265";
-    if(value==2)return "mjpeg";
-    return "Unknown";
-}
 static QString bitrate_to_qstring(int64_t bitrate_bits_per_second){
     return QString{StringHelper::bitrate_to_string(bitrate_bits_per_second).c_str()};
 }
@@ -225,10 +220,14 @@ void AOHDSystem::process_x3(const mavlink_openhd_stats_wb_video_air_t &msg){
         qDebug()<<"warning got mavlink_openhd_stats_wb_video_air from ground";
         return;
     }
+    // TODO not the most cleanest approach to update another model from here
+    if(msg.link_index==0 || msg.link_index==1){
+        auto& cam=AirCameraModel::instance(msg.link_index);
+        cam.set_curr_video_measured_encoder_bitrate(bitrate_to_qstring(msg.curr_measured_encoder_bitrate));
+        cam.set_curr_video_injected_bitrate(bitrate_to_qstring(msg.curr_injected_bitrate));
+    }
     // r.n we only suport stats for the primary video stream
     if(msg.link_index!=0)return;
-    set_curr_video0_measured_encoder_bitrate(bitrate_to_qstring(msg.curr_measured_encoder_bitrate));
-    set_curr_video0_injected_bitrate(bitrate_to_qstring(msg.curr_injected_bitrate));
     set_curr_video0_injected_pps(pps_to_string(msg.curr_injected_pps));
     set_curr_video0_dropped_packets(msg.curr_dropped_packets);
     set_curr_video0_fec_encode_time_avg_min_max(
@@ -269,16 +268,6 @@ void AOHDSystem::process_x4(const mavlink_openhd_stats_wb_video_ground_t &msg){
     set_video0_count_blocks_total(msg.count_blocks_total);
     set_curr_video0_fec_decode_time_avg_min_max(
                 us_min_max_avg_to_string(msg.curr_fec_decode_time_min_us,msg.curr_fec_decode_time_max_us,msg.curr_fec_decode_time_avg_us));
-}
-
-void AOHDSystem::set_curr_set_video_bitrate_int(int value){
-    auto tmp=std::to_string(value)+" MBit/s";
-    set_curr_set_video_bitrate(tmp.c_str());
-}
-
-void AOHDSystem::set_curr_set_video_codec_int(int value){
-    auto tmp=video_codec_to_string(value);
-    set_curr_set_video_codec(tmp.c_str());
 }
 
 void AOHDSystem::update_alive()

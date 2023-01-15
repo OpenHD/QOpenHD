@@ -185,29 +185,6 @@ BaseWidget {
                     onCheckedChanged: settings.setValue(vCenterIdentifier, checked)
                 }
             }
-
-
-            Item {
-                width: parent.width
-                height: 32
-                Text {
-                    text: qsTr("Disable video tx error warning")
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels;
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Switch {
-                    width: 32
-                    height: parent.height
-                    anchors.rightMargin: 6
-                    anchors.right: parent.right
-                    checked: settings.disable_video_tx_overloaded_warning
-                    onCheckedChanged: settings.disable_video_tx_overloaded_warning = checked
-                }
-            }
         }
     }
 
@@ -233,7 +210,7 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Text {
-                    text: _ohdSystemAir.curr_set_video_codec
+                    text: _airCameraModelPrimary.curr_set_video_codec
                     color: "white";
                     font.bold: true;
                     height: parent.height
@@ -255,7 +232,7 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Text {
-                    text: _ohdSystemAir.curr_set_video_bitrate
+                    text: _airCameraModelPrimary.curr_set_video_bitrate
                     color: "white";
                     font.bold: true;
                     height: parent.height
@@ -277,7 +254,7 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Text {
-                    text: _ohdSystemAir.curr_video0_measured_encoder_bitrate
+                    text: _airCameraModelPrimary.curr_video_measured_encoder_bitrate
                     color: "white";
                     font.bold: true;
                     height: parent.height
@@ -299,7 +276,7 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Text {
-                    text: _ohdSystemAir.curr_video0_injected_bitrate
+                    text: _airCameraModelPrimary.curr_video_injected_bitrate
                     color: "white";
                     font.bold: true;
                     height: parent.height
@@ -354,15 +331,6 @@ BaseWidget {
             font.family: settings.font_text
             style: Text.Outline
             styleColor: settings.color_glow
-        }
-        Text{
-            id: video_rate_warning
-            text: "TX error, reduce bitrate"
-            color: "red"
-            anchors.top: camera_icon.bottom
-            anchors.left: camera_icon.left
-            font.pixelSize: 14
-            visible: (!settings.disable_video_tx_overloaded_warning) && _ohdSystemAir.tx_is_currently_dropping_packets
         }
     }
 }
