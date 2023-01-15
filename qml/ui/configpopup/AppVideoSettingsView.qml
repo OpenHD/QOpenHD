@@ -59,13 +59,20 @@ ScrollView {
                 }
             }
 
+            ListModel {
+                id: itemsVideoCodec
+                ListElement { text: "H264"; }
+                ListElement { text: "H265";  }
+                ListElement { text: "MJPEG"; }
+            }
+
             Rectangle {
                 width: parent.width
                 height: rowHeight
                 color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
                 visible: true
                 Text {
-                    text: qsTr("Video Codec")
+                    text: qsTr("Video Codec primary")
                     font.weight: Font.Bold
                     font.pixelSize: 13
                     anchors.leftMargin: 8
@@ -84,12 +91,7 @@ ScrollView {
                   anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
                   anchors.verticalCenter: parent.verticalCenter
                   anchors.horizontalCenter: parent.horizonatalCenter
-                  model: ListModel {
-                   id: cbItems
-                   ListElement { text: "H264"; }
-                   ListElement { text: "H265";  }
-                   ListElement { text: "MJPEG"; }
-                 }
+                  model: itemsVideoCodec
                   Component.onCompleted: {
                       // out of bounds checking
                       if(settings.selectedVideoCodecPrimary>2 || settings.selectedVideoCodecPrimary<0){
@@ -98,8 +100,47 @@ ScrollView {
                       currentIndex = settings.selectedVideoCodecPrimary;
                   }
                  onCurrentIndexChanged:{
-                     console.debug("VideoCodec:"+cbItems.get(currentIndex).text + ", "+currentIndex)
+                     console.debug("VideoCodec:"+itemsVideoCodec.get(currentIndex).text + ", "+currentIndex)
                      settings.selectedVideoCodecPrimary=currentIndex;
+                 }
+                }
+            }
+            Rectangle {
+                width: parent.width
+                height: rowHeight
+                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                visible: true
+                Text {
+                    text: qsTr("Video Codec Secondary")
+                    font.weight: Font.Bold
+                    font.pixelSize: 13
+                    anchors.leftMargin: 8
+                    verticalAlignment: Text.AlignVCenter
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: 224
+                    height: elementHeight
+                    anchors.left: parent.left
+                }
+
+                ComboBox {
+                  id: selectVideoCodecSecondary
+                  width: 320
+                  height: elementHeight
+                  anchors.right: parent.right
+                  anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                  anchors.verticalCenter: parent.verticalCenter
+                  anchors.horizontalCenter: parent.horizonatalCenter
+                  model: itemsVideoCodec
+                  Component.onCompleted: {
+                      // out of bounds checking
+                      if(settings.selectedVideoCodecSecondary >2 || settings.selectedVideoCodecSecondary<0){
+                          settings.selectedVideoCodecSecondary=0;
+                      }
+                      currentIndex = settings.selectedVideoCodecSecondary;
+                  }
+                 onCurrentIndexChanged:{
+                     console.debug("VideoCodec:"+itemsVideoCodec.get(currentIndex).text + ", "+currentIndex)
+                     settings.selectedVideoCodecSecondary=currentIndex;
                  }
                 }
             }
@@ -200,7 +241,7 @@ ScrollView {
                       currentIndex = settings.dev_test_video_mode;
                   }
                  onCurrentIndexChanged:{
-                     console.debug("Dev video testing::"+cbItems.get(currentIndex).text + ", "+currentIndex)
+                     //console.debug("Dev video testing::"+model.get(currentIndex).text + ", "+currentIndex)
                      settings.dev_test_video_mode=currentIndex;
                  }
                 }

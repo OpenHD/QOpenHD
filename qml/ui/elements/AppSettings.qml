@@ -19,9 +19,6 @@ Settings {
     property int fc_mavlink_sysid: 1
     property bool filter_mavlink_telemetry: false
 
-    property bool show_pip_video: false
-    property double pip_video_opacity: 1
-
     //WARNING: THIS ALLOWS THE USER TO MAKE BREAKING CHANGES
     property bool dev_show_whitelisted_params: false
     property bool dev_show_advanced_button: false
@@ -44,7 +41,8 @@ Settings {
     property int dev_test_video_mode:0 // 0 is disabled
     // Video codec of the primary video stream (main window).
     property int selectedVideoCodecPrimary:0 //0==h264,1==h265,2==MJPEG, other (error) default to h264
-    property bool enable_rtp: true
+    property int selectedVideoCodecSecondary:0
+
     property bool hide_watermark: true
     property bool dev_jetson: false
     // When this one is set to true, we read a file (where you can then write your custom rx gstreamer pipeline
@@ -106,7 +104,6 @@ Settings {
 
     property bool show_bitrate: true
     property double bitrate_opacity: 1
-    property bool disable_video_tx_overloaded_warning: false
     property double bitrate_size: 1
     property bool bitrate_declutter: false
     property double bitrate_warn: 0
