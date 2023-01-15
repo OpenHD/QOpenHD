@@ -302,7 +302,7 @@ Rectangle{
             value: paramValueInt
             visible: holds_int_value()
             editable: true
-            contentItem: TextInput {
+            /*contentItem: TextInput {
                     text: paramValueInt
                     color: "white"
                     selectionColor: "white"
@@ -312,7 +312,7 @@ Rectangle{
                     horizontalAlignment: Text.AlignHCenter
                     Layout.leftMargin: -100
                 }
-            /*up.indicator: Rectangle {
+            up.indicator: Rectangle {
                     height: parent.height/1.5
                     anchors.right: parent.right
                     anchors.top: parent.top
@@ -337,10 +337,10 @@ Rectangle{
                         font.pixelSize: 30
                         anchors.fill: parent
                     }
-                }*/
+                }
             onValueChanged: {
 
-            }
+            }*/
         }
         // And for int values that do have an enum mapping we use a more verbose combo box and a dynamically updated model
         // The best example is the typical yes/no, or uart1,uart2,uart3,...
