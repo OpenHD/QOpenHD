@@ -63,8 +63,8 @@ cp release/QOpenHD /tmp/qopenhd/usr/local/bin/ || exit 1
 if [[ "${PACKAGE_ARCH}" != "x86_64" ]]; then
 cp systemd/* /tmp/qopenhd/etc/systemd/system/ || exit 1
 fi
-
-cp qt.json /tmp/qopenhd/usr/local/share/openhd/ || exit 1
+mkdir /tmp/qopenhd/usr/local/share/qopenhd/
+cp qt.json /tmp/qopenhd/usr/local/share/qopenhd/ || exit 1
 
 VERSION="2.2.4-evo-$(date '+%Y%m%d%H%M')-${VER2}"
 
