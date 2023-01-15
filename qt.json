@@ -1,5 +1,5 @@
 {
-    "device": "/dev/dri/by-path/platform-soc:gpu-card",
+    "device": "/dev/dri/by-path/platform-gpu-card",
     "hwcursor": false,
     "pbuffers": true,
     "outputs": [
