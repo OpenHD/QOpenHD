@@ -490,7 +490,7 @@ Rectangle {
                         color: eeBtn.hovered ? "grey" : "transparent" // I update background color by this
                     }
                     onClicked: {
-                        mainStackLayout.currentIndex = 6
+                        mainStackLayout.currentIndex = 7
                     }
                 }
             }
@@ -538,7 +538,7 @@ Rectangle {
             id: rcInfoPanel
         }
         EasterEggPanel {
-            id: EasterEggPanel
+            id: easterEgPanel
         }
     }
 }
