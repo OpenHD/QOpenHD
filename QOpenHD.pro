@@ -49,8 +49,9 @@ RCC_DIR      = $${OUT_PWD}/rcc
 #from https://mavlink.io/en/mavgen_c/
 #You can supress the warnings in CMake using ...
 #and https://stackoverflow.com/questions/2987062/configuring-the-gcc-compiler-switches-in-qt-qtcreator-and-qmake
-QMAKE_CXXFLAGS += -Wno-address-of-packed-member
-QMAKE_CXXFLAGS += -Wno-cast-align
+#this can not be used in MSVC (windows)
+#QMAKE_CXXFLAGS += -Wno-address-of-packed-member
+#QMAKE_CXXFLAGS += -Wno-cast-align
 
 #QT += qml quick concurrent opengl gui
 #QT += positioning location
@@ -77,9 +78,20 @@ INCLUDEPATH += $$PWD/app/exp
 #INCLUDEPATH += $$PWD/lib/c_library_v2_openhd
 # mavsdk - dirty
 # We have the include path 2 times here, aparently release and debug install to different paths
+
+#ifdef __linux__
 INCLUDEPATH += /usr/local/include/mavsdk
 LIBS += -L/usr/local/lib -lmavsdk
 INCLUDEPATH += /usr/include/mavsdk
+#elif _WIN32
+INCLUDEPATH += C:\MAVSDK\
+INCLUDEPATH += C:\MAVSDK\include
+LIBS += -LC:\MAVSDK\lib
+#else
+
+#endif
+
+
 
 
 # Avcodec decode and display, all sources
@@ -88,11 +100,11 @@ INCLUDEPATH += /usr/include/mavsdk
 # However, this can be usefully for figuring out compiler issue(s) on different platform(s)
 # NOTE: QT Creator is quite bad at figuring out changes here, you might need a "full" rebuild or manualy delete
 # the build dir/cache, then rebuild
-include(app/vs_avcodec/avcodec_video.pri)
+#include(app/vs_avcodec/avcodec_video.pri)
 
 # Gstreamer / qmlglsink decode and display, all sources
 # r.n only used for secondary video and for primary video only on platforms we cannot do primary video via QSG / avcodec
-include(app/vs_gst_qmlglsink/gst_video.pri)
+#include(app/vs_gst_qmlglsink/gst_video.pri)
 
 # adsb library
 include(app/adsb/adsb_lib.pri)
@@ -319,4 +331,3 @@ contains(ANDROID_TARGET_ARCH,arm64-v8a) {
 }
 
 ANDROID_ABIS = armeabi-v7a
-
