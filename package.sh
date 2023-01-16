@@ -68,7 +68,7 @@ fi
 mkdir /tmp/qopenhd/usr/local/share/qopenhd/
 cp rpi_qt_eglfs_kms_config.json /tmp/qopenhd/usr/local/share/qopenhd/ || exit 1
 
-VERSION="2.2.4-evo-$(date '+%Y%m%d%H%M')-${VER2}"
+VERSION="2.2.5-evo-$(date '+%Y%m%d%H%M')-${VER2}"
 
 
 rm ${PACKAGE_NAME}_${VERSION}_${PACKAGE_ARCH}.deb > /dev/null 2>&1
