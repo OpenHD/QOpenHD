@@ -538,7 +538,7 @@ Rectangle {
             id: rcInfoPanel
         }
         EasterEggPanel {
-            id: eePanel
+            id: EasterEggPanel
         }
     }
 }
