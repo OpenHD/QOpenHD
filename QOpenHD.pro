@@ -61,22 +61,17 @@ INCLUDEPATH += $$PWD/lib
 INCLUDEPATH += $$PWD/app
 INCLUDEPATH += $$PWD/app/exp
 
-# Since mavlink is coming with MAVSDK, we don't need that anymore
-#INCLUDEPATH += $$PWD/lib/c_library_v2_openhd
-# mavsdk - dirty
+# NOTE: mavlink we get from MAVSDK
+# MAVSDK needs to be built and installed externally
 # We have the include path 2 times here, aparently release and debug install to different paths
-
-#ifdef __linux__
+# The following lines are for linux only
 INCLUDEPATH += /usr/local/include/mavsdk
 LIBS += -L/usr/local/lib -lmavsdk
 INCLUDEPATH += /usr/include/mavsdk
-#elif _WIN32
-INCLUDEPATH += C:\MAVSDK\
-INCLUDEPATH += C:\MAVSDK\include
-LIBS += -LC:\MAVSDK\lib
-#else
-
-#endif
+# The following lines are for windows
+#INCLUDEPATH += C:\MAVSDK\
+#INCLUDEPATH += C:\MAVSDK\include
+#LIBS += -LC:\MAVSDK\lib
 
 
 
@@ -87,11 +82,11 @@ LIBS += -LC:\MAVSDK\lib
 # However, this can be usefully for figuring out compiler issue(s) on different platform(s)
 # NOTE: QT Creator is quite bad at figuring out changes here, you might need a "full" rebuild or manualy delete
 # the build dir/cache, then rebuild
-#include(app/vs_avcodec/avcodec_video.pri)
+include(app/vs_avcodec/avcodec_video.pri)
 
 # Gstreamer / qmlglsink decode and display, all sources
 # r.n only used for secondary video and for primary video only on platforms we cannot do primary video via QSG / avcodec
-#include(app/vs_gst_qmlglsink/gst_video.pri)
+include(app/vs_gst_qmlglsink/gst_video.pri)
 
 # adsb library
 include(app/adsb/adsb_lib.pri)
