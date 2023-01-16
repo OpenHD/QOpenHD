@@ -886,11 +886,15 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp_and_mmal_direct(cons
         }else{
            std::shared_ptr<NALU> buf=nullptr;
             while(buf==nullptr){
-                // for some weird reason, rpi scheduling requires this thread to use a really low timeout to
-                // not create unwanted latency
-                buf=m_rtp_receiver->get_next_frame(std::chrono::milliseconds(5));
-                //std::this_thread::sleep_for(std::chrono::milliseconds(5));
-                //buf=m_rtp_receiver->get_next_frame(std::nullopt);
+			    // for some weird reason, using the queue with a waking up approach doesn't work on rpi.
+				// doesn't work == by using a timeout, we get incredibly high parse & enqueue time (in the 250ms range)
+				// It doesn't make sense from a sw standpoint, but we unfortunately need to use a
+				// "wake upd in regular intervalls and fetch latest" approach here.
+				// This doesn't work
+                //buf=m_rtp_receiver->get_next_frame(std::chrono::milliseconds(5));
+				// This works
+                std::this_thread::sleep_for(std::chrono::milliseconds(5));
+                buf=m_rtp_receiver->get_next_frame(std::nullopt);
                 if(request_restart){
                     request_restart=false;
                     goto finish;
