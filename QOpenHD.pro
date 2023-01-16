@@ -21,19 +21,6 @@ include(git.pri)
 # since it is a library "specifically for qt"
 include(lib/lqtutils_master/lqtutils.pri)
 
-CONFIG(debug, debug|release) {
-    DESTDIR = $${OUT_PWD}/debug
-
-    CONFIG += debug
-    DEFINES += QMLJSDEBUGGER
-} else:CONFIG(release, debug|release) {
-    DEFINES += QT_NO_DEBUG
-    CONFIG += installer
-    CONFIG += force_debug_info
-    DESTDIR = $${OUT_PWD}/release
-    DEFINES += QMLJSDEBUGGER
-}
-
 #https://doc.qt.io/qt-6/portingguide.html
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x050F00
 
@@ -195,8 +182,7 @@ SOURCES += \
     app/util/FrequencyMonitor.cpp \
     app/main.cpp \
 
-RESOURCES += qml/qml.qrc \
-    qml/qml.qrc
+RESOURCES += qml/qml.qrc
 
 HEADERS += \
     app/telemetry/models/fcmavlinksystem.h \
