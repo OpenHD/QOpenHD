@@ -58,8 +58,8 @@ ScrollView {
                     stepSize: 1
                     anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
 
-                    value: settings.mavlink_sysid
-                    onValueChanged: settings.mavlink_sysid = value
+                    value: settings.qopenhd_mavlink_sysid
+                    onValueChanged: settings.qopenhd_mavlink_sysid = value
                 }
             }
 

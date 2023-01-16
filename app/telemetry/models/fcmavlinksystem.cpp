@@ -280,6 +280,7 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         mavlink_msg_sys_status_decode(&msg, &sys_status);
         const auto battery_voltage_v = (double)sys_status.voltage_battery / 1000.0;
         set_battery_voltage_volt(battery_voltage_v);
+        set_battery_voltage_single_cell(QOpenHDMavlinkHelper::calclate_voltage_per_cell(battery_voltage_v));
         set_battery_current_ampere((double)sys_status.current_battery/100.0);
         // TODO XX
         break;
@@ -456,7 +457,8 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         set_battery_percent_gauge(fc_battery_gauge_glyph);
         // we always use the first cell for the "single volt" value. However, not sure how many people have the HW on their air
         // battery to measure the voltage of a single cell (which is what this would be for)
-        set_battery_voltage_single_cell((double)battery_status.voltages[0]/1000.0);
+        // January 22: doesn't work reliably, use the worse but working qopenhd local setting approach
+        //set_battery_voltage_single_cell((double)battery_status.voltages[0]/1000.0);
         break;
     }
     case MAVLINK_MSG_ID_SENSOR_OFFSETS: {

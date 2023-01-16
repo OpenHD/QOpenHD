@@ -15,9 +15,8 @@ Settings {
     property int dev_stream0_udp_rtp_input_port: 5600
     property string dev_stream0_udp_rtp_input_ip_address: "127.0.0.1"
 
-    property int mavlink_sysid: 225
-    property int fc_mavlink_sysid: 1
-    property bool filter_mavlink_telemetry: false
+    // Sys id QOpenHD uses itself
+    property int qopenhd_mavlink_sysid: 225
 
     //WARNING: THIS ALLOWS THE USER TO MAKE BREAKING CHANGES
     property bool dev_show_whitelisted_params: false
@@ -374,4 +373,8 @@ Settings {
     property int stereo_osd_size: 0
 
     property int dev_qopenhd_n_cameras:1
+
+    // N of battery cells (generic) of the vehicle, used for the show voltage per cell setting
+    // Proper way would be to query / get that via mavlink, but this is more complicated than it seems at glance
+    property int vehicle_battery_n_cells: 3
 }
