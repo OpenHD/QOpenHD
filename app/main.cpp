@@ -178,8 +178,8 @@ int main(int argc, char *argv[]) {
     QCoreApplication::setApplicationName("QOpenHD");
 
 #ifdef QOPENHD_ENABLE_GSTREAMER
-    initGstreamerOrThrowExtra(argc,argv);
-    initQmlGlSinkOrThrow();
+    init_gstreamer(argc,argv);
+    init_qmlglsink_and_log();
 #endif //QOPENHD_ENABLE_GSTREAMER
 
     QSettings settings;

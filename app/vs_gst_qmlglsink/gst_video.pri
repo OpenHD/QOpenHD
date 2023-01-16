@@ -12,9 +12,3 @@ HEADERS += \
 
 CONFIG += link_pkgconfig
 PKGCONFIG   += gstreamer-1.0  gstreamer-video-1.0 gstreamer-gl-1.0 #gstreamer1.0-plugins-good
-
-#include(qmlglsink.pri)
-#include(lib/gst-plugins-good/ext/qt/qtplugin.pro)
-#QT += qitem
-#QT += widgets
-#QT += gui-private
