@@ -56,7 +56,7 @@ ScrollView {
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
                     from: 1
-                    to: 6
+                    to: 32
                     stepSize: 1
                     anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
 
