@@ -24,13 +24,27 @@ static uint64_t getTimeMilliseconds(){
 // with OpenHD (or QOpenHD AND QGroundCOntroll at the same time) this value needs to be changed
 static uint8_t getSysId(){
     QSettings settings;
-    int mavlink_sysid = settings.value("mavlink_sysid", 225).toInt();
-    return mavlink_sysid;
+    const int qopenhd_mavlink_sysid = settings.value("qopenhd_mavlink_sysid", 225).toInt();
+    return qopenhd_mavlink_sysid;
 }
 
 // Return: the mavlink comonent id of QOpenHD. We are basicalyy a mission planner lke QGroundControll, just with a slightly different feature set.
 static uint8_t getCompId(){
     return MAV_COMP_ID_MISSIONPLANNER;
+}
+
+static int get_vehicle_battery_n_cells(){
+    QSettings settings;
+    const int vehicle_battery_n_cells = settings.value("vehicle_battery_n_cells", 3).toInt();
+    return vehicle_battery_n_cells;
+}
+static double calclate_voltage_per_cell(double voltage){
+    const auto vehicle_battery_n_cells=get_vehicle_battery_n_cells();
+    // do not divide by 0
+    if(vehicle_battery_n_cells>0){
+        return voltage / (double) vehicle_battery_n_cells;
+    }
+    return vehicle_battery_n_cells;
 }
 
 // convert a mavlink message to the raw byte array that can be transmitted
