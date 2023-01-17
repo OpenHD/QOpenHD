@@ -61,7 +61,7 @@ static const GLchar* fragment_shader_source_GL_OES_EGL_IMAGE_EXTERNAL =
     "	gl_FragColor = texture2D( texture, v_texCoord );\n"
 	"}\n";
 static const GLchar* fragment_shader_source_RGB =
-    "#version 100 es\n"
+    "#version 100\n"
 	"precision mediump float;\n"
 	"uniform sampler2D s_texture;\n"
     "varying v_texCoord;\n"
