@@ -56,7 +56,7 @@ static const GLchar* fragment_shader_source_GL_OES_EGL_IMAGE_EXTERNAL =
 	"#extension GL_OES_EGL_image_external : require\n"
 	"precision mediump float;\n"
 	"uniform samplerExternalOES texture;\n"
-    "varying v_texCoord;\n"
+    "varying vec2 v_texCoord;\n"
 	"void main() {	\n"
     "	gl_FragColor = texture2D( texture, v_texCoord );\n"
 	"}\n";
@@ -64,7 +64,7 @@ static const GLchar* fragment_shader_source_RGB =
     "#version 100\n"
 	"precision mediump float;\n"
 	"uniform sampler2D s_texture;\n"
-    "varying v_texCoord;\n"
+    "varying vec2 v_texCoord;\n"
 	"void main() {	\n"
     "	gl_FragColor = texture2D( s_texture, v_texCoord );\n"
     "	gl_FragColor.a = 1.0;\n"
@@ -100,7 +100,7 @@ static const GLchar* fragment_shader_source_NV12 =
 	"precision mediump float;\n"
 	"uniform sampler2D s_texture_y;\n"
 	"uniform sampler2D s_texture_uv;\n"
-    "varying v_texCoord;\n"
+    "varying vec2 v_texCoord;\n"
 	"void main() {	\n"
 	"	vec3 YCbCr = vec3(\n"
 	"		texture2D(s_texture_y, v_texCoord).x,\n"
@@ -142,7 +142,7 @@ static GLint common_get_shader_program(const char *vertex_shader_source, const c
   glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &success);
   if (!success) {
 	glGetShaderInfoLog(vertex_shader, INFOLOG_LEN, NULL, infoLog);
-	printf("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n%s\n", infoLog);
+    printf("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n%s\n", infoLog);
   }
 
   /* Fragment shader */
@@ -163,7 +163,7 @@ static GLint common_get_shader_program(const char *vertex_shader_source, const c
   glGetProgramiv(shader_program, GL_LINK_STATUS, &success);
   if (!success) {
 	glGetProgramInfoLog(shader_program, INFOLOG_LEN, NULL, infoLog);
-	printf("ERROR::SHADER::PROGRAM::LINKING_FAILED\n%s\n", infoLog);
+    fprintf(stderr,"ERROR::SHADER::PROGRAM::LINKING_FAILED\n%s\n", infoLog);
   }
 
   glDeleteShader(vertex_shader);
