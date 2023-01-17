@@ -255,5 +255,7 @@
         <file>ui/configpopup/AppManageSettingsView.qml</file>
         <file>ui/configpopup/GgAppSettingsPanel.qml</file>
         <file>ui/configpopup/GgMavlinkAllSettingsPanel.qml</file>
+        <file>ui/elements/GgSwitch.qml</file>
+        <file>ui/elements/GgSpinBox.qml</file>
     </qresource>
 </RCC>

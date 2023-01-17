@@ -11,17 +11,62 @@ import OpenHD 1.0
 import "../../ui" as Ui
 import "../elements"
 
-ScrollView {
+
+Flickable {
     id: appManageSettingsView
     width: parent.width
     height: parent.height
     contentHeight: generalColumn.height
+    boundsBehavior: Flickable.StopAtBounds
+
     visible: appSettingsBar.currentIndex == 0
 
     clip: true
 
+    onActiveFocusChanged: {console.log("FOCUS CHANGED");}
+
+    property bool controlSelected: false
+
+    function focusAppGeneralView(){
+        console.log("appGeneralSettingsView reached");
+        mavlinkSysIDSpinBox.forceActiveFocus()
+        controlSelected=false
+    }
+
+    function closeAppGeneralView(){
+        console.log("closeAppGeneralView reached");
+    }
+
+    function scrollToY(y) {
+        //So we can control scrolling when focus shift down view
+        console.log("scroll :" +y);
+        //1.0 is bottom
+        //appManageSettingsView.ScrollBar.vertical.position= .5 - appManageSettingsView.ScrollBar.vertical.size
+
+        //added 48px for the content above the column
+        var columnH=generalColumn.childrenRect.height+48
+        var viewH= applicationWindow.height
+        console.log("height: " + viewH + " column: " + columnH)
+        if (columnH > viewH){
+            // 8 is total children
+        var ratio = columnH/8
+            //now find where you are in the column ( "1" ) and move there
+        var position = ratio * 1
+            appManageSettingsView.flick(0,-position);
+        }
+    }
+
     Item {
-        anchors.fill: parent
+        anchors.fill: parent       
+
+        FocusScope {
+            id: scope
+            anchors.fill: parent
+
+            Keys.onPressed: (event)=> {
+                                if (event.key === Qt.Key_Escape)
+                                closeAppGeneralView()
+                            }
 
         Column {
             id: generalColumn
@@ -46,7 +91,7 @@ ScrollView {
                     anchors.left: parent.left
                 }
 
-                SpinBox {
+                GgSpinBox {
                     id: mavlinkSysIDSpinBox
                     height: elementHeight
                     width: 210
@@ -57,10 +102,20 @@ ScrollView {
                     to: 255
                     stepSize: 1
                     anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
-
                     value: settings.mavlink_sysid
                     onValueChanged: settings.mavlink_sysid = value
                 }
+                Keys.onPressed: (event)=> {
+                                    if (event.key === Qt.Key_Minus && controlSelected == false){
+                                    ggSwitch.forceActiveFocus()
+                                    appGeneralSettingsView.scrollToY(Positioner.index);
+                                    }
+                                    else if (event.key === Qt.Key_Return){
+                                    controlSelected=true
+                                    }
+                                    else if (event.key === Qt.Key_Escape)
+                                    controlSelected=false
+                                }
             }
 
             Rectangle {
@@ -81,18 +136,26 @@ ScrollView {
                     anchors.left: parent.left
                 }
 
-                Switch {
+                GgSwitch {
+                    id:ggSwitch
                     width: 32
                     height: elementHeight
                     anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
                     checked: settings.goggle_layout
+
                     onCheckedChanged: {
                         closeSettings()
                         settings.goggle_layout = checked
                     }
                 }
+                Keys.onPressed: (event)=> {
+                                    if (event.key === Qt.Key_Equal)
+                                    mavlinkSysIDSpinBox.forceActiveFocus()
+                                    else if (event.key === Qt.Key_Minus)
+                                    speechSwitch.forceActiveFocus()
+                                }
             }
 
             Rectangle {
@@ -113,7 +176,8 @@ ScrollView {
                     anchors.left: parent.left
                 }
 
-                Switch {
+                GgSwitch {
+                    id:speechSwitch
                     width: 32
                     height: elementHeight
                     anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -252,4 +316,5 @@ ScrollView {
             }
         }
     }
+}
 }

@@ -95,6 +95,8 @@ Item {
             onClicked: {
                 appSettingsStack.visible=true
                 appSettingsBar.currentIndex = 0
+                // move focus to the appGeneralSettingsView
+                appGeneralSettingsView.focusAppGeneralView()
             }
             Keys.onPressed: (event)=> {
                                 if (event.key === Qt.Key_Escape)
