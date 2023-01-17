@@ -30,72 +30,14 @@ ScrollView {
             anchors.right: parent.right
 
             Rectangle {
+
                 width: parent.width
                 height: rowHeight
                 color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-                visible: EnableRC
+                visible: true
 
                 Text {
-                    text: qsTr("Enable RC")
-                    font.weight: Font.Bold
-                    font.pixelSize: 13
-                    anchors.leftMargin: 8
-                    verticalAlignment: Text.AlignVCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: 224
-                    height: elementHeight
-                    anchors.left: parent.left
-                }
-
-                Switch {
-                    width: 32
-                    height: elementHeight
-                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    checked: settings.enable_rc
-                    onCheckedChanged: settings.enable_rc = checked
-                }
-            }
-
-            Rectangle {
-                width: parent.width
-                height: rowHeight
-                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                Text {
-                    text: qsTr("Filter by Mavlink SysID")
-                    font.weight: Font.Bold
-                    font.pixelSize: 13
-                    anchors.leftMargin: 8
-                    verticalAlignment: Text.AlignVCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: 224
-                    height: elementHeight
-                    anchors.left: parent.left
-                }
-
-                Switch {
-                    width: 32
-                    height: elementHeight
-                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    checked: settings.filter_mavlink_telemetry
-                    onCheckedChanged: settings.filter_mavlink_telemetry = checked
-                }
-            }
-
-            Rectangle {
-                width: parent.width
-                height: rowHeight
-                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-                visible: settings.filter_mavlink_telemetry
-
-                Text {
-                    text: qsTr("Flight Controller Mavlink SysID")
+                    text: qsTr("Vehicle Battery Cells")
                     font.weight: Font.Bold
                     font.pixelSize: 13
                     anchors.leftMargin: 8
@@ -107,19 +49,19 @@ ScrollView {
                 }
 
                 SpinBox {
-                    id: fcMavlinkSysIDSpinBox
+                    id: vehicle_attery_n_cellsSpinBox
                     height: elementHeight
                     width: 210
                     font.pixelSize: 14
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
                     from: 1
-                    to: 255
+                    to: 32
                     stepSize: 1
                     anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
 
-                    value: settings.fc_mavlink_sysid
-                    onValueChanged: settings.fc_mavlink_sysid = value
+                    value: settings.vehicle_battery_n_cells
+                    onValueChanged: settings.vehicle_battery_n_cells = value
                 }
             }
         }

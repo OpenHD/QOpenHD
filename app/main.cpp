@@ -13,6 +13,7 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #endif
 
 #include "telemetry/models/fcmavlinksystem.h"
+#include "telemetry/models/camerastreammodel.h"
 #include "telemetry/models/aohdsystem.h"
 #include "telemetry/models/wificard.h"
 #include "telemetry/MavlinkTelemetry.h"
@@ -29,8 +30,14 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "osd/aoagauge.h"
 //
 #ifdef QOPENHD_ENABLE_VIDEO_VIA_AVCODEC
-#include "videostreaming2/QSGVideoTextureItem.h"
+#include "vs_avcodec/QSGVideoTextureItem.h"
 #endif
+
+#ifdef QOPENHD_ENABLE_GSTREAMER
+#include "vs_gst_qmlglsink/gstvideostream.h"
+#include "vs_gst_qmlglsink/gst_helper.hpp"
+#endif //QOPENHD_ENABLE_GSTREAMER
+
 #include "util/qrenderstats.h"
 
 
@@ -38,13 +45,8 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "platform/appleplatform.h"
 #endif
 
-#if defined(ENABLE_GSTREAMER)
-#include "videostreaming/gst_qmlglsink/gstvideostream.h"
-#include "videostreaming/gst_qmlglsink/gst_helper.hpp"
-#endif
-
-#include "videostreaming/QOpenHDVideoHelper.hpp"
-#include "videostreaming/decodingstatistcs.h"
+#include "vs_util/QOpenHDVideoHelper.hpp"
+#include "vs_util/decodingstatistcs.h"
 
 
 #include "logging/logmessagesmodel.h"
@@ -165,11 +167,6 @@ void write_other_context_properties(QQmlApplicationEngine& engine){
 #else
     engine.rootContext()->setContextProperty("EnableGStreamer", QVariant(false));
 #endif
-#ifdef ENABLE_VIDEO_RENDERER
-    engine.rootContext()->setContextProperty("EnableVideoRender", QVariant(true));
-#else
-     engine.rootContext()->setContextProperty("EnableVideoRender", QVariant(false));
-#endif
 }
 
 int main(int argc, char *argv[]) {
@@ -180,10 +177,10 @@ int main(int argc, char *argv[]) {
     QCoreApplication::setOrganizationDomain("open.hd");
     QCoreApplication::setApplicationName("QOpenHD");
 
-#ifdef ENABLE_GSTREAMER
-    initGstreamerOrThrowExtra(argc,argv);
-    initQmlGlSinkOrThrow();
-#endif //ENABLE_GSTREAMER
+#ifdef QOPENHD_ENABLE_GSTREAMER
+    init_gstreamer(argc,argv);
+    init_qmlglsink_and_log();
+#endif //QOPENHD_ENABLE_GSTREAMER
 
     QSettings settings;
 
@@ -228,18 +225,6 @@ int main(int argc, char *argv[]) {
     }
 #endif
 
-#if defined(__rasp_pi__)
-    qDebug() << "Initializing Pi";
-    OpenHDPi pi;
-
-    // set persistent brightness level at startup
-    if (pi.is_raspberry_pi()) {
-        auto brightness = settings.value("brightness", 100).toInt();
-        pi.set_brightness(brightness);
-    }
-    qDebug() << "Finished initializing Pi";
-#endif
-
     load_fonts();
 
     qmlRegisterUncreatableType<QmlObjectListModel>("OpenHD", 1, 0, "QmlObjectListModel", "Reference only");
@@ -271,16 +256,21 @@ int main(int argc, char *argv[]) {
     engine.rootContext()->setContextProperty("_hudLogMessagesModel", &HUDLogMessagesModel::instance());
 
     engine.rootContext()->setContextProperty("_airCameraSettingsModel", &MavlinkSettingsModel::instanceAirCamera());
+    engine.rootContext()->setContextProperty("_airCameraSettingsModel2", &MavlinkSettingsModel::instanceAirCamera2());
     engine.rootContext()->setContextProperty("_airPiSettingsModel", &MavlinkSettingsModel::instanceAir());
     engine.rootContext()->setContextProperty("_groundPiSettingsModel", &MavlinkSettingsModel::instanceGround());
     engine.rootContext()->setContextProperty("_synchronizedSettings", &SynchronizedSettings::instance());
 
-#if defined(ENABLE_GSTREAMER)
-#if defined(ENABLE_MAIN_VIDEO)
-    //std::unique_ptr<GstVideoStream>  mainVideo=nullptr;
-    std::unique_ptr<GstVideoStream>  mainVideo=std::make_unique<GstVideoStream>();
-    engine.rootContext()->setContextProperty("_mainVideo", mainVideo.get());
+#ifdef QOPENHD_ENABLE_GSTREAMER
+    engine.rootContext()->setContextProperty("QOPENHD_ENABLE_GSTREAMER", QVariant(true));
+#ifdef QOPENHD_GSTREAMER_PRIMARY_VIDEO
+    std::unique_ptr<GstVideoStream> primary_video_gstreamer=std::make_unique<GstVideoStream>(true);
 #endif
+#ifdef QOPENHD_GSTREAMER_SECONDARY_VIDEO
+    std::unique_ptr<GstVideoStream> secondary_video_gstreamer=std::make_unique<GstVideoStream>(false);
+#endif
+#else
+    engine.rootContext()->setContextProperty("QOPENHD_ENABLE_GSTREAMER", QVariant(false));
 #endif
 
     //MavlinkTelemetry::register_for_qml(engine.rootContext());
@@ -296,6 +286,9 @@ int main(int argc, char *argv[]) {
     //AOHDSystem::register_for_qml(engine.rootContext());
     engine.rootContext()->setContextProperty("_ohdSystemAir", &AOHDSystem::instanceAir());
     engine.rootContext()->setContextProperty("_ohdSystemGround", &AOHDSystem::instanceGround());
+    //
+    engine.rootContext()->setContextProperty("_cameraStreamModelPrimary", &CameraStreamModel::instance(0));
+    engine.rootContext()->setContextProperty("_cameraStreamModelSecondary", &CameraStreamModel::instance(1));
     // wifi cards
     engine.rootContext()->setContextProperty("_wifi_card_gnd0", &WiFiCard::instance_gnd(0));
     engine.rootContext()->setContextProperty("_wifi_card_gnd1", &WiFiCard::instance_gnd(1));
@@ -307,12 +300,6 @@ int main(int argc, char *argv[]) {
     engine.rootContext()->setContextProperty("_decodingStatistics",&DecodingStatistcs::instance());
     // dirty
     engine.rootContext()->setContextProperty("_messageBoxInstance", &workaround::MessageBox::instance());
-
-#if defined(ENABLE_MAIN_VIDEO)
-    engine.rootContext()->setContextProperty("EnableMainVideo", QVariant(true));
-#else
-    engine.rootContext()->setContextProperty("EnableMainVideo", QVariant(false));
-#endif
 
 //#if defined(LIMIT_ADSB_MAX)
 engine.rootContext()->setContextProperty("LimitADSBMax", QVariant(true));
@@ -364,30 +351,44 @@ engine.rootContext()->setContextProperty("EnableADSB", QVariant(false));
 
     qDebug() << "Running QML";
 
-#if defined(ENABLE_GSTREAMER)
-#if defined(ENABLE_MAIN_VIDEO)
+#ifdef QOPENHD_ENABLE_GSTREAMER
+#ifdef QOPENHD_GSTREAMER_PRIMARY_VIDEO
     const auto windowPrimary=find_qt_video_window(engine,true);
     if(windowPrimary==nullptr){
-        qDebug()<<"Error primary window enabled but not found";
+        qWarning()<<"primary window enabled but not found";
         //throw std::runtime_error("Window not found");
     }else{
-        if(mainVideo){
-            mainVideo->init(windowPrimary,true);
+        if(primary_video_gstreamer){
+            primary_video_gstreamer->init(windowPrimary);
         }
     }
 #endif
+#ifdef QOPENHD_GSTREAMER_SECONDARY_VIDEO
+    const auto windowSecondary=find_qt_video_window(engine,false);
+    if(windowSecondary==nullptr){
+        qWarning()<<"secondary window enabled but not found";
+        //throw std::runtime_error("Window not found");
+    }else{
+        if(secondary_video_gstreamer){
+            secondary_video_gstreamer->init(windowSecondary);
+        }
+    }
 #endif
+#endif // QOPENHD_ENABLE_GSTREAMER
 
     LogMessagesModel::instance().addLogMessage("QOpenHD","running");
     const int retval = app.exec();
 
-#if defined(ENABLE_GSTREAMER)
+#ifdef QOPENHD_ENABLE_GSTREAMER
 #if defined(ENABLE_MAIN_VIDEO)
-    if(mainVideo!=nullptr){
-         mainVideo->stopVideoSafe();
+    if(primary_video_gstreamer!=nullptr){
+         primary_video_gstreamer->stopVideoSafe();
+    }
+    if(secondary_video_gstreamer!=nullptr){
+        secondary_video_gstreamer->stopVideoSafe();
     }
 #endif
-#endif
+#endif // QOPENHD_ENABLE_GSTREAMER
     return retval;
 
 

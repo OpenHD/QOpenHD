@@ -36,7 +36,7 @@ public:
      * guaranteed that the size is actually increased. Use 0 to leave the buffer size untouched
      */
     UDPReceiver(IpAndPort ip_and_port,std::string name,DATA_CALLBACK onDataReceivedCallbackX,
-    size_t wanted_receive_buff_size_btyes=0,const bool ENABLE_NONBLOCKINGX=false);
+    size_t wanted_receive_buff_size_btyes,const bool ENABLE_NONBLOCKINGX,const bool set_sched_param_max_realtime);
     /**
      * Start receiver thread,which opens UDP port
      */
@@ -69,6 +69,7 @@ private:
 	std::chrono::steady_clock::time_point lastReceivedPacket{};
 	//AvgCalculator avgDeltaBetweenPackets;
 	const bool ENABLE_NONBLOCKING;
+    const bool m_set_sched_param_max_realtime;
 };
 
 #endif // FPV_VR_UDPRECEIVER_H

@@ -6,7 +6,7 @@
 #include <memory>
 
 #include "avcodec_helper.hpp"
-#include "../videostreaming/QOpenHDVideoHelper.hpp"
+#include "../vs_util//QOpenHDVideoHelper.hpp"
 #include "../common_consti/TimeHelper.hpp"
 
 #include "rtp/rtpreceiver.h"

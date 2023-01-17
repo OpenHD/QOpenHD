@@ -1,7 +1,8 @@
-#include "mavlinksettingsmodel.h"
+﻿#include "mavlinksettingsmodel.h"
 #include "qdebug.h"
 #include "../openhd_defines.hpp"
 #include "../models/aohdsystem.h"
+#include "../models/camerastreammodel.h"
 
 #include "../../util/WorkaroundMessageBox.h"
 #include "improvedintsetting.h"
@@ -12,8 +13,14 @@
 
 MavlinkSettingsModel &MavlinkSettingsModel::instanceAirCamera()
 {
-    static MavlinkSettingsModel* instanceAirCamera=new MavlinkSettingsModel(OHD_SYS_ID_AIR,OHD_COMP_ID_AIR_CAMERA);
+    static MavlinkSettingsModel* instanceAirCamera=new MavlinkSettingsModel(OHD_SYS_ID_AIR,OHD_COMP_ID_AIR_CAMERA_PRIMARY);
     return *instanceAirCamera;
+}
+
+MavlinkSettingsModel &MavlinkSettingsModel::instanceAirCamera2()
+{
+    static MavlinkSettingsModel instanceAirCamera2{OHD_SYS_ID_AIR, OHD_COMP_ID_AIR_CAMERA_SECONDARY};
+    return instanceAirCamera2;
 }
 
 MavlinkSettingsModel &MavlinkSettingsModel::instanceAir()
@@ -67,6 +74,7 @@ bool MavlinkSettingsModel::is_param_read_only(const std::string param_id)const
     if(param_id.compare("BOARD_TYPE") == 0)ret=true;
     if(param_id.compare("WB_N_RX_CARDS")== 0)ret=true;
     if(param_id.compare("V_N_CAMERAS")== 0)ret=true;
+	if(param_id.compare("V_CAM_NAME")==0 )ret=true;
     //qDebug()<<"Param"<<param_id.c_str()<<"Read-only:"<<(ret==false ? "N":"Y");
     return ret;
 }
@@ -258,6 +266,10 @@ static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string&
             };
             map_improved_params["V_KEYFRAME_I"]=ImprovedIntSetting(0,100,default_values);
         }
+        map_improved_params["V_FORCE_SW_ENC"]=ImprovedIntSetting::createEnumEnableDisable();
+        map_improved_params["V_SWITCH_CAM"]=ImprovedIntSetting::createEnumEnableDisable();
+
+        map_improved_params["I_ETH_HOTSPOT_E"]=ImprovedIntSetting::createEnumEnableDisable();
     }
     if(map_improved_params.find(param_id)!=map_improved_params.end()){
         return map_improved_params[param_id];
@@ -277,6 +289,7 @@ static std::optional<ImprovedStringSetting> get_improved_for_string(const std::s
             "1920x1080@30",
     };
     map_improved_params["V_FORMAT"]=ImprovedStringSetting::create_from_keys_only(choices_video_res_framerate);
+    //
     if(map_improved_params.find(param_id)!=map_improved_params.end()){
         return map_improved_params[param_id];
     }
@@ -538,7 +551,7 @@ void MavlinkSettingsModel::removeData(int row)
 }
 
 // hacky, temporary
-static void hacky_set_video_codec_in_qopenhd(const MavlinkSettingsModel::SettingData& data){
+static void hacky_set_video_codec_in_qopenhd(const int comp_id,const MavlinkSettingsModel::SettingData& data){
     if(data.unique_id=="VIDEO_CODEC"){
         // Check if the param is still an int (should always be the case, but we don't want to crash in c++)
         if(!std::holds_alternative<int32_t>(data.value)){
@@ -546,27 +559,46 @@ static void hacky_set_video_codec_in_qopenhd(const MavlinkSettingsModel::Setting
             return;
         }
         const int video_codec_in_openhd=std::get<int32_t>(data.value);
-        AOHDSystem::instanceAir().set_curr_set_video_codec_int(video_codec_in_openhd);
-        if(video_codec_in_openhd==0 || video_codec_in_openhd==1 || video_codec_in_openhd==2){
-            QSettings settings;
-            const int tmp_video_codec = settings.value("selectedVideoCodecPrimary", 0).toInt();
-            if(tmp_video_codec!=video_codec_in_openhd){
-                // video codec mismatch, update the QOpenHD settings
-                settings.setValue("selectedVideoCodecPrimary",video_codec_in_openhd);
-                qDebug()<<"Changed video codec in QOpenHD to "<<video_codec_in_openhd;
-                workaround::makePopupMessage("Changed VideoCodec in QOpenHD");
+        if(comp_id==OHD_COMP_ID_AIR_CAMERA_PRIMARY){
+            CameraStreamModel::instance(0).set_curr_set_video_codec_int(video_codec_in_openhd);
+            if(video_codec_in_openhd==0 || video_codec_in_openhd==1 || video_codec_in_openhd==2){
+                QSettings settings;
+                const int tmp_video_codec = settings.value("selectedVideoCodecPrimary", 0).toInt();
+                if(tmp_video_codec!=video_codec_in_openhd){
+                    // video codec mismatch, update the QOpenHD settings
+                    settings.setValue("selectedVideoCodecPrimary",video_codec_in_openhd);
+                    qDebug()<<"Changed electedVideoCodecPrimary in QOpenHD to "<<video_codec_in_openhd;
+                    workaround::makePopupMessage("Changed VideoCodec Primary in QOpenHD");
+                }
+            }
+        }else if(comp_id==OHD_COMP_ID_AIR_CAMERA_SECONDARY){
+             CameraStreamModel::instance(1).set_curr_set_video_codec_int(video_codec_in_openhd);
+            if(video_codec_in_openhd==0 || video_codec_in_openhd==1 || video_codec_in_openhd==2){
+                QSettings settings;
+                const int tmp_video_codec = settings.value("selectedVideoCodecSecondary", 0).toInt();
+                if(tmp_video_codec!=video_codec_in_openhd){
+                    // video codec mismatch, update the QOpenHD settings
+                    settings.setValue("selectedVideoCodecSecondary",video_codec_in_openhd);
+                    qDebug()<<"Changed selectedVideoCodecSecondary in QOpenHD to "<<video_codec_in_openhd;
+                    workaround::makePopupMessage("Changed VideoCodec Secondary in QOpenHD");
+                }
             }
         }
     }
 }
 
-static void hacky_set_curr_selected_video_bitrate_in_qopenhd(const MavlinkSettingsModel::SettingData& data){
+static void hacky_set_curr_selected_video_bitrate_in_qopenhd(const int comp_id,const MavlinkSettingsModel::SettingData& data){
     if(data.unique_id=="V_BITRATE_MBITS"){
         if(!std::holds_alternative<int32_t>(data.value)){
             qDebug()<<"ERROR video_bitrate setting messed up, fixme";
             return;
         }
-        AOHDSystem::instanceAir().set_curr_set_video_bitrate_int(std::get<int32_t>(data.value));
+        const int value=std::get<int32_t>(data.value);
+        if(comp_id==OHD_COMP_ID_AIR_CAMERA_PRIMARY){
+            CameraStreamModel::instance(0).set_curr_set_video_bitrate_int(value);
+        }else if(comp_id==OHD_COMP_ID_AIR_CAMERA_SECONDARY){
+             CameraStreamModel::instance(1).set_curr_set_video_bitrate_int(value);
+        }
     }
 }
 
@@ -575,8 +607,8 @@ void MavlinkSettingsModel::updateData(std::optional<int> row_opt, SettingData ne
 {
     {
         // temporary, dirty
-        hacky_set_curr_selected_video_bitrate_in_qopenhd(new_data);
-        hacky_set_video_codec_in_qopenhd(new_data);
+        hacky_set_curr_selected_video_bitrate_in_qopenhd(m_comp_id,new_data);
+        hacky_set_video_codec_in_qopenhd(m_comp_id,new_data);
     }
     int row=-1;
     if(row_opt.has_value()){
@@ -607,8 +639,8 @@ void MavlinkSettingsModel::addData(MavlinkSettingsModel::SettingData data)
 {
     {
         // temporary, dirty
-        hacky_set_curr_selected_video_bitrate_in_qopenhd(data);
-        hacky_set_video_codec_in_qopenhd(data);
+        hacky_set_curr_selected_video_bitrate_in_qopenhd(m_comp_id,data);
+        hacky_set_video_codec_in_qopenhd(m_comp_id,data);
     }
     if(is_param_whitelisted(data.unique_id.toStdString())){
         // never add whitelisted params to the simple model, they need synchronization
@@ -748,7 +780,7 @@ bool MavlinkSettingsModel::get_param_requires_manual_reboot(QString param_id)
     if(param_id=="ENABLE_JOY_RC"){
         return true;
     }
-    if(param_id=="RTL8812AU_PWR_I"){
+    if(param_id=="I_ETH_HOTSPOT_E"){
         return true;
     }
     return false;
@@ -843,8 +875,18 @@ QString MavlinkSettingsModel::get_short_description(const QString param_id)const
         return "Camera exposure metering mode to use. Default average.";
     }
     if(param_id=="I_WIFI_HOTSPOT_E"){
-        return "Enable/disable wifi hotspot such that you can connect to your air/ground unit via normal WiFi. Frequency is always the opposite of your WB link, e.g. "
+        return "Enable/Disable WiFi hotspot such that you can connect to your air/ground unit via normal WiFi. Frequency is always the opposite of your WB link, e.g. "
                "2.4G if your wb link is 5.8G and opposite. However, disable hotspot during flight !";
+    }
+    if(param_id=="I_ETH_HOTSPOT_E"){
+        return "Enable/Disable ethernet hotspot. When enabled, your rpi becomes a DHCPD server and starts forwarding video & telemetry if you connect a device via ethernet."
+               "Requires Reboot to be applied !";
+    }
+    if(param_id=="V_FORCE_SW_ENC"){
+        return "Force SW encode for the given USB camera, only enable if your camera supports outputting an appropriate raw format.";
+    }
+    if(param_id=="V_SWITCH_CAM"){
+        return "Requires reboot. Switch primary and secondary camera.";
     }
     return "TODO";
 }

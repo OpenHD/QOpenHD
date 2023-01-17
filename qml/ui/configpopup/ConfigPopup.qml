@@ -724,7 +724,7 @@ Rectangle {
         }
 
         EasterEggPanel {
-            id: eePanel
+            id: easterEgPanel
         }
     }
 }

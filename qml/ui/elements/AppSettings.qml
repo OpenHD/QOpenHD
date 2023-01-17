@@ -15,16 +15,16 @@ Settings {
     property int dev_stream0_udp_rtp_input_port: 5600
     property string dev_stream0_udp_rtp_input_ip_address: "127.0.0.1"
 
-    property int mavlink_sysid: 225
-    property int fc_mavlink_sysid: 1
-    property bool filter_mavlink_telemetry: false
-
-    property bool show_pip_video: false
-    property double pip_video_opacity: 1
+    // Sys id QOpenHD uses itself
+    property int qopenhd_mavlink_sysid: 225
 
     //WARNING: THIS ALLOWS THE USER TO MAKE BREAKING CHANGES
     property bool dev_show_whitelisted_params: false
     property bool dev_show_advanced_button: false
+    //WARNING: THIS makes the RC panel visible
+
+    property bool app_show_RC: false
+
 
     property bool app_background_transparent: true
     // devices that use drm/kms (e.g. rpi) are always fullscreen anyways
@@ -40,7 +40,8 @@ Settings {
     property int dev_test_video_mode:0 // 0 is disabled
     // Video codec of the primary video stream (main window).
     property int selectedVideoCodecPrimary:0 //0==h264,1==h265,2==MJPEG, other (error) default to h264
-    property bool enable_rtp: true
+    property int selectedVideoCodecSecondary:0
+
     property bool hide_watermark: true
     property bool dev_jetson: false
     // When this one is set to true, we read a file (where you can then write your custom rx gstreamer pipeline
@@ -103,7 +104,6 @@ Settings {
 
     property bool show_bitrate: true
     property double bitrate_opacity: 1
-    property bool disable_video_tx_overloaded_warning: false
     property double bitrate_size: 1
     property bool bitrate_declutter: false
     property double bitrate_warn: 0
@@ -372,4 +372,10 @@ Settings {
     property int stereo_osd_left_x: 0
     property int stereo_osd_right_x: 0
     property int stereo_osd_size: 0
+
+    property int dev_qopenhd_n_cameras:1
+
+    // N of battery cells (generic) of the vehicle, used for the show voltage per cell setting
+    // Proper way would be to query / get that via mavlink, but this is more complicated than it seems at glance
+    property int vehicle_battery_n_cells: 3
 }

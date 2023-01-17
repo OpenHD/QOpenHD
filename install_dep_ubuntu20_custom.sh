@@ -21,6 +21,8 @@ apt -y install libqt5texttospeech5-dev
 
 # now also ffmpeg / avcodec
 apt -y install libavcodec-dev libavformat-dev
+apt -y install libgstreamer-plugins-base1.0-dev gstreamer1.0-plugins-good qtgstreamer-plugins-qt5
+
 # Note on pi / your PC this should be already installed, be carefully to pick the right one otherwise
 
 # they are needed to build and install mavsdk

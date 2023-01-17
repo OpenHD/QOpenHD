@@ -88,8 +88,11 @@ INCLUDEPATH += /usr/include/mavsdk
 # However, this can be usefully for figuring out compiler issue(s) on different platform(s)
 # NOTE: QT Creator is quite bad at figuring out changes here, you might need a "full" rebuild or manualy delete
 # the build dir/cache, then rebuild
-# NOTE: You manually have to uncomment 3 lines in qml/main.qml too for now (if you choose to uncomment below)
-include(app/videostreaming2/avcodec_video.pri)
+include(app/vs_avcodec/avcodec_video.pri)
+
+# Gstreamer / qmlglsink decode and display, all sources
+# r.n only used for secondary video and for primary video only on platforms we cannot do primary video via QSG / avcodec
+include(app/vs_gst_qmlglsink/gst_video.pri)
 
 # adsb library
 include(app/adsb/adsb_lib.pri)
@@ -102,6 +105,7 @@ SOURCES += \
     app/logging/logmessagesmodel.cpp \
     app/telemetry/models/aohdsystem.cpp \
     app/qopenhd.cpp \
+    app/telemetry/models/camerastreammodel.cpp \
     app/telemetry/models/rcchannelsmodel.cpp \
     app/telemetry/models/wificard.cpp \
     app/telemetry/settings/improvedintsetting.cpp \
@@ -110,7 +114,7 @@ SOURCES += \
     app/util/QmlObjectListModel.cpp \
     app/util/WorkaroundMessageBox.cpp \
     app/util/qrenderstats.cpp \
-    app/videostreaming/decodingstatistcs.cpp \
+    app/vs_util/decodingstatistcs.cpp
 
 HEADERS += \
     app/common_consti/EmulatedPacketDrop.hpp \
@@ -119,6 +123,7 @@ HEADERS += \
     app/logging/logmessagesmodel.h \
     app/telemetry/mavsdk_include.h \
     app/telemetry/models/aohdsystem.h \
+    app/telemetry/models/camerastreammodel.h \
     app/telemetry/models/rcchannelsmodel.h \
     app/qopenhd.h \
     app/telemetry/models/wificard.h \
@@ -131,7 +136,7 @@ HEADERS += \
     app/util/QmlObjectListModel.h \
     app/util/WorkaroundMessageBox.h \
     app/util/qrenderstats.h \
-    app/videostreaming/decodingstatistcs.h \
+    app/vs_util/decodingstatistcs.h
 
 
 # Geographic lib updated to c-2.0, so much cleaner
@@ -215,7 +220,9 @@ DISTFILES += \
     app/telemetry/settings/README.md \
     app/util/README.md \
     app/videostreaming/README.md \
+    app/videostreaming/gst_qmlglsink/gst_video.pri \
     app/videostreaming/legacy/README.md \
+    app/videostreaming_util/README.txt \
     extra_build_qmake.sh \
     inc/osd/Readme.md \
     lib/h264nal/h264nal.pri \
@@ -257,12 +264,6 @@ iOSBuild {
 
     SOURCES += \
         src/platform/appleplatform.mm
-
-    EnableGStreamer {
-        DEFINES += GST_GL_HAVE_WINDOW_EAGL=1
-        DEFINES += GST_GL_HAVE_PLATFORM_EAGL=1
-        DEFINES += HAVE_QT_IOS
-    }
 }
 
 MacBuild {
@@ -274,45 +275,20 @@ MacBuild {
     #CONFIG += EnableGamepads
     CONFIG += EnableJoysticks
     CONFIG += EnableSpeech
-    CONFIG += EnableMainVideo
-    #CONFIG += EnableCharts
-    #CONFIG += EnableLog //does not work due to filepath not set
-
-    EnableGStreamer {
-        DEFINES += GST_GL_HAVE_PLATFORM_CGL=1
-        DEFINES += GST_GL_HAVE_WINDOW_COCOA=1
-        DEFINES += HAVE_QT_MAC
-    }
 }
 
 LinuxBuild {
-    CONFIG += EnableMainVideo
     CONFIG += EnableSpeech
     message("LinuxBuild - config")
 }
 
 JetsonBuild {
     message("JetsonBuild")
-    CONFIG += EnableMainVideo
     CONFIG += EnableSpeech
-
-    CONFIG += EnableGStreamer
-
-    EnableGStreamer {
-        DEFINES += GST_GL_HAVE_PLATFORM_EGL=1
-        DEFINES += HAVE_QT_EGLFS=1
-    }
 }
 
 
 WindowsBuild {
-    #CONFIG += EnableGamepads
-    #CONFIG += EnableSpeech
-    #CONFIG += EnableMainVideo
-    #CONFIG += EnableGStreamer
-    #CONFIG += EnableCharts
-    #CONFIG += EnableLog
-
     DEFINES += GST_GL_HAVE_WINDOW_WIN32=1
     DEFINES += GST_GL_HAVE_PLATFORM_WGL=1
     DEFINES += HAVE_QT_WIN32
@@ -323,109 +299,13 @@ WindowsBuild {
 AndroidBuild {
     CONFIG += EnableJoysticks
     CONFIG += EnableSpeech
-    CONFIG += EnableMainVideo
-    #CONFIG += EnableCharts
-    #CONFIG += EnableLog
-
-    EnableGStreamer {
-        OTHER_FILES += \
-            $$PWD/android/src/org/openhd/OpenHDActivity.java
-
-        DEFINES += GST_GL_HAVE_PLATFORM_EGL=1
-        DEFINES += GST_GL_HAVE_WINDOW_ANDROID=1
-        DEFINES += HAVE_QT_ANDROID
-    }
-    QT += androidextras
-
-    #Androidx86Build {
-    #    ANDROID_EXTRA_LIBS += $$PWD/lib/android/openssl/latest/x86/libcrypto_1_1.so \
-    #                          $$PWD/lib/android/openssl/latest/x86/libssl_1_1.so
-    #} AndroidARM64Build {
-    #    ANDROID_EXTRA_LIBS += $$PWD/lib/android/openssl/latest/arm64/libcrypto_1_1.so \
-    #                          $$PWD/lib/android/openssl/latest/arm64/libssl_1_1.so
-    #} else {
-        ANDROID_EXTRA_LIBS += $$PWD/lib/android/openssl/latest/arm/libcrypto_1_1.so \
-                              $$PWD/lib/android/openssl/latest/arm/libssl_1_1.so
-    #}
 }
-
 
 EnableSpeech {
     message("EnableSpeech")
     DEFINES += ENABLE_SPEECH
     QT += texttospeech
 }
-
-EnableMainVideo {
-    message("EnableMainVideo")
-    DEFINES += ENABLE_MAIN_VIDEO
-}
-
-EnableGStreamer {
-    DEFINES += ENABLE_GSTREAMER
-
-    SOURCES += \
-        app/videostreaming/gst_qmlglsink/gstvideostream.cpp
-
-    HEADERS += \
-        app/videostreaming/gst_qmlglsink/gst_helper.hpp \
-        app/videostreaming/gst_qmlglsink/gstvideostream.h
-
-    CONFIG += link_pkgconfig
-    PKGCONFIG   += gstreamer-1.0  gstreamer-video-1.0 gstreamer-gl-1.0
-
-    #include(qmlglsink.pri)
-    #include(lib/gst-plugins-good/ext/qt/qtplugin.pro)
-    #QT += qitem
-    #QT += widgets
-    #QT += gui-private
-}
-
-
-installer {
-    MacBuild {
-        DESTDIR_COPY_RESOURCE_LIST = $$DESTDIR/$${TARGET}.app/Contents/MacOS
-        EnableGStreamer {
-            QMAKE_POST_LINK += $${BASEDIR}/tools/prepare_gstreamer_framework.sh $${DESTDIR}/gstwork $${DESTDIR}/$${TARGET}.app $${TARGET}
-            QMAKE_POST_LINK += && cd $${DESTDIR}
-        }
-
-        QMAKE_POST_LINK += && $$dirname(QMAKE_QMAKE)/macdeployqt $${TARGET}.app -appstore-compliant -qmldir=$${BASEDIR}/qml
-
-        QMAKE_POST_LINK += && /usr/libexec/PlistBuddy -c \"Set :CFBundleShortVersionString $$APPLE_BUILD\" $$DESTDIR/$${TARGET}.app/Contents/Info.plist
-        QMAKE_POST_LINK += && /usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $$APPLE_BUILD\" $$DESTDIR/$${TARGET}.app/Contents/Info.plist
-
-        IS_TRAVIS = $$(TRAVIS)
-
-        !isEmpty(IS_TRAVIS) {
-            QMAKE_POST_LINK += && codesign --force --verify --sign \"${DEV_CERT}\" --keychain ${PWD}/openhd.keychain $${TARGET}.app --deep
-        } else {
-            QMAKE_POST_LINK += && codesign --force --verify --sign \"${DEV_CERT}\" --keychain ${HOME}/Library/Keychains/login.keychain $${TARGET}.app --deep
-        }
-
-
-
-        QMAKE_POST_LINK += && hdiutil create $${TARGET}.dmg -volname $${TARGET} -fs HFS+ -srcfolder $${DESTDIR}/$${TARGET}.app
-        QMAKE_POST_LINK += && hdiutil convert $${TARGET}.dmg -format UDZO -o "$${TARGET}-$${QOPENHD_VERSION}.dmg"
-
-    }
-    WindowsBuild {
-        DESTDIR_WIN = $$replace(DESTDIR, "/", "\\")
-
-        OTHER_FILES += tools/qopenhd_installer.nsi
-        QMAKE_POST_LINK +=$${PWD}/win_deploy_sdl.cmd \"$$DESTDIR_WIN\" \"$$PWD\QJoysticks\lib\SDL\bin\windows\msvc\x86\" $$escape_expand(\\n)
-
-        QMAKE_POST_LINK += $$escape_expand(\\n) c:\Qt\5.15.2\msvc2019\bin\windeployqt.exe --qmldir $${PWD}/qml \"$${DESTDIR_WIN}\\QOpenHD.exe\"
-
-        QMAKE_POST_LINK += $$escape_expand(\\n) cd $$BASEDIR_WIN && $$quote("\"C:\\Program Files \(x86\)\\NSIS\\makensis.exe\"" /DINSTALLER_ICON="\"$${PWD}\icons\openhd.ico\"" /DHEADER_BITMAP="\"$${PWD}\icons\LaunchScreen.png\"" /DAPPNAME="\"QOpenHD\"" /DEXENAME="\"$${TARGET}\"" /DORGNAME="\"Open.HD\"" /DDESTDIR=$${DESTDIR} /NOCD "\"/XOutFile $${DESTDIR_WIN}\\QOpenHD-$${QOPENHD_VERSION}.exe\"" "$$PWD/tools/qopenhd_installer.nsi")
-
-    }
-    AndroidBuild {
-        QMAKE_POST_LINK += mkdir -p $${DESTDIR}/package
-        QMAKE_POST_LINK += && make install INSTALL_ROOT=$${DESTDIR}/android-build/
-    }
-}
-
 
 
 contains(ANDROID_TARGET_ARCH,armeabi-v7a) {

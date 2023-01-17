@@ -1,4 +1,3 @@
-#if defined(ENABLE_GSTREAMER)
 #ifndef GST_PLATFORM_INCLUDE_H
 #define GST_PLATFORM_INCLUDE_H
 
@@ -7,7 +6,7 @@
 // (TODO: rn everythng except standart ubuntu has been deleted).
 // exposes a initGstreamerOrThrow() method that should be called before any actual gstreamer calls.
 
-#include "../QOpenHDVideoHelper.hpp"
+#include "../vs_util/QOpenHDVideoHelper.hpp"
 #include "qglobal.h"
 #include <gst/gst.h>
 #include <QString>
@@ -15,6 +14,7 @@
 #include <stdexcept>
 #include <sstream>
 #include <qqmlapplicationengine.h>
+#include <QDebug>
 
 /**
  * @brief initGstreamer, throw a run time exception when failing
@@ -33,30 +33,41 @@ static void initGstreamerOrThrow(){
 // Similar to above, but takes argc/ argv from command line.
 // This way it is possible to pass on extra stuff at run time onto gstreamer by launching
 // QOpenHD with some argc/ argvalues
-static void initGstreamerOrThrowExtra(int argc,char* argv[]){
+static void init_gstreamer(int argc,char* argv[]){
     GError* error = nullptr;
     if (!gst_init_check(&argc,&argv, &error)) {
         std::stringstream ss;
         ss<<"Cannot initialize gstreamer";
         ss<<error->code<<":"<<error->message;
         g_error_free(error);
-        throw std::runtime_error(ss.str().c_str());
+        qWarning("gst_init_check failed");
+        return;
     }
+    qDebug("gst_init_check success");
 }
 
 // If qmlgl plugin was dynamically linked, this will force GStreamer to go find it and
 // load it before the QML gets loaded in main.cpp (without this, Qt will complain that
 // it can't find org.freedesktop.gstreamer.GLVideoItem)
-static void initQmlGlSinkOrThrow(){
-    /*if (!gst_element_register (plugin, "qmlglsink",
-              GST_RANK_NONE, GST_TYPE_QT_SINK)) {
-         qDebug()<<"Cannot iregister gst qmlglsink";
-      }*/
+// From https://github.com/GStreamer/gst-examples/blob/b27bcc187e867897dcd169cd46f8d9bc403210e8/playback/player/qt/main.cpp#L51
+// NOTE: Basically, it looks as if you NEED to do this before QT loads any .qml file(s) and if it fails
+// qmlglsink won't work !!
+static bool init_qmlglsink(){
     GstElement *sink = gst_element_factory_make("qmlglsink", NULL);
     if(sink==nullptr){
-        qDebug()<<"Cannot initialize gstreamer - qmlsink not found";
-        //throw std::runtime_error("Cannot initialize gstreamer - qmlsink not found\n");
-   }
+        return false;
+    }
+    gst_object_unref(sink);
+    return true;
+}
+
+static void init_qmlglsink_and_log(){
+    const bool success=init_qmlglsink();
+    if(success){
+        qDebug()<<"qmlglsink found - gstreamer + qmlglsink should work";
+    }else{
+        qWarning("qmlglsink not found - check your gstreamer installation");
+    }
 }
 
 // not sure, customize the path where gstreamer log is written to
@@ -89,7 +100,7 @@ static QString get_gstreamer_version() {
 
 // link gstreamer qmlglsink to qt window
 static void link_gsteamer_to_qt_window(GstElement *qmlglsink,QQuickItem *qtOutWindow){
-      g_object_set(qmlglsink, "widget", qtOutWindow, NULL);
+      g_object_set(qmlglsink, "widget", gpointer(qtOutWindow), NULL);
 }
 
 // find qmlglsink in gstreamer pipeline and link it to the window
@@ -113,7 +124,7 @@ static QQuickItem* find_qt_video_window(QQmlApplicationEngine& m_engine,const bo
     if(isMainStream){
          m_elementName = "mainVideoGStreamer";
     }else{
-         m_elementName = "pipVideoGStreamer";
+         m_elementName = "secondaryVideoGStreamer";
     }
     QQuickItem *videoItem;
     QQuickWindow *rootObject;
@@ -150,4 +161,3 @@ static std::string create_debug_encoded_data_producer(const QOpenHDVideoHelper::
     return ss.str();
 }
 #endif // GST_PLATFORM_INCLUDE_H
-#endif

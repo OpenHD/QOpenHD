@@ -4,7 +4,8 @@
 #include <qobject.h>
 #include "../../../lib/lqtutils_master/lqtutils_prop.h"
 
-
+// Stats unique per each connected (wifibroadcast) wfi card
+// Air has only one card, ground can have one or more card(s)
 class WiFiCard : public QObject
 {
     Q_OBJECT

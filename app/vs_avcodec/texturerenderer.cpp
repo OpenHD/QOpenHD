@@ -4,7 +4,7 @@
 #include <cmath>
 #include <qsettings.h>
 
-#include "../videostreaming/decodingstatistcs.h"
+#include "../vs_util/decodingstatistcs.h"
 
 struct MGLViewptort{
     int x,y,width,height;

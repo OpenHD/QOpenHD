@@ -102,8 +102,8 @@ Flickable {
                     to: 255
                     stepSize: 1
                     anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
-                    value: settings.mavlink_sysid
-                    onValueChanged: settings.mavlink_sysid = value
+                    value: settings.qopenhd_mavlink_sysid
+                    onValueChanged: settings.qopenhd_mavlink_sysid = value
                 }
                 Keys.onPressed: (event)=> {
                                     if (event.key === Qt.Key_Minus && controlSelected == false){
@@ -123,7 +123,8 @@ Flickable {
                 height: rowHeight
                 color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
-                //color: "#8cbfd7f3"
+                visible: false
+
                 Text {
                     text: qsTr("Enable Goggle Layout")
                     font.weight: Font.Bold
@@ -314,6 +315,42 @@ Flickable {
                     anchors.horizontalCenter: parent.horizonatalCenter
                 }
             }
+
+            // exp
+            Rectangle {
+                width: parent.width
+                height: rowHeight
+                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                visible: true
+                Text {
+                    text: qsTr("N Cameras to controll")
+                    font.weight: Font.Bold
+                    font.pixelSize: 13
+                    anchors.leftMargin: 8
+                    verticalAlignment: Text.AlignVCenter
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: 224
+                    height: elementHeight
+                    anchors.left: parent.left
+                }
+
+                SpinBox {
+                    id: dev_qopenhd_n_cameras_spinbox
+                    height: elementHeight
+                    width: 210
+                    font.pixelSize: 14
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    from: 1
+                    to: 2
+                    stepSize: 1
+                    anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
+
+                    value: settings.dev_qopenhd_n_cameras
+                    onValueChanged: settings.dev_qopenhd_n_cameras = value
+                }
+            }
+
         }
     }
 }

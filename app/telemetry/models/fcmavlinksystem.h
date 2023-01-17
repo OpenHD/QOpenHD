@@ -6,6 +6,7 @@
 #include <QTimer>
 #include <QQmlContext>
 #include "../mavsdk_include.h"
+#include <atomic>
 
 // Really nice, this way we don't have to write all the setters / getters / signals ourselves !
 #include "../../../lib/lqtutils_master/lqtutils_prop.h"
@@ -215,7 +216,8 @@ private:
     int m_reboot_shutdown=99;
     //
     QTimer* m_alive_timer = nullptr;
-    qint64 m_last_heartbeat = -1;
+    std::atomic<int32_t> m_last_heartbeat_ms = -1;
+    std::atomic<int32_t> m_last_message_ms= -1;
     void update_alive();
     std::chrono::steady_clock::time_point m_last_update_update_rate_mavlink_message_attitude=std::chrono::steady_clock::now();
     int m_n_messages_update_rate_mavlink_message_attitude=0;

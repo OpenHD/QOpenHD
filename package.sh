@@ -63,10 +63,12 @@ cp release/QOpenHD /tmp/qopenhd/usr/local/bin/ || exit 1
 if [[ "${PACKAGE_ARCH}" != "x86_64" ]]; then
 cp systemd/* /tmp/qopenhd/etc/systemd/system/ || exit 1
 fi
+# The rpi_qt_eglfs_kms_config.json file makes sure that qopenhd runs at the res
+# specified in the config.txt if the user did so
+mkdir /tmp/qopenhd/usr/local/share/qopenhd/
+cp rpi_qt_eglfs_kms_config.json /tmp/qopenhd/usr/local/share/qopenhd/ || exit 1
 
-cp qt.json /tmp/qopenhd/usr/local/share/openhd/ || exit 1
-
-VERSION="2.2.4-evo-$(date '+%Y%m%d%H%M')-${VER2}"
+VERSION="2.2.5-evo-$(date '+%Y%m%d%H%M')-${VER2}"
 
 
 rm ${PACKAGE_NAME}_${VERSION}_${PACKAGE_ARCH}.deb > /dev/null 2>&1

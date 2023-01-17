@@ -90,6 +90,7 @@ void MavlinkTelemetry::onNewSystem(std::shared_ptr<mavsdk::System> system){
         systemOhdAir=system;
         MavlinkSettingsModel::instanceAir().set_param_client(system);
         MavlinkSettingsModel::instanceAirCamera().set_param_client(system);
+        MavlinkSettingsModel::instanceAirCamera2().set_param_client(system);
         AOHDSystem::instanceAir().set_system(system);
     }
     // mavsdk doesn't report iNAV as being an "autopilot", so for now we just assume that if we have a mavlink system that has not one of the

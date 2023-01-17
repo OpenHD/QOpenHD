@@ -8,7 +8,8 @@
 #include "../common_consti/TimeHelper.hpp"
 
 #include "texturerenderer.h"
-#include "../videostreaming/decodingstatistcs.h"
+#include "../vs_util/decodingstatistcs.h"
+#include "common_consti/SchedulingHelper.hpp"
 
 #ifdef HAVE_MMAL
 #include "mmal/rpimmaldecodedisplay.h"
@@ -688,7 +689,9 @@ int AVCodecDecoder::open_and_decode_until_error(const QOpenHDVideoHelper::VideoS
 // https://ffmpeg.org/doxygen/3.3/decode_video_8c-example.html
 void AVCodecDecoder::open_and_decode_until_error_custom_rtp(const QOpenHDVideoHelper::VideoStreamConfig settings)
 {
-     av_log_set_level(AV_LOG_TRACE);
+    // This thread pulls frame(s) from the rtp decoder and therefore should have high priority
+    SchedulingHelper::setThreadParamsMaxRealtime();
+    av_log_set_level(AV_LOG_TRACE);
      assert(settings.video_codec==QOpenHDVideoHelper::VideoCodecH264 || settings.video_codec==QOpenHDVideoHelper::VideoCodecH265);
      if(settings.video_codec==QOpenHDVideoHelper::VideoCodecH264){
          decoder = avcodec_find_decoder(AV_CODEC_ID_H264);
@@ -883,8 +886,13 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp_and_mmal_direct(cons
         }else{
            std::shared_ptr<NALU> buf=nullptr;
             while(buf==nullptr){
-                // TODO wtf
-                //buf=m_rtp_receiver->get_data(std::chrono::milliseconds(kDefaultFrameTimeout));
+			    // for some weird reason, using the queue with a waking up approach doesn't work on rpi.
+				// doesn't work == by using a timeout, we get incredibly high parse & enqueue time (in the 250ms range)
+				// It doesn't make sense from a sw standpoint, but we unfortunately need to use a
+				// "wake upd in regular intervalls and fetch latest" approach here.
+				// This doesn't work
+                //buf=m_rtp_receiver->get_next_frame(std::chrono::milliseconds(5));
+				// This works
                 std::this_thread::sleep_for(std::chrono::milliseconds(5));
                 buf=m_rtp_receiver->get_next_frame(std::nullopt);
                 if(request_restart){

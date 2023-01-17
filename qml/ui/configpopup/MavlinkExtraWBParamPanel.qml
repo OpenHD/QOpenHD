@@ -256,8 +256,8 @@ It is your responsibility to only change the frequency to values allowd in your 
                         text: "INFO"
                         Material.background:Material.LightBlue
                         onClicked: {
-                            var text="Recommended 20Mhz (Default). A bigger channel width gives more bandwidth, but greatly increases interference and reduces range (sensitivity).
-Leave default (20Mhz width)."
+                            var text="A channel width of 40Mhz gives almost double the bandwidth, but uses 2x 20Mhz channels and therefore the likeliness of
+interference from other stations sending on either of those channels is increased. It also slightly decreases sensitivity. Only changeable on rtl8812au."
                             _messageBoxInstance.set_text_and_show(text)
                         }
                     }

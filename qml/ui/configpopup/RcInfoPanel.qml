@@ -11,9 +11,10 @@ import OpenHD 1.0
 import "../../ui" as Ui
 import "../elements"
 
+
 ScrollView {
     clip:true
-    contentHeight: 800
+    contentHeight: 850
     width: parent.width
 
 // For joystick debugging. For ease of use, we have a simple model in c++ for it
@@ -29,7 +30,6 @@ ScrollView {
         Layout.minimumHeight: 30
         spacing: 6
         Layout.topMargin: 15
-
 
         Card {
             id: infoBox
@@ -51,32 +51,42 @@ ScrollView {
             Layout.topMargin: 15
             Layout.leftMargin: 15
             Layout.rightMargin: 15
-            Layout.fillWidth: true
-            visible: _rcchannelsmodelground.is_alive
+            visible: !settings.app_show_RC
             height: 24
-            text: "Disable RC and Reboot"
+            text: "Enable RC"
             onClicked: {
-                _groundPiSettingsModel.try_update_parameter_int("ENABLE_JOY_RC",0)
-                _qopenhd.quit_qopenhd()
+                var text="RC was enabled, now please restart OpenHD or reboot the Groundstation\n\n\nRemember that your Controller needs to be connected when booting for Rc to work correctly!"
+                _messageBoxInstance.set_text_and_show(text)
+                _groundPiSettingsModel.try_update_parameter_int("ENABLE_JOY_RC",1)
+                settings.app_show_RC=true
             }
         }
-        Button{
+
+        Card {
+            id: connectRCCard
+            visible: !_rcchannelsmodelground.is_alive
             Layout.topMargin: 15
             Layout.leftMargin: 15
             Layout.rightMargin: 15
-            visible: !_rcchannelsmodelground.is_alive
-            height: 24
-            text: "Enable RC and Reboot"
-            onClicked: {
-                _groundPiSettingsModel.try_update_parameter_int("ENABLE_JOY_RC",1)
-                _qopenhd.quit_qopenhd()
-            }
+            Layout.bottomMargin: 15
+            height: 35
+            width: 450
+            cardBody:
+                    Text {
+                        text: qsTr("You need to connect your controller, if not OpenHD-RC can not work")
+                        height: 24
+                        font.pixelSize: 14
+                        topPadding: -30
+                        leftPadding: 12
+                    }
         }
 
         Repeater {
                model: _rcchannelsmodelground
                RowLayout{
-                   visible: _rcchannelsmodelground.is_alive
+                   visible: settings.app_show_RC
+                   Layout.leftMargin: 15
+                   Layout.rightMargin: 15
                    Layout.fillWidth: true
                    Layout.minimumHeight: 20
                    //implicitWidth: parent.implicitWidth
@@ -105,6 +115,20 @@ ScrollView {
                        return channel_index_plus_1+"  (channel):";
                    }
                }
+        }
+        Button{
+            Layout.topMargin: 15
+            Layout.leftMargin: 15
+            Layout.rightMargin: 15
+            visible: settings.app_show_RC
+            height: 24
+            text: "Disable RC"
+            onClicked: {
+                var text="RC was disabled, now please restart OpenHD or reboot the Groundstation"
+                _messageBoxInstance.set_text_and_show(text)
+                _groundPiSettingsModel.try_update_parameter_int("ENABLE_JOY_RC",0)
+                settings.app_show_RC=false
+            }
         }
         Card {
             id: valuesCard

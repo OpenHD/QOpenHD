@@ -96,12 +96,12 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         m_n_messages_update_rate_mavlink_message_attitude=0;
         m_last_update_update_rate_mavlink_message_attitude=std::chrono::steady_clock::now();
     }
+    m_last_message_ms=QOpenHDMavlinkHelper::getTimeMilliseconds();
     switch (msg.msgid) {
     case MAVLINK_MSG_ID_HEARTBEAT: {
         mavlink_heartbeat_t heartbeat;
         mavlink_msg_heartbeat_decode(&msg, &heartbeat);
-        const auto time_millis=QOpenHDMavlinkHelper::getTimeMilliseconds();
-        m_last_heartbeat=time_millis;
+        m_last_heartbeat_ms=QOpenHDMavlinkHelper::getTimeMilliseconds();
         const auto custom_mode = heartbeat.custom_mode;
         const auto autopilot = (MAV_AUTOPILOT)heartbeat.autopilot;
         //upon first heartbeat find out if autopilot is ardupilot or "other"
@@ -280,6 +280,7 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         mavlink_msg_sys_status_decode(&msg, &sys_status);
         const auto battery_voltage_v = (double)sys_status.voltage_battery / 1000.0;
         set_battery_voltage_volt(battery_voltage_v);
+        set_battery_voltage_single_cell(QOpenHDMavlinkHelper::calclate_voltage_per_cell(battery_voltage_v));
         set_battery_current_ampere((double)sys_status.current_battery/100.0);
         // TODO XX
         break;
@@ -456,7 +457,8 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         set_battery_percent_gauge(fc_battery_gauge_glyph);
         // we always use the first cell for the "single volt" value. However, not sure how many people have the HW on their air
         // battery to measure the voltage of a single cell (which is what this would be for)
-        set_battery_voltage_single_cell((double)battery_status.voltages[0]/1000.0);
+        // January 22: doesn't work reliably, use the worse but working qopenhd local setting approach
+        //set_battery_voltage_single_cell((double)battery_status.voltages[0]/1000.0);
         break;
     }
     case MAVLINK_MSG_ID_SENSOR_OFFSETS: {
@@ -1031,11 +1033,11 @@ void FCMavlinkSystem::flight_mode_cmd(long cmd_msg) {
 
 void FCMavlinkSystem::update_alive()
 {
-    if(m_last_heartbeat==-1){
+    if(m_last_heartbeat_ms==-1){
         // we did not get any heartbeat (yet)
         set_is_alive(false);
     }else{
-        const auto elapsed_since_last_heartbeat=QOpenHDMavlinkHelper::getTimeMilliseconds()-m_last_heartbeat;
+        const auto elapsed_since_last_heartbeat=QOpenHDMavlinkHelper::getTimeMilliseconds()-m_last_heartbeat_ms;
         // after 3 seconds, consider as "not alive"
         const bool alive=elapsed_since_last_heartbeat< 4*1000;
         if(alive != m_is_alive){
