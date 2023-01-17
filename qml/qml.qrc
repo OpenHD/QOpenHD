@@ -253,7 +253,5 @@
         <file>video/SecondaryVideoGStreamer.qml</file>
         <file>video/MainVideoQSG.qml</file>
         <file>ui/widgets/VideoBitrateWidgetSecondary.qml</file>
-        <file>ui/configpopup/ConfigPopup.qml</file>
-        <file>ui/widgets/MessageHUDForm.ui.qml</file>
     </qresource>
 </RCC>

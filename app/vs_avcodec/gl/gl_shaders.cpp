@@ -39,6 +39,9 @@ static const char *GlErrorString(GLenum error ){
   }
 }
 
+// NOTE: The lowest we need to suport is generally the RPI and OpenGL ES 2.0
+ // Which is why we use v100 here -  GLES20 uses shading language v100
+
 // We always use the same vertex shader code - full screen texture.
 // (Adjust ratio by setting the OpenGL viewport)
 static const GLchar* vertex_shader_source_all =
