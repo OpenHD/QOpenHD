@@ -321,9 +321,9 @@ contains(ANDROID_TARGET_ARCH,arm64-v8a) {
 ANDROID_ABIS = armeabi-v7a
 
 
-unix:!macx: LIBS += -L$$PWD/lib/MAVSDK/ -lmavsdk
+unix:!macx: LIBS += -L$$PWD/mavsdk/lib/ -lmavsdk
 
-INCLUDEPATH += $$PWD/lib/MAVSDK/include
-DEPENDPATH += $$PWD/lib/MAVSDK/include
+INCLUDEPATH += $$PWD/mavsdk/include
+DEPENDPATH += $$PWD/mavsdk/include
 
-unix:!macx: PRE_TARGETDEPS += $$PWD/lib/MAVSDK/libmavsdk.a
+unix:!macx: PRE_TARGETDEPS += $$PWD/mavsdk/lib/libmavsdk.a

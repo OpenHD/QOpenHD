@@ -6,7 +6,7 @@ apt -y install libavcodec-dev libavformat-dev
 apt -y install libgles2-mesa-dev
 
 # they are needed to build and install mavsdk
-apt -y install pip tree
+apt -y install pip tee
 pip install future
 
 # build and install mavsdk
@@ -15,13 +15,19 @@ pip install future
 cd lib/MAVSDK
 cmake -Bbuild/default -DBUILD_SHARED_LIBS=OFF -DCMAKE_BUILD_TYPE=Release -H.
 cmake --build build/default -j4
-#sudo cmake --build build/default --target install
+sudo cmake --build build/default --target install
 #sudo ldconfig
-ls mavsdk
-#ls /usr/local/include/mavsdk
-#ls /usr/local/lib
 
+ls /usr/local/include/mavsdk
+ls /usr/local/lib
+
+cp -r /usr/local/include/mavsdk /home/runner/work/QOpenHD/QOpenHD/mavsdk
+cp -r /usr/local/lib /home/runner/work/QOpenHD/QOpenHD/mavsdk
+ls /home/runner/work/QOpenHD/QOpenHD/mavsdk
 cd ../../
+
+
+
 
 # Install all the dependencies needed to build QOpenHD from source.
 curl -1sLf \
