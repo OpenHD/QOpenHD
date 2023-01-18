@@ -77,9 +77,9 @@ INCLUDEPATH += $$PWD/app/exp
 #INCLUDEPATH += $$PWD/lib/c_library_v2_openhd
 # mavsdk - dirty
 # We have the include path 2 times here, aparently release and debug install to different paths
-INCLUDEPATH += /usr/local/include/mavsdk
-LIBS += -L/usr/local/lib -lmavsdk
-INCLUDEPATH += /usr/include/mavsdk
+#INCLUDEPATH += /usr/local/include/mavsdk
+#LIBS += -L/usr/local/lib -lmavsdk
+#INCLUDEPATH += /usr/include/mavsdk
 
 
 # Avcodec decode and display, all sources
@@ -320,3 +320,10 @@ contains(ANDROID_TARGET_ARCH,arm64-v8a) {
 
 ANDROID_ABIS = armeabi-v7a
 
+
+unix:!macx: LIBS += -L$$PWD/mavsdk/lib/ -lmavsdk
+
+INCLUDEPATH += $$PWD/mavsdk/include
+DEPENDPATH += $$PWD/mavsdk/include
+
+unix:!macx: PRE_TARGETDEPS += $$PWD/mavsdk/lib/libmavsdk.a
