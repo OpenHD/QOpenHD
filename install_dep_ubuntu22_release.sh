@@ -28,18 +28,23 @@ apt -y install libgles2-mesa-dev
 
 
 # they are needed to build and install mavsdk
-apt -y install pip mavsdk ruby
+apt -y install pip ruby
 pip install future
 gem install fpm
 
 # build and install mavsdk
-# cd lib/MAVSDK
-# cmake -Bbuild/default -DCMAKE_BUILD_TYPE=Release -H.
-# cmake --build build/default -j4
-# sudo cmake --build build/default --target install
-# sudo ldconfig
 
-# ls /usr/local/include/mavsdk
-# ls /usr/local/lib
 
-# cd ../../
+cd lib/MAVSDK
+cmake -Bbuild/default -DBUILD_SHARED_LIBS=OFF -DCMAKE_BUILD_TYPE=Release -H.
+cmake --build build/default -j4
+sudo cmake --build build/default --target install
+#sudo ldconfig
+
+ls /usr/local/include/mavsdk
+ls /usr/local/lib
+
+cp -r /usr/local/include/mavsdk /home/runner/work/QOpenHD/QOpenHD/mavsdk
+cp -r /usr/local/lib /home/runner/work/QOpenHD/QOpenHD/mavsdk
+ls /home/runner/work/QOpenHD/QOpenHD/mavsdk
+cd ../../
