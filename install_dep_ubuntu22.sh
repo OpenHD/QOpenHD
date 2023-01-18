@@ -17,14 +17,11 @@ cmake -Bbuild/default -DBUILD_SHARED_LIBS=OFF -DCMAKE_BUILD_TYPE=Release -H.
 cmake --build build/default -j4
 #sudo cmake --build build/default --target install
 #sudo ldconfig
-tree
+ls mavsdk
 #ls /usr/local/include/mavsdk
 #ls /usr/local/lib
 
 cd ../../
-
-break
-
 
 # Install all the dependencies needed to build QOpenHD from source.
 curl -1sLf \
