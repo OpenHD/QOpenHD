@@ -33,7 +33,7 @@ jobs:
         curl -1sLf \
         'https://dl.cloudsmith.io/public/openhd/openhd-2-2-evo/setup.deb.sh' \
         | sudo -E bash
-        sudo bash install_dep_ubuntu22.sh
+        sudo bash install_dep_ubuntu22_release.sh
         
         
 
