@@ -6,7 +6,7 @@ apt -y install libavcodec-dev libavformat-dev
 apt -y install libgles2-mesa-dev
 
 # they are needed to build and install mavsdk
-apt -y install pip tee
+apt -y install pip
 pip install future
 
 # build and install mavsdk
