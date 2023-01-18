@@ -15,13 +15,15 @@ pip install future
 cd lib/MAVSDK
 cmake -Bbuild/default -DBUILD_SHARED_LIBS=OFF -DCMAKE_BUILD_TYPE=Release -H.
 cmake --build build/default -j4
-tee
-#sudo cmake --build build/default --target install
+sudo cmake --build build/default --target install
 #sudo ldconfig
 
-#ls /usr/local/include/mavsdk
-#ls /usr/local/lib
+ls /usr/local/include/mavsdk
+ls /usr/local/lib
 
+cp /usr/local/include/mavsdk /home/runner/work/QOpenHD/QOpenHD/mavsdk
+cp /usr/local/lib /home/runner/work/QOpenHD/QOpenHD/mavsdk
+ls /home/runner/work/QOpenHD/QOpenHD/mavsdk
 cd ../../
 
 
