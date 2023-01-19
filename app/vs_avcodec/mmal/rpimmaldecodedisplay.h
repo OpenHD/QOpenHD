@@ -45,6 +45,10 @@ public:
 private:
     void updateDisplayRegion();
     bool display_region_needs_update=true;
+private:
+    // Get an input buffer to copy frame data to.
+    // Returns nullptr on failure, a valid mmal buffer pointer otherwise (note that the memory management is mmal inernal,
+    // you do not need to free this buffer)
 
 };
 
