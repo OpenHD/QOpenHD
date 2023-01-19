@@ -17,7 +17,6 @@ rm -rf /tmp/qopenhd/*
 
 mkdir -p /tmp/qopenhd/usr/local/bin || exit 1
 mkdir -p /tmp/qopenhd/etc/systemd/system || exit 1
-mkdir -p /tmp/qopenhd/usr/local/share/openhd || exit 1
 
 ls -a
 ls /opt
