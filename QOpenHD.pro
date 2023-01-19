@@ -21,6 +21,20 @@ include(git.pri)
 # since it is a library "specifically for qt"
 include(lib/lqtutils_master/lqtutils.pri)
 
+# No one knows what this block below does, from stephen most likely
+CONFIG(debug, debug|release) {
+    DESTDIR = $${OUT_PWD}/debug
+
+    CONFIG += debug
+    DEFINES += QMLJSDEBUGGER
+} else:CONFIG(release, debug|release) {
+    DEFINES += QT_NO_DEBUG
+    CONFIG += installer
+    CONFIG += force_debug_info
+    DESTDIR = $${OUT_PWD}/release
+    DEFINES += QMLJSDEBUGGER
+}
+
 #https://doc.qt.io/qt-6/portingguide.html
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x050F00
 
