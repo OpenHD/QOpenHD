@@ -900,11 +900,10 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp_and_mmal_direct(cons
                     goto finish;
                 }
             }
-             //RPIMMALDecoder::instance().feed_frame(buf->getData(),buf->getSize());
-             const auto before_feed_frame=std::chrono::steady_clock::now();
+             //const auto before_feed_frame=std::chrono::steady_clock::now();
              const bool feed_frame_success=mmal_decode_display->feed_frame(buf->getData(),buf->getSize());
-             const auto duration_feed_frame=std::chrono::steady_clock::now()-before_feed_frame;
-             qDebug()<<"feed frame time:"<<MyTimeHelper::R(duration_feed_frame).c_str();
+             //const auto duration_feed_frame=std::chrono::steady_clock::now()-before_feed_frame;
+             //qDebug()<<"feed frame time:"<<MyTimeHelper::R(duration_feed_frame).c_str();
              if(!feed_frame_success){
                  feed_frame_error_count++;
              }
