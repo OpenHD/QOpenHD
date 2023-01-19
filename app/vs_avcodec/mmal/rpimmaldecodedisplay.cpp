@@ -59,7 +59,9 @@ bool RPIMMalDecodeDisplay::initialize(const uint8_t *config_data, const int conf
         initialized=true;
         bcm_host_init();
     }
-     vcos_semaphore_create(&m_context.semaphore, "example", 1);
+    static constexpr auto N_INPUT_BUFFERS=6;
+
+     vcos_semaphore_create(&m_context.semaphore, "example", N_INPUT_BUFFERS);
 
      /* Create the graph */
     m_status = mmal_graph_create(&m_graph, 0);
@@ -119,7 +121,7 @@ bool RPIMMalDecodeDisplay::initialize(const uint8_t *config_data, const int conf
 
     qDebug()<<"Decoder output buffer_num_min"<<m_decoder->output[0]->buffer_num_min;
     //m_decoder->output[0]->buffer_num = m_decoder->output[0]->buffer_num_min;
-    m_decoder->output[0]->buffer_num = 6;
+    m_decoder->output[0]->buffer_num = N_INPUT_BUFFERS;
     m_decoder->output[0]->buffer_size = m_decoder->output[0]->buffer_size_min;
 
     m_pool_in = mmal_pool_create(m_decoder->input[0]->buffer_num,m_decoder->input[0]->buffer_size);
