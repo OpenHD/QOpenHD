@@ -141,8 +141,10 @@ void RTPReceiver::queue_data(const uint8_t* nalu_data,const std::size_t nalu_dat
         }
         //qDebug()<<"Queue size:"<<m_data_queue.size_approx();
         if(!m_data_queue.try_enqueue(std::make_shared<NALU>(nalu))){
+            // If we cannot push a frame onto this queue, it means the decoder cannot keep up what we want to provide to it
             n_dropped_frames++;
             qDebug()<<"Dropping incoming frame, total:"<<n_dropped_frames;
+            DecodingStatistcs::instance().set_n_decoder_dropped_frames(n_dropped_frames);
         }
     }else{
         // We don't have all config data yet, drop anything that is not config data.
