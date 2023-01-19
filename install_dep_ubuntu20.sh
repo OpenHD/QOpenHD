@@ -37,6 +37,6 @@ ls /usr/local/include/mavsdk
 ls /usr/local/lib
 
 cp -r /usr/local/include/mavsdk /home/runner/work/QOpenHD/QOpenHD/mavsdk
-cp -r /usr/local/lib /home/runner/work/QOpenHD/QOpenHD/mavsdk
+cp -r /usr/local/lib/libmavsdk.a /home/runner/work/QOpenHD/QOpenHD/mavsdk
 ls /home/runner/work/QOpenHD/QOpenHD/mavsdk
 cd ../../
