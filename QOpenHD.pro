@@ -21,19 +21,6 @@ include(git.pri)
 # since it is a library "specifically for qt"
 include(lib/lqtutils_master/lqtutils.pri)
 
-CONFIG(debug, debug|release) {
-    DESTDIR = $${OUT_PWD}/debug
-
-    CONFIG += debug
-    DEFINES += QMLJSDEBUGGER
-} else:CONFIG(release, debug|release) {
-    DEFINES += QT_NO_DEBUG
-    CONFIG += installer
-    CONFIG += force_debug_info
-    DESTDIR = $${OUT_PWD}/release
-    DEFINES += QMLJSDEBUGGER
-}
-
 #https://doc.qt.io/qt-6/portingguide.html
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x050F00
 
@@ -49,8 +36,9 @@ RCC_DIR      = $${OUT_PWD}/rcc
 #from https://mavlink.io/en/mavgen_c/
 #You can supress the warnings in CMake using ...
 #and https://stackoverflow.com/questions/2987062/configuring-the-gcc-compiler-switches-in-qt-qtcreator-and-qmake
-QMAKE_CXXFLAGS += -Wno-address-of-packed-member
-QMAKE_CXXFLAGS += -Wno-cast-align
+#this can not be used in MSVC (windows)
+#QMAKE_CXXFLAGS += -Wno-address-of-packed-member
+#QMAKE_CXXFLAGS += -Wno-cast-align
 
 #QT += qml quick concurrent opengl gui
 #QT += positioning location
@@ -73,13 +61,19 @@ INCLUDEPATH += $$PWD/lib
 INCLUDEPATH += $$PWD/app
 INCLUDEPATH += $$PWD/app/exp
 
-# Since mavlink is coming with MAVSDK, we don't need that anymore
-#INCLUDEPATH += $$PWD/lib/c_library_v2_openhd
-# mavsdk - dirty
+# NOTE: mavlink we get from MAVSDK
+# MAVSDK needs to be built and installed externally
 # We have the include path 2 times here, aparently release and debug install to different paths
+# The following lines are for linux only
 INCLUDEPATH += /usr/local/include/mavsdk
 LIBS += -L/usr/local/lib -lmavsdk
 INCLUDEPATH += /usr/include/mavsdk
+# The following lines are for windows
+#INCLUDEPATH += C:\MAVSDK\
+#INCLUDEPATH += C:\MAVSDK\include
+#LIBS += -LC:\MAVSDK\lib
+
+
 
 
 # Avcodec decode and display, all sources
@@ -183,8 +177,7 @@ SOURCES += \
     app/util/FrequencyMonitor.cpp \
     app/main.cpp \
 
-RESOURCES += qml/qml.qrc \
-    qml/qml.qrc
+RESOURCES += qml/qml.qrc
 
 HEADERS += \
     app/telemetry/models/fcmavlinksystem.h \
@@ -319,4 +312,3 @@ contains(ANDROID_TARGET_ARCH,arm64-v8a) {
 }
 
 ANDROID_ABIS = armeabi-v7a
-
