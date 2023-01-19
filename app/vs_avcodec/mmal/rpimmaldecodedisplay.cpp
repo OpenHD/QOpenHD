@@ -18,6 +18,8 @@ static void input_callback(MMAL_PORT_T *port, MMAL_BUFFER_HEADER_T *buffer)
     //The decoder is done with the data, just recycle the buffer header into its pool
     mmal_buffer_header_release(buffer);
 
+    qDebug()<<"Buff available";
+
     // Kick the processing thread
     vcos_semaphore_post(&ctx->semaphore);
 }
