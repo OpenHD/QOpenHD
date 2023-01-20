@@ -11,7 +11,7 @@ curl -1sLf \
   'https://dl.cloudsmith.io/public/openhd/openhd-2-3-dev/setup.deb.sh' \
   | sudo -E bash
   
-apt install -y openhd-qt 
+apt install -y openhd-qt-x86-jammy 
 
 # While we keep the gstreamer code in (in case we want to enable it anyways for the jetson) we have it disabled at compile time by default
 #apt -y install libgstreamer-plugins-base1.0-dev gstreamer1.0-plugins-good
