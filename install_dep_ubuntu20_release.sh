@@ -8,10 +8,10 @@ apt install -y gnupg gnupg1 gnupg2 apt-transport-https curl apt-utils  libgles2-
 
 # Add our own repository to install a custom QT5.15.4
 curl -1sLf \
-  'https://dl.cloudsmith.io/public/openhd/openhd-2-2-evo/setup.deb.sh' \
+  'https://dl.cloudsmith.io/public/openhd/openhd-2-3-evo/setup.deb.sh' \
   | sudo -E bash
 curl -1sLf \
-  'https://dl.cloudsmith.io/public/openhd/openhd-2-2-dev/setup.deb.sh' \
+  'https://dl.cloudsmith.io/public/openhd/openhd-2-3-dev/setup.deb.sh' \
   | sudo -E bash
 apt install -y openhd-qt-x86-focal ruby mavsdk
 gem install fpm

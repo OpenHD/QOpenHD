@@ -5,10 +5,10 @@ apt install -y gnupg gnupg1 gnupg2 apt-transport-https curl apt-utils libgles2-m
 
 # Install all the dependencies needed to build QOpenHD from source.
 curl -1sLf \
-  'https://dl.cloudsmith.io/public/openhd/openhd-2-2-evo/setup.deb.sh' \
+  'https://dl.cloudsmith.io/public/openhd/openhd-2-3-evo/setup.deb.sh' \
   | sudo -E bash
 curl -1sLf \
-  'https://dl.cloudsmith.io/public/openhd/openhd-2-2-dev/setup.deb.sh' \
+  'https://dl.cloudsmith.io/public/openhd/openhd-2-3-dev/setup.deb.sh' \
   | sudo -E bash
   
 apt install -y openhd-qt 
