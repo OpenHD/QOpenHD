@@ -2,7 +2,7 @@ name: build_package_x86
 
 on:
   push:
-    branches: [ master, "2.0", "2.2.x-evo" ]
+    branches: [ "2.3-evo" ]
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
@@ -31,7 +31,7 @@ jobs:
     - name: Build with make
       run: |
         curl -1sLf \
-        'https://dl.cloudsmith.io/public/openhd/openhd-2-2-evo/setup.deb.sh' \
+        'https://dl.cloudsmith.io/public/openhd/openhd-2-3-evo/setup.deb.sh' \
         | sudo -E bash
         sudo ./package.sh x86_64 ubuntu focal
     
@@ -43,7 +43,7 @@ jobs:
         command: "push"
         format: "deb"
         owner: "openhd"
-        repo: "openhd-2-2-evo"
+        repo: "openhd-2-3-evo"
         distro: "ubuntu"
         release: "focal"
         republish: "true" # needed ONLY if version is not changing
