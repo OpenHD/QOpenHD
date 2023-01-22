@@ -125,7 +125,6 @@ SOURCES += \
     app/vs_util/decodingstatistcs.cpp
 
 HEADERS += \
-    app/common_consti/EmulatedPacketDrop.hpp \
     app/logging/hudlogmessagesmodel.h \
     app/logging/loghelper.h \
     app/logging/logmessagesmodel.h \

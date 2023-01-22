@@ -32,11 +32,9 @@ ApplicationWindow {
     //visibility: "FullScreen"
     visibility: UseFullscreen ? "FullScreen" : "AutomaticVisibility"
 
-    /*
-     * Local app settings. Uses the "user defaults" system on Mac/iOS, the Registry on Windows,
-     * and equivalent settings systems on Linux and Android
-     *
-     */
+    // Local app settings. Uses the "user defaults" system on Mac/iOS, the Registry on Windows,
+    // and equivalent settings systems on Linux and Android
+    // On linux, they generally are stored under /home/username/.config/Open.HD
     AppSettings {
         id: settings
         Component.onCompleted: {
