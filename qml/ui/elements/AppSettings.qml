@@ -16,7 +16,7 @@ Settings {
     property string dev_stream0_udp_rtp_input_ip_address: "127.0.0.1"
 
     // Sys id QOpenHD uses itself
-    property int qopenhd_mavlink_sysid: 225
+    property int qopenhd_mavlink_sysid: 255
 
     //WARNING: THIS ALLOWS THE USER TO MAKE BREAKING CHANGES
     property bool dev_show_whitelisted_params: false
