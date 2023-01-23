@@ -2,7 +2,7 @@
 QOPENHD_GIT_VERSION = $$system(git describe --always --tags --abbrev=0 --dirty)
 
 # We show the commit hash in the GUI for development
-QOPENHD_GIT_COMMIT_HASH = $$system(git describe --always --tags --abbrev=0 --dirty)
+QOPENHD_GIT_COMMIT_HASH = $$system(git rev-parse HEAD)
 
 MacBuild | iOSBuild {
     APPLE_VERSION  = $$QOPENHD_GIT_VERSION
