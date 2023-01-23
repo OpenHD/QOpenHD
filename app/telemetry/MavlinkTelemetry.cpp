@@ -9,8 +9,10 @@
 #include "../logging/logmessagesmodel.h"
 
 MavlinkTelemetry::MavlinkTelemetry(QObject *parent):QObject(parent)
-{
+{   
+    mavsdk::Mavsdk::Configuration config{QOpenHDMavlinkHelper::getSysId(),QOpenHDMavlinkHelper::getCompId(),false};
     mavsdk=std::make_shared<mavsdk::Mavsdk>();
+    mavsdk->set_configuration(config);
     mavsdk::log::subscribe([](mavsdk::log::Level level,   // message severity level
                               const std::string& message, // message text
                               const std::string& file,    // source file from which the message was sent
