@@ -303,6 +303,26 @@ Rectangle {
                         leftPadding: 6
                     }
                 }
+                RowLayout{
+                    Layout.fillWidth: true
+                    Layout.minimumHeight: text_minHeight
+                    spacing: 6
+                    Text {
+                        text: qsTr("Sys id: ")
+                        height: 24
+                        font.pixelSize: 14
+                        font.bold: true
+                        leftPadding: 12
+                    }
+                    Text {
+                        text: _fcMavlinkSystem.for_osd_sys_id == -1 ? "na" : qsTr(""+_fcMavlinkSystem.for_osd_sys_id)
+                        height: 24
+                        width: 256
+                        //color: _fcMavlinkSystem.is_alive ? "RED" : "GREEN"
+                        font.pixelSize: 14
+                        leftPadding: 6
+                    }
+                }
             }
         }
         // --------------

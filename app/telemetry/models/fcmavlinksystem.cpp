@@ -40,7 +40,9 @@ void FCMavlinkSystem::set_system(std::shared_ptr<mavsdk::System> system)
     if(!_system->has_autopilot()){
         qDebug()<<"FCMavlinkSystem::set_system WARNING no autopilot";
     }
-    qDebug()<<"FCMavlinkSystem::set_system: FC SYS ID is:"<<(int)_system->get_system_id();
+    const int tmp_sys_id=_system->get_system_id();
+    qDebug()<<"FCMavlinkSystem::set_system: FC SYS ID is:"<<(int)tmp_sys_id;
+    set_for_osd_sys_id(tmp_sys_id);
     _action=std::make_shared<mavsdk::Action>(system);
     _mavsdk_telemetry=std::make_shared<mavsdk::Telemetry>(system);
     _pass_thru=std::make_shared<mavsdk::MavlinkPassthrough>(system);
