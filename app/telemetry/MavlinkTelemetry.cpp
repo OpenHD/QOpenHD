@@ -10,7 +10,7 @@
 
 MavlinkTelemetry::MavlinkTelemetry(QObject *parent):QObject(parent)
 {   
-    mavsdk::Mavsdk::Configuration config{QOpenHDMavlinkHelper::getSysId(),QOpenHDMavlinkHelper::getCompId(),false};
+    mavsdk::Mavsdk::Configuration config{QOpenHDMavlinkHelper::get_own_sys_id(),QOpenHDMavlinkHelper::get_own_comp_id(),false};
     mavsdk=std::make_shared<mavsdk::Mavsdk>();
     mavsdk->set_configuration(config);
     mavsdk::log::subscribe([](mavsdk::log::Level level,   // message severity level
@@ -115,8 +115,8 @@ void MavlinkTelemetry::onNewSystem(std::shared_ptr<mavsdk::System> system){
 }
 
 bool MavlinkTelemetry::sendMessage(mavlink_message_t msg){
-    const auto sys_id=QOpenHDMavlinkHelper::getSysId();
-    const auto comp_id=QOpenHDMavlinkHelper::getCompId();
+    const auto sys_id=QOpenHDMavlinkHelper::get_own_sys_id();
+    const auto comp_id=QOpenHDMavlinkHelper::get_own_comp_id();
     if(msg.sysid!=sys_id){
         // probably a programming error, the message was not packed with the right sys id
         qDebug()<<"WARN Sending message with sys id:"<<msg.sysid<<" instead of"<<sys_id;
@@ -227,7 +227,7 @@ void MavlinkTelemetry::ping_all_systems()
     // NOTE: MAVSDK does time in nanoseconds by default
     lastTimeSyncOut=QOpenHDMavlinkHelper::getTimeMicroseconds();
     timesync.ts1=lastTimeSyncOut;
-    mavlink_msg_timesync_encode(QOpenHDMavlinkHelper::getSysId(),QOpenHDMavlinkHelper::getCompId(),&msg,&timesync);
+    mavlink_msg_timesync_encode(QOpenHDMavlinkHelper::get_own_sys_id(),QOpenHDMavlinkHelper::get_own_comp_id(),&msg,&timesync);
     sendMessage(msg);
 }
 
@@ -248,7 +248,7 @@ void MavlinkTelemetry::request_openhd_version()
 bool MavlinkTelemetry::send_command_long_oneshot(const mavlink_command_long_t &command)
 {
     mavlink_message_t msg;
-    mavlink_msg_command_long_encode(QOpenHDMavlinkHelper::getSysId(),QOpenHDMavlinkHelper::getCompId(), &msg,&command);
+    mavlink_msg_command_long_encode(QOpenHDMavlinkHelper::get_own_sys_id(),QOpenHDMavlinkHelper::get_own_comp_id(), &msg,&command);
     return sendMessage(msg);
 }
 
