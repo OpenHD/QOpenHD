@@ -51,7 +51,7 @@ Rectangle {
                     id: title
                     height: 48
                     color: "#ff3a3a3a"
-                    text: qsTr("QOpenHD-evo-2.3.0")
+                    text: qsTr("QOpenHD-evo")
                     font.pixelSize: 36
                 }
             }
@@ -62,7 +62,7 @@ Rectangle {
                 width: 173
                 height: 14
                 color: "#ff3a3a3a"
-                text: QOPENHD_VERSION
+                text: QOPENHD_GIT_VERSION
                 font.pixelSize: 14
                 leftPadding: 80
             }
@@ -74,6 +74,16 @@ Rectangle {
                 onLinkActivated: {
                     Qt.openUrlExternally("https://github.com/OpenHD/QOpenHD/blob/master/LICENSE")
                 }
+                font.pixelSize: 14
+                leftPadding: 80
+            }
+
+            Text {
+                id: qopenhd_commit_hash
+                width: 173
+                height: 14
+                color: "#ff3a3a3a"
+                text: QOPENHD_GIT_COMMIT_HASH
                 font.pixelSize: 14
                 leftPadding: 80
             }

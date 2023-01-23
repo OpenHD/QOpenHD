@@ -167,6 +167,8 @@ void write_other_context_properties(QQmlApplicationEngine& engine){
 #else
     engine.rootContext()->setContextProperty("EnableGStreamer", QVariant(false));
 #endif
+
+
 }
 
 int main(int argc, char *argv[]) {
@@ -353,7 +355,21 @@ engine.rootContext()->setContextProperty("EnableADSB", QVariant(false));
     engine.rootContext()->setContextProperty("UseFullscreen", QVariant(false));
 #endif
 
-    engine.rootContext()->setContextProperty("QOPENHD_VERSION", QVariant(QOPENHD_VERSION));
+    // This allows to use the defines as strings in qml
+    engine.rootContext()->setContextProperty("QOPENHD_GIT_VERSION",
+#ifdef QOPENHD_GIT_VERSION
+        QVariant(QOPENHD_GIT_VERSION)
+#else
+        QVariant("unknown")
+#endif
+    );
+    engine.rootContext()->setContextProperty("QOPENHD_GIT_COMMIT_HASH",
+#ifdef QOPENHD_GIT_COMMIT_HASH
+        QVariant(QOPENHD_GIT_COMMIT_HASH)
+#else
+        QVariant("unknown")
+#endif
+     );
 
     engine.load(QUrl(QLatin1String("qrc:/main.qml")));
 
