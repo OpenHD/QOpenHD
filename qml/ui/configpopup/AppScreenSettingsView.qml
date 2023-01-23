@@ -78,6 +78,7 @@ ScrollView {
                     }
                 }
             }
+            //Issue from @Norbert, rotating OSD can break things irreversible
             /*Rectangle {
                 width: parent.width
                 height: rowHeight
