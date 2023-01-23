@@ -24,7 +24,7 @@ Item{
         MouseArea {
             anchors.fill: parent
             onClicked: {
-                console.log("Clicked")
+                //console.log("Clicked")
                 if(has_been_maximized){
                     // minimize
                     secondaryVideoGStreamer.width=320;
