@@ -182,6 +182,13 @@ int main(int argc, char *argv[]) {
     init_qmlglsink_and_log();
 #endif //QOPENHD_ENABLE_GSTREAMER
 
+    // From https://stackoverflow.com/questions/63473541/how-to-dynamically-toggle-vsync-in-a-qt-application-at-runtime
+    // Get rid of VSYNC if possible
+    // Doesn't work
+    //QSurfaceFormat format=QSurfaceFormat::defaultFormat();
+    //format.setSwapInterval(0);
+    //QSurfaceFormat::setDefaultFormat(format);
+
     QSettings settings;
 
     const double global_scale = settings.value("global_scale", 1.0).toDouble();

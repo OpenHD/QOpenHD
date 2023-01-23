@@ -90,7 +90,7 @@ void TextureRenderer::paint(QQuickWindow *window)
    if(m_clear_all_video_textures_next_frame){
        remove_queued_frame_if_avalable();
        gl_video_renderer->clean_video_textures_gl();
-       DecodingStatistcs::instance().set_n_dropped_frames(-1);
+       DecodingStatistcs::instance().set_n_renderer_dropped_frames(-1);
        DecodingStatistcs::instance().set_n_rendered_frames(-1);
        DecodingStatistcs::instance().set_decode_and_render_time("-1");
        m_clear_all_video_textures_next_frame=false;
@@ -147,7 +147,7 @@ int TextureRenderer::queue_new_frame_for_display(AVFrame *src_frame)
       m_latest_frame=nullptr;
       //qDebug()<<"Dropping frame";
       m_display_stats.n_frames_dropped++;
-      DecodingStatistcs::instance().set_n_dropped_frames(m_display_stats.n_frames_dropped);
+      DecodingStatistcs::instance().set_n_renderer_dropped_frames(m_display_stats.n_frames_dropped);
     }
     AVFrame *frame=frame = av_frame_alloc();
     assert(frame);

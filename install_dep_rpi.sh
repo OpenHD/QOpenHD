@@ -6,6 +6,8 @@ apt install -y gnupg gnupg1 gnupg2 apt-transport-https curl apt-utils  libgles2-
 
 #install qt
 apt install -y openhd-qt
+ldconfig
+
 
 
 # Install all the dependencies needed to build QOpenHD from source

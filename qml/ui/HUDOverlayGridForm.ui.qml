@@ -264,7 +264,7 @@ Item {
         elide: Text.ElideNone
         wrapMode: Text.NoWrap
         font.pixelSize: 14
-        visible: true
+        visible: false
     }
 }
 

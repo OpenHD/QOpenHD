@@ -32,6 +32,7 @@ if [[ "${DISTRO}" == "bullseye" ]] || [[ "${DISTRO}" == "bionic" ]] ; then
     sudo echo "/opt/Qt5.15.4/lib/" > /etc/ld.so.conf.d/qt.conf
     sudo ldconfig
     export PATH="$PATH:/opt/Qt5.15.4/bin/"
+    sudo rm -Rf /usr/bin/qmake
     sudo ln -s /opt/Qt5.15.4/bin/qmake /usr/bin/qmake
     /opt/Qt5.15.4/bin/qmake
     echo "build with qmake done"
@@ -68,7 +69,7 @@ fi
 mkdir /tmp/qopenhd/usr/local/share/qopenhd/
 cp rpi_qt_eglfs_kms_config.json /tmp/qopenhd/usr/local/share/qopenhd/ || exit 1
 
-VERSION="2.2.5-evo-$(date '+%Y%m%d%H%M')-${VER2}"
+VERSION="2.3-evo-$(date '+%Y%m%d%H%M')-${VER2}"
 
 
 rm ${PACKAGE_NAME}_${VERSION}_${PACKAGE_ARCH}.deb > /dev/null 2>&1

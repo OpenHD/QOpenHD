@@ -326,35 +326,12 @@ public:
     }
 };
 
-static __attribute__((unused)) std::chrono::nanoseconds timevalToDuration(timeval tv){
-    auto duration = std::chrono::seconds{tv.tv_sec}
-                    + std::chrono::microseconds{tv.tv_usec};
-    return std::chrono::duration_cast<std::chrono::nanoseconds>(duration);
-}
-static __attribute__((unused)) std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>
-timevalToTimePointSystemClock(timeval tv){
-    return std::chrono::time_point<std::chrono::system_clock,std::chrono::nanoseconds>{
-            std::chrono::duration_cast<std::chrono::system_clock::duration>(timevalToDuration(tv))};
-}
-static __attribute__((unused)) std::chrono::time_point<std::chrono::steady_clock,std::chrono::nanoseconds>
-timevalToTimePointSteadyClock(timeval tv){
-    return std::chrono::time_point<std::chrono::steady_clock,std::chrono::nanoseconds>{
-            std::chrono::duration_cast<std::chrono::steady_clock::duration>(timevalToDuration(tv))};
-}
-
-static __attribute__((unused)) std::chrono::time_point<std::chrono::steady_clock,std::chrono::nanoseconds>
-nanosecondsToTimePointSteadyClock(std::chrono::nanoseconds nanoseconds){
-    return std::chrono::time_point<std::chrono::steady_clock,std::chrono::nanoseconds>{
-            std::chrono::duration_cast<std::chrono::steady_clock::duration>(nanoseconds)};
-}
-
-
-static uint64_t __attribute__((unused)) getTimeUs(){
+static uint64_t  getTimeUs(){
     const auto time=std::chrono::steady_clock::now().time_since_epoch();
     return std::chrono::duration_cast<std::chrono::microseconds>(time).count();
 }
 
-static uint64_t __attribute__((unused)) getTimeMs(){
+static uint64_t  getTimeMs(){
     return getTimeUs()/1000;
 }
 

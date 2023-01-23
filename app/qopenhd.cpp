@@ -4,7 +4,11 @@
 #include <QDebug>
 #include <qapplication.h>
 
+#ifdef __linux__
+
 #include "common_consti/openhd-util.hpp"
+#endif
+
 #if defined(ENABLE_SPEECH)
 #include <QTextToSpeech>
 #include <QVoice>
@@ -104,26 +108,40 @@ void QOpenHD::quit_qopenhd()
 
 void QOpenHD::disable_service_and_quit()
 {
+#ifdef __linux__
 
     OHDUtil::run_command("sudo systemctl stop qopenhd",{""},true);
     quit_qopenhd();
+#endif
 }
 
 void QOpenHD::restart_local_oenhd_service()
 {
+#ifdef __linux__
+
     OHDUtil::run_command("sudo systemctl stop openhd",{""},true);
     OHDUtil::run_command("sudo systemctl start openhd",{""},true);
+#endif
 }
 
 void QOpenHD::run_dhclient_eth0()
 {
+#ifdef __linux__
+
     OHDUtil::run_command("sudo dhclient eth0",{""},true);
+#endif
 }
 
 QString QOpenHD::show_local_ip()
 {
+#ifdef __linux__
+
     auto res=OHDUtil::run_command_out("hostname -I");
     return QString(res->c_str());
+#else
+    return QString("this doesn't work");
+#endif
+
 }
 
 #if defined(__android__)
