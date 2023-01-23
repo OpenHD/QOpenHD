@@ -12,7 +12,6 @@ import "./widgets"
 import "../resources" as Resources
 
 Item {
-    property alias messageHUD: messageHUD
     signal settingsButtonClicked
 
     Image {

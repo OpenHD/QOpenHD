@@ -75,12 +75,10 @@ ApplicationWindow {
         }
 
         // Loads the proper (platform-dependent) video widget for the secondary video, if enabled.
-        // Secondary video is always in the lower left corner, and not full screen. And r.n we only have a gstreamer - qmlglsink
-        // implementation for it
+        // r.n we only have a gstreamer - qmlglsink implementation for it
         Loader {
+            anchors.fill: parent
             z: 2.0
-            width: 320
-            height: 240
             anchors.bottom: parent.bottom
             source: {
                 if (QOPENHD_ENABLE_GSTREAMER && settings.dev_qopenhd_n_cameras>1) {
