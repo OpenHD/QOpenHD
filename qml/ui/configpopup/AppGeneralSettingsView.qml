@@ -250,7 +250,10 @@ ScrollView {
                     anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
 
                     value: settings.dev_qopenhd_n_cameras
-                    onValueChanged: settings.dev_qopenhd_n_cameras = value
+                    onValueChanged: {
+                        settings.dev_qopenhd_n_cameras = value
+                        _messageBoxInstance.set_text_and_show("Please restart QOpenHD to apply")
+                    }
                 }
             }
 
