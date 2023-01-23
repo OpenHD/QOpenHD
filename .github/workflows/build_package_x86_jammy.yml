@@ -2,7 +2,7 @@ name: build_package_x86_22
 
 on:
   push:
-    branches: [ "2.3-evo" ]
+    branches: [ master, "2.0", "2.3-evo-dev" ]
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
@@ -31,7 +31,7 @@ jobs:
         sudo apt upgrade -y
         sudo add-apt-repository universe
         curl -1sLf \
-        'https://dl.cloudsmith.io/public/openhd/openhd-2-3-evo/setup.deb.sh' \
+        'https://dl.cloudsmith.io/public/openhd/openhd-2-2-evo/setup.deb.sh' \
         | sudo -E bash
         sudo bash install_dep_ubuntu22_release.sh
         
@@ -57,7 +57,7 @@ jobs:
         command: "push"
         format: "deb"
         owner: "openhd"
-        repo: "openhd-2-3-evo"
+        repo: "openhd-2-3-dev"
         distro: "ubuntu"
         release: "jammy"
         republish: "true" # needed ONLY if version is not changing

@@ -51,8 +51,8 @@ RCC_DIR      = $${OUT_PWD}/rcc
 #You can supress the warnings in CMake using ...
 #and https://stackoverflow.com/questions/2987062/configuring-the-gcc-compiler-switches-in-qt-qtcreator-and-qmake
 #this can not be used in MSVC (windows)
-#QMAKE_CXXFLAGS += -Wno-address-of-packed-member
-#QMAKE_CXXFLAGS += -Wno-cast-align
+QMAKE_CXXFLAGS += -Wno-address-of-packed-member
+QMAKE_CXXFLAGS += -Wno-cast-align
 
 #QT += qml quick concurrent opengl gui
 #QT += positioning location
@@ -325,3 +325,11 @@ contains(ANDROID_TARGET_ARCH,arm64-v8a) {
 }
 
 ANDROID_ABIS = armeabi-v7a
+
+
+unix:!macx: LIBS += -L$$PWD/mavsdk/lib/ -lmavsdk
+
+INCLUDEPATH += $$PWD/mavsdk/include
+DEPENDPATH += $$PWD/mavsdk/include
+
+unix:!macx: PRE_TARGETDEPS += $$PWD/mavsdk/lib/libmavsdk.a

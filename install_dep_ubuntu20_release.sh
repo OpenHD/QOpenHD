@@ -13,7 +13,7 @@ curl -1sLf \
 curl -1sLf \
   'https://dl.cloudsmith.io/public/openhd/openhd-2-3-dev/setup.deb.sh' \
   | sudo -E bash
-apt install -y openhd-qt-x86-focal ruby mavsdk
+apt install -y openhd-qt-x86-focal ruby
 gem install fpm
 
 
@@ -35,13 +35,19 @@ apt -y install pip
 pip install future
 
 # build and install mavsdk
-# cd lib/MAVSDK
-# cmake -Bbuild/default -DCMAKE_BUILD_TYPE=Release -H.
-# cmake --build build/default -j4
-# sudo cmake --build build/default --target install
-# sudo ldconfig
 
-# ls /usr/local/include/mavsdk
-# ls /usr/local/lib
 
-# cd ../../
+cd lib/MAVSDK
+cmake -Bbuild/default -DBUILD_SHARED_LIBS=OFF -DCMAKE_BUILD_TYPE=Release -H.
+cmake --build build/default -j4
+sudo cmake --build build/default --target install
+#sudo ldconfig
+
+ls /usr/local/include/mavsdk
+ls /usr/local/lib
+
+cp -r /usr/local/include/mavsdk /home/runner/work/QOpenHD/QOpenHD/mavsdk
+mkdir /home/runner/work/QOpenHD/QOpenHD/mavsdk/lib/
+cp /usr/local/lib/libmavsdk.a /home/runner/work/QOpenHD/QOpenHD/mavsdk/lib/
+ls /home/runner/work/QOpenHD/QOpenHD/mavsdk
+cd ../../
