@@ -7,8 +7,9 @@ Settings {
     id: settings
 
     property double global_scale: 1.0
-    property double video_rotation: 0
-    property double osd_rotation: 0
+
+    // Dirty, rotate everything even though that can create issues
+    property int general_screen_rotation: 0
 
     property string locale: "en"
 
