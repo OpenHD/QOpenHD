@@ -39,6 +39,7 @@ ApplicationWindow {
     // Won't affect the video, but heck, then just mount your camera upside down.
     // TODO: the better fix really would be to somehow the the RPI HDMI config to rotate the screen in HW - but r.n there seems to be
     // no way, at least on MMAL
+    // NOTE: If this creates issues, just comment it out - I'd love to get rid of it as soon as we can
     Item{
         rotation: settings.general_screen_rotation
         anchors.fill: parent
