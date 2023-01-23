@@ -252,6 +252,11 @@ int main(int argc, char *argv[]) {
 #else
     engine.rootContext()->setContextProperty("QOPENHD_ENABLE_VIDEO_VIA_AVCODEC", QVariant(false));
 #endif
+#ifdef HAVE_MMAL
+    engine.rootContext()->setContextProperty("QOPENHD_HAVE_MMAL", QVariant(true));
+#else
+    engine.rootContext()->setContextProperty("QOPENHD_HAVE_MMAL", QVariant(false));
+#endif
     engine.rootContext()->setContextProperty("_qopenhd", &QOpenHD::instance());
     QOpenHD::instance().setEngine(&engine);
 

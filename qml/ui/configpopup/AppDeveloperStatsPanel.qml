@@ -21,6 +21,19 @@ Rectangle {
 
     color: "#eaeaea"
 
+    function yes_or_no_as_string(yes){
+        if(yes)return "Y"
+        return "N"
+    }
+
+    function get_features_string(){
+        var ret=""
+        ret+="AVCODEC:"+yes_or_no_as_string(QOPENHD_ENABLE_VIDEO_VIA_AVCODEC)+", "
+        ret+="MMAL:"+yes_or_no_as_string(QOPENHD_HAVE_MMAL)+", "
+        ret+="GSTREAMER:"+yes_or_no_as_string(QOPENHD_ENABLE_GSTREAMER) //+", "
+        return ret;
+    }
+
     ColumnLayout{
         Layout.fillWidth: true
         Layout.minimumHeight: 30
@@ -70,6 +83,11 @@ Rectangle {
         Text {
             id: test3
             text: qsTr("video0 FEC decode:  "+_cameraStreamModelPrimary.curr_video0_fec_decode_time_avg_min_max)
+        }
+
+        Text {
+            id: test5
+            text: qsTr("FEATURES:  "+get_features_string())
         }
     }
 }
