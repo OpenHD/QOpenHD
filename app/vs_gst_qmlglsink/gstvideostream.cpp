@@ -1,6 +1,5 @@
 #include "gstvideostream.h"
 
-#include <QtConcurrent>
 #include <QtQuick>
 #include <sstream>
 

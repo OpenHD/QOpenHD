@@ -54,22 +54,13 @@ RCC_DIR      = $${OUT_PWD}/rcc
 QMAKE_CXXFLAGS += -Wno-address-of-packed-member
 QMAKE_CXXFLAGS += -Wno-cast-align
 
-#QT += qml quick concurrent opengl gui
-#QT += positioning location
-
-#Not sure what exactly is going on here, but maybe this lib made it into qt official ?!!
-#since there is https://doc.qt.io/qt-5/qsortfilterproxymodel.html#details
-# Consti10: Dependency removed
-#include ($$PWD/lib/SortFilterProxyModel/SortFilterProxyModel.pri)
-# Comes with pretty much any install
-QT +=core
-
-# We need this for our qml files, available pretty much anywhere
-QT += qml
-
-# We need to include this one, needs to be explicitly installed via apt-get on Ubuntu
-QT += quick
-QT += concurrent opengl gui
+# These are the QT libraries we always need when building QOpenHD - they are intentially kept as small in number as possible
+# (aka all these really should come with pretty much any qt install)
+# In general, parts of QOpenHD that need additional libraries should have their code in a subdirectory with a .pri where those
+# dependencies are added such that you can easily compile the project even on systems that might lack some of those qt functionalities
+# see app/adsb/adsb_lib.pri for an example
+QT +=core quick qml gui
+QT += opengl
 
 INCLUDEPATH += $$PWD/lib
 INCLUDEPATH += $$PWD/app
@@ -87,6 +78,11 @@ INCLUDEPATH += /usr/include/mavsdk
 #INCLUDEPATH += C:\MAVSDK\include
 #LIBS += -LC:\MAVSDK\lib
 
+# For linking MAVSDK statically
+#unix:!macx: LIBS += -L$$PWD/mavsdk/lib/ -lmavsdk
+#INCLUDEPATH += $$PWD/mavsdk/include
+#DEPENDPATH += $$PWD/mavsdk/include
+#unix:!macx: PRE_TARGETDEPS += $$PWD/mavsdk/lib/libmavsdk.a
 
 
 
@@ -149,9 +145,6 @@ HEADERS += \
 # Geographic lib updated to c-2.0, so much cleaner
 SOURCES += $$PWD/lib/geographiclib-c-2.0/src/geodesic.c
 HEADERS += $$PWD/lib/geographiclib-c-2.0/src/geodesic.h
-
-QT += positioning
-
 
 # All files for the OSD elements - these are QT QQuickPaintedItem's that are written in c++
 SOURCES += \
@@ -238,9 +231,6 @@ DISTFILES += \
     qml/ui/elements/README.md \
     qml/ui/qmldir \
     tools/usefull_commands.md \
-    translations/QOpenHD_it.ts \
-    translations/QOpenHD_ro.ts \
-    translations/QOpenHD_zh.ts
 
 
 iOSBuild {
@@ -325,11 +315,3 @@ contains(ANDROID_TARGET_ARCH,arm64-v8a) {
 }
 
 ANDROID_ABIS = armeabi-v7a
-
-
-unix:!macx: LIBS += -L$$PWD/mavsdk/lib/ -lmavsdk
-
-INCLUDEPATH += $$PWD/mavsdk/include
-DEPENDPATH += $$PWD/mavsdk/include
-
-unix:!macx: PRE_TARGETDEPS += $$PWD/mavsdk/lib/libmavsdk.a
