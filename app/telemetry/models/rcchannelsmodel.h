@@ -4,6 +4,7 @@
 #include <QAbstractItemModel>
 #include <QObject>
 #include <qtimer.h>
+#include <array>
 
 #include <memory>
 

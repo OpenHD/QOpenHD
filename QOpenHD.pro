@@ -21,6 +21,7 @@ include(git.pri)
 # since it is a library "specifically for qt"
 include(lib/lqtutils_master/lqtutils.pri)
 
+# No one knows what this block below does, from stephen most likely
 CONFIG(debug, debug|release) {
     DESTDIR = $${OUT_PWD}/debug
 
@@ -49,8 +50,9 @@ RCC_DIR      = $${OUT_PWD}/rcc
 #from https://mavlink.io/en/mavgen_c/
 #You can supress the warnings in CMake using ...
 #and https://stackoverflow.com/questions/2987062/configuring-the-gcc-compiler-switches-in-qt-qtcreator-and-qmake
-QMAKE_CXXFLAGS += -Wno-address-of-packed-member
-QMAKE_CXXFLAGS += -Wno-cast-align
+#this can not be used in MSVC (windows)
+#QMAKE_CXXFLAGS += -Wno-address-of-packed-member
+#QMAKE_CXXFLAGS += -Wno-cast-align
 
 #QT += qml quick concurrent opengl gui
 #QT += positioning location
@@ -72,15 +74,6 @@ QT += concurrent opengl gui
 INCLUDEPATH += $$PWD/lib
 INCLUDEPATH += $$PWD/app
 INCLUDEPATH += $$PWD/app/exp
-
-# Since mavlink is coming with MAVSDK, we don't need that anymore
-#INCLUDEPATH += $$PWD/lib/c_library_v2_openhd
-# mavsdk - dirty
-# We have the include path 2 times here, aparently release and debug install to different paths
-#INCLUDEPATH += /usr/local/include/mavsdk
-#LIBS += -L/usr/local/lib -lmavsdk
-#INCLUDEPATH += /usr/include/mavsdk
-
 
 # Avcodec decode and display, all sources
 # Replaced gstreamer for now
@@ -183,8 +176,7 @@ SOURCES += \
     app/util/FrequencyMonitor.cpp \
     app/main.cpp \
 
-RESOURCES += qml/qml.qrc \
-    qml/qml.qrc
+RESOURCES += qml/qml.qrc
 
 HEADERS += \
     app/telemetry/models/fcmavlinksystem.h \
@@ -319,7 +311,6 @@ contains(ANDROID_TARGET_ARCH,arm64-v8a) {
 }
 
 ANDROID_ABIS = armeabi-v7a
-
 
 unix:!macx: LIBS += -L$$PWD/mavsdk/lib/ -lmavsdk
 
