@@ -50,9 +50,9 @@ jobs:
             | sudo -E bash
             ls -a
             cd /opt
+            cd /opt/QOpenHD
             apt update
             sudo bash QOpenHD/install_dep_rpi.sh
-            cd /opt/QOpenHD
             sudo ./package.sh armhf raspbian bullseye
             ls -a
 
