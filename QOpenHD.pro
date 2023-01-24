@@ -75,21 +75,6 @@ INCLUDEPATH += $$PWD/lib
 INCLUDEPATH += $$PWD/app
 INCLUDEPATH += $$PWD/app/exp
 
-# NOTE: mavlink we get from MAVSDK
-# MAVSDK needs to be built and installed externally
-# We have the include path 2 times here, aparently release and debug install to different paths
-# The following lines are for linux only
-INCLUDEPATH += /usr/local/include/mavsdk
-LIBS += -L/usr/local/lib -lmavsdk
-INCLUDEPATH += /usr/include/mavsdk
-# The following lines are for windows
-#INCLUDEPATH += C:\MAVSDK\
-#INCLUDEPATH += C:\MAVSDK\include
-#LIBS += -LC:\MAVSDK\lib
-
-
-
-
 # Avcodec decode and display, all sources
 # Replaced gstreamer for now
 # Comment the line below to build without avcodec (you won't have any video decoding capabilities in this case though)
@@ -326,3 +311,10 @@ contains(ANDROID_TARGET_ARCH,arm64-v8a) {
 }
 
 ANDROID_ABIS = armeabi-v7a
+
+unix:!macx: LIBS += -L$$PWD/mavsdk/lib/ -lmavsdk
+
+INCLUDEPATH += $$PWD/mavsdk/include
+DEPENDPATH += $$PWD/mavsdk/include
+
+unix:!macx: PRE_TARGETDEPS += $$PWD/mavsdk/lib/libmavsdk.a

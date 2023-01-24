@@ -17,7 +17,6 @@ rm -rf /tmp/qopenhd/*
 
 mkdir -p /tmp/qopenhd/usr/local/bin || exit 1
 mkdir -p /tmp/qopenhd/etc/systemd/system || exit 1
-mkdir -p /tmp/qopenhd/usr/local/share/openhd || exit 1
 
 ls -a
 ls /opt
@@ -66,7 +65,7 @@ cp systemd/* /tmp/qopenhd/etc/systemd/system/ || exit 1
 fi
 # The rpi_qt_eglfs_kms_config.json file makes sure that qopenhd runs at the res
 # specified in the config.txt if the user did so
-mkdir /tmp/qopenhd/usr/local/share/qopenhd/
+mkdir -p /tmp/qopenhd/usr/local/share/qopenhd/
 cp rpi_qt_eglfs_kms_config.json /tmp/qopenhd/usr/local/share/qopenhd/ || exit 1
 
 VERSION="2.3-evo-$(date '+%Y%m%d%H%M')-${VER2}"
@@ -77,5 +76,4 @@ ls -a
 fpm -a ${PACKAGE_ARCH} -s dir -t deb -n ${PACKAGE_NAME} -v ${VERSION} -C ${TMPDIR} \
   -p qopenhd_VERSION_ARCH.deb \
   --after-install after-install.sh \
-  -d "mavsdk" \
   ${PLATFORM_PACKAGES} || exit 1
