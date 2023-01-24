@@ -52,7 +52,8 @@ private:
     const bool is_h265;
 private:
     std::mutex m_data_mutex;
-    // space for up to 20 NALUs to account for "weird" cases, fifo anyways
+    // space for up to X NALUs to account for "weird" cases, fifo anyways
+    // In case the decoder cannot keep up with the data we provide to it, the only fix would be to reduce the fps/resolution anyways.
     moodycamel::BlockingReaderWriterCircularBuffer<std::shared_ptr<NALU>> m_data_queue{20};
     void queue_data(const uint8_t* nalu_data,const std::size_t nalu_data_len);
 private:

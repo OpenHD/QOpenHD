@@ -50,6 +50,8 @@ std::map<std::string, void *> MavlinkSettingsModel::get_whitelisted_params()
     //
     ret["CONFIG_BOOT_AIR"]=nullptr;
     ret["WB_MAX_D_BZ"]=nullptr;
+    // whitelisted for now
+    ret["VARIABLE_BITRARE"]=nullptr;
     //ret[""]=nullptr;
     return ret;
 }
@@ -189,6 +191,9 @@ static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string&
                     "LIBCAMERA_IMX477",
                     "LIBCAMERA_ARDU",
                     "LIBCAMERA_IMX519",
+                    "LIBCAMERA_IMX290",
+                    "LIBCAMERA_IMX327",
+                    "LIBCAMERA_IMX462",
                     "VEYE_327",
                     "VEYE_CSIMX307",
                     "VEYE_CSSC132",

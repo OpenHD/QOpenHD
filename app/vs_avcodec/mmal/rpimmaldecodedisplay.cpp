@@ -17,6 +17,7 @@ static void input_callback(MMAL_PORT_T *port, MMAL_BUFFER_HEADER_T *buffer)
 
     //The decoder is done with the data, just recycle the buffer header into its pool
     mmal_buffer_header_release(buffer);
+    //qDebug()<<"Buff available";
 
     // Kick the processing thread
     vcos_semaphore_post(&ctx->semaphore);
@@ -57,7 +58,9 @@ bool RPIMMalDecodeDisplay::initialize(const uint8_t *config_data, const int conf
         initialized=true;
         bcm_host_init();
     }
-     vcos_semaphore_create(&m_context.semaphore, "example", 1);
+    static constexpr auto N_INPUT_BUFFERS=6;
+
+     vcos_semaphore_create(&m_context.semaphore, "example", N_INPUT_BUFFERS);
 
      /* Create the graph */
     m_status = mmal_graph_create(&m_graph, 0);
@@ -117,7 +120,7 @@ bool RPIMMalDecodeDisplay::initialize(const uint8_t *config_data, const int conf
 
     qDebug()<<"Decoder output buffer_num_min"<<m_decoder->output[0]->buffer_num_min;
     //m_decoder->output[0]->buffer_num = m_decoder->output[0]->buffer_num_min;
-    m_decoder->output[0]->buffer_num = 6;
+    m_decoder->output[0]->buffer_num = N_INPUT_BUFFERS;
     m_decoder->output[0]->buffer_size = m_decoder->output[0]->buffer_size_min;
 
     m_pool_in = mmal_pool_create(m_decoder->input[0]->buffer_num,m_decoder->input[0]->buffer_size);
@@ -154,13 +157,16 @@ bool RPIMMalDecodeDisplay::feed_frame(const uint8_t *frame_data, const int frame
     //qDebug()<<"RPIMMALDecoder::feed_frame";
     //if(true)return;
 
-    MMAL_BUFFER_HEADER_T *buffer;
+    MMAL_BUFFER_HEADER_T *buffer=nullptr;
 
     while (true) {
-        vcos_semaphore_wait(&m_context.semaphore);
 
-        if ((buffer = mmal_queue_get(m_pool_in->queue)) != nullptr) {
+        // We first try and get a frame from the input pool without waiting on the semaphore -
+        // Quite likely there is one available immediately
+        buffer = mmal_queue_get(m_pool_in->queue);
 
+        if (buffer != nullptr) {
+            // We got a buffer, copy data into it and feed it to the decoder
             //qDebug()<<"RPIMMALDecoder::feed_frame:got buffer,send";
             int n_bytes_to_copy=frame_data_size;
             // Since I do not know how to put this buffer back into the queue, I decided to just copy
@@ -191,6 +197,9 @@ bool RPIMMalDecodeDisplay::feed_frame(const uint8_t *frame_data, const int frame
             }
             break;
         }
+        // If we didn't get a buffer the first time, we wait on the semaphore kicked off by the callback that is called
+        // when there is a new buffer available
+        vcos_semaphore_wait(&m_context.semaphore);
     }
     return true;
 }
