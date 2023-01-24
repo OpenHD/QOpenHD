@@ -17,8 +17,10 @@ import "./ui/configpopup"
 ApplicationWindow {
     id: applicationWindow
     visible: true
-    width: 850
-    height: 480
+    //width: 850
+    //height: 480
+    width: (settings.general_screen_rotation == 90 || settings.general_screen_rotation == 270) ? 480 : 850
+    height: (settings.general_screen_rotation == 90 || settings.general_screen_rotation == 270) ? 850 : 480
     minimumWidth: 480
     minimumHeight: 320
     title: qsTr("Open.HD")

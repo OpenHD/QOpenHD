@@ -208,7 +208,9 @@ ScrollView {
                     model: ListModel {
                         id: screen_rotations
                         ListElement { text: qsTr("0°") ; value: 0 }
+                        ListElement { text: qsTr("90° (WARNING)") ; value: 90 }
                         ListElement { text: qsTr("180°") ; value: 180 }
+                        ListElement { text: qsTr("270° (WARNING)") ; value: 270 }
                     }
                     textRole: "text"
                     Component.onCompleted: {
