@@ -66,13 +66,23 @@ INCLUDEPATH += $$PWD/lib
 INCLUDEPATH += $$PWD/app
 INCLUDEPATH += $$PWD/app/exp
 
+CONFIG += QOPENHD_LINK_MAVSDK_SHARED
+QOPENHD_LINK_MAVSDK_SHARED {
+    message(mavsdk shared)
+    INCLUDEPATH += /usr/local/include/mavsdk
+    INCLUDEPATH += /usr/include/mavsdk
+    LIBS += -L/usr/local/lib -lmavsdk
+} else {
+    message(mavsdk static)
+}
+
 # NOTE: mavlink we get from MAVSDK
 # MAVSDK needs to be built and installed externally
 # We have the include path 2 times here, aparently release and debug install to different paths
 # The following lines are for linux only
-INCLUDEPATH += /usr/local/include/mavsdk
-LIBS += -L/usr/local/lib -lmavsdk
-INCLUDEPATH += /usr/include/mavsdk
+#INCLUDEPATH += /usr/local/include/mavsdk
+#LIBS += -L/usr/local/lib -lmavsdk
+#INCLUDEPATH += /usr/include/mavsdk
 # The following lines are for windows
 #INCLUDEPATH += C:\MAVSDK\
 #INCLUDEPATH += C:\MAVSDK\include
