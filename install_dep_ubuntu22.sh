@@ -20,11 +20,6 @@ sudo cmake --build build/default --target install
 
 ls /usr/local/include/mavsdk
 ls /usr/local/lib
-
-cp -r /usr/local/include/mavsdk /home/runner/work/QOpenHD/QOpenHD/mavsdk
-mkdir /home/runner/work/QOpenHD/QOpenHD/mavsdk/lib/
-cp /usr/local/lib/libmavsdk.a /home/runner/work/QOpenHD/QOpenHD/mavsdk/lib/
-ls /home/runner/work/QOpenHD/QOpenHD/mavsdk
 cd ../../
 
 
