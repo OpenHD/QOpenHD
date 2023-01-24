@@ -19,7 +19,7 @@ BaseWidget {
 
     defaultAlignment: 1
     defaultXOffset: 224
-    defaultYOffset: 0 + 100
+    defaultYOffset: 50
     defaultHCenter: false
     defaultVCenter: false
 

@@ -78,7 +78,8 @@ ScrollView {
                     }
                 }
             }
-            Rectangle {
+            //Issue from @Norbert, rotating OSD can break things irreversible
+            /*Rectangle {
                 width: parent.width
                 height: rowHeight
                 color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
@@ -177,6 +178,51 @@ ScrollView {
                     onValueChanged: {
                         // @disable-check M222
                         settings.osd_rotation = value
+                    }
+                }
+            }*/
+            Rectangle {
+                width: parent.width
+                height: rowHeight
+                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+
+                Text {
+                    text: qsTr("Screen rotation")
+                    font.weight: Font.Bold
+                    font.pixelSize: 13
+                    anchors.leftMargin: 8
+                    verticalAlignment: Text.AlignVCenter
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: 224
+                    height: elementHeight
+                    anchors.left: parent.left
+                }
+                // anything other than 0 and 180 breaks things
+                ComboBox {
+                    height: elementHeight
+                    anchors.right: parent.right
+                    anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.horizontalCenter: parent.horizonatalCenter
+                    width: 320
+                    model: ListModel {
+                        id: screen_rotations
+                        ListElement { text: qsTr("0°") ; value: 0 }
+                        ListElement { text: qsTr("90° (WARNING)") ; value: 90 }
+                        ListElement { text: qsTr("180°") ; value: 180 }
+                        ListElement { text: qsTr("270° (WARNING)") ; value: 270 }
+                    }
+                    textRole: "text"
+                    Component.onCompleted: {
+                        for (var i = 0; i < model.count; i++) {
+                            var choice = model.get(i);
+                            if (choice.value == settings.general_screen_rotation) {
+                                currentIndex = i;
+                            }
+                        }
+                    }
+                    onCurrentIndexChanged: {
+                        settings.general_screen_rotation = screen_rotations.get(currentIndex).value
                     }
                 }
             }

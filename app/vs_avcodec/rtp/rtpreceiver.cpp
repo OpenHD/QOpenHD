@@ -164,10 +164,6 @@ void RTPReceiver::uvgrtp_rtp_receive_hook(void *arg, uvgrtp::frame::rtp_frame *f
 void RTPReceiver::udp_raw_data_callback(const uint8_t *payload, const std::size_t payloadSize)
 {
     //qDebug()<<"Got UDP data "<<payloadSize;
-    /*if(m_packet_drop_emulator.drop_packet()){
-        qDebug()<<"Emulate - Dropping packet";
-        return;
-    }*/
     m_rtp_bitrate.addBytes(payloadSize,[](std::string bitrate){
         DecodingStatistcs::instance().set_rtp_measured_bitrate(bitrate.c_str());
     });

@@ -115,6 +115,8 @@ class FCMavlinkSystem : public QObject
     // update rate: here we keep track of how often we get the "MAVLINK_MSG_ID_ATTITUDE" messages.
     // (since it controlls the art. horizon). This is pretty much the only thing we perhaps need to manually set the update rate on
     L_RO_PROP(float,curr_update_rate_mavlink_message_attitude,set_curr_update_rate_mavlink_message_attitude,-1)
+    // We expose the sys id for the OSD to show - note that this value should not be used by any c++ code
+    L_RO_PROP(int,for_osd_sys_id,set_for_osd_sys_id,-1);
 public:
     explicit FCMavlinkSystem(QObject *parent = nullptr);
     // singleton for accessing the model from c++

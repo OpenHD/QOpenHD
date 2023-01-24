@@ -51,7 +51,7 @@ Rectangle {
                     id: title
                     height: 48
                     color: "#ff3a3a3a"
-                    text: qsTr("QOpenHD-evo-2.3.0")
+                    text: qsTr("QOpenHD-evo")
                     font.pixelSize: 36
                 }
             }
@@ -62,7 +62,7 @@ Rectangle {
                 width: 173
                 height: 14
                 color: "#ff3a3a3a"
-                text: QOPENHD_VERSION
+                text: QOPENHD_GIT_VERSION
                 font.pixelSize: 14
                 leftPadding: 80
             }
@@ -74,6 +74,16 @@ Rectangle {
                 onLinkActivated: {
                     Qt.openUrlExternally("https://github.com/OpenHD/QOpenHD/blob/master/LICENSE")
                 }
+                font.pixelSize: 14
+                leftPadding: 80
+            }
+
+            Text {
+                id: qopenhd_commit_hash
+                width: 173
+                height: 14
+                color: "#ff3a3a3a"
+                text: QOPENHD_GIT_COMMIT_HASH
                 font.pixelSize: 14
                 leftPadding: 80
             }
@@ -296,6 +306,26 @@ Rectangle {
                     }
                     Text {
                         text: _fcMavlinkSystem.is_alive ? "Y" : "N"
+                        height: 24
+                        width: 256
+                        //color: _fcMavlinkSystem.is_alive ? "RED" : "GREEN"
+                        font.pixelSize: 14
+                        leftPadding: 6
+                    }
+                }
+                RowLayout{
+                    Layout.fillWidth: true
+                    Layout.minimumHeight: text_minHeight
+                    spacing: 6
+                    Text {
+                        text: qsTr("Sys id: ")
+                        height: 24
+                        font.pixelSize: 14
+                        font.bold: true
+                        leftPadding: 12
+                    }
+                    Text {
+                        text: _fcMavlinkSystem.for_osd_sys_id == -1 ? "na" : qsTr(""+_fcMavlinkSystem.for_osd_sys_id)
                         height: 24
                         width: 256
                         //color: _fcMavlinkSystem.is_alive ? "RED" : "GREEN"

@@ -1,6 +1,5 @@
 #include "gstvideostream.h"
 
-#include <QtConcurrent>
 #include <QtQuick>
 #include <sstream>
 
@@ -180,6 +179,8 @@ GstVideoStream::~GstVideoStream() {
 
 
 void GstVideoStream::init(QQuickItem* videoOutputWindow) {
+    // we do not support changing the output window once it is assigned
+    assert(m_videoOutputWindow==nullptr);
     assert(videoOutputWindow);
     m_videoOutputWindow=videoOutputWindow;
     m_videoStreamConfig=QOpenHDVideoHelper::read_from_settings2(m_isPrimaryStream);

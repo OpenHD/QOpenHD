@@ -51,29 +51,42 @@ RCC_DIR      = $${OUT_PWD}/rcc
 #You can supress the warnings in CMake using ...
 #and https://stackoverflow.com/questions/2987062/configuring-the-gcc-compiler-switches-in-qt-qtcreator-and-qmake
 #this can not be used in MSVC (windows)
-#QMAKE_CXXFLAGS += -Wno-address-of-packed-member
-#QMAKE_CXXFLAGS += -Wno-cast-align
+QMAKE_CXXFLAGS += -Wno-address-of-packed-member
+QMAKE_CXXFLAGS += -Wno-cast-align
 
-#QT += qml quick concurrent opengl gui
-#QT += positioning location
-
-#Not sure what exactly is going on here, but maybe this lib made it into qt official ?!!
-#since there is https://doc.qt.io/qt-5/qsortfilterproxymodel.html#details
-# Consti10: Dependency removed
-#include ($$PWD/lib/SortFilterProxyModel/SortFilterProxyModel.pri)
-# Comes with pretty much any install
-QT +=core
-
-# We need this for our qml files, available pretty much anywhere
-QT += qml
-
-# We need to include this one, needs to be explicitly installed via apt-get on Ubuntu
-QT += quick
-QT += concurrent opengl gui
+# These are the QT libraries we always need when building QOpenHD - they are intentially kept as small in number as possible
+# (aka all these really should come with pretty much any qt install)
+# In general, parts of QOpenHD that need additional libraries should have their code in a subdirectory with a .pri where those
+# dependencies are added such that you can easily compile the project even on systems that might lack some of those qt functionalities
+# see app/adsb/adsb_lib.pri for an example
+QT +=core quick qml gui
+QT += opengl
 
 INCLUDEPATH += $$PWD/lib
 INCLUDEPATH += $$PWD/app
 INCLUDEPATH += $$PWD/app/exp
+
+# NOTE: MAVSDK needs to be built and installed manually (since it doesn't support QMake's .pro)
+# also note that mavlink (openhd flavour) comes with MAVSDK (since it is needed for building MAVSDK anyways)
+# uncomment out below if you wanna use MAVSDK shared for some reason
+#CONFIG += QOPENHD_LINK_MAVSDK_SHARED
+QOPENHD_LINK_MAVSDK_SHARED {
+    # mavsdk needs to be built and installed locally with BUILD_SHARED_LIBS=ON
+    message(mavsdk shared)
+    # We have the include path 2 times here, from MAVSDK docs:
+    # The mavsdk library installed via a .deb or .rpm file will be installed in /usr/ while the built library will be installed in /usr/local
+    INCLUDEPATH += /usr/local/include/mavsdk
+    INCLUDEPATH += /usr/include/mavsdk
+    LIBS += -L/usr/local/lib -lmavsdk
+} else {
+    # mavsdk needs to be built and (semi-installed) locally with BUILD_SHARED_LIBS=OFF
+    # This is for packaging / releases / recommended for development, since we then have one fever package to install and no issues with updating
+    # QOpenHD and/or MAVSDK during development
+    message(mavsdk static)
+    INCLUDEPATH += /usr/local/include/mavsdk
+    LIBS += -L/usr/local/lib/libmavsdk.a -lmavsdk
+    # TODO windows, android, ...
+}
 
 # Avcodec decode and display, all sources
 # Replaced gstreamer for now
@@ -110,7 +123,6 @@ SOURCES += \
     app/vs_util/decodingstatistcs.cpp
 
 HEADERS += \
-    app/common_consti/EmulatedPacketDrop.hpp \
     app/logging/hudlogmessagesmodel.h \
     app/logging/loghelper.h \
     app/logging/logmessagesmodel.h \
@@ -135,9 +147,6 @@ HEADERS += \
 # Geographic lib updated to c-2.0, so much cleaner
 SOURCES += $$PWD/lib/geographiclib-c-2.0/src/geodesic.c
 HEADERS += $$PWD/lib/geographiclib-c-2.0/src/geodesic.h
-
-QT += positioning
-
 
 # All files for the OSD elements - these are QT QQuickPaintedItem's that are written in c++
 SOURCES += \
@@ -224,9 +233,6 @@ DISTFILES += \
     qml/ui/elements/README.md \
     qml/ui/qmldir \
     tools/usefull_commands.md \
-    translations/QOpenHD_it.ts \
-    translations/QOpenHD_ro.ts \
-    translations/QOpenHD_zh.ts
 
 
 iOSBuild {
@@ -311,10 +317,3 @@ contains(ANDROID_TARGET_ARCH,arm64-v8a) {
 }
 
 ANDROID_ABIS = armeabi-v7a
-
-unix:!macx: LIBS += -L$$PWD/mavsdk/lib/ -lmavsdk
-
-INCLUDEPATH += $$PWD/mavsdk/include
-DEPENDPATH += $$PWD/mavsdk/include
-
-unix:!macx: PRE_TARGETDEPS += $$PWD/mavsdk/lib/libmavsdk.a

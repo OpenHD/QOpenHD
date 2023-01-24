@@ -7,8 +7,9 @@ Settings {
     id: settings
 
     property double global_scale: 1.0
-    property double video_rotation: 0
-    property double osd_rotation: 0
+
+    // Dirty, rotate everything even though that can create issues
+    property int general_screen_rotation: 0
 
     property string locale: "en"
 
@@ -16,7 +17,7 @@ Settings {
     property string dev_stream0_udp_rtp_input_ip_address: "127.0.0.1"
 
     // Sys id QOpenHD uses itself
-    property int qopenhd_mavlink_sysid: 225
+    property int qopenhd_mavlink_sysid: 255
 
     //WARNING: THIS ALLOWS THE USER TO MAKE BREAKING CHANGES
     property bool dev_show_whitelisted_params: false
