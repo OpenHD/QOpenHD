@@ -2,6 +2,7 @@ name: build_package_rpi
 
 on:
   push:
+  pull_request:
     branches: [ "2.3-evo,2.3-evo-dev" ]
 
 env:
