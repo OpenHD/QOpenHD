@@ -66,35 +66,27 @@ INCLUDEPATH += $$PWD/lib
 INCLUDEPATH += $$PWD/app
 INCLUDEPATH += $$PWD/app/exp
 
-CONFIG += QOPENHD_LINK_MAVSDK_SHARED
+# NOTE: MAVSDK needs to be built and installed manually (since it doesn't support QMake's .pro)
+# also note that mavlink (openhd flavour) comes with MAVSDK (since it is needed for building MAVSDK anyways)
+# uncomment out below if you wanna use MAVSDK shared for some reason
+#CONFIG += QOPENHD_LINK_MAVSDK_SHARED
 QOPENHD_LINK_MAVSDK_SHARED {
+    # mavsdk needs to be built and installed locally with BUILD_SHARED_LIBS=ON
     message(mavsdk shared)
+    # We have the include path 2 times here, from MAVSDK docs:
+    # The mavsdk library installed via a .deb or .rpm file will be installed in /usr/ while the built library will be installed in /usr/local
     INCLUDEPATH += /usr/local/include/mavsdk
     INCLUDEPATH += /usr/include/mavsdk
     LIBS += -L/usr/local/lib -lmavsdk
 } else {
+    # mavsdk needs to be built and (semi-installed) locally with BUILD_SHARED_LIBS=OFF
+    # This is for packaging / releases / recommended for development, since we then have one fever package to install and no issues with updating
+    # QOpenHD and/or MAVSDK during development
     message(mavsdk static)
+    INCLUDEPATH += /usr/local/include/mavsdk
+    LIBS += -L/usr/local/lib/libmavsdk.a -lmavsdk
+    # TODO windows, android, ...
 }
-
-# NOTE: mavlink we get from MAVSDK
-# MAVSDK needs to be built and installed externally
-# We have the include path 2 times here, aparently release and debug install to different paths
-# The following lines are for linux only
-#INCLUDEPATH += /usr/local/include/mavsdk
-#LIBS += -L/usr/local/lib -lmavsdk
-#INCLUDEPATH += /usr/include/mavsdk
-# The following lines are for windows
-#INCLUDEPATH += C:\MAVSDK\
-#INCLUDEPATH += C:\MAVSDK\include
-#LIBS += -LC:\MAVSDK\lib
-
-# For linking MAVSDK statically
-#unix:!macx: LIBS += -L$$PWD/mavsdk/lib/ -lmavsdk
-#INCLUDEPATH += $$PWD/mavsdk/include
-#DEPENDPATH += $$PWD/mavsdk/include
-#unix:!macx: PRE_TARGETDEPS += $$PWD/mavsdk/lib/libmavsdk.a
-
-
 
 # Avcodec decode and display, all sources
 # Replaced gstreamer for now
