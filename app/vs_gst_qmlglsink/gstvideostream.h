@@ -55,7 +55,7 @@ private:
      */
     void timerCallback();
     // Where the video is output to.
-    QQuickItem* m_videoOutputWindow;
+    QQuickItem* m_videoOutputWindow=nullptr;
     // The gstreamer pipeline
     GstElement * m_pipeline=nullptr;
     // the current configuration, is continously synced with settings
