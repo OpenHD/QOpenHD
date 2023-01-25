@@ -86,6 +86,8 @@ QOPENHD_LINK_MAVSDK_SHARED {
     INCLUDEPATH += /usr/local/include/mavsdk
     LIBS += -L/usr/local/lib/libmavsdk.a -lmavsdk
     # TODO windows, android, ...
+    # weird rpi
+    LIBS += -latomic
 }
 
 # Avcodec decode and display, all sources
