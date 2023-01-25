@@ -6,7 +6,7 @@ It is responsible for displaying the (main) video stream to the user, composed w
 
 As the name suspects, it is based on QT (5.15.X).
 
-![temporary_screenshot](https://github.com/OpenHD/QOpenHD/blob/2.2.x-evo/wiki/temporary_screenshot.png)
+![temporary_screenshot](wiki/temporary_screenshot.png)
 
 # Developer Design Overview (incomplete)
 1) QOpenHD is not OpenHD (main). It can talk to a running OpenHD main instance (ground and/or air) via Mavlink and rceives the (primary / secondary / ++) video streams. 
