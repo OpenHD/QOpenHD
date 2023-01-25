@@ -473,6 +473,20 @@ static std::array<int,18> mavlink_msg_rc_channels_override_to_array(const mavlin
     return ret;
 }
 
+// Taken from mavsdk
+static constexpr double MAVSDK_PI = 3.14159265358979323846;
+static double to_deg_from_rad(double rad)
+{
+    return static_cast<double>(180.0) / static_cast<double>(MAVSDK_PI) * rad;
+}
+
+// For MAVLINK_MSG_ID_ATTITUDE
+// aka example Roll angle (-pi..+pi)
+static float angle_mavlink_rad_to_degree(float angle_rad){
+    auto degree=to_deg_from_rad(angle_rad);
+    return static_cast<float>(degree);
+}
+
 }
 
 #endif // TELEMETRYUTIL_H
