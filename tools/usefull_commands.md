@@ -12,3 +12,5 @@ gst-launch-1.0 videotestsrc ! video/x-raw, format=I420,width=640,height=480,fram
 MJPEG
 gst-launch-1.0 videotestsrc ! video/x-raw, format=I420,width=640,height=480,framerate=30/1 ! jpegenc quality=50 ! queue ! jpegparse ! rtpjpegpay mtu=1024 !  udpsink host=127.0.0.1 port=5600 
 
+Clone project:
+git clone https://github.com/OpenHD/QOpenHD.git -b 2.3.x-evo-consti-dev --recurse-submodules
