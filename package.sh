@@ -52,6 +52,7 @@ elif [[ "${DISTRO}" == "jammy" ]] && [[ "${BUILD_TYPE}" = "debug" ]] ; then
     make -j2 || exit 1
     echo "build with make done"
 else
+    echo "\ndebug\ndebug\ndebug\n"
     qmake
     echo "build with qmake done"
     make -j$(nproc)|| exit 1
