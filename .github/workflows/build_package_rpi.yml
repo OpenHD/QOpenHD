@@ -33,7 +33,7 @@ jobs:
       id: qemu
       uses: pguyot/arm-runner-action@v2.5.2
       with:
-        base_image: raspios_lite:latest
+        base_image: https://openhdfpv.org/wp-content/Downloader/OpenHD-image-pi-bullseye-release-configurable-2.3-evo-2023-01-20_2313.img.xz
         image_additional_mb: 4000
         copy_repository_path: /opt
         copy_artifact_path: QOpenHD
