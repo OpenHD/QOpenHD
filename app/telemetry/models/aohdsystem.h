@@ -107,8 +107,8 @@ private:
     // Model / fire and forget data only end
 private:
      // NOTE: nullptr until discovered !!
-     std::shared_ptr<mavsdk::System> _system;
-     std::shared_ptr<mavsdk::Action> _action;
+     std::shared_ptr<mavsdk::System> _system=nullptr;
+     std::shared_ptr<mavsdk::Action> _action=nullptr;
      bool send_command_long(mavsdk::Action::CommandLong command);
 public:
      // Set the mavlink system reference, once discovered

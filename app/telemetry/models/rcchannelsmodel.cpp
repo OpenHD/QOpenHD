@@ -65,7 +65,7 @@ void RCChannelsModel::update_all_channels(const RC_CHANNELS &channels)
 void RCChannelsModel::update_alive()
 {
     const auto delay_since_last=std::chrono::steady_clock::now()-m_last_update;
-    if(delay_since_last<std::chrono::seconds(2)){
+    if(delay_since_last<std::chrono::seconds(3)){
         set_is_alive(true);
     }else{
         set_is_alive(false);
