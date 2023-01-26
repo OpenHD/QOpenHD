@@ -17,7 +17,7 @@ pip3 install --upgrade cloudsmith-cli
 pip3 install future
 
 # Repairing MMAL-Graph-Lib
-sed -i 's/util\/\mmal_connection.h/mmal_connection.h/g' /usr/include/interface/mmal/util/mmal_graph.h
+#sed -i 's/util\/\mmal_connection.h/mmal_connection.h/g' /usr/include/interface/mmal/util/mmal_graph.h
 
 # cd lib/MAVSDK
 # cmake -Bbuild/default -DBUILD_SHARED_LIBS=OFF -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=OFF -H.
