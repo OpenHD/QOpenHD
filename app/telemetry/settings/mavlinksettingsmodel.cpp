@@ -794,6 +794,9 @@ bool MavlinkSettingsModel::get_param_requires_manual_reboot(QString param_id)
     if(param_id=="I_ETH_HOTSPOT_E"){
         return true;
     }
+    if(param_id=="TRACKER_UART_OUT"){
+        return true;
+    }
     return false;
 }
 
