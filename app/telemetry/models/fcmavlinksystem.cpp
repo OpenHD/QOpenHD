@@ -51,7 +51,7 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
 {
     //qDebug()<<"FCMavlinkSystem::process_message";
     if(!_system){
-        qDebug()<<"WARNING the system must be set before this model starts processing data";
+        qDebug()<<"WARNING the system must be set before FC model starts processing data";
         return false;
     }
     const auto fc_sys_id=get_fc_sys_id().value();
