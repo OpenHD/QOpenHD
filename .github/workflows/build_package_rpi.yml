@@ -41,6 +41,7 @@ jobs:
         cpu: cortex-a53
         commands: |
             apt update
+            apt upgrade -y
             apt install -y curl
             rm -Rf /etc/apt/sources.list.d/openhd*
             apt-get clean
@@ -52,6 +53,7 @@ jobs:
             cd /opt
             cd /opt/QOpenHD
             apt update
+            apt upgrade -y
             apt install -y git libgstreamer-plugins-base1.0-dev gstreamer1.0-plugins-good
             # sudo bash install_dep_rpi.sh
             sudo apt install -y openhd-qt
