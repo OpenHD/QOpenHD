@@ -52,6 +52,7 @@ jobs:
             cd /opt
             cd /opt/QOpenHD
             apt update
+            apt install -y git libgstreamer-plugins-base1.0-dev gstreamer1.0-plugins-good
             # sudo bash install_dep_rpi.sh
             sudo apt install -y openhd-qt
             touch /etc/ld.so.conf.d/qt.conf
