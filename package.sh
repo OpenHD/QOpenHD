@@ -26,11 +26,14 @@ VER2=$(git rev-parse --short HEAD)
 
 if [[ "${DISTRO}" == "bullseye" ]] || [[ "${DISTRO}" == "bionic" ]] ; then
     QT_VERSION=Qt5.15.4
+    echo "debug"
     # link libraries and qt
+    rm /etc/ld.so.conf.d/qt.conf
     touch /etc/ld.so.conf.d/qt.conf
     sudo echo "/opt/Qt5.15.4/lib/" > /etc/ld.so.conf.d/qt.conf
     sudo ldconfig
     export PATH="$PATH:/opt/Qt5.15.4/bin/"
+    ls /opt/Qt5.15.4/bin/
     sudo rm -Rf /usr/bin/qmake
     sudo ln -s /opt/Qt5.15.4/bin/qmake /usr/bin/qmake
     /opt/Qt5.15.4/bin/qmake
