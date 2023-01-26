@@ -408,6 +408,15 @@ BaseWidget {
                 font.pixelSize: detailPanelFontPixels
                 verticalAlignment: Text.AlignVCenter
             }
+            Text {
+                //Layout.alignment: left
+                text: "v3d freq: "+_ohdSystemAir.curr_v3d_freq_mhz+" Mhz"
+                color: "white"
+                font.bold: true
+                height: parent.height
+                font.pixelSize: detailPanelFontPixels
+                verticalAlignment: Text.AlignVCenter
+            }
         }
     }
 
