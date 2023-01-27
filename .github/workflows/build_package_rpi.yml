@@ -33,7 +33,7 @@ jobs:
       id: qemu
       uses: pguyot/arm-runner-action@v2.5.2
       with:
-        base_image: http://openhdfpv.org/wp-content/BaseImages/OpenHD-image-pi-bullseye-milestone--2.1-milestones-2022-05-28_1033.zip
+        base_image: raspios_lite:latest
         image_additional_mb: 4000
         copy_repository_path: /opt
         copy_artifact_path: QOpenHD
