@@ -11,30 +11,41 @@ SpinBox {
     property bool selected: false
 
     Keys.onPressed: {
-        if (event.key === Qt.Key_Return)
+        if (event.key === Qt.Key_Return){
             selected = true
-        else if (event.key === Qt.Key_Escape)
+        highlight.color= "#33aaff"
+        }
+        else if (event.key === Qt.Key_Escape){
             selected = false
+            highlight.color= "grey"
+        }
         else if (event.key === Qt.Key_Equal){
             if (selected == true){
                 control.increase()
+                up.pressed
             }
         }
         else if (event.key === Qt.Key_Minus){
             if (selected == true){
                 control.decrease()
+                down.pressed
             }
         }
     }
 
     onActiveFocusChanged: {
         if (control.activeFocus == true){
-            console.log("New spinbox has focus");
+            //console.log("New spinbox has focus");
             highlight.visible=true
             highlight.color= "#33aaff"
+
+            if(control.selected)
+                highlight.color= "#33aaff"
+            else
+                highlight.color= "grey"
         }
         else if (control.activeFocus == false){
-            console.log("New spinbox has lost focus");
+            //console.log("New spinbox has lost focus");
             highlight.visible=false
         }
     }
@@ -51,17 +62,13 @@ SpinBox {
         verticalAlignment: Qt.AlignVCenter
 
         readOnly: !control.editable
-
     }
-
-
 
     up.indicator: Rectangle {
         x: control.mirrored ? 0 : parent.width - width
         height: parent.height
         implicitWidth: 30
         color: "transparent"
-
 
         Rectangle {
             width: parent.width
@@ -76,7 +83,7 @@ SpinBox {
         Text {
             text: "+"
             font.pixelSize: control.font.pixelSize * 2
-            color: "grey"
+            color: control.selected ? "black" : "grey"
             anchors.fill: parent
             fontSizeMode: Text.Fit
             horizontalAlignment: Text.AlignHCenter
@@ -105,7 +112,7 @@ SpinBox {
         Text {
             text: "-"
             font.pixelSize: control.font.pixelSize * 2
-            color: "grey"
+            color: control.selected ? "black" : "grey"
             anchors.fill: parent
             fontSizeMode: Text.Fit
             horizontalAlignment: Text.AlignHCenter
@@ -122,23 +129,14 @@ SpinBox {
     }
 
     Rectangle {
-        id: highlight //this is the center highlight of the button
+        id: highlight //this is the center highlight of the button on text
 
         z:0
 
         anchors.centerIn: parent
-
         width: 60
         height: 35
         radius: 20
         opacity: .3
-
-
     }
-
-
-
-
-
-
 }
