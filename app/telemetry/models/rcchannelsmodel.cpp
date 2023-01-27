@@ -1,5 +1,6 @@
 #include "rcchannelsmodel.h"
 #include "qdebug.h"
+#include "../qopenhdmavlinkhelper.hpp"
 
 
 
@@ -16,6 +17,12 @@ RCChannelsModel &RCChannelsModel::instanceGround()
 {
     static RCChannelsModel ground{};
     return ground;
+}
+
+RCChannelsModel &RCChannelsModel::instanceFC()
+{
+    static RCChannelsModel fc{};
+    return fc;
 }
 
 int RCChannelsModel::rowCount(const QModelIndex &parent) const
@@ -59,16 +66,19 @@ void RCChannelsModel::update_all_channels(const RC_CHANNELS &channels)
     for(int i=0;i<channels.size();i++){
         updateData(i,channels[i]);
     }
-    m_last_update=std::chrono::steady_clock::now();
+    m_last_update_ms=QOpenHDMavlinkHelper::getTimeMilliseconds();
 }
 
 void RCChannelsModel::update_alive()
 {
-    const auto delay_since_last=std::chrono::steady_clock::now()-m_last_update;
-    if(delay_since_last<std::chrono::seconds(3)){
-        set_is_alive(true);
-    }else{
+    if(m_last_update_ms==-1){
+        // we did not get any updates yet
         set_is_alive(false);
+    }else{
+        const auto elapsed_ms=QOpenHDMavlinkHelper::getTimeMilliseconds()-m_last_update_ms;
+        // after X seconds, consider as "not alive"
+        const bool alive=elapsed_ms < 4*1000;
+        set_is_alive(alive);
     }
 }
 

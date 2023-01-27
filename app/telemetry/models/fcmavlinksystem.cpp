@@ -1,6 +1,7 @@
 #include "fcmavlinksystem.h"
 
 #include "../qopenhdmavlinkhelper.hpp"
+#include "rcchannelsmodel.h"
 
 #include <QDebug>
 #include "qopenhd.h"
@@ -351,11 +352,23 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         break;
     }
     case MAVLINK_MSG_ID_RC_CHANNELS_RAW:{
+        // Seems to be outdated
         //qDebug()<<"Got message RC channels raw";
         mavlink_rc_channels_raw_t rc_channels_raw;
         mavlink_msg_rc_channels_raw_decode(&msg, &rc_channels_raw);
+        //const auto tmp=Telemetryutil::mavlink_msg_rc_channels_raw_to_array(rc_channels_raw);
+        //RCChannelsModel::instanceFC().update_all_channels(tmp);
         //const auto rssi = static_cast<int>(static_cast<double>(rc_channels_raw.rssi) / 255.0 * 100.0);
         //set_rc_rssi(rssi);
+        break;
+    }
+    case MAVLINK_MSG_ID_RC_CHANNELS:{
+        // Seems to be used by ARDUPILOT
+        mavlink_rc_channels_t rc_channels;
+        mavlink_msg_rc_channels_decode(&msg, &rc_channels);
+        set_rc_rssi(rc_channels.rssi);
+        const auto tmp=Telemetryutil::mavlink_msg_rc_channels_to_array(rc_channels);
+        RCChannelsModel::instanceFC().update_all_channels(tmp);
         break;
     }
     case MAVLINK_MSG_ID_SERVO_OUTPUT_RAW:{
@@ -374,22 +387,6 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         break;
     }
     case MAVLINK_MSG_ID_NAV_CONTROLLER_OUTPUT:{
-        break;
-    }
-    case MAVLINK_MSG_ID_RC_CHANNELS:{
-        mavlink_rc_channels_t rc_channels;
-        mavlink_msg_rc_channels_decode(&msg, &rc_channels);
-        // TODO
-        /*qDebug() << "RC: " << rc_channels.chan1_raw
-                                 << rc_channels.chan2_raw
-                                 << rc_channels.chan3_raw
-                                 << rc_channels.chan4_raw
-                                 << rc_channels.chan5_raw
-                                 << rc_channels.chan6_raw
-                                 << rc_channels.chan7_raw
-                                 << rc_channels.chan8_raw
-                                 << rc_channels.chan9_raw
-                                 << rc_channels.chan10_raw;*/
         break;
     }
     case MAVLINK_MSG_ID_VFR_HUD:{

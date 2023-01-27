@@ -40,14 +40,32 @@ ScrollView {
             Layout.fillWidth: true
             cardName: qsTr("OpenHD RC")
             cardBody:
-                    Text {
-                        text: qsTr("Here you can view the values which OpenHD reads \nfrom your Joystick when it is enabled")
-                        height: 24
-                        font.pixelSize: 14
-                        leftPadding: 12
-                    }
+                Text {
+                text: qsTr("Here you can view the values which OpenHD reads from your Joystick\n and sends to the FC via wifibroadcast")
+                height: 24
+                font.pixelSize: 14
+                leftPadding: 12
+            }
         }
-        Button{
+        /*Card {
+            id: connectRCCard
+            visible: !_rcchannelsmodelground.is_alive
+            Layout.topMargin: 15
+            Layout.leftMargin: 15
+            Layout.rightMargin: 15
+            Layout.bottomMargin: 15
+            height: 35
+            cardBody:
+                Text {
+                text: qsTr("Go to OpenHD / Ground, enable RC over wifibroadcast (Param=ENABLE_JOY_RC) and reboot")
+                height: 24
+                font.pixelSize: 14
+                topPadding: -30
+                leftPadding: 12
+
+            }
+        }*/
+        /*Button{
             Layout.topMargin: 15
             Layout.leftMargin: 15
             Layout.rightMargin: 15
@@ -60,9 +78,9 @@ ScrollView {
                 _groundPiSettingsModel.try_update_parameter_int("ENABLE_JOY_RC",1)
                 settings.app_show_RC=true
             }
-        }
+        }*/
 
-        Card {
+        /*Card {
             id: connectRCCard
             visible: !_rcchannelsmodelground.is_alive
             Layout.topMargin: 15
@@ -79,12 +97,13 @@ ScrollView {
                         topPadding: -30
                         leftPadding: 12
                     }
-        }
+        }*/
 
         Repeater {
+               id: channels_ground
                model: _rcchannelsmodelground
                RowLayout{
-                   visible: settings.app_show_RC
+                   visible: true // settings.app_show_RC
                    Layout.leftMargin: 15
                    Layout.rightMargin: 15
                    Layout.fillWidth: true
@@ -116,7 +135,41 @@ ScrollView {
                    }
                }
         }
-        Button{
+        Repeater {
+               id: channels_air
+               model: _rcchannelsmodelfc
+               RowLayout{
+                   visible: true // settings.app_show_RC
+                   Layout.leftMargin: 15
+                   Layout.rightMargin: 15
+                   Layout.fillWidth: true
+                   Layout.minimumHeight: 20
+                   //implicitWidth: parent.implicitWidth
+                   Text {
+                       text: get_description()+model.curr_value
+                       Layout.minimumWidth: 100
+                   }
+                   ProgressBar {
+                       // mavlink rc is in pwm, 1000 is min, 2000 is max
+                       from: 1000
+                       to: 2000
+                       value: model.curr_value
+                       //Layout.maximumWidth: 600
+                       Layout.minimumWidth: 300
+                       //Layout.fillWidth: true
+                   }
+                   // To the user we display the more verbose "start counting at channel 1", even though we use normal array indices in c++
+                   function get_description(){
+                       var channel_index_plus_1=index+1;
+                       // add an additional space for values <10
+                       if(channel_index_plus_1>=10){
+                           return channel_index_plus_1+" (channel):";
+                       }
+                       return channel_index_plus_1+"  (channel):";
+                   }
+               }
+        }
+        /*Button{
             Layout.topMargin: 15
             Layout.leftMargin: 15
             Layout.rightMargin: 15
@@ -129,7 +182,7 @@ ScrollView {
                 _groundPiSettingsModel.try_update_parameter_int("ENABLE_JOY_RC",0)
                 settings.app_show_RC=false
             }
-        }
+        }*/
         Card {
             id: valuesCard
             Layout.topMargin: 15
