@@ -59,22 +59,29 @@ SpinBox {
     up.indicator: Rectangle {
         x: control.mirrored ? 0 : parent.width - width
         height: parent.height
-        implicitWidth: 40
-        implicitHeight: 40
-        color: down.pressed ? "grey" :
-               control.activeFocus ? "#33aaff" : "transparent"
-        //border.color: enabled ? "#21be2b" : "#bdbebf"
-        border.color: "transparent"
-        radius:20
+        implicitWidth: 30
+        color: "transparent"
+
+
+        Rectangle {
+            width: parent.width
+            height: parent.height
+            color: up.pressed ? "grey" :
+                   control.selected ? "#33aaff" : "transparent"
+            border.color: "transparent"
+            radius: 20
+            opacity: .3
+        }
 
         Text {
             text: "+"
             font.pixelSize: control.font.pixelSize * 2
-            color: "#7dbcf0"
+            color: "grey"
             anchors.fill: parent
             fontSizeMode: Text.Fit
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
+            opacity:1
         }
     }
 
@@ -82,22 +89,28 @@ SpinBox {
     down.indicator: Rectangle {
         x: control.mirrored ? parent.width - width : 0
         height: parent.height
-        implicitWidth: 40
-        implicitHeight: 40
-        color: down.pressed ? "grey" :
-               control.activeFocus ? "#33aaff" : "transparent"
-        //border.color: enabled ? "#21be2b" : "#bdbebf"
-        border.color: "transparent"
-        radius:20
+        implicitWidth: 30
+        color: "transparent"
+
+        Rectangle {
+            width: parent.width
+            height: parent.height
+            color: down.pressed ? "grey" :
+                   control.selected ? "#33aaff" : "transparent"
+            border.color: "transparent"
+            radius: 20
+            opacity: .3
+        }
 
         Text {
             text: "-"
             font.pixelSize: control.font.pixelSize * 2
-            color: "#7dbcf0"
+            color: "grey"
             anchors.fill: parent
             fontSizeMode: Text.Fit
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
+            opacity:1
         }
     }
 
@@ -109,15 +122,17 @@ SpinBox {
     }
 
     Rectangle {
-        id: highlight
-z:0
+        id: highlight //this is the center highlight of the button
+
+        z:0
+
         anchors.centerIn: parent
 
         width: 60
         height: 35
-        radius: 17
-        opacity:.3
-        //color: "grey"
+        radius: 20
+        opacity: .3
+
 
     }
 
