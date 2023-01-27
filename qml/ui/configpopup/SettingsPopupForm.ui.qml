@@ -456,10 +456,6 @@ Rectangle {
             id: appSettingsPanel
         }
 
-        OHDComponentSettings {
-            id:  oHDComponentSettings
-        }
-
         LogMessagesStatusView{
             id: logMessagesStatusView
         }
@@ -481,10 +477,10 @@ Rectangle {
             id: appDeveloperStatsPanel
         }
 
-        RcInfoPanel {
+        RcInfoPanel2 {
             id: rcInfoPanel
         }
-        Eepanel {
+        EasterEggPanel {
             id: eePanel
         }
 

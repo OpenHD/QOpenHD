@@ -401,7 +401,7 @@ int AVCodecDecoder::open_and_decode_until_error(const QOpenHDVideoHelper::VideoS
             in_filename=settings.dev_custom_pipeline;
         }else{
             // For testing, I regulary change the filename(s) and recompile
-            const bool consti_testing=true;
+            const bool consti_testing=false;
             if(consti_testing){
                 if(settings.video_codec==QOpenHDVideoHelper::VideoCodecH264){
                      //in_filename="/tmp/x_raw_h264.h264";

@@ -236,9 +236,9 @@ Settings {
     property double heading_width: 250
     property bool show_heading_ladder: true
 
-    // false by default for now, since it has a big performance hit. As soon as we have merged it with the art. horizon,
-    // we have at least 1 FBO less and can probably enable it by default again
-    property bool show_flight_path_vector: true
+    // false by default for now, since it has a big performance hit. (only noticeable on embedded devices like rpi -
+    // but rpi is one of our main user(s) platforms
+    property bool show_flight_path_vector: false
     property bool fpv_dynamic: true    
     property int fpv_sensitivity: 5
     property double fpv_opacity: 1

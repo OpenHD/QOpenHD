@@ -49,6 +49,7 @@ class AOHDSystem : public QObject
     L_RO_PROP(int,curr_isp_freq_mhz,set_curr_isp_freq_mhz,0)
     L_RO_PROP(int,curr_h264_freq_mhz,set_curr_h264_freq_mhz,0)
     L_RO_PROP(int,curr_core_freq_mhz,set_curr_core_freq_mhz,0)
+    L_RO_PROP(int,curr_v3d_freq_mhz,set_curr_v3d_freq_mhz,0)
     //L_RO_PROP(int,,set_,0)
     // This basically only makes sense on the ground pi, it is not the battery percentage reported by the FC
     // but the battery percentage reported by the COmpanion computer running OpenHD (if it is supported, aka for future power hat o.ä)
@@ -107,8 +108,8 @@ private:
     // Model / fire and forget data only end
 private:
      // NOTE: nullptr until discovered !!
-     std::shared_ptr<mavsdk::System> _system;
-     std::shared_ptr<mavsdk::Action> _action;
+     std::shared_ptr<mavsdk::System> _system=nullptr;
+     std::shared_ptr<mavsdk::Action> _action=nullptr;
      bool send_command_long(mavsdk::Action::CommandLong command);
 public:
      // Set the mavlink system reference, once discovered

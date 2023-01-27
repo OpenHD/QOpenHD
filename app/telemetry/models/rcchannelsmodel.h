@@ -7,17 +7,24 @@
 #include <array>
 
 #include <memory>
+#include <mutex>
 
 #include "../../../lib/lqtutils_master/lqtutils_prop.h"
 
-// The OpenHD ground instance for now broadcasts the rc channel value(s) to QOpenHD for display / debugging.
+// Don't get confused - we have 2 instances of this model:
+// instanceGround()-> The OpenHD ground instance for now broadcasts the rc channel value(s) to QOpenHD for display / debugging.
+// Aka these are the same channels that are sent to the FC as MAVLINK_MSG_ID_RC_CHANNELS_OVERRIDE
+// instanceFC() -> Some FCs (for example ARDUPILOT) broadcast the current rc channel values. Aka this could be what's set via MAVLINK_MSG_ID_RC_CHANNELS_OVERRIDE  but
+// otherwise is most likely what the FC gets from an RC receiver connected via serial for example.
+// Both are valuable information for debugging
 class RCChannelsModel : public  QAbstractListModel
 {
   Q_OBJECT
  public :
     explicit RCChannelsModel(QObject * parent = 0);
     static RCChannelsModel& instanceGround();
-    // Considered alive if we got data in the last X seconds
+    static RCChannelsModel& instanceFC();
+    // Considered alive if we got an update in the last X seconds
     L_RO_PROP(bool,is_alive,set_is_alive,false)
 public:
     enum Roles {
@@ -34,7 +41,8 @@ public slots:
  private:
    QList<int> m_data{-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1};
 private:
-   std::chrono::steady_clock::time_point m_last_update{};
+   // We need thread saftey on the alive
+   std::atomic<int32_t> m_last_update_ms = -1;
    std::unique_ptr<QTimer> m_alive_timer;
    void update_alive();
 };

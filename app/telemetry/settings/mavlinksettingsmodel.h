@@ -139,6 +139,7 @@ public:
 
 private:
     QString get_short_description(QString param_id)const;
+
 };
 
 #endif // MavlinkSettingsModel_H
