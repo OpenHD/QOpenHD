@@ -18,18 +18,19 @@ SwitchDelegate {
 
     onActiveFocusChanged: {
         if (control.activeFocus == true){
-            console.log("New switch has focus");
+            //console.log("New switch has focus");
             control.highlighted=true
-            highlight.color= "#33aaff"
+
+            if(control.checked)
+                highlight.color= "#33aaff"
+            else
+                highlight.color= "grey"
         }
         else if (control.activeFocus == false){
-            console.log("New switch has lost focus");
+            //console.log("New switch has lost focus");
             control.highlighted=false
         }
     }
-
-
-
 
     contentItem: Text {
         rightPadding: control.indicator.width + control.spacing
@@ -48,8 +49,8 @@ SwitchDelegate {
         x: control.width - width - control.rightPadding
         y: parent.height / 2 - height / 2
         radius: 13
-        color: control.checked ? "#7dbcf0" : "white"
-        border.color: control.checked ? "transparent"  : "#464b52"
+        color: control.checked ? "#7dbcf0" : "#BEBBBA"
+        border.color: "transparent"
 
         Rectangle {
            id: highlight
@@ -59,10 +60,9 @@ SwitchDelegate {
            width: 35
            height: 35
            radius: 17
-           opacity:.3
            visible: control.down || control.highlighted
-           color: "grey"
-
+           color: "grey" //color also controlled above
+           opacity:.3
        }
 
         Rectangle {
@@ -72,8 +72,9 @@ SwitchDelegate {
             width: 26
             height: 26
             radius: 13
-            color: control.checked ? "#33aaff" : "white"
-            border.color: control.checked ? "transparent"  : "#464b52"
+            color: control.checked ? "#33aaff" : "#A5A1A0"
+            border.color: control.checked ? "transparent"  : "grey"
+            opacity: 1
         }
     }
 
@@ -103,7 +104,10 @@ SwitchDelegate {
 
         onEntered: {
             control.highlighted=true
-                     highlight.color= "#33aaff"
+            if(control.checked)
+                highlight.color= "#33aaff"
+            else
+                highlight.color= "grey"
                  }
         onExited: {
                      control.highlighted=false
