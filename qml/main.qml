@@ -115,7 +115,9 @@ ApplicationWindow {
             onSettingsButtonClicked: {
                 settings_panel.openSettings();
             }
-            layer.enabled: true
+            // Performance seems to be better on embedded devices like
+            // rpi with layers disabled (aka default) but this is not exact science
+            layer.enabled: false
         }
 
         OSDCustomizer {

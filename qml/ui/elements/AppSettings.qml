@@ -309,7 +309,9 @@ Settings {
     property double vibration_opacity: 1
     property double vibration_size: 1
 
-    property bool show_vsi: true
+    // Disabled by default, since it has a quite big impact on draw call performance on embedded devices
+    // like rpi
+    property bool show_vsi: false
     property double vsi_opacity: 1
     property int vsi_max: 20
     property double vsi_size: 1
