@@ -7,6 +7,8 @@
 #include <qdir.h>
 #include <qstring.h>
 
+// Video decode and display will silently fail without fkms enabled
+// TODO Fucking QT doesn't compile on rpi when you pull in those QT includes needed
 
 namespace rpi::check_mmal {
 
@@ -45,24 +47,6 @@ static bool is_fkms_enabled(){
     }
     return false;
 }
-
-/*static bool is_fksm_enabled(){
-    QFile file("/boot/config.txt");
-    if(!file.open(QIODevice::ReadOnly)) {
-        return false;
-    }
-    bool ret=false;
-    QTextStream in(&file);
-    while(!in.atEnd()) {
-        QString line = in.readLine();
-        if(line.contains(""))
-        QStringList fields = line.split(",");
-        model->appendRow(fields);
-    }
-
-    file.close();
-}*/
-
 
 }
 #endif // RPI_CHECK_FKMS_H
