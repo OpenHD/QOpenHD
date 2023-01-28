@@ -26,11 +26,12 @@ ScrollView {
 
         Card {
             id: infoBox
-            height: 90
+            height: 120
             Layout.topMargin: 15
             Layout.leftMargin: 15
             Layout.rightMargin: 15
             Layout.fillWidth: true
+            width:parent.width
             cardName: qsTr("FC RC (for debugging)")
             cardBody:
                 Text {

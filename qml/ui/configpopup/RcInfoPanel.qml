@@ -17,8 +17,14 @@ Item {
     // Tab bar for selecting items in stack layout
     TabBar {
           id: selectItemInStackLayoutBar
-          width: parent.width
-          height: 100
+          height: 48
+          anchors.right: parent.right
+          anchors.rightMargin: 0
+          anchors.left: parent.left
+          anchors.leftMargin: 0
+          anchors.top: parent.top
+          clip: true
+
           TabButton {
               text: qsTr("About")
           }

@@ -10,9 +10,11 @@
 #include "texturerenderer.h"
 #include "../vs_util/decodingstatistcs.h"
 #include "common_consti/SchedulingHelper.hpp"
+#include "../util/WorkaroundMessageBox.h"
 
 #ifdef HAVE_MMAL
 #include "mmal/rpimmaldecodedisplay.h"
+//#include "mmal/rpi_check_fkms.h"
 #endif
 
 static int hw_decoder_init(AVCodecContext *ctx, const enum AVHWDeviceType type){
@@ -834,6 +836,9 @@ finish:
 void AVCodecDecoder::open_and_decode_until_error_custom_rtp_and_mmal_direct(const QOpenHDVideoHelper::VideoStreamConfig settings)
 {
     qDebug()<<"AVCodecDecoder::open_and_decode_until_error_custom_rtp_and_mmal_direct";
+    //if(!rpi::check_mmal::is_fkms_enabled()){
+    //    workaround::makePopupMessage("FKMS disabled - video won't work");
+    //}
     assert(settings.video_codec==QOpenHDVideoHelper::VideoCodecH264);
     assert(settings.enable_software_video_decoder==false);
     assert(settings.dev_test_video_mode==QOpenHDVideoHelper::VideoTestMode::DISABLED);

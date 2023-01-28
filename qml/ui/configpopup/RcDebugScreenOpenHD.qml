@@ -15,7 +15,6 @@ import "../elements"
 //
 ScrollView {
     clip:true
-    //contentHeight: 850
     width: parent.width
 
     background: Rectangle { color: "#eaeaea" }
@@ -28,6 +27,7 @@ ScrollView {
 
         Card {
             id: infoBox
+            width:parent.width
             height: 90
             Layout.topMargin: 15
             Layout.leftMargin: 15
