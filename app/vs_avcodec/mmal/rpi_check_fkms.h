@@ -1,9 +1,11 @@
 #ifndef RPI_CHECK_FKMS_H
 #define RPI_CHECK_FKMS_H
 
-#include <QDir>
-#include <qstring.h>
+#include <QTextStream>
+#include <qfile.h>
 
+#include <qdir.h>
+#include <qstring.h>
 
 
 namespace rpi::check_mmal {
@@ -43,6 +45,23 @@ static bool is_fkms_enabled(){
     }
     return false;
 }
+
+/*static bool is_fksm_enabled(){
+    QFile file("/boot/config.txt");
+    if(!file.open(QIODevice::ReadOnly)) {
+        return false;
+    }
+    bool ret=false;
+    QTextStream in(&file);
+    while(!in.atEnd()) {
+        QString line = in.readLine();
+        if(line.contains(""))
+        QStringList fields = line.split(",");
+        model->appendRow(fields);
+    }
+
+    file.close();
+}*/
 
 
 }
