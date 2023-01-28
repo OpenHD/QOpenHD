@@ -113,7 +113,7 @@ Rectangle {
                     Keys.onPressed: (event)=> {
                                         if (event.key === Qt.Key_Escape)
                                         closeSettings()
-                                        else if (event.key === Qt.Key_Return)
+                                        else if (event.key === Qt.Key_S)
                                         closeButton.clicked()
                                         else if (event.key === Qt.Key_Minus){
                     //logic to prevent curser going to main menu from close btn after submenu
@@ -227,7 +227,7 @@ Rectangle {
                     Keys.onPressed: (event)=> {
                                         if (event.key === Qt.Key_Escape)
                                         closeSettings()
-                                        else if (event.key === Qt.Key_Return)
+                                        else if (event.key === Qt.Key_S)
                                         appSettingsBtn.clicked()
                                         else if (event.key === Qt.Key_Equal)
                                         closeButton.forceActiveFocus()
@@ -294,7 +294,7 @@ Rectangle {
                     Keys.onPressed: (event)=> {
                                         if (event.key === Qt.Key_Escape)
                                         closeSettings()
-                                        else if (event.key === Qt.Key_Return)
+                                        else if (event.key === Qt.Key_S)
                                         openhdSettingsBtn.clicked()
                                         else if (event.key === Qt.Key_Equal)
                                         appSettingsBtn.forceActiveFocus()
@@ -355,7 +355,7 @@ Rectangle {
                     Keys.onPressed: (event)=> {
                                         if (event.key === Qt.Key_Escape)
                                         closeSettings()
-                                        else if (event.key === Qt.Key_Return)
+                                        else if (event.key === Qt.Key_S)
                                         logBtn.clicked()
                                         else if (event.key === Qt.Key_Equal)
                                         openhdSettingsBtn.forceActiveFocus()
@@ -414,7 +414,7 @@ Rectangle {
                     Keys.onPressed: (event)=> {
                                         if (event.key === Qt.Key_Escape)
                                         closeSettings()
-                                        else if (event.key === Qt.Key_Return)
+                                        else if (event.key === Qt.Key_S)
                                         powerSettingsBtn.clicked()
                                         else if (event.key === Qt.Key_Equal)
                                         logBtn.forceActiveFocus()
@@ -480,7 +480,7 @@ Rectangle {
                     Keys.onPressed: (event)=> {
                                         if (event.key === Qt.Key_Escape)
                                         closeSettings()
-                                        else if (event.key === Qt.Key_Return)
+                                        else if (event.key === Qt.Key_S)
                                         aboutBtn.clicked()
                                         else if (event.key === Qt.Key_Equal)
                                         powerSettingsBtn.forceActiveFocus()
@@ -539,7 +539,7 @@ Rectangle {
                     Keys.onPressed: (event)=> {
                                         if (event.key === Qt.Key_Escape)
                                         closeSettings()
-                                        else if (event.key === Qt.Key_Return)
+                                        else if (event.key === Qt.Key_S)
                                         devStatsBtn.clicked()
                                         else if (event.key === Qt.Key_Equal)
                                         aboutBtn.forceActiveFocus()
@@ -598,7 +598,7 @@ Rectangle {
                     Keys.onPressed: (event)=> {
                                         if (event.key === Qt.Key_Escape)
                                         closeSettings()
-                                        else if (event.key === Qt.Key_Return)
+                                        else if (event.key === Qt.Key_S)
                                         rcSettingsBtn.clicked()
                                         else if (event.key === Qt.Key_Equal)
                                         devStatsBtn.forceActiveFocus()
@@ -663,7 +663,7 @@ Rectangle {
                     Keys.onPressed: (event)=> {
                                         if (event.key === Qt.Key_Escape)
                                         closeSettings()
-                                        else if (event.key === Qt.Key_Return)
+                                        else if (event.key === Qt.Key_S)
                                         eeBtn.clicked()
                                         else if (event.key === Qt.Key_Equal)
                                         devStatsBtn.forceActiveFocus()

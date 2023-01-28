@@ -11,7 +11,7 @@ SpinBox {
     property bool selected: false
 
     Keys.onPressed: {
-        if (event.key === Qt.Key_Return){
+        if (event.key === Qt.Key_S){
             selected = true
         highlight.color= "#33aaff"
         }

@@ -93,7 +93,7 @@ Item {
             Keys.onPressed: (event)=> {
                                 if (event.key === Qt.Key_Escape)
                                 closeOhdPanel()
-                                else if (event.key === Qt.Key_Return)
+                                else if (event.key === Qt.Key_S)
                                 zeroBtnOhd.clicked()
                                 else if (event.key === Qt.Key_Equal){
                                     closeButton.forceActiveFocus()
@@ -129,7 +129,7 @@ Item {
             Keys.onPressed: (event)=> {
                                 if (event.key === Qt.Key_Escape)
                                 closeOhdPanel()
-                                else if (event.key === Qt.Key_Return)
+                                else if (event.key === Qt.Key_S)
                                 oneBtnOhd.clicked()
                                 else if (event.key === Qt.Key_Equal){
                                     zeroBtnOhd.forceActiveFocus()
@@ -164,7 +164,7 @@ Item {
             Keys.onPressed: (event)=> {
                                 if (event.key === Qt.Key_Escape)
                                 closeOhdPanel()
-                                else if (event.key === Qt.Key_Return)
+                                else if (event.key === Qt.Key_S)
                                 twoBtnOhd.clicked()
                                 else if (event.key === Qt.Key_Equal){
                                     oneBtnOhd.forceActiveFocus()
@@ -199,7 +199,7 @@ Item {
             Keys.onPressed: (event)=> {
                                 if (event.key === Qt.Key_Escape)
                                 closeOhdPanel()
-                                else if (event.key === Qt.Key_Return)
+                                else if (event.key === Qt.Key_S)
                                 threeBtnOhd.clicked()
                                 else if (event.key === Qt.Key_Equal){
                                     twoBtnOhd.forceActiveFocus()

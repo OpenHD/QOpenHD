@@ -101,7 +101,7 @@ Item {
             Keys.onPressed: (event)=> {
                                 if (event.key === Qt.Key_Escape)
                                 closeAppPanel()
-                                else if (event.key === Qt.Key_Return)
+                                else if (event.key === Qt.Key_S)
                                 zeroBtn.clicked()
                                 else if (event.key === Qt.Key_Equal){
                                 closeButton.forceActiveFocus()
@@ -139,7 +139,7 @@ Item {
             Keys.onPressed: (event)=> {
                                 if (event.key === Qt.Key_Escape)
                                 closeAppPanel()
-                                else if (event.key === Qt.Key_Return)
+                                else if (event.key === Qt.Key_S)
                                 oneBtn.clicked()
                                 else if (event.key === Qt.Key_Equal)
                                 zeroBtn.forceActiveFocus()
@@ -174,7 +174,7 @@ Item {
             Keys.onPressed: (event)=> {
                                 if (event.key === Qt.Key_Escape)
                                 closeAppPanel()
-                                else if (event.key === Qt.Key_Return)
+                                else if (event.key === Qt.Key_S)
                                 twoBtn.clicked()
                                 else if (event.key === Qt.Key_Equal)
                                 oneBtn.forceActiveFocus()
@@ -209,7 +209,7 @@ Item {
             Keys.onPressed: (event)=> {
                                 if (event.key === Qt.Key_Escape)
                                 closeAppPanel()
-                                else if (event.key === Qt.Key_Return)
+                                else if (event.key === Qt.Key_S)
                                 threeBtn.clicked()
                                 else if (event.key === Qt.Key_Equal)
                                 twoBtn.forceActiveFocus()
@@ -244,7 +244,7 @@ Item {
             Keys.onPressed: (event)=> {
                                 if (event.key === Qt.Key_Escape)
                                 closeAppPanel()
-                                else if (event.key === Qt.Key_Return)
+                                else if (event.key === Qt.Key_S)
                                 fourBtn.clicked()
                                 else if (event.key === Qt.Key_Equal)
                                 threeBtn.forceActiveFocus()
@@ -279,7 +279,7 @@ Item {
             Keys.onPressed: (event)=> {
                                 if (event.key === Qt.Key_Escape)
                                 closeAppPanel()
-                                else if (event.key === Qt.Key_Return)
+                                else if (event.key === Qt.Key_S)
                                 fiveBtn.clicked()
                                 else if (event.key === Qt.Key_Equal)
                                 fourBtn.forceActiveFocus()

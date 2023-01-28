@@ -110,7 +110,7 @@ Flickable {
                                     ggSwitch.forceActiveFocus()
                                     appGeneralSettingsView.scrollToY(Positioner.index);
                                     }
-                                    else if (event.key === Qt.Key_Return){
+                                    else if (event.key === Qt.Key_S){
                                     controlSelected=true
                                     }
                                     else if (event.key === Qt.Key_Escape)
@@ -122,8 +122,6 @@ Flickable {
                 width: parent.width
                 height: rowHeight
                 color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-
 
                 Text {
                     text: qsTr("Enable Goggle Layout")
@@ -187,6 +185,12 @@ Flickable {
                     checked: settings.enable_speech
                     onCheckedChanged: settings.enable_speech = checked
                 }
+                Keys.onPressed: (event)=> {
+                                    if (event.key === Qt.Key_Equal)
+                                    ggSwitch.forceActiveFocus()
+                                    else if (event.key === Qt.Key_Minus)
+                                    logLevelspinBox.forceActiveFocus()
+                                }
             }
 
             Rectangle {
@@ -206,7 +210,7 @@ Flickable {
                     anchors.left: parent.left
                 }
 
-                SpinBox {
+                GgSpinBox {
                     id: logLevelspinBox
                     height: elementHeight
                     width: 210
@@ -221,6 +225,21 @@ Flickable {
                     value: settings.log_level
                     onValueChanged: settings.log_level = value
                 }
+                Keys.onPressed: (event)=> {
+                                    if (event.key === Qt.Key_Equal && controlSelected == false){
+                                        speechSwitch.forceActiveFocus()
+                                        appGeneralSettingsView.scrollToY(Positioner.index);
+                                    }
+                                    else if (event.key === Qt.Key_Minus && controlSelected == false){
+                                        unitsSwitch.forceActiveFocus()
+                                        appGeneralSettingsView.scrollToY(Positioner.index);
+                                    }
+                                    else if (event.key === Qt.Key_S){
+                                        controlSelected=true
+                                    }
+                                    else if (event.key === Qt.Key_Escape)
+                                    controlSelected=false
+                                }
             }
 
             Rectangle {
@@ -240,7 +259,8 @@ Flickable {
                     anchors.left: parent.left
                 }
 
-                Switch {
+                GgSwitch {
+                    id: unitsSwitch
                     width: 32
                     height: elementHeight
                     anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -250,6 +270,12 @@ Flickable {
                     checked: settings.enable_imperial
                     onCheckedChanged: settings.enable_imperial = checked
                 }
+                Keys.onPressed: (event)=> {
+                                    if (event.key === Qt.Key_Equal)
+                                    logLevelspinBox.forceActiveFocus()
+                                    else if (event.key === Qt.Key_Minus)
+                                    gndBatteryCellspinBox.forceActiveFocus()
+                                }
             }
 
             Rectangle {
@@ -271,7 +297,7 @@ Flickable {
                     anchors.left: parent.left
                 }
 
-                SpinBox {
+                GgSpinBox {
                     id: gndBatteryCellspinBox
                     height: elementHeight
                     width: 210
@@ -286,6 +312,21 @@ Flickable {
                     value: settings.ground_battery_cells
                     onValueChanged: settings.ground_battery_cells = value
                 }
+                Keys.onPressed: (event)=> {
+                                    if (event.key === Qt.Key_Equal && controlSelected == false){
+                                        unitsSwitch.forceActiveFocus()
+                                        appGeneralSettingsView.scrollToY(Positioner.index);
+                                    }
+                                    else if (event.key === Qt.Key_Minus && controlSelected == false){
+                                        languageSelectBox.forceActiveFocus()
+                                        appGeneralSettingsView.scrollToY(Positioner.index);
+                                    }
+                                    else if (event.key === Qt.Key_S){
+                                        controlSelected=true
+                                    }
+                                    else if (event.key === Qt.Key_Escape)
+                                    controlSelected=false
+                                }
             }
 
             Rectangle {
@@ -305,7 +346,7 @@ Flickable {
                     anchors.left: parent.left
                 }
 
-                LanguageSelect {
+     /*           LanguageSelect {
                     id: languageSelectBox
                     height: elementHeight
                     width: 210
@@ -314,6 +355,40 @@ Flickable {
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.horizontalCenter: parent.horizonatalCenter
                 }
+   */
+
+                ListModel {
+                    id: itemsLanguage
+                    ListElement { text: "H264"; }
+                    ListElement { text: "H265";  }
+                    ListElement { text: "MJPEG"; }
+                }
+                GgComboBox {
+                    id: languageSelectBox
+                    model: itemsLanguage
+                    height: elementHeight
+                    width: 210
+                    anchors.right: parent.right
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.horizontalCenter: parent.horizonatalCenter
+                }
+                Keys.onPressed: (event)=> {
+                                    if (event.key === Qt.Key_Equal && controlSelected == false){
+                                        gndBatteryCellspinBox.forceActiveFocus()
+                                        appGeneralSettingsView.scrollToY(Positioner.index);
+                                    }
+                                    else if (event.key === Qt.Key_Minus && controlSelected == false){
+                                        dev_qopenhd_n_cameras_spinbox.forceActiveFocus()
+                                        appGeneralSettingsView.scrollToY(Positioner.index);
+                                    }
+                                    else if (event.key === Qt.Key_S){
+                                        controlSelected=true
+                                    }
+                                    else if (event.key === Qt.Key_Escape)
+                                    controlSelected=false
+                                }
+
             }
 
             // exp
@@ -334,7 +409,7 @@ Flickable {
                     anchors.left: parent.left
                 }
 
-                SpinBox {
+                GgSpinBox {
                     id: dev_qopenhd_n_cameras_spinbox
                     height: elementHeight
                     width: 210
@@ -349,6 +424,22 @@ Flickable {
                     value: settings.dev_qopenhd_n_cameras
                     onValueChanged: settings.dev_qopenhd_n_cameras = value
                 }
+                Keys.onPressed: (event)=> {
+                                    if (event.key === Qt.Key_Equal && controlSelected == false){
+                                        languageSelectBox.forceActiveFocus()
+                                        appGeneralSettingsView.scrollToY(Positioner.index);
+                                    }
+                            /*        else if (event.key === Qt.Key_Minus && controlSelected == false){
+                                        languageSelectBox.forceActiveFocus()
+                                        appGeneralSettingsView.scrollToY(Positioner.index);
+                                    }
+                            */
+                                    else if (event.key === Qt.Key_S){
+                                        controlSelected=true
+                                    }
+                                    else if (event.key === Qt.Key_Escape)
+                                    controlSelected=false
+                                }
             }
 
         }

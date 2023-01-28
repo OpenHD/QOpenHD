@@ -27,7 +27,7 @@ Item {
     property int elementHeight: 48
 
     Keys.onPressed: (event)=> {
-                        if (event.key == Qt.Key_Return) {
+                        if (event.key == Qt.Key_S) {
                             console.log("enter was pressed from menu");
                             event.accepted = true;
                         }

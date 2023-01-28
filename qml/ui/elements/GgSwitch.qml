@@ -12,7 +12,7 @@ SwitchDelegate {
     clip:false
 
     Keys.onPressed: {
-        if (event.key === Qt.Key_Return && !event.isAutoRepeat)
+        if (event.key === Qt.Key_S && !event.isAutoRepeat)
             checked = !checked;
     }
 

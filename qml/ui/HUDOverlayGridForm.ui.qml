@@ -34,7 +34,7 @@ Item {
         anchors.topMargin: 0
         focus: true
         Keys.onPressed: (event)=> {
-                if (event.key == Qt.Key_Return) {
+                if (event.key == Qt.Key_S) {
                     console.log("enter was pressed");
                     event.accepted = true;
                     hudOverlayGrid.settingsButtonClicked()

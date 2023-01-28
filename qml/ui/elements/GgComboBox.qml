@@ -1,6 +1,9 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 
+//This combobox logic could be improved after a selection is made and
+//an escape is still required to "exit" the combo box...
+
 ComboBox {
     id: control
     //anchors.fill: parent
