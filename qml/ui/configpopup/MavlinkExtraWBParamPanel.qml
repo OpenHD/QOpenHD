@@ -128,6 +128,11 @@ ScrollView {
                 ListElement {title: "5785Mhz [157]"; value: 5785}
                 ListElement {title: "5805Mhz [161]"; value: 5805}
                 ListElement {title: "5825Mhz [165]"; value: 5825}
+                // These require patched kernel !
+                ListElement {title: "5845Mhz [169]"; value: 5845}
+                ListElement {title: "5865Mhz [173]"; value: 5865}
+                ListElement {title: "5885Mhz [177]"; value: 5885}
+                //ListElement {title: "5905Mhz [181]"; value: 5905}
             }
 
             ListModel{
