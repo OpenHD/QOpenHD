@@ -15,6 +15,12 @@ Item {
     width: parent.width
     height: parent.height
 
+    Rectangle{
+        width:parent.width
+        height:parent.height
+        color: "#eaeaea"
+    }
+
     ColumnLayout{
         width: parent.width
         Layout.minimumHeight: 30
@@ -23,7 +29,7 @@ Item {
 
         Card {
             id: infoBox
-            height: 90
+            height: 120
             Layout.topMargin: 15
             Layout.leftMargin: 15
             Layout.rightMargin: 15
@@ -32,7 +38,7 @@ Item {
             cardBody:
                 Text {
                 text: qsTr("To enable RC over wifibroadcast change OpenHD / Ground(TMP) / ENABLE_JOY_RC=ENABLED,\nconnect a joystick (or a RC in joystick mode) and reboot.\n
-Use the ")
+You can use the other screens to validate/debug your setup.")
                 height: 24
                 font.pixelSize: 14
                 leftPadding: 12
