@@ -115,15 +115,7 @@ ApplicationWindow {
             onSettingsButtonClicked: {
                 settings_panel.openSettings();
             }
-
-            transform: Scale {
-                origin.x: 0 + (settings.stereo_osd_left_x)
-                origin.y: hudOverlayGrid.height / 2
-                xScale: settings.stereo_enable ? 0.5*(settings.stereo_osd_size/100) : 1.0
-                yScale: settings.stereo_enable ? 0.5*(settings.stereo_osd_size/100) : 1.0
-            }
-
-            layer.enabled: true
+            layer.enabled: false
         }
 
         OSDCustomizer {

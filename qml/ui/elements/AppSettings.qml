@@ -366,13 +366,6 @@ Settings {
 
     property bool show_example_widget: false
 
-    property bool stereo_enable: false
-
-    property int stereo_mode: 0
-    property int stereo_osd_left_x: 0
-    property int stereo_osd_right_x: 0
-    property int stereo_osd_size: 0
-
     property int dev_qopenhd_n_cameras:1
 
     // N of battery cells (generic) of the vehicle, used for the show voltage per cell setting
