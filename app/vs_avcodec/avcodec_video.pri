@@ -21,6 +21,7 @@ HEADERS += \
     $$PWD/QSGVideoTextureItem.h \
     $$PWD/gl/gl_shaders.h \
     $$PWD/gl/gl_videorenderer.h \
+    $$PWD/mmal/rpi_check_fkms.h \
     $$PWD/nalu/KeyFrameFinder.hpp \
     $$PWD/nalu/NALUnitType.hpp \
     $$PWD/rtp/ParseRTP.h \
