@@ -115,7 +115,7 @@ ApplicationWindow {
             onSettingsButtonClicked: {
                 settings_panel.openSettings();
             }
-            layer.enabled: false
+            layer.enabled: true
         }
 
         OSDCustomizer {
