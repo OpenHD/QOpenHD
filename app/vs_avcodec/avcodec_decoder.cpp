@@ -11,6 +11,7 @@
 #include "../vs_util/decodingstatistcs.h"
 #include "common_consti/SchedulingHelper.hpp"
 #include "../util/WorkaroundMessageBox.h"
+#include "../logging/hudlogmessagesmodel.h"
 
 #ifdef HAVE_MMAL
 #include "mmal/rpimmaldecodedisplay.h"
@@ -855,6 +856,9 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp_and_mmal_direct(cons
 
     bool has_keyframe_data=false;
     int feed_frame_error_count=0;
+
+    std::chrono::steady_clock::time_point m_last_log_decoder_unhealty=std::chrono::steady_clock::now();
+
     while(true){
         if(request_restart){
             request_restart=false;
@@ -864,11 +868,11 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp_and_mmal_direct(cons
             qDebug()<<"Break/Restart,config has changed during decode";
             goto finish;
         }
-        if(feed_frame_error_count>10){
+        /*if(feed_frame_error_count>10){
             // Decoder clearly unhealthy, use a full restart to fix it
             qDebug()<<"MMAL Direct decoder unhealthy-restart";
             goto finish;
-        }
+        }*/
         //std::this_thread::sleep_for(std::chrono::milliseconds(3000));
         if(!has_keyframe_data){
              std::shared_ptr<std::vector<uint8_t>> keyframe_buf=nullptr;
@@ -893,13 +897,20 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp_and_mmal_direct(cons
              continue;
         }else{
             if(!cb_set){
-                auto cb=[this,&mmal_decode_display,&feed_frame_error_count](std::shared_ptr<NALU> buf){
+                auto cb=[this,&mmal_decode_display,&feed_frame_error_count,&m_last_log_decoder_unhealty](std::shared_ptr<NALU> buf){
                     const bool feed_frame_success=mmal_decode_display->feed_frame(buf->getData(),buf->getSize(),std::chrono::milliseconds(8));
                     //const auto duration_feed_frame=std::chrono::steady_clock::now()-before_feed_frame;
                     //qDebug()<<"feed frame time:"<<MyTimeHelper::R(duration_feed_frame).c_str();
                     if(!feed_frame_success){
                         qDebug()<<"MMAL - cannot feed frame";
                         feed_frame_error_count++;
+                        DecodingStatistcs::instance().set_n_decoder_dropped_frames(feed_frame_error_count);
+                        // Tell user what's going on
+                        const auto elapsed_since_last_log=std::chrono::steady_clock::now()-m_last_log_decoder_unhealty;
+                        if(elapsed_since_last_log>std::chrono::seconds(3)){
+                            m_last_log_decoder_unhealty=std::chrono::steady_clock::now();
+                            HUDLogMessagesModel::instance().add_message_warning("Decoder unhealthy-reduce load");
+                        }
                     }
                     const auto delay=std::chrono::steady_clock::now()-buf->creationTime;
                     avg_parse_time.add(delay);
