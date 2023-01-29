@@ -29,4 +29,5 @@ apt -y install libgstreamer-plugins-base1.0-dev gstreamer1.0-plugins-good qtgstr
 
 
 # See script for more info
+echo "$PWD"
 bash build_install_mavsdk_static.sh || exit 1
