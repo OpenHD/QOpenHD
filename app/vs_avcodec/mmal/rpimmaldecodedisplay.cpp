@@ -152,14 +152,21 @@ bool RPIMMalDecodeDisplay::initialize(const uint8_t *config_data, const int conf
 }
 
 
-bool RPIMMalDecodeDisplay::feed_frame(const uint8_t *frame_data, const int frame_data_size)
+bool RPIMMalDecodeDisplay::feed_frame(const uint8_t *frame_data, const int frame_data_size,std::optional<std::chrono::milliseconds> opt_upper_wait_limit)
 {
     //qDebug()<<"RPIMMALDecoder::feed_frame";
     //if(true)return;
 
+    const auto begin=std::chrono::steady_clock::now();
     MMAL_BUFFER_HEADER_T *buffer=nullptr;
 
     while (true) {
+        if(opt_upper_wait_limit){
+            const auto elapsed=std::chrono::steady_clock::now()-begin;
+            if(elapsed>=opt_upper_wait_limit.value()){
+                return false;
+            }
+        }
 
         // We first try and get a frame from the input pool without waiting on the semaphore -
         // Quite likely there is one available immediately
@@ -199,7 +206,12 @@ bool RPIMMalDecodeDisplay::feed_frame(const uint8_t *frame_data, const int frame
         }
         // If we didn't get a buffer the first time, we wait on the semaphore kicked off by the callback that is called
         // when there is a new buffer available
-        vcos_semaphore_wait(&m_context.semaphore);
+        if(opt_upper_wait_limit){
+             const uint32_t wait_ms=5; // We keep the thread busy a bit by purpose
+             vcos_semaphore_wait_timeout(&m_context.semaphore,wait_ms);
+        }else{
+            vcos_semaphore_wait(&m_context.semaphore);
+        }
     }
     return true;
 }

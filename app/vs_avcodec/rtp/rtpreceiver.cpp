@@ -88,6 +88,11 @@ RTPReceiver::~RTPReceiver()
         m_data_queue.try_dequeue(ret);
     }
     return ret;
+ }
+
+void RTPReceiver::register_new_nalu_callbac(NEW_NALU_CALLBACK cb){
+    std::lock_guard<std::mutex> lock(m_new_nalu_data_cb_mutex);
+    m_new_nalu_cb=cb;
 }
 
 std::shared_ptr<std::vector<uint8_t>> RTPReceiver::get_config_data()
@@ -140,11 +145,17 @@ void RTPReceiver::queue_data(const uint8_t* nalu_data,const std::size_t nalu_dat
             DecodingStatistcs::instance().set_estimate_rtp_fps({fps_as_string.c_str()});
         }
         //qDebug()<<"Queue size:"<<m_data_queue.size_approx();
-        if(!m_data_queue.try_enqueue(std::make_shared<NALU>(nalu))){
-            // If we cannot push a frame onto this queue, it means the decoder cannot keep up what we want to provide to it
-            n_dropped_frames++;
-            qDebug()<<"Dropping incoming frame, total:"<<n_dropped_frames;
-            DecodingStatistcs::instance().set_n_decoder_dropped_frames(n_dropped_frames);
+        if(m_new_nalu_cb){
+            // Use the cb approach
+            m_new_nalu_cb(std::make_shared<NALU>(nalu));
+        }else{
+            // Use the queue approach
+            if(!m_data_queue.try_enqueue(std::make_shared<NALU>(nalu))){
+                // If we cannot push a frame onto this queue, it means the decoder cannot keep up what we want to provide to it
+                n_dropped_frames++;
+                qDebug()<<"Dropping incoming frame, total:"<<n_dropped_frames;
+                DecodingStatistcs::instance().set_n_decoder_dropped_frames(n_dropped_frames);
+            }
         }
     }else{
         // We don't have all config data yet, drop anything that is not config data.

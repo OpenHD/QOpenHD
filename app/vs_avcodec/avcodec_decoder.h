@@ -16,6 +16,8 @@
 #include <optional>
 #include <queue>
 
+//#define HAVE_MMAL
+
 #ifdef HAVE_MMAL
 #include "mmal/rpimmaldisplay.h"
 #include "mmal/rpimmaldecoder.h"

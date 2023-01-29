@@ -845,10 +845,13 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp_and_mmal_direct(cons
 
     m_rtp_receiver=std::make_unique<RTPReceiver>(settings.udp_rtp_input_port,settings.udp_rtp_input_ip_address,false,settings.dev_feed_incomplete_frames_to_decoder);
     std::unique_ptr<RPIMMalDecodeDisplay> mmal_decode_display=std::make_unique<RPIMMalDecodeDisplay>();
+    // We use the HW composer, not opengl
+    TextureRenderer::instance().clear_all_video_textures_next_frame();
 
     reset_before_decode_start();
     DecodingStatistcs::instance().set_primary_stream_frame_format("MMAL waiting");
     DecodingStatistcs::instance().set_decoding_type("HW");
+    bool cb_set=false;
 
     bool has_keyframe_data=false;
     int feed_frame_error_count=0;
@@ -889,36 +892,55 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp_and_mmal_direct(cons
              has_keyframe_data=true;
              continue;
         }else{
-           std::shared_ptr<NALU> buf=nullptr;
-            while(buf==nullptr){
-			    // for some weird reason, using the queue with a waking up approach doesn't work on rpi.
-				// doesn't work == by using a timeout, we get incredibly high parse & enqueue time (in the 250ms range)
-				// It doesn't make sense from a sw standpoint, but we unfortunately need to use a
-				// "wake upd in regular intervalls and fetch latest" approach here.
-				// This doesn't work
-                //buf=m_rtp_receiver->get_next_frame(std::chrono::milliseconds(5));
-				// This works
-                std::this_thread::sleep_for(std::chrono::milliseconds(5));
-                buf=m_rtp_receiver->get_next_frame(std::nullopt);
-                if(request_restart){
-                    request_restart=false;
-                    goto finish;
-                }
+            if(!cb_set){
+                auto cb=[this,&mmal_decode_display,&feed_frame_error_count](std::shared_ptr<NALU> buf){
+                    const bool feed_frame_success=mmal_decode_display->feed_frame(buf->getData(),buf->getSize(),std::chrono::milliseconds(8));
+                    //const auto duration_feed_frame=std::chrono::steady_clock::now()-before_feed_frame;
+                    //qDebug()<<"feed frame time:"<<MyTimeHelper::R(duration_feed_frame).c_str();
+                    if(!feed_frame_success){
+                        qDebug()<<"MMAL - cannot feed frame";
+                        feed_frame_error_count++;
+                    }
+                    const auto delay=std::chrono::steady_clock::now()-buf->creationTime;
+                    avg_parse_time.add(delay);
+                    avg_parse_time.custom_print_in_intervals(std::chrono::seconds(3),[](const std::string name,const std::string message){
+                        //qDebug()<<name.c_str()<<":"<<message.c_str();
+                        DecodingStatistcs::instance().set_parse_and_enqueue_time(message.c_str());
+                    });
+                };
+                m_rtp_receiver->register_new_nalu_callback(cb);
+                cb_set=true;
             }
-             //const auto before_feed_frame=std::chrono::steady_clock::now();
-             const bool feed_frame_success=mmal_decode_display->feed_frame(buf->getData(),buf->getSize());
-             //const auto duration_feed_frame=std::chrono::steady_clock::now()-before_feed_frame;
-             //qDebug()<<"feed frame time:"<<MyTimeHelper::R(duration_feed_frame).c_str();
-             if(!feed_frame_success){
-                 feed_frame_error_count++;
+            std::this_thread::sleep_for(std::chrono::milliseconds(500));
+            /*std::shared_ptr<NALU> buf=nullptr;
+             while(buf==nullptr){
+                 // for some weird reason, using the queue with a waking up approach doesn't work on rpi.
+                 // doesn't work == by using a timeout, we get incredibly high parse & enqueue time (in the 250ms range)
+                 // It doesn't make sense from a sw standpoint, but we unfortunately need to use a
+                 // "wake upd in regular intervalls and fetch latest" approach here.
+                 // This doesn't work
+                 //buf=m_rtp_receiver->get_next_frame(std::chrono::milliseconds(5));
+                 // This works
+                 std::this_thread::sleep_for(std::chrono::milliseconds(5));
+                 buf=m_rtp_receiver->get_next_frame(std::nullopt);
+                 if(request_restart){
+                     request_restart=false;
+                     goto finish;
+                 }
              }
-             const auto delay=std::chrono::steady_clock::now()-buf->creationTime;
-             avg_parse_time.add(delay);
-             avg_parse_time.custom_print_in_intervals(std::chrono::seconds(3),[](const std::string name,const std::string message){
-                 //qDebug()<<name.c_str()<<":"<<message.c_str();
-                 DecodingStatistcs::instance().set_parse_and_enqueue_time(message.c_str());
-             });
-             TextureRenderer::instance().clear_all_video_textures_next_frame();
+              //const auto before_feed_frame=std::chrono::steady_clock::now();
+              const bool feed_frame_success=mmal_decode_display->feed_frame(buf->getData(),buf->getSize());
+              //const auto duration_feed_frame=std::chrono::steady_clock::now()-before_feed_frame;
+              //qDebug()<<"feed frame time:"<<MyTimeHelper::R(duration_feed_frame).c_str();
+              if(!feed_frame_success){
+                  feed_frame_error_count++;
+              }
+              const auto delay=std::chrono::steady_clock::now()-buf->creationTime;
+              avg_parse_time.add(delay);
+              avg_parse_time.custom_print_in_intervals(std::chrono::seconds(3),[](const std::string name,const std::string message){
+                  //qDebug()<<name.c_str()<<":"<<message.c_str();
+                  DecodingStatistcs::instance().set_parse_and_enqueue_time(message.c_str());
+              });*/
         }
     }
 finish:
