@@ -68,7 +68,8 @@ Settings {
     property string font_text: "Sans Serif"
 
     // animation smoothing value, in ms
-    property int smoothing: 250
+    // Note that low fps like on embedded devices also adds some latency - because of that, default to 100ms here
+    property int smoothing: 100
 
     property string bar_behavior: "red"
 
