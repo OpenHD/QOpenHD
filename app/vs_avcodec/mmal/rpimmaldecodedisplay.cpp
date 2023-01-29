@@ -77,6 +77,8 @@ bool RPIMMalDecodeDisplay::initialize(const uint8_t *config_data, const int conf
     m_status = mmal_port_enable(m_decoder->control, control_callback);
     CHECK_STATUS(m_status, "failed to enable control port");
 
+	// NOTE: fps seems to have no effect
+	qDebug()<<"Configuring rpi mmal with "<<width<<"x"<<height<<"@"<<fps;
     //
     // Set format of video decoder input port
     MMAL_ES_FORMAT_T* format_in = m_decoder->input[0]->format;
@@ -91,8 +93,6 @@ bool RPIMMalDecodeDisplay::initialize(const uint8_t *config_data, const int conf
     // We don't need this, since we set MMAL_BUFFER_HEADER_FLAG_FRAME_END for each frame
     // If the data is known to be framed then the following flag should be set:
     //format_in->flags |= MMAL_ES_FORMAT_FLAG_FRAMED;
-
-    qDebug()<<"X1";
 
     //SOURCE_READ_CODEC_CONFIG_DATA(codec_header_bytes, codec_header_bytes_size);
     //m_status = mmal_format_extradata_alloc(format_in, codec_header_bytes_size);
@@ -125,7 +125,7 @@ bool RPIMMalDecodeDisplay::initialize(const uint8_t *config_data, const int conf
 
     m_pool_in = mmal_pool_create(m_decoder->input[0]->buffer_num,m_decoder->input[0]->buffer_size);
 
-    qDebug()<<"X2";
+    qDebug()<<"Done creating m_pool_in";
 
     m_context.queue = mmal_queue_create();
 
@@ -139,10 +139,8 @@ bool RPIMMalDecodeDisplay::initialize(const uint8_t *config_data, const int conf
     m_status = mmal_graph_new_connection(m_graph, m_decoder->output[0], m_renderer->input[0],  0, NULL);
     CHECK_STATUS(m_status, "failed to connect decoder to renderer");
 
-    qDebug()<<"X3";
+    qDebug()<<"done mmal_graph_new_connection";
 
-     // Start playback
-    fprintf(stderr, "start");
     m_status = mmal_graph_enable(m_graph, NULL, NULL);
     CHECK_STATUS(m_status, "failed to enable graph");
 
@@ -152,14 +150,21 @@ bool RPIMMalDecodeDisplay::initialize(const uint8_t *config_data, const int conf
 }
 
 
-bool RPIMMalDecodeDisplay::feed_frame(const uint8_t *frame_data, const int frame_data_size)
+bool RPIMMalDecodeDisplay::feed_frame(const uint8_t *frame_data, const int frame_data_size,std::optional<std::chrono::milliseconds> opt_upper_wait_limit)
 {
     //qDebug()<<"RPIMMALDecoder::feed_frame";
     //if(true)return;
 
+    const auto begin=std::chrono::steady_clock::now();
     MMAL_BUFFER_HEADER_T *buffer=nullptr;
 
     while (true) {
+        if(opt_upper_wait_limit){
+            const auto elapsed=std::chrono::steady_clock::now()-begin;
+            if(elapsed>=opt_upper_wait_limit.value()){
+                return false;
+            }
+        }
 
         // We first try and get a frame from the input pool without waiting on the semaphore -
         // Quite likely there is one available immediately
@@ -199,7 +204,12 @@ bool RPIMMalDecodeDisplay::feed_frame(const uint8_t *frame_data, const int frame
         }
         // If we didn't get a buffer the first time, we wait on the semaphore kicked off by the callback that is called
         // when there is a new buffer available
-        vcos_semaphore_wait(&m_context.semaphore);
+        if(opt_upper_wait_limit){
+             const uint32_t wait_ms=5; // We keep the thread busy a bit by purpose
+             vcos_semaphore_wait_timeout(&m_context.semaphore,wait_ms);
+        }else{
+            vcos_semaphore_wait(&m_context.semaphore);
+        }
     }
     return true;
 }

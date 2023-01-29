@@ -10,6 +10,8 @@
 //#include "interface/mmal/util/mmal_util_params.h"
 
 #include <cstdint>
+#include <optional>
+#include <chrono>
 
 
 /** Context for our application */
@@ -29,7 +31,7 @@ public:
     // similar for fps, seems to have no effect anyways.
     bool initialize(const uint8_t* config_data,const int config_data_size,int width,int height,int fps);
 
-    bool feed_frame(const uint8_t* frame_data,const int frame_data_size);
+    bool feed_frame(const uint8_t* frame_data,const int frame_data_size,std::optional<std::chrono::milliseconds> opt_upper_wait_limit=std::nullopt);
 
     void cleanup();
 

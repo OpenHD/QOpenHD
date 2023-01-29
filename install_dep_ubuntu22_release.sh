@@ -27,17 +27,5 @@ apt -y install libgstreamer-plugins-base1.0-dev gstreamer1.0-plugins-good qtgstr
 apt -y install libgles2-mesa-dev
 
 
-# they are needed to build and install mavsdk
-apt -y install pip ruby
-pip install future
-gem install fpm
-
-# build and install mavsdk
-
-
-cd lib/MAVSDK
-cmake -Bbuild/default -DBUILD_SHARED_LIBS=OFF -DCMAKE_BUILD_TYPE=Release -H.
-cmake --build build/default -j4
-sudo cmake --build build/default --target install
-#sudo ldconfig
-cd ../../
+# See script for more info
+bash build_install_mavsdk_static.sh || exit 1

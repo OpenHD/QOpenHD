@@ -115,15 +115,9 @@ ApplicationWindow {
             onSettingsButtonClicked: {
                 settings_panel.openSettings();
             }
-
-            transform: Scale {
-                origin.x: 0 + (settings.stereo_osd_left_x)
-                origin.y: hudOverlayGrid.height / 2
-                xScale: settings.stereo_enable ? 0.5*(settings.stereo_osd_size/100) : 1.0
-                yScale: settings.stereo_enable ? 0.5*(settings.stereo_osd_size/100) : 1.0
-            }
-
-            layer.enabled: true
+            // Performance seems to be better on embedded devices like
+            // rpi with layers disabled (aka default) but this is not exact science
+            layer.enabled: false
         }
 
         OSDCustomizer {

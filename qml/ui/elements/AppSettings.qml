@@ -68,7 +68,8 @@ Settings {
     property string font_text: "Sans Serif"
 
     // animation smoothing value, in ms
-    property int smoothing: 250
+    // Note that low fps like on embedded devices also adds some latency - because of that, default to 100ms here
+    property int smoothing: 100
 
     property string bar_behavior: "red"
 
@@ -309,7 +310,9 @@ Settings {
     property double vibration_opacity: 1
     property double vibration_size: 1
 
-    property bool show_vsi: true
+    // Disabled by default, since it has a quite big impact on draw call performance on embedded devices
+    // like rpi
+    property bool show_vsi: false
     property double vsi_opacity: 1
     property int vsi_max: 20
     property double vsi_size: 1
@@ -365,13 +368,6 @@ Settings {
     property double aoa_max: 20
 
     property bool show_example_widget: false
-
-    property bool stereo_enable: false
-
-    property int stereo_mode: 0
-    property int stereo_osd_left_x: 0
-    property int stereo_osd_right_x: 0
-    property int stereo_osd_size: 0
 
     property int dev_qopenhd_n_cameras:1
 
