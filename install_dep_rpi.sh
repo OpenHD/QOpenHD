@@ -26,6 +26,6 @@ pip3 install future
 sed -i 's/util\/\mmal_connection.h/mmal_connection.h/g' /usr/include/interface/mmal/util/mmal_graph.h
 
 # See script for more info
-./build_install_mavsdk_static.sh || exit 1
+bash build_install_mavsdk_static.sh || exit 1
 
 
