@@ -18,10 +18,7 @@ ln -s /usr/local/bin/ruby /usr/bin/ruby
 
 gem install fpm
 
-cd lib/MAVSDK
-cmake -Bbuild/default -DBUILD_SHARED_LIBS=OFF -DCMAKE_BUILD_TYPE=Release -H.
-cmake --build build/default -j4
-sudo cmake --build build/default --target install
-cd ../../
+# See script for more info
+./build_install_mavsdk_static.sh || exit 1
 
 
