@@ -13,6 +13,7 @@ curl -1sLf \
   'https://dl.cloudsmith.io/public/openhd/openhd-2-2-dev/setup.deb.sh' \
   | sudo -E bash
 apt install -y openhd-qt-x86-jammy
+gem install fpm
 
 #linking qt for x86 jammy
 
