@@ -10,7 +10,7 @@ apt -y install pip tee
 pip install future
 
 # See script for more info
-./lib/build_install_mavsdk_static.sh || exit 1
+./build_install_mavsdk_static.sh || exit 1
 
 
 
