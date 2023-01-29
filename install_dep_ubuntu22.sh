@@ -5,16 +5,6 @@ apt -y install libavcodec-dev libavformat-dev
 # Note on pi / your PC this should be already installed, be carefully to pick the right one otherwise
 apt -y install libgles2-mesa-dev
 
-# they are needed to build and install mavsdk
-apt -y install pip tee
-pip install future
-
-# See script for more info
-./build_install_mavsdk_static.sh || exit 1
-
-
-
-
 # Install all the dependencies needed to build QOpenHD from source.
 curl -1sLf \
   'https://dl.cloudsmith.io/public/openhd/openhd-2-2-evo/setup.deb.sh' \
@@ -38,3 +28,5 @@ sudo ln -s /opt/Qt5.15.7/bin/qmake qmake
 apt -y install libgstreamer-plugins-base1.0-dev gstreamer1.0-plugins-good qtgstreamer-plugins-qt5
 
 
+# See script for more info
+./build_install_mavsdk_static.sh || exit 1
