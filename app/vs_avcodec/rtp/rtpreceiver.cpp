@@ -90,7 +90,7 @@ RTPReceiver::~RTPReceiver()
     return ret;
  }
 
-void RTPReceiver::register_new_nalu_callbac(NEW_NALU_CALLBACK cb){
+void RTPReceiver::register_new_nalu_callback(NEW_NALU_CALLBACK cb){
     std::lock_guard<std::mutex> lock(m_new_nalu_data_cb_mutex);
     m_new_nalu_cb=cb;
 }
