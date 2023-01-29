@@ -9,18 +9,8 @@ apt -y install libgles2-mesa-dev
 apt -y install pip tee
 pip install future
 
-# build and install mavsdk
-
-
-cd lib/MAVSDK
-cmake -Bbuild/default -DBUILD_SHARED_LIBS=OFF -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=OFF -H.
-cmake --build build/default -j4
-sudo cmake --build build/default --target install
-#sudo ldconfig
-
-ls /usr/local/include/mavsdk
-ls /usr/local/lib
-cd ../../
+# See script for more info
+./lib/build_install_mavsdk_static.sh || exit 1
 
 
 
