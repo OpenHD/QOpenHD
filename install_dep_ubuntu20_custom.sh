@@ -23,16 +23,5 @@ apt -y install libqt5texttospeech5-dev
 apt -y install libavcodec-dev libavformat-dev
 apt -y install libgstreamer-plugins-base1.0-dev gstreamer1.0-plugins-good qtgstreamer-plugins-qt5
 
-# Note on pi / your PC this should be already installed, be carefully to pick the right one otherwise
-
-# they are needed to build and install mavsdk
-apt -y install pip
-pip install future
-
-# build and install mavsdk
-cd lib/MAVSDK
-cmake -Bbuild/default -DCMAKE_BUILD_TYPE=Release -H.
-cmake --build build/default -j4
-sudo cmake --build build/default --target install
-sudo ldconfig
-cd ../../
+# See script for more info
+source build_install_mavsdk_static.sh || exit 1

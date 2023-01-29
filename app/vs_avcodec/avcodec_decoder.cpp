@@ -896,6 +896,7 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp_and_mmal_direct(cons
              has_keyframe_data=true;
              continue;
         }else{
+		  // Switch over to a callback-based approach for lower latency. mmal already has a frame queue, so we don't need an extra one
             if(!cb_set){
                 auto cb=[this,&mmal_decode_display,&feed_frame_error_count,&m_last_log_decoder_unhealty](std::shared_ptr<NALU> buf){
                     const bool feed_frame_success=mmal_decode_display->feed_frame(buf->getData(),buf->getSize(),std::chrono::milliseconds(8));
