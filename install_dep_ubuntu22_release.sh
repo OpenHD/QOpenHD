@@ -28,4 +28,4 @@ apt -y install libgles2-mesa-dev
 
 
 # See script for more info
-./build_install_mavsdk_static.sh || exit 1
+source build_install_mavsdk_static.sh || exit 1

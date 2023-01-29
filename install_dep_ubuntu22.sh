@@ -12,7 +12,7 @@ curl -1sLf \
 curl -1sLf \
   'https://dl.cloudsmith.io/public/openhd/openhd-2-2-dev/setup.deb.sh' \
   | sudo -E bash
-apt install -y openhd-qt-x86-jammy  
+apt install -y openhd-qt-x86-jammy
 
 #linking qt for x86 jammy
 
@@ -29,4 +29,4 @@ apt -y install libgstreamer-plugins-base1.0-dev gstreamer1.0-plugins-good qtgstr
 
 
 # See script for more info
-source build_install_mavsdk_static.sh
+source build_install_mavsdk_static.sh || exit 1
