@@ -38,7 +38,7 @@ public:
     // available. Note that care needs to be taken to not perform any blocking operation(s) in this callback -
     // aka the decoder should have a queue internally when using this mode. Can decrease latency (scheduling latency) though
     typedef std::function<void(std::shared_ptr<NALU>)> NEW_NALU_CALLBACK;
-    void register_new_nalu_callbac(NEW_NALU_CALLBACK cb);
+    void register_new_nalu_callback(NEW_NALU_CALLBACK cb);
 
     std::shared_ptr<std::vector<uint8_t>> get_config_data();
     bool config_has_changed_during_decode=false;
