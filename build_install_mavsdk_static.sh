@@ -1,4 +1,4 @@
-#bin/bash
+#!/bin/bash
 
 cd lib/MAVSDK
 cmake -Bbuild/default -DBUILD_SHARED_LIBS=OFF -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=OFF -H.
