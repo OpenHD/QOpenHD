@@ -113,15 +113,9 @@ You can then open `QOpenHD.pro` using Qt Creator and set up the Android kit (lef
 
 
 # Building MAVSDK (REQUIRED)
-QOpenHD relies on MAVSDK library. After recursively cloning qopenhd build this library:
+QOpenHD relies on MAVSDK library. After recursively cloning qopenhd you have to build and install it once:
 
-`cd lib/MAVSDK`
-
-`cmake -Bbuild/default -DCMAKE_BUILD_TYPE=Release -H.`
-
-`cmake --build build/default -j4`
-
-`sudo cmake --build build/default --target install`
+`./build_install_mavsdk_static.sh`
 
 After that, you can build QOpenHD by either opening it in QT Creator (recommended) or building it with the following commands:
 
