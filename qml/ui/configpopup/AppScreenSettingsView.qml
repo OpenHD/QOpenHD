@@ -205,6 +205,14 @@ ScrollView {
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.horizontalCenter: parent.horizonatalCenter
                     width: 320
+                    popup.contentItem {
+                        transform: [ Rotation { angle: settings.general_screen_rotation } ]
+                        transformOrigin: Item.TopLeft
+                    }
+                    popup.background {
+                        transform: [ Rotation { angle: settings.general_screen_rotation } ]
+                        transformOrigin: Item.TopLeft
+                    }
                     model: ListModel {
                         id: screen_rotations
                         ListElement { text: qsTr("0°") ; value: 0 }

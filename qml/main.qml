@@ -1,3 +1,4 @@
+
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Controls.Styles 1.4
@@ -44,7 +45,9 @@ ApplicationWindow {
     // NOTE: If this creates issues, just comment it out - I'd love to get rid of it as soon as we can.
     Item{
         rotation: settings.general_screen_rotation
-        anchors.fill: parent
+        anchors.centerIn: parent
+        width: (settings.general_screen_rotation == 90 || settings.general_screen_rotation == 270) ? parent.height : parent.width
+        height: (settings.general_screen_rotation == 90 || settings.general_screen_rotation == 270) ? parent.width : parent.height
 
         // Local app settings. Uses the "user defaults" system on Mac/iOS, the Registry on Windows,
         // and equivalent settings systems on Linux and Android
