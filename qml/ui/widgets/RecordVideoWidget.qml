@@ -29,9 +29,7 @@ BaseWidget {
     widgetActionWidth: 200
     widgetActionHeight: 190
 
-    property var instanceMavlinkSettingsModel: _airPiSettingsModel
-
-    widgetActionComponent: ScrollView{
+   widgetActionComponent: ScrollView{
 
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
         clip: true
@@ -58,7 +56,7 @@ BaseWidget {
                 text_off: qsTr("Record Video")
                 onCheckedChanged: {
                     if (checked == true) {
-                        widgetInner.rec=instanceMavlinkSettingsModel.try_update_parameter_int(V_AIR_RECORDING,1)
+                        widgetInner.rec=_airCameraSettingsModel.try_update_parameter_int("V_AIR_RECORDING",1)
                         //here should also be an update "space-left" action
                         airVideoSpaceLeft.text="2GB" //just a mockup
 
@@ -84,9 +82,9 @@ BaseWidget {
                 text_off: qsTr("Stop Recording")
                 onCheckedChanged: {
                     if (checked == true) {
-                        widgetInner.rec=instanceMavlinkSettingsModel.try_update_parameter_int(V_AIR_RECORDING,0)
+                        widgetInner.rec=_airCameraSettingsModel.try_update_parameter_int("V_AIR_RECORDING",0)
                         //here should also be an update "space-left" action
-                        airVideoSpaceLeft.text="2GB" //just a mockup
+                        airVideoSpaceLeft.text="3GB" //just a mockup
                     }
                 }
             }
