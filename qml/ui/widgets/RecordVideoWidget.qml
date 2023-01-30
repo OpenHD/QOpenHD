@@ -34,6 +34,12 @@ BaseWidget {
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
         clip: true
 
+        Item {
+            id:vars
+            property bool rec: false
+            property bool ret: false
+        }
+
         ColumnLayout{
             id:recID
             width: 400
@@ -56,10 +62,14 @@ BaseWidget {
                 text_off: qsTr("Record Video")
                 onCheckedChanged: {
                     if (checked == true) {
-                        widgetInner.rec=_airCameraSettingsModel.try_update_parameter_int("V_AIR_RECORDING",1)
-                        //here should also be an update "space-left" action
-                        airVideoSpaceLeft.text="2GB" //just a mockup
-
+                        vars.ret=_airCameraSettingsModel.try_update_parameter_int("V_AIR_RECORDING",1)
+                        if (vars.ret==true){
+                            vars.rec=true
+                            vars.ret=false
+                            record_status.text="ON"
+                            record_status.color="green"
+                        }
+                        console.log(vars.rec)
                     }
                 }
             }
@@ -82,9 +92,14 @@ BaseWidget {
                 text_off: qsTr("Stop Recording")
                 onCheckedChanged: {
                     if (checked == true) {
-                        widgetInner.rec=_airCameraSettingsModel.try_update_parameter_int("V_AIR_RECORDING",0)
-                        //here should also be an update "space-left" action
-                        airVideoSpaceLeft.text="3GB" //just a mockup
+                        vars.ret=_airCameraSettingsModel.try_update_parameter_int("V_AIR_RECORDING",0)
+                        if (vars.ret==true){
+                            vars.rec=false
+                            vars.ret=false
+                            record_status.text="OFF"
+                            record_status.color="red"
+                        }
+                        console.log(vars.rec)
                     }
                 }
             }
@@ -96,8 +111,6 @@ BaseWidget {
 
     Item {
         id: widgetInner
-        property bool rec: false
-
         anchors.fill: parent
                 Text {
                     text: qsTr("Record Video");
@@ -115,20 +128,8 @@ BaseWidget {
                 }
                 Text {
                     id:record_status
-                    text: {
-                        text = qsTr("OFF")
-                        if(widgetInner.rec == false)
-                            text = qsTr("OFF")
-                        if(widgetInner.rec == true)
-                            text = qsTr("ON")
-                     }
-                    color: {
-                           color = "red"
-                           if(widgetInner.rec == false)
-                               color = "red"
-                           if(widgetInner.rec == true)
-                               color = "green"
-                        }
+                    text: "OFF"
+                    color: "red"
                     anchors.fill: parent
                     anchors.leftMargin: 95
                     verticalAlignment: Text.AlignVCenter
@@ -156,7 +157,7 @@ BaseWidget {
                 }
                 Text {
                     id:airVideoSpaceLeft
-                    text: qsTr("UNKNOWN");
+                    text: _ohdSystemAir.curr_v3d_freq_mhz+" MB"
                     color: "green"
                     anchors.fill: parent
                     anchors.leftMargin: 95
