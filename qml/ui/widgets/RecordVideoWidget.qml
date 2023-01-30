@@ -157,7 +157,7 @@ BaseWidget {
                 }
                 Text {
                     id:airVideoSpaceLeft
-                    text: _ohdSystemAir.curr_v3d_freq_mhz+" MB"
+                    text: _ohdSystemAir.curr_space_left_mb+" MB"
                     color: "green"
                     anchors.fill: parent
                     anchors.leftMargin: 95
