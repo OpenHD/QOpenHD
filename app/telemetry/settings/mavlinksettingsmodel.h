@@ -16,6 +16,7 @@
 // NOTE: R.n the enum / parameter validation needs to be duplicated in both OpenHD and QOpenHD.
 // Eventually we'l migrate to the proper way, which is fetching something like this:
 // https://github.com/mavlink/mavlink/blob/master/component_metadata/parameter.schema.json
+// https://mavlink.io/en/services/parameter.html
 class MavlinkSettingsModel : public QAbstractListModel
 {
     Q_OBJECT
@@ -28,6 +29,9 @@ public:
     static MavlinkSettingsModel& instanceAir();
     // general, ground (mostly link)
     static MavlinkSettingsModel& instanceGround();
+    // TODO theoretically, we could allow the user to change parameters on the FC itself
+    // (aka what for example mission planner would show)
+    //static MavlinkSettingsModel& instanceFC();
 
     // parameters that need to be synchronized are white-listed
     static std::map<std::string,void*> get_whitelisted_params();
@@ -37,7 +41,8 @@ public:
 
     explicit MavlinkSettingsModel(uint8_t sys_id,uint8_t comp_id,QObject *parent = nullptr);
 public:
-    void set_param_client(std::shared_ptr<mavsdk::System> system);
+    // any instance of this class is only usable as soon as its corresponding system is set
+    void set_param_client(std::shared_ptr<mavsdk::System> system,bool autoload_all_params=true);
 private:
     std::shared_ptr<mavsdk::Param> param_client=nullptr;
     std::shared_ptr<mavsdk::System> m_system=nullptr;

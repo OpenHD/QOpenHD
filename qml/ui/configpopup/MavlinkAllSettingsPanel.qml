@@ -40,6 +40,9 @@ Item {
           TabButton {
               text: qsTr("Ground (TMP)")
           }
+          //TabButton {
+          //    text: qsTr("FC (EXP)")
+          //}
     }
 
     // placed right below the top bar
@@ -83,6 +86,13 @@ Item {
               m_instanceMavlinkSettingsModel: _groundPiSettingsModel
               m_instanceCheckIsAvlie: _ohdSystemGround
           }
+          // EXP
+          /*MavlinkParamPanel{
+              id: x4_fcSettingsPanel
+              m_name: "FC"
+              m_instanceMavlinkSettingsModel: _fcSettingsModel
+              m_instanceCheckIsAvlie: _fcMavlinkSystem
+          }*/
       }
 
 }
