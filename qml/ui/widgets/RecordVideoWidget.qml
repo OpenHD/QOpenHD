@@ -26,8 +26,8 @@ BaseWidget {
 
     hasWidgetDetail: false
     hasWidgetAction: true
-    widgetActionWidth: 200
-    widgetActionHeight: 170
+    widgetActionWidth: 220
+    widgetActionHeight: (settings.dev_qopenhd_n_cameras > 1) ? 95 : 60
 
    widgetActionComponent: ScrollView{
 
@@ -44,7 +44,7 @@ BaseWidget {
             id:recID
             width: 400
             ConfirmSlider {
-
+                id:cam1rec
                 visible: true
                 text_off: qsTr("Record CAM1")
                 onCheckedChanged: {
@@ -56,6 +56,8 @@ BaseWidget {
                             record_status_cam1.text="CAM1"
                             record_status_cam1.color="green"
                             _hudLogMessagesModel.signalAddLogMessage(6,"recording cam1 started")
+                            cam1stop.visible= true
+                            cam1rec.visible= false
                         }
                         else {
                             _hudLogMessagesModel.signalAddLogMessage(4,"couldn't start cam1 recording")
@@ -64,8 +66,8 @@ BaseWidget {
                 }
             }
             ConfirmSlider {
-
-                visible: true
+                id:cam1stop
+                visible: false
                 text_off: qsTr("Stop Rec CAM1")
                 onCheckedChanged: {
                     if (checked == true) {
@@ -76,6 +78,8 @@ BaseWidget {
                             record_status_cam1.text="CAM1"
                             record_status_cam1.color="red"
                             _hudLogMessagesModel.signalAddLogMessage(6,"recording cam1 stopped")
+                            cam1stop.visible= false
+                            cam1rec.visible= true
                         }
                         else {
                             _hudLogMessagesModel.signalAddLogMessage(4,"couldn't stop cam1 recording")
@@ -84,8 +88,8 @@ BaseWidget {
                 }
             }
             ConfirmSlider {
-
-                visible: true
+                id:cam2rec
+                visible: settings.dev_qopenhd_n_cameras > 1
                 text_off: qsTr("Record CAM2")
                 onCheckedChanged: {
                     if (checked == true) {
@@ -96,6 +100,8 @@ BaseWidget {
                             record_status_cam2.text="CAM2"
                             record_status_cam2.color="green"
                             _hudLogMessagesModel.signalAddLogMessage(6,"recording cam2 started")
+                            cam2stop.visible= true
+                            cam2rec.visible= false
                         }
                         else {
                             _hudLogMessagesModel.signalAddLogMessage(4,"couldn't start cam2 recording")
@@ -104,8 +110,8 @@ BaseWidget {
                 }
             }
             ConfirmSlider {
-
-                visible: true
+                id:cam2stop
+                visible: settings.dev_qopenhd_n_cameras > 1
                 text_off: qsTr("Stop Rec CAM2")
                 onCheckedChanged: {
                     if (checked == true) {
@@ -116,6 +122,8 @@ BaseWidget {
                             record_status_cam2.text="CAM2"
                             record_status_cam2.color="red"
                             _hudLogMessagesModel.signalAddLogMessage(6,"recording cam2 stopped")
+                            cam2stop.visible= false
+                            cam2rec.visible= true
                         }
                         else {
                             _hudLogMessagesModel.signalAddLogMessage(4,"couldn't stop recording cam2")
@@ -174,7 +182,7 @@ BaseWidget {
                     font.family: settings.font_text
                     style: Text.Outline
                     styleColor: settings.color_glow
-                    visible: true
+                    visible: settings.dev_qopenhd_n_cameras > 1
                 }
                 Text {
                     text: qsTr("Free Space");
@@ -193,7 +201,7 @@ BaseWidget {
                 Text {
                     id:airVideoSpaceLeft
                     text: _ohdSystemAir.curr_space_left_mb+" MB"
-                    color: "green"
+                    color: (_ohdSystemAir.curr_space_left_mb < 500) ? "red" : "green"
                     anchors.fill: parent
                     anchors.leftMargin: 95
                     anchors.topMargin: -30
