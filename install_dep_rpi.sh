@@ -19,6 +19,12 @@ pip3 install future
 sed -i 's/util\/\mmal_connection.h/mmal_connection.h/g' /usr/include/interface/mmal/util/mmal_graph.h
 
 # See script for more info
-bash build_install_mavsdk_static.sh || exit 1
+#bash build_install_mavsdk_static.sh || exit 1
 
+#try the old way just for the sake of it
+cd lib/MAVSDK
+cmake -Bbuild/default -DBUILD_SHARED_LIBS=OFF -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=OFF -H.
+cmake --build build/default -j4
+sudo cmake --build build/default --target install
+cd ../../
 
