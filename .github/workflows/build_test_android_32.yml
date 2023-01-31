@@ -85,8 +85,7 @@ jobs:
           ANDROID_NDK_LATEST_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
           ANDROID_NDK: ${{ steps.setup-ndk.outputs.ndk-path }}
         run:  |
-            ls -a ..
-            qmake ..
+            qmake ${SOURCE_DIR}/QOpenHD.pro 
             make -j$(($(nproc)/2))
 
       - name: ccache post-run
