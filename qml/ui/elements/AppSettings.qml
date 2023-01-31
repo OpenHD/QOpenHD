@@ -374,4 +374,6 @@ Settings {
     // N of battery cells (generic) of the vehicle, used for the show voltage per cell setting
     // Proper way would be to query / get that via mavlink, but this is more complicated than it seems at glance
     property int vehicle_battery_n_cells: 3
+
+    property bool enable_widget_air_recording: true
 }

@@ -111,6 +111,7 @@ void MavlinkTelemetry::onNewSystem(std::shared_ptr<mavsdk::System> system){
                 return true;
             });
         }
+        //MavlinkSettingsModel::instanceFC().set_param_client(system);
     }
 }
 

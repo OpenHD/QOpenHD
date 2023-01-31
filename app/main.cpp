@@ -273,6 +273,8 @@ int main(int argc, char *argv[]) {
     engine.rootContext()->setContextProperty("_airCameraSettingsModel2", &MavlinkSettingsModel::instanceAirCamera2());
     engine.rootContext()->setContextProperty("_airPiSettingsModel", &MavlinkSettingsModel::instanceAir());
     engine.rootContext()->setContextProperty("_groundPiSettingsModel", &MavlinkSettingsModel::instanceGround());
+    // exp
+    //engine.rootContext()->setContextProperty("_fcSettingsModel", &MavlinkSettingsModel::instanceFC());
     engine.rootContext()->setContextProperty("_synchronizedSettings", &SynchronizedSettings::instance());
 
 #ifdef QOPENHD_ENABLE_GSTREAMER
