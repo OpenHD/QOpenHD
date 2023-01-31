@@ -55,8 +55,11 @@ BaseWidget {
                             vars.ret=false
                             record_status_cam1.text="CAM1"
                             record_status_cam1.color="green"
+                            _hudLogMessagesModel.signalAddLogMessage(6,"recording cam1 started")
                         }
-                        console.log(vars.rec)
+                        else {
+                            _hudLogMessagesModel.signalAddLogMessage(4,"couldn't start cam1 recording")
+                        }
                     }
                 }
             }
@@ -72,8 +75,11 @@ BaseWidget {
                             vars.ret=false
                             record_status_cam1.text="CAM1"
                             record_status_cam1.color="red"
+                            _hudLogMessagesModel.signalAddLogMessage(6,"recording cam1 stopped")
                         }
-                        console.log(vars.rec)
+                        else {
+                            _hudLogMessagesModel.signalAddLogMessage(4,"couldn't stop cam1 recording")
+                        }
                     }
                 }
             }
@@ -89,8 +95,11 @@ BaseWidget {
                             vars.ret=false
                             record_status_cam2.text="CAM2"
                             record_status_cam2.color="green"
+                            _hudLogMessagesModel.signalAddLogMessage(6,"recording cam2 started")
                         }
-                        console.log(vars.rec)
+                        else {
+                            _hudLogMessagesModel.signalAddLogMessage(4,"couldn't start cam2 recording")
+                        }
                     }
                 }
             }
@@ -106,8 +115,11 @@ BaseWidget {
                             vars.ret=false
                             record_status_cam2.text="CAM2"
                             record_status_cam2.color="red"
+                            _hudLogMessagesModel.signalAddLogMessage(6,"recording cam2 stopped")
                         }
-                        console.log(vars.rec)
+                        else {
+                            _hudLogMessagesModel.signalAddLogMessage(4,"couldn't stop recording cam2")
+                        }
                     }
                 }
             }
