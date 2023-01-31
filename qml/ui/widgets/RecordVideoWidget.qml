@@ -14,7 +14,7 @@ BaseWidget {
     width: 256
     height: 48
 
-    visible: settings.enable_widget_air_recording
+    visible: settings.show_record_widget
 
     widgetIdentifier: "record_video_widget"
 
@@ -27,7 +27,7 @@ BaseWidget {
     hasWidgetDetail: false
     hasWidgetAction: true
     widgetActionWidth: 200
-    widgetActionHeight: 190
+    widgetActionHeight: 170
 
    widgetActionComponent: ScrollView{
 
@@ -43,61 +43,69 @@ BaseWidget {
         ColumnLayout{
             id:recID
             width: 400
-                Item {
-                width: parent.width
-                height: 32
-                Text {
-                    text: qsTr("Enable Recording")
-                    color: "white"
-                    font.bold: true
-                    height: parent.height
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-            }
             ConfirmSlider {
 
                 visible: true
-                text_off: qsTr("Record Video")
+                text_off: qsTr("Record CAM1")
                 onCheckedChanged: {
                     if (checked == true) {
                         vars.ret=_airCameraSettingsModel.try_update_parameter_int("V_AIR_RECORDING",1)
                         if (vars.ret==true){
                             vars.rec=true
                             vars.ret=false
-                            record_status.text="ON"
-                            record_status.color="green"
+                            record_status_cam1.text="CAM1"
+                            record_status_cam1.color="green"
                         }
                         console.log(vars.rec)
                     }
                 }
             }
-            Item {
-                width: parent.width
-                height: 32
-                Text {
-                    text: qsTr("Disable Recording")
-                    color: "white"
-                    font.bold: true
-                    height: parent.height
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-            }
             ConfirmSlider {
 
                 visible: true
-                text_off: qsTr("Stop Recording")
+                text_off: qsTr("Stop Rec CAM1")
                 onCheckedChanged: {
                     if (checked == true) {
                         vars.ret=_airCameraSettingsModel.try_update_parameter_int("V_AIR_RECORDING",0)
                         if (vars.ret==true){
                             vars.rec=false
                             vars.ret=false
-                            record_status.text="OFF"
-                            record_status.color="red"
+                            record_status_cam1.text="CAM1"
+                            record_status_cam1.color="red"
+                        }
+                        console.log(vars.rec)
+                    }
+                }
+            }
+            ConfirmSlider {
+
+                visible: true
+                text_off: qsTr("Record CAM2")
+                onCheckedChanged: {
+                    if (checked == true) {
+                        vars.ret=_airCameraSettingsModel2.try_update_parameter_int("V_AIR_RECORDING",1)
+                        if (vars.ret==true){
+                            vars.rec=true
+                            vars.ret=false
+                            record_status_cam2.text="CAM2"
+                            record_status_cam2.color="green"
+                        }
+                        console.log(vars.rec)
+                    }
+                }
+            }
+            ConfirmSlider {
+
+                visible: true
+                text_off: qsTr("Stop Rec CAM2")
+                onCheckedChanged: {
+                    if (checked == true) {
+                        vars.ret=_airCameraSettingsModel2.try_update_parameter_int("V_AIR_RECORDING",0)
+                        if (vars.ret==true){
+                            vars.rec=false
+                            vars.ret=false
+                            record_status_cam2.text="CAM2"
+                            record_status_cam2.color="red"
                         }
                         console.log(vars.rec)
                     }
@@ -127,11 +135,26 @@ BaseWidget {
                     visible: true
                 }
                 Text {
-                    id:record_status
-                    text: "OFF"
+                    id:record_status_cam1
+                    text: "CAM1"
                     color: "red"
                     anchors.fill: parent
                     anchors.leftMargin: 95
+                    verticalAlignment: Text.AlignVCenter
+                    elide: Text.ElideNone
+                    wrapMode: Text.NoWrap
+                    font.pixelSize: 14
+                    font.family: settings.font_text
+                    style: Text.Outline
+                    styleColor: settings.color_glow
+                    visible: true
+                }
+                Text {
+                    id:record_status_cam2
+                    text: "CAM2"
+                    color: "red"
+                    anchors.fill: parent
+                    anchors.leftMargin: 140
                     verticalAlignment: Text.AlignVCenter
                     elide: Text.ElideNone
                     wrapMode: Text.NoWrap

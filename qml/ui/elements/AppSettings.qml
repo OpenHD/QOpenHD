@@ -328,6 +328,7 @@ Settings {
     property double wind_size: 1
 
     property bool show_roll: true
+    property bool show_record_widget: true
     property bool roll_invert: false
     property bool roll_show_arc: true
     property bool roll_show_numbers: true
@@ -374,6 +375,4 @@ Settings {
     // N of battery cells (generic) of the vehicle, used for the show voltage per cell setting
     // Proper way would be to query / get that via mavlink, but this is more complicated than it seems at glance
     property int vehicle_battery_n_cells: 3
-
-    property bool enable_widget_air_recording: true
 }

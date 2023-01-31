@@ -1455,14 +1455,13 @@ ScrollView {
                     }
                 }
             }
-
             Rectangle {
                 width: parent.width
                 height: rowHeight
                 color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
                 Text {
-                    text: qsTr("Show air recording widget")
+                    text: qsTr("Show Record Widget")
                     font.weight: Font.Bold
                     font.pixelSize: 13
                     anchors.leftMargin: 8
@@ -1480,10 +1479,8 @@ ScrollView {
 
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    checked: settings.enable_widget_air_recording
-                    onCheckedChanged: {
-                        settings.enable_widget_air_recording = checked;
-                    }
+                    checked: settings.show_record_widget
+                    onCheckedChanged: settings.show_record_widget = checked
                 }
             }
         }
