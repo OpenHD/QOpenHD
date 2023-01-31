@@ -14,7 +14,7 @@ BaseWidget {
     width: 256
     height: 48
 
-    visible: true
+    visible: settings.enable_widget_air_recording
 
     widgetIdentifier: "record_video_widget"
 
