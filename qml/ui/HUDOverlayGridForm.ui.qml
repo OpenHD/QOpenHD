@@ -246,6 +246,9 @@ Item {
     ExampleWidget {
         id: exampleWidget
     }
+    RecordVideoWidget {
+        id: record_video_widget
+    }
 
     Text {
         anchors.bottom: parent.bottom
