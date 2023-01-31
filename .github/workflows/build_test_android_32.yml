@@ -85,9 +85,7 @@ jobs:
           ANDROID_NDK_LATEST_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
           ANDROID_NDK: ${{ steps.setup-ndk.outputs.ndk-path }}
         run:  |
-            ls -a
-            mkdir build
-            cd build
+            ls -a ..
             qmake ..
             make -j$(($(nproc)/2))
 
