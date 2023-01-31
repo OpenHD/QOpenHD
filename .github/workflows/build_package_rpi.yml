@@ -34,7 +34,7 @@ jobs:
       id: qemu
       uses: pguyot/arm-runner-action@v2.5.2
       with:
-        base_image: raspios_lite:latest
+        base_image: http://openhdfpv.org/wp-content/BaseImages/OpenHD-image-2022-05-28_1033.zip
         image_additional_mb: 4000
         copy_repository_path: /opt
         copy_artifact_path: QOpenHD
@@ -42,6 +42,7 @@ jobs:
         cpu: cortex-a53
         commands: |
             apt update
+            apt upgrade -y
             apt install -y curl
             rm -Rf /etc/apt/sources.list.d/openhd*
             apt-get clean
@@ -53,6 +54,11 @@ jobs:
             cd /opt
             cd /opt/QOpenHD
             apt update
+            apt upgrade -y
+            apt install -y git libgstreamer-plugins-base1.0-dev gstreamer1.0-plugins-good
+            apt install -y openhd-qt 
+            ls /opt/Qt5.15.4/
+            ls /opt/Qt5.15.4/bin
             sudo bash install_dep_rpi.sh
             sudo ./package.sh armhf raspbian bullseye
             ls -a

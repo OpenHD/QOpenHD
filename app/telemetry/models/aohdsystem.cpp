@@ -168,6 +168,7 @@ void AOHDSystem::process_onboard_computer_status(const mavlink_onboard_computer_
     set_curr_h264_freq_mhz(msg.storage_type[2]);
     set_curr_core_freq_mhz(msg.storage_type[3]);
     set_curr_v3d_freq_mhz(msg.storage_usage[0]);
+    set_curr_space_left_mb(msg.storage_usage[1]);
 }
 
 void AOHDSystem::process_x0(const mavlink_openhd_stats_monitor_mode_wifi_card_t &msg){
