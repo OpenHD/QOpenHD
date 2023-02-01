@@ -167,6 +167,8 @@ void write_other_context_properties(QQmlApplicationEngine& engine){
 #else
     engine.rootContext()->setContextProperty("EnableGStreamer", QVariant(false));
 #endif
+
+
 }
 
 int main(int argc, char *argv[]) {
@@ -198,7 +200,7 @@ int main(int argc, char *argv[]) {
 
     // https://doc.qt.io/qt-6/qtquick-visualcanvas-scenegraph-renderer.html
     //qputenv("QSG_VISUALIZE", "overdraw");
-   // QCoreApplication::setAttribute(Qt::AA_UseOpenGLES);
+    //QCoreApplication::setAttribute(Qt::AA_UseOpenGLES);
     //QLoggingCategory::setFilterRules("qt.scenegraph.*=true");
     //QLoggingCategory::setFilterRules("qt.scenegraph.time.*=true");
     //QLoggingCategory::setFilterRules("qt.scenegraph.general=true");
@@ -252,6 +254,11 @@ int main(int argc, char *argv[]) {
 #else
     engine.rootContext()->setContextProperty("QOPENHD_ENABLE_VIDEO_VIA_AVCODEC", QVariant(false));
 #endif
+#ifdef HAVE_MMAL
+    engine.rootContext()->setContextProperty("QOPENHD_HAVE_MMAL", QVariant(true));
+#else
+    engine.rootContext()->setContextProperty("QOPENHD_HAVE_MMAL", QVariant(false));
+#endif
     engine.rootContext()->setContextProperty("_qopenhd", &QOpenHD::instance());
     QOpenHD::instance().setEngine(&engine);
 
@@ -266,6 +273,8 @@ int main(int argc, char *argv[]) {
     engine.rootContext()->setContextProperty("_airCameraSettingsModel2", &MavlinkSettingsModel::instanceAirCamera2());
     engine.rootContext()->setContextProperty("_airPiSettingsModel", &MavlinkSettingsModel::instanceAir());
     engine.rootContext()->setContextProperty("_groundPiSettingsModel", &MavlinkSettingsModel::instanceGround());
+    // exp
+    //engine.rootContext()->setContextProperty("_fcSettingsModel", &MavlinkSettingsModel::instanceFC());
     engine.rootContext()->setContextProperty("_synchronizedSettings", &SynchronizedSettings::instance());
 
 #ifdef QOPENHD_ENABLE_GSTREAMER
@@ -289,6 +298,7 @@ int main(int argc, char *argv[]) {
     engine.rootContext()->setContextProperty("_fcMavlinkSystem", &FCMavlinkSystem::instance());
 
     engine.rootContext()->setContextProperty("_rcchannelsmodelground", &RCChannelsModel::instanceGround());
+    engine.rootContext()->setContextProperty("_rcchannelsmodelfc", &RCChannelsModel::instanceFC());
 
     //AOHDSystem::register_for_qml(engine.rootContext());
     engine.rootContext()->setContextProperty("_ohdSystemAir", &AOHDSystem::instanceAir());
@@ -348,7 +358,21 @@ engine.rootContext()->setContextProperty("EnableADSB", QVariant(false));
     engine.rootContext()->setContextProperty("UseFullscreen", QVariant(false));
 #endif
 
-    engine.rootContext()->setContextProperty("QOPENHD_VERSION", QVariant(QOPENHD_VERSION));
+    // This allows to use the defines as strings in qml
+    engine.rootContext()->setContextProperty("QOPENHD_GIT_VERSION",
+#ifdef QOPENHD_GIT_VERSION
+        QVariant(QOPENHD_GIT_VERSION)
+#else
+        QVariant("unknown")
+#endif
+    );
+    engine.rootContext()->setContextProperty("QOPENHD_GIT_COMMIT_HASH",
+#ifdef QOPENHD_GIT_COMMIT_HASH
+        QVariant(QOPENHD_GIT_COMMIT_HASH)
+#else
+        QVariant("unknown")
+#endif
+     );
 
     engine.load(QUrl(QLatin1String("qrc:/main.qml")));
 

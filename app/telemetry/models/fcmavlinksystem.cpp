@@ -1,6 +1,7 @@
 #include "fcmavlinksystem.h"
 
 #include "../qopenhdmavlinkhelper.hpp"
+#include "rcchannelsmodel.h"
 
 #include <QDebug>
 #include "qopenhd.h"
@@ -40,46 +41,18 @@ void FCMavlinkSystem::set_system(std::shared_ptr<mavsdk::System> system)
     if(!_system->has_autopilot()){
         qDebug()<<"FCMavlinkSystem::set_system WARNING no autopilot";
     }
-    qDebug()<<"FCMavlinkSystem::set_system: FC SYS ID is:"<<(int)_system->get_system_id();
+    const int tmp_sys_id=_system->get_system_id();
+    qDebug()<<"FCMavlinkSystem::set_system: FC SYS ID is:"<<(int)tmp_sys_id;
+    set_for_osd_sys_id(tmp_sys_id);
     _action=std::make_shared<mavsdk::Action>(system);
-    _mavsdk_telemetry=std::make_shared<mavsdk::Telemetry>(system);
     _pass_thru=std::make_shared<mavsdk::MavlinkPassthrough>(system);
-
-    auto cb_attituede=[this](mavsdk::Telemetry::EulerAngle angle){
-        //qDebug()<<"Got att euler";
-        set_pitch((double)angle.pitch_deg);
-        //qDebug() << "Pitch:" <<  attitude.pitch*57.2958;
-        set_roll((double)angle.roll_deg);
-    };
-    _mavsdk_telemetry->subscribe_attitude_euler(cb_attituede);
-    auto cb_heading=[this](mavsdk::Telemetry::Heading heading){
-        set_hdg(heading.heading_deg);
-    };
-    _mavsdk_telemetry->subscribe_heading(cb_heading);
-    //TODO ---THIS LOOKS WRONG HERE "headin" and "armed" together
-    auto cb_armed=[this](bool armed){
-        set_armed(armed);
-    };
-    _mavsdk_telemetry->subscribe_armed(cb_armed);
-    //_mavsdk_telemetry->subscribe_status_text()
-    /*auto cb_flight_mode=[this](mavsdk::Telemetry::FlightMode flight_mode){
-        flight_mode
-    };
-    _mavsdk_telemetry->subscribe_flight_mode(cb_flight_mode);*/
-    //_mavsdk_telemetry->subscribe_position()
-    //_mavsdk_telemetry->subscribe_home()
-    //
-    /*auto res=_mavsdk_telemetry->set_rate_attitude(60);
-    std::stringstream ss;
-    ss<<res;
-    qDebug()<<"Set rate result:"<<ss.str().c_str();*/
 }
 
 bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
 {
     //qDebug()<<"FCMavlinkSystem::process_message";
     if(!_system){
-        qDebug()<<"WARNING the system must be set before this model starts processing data";
+        qDebug()<<"WARNING the system must be set before FC model starts processing data";
         return false;
     }
     const auto fc_sys_id=get_fc_sys_id().value();
@@ -337,25 +310,40 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
     case MAVLINK_MSG_ID_ATTITUDE:{
         mavlink_attitude_t attitude;
         mavlink_msg_attitude_decode (&msg, &attitude);
-        // handled by mavsdk attitude_euler callback
+        // Not handled by mavsdk telemetry callback(s) anymore
         m_n_messages_update_rate_mavlink_message_attitude++;
+        const auto roll_deg=Telemetryutil::angle_mavlink_rad_to_degree(attitude.roll);
+        const auto pitch_deg=Telemetryutil::angle_mavlink_rad_to_degree(attitude.pitch);
+        set_roll((double)roll_deg);
+        set_pitch((double)pitch_deg);
+        // TODO what about yaw ?! - heading something weird is going on there
+        //const auto yaw_deg=Telemetryutil::angle_mavlink_rad_to_degree(attitude.yaw);
+        //set_hdg(yaw_deg);
+        //qDebug()<<"degree Roll:"<<roll_deg<<" Pitch:"<<pitch_deg<<" Yaw:"<<yaw_deg;
         break;
     }
     case MAVLINK_MSG_ID_LOCAL_POSITION_NED:{
         break;
     }
     case MAVLINK_MSG_ID_GLOBAL_POSITION_INT: {
-        mavlink_global_position_int_t global_position;
-        mavlink_msg_global_position_int_decode(&msg, &global_position);
-        set_lat((double)global_position.lat / 10000000.0);
-        set_lon((double)global_position.lon / 10000000.0);
-        set_boot_time(global_position.time_boot_ms);
-        set_alt_rel(global_position.relative_alt/1000.0);
+        mavlink_global_position_int_t global_position_int;
+        mavlink_msg_global_position_int_decode(&msg, &global_position_int);
+        set_lat((double)global_position_int.lat / 10000000.0);
+        set_lon((double)global_position_int.lon / 10000000.0);
+        set_boot_time(global_position_int.time_boot_ms);
+        set_alt_rel(global_position_int.relative_alt/1000.0);
         // qDebug() << "Altitude relative " << alt_rel;
-        set_alt_msl(global_position.alt/1000.0);
-        set_vx(global_position.vx/100.0);
-        set_vy(global_position.vy/100.0);
-        set_vz(global_position.vz/100.0);
+        set_alt_msl(global_position_int.alt/1000.0);
+        set_vx(global_position_int.vx/100.0);
+        set_vy(global_position_int.vy/100.0);
+        set_vz(global_position_int.vz/100.0);
+        {
+           // Still something funky here
+           auto heading_deg = (global_position_int.hdg != std::numeric_limits<uint16_t>::max()) ?
+                                              static_cast<double>(global_position_int.hdg) * 1e-2 :
+                                              static_cast<double>(0);
+           set_hdg(heading_deg);
+        }
         calculate_home_distance();
         calculate_home_course();
         updateFlightDistance();
@@ -364,11 +352,23 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         break;
     }
     case MAVLINK_MSG_ID_RC_CHANNELS_RAW:{
+        // Seems to be outdated
         //qDebug()<<"Got message RC channels raw";
         mavlink_rc_channels_raw_t rc_channels_raw;
         mavlink_msg_rc_channels_raw_decode(&msg, &rc_channels_raw);
+        //const auto tmp=Telemetryutil::mavlink_msg_rc_channels_raw_to_array(rc_channels_raw);
+        //RCChannelsModel::instanceFC().update_all_channels(tmp);
         //const auto rssi = static_cast<int>(static_cast<double>(rc_channels_raw.rssi) / 255.0 * 100.0);
         //set_rc_rssi(rssi);
+        break;
+    }
+    case MAVLINK_MSG_ID_RC_CHANNELS:{
+        // Seems to be used by ARDUPILOT
+        mavlink_rc_channels_t rc_channels;
+        mavlink_msg_rc_channels_decode(&msg, &rc_channels);
+        set_rc_rssi(rc_channels.rssi);
+        const auto tmp=Telemetryutil::mavlink_msg_rc_channels_to_array(rc_channels);
+        RCChannelsModel::instanceFC().update_all_channels(tmp);
         break;
     }
     case MAVLINK_MSG_ID_SERVO_OUTPUT_RAW:{
@@ -387,22 +387,6 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         break;
     }
     case MAVLINK_MSG_ID_NAV_CONTROLLER_OUTPUT:{
-        break;
-    }
-    case MAVLINK_MSG_ID_RC_CHANNELS:{
-        mavlink_rc_channels_t rc_channels;
-        mavlink_msg_rc_channels_decode(&msg, &rc_channels);
-        // TODO
-        /*qDebug() << "RC: " << rc_channels.chan1_raw
-                                 << rc_channels.chan2_raw
-                                 << rc_channels.chan3_raw
-                                 << rc_channels.chan4_raw
-                                 << rc_channels.chan5_raw
-                                 << rc_channels.chan6_raw
-                                 << rc_channels.chan7_raw
-                                 << rc_channels.chan8_raw
-                                 << rc_channels.chan9_raw
-                                 << rc_channels.chan10_raw;*/
         break;
     }
     case MAVLINK_MSG_ID_VFR_HUD:{

@@ -11,7 +11,8 @@ curl -1sLf \
   'https://dl.cloudsmith.io/public/openhd/openhd-2-3-dev/setup.deb.sh' \
   | sudo -E bash
   
-apt install -y openhd-qt-x86-jammy 
+apt install -y openhd-qt-x86-jammy
+gem install fpm
 
 # While we keep the gstreamer code in (in case we want to enable it anyways for the jetson) we have it disabled at compile time by default
 #apt -y install libgstreamer-plugins-base1.0-dev gstreamer1.0-plugins-good
@@ -27,19 +28,5 @@ apt -y install libgstreamer-plugins-base1.0-dev gstreamer1.0-plugins-good qtgstr
 apt -y install libgles2-mesa-dev
 
 
-# they are needed to build and install mavsdk
-apt -y install pip mavsdk ruby
-pip install future
-gem install fpm
-
-# build and install mavsdk
-# cd lib/MAVSDK
-# cmake -Bbuild/default -DCMAKE_BUILD_TYPE=Release -H.
-# cmake --build build/default -j4
-# sudo cmake --build build/default --target install
-# sudo ldconfig
-
-# ls /usr/local/include/mavsdk
-# ls /usr/local/lib
-
-# cd ../../
+# See script for more info
+bash build_install_mavsdk_static.sh || exit 1

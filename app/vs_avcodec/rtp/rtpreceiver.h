@@ -9,12 +9,12 @@
 #include <fstream>
 #include <mutex>
 #include <queue>
+#include <functional>
 
 #include "../nalu/NALU.hpp"
 #include "../nalu/KeyFrameFinder.hpp"
 
 #include "../../common_consti/TimeHelper.hpp"
-#include "../../common_consti/EmulatedPacketDrop.hpp"
 #include "../readerwriterqueue/readerwritercircularbuffer.h"
 
 //#define OPENHD_USE_LIB_UVGRTP
@@ -33,6 +33,12 @@ public:
     // (nullptr on failure)
     // The timeout is optional
     std::shared_ptr<NALU> get_next_frame(std::optional<std::chrono::microseconds> timeout=std::nullopt);
+    // Instead of using a queue and another thread for fetching data between what's basically the udp receiver
+    // and the decoder, you can register a callback here that is called directly when there is a new NALU
+    // available. Note that care needs to be taken to not perform any blocking operation(s) in this callback -
+    // aka the decoder should have a queue internally when using this mode. Can decrease latency (scheduling latency) though
+    typedef std::function<void(std::shared_ptr<NALU>)> NEW_NALU_CALLBACK;
+    void register_new_nalu_callback(NEW_NALU_CALLBACK cb);
 
     std::shared_ptr<std::vector<uint8_t>> get_config_data();
     bool config_has_changed_during_decode=false;
@@ -56,11 +62,13 @@ private:
     // In case the decoder cannot keep up with the data we provide to it, the only fix would be to reduce the fps/resolution anyways.
     moodycamel::BlockingReaderWriterCircularBuffer<std::shared_ptr<NALU>> m_data_queue{20};
     void queue_data(const uint8_t* nalu_data,const std::size_t nalu_data_len);
+    std::mutex m_new_nalu_data_cb_mutex;
+    NEW_NALU_CALLBACK m_new_nalu_cb=nullptr;
+    bool forward_via_cb_if_registered();
 private:
     std::unique_ptr<KeyFrameFinder> m_keyframe_finder;
     int n_dropped_frames=0;
     BitrateCalculator m_rtp_bitrate;
-    PacketDropEmulator m_packet_drop_emulator{1};
 private:
     // Calculate fps, but note that this actually calculates the non-sps / pps / vps NALUs per second
     FPSCalculator m_estimate_fps_calculator{};
@@ -75,6 +83,8 @@ public:
 private:
     int n_frames_non_idr=0;
     int n_frames_idr=0;
+private:
+    std::chrono::steady_clock::time_point m_last_log_hud_dropped_frame=std::chrono::steady_clock::now();
 };
 
 #endif // RTPRECEIVER_H

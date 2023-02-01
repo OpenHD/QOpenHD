@@ -34,6 +34,12 @@ MavlinkSettingsModel &MavlinkSettingsModel::instanceGround()
     return *instanceGround;
 }
 
+/*MavlinkSettingsModel &MavlinkSettingsModel::instanceFC()
+{
+    static MavlinkSettingsModel* instanceFc=new MavlinkSettingsModel(1,1);
+    return *instanceFc;
+}*/
+
 std::map<std::string, void *> MavlinkSettingsModel::get_whitelisted_params()
 {
     std::map<std::string,void*> ret{};
@@ -122,6 +128,8 @@ static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string&
        });
         auto fc_uart_conn_values=std::vector<std::string>{"disable","serial0","serial1","ttyUSB0","ttyACM0","ttyACM1", "ttyS7"};
         map_improved_params["FC_UART_CONN"]=ImprovedIntSetting::createEnum(fc_uart_conn_values);
+        // same for ground uart out
+         map_improved_params["TRACKER_UART_OUT"]=ImprovedIntSetting::createEnum(fc_uart_conn_values);
         // rpicamsrc only for now
         auto gst_awb_modes=std::vector<std::string>{
                     "OFF",
@@ -191,6 +199,9 @@ static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string&
                     "LIBCAMERA_IMX477",
                     "LIBCAMERA_ARDU",
                     "LIBCAMERA_IMX519",
+                    "LIBCAMERA_IMX290",
+                    "LIBCAMERA_IMX327",
+                    "LIBCAMERA_IMX462",
                     "VEYE_327",
                     "VEYE_CSIMX307",
                     "VEYE_CSSC132",
@@ -272,6 +283,10 @@ static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string&
         map_improved_params["V_SWITCH_CAM"]=ImprovedIntSetting::createEnumEnableDisable();
 
         map_improved_params["I_ETH_HOTSPOT_E"]=ImprovedIntSetting::createEnumEnableDisable();
+        {
+            auto values=std::vector<std::string>{"untouched","high","low"};
+            map_improved_params["GPIO_2"]=ImprovedIntSetting::createEnum(values);
+        }
     }
     if(map_improved_params.find(param_id)!=map_improved_params.end()){
         return map_improved_params[param_id];
@@ -318,14 +333,16 @@ MavlinkSettingsModel::MavlinkSettingsModel(uint8_t sys_id,uint8_t comp_id,QObjec
     //m_data.push_back({"VIDEO_FPS",1});
 }
 
-void MavlinkSettingsModel::set_param_client(std::shared_ptr<mavsdk::System> system)
+void MavlinkSettingsModel::set_param_client(std::shared_ptr<mavsdk::System> system,bool autoload_all_params)
 {
     // only allow adding the param client once it is discovered, do not overwrite it once discovered.
     assert(this->param_client==nullptr);
     assert(system->get_system_id()==m_sys_id);
     m_system=system;
     param_client=std::make_shared<mavsdk::Param>(system,m_comp_id,true);
-    try_fetch_all_parameters();
+    if(autoload_all_params){
+        try_fetch_all_parameters();
+    }
 }
 
 bool MavlinkSettingsModel::try_fetch_all_parameters()
@@ -342,6 +359,7 @@ bool MavlinkSettingsModel::try_fetch_all_parameters()
         }
         qDebug()<<"Done removing old params";
         // now fetch all params using mavsdk (this talks to the OHD system(s).
+        param_client->set_timeout(10);
         const auto params=param_client->get_all_params(true);
         for(const auto& int_param:params.int_params){
             MavlinkSettingsModel::SettingData data{QString(int_param.name.c_str()),int_param.value};
@@ -785,6 +803,9 @@ bool MavlinkSettingsModel::get_param_requires_manual_reboot(QString param_id)
     if(param_id=="I_ETH_HOTSPOT_E"){
         return true;
     }
+    if(param_id=="TRACKER_UART_OUT"){
+        return true;
+    }
     return false;
 }
 
@@ -889,6 +910,12 @@ QString MavlinkSettingsModel::get_short_description(const QString param_id)const
     }
     if(param_id=="V_SWITCH_CAM"){
         return "Requires reboot. Switch primary and secondary camera.";
+    }
+    if(param_id=="TRACKER_UART_OUT"){
+         return "Requires reboot. Enable mavlink telemetry out via UART on the ground station for connecting a tracker or even an RC with mavlink lua script.";
+    }
+    if(param_id=="GPIO_2"){
+        return "Experimental, allows manually controlling a rpi gpio for special uses like a LED, landing gear, ...";
     }
     return "TODO";
 }

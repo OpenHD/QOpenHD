@@ -19,9 +19,10 @@
  * the Flight Controller, but it is NOT a Flight Controller ;)
  * The corresponding qml element is called _fcMavlinkSystem.
  *
- * NOTE: R.n we are using both the mavsdk "subscription" pattern for a couble of values and the humungus
- * mavlink message type switch-case (legacy). This is a bit confusing, not sure if we should either not
- * use mavsdk subscriptions at all or use them as much as possible.
+ * NOTE: In the beginning, me (Consti10) and @luke experimented a bit with the mavsdk telemetry subscription feature -
+ * However, after some testing and discussion, we came to the conclusion that they are more annoying than
+ * usefull due to what seems to be a common lack of support for Ardupilot in MAVSDK. We parse the "broadcast"
+ * mavlink telemetry message(s) from the FC manually.
  */
 class FCMavlinkSystem : public QObject
 {
@@ -115,6 +116,8 @@ class FCMavlinkSystem : public QObject
     // update rate: here we keep track of how often we get the "MAVLINK_MSG_ID_ATTITUDE" messages.
     // (since it controlls the art. horizon). This is pretty much the only thing we perhaps need to manually set the update rate on
     L_RO_PROP(float,curr_update_rate_mavlink_message_attitude,set_curr_update_rate_mavlink_message_attitude,-1)
+    // We expose the sys id for the OSD to show - note that this value should not be used by any c++ code
+    L_RO_PROP(int,for_osd_sys_id,set_for_osd_sys_id,-1);
 public:
     explicit FCMavlinkSystem(QObject *parent = nullptr);
     // singleton for accessing the model from c++
@@ -182,7 +185,8 @@ private:
     // NOTE: Null until system discovered
     std::shared_ptr<mavsdk::System> _system=nullptr;
     std::shared_ptr<mavsdk::Action> _action=nullptr;
-    std::shared_ptr<mavsdk::Telemetry> _mavsdk_telemetry=nullptr;
+    // We got rid of this submodule for a good reason (see above)
+    //std::shared_ptr<mavsdk::Telemetry> _mavsdk_telemetry=nullptr;
     std::shared_ptr<mavsdk::MavlinkPassthrough> _pass_thru=nullptr;
     // other members
     bool m_armed = false;

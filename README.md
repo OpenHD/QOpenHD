@@ -6,7 +6,7 @@ It is responsible for displaying the (main) video stream to the user, composed w
 
 As the name suspects, it is based on QT (5.15.X).
 
-![temporary_screenshot](https://github.com/OpenHD/QOpenHD/blob/2.2.x-evo/wiki/temporary_screenshot.png)
+![temporary_screenshot](wiki/temporary_screenshot.png)
 
 # Developer Design Overview (incomplete)
 1) QOpenHD is not OpenHD (main). It can talk to a running OpenHD main instance (ground and/or air) via Mavlink and rceives the (primary / secondary / ++) video streams. 
@@ -113,15 +113,9 @@ You can then open `QOpenHD.pro` using Qt Creator and set up the Android kit (lef
 
 
 # Building MAVSDK (REQUIRED)
-QOpenHD relies on MAVSDK library. After recursively cloning qopenhd build this library:
+QOpenHD relies on MAVSDK library. After recursively cloning qopenhd you have to build and install it once:
 
-`cd lib/MAVSDK`
-
-`cmake -Bbuild/default -DCMAKE_BUILD_TYPE=Release -H.`
-
-`cmake --build build/default -j4`
-
-`sudo cmake --build build/default --target install`
+`./build_install_mavsdk_static.sh`
 
 After that, you can build QOpenHD by either opening it in QT Creator (recommended) or building it with the following commands:
 

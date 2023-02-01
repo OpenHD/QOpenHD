@@ -65,6 +65,7 @@ void QSGVideoTextureItem::m_QQuickWindow_beforeRendering()
 void QSGVideoTextureItem::m_QQuickWindow_beforeRenderPassRecording()
 {
     if(m_renderer){
+        //qDebug()<<"Rotation:"<<QQuickItem::rotation();
         m_renderer->paint(window());
     }
     // always trigger a repaint, otherwise QT "thinks" nothing has changed since it doesn't

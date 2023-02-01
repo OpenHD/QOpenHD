@@ -3,6 +3,8 @@ name: build_package_x86_22
 on:
   push:
     branches: [ "2.3-evo" ]
+  pull_request:
+      branches: [ "2.3-evo" ]
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)

@@ -22,14 +22,16 @@ static uint64_t getTimeMilliseconds(){
 
 // Return: The mavlink sys id of QOpenHD. By default, same as QGroundControl. However, in case one uses multiple ground controlls
 // with OpenHD (or QOpenHD AND QGroundCOntroll at the same time) this value needs to be changed
-static uint8_t getSysId(){
+static uint8_t get_own_sys_id(){
     QSettings settings;
-    const int qopenhd_mavlink_sysid = settings.value("qopenhd_mavlink_sysid", 225).toInt();
+    // NOTE: QGroundControll also uses a sys id of 255 - we need a hard coded 255 sys id for the rc channels override hack in openhd
+    // (And in general, for now, you should never have 2 GCS open at the same time connected to OpenHD anyways)
+    const int qopenhd_mavlink_sysid = settings.value("qopenhd_mavlink_sysid", 255).toInt();
     return qopenhd_mavlink_sysid;
 }
 
 // Return: the mavlink comonent id of QOpenHD. We are basicalyy a mission planner lke QGroundControll, just with a slightly different feature set.
-static uint8_t getCompId(){
+static uint8_t get_own_comp_id(){
     return MAV_COMP_ID_MISSIONPLANNER;
 }
 

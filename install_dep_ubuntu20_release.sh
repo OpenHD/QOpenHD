@@ -13,7 +13,7 @@ curl -1sLf \
 curl -1sLf \
   'https://dl.cloudsmith.io/public/openhd/openhd-2-3-dev/setup.deb.sh' \
   | sudo -E bash
-apt install -y openhd-qt-x86-focal ruby mavsdk
+apt install -y openhd-qt-x86-focal ruby
 gem install fpm
 
 
@@ -30,18 +30,5 @@ apt -y install libgstreamer-plugins-base1.0-dev gstreamer1.0-plugins-good qtgstr
 # Note on pi / your PC this should be already installed, be carefully to pick the right one otherwise
 apt -y install libgles2-mesa-dev
 
-# they are needed to build and install mavsdk
-apt -y install pip
-pip install future
-
-# build and install mavsdk
-# cd lib/MAVSDK
-# cmake -Bbuild/default -DCMAKE_BUILD_TYPE=Release -H.
-# cmake --build build/default -j4
-# sudo cmake --build build/default --target install
-# sudo ldconfig
-
-# ls /usr/local/include/mavsdk
-# ls /usr/local/lib
-
-# cd ../../
+# See script for more info
+bash build_install_mavsdk_static.sh || exit 1

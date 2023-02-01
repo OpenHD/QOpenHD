@@ -12,7 +12,6 @@ import "./widgets"
 import "../resources" as Resources
 
 Item {
-    property alias messageHUD: messageHUD
     signal settingsButtonClicked
 
     function mainMenuClosed() {
@@ -250,6 +249,9 @@ Item {
 
     ExampleWidget {
         id: exampleWidget
+    }
+    RecordVideoWidget {
+        id: record_video_widget
     }
 
     Text {

@@ -103,7 +103,13 @@ Flickable {
                     stepSize: 1
                     anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
                     value: settings.qopenhd_mavlink_sysid
-                    onValueChanged: settings.qopenhd_mavlink_sysid = value
+                    onValueChanged: {
+                        if(value==100 || value==101){
+                            // openhd air and ground unit sys id are hard coded, one should never use them
+                            _messageBoxInstance.set_text_and_show("Do not use 100 or 101 for QOpenHD sys id")
+                        }
+                        settings.qopenhd_mavlink_sysid = value
+                    }
                 }
                 Keys.onPressed: (event)=> {
                                     if (event.key === Qt.Key_Minus && controlSelected == false){
@@ -448,7 +454,13 @@ Flickable {
                     anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
 
                     value: settings.dev_qopenhd_n_cameras
-                    onValueChanged: settings.dev_qopenhd_n_cameras = value
+                    onValueChanged: {
+                        var actually_changed=settings.dev_qopenhd_n_cameras!=value
+                        settings.dev_qopenhd_n_cameras = value
+                        if(actually_changed){
+                            _messageBoxInstance.set_text_and_show("Please restart QOpenHD to apply")
+                        }
+                    }
                 }
                 Keys.onPressed: (event)=> {
                                     if (event.key === Qt.Key_Equal && controlSelected == false){

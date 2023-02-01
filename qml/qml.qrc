@@ -107,7 +107,6 @@
         <file>ui/elements/CardForm.ui.qml</file>
         <file>ui/widgets/SpeedSecondWidget.qml</file>
         <file>ui/widgets/SpeedSecondWidgetForm.ui.qml</file>
-        <file>qopenhd.template</file>
         <file>osdfonts/Acme-Regular.ttf</file>
         <file>osdfonts/Aldrich-Regular.ttf</file>
         <file>osdfonts/AnonymousPro-Bold.ttf</file>
@@ -204,11 +203,10 @@
         <file>ui/configpopup/MavlinkParamEditor.qml</file>
         <file>ui/configpopup/AppDeveloperStatsPanel.qml</file>
         <file>ui/widgets/QRenderStatsWidget.qml</file>
-        <file>ui/widgets/QRenderStatsWidgetForm.ui.qml</file>
         <file>ui/widgets/MapWidget.qml</file>
         <file>ui/widgets/MapWidgetForm.ui.qml</file>
         <file>ui/elements/MapComponent.qml</file>
-        <file>ui/configpopup/RcInfoPanel.qml</file>
+        <file>ui/configpopup/RcDebugScreenOpenHD.qml</file>
         <file>ui/configpopup/ConfigPopup.qml</file>
         <file>resources/master1.png</file>
         <file>resources/master2.png</file>
@@ -259,5 +257,9 @@
         <file>ui/widgets/VideoBitrateWidgetSecondary.qml</file>
         <file>ui/elements/GgComboBox.qml</file>
         <file>ui/elements/GgSlider.qml</file>
+        <file>ui/widgets/RecordVideoWidget.qml</file>
+        <file>ui/configpopup/RcInfoPanel.qml</file>
+        <file>ui/configpopup/RcDebugScreenFC.qml</file>
+        <file>ui/configpopup/RcInfoScreen.qml</file>
     </qresource>
 </RCC>

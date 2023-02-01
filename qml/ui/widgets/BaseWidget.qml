@@ -37,6 +37,8 @@ BaseWidgetForm {
     property string vCenterIdentifier: "%1_v_center".arg(widgetIdentifier);
     property double oldOpacity: 100;
 
+    //layer.enabled: false
+
     /*Connections {
         target: link
         function onWidgetLocation(widgetName, alignment, xOffset, yOffset, hCenter, vCenter, full) {

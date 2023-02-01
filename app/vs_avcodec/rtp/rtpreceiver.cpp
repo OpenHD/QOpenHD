@@ -8,6 +8,7 @@
 #include "../../vs_util/decodingstatistcs.h"
 #include "common_consti/openhd-util.hpp"
 #include "vs_util/QOpenHDVideoHelper.hpp"
+#include "../../logging/hudlogmessagesmodel.h"
 
 
 #ifdef OPENHD_USE_LIB_UVGRTP
@@ -88,6 +89,11 @@ RTPReceiver::~RTPReceiver()
         m_data_queue.try_dequeue(ret);
     }
     return ret;
+ }
+
+void RTPReceiver::register_new_nalu_callback(NEW_NALU_CALLBACK cb){
+    std::lock_guard<std::mutex> lock(m_new_nalu_data_cb_mutex);
+    m_new_nalu_cb=cb;
 }
 
 std::shared_ptr<std::vector<uint8_t>> RTPReceiver::get_config_data()
@@ -140,11 +146,22 @@ void RTPReceiver::queue_data(const uint8_t* nalu_data,const std::size_t nalu_dat
             DecodingStatistcs::instance().set_estimate_rtp_fps({fps_as_string.c_str()});
         }
         //qDebug()<<"Queue size:"<<m_data_queue.size_approx();
-        if(!m_data_queue.try_enqueue(std::make_shared<NALU>(nalu))){
-            // If we cannot push a frame onto this queue, it means the decoder cannot keep up what we want to provide to it
-            n_dropped_frames++;
-            qDebug()<<"Dropping incoming frame, total:"<<n_dropped_frames;
-            DecodingStatistcs::instance().set_n_decoder_dropped_frames(n_dropped_frames);
+        if(m_new_nalu_cb){
+            // Use the cb approach
+            m_new_nalu_cb(std::make_shared<NALU>(nalu));
+        }else{
+            // Use the queue approach
+            if(!m_data_queue.try_enqueue(std::make_shared<NALU>(nalu))){
+                // If we cannot push a frame onto this queue, it means the decoder cannot keep up what we want to provide to it
+                n_dropped_frames++;
+                qDebug()<<"Dropping incoming frame, total:"<<n_dropped_frames;
+                DecodingStatistcs::instance().set_n_decoder_dropped_frames(n_dropped_frames);
+                const auto elapsed=std::chrono::steady_clock::now()-m_last_log_hud_dropped_frame;
+                if(elapsed>std::chrono::seconds(3)){
+                    HUDLogMessagesModel::instance().add_message_warning("Decoder unhealthy-reduce load");
+                    m_last_log_hud_dropped_frame=std::chrono::steady_clock::now();
+                }
+            }
         }
     }else{
         // We don't have all config data yet, drop anything that is not config data.
@@ -164,10 +181,6 @@ void RTPReceiver::uvgrtp_rtp_receive_hook(void *arg, uvgrtp::frame::rtp_frame *f
 void RTPReceiver::udp_raw_data_callback(const uint8_t *payload, const std::size_t payloadSize)
 {
     //qDebug()<<"Got UDP data "<<payloadSize;
-    /*if(m_packet_drop_emulator.drop_packet()){
-        qDebug()<<"Emulate - Dropping packet";
-        return;
-    }*/
     m_rtp_bitrate.addBytes(payloadSize,[](std::string bitrate){
         DecodingStatistcs::instance().set_rtp_measured_bitrate(bitrate.c_str());
     });
