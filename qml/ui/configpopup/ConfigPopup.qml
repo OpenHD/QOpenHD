@@ -7,19 +7,58 @@ import Qt.labs.settings 1.0
 
 import OpenHD 1.0
 
-// Contains the selector on the left and a stack view for the panels on the right
+/*  -Contains the selector on the left and a stack view for the panels on the right
+*   -Navigation: 1 main menu -> 2 submenus (each with 2 themes) -> controls
+*   -Keyboard keys are "return" =select , "esc" =back , "=" =up/plus , "-" =down/minus
+*   -if goggles enabled/disabled we show different current index in the stack which points
+*   either the 2 "standard" submenus or the 2 goggle theme submenus
+*   -The open/close functions are needed as focus cannot be directly assigned from
+*   one qml to another, so effectively its passed thru functions.
+*   -all menu open/closes should go through the functions when possible to ensure transfer
+*   of focus AND tracking if focus went to close btn from a sub menu or main menu.
+*   IF focus is not tracked to close btn its possible to move curser from submenu to close btn then
+*   back to the main menu (which is behind sub menu) and you lose curser.
+*/
+
 Rectangle {
     id: settings_form
 
     property int eeInt : 0
+    //this bool is needed to track where focus came from when certain menus are open
+    //someone tries to navigate down from close button..without you get focus in wrong place
+    property bool fromSubMenu
 
     function openSettings() {
         visible = true
         focus = true
+        fromSubMenu=false
+        sidebar.x = -1 //animation for sidebar
+        appSettingsBtn.forceActiveFocus()
+
+        if (settings.goggle_layout==true){
+            mainStackLayout.visible=false
+            mainStackLayout.currentIndex=1
+        }
+        else {
+            mainStackLayout.visible=true
+            mainStackLayout.currentIndex=0
+        }
     }
 
-    function showAppSettings(i) {
-        console.log("TEST show app settings:"+i);
+    function closeSettings() {
+        settings_form.visible=false
+        sidebar.x = -300 //animation for sidebar
+        if (settings.goggle_layout==true){ //reset stuff
+            mainStackLayout.visible=false
+            mainStackLayout.currentIndex=1
+            sidebar.opacity=1
+            hudOverlayGrid.mainMenuClosed()//used to return focus to menu btn
+            fromSubMenu=false
+        }
+        else {
+            mainStackLayout.visible=true
+            mainStackLayout.currentIndex=0
+        }
     }
 
     anchors.fill: parent
@@ -47,8 +86,7 @@ Rectangle {
         Column {
             width: parent.width
             anchors.top: parent.top
-
-            // Close
+            // Close Button
             Item {
                 height: 48
                 width: parent.width
@@ -64,14 +102,32 @@ Rectangle {
                     anchors.horizontalCenter: parent.horizontalCenter
 
                     background: Rectangle {
-                        opacity: .5
+                        opacity: .3
                         radius: 5
-                        //later this can be changed to focus
-                        color: closeButton.hovered ? "grey" : "white" // I update background color by this
+                        color: closeButton.hovered ? "grey" :
+                                                     closeButton.activeFocus ? "grey" : "white"
                     }
                     onClicked: {
-                        settings_form.visible=false
+                        closeSettings();
                     }
+                    Keys.onPressed: (event)=> {
+                                        if (event.key === Qt.Key_Escape)
+                                        closeSettings()
+                                        else if (event.key === Qt.Key_S)
+                                        closeButton.clicked()
+                                        else if (event.key === Qt.Key_Minus){
+                    //logic to prevent curser going to main menu from close btn after submenu
+                                            if(fromSubMenu==true){
+                                                if(mainStackLayout.currentIndex === 1 || mainStackLayout.currentIndex === 0)
+                                                ggAppSettingsPanel.openAppPanel()
+                                                else
+                                                ggMavlinkAllSettingsPanel.openOhdPanel()
+                                            }
+                                            else{
+                                                appSettingsBtn.forceActiveFocus()
+                                            }
+                                        }
+                                    }
                 }
             }
         }
@@ -84,24 +140,35 @@ Rectangle {
         id: sidebar
         width: 132
         visible: true
-        anchors.left: parent.left
-        anchors.leftMargin: -1
         anchors.bottom: parent.bottom
         anchors.bottomMargin: -1
         anchors.top: parent.top
         anchors.topMargin: 48
         color: "#333c4c"
-        radius: 0
         border.width: 1
         border.color: "#4c000000"
 
         clip: true
 
+        Behavior on x { //when settings are opened animation
+            NumberAnimation {
+                duration: 600
+                easing.type: Easing.OutBack
+            }
+        }
+
+        Behavior on opacity { //fade when menu is selected
+            NumberAnimation {
+                duration: 700
+                easing.type: Easing.OutBack
+            }
+        }
+
         Column {
             width: parent.width
             anchors.top: parent.top
 
-            // QOpenHD Settings - AppSettingsPanel
+            // QOpenHD Settings - AppSettingsPanel INDEX 0 AND 1 !!
             Item {
                 height: 48
                 width: parent.width
@@ -112,6 +179,7 @@ Rectangle {
                     width: parent.width
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.horizontalCenter: parent.horizontalCenter
+                    focus: true //this gets focus automatically on open
 
                     Text {
                         id: appIcon
@@ -135,21 +203,41 @@ Rectangle {
                         font.pixelSize: 15
                         horizontalAlignment: Text.AlignLeft
                         verticalAlignment: Text.AlignVCenter
-                        color: mainStackLayout.currentIndex == 0 ? "#33aaff" : "#dde4ed"
+                        color: mainStackLayout.currentIndex == 0 ? "#33aaff" :
+                            mainStackLayout.currentIndex == 1 ? "#33aaff" : "#dde4ed"
                     }
                     background: Rectangle {
-                        opacity: .5
+                        opacity: .3
                         radius: 5
-                        //later this can be changed to focus
-                        color: appSettingsBtn.hovered ? "grey" : "transparent" // I update background color by this
+                        color: appSettingsBtn.hovered ? "grey" :
+                                                        appSettingsBtn.activeFocus ? "grey" : "transparent"
                     }
                     onClicked: {
-                        mainStackLayout.currentIndex = 0
+                        fromSubMenu=false
+                        if (settings.goggle_layout==true){                           
+                            mainStackLayout.currentIndex = 1
+                            mainStackLayout.visible=true
+                            sidebar.opacity = .5 //animation for sidebar fade
+                            ggAppSettingsPanel.openAppPanel()
+                        }
+                        else{
+                            mainStackLayout.currentIndex = 0
+                       }
                     }
+                    Keys.onPressed: (event)=> {
+                                        if (event.key === Qt.Key_Escape)
+                                        closeSettings()
+                                        else if (event.key === Qt.Key_S)
+                                        appSettingsBtn.clicked()
+                                        else if (event.key === Qt.Key_Equal)
+                                        closeButton.forceActiveFocus()
+                                        else if (event.key === Qt.Key_Minus)
+                                        openhdSettingsBtn.forceActiveFocus()
+                                    }
                 }
             }
 
-            // OpenHD Settings - MavlinkAllSettingsPanel
+            // OpenHD Settings - MavlinkAllSettingsPanel INDEX 2 AND 3 !!
             Item {
                 height: 48
                 width: parent.width
@@ -182,21 +270,42 @@ Rectangle {
                         font.pixelSize: 15
                         horizontalAlignment: Text.AlignLeft
                         verticalAlignment: Text.AlignVCenter
-                        color: mainStackLayout.currentIndex == 1 ? "#33aaff" : "#dde4ed"
+                        color: mainStackLayout.currentIndex == 2 ? "#33aaff" :
+                                                                   mainStackLayout.currentIndex == 3 ? "#33aaff" : "#dde4ed"
                     }
                     background: Rectangle {
-                        opacity: .5
+                        opacity: .3
                         radius: 5
-                        //later this can be changed to focus
-                        color: openhdSettingsBtn.hovered ? "grey" : "transparent" // I update background color by this
+                        color: openhdSettingsBtn.hovered ? "grey" :
+                                                           openhdSettingsBtn.activeFocus ? "grey" : "transparent"
                     }
                     onClicked: {
-                        mainStackLayout.currentIndex = 1
+                        fromSubMenu=false
+                        if (settings.goggle_layout==true){
+                            mainStackLayout.currentIndex = 3
+                            mainStackLayout.visible=true
+                            sidebar.opacity = .5 //animation for sidebar fade
+                            ggMavlinkAllSettingsPanel.openOhdPanel()
+                        }
+                        else{
+                            mainStackLayout.currentIndex = 2
+                       }
                     }
+                    Keys.onPressed: (event)=> {
+                                        if (event.key === Qt.Key_Escape)
+                                        closeSettings()
+                                        else if (event.key === Qt.Key_S)
+                                        openhdSettingsBtn.clicked()
+                                        else if (event.key === Qt.Key_Equal)
+                                        appSettingsBtn.forceActiveFocus()
+                                        else if (event.key === Qt.Key_Minus)
+                                        logBtn.forceActiveFocus()
+                                    }
+
                 }
             }
 
-            // Log
+            // Log INDEX 4
             Item {
                 height: 48
                 width: parent.width
@@ -231,21 +340,32 @@ Rectangle {
                         font.pixelSize: 15
                         horizontalAlignment: Text.AlignLeft
                         verticalAlignment: Text.AlignVCenter
-                        color: mainStackLayout.currentIndex == 2 ? "#33aaff" : "#dde4ed"
+                        color: mainStackLayout.currentIndex == 4 ? "#33aaff" : "#dde4ed"
                     }
                     background: Rectangle {
-                        opacity: .5
+                        opacity: .3
                         radius: 5
-                        //later this can be changed to focus
-                        color: logBtn.hovered ? "grey" : "transparent" // I update background color by this
+                        color: logBtn.hovered ? "grey" :
+                                                logBtn.activeFocus ? "grey" : "transparent"
                     }
                     onClicked: {
-                        mainStackLayout.currentIndex = 2
+                        mainStackLayout.visible=true
+                        mainStackLayout.currentIndex = 4
                     }
+                    Keys.onPressed: (event)=> {
+                                        if (event.key === Qt.Key_Escape)
+                                        closeSettings()
+                                        else if (event.key === Qt.Key_S)
+                                        logBtn.clicked()
+                                        else if (event.key === Qt.Key_Equal)
+                                        openhdSettingsBtn.forceActiveFocus()
+                                        else if (event.key === Qt.Key_Minus)
+                                        powerSettingsBtn.forceActiveFocus()
+                                    }
                 }
             }
 
-            // Power
+            // Power INDEX 5
             Item {
                 height: 48
                 width: parent.width
@@ -279,21 +399,32 @@ Rectangle {
                         font.pixelSize: 15
                         horizontalAlignment: Text.AlignLeft
                         verticalAlignment: Text.AlignVCenter
-                        color: mainStackLayout.currentIndex == 3 ? "#33aaff" : "#dde4ed"
+                        color: mainStackLayout.currentIndex == 5 ? "#33aaff" : "#dde4ed"
                     }
                     background: Rectangle {
-                        opacity: .5
+                        opacity: .3
                         radius: 5
-                        //later this can be changed to focus
-                        color: powerSettingsBtn.hovered ? "grey" : "transparent" // I update background color by this
+                        color: powerSettingsBtn.hovered ? "grey" :
+                                                          powerSettingsBtn.activeFocus ? "grey" : "transparent"
                     }
                     onClicked: {
-                        mainStackLayout.currentIndex = 3
+                        mainStackLayout.visible=true
+                        mainStackLayout.currentIndex = 5
                     }
+                    Keys.onPressed: (event)=> {
+                                        if (event.key === Qt.Key_Escape)
+                                        closeSettings()
+                                        else if (event.key === Qt.Key_S)
+                                        powerSettingsBtn.clicked()
+                                        else if (event.key === Qt.Key_Equal)
+                                        logBtn.forceActiveFocus()
+                                        else if (event.key === Qt.Key_Minus)
+                                        aboutBtn.forceActiveFocus()
+                                    }
                 }
             }
 
-            // About
+            // About INDEX 6
             Item {
                 height: 48
                 width: parent.width
@@ -327,17 +458,18 @@ Rectangle {
                         font.pixelSize: 15
                         horizontalAlignment: Text.AlignLeft
                         verticalAlignment: Text.AlignVCenter
-                        color: mainStackLayout.currentIndex == 4 ? "#33aaff" : "#dde4ed"
+                        color: mainStackLayout.currentIndex == 6 ? "#33aaff" : "#dde4ed"
                     }
                     background: Rectangle {
-                        opacity: .5
+                        opacity: .3
                         radius: 5
-                        //later this can be changed to focus
-                        color: aboutBtn.hovered ? "grey" : "transparent" // I update background color by this
+                        color: aboutBtn.hovered ? "grey" :
+                                                  aboutBtn.activeFocus ? "grey" : "transparent"
                     }
                     onClicked: {
-                        mainStackLayout.currentIndex = 4
-                        if (eeInt > 8){
+                        mainStackLayout.visible=true
+                        mainStackLayout.currentIndex = 6
+                        if (eeInt > 9){
                             eeItem.visible = true
                             eeInt = 0
                         }else{
@@ -345,10 +477,20 @@ Rectangle {
                             eeInt = eeInt+1
                         }
                     }
+                    Keys.onPressed: (event)=> {
+                                        if (event.key === Qt.Key_Escape)
+                                        closeSettings()
+                                        else if (event.key === Qt.Key_S)
+                                        aboutBtn.clicked()
+                                        else if (event.key === Qt.Key_Equal)
+                                        powerSettingsBtn.forceActiveFocus()
+                                        else if (event.key === Qt.Key_Minus)
+                                        devStatsBtn.forceActiveFocus()
+                                    }
                 }
             }
 
-            // Developer stats
+            // Developer stats INDEX 7
             Item {
                 height: 48
                 width: parent.width
@@ -382,21 +524,32 @@ Rectangle {
                         font.pixelSize: 15
                         horizontalAlignment: Text.AlignLeft
                         verticalAlignment: Text.AlignVCenter
-                        color: mainStackLayout.currentIndex == 5 ? "#33aaff" : "#dde4ed"
+                        color: mainStackLayout.currentIndex == 7 ? "#33aaff" : "#dde4ed"
                     }
                     background: Rectangle {
-                        opacity: .5
+                        opacity: .3
                         radius: 5
-                        //later this can be changed to focus
-                        color: devStatsBtn.hovered ? "grey" : "transparent" // I update background color by this
+                        color: devStatsBtn.hovered ? "grey" :
+                                                     devStatsBtn.activeFocus ? "grey" : "transparent"
                     }
                     onClicked: {
-                        mainStackLayout.currentIndex = 5
+                        mainStackLayout.visible=true
+                        mainStackLayout.currentIndex = 7
                     }
+                    Keys.onPressed: (event)=> {
+                                        if (event.key === Qt.Key_Escape)
+                                        closeSettings()
+                                        else if (event.key === Qt.Key_S)
+                                        devStatsBtn.clicked()
+                                        else if (event.key === Qt.Key_Equal)
+                                        aboutBtn.forceActiveFocus()
+                                        else if (event.key === Qt.Key_Minus)
+                                        rcSettingsBtn.forceActiveFocus()
+                                    }
                 }
             }
 
-            // RC
+            // RC INDEX 8
             Item {
                 height: 48
                 width: parent.width
@@ -430,20 +583,34 @@ Rectangle {
                         font.pixelSize: 15
                         horizontalAlignment: Text.AlignLeft
                         verticalAlignment: Text.AlignVCenter
-                        color: mainStackLayout.currentIndex == 6 ? "#33aaff" : "#dde4ed"
+                        color: mainStackLayout.currentIndex == 8 ? "#33aaff" : "#dde4ed"
                     }
                     background: Rectangle {
-                        opacity: .5
+                        opacity: .3
                         radius: 5
-                        //later this can be changed to focus
-                        color: rcSettingsBtn.hovered ? "grey" : "transparent" // I update background color by this
+                        color: rcSettingsBtn.hovered ? "grey" :
+                                                       rcSettingsBtn.activeFocus ? "grey" : "transparent"
                     }
                     onClicked: {
-                        mainStackLayout.currentIndex = 6
+                        mainStackLayout.visible=true
+                        mainStackLayout.currentIndex = 8
                     }
+                    Keys.onPressed: (event)=> {
+                                        if (event.key === Qt.Key_Escape)
+                                        closeSettings()
+                                        else if (event.key === Qt.Key_S)
+                                        rcSettingsBtn.clicked()
+                                        else if (event.key === Qt.Key_Equal)
+                                        devStatsBtn.forceActiveFocus()
+                                        else if (event.key === Qt.Key_Minus){
+                                            if (eeItem.visible == true){
+                                                eeBtn.forceActiveFocus()
+                                            }
+                                        }
+                                    }
                 }
             }
-
+            // EASTER EGG INDEX 9
             Item {
                 id: eeItem
                 visible: false
@@ -481,17 +648,28 @@ Rectangle {
                         font.pixelSize: 15
                         horizontalAlignment: Text.AlignLeft
                         verticalAlignment: Text.AlignVCenter
-                        color: mainStackLayout.currentIndex == 7 ? "#33aaff" : "#dde4ed"
+                        color: mainStackLayout.currentIndex == 9 ? "#33aaff" : "#dde4ed"
                     }
                     background: Rectangle {
-                        opacity: .5
+                        opacity: .3
                         radius: 5
-                        //later this can be changed to focus
-                        color: eeBtn.hovered ? "grey" : "transparent" // I update background color by this
+                        color: eeBtn.hovered ? "grey" :
+                                               eeBtn.activeFocus ? "grey" : "transparent"
                     }
                     onClicked: {
-                        mainStackLayout.currentIndex = 7
+                        mainStackLayout.visible=true
+                        mainStackLayout.currentIndex = 9
                     }
+                    Keys.onPressed: (event)=> {
+                                        if (event.key === Qt.Key_Escape)
+                                        closeSettings()
+                                        else if (event.key === Qt.Key_S)
+                                        eeBtn.clicked()
+                                        else if (event.key === Qt.Key_Equal)
+                                        devStatsBtn.forceActiveFocus()
+                                        //else if (event.key == Qt.Key_Minus)
+                                        //eeBtn.forceActiveFocus()
+                                    }
                 }
             }
         }
@@ -504,18 +682,25 @@ Rectangle {
         anchors.bottomMargin: 0
         anchors.right: parent.right
         anchors.rightMargin: 0
-        anchors.left: sidebar.right
-        anchors.leftMargin: 0
+        anchors.left: settings.goggle_layout ? sidebar.left : sidebar.right
+        anchors.leftMargin: settings.goggle_layout ? 132 : -1
+        anchors.topMargin: settings.goggle_layout ? 48 : 0
         anchors.top: parent.top
-        anchors.topMargin: 0
-
 
         AppSettingsPanel {
-            id: appSettingsPanel
+            id: appSettingsPanel //app normal view for qopenhd settings
+        }
+
+        GgAppSettingsPanel {
+            id: ggAppSettingsPanel //app goggle view for qopenhd settings
         }
 
         MavlinkAllSettingsPanel {
-            id:  mavlinkAllSettingsPanel //this is "openhd" menu
+            id:  mavlinkAllSettingsPanel //"openhd" normal menu view
+        }
+
+        GgMavlinkAllSettingsPanel {
+            id:  ggMavlinkAllSettingsPanel //"openhd" goggle menu view
         }
 
         LogMessagesStatusView{
@@ -537,6 +722,7 @@ Rectangle {
         RcInfoPanel {
             id: rcInfoPanel
         }
+
         EasterEggPanel {
             id: easterEgPanel
         }

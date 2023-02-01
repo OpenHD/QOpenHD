@@ -28,9 +28,9 @@ QOpenHD::QOpenHD(QObject *parent)
     m_speech = new QTextToSpeech(this);
 
     QStringList engines = QTextToSpeech::availableEngines();
-    qDebug() << "Available SPEECH engines:";
+    //qDebug() << "Available SPEECH engines:";
     for (auto engine : engines) {
-        qDebug() << "  " << engine;
+        //qDebug() << "  " << engine;
     }
     // List the available locales.
 //    qDebug() << "Available locales:";
@@ -45,12 +45,12 @@ QOpenHD::QOpenHD(QObject *parent)
 //        qDebug() << "  " << voice.name();
     }
     // Display properties.
-    qDebug() << "Locale:" << m_speech->locale();
-    qDebug() << "Pitch:" << m_speech->pitch();
-    qDebug() << "Rate:" << m_speech->rate();
-    qDebug() << "Voice:" << m_speech->voice().name();
-    qDebug() << "Volume:" << m_speech->volume();
-    qDebug() << "State:" << m_speech->state();
+    //qDebug() << "Locale:" << m_speech->locale();
+    //qDebug() << "Pitch:" << m_speech->pitch();
+    //qDebug() << "Rate:" << m_speech->rate();
+    //qDebug() << "Voice:" << m_speech->voice().name();
+    //qDebug() << "Volume:" << m_speech->volume();
+    //qDebug() << "State:" << m_speech->state();
 #endif
 }
 

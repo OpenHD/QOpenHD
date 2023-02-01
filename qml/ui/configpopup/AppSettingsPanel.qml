@@ -27,7 +27,7 @@ Item {
     property int elementHeight: 48
 
     Keys.onPressed: (event)=> {
-                        if (event.key == Qt.Key_Return) {
+                        if (event.key == Qt.Key_S) {
                             console.log("enter was pressed from menu");
                             event.accepted = true;
                         }
@@ -43,7 +43,7 @@ Item {
         anchors.top: parent.top
         clip: true
         onActiveFocusChanged: {
-            console.log("menu focus changed");
+            //console.log("menu focus changed");
         }
 
         TabButton {
@@ -104,9 +104,6 @@ Item {
 
         currentIndex:     {
            // console.log("index:"+appSettingsBar.currentIndex);
-            // for future use to set focus for goggle support
-            showAppSettings(appSettingsBar.currentIndex);
-
             return appSettingsBar.currentIndex;
         }
 

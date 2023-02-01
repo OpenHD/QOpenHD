@@ -8,7 +8,7 @@
 #include "debug_overdraw.hpp"
 
 FlightPathVector::FlightPathVector(QQuickItem *parent): QQuickPaintedItem(parent) {
-    qDebug() << "FlightPathVector::FlightPathVector()";
+    //qDebug() << "FlightPathVector::FlightPathVector()";
     setRenderTarget(RenderTarget::FramebufferObject);
 }
 

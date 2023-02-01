@@ -205,7 +205,7 @@ ScrollView {
                 Text {
                     text: Number(settings.smoothing).toLocaleString(Qt.locale(), 'f', 0) + "ms";
                     font.pixelSize: 16
-                    anchors.right: smoothing_Slider.left
+                    anchors.right: smoothing_GgSlider.left
                     anchors.rightMargin: 12
                     verticalAlignment: Text.AlignVCenter
                     anchors.verticalCenter: parent.verticalCenter
@@ -214,8 +214,8 @@ ScrollView {
 
                 }
 
-                Slider {
-                    id: smoothing_Slider
+                GgSlider {
+                    id: smoothing_GgSlider
                     height: elementHeight
                     width: 210
                     font.pixelSize: 14
@@ -230,7 +230,7 @@ ScrollView {
                     // @disable-check M223
                     onValueChanged: {
                         // @disable-check M222
-                        settings.smoothing = smoothing_Slider.value
+                        settings.smoothing = smoothing_GgSlider.value
                     }
                 }
 

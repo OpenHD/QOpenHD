@@ -83,7 +83,7 @@ ScrollView {
                     anchors.left: parent.left
                 }
 
-                ComboBox {
+                GgComboBox {
                   id: selectVideoCodecPrimary
                   width: 320
                   height: elementHeight

@@ -44,7 +44,7 @@ void ADSBVehicleManager::onStarted()
 //    MavlinkTelemetry* mavlinktelemetry = MavlinkTelemetry::instance();
 //    connect(mavlinktelemetry, &MavlinkTelemetry::adsbVehicleUpdate, this, &ADSBVehicleManager::adsbVehicleUpdate, Qt::QueuedConnection);
 
-    qDebug() << "ADSBVehicleManager::onStarted()";
+    //qDebug() << "ADSBVehicleManager::onStarted()";
 
     connect(&_adsbVehicleCleanupTimer, &QTimer::timeout, this, &ADSBVehicleManager::_cleanupStaleVehicles);
     _adsbVehicleCleanupTimer.setSingleShot(false);
@@ -167,7 +167,7 @@ void ADSBapi::run(void)
 }
 
 void ADSBapi::init(void) {
-    qDebug() << "------------------>Adsbapi::init()<------------------------";
+    //qDebug() << "------------------>Adsbapi::init()<------------------------";
 
     QNetworkAccessManager * manager = new QNetworkAccessManager(this);
 

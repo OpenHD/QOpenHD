@@ -8,7 +8,7 @@
 #include "debug_overdraw.hpp"
 
 AoaGauge::AoaGauge(QQuickItem *parent): QQuickPaintedItem(parent) {
-    qDebug() << "AoaGauge::AoaGauge()";
+    //qDebug() << "AoaGauge::AoaGauge()";
     setRenderTarget(RenderTarget::FramebufferObject);
 }
 
