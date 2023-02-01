@@ -85,6 +85,9 @@ jobs:
           ANDROID_NDK_LATEST_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
           ANDROID_NDK: ${{ steps.setup-ndk.outputs.ndk-path }}
         run:  |
+            wget https://openhdfpv.org/wp-content/BaseImages/install.zip
+            sudo unzip install.zip -d /usr/local/
+            ls -a /usr/local/
             qmake ${SOURCE_DIR}/QOpenHD.pro 
             make -j$(($(nproc)/2))
 
