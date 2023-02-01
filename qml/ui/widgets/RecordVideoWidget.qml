@@ -225,7 +225,7 @@ BaseWidget {
                             }
                             if (vars.rec2 ==true) {
                              vars.ret2 = _airCameraSettingsModel.try_update_parameter_int("V_AIR_RECORDING", 0)
-                             _hudLogMessagesModel.signalAddLogMessage(0,"stopping recording 2")
+                             _hudLogMessagesModel2.signalAddLogMessage(0,"stopping recording 2")
                                 if (vars.ret2 == true) {
                                 record_status_cam2.color = "red"
                                 }
