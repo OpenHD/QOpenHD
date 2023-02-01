@@ -68,7 +68,7 @@ INCLUDEPATH += $$PWD/app/exp
 
 # QOpenHD telemetry (mavlink, partially based on MAVSDK) features
 # REQUIRED - without it QOpenHD will compile, but be pretty much non functional
-include(app/telemetry/telemetry.pri)
+#include(app/telemetry/telemetry.pri)
 
 # Avcodec decode and display, all sources
 # Replaced gstreamer for now
@@ -83,7 +83,7 @@ include(app/telemetry/telemetry.pri)
 #include(app/vs_gst_qmlglsink/gst_video.pri)
 
 # adsb library
-include(app/adsb/adsb_lib.pri)
+#include(app/adsb/adsb_lib.pri)
 
 # All Generic files / files that literally have 0!! dependencies other than qt
 SOURCES += \
