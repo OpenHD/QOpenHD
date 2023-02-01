@@ -36,8 +36,12 @@ BaseWidget {
 
         Item {
             id:vars
-            property bool rec: false
             property bool ret: false
+            property bool rec1: false
+            property bool rec2: false
+            property bool ret1: false
+            property bool ret2: false
+
         }
 
         ColumnLayout{
@@ -51,10 +55,8 @@ BaseWidget {
                     if (checked == true) {
                         vars.ret=_airCameraSettingsModel.try_update_parameter_int("V_AIR_RECORDING",1)
                         if (vars.ret==true){
-                            vars.rec=true
+                            vars.rec1=true
                             vars.ret=false
-                            record_status_cam1.text="CAM1"
-                            record_status_cam1.color="green"
                             _hudLogMessagesModel.signalAddLogMessage(6,"recording cam1 started")
                             cam1stop.visible= true
                             cam1rec.visible= false
@@ -73,10 +75,8 @@ BaseWidget {
                     if (checked == true) {
                         vars.ret=_airCameraSettingsModel.try_update_parameter_int("V_AIR_RECORDING",0)
                         if (vars.ret==true){
-                            vars.rec=false
+                            vars.rec1=false
                             vars.ret=false
-                            record_status_cam1.text="CAM1"
-                            record_status_cam1.color="red"
                             _hudLogMessagesModel.signalAddLogMessage(6,"recording cam1 stopped")
                             cam1stop.visible= false
                             cam1rec.visible= true
@@ -95,10 +95,8 @@ BaseWidget {
                     if (checked == true) {
                         vars.ret=_airCameraSettingsModel2.try_update_parameter_int("V_AIR_RECORDING",1)
                         if (vars.ret==true){
-                            vars.rec=true
+                            vars.rec2=true
                             vars.ret=false
-                            record_status_cam2.text="CAM2"
-                            record_status_cam2.color="green"
                             _hudLogMessagesModel.signalAddLogMessage(6,"recording cam2 started")
                             cam2stop.visible= true
                             cam2rec.visible= false
@@ -117,10 +115,8 @@ BaseWidget {
                     if (checked == true) {
                         vars.ret=_airCameraSettingsModel2.try_update_parameter_int("V_AIR_RECORDING",0)
                         if (vars.ret==true){
-                            vars.rec=false
+                            vars.rec2=false
                             vars.ret=false
-                            record_status_cam2.text="CAM2"
-                            record_status_cam2.color="red"
                             _hudLogMessagesModel.signalAddLogMessage(6,"recording cam2 stopped")
                             cam2stop.visible= false
                             cam2rec.visible= true
@@ -157,7 +153,7 @@ BaseWidget {
                 Text {
                     id:record_status_cam1
                     text: "CAM1"
-                    color: "red"
+                    color: (vars.rec1 == true) ? "green" : "red"
                     anchors.fill: parent
                     anchors.leftMargin: 95
                     verticalAlignment: Text.AlignVCenter
@@ -172,7 +168,7 @@ BaseWidget {
                 Text {
                     id:record_status_cam2
                     text: "CAM2"
-                    color: "red"
+                    color: (vars.rec1 == true) ? "green" : "red"
                     anchors.fill: parent
                     anchors.leftMargin: 140
                     verticalAlignment: Text.AlignVCenter
@@ -213,7 +209,30 @@ BaseWidget {
                     style: Text.Outline
                     styleColor: settings.color_glow
                     visible: true
+                    onTextChanged: {
+                    if (vars.rec1 ==true || vars.rec2 ==true ) {
+                        if (_ohdSystemAir.curr_space_left_mb < 500 && _ohdSystemAir.curr_space_left_mb > 200 && _ohdSystemAir.curr_space_left_mb % 10 == 0) {
+                            _hudLogMessagesModel.signalAddLogMessage(4,"SD-Card getting full.")
+                            }
+                        if (_ohdSystemAir.curr_space_left_mb < 200) {
+                            _hudLogMessagesModel.signalAddLogMessage(4,"SD-Card getting full.")
+                            if (vars.rec1 ==true ) {
+                            vars.ret1 = _airCameraSettingsModel.try_update_parameter_int("V_AIR_RECORDING", 0)
+                            _hudLogMessagesModel.signalAddLogMessage(0,"stopping recording 1")
+                                if (vars.ret1 == true) {
+                                record_status_cam1.color = "red"
+                                }
+                            }
+                            if (vars.rec2 ==true) {
+                             vars.ret2 = _airCameraSettingsModel.try_update_parameter_int("V_AIR_RECORDING", 0)
+                             _hudLogMessagesModel.signalAddLogMessage(0,"stopping recording 2")
+                                if (vars.ret2 == true) {
+                                record_status_cam2.color = "red"
+                                }
+                            }
+
+                    }    }
                 }
-    }
+    }       }
 
 }
