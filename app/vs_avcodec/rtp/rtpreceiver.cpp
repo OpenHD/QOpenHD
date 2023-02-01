@@ -8,6 +8,7 @@
 #include "../../vs_util/decodingstatistcs.h"
 #include "common_consti/openhd-util.hpp"
 #include "vs_util/QOpenHDVideoHelper.hpp"
+#include "../../logging/hudlogmessagesmodel.h"
 
 
 #ifdef OPENHD_USE_LIB_UVGRTP
@@ -155,6 +156,11 @@ void RTPReceiver::queue_data(const uint8_t* nalu_data,const std::size_t nalu_dat
                 n_dropped_frames++;
                 qDebug()<<"Dropping incoming frame, total:"<<n_dropped_frames;
                 DecodingStatistcs::instance().set_n_decoder_dropped_frames(n_dropped_frames);
+                const auto elapsed=std::chrono::steady_clock::now()-m_last_log_hud_dropped_frame;
+                if(elapsed>std::chrono::seconds(3)){
+                    HUDLogMessagesModel::instance().add_message_warning("Decoder unhealthy-reduce load");
+                    m_last_log_hud_dropped_frame=std::chrono::steady_clock::now();
+                }
             }
         }
     }else{
