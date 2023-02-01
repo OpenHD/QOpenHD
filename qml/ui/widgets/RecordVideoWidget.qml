@@ -168,7 +168,7 @@ BaseWidget {
                 Text {
                     id:record_status_cam2
                     text: "CAM2"
-                    color: (vars.rec1 == true) ? "green" : "red"
+                    color: (vars.rec2 == true) ? "green" : "red"
                     anchors.fill: parent
                     anchors.leftMargin: 140
                     verticalAlignment: Text.AlignVCenter
