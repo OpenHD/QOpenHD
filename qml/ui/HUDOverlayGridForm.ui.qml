@@ -14,6 +14,11 @@ import "../resources" as Resources
 Item {
     signal settingsButtonClicked
 
+    function mainMenuClosed() {
+        console.log("mainMenuClosed");
+        settingsButton.forceActiveFocus()
+    }
+
     Image {
         id: settingsButton
         width: 48
@@ -28,11 +33,10 @@ Item {
         anchors.topMargin: 0
         focus: true
         Keys.onPressed: (event)=> {
-                if (event.key == Qt.Key_Return) {
+                if (event.key == Qt.Key_S) {
                     console.log("enter was pressed");
                     event.accepted = true;
-                    hudOverlayGrid.settingsButtonClicked();
-                                settingsButton.focus=false;
+                    hudOverlayGrid.settingsButtonClicked()
                 }
             }
         MouseArea {

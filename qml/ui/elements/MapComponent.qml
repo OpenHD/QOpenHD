@@ -32,7 +32,7 @@ Map {
         //this deletes the lines drawn between mission waypoints
         target: MissionWaypointManager
         function onMapDeleteWaypoints(){
-            console.log("Map component: onMapDeleteWaypoints from polyline");
+            //console.log("Map component: onMapDeleteWaypoints from polyline");
 
             var waypoint_track_count = waypointTrack.pathLength();
 
@@ -50,13 +50,13 @@ Map {
     }
 
     onSupportedMapTypesChanged: {
-        console.log("Map component: supported map types has changed")
+        //console.log("Map component: supported map types has changed")
         variantDropdown.model = map.supportedMapTypes
     }
 
     onMapReadyChanged: {
         //needed to intitialize adsb api coordinates
-        console.log("Map component: is ready");
+        //console.log("Map component: is ready");
         findMapBounds();
     }
 
