@@ -358,20 +358,45 @@ Flickable {
    */
 
                 ListModel {
-                    id: itemsLanguage
-                    ListElement { text: "H264"; }
-                    ListElement { text: "H265";  }
-                    ListElement { text: "MJPEG"; }
+                    id: locales
+                        ListElement { text: "German"; locale: "de" }
+                        ListElement { text: "Russian"; locale: "ru" }
+                        ListElement { text: "English"; locale: "en" }
+                        ListElement { text: "French"; locale: "fr" }
+                        ListElement { text: "Spanish"; locale: "es" }
+                        ListElement { text: "Dutch"; locale: "nl" }
+                        ListElement { text: "Romanian"; locale: "ro" }
+                        ListElement { text: "Chinese"; locale: "zh" }
+                        ListElement { text: "Italian"; locale: "it" }
                 }
+
                 GgComboBox {
                     id: languageSelectBox
-                    model: itemsLanguage
+                    model: locales
                     height: elementHeight
                     width: 210
                     anchors.right: parent.right
                     anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.horizontalCenter: parent.horizonatalCenter
+
+                    Component.onCompleted: {
+                        for (var i = 0; i < model.count; i++) {
+                            var choice = model.get(i);
+                            if (choice.locale == settings.locale) {
+                                languageSelectBox.currentIndex = i;
+                            }
+                        }
+                      //  _qopenhd.switchToLanguage(settings.locale);
+                        console.log("Current language:"+settings.locale);
+                    }
+
+                    onActivated: {
+                        settings.locale = locales.get(languageSelectBox.currentIndex).locale
+
+                    //    _qopenhd.switchToLanguage(settings.locale);
+                        console.log("New language:"+settings.locale);
+                    }
                 }
                 Keys.onPressed: (event)=> {
                                     if (event.key === Qt.Key_Equal && controlSelected == false){
@@ -387,6 +412,7 @@ Flickable {
                                     }
                                     else if (event.key === Qt.Key_Escape)
                                     controlSelected=false
+
                                 }
 
             }

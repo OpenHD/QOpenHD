@@ -10,10 +10,34 @@ SpinBox {
 
     property bool selected: false
 
+    NumberAnimation {
+        id: animatePlus
+        target: plusHighlight
+        properties: "width"
+        from: 20
+        to: 40
+        loops: Animation.Infinite
+        duration: 1000
+        easing {type: Easing.OutBack; overshoot: 5}
+    }
+
+    NumberAnimation {
+        id: animateMinus
+        target: minusHighlight
+        properties: "width"
+        from: 20
+        to: 40
+        loops: Animation.Infinite
+        duration: 1000
+        easing {type: Easing.OutBack; overshoot: 5}
+    }
+
     Keys.onPressed: {
         if (event.key === Qt.Key_S){
             selected = true
-        highlight.color= "#33aaff"
+            highlight.color= "#33aaff"
+            animateMinus.start()
+            animatePlus.start()
         }
         else if (event.key === Qt.Key_Escape){
             selected = false
@@ -39,14 +63,17 @@ SpinBox {
             highlight.visible=true
             highlight.color= "#33aaff"
 
-            if(control.selected)
+            if(control.selected){
                 highlight.color= "#33aaff"
+            }
             else
                 highlight.color= "grey"
         }
         else if (control.activeFocus == false){
             //console.log("New spinbox has lost focus");
             highlight.visible=false
+            animateMinus.stop()
+            animatePlus.stop()
         }
     }
 
@@ -71,17 +98,20 @@ SpinBox {
         color: "transparent"
 
         Rectangle {
-            width: parent.width
-            height: parent.height
+            id: plusHighlight
+            anchors.centerIn: parent
+            width: 30
+            height: plusHighlight.width
             color: up.pressed ? "grey" :
-                   control.selected ? "#33aaff" : "transparent"
+                                control.selected ? "#33aaff" : "transparent"
             border.color: "transparent"
-            radius: 20
-            opacity: .3
+            radius: plusHighlight.width/2
+            opacity: .2
         }
 
         Text {
             text: "+"
+            anchors.centerIn: parent
             font.pixelSize: control.font.pixelSize * 2
             color: control.selected ? "black" : "grey"
             anchors.fill: parent
@@ -100,17 +130,20 @@ SpinBox {
         color: "transparent"
 
         Rectangle {
-            width: parent.width
-            height: parent.height
+            id: minusHighlight
+            anchors.centerIn: parent
+            width: 30
+            height: minusHighlight.width
             color: down.pressed ? "grey" :
-                   control.selected ? "#33aaff" : "transparent"
+                                  control.selected ? "#33aaff" : "transparent"
             border.color: "transparent"
-            radius: 20
-            opacity: .3
+            radius: minusHighlight.width/2
+            opacity: .2
         }
 
         Text {
             text: "-"
+            anchors.centerIn: parent
             font.pixelSize: control.font.pixelSize * 2
             color: control.selected ? "black" : "grey"
             anchors.fill: parent

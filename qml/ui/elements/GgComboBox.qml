@@ -20,16 +20,30 @@ ComboBox {
 
     background.opacity:.5
 
+    NumberAnimation {
+        id: animateBackground
+        target: background
+        properties: "opacity"
+        from: .1
+        to: .3
+        loops: Animation.Infinite
+        duration: 1000
+        easing {type: Easing.OutBack; overshoot: 5}
+    }
+
     onActiveFocusChanged: {
         if (control.activeFocus == true){
-background.color="grey"
+            background.color="grey"
             background.opacity=.3
         }
         else if (control.activeFocus == false){
-background.color="white"
+            background.color="white"
             background.opacity=.5
+            animateBackground.stop()
         }
     }
+
+    textRole: "text"
 
     //Keys.forwardTo: comboBox
     //Keys.onPressed: allowComplete = (event.key !== Qt.Key_Backspace && event.key !== Qt.Key_Delete);
@@ -38,6 +52,8 @@ background.color="white"
             if (selected == false){
                 control.popup.open()
                 selected = true
+                background.color = "#33aaff"
+                animateBackground.start()
             } else {
                 //console.log("Make Selection");
                 control.currentIndex=selection
@@ -49,13 +65,19 @@ background.color="white"
             if (selected == true){
                 control.popup.close()
                 selected = false
+                control.activeFocus=false
+            }
+            else {
+                animateBackground.stop()
+                background.color = "grey"
+                background.opacity=.3
             }
         } else if (event.key === Qt.Key_Minus){
             if (selected == true){
                 control.incrementCurrentIndex()
                 selection= selection+1
                 //event.accepted = true;
-                console.log("event accepted<<<<<<<");
+                //console.log("event accepted<<<<<<<");
                 //event.key = accepted() //prevent the keypress from "bubbling up" to parent
             }
         } else if (event.key === Qt.Key_Equal){
@@ -63,14 +85,14 @@ background.color="white"
                 control.decrementCurrentIndex()
                 selection= selection-1
                 //event.accepted = true;
-                console.log("event accepted<<<<<<<");
-               // event.key = accepted() //prevent the keypress from "bubbling up" to parent
+                //console.log("event accepted<<<<<<<");
+                // event.key = accepted() //prevent the keypress from "bubbling up" to parent
             }
         }
 
     }
 
-onPressedChanged: if (pressed)selected=true
+    onPressedChanged: if (pressed)selected=true
 
 
 

@@ -11,6 +11,17 @@ SwitchDelegate {
     checked: true
     clip:false
 
+    NumberAnimation {
+        id: animateHighlight
+        target: highlight
+        properties: "width"
+        from: 5
+        to: 35
+        loops: Animation.Infinite
+        duration: 1000
+        easing {type: Easing.OutBack; overshoot: 5}
+    }
+
     Keys.onPressed: {
         if (event.key === Qt.Key_S && !event.isAutoRepeat)
             checked = !checked;
@@ -20,15 +31,12 @@ SwitchDelegate {
         if (control.activeFocus == true){
             //console.log("New switch has focus");
             control.highlighted=true
-
-            if(control.checked)
-                highlight.color= "#33aaff"
-            else
-                highlight.color= "grey"
+            animateHighlight.start()
         }
         else if (control.activeFocus == false){
             //console.log("New switch has lost focus");
             control.highlighted=false
+            animateHighlight.stop()
         }
     }
 
@@ -53,17 +61,17 @@ SwitchDelegate {
         border.color: "transparent"
 
         Rectangle {
-           id: highlight
+            id: highlight
 
-           x: control.checked ? parent.width - width : 0
-           y: parent.height / 2 - height / 2
-           width: 35
-           height: 35
-           radius: 17
-           visible: control.down || control.highlighted
-           color: "grey" //color also controlled above
-           opacity:.3
-       }
+            x: control.checked ? parent.width - width : 0
+            y: parent.height / 2 - height / 2
+            width: 35
+            height: 35
+            radius: 17
+            visible: control.down || control.highlighted
+            color: control.checked ? "#33aaff" : "grey"
+            opacity:.3
+        }
 
         Rectangle {
             id:knob
@@ -108,11 +116,11 @@ SwitchDelegate {
                 highlight.color= "#33aaff"
             else
                 highlight.color= "grey"
-                 }
+        }
         onExited: {
-                     control.highlighted=false
+            control.highlighted=false
 
-                 }
+        }
     }
 
 }
