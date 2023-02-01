@@ -141,9 +141,9 @@ QString QOpenHD::show_local_ip()
 
 }
 
-#if defined(__android__)
 void QOpenHD::keep_screen_on(bool on)
 {
+#if defined(__android__)
     QtAndroid::runOnAndroidThread([on] {
         QAndroidJniObject activity = QtAndroid::androidActivity();
         if (activity.isValid()) {
@@ -163,5 +163,6 @@ void QOpenHD::keep_screen_on(bool on)
             env->ExceptionClear();
         }
     });
+  // Not needed on any other platform so far
+#endif //defined(__android__)
 }
-#endif

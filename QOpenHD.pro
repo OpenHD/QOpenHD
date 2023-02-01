@@ -262,3 +262,5 @@ contains(ANDROID_TARGET_ARCH,arm64-v8a) {
 }
 
 ANDROID_ABIS = armeabi-v7a
+
+QMAKE_LFLAGS+= "-s TOTAL_MEMORY=18087936"

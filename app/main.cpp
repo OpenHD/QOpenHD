@@ -221,10 +221,8 @@ int main(int argc, char *argv[]) {
     applePlatform->registerNotifications();
 #endif
 
-
+  OpenHDUtil::instance().keep_screen_on(true);
 #if defined(__android__)
-    OpenHDUtil::instance().keep_screen_on(true);
-
     for(const QString &permission : permissions) {
         auto result = QtAndroid::checkPermission(permission);
 
