@@ -87,7 +87,7 @@ jobs:
         run:  |
             wget https://openhdfpv.org/wp-content/BaseImages/install.zip
             sudo unzip install.zip -d /usr/local/
-            ls -a /usr/local/include/
+            ls -a /usr/local/include/mavsdk
             ls -a /usr/local/lib/
             qmake ${SOURCE_DIR}/QOpenHD.pro 
             make -j$(($(nproc)/2))
