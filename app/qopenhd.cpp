@@ -15,6 +15,10 @@
 #include <qsettings.h>
 #endif
 
+#if defined(__android__)
+#include <QtAndroid>
+#endif
+
 QOpenHD &QOpenHD::instance()
 {
     static QOpenHD instance=QOpenHD();

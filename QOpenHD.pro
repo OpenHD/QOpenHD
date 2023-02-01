@@ -240,8 +240,11 @@ WindowsBuild {
 }
 
 AndroidBuild {
+    message("AndroidBuild")
     CONFIG += EnableJoysticks
     CONFIG += EnableSpeech
+    QT += androidextras
+
 }
 
 EnableSpeech {
