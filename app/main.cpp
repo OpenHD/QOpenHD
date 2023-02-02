@@ -5,7 +5,7 @@
 #include <QDebug>
 #include <QFontDatabase>
 #if defined(__android__)
-#include <QtAndroidExtras/QtAndroid>
+#include <QtAndroid>
 const QVector<QString> permissions({"android.permission.INTERNET",
                                     "android.permission.WRITE_EXTERNAL_STORAGE",
                                     "android.permission.READ_EXTERNAL_STORAGE",
