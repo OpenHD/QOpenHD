@@ -167,17 +167,10 @@ DISTFILES += \
     app/util/README.md \
     app/videostreaming/README.md \
     app/videostreaming/gst_qmlglsink/gst_video.pri \
-    app/videostreaming/legacy/README.md \
-    app/videostreaming_util/README.txt \
     extra_build_qmake.sh \
-    inc/osd/Readme.md \
     lib/h264nal/h264nal.pri \
     qml/qtquickcontrols2.conf \
-    qml/resources/README.md \
-    qml/ui/ConfigPopup/README.md \
-    qml/ui/elements/README.md \
     qml/ui/qmldir \
-    tools/usefull_commands.md \
 
 
 iOSBuild {
@@ -254,17 +247,7 @@ EnableSpeech {
 }
 
 
-contains(ANDROID_TARGET_ARCH,armeabi-v7a) {
+android{
     ANDROID_PACKAGE_SOURCE_DIR = \
         $$PWD/android
 }
-
-contains(ANDROID_TARGET_ARCH,arm64-v8a) {
-    ANDROID_PACKAGE_SOURCE_DIR = \
-        $$PWD/android
-}
-
-ANDROID_ABIS = armeabi-v7a
-
-# For web assembly
-#QMAKE_LFLAGS+= "-s TOTAL_MEMORY=25165824"
