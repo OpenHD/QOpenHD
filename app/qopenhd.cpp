@@ -31,22 +31,21 @@ QOpenHD::QOpenHD(QObject *parent)
 {
 #if defined(ENABLE_SPEECH)
     m_speech = new QTextToSpeech(this);
-
     QStringList engines = QTextToSpeech::availableEngines();
     qDebug() << "Available SPEECH engines:";
-    for (auto engine : engines) {
+    for (auto& engine : engines) {
         qDebug() << "  " << engine;
     }
     // List the available locales.
 //    qDebug() << "Available locales:";
-    for (auto locale : m_speech->availableLocales()) {
+    for (auto& locale : m_speech->availableLocales()) {
 //        qDebug() << "  " << locale;
     }
     // Set locale.
     m_speech->setLocale(QLocale(QLocale::English, QLocale::LatinScript, QLocale::UnitedStates));
     // List the available voices.
 //    qDebug() << "Available voices:";
-    for (auto voice : m_speech->availableVoices()) {
+    for (auto& voice : m_speech->availableVoices()) {
 //        qDebug() << "  " << voice.name();
     }
     // Display properties.
@@ -67,6 +66,7 @@ void QOpenHD::setEngine(QQmlApplicationEngine *engine) {
 void QOpenHD::switchToLanguage(const QString &language) {
     if(m_engine==nullptr){
         qDebug()<<"Error switch language- engine not set";
+        return;
     }
     QLocale::setDefault(language);
 
