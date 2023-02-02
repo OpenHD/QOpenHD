@@ -48,6 +48,8 @@ private:
     QTextToSpeech *m_speech;
 #endif
 public:
+    // We always want the screen to be kept "On" while QOpenHD is running -
+    // but how to do that depends highly on the platform
     Q_INVOKABLE void keep_screen_on(bool on);
 };
 

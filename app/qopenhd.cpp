@@ -16,6 +16,7 @@
 #endif
 
 #if defined(__android__)
+#include <QAndroidJniEnvironment>
 #include <QtAndroid>
 #endif
 
