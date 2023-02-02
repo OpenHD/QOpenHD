@@ -1,10 +1,11 @@
+#include "qqmlcontext.h"
 #include <QApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlComponent>
 #include <QDebug>
 #include <QFontDatabase>
 #if defined(__android__)
-#include <QtAndroidExtras/QtAndroid>
+#include <QtAndroid>
 const QVector<QString> permissions({"android.permission.INTERNET",
                                     "android.permission.WRITE_EXTERNAL_STORAGE",
                                     "android.permission.READ_EXTERNAL_STORAGE",
@@ -12,12 +13,16 @@ const QVector<QString> permissions({"android.permission.INTERNET",
                                     "android.permission.ACCESS_FINE_LOCATION"});
 #endif
 
+#ifdef QOPENHD_HAS_MAVSDK_MAVLINK_TELEMETRY
 #include "telemetry/models/fcmavlinksystem.h"
 #include "telemetry/models/camerastreammodel.h"
 #include "telemetry/models/aohdsystem.h"
 #include "telemetry/models/wificard.h"
 #include "telemetry/MavlinkTelemetry.h"
 #include "telemetry/models/rcchannelsmodel.h"
+#include "telemetry/settings/mavlinksettingsmodel.h"
+#include "telemetry/settings/synchronizedsettings.h"
+#endif //QOPENHD_HAS_MAVSDK_MAVLINK_TELEMETRY
 
 #include "util/QmlObjectListModel.h"
 
@@ -51,8 +56,6 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 
 #include "logging/logmessagesmodel.h"
 #include "logging/hudlogmessagesmodel.h"
-#include "telemetry/settings/mavlinksettingsmodel.h"
-#include "telemetry/settings/synchronizedsettings.h"
 #include "qopenhd.h"
 #include "util/WorkaroundMessageBox.h"
 
@@ -218,10 +221,8 @@ int main(int argc, char *argv[]) {
     applePlatform->registerNotifications();
 #endif
 
-
+  QOpenHD::instance().keep_screen_on(true);
 #if defined(__android__)
-    OpenHDUtil::instance().keep_screen_on(true);
-
     for(const QString &permission : permissions) {
         auto result = QtAndroid::checkPermission(permission);
 
@@ -262,6 +263,9 @@ int main(int argc, char *argv[]) {
     engine.rootContext()->setContextProperty("_qopenhd", &QOpenHD::instance());
     QOpenHD::instance().setEngine(&engine);
 
+    // Regster all the QT Mavlink system model(s)
+    // it is a common practice for QT to prefix models from c++ with an underscore
+
     engine.rootContext()->setContextProperty("_qrenderstats", &QRenderStats::instance());
 
     write_platform_context_properties(engine);
@@ -269,6 +273,8 @@ int main(int argc, char *argv[]) {
     engine.rootContext()->setContextProperty("_logMessagesModel", &LogMessagesModel::instance());
     engine.rootContext()->setContextProperty("_hudLogMessagesModel", &HUDLogMessagesModel::instance());
 
+#ifdef QOPENHD_HAS_MAVSDK_MAVLINK_TELEMETRY
+    // Telemetry
     engine.rootContext()->setContextProperty("_airCameraSettingsModel", &MavlinkSettingsModel::instanceAirCamera());
     engine.rootContext()->setContextProperty("_airCameraSettingsModel2", &MavlinkSettingsModel::instanceAirCamera2());
     engine.rootContext()->setContextProperty("_airPiSettingsModel", &MavlinkSettingsModel::instanceAir());
@@ -276,6 +282,21 @@ int main(int argc, char *argv[]) {
     // exp
     //engine.rootContext()->setContextProperty("_fcSettingsModel", &MavlinkSettingsModel::instanceFC());
     engine.rootContext()->setContextProperty("_synchronizedSettings", &SynchronizedSettings::instance());
+    engine.rootContext()->setContextProperty("_mavlinkTelemetry", &MavlinkTelemetry::instance());
+    engine.rootContext()->setContextProperty("_fcMavlinkSystem", &FCMavlinkSystem::instance());
+    engine.rootContext()->setContextProperty("_rcchannelsmodelground", &RCChannelsModel::instanceGround());
+    engine.rootContext()->setContextProperty("_rcchannelsmodelfc", &RCChannelsModel::instanceFC());
+    engine.rootContext()->setContextProperty("_ohdSystemAir", &AOHDSystem::instanceAir());
+    engine.rootContext()->setContextProperty("_ohdSystemGround", &AOHDSystem::instanceGround());
+    engine.rootContext()->setContextProperty("_cameraStreamModelPrimary", &CameraStreamModel::instance(0));
+    engine.rootContext()->setContextProperty("_cameraStreamModelSecondary", &CameraStreamModel::instance(1));
+    engine.rootContext()->setContextProperty("_wifi_card_gnd0", &WiFiCard::instance_gnd(0));
+    engine.rootContext()->setContextProperty("_wifi_card_gnd1", &WiFiCard::instance_gnd(1));
+    engine.rootContext()->setContextProperty("_wifi_card_gnd2", &WiFiCard::instance_gnd(2));
+    engine.rootContext()->setContextProperty("_wifi_card_gnd3", &WiFiCard::instance_gnd(3));
+    engine.rootContext()->setContextProperty("_wifi_card_air", &WiFiCard::instance_air());
+#endif //QOPENHD_HAS_MAVSDK_MAVLINK_TELEMETRY
+
 
 #ifdef QOPENHD_ENABLE_GSTREAMER
     engine.rootContext()->setContextProperty("QOPENHD_ENABLE_GSTREAMER", QVariant(true));
@@ -289,30 +310,6 @@ int main(int argc, char *argv[]) {
     engine.rootContext()->setContextProperty("QOPENHD_ENABLE_GSTREAMER", QVariant(false));
 #endif
 
-    //MavlinkTelemetry::register_for_qml(engine.rootContext());
-    engine.rootContext()->setContextProperty("_mavlinkTelemetry", &MavlinkTelemetry::instance());
-
-    // Regster all the QT Mavlink system model(s)
-    // it is a common practice for QT to prefix models from c++ with an underscore
-    //FCMavlinkSystem::register_for_qml(engine.rootContext());
-    engine.rootContext()->setContextProperty("_fcMavlinkSystem", &FCMavlinkSystem::instance());
-
-    engine.rootContext()->setContextProperty("_rcchannelsmodelground", &RCChannelsModel::instanceGround());
-    engine.rootContext()->setContextProperty("_rcchannelsmodelfc", &RCChannelsModel::instanceFC());
-
-    //AOHDSystem::register_for_qml(engine.rootContext());
-    engine.rootContext()->setContextProperty("_ohdSystemAir", &AOHDSystem::instanceAir());
-    engine.rootContext()->setContextProperty("_ohdSystemGround", &AOHDSystem::instanceGround());
-    //
-    engine.rootContext()->setContextProperty("_cameraStreamModelPrimary", &CameraStreamModel::instance(0));
-    engine.rootContext()->setContextProperty("_cameraStreamModelSecondary", &CameraStreamModel::instance(1));
-    // wifi cards
-    engine.rootContext()->setContextProperty("_wifi_card_gnd0", &WiFiCard::instance_gnd(0));
-    engine.rootContext()->setContextProperty("_wifi_card_gnd1", &WiFiCard::instance_gnd(1));
-    engine.rootContext()->setContextProperty("_wifi_card_gnd2", &WiFiCard::instance_gnd(2));
-    engine.rootContext()->setContextProperty("_wifi_card_gnd3", &WiFiCard::instance_gnd(3));
-    //
-    engine.rootContext()->setContextProperty("_wifi_card_air", &WiFiCard::instance_air());
 
     engine.rootContext()->setContextProperty("_decodingStatistics",&DecodingStatistcs::instance());
     // dirty
