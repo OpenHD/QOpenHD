@@ -68,7 +68,7 @@ INCLUDEPATH += $$PWD/app/exp
 
 # QOpenHD telemetry (mavlink, partially based on MAVSDK) features
 # REQUIRED - without it QOpenHD will compile, but be pretty much non functional
-#include(app/telemetry/telemetry.pri)
+include(app/telemetry/telemetry.pri)
 
 # Avcodec decode and display, all sources
 # Replaced gstreamer for now
@@ -249,8 +249,8 @@ AndroidBuild {
 
 EnableSpeech {
     message("EnableSpeech")
-    DEFINES += ENABLE_SPEECH
-    QT += texttospeech
+    #DEFINES += ENABLE_SPEECH
+    #QT += texttospeech
 }
 
 
