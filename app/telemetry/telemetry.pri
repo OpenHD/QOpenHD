@@ -18,7 +18,6 @@ QOPENHD_LINK_MAVSDK_SHARED {
     # This is for packaging / releases / recommended for development, since we then have one fever package to install and no issues with updating
     # QOpenHD and/or MAVSDK during development
     message(mavsdk static)
-
     android {
         message(mavsdk static android)
         INCLUDEPATH += /home/consti10//Downloads/MAVSDK/mavsdk-android-android-arm/build/android-arm/install/include
@@ -30,7 +29,6 @@ QOPENHD_LINK_MAVSDK_SHARED {
         message(mavsdk static linux)
         INCLUDEPATH += /usr/local/include/mavsdk
         LIBS += -L/usr/local/lib/libmavsdk.a -lmavsdk
-        # TODO windows, android, ...
         # weird rpi
         LIBS += -latomic
     }
