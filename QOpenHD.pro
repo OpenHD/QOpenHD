@@ -242,8 +242,8 @@ AndroidBuild {
 
 EnableSpeech {
     message("EnableSpeech")
-    #DEFINES += ENABLE_SPEECH
-    #QT += texttospeech
+    DEFINES += ENABLE_SPEECH
+    QT += texttospeech
 }
 
 

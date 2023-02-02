@@ -11,11 +11,10 @@ HEADERS += \
     $$PWD//gstvideostream.h
 
 android{
-    message(gst android)
-    message(doesn't work yet lol)
+    message("gst android")
+    message("doesn't work yet lol")
 }else{
     message(gst linux)
     CONFIG += link_pkgconfig
     PKGCONFIG   += gstreamer-1.0  gstreamer-video-1.0 gstreamer-gl-1.0 #gstreamer1.0-plugins-good
-
 }
