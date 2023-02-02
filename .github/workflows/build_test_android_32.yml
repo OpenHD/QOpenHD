@@ -59,12 +59,12 @@ jobs:
 
       - name: Setup ccache
         run: |
-            mkdir -p ~/.ccache
-            echo "base_dir = ${GITHUB_WORKSPACE}" > ~/.ccache/ccache.conf
-            echo "compression = true" >> ~/.ccache/ccache.conf
-            echo "compression_level = 5" >> ~/.ccache/ccache.conf
-            ccache -s
-            ccache -z
+          mkdir -p ~/.ccache
+          echo "base_dir = ${GITHUB_WORKSPACE}" > ~/.ccache/ccache.conf
+          echo "compression = true" >> ~/.ccache/ccache.conf
+          echo "compression_level = 5" >> ~/.ccache/ccache.conf
+          ccache -s
+          ccache -z
 
       - name: Create build directory
         run:  mkdir ${{ runner.temp }}/shadow_build_dir
@@ -72,9 +72,9 @@ jobs:
       - name:               Install gstreamer
         working-directory:  ${{ github.workspace }}
         run: |
-            wget --quiet https://gstreamer.freedesktop.org/data/pkg/android/1.18.5/gstreamer-1.0-android-universal-1.18.5.tar.xz
-            mkdir gstreamer-1.0-android-universal-1.18.5
-            tar xf gstreamer-1.0-android-universal-1.18.5.tar.xz -C gstreamer-1.0-android-universal-1.18.5
+          wget --quiet https://gstreamer.freedesktop.org/data/pkg/android/1.18.5/gstreamer-1.0-android-universal-1.18.5.tar.xz
+          mkdir gstreamer-1.0-android-universal-1.18.5
+          tar xf gstreamer-1.0-android-universal-1.18.5.tar.xz -C gstreamer-1.0-android-universal-1.18.5
 
       - name: Build
         working-directory: ${{ runner.temp }}/shadow_build_dir
@@ -85,18 +85,19 @@ jobs:
           ANDROID_NDK_LATEST_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
           ANDROID_NDK: ${{ steps.setup-ndk.outputs.ndk-path }}
         run:  |
-            wget https://openhdfpv.org/wp-content/BaseImages/install.zip
-            sudo unzip install.zip -d /usr/local/
-            ls -a /usr/local/include/mavsdk
-            ls -a /usr/local/lib/
-            qmake ${SOURCE_DIR}/QOpenHD.pro 
-            make -j$(($(nproc)/2))
+          wget https://openhdfpv.org/wp-content/BaseImages/install.zip
+          sudo unzip install.zip -d /usr/local/
+          ls -a /usr/local/include/mavsdk
+          ls -a /usr/local/lib/
+          qmake ${SOURCE_DIR}/QOpenHD.pro
+          make -j$(($(nproc)/2))
+    zip -r file.zip .
 
-      - name: ccache post-run
-        run:  ccache -s
+    - name: ccache post-run
+      run:  ccache -s
 
-      - name: Save artifact
-        uses: actions/upload-artifact@master
-        with:
-          name: ${{ env.ARTIFACT }}
-          path: ${{ runner.temp }}/shadow_build_dir/package/${{ env.ARTIFACT }}
+    - name: Save artifact
+      uses: actions/upload-artifact@master
+      with:
+        name: ${{ env.ARTIFACT }}
+        path: ${{ runner.temp }}/shadow_build_dir/*.zip
