@@ -12,8 +12,10 @@ import "../../ui" as Ui
 import "../elements"
 
 Item {
-    width: parent.width
+    width: applicationWindow.width -165
+    //the -150 is the tab on the left +15margin
     height: parent.height
+    Component.onCompleted: console.log("this is the width "+parent.width)
     // Tab bar for selecting items in stack layout
     TabBar {
           id: selectItemInStackLayoutBar
