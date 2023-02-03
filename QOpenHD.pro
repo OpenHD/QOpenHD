@@ -76,20 +76,20 @@ include(app/telemetry/telemetry.pri)
 # However, this can be usefully for figuring out compiler issue(s) on different platform(s)
 # NOTE: QT Creator is quite bad at figuring out changes here, you might need a "full" rebuild or manualy delete
 # the build dir/cache, then rebuild
-#include(app/vs_avcodec/avcodec_video.pri)
+include(app/vs_avcodec/avcodec_video.pri)
 
 # Gstreamer / qmlglsink decode and display, all sources
 # r.n only used for secondary video and for primary video only on platforms we cannot do primary video via QSG / avcodec
-#include(app/vs_gst_qmlglsink/gst_video.pri)
+include(app/vs_gst_qmlglsink/gst_video.pri)
 
 # adsb library
-#include(app/adsb/adsb_lib.pri)
+include(app/adsb/adsb_lib.pri)
 
 # All Generic files / files that literally have 0!! dependencies other than qt
 SOURCES += \
     app/logging/hudlogmessagesmodel.cpp \
     app/logging/logmessagesmodel.cpp \
-    app/qopenhd.cpp \
+    app/util/qopenhd.cpp \
     app/util/QmlObjectListModel.cpp \
     app/util/WorkaroundMessageBox.cpp \
     app/util/qrenderstats.cpp \
@@ -101,7 +101,7 @@ HEADERS += \
     app/logging/hudlogmessagesmodel.h \
     app/logging/loghelper.h \
     app/logging/logmessagesmodel.h \
-    app/qopenhd.h \
+    app/util/qopenhd.h \
     app/util/QmlObjectListModel.h \
     app/util/WorkaroundMessageBox.h \
     app/util/qrenderstats.h \

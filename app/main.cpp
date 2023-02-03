@@ -56,7 +56,7 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 
 #include "logging/logmessagesmodel.h"
 #include "logging/hudlogmessagesmodel.h"
-#include "qopenhd.h"
+#include "util/qopenhd.h"
 #include "util/WorkaroundMessageBox.h"
 
 #ifdef QOPENHD_ENABLE_ADSB_LIBRARY
@@ -203,6 +203,8 @@ int main(int argc, char *argv[]) {
 
     // https://doc.qt.io/qt-6/qtquick-visualcanvas-scenegraph-renderer.html
     //qputenv("QSG_VISUALIZE", "overdraw");
+    //qputenv("QSG_VISUALIZE", "batches");
+    //qputenv("QSG_VISUALIZE", "changes");
     //QCoreApplication::setAttribute(Qt::AA_UseOpenGLES);
     //QLoggingCategory::setFilterRules("qt.scenegraph.*=true");
     //QLoggingCategory::setFilterRules("qt.scenegraph.time.*=true");

@@ -14,7 +14,7 @@
 #include <logging/logmessagesmodel.h>
 #include <logging/hudlogmessagesmodel.h>
 
-#include "../../qopenhd.h"
+#include "util/qopenhd.h"
 
 
 static QString bitrate_to_qstring(int64_t bitrate_bits_per_second){
