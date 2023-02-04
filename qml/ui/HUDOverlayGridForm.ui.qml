@@ -239,8 +239,14 @@ Item {
         id: mapWidget
     }
 
-    AdsbWidget {
-        id: adsbWidget
+    // Load it only when adsb was enabled at compile time
+    Loader {
+        source: {
+            if (QOPENHD_ENABLE_ADSB_LIBRARY) {
+                return "widgets/AdsbWidget.qml";
+            }
+            return ""
+        }
     }
 
     ExampleWidget {
