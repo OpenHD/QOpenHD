@@ -59,6 +59,9 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "util/qopenhd.h"
 #include "util/WorkaroundMessageBox.h"
 
+#include <vs_android/qandroidmediaplayer.h>
+#include <vs_android/qsurfacetexture.h>
+
 #ifdef QOPENHD_ENABLE_ADSB_LIBRARY
 #include "adsb/ADSBVehicleManager.h"
 #include "adsb/ADSBVehicle.h"
@@ -249,6 +252,7 @@ int main(int argc, char *argv[]) {
     qmlRegisterType<DrawingCanvas>("OpenHD", 1, 0, "DrawingCanvas");
     qmlRegisterType<AoaGauge>("OpenHD", 1, 0, "AoaGauge");
 
+
     QQmlApplicationEngine engine;
 #ifdef QOPENHD_ENABLE_VIDEO_VIA_AVCODEC
     // QT doesn't have the define(s) from c++
@@ -373,6 +377,13 @@ engine.rootContext()->setContextProperty("EnableADSB", QVariant(false));
 #endif
      );
 
+#ifdef QOPENHD_ENABLE_VIDEO_VIA_ANDROID
+    qmlRegisterType<QSurfaceTexture>("OpenHD", 1, 0, "SurfaceTexture");
+    // Create a player
+    QAndroidMediaPlayer player;
+    engine.rootContext()->setContextProperty("_mediaPlayer", &player);
+#endif
+
     engine.load(QUrl(QLatin1String("qrc:/main.qml")));
 
 #if defined(__android__)
@@ -380,6 +391,8 @@ engine.rootContext()->setContextProperty("EnableADSB", QVariant(false));
 #endif
 
     qDebug() << "Running QML";
+
+    //player.playFile("https://download.blender.org/peach/bigbuckbunny_movies/BigBuckBunny_320x180.mp4");
 
 #ifdef QOPENHD_ENABLE_GSTREAMER
 #ifdef QOPENHD_GSTREAMER_PRIMARY_VIDEO

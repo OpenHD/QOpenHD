@@ -159,6 +159,7 @@ DISTFILES += \
     android/res/values/libs.xml \
     android/res/values/styles.xml \
     android/src/OpenHDActivity.java \
+    android/src/SurfaceTextureListener.java \
     android/src/org/freedesktop/gstreamer/androidmedia/GstAhcCallback.java \
     android/src/org/freedesktop/gstreamer/androidmedia/GstAhsCallback.java \
     android/src/org/freedesktop/gstreamer/androidmedia/GstAmcOnFrameAvailableListener.java \
@@ -171,6 +172,7 @@ DISTFILES += \
     app/util/README.md \
     app/videostreaming/README.md \
     app/videostreaming/gst_qmlglsink/gst_video.pri \
+    app/vs_android/videostreamingandroid.pri \
     extra_build_qmake.sh \
     lib/h264nal/h264nal.pri \
     qml/qtquickcontrols2.conf \
@@ -243,6 +245,7 @@ AndroidBuild {
     #CONFIG += EnableSpeech
     QT += androidextras
 
+    include(app/vs_android/videostreamingandroid.pri)
 }
 
 EnableSpeech {
