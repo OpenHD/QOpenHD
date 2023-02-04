@@ -405,6 +405,7 @@ engine.rootContext()->setContextProperty("EnableADSB", QVariant(false));
     }
 #endif
 #endif // QOPENHD_ENABLE_GSTREAMER
+    QRenderStats::instance().register_to_root_window(engine);
 
     LogMessagesModel::instance().addLogMessage("QOpenHD","running");
     const int retval = app.exec();

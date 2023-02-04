@@ -2,20 +2,24 @@
 #define QRENDERSTATS_H
 
 #include <QObject>
+#include <qqmlapplicationengine.h>
 #include <qquickwindow.h>
 
 #include "../common_consti/TimeHelper.hpp"
+#include "../lib/lqtutils_master/lqtutils_prop.h"
 
 // Stats about the QT (QOpenHD) rendering.
 // Dirty right now.
 class QRenderStats : public QObject
 {
     Q_OBJECT
+    L_RO_PROP(QString, main_render_stats, set_main_render_stats, "NA")
 private:
     explicit QRenderStats(QObject *parent = nullptr);
 public:
     // Use singleton
     static QRenderStats& instance();
+    void register_to_root_window(QQmlApplicationEngine& engine);
 public:
     // We hoock to the window to get the main pass statistics
     void registerOnWindow(QQuickWindow* window);
@@ -30,16 +34,6 @@ private:
     AvgCalculator avgMainRenderFrameDelta{};
     //
     std::chrono::steady_clock::time_point renderPassBegin;
-public:
-    Q_PROPERTY(QString main_render_stats MEMBER m_main_render_stats WRITE set_main_render_stats NOTIFY main_render_stats_changed)
-    void set_main_render_stats(QString main_render_stats);
-    //
-    //Q_PROPERTY(QString decode_time MEMBER m_decode_time WRITE set_decode_time NOTIFY decode_time_changed)
-    //void set_main_render_stats(QString main_render_stats);
-signals:
-    void main_render_stats_changed(QString main_render_stats);
-private:
-    QString m_main_render_stats="Unknown";
 };
 
 #endif // QRENDERSTATS_H

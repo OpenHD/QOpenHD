@@ -1,5 +1,7 @@
 #include "qrenderstats.h"
 
+#include <qapplication.h>
+
 QRenderStats::QRenderStats(QObject *parent)
     : QObject{parent}
 {
@@ -10,6 +12,17 @@ QRenderStats &QRenderStats::instance()
 {
     static QRenderStats instance{};
     return instance;
+}
+
+void QRenderStats::register_to_root_window(QQmlApplicationEngine& engine)
+{
+    auto rootObjects = engine.rootObjects();
+    if (rootObjects.length() < 1) {
+        qWarning(" QRenderStats::register_to_root_window failed,no root objects");
+        return;
+    }
+     QQuickWindow* window = static_cast<QQuickWindow *>(rootObjects.first());
+     registerOnWindow(window);
 }
 
 void QRenderStats::registerOnWindow(QQuickWindow *window)
@@ -45,11 +58,4 @@ void QRenderStats::m_QQuickWindow_afterRenderPassRecording()
 {
     const auto render_pass_recording_time=std::chrono::steady_clock::now()-renderPassBegin;
     //qDebug()<<"Render pass recording time:"<<QString(MyTimeHelper::R(render_pass_recording_time).c_str());
-}
-
-void QRenderStats::set_main_render_stats(QString main_render_stats)
-{
-    if(main_render_stats==m_main_render_stats)return;
-    m_main_render_stats=main_render_stats;
-    emit main_render_stats_changed(m_main_render_stats);
 }
