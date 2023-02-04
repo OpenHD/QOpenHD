@@ -13,6 +13,8 @@ import "./ui/widgets"
 import "./ui/elements"
 import "./ui/configpopup"
 
+// TODO remove me ?
+import QtMultimedia 5.15
 
 ApplicationWindow {
     id: applicationWindow
@@ -208,6 +210,26 @@ ApplicationWindow {
                 grabPermissions: PointerHandler.CanTakeOverFromAnything
             }
         }
+
+        /*Rectangle {
+            width: 800
+            height: 600
+            color: "red"
+            z: 1
+
+            MediaPlayer {
+                id: player
+                source: "gst-pipeline: videotestsrc ! videoconvert ! qtvideosink"
+                //source: "gst-pipeline: udpsrc port=5600 caps = \"application/x-rtp, media=(string)video, encoding-name=(string)H264, payload=(int)96\" ! rtph264depay ! decodebin ! qtvideosink"
+                autoPlay: true
+            }
+
+            VideoOutput {
+                id: videoOutput
+                source: player
+                anchors.fill: parent
+            }
+        }*/
 
     }
 }
