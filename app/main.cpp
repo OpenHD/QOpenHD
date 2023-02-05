@@ -59,8 +59,10 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "util/qopenhd.h"
 #include "util/WorkaroundMessageBox.h"
 
+#ifdef QOPENHD_ENABLE_VIDEO_VIA_ANDROID
 #include <vs_android/qandroidmediaplayer.h>
 #include <vs_android/qsurfacetexture.h>
+#endif
 
 #ifdef QOPENHD_ENABLE_ADSB_LIBRARY
 #include "adsb/ADSBVehicleManager.h"
