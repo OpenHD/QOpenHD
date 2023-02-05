@@ -62,9 +62,9 @@ QMAKE_CXXFLAGS += -Wno-cast-align
 QT +=core quick qml gui
 QT += opengl
 # TODO remove me
-QT += multimedia
+#QT += multimedia
 #QT += multimediawidgets
-GSTREAMER_ROOT_ANDROID = /home/consti10/Downloads/gstreamer-1.0-android-universal-1.20.5
+#GSTREAMER_ROOT_ANDROID = /home/consti10/Downloads/gstreamer-1.0-android-universal-1.20.5
 
 INCLUDEPATH += $$PWD/lib
 INCLUDEPATH += $$PWD/app
@@ -80,7 +80,7 @@ include(app/telemetry/telemetry.pri)
 # However, this can be usefully for figuring out compiler issue(s) on different platform(s)
 # NOTE: QT Creator is quite bad at figuring out changes here, you might need a "full" rebuild or manualy delete
 # the build dir/cache, then rebuild
-#include(app/vs_avcodec/avcodec_video.pri)
+include(app/vs_avcodec/avcodec_video.pri)
 
 # Gstreamer / qmlglsink decode and display, all sources
 # r.n only used for secondary video and for primary video only on platforms we cannot do primary video via QSG / avcodec

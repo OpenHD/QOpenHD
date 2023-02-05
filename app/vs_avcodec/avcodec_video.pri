@@ -70,3 +70,7 @@ mmal {
 }
 # can be used in c++, also set to be exposed in qml
 DEFINES += QOPENHD_ENABLE_VIDEO_VIA_AVCODEC
+
+
+# experimental, use uvgRTP instead of a custom rtp receive impl
+#LIBS += -luvgrtp

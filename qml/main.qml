@@ -231,7 +231,7 @@ ApplicationWindow {
             }
         }*/
 
-        SurfaceTexture {
+        /*SurfaceTexture {
                 id: videoItem
                 anchors.fill: parent
                 width:parent.width
@@ -257,7 +257,7 @@ ApplicationWindow {
                         _mediaPlayer.playFile("https://download.blender.org/peach/bigbuckbunny_movies/BigBuckBunny_320x180.mp4");
                     }
                 }
-            }
+         }*/
     }
 }
 
