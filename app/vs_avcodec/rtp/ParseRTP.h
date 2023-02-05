@@ -51,7 +51,6 @@ private:
     // Resets the m_nalu_data_length to 0
     void forwardNALU(const bool isH265=false);
     const NALU_DATA_CALLBACK m_cb;
-    //std::shared_ptr<std::vector<uint8_t>> m_curr_nalu2=nullptr;
     std::array<uint8_t,NALU_MAXLEN> m_curr_nalu;
     size_t m_nalu_data_length=0;
     bool m_feed_incomplete_frames;
