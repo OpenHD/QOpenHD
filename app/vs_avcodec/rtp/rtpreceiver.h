@@ -53,7 +53,7 @@ private:
 
     void nalu_data_callback(const std::chrono::steady_clock::time_point creation_time,const uint8_t* nalu_data,const int nalu_data_size);
     //
-    std::unique_ptr<std::ofstream> m_out_file;
+    std::unique_ptr<std::ofstream> m_out_file=nullptr;
 private:
     const bool is_h265;
 private:

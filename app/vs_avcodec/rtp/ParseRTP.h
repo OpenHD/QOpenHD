@@ -44,12 +44,14 @@ private:
     // copy data_len bytes into the data buffer at the current position
     // and increase its size by data_len
     void append_nalu_data(const uint8_t* data, size_t data_len);
+    // like append_nalu_data, but for one byte
+    void append_nalu_data_byte(uint8_t byte);
     void append_empty(size_t data_len);
     // Properly calls the cb function (if not null)
     // Resets the m_nalu_data_length to 0
     void forwardNALU(const bool isH265=false);
     const NALU_DATA_CALLBACK m_cb;
-    std::array<uint8_t,NALU_MAXLEN> m_nalu_data;
+    std::array<uint8_t,NALU_MAXLEN> m_curr_nalu;
     size_t m_nalu_data_length=0;
     bool m_feed_incomplete_frames;
     int m_total_n_fragments_for_current_fu=0;
