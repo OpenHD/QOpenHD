@@ -345,17 +345,18 @@ void RTPDecoder::append_empty(size_t data_len)
 
 void RTPDecoder::write_h264_h265_nalu_start(const bool use_4_bytes)
 {
+    m_nalu_data_length=0;
     if(use_4_bytes){
-        m_curr_nalu[0]=0;
-        m_curr_nalu[1]=0;
-        m_curr_nalu[2]=0;
-        m_curr_nalu[3]=1;
-        m_nalu_data_length=4;
+        append_nalu_data_byte(0);
+        append_nalu_data_byte(0);
+        append_nalu_data_byte(0);
+        append_nalu_data_byte(1);
+        assert(m_nalu_data_length==4);
     }else{
-        m_curr_nalu[0]=0;
-        m_curr_nalu[1]=0;
-        m_curr_nalu[2]=1;
-        m_nalu_data_length=3;
+        append_nalu_data_byte(0);
+        append_nalu_data_byte(0);
+        append_nalu_data_byte(1);
+        assert(m_nalu_data_length==3);
     }
 }
 
