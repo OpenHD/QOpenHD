@@ -173,12 +173,12 @@ void write_other_context_properties(QQmlApplicationEngine& engine){
 #else
     engine.rootContext()->setContextProperty("EnableGStreamer", QVariant(false));
 #endif
-
-
 }
 
 int main(int argc, char *argv[]) {
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    // native dialoques don't work on some platforms, like eglfs
+    QCoreApplication::setAttribute(Qt::AA_DontUseNativeDialogs);
     //QCoreApplication::setAttribute(Qt::AA_UseOpenGLES);
 
     QCoreApplication::setOrganizationName("Open.HD");
@@ -216,7 +216,6 @@ int main(int argc, char *argv[]) {
     //QLoggingCategory::setFilterRules("qt.scenegraph.time.renderloop=true");
     //QLoggingCategory::setFilterRules("qt.qpa.eglfs.*=true");
     //QLoggingCategory::setFilterRules("qt.qpa.egl*=true");
-
 
     QApplication app(argc, argv);
 
