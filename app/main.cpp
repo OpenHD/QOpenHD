@@ -393,8 +393,6 @@ engine.rootContext()->setContextProperty("EnableADSB", QVariant(false));
 
     qDebug() << "Running QML";
 
-    //player.playFile("https://download.blender.org/peach/bigbuckbunny_movies/BigBuckBunny_320x180.mp4");
-
 #ifdef QOPENHD_ENABLE_GSTREAMER
 #ifdef QOPENHD_GSTREAMER_PRIMARY_VIDEO
     const auto windowPrimary=find_qt_video_window(engine,true);
