@@ -17,17 +17,16 @@ class QRenderStats : public QObject
 private:
     explicit QRenderStats(QObject *parent = nullptr);
 public:
-    // Use singleton
+    // Singleton for the main QML window
     static QRenderStats& instance();
+    // Util to register to the root QML window
     void register_to_root_window(QQmlApplicationEngine& engine);
-public:
-    // We hoock to the window to get the main pass statistics
+    // Manually regster the QML window
     void registerOnWindow(QQuickWindow* window);
 public slots:
     void m_QQuickWindow_beforeRendering();
     void m_QQuickWindow_beforeRenderPassRecording();
     void m_QQuickWindow_afterRenderPassRecording();
-public:
 private:
     // for the main render thread (render pass recording)
     std::chrono::steady_clock::time_point last_frame=std::chrono::steady_clock::now();
