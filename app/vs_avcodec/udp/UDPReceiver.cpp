@@ -15,30 +15,27 @@
 
 #include <qdebug.h>
 
-UDPReceiver::UDPReceiver(IpAndPort ip_and_port,std::string name,DATA_CALLBACK  onDataReceivedCallbackX,
-size_t wanted_receive_buff_size_btyes,const bool ENABLE_NONBLOCKINGX,const bool set_sched_param_max_realtime)
-    : m_ip_and_port(ip_and_port),
-    mName(std::move(name)),
-    onDataReceivedCallback(std::move(onDataReceivedCallbackX)),
-    WANTED_RCVBUF_SIZE_BYTES(wanted_receive_buff_size_btyes),
-    ENABLE_NONBLOCKING(ENABLE_NONBLOCKINGX),
-    m_set_sched_param_max_realtime(set_sched_param_max_realtime)
+UDPReceiver::UDPReceiver(std::string tag,Configuration config,DATA_CALLBACK onDataReceivedCallbackX)
+    :
+    m_tag(tag),
+    m_config(config),
+    m_on_data_received_cb(std::move(onDataReceivedCallbackX))
 {
-    qDebug()<<"UDPReceiver "<<mName.c_str()<<"with "<<m_ip_and_port.to_string().c_str();
+    qDebug()<<"UDPReceiver "<<m_tag.c_str()<<"with "<<m_config.to_string().c_str();
 }
 
 long UDPReceiver::getNReceivedBytes()const {
-    return nReceivedBytes;
+    return m_n_received_bytes;
 }
 
 std::string UDPReceiver::getSourceIPAddress()const {
-    return senderIP;
+    return m_sender_ip;
 }
 
 void UDPReceiver::startReceiving() {
-    receiving=true;
-    mUDPReceiverThread=std::make_unique<std::thread>([this]{
-        if(m_set_sched_param_max_realtime){
+    m_receiving=true;
+    m_receive_thread=std::make_unique<std::thread>([this]{
+        if(m_config.set_sched_param_max_realtime){
             SchedulingHelper::setThreadParamsMaxRealtime();
         }
         this->receiveFromUDPLoop();}
@@ -46,13 +43,13 @@ void UDPReceiver::startReceiving() {
 }
 
 void UDPReceiver::stopReceiving() {
-    receiving=false;
+    m_receiving=false;
     //this stops the recvfrom even if in blocking mode
-    shutdown(mSocket,SHUT_RD);
-    if(mUDPReceiverThread->joinable()){
-        mUDPReceiverThread->join();
+    shutdown(m_socket,SHUT_RD);
+    if(m_receive_thread->joinable()){
+        m_receive_thread->join();
     }
-    mUDPReceiverThread.reset();
+    m_receive_thread.reset();
 	//std::cout<<"UDPReceiver avgDeltaBetween(recvfrom) "<<avgDeltaBetweenPackets.getAvgReadable()<<"\n";
 }
 
@@ -82,30 +79,32 @@ static void increase_socket_recv_buff_size(int sockfd, const int wanted_rcvbuff_
 }
 
 void UDPReceiver::receiveFromUDPLoop() {
-    mSocket=socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-    if (mSocket == -1) {
+    m_socket=socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+    if (m_socket == -1) {
         std::cerr<<"Error creating socket\n";
         return;
     }
     int enable = 1;
-    if (setsockopt(mSocket, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) < 0){
+    if (setsockopt(m_socket, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) < 0){
         std::cout<<"Error setting reuse\n";
     }
-    if(setsockopt(mSocket,SOL_SOCKET,SO_REUSEPORT,&enable,sizeof(int))<0){
+    if(setsockopt(m_socket,SOL_SOCKET,SO_REUSEPORT,&enable,sizeof(int))<0){
         std::cout<<"Error setting SO_REUSEPORT\n";
     }
-    increase_socket_recv_buff_size(mSocket,WANTED_RCVBUF_SIZE_BYTES);
+    if(m_config.opt_os_receive_buff_size){
+        increase_socket_recv_buff_size(m_socket,m_config.opt_os_receive_buff_size.value());
+    }
     struct sockaddr_in myaddr;
     memset((uint8_t *) &myaddr, 0, sizeof(myaddr));
     myaddr.sin_family = AF_INET;
-    myaddr.sin_port = htons(m_ip_and_port.udp_port);
-    if(m_ip_and_port.udp_ip_address.has_value()){
-        inet_aton(m_ip_and_port.udp_ip_address.value().c_str(), (in_addr *) &myaddr.sin_addr.s_addr);
+    myaddr.sin_port = htons(m_config.udp_port);
+    if(m_config.udp_ip_address.has_value()){
+        inet_aton(m_config.udp_ip_address.value().c_str(), (in_addr *) &myaddr.sin_addr.s_addr);
     }else{
         myaddr.sin_addr.s_addr = htonl(INADDR_ANY);
     }
-    if (bind(mSocket, (struct sockaddr *) &myaddr, sizeof(myaddr)) == -1) {
-        std::cerr<<"Error binding to "<<m_ip_and_port.to_string()<<"\n";
+    if (bind(m_socket, (struct sockaddr *) &myaddr, sizeof(myaddr)) == -1) {
+        std::cerr<<"Error binding to "<<m_config.to_string()<<"\n";
         return;
     }
     //wrap into unique pointer to avoid running out of stack
@@ -114,34 +113,34 @@ void UDPReceiver::receiveFromUDPLoop() {
     sockaddr_in source;
     socklen_t sourceLen= sizeof(sockaddr_in);
     
-    while (receiving) {
+    while (m_receiving) {
         //TODO investigate: does a big buffer size create latency with MSG_WAITALL ?
         //I do not think so. recvfrom should return as soon as new data arrived,not when the buffer is full
         //But with a bigger buffer we do not loose packets when the receiver thread cannot keep up for a short amount of time
         // MSG_WAITALL does not wait until we have __n data, but a new UDP packet (that can be smaller than __n)
         //NOTE: NONBLOCKING hogs a whole CPU core ! do not use whenever possible !
 		ssize_t tmp;
-		if(ENABLE_NONBLOCKING){
-			tmp = recvfrom(mSocket,buff->data(),UDP_PACKET_MAX_SIZE, MSG_DONTWAIT,(sockaddr*)&source,&sourceLen);
+        if(m_config.enable_nonblocking){
+			tmp = recvfrom(m_socket,buff->data(),UDP_PACKET_MAX_SIZE, MSG_DONTWAIT,(sockaddr*)&source,&sourceLen);
 		}else{
-			tmp = recvfrom(mSocket,buff->data(),UDP_PACKET_MAX_SIZE, MSG_WAITALL,(sockaddr*)&source,&sourceLen);
+			tmp = recvfrom(m_socket,buff->data(),UDP_PACKET_MAX_SIZE, MSG_WAITALL,(sockaddr*)&source,&sourceLen);
 		}
 		const ssize_t message_length=tmp;
         if (message_length > 0) { //else -1 was returned;timeout/No data received
-			if(lastReceivedPacket!=std::chrono::steady_clock::time_point{}){
+			if(m_last_received_packet_ts!=std::chrono::steady_clock::time_point{}){
 				//const auto delta=std::chrono::steady_clock::now()-lastReceivedPacket;
 				//avgDeltaBetweenPackets.add(delta);
 			}
-			lastReceivedPacket=std::chrono::steady_clock::now();
+			m_last_received_packet_ts=std::chrono::steady_clock::now();
             //LOGD("Data size %d",(int)message_length);
-            onDataReceivedCallback(buff->data(), (size_t)message_length);
+            m_on_data_received_cb(buff->data(), (size_t)message_length);
 
-            nReceivedBytes+=message_length;
+            m_n_received_bytes+=message_length;
             //The source ip stuff
             const char* p=inet_ntoa(source.sin_addr);
             std::string s1=std::string(p);
-            if(senderIP!=s1){
-                senderIP=s1;
+            if(m_sender_ip!=s1){
+                m_sender_ip=s1;
             }
         }else{
             if(errno != EWOULDBLOCK) {
@@ -149,9 +148,9 @@ void UDPReceiver::receiveFromUDPLoop() {
             }
         }
     }
-    close(mSocket);
+    close(m_socket);
 }
 
 int UDPReceiver::getPort() const {
-    return m_ip_and_port.udp_port;
+    return m_config.udp_port;
 }

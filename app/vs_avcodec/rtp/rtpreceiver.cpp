@@ -53,11 +53,14 @@ RTPReceiver::RTPReceiver(const int port,const std::string ip,bool is_h265,bool f
     // Increase the OS max UDP buffer size (only works as root) such that the UDP receiver
     // doesn't fail when requesting a bigger UDP buffer size
     OHDUtil::run_command("sysctl ",{"-w","net.core.rmem_max=26214400"});
-    const auto ip_and_port=UDPReceiver::IpAndPort{std::nullopt,port};
-    m_udp_receiver=std::make_unique<UDPReceiver>(ip_and_port,"V_REC",[this](const uint8_t *payload, const std::size_t payloadSize){
+    auto udp_config=UDPReceiver::Configuration{std::nullopt,port};
+    udp_config.opt_os_receive_buff_size=UDPReceiver::BIG_UDP_RECEIVE_BUFFER_SIZE;
+    udp_config.set_sched_param_max_realtime=true;
+    udp_config.enable_nonblocking=false;
+    m_udp_receiver=std::make_unique<UDPReceiver>("V_REC",udp_config,[this](const uint8_t *payload, const std::size_t payloadSize){
         this->udp_raw_data_callback(payload,payloadSize);
         DecodingStatistcs::instance().set_n_missing_rtp_video_packets(m_rtp_decoder->m_n_gaps);
-    },UDPReceiver::BIG_UDP_RECEIVE_BUFFER_SIZE,false,true);
+    });
     m_udp_receiver->startReceiving();
 #endif
 }
