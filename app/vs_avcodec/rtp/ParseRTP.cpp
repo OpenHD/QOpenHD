@@ -98,7 +98,7 @@ void RTPDecoder::h264_reconstruct_and_forward_one_nalu(const uint8_t *data,const
                                     | (nalu_header.nri << 5)
                                     | (nalu_header.f << 7);
     // write the reconstructed NAL header (the h264 "type")
-    append_nalu_data(&h264_nal_header,1);
+    append_nalu_data_byte(h264_nal_header);
     // write the rest of the data
     append_nalu_data(&data[1], (size_t)data_size - 1);
     // forward via callback

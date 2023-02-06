@@ -8,7 +8,6 @@
 
 #include <fstream>
 #include <mutex>
-#include <queue>
 #include <functional>
 
 #include "../nalu/NALU.hpp"
@@ -70,7 +69,7 @@ private:
     int n_dropped_frames=0;
     BitrateCalculator m_rtp_bitrate;
 private:
-    // Calculate fps, but note that this actually calculates the non-sps / pps / vps NALUs per second
+    // Calculate fps, but note that this might not give the exact/correct value in some case(s)
     FPSCalculator m_estimate_fps_calculator{};
 #ifdef OPENHD_USE_LIB_UVGRTP
 private:
