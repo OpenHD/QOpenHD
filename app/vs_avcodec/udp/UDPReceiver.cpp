@@ -1,7 +1,7 @@
 
 #include "UDPReceiver.h"
-#include "../../common_consti/StringHelper.hpp"
-#include "common_consti/SchedulingHelper.hpp"
+#include "common/StringHelper.hpp"
+#include "common/SchedulingHelper.hpp"
 #include <arpa/inet.h>
 #include <utility>
 #include <vector>

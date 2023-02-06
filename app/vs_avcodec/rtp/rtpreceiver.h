@@ -14,8 +14,8 @@
 #include "../nalu/NALU.hpp"
 #include "../nalu/KeyFrameFinder.hpp"
 
-#include "../../common_consti/TimeHelper.hpp"
-#include "../readerwriterqueue/readerwritercircularbuffer.h"
+#include "common/TimeHelper.hpp"
+#include "common/moodycamel/readerwriterqueue/readerwritercircularbuffer.h"
 
 //#define OPENHD_USE_LIB_UVGRTP
 

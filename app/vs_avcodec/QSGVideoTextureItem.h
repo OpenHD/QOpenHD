@@ -32,7 +32,7 @@ private slots:
 private:
     void releaseResources() override;
 
-    TextureRenderer* m_renderer;
+    TextureRenderer* m_renderer=nullptr;
 public slots:
     void m_QQuickWindow_beforeRendering();
     void m_QQuickWindow_beforeRenderPassRecording();

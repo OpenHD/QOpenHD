@@ -2,11 +2,11 @@
 
 #include <qdebug.h>
 
-#include "../common_consti/StringHelper.hpp"
-#include "../common_consti/openhd-util.hpp"
+#include "../common/StringHelper.hpp"
+#include "../common/openhd-util.hpp"
 
 #include "../../vs_util/decodingstatistcs.h"
-#include "common_consti/openhd-util.hpp"
+#include "common/openhd-util.hpp"
 #include "vs_util/QOpenHDVideoHelper.hpp"
 #include "../../logging/hudlogmessagesmodel.h"
 

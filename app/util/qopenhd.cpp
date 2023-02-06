@@ -6,7 +6,7 @@
 
 #ifdef __linux__
 
-#include "common_consti/openhd-util.hpp"
+#include "common/openhd-util.hpp"
 #endif
 
 #if defined(ENABLE_SPEECH)

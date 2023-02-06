@@ -5,11 +5,11 @@
 #include <sstream>
 
 #include "avcodec_helper.hpp"
-#include "../common_consti/TimeHelper.hpp"
+#include "../common/TimeHelper.hpp"
 
 #include "texturerenderer.h"
 #include "../vs_util/decodingstatistcs.h"
-#include "common_consti/SchedulingHelper.hpp"
+#include "common/SchedulingHelper.hpp"
 #include "../util/WorkaroundMessageBox.h"
 #include "../logging/hudlogmessagesmodel.h"
 

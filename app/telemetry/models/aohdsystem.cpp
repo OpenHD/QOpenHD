@@ -1,8 +1,8 @@
 #include "aohdsystem.h"
 
 #include "../qopenhdmavlinkhelper.hpp"
-#include "../../common_consti/StringHelper.hpp"
-#include "../../common_consti/TimeHelper.hpp"
+#include "../../common/StringHelper.hpp"
+#include "../../common/TimeHelper.hpp"
 #include "../telemetryutil.hpp"
 #include "wificard.h"
 #include "rcchannelsmodel.h"
