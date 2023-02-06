@@ -13,8 +13,11 @@
 /*********************************************
  ** Parses a stream of rtp h264 / h265 data into NALUs.
  ** No rtp jitterbuffer or similar - this decreases latency, but removes any rtp packet re-ordering capabilities.
+ ** Aka this decoder can deal with lost packets (incomplete rtp fragments are dropped) but requires received packets to
+ ** be in order.
  ** No special dependencies other than std library.
  ** R.n Supports single, aggregated and fragmented rtp packets for both h264 and h265.
+ ** Data is forwarded directly via a callback for no thread scheduling overhead
 **********************************************/
 
 static constexpr const auto NALU_MAXLEN=1024*1024;

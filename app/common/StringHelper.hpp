@@ -14,11 +14,19 @@
 
 class StringHelper{
 public:
+    // std::to_string doesn't work on std::string itself
+    template<typename T>
+    static std::string to_string_helper(const T& value){
+        if (std::is_same<T, std::string>::value){
+            return value;
+        }
+        return std::to_string(value);
+    }
     template<typename T>
     static std::string vectorAsString(const std::vector<T>& v){
         std::stringstream ss;
         for (const auto i:v) {
-            ss << (int)i << ",";
+            ss << to_string_helper(i) << ",";
         }
         return ss.str();
     }
@@ -27,7 +35,7 @@ public:
     static std::string arrayAsString(const std::array<T,S>& a){
         std::stringstream ss;
         for (const auto i:a) {
-            ss << (int)i << ",";
+            ss << to_string_helper(i) << ",";
         }
         return ss.str();
     }
