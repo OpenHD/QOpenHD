@@ -47,6 +47,7 @@ static bool run_command(const std::string &command, const std::vector<std::strin
   return ret;
 #else
     std::cerr<<"run_command only supported on linux\n";
+    return false;
 #endif
 }
 

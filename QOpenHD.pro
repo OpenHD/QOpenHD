@@ -53,6 +53,7 @@ RCC_DIR      = $${OUT_PWD}/rcc
 #this can not be used in MSVC (windows)
 QMAKE_CXXFLAGS += -Wno-address-of-packed-member
 QMAKE_CXXFLAGS += -Wno-cast-align
+QMAKE_CXXFLAGS += -Wno-unused-function
 
 # These are the QT libraries we always need when building QOpenHD - they are intentially kept as small in number as possible
 # (aka all these really should come with pretty much any qt install)

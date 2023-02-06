@@ -9,7 +9,6 @@
 #include <mutex>
 #include <memory>
 #include <semaphore.h>
-#include "Logger.hpp"
 
 // NOTE: the item is wrapped as std::shared_ptr
 template<typename T>

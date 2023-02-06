@@ -102,7 +102,7 @@ public:
         return m_data;
     }
     // size of the NALU data with 0001 prefix
-    const size_t getSize()const{
+    size_t getSize()const{
         return m_data_len;
     }
     //pointer to the NALU data without 0001 prefix
@@ -110,7 +110,7 @@ public:
         return &getData()[m_nalu_prefix_size];
     }
     //size of the NALU data without 0001 prefix
-    const ssize_t getDataSizeWithoutPrefix()const{
+    ssize_t getDataSizeWithoutPrefix()const{
         return getSize()-m_nalu_prefix_size;
     }
     // return the nal unit type (quick)
