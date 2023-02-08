@@ -189,6 +189,36 @@ public:
        }
        return {640,480};
    }
+   // Print all sps info, for debugging
+   std::string get_sps_as_string()const{
+       if(!isSPS())return "no sps";
+       const auto offset_for_webrtc=webrtc::H264::kNaluTypeSize;
+       auto sps_opt = webrtc::SpsParser::ParseSps(getDataWithoutPrefix() + offset_for_webrtc, getDataSizeWithoutPrefix() - offset_for_webrtc);
+       if(!sps_opt){
+           return "cannot parse sps";
+       }
+       //    uint32_t delta_pic_order_always_zero_flag = 0;
+       uint32_t separate_colour_plane_flag = 0;
+       uint32_t frame_mbs_only_flag = 0;
+       uint32_t log2_max_frame_num = 4;          // Smallest valid value.
+       uint32_t log2_max_pic_order_cnt_lsb = 4;  // Smallest valid value.
+       uint32_t pic_order_cnt_type = 0;
+       uint32_t max_num_ref_frames = 0;
+       uint32_t vui_params_present = 0;
+       uint32_t id = 0;
+       auto sps=sps_opt.value();
+       std::stringstream ss;
+       ss<<"SPS{"<<sps.width<<"x"<<sps.height<<" ";
+       ss<<"delta_pic_order_always_zero_flag:"<<sps.delta_pic_order_always_zero_flag<<",";
+       ss<<"frame_mbs_only_flag:"<<sps.frame_mbs_only_flag<<",";
+       ss<<"log2_max_frame_num:"<<sps.log2_max_frame_num<<",";
+       ss<<"log2_max_pic_order_cnt_lsb:"<<sps.log2_max_pic_order_cnt_lsb<<",";
+       ss<<"pic_order_cnt_type:"<<sps.pic_order_cnt_type<<",";
+       ss<<"max_num_ref_frames:"<<sps.max_num_ref_frames<<",";
+       ss<<"vui_params_present:"<<sps.vui_params_present<<",";
+       ss<<"id:"<<sps.id<<"}";
+       return ss.str();
+   }
 };
 
 
