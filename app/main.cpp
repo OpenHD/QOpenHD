@@ -205,6 +205,7 @@ int main(int argc, char *argv[]) {
     const std::string global_scale_s = std::to_string(global_scale);
     QByteArray scaleAsQByteArray(global_scale_s.c_str(), global_scale_s.length());
     qputenv("QT_SCALE_FACTOR", scaleAsQByteArray);
+    qDebug()<<"Storing settings at ["<<settings.fileName()<<"]";
 
     // https://doc.qt.io/qt-6/qtquick-visualcanvas-scenegraph-renderer.html
     //qputenv("QSG_VISUALIZE", "overdraw");
