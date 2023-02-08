@@ -58,6 +58,7 @@ std::map<std::string, void *> MavlinkSettingsModel::get_whitelisted_params()
     ret["WB_MAX_D_BZ"]=nullptr;
     // whitelisted for now
     ret["VARIABLE_BITRARE"]=nullptr;
+    ret["V_AIR_RECORDING"]=nullptr;
     //ret[""]=nullptr;
     return ret;
 }
