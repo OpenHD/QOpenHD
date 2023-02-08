@@ -117,7 +117,8 @@ void RTPReceiver::queue_data(const uint8_t* nalu_data,const std::size_t nalu_dat
 {
     std::lock_guard<std::mutex> lock(m_data_mutex);
     // we discard any data in this state
-    if(config_has_changed_during_decode)return;
+    // TODO fixme
+    //if(config_has_changed_during_decode)return;
     //qDebug()<<"Got frame2";
     NALU nalu(nalu_data,nalu_data_len,is_h265);
     // hacky way to estimate keyframe interval
@@ -135,6 +136,7 @@ void RTPReceiver::queue_data(const uint8_t* nalu_data,const std::size_t nalu_dat
     if(m_keyframe_finder->allKeyFramesAvailable(is_h265)){
         if(!m_keyframe_finder->check_is_still_same_config_data(nalu)){
             // We neither queue on new data nor call the callback - upper level needs to reconfigure the decoder
+            qDebug()<<"config_has_changed_during_decode";
             config_has_changed_during_decode=true;
             return;
         }
