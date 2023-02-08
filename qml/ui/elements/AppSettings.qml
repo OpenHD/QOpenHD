@@ -359,6 +359,7 @@ Settings {
     property bool show_mission: true
     property double mission_opacity: 1
     property double mission_size: 1
+    property double recordTextSize: 14
 
     property bool show_aoa: false
     property double aoa_opacity: 1
