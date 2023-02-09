@@ -285,24 +285,7 @@ BaseWidget {
                         if (_ohdSystemAir.curr_space_left_mb < 500 && _ohdSystemAir.curr_space_left_mb > 200 && _ohdSystemAir.curr_space_left_mb % 10 == 0) {
                             _hudLogMessagesModel.signalAddLogMessage(4,"SD-Card getting full.")
                             }
-                        if (_ohdSystemAir.curr_space_left_mb < 200) {
-                            _hudLogMessagesModel.signalAddLogMessage(4,"SD-Card getting full.")
-                            if (vars.rec1 ==true ) {
-                            vars.ret1 = _airCameraSettingsModel.try_update_parameter_int("V_AIR_RECORDING", 0)
-                            _hudLogMessagesModel.signalAddLogMessage(0,"stopping recording 1")
-                                if (vars.ret1 == true) {
-                                record_status_cam1.color = "red"
-                                }
-                            }
-                            if (vars.rec2 ==true) {
-                             vars.ret2 = _airCameraSettingsModel.try_update_parameter_int("V_AIR_RECORDING", 0)
-                             _hudLogMessagesModel.signalAddLogMessage(0,"stopping recording 2")
-                                if (vars.ret2 == true) {
-                                record_status_cam2.color = "red"
-                                }
-                            }
-
-                    }    }
+                    }
                 }
     }       }
 

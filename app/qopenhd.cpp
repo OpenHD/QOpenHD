@@ -2,11 +2,17 @@
 #include <QCoreApplication>
 
 #include <QDebug>
+#include <QSettings>
 #include <qapplication.h>
+
+QSettings settings("OpenHD", "QOpenHD");
 
 #ifdef __linux__
 
 #include "common_consti/openhd-util.hpp"
+#include<iostream>
+#include<fstream>
+#include<string>
 #endif
 
 #if defined(ENABLE_SPEECH)
@@ -132,6 +138,56 @@ void QOpenHD::run_dhclient_eth0()
 {
 #ifdef __linux__
     OHDUtil::run_command("sudo dhclient eth0",{""},true);
+#endif
+}
+
+bool QOpenHD::copy_settings()
+{
+#ifdef __linux__
+    std::string file_name = settings.fileName().toStdString();
+    std::ifstream src(file_name, std::ios::binary);
+    std::ofstream dst("/boot/openhd/QOpenHD.conf", std::ios::binary);
+
+    dst << src.rdbuf();
+    src.close();
+    dst.close();
+
+    if (!src) {
+        qDebug() << "Error: Failed to open source file" << QString::fromStdString(file_name);
+        return false;
+        if (!dst) {
+            qDebug() << "Error: Failed to open destination file" << QString::fromStdString(file_name);
+            return false;
+        }
+    }
+    else{
+    return true;
+    }
+#endif
+}
+
+bool QOpenHD::read_settings()
+{
+#ifdef __linux__
+    std::string file_name = settings.fileName().toStdString();
+    std::ifstream src("/boot/openhd/QOpenHD.conf", std::ios::binary);
+    std::ofstream dst(file_name, std::ios::binary);
+
+    dst << src.rdbuf();
+    src.close();
+    dst.close();
+    
+    if (!src) {
+        qDebug() << "Error: Failed to open source file" << QString::fromStdString(file_name);
+        return false;
+        if (!dst) {
+            qDebug() << "Error: Failed to open destination file" << QString::fromStdString(file_name);
+            return false;
+        }
+    }
+    else{
+    return true;
+    }
 #endif
 }
 

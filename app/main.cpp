@@ -178,8 +178,8 @@ int main(int argc, char *argv[]) {
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     //QCoreApplication::setAttribute(Qt::AA_UseOpenGLES);
 
-    QCoreApplication::setOrganizationName("Open.HD");
-    QCoreApplication::setOrganizationDomain("open.hd");
+    QCoreApplication::setOrganizationName("OpenHD");
+    QCoreApplication::setOrganizationDomain("openhd");
     QCoreApplication::setApplicationName("QOpenHD");
 
 #ifdef QOPENHD_ENABLE_GSTREAMER
