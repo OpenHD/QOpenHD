@@ -22,6 +22,9 @@ ApplicationWindow {
     //height: 480
     width: (settings.general_screen_rotation == 90 || settings.general_screen_rotation == 270) ? 480 : 850
     height: (settings.general_screen_rotation == 90 || settings.general_screen_rotation == 270) ? 850 : 480
+
+    contentOrientation: settings.general_screen_rotation===0 ? Qt.PortraitOrientation : Qt.LandscapeOrientation 
+
     minimumWidth: 480
     minimumHeight: 320
     title: qsTr("Open.HD")
@@ -36,7 +39,6 @@ ApplicationWindow {
     visibility: UseFullscreen ? "FullScreen" : "AutomaticVisibility"
 
     // Doesn't work, already tried :(
-    //contentOrientation: Qt.InvertedLandscapeOrientation
 
     // This only exists to be able to fully rotate "everything" for users that have their screen upside down for some reason.
     // Won't affect the video, but heck, then just mount your camera upside down.
@@ -125,7 +127,6 @@ ApplicationWindow {
 
         OSDCustomizer {
             id: osdCustomizer
-
             anchors.centerIn: parent
             visible: false
             z: 5.0
