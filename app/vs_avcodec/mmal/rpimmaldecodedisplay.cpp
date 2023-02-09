@@ -124,12 +124,12 @@ bool RPIMMalDecodeDisplay::initialize(const uint8_t *config_data, const int conf
     m_decoder->output[0]->buffer_size = m_decoder->output[0]->buffer_size_min;
 
 
-    m_status = mmal_port_parameter_set_boolean(m_decoder->output[0], MMAL_PARAMETER_ZERO_COPY, MMAL_TRUE);
+    /*m_status = mmal_port_parameter_set_boolean(m_decoder->output[0], MMAL_PARAMETER_ZERO_COPY, MMAL_TRUE);
     if (m_status != MMAL_SUCCESS) {
         qDebug() << "Failed to set zero copy on output port";
     }else{
         qDebug()<<" set zero copy on output";
-    }
+    }*/
 
     m_pool_in = mmal_pool_create(m_decoder->input[0]->buffer_num,m_decoder->input[0]->buffer_size);
 
