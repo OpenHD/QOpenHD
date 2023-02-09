@@ -130,11 +130,11 @@ bool RPIMMalDecodeDisplay::initialize(const uint8_t *config_data, const int conf
      * becomes a factor around the 60fps+ rate, but even if we could technically get away with it, it
      * would waste resources.
      */
-    m_status = x_mmal_port_parameter_set_boolean(m_decoder->output[0], MMAL_PARAMETER_ZERO_COPY, MMAL_TRUE);
+    /*m_status = x_mmal_port_parameter_set_boolean(m_decoder->output[0], MMAL_PARAMETER_ZERO_COPY, MMAL_TRUE);
     if (m_status != MMAL_SUCCESS) {
         qDebug() << "Failed to set zero copy on output port";
         return false;
-    }
+    }*/
 
     /*
      * Don't discard corrupt decoded frames, pass them on to the Arm side for rendering.
