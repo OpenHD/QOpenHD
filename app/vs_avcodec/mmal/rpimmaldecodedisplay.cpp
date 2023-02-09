@@ -65,7 +65,9 @@ bool RPIMMalDecodeDisplay::initialize(const uint8_t *config_data, const int conf
         initialized=true;
         bcm_host_init();
     }
-    static constexpr auto N_INPUT_BUFFERS=6;
+	// used to init the semaphore initial count, should match n of allocated input buffers
+    static constexpr auto N_INPUT_BUFFERS=15;
+    static constexpr auto N_OUTPUT_BUFFERS=15;
 
      vcos_semaphore_create(&m_context.semaphore, "example", N_INPUT_BUFFERS);
 
@@ -119,7 +121,7 @@ bool RPIMMalDecodeDisplay::initialize(const uint8_t *config_data, const int conf
 
     qDebug()<<"Decoder input buffer_num_min"<<m_decoder->input[0]->buffer_num_min;
     //m_decoder->input[0]->buffer_num = m_decoder->input[0]->buffer_num_min;
-    m_decoder->input[0]->buffer_num = 15;
+    m_decoder->input[0]->buffer_num = N_INPUT_BUFFERS;
 
     //m_decoder->input[0]->buffer_size = m_decoder->input[0]->buffer_size_min+1024;
     // 1MByte is completely overkill, that would be 480 Mbit/s at 60fps ;)
@@ -127,7 +129,7 @@ bool RPIMMalDecodeDisplay::initialize(const uint8_t *config_data, const int conf
 
     qDebug()<<"Decoder output buffer_num_min"<<m_decoder->output[0]->buffer_num_min;
     //m_decoder->output[0]->buffer_num = m_decoder->output[0]->buffer_num_min;
-    m_decoder->output[0]->buffer_num = N_INPUT_BUFFERS;
+    m_decoder->output[0]->buffer_num = N_OUTPUT_BUFFERS;
     m_decoder->output[0]->buffer_size = m_decoder->output[0]->buffer_size_min;
 
 
