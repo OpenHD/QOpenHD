@@ -104,13 +104,45 @@ bool RPIMMalDecodeDisplay::initialize(const uint8_t *config_data, const int conf
     //format_in->flags |= MMAL_ES_FORMAT_FLAG_FRAMED;
 
     //SOURCE_READ_CODEC_CONFIG_DATA(codec_header_bytes, codec_header_bytes_size);
-    //m_status = mmal_format_extradata_alloc(format_in, codec_header_bytes_size);
     m_status = mmal_format_extradata_alloc(format_in, config_data_size);
     CHECK_STATUS(m_status, "failed to allocate extradata");
     //format_in->extradata_size = codec_header_bytes_size;
     format_in->extradata_size = config_data_size;
     if (format_in->extradata_size){
         memcpy(format_in->extradata, config_data, format_in->extradata_size);
+    }
+
+    /*
+     * Don't infer timestamps from the framerate
+     */
+    m_status = x_mmal_port_parameter_set_boolean(m_decoder->output[0], MMAL_PARAMETER_VIDEO_INTERPOLATE_TIMESTAMPS, MMAL_FALSE);
+    if (m_status != MMAL_SUCCESS) {
+        qDebug() << "Failed to disable timestamp interpolation on output port";
+        return;
+    }
+
+    /*
+     * Set zero copy on the output port, which uses VCSM to map the decoded frame buffers into arm memory
+     * address space, allowing us to avoid copying large amounts of data from GPU->Arm for every single
+     * decoded frame.
+     *
+     * The overhead of the copying would be significant enough to affect framerate. Testing suggests it
+     * becomes a factor around the 60fps+ rate, but even if we could technically get away with it, it
+     * would waste resources.
+     */
+    m_status = x_mmal_port_parameter_set_boolean(m_decoder->output[0], MMAL_PARAMETER_ZERO_COPY, MMAL_TRUE);
+    if (m_status != MMAL_SUCCESS) {
+        qDebug() << "Failed to set zero copy on output port";
+        return;
+    }
+
+    /*
+     * Don't discard corrupt decoded frames, pass them on to the Arm side for rendering.
+     */
+    m_status = x_mmal_port_parameter_set_boolean(m_decoder->output[0], MMAL_PARAMETER_VIDEO_DECODE_ERROR_CONCEALMENT, MMAL_FALSE);
+    if (m_status != MMAL_SUCCESS) {
+        qDebug() << "Failed to set error concealment on output port";
+        return;
     }
 
     m_status = mmal_port_format_commit(m_decoder->input[0]);
