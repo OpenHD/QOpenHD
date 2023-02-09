@@ -172,7 +172,11 @@ void write_other_context_properties(QQmlApplicationEngine& engine){
 }
 
 int main(int argc, char *argv[]) {
-    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    // QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    QCoreApplication::setAttribute(Qt::AA_DisableHighDpiScaling);
+    if (qgetenv("QT_FONT_DPI").isEmpty()) {
+        qputenv("QT_FONT_DPI", "150");
+    }
     //QCoreApplication::setAttribute(Qt::AA_UseOpenGLES);
 
     QCoreApplication::setOrganizationName("Open.HD");

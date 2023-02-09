@@ -23,7 +23,8 @@ ApplicationWindow {
     width: (settings.general_screen_rotation == 90 || settings.general_screen_rotation == 270) ? 480 : 850
     height: (settings.general_screen_rotation == 90 || settings.general_screen_rotation == 270) ? 850 : 480
 
-    contentOrientation: settings.general_screen_rotation===0 ? Qt.PortraitOrientation : Qt.LandscapeOrientation 
+    contentOrientation: settings.general_screen_rotation===0 ? Qt.PortraitOrientation : Qt.LandscapeOrientation
+    contentItem.rotation: settings.general_screen_rotation 
 
     minimumWidth: 480
     minimumHeight: 320
@@ -46,7 +47,7 @@ ApplicationWindow {
     // no way, at least on MMAL
     // NOTE: If this creates issues, just comment it out - I'd love to get rid of it as soon as we can.
     Item{
-        rotation: settings.general_screen_rotation
+        // rotation: settings.general_screen_rotation
         anchors.centerIn: parent
         width: (settings.general_screen_rotation == 90 || settings.general_screen_rotation == 270) ? parent.height : parent.width
         height: (settings.general_screen_rotation == 90 || settings.general_screen_rotation == 270) ? parent.width : parent.height
