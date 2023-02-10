@@ -118,8 +118,8 @@ void QOpenHD::disable_service_and_quit()
 {
 #ifdef __linux__
     OHDUtil::run_command("sudo systemctl stop qopenhd",{""},true);
-    quit_qopenhd();
 #endif
+    quit_qopenhd();
 }
 
 void QOpenHD::restart_local_oenhd_service()
