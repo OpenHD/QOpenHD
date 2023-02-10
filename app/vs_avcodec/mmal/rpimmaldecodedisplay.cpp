@@ -80,7 +80,7 @@ bool RPIMMalDecodeDisplay::initialize(const uint8_t *config_data, const int conf
     }
 	// used to init the semaphore initial count, should match n of allocated input buffers
     // 10 input buffers (~frames) should be plenty for all cases, fifo anyways
-    static constexpr auto N_INPUT_BUFFERS=10;
+    static constexpr auto N_INPUT_BUFFERS=2;
     // also, 10 output buffers should be plenty, fifo anyways
     static constexpr auto N_OUTPUT_BUFFERS=5;
 
