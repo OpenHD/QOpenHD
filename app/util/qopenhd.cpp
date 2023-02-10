@@ -141,7 +141,9 @@ void QOpenHD::run_dhclient_eth0()
 bool QOpenHD::copy_settings()
 {
 #ifdef __linux__
-    QSettings settings("OpenHD", "QOpenHD");
+    //QSettings settings("OpenHD", "QOpenHD");
+    QSettings settings;
+    qDebug()<<"Storing settings at ["<<settings.fileName()<<"]";
     std::string file_name = settings.fileName().toStdString();
     std::ifstream src(file_name, std::ios::binary);
     std::ofstream dst("/boot/openhd/QOpenHD.conf", std::ios::binary);
@@ -167,7 +169,9 @@ bool QOpenHD::copy_settings()
 bool QOpenHD::read_settings()
 {
 #ifdef __linux__
-    QSettings settings("OpenHD", "QOpenHD");
+    //QSettings settings("OpenHD", "QOpenHD");
+    QSettings settings;
+     qDebug()<<"Storing settings at ["<<settings.fileName()<<"]";
     std::string file_name = settings.fileName().toStdString();
     std::ifstream src("/boot/openhd/QOpenHD.conf", std::ios::binary);
     std::ofstream dst(file_name, std::ios::binary);
