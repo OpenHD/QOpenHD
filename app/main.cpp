@@ -178,13 +178,15 @@ void write_other_context_properties(QQmlApplicationEngine& engine){
 }
 
 int main(int argc, char *argv[]) {
-    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-    // native dialoques don't work on some platforms, like eglfs
-    QCoreApplication::setAttribute(Qt::AA_DontUseNativeDialogs);
+    // Disable it for now
+    //QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     //QCoreApplication::setAttribute(Qt::AA_UseOpenGLES);
+	if (qgetenv("QT_FONT_DPI").isEmpty()) {
+	  qputenv("QT_FONT_DPI", "150");
+	}
 
-    QCoreApplication::setOrganizationName("Open.HD");
-    QCoreApplication::setOrganizationDomain("open.hd");
+    QCoreApplication::setOrganizationName("OpenHD");
+    QCoreApplication::setOrganizationDomain("openhd");
     QCoreApplication::setApplicationName("QOpenHD");
 
 #ifdef QOPENHD_ENABLE_GSTREAMER

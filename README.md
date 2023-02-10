@@ -4,7 +4,7 @@ QOpenHD is the default OpenHD companion app that runs on the OHD Ground station 
 
 It is responsible for displaying the (main) video stream to the user, composed with the OSD and changing OpenHD settings.
 
-As the name suspects, it is based on QT (5.15.X).
+As the name suspects, it is based on QT (5.15.X) and will not run on older Versions.
 
 ![temporary_screenshot](wiki/temporary_screenshot.png)
 
