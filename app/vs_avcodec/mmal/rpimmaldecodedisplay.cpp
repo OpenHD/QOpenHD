@@ -131,9 +131,7 @@ bool RPIMMalDecodeDisplay::initialize(const uint8_t *config_data, const int conf
         memcpy(format_in->extradata, config_data, format_in->extradata_size);
     }
 
-    /*
-     * Don't infer timestamps from the framerate
-     */
+    // No idea if needed or not, but do it anyways
     m_status = x_mmal_port_parameter_set_boolean(m_decoder->output[0], MMAL_PARAMETER_VIDEO_INTERPOLATE_TIMESTAMPS, MMAL_FALSE);
     if (m_status != MMAL_SUCCESS) {
         qDebug() << "Failed to disable timestamp interpolation on output port";
@@ -141,13 +139,9 @@ bool RPIMMalDecodeDisplay::initialize(const uint8_t *config_data, const int conf
     }
 
     /*
-     * Set zero copy on the output port, which uses VCSM to map the decoded frame buffers into arm memory
-     * address space, allowing us to avoid copying large amounts of data from GPU->Arm for every single
-     * decoded frame.
-     *
-     * The overhead of the copying would be significant enough to affect framerate. Testing suggests it
-     * becomes a factor around the 60fps+ rate, but even if we could technically get away with it, it
-     * would waste resources.
+     * Zero copy is important on rpi / embedded devices. However, that's why we use the mmal graph stuff, it
+     * should be zero copy directly to the HW composer.
+     * Setting this manually seems to break things though.
      */
     /*m_status = x_mmal_port_parameter_set_boolean(m_decoder->output[0], MMAL_PARAMETER_ZERO_COPY, MMAL_TRUE);
     if (m_status != MMAL_SUCCESS) {
@@ -155,9 +149,8 @@ bool RPIMMalDecodeDisplay::initialize(const uint8_t *config_data, const int conf
         return false;
     }*/
 
-    /*
-     * Don't discard corrupt decoded frames, pass them on to the Arm side for rendering.
-     */
+    // Should be on by default, but just to make sure, set it anyways
+    // Don't discard corrupt decoded frames, pass them on to the Arm side for rendering.
     m_status = x_mmal_port_parameter_set_boolean(m_decoder->output[0], MMAL_PARAMETER_VIDEO_DECODE_ERROR_CONCEALMENT, MMAL_FALSE);
     if (m_status != MMAL_SUCCESS) {
         qDebug() << "Failed to set error concealment on output port";
