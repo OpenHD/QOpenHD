@@ -13,8 +13,11 @@
 /*********************************************
  ** Parses a stream of rtp h264 / h265 data into NALUs.
  ** No rtp jitterbuffer or similar - this decreases latency, but removes any rtp packet re-ordering capabilities.
+ ** Aka this decoder can deal with lost packets (incomplete rtp fragments are dropped) but requires received packets to
+ ** be in order.
  ** No special dependencies other than std library.
  ** R.n Supports single, aggregated and fragmented rtp packets for both h264 and h265.
+ ** Data is forwarded directly via a callback for no thread scheduling overhead
 **********************************************/
 
 static constexpr const auto NALU_MAXLEN=1024*1024;
@@ -44,12 +47,14 @@ private:
     // copy data_len bytes into the data buffer at the current position
     // and increase its size by data_len
     void append_nalu_data(const uint8_t* data, size_t data_len);
+    // like append_nalu_data, but for one byte
+    void append_nalu_data_byte(uint8_t byte);
     void append_empty(size_t data_len);
     // Properly calls the cb function (if not null)
     // Resets the m_nalu_data_length to 0
     void forwardNALU(const bool isH265=false);
     const NALU_DATA_CALLBACK m_cb;
-    std::array<uint8_t,NALU_MAXLEN> m_nalu_data;
+    std::array<uint8_t,NALU_MAXLEN> m_curr_nalu;
     size_t m_nalu_data_length=0;
     bool m_feed_incomplete_frames;
     int m_total_n_fragments_for_current_fu=0;

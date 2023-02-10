@@ -132,7 +132,7 @@ static QString battery_gauge_glyph_from_percentage(int percent){
 
 static QString sub_mode_from_enum(SUB_MODE mode){
     switch (mode) {
-       case SUB_MODE_MANUAL:
+    case SUB_MODE_MANUAL:
             return "Manual";
        case SUB_MODE_ACRO:
             return "Acro";
@@ -150,6 +150,9 @@ static QString sub_mode_from_enum(SUB_MODE mode){
             return "Surface";
        case SUB_MODE_POSHOLD:
             return "Position Hold";
+       case SUB_MODE_ENUM_END:
+       default:
+            break;
     }
     return "Unknown";
 }
@@ -176,6 +179,8 @@ static QString rover_mode_from_enum(ROVER_MODE mode){
             return "Loiter";
        case ROVER_MODE_GUIDED:
             return "Guided";
+        default:
+             break;
     }
     return "Unknown";
 }
@@ -220,13 +225,15 @@ static QString copter_mode_from_enum(COPTER_MODE mode){
             return "Avoid ADSB";
        case COPTER_MODE_GUIDED:
             return "Guided";
+        default:
+             break;
     }
     return "Unknown";
 }
 
 static QString plane_mode_from_enum(PLANE_MODE mode){
     switch (mode) {
-       case PLANE_MODE_MANUAL:
+    case PLANE_MODE_MANUAL:
             return "Manual";
        case PLANE_MODE_CIRCLE:
             return "Circle";
@@ -270,6 +277,12 @@ static QString plane_mode_from_enum(PLANE_MODE mode){
             return "QRTL";
        case PLANE_MODE_QAUTOTUNE:
             return "QAutotune";
+        case PLANE_MODE_QACRO:
+            return "QAcro";
+        case PLANE_MODE_THERMAL:
+            return "Thermal";
+        case PLANE_MODE_ENUM_END:
+            return "unknwown";
     }
     return "Unknown";
 }

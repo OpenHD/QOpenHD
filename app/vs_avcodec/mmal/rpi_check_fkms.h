@@ -1,11 +1,10 @@
 #ifndef RPI_CHECK_FKMS_H
 #define RPI_CHECK_FKMS_H
 
-#include <QTextStream>
-#include <qfile.h>
+#include <QDir>
+#include <QStringList>
 
-#include <qdir.h>
-#include <qstring.h>
+
 
 // Video decode and display will silently fail without fkms enabled
 // TODO Fucking QT doesn't compile on rpi when you pull in those QT includes needed
@@ -26,7 +25,6 @@ static bool getDtDeviceStatus(QString name, bool ifUnknown)
     if (!dir.cd(matchingDir.first())) {
         return ifUnknown;
     }
-
     QFile statusFile(dir.filePath("status"));
     if (!statusFile.open(QFile::ReadOnly)) {
         // Per Device Tree docs, missing 'status' means enabled

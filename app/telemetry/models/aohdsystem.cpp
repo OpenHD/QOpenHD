@@ -1,8 +1,8 @@
 #include "aohdsystem.h"
 
 #include "../qopenhdmavlinkhelper.hpp"
-#include "../../common_consti/StringHelper.hpp"
-#include "../../common_consti/TimeHelper.hpp"
+#include "../../common/StringHelper.hpp"
+#include "../../common/TimeHelper.hpp"
 #include "../telemetryutil.hpp"
 #include "wificard.h"
 #include "rcchannelsmodel.h"
@@ -14,7 +14,7 @@
 #include <logging/logmessagesmodel.h>
 #include <logging/hudlogmessagesmodel.h>
 
-#include "../../qopenhd.h"
+#include "util/qopenhd.h"
 
 
 static QString bitrate_to_qstring(int64_t bitrate_bits_per_second){

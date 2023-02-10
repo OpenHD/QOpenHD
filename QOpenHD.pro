@@ -38,6 +38,8 @@ CONFIG(debug, debug|release) {
 #https://doc.qt.io/qt-6/portingguide.html
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x050F00
 
+# See https://www.qt.io/blog/qml-type-registration-in-qt-5.15
+# avoid using qmlRegisterType<>, use macro instead
 CONFIG += qmltypes
 QML_IMPORT_NAME = OpenHD
 QML_IMPORT_MAJOR_VERSION = 1
@@ -51,8 +53,14 @@ RCC_DIR      = $${OUT_PWD}/rcc
 #You can supress the warnings in CMake using ...
 #and https://stackoverflow.com/questions/2987062/configuring-the-gcc-compiler-switches-in-qt-qtcreator-and-qmake
 #this can not be used in MSVC (windows)
+#NOTE: While disabling warnings is often discouraged, in the scope of QOpenHD, those warnings distract more from actual issues than help
+#However, if you feel so, re-enable and fix them ;)
 QMAKE_CXXFLAGS += -Wno-address-of-packed-member
 QMAKE_CXXFLAGS += -Wno-cast-align
+QMAKE_CXXFLAGS += -Wno-unused-function
+QMAKE_CXXFLAGS += -Wno-unused-variable
+QMAKE_CXXFLAGS += -Wno-unused-parameter
+QMAKE_CXXFLAGS += -Wno-sign-compare
 
 # These are the QT libraries we always need when building QOpenHD - they are intentially kept as small in number as possible
 # (aka all these really should come with pretty much any qt install)
@@ -61,6 +69,10 @@ QMAKE_CXXFLAGS += -Wno-cast-align
 # see app/adsb/adsb_lib.pri for an example
 QT +=core quick qml gui
 QT += opengl
+# TODO remove me
+#QT += multimedia
+#QT += multimediawidgets
+#GSTREAMER_ROOT_ANDROID = /home/consti10/Downloads/gstreamer-1.0-android-universal-1.20.5
 
 INCLUDEPATH += $$PWD/lib
 INCLUDEPATH += $$PWD/app
@@ -89,7 +101,7 @@ include(app/adsb/adsb_lib.pri)
 SOURCES += \
     app/logging/hudlogmessagesmodel.cpp \
     app/logging/logmessagesmodel.cpp \
-    app/qopenhd.cpp \
+    app/util/qopenhd.cpp \
     app/util/QmlObjectListModel.cpp \
     app/util/WorkaroundMessageBox.cpp \
     app/util/qrenderstats.cpp \
@@ -101,13 +113,12 @@ HEADERS += \
     app/logging/hudlogmessagesmodel.h \
     app/logging/loghelper.h \
     app/logging/logmessagesmodel.h \
-    app/qopenhd.h \
+    app/util/qopenhd.h \
     app/util/QmlObjectListModel.h \
     app/util/WorkaroundMessageBox.h \
     app/util/qrenderstats.h \
     app/vs_util/decodingstatistcs.h \
     app/util/FrequencyMonitor.h \
-    app/util/sharedqueue.h \
 
 
 # Geographic lib updated to c-2.0, so much cleaner
@@ -155,6 +166,7 @@ DISTFILES += \
     android/res/values/libs.xml \
     android/res/values/styles.xml \
     android/src/OpenHDActivity.java \
+    android/src/SurfaceTextureListener.java \
     android/src/org/freedesktop/gstreamer/androidmedia/GstAhcCallback.java \
     android/src/org/freedesktop/gstreamer/androidmedia/GstAhsCallback.java \
     android/src/org/freedesktop/gstreamer/androidmedia/GstAmcOnFrameAvailableListener.java \
@@ -167,6 +179,7 @@ DISTFILES += \
     app/util/README.md \
     app/videostreaming/README.md \
     app/videostreaming/gst_qmlglsink/gst_video.pri \
+    app/vs_android/videostreamingandroid.pri \
     extra_build_qmake.sh \
     lib/h264nal/h264nal.pri \
     qml/qtquickcontrols2.conf \
@@ -235,9 +248,11 @@ WindowsBuild {
 AndroidBuild {
     message("AndroidBuild")
     CONFIG += EnableJoysticks
-    CONFIG += EnableSpeech
+    # Text to speech crashes on android for some weird reason
+    #CONFIG += EnableSpeech
     QT += androidextras
 
+    include(app/vs_android/videostreamingandroid.pri)
 }
 
 EnableSpeech {

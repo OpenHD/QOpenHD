@@ -4,7 +4,7 @@
 #include "rcchannelsmodel.h"
 
 #include <QDebug>
-#include "qopenhd.h"
+#include "util/qopenhd.h"
 #include "../telemetryutil.hpp"
 
 #include <geographiclib-c-2.0/src/geodesic.h>

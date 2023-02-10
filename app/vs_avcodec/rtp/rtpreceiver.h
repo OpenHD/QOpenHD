@@ -8,14 +8,13 @@
 
 #include <fstream>
 #include <mutex>
-#include <queue>
 #include <functional>
 
 #include "../nalu/NALU.hpp"
 #include "../nalu/KeyFrameFinder.hpp"
 
-#include "../../common_consti/TimeHelper.hpp"
-#include "../readerwriterqueue/readerwritercircularbuffer.h"
+#include "common/TimeHelper.hpp"
+#include "common/moodycamel/readerwriterqueue/readerwritercircularbuffer.h"
 
 //#define OPENHD_USE_LIB_UVGRTP
 
@@ -39,7 +38,7 @@ public:
     // aka the decoder should have a queue internally when using this mode. Can decrease latency (scheduling latency) though
     typedef std::function<void(std::shared_ptr<NALU>)> NEW_NALU_CALLBACK;
     void register_new_nalu_callback(NEW_NALU_CALLBACK cb);
-
+    // return nullptr if not enough config data is available yet, otherwise, return valid config data
     std::shared_ptr<std::vector<uint8_t>> get_config_data();
     bool config_has_changed_during_decode=false;
     // get width height using the config data (SPS)
@@ -53,7 +52,7 @@ private:
 
     void nalu_data_callback(const std::chrono::steady_clock::time_point creation_time,const uint8_t* nalu_data,const int nalu_data_size);
     //
-    std::unique_ptr<std::ofstream> m_out_file;
+    std::unique_ptr<std::ofstream> m_out_file=nullptr;
 private:
     const bool is_h265;
 private:
@@ -70,7 +69,7 @@ private:
     int n_dropped_frames=0;
     BitrateCalculator m_rtp_bitrate;
 private:
-    // Calculate fps, but note that this actually calculates the non-sps / pps / vps NALUs per second
+    // Calculate fps, but note that this might not give the exact/correct value in some case(s)
     FPSCalculator m_estimate_fps_calculator{};
 #ifdef OPENHD_USE_LIB_UVGRTP
 private:

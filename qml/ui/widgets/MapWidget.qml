@@ -27,7 +27,11 @@ MapWidgetForm {
                                })
         }
   */
-        configure()
+        // Consti10: This way we need a restart of QOpenHD when the map is enabled, but we
+        // save some performance in case the map is not enabled
+        if(settings.show_map){
+            configure()
+        }
     }
 
     function createMap(parent, provider) {

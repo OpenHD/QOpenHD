@@ -356,7 +356,7 @@ private:
             return;
         }
         const auto delta=std::chrono::steady_clock::now()-last_caluclation;
-        if(delta>=std::chrono::seconds(1)){
+        if(delta>=interval_duration_size){
             const int bits_per_second=(nBytes*8)/(std::chrono::duration_cast<std::chrono::milliseconds>(delta).count()/1000.0);
             //const double bytesPerSecond=nBytes/(std::chrono::duration_cast<std::chrono::milliseconds>(delta).count()/1000.0);
             //const double mBytesPerSecond=bytesPerSecond/1024.0/1024.0;
@@ -401,11 +401,5 @@ public:
     }
 };
 
-static void busySleep(const long microseconds){
-    const auto start=getTimeUs();
-    while ((getTimeUs()-start)<microseconds){
-        // busy wait
-    }
-}
 
 #endif //LIVEVIDEO10MS_TIMEHELPER_HPP

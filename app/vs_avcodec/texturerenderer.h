@@ -11,7 +11,7 @@
 
 #include "gl/gl_videorenderer.h"
 
-#include "../common_consti/TimeHelper.hpp"
+#include "../common/TimeHelper.hpp"
 
 class TextureRenderer : public QObject
 {

@@ -31,6 +31,7 @@ Rectangle {
         ret+="AVCODEC:"+yes_or_no_as_string(QOPENHD_ENABLE_VIDEO_VIA_AVCODEC)+", "
         ret+="MMAL:"+yes_or_no_as_string(QOPENHD_HAVE_MMAL)+", "
         ret+="GSTREAMER:"+yes_or_no_as_string(QOPENHD_ENABLE_GSTREAMER) //+", "
+        ret+="ADSB:"+yes_or_no_as_string(QOPENHD_ENABLE_ADSB_LIBRARY) //+", "
         return ret;
     }
 

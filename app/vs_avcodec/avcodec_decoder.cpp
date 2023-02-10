@@ -5,11 +5,11 @@
 #include <sstream>
 
 #include "avcodec_helper.hpp"
-#include "../common_consti/TimeHelper.hpp"
+#include "../common/TimeHelper.hpp"
 
 #include "texturerenderer.h"
 #include "../vs_util/decodingstatistcs.h"
-#include "common_consti/SchedulingHelper.hpp"
+#include "common/SchedulingHelper.hpp"
 #include "../util/WorkaroundMessageBox.h"
 #include "../logging/hudlogmessagesmodel.h"
 
@@ -785,24 +785,22 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp(const QOpenHDVideoHe
      assert(pkt!=nullptr);
      bool has_keyframe_data=false;
      while(true){
+         // We break out of this loop if someone requested a restart
          if(request_restart){
              request_restart=false;
              goto finish;
          }
+         // or the decode config changed and we need a restart
          if(m_rtp_receiver->config_has_changed_during_decode){
              qDebug()<<"Break/Restart,config has changed during decode";
              goto finish;
          }
          //std::this_thread::sleep_for(std::chrono::milliseconds(3000));
          if(!has_keyframe_data){
-              std::shared_ptr<std::vector<uint8_t>> keyframe_buf=nullptr;
-              while(keyframe_buf==nullptr){
-                  if(request_restart){
-                      request_restart=false;
-                      goto finish;
-                  }
+              std::shared_ptr<std::vector<uint8_t>> keyframe_buf=m_rtp_receiver->get_config_data();
+              if(keyframe_buf==nullptr){
                   std::this_thread::sleep_for(std::chrono::milliseconds(100));
-                  keyframe_buf=m_rtp_receiver->get_config_data();
+                  continue;
               }
               qDebug()<<"Got decode data (before keyframe)";
               pkt->data=keyframe_buf->data();
@@ -811,14 +809,10 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp(const QOpenHDVideoHe
               has_keyframe_data=true;
               continue;
          }else{
-            std::shared_ptr<NALU> buf=nullptr;
-             while(buf==nullptr){
-                 // do not peg the cpu completely here
-                 buf=m_rtp_receiver->get_next_frame(std::chrono::milliseconds(kDefaultFrameTimeout));
-                 if(request_restart){
-                     request_restart=false;
-                     goto finish;
-                 }
+             std::shared_ptr<NALU> buf =m_rtp_receiver->get_next_frame(std::chrono::milliseconds(kDefaultFrameTimeout));
+             if(buf==nullptr){
+                 // No buff after X seconds
+                 continue;
              }
              //qDebug()<<"Got decode data (after keyframe)";
              pkt->data=(uint8_t*)buf->getData();
@@ -875,15 +869,11 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp_and_mmal_direct(cons
         }*/
         //std::this_thread::sleep_for(std::chrono::milliseconds(3000));
         if(!has_keyframe_data){
-             std::shared_ptr<std::vector<uint8_t>> keyframe_buf=nullptr;
-             while(keyframe_buf==nullptr){
-                 if(request_restart){
-                     request_restart=false;
-                     goto finish;
-                 }
-                 std::this_thread::sleep_for(std::chrono::milliseconds(100));
-                 keyframe_buf=m_rtp_receiver->get_config_data();
-             }
+            std::shared_ptr<std::vector<uint8_t>> keyframe_buf=m_rtp_receiver->get_config_data();
+            if(keyframe_buf==nullptr){
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
+                continue;
+            }
              qDebug()<<"Got decode data (before keyframe)";
              //RPIMMALDecoder::instance().initialize(keyframe_buf->data(),keyframe_buf->size(),640,480,30);
              const auto w_h=m_rtp_receiver->sps_get_width_height();

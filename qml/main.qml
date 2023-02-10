@@ -14,6 +14,8 @@ import "./ui/widgets"
 import "./ui/elements"
 import "./ui/configpopup"
 
+// TODO remove me ?
+import QtMultimedia 5.15
 
 ApplicationWindow {
     id: applicationWindow
@@ -214,6 +216,53 @@ ApplicationWindow {
             }
         }
 
+        /*Rectangle {
+            width: 800
+            height: 600
+            color: "red"
+            z: 1
+
+            MediaPlayer {
+                id: player
+                source: "gst-pipeline: videotestsrc ! videoconvert ! qtvideosink"
+                //source: "gst-pipeline: udpsrc port=5600 caps = \"application/x-rtp, media=(string)video, encoding-name=(string)H264, payload=(int)96\" ! rtph264depay ! decodebin ! qtvideosink"
+                autoPlay: true
+            }
+
+            VideoOutput {
+                id: videoOutput
+                source: player
+                anchors.fill: parent
+            }
+        }*/
+
+        /*SurfaceTexture {
+                id: videoItem
+                anchors.fill: parent
+                width:parent.width
+                height:parent.height
+
+                //z: 13
+
+                // Set media player's video out
+                Component.onCompleted: {
+                    _mediaPlayer.videoOut = videoItem;
+                    //_mediaPlayer.playFile("https://download.blender.org/peach/bigbuckbunny_movies/BigBuckBunny_320x180.mp4");
+                    _mediaPlayer.playFile("https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/1080/Big_Buck_Bunny_1080_10s_1MB.mp4")
+                }
+
+                MouseArea {
+
+                    anchors.fill: parent
+                    width:parent.width
+                    height:parent.height
+                    onPressed: {
+                        console.log("Player started")
+                        //_mediaPlayer.playFile("/sdcard/testfile.mp4");
+                        _mediaPlayer.playFile("https://download.blender.org/peach/bigbuckbunny_movies/BigBuckBunny_320x180.mp4");
+                    }
+                }
+         }*/
     }
 }
 

@@ -1,9 +1,29 @@
 #include "rpimmaldecodedisplay.h"
 
-#include "../../common_consti/TimeHelper.hpp"
+#include "../../common/TimeHelper.hpp"
 
 #include <qdebug.h>
 
+// DIRTY BEGIN
+MMAL_STATUS_T x_mmal_port_parameter_set_boolean(MMAL_PORT_T *port, uint32_t id, MMAL_BOOL_T value)
+{
+  MMAL_PARAMETER_BOOLEAN_T param = {{id, sizeof(param)}, value};
+  return mmal_port_parameter_set(port, &param.hdr);
+}
+// DIRTY END
+
+
+static void debug_mmal_format(MMAL_ES_FORMAT_T *format_out){
+    qDebug(" type: %i, fourcc: %4.4s\n", format_out->type, (char *)&format_out->encoding);
+    qDebug(" bitrate: %i, framed: %i\n", format_out->bitrate,
+                      !!(format_out->flags & MMAL_ES_FORMAT_FLAG_FRAMED));
+    qDebug(" extra data: %i, %p\n", format_out->extradata_size, format_out->extradata);
+    const float fps=(float)format_out->es->video.frame_rate.num / (float)format_out->es->video.frame_rate.den;
+    qDebug(" width: %i, height: %i, (%i,%i,%i,%i) fps:%f",
+                      format_out->es->video.width, format_out->es->video.height,
+                      format_out->es->video.crop.x, format_out->es->video.crop.y,
+                      format_out->es->video.crop.width, format_out->es->video.crop.height,fps);
+}
 
 static bool initialized=false;
 
@@ -58,7 +78,11 @@ bool RPIMMalDecodeDisplay::initialize(const uint8_t *config_data, const int conf
         initialized=true;
         bcm_host_init();
     }
-    static constexpr auto N_INPUT_BUFFERS=6;
+	// used to init the semaphore initial count, should match n of allocated input buffers
+    // 10 input buffers (~frames) should be plenty for all cases, fifo anyways
+    static constexpr auto N_INPUT_BUFFERS=2;
+    // also, 10 output buffers should be plenty, fifo anyways
+    static constexpr auto N_OUTPUT_BUFFERS=5;
 
      vcos_semaphore_create(&m_context.semaphore, "example", N_INPUT_BUFFERS);
 
@@ -78,7 +102,7 @@ bool RPIMMalDecodeDisplay::initialize(const uint8_t *config_data, const int conf
     CHECK_STATUS(m_status, "failed to enable control port");
 
 	// NOTE: fps seems to have no effect
-	qDebug()<<"Configuring rpi mmal with "<<width<<"x"<<height<<"@"<<fps;
+    qDebug()<<"Configuring rpi mmal with "<<width<<"x"<<height<<"@"<<fps<<" config data size:"<<config_data_size;
     //
     // Set format of video decoder input port
     MMAL_ES_FORMAT_T* format_in = m_decoder->input[0]->format;
@@ -91,28 +115,61 @@ bool RPIMMalDecodeDisplay::initialize(const uint8_t *config_data, const int conf
     format_in->es->video.par.num = 1;
     format_in->es->video.par.den = 1;
     // We don't need this, since we set MMAL_BUFFER_HEADER_FLAG_FRAME_END for each frame
+    // BUT - Do it anyways !!!
+    // Weird - this flag seems to eliminte the "720p 60fps issue" even thugh I have no idea why.
+    // Because in theory, we should not need it since we set MMAL_BUFFER_HEADER_FLAG_FRAME_END
     // If the data is known to be framed then the following flag should be set:
-    //format_in->flags |= MMAL_ES_FORMAT_FLAG_FRAMED;
+    format_in->flags |= MMAL_ES_FORMAT_FLAG_FRAMED;
 
     //SOURCE_READ_CODEC_CONFIG_DATA(codec_header_bytes, codec_header_bytes_size);
-    //m_status = mmal_format_extradata_alloc(format_in, codec_header_bytes_size);
     m_status = mmal_format_extradata_alloc(format_in, config_data_size);
     CHECK_STATUS(m_status, "failed to allocate extradata");
     //format_in->extradata_size = codec_header_bytes_size;
     format_in->extradata_size = config_data_size;
     if (format_in->extradata_size){
+        qDebug()<<"copying extradata";
         memcpy(format_in->extradata, config_data, format_in->extradata_size);
+    }
+
+    // No idea if needed or not, but do it anyways
+    m_status = x_mmal_port_parameter_set_boolean(m_decoder->output[0], MMAL_PARAMETER_VIDEO_INTERPOLATE_TIMESTAMPS, MMAL_FALSE);
+    if (m_status != MMAL_SUCCESS) {
+        qDebug() << "Failed to disable timestamp interpolation on output port";
+        return false;
+    }
+
+    /*
+     * Zero copy is important on rpi / embedded devices. However, that's why we use the mmal graph stuff, it
+     * should be zero copy directly to the HW composer.
+     * Setting this manually seems to break things though.
+     */
+    /*m_status = x_mmal_port_parameter_set_boolean(m_decoder->output[0], MMAL_PARAMETER_ZERO_COPY, MMAL_TRUE);
+    if (m_status != MMAL_SUCCESS) {
+        qDebug() << "Failed to set zero copy on output port";
+        return false;
+    }*/
+
+    // Should be on by default, but just to make sure, set it anyways
+    // Don't discard corrupt decoded frames, pass them on to the Arm side for rendering.
+    m_status = x_mmal_port_parameter_set_boolean(m_decoder->output[0], MMAL_PARAMETER_VIDEO_DECODE_ERROR_CONCEALMENT, MMAL_FALSE);
+    if (m_status != MMAL_SUCCESS) {
+        qDebug() << "Failed to set error concealment on output port";
+        return false;
     }
 
     m_status = mmal_port_format_commit(m_decoder->input[0]);
     CHECK_STATUS(m_status, "failed to commit format");
+    qDebug()<<"Input format:";
+    debug_mmal_format(m_decoder->input[0]->format);
 
     m_status = mmal_port_format_commit(m_decoder->output[0]);
     CHECK_STATUS(m_status, "failed to commit format");
+    qDebug()<<"Output format:";
+    debug_mmal_format(m_decoder->output[0]->format);
 
     qDebug()<<"Decoder input buffer_num_min"<<m_decoder->input[0]->buffer_num_min;
     //m_decoder->input[0]->buffer_num = m_decoder->input[0]->buffer_num_min;
-    m_decoder->input[0]->buffer_num = 15;
+    m_decoder->input[0]->buffer_num = N_INPUT_BUFFERS;
 
     //m_decoder->input[0]->buffer_size = m_decoder->input[0]->buffer_size_min+1024;
     // 1MByte is completely overkill, that would be 480 Mbit/s at 60fps ;)
@@ -120,8 +177,16 @@ bool RPIMMalDecodeDisplay::initialize(const uint8_t *config_data, const int conf
 
     qDebug()<<"Decoder output buffer_num_min"<<m_decoder->output[0]->buffer_num_min;
     //m_decoder->output[0]->buffer_num = m_decoder->output[0]->buffer_num_min;
-    m_decoder->output[0]->buffer_num = N_INPUT_BUFFERS;
+    m_decoder->output[0]->buffer_num = N_OUTPUT_BUFFERS;
     m_decoder->output[0]->buffer_size = m_decoder->output[0]->buffer_size_min;
+
+
+    /*m_status = x_mmal_port_parameter_set_boolean(m_decoder->output[0], MMAL_PARAMETER_ZERO_COPY, MMAL_TRUE);
+    if (m_status != MMAL_SUCCESS) {
+        qDebug() << "Failed to set zero copy on output port";
+    }else{
+        qDebug()<<" set zero copy on output";
+    }*/
 
     m_pool_in = mmal_pool_create(m_decoder->input[0]->buffer_num,m_decoder->input[0]->buffer_size);
 
@@ -162,6 +227,8 @@ bool RPIMMalDecodeDisplay::feed_frame(const uint8_t *frame_data, const int frame
         if(opt_upper_wait_limit){
             const auto elapsed=std::chrono::steady_clock::now()-begin;
             if(elapsed>=opt_upper_wait_limit.value()){
+                const auto queue_len=mmal_queue_length(m_pool_in->queue);
+                qDebug()<<"No frame after "<<MyTimeHelper::R(std::chrono::steady_clock::now()-begin).c_str()<<" queue length:"<<queue_len;
                 return false;
             }
         }

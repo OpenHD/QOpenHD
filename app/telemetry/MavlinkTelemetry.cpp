@@ -36,7 +36,7 @@ MavlinkTelemetry::MavlinkTelemetry(QObject *parent):QObject(parent)
         std::lock_guard<std::mutex> lock(systems_mutex);
         // hacky, fucking hell. mavsdk might call this callback with more than 1 system added.
         auto systems=mavsdk->systems();
-        for(int i=mavsdk_already_known_systems;i<systems.size();i++){
+        for(auto i=mavsdk_already_known_systems;i<systems.size();i++){
             auto new_system=systems.at(i);
             this->onNewSystem(new_system);
         }

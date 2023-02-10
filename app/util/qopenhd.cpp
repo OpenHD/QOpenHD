@@ -1,18 +1,15 @@
 #include "qopenhd.h"
 #include <QCoreApplication>
-
-#include <QDebug>
 #include <QSettings>
+#include <QDebug>
 #include <qapplication.h>
 
-QSettings settings("OpenHD", "QOpenHD");
-
-#ifdef __linux__
-
-#include "common_consti/openhd-util.hpp"
 #include<iostream>
 #include<fstream>
 #include<string>
+
+#ifdef __linux__
+#include "common/openhd-util.hpp"
 #endif
 
 #if defined(ENABLE_SPEECH)
@@ -37,22 +34,21 @@ QOpenHD::QOpenHD(QObject *parent)
 {
 #if defined(ENABLE_SPEECH)
     m_speech = new QTextToSpeech(this);
-
     QStringList engines = QTextToSpeech::availableEngines();
     qDebug() << "Available SPEECH engines:";
-    for (auto engine : engines) {
+    for (auto& engine : engines) {
         qDebug() << "  " << engine;
     }
     // List the available locales.
 //    qDebug() << "Available locales:";
-    for (auto locale : m_speech->availableLocales()) {
+    for (auto& locale : m_speech->availableLocales()) {
 //        qDebug() << "  " << locale;
     }
     // Set locale.
     m_speech->setLocale(QLocale(QLocale::English, QLocale::LatinScript, QLocale::UnitedStates));
     // List the available voices.
 //    qDebug() << "Available voices:";
-    for (auto voice : m_speech->availableVoices()) {
+    for (auto& voice : m_speech->availableVoices()) {
 //        qDebug() << "  " << voice.name();
     }
     // Display properties.
@@ -73,6 +69,7 @@ void QOpenHD::setEngine(QQmlApplicationEngine *engine) {
 void QOpenHD::switchToLanguage(const QString &language) {
     if(m_engine==nullptr){
         qDebug()<<"Error switch language- engine not set";
+        return;
     }
     QLocale::setDefault(language);
 
@@ -144,6 +141,9 @@ void QOpenHD::run_dhclient_eth0()
 bool QOpenHD::copy_settings()
 {
 #ifdef __linux__
+    //QSettings settings("OpenHD", "QOpenHD");
+    QSettings settings;
+    qDebug()<<"Storing settings at ["<<settings.fileName()<<"]";
     std::string file_name = settings.fileName().toStdString();
     std::ifstream src(file_name, std::ios::binary);
     std::ofstream dst("/boot/openhd/QOpenHD.conf", std::ios::binary);
@@ -169,6 +169,9 @@ bool QOpenHD::copy_settings()
 bool QOpenHD::read_settings()
 {
 #ifdef __linux__
+    //QSettings settings("OpenHD", "QOpenHD");
+    QSettings settings;
+     qDebug()<<"Storing settings at ["<<settings.fileName()<<"]";
     std::string file_name = settings.fileName().toStdString();
     std::ifstream src("/boot/openhd/QOpenHD.conf", std::ios::binary);
     std::ofstream dst(file_name, std::ios::binary);
@@ -176,7 +179,7 @@ bool QOpenHD::read_settings()
     dst << src.rdbuf();
     src.close();
     dst.close();
-    
+
     if (!src) {
         qDebug() << "Error: Failed to open source file" << QString::fromStdString(file_name);
         return false;

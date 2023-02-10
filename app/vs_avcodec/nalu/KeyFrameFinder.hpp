@@ -25,6 +25,7 @@ public:
         if(nalu.isSPS()){
             SPS=std::make_unique<NALU>(nalu);
             qDebug()<<"SPS found";
+            qDebug()<<nalu.get_sps_as_string().c_str();
             return true;
         }else if(nalu.isPPS()){
             PPS=std::make_unique<NALU>(nalu);

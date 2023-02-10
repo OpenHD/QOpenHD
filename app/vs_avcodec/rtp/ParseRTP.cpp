@@ -98,7 +98,7 @@ void RTPDecoder::h264_reconstruct_and_forward_one_nalu(const uint8_t *data,const
                                     | (nalu_header.nri << 5)
                                     | (nalu_header.f << 7);
     // write the reconstructed NAL header (the h264 "type")
-    append_nalu_data(&h264_nal_header,1);
+    append_nalu_data_byte(h264_nal_header);
     // write the rest of the data
     append_nalu_data(&data[1], (size_t)data_size - 1);
     // forward via callback
@@ -151,8 +151,7 @@ void RTPDecoder::parseRTPH264toNALU(const uint8_t* rtp_data, const size_t data_l
             const uint8_t h264_nal_header = (uint8_t)(fu_header.type & 0x1f)
                                             | (nalu_header.nri << 5)
                                             | (nalu_header.f << 7);
-            m_nalu_data[m_nalu_data_length]=h264_nal_header;
-            m_nalu_data_length++;
+            append_nalu_data_byte(h264_nal_header);
             append_nalu_data(fu_payload, fu_payload_size);
         } else {
             //MLOGD<<"Middle of fu-a";
@@ -278,10 +277,9 @@ void RTPDecoder::parseRTPH265toNALU(const uint8_t* rtp_data, const size_t data_l
             const uint8_t* ptr=&rtp_data[sizeof(rtp_header_t)];
             uint8_t variableNoIdea=rtp_data[sizeof(rtp_header_t) + sizeof(nal_unit_header_h265_t)];
             // replace NAL Unit Type Bits - I have no idea how that works, but this manipulation works :)
-            m_nalu_data[m_nalu_data_length] = (FU_NAL(variableNoIdea) << 1) | (ptr[0] & 0x81);
-            m_nalu_data_length++;
-            m_nalu_data[m_nalu_data_length] = ptr[1];
-            m_nalu_data_length++;
+            const uint8_t tmp_unknown = (FU_NAL(variableNoIdea) << 1) | (ptr[0] & 0x81);
+            append_nalu_data_byte(tmp_unknown);
+            append_nalu_data_byte(ptr[1]);
             // copy the rest of the data
             append_nalu_data(fu_payload, fu_payload_size);
         }else{
@@ -317,42 +315,48 @@ void RTPDecoder::forwardNALU(const bool isH265) {
         if(!check_has_valid_prefix(true)){
             return;
         }
-        m_cb(timePointStartOfReceivingNALU,m_nalu_data.data(),m_nalu_data_length);
+        m_cb(timePointStartOfReceivingNALU,m_curr_nalu.data(),m_nalu_data_length);
     }
     m_nalu_data_length=0;
 }
 
 void RTPDecoder::append_nalu_data(const uint8_t *data, size_t data_len) {
-    if(m_nalu_data_length+data_len>m_nalu_data.size()){
+    if(m_nalu_data_length+data_len>m_curr_nalu.size()){
         qDebug()<<"Weird - not enugh space to write NALU. curr_size:"<<m_nalu_data_length<<" append:"<<data_len;
         return;
     }
-    memcpy(&m_nalu_data[m_nalu_data_length],data,data_len);
+    memcpy(&m_curr_nalu[m_nalu_data_length],data,data_len);
     m_nalu_data_length+=data_len;
+}
+
+void RTPDecoder::append_nalu_data_byte(uint8_t byte)
+{
+    append_nalu_data(&byte,1);
 }
 
 void RTPDecoder::append_empty(size_t data_len)
 {
-    if(m_nalu_data_length+data_len>m_nalu_data.size()){
+    if(m_nalu_data_length+data_len>m_curr_nalu.size()){
         qDebug()<<"Weird - not enugh space to write NALU. curr_size:"<<m_nalu_data_length<<" append:"<<data_len;
         return;
     }
-    std::memset(&m_nalu_data[m_nalu_data_length],0,data_len);
+    std::memset(&m_curr_nalu[m_nalu_data_length],0,data_len);
 }
 
 void RTPDecoder::write_h264_h265_nalu_start(const bool use_4_bytes)
 {
+    m_nalu_data_length=0;
     if(use_4_bytes){
-        m_nalu_data[0]=0;
-        m_nalu_data[1]=0;
-        m_nalu_data[2]=0;
-        m_nalu_data[3]=1;
-        m_nalu_data_length=4;
+        append_nalu_data_byte(0);
+        append_nalu_data_byte(0);
+        append_nalu_data_byte(0);
+        append_nalu_data_byte(1);
+        assert(m_nalu_data_length==4);
     }else{
-        m_nalu_data[0]=0;
-        m_nalu_data[1]=0;
-        m_nalu_data[2]=1;
-        m_nalu_data_length=3;
+        append_nalu_data_byte(0);
+        append_nalu_data_byte(0);
+        append_nalu_data_byte(1);
+        assert(m_nalu_data_length==3);
     }
 }
 
@@ -363,18 +367,18 @@ bool RTPDecoder::check_has_valid_prefix(bool use_4_bytes_start_code)
         return false;
     }
     if(use_4_bytes_start_code){
-        const bool valid= m_nalu_data[0]==0 &&
-        m_nalu_data[1]==0 &&
-        m_nalu_data[2]==0 &&
-        m_nalu_data[3]==1;
+        const bool valid= m_curr_nalu[0]==0 &&
+        m_curr_nalu[1]==0 &&
+        m_curr_nalu[2]==0 &&
+        m_curr_nalu[3]==1;
         if(!valid){
             qDebug()<<"Not a valid nalu - missing start code (4 bytes)";
         }
         return valid;
     }else{
-        const bool valid= m_nalu_data[0]==0 &&
-        m_nalu_data[1]==0 &&
-        m_nalu_data[2]==1;
+        const bool valid= m_curr_nalu[0]==0 &&
+        m_curr_nalu[1]==0 &&
+        m_curr_nalu[2]==1;
         if(!valid){
             qDebug()<<"Not a valid nalu - missing start code (3 bytes)";
         }

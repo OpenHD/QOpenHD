@@ -56,8 +56,13 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 
 #include "logging/logmessagesmodel.h"
 #include "logging/hudlogmessagesmodel.h"
-#include "qopenhd.h"
+#include "util/qopenhd.h"
 #include "util/WorkaroundMessageBox.h"
+
+#ifdef QOPENHD_ENABLE_VIDEO_VIA_ANDROID
+#include <vs_android/qandroidmediaplayer.h>
+#include <vs_android/qsurfacetexture.h>
+#endif
 
 #ifdef QOPENHD_ENABLE_ADSB_LIBRARY
 #include "adsb/ADSBVehicleManager.h"
@@ -170,17 +175,15 @@ void write_other_context_properties(QQmlApplicationEngine& engine){
 #else
     engine.rootContext()->setContextProperty("EnableGStreamer", QVariant(false));
 #endif
-
-
 }
 
 int main(int argc, char *argv[]) {
-    // QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-    QCoreApplication::setAttribute(Qt::AA_DisableHighDpiScaling);
-    if (qgetenv("QT_FONT_DPI").isEmpty()) {
-        qputenv("QT_FONT_DPI", "150");
-    }
+    // Disabling it causes issues on other devices
+    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     //QCoreApplication::setAttribute(Qt::AA_UseOpenGLES);
+    //if (qgetenv("QT_FONT_DPI").isEmpty()) {
+    //  qputenv("QT_FONT_DPI", "150");
+    //}
 
     QCoreApplication::setOrganizationName("OpenHD");
     QCoreApplication::setOrganizationDomain("openhd");
@@ -204,9 +207,12 @@ int main(int argc, char *argv[]) {
     const std::string global_scale_s = std::to_string(global_scale);
     QByteArray scaleAsQByteArray(global_scale_s.c_str(), global_scale_s.length());
     qputenv("QT_SCALE_FACTOR", scaleAsQByteArray);
+    qDebug()<<"Storing settings at ["<<settings.fileName()<<"]";
 
     // https://doc.qt.io/qt-6/qtquick-visualcanvas-scenegraph-renderer.html
     //qputenv("QSG_VISUALIZE", "overdraw");
+    //qputenv("QSG_VISUALIZE", "batches");
+    //qputenv("QSG_VISUALIZE", "changes");
     //QCoreApplication::setAttribute(Qt::AA_UseOpenGLES);
     //QLoggingCategory::setFilterRules("qt.scenegraph.*=true");
     //QLoggingCategory::setFilterRules("qt.scenegraph.time.*=true");
@@ -215,7 +221,6 @@ int main(int argc, char *argv[]) {
     //QLoggingCategory::setFilterRules("qt.scenegraph.time.renderloop=true");
     //QLoggingCategory::setFilterRules("qt.qpa.eglfs.*=true");
     //QLoggingCategory::setFilterRules("qt.qpa.egl*=true");
-
 
     QApplication app(argc, argv);
 
@@ -250,6 +255,7 @@ int main(int argc, char *argv[]) {
     qmlRegisterType<FlightPathVector>("OpenHD", 1, 0, "FlightPathVector");
     qmlRegisterType<DrawingCanvas>("OpenHD", 1, 0, "DrawingCanvas");
     qmlRegisterType<AoaGauge>("OpenHD", 1, 0, "AoaGauge");
+
 
     QQmlApplicationEngine engine;
 #ifdef QOPENHD_ENABLE_VIDEO_VIA_AVCODEC
@@ -375,6 +381,13 @@ engine.rootContext()->setContextProperty("EnableADSB", QVariant(false));
 #endif
      );
 
+#ifdef QOPENHD_ENABLE_VIDEO_VIA_ANDROID
+    qmlRegisterType<QSurfaceTexture>("OpenHD", 1, 0, "SurfaceTexture");
+    // Create a player
+    QAndroidMediaPlayer player;
+    engine.rootContext()->setContextProperty("_mediaPlayer", &player);
+#endif
+
     engine.load(QUrl(QLatin1String("qrc:/main.qml")));
 
 #if defined(__android__)
@@ -407,6 +420,7 @@ engine.rootContext()->setContextProperty("EnableADSB", QVariant(false));
     }
 #endif
 #endif // QOPENHD_ENABLE_GSTREAMER
+    QRenderStats::instance().register_to_root_window(engine);
 
     LogMessagesModel::instance().addLogMessage("QOpenHD","running");
     const int retval = app.exec();
