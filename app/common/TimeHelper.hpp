@@ -401,11 +401,5 @@ public:
     }
 };
 
-static void busySleep(const long microseconds){
-    const auto start=getTimeUs();
-    while ((getTimeUs()-start)<microseconds){
-        // busy wait
-    }
-}
 
 #endif //LIVEVIDEO10MS_TIMEHELPER_HPP
