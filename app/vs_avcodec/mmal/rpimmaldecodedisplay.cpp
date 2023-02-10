@@ -79,7 +79,7 @@ bool RPIMMalDecodeDisplay::initialize(const uint8_t *config_data, const int conf
     }
 	// used to init the semaphore initial count, should match n of allocated input buffers
     static constexpr auto N_INPUT_BUFFERS=15;
-    static constexpr auto N_OUTPUT_BUFFERS=15;
+    static constexpr auto N_OUTPUT_BUFFERS=3;
 
      vcos_semaphore_create(&m_context.semaphore, "example", N_INPUT_BUFFERS);
 
@@ -99,7 +99,7 @@ bool RPIMMalDecodeDisplay::initialize(const uint8_t *config_data, const int conf
     CHECK_STATUS(m_status, "failed to enable control port");
 
 	// NOTE: fps seems to have no effect
-	qDebug()<<"Configuring rpi mmal with "<<width<<"x"<<height<<"@"<<fps;
+    qDebug()<<"Configuring rpi mmal with "<<width<<"x"<<height<<"@"<<fps<<" config data size:"<<config_data_size;
     //
     // Set format of video decoder input port
     MMAL_ES_FORMAT_T* format_in = m_decoder->input[0]->format;
