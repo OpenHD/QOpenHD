@@ -18,10 +18,11 @@ static void debug_mmal_format(MMAL_ES_FORMAT_T *format_out){
     qDebug(" bitrate: %i, framed: %i\n", format_out->bitrate,
                       !!(format_out->flags & MMAL_ES_FORMAT_FLAG_FRAMED));
     qDebug(" extra data: %i, %p\n", format_out->extradata_size, format_out->extradata);
-    qDebug(" width: %i, height: %i, (%i,%i,%i,%i)\n",
+    const float fps=(float)format_out->es->video.frame_rate.num / (float)format_out->es->video.frame_rate.den;
+    qDebug(" width: %i, height: %i, (%i,%i,%i,%i) fps:%f",
                       format_out->es->video.width, format_out->es->video.height,
                       format_out->es->video.crop.x, format_out->es->video.crop.y,
-                      format_out->es->video.crop.width, format_out->es->video.crop.height);
+                      format_out->es->video.crop.width, format_out->es->video.crop.height,fps);
 }
 
 static bool initialized=false;
@@ -112,8 +113,9 @@ bool RPIMMalDecodeDisplay::initialize(const uint8_t *config_data, const int conf
     format_in->es->video.par.num = 1;
     format_in->es->video.par.den = 1;
     // We don't need this, since we set MMAL_BUFFER_HEADER_FLAG_FRAME_END for each frame
+    // Do it anyways
     // If the data is known to be framed then the following flag should be set:
-    //format_in->flags |= MMAL_ES_FORMAT_FLAG_FRAMED;
+    format_in->flags |= MMAL_ES_FORMAT_FLAG_FRAMED;
 
     //SOURCE_READ_CODEC_CONFIG_DATA(codec_header_bytes, codec_header_bytes_size);
     m_status = mmal_format_extradata_alloc(format_in, config_data_size);
@@ -121,6 +123,7 @@ bool RPIMMalDecodeDisplay::initialize(const uint8_t *config_data, const int conf
     //format_in->extradata_size = codec_header_bytes_size;
     format_in->extradata_size = config_data_size;
     if (format_in->extradata_size){
+        qDebug()<<"copying extradata";
         memcpy(format_in->extradata, config_data, format_in->extradata_size);
     }
 
