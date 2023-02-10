@@ -154,7 +154,7 @@ ScrollView {
                                         onClicked: {
                                         var res=_qopenhd.read_settings()
                                                 if (res) {
-                                                            _messageBoxInstance.set_text_and_show("Settings file Loaded !")
+                                                            _messageBoxInstance.set_text_and_show("Settings file Loaded !, Please restart QOpenHD to apply")
                                                         }
                                                 else{
                                                 _messageBoxInstance.set_text_and_show("couldn't save the settings,\nplease make sure there is a file in /boot/openhd/QOpenHD.conf \nor in the Root of the SD-Card in folder openhd")
