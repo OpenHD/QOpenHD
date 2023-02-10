@@ -79,8 +79,10 @@ bool RPIMMalDecodeDisplay::initialize(const uint8_t *config_data, const int conf
         bcm_host_init();
     }
 	// used to init the semaphore initial count, should match n of allocated input buffers
-    static constexpr auto N_INPUT_BUFFERS=15;
-    static constexpr auto N_OUTPUT_BUFFERS=3;
+    // 10 input buffers (~frames) should be plenty for all cases, fifo anyways
+    static constexpr auto N_INPUT_BUFFERS=10;
+    // also, 10 output buffers should be plenty, fifo anyways
+    static constexpr auto N_OUTPUT_BUFFERS=5;
 
      vcos_semaphore_create(&m_context.semaphore, "example", N_INPUT_BUFFERS);
 
