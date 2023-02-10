@@ -1,3 +1,4 @@
+
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Controls.Styles 1.4
@@ -21,6 +22,10 @@ ApplicationWindow {
     //height: 480
     width: (settings.general_screen_rotation == 90 || settings.general_screen_rotation == 270) ? 480 : 850
     height: (settings.general_screen_rotation == 90 || settings.general_screen_rotation == 270) ? 850 : 480
+
+    contentOrientation: settings.general_screen_rotation===0 ? Qt.PortraitOrientation : Qt.LandscapeOrientation
+    contentItem.rotation: settings.general_screen_rotation 
+
     minimumWidth: 480
     minimumHeight: 320
     title: qsTr("Open.HD")
@@ -35,7 +40,6 @@ ApplicationWindow {
     visibility: UseFullscreen ? "FullScreen" : "AutomaticVisibility"
 
     // Doesn't work, already tried :(
-    //contentOrientation: Qt.InvertedLandscapeOrientation
 
     // This only exists to be able to fully rotate "everything" for users that have their screen upside down for some reason.
     // Won't affect the video, but heck, then just mount your camera upside down.
@@ -43,8 +47,10 @@ ApplicationWindow {
     // no way, at least on MMAL
     // NOTE: If this creates issues, just comment it out - I'd love to get rid of it as soon as we can.
     Item{
-        rotation: settings.general_screen_rotation
-        anchors.fill: parent
+        // rotation: settings.general_screen_rotation
+        anchors.centerIn: parent
+        width: (settings.general_screen_rotation == 90 || settings.general_screen_rotation == 270) ? parent.height : parent.width
+        height: (settings.general_screen_rotation == 90 || settings.general_screen_rotation == 270) ? parent.width : parent.height
 
         // Local app settings. Uses the "user defaults" system on Mac/iOS, the Registry on Windows,
         // and equivalent settings systems on Linux and Android
@@ -123,7 +129,6 @@ ApplicationWindow {
 
         OSDCustomizer {
             id: osdCustomizer
-
             anchors.centerIn: parent
             visible: false
             z: 5.0
