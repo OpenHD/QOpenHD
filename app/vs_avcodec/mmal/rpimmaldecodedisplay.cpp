@@ -116,6 +116,7 @@ bool RPIMMalDecodeDisplay::initialize(const uint8_t *config_data, const int conf
     format_in->es->video.par.den = 1;
     // We don't need this, since we set MMAL_BUFFER_HEADER_FLAG_FRAME_END for each frame
     // Do it anyways
+    // Weird - this flag seems to eliminte the "720p 60fps issue" even thugh I have no idea why
     // If the data is known to be framed then the following flag should be set:
     format_in->flags |= MMAL_ES_FORMAT_FLAG_FRAMED;
 
