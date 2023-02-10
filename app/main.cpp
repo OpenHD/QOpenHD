@@ -178,12 +178,12 @@ void write_other_context_properties(QQmlApplicationEngine& engine){
 }
 
 int main(int argc, char *argv[]) {
-    // Disable it for now
-    //QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    // Disabling it causes issues on other devices
+    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     //QCoreApplication::setAttribute(Qt::AA_UseOpenGLES);
-	if (qgetenv("QT_FONT_DPI").isEmpty()) {
-	  qputenv("QT_FONT_DPI", "150");
-	}
+    //if (qgetenv("QT_FONT_DPI").isEmpty()) {
+    //  qputenv("QT_FONT_DPI", "150");
+    //}
 
     QCoreApplication::setOrganizationName("OpenHD");
     QCoreApplication::setOrganizationDomain("openhd");
