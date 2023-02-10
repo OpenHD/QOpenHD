@@ -211,6 +211,7 @@ bool RPIMMalDecodeDisplay::feed_frame(const uint8_t *frame_data, const int frame
         if(opt_upper_wait_limit){
             const auto elapsed=std::chrono::steady_clock::now()-begin;
             if(elapsed>=opt_upper_wait_limit.value()){
+                qDebug()<<"No frame after "<<MyTimeHelper::R(std::chrono::steady_clock::now()-begin);
                 return false;
             }
         }
