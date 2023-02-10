@@ -38,6 +38,8 @@ CONFIG(debug, debug|release) {
 #https://doc.qt.io/qt-6/portingguide.html
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x050F00
 
+# See https://www.qt.io/blog/qml-type-registration-in-qt-5.15
+# avoid using qmlRegisterType<>, use macro instead
 CONFIG += qmltypes
 QML_IMPORT_NAME = OpenHD
 QML_IMPORT_MAJOR_VERSION = 1

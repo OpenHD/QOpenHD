@@ -1,7 +1,6 @@
 <RCC>
     <qresource lang="en" prefix="/translations">
         <file alias="QOpenHD.qm">../translations/QOpenHD_en.qm</file>
-        <file>qml.qrc</file>
     </qresource>
     <qresource lang="de" prefix="/translations">
         <file alias="QOpenHD.qm">../translations/QOpenHD_de.qm</file>
