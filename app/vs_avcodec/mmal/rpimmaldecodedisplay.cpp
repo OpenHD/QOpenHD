@@ -12,6 +12,18 @@ MMAL_STATUS_T x_mmal_port_parameter_set_boolean(MMAL_PORT_T *port, uint32_t id, 
 }
 // DIRTY END
 
+
+static void debug_mmal_format(MMAL_ES_FORMAT_T *format_out){
+    qDebug(" type: %i, fourcc: %4.4s\n", format_out->type, (char *)&format_out->encoding);
+    qDebug(" bitrate: %i, framed: %i\n", format_out->bitrate,
+                      !!(format_out->flags & MMAL_ES_FORMAT_FLAG_FRAMED));
+    qDebug(" extra data: %i, %p\n", format_out->extradata_size, format_out->extradata);
+    qDebug(" width: %i, height: %i, (%i,%i,%i,%i)\n",
+                      format_out->es->video.width, format_out->es->video.height,
+                      format_out->es->video.crop.x, format_out->es->video.crop.y,
+                      format_out->es->video.crop.width, format_out->es->video.crop.height);
+}
+
 static bool initialized=false;
 
 #define CHECK_STATUS(status, msg) if (status != MMAL_SUCCESS) { fprintf(stderr, msg"\n"); return false; }
@@ -147,9 +159,13 @@ bool RPIMMalDecodeDisplay::initialize(const uint8_t *config_data, const int conf
 
     m_status = mmal_port_format_commit(m_decoder->input[0]);
     CHECK_STATUS(m_status, "failed to commit format");
+    qDebug()<<"Input format:";
+    debug_mmal_format(m_decoder->input[0]->format);
 
     m_status = mmal_port_format_commit(m_decoder->output[0]);
     CHECK_STATUS(m_status, "failed to commit format");
+    qDebug()<<"Output format:";
+    debug_mmal_format(m_decoder->output[0]->format);
 
     qDebug()<<"Decoder input buffer_num_min"<<m_decoder->input[0]->buffer_num_min;
     //m_decoder->input[0]->buffer_num = m_decoder->input[0]->buffer_num_min;
