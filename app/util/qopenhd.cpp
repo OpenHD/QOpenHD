@@ -4,11 +4,12 @@
 #include <QDebug>
 #include <qapplication.h>
 
-#ifdef __linux__
-#include "common_consti/openhd-util.hpp"
 #include<iostream>
 #include<fstream>
 #include<string>
+
+#ifdef __linux__
+#include "common/openhd-util.hpp"
 #endif
 
 #if defined(ENABLE_SPEECH)
@@ -140,6 +141,7 @@ void QOpenHD::run_dhclient_eth0()
 bool QOpenHD::copy_settings()
 {
 #ifdef __linux__
+    QSettings settings("OpenHD", "QOpenHD");
     std::string file_name = settings.fileName().toStdString();
     std::ifstream src(file_name, std::ios::binary);
     std::ofstream dst("/boot/openhd/QOpenHD.conf", std::ios::binary);
