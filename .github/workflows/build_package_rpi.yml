@@ -2,7 +2,7 @@ name: build_package_rpi
 
 on:
   push:
-    branches: [ "2.3-evo" ]
+    branches: [ "2.3-evo","2.3-evo-consti-dev" ]
   pull_request:
     branches: [ "2.3-evo" ]
 
