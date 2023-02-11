@@ -193,10 +193,11 @@ ApplicationWindow {
         }
 
         // Allows closing QOpenHD via a keyboard shortcut
+        // also stops the service, such that it is not restartet
         Shortcut {
             sequence: "Ctrl+F12"
             onActivated: {
-                _qopenhd.quit_qopenhd()
+                _qopenhd.disable_service_and_quit()
             }
         }
 

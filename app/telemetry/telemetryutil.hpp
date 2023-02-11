@@ -281,8 +281,8 @@ static QString plane_mode_from_enum(PLANE_MODE mode){
             return "QAcro";
         case PLANE_MODE_THERMAL:
             return "Thermal";
-        case PLANE_MODE_ENUM_END:
-            return "unknwown";
+        default:
+             break;
     }
     return "Unknown";
 }
@@ -301,6 +301,8 @@ static QString tracker_mode_from_enum(TRACKER_MODE mode){
             return "Auto";
        case TRACKER_MODE_INITIALIZING:
             return "Initializing";
+       default:
+             break;
     }
     return "Unknown";
 }
