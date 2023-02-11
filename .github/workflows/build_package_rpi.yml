@@ -34,7 +34,7 @@ jobs:
       id: qemu
       uses: pguyot/arm-runner-action@v2.5.2
       with:
-        base_image: http://openhdfpv.org/wp-content/BaseImages/OpenHD-image-2022-05-28_1033.zip        
+        base_image: https://pipelines.actions.githubusercontent.com/serviceHosts/85e2db25-ff8f-4c2c-a3df-078f6662d2a4/_apis/pipelines/1/runs/1839/signedartifactscontent?artifactName=OpenHD-image-pi-bullseye--2.3-evo-2023-02-08_2101&urlExpires=2023-02-11T18%3A16%3A18.1659322Z&urlSigningMethod=HMACV2&urlSignature=Krcd7A1ePBjmehhcI1Cg5iKptT5i2uFgmqwYiNyRFUg%3D        
         image_additional_mb: 4000
         copy_repository_path: /opt
         copy_artifact_path: QOpenHD
