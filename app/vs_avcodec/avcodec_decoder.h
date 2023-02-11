@@ -15,6 +15,7 @@
 #include <deque>
 #include <optional>
 #include <queue>
+#include <atomic>
 
 //#define HAVE_MMAL
 
@@ -60,8 +61,9 @@ private:
     int decode_config_data(AVPacket *packet);
     // Called every time we get a new frame from the decoder, do what you wish here ;)
     void on_new_frame(AVFrame* frame);
-    // simle restart, e.g. when the video codec or the video resolution has changed
-    bool request_restart=false;
+    // simle restart, e.g. when the video codec or the video resolution has changed we need to break
+    // out of a running "constant_decode_xx" loop
+    std::atomic<bool> request_restart=false;
     // Completely stop (Exit QOpenHD)
     bool m_should_terminate=false;
     int n_no_output_frame_after_x_seconds=0;
