@@ -39,6 +39,7 @@ class DecodingStatistcs : public QObject
 public:
     explicit DecodingStatistcs(QObject *parent = nullptr);
     static DecodingStatistcs& instance();
+    void reset_all_to_default();
 };
 
 #endif // DECODINGSTATISTCS_H

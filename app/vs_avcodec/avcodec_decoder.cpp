@@ -390,11 +390,10 @@ void AVCodecDecoder::reset_before_decode_start()
     last_frame_height=-1;
     avg_decode_time.reset();
     avg_parse_time.reset();
-    DecodingStatistcs::instance().set_doing_wait_for_frame_decode("Yes");
+    DecodingStatistcs::instance().reset_all_to_default();
     last_frame_width=-1;
     last_frame_height=-1;
     m_fed_timestamps_queue.clear();
-    DecodingStatistcs::instance().set_decoding_type("?");
 }
 
 int AVCodecDecoder::open_and_decode_until_error(const QOpenHDVideoHelper::VideoStreamConfig settings)
@@ -991,6 +990,8 @@ static constexpr auto RPI_OMX_H264_DECODE_SERVICE="rpi_omx_h264_decode";
 void AVCodecDecoder::dirty_rpi_decode_via_external_decode_service()
 {
     qDebug()<<"Decode via rpi external decode service begin";
+    DecodingStatistcs::instance().reset_all_to_default();
+    DecodingStatistcs::instance().set_decoding_type("External OMX");
     // Start service
     OHDUtil::run_command("systemctl start",{std::string(RPI_OMX_H264_DECODE_SERVICE)});
     while(true){
