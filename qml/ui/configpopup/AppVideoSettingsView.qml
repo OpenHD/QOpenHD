@@ -428,7 +428,7 @@ ScrollView {
                 color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
                 Text {
-                    text: qsTr("dev_rpi_use_external_mmal_decode_service")
+                    text: qsTr("dev_rpi_use_external_omx_decode_service")
                     font.weight: Font.Bold
                     font.pixelSize: 13
                     anchors.leftMargin: 8
@@ -444,8 +444,8 @@ ScrollView {
                     anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    checked: settings.dev_rpi_use_external_mmal_decode_service
-                    onCheckedChanged: settings.dev_rpi_use_external_mmal_decode_service = checked
+                    checked: settings.dev_rpi_use_external_omx_decode_service
+                    onCheckedChanged: settings.dev_rpi_use_external_omx_decode_service = checked
                 }
             }
         }
