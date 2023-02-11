@@ -57,7 +57,7 @@ Settings {
     property bool dev_feed_incomplete_frames_to_decoder:false;
 
     // dirty, perhaps temporary
-    property bool dev_rpi_use_external_omx_decode_service: false;
+    property bool dev_rpi_use_external_omx_decode_service: true;
 
     property bool enable_speech: true
     property bool enable_imperial: false
