@@ -136,7 +136,6 @@ void AVCodecDecoder::constant_decode()
              if(settings.dev_test_video_mode==QOpenHDVideoHelper::VideoTestMode::DISABLED
                      && settings.enable_software_video_decoder==false
                      && settings.video_codec==QOpenHDVideoHelper::VideoCodecH264){
-
                  if(settings.dev_rpi_use_external_mmal_decode_service){
                      dirty_rpi_decode_via_external_decode_service();
                  }else{
@@ -397,7 +396,6 @@ void AVCodecDecoder::reset_before_decode_start()
     m_fed_timestamps_queue.clear();
     DecodingStatistcs::instance().set_decoding_type("?");
 }
-
 
 int AVCodecDecoder::open_and_decode_until_error(const QOpenHDVideoHelper::VideoStreamConfig settings)
 {
@@ -984,25 +982,4 @@ void AVCodecDecoder::timestamp_debug_valid(int64_t ts)
     }else{
         qDebug()<<"Is not a valid timestamp";
     }
-}
-
-#include "../common/openhd-util.hpp"
-
-static constexpr auto RPI_OMX_H264_DECODE_SERVICE="rpi_omx_h264_decode_service";
-
-void AVCodecDecoder::dirty_rpi_decode_via_external_decode_service()
-{
-    qDebug()<<"Decode via rpi external decode service begin";
-    // Start service
-    OHDUtil::run_command("systemctl start",{std::string(RPI_OMX_H264_DECODE_SERVICE)});
-    while(true){
-        if(request_restart){
-            request_restart=false;
-            break;
-        }
-        std::this_thread::sleep_for(std::chrono::seconds(1));
-    }
-    // Stop service
-    OHDUtil::run_command("systemctl stop",{std::string(RPI_OMX_H264_DECODE_SERVICE)});
-    qDebug()<<"Decode via rpi external decode service end";
 }
