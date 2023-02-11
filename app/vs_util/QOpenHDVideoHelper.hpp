@@ -69,7 +69,7 @@ struct VideoStreamConfig{
     // but not caring about missing previous frames
     bool dev_feed_incomplete_frames_to_decoder=false;
     // argh, is the only thing I say here
-    bool dev_rpi_use_external_mmal_decode_service=false;
+    bool dev_rpi_use_external_omx_decode_service=false;
 
     // 2 configs are equal if all members are exactly the same.
     bool operator==(const VideoStreamConfig &o) const {
@@ -81,7 +81,7 @@ struct VideoStreamConfig{
                this->dev_use_low_latency_parser_when_possible == o.dev_use_low_latency_parser_when_possible &&
                this->dev_feed_incomplete_frames_to_decoder == o.dev_feed_incomplete_frames_to_decoder &&
                this->udp_rtp_input_ip_address==o.udp_rtp_input_ip_address &&
-               this->dev_rpi_use_external_mmal_decode_service==o.dev_rpi_use_external_mmal_decode_service;
+               this->dev_rpi_use_external_omx_decode_service==o.dev_rpi_use_external_omx_decode_service;
      }
     bool operator !=(const VideoStreamConfig &o) const {
         return !(*this==o);
@@ -105,7 +105,7 @@ static VideoStreamConfig read_from_settings(){
     _videoStreamConfig.dev_limit_fps_on_test_file=settings.value("dev_limit_fps_on_test_file",-1).toInt();
     _videoStreamConfig.dev_use_low_latency_parser_when_possible=settings.value("dev_use_low_latency_parser_when_possible",true).toBool();
     //
-    _videoStreamConfig.dev_rpi_use_external_mmal_decode_service=settings.value("dev_rpi_use_external_mmal_decode_service", false).toBool();
+    _videoStreamConfig.dev_rpi_use_external_omx_decode_service=settings.value("dev_rpi_use_external_omx_decode_service", false).toBool();
     // QML text input sucks, so we read a file. Not ideal, but for testing only anyways
     {
         _videoStreamConfig.dev_custom_pipeline="";
