@@ -69,7 +69,7 @@ struct VideoStreamConfig{
     // but not caring about missing previous frames
     bool dev_feed_incomplete_frames_to_decoder=false;
     // argh, is the only thing I say here
-    bool dev_rpi_use_external_omx_decode_service=false;
+    bool dev_rpi_use_external_omx_decode_service=true;
 
     // 2 configs are equal if all members are exactly the same.
     bool operator==(const VideoStreamConfig &o) const {
