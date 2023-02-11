@@ -988,11 +988,13 @@ void AVCodecDecoder::timestamp_debug_valid(int64_t ts)
 
 #include "../common/openhd-util.hpp"
 
+static constexpr auto RPI_OMX_H264_DECODE_SERVICE="rpi_omx_h264_decode_service";
+
 void AVCodecDecoder::dirty_rpi_decode_via_external_decode_service()
 {
     qDebug()<<"Decode via rpi external decode service begin";
     // Start service
-    OHDUtil::run_command("systemctl start rpi_mmal_h264_decode_service",{});
+    OHDUtil::run_command("systemctl start",{std::string(RPI_OMX_H264_DECODE_SERVICE)});
     while(true){
         if(request_restart){
             request_restart=false;
@@ -1001,6 +1003,6 @@ void AVCodecDecoder::dirty_rpi_decode_via_external_decode_service()
         std::this_thread::sleep_for(std::chrono::seconds(1));
     }
     // Stop service
-    OHDUtil::run_command("systemctl stop rpi_mmal_h264_decode_service",{});
+    OHDUtil::run_command("systemctl stop",{std::string(RPI_OMX_H264_DECODE_SERVICE)});
     qDebug()<<"Decode via rpi external decode service end";
 }
