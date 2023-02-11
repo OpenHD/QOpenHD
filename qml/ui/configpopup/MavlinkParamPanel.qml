@@ -26,6 +26,34 @@ Rectangle {
 
     property string m_name: "undefined"
 
+    // Refetch all button
+    Button {
+        height: 48
+        anchors.top: parent.top
+        id: fetchAllButtonId
+        text:"ReFetch All "+m_name
+        enabled: m_instanceCheckIsAvlie.is_alive
+        onClicked: {
+            parameterEditor.visible=false
+            var result=m_instanceMavlinkSettingsModel.try_fetch_all_parameters()
+            if(!result){
+                 _messageBoxInstance.set_text_and_show("Fetch all failed, please try again")
+            }
+        }
+    }
+    Button {
+        height: 48
+        anchors.top: parent.top
+        anchors.left: fetchAllButtonId.right
+        anchors.leftMargin: 20
+        id: fetchAllButtonInfoId
+        text:"INFO"
+        Material.background:Material.LightBlue
+        onClicked: {
+            var text="Refresh your complete parameter set by fetching it from the openhd air/ground unit. Might need a couple of tries"
+            _messageBoxInstance.set_text_and_show(text)
+        }
+    }
 
     Component {
         id: delegateMavlinkSettingsValue
@@ -62,53 +90,14 @@ Rectangle {
         }
     }
 
-
-    // Refetch all button
-    Button {
-        height: 48
-        anchors.top: parent.top
-        id: fetchAllButtonId
-        text:"ReFetch All "+m_name
-        enabled: m_instanceCheckIsAvlie.is_alive
-        onClicked: {
-            parameterEditor.visible=false
-            var result=m_instanceMavlinkSettingsModel.try_fetch_all_parameters()
-            if(!result){
-                 _messageBoxInstance.set_text_and_show("Fetch all failed, please try again")
-            }
-        }
-    }
-    Button {
-        height: 48
-        anchors.top: parent.top
-        anchors.left: fetchAllButtonId.right
-        anchors.leftMargin: 20
-        id: fetchAllButtonInfoId
-        text:"INFO"
-        Material.background:Material.LightBlue
-        onClicked: {
-            var text="Refresh your complete parameter set by fetching it from the openhd air/ground unit. Might need a couple of tries"
-            _messageBoxInstance.set_text_and_show(text)
-        }
-    }
-    /*Button {
-        height: 48
-        anchors.top: fetchAllButtonId.top
-        anchors.left: fetchAllButtonId.right
-        id: infoButton
-        text:"Info"
-        enabled: true
-        onClicked: {
-
-        }
-    }*/
     // Left part: multiple colums of param value
     Rectangle{
         id: scrollViewRectangle
-        width: parent.width - paramEditorWidth
+        width: parent.width
         height: parent.height-64
         anchors.top: fetchAllButtonId.bottom
         anchors.bottom: parent.bottom
+        anchors.left: parent.left
 
         ScrollView{
             //height: parent.height
