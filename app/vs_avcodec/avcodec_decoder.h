@@ -115,6 +115,7 @@ private:
         qDebug()<<"ERROR Compile with mmal";
     }
 #endif
+    void dirty_rpi_decode_via_external_decode_service();
 };
 
 #endif // AVCODEC_DECODER_H

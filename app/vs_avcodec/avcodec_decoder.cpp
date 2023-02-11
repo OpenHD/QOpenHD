@@ -136,7 +136,12 @@ void AVCodecDecoder::constant_decode()
              if(settings.dev_test_video_mode==QOpenHDVideoHelper::VideoTestMode::DISABLED
                      && settings.enable_software_video_decoder==false
                      && settings.video_codec==QOpenHDVideoHelper::VideoCodecH264){
-                 open_and_decode_until_error_custom_rtp_and_mmal_direct(settings);
+
+                 if(settings.dev_rpi_use_external_mmal_decode_service){
+                     dirty_rpi_decode_via_external_decode_service();
+                 }else{
+                     open_and_decode_until_error_custom_rtp_and_mmal_direct(settings);
+                 }
              }else{
                  open_and_decode_until_error_custom_rtp(settings);
              }
@@ -392,6 +397,7 @@ void AVCodecDecoder::reset_before_decode_start()
     m_fed_timestamps_queue.clear();
     DecodingStatistcs::instance().set_decoding_type("?");
 }
+
 
 int AVCodecDecoder::open_and_decode_until_error(const QOpenHDVideoHelper::VideoStreamConfig settings)
 {
@@ -978,4 +984,23 @@ void AVCodecDecoder::timestamp_debug_valid(int64_t ts)
     }else{
         qDebug()<<"Is not a valid timestamp";
     }
+}
+
+#include "../common/openhd-util.hpp"
+
+void AVCodecDecoder::dirty_rpi_decode_via_external_decode_service()
+{
+    qDebug()<<"Decode via rpi external decode service begin";
+    // Start service
+    OHDUtil::run_command("systemctl start rpi_mmal_h264_decode_service",{});
+    while(true){
+        if(request_restart){
+            request_restart=false;
+            break;
+        }
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+    }
+    // Stop service
+    OHDUtil::run_command("systemctl stop rpi_mmal_h264_decode_service",{});
+    qDebug()<<"Decode via rpi external decode service end";
 }

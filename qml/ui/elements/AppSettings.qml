@@ -56,6 +56,9 @@ Settings {
     property bool dev_use_low_latency_parser_when_possible: true;
     property bool dev_feed_incomplete_frames_to_decoder:false;
 
+    // dirty, perhaps temporary
+    property bool dev_rpi_use_external_mmal_decode_service: false;
+
     property bool enable_speech: true
     property bool enable_imperial: false
     property bool enable_rc: false
