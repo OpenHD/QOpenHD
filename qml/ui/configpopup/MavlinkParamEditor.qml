@@ -16,6 +16,7 @@ import "../elements"
 // R.n it supports int and string parameters.
 // int parameters can have sequential (0,1,2,..) or custom (1000Mhz,2000Mhz,3000Mhz) enums,
 // which is much more verbose to the user.
+// Aligned to the right, and width can be set by total_width property manually
 
 Rectangle{
 
@@ -231,11 +232,27 @@ Rectangle{
         }
     }
 
+    //TODO make me look nice
+    Button{
+        text: "x"
+        anchors.right: parent.right
+        anchors.top: parent.top
+        anchors.topMargin: 5
+        anchors.rightMargin: 5
+        width: 30
+        height: 30
+        onClicked: {
+            console.log("Closing param editor")
+            parameterEditor.visible=false
+        }
+    }
+
 
     ColumnLayout{
         width: parent.width
         height:parent.height
         anchors.top: parent.top
+        anchors.right: parent.right
         anchors.topMargin: 15
         spacing: 10
 
