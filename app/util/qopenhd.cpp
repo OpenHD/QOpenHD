@@ -141,9 +141,7 @@ void QOpenHD::run_dhclient_eth0()
 bool QOpenHD::copy_settings()
 {
 #ifdef __linux__
-    //QSettings settings("OpenHD", "QOpenHD");
     QSettings settings;
-    qDebug()<<"Storing settings at ["<<settings.fileName()<<"]";
     std::string file_name = settings.fileName().toStdString();
     std::ifstream src(file_name, std::ios::binary);
     std::ofstream dst("/boot/openhd/QOpenHD.conf", std::ios::binary);
@@ -169,24 +167,29 @@ bool QOpenHD::copy_settings()
 bool QOpenHD::read_settings()
 {
 #ifdef __linux__
-    //QSettings settings("OpenHD", "QOpenHD");
     QSettings settings;
-     qDebug()<<"Storing settings at ["<<settings.fileName()<<"]";
     std::string file_name = settings.fileName().toStdString();
     std::ifstream src("/boot/openhd/QOpenHD.conf", std::ios::binary);
-    std::ofstream dst(file_name, std::ios::binary);
 
+    if (!src) {
+        qDebug() << "Error: Failed to open source file" << QString::fromStdString("/boot/openhd/QOpenHD.conf");
+        return false;
+    }
+
+    if(src.peek() == std::ifstream::traits_type::eof()){
+        qDebug() << "Error: Source file is empty" << QString::fromStdString("/boot/openhd/QOpenHD.conf");
+        src.close();
+        return false;
+    }
+
+    std::ofstream dst(file_name, std::ios::binary);
     dst << src.rdbuf();
     src.close();
     dst.close();
 
-    if (!src) {
-        qDebug() << "Error: Failed to open source file" << QString::fromStdString(file_name);
+    if (!dst) {
+        qDebug() << "Error: Failed to open destination file" << QString::fromStdString(file_name);
         return false;
-        if (!dst) {
-            qDebug() << "Error: Failed to open destination file" << QString::fromStdString(file_name);
-            return false;
-        }
     }
     else{
     return true;
