@@ -986,7 +986,7 @@ void AVCodecDecoder::timestamp_debug_valid(int64_t ts)
 
 #include "../common/openhd-util.hpp"
 
-static constexpr auto RPI_OMX_H264_DECODE_SERVICE="rpi_omx_h264_decode_service";
+static constexpr auto RPI_OMX_H264_DECODE_SERVICE="rpi_omx_h264_decode";
 
 void AVCodecDecoder::dirty_rpi_decode_via_external_decode_service()
 {
