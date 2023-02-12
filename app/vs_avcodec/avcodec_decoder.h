@@ -104,8 +104,6 @@ private:
     void open_and_decode_until_error_custom_rtp(const QOpenHDVideoHelper::VideoStreamConfig settings);
     bool feed_rtp_frame_if_available();
 private:
-    bool create_decoder_context(const QOpenHDVideoHelper::VideoStreamConfig settings);
-private:
     void reset_before_decode_start();
 //#define HAVE_MMAL
 #ifdef HAVE_MMAL

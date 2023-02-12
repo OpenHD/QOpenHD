@@ -292,11 +292,6 @@ bool AVCodecDecoder::feed_rtp_frame_if_available()
     return false;
 }
 
-bool AVCodecDecoder::create_decoder_context(const QOpenHDVideoHelper::VideoStreamConfig settings)
-{
-
-}
-
 void AVCodecDecoder::fetch_frame_or_feed_input_packet(){
     AVPacket *pkt=av_packet_alloc();
     bool keep_fetching_frames_or_input_packets=true;

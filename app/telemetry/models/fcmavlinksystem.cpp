@@ -358,17 +358,18 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         mavlink_msg_rc_channels_raw_decode(&msg, &rc_channels_raw);
         //const auto tmp=Telemetryutil::mavlink_msg_rc_channels_raw_to_array(rc_channels_raw);
         //RCChannelsModel::instanceFC().update_all_channels(tmp);
-        //const auto rssi = static_cast<int>(static_cast<double>(rc_channels_raw.rssi) / 255.0 * 100.0);
-        //set_rc_rssi(rssi);
+        const auto rssi_perc = static_cast<int>(static_cast<double>(rc_channels_raw.rssi) / 255.0 * 100.0);
+        set_rc_rssi_percentage(rssi_perc);
         break;
     }
     case MAVLINK_MSG_ID_RC_CHANNELS:{
         // Seems to be used by ARDUPILOT
         mavlink_rc_channels_t rc_channels;
         mavlink_msg_rc_channels_decode(&msg, &rc_channels);
-        set_rc_rssi(rc_channels.rssi);
         const auto tmp=Telemetryutil::mavlink_msg_rc_channels_to_array(rc_channels);
         RCChannelsModel::instanceFC().update_all_channels(tmp);
+        const auto rssi_perc = static_cast<int>(static_cast<double>(rc_channels.rssi) / 255.0 * 100.0);
+        set_rc_rssi_percentage(rssi_perc);
         break;
     }
     case MAVLINK_MSG_ID_SERVO_OUTPUT_RAW:{

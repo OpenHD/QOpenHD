@@ -116,6 +116,9 @@ Item {
     PressTempWidget {
         id: press_temp
     }
+    RCRssiWidget {
+        id: rc_rssi_widget
+    }
 
     AirspeedTempWidget {
         id: airspeed_temp
@@ -145,11 +148,6 @@ Item {
     LinkUpRSSIWidget {
         id: uplink
     }
-
-    // + 0% cpu
-    //RcRSSIWidget {
-    //    id: rcRSSIWidget
-    //}
 
     // + 12% cpu
     HorizonWidget {

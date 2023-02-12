@@ -99,7 +99,7 @@ Settings {
     property double uplink_rssi_warn: 0
     property double uplink_rssi_caution: 0
 
-    property bool show_rc_rssi: false
+    property bool show_rc_rssi: true
     property double rc_rssi_opacity: 1
     property double rc_rssi_size: 1
     property bool rc_rssi_declutter: false
