@@ -301,9 +301,12 @@ static std::optional<ImprovedStringSetting> get_improved_for_string(const std::s
             "640x480@30",
             "640x480@60",
             "640x480@90",
+            //"960x720@30",
+            //"960x720@60",
             "1280x720@30",
             "1280x720@49",
             "1280x720@60",
+            //"1440x1080@30",
             "1920x1080@30",
     };
     map_improved_params["V_FORMAT"]=ImprovedStringSetting::create_from_keys_only(choices_video_res_framerate);
