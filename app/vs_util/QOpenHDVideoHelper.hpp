@@ -105,7 +105,7 @@ static VideoStreamConfig read_from_settings(){
     _videoStreamConfig.dev_limit_fps_on_test_file=settings.value("dev_limit_fps_on_test_file",-1).toInt();
     _videoStreamConfig.dev_use_low_latency_parser_when_possible=settings.value("dev_use_low_latency_parser_when_possible",true).toBool();
     //
-    _videoStreamConfig.dev_rpi_use_external_omx_decode_service=settings.value("dev_rpi_use_external_omx_decode_service", false).toBool();
+    _videoStreamConfig.dev_rpi_use_external_omx_decode_service=settings.value("dev_rpi_use_external_omx_decode_service", true).toBool();
     // QML text input sucks, so we read a file. Not ideal, but for testing only anyways
     {
         _videoStreamConfig.dev_custom_pipeline="";
