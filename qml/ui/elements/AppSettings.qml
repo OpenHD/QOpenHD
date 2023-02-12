@@ -331,7 +331,6 @@ Settings {
     property double wind_size: 1
 
     property bool show_roll: true
-    property bool show_record_widget: true
     property bool roll_invert: false
     property bool roll_show_arc: true
     property bool roll_show_numbers: true
@@ -362,7 +361,13 @@ Settings {
     property bool show_mission: true
     property double mission_opacity: 1
     property double mission_size: 1
+
+    property bool show_record_widget: true
     property double recordTextSize: 14
+    property bool show_minimal_record_widget: false
+    property double record_widget_height: 48
+    property double record_widget_width: 140
+
 
     property bool show_aoa: false
     property double aoa_opacity: 1

@@ -161,10 +161,47 @@ ScrollView {
                                                 }
                                             }
                                     }
-
-
                                 }
-                    }
+            Rectangle {
+                                    width: parent.width
+                                    height: rowHeight
+                                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                                    visible: !IsRaspPi
+
+                                    Text {
+                                        text: qsTr("Reset ALL QOpenHD Settings")
+                                        font.weight: Font.Bold
+                                        font.pixelSize: 13
+                                        anchors.leftMargin: 8
+                                        verticalAlignment: Text.AlignVCenter
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        width: 224
+                                        height: elementHeight
+                                        anchors.left: parent.left
+                                    }
+
+                                    Button {
+                                        id:reset
+                                        width: 128
+                                        height: elementHeight
+                                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                                        anchors.right: parent.right
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        text: qsTr("Reset")
+                                        onClicked: {
+                                        var res=_qopenhd.reset_settings()
+                                                if (res) {
+                                                            _messageBoxInstance.set_text_and_show("Settings are now reset to default, please restart QOpenHD")
+                                                        }
+                                                else{
+                                                _messageBoxInstance.set_text_and_show("couldn't reset the settings")
+                                                }
+                                            }
+                                    }
+                                }
+
+            }
         }
 }
 

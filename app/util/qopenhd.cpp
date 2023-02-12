@@ -197,6 +197,25 @@ bool QOpenHD::read_settings()
 #endif
 }
 
+bool QOpenHD::reset_settings()
+{
+#ifdef __linux__
+    QSettings settings;
+    std::string file_name = settings.fileName().toStdString();
+    int result = remove(file_name.c_str());
+
+if (result == 0) {
+        qDebug() << "File" << QString::fromStdString(file_name) << "deleted successfully";
+        return true;
+    }
+    else {
+        qDebug() << "Error: Failed to delete file" << QString::fromStdString(file_name);
+        return false;
+    }
+#endif
+}
+
+
 QString QOpenHD::show_local_ip()
 {
 #ifdef __linux__

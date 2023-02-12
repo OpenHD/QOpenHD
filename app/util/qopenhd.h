@@ -38,6 +38,7 @@ public:
     Q_INVOKABLE void run_dhclient_eth0();
     Q_INVOKABLE bool copy_settings();
     Q_INVOKABLE bool read_settings();
+    Q_INVOKABLE bool reset_settings();
     Q_INVOKABLE QString show_local_ip();
 signals:
     void fontFamilyChanged(QString fontFamily);
