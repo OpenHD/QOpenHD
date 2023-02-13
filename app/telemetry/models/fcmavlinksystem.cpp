@@ -75,161 +75,16 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         mavlink_heartbeat_t heartbeat;
         mavlink_msg_heartbeat_decode(&msg, &heartbeat);
         m_last_heartbeat_ms=QOpenHDMavlinkHelper::getTimeMilliseconds();
-        const auto custom_mode = heartbeat.custom_mode;
-        const auto autopilot = (MAV_AUTOPILOT)heartbeat.autopilot;
-        //upon first heartbeat find out if autopilot is ardupilot or "other"
-        /*if (!sent_autopilot_request){
-                requestAutopilotInfo();
-                sent_autopilot_request=true;
-            }*/
-        switch (autopilot) {
-        case MAV_AUTOPILOT_PX4: {
-            if (heartbeat.base_mode & MAV_MODE_FLAG_CUSTOM_MODE_ENABLED) {
-                auto px4_mode = Telemetryutil::px4_mode_from_custom_mode(custom_mode);
-                set_flight_mode(px4_mode);
-            }
-            set_mav_type("PX4?");
-            break;
-        }
-        case MAV_AUTOPILOT_GENERIC:
-        case MAV_AUTOPILOT_ARDUPILOTMEGA: {
-            if (heartbeat.base_mode & MAV_MODE_FLAG_CUSTOM_MODE_ENABLED) {
-                auto uav_type = heartbeat.type;
-                switch (uav_type) {
-                case MAV_TYPE_GENERIC: {
-                    break;
-                }
-                case MAV_TYPE_FIXED_WING: {
-                    auto plane_mode = Telemetryutil::plane_mode_from_enum((PLANE_MODE)custom_mode);
-                    set_flight_mode(plane_mode);
-                    set_mav_type("ARDUPLANE");
-                    /* autopilot detecton not reliable
-                                if(ap_version>999){
-                                   set_mav_type("ARDUPLANE");
-                                    //qDebug() << "Mavlink Mav Type= ARDUPLANE";
-                                }
-                                else{
-                                   set_mav_type("UKNOWN PLANE");
-                                }
-                                */
-                    break;
-                }
-                case MAV_TYPE_GROUND_ROVER: {
-                    auto rover_mode = Telemetryutil::rover_mode_from_enum((ROVER_MODE)custom_mode);
-                    set_flight_mode(rover_mode);
-                    break;
-                }
-                case MAV_TYPE_QUADROTOR: {
-                    auto copter_mode = Telemetryutil::copter_mode_from_enum((COPTER_MODE)custom_mode);
-                    set_flight_mode(copter_mode);
-                    set_mav_type("ARDUCOPTER");
-                    /* autopilot detection not reliable
-                                if(ap_version>999){
-                                   set_mav_type("ARDUCOPTER");
-                                    //qDebug() << "Mavlink Mav Type= ARDUCOPTER";
-                                }
-                                else {
-                                   set_mav_type("UNKNOWN COPTER");
-                                }
-                                */
-                    break;
-                }
-                case MAV_TYPE_HELICOPTER: {
-                    auto copter_mode = Telemetryutil::copter_mode_from_enum((COPTER_MODE)custom_mode);
-                    set_flight_mode(copter_mode);
-                    set_mav_type("ARDUCOPTER");
-                    break;
-                }
-                case MAV_TYPE_HEXAROTOR: {
-                    auto copter_mode = Telemetryutil::copter_mode_from_enum((COPTER_MODE)custom_mode);
-                    set_flight_mode(copter_mode);
-                    set_mav_type("ARDUCOPTER");
-                    break;
-                }
-                case MAV_TYPE_OCTOROTOR: {
-                    auto copter_mode = Telemetryutil::copter_mode_from_enum((COPTER_MODE)custom_mode);
-                    set_flight_mode(copter_mode);
-                    set_mav_type("ARDUCOPTER");
-                    break;
-                }
-                case MAV_TYPE_TRICOPTER: {
-                    auto copter_mode = Telemetryutil::copter_mode_from_enum((COPTER_MODE)custom_mode);
-                    set_flight_mode(copter_mode);
-                    set_mav_type("ARDUCOPTER");
-                    break;
-                }
-                case MAV_TYPE_DECAROTOR: {
-                    auto copter_mode = Telemetryutil::copter_mode_from_enum((COPTER_MODE)custom_mode);
-                    set_flight_mode(copter_mode);
-                    set_mav_type("ARDUCOPTER");
-                    break;
-                }
-                case MAV_TYPE_DODECAROTOR: {
-                    auto copter_mode = Telemetryutil::copter_mode_from_enum((COPTER_MODE)custom_mode);
-                    set_flight_mode(copter_mode);
-                    set_mav_type("ARDUCOPTER");
-                    break;
-                }
-                case MAV_TYPE_VTOL_FIXEDROTOR: {
-                    auto plane_mode = Telemetryutil::plane_mode_from_enum((PLANE_MODE)custom_mode);
-                    set_flight_mode(plane_mode);
-                    set_mav_type("VTOL");
-                    break;
-                }
-                case MAV_TYPE_VTOL_TAILSITTER: {
-                    auto plane_mode = Telemetryutil::plane_mode_from_enum((PLANE_MODE)custom_mode);
-                    set_flight_mode(plane_mode);
-                    set_mav_type("VTOL");
-                    break;
-                }
-                case MAV_TYPE_VTOL_TILTROTOR: {
-                    auto plane_mode = Telemetryutil::plane_mode_from_enum((PLANE_MODE)custom_mode);
-                    set_flight_mode(plane_mode);
-                    set_mav_type("VTOL");
-                    break;
-                }
-                case MAV_TYPE_VTOL_TAILSITTER_DUOROTOR: {
-                    auto plane_mode = Telemetryutil::plane_mode_from_enum((PLANE_MODE)custom_mode);
-                    set_flight_mode(plane_mode);
-                    set_mav_type("VTOL");
-                    break;
-                }
-                case MAV_TYPE_VTOL_TAILSITTER_QUADROTOR: {
-                    auto plane_mode = Telemetryutil::plane_mode_from_enum((PLANE_MODE)custom_mode);
-                    set_flight_mode(plane_mode);
-                    set_mav_type("VTOL");
-                    break;
-                }
-                case MAV_TYPE_SUBMARINE: {
-                    auto sub_mode = Telemetryutil::sub_mode_from_enum((SUB_MODE)custom_mode);
-                    set_flight_mode(sub_mode);
-                    break;
-                }
-                case MAV_TYPE_ANTENNA_TRACKER: {
-                    auto tracker_mode = Telemetryutil::tracker_mode_from_enum((TRACKER_MODE)custom_mode);
-                    //FCMavlinkSystem::instance()->set_tracker_mode(tracker_mode);
-                    break;
-                }
-                default: {
-                    // do nothing
-                }
-                }
-            }
-            break;
-        }
-        default: {
-            // this returns to prevent heartbeats from devices other than an autopilot from setting
-            // the armed/disarmed flag or resetting the last heartbeat timestamp
+        const auto opt_info=Telemetryutil::parse_heartbeat(heartbeat);
+        if(opt_info.has_value()){
+            // heartbeat okay
+            const auto info=opt_info.value();
+            set_flight_mode(info.flight_mode);
+            set_mav_type(info.mav_type);
+            const bool armed=Telemetryutil::get_arm_mode_from_heartbeat(heartbeat);
+            set_armed(armed);
+        }else{
             qDebug()<<"Weird heartbeat";
-        }
-        }
-        //MAV_STATE state = (MAV_STATE)heartbeat.system_status;
-        MAV_MODE_FLAG mode = (MAV_MODE_FLAG)heartbeat.base_mode;
-        if (mode & MAV_MODE_FLAG_SAFETY_ARMED) {
-            // armed
-            set_armed(true);
-        } else {
-            set_armed(false);
         }
         break;
     }
@@ -281,6 +136,9 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         break;
     }
     case MAVLINK_MSG_ID_GPS_RAW_INT:{
+        // https://mavlink.io/en/messages/common.html#GPS_RAW_INT
+        // NOTE: Do not use lat/lon values reported here, use the values actually fused by the FC instead.
+        // n satelites and such is okay though
         mavlink_gps_raw_int_t gps_status;
         mavlink_msg_gps_raw_int_decode(&msg, &gps_status);
         set_satellites_visible(gps_status.satellites_visible);
