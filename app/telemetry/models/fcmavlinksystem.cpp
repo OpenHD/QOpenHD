@@ -1014,6 +1014,7 @@ void FCMavlinkSystem::flight_mode_cmd(long cmd_msg) {
 void FCMavlinkSystem::request_mission_async()
 {
     qDebug()<<"TODO";
+    HUDLogMessagesModel::instance().add_message_info("Not yet implemented");
 }
 
 void FCMavlinkSystem::send_message_hud_connection(bool connected)
