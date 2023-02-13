@@ -539,6 +539,15 @@ static float angle_mavlink_rad_to_degree(float angle_rad){
     return static_cast<float>(degree);
 }
 
+// mavlink defines the rc rssi value commonly the following way:
+// Receive signal strength indicator in device-dependent units/scale. Values: [0-254], UINT8_MAX: invalid/unknown.
+// We use percent in the osd, with 0 for N/A
+static int mavlink_rc_rssi_to_percent(uint8_t rssi){
+    if(rssi==UINT8_MAX)return 0;
+    const auto rssi_perc =static_cast<int>(static_cast<double>(rssi) / 255.0 * 100.0);
+    return rssi_perc;
+}
+
 }
 
 #endif // TELEMETRYUTIL_H
