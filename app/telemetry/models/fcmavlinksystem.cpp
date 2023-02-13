@@ -563,7 +563,6 @@ std::optional<uint8_t> FCMavlinkSystem::get_fc_sys_id()
 }
 
 void FCMavlinkSystem::telemetryStatusMessage(QString message, int level) {
-    //emit messageReceived(message, level);
     //QOpenHD::instance().textToSpeech_sayMessage(message);
 }
 
@@ -914,53 +913,107 @@ void FCMavlinkSystem::setTotalWaypoints(int total_waypoints) {
 
 void FCMavlinkSystem::arm_fc_async(bool arm)
 {
+    if(!_action){
+        qDebug()<<"No fc action module";
+        return;
+    }
     qDebug()<<"FCMavlinkSystem::arm_fc_async "<<(arm ? "arm" : "disarm");
-    if(_action){
-        // We listen for the armed / disarmed changes directly
-        auto cb=[this](mavsdk::Action::Result res){
-            if(res!=mavsdk::Action::Result::Success){
-                std::stringstream ss;
-                ss<<"amr/disarm failed:"<<res;
-                qDebug()<<ss.str().c_str();
-                emit messageReceived(ss.str().c_str(), 0);
-            }
-        };
-        if(arm){
-            _action->arm_async(cb);
-        }else{
-            _action->disarm_async(cb);
+    // We listen for the armed / disarmed changes directly
+    auto cb=[this](mavsdk::Action::Result res){
+        if(res!=mavsdk::Action::Result::Success){
+            std::stringstream ss;
+            ss<<"ARM/Disarm failed:"<<res;
+            qDebug()<<ss.str().c_str();
+            HUDLogMessagesModel::instance().add_message_info(ss.str().c_str());
         }
+    };
+    if(arm){
+        _action->arm_async(cb);
     }else{
-        qDebug()<<"No action set";
+        _action->disarm_async(cb);
     }
 }
 
 void FCMavlinkSystem::send_return_to_launch_async()
 { //TODO ------this probably only works for px4---------
-    if(_action){
-        auto cb=[](mavsdk::Action::Result res){
-            std::stringstream ss;
-            ss<<"send_return_to_launch: result: "<<res;
-            qDebug()<<ss.str().c_str();
-        };
-        _action->return_to_launch_async(cb);
+    if(!_action){
+        qDebug()<<"No fc action module";
+        return;
     }
+    auto cb=[](mavsdk::Action::Result res){
+        std::stringstream ss;
+        ss<<"send_return_to_launch: result: "<<res;
+        qDebug()<<ss.str().c_str();
+        HUDLogMessagesModel::instance().add_message_info(ss.str().c_str());
+    };
+    _action->return_to_launch_async(cb);
 }
 
 bool FCMavlinkSystem::send_command_reboot(bool reboot)
 {
-    if(_action){
-        mavsdk::Action::Result res{};
-        if(reboot){
-            res=_action->reboot();
-        }else{
-            res=_action->shutdown();
-        }
-        if(res==mavsdk::Action::Result::Success){
-            return true;
-        }
+    if(!_action){
+        qDebug()<<"No fc action module";
+        return false;
+    }
+    mavsdk::Action::Result res{};
+    if(reboot){
+        res=_action->reboot();
+    }else{
+        res=_action->shutdown();
+    }
+    if(res==mavsdk::Action::Result::Success){
+        return true;
     }
     return false;
+}
+
+
+void FCMavlinkSystem::flight_mode_cmd(long cmd_msg) {
+    if(!_pass_thru){
+        qDebug()<<"No fc pass_thru module";
+        return;
+    }
+    mavsdk::MavlinkPassthrough::Result res{};
+    /*
+    qDebug() << "flight_mode_cmd CMD:" << cmd_msg;
+    qDebug() << "flight_mode_cmd our sysid:" << _pass_thru->get_our_sysid();
+    qDebug() << "flight_mode_cmd our comp id:" << _pass_thru->get_our_compid();
+    qDebug() << "flight_mode_cmd target id:" << _pass_thru->get_target_sysid();
+    qDebug() << "flight_mode_cmd target compid:" << _pass_thru->get_target_compid();*/
+    mavsdk::MavlinkPassthrough::CommandLong cmd;
+
+    cmd.command = MAV_CMD_DO_SET_MODE;
+
+    cmd.target_sysid= _pass_thru->get_target_sysid();
+    cmd.target_compid=_pass_thru->get_target_compid();
+
+    cmd.param1=MAV_MODE_FLAG_CUSTOM_MODE_ENABLED;
+    cmd.param2=cmd_msg;
+    cmd.param3=0;
+    cmd.param4=0;
+    cmd.param5=0;
+    cmd.param6=0;
+    cmd.param7=0;
+
+    _pass_thru->send_command_long(cmd);
+
+    //result is not really used right now as mavsdk will output errors
+    //----here for future use----
+    if(res==mavsdk::MavlinkPassthrough::Result::Success){
+        const auto msg="flight_mode_cmd Success!!";
+        qDebug()<<msg;
+        HUDLogMessagesModel::instance().add_message_info(msg);
+    }
+    else {
+        const auto msg="flight_mode_cmd Something went wrong!";
+        qDebug()<<msg;
+        HUDLogMessagesModel::instance().add_message_info(msg);
+    }
+}
+
+void FCMavlinkSystem::request_mission_async()
+{
+    qDebug()<<"TODO";
 }
 
 void FCMavlinkSystem::send_message_hud_connection(bool connected)
@@ -973,44 +1026,6 @@ void FCMavlinkSystem::send_message_hud_connection(bool connected)
     }else{
         message << "disconnected";
         HUDLogMessagesModel::instance().add_message_warning(message.str().c_str());
-    }
-}
-
-void FCMavlinkSystem::flight_mode_cmd(long cmd_msg) {
-    if (_pass_thru){
-        mavsdk::MavlinkPassthrough::Result res{};
-        /*
-        qDebug() << "flight_mode_cmd CMD:" << cmd_msg;
-        qDebug() << "flight_mode_cmd our sysid:" << _pass_thru->get_our_sysid();
-        qDebug() << "flight_mode_cmd our comp id:" << _pass_thru->get_our_compid();
-        qDebug() << "flight_mode_cmd target id:" << _pass_thru->get_target_sysid();
-        qDebug() << "flight_mode_cmd target compid:" << _pass_thru->get_target_compid();
-*/
-        mavsdk::MavlinkPassthrough::CommandLong cmd;
-
-        cmd.command = MAV_CMD_DO_SET_MODE;
-
-        cmd.target_sysid= _pass_thru->get_target_sysid();
-        cmd.target_compid=_pass_thru->get_target_compid();
-
-        cmd.param1=MAV_MODE_FLAG_CUSTOM_MODE_ENABLED;
-        cmd.param2=cmd_msg;
-        cmd.param3=0;
-        cmd.param4=0;
-        cmd.param5=0;
-        cmd.param6=0;
-        cmd.param7=0;
-
-        _pass_thru->send_command_long(cmd);
-
-        //result is not really used right now as mavsdk will output errors
-        //----here for future use----
-        if(res==mavsdk::MavlinkPassthrough::Result::Success){
-            qDebug() << "flight_mode_cmd Success!";
-        }
-        else {
-            qDebug() << "flight_mode_cmd Something went wrong!";
-        }
     }
 }
 

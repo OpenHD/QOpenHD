@@ -181,7 +181,6 @@ signals:
     void homelon_changed(double homelon);
     void home_course_changed(int home_course);
     void home_heading_changed(int home_heading);
-    void messageReceived(QString message, int level);
 
     void currentWaypointChanged (int current_waypoint);
     void totalWaypointsChanged (int total_waypoints);
@@ -237,6 +236,7 @@ public:
     Q_INVOKABLE void send_return_to_launch_async();
     Q_INVOKABLE bool send_command_reboot(bool reboot);
     Q_INVOKABLE void flight_mode_cmd(long cmd_msg);
+    Q_INVOKABLE void request_mission_async();
     // -----------------------
 private:
     void send_message_hud_connection(bool connected);

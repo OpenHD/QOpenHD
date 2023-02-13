@@ -64,6 +64,7 @@ Rectangle {
             Row {
                 //anchors.fill: parent
                 spacing: 5
+                //color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
                 Label {
                     width:150
