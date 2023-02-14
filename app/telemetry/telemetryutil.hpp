@@ -2,6 +2,7 @@
 #define TELEMETRYUTIL_H
 
 #include <QString>
+#include <QDebug>
 
 #include "../telemetry/mavsdk_include.h"
 
@@ -352,9 +353,7 @@ union px4_custom_mode {
 static QString px4_mode_from_custom_mode(int custom_mode){
     union px4_custom_mode px4_mode;
     px4_mode.data = custom_mode;
-
-    auto main_mode = px4_mode.main_mode;
-
+    const auto main_mode = px4_mode.main_mode;
     switch (main_mode) {
         case PX4_CUSTOM_MAIN_MODE_MANUAL: {
             return "Manual";
@@ -546,6 +545,151 @@ static int mavlink_rc_rssi_to_percent(uint8_t rssi){
     if(rssi==UINT8_MAX)return 0;
     const auto rssi_perc =static_cast<int>(static_cast<double>(rssi) / 255.0 * 100.0);
     return rssi_perc;
+}
+
+
+// Humungus switch case, mostly legacy code. Annoying, but at least broken out of fcmavlinksystem now.
+struct HeartBeatInfo{
+    QString flight_mode;
+    QString mav_type;
+};
+static std::optional<HeartBeatInfo> parse_heartbeat(const mavlink_heartbeat_t& heartbeat){
+    HeartBeatInfo info{"Unknown","Unknown"};
+    const auto custom_mode = heartbeat.custom_mode;
+    const auto autopilot = (MAV_AUTOPILOT)heartbeat.autopilot;
+    switch (autopilot) {
+    case MAV_AUTOPILOT_PX4: {
+        if (heartbeat.base_mode & MAV_MODE_FLAG_CUSTOM_MODE_ENABLED) {
+            auto px4_mode = Telemetryutil::px4_mode_from_custom_mode(custom_mode);
+            info.flight_mode=px4_mode;
+        }
+        info.mav_type=QString("PX4?");
+        break;
+    }
+    case MAV_AUTOPILOT_GENERIC:
+    case MAV_AUTOPILOT_ARDUPILOTMEGA: {
+        if (heartbeat.base_mode & MAV_MODE_FLAG_CUSTOM_MODE_ENABLED) {
+            auto uav_type = heartbeat.type;
+            switch (uav_type) {
+            case MAV_TYPE_GENERIC: {
+                break;
+            }
+            case MAV_TYPE_FIXED_WING: {
+                auto plane_mode = Telemetryutil::plane_mode_from_enum((PLANE_MODE)custom_mode);
+                info.flight_mode=plane_mode;
+                info.mav_type=QString("ARDUPLANE");
+                break;
+            }
+            case MAV_TYPE_GROUND_ROVER: {
+                auto rover_mode = Telemetryutil::rover_mode_from_enum((ROVER_MODE)custom_mode);
+                info.flight_mode=rover_mode;
+                break;
+            }
+            case MAV_TYPE_QUADROTOR: {
+                auto copter_mode = Telemetryutil::copter_mode_from_enum((COPTER_MODE)custom_mode);
+                info.flight_mode=copter_mode;
+                info.mav_type=QString("ARDUCOPTER");
+                break;
+            }
+            case MAV_TYPE_HELICOPTER: {
+                auto copter_mode = Telemetryutil::copter_mode_from_enum((COPTER_MODE)custom_mode);
+                info.flight_mode=copter_mode;
+                info.mav_type=QString("ARDUCOPTER");
+                break;
+            }
+            case MAV_TYPE_HEXAROTOR: {
+                auto copter_mode = Telemetryutil::copter_mode_from_enum((COPTER_MODE)custom_mode);
+                info.flight_mode=copter_mode;
+                info.mav_type=QString("ARDUCOPTER");
+                break;
+            }
+            case MAV_TYPE_OCTOROTOR: {
+                auto copter_mode = Telemetryutil::copter_mode_from_enum((COPTER_MODE)custom_mode);
+                info.flight_mode=copter_mode;
+                info.mav_type=QString("ARDUCOPTER");
+                break;
+            }
+            case MAV_TYPE_TRICOPTER: {
+                auto copter_mode = Telemetryutil::copter_mode_from_enum((COPTER_MODE)custom_mode);
+                info.flight_mode=copter_mode;
+                info.mav_type=QString("ARDUCOPTER");
+                break;
+            }
+            case MAV_TYPE_DECAROTOR: {
+                auto copter_mode = Telemetryutil::copter_mode_from_enum((COPTER_MODE)custom_mode);
+                info.flight_mode=copter_mode;
+                info.mav_type=QString("ARDUCOPTER");
+                break;
+            }
+            case MAV_TYPE_DODECAROTOR: {
+                auto copter_mode = Telemetryutil::copter_mode_from_enum((COPTER_MODE)custom_mode);
+                info.flight_mode=copter_mode;
+                info.mav_type=QString("ARDUCOPTER");
+                break;
+            }
+            case MAV_TYPE_VTOL_FIXEDROTOR: {
+                auto plane_mode = Telemetryutil::plane_mode_from_enum((PLANE_MODE)custom_mode);
+                info.flight_mode=plane_mode;
+                info.mav_type=QString("VTOL");
+                break;
+            }
+            case MAV_TYPE_VTOL_TAILSITTER: {
+                auto plane_mode = Telemetryutil::plane_mode_from_enum((PLANE_MODE)custom_mode);
+                info.flight_mode=plane_mode;
+                info.mav_type=QString("VTOL");
+                break;
+            }
+            case MAV_TYPE_VTOL_TILTROTOR: {
+                auto plane_mode = Telemetryutil::plane_mode_from_enum((PLANE_MODE)custom_mode);
+                info.flight_mode=plane_mode;
+                info.mav_type=QString("VTOL");
+                break;
+            }
+            case MAV_TYPE_VTOL_TAILSITTER_DUOROTOR: {
+                auto plane_mode = Telemetryutil::plane_mode_from_enum((PLANE_MODE)custom_mode);
+                info.flight_mode=plane_mode;
+                info.mav_type=QString("VTOL");
+                break;
+            }
+            case MAV_TYPE_VTOL_TAILSITTER_QUADROTOR: {
+                auto plane_mode = Telemetryutil::plane_mode_from_enum((PLANE_MODE)custom_mode);
+                info.flight_mode=plane_mode;
+                info.mav_type=QString("VTOL");
+                break;
+            }
+            case MAV_TYPE_SUBMARINE: {
+                auto sub_mode = Telemetryutil::sub_mode_from_enum((SUB_MODE)custom_mode);
+                info.flight_mode=sub_mode;
+                info.mav_type=QString("SUB");
+                break;
+            }
+            case MAV_TYPE_ANTENNA_TRACKER: {
+                qDebug()<<"Weird antenna tracker heartbeat from fc";
+                return std::nullopt;
+            }
+            default: {
+                return std::nullopt;
+            }
+            }
+        }
+        break;
+    }
+    default: {
+        // this returns to prevent heartbeats from devices other than an autopilot from setting
+        // the armed/disarmed flag or resetting the last heartbeat timestamp
+        return std::nullopt;
+    }
+    }
+    return info;
+}
+
+static bool get_arm_mode_from_heartbeat(const mavlink_heartbeat_t& heartbeat){
+    const MAV_MODE_FLAG mode = (MAV_MODE_FLAG)heartbeat.base_mode;
+    if (mode & MAV_MODE_FLAG_SAFETY_ARMED) {
+        // armed
+        return true;
+    }
+    return false;
 }
 
 }

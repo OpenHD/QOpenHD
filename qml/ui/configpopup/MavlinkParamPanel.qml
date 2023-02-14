@@ -64,6 +64,7 @@ Rectangle {
             Row {
                 //anchors.fill: parent
                 spacing: 5
+                //color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
                 Label {
                     width:150
@@ -94,7 +95,8 @@ Rectangle {
     Rectangle{
         id: scrollViewRectangle
         width: parent.width
-        height: parent.height-64
+        height: parent.height-48
+        //color: "#8cbfd7f3"
         anchors.top: fetchAllButtonId.bottom
         anchors.bottom: parent.bottom
         anchors.left: parent.left
@@ -108,10 +110,9 @@ Rectangle {
             clip: true
 
             ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
-            ScrollBar.vertical.policy: ScrollBar.AlwaysOff
+            ScrollBar.vertical.policy: ScrollBar.AlwaysOn
             // allow dragging without using the vertical scroll bar
             ScrollBar.vertical.interactive: true
-
             ListView {
                 id: listView
                 //top: fetchAllButtonId.bottom

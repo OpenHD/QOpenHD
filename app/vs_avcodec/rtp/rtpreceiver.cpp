@@ -82,9 +82,9 @@ RTPReceiver::~RTPReceiver()
 }
 
 
- std::shared_ptr<NALU> RTPReceiver::get_next_frame(std::optional<std::chrono::microseconds> timeout)
+std::shared_ptr<NALUBuffer> RTPReceiver::get_next_frame(std::optional<std::chrono::microseconds> timeout)
 {
-    std::shared_ptr<NALU> ret=nullptr;
+    std::shared_ptr<NALUBuffer> ret=nullptr;
     //qDebug()<<"get_data size_estimate:"<<m_data_queue.size_approx();
     if(timeout!=std::nullopt){
         m_data_queue.wait_dequeue_timed(ret,timeout.value());
@@ -156,10 +156,10 @@ void RTPReceiver::queue_data(const uint8_t* nalu_data,const std::size_t nalu_dat
         //qDebug()<<"Queue size:"<<m_data_queue.size_approx();
         if(m_new_nalu_cb){
             // Use the cb approach
-            m_new_nalu_cb(std::make_shared<NALU>(nalu));
+            m_new_nalu_cb(nalu);
         }else{
             // Use the queue approach
-            if(!m_data_queue.try_enqueue(std::make_shared<NALU>(nalu))){
+            if(!m_data_queue.try_enqueue(std::make_shared<NALUBuffer>(nalu))){
                 // If we cannot push a frame onto this queue, it means the decoder cannot keep up what we want to provide to it
                 n_dropped_frames++;
                 qDebug()<<"Dropping incoming frame, total:"<<n_dropped_frames;

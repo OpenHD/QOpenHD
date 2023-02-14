@@ -31,12 +31,12 @@ public:
     // Returns the oldest frame if available.
     // (nullptr on failure)
     // The timeout is optional
-    std::shared_ptr<NALU> get_next_frame(std::optional<std::chrono::microseconds> timeout=std::nullopt);
+    std::shared_ptr<NALUBuffer> get_next_frame(std::optional<std::chrono::microseconds> timeout=std::nullopt);
     // Instead of using a queue and another thread for fetching data between what's basically the udp receiver
     // and the decoder, you can register a callback here that is called directly when there is a new NALU
     // available. Note that care needs to be taken to not perform any blocking operation(s) in this callback -
     // aka the decoder should have a queue internally when using this mode. Can decrease latency (scheduling latency) though
-    typedef std::function<void(std::shared_ptr<NALU>)> NEW_NALU_CALLBACK;
+    typedef std::function<void(const NALU& nalu)> NEW_NALU_CALLBACK;
     void register_new_nalu_callback(NEW_NALU_CALLBACK cb);
     // return nullptr if not enough config data is available yet, otherwise, return valid config data
     std::shared_ptr<std::vector<uint8_t>> get_config_data();
@@ -59,7 +59,7 @@ private:
     std::mutex m_data_mutex;
     // space for up to X NALUs to account for "weird" cases, fifo anyways
     // In case the decoder cannot keep up with the data we provide to it, the only fix would be to reduce the fps/resolution anyways.
-    moodycamel::BlockingReaderWriterCircularBuffer<std::shared_ptr<NALU>> m_data_queue{20};
+    moodycamel::BlockingReaderWriterCircularBuffer<std::shared_ptr<NALUBuffer>> m_data_queue{20};
     void queue_data(const uint8_t* nalu_data,const std::size_t nalu_data_len);
     std::mutex m_new_nalu_data_cb_mutex;
     NEW_NALU_CALLBACK m_new_nalu_cb=nullptr;

@@ -16,8 +16,8 @@ import "../elements"
 // R.n it supports int and string parameters.
 // int parameters can have sequential (0,1,2,..) or custom (1000Mhz,2000Mhz,3000Mhz) enums,
 // which is much more verbose to the user.
+//
 // Aligned to the right, and width can be set by total_width property manually
-
 Rectangle{
 
     property int total_width: 300
@@ -26,7 +26,7 @@ Rectangle{
     height: parent.height
     anchors.right: parent.right;
     anchors.top: parent.top
-    anchors.topMargin: -15
+    //anchors.topMargin: -15
     color: "#333c4c"
 
     //Layout.alignment: Qt.AlignRight || Qt.AlignTop

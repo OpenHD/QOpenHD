@@ -30,7 +30,7 @@ BaseWidget {
 
     // We display quite a lot of text, and this one is only for development anyways
     widgetActionWidth: 500
-    widgetActionHeight: 500
+    widgetActionHeight: 600
 
     //----------------------------- DETAIL BELOW ----------------------------------
 

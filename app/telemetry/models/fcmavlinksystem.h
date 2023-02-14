@@ -181,7 +181,6 @@ signals:
     void homelon_changed(double homelon);
     void home_course_changed(int home_course);
     void home_heading_changed(int home_heading);
-    void messageReceived(QString message, int level);
 
     void currentWaypointChanged (int current_waypoint);
     void totalWaypointsChanged (int total_waypoints);
@@ -231,10 +230,16 @@ private:
     int m_n_messages_update_rate_mavlink_message_attitude=0;
 public:
     //
-    // Try to change the arming state. Once completed, since we listen to arm/disarm results,
-    // the armed status is changed. On failure, a message is pushed onto the HUD
+    // Try to change the arming state.
+    // The result (success/failure) is logged in the HUD once completed
     Q_INVOKABLE void arm_fc_async(bool arm=false);
+    // Try to send a return to launch command.
+    // The result (success/failure) is logged in the HUD once completed
     Q_INVOKABLE void send_return_to_launch_async();
+    // Request current total n of missions and active mission
+    // The result (success/failure) is logged in the HUD once completed
+    Q_INVOKABLE void request_mission_async();
+    // TODO document me
     Q_INVOKABLE bool send_command_reboot(bool reboot);
     Q_INVOKABLE void flight_mode_cmd(long cmd_msg);
     // -----------------------

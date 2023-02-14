@@ -223,7 +223,7 @@ BaseWidget {
                     if (checked == true) {
 
                         //double check.... not really needed
-                        _fcMavlinkSystem.request_Mission()
+                        _fcMavlinkSystem.request_mission_async()
                         //console.log("Mission selected");
                     }
                 }

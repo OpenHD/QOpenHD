@@ -20,7 +20,18 @@
  ** Data is forwarded directly via a callback for no thread scheduling overhead
 **********************************************/
 
+// Enough for pretty much any resolution/framerate we handle in OpenHD
 static constexpr const auto NALU_MAXLEN=1024*1024;
+
+/*struct NALUBuff{
+    // system time point first byte of this NALU was received
+    std::chrono::steady_clock::time_point creation_time;
+    // buffer for nalu data (might not be completely filled)
+   std::shared_ptr<std::array<uint8_t,NALU_MAXLEN>> nalu_data;
+   // size of the nalu data
+   int nalu_data_size;
+};*/
+
 typedef std::function<void(const std::chrono::steady_clock::time_point creation_time,const uint8_t* nalu_data,const int nalu_data_size)> NALU_DATA_CALLBACK;
 
 class RTPDecoder{
@@ -54,6 +65,7 @@ private:
     // Resets the m_nalu_data_length to 0
     void forwardNALU(const bool isH265=false);
     const NALU_DATA_CALLBACK m_cb;
+    //std::shared_ptr<std::array<uint8_t,NALU_MAXLEN>> m_curr_nalu{};
     std::array<uint8_t,NALU_MAXLEN> m_curr_nalu;
     size_t m_nalu_data_length=0;
     bool m_feed_incomplete_frames;
@@ -78,7 +90,8 @@ private:
     // data should point to "just" the rtp payload
     void h265_forward_one_nalu(const uint8_t* data,int data_size,bool write_4_bytes_for_start_code=true);
     // wtf
-    bool check_has_valid_prefix(bool use_4_bytes_start_code);
+    static bool check_has_valid_prefix(const uint8_t* nalu_data,int nalu_data_len,bool use_4_bytes_start_code);
+    bool check_curr_nalu_has_valid_prefix(bool use_4_bytes_start_code);
     // we can clear the missing packet flag when we either receive the first packet of a fragmented rtp packet or
     // a non-fragmented rtp packet
     //void clear_missing_packet_flag();

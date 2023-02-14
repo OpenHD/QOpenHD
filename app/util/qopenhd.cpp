@@ -101,9 +101,11 @@ void QOpenHD::textToSpeech_sayMessage(QString message)
         //m_speech->setVolume(m_volume/100.0);
         qDebug() << "QOpenHD::textToSpeech_sayMessage say:" << message;
         m_speech->say(message);
+    }else{
+        qDebug()<<"TextToSpeech disabled, msg:"<<message;
     }
 #else
-    qDebug()<<"TextToSpeech disabled, msg:"<<message;
+    qDebug()<<"TextToSpeech not available, msg:"<<message;
 #endif
 }
 
