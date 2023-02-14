@@ -589,6 +589,7 @@ static std::optional<HeartBeatInfo> parse_heartbeat(const mavlink_heartbeat_t& h
                 auto copter_mode = Telemetryutil::copter_mode_from_enum((COPTER_MODE)custom_mode);
                 info.flight_mode=copter_mode;
                 info.mav_type=QString("ARDUCOPTER");
+                break;
             }
             case MAV_TYPE_HELICOPTER: {
                 auto copter_mode = Telemetryutil::copter_mode_from_enum((COPTER_MODE)custom_mode);
