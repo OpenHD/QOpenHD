@@ -271,7 +271,6 @@ void RTPDecoder::parseRTPH265toNALU(const uint8_t* rtp_data, const size_t data_l
                 qDebug()<<"Got fu-a start - clearing missing packet flag";
                 flagPacketHasGoneMissing=false;
             }
-            //write_h264_h265_nalu_start(false);
             write_h264_h265_nalu_start();
             // copy header and reconstruct ?!!!
             const uint8_t* ptr=&rtp_data[sizeof(rtp_header_t)];
