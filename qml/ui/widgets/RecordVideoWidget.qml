@@ -29,7 +29,7 @@ BaseWidget {
     hasWidgetDetail: true
     hasWidgetAction: true
     widgetActionWidth: 150
-    widgetActionHeight: (settings.dev_qopenhd_n_cameras > 1) ? 240 : 165
+    widgetActionHeight: (settings.dev_qopenhd_n_cameras > 1) ? 160 : 95
     widgetDetailWidth:275
     widgetDetailHeight:150
 
@@ -104,10 +104,45 @@ BaseWidget {
                 }
             }
             Item {
-                //dummy for layout
-                width: 230
+                width: parent.width
                 height: 32
+                Text {
+                    text: qsTr("Minimal Layout")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
                 }
+                Switch {
+                    height: parent.height
+                    anchors.rightMargin: 0
+                    anchors.right: parent.right
+                    width: parent.width - 96
+                        onCheckedChanged:{
+                            if (checked) {
+                                settings.show_minimal_record_widget = true
+                                settings.record_widget_height= 25
+                                settings.record_widget_width= 35
+                            }
+                            else{
+                                settings.show_minimal_record_widget = false
+                                settings.record_widget_height= 48
+                                settings.record_widget_width= 140
+                                }
+
+                            }
+
+                        }
+
+            }
+                Item {
+                                //dummy for layout
+                                width: 230
+                                height: 32
+                                }
+
         }
     }
 
@@ -209,37 +244,7 @@ BaseWidget {
                         }
 
                     }
-            Text {
-                text: qsTr("Set Minimal Mode");
-                color: settings.color_text
-                elide: Text.ElideNone
-                wrapMode: Text.NoWrap
-                horizontalAlignment: Text.AlignLeft
-                font.pixelSize: settings.recordTextSize
-                font.family: settings.font_text
-                style: Text.Outline
-                styleColor: settings.color_glow
-                visible: true
-                            }
-            Switch {
-                    width: 32
-                    height: 32
-                    checked: settings.show_minimal_record_widget
-                    onCheckedChanged:{
-                        if (checked) {
-                            settings.show_minimal_record_widget = true
-                            settings.record_widget_height= 25
-                            settings.record_widget_width= 25
-                        }
-                        else{
-                            settings.show_minimal_record_widget = false
-                            settings.record_widget_height= 48
-                            settings.record_widget_width= 140
-                            }
 
-                    }
-
-           }
     }   }
 
 
