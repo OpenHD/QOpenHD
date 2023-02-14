@@ -288,6 +288,12 @@ static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string&
             auto values=std::vector<std::string>{"untouched","high","low"};
             map_improved_params["GPIO_2"]=ImprovedIntSetting::createEnum(values);
         }
+        {
+            std::pair<std::string,int> val1{"20Mhz",20};
+            std::pair<std::string,int> val2{"40Mhz",40};
+            map_improved_params["WB_CHANNEL_W"]=ImprovedIntSetting::createEnumSimple({val1,val2});
+            map_improved_params["WB_MCS_INDEX"]=ImprovedIntSetting::createEnum({"MCS0","MCS1","MCS2","MCS3","MCS4","MCS5","MCS6","MCS7"});
+        }
     }
     if(map_improved_params.find(param_id)!=map_improved_params.end()){
         return map_improved_params[param_id];
@@ -880,7 +886,7 @@ QString MavlinkSettingsModel::get_short_description(const QString param_id)const
     if(param_id=="V_HORIZ_FLIP"){
         return "Flip video horizontally";
     }
-    if(param_id=="V_CAM_ROT_DEGREE"){
+    if(param_id=="V_CAM_ROT_DEG"){
         return "Rotate video by 90 degree increments";
     }
     if(param_id=="V_AWB_MODE"){
@@ -889,7 +895,7 @@ QString MavlinkSettingsModel::get_short_description(const QString param_id)const
     if(param_id=="V_EXP_MODE"){
         return "EXP Exposure mode";
     }
-    if(param_id=="V_BRIGHNTESS"){
+    if(param_id=="V_BRIGHTNESS"){
         return "Image capture brightness, [0..100], default 50, but recommended to tune AWB or EXP instead";
     }
     if(param_id=="V_ISO"){
@@ -920,6 +926,16 @@ QString MavlinkSettingsModel::get_short_description(const QString param_id)const
     }
     if(param_id=="GPIO_2"){
         return "Experimental, allows manually controlling a rpi gpio for special uses like a LED, landing gear, ...";
+    }
+    if(param_id=="FC_UART_FLWCTL"){
+        return "Leave disabled, for setups with an additional 4th cable for uart flow control";
+    }
+    if(param_id=="WB_CHANNEL_W" || param_id=="WB_MCS_INDEX" || param_id=="WB_FREQUENCY"){
+        // They are whitelisted, but whitelisting can be disabled by enabling developer mode.
+        return "!!!Editing this param manually without care will result in a broken link!!!";
+    }
+    if(param_id=="WB_MAX_D_BZ"){
+        return "FEC auto internal.";
     }
     return "TODO";
 }
