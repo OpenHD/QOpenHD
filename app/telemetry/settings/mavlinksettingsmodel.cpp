@@ -127,10 +127,12 @@ static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string&
            ImprovedIntSetting::Item{"BOTH",2},
            ImprovedIntSetting::Item{"CYCLIC_ROWS",2130706433}
        });
-        auto fc_uart_conn_values=std::vector<std::string>{"disable","serial0","serial1","ttyUSB0","ttyACM0","ttyACM1", "ttyS7"};
-        map_improved_params["FC_UART_CONN"]=ImprovedIntSetting::createEnum(fc_uart_conn_values);
-        // same for ground uart out
-         map_improved_params["TRACKER_UART_OUT"]=ImprovedIntSetting::createEnum(fc_uart_conn_values);
+       {
+            auto fc_uart_conn_values=std::vector<std::string>{"disable","serial0","serial1","ttyUSB0","ttyACM0","ttyACM1", "ttyS7"};
+            map_improved_params["FC_UART_CONN"]=ImprovedIntSetting::createEnum(fc_uart_conn_values);
+            // same for ground uart out
+             map_improved_params["TRACKER_UART_OUT"]=ImprovedIntSetting::createEnum(fc_uart_conn_values);
+       }
         // rpicamsrc only for now
         auto gst_awb_modes=std::vector<std::string>{
                     "OFF",
@@ -316,6 +318,20 @@ static std::optional<ImprovedStringSetting> get_improved_for_string(const std::s
             "1920x1080@30",
     };
     map_improved_params["V_FORMAT"]=ImprovedStringSetting::create_from_keys_only(choices_video_res_framerate);
+    {
+        auto fc_uart_conn_values=std::vector<ImprovedStringSetting::Item>{
+            {"disable",""},
+            {"serial0","/dev/serial0"},
+            {"serial1","/dev/serial1"},
+            {"ttyUSB0","/dev/ttyUSB0"},
+            {"ttyACM0","/dev/ttyACM0"},
+            {"ttyACM1","/dev/ttyACM1"},
+            {"ttyS7","/dev/ttyS7"}
+        };
+        map_improved_params["FC_UART_CONN"]=ImprovedStringSetting{fc_uart_conn_values};
+        //same for ground uart out
+        map_improved_params["TRACKER_UART_OUT"]=ImprovedStringSetting{fc_uart_conn_values};
+    }
     //
     if(map_improved_params.find(param_id)!=map_improved_params.end()){
         return map_improved_params[param_id];
