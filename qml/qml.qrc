@@ -1,7 +1,6 @@
 <RCC>
     <qresource lang="en" prefix="/translations">
         <file alias="QOpenHD.qm">../translations/QOpenHD_en.qm</file>
-        <file>qml.qrc</file>
     </qresource>
     <qresource lang="de" prefix="/translations">
         <file alias="QOpenHD.qm">../translations/QOpenHD_de.qm</file>
@@ -35,7 +34,6 @@
         <file>ui/delegates/NumberSettingDelegate.ui.qml</file>
         <file>ui/delegates/ChoiceSettingDelegate.ui.qml</file>
         <file>ui/delegates/RangeSettingDelegate.ui.qml</file>
-        <file>ui/widgets/MessageHUDForm.ui.qml</file>
         <file>ui/widgets/MessageHUD.qml</file>
         <file>LICENSE_UI.txt</file>
         <file>ui/widgets/LinkDownRSSIWidget.qml</file>
@@ -176,7 +174,6 @@
         <file>ui/widgets/EscTempWidget.qml</file>
         <file>ui/widgets/EscTempWidgetForm.ui.qml</file>
         <file>ui/widgets/PressTempWidget.qml</file>
-        <file>ui/widgets/PressTempWidgetForm.ui.qml</file>
         <file>ui/widgets/ImuTempWidget.qml</file>
         <file>ui/widgets/ImuTempWidgetForm.ui.qml</file>
         <file>ui/widgets/FlightMahKmWidget.qml</file>
@@ -251,8 +248,10 @@
         <file>video/SecondaryVideoGStreamer.qml</file>
         <file>video/MainVideoQSG.qml</file>
         <file>ui/widgets/VideoBitrateWidgetSecondary.qml</file>
+        <file>ui/widgets/RecordVideoWidget.qml</file>
         <file>ui/configpopup/RcInfoPanel.qml</file>
         <file>ui/configpopup/RcDebugScreenFC.qml</file>
         <file>ui/configpopup/RcInfoScreen.qml</file>
+        <file>ui/widgets/RCRssiWidget.qml</file>
     </qresource>
 </RCC>

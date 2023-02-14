@@ -22,6 +22,7 @@ namespace OHDUtil {
  * NOTE: Used to use boost, there were issues with that, I changed it to use c standard library.
  */
 static bool run_command(const std::string &command, const std::vector<std::string> &args,bool print_debug=true) {
+#ifdef __linux__
   std::stringstream ss;
   ss << command;
   for (const auto &arg: args) {
@@ -44,6 +45,10 @@ static bool run_command(const std::string &command, const std::vector<std::strin
 	std::cout << "Run command end\n";
   }
   return ret;
+#else
+    std::cerr<<"run_command only supported on linux\n";
+    return false;
+#endif
 }
 
 /**
@@ -57,7 +62,7 @@ static bool run_command(const std::string &command, const std::vector<std::strin
  */
 
 static std::optional<std::string> run_command_out(const char* command){
-
+#ifdef __linux__
   std::string raw_value;
   std::array<char, 512> buffer{};
   std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(command, "r"), pclose);
@@ -72,6 +77,10 @@ static std::optional<std::string> run_command_out(const char* command){
 	raw_value += buffer.data();
   }
   return raw_value;
+#else
+    std::cerr<<"run_command only supported on linux\n";
+    return std::nullopt;
+#endif
 }
 
 static std::string yes_or_no(bool yes){

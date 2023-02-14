@@ -195,7 +195,6 @@ and we need to listen on each of them for a short timespan)"
                             }
                             //console.log("Got ",_res)
                             update_combobox(comboBoxFreq,_res);
-                            update
                         }
                     }
                     ComboBox {

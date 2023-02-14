@@ -12,6 +12,7 @@ import Qt.labs.settings 1.0
 // Detail widget: Opened when the user long clicks on the widget
 BaseWidgetForm {
     id: widgetBase
+    visible:false
     Drag.active: dragging
     Drag.dragType: Drag.Internal
 
@@ -69,10 +70,10 @@ BaseWidgetForm {
         alwaysRunToEnd: true
 
         animations: [
-            RotationAnimator { target: widgetInner; from: 0; to: 2; duration: 200 * 0.4 },
-            RotationAnimator { target: widgetInner; from: 2; to: 0; duration: 200 * 0.4 },
-            RotationAnimator { target: widgetInner; from: 0; to: -2; duration: 200 * 0.4 },
-            RotationAnimator { target: widgetInner; from: -2; to: 0; duration: 200 * 0.4 }
+            RotationAnimator { target: dragHandle; from: 0; to: 2; duration: 200 * 0.4 },
+            RotationAnimator { target: dragHandle; from: 2; to: 0; duration: 200 * 0.4 },
+            RotationAnimator { target: dragHandle; from: 0; to: -2; duration: 200 * 0.4 },
+            RotationAnimator { target: dragHandle; from: -2; to: 0; duration: 200 * 0.4 }
         ]
     }
 
@@ -176,12 +177,12 @@ BaseWidgetForm {
                 _onClicked(drag)
             }
             onPressAndHold: {
-                oldOpacity = widgetInner.opacity
-                widgetInner.opacity = 100
+                oldOpacity = dragHandle.opacity
+                dragHandle.opacity = 100
                 _onPressAndHold(drag)
             }
             onReleased: {
-                widgetInner.opacity = oldOpacity
+                dragHandle.opacity = oldOpacity
                 _onClicked(drag)
             }
         }

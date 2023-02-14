@@ -14,29 +14,47 @@
 #include <optional>
 #include <sstream>
 
-//Starts a new thread that continuously checks for new data on UDP port
+//Starts a new thread that continuously checks for new data on UDP port and
+// forward the received data (packet for packet) via a callback
 class UDPReceiver {
 public:
     typedef std::function<void(const uint8_t[],size_t)> DATA_CALLBACK;
-    struct IpAndPort{
+    // Custom struct to keep the constructor simple / documented
+    struct Configuration{
+        // If no IP addr is given, uses INADRR_ANY
+        // otherwise, uses the given ip
         std::optional<std::string> udp_ip_address="127.0.0.1";
+        // The udp port to listen on
         int udp_port=5600;
+        // linux for example allows increasing / decreasing the amount of data it buffers on an UDP port
+        // before it starts dropping packates. On high bitrates, you might have to increase this buffer
+        std::optional<size_t> opt_os_receive_buff_size=std::nullopt;
+        // we create a thread that fetches the UDP data - set this to true to assign the highest prio possible to this thread
+        // (can decrease OS scheduling latency)
+        bool set_sched_param_max_realtime=false;
+        // busy instead of blocking receive - hogs one cpu core, experimental
+        bool enable_nonblocking=false;
         std::string to_string()const{
             std::stringstream ss;
             ss<<udp_ip_address.value_or("INADDR_ANY")<<":"<<udp_port;
+            if(opt_os_receive_buff_size.has_value()){
+                ss<<" os_receive_buff_size:"<<opt_os_receive_buff_size.value();
+            }
+            if(set_sched_param_max_realtime){
+                ss<<" set_sched_param_max_realtime";
+            }
+            if(enable_nonblocking){
+                ss<<" enable_nonblocking";
+            }
             return ss.str();
         }
     };
-public:
     /**
-     * @param port : The port to listen on
+     * @param tag: tag for logging
+     * @param config: see config documentation for more info
      * @param onDataReceivedCallback: called every time new data is received
-     * @param WANTED_RCVBUF_SIZE: The buffer allocated by the OS might not be sufficient to buffer incoming data when receiving at a high data rate
-     * If @param WANTED_RCVBUF_SIZE is bigger than the size allocated by the OS a bigger buffer is requested, but it is not
-     * guaranteed that the size is actually increased. Use 0 to leave the buffer size untouched
      */
-    UDPReceiver(IpAndPort ip_and_port,std::string name,DATA_CALLBACK onDataReceivedCallbackX,
-    size_t wanted_receive_buff_size_btyes,const bool ENABLE_NONBLOCKINGX,const bool set_sched_param_max_realtime);
+    UDPReceiver(std::string tag,Configuration config,DATA_CALLBACK onDataReceivedCallbackX);
     /**
      * Start receiver thread,which opens UDP port
      */
@@ -53,23 +71,19 @@ public:
     static constexpr auto MEDIUM_UDP_RECEIVE_BUFFER_SIZE=1024*1024*25;
 private:
     void receiveFromUDPLoop();
-    const IpAndPort m_ip_and_port;
-    const std::string mName;
-    const DATA_CALLBACK onDataReceivedCallback=nullptr;
-    const size_t WANTED_RCVBUF_SIZE_BYTES;
+    const std::string m_tag;
+    const Configuration m_config;
+    const DATA_CALLBACK m_on_data_received_cb=nullptr;
     ///We need this reference to stop the receiving thread
-    int mSocket=0;
-    std::string senderIP="0.0.0.0";
-    std::unique_ptr<std::thread> mUDPReceiverThread;
-    std::atomic<bool> receiving={false};
-    std::atomic<long> nReceivedBytes={0};
+    int m_socket=0;
+    std::string m_sender_ip="0.0.0.0";
+    std::unique_ptr<std::thread> m_receive_thread;
+    std::atomic<bool> m_receiving={false};
+    std::atomic<long> m_n_received_bytes={0};
     //https://en.wikipedia.org/wiki/User_Datagram_Protocol
     //65,507 bytes (65,535 − 8 byte UDP header − 20 byte IP header).
     static constexpr const size_t UDP_PACKET_MAX_SIZE=65507;
-	std::chrono::steady_clock::time_point lastReceivedPacket{};
-	//AvgCalculator avgDeltaBetweenPackets;
-	const bool ENABLE_NONBLOCKING;
-    const bool m_set_sched_param_max_realtime;
+    std::chrono::steady_clock::time_point m_last_received_packet_ts{};
 };
 
 #endif // FPV_VR_UDPRECEIVER_H

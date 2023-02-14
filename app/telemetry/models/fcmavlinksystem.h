@@ -23,6 +23,8 @@
  * However, after some testing and discussion, we came to the conclusion that they are more annoying than
  * usefull due to what seems to be a common lack of support for Ardupilot in MAVSDK. We parse the "broadcast"
  * mavlink telemetry message(s) from the FC manually.
+ *
+ * NOTE: When adding new values, please try and be specific about their unit - e.g. add a "volt" suffix if the value is in volts.
  */
 class FCMavlinkSystem : public QObject
 {
@@ -85,7 +87,9 @@ class FCMavlinkSystem : public QObject
     L_RO_PROP(double,wind_direction,set_wind_direction,0)
     L_RO_PROP(float,mav_wind_direction,set_mav_wind_direction,0)
     L_RO_PROP(float,mav_wind_speed,set_mav_wind_speed,0)
-    L_RO_PROP(int,rc_rssi,set_rc_rssi,0);
+    // Not openhd rc or something, but the RSSI of the (for example) OpenLRS receiver
+    // value reported by the FC
+    L_RO_PROP(int,rc_rssi_percentage,set_rc_rssi_percentage,0);
     L_RO_PROP(int,imu_temp_degree,set_imu_temp_degree,0);
     L_RO_PROP(int,preasure_sensor_temperature_degree,set_preasure_sensor_temperature_degree,0)
     L_RO_PROP(int,airspeed_sensor_temperature_degree,set_airspeed_sensor_temperature_degree,99)
@@ -177,7 +181,6 @@ signals:
     void homelon_changed(double homelon);
     void home_course_changed(int home_course);
     void home_heading_changed(int home_heading);
-    void messageReceived(QString message, int level);
 
     void currentWaypointChanged (int current_waypoint);
     void totalWaypointsChanged (int total_waypoints);
@@ -227,10 +230,16 @@ private:
     int m_n_messages_update_rate_mavlink_message_attitude=0;
 public:
     //
-    // Try to change the arming state. Once completed, since we listen to arm/disarm results,
-    // the armed status is changed. On failure, a message is pushed onto the HUD
+    // Try to change the arming state.
+    // The result (success/failure) is logged in the HUD once completed
     Q_INVOKABLE void arm_fc_async(bool arm=false);
+    // Try to send a return to launch command.
+    // The result (success/failure) is logged in the HUD once completed
     Q_INVOKABLE void send_return_to_launch_async();
+    // Request current total n of missions and active mission
+    // The result (success/failure) is logged in the HUD once completed
+    Q_INVOKABLE void request_mission_async();
+    // TODO document me
     Q_INVOKABLE bool send_command_reboot(bool reboot);
     Q_INVOKABLE void flight_mode_cmd(long cmd_msg);
     // -----------------------

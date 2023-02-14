@@ -5,11 +5,11 @@
 #include <sstream>
 
 #include "avcodec_helper.hpp"
-#include "../common_consti/TimeHelper.hpp"
+#include "../common/TimeHelper.hpp"
 
 #include "texturerenderer.h"
 #include "../vs_util/decodingstatistcs.h"
-#include "common_consti/SchedulingHelper.hpp"
+#include "common/SchedulingHelper.hpp"
 #include "../util/WorkaroundMessageBox.h"
 #include "../logging/hudlogmessagesmodel.h"
 
@@ -136,7 +136,11 @@ void AVCodecDecoder::constant_decode()
              if(settings.dev_test_video_mode==QOpenHDVideoHelper::VideoTestMode::DISABLED
                      && settings.enable_software_video_decoder==false
                      && settings.video_codec==QOpenHDVideoHelper::VideoCodecH264){
-                 open_and_decode_until_error_custom_rtp_and_mmal_direct(settings);
+                 if(settings.dev_rpi_use_external_omx_decode_service){
+                     dirty_rpi_decode_via_external_decode_service();
+                 }else{
+                     open_and_decode_until_error_custom_rtp_and_mmal_direct(settings);
+                 }
              }else{
                  open_and_decode_until_error_custom_rtp(settings);
              }
@@ -268,7 +272,7 @@ bool AVCodecDecoder::feed_rtp_frame_if_available()
     if(frame){
         {
             // parsing delay
-            const auto delay=std::chrono::steady_clock::now()-frame->creationTime;
+            const auto delay=std::chrono::steady_clock::now()-frame->get_nal().creationTime;
             avg_parse_time.add(delay);
             avg_parse_time.custom_print_in_intervals(std::chrono::seconds(3),[](const std::string name,const std::string message){
                 //qDebug()<<name.c_str()<<":"<<message.c_str();
@@ -276,8 +280,8 @@ bool AVCodecDecoder::feed_rtp_frame_if_available()
             });
         }
         AVPacket *pkt=av_packet_alloc();
-        pkt->data=(uint8_t*)frame->getData();
-        pkt->size=frame->getSize();
+        pkt->data=(uint8_t*)frame->get_nal().getData();
+        pkt->size=frame->get_nal().getSize();
         const auto beforeFeedFrameUs=getTimeUs();
         pkt->pts=beforeFeedFrameUs;
         timestamp_add_fed(pkt->pts);
@@ -286,11 +290,6 @@ bool AVCodecDecoder::feed_rtp_frame_if_available()
         return true;
     }
     return false;
-}
-
-bool AVCodecDecoder::create_decoder_context(const QOpenHDVideoHelper::VideoStreamConfig settings)
-{
-
 }
 
 void AVCodecDecoder::fetch_frame_or_feed_input_packet(){
@@ -386,11 +385,10 @@ void AVCodecDecoder::reset_before_decode_start()
     last_frame_height=-1;
     avg_decode_time.reset();
     avg_parse_time.reset();
-    DecodingStatistcs::instance().set_doing_wait_for_frame_decode("Yes");
+    DecodingStatistcs::instance().reset_all_to_default();
     last_frame_width=-1;
     last_frame_height=-1;
     m_fed_timestamps_queue.clear();
-    DecodingStatistcs::instance().set_decoding_type("?");
 }
 
 int AVCodecDecoder::open_and_decode_until_error(const QOpenHDVideoHelper::VideoStreamConfig settings)
@@ -785,24 +783,22 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp(const QOpenHDVideoHe
      assert(pkt!=nullptr);
      bool has_keyframe_data=false;
      while(true){
+         // We break out of this loop if someone requested a restart
          if(request_restart){
              request_restart=false;
              goto finish;
          }
+         // or the decode config changed and we need a restart
          if(m_rtp_receiver->config_has_changed_during_decode){
              qDebug()<<"Break/Restart,config has changed during decode";
              goto finish;
          }
          //std::this_thread::sleep_for(std::chrono::milliseconds(3000));
          if(!has_keyframe_data){
-              std::shared_ptr<std::vector<uint8_t>> keyframe_buf=nullptr;
-              while(keyframe_buf==nullptr){
-                  if(request_restart){
-                      request_restart=false;
-                      goto finish;
-                  }
+              std::shared_ptr<std::vector<uint8_t>> keyframe_buf=m_rtp_receiver->get_config_data();
+              if(keyframe_buf==nullptr){
                   std::this_thread::sleep_for(std::chrono::milliseconds(100));
-                  keyframe_buf=m_rtp_receiver->get_config_data();
+                  continue;
               }
               qDebug()<<"Got decode data (before keyframe)";
               pkt->data=keyframe_buf->data();
@@ -811,19 +807,15 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp(const QOpenHDVideoHe
               has_keyframe_data=true;
               continue;
          }else{
-            std::shared_ptr<NALU> buf=nullptr;
-             while(buf==nullptr){
-                 // do not peg the cpu completely here
-                 buf=m_rtp_receiver->get_next_frame(std::chrono::milliseconds(kDefaultFrameTimeout));
-                 if(request_restart){
-                     request_restart=false;
-                     goto finish;
-                 }
+             auto buf =m_rtp_receiver->get_next_frame(std::chrono::milliseconds(kDefaultFrameTimeout));
+             if(buf==nullptr){
+                 // No buff after X seconds
+                 continue;
              }
              //qDebug()<<"Got decode data (after keyframe)";
-             pkt->data=(uint8_t*)buf->getData();
-             pkt->size=buf->getSize();
-             decode_and_wait_for_frame(pkt,buf->creationTime);
+             pkt->data=(uint8_t*)buf->get_nal().getData();
+             pkt->size=buf->get_nal().getSize();
+             decode_and_wait_for_frame(pkt,buf->get_nal().creationTime);
              //fetch_frame_or_feed_input_packet();
          }
      }
@@ -875,15 +867,11 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp_and_mmal_direct(cons
         }*/
         //std::this_thread::sleep_for(std::chrono::milliseconds(3000));
         if(!has_keyframe_data){
-             std::shared_ptr<std::vector<uint8_t>> keyframe_buf=nullptr;
-             while(keyframe_buf==nullptr){
-                 if(request_restart){
-                     request_restart=false;
-                     goto finish;
-                 }
-                 std::this_thread::sleep_for(std::chrono::milliseconds(100));
-                 keyframe_buf=m_rtp_receiver->get_config_data();
-             }
+            std::shared_ptr<std::vector<uint8_t>> keyframe_buf=m_rtp_receiver->get_config_data();
+            if(keyframe_buf==nullptr){
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
+                continue;
+            }
              qDebug()<<"Got decode data (before keyframe)";
              //RPIMMALDecoder::instance().initialize(keyframe_buf->data(),keyframe_buf->size(),640,480,30);
              const auto w_h=m_rtp_receiver->sps_get_width_height();
@@ -898,8 +886,8 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp_and_mmal_direct(cons
         }else{
 		  // Switch over to a callback-based approach for lower latency. mmal already has a frame queue, so we don't need an extra one
             if(!cb_set){
-                auto cb=[this,&mmal_decode_display,&feed_frame_error_count,&m_last_log_decoder_unhealty](std::shared_ptr<NALU> buf){
-                    const bool feed_frame_success=mmal_decode_display->feed_frame(buf->getData(),buf->getSize(),std::chrono::milliseconds(8));
+                auto cb=[this,&mmal_decode_display,&feed_frame_error_count,&m_last_log_decoder_unhealty](const NALU& nalu){
+                    const bool feed_frame_success=mmal_decode_display->feed_frame(nalu.getData(),nalu.getSize(),std::chrono::milliseconds(8));
                     //const auto duration_feed_frame=std::chrono::steady_clock::now()-before_feed_frame;
                     //qDebug()<<"feed frame time:"<<MyTimeHelper::R(duration_feed_frame).c_str();
                     if(!feed_frame_success){
@@ -913,7 +901,7 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp_and_mmal_direct(cons
                             HUDLogMessagesModel::instance().add_message_warning("Decoder unhealthy-reduce load");
                         }
                     }
-                    const auto delay=std::chrono::steady_clock::now()-buf->creationTime;
+                    const auto delay=std::chrono::steady_clock::now()-nalu.creationTime;
                     avg_parse_time.add(delay);
                     avg_parse_time.custom_print_in_intervals(std::chrono::seconds(3),[](const std::string name,const std::string message){
                         //qDebug()<<name.c_str()<<":"<<message.c_str();
@@ -988,4 +976,27 @@ void AVCodecDecoder::timestamp_debug_valid(int64_t ts)
     }else{
         qDebug()<<"Is not a valid timestamp";
     }
+}
+
+#include "../common/openhd-util.hpp"
+
+static constexpr auto RPI_OMX_H264_DECODE_SERVICE="rpi_omx_h264_decode";
+
+void AVCodecDecoder::dirty_rpi_decode_via_external_decode_service()
+{
+    qDebug()<<"Decode via rpi external decode service begin";
+    DecodingStatistcs::instance().reset_all_to_default();
+    DecodingStatistcs::instance().set_decoding_type("External OMX");
+    // Start service
+    OHDUtil::run_command("systemctl start",{std::string(RPI_OMX_H264_DECODE_SERVICE)});
+    while(true){
+        if(request_restart){
+            request_restart=false;
+            break;
+        }
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+    }
+    // Stop service
+    OHDUtil::run_command("systemctl stop",{std::string(RPI_OMX_H264_DECODE_SERVICE)});
+    qDebug()<<"Decode via rpi external decode service end";
 }

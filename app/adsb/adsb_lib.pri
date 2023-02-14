@@ -16,5 +16,5 @@ HEADERS += \
 QT += positioning
 QT += concurrent
 
-# used in main.cpp to enable/disable adsb
+# used in main.cpp / qml to enable/disable adsb depending on weather the needed platform dependencies were found
 DEFINES += QOPENHD_ENABLE_ADSB_LIBRARY

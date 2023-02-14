@@ -116,6 +116,9 @@ Item {
     PressTempWidget {
         id: press_temp
     }
+    RCRssiWidget {
+        id: rc_rssi_widget
+    }
 
     AirspeedTempWidget {
         id: airspeed_temp
@@ -145,11 +148,6 @@ Item {
     LinkUpRSSIWidget {
         id: uplink
     }
-
-    // + 0% cpu
-    //RcRSSIWidget {
-    //    id: rcRSSIWidget
-    //}
 
     // + 12% cpu
     HorizonWidget {
@@ -239,12 +237,21 @@ Item {
         id: mapWidget
     }
 
-    AdsbWidget {
-        id: adsbWidget
+    // Load it only when adsb was enabled at compile time
+    Loader {
+        source: {
+            if (QOPENHD_ENABLE_ADSB_LIBRARY) {
+                return "widgets/AdsbWidget.qml";
+            }
+            return ""
+        }
     }
 
     ExampleWidget {
         id: exampleWidget
+    }
+    RecordVideoWidget {
+        id: record_video_widget
     }
 
     Text {

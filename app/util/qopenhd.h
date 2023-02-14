@@ -36,6 +36,9 @@ public:
     // Develoment only
     Q_INVOKABLE void restart_local_oenhd_service();
     Q_INVOKABLE void run_dhclient_eth0();
+    Q_INVOKABLE bool copy_settings();
+    Q_INVOKABLE bool read_settings();
+    Q_INVOKABLE bool reset_settings();
     Q_INVOKABLE QString show_local_ip();
 signals:
     void fontFamilyChanged(QString fontFamily);
@@ -48,9 +51,9 @@ private:
     QTextToSpeech *m_speech;
 #endif
 public:
-#if defined(__android__)
+    // We always want the screen to be kept "On" while QOpenHD is running -
+    // but how to do that depends highly on the platform
     Q_INVOKABLE void keep_screen_on(bool on);
-#endif
 };
 
 #endif // QOPENHD_H

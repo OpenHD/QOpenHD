@@ -13,6 +13,7 @@
 #include <qdebug.h>
 
 namespace SchedulingHelper {
+
 static void printCurrentThreadPriority(const std::string& name) {
   int which = PRIO_PROCESS;
   id_t pid = (id_t) getpid();

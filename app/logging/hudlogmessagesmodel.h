@@ -25,10 +25,10 @@ public:
     // add new message to be shown on the HUD
     // the message will dissappear after a specific amount of time or when a new message
     // pushes it out (more than MAX_N_ELEMENTS messages)
-    void add_message(int severity,QString message);
+    Q_INVOKABLE void add_message(int severity,QString message);
     // These are just utility for common severity levels
-    void add_message_info(QString message);
-    void add_message_warning(QString message);
+    Q_INVOKABLE void add_message_info(QString message);
+    Q_INVOKABLE void add_message_warning(QString message);
 private:
     struct Element{
         QString message;

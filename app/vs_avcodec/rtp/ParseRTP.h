@@ -13,11 +13,25 @@
 /*********************************************
  ** Parses a stream of rtp h264 / h265 data into NALUs.
  ** No rtp jitterbuffer or similar - this decreases latency, but removes any rtp packet re-ordering capabilities.
+ ** Aka this decoder can deal with lost packets (incomplete rtp fragments are dropped) but requires received packets to
+ ** be in order.
  ** No special dependencies other than std library.
  ** R.n Supports single, aggregated and fragmented rtp packets for both h264 and h265.
+ ** Data is forwarded directly via a callback for no thread scheduling overhead
 **********************************************/
 
+// Enough for pretty much any resolution/framerate we handle in OpenHD
 static constexpr const auto NALU_MAXLEN=1024*1024;
+
+/*struct NALUBuff{
+    // system time point first byte of this NALU was received
+    std::chrono::steady_clock::time_point creation_time;
+    // buffer for nalu data (might not be completely filled)
+   std::shared_ptr<std::array<uint8_t,NALU_MAXLEN>> nalu_data;
+   // size of the nalu data
+   int nalu_data_size;
+};*/
+
 typedef std::function<void(const std::chrono::steady_clock::time_point creation_time,const uint8_t* nalu_data,const int nalu_data_size)> NALU_DATA_CALLBACK;
 
 class RTPDecoder{
@@ -44,12 +58,15 @@ private:
     // copy data_len bytes into the data buffer at the current position
     // and increase its size by data_len
     void append_nalu_data(const uint8_t* data, size_t data_len);
+    // like append_nalu_data, but for one byte
+    void append_nalu_data_byte(uint8_t byte);
     void append_empty(size_t data_len);
     // Properly calls the cb function (if not null)
     // Resets the m_nalu_data_length to 0
     void forwardNALU(const bool isH265=false);
     const NALU_DATA_CALLBACK m_cb;
-    std::array<uint8_t,NALU_MAXLEN> m_nalu_data;
+    //std::shared_ptr<std::array<uint8_t,NALU_MAXLEN>> m_curr_nalu{};
+    std::array<uint8_t,NALU_MAXLEN> m_curr_nalu;
     size_t m_nalu_data_length=0;
     bool m_feed_incomplete_frames;
     int m_total_n_fragments_for_current_fu=0;
@@ -73,7 +90,8 @@ private:
     // data should point to "just" the rtp payload
     void h265_forward_one_nalu(const uint8_t* data,int data_size,bool write_4_bytes_for_start_code=true);
     // wtf
-    bool check_has_valid_prefix(bool use_4_bytes_start_code);
+    static bool check_has_valid_prefix(const uint8_t* nalu_data,int nalu_data_len,bool use_4_bytes_start_code);
+    bool check_curr_nalu_has_valid_prefix(bool use_4_bytes_start_code);
     // we can clear the missing packet flag when we either receive the first packet of a fragmented rtp packet or
     // a non-fragmented rtp packet
     //void clear_missing_packet_flag();

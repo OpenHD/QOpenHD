@@ -12,7 +12,8 @@ import "../../ui" as Ui
 import "../elements"
 
 Item {
-    width: parent.width
+    width: applicationWindow.width -165
+    //the -150 is the tab on the left +15margin
     height: parent.height
     // Tab bar for selecting items in stack layout
     TabBar {

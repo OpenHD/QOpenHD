@@ -16,7 +16,8 @@ import "../elements"
 // R.n it supports int and string parameters.
 // int parameters can have sequential (0,1,2,..) or custom (1000Mhz,2000Mhz,3000Mhz) enums,
 // which is much more verbose to the user.
-
+//
+// Aligned to the right, and width can be set by total_width property manually
 Rectangle{
 
     property int total_width: 300
@@ -25,7 +26,7 @@ Rectangle{
     height: parent.height
     anchors.right: parent.right;
     anchors.top: parent.top
-    anchors.topMargin: -15
+    //anchors.topMargin: -15
     color: "#333c4c"
 
     //Layout.alignment: Qt.AlignRight || Qt.AlignTop
@@ -231,11 +232,42 @@ Rectangle{
         }
     }
 
+    Button{
+        id:exit_button
+        text: "x"
+        anchors.right: parent.right
+        anchors.top: parent.top
+        anchors.topMargin: 5
+        anchors.rightMargin: 25
+        width: 30
+        height: 30
+        contentItem: Text {
+            text: exit_button.text
+            font: exit_button.font
+            opacity: enabled ? 1.0 : 0.3
+            color: exit_button.down ? "#222425" : "#fff"
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+            elide: Text.ElideRight
+        }
+        background: Rectangle {
+            implicitWidth: 100
+            implicitHeight: 100
+            opacity: enabled ? 0.1 : 1
+            color: exit_button.down ? "#14181f" : "#333c4c"
+        }
+        onClicked: {
+            console.log("Closing param editor")
+            parameterEditor.visible=false
+        }
+    }
+
 
     ColumnLayout{
         width: parent.width
         height:parent.height
         anchors.top: parent.top
+        anchors.right: parent.right
         anchors.topMargin: 15
         spacing: 10
 

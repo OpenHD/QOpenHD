@@ -1,18 +1,26 @@
 #include "qopenhd.h"
 #include <QCoreApplication>
-
+#include <QSettings>
 #include <QDebug>
 #include <qapplication.h>
 
-#ifdef __linux__
+#include<iostream>
+#include<fstream>
+#include<string>
 
-#include "common_consti/openhd-util.hpp"
+#ifdef __linux__
+#include "common/openhd-util.hpp"
 #endif
 
 #if defined(ENABLE_SPEECH)
 #include <QTextToSpeech>
 #include <QVoice>
 #include <qsettings.h>
+#endif
+
+#if defined(__android__)
+#include <QAndroidJniEnvironment>
+#include <QtAndroid>
 #endif
 
 QOpenHD &QOpenHD::instance()
@@ -26,22 +34,21 @@ QOpenHD::QOpenHD(QObject *parent)
 {
 #if defined(ENABLE_SPEECH)
     m_speech = new QTextToSpeech(this);
-
     QStringList engines = QTextToSpeech::availableEngines();
     qDebug() << "Available SPEECH engines:";
-    for (auto engine : engines) {
+    for (auto& engine : engines) {
         qDebug() << "  " << engine;
     }
     // List the available locales.
 //    qDebug() << "Available locales:";
-    for (auto locale : m_speech->availableLocales()) {
+    for (auto& locale : m_speech->availableLocales()) {
 //        qDebug() << "  " << locale;
     }
     // Set locale.
     m_speech->setLocale(QLocale(QLocale::English, QLocale::LatinScript, QLocale::UnitedStates));
     // List the available voices.
 //    qDebug() << "Available voices:";
-    for (auto voice : m_speech->availableVoices()) {
+    for (auto& voice : m_speech->availableVoices()) {
 //        qDebug() << "  " << voice.name();
     }
     // Display properties.
@@ -62,6 +69,7 @@ void QOpenHD::setEngine(QQmlApplicationEngine *engine) {
 void QOpenHD::switchToLanguage(const QString &language) {
     if(m_engine==nullptr){
         qDebug()<<"Error switch language- engine not set";
+        return;
     }
     QLocale::setDefault(language);
 
@@ -93,9 +101,11 @@ void QOpenHD::textToSpeech_sayMessage(QString message)
         //m_speech->setVolume(m_volume/100.0);
         qDebug() << "QOpenHD::textToSpeech_sayMessage say:" << message;
         m_speech->say(message);
+    }else{
+        qDebug()<<"TextToSpeech disabled, msg:"<<message;
     }
 #else
-    qDebug()<<"TextToSpeech disabled, msg:"<<message;
+    qDebug()<<"TextToSpeech not available, msg:"<<message;
 #endif
 }
 
@@ -110,8 +120,8 @@ void QOpenHD::disable_service_and_quit()
 {
 #ifdef __linux__
     OHDUtil::run_command("sudo systemctl stop qopenhd",{""},true);
-    quit_qopenhd();
 #endif
+    quit_qopenhd();
 }
 
 void QOpenHD::restart_local_oenhd_service()
@@ -130,6 +140,84 @@ void QOpenHD::run_dhclient_eth0()
 #endif
 }
 
+bool QOpenHD::copy_settings()
+{
+#ifdef __linux__
+    QSettings settings;
+    std::string file_name = settings.fileName().toStdString();
+    std::ifstream src(file_name, std::ios::binary);
+    std::ofstream dst("/boot/openhd/QOpenHD.conf", std::ios::binary);
+
+    dst << src.rdbuf();
+    src.close();
+    dst.close();
+
+    if (!src) {
+        qDebug() << "Error: Failed to open source file" << QString::fromStdString(file_name);
+        return false;
+        if (!dst) {
+            qDebug() << "Error: Failed to open destination file" << QString::fromStdString(file_name);
+            return false;
+        }
+    }
+    else{
+    return true;
+    }
+#endif
+}
+
+bool QOpenHD::read_settings()
+{
+#ifdef __linux__
+    QSettings settings;
+    std::string file_name = settings.fileName().toStdString();
+    std::ifstream src("/boot/openhd/QOpenHD.conf", std::ios::binary);
+
+    if (!src) {
+        qDebug() << "Error: Failed to open source file" << QString::fromStdString("/boot/openhd/QOpenHD.conf");
+        return false;
+    }
+
+    if(src.peek() == std::ifstream::traits_type::eof()){
+        qDebug() << "Error: Source file is empty" << QString::fromStdString("/boot/openhd/QOpenHD.conf");
+        src.close();
+        return false;
+    }
+
+    std::ofstream dst(file_name, std::ios::binary);
+    dst << src.rdbuf();
+    src.close();
+    dst.close();
+
+    if (!dst) {
+        qDebug() << "Error: Failed to open destination file" << QString::fromStdString(file_name);
+        return false;
+    }
+    else{
+    return true;
+    }
+#endif
+}
+
+bool QOpenHD::reset_settings()
+{
+#ifdef __linux__
+    QSettings settings;
+    std::string file_name = settings.fileName().toStdString();
+    int result = remove(file_name.c_str());
+
+if (result == 0) {
+        qDebug() << "File" << QString::fromStdString(file_name) << "deleted successfully";
+        return true;
+    }
+    else {
+        qDebug() << "Error: Failed to delete file" << QString::fromStdString(file_name);
+        return false;
+    }
+#endif
+}
+
+
 QString QOpenHD::show_local_ip()
 {
 #ifdef __linux__
@@ -141,9 +229,9 @@ QString QOpenHD::show_local_ip()
 
 }
 
-#if defined(__android__)
 void QOpenHD::keep_screen_on(bool on)
 {
+#if defined(__android__)
     QtAndroid::runOnAndroidThread([on] {
         QAndroidJniObject activity = QtAndroid::androidActivity();
         if (activity.isValid()) {
@@ -163,5 +251,6 @@ void QOpenHD::keep_screen_on(bool on)
             env->ExceptionClear();
         }
     });
+  // Not needed on any other platform so far
+#endif //defined(__android__)
 }
-#endif

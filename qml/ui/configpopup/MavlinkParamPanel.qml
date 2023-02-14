@@ -26,43 +26,6 @@ Rectangle {
 
     property string m_name: "undefined"
 
-
-    Component {
-        id: delegateMavlinkSettingsValue
-        Item {
-            id: item
-            //width: ListView.view.width
-            height: 64
-            Row {
-                //anchors.fill: parent
-                spacing: 5
-
-                Label {
-                    width:150
-                    text: model.unique_id
-                    font.bold: true
-                }
-                Label {
-                    width:150
-                    //text: "Val: "+model.value
-                    //text: "Val: "+model.extraValue
-                    text: model.extraValue
-                    font.bold: true
-                }
-                Button {
-                    text: "EDIT"
-                    onClicked: {
-                        // this initializes and opens up the param editor
-                        parameterEditor.setup_for_parameter(model.unique_id,model)
-                    }
-                    // gray out the button for read-only params
-                    enabled: !model.read_only
-                }
-            }
-        }
-    }
-
-
     // Refetch all button
     Button {
         height: 48
@@ -91,24 +54,52 @@ Rectangle {
             _messageBoxInstance.set_text_and_show(text)
         }
     }
-    /*Button {
-        height: 48
-        anchors.top: fetchAllButtonId.top
-        anchors.left: fetchAllButtonId.right
-        id: infoButton
-        text:"Info"
-        enabled: true
-        onClicked: {
 
+    Component {
+        id: delegateMavlinkSettingsValue
+        Item {
+            id: item
+            //width: ListView.view.width
+            height: 64
+            Row {
+                //anchors.fill: parent
+                spacing: 5
+                //color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+
+                Label {
+                    width:150
+                    text: model.unique_id
+                    font.bold: true
+                }
+                Label {
+                    width:150
+                    //text: "Val: "+model.value
+                    //text: "Val: "+model.extraValue
+                    text: model.extraValue
+                    font.bold: true
+                }
+                Button {
+                    text: "EDIT"
+                    onClicked: {
+                        // this initializes and opens up the param editor
+                        parameterEditor.setup_for_parameter(model.unique_id,model)
+                    }
+                    // gray out the button for read-only params
+                    enabled: !model.read_only
+                }
+            }
         }
-    }*/
+    }
+
     // Left part: multiple colums of param value
     Rectangle{
         id: scrollViewRectangle
-        width: parent.width - paramEditorWidth
-        height: parent.height-64
+        width: parent.width
+        height: parent.height-48
+        //color: "#8cbfd7f3"
         anchors.top: fetchAllButtonId.bottom
         anchors.bottom: parent.bottom
+        anchors.left: parent.left
 
         ScrollView{
             //height: parent.height
@@ -119,10 +110,9 @@ Rectangle {
             clip: true
 
             ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
-            ScrollBar.vertical.policy: ScrollBar.AlwaysOff
+            ScrollBar.vertical.policy: ScrollBar.AlwaysOn
             // allow dragging without using the vertical scroll bar
             ScrollBar.vertical.interactive: true
-
             ListView {
                 id: listView
                 //top: fetchAllButtonId.bottom

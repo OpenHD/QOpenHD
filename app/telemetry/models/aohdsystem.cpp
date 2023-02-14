@@ -1,8 +1,8 @@
 #include "aohdsystem.h"
 
 #include "../qopenhdmavlinkhelper.hpp"
-#include "../../common_consti/StringHelper.hpp"
-#include "../../common_consti/TimeHelper.hpp"
+#include "../../common/StringHelper.hpp"
+#include "../../common/TimeHelper.hpp"
 #include "../telemetryutil.hpp"
 #include "wificard.h"
 #include "rcchannelsmodel.h"
@@ -14,7 +14,7 @@
 #include <logging/logmessagesmodel.h>
 #include <logging/hudlogmessagesmodel.h>
 
-#include "../../qopenhd.h"
+#include "util/qopenhd.h"
 
 
 static QString bitrate_to_qstring(int64_t bitrate_bits_per_second){
@@ -168,6 +168,9 @@ void AOHDSystem::process_onboard_computer_status(const mavlink_onboard_computer_
     set_curr_h264_freq_mhz(msg.storage_type[2]);
     set_curr_core_freq_mhz(msg.storage_type[3]);
     set_curr_v3d_freq_mhz(msg.storage_usage[0]);
+    set_curr_space_left_mb(msg.storage_usage[1]);
+    set_ram_usage_perc(msg.ram_usage);
+    set_ram_total(msg.ram_total);
 }
 
 void AOHDSystem::process_x0(const mavlink_openhd_stats_monitor_mode_wifi_card_t &msg){

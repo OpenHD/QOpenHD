@@ -50,6 +50,9 @@ class AOHDSystem : public QObject
     L_RO_PROP(int,curr_h264_freq_mhz,set_curr_h264_freq_mhz,0)
     L_RO_PROP(int,curr_core_freq_mhz,set_curr_core_freq_mhz,0)
     L_RO_PROP(int,curr_v3d_freq_mhz,set_curr_v3d_freq_mhz,0)
+    L_RO_PROP(int,curr_space_left_mb,set_curr_space_left_mb,0)
+    L_RO_PROP(int,ram_usage_perc,set_ram_usage_perc,0)
+    L_RO_PROP(int,ram_total,set_ram_total,0)
     //L_RO_PROP(int,,set_,0)
     // This basically only makes sense on the ground pi, it is not the battery percentage reported by the FC
     // but the battery percentage reported by the COmpanion computer running OpenHD (if it is supported, aka for future power hat o.ä)

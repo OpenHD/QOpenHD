@@ -57,6 +57,9 @@ Settings {
     property bool dev_use_low_latency_parser_when_possible: true;
     property bool dev_feed_incomplete_frames_to_decoder:false;
 
+    // dirty, perhaps temporary
+    property bool dev_rpi_use_external_omx_decode_service: true;
+
     property bool enable_speech: true
     property bool enable_imperial: false
     property bool enable_rc: false
@@ -97,7 +100,7 @@ Settings {
     property double uplink_rssi_warn: 0
     property double uplink_rssi_caution: 0
 
-    property bool show_rc_rssi: false
+    property bool show_rc_rssi: true
     property double rc_rssi_opacity: 1
     property double rc_rssi_size: 1
     property bool rc_rssi_declutter: false
@@ -359,6 +362,13 @@ Settings {
     property bool show_mission: true
     property double mission_opacity: 1
     property double mission_size: 1
+
+    property bool show_record_widget: true
+    property double recordTextSize: 14
+    property bool show_minimal_record_widget: false
+    property double record_widget_height: 48
+    property double record_widget_width: 140
+
 
     property bool show_aoa: false
     property double aoa_opacity: 1

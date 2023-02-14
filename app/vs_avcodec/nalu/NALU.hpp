@@ -27,34 +27,12 @@
 #include <qdebug.h>
 
 /**
- * A NALU either contains H264 data (default) or H265 data
- * NOTE: Only when copy constructing a NALU it owns the data, else it only holds a data pointer (that might get overwritten by the parser if you hold onto a NALU)
- * Also, H264 and H265 is slightly different
+ * NOTE: NALU only takes a c-style data pointer - it does not do any memory management. Use NALUBuffer if you need to store a NALU.
+ * Since H264 and H265 are that similar, we use this class for both (make sure to not call methds only supported on h265 with a h264 nalu,though)
  * The constructor of the NALU does some really basic validation - make sure the parser never produces a NALU where this validation would fail
  */
 class NALU{
 public:
-    // test video white iceland: Max 1024*117. Video might not be decodable if its NALU buffers size exceed the limit
-    // But a buffer size of 1MB accounts for 60fps video of up to 60MB/s or 480 Mbit/s. That should be plenty !
-    static constexpr const auto NALU_MAXLEN=1024*1024;
-    // Application should re-use NALU_BUFFER to avoid memory allocations
-    using NALU_BUFFER=std::array<uint8_t,NALU_MAXLEN>;
-    // Copy constructor allocates new buffer for data (heavy)
-    NALU(const NALU& nalu):
-    ownedData(std::vector<uint8_t>(nalu.getData(),nalu.getData()+nalu.getSize())),
-    m_data(ownedData->data()),m_data_len(nalu.getSize()),IS_H265_PACKET(nalu.IS_H265_PACKET),creationTime(nalu.creationTime){
-        //MLOGD<<"NALU copy constructor";
-        m_nalu_prefix_size=get_nalu_prefix_size();
-    }
-    // Default constructor does not allocate a new buffer,only stores some pointer (light)
-    NALU(const NALU_BUFFER& data1,const size_t data_length,const bool IS_H265_PACKET1=false,const std::chrono::steady_clock::time_point creationTime=std::chrono::steady_clock::now()):
-            m_data(data1.data()),m_data_len(data_length),IS_H265_PACKET(IS_H265_PACKET1),creationTime{creationTime}{
-        // Validate correctness of NALU (make sure parser never forwards NALUs where this assertion fails)
-        assert(hasValidPrefix());
-        assert(getSize()>=getMinimumNaluSize(IS_H265_PACKET1));
-        m_nalu_prefix_size=get_nalu_prefix_size();
-    };
-    // tmp
     NALU(const uint8_t* data1,size_t data_len1,const bool IS_H265_PACKET1=false,const std::chrono::steady_clock::time_point creationTime=std::chrono::steady_clock::now()):
             m_data(data1),m_data_len(data_len1),IS_H265_PACKET(IS_H265_PACKET1),creationTime{creationTime}
     {
@@ -62,13 +40,8 @@ public:
         assert(getSize()>=getMinimumNaluSize(IS_H265_PACKET1));
         m_nalu_prefix_size=get_nalu_prefix_size();
     }
-    // tmp, for data with 001 prefix instead of 0001
     ~NALU()= default;
 private:
-    // With the default constructor a NALU does not own its memory. This saves us one memcpy. However, storing a NALU after the lifetime of the
-    // Non-owned memory expired is also needed in some places, so the copy-constructor creates a copy of the non-owned data and stores it in a optional buffer
-    // WARNING: Order is important here (Initializer list). Declare before data pointer
-    const std::optional<std::vector<uint8_t>> ownedData={};
     const uint8_t* m_data;
     const size_t m_data_len;
     int m_nalu_prefix_size;
@@ -102,7 +75,7 @@ public:
         return m_data;
     }
     // size of the NALU data with 0001 prefix
-    const size_t getSize()const{
+    size_t getSize()const{
         return m_data_len;
     }
     //pointer to the NALU data without 0001 prefix
@@ -110,7 +83,7 @@ public:
         return &getData()[m_nalu_prefix_size];
     }
     //size of the NALU data without 0001 prefix
-    const ssize_t getDataSizeWithoutPrefix()const{
+    ssize_t getDataSizeWithoutPrefix()const{
         return getSize()-m_nalu_prefix_size;
     }
     // return the nal unit type (quick)
@@ -189,8 +162,51 @@ public:
        }
        return {640,480};
    }
+   // Print all sps info, for debugging
+   std::string get_sps_as_string()const{
+       if(!isSPS())return "no sps";
+       const auto offset_for_webrtc=webrtc::H264::kNaluTypeSize;
+       auto sps_opt = webrtc::SpsParser::ParseSps(getDataWithoutPrefix() + offset_for_webrtc, getDataSizeWithoutPrefix() - offset_for_webrtc);
+       if(!sps_opt){
+           return "cannot parse sps";
+       }
+       auto sps=sps_opt.value();
+       std::stringstream ss;
+       ss<<"SPS{"<<sps.width<<"x"<<sps.height<<" ";
+       ss<<"delta_pic_order_always_zero_flag:"<<sps.delta_pic_order_always_zero_flag<<",";
+       ss<<"frame_mbs_only_flag:"<<sps.frame_mbs_only_flag<<",";
+       ss<<"log2_max_frame_num:"<<sps.log2_max_frame_num<<",";
+       ss<<"log2_max_pic_order_cnt_lsb:"<<sps.log2_max_pic_order_cnt_lsb<<",";
+       ss<<"pic_order_cnt_type:"<<sps.pic_order_cnt_type<<",";
+       ss<<"max_num_ref_frames:"<<sps.max_num_ref_frames<<",";
+       ss<<"vui_params_present:"<<sps.vui_params_present<<",";
+       ss<<"id:"<<sps.id<<"}";
+       return ss.str();
+   }
 };
 
+// Copies the nalu data into its own c++-style managed buffer.
+class NALUBuffer{
+public:
+    NALUBuffer(const uint8_t* data,int data_len,bool is_h265,std::chrono::steady_clock::time_point creation_time){
+        m_data=std::make_shared<std::vector<uint8_t>>(data,data+data_len);
+        m_nalu=std::make_unique<NALU>(m_data->data(),m_data->size(),is_h265,creation_time);
+    }
+    NALUBuffer(const NALU& nalu){
+        m_data=std::make_shared<std::vector<uint8_t>>(nalu.getData(),nalu.getData()+nalu.getSize());
+        m_nalu=std::make_unique<NALU>(m_data->data(),m_data->size(),nalu.IS_H265_PACKET,nalu.creationTime);
+    }
+    NALUBuffer(const NALUBuffer&)=delete;
+    NALUBuffer(const NALUBuffer&&)=delete;
 
+    const NALU& get_nal(){
+        return *m_nalu;
+    }
+private:
+    std::shared_ptr<std::vector<uint8_t>> m_data;
+    std::unique_ptr<NALU> m_nalu;
+};
 
 #endif //LIVE_VIDEO_10MS_ANDROID_NALU_H
+
+

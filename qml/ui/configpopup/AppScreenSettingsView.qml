@@ -65,8 +65,8 @@ ScrollView {
                     font.pixelSize: 14
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
+                    from : 0.8
                     to : 2.0
-                    from : 1.0
 
                     anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
                     value: settings.global_scale
@@ -75,112 +75,11 @@ ScrollView {
                     onValueChanged: {
                         // @disable-check M222
                         settings.global_scale = value
-                    }
-                }
-            }
-            //Issue from @Norbert, rotating OSD can break things irreversible
-            /*Rectangle {
-                width: parent.width
-                height: rowHeight
-                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                Text {
-                    text: qsTr("Video Rotation (untested)")
-                    font.weight: Font.Bold
-                    font.pixelSize: 13
-                    anchors.leftMargin: 8
-                    verticalAlignment: Text.AlignVCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: 224
-                    height: elementHeight
-                    anchors.left: parent.left
-                }
-
-                Text {
-                    text: Number(settings.video_rotation).toLocaleString(Qt.locale(), 'f', 1) + "x";
-                    font.pixelSize: 16
-                    anchors.right: videoRotationSpinBox.left
-                    anchors.rightMargin: 12
-                    verticalAlignment: Text.AlignVCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: 32
-                    height: elementHeight
-
-                }
-
-                Slider {
-                    id: videoRotationSpinBox
-                    height: elementHeight
-                    width: 210
-                    font.pixelSize: 14
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    to : 270
-                    from : 0
-                    stepSize: 90
-
-                    anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
-                    value: settings.video_rotation
-
-                    // @disable-check M223
-                    onValueChanged: {
-                        // @disable-check M222
-                        settings.video_rotation = value
+                        //_messageBoxInstance.set_text_and_show("Please restart QOpenHD !")
                     }
                 }
             }
 
-            Rectangle {
-                width: parent.width
-                height: rowHeight
-                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                Text {
-                    //TODO on some platforms might not be able to nav back
-                    text: qsTr("OSD rotation")
-                    font.weight: Font.Bold
-                    font.pixelSize: 13
-                    anchors.leftMargin: 8
-                    verticalAlignment: Text.AlignVCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: 224
-                    height: elementHeight
-                    anchors.left: parent.left
-                }
-
-                Text {
-                    text: Number(settings.osd_rotation).toLocaleString(Qt.locale(), 'f', 1) + "x";
-                    font.pixelSize: 16
-                    anchors.right: osdRotationSpinBox.left
-                    anchors.rightMargin: 12
-                    verticalAlignment: Text.AlignVCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: 32
-                    height: elementHeight
-
-                }
-
-                Slider {
-                    id: osdRotationSpinBox
-                    height: elementHeight
-                    width: 210
-                    font.pixelSize: 14
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    to : 270
-                    from : 0
-                    stepSize: 90
-
-                    anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
-                    value: settings.osd_rotation
-
-                    // @disable-check M223
-                    onValueChanged: {
-                        // @disable-check M222
-                        settings.osd_rotation = value
-                    }
-                }
-            }*/
             Rectangle {
                 width: parent.width
                 height: rowHeight

@@ -38,6 +38,8 @@ CONFIG(debug, debug|release) {
 #https://doc.qt.io/qt-6/portingguide.html
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x050F00
 
+# See https://www.qt.io/blog/qml-type-registration-in-qt-5.15
+# avoid using qmlRegisterType<>, use macro instead
 CONFIG += qmltypes
 QML_IMPORT_NAME = OpenHD
 QML_IMPORT_MAJOR_VERSION = 1
@@ -51,8 +53,14 @@ RCC_DIR      = $${OUT_PWD}/rcc
 #You can supress the warnings in CMake using ...
 #and https://stackoverflow.com/questions/2987062/configuring-the-gcc-compiler-switches-in-qt-qtcreator-and-qmake
 #this can not be used in MSVC (windows)
+#NOTE: While disabling warnings is often discouraged, in the scope of QOpenHD, those warnings distract more from actual issues than help
+#However, if you feel so, re-enable and fix them ;)
 QMAKE_CXXFLAGS += -Wno-address-of-packed-member
 QMAKE_CXXFLAGS += -Wno-cast-align
+QMAKE_CXXFLAGS += -Wno-unused-function
+QMAKE_CXXFLAGS += -Wno-unused-variable
+QMAKE_CXXFLAGS += -Wno-unused-parameter
+QMAKE_CXXFLAGS += -Wno-sign-compare
 
 # These are the QT libraries we always need when building QOpenHD - they are intentially kept as small in number as possible
 # (aka all these really should come with pretty much any qt install)
@@ -61,34 +69,18 @@ QMAKE_CXXFLAGS += -Wno-cast-align
 # see app/adsb/adsb_lib.pri for an example
 QT +=core quick qml gui
 QT += opengl
+# TODO remove me
+#QT += multimedia
+#QT += multimediawidgets
+#GSTREAMER_ROOT_ANDROID = /home/consti10/Downloads/gstreamer-1.0-android-universal-1.20.5
 
 INCLUDEPATH += $$PWD/lib
 INCLUDEPATH += $$PWD/app
 INCLUDEPATH += $$PWD/app/exp
 
-# NOTE: MAVSDK needs to be built and installed manually (since it doesn't support QMake's .pro)
-# also note that mavlink (openhd flavour) comes with MAVSDK (since it is needed for building MAVSDK anyways)
-# uncomment out below if you wanna use MAVSDK shared for some reason
-#CONFIG += QOPENHD_LINK_MAVSDK_SHARED
-QOPENHD_LINK_MAVSDK_SHARED {
-    # mavsdk needs to be built and installed locally with BUILD_SHARED_LIBS=ON
-    message(mavsdk shared)
-    # We have the include path 2 times here, from MAVSDK docs:
-    # The mavsdk library installed via a .deb or .rpm file will be installed in /usr/ while the built library will be installed in /usr/local
-    INCLUDEPATH += /usr/local/include/mavsdk
-    INCLUDEPATH += /usr/include/mavsdk
-    LIBS += -L/usr/local/lib -lmavsdk
-} else {
-    # mavsdk needs to be built and (semi-installed) locally with BUILD_SHARED_LIBS=OFF
-    # This is for packaging / releases / recommended for development, since we then have one fever package to install and no issues with updating
-    # QOpenHD and/or MAVSDK during development
-    message(mavsdk static)
-    INCLUDEPATH += /usr/local/include/mavsdk
-    LIBS += -L/usr/local/lib/libmavsdk.a -lmavsdk
-    # TODO windows, android, ...
-    # weird rpi
-    LIBS += -latomic
-}
+# QOpenHD telemetry (mavlink, partially based on MAVSDK) features
+# REQUIRED - without it QOpenHD will compile, but be pretty much non functional
+include(app/telemetry/telemetry.pri)
 
 # Avcodec decode and display, all sources
 # Replaced gstreamer for now
@@ -105,45 +97,28 @@ include(app/vs_gst_qmlglsink/gst_video.pri)
 # adsb library
 include(app/adsb/adsb_lib.pri)
 
-# All Generic files. NOTE: During development, when you create new files, QT Creater will add them to the
-# "first SOURCES / HEADERS it can find in the .pro, which is here". This is why (as an example) geographic lib,
-# which is a library, comes after the generic files here.
+# All Generic files / files that literally have 0!! dependencies other than qt
 SOURCES += \
     app/logging/hudlogmessagesmodel.cpp \
     app/logging/logmessagesmodel.cpp \
-    app/telemetry/models/aohdsystem.cpp \
-    app/qopenhd.cpp \
-    app/telemetry/models/camerastreammodel.cpp \
-    app/telemetry/models/rcchannelsmodel.cpp \
-    app/telemetry/models/wificard.cpp \
-    app/telemetry/settings/improvedintsetting.cpp \
-    app/telemetry/settings/improvedstringsetting.cpp \
-    app/telemetry/settings/synchronizedsettings.cpp \
+    app/util/qopenhd.cpp \
     app/util/QmlObjectListModel.cpp \
     app/util/WorkaroundMessageBox.cpp \
     app/util/qrenderstats.cpp \
-    app/vs_util/decodingstatistcs.cpp
+    app/vs_util/decodingstatistcs.cpp \
+    app/util/FrequencyMonitor.cpp \
+    app/main.cpp \
 
 HEADERS += \
     app/logging/hudlogmessagesmodel.h \
     app/logging/loghelper.h \
     app/logging/logmessagesmodel.h \
-    app/telemetry/mavsdk_include.h \
-    app/telemetry/models/aohdsystem.h \
-    app/telemetry/models/camerastreammodel.h \
-    app/telemetry/models/rcchannelsmodel.h \
-    app/qopenhd.h \
-    app/telemetry/models/wificard.h \
-    app/telemetry/openhd_defines.hpp \
-    app/telemetry/qopenhdmavlinkhelper.hpp \
-    app/telemetry/settings/improvedintsetting.h \
-    app/telemetry/settings/improvedstringsetting.h \
-    app/telemetry/settings/synchronizedsettings.h \
-    app/telemetry/telemetryutil.hpp \
+    app/util/qopenhd.h \
     app/util/QmlObjectListModel.h \
     app/util/WorkaroundMessageBox.h \
     app/util/qrenderstats.h \
-    app/vs_util/decodingstatistcs.h
+    app/vs_util/decodingstatistcs.h \
+    app/util/FrequencyMonitor.h \
 
 
 # Geographic lib updated to c-2.0, so much cleaner
@@ -170,29 +145,9 @@ HEADERS += \
     app/osd/debug_overdraw.hpp \
     app/osd/aoagauge.h \
 
-# I deleted all the "old" telemetry protocolls other than mavlink
-# and moved them into their own respective directories
-HEADERS += \
-    app/telemetry/MavlinkTelemetry.h \
-    app/telemetry/settings/mavlinksettingsmodel.h \
-
-SOURCES += \
-    app/telemetry/MavlinkTelemetry.cpp \
-    app/telemetry/settings/mavlinksettingsmodel.cpp \
-
-
-# all other files, complete mess
-SOURCES += \
-    app/telemetry/models/fcmavlinksystem.cpp \
-    app/util/FrequencyMonitor.cpp \
-    app/main.cpp \
 
 RESOURCES += qml/qml.qrc
 
-HEADERS += \
-    app/telemetry/models/fcmavlinksystem.h \
-    app/util/FrequencyMonitor.h \
-    app/util/sharedqueue.h \
 
 DISTFILES += \
     README.md \
@@ -211,6 +166,7 @@ DISTFILES += \
     android/res/values/libs.xml \
     android/res/values/styles.xml \
     android/src/OpenHDActivity.java \
+    android/src/SurfaceTextureListener.java \
     android/src/org/freedesktop/gstreamer/androidmedia/GstAhcCallback.java \
     android/src/org/freedesktop/gstreamer/androidmedia/GstAhsCallback.java \
     android/src/org/freedesktop/gstreamer/androidmedia/GstAmcOnFrameAvailableListener.java \
@@ -219,22 +175,15 @@ DISTFILES += \
     app/openhd_systems/README.md \
     app/osd_extra/Readme.txt \
     app/platform/README.md \
-    app/telemetry/README.md \
-    app/telemetry/settings/README.md \
+    app/telemetry/telemetry.pri \
     app/util/README.md \
     app/videostreaming/README.md \
     app/videostreaming/gst_qmlglsink/gst_video.pri \
-    app/videostreaming/legacy/README.md \
-    app/videostreaming_util/README.txt \
+    app/vs_android/videostreamingandroid.pri \
     extra_build_qmake.sh \
-    inc/osd/Readme.md \
     lib/h264nal/h264nal.pri \
     qml/qtquickcontrols2.conf \
-    qml/resources/README.md \
-    qml/ui/ConfigPopup/README.md \
-    qml/ui/elements/README.md \
     qml/ui/qmldir \
-    tools/usefull_commands.md \
 
 
 iOSBuild {
@@ -297,8 +246,13 @@ WindowsBuild {
 }
 
 AndroidBuild {
+    message("AndroidBuild")
     CONFIG += EnableJoysticks
-    CONFIG += EnableSpeech
+    # Text to speech crashes on android for some weird reason
+    #CONFIG += EnableSpeech
+    QT += androidextras
+
+    include(app/vs_android/videostreamingandroid.pri)
 }
 
 EnableSpeech {
@@ -308,14 +262,7 @@ EnableSpeech {
 }
 
 
-contains(ANDROID_TARGET_ARCH,armeabi-v7a) {
+android{
     ANDROID_PACKAGE_SOURCE_DIR = \
         $$PWD/android
 }
-
-contains(ANDROID_TARGET_ARCH,arm64-v8a) {
-    ANDROID_PACKAGE_SOURCE_DIR = \
-        $$PWD/android
-}
-
-ANDROID_ABIS = armeabi-v7a

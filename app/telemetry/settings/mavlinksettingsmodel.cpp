@@ -34,6 +34,12 @@ MavlinkSettingsModel &MavlinkSettingsModel::instanceGround()
     return *instanceGround;
 }
 
+/*MavlinkSettingsModel &MavlinkSettingsModel::instanceFC()
+{
+    static MavlinkSettingsModel* instanceFc=new MavlinkSettingsModel(1,1);
+    return *instanceFc;
+}*/
+
 std::map<std::string, void *> MavlinkSettingsModel::get_whitelisted_params()
 {
     std::map<std::string,void*> ret{};
@@ -51,7 +57,8 @@ std::map<std::string, void *> MavlinkSettingsModel::get_whitelisted_params()
     ret["CONFIG_BOOT_AIR"]=nullptr;
     ret["WB_MAX_D_BZ"]=nullptr;
     // whitelisted for now
-    ret["VARIABLE_BITRARE"]=nullptr;
+    ret["VARIABLE_BITRATE"]=nullptr;
+    ret["V_AIR_RECORDING"]=nullptr;
     //ret[""]=nullptr;
     return ret;
 }
@@ -294,9 +301,12 @@ static std::optional<ImprovedStringSetting> get_improved_for_string(const std::s
             "640x480@30",
             "640x480@60",
             "640x480@90",
+            //"960x720@30",
+            //"960x720@60",
             "1280x720@30",
             "1280x720@49",
             "1280x720@60",
+            //"1440x1080@30",
             "1920x1080@30",
     };
     map_improved_params["V_FORMAT"]=ImprovedStringSetting::create_from_keys_only(choices_video_res_framerate);
@@ -327,14 +337,16 @@ MavlinkSettingsModel::MavlinkSettingsModel(uint8_t sys_id,uint8_t comp_id,QObjec
     //m_data.push_back({"VIDEO_FPS",1});
 }
 
-void MavlinkSettingsModel::set_param_client(std::shared_ptr<mavsdk::System> system)
+void MavlinkSettingsModel::set_param_client(std::shared_ptr<mavsdk::System> system,bool autoload_all_params)
 {
     // only allow adding the param client once it is discovered, do not overwrite it once discovered.
     assert(this->param_client==nullptr);
     assert(system->get_system_id()==m_sys_id);
     m_system=system;
     param_client=std::make_shared<mavsdk::Param>(system,m_comp_id,true);
-    try_fetch_all_parameters();
+    if(autoload_all_params){
+        try_fetch_all_parameters();
+    }
 }
 
 bool MavlinkSettingsModel::try_fetch_all_parameters()
@@ -351,6 +363,7 @@ bool MavlinkSettingsModel::try_fetch_all_parameters()
         }
         qDebug()<<"Done removing old params";
         // now fetch all params using mavsdk (this talks to the OHD system(s).
+        //param_client->set_timeout(10);
         const auto params=param_client->get_all_params(true);
         for(const auto& int_param:params.int_params){
             MavlinkSettingsModel::SettingData data{QString(int_param.name.c_str()),int_param.value};

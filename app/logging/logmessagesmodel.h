@@ -4,9 +4,6 @@
 #include <QAbstractListModel>
 #include <QColor>
 
-//TODO remove me
-//#include "../telemetry/qopenhdmavlinkhelper.hpp"
-
 /**
  * Note: This is for the "Log" list UI element, NOT for the HUD
  * Here we can display much more log messages / do not need to worry about spamming the user.

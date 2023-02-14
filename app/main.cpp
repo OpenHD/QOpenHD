@@ -1,10 +1,11 @@
+#include "qqmlcontext.h"
 #include <QApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlComponent>
 #include <QDebug>
 #include <QFontDatabase>
 #if defined(__android__)
-#include <QtAndroidExtras/QtAndroid>
+#include <QtAndroid>
 const QVector<QString> permissions({"android.permission.INTERNET",
                                     "android.permission.WRITE_EXTERNAL_STORAGE",
                                     "android.permission.READ_EXTERNAL_STORAGE",
@@ -12,12 +13,16 @@ const QVector<QString> permissions({"android.permission.INTERNET",
                                     "android.permission.ACCESS_FINE_LOCATION"});
 #endif
 
+#ifdef QOPENHD_HAS_MAVSDK_MAVLINK_TELEMETRY
 #include "telemetry/models/fcmavlinksystem.h"
 #include "telemetry/models/camerastreammodel.h"
 #include "telemetry/models/aohdsystem.h"
 #include "telemetry/models/wificard.h"
 #include "telemetry/MavlinkTelemetry.h"
 #include "telemetry/models/rcchannelsmodel.h"
+#include "telemetry/settings/mavlinksettingsmodel.h"
+#include "telemetry/settings/synchronizedsettings.h"
+#endif //QOPENHD_HAS_MAVSDK_MAVLINK_TELEMETRY
 
 #include "util/QmlObjectListModel.h"
 
@@ -51,10 +56,13 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 
 #include "logging/logmessagesmodel.h"
 #include "logging/hudlogmessagesmodel.h"
-#include "telemetry/settings/mavlinksettingsmodel.h"
-#include "telemetry/settings/synchronizedsettings.h"
-#include "qopenhd.h"
+#include "util/qopenhd.h"
 #include "util/WorkaroundMessageBox.h"
+
+#ifdef QOPENHD_ENABLE_VIDEO_VIA_ANDROID
+#include <vs_android/qandroidmediaplayer.h>
+#include <vs_android/qsurfacetexture.h>
+#endif
 
 #ifdef QOPENHD_ENABLE_ADSB_LIBRARY
 #include "adsb/ADSBVehicleManager.h"
@@ -167,17 +175,14 @@ void write_other_context_properties(QQmlApplicationEngine& engine){
 #else
     engine.rootContext()->setContextProperty("EnableGStreamer", QVariant(false));
 #endif
-
-
 }
 
 
 
 int main(int argc, char *argv[]) {
-    
 
-    QCoreApplication::setOrganizationName("Open.HD");
-    QCoreApplication::setOrganizationDomain("open.hd");
+    QCoreApplication::setOrganizationName("OpenHD");
+    QCoreApplication::setOrganizationDomain("openhd");
     QCoreApplication::setApplicationName("QOpenHD");
     
     QSettings settings;
@@ -212,9 +217,12 @@ int main(int argc, char *argv[]) {
     const std::string global_scale_s = std::to_string(global_scale);
     QByteArray scaleAsQByteArray(global_scale_s.c_str(), global_scale_s.length());
     qputenv("QT_SCALE_FACTOR", scaleAsQByteArray);
+    qDebug()<<"Storing settings at ["<<settings.fileName()<<"]";
 
     // https://doc.qt.io/qt-6/qtquick-visualcanvas-scenegraph-renderer.html
     //qputenv("QSG_VISUALIZE", "overdraw");
+    //qputenv("QSG_VISUALIZE", "batches");
+    //qputenv("QSG_VISUALIZE", "changes");
     //QCoreApplication::setAttribute(Qt::AA_UseOpenGLES);
     //QLoggingCategory::setFilterRules("qt.scenegraph.*=true");
     //QLoggingCategory::setFilterRules("qt.scenegraph.time.*=true");
@@ -224,7 +232,6 @@ int main(int argc, char *argv[]) {
     //QLoggingCategory::setFilterRules("qt.qpa.eglfs.*=true");
     //QLoggingCategory::setFilterRules("qt.qpa.egl*=true");
 
-
     QApplication app(argc, argv);
 
 #if defined(__ios__)
@@ -233,10 +240,8 @@ int main(int argc, char *argv[]) {
     applePlatform->registerNotifications();
 #endif
 
-
+  QOpenHD::instance().keep_screen_on(true);
 #if defined(__android__)
-    OpenHDUtil::instance().keep_screen_on(true);
-
     for(const QString &permission : permissions) {
         auto result = QtAndroid::checkPermission(permission);
 
@@ -261,6 +266,7 @@ int main(int argc, char *argv[]) {
     qmlRegisterType<DrawingCanvas>("OpenHD", 1, 0, "DrawingCanvas");
     qmlRegisterType<AoaGauge>("OpenHD", 1, 0, "AoaGauge");
 
+
     QQmlApplicationEngine engine;
 #ifdef QOPENHD_ENABLE_VIDEO_VIA_AVCODEC
     // QT doesn't have the define(s) from c++
@@ -277,6 +283,9 @@ int main(int argc, char *argv[]) {
     engine.rootContext()->setContextProperty("_qopenhd", &QOpenHD::instance());
     QOpenHD::instance().setEngine(&engine);
 
+    // Regster all the QT Mavlink system model(s)
+    // it is a common practice for QT to prefix models from c++ with an underscore
+
     engine.rootContext()->setContextProperty("_qrenderstats", &QRenderStats::instance());
 
     write_platform_context_properties(engine);
@@ -284,11 +293,30 @@ int main(int argc, char *argv[]) {
     engine.rootContext()->setContextProperty("_logMessagesModel", &LogMessagesModel::instance());
     engine.rootContext()->setContextProperty("_hudLogMessagesModel", &HUDLogMessagesModel::instance());
 
+#ifdef QOPENHD_HAS_MAVSDK_MAVLINK_TELEMETRY
+    // Telemetry
     engine.rootContext()->setContextProperty("_airCameraSettingsModel", &MavlinkSettingsModel::instanceAirCamera());
     engine.rootContext()->setContextProperty("_airCameraSettingsModel2", &MavlinkSettingsModel::instanceAirCamera2());
     engine.rootContext()->setContextProperty("_airPiSettingsModel", &MavlinkSettingsModel::instanceAir());
     engine.rootContext()->setContextProperty("_groundPiSettingsModel", &MavlinkSettingsModel::instanceGround());
+    // exp
+    //engine.rootContext()->setContextProperty("_fcSettingsModel", &MavlinkSettingsModel::instanceFC());
     engine.rootContext()->setContextProperty("_synchronizedSettings", &SynchronizedSettings::instance());
+    engine.rootContext()->setContextProperty("_mavlinkTelemetry", &MavlinkTelemetry::instance());
+    engine.rootContext()->setContextProperty("_fcMavlinkSystem", &FCMavlinkSystem::instance());
+    engine.rootContext()->setContextProperty("_rcchannelsmodelground", &RCChannelsModel::instanceGround());
+    engine.rootContext()->setContextProperty("_rcchannelsmodelfc", &RCChannelsModel::instanceFC());
+    engine.rootContext()->setContextProperty("_ohdSystemAir", &AOHDSystem::instanceAir());
+    engine.rootContext()->setContextProperty("_ohdSystemGround", &AOHDSystem::instanceGround());
+    engine.rootContext()->setContextProperty("_cameraStreamModelPrimary", &CameraStreamModel::instance(0));
+    engine.rootContext()->setContextProperty("_cameraStreamModelSecondary", &CameraStreamModel::instance(1));
+    engine.rootContext()->setContextProperty("_wifi_card_gnd0", &WiFiCard::instance_gnd(0));
+    engine.rootContext()->setContextProperty("_wifi_card_gnd1", &WiFiCard::instance_gnd(1));
+    engine.rootContext()->setContextProperty("_wifi_card_gnd2", &WiFiCard::instance_gnd(2));
+    engine.rootContext()->setContextProperty("_wifi_card_gnd3", &WiFiCard::instance_gnd(3));
+    engine.rootContext()->setContextProperty("_wifi_card_air", &WiFiCard::instance_air());
+#endif //QOPENHD_HAS_MAVSDK_MAVLINK_TELEMETRY
+
 
 #ifdef QOPENHD_ENABLE_GSTREAMER
     engine.rootContext()->setContextProperty("QOPENHD_ENABLE_GSTREAMER", QVariant(true));
@@ -302,30 +330,6 @@ int main(int argc, char *argv[]) {
     engine.rootContext()->setContextProperty("QOPENHD_ENABLE_GSTREAMER", QVariant(false));
 #endif
 
-    //MavlinkTelemetry::register_for_qml(engine.rootContext());
-    engine.rootContext()->setContextProperty("_mavlinkTelemetry", &MavlinkTelemetry::instance());
-
-    // Regster all the QT Mavlink system model(s)
-    // it is a common practice for QT to prefix models from c++ with an underscore
-    //FCMavlinkSystem::register_for_qml(engine.rootContext());
-    engine.rootContext()->setContextProperty("_fcMavlinkSystem", &FCMavlinkSystem::instance());
-
-    engine.rootContext()->setContextProperty("_rcchannelsmodelground", &RCChannelsModel::instanceGround());
-    engine.rootContext()->setContextProperty("_rcchannelsmodelfc", &RCChannelsModel::instanceFC());
-
-    //AOHDSystem::register_for_qml(engine.rootContext());
-    engine.rootContext()->setContextProperty("_ohdSystemAir", &AOHDSystem::instanceAir());
-    engine.rootContext()->setContextProperty("_ohdSystemGround", &AOHDSystem::instanceGround());
-    //
-    engine.rootContext()->setContextProperty("_cameraStreamModelPrimary", &CameraStreamModel::instance(0));
-    engine.rootContext()->setContextProperty("_cameraStreamModelSecondary", &CameraStreamModel::instance(1));
-    // wifi cards
-    engine.rootContext()->setContextProperty("_wifi_card_gnd0", &WiFiCard::instance_gnd(0));
-    engine.rootContext()->setContextProperty("_wifi_card_gnd1", &WiFiCard::instance_gnd(1));
-    engine.rootContext()->setContextProperty("_wifi_card_gnd2", &WiFiCard::instance_gnd(2));
-    engine.rootContext()->setContextProperty("_wifi_card_gnd3", &WiFiCard::instance_gnd(3));
-    //
-    engine.rootContext()->setContextProperty("_wifi_card_air", &WiFiCard::instance_air());
 
     engine.rootContext()->setContextProperty("_decodingStatistics",&DecodingStatistcs::instance());
     // dirty
@@ -387,6 +391,13 @@ engine.rootContext()->setContextProperty("EnableADSB", QVariant(false));
 #endif
      );
 
+#ifdef QOPENHD_ENABLE_VIDEO_VIA_ANDROID
+    qmlRegisterType<QSurfaceTexture>("OpenHD", 1, 0, "SurfaceTexture");
+    // Create a player
+    QAndroidMediaPlayer player;
+    engine.rootContext()->setContextProperty("_mediaPlayer", &player);
+#endif
+
     engine.load(QUrl(QLatin1String("qrc:/main.qml")));
 
 #if defined(__android__)
@@ -419,6 +430,7 @@ engine.rootContext()->setContextProperty("EnableADSB", QVariant(false));
     }
 #endif
 #endif // QOPENHD_ENABLE_GSTREAMER
+    QRenderStats::instance().register_to_root_window(engine);
 
     LogMessagesModel::instance().addLogMessage("QOpenHD","running");
     const int retval = app.exec();
