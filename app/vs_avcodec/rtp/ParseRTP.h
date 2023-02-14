@@ -20,7 +20,18 @@
  ** Data is forwarded directly via a callback for no thread scheduling overhead
 **********************************************/
 
+// Enough for pretty much any resolution/framerate we handle in OpenHD
 static constexpr const auto NALU_MAXLEN=1024*1024;
+
+/*struct NALUBuff{
+    // system time point first byte of this NALU was received
+    std::chrono::steady_clock::time_point creation_time;
+    // buffer for nalu data (might not be completely filled)
+   std::shared_ptr<std::array<uint8_t,NALU_MAXLEN>> nalu_data;
+   // size of the nalu data
+   int nalu_data_size;
+};*/
+
 typedef std::function<void(const std::chrono::steady_clock::time_point creation_time,const uint8_t* nalu_data,const int nalu_data_size)> NALU_DATA_CALLBACK;
 
 class RTPDecoder{
@@ -54,7 +65,7 @@ private:
     // Resets the m_nalu_data_length to 0
     void forwardNALU(const bool isH265=false);
     const NALU_DATA_CALLBACK m_cb;
-    //std::shared_ptr<std::array<uint8_t,NALU_MAXLEN>> m_curr_nalu;
+    //std::shared_ptr<std::array<uint8_t,NALU_MAXLEN>> m_curr_nalu{};
     std::array<uint8_t,NALU_MAXLEN> m_curr_nalu;
     size_t m_nalu_data_length=0;
     bool m_feed_incomplete_frames;

@@ -272,7 +272,7 @@ bool AVCodecDecoder::feed_rtp_frame_if_available()
     if(frame){
         {
             // parsing delay
-            const auto delay=std::chrono::steady_clock::now()-frame->creationTime;
+            const auto delay=std::chrono::steady_clock::now()-frame->get_nal().creationTime;
             avg_parse_time.add(delay);
             avg_parse_time.custom_print_in_intervals(std::chrono::seconds(3),[](const std::string name,const std::string message){
                 //qDebug()<<name.c_str()<<":"<<message.c_str();
@@ -280,8 +280,8 @@ bool AVCodecDecoder::feed_rtp_frame_if_available()
             });
         }
         AVPacket *pkt=av_packet_alloc();
-        pkt->data=(uint8_t*)frame->getData();
-        pkt->size=frame->getSize();
+        pkt->data=(uint8_t*)frame->get_nal().getData();
+        pkt->size=frame->get_nal().getSize();
         const auto beforeFeedFrameUs=getTimeUs();
         pkt->pts=beforeFeedFrameUs;
         timestamp_add_fed(pkt->pts);
@@ -807,15 +807,15 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp(const QOpenHDVideoHe
               has_keyframe_data=true;
               continue;
          }else{
-             std::shared_ptr<NALU> buf =m_rtp_receiver->get_next_frame(std::chrono::milliseconds(kDefaultFrameTimeout));
+             auto buf =m_rtp_receiver->get_next_frame(std::chrono::milliseconds(kDefaultFrameTimeout));
              if(buf==nullptr){
                  // No buff after X seconds
                  continue;
              }
              //qDebug()<<"Got decode data (after keyframe)";
-             pkt->data=(uint8_t*)buf->getData();
-             pkt->size=buf->getSize();
-             decode_and_wait_for_frame(pkt,buf->creationTime);
+             pkt->data=(uint8_t*)buf->get_nal().getData();
+             pkt->size=buf->get_nal().getSize();
+             decode_and_wait_for_frame(pkt,buf->get_nal().creationTime);
              //fetch_frame_or_feed_input_packet();
          }
      }
@@ -886,8 +886,8 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp_and_mmal_direct(cons
         }else{
 		  // Switch over to a callback-based approach for lower latency. mmal already has a frame queue, so we don't need an extra one
             if(!cb_set){
-                auto cb=[this,&mmal_decode_display,&feed_frame_error_count,&m_last_log_decoder_unhealty](std::shared_ptr<NALU> buf){
-                    const bool feed_frame_success=mmal_decode_display->feed_frame(buf->getData(),buf->getSize(),std::chrono::milliseconds(8));
+                auto cb=[this,&mmal_decode_display,&feed_frame_error_count,&m_last_log_decoder_unhealty](const NALU& nalu){
+                    const bool feed_frame_success=mmal_decode_display->feed_frame(nalu.getData(),nalu.getSize(),std::chrono::milliseconds(8));
                     //const auto duration_feed_frame=std::chrono::steady_clock::now()-before_feed_frame;
                     //qDebug()<<"feed frame time:"<<MyTimeHelper::R(duration_feed_frame).c_str();
                     if(!feed_frame_success){
@@ -901,7 +901,7 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp_and_mmal_direct(cons
                             HUDLogMessagesModel::instance().add_message_warning("Decoder unhealthy-reduce load");
                         }
                     }
-                    const auto delay=std::chrono::steady_clock::now()-buf->creationTime;
+                    const auto delay=std::chrono::steady_clock::now()-nalu.creationTime;
                     avg_parse_time.add(delay);
                     avg_parse_time.custom_print_in_intervals(std::chrono::seconds(3),[](const std::string name,const std::string message){
                         //qDebug()<<name.c_str()<<":"<<message.c_str();

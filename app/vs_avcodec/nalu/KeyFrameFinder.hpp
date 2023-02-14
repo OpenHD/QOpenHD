@@ -15,24 +15,24 @@
 // For later use
 class KeyFrameFinder{
 private:
-    std::unique_ptr<NALU> SPS=nullptr;
-    std::unique_ptr<NALU> PPS=nullptr;
+    std::unique_ptr<NALUBuffer> SPS=nullptr;
+    std::unique_ptr<NALUBuffer> PPS=nullptr;
     // VPS are only used in H265
-    std::unique_ptr<NALU> VPS=nullptr;
+    std::unique_ptr<NALUBuffer> VPS=nullptr;
 public:
     bool saveIfKeyFrame(const NALU &nalu){
         if(nalu.getSize()<=0)return false;
         if(nalu.isSPS()){
-            SPS=std::make_unique<NALU>(nalu);
+            SPS=std::make_unique<NALUBuffer>(nalu);
             qDebug()<<"SPS found";
             qDebug()<<nalu.get_sps_as_string().c_str();
             return true;
         }else if(nalu.isPPS()){
-            PPS=std::make_unique<NALU>(nalu);
+            PPS=std::make_unique<NALUBuffer>(nalu);
             qDebug()<<"PPS found";
             return true;
         }else if(nalu.IS_H265_PACKET && nalu.isVPS()){
-            VPS=std::make_unique<NALU>(nalu);
+            VPS=std::make_unique<NALUBuffer>(nalu);
             qDebug()<<"VPS found";
             return true;
         }
@@ -51,41 +51,38 @@ public:
         assert(allKeyFramesAvailable(IS_H265));
         if(IS_H265){
             // Looks like avcodec wants the VPS before sps and pps
-            const auto size=SPS->getSize()+PPS->getSize()+VPS->getSize();
+            auto& sps=SPS->get_nal();
+            auto& pps=PPS->get_nal();
+            auto& vps=VPS->get_nal();
+            const auto size=sps.getSize()+pps.getSize()+vps.getSize();
             auto ret=std::make_unique<std::vector<uint8_t>>(size);
-            std::memcpy(ret->data(),VPS->getData(),VPS->getSize());
-            auto offset=VPS->getSize();
-            std::memcpy(ret->data()+offset,SPS->getData(),SPS->getSize());
-            offset+=SPS->getSize();
-            std::memcpy(ret->data()+offset,PPS->getData(),PPS->getSize());
+            std::memcpy(ret->data(),vps.getData(),vps.getSize());
+            auto offset=vps.getSize();
+            std::memcpy(ret->data()+offset,sps.getData(),sps.getSize());
+            offset+=sps.getSize();
+            std::memcpy(ret->data()+offset,pps.getData(),pps.getSize());
             return ret;
         }
-        const auto size=SPS->getSize()+PPS->getSize();
+        auto& sps=SPS->get_nal();
+        auto& pps=PPS->get_nal();
+        const auto size=sps.getSize()+pps.getSize();
         auto ret=std::make_shared<std::vector<uint8_t>>(size);
-        std::memcpy(ret->data(),SPS->getData(),SPS->getSize());
-        std::memcpy(ret->data()+SPS->getSize(),PPS->getData(),PPS->getSize());
+        std::memcpy(ret->data(),sps.getData(),sps.getSize());
+        std::memcpy(ret->data()+sps.getSize(),pps.getData(),pps.getSize());
         return ret;
-    }    
+    }
     // returns false if the config data (SPS,PPS,optional VPS) has changed
     // true otherwise
     bool check_is_still_same_config_data(const NALU &nalu){
         assert(allKeyFramesAvailable(nalu.IS_H265_PACKET));
         if(nalu.isSPS()){
-            return compare(nalu,*SPS);
+            return compare(nalu,SPS->get_nal());
         }else if(nalu.isPPS()){
-            return compare(nalu,*PPS);
+            return compare(nalu,PPS->get_nal());
         }else if(nalu.IS_H265_PACKET && nalu.isVPS()){
-            return compare(nalu,*VPS);
+            return compare(nalu,VPS->get_nal());
         }
         return true;
-    }
-    //SPS
-    const NALU& getCSD0()const{
-        return *SPS;
-    }
-    //PPS
-    const NALU& getCSD1()const{
-        return *PPS;
     }
     static void appendNaluData(std::vector<uint8_t>& buff,const NALU& nalu){
         buff.insert(buff.begin(),nalu.getData(),nalu.getData()+nalu.getSize());
@@ -97,7 +94,7 @@ public:
     }
     std::array<int,2> sps_get_width_height()const{
         assert(SPS!=nullptr);
-        return SPS->sps_get_width_height();
+        return SPS->get_nal().sps_get_width_height();
     }
 public:
     static bool compare(const NALU& n1,const NALU& n2){
