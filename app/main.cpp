@@ -171,17 +171,30 @@ void write_other_context_properties(QQmlApplicationEngine& engine){
 
 }
 
+
+
 int main(int argc, char *argv[]) {
-    // QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-    QCoreApplication::setAttribute(Qt::AA_DisableHighDpiScaling);
-    if (qgetenv("QT_FONT_DPI").isEmpty()) {
-        qputenv("QT_FONT_DPI", "150");
-    }
-    //QCoreApplication::setAttribute(Qt::AA_UseOpenGLES);
+    
 
     QCoreApplication::setOrganizationName("Open.HD");
     QCoreApplication::setOrganizationDomain("open.hd");
     QCoreApplication::setApplicationName("QOpenHD");
+    
+    QSettings settings;
+
+    QCoreApplication::setAttribute(Qt::AA_DisableHighDpiScaling);
+
+    const int font_dpi = settings.value("font_dpi").toInt();
+
+    if (font_dpi) {
+        QCoreApplication::setAttribute(Qt::AA_DisableHighDpiScaling);
+        const std::string font_dpi_s = std::to_string(font_dpi);
+        qputenv("QT_FONT_DPI", QByteArray(font_dpi_s.c_str(), font_dpi_s.length()));
+        } else {
+        QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+        }
+
+    //QCoreApplication::setAttribute(Qt::AA_UseOpenGLES);
 
 #ifdef QOPENHD_ENABLE_GSTREAMER
     init_gstreamer(argc,argv);
@@ -194,8 +207,6 @@ int main(int argc, char *argv[]) {
     //QSurfaceFormat format=QSurfaceFormat::defaultFormat();
     //format.setSwapInterval(0);
     //QSurfaceFormat::setDefaultFormat(format);
-
-    QSettings settings;
 
     const double global_scale = settings.value("global_scale", 1.0).toDouble();
     const std::string global_scale_s = std::to_string(global_scale);

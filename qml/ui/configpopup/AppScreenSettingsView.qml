@@ -226,6 +226,51 @@ ScrollView {
                     }
                 }
             }
+            Rectangle {
+                width: parent.width
+                height: rowHeight
+                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+
+                Text {
+                    text: qsTr("Font DPI")
+                    font.weight: Font.Bold
+                    font.pixelSize: 13
+                    anchors.leftMargin: 8
+                    verticalAlignment: Text.AlignVCenter
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: 224
+                    height: elementHeight
+                    anchors.left: parent.left
+                }
+                // anything other than 0 and 180 breaks things
+                ComboBox {
+                    height: elementHeight
+                    anchors.right: parent.right
+                    anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.horizontalCenter: parent.horizonatalCenter
+                    width: 320
+                    model: ListModel {
+                        id: font_dpi
+                        ListElement { text: qsTr("0") ; value: 0 }
+                        ListElement { text: qsTr("72") ; value: 72 }
+                        ListElement { text: qsTr("150") ; value: 150 }
+                        ListElement { text: qsTr("300") ; value: 300 }
+                    }
+                    textRole: "text"
+                    Component.onCompleted: {
+                        for (var i = 0; i < model.count; i++) {
+                            var choice = model.get(i);
+                            if (choice.value == settings.font_dpi) {
+                                currentIndex = i;
+                            }
+                        }
+                    }
+                    onCurrentIndexChanged: {
+                        settings.font_dpi = font_dpi.get(currentIndex).value
+                    }
+                }
+            }
         }
     }
 }
