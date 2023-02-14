@@ -187,8 +187,6 @@ int main(int argc, char *argv[]) {
     
     QSettings settings;
 
-    QCoreApplication::setAttribute(Qt::AA_DisableHighDpiScaling);
-
     const int font_dpi = settings.value("font_dpi").toInt();
 
     if (font_dpi) {

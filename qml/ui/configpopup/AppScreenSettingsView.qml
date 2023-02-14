@@ -151,7 +151,7 @@ ScrollView {
                     width: 320
                     model: ListModel {
                         id: font_dpi
-                        ListElement { text: qsTr("0") ; value: 0 }
+                        ListElement { text: qsTr("0 Auto") ; value: 0 }
                         ListElement { text: qsTr("72") ; value: 72 }
                         ListElement { text: qsTr("150") ; value: 150 }
                         ListElement { text: qsTr("300") ; value: 300 }
