@@ -30,7 +30,6 @@ ScrollView {
             spacing: 0
             anchors.left: parent.left
             anchors.right: parent.right
-
             //
             Rectangle {
                 width: parent.width
@@ -217,19 +216,85 @@ ScrollView {
                                         anchors.verticalCenter: parent.verticalCenter
                                         text: qsTr("Reset")
                                         onClicked: {
-                                        var res=_qopenhd.reset_settings()
-                                                if (res) {
-                                                            _messageBoxInstance.set_text_and_show("Settings are now reset to default, please restart QOpenHD")
-                                                        }
-                                                else{
-                                                _messageBoxInstance.set_text_and_show("couldn't reset the settings")
-                                                }
+                                            simplePopupHack.visible=true;
                                             }
                                     }
                                 }
 
             }
-        }
+        Card {
+                    id: simplePopupHack
+                    width: 360
+                    height: 340
+                    anchors.top: parent.top
+                    anchors.topMargin: 20
+                    anchors.left: parent.left
+                    anchors.leftMargin: mainStackLayout.width/2-180
+                    z: 5.0
+                    cardName: qsTr("WARNING")
+                    cardNameColor: "red"
+                    visible: false
+                    cardBody: Column {
+                        height: 200
+                        width: parent.width
+                        Text {
+                            id: simplePopupHackText
+                            text: "This will erase all your QOpenHD settings (Layout of OSD elements, ...) and is irreversible, continue only if you know what you're doing!"
+                            width: parent.width-24
+                            height:parent.height
+                            leftPadding: 12
+                            rightPadding: 12
+                            font.pixelSize: 20
+                            wrapMode: Text.WordWrap
+                        }
+                    }
+                    hasFooter: true
+                    cardFooter: Item {
+                        anchors.fill: parent
+                        Button {
+                            width: 150
+                            height: 48
+                            anchors.left: parent.left
+                            anchors.leftMargin: 12
+                            anchors.bottom: parent.bottom
+                            anchors.bottomMargin: 6
+                            font.pixelSize: 14
+                            font.capitalization: Font.MixedCase
+                            Material.accent: Material.Red
+                            highlighted: true
+                            text:  qsTr("Continue")
+                            onPressed: {
+                                simplePopupHack.visible=false
+                                    var res=_qopenhd.reset_settings()
+                                            if (res) {
+                                                        _messageBoxInstance.set_text_and_show("Settings are now reset to default, please restart QOpenHD")
+                                                    }
+                                            else{
+                                            _messageBoxInstance.set_text_and_show("couldn't reset the settings")
+                                            }
+                            }
+                        }
+                        Button {
+                            width: 150
+                            height: 48
+                            anchors.right: parent.right
+                            anchors.rightMargin: 12
+                            anchors.bottom: parent.bottom
+                            anchors.bottomMargin: 6
+                            font.pixelSize: 14
+                            font.capitalization: Font.MixedCase
+                            Material.accent: Material.Grey
+                            highlighted: true
+                            text:  qsTr("Cancel")
+                            onPressed: {
+                                simplePopupHack.visible=false
+                            }
+                        }
+                    }
+                }
+
+
+    }
 }
 
 
