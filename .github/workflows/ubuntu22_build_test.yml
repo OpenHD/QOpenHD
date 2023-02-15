@@ -14,7 +14,7 @@ jobs:
   build:
     #runs-on: ubuntu-18.04
     #runs-on: ubuntu-20.04
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
       - name: Checkout repository and submodules
@@ -25,6 +25,7 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt update
+          echo unixodbc-dev hold | sudo dpkg --set-selections   
           sudo apt upgrade -y
           sudo apt remove libunwind-13-dev 
           sudo apt install -y libunwind-dev libgstreamer-plugins-base1.0-dev
