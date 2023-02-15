@@ -488,6 +488,9 @@ MavlinkSettingsModel::SetParamResult MavlinkSettingsModel::try_set_param_int_imp
     if(result==mavsdk::Param::Result::ValueUnsupported)return SetParamResult::VALUE_UNSUPPORTED;
     if(result==mavsdk::Param::Result::Timeout)return SetParamResult::NO_CONNECTION;
     if(result==mavsdk::Param::Result::Success)return SetParamResult::SUCCESS;
+    if(result==mavsdk::Param::Result::ParamNameTooLong || result==mavsdk::Param::Result::ParamValueTooLong || result==mavsdk::Param::Result::WrongType){
+        qDebug()<<"Improper use, fix your code!";
+    }
     return SetParamResult::UNKNOWN;
 }
 
@@ -508,6 +511,9 @@ MavlinkSettingsModel::SetParamResult MavlinkSettingsModel::try_set_param_string_
     if(result==mavsdk::Param::Result::ValueUnsupported)return SetParamResult::VALUE_UNSUPPORTED;
     if(result==mavsdk::Param::Result::Timeout)return SetParamResult::NO_CONNECTION;
     if(result==mavsdk::Param::Result::Success)return SetParamResult::SUCCESS;
+    if(result==mavsdk::Param::Result::ParamNameTooLong || result==mavsdk::Param::Result::ParamValueTooLong || result==mavsdk::Param::Result::WrongType){
+        qDebug()<<"Improper use, fix your code!";
+    }
     return SetParamResult::UNKNOWN;
 }
 
