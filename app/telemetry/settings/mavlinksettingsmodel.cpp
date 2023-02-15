@@ -349,6 +349,14 @@ static std::optional<std::string> int_param_to_enum_string_if_known(const std::s
     }
     return std::nullopt;
 }
+static std::optional<std::string> string_param_to_enum_string_if_known(const std::string param_id,std::string value){
+    const auto improved_opt=get_improved_for_string(param_id);
+    if(improved_opt.has_value()){
+        const auto& improved=improved_opt.value();
+        return improved.value_to_key(value);
+    }
+    return std::nullopt;
+}
 
 
 MavlinkSettingsModel::MavlinkSettingsModel(uint8_t sys_id,uint8_t comp_id,QObject *parent)
@@ -547,16 +555,11 @@ QVariant MavlinkSettingsModel::data(const QModelIndex &index, int role) const
         if(std::holds_alternative<int>(data.value)){
             auto value=std::get<int>(data.value);
             return int_enum_get_readable(data.unique_id,value);
-            auto as_enum=int_param_to_enum_string_if_known(data.unique_id.toStdString(),value);
-            if(as_enum.has_value()){
-                return QString(as_enum.value().c_str());
-            }
-            std::stringstream ss;
-            ss<<"{"<<value<<"}";
-            return QString(ss.str().c_str());
         }
+        // We only support int and string
+        assert(std::holds_alternative<std::string>(data.value));
         auto value=std::get<std::string>(data.value);
-        return QString(value.c_str());
+        return string_enum_get_readable(data.unique_id,value.c_str());
     } else if (role==ValueTypeRole){
         if(std::holds_alternative<int>(data.value)){
             return 0;
@@ -705,6 +708,17 @@ QString MavlinkSettingsModel::int_enum_get_readable(QString param_id, int value)
     }
     std::stringstream ss;
     ss<<"{"<<value<<"}";
+    return QString(ss.str().c_str());
+}
+
+QString MavlinkSettingsModel::string_enum_get_readable(QString param_id,QString value) const
+{
+    auto as_enum=string_param_to_enum_string_if_known(param_id.toStdString(),value.toStdString());
+    if(as_enum.has_value()){
+        return QString(as_enum.value().c_str());
+    }
+    std::stringstream ss;
+    ss<<"{"<<value.toStdString()<<"}";
     return QString(ss.str().c_str());
 }
 

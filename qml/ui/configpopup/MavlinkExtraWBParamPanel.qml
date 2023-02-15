@@ -217,7 +217,7 @@ and we need to listen on each of them for a short timespan)"
                         Material.background:Material.LightBlue
                         onClicked: {
                             var text="Frequency in Mhz and channel number. [X] - Not a legal wifi frequency, AR9271 does them anyways. (DFS-RADAR) - also used by commercial plane(s) weather radar.
-It is your responsibility to only change the frequency to values allowd in your country. You can use a frequency analyzer on your phone or the packet loss to find the best channel for your environemnt."
+It is your responsibility to only change the frequency to values allowed in your country. You can use a frequency analyzer on your phone or the packet loss to find the best channel for your environemnt."
                             _messageBoxInstance.set_text_and_show(text)
                         }
                     }

@@ -116,6 +116,7 @@ private:
 public:
     // These are for the UI to query more data about a specific params
     Q_INVOKABLE QString int_enum_get_readable(QString param_id,int value)const;
+    Q_INVOKABLE QString string_enum_get_readable(QString param_id,QString value)const;
     // if possible, the UI should populate for a full enum key-value int parameter if possible,
     // and only fall back to the min max checking if such a mapping is not available.
     Q_INVOKABLE bool int_param_has_min_max(QString param_id)const;
