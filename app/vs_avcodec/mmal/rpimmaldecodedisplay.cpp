@@ -259,7 +259,7 @@ bool RPIMMalDecodeDisplay::feed_frame(const uint8_t *frame_data, const int frame
 
             buffer->pts = buffer->dts = MMAL_TIME_UNKNOWN;
             // used to measure decode latency
-            buffer->pts = getTimeUs();
+            //buffer->pts = getTimeUs();
 
             m_status = mmal_port_send_buffer(m_decoder->input[0], buffer);
             if (m_status != MMAL_SUCCESS) {
