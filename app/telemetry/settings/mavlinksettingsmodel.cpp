@@ -370,6 +370,8 @@ MavlinkSettingsModel::MavlinkSettingsModel(uint8_t sys_id,uint8_t comp_id,QObjec
 void MavlinkSettingsModel::set_param_client(std::shared_ptr<mavsdk::System> system,bool autoload_all_params)
 {
     // only allow adding the param client once it is discovered, do not overwrite it once discovered.
+    // DO NOT REMOVE THIS NECCESSARY CHECK - this class is written under the assumption that the "param_client" pointer becomes valid
+    // at some point and then stays valid
     assert(this->param_client==nullptr);
     assert(system->get_system_id()==m_sys_id);
     m_system=system;
@@ -461,57 +463,64 @@ bool MavlinkSettingsModel::try_refetch_parameter_string(QString param_id)
     return false;
 }
 
-bool MavlinkSettingsModel::try_set_param_int_impl(const QString param_id, int value,std::optional<ExtraRetransmitParams> extra_retransmit_params)
+std::string MavlinkSettingsModel::set_param_result_as_string(const SetParamResult &res)
 {
-    if(param_client){
-        if(extra_retransmit_params.has_value()){
-            const double timeout_s=std::chrono::duration_cast<std::chrono::milliseconds>(extra_retransmit_params.value().retransmit_timeout).count()/1000.0;
-            param_client->set_timeout(timeout_s);
-            param_client->set_n_retransmissions(extra_retransmit_params.value().n_retransmissions);
-        }
-        const auto result=param_client->set_param_int(param_id.toStdString(),value);
-        if(extra_retransmit_params.has_value()){
-            // restores defaults
-            param_client->set_timeout(-1);
-            param_client->set_n_retransmissions(3);
-        }
-        if(result==mavsdk::Param::Result::Success){
-            return true;
-        }
-    }
-    return false;
+    if(res==SetParamResult::NO_CONNECTION)return "NO_CONNECTION";
+    if(res==SetParamResult::VALUE_UNSUPPORTED)return "VALUE_UNSUPPORTED";
+    if(res==SetParamResult:: SUCCESS)return " SUCCESS";
+    return "UNKNOWN";
 }
 
-bool MavlinkSettingsModel::try_set_param_string_impl(const QString param_id,QString value,std::optional<ExtraRetransmitParams> extra_retransmit_params)
+MavlinkSettingsModel::SetParamResult MavlinkSettingsModel::try_set_param_int_impl(const QString param_id, int value,std::optional<ExtraRetransmitParams> extra_retransmit_params)
 {
-    if(param_client){
-        if(extra_retransmit_params.has_value()){
-            const double timeout_s=std::chrono::duration_cast<std::chrono::milliseconds>(extra_retransmit_params.value().retransmit_timeout).count()/1000.0;
-            param_client->set_timeout(timeout_s);
-            param_client->set_n_retransmissions(extra_retransmit_params.value().n_retransmissions);
-        }
-        const auto result=param_client->set_param_custom(param_id.toStdString(),value.toStdString());
-        if(extra_retransmit_params.has_value()){
-            // restores defaults
-            param_client->set_timeout(-1);
-            param_client->set_n_retransmissions(3);
-        }
-        if(result==mavsdk::Param::Result::Success){
-            return true;
-        }
+    if(!param_client)return SetParamResult::NO_CONNECTION;
+    if(extra_retransmit_params.has_value()){
+        const double timeout_s=std::chrono::duration_cast<std::chrono::milliseconds>(extra_retransmit_params.value().retransmit_timeout).count()/1000.0;
+        param_client->set_timeout(timeout_s);
+        param_client->set_n_retransmissions(extra_retransmit_params.value().n_retransmissions);
     }
-    return false;
+    const auto result=param_client->set_param_int(param_id.toStdString(),value);
+    if(extra_retransmit_params.has_value()){
+        // restores defaults
+        param_client->set_timeout(-1);
+        param_client->set_n_retransmissions(3);
+    }
+    if(result==mavsdk::Param::Result::ValueUnsupported)return SetParamResult::VALUE_UNSUPPORTED;
+    if(result==mavsdk::Param::Result::Timeout)return SetParamResult::NO_CONNECTION;
+    if(result==mavsdk::Param::Result::Success)return SetParamResult::SUCCESS;
+    return SetParamResult::UNKNOWN;
+}
+
+MavlinkSettingsModel::SetParamResult MavlinkSettingsModel::try_set_param_string_impl(const QString param_id,QString value,std::optional<ExtraRetransmitParams> extra_retransmit_params)
+{
+    if(!param_client)return SetParamResult::NO_CONNECTION;
+    if(extra_retransmit_params.has_value()){
+        const double timeout_s=std::chrono::duration_cast<std::chrono::milliseconds>(extra_retransmit_params.value().retransmit_timeout).count()/1000.0;
+        param_client->set_timeout(timeout_s);
+        param_client->set_n_retransmissions(extra_retransmit_params.value().n_retransmissions);
+    }
+    const auto result=param_client->set_param_custom(param_id.toStdString(),value.toStdString());
+    if(extra_retransmit_params.has_value()){
+        // restores defaults
+        param_client->set_timeout(-1);
+        param_client->set_n_retransmissions(3);
+    }
+    if(result==mavsdk::Param::Result::ValueUnsupported)return SetParamResult::VALUE_UNSUPPORTED;
+    if(result==mavsdk::Param::Result::Timeout)return SetParamResult::NO_CONNECTION;
+    if(result==mavsdk::Param::Result::Success)return SetParamResult::SUCCESS;
+    return SetParamResult::UNKNOWN;
 }
 
 bool MavlinkSettingsModel::try_update_parameter_int(const QString param_id,int value)
 {
     qDebug()<<"try_update_parameter_int:"<<param_id<<","<<value;
     const auto result=try_set_param_int_impl(param_id,value);
-    if(result){
+    if(result==SetParamResult::SUCCESS){
         MavlinkSettingsModel::SettingData tmp{param_id,value};
         updateData(std::nullopt,tmp);
         return true;
     }
+    qDebug()<<"Failure code:"<<set_param_result_as_string(result).c_str();
     return false;
 }
 
@@ -519,11 +528,12 @@ bool MavlinkSettingsModel::try_update_parameter_string(const QString param_id,QS
 {
     qDebug()<<"try_update_parameter_string:"<<param_id<<","<<value;
     const auto result=try_set_param_string_impl(param_id,value);
-    if(result){
+    if(result==SetParamResult::SUCCESS){
         MavlinkSettingsModel::SettingData tmp{param_id,value.toStdString()};
         updateData(std::nullopt,tmp);
         return true;
     }
+    qDebug()<<"Failure code:"<<set_param_result_as_string(result).c_str();
     return false;
 }
 

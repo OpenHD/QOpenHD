@@ -68,8 +68,16 @@ public:
         std::chrono::nanoseconds retransmit_timeout=std::chrono::milliseconds(500);
         int n_retransmissions=3;
     };
-    bool try_set_param_int_impl(const QString param_id,int value,std::optional<ExtraRetransmitParams> extra_retransmit_params=std::nullopt);
-    bool try_set_param_string_impl(const QString param_id,QString value,std::optional<ExtraRetransmitParams> extra_retransmit_params=std::nullopt);
+    // The error codes are a bit less than what mavsdk returns, since we can merge some of them into a "unknown-this should never happen" value
+    enum SetParamResult{
+        UNKNOWN, // Hints at a programmer's error
+        NO_CONNECTION, // Most likely all retransmitts failed, cannot be completely avoided
+        VALUE_UNSUPPORTED, // (openhd) rejected the param value, it is not valid / not supported by the HW
+        SUCCESS, //Param was successfully updated
+    };
+    static std::string set_param_result_as_string(const SetParamResult& res);
+    SetParamResult try_set_param_int_impl(const QString param_id,int value,std::optional<ExtraRetransmitParams> extra_retransmit_params=std::nullopt);
+    SetParamResult try_set_param_string_impl(const QString param_id,QString value,std::optional<ExtraRetransmitParams> extra_retransmit_params=std::nullopt);
 
     // first updates the parameter on the server via MAVSDK (unless server rejects / rare timeout)
     // then updates the internal cached parameter (if previous update was successfull).
