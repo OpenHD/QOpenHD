@@ -7,6 +7,7 @@ Settings {
     id: settings
 
     property double global_scale: 1.0
+    property int font_dpi: 96
 
     // Dirty, rotate everything even though that can create issues
     property int general_screen_rotation: 0
