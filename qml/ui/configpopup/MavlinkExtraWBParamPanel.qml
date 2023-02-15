@@ -161,6 +161,7 @@ ScrollView {
                     anchors.verticalCenter: parent.verticalCenter
                     Button{
                         text: "Find Air unit"
+                        enabled: _ohdSystemGround.is_alive
                         onClicked: {
                             dialoqueStartChannelScan.m_curr_index=0
                             dialoqueStartChannelScan.visible=true
@@ -208,6 +209,11 @@ and we need to listen on each of them for a short timespan)"
                         id: buttonSwitchFreq
                         enabled: false
                         onClicked: {
+                            if(_fcMavlinkSystem.is_alive && _fcMavlinkSystem.armed && (!settings.dev_allow_freq_change_when_armed)){
+                                var text="Cannot change frequency while FC is armed";
+                                _messageBoxInstance.set_text_and_show(text);
+                                return;
+                            }
                             var selectedValue=frequenciesModel.get(comboBoxFreq.currentIndex).value
                             _synchronizedSettings.change_param_air_and_ground_frequency(selectedValue);
                         }
@@ -252,6 +258,11 @@ It is your responsibility to only change the frequency to values allowed in your
                         id: buttonSwitchChannelWidth
                         enabled: false
                         onClicked: {
+                            if(_fcMavlinkSystem.is_alive && _fcMavlinkSystem.armed && (!settings.dev_allow_freq_change_when_armed)){
+                                var text="Cannot change channel width while FC is armed"
+                                _messageBoxInstance.set_text_and_show(text);
+                                return;
+                            }
                             var selectedValue=channelWidthModel.get(comboBoxChannelWidth.currentIndex).value
                             _synchronizedSettings.change_param_air_and_ground_channel_width(selectedValue)
                         }
@@ -298,6 +309,29 @@ interference from other stations sending on either of those channels is increase
                         onClicked: {
                             var selectedValue=mcsIndexModel.get(comboBoxMcsIndex.currentIndex).value
                             _synchronizedSettings.change_param_air_and_ground_mcs(selectedValue)
+                        }
+                    }
+                    Button{
+                        text: "INFO"
+                        Material.background:Material.LightBlue
+                        onClicked: {
+                            var text="Recommended 3 (Default). The MCS index controlls the available bandwidth. Higher MCS index - higher bandwidth, but less range. Not all cards support changing it."
+                            _messageBoxInstance.set_text_and_show(text)
+                        }
+                    }
+                }
+            }
+            Rectangle {
+                width: parent.width
+                height: rowHeight
+                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+
+                RowLayout{
+                    anchors.verticalCenter: parent.verticalCenter
+                    Button{
+                        text: "Apply Presets"
+                        onClicked: {
+                            //
                         }
                     }
                     Button{
