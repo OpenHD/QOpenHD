@@ -139,9 +139,9 @@ ScrollView {
                 id: mcsIndexModel
                 ListElement {title: "~3.0 Mbps  (MCS0)"; value: 0}
                 ListElement {title: "~5.5 Mbps  (MCS1)"; value: 1}
-                ListElement {title: "~8.5 Mbps  (MCS2)"; value: 2}
-                ListElement {title: "~12  Mbps  (MCS3)"; value: 3}
-                ListElement {title: "~17  Mbps  (MCS4)"; value: 4}
+                ListElement {title: "~8.5 Mbps (long range) (MCS2)"; value: 2}
+                ListElement {title: "~12  Mbps (default) (MCS3)"; value: 3}
+                ListElement {title: "~17  Mbps (EXP)(MCS4)"; value: 4}
                 ListElement {title: "~20+ Mbps (EXP) (MCS5)"; value: 5}
                 ListElement {title: "~20+ Mbps (EXP) (MCS6)"; value: 6}
                 ListElement {title: "~20+ Mbps (EXP) (MCS7)"; value: 7}
