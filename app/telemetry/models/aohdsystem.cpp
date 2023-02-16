@@ -227,6 +227,7 @@ void AOHDSystem::process_x3(const mavlink_openhd_stats_wb_video_air_t &msg){
     // TODO not the most cleanest approach to update another model from here
     if(msg.link_index==0 || msg.link_index==1){
         auto& cam=CameraStreamModel::instance(msg.link_index);
+        cam.set_curr_recomended_video_bitrate_kbits(bitrate_to_qstring(msg.curr_recommended_bitrate*1000));
         cam.set_curr_video_measured_encoder_bitrate(bitrate_to_qstring(msg.curr_measured_encoder_bitrate));
         cam.set_curr_video_injected_bitrate(bitrate_to_qstring(msg.curr_injected_bitrate));
         cam.set_curr_video0_injected_pps(pps_to_string(msg.curr_injected_pps));
