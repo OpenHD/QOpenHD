@@ -982,11 +982,25 @@ void AVCodecDecoder::timestamp_debug_valid(int64_t ts)
 
 static constexpr auto RPI_OMX_H264_DECODE_SERVICE="rpi_omx_h264_decode";
 
+static void write_service_rotation_file(int rotation){
+    qDebug()<<"Writing "<<rotation<<"° to video service file";
+    FILE *f = fopen("/tmp/video_service_rotation.txt", "w");
+    if (f == NULL){
+        qDebug()<<"Error opening file!";
+        return;
+    }
+    fprintf(f, "%d",rotation);
+    fclose(f);
+}
+
 void AVCodecDecoder::dirty_rpi_decode_via_external_decode_service()
 {
     qDebug()<<"Decode via rpi external decode service begin";
     DecodingStatistcs::instance().reset_all_to_default();
     DecodingStatistcs::instance().set_decoding_type("External OMX");
+    // Dirty way we communicate with the service / executable
+    const auto rotation=QOpenHDVideoHelper::get_display_rotation();
+    write_service_rotation_file(rotation);
     // Start service
     OHDUtil::run_command("systemctl start",{std::string(RPI_OMX_H264_DECODE_SERVICE)});
     while(true){
