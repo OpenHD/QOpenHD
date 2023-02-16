@@ -321,7 +321,7 @@ interference from other stations sending on either of those channels is increase
                     }
                 }
             }
-            Rectangle {
+            /*Rectangle {
                 width: parent.width
                 height: rowHeight
                 color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
@@ -334,16 +334,9 @@ interference from other stations sending on either of those channels is increase
                             //
                         }
                     }
-                    Button{
-                        text: "INFO"
-                        Material.background:Material.LightBlue
-                        onClicked: {
-                            var text="Recommended 3 (Default). The MCS index controlls the available bandwidth. Higher MCS index - higher bandwidth, but less range. Not all cards support changing it."
-                            _messageBoxInstance.set_text_and_show(text)
-                        }
-                    }
+
                 }
-            }
+            }*/
             Text{
                 text:
                     "To change these parameters, make sure your ground and air unit are alive and well.\nAlso, it is not recommended to change them during flight.
