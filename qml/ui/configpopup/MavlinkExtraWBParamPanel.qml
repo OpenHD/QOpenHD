@@ -137,13 +137,14 @@ ScrollView {
 
             ListModel{
                 id: mcsIndexModel
-                ListElement{title: "~4Mbps         (MCS0)"; value: 0}
-                ListElement {title: "5.5Mbps/6.5Mbps(MCS1)"; value: 1}
-                ListElement {title: "11Mbps/13Mbps  (MCS2)"; value: 2}
-                ListElement {title: "12Mbps/13Mbps  (MCS3)"; value: 3}
-                ListElement {title: "19.5Mbps       (MCS4)"; value: 4}
-                ListElement {title: "24Mbps/26Mbps  (MCS5)"; value: 5}
-                ListElement {title: "36Mbps/39Mbps  (MCS6)"; value: 6}
+                ListElement {title: "~3.0 Mbps  (MCS0)"; value: 0}
+                ListElement {title: "~5.5 Mbps  (MCS1)"; value: 1}
+                ListElement {title: "~8.5 Mbps (long range) (MCS2)"; value: 2}
+                ListElement {title: "~12  Mbps (default) (MCS3)"; value: 3}
+                ListElement {title: "~17  Mbps (EXP)(MCS4)"; value: 4}
+                ListElement {title: "~20+ Mbps (EXP) (MCS5)"; value: 5}
+                ListElement {title: "~20+ Mbps (EXP) (MCS6)"; value: 6}
+                ListElement {title: "~20+ Mbps (EXP) (MCS7)"; value: 7}
             }
 
             ListModel{
@@ -161,6 +162,7 @@ ScrollView {
                     anchors.verticalCenter: parent.verticalCenter
                     Button{
                         text: "Find Air unit"
+                        enabled: _ohdSystemGround.is_alive
                         onClicked: {
                             dialoqueStartChannelScan.m_curr_index=0
                             dialoqueStartChannelScan.visible=true
@@ -208,6 +210,11 @@ and we need to listen on each of them for a short timespan)"
                         id: buttonSwitchFreq
                         enabled: false
                         onClicked: {
+                            if(_fcMavlinkSystem.is_alive && _fcMavlinkSystem.armed && (!settings.dev_allow_freq_change_when_armed)){
+                                var text="Cannot change frequency while FC is armed";
+                                _messageBoxInstance.set_text_and_show(text);
+                                return;
+                            }
                             var selectedValue=frequenciesModel.get(comboBoxFreq.currentIndex).value
                             _synchronizedSettings.change_param_air_and_ground_frequency(selectedValue);
                         }
@@ -217,7 +224,7 @@ and we need to listen on each of them for a short timespan)"
                         Material.background:Material.LightBlue
                         onClicked: {
                             var text="Frequency in Mhz and channel number. [X] - Not a legal wifi frequency, AR9271 does them anyways. (DFS-RADAR) - also used by commercial plane(s) weather radar.
-It is your responsibility to only change the frequency to values allowd in your country. You can use a frequency analyzer on your phone or the packet loss to find the best channel for your environemnt."
+It is your responsibility to only change the frequency to values allowed in your country. You can use a frequency analyzer on your phone or the packet loss to find the best channel for your environemnt."
                             _messageBoxInstance.set_text_and_show(text)
                         }
                     }
@@ -252,6 +259,11 @@ It is your responsibility to only change the frequency to values allowd in your 
                         id: buttonSwitchChannelWidth
                         enabled: false
                         onClicked: {
+                            if(_fcMavlinkSystem.is_alive && _fcMavlinkSystem.armed && (!settings.dev_allow_freq_change_when_armed)){
+                                var text="Cannot change channel width while FC is armed"
+                                _messageBoxInstance.set_text_and_show(text);
+                                return;
+                            }
                             var selectedValue=channelWidthModel.get(comboBoxChannelWidth.currentIndex).value
                             _synchronizedSettings.change_param_air_and_ground_channel_width(selectedValue)
                         }
@@ -310,6 +322,22 @@ interference from other stations sending on either of those channels is increase
                     }
                 }
             }
+            /*Rectangle {
+                width: parent.width
+                height: rowHeight
+                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+
+                RowLayout{
+                    anchors.verticalCenter: parent.verticalCenter
+                    Button{
+                        text: "Apply Presets"
+                        onClicked: {
+                            //
+                        }
+                    }
+
+                }
+            }*/
             Text{
                 text:
                     "To change these parameters, make sure your ground and air unit are alive and well.\nAlso, it is not recommended to change them during flight.

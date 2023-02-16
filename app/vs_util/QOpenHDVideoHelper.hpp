@@ -70,6 +70,9 @@ struct VideoStreamConfig{
     bool dev_feed_incomplete_frames_to_decoder=false;
     // argh, is the only thing I say here
     bool dev_rpi_use_external_omx_decode_service=true;
+    // On embedded devices, video is commonly rendered on a special surface, independent of QOpenHD
+    // r.n only the rpi mmal impl. supports proper video rotation
+    int extra_screen_rotation=0;
 
     // 2 configs are equal if all members are exactly the same.
     bool operator==(const VideoStreamConfig &o) const {
@@ -81,12 +84,19 @@ struct VideoStreamConfig{
                this->dev_use_low_latency_parser_when_possible == o.dev_use_low_latency_parser_when_possible &&
                this->dev_feed_incomplete_frames_to_decoder == o.dev_feed_incomplete_frames_to_decoder &&
                this->udp_rtp_input_ip_address==o.udp_rtp_input_ip_address &&
-               this->dev_rpi_use_external_omx_decode_service==o.dev_rpi_use_external_omx_decode_service;
+               this->dev_rpi_use_external_omx_decode_service==o.dev_rpi_use_external_omx_decode_service &&
+               this->extra_screen_rotation == o.extra_screen_rotation;
      }
     bool operator !=(const VideoStreamConfig &o) const {
         return !(*this==o);
     }
 };
+
+// Kinda UI, kinda video related
+static int get_display_rotation(){
+    QSettings settings{};
+    return settings.value("general_screen_rotation", 0).toInt();
+}
 
 static VideoStreamConfig read_from_settings(){
     QSettings settings;
@@ -106,6 +116,7 @@ static VideoStreamConfig read_from_settings(){
     _videoStreamConfig.dev_use_low_latency_parser_when_possible=settings.value("dev_use_low_latency_parser_when_possible",true).toBool();
     //
     _videoStreamConfig.dev_rpi_use_external_omx_decode_service=settings.value("dev_rpi_use_external_omx_decode_service", true).toBool();
+    _videoStreamConfig.extra_screen_rotation=get_display_rotation();
     // QML text input sucks, so we read a file. Not ideal, but for testing only anyways
     {
         _videoStreamConfig.dev_custom_pipeline="";
@@ -130,6 +141,7 @@ static VideoStreamConfig tmp_get_secondary_config(){
     const int tmp_video_codec = settings.value("selectedVideoCodecSecondary", 0).toInt();
     videoStreamConfig.video_codec=QOpenHDVideoHelper::intToVideoCodec(tmp_video_codec);
     videoStreamConfig.udp_rtp_input_port=5601;
+    videoStreamConfig.extra_screen_rotation=0;
     return videoStreamConfig;
 }
 

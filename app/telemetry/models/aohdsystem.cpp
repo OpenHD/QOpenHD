@@ -17,7 +17,7 @@
 #include "util/qopenhd.h"
 
 
-static QString bitrate_to_qstring(int64_t bitrate_bits_per_second){
+static QString bitrate_bps_to_qstring(int64_t bitrate_bits_per_second){
     return QString{StringHelper::bitrate_to_string(bitrate_bits_per_second).c_str()};
 }
 static QString pps_to_string(int64_t packets_per_second){
@@ -214,8 +214,8 @@ void AOHDSystem::process_x2(const mavlink_openhd_stats_telemetry_t &msg)
     //qDebug()<<"Got mavlink_openhd_stats_telemetry_t";
     set_curr_telemetry_rx_pps(pps_to_string(msg.curr_rx_pps));
     set_curr_telemetry_tx_pps(pps_to_string(msg.curr_tx_pps));
-    set_curr_telemetry_rx_bps(bitrate_to_qstring(msg.curr_rx_bps));
-    set_curr_telemetry_tx_bps(bitrate_to_qstring(msg.curr_tx_bps));
+    set_curr_telemetry_rx_bps(bitrate_bps_to_qstring(msg.curr_rx_bps));
+    set_curr_telemetry_tx_bps(bitrate_bps_to_qstring(msg.curr_tx_bps));
 }
 
 void AOHDSystem::process_x3(const mavlink_openhd_stats_wb_video_air_t &msg){
@@ -227,8 +227,14 @@ void AOHDSystem::process_x3(const mavlink_openhd_stats_wb_video_air_t &msg){
     // TODO not the most cleanest approach to update another model from here
     if(msg.link_index==0 || msg.link_index==1){
         auto& cam=CameraStreamModel::instance(msg.link_index);
-        cam.set_curr_video_measured_encoder_bitrate(bitrate_to_qstring(msg.curr_measured_encoder_bitrate));
-        cam.set_curr_video_injected_bitrate(bitrate_to_qstring(msg.curr_injected_bitrate));
+        const auto curr_recommended_bitrate_kbits=msg.curr_recommended_bitrate;
+        if(curr_recommended_bitrate_kbits>0){
+            cam.set_curr_recomended_video_bitrate_kbits(bitrate_bps_to_qstring(curr_recommended_bitrate_kbits*1000));
+        }else{
+            cam.set_curr_recomended_video_bitrate_kbits("N/A");
+        }
+        cam.set_curr_video_measured_encoder_bitrate(bitrate_bps_to_qstring(msg.curr_measured_encoder_bitrate));
+        cam.set_curr_video_injected_bitrate(bitrate_bps_to_qstring(msg.curr_injected_bitrate));
         cam.set_curr_video0_injected_pps(pps_to_string(msg.curr_injected_pps));
         cam.set_curr_video0_dropped_packets(msg.curr_dropped_packets);
         cam.set_curr_video0_fec_encode_time_avg_min_max(
@@ -264,7 +270,7 @@ void AOHDSystem::process_x4(const mavlink_openhd_stats_wb_video_ground_t &msg){
     }
     if(msg.link_index==0 || msg.link_index==1){
         auto& cam=CameraStreamModel::instance(msg.link_index);
-        cam.set_curr_video0_received_bitrate_with_fec(bitrate_to_qstring(msg.curr_incoming_bitrate));
+        cam.set_curr_video0_received_bitrate_with_fec(bitrate_bps_to_qstring(msg.curr_incoming_bitrate));
         cam.set_video0_count_blocks_lost(msg.count_blocks_lost);
         cam.set_video0_count_blocks_recovered(msg.count_blocks_recovered);
         cam.set_video0_count_fragments_recovered(msg.count_fragments_recovered);

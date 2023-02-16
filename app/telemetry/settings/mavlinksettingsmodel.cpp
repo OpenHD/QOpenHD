@@ -56,8 +56,8 @@ std::map<std::string, void *> MavlinkSettingsModel::get_whitelisted_params()
     //
     ret["CONFIG_BOOT_AIR"]=nullptr;
     ret["WB_MAX_D_BZ"]=nullptr;
-    // whitelisted for now
-    ret["VARIABLE_BITRATE"]=nullptr;
+    // Not whitelisted anymore
+    //ret["VARIABLE_BITRATE"]=nullptr;
     ret["V_AIR_RECORDING"]=nullptr;
     //ret[""]=nullptr;
     return ret;
@@ -127,10 +127,12 @@ static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string&
            ImprovedIntSetting::Item{"BOTH",2},
            ImprovedIntSetting::Item{"CYCLIC_ROWS",2130706433}
        });
-        auto fc_uart_conn_values=std::vector<std::string>{"disable","serial0","serial1","ttyUSB0","ttyACM0","ttyACM1", "ttyS7"};
-        map_improved_params["FC_UART_CONN"]=ImprovedIntSetting::createEnum(fc_uart_conn_values);
-        // same for ground uart out
-         map_improved_params["TRACKER_UART_OUT"]=ImprovedIntSetting::createEnum(fc_uart_conn_values);
+       {
+            auto fc_uart_conn_values=std::vector<std::string>{"disable","serial0","serial1","ttyUSB0","ttyACM0","ttyACM1", "ttyS7"};
+            map_improved_params["FC_UART_CONN"]=ImprovedIntSetting::createEnum(fc_uart_conn_values);
+            // same for ground uart out
+             map_improved_params["TRACKER_UART_OUT"]=ImprovedIntSetting::createEnum(fc_uart_conn_values);
+       }
         // rpicamsrc only for now
         auto gst_awb_modes=std::vector<std::string>{
                     "OFF",
@@ -288,6 +290,12 @@ static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string&
             auto values=std::vector<std::string>{"untouched","high","low"};
             map_improved_params["GPIO_2"]=ImprovedIntSetting::createEnum(values);
         }
+        {
+            std::pair<std::string,int> val1{"20Mhz",20};
+            std::pair<std::string,int> val2{"40Mhz",40};
+            map_improved_params["WB_CHANNEL_W"]=ImprovedIntSetting::createEnumSimple({val1,val2});
+            map_improved_params["WB_MCS_INDEX"]=ImprovedIntSetting::createEnum({"MCS0","MCS1","MCS2","MCS3","MCS4","MCS5","MCS6","MCS7"});
+        }
     }
     if(map_improved_params.find(param_id)!=map_improved_params.end()){
         return map_improved_params[param_id];
@@ -310,6 +318,20 @@ static std::optional<ImprovedStringSetting> get_improved_for_string(const std::s
             "1920x1080@30",
     };
     map_improved_params["V_FORMAT"]=ImprovedStringSetting::create_from_keys_only(choices_video_res_framerate);
+    {
+        auto fc_uart_conn_values=std::vector<ImprovedStringSetting::Item>{
+            {"disable",""},
+            {"serial0","/dev/serial0"},
+            {"serial1","/dev/serial1"},
+            {"ttyUSB0","/dev/ttyUSB0"},
+            {"ttyACM0","/dev/ttyACM0"},
+            {"ttyACM1","/dev/ttyACM1"},
+            {"ttyS7","/dev/ttyS7"}
+        };
+        map_improved_params["FC_UART_CONN"]=ImprovedStringSetting{fc_uart_conn_values};
+        //same for ground uart out
+        map_improved_params["TRACKER_UART_OUT"]=ImprovedStringSetting{fc_uart_conn_values};
+    }
     //
     if(map_improved_params.find(param_id)!=map_improved_params.end()){
         return map_improved_params[param_id];
@@ -327,6 +349,14 @@ static std::optional<std::string> int_param_to_enum_string_if_known(const std::s
     }
     return std::nullopt;
 }
+static std::optional<std::string> string_param_to_enum_string_if_known(const std::string param_id,std::string value){
+    const auto improved_opt=get_improved_for_string(param_id);
+    if(improved_opt.has_value()){
+        const auto& improved=improved_opt.value();
+        return improved.value_to_key(value);
+    }
+    return std::nullopt;
+}
 
 
 MavlinkSettingsModel::MavlinkSettingsModel(uint8_t sys_id,uint8_t comp_id,QObject *parent)
@@ -340,6 +370,8 @@ MavlinkSettingsModel::MavlinkSettingsModel(uint8_t sys_id,uint8_t comp_id,QObjec
 void MavlinkSettingsModel::set_param_client(std::shared_ptr<mavsdk::System> system,bool autoload_all_params)
 {
     // only allow adding the param client once it is discovered, do not overwrite it once discovered.
+    // DO NOT REMOVE THIS NECCESSARY CHECK - this class is written under the assumption that the "param_client" pointer becomes valid
+    // at some point and then stays valid
     assert(this->param_client==nullptr);
     assert(system->get_system_id()==m_sys_id);
     m_system=system;
@@ -431,57 +463,70 @@ bool MavlinkSettingsModel::try_refetch_parameter_string(QString param_id)
     return false;
 }
 
-bool MavlinkSettingsModel::try_set_param_int_impl(const QString param_id, int value,std::optional<ExtraRetransmitParams> extra_retransmit_params)
+std::string MavlinkSettingsModel::set_param_result_as_string(const SetParamResult &res)
 {
-    if(param_client){
-        if(extra_retransmit_params.has_value()){
-            const double timeout_s=std::chrono::duration_cast<std::chrono::milliseconds>(extra_retransmit_params.value().retransmit_timeout).count()/1000.0;
-            param_client->set_timeout(timeout_s);
-            param_client->set_n_retransmissions(extra_retransmit_params.value().n_retransmissions);
-        }
-        const auto result=param_client->set_param_int(param_id.toStdString(),value);
-        if(extra_retransmit_params.has_value()){
-            // restores defaults
-            param_client->set_timeout(-1);
-            param_client->set_n_retransmissions(3);
-        }
-        if(result==mavsdk::Param::Result::Success){
-            return true;
-        }
-    }
-    return false;
+    if(res==SetParamResult::NO_CONNECTION)return "NO_CONNECTION";
+    if(res==SetParamResult::VALUE_UNSUPPORTED)return "VALUE_UNSUPPORTED";
+    if(res==SetParamResult:: SUCCESS)return " SUCCESS";
+    return "UNKNOWN";
 }
 
-bool MavlinkSettingsModel::try_set_param_string_impl(const QString param_id,QString value,std::optional<ExtraRetransmitParams> extra_retransmit_params)
+MavlinkSettingsModel::SetParamResult MavlinkSettingsModel::try_set_param_int_impl(const QString param_id, int value,std::optional<ExtraRetransmitParams> extra_retransmit_params)
 {
-    if(param_client){
-        if(extra_retransmit_params.has_value()){
-            const double timeout_s=std::chrono::duration_cast<std::chrono::milliseconds>(extra_retransmit_params.value().retransmit_timeout).count()/1000.0;
-            param_client->set_timeout(timeout_s);
-            param_client->set_n_retransmissions(extra_retransmit_params.value().n_retransmissions);
-        }
-        const auto result=param_client->set_param_custom(param_id.toStdString(),value.toStdString());
-        if(extra_retransmit_params.has_value()){
-            // restores defaults
-            param_client->set_timeout(-1);
-            param_client->set_n_retransmissions(3);
-        }
-        if(result==mavsdk::Param::Result::Success){
-            return true;
-        }
+    if(!param_client)return SetParamResult::NO_CONNECTION;
+    if(extra_retransmit_params.has_value()){
+        const double timeout_s=std::chrono::duration_cast<std::chrono::milliseconds>(extra_retransmit_params.value().retransmit_timeout).count()/1000.0;
+        param_client->set_timeout(timeout_s);
+        param_client->set_n_retransmissions(extra_retransmit_params.value().n_retransmissions);
     }
-    return false;
+    const auto result=param_client->set_param_int(param_id.toStdString(),value);
+    if(extra_retransmit_params.has_value()){
+        // restores defaults
+        param_client->set_timeout(-1);
+        param_client->set_n_retransmissions(3);
+    }
+    if(result==mavsdk::Param::Result::ValueUnsupported)return SetParamResult::VALUE_UNSUPPORTED;
+    if(result==mavsdk::Param::Result::Timeout)return SetParamResult::NO_CONNECTION;
+    if(result==mavsdk::Param::Result::Success)return SetParamResult::SUCCESS;
+    if(result==mavsdk::Param::Result::ParamNameTooLong || result==mavsdk::Param::Result::ParamValueTooLong || result==mavsdk::Param::Result::WrongType){
+        qDebug()<<"Improper use, fix your code!";
+    }
+    return SetParamResult::UNKNOWN;
+}
+
+MavlinkSettingsModel::SetParamResult MavlinkSettingsModel::try_set_param_string_impl(const QString param_id,QString value,std::optional<ExtraRetransmitParams> extra_retransmit_params)
+{
+    if(!param_client)return SetParamResult::NO_CONNECTION;
+    if(extra_retransmit_params.has_value()){
+        const double timeout_s=std::chrono::duration_cast<std::chrono::milliseconds>(extra_retransmit_params.value().retransmit_timeout).count()/1000.0;
+        param_client->set_timeout(timeout_s);
+        param_client->set_n_retransmissions(extra_retransmit_params.value().n_retransmissions);
+    }
+    const auto result=param_client->set_param_custom(param_id.toStdString(),value.toStdString());
+    if(extra_retransmit_params.has_value()){
+        // restores defaults
+        param_client->set_timeout(-1);
+        param_client->set_n_retransmissions(3);
+    }
+    if(result==mavsdk::Param::Result::ValueUnsupported)return SetParamResult::VALUE_UNSUPPORTED;
+    if(result==mavsdk::Param::Result::Timeout)return SetParamResult::NO_CONNECTION;
+    if(result==mavsdk::Param::Result::Success)return SetParamResult::SUCCESS;
+    if(result==mavsdk::Param::Result::ParamNameTooLong || result==mavsdk::Param::Result::ParamValueTooLong || result==mavsdk::Param::Result::WrongType){
+        qDebug()<<"Improper use, fix your code!";
+    }
+    return SetParamResult::UNKNOWN;
 }
 
 bool MavlinkSettingsModel::try_update_parameter_int(const QString param_id,int value)
 {
     qDebug()<<"try_update_parameter_int:"<<param_id<<","<<value;
     const auto result=try_set_param_int_impl(param_id,value);
-    if(result){
+    if(result==SetParamResult::SUCCESS){
         MavlinkSettingsModel::SettingData tmp{param_id,value};
         updateData(std::nullopt,tmp);
         return true;
     }
+    qDebug()<<"Failure code:"<<set_param_result_as_string(result).c_str();
     return false;
 }
 
@@ -489,11 +534,12 @@ bool MavlinkSettingsModel::try_update_parameter_string(const QString param_id,QS
 {
     qDebug()<<"try_update_parameter_string:"<<param_id<<","<<value;
     const auto result=try_set_param_string_impl(param_id,value);
-    if(result){
+    if(result==SetParamResult::SUCCESS){
         MavlinkSettingsModel::SettingData tmp{param_id,value.toStdString()};
         updateData(std::nullopt,tmp);
         return true;
     }
+    qDebug()<<"Failure code:"<<set_param_result_as_string(result).c_str();
     return false;
 }
 
@@ -525,16 +571,11 @@ QVariant MavlinkSettingsModel::data(const QModelIndex &index, int role) const
         if(std::holds_alternative<int>(data.value)){
             auto value=std::get<int>(data.value);
             return int_enum_get_readable(data.unique_id,value);
-            auto as_enum=int_param_to_enum_string_if_known(data.unique_id.toStdString(),value);
-            if(as_enum.has_value()){
-                return QString(as_enum.value().c_str());
-            }
-            std::stringstream ss;
-            ss<<"{"<<value<<"}";
-            return QString(ss.str().c_str());
         }
+        // We only support int and string
+        assert(std::holds_alternative<std::string>(data.value));
         auto value=std::get<std::string>(data.value);
-        return QString(value.c_str());
+        return string_enum_get_readable(data.unique_id,value.c_str());
     } else if (role==ValueTypeRole){
         if(std::holds_alternative<int>(data.value)){
             return 0;
@@ -686,6 +727,17 @@ QString MavlinkSettingsModel::int_enum_get_readable(QString param_id, int value)
     return QString(ss.str().c_str());
 }
 
+QString MavlinkSettingsModel::string_enum_get_readable(QString param_id,QString value) const
+{
+    auto as_enum=string_param_to_enum_string_if_known(param_id.toStdString(),value.toStdString());
+    if(as_enum.has_value()){
+        return QString(as_enum.value().c_str());
+    }
+    std::stringstream ss;
+    ss<<"{"<<value.toStdString()<<"}";
+    return QString(ss.str().c_str());
+}
+
 bool MavlinkSettingsModel::int_param_has_min_max(QString param_id) const
 {
     const auto improved_opt=get_improved_for_int(param_id.toStdString());
@@ -817,9 +869,8 @@ QString MavlinkSettingsModel::get_short_description(const QString param_id)const
 {
     if(param_id=="V_BITRATE_MBITS"){
         return "Camera encoder bitrate, does not include FEC overhead. Supported by most cameras, but some encoders do not properly respond to this value."
-               "Note1: Your final transmitted bitrate also depends on WB_V_FEC_PERC (FEC overhead, in percent). You can find the actual measured rate(s) in the OSD"
-               "Note2: The MCS index under WB_LINK_FREQ controlls how much data can be transmitted. If you have TX errors(shown in OSD) you need to either "
-               "decrease the encoder bitrate, decrease the WB_V_FEC_PERC or (if possible) increase MCS index";
+               "If variable bitrate is enabled (recommended), this value is ignored. Otherwise, you can manually set a fixed camera/encoder bitrate here."
+               "Does not include FEC overhead.";
     }
     if(param_id=="WB_V_FEC_PERC"){
         return "WB Video FEC overhead, in percent. Increases link stability, but also the required link bandwidth (watch out for tx errors). "
@@ -880,7 +931,7 @@ QString MavlinkSettingsModel::get_short_description(const QString param_id)const
     if(param_id=="V_HORIZ_FLIP"){
         return "Flip video horizontally";
     }
-    if(param_id=="V_CAM_ROT_DEGREE"){
+    if(param_id=="V_CAM_ROT_DEG"){
         return "Rotate video by 90 degree increments";
     }
     if(param_id=="V_AWB_MODE"){
@@ -889,7 +940,7 @@ QString MavlinkSettingsModel::get_short_description(const QString param_id)const
     if(param_id=="V_EXP_MODE"){
         return "EXP Exposure mode";
     }
-    if(param_id=="V_BRIGHNTESS"){
+    if(param_id=="V_BRIGHTNESS"){
         return "Image capture brightness, [0..100], default 50, but recommended to tune AWB or EXP instead";
     }
     if(param_id=="V_ISO"){
@@ -920,6 +971,16 @@ QString MavlinkSettingsModel::get_short_description(const QString param_id)const
     }
     if(param_id=="GPIO_2"){
         return "Experimental, allows manually controlling a rpi gpio for special uses like a LED, landing gear, ...";
+    }
+    if(param_id=="FC_UART_FLWCTL"){
+        return "Leave disabled, for setups with an additional 4th cable for uart flow control";
+    }
+    if(param_id=="WB_CHANNEL_W" || param_id=="WB_MCS_INDEX" || param_id=="WB_FREQUENCY"){
+        // They are whitelisted, but whitelisting can be disabled by enabling developer mode.
+        return "!!!Editing this param manually without care will result in a broken link!!!";
+    }
+    if(param_id=="WB_MAX_D_BZ"){
+        return "FEC auto internal.";
     }
     return "TODO";
 }

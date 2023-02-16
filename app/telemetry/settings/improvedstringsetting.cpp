@@ -29,3 +29,19 @@ QStringList ImprovedStringSetting::enum_values() const{
     }
     return ret;
 }
+
+std::optional<std::string> ImprovedStringSetting::value_to_key(const std::string& value) const
+{
+    for(const auto& item:m_values_enum){
+        if(item.value==value)return item.key;
+    }
+    return std::nullopt;
+}
+
+std::optional<std::string> ImprovedStringSetting::key_to_value(const std::string &key) const
+{
+    for(const auto& item:m_values_enum){
+        if(item.key==key)return item.value;
+    }
+    return std::nullopt;
+}

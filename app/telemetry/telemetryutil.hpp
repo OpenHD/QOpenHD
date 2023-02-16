@@ -692,6 +692,12 @@ static bool get_arm_mode_from_heartbeat(const mavlink_heartbeat_t& heartbeat){
     return false;
 }
 
+static int calculate_efficiency_in_mah_per_km(const int delta_mah,const int delta_km){
+    if(delta_km<=0)return 0;
+    double ret=static_cast<double>(delta_mah)/static_cast<double>(delta_km);
+    return std::round(ret);
+}
+
 }
 
 #endif // TELEMETRYUTIL_H

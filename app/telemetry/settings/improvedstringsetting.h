@@ -4,6 +4,7 @@
 #include <QStringList>
 #include <string>
 #include <vector>
+#include <optional>
 
 /**
  * For a string setting it makes less sense to use both a key and value - but we do it anyways for the future.
@@ -25,6 +26,8 @@ public:
 
     QStringList enum_values()const;
 
+    std::optional<std::string> value_to_key(const std::string& value)const;
+    std::optional<std::string> key_to_value(const std::string& key)const;
 private:
     std::vector<Item> m_values_enum{};
 };
