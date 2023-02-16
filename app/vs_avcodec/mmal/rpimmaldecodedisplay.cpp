@@ -2,6 +2,8 @@
 
 #include "../../common/TimeHelper.hpp"
 
+#include "../../vs_util/QOpenHDVideoHelper.hpp"
+
 #include <qdebug.h>
 
 // DIRTY BEGIN
