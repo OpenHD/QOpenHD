@@ -137,13 +137,14 @@ ScrollView {
 
             ListModel{
                 id: mcsIndexModel
-                ListElement{title: "~4Mbps         (MCS0)"; value: 0}
-                ListElement {title: "5.5Mbps/6.5Mbps(MCS1)"; value: 1}
-                ListElement {title: "11Mbps/13Mbps  (MCS2)"; value: 2}
-                ListElement {title: "12Mbps/13Mbps  (MCS3)"; value: 3}
-                ListElement {title: "19.5Mbps       (MCS4)"; value: 4}
-                ListElement {title: "24Mbps/26Mbps  (MCS5)"; value: 5}
-                ListElement {title: "36Mbps/39Mbps  (MCS6)"; value: 6}
+                ListElement {title: "~3.0 Mbps  (MCS0)"; value: 0}
+                ListElement {title: "~5.5 Mbps  (MCS1)"; value: 1}
+                ListElement {title: "~8.5 Mbps  (MCS2)"; value: 2}
+                ListElement {title: "~12  Mbps  (MCS3)"; value: 3}
+                ListElement {title: "~17  Mbps  (MCS4)"; value: 4}
+                ListElement {title: "~20+ Mbps (EXP) (MCS5)"; value: 5}
+                ListElement {title: "~20+ Mbps (EXP) (MCS6)"; value: 6}
+                ListElement {title: "~20+ Mbps (EXP) (MCS7)"; value: 7}
             }
 
             ListModel{
