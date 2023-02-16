@@ -337,7 +337,7 @@ void RPIMMalDecodeDisplay::updateDisplayRegion()
     dr.set |=  MMAL_DISPLAY_SET_MODE;
     dr.mode =  MMAL_DISPLAY_MODE_LETTERBOX;
 
-    const auto rotation=get_display_rotation();
+    const auto rotation=QOpenHDVideoHelper::get_display_rotation();
     if(rotation==90){
         dr.set |=MMAL_DISPLAY_SET_TRANSFORM;
         dr.transform =MMAL_DISPLAY_ROT90;
