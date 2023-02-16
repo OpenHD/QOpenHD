@@ -195,6 +195,12 @@ static std::string get_udp_rtp_sdp_filename(const VideoStreamConfig& video_strea
     return kRTP_FILENAME;
 }
 
+// Kinda UI, kinda video related
+static int get_display_rotation(){
+    QSettings settings{};
+    return settings.value("general_screen_rotation", 0).toInt();
+}
+
 }
 
 #endif // QOPENHDVIDEOHELPER_H
