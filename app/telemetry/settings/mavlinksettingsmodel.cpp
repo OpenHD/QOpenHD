@@ -869,9 +869,8 @@ QString MavlinkSettingsModel::get_short_description(const QString param_id)const
 {
     if(param_id=="V_BITRATE_MBITS"){
         return "Camera encoder bitrate, does not include FEC overhead. Supported by most cameras, but some encoders do not properly respond to this value."
-               "Note1: Your final transmitted bitrate also depends on WB_V_FEC_PERC (FEC overhead, in percent). You can find the actual measured rate(s) in the OSD"
-               "Note2: The MCS index under WB_LINK_FREQ controlls how much data can be transmitted. If you have TX errors(shown in OSD) you need to either "
-               "decrease the encoder bitrate, decrease the WB_V_FEC_PERC or (if possible) increase MCS index";
+               "If variable bitrate is enabled (recommended), this value is ignored. Otherwise, you can manually set a fixed camera/encoder bitrate here."
+               "Does not include FEC overhead.";
     }
     if(param_id=="WB_V_FEC_PERC"){
         return "WB Video FEC overhead, in percent. Increases link stability, but also the required link bandwidth (watch out for tx errors). "
