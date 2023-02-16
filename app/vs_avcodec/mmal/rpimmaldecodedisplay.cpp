@@ -5,6 +5,7 @@
 #include "../../vs_util/QOpenHDVideoHelper.hpp"
 
 #include <qdebug.h>
+#include <optional>
 
 // DIRTY BEGIN
 MMAL_STATUS_T x_mmal_port_parameter_set_boolean(MMAL_PORT_T *port, uint32_t id, MMAL_BOOL_T value)
@@ -26,6 +27,20 @@ static void debug_mmal_format(MMAL_ES_FORMAT_T *format_out){
                       format_out->es->video.crop.x, format_out->es->video.crop.y,
                       format_out->es->video.crop.width, format_out->es->video.crop.height,fps);
 }
+
+static std::optional<MMAL_DISPLAYTRANSFORM_T> get_opt_video_rotation(int rotation){
+    if(rotation==90){
+        return MMAL_DISPLAY_ROT90;
+    }
+    if(rotation==180){
+        return MMAL_DISPLAY_ROT180;
+    }
+    if(rotation==270){
+        return MMAL_DISPLAY_ROT270;
+    }
+    return std::nullopt;
+}
+
 
 static bool initialized=false;
 
@@ -340,17 +355,12 @@ void RPIMMalDecodeDisplay::updateDisplayRegion()
     dr.mode =  MMAL_DISPLAY_MODE_LETTERBOX;
 
     const auto rotation=QOpenHDVideoHelper::get_display_rotation();
-    if(rotation==90){
-        dr.set |=MMAL_DISPLAY_SET_TRANSFORM;
-        dr.transform =MMAL_DISPLAY_ROT90;
-    }
-    if(rotation==180){
-        dr.set |=MMAL_DISPLAY_SET_TRANSFORM;
-        dr.transform =MMAL_DISPLAY_ROT180;
-    }
-    if(rotation==270){
-        dr.set |=MMAL_DISPLAY_SET_TRANSFORM;
-        dr.transform =MMAL_DISPLAY_ROT270;
+    const auto opt_mmal_rot=get_opt_video_rotation(rotation);
+    if(opt_mmal_rot.has_value()){
+        const auto mmal_rot=opt_mmal_rot.value;
+         dr.set |=MMAL_DISPLAY_SET_TRANSFORM;
+         dr.transform = mmal_rot;
+
     }
     /*const int screen_width=2560;
     const int screen_height=1440;
