@@ -357,7 +357,7 @@ void RPIMMalDecodeDisplay::updateDisplayRegion()
     const auto rotation=QOpenHDVideoHelper::get_display_rotation();
     const auto opt_mmal_rot=get_opt_video_rotation(rotation);
     if(opt_mmal_rot.has_value()){
-        const auto mmal_rot=opt_mmal_rot.value;
+        const auto mmal_rot=opt_mmal_rot.value();
          dr.set |=MMAL_DISPLAY_SET_TRANSFORM;
          dr.transform = mmal_rot;
 
