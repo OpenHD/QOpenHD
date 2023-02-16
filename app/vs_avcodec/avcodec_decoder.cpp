@@ -996,6 +996,9 @@ static void write_service_rotation_file(int rotation){
 void AVCodecDecoder::dirty_rpi_decode_via_external_decode_service()
 {
     qDebug()<<"Decode via rpi external decode service begin";
+    // The service should already be stopped,but do it anyways just to be sure
+    OHDUtil::run_command("systemctl stop",{std::string(RPI_OMX_H264_DECODE_SERVICE)});
+    // QRS are not available with this implementation
     DecodingStatistcs::instance().reset_all_to_default();
     DecodingStatistcs::instance().set_decoding_type("External OMX");
     // Dirty way we communicate with the service / executable
@@ -1003,6 +1006,7 @@ void AVCodecDecoder::dirty_rpi_decode_via_external_decode_service()
     write_service_rotation_file(rotation);
     // Start service
     OHDUtil::run_command("systemctl start",{std::string(RPI_OMX_H264_DECODE_SERVICE)});
+    // We follow the same pattern here as the decode flows that don't use an "external service"
     while(true){
         if(request_restart){
             request_restart=false;
