@@ -149,8 +149,8 @@ ScrollView {
 
             ListModel{
                 id: channelWidthModel
-                ListElement {title: "20MHz"; value: 20}
-                ListElement {title: "40MHz"; value: 40}
+                ListElement {title: "20MHz (default)"; value: 20}
+                ListElement {title: "40MHz (experimental)"; value: 40}
             }
 
             Rectangle {
