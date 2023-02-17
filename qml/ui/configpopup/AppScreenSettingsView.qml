@@ -160,7 +160,7 @@ ScrollView {
                     Component.onCompleted: {
                         for (var i = 0; i < model.count; i++) {
                             var choice = model.get(i);
-                            if (choice.value == settings.font_dpi) {
+                            if (choice.value == settings.screen_custom_font_dpi) {
                                 currentIndex = i;
                             }
                         }
