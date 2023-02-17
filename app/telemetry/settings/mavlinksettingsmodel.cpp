@@ -890,9 +890,9 @@ bool MavlinkSettingsModel::get_param_requires_manual_reboot(QString param_id)
 QString MavlinkSettingsModel::get_short_description(const QString param_id)const
 {
     if(param_id=="V_BITRATE_MBITS"){
-        return "Camera encoder bitrate, does not include FEC overhead. Supported by most cameras, but some encoders do not properly respond to this value."
-               "If variable bitrate is enabled (recommended), this value is ignored. Otherwise, you can manually set a fixed camera/encoder bitrate here."
-               "Does not include FEC overhead.";
+        return "Camera encoder bitrate, does not include FEC overhead. "
+               "If variable bitrate is enabled (recommended), this value is ignored. Otherwise, you can manually set a fixed camera/encoder bitrate here. "
+               "Supported by most cameras, but some encoders do not properly respond to this value.";
     }
     if(param_id=="WB_V_FEC_PERC"){
         return "WB Video FEC overhead, in percent. Increases link stability, but also the required link bandwidth (watch out for tx errors). "
