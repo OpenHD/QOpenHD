@@ -187,16 +187,14 @@ int main(int argc, char *argv[]) {
     
     QSettings settings;
 
-    const int font_dpi = settings.value("font_dpi").toInt();
-
-    if (font_dpi) {
+    const int screen_custom_font_dpi = settings.value("screen_custom_font_dpi").toInt();
+    if (screen_custom_font_dpi) {
         QCoreApplication::setAttribute(Qt::AA_DisableHighDpiScaling);
-        const std::string font_dpi_s = std::to_string(font_dpi);
+        const std::string font_dpi_s = std::to_string(screen_custom_font_dpi);
         qputenv("QT_FONT_DPI", QByteArray(font_dpi_s.c_str(), font_dpi_s.length()));
-        } else {
+    } else {
         QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-        }
-
+    }
     //QCoreApplication::setAttribute(Qt::AA_UseOpenGLES);
 
 #ifdef QOPENHD_ENABLE_GSTREAMER

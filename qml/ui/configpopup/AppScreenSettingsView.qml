@@ -166,7 +166,7 @@ ScrollView {
                         }
                     }
                     onCurrentIndexChanged: {
-                        settings.font_dpi = font_dpi.get(currentIndex).value
+                        settings.screen_custom_font_dpi = font_dpi.get(currentIndex).value
                     }
                 }
             }
