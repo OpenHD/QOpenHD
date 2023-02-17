@@ -164,7 +164,7 @@ Rectangle {
                         leftPadding: 12
                     }
                     Text {
-                        text: _ohdSystemAir.is_alive ? "YES" : "NO"
+                        text: _ohdSystemAir.is_alive ? "Yes" : "No"
                         color: _ohdSystemAir.is_alive ? "GREEN" : "RED"
                         height: 24
                         width: 256
@@ -235,7 +235,7 @@ Rectangle {
                         leftPadding: 12
                     }
                     Text {
-                        text: _ohdSystemGround.is_alive ? "YES" : "NO"
+                        text: _ohdSystemGround.is_alive ? "Yes" : "No"
                         color: _ohdSystemGround.is_alive ? "GREEN" : "RED"
                         height: 24
                         width: 256
@@ -307,7 +307,7 @@ Rectangle {
                         leftPadding: 12
                     }
                     Text {
-                        text: _fcMavlinkSystem.is_alive ? "YES" : "NO"
+                        text: _fcMavlinkSystem.is_alive ? "Yes" : "No"
                         color: _fcMavlinkSystem.is_alive ? "GREEN" : "RED"
                         height: 24
                         width: 256
