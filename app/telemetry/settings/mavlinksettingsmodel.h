@@ -69,7 +69,7 @@ public:
         int n_retransmissions=3;
     };
     // The error codes are a bit less than what mavsdk returns, since we can merge some of them into a "unknown-this should never happen" value
-    enum SetParamResult{
+    enum class SetParamResult{
         UNKNOWN, // Hints at a programmer's error
         NO_CONNECTION, // Most likely all retransmitts failed, cannot be completely avoided
         VALUE_UNSUPPORTED, // (openhd) rejected the param value, it is not valid / not supported by the HW
