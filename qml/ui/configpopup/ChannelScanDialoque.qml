@@ -121,6 +121,7 @@ max 30 seconds, usually less"
                     var result=_mavlinkTelemetry.ohd_gnd_request_channel_scan(how_many_freq_bands,how_many_bandwidths)
                     if(result){
                          m_curr_index++;
+                        //settings_panel.close_all()
                     }else{
                         console.log("Cannot initiate channel scan");
                         _messageBoxInstance.set_text_and_show("Please try again")

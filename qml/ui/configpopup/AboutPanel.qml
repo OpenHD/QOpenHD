@@ -164,7 +164,8 @@ Rectangle {
                         leftPadding: 12
                     }
                     Text {
-                        text: _ohdSystemAir.is_alive ? "Y" : "N"
+                        text: _ohdSystemAir.is_alive ? "YES" : "NO"
+                        color: _ohdSystemAir.is_alive ? "GREEN" : "RED"
                         height: 24
                         width: 256
                         font.pixelSize: 14
@@ -234,7 +235,8 @@ Rectangle {
                         leftPadding: 12
                     }
                     Text {
-                        text: _ohdSystemGround.is_alive ? "Y" : "N"
+                        text: _ohdSystemGround.is_alive ? "YES" : "NO"
+                        color: _ohdSystemGround.is_alive ? "GREEN" : "RED"
                         height: 24
                         width: 256
                         font.pixelSize: 14
@@ -305,10 +307,10 @@ Rectangle {
                         leftPadding: 12
                     }
                     Text {
-                        text: _fcMavlinkSystem.is_alive ? "Y" : "N"
+                        text: _fcMavlinkSystem.is_alive ? "YES" : "NO"
+                        color: _fcMavlinkSystem.is_alive ? "GREEN" : "RED"
                         height: 24
                         width: 256
-                        //color: _fcMavlinkSystem.is_alive ? "RED" : "GREEN"
                         font.pixelSize: 14
                         leftPadding: 6
                     }
@@ -328,7 +330,6 @@ Rectangle {
                         text: _fcMavlinkSystem.for_osd_sys_id == -1 ? "na" : qsTr(""+_fcMavlinkSystem.for_osd_sys_id)
                         height: 24
                         width: 256
-                        //color: _fcMavlinkSystem.is_alive ? "RED" : "GREEN"
                         font.pixelSize: 14
                         leftPadding: 6
                     }
