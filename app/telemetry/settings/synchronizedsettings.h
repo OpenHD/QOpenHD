@@ -39,12 +39,13 @@ public:
         change_param_air_and_ground(PARAM_ID_WB_FREQ,value);
     }
 
-    Q_INVOKABLE void change_param_air_and_ground_mcs(int value){
-        change_param_air_and_ground(PARAM_ID_WB_MCS_INDEX,value);
-    }
-
     Q_INVOKABLE void change_param_air_and_ground_channel_width(int value){
         change_param_air_and_ground(PARAM_ID_WB_CHANNEL_WIDTH,value);
+    }
+
+    // R.n I am quite certain MCS index does not need to match on air and ground
+    Q_INVOKABLE void change_param_air_and_ground_mcs(int value){
+        change_param_air_and_ground(PARAM_ID_WB_MCS_INDEX,value);
     }
 };
 

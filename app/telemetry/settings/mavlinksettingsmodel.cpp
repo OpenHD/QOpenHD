@@ -84,6 +84,12 @@ bool MavlinkSettingsModel::is_param_read_only(const std::string param_id)const
     if(param_id.compare("WB_N_RX_CARDS")== 0)ret=true;
     if(param_id.compare("V_N_CAMERAS")== 0)ret=true;
 	if(param_id.compare("V_CAM_NAME")==0 )ret=true;
+    if(param_id=="WIFI_CARD0" || param_id=="WIFI_CARD1" || param_id=="WIFI_CARD2" || param_id=="WIFI_CARD3"){
+        ret=true;
+    }
+    if(param_id=="HOTSPOT_CARD"){
+         ret=true;
+    }
     //qDebug()<<"Param"<<param_id.c_str()<<"Read-only:"<<(ret==false ? "N":"Y");
     return ret;
 }
@@ -517,30 +523,46 @@ MavlinkSettingsModel::SetParamResult MavlinkSettingsModel::try_set_param_string_
     return SetParamResult::UNKNOWN;
 }
 
-bool MavlinkSettingsModel::try_update_parameter_int(const QString param_id,int value)
+QString MavlinkSettingsModel::try_update_parameter_int(const QString param_id,int value)
 {
     qDebug()<<"try_update_parameter_int:"<<param_id<<","<<value;
     const auto result=try_set_param_int_impl(param_id,value);
     if(result==SetParamResult::SUCCESS){
         MavlinkSettingsModel::SettingData tmp{param_id,value};
         updateData(std::nullopt,tmp);
-        return true;
+        return "";
     }
     qDebug()<<"Failure code:"<<set_param_result_as_string(result).c_str();
-    return false;
+    if(result==SetParamResult::VALUE_UNSUPPORTED){
+        std::stringstream ss;
+        ss<<"Your HW does not support "<<param_id.toStdString()<<"="<<value;
+        return ss.str().c_str();
+    }
+    if(result==SetParamResult::NO_CONNECTION){
+        return "Update failed,please try again";
+    }
+    return "Update failed, unknown error";
 }
 
-bool MavlinkSettingsModel::try_update_parameter_string(const QString param_id,QString value)
+QString MavlinkSettingsModel::try_update_parameter_string(const QString param_id,QString value)
 {
     qDebug()<<"try_update_parameter_string:"<<param_id<<","<<value;
     const auto result=try_set_param_string_impl(param_id,value);
     if(result==SetParamResult::SUCCESS){
         MavlinkSettingsModel::SettingData tmp{param_id,value.toStdString()};
         updateData(std::nullopt,tmp);
-        return true;
+        return "";
     }
     qDebug()<<"Failure code:"<<set_param_result_as_string(result).c_str();
-    return false;
+    if(result==SetParamResult::VALUE_UNSUPPORTED){
+        std::stringstream ss;
+        ss<<"Your HW does not support "<<param_id.toStdString()<<"="<<value.toStdString();
+        return ss.str().c_str();
+    }
+    if(result==SetParamResult::NO_CONNECTION){
+        return "Update failed,please try again";
+    }
+    return "Update failed, unknown error";
 }
 
 int MavlinkSettingsModel::rowCount(const QModelIndex &parent) const
@@ -868,9 +890,9 @@ bool MavlinkSettingsModel::get_param_requires_manual_reboot(QString param_id)
 QString MavlinkSettingsModel::get_short_description(const QString param_id)const
 {
     if(param_id=="V_BITRATE_MBITS"){
-        return "Camera encoder bitrate, does not include FEC overhead. Supported by most cameras, but some encoders do not properly respond to this value."
-               "If variable bitrate is enabled (recommended), this value is ignored. Otherwise, you can manually set a fixed camera/encoder bitrate here."
-               "Does not include FEC overhead.";
+        return "Camera encoder bitrate, does not include FEC overhead. "
+               "If variable bitrate is enabled (recommended), this value is ignored. Otherwise, you can manually set a fixed camera/encoder bitrate here. "
+               "Supported by most cameras, but some encoders do not properly respond to this value.";
     }
     if(param_id=="WB_V_FEC_PERC"){
         return "WB Video FEC overhead, in percent. Increases link stability, but also the required link bandwidth (watch out for tx errors). "
@@ -981,6 +1003,12 @@ QString MavlinkSettingsModel::get_short_description(const QString param_id)const
     }
     if(param_id=="WB_MAX_D_BZ"){
         return "FEC auto internal.";
+    }
+    if(param_id=="WIFI_CARD0" || param_id=="WIFI_CARD1" || param_id=="WIFI_CARD2" || param_id=="WIFI_CARD3"){
+        return "Detected wifi card type";
+    }
+    if(param_id=="HOTSPOT_CARD"){
+        return "Detected card for wifi hotspot";
     }
     return "TODO";
 }

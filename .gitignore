@@ -79,6 +79,10 @@ compile_commands.json
 build
 #MAVSDK
 
-
-
-
+.csm_setup_*
+.*.swp
+.vscode
+*.orig
+qopenhd.qmltypes
+qopenhd_metatypes.json
+qopenhd_qmltyperegistrations.cpp

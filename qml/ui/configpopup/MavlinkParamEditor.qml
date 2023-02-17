@@ -455,7 +455,7 @@ Rectangle{
                 text: "Save"
                 Layout.alignment: Qt.AlignRight
                 onClicked: {
-                    var res=false;
+                    var res="";
                     if(paramValueType==0){
                         var value_int;
                         if(intEnumDynamicComboBox.visible){
@@ -473,14 +473,15 @@ Rectangle{
                         console.log("UI set string:{"+value_string+"}")
                         res=instanceMavlinkSettingsModel.try_update_parameter_string(parameterId,value_string);
                     }
-                    if(!res){
-                        console.log("Update failed")
-                        _messageBoxInstance.set_text_and_show("Update failed")
-                    }else{
+                    if(res===""){
+                        // Update success (no error code)
                         if(instanceMavlinkSettingsModel.get_param_requires_manual_reboot(parameterId)){
                             _messageBoxInstance.set_text_and_show("Please reboot to apply")
                         }
                         parameterEditor.visible=false
+                    }else{
+                        console.log("Update failed")
+                        _messageBoxInstance.set_text_and_show(res);
                     }
                     set_description_enabled(false)
                 }

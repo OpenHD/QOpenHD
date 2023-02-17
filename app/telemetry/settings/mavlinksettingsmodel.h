@@ -69,7 +69,7 @@ public:
         int n_retransmissions=3;
     };
     // The error codes are a bit less than what mavsdk returns, since we can merge some of them into a "unknown-this should never happen" value
-    enum SetParamResult{
+    enum class SetParamResult{
         UNKNOWN, // Hints at a programmer's error
         NO_CONNECTION, // Most likely all retransmitts failed, cannot be completely avoided
         VALUE_UNSUPPORTED, // (openhd) rejected the param value, it is not valid / not supported by the HW
@@ -81,8 +81,9 @@ public:
 
     // first updates the parameter on the server via MAVSDK (unless server rejects / rare timeout)
     // then updates the internal cached parameter (if previous update was successfull).
-    Q_INVOKABLE bool try_update_parameter_int(const QString param_id,int value);
-    Q_INVOKABLE bool try_update_parameter_string(const QString param_id,QString value);
+    // Kinda dirty, but since we use it from QML - returns an empty string "" on success, an error code otherwise
+    Q_INVOKABLE QString try_update_parameter_int(const QString param_id,int value);
+    Q_INVOKABLE QString try_update_parameter_string(const QString param_id,QString value);
 
     enum Roles {
         // The unique string id of this param

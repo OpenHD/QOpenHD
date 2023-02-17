@@ -56,18 +56,20 @@ void SynchronizedSettings::change_param_air_and_ground(QString param_id,int valu
     const MavlinkSettingsModel::ExtraRetransmitParams extra_retransmit_params{std::chrono::milliseconds(100),10};
     // First change it on the air and wait for ack - if failed, return. MAVSDK does 3 retransmission(s) until acked so it is really unlikely that
     // we set the value and all 3 ack's are lost (which would be the generals problem and then the frequenies are out of sync).
-    const bool air_success=MavlinkSettingsModel::instanceAir().try_set_param_int_impl(param_id,value,extra_retransmit_params);
-    if(!air_success){
+    const auto air_success=MavlinkSettingsModel::instanceAir().try_set_param_int_impl(param_id,value,extra_retransmit_params);
+    if(!(air_success==MavlinkSettingsModel::SetParamResult::SUCCESS)){
         std::stringstream ss;
-        ss<<"Air rejected "<<param_id.toStdString()<<":"<<value<<" nothing changed";
+        ss<<"Cannot change "<<param_id.toStdString()<<" to "<<value<<" -"<<MavlinkSettingsModel::set_param_result_as_string(air_success);
          workaround::makePopupMessage(ss.str().c_str());
         return;
     }
-    // we have changed the air freq, now change the ground
-    const bool ground_success=MavlinkSettingsModel::instanceGround().try_set_param_int_impl(param_id,value);
-    if(!ground_success){
+    // we have changed the value on air, now change the ground
+    // It is highly unlikely that fauls - if it does, we have an issue ! (2 generals problem)
+    const auto ground_success=MavlinkSettingsModel::instanceGround().try_set_param_int_impl(param_id,value);
+    if(!(ground_success==MavlinkSettingsModel::SetParamResult::SUCCESS)){
         std::stringstream ss;
-        ss<<"Air changed but ground rejected - unfortunately you have to manually fix "<<param_id.toStdString();
+        ss<<"Cannot change "<<param_id.toStdString()<<" to "<<value<<" -"<<MavlinkSettingsModel::set_param_result_as_string(air_success);
+        ss<<"\nAir and ground are out of sync";
         workaround::makePopupMessage(ss.str().c_str());
         return;
     }

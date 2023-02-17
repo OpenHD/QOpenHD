@@ -18,6 +18,11 @@ Rectangle {
         focus = true
     }
 
+    function close_all(){
+        visible = false;
+        focus=false;
+    }
+
     function showAppSettings(i) {
         console.log("TEST show app settings:"+i);
     }

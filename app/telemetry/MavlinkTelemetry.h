@@ -78,7 +78,7 @@ public:
     // 1: 2.4G only
     // 2: 5.8G only
     // similar for channel widths
-    Q_INVOKABLE bool request_channel_scan(int freq_bands,int channel_widths);
+    Q_INVOKABLE bool ohd_gnd_request_channel_scan(int freq_bands,int channel_widths);
 };
 
 #endif // OHDMAVLINKCONNECTION_H
