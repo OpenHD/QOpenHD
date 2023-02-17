@@ -87,6 +87,9 @@ bool MavlinkSettingsModel::is_param_read_only(const std::string param_id)const
     if(param_id=="WIFI_CARD0" || param_id=="WIFI_CARD1" || param_id=="WIFI_CARD2" || param_id=="WIFI_CARD3"){
         ret=true;
     }
+    if(param_id=="HOTSPOT_CARD"){
+         ret=true;
+    }
     //qDebug()<<"Param"<<param_id.c_str()<<"Read-only:"<<(ret==false ? "N":"Y");
     return ret;
 }
@@ -1003,6 +1006,9 @@ QString MavlinkSettingsModel::get_short_description(const QString param_id)const
     }
     if(param_id=="WIFI_CARD0" || param_id=="WIFI_CARD1" || param_id=="WIFI_CARD2" || param_id=="WIFI_CARD3"){
         return "Detected wifi card type";
+    }
+    if(param_id=="HOTSPOT_CARD"){
+        return "Detected card for wifi hotspot";
     }
     return "TODO";
 }
