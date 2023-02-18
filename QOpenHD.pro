@@ -200,7 +200,6 @@ iOSBuild {
     #CONFIG += EnableGamepads
     CONFIG += EnableSpeech
     CONFIG += EnableMainVideo
-    #CONFIG += EnableCharts
     #CONFIG += EnableLog //does not work due to filepath not set
 
     app_launch_images.files = $$PWD/icons/LaunchScreen.png $$files($$PWD/icons/LaunchScreen.storyboard)

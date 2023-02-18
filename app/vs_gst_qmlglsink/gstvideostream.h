@@ -37,7 +37,7 @@ public:
      * @param primaryStream primary and secondary stream use different UDP ports
      */
     void init(QQuickItem* videoOutputWindow);
-    // Qmlglsink can have some weird bugs
+    // Avoid common bugs from qml that could crash the whole application when propagated to c++
     Q_INVOKABLE void check_common_mistakes_then_init(QQuickItem* qmlglsinkvideoitem);
     // for checking if video data actually arrives
     // public because set by static method

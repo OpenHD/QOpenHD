@@ -199,6 +199,7 @@ int main(int argc, char *argv[]) {
 
 #ifdef QOPENHD_ENABLE_GSTREAMER
     init_gstreamer(argc,argv);
+    // NEEDED !! For QMLqlsink to work !!
     init_qmlglsink_and_log();
 #endif //QOPENHD_ENABLE_GSTREAMER
 
@@ -351,12 +352,6 @@ engine.rootContext()->setContextProperty("QOPENHD_ENABLE_ADSB_LIBRARY", QVariant
 engine.rootContext()->setContextProperty("EnableADSB", QVariant(false));
 #endif
 
-
-#if defined(ENABLE_CHARTS)
-    engine.rootContext()->setContextProperty("EnableCharts", QVariant(true));
-#else
-    engine.rootContext()->setContextProperty("EnableCharts", QVariant(false));
-#endif
 
 #if defined(ENABLE_RC)
     engine.rootContext()->setContextProperty("EnableRC", QVariant(true));
