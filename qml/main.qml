@@ -235,9 +235,9 @@ ApplicationWindow {
             }
         }*/
 
-        ExpMainVideoAndroid{
+        /*ExpMainVideoAndroid{
 
-        }
+        }*/
     }
 }
 
