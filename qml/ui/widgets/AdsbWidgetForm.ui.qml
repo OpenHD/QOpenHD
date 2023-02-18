@@ -31,6 +31,7 @@ BaseWidget {
     defaultVCenter: false
 
     hasWidgetDetail: true
+    hasWidgetAction: false
 
     property double lastData: 0
 
