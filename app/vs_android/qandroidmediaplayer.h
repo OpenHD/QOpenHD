@@ -25,6 +25,8 @@ signals:
 
 private:
     QPointer<QSurfaceTexture> m_videoOut;
+    // Links to LiveVideoPlayerWrapper - it is honestly easier to write java code and then copy it over into QOpenHD
+    // qt android (video) sucks
     QAndroidJniObject m_mediaPlayer;
 };
 

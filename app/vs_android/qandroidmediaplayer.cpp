@@ -3,27 +3,29 @@
 
 #include <QAndroidJniEnvironment>
 
-/*#include <gst/gst.h>
+#include <gst/gst.h>
 
 static void lol(){
     GstElement * m_pipeline=nullptr;
     GError *error = nullptr;
     m_pipeline = gst_parse_launch("", &error);
-}*/
+}
 
 QAndroidMediaPlayer::QAndroidMediaPlayer(QObject *parent)
     : QObject(parent)
-    , m_mediaPlayer("android/media/MediaPlayer")
+    ,m_mediaPlayer("org/openhd/LiveVideoPlayerWrapper")
+    //, m_mediaPlayer("android/media/MediaPlayer")
 {
 }
 
 QAndroidMediaPlayer::~QAndroidMediaPlayer()
 {
     QAndroidJniEnvironment env;
-    m_mediaPlayer.callMethod<void>("stop");
+    /*m_mediaPlayer.callMethod<void>("stop");
     m_mediaPlayer.callMethod<void>("reset");
-    m_mediaPlayer.callMethod<void>("release");
-    //lol();
+    m_mediaPlayer.callMethod<void>("release");*/
+    m_mediaPlayer.callMethod<void>("releaseAll");
+    lol();
 }
 
 QSurfaceTexture *QAndroidMediaPlayer::videoOut() const
@@ -62,7 +64,8 @@ void QAndroidMediaPlayer::playFile(const QString &file)
 {
     qDebug()<<"QAndroidMediaPlayer::playFile"<<file;
     QAndroidJniEnvironment env;
-    m_mediaPlayer.callMethod<void>("stop"); // try to stop the media player.
+    m_mediaPlayer.callMethod<void>("playUrl", "(Ljava/lang/String;)V", QAndroidJniObject::fromString(file).object());
+    /*m_mediaPlayer.callMethod<void>("stop"); // try to stop the media player.
     m_mediaPlayer.callMethod<void>("reset"); // try to reset the media player.
 
     // http://developer.android.com/reference/android/media/MediaPlayer.html#setDataSource(java.lang.String) - the path of the file, or the http/rtsp URL of the stream you want to play.
@@ -72,5 +75,5 @@ void QAndroidMediaPlayer::playFile(const QString &file)
     m_mediaPlayer.callMethod<void>("prepare");
 
     // start playing
-    m_mediaPlayer.callMethod<void>("start");
+    m_mediaPlayer.callMethod<void>("start");*/
 }

@@ -24,17 +24,6 @@ SurfaceTexture {
             _mediaPlayer.videoOut = videoItem;
             //_mediaPlayer.playFile("https://download.blender.org/peach/bigbuckbunny_movies/BigBuckBunny_320x180.mp4");
             _mediaPlayer.playFile("https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/1080/Big_Buck_Bunny_1080_10s_1MB.mp4")
-        }
-
-        MouseArea {
-
-            anchors.fill: parent
-            width:parent.width
-            height:parent.height
-            onPressed: {
-                console.log("Player started")
-                //_mediaPlayer.playFile("/sdcard/testfile.mp4");
-                _mediaPlayer.playFile("https://download.blender.org/peach/bigbuckbunny_movies/BigBuckBunny_320x180.mp4");
-            }
+            //_mediaPlayer.playFile("rtp://234.x.x.x:xxxx");
         }
  }
