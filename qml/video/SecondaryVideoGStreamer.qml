@@ -22,7 +22,7 @@ Item{
         anchors.bottom: parent.bottom
 
         Component.onCompleted: {
-            console.log("mainVideoGStreamer (Qmlglsink) created")
+            console.log("secondaryVideoGStreamer (Qmlglsink) created")
             _secondary_video_gstreamer.check_common_mistakes_then_init(secondaryVideoGStreamer)
         }
 
