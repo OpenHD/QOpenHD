@@ -21,6 +21,11 @@ Item{
         height: 240
         anchors.bottom: parent.bottom
 
+        Component.onCompleted: {
+            console.log("mainVideoGStreamer (Qmlglsink) created")
+            _secondary_video_gstreamer.check_common_mistakes_then_init(secondaryVideoGStreamer)
+        }
+
         MouseArea {
             anchors.fill: parent
             onClicked: {

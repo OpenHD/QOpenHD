@@ -9,4 +9,10 @@ GstGLVideoItem {
     anchors.fill: parent
     id: mainVideoGStreamer
     objectName: "mainVideoGStreamer"
+
+    Component.onCompleted: {
+        console.log("mainVideoGStreamer (Qmlglsink) created")
+        _secondary_video_gstreamer.check_common_mistakes_then_init(mainVideoGStreamer)
+    }
+
 }

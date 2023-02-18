@@ -318,9 +318,11 @@ int main(int argc, char *argv[]) {
     engine.rootContext()->setContextProperty("QOPENHD_ENABLE_GSTREAMER", QVariant(true));
 #ifdef QOPENHD_GSTREAMER_PRIMARY_VIDEO
     std::unique_ptr<GstVideoStream> primary_video_gstreamer=std::make_unique<GstVideoStream>(true);
+    engine.rootContext()->setContextProperty("_primary_video_gstreamer", primary_video_gstreamer.get());
 #endif
 #ifdef QOPENHD_GSTREAMER_SECONDARY_VIDEO
     std::unique_ptr<GstVideoStream> secondary_video_gstreamer=std::make_unique<GstVideoStream>(false);
+    engine.rootContext()->setContextProperty("_secondary_video_gstreamer", secondary_video_gstreamer.get());
 #endif
 #else
     engine.rootContext()->setContextProperty("QOPENHD_ENABLE_GSTREAMER", QVariant(false));
@@ -402,45 +404,11 @@ engine.rootContext()->setContextProperty("EnableADSB", QVariant(false));
 
     qDebug() << "Running QML";
 
-#ifdef QOPENHD_ENABLE_GSTREAMER
-#ifdef QOPENHD_GSTREAMER_PRIMARY_VIDEO
-    const auto windowPrimary=find_qt_video_window(engine,true);
-    if(windowPrimary==nullptr){
-        qWarning()<<"primary window enabled but not found";
-        //throw std::runtime_error("Window not found");
-    }else{
-        if(primary_video_gstreamer){
-            primary_video_gstreamer->init(windowPrimary);
-        }
-    }
-#endif
-#ifdef QOPENHD_GSTREAMER_SECONDARY_VIDEO
-    const auto windowSecondary=find_qt_video_window(engine,false);
-    if(windowSecondary==nullptr){
-        qWarning()<<"secondary window enabled but not found";
-        //throw std::runtime_error("Window not found");
-    }else{
-        if(secondary_video_gstreamer){
-            secondary_video_gstreamer->init(windowSecondary);
-        }
-    }
-#endif
-#endif // QOPENHD_ENABLE_GSTREAMER
     QRenderStats::instance().register_to_root_window(engine);
 
     LogMessagesModel::instance().addLogMessage("QOpenHD","running");
     const int retval = app.exec();
 
-#ifdef QOPENHD_ENABLE_GSTREAMER
-#if defined(ENABLE_MAIN_VIDEO)
-    if(primary_video_gstreamer!=nullptr){
-         primary_video_gstreamer->stopVideoSafe();
-    }
-    if(secondary_video_gstreamer!=nullptr){
-        secondary_video_gstreamer->stopVideoSafe();
-    }
-#endif
-#endif // QOPENHD_ENABLE_GSTREAMER
     return retval;
 
 
