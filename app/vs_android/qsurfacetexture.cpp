@@ -129,11 +129,11 @@ void SurfaceTextureNode::preprocess()
 }
 
 
-extern "C" void Java_org_openhd_SurfaceTextureListener_frameAvailable(JNIEnv */*env*/, jobject /*thiz*/, jlong ptr, jobject /*surfaceTexture*/)
+/*extern "C" void Java_org_openhd_SurfaceTextureListener_frameAvailable(JNIEnv *, jobject , jlong ptr, jobject)
 {
     // a new frame was decoded, let's update our item
-    QMetaObject::invokeMethod(reinterpret_cast<QSurfaceTexture*>(ptr), "update", Qt::QueuedConnection);
-}
+    //QMetaObject::invokeMethod(reinterpret_cast<QSurfaceTexture*>(ptr), "update", Qt::QueuedConnection);
+}*/
 
 QSurfaceTexture::QSurfaceTexture(QQuickItem *parent)
     : QQuickItem(parent)
@@ -172,10 +172,10 @@ QSGNode *QSurfaceTexture::updatePaintNode(QSGNode *n, QQuickItem::UpdatePaintNod
         // We need to setOnFrameAvailableListener, to be notify when a new frame was decoded
         // and is ready to be displayed. Check android/src/com/kdab/android/SurfaceTextureListener.java
         // file for implementation details.
-        m_surfaceTexture.callMethod<void>("setOnFrameAvailableListener",
+        /*m_surfaceTexture.callMethod<void>("setOnFrameAvailableListener",
                                           "(Landroid/graphics/SurfaceTexture$OnFrameAvailableListener;)V",
                                           QAndroidJniObject("org/openhd/SurfaceTextureListener",
-                                                            "(J)V", jlong(this)).object());
+                                                            "(J)V", jlong(this)).object());*/
 
         // Create our SurfaceTextureNode
         node = new SurfaceTextureNode(m_surfaceTexture, m_textureId);
@@ -190,5 +190,7 @@ QSGNode *QSurfaceTexture::updatePaintNode(QSGNode *n, QQuickItem::UpdatePaintNod
 
     QSGGeometry::updateTexturedRectGeometry(node->geometry(), rect, QRectF(0, 0, 1, 1));
     node->markDirty(QSGNode::DirtyGeometry | QSGNode::DirtyMaterial);
+    // XX
+     QMetaObject::invokeMethod(reinterpret_cast<QSurfaceTexture*>(this), "update", Qt::QueuedConnection);
     return node;
 }
