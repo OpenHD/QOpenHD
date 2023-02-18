@@ -25,6 +25,7 @@ QOPENHD_LINK_MAVSDK_SHARED {
         #ANDROID_EXTRA_LIBS
     } windows {
         message(mavsdk static windows)
+        message(todo hard code path to mavsdk)
     }else{
         message(mavsdk static linux)
         INCLUDEPATH += /usr/local/include/mavsdk
