@@ -169,12 +169,13 @@ GstVideoStream::GstVideoStream(bool is_primary,QObject *parent)
 }
 
 GstVideoStream::~GstVideoStream() {
-    stopVideoSafe();
+     qDebug() << "GstVideoStream::~GstVideoStream()begin";
     if(timer){
         timer->stop();
         delete timer;
     }
-    qDebug() << "GstVideoStream::~GstVideoStream()";
+    stopVideoSafe();
+    qDebug() << "GstVideoStream::~GstVideoStream()end";
 }
 
 
@@ -188,6 +189,19 @@ void GstVideoStream::init(QQuickItem* videoOutputWindow) {
     QObject::connect(timer, &QTimer::timeout, this, &GstVideoStream::timerCallback);
     timer->start(1000);
     qDebug() << "GstVideoStream::init()";
+}
+
+void GstVideoStream::check_common_mistakes_then_init(QQuickItem* qmlglsinkvideoitem)
+{
+    if(qmlglsinkvideoitem==nullptr){
+        qWarning("init called withut valid window");
+        return;
+    }
+    if(m_videoOutputWindow!=nullptr){
+        qWarning("init called with window already set");
+        return;
+    }
+    init(qmlglsinkvideoitem);
 }
 
 

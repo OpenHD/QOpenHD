@@ -251,5 +251,6 @@
         <file>ui/configpopup/RcDebugScreenFC.qml</file>
         <file>ui/configpopup/RcInfoScreen.qml</file>
         <file>ui/widgets/RCRssiWidget.qml</file>
+        <file>video/ExpMainVideoAndroid.qml</file>
     </qresource>
 </RCC>

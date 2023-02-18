@@ -69,10 +69,6 @@ QMAKE_CXXFLAGS += -Wno-sign-compare
 # see app/adsb/adsb_lib.pri for an example
 QT +=core quick qml gui
 QT += opengl
-# TODO remove me
-#QT += multimedia
-#QT += multimediawidgets
-#GSTREAMER_ROOT_ANDROID = /home/consti10/Downloads/gstreamer-1.0-android-universal-1.20.5
 
 INCLUDEPATH += $$PWD/lib
 INCLUDEPATH += $$PWD/app
@@ -170,6 +166,7 @@ DISTFILES += \
     android/src/org/freedesktop/gstreamer/androidmedia/GstAhcCallback.java \
     android/src/org/freedesktop/gstreamer/androidmedia/GstAhsCallback.java \
     android/src/org/freedesktop/gstreamer/androidmedia/GstAmcOnFrameAvailableListener.java \
+    android/src/org/openhd/LiveVideoPlayerWrapper.java \
     app/adsb/adsb_lib.pri \
     app/logging/README.txt \
     app/openhd_systems/README.md \
@@ -200,7 +197,6 @@ iOSBuild {
     #CONFIG += EnableGamepads
     CONFIG += EnableSpeech
     CONFIG += EnableMainVideo
-    #CONFIG += EnableCharts
     #CONFIG += EnableLog //does not work due to filepath not set
 
     app_launch_images.files = $$PWD/icons/LaunchScreen.png $$files($$PWD/icons/LaunchScreen.storyboard)
