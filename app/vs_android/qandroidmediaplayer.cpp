@@ -3,14 +3,6 @@
 
 #include <QAndroidJniEnvironment>
 
-#include <gst/gst.h>
-
-static void lol(){
-    GstElement * m_pipeline=nullptr;
-    GError *error = nullptr;
-    m_pipeline = gst_parse_launch("", &error);
-}
-
 QAndroidMediaPlayer::QAndroidMediaPlayer(QObject *parent)
     : QObject(parent)
     ,m_mediaPlayer("org/openhd/LiveVideoPlayerWrapper")
@@ -25,7 +17,6 @@ QAndroidMediaPlayer::~QAndroidMediaPlayer()
     m_mediaPlayer.callMethod<void>("reset");
     m_mediaPlayer.callMethod<void>("release");*/
     m_mediaPlayer.callMethod<void>("releaseAll");
-    lol();
 }
 
 QSurfaceTexture *QAndroidMediaPlayer::videoOut() const

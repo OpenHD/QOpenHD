@@ -17,13 +17,14 @@ DOWNLOADED_GST_FOLDER= /home/consti10/Downloads/gstreamer-1.0-android-universal-
 GSTREAMER_ARCH_FOLDER = armv7
 
 GSTREAMER_ROOT_ANDROID = $$DOWNLOADED_GST_FOLDER/$$GSTREAMER_ARCH_FOLDER
-message(gstreamer root android)
+message(gstreamer root android:)
 message($$GSTREAMER_ROOT_ANDROID)
 
 
 # XXXX
-GST_ROOT = GSTREAMER_ROOT_ANDROID
+GST_ROOT = $$GSTREAMER_ROOT_ANDROID
 exists($$GST_ROOT) {
+    message(Doing stehen gstreamer stuff)
     message($$GST_ROOT)
     QMAKE_CXXFLAGS  += -pthread
     CONFIG          += VideoEnabled
