@@ -13,9 +13,7 @@ import "./ui"
 import "./ui/widgets"
 import "./ui/elements"
 import "./ui/configpopup"
-
-// TODO remove me ?
-import QtMultimedia 5.15
+import "./video"
 
 ApplicationWindow {
     id: applicationWindow
@@ -237,33 +235,9 @@ ApplicationWindow {
             }
         }*/
 
-        /*SurfaceTexture {
-                id: videoItem
-                anchors.fill: parent
-                width:parent.width
-                height:parent.height
+        ExpMainVideoAndroid{
 
-                //z: 13
-
-                // Set media player's video out
-                Component.onCompleted: {
-                    _mediaPlayer.videoOut = videoItem;
-                    //_mediaPlayer.playFile("https://download.blender.org/peach/bigbuckbunny_movies/BigBuckBunny_320x180.mp4");
-                    _mediaPlayer.playFile("https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/1080/Big_Buck_Bunny_1080_10s_1MB.mp4")
-                }
-
-                MouseArea {
-
-                    anchors.fill: parent
-                    width:parent.width
-                    height:parent.height
-                    onPressed: {
-                        console.log("Player started")
-                        //_mediaPlayer.playFile("/sdcard/testfile.mp4");
-                        _mediaPlayer.playFile("https://download.blender.org/peach/bigbuckbunny_movies/BigBuckBunny_320x180.mp4");
-                    }
-                }
-         }*/
+        }
     }
 }
 

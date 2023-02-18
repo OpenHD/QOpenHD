@@ -10,4 +10,8 @@ SOURCES += \
     $$PWD/qandroidmediaplayer.cpp \
     $$PWD/qsurfacetexture.cpp
 
+QT += multimedia
+QT += multimediawidgets
+GSTREAMER_ROOT_ANDROID = /home/consti10/Downloads/gstreamer-1.0-android-universal-1.20.5
+
 DEFINES += QOPENHD_ENABLE_VIDEO_VIA_ANDROID

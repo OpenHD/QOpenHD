@@ -91,7 +91,7 @@ include(app/telemetry/telemetry.pri)
 #include(app/vs_gst_qmlglsink/gst_video.pri)
 
 # adsb library
-include(app/adsb/adsb_lib.pri)
+#include(app/adsb/adsb_lib.pri)
 
 # All Generic files / files that literally have 0!! dependencies other than qt
 SOURCES += \
