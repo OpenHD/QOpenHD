@@ -78,20 +78,26 @@ INCLUDEPATH += $$PWD/app/exp
 # REQUIRED - without it QOpenHD will compile, but be pretty much non functional
 include(app/telemetry/telemetry.pri)
 
-# Avcodec decode and display, all sources
-# Replaced gstreamer for now
-# Comment the line below to build without avcodec (you won't have any video decoding capabilities in this case though)
-# However, this can be usefully for figuring out compiler issue(s) on different platform(s)
-# NOTE: QT Creator is quite bad at figuring out changes here, you might need a "full" rebuild or manualy delete
-# the build dir/cache, then rebuild
-include(app/vs_avcodec/avcodec_video.pri)
+# Video is quite platform dependent, if you have compile issues, try compiling without any videostreaming enabled first ;)
+LinuxBuild {
+    # Avcodec decode and display, all sources
+    # Replaced gstreamer for now
+    # Comment the line below to build without avcodec (you won't have any video decoding capabilities in this case though)
+    # However, this can be usefully for figuring out compiler issue(s) on different platform(s)
+    # NOTE: QT Creator is quite bad at figuring out changes here, you might need a "full" rebuild or manualy delete
+    # the build dir/cache, then rebuild
+    include(app/vs_avcodec/avcodec_video.pri)
 
-# Gstreamer / qmlglsink decode and display, all sources
-# r.n only used for secondary video and for primary video only on platforms we cannot do primary video via QSG / avcodec
-include(app/vs_gst_qmlglsink/gst_video.pri)
+    # Gstreamer / qmlglsink decode and display, all sources
+    # r.n only used for secondary video and for primary video only on platforms we cannot do primary video via QSG / avcodec
+    include(app/vs_gst_qmlglsink/gst_video.pri)
+}
 
 # adsb library
-include(app/adsb/adsb_lib.pri)
+# Only tested on linux so far, but might work on other platforms already / with minimal effort, too
+LinuxBuild {
+    include(app/adsb/adsb_lib.pri)
+}
 
 # All Generic files / files that literally have 0!! dependencies other than qt
 SOURCES += \

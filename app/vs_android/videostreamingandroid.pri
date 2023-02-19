@@ -22,6 +22,7 @@ message($$GSTREAMER_ROOT_ANDROID)
 
 
 # XXXX
+# From stephen qt some tag, who actually took it from https://github.com/mavlink/qgroundcontrol/blob/master/src/VideoReceiver/VideoReceiver.pri
 GST_ROOT = $$GSTREAMER_ROOT_ANDROID
 exists($$GST_ROOT) {
     message(Doing stehen gstreamer stuff)
