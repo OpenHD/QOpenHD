@@ -42,7 +42,8 @@ private:
     std::unique_ptr<std::thread> decode_thread=nullptr;
 private:
     // The logic of this decode "machine" is simple:
-    // Always decode,and completely restart the decoding in case an error occurs
+    // Start decoding as soon as enough config data has been received
+    // Ccompletely restart the decoding in case an error occurs
     // or the settings changed (e.g. a switch of the video codec).
     void constant_decode();
     // Since we are basically doing connectionless live streaming, where config data comes in regular intervals,
