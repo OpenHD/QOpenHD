@@ -28,6 +28,7 @@ public class LiveVideoPlayerWrapper {
             mMediaPlayer.setDataSource(url);
             mMediaPlayer.prepare();
             mMediaPlayer.start();
+            mMediaPlayer.setLooping(true);
         } catch (IOException e) {
             e.printStackTrace();
         }
