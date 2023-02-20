@@ -13,6 +13,7 @@ SOURCES += \
 QT += multimedia
 QT += multimediawidgets
 
+# Where gstreamer android prebuilt has been dowwnloaded and installed into
 DOWNLOADED_GST_FOLDER= /home/consti10/Downloads/gstreamer-1.0-android-universal-1.20.5
 GSTREAMER_ARCH_FOLDER = armv7
 
