@@ -9,6 +9,7 @@ HEADERS += \
 SOURCES += \
     $$PWD/qandroidmediaplayer.cpp \
     $$PWD/qsurfacetexture.cpp
+    $$PWD/gst_live_player.c
 
 QT += multimedia
 QT += multimediawidgets

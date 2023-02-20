@@ -5,9 +5,17 @@ import android.view.Surface;
 
 import java.io.IOException;
 
+import org.freedesktop.gstreamer.tutorials.tutorial_3.GstLivePlayer;
+
 public class LiveVideoPlayerWrapper {
 
     private final MediaPlayer mMediaPlayer=new MediaPlayer();
+
+    //private final GstLivePlayer m_live_player=new GstLivePlayer();
+
+    //public void x_on_create(Context c){
+        //m_live_player.xx_init(c);
+    //}
 
     public void setSurface(Surface surface){
         mMediaPlayer.setSurface(surface);
