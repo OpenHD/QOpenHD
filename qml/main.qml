@@ -76,9 +76,13 @@ ApplicationWindow {
                     return "../video/MainVideoQSG.qml";
                 }
                 // Fallback / windows or similar
-                if(QOPENHD_ENABLE_GSTREAMER){
+                if(QOPENHD_ENABLE_GSTREAMER_QMLGLSINK){
                     return "../video/MainVideoGStreamer.qml";
                 }
+                if(QOPENHD_ENABLE_VIDEO_VIA_ANDROID){
+                    return "../video/ExpMainVideoAndroid.qml"
+                }
+                console.warn("No primary video implementation")
                 return ""
             }
         }
@@ -90,9 +94,10 @@ ApplicationWindow {
             z: 2.0
             anchors.bottom: parent.bottom
             source: {
-                if (QOPENHD_ENABLE_GSTREAMER && settings.dev_qopenhd_n_cameras>1) {
+                if (QOPENHD_ENABLE_GSTREAMER_QMLGLSINK && settings.dev_qopenhd_n_cameras>1) {
                     return "../video/SecondaryVideoGStreamer.qml";
                 }
+                console.debug("No secondary video implementation")
                 return ""
             }
         }
@@ -234,10 +239,6 @@ ApplicationWindow {
                 anchors.fill: parent
             }
         }*/
-
-        ExpMainVideoAndroid{
-
-        }
     }
 }
 

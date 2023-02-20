@@ -38,10 +38,10 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "vs_avcodec/QSGVideoTextureItem.h"
 #endif
 
-#ifdef QOPENHD_ENABLE_GSTREAMER
+#ifdef QOPENHD_ENABLE_GSTREAMER_QMLGLSINK
 #include "vs_gst_qmlglsink/gstvideostream.h"
 #include "vs_gst_qmlglsink/gst_helper.hpp"
-#endif //QOPENHD_ENABLE_GSTREAMER
+#endif //QOPENHD_ENABLE_GSTREAMER_QMLGLSINK
 
 #include "util/qrenderstats.h"
 
@@ -197,11 +197,11 @@ int main(int argc, char *argv[]) {
     }
     //QCoreApplication::setAttribute(Qt::AA_UseOpenGLES);
 
-#ifdef QOPENHD_ENABLE_GSTREAMER
+#ifdef QOPENHD_ENABLE_GSTREAMER_QMLGLSINK
     init_gstreamer(argc,argv);
     // NEEDED !! For QMLqlsink to work !!
     init_qmlglsink_and_log();
-#endif //QOPENHD_ENABLE_GSTREAMER
+#endif //QOPENHD_ENABLE_GSTREAMER_QMLGLSINK
 
     // From https://stackoverflow.com/questions/63473541/how-to-dynamically-toggle-vsync-in-a-qt-application-at-runtime
     // Get rid of VSYNC if possible
@@ -315,8 +315,8 @@ int main(int argc, char *argv[]) {
 #endif //QOPENHD_HAS_MAVSDK_MAVLINK_TELEMETRY
 
 
-#ifdef QOPENHD_ENABLE_GSTREAMER
-    engine.rootContext()->setContextProperty("QOPENHD_ENABLE_GSTREAMER", QVariant(true));
+#ifdef QOPENHD_ENABLE_GSTREAMER_QMLGLSINK
+    engine.rootContext()->setContextProperty("QOPENHD_ENABLE_GSTREAMER_QMLGLSINK", QVariant(true));
 #ifdef QOPENHD_GSTREAMER_PRIMARY_VIDEO
     std::unique_ptr<GstVideoStream> primary_video_gstreamer=std::make_unique<GstVideoStream>(true);
     engine.rootContext()->setContextProperty("_primary_video_gstreamer", primary_video_gstreamer.get());
@@ -326,7 +326,7 @@ int main(int argc, char *argv[]) {
     engine.rootContext()->setContextProperty("_secondary_video_gstreamer", secondary_video_gstreamer.get());
 #endif
 #else
-    engine.rootContext()->setContextProperty("QOPENHD_ENABLE_GSTREAMER", QVariant(false));
+    engine.rootContext()->setContextProperty("QOPENHD_ENABLE_GSTREAMER_QMLGLSINK", QVariant(false));
 #endif
 
 
@@ -385,6 +385,7 @@ engine.rootContext()->setContextProperty("EnableADSB", QVariant(false));
      );
 
 #ifdef QOPENHD_ENABLE_VIDEO_VIA_ANDROID
+    engine.rootContext()->setContextProperty("QOPENHD_ENABLE_VIDEO_VIA_ANDROID", QVariant(true));
     qmlRegisterType<QSurfaceTexture>("OpenHD", 1, 0, "SurfaceTexture");
     // Create a player
     QAndroidMediaPlayer player;
