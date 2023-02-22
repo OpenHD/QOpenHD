@@ -11,6 +11,7 @@ SOURCES += \
     $$PWD/qsurfacetexture.cpp
     $$PWD/gst_live_player.c
 
+probablynotdefined{
 QT += multimedia
 QT += multimediawidgets
 
@@ -65,5 +66,6 @@ exists($$GST_ROOT) {
 
 #INCLUDEPATH += $$GSTREAMER_ROOT_ANDROID/include/gstreamer-1.0 $$GSTREAMER_ROOT_ANDROID/include/glib-2.0 $$GSTREAMER_ROOT_ANDROID/lib/glib-2.0/include
 #LIBS += -L$$ANDROID_PACKAGE_SOURCE_DIR/libs/$$ANDROID_TARGET_ARCH -lgstreamer-1.0
+}
 
 DEFINES += QOPENHD_ENABLE_VIDEO_VIA_ANDROID

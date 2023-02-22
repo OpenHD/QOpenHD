@@ -19,6 +19,9 @@ apply plugin: 'com.android.application'
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
     implementation 'com.android.support:appcompat-v7:28.0.0'
+
+    //implementation project(":libs:android-tutorial-3")
+    //implementation project(path: ":libs:android-tutorial-3")
 }
 
 android {
@@ -59,5 +62,19 @@ android {
     // Do not compress Qt binary resources file
     aaptOptions {
         noCompress 'rcc'
+    }
+}
+
+allprojects {
+    ext {
+        minSdkVersion = 21
+        compileSdkVersion = 31
+        targetSdkVersion = 31
+        appcompatVersion = '1.4.1'
+        materialVersion = '1.3.0-alpha02'
+        constraintlayoutVersion='2.1.3'
+        androidxpreferenceVersion='1.2.0'
+        mGvrVersion = '1.180.0'
+        myPrefsPlusVersion = '6.0'
     }
 }

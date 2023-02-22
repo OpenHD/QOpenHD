@@ -5,7 +5,7 @@ import android.view.Surface;
 
 import java.io.IOException;
 
-import org.freedesktop.gstreamer.tutorials.tutorial_3.GstLivePlayer;
+//import org.freedesktop.gstreamer.tutorials.tutorial_3.GstLivePlayer;
 
 public class LiveVideoPlayerWrapper {
 
