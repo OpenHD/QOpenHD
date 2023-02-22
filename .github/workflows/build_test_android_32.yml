@@ -85,10 +85,11 @@ jobs:
           ANDROID_NDK_LATEST_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
           ANDROID_NDK: ${{ steps.setup-ndk.outputs.ndk-path }}
         run:  |
-          wget https://openhdfpv.org/wp-content/BaseImages/install.zip
-          sudo unzip install.zip -d /usr/local/
-          ls -a /usr/local/include/mavsdk
-          ls -a /usr/local/lib/
+          # we need a working mavsdk here, you can just upload a zip file and go on with the build
+          # wget https://openhdfpv.org/wp-content/BaseImages/install.zip
+          # sudo unzip install.zip -d /usr/local/
+          # ls -a /usr/local/include/mavsdk
+          # ls -a /usr/local/lib/
           qmake ${SOURCE_DIR}/QOpenHD.pro
           make -j$(($(nproc)/2))
           zip -r file.zip .
