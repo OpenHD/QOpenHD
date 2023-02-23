@@ -17,27 +17,77 @@ BaseWidget {
 
     defaultAlignment: 1
     defaultXOffset: 128
-    defaultYOffset: 0
+    defaultYOffset: 24
     defaultHCenter: false
     defaultVCenter: false
 
     hasWidgetDetail: true
     hasWidgetAction: true
 
+    // Functionality between air and air widget is really similar - this helps reducing code bloat a bit
+    property int m_cpuload_perc: _ohdSystemAir.curr_cpuload_perc
+    property int m_cpuload_perc_warn: settings.air_status_cpu_warn
+    property int m_cpuload_perc_caution: settings.air_status_cpu_caution
+
+    property int m_soc_temperature_deg: _ohdSystemAir.curr_soc_temp_degree
+    property int m_soc_temperature_deg_warn: settings.air_status_temp_warn
+    property int m_soc_temperature_deg_caution: settings.air_status_temp_caution
+
+    // These do not need warning level(s) and are hidden in the action popup
+    property int m_curr_cpu_freq_mhz: _ohdSystemAir.curr_cpu_freq_mhz
+    property int m_curr_isp_freq_mhz: _ohdSystemAir.curr_isp_freq_mhz
+    property int m_curr_h264_freq_mhz : _ohdSystemAir.curr_h264_freq_mhz
+    property int m_curr_core_freq_mhz : _ohdSystemAir.curr_core_freq_mhz
+    property int m_curr_v3d_freq_mhz : _ohdSystemAir.curr_v3d_freq_mhz
+    property int m_ram_usage_perc  : _ohdSystemAir.ram_usage_perc
+
+    // 0 - no warning
+    // 1 - caution
+    // 2 - warning
+    function get_cpuload_warning_level(){
+        if (m_cpuload_perc>= m_cpuload_perc_warn) {
+            return 2;
+        }
+        if (m_cpuload_perc > m_cpuload_perc_caution) {
+            return 1;
+        }
+        return 0;
+    }
+    function get_temperature_warning_level(){
+        if (m_soc_temperature_deg>= m_soc_temperature_deg_warn) {
+            return 2;
+        }
+        if (m_soc_temperature_deg>= m_soc_temperature_deg_caution) {
+            return 1;
+        }
+        return 0;
+    }
+    // The icon is colored if any of those warnings are set
+    function get_highest_warning_level(){
+        var w1=get_cpuload_warning_level();
+        var w2=get_temperature_warning_level();
+        return w1 >= w2 ? w1 : w2;
+    }
+
+    function warning_level_to_color(level){
+        if(level===2)return settings.color_warn;
+        if(level===1)return settings.color_caution;
+        return settings.color_shape;
+    }
+
     widgetDetailComponent: ScrollView {
 
         contentHeight: airstatusSettingsColumn.height
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
         clip: true
-
         Column {
             id: airstatusSettingsColumn
             Item {
                 width: parent.width
                 height: 42
                 Text {
-                    id: airstatusTitle
-                    text: qsTr("AIR STATUS")
+                    id: airstatusSettingsTitle
+                    text: qsTr("GROUND STATUS")
                     color: "white"
                     height: parent.height - 10
                     width: parent.width
@@ -47,7 +97,7 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Rectangle {
-                    id: airstatusTitleUL
+                    id: airstatusSettingsTitleUL
                     y: 34
                     width: parent.width
                     height: 3
@@ -71,11 +121,11 @@ BaseWidget {
                 Slider {
                     id: air_status_opacity_Slider
                     orientation: Qt.Horizontal
-                    height: parent.height
                     from: .1
                     value: settings.air_status_opacity
                     to: 1
                     stepSize: .1
+                    height: parent.height
                     anchors.rightMargin: 0
                     anchors.right: parent.right
                     width: parent.width - 96
@@ -361,9 +411,9 @@ BaseWidget {
                     }
                 }
             }
+
         }
     }
-
     widgetActionComponent: ScrollView{
 
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
@@ -374,7 +424,7 @@ BaseWidget {
 
             Text {
                 //Layout.alignment: left
-                text: "CPU freq: "+_ohdSystemAir.curr_cpu_freq_mhz+" Mhz"
+                text: "CPU freq: "+m_curr_cpu_freq_mhz
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -383,7 +433,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: "ISP freq: "+_ohdSystemAir.curr_isp_freq_mhz+" Mhz"
+                text: "ISP freq: "+m_curr_isp_freq_mhz
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -392,7 +442,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: "H264 freq: "+_ohdSystemAir.curr_h264_freq_mhz+" Mhz"
+                text: "H264 freq: "+m_curr_h264_freq_mhz
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -401,7 +451,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: "Core freq: "+_ohdSystemAir.curr_core_freq_mhz+" Mhz"
+                text: "Core freq: "+m_curr_core_freq_mhz
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -410,7 +460,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: "v3d freq: "+_ohdSystemAir.curr_v3d_freq_mhz+" Mhz"
+                text: "v3d freq: "+m_curr_v3d_freq_mhz+" Mhz"
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -419,7 +469,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: "RAM: "+_ohdSystemAir.ram_usage_perc+" %"
+                text: "RAM: "+m_ram_usage_perc+" %"
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -436,23 +486,16 @@ BaseWidget {
         scale: settings.air_status_size
 
         Text {
-            id: chip_air
+            id: chip_icon_air
             y: 0
             width: 24
             height: 24
             color: {
-                if (_ohdSystemAir.curr_cpuload_perc >= settings.air_status_cpu_warn
-                        || _ohdSystemAir.curr_soc_temp_degree >= settings.air_status_temp_warn) {
-                    return settings.color_warn
-                } else if (_ohdSystemAir.curr_cpuload_perc > settings.air_status_cpu_caution
-                           || _ohdSystemAir.curr_soc_temp_degree > settings.air_status_temp_caution) {
-                    return settings.color_caution
-                } else {
-                    return settings.color_shape
-                }
+                var level=get_highest_warning_level();
+                return warning_level_to_color(level)
             }
             opacity: settings.air_status_opacity
-            text: "\uf2db"
+            text: "\uF2DA"
             anchors.right: cpuload_air.left
             anchors.rightMargin: 2
             anchors.verticalCenter: parent.verticalCenter
@@ -472,29 +515,15 @@ BaseWidget {
             width: 36
             height: 24
             color: {
-                if (_ohdSystemAir.curr_cpuload_perc>= settings.air_status_cpu_warn
-                        || _ohdSystemAir.curr_soc_temp_degree >= settings.air_status_temp_warn) {
-                    widgetInner.visible = true
-                    return settings.color_warn
-                } else if (_ohdSystemAir.curr_cpuload_perc > settings.air_status_cpu_caution
-                           || _ohdSystemAir.curr_soc_temp_degree > settings.air_status_temp_caution) {
-                    widgetInner.visible = true
-                    return settings.color_caution
-                } else if (settings.air_status_declutter == true
-                           && _fcMavlinkSystem.armed == true) {
-                    widgetInner.visible = false
-                    return settings.color_text
-                } else {
-                    widgetInner.visible = true
-                    return settings.color_text
-                }
+                var level=get_cpuload_warning_level();
+                return warning_level_to_color(level)
             }
             opacity: settings.air_status_opacity
-            text: Number(_ohdSystemAir.curr_cpuload_perc).toLocaleString(Qt.locale(),
+            text: Number(m_cpuload_perc).toLocaleString(Qt.locale(),
                                                             'f', 0) + "%"
+            anchors.verticalCenter: parent.verticalCenter
             anchors.right: temp_air.left
             anchors.rightMargin: 2
-            anchors.verticalCenter: parent.verticalCenter
             verticalAlignment: Text.AlignVCenter
             font.pixelSize: 14
             font.family: settings.font_text
@@ -503,32 +532,19 @@ BaseWidget {
             style: Text.Outline
             styleColor: settings.color_glow
         }
+
         Text {
             id: temp_air
             x: 0
-            y: 4
+            y: 0
             width: 36
             height: 24
             color: {
-                if (_ohdSystemAir.curr_cpuload_perc >= settings.air_status_cpu_warn
-                        || _ohdSystemAir.curr_soc_temp_degree >= settings.air_status_temp_warn) {
-                    widgetInner.visible = true
-                    return settings.color_warn
-                } else if (_ohdSystemAir.curr_cpuload_perc > settings.air_status_cpu_caution
-                           || _ohdSystemAir.curr_soc_temp_degree > settings.air_status_temp_caution) {
-                    widgetInner.visible = true
-                    return settings.color_caution
-                } else if (settings.air_status_declutter == true
-                           && _fcMavlinkSystem.armed == true) {
-                    widgetInner.visible = false
-                    return settings.color_text
-                } else {
-                    widgetInner.visible = true
-                    return settings.color_text
-                }
+                var level=get_temperature_warning_level()
+                return warning_level_to_color(level)
             }
             opacity: settings.air_status_opacity
-            text: Number(_ohdSystemAir.curr_soc_temp_degree).toLocaleString(Qt.locale(),
+            text: Number(m_soc_temperature_deg).toLocaleString(Qt.locale(),
                                                          'f', 0) + "°"
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: parent.right
