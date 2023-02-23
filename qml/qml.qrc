@@ -41,8 +41,8 @@
         <file>ui/widgets/VideoBitrateWidgetPrimary.qml</file>
         <file>ui/widgets/LinkUpRSSIWidget.qml</file>
         <file>ui/widgets/LinkUpRSSIWidgetForm.ui.qml</file>
-        <file>ui/widgets/GroundStatusWidget.qml</file>
-        <file>ui/widgets/AirStatusWidget.qml</file>
+        <file>ui/widgets/SOCStatusWidgetGround.qml</file>
+        <file>ui/widgets/SOCStatusWidgetAir.qml</file>
         <file>ui/widgets/HorizonWidget.qml</file>
         <file>ui/widgets/HorizonWidgetForm.ui.qml</file>
         <file>ui/widgets/AirBatteryWidget.qml</file>

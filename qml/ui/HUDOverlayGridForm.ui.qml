@@ -130,12 +130,12 @@ Item {
     }
 
     // + 0% cpu
-    AirStatusWidget {
+    SOCStatusWidgetAir {
         id: air_status
     }
 
     // + 0% cpu
-    GroundStatusWidget {
+    SOCStatusWidgetGround {
         id: ground_status
     }
 
