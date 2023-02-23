@@ -305,6 +305,8 @@ interference from other stations sending on either of those channels is increase
                         model: mcsIndexModel
                         textRole: "title"
                         implicitWidth:  elementComboBoxWidth
+                        // openhd defaults to MCS 3
+                        currentIndex: 3
                     }
                     Button{
                         text: "Change MCS"
