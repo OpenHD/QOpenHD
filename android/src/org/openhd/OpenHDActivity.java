@@ -62,5 +62,7 @@ public class OpenHDActivity extends QtActivity {
 
         setContentView(frameLayout);*/
 
+
+
     }
 }

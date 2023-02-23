@@ -11,6 +11,7 @@ import OpenHD 1.0
 // TODO remove me ?
 import QtMultimedia 5.15
 
+// Written in c++ and exposed to qml
 SurfaceTexture {
         id: videoItem
         anchors.fill: parent

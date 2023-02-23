@@ -8,8 +8,8 @@
 #include "../common/TimeHelper.hpp"
 #include "../lib/lqtutils_master/lqtutils_prop.h"
 
-// Stats about the QT (QOpenHD) rendering.
-// Dirty right now.
+// Stats about the QT (QOpenHD) OpenGL rendering.
+// E.g frame time of the QT OpenGL rendering thread.
 class QRenderStats : public QObject
 {
     Q_OBJECT
