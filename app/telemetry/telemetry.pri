@@ -20,8 +20,11 @@ QOPENHD_LINK_MAVSDK_SHARED {
     message(mavsdk static)
     android {
         message(mavsdk static android)
-        INCLUDEPATH += /home/consti10//Downloads/MAVSDK/mavsdk-android-android-arm/build/android-arm/install/include
-        LIBS += -L/home/consti10/Downloads/MAVSDK/mavsdk-android-android-arm/build/android-arm/install/lib/ -lmavsdk
+        MAVSDK_PREBUILTS_PATH= $$PWD/../../lib/mavsdk_prebuilts
+        MAVSDK_PATH= $$MAVSDK_PREBUILTS_PATH/mavsdk-android-android-arm/build/android-arm/install
+        message($$MAVSDK_PATH)
+        INCLUDEPATH += $$MAVSDK_PATH/include
+        LIBS += -L$$MAVSDK_PATH/lib/ -lmavsdk
         #ANDROID_EXTRA_LIBS
     } windows {
         message(mavsdk static windows)
