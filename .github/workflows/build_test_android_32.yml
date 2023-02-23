@@ -31,7 +31,6 @@ jobs:
           target:       android
           arch:         android_armv7
           dir:          ${{ runner.temp }}
-          modules:      qtcharts
           setup-python: true
 
       - name: Install Android NDK
