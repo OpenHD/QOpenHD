@@ -496,6 +496,7 @@ BaseWidget {
             }
             opacity: settings.ground_status_opacity
             text: "\uF2DA"
+            //text: "\uf2db"
             anchors.right: cpuload_gnd.left
             anchors.rightMargin: 2
             anchors.verticalCenter: parent.verticalCenter
