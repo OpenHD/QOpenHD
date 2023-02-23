@@ -9,7 +9,7 @@ defaults:
 
 env:
   SOURCE_DIR:   ${{ github.workspace }}
-  QT_VERSION:   6.0.0
+  QT_VERSION:   5.15.2
   ARTIFACT:     QOpenHD_32.apk
   BUILD_TYPE:   ${{ fromJSON('["DailyBuild", "StableBuild"]')[ github.ref_type == 'tag' || contains(github.ref, 'Stable_' ) ] }}
 
@@ -29,8 +29,8 @@ jobs:
           version:      ${{ env.QT_VERSION }}
           host:         linux
           target:       android
-          arch:         android_armv7
           dir:          ${{ runner.temp }}
+          modules:      qtcharts
           setup-python: true
 
       - name: Install Android NDK
@@ -90,7 +90,7 @@ jobs:
           # sudo unzip install.zip -d /usr/local/
           # ls -a /usr/local/include/mavsdk
           # ls -a /usr/local/lib/
-          qmake ${SOURCE_DIR}/QOpenHD.pro
+          qmake ${SOURCE_DIR}/QOpenHD.pro ANDROID_ABIS="armeabi-v7a"
           make -j$(($(nproc)/2))
           zip -r file.zip .
 
