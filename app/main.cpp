@@ -33,36 +33,33 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "osd/flightpathvector.h"
 #include "osd/drawingcanvas.h"
 #include "osd/aoagauge.h"
-//
+
+// Video - annyoing ifdef crap is needed for all the different platforms / configurations
+#include "vs_util/QOpenHDVideoHelper.hpp"
+#include "vs_util/decodingstatistcs.h"
 #ifdef QOPENHD_ENABLE_VIDEO_VIA_AVCODEC
 #include "vs_avcodec/QSGVideoTextureItem.h"
 #endif
-
 #ifdef QOPENHD_ENABLE_GSTREAMER_QMLGLSINK
 #include "vs_gst_qmlglsink/gstvideostream.h"
 #include "vs_gst_qmlglsink/gst_helper.hpp"
 #endif //QOPENHD_ENABLE_GSTREAMER_QMLGLSINK
+#ifdef QOPENHD_ENABLE_VIDEO_VIA_ANDROID
+#include <vs_android/qandroidmediaplayer.h>
+#include <vs_android/qsurfacetexture.h>
+#endif
+// Video end
 
 #include "util/qrenderstats.h"
-
 
 #if defined(__ios__)
 #include "platform/appleplatform.h"
 #endif
 
-#include "vs_util/QOpenHDVideoHelper.hpp"
-#include "vs_util/decodingstatistcs.h"
-
-
 #include "logging/logmessagesmodel.h"
 #include "logging/hudlogmessagesmodel.h"
 #include "util/qopenhd.h"
 #include "util/WorkaroundMessageBox.h"
-
-#ifdef QOPENHD_ENABLE_VIDEO_VIA_ANDROID
-#include <vs_android/qandroidmediaplayer.h>
-#include <vs_android/qsurfacetexture.h>
-#endif
 
 #ifdef QOPENHD_ENABLE_ADSB_LIBRARY
 #include "adsb/ADSBVehicleManager.h"
@@ -169,15 +166,6 @@ static void write_platform_context_properties(QQmlApplicationEngine& engine){
 #endif
 }
 
-void write_other_context_properties(QQmlApplicationEngine& engine){
-#ifdef ENABLE_GSTREAMER
-    engine.rootContext()->setContextProperty("EnableGStreamer", QVariant(true));
-#else
-    engine.rootContext()->setContextProperty("EnableGStreamer", QVariant(false));
-#endif
-}
-
-
 
 int main(int argc, char *argv[]) {
 
@@ -196,12 +184,6 @@ int main(int argc, char *argv[]) {
         QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     }
     //QCoreApplication::setAttribute(Qt::AA_UseOpenGLES);
-
-#ifdef QOPENHD_ENABLE_GSTREAMER_QMLGLSINK
-    init_gstreamer(argc,argv);
-    // NEEDED !! For QMLqlsink to work !!
-    init_qmlglsink_and_log();
-#endif //QOPENHD_ENABLE_GSTREAMER_QMLGLSINK
 
     // From https://stackoverflow.com/questions/63473541/how-to-dynamically-toggle-vsync-in-a-qt-application-at-runtime
     // Get rid of VSYNC if possible
@@ -265,18 +247,6 @@ int main(int argc, char *argv[]) {
 
 
     QQmlApplicationEngine engine;
-#ifdef QOPENHD_ENABLE_VIDEO_VIA_AVCODEC
-    // QT doesn't have the define(s) from c++
-    engine.rootContext()->setContextProperty("QOPENHD_ENABLE_VIDEO_VIA_AVCODEC", QVariant(true));
-    qmlRegisterType<QSGVideoTextureItem>("OpenHD", 1, 0, "QSGVideoTextureItem");
-#else
-    engine.rootContext()->setContextProperty("QOPENHD_ENABLE_VIDEO_VIA_AVCODEC", QVariant(false));
-#endif
-#ifdef HAVE_MMAL
-    engine.rootContext()->setContextProperty("QOPENHD_HAVE_MMAL", QVariant(true));
-#else
-    engine.rootContext()->setContextProperty("QOPENHD_HAVE_MMAL", QVariant(false));
-#endif
     engine.rootContext()->setContextProperty("_qopenhd", &QOpenHD::instance());
     QOpenHD::instance().setEngine(&engine);
 
@@ -286,7 +256,6 @@ int main(int argc, char *argv[]) {
     engine.rootContext()->setContextProperty("_qrenderstats", &QRenderStats::instance());
 
     write_platform_context_properties(engine);
-    write_other_context_properties(engine);
     engine.rootContext()->setContextProperty("_logMessagesModel", &LogMessagesModel::instance());
     engine.rootContext()->setContextProperty("_hudLogMessagesModel", &HUDLogMessagesModel::instance());
 
@@ -314,6 +283,12 @@ int main(int argc, char *argv[]) {
     engine.rootContext()->setContextProperty("_wifi_card_air", &WiFiCard::instance_air());
 #endif //QOPENHD_HAS_MAVSDK_MAVLINK_TELEMETRY
 
+// Platform - dependend video begin -----------------------------------------------------------------
+#ifdef QOPENHD_ENABLE_GSTREAMER_QMLGLSINK
+    init_gstreamer(argc,argv);
+    // NEEDED !! For QMLqlsink to work !!
+    init_qmlglsink_and_log();
+#endif //QOPENHD_ENABLE_GSTREAMER_QMLGLSINK
 
 #ifdef QOPENHD_ENABLE_GSTREAMER_QMLGLSINK
     engine.rootContext()->setContextProperty("QOPENHD_ENABLE_GSTREAMER_QMLGLSINK", QVariant(true));
@@ -328,7 +303,26 @@ int main(int argc, char *argv[]) {
 #else
     engine.rootContext()->setContextProperty("QOPENHD_ENABLE_GSTREAMER_QMLGLSINK", QVariant(false));
 #endif
-
+#ifdef QOPENHD_ENABLE_VIDEO_VIA_AVCODEC
+    // QT doesn't have the define(s) from c++
+    engine.rootContext()->setContextProperty("QOPENHD_ENABLE_VIDEO_VIA_AVCODEC", QVariant(true));
+    qmlRegisterType<QSGVideoTextureItem>("OpenHD", 1, 0, "QSGVideoTextureItem");
+#else
+    engine.rootContext()->setContextProperty("QOPENHD_ENABLE_VIDEO_VIA_AVCODEC", QVariant(false));
+#endif
+#ifdef HAVE_MMAL
+    engine.rootContext()->setContextProperty("QOPENHD_HAVE_MMAL", QVariant(true));
+#else
+    engine.rootContext()->setContextProperty("QOPENHD_HAVE_MMAL", QVariant(false));
+#endif
+#ifdef QOPENHD_ENABLE_VIDEO_VIA_ANDROID
+    engine.rootContext()->setContextProperty("QOPENHD_ENABLE_VIDEO_VIA_ANDROID", QVariant(true));
+    qmlRegisterType<QSurfaceTexture>("OpenHD", 1, 0, "SurfaceTexture");
+    // Create a player
+    QAndroidMediaPlayer player;
+    engine.rootContext()->setContextProperty("_mediaPlayer", &player);
+#endif
+// Platform - dependend video end  -----------------------------------------------------------------
 
     engine.rootContext()->setContextProperty("_decodingStatistics",&DecodingStatistcs::instance());
     // dirty
@@ -353,15 +347,6 @@ engine.rootContext()->setContextProperty("EnableADSB", QVariant(false));
 #endif
 
 
-#if defined(ENABLE_RC)
-    engine.rootContext()->setContextProperty("EnableRC", QVariant(true));
-    //QJoysticks* jinstance = QJoysticks::getInstance();
-    auto QJoysticks = QJoysticks::getInstance();
-    engine.rootContext()->setContextProperty("QJoysticks", QJoysticks);
-#else
-    engine.rootContext()->setContextProperty("EnableRC", QVariant(false));
-#endif
-
 #if defined(__ios__) || defined(__android__)
     engine.rootContext()->setContextProperty("UseFullscreen", QVariant(true));
 #else
@@ -383,14 +368,6 @@ engine.rootContext()->setContextProperty("EnableADSB", QVariant(false));
         QVariant("unknown")
 #endif
      );
-
-#ifdef QOPENHD_ENABLE_VIDEO_VIA_ANDROID
-    engine.rootContext()->setContextProperty("QOPENHD_ENABLE_VIDEO_VIA_ANDROID", QVariant(true));
-    qmlRegisterType<QSurfaceTexture>("OpenHD", 1, 0, "SurfaceTexture");
-    // Create a player
-    QAndroidMediaPlayer player;
-    engine.rootContext()->setContextProperty("_mediaPlayer", &player);
-#endif
 
     engine.load(QUrl(QLatin1String("qrc:/main.qml")));
 
