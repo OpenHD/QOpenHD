@@ -78,3 +78,35 @@ void SynchronizedSettings::change_param_air_and_ground(QString param_id,int valu
     workaround:: makePopupMessage(ss.str().c_str());
 }
 
+void SynchronizedSettings::change_param_air_only_mcs(int value)
+{
+    const bool air_alive=AOHDSystem::instanceAir().is_alive();
+    if(!air_alive){
+        workaround::makePopupMessage("Precondition: Air and Ground running and alive not given. Change not possible.");
+        return;
+    }
+    const MavlinkSettingsModel::ExtraRetransmitParams extra_retransmit_params{std::chrono::milliseconds(100),10};
+    const QString param_id=PARAM_ID_WB_MCS_INDEX;
+    const auto air_success=MavlinkSettingsModel::instanceAir().try_set_param_int_impl(param_id,value,extra_retransmit_params);
+    if(!(air_success==MavlinkSettingsModel::SetParamResult::SUCCESS)){
+        std::stringstream ss;
+        ss<<"Cannot change "<<param_id.toStdString()<<" to "<<value<<" -"<<MavlinkSettingsModel::set_param_result_as_string(air_success);
+         workaround::makePopupMessage(ss.str().c_str());
+        return;
+    }
+    std::stringstream ss;
+    ss<<"Successfully changed "<<param_id.toStdString()<<" to "<<value;
+    workaround:: makePopupMessage(ss.str().c_str());
+}
+
+int SynchronizedSettings::get_param_int_air_only_mcs()
+{
+    const QString param_id=PARAM_ID_WB_MCS_INDEX;
+    const auto value_air_opt=MavlinkSettingsModel::instanceAir().try_get_param_int_impl(param_id);
+    if(!value_air_opt.has_value()){
+        workaround::makePopupMessage("Cannot fetch param from air");
+        return -1;
+    }
+    return value_air_opt.value();
+}
+

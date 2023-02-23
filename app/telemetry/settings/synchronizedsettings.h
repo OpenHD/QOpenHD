@@ -47,6 +47,10 @@ public:
     Q_INVOKABLE void change_param_air_and_ground_mcs(int value){
         change_param_air_and_ground(PARAM_ID_WB_MCS_INDEX,value);
     }
+    // MCS index does not need to match - 2.3.3 and upwards uses the lowest mcs index possible for uplink, and
+    // allows changing the MCS index of the downlink (e.g. the mcs index used for injecting packets on the air unit)
+    Q_INVOKABLE void change_param_air_only_mcs(int value);
+    Q_INVOKABLE int get_param_int_air_only_mcs();
 };
 
 #endif // SynchronizedSettings_H
