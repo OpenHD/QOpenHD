@@ -22,7 +22,8 @@ Item {
 
         width: settings.secondVideoWidth
         height: settings.secondVideoHeight
-        anchors.leftMargin: settings.secondVideoLeftMargin
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin:settings.secondVideoHeight*secondVideoMaximiseFaktor/2
 
         Component.onCompleted: {
             console.log("secondaryVideoGStreamer (Qmlglsink) created")
