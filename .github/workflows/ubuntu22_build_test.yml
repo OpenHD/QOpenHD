@@ -25,7 +25,7 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt update
-          sudo apt-mark hold unixodbc-dev unixodbc odbcinst odbcinst1debian2
+          sudo apt-mark hold unixodbc-dev unixodbc odbcinst odbcinst1debian2 grub-efi-amd64-signed
           echo unixodbc hold | sudo dpkg --set-selections   
           sudo apt upgrade -y
           sudo apt remove libunwind-13-dev 

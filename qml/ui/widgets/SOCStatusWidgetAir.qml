@@ -7,13 +7,13 @@ import Qt.labs.settings 1.0
 import OpenHD 1.0
 
 BaseWidget {
-    id: groundStatusWidget
+    id: airStatusWidget
     width: 112
     height: 24
 
-    visible: settings.show_ground_status
+    visible: settings.show_air_status
 
-    widgetIdentifier: "ground_status_widget"
+    widgetIdentifier: "air_status_widget"
 
     defaultAlignment: 1
     defaultXOffset: 128
@@ -24,19 +24,70 @@ BaseWidget {
     hasWidgetDetail: true
     hasWidgetAction: true
 
+    // Functionality between air and air widget is really similar - this helps reducing code bloat a bit
+    property int m_cpuload_perc: _ohdSystemAir.curr_cpuload_perc
+    property int m_cpuload_perc_warn: settings.air_status_cpu_warn
+    property int m_cpuload_perc_caution: settings.air_status_cpu_caution
+
+    property int m_soc_temperature_deg: _ohdSystemAir.curr_soc_temp_degree
+    property int m_soc_temperature_deg_warn: settings.air_status_temp_warn
+    property int m_soc_temperature_deg_caution: settings.air_status_temp_caution
+
+    // These do not need warning level(s) and are hidden in the action popup
+    property int m_curr_cpu_freq_mhz: _ohdSystemAir.curr_cpu_freq_mhz
+    property int m_curr_isp_freq_mhz: _ohdSystemAir.curr_isp_freq_mhz
+    property int m_curr_h264_freq_mhz : _ohdSystemAir.curr_h264_freq_mhz
+    property int m_curr_core_freq_mhz : _ohdSystemAir.curr_core_freq_mhz
+    property int m_curr_v3d_freq_mhz : _ohdSystemAir.curr_v3d_freq_mhz
+    property int m_ram_usage_perc  : _ohdSystemAir.ram_usage_perc
+
+    // 0 - no warning
+    // 1 - caution
+    // 2 - warning
+    function get_cpuload_warning_level(){
+        if (m_cpuload_perc>= m_cpuload_perc_warn) {
+            return 2;
+        }
+        if (m_cpuload_perc > m_cpuload_perc_caution) {
+            return 1;
+        }
+        return 0;
+    }
+    function get_temperature_warning_level(){
+        if (m_soc_temperature_deg>= m_soc_temperature_deg_warn) {
+            return 2;
+        }
+        if (m_soc_temperature_deg>= m_soc_temperature_deg_caution) {
+            return 1;
+        }
+        return 0;
+    }
+    // The icon is colored if any of those warnings are set
+    function get_highest_warning_level(){
+        var w1=get_cpuload_warning_level();
+        var w2=get_temperature_warning_level();
+        return w1 >= w2 ? w1 : w2;
+    }
+
+    function warning_level_to_color(level){
+        if(level===2)return settings.color_warn;
+        if(level===1)return settings.color_caution;
+        return settings.color_shape;
+    }
+
     widgetDetailComponent: ScrollView {
 
-        contentHeight: groundstatusSettingsColumn.height
+        contentHeight: airstatusSettingsColumn.height
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
         clip: true
         Column {
-            id: groundstatusSettingsColumn
+            id: airstatusSettingsColumn
             Item {
                 width: parent.width
                 height: 42
                 Text {
-                    id: groundstatusSettingsTitle
-                    text: qsTr("GROUND STATUS")
+                    id: airstatusSettingsTitle
+                    text: qsTr("AIR STATUS")
                     color: "white"
                     height: parent.height - 10
                     width: parent.width
@@ -46,7 +97,7 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Rectangle {
-                    id: groundstatusSettingsTitleUL
+                    id: airstatusSettingsTitleUL
                     y: 34
                     width: parent.width
                     height: 3
@@ -68,10 +119,10 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Slider {
-                    id: ground_status_opacity_Slider
+                    id: air_status_opacity_Slider
                     orientation: Qt.Horizontal
                     from: .1
-                    value: settings.ground_status_opacity
+                    value: settings.air_status_opacity
                     to: 1
                     stepSize: .1
                     height: parent.height
@@ -80,7 +131,7 @@ BaseWidget {
                     width: parent.width - 96
 
                     onValueChanged: {
-                        settings.ground_status_opacity = ground_status_opacity_Slider.value
+                        settings.air_status_opacity = air_status_opacity_Slider.value
                     }
                 }
             }
@@ -97,10 +148,10 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Slider {
-                    id: ground_status_size_Slider
+                    id: air_status_size_Slider
                     orientation: Qt.Horizontal
                     from: .5
-                    value: settings.ground_status_size
+                    value: settings.air_status_size
                     to: 3
                     stepSize: .1
                     height: parent.height
@@ -109,7 +160,7 @@ BaseWidget {
                     width: parent.width - 96
 
                     onValueChanged: {
-                        settings.ground_status_size = ground_status_size_Slider.value
+                        settings.air_status_size = air_status_size_Slider.value
                     }
                 }
             }
@@ -200,8 +251,8 @@ BaseWidget {
                     height: parent.height
                     anchors.rightMargin: 6
                     anchors.right: parent.right
-                    checked: settings.ground_status_declutter
-                    onCheckedChanged: settings.ground_status_declutter = checked
+                    checked: settings.air_status_declutter
+                    onCheckedChanged: settings.air_status_declutter = checked
                 }
             }
             Item {
@@ -217,7 +268,7 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Text {
-                    text: settings.ground_status_cpu_caution
+                    text: settings.air_status_cpu_caution
                     color: settings.color_caution
                     height: parent.height
                     font.bold: true
@@ -226,9 +277,9 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Slider {
-                    id: ground_status_cpu_caution_Slider
+                    id: air_status_cpu_caution_Slider
                     orientation: Qt.Horizontal
-                    value: settings.ground_status_cpu_caution
+                    value: settings.air_status_cpu_caution
                     from: 20
                     to: 100
                     stepSize: 1
@@ -238,8 +289,8 @@ BaseWidget {
                     width: parent.width - 96
 
                     onValueChanged: {
-                        settings.ground_status_cpu_caution = Math.round(
-                                    ground_status_cpu_caution_Slider.value * 10) / 10.0
+                        settings.air_status_cpu_caution = Math.round(
+                                    air_status_cpu_caution_Slider.value * 10) / 10.0
                     }
                 }
             }
@@ -256,7 +307,7 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Text {
-                    text: settings.ground_status_cpu_warn
+                    text: settings.air_status_cpu_warn
                     color: settings.color_warn
                     height: parent.height
                     font.bold: true
@@ -265,9 +316,9 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Slider {
-                    id: ground_status_cpu_warn_Slider
+                    id: air_status_cpu_warn_Slider
                     orientation: Qt.Horizontal
-                    value: settings.ground_status_cpu_warn
+                    value: settings.air_status_cpu_warn
                     from: 20
                     to: 100
                     stepSize: 1
@@ -277,8 +328,8 @@ BaseWidget {
                     width: parent.width - 96
 
                     onValueChanged: {
-                        settings.ground_status_cpu_warn = Math.round(
-                                    ground_status_cpu_warn_Slider.value * 10) / 10.0
+                        settings.air_status_cpu_warn = Math.round(
+                                    air_status_cpu_warn_Slider.value * 10) / 10.0
                     }
                 }
             }
@@ -295,7 +346,7 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Text {
-                    text: settings.ground_status_temp_caution
+                    text: settings.air_status_temp_caution
                     color: settings.color_caution
                     height: parent.height
                     font.bold: true
@@ -304,9 +355,9 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Slider {
-                    id: ground_status_temp_caution_Slider
+                    id: air_status_temp_caution_Slider
                     orientation: Qt.Horizontal
-                    value: settings.ground_status_temp_caution
+                    value: settings.air_status_temp_caution
                     from: 20
                     to: 100
                     stepSize: 1
@@ -316,8 +367,8 @@ BaseWidget {
                     width: parent.width - 96
 
                     onValueChanged: {
-                        settings.ground_status_temp_caution = Math.round(
-                                    ground_status_temp_caution_Slider.value * 10) / 10.0
+                        settings.air_status_temp_caution = Math.round(
+                                    air_status_temp_caution_Slider.value * 10) / 10.0
                     }
                 }
             }
@@ -334,7 +385,7 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Text {
-                    text: settings.ground_status_temp_warn
+                    text: settings.air_status_temp_warn
                     color: settings.color_warn
                     height: parent.height
                     font.bold: true
@@ -343,9 +394,9 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Slider {
-                    id: ground_status_temp_warn_Slider
+                    id: air_status_temp_warn_Slider
                     orientation: Qt.Horizontal
-                    value: settings.ground_status_temp_warn
+                    value: settings.air_status_temp_warn
                     from: 20
                     to: 100
                     stepSize: 1
@@ -355,8 +406,8 @@ BaseWidget {
                     width: parent.width - 96
 
                     onValueChanged: {
-                        settings.ground_status_temp_warn = Math.round(
-                                    ground_status_temp_warn_Slider.value * 10) / 10.0
+                        settings.air_status_temp_warn = Math.round(
+                                    air_status_temp_warn_Slider.value * 10) / 10.0
                     }
                 }
             }
@@ -373,7 +424,7 @@ BaseWidget {
 
             Text {
                 //Layout.alignment: left
-                text: "CPU freq: "+_ohdSystemGround.curr_cpu_freq_mhz
+                text: "CPU freq: "+m_curr_cpu_freq_mhz
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -382,7 +433,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: "ISP freq: "+_ohdSystemGround.curr_isp_freq_mhz
+                text: "ISP freq: "+m_curr_isp_freq_mhz
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -391,7 +442,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: "H264 freq: "+_ohdSystemGround.curr_h264_freq_mhz
+                text: "H264 freq: "+m_curr_h264_freq_mhz
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -400,7 +451,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: "Core freq: "+_ohdSystemGround.curr_core_freq_mhz
+                text: "Core freq: "+m_curr_core_freq_mhz
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -409,7 +460,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: "v3d freq: "+_ohdSystemGround.curr_v3d_freq_mhz+" Mhz"
+                text: "v3d freq: "+m_curr_v3d_freq_mhz+" Mhz"
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -418,7 +469,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: "RAM: "+_ohdSystemGround.ram_usage_perc+" %"
+                text: "RAM: "+m_ram_usage_perc+" %"
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -432,28 +483,21 @@ BaseWidget {
         id: widgetInner
 
         anchors.fill: parent
-        scale: settings.ground_status_size
+        scale: settings.air_status_size
 
         Text {
-            id: chip_gnd
+            id: chip_icon_air
             y: 0
             width: 24
             height: 24
             color: {
-
-                if (_ohdSystemGround.curr_cpuload_perc>= settings.ground_status_cpu_warn
-                        || _ohdSystemGround.curr_soc_temp_degree>= settings.ground_status_temp_warn) {
-                    return settings.color_warn
-                } else if (_ohdSystemGround.curr_cpuload_perc > settings.ground_status_cpu_caution
-                           || _ohdSystemGround.curr_soc_temp_degree> settings.ground_status_temp_caution) {
-                    return settings.color_caution
-                } else {
-                    return settings.color_shape
-                }
+                var level=get_highest_warning_level();
+                return warning_level_to_color(level)
             }
-            opacity: settings.ground_status_opacity
-            text: "\uF2DA"
-            anchors.right: cpuload_gnd.left
+            opacity: settings.air_status_opacity
+            //text: "\uF2DA"
+            text: "\uf2db"
+            anchors.right: cpuload_air.left
             anchors.rightMargin: 2
             anchors.verticalCenter: parent.verticalCenter
             font.family: "Font Awesome 5 Free"
@@ -466,34 +510,20 @@ BaseWidget {
         }
 
         Text {
-            id: cpuload_gnd
+            id: cpuload_air
             x: 0
             y: 0
             width: 36
             height: 24
             color: {
-                if (_ohdSystemGround.curr_cpuload_perc>= settings.ground_status_cpu_warn
-                        || _ohdSystemGround.curr_soc_temp_degree>= settings.ground_status_temp_warn) {
-                    widgetInner.visible = true
-                    return settings.color_warn
-                } else if (_ohdSystemGround.curr_cpuload_perc> settings.ground_status_cpu_caution
-                           || _ohdSystemGround.curr_soc_temp_degree> settings.ground_status_temp_caution) {
-                    widgetInner.visible = true
-                    return settings.color_caution
-                } else if (settings.ground_status_declutter == true
-                           && OpenHD.armed == true) {
-                    widgetInner.visible = false
-                    return settings.color_text
-                } else {
-                    widgetInner.visible = true
-                    return settings.color_text
-                }
+                var level=get_cpuload_warning_level();
+                return warning_level_to_color(level)
             }
-            opacity: settings.ground_status_opacity
-            text: Number(_ohdSystemGround.curr_cpuload_perc).toLocaleString(Qt.locale(),
+            opacity: settings.air_status_opacity
+            text: Number(m_cpuload_perc).toLocaleString(Qt.locale(),
                                                             'f', 0) + "%"
             anchors.verticalCenter: parent.verticalCenter
-            anchors.right: temp_gnd.left
+            anchors.right: temp_air.left
             anchors.rightMargin: 2
             verticalAlignment: Text.AlignVCenter
             font.pixelSize: 14
@@ -505,31 +535,17 @@ BaseWidget {
         }
 
         Text {
-            id: temp_gnd
+            id: temp_air
             x: 0
             y: 0
             width: 36
             height: 24
             color: {
-                if (_ohdSystemGround.curr_cpuload_perc>= settings.ground_status_cpu_warn
-                        || _ohdSystemGround.curr_soc_temp_degree >= settings.ground_status_temp_warn) {
-                    widgetInner.visible = true
-                    return settings.color_warn
-                } else if (_ohdSystemGround.curr_cpuload_perc> settings.ground_status_cpu_caution
-                           || _ohdSystemGround.curr_soc_temp_degree > settings.ground_status_temp_caution) {
-                    widgetInner.visible = true
-                    return settings.color_caution
-                } else if (settings.ground_status_declutter == true
-                           && OpenHD.armed == true) {
-                    widgetInner.visible = false
-                    return settings.color_text
-                } else {
-                    widgetInner.visible = true
-                    return settings.color_text
-                }
+                var level=get_temperature_warning_level()
+                return warning_level_to_color(level)
             }
-            opacity: settings.ground_status_opacity
-            text: Number(_ohdSystemGround.curr_soc_temp_degree).toLocaleString(Qt.locale(),
+            opacity: settings.air_status_opacity
+            text: Number(m_soc_temperature_deg).toLocaleString(Qt.locale(),
                                                          'f', 0) + "°"
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: parent.right

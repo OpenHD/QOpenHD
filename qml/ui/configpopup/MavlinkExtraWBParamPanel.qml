@@ -347,7 +347,7 @@ interference from other stations sending on either of those channels is increase
             }*/
             Text{
                 text:
-                    "To change these parameters, make sure your ground and air unit are alive and well.\nAlso, it is not recommended to change them during flight.
+                    "To change frequency/channel width, make sure your ground and air unit are alive and well.\nAlso, it is not recommended to change them during flight.
 Changing these params is only possible if both your air and ground unit support them\nA change might take up to 3 seconds to be applied."
             }
         }
