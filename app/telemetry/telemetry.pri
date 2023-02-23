@@ -14,10 +14,11 @@ QOPENHD_LINK_MAVSDK_SHARED {
     INCLUDEPATH += /usr/include/mavsdk
     LIBS += -L/usr/local/lib -lmavsdk
 } else {
-    # mavsdk needs to be built and (semi-installed) locally with BUILD_SHARED_LIBS=OFF
+    # mavsdk needs to be built and (semi-installed) locally with BUILD_SHARED_LIBS=OFF (aka as a static library)
     # This is for packaging / releases / recommended for development, since we then have one fever package to install and no issues with updating
     # QOpenHD and/or MAVSDK during development
-    message(mavsdk static)
+    # (compared to building and linking shared / dynamically)
+    message(mavsdk static (default))
     android {
         message(mavsdk static android)
         MAVSDK_PREBUILTS_PATH= $$PWD/../../lib/mavsdk_prebuilts
@@ -31,8 +32,16 @@ QOPENHD_LINK_MAVSDK_SHARED {
         message(todo hard code path to mavsdk)
     }else{
         message(mavsdk static linux)
-        INCLUDEPATH += /usr/local/include/mavsdk
-        LIBS += -L/usr/local/lib/libmavsdk.a -lmavsdk
+        # We use the installation path mavsdk uses when it is built and installed on the host system
+        MAVSDK_INCLUDE_PATH= /usr/local/include/mavsdk
+        MAVSDK_LIB_PATH= /usr/local/lib/libmavsdk.a
+        exists($$MAVSDK_LIB_PATH){
+            message(MAVSDK lib file exists)
+        }else{
+            message(see the readme on how to build / install MAVSDK)
+        }
+        INCLUDEPATH += $$MAVSDK_INCLUDE_PATH
+        LIBS += -L$$MAVSDK_LIB_PATH -lmavsdk
         # weird rpi
         LIBS += -latomic
     }
