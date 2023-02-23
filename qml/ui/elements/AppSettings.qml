@@ -372,6 +372,14 @@ Settings {
     property double record_widget_height: 48
     property double record_widget_width: 140
 
+    property double secondVideoHeight: 240
+    property double secondVideoWidth: 320
+    property double secondVideoMinHeight: 240
+    property double secondVideoMinWidth: 320
+    property double secondVideoLeftMargin: 0
+    property double secondVideoBottomMargin: 0
+    property double secondVideoMaximiseFaktor: 100
+
 
     property bool show_aoa: false
     property double aoa_opacity: 1

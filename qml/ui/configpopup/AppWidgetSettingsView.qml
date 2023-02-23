@@ -1483,6 +1483,130 @@ ScrollView {
                     onCheckedChanged: settings.show_record_widget = checked
                 }
             }
+            Rectangle {
+                width: parent.width
+                height: rowHeight
+                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+
+                Text {
+                    text: qsTr("Second Video min Height")
+                    font.weight: Font.Bold
+                    font.pixelSize: 13
+                    anchors.leftMargin: 8
+                    verticalAlignment: Text.AlignVCenter
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: 224
+                    height: elementHeight
+                    anchors.left: parent.left
+                }
+
+                Switch {
+                    width: 32
+                    height: elementHeight
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    checked: settings.show_record_widget
+                    onCheckedChanged: settings.show_record_widget = checked
+                }
+            }
+            Rectangle {
+                width: parent.width
+                height: rowHeight
+                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+
+                Text {
+                    text: qsTr("Second Video Min Height")
+                    font.weight: Font.Bold
+                    font.pixelSize: 13
+                    anchors.leftMargin: 8
+                    verticalAlignment: Text.AlignVCenter
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: 224
+                    height: elementHeight
+                    anchors.left: parent.left
+                }
+                SpinBox {
+                    id: secondVideoHeight
+                    height: elementHeight
+                    width: 210
+                    font.pixelSize: 14
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    stepSize: 1
+                    editable: true
+                    from:25
+                    to: 500
+                    anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
+                    value: settings.secondVideoMinHeight
+                    onValueChanged: settings.secondVideoMinHeight = value
+                }
+            }
+            Rectangle {
+                width: parent.width
+                height: rowHeight
+                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+
+                Text {
+                    text: qsTr("Second Video Min Width")
+                    font.weight: Font.Bold
+                    font.pixelSize: 13
+                    anchors.leftMargin: 8
+                    verticalAlignment: Text.AlignVCenter
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: 224
+                    height: elementHeight
+                    anchors.left: parent.left
+                }
+                SpinBox {
+                    id: secondVideoWidth
+                    height: elementHeight
+                    width: 210
+                    font.pixelSize: 14
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    stepSize: 1
+                    editable: true
+                    from:25
+                    to: 500
+                    anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
+                    value: settings.secondVideoMinWidth
+                    onValueChanged: settings.secondVideoMinWidth = value
+                }
+            }
+            Rectangle {
+                width: parent.width
+                height: rowHeight
+                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+
+                Text {
+                    text: qsTr("Second Video Maximise Multiplicator (in %)")
+                    font.weight: Font.Bold
+                    font.pixelSize: 13
+                    anchors.leftMargin: 8
+                    verticalAlignment: Text.AlignVCenter
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: 224
+                    height: elementHeight
+                    anchors.left: parent.left
+                }
+                SpinBox {
+                    id: secondVideoMaximiseFaktor
+                    height: elementHeight
+                    width: 210
+                    font.pixelSize: 14
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    stepSize: 1
+                    editable: true
+                    from:25
+                    to: 500
+                    anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
+                    value: settings.secondVideoMaximiseFaktor
+                    onValueChanged: settings.secondVideoMaximiseFaktor = value
+                }
+            }
         }
     }
 }
