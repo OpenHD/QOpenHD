@@ -204,6 +204,8 @@ and we need to listen on each of them for a short timespan)"
                         model: frequenciesModel
                         textRole: "title"
                         implicitWidth:  elementComboBoxWidth
+                        // 5.8G is generally recommended and much more commonly used than 2.4G. Default to it when unknown, just like openhd does
+                        currentIndex: 30
                     }
                     Button{
                         text: "Switch Frequency"
@@ -289,7 +291,8 @@ interference from other stations sending on either of those channels is increase
                     Button{
                         text: "Fetch"
                         onClicked: {
-                            var _res=_synchronizedSettings.get_param_int_air_and_ground_value_mcs()
+                            //var _res=_synchronizedSettings.get_param_int_air_and_ground_value_mcs()
+                            var _res=_synchronizedSettings.get_param_int_air_only_mcs()
                             if(_res>=0){
                                 buttonSwitchMCS.enabled=true
                             }
@@ -302,6 +305,8 @@ interference from other stations sending on either of those channels is increase
                         model: mcsIndexModel
                         textRole: "title"
                         implicitWidth:  elementComboBoxWidth
+                        // openhd defaults to MCS 3
+                        currentIndex: 3
                     }
                     Button{
                         text: "Change MCS"
@@ -309,6 +314,7 @@ interference from other stations sending on either of those channels is increase
                         enabled: false
                         onClicked: {
                             var selectedValue=mcsIndexModel.get(comboBoxMcsIndex.currentIndex).value
+                            //_synchronizedSettings.change_param_air_and_ground_mcs(selectedValue)
                             _synchronizedSettings.change_param_air_and_ground_mcs(selectedValue)
                         }
                     }
@@ -316,7 +322,8 @@ interference from other stations sending on either of those channels is increase
                         text: "INFO"
                         Material.background:Material.LightBlue
                         onClicked: {
-                            var text="Recommended 3 (Default). The MCS index controlls the available bandwidth. Higher MCS index - higher bandwidth, but less range. Not all cards support changing it."
+                            var text="Recommended 3 (Default). The MCS index controlls the available bandwidth. Higher MCS index - higher bandwidth, but less range. Only rtl8812au
+(or cards using the rtl88xxau driver) support changing it. This also only controlls the MCS index of the downlink, since it generally needs more bandwidth than the uplink."
                             _messageBoxInstance.set_text_and_show(text)
                         }
                     }
