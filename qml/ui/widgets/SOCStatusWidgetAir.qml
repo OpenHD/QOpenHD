@@ -87,7 +87,7 @@ BaseWidget {
                 height: 42
                 Text {
                     id: airstatusSettingsTitle
-                    text: qsTr("GROUND STATUS")
+                    text: qsTr("AIR STATUS")
                     color: "white"
                     height: parent.height - 10
                     width: parent.width
