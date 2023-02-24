@@ -883,9 +883,6 @@ bool MavlinkSettingsModel::get_param_requires_manual_reboot(QString param_id)
     if(param_id=="I_ETH_HOTSPOT_E"){
         return true;
     }
-    if(param_id=="TRACKER_UART_OUT"){
-        return true;
-    }
     return false;
 }
 
@@ -991,7 +988,7 @@ QString MavlinkSettingsModel::get_short_description(const QString param_id)const
         return "Requires reboot. Switch primary and secondary camera.";
     }
     if(param_id=="TRACKER_UART_OUT"){
-         return "Requires reboot. Enable mavlink telemetry out via UART on the ground station for connecting a tracker or even an RC with mavlink lua script.";
+         return "Enable mavlink telemetry out via UART on the ground station for connecting a tracker or even an RC with mavlink lua script.";
     }
     if(param_id=="GPIO_2"){
         return "Experimental, allows manually controlling a rpi gpio for special uses like a LED, landing gear, ...";
