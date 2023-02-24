@@ -31,7 +31,7 @@ Item {
 
     MouseArea {
         anchors.fill: parent
-        onPressAndHold: {
+        onClicked: {
             console.log("longpress")
             if (has_been_maximized) {
                 // minimize

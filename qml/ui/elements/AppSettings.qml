@@ -378,7 +378,7 @@ Settings {
     property double secondVideoMinWidth: 320
     property double secondVideoLeftMargin: 0
     property double secondVideoBottomMargin: 0
-    property double secondVideoMaximiseFaktor: 100
+    property double secondVideoMaximiseFaktor: 200
 
 
     property bool show_aoa: false
