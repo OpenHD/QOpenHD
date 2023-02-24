@@ -23,9 +23,7 @@ Item {
         width: settings.secondVideoWidth
         height: settings.secondVideoHeight
         anchors.bottom: parent.bottom
-        anchors.bottomMargin:settings.secondVideoHeight*secondVideoMaximiseFaktor/2
-
-        Component.onCompleted: {
+         Component.onCompleted: {
             console.log("secondaryVideoGStreamer (Qmlglsink) created")
             _secondary_video_gstreamer.check_common_mistakes_then_init(secondaryVideoGStreamer)
         }
@@ -33,16 +31,7 @@ Item {
 
     MouseArea {
         anchors.fill: parent
-        drag.target: secondaryVideoGStreamer
-        onPositionChanged: {
-            secondaryVideoGStreamer.anchors.bottomMargin = parent.height - drag.activeY
-            secondaryVideoGStreamer.anchors.leftMargin = drag.activeX
-
-            savedSecondaryVideoBottomMargin = secondaryVideoGStreamer.anchors.bottomMargin
-            savedSecondaryVideoLeftMargin = secondaryVideoGStreamer.anchors.leftMargin
-           }
-
-        onPressAndHold: {
+        onClicked: {
             console.log("longpress")
             if (has_been_maximized) {
                 // minimize
