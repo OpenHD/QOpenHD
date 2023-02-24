@@ -890,8 +890,8 @@ QString MavlinkSettingsModel::get_short_description(const QString param_id)const
 {
     if(param_id=="V_BITRATE_MBITS"){
         return "Camera encoder bitrate, does not include FEC overhead. "
-               "If variable bitrate is enabled (recommended), this value is ignored. Otherwise, you can manually set a fixed camera/encoder bitrate here. "
-               "Supported by most cameras, but some encoders do not properly respond to this value.";
+               "!! If variable bitrate is enabled (recommended), this value is ignored.!! Otherwise, you can manually set a fixed camera/encoder bitrate here. "
+               "NOTE: If you are using a camera not listed on the OpenHD recommended cameras list, the bitrate might be fixed by the vendor and not changeable.";
     }
     if(param_id=="WB_V_FEC_PERC"){
         return "WB Video FEC overhead, in percent. Increases link stability, but also the required link bandwidth (watch out for tx errors). "
@@ -1008,6 +1008,10 @@ QString MavlinkSettingsModel::get_short_description(const QString param_id)const
     }
     if(param_id=="HOTSPOT_CARD"){
         return "Detected card for wifi hotspot";
+    }
+    if(param_id=="V_PRIMARY_PERC"){
+        return "If Variable bitrate is enabled,your primary camera is given that much percentage of the total available link bandwidth. "
+               "The rest is given to the secondary camera. Default to 60% (60:40 split).";
     }
     return "TODO";
 }
