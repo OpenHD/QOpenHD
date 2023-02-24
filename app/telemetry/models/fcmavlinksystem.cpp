@@ -754,21 +754,6 @@ void FCMavlinkSystem::updateWind(){
     }
 }
 
-
-void FCMavlinkSystem::setCurrentWaypoint(int current_waypoint) {
-    m_current_waypoint = current_waypoint;
-    emit currentWaypointChanged(m_current_waypoint);
-}
-
-void FCMavlinkSystem::setTotalWaypoints(int total_waypoints) {
-    m_total_waypoints = total_waypoints-1;
-    if(m_total_waypoints<0){
-        m_total_waypoints=0;
-    }
-    emit totalWaypointsChanged(m_total_waypoints);
-}
-
-
 void FCMavlinkSystem::arm_fc_async(bool arm)
 {
     if(!_action){
@@ -795,7 +780,7 @@ void FCMavlinkSystem::arm_fc_async(bool arm)
 void FCMavlinkSystem::send_return_to_launch_async()
 { //TODO ------this probably only works for px4---------
     if(!_action){
-        qDebug()<<"No fc action module";
+        HUDLogMessagesModel::instance().add_message_info("No FC");
         return;
     }
     auto cb=[](mavsdk::Action::Result res){
@@ -810,7 +795,7 @@ void FCMavlinkSystem::send_return_to_launch_async()
 bool FCMavlinkSystem::send_command_reboot(bool reboot)
 {
     if(!_action){
-        qDebug()<<"No fc action module";
+        HUDLogMessagesModel::instance().add_message_info("No FC");
         return false;
     }
     mavsdk::Action::Result res{};
@@ -828,6 +813,7 @@ bool FCMavlinkSystem::send_command_reboot(bool reboot)
 
 void FCMavlinkSystem::flight_mode_cmd(long cmd_msg) {
     if(!_pass_thru){
+        HUDLogMessagesModel::instance().add_message_info("No FC");
         qDebug()<<"No fc pass_thru module";
         return;
     }

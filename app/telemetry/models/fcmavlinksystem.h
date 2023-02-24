@@ -122,6 +122,10 @@ class FCMavlinkSystem : public QObject
     L_RO_PROP(float,curr_update_rate_mavlink_message_attitude,set_curr_update_rate_mavlink_message_attitude,-1)
     // We expose the sys id for the OSD to show - note that this value should not be used by any c++ code
     L_RO_PROP(int,for_osd_sys_id,set_for_osd_sys_id,-1);
+    // TODO: We have 2 variables for the OSD to show - the current total n of waypoints and the current waypoint the FC is at. Depending on how things are broadcasted,
+    // The user might have to manually request the current total n of waypoints
+    L_RO_PROP(int,current_waypoint,set_current_waypoint,-1);
+    L_RO_PROP(int,curr_total_waypoints,set_curr_total_waypoints,-1);
 public:
     explicit FCMavlinkSystem(QObject *parent = nullptr);
     // singleton for accessing the model from c++
@@ -167,12 +171,6 @@ public:
 
     Q_PROPERTY(double homelon MEMBER m_homelon WRITE set_homelon NOTIFY homelon_changed)
     void set_homelon(double homelon);
-
-    Q_PROPERTY(int current_waypoint MEMBER m_current_waypoint WRITE setCurrentWaypoint NOTIFY currentWaypointChanged)
-    void setCurrentWaypoint(int current_waypoint);
-
-    Q_PROPERTY(int total_waypoints MEMBER m_total_waypoints WRITE setTotalWaypoints NOTIFY totalWaypointsChanged)
-    void setTotalWaypoints(int total_waypoints);
 signals:
     // mavlink
     void armed_changed(bool armed);
@@ -181,9 +179,6 @@ signals:
     void homelon_changed(double homelon);
     void home_course_changed(int home_course);
     void home_heading_changed(int home_heading);
-
-    void currentWaypointChanged (int current_waypoint);
-    void totalWaypointsChanged (int total_waypoints);
 private:
     // NOTE: Null until system discovered
     std::shared_ptr<mavsdk::System> _system=nullptr;
@@ -212,9 +207,6 @@ private:
     QElapsedTimer flightTimeStart;
 
     QTimer* m_flight_time_timer = nullptr;
-
-    int m_current_waypoint = 0;
-    int m_total_waypoints = 0;
 
     int m_mode = 0;
 

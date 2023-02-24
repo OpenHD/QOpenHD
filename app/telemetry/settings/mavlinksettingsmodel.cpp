@@ -403,12 +403,14 @@ bool MavlinkSettingsModel::try_fetch_all_parameters()
         // now fetch all params using mavsdk (this talks to the OHD system(s).
         //param_client->set_timeout(10);
         const auto params=param_client->get_all_params(true);
-        for(const auto& int_param:params.int_params){
-            MavlinkSettingsModel::SettingData data{QString(int_param.name.c_str()),int_param.value};
-            addData(data);
-        }
+        // The order in which params show up is r.n controlled by how they are added here -
+        // TODO could be improved. For some reason, string params are generally the most important ones r.n, though
         for(const auto& string_param:params.custom_params){
             MavlinkSettingsModel::SettingData data{QString(string_param.name.c_str()),string_param.value};
+            addData(data);
+        }
+        for(const auto& int_param:params.int_params){
+            MavlinkSettingsModel::SettingData data{QString(int_param.name.c_str()),int_param.value};
             addData(data);
         }
         if(!params.int_params.empty()){

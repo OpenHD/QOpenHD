@@ -248,7 +248,7 @@ BaseWidget {
                 height: 14
                 color: settings.color_text
                 text: qsTr(
-                          "Mission") + ": " + _fcMavlinkSystem.current_waypoint + "/" + _fcMavlinkSystem.total_waypoints
+                          "Mission") + ": " + _fcMavlinkSystem.current_waypoint + "/" + _fcMavlinkSystem.curr_total_waypoints
                 anchors.bottom: parent.bottom
                 anchors.bottomMargin: 0
                 verticalAlignment: Text.AlignBottom
