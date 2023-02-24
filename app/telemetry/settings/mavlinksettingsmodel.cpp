@@ -403,12 +403,14 @@ bool MavlinkSettingsModel::try_fetch_all_parameters()
         // now fetch all params using mavsdk (this talks to the OHD system(s).
         //param_client->set_timeout(10);
         const auto params=param_client->get_all_params(true);
-        for(const auto& int_param:params.int_params){
-            MavlinkSettingsModel::SettingData data{QString(int_param.name.c_str()),int_param.value};
-            addData(data);
-        }
+        // The order in which params show up is r.n controlled by how they are added here -
+        // TODO could be improved. For some reason, string params are generally the most important ones r.n, though
         for(const auto& string_param:params.custom_params){
             MavlinkSettingsModel::SettingData data{QString(string_param.name.c_str()),string_param.value};
+            addData(data);
+        }
+        for(const auto& int_param:params.int_params){
+            MavlinkSettingsModel::SettingData data{QString(int_param.name.c_str()),int_param.value};
             addData(data);
         }
         if(!params.int_params.empty()){
@@ -881,9 +883,6 @@ bool MavlinkSettingsModel::get_param_requires_manual_reboot(QString param_id)
     if(param_id=="I_ETH_HOTSPOT_E"){
         return true;
     }
-    if(param_id=="TRACKER_UART_OUT"){
-        return true;
-    }
     return false;
 }
 
@@ -891,8 +890,8 @@ QString MavlinkSettingsModel::get_short_description(const QString param_id)const
 {
     if(param_id=="V_BITRATE_MBITS"){
         return "Camera encoder bitrate, does not include FEC overhead. "
-               "If variable bitrate is enabled (recommended), this value is ignored. Otherwise, you can manually set a fixed camera/encoder bitrate here. "
-               "Supported by most cameras, but some encoders do not properly respond to this value.";
+               "!! If variable bitrate is enabled (recommended), this value is ignored.!! Otherwise, you can manually set a fixed camera/encoder bitrate here. "
+               "NOTE: If you are using a camera not listed on the OpenHD recommended cameras list, the bitrate might be fixed by the vendor and not changeable.";
     }
     if(param_id=="WB_V_FEC_PERC"){
         return "WB Video FEC overhead, in percent. Increases link stability, but also the required link bandwidth (watch out for tx errors). "
@@ -989,7 +988,7 @@ QString MavlinkSettingsModel::get_short_description(const QString param_id)const
         return "Requires reboot. Switch primary and secondary camera.";
     }
     if(param_id=="TRACKER_UART_OUT"){
-         return "Requires reboot. Enable mavlink telemetry out via UART on the ground station for connecting a tracker or even an RC with mavlink lua script.";
+         return "Enable mavlink telemetry out via UART on the ground station for connecting a tracker or even an RC with mavlink lua script.";
     }
     if(param_id=="GPIO_2"){
         return "Experimental, allows manually controlling a rpi gpio for special uses like a LED, landing gear, ...";
@@ -1009,6 +1008,10 @@ QString MavlinkSettingsModel::get_short_description(const QString param_id)const
     }
     if(param_id=="HOTSPOT_CARD"){
         return "Detected card for wifi hotspot";
+    }
+    if(param_id=="V_PRIMARY_PERC"){
+        return "If Variable bitrate is enabled,your primary camera is given that much percentage of the total available link bandwidth. "
+               "The rest is given to the secondary camera. Default to 60% (60:40 split).";
     }
     return "TODO";
 }
