@@ -23,9 +23,9 @@ BaseWidget {
     widgetIdentifier: "adsb_widget"
 
 
-
     defaultAlignment: 1
-    defaultXOffset: 93
+    // Placed below the SOC air / ground statistics by default
+    defaultXOffset: 128
     defaultYOffset: 50
     defaultHCenter: false
     defaultVCenter: false

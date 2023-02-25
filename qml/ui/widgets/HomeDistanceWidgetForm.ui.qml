@@ -223,7 +223,7 @@ BaseWidget {
 
         ColumnLayout {
             width: 200
-            spacing: 10
+            spacing: 5
 
             Item {
                 width: parent.width
