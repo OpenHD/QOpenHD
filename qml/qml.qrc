@@ -212,7 +212,6 @@
         <file>ui/widgets/AoaWidgetForm.ui.qml</file>
         <file>ui/widgets/MessageHUDRow.qml</file>
         <file>ui/widgets/AdsbWidget.qml</file>
-        <file>ui/widgets/AdsbWidgetForm.ui.qml</file>
         <file>ui/configpopup/ChannelScanDialoque.qml</file>
         <file>ui/configpopup/MavlinkSetupPiCameraPanel.qml</file>
         <file>ui/configpopup/PiCameraConfigListOriginal.qml</file>
