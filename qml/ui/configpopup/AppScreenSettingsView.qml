@@ -151,10 +151,12 @@ ScrollView {
                     width: 320
                     model: ListModel {
                         id: font_dpi
-                        ListElement { text: qsTr("0 Auto") ; value: 0 }
-                        ListElement { text: qsTr("72") ; value: 72 }
-                        ListElement { text: qsTr("150") ; value: 150 }
-                        ListElement { text: qsTr("300") ; value: 300 }
+                        ListElement { text: qsTr("0 Auto (Recommended)") ; value: 0 }
+                        ListElement { text: qsTr("50 (ultra small)") ; value: 50 }
+                        ListElement { text: qsTr("72 (smaller)") ; value: 72 }
+                        ListElement { text: qsTr("100") ; value: 100 }
+                        ListElement { text: qsTr("120 (bigger)") ; value: 120 }
+                        ListElement { text: qsTr("150 (ultra big)") ; value: 150 }
                     }
                     textRole: "text"
                     Component.onCompleted: {
