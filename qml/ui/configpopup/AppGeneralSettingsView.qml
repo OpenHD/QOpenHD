@@ -260,7 +260,7 @@ ScrollView {
                         var actually_changed=settings.dev_qopenhd_n_cameras!=value
                         settings.dev_qopenhd_n_cameras = value
                         if(actually_changed){
-                            _messageBoxInstance.set_text_and_show("Please restart QOpenHD to apply")
+                            _messageBoxInstance.show_text_restart_qopenhd()
                         }
                     }
                 }
