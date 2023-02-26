@@ -26,6 +26,11 @@ public:
         set_text(text);
         set_show_to_user(true);
     }
+    // We eventually need a "restart QOpenHD" dialoque
+    Q_INVOKABLE void show_text_restart_qopenhd(){
+        set_text("Plase restart QOpenHD to apply");
+        set_show_to_user(true);
+    }
 public:
     Q_PROPERTY(QString text MEMBER m_text WRITE set_text NOTIFY text_changed)
     void set_text(QString text);

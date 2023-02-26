@@ -117,7 +117,7 @@ Settings {
     property double bitrate_warn: 0
     property double bitrate_caution: 0
     //
-    property bool qrenderstats_show: true
+    property bool qrenderstats_show: false
     property double qrenderstats_opacity: 1
     property double qrenderstats_size: 1
     property bool qrenderstats_declutter: false

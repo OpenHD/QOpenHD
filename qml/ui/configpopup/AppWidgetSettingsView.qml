@@ -1154,7 +1154,14 @@ ScrollView {
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
                     checked: settings.show_map
-                    onCheckedChanged: settings.show_map = checked
+                    onCheckedChanged: {
+                        // Weird qt specifcs, see https://stackoverflow.com/questions/56817460/qml-appswitch-sending-oncheckedchanged-signal-each-time-page-is-opened
+                        if(settings.show_map != checked){
+                            settings.show_map = checked;
+                            _messageBoxInstance.show_text_restart_qopenhd()
+                        }
+                        //settings.show_map = checked
+                    }
                 }
             }
 

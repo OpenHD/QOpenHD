@@ -53,7 +53,8 @@ class FCMavlinkSystem : public QObject
     // same as battery_percent, but as an "icon"
     L_RO_PROP(QString, battery_percent_gauge, set_battery_percent_gauge, "\uf091")
     // not directly battery, but similar
-    L_RO_PROP(int,battery_consumed_mah,set_battery_battery_consumed_mah,0)
+    L_RO_PROP(int,battery_consumed_mah,set_battery_consumed_mah,0)
+    // TODO this value is not calculated yet
     L_RO_PROP(int,battery_consumed_mah_per_km,set_battery_consumed_mah_per_km,0)
     // roll, pitch and yaw
     L_RO_PROP(double, pitch, set_pitch, 0)
