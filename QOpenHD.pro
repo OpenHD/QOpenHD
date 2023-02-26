@@ -107,6 +107,7 @@ SOURCES += \
     app/util/QmlObjectListModel.cpp \
     app/util/WorkaroundMessageBox.cpp \
     app/util/qrenderstats.cpp \
+    app/util/restartqopenhdmessagebox.cpp \
     app/vs_util/decodingstatistcs.cpp \
     app/util/FrequencyMonitor.cpp \
     app/main.cpp \
@@ -119,6 +120,7 @@ HEADERS += \
     app/util/QmlObjectListModel.h \
     app/util/WorkaroundMessageBox.h \
     app/util/qrenderstats.h \
+    app/util/restartqopenhdmessagebox.h \
     app/vs_util/decodingstatistcs.h \
     app/util/FrequencyMonitor.h \
 

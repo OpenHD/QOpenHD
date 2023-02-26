@@ -148,51 +148,11 @@ ApplicationWindow {
              id: dialoqueStartChannelScan
         }
 
-        // We need this one to display popup messages to the user on platforms that don't support
-        // QMessageBox (e.g. eglfs) since QMessageBox wants to open a new window
-        // TODO make me less dirty / hacky
-        Card {
-            id: workaroundMessageBox
-            width: 360
-            height: 340
-            z: 5.0
-            anchors.centerIn: parent
-            cardName: qsTr("QOpenHD")
-            cardNameColor: "black"
-            visible: _messageBoxInstance.show_to_user
-            cardBody: Column {
-                height: 200
-                width: 320
-                Text {
-                    id: workaroundMessageBox_text
-                    text: _messageBoxInstance.text
-                    width: parent.width-24
-                    height:parent.height
-                    leftPadding: 12
-                    rightPadding: 12
-                    wrapMode: Text.WordWrap
-                }
-            }
-            hasFooter: true
-            cardFooter: Item {
-                anchors.fill: parent
-                Button {
-                    width: 140
-                    height: 48
-                    anchors.right: parent.right
-                    anchors.rightMargin: 12
-                    anchors.bottom: parent.bottom
-                    anchors.bottomMargin: 6
-                    font.pixelSize: 14
-                    font.capitalization: Font.MixedCase
-                    Material.accent: Material.Green
-                    highlighted: true
-                    text:  qsTr("Okay")
-                    onPressed: {
-                        _messageBoxInstance.okay_button_clicked()
-                    }
-                }
-            }
+        WorkaroundMessageBox{
+            id: workaroundmessagebox
+        }
+        RestartQOpenHDMessageBox{
+            id: restartQOpenHDMessageBox
         }
 
         // Allows closing QOpenHD via a keyboard shortcut

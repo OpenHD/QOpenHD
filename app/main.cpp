@@ -60,6 +60,7 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "logging/hudlogmessagesmodel.h"
 #include "util/qopenhd.h"
 #include "util/WorkaroundMessageBox.h"
+#include "util/restartqopenhdmessagebox.h"
 
 #ifdef QOPENHD_ENABLE_ADSB_LIBRARY
 #include "adsb/ADSBVehicleManager.h"
@@ -327,6 +328,7 @@ int main(int argc, char *argv[]) {
     engine.rootContext()->setContextProperty("_decodingStatistics",&DecodingStatistcs::instance());
     // dirty
     engine.rootContext()->setContextProperty("_messageBoxInstance", &workaround::MessageBox::instance());
+    engine.rootContext()->setContextProperty("_restartqopenhdmessagebox", &RestartQOpenHDMessageBox::instance());
 
 //#if defined(LIMIT_ADSB_MAX)
 engine.rootContext()->setContextProperty("LimitADSBMax", QVariant(true));
