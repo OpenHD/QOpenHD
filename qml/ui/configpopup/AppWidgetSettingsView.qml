@@ -1158,7 +1158,7 @@ ScrollView {
                         // Weird qt specifcs, see https://stackoverflow.com/questions/56817460/qml-appswitch-sending-oncheckedchanged-signal-each-time-page-is-opened
                         if(settings.show_map != checked){
                             settings.show_map = checked;
-                            _messageBoxInstance.show_text_restart_qopenhd()
+                            _restartqopenhdmessagebox.show();
                         }
                         //settings.show_map = checked
                     }

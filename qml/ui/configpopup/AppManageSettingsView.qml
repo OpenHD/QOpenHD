@@ -179,7 +179,7 @@ ScrollView {
                     onClicked: {
                         var res=_qopenhd.overwrite_settings_from_backup_file()
                         if (res) {
-                            _messageBoxInstance.set_text_and_show("Settings file Loaded !, Please restart QOpenHD to apply")
+                            _restartqopenhdmessagebox.show_with_text("Settings file Loaded !");
                         }else{
                             _messageBoxInstance.set_text_and_show("Couldn't load settings - make sure /boot/openhd/QOpenHD.conf (a previous pbackup) exists on your SD card")
                         }
@@ -265,7 +265,7 @@ ScrollView {
                         simplePopupHack.visible=false
                         var res=_qopenhd.reset_settings()
                         if (res) {
-                            _messageBoxInstance.set_text_and_show("Settings are now reset to default, please restart QOpenHD")
+                             _restartqopenhdmessagebox.show_with_text("Settings reset to default,");
                         }
                         else{
                             _messageBoxInstance.set_text_and_show("couldn't reset the settings")

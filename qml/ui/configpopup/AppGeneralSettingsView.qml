@@ -260,7 +260,7 @@ ScrollView {
                         var actually_changed=settings.dev_qopenhd_n_cameras!=value
                         settings.dev_qopenhd_n_cameras = value
                         if(actually_changed){
-                            _messageBoxInstance.show_text_restart_qopenhd()
+                            _restartqopenhdmessagebox.show()
                         }
                     }
                 }
