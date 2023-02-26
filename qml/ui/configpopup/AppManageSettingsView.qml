@@ -113,185 +113,183 @@ ScrollView {
                 }
             }
             Rectangle {
-                                    width: parent.width
-                                    height: rowHeight
-                                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-                                    visible: !IsRaspPi
+                width: parent.width
+                height: rowHeight
+                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                visible: !IsRaspPi
 
-                                    Text {
-                                        text: qsTr("Save settings to file")
-                                        font.weight: Font.Bold
-                                        font.pixelSize: 13
-                                        anchors.leftMargin: 8
-                                        verticalAlignment: Text.AlignVCenter
-                                        anchors.verticalCenter: parent.verticalCenter
-                                        width: 224
-                                        height: elementHeight
-                                        anchors.left: parent.left
-                                    }
-
-                                    Button {
-                                        id:save
-                                        width: 128
-                                        height: elementHeight
-                                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-
-                                        anchors.right: parent.right
-                                        anchors.verticalCenter: parent.verticalCenter
-                                        text: qsTr("Save")
-                                        onClicked: {
-                                        var res=_qopenhd.copy_settings()
-                                                if (res) {
-                                                            _messageBoxInstance.set_text_and_show("Settings file Saved to \n\n1.the root of the SD-Card in openhd \n2./boot/openhd")
-                                                        }
-                                                else{
-                                                _messageBoxInstance.set_text_and_show("couldn't save the settings")
-                                                }
-                                            }
-                                        }
-                                    }
-            Rectangle {
-                                    width: parent.width
-                                    height: rowHeight
-                                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-                                    visible: !IsRaspPi
-
-                                    Text {
-                                        text: qsTr("Load Settings from File")
-                                        font.weight: Font.Bold
-                                        font.pixelSize: 13
-                                        anchors.leftMargin: 8
-                                        verticalAlignment: Text.AlignVCenter
-                                        anchors.verticalCenter: parent.verticalCenter
-                                        width: 224
-                                        height: elementHeight
-                                        anchors.left: parent.left
-                                    }
-
-                                    Button {
-                                        id:load
-                                        width: 128
-                                        height: elementHeight
-                                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-
-                                        anchors.right: parent.right
-                                        anchors.verticalCenter: parent.verticalCenter
-                                        text: qsTr("Load")
-                                        onClicked: {
-                                        var res=_qopenhd.read_settings()
-                                                if (res) {
-                                                            _messageBoxInstance.set_text_and_show("Settings file Loaded !, Please restart QOpenHD to apply")
-                                                        }
-                                                else{
-                                                _messageBoxInstance.set_text_and_show("couldn't save the settings,\nplease make sure there is a file in /boot/openhd/QOpenHD.conf \nor in the Root of the SD-Card in folder openhd")
-                                                }
-                                            }
-                                    }
-                                }
-            Rectangle {
-                                    width: parent.width
-                                    height: rowHeight
-                                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-                                    visible: !IsRaspPi
-
-                                    Text {
-                                        text: qsTr("Reset ALL QOpenHD Settings")
-                                        font.weight: Font.Bold
-                                        font.pixelSize: 13
-                                        anchors.leftMargin: 8
-                                        verticalAlignment: Text.AlignVCenter
-                                        anchors.verticalCenter: parent.verticalCenter
-                                        width: 224
-                                        height: elementHeight
-                                        anchors.left: parent.left
-                                    }
-
-                                    Button {
-                                        id:reset
-                                        width: 128
-                                        height: elementHeight
-                                        anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-
-                                        anchors.right: parent.right
-                                        anchors.verticalCenter: parent.verticalCenter
-                                        text: qsTr("Reset")
-                                        onClicked: {
-                                            simplePopupHack.visible=true;
-                                            }
-                                    }
-                                }
-
-            }
-        Card {
-                    id: simplePopupHack
-                    width: 360
-                    height: 340
-                    anchors.top: parent.top
-                    anchors.topMargin: 20
+                Text {
+                    text: qsTr("Save settings to file")
+                    font.weight: Font.Bold
+                    font.pixelSize: 13
+                    anchors.leftMargin: 8
+                    verticalAlignment: Text.AlignVCenter
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: 224
+                    height: elementHeight
                     anchors.left: parent.left
-                    anchors.leftMargin: mainStackLayout.width/2-180
-                    z: 5.0
-                    cardName: qsTr("WARNING")
-                    cardNameColor: "red"
-                    visible: false
-                    cardBody: Column {
-                        height: 200
-                        width: parent.width
-                        Text {
-                            id: simplePopupHackText
-                            text: "This will erase all your QOpenHD settings (Layout of OSD elements, ...) and is irreversible, continue only if you know what you're doing!"
-                            width: parent.width-24
-                            height:parent.height
-                            leftPadding: 12
-                            rightPadding: 12
-                            font.pixelSize: 20
-                            wrapMode: Text.WordWrap
-                        }
-                    }
-                    hasFooter: true
-                    cardFooter: Item {
-                        anchors.fill: parent
-                        Button {
-                            width: 150
-                            height: 48
-                            anchors.left: parent.left
-                            anchors.leftMargin: 12
-                            anchors.bottom: parent.bottom
-                            anchors.bottomMargin: 6
-                            font.pixelSize: 14
-                            font.capitalization: Font.MixedCase
-                            Material.accent: Material.Red
-                            highlighted: true
-                            text:  qsTr("Continue")
-                            onPressed: {
-                                simplePopupHack.visible=false
-                                    var res=_qopenhd.reset_settings()
-                                            if (res) {
-                                                        _messageBoxInstance.set_text_and_show("Settings are now reset to default, please restart QOpenHD")
-                                                    }
-                                            else{
-                                            _messageBoxInstance.set_text_and_show("couldn't reset the settings")
-                                            }
-                            }
-                        }
-                        Button {
-                            width: 150
-                            height: 48
-                            anchors.right: parent.right
-                            anchors.rightMargin: 12
-                            anchors.bottom: parent.bottom
-                            anchors.bottomMargin: 6
-                            font.pixelSize: 14
-                            font.capitalization: Font.MixedCase
-                            Material.accent: Material.Grey
-                            highlighted: true
-                            text:  qsTr("Cancel")
-                            onPressed: {
-                                simplePopupHack.visible=false
-                            }
+                }
+
+                Button {
+                    id:save
+                    width: 128
+                    height: elementHeight
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: qsTr("Save")
+                    onClicked: {
+                        var res=_qopenhd.backup_settings_locally();
+                        if (res) {
+                            _messageBoxInstance.set_text_and_show("QOpenHD settings backed up to /boot/openhd/QOpenHD.conf")
+                        }else{
+                            _messageBoxInstance.set_text_and_show("Couldn't backup settings")
                         }
                     }
                 }
+            }
+            Rectangle {
+                width: parent.width
+                height: rowHeight
+                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                visible: !IsRaspPi
+
+                Text {
+                    text: qsTr("Load Settings from File")
+                    font.weight: Font.Bold
+                    font.pixelSize: 13
+                    anchors.leftMargin: 8
+                    verticalAlignment: Text.AlignVCenter
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: 224
+                    height: elementHeight
+                    anchors.left: parent.left
+                }
+
+                Button {
+                    id:load
+                    width: 128
+                    height: elementHeight
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: qsTr("Load")
+                    onClicked: {
+                        var res=_qopenhd.overwrite_settings_from_backup_file()
+                        if (res) {
+                            _messageBoxInstance.set_text_and_show("Settings file Loaded !, Please restart QOpenHD to apply")
+                        }else{
+                            _messageBoxInstance.set_text_and_show("Couldn't load settings - make sure /boot/openhd/QOpenHD.conf (a previous pbackup) exists on your SD card")
+                        }
+                    }
+                }
+            }
+            Rectangle {
+                width: parent.width
+                height: rowHeight
+                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                visible: !IsRaspPi
+
+                Text {
+                    text: qsTr("Reset ALL QOpenHD Settings")
+                    font.weight: Font.Bold
+                    font.pixelSize: 13
+                    anchors.leftMargin: 8
+                    verticalAlignment: Text.AlignVCenter
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: 224
+                    height: elementHeight
+                    anchors.left: parent.left
+                }
+
+                Button {
+                    id:reset
+                    width: 128
+                    height: elementHeight
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: qsTr("Reset")
+                    onClicked: {
+                        simplePopupHack.visible=true;
+                    }
+                }
+            }
+
+        }
+        Card {
+            id: simplePopupHack
+            width: 360
+            height: 340
+            anchors.top: parent.top
+            anchors.topMargin: 20
+            anchors.left: parent.left
+            anchors.leftMargin: mainStackLayout.width/2-180
+            z: 5.0
+            cardName: qsTr("WARNING")
+            cardNameColor: "red"
+            visible: false
+            cardBody: Column {
+                height: 200
+                width: parent.width
+                Text {
+                    id: simplePopupHackText
+                    text: "This will erase all your QOpenHD settings (Layout of OSD elements, ...) and is irreversible, continue only if you know what you're doing!"
+                    width: parent.width-24
+                    height:parent.height
+                    leftPadding: 12
+                    rightPadding: 12
+                    font.pixelSize: 20
+                    wrapMode: Text.WordWrap
+                }
+            }
+            hasFooter: true
+            cardFooter: Item {
+                anchors.fill: parent
+                Button {
+                    width: 150
+                    height: 48
+                    anchors.left: parent.left
+                    anchors.leftMargin: 12
+                    anchors.bottom: parent.bottom
+                    anchors.bottomMargin: 6
+                    font.pixelSize: 14
+                    font.capitalization: Font.MixedCase
+                    Material.accent: Material.Red
+                    highlighted: true
+                    text:  qsTr("Continue")
+                    onPressed: {
+                        simplePopupHack.visible=false
+                        var res=_qopenhd.reset_settings()
+                        if (res) {
+                            _messageBoxInstance.set_text_and_show("Settings are now reset to default, please restart QOpenHD")
+                        }
+                        else{
+                            _messageBoxInstance.set_text_and_show("couldn't reset the settings")
+                        }
+                    }
+                }
+                Button {
+                    width: 150
+                    height: 48
+                    anchors.right: parent.right
+                    anchors.rightMargin: 12
+                    anchors.bottom: parent.bottom
+                    anchors.bottomMargin: 6
+                    font.pixelSize: 14
+                    font.capitalization: Font.MixedCase
+                    Material.accent: Material.Grey
+                    highlighted: true
+                    text:  qsTr("Cancel")
+                    onPressed: {
+                        simplePopupHack.visible=false
+                    }
+                }
+            }
+        }
 
 
     }
