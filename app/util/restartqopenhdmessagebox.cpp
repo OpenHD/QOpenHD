@@ -15,13 +15,13 @@ RestartQOpenHDMessageBox &RestartQOpenHDMessageBox::instance()
 }
 
 void RestartQOpenHDMessageBox::show(){
-    set_text("Please restart QOpenHD");
+    set_text("Please restart QOpenHD to apply.");
     set_visible(true);
 }
 
 void RestartQOpenHDMessageBox::show_with_text(QString text){
     std::stringstream full_text;
-    full_text << text.toStdString() << " - Please restart QopenHD";
+    full_text << text.toStdString() << " - Please restart QOpenHD to apply.";
     set_text(QString(full_text.str().c_str()));
     set_visible(true);
 }
