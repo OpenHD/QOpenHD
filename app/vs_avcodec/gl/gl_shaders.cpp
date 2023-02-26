@@ -44,15 +44,29 @@ static const char *GlErrorString(GLenum error ){
 
 // We always use the same vertex shader code - full screen texture.
 // (Adjust ratio by setting the OpenGL viewport)
+// static const GLchar* vertex_shader_source_all =
+//     "#version 100\n"
+//     "attribute vec3 position;\n"
+//     "attribute vec2 tex_coords;\n"
+//     "varying vec2 v_texCoord;\n"
+// 	"void main() {  \n"
+// 	"	gl_Position = vec4(position, 1.0);\n"
+// 	"	v_texCoord = tex_coords;\n"
+// 	"}\n";
+
 static const GLchar* vertex_shader_source_all =
     "#version 100\n"
     "attribute vec3 position;\n"
     "attribute vec2 tex_coords;\n"
     "varying vec2 v_texCoord;\n"
 	"void main() {  \n"
-	"	gl_Position = vec4(position, 1.0);\n"
+  " const float w = 1.57;\n"
+  " mat3 A = mat3(cos(w), -sin(w), 0.0,\
+                  sin(w),  cos(w), 0.0,\
+                     0.0,     0.0, 1.0);\n"
+  "	gl_Position = vec4(A* position, 1.0);\n"
 	"	v_texCoord = tex_coords;\n"
-	"}\n";
+	"}\n";  
 // All the different fragment shader
 static const GLchar* fragment_shader_source_GL_OES_EGL_IMAGE_EXTERNAL =
     "#version 100\n"
