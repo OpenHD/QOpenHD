@@ -25,7 +25,23 @@ BaseWidget {
 
     hasWidgetDetail: true
 
-     property int rssiValue: _fcMavlinkSystem.rc_rssi_percentage
+    // -1 denotes N/A
+    // Otherwise,value in percent
+    property int rc_rssi_percentage: _fcMavlinkSystem.rc_rssi_percentage
+
+    function is_valid_rssi(){
+        if (rc_rssi_percentage <= -1) {
+            return false;
+        }
+        return true;
+    }
+
+    function get_color(){
+        if(is_valid_rssi()){
+            return settings.color_shape
+        }
+        return "red"
+    }
 
     widgetDetailComponent: ScrollView {
 
@@ -212,13 +228,7 @@ BaseWidget {
                 height: 5
                 border.color: settings.color_glow
                 border.width: 1
-                color: {
-                    if (rssiValue == 0) {
-                        return "red"
-                    } else {
-                        return settings.color_shape
-                    }
-                }
+                color: get_color()
                 //always visible
             }
 
@@ -231,15 +241,9 @@ BaseWidget {
                 height: 10
                 border.color: settings.color_glow
                 border.width: 1
-                color: {
-                    if (rssiValue == 0) {
-                        return "red"
-                    } else {
-                        return settings.color_shape
-                    }
-                }
+                color: get_color()
                 visible: {
-                    if (rssiValue > 20 || rssiValue == 0) {
+                    if (rc_rssi_percentage > 20 || !is_valid_rssi()) {
                         return true
                     } else {
                         return false
@@ -256,15 +260,9 @@ BaseWidget {
                 border.width: 1
                 width: 3
                 height: 15
-                color: {
-                    if (rssiValue == 0) {
-                        return "red"
-                    } else {
-                        return settings.color_shape
-                    }
-                }
+                color: get_color()
                 visible: {
-                    if (rssiValue > 40 || rssiValue == 0) {
+                    if (rc_rssi_percentage > 40 || !is_valid_rssi()) {
                         return true
                     } else {
                         return false
@@ -281,15 +279,9 @@ BaseWidget {
                 border.width: 1
                 width: 3
                 height: 20
-                color: {
-                    if (rssiValue == 0) {
-                        return "red"
-                    } else {
-                        return settings.color_shape
-                    }
-                }
+                color: get_color()
                 visible: {
-                    if (rssiValue > 60 || rssiValue == 0) {
+                    if (rc_rssi_percentage > 60 || !is_valid_rssi()) {
                         return true
                     } else {
                         return false
@@ -306,15 +298,9 @@ BaseWidget {
                 border.width: 1
                 width: 3
                 height: 25
-                color: {
-                    if (rssiValue == 0) {
-                        return "red"
-                    } else {
-                        return settings.color_shape
-                    }
-                }
+                color: get_color()
                 visible: {
-                    if (rssiValue > 80 || rssiValue == 0) {
+                    if (rc_rssi_percentage > 80 || !is_valid_rssi()) {
                         return true
                     } else {
                         return false
@@ -326,7 +312,7 @@ BaseWidget {
                 id: percent_symbol
                 color: settings.color_text
                 opacity: settings.rc_rssi_opacity
-                text: rssiValue == 0 ? qsTr("") : "%"
+                text: is_valid_rssi() ? qStr("%") : qsTr("")
                 anchors.right: rcRSSI_21to40.left
                 anchors.rightMargin: 0
                 anchors.top: parent.top
@@ -344,7 +330,7 @@ BaseWidget {
                 id: rc_rssi
                 color: settings.color_text
                 opacity: settings.rc_rssi_opacity
-                text: rssiValue == 0 ? qsTr("N/A") : rssiValue
+                text: is_valid_rssi() ? qsTr(rc_rssi_percentage) : qsTr("N/A")
                 anchors.right: percent_symbol.left
                 anchors.rightMargin: 2
                 anchors.top: parent.top

@@ -89,8 +89,8 @@ class FCMavlinkSystem : public QObject
     L_RO_PROP(float,mav_wind_direction,set_mav_wind_direction,0)
     L_RO_PROP(float,mav_wind_speed,set_mav_wind_speed,0)
     // Not openhd rc or something, but the RSSI of the (for example) OpenLRS receiver
-    // value reported by the FC
-    L_RO_PROP(int,rc_rssi_percentage,set_rc_rssi_percentage,0);
+    // value reported by the FC. Between [0...100], -1 -=> No value reported
+    L_RO_PROP(int,rc_rssi_percentage,set_rc_rssi_percentage,-1);
     L_RO_PROP(int,imu_temp_degree,set_imu_temp_degree,0);
     L_RO_PROP(int,preasure_sensor_temperature_degree,set_preasure_sensor_temperature_degree,0)
     L_RO_PROP(int,airspeed_sensor_temperature_degree,set_airspeed_sensor_temperature_degree,99)
