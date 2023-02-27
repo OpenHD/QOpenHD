@@ -25,6 +25,12 @@ BaseWidget {
     defaultHCenter: false
     defaultVCenter: false
 
+    hasWidgetAction: false
+    hasWidgetDetail: false
+    hasWidgetPopup: false
+
+    disable_dragging : true
+
     Item {
         id: widgetInner
 
