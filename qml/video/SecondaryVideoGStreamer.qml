@@ -147,7 +147,7 @@ Item {
                         stepSize: 1
                         editable: true
                         from:120
-                        to: 500
+                        to: 800
                         value: settings.secondary_video_maximize_factor_perc
                         onValueChanged: settings.secondary_video_maximize_factor_perc = value
                     }
