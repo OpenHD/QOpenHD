@@ -25,6 +25,14 @@ BaseWidget {
     defaultHCenter: false
     defaultVCenter: false
 
+    hasWidgetAction: false
+    hasWidgetDetail: false
+    hasWidgetPopup: false
+
+    // We do not want this widget to be dragable / touchable, it needs to be "hidden" otherwise
+    // clicking the secondary video becomes impossible
+    disable_dragging : true
+
     Item {
         id: widgetInner
 

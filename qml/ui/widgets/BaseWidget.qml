@@ -18,6 +18,8 @@ BaseWidgetForm {
 
     property string widgetIdentifier
 
+    // Show a "hand" icon to let the user know where to touch to drag the widget around.
+    // Only used by "MAP" right now (to my knowledge)
     property bool useDragHandle: false
     property int defaultAlignment: 0
     property int defaultXOffset: 0
@@ -37,6 +39,12 @@ BaseWidgetForm {
     property string hCenterIdentifier: "%1_h_center".arg(widgetIdentifier);
     property string vCenterIdentifier: "%1_v_center".arg(widgetIdentifier);
     property double oldOpacity: 100;
+
+    // Added by Consti10 -
+    // disable dragging for this widget (dragging is enabled by default)
+    // Needed for the HUD log messages element, since it sits above the secondary video and disabling its "mouse area"
+    // Was the easiest fix
+    property bool disable_dragging: false
 
     //layer.enabled: false
 
@@ -191,6 +199,8 @@ BaseWidgetForm {
 
     MouseArea {
         id: dragArea
+
+        enabled: ! disable_dragging;
 
         anchors.fill: parent
 

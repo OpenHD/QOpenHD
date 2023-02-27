@@ -181,7 +181,7 @@ ScrollView {
                         if (res) {
                             _restartqopenhdmessagebox.show_with_text("Settings file Loaded !");
                         }else{
-                            _messageBoxInstance.set_text_and_show("Couldn't load settings - make sure /boot/openhd/QOpenHD.conf (a previous pbackup) exists on your SD card")
+                            _messageBoxInstance.set_text_and_show("Couldn't load settings - make sure \"/boot/openhd/QOpenHD.conf\" (a previous pbackup) exists on your SD card")
                         }
                     }
                 }
