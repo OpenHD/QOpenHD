@@ -286,12 +286,12 @@ void GL_VideoRenderer::update_texture_gl(AVFrame *frame) {
   }
 }
 
-void GL_VideoRenderer::draw_texture_gl(const bool dev_draw_alternating_rgb_dummy_frames) {
+void GL_VideoRenderer::draw_texture_gl(const bool dev_draw_alternating_rgb_dummy_frames,int rotation_degree) {
   //GL_shaders::debug_set_swap_interval(0);
   if(egl_frame_texture.has_valid_image){
-	gl_shaders->draw_egl(egl_frame_texture.texture);
+    gl_shaders->draw_egl(egl_frame_texture.texture,rotation_degree);
   }else if(cuda_frametexture.has_valid_image) {
-	gl_shaders->draw_NV12(cuda_frametexture.textures[0], cuda_frametexture.textures[1]);
+    gl_shaders->draw_NV12(cuda_frametexture.textures[0], cuda_frametexture.textures[1],rotation_degree);
   }else if(yuv_420_p_sw_frame_texture.has_valid_image){
     /*if(yuv_420_p_sw_frame_texture.sdl_texture!= nullptr){
 	  //std::cout<<"SDL render\n";
@@ -300,14 +300,14 @@ void GL_VideoRenderer::draw_texture_gl(const bool dev_draw_alternating_rgb_dummy
 	  //std::cout<<"Cust render\n";
 	  gl_shaders->draw_YUV420P(yuv_420_p_sw_frame_texture.textures[0],
 							   yuv_420_p_sw_frame_texture.textures[1],
-							   yuv_420_p_sw_frame_texture.textures[2]);
+                               yuv_420_p_sw_frame_texture.textures[2],rotation_degree);
     //}
   }
   else{
 	// no valid video texture yet, alternating draw the rgb textures.
     if(dev_draw_alternating_rgb_dummy_frames){
         const auto rgb_texture=frameCount % 2==0? texture_rgb_blue:texture_rgb_green;
-        gl_shaders->draw_rgb(rgb_texture);
+        gl_shaders->draw_rgb(rgb_texture,rotation_degree);
         frameCount++;
     }
   }

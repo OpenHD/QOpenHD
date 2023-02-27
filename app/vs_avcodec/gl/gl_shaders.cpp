@@ -44,29 +44,16 @@ static const char *GlErrorString(GLenum error ){
 
 // We always use the same vertex shader code - full screen texture.
 // (Adjust ratio by setting the OpenGL viewport)
-// static const GLchar* vertex_shader_source_all =
-//     "#version 100\n"
-//     "attribute vec3 position;\n"
-//     "attribute vec2 tex_coords;\n"
-//     "varying vec2 v_texCoord;\n"
-// 	"void main() {  \n"
-// 	"	gl_Position = vec4(position, 1.0);\n"
-// 	"	v_texCoord = tex_coords;\n"
-// 	"}\n";
-
 static const GLchar* vertex_shader_source_all =
-    "#version 100\n"
-    "attribute vec3 position;\n"
-    "attribute vec2 tex_coords;\n"
-    "varying vec2 v_texCoord;\n"
-	"void main() {  \n"
-  " const float w = 1.57;\n"
-  " mat3 A = mat3(cos(w), -sin(w), 0.0,\
-                  sin(w),  cos(w), 0.0,\
-                     0.0,     0.0, 1.0);\n"
-  "	gl_Position = vec4(A* position, 1.0);\n"
-	"	v_texCoord = tex_coords;\n"
-	"}\n";  
+     "#version 100\n"
+     "attribute vec3 position;\n"
+     "attribute vec2 tex_coords;\n"
+     "varying vec2 v_texCoord;\n"
+    "void main() {  \n"
+    "	gl_Position = vec4(position, 1.0);\n"
+    "	v_texCoord = tex_coords;\n"
+    "}\n";
+
 // All the different fragment shader
 static const GLchar* fragment_shader_source_GL_OES_EGL_IMAGE_EXTERNAL =
     "#version 100\n"
@@ -132,10 +119,14 @@ static const GLchar* fragment_shader_source_NV12 =
 	"}\n";
 
 /// negative x,y is bottom left and first vertex
-static const GLfloat vertices[][4][3] =
+/// 3 ---- 4
+/// |      |
+/// 1 ---- 2
+static const GLfloat vertices[4][3] =
 	{
-		{ {-1.0, -1.0, 0.0}, { 1.0, -1.0, 0.0}, {-1.0, 1.0, 0.0}, {1.0, 1.0, 0.0} }
+        {-1.0, -1.0, 0.0}, { 1.0, -1.0, 0.0}, {-1.0, 1.0, 0.0}, {1.0, 1.0, 0.0}
 	};
+
 // Consti10: Video was flipped horizontally (at least big buck bunny), fixed
 static const GLfloat uv_coords[][4][2] =
 	{
@@ -143,6 +134,10 @@ static const GLfloat uv_coords[][4][2] =
 		//{ {1.0, 1.0}, {0.0, 1.0}, {1.0, 0.0}}//, {0.0, 0.0} }
 		{ {0.0, 1.0}, {1.0, 1.0}, {0.0, 0.0}, {1.0, 0.0} }
 	};
+static const GLfloat uv_coords_rotated_90_degree[][4][2] =
+    {
+        { {1.0, 1.0}, {1.0, 0.0}, {0.0, 1.0}, {0.0, 0.0} }
+    };
 
 static GLint common_get_shader_program(const char *vertex_shader_source, const char *fragment_shader_source) {
   enum Consts {INFOLOG_LEN = 512};
@@ -235,11 +230,23 @@ void GL_shaders::initialize() {
   glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
   glBufferSubData(GL_ARRAY_BUFFER, sizeof(vertices), sizeof(uv_coords), uv_coords);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
+  // For now, we only do 90°
+  glGenBuffers(1, &vbo_rotated_90_degree);
+  glBindBuffer(GL_ARRAY_BUFFER, vbo_rotated_90_degree);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices)+sizeof(uv_coords), 0, GL_STATIC_DRAW);
+  glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
+  glBufferSubData(GL_ARRAY_BUFFER, sizeof(vertices), sizeof(uv_coords), uv_coords_rotated_90_degree);
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
   checkGlError("Create VBO");
 }
 
-void GL_shaders::beforeDrawVboSetup(GLint pos, GLint uvs) const {
-  glBindBuffer(GL_ARRAY_BUFFER, vbo);
+void GL_shaders::beforeDrawVboSetup(GLint pos, GLint uvs,int rotation_degree) const {
+  auto vbo_rot = vbo;
+  if(rotation_degree==90 || rotation_degree==270){
+      // 270° - not technically correct, but at least the user can just use a flip
+      vbo_rot= vbo_rotated_90_degree;
+  }
+  glBindBuffer(GL_ARRAY_BUFFER, vbo_rot);
   glEnableVertexAttribArray(pos);
   glEnableVertexAttribArray(uvs);
   glVertexAttribPointer(pos, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
@@ -251,22 +258,22 @@ void GL_shaders::afterDrawVboCleanup(GLint pos, GLint uvs) {
   glBindBuffer(GL_ARRAY_BUFFER,0);
 }
 
-void GL_shaders::draw_rgb(GLuint texture) {
+void GL_shaders::draw_rgb(GLuint texture,int rotation_degree) {
   glUseProgram(rgba_shader.program);
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, texture);
   glUniform1i(rgba_shader.sampler,0);
-  beforeDrawVboSetup(rgba_shader.pos,rgba_shader.uvs);
+  beforeDrawVboSetup(rgba_shader.pos,rgba_shader.uvs,rotation_degree);
   glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
   glBindTexture(GL_TEXTURE_2D, 0);
   afterDrawVboCleanup(rgba_shader.pos,rgba_shader.uvs);
   checkGlError("Draw RGBA texture");
 }
 
-void GL_shaders::draw_egl(GLuint texture) {
+void GL_shaders::draw_egl(GLuint texture,int rotation_degree) {
   glUseProgram(egl_shader.program);
   glBindTexture(GL_TEXTURE_EXTERNAL_OES,texture);
-  beforeDrawVboSetup(egl_shader.pos,egl_shader.uvs);
+  beforeDrawVboSetup(egl_shader.pos,egl_shader.uvs,rotation_degree);
   glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
   afterDrawVboCleanup(egl_shader.pos,egl_shader.uvs);
   glBindTexture(GL_TEXTURE_EXTERNAL_OES,0);
@@ -296,27 +303,27 @@ static void set_uniforms_ascending(std::vector<GLint> uniforms){
   }
 }
 
-void GL_shaders::draw_YUV420P(GLuint textureY, GLuint textureU, GLuint textureV) {
+void GL_shaders::draw_YUV420P(GLuint textureY, GLuint textureU, GLuint textureV,int rotation_degree) {
   checkGlError("B Draw YUV420 texture");
   glUseProgram(yuv_420P_shader.program);
   const std::vector<GLuint> textures{textureY,textureU,textureV};
   bind_textures(textures);
   const std::vector<GLint> uniforms{yuv_420P_shader.s_texture_y,yuv_420P_shader.s_texture_u,yuv_420P_shader.s_texture_v};
   set_uniforms_ascending(uniforms);
-  beforeDrawVboSetup(yuv_420P_shader.pos,yuv_420P_shader.uvs);
+  beforeDrawVboSetup(yuv_420P_shader.pos,yuv_420P_shader.uvs,rotation_degree);
   glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
   afterDrawVboCleanup(yuv_420P_shader.pos,yuv_420P_shader.uvs);
   unbind_textures(textures.size());
   checkGlError("Draw YUV420 texture");
 }
 
-void GL_shaders::draw_NV12(GLuint textureY, GLuint textureUV) {
+void GL_shaders::draw_NV12(GLuint textureY, GLuint textureUV,int rotation_degree) {
   glUseProgram(nv12_shader.program);
   const std::vector<GLuint> textures{textureY,textureUV};
   bind_textures(textures);
   const std::vector<GLint> uniforms{nv12_shader.s_texture_y,nv12_shader.s_texture_uv};
   set_uniforms_ascending(uniforms);
-  beforeDrawVboSetup(nv12_shader.pos,nv12_shader.uvs);
+  beforeDrawVboSetup(nv12_shader.pos,nv12_shader.uvs,rotation_degree);
   glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
   afterDrawVboCleanup(nv12_shader.pos,nv12_shader.uvs);
   unbind_textures(textures.size());

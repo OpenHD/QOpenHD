@@ -3,6 +3,7 @@
 
 #include <cmath>
 #include <qsettings.h>
+#include <algorithm>
 
 #include "../vs_util/decodingstatistcs.h"
 
@@ -72,7 +73,7 @@ void TextureRenderer::initGL(QQuickWindow *window)
     }
 }
 
-void TextureRenderer::paint(QQuickWindow *window)
+void TextureRenderer::paint(QQuickWindow *window,int rotation_degree)
 {
     const auto delta=std::chrono::steady_clock::now()-last_frame;
     last_frame=std::chrono::steady_clock::now();
@@ -113,17 +114,19 @@ void TextureRenderer::paint(QQuickWindow *window)
          m_display_stats.decode_and_render.reset();
      }
    }
-//    const auto video_tex_width=gl_video_renderer->curr_video_width;
-//    const auto video_tex_height=gl_video_renderer->curr_video_height;
-   const auto video_tex_width=gl_video_renderer->curr_video_height;
-   const auto video_tex_height=gl_video_renderer->curr_video_width;
+   auto video_tex_width=gl_video_renderer->curr_video_width;
+   auto video_tex_height=gl_video_renderer->curr_video_height;
+   if(rotation_degree==90 || rotation_degree==270){
+     // just swap them around when rotated to get the right viewport
+     std::swap(video_tex_width,video_tex_height);
+   }
    if(video_tex_width >0 && video_tex_height>0){
        const auto viewport=calculate_viewport_video_fullscreen(m_viewportSize.width(), m_viewportSize.height(),video_tex_width,video_tex_height);
        glViewport(viewport.x,viewport.y,viewport.width,viewport.height);
    }
    glDisable(GL_DEPTH_TEST);
 
-   gl_video_renderer->draw_texture_gl(dev_draw_alternating_rgb_dummy_frames);
+   gl_video_renderer->draw_texture_gl(dev_draw_alternating_rgb_dummy_frames,rotation_degree);
    // make sure we leave how we started / such that Qt rendering works normally
    glEnable(GL_DEPTH_TEST);
    glViewport(0, 0, m_viewportSize.width(), m_viewportSize.height());

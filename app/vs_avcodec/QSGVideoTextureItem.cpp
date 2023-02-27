@@ -66,7 +66,8 @@ void QSGVideoTextureItem::m_QQuickWindow_beforeRenderPassRecording()
 {
     if(m_renderer){
         //qDebug()<<"Rotation:"<<QQuickItem::rotation();
-        m_renderer->paint(window());
+        const auto screen_rotation=QOpenHDVideoHelper::get_display_rotation();
+        m_renderer->paint(window(),screen_rotation);
     }
     // always trigger a repaint, otherwise QT "thinks" nothing has changed since it doesn't
     // know about the OpenGL commands we do here

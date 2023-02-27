@@ -55,20 +55,21 @@ class GL_shaders {
   NV12Shader nv12_shader;
   // All shaders use the same VBO for vertex / uv coordinates
   GLuint vbo=0;
-  void beforeDrawVboSetup(GLint pos,GLint uvs) const;
+  GLuint vbo_rotated_90_degree=0;
+  void beforeDrawVboSetup(GLint pos,GLint uvs,int rotation_degree) const;
   static void afterDrawVboCleanup(GLint pos,GLint uvs);
  public:
   static void checkGlError(const std::string& caller);
   // needs to be called on the OpenGL thread and before the first use of any draw_XXX calls
   void initialize();
   // "normal" RGB(A) texture
-  void draw_rgb(GLuint texture);
+  void draw_rgb(GLuint texture,int rotation_degree);
   // gl oes egl external texture
-  void draw_egl(GLuint texture);
+  void draw_egl(GLuint texture,int rotation_degree);
   // each plane (Y,U,V) has its own texture
-  void draw_YUV420P(GLuint textureY,GLuint textureU,GLuint textureV);
+  void draw_YUV420P(GLuint textureY,GLuint textureU,GLuint textureV,int rotation_degree);
   // Y has its own texture, UV are interleaved in the same texture.
-  void draw_NV12(GLuint textureY,GLuint textureUV);
+  void draw_NV12(GLuint textureY,GLuint textureUV,int rotation_degree);
   //
   static void debug_set_swap_interval(int interval);
 };
