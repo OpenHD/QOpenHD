@@ -113,8 +113,10 @@ void TextureRenderer::paint(QQuickWindow *window)
          m_display_stats.decode_and_render.reset();
      }
    }
-   const auto video_tex_width=gl_video_renderer->curr_video_width;
-   const auto video_tex_height=gl_video_renderer->curr_video_height;
+//    const auto video_tex_width=gl_video_renderer->curr_video_width;
+//    const auto video_tex_height=gl_video_renderer->curr_video_height;
+   const auto video_tex_width=gl_video_renderer->curr_video_height;
+   const auto video_tex_height=gl_video_renderer->curr_video_width;
    if(video_tex_width >0 && video_tex_height>0){
        const auto viewport=calculate_viewport_video_fullscreen(m_viewportSize.width(), m_viewportSize.height(),video_tex_width,video_tex_height);
        glViewport(viewport.x,viewport.y,viewport.width,viewport.height);
