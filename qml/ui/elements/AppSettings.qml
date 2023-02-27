@@ -372,14 +372,12 @@ Settings {
     property double record_widget_height: 48
     property double record_widget_width: 140
 
-    property double secondVideoHeight: 240
-    property double secondVideoWidth: 320
-    property double secondVideoMinHeight: 240
-    property double secondVideoMinWidth: 320
-    property double secondVideoLeftMargin: 0
-    property double secondVideoBottomMargin: 0
-    property double secondVideoMaximiseFaktor: 200
-
+    // The user can controll the width and height the secondary video has when in minimized state
+    // (By that he also controlls the ratio).
+    // And he can specify a factor by which the secondary video is maximized when clicked
+    property int secondary_video_minimized_width : 320
+    property int secondary_video_minimized_height : 240
+    property int secondary_video_maximize_factor_perc : 200
 
     property bool show_aoa: false
     property double aoa_opacity: 1

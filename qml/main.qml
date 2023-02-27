@@ -94,11 +94,17 @@ ApplicationWindow {
             z: 2.0
             anchors.bottom: parent.bottom
             source: {
-                if (QOPENHD_ENABLE_GSTREAMER_QMLGLSINK && settings.dev_qopenhd_n_cameras>1) {
-                    return "../video/SecondaryVideoGStreamer.qml";
+                if(settings.dev_qopenhd_n_cameras>1){
+                    // R.N the only implementation for secondary video
+                    if (QOPENHD_ENABLE_GSTREAMER_QMLGLSINK){
+                         return "../video/SecondaryVideoGStreamer.qml";
+                    }else{
+                        console.warn("No secondary video implementation")
+                    }
+                }else{
+                    console.debug("Scondary video disabled");
                 }
-                console.debug("No secondary video implementation")
-                return ""
+                return "";
             }
         }
 

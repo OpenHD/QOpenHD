@@ -1524,7 +1524,7 @@ ScrollView {
                 color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
                 Text {
-                    text: qsTr("Second Video Min Height")
+                    text: qsTr("Secondary video minimized width")
                     font.weight: Font.Bold
                     font.pixelSize: 13
                     anchors.leftMargin: 8
@@ -1546,8 +1546,8 @@ ScrollView {
                     from:25
                     to: 500
                     anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
-                    value: settings.secondVideoMinHeight
-                    onValueChanged: settings.secondVideoMinHeight = value
+                    value: settings.secondary_video_minimized_width
+                    onValueChanged: settings.secondary_video_minimized_width = value
                 }
             }
             Rectangle {
@@ -1556,7 +1556,7 @@ ScrollView {
                 color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
                 Text {
-                    text: qsTr("Second Video Min Width")
+                    text: qsTr("Secondary Video minimized height")
                     font.weight: Font.Bold
                     font.pixelSize: 13
                     anchors.leftMargin: 8
@@ -1578,8 +1578,8 @@ ScrollView {
                     from:25
                     to: 500
                     anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
-                    value: settings.secondVideoMinWidth
-                    onValueChanged: settings.secondVideoMinWidth = value
+                    value: settings.secondary_video_minimized_height
+                    onValueChanged: settings.secondary_video_minimized_height = value
                 }
             }
             Rectangle {
@@ -1610,8 +1610,8 @@ ScrollView {
                     from:25
                     to: 500
                     anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
-                    value: settings.secondVideoMaximiseFaktor
-                    onValueChanged: settings.secondVideoMaximiseFaktor = value
+                    value: settings.secondary_video_maximize_factor_perc
+                    onValueChanged: settings.secondary_video_maximize_factor_perc = value
                 }
             }
         }
