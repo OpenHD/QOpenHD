@@ -166,7 +166,7 @@ ApplicationWindow {
 
         Item {
             anchors.fill: parent
-            z: settings.stereo_enable ? 10.0 : 1.0
+            z: 1.0
 
             TapHandler {
                 enabled: settings_panel.visible == false
