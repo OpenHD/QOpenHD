@@ -97,6 +97,26 @@ Pane {
                     // gray out the button for read-only params
                     enabled: !model.read_only
                 }
+                // Empty item for padding
+                Item{
+                    width: 16
+                    height: parent.height
+                }
+                Button {
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: "INFO"
+                    Material.background:Material.LightBlue
+                    onClicked: {
+                        var text = model.shortDescription
+                        if(text==="TODO"){
+                            text = "This parameter is not documented yet";
+                         }
+                        if(model.read_only){
+                            text ="This parameter is read-only (cannot be edited)\n"+text;
+                        }
+                        _messageBoxInstance.set_text_and_show(text)
+                    }
+                }
             }
         }
     }
