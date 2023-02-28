@@ -172,8 +172,7 @@ Pane{
                             text: "INFO"
                             Material.background:Material.LightBlue
                             onClicked: {
-                                var text="Scan all channels for a running Air unit. Might take up to 30seconds to complete (openhd supports a ton of channels,
-    and we need to listen on each of them for a short timespan)"
+                                var text="Scan all channels for a running Air unit. Might take up to 30seconds to complete (openhd supports a ton of channels, and we need to listen on each of them for a short timespan)"
                                 _messageBoxInstance.set_text_and_show(text)
                             }
                         }
@@ -225,8 +224,8 @@ Pane{
                             text: "INFO"
                             Material.background:Material.LightBlue
                             onClicked: {
-                                var text="Frequency in Mhz and channel number. [X] - Not a legal wifi frequency, AR9271 does them anyways. (DFS-RADAR) - also used by commercial plane(s) weather radar.
-    It is your responsibility to only change the frequency to values allowed in your country. You can use a frequency analyzer on your phone or the packet loss to find the best channel for your environemnt."
+                                var text="Frequency in Mhz and channel number. [X] - Not a legal wifi frequency, AR9271 does them anyways. (DFS-RADAR) - also used by commercial plane(s) weather radar. "+
+"It is your responsibility to only change the frequency to values allowed in your country. You can use a frequency analyzer on your phone or the packet loss to find the best channel for your environemnt."
                                 _messageBoxInstance.set_text_and_show(text)
                             }
                         }
@@ -274,8 +273,8 @@ Pane{
                             text: "INFO"
                             Material.background:Material.LightBlue
                             onClicked: {
-                                var text="A channel width of 40Mhz gives almost double the bandwidth, but uses 2x 20Mhz channels and therefore the likeliness of
-    interference from other stations sending on either of those channels is increased. It also slightly decreases sensitivity. Only changeable on rtl8812au."
+                                var text="Only supported on rtl8812au!\nA channel width of 40Mhz gives almost double the bandwidth, but uses 2x 20Mhz channels and therefore the likeliness of "+
+"interference from other stations sending on either of those channels is increased. It also slightly decreases sensitivity. Only changeable on rtl8812au."
                                 _messageBoxInstance.set_text_and_show(text)
                             }
                         }
@@ -322,33 +321,23 @@ Pane{
                             text: "INFO"
                             Material.background:Material.LightBlue
                             onClicked: {
-                                var text="Recommended 3 (Default). The MCS index controlls the available bandwidth. Higher MCS index - higher bandwidth, but less range. Only rtl8812au
-    (or cards using the rtl88xxau driver) support changing it. This also only controlls the MCS index of the downlink, since it generally needs more bandwidth than the uplink."
+                                var text="Only supported on rtl8812au!\nThe MCS index controlls the available bandwidth. Higher MCS index - higher bandwidth, but less sensitivity/range."+
+                                        "In contrast to the frequency / channel width, this param only needs to be set on the air unit. As long as your camera supports variable bitrate,"+
+                                        "you can even safely change this param during flight."
                                 _messageBoxInstance.set_text_and_show(text)
                             }
                         }
                     }
                 }
-                /*Rectangle {
-                    width: parent.width
-                    height: rowHeight
-                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                    RowLayout{
-                        anchors.verticalCenter: parent.verticalCenter
-                        Button{
-                            text: "Apply Presets"
-                            onClicked: {
-                                //
-                            }
-                        }
-
-                    }
-                }*/
                 Text{
-                    text:
-                        "To change frequency/channel width, make sure your ground and air unit are alive and well.\nAlso, it is not recommended to change them during flight.
-    Changing these params is only possible if both your air and ground unit support them\nA change might take up to 3 seconds to be applied."
+                    width: parent.width
+                    elide: Text.ElideLeft
+                    wrapMode: Text.WordWrap
+                    text:{
+                        "Changing the frequency / channel width requires synchronisation between your air and ground unit. It can fail and is therefore only safe to change in disarmed state. "+
+                        "You can use the channel scan feature to recover a failed synchronisation.\n"+
+                        "Changing the MCS index only requires changing the value on the air unit, and is therefore safe to do during flight - as long as your camera supports variable bitrate."
+                    }
                 }
             }
         }

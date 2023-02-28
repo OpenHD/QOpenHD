@@ -906,7 +906,8 @@ QString MavlinkSettingsModel::get_short_description(const QString param_id)const
                " when you change this parameter";
     }
     if(param_id=="VARIABLE_BITRATE"){
-        return "Work in progress. Reduce video encoder bitrate if TX injections fail. Does not take the received packets into account (yet)";
+        return "Recommend a matching bitrate to the encoder depending on the selected link parameters,and reduce bitrate on TX errors (failed injections). On by default, but only works on select cameras. On Cameras that"
+               "don't support changing the bitrate / are bad at targeting a given bitrate, you have to adjust your link according to your camera needs.";
     }
     if(param_id=="FC_UART_BAUD"){
         return "RPI HW UART baud rate, needs to match the UART baud rate set on your FC";
@@ -934,11 +935,11 @@ QString MavlinkSettingsModel::get_short_description(const QString param_id)const
         return "Record video data locally on your air unit. You can find the files under /home/openhd/Videos";
     }
     if(param_id=="V_E_STREAMING"){
-        return "enable / disable streaming for this camera. Note that this setting is persistent - once you disable streaming for a camera, you won't have video"
-               " until you re-enable streaming. On by default";
+        return "Enable / disable streaming for this camera. Note that this setting is persistent at run time - once you disable streaming for a camera, you won't have video"
+               " until you re-enable streaming or reboot your air unit. On by default";
     }
     if(param_id=="V_KEYFRAME_I"){
-        return "keyframe / instantaneous decode refresh interval, in frames. E.g. if set to 15, every 15th frame will be a key frame. Higher values result in better image compression, but increase the likeliness of microfreezes.";
+        return "Keyframe / instantaneous decode refresh interval, in frames. E.g. if set to 15, every 15th frame will be a key frame. Higher values result in better image compression, but increase the likeliness of microfreezes.";
     }
     if(param_id=="V_VERT_FLIP"){
         return "Flip video vertically";
