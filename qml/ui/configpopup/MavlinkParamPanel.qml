@@ -58,29 +58,45 @@ Pane {
 
     Component {
         id: delegateMavlinkSettingsValue
-        Row {
-            //anchors.fill: parent
-            spacing: 5
-            //color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+        Rectangle{
+            color: (index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+            //color: "green"
+            //implicitHeight: elementsRow.implicitHeight
+            //implicitWidth: elementsRow.implicitWidth
+            //height: 64
+            //width: 200
             height: 64
-            Label {
-                width:150
-                text: model.unique_id
-                font.bold: true
-            }
-            Label {
-                width:150
-                text: model.extraValue
-                font.bold: true
-            }
-            Button {
-                text: "EDIT"
-                onClicked: {
-                    // this initializes and opens up the param editor
-                    parameterEditor.setup_for_parameter(model.unique_id,model)
+            width: listView.width
+            Row {
+                id: elementsRow
+                //anchors.fill: parent
+                spacing: 5
+                //color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+                height: 64
+                Label {
+                    anchors.verticalCenter: parent.verticalCenter
+                    //font.pixelSize: 20
+                    width:150
+                    text: model.unique_id
+                    font.bold: true
                 }
-                // gray out the button for read-only params
-                enabled: !model.read_only
+                Label {
+                    width:150
+                    //font.pixelSize: 20
+                    text: model.extraValue
+                    font.bold: true
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+                Button {
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: "EDIT"
+                    onClicked: {
+                        // this initializes and opens up the param editor
+                        parameterEditor.setup_for_parameter(model.unique_id,model)
+                    }
+                    // gray out the button for read-only params
+                    enabled: !model.read_only
+                }
             }
         }
     }
@@ -113,7 +129,8 @@ Pane {
         }
     }
 
-    // Right part: the parameter edit element
+    // Right part: the parameter edit element.
+    // Drawn over the parameters list if needed
     MavlinkParamEditor{
         id: parameterEditor
         total_width: paramEditorWidth
