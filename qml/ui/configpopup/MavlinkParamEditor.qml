@@ -152,42 +152,42 @@ Rectangle{
         if(holds_int_value()){
             // If we can treat this int value as an enum, this is the most verbose for the user
             // unless the user explicitly wants raw access to the param (enable advanced)
-             if(instanceMavlinkSettingsModel.int_param_has_enum_keys_values(parameterId) && !enableAdvanced){
-                 console.log(parameterId+" has int enum mapping")
-                 spinBoxInputParamtypeInt.visible=false
-                 intEnumDynamicComboBox.visible=true
-                 // Populate the model with the key,value pairs for this enum
-                 const keys=instanceMavlinkSettingsModel.int_param_get_enum_keys(parameterId)
-                 const values=instanceMavlinkSettingsModel.int_param_get_enum_values(parameterId);
-                 intEnumDynamicListModel.clear()
-                 var currently_selected_index=-1;
-                 for (var i = 0; i < keys.length; i++) {
-                     var key=keys[i];
-                     var value=values[i];
-                     //console.log(key,value);
-                     intEnumDynamicListModel.append({title: key, value: value})
-                     if(value===paramValueInt){
-                         currently_selected_index=i;
-                     }
-                 }
-                 if(currently_selected_index==-1){
-                     // We are missing a description for this int value, add row
-                     var new_key="Unknown ("+paramValueInt+")"
-                     console.log("Adding missing dummy description :"+new_key+" "+paramValueInt)
-                     intEnumDynamicListModel.append({title: new_key, value: paramValueInt})
-                     currently_selected_index=intEnumDynamicListModel.count-1
-                 }
-                 intEnumDynamicComboBox.currentIndex=currently_selected_index
-                 console.log("Curr index:",currently_selected_index);
-             }else{
-                 // Less verbose
-                 console.log("Int parameter has no int enum mapping")
-                 intEnumDynamicComboBox.visible=false
-                 spinBoxInputParamtypeInt.visible=true
-                 spinBoxInputParamtypeInt.from=param_int_min_value()
-                 spinBoxInputParamtypeInt.to=param_int_max_value()
-                 spinBoxInputParamtypeInt.value=paramValueInt
-             }
+            if(instanceMavlinkSettingsModel.int_param_has_enum_keys_values(parameterId) && !enableAdvanced){
+                console.log(parameterId+" has int enum mapping")
+                spinBoxInputParamtypeInt.visible=false
+                intEnumDynamicComboBox.visible=true
+                // Populate the model with the key,value pairs for this enum
+                const keys=instanceMavlinkSettingsModel.int_param_get_enum_keys(parameterId)
+                const values=instanceMavlinkSettingsModel.int_param_get_enum_values(parameterId);
+                intEnumDynamicListModel.clear()
+                var currently_selected_index=-1;
+                for (var i = 0; i < keys.length; i++) {
+                    var key=keys[i];
+                    var value=values[i];
+                    //console.log(key,value);
+                    intEnumDynamicListModel.append({title: key, value: value})
+                    if(value===paramValueInt){
+                        currently_selected_index=i;
+                    }
+                }
+                if(currently_selected_index==-1){
+                    // We are missing a description for this int value, add row
+                    var new_key="Unknown ("+paramValueInt+")"
+                    console.log("Adding missing dummy description :"+new_key+" "+paramValueInt)
+                    intEnumDynamicListModel.append({title: new_key, value: paramValueInt})
+                    currently_selected_index=intEnumDynamicListModel.count-1
+                }
+                intEnumDynamicComboBox.currentIndex=currently_selected_index
+                console.log("Curr index:",currently_selected_index);
+            }else{
+                // Less verbose
+                console.log("Int parameter has no int enum mapping")
+                intEnumDynamicComboBox.visible=false
+                spinBoxInputParamtypeInt.visible=true
+                spinBoxInputParamtypeInt.from=param_int_min_value()
+                spinBoxInputParamtypeInt.to=param_int_max_value()
+                spinBoxInputParamtypeInt.value=paramValueInt
+            }
         }else{
             spinBoxInputParamtypeInt.visible=false
             intEnumDynamicComboBox.visible=false;
@@ -317,7 +317,7 @@ Rectangle{
             visible: !m_has_param_description
         }
 
-// Value edit part begin
+        // Value edit part begin
 
         // Type int only begin --------------------------
         // For int values that do not have an enum mapping, we use a SpinBox such that the user can either
@@ -377,8 +377,8 @@ Rectangle{
         // And for int values that do have an enum mapping we use a more verbose combo box and a dynamically updated model
         // The best example is the typical yes/no, or uart1,uart2,uart3,...
         ListModel{
-             id: intEnumDynamicListModel
-             ListElement {title: "I SHOULD NEVER APPEAR"; value: 0}
+            id: intEnumDynamicListModel
+            ListElement {title: "I SHOULD NEVER APPEAR"; value: 0}
         }
         ComboBox {
             id: intEnumDynamicComboBox
@@ -397,8 +397,8 @@ Rectangle{
         // Type string only begin --------------------------
         // if we have a mapping / pre-selected recommended choices
         ListModel{
-             id: stringEnumDynamicListModel
-             ListElement {title: "I SHOULD NEVER APPEAR"; value:"ERROR"}
+            id: stringEnumDynamicListModel
+            ListElement {title: "I SHOULD NEVER APPEAR"; value:"ERROR"}
         }
 
         ComboBox {

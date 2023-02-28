@@ -14,8 +14,9 @@ import "../elements"
 
 // Contains a list of all the settings on the left, and opens up a parameter editor instance on
 // the right if the user wants to edit any mavlink settings
-Rectangle {
-
+Pane {
+    width: parent.width
+    height: parent.height
     property int paramEditorWidth: 300
 
     // We set a the ground pi instance as default (such that the qt editor code completion helps us a bit),
@@ -37,7 +38,7 @@ Rectangle {
             parameterEditor.visible=false
             var result=m_instanceMavlinkSettingsModel.try_fetch_all_parameters()
             if(!result){
-                 _messageBoxInstance.set_text_and_show("Fetch all failed, please try again")
+                _messageBoxInstance.set_text_and_show("Fetch all failed, please try again")
             }
         }
     }
@@ -57,28 +58,37 @@ Rectangle {
 
     Component {
         id: delegateMavlinkSettingsValue
-        Item {
-            id: item
-            //width: ListView.view.width
+        Rectangle{
+            color: (index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+            //color: "green"
+            //implicitHeight: elementsRow.implicitHeight
+            //implicitWidth: elementsRow.implicitWidth
+            //height: 64
+            //width: 200
             height: 64
+            width: listView.width
             Row {
+                id: elementsRow
                 //anchors.fill: parent
                 spacing: 5
                 //color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
+                height: 64
                 Label {
+                    anchors.verticalCenter: parent.verticalCenter
+                    //font.pixelSize: 20
                     width:150
                     text: model.unique_id
                     font.bold: true
                 }
                 Label {
                     width:150
-                    //text: "Val: "+model.value
-                    //text: "Val: "+model.extraValue
+                    //font.pixelSize: 20
                     text: model.extraValue
                     font.bold: true
+                    anchors.verticalCenter: parent.verticalCenter
                 }
                 Button {
+                    anchors.verticalCenter: parent.verticalCenter
                     text: "EDIT"
                     onClicked: {
                         // this initializes and opens up the param editor
@@ -95,27 +105,23 @@ Rectangle {
     Rectangle{
         id: scrollViewRectangle
         width: parent.width
-        height: parent.height-48
-        //color: "#8cbfd7f3"
+        height: parent.height - fetchAllButtonId.height
         anchors.top: fetchAllButtonId.bottom
         anchors.bottom: parent.bottom
         anchors.left: parent.left
+        anchors.right: parent.right
+        //color: "green"
 
         ScrollView{
-            //height: parent.height
-            anchors.top:parent.top
-            anchors.topMargin: 30
-            anchors.fill: parent
-            contentWidth: availableWidth
+            width: parent.width
+            height: parent.height
             clip: true
-
             ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+            // Always show the scroll bar (sometimes the interactive might not work) but allow interactive also
             ScrollBar.vertical.policy: ScrollBar.AlwaysOn
-            // allow dragging without using the vertical scroll bar
             ScrollBar.vertical.interactive: true
             ListView {
                 id: listView
-                //top: fetchAllButtonId.bottom
                 width: parent.width
                 model: m_instanceMavlinkSettingsModel
                 delegate: delegateMavlinkSettingsValue
@@ -123,13 +129,12 @@ Rectangle {
         }
     }
 
-    // Right part: the parameter edit element
+    // Right part: the parameter edit element.
+    // Drawn over the parameters list if needed
     MavlinkParamEditor{
         id: parameterEditor
         total_width: paramEditorWidth
         instanceMavlinkSettingsModel: m_instanceMavlinkSettingsModel
     }
-
-
 
 }

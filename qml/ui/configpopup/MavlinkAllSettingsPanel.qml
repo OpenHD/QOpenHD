@@ -47,9 +47,7 @@ Item {
           width: parent.width
           height: parent.height-selectItemInStackLayoutBar.height
           anchors.top: selectItemInStackLayoutBar.bottom
-          anchors.topMargin: 15
           anchors.left: selectItemInStackLayoutBar.left
-          anchors.leftMargin: 15
           anchors.bottom: parent.bottom
           currentIndex: selectItemInStackLayoutBar.currentIndex
           MavlinkExtraWBParamPanel{

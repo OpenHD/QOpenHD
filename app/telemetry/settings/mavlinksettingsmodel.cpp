@@ -133,12 +133,6 @@ static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string&
            ImprovedIntSetting::Item{"BOTH",2},
            ImprovedIntSetting::Item{"CYCLIC_ROWS",2130706433}
        });
-       {
-            auto fc_uart_conn_values=std::vector<std::string>{"disable","serial0","serial1","ttyUSB0","ttyACM0","ttyACM1", "ttyS7"};
-            map_improved_params["FC_UART_CONN"]=ImprovedIntSetting::createEnum(fc_uart_conn_values);
-            // same for ground uart out
-             map_improved_params["TRACKER_UART_OUT"]=ImprovedIntSetting::createEnum(fc_uart_conn_values);
-       }
         // rpicamsrc only for now
         auto gst_awb_modes=std::vector<std::string>{
                     "OFF",
