@@ -207,6 +207,12 @@ static std::string get_udp_rtp_sdp_filename(const VideoStreamConfig& video_strea
     return kRTP_FILENAME;
 }
 
+static int get_qopenhd_n_cameras(){
+    QSettings settings;
+    const int tmp = settings.value("dev_qopenhd_n_cameras", 1).toInt();
+    return tmp;
+}
+
 }
 
 #endif // QOPENHDVIDEOHELPER_H

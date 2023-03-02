@@ -6,6 +6,8 @@
 #include <QObject>
 #include <QString>
 
+#include "../../lib/lqtutils_master/lqtutils_prop.h"
+
 // QT Message popup's (their default ones) don't work in kms, since they are opened in a new window.
 // This exposes the following functionality:
 // At any time in c++ code, show a message dialog to the user that only goes away if the user clicks "Okay"
@@ -23,37 +25,24 @@ public:
     explicit MessageBox(QObject *parent = nullptr);
     static MessageBox& instance();
     Q_INVOKABLE void set_text_and_show(QString text){
-        set_text(text);
-        set_show_to_user(true);
+        // We might not be called from the UI thread, which is why we use the signal workaround
+        emit signal_set_text_and_show(text);
     }
 public:
-    Q_PROPERTY(QString text MEMBER m_text WRITE set_text NOTIFY text_changed)
-    void set_text(QString text);
-    //
-    Q_PROPERTY(bool show_to_user MEMBER m_show_to_user WRITE set_show_to_user NOTIFY show_to_user_changed)
-    void set_show_to_user(bool show_to_user);
-    //
+    L_RO_PROP(QString,text,set_text,"NONE");
+    L_RO_PROP(bool,visible,set_visible,false);
+public:
     Q_INVOKABLE void okay_button_clicked();
+public:
 signals:
-    void text_changed(QString text);
-    void show_to_user_changed(bool show_to_user);
+    void signal_set_text_and_show(QString text);
 private:
-    QString m_text="Air and ground are out of sync - this should never happen. Please report";
-    bool m_show_to_user=false;
+    void do_not_call_me_set_text_and_show(QString text);
 };
 
-// Show a message to the user he can only remove by clicking "OK".
-
-/*static void makePopupMessage(QString message){
-    QMessageBox msgBox;
-    msgBox.setText(message);
-    msgBox.exec();
-}*/
-// NOTE: doesn't check if there is already a message being displayed right now
-static void makePopupMessage(QString message){
-    MessageBox::instance().set_text_and_show(message);
+static void makePopupMessage(QString text){
+    MessageBox::instance().set_text_and_show(text);
 }
-
 }
 
 #endif // MESSAGEPOPUP_H

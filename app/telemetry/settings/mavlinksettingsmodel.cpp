@@ -7,6 +7,7 @@
 #include "../../util/WorkaroundMessageBox.h"
 #include "improvedintsetting.h"
 #include "improvedstringsetting.h"
+#include "../../vs_util/QOpenHDVideoHelper.hpp"
 
 #include <QSettings>
 #include <QVariant>
@@ -82,7 +83,6 @@ bool MavlinkSettingsModel::is_param_read_only(const std::string param_id)const
     if(param_id.compare("V_CAM_SENSOR") == 0)ret=true;
     if(param_id.compare("BOARD_TYPE") == 0)ret=true;
     if(param_id.compare("WB_N_RX_CARDS")== 0)ret=true;
-    if(param_id.compare("V_N_CAMERAS")== 0)ret=true;
 	if(param_id.compare("V_CAM_NAME")==0 )ret=true;
     if(param_id=="WIFI_CARD0" || param_id=="WIFI_CARD1" || param_id=="WIFI_CARD2" || param_id=="WIFI_CARD3"){
         ret=true;
@@ -295,6 +295,12 @@ static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string&
             std::pair<std::string,int> val2{"40Mhz",40};
             map_improved_params["WB_CHANNEL_W"]=ImprovedIntSetting::createEnumSimple({val1,val2});
             map_improved_params["WB_MCS_INDEX"]=ImprovedIntSetting::createEnum({"MCS0","MCS1","MCS2","MCS3","MCS4","MCS5","MCS6","MCS7"});
+        }
+        {
+            map_improved_params["V_N_CAMERAS"]=ImprovedIntSetting(1,2,{
+               ImprovedIntSetting::Item{"SINGLE (default)",1},
+               ImprovedIntSetting::Item{"DUALCAM",2}
+           });
         }
     }
     if(map_improved_params.find(param_id)!=map_improved_params.end()){
@@ -670,17 +676,18 @@ static void hacky_set_video_codec_in_qopenhd(const int comp_id,const MavlinkSett
     }
 }
 
-static void hacky_set_curr_selected_video_bitrate_in_qopenhd(const int comp_id,const MavlinkSettingsModel::SettingData& data){
-    if(data.unique_id=="V_BITRATE_MBITS"){
+static void hacky_set_n_cameras_in_qopenhd(const int comp_id,const MavlinkSettingsModel::SettingData& data){
+    if(data.unique_id=="V_N_CAMERAS"){
         if(!std::holds_alternative<int32_t>(data.value)){
-            qDebug()<<"ERROR video_bitrate setting messed up, fixme";
+            qDebug()<<"ERROR N_CAMERAS messed up, fixme";
             return;
         }
         const int value=std::get<int32_t>(data.value);
-        if(comp_id==OHD_COMP_ID_AIR_CAMERA_PRIMARY){
-            CameraStreamModel::instance(0).set_curr_set_video_bitrate_int(value);
-        }else if(comp_id==OHD_COMP_ID_AIR_CAMERA_SECONDARY){
-             CameraStreamModel::instance(1).set_curr_set_video_bitrate_int(value);
+        const int value_in_qopenhd=QOpenHDVideoHelper::get_qopenhd_n_cameras();
+        if(value!=value_in_qopenhd && value_in_qopenhd==1){
+            auto message="QopenHD is not configured for single cam usage, go to QOpenHD settings / General to configure your GCS to show secondary camera screen";
+            qDebug()<<message;
+            workaround::makePopupMessage(message);
         }
     }
 }
@@ -690,7 +697,7 @@ void MavlinkSettingsModel::updateData(std::optional<int> row_opt, SettingData ne
 {
     {
         // temporary, dirty
-        hacky_set_curr_selected_video_bitrate_in_qopenhd(m_comp_id,new_data);
+        hacky_set_n_cameras_in_qopenhd(m_comp_id,new_data);
         hacky_set_video_codec_in_qopenhd(m_comp_id,new_data);
     }
     int row=-1;
@@ -722,7 +729,7 @@ void MavlinkSettingsModel::addData(MavlinkSettingsModel::SettingData data)
 {
     {
         // temporary, dirty
-        hacky_set_curr_selected_video_bitrate_in_qopenhd(m_comp_id,data);
+        hacky_set_n_cameras_in_qopenhd(m_comp_id,data);
         hacky_set_video_codec_in_qopenhd(m_comp_id,data);
     }
     if(is_param_whitelisted(data.unique_id.toStdString())){
@@ -877,6 +884,7 @@ bool MavlinkSettingsModel::get_param_requires_manual_reboot(QString param_id)
     if(param_id=="I_ETH_HOTSPOT_E"){
         return true;
     }
+    if(param_id=="V_N_CAMERAS")return true;
     return false;
 }
 
@@ -1007,6 +1015,10 @@ QString MavlinkSettingsModel::get_short_description(const QString param_id)const
     if(param_id=="V_PRIMARY_PERC"){
         return "If Variable bitrate is enabled,your primary camera is given that much percentage of the total available link bandwidth. "
                "The rest is given to the secondary camera. Default to 60% (60:40 split).";
+    }
+    if(param_id=="V_N_CAMERAS"){
+        return "Configure openhd for single / dualcam usage. The air unit will wait for a specific amount of time until it has found that many camera(s),"
+               " if it cannot find enough camera(s) it creates as many dummy camera(s) as needec instead.";
     }
     return "TODO";
 }
