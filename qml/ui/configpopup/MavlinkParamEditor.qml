@@ -232,6 +232,7 @@ Rectangle{
         }
     }
 
+    // This button closes the param editor
     Button{
         id:exit_button
         text: "x"
@@ -334,45 +335,13 @@ Rectangle{
             value: paramValueInt
             visible: holds_int_value()
             editable: true
-            /*contentItem: TextInput {
-                    text: paramValueInt
-                    color: "white"
-                    selectionColor: "white"
-                    selectedTextColor: "white"
-                    anchors.fill: parent
-                    inputMethodHints: Qt.ImhFormattedNumbersOnly
-                    horizontalAlignment: Text.AlignHCenter
-                    Layout.leftMargin: -100
-                }
-            up.indicator: Rectangle {
-                    height: parent.height/1.5
-                    anchors.right: parent.right
-                    anchors.top: parent.top
-                    color: "#333c4c"
-                    Text {
-                        text: "\uF054"
-                        color: "white"
-                        font.pixelSize: 30
-                        anchors.fill: parent
-                    }
-                }
-            down.indicator: Rectangle {
-                    height: parent.height / 1.5
-                    implicitWidth: 30
-                    color: "#333c4c"
-                    Text {
-                        text: "\uF053"
-                        color: "white"
-                        anchors.left: parent.left
-                        anchors.leftMargin: -10
-                        anchors.top: parent.top
-                        font.pixelSize: 30
-                        anchors.fill: parent
-                    }
-                }
-            onValueChanged: {
-
-            }*/
+            // Not the best design style wise, but since the param editor is dark blue, otherwise the spin
+            background: Rectangle {
+                implicitWidth: 200
+                implicitHeight: 20
+                border.color: "gray"
+                radius: 2
+            }
         }
         // And for int values that do have an enum mapping we use a more verbose combo box and a dynamically updated model
         // The best example is the typical yes/no, or uart1,uart2,uart3,...
@@ -430,6 +399,8 @@ Rectangle{
             cursorVisible: false
             visible: false
             Layout.alignment: Qt.AlignCenter
+            // Not the best design style wise, but since the param editor is dark blue, otherwise the spin
+            color: "white"
         }
         // Type string only end --------------------------
         //Value edit part end
@@ -445,7 +416,7 @@ Rectangle{
                 visible: settings.dev_show_advanced_button
                 Layout.alignment: Qt.AlignLeft
                 onClicked: {
-                    enableAdvanced=true
+                    enableAdvanced= !enableAdvanced
                     // Completely re-fresh the UI - the user has now more direct access to the parameter(s)
                     setup_spin_box_int_param()
                     setup_text_input_string_param()
