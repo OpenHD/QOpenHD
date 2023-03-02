@@ -82,7 +82,6 @@ bool MavlinkSettingsModel::is_param_read_only(const std::string param_id)const
     if(param_id.compare("V_CAM_SENSOR") == 0)ret=true;
     if(param_id.compare("BOARD_TYPE") == 0)ret=true;
     if(param_id.compare("WB_N_RX_CARDS")== 0)ret=true;
-    if(param_id.compare("V_N_CAMERAS")== 0)ret=true;
 	if(param_id.compare("V_CAM_NAME")==0 )ret=true;
     if(param_id=="WIFI_CARD0" || param_id=="WIFI_CARD1" || param_id=="WIFI_CARD2" || param_id=="WIFI_CARD3"){
         ret=true;
@@ -295,6 +294,12 @@ static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string&
             std::pair<std::string,int> val2{"40Mhz",40};
             map_improved_params["WB_CHANNEL_W"]=ImprovedIntSetting::createEnumSimple({val1,val2});
             map_improved_params["WB_MCS_INDEX"]=ImprovedIntSetting::createEnum({"MCS0","MCS1","MCS2","MCS3","MCS4","MCS5","MCS6","MCS7"});
+        }
+        {
+            map_improved_params["V_N_CAMERAS"]=ImprovedIntSetting(1,2,{
+               ImprovedIntSetting::Item{"SINGLE (default)",1},
+               ImprovedIntSetting::Item{"DUALCAM",2}
+           });
         }
     }
     if(map_improved_params.find(param_id)!=map_improved_params.end()){
@@ -877,6 +882,7 @@ bool MavlinkSettingsModel::get_param_requires_manual_reboot(QString param_id)
     if(param_id=="I_ETH_HOTSPOT_E"){
         return true;
     }
+    if(param_id=="V_N_CAMERAS")return true;
     return false;
 }
 
@@ -1007,6 +1013,10 @@ QString MavlinkSettingsModel::get_short_description(const QString param_id)const
     if(param_id=="V_PRIMARY_PERC"){
         return "If Variable bitrate is enabled,your primary camera is given that much percentage of the total available link bandwidth. "
                "The rest is given to the secondary camera. Default to 60% (60:40 split).";
+    }
+    if(param_id=="V_N_CAMERAS"){
+        return "COnfigure openhd for single / dualcam usage. The air unit will wait for a specific amount of time until it has found that many camera(s),"
+               " if it cannot find enough camera(s) it creates as many dummy camera(s) as needec instead.";
     }
     return "TODO";
 }
