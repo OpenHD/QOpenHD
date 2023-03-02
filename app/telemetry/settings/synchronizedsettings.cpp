@@ -37,7 +37,7 @@ int SynchronizedSettings::get_param_int_air_and_ground_value(QString param_id)
     }
     const auto value_air=value_air_opt.value();
     if(value_air!=value_ground){
-         workaround::MessageBox::instance().set_text_and_show("Air and ground are out of sync - this should never happen. Please report");
+         workaround::MessageBox::instance().set_text_and_show("Air and ground are out of sync - this can happen after a channel scan. Reboot Ground to Fix.");
          return value_ground;
     }
     return value_ground;
