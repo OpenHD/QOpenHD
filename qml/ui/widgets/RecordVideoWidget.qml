@@ -218,7 +218,7 @@ BaseWidget {
                     checked: vars.rec2
                     onToggled:{
                         if (checked) {
-                            vars.ret=_airCameraSettingsModel2.try_update_parameter_int("V_AIR_RECORDING",1)
+                            vars.ret=(_airCameraSettingsModel2.try_update_parameter_int("V_AIR_RECORDING",1)==="")
                             if (vars.ret==true){
                                 vars.rec2=true
                                 vars.ret=false
@@ -230,7 +230,7 @@ BaseWidget {
                                      }
                             }
                         else{
-                                vars.ret=_airCameraSettingsModel2.try_update_parameter_int("V_AIR_RECORDING",0)
+                                vars.ret=(_airCameraSettingsModel2.try_update_parameter_int("V_AIR_RECORDING",0)==="")
                                 if (vars.ret==true){
                                     vars.rec2=false
                                     vars.ret=false
