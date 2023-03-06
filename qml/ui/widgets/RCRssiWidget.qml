@@ -312,7 +312,7 @@ BaseWidget {
                 id: percent_symbol
                 color: settings.color_text
                 opacity: settings.rc_rssi_opacity
-                text: is_valid_rssi() ? qStr("%") : qsTr("")
+                text: is_valid_rssi() ? qsTr("%") : qsTr("")
                 anchors.right: rcRSSI_21to40.left
                 anchors.rightMargin: 0
                 anchors.top: parent.top
@@ -330,7 +330,7 @@ BaseWidget {
                 id: rc_rssi
                 color: settings.color_text
                 opacity: settings.rc_rssi_opacity
-                text: is_valid_rssi() ? qsTr(rc_rssi_percentage) : qsTr("N/A")
+                text: is_valid_rssi() ? rc_rssi_percentage : qsTr("N/A")
                 anchors.right: percent_symbol.left
                 anchors.rightMargin: 2
                 anchors.top: parent.top
