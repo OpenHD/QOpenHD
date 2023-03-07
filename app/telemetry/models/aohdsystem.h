@@ -91,11 +91,6 @@ private:
      void process_x2(const mavlink_openhd_stats_telemetry_t& msg);
      void process_x3(const mavlink_openhd_stats_wb_video_air_t& msg);
      void process_x4(const mavlink_openhd_stats_wb_video_ground_t& msg);
-public:
-     //
-     // NOTE: hacky right now, since it is a param but we also want to display it in the HUD
-     void set_curr_set_video_bitrate_int(int value);
-     void set_curr_set_video_codec_int(int value);
 private:
      std::atomic<int32_t> m_last_heartbeat_ms = -1;
      std::atomic<int32_t> m_last_message_ms= -1;

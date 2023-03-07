@@ -66,11 +66,11 @@ public:
     static std::string bitrate_to_string(uint64_t bits_per_second){
       if(bits_per_second>1000*1000){
           const double mbits=static_cast<double>(bits_per_second)/(1000.0*1000.0);
-          return to_string_with_precision(mbits,1)+" mBit/s";
+          return to_string_with_precision(mbits,1)+" MBit/s";
       }
       if(bits_per_second>1000){
           const double kbits=static_cast<double>(bits_per_second)/(1000.0);
-          return to_string_with_precision(kbits,2)+" kBit/s";
+          return to_string_with_precision(kbits,2)+" KBit/s";
       }
       return std::to_string(bits_per_second)+" Bit/s";
     }

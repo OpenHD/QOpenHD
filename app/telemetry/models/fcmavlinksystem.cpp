@@ -13,6 +13,7 @@
 
 #include <logging/logmessagesmodel.h>
 #include <logging/hudlogmessagesmodel.h>
+#include "mavsdk_helper.hpp"
 
 FCMavlinkSystem::FCMavlinkSystem(QObject *parent): QObject(parent) {
     m_flight_time_timer = new QTimer(this);
@@ -375,6 +376,12 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         mavlink_msg_statustext_decode(&msg,&parsedMsg);
         auto tmp=Telemetryutil::statustext_convert(parsedMsg);
         LogMessagesModel::instance().addLogMessage("FC",tmp.message.c_str(),tmp.level);
+        QSettings setings;
+        if(get_SHOW_FC_MESSAGES_IN_HUD()){
+            std::stringstream ss;
+            ss<<"["<<tmp.message<<"]";
+            HUDLogMessagesModel::instance().add_message(tmp.level,ss.str().c_str());
+        }
         return true;
     }break;
     case MAVLINK_MSG_ID_ESC_TELEMETRY_1_TO_4: {
@@ -817,7 +824,6 @@ void FCMavlinkSystem::flight_mode_cmd(long cmd_msg) {
         qDebug()<<"No fc pass_thru module";
         return;
     }
-    mavsdk::MavlinkPassthrough::Result res{};
     /*
     qDebug() << "flight_mode_cmd CMD:" << cmd_msg;
     qDebug() << "flight_mode_cmd our sysid:" << _pass_thru->get_our_sysid();
@@ -839,7 +845,7 @@ void FCMavlinkSystem::flight_mode_cmd(long cmd_msg) {
     cmd.param6=0;
     cmd.param7=0;
 
-    _pass_thru->send_command_long(cmd);
+    const auto res=_pass_thru->send_command_long(cmd);
 
     //result is not really used right now as mavsdk will output errors
     //----here for future use----
@@ -849,9 +855,9 @@ void FCMavlinkSystem::flight_mode_cmd(long cmd_msg) {
         HUDLogMessagesModel::instance().add_message_info(msg);
     }
     else {
-        const auto msg="flight_mode_cmd Something went wrong!";
-        qDebug()<<msg;
-        HUDLogMessagesModel::instance().add_message_info(msg);
+        const auto msg=mavsdk::helper::to_string2("flight_mode_cmd error:",res);
+        qDebug()<<msg.c_str();
+        HUDLogMessagesModel::instance().add_message_warning(msg.c_str());
     }
 }
 
@@ -902,4 +908,10 @@ void FCMavlinkSystem::test_set_data_stream_rates(MAV_DATA_STREAM streamType, uin
     tmp.start_stop=1;
     mavlink_message_t msg;
     mavlink_msg_request_data_stream_encode(0,0,&msg,&tmp);
+}
+
+bool FCMavlinkSystem::get_SHOW_FC_MESSAGES_IN_HUD()
+{
+    QSettings settings;
+    return settings.value("show_fc_messages_in_hud", false).toBool();
 }

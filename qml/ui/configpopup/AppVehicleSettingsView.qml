@@ -64,6 +64,20 @@ ScrollView {
                     onValueChanged: settings.vehicle_battery_n_cells = value
                 }
             }
+
+            SettingBaseElement{
+                m_short_description: "Show FC Messages in HUD"
+                m_long_description: "When enabled, FC log messages are shown in the HUD log messages element,e.g. they might apear before,during and after flight"
+                Switch {
+                    width: 32
+                    height: elementHeight
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    checked: settings.show_fc_messages_in_hud
+                    onCheckedChanged: settings.show_fc_messages_in_hud = checked
+                }
+            }
         }
     }
 }
