@@ -965,7 +965,7 @@ QString MavlinkSettingsModel::get_short_description(const QString param_id)const
                "Requires Reboot to be applied !";
     }
     if(param_id=="V_FORCE_SW_ENC"){
-        return "Force SW encode for the given USB camera, only enable if your camera supports outputting an appropriate raw format.";
+        return "Force SW encode for the given camera, only enable if your camera supports outputting an appropriate raw format.";
     }
     if(param_id=="V_SWITCH_CAM"){
         return "Requires reboot. Switch primary and secondary camera.";
