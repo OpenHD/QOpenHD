@@ -30,6 +30,9 @@ public:
     static constexpr auto X_MAV_SEVERITY_INFO=6;
     static constexpr auto X_MAV_SEVERITY_DEBUG=7;
 public:
+    Q_INVOKABLE void add_message_debug(QString tag,QString message);
+    Q_INVOKABLE void add_message_warn(QString tag,QString message);
+
     static  LogMessagesModel& instance();
     enum Roles {
         TagRole = Qt::UserRole,

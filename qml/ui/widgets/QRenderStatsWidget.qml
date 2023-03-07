@@ -223,6 +223,29 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
             }
+            // QT render pass recording time
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("QT RP:")
+                    color: "white"
+                    font.bold: true
+                    height: parent.height
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Text {
+                    text: _qrenderstats.qt_renderpass_time
+                    color: "white";
+                    font.bold: true;
+                    height: parent.height
+                    font.pixelSize: detailPanelFontPixels;
+                    anchors.right: parent.right
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
             // Decoding related
             Item {
                 width: parent.width

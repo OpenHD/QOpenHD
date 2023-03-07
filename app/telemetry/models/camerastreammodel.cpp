@@ -6,6 +6,7 @@
 #include <qsettings.h>
 
 #include <logging/hudlogmessagesmodel.h>
+#include <logging/logmessagesmodel.h>
 
 static std::string video_codec_to_string(int value){
     if(value==0)return "h264";
@@ -87,6 +88,10 @@ void CameraStreamModel::update_mavlink_openhd_stats_wb_video_air(const mavlink_o
         //qDebug()<<"Diff:"<<delta_kbits;
         // Set and measured bitrate are more than 1MBit/s apart
         set_curr_set_and_measured_bitrate_mismatch(true);
+        if(m_n_mismatch_has_been_logged<10){
+            LogMessagesModel::instance().add_message_warn("CAM","Set/ Measured encoder bitrate mismatch");
+            m_n_mismatch_has_been_logged++;
+        }
     }else{
         set_curr_set_and_measured_bitrate_mismatch(false);
     }
