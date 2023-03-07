@@ -125,6 +125,7 @@ class FCMavlinkSystem : public QObject
     L_RO_PROP(int,for_osd_sys_id,set_for_osd_sys_id,-1);
     // TODO: We have 2 variables for the OSD to show - the current total n of waypoints and the current waypoint the FC is at. Depending on how things are broadcasted,
     // The user might have to manually request the current total n of waypoints
+    // NOTE: the description "waypoints" is not exactly accurate, left in for now due to legacy reasons though
     L_RO_PROP(int,current_waypoint,set_current_waypoint,-1);
     L_RO_PROP(int,curr_total_waypoints,set_curr_total_waypoints,-1);
 public:
