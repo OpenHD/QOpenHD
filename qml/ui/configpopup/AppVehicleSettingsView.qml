@@ -29,27 +29,9 @@ ScrollView {
             anchors.left: parent.left
             anchors.right: parent.right
 
-            Rectangle {
-
-                width: parent.width
-                height: rowHeight
-                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-                visible: true
-
-                Text {
-                    text: qsTr("Vehicle Battery Cells")
-                    font.weight: Font.Bold
-                    font.pixelSize: 13
-                    anchors.leftMargin: 8
-                    verticalAlignment: Text.AlignVCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: 224
-                    height: elementHeight
-                    anchors.left: parent.left
-                }
-
+            SettingBaseElement{
+                m_short_description: "Vehicle Battery Cells"
                 SpinBox {
-                    id: vehicle_attery_n_cellsSpinBox
                     height: elementHeight
                     width: 210
                     font.pixelSize: 14
@@ -61,7 +43,9 @@ ScrollView {
                     anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
 
                     value: settings.vehicle_battery_n_cells
-                    onValueChanged: settings.vehicle_battery_n_cells = value
+                    onValueChanged: {
+                        settings.vehicle_battery_n_cells=value
+                    }
                 }
             }
 

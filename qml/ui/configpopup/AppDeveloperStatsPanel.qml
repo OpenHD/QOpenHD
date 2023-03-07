@@ -60,13 +60,6 @@ Rectangle {
             }
         }
 
-        /*Button{
-            height: 24
-            text: "Run dhclient eth0 (might block UI for N seconds)"
-            onClicked:{
-                _qopenhd.run_dhclient_eth0()
-            }
-        }*/
         Text {
             id: test1
             text: qsTr("Art Horizon mavlink update rate:"+_fcMavlinkSystem.curr_update_rate_mavlink_message_attitude+" Hz")
@@ -89,6 +82,14 @@ Rectangle {
         Text {
             id: test5
             text: qsTr("FEATURES:  "+get_features_string())
+        }
+        Text {
+            id: test6
+            text: qsTr("Screen resolution: "+_qrenderstats.display_width_height_str)
+        }
+        Text {
+            id: test7
+            text: qsTr("Window resolution: "+_qrenderstats.window_width_height_str)
         }
     }
 }

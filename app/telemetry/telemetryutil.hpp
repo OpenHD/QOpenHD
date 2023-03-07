@@ -5,6 +5,8 @@
 #include <QDebug>
 
 #include "../telemetry/mavsdk_include.h"
+#include "../common/TimeHelper.hpp"
+#include "../common/StringHelper.hpp"
 
 // Various utility methods for telemetry that are static and take simple imputs.
 namespace Telemetryutil{
@@ -696,6 +698,31 @@ static int calculate_efficiency_in_mah_per_km(const int delta_mah,const int delt
     if(delta_km<=0)return 0;
     double ret=static_cast<double>(delta_mah)/static_cast<double>(delta_km);
     return std::round(ret);
+}
+
+static QString bitrate_bps_to_qstring(int64_t bitrate_bits_per_second){
+    return QString{StringHelper::bitrate_to_string(bitrate_bits_per_second).c_str()};
+}
+static QString bitrate_kbits_to_qstring(int64_t bitrate_kbits_per_second){
+    return QString{StringHelper::bitrate_to_string(bitrate_kbits_per_second*1000).c_str()};
+}
+
+static QString pps_to_string(int64_t packets_per_second){
+    return QString((std::to_string(packets_per_second)+" pps").c_str());
+}
+static QString us_min_max_avg_to_string(int32_t min_us,int32_t max_us,int32_t avg_us){
+    std::stringstream ss;
+    ss<<"Min:"<<MyTimeHelper::R(std::chrono::microseconds(min_us))<<", ";
+    ss<<"Max:"<<MyTimeHelper::R(std::chrono::microseconds(max_us));
+    ss<<"Avg:"<<MyTimeHelper::R(std::chrono::microseconds(avg_us))<<", ";
+    return QString(ss.str().c_str());
+}
+static QString min_max_avg_to_string(int32_t min,int32_t max,int32_t avg){
+    std::stringstream ss;
+    ss<<"min:"<<min<<", ";
+    ss<<"max:"<<max<<", ";
+    ss<<"avg:"<<avg;
+    return QString(ss.str().c_str());
 }
 
 }
