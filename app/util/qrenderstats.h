@@ -19,6 +19,10 @@ class QRenderStats : public QObject
     L_RO_PROP(QString, display_width_height_str, set_display_width_height_str, "NA")
     // Resolution qopenhd is rendering at
     L_RO_PROP(QString, window_width_height_str, set_window_width_height_str, "NA")
+    // Time QT spent "rendering", probably aka creating the GPU command buffer
+    L_RO_PROP(QString, qt_rendering_time, set_qt_rendering_time, "NA")
+    // Time QT spent "recording the render pass"
+    L_RO_PROP(QString, qt_renderpass_time, set_qt_renderpass_time, "NA")
 private:
     explicit QRenderStats(QObject *parent = nullptr);
 public:
@@ -32,6 +36,7 @@ public:
     void set_window_width_height(int width,int height);
 public slots:
     void m_QQuickWindow_beforeRendering();
+    void m_QQuickWindow_afterRendering();
     void m_QQuickWindow_beforeRenderPassRecording();
     void m_QQuickWindow_afterRenderPassRecording();
 private:
@@ -39,7 +44,9 @@ private:
     std::chrono::steady_clock::time_point last_frame=std::chrono::steady_clock::now();
     AvgCalculator avgMainRenderFrameDelta{};
     //
-    std::chrono::steady_clock::time_point renderPassBegin;
+    Chronometer m_avg_rendering_time{};
+    Chronometer m_avg_renderpass_time{};
+
 };
 
 #endif // QRENDERSTATS_H
