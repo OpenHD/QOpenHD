@@ -201,19 +201,11 @@ void AOHDSystem::process_x3(const mavlink_openhd_stats_wb_video_air_t &msg){
         qDebug()<<"warning got mavlink_openhd_stats_wb_video_air from ground";
         return;
     }
-    // TODO not the most cleanest approach to update another model from here
+    // We use parts of this message ourself, but mostly, we just forward it to the right CameraStreamModel
+    // (it is
     if(msg.link_index==0 || msg.link_index==1){
         auto& cam=CameraStreamModel::instance(msg.link_index);
-        const auto curr_recommended_bitrate_kbits=msg.curr_recommended_bitrate;
-        cam.set_curr_recommended_bitrate_from_message(curr_recommended_bitrate_kbits);
-        cam.set_curr_video_measured_encoder_bitrate(Telemetryutil::bitrate_bps_to_qstring(msg.curr_measured_encoder_bitrate));
-        cam.set_curr_video_injected_bitrate(Telemetryutil::bitrate_bps_to_qstring(msg.curr_injected_bitrate));
-        cam.set_curr_video0_injected_pps(Telemetryutil::pps_to_string(msg.curr_injected_pps));
-        cam.set_curr_video0_dropped_packets(msg.curr_dropped_packets);
-        cam.set_curr_video0_fec_encode_time_avg_min_max(
-                    Telemetryutil::us_min_max_avg_to_string(msg.curr_fec_encode_time_min_us,msg.curr_fec_encode_time_max_us,msg.curr_fec_encode_time_avg_us));
-        cam.set_curr_video0_fec_block_length_min_max_avg(
-                    Telemetryutil::min_max_avg_to_string(msg.curr_fec_block_size_min,msg.curr_fec_block_size_max,msg.curr_fec_block_size_avg));
+        cam.update_mavlink_openhd_stats_wb_video_air(msg);
     }
     // dirty
     if(msg.link_index!=0)return;
@@ -243,13 +235,7 @@ void AOHDSystem::process_x4(const mavlink_openhd_stats_wb_video_ground_t &msg){
     }
     if(msg.link_index==0 || msg.link_index==1){
         auto& cam=CameraStreamModel::instance(msg.link_index);
-        cam.set_curr_video0_received_bitrate_with_fec(Telemetryutil::bitrate_bps_to_qstring(msg.curr_incoming_bitrate));
-        cam.set_video0_count_blocks_lost(msg.count_blocks_lost);
-        cam.set_video0_count_blocks_recovered(msg.count_blocks_recovered);
-        cam.set_video0_count_fragments_recovered(msg.count_fragments_recovered);
-        cam.set_video0_count_blocks_total(msg.count_blocks_total);
-        cam.set_curr_video0_fec_decode_time_avg_min_max(
-                    Telemetryutil::us_min_max_avg_to_string(msg.curr_fec_decode_time_min_us,msg.curr_fec_decode_time_max_us,msg.curr_fec_decode_time_avg_us));
+        cam.update_mavlink_openhd_stats_wb_video_ground(msg);
     }
 }
 

@@ -316,7 +316,8 @@ BaseWidget {
             y: 0
             width: 84
             height: 32
-            color: settings.color_text
+            //color: settings.color_text
+            color: _cameraStreamModelSecondary.curr_set_and_measured_bitrate_mismatch ? "red" : settings.color_text
             text: _cameraStreamModelSecondary.curr_video0_received_bitrate_with_fec
             anchors.verticalCenterOffset: 0
             anchors.left: camera_icon.right

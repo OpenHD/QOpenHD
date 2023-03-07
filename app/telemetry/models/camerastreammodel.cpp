@@ -70,6 +70,39 @@ void CameraStreamModel::dirty_set_curr_set_video_codec_for_cam(int cam_index, in
     }
 }
 
+void CameraStreamModel::update_mavlink_openhd_stats_wb_video_air(const mavlink_openhd_stats_wb_video_air_t &msg)
+{
+    const auto curr_recommended_bitrate_kbits=msg.curr_recommended_bitrate;
+    set_curr_recommended_bitrate_from_message(curr_recommended_bitrate_kbits);
+    set_curr_video_measured_encoder_bitrate(Telemetryutil::bitrate_bps_to_qstring(msg.curr_measured_encoder_bitrate));
+    set_curr_video_injected_bitrate(Telemetryutil::bitrate_bps_to_qstring(msg.curr_injected_bitrate));
+    set_curr_video0_injected_pps(Telemetryutil::pps_to_string(msg.curr_injected_pps));
+    set_curr_video0_dropped_packets(msg.curr_dropped_packets);
+    set_curr_video0_fec_encode_time_avg_min_max(
+                Telemetryutil::us_min_max_avg_to_string(msg.curr_fec_encode_time_min_us,msg.curr_fec_encode_time_max_us,msg.curr_fec_encode_time_avg_us));
+    set_curr_video0_fec_block_length_min_max_avg(
+                Telemetryutil::min_max_avg_to_string(msg.curr_fec_block_size_min,msg.curr_fec_block_size_max,msg.curr_fec_block_size_avg));
+    const auto delta_kbits=std::abs(msg.curr_recommended_bitrate-(msg.curr_measured_encoder_bitrate/1000));
+    if(delta_kbits>1*1000){
+        //qDebug()<<"Diff:"<<delta_kbits;
+        // Set and measured bitrate are more than 1MBit/s apart
+        set_curr_set_and_measured_bitrate_mismatch(true);
+    }else{
+        set_curr_set_and_measured_bitrate_mismatch(false);
+    }
+}
+
+void CameraStreamModel::update_mavlink_openhd_stats_wb_video_ground(const mavlink_openhd_stats_wb_video_ground_t &msg)
+{
+    set_curr_video0_received_bitrate_with_fec(Telemetryutil::bitrate_bps_to_qstring(msg.curr_incoming_bitrate));
+    set_video0_count_blocks_lost(msg.count_blocks_lost);
+    set_video0_count_blocks_recovered(msg.count_blocks_recovered);
+    set_video0_count_fragments_recovered(msg.count_fragments_recovered);
+    set_video0_count_blocks_total(msg.count_blocks_total);
+    set_curr_video0_fec_decode_time_avg_min_max(
+                Telemetryutil::us_min_max_avg_to_string(msg.curr_fec_decode_time_min_us,msg.curr_fec_decode_time_max_us,msg.curr_fec_decode_time_avg_us));
+}
+
 void CameraStreamModel::set_curr_recommended_bitrate_from_message(int64_t curr_recommended_bitrate_kbits)
 {
     // We use the fact that the current recommended bitrate is updated regularily to notify the user of
