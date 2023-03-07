@@ -40,6 +40,22 @@ BaseWidgetForm {
     property string vCenterIdentifier: "%1_v_center".arg(widgetIdentifier);
     property double oldOpacity: 100;
 
+    // Pretty much all widgets have a scale (previously often called size) setting
+    // Properly resizing the widget is the responsibility of the upper implementation -
+    // This base class implements the neccessary tools to resize, though. In short, we do
+    // 1) Store the scale unique for this widget persistently
+    // 2) expose its current value via a property variable
+    // 3) have a simple util method to set the scale
+    property string bw_scale_identifier: "%1_scale".arg(widgetIdentifier);
+    // Default scale is 1, the value is persistent
+    property double bw_current_scale : settings.value(bw_scale_identifier,1.0);
+    // Updates the current base widget scale (unique per widgetIdentifier) and persist the value for later use
+    function bw_set_current_scale(scale){
+        bw_current_scale=scale
+        settings.setValue(bw_scale_identifier, bw_current_scale);
+        settings.sync();
+    }
+
     // Added by Consti10 -
     // disable dragging for this widget (dragging is enabled by default)
     // Needed for the HUD log messages element, since it sits above the secondary video and disabling its "mouse area"
