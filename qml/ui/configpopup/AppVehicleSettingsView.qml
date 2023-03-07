@@ -32,7 +32,6 @@ ScrollView {
             SettingBaseElement{
                 m_short_description: "Vehicle Battery Cells"
                 SpinBox {
-                    id: vehicle_attery_n_cellsSpinBox
                     height: elementHeight
                     width: 210
                     font.pixelSize: 14
