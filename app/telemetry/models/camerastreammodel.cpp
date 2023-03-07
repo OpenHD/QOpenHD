@@ -1,4 +1,8 @@
 #include "camerastreammodel.h"
+#include "qdebug.h"
+#include "util/WorkaroundMessageBox.h"
+
+#include <qsettings.h>
 
 static std::string video_codec_to_string(int value){
     if(value==0)return "h264";
@@ -26,15 +30,39 @@ CameraStreamModel &CameraStreamModel::instance(int cam_index)
     assert(false);
 }
 
-
-void CameraStreamModel::set_curr_set_video_bitrate_int(int value)
-{
-    auto tmp=std::to_string(value)+" MBit/s";
-    set_curr_set_video_bitrate(tmp.c_str());
-}
-
-void CameraStreamModel::set_curr_set_video_codec_int(int value)
+void CameraStreamModel::dirty_set_curr_set_video_codec_int(int value)
 {
     auto tmp=video_codec_to_string(value);
     set_curr_set_video_codec(tmp.c_str());
+}
+
+void CameraStreamModel::dirty_set_curr_set_video_codec_for_cam(int cam_index, int video_codec_in_openhd)
+{
+    if(cam_index==0){
+        CameraStreamModel::instance(0).dirty_set_curr_set_video_codec_int(video_codec_in_openhd);
+        if(video_codec_in_openhd==0 || video_codec_in_openhd==1 || video_codec_in_openhd==2){
+            QSettings settings;
+            const int tmp_video_codec = settings.value("selectedVideoCodecPrimary", 0).toInt();
+            if(tmp_video_codec!=video_codec_in_openhd){
+                // video codec mismatch, update the QOpenHD settings
+                settings.setValue("selectedVideoCodecPrimary",video_codec_in_openhd);
+                qDebug()<<"Changed electedVideoCodecPrimary in QOpenHD to "<<video_codec_in_openhd;
+                workaround::makePopupMessage("Changed VideoCodec Primary in QOpenHD");
+            }
+        }
+    }else if(cam_index==1){
+        CameraStreamModel::instance(1).dirty_set_curr_set_video_codec_int(video_codec_in_openhd);
+       if(video_codec_in_openhd==0 || video_codec_in_openhd==1 || video_codec_in_openhd==2){
+           QSettings settings;
+           const int tmp_video_codec = settings.value("selectedVideoCodecSecondary", 0).toInt();
+           if(tmp_video_codec!=video_codec_in_openhd){
+               // video codec mismatch, update the QOpenHD settings
+               settings.setValue("selectedVideoCodecSecondary",video_codec_in_openhd);
+               qDebug()<<"Changed selectedVideoCodecSecondary in QOpenHD to "<<video_codec_in_openhd;
+               workaround::makePopupMessage("Changed VideoCodec Secondary in QOpenHD");
+           }
+       }
+    }else{
+        qWarning("Invalid cam index");
+    }
 }

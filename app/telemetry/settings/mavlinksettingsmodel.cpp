@@ -649,29 +649,9 @@ static void hacky_set_video_codec_in_qopenhd(const int comp_id,const MavlinkSett
         }
         const int video_codec_in_openhd=std::get<int32_t>(data.value);
         if(comp_id==OHD_COMP_ID_AIR_CAMERA_PRIMARY){
-            CameraStreamModel::instance(0).set_curr_set_video_codec_int(video_codec_in_openhd);
-            if(video_codec_in_openhd==0 || video_codec_in_openhd==1 || video_codec_in_openhd==2){
-                QSettings settings;
-                const int tmp_video_codec = settings.value("selectedVideoCodecPrimary", 0).toInt();
-                if(tmp_video_codec!=video_codec_in_openhd){
-                    // video codec mismatch, update the QOpenHD settings
-                    settings.setValue("selectedVideoCodecPrimary",video_codec_in_openhd);
-                    qDebug()<<"Changed electedVideoCodecPrimary in QOpenHD to "<<video_codec_in_openhd;
-                    workaround::makePopupMessage("Changed VideoCodec Primary in QOpenHD");
-                }
-            }
+            CameraStreamModel::dirty_set_curr_set_video_codec_for_cam(0,video_codec_in_openhd);
         }else if(comp_id==OHD_COMP_ID_AIR_CAMERA_SECONDARY){
-             CameraStreamModel::instance(1).set_curr_set_video_codec_int(video_codec_in_openhd);
-            if(video_codec_in_openhd==0 || video_codec_in_openhd==1 || video_codec_in_openhd==2){
-                QSettings settings;
-                const int tmp_video_codec = settings.value("selectedVideoCodecSecondary", 0).toInt();
-                if(tmp_video_codec!=video_codec_in_openhd){
-                    // video codec mismatch, update the QOpenHD settings
-                    settings.setValue("selectedVideoCodecSecondary",video_codec_in_openhd);
-                    qDebug()<<"Changed selectedVideoCodecSecondary in QOpenHD to "<<video_codec_in_openhd;
-                    workaround::makePopupMessage("Changed VideoCodec Secondary in QOpenHD");
-                }
-            }
+            CameraStreamModel::dirty_set_curr_set_video_codec_for_cam(1,video_codec_in_openhd);
         }
     }
 }

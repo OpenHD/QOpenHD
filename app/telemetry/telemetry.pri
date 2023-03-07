@@ -60,6 +60,7 @@ SOURCES += \
     app/telemetry/models/fcmavlinksystem.cpp \
 
 HEADERS += \
+    app/telemetry/mavsdk_helper.hpp \
     app/telemetry/mavsdk_include.h \
     app/telemetry/models/aohdsystem.h \
     app/telemetry/models/camerastreammodel.h \
