@@ -213,6 +213,12 @@ int main(int argc, char *argv[]) {
     //QLoggingCategory::setFilterRules("qt.qpa.egl*=true");
 
     QApplication app(argc, argv);
+    {
+        QScreen* screen=app.primaryScreen();
+        if(screen){
+            QRenderStats::instance().set_display_width_height(screen->size().width(),screen->size().height());
+        }
+    }
 
 #if defined(__ios__)
     auto applePlatform = ApplePlatform::instance();

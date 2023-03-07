@@ -85,6 +85,10 @@ Rectangle {
         }
         Text {
             id: test6
+            text: qsTr("Screen resolution: "+_qrenderstats.display_width_height_str)
+        }
+        Text {
+            id: test7
             text: qsTr("Window resolution: "+_qrenderstats.window_width_height_str)
         }
     }
