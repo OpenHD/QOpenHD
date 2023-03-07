@@ -108,7 +108,7 @@ void CameraStreamModel::update_mavlink_openhd_stats_wb_video_ground(const mavlin
                 Telemetryutil::us_min_max_avg_to_string(msg.curr_fec_decode_time_min_us,msg.curr_fec_decode_time_max_us,msg.curr_fec_decode_time_avg_us));
 }
 
-void CameraStreamModel::set_curr_recommended_bitrate_from_message(int64_t curr_recommended_bitrate_kbits)
+void CameraStreamModel::set_curr_recommended_bitrate_from_message(const int64_t curr_recommended_bitrate_kbits)
 {
     // We use the fact that the current recommended bitrate is updated regularily to notify the user of
     // changing rate(s) during flight
