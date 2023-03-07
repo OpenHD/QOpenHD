@@ -49,23 +49,24 @@ void QRenderStats::set_window_width_height(int width, int height)
 
 void QRenderStats::m_QQuickWindow_beforeRendering()
 {
-    m_avg_rendering_time.start();
+    //m_avg_rendering_time.start();
 }
 
 void QRenderStats::m_QQuickWindow_afterRendering()
 {
-    m_avg_rendering_time.stop();
+    /*m_avg_rendering_time.stop();
     if(m_avg_rendering_time.getNSamples()>120){
         const auto stats=QString( m_avg_rendering_time.getAvgReadable().c_str());
         //qDebug()<<"QRenderStats main frame time:"<<main_stats;
         set_qt_rendering_time(stats);
         m_avg_rendering_time.reset();
-    }
+    }*/
 }
 
 void QRenderStats::m_QQuickWindow_beforeRenderPassRecording()
 {
     m_avg_renderpass_time.start();
+    // Calculate frame time by calculating the delta between calls to render pass recording
     const auto delta=std::chrono::steady_clock::now()-last_frame;
     last_frame=std::chrono::steady_clock::now();
     //const auto frame_time_us=std::chrono::duration_cast<std::chrono::microseconds>(delta).count();
