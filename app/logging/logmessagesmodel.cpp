@@ -25,6 +25,22 @@ LogMessagesModel::LogMessagesModel(QObject *parent) :
     connect(this, &LogMessagesModel::signalAddLogMessage, this, &LogMessagesModel::do_not_call_me_addLogMessage);
 }
 
+void LogMessagesModel::addLogMessage(const QString tag, QString message,quint8 severity){
+    //qDebug()<<"Add log message:"<<tag<<message;
+    // See .h documentation, here we have to emit a signal instead of modifying the model directly.
+    emit signalAddLogMessage(tag,message,severity);
+}
+
+void LogMessagesModel::add_message_debug(QString tag, QString message)
+{
+    addLogMessage(tag,message,X_MAV_SEVERITY_DEBUG);
+}
+
+void LogMessagesModel::add_message_warn(QString tag, QString message)
+{
+    addLogMessage(tag,message,X_MAV_SEVERITY_WARNING);
+}
+
 int LogMessagesModel::rowCount( const QModelIndex& parent) const
 {
     if (parent.isValid())
@@ -71,12 +87,6 @@ QColor LogMessagesModel::log_severity_to_color(quint8 severity){
         return QColor{255, 165, 0,255};//orange
     }
     return QColor{0,255,0,255};//green
-}
-
-void LogMessagesModel::addLogMessage(const QString tag, QString message,quint8 severity){
-    //qDebug()<<"Add log message:"<<tag<<message;
-    // See .h documentation, here we have to emit a signal instead of modifying the model directly.
-    emit signalAddLogMessage(tag,message,severity);
 }
 
 

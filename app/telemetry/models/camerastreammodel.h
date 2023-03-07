@@ -56,6 +56,9 @@ public:
     void update_mavlink_openhd_stats_wb_video_ground(const mavlink_openhd_stats_wb_video_ground_t &msg);
     // Calls the appropriate member setter(s)
     void set_curr_recommended_bitrate_from_message(int64_t curr_recommended_bitrate_kbits);
+private:
+    // Do not completely pollute the Log messages model
+    int m_n_mismatch_has_been_logged=0;
 };
 
 #endif // AIRCAMERAMODEL_H
