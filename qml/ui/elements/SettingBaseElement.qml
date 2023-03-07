@@ -47,7 +47,9 @@ Rectangle {
     Button {
         anchors.verticalCenter: parent.verticalCenter
         anchors.left: description.right
-        text: "INFO"
+        //text: "INFO"
+        text: "\uf05a"
+        font.family: "Font Awesome 5 Free"
         Material.background:Material.LightBlue
         visible: has_valid_long_description()
         onClicked: {
