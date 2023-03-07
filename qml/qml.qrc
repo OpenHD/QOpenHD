@@ -51,7 +51,6 @@
         <file>ui/widgets/GPSWidget.qml</file>
         <file>ui/widgets/GPSWidgetForm.ui.qml</file>
         <file>ui/widgets/HomeDistanceWidget.qml</file>
-        <file>ui/widgets/HomeDistanceWidgetForm.ui.qml</file>
         <file>ui/widgets/FlightTimerWidget.qml</file>
         <file>ui/widgets/FlightTimerWidgetForm.ui.qml</file>
         <file>ui/HUDOverlayGrid.qml</file>
