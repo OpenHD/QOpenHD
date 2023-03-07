@@ -251,5 +251,6 @@
         <file>video/ExpMainVideoAndroid.qml</file>
         <file>ui/elements/WorkaroundMessageBox.qml</file>
         <file>ui/elements/RestartQOpenHDMessageBox.qml</file>
+        <file>ui/elements/SettingBaseElement.qml</file>
     </qresource>
 </RCC>

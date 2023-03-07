@@ -375,6 +375,12 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         mavlink_msg_statustext_decode(&msg,&parsedMsg);
         auto tmp=Telemetryutil::statustext_convert(parsedMsg);
         LogMessagesModel::instance().addLogMessage("FC",tmp.message.c_str(),tmp.level);
+        QSettings setings;
+        if(get_SHOW_FC_MESSAGES_IN_HUD()){
+            std::stringstream ss;
+            ss<<"["<<tmp.message<<"]";
+            HUDLogMessagesModel::instance().add_message(tmp.level,ss.str().c_str());
+        }
         return true;
     }break;
     case MAVLINK_MSG_ID_ESC_TELEMETRY_1_TO_4: {
@@ -902,4 +908,10 @@ void FCMavlinkSystem::test_set_data_stream_rates(MAV_DATA_STREAM streamType, uin
     tmp.start_stop=1;
     mavlink_message_t msg;
     mavlink_msg_request_data_stream_encode(0,0,&msg,&tmp);
+}
+
+bool FCMavlinkSystem::get_SHOW_FC_MESSAGES_IN_HUD()
+{
+    QSettings settings;
+    return settings.value("show_fc_messages_in_hud", false).toBool();
 }
