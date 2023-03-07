@@ -29,23 +29,9 @@ ScrollView {
             anchors.left: parent.left
             anchors.right: parent.right
 
-            Rectangle {
-                width: parent.width
-                height: rowHeight
-                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                Text {
-                    text: qsTr("Screen Scale")
-                    font.weight: Font.Bold
-                    font.pixelSize: 13
-                    anchors.leftMargin: 8
-                    verticalAlignment: Text.AlignVCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: 224
-                    height: elementHeight
-                    anchors.left: parent.left
-                }
-
+            SettingBaseElement{
+                m_short_description: "Screen Scale"
+                m_long_description: "Increase OSD elements and text size, requires restart of QOpenHD"
                 Text {
                     text: Number(settings.global_scale).toLocaleString(Qt.locale(), 'f', 1) + "x";
                     font.pixelSize: 16
@@ -80,23 +66,11 @@ ScrollView {
                 }
             }
 
-            Rectangle {
-                width: parent.width
-                height: rowHeight
-                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
-                Text {
-                    text: qsTr("Screen rotation")
-                    font.weight: Font.Bold
-                    font.pixelSize: 13
-                    anchors.leftMargin: 8
-                    verticalAlignment: Text.AlignVCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: 224
-                    height: elementHeight
-                    anchors.left: parent.left
-                }
-                // anything other than 0 and 180 breaks things
+            SettingBaseElement{
+                m_short_description: "Screen rotation"
+                m_long_description: "Rotate QOpenHD, can be usefull if your screen is installed the wrong way around"
+                // anything other than 0 and 180 can breaks things
                 ComboBox {
                     height: elementHeight
                     anchors.right: parent.right
@@ -125,23 +99,9 @@ ScrollView {
                     }
                 }
             }
-            Rectangle {
-                width: parent.width
-                height: rowHeight
-                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                Text {
-                    text: qsTr("Font DPI")
-                    font.weight: Font.Bold
-                    font.pixelSize: 13
-                    anchors.leftMargin: 8
-                    verticalAlignment: Text.AlignVCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: 224
-                    height: elementHeight
-                    anchors.left: parent.left
-                }
-                // anything other than 0 and 180 breaks things
+            SettingBaseElement{
+                m_short_description: "Font DPI"
+                m_long_description: "Scale the text / line size of the artifical horizon / ladders, requires restart of QOpenHD."
                 ComboBox {
                     height: elementHeight
                     anchors.right: parent.right
