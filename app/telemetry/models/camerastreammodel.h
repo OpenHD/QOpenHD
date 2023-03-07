@@ -26,7 +26,8 @@ public:
     // Regarding encoder recommended video bitrate: This value is broadcasted in regular intervals by the openhd air unit,
     // If variable bitrate is disabled, it is the value set by the mavlink parameter (duplicate) but if variable bitrate is enabled,
     // it is the value the openhd air unit currently recommends to the encoder
-    L_RO_PROP(QString,curr_recomended_video_bitrate_kbits,set_curr_recomended_video_bitrate_kbits,"N/A")
+    L_RO_PROP(QString,curr_recomended_video_bitrate_string,set_curr_recomended_video_bitrate_string,"N/A")
+    L_RO_PROP(int,curr_recomended_video_bitrate_kbits,set_curr_recomended_video_bitrate_kbits,0)
     L_RO_PROP(QString,curr_video_measured_encoder_bitrate,set_curr_video_measured_encoder_bitrate,"N/A")
     L_RO_PROP(QString,curr_video_injected_bitrate,set_curr_video_injected_bitrate,"N/A") //includes FEC overhead
     L_RO_PROP(QString,curr_video0_injected_pps,set_curr_video0_injected_pps,"-1pps") //includes FEC overhead
@@ -43,9 +44,12 @@ public:
     L_RO_PROP(qint64,video0_count_fragments_recovered,set_video0_count_fragments_recovered,-1)
     L_RO_PROP(QString,curr_video0_fec_decode_time_avg_min_max,set_curr_video0_fec_decode_time_avg_min_max,"avg na, min na, max na")
 public:
-    // NOTE: hacky right now, since it is a param but we also want to display it in the HUD
+    // NOTE: hacky right now, since it is a param but we also want to display it in the OSD
     void dirty_set_curr_set_video_codec_int(int value);
     static void dirty_set_curr_set_video_codec_for_cam(int cam_index,int value);
+public:
+    // Calls the appropriate member setter(s)
+    void set_curr_recommended_bitrate_from_message(int64_t curr_recommended_bitrate_kbits);
 };
 
 #endif // AIRCAMERAMODEL_H

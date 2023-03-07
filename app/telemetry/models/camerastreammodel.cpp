@@ -1,8 +1,11 @@
 #include "camerastreammodel.h"
 #include "qdebug.h"
+#include "telemetryutil.hpp"
 #include "util/WorkaroundMessageBox.h"
 
 #include <qsettings.h>
+
+#include <logging/hudlogmessagesmodel.h>
 
 static std::string video_codec_to_string(int value){
     if(value==0)return "h264";
@@ -64,5 +67,22 @@ void CameraStreamModel::dirty_set_curr_set_video_codec_for_cam(int cam_index, in
        }
     }else{
         qWarning("Invalid cam index");
+    }
+}
+
+void CameraStreamModel::set_curr_recommended_bitrate_from_message(int64_t curr_recommended_bitrate_kbits)
+{
+    // We use the fact that the current recommended bitrate is updated regularily to notify the user of
+    // changing rate(s) during flight
+    if(m_curr_recomended_video_bitrate_kbits!= 0 && curr_recommended_bitrate_kbits!=0 && m_curr_recomended_video_bitrate_kbits != curr_recommended_bitrate_kbits){
+        QString message=m_camera_index==0 ? "Cam1 encoder:" : "Cam2 encoder:";
+        message+=Telemetryutil::bitrate_kbits_to_qstring(curr_recommended_bitrate_kbits);
+        HUDLogMessagesModel::instance().add_message_info(message);
+    }
+    set_curr_recomended_video_bitrate_kbits(curr_recommended_bitrate_kbits);
+    if(curr_recommended_bitrate_kbits>0){
+        set_curr_recomended_video_bitrate_string(Telemetryutil::bitrate_kbits_to_qstring(curr_recommended_bitrate_kbits));
+    }else{
+        set_curr_recomended_video_bitrate_string("N/A");
     }
 }

@@ -232,7 +232,7 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Text {
-                    text: _cameraStreamModelSecondary.curr_recomended_video_bitrate_kbits
+                    text: _cameraStreamModelSecondary.curr_recomended_video_bitrate_string
                     color: "white";
                     font.bold: true;
                     height: parent.height
