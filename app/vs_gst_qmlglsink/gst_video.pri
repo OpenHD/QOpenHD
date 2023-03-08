@@ -4,11 +4,13 @@ DEFINES += QOPENHD_ENABLE_GSTREAMER_QMLGLSINK
 DEFINES += QOPENHD_GSTREAMER_SECONDARY_VIDEO
 
 SOURCES += \
-    $$PWD//gstvideostream.cpp
+    $$PWD//gstvideostream.cpp \
+    $$PWD/gstrtpreceiver.cpp
 
 HEADERS += \
     $$PWD//gst_helper.hpp \
-    $$PWD//gstvideostream.h
+    $$PWD//gstvideostream.h \
+    $$PWD/gstrtpreceiver.h
 
 android{
     message("gst android")
@@ -68,5 +70,5 @@ android{
 }else{
     message(gst linux)
     CONFIG += link_pkgconfig
-    PKGCONFIG   += gstreamer-1.0  gstreamer-video-1.0 gstreamer-gl-1.0 #gstreamer1.0-plugins-good
+    PKGCONFIG   += gstreamer-1.0  gstreamer-video-1.0 gstreamer-gl-1.0 gstreamer-app-1.0 #gstreamer1.0-plugins-good
 }
