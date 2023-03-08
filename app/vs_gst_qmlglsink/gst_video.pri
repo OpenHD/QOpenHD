@@ -5,12 +5,12 @@ DEFINES += QOPENHD_GSTREAMER_SECONDARY_VIDEO
 
 SOURCES += \
     $$PWD//gstvideostream.cpp \
-    #$$PWD/gstrtpreceiver.cpp
+    $$PWD/gstrtpreceiver.cpp
 
 HEADERS += \
     $$PWD//gst_helper.hpp \
     $$PWD//gstvideostream.h \
-    #$$PWD/gstrtpreceiver.h
+    $$PWD/gstrtpreceiver.h
 
 android{
     message("gst android")

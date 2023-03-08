@@ -38,6 +38,40 @@ namespace NALUnitType{
             // 20..23    // Reserved
             // 24..31    // Unspecified
         };
+        static std::string unit_type_to_string(const int nal_unit_type){
+            switch (nal_unit_type){
+                case NAL_UNIT_TYPE_UNSPECIFIED:
+                    return "UNSPECIFIED";
+                case NAL_UNIT_TYPE_CODED_SLICE_NON_IDR:
+                    return "CODED_SLICE_NON_IDR";
+                case NAL_UNIT_TYPE_CODED_SLICE_DATA_PARTITION_A:
+                    return "CODED_SLICE_DATA_PARTITION_A";
+                case NAL_UNIT_TYPE_CODED_SLICE_DATA_PARTITION_B:
+                    return "CODED_SLICE_DATA_PARTITION_B";
+                case NAL_UNIT_TYPE_CODED_SLICE_DATA_PARTITION_C:
+                    return "CODED_SLICE_DATA_PARTITION_C";
+                case NAL_UNIT_TYPE_CODED_SLICE_IDR:
+                    return "CODED_SLICE_IDR";
+                case NAL_UNIT_TYPE_SEI:
+                    return "SEI";
+                case NAL_UNIT_TYPE_SPS:
+                    return "SPS";
+                case NAL_UNIT_TYPE_PPS:
+                    return "PPS";
+                case NAL_UNIT_TYPE_AUD:
+                    return "AUD";
+                case NAL_UNIT_TYPE_END_OF_SEQUENCE:
+                    return "END_OF_SEQUENCE";
+                case NAL_UNIT_TYPE_END_OF_STREAM:
+                    return "END_OF_STREAM";
+                case NAL_UNIT_TYPE_FILLER:
+                    return "FILLER";
+                case NAL_UNIT_TYPE_SPS_EXT:
+                    return "SPS_EXT";
+                default:break;
+            }
+            return "UNKNOWN";
+        }
     }
 
     namespace H265{
