@@ -151,7 +151,7 @@ BaseWidget {
                     id: air_status_size_Slider
                     orientation: Qt.Horizontal
                     from: .5
-                    value: settings.air_status_size
+                    value: bw_current_scale
                     to: 3
                     stepSize: .1
                     height: parent.height
@@ -160,7 +160,7 @@ BaseWidget {
                     width: parent.width - 96
 
                     onValueChanged: {
-                        settings.air_status_size = air_status_size_Slider.value
+                        bw_set_current_scale(air_status_size_Slider.value)
                     }
                 }
             }
@@ -483,7 +483,7 @@ BaseWidget {
         id: widgetInner
 
         anchors.fill: parent
-        scale: settings.air_status_size
+        scale: bw_current_scale
 
         Text {
             id: chip_icon_air

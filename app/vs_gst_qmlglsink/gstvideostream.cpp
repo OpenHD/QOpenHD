@@ -323,7 +323,7 @@ void GstVideoStream::startVideo() {
 
     link_gstreamer_pipe_to_qt_window(m_pipeline,m_videoOutputWindow);
 
-     gst_element_set_state (m_pipeline, GST_STATE_PLAYING);
+    gst_element_set_state (m_pipeline, GST_STATE_PLAYING);
     lastDataTimeout = QDateTime::currentMSecsSinceEpoch();
     qDebug()<<"GstVideoStream::startVideo() end";
 }

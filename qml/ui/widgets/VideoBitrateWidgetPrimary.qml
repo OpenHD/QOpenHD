@@ -108,7 +108,7 @@ BaseWidget {
                     id: bitrate_size_Slider
                     orientation: Qt.Horizontal
                     from: .5
-                    value: settings.bitrate_size
+                    value: bw_current_scale
                     to: 3
                     stepSize: .1
                     height: parent.height
@@ -117,7 +117,7 @@ BaseWidget {
                     width: parent.width - 96
 
                     onValueChanged: {
-                        settings.bitrate_size = bitrate_size_Slider.value
+                        bw_set_current_scale(bitrate_size_Slider.value)
                     }
                 }
             }
@@ -293,7 +293,7 @@ BaseWidget {
 
         anchors.fill: parent
         opacity: settings.bitrate_opacity
-        scale: settings.bitrate_size
+        scale: bw_current_scale
 
         Text {
             id: camera_icon
