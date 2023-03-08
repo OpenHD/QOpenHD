@@ -43,7 +43,7 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #ifdef QOPENHD_ENABLE_GSTREAMER_QMLGLSINK
 #include "vs_gst_qmlglsink/gstvideostream.h"
 #include "vs_gst_qmlglsink/gst_helper.hpp"
-#include "vs_gst_qmlglsink/gstrtpreceiver.h"
+//#include "vs_gst_qmlglsink/gstrtpreceiver.h"
 #endif //QOPENHD_ENABLE_GSTREAMER_QMLGLSINK
 #ifdef QOPENHD_ENABLE_VIDEO_VIA_ANDROID
 #include <vs_android/qandroidmediaplayer.h>
@@ -330,8 +330,8 @@ int main(int argc, char *argv[]) {
     QAndroidMediaPlayer player;
     engine.rootContext()->setContextProperty("_mediaPlayer", &player);
 #endif
-    auto m_gst_rtp_receiver=std::make_unique<GstRtpReceiver>(5400,QOpenHDVideoHelper::VideoCodec::VideoCodecH264);
-    m_gst_rtp_receiver->start_receiving(nullptr);
+    //auto m_gst_rtp_receiver=std::make_unique<GstRtpReceiver>(5400,QOpenHDVideoHelper::VideoCodec::VideoCodecH264);
+    //m_gst_rtp_receiver->start_receiving(nullptr);
 // Platform - dependend video end  -----------------------------------------------------------------
 
     engine.rootContext()->setContextProperty("_decodingStatistics",&DecodingStatistcs::instance());
