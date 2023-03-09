@@ -906,16 +906,43 @@ void FCMavlinkSystem::update_alive()
     }
 }
 
-void FCMavlinkSystem::test_set_data_stream_rates(MAV_DATA_STREAM streamType, uint8_t hz)
+void FCMavlinkSystem::test_set_data_stream_rates()
 {
-    mavlink_request_data_stream_t tmp;
+    qDebug()<<"test_set_data_stream_rates";
+    /*mavlink_request_data_stream_t tmp;
     tmp.target_system=1;
     tmp.target_component=MAV_COMP_ID_AUTOPILOT1;
     tmp.req_message_rate=hz;
     tmp.req_stream_id=streamType;
     tmp.start_stop=1;
     mavlink_message_t msg;
-    mavlink_msg_request_data_stream_encode(0,0,&msg,&tmp);
+    mavlink_msg_request_data_stream_encode(0,0,&msg,&tmp);*/
+    if(!_pass_thru){
+        HUDLogMessagesModel::instance().add_message_info("No FC");
+        qDebug()<<"No fc pass_thru module";
+        return;
+    }
+    mavsdk::MavlinkPassthrough::CommandLong cmd{};
+    cmd.command = MAV_CMD_SET_MESSAGE_INTERVAL;
+    cmd.target_sysid= _pass_thru->get_target_sysid();
+    cmd.target_compid=_pass_thru->get_target_compid();
+    cmd.param1=MAVLINK_MSG_ID_ATTITUDE; // affects artificial horizon update rate
+    const int interval_us=std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::milliseconds(100)).count();
+    cmd.param2=interval_us;
+    const auto res=_pass_thru->send_command_long(cmd);
+    if(res==mavsdk::MavlinkPassthrough::Result::Success){
+        const auto msg="flight_mode_cmd Success!!";
+        qDebug()<<"Set rate";
+    }
+    else {
+        const auto msg=mavsdk::helper::to_string2("rate error:",res);
+        qDebug()<<msg.c_str();
+    }
+    /*auto cb=[](mavsdk::MavlinkPassthrough::Result res){
+        std::stringstream ss;
+        ss<<"send_return_to_launch: result: "<<res;
+        qDebug()<<ss.str().c_str();
+    };*/
 }
 
 bool FCMavlinkSystem::get_SHOW_FC_MESSAGES_IN_HUD()

@@ -241,7 +241,7 @@ private:
     void send_message_hud_connection(bool connected);
     void send_message_arm_change(bool armed);
 private:
-    void test_set_data_stream_rates(MAV_DATA_STREAM streamType, uint8_t hz);
+    void test_set_data_stream_rates();
 private:
     static bool get_SHOW_FC_MESSAGES_IN_HUD();
 };
