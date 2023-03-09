@@ -60,6 +60,9 @@ std::map<std::string, void *> MavlinkSettingsModel::get_whitelisted_params()
     // Not whitelisted anymore
     //ret["VARIABLE_BITRATE"]=nullptr;
     ret["V_AIR_RECORDING"]=nullptr;
+    // These 2 are white listed because only advanced users should ever play with them
+    ret["WB_E_LDPC"]=nullptr;
+    ret["WB_E_SHORT_GUARD"]=nullptr;
     //ret[""]=nullptr;
     return ret;
 }
@@ -101,9 +104,16 @@ static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string&
     map_improved_params["VARIABLE_BITRATE"]=ImprovedIntSetting::createEnumEnableDisable();
     map_improved_params["FC_UART_FLWCTL"]=ImprovedIntSetting::createEnumEnableDisable();
     //
-    map_improved_params["WB_E_STBC"]=ImprovedIntSetting::createEnumEnableDisable();
+    {
+        std::vector<std::string> values{};
+        values.push_back("Disable");
+        values.push_back("+1 (2 antennas)");
+        //values.push_back("+2 Spatial streams");
+        //values.push_back("+3 Spatial streams");
+        map_improved_params["WB_E_STBC"]=ImprovedIntSetting::createEnum(values);
+    }
     map_improved_params["WB_E_LDPC"]=ImprovedIntSetting::createEnumEnableDisable();
-    map_improved_params["WB_E_SHORT_GUARD"]=ImprovedIntSetting::createEnumEnableDisable();
+    map_improved_params["WB_E_SHORT_GUARD"]=ImprovedIntSetting::createEnum({"LONG_GI (default)","SHORT_GI"});
     //map_improved_params["RTL8812AU_PWR_I"]=ImprovedIntSetting::createRangeOnly(0,63);
     {
         std::vector<std::string> values{};
@@ -999,6 +1009,15 @@ QString MavlinkSettingsModel::get_short_description(const QString param_id)const
     if(param_id=="V_N_CAMERAS"){
         return "Configure openhd for single / dualcam usage. The air unit will wait for a specific amount of time until it has found that many camera(s),"
                " if it cannot find enough camera(s) it creates as many dummy camera(s) as needec instead.";
+    }
+    if(param_id=="WB_E_STBC"){
+        return "!! Advanced users only !!. This param is not automatically synchronized between air/ground. You can set it to 2 or 3 respective if your card(s) have 2,3 proper antennas, respecitive.";
+    }
+    if(param_id=="WB_E_LDPC"){
+        return "!! Advanced users only !!. This param is not automatically synchronized between air/ground. Enable Low density parity check. Needs to be supported by both your tx and rxes.";
+    }
+    if(param_id=="WB_E_SHORT_GUARD"){
+        return "!! Advanced users only !!. This param is not automatically synchronized between air/ground. A short guard intervall increases throughput, but increases packet collisions.";
     }
     return "TODO";
 }
