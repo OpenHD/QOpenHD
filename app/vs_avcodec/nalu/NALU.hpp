@@ -93,6 +93,12 @@ public:
        }
        return getDataWithoutPrefix()[0]&0x1f;
    }
+   std::string get_nal_unit_type_as_string()const{
+       if(IS_H265_PACKET){
+           return NALUnitType::H265::unitTypeName(get_nal_unit_type());
+       }
+       return NALUnitType::H264::unit_type_to_string(get_nal_unit_type());
+   }
 public:
    bool isSPS()const{
        if(IS_H265_PACKET){

@@ -129,7 +129,7 @@ void GstRtpReceiver::on_new_sample(std::shared_ptr<std::vector<uint8_t> > sample
         m_cb(sample);
     }else{
         NALU nalu(sample->data(),sample->size());
-        qDebug()<<"Got frame:"<<NALUnitType::H264::unit_type_to_string(nalu.get_nal_unit_type()).c_str();
+        qDebug()<<"Got frame:"<<nalu.get_nal_unit_type_as_string().c_str();
     }
 }
 
