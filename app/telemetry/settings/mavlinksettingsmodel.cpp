@@ -107,13 +107,13 @@ static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string&
     {
         std::vector<std::string> values{};
         values.push_back("Disable");
-        values.push_back("1 Spatial stream");
-        values.push_back("2 Spatial streams");
-        values.push_back("3 Spatial streams");
+        values.push_back("+1 (2 antennas)");
+        //values.push_back("+2 Spatial streams");
+        //values.push_back("+3 Spatial streams");
         map_improved_params["WB_E_STBC"]=ImprovedIntSetting::createEnum(values);
     }
     map_improved_params["WB_E_LDPC"]=ImprovedIntSetting::createEnumEnableDisable();
-    map_improved_params["WB_E_SHORT_GUARD"]=ImprovedIntSetting::createEnum({"LONG_GI(default)","SHORT_GI"});
+    map_improved_params["WB_E_SHORT_GUARD"]=ImprovedIntSetting::createEnum({"LONG_GI (default)","SHORT_GI"});
     //map_improved_params["RTL8812AU_PWR_I"]=ImprovedIntSetting::createRangeOnly(0,63);
     {
         std::vector<std::string> values{};
