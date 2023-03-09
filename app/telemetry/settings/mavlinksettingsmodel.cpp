@@ -1011,13 +1011,13 @@ QString MavlinkSettingsModel::get_short_description(const QString param_id)const
                " if it cannot find enough camera(s) it creates as many dummy camera(s) as needec instead.";
     }
     if(param_id=="WB_E_STBC"){
-        return "!! Advanced users only !!. You can set it to 2 or 3 respective if your card(s) have 2,3 proper antennas, respecitive.";
+        return "!! Advanced users only !!. This param is not automatically synchronized between air/ground. You can set it to 2 or 3 respective if your card(s) have 2,3 proper antennas, respecitive.";
     }
     if(param_id=="WB_E_LDPC"){
-        return "!! Advanced users only !!. Enable Low density parity check. Needs to be supported by both your tx and rxes.";
+        return "!! Advanced users only !!. This param is not automatically synchronized between air/ground. Enable Low density parity check. Needs to be supported by both your tx and rxes.";
     }
     if(param_id=="WB_E_SHORT_GUARD"){
-        return "!! Advanced users only !!. A short guard intervall increases throughput, but increases packet collisions.";
+        return "!! Advanced users only !!. This param is not automatically synchronized between air/ground. A short guard intervall increases throughput, but increases packet collisions.";
     }
     return "TODO";
 }
