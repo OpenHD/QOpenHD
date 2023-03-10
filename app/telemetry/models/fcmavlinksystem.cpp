@@ -130,6 +130,7 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
                 setDataStreamRate(MAV_DATA_STREAM_RAW_SENSORS, 2);
                 setDataStreamRate(MAV_DATA_STREAM_RC_CHANNELS, 2);
             }*/
+        //test_set_data_stream_rates();
         break;
     }
     case MAVLINK_MSG_ID_PARAM_VALUE:{
@@ -922,7 +923,9 @@ void FCMavlinkSystem::test_set_data_stream_rates()
         qDebug()<<"No fc pass_thru module";
         return;
     }
-    mavsdk::MavlinkPassthrough::CommandLong cmd{};
+    //qDebug() << "test_set_data_stream_rates:" << _pass_thru->get_target_sysid();
+    //qDebug() << "test_set_data_stream_rates:" << _pass_thru->get_target_compid();
+    mavsdk::MavlinkPassthrough::CommandLong cmd;
     cmd.command = MAV_CMD_SET_MESSAGE_INTERVAL;
     cmd.target_sysid= _pass_thru->get_target_sysid();
     cmd.target_compid=_pass_thru->get_target_compid();
@@ -931,11 +934,11 @@ void FCMavlinkSystem::test_set_data_stream_rates()
     cmd.param2=interval_us;
     const auto res=_pass_thru->send_command_long(cmd);
     if(res==mavsdk::MavlinkPassthrough::Result::Success){
-        const auto msg="flight_mode_cmd Success!!";
+        const auto msg="test_set_data_stream_rates() Success!!";
         qDebug()<<"Set rate";
     }
     else {
-        const auto msg=mavsdk::helper::to_string2("rate error:",res);
+        const auto msg=mavsdk::helper::to_string2("test_set_data_stream_rates() error:",res);
         qDebug()<<msg.c_str();
     }
     /*auto cb=[](mavsdk::MavlinkPassthrough::Result res){
