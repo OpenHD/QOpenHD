@@ -396,5 +396,5 @@ Settings {
     property int vehicle_battery_n_cells: 3
 
     // Show FC mavlink messages in the HUD
-    property bool show_fc_messages_in_hud: false
+    property bool show_fc_messages_in_hud: true
 }
