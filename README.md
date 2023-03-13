@@ -128,5 +128,5 @@ After that, you can build QOpenHD by either opening it in QT Creator (recommende
 **Thanks to all the people who already contributed!**
 
 <a href="https://github.com/OpenHD/QOpenHD/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=OpenHD/QOpenHD" />
+  <img src="https://data.openhdfpv.org/openhd-images/uploads/QOpenHD.svg" />
 </a>
