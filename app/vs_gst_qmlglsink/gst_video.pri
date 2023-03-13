@@ -5,12 +5,15 @@ DEFINES += QOPENHD_GSTREAMER_SECONDARY_VIDEO
 
 SOURCES += \
     $$PWD//gstvideostream.cpp \
-    #$$PWD/gstrtpreceiver.cpp
+    $$PWD/gstrtpreceiver.cpp
 
 HEADERS += \
     $$PWD//gst_helper.hpp \
     $$PWD//gstvideostream.h \
-    #$$PWD/gstrtpreceiver.h
+    $$PWD/gstrtpreceiver.h
+
+# just using the something something webrtc from stephen was the easiest solution.
+include(../../lib/h264/h264.pri)
 
 android{
     message("gst android")
@@ -32,32 +35,43 @@ android{
     # XXXX
     GST_ROOT = $$GSTREAMER_ROOT_ANDROID
     exists($$GST_ROOT) {
-        message(Doing stehen gstreamer stuff)
+        message(Doing QGC gstreamer stuff)
         message($$GST_ROOT)
         QMAKE_CXXFLAGS  += -pthread
         CONFIG          += VideoEnabled
 
-        # We want to link these plugins statically
-        LIBS += -L$$GST_ROOT/lib/gstreamer-1.0
+        LIBS += -L$$GST_ROOT/lib/gstreamer-1.0 \
+            -lgstvideo-1.0 \
+            -lgstcoreelements \
+            -lgstplayback \
+            -lgstudp \
+            -lgstrtp \
+            -lgstrtsp \
+            -lgstx264 \
+            -lgstlibav \
+            -lgstsdpelem \
+            -lgstvideoparsersbad \
+            -lgstrtpmanager \
+            -lgstisomp4 \
+            -lgstmatroska \
+            -lgstmpegtsdemux \
+            -lgstandroidmedia \
+            -lgstopengl \
+            -lgsttcp \
+            -lgstapp
 
-        SHARED_LIB_FILES = $$files($$GST_ROOT/lib/gstreamer-1.0/*.a)
-        for(FILE, SHARED_LIB_FILES) {
-            BASENAME = $$basename(FILE)
-            BASENAME = $$replace(BASENAME,^lib,)
-
-            LIBS += -l$$replace(BASENAME,\.a,)
-        }
 
         # Rest of GStreamer dependencies
         LIBS += -L$$GST_ROOT/lib \
+            -lgraphene-1.0 -ljpeg -lpng16 \
             -lgstfft-1.0 -lm  \
             -lgstnet-1.0 -lgio-2.0 \
+            -lgstphotography-1.0 -lgstgl-1.0 -lEGL \
             -lgstaudio-1.0 -lgstcodecparsers-1.0 -lgstbase-1.0 \
             -lgstreamer-1.0 -lgstrtp-1.0 -lgstpbutils-1.0 -lgstrtsp-1.0 -lgsttag-1.0 \
             -lgstvideo-1.0 -lavformat -lavcodec -lavutil -lx264 -lavfilter -lswresample \
             -lgstriff-1.0 -lgstcontroller-1.0 -lgstapp-1.0 \
-            -lgstsdp-1.0 -lbz2 -lgobject-2.0 \
-            -lgstgl-1.0  -lgraphene-1.0 -lpng16 -ljpeg -lgstphotography-1.0 -lEGL \
+            -lgstsdp-1.0 -lbz2 -lgobject-2.0 -lgstmpegts-1.0 \
             -Wl,--export-dynamic -lgmodule-2.0 -pthread -lglib-2.0 -lorc-0.4 -liconv -lffi -lintl \
 
         INCLUDEPATH += \
@@ -68,7 +82,7 @@ android{
     }
     # XXXX
 }else{
-    message(gst linux)
-    CONFIG += link_pkgconfig
-    PKGCONFIG   += gstreamer-1.0  gstreamer-video-1.0 gstreamer-gl-1.0 gstreamer-app-1.0 #gstreamer1.0-plugins-good
+    #message(gst linux)
+    #CONFIG += link_pkgconfig
+    #PKGCONFIG   += gstreamer-1.0  gstreamer-video-1.0 gstreamer-gl-1.0 gstreamer-app-1.0 #gstreamer1.0-plugins-good
 }

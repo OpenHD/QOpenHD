@@ -2,15 +2,65 @@
 #include "gst/gstparse.h"
 #include "gst/gstpipeline.h"
 #include "gst/app/gstappsink.h"
-
+#include "gst_helper.hpp"
 #include <cstring>
 
 #include "../vs_avcodec/nalu/NALU.hpp"
+
+G_BEGIN_DECLS
+// The static plugins we use
+#if defined(__android__) || defined(__ios__)
+    GST_PLUGIN_STATIC_DECLARE(coreelements);
+    GST_PLUGIN_STATIC_DECLARE(playback);
+    GST_PLUGIN_STATIC_DECLARE(libav);
+    GST_PLUGIN_STATIC_DECLARE(rtp);
+    GST_PLUGIN_STATIC_DECLARE(rtsp);
+    GST_PLUGIN_STATIC_DECLARE(udp);
+    GST_PLUGIN_STATIC_DECLARE(videoparsersbad);
+    GST_PLUGIN_STATIC_DECLARE(x264);
+    GST_PLUGIN_STATIC_DECLARE(rtpmanager);
+    GST_PLUGIN_STATIC_DECLARE(isomp4);
+    GST_PLUGIN_STATIC_DECLARE(matroska);
+    GST_PLUGIN_STATIC_DECLARE(mpegtsdemux);
+    GST_PLUGIN_STATIC_DECLARE(opengl);
+    GST_PLUGIN_STATIC_DECLARE(tcp);
+    GST_PLUGIN_STATIC_DECLARE(app);//XX
+#if defined(__android__)
+    GST_PLUGIN_STATIC_DECLARE(androidmedia);
+#elif defined(__ios__)
+    GST_PLUGIN_STATIC_DECLARE(applemedia);
+#endif
+#endif
+    GST_PLUGIN_STATIC_DECLARE(qmlgl);
+    GST_PLUGIN_STATIC_DECLARE(qgc);
+G_END_DECLS
 
 GstRtpReceiver::GstRtpReceiver(int udp_port, QOpenHDVideoHelper::VideoCodec video_codec)
 {
     m_port=udp_port;
     m_video_codec=video_codec;
+#if defined(__android__) || defined(__ios__)
+    GST_PLUGIN_STATIC_REGISTER(coreelements);
+    GST_PLUGIN_STATIC_REGISTER(playback);
+    GST_PLUGIN_STATIC_REGISTER(libav);
+    GST_PLUGIN_STATIC_REGISTER(rtp);
+    GST_PLUGIN_STATIC_REGISTER(rtsp);
+    GST_PLUGIN_STATIC_REGISTER(udp);
+    GST_PLUGIN_STATIC_REGISTER(videoparsersbad);
+    GST_PLUGIN_STATIC_REGISTER(x264);
+    GST_PLUGIN_STATIC_REGISTER(rtpmanager);
+    GST_PLUGIN_STATIC_REGISTER(isomp4);
+    GST_PLUGIN_STATIC_REGISTER(matroska);
+    GST_PLUGIN_STATIC_REGISTER(mpegtsdemux);
+    GST_PLUGIN_STATIC_REGISTER(opengl);
+    GST_PLUGIN_STATIC_REGISTER(tcp);
+    GST_PLUGIN_STATIC_REGISTER(app);//XX
+#if defined(__android__)
+    GST_PLUGIN_STATIC_REGISTER(androidmedia);
+#elif defined(__ios__)
+    GST_PLUGIN_STATIC_REGISTER(applemedia);
+#endif
+#endif
 }
 
 GstRtpReceiver::~GstRtpReceiver()
@@ -83,7 +133,8 @@ static void loop_pull_appsink_samples(bool& keep_looping,GstElement *app_sink_el
   assert(out_cb);
   const uint64_t timeout_ns=std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::milliseconds(100)).count();
   while (keep_looping){
-    GstSample* sample = gst_app_sink_try_pull_sample(GST_APP_SINK(app_sink_element),timeout_ns);
+    //GstSample* sample = nullptr;
+    GstSample* sample= gst_app_sink_try_pull_sample(GST_APP_SINK(app_sink_element),timeout_ns);
     if (sample) {
       //openhd::log::get_default()->debug("Got sample");
       //auto buffer_list=gst_sample_get_buffer_list(sample);
