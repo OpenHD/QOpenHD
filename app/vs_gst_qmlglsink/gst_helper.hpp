@@ -131,4 +131,53 @@ static std::string create_debug_encoded_data_producer(const QOpenHDVideoHelper::
     ss<<"queue ! ";
     return ss.str();
 }
+namespace pipeline{
+enum class VideoCodec {
+  H264=0,
+  H265,
+  MJPEG
+};
+static VideoCodec conv_codec(const QOpenHDVideoHelper::VideoCodec codec){
+    if(codec==QOpenHDVideoHelper::VideoCodecH264)return VideoCodec::H264;
+    if(codec==QOpenHDVideoHelper::VideoCodecH265)return VideoCodec::H265;
+    return VideoCodec::MJPEG;
+}
+
+static std::string gst_create_rtp_caps(const VideoCodec& videoCodec){
+  std::stringstream ss;
+  if(videoCodec==VideoCodec::H264){
+    ss<<"caps=\"application/x-rtp, media=(string)video, encoding-name=(string)H264, payload=(int)96\"";
+  }else if(videoCodec==VideoCodec::H265){
+    ss<<"caps=\"application/x-rtp, media=(string)video, encoding-name=(string)H265\"";
+  }else{
+    ss<<"caps=\"application/x-rtp, media=(string)video, encoding-name=(string)mjpeg\"";
+  }
+  return ss.str();
+}
+static std::string create_rtp_depacketize_for_codec(const VideoCodec& codec){
+  if(codec==VideoCodec::H264)return "rtph264depay ! ";
+  if(codec==VideoCodec::H265)return "rtph265depay ! ";
+  if(codec==VideoCodec::MJPEG)return "rtpjpegdepay ! ";
+  assert(false);
+  return "";
+}
+static std::string create_parse_for_codec(const VideoCodec& codec){
+  // config-interval=-1 = makes 100% sure each keyframe has SPS and PPS
+  if(codec==VideoCodec::H264)return "h264parse config-interval=-1 ! ";
+  if(codec==VideoCodec::H265)return "h265parse config-interval=-1  ! ";
+  if(codec==VideoCodec::MJPEG)return "jpegparse ! ";
+  assert(false);
+  return "";
+}
+static std::string create_out_h264(){
+    std::stringstream ss;
+    ss<<"video/x-h264";
+    ss<<", stream-format=\"byte-stream\"";
+    //ss<<", alignment=\"nal\"";
+    ss<<" ! ";
+    return ss.str();
+}
+}
+
+
 #endif // GST_PLATFORM_INCLUDE_H

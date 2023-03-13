@@ -2,6 +2,7 @@ package org.openhd;
 
 import android.media.MediaPlayer;
 import android.view.Surface;
+import android.graphics.SurfaceTexture;
 
 import java.io.IOException;
 
@@ -16,6 +17,12 @@ public class LiveVideoPlayerWrapper {
     //public void x_on_create(Context c){
         //m_live_player.xx_init(c);
     //}
+    private Surface mSurface=null;
+
+    public void setSurfaceTexture(SurfaceTexture st){
+        mSurface=new Surface(st);
+        setSurface(mSurface);
+    }
 
     public void setSurface(Surface surface){
         mMediaPlayer.setSurface(surface);

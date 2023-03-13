@@ -34,14 +34,17 @@ void QAndroidMediaPlayer::setVideoOut(QSurfaceTexture *videoOut)
 
     auto setSurfaceTexture = [=]{
         // Create a new Surface object from our SurfaceTexture
-        QAndroidJniObject surface("android/view/Surface",
+        /*QAndroidJniObject surface("android/view/Surface",
                                   "(Landroid/graphics/SurfaceTexture;)V",
                                    m_videoOut->surfaceTexture().object());
 
         // Set the new surface to m_mediaPlayer object
         m_mediaPlayer.callMethod<void>("setSurface",
                                        "(Landroid/view/Surface;)V",
-                                       surface.object());
+                                       surface.object());*/
+        m_mediaPlayer.callMethod<void>("setSurfaceTexture",
+                                       "(Landroid/graphics/SurfaceTexture;)V",
+                                       m_videoOut->surfaceTexture().object());
     };
 
     if (videoOut->surfaceTexture().isValid())
