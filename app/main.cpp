@@ -296,12 +296,10 @@ int main(int argc, char *argv[]) {
 #ifdef QOPENHD_ENABLE_GSTREAMER_QMLGLSINK
     engine.rootContext()->setContextProperty("QOPENHD_ENABLE_GSTREAMER_QMLGLSINK", QVariant(true));
 #ifdef QOPENHD_GSTREAMER_PRIMARY_VIDEO
-    std::unique_ptr<GstQmlGlSinkStream> primary_video_gstreamer=std::make_unique<GstQmlGlSinkStream>(true);
-    engine.rootContext()->setContextProperty("_primary_video_gstreamer", primary_video_gstreamer.get());
+    engine.rootContext()->setContextProperty("_primary_video_gstreamer_qml", &GstQmlGlSinkStream::instancePrimary());
 #endif
 #ifdef QOPENHD_GSTREAMER_SECONDARY_VIDEO
-    std::unique_ptr<GstQmlGlSinkStream> secondary_video_gstreamer=std::make_unique<GstQmlGlSinkStream>(false);
-    engine.rootContext()->setContextProperty("_secondary_video_gstreamer", secondary_video_gstreamer.get());
+    engine.rootContext()->setContextProperty("_secondary_video_gstreamer_qml", &GstQmlGlSinkStream::instanceSecondary());
 #endif
 #else
     engine.rootContext()->setContextProperty("QOPENHD_ENABLE_GSTREAMER_QMLGLSINK", QVariant(false));

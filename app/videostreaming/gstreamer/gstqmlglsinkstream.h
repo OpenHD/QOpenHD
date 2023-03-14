@@ -29,6 +29,9 @@ public:
      */
     GstQmlGlSinkStream(bool is_primary,QObject *parent = nullptr);
     virtual ~GstQmlGlSinkStream();
+    // These are registered for qml
+    static GstQmlGlSinkStream& instancePrimary();
+    static GstQmlGlSinkStream& instanceSecondary();
     /**
      * @brief after setting the output window, this does not immediately start streaming -
      * it starts a timer that checks in regular intervalls if any video-related settings (like the videoCodec) have changed
