@@ -5,18 +5,6 @@
 
 #include "gst_helper.hpp"
 
-static std::string gst_create_rtp_decoder(const QOpenHDVideoHelper::VideoCodec& videoCodec){
-    std::stringstream ss;
-    if(videoCodec==QOpenHDVideoHelper::VideoCodecH264){
-        ss<<" rtph264depay ! ";
-    }else if(videoCodec==QOpenHDVideoHelper::VideoCodecH265){
-        ss<<" rtph265depay ! ";
-    }else{
-       ss<<" rtpjpegdepay ! ";
-    }
-    return ss.str();
-}
-
 static std::string gst_create_always_software_decoder(const QOpenHDVideoHelper::VideoCodec& videoCodec){
     std::stringstream ss;
     switch(videoCodec){
@@ -122,7 +110,7 @@ static std::string constructGstreamerPipeline(const QOpenHDVideoHelper::VideoStr
         ss<<pipeline::gst_create_rtp_caps(pipeline::conv_codec(config.video_codec))<<" ! ";
     }
     // add rtp decoder
-    ss<<gst_create_rtp_decoder(config.video_codec);
+    ss<<pipeline::create_rtp_depacketize_for_codec(pipeline::conv_codec(config.video_codec));
     // add video decoder
     ss<<gst_create_video_decoder(config.video_codec,config.enable_software_video_decoder,config.dev_jetson);
 
