@@ -89,7 +89,7 @@ jobs:
         run:  |
           qmake ${SOURCE_DIR}/QOpenHD.pro ANDROID_ABIS="armeabi-v7a"
           make -j$(($(nproc)/2))
-          zip -r file.zip ../.
+          zip -r file.zip .
 
       - name: ccache post-run
         run:  ccache -s
