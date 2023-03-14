@@ -70,6 +70,8 @@ android{
             $$GST_ROOT/lib/gstreamer-1.0/include \
             $$GST_ROOT/include/glib-2.0 \
             $$GST_ROOT/lib/glib-2.0/include
+    }else{
+        message(Gstreamer prebuilt directory does not exist)
     }
     # XXXX
 }else{
