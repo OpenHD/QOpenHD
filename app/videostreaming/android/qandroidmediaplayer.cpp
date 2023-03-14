@@ -17,7 +17,8 @@ QAndroidMediaPlayer::QAndroidMediaPlayer(QObject *parent)
         DecodingStatistcs::instance().set_decode_time(ss.str().c_str());
     };
     m_low_lag_decoder->registerOnDecodingInfoChangedCallback(cb);
-    m_receiver=std::make_unique<GstRtpReceiver>(5600,QOpenHDVideoHelper::VideoCodec::VideoCodecH264);
+    auto codec=QOpenHDVideoHelper::read_from_settings().video_codec;
+    m_receiver=std::make_unique<GstRtpReceiver>(5600,codec);
 }
 
 QAndroidMediaPlayer::~QAndroidMediaPlayer()
@@ -64,7 +65,8 @@ void QAndroidMediaPlayer::setVideoOut(QSurfaceTexture *videoOut)
             m_low_lag_decoder->setOutputSurface(env,surface.object());
         }
         auto cb=[this](std::shared_ptr<std::vector<uint8_t>> sample){
-            NALU nalu(sample->data(),sample->size());
+            bool is_h265=m_receiver->get_codec()==QOpenHDVideoHelper::VideoCodecH265;
+            NALU nalu(sample->data(),sample->size(),is_h265);
             //qDebug()<<"XGot frame:"<<nalu.get_nal_unit_type_as_string().c_str();
             m_low_lag_decoder->interpretNALU(nalu);
         };

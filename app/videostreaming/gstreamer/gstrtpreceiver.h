@@ -22,6 +22,9 @@ public:
     typedef std::function<void(std::shared_ptr<std::vector<uint8_t>> frame)> NEW_FRAME_CALLBACK;
     void start_receiving(NEW_FRAME_CALLBACK cb);
     void stop_receiving();
+    QOpenHDVideoHelper::VideoCodec get_codec()const{
+        return m_video_codec;
+    }
 private:
     std::string construct_gstreamer_pipeline();
     void loop_pull_samples();

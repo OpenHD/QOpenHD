@@ -179,7 +179,7 @@ static std::string create_out_caps(const VideoCodec& codec){
         return ss.str();
     }else if(codec==VideoCodec::H265){
         std::stringstream ss;
-        ss<<"video/x-h264";
+        ss<<"video/x-h265";
         ss<<", stream-format=\"byte-stream\"";
         //ss<<", alignment=\"nal\"";
         ss<<" ! ";
