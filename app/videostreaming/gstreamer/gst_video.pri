@@ -17,11 +17,6 @@ HEADERS += \
 
 android{
     message("gst android")
-    #QT += multimedia
-    #QT += multimediawidgets
-    #GSTREAMER_ROOT_ANDROID = /home/consti10/Downloads/gstreamer-1.0-android-universal-1.20.5
-    QT += multimedia
-    QT += multimediawidgets
 
     DOWNLOADED_GST_FOLDER= /home/consti10/Downloads/gstreamer-1.0-android-universal-1.20.5
     GSTREAMER_ARCH_FOLDER = armv7
