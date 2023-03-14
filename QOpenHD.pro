@@ -107,11 +107,9 @@ SOURCES += \
     app/logging/hudlogmessagesmodel.cpp \
     app/logging/logmessagesmodel.cpp \
     app/util/qopenhd.cpp \
-    app/util/QmlObjectListModel.cpp \
     app/util/WorkaroundMessageBox.cpp \
     app/util/qrenderstats.cpp \
     app/util/restartqopenhdmessagebox.cpp \
-    app/util/FrequencyMonitor.cpp \
     app/main.cpp \
 
 HEADERS += \
@@ -119,11 +117,9 @@ HEADERS += \
     app/logging/loghelper.h \
     app/logging/logmessagesmodel.h \
     app/util/qopenhd.h \
-    app/util/QmlObjectListModel.h \
     app/util/WorkaroundMessageBox.h \
     app/util/qrenderstats.h \
     app/util/restartqopenhdmessagebox.h \
-    app/util/FrequencyMonitor.h \
 
 
 # Geographic lib updated to c-2.0, so much cleaner
@@ -259,7 +255,7 @@ AndroidBuild {
     #CONFIG += EnableSpeech
     QT += androidextras
 
-    include(app/vs_android/videostreamingandroid.pri)
+    include(app/videostreaming/android/videostreamingandroid.pri)
 }
 
 EnableSpeech {
