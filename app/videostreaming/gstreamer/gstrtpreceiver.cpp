@@ -111,7 +111,6 @@ std::string GstRtpReceiver::construct_gstreamer_pipeline()
 {
     const auto codec=pipeline::conv_codec(m_video_codec);
     std::stringstream ss;
-    //ss<<"udpsrc address=\"127.0.0.1\" port="<<m_port<<" "<<gst_create_rtp_caps(codec)<<" ! ";
     ss<<"udpsrc port="<<m_port<<" "<<gst_create_rtp_caps(codec)<<" ! ";
     ss<<pipeline::create_rtp_depacketize_for_codec(codec);
     ss<<pipeline::create_parse_for_codec(codec);
@@ -132,6 +131,7 @@ void GstRtpReceiver::loop_pull_samples()
 void GstRtpReceiver::on_new_sample(std::shared_ptr<std::vector<uint8_t> > sample)
 {
     if(m_cb){
+        //debug_sample(sample);
         m_cb(sample);
     }else{
         debug_sample(sample);
