@@ -81,7 +81,7 @@ android{
     }
     # XXXX
 }else{
-    #message(gst linux)
-    #CONFIG += link_pkgconfig
-    #PKGCONFIG   += gstreamer-1.0  gstreamer-video-1.0 gstreamer-gl-1.0 gstreamer-app-1.0 #gstreamer1.0-plugins-good
+    message(gst linux)
+    CONFIG += link_pkgconfig
+    PKGCONFIG   += gstreamer-1.0  gstreamer-video-1.0 gstreamer-gl-1.0 gstreamer-app-1.0 #gstreamer1.0-plugins-good
 }

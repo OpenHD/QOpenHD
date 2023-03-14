@@ -5,18 +5,6 @@
 
 #include "gst_helper.hpp"
 
-static std::string gst_create_caps(const QOpenHDVideoHelper::VideoCodec& videoCodec){
-    std::stringstream ss;
-    if(videoCodec==QOpenHDVideoHelper::VideoCodecH264){
-        ss<<"caps = \"application/x-rtp, media=(string)video, encoding-name=(string)H264, payload=(int)96\" ! ";
-    }else if(videoCodec==QOpenHDVideoHelper::VideoCodecH265){
-        ss<<"caps = \"application/x-rtp, media=(string)video, encoding-name=(string)H265\" ! ";
-    }else{
-        ss<<"caps = \"application/x-rtp, media=(string)video, encoding-name=(string)mjpeg\" ! ";
-    }
-    return ss.str();
-}
-
 static std::string gst_create_rtp_decoder(const QOpenHDVideoHelper::VideoCodec& videoCodec){
     std::stringstream ss;
     if(videoCodec==QOpenHDVideoHelper::VideoCodecH264){
@@ -131,7 +119,7 @@ static std::string constructGstreamerPipeline(const QOpenHDVideoHelper::VideoStr
         ss<<create_debug_encoded_data_producer(config.video_codec);
     }else{
         ss<<"udpsrc port="<<config.udp_rtp_input_port<<" ";
-        ss<<gst_create_caps(config.video_codec);
+        ss<<pipeline::gst_create_rtp_caps(pipeline::conv_codec(config.video_codec));
     }
     // add rtp decoder
     ss<<gst_create_rtp_decoder(config.video_codec);

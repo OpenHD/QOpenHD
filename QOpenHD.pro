@@ -185,6 +185,7 @@ DISTFILES += \
     app/telemetry/telemetry.pri \
     app/util/README.md \
     app/videostreaming/README.md \
+    app/videostreaming/README.txt \
     app/videostreaming/gst_qmlglsink/gst_video.pri \
     app/vs_android/videostreamingandroid.pri \
     extra_build_qmake.sh \
