@@ -3,12 +3,20 @@
 
 #include <QAndroidJniEnvironment>
 
+#include <vs_util/decodingstatistcs.h>
+
 QAndroidMediaPlayer::QAndroidMediaPlayer(QObject *parent)
     : QObject(parent)
     ,m_mediaPlayer("org/openhd/LiveVideoPlayerWrapper")
     //, m_mediaPlayer("android/media/MediaPlayer")
 {
     m_low_lag_decoder=std::make_unique<LowLagDecoder>(nullptr);
+    auto cb=[](const DecodingInfo di){
+        std::stringstream ss;
+        ss<<di.avgDecodingTime_ms<<"ms";
+        DecodingStatistcs::instance().set_decode_time(ss.str().c_str());
+    };
+    m_low_lag_decoder->registerOnDecodingInfoChangedCallback(cb);
     m_receiver=std::make_unique<GstRtpReceiver>(5600,QOpenHDVideoHelper::VideoCodec::VideoCodecH264);
 }
 
@@ -57,7 +65,7 @@ void QAndroidMediaPlayer::setVideoOut(QSurfaceTexture *videoOut)
         }
         auto cb=[this](std::shared_ptr<std::vector<uint8_t>> sample){
             NALU nalu(sample->data(),sample->size());
-            qDebug()<<"XGot frame:"<<nalu.get_nal_unit_type_as_string().c_str();
+            //qDebug()<<"XGot frame:"<<nalu.get_nal_unit_type_as_string().c_str();
             m_low_lag_decoder->interpretNALU(nalu);
         };
         m_receiver->start_receiving(cb);

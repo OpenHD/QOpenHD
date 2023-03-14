@@ -12,20 +12,36 @@
 using namespace std::chrono;
 
 static void h264_configureAMediaFormat(KeyFrameFinder& kff,AMediaFormat* format){
-        const auto sps=kff.getCSD0();
-        const auto pps=kff.getCSD1();
-        const auto videoWH= sps.sps_get_width_height();
-        AMediaFormat_setInt32(format,AMEDIAFORMAT_KEY_WIDTH,videoWH[0]);
-        AMediaFormat_setInt32(format,AMEDIAFORMAT_KEY_HEIGHT,videoWH[1]);
-        AMediaFormat_setBuffer(format,"csd-0",sps.getData(),(size_t)sps.getSize());
-        AMediaFormat_setBuffer(format,"csd-1",pps.getData(),(size_t)pps.getSize());
-        MLOGD<<"Video WH:"<<videoWH[0]<<" H:"<<videoWH[1];
-        //AMediaFormat_setInt32(format,AMEDIAFORMAT_KEY_BIT_RATE,5*1024*1024);
-        //AMediaFormat_setInt32(format,AMEDIAFORMAT_KEY_FRAME_RATE,60);
-        //AVCProfileBaseline==1
-        //AMediaFormat_setInt32(decoder.format,AMEDIAFORMAT_KEY_PROFILE,1);
-        //AMediaFormat_setInt32(decoder.format,AMEDIAFORMAT_KEY_PRIORITY,0);
-        //writeAndroidPerformanceParams(format);
+    const auto sps=kff.getCSD0();
+    const auto pps=kff.getCSD1();
+    const auto videoWH= sps.sps_get_width_height();
+    AMediaFormat_setInt32(format,AMEDIAFORMAT_KEY_WIDTH,videoWH[0]);
+    AMediaFormat_setInt32(format,AMEDIAFORMAT_KEY_HEIGHT,videoWH[1]);
+    AMediaFormat_setBuffer(format,"csd-0",sps.getData(),(size_t)sps.getSize());
+    AMediaFormat_setBuffer(format,"csd-1",pps.getData(),(size_t)pps.getSize());
+    MLOGD<<"Video WH:"<<videoWH[0]<<" H:"<<videoWH[1];
+    //AMediaFormat_setInt32(format,AMEDIAFORMAT_KEY_BIT_RATE,5*1024*1024);
+    //AMediaFormat_setInt32(format,AMEDIAFORMAT_KEY_FRAME_RATE,60);
+    //AVCProfileBaseline==1
+    //AMediaFormat_setInt32(decoder.format,AMEDIAFORMAT_KEY_PROFILE,1);
+    //AMediaFormat_setInt32(decoder.format,AMEDIAFORMAT_KEY_PRIORITY,0);
+    //writeAndroidPerformanceParams(format);
+}
+static void h265_configureAMediaFormat(KeyFrameFinder& kff,AMediaFormat* format){
+    std::vector<uint8_t> buff={};
+    const auto SPS=kff.getCSD0();
+    const auto PPS=kff.getCSD1();
+    const auto VPS=kff.getVPS();
+    buff.reserve(SPS.getSize()+PPS.getSize()+VPS.getSize());
+    KeyFrameFinder::appendNaluData(buff,VPS);
+    KeyFrameFinder::appendNaluData(buff,SPS);
+    KeyFrameFinder::appendNaluData(buff,PPS);
+    const auto videoWH= std::array<int,2>{1280,720};
+    AMediaFormat_setInt32(format,AMEDIAFORMAT_KEY_WIDTH,videoWH[0]);
+    AMediaFormat_setInt32(format,AMEDIAFORMAT_KEY_HEIGHT,videoWH[1]);
+    AMediaFormat_setBuffer(format,"csd-0",buff.data(),buff.size());
+    MLOGD<<"Video WH:"<<videoWH[0]<<" H:"<<videoWH[1];
+    //writeAndroidPerformanceParams(format);
 }
 
 LowLagDecoder::LowLagDecoder(JNIEnv* env){
@@ -145,7 +161,7 @@ void LowLagDecoder::configureStartDecoder(){
     AMediaFormat* format=AMediaFormat_new();
     AMediaFormat_setString(format,AMEDIAFORMAT_KEY_MIME,MIME.c_str());
     if(IS_H265){
-        //mKeyFrameFinder.h265_configureAMediaFormat(format);
+        h265_configureAMediaFormat(mKeyFrameFinder,format);
     }else{
         h264_configureAMediaFormat(mKeyFrameFinder,format);
         //mKeyFrameFinder.h264_configureAMediaFormat(format);

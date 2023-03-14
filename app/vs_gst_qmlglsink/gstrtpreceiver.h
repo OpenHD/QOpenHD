@@ -16,6 +16,9 @@ public:
      */
     GstRtpReceiver(int udp_port,QOpenHDVideoHelper::VideoCodec video_codec);
     virtual ~GstRtpReceiver();
+    // Depending on the codec, these are h264,h265 or mjpeg "frames" / frame buffers
+    // The big advantage of gstreamer is that it seems to handle all those parsing quirks the best,
+    // e.g. the frames on this cb should be easily passable to whatever decode api is available.
     typedef std::function<void(std::shared_ptr<std::vector<uint8_t>> frame)> NEW_FRAME_CALLBACK;
     void start_receiving(NEW_FRAME_CALLBACK cb);
     void stop_receiving();
@@ -23,6 +26,7 @@ private:
     std::string construct_gstreamer_pipeline();
     void loop_pull_samples();
     void on_new_sample(std::shared_ptr<std::vector<uint8_t>> sample);
+    void debug_sample(std::shared_ptr<std::vector<uint8_t>> sample);
 private:
     // The gstreamer pipeline
     GstElement * m_gst_pipeline=nullptr;

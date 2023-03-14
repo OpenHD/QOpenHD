@@ -169,13 +169,25 @@ static std::string create_parse_for_codec(const VideoCodec& codec){
   assert(false);
   return "";
 }
-static std::string create_out_h264(){
-    std::stringstream ss;
-    ss<<"video/x-h264";
-    ss<<", stream-format=\"byte-stream\"";
-    //ss<<", alignment=\"nal\"";
-    ss<<" ! ";
-    return ss.str();
+static std::string create_out_caps(const VideoCodec& codec){
+    if(codec==VideoCodec::H264){
+        std::stringstream ss;
+        ss<<"video/x-h264";
+        ss<<", stream-format=\"byte-stream\"";
+        //ss<<", alignment=\"nal\"";
+        ss<<" ! ";
+        return ss.str();
+    }else if(codec==VideoCodec::H265){
+        std::stringstream ss;
+        ss<<"video/x-h264";
+        ss<<", stream-format=\"byte-stream\"";
+        //ss<<", alignment=\"nal\"";
+        ss<<" ! ";
+        return ss.str();
+    }else{
+        return "todo";
+    }
+    assert(false);
 }
 }
 

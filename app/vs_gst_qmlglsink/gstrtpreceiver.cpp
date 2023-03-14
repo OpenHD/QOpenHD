@@ -115,7 +115,7 @@ std::string GstRtpReceiver::construct_gstreamer_pipeline()
     ss<<"udpsrc port="<<m_port<<" "<<gst_create_rtp_caps(codec)<<" ! ";
     ss<<pipeline::create_rtp_depacketize_for_codec(codec);
     ss<<pipeline::create_parse_for_codec(codec);
-    ss<<pipeline::create_out_h264();
+    ss<<pipeline::create_out_caps(codec);
     ss<<" appsink drop=true name=out_appsink";
     return ss.str();
 }
@@ -134,8 +134,20 @@ void GstRtpReceiver::on_new_sample(std::shared_ptr<std::vector<uint8_t> > sample
     if(m_cb){
         m_cb(sample);
     }else{
+        debug_sample(sample);
+    }
+}
+
+void GstRtpReceiver::debug_sample(std::shared_ptr<std::vector<uint8_t> > sample)
+{
+    if(m_video_codec==QOpenHDVideoHelper::VideoCodecH264){
         NALU nalu(sample->data(),sample->size());
-        qDebug()<<"Got frame:"<<nalu.get_nal_unit_type_as_string().c_str();
+        qDebug()<<"Got h264 frame:"<<nalu.get_nal_unit_type_as_string().c_str();
+    }else if(m_video_codec==QOpenHDVideoHelper::VideoCodecH265){
+        NALU nalu(sample->data(),sample->size(),true);
+        qDebug()<<"Got h265 frame:"<<nalu.get_nal_unit_type_as_string().c_str();
+    }else{
+        qDebug()<<"Got mjpeg frame";
     }
 }
 
