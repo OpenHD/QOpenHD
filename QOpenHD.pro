@@ -78,9 +78,11 @@ INCLUDEPATH += $$PWD/app/exp
 # REQUIRED - without it QOpenHD will compile, but be pretty much non functional
 include(app/telemetry/telemetry.pri)
 
+# This code is platform and library independent, and always compiled.
+include(app/videostreaming/vscommon/vscommon.pri)
+
 # Video is quite platform dependent, if you have compile issues, try compiling without any videostreaming enabled first ;)
 LinuxBuild {
-    include(app/videostreaming/vscommon/vscommon.pri)
     # Avcodec decode and display, all sources
     # Replaced gstreamer for now
     # Comment the line below to build without avcodec (you won't have any video decoding capabilities in this case though)
