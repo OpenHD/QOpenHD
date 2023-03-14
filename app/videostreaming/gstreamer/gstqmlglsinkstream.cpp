@@ -119,7 +119,7 @@ static std::string constructGstreamerPipeline(const QOpenHDVideoHelper::VideoStr
         ss<<create_debug_encoded_data_producer(config.video_codec);
     }else{
         ss<<"udpsrc port="<<config.udp_rtp_input_port<<" ";
-        ss<<pipeline::gst_create_rtp_caps(pipeline::conv_codec(config.video_codec));
+        ss<<pipeline::gst_create_rtp_caps(pipeline::conv_codec(config.video_codec))<<" ! ";
     }
     // add rtp decoder
     ss<<gst_create_rtp_decoder(config.video_codec);
