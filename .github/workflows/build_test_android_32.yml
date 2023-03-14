@@ -76,7 +76,7 @@ jobs:
         working-directory:  ${{ github.workspace }}
         run: |
           wget --quiet https://gstreamer.freedesktop.org/data/pkg/android/1.20.5/gstreamer-1.0-android-universal-1.20.5.tar.xz
-          tar xf gstreamer-1.0-android-universal-1.20.5.tar.xz -C $(GITHUB_WORKSPACE)/QOpenHD/lib/gstreamer_prebuilts/gstreamer-1.0-android-universal-1.20.5
+          tar xf gstreamer-1.0-android-universal-1.20.5.tar.xz -C $(GITHUB_WORKSPACE)/lib/gstreamer_prebuilts/gstreamer-1.0-android-universal-1.20.5
 
       - name: Build
         working-directory: ${{ runner.temp }}/shadow_build_dir
