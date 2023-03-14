@@ -6,7 +6,7 @@
 #include <QPointer>
 
 #include "lowlagdecoder.h"
-#include "../vs_gst_qmlglsink/gstrtpreceiver.h"
+#include "../gstreamer/gstrtpreceiver.h"
 
 class QSurfaceTexture;
 class QAndroidMediaPlayer : public QObject

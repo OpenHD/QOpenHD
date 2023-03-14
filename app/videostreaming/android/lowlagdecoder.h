@@ -10,8 +10,8 @@
 #include <thread>
 #include <atomic>
 
-#include "NALU.hpp"
-#include "KeyFrameFinder.hpp"
+#include <nalu/NALU.hpp>
+#include <nalu/KeyFrameFinder.hpp>
 
 #include "../../common/TimeHelper.hpp"
 

@@ -3,7 +3,7 @@
 
 #include <QAndroidJniEnvironment>
 
-#include <vs_util/decodingstatistcs.h>
+#include <decodingstatistcs.h>
 
 QAndroidMediaPlayer::QAndroidMediaPlayer(QObject *parent)
     : QObject(parent)
