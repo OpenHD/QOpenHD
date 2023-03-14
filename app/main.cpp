@@ -333,17 +333,17 @@ int main(int argc, char *argv[]) {
     engine.rootContext()->setContextProperty("_restartqopenhdmessagebox", &RestartQOpenHDMessageBox::instance());
 
 #ifdef QOPENHD_ENABLE_ADSB_LIBRARY
-qmlRegisterUncreatableType<QmlObjectListModel>("OpenHD", 1, 0, "QmlObjectListModel", "Reference only");
-engine.rootContext()->setContextProperty("QOPENHD_ENABLE_ADSB_LIBRARY", QVariant(true));
-engine.rootContext()->setContextProperty("EnableADSB", QVariant(true));
-engine.rootContext()->setContextProperty("LimitADSBMax", QVariant(true));
-auto adsbVehicleManager = ADSBVehicleManager::instance();
-engine.rootContext()->setContextProperty("AdsbVehicleManager", adsbVehicleManager);
-//QObject::connect(openHDSettings, &OpenHDSettings::groundStationIPUpdated, adsbVehicleManager, &ADSBVehicleManager::setGroundIP, Qt::QueuedConnection);
-adsbVehicleManager->onStarted();
+    qmlRegisterUncreatableType<QmlObjectListModel>("OpenHD", 1, 0, "QmlObjectListModel", "Reference only");
+    engine.rootContext()->setContextProperty("QOPENHD_ENABLE_ADSB_LIBRARY", QVariant(true));
+    engine.rootContext()->setContextProperty("EnableADSB", QVariant(true));
+    engine.rootContext()->setContextProperty("LimitADSBMax", QVariant(true));
+    auto adsbVehicleManager = ADSBVehicleManager::instance();
+    engine.rootContext()->setContextProperty("AdsbVehicleManager", adsbVehicleManager);
+    //QObject::connect(openHDSettings, &OpenHDSettings::groundStationIPUpdated, adsbVehicleManager, &ADSBVehicleManager::setGroundIP, Qt::QueuedConnection);
+    adsbVehicleManager->onStarted();
 #else
-engine.rootContext()->setContextProperty("QOPENHD_ENABLE_ADSB_LIBRARY", QVariant(false));
-engine.rootContext()->setContextProperty("EnableADSB", QVariant(false));
+    engine.rootContext()->setContextProperty("QOPENHD_ENABLE_ADSB_LIBRARY", QVariant(false));
+    engine.rootContext()->setContextProperty("EnableADSB", QVariant(false));
 #endif
 
 
