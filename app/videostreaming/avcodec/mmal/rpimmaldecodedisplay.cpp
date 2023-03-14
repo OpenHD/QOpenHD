@@ -1,8 +1,8 @@
 #include "rpimmaldecodedisplay.h"
 
-#include "../../common/TimeHelper.hpp"
+#include "../../../common/TimeHelper.hpp"
 
-#include "../../vs_util/QOpenHDVideoHelper.hpp"
+#include "QOpenHDVideoHelper.hpp"
 
 #include <qdebug.h>
 #include <optional>

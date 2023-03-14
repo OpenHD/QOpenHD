@@ -15,7 +15,8 @@ HEADERS += \
 android{
     message("gst android")
 
-    DOWNLOADED_GST_FOLDER= /home/consti10/Downloads/gstreamer-1.0-android-universal-1.20.5
+    #DOWNLOADED_GST_FOLDER= /home/consti10/Downloads/gstreamer-1.0-android-universal-1.20.5
+    DOWNLOADED_GST_FOLDER= $$PWD/../../../lib/gstreamer_prebuilts/gstreamer-1.0-android-universal-1.20.5
     GSTREAMER_ARCH_FOLDER = armv7
 
     GSTREAMER_ROOT_ANDROID = $$DOWNLOADED_GST_FOLDER/$$GSTREAMER_ARCH_FOLDER
@@ -70,6 +71,8 @@ android{
             $$GST_ROOT/lib/gstreamer-1.0/include \
             $$GST_ROOT/include/glib-2.0 \
             $$GST_ROOT/lib/glib-2.0/include
+    }else{
+        message(Gstreamer prebuilt directory does not exist)
     }
     # XXXX
 }else{

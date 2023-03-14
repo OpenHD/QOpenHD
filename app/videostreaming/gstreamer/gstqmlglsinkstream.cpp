@@ -166,6 +166,18 @@ GstQmlGlSinkStream::~GstQmlGlSinkStream() {
     qDebug() << "GstQmlGlSinkStream::~GstQmlGlSinkStream()end";
 }
 
+GstQmlGlSinkStream& GstQmlGlSinkStream::instancePrimary()
+{
+    static GstQmlGlSinkStream instancePrimary{true};
+    return instancePrimary;
+}
+
+GstQmlGlSinkStream& GstQmlGlSinkStream::instanceSecondary()
+{
+    static GstQmlGlSinkStream instanceSecondary{false};
+    return instanceSecondary;
+}
+
 
 void GstQmlGlSinkStream::init(QQuickItem* videoOutputWindow) {
     // we do not support changing the output window once it is assigned

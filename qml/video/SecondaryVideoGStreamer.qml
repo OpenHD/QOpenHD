@@ -62,7 +62,7 @@ Item {
 
         Component.onCompleted: {
             console.log("secondaryVideoGStreamer (Qmlglsink) created")
-            _secondary_video_gstreamer.check_common_mistakes_then_init(secondaryVideoGStreamer)
+            _secondary_video_gstreamer_qml.check_common_mistakes_then_init(secondaryVideoGStreamer)
         }
 
         MouseArea {
