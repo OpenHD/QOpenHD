@@ -5,30 +5,21 @@ LIBS += -lavcodec -lavutil -lavformat
 LIBS += -lGLESv2 -lEGL
 
 # just using the something something webrtc from stephen was the easiest solution.
-include(../../lib/h264/h264.pri)
+#include(../../lib/h264/h264.pri)
 
 SOURCES += \
     $$PWD/QSGVideoTextureItem.cpp \
     $$PWD/gl/gl_shaders.cpp \
     $$PWD/gl/gl_videorenderer.cpp \
-    $$PWD/rtp/ParseRTP.cpp \
-    $$PWD/rtp/rtpreceiver.cpp \
     $$PWD/texturerenderer.cpp \
     $$PWD/avcodec_decoder.cpp \
-    $$PWD/udp/UDPReceiver.cpp \
 
 HEADERS += \
     $$PWD/QSGVideoTextureItem.h \
     $$PWD/gl/gl_shaders.h \
     $$PWD/gl/gl_videorenderer.h \
-    $$PWD/nalu/KeyFrameFinder.hpp \
-    $$PWD/nalu/NALUnitType.hpp \
-    $$PWD/rtp/ParseRTP.h \
-    $$PWD/rtp/RTP.hpp \
-    $$PWD/rtp/rtpreceiver.h \
     $$PWD/texturerenderer.h \
     $$PWD/avcodec_decoder.h \
-    $$PWD/udp/UDPReceiver.h \
 
 # Search for mmal at compile time, when found, we can do the "best" path video to display on rpi -
 # note that you then have to use a /boot/config.txt with fkms for mmal to work (default in OpenHD image,

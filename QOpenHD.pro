@@ -80,17 +80,18 @@ include(app/telemetry/telemetry.pri)
 
 # Video is quite platform dependent, if you have compile issues, try compiling without any videostreaming enabled first ;)
 LinuxBuild {
+    include(app/videostreaming/vscommon/vscommon.pri)
     # Avcodec decode and display, all sources
     # Replaced gstreamer for now
     # Comment the line below to build without avcodec (you won't have any video decoding capabilities in this case though)
     # However, this can be usefully for figuring out compiler issue(s) on different platform(s)
     # NOTE: QT Creator is quite bad at figuring out changes here, you might need a "full" rebuild or manualy delete
     # the build dir/cache, then rebuild
-    include(app/vs_avcodec/avcodec_video.pri)
+    include(app/videostreaming/avcodec/avcodec_video.pri)
 
     # Gstreamer / qmlglsink decode and display, all sources
     # r.n only used for secondary video and for primary video only on platforms we cannot do primary video via QSG / avcodec
-    include(app/vs_gst_qmlglsink/gst_video.pri)
+    include(app/videostreaming/gstreamer/gst_video.pri)
 }
 
 # adsb library
@@ -99,7 +100,7 @@ LinuxBuild {
     include(app/adsb/adsb_lib.pri)
 }
 
-include(app/vs_gst_qmlglsink/gst_video.pri)
+#include(app/vs_gst_qmlglsink/gst_video.pri)
 
 # All Generic files / files that literally have 0!! dependencies other than qt
 SOURCES += \
@@ -110,7 +111,6 @@ SOURCES += \
     app/util/WorkaroundMessageBox.cpp \
     app/util/qrenderstats.cpp \
     app/util/restartqopenhdmessagebox.cpp \
-    app/vs_util/decodingstatistcs.cpp \
     app/util/FrequencyMonitor.cpp \
     app/main.cpp \
 
@@ -123,7 +123,6 @@ HEADERS += \
     app/util/WorkaroundMessageBox.h \
     app/util/qrenderstats.h \
     app/util/restartqopenhdmessagebox.h \
-    app/vs_util/decodingstatistcs.h \
     app/util/FrequencyMonitor.h \
 
 
@@ -187,6 +186,7 @@ DISTFILES += \
     app/videostreaming/README.md \
     app/videostreaming/README.txt \
     app/videostreaming/gst_qmlglsink/gst_video.pri \
+    app/videostreaming/vscommon/vscommon.pri \
     app/vs_android/videostreamingandroid.pri \
     extra_build_qmake.sh \
     lib/h264nal/h264nal.pri \

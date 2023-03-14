@@ -6,7 +6,7 @@
 // (TODO: rn everythng except standart ubuntu has been deleted).
 // exposes a initGstreamerOrThrow() method that should be called before any actual gstreamer calls.
 
-#include "../vs_util/QOpenHDVideoHelper.hpp"
+#include "QOpenHDVideoHelper.hpp"
 #include "qglobal.h"
 #include <gst/gst.h>
 #include <QString>

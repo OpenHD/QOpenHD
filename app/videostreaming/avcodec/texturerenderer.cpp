@@ -5,7 +5,7 @@
 #include <qsettings.h>
 #include <algorithm>
 
-#include "../vs_util/decodingstatistcs.h"
+#include "decodingstatistcs.h"
 
 struct MGLViewptort{
     int x,y,width,height;

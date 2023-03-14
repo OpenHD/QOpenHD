@@ -4,8 +4,8 @@
 #include "gst/app/gstappsink.h"
 #include "gst_helper.hpp"
 #include <cstring>
+#include <nalu/NALU.hpp>
 
-#include "../vs_avcodec/nalu/NALU.hpp"
 
 G_BEGIN_DECLS
 // The static plugins we use

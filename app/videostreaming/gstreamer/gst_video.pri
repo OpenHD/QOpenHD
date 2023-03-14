@@ -4,16 +4,16 @@ DEFINES += QOPENHD_ENABLE_GSTREAMER_QMLGLSINK
 DEFINES += QOPENHD_GSTREAMER_SECONDARY_VIDEO
 
 SOURCES += \
-    $$PWD//gstqmlglsinkstream.cpp \
+    $$PWD/gstqmlglsinkstream.cpp \
     $$PWD/gstrtpreceiver.cpp
 
 HEADERS += \
-    $$PWD//gst_helper.hpp \
-    $$PWD//gstqmlglsinkstream.h \
+    $$PWD/gst_helper.hpp \
+    $$PWD/gstqmlglsinkstream.h \
     $$PWD/gstrtpreceiver.h
 
 # just using the something something webrtc from stephen was the easiest solution.
-include(../../lib/h264/h264.pri)
+#include(../../lib/h264/h264.pri)
 
 android{
     message("gst android")

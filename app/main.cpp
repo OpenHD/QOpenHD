@@ -35,15 +35,13 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "osd/aoagauge.h"
 
 // Video - annyoing ifdef crap is needed for all the different platforms / configurations
-#include "vs_util/QOpenHDVideoHelper.hpp"
-#include "vs_util/decodingstatistcs.h"
+#include "decodingstatistcs.h"
 #ifdef QOPENHD_ENABLE_VIDEO_VIA_AVCODEC
-#include "vs_avcodec/QSGVideoTextureItem.h"
+#include "QSGVideoTextureItem.h"
 #endif
 #ifdef QOPENHD_ENABLE_GSTREAMER_QMLGLSINK
-#include "vs_gst_qmlglsink/gstqmlglsinkstream.h"
-#include "vs_gst_qmlglsink/gst_helper.hpp"
-#include "vs_gst_qmlglsink/gstrtpreceiver.h"
+#include "videostreaming/gstreamer/gst_helper.hpp"
+#include "videostreaming/gstreamer/gstqmlglsinkstream.h"
 #endif //QOPENHD_ENABLE_GSTREAMER_QMLGLSINK
 #ifdef QOPENHD_ENABLE_VIDEO_VIA_ANDROID
 #include <vs_android/qandroidmediaplayer.h>
@@ -329,9 +327,9 @@ int main(int argc, char *argv[]) {
     // Create a player
     QAndroidMediaPlayer player;
     engine.rootContext()->setContextProperty("_mediaPlayer", &player);
+#else
+     engine.rootContext()->setContextProperty("QOPENHD_ENABLE_VIDEO_VIA_ANDROID", QVariant(false));
 #endif
-    //auto m_gst_rtp_receiver=std::make_unique<GstRtpReceiver>(5600,QOpenHDVideoHelper::VideoCodec::VideoCodecH264);
-    //m_gst_rtp_receiver->start_receiving(nullptr);
 // Platform - dependend video end  -----------------------------------------------------------------
 
     engine.rootContext()->setContextProperty("_decodingStatistics",&DecodingStatistcs::instance());

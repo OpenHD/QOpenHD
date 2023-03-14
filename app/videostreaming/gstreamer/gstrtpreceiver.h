@@ -1,7 +1,7 @@
 #ifndef GSTRTPRECEIVER_H
 #define GSTRTPRECEIVER_H
 
-#include "../vs_util/QOpenHDVideoHelper.hpp"
+#include "QOpenHDVideoHelper.hpp"
 #include "gst/gstelement.h"
 #include <thread>
 
