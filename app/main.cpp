@@ -24,8 +24,6 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "telemetry/settings/synchronizedsettings.h"
 #endif //QOPENHD_HAS_MAVSDK_MAVLINK_TELEMETRY
 
-#include "util/QmlObjectListModel.h"
-
 #include "osd/speedladder.h"
 #include "osd/altitudeladder.h"
 #include "osd/headingladder.h"
@@ -64,6 +62,7 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #ifdef QOPENHD_ENABLE_ADSB_LIBRARY
 #include "adsb/ADSBVehicleManager.h"
 #include "adsb/ADSBVehicle.h"
+#include "adsb/QmlObjectListModel.h"
 #endif
 
 
@@ -241,8 +240,6 @@ int main(int argc, char *argv[]) {
 
     load_fonts();
 
-    qmlRegisterUncreatableType<QmlObjectListModel>("OpenHD", 1, 0, "QmlObjectListModel", "Reference only");
-
     qmlRegisterType<SpeedLadder>("OpenHD", 1, 0, "SpeedLadder");
     qmlRegisterType<AltitudeLadder>("OpenHD", 1, 0, "AltitudeLadder");
     qmlRegisterType<HeadingLadder>("OpenHD", 1, 0, "HeadingLadder");
@@ -337,15 +334,11 @@ int main(int argc, char *argv[]) {
     engine.rootContext()->setContextProperty("_messageBoxInstance", &workaround::MessageBox::instance());
     engine.rootContext()->setContextProperty("_restartqopenhdmessagebox", &RestartQOpenHDMessageBox::instance());
 
-//#if defined(LIMIT_ADSB_MAX)
-engine.rootContext()->setContextProperty("LimitADSBMax", QVariant(true));
-//#else
-//engine.rootContext()->setContextProperty("LimitADSBMax", QVariant(false));
-//#endif
-
 #ifdef QOPENHD_ENABLE_ADSB_LIBRARY
+qmlRegisterUncreatableType<QmlObjectListModel>("OpenHD", 1, 0, "QmlObjectListModel", "Reference only");
 engine.rootContext()->setContextProperty("QOPENHD_ENABLE_ADSB_LIBRARY", QVariant(true));
 engine.rootContext()->setContextProperty("EnableADSB", QVariant(true));
+engine.rootContext()->setContextProperty("LimitADSBMax", QVariant(true));
 auto adsbVehicleManager = ADSBVehicleManager::instance();
 engine.rootContext()->setContextProperty("AdsbVehicleManager", adsbVehicleManager);
 //QObject::connect(openHDSettings, &OpenHDSettings::groundStationIPUpdated, adsbVehicleManager, &ADSBVehicleManager::setGroundIP, Qt::QueuedConnection);

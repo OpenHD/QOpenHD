@@ -10,10 +10,10 @@
 #include <thread>
 #include <atomic>
 
-#include "../vs_avcodec/nalu/NALU.hpp"
-#include "../vs_avcodec/nalu/KeyFrameFinder.hpp"
+#include "NALU.hpp"
+#include "KeyFrameFinder.hpp"
 
-#include "../common/TimeHelper.hpp"
+#include "../../common/TimeHelper.hpp"
 
 struct DecodingInfo{
     std::chrono::steady_clock::time_point lastCalculation=std::chrono::steady_clock::now();
