@@ -76,6 +76,7 @@ jobs:
         working-directory:  ${{ github.workspace }}
         run: |
           ./lib/gstreamer_prebuilts/fetch_extract_locally.sh
+          ls lib/gstreamer_prebuilts/
 
       - name: Build
         working-directory: ${{ runner.temp }}/shadow_build_dir
