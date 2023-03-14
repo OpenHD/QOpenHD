@@ -14,6 +14,8 @@ HEADERS += \
 
 android{
     message("gst android")
+    # More or less taken from QGroundControl.
+    # this is already the "least dirty" solution I could come up with :/
 
     #DOWNLOADED_GST_FOLDER= /home/consti10/Downloads/gstreamer-1.0-android-universal-1.20.5
     DOWNLOADED_GST_FOLDER= $$PWD/../../../lib/gstreamer_prebuilts/gstreamer-1.0-android-universal-1.20.5
@@ -23,8 +25,6 @@ android{
     message(gstreamer root android:)
     message($$GSTREAMER_ROOT_ANDROID)
 
-
-    # XXXX
     GST_ROOT = $$GSTREAMER_ROOT_ANDROID
     exists($$GST_ROOT) {
         message(Doing QGC gstreamer stuff)
@@ -74,7 +74,6 @@ android{
     }else{
         message(Gstreamer prebuilt directory does not exist)
     }
-    # XXXX
 }else{
     message(gst linux)
     CONFIG += link_pkgconfig
