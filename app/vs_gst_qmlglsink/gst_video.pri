@@ -4,12 +4,12 @@ DEFINES += QOPENHD_ENABLE_GSTREAMER_QMLGLSINK
 DEFINES += QOPENHD_GSTREAMER_SECONDARY_VIDEO
 
 SOURCES += \
-    $$PWD//gstvideostream.cpp \
+    $$PWD//gstqmlglsinkstream.cpp \
     $$PWD/gstrtpreceiver.cpp
 
 HEADERS += \
     $$PWD//gst_helper.hpp \
-    $$PWD//gstvideostream.h \
+    $$PWD//gstqmlglsinkstream.h \
     $$PWD/gstrtpreceiver.h
 
 # just using the something something webrtc from stephen was the easiest solution.
@@ -17,7 +17,6 @@ include(../../lib/h264/h264.pri)
 
 android{
     message("gst android")
-    message("doesn't work yet lol")
     #QT += multimedia
     #QT += multimediawidgets
     #GSTREAMER_ROOT_ANDROID = /home/consti10/Downloads/gstreamer-1.0-android-universal-1.20.5

@@ -1,4 +1,4 @@
-#include "gstvideostream.h"
+#include "gstqmlglsinkstream.h"
 
 #include <QtQuick>
 #include <sstream>
