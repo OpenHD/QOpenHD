@@ -330,8 +330,8 @@ int main(int argc, char *argv[]) {
     QAndroidMediaPlayer player;
     engine.rootContext()->setContextProperty("_mediaPlayer", &player);
 #endif
-    auto m_gst_rtp_receiver=std::make_unique<GstRtpReceiver>(5600,QOpenHDVideoHelper::VideoCodec::VideoCodecH264);
-    m_gst_rtp_receiver->start_receiving(nullptr);
+    //auto m_gst_rtp_receiver=std::make_unique<GstRtpReceiver>(5600,QOpenHDVideoHelper::VideoCodec::VideoCodecH264);
+    //m_gst_rtp_receiver->start_receiving(nullptr);
 // Platform - dependend video end  -----------------------------------------------------------------
 
     engine.rootContext()->setContextProperty("_decodingStatistics",&DecodingStatistcs::instance());
