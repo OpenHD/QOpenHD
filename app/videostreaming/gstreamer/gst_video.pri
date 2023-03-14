@@ -15,7 +15,8 @@ HEADERS += \
 android{
     message("gst android")
 
-    DOWNLOADED_GST_FOLDER= /home/consti10/Downloads/gstreamer-1.0-android-universal-1.20.5
+    #DOWNLOADED_GST_FOLDER= /home/consti10/Downloads/gstreamer-1.0-android-universal-1.20.5
+    DOWNLOADED_GST_FOLDER= $$PWD/../../../lib/gstreamer_prebuilts/gstreamer-1.0-android-universal-1.20.5
     GSTREAMER_ARCH_FOLDER = armv7
 
     GSTREAMER_ROOT_ANDROID = $$DOWNLOADED_GST_FOLDER/$$GSTREAMER_ARCH_FOLDER

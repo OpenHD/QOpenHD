@@ -75,13 +75,8 @@ jobs:
       - name:               Install gstreamer
         working-directory:  ${{ github.workspace }}
         run: |
-          #wget --quiet https://gstreamer.freedesktop.org/data/pkg/android/1.18.5/gstreamer-1.0-android-universal-1.18.5.tar.xz
-          #mkdir gstreamer-1.0-android-universal-1.18.5
-          #tar xf gstreamer-1.0-android-universal-1.18.5.tar.xz -C gstreamer-1.0-android-universal-1.18.5
           wget --quiet https://gstreamer.freedesktop.org/data/pkg/android/1.20.5/gstreamer-1.0-android-universal-1.20.5.tar.xz
-          sudo mkdir -p /home/consti10/Downloads/gstreamer-1.0-android-universal-1.20.5
-          sudo chmod 777 /home/consti10/Downloads/gstreamer-1.0-android-universal-1.20.5
-          tar xf gstreamer-1.0-android-universal-1.18.5.tar.xz -C /home/consti10/Downloads/gstreamer-1.0-android-universal-1.20.5
+          tar xf gstreamer-1.0-android-universal-1.18.5.tar.xz -C $(GITHUB_WORKSPACE)/QOpenHD/lib/gstreamer_prebuilts/gstreamer-1.0-android-universal-1.20.5
 
       - name: Build
         working-directory: ${{ runner.temp }}/shadow_build_dir
