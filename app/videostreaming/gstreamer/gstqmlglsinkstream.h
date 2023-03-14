@@ -7,7 +7,7 @@
 #include <QtQml>
 #include <gst/gst.h>
 
-#include "../vs_util/QOpenHDVideoHelper.hpp"
+#include "QOpenHDVideoHelper.hpp"
 
 /**
  * Consti10
@@ -20,15 +20,15 @@
  * 2) Output -> a qmlglsink with the item registered in qt (qml,GstGLVideoItem).
  * It allows dynamically changing the video resolution, framerate and/or video codec.
  */
-class GstVideoStream : public QObject{
+class GstQmlGlSinkStream : public QObject{
     Q_OBJECT
 public:
     /**
      * The constructor is delayed, remember to use init().
      * @param is_primary: weather to use the settings for primary or secondary video stream
      */
-    GstVideoStream(bool is_primary,QObject *parent = nullptr);
-    virtual ~GstVideoStream();
+    GstQmlGlSinkStream(bool is_primary,QObject *parent = nullptr);
+    virtual ~GstQmlGlSinkStream();
     /**
      * @brief after setting the output window, this does not immediately start streaming -
      * it starts a timer that checks in regular intervalls if any video-related settings (like the videoCodec) have changed

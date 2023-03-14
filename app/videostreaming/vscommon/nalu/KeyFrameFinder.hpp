@@ -96,6 +96,15 @@ public:
         assert(SPS!=nullptr);
         return SPS->get_nal().sps_get_width_height();
     }
+    const NALU& getCSD0()const{
+        return SPS->get_nal();
+    }
+    const NALU& getCSD1()const{
+        return PPS->get_nal();
+    }
+    const NALU& getVPS()const{
+        return VPS->get_nal();
+    }
 public:
     static bool compare(const NALU& n1,const NALU& n2){
         if(n1.getSize()!=n2.getSize())return false;

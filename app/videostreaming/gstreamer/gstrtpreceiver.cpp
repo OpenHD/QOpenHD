@@ -2,66 +2,70 @@
 #include "gst/gstparse.h"
 #include "gst/gstpipeline.h"
 #include "gst/app/gstappsink.h"
-
+#include "gst_helper.hpp"
 #include <cstring>
+#include <nalu/NALU.hpp>
 
-#include "../vs_avcodec/nalu/NALU.hpp"
+
+G_BEGIN_DECLS
+// The static plugins we use
+#if defined(__android__) || defined(__ios__)
+    GST_PLUGIN_STATIC_DECLARE(coreelements);
+    GST_PLUGIN_STATIC_DECLARE(playback);
+    GST_PLUGIN_STATIC_DECLARE(libav);
+    GST_PLUGIN_STATIC_DECLARE(rtp);
+    GST_PLUGIN_STATIC_DECLARE(rtsp);
+    GST_PLUGIN_STATIC_DECLARE(udp);
+    GST_PLUGIN_STATIC_DECLARE(videoparsersbad);
+    GST_PLUGIN_STATIC_DECLARE(x264);
+    GST_PLUGIN_STATIC_DECLARE(rtpmanager);
+    GST_PLUGIN_STATIC_DECLARE(isomp4);
+    GST_PLUGIN_STATIC_DECLARE(matroska);
+    GST_PLUGIN_STATIC_DECLARE(mpegtsdemux);
+    GST_PLUGIN_STATIC_DECLARE(opengl);
+    GST_PLUGIN_STATIC_DECLARE(tcp);
+    GST_PLUGIN_STATIC_DECLARE(app);//XX
+#if defined(__android__)
+    GST_PLUGIN_STATIC_DECLARE(androidmedia);
+#elif defined(__ios__)
+    GST_PLUGIN_STATIC_DECLARE(applemedia);
+#endif
+#endif
+    GST_PLUGIN_STATIC_DECLARE(qmlgl);
+    GST_PLUGIN_STATIC_DECLARE(qgc);
+G_END_DECLS
 
 GstRtpReceiver::GstRtpReceiver(int udp_port, QOpenHDVideoHelper::VideoCodec video_codec)
 {
     m_port=udp_port;
     m_video_codec=video_codec;
+#if defined(__android__) || defined(__ios__)
+    GST_PLUGIN_STATIC_REGISTER(coreelements);
+    GST_PLUGIN_STATIC_REGISTER(playback);
+    GST_PLUGIN_STATIC_REGISTER(libav);
+    GST_PLUGIN_STATIC_REGISTER(rtp);
+    GST_PLUGIN_STATIC_REGISTER(rtsp);
+    GST_PLUGIN_STATIC_REGISTER(udp);
+    GST_PLUGIN_STATIC_REGISTER(videoparsersbad);
+    GST_PLUGIN_STATIC_REGISTER(x264);
+    GST_PLUGIN_STATIC_REGISTER(rtpmanager);
+    GST_PLUGIN_STATIC_REGISTER(isomp4);
+    GST_PLUGIN_STATIC_REGISTER(matroska);
+    GST_PLUGIN_STATIC_REGISTER(mpegtsdemux);
+    GST_PLUGIN_STATIC_REGISTER(opengl);
+    GST_PLUGIN_STATIC_REGISTER(tcp);
+    GST_PLUGIN_STATIC_REGISTER(app);//XX
+#if defined(__android__)
+    GST_PLUGIN_STATIC_REGISTER(androidmedia);
+#elif defined(__ios__)
+    GST_PLUGIN_STATIC_REGISTER(applemedia);
+#endif
+#endif
 }
 
 GstRtpReceiver::~GstRtpReceiver()
 {
 
-}
-
-enum class VideoCodec {
-  H264=0,
-  H265,
-  MJPEG
-};
-static VideoCodec conv_codec(const QOpenHDVideoHelper::VideoCodec codec){
-    if(codec==QOpenHDVideoHelper::VideoCodecH264)return VideoCodec::H264;
-    if(codec==QOpenHDVideoHelper::VideoCodecH265)return VideoCodec::H265;
-    return VideoCodec::MJPEG;
-}
-
-static std::string gst_create_rtp_caps(const VideoCodec& videoCodec){
-  std::stringstream ss;
-  if(videoCodec==VideoCodec::H264){
-    ss<<"caps=\"application/x-rtp, media=(string)video, encoding-name=(string)H264, payload=(int)96\"";
-  }else if(videoCodec==VideoCodec::H265){
-    ss<<"caps=\"application/x-rtp, media=(string)video, encoding-name=(string)H265\"";
-  }else{
-    ss<<"caps=\"application/x-rtp, media=(string)video, encoding-name=(string)mjpeg\"";
-  }
-  return ss.str();
-}
-static std::string create_rtp_depacketize_for_codec(const VideoCodec& codec){
-  if(codec==VideoCodec::H264)return "rtph264depay ! ";
-  if(codec==VideoCodec::H265)return "rtph265depay ! ";
-  if(codec==VideoCodec::MJPEG)return "rtpjpegdepay ! ";
-  assert(false);
-  return "";
-}
-static std::string create_parse_for_codec(const VideoCodec& codec){
-  // config-interval=-1 = makes 100% sure each keyframe has SPS and PPS
-  if(codec==VideoCodec::H264)return "h264parse config-interval=-1 ! ";
-  if(codec==VideoCodec::H265)return "h265parse config-interval=-1  ! ";
-  if(codec==VideoCodec::MJPEG)return "jpegparse ! ";
-  assert(false);
-  return "";
-}
-static std::string create_out_h264(){
-    std::stringstream ss;
-    ss<<"video/x-h264";
-    ss<<", stream-format=\"byte-stream\"";
-    //ss<<", alignment=\"nal\"";
-    ss<<" ! ";
-    return ss.str();
 }
 
 static std::shared_ptr<std::vector<uint8_t>> gst_copy_buffer(GstBuffer* buffer){
@@ -83,7 +87,8 @@ static void loop_pull_appsink_samples(bool& keep_looping,GstElement *app_sink_el
   assert(out_cb);
   const uint64_t timeout_ns=std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::milliseconds(100)).count();
   while (keep_looping){
-    GstSample* sample = gst_app_sink_try_pull_sample(GST_APP_SINK(app_sink_element),timeout_ns);
+    //GstSample* sample = nullptr;
+    GstSample* sample= gst_app_sink_try_pull_sample(GST_APP_SINK(app_sink_element),timeout_ns);
     if (sample) {
       //openhd::log::get_default()->debug("Got sample");
       //auto buffer_list=gst_sample_get_buffer_list(sample);
@@ -104,12 +109,13 @@ static void loop_pull_appsink_samples(bool& keep_looping,GstElement *app_sink_el
 
 std::string GstRtpReceiver::construct_gstreamer_pipeline()
 {
-    const auto codec=conv_codec(m_video_codec);
+    const auto codec=pipeline::conv_codec(m_video_codec);
     std::stringstream ss;
-    ss<<"udpsrc address=\"127.0.0.1\" port="<<m_port<<" "<<gst_create_rtp_caps(codec)<<" ! ";
-    ss<<create_rtp_depacketize_for_codec(codec);
-    ss<<create_parse_for_codec(codec);
-    ss<<create_out_h264();
+    //ss<<"udpsrc address=\"127.0.0.1\" port="<<m_port<<" "<<gst_create_rtp_caps(codec)<<" ! ";
+    ss<<"udpsrc port="<<m_port<<" "<<gst_create_rtp_caps(codec)<<" ! ";
+    ss<<pipeline::create_rtp_depacketize_for_codec(codec);
+    ss<<pipeline::create_parse_for_codec(codec);
+    ss<<pipeline::create_out_caps(codec);
     ss<<" appsink drop=true name=out_appsink";
     return ss.str();
 }
@@ -128,8 +134,20 @@ void GstRtpReceiver::on_new_sample(std::shared_ptr<std::vector<uint8_t> > sample
     if(m_cb){
         m_cb(sample);
     }else{
+        debug_sample(sample);
+    }
+}
+
+void GstRtpReceiver::debug_sample(std::shared_ptr<std::vector<uint8_t> > sample)
+{
+    if(m_video_codec==QOpenHDVideoHelper::VideoCodecH264){
         NALU nalu(sample->data(),sample->size());
-        qDebug()<<"Got frame:"<<nalu.get_nal_unit_type_as_string().c_str();
+        qDebug()<<"Got h264 frame:"<<nalu.get_nal_unit_type_as_string().c_str();
+    }else if(m_video_codec==QOpenHDVideoHelper::VideoCodecH265){
+        NALU nalu(sample->data(),sample->size(),true);
+        qDebug()<<"Got h265 frame:"<<nalu.get_nal_unit_type_as_string().c_str();
+    }else{
+        qDebug()<<"Got mjpeg frame";
     }
 }
 

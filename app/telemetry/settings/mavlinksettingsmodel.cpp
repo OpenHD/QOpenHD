@@ -7,7 +7,7 @@
 #include "../../util/WorkaroundMessageBox.h"
 #include "improvedintsetting.h"
 #include "improvedstringsetting.h"
-#include "../../vs_util/QOpenHDVideoHelper.hpp"
+#include "../../videostreaming/vscommon/QOpenHDVideoHelper.hpp"
 
 #include <QSettings>
 #include <QVariant>

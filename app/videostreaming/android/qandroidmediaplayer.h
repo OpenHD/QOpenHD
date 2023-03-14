@@ -5,6 +5,9 @@
 #include <QObject>
 #include <QPointer>
 
+#include "lowlagdecoder.h"
+#include "../gstreamer/gstrtpreceiver.h"
+
 class QSurfaceTexture;
 class QAndroidMediaPlayer : public QObject
 {
@@ -28,6 +31,9 @@ private:
     // Links to LiveVideoPlayerWrapper - it is honestly easier to write java code and then copy it over into QOpenHD
     // qt android (video) sucks
     QAndroidJniObject m_mediaPlayer;
+private:
+    std::unique_ptr<LowLagDecoder> m_low_lag_decoder=nullptr;
+    std::unique_ptr<GstRtpReceiver> m_receiver=nullptr;
 };
 
 #endif // QANDROIDMEDIAPLAYER_H

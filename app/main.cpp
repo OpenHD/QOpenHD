@@ -24,8 +24,6 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "telemetry/settings/synchronizedsettings.h"
 #endif //QOPENHD_HAS_MAVSDK_MAVLINK_TELEMETRY
 
-#include "util/QmlObjectListModel.h"
-
 #include "osd/speedladder.h"
 #include "osd/altitudeladder.h"
 #include "osd/headingladder.h"
@@ -35,19 +33,17 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "osd/aoagauge.h"
 
 // Video - annyoing ifdef crap is needed for all the different platforms / configurations
-#include "vs_util/QOpenHDVideoHelper.hpp"
-#include "vs_util/decodingstatistcs.h"
+#include "decodingstatistcs.h"
 #ifdef QOPENHD_ENABLE_VIDEO_VIA_AVCODEC
-#include "vs_avcodec/QSGVideoTextureItem.h"
+#include "QSGVideoTextureItem.h"
 #endif
 #ifdef QOPENHD_ENABLE_GSTREAMER_QMLGLSINK
-#include "vs_gst_qmlglsink/gstvideostream.h"
-#include "vs_gst_qmlglsink/gst_helper.hpp"
-//#include "vs_gst_qmlglsink/gstrtpreceiver.h"
+#include "videostreaming/gstreamer/gst_helper.hpp"
+#include "videostreaming/gstreamer/gstqmlglsinkstream.h"
 #endif //QOPENHD_ENABLE_GSTREAMER_QMLGLSINK
 #ifdef QOPENHD_ENABLE_VIDEO_VIA_ANDROID
-#include <vs_android/qandroidmediaplayer.h>
-#include <vs_android/qsurfacetexture.h>
+#include <videostreaming/android/qandroidmediaplayer.h>
+#include <videostreaming/android/qsurfacetexture.h>
 #endif
 // Video end
 
@@ -66,6 +62,7 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #ifdef QOPENHD_ENABLE_ADSB_LIBRARY
 #include "adsb/ADSBVehicleManager.h"
 #include "adsb/ADSBVehicle.h"
+#include "adsb/QmlObjectListModel.h"
 #endif
 
 
@@ -229,9 +226,9 @@ int main(int argc, char *argv[]) {
 
   QOpenHD::instance().keep_screen_on(true);
 #if defined(__android__)
+    qDebug()<<"Android request permissions";
     for(const QString &permission : permissions) {
         auto result = QtAndroid::checkPermission(permission);
-
         if (result == QtAndroid::PermissionResult::Denied) {
             auto resultHash = QtAndroid::requestPermissionsSync(QStringList({permission}));
             if (resultHash[permission] == QtAndroid::PermissionResult::Denied) {
@@ -242,8 +239,6 @@ int main(int argc, char *argv[]) {
 #endif
 
     load_fonts();
-
-    qmlRegisterUncreatableType<QmlObjectListModel>("OpenHD", 1, 0, "QmlObjectListModel", "Reference only");
 
     qmlRegisterType<SpeedLadder>("OpenHD", 1, 0, "SpeedLadder");
     qmlRegisterType<AltitudeLadder>("OpenHD", 1, 0, "AltitudeLadder");
@@ -301,11 +296,11 @@ int main(int argc, char *argv[]) {
 #ifdef QOPENHD_ENABLE_GSTREAMER_QMLGLSINK
     engine.rootContext()->setContextProperty("QOPENHD_ENABLE_GSTREAMER_QMLGLSINK", QVariant(true));
 #ifdef QOPENHD_GSTREAMER_PRIMARY_VIDEO
-    std::unique_ptr<GstVideoStream> primary_video_gstreamer=std::make_unique<GstVideoStream>(true);
+    std::unique_ptr<GstQmlGlSinkStream> primary_video_gstreamer=std::make_unique<GstQmlGlSinkStream>(true);
     engine.rootContext()->setContextProperty("_primary_video_gstreamer", primary_video_gstreamer.get());
 #endif
 #ifdef QOPENHD_GSTREAMER_SECONDARY_VIDEO
-    std::unique_ptr<GstVideoStream> secondary_video_gstreamer=std::make_unique<GstVideoStream>(false);
+    std::unique_ptr<GstQmlGlSinkStream> secondary_video_gstreamer=std::make_unique<GstQmlGlSinkStream>(false);
     engine.rootContext()->setContextProperty("_secondary_video_gstreamer", secondary_video_gstreamer.get());
 #endif
 #else
@@ -329,9 +324,9 @@ int main(int argc, char *argv[]) {
     // Create a player
     QAndroidMediaPlayer player;
     engine.rootContext()->setContextProperty("_mediaPlayer", &player);
+#else
+     engine.rootContext()->setContextProperty("QOPENHD_ENABLE_VIDEO_VIA_ANDROID", QVariant(false));
 #endif
-    //auto m_gst_rtp_receiver=std::make_unique<GstRtpReceiver>(5400,QOpenHDVideoHelper::VideoCodec::VideoCodecH264);
-    //m_gst_rtp_receiver->start_receiving(nullptr);
 // Platform - dependend video end  -----------------------------------------------------------------
 
     engine.rootContext()->setContextProperty("_decodingStatistics",&DecodingStatistcs::instance());
@@ -339,15 +334,11 @@ int main(int argc, char *argv[]) {
     engine.rootContext()->setContextProperty("_messageBoxInstance", &workaround::MessageBox::instance());
     engine.rootContext()->setContextProperty("_restartqopenhdmessagebox", &RestartQOpenHDMessageBox::instance());
 
-//#if defined(LIMIT_ADSB_MAX)
-engine.rootContext()->setContextProperty("LimitADSBMax", QVariant(true));
-//#else
-//engine.rootContext()->setContextProperty("LimitADSBMax", QVariant(false));
-//#endif
-
 #ifdef QOPENHD_ENABLE_ADSB_LIBRARY
+qmlRegisterUncreatableType<QmlObjectListModel>("OpenHD", 1, 0, "QmlObjectListModel", "Reference only");
 engine.rootContext()->setContextProperty("QOPENHD_ENABLE_ADSB_LIBRARY", QVariant(true));
 engine.rootContext()->setContextProperty("EnableADSB", QVariant(true));
+engine.rootContext()->setContextProperty("LimitADSBMax", QVariant(true));
 auto adsbVehicleManager = ADSBVehicleManager::instance();
 engine.rootContext()->setContextProperty("AdsbVehicleManager", adsbVehicleManager);
 //QObject::connect(openHDSettings, &OpenHDSettings::groundStationIPUpdated, adsbVehicleManager, &ADSBVehicleManager::setGroundIP, Qt::QueuedConnection);

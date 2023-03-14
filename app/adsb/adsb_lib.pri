@@ -5,12 +5,15 @@ SOURCES += \
     $$PWD/markermodel.cpp \
     $$PWD/ADSBVehicle.cpp \
     $$PWD/ADSBVehicleManager.cpp \
+    $$PWD/QmlObjectListModel.cpp \
+
 
 HEADERS += \
     $$PWD/adsb.h \
     $$PWD/markermodel.h \
     $$PWD/ADSBVehicle.h \
     $$PWD/ADSBVehicleManager.h \
+    $$PWD/QmlObjectListModel.h \
 
 
 QT += positioning

@@ -69,6 +69,9 @@ ApplicationWindow {
             anchors.fill: parent
             z: 1.0
             source: {
+                if(QOPENHD_ENABLE_VIDEO_VIA_ANDROID){
+                    return "../video/ExpMainVideoAndroid.qml"
+                }
                 // If we have avcodec at compile time, we prefer it over qmlglsink since it provides lower latency
                 // (not really avcodec itself, but in this namespace we have 1) the preferred sw decode path and
                 // 2) also the mmal rpi path )
@@ -78,9 +81,6 @@ ApplicationWindow {
                 // Fallback / windows or similar
                 if(QOPENHD_ENABLE_GSTREAMER_QMLGLSINK){
                     return "../video/MainVideoGStreamer.qml";
-                }
-                if(QOPENHD_ENABLE_VIDEO_VIA_ANDROID){
-                    return "../video/ExpMainVideoAndroid.qml"
                 }
                 console.warn("No primary video implementation")
                 return ""

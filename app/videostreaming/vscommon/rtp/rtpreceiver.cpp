@@ -5,9 +5,9 @@
 #include "../common/StringHelper.hpp"
 #include "../common/openhd-util.hpp"
 
-#include "../../vs_util/decodingstatistcs.h"
+#include "QOpenHDVideoHelper.hpp"
+#include "decodingstatistcs.h"
 #include "common/openhd-util.hpp"
-#include "vs_util/QOpenHDVideoHelper.hpp"
 #include "../../logging/hudlogmessagesmodel.h"
 
 

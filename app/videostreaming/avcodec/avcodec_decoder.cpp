@@ -8,7 +8,7 @@
 #include "../common/TimeHelper.hpp"
 
 #include "texturerenderer.h"
-#include "../vs_util/decodingstatistcs.h"
+#include "decodingstatistcs.h"
 #include "common/SchedulingHelper.hpp"
 #include "../util/WorkaroundMessageBox.h"
 #include "../logging/hudlogmessagesmodel.h"

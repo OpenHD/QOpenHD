@@ -78,6 +78,9 @@ INCLUDEPATH += $$PWD/app/exp
 # REQUIRED - without it QOpenHD will compile, but be pretty much non functional
 include(app/telemetry/telemetry.pri)
 
+# This code is platform and library independent, and always compiled.
+include(app/videostreaming/vscommon/vscommon.pri)
+
 # Video is quite platform dependent, if you have compile issues, try compiling without any videostreaming enabled first ;)
 LinuxBuild {
     # Avcodec decode and display, all sources
@@ -86,11 +89,11 @@ LinuxBuild {
     # However, this can be usefully for figuring out compiler issue(s) on different platform(s)
     # NOTE: QT Creator is quite bad at figuring out changes here, you might need a "full" rebuild or manualy delete
     # the build dir/cache, then rebuild
-    include(app/vs_avcodec/avcodec_video.pri)
+    include(app/videostreaming/avcodec/avcodec_video.pri)
 
     # Gstreamer / qmlglsink decode and display, all sources
     # r.n only used for secondary video and for primary video only on platforms we cannot do primary video via QSG / avcodec
-    include(app/vs_gst_qmlglsink/gst_video.pri)
+    include(app/videostreaming/gstreamer/gst_video.pri)
 }
 
 # adsb library
@@ -99,17 +102,16 @@ LinuxBuild {
     include(app/adsb/adsb_lib.pri)
 }
 
+#include(app/vs_gst_qmlglsink/gst_video.pri)
+
 # All Generic files / files that literally have 0!! dependencies other than qt
 SOURCES += \
     app/logging/hudlogmessagesmodel.cpp \
     app/logging/logmessagesmodel.cpp \
     app/util/qopenhd.cpp \
-    app/util/QmlObjectListModel.cpp \
     app/util/WorkaroundMessageBox.cpp \
     app/util/qrenderstats.cpp \
     app/util/restartqopenhdmessagebox.cpp \
-    app/vs_util/decodingstatistcs.cpp \
-    app/util/FrequencyMonitor.cpp \
     app/main.cpp \
 
 HEADERS += \
@@ -117,12 +119,9 @@ HEADERS += \
     app/logging/loghelper.h \
     app/logging/logmessagesmodel.h \
     app/util/qopenhd.h \
-    app/util/QmlObjectListModel.h \
     app/util/WorkaroundMessageBox.h \
     app/util/qrenderstats.h \
     app/util/restartqopenhdmessagebox.h \
-    app/vs_util/decodingstatistcs.h \
-    app/util/FrequencyMonitor.h \
 
 
 # Geographic lib updated to c-2.0, so much cleaner
@@ -183,7 +182,9 @@ DISTFILES += \
     app/telemetry/telemetry.pri \
     app/util/README.md \
     app/videostreaming/README.md \
+    app/videostreaming/README.txt \
     app/videostreaming/gst_qmlglsink/gst_video.pri \
+    app/videostreaming/vscommon/vscommon.pri \
     app/vs_android/videostreamingandroid.pri \
     extra_build_qmake.sh \
     lib/h264nal/h264nal.pri \
@@ -256,7 +257,8 @@ AndroidBuild {
     #CONFIG += EnableSpeech
     QT += androidextras
 
-    include(app/vs_android/videostreamingandroid.pri)
+    include(app/videostreaming/gstreamer/gst_video.pri)
+    include(app/videostreaming/android/videostreamingandroid.pri)
 }
 
 EnableSpeech {

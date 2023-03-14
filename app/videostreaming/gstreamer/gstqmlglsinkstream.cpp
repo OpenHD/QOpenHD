@@ -1,21 +1,9 @@
-#include "gstvideostream.h"
+#include "gstqmlglsinkstream.h"
 
 #include <QtQuick>
 #include <sstream>
 
 #include "gst_helper.hpp"
-
-static std::string gst_create_caps(const QOpenHDVideoHelper::VideoCodec& videoCodec){
-    std::stringstream ss;
-    if(videoCodec==QOpenHDVideoHelper::VideoCodecH264){
-        ss<<"caps = \"application/x-rtp, media=(string)video, encoding-name=(string)H264, payload=(int)96\" ! ";
-    }else if(videoCodec==QOpenHDVideoHelper::VideoCodecH265){
-        ss<<"caps = \"application/x-rtp, media=(string)video, encoding-name=(string)H265\" ! ";
-    }else{
-        ss<<"caps = \"application/x-rtp, media=(string)video, encoding-name=(string)mjpeg\" ! ";
-    }
-    return ss.str();
-}
 
 static std::string gst_create_rtp_decoder(const QOpenHDVideoHelper::VideoCodec& videoCodec){
     std::stringstream ss;
@@ -131,7 +119,7 @@ static std::string constructGstreamerPipeline(const QOpenHDVideoHelper::VideoStr
         ss<<create_debug_encoded_data_producer(config.video_codec);
     }else{
         ss<<"udpsrc port="<<config.udp_rtp_input_port<<" ";
-        ss<<gst_create_caps(config.video_codec);
+        ss<<pipeline::gst_create_rtp_caps(pipeline::conv_codec(config.video_codec))<<" ! ";
     }
     // add rtp decoder
     ss<<gst_create_rtp_decoder(config.video_codec);
@@ -159,39 +147,39 @@ static void debug_gstreamer_pipeline_state(GstElement *gst_pipeline){
     }
 }
 
-GstVideoStream::GstVideoStream(bool is_primary,QObject *parent)
+GstQmlGlSinkStream::GstQmlGlSinkStream(bool is_primary,QObject *parent)
     : QObject(parent),
       timer(new QTimer),
       m_isPrimaryStream(is_primary)
 {
-    qDebug() << "GstVideoStream::GstVideoStream()";
+    qDebug() << "GstQmlGlSinkStream::GstQmlGlSinkStream()";
     // NOTE: the gstreamer init stuff should be already called via main !
 }
 
-GstVideoStream::~GstVideoStream() {
-     qDebug() << "GstVideoStream::~GstVideoStream()begin";
+GstQmlGlSinkStream::~GstQmlGlSinkStream() {
+     qDebug() << "GstQmlGlSinkStream::~GstQmlGlSinkStream()begin";
     if(timer){
         timer->stop();
         delete timer;
     }
     stopVideoSafe();
-    qDebug() << "GstVideoStream::~GstVideoStream()end";
+    qDebug() << "GstQmlGlSinkStream::~GstQmlGlSinkStream()end";
 }
 
 
-void GstVideoStream::init(QQuickItem* videoOutputWindow) {
+void GstQmlGlSinkStream::init(QQuickItem* videoOutputWindow) {
     // we do not support changing the output window once it is assigned
     assert(m_videoOutputWindow==nullptr);
     assert(videoOutputWindow);
     m_videoOutputWindow=videoOutputWindow;
     m_videoStreamConfig=QOpenHDVideoHelper::read_from_settings2(m_isPrimaryStream);
     lastDataTimeout = QDateTime::currentMSecsSinceEpoch();
-    QObject::connect(timer, &QTimer::timeout, this, &GstVideoStream::timerCallback);
+    QObject::connect(timer, &QTimer::timeout, this, &GstQmlGlSinkStream::timerCallback);
     timer->start(1000);
-    qDebug() << "GstVideoStream::init()";
+    qDebug() << "GstQmlGlSinkStream::init()";
 }
 
-void GstVideoStream::check_common_mistakes_then_init(QQuickItem* qmlglsinkvideoitem)
+void GstQmlGlSinkStream::check_common_mistakes_then_init(QQuickItem* qmlglsinkvideoitem)
 {
     if(qmlglsinkvideoitem==nullptr){
         qWarning("init called withut valid window");
@@ -207,7 +195,7 @@ void GstVideoStream::check_common_mistakes_then_init(QQuickItem* qmlglsinkvideoi
 
 
 static gboolean PipelineCb(GstBus *bus, GstMessage *msg, gpointer data) {
-    auto instance = static_cast<GstVideoStream*>(data);
+    auto instance = static_cast<GstQmlGlSinkStream*>(data);
     //qDebug()<<"PipelineCb"<<QString(GST_MESSAGE_TYPE_NAME(msg));
     switch (GST_MESSAGE_TYPE(msg)){
     case GST_MESSAGE_EOS:{
@@ -294,8 +282,8 @@ static gboolean bus_call (GstBus *bus,GstMessage *msg,gpointer data){
 }
 
 
-void GstVideoStream::startVideo() {
-    qDebug()<<"GstVideoStream::startVideo() begin";
+void GstQmlGlSinkStream::startVideo() {
+    qDebug()<<"GstQmlGlSinkStream::startVideo() begin";
     if(m_pipeline!=nullptr){
         //qDebug()<<"You probably forgot to call stopVideo";
         stopVideoSafe();
@@ -325,11 +313,11 @@ void GstVideoStream::startVideo() {
 
     gst_element_set_state (m_pipeline, GST_STATE_PLAYING);
     lastDataTimeout = QDateTime::currentMSecsSinceEpoch();
-    qDebug()<<"GstVideoStream::startVideo() end";
+    qDebug()<<"GstQmlGlSinkStream::startVideo() end";
 }
 
-void GstVideoStream::stopVideoSafe() {
-    qDebug() << "GstVideoStream::stopVideoSafe()::begin";
+void GstQmlGlSinkStream::stopVideoSafe() {
+    qDebug() << "GstQmlGlSinkStream::stopVideoSafe()::begin";
     if (m_pipeline != nullptr) {
         // Needed on jetson ?!
         gst_element_send_event ((GstElement*)m_pipeline, gst_event_new_eos ());
@@ -338,16 +326,16 @@ void GstVideoStream::stopVideoSafe() {
         gst_object_unref (m_pipeline);
         m_pipeline=nullptr;
     }
-    qDebug() << "GstVideoStream::stopVideoSafe()::end";
+    qDebug() << "GstQmlGlSinkStream::stopVideoSafe()::end";
 }
 
-void GstVideoStream::dev_restart_stream()
+void GstQmlGlSinkStream::dev_restart_stream()
 {
     // we just set decoder error to true, such that the timer will stop and then restart the video stream
     has_decoder_error=true;
 }
 
-void GstVideoStream::timerCallback() {
+void GstQmlGlSinkStream::timerCallback() {
     if(m_videoOutputWindow==nullptr){
         if(nTimesVideoQmlElementNotSet<10){
             // Most likely the qmlglsink is not found by qt - install gstreamer with qmlglsink enabled)
