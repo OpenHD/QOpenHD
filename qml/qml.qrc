@@ -44,7 +44,6 @@
         <file>ui/widgets/SOCStatusWidgetGround.qml</file>
         <file>ui/widgets/SOCStatusWidgetAir.qml</file>
         <file>ui/widgets/HorizonWidget.qml</file>
-        <file>ui/widgets/HorizonWidgetForm.ui.qml</file>
         <file>ui/widgets/AirBatteryWidget.qml</file>
         <file>ui/widgets/FlightModeWidget.qml</file>
         <file>ui/widgets/FlightModeWidgetForm.ui.qml</file>

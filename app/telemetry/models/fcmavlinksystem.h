@@ -223,6 +223,7 @@ private:
     std::chrono::steady_clock::time_point m_last_update_update_rate_mavlink_message_attitude=std::chrono::steady_clock::now();
     int m_n_messages_update_rate_mavlink_message_attitude=0;
 public:
+    // WARNING: Do not call any non-async send command methods from the same thread that is parsing the mavlink messages !
     //
     // Try to change the arming state.
     // The result (success/failure) is logged in the HUD once completed
@@ -241,7 +242,11 @@ private:
     void send_message_hud_connection(bool connected);
     void send_message_arm_change(bool armed);
 private:
+    // The user can configure a specific rate for the artificial horizon updates in the UI
+    // (Since the artificial horizon may feel really sluggish otherwise, at least with the default update rate of mavlink, which is 10Hz)
     void test_set_data_stream_rates();
+    int m_rate_n_times_tried=0;
+    bool m_rate_success=false;
 private:
     static bool get_SHOW_FC_MESSAGES_IN_HUD();
     // Used to calculate efficiency in mAh / km
