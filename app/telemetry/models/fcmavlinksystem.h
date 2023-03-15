@@ -244,6 +244,11 @@ private:
     void test_set_data_stream_rates();
 private:
     static bool get_SHOW_FC_MESSAGES_IN_HUD();
+    // Used to calculate efficiency in mAh / km
+    void recalculate_efficiency();
+    double m_efficiency_last_distance_km=0;
+    int m_efficiency_last_charge_consumed_mAh=0;
+    std::chrono::steady_clock::time_point m_efficiency_last_update=std::chrono::steady_clock::now();
 };
 
 
