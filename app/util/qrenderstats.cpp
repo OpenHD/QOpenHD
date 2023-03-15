@@ -73,22 +73,19 @@ void QRenderStats::m_QQuickWindow_beforeRenderPassRecording()
     //const float frame_time_ms=((float)frame_time_us)/1000.0f;
     //qDebug()<<"QRenderStats main frame time:"<<frame_time_ms<<"ms";
     avgMainRenderFrameDelta.add(delta);
-    if(avgMainRenderFrameDelta.getNSamples()>120){
-        const auto main_stats=QString(avgMainRenderFrameDelta.getAvgReadable().c_str());
+    avgMainRenderFrameDelta.recalculate_in_fixed_time_intervals(std::chrono::seconds(1),[this](const AvgCalculator& self){
+        const auto main_stats=QString(self.getAvgReadable().c_str());
         //qDebug()<<"QRenderStats main frame time:"<<main_stats;
         set_main_render_stats(main_stats);
-        avgMainRenderFrameDelta.reset();
-    }
+    });
 }
 
 void QRenderStats::m_QQuickWindow_afterRenderPassRecording()
 {
     m_avg_renderpass_time.stop();
-    if(m_avg_renderpass_time.getNSamples()>120){
-        const auto stats=QString(m_avg_renderpass_time.getAvgReadable().c_str());
+    m_avg_renderpass_time.recalculate_in_fixed_time_intervals(std::chrono::seconds(1),[this](const AvgCalculator& self){
+        const auto stats=QString(self.getAvgReadable().c_str());
         //qDebug()<<"QRenderStats main frame time:"<<main_stats;
         set_qt_renderpass_time(stats);
-        m_avg_renderpass_time.reset();
-    }
-
+    });
 }

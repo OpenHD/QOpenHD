@@ -397,4 +397,12 @@ Settings {
 
     // Show FC mavlink messages in the HUD
     property bool show_fc_messages_in_hud: true
+
+    // only works on select platforms (on rpi, we are automatically already full screen)
+    property bool dev_force_show_full_screen: false
+
+    // experimental
+    property bool dev_enable_live_audio_playback: false
+    // might / might not work
+    property bool dev_set_swap_interval_zero: false
 }
