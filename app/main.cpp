@@ -186,11 +186,14 @@ int main(int argc, char *argv[]) {
     //QCoreApplication::setAttribute(Qt::AA_UseOpenGLES);
 
     // From https://stackoverflow.com/questions/63473541/how-to-dynamically-toggle-vsync-in-a-qt-application-at-runtime
-    // Get rid of VSYNC if possible
-    // Doesn't work
-    //QSurfaceFormat format=QSurfaceFormat::defaultFormat();
-    //format.setSwapInterval(0);
-    //QSurfaceFormat::setDefaultFormat(format);
+    // Get rid of VSYNC if possible. Might / might not work. On my ubuntu nvidia & intel laptop, this at least seems to
+    // result in tripple buffering with unlimited fps, a bit "better" regarding latency than default.
+    if(settings.value("dev_set_swap_interval_zero",false).toBool()){
+        qDebug()<<"Request swap interval of 0";
+        QSurfaceFormat format=QSurfaceFormat::defaultFormat();
+        format.setSwapInterval(0);
+        QSurfaceFormat::setDefaultFormat(format);
+    }
 
     const double global_scale = settings.value("global_scale", 1.0).toDouble();
     const std::string global_scale_s = std::to_string(global_scale);

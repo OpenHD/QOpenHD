@@ -403,4 +403,6 @@ Settings {
 
     // experimental
     property bool dev_enable_live_audio_playback: false
+    // might / might not work
+    property bool dev_set_swap_interval_zero: false
 }

@@ -248,6 +248,21 @@ ScrollView {
                     onCheckedChanged: settings.dev_enable_live_audio_playback = checked
                 }
             }
+            SettingBaseElement{
+                m_short_description: "dev_set_swap_interval_zero"
+                m_long_description: "Can decrease latency on x86 / laptop. Requires restart."
+
+                Switch {
+                    width: 32
+                    height: elementHeight
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    checked: settings.dev_set_swap_interval_zero
+                    onCheckedChanged: settings.dev_set_swap_interval_zero = checked
+                }
+            }
         }
         Card {
             id: simplePopupHack
