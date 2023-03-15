@@ -53,7 +53,6 @@
         <file>ui/widgets/FlightTimerWidget.qml</file>
         <file>ui/widgets/FlightTimerWidgetForm.ui.qml</file>
         <file>ui/HUDOverlayGrid.qml</file>
-        <file>ui/HUDOverlayGridForm.ui.qml</file>
         <file>ui/widgets/BaseWidget.qml</file>
         <file>ui/widgets/BaseWidgetForm.ui.qml</file>
         <file>ui/widgets/FpvWidget.qml</file>
