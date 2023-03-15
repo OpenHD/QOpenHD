@@ -5,11 +5,13 @@ DEFINES += QOPENHD_GSTREAMER_SECONDARY_VIDEO
 
 SOURCES += \
     $$PWD/gstqmlglsinkstream.cpp \
+    $$PWD/gstrtpaudioplayer.cpp \
     $$PWD/gstrtpreceiver.cpp
 
 HEADERS += \
     $$PWD/gst_helper.hpp \
     $$PWD/gstqmlglsinkstream.h \
+    $$PWD/gstrtpaudioplayer.h \
     $$PWD/gstrtpreceiver.h
 
 android{
