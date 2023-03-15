@@ -905,6 +905,7 @@ void FCMavlinkSystem::update_alive()
             set_is_alive(alive);
         }
     }
+    recalculate_efficiency();
 }
 
 void FCMavlinkSystem::test_set_data_stream_rates()
@@ -952,4 +953,23 @@ bool FCMavlinkSystem::get_SHOW_FC_MESSAGES_IN_HUD()
 {
     QSettings settings;
     return settings.value("show_fc_messages_in_hud", false).toBool();
+}
+
+void FCMavlinkSystem::recalculate_efficiency()
+{
+    // We recalculate the efficiency in X second intervals
+    const auto elapsed=std::chrono::steady_clock::now()-m_efficiency_last_update;
+    if(elapsed<std::chrono::seconds(10)){
+        return;
+    }
+    m_efficiency_last_update=std::chrono::steady_clock::now();
+    const double delta_distance_km=m_flight_distance-m_efficiency_last_distance_km;
+    const int delta_charge_mah=m_battery_consumed_mah-m_efficiency_last_charge_consumed_mAh;
+    if(delta_distance_km>0 && delta_charge_mah>0){
+        // recalculate and update efficiency
+        const int efficiency_mah_per_km=Telemetryutil::calculate_efficiency_in_mah_per_km(delta_charge_mah,delta_distance_km);
+        set_battery_consumed_mah_per_km(efficiency_mah_per_km);
+    }
+    m_efficiency_last_distance_km=m_flight_distance;
+    m_efficiency_last_charge_consumed_mAh=m_battery_consumed_mah;
 }
