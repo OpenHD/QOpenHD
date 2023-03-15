@@ -400,4 +400,7 @@ Settings {
 
     // only works on select platforms (on rpi, we are automatically already full screen)
     property bool dev_force_show_full_screen: false
+
+    // experimental
+    property bool dev_enable_live_audio_playback: false
 }

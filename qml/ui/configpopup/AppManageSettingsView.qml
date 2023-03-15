@@ -233,7 +233,21 @@ ScrollView {
                     onCheckedChanged: settings.dev_force_show_full_screen = checked
                 }
             }
+            SettingBaseElement{
+                m_short_description: "Enable audio playback"
+                m_long_description: "Enable live audio playback in QOpenHD, NOTE: audio streaming is not supported in OpenHD yet. Requires restart of QOpenHD."
 
+                Switch {
+                    width: 32
+                    height: elementHeight
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    checked: settings.dev_enable_live_audio_playback
+                    onCheckedChanged: settings.dev_enable_live_audio_playback = checked
+                }
+            }
         }
         Card {
             id: simplePopupHack

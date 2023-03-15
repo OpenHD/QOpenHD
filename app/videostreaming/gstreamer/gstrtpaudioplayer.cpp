@@ -5,6 +5,7 @@
 #include <assert.h>
 #include <qdebug.h>
 
+#include <qsettings.h>
 #include <sstream>
 
 GstRtpAudioPlayer::GstRtpAudioPlayer()
@@ -22,13 +23,19 @@ GstRtpAudioPlayer &GstRtpAudioPlayer::instance()
 static std::string construct_gstreamer_pipeline(){
     std::stringstream ss;
     //ss<<"audiotestsrc ! autoaudiosink";
-    ss<<"udpsrc port=5610 caps=\"application/x-rtp, media=(string)audio, clock-rate=(int)8000, encoding-name=(string)L16, encoding-params=(string)1, channels=(int)1, payload=(int)96\" ! rtpL16depay  ! autoaudiosink";
+    ss<<"udpsrc port=5610 caps=\"application/x-rtp, media=(string)audio, clock-rate=(int)8000, encoding-name=(string)L16, encoding-params=(string)1, channels=(int)1, payload=(int)96\" ! rtpL16depay ! queue ! autoaudiosink";
     return ss.str();
 }
 
 void GstRtpAudioPlayer::start_playing()
 {
     qDebug()<<"GstRtpAudioPlayer::start_playing() begin";
+    QSettings settings;
+    const bool dev_enable_live_audio_playback=settings.value("dev_enable_live_audio_playback", false).toBool();
+    if(!dev_enable_live_audio_playback){
+        qDebug()<<"Live audio playback is disabled";
+        return;
+    }
     assert(m_gst_pipeline==nullptr);
     const auto pipeline=construct_gstreamer_pipeline();
     GError *error = nullptr;
