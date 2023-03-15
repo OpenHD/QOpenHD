@@ -37,7 +37,7 @@ ApplicationWindow {
     //flags: Qt.WindowStaysOnTopHint| Qt.FramelessWindowHint| Qt.X11BypassWindowManagerHint;
     //flags: Qt.WindowStaysOnTopHint| Qt.X11BypassWindowManagerHint;
     //visibility: "FullScreen"
-    visibility: UseFullscreen ? "FullScreen" : "AutomaticVisibility"
+    visibility: settings.dev_force_show_full_screen ? "FullScreen" : "AutomaticVisibility"
 
     // Doesn't work, already tried :(
 

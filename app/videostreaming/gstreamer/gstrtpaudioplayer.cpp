@@ -21,7 +21,8 @@ GstRtpAudioPlayer &GstRtpAudioPlayer::instance()
 
 static std::string construct_gstreamer_pipeline(){
     std::stringstream ss;
-    ss<<"audiotestsrc ! autoaudiosink";
+    //ss<<"audiotestsrc ! autoaudiosink";
+    ss<<"udpsrc port=5610 caps=\"application/x-rtp, media=(string)audio, clock-rate=(int)8000, encoding-name=(string)L16, encoding-params=(string)1, channels=(int)1, payload=(int)96\" ! rtpL16depay  ! autoaudiosink";
     return ss.str();
 }
 
