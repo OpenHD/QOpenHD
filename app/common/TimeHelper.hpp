@@ -156,6 +156,15 @@ public:
     void set_last_log(){
         last_log=std::chrono::steady_clock::now();
     }
+    typedef std::function<void(const AvgCalculator& self)> CUSTOM_CB;
+    void recalculate_in_fixed_time_intervals(const std::chrono::steady_clock::duration interval_duration_size,CUSTOM_CB cb){
+        const auto timeSinceLastLog=std::chrono::steady_clock::now()-last_log;
+        if(timeSinceLastLog>interval_duration_size){
+            cb(*this);
+            reset();
+            last_log=std::chrono::steady_clock::now();
+        }
+    }
     typedef std::function<void(const std::string name,const std::string message)> CUSTOM_PRINT_CB;
     void custom_print_in_intervals(const std::chrono::steady_clock::duration interval_duration_size,CUSTOM_PRINT_CB cb,bool resetSamples=true){
         const auto timeSinceLastLog=std::chrono::steady_clock::now()-last_log;
