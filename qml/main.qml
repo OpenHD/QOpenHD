@@ -39,8 +39,6 @@ ApplicationWindow {
     //visibility: "FullScreen"
     visibility: settings.dev_force_show_full_screen ? "FullScreen" : "AutomaticVisibility"
 
-    // Doesn't work, already tried :(
-
     // This only exists to be able to fully rotate "everything" for users that have their screen upside down for some reason.
     // Won't affect the video, but heck, then just mount your camera upside down.
     // TODO: the better fix really would be to somehow the the RPI HDMI config to rotate the screen in HW - but r.n there seems to be
