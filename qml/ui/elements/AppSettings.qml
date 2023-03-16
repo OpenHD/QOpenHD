@@ -47,7 +47,6 @@ Settings {
     property int selectedVideoCodecPrimary:0 //0==h264,1==h265,2==MJPEG, other (error) default to h264
     property int selectedVideoCodecSecondary:0
 
-    property bool hide_watermark: true
     property bool dev_jetson: false
     // When this one is set to true, we read a file (where you can then write your custom rx gstreamer pipeline
     // that ends with qmlglsink )
