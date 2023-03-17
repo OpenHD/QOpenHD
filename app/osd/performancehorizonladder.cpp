@@ -8,6 +8,7 @@ PerformanceHorizonLadder::PerformanceHorizonLadder(QQuickItem *parent)
     : QQuickItem(parent)
 {
     setFlags(ItemHasContents);
+    setClip(true);
 }
 
 PerformanceHorizonLadder::~PerformanceHorizonLadder()
@@ -43,9 +44,11 @@ static QSGGeometry* make_rectangle(int height,int width){
 static QSGGeometry* make_line(int width,int height){
     QSGGeometry *geometry = new QSGGeometry(QSGGeometry::defaultAttributes_Point2D(), 2);
     geometry->setDrawingMode(GL_LINES);
-    geometry->setLineWidth(10);
-    geometry->vertexDataAsPoint2D()[0].set(0, height/2); //height/2
-    geometry->vertexDataAsPoint2D()[1].set(width,height/2);
+    geometry->setLineWidth(3);
+    geometry->vertexDataAsPoint2D()[0].set(-width/2, 0); //height/2
+    geometry->vertexDataAsPoint2D()[1].set(width/2,0);
+    /*geometry->vertexDataAsPoint2D()[0].set(0, height/2); //height/2
+    geometry->vertexDataAsPoint2D()[1].set(width,height/2);*/
     return geometry;
 }
 
@@ -54,19 +57,22 @@ QSGNode *PerformanceHorizonLadder::updatePaintNode(QSGNode *n, QQuickItem::Updat
     if(!node){
         node = new QSGGeometryNode();
         m_tf_node = new QSGTransformNode();
+        m_tf_node2 = new QSGTransformNode();
 
         //auto geometry=make_rectangle(width(),height());
         auto geometry=make_line(width(),height());
 
         QSGFlatColorMaterial *material = new QSGFlatColorMaterial();
-        material->setColor(QColor(255, 0, 0));
+        material->setColor(QColor(255, 255, 255));
 
         node->setGeometry(geometry);
         node->setFlag(QSGNode::OwnsGeometry);
         node->setMaterial(material);
         node->setFlag(QSGNode::OwnsMaterial);
 
-        m_tf_node->appendChildNode(node);
+        m_tf_node->appendChildNode(m_tf_node2);
+        m_tf_node2->appendChildNode(node);
+
     }
     //qDebug()<<"LOOOL";
 
@@ -76,10 +82,20 @@ QSGNode *PerformanceHorizonLadder::updatePaintNode(QSGNode *n, QQuickItem::Updat
     //QSGGeometry::updateTexturedRectGeometry(node->geometry(), rect, texture_coords);
     node->markDirty(QSGNode::DirtyGeometry | QSGNode::DirtyMaterial);
 
-    auto matrix=QMatrix4x4();
-    matrix.rotate(QQuaternion::fromAxisAndAngle(QVector3D(0,0,1),m_roll*-1));
-    //matrix.translate({0.0f,m_pitch*18.0f,0.0f});
-    m_tf_node->setMatrix(matrix);
+    {
+        auto matrix=QMatrix4x4();
+        matrix.setToIdentity();
+        matrix.translate({0.0f,m_pitch*18.0f,0.0f});
+        matrix.translate(width()/2,height()/2,0);
+        m_tf_node->setMatrix(matrix);
+    }
+    {
+        auto matrix=QMatrix4x4();
+        matrix.setToIdentity();
+        matrix.rotate(m_roll*-1,QVector3D(0,0,1));
+        m_tf_node2->setMatrix(matrix);
+    }
+
     //QTransform transform_centerOfWindow( 1, 0, 0, 1, width()/2, height()/2 );
     //transform_centerOfWindow.rotate(m_pitch*18.0f);
 

@@ -5,6 +5,8 @@
 #include <QSGGeometryNode>
 #include "../../../lib/lqtutils_master/lqtutils_prop.h"
 
+#include "horizonladder.h"
+
 class PerformanceHorizonLadder : public QQuickItem
 {
     Q_OBJECT
@@ -27,9 +29,12 @@ protected:
 private:
     QSGGeometryNode *node=nullptr;
     QSGTransformNode* m_tf_node=nullptr;
+    QSGTransformNode* m_tf_node2=nullptr;
 private:
     int m_roll;
     int m_pitch;
+private:
+    HorizonLadder* m_hl=nullptr;
 };
 
 #endif // PERFORMANCEHORIZONLADDER_H
