@@ -213,6 +213,6 @@ QSGNode *QSurfaceTexture::updatePaintNode(QSGNode *n, QQuickItem::UpdatePaintNod
     QSGGeometry::updateTexturedRectGeometry(node->geometry(), rect, texture_coords);
     node->markDirty(QSGNode::DirtyGeometry | QSGNode::DirtyMaterial);
     // XX
-     QMetaObject::invokeMethod(reinterpret_cast<QSurfaceTexture*>(this), "update", Qt::QueuedConnection);
+    QMetaObject::invokeMethod(reinterpret_cast<QSurfaceTexture*>(this), "update", Qt::QueuedConnection);
     return node;
 }

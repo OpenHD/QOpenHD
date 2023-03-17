@@ -31,6 +31,7 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #include "osd/flightpathvector.h"
 #include "osd/drawingcanvas.h"
 #include "osd/aoagauge.h"
+#include "osd/performancehorizonladder.h"
 
 // Video - annyoing ifdef crap is needed for all the different platforms / configurations
 #include "decodingstatistcs.h"
@@ -251,6 +252,7 @@ int main(int argc, char *argv[]) {
     qmlRegisterType<FlightPathVector>("OpenHD", 1, 0, "FlightPathVector");
     qmlRegisterType<DrawingCanvas>("OpenHD", 1, 0, "DrawingCanvas");
     qmlRegisterType<AoaGauge>("OpenHD", 1, 0, "AoaGauge");
+    qmlRegisterType<PerformanceHorizonLadder>("OpenHD", 1, 0, "PerformanceHorizonLadder");
 
 
     QQmlApplicationEngine engine;

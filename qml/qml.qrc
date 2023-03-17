@@ -246,5 +246,6 @@
         <file>ui/elements/WorkaroundMessageBox.qml</file>
         <file>ui/elements/RestartQOpenHDMessageBox.qml</file>
         <file>ui/elements/SettingBaseElement.qml</file>
+        <file>ui/widgets/PerformanceHorizonWidget.qml</file>
     </qresource>
 </RCC>

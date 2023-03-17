@@ -67,7 +67,8 @@ QMAKE_CXXFLAGS += -Wno-sign-compare
 # In general, parts of QOpenHD that need additional libraries should have their code in a subdirectory with a .pri where those
 # dependencies are added such that you can easily compile the project even on systems that might lack some of those qt functionalities
 # see app/adsb/adsb_lib.pri for an example
-QT +=core quick qml gui
+QT +=core quick qml gui \
+    widgets
 QT += opengl
 
 INCLUDEPATH += $$PWD/lib
@@ -137,6 +138,7 @@ SOURCES += \
     app/osd/drawingcanvas.cpp \
     app/osd/flightpathvector.cpp \
     app/osd/aoagauge.cpp \
+    app/osd/performancehorizonladder.cpp \
 
 HEADERS += \
     app/osd/headingladder.h \
@@ -147,6 +149,7 @@ HEADERS += \
     app/osd/flightpathvector.h \
     app/osd/debug_overdraw.hpp \
     app/osd/aoagauge.h \
+    app/osd/performancehorizonladder.h \
 
 
 RESOURCES += qml/qml.qrc
