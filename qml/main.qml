@@ -37,7 +37,8 @@ ApplicationWindow {
     //flags: Qt.WindowStaysOnTopHint| Qt.FramelessWindowHint| Qt.X11BypassWindowManagerHint;
     //flags: Qt.WindowStaysOnTopHint| Qt.X11BypassWindowManagerHint;
     //visibility: "FullScreen"
-    visibility: settings.dev_force_show_full_screen ? "FullScreen" : "AutomaticVisibility"
+    // android / ios - specifc: We need to explicitly say full screen, otherwise things might be "cut off"
+    visibility: (settings.dev_force_show_full_screen || QOPENHD_IS_MOBILE) ? "FullScreen" : "AutomaticVisibility"
 
     // This only exists to be able to fully rotate "everything" for users that have their screen upside down for some reason.
     // Won't affect the video, but heck, then just mount your camera upside down.

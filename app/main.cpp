@@ -353,9 +353,9 @@ int main(int argc, char *argv[]) {
 
 
 #if defined(__ios__) || defined(__android__)
-    engine.rootContext()->setContextProperty("UseFullscreen", QVariant(true));
+    engine.rootContext()->setContextProperty("QOPENHD_IS_MOBILE", QVariant(true));
 #else
-    engine.rootContext()->setContextProperty("UseFullscreen", QVariant(false));
+    engine.rootContext()->setContextProperty("QOPENHD_IS_MOBILE", QVariant(false));
 #endif
 
     // This allows to use the defines as strings in qml
