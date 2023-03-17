@@ -94,6 +94,9 @@ Settings {
     property bool downlink_rssi_declutter: false
     property double downlink_rssi_warn: 0
     property double downlink_rssi_caution: 0
+    //
+    property int downlink_packet_loss_perc_caution : 10
+    property int downlink_packet_loss_perc_warn : 20
 
     property bool show_uplink_rssi: true
     property double uplink_rssi_opacity: 1
