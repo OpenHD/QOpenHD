@@ -94,7 +94,7 @@ Settings {
     property bool downlink_rssi_declutter: false
     property double downlink_rssi_warn: 0
     property double downlink_rssi_caution: 0
-    //
+    // r.n one of the most important statistics about link quality
     property int downlink_packet_loss_perc_caution : 10
     property int downlink_packet_loss_perc_warn : 20
 
