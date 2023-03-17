@@ -404,4 +404,7 @@ Settings {
     property bool dev_enable_live_audio_playback: false
     // might / might not work
     property bool dev_set_swap_interval_zero: false
+
+    // Discard actual video ratio and fit primary video to whatever ratio the screen is at (might distort video)
+    property bool primary_video_scale_to_fit: false
 }

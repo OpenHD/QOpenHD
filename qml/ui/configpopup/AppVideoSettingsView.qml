@@ -175,6 +175,22 @@ ScrollView {
                 }
             }
 
+            SettingBaseElement{
+                m_short_description: "Scale primary video to fit"
+                m_long_description: "Fit the primary video to the exact screen size (discards actual video aspect ratio,aka video is a bit distorted). Not supported on all platforms / implementations. Might require a restart."
+
+                Switch {
+                    width: 32
+                    height: elementHeight
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    checked: settings.primary_video_scale_to_fit
+                    onCheckedChanged: settings.primary_video_scale_to_fit = checked
+                }
+            }
+
             Rectangle {
                 width: parent.width
                 height: rowHeight

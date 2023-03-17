@@ -97,6 +97,13 @@ static int get_display_rotation(){
     QSettings settings{};
     return settings.value("general_screen_rotation", 0).toInt();
 }
+// See setting description
+// do not preserve aspect ratio of primary video
+// default false (do preserve video aspect ratio)
+static bool get_primary_video_scale_to_fit(){
+    QSettings settings{};
+    return settings.value("primary_video_scale_to_fit", false).toBool();
+}
 
 static VideoStreamConfig read_from_settings(){
     QSettings settings;
