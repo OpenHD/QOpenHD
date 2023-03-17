@@ -246,6 +246,10 @@ Settings {
     property double heading_width: 250
     property bool show_heading_ladder: true
 
+    // experimental
+    property bool show_performance_horizon: false
+    // experimental end
+
     // false by default for now, since it has a big performance hit. (only noticeable on embedded devices like rpi -
     // but rpi is one of our main user(s) platforms
     property bool show_flight_path_vector: false
