@@ -335,7 +335,7 @@ void HorizonLadder::paint(QPainter* painter) {
         }
         painter->setFont(m_font);
     }
-
+    //painter->drawPoint(QPoint(width()/2,height()/2));
 
     painter->restore();
 }
