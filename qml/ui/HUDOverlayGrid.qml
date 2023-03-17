@@ -156,9 +156,9 @@ Item {
         id: horizonWidget
     }
 
-    PerformanceHorizonWidget{
-        id: performanceHorizonWidget
-    }
+    //PerformanceHorizonWidget{
+    //    id: performanceHorizonWidget
+    //}
 
     // + 7% cpu
     FpvWidget {
