@@ -153,6 +153,12 @@ QSurfaceTexture::~QSurfaceTexture()
     }
 }
 
+void QSurfaceTexture::set_video_texture_size(int width_px, int height_px)
+{
+    m_texture_width_px=width_px;
+    m_texture_height_px=height_px;
+}
+
 // No idea how / why this works, but it works.
 static void qrectf_flip_horizontally(QRectF& rect){
     float tmp = rect.top();
@@ -191,14 +197,12 @@ QSGNode *QSurfaceTexture::updatePaintNode(QSGNode *n, QQuickItem::UpdatePaintNod
         node = new SurfaceTextureNode(m_surfaceTexture, m_textureId);
         emit surfaceTextureChanged(this);
     }
-    // flip vertical
-    /*QRectF rect(boundingRect());
-    float tmp = rect.top();
-    rect.setTop(rect.bottom());
-    rect.setBottom(tmp);*/
-    auto coords=helper::ratio::calculate_viewport(boundingRect().width(),boundingRect().height(),1280,720,QOpenHDVideoHelper::get_primary_video_scale_to_fit());
-    //auto coords=helper::ratio::calculate_viewport_video_fullscreen(boundingRect().width(),boundingRect().height(),1280,720);
-    auto rect=QRectF(coords.x,coords.y,coords.width,coords.height);
+    QRectF rect(boundingRect());
+    if(m_texture_width_px>0 && m_texture_height_px>0){
+        auto coords=helper::ratio::calculate_viewport(boundingRect().width(),boundingRect().height(),m_texture_width_px,m_texture_height_px,QOpenHDVideoHelper::get_primary_video_scale_to_fit());
+        rect=QRectF(coords.x,coords.y,coords.width,coords.height);
+    }
+    // flip vertical - for some reason video by default is upside down on android otherwise
     qrectf_flip_horizontally(rect);
 
      const QRectF texture_coords=QRectF(0, 0, 1, 1);

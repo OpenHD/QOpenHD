@@ -11,12 +11,19 @@ QAndroidMediaPlayer::QAndroidMediaPlayer(QObject *parent)
     //, m_mediaPlayer("android/media/MediaPlayer")
 {
     m_low_lag_decoder=std::make_unique<LowLagDecoder>(nullptr);
-    auto cb=[](const DecodingInfo di){
+    auto stats_cb=[](const DecodingInfo di){
         std::stringstream ss;
         ss<<di.avgDecodingTime_ms<<"ms";
         DecodingStatistcs::instance().set_decode_time(ss.str().c_str());
     };
-    m_low_lag_decoder->registerOnDecodingInfoChangedCallback(cb);
+    m_low_lag_decoder->registerOnDecodingInfoChangedCallback(stats_cb);
+    auto ratio_changed_cb=[this](const VideoRatio ratio){
+        DecodingStatistcs::instance().util_set_primary_stream_frame_format("android",ratio.width,ratio.height);
+        if(m_videoOut){
+            m_videoOut->set_video_texture_size(ratio.width,ratio.height);
+        }
+    };
+    m_low_lag_decoder->registerOnDecoderRatioChangedCallback(ratio_changed_cb);
     auto codec=QOpenHDVideoHelper::read_from_settings().video_codec;
     m_receiver=std::make_unique<GstRtpReceiver>(5600,codec);
 }

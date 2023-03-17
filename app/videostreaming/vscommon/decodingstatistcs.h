@@ -40,6 +40,8 @@ public:
     explicit DecodingStatistcs(QObject *parent = nullptr);
     static DecodingStatistcs& instance();
     void reset_all_to_default();
+
+    void util_set_primary_stream_frame_format(std::string format,int width_px,int height_px);
 };
 
 #endif // DECODINGSTATISTCS_H
