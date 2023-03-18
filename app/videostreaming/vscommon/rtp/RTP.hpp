@@ -7,7 +7,6 @@
 
 #include <arpa/inet.h>
 #include <assert.h>
-#include <qdebug.h>
 #include <sstream>
 
 // This code is written for little endian (aka ARM,x86) byte order

@@ -1,4 +1,5 @@
 #include "decodingstatistcs.h"
+#include <sstream>
 
 DecodingStatistcs::DecodingStatistcs(QObject *parent)
     : QObject{parent}
@@ -26,5 +27,12 @@ void DecodingStatistcs::reset_all_to_default()
     set_estimate_rtp_fps("-1");
     set_estimate_keyframe_interval(-1);
     set_n_decoder_dropped_frames(-1);
+}
+
+void DecodingStatistcs::util_set_primary_stream_frame_format(std::string format, int width_px, int height_px)
+{
+    std::stringstream ss;
+    ss<<format<<" "<<width_px<<"x"<<height_px;
+    set_primary_stream_frame_format(ss.str().c_str());
 }
 

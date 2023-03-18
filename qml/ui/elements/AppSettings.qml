@@ -47,7 +47,6 @@ Settings {
     property int selectedVideoCodecPrimary:0 //0==h264,1==h265,2==MJPEG, other (error) default to h264
     property int selectedVideoCodecSecondary:0
 
-    property bool hide_watermark: true
     property bool dev_jetson: false
     // When this one is set to true, we read a file (where you can then write your custom rx gstreamer pipeline
     // that ends with qmlglsink )
@@ -95,6 +94,9 @@ Settings {
     property bool downlink_rssi_declutter: false
     property double downlink_rssi_warn: 0
     property double downlink_rssi_caution: 0
+    // r.n one of the most important statistics about link quality
+    property int downlink_packet_loss_perc_caution : 10
+    property int downlink_packet_loss_perc_warn : 20
 
     property bool show_uplink_rssi: true
     property double uplink_rssi_opacity: 1
@@ -243,6 +245,10 @@ Settings {
     property double heading_size: 1
     property double heading_width: 250
     property bool show_heading_ladder: true
+
+    // experimental
+    property bool show_performance_horizon: false
+    // experimental end
 
     // false by default for now, since it has a big performance hit. (only noticeable on embedded devices like rpi -
     // but rpi is one of our main user(s) platforms
@@ -405,4 +411,7 @@ Settings {
     property bool dev_enable_live_audio_playback: false
     // might / might not work
     property bool dev_set_swap_interval_zero: false
+
+    // Discard actual video ratio and fit primary video to whatever ratio the screen is at (might distort video)
+    property bool primary_video_scale_to_fit: false
 }

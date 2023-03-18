@@ -14,6 +14,10 @@ public:
     // returns surfaceTexture Java object.
     const QAndroidJniObject &surfaceTexture() const { return m_surfaceTexture; }
 
+    // Needs to be explicitly called from c++ to do proper aspect ratio
+    // not thread safe, but this doesn't matter
+    void set_video_texture_size(int width_px,int height_px);
+
     // QQuickItem interface
 protected:
     QSGNode *updatePaintNode(QSGNode *n, UpdatePaintNodeData *) override;
@@ -27,6 +31,9 @@ private:
 
     // Java SurfaceTexture object
     QAndroidJniObject m_surfaceTexture;
+
+    int m_texture_width_px=0;
+    int m_texture_height_px=0;
 };
 
 #endif // QSURFACETEXTURE_H

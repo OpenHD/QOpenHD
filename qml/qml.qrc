@@ -1,29 +1,29 @@
 <RCC>
-    <qresource prefix="/translations" lang="en">
+    <qresource lang="en" prefix="/translations">
         <file alias="QOpenHD.qm">../translations/QOpenHD_en.qm</file>
     </qresource>
-    <qresource prefix="/translations" lang="de">
+    <qresource lang="de" prefix="/translations">
         <file alias="QOpenHD.qm">../translations/QOpenHD_de.qm</file>
     </qresource>
-    <qresource prefix="/translations" lang="ru">
+    <qresource lang="ru" prefix="/translations">
         <file alias="QOpenHD.qm">../translations/QOpenHD_ru.qm</file>
     </qresource>
-    <qresource prefix="/translations" lang="es">
+    <qresource lang="es" prefix="/translations">
         <file alias="QOpenHD.qm">../translations/QOpenHD_es.qm</file>
     </qresource>
-    <qresource prefix="/translations" lang="fr">
+    <qresource lang="fr" prefix="/translations">
         <file alias="QOpenHD.qm">../translations/QOpenHD_fr.qm</file>
     </qresource>
-    <qresource prefix="/translations" lang="nl">
+    <qresource lang="nl" prefix="/translations">
         <file alias="QOpenHD.qm">../translations/QOpenHD_nl.qm</file>
     </qresource>
-    <qresource prefix="/translations" lang="ro">
+    <qresource lang="ro" prefix="/translations">
         <file alias="QOpenHD.qm">../translations/QOpenHD_ro.qm</file>
     </qresource>
-    <qresource prefix="/translations" lang="it">
+    <qresource lang="it" prefix="/translations">
         <file alias="QOpenHD.qm">../translations/QOpenHD_it.qm</file>
     </qresource>
-    <qresource prefix="/translations" lang="zh">
+    <qresource lang="zh" prefix="/translations">
         <file alias="QOpenHD.qm">../translations/QOpenHD_zh.qm</file>
     </qresource>
     <qresource prefix="/">
@@ -37,14 +37,11 @@
         <file>ui/widgets/MessageHUD.qml</file>
         <file>LICENSE_UI.txt</file>
         <file>ui/widgets/LinkDownRSSIWidget.qml</file>
-        <file>ui/widgets/LinkDownRSSIWidgetForm.ui.qml</file>
         <file>ui/widgets/VideoBitrateWidgetPrimary.qml</file>
         <file>ui/widgets/LinkUpRSSIWidget.qml</file>
-        <file>ui/widgets/LinkUpRSSIWidgetForm.ui.qml</file>
         <file>ui/widgets/SOCStatusWidgetGround.qml</file>
         <file>ui/widgets/SOCStatusWidgetAir.qml</file>
         <file>ui/widgets/HorizonWidget.qml</file>
-        <file>ui/widgets/HorizonWidgetForm.ui.qml</file>
         <file>ui/widgets/AirBatteryWidget.qml</file>
         <file>ui/widgets/FlightModeWidget.qml</file>
         <file>ui/widgets/FlightModeWidgetForm.ui.qml</file>
@@ -54,7 +51,6 @@
         <file>ui/widgets/FlightTimerWidget.qml</file>
         <file>ui/widgets/FlightTimerWidgetForm.ui.qml</file>
         <file>ui/HUDOverlayGrid.qml</file>
-        <file>ui/HUDOverlayGridForm.ui.qml</file>
         <file>ui/widgets/BaseWidget.qml</file>
         <file>ui/widgets/BaseWidgetForm.ui.qml</file>
         <file>ui/widgets/FpvWidget.qml</file>
@@ -250,5 +246,6 @@
         <file>ui/elements/WorkaroundMessageBox.qml</file>
         <file>ui/elements/RestartQOpenHDMessageBox.qml</file>
         <file>ui/elements/SettingBaseElement.qml</file>
+        <file>ui/widgets/PerformanceHorizonWidget.qml</file>
     </qresource>
 </RCC>

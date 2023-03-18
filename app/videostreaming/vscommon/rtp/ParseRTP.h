@@ -8,6 +8,7 @@
 #include <chrono>
 #include <cstdio>
 #include <functional>
+#include <array>
 #include "RTP.hpp"
 
 /*********************************************
@@ -23,22 +24,13 @@
 // Enough for pretty much any resolution/framerate we handle in OpenHD
 static constexpr const auto NALU_MAXLEN=1024*1024;
 
-/*struct NALUBuff{
-    // system time point first byte of this NALU was received
-    std::chrono::steady_clock::time_point creation_time;
-    // buffer for nalu data (might not be completely filled)
-   std::shared_ptr<std::array<uint8_t,NALU_MAXLEN>> nalu_data;
-   // size of the nalu data
-   int nalu_data_size;
-};*/
-
-typedef std::function<void(const std::chrono::steady_clock::time_point creation_time,const uint8_t* nalu_data,const int nalu_data_size)> NALU_DATA_CALLBACK;
+typedef std::function<void(const std::chrono::steady_clock::time_point creation_time,const uint8_t* nalu_data,const int nalu_data_size)> RTP_FRAME_DATA_CALLBACK;
 
 class RTPDecoder{
 public:
     // NALUs are passed on via the callback, one by one.
     // (Each time the callback is called, it contains exactly one NALU prefixed with the 0,0,0,1 start code)
-    RTPDecoder(NALU_DATA_CALLBACK cb,bool feed_incomplete_frames);
+    RTPDecoder(RTP_FRAME_DATA_CALLBACK cb,bool feed_incomplete_frames);
     // check if a packet is missing by using the rtp sequence number and
     // if the payload is dynamic (h264 or h265)
     // Returns false if payload is wrong
@@ -64,7 +56,7 @@ private:
     // Properly calls the cb function (if not null)
     // Resets the m_nalu_data_length to 0
     void forwardNALU(const bool isH265=false);
-    const NALU_DATA_CALLBACK m_cb;
+    const RTP_FRAME_DATA_CALLBACK m_cb;
     //std::shared_ptr<std::array<uint8_t,NALU_MAXLEN>> m_curr_nalu{};
     std::array<uint8_t,NALU_MAXLEN> m_curr_nalu;
     size_t m_nalu_data_length=0;

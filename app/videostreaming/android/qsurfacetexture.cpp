@@ -4,6 +4,9 @@
 #include <QSGGeometryNode>
 #include <QSGSimpleMaterialShader>
 
+#include "../vscommon/QOpenHDVideoHelper.hpp"
+#include "../vscommon/video_ratio_helper.hpp"
+
 struct State {
     // the texture transform matrix
     QMatrix4x4 uSTMatrix;
@@ -150,6 +153,19 @@ QSurfaceTexture::~QSurfaceTexture()
     }
 }
 
+void QSurfaceTexture::set_video_texture_size(int width_px, int height_px)
+{
+    m_texture_width_px=width_px;
+    m_texture_height_px=height_px;
+}
+
+// No idea how / why this works, but it works.
+static void qrectf_flip_horizontally(QRectF& rect){
+    float tmp = rect.top();
+    rect.setTop(rect.bottom());
+    rect.setBottom(tmp);
+}
+
 QSGNode *QSurfaceTexture::updatePaintNode(QSGNode *n, QQuickItem::UpdatePaintNodeData *)
 {
     SurfaceTextureNode *node = static_cast<SurfaceTextureNode *>(n);
@@ -181,16 +197,22 @@ QSGNode *QSurfaceTexture::updatePaintNode(QSGNode *n, QQuickItem::UpdatePaintNod
         node = new SurfaceTextureNode(m_surfaceTexture, m_textureId);
         emit surfaceTextureChanged(this);
     }
-
-    // flip vertical
     QRectF rect(boundingRect());
-    float tmp = rect.top();
-    rect.setTop(rect.bottom());
-    rect.setBottom(tmp);
+    if(m_texture_width_px>0 && m_texture_height_px>0){
+        auto coords=helper::ratio::calculate_viewport(boundingRect().width(),boundingRect().height(),m_texture_width_px,m_texture_height_px,QOpenHDVideoHelper::get_primary_video_scale_to_fit());
+        rect=QRectF(coords.x,coords.y,coords.width,coords.height);
+    }
+    // flip vertical - for some reason video by default is upside down on android otherwise
+    qrectf_flip_horizontally(rect);
 
-    QSGGeometry::updateTexturedRectGeometry(node->geometry(), rect, QRectF(0, 0, 1, 1));
+     const QRectF texture_coords=QRectF(0, 0, 1, 1);
+
+    //qDebug()<<rect.width()<<" "<<rect.height();
+    //rect.setWidth(rect.width()*0.5);
+
+    QSGGeometry::updateTexturedRectGeometry(node->geometry(), rect, texture_coords);
     node->markDirty(QSGNode::DirtyGeometry | QSGNode::DirtyMaterial);
     // XX
-     QMetaObject::invokeMethod(reinterpret_cast<QSurfaceTexture*>(this), "update", Qt::QueuedConnection);
+    QMetaObject::invokeMethod(reinterpret_cast<QSurfaceTexture*>(this), "update", Qt::QueuedConnection);
     return node;
 }

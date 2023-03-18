@@ -152,36 +152,6 @@ ScrollView {
                 visible: true
 
                 Text {
-                    text: qsTr("Hide warning watermark")
-                    font.weight: Font.Bold
-                    font.pixelSize: 13
-                    anchors.leftMargin: 8
-                    verticalAlignment: Text.AlignVCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: 224
-                    height: elementHeight
-                    anchors.left: parent.left
-                }
-
-                Switch {
-                    width: 32
-                    height: elementHeight
-                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    checked: settings.hide_watermark
-                    onCheckedChanged: settings.hide_watermark = checked
-                }
-            }
-
-            Rectangle {
-                width: parent.width
-                height: rowHeight
-                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-                visible: true
-
-                Text {
                     text: qsTr("Background Transparent")
                     font.weight: Font.Bold
                     font.pixelSize: 13
@@ -202,6 +172,22 @@ ScrollView {
                     anchors.verticalCenter: parent.verticalCenter
                     checked: settings.app_background_transparent
                     onCheckedChanged: settings.app_background_transparent = checked
+                }
+            }
+
+            SettingBaseElement{
+                m_short_description: "Scale primary video to fit"
+                m_long_description: "Fit the primary video to the exact screen size (discards actual video aspect ratio,aka video is a bit distorted). Not supported on all platforms / implementations. Might require a restart."
+
+                Switch {
+                    width: 32
+                    height: elementHeight
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    checked: settings.primary_video_scale_to_fit
+                    onCheckedChanged: settings.primary_video_scale_to_fit = checked
                 }
             }
 

@@ -1,3 +1,6 @@
+#ifndef QOPENHD_HORIZON_LADDER
+#define QOPENHD_HORIZON_LADDER
+
 #include <QQuickItem>
 #include <QQuickPaintedItem>
 #include <QPainter>
@@ -100,3 +103,4 @@ private:
 
     QFont m_fontAwesome = QFont("Font Awesome 5 Free", 15, QFont::Bold, false);
 };
+#endif //QOPENHD_HORIZON_LADDER

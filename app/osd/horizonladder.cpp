@@ -20,19 +20,6 @@ void HorizonLadder::paint(QPainter* painter) {
         setFillColor(QColor::fromRgb(0,255,0,200));
     }
 
-    // How the heck can I just clear the FBO with a solid color ?
-    /*if(true){
-        // Helper to visualize the overdraw
-        const auto texture_size=this->contentsSize();
-        qDebug()<<"HorizonLadder:"<<texture_size;
-        QRect rect{0,0,texture_size.width(),texture_size.height()};
-        QBrush my_brush;
-        QColor red(Qt::red);
-        my_brush.setColor(red);
-        //painter->setBackground(my_brush);
-        painter->fillRect(rect,my_brush);
-    }*/
-
     painter->setRenderHint(QPainter::Antialiasing);
     painter->setRenderHint(QPainter::TextAntialiasing);
 
@@ -348,7 +335,7 @@ void HorizonLadder::paint(QPainter* painter) {
         }
         painter->setFont(m_font);
     }
-
+    //painter->drawPoint(QPoint(width()/2,height()/2));
 
     painter->restore();
 }
