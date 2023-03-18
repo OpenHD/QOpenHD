@@ -45,21 +45,50 @@ struct Vec2{
     float x=0;
     float y=0;
 };
-static void append_horizontal_line_with_middle_space(std::vector<Vec2>& buff,float width,float y_off,float middle_space,float height){
+static void append_horizontal_line_with_middle_space(std::vector<Vec2>& buff,float x_off,float width,float y_off,float middle_space,float height){
     const float middle_space_half=middle_space/2;
     //left up line
-    buff.push_back({0,y_off});
-    buff.push_back({0,y_off+height});
+    buff.push_back({x_off+0,y_off});
+    buff.push_back({x_off+0,y_off+height});
     //left to middle
-    buff.push_back({0,y_off});
-    buff.push_back({width/2.0f-middle_space_half,y_off});
+    buff.push_back({x_off+0,y_off});
+    buff.push_back({x_off+width/2.0f-middle_space_half,y_off});
     // middle to right
-    buff.push_back({width/2.0f+middle_space_half,y_off});
-     buff.push_back({width,y_off});
+    buff.push_back({x_off+width/2.0f+middle_space_half,y_off});
+     buff.push_back({x_off+width,y_off});
     // right up
-    buff.push_back({width,y_off});
-    buff.push_back({width,y_off+height});
+    buff.push_back({x_off+width,y_off});
+    buff.push_back({x_off+width,y_off+height});
 }
+static void append_horizontal_line_with_middle_space_and_dashes(std::vector<Vec2>& buff,float x_off,float width,float y_off,float middle_space,float height){
+    const float middle_space_half=middle_space/2;
+    const float horizontal_line_length=width/2.0f-middle_space_half;
+    const float dash_length=horizontal_line_length/5.0f;
+    //left down line
+    buff.push_back({x_off+0,y_off});
+    buff.push_back({x_off+0,y_off-height});
+    //left to middle,dashes
+    int count=0;
+    for(int i=0;i<3;i++){
+        buff.push_back({x_off+dash_length*count,y_off});
+        count++;
+        buff.push_back({x_off+dash_length*count,y_off});
+        count++;
+    }
+    // middle to right
+    count=0;
+    for(int i=0;i<3;i++){
+        const float start=x_off+width/2.0f+middle_space_half;
+        buff.push_back({start+dash_length*count,y_off});
+        count++;
+        buff.push_back({start+dash_length*count,y_off});
+        count++;
+    }
+    // right down line
+    buff.push_back({x_off+width,y_off});
+    buff.push_back({x_off+width,y_off-height});
+}
+
 static void append_horizontal_line(std::vector<Vec2>& buff,float width,float y_off){
     buff.push_back({0,y_off});
     buff.push_back({width,y_off});
@@ -94,11 +123,26 @@ QSGNode *PerformanceHorizonLadder::updatePaintNode(QSGNode *n, QQuickItem::Updat
         m_tf_node2 = new QSGTransformNode();
         m_tf_node3 = new QSGTransformNode();
 
+        const auto m_width=width();
+        const auto m_height=height();
+
         //auto geometry=make_rectangle(width(),height());
         //auto geometry=make_line(width(),height());
         auto vertices=std::vector<Vec2>();
         append_horizontal_line(vertices,width(),height()/2);
-        append_horizontal_line_with_middle_space(vertices,width(),height()/4,width()/10,height()/20);
+        // lower/ upper lines
+        const auto l_width=m_width * 0.6f;
+        const auto l_x_offset= m_width/2.0f-l_width/2.0f;
+        // upper lines
+        for(int i=1;i<9;i++){ //9 = 9 times 10 degree
+            const auto l_y_offset=height()/2.0f-height()/2.0f*i*1.2;
+            append_horizontal_line_with_middle_space(vertices,l_x_offset,l_width,l_y_offset,width()/4.0f,height()/30.0f);
+        }
+        // lower lines
+        for(int i=1;i<9;i++){  //9 = 9 times 10 degree
+            const auto l_y_offset=height()/2.0f+height()/2.0f*i*1.2;
+            append_horizontal_line_with_middle_space_and_dashes(vertices,l_x_offset,l_width,l_y_offset,width()/4.0f,height()/20.0f);
+        }
         //append_horizontal_line_with_middle_space(vertices,width(),width()/2,height()/10,-height()/2);
 
         auto geometry=qsggeometry_from_array(vertices);
