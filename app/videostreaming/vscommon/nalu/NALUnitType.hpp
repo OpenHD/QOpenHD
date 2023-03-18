@@ -39,39 +39,31 @@ namespace NALUnitType{
             // 24..31    // Unspecified
         };
         static std::string unit_type_to_string(const int nal_unit_type){
+            std::string nal_unit_type_name;
             switch (nal_unit_type){
-                case NAL_UNIT_TYPE_UNSPECIFIED:
-                    return "UNSPECIFIED";
-                case NAL_UNIT_TYPE_CODED_SLICE_NON_IDR:
-                    return "CODED_SLICE_NON_IDR";
-                case NAL_UNIT_TYPE_CODED_SLICE_DATA_PARTITION_A:
-                    return "CODED_SLICE_DATA_PARTITION_A";
-                case NAL_UNIT_TYPE_CODED_SLICE_DATA_PARTITION_B:
-                    return "CODED_SLICE_DATA_PARTITION_B";
-                case NAL_UNIT_TYPE_CODED_SLICE_DATA_PARTITION_C:
-                    return "CODED_SLICE_DATA_PARTITION_C";
-                case NAL_UNIT_TYPE_CODED_SLICE_IDR:
-                    return "CODED_SLICE_IDR";
-                case NAL_UNIT_TYPE_SEI:
-                    return "SEI";
-                case NAL_UNIT_TYPE_SPS:
-                    return "SPS";
-                case NAL_UNIT_TYPE_PPS:
-                    return "PPS";
-                case NAL_UNIT_TYPE_AUD:
-                    return "AUD";
-                case NAL_UNIT_TYPE_END_OF_SEQUENCE:
-                    return "END_OF_SEQUENCE";
-                case NAL_UNIT_TYPE_END_OF_STREAM:
-                    return "END_OF_STREAM";
-                case NAL_UNIT_TYPE_FILLER:
-                    return "FILLER";
-                case NAL_UNIT_TYPE_SPS_EXT:
-                    return "SPS_EXT";
-                default:break;
+                case  NAL_UNIT_TYPE_UNSPECIFIED :                   nal_unit_type_name = "NAL_UNIT_TYPE_UNSPECIFIED"; break;//Unspecified
+                case  NAL_UNIT_TYPE_CODED_SLICE_NON_IDR :           nal_unit_type_name = "NAL_UNIT_TYPE_CODED_SLICE_NON_IDR"; break;//Coded slice of a non-IDR picture
+                case  NAL_UNIT_TYPE_CODED_SLICE_DATA_PARTITION_A :  nal_unit_type_name = "NAL_UNIT_TYPE_CODED_SLICE_DATA_PARTITION_A"; break;//Coded slice data partition A
+                case  NAL_UNIT_TYPE_CODED_SLICE_DATA_PARTITION_B :  nal_unit_type_name = "NAL_UNIT_TYPE_CODED_SLICE_DATA_PARTITION_B"; break;//Coded slice data partition B
+                case  NAL_UNIT_TYPE_CODED_SLICE_DATA_PARTITION_C :  nal_unit_type_name = "NAL_UNIT_TYPE_CODED_SLICE_DATA_PARTITION_C"; break;//Coded slice data partition C
+                case  NAL_UNIT_TYPE_CODED_SLICE_IDR :               nal_unit_type_name = "NAL_UNIT_TYPE_CODED_SLICE_IDR"; break;//Coded slice of an IDR picture
+                case  NAL_UNIT_TYPE_SEI :                           nal_unit_type_name = "NAL_UNIT_TYPE_SEI"; break;//Supplemental enhancement information (SEI)
+                case  NAL_UNIT_TYPE_SPS :                           nal_unit_type_name = "NAL_UNIT_TYPE_SPS"; break;//Sequence parameter set
+                case  NAL_UNIT_TYPE_PPS :                           nal_unit_type_name = "NAL_UNIT_TYPE_PPS"; break;//Picture parameter set
+                case  NAL_UNIT_TYPE_AUD :                           nal_unit_type_name = "NAL_UNIT_TYPE_AUD"; break;//Access unit delimiter
+                case  NAL_UNIT_TYPE_END_OF_SEQUENCE :               nal_unit_type_name = "NAL_UNIT_TYPE_END_OF_SEQUENCE"; break;//End of sequence
+                case  NAL_UNIT_TYPE_END_OF_STREAM :                 nal_unit_type_name = "NAL_UNIT_TYPE_END_OF_STREAM"; break;//End of stream
+                case  NAL_UNIT_TYPE_FILLER :                        nal_unit_type_name = "NAL_UNIT_TYPE_FILLER"; break;//Filler data
+                case  NAL_UNIT_TYPE_SPS_EXT :                       nal_unit_type_name = "SNAL_UNIT_TYPE_SPS_EXT"; break;//Sequence parameter set extension
+                    // 14..18    // Reserved
+                case  NAL_UNIT_TYPE_CODED_SLICE_AUX :               nal_unit_type_name = "NAL_UNIT_TYPE_CODED_SLICE_AUX"; break;
+                //Coded slice of an auxiliary coded picture without partitioning
+                    // 20..23    // Reserved
+                    // 24..31    // Unspecified
+                default :                                           nal_unit_type_name = std::string("Unknown")+std::to_string(nal_unit_type); break;
             }
-            return "UNKNOWN";
-        }
+            return nal_unit_type_name;
+        };
     }
 
     namespace H265{
@@ -150,7 +142,7 @@ namespace NALUnitType{
             NAL_UNIT_UNSPECIFIED_63,
             NAL_UNIT_INVALID,
         };
-        static std::string unitTypeName(const int nal_unit_type){
+        static std::string unit_type_to_string(const int nal_unit_type){
             std::string nal_unit_type_name="Unimpl";
             switch (nal_unit_type){
                 case NalUnitType::NAL_UNIT_CODED_SLICE_TRAIL_N:
