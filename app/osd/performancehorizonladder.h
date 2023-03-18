@@ -30,6 +30,7 @@ private:
     QSGGeometryNode *node=nullptr;
     QSGTransformNode* m_tf_node=nullptr;
     QSGTransformNode* m_tf_node2=nullptr;
+	QSGTransformNode* m_tf_node3=nullptr;
 private:
     int m_roll;
     int m_pitch;
