@@ -41,6 +41,11 @@ public:
         m_nalu_prefix_size=get_nalu_prefix_size();
     }
     ~NALU()= default;
+    // test video white iceland: Max 1024*117. Video might not be decodable if its NALU buffers size exceed the limit
+    // But a buffer size of 1MB accounts for 60fps video of up to 60MB/s or 480 Mbit/s. That should be plenty !
+    static constexpr const auto NALU_MAXLEN=1024*1024;
+    // Application should re-use NALU_BUFFER to avoid memory allocations
+    using NALU_BUFFER=std::array<uint8_t,NALU_MAXLEN>;
 private:
     const uint8_t* m_data;
     const size_t m_data_len;
