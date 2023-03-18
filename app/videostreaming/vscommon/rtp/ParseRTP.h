@@ -23,15 +23,6 @@
 // Enough for pretty much any resolution/framerate we handle in OpenHD
 static constexpr const auto NALU_MAXLEN=1024*1024;
 
-/*struct NALUBuff{
-    // system time point first byte of this NALU was received
-    std::chrono::steady_clock::time_point creation_time;
-    // buffer for nalu data (might not be completely filled)
-   std::shared_ptr<std::array<uint8_t,NALU_MAXLEN>> nalu_data;
-   // size of the nalu data
-   int nalu_data_size;
-};*/
-
 typedef std::function<void(const std::chrono::steady_clock::time_point creation_time,const uint8_t* nalu_data,const int nalu_data_size)> RTP_FRAME_DATA_CALLBACK;
 
 class RTPDecoder{
