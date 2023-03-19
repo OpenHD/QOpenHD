@@ -216,7 +216,7 @@ Pane{
                             enabled: false
                             onClicked: {
                                 if(_fcMavlinkSystem.is_alive && _fcMavlinkSystem.armed && (!settings.dev_allow_freq_change_when_armed)){
-                                    var text="Cannot change frequency while FC is armed";
+                                    var text="Cannot change frequency while FC is armed. MCS index can be changed though.";
                                     _messageBoxInstance.set_text_and_show(text);
                                     return;
                                 }
@@ -266,7 +266,7 @@ Pane{
                             enabled: false
                             onClicked: {
                                 if(_fcMavlinkSystem.is_alive && _fcMavlinkSystem.armed && (!settings.dev_allow_freq_change_when_armed)){
-                                    var text="Cannot change channel width while FC is armed"
+                                    var text="Cannot change channel width while FC is armed. MCS index can be changed though."
                                     _messageBoxInstance.set_text_and_show(text);
                                     return;
                                 }
@@ -323,7 +323,7 @@ Pane{
                                 //_synchronizedSettings.change_param_air_and_ground_mcs(selectedValue)
                                 _synchronizedSettings.change_param_air_only_mcs(selectedValue)
                             }
-                            Material.background: fc_is_armed() ? Material.Green : Material.Normal;
+                            //Material.foreground: fc_is_armed() ? Material.Green : Material.Dark;
                         }
                         Button{
                             text: "INFO"
