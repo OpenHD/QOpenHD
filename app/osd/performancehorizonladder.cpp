@@ -129,34 +129,48 @@ QSGNode *PerformanceHorizonLadder::updatePaintNode(QSGNode *n, QQuickItem::Updat
         const auto m_width=width();
         const auto m_height=height();
 
-        //auto geometry=make_rectangle(width(),height());
-        //auto geometry=make_line(width(),height());
-        auto vertices=std::vector<Vec2>();
-        // the middle, big line
-        append_horizontal_line(vertices,0,height()/2,width());
-        // lower/ upper lines
-        const auto l_width=m_width * 0.6f;
-        const auto l_x_offset= m_width/2.0f-l_width/2.0f;
-        // upper lines
-        for(int i=1;i<9;i++){ //9 = 9 times 10 degree
-            const auto l_y_offset=height()/2.0f-height()/2.0f*i*1.2;
-            append_horizontal_line_with_middle_space(vertices,l_x_offset,l_width,l_y_offset,width()/4.0f,height()/30.0f);
-        }
-        // lower lines
-        for(int i=1;i<9;i++){  //9 = 9 times 10 degree
-            const auto l_y_offset=height()/2.0f+height()/2.0f*i*1.2;
-            append_horizontal_line_with_middle_space_and_dashes(vertices,l_x_offset,l_width,l_y_offset,width()/4.0f,height()/20.0f);
-        }
-        //append_horizontal_line_with_middle_space(vertices,width(),width()/2,height()/10,-height()/2);
+        {
+            //auto geometry=make_rectangle(width(),height());
+            //auto geometry=make_line(width(),height());
+            auto vertices=std::vector<Vec2>();
+            // the middle, big line
+            append_horizontal_line(vertices,0,height()/2,width());
+            // lower/ upper lines
+            const auto l_width=m_width * 0.6f;
+            const auto l_x_offset= m_width/2.0f-l_width/2.0f;
+            // upper lines
+            for(int i=1;i<9;i++){ //9 = 9 times 10 degree
+                const auto l_y_offset=height()/2.0f-height()/2.0f*i*1.2;
+                append_horizontal_line_with_middle_space(vertices,l_x_offset,l_width,l_y_offset,width()/4.0f,height()/30.0f);
+            }
+            // lower lines
+            for(int i=1;i<9;i++){  //9 = 9 times 10 degree
+                const auto l_y_offset=height()/2.0f+height()/2.0f*i*1.2;
+                append_horizontal_line_with_middle_space_and_dashes(vertices,l_x_offset,l_width,l_y_offset,width()/4.0f,height()/20.0f);
+            }
+            //append_horizontal_line_with_middle_space(vertices,width(),width()/2,height()/10,-height()/2);
 
-        auto geometry=qsggeometry_from_array(vertices);
+            auto geometry=qsggeometry_from_array(vertices);
 
-        m_ladders_geom_node->setGeometry(geometry);
-        m_ladders_geom_node->setFlag(QSGNode::OwnsGeometry);
-        m_ladders_geom_node->setMaterial(m_flat_color_material);
-        m_ladders_geom_node->setFlag(QSGNode::OwnsMaterial);
+            m_ladders_geom_node->setGeometry(geometry);
+            m_ladders_geom_node->setFlag(QSGNode::OwnsGeometry);
+            m_ladders_geom_node->setMaterial(m_flat_color_material);
+            m_ladders_geom_node->setFlag(QSGNode::OwnsMaterial);
+        }
+        {
+            auto vertices=std::vector<Vec2>();
+            const auto center_line_width=width()/8;
+            append_horizontal_line(vertices,width()/2.0f-center_line_width/2.0f,height()/2,center_line_width);
+            auto geometry=qsggeometry_from_array(vertices);
+            geometry->setLineWidth(10);
+            m_center_indicator->setGeometry(geometry);
+            m_center_indicator->setFlag(QSGNode::OwnsGeometry);
+            m_center_indicator->setMaterial(m_flat_color_material);
+            m_center_indicator->setFlag(QSGNode::OwnsMaterial);
+        }
 
         m_base_node->appendChildNode(m_tf_node);
+        m_base_node->appendChildNode(m_center_indicator);
         m_tf_node->appendChildNode(m_ladders_geom_node);
     }
     //qDebug()<<"LOOOL";
