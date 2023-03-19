@@ -229,7 +229,7 @@ BaseWidget {
                 width: parent.width
                 height: 32
                 Text {
-                    text: qsTr("Lat:")
+                    text: qsTr("Home Lat:")
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -252,7 +252,7 @@ BaseWidget {
                 width: parent.width
                 height: 32
                 Text {
-                    text: qsTr("Lon:")
+                    text: qsTr("Home Lon:")
                     color: "white"
                     height: parent.height
                     font.bold: true
