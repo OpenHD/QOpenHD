@@ -71,8 +71,12 @@ class FCMavlinkSystem : public QObject
     L_RO_PROP(double,lat,set_lat,0.0)
     L_RO_PROP(double,lon,set_lon,0.0)
     L_RO_PROP(int,satellites_visible,set_satellites_visible,0)
-    L_RO_PROP(double,gps_hdop,set_gps_hdop,99.0)
+    L_RO_PROP(double,gps_hdop,set_gps_hdop,-1)
+    L_RO_PROP(double,gps_vdop,set_gps_vdop,-1)
+    // gps lock type, see: mavlink_gps_raw_int_t / gps_status.fix_type
     L_RO_PROP(int,gps_fix_type,set_gps_fix_type,0)
+    L_RO_PROP(QString,gps_status_fix_type_str,set_gps_status_fix_type_str,"Unknown") // User-understandable string for UI
+
     L_RO_PROP(double,vx,set_vx,0.0)
     L_RO_PROP(double,vy,set_vy,0.0)
     L_RO_PROP(double,vz,set_vz,0.0)

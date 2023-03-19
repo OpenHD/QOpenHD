@@ -685,6 +685,23 @@ static std::optional<HeartBeatInfo> parse_heartbeat(const mavlink_heartbeat_t& h
     return info;
 }
 
+// See https://mavlink.io/en/messages/common.html#GPS_FIX_TYPE
+static QString mavlink_gps_fix_type_to_string(const uint8_t fix_type){
+    switch(fix_type){
+        case GPS_FIX_TYPE_NO_GPS: return "No GPS";
+        case GPS_FIX_TYPE_NO_FIX: return "No Fix";
+        case GPS_FIX_TYPE_2D_FIX: return "2D Fix";
+        case GPS_FIX_TYPE_3D_FIX: return "3D Fix";
+        case GPS_FIX_TYPE_DGPS: return "DGPS";
+        case GPS_FIX_TYPE_RTK_FLOAT: return "RTK f";
+        case GPS_FIX_TYPE_RTK_FIXED: return "RTK F";
+        case GPS_FIX_TYPE_STATIC: return "Static";
+        case GPS_FIX_TYPE_PPP: return "PPP";
+    default:break;
+    }
+    return "Unknown";
+}
+
 static bool get_arm_mode_from_heartbeat(const mavlink_heartbeat_t& heartbeat){
     const MAV_MODE_FLAG mode = (MAV_MODE_FLAG)heartbeat.base_mode;
     if (mode & MAV_MODE_FLAG_SAFETY_ARMED) {

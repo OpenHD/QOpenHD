@@ -145,7 +145,9 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         mavlink_msg_gps_raw_int_decode(&msg, &gps_status);
         set_satellites_visible(gps_status.satellites_visible);
         set_gps_hdop(gps_status.eph / 100.0);
+        set_gps_vdop(gps_status.epv / 100.0);
         set_gps_fix_type((unsigned int)gps_status.fix_type);
+        set_gps_status_fix_type_str(Telemetryutil::mavlink_gps_fix_type_to_string(gps_status.fix_type));
         break;
     }
     case MAVLINK_MSG_ID_GPS_STATUS: {
@@ -961,13 +963,18 @@ void FCMavlinkSystem::recalculate_efficiency()
     if(elapsed<std::chrono::seconds(10)){
         return;
     }
+    qDebug()<<"FCMavlinkSystem::recalculate_efficiency()";
     m_efficiency_last_update=std::chrono::steady_clock::now();
     const double delta_distance_km=m_flight_distance-m_efficiency_last_distance_km;
     const int delta_charge_mah=m_battery_consumed_mah-m_efficiency_last_charge_consumed_mAh;
     if(delta_distance_km>0 && delta_charge_mah>0){
+        qDebug()<<"recalculate_efficiency: delta_distance_km:"<<delta_distance_km<<" delta_charge_mah:"<<delta_charge_mah;
         // recalculate and update efficiency
         const int efficiency_mah_per_km=Telemetryutil::calculate_efficiency_in_mah_per_km(delta_charge_mah,delta_distance_km);
         set_battery_consumed_mah_per_km(efficiency_mah_per_km);
+        qDebug()<<"FCMavlinkSystem::recalculate_efficiency:"<<efficiency_mah_per_km;
+    }else{
+        qDebug()<<"FCMavlinkSystem::recalculate_efficiency - cannot";
     }
     m_efficiency_last_distance_km=m_flight_distance;
     m_efficiency_last_charge_consumed_mAh=m_battery_consumed_mah;
