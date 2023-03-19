@@ -89,9 +89,9 @@ static void append_horizontal_line_with_middle_space_and_dashes(std::vector<Vec2
     buff.push_back({x_off+width,y_off-height});
 }
 
-static void append_horizontal_line(std::vector<Vec2>& buff,float width,float y_off){
-    buff.push_back({0,y_off});
-    buff.push_back({width,y_off});
+static void append_horizontal_line(std::vector<Vec2>& buff,float x,float y,float width){
+    buff.push_back({x,y});
+    buff.push_back({x+width,y});
 }
 
 static QSGGeometry* qsggeometry_from_array(const std::vector<Vec2>& vec){
@@ -117,11 +117,14 @@ static QSGGeometry* make_line(int width,int height){
 
 QSGNode *PerformanceHorizonLadder::updatePaintNode(QSGNode *n, QQuickItem::UpdatePaintNodeData *)
 {
-    if(!node){
-        node = new QSGGeometryNode();
+    if(!m_base_node){
+        m_base_node = new QSGNode();
+        m_ladders_geom_node = new QSGGeometryNode();
         m_tf_node = new QSGTransformNode();
-        m_tf_node2 = new QSGTransformNode();
-        m_tf_node3 = new QSGTransformNode();
+        m_center_indicator = new QSGGeometryNode();
+
+        m_flat_color_material = new QSGFlatColorMaterial();
+        m_flat_color_material->setColor(QColor(255, 255, 255));
 
         const auto m_width=width();
         const auto m_height=height();
@@ -129,7 +132,8 @@ QSGNode *PerformanceHorizonLadder::updatePaintNode(QSGNode *n, QQuickItem::Updat
         //auto geometry=make_rectangle(width(),height());
         //auto geometry=make_line(width(),height());
         auto vertices=std::vector<Vec2>();
-        append_horizontal_line(vertices,width(),height()/2);
+        // the middle, big line
+        append_horizontal_line(vertices,0,height()/2,width());
         // lower/ upper lines
         const auto l_width=m_width * 0.6f;
         const auto l_x_offset= m_width/2.0f-l_width/2.0f;
@@ -147,18 +151,13 @@ QSGNode *PerformanceHorizonLadder::updatePaintNode(QSGNode *n, QQuickItem::Updat
 
         auto geometry=qsggeometry_from_array(vertices);
 
-        QSGFlatColorMaterial *material = new QSGFlatColorMaterial();
-        material->setColor(QColor(255, 255, 255));
+        m_ladders_geom_node->setGeometry(geometry);
+        m_ladders_geom_node->setFlag(QSGNode::OwnsGeometry);
+        m_ladders_geom_node->setMaterial(m_flat_color_material);
+        m_ladders_geom_node->setFlag(QSGNode::OwnsMaterial);
 
-        node->setGeometry(geometry);
-        node->setFlag(QSGNode::OwnsGeometry);
-        node->setMaterial(material);
-        node->setFlag(QSGNode::OwnsMaterial);
-
-        m_tf_node->appendChildNode(m_tf_node2);
-        m_tf_node2->appendChildNode(m_tf_node3);
-        m_tf_node3->appendChildNode(node);
-
+        m_base_node->appendChildNode(m_tf_node);
+        m_tf_node->appendChildNode(m_ladders_geom_node);
     }
     //qDebug()<<"LOOOL";
 
@@ -166,26 +165,8 @@ QSGNode *PerformanceHorizonLadder::updatePaintNode(QSGNode *n, QQuickItem::Updat
 
     //QSGGeometry::updateColoredRectGeometry(node->geometry(),rect);
     //QSGGeometry::updateTexturedRectGeometry(node->geometry(), rect, texture_coords);
-    node->markDirty(QSGNode::DirtyGeometry | QSGNode::DirtyMaterial);
+    m_ladders_geom_node->markDirty(QSGNode::DirtyGeometry | QSGNode::DirtyMaterial);
 
-    /*{
-        auto matrix=QMatrix4x4();
-        matrix.setToIdentity();
-        matrix.translate({0.0f,m_pitch*18.0f,0.0f});
-        m_tf_node->setMatrix(matrix);
-    }
-    {
-        auto matrix=QMatrix4x4();
-        matrix.setToIdentity();
-        matrix.rotate(m_roll*-1,QVector3D(0,0,1));
-        m_tf_node2->setMatrix(matrix);
-    }
-    {
-        auto matrix=QMatrix4x4();
-        matrix.setToIdentity();
-        matrix.translate(width()/2,height()/2,0);
-        m_tf_node3->setMatrix(matrix);
-    }*/
     {
         auto matrix=QMatrix4x4();
         matrix.setToIdentity();
@@ -200,8 +181,7 @@ QSGNode *PerformanceHorizonLadder::updatePaintNode(QSGNode *n, QQuickItem::Updat
     //QTransform transform_centerOfWindow( 1, 0, 0, 1, width()/2, height()/2 );
     //transform_centerOfWindow.rotate(m_pitch*18.0f);
 
-
     //QMetaObject::invokeMethod(node, "update", Qt::QueuedConnection);
     //return node;
-    return m_tf_node;
+    return m_base_node;
 }

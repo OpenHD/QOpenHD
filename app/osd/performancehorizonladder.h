@@ -3,6 +3,7 @@
 
 #include <QQuickItem>
 #include <QSGGeometryNode>
+#include <qsgflatcolormaterial.h>
 #include "../../../lib/lqtutils_master/lqtutils_prop.h"
 
 #include "horizonladder.h"
@@ -27,10 +28,14 @@ protected:
     QSGNode *updatePaintNode(QSGNode *n, UpdatePaintNodeData *) override;
 
 private:
-    QSGGeometryNode *node=nullptr;
+    QSGNode *m_base_node=nullptr;
+     // node for the center indicator, never translated
+    QSGGeometryNode *m_center_indicator=nullptr;
+    // node for the ladder lines, translated
+    QSGGeometryNode *m_ladders_geom_node=nullptr;
     QSGTransformNode* m_tf_node=nullptr;
-    QSGTransformNode* m_tf_node2=nullptr;
-	QSGTransformNode* m_tf_node3=nullptr;
+    //
+    QSGFlatColorMaterial *m_flat_color_material=nullptr;
 private:
     int m_roll;
     int m_pitch;

@@ -565,7 +565,7 @@ void FCMavlinkSystem::calculate_home_course() {
     a2 = atan2(a1, a2);
     if (a2 < 0.0) a2 += M_PI*2;
 
-    int result= 180.0f / M_PI*(a2);
+    const int result= 180.0f / M_PI*(a2);
 
     set_home_course(result);
     set_home_heading(result);

@@ -28,6 +28,10 @@ Pane{
         }
     }
 
+    function fc_is_armed(){
+        return _fcMavlinkSystem.armed
+    }
+
     ScrollView {
         id:mavlinkExtraWBParamPanel
         width: parent.width
@@ -219,6 +223,7 @@ Pane{
                                 var selectedValue=frequenciesModel.get(comboBoxFreq.currentIndex).value
                                 _synchronizedSettings.change_param_air_and_ground_frequency(selectedValue);
                             }
+                            //Material.background: fc_is_armed() ? Material.Red : Material.Normal;
                         }
                         Button{
                             text: "INFO"
@@ -268,6 +273,8 @@ Pane{
                                 var selectedValue=channelWidthModel.get(comboBoxChannelWidth.currentIndex).value
                                 _synchronizedSettings.change_param_air_and_ground_channel_width(selectedValue)
                             }
+                            //Material.background: fc_is_armed() ? Material.Red : Material.Normal;
+                            //Material.background: Material.Light;
                         }
                         Button{
                             text: "INFO"
@@ -316,6 +323,7 @@ Pane{
                                 //_synchronizedSettings.change_param_air_and_ground_mcs(selectedValue)
                                 _synchronizedSettings.change_param_air_only_mcs(selectedValue)
                             }
+                            Material.background: fc_is_armed() ? Material.Green : Material.Normal;
                         }
                         Button{
                             text: "INFO"
