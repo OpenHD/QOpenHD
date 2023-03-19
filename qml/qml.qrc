@@ -75,7 +75,6 @@
         <file>ui/elements/ColoredCheckbox.qml</file>
         <file>ui/widgets/GPIOWidget.qml</file>
         <file>ui/widgets/GPIOWidgetForm.ui.qml</file>
-        <file>ui/widgets/FlightDistanceWidgetForm.ui.qml</file>
         <file>ui/widgets/FlightDistanceWidget.qml</file>
         <file>ui/widgets/FlightMahWidget.qml</file>
         <file>ui/widgets/ControlWidgetForm.ui.qml</file>

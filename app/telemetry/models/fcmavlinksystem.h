@@ -100,7 +100,7 @@ class FCMavlinkSystem : public QObject
     L_RO_PROP(int,airspeed_sensor_temperature_degree,set_airspeed_sensor_temperature_degree,99)
     L_RO_PROP(int,esc_temp,set_esc_temp,0);
     L_RO_PROP(QString,flight_time,set_flight_time,"00:00")
-    L_RO_PROP(double,flight_distance,set_flight_distance,0)
+    L_RO_PROP(double,flight_distance_m,set_flight_distance_m,0)
     L_RO_PROP(double,lateral_speed,set_lateral_speed,0)  
     L_RO_PROP(double,home_distance,set_home_distance,0)
     L_RO_PROP(int,boot_time,set_boot_time,0)
@@ -255,7 +255,7 @@ private:
     static bool get_SHOW_FC_MESSAGES_IN_HUD();
     // Used to calculate efficiency in mAh / km
     void recalculate_efficiency();
-    double m_efficiency_last_distance_km=0;
+    double m_efficiency_last_distance_m=0;
     int m_efficiency_last_charge_consumed_mAh=0;
     std::chrono::steady_clock::time_point m_efficiency_last_update=std::chrono::steady_clock::now();
 };
