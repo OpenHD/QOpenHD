@@ -353,54 +353,6 @@ Rectangle {
                 }
             }
 
-            // Developer stats
-            Item {
-                height: 48
-                width: parent.width
-                Button{
-                    id: devStatsBtn
-                    height: parent.height
-                    width: parent.width
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.horizontalCenter: parent.horizontalCenter
-
-                    Text {
-                        id: developerStatsIcon
-                        text: "\uf05a"
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
-                        font.family: "Font Awesome 5 Free"
-                        font.pixelSize: 18
-                        height: parent.height
-                        width: 24
-                        anchors.left: parent.left
-                        anchors.leftMargin: 12
-                        color: "#dde4ed"
-                    }
-
-                    Text {
-                        id: developerStatsButton
-                        text: qsTr("DEV")
-                        height: parent.height
-                        anchors.left: developerStatsIcon.right
-                        anchors.leftMargin: 6
-                        font.pixelSize: 15
-                        horizontalAlignment: Text.AlignLeft
-                        verticalAlignment: Text.AlignVCenter
-                        color: mainStackLayout.currentIndex == 5 ? "#33aaff" : "#dde4ed"
-                    }
-                    background: Rectangle {
-                        opacity: .5
-                        radius: 5
-                        //later this can be changed to focus
-                        color: devStatsBtn.hovered ? "grey" : "transparent" // I update background color by this
-                    }
-                    onClicked: {
-                        mainStackLayout.currentIndex = 5
-                    }
-                }
-            }
-
             // RC
             Item {
                 height: 48
@@ -435,13 +387,62 @@ Rectangle {
                         font.pixelSize: 15
                         horizontalAlignment: Text.AlignLeft
                         verticalAlignment: Text.AlignVCenter
-                        color: mainStackLayout.currentIndex == 6 ? "#33aaff" : "#dde4ed"
+                        color: mainStackLayout.currentIndex == 5 ? "#33aaff" : "#dde4ed"
                     }
                     background: Rectangle {
                         opacity: .5
                         radius: 5
                         //later this can be changed to focus
                         color: rcSettingsBtn.hovered ? "grey" : "transparent" // I update background color by this
+                    }
+                    onClicked: {
+                        mainStackLayout.currentIndex = 5
+                    }
+                }
+            }
+
+
+            // Developer stats
+            Item {
+                height: 48
+                width: parent.width
+                Button{
+                    id: devStatsBtn
+                    height: parent.height
+                    width: parent.width
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.horizontalCenter: parent.horizontalCenter
+
+                    Text {
+                        id: developerStatsIcon
+                        text: "\uf05a"
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                        font.family: "Font Awesome 5 Free"
+                        font.pixelSize: 18
+                        height: parent.height
+                        width: 24
+                        anchors.left: parent.left
+                        anchors.leftMargin: 12
+                        color: "#dde4ed"
+                    }
+
+                    Text {
+                        id: developerStatsButton
+                        text: qsTr("DEV")
+                        height: parent.height
+                        anchors.left: developerStatsIcon.right
+                        anchors.leftMargin: 6
+                        font.pixelSize: 15
+                        horizontalAlignment: Text.AlignLeft
+                        verticalAlignment: Text.AlignVCenter
+                        color: mainStackLayout.currentIndex == 6 ? "#33aaff" : "#dde4ed"
+                    }
+                    background: Rectangle {
+                        opacity: .5
+                        radius: 5
+                        //later this can be changed to focus
+                        color: devStatsBtn.hovered ? "grey" : "transparent" // I update background color by this
                     }
                     onClicked: {
                         mainStackLayout.currentIndex = 6
@@ -535,13 +536,14 @@ Rectangle {
             id: aboutPanel
         }
 
+        RcInfoPanel {
+            id: rcInfoPanel
+        }
+
         AppDeveloperStatsPanel {
             id: appDeveloperStatsPanel
         }
 
-        RcInfoPanel {
-            id: rcInfoPanel
-        }
         EasterEggPanel {
             id: easterEgPanel
         }
