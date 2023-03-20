@@ -76,6 +76,9 @@ class FCMavlinkSystem : public QObject
     // gps lock type, see: mavlink_gps_raw_int_t / gps_status.fix_type
     L_RO_PROP(int,gps_fix_type,set_gps_fix_type,0)
     L_RO_PROP(QString,gps_status_fix_type_str,set_gps_status_fix_type_str,"Unknown") // User-understandable string for UI
+    // Home point (lat/lon/...) as reported by the FC via MAVLINK_MSG_ID_HOME_POSITION
+    L_RO_PROP(double,home_latitude,set_home_latitude,0.0);
+    L_RO_PROP(double,home_longitude,set_home_longitude,0.0);
 
     L_RO_PROP(double,vx,set_vx,0.0)
     L_RO_PROP(double,vy,set_vy,0.0)
@@ -171,18 +174,10 @@ public:
 
     Q_PROPERTY(QString flight_mode MEMBER m_flight_mode WRITE set_flight_mode NOTIFY flight_mode_changed)
     void set_flight_mode(QString flight_mode);
-
-    Q_PROPERTY(double homelat MEMBER m_homelat WRITE set_homelat NOTIFY homelat_changed)
-    void set_homelat(double homelat);
-
-    Q_PROPERTY(double homelon MEMBER m_homelon WRITE set_homelon NOTIFY homelon_changed)
-    void set_homelon(double homelon);
 signals:
     // mavlink
     void armed_changed(bool armed);
     void flight_mode_changed(QString flight_mode);
-    void homelat_changed(double homelat);
-    void homelon_changed(double homelon);
     void home_course_changed(int home_course);
     void home_heading_changed(int home_heading);
 private:
@@ -196,9 +191,6 @@ private:
     bool m_armed = false;
     QString m_flight_mode = "------";
 
-    double m_homelat = 0.0;
-    double m_homelon = 0.0;
-    bool gcs_position_set = false;
     int gps_quality_count = 0;
 
     int m_home_heading = 0; //this is actual global heading

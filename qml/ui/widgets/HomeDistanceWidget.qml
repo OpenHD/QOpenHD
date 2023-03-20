@@ -238,7 +238,7 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Text {
-                    text: Number(_fcMavlinkSystem.homelat).toLocaleString(Qt.locale(),
+                    text: Number(_fcMavlinkSystem.home_latitude).toLocaleString(Qt.locale(),
                                                                 'f', 6)
                     color: "white"
                     height: parent.height
@@ -261,7 +261,7 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Text {
-                    text: Number(_fcMavlinkSystem.homelon).toLocaleString(Qt.locale(),
+                    text: Number(_fcMavlinkSystem.home_longitude).toLocaleString(Qt.locale(),
                                                                 'f', 6)
                     color: "white"
                     height: parent.height

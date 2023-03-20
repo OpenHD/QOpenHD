@@ -377,8 +377,8 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
     case MAVLINK_MSG_ID_HOME_POSITION:{
         mavlink_home_position_t home_position;
         mavlink_msg_home_position_decode(&msg, &home_position);
-        set_homelat((double)home_position.latitude / 10000000.0);
-        set_homelon((double)home_position.longitude / 10000000.0);
+        set_home_latitude((double)home_position.latitude / 10000000.0);
+        set_home_longitude((double)home_position.longitude / 10000000.0);
         //LocalMessage::instance()->showMessage("Home Position set by Telemetry", 7);
         break;
     }
@@ -488,7 +488,7 @@ void FCMavlinkSystem::set_armed(bool armed) {
          * vehicle is disarmed, causing it to appear to stop in the UI.
          */
         flightTimeStart.start();
-        if (m_homelat == 0.0 && m_homelon == 0.0) {
+        if (m_home_latitude == 0.0 && m_home_longitude == 0.0) {
             //LocalMessage::instance()->showMessage("No Home Position in FCMavlinkSystem", 4);
         }
     }
@@ -517,21 +517,9 @@ void FCMavlinkSystem::set_flight_mode(QString flight_mode) {
     emit flight_mode_changed(m_flight_mode);
 }
 
-void FCMavlinkSystem::set_homelat(double homelat) {
-    m_homelat = homelat;
-    gcs_position_set = true;
-    emit homelat_changed(m_homelat);
-}
-
-void FCMavlinkSystem::set_homelon(double homelon) {
-    m_homelon = homelon;
-    gcs_position_set = true;
-    emit homelon_changed(m_homelon);
-}
-
 void FCMavlinkSystem::calculate_home_distance() {
     // if home lat/long are zero the calculation will be wrong so we skip it
-    if (m_homelat != 0.0 && m_homelon != 0.0) {
+    if (m_home_latitude != 0.0 && m_home_longitude != 0.0) {
         double s12;
         double azi1;
         double azi2;
@@ -540,7 +528,7 @@ void FCMavlinkSystem::calculate_home_distance() {
         // from https://manpages.ubuntu.com/manpages/bionic/man3/geodesic.3.html
         const double a = 6378137, f = 1/298.257223563; /* WGS84 */
         geod_init(&geod,a,f);
-        geod_inverse(&geod,m_homelat,m_homelon,m_lat,m_lon,&s12,&azi1,&azi2);
+        geod_inverse(&geod,m_home_latitude,m_home_longitude,m_lat,m_lon,&s12,&azi1,&azi2);
 
         /* todo: this could be easily extended to save the azimuth as well, which gives us the direction
            home for free as a result of the calculation above.
@@ -556,10 +544,10 @@ void FCMavlinkSystem::calculate_home_distance() {
 
 void FCMavlinkSystem::calculate_home_course() {
 
-    //qDebug() << "Home lat lon " << m_homelat << " :" << m_homelon;
+    //qDebug() << "Home lat lon " << m_home_latitude << " :" << m_home_longitude;
 
-    double  dlon = (m_lon-m_homelon)*0.017453292519;
-    double lat1 = (m_homelat)*0.017453292519;
+    double  dlon = (m_lon-m_home_longitude)*0.017453292519;
+    double lat1 = (m_home_latitude)*0.017453292519;
     double lat2 = (m_lat)*0.017453292519;
     double  a1 = sin(dlon) * cos(lat2);
     double  a2 = sin(lat1) * cos(lat2) * cos(dlon);
