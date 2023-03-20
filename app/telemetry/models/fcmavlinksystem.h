@@ -182,11 +182,11 @@ signals:
     void home_heading_changed(int home_heading);
 private:
     // NOTE: Null until system discovered
-    std::shared_ptr<mavsdk::System> _system=nullptr;
-    std::shared_ptr<mavsdk::Action> _action=nullptr;
+    std::shared_ptr<mavsdk::System> m_system=nullptr;
+    std::shared_ptr<mavsdk::Action> m_action=nullptr;
     // We got rid of this submodule for a good reason (see above)
     //std::shared_ptr<mavsdk::Telemetry> _mavsdk_telemetry=nullptr;
-    std::shared_ptr<mavsdk::MavlinkPassthrough> _pass_thru=nullptr;
+    std::shared_ptr<mavsdk::MavlinkPassthrough> m_pass_thru=nullptr;
     // other members
     bool m_armed = false;
     QString m_flight_mode = "------";

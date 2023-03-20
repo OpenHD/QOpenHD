@@ -37,22 +37,22 @@ void FCMavlinkSystem::register_for_qml(QQmlContext *qml_context)
 void FCMavlinkSystem::set_system(std::shared_ptr<mavsdk::System> system)
 {
     // The system is set once when discovered, then should not change !!
-    assert(_system==nullptr);
-    _system=system;
-    if(!_system->has_autopilot()){
+    assert(m_system==nullptr);
+    m_system=system;
+    if(!m_system->has_autopilot()){
         qDebug()<<"FCMavlinkSystem::set_system WARNING no autopilot";
     }
-    const int tmp_sys_id=_system->get_system_id();
+    const int tmp_sys_id=m_system->get_system_id();
     qDebug()<<"FCMavlinkSystem::set_system: FC SYS ID is:"<<(int)tmp_sys_id;
     set_for_osd_sys_id(tmp_sys_id);
-    _action=std::make_shared<mavsdk::Action>(system);
-    _pass_thru=std::make_shared<mavsdk::MavlinkPassthrough>(system);
+    m_action=std::make_shared<mavsdk::Action>(system);
+    m_pass_thru=std::make_shared<mavsdk::MavlinkPassthrough>(system);
 }
 
 bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
 {
     //qDebug()<<"FCMavlinkSystem::process_message";
-    if(!_system){
+    if(!m_system){
         qDebug()<<"WARNING the system must be set before FC model starts processing data";
         return false;
     }
@@ -387,7 +387,6 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         mavlink_msg_statustext_decode(&msg,&parsedMsg);
         auto tmp=Telemetryutil::statustext_convert(parsedMsg);
         LogMessagesModel::instance().addLogMessage("FC",tmp.message.c_str(),tmp.level);
-        QSettings setings;
         if(get_SHOW_FC_MESSAGES_IN_HUD()){
             std::stringstream ss;
             ss<<"["<<tmp.message<<"]";
@@ -432,8 +431,8 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
 
 std::optional<uint8_t> FCMavlinkSystem::get_fc_sys_id()
 {
-    if(_system){
-        return _system->get_system_id();
+    if(m_system){
+        return m_system->get_system_id();
     }
     return std::nullopt;
 }
@@ -762,7 +761,7 @@ void FCMavlinkSystem::updateWind(){
 
 void FCMavlinkSystem::arm_fc_async(bool arm)
 {
-    if(!_action){
+    if(!m_action){
         qDebug()<<"No fc action module";
         return;
     }
@@ -777,15 +776,15 @@ void FCMavlinkSystem::arm_fc_async(bool arm)
         }
     };
     if(arm){
-        _action->arm_async(cb);
+        m_action->arm_async(cb);
     }else{
-        _action->disarm_async(cb);
+        m_action->disarm_async(cb);
     }
 }
 
 void FCMavlinkSystem::send_return_to_launch_async()
 { //TODO ------this probably only works for px4---------
-    if(!_action){
+    if(!m_action){
         HUDLogMessagesModel::instance().add_message_info("No FC");
         return;
     }
@@ -795,20 +794,20 @@ void FCMavlinkSystem::send_return_to_launch_async()
         qDebug()<<ss.str().c_str();
         HUDLogMessagesModel::instance().add_message_info(ss.str().c_str());
     };
-    _action->return_to_launch_async(cb);
+    m_action->return_to_launch_async(cb);
 }
 
 bool FCMavlinkSystem::send_command_reboot(bool reboot)
 {
-    if(!_action){
+    if(!m_action){
         HUDLogMessagesModel::instance().add_message_info("No FC");
         return false;
     }
     mavsdk::Action::Result res{};
     if(reboot){
-        res=_action->reboot();
+        res=m_action->reboot();
     }else{
-        res=_action->shutdown();
+        res=m_action->shutdown();
     }
     if(res==mavsdk::Action::Result::Success){
         return true;
@@ -818,7 +817,7 @@ bool FCMavlinkSystem::send_command_reboot(bool reboot)
 
 
 void FCMavlinkSystem::flight_mode_cmd(long cmd_msg) {
-    if(!_pass_thru){
+    if(!m_pass_thru){
         HUDLogMessagesModel::instance().add_message_info("No FC");
         qDebug()<<"No fc pass_thru module";
         return;
@@ -833,8 +832,8 @@ void FCMavlinkSystem::flight_mode_cmd(long cmd_msg) {
 
     cmd.command = MAV_CMD_DO_SET_MODE;
 
-    cmd.target_sysid= _pass_thru->get_target_sysid();
-    cmd.target_compid=_pass_thru->get_target_compid();
+    cmd.target_sysid= m_pass_thru->get_target_sysid();
+    cmd.target_compid=m_pass_thru->get_target_compid();
 
     cmd.param1=MAV_MODE_FLAG_CUSTOM_MODE_ENABLED;
     cmd.param2=cmd_msg;
@@ -844,7 +843,7 @@ void FCMavlinkSystem::flight_mode_cmd(long cmd_msg) {
     cmd.param6=0;
     cmd.param7=0;
 
-    const auto res=_pass_thru->send_command_long(cmd);
+    const auto res=m_pass_thru->send_command_long(cmd);
 
     //result is not really used right now as mavsdk will output errors
     //----here for future use----
@@ -906,7 +905,7 @@ void FCMavlinkSystem::test_set_data_stream_rates()
         return;
     }
     qDebug()<<"test_set_data_stream_rates";
-    if(!_pass_thru){
+    if(!m_pass_thru){
         HUDLogMessagesModel::instance().add_message_info("No FC");
         qDebug()<<"No fc pass_thru module";
         return;
@@ -915,12 +914,12 @@ void FCMavlinkSystem::test_set_data_stream_rates()
     //qDebug() << "test_set_data_stream_rates:" << _pass_thru->get_target_compid();
     mavsdk::MavlinkPassthrough::CommandLong cmd;
     cmd.command = MAV_CMD_SET_MESSAGE_INTERVAL;
-    cmd.target_sysid= _pass_thru->get_target_sysid();
-    cmd.target_compid=_pass_thru->get_target_compid();
+    cmd.target_sysid= m_pass_thru->get_target_sysid();
+    cmd.target_compid=m_pass_thru->get_target_compid();
     cmd.param1=MAVLINK_MSG_ID_ATTITUDE; // affects artificial horizon update rate
     const int interval_us=std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::milliseconds(10)).count();
     cmd.param2=interval_us;
-    const auto res=_pass_thru->send_command_long(cmd);
+    const auto res=m_pass_thru->send_command_long(cmd);
     if(res==mavsdk::MavlinkPassthrough::Result::Success){
         const auto msg="test_set_data_stream_rates() Success!!";
         qDebug()<<msg;
