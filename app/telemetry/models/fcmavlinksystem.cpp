@@ -973,9 +973,9 @@ void FCMavlinkSystem::recalculate_efficiency()
         // recalculate and update efficiency
         const int efficiency_mah_per_km=Telemetryutil::calculate_efficiency_in_mah_per_km(delta_charge_mah,delta_distance_km);
         set_battery_consumed_mah_per_km(efficiency_mah_per_km);
-        qDebug()<<"FCMavlinkSystem::recalculate_efficiency:"<<efficiency_mah_per_km;
+        //qDebug()<<"FCMavlinkSystem::recalculate_efficiency:"<<efficiency_mah_per_km;
     }else{
-        qDebug()<<"FCMavlinkSystem::recalculate_efficiency - cannot";
+        //qDebug()<<"FCMavlinkSystem::recalculate_efficiency - cannot";
     }
     m_efficiency_last_distance_m=m_flight_distance_m;
     m_efficiency_last_charge_consumed_mAh=m_battery_consumed_mah;
