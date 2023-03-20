@@ -136,8 +136,8 @@ Map {
         anchorPoint.x: imageSmallMap.width / 2
         anchorPoint.y: imageSmallMap.height
         coordinate {
-            latitude: _fcMavlinkSystem.homelat
-            longitude: _fcMavlinkSystem.homelon
+            latitude: _fcMavlinkSystem.home_latitude
+            longitude: _fcMavlinkSystem.home_longitude
         }
 
         sourceItem: Image {

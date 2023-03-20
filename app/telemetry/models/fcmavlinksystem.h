@@ -71,8 +71,15 @@ class FCMavlinkSystem : public QObject
     L_RO_PROP(double,lat,set_lat,0.0)
     L_RO_PROP(double,lon,set_lon,0.0)
     L_RO_PROP(int,satellites_visible,set_satellites_visible,0)
-    L_RO_PROP(double,gps_hdop,set_gps_hdop,99.0)
+    L_RO_PROP(double,gps_hdop,set_gps_hdop,-1)
+    L_RO_PROP(double,gps_vdop,set_gps_vdop,-1)
+    // gps lock type, see: mavlink_gps_raw_int_t / gps_status.fix_type
     L_RO_PROP(int,gps_fix_type,set_gps_fix_type,0)
+    L_RO_PROP(QString,gps_status_fix_type_str,set_gps_status_fix_type_str,"Unknown") // User-understandable string for UI
+    // Home point (lat/lon/...) as reported by the FC via MAVLINK_MSG_ID_HOME_POSITION
+    L_RO_PROP(double,home_latitude,set_home_latitude,0.0);
+    L_RO_PROP(double,home_longitude,set_home_longitude,0.0);
+
     L_RO_PROP(double,vx,set_vx,0.0)
     L_RO_PROP(double,vy,set_vy,0.0)
     L_RO_PROP(double,vz,set_vz,0.0)
@@ -96,7 +103,7 @@ class FCMavlinkSystem : public QObject
     L_RO_PROP(int,airspeed_sensor_temperature_degree,set_airspeed_sensor_temperature_degree,99)
     L_RO_PROP(int,esc_temp,set_esc_temp,0);
     L_RO_PROP(QString,flight_time,set_flight_time,"00:00")
-    L_RO_PROP(double,flight_distance,set_flight_distance,0)
+    L_RO_PROP(double,flight_distance_m,set_flight_distance_m,0)
     L_RO_PROP(double,lateral_speed,set_lateral_speed,0)  
     L_RO_PROP(double,home_distance,set_home_distance,0)
     L_RO_PROP(int,boot_time,set_boot_time,0)
@@ -167,34 +174,23 @@ public:
 
     Q_PROPERTY(QString flight_mode MEMBER m_flight_mode WRITE set_flight_mode NOTIFY flight_mode_changed)
     void set_flight_mode(QString flight_mode);
-
-    Q_PROPERTY(double homelat MEMBER m_homelat WRITE set_homelat NOTIFY homelat_changed)
-    void set_homelat(double homelat);
-
-    Q_PROPERTY(double homelon MEMBER m_homelon WRITE set_homelon NOTIFY homelon_changed)
-    void set_homelon(double homelon);
 signals:
     // mavlink
     void armed_changed(bool armed);
     void flight_mode_changed(QString flight_mode);
-    void homelat_changed(double homelat);
-    void homelon_changed(double homelon);
     void home_course_changed(int home_course);
     void home_heading_changed(int home_heading);
 private:
     // NOTE: Null until system discovered
-    std::shared_ptr<mavsdk::System> _system=nullptr;
-    std::shared_ptr<mavsdk::Action> _action=nullptr;
+    std::shared_ptr<mavsdk::System> m_system=nullptr;
+    std::shared_ptr<mavsdk::Action> m_action=nullptr;
     // We got rid of this submodule for a good reason (see above)
     //std::shared_ptr<mavsdk::Telemetry> _mavsdk_telemetry=nullptr;
-    std::shared_ptr<mavsdk::MavlinkPassthrough> _pass_thru=nullptr;
+    std::shared_ptr<mavsdk::MavlinkPassthrough> m_pass_thru=nullptr;
     // other members
     bool m_armed = false;
     QString m_flight_mode = "------";
 
-    double m_homelat = 0.0;
-    double m_homelon = 0.0;
-    bool gcs_position_set = false;
     int gps_quality_count = 0;
 
     int m_home_heading = 0; //this is actual global heading
@@ -251,7 +247,7 @@ private:
     static bool get_SHOW_FC_MESSAGES_IN_HUD();
     // Used to calculate efficiency in mAh / km
     void recalculate_efficiency();
-    double m_efficiency_last_distance_km=0;
+    double m_efficiency_last_distance_m=0;
     int m_efficiency_last_charge_consumed_mAh=0;
     std::chrono::steady_clock::time_point m_efficiency_last_update=std::chrono::steady_clock::now();
 };

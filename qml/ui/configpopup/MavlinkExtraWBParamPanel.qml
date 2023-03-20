@@ -28,6 +28,10 @@ Pane{
         }
     }
 
+    function fc_is_armed(){
+        return _fcMavlinkSystem.armed
+    }
+
     ScrollView {
         id:mavlinkExtraWBParamPanel
         width: parent.width
@@ -212,13 +216,14 @@ Pane{
                             enabled: false
                             onClicked: {
                                 if(_fcMavlinkSystem.is_alive && _fcMavlinkSystem.armed && (!settings.dev_allow_freq_change_when_armed)){
-                                    var text="Cannot change frequency while FC is armed";
+                                    var text="Cannot change frequency while FC is armed. MCS index can be changed though.";
                                     _messageBoxInstance.set_text_and_show(text);
                                     return;
                                 }
                                 var selectedValue=frequenciesModel.get(comboBoxFreq.currentIndex).value
                                 _synchronizedSettings.change_param_air_and_ground_frequency(selectedValue);
                             }
+                            //Material.background: fc_is_armed() ? Material.Red : Material.Normal;
                         }
                         Button{
                             text: "INFO"
@@ -261,13 +266,15 @@ Pane{
                             enabled: false
                             onClicked: {
                                 if(_fcMavlinkSystem.is_alive && _fcMavlinkSystem.armed && (!settings.dev_allow_freq_change_when_armed)){
-                                    var text="Cannot change channel width while FC is armed"
+                                    var text="Cannot change channel width while FC is armed. MCS index can be changed though."
                                     _messageBoxInstance.set_text_and_show(text);
                                     return;
                                 }
                                 var selectedValue=channelWidthModel.get(comboBoxChannelWidth.currentIndex).value
                                 _synchronizedSettings.change_param_air_and_ground_channel_width(selectedValue)
                             }
+                            //Material.background: fc_is_armed() ? Material.Red : Material.Normal;
+                            //Material.background: Material.Light;
                         }
                         Button{
                             text: "INFO"
@@ -316,6 +323,7 @@ Pane{
                                 //_synchronizedSettings.change_param_air_and_ground_mcs(selectedValue)
                                 _synchronizedSettings.change_param_air_only_mcs(selectedValue)
                             }
+                            //Material.foreground: fc_is_armed() ? Material.Green : Material.Dark;
                         }
                         Button{
                             text: "INFO"

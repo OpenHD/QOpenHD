@@ -37,22 +37,22 @@ void FCMavlinkSystem::register_for_qml(QQmlContext *qml_context)
 void FCMavlinkSystem::set_system(std::shared_ptr<mavsdk::System> system)
 {
     // The system is set once when discovered, then should not change !!
-    assert(_system==nullptr);
-    _system=system;
-    if(!_system->has_autopilot()){
+    assert(m_system==nullptr);
+    m_system=system;
+    if(!m_system->has_autopilot()){
         qDebug()<<"FCMavlinkSystem::set_system WARNING no autopilot";
     }
-    const int tmp_sys_id=_system->get_system_id();
+    const int tmp_sys_id=m_system->get_system_id();
     qDebug()<<"FCMavlinkSystem::set_system: FC SYS ID is:"<<(int)tmp_sys_id;
     set_for_osd_sys_id(tmp_sys_id);
-    _action=std::make_shared<mavsdk::Action>(system);
-    _pass_thru=std::make_shared<mavsdk::MavlinkPassthrough>(system);
+    m_action=std::make_shared<mavsdk::Action>(system);
+    m_pass_thru=std::make_shared<mavsdk::MavlinkPassthrough>(system);
 }
 
 bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
 {
     //qDebug()<<"FCMavlinkSystem::process_message";
-    if(!_system){
+    if(!m_system){
         qDebug()<<"WARNING the system must be set before FC model starts processing data";
         return false;
     }
@@ -145,7 +145,9 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         mavlink_msg_gps_raw_int_decode(&msg, &gps_status);
         set_satellites_visible(gps_status.satellites_visible);
         set_gps_hdop(gps_status.eph / 100.0);
+        set_gps_vdop(gps_status.epv / 100.0);
         set_gps_fix_type((unsigned int)gps_status.fix_type);
+        set_gps_status_fix_type_str(Telemetryutil::mavlink_gps_fix_type_to_string(gps_status.fix_type));
         break;
     }
     case MAVLINK_MSG_ID_GPS_STATUS: {
@@ -375,8 +377,8 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
     case MAVLINK_MSG_ID_HOME_POSITION:{
         mavlink_home_position_t home_position;
         mavlink_msg_home_position_decode(&msg, &home_position);
-        set_homelat((double)home_position.latitude / 10000000.0);
-        set_homelon((double)home_position.longitude / 10000000.0);
+        set_home_latitude((double)home_position.latitude / 10000000.0);
+        set_home_longitude((double)home_position.longitude / 10000000.0);
         //LocalMessage::instance()->showMessage("Home Position set by Telemetry", 7);
         break;
     }
@@ -385,7 +387,6 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         mavlink_msg_statustext_decode(&msg,&parsedMsg);
         auto tmp=Telemetryutil::statustext_convert(parsedMsg);
         LogMessagesModel::instance().addLogMessage("FC",tmp.message.c_str(),tmp.level);
-        QSettings setings;
         if(get_SHOW_FC_MESSAGES_IN_HUD()){
             std::stringstream ss;
             ss<<"["<<tmp.message<<"]";
@@ -430,8 +431,8 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
 
 std::optional<uint8_t> FCMavlinkSystem::get_fc_sys_id()
 {
-    if(_system){
-        return _system->get_system_id();
+    if(m_system){
+        return m_system->get_system_id();
     }
     return std::nullopt;
 }
@@ -471,7 +472,7 @@ void FCMavlinkSystem::updateFlightDistance() {
         //qDebug() << "added distance" << added_distance;
         total_dist = total_dist + added_distance;
         //qDebug() << "total distance" << total_dist;
-        set_flight_distance( total_dist);
+        set_flight_distance_m( total_dist);
     }
 }
 
@@ -486,7 +487,7 @@ void FCMavlinkSystem::set_armed(bool armed) {
          * vehicle is disarmed, causing it to appear to stop in the UI.
          */
         flightTimeStart.start();
-        if (m_homelat == 0.0 && m_homelon == 0.0) {
+        if (m_home_latitude == 0.0 && m_home_longitude == 0.0) {
             //LocalMessage::instance()->showMessage("No Home Position in FCMavlinkSystem", 4);
         }
     }
@@ -515,21 +516,9 @@ void FCMavlinkSystem::set_flight_mode(QString flight_mode) {
     emit flight_mode_changed(m_flight_mode);
 }
 
-void FCMavlinkSystem::set_homelat(double homelat) {
-    m_homelat = homelat;
-    gcs_position_set = true;
-    emit homelat_changed(m_homelat);
-}
-
-void FCMavlinkSystem::set_homelon(double homelon) {
-    m_homelon = homelon;
-    gcs_position_set = true;
-    emit homelon_changed(m_homelon);
-}
-
 void FCMavlinkSystem::calculate_home_distance() {
     // if home lat/long are zero the calculation will be wrong so we skip it
-    if (m_homelat != 0.0 && m_homelon != 0.0) {
+    if (m_home_latitude != 0.0 && m_home_longitude != 0.0) {
         double s12;
         double azi1;
         double azi2;
@@ -538,7 +527,7 @@ void FCMavlinkSystem::calculate_home_distance() {
         // from https://manpages.ubuntu.com/manpages/bionic/man3/geodesic.3.html
         const double a = 6378137, f = 1/298.257223563; /* WGS84 */
         geod_init(&geod,a,f);
-        geod_inverse(&geod,m_homelat,m_homelon,m_lat,m_lon,&s12,&azi1,&azi2);
+        geod_inverse(&geod,m_home_latitude,m_home_longitude,m_lat,m_lon,&s12,&azi1,&azi2);
 
         /* todo: this could be easily extended to save the azimuth as well, which gives us the direction
            home for free as a result of the calculation above.
@@ -554,10 +543,10 @@ void FCMavlinkSystem::calculate_home_distance() {
 
 void FCMavlinkSystem::calculate_home_course() {
 
-    //qDebug() << "Home lat lon " << m_homelat << " :" << m_homelon;
+    //qDebug() << "Home lat lon " << m_home_latitude << " :" << m_home_longitude;
 
-    double  dlon = (m_lon-m_homelon)*0.017453292519;
-    double lat1 = (m_homelat)*0.017453292519;
+    double  dlon = (m_lon-m_home_longitude)*0.017453292519;
+    double lat1 = (m_home_latitude)*0.017453292519;
     double lat2 = (m_lat)*0.017453292519;
     double  a1 = sin(dlon) * cos(lat2);
     double  a2 = sin(lat1) * cos(lat2) * cos(dlon);
@@ -565,7 +554,7 @@ void FCMavlinkSystem::calculate_home_course() {
     a2 = atan2(a1, a2);
     if (a2 < 0.0) a2 += M_PI*2;
 
-    int result= 180.0f / M_PI*(a2);
+    const int result= 180.0f / M_PI*(a2);
 
     set_home_course(result);
     set_home_heading(result);
@@ -772,7 +761,7 @@ void FCMavlinkSystem::updateWind(){
 
 void FCMavlinkSystem::arm_fc_async(bool arm)
 {
-    if(!_action){
+    if(!m_action){
         qDebug()<<"No fc action module";
         return;
     }
@@ -787,15 +776,15 @@ void FCMavlinkSystem::arm_fc_async(bool arm)
         }
     };
     if(arm){
-        _action->arm_async(cb);
+        m_action->arm_async(cb);
     }else{
-        _action->disarm_async(cb);
+        m_action->disarm_async(cb);
     }
 }
 
 void FCMavlinkSystem::send_return_to_launch_async()
 { //TODO ------this probably only works for px4---------
-    if(!_action){
+    if(!m_action){
         HUDLogMessagesModel::instance().add_message_info("No FC");
         return;
     }
@@ -805,20 +794,20 @@ void FCMavlinkSystem::send_return_to_launch_async()
         qDebug()<<ss.str().c_str();
         HUDLogMessagesModel::instance().add_message_info(ss.str().c_str());
     };
-    _action->return_to_launch_async(cb);
+    m_action->return_to_launch_async(cb);
 }
 
 bool FCMavlinkSystem::send_command_reboot(bool reboot)
 {
-    if(!_action){
+    if(!m_action){
         HUDLogMessagesModel::instance().add_message_info("No FC");
         return false;
     }
     mavsdk::Action::Result res{};
     if(reboot){
-        res=_action->reboot();
+        res=m_action->reboot();
     }else{
-        res=_action->shutdown();
+        res=m_action->shutdown();
     }
     if(res==mavsdk::Action::Result::Success){
         return true;
@@ -828,7 +817,7 @@ bool FCMavlinkSystem::send_command_reboot(bool reboot)
 
 
 void FCMavlinkSystem::flight_mode_cmd(long cmd_msg) {
-    if(!_pass_thru){
+    if(!m_pass_thru){
         HUDLogMessagesModel::instance().add_message_info("No FC");
         qDebug()<<"No fc pass_thru module";
         return;
@@ -843,8 +832,8 @@ void FCMavlinkSystem::flight_mode_cmd(long cmd_msg) {
 
     cmd.command = MAV_CMD_DO_SET_MODE;
 
-    cmd.target_sysid= _pass_thru->get_target_sysid();
-    cmd.target_compid=_pass_thru->get_target_compid();
+    cmd.target_sysid= m_pass_thru->get_target_sysid();
+    cmd.target_compid=m_pass_thru->get_target_compid();
 
     cmd.param1=MAV_MODE_FLAG_CUSTOM_MODE_ENABLED;
     cmd.param2=cmd_msg;
@@ -854,7 +843,7 @@ void FCMavlinkSystem::flight_mode_cmd(long cmd_msg) {
     cmd.param6=0;
     cmd.param7=0;
 
-    const auto res=_pass_thru->send_command_long(cmd);
+    const auto res=m_pass_thru->send_command_long(cmd);
 
     //result is not really used right now as mavsdk will output errors
     //----here for future use----
@@ -916,7 +905,7 @@ void FCMavlinkSystem::test_set_data_stream_rates()
         return;
     }
     qDebug()<<"test_set_data_stream_rates";
-    if(!_pass_thru){
+    if(!m_pass_thru){
         HUDLogMessagesModel::instance().add_message_info("No FC");
         qDebug()<<"No fc pass_thru module";
         return;
@@ -925,12 +914,12 @@ void FCMavlinkSystem::test_set_data_stream_rates()
     //qDebug() << "test_set_data_stream_rates:" << _pass_thru->get_target_compid();
     mavsdk::MavlinkPassthrough::CommandLong cmd;
     cmd.command = MAV_CMD_SET_MESSAGE_INTERVAL;
-    cmd.target_sysid= _pass_thru->get_target_sysid();
-    cmd.target_compid=_pass_thru->get_target_compid();
+    cmd.target_sysid= m_pass_thru->get_target_sysid();
+    cmd.target_compid=m_pass_thru->get_target_compid();
     cmd.param1=MAVLINK_MSG_ID_ATTITUDE; // affects artificial horizon update rate
     const int interval_us=std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::milliseconds(10)).count();
     cmd.param2=interval_us;
-    const auto res=_pass_thru->send_command_long(cmd);
+    const auto res=m_pass_thru->send_command_long(cmd);
     if(res==mavsdk::MavlinkPassthrough::Result::Success){
         const auto msg="test_set_data_stream_rates() Success!!";
         qDebug()<<msg;
@@ -961,14 +950,20 @@ void FCMavlinkSystem::recalculate_efficiency()
     if(elapsed<std::chrono::seconds(10)){
         return;
     }
+    //qDebug()<<"FCMavlinkSystem::recalculate_efficiency()";
     m_efficiency_last_update=std::chrono::steady_clock::now();
-    const double delta_distance_km=m_flight_distance-m_efficiency_last_distance_km;
+    const double delta_distance_m=m_flight_distance_m-m_efficiency_last_distance_m;
+    const double delta_distance_km=delta_distance_m / 1000.0;
     const int delta_charge_mah=m_battery_consumed_mah-m_efficiency_last_charge_consumed_mAh;
-    if(delta_distance_km>0 && delta_charge_mah>0){
+    if(delta_distance_m>0 && delta_charge_mah>0){
+        //qDebug()<<"recalculate_efficiency: delta_distance_m:"<<delta_distance_m<<" delta_charge_mah:"<<delta_charge_mah;
         // recalculate and update efficiency
         const int efficiency_mah_per_km=Telemetryutil::calculate_efficiency_in_mah_per_km(delta_charge_mah,delta_distance_km);
         set_battery_consumed_mah_per_km(efficiency_mah_per_km);
+        //qDebug()<<"FCMavlinkSystem::recalculate_efficiency:"<<efficiency_mah_per_km;
+    }else{
+        //qDebug()<<"FCMavlinkSystem::recalculate_efficiency - cannot";
     }
-    m_efficiency_last_distance_km=m_flight_distance;
+    m_efficiency_last_distance_m=m_flight_distance_m;
     m_efficiency_last_charge_consumed_mAh=m_battery_consumed_mah;
 }

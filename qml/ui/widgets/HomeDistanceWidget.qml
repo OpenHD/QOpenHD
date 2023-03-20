@@ -229,7 +229,7 @@ BaseWidget {
                 width: parent.width
                 height: 32
                 Text {
-                    text: qsTr("Lat:")
+                    text: qsTr("Home Lat:")
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -238,7 +238,7 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Text {
-                    text: Number(_fcMavlinkSystem.homelat).toLocaleString(Qt.locale(),
+                    text: Number(_fcMavlinkSystem.home_latitude).toLocaleString(Qt.locale(),
                                                                 'f', 6)
                     color: "white"
                     height: parent.height
@@ -252,7 +252,7 @@ BaseWidget {
                 width: parent.width
                 height: 32
                 Text {
-                    text: qsTr("Lon:")
+                    text: qsTr("Home Lon:")
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -261,7 +261,7 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Text {
-                    text: Number(_fcMavlinkSystem.homelon).toLocaleString(Qt.locale(),
+                    text: Number(_fcMavlinkSystem.home_longitude).toLocaleString(Qt.locale(),
                                                                 'f', 6)
                     color: "white"
                     height: parent.height

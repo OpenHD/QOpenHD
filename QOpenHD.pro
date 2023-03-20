@@ -103,8 +103,6 @@ LinuxBuild {
     include(app/adsb/adsb_lib.pri)
 }
 
-#include(app/vs_gst_qmlglsink/gst_video.pri)
-
 # All Generic files / files that literally have 0!! dependencies other than qt
 SOURCES += \
     app/logging/hudlogmessagesmodel.cpp \
