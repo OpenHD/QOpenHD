@@ -712,6 +712,7 @@ static bool get_arm_mode_from_heartbeat(const mavlink_heartbeat_t& heartbeat){
 }
 
 static int calculate_efficiency_in_mah_per_km(const double delta_mah,const double delta_km){
+    //qDebug()<<"delta_mah:"<<delta_mah<<" delta_km:"<<delta_km;
     if(delta_km<=0)return 0;
     double ret=delta_mah/delta_km;
     return std::round(ret);
