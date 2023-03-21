@@ -5,6 +5,7 @@
 
 #include "../../util/WorkaroundMessageBox.h"
 #include "../logging/hudlogmessagesmodel.h"
+#include "../logging/logmessagesmodel.h"
 #include <sstream>
 
 
@@ -85,6 +86,14 @@ void SynchronizedSettings::change_param_air_only_mcs(int value,bool use_hud)
     if(!air_alive){
         log_result_message("Precondition: Air and Ground running and alive not given. Change not possible.",use_hud);
         return;
+    }
+    {
+        const auto var_bitrate_enabled=MavlinkSettingsModel::instanceAir().try_get_param_int_impl("VARIABLE_BITRATE");
+        if(var_bitrate_enabled.has_value() && var_bitrate_enabled!=((int)true)){
+            const auto message="Variable bitrate is OFF !";
+            HUDLogMessagesModel::instance().add_message_warning(message);
+            LogMessagesModel::instance().add_message_warn("MCS",message);
+        }
     }
     const MavlinkSettingsModel::ExtraRetransmitParams extra_retransmit_params{std::chrono::milliseconds(100),10};
     const QString param_id=PARAM_ID_WB_MCS_INDEX;
