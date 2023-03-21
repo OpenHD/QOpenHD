@@ -264,6 +264,10 @@ Item {
         id: record_video_widget
     }
 
+    WBLinkRateControlWidget{
+        id: wBLinkRateControlWidget
+    }
+
     Text {
         anchors.bottom: parent.bottom
         anchors.horizontalCenter: parent.horizontalCenter

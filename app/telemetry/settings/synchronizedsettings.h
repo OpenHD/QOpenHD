@@ -49,8 +49,11 @@ public:
     }
     // MCS index does not need to match - 2.3.3 and upwards uses the lowest mcs index possible for uplink, and
     // allows changing the MCS index of the downlink (e.g. the mcs index used for injecting packets on the air unit)
-    Q_INVOKABLE void change_param_air_only_mcs(int value);
+    // @param use_hud: when true, errors are logged to the HUD, otherwise, they are logged via a message popup
+    Q_INVOKABLE void change_param_air_only_mcs(int value,bool use_hud);
     Q_INVOKABLE int get_param_int_air_only_mcs();
+private:
+    void log_result_message(const std::string& result_message,bool use_hud);
 };
 
 #endif // SynchronizedSettings_H

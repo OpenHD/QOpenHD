@@ -244,5 +244,6 @@
         <file>ui/elements/RestartQOpenHDMessageBox.qml</file>
         <file>ui/elements/SettingBaseElement.qml</file>
         <file>ui/widgets/PerformanceHorizonWidget.qml</file>
+        <file>ui/widgets/WBLinkRateControlWidget.qml</file>
     </qresource>
 </RCC>

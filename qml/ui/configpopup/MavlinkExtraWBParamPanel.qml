@@ -321,7 +321,7 @@ Pane{
                             onClicked: {
                                 var selectedValue=mcsIndexModel.get(comboBoxMcsIndex.currentIndex).value
                                 //_synchronizedSettings.change_param_air_and_ground_mcs(selectedValue)
-                                _synchronizedSettings.change_param_air_only_mcs(selectedValue)
+                                _synchronizedSettings.change_param_air_only_mcs(selectedValue,false)
                             }
                             //Material.foreground: fc_is_armed() ? Material.Green : Material.Dark;
                         }
