@@ -3,7 +3,7 @@
 # NOTE: requires cloning with --recurse-submodules
 # Build and install MAVSDK - this needs to be done only once
 
-cd lib/MAVSDK
+cd lib/MAVSDK || exit
 cmake -Bbuild/default -DBUILD_SHARED_LIBS=OFF -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=OFF -H.
 cmake --build build/default -j4
 sudo cmake --build build/default --target install
