@@ -24,7 +24,7 @@ ls /opt
 VER2=$(git rev-parse --short HEAD)
 
 
-if [[ "${DISTRO}" == "bullseye2" ]] || [[ "${DISTRO}" == "bionic" ]] ; then
+if [[ "${DISTRO}" == "bullseye" ]] || [[ "${DISTRO}" == "bionic" ]] ; then
     QT_VERSION=Qt5.15.4
     echo "debug"
     /opt/Qt5.15.4/bin/qmake
