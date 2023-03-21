@@ -24,7 +24,7 @@ ls /opt
 VER2=$(git rev-parse --short HEAD)
 
 
-if [[ "${DISTRO}" == "bullseye" ]] || [[ "${DISTRO}" == "bionic" ]] ; then
+if [[ "${DISTRO}" == "bullseye2" ]] || [[ "${DISTRO}" == "bionic" ]] ; then
     QT_VERSION=Qt5.15.4
     echo "debug"
     /opt/Qt5.15.4/bin/qmake
@@ -53,21 +53,26 @@ fi
 #Here are the dependencies depending on the platform
 if [[ "${DISTRO}" == "bullseye" ]] && [[ "${OS}" == "raspbian" ]] ; then
 #Raspberry
-PLATFORM_PACKAGES=git openhd-userland libavcodec-dev libavformat-dev openhd-qt gst-plugins-good gst-openhd-plugins
+PLATFORM_PACKAGES="-d git -d openhd-userland -d libavcodec-dev -d libavformat-dev -d openhd-qt -d gst-plugins-good -d gst-openhd-plugins"
 elif [[ "${DISTRO}" == "jammy" ]] && [[ "${OS}" == "ubuntu" ]] ; then
 #X86
-PLATFORM_PACKAGES=git libavcodec-dev libavformat-dev openhd-qt-x86-jammy gst-plugins-good
+PLATFORM_PACKAGES="-d git -d qtgstreamer-plugins-qt5 libgstreamer-plugins-base1.0-dev -d gstreamer1.0-plugins-good -d libavcodec-dev -d libavformat-dev -d openhd-qt-x86-jammy"
 else
-PLATFORM_PACKAGES=git libavcodec-dev libavformat-dev gst-plugins-good qml-module-qtquick-controls2 libqt5concurrent5 libqt5core5a libqt5dbus5 libqt5gui5 libqt5help5 libqt5location5 libqt5location5-plugins libqt5multimedia5 libqt5multimedia5-plugins libqt5multimediagsttools5 libqt5multimediawidgets5 libqt5network5 libqt5opengl5 libqt5opengl5-dev libqt5positioning5 libqt5positioning5-plugins libqt5positioningquick5 libqt5printsupport5 libqt5qml5 libqt5quick5 libqt5quickparticles5 libqt5quickshapes5 libqt5quicktest5 libqt5quickwidgets5 libqt5sensors5 libqt5sql5 libqt5sql5-sqlite libqt5svg5 libqt5test5 libqt5webchannel5 libqt5webkit5 libqt5widgets5 libqt5x11extras5 libqt5xml5 openshot-qt python3-pyqt5 python3-pyqt5.qtopengl python3-pyqt5.qtsvg python3-pyqt5.qtwebkit python3-pyqtgraph qml-module-qt-labs-settings qml-module-qtgraphicaleffects qml-module-qtlocation qml-module-qtpositioning qml-module-qtquick-controls qml-module-qtquick-dialogs qml-module-qtquick-extras qml-module-qtquick-layouts qml-module-qtquick-privatewidgets qml-module-qtquick-shapes qml-module-qtquick-window2 qml-module-qtquick2 qt5-gtk-platformtheme qt5-qmake qt5-qmake-bin qt5-qmltooling-plugins qtbase5-dev qtbase5-dev-tools qtchooser qtdeclarative5-dev qtdeclarative5-dev-tools qtpositioning5-dev qttranslations5-l10n
-
+PLATFORM_PACKAGES="-d qtgstreamer-plugins-qt5 -d libqt5texttospeech5-dev -d qml-module-qt-labs-platform -d git -d libgstreamer-plugins-base1.0-dev -d gstreamer1.0-plugins-good -d libavcodec-dev -d libavformat-dev -d qml-module-qtquick-controls2 -d libqt5concurrent5 -d libqt5core5a -d libqt5dbus5 -d libqt5gui5 -d libqt5help5 -d libqt5location5 -d libqt5location5-plugins -d libqt5multimedia5 -d libqt5multimedia5-plugins -d libqt5multimediagsttools5 -d libqt5multimediawidgets5 -d libqt5network5 -d libqt5opengl5 -d libqt5opengl5-dev -d libqt5positioning5 -d libqt5positioning5-plugins -d libqt5positioningquick5 -d libqt5printsupport5 -d libqt5qml5 -d libqt5quick5 -d libqt5quickparticles5 -d libqt5quickshapes5 -d libqt5quicktest5 -d libqt5quickwidgets5 -d libqt5sensors5 -d libqt5sql5 -d libqt5sql5-sqlite -d libqt5svg5 -d libqt5test5 -d libqt5webchannel5 -d libqt5webkit5 -d libqt5widgets5 -d libqt5x11extras5 -d libqt5xml5 -d openshot-qt -d python3-pyqt5 -d python3-pyqt5.qtopengl -d python3-pyqt5.qtsvg -d python3-pyqt5.qtwebkit -d python3-pyqtgraph -d qml-module-qt-labs-settings -d qml-module-qtgraphicaleffects -d qml-module-qtlocation -d qml-module-qtpositioning -d qml-module-qtquick-controls -d qml-module-qtquick-dialogs -d qml-module-qtquick-extras -d qml-module-qtquick-layouts -d qml-module-qtquick-privatewidgets -d qml-module-qtquick-shapes -d qml-module-qtquick-window2 -d qml-module-qtquick2 -d qt5-gtk-platformtheme -d qt5-qmake -d qt5-qmake-bin -d qt5-qmltooling-plugins -d qtbase5-dev -d qtbase5-dev-tools -d qtchooser -d qtdeclarative5-dev -d qtdeclarative5-dev-tools -d qtpositioning5-dev -d qttranslations5-l10n"
 fi
 
 cp release/QOpenHD /tmp/qopenhd/usr/local/bin/ || exit 1
 
 # copying qopenhd service
-if [[ "${PACKAGE_ARCH}" != "x86_64" ]]; then
+if [[ "${PACKAGE_ARCH}" = "armhf" ]]; then
 cp systemd/* /tmp/qopenhd/etc/systemd/system/ || exit 1
 fi
+
+if [[ "${PACKAGE_ARCH}" = "arm64" ]]; then
+cp systemd/qopenhd_rock.service /tmp/qopenhd/etc/systemd/system/qopenhd.service || exit 1
+cp systemd/rock5_h264_decode.service /tmp/qopenhd/etc/systemd/system/rock5_h264_decode.service || exit 1
+fi
+
 # The rpi_qt_eglfs_kms_config.json file makes sure that qopenhd runs at the res
 # specified in the config.txt if the user did so
 mkdir -p /tmp/qopenhd/usr/local/share/qopenhd/
