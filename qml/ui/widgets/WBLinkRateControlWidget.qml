@@ -21,7 +21,7 @@ BaseWidget {
     widgetIdentifier: "wb_link_rate_control_widget"
 
     defaultAlignment: 0
-    defaultXOffset: 200
+    defaultXOffset: 400
     defaultYOffset: 2
     defaultHCenter: false
     defaultVCenter: false
@@ -124,25 +124,30 @@ BaseWidget {
                         text: "MCS0"
                         onClicked: {
                              _synchronizedSettings.change_param_air_only_mcs(0,true)
+                            console.log("XX"+_synchronizedSettings.dirty_curr_mcs_index)
                         }
+                        highlighted: _synchronizedSettings.dirty_curr_mcs_index==0
                     }
                     Button{
                         text: "MCS1"
                         onClicked: {
                              _synchronizedSettings.change_param_air_only_mcs(1,true)
                         }
+                        highlighted: _synchronizedSettings.dirty_curr_mcs_index==1
                     }
                     Button{
                         text: "MCS2"
                         onClicked: {
                              _synchronizedSettings.change_param_air_only_mcs(2,true)
                         }
+                        highlighted: _synchronizedSettings.dirty_curr_mcs_index==2
                     }
                     Button{
                         text: "MCS3"
                         onClicked: {
                              _synchronizedSettings.change_param_air_only_mcs(3,true)
                         }
+                        highlighted: _synchronizedSettings.dirty_curr_mcs_index==3
                     }
                     /*Button{
                         text: "MCS4"

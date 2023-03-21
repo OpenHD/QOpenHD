@@ -141,8 +141,8 @@ Pane{
 
                 ListModel{
                     id: mcsIndexModel
-                    ListElement {title: "~3.0 Mbps  (MCS0)"; value: 0}
-                    ListElement {title: "~5.5 Mbps  (MCS1)"; value: 1}
+                    ListElement {title: "~4.5 Mbps  (MCS0)"; value: 0}
+                    ListElement {title: "~6.5 Mbps  (MCS1)"; value: 1}
                     ListElement {title: "~8.5 Mbps (long range) (MCS2)"; value: 2}
                     ListElement {title: "~12  Mbps (default) (MCS3)"; value: 3}
                     ListElement {title: "~17  Mbps (EXP)(MCS4)"; value: 4}

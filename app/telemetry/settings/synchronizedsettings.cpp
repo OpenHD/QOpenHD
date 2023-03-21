@@ -98,6 +98,7 @@ void SynchronizedSettings::change_param_air_only_mcs(int value,bool use_hud)
     std::stringstream ss;
     ss<<"Successfully changed "<<param_id.toStdString()<<" to "<<value;
     log_result_message(ss.str(),use_hud);
+    set_dirty_curr_mcs_index(value);
 }
 
 int SynchronizedSettings::get_param_int_air_only_mcs()
