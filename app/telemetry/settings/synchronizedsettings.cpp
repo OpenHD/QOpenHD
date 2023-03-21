@@ -84,7 +84,7 @@ void SynchronizedSettings::change_param_air_only_mcs(int value,bool use_hud)
 {
     const bool air_alive=AOHDSystem::instanceAir().is_alive();
     if(!air_alive){
-        log_result_message("Precondition: Air and Ground running and alive not given. Change not possible.",use_hud);
+        log_result_message("Precondition: Air running and alive not given. Change not possible.",use_hud);
         return;
     }
     {
