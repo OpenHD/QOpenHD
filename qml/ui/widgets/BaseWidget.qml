@@ -40,8 +40,9 @@ BaseWidgetForm {
     property string vCenterIdentifier: "%1_v_center".arg(widgetIdentifier);
     property double oldOpacity: 100;
 
+    // Feature scale begin --------------------------------------------------------------------------------------
     // Pretty much all widgets have a scale (previously often called size) setting
-    // Properly resizing the widget is the responsibility of the upper implementation -
+    // Properly resizing the widget elements itself is the responsibility of the upper implementation -
     // This base class implements the neccessary tools to resize, though. In short, we do
     // 1) Store the scale unique for this widget persistently
     // 2) expose its current value via a property variable
@@ -51,10 +52,15 @@ BaseWidgetForm {
     property double bw_current_scale : settings.value(bw_scale_identifier,1.0);
     // Updates the current base widget scale (unique per widgetIdentifier) and persist the value for later use
     function bw_set_current_scale(scale){
+        if(scale <=0 || scale>=500){
+            console.warn("perhaps invalid widget scale");
+        }
         bw_current_scale=scale
         settings.setValue(bw_scale_identifier, bw_current_scale);
         settings.sync();
     }
+    // Feature scale end   --------------------------------------------------------------------------------------
+
 
     // Added by Consti10 -
     // disable dragging for this widget (dragging is enabled by default)

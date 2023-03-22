@@ -4,6 +4,8 @@
 #include "mavlinksettingsmodel.h"
 
 #include "../../util/WorkaroundMessageBox.h"
+#include "../logging/hudlogmessagesmodel.h"
+#include "../logging/logmessagesmodel.h"
 #include <sstream>
 
 
@@ -78,12 +80,20 @@ void SynchronizedSettings::change_param_air_and_ground(QString param_id,int valu
     workaround:: makePopupMessage(ss.str().c_str());
 }
 
-void SynchronizedSettings::change_param_air_only_mcs(int value)
+void SynchronizedSettings::change_param_air_only_mcs(int value,bool use_hud)
 {
     const bool air_alive=AOHDSystem::instanceAir().is_alive();
     if(!air_alive){
-        workaround::makePopupMessage("Precondition: Air and Ground running and alive not given. Change not possible.");
+        log_result_message("Precondition: Air running and alive not given. Change not possible.",use_hud);
         return;
+    }
+    {
+        const auto var_bitrate_enabled=MavlinkSettingsModel::instanceAir().try_get_param_int_impl("VARIABLE_BITRATE");
+        if(var_bitrate_enabled.has_value() && var_bitrate_enabled!=((int)true)){
+            const auto message="Variable bitrate is OFF !";
+            HUDLogMessagesModel::instance().add_message_warning(message);
+            LogMessagesModel::instance().add_message_warn("MCS",message);
+        }
     }
     const MavlinkSettingsModel::ExtraRetransmitParams extra_retransmit_params{std::chrono::milliseconds(100),10};
     const QString param_id=PARAM_ID_WB_MCS_INDEX;
@@ -91,12 +101,13 @@ void SynchronizedSettings::change_param_air_only_mcs(int value)
     if(!(air_success==MavlinkSettingsModel::SetParamResult::SUCCESS)){
         std::stringstream ss;
         ss<<"Cannot change "<<param_id.toStdString()<<" to "<<value<<" -"<<MavlinkSettingsModel::set_param_result_as_string(air_success);
-         workaround::makePopupMessage(ss.str().c_str());
+        log_result_message(ss.str(),use_hud);
         return;
     }
     std::stringstream ss;
     ss<<"Successfully changed "<<param_id.toStdString()<<" to "<<value;
-    workaround:: makePopupMessage(ss.str().c_str());
+    log_result_message(ss.str(),use_hud);
+    set_dirty_curr_mcs_index(value);
 }
 
 int SynchronizedSettings::get_param_int_air_only_mcs()
@@ -108,5 +119,14 @@ int SynchronizedSettings::get_param_int_air_only_mcs()
         return -1;
     }
     return value_air_opt.value();
+}
+
+void SynchronizedSettings::log_result_message(const std::string &result_message, bool use_hud)
+{
+    if(use_hud){
+        HUDLogMessagesModel::instance().add_message_info(result_message.c_str());
+    }else{
+        workaround::makePopupMessage(result_message.c_str());
+    }
 }
 

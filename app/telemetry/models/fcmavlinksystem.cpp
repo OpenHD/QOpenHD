@@ -545,10 +545,10 @@ void FCMavlinkSystem::calculate_home_course() {
 
     //qDebug() << "Home lat lon " << m_home_latitude << " :" << m_home_longitude;
 
-    double  dlon = (m_lon-m_home_longitude)*0.017453292519;
-    double lat1 = (m_home_latitude)*0.017453292519;
-    double lat2 = (m_lat)*0.017453292519;
-    double  a1 = sin(dlon) * cos(lat2);
+    const double  dlon = (m_lon-m_home_longitude)*0.017453292519;
+    const double lat1 = (m_home_latitude)*0.017453292519;
+    const double lat2 = (m_lat)*0.017453292519;
+    const double  a1 = sin(dlon) * cos(lat2);
     double  a2 = sin(lat1) * cos(lat2) * cos(dlon);
     a2 = cos(lat1) * sin(lat2) - a2;
     a2 = atan2(a1, a2);

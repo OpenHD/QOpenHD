@@ -1492,6 +1492,21 @@ ScrollView {
                     }
                 }
             }
+            SettingBaseElement{
+                m_short_description: "Show live rate control widget"
+                m_long_description: "Trade range for bitrate at run time. Experimental, only usable when variable bitrate enabled & supported hardware"
+                Switch {
+                    width: 32
+                    height: elementHeight
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    checked: settings.wb_link_rate_control_widget_show
+                    onCheckedChanged: settings.wb_link_rate_control_widget_show = checked
+                }
+            }
+
             Rectangle {
                 width: parent.width
                 height: rowHeight

@@ -128,7 +128,7 @@ static void load_fonts(){
     QFontDatabase::addApplicationFont(":/osdfonts/ZolanMonoOblique.ttf");
 }
 
-// Write context properties for all platforms
+// Write context properties for all platforms, e.g. such that we have boolean variable(s) accessible from .qml
 static void write_platform_context_properties(QQmlApplicationEngine& engine){
 #if defined(__android__)
     engine.rootContext()->setContextProperty("IsAndroid", QVariant(true));
@@ -164,6 +164,12 @@ static void write_platform_context_properties(QQmlApplicationEngine& engine){
     engine.rootContext()->setContextProperty("IsRaspPi", QVariant(true));
 #else
     engine.rootContext()->setContextProperty("IsRaspPi", QVariant(false));
+#endif
+
+#if defined(__ios__) || defined(__android__)
+    engine.rootContext()->setContextProperty("QOPENHD_IS_MOBILE", QVariant(true));
+#else
+    engine.rootContext()->setContextProperty("QOPENHD_IS_MOBILE", QVariant(false));
 #endif
 }
 
@@ -351,13 +357,6 @@ int main(int argc, char *argv[]) {
 #else
     engine.rootContext()->setContextProperty("QOPENHD_ENABLE_ADSB_LIBRARY", QVariant(false));
     engine.rootContext()->setContextProperty("EnableADSB", QVariant(false));
-#endif
-
-
-#if defined(__ios__) || defined(__android__)
-    engine.rootContext()->setContextProperty("QOPENHD_IS_MOBILE", QVariant(true));
-#else
-    engine.rootContext()->setContextProperty("QOPENHD_IS_MOBILE", QVariant(false));
 #endif
 
     // This allows to use the defines as strings in qml
