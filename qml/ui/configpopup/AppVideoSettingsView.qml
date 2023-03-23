@@ -145,23 +145,9 @@ ScrollView {
                 }
             }
 
-            Rectangle {
-                width: parent.width
-                height: rowHeight
-                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-                visible: true
-
-                Text {
-                    text: qsTr("Background Transparent")
-                    font.weight: Font.Bold
-                    font.pixelSize: 13
-                    anchors.leftMargin: 8
-                    verticalAlignment: Text.AlignVCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: 224
-                    height: elementHeight
-                    anchors.left: parent.left
-                }
+            SettingBaseElement{
+                m_short_description: "Backgrund transparent"
+                m_long_description: "Use a transparent surface, such that another application can play (hw composer accelerated) video behind the QOpenHD surface."
 
                 Switch {
                     width: 32
