@@ -374,7 +374,7 @@ Settings {
 
     property bool show_record_widget: true
     property double recordTextSize: 14
-    property bool show_minimal_record_widget: false
+    property bool show_minimal_record_widget: true
     property double record_widget_height: 48
     property double record_widget_width: 140
 
