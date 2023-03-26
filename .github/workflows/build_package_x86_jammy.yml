@@ -2,7 +2,8 @@ name: build_package_x86_22
 
 on:
   push:
-    branches: [ "2.3-evo" ]
+#    branches: [ "2.3-evo" ]
+    branches: [ "refactor-dependencies" ]
   pull_request:
       branches: [ "2.3-evo" ]
 
@@ -33,10 +34,8 @@ jobs:
         sudo rm -rf /var/lib/apt/lists/*
         sudo apt upgrade -y
         sudo add-apt-repository universe
-        curl -1sLf \
-        'https://dl.cloudsmith.io/public/openhd/openhd-2-3-evo/setup.deb.sh' \
-        | sudo -E bash
-        sudo bash install_dep_ubuntu22_release.sh
+        sudo ./install_build_dep.sh ubuntu-x86 custom
+
         
         
 
@@ -52,18 +51,18 @@ jobs:
         echo "QT successfully linked"   
         sudo ./package.sh x86_64 ubuntu jammy
     
-    - name: Push
-      id: push
-      uses: cloudsmith-io/action@master
-      with:
-        api-key: ${{ secrets.CLOUDSMITH_API_KEY }}
-        command: "push"
-        format: "deb"
-        owner: "openhd"
-        repo: "openhd-2-3-evo"
-        distro: "ubuntu"
-        release: "jammy"
-        republish: "true" # needed ONLY if version is not changing
-        file: "*.deb"
+    # - name: Push
+    #   id: push
+    #   uses: cloudsmith-io/action@master
+    #   with:
+    #     api-key: ${{ secrets.CLOUDSMITH_API_KEY }}
+    #     command: "push"
+    #     format: "deb"
+    #     owner: "openhd"
+    #     repo: "openhd-2-3-evo"
+    #     distro: "ubuntu"
+    #     release: "jammy"
+    #     republish: "true" # needed ONLY if version is not changing
+    #     file: "*.deb"
        
 
