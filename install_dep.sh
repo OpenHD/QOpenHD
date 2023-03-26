@@ -2,7 +2,7 @@
 set -e
 
 PLATFORM="$1"
-QT-TYPE="$2"
+QTTYPE="$2"
 
 
 BASE_PACKAGES="gnupg libjsoncpp-dev libtinyxml2-dev zlib1g libcurl4-gnutls-dev gnupg1 gnupg2 apt-transport-https apt-utils libgles2-mesa-dev libegl1-mesa-dev libgbm-dev libboost-dev libsdl2-dev libsdl1.2-dev"
@@ -33,16 +33,22 @@ bash build_install_mavsdk_static.sh || exit 1
 
 # Main function
  
- if [[ "$1" == "rpi" ]]; then
+ if [[ "${PLATFORM}" == "rpi" ]]; then
     echo "rpi"
- elif [[ "$1" == "jetson" ]] ; then
+ elif [[ "${PLATFORM}" == "jetson" ]] ; then
     echo "jetson"
- elif [[ "$1" == "ubuntu-x86" ]] ; then
+ elif [[ "${PLATFORM}" == "ubuntu-x86" ]] ; then
     echo "ubuntu-x86"
- elif [[ "$1" == "rock5" ]] ; then
+ elif [[ "${PLATFORM}" == "rock5" ]] ; then
     echo "rock5"
  else
     echo "platform not supported"
+ fi
+
+ if [[ "${QTTYPE}" == "custom" ]]; then
+    echo "custom"
+ else
+    echo "stock"
  fi
 
  # Install platform-specific packages
