@@ -55,7 +55,7 @@ bash build_install_mavsdk_static.sh || exit 1
 
  # Install platform-specific packages
  echo "Installing platform-specific packages..."
- for package in ${BASE_PACKAGES} ${PLATFORM_PACKAGES}; do
+ for package in ${BASE_PACKAGES} ${VIDEO_PACKAGES} ${BUILD_PACKAGES} ${PLATFORM_PACKAGES}; do
      echo "Installing ${package}..."
      apt install -y -o Dpkg::Options::="--force-overwrite" --no-install-recommends ${package}
      if [ $? -ne 0 ]; then
