@@ -22,6 +22,9 @@ PLATFORM_PACKAGES=""
 function install_rock_packages {
 PLATFORM_PACKAGES=""
 }
+function install_mavsdk {
+bash build_install_mavsdk_static.sh || exit 1
+}
 
  # Add OpenHD Repository platform-specific packages
  apt install -y curl
@@ -61,6 +64,5 @@ pip3 install future
 sed -i 's/util\/\mmal_connection.h/mmal_connection.h/g' /usr/include/interface/mmal/util/mmal_graph.h
 
 # Building MAVSDK
-bash build_install_mavsdk_static.sh || exit 1
-
+install_mavsdk
 
