@@ -48,6 +48,8 @@ jobs:
             apt-get clean
             rm -rf /var/lib/apt/lists/*
             sudo chown -R root:root /opt/QOpenHD
+            ls -a
+            cd QOpenHD
             sudo ./install_build_dep.sh rpi custom
             sudo ./package.sh armhf raspbian bullseye
             ls -a
