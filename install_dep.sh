@@ -35,6 +35,8 @@ bash build_install_mavsdk_static.sh || exit 1
  
  if [[ "${PLATFORM}" == "rpi" ]]; then
     echo "rpi"
+    # Repairing MMAL-Graph-Lib
+    sed -i 's/util\/\mmal_connection.h/mmal_connection.h/g' /usr/include/interface/mmal/util/mmal_graph.h
  elif [[ "${PLATFORM}" == "jetson" ]] ; then
     echo "jetson"
  elif [[ "${PLATFORM}" == "ubuntu-x86" ]] ; then
@@ -65,9 +67,6 @@ bash build_install_mavsdk_static.sh || exit 1
 # Installing python packages
 gem install fpm
 pip3 install future
-
-# Repairing MMAL-Graph-Lib
-sed -i 's/util\/\mmal_connection.h/mmal_connection.h/g' /usr/include/interface/mmal/util/mmal_graph.h
 
 # Building MAVSDK
 install_mavsdk
