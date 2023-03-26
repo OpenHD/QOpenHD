@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -e
 
-PLATFORM=$1
-QT-TYPE=$2
+PLATFORM="$1"
+QT-TYPE="$2"
 
 
 BASE_PACKAGES="gnupg libjsoncpp-dev libtinyxml2-dev zlib1g libcurl4-gnutls-dev gnupg1 gnupg2 apt-transport-https apt-utils libgles2-mesa-dev libegl1-mesa-dev libgbm-dev libboost-dev libsdl2-dev libsdl1.2-dev"
