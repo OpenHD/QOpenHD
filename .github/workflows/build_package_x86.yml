@@ -29,6 +29,12 @@ jobs:
         sudo rm -rf /var/lib/apt/lists/*
         sudo ./install_build_dep.sh ubuntu-x86 custom
 
+    - name: Build with make
+      run: |
+        curl -1sLf \
+        'https://dl.cloudsmith.io/public/openhd/openhd-2-3-evo/setup.deb.sh' \
+        | sudo -E bash
+        sudo ./package.sh x86_64 ubuntu focal
     
     - name: Push
       id: push
