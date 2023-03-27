@@ -160,7 +160,6 @@ Settings {
 
     property bool show_flight_mode: true
     property double flight_mode_opacity: 1
-    property double flight_mode_size: 1
 
     property bool show_flight_distance: true
     property double flight_distance_opacity: 1

@@ -16,7 +16,10 @@ BaseWidgetForm {
     Drag.active: dragging
     Drag.dragType: Drag.Internal
 
+    // Used to uniquely identify persistent settings for this widget. Should only contain lowercase letters and "_" (aka no blank space, extra characters and more)
     property string widgetIdentifier
+    // Shown to the user as a more verbose description of what this widget does
+    property string bw_verbose_name: "PLS FILL ME"
 
     // Show a "hand" icon to let the user know where to touch to drag the widget around.
     // Only used by "MAP" right now (to my knowledge)
@@ -40,7 +43,7 @@ BaseWidgetForm {
     property string vCenterIdentifier: "%1_v_center".arg(widgetIdentifier);
     property double oldOpacity: 100;
 
-    // Feature scale begin --------------------------------------------------------------------------------------
+    // Feature persist scale begin --------------------------------------------------------------------------------------
     // Pretty much all widgets have a scale (previously often called size) setting
     // Properly resizing the widget elements itself is the responsibility of the upper implementation -
     // This base class implements the neccessary tools to resize, though. In short, we do
@@ -59,7 +62,21 @@ BaseWidgetForm {
         settings.setValue(bw_scale_identifier, bw_current_scale);
         settings.sync();
     }
-    // Feature scale end   --------------------------------------------------------------------------------------
+    // Feature persist scale end   --------------------------------------------------------------------------------------
+    // Feature persist opacity begin
+    property string bw_opacity_identifier: "%1_opacity".arg(widgetIdentifier);
+    // Default opacity is 1, the value is persistent
+    property double bw_current_opacity : settings.value(bw_opacity_identifier,1.0);
+    // Updates the current base widget scale (unique per widgetIdentifier) and persist the value for later use
+    function bw_set_current_opacity(opacity){
+        if(opacity <=0 || opacity>1){
+            console.warn("perhaps invalid widget opacity");
+        }
+        bw_current_opacity=scale
+        settings.setValue(bw_opacity_identifier, bw_current_opacity);
+        settings.sync();
+    }
+    // Feature persist opacity end
 
 
     // Added by Consti10 -

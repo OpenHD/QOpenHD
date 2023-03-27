@@ -100,7 +100,7 @@ BaseWidget {
                     id: flight_mode_size_Slider
                     orientation: Qt.Horizontal
                     from: .5
-                    value: settings.flight_mode_size
+                    value: bw_current_scale
                     to: 3
                     stepSize: .1
                     height: parent.height
@@ -109,7 +109,7 @@ BaseWidget {
                     width: parent.width - 96
 
                     onValueChanged: {
-                        settings.flight_mode_size = flight_mode_size_Slider.value
+                        bw_set_current_scale(flight_mode_size_Slider.value)
                     }
                 }
             }
@@ -262,7 +262,6 @@ BaseWidget {
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
         clip: true
 
-
         /*
         PLANE_MODE_MANUAL=0,
         PLANE_MODE_CIRCLE=1,
@@ -307,7 +306,8 @@ VTOL
 */
         Column {
             width: 200
-            spacing: 10
+            spacing: 2
+            height: 600
 
             Text {
                 height: 32
@@ -603,13 +603,13 @@ VTOL
     Item {
         id: widgetInner
         anchors.fill: parent
-        scale: settings.flight_mode_size
+        scale: bw_current_scale
 
         Text {
             id: flight_mode_icon
             width: 24
             height: 48
-            color: settings.color_shape
+            color: _fcMavlinkSystem.armed ? "green" : settings.color_shape
             opacity: settings.flight_mode_opacity
             text: "\uf072"
             anchors.right: flight_mode_text.left
@@ -630,40 +630,6 @@ VTOL
             text: _fcMavlinkSystem.flight_mode
             anchors.verticalCenter: parent.verticalCenter
             anchors.horizontalCenter: parent.horizontalCenter
-            verticalAlignment: Text.AlignVCenter
-            font.pixelSize: 24
-            font.family: settings.font_text
-            elide: Text.ElideRight
-            style: Text.Outline
-            styleColor: settings.color_glow
-        }
-        Text {
-            id:left_bracket
-            height: 48
-            visible: _fcMavlinkSystem.armed
-            color: "red"
-            text: "["
-            opacity: settings.flight_mode_opacity
-            anchors.left: parent.left
-            //anchors.verticalCenter: parent.verticalCenter
-            //anchors.horizontalCenter: parent.horizontalCenter
-            verticalAlignment: Text.AlignVCenter
-            font.pixelSize: 24
-            font.family: settings.font_text
-            elide: Text.ElideRight
-            style: Text.Outline
-            styleColor: settings.color_glow
-        }
-        Text {
-            id:right_bracket
-            height: 48
-            visible: _fcMavlinkSystem.armed
-            color: "red"
-            text: "]"
-            opacity: settings.flight_mode_opacity
-            anchors.right: parent.right
-            //anchors.verticalCenter: parent.verticalCenter
-            //anchors.horizontalCenter: parent.horizontalCenter
             verticalAlignment: Text.AlignVCenter
             font.pixelSize: 24
             font.family: settings.font_text
