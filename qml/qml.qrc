@@ -44,11 +44,9 @@
         <file>ui/widgets/HorizonWidget.qml</file>
         <file>ui/widgets/AirBatteryWidget.qml</file>
         <file>ui/widgets/FlightModeWidget.qml</file>
-        <file>ui/widgets/FlightModeWidgetForm.ui.qml</file>
         <file>ui/widgets/GPSWidget.qml</file>
         <file>ui/widgets/HomeDistanceWidget.qml</file>
-        <file>ui/widgets/FlightTimerWidget.qml</file>
-        <file>ui/widgets/FlightTimerWidgetForm.ui.qml</file>
+        <file>ui/widgets/FlightTimeWidget.qml</file>
         <file>ui/HUDOverlayGrid.qml</file>
         <file>ui/widgets/BaseWidget.qml</file>
         <file>ui/widgets/BaseWidgetForm.ui.qml</file>

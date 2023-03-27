@@ -7,13 +7,13 @@ import Qt.labs.settings 1.0
 import OpenHD 1.0
 
 BaseWidget {
-    id: flightTimerWidget
+    id: flightTimeWidget
     width: 96
     height: 24
 
-    visible: settings.show_flight_timer
+    visible: settings.show_flight_time
 
-    widgetIdentifier: "flight_timer_widget"
+    widgetIdentifier: "flight_time_widget"
 
     defaultAlignment: 2
     defaultXOffset: 0
@@ -25,17 +25,17 @@ BaseWidget {
 
     widgetDetailComponent: ScrollView {
 
-        contentHeight: flighttimerSettingsColumn.height
+        contentHeight: flighttimeSettingsColumn.height
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
         clip: true
         Column {
-            id: flighttimerSettingsColumn
+            id: flighttimeSettingsColumn
             Item {
                 width: parent.width
                 height: 42
                 Text {
-                    id: flighttimerSettingsTitle
-                    text: qsTr("FLIGHT TIMER")
+                    id: flighttimeSettingsTitle
+                    text: qsTr("FLIGHT TIME")
                     color: "white"
                     height: parent.height - 10
                     width: parent.width
@@ -45,7 +45,7 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Rectangle {
-                    id: flighttimerSettingsTitleUL
+                    id: flighttimeSettingsTitleUL
                     y: 34
                     width: parent.width
                     height: 3
@@ -67,10 +67,10 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Slider {
-                    id: flight_timer_opacity_Slider
+                    id: flight_time_opacity_Slider
                     orientation: Qt.Horizontal
                     from: .1
-                    value: settings.flight_timer_opacity
+                    value: settings.flight_time_opacity
                     to: 1
                     stepSize: .1
                     height: parent.height
@@ -79,7 +79,7 @@ BaseWidget {
                     width: parent.width - 96
 
                     onValueChanged: {
-                        settings.flight_timer_opacity = flight_timer_opacity_Slider.value
+                        settings.flight_time_opacity = flight_time_opacity_Slider.value
                     }
                 }
             }
@@ -96,10 +96,10 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Slider {
-                    id: flight_timer_size_Slider
+                    id: flight_time_size_Slider
                     orientation: Qt.Horizontal
                     from: .5
-                    value: settings.flight_timer_size
+                    value: bw_current_scale
                     to: 3
                     stepSize: .1
                     height: parent.height
@@ -108,7 +108,7 @@ BaseWidget {
                     width: parent.width - 96
 
                     onValueChanged: {
-                        settings.flight_timer_size = flight_timer_size_Slider.value
+                        bw_set_current_scale(flight_time_size_Slider.value)
                     }
                 }
             }
@@ -189,15 +189,15 @@ BaseWidget {
         id: widgetInner
 
         anchors.fill: parent
-        scale: settings.flight_timer_size
+        scale: bw_current_scale
 
         Text {
-            id: flight_timer_text
+            id: flight_time_text
             y: 0
             width: 64
             height: 24
             color: settings.color_text
-            opacity: settings.flight_timer_opacity
+            opacity: settings.flight_time_opacity
             text: _fcMavlinkSystem.flight_time
             elide: Text.ElideRight
             anchors.right: parent.right
@@ -217,10 +217,10 @@ BaseWidget {
             width: 24
             height: 24
             color: settings.color_shape
-            opacity: settings.flight_timer_opacity
+            opacity: settings.flight_time_opacity
             text: "\uf017"
             font.family: "Font Awesome 5 Free"
-            anchors.right: flight_timer_text.left
+            anchors.right: flight_time_text.left
             horizontalAlignment: Text.AlignRight
             verticalAlignment: Text.AlignVCenter
             anchors.rightMargin: 6

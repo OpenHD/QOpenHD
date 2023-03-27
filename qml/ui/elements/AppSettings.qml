@@ -155,9 +155,8 @@ Settings {
     property double home_saved_lat: 0.0
     property double home_saved_lon: 0.0
 
-    property bool show_flight_timer: true
-    property double flight_timer_opacity: 1
-    property double flight_timer_size: 1
+    property bool show_flight_time: true
+    property double flight_time_opacity: 1
 
     property bool show_flight_mode: true
     property double flight_mode_opacity: 1

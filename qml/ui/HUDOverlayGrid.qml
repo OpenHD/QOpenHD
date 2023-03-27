@@ -77,7 +77,7 @@ Item {
     }
 
     // + 0% cpu
-    FlightTimerWidget {
+    FlightTimeWidget {
         id: flight_timer
     }
 
