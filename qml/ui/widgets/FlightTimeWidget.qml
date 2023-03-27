@@ -26,7 +26,6 @@ BaseWidget {
     hasWidgetDetail: true
 
     widgetDetailComponent: ScrollView {
-
         contentHeight: idBaseWidgetDefaultUiControlElements.height
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
         clip: true

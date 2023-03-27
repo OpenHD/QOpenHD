@@ -7,9 +7,10 @@ import Qt.labs.settings 1.0
 // Can be used to quickly add the right UI elements for (persistently) setting scale and opacity for a HUD element (e.g. an element extending BaseWidget)
 // By default, placed in one of the popups, and more values can be added manually if needed
 // NOTE: Element needs to already extend base widget (we call methods and use variables from BaseWidget, the lazy evaluation of QML is fine with such an approach)
-Column{
-    width: 230
-    height: 40+40+40
+ColumnLayout{
+    width: 270
+    spacing: 0
+    clip: false
 
     property bool show_vertical_lock: false
     property bool show_horizontal_lock: false
