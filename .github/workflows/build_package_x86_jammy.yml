@@ -33,10 +33,8 @@ jobs:
         sudo rm -rf /var/lib/apt/lists/*
         sudo apt upgrade -y
         sudo add-apt-repository universe
-        curl -1sLf \
-        'https://dl.cloudsmith.io/public/openhd/openhd-2-3-evo/setup.deb.sh' \
-        | sudo -E bash
-        sudo bash install_dep_ubuntu22_release.sh
+        sudo ./install_build_dep.sh ubuntu-x86 custom
+
         
         
 
