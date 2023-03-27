@@ -46,20 +46,10 @@ jobs:
             rm -Rf /etc/apt/sources.list.d/openhd*
             apt-get clean
             rm -rf /var/lib/apt/lists/*
-            curl -1sLf \
-            'https://dl.cloudsmith.io/public/openhd/openhd-2-3-evo/setup.deb.sh' \
-            | sudo -E bash
-            ls -a
-            cd /opt
-            cd /opt/QOpenHD
-            apt update
-            apt upgrade -y
-            apt install -y git libgstreamer-plugins-base1.0-dev gstreamer1.0-plugins-good
-            apt install -y openhd-qt 
-            ls /opt/Qt5.15.4/
-            ls /opt/Qt5.15.4/bin
             sudo chown -R root:root /opt/QOpenHD
-            sudo bash install_dep_rpi.sh
+            ls -a
+            cd QOpenHD
+            sudo ./install_build_dep.sh rpi custom
             sudo ./package.sh armhf raspbian bullseye
             ls -a
 

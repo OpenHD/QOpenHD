@@ -91,5 +91,9 @@ Rectangle {
             id: test7
             text: qsTr("Window resolution: "+_qrenderstats.window_width_height_str)
         }
+        Text {
+            id: test8
+            text: qsTr("You're running on: "+Qt.platform.os)
+        }
     }
 }

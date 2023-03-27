@@ -27,8 +27,7 @@ jobs:
         sudo rm -Rf /etc/apt/sources.list.d/openhd*
         sudo apt-get clean
         sudo rm -rf /var/lib/apt/lists/*
-        sudo bash install_dep_ubuntu20_release.sh
-        
+        sudo ./install_build_dep.sh ubuntu-x86 custom
 
     - name: Build with make
       run: |
