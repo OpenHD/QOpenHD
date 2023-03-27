@@ -47,6 +47,8 @@ void FCMavlinkSystem::set_system(std::shared_ptr<mavsdk::System> system)
     set_for_osd_sys_id(tmp_sys_id);
     m_action=std::make_shared<mavsdk::Action>(system);
     m_pass_thru=std::make_shared<mavsdk::MavlinkPassthrough>(system);
+    // must be manually enabled by the user to save resources
+    //m_mission=std::make_shared<mavsdk::Mission>(system);
 }
 
 bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
@@ -236,20 +238,26 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         break;
     }
     case MAVLINK_MSG_ID_MISSION_CURRENT:{
+        qDebug()<<"Got MAVLINK_MSG_ID_MISSION_CURRENT";
         // https://mavlink.io/en/messages/common.html#MISSION_CURRENT
         mavlink_mission_current_t mission_current;
         mavlink_msg_mission_current_decode(&msg,&mission_current);
-        set_current_waypoint(mission_current.seq);
+        set_mission_waypoints_current(mission_current.seq);
         break;
     }
     case MAVLINK_MSG_ID_MISSION_COUNT:{
+        qDebug()<<"Got MAVLINK_MSG_ID_MISSION_COUNT";
         // https://mavlink.io/en/messages/common.html#MISSION_COUNT
         mavlink_mission_count_t mission;
         mavlink_msg_mission_count_decode(&msg,&mission);
-        set_curr_total_waypoints(mission.count);
+        set_mission_waypoints_current_total(mission.count);
+        set_mission_current_type(Telemetryutil::mavlink_mission_type_to_string(mission.mission_type));
         break;
     }
     case MAVLINK_MSG_ID_MISSION_ITEM_INT:{
+        qDebug()<<"Got MAVLINK_MSG_ID_MISSION_ITEM_INT";
+        mavlink_mission_item_int_t item;
+        mavlink_msg_mission_item_int_decode(&msg, &item);
         break;
     }
     case MAVLINK_MSG_ID_GPS_GLOBAL_ORIGIN:{
@@ -859,10 +867,51 @@ void FCMavlinkSystem::flight_mode_cmd(long cmd_msg) {
     }
 }
 
-void FCMavlinkSystem::request_mission_async()
+void FCMavlinkSystem::enable_disable_mission_updates(bool enable)
 {
-    qDebug()<<"TODO";
-    HUDLogMessagesModel::instance().add_message_info("Not yet implemented");
+    if(enable){
+        // Enable mission updates via mavsdk
+        // by instantiating the mavsdk mission instance, we now automatically get updates, but manually parse the mission updates in the main mavlink message callback.
+        if(m_system==nullptr){
+             HUDLogMessagesModel::instance().add_message_info("No FC");
+             return;
+        }
+        if(m_mission==nullptr){
+            // must be manually enabled by the user to save resources
+            m_mission=std::make_shared<mavsdk::Mission>(m_system);
+            auto cb=[this](mavsdk::Mission::MissionProgress mp){
+                //qDebug()<<"Mission progress: "<<mp.current<<":"<<mp.total;
+            };
+            m_mission->subscribe_mission_progress(cb);
+            const auto [res,plan]=m_mission->download_mission();
+            if(res!=mavsdk::Mission::Result::Success){
+                std::stringstream ss;
+                ss<<"Mission "<<res;
+                HUDLogMessagesModel::instance().add_message_warning(ss.str().c_str());
+            }
+            HUDLogMessagesModel::instance().add_message_info("Mission updates enabled");
+        }else{
+            HUDLogMessagesModel::instance().add_message_info("Mission updates already enabled");
+        }
+    }else{
+        if(m_mission!=nullptr){
+            // disable mission updates via mavsdk
+            m_mission=nullptr;
+            HUDLogMessagesModel::instance().add_message_info("Mission updates disabled");
+        }else{
+            HUDLogMessagesModel::instance().add_message_info("Mission updates already disabled");
+        }
+    }
+    /*const auto [res,plan]=m_mission->download_mission();
+    if(res!=mavsdk::Mission::Result::Success){
+        HUDLogMessagesModel::instance().add_message_info("Mission download failure");
+        return;
+    }
+    HUDLogMessagesModel::instance().add_message_info("Mission download success");*/
+    /*auto cb=[this](mavsdk::Mission::MissionProgress mp){
+        //qDebug()<<"Mission progress: "<<mp.current<<":"<<mp.total;
+    };
+    m_mission->subscribe_mission_progress(cb);*/
 }
 
 void FCMavlinkSystem::send_message_hud_connection(bool connected)

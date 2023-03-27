@@ -133,8 +133,10 @@ class FCMavlinkSystem : public QObject
     // TODO: We have 2 variables for the OSD to show - the current total n of waypoints and the current waypoint the FC is at. Depending on how things are broadcasted,
     // The user might have to manually request the current total n of waypoints
     // NOTE: the description "waypoints" is not exactly accurate, left in for now due to legacy reasons though
-    L_RO_PROP(int,current_waypoint,set_current_waypoint,-1);
-    L_RO_PROP(int,curr_total_waypoints,set_curr_total_waypoints,-1);
+    L_RO_PROP(int,mission_waypoints_current_total,set_mission_waypoints_current_total,-1);
+    L_RO_PROP(int,mission_waypoints_current,set_mission_waypoints_current,-1);
+    // Current mission type, verbose as string for the user
+    L_RO_PROP(QString,mission_current_type,set_mission_current_type,"Unknown");
 public:
     explicit FCMavlinkSystem(QObject *parent = nullptr);
     // singleton for accessing the model from c++
@@ -187,6 +189,10 @@ private:
     // We got rid of this submodule for a good reason (see above)
     //std::shared_ptr<mavsdk::Telemetry> _mavsdk_telemetry=nullptr;
     std::shared_ptr<mavsdk::MavlinkPassthrough> m_pass_thru=nullptr;
+    // TODO: figure out if we shall use mission plugin (compatible with ardupilot) or not
+    // R.N: must be manually enabled by the user to save resources
+    std::shared_ptr<mavsdk::Mission> m_mission=nullptr;
+
     // other members
     bool m_armed = false;
     QString m_flight_mode = "------";
@@ -227,9 +233,8 @@ public:
     // Try to send a return to launch command.
     // The result (success/failure) is logged in the HUD once completed
     Q_INVOKABLE void send_return_to_launch_async();
-    // Request current total n of missions and active mission
-    // The result (success/failure) is logged in the HUD once completed
-    Q_INVOKABLE void request_mission_async();
+    //
+    Q_INVOKABLE void enable_disable_mission_updates(bool enable);
     // TODO document me
     Q_INVOKABLE bool send_command_reboot(bool reboot);
     Q_INVOKABLE void flight_mode_cmd(long cmd_msg);

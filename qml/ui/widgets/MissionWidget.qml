@@ -199,7 +199,6 @@ BaseWidget {
 
         ColumnLayout {
             width: 200
-            spacing: 10
 
             Item {
                 height: 32
@@ -215,17 +214,60 @@ BaseWidget {
             ConfirmSlider {
 
                 visible: _fcMavlinkSystem.supports_basic_commands
-                text_off: qsTr("Request Mission")
-
-                msg_id: 43 //mission_request_list
+                text_off: qsTr("Enable updates")
+                text_on: qsTr("Disable updates");
+                //timer_reset: false
 
                 onCheckedChanged: {
                     if (checked == true) {
-
-                        //double check.... not really needed
-                        _fcMavlinkSystem.request_mission_async()
-                        //console.log("Mission selected");
+                        _fcMavlinkSystem.enable_disable_mission_updates(true);
+                    }else{
+                        _fcMavlinkSystem.enable_disable_mission_updates(false);
                     }
+                }
+            }
+            Item {
+                width: parent.width
+                height: 20
+                Text {
+                    text: qsTr("Waypoints curr/total:")
+                    color: "white"
+                    font.bold: true
+                    height: parent.height
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Text {
+                    text: qsTr(_fcMavlinkSystem.mission_waypoints_current+"/"+_fcMavlinkSystem.mission_waypoints_current_total)
+                    color: "white"
+                    font.bold: true
+                    height: parent.height
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.right: parent.right
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
+            Item {
+                width: parent.width
+                height: 20
+                Text {
+                    text: qsTr("Type:")
+                    color: "white"
+                    font.bold: true
+                    height: parent.height
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Text {
+                    text: qsTr(_fcMavlinkSystem.mission_current_type)
+                    color: "white"
+                    font.bold: true
+                    height: parent.height
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.right: parent.right
+                    verticalAlignment: Text.AlignVCenter
                 }
             }
         }
@@ -248,7 +290,7 @@ BaseWidget {
                 height: 14
                 color: settings.color_text
                 text: qsTr(
-                          "Mission") + ": " + _fcMavlinkSystem.current_waypoint + "/" + _fcMavlinkSystem.curr_total_waypoints
+                          "Mission") + ": " + qsTr(_fcMavlinkSystem.mission_waypoints_current+"/"+_fcMavlinkSystem.mission_waypoints_current_total)
                 anchors.bottom: parent.bottom
                 anchors.bottomMargin: 0
                 verticalAlignment: Text.AlignBottom
