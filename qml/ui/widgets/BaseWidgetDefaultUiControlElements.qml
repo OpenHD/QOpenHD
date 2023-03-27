@@ -73,7 +73,7 @@ ColumnLayout{
         width: parent.width
         height: 32
         Text {
-            text: qsTr("Size:"+bw_current_scale)
+            text: qsTr("Size: x"+bw_current_scale.toFixed(1))
             color: "white"
             height: parent.height
             font.bold: true

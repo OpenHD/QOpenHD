@@ -238,7 +238,7 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         break;
     }
     case MAVLINK_MSG_ID_MISSION_CURRENT:{
-        qDebug()<<"Got MAVLINK_MSG_ID_MISSION_CURRENT";
+        //qDebug()<<"Got MAVLINK_MSG_ID_MISSION_CURRENT";
         // https://mavlink.io/en/messages/common.html#MISSION_CURRENT
         mavlink_mission_current_t mission_current;
         mavlink_msg_mission_current_decode(&msg,&mission_current);
@@ -246,7 +246,7 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         break;
     }
     case MAVLINK_MSG_ID_MISSION_COUNT:{
-        qDebug()<<"Got MAVLINK_MSG_ID_MISSION_COUNT";
+        //qDebug()<<"Got MAVLINK_MSG_ID_MISSION_COUNT";
         // https://mavlink.io/en/messages/common.html#MISSION_COUNT
         mavlink_mission_count_t mission;
         mavlink_msg_mission_count_decode(&msg,&mission);
@@ -255,7 +255,7 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         break;
     }
     case MAVLINK_MSG_ID_MISSION_ITEM_INT:{
-        qDebug()<<"Got MAVLINK_MSG_ID_MISSION_ITEM_INT";
+        //qDebug()<<"Got MAVLINK_MSG_ID_MISSION_ITEM_INT";
         mavlink_mission_item_int_t item;
         mavlink_msg_mission_item_int_decode(&msg, &item);
         break;
