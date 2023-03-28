@@ -14,6 +14,7 @@ BaseWidget {
     visible: settings.show_air_battery
 
     widgetIdentifier: "air_battery_widget"
+    bw_verbose_name: "Air Battery (FC)"
 
     defaultAlignment: 3
     defaultXOffset: 0
@@ -24,166 +25,14 @@ BaseWidget {
     hasWidgetDetail: true
     widgetDetailComponent: ScrollView {
 
-        contentHeight: airBatterySettingsColumn.height
+        contentHeight: idBaseWidgetDefaultUiControlElements.height
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
         clip: true
 
-        ColumnLayout {
-            id: airBatterySettingsColumn
-            spacing: 0
-            clip: true
-            Item {
-                width: 230
-                height: 42
-                Text {
-                    id: airBatteryTitle
-                    text: qsTr("AIR BATTERY")
-                    color: "white"
-                    height: parent.height - 10
-                    width: parent.width
-                    font.bold: true
-                    horizontalAlignment: Text.AlignHCenter
-                    font.pixelSize: detailPanelFontPixels
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Rectangle {
-                    id: airBatteryTitleUL
-                    y: 34
-                    width: parent.width
-                    height: 3
-                    color: "white"
-                    radius: 5
-                }
-            }
-            Item {
-                width: 230
-                height: 32
-                Text {
-                    id: opacityTitle
-                    text: qsTr("Transparency")
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Slider {
-                    id: air_battery_opacity_Slider
-                    orientation: Qt.Horizontal
-                    height: parent.height
-                    from: .1
-                    value: settings.air_battery_opacity
-                    to: 1
-                    stepSize: .1
-                    anchors.rightMargin: 0
-                    anchors.right: parent.right
-                    width: parent.width - 96
+        BaseWidgetDefaultUiControlElements{
+            id: idBaseWidgetDefaultUiControlElements
 
-                    onValueChanged: {
-                        settings.air_battery_opacity = air_battery_opacity_Slider.value
-                    }
-                }
-            }
-            Item {
-                width: 230
-                height: 32
-                Text {
-                    text: qsTr("Size")
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Slider {
-                    id: air_battery_size_Slider
-                    orientation: Qt.Horizontal
-                    from: .5
-                    value: settings.air_battery_size
-                    to: 3
-                    stepSize: .1
-                    height: parent.height
-                    anchors.rightMargin: 0
-                    anchors.right: parent.right
-                    width: parent.width - 96
-
-                    onValueChanged: {
-                        settings.air_battery_size = air_battery_size_Slider.value
-                    }
-                }
-            }
-            Item {
-                width: 230
-                height: 32
-                Text {
-                    text: qsTr("Lock to Horizontal Center")
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Switch {
-                    width: 32
-                    height: parent.height
-                    anchors.rightMargin: 6
-                    anchors.right: parent.right
-                    checked: {
-                        // @disable-check M222
-                        var _hCenter = settings.value(hCenterIdentifier,
-                                                      defaultHCenter)
-                        // @disable-check M223
-                        if (_hCenter === "true" || _hCenter === 1
-                                || _hCenter === true) {
-                            checked = true
-                            // @disable-check M223
-                        } else {
-                            checked = false
-                        }
-                    }
-
-                    onCheckedChanged: settings.setValue(hCenterIdentifier,
-                                                        checked)
-                }
-            }
-            Item {
-                width: 230
-                height: 32
-                Text {
-                    text: qsTr("Lock to Vertical Center")
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Switch {
-                    width: 32
-                    height: parent.height
-                    anchors.rightMargin: 6
-                    anchors.right: parent.right
-                    checked: {
-                        // @disable-check M222
-                        var _vCenter = settings.value(vCenterIdentifier,
-                                                      defaultVCenter)
-                        // @disable-check M223
-                        if (_vCenter === "true" || _vCenter === 1
-                                || _vCenter === true) {
-                            checked = true
-                            // @disable-check M223
-                        } else {
-                            checked = false
-                        }
-                    }
-
-                    onCheckedChanged: settings.setValue(vCenterIdentifier,
-                                                        checked)
-                }
-            }
+            // This element has a couple of non-base-class settings for customization
             Item {
                 width: 230
                 height: 32
@@ -227,6 +76,7 @@ BaseWidget {
                     onCheckedChanged: settings.air_battery_show_single_cell = checked
                 }
             }
+
         }
     }
 
@@ -234,8 +84,8 @@ BaseWidget {
         id: widgetInner
 
         anchors.fill: parent
-        opacity: settings.air_battery_opacity
-        scale: settings.air_battery_size
+        opacity: bw_current_opacity
+        scale: bw_current_scale
 
         Text {
             id: airTag
@@ -326,7 +176,7 @@ BaseWidget {
                 // 20% warning, 15% critical
                 return percent < 20 ? (percent < 15 ? "#ff0000" : "#fbfd15") : settings.color_shape
             }
-            opacity: settings.air_battery_opacity
+            opacity: bw_current_opacity
             text: _fcMavlinkSystem.battery_percent_gauge
             anchors.left: parent.left
             anchors.leftMargin: 12

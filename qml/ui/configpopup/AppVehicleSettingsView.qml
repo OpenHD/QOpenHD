@@ -31,6 +31,7 @@ ScrollView {
 
             SettingBaseElement{
                 m_short_description: "Vehicle Battery Cells"
+                m_long_description: "When show voltage per cell is selected (off by dfault) in the HUD, set this to the N of cells your air battery has."
                 SpinBox {
                     height: elementHeight
                     width: 210

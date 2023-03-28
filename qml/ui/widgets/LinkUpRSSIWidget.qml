@@ -9,7 +9,7 @@ import OpenHD 1.0
 BaseWidget {
     id: linkUpRSSIWidget
     width: 112
-    height: 24
+    height: 48
 
     visible: settings.show_uplink_rssi
 

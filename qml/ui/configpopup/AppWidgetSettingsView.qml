@@ -486,8 +486,8 @@ ScrollView {
 
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    checked: settings.show_flight_timer
-                    onCheckedChanged: settings.show_flight_timer = checked
+                    checked: settings.show_flight_time
+                    onCheckedChanged: settings.show_flight_time = checked
                 }
             }
 

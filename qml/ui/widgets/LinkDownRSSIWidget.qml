@@ -14,7 +14,7 @@ import "../elements"
 BaseWidget {
     id: linkDownRSSIWidget
     width: 112
-    height: 24
+    height: 48
 
     visible: settings.show_downlink_rssi
 

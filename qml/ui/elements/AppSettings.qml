@@ -128,10 +128,8 @@ Settings {
 
 
     property bool show_air_battery: true
-    property double air_battery_opacity: 1
     property bool air_battery_show_voltage_current: false
     property bool air_battery_show_single_cell: false
-    property double air_battery_size: 1
 
     property bool show_ground_battery: false
     property double ground_battery_opacity: 1
@@ -155,13 +153,10 @@ Settings {
     property double home_saved_lat: 0.0
     property double home_saved_lon: 0.0
 
-    property bool show_flight_timer: true
-    property double flight_timer_opacity: 1
-    property double flight_timer_size: 1
+    property bool show_flight_time: true
 
     property bool show_flight_mode: true
     property double flight_mode_opacity: 1
-    property double flight_mode_size: 1
 
     property bool show_flight_distance: true
     property double flight_distance_opacity: 1
