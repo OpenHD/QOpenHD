@@ -730,6 +730,14 @@ static int calculate_efficiency_in_mah_per_km(const double delta_mah,const doubl
     return std::round(ret);
 }
 
+// Brings the given angle into the [0,360[ range
+static float normalize_degree(float degree){
+    degree = std::fmod(degree,360);
+    if (degree < 0) degree += 360;
+    if (degree >= 360) degree -=360;
+    return degree;
+}
+
 static QString bitrate_bps_to_qstring(int64_t bitrate_bits_per_second){
     return QString{StringHelper::bitrate_to_string(bitrate_bits_per_second).c_str()};
 }

@@ -541,6 +541,7 @@ void FCMavlinkSystem::calculate_home_distance() {
            home for free as a result of the calculation above.
         */
         set_home_distance(s12);
+        //qDebug()<<"XX"<<Telemetryutil::normalize_degree(azi1);
     } else {
         /*
          * If the system doesnt have home pos just show "0"
