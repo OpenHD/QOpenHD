@@ -84,7 +84,7 @@ BaseWidget {
         id: widgetInner
 
         anchors.fill: parent
-        opacity: settings.air_battery_opacity
+        opacity: bw_current_opacity
         scale: bw_current_scale
 
         Text {
@@ -176,7 +176,7 @@ BaseWidget {
                 // 20% warning, 15% critical
                 return percent < 20 ? (percent < 15 ? "#ff0000" : "#fbfd15") : settings.color_shape
             }
-            opacity: settings.air_battery_opacity
+            opacity: bw_current_opacity
             text: _fcMavlinkSystem.battery_percent_gauge
             anchors.left: parent.left
             anchors.leftMargin: 12

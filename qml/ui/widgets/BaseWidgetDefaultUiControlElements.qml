@@ -19,7 +19,7 @@ ColumnLayout{
         width: parent.width
         height: 42
         Text {
-            id: flighttimeSettingsTitle
+            id: settings_title
             text: qsTr(bw_verbose_name)
             color: "white"
             height: parent.height - 10
@@ -30,7 +30,7 @@ ColumnLayout{
             verticalAlignment: Text.AlignVCenter
         }
         Rectangle {
-            id: flighttimeSettingsTitleUL
+            id: settings_title_underline
             y: 34
             width: parent.width
             height: 3
@@ -52,10 +52,10 @@ ColumnLayout{
             verticalAlignment: Text.AlignVCenter
         }
         Slider {
-            id: flight_time_opacity_Slider
+            id: transparency_slider
             orientation: Qt.Horizontal
             from: .1
-            value: settings.flight_time_opacity
+            value: bw_current_opacity
             to: 1
             stepSize: .1
             height: parent.height
@@ -64,7 +64,7 @@ ColumnLayout{
             width: parent.width - 96
 
             onValueChanged: {
-                settings.flight_time_opacity = flight_time_opacity_Slider.value
+                bw_set_current_opacity(transparency_slider.value);
             }
         }
     }

@@ -72,7 +72,7 @@ BaseWidgetForm {
         if(opacity <=0 || opacity>1){
             console.warn("perhaps invalid widget opacity");
         }
-        bw_current_opacity=scale
+        bw_current_opacity=opacity
         settings.setValue(bw_opacity_identifier, bw_current_opacity);
         settings.sync();
     }

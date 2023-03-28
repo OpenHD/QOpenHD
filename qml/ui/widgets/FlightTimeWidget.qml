@@ -48,7 +48,7 @@ BaseWidget {
             width: 64
             height: 24
             color: settings.color_text
-            opacity: settings.flight_time_opacity
+            opacity: bw_current_opacity
             text: _fcMavlinkSystem.flight_time
             elide: Text.ElideRight
             anchors.right: parent.right
@@ -68,7 +68,7 @@ BaseWidget {
             width: 24
             height: 24
             color: settings.color_shape
-            opacity: settings.flight_time_opacity
+            opacity: bw_current_opacity
             text: "\uf017"
             font.family: "Font Awesome 5 Free"
             anchors.right: flight_time_text.left
