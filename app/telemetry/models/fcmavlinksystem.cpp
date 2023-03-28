@@ -574,8 +574,10 @@ void FCMavlinkSystem::set_home_course(int home_course) {
     int rel_heading = home_course - m_hdg;
     if (rel_heading < 0) rel_heading += 360;
     if (rel_heading >= 360) rel_heading -=360;
-    m_home_course = rel_heading;
-    emit home_course_changed(home_course);
+    if(m_home_course != rel_heading){
+        m_home_course = rel_heading;
+        emit home_course_changed(home_course);
+    }
 }
 
 void FCMavlinkSystem::set_home_heading(int home_heading) {
@@ -583,8 +585,10 @@ void FCMavlinkSystem::set_home_heading(int home_heading) {
     home_heading=home_heading-180;
     if (home_heading < 0) home_heading += 360;
     if (home_heading >= 360) home_heading -=360;
-    m_home_heading = home_heading;
-    emit home_heading_changed(home_heading);
+    if(m_home_heading != home_heading){
+        m_home_heading = home_heading;
+        emit home_heading_changed(home_heading);
+    }
 }
 
 void FCMavlinkSystem::updateVehicleAngles(){
