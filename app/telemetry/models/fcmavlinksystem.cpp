@@ -944,27 +944,6 @@ bool FCMavlinkSystem::enable_disable_mission_updates(bool enable)
     m_mission->subscribe_mission_progress(cb);*/
 }
 
-void FCMavlinkSystem::start_pause_primary_mission_async(const bool pause)
-{
-    qDebug()<<"start_primary_mission_async()";
-    auto tmp_mission=m_mission;
-    if(tmp_mission==nullptr){
-        HUDLogMessagesModel::instance().add_message_info("Missions disabled");
-        return;
-    }
-    auto cb=[this,pause](mavsdk::Mission::Result res){
-        std::stringstream ss;
-        ss<<"Mission "<<(pause ? "pause" : "start")<<" "<<res;
-        qDebug()<<ss.str().c_str();
-        HUDLogMessagesModel::instance().add_message_info(ss.str().c_str());
-    };
-    if(pause){
-        tmp_mission->start_mission_async(cb);
-    }else{
-        tmp_mission->pause_mission_async(cb);
-    }
-}
-
 void FCMavlinkSystem::send_message_hud_connection(bool connected)
 {
     std::stringstream message;

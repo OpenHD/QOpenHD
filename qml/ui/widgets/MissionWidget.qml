@@ -136,26 +136,6 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
             }
-            ConfirmSlider{
-                height: 33
-                text_off: "Enable mission1"
-                visible: settings.dev_show_mission_start_pause
-                onCheckedChanged: {
-                    if (checked == true) {
-                        _fcMavlinkSystem.start_pause_primary_mission_async(false)
-                    }
-                }
-            }
-            ConfirmSlider{
-                height: 33
-                text_off: "Pause mission1"
-                visible: settings.dev_show_mission_start_pause
-                onCheckedChanged: {
-                    if (checked == true) {
-                        _fcMavlinkSystem.start_pause_primary_mission_async(true)
-                    }
-                }
-            }
         }
     }
 
