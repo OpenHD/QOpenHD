@@ -23,6 +23,10 @@ BaseWidget {
     defaultVCenter: false
 
     hasWidgetDetail: true
+
+    // Bound extra, a bit complicated
+    property double m_extra_size: m_extra_size
+
     widgetDetailComponent: ScrollView {
 
         contentHeight: idBaseWidgetDefaultUiControlElements.height
@@ -79,21 +83,21 @@ BaseWidget {
     Item {
         id: widgetInner
         anchors.fill: parent
-        opacity: bw_current_opacity
+        //opacity: bw_current_opacity
 
         Item {
             id: headingLadder
 
-            width: parent.width * settings.heading_size
+            width: parent.width * m_extra_size
             anchors.horizontalCenter: parent.horizontalCenter
             y: 27
             x: width/2
 
             transform: Scale {
-                origin.x: width/2*settings.heading_size //24
+                origin.x: width/2*m_extra_size //24
                 origin.y: 15
-                xScale: bw_current_scale
-                yScale: bw_current_scale
+                xScale: m_extra_size
+                yScale: m_extra_size
             }
 
             HeadingLadder {
@@ -129,8 +133,8 @@ BaseWidget {
             transform: Scale {
                 origin.x: width/2 //24
                 origin.y: 40 //34
-                xScale: bw_current_scale
-                yScale: bw_current_scale
+                xScale: m_extra_size
+                yScale: m_extra_size
             }
             text: Number(_fcMavlinkSystem.hdg).toLocaleString(Qt.locale(), 'f', 0)
             horizontalAlignment: Text.AlignHCenter
@@ -144,9 +148,9 @@ BaseWidget {
 
             transform: Scale {
                 origin.x: width/2 //24
-                origin.y: 40-20*settings.heading_size
-                xScale: bw_current_scale
-                yScale: bw_current_scale
+                origin.y: 40-20*m_extra_size
+                xScale: m_extra_size
+                yScale: m_extra_size
             }
             ShapePath {
                 capStyle: ShapePath.RoundCap
@@ -155,38 +159,38 @@ BaseWidget {
                 strokeStyle: ShapePath.SolidLine
                 fillColor: "transparent"
                 startX: 4
-                startY: 0-20*settings.heading_size
+                startY: 0-20*m_extra_size
                 PathLine {
                     x: 4
-                    y: 0-20*settings.heading_size
+                    y: 0-20*m_extra_size
                 }
                 PathLine {
                     x: 44
-                    y: 0-20*settings.heading_size
+                    y: 0-20*m_extra_size
                 }
                 PathLine {
                     x: 44
-                    y: 20-20*settings.heading_size
+                    y: 20-20*m_extra_size
                 }
                 PathLine {
                     x: 32
-                    y: 20-20*settings.heading_size
+                    y: 20-20*m_extra_size
                 }
                 PathLine {
                     x: 24
-                    y: 25-20*settings.heading_size
+                    y: 25-20*m_extra_size
                 }
                 PathLine {
                     x: 16
-                    y: 20-20*settings.heading_size
+                    y: 20-20*m_extra_size
                 }
                 PathLine {
                     x: 4
-                    y: 20-20*settings.heading_size
+                    y: 20-20*m_extra_size
                 }
                 PathLine {
                     x: 4
-                    y: 0-20*settings.heading_size
+                    y: 0-20*m_extra_size
                 }
             }
         }
@@ -196,9 +200,9 @@ BaseWidget {
 
             transform: Scale {
                 origin.x: width/2 //24
-                origin.y: 40-20*settings.heading_size
-                xScale: bw_current_scale
-                yScale: bw_current_scale
+                origin.y: 40-20*m_extra_size
+                xScale: m_extra_size
+                yScale: m_extra_size
             }
             ShapePath {
                 capStyle: ShapePath.RoundCap
@@ -207,38 +211,38 @@ BaseWidget {
                 strokeStyle: ShapePath.SolidLine
                 fillColor: "transparent"
                 startX: 4
-                startY: 0-20*settings.heading_size
+                startY: 0-20*m_extra_size
                 PathLine {
                     x: 4
-                    y: 0-20*settings.heading_size
+                    y: 0-20*m_extra_size
                 }
                 PathLine {
                     x: 44
-                    y: 0-20*settings.heading_size
+                    y: 0-20*m_extra_size
                 }
                 PathLine {
                     x: 44
-                    y: 20-20*settings.heading_size
+                    y: 20-20*m_extra_size
                 }
                 PathLine {
                     x: 32
-                    y: 20-20*settings.heading_size
+                    y: 20-20*m_extra_size
                 }
                 PathLine {
                     x: 24
-                    y: 25-20*settings.heading_size
+                    y: 25-20*m_extra_size
                 }
                 PathLine {
                     x: 16
-                    y: 20-20*settings.heading_size
+                    y: 20-20*m_extra_size
                 }
                 PathLine {
                     x: 4
-                    y: 20-20*settings.heading_size
+                    y: 20-20*m_extra_size
                 }
                 PathLine {
                     x: 4
-                    y: 0-20*settings.heading_size
+                    y: 0-20*m_extra_size
                 }
             }
         }
