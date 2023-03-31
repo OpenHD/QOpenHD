@@ -14,8 +14,7 @@ BaseWidget {
     visible: settings.show_flight_time
 
     widgetIdentifier: "flight_time_widget"
-    //
-    bw_verbose_name: "Flight Time"
+    bw_verbose_name: "FLIGHT TIME"
 
     defaultAlignment: 2
     defaultXOffset: 0

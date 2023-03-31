@@ -148,7 +148,6 @@
         <file>ui/elements/ColorPicker.qml</file>
         <file>ui/elements/AppSettings.qml</file>
         <file>ui/widgets/EscTempWidget.qml</file>
-        <file>ui/widgets/EscTempWidgetForm.ui.qml</file>
         <file>ui/widgets/PressTempWidget.qml</file>
         <file>ui/widgets/ImuTempWidget.qml</file>
         <file>ui/widgets/FlightMahKmWidget.qml</file>
