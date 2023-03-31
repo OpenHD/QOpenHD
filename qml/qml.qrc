@@ -51,24 +51,18 @@
         <file>ui/widgets/BaseWidget.qml</file>
         <file>ui/widgets/BaseWidgetForm.ui.qml</file>
         <file>ui/widgets/FpvWidget.qml</file>
-        <file>ui/widgets/FpvWidgetForm.ui.qml</file>
         <file>ui/widgets/HeadingWidget.qml</file>
         <file>ui/widgets/HeadingWidgetForm.ui.qml</file>
         <file>ui/widgets/SpeedWidget.qml</file>
         <file>ui/widgets/AltitudeWidget.qml</file>
-        <file>ui/widgets/SpeedWidgetForm.ui.qml</file>
-        <file>ui/widgets/AltitudeWidgetForm.ui.qml</file>
         <file>ui/widgets/AltitudeSecondWidget.qml</file>
-        <file>ui/widgets/AltitudeSecondWidgetForm.ui.qml</file>
         <file>ui/widgets/ThrottleWidget.qml</file>
         <file>ui/widgets/ThrottleWidgetForm.ui.qml</file>
         <file>ui/widgets/ArrowWidget.qml</file>
-        <file>ui/widgets/ArrowWidgetForm.qml</file>
         <file>ui/delegates/BaseDelegate.ui.qml</file>
         <file>ui/elements/SlideSwitchForm.ui.qml</file>
         <file>ui/elements/SlideSwitch.qml</file>
         <file>ui/widgets/GroundPowerWidget.qml</file>
-        <file>ui/widgets/GroundPowerWidgetForm.ui.qml</file>
         <file>ui/elements/ColoredCheckboxForm.ui.qml</file>
         <file>ui/elements/ColoredCheckbox.qml</file>
         <file>ui/widgets/GPIOWidget.qml</file>
@@ -77,13 +71,9 @@
         <file>ui/widgets/FlightMahWidget.qml</file>
         <file>ui/widgets/ControlWidget.qml</file>
         <file>ui/widgets/VibrationWidget.qml</file>
-        <file>ui/widgets/VibrationWidgetForm.ui.qml</file>
-        <file>ui/widgets/VsiWidgetForm.ui.qml</file>
         <file>ui/widgets/VsiWidget.qml</file>
-        <file>ui/widgets/WindWidgetForm.ui.qml</file>
         <file>ui/widgets/WindWidget.qml</file>
         <file>ui/widgets/ExampleWidget.qml</file>
-        <file>ui/widgets/RollWidgetForm.ui.qml</file>
         <file>ui/widgets/RollWidget.qml</file>
         <file>ui/elements/LanguageSelect.qml</file>
         <file>ui/elements/LanguageSelectForm.ui.qml</file>
@@ -91,7 +81,6 @@
         <file>ui/elements/Card.qml</file>
         <file>ui/elements/CardForm.ui.qml</file>
         <file>ui/widgets/SpeedSecondWidget.qml</file>
-        <file>ui/widgets/SpeedSecondWidgetForm.ui.qml</file>
         <file>osdfonts/Acme-Regular.ttf</file>
         <file>osdfonts/Aldrich-Regular.ttf</file>
         <file>osdfonts/AnonymousPro-Bold.ttf</file>
@@ -162,7 +151,6 @@
         <file>ui/widgets/EscTempWidgetForm.ui.qml</file>
         <file>ui/widgets/PressTempWidget.qml</file>
         <file>ui/widgets/ImuTempWidget.qml</file>
-        <file>ui/widgets/ImuTempWidgetForm.ui.qml</file>
         <file>ui/widgets/FlightMahKmWidget.qml</file>
         <file>ui/elements/ConfirmSlider.qml</file>
         <file>ui/elements/ConfirmSliderForm.ui.qml</file>
@@ -196,9 +184,7 @@
         <file>resources/master4.png</file>
         <file>ui/configpopup/EasterEggPanel.qml</file>
         <file>ui/widgets/AirspeedTempWidget.qml</file>
-        <file>ui/widgets/AirspeedTempWidgetForm.ui.qml</file>
         <file>ui/widgets/AoaWidget.qml</file>
-        <file>ui/widgets/AoaWidgetForm.ui.qml</file>
         <file>ui/widgets/MessageHUDRow.qml</file>
         <file>ui/widgets/AdsbWidget.qml</file>
         <file>ui/configpopup/ChannelScanDialoque.qml</file>
