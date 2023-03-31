@@ -198,7 +198,7 @@ MapWidgetForm {
         map.gesture.enabled = false
         mapExpanded = !mapExpanded
         //scale = settings.map_size
-        mapWidget.widgetInner.opacity = 0
+        //mapWidget.widgetInner.opacity = 0
     }
 
     function launchPopup() {
