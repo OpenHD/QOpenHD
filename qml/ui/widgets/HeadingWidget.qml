@@ -35,6 +35,8 @@ BaseWidget {
 
         BaseWidgetDefaultUiControlElements{
             id: idBaseWidgetDefaultUiControlElements
+            show_vertical_lock: true
+
             Item {
                 width: 230
                 height: 32

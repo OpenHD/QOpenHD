@@ -14,7 +14,7 @@ BaseWidget {
     visible: settings.show_horizon
 
     widgetIdentifier: "horizon_widget"
-    bw_verbose_name: "ARTIFICIAL HORIZON(1)"
+    bw_verbose_name: "ARTIFICIAL HORIZON"
 
     defaultHCenter: true
     defaultVCenter: true
@@ -28,6 +28,10 @@ BaseWidget {
 
         BaseWidgetDefaultUiControlElements{
             id: idBaseWidgetDefaultUiControlElements
+
+            show_vertical_lock: true
+            show_horizontal_lock: true
+
             Item {
                 width: 230
                 height: 32
