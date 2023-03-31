@@ -14,7 +14,7 @@ BaseWidget {
     visible: settings.show_airspeed_temp
 
     widgetIdentifier: "airspeed_temp_widget"
-    bw_verbose_name: "Airspeed sensor temp"
+    bw_verbose_name: "AIRSPEED SENSOR TEMP"
 
 
     defaultAlignment: 1

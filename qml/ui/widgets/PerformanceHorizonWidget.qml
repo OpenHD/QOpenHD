@@ -14,6 +14,7 @@ BaseWidget {
     visible: settings.show_performance_horizon
 
     widgetIdentifier: "performance_horizon_widget"
+    bw_verbose_name: "PERFORMANCE HORIZON"
 
     defaultHCenter: true
     defaultVCenter: true
@@ -21,41 +22,12 @@ BaseWidget {
     hasWidgetDetail: true
     widgetDetailComponent: ScrollView {
 
-        contentHeight: horizonSettingsColumn.height
+        contentHeight: idBaseWidgetDefaultUiControlElements.height
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
         clip: true
 
-        ColumnLayout {
-            id: horizonSettingsColumn
-            x: 0
-            y: 0
-            width: 321
-            height: 522
-            spacing: 0
-            clip: true
-            Item {
-                width: 230
-                height: 42
-                Text {
-                    id: horizonSettingsTitle
-                    text: qsTr("Perf Horizon")
-                    color: "white"
-                    height: parent.height - 10
-                    width: parent.width
-                    font.bold: true
-                    horizontalAlignment: Text.AlignHCenter
-                    font.pixelSize: detailPanelFontPixels
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Rectangle {
-                    id: horizonSettingsTitleUL
-                    y: 34
-                    width: parent.width
-                    height: 3
-                    color: "white"
-                    radius: 5
-                }
-            }
+        BaseWidgetDefaultUiControlElements{
+            id: idBaseWidgetDefaultUiControlElements
             Item {
                 width: 230
                 height: 32

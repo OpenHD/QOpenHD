@@ -16,7 +16,7 @@ BaseWidget {
     visible: settings.show_bitrate
 
     widgetIdentifier: "bitrate_widget"
-    bw_verbose_name: "VIDEO BITRATE"
+    bw_verbose_name: "VIDEO BITRATE CAM1"
 
     defaultAlignment: 1
     defaultXOffset: 224

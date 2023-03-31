@@ -22,7 +22,7 @@ BaseWidget {
     visible: settings.show_altitude
 
     widgetIdentifier: "altitude_widget"
-    bw_verbose_name: "Altitude"
+    bw_verbose_name: "ALTITUDE"
 
     defaultHCenter: false
 

@@ -56,7 +56,6 @@
         <file>ui/widgets/AltitudeWidget.qml</file>
         <file>ui/widgets/AltitudeSecondWidget.qml</file>
         <file>ui/widgets/ThrottleWidget.qml</file>
-        <file>ui/widgets/ThrottleWidgetForm.ui.qml</file>
         <file>ui/widgets/ArrowWidget.qml</file>
         <file>ui/delegates/BaseDelegate.ui.qml</file>
         <file>ui/elements/SlideSwitchForm.ui.qml</file>

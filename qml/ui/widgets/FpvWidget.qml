@@ -15,6 +15,7 @@ BaseWidget {
     visible: settings.show_flight_path_vector
 
     widgetIdentifier: "fpv_widget"
+    bw_verbose_name: "FLIGHT PATH VECTOR"
 
     defaultHCenter: true
     defaultVCenter: true

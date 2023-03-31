@@ -19,6 +19,7 @@ BaseWidget {
     visible:    settings.show_record_widget
 
     widgetIdentifier: "record_video_widget"
+    bw_verbose_name: "AIR RECORDING"
 
     defaultAlignment: 0
     defaultXOffset: 200
@@ -45,64 +46,13 @@ BaseWidget {
 
     widgetDetailComponent: ScrollView {
 
-        contentHeight: missionSettingsColumn.height
+        contentHeight: idBaseWidgetDefaultUiControlElements.height
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
         clip: true
-        Column {
-            id: missionSettingsColumn
-            Item {
-                width: parent.width
-                height: 42
-                Text {
-                    id: missionSettingsTitle
-                    text: qsTr("Record")
-                    color: "white"
-                    height: parent.height - 10
-                    width: parent.width
-                    font.bold: true
-                    horizontalAlignment: Text.AlignHCenter
-                    font.pixelSize: detailPanelFontPixels
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Rectangle {
-                    id: missionSettingsTitleUL
-                    y: 34
-                    width: parent.width
-                    height: 3
-                    color: "white"
-                    radius: 5
-                }
-            }
 
-            Item {
-                width: parent.width
-                height: 32
-                Text {
-                    text: qsTr("Size")
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Slider {
-                    id: record_size_Slider
-                    orientation: Qt.Horizontal
-                    from: 14
-                    value: settings.recordTextSize
-                    to: 22
-                    stepSize: 1
-                    height: parent.height
-                    anchors.rightMargin: 0
-                    anchors.right: parent.right
-                    width: parent.width - 96
+        BaseWidgetDefaultUiControlElements{
+            id: idBaseWidgetDefaultUiControlElements
 
-                    onValueChanged: {
-                        settings.recordTextSize = record_size_Slider.value
-                    }
-                }
-            }
             Item {
                 width: parent.width
                 height: 32

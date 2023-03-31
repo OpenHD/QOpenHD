@@ -21,7 +21,7 @@ BaseWidget {
     visible: settings.show_aoa
 
     widgetIdentifier: "aoa_widget"
-    bw_verbose_name: "Angle of attack"
+    bw_verbose_name: "ANGLE OF ATTACK"
 
     hasWidgetDetail: true
 

@@ -16,7 +16,7 @@ BaseWidget {
     visible: settings.show_arrow
 
     widgetIdentifier: "arrow_widget"
-    bw_verbose_name: "Home Arrow"
+    bw_verbose_name: "HOME ARROW"
 
     defaultHCenter: true
     defaultVCenter: false

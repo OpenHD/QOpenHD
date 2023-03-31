@@ -20,6 +20,7 @@ BaseWidget {
     visible: settings.show_altitude_second
 
     widgetIdentifier: "altitude_second_widget"
+    bw_verbose_name: "SECOND ALTITUDE"
 
     hasWidgetDetail: true
 

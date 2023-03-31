@@ -14,6 +14,7 @@ BaseWidget {
     visible: settings.show_ground_battery
 
     widgetIdentifier: "ground_battery_widget"
+    bw_verbose_name: "GROUND BATTERY"
 
     defaultAlignment: 2
     defaultXOffset: 188
