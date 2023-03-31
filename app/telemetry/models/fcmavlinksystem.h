@@ -233,8 +233,8 @@ public:
     // Try to send a return to launch command.
     // The result (success/failure) is logged in the HUD once completed
     Q_INVOKABLE void send_return_to_launch_async();
-    //
-    Q_INVOKABLE void enable_disable_mission_updates(bool enable);
+    // return true on success, false otherwise
+    Q_INVOKABLE bool enable_disable_mission_updates(bool enable);
     // TODO document me
     Q_INVOKABLE bool send_command_reboot(bool reboot);
     Q_INVOKABLE void flight_mode_cmd(long cmd_msg);

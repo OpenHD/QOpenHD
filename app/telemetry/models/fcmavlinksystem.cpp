@@ -872,14 +872,14 @@ void FCMavlinkSystem::flight_mode_cmd(long cmd_msg) {
     }
 }
 
-void FCMavlinkSystem::enable_disable_mission_updates(bool enable)
+bool FCMavlinkSystem::enable_disable_mission_updates(bool enable)
 {
     if(enable){
         // Enable mission updates via mavsdk
         // by instantiating the mavsdk mission instance, we now automatically get updates, but manually parse the mission updates in the main mavlink message callback.
         if(m_system==nullptr){
              HUDLogMessagesModel::instance().add_message_info("No FC");
-             return;
+             return false;
         }
         if(m_mission==nullptr){
             // must be manually enabled by the user to save resources
@@ -907,6 +907,7 @@ void FCMavlinkSystem::enable_disable_mission_updates(bool enable)
             HUDLogMessagesModel::instance().add_message_info("Mission updates already disabled");
         }
     }
+    return true;
     /*const auto [res,plan]=m_mission->download_mission();
     if(res!=mavsdk::Mission::Result::Success){
         HUDLogMessagesModel::instance().add_message_info("Mission download failure");

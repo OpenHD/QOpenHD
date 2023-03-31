@@ -211,21 +211,34 @@ BaseWidget {
                 }
             }
 
-            ConfirmSlider {
-
+            ConfirmSliderEnableDisable {
+                id: confirmSliderEnableUpdates
                 visible: _fcMavlinkSystem.supports_basic_commands
                 text_off: qsTr("Enable updates")
                 text_on: qsTr("Disable updates");
-                //timer_reset: false
 
                 onCheckedChanged: {
+                    if(error_last){
+                        error_last=false;
+                        return;
+                    }
+                    var res=false
                     if (checked == true) {
-                        _fcMavlinkSystem.enable_disable_mission_updates(true);
+                        res=_fcMavlinkSystem.enable_disable_mission_updates(true);
+                        if(res===false){
+                            error_last=true;
+                            checked = !checked;
+                        }
                     }else{
-                        _fcMavlinkSystem.enable_disable_mission_updates(false);
+                        res=_fcMavlinkSystem.enable_disable_mission_updates(false);
+                        if(res===false){
+                            error_last=true;
+                            checked = !checked;
+                        }
                     }
                 }
             }
+
             Item {
                 width: parent.width
                 height: 20
