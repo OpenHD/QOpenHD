@@ -235,6 +235,8 @@ public:
     Q_INVOKABLE void send_return_to_launch_async();
     // return true on success, false otherwise
     Q_INVOKABLE bool enable_disable_mission_updates(bool enable);
+    Q_INVOKABLE void start_pause_primary_mission_async(bool pause);
+
     // TODO document me
     Q_INVOKABLE bool send_command_reboot(bool reboot);
     Q_INVOKABLE void flight_mode_cmd(long cmd_msg);

@@ -15,8 +15,8 @@ ConfirmSliderForm {
     property var slider_height:32
     property var slider_width: 180
 
-    property string text_off:"MANUAL"
-    property string text_on: text_off //might be bad practice
+    property string text_off:"I'm a BUG" //prevent dev from accidentally forgetting to set it
+    property string text_on: text_off
 
     property var msg_id: 0 //the actual msg id sent from the widget
 

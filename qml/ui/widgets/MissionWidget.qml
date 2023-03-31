@@ -30,6 +30,9 @@ BaseWidget {
     hasWidgetDetail: true
     hasWidgetAction: true
 
+    // Needs to be a bit bigger than default:
+    widgetActionHeight: 164+ 100
+
     widgetDetailComponent: ScrollView {
 
         contentHeight: idBaseWidgetDefaultUiControlElements.height
@@ -131,6 +134,26 @@ BaseWidget {
                     font.pixelSize: detailPanelFontPixels
                     anchors.right: parent.right
                     verticalAlignment: Text.AlignVCenter
+                }
+            }
+            ConfirmSlider{
+                height: 33
+                text_off: "Enable mission1"
+                visible: settings.dev_show_mission_start_pause
+                onCheckedChanged: {
+                    if (checked == true) {
+                        _fcMavlinkSystem.start_pause_primary_mission_async(false)
+                    }
+                }
+            }
+            ConfirmSlider{
+                height: 33
+                text_off: "Pause mission1"
+                visible: settings.dev_show_mission_start_pause
+                onCheckedChanged: {
+                    if (checked == true) {
+                        _fcMavlinkSystem.start_pause_primary_mission_async(true)
+                    }
                 }
             }
         }

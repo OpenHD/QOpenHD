@@ -435,24 +435,6 @@ static QString px4_mode_from_custom_mode(int custom_mode){
     return "Unknown";
 }
 
-static constexpr auto  X_PIf=3.14159265358979323846f;
-typedef struct pt1Filter_s {
-    float state;
-    float RC;
-    float dT;
-} pt1Filter_t;
-
-static float pt1FilterApply4(Telemetryutil::pt1Filter_t *filter, float input, float f_cut, float dT){
-    // Pre calculate and store RC
-    if (!filter->RC) {
-        filter->RC = 1.0f / ( 2.0f * X_PIf * f_cut );
-    }
-
-    filter->dT = dT;    // cache latest dT for possible use in pt1FilterApply
-    filter->state = filter->state + dT / (filter->RC + dT) * (input - filter->state);
-    return filter->state;
-}
-
 struct XLogMessage{
     std::string message;
     int level;
