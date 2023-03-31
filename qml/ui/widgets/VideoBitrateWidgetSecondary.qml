@@ -147,8 +147,8 @@ BaseWidget {
         id: widgetInner
 
         anchors.fill: parent
-        opacity: settings.bitrate_opacity
-        scale: settings.bitrate_size
+        opacity: bw_current_opacity
+        scale: bw_current_scale
 
         Text {
             id: camera_icon

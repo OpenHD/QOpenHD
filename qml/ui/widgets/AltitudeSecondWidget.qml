@@ -61,12 +61,12 @@ BaseWidget {
         id: widgetInner
         anchors.fill: parent
 
-        scale: settings.altitude_second_size
+        scale: bw_current_scale
 
         Text {
             id: second_alt_text
             color: settings.color_text
-            opacity: settings.altitude_second_opacity
+            opacity: bw_current_opacity
             font.pixelSize: 14
             font.family: settings.font_text
             anchors.left: widgetGlyph.right
@@ -86,7 +86,7 @@ BaseWidget {
             width: 16
             height: parent.height
             color: settings.color_shape
-            opacity: settings.altitude_second_opacity
+            opacity: bw_current_opacity
             text: "\uf338"
             anchors.left: parent.left
             anchors.leftMargin: 0

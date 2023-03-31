@@ -225,7 +225,7 @@ BaseWidget {
         anchors.fill: parent
         antialiasing: true
 
-        opacity: settings.wind_opacity
+        opacity: bw_current_opacity
 
         Item {
             anchors.fill: parent
@@ -233,8 +233,8 @@ BaseWidget {
             transform: Scale {
                 origin.x: 25
                 origin.y: 25
-                xScale: settings.wind_size
-                yScale: settings.wind_size
+                xScale: bw_current_scale
+                yScale: bw_current_scale
             }
 
             Shape {

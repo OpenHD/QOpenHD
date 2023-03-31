@@ -518,8 +518,8 @@ BaseWidget {
         id: widgetInner
 
         anchors.fill: parent
-        opacity: settings.qrenderstats_opacity
-        scale: settings.qrenderstats_size
+        opacity: bw_current_opacity
+        scale: bw_current_scale
 
         Text {
             id: qrenderstats_tm_icon

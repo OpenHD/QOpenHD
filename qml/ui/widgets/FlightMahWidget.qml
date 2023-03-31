@@ -39,7 +39,7 @@ BaseWidget {
         id: widgetInner
 
         anchors.fill: parent
-        scale: settings.mah_size
+        scale: bw_current_scale
 
         Text {
             id: home_icon
@@ -49,7 +49,7 @@ BaseWidget {
             height: 24
             clip: true
             color: settings.color_shape
-            opacity: settings.mah_opacity
+            opacity: bw_current_opacity
             text: "\uf0e7"
             anchors.right: flight_mah_text.left
             anchors.rightMargin: 6
@@ -67,7 +67,7 @@ BaseWidget {
             height: 24
             clip: false
             color: settings.color_text
-            opacity: settings.mah_opacity
+            opacity: bw_current_opacity
             text:  _fcMavlinkSystem.battery_consumed_mah+ "mAh"
             anchors.right: parent.right
             anchors.rightMargin: 0

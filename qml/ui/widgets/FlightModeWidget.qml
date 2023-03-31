@@ -391,7 +391,7 @@ VTOL
             width: 24
             height: 48
             color: _fcMavlinkSystem.armed ? "green" : settings.color_shape
-            opacity: settings.flight_mode_opacity
+            opacity: bw_current_opacity
             text: "\uf072"
             anchors.right: flight_mode_text.left
             anchors.rightMargin: 6
@@ -407,7 +407,7 @@ VTOL
             id: flight_mode_text
             height: 48
             color: settings.color_text
-            opacity: settings.flight_mode_opacity
+            opacity: bw_current_opacity
             text: _fcMavlinkSystem.flight_mode
             anchors.verticalCenter: parent.verticalCenter
             anchors.horizontalCenter: parent.horizontalCenter

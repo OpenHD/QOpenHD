@@ -63,7 +63,7 @@ BaseWidget {
     Item {
         id: widgetInner
         anchors.fill: parent
-        opacity: settings.horizon_opacity
+        opacity: bw_current_opacity
 
         Rectangle {
             id: horizonLadder2

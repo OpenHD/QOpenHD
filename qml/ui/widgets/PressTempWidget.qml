@@ -290,12 +290,12 @@ BaseWidget {
         id: widgetInner
 
         anchors.fill: parent
-        scale: settings.press_temp_size
+        scale: bw_current_scale
+        opacity: bw_current_opacity
 
         Text {
             id: temp_glyph
             color: _fcMavlinkSystem.preasure_sensor_temperature_degree >= settings.press_temp_caution ? (_fcMavlinkSystem.preasure_sensor_temperature_degree >= settings.press_temp_warn ? settings.color_warn : settings.color_caution) : settings.color_shape
-            opacity: settings.press_temp_opacity
             text: _fcMavlinkSystem.preasure_sensor_temperature_degree >= settings.press_temp_caution ? (_fcMavlinkSystem.preasure_sensor_temperature_degree >= settings.press_temp_warn ? "\uf2c7" : "\uf2c9") : "\uf2cb"
             anchors.left: parent.left
             anchors.bottom: parent.bottom
@@ -327,7 +327,6 @@ BaseWidget {
                     return settings.color_text
                 }
             }
-            opacity: settings.press_temp_opacity
             text: _fcMavlinkSystem.preasure_sensor_temperature_degree == 0 ? qsTr("N/A") : _fcMavlinkSystem.preasure_sensor_temperature_degree + "°"
             anchors.left: temp_glyph.right
             anchors.leftMargin: 2

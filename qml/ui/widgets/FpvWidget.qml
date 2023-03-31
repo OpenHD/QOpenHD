@@ -244,7 +244,7 @@ BaseWidget {
         anchors.centerIn: parent
 
         visible: settings.show_flight_path_vector
-        opacity: settings.fpv_opacity
+        opacity: bw_current_opacity
 
         Item {
             id: flightPathVector
@@ -253,7 +253,7 @@ BaseWidget {
 
             visible: settings.show_flight_path_vector
 
-            //transform: Scale { origin.x: 0; origin.y: 0; xScale: settings.fpv_size ; yScale: settings.fpv_size}
+            //transform: Scale { origin.x: 0; origin.y: 0; xScale: bw_current_scale ; yScale: bw_current_scale}
             FlightPathVector {
                 id: fpvC
                 anchors.centerIn: parent

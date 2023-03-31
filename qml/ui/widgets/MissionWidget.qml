@@ -289,8 +289,8 @@ BaseWidget {
     Item {
         id: widgetInner
         anchors.fill: parent
-        opacity: settings.mission_opacity
-        scale: settings.mission_size
+        opacity: bw_current_opacity
+        scale: bw_current_scale
 
         Item {
             anchors.fill: parent

@@ -113,7 +113,7 @@ BaseWidget {
     Item {
         id: widgetInner
         anchors.fill: parent
-        opacity: settings.altitude_opacity
+        opacity: bw_current_opacity
 
         //-----------------------ladder start---------------
         Item {
@@ -127,8 +127,8 @@ BaseWidget {
             transform: Scale {
                 origin.x: -5
                 origin.y: 12
-                xScale: settings.altitude_size
-                yScale: settings.altitude_size
+                xScale: bw_current_scale
+                yScale: bw_current_scale
             }
 
             AltitudeLadder {
@@ -163,8 +163,8 @@ BaseWidget {
                 transform: Scale {
                     origin.x: 12
                     origin.y: 12
-                    xScale: settings.altitude_size
-                    yScale: settings.altitude_size
+                    xScale: bw_current_scale
+                    yScale: bw_current_scale
                 }
                 text: Number(// @disable-check M222
                              settings.enable_imperial ? (settings.altitude_rel_msl ? (_fcMavlinkSystem.alt_msl * 3.28) : (_fcMavlinkSystem.alt_rel * 3.28)) : (settings.altitude_rel_msl ? _fcMavlinkSystem.alt_msl : _fcMavlinkSystem.alt_rel)).toLocaleString(
@@ -182,8 +182,8 @@ BaseWidget {
                 transform: Scale {
                     origin.x: 12
                     origin.y: 12
-                    xScale: settings.altitude_size
-                    yScale: settings.altitude_size
+                    xScale: bw_current_scale
+                    yScale: bw_current_scale
                 }
                 ShapePath {
                     strokeColor: settings.color_glow
@@ -225,8 +225,8 @@ BaseWidget {
                 transform: Scale {
                     origin.x: 12
                     origin.y: 12
-                    xScale: settings.altitude_size
-                    yScale: settings.altitude_size
+                    xScale: bw_current_scale
+                    yScale: bw_current_scale
                 }
                 ShapePath {
                     strokeColor: settings.color_shape

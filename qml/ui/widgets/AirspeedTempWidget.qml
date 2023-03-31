@@ -165,12 +165,12 @@ BaseWidget {
         id: widgetInner
 
         anchors.fill: parent
-        scale: settings.airspeed_temp_size
+        scale: bw_current_scale
 
         Text {
             id: temp_glyph
             color: _fcMavlinkSystem.airspeed_sensor_temperature_degree <= settings.airspeed_temp_caution ? (_fcMavlinkSystem.airspeed_sensor_temperature_degree <= settings.airspeed_temp_warn ? settings.color_warn : settings.color_caution) : settings.color_shape
-            opacity: settings.airspeed_temp_opacity
+            opacity: bw_current_opacity
             text: _fcMavlinkSystem.airspeed_sensor_temperature_degree <= settings.airspeed_temp_caution ? (_fcMavlinkSystem.airspeed_sensor_temperature_degree <= settings.airspeed_temp_warn ? "\uf2c7" : "\uf2c9") : "\uf2cb"
             anchors.left: parent.left
             anchors.bottom: parent.bottom
@@ -202,7 +202,7 @@ BaseWidget {
                     return settings.color_text
                 }
             }
-            opacity: settings.airspeed_temp_opacity
+            opacity: bw_current_opacity
             text: _fcMavlinkSystem.airspeed_sensor_temperature_degree == 99 ? qsTr("N/A") : _fcMavlinkSystem.airspeed_sensor_temperature_degree + "°"
             anchors.left: temp_glyph.right
             anchors.leftMargin: 2

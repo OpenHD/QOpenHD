@@ -174,12 +174,12 @@ BaseWidget {
         id: widgetInner
         visible: settings.show_adsb
         anchors.fill: parent
-        scale: settings.adsb_size
+        scale: bw_current_scale
 
         Text {
             id: adsb_text
             color: settings.color_shape
-            opacity: settings.adsb_opacity
+            opacity: bw_current_opacity
             text: "ADS-B"
             anchors.left: parent.left
             anchors.verticalCenter: parent.verticalCenter

@@ -69,7 +69,7 @@ BaseWidget {
     Item {
         id: widgetInner
         anchors.fill: parent
-        opacity: settings.aoa_opacity
+        opacity: bw_current_opacity
 
         //-----------------------ladder start---------------
         Item {
@@ -83,8 +83,8 @@ BaseWidget {
             transform: Scale {
                 origin.x: 25
                 origin.y: 60
-                xScale: settings.aoa_size
-                yScale: settings.aoa_size
+                xScale: bw_current_scale
+                yScale: bw_current_scale
             }
 
             AoaGauge {
@@ -116,8 +116,8 @@ BaseWidget {
             transform: Scale {
                 origin.x: 12
                 origin.y: 12
-                xScale: settings.aoa_size
-                yScale: settings.aoa_size
+                xScale: bw_current_scale
+                yScale: bw_current_scale
             }
             text: Number(_fcMavlinkSystem.aoa).toLocaleString(
                       Qt.locale(), 'f', 0)

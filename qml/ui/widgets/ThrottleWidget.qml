@@ -103,7 +103,7 @@ BaseWidget {
     Item {
         id: widgetInner
         anchors.fill: parent
-        opacity: settings.throttle_opacity
+        opacity: bw_current_opacity
 
         Item {
             anchors.fill: parent
@@ -111,8 +111,8 @@ BaseWidget {
             transform: Scale {
                 origin.x: 48
                 origin.y: 34
-                xScale: settings.throttle_scale
-                yScale: settings.throttle_scale
+                xScale: bw_current_scale
+                yScale: bw_current_scale
             }
 
             Text {

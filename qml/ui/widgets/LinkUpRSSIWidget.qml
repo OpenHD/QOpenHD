@@ -86,8 +86,8 @@ BaseWidget {
         id: widgetInner
 
         anchors.fill: parent
-        opacity: settings.uplink_rssi_opacity
-        scale: settings.uplink_rssi_size
+        opacity: bw_current_opacity
+        scale: bw_current_scale
 
         Text {
             id: uplink_icon

@@ -152,8 +152,8 @@ BaseWidget {
         height: parent.height
         width: parent.width
         anchors.verticalCenter: parent.verticalCenter
-        opacity: settings.control_opacity
-        scale: settings.control_size
+        opacity: bw_current_opacity
+        scale: bw_current_scale
 
         antialiasing: true
 

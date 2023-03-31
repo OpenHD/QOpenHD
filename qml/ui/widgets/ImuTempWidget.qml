@@ -140,12 +140,12 @@ BaseWidget {
         id: widgetInner
 
         anchors.fill: parent
-        scale: settings.imu_temp_size
+        scale: bw_current_scale
+        opacity: bw_current_opacity
 
         Text {
             id: temp_glyph
             color: _fcMavlinkSystem.imu_temp_degree >= settings.imu_temp_caution ? (_fcMavlinkSystem.imu_temp_degree >= settings.imu_temp_warn ? settings.color_warn : settings.color_caution) : settings.color_shape
-            opacity: settings.imu_temp_opacity
             text: "\uf5d2"
             anchors.left: parent.left
             anchors.bottom: parent.bottom
@@ -177,7 +177,6 @@ BaseWidget {
                     return settings.color_text
                 }
             }
-            opacity: settings.imu_temp_opacity
             text: _fcMavlinkSystem.imu_temp_degree == 0 ? qsTr("N/A") : _fcMavlinkSystem.imu_temp_degree + "°"
             anchors.left: temp_glyph.right
             anchors.leftMargin: 2

@@ -142,7 +142,7 @@ BaseWidget {
     Item {
         id: widgetInner
         anchors.fill: parent
-        opacity: settings.speed_opacity
+        opacity: bw_current_opacity
 
         //-----------------------ladder start---------------
         Item {
@@ -156,8 +156,8 @@ BaseWidget {
             transform: Scale {
                 origin.x: -33
                 origin.y: 12
-                xScale: settings.speed_size
-                yScale: settings.speed_size
+                xScale: bw_current_scale
+                yScale: bw_current_scale
             }
 
             SpeedLadder {
@@ -190,8 +190,8 @@ BaseWidget {
             transform: Scale {
                 origin.x: 12
                 origin.y: 12
-                xScale: settings.speed_size
-                yScale: settings.speed_size
+                xScale: bw_current_scale
+                yScale: bw_current_scale
             }
             text: Number(
                       settings.enable_imperial ? (settings.speed_use_groundspeed ? _fcMavlinkSystem.speed * 0.621371 : _fcMavlinkSystem.airspeed * 0.621371) : (settings.speed_use_groundspeed ? _fcMavlinkSystem.speed : _fcMavlinkSystem.airspeed)).toLocaleString(
@@ -208,8 +208,8 @@ BaseWidget {
             transform: Scale {
                 origin.x: 12
                 origin.y: 12
-                xScale: settings.speed_size
-                yScale: settings.speed_size
+                xScale: bw_current_scale
+                yScale: bw_current_scale
             }
             ShapePath {
                 strokeColor: settings.color_glow
@@ -251,8 +251,8 @@ BaseWidget {
             transform: Scale {
                 origin.x: 12
                 origin.y: 12
-                xScale: settings.speed_size
-                yScale: settings.speed_size
+                xScale: bw_current_scale
+                yScale: bw_current_scale
             }
             ShapePath {
                 strokeColor: settings.color_shape

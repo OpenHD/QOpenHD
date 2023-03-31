@@ -134,14 +134,14 @@ BaseWidget {
             transform: Scale {
                 origin.x: 100
                 origin.y: 60
-                xScale: settings.roll_size
-                yScale: settings.roll_size
+                xScale: bw_current_scale
+                yScale: bw_current_scale
             }
 
             Item {
                 id: rollTicks
                 anchors.fill: parent
-                opacity: settings.roll_opacity
+                opacity: bw_current_opacity
 
                 Shape {
                     width: 200
@@ -408,7 +408,7 @@ BaseWidget {
                 id: pointer
                 anchors.fill: parent
                 antialiasing: true
-                opacity: settings.roll_opacity
+                opacity: bw_current_opacity
 
                 ShapePath {
                     capStyle: ShapePath.RoundCap

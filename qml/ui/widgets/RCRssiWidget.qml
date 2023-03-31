@@ -216,8 +216,8 @@ BaseWidget {
             transform: Scale {
                 origin.x: 25
                 origin.y: 15
-                xScale: settings.rc_rssi_size
-                yScale: settings.rc_rssi_size
+                xScale: bw_current_scale
+                yScale: bw_current_scale
             }
 
             Rectangle {
@@ -311,7 +311,7 @@ BaseWidget {
             Text {
                 id: percent_symbol
                 color: settings.color_text
-                opacity: settings.rc_rssi_opacity
+                opacity: bw_current_opacity
                 text: is_valid_rssi() ? qsTr("%") : qsTr("")
                 anchors.right: rcRSSI_21to40.left
                 anchors.rightMargin: 0
@@ -329,7 +329,7 @@ BaseWidget {
             Text {
                 id: rc_rssi
                 color: settings.color_text
-                opacity: settings.rc_rssi_opacity
+                opacity: bw_current_opacity
                 text: is_valid_rssi() ? rc_rssi_percentage : qsTr("N/A")
                 anchors.right: percent_symbol.left
                 anchors.rightMargin: 2

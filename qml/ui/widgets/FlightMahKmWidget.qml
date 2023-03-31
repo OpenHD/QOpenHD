@@ -41,7 +41,8 @@ BaseWidget {
         id: widgetInner
 
         anchors.fill: parent
-        scale: settings.mah_km_size
+        scale: bw_current_scale
+        opacity: bw_current_opacity
 
         Text {
             id: home_icon
@@ -51,7 +52,6 @@ BaseWidget {
             height: 24
             clip: true
             color: settings.color_shape
-            opacity: settings.mah_km_opacity
             text: "\uf0e7"
             anchors.right: flight_mah_km_text.left
             anchors.rightMargin: 6
@@ -68,7 +68,6 @@ BaseWidget {
             height: 24
             clip: true
             color: settings.color_text
-            opacity: settings.mah_km_opacity
             text: (curr_mah_per_km > 0)
                   && (curr_mah_per_km < 999) ? (curr_mah_per_km + "mAh/km") : "---mAh/km"
             anchors.right: parent.right

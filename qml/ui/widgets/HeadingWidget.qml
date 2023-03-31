@@ -79,7 +79,7 @@ BaseWidget {
     Item {
         id: widgetInner
         anchors.fill: parent
-        opacity: settings.heading_opacity
+        opacity: bw_current_opacity
 
         Item {
             id: headingLadder
@@ -92,8 +92,8 @@ BaseWidget {
             transform: Scale {
                 origin.x: width/2*settings.heading_size //24
                 origin.y: 15
-                xScale: settings.heading_size
-                yScale: settings.heading_size
+                xScale: bw_current_scale
+                yScale: bw_current_scale
             }
 
             HeadingLadder {
@@ -129,8 +129,8 @@ BaseWidget {
             transform: Scale {
                 origin.x: width/2 //24
                 origin.y: 40 //34
-                xScale: settings.heading_size
-                yScale: settings.heading_size
+                xScale: bw_current_scale
+                yScale: bw_current_scale
             }
             text: Number(_fcMavlinkSystem.hdg).toLocaleString(Qt.locale(), 'f', 0)
             horizontalAlignment: Text.AlignHCenter
@@ -145,8 +145,8 @@ BaseWidget {
             transform: Scale {
                 origin.x: width/2 //24
                 origin.y: 40-20*settings.heading_size
-                xScale: settings.heading_size
-                yScale: settings.heading_size
+                xScale: bw_current_scale
+                yScale: bw_current_scale
             }
             ShapePath {
                 capStyle: ShapePath.RoundCap
@@ -197,8 +197,8 @@ BaseWidget {
             transform: Scale {
                 origin.x: width/2 //24
                 origin.y: 40-20*settings.heading_size
-                xScale: settings.heading_size
-                yScale: settings.heading_size
+                xScale: bw_current_scale
+                yScale: bw_current_scale
             }
             ShapePath {
                 capStyle: ShapePath.RoundCap

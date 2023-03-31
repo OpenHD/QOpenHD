@@ -147,7 +147,7 @@ BaseWidget {
         id: widgetInner
 
         anchors.fill: parent
-        opacity: settings.bitrate_opacity
+        opacity: bw_current_opacity
         scale: bw_current_scale
 
         Text {

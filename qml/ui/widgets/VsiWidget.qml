@@ -69,7 +69,7 @@ BaseWidget {
     Item {
         id: widgetInner
         anchors.fill: parent
-        opacity: settings.vsi_opacity
+        opacity: bw_current_opacity
 
         Item {
             anchors.fill: parent
@@ -77,8 +77,8 @@ BaseWidget {
             transform: Scale {
                 origin.x: 25
                 origin.y: 25
-                xScale: settings.vsi_size
-                yScale: settings.vsi_size
+                xScale: bw_current_scale
+                yScale: bw_current_scale
             }
 
             Shape {

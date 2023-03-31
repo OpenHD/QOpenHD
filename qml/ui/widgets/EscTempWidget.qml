@@ -141,12 +141,12 @@ BaseWidget {
         id: widgetInner
 
         anchors.fill: parent
-        scale: settings.esc_temp_size
+        scale: bw_current_scale
+        opacity: bw_current_opacity
 
         Text {
             id: temp_glyph
             color: _fcMavlinkSystem.esc_temp >= settings.esc_temp_caution ? (_fcMavlinkSystem.esc_temp >= settings.esc_temp_warn ? settings.color_warn : settings.color_caution) : settings.color_shape
-            opacity: settings.esc_temp_opacity
             text: "\uf613"
             anchors.left: parent.left
             anchors.bottom: parent.bottom
@@ -178,7 +178,6 @@ BaseWidget {
                     return settings.color_text
                 }
             }
-            opacity: settings.esc_temp_opacity
             text: _fcMavlinkSystem.esc_temp == 0 ? qsTr("N/A") : _fcMavlinkSystem.esc_temp + "°"
             anchors.left: temp_glyph.right
             anchors.leftMargin: 2

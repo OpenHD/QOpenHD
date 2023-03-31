@@ -476,7 +476,7 @@ BaseWidget {
         id: widgetInner
 
         anchors.fill: parent
-        scale: settings.gps_size
+        scale: bw_current_scale
 
         Text {
             id: satellite_icon
@@ -484,7 +484,7 @@ BaseWidget {
             width: 24
             height: 24
             color: settings.color_shape
-            opacity: settings.gps_opacity
+            opacity: bw_current_opacity
             text: "\uf0ac"
             anchors.right: satellites_visible.left
             anchors.rightMargin: 6
@@ -518,7 +518,7 @@ BaseWidget {
                     return settings.color_text
                 }
             }
-            opacity: settings.gps_opacity
+            opacity: bw_current_opacity
             text: _fcMavlinkSystem.satellites_visible
             anchors.right: gps_hdop.left
             anchors.rightMargin: 2
@@ -552,7 +552,7 @@ BaseWidget {
                     return settings.color_text
                 }
             }
-            opacity: settings.gps_opacity
+            opacity: bw_current_opacity
             text: qsTr("%L1").arg(_fcMavlinkSystem.gps_hdop)
             anchors.right: parent.right
             anchors.rightMargin: 0
@@ -583,7 +583,7 @@ BaseWidget {
                     height: parent.height
                     width: 32
                     color: settings.color_shape
-                    opacity: settings.gps_opacity
+                    opacity: bw_current_opacity
                     //font.family: "Font Awesome 5 Free"
                     text: qsTr("Lat:")
                     horizontalAlignment: Text.AlignLeft
@@ -597,7 +597,7 @@ BaseWidget {
                     visible: settings.gps_show_all
                     text: Number(_fcMavlinkSystem.lat).toLocaleString(Qt.locale(), 'f', 6)
                     color: settings.color_text
-                    opacity: settings.gps_opacity
+                    opacity: bw_current_opacity
                     font.bold: true
                     font.family: settings.font_text
                     height: parent.height
@@ -620,7 +620,7 @@ BaseWidget {
                     height: parent.height
                     width: 32
                     color: settings.color_shape
-                    opacity: settings.gps_opacity
+                    opacity: bw_current_opacity
                     //font.family: "Font Awesome 5 Free"
                     text: qsTr("Lon:")
                     horizontalAlignment: Text.AlignLeft
@@ -634,7 +634,7 @@ BaseWidget {
                     visible: settings.gps_show_all
                     text: Number(_fcMavlinkSystem.lon).toLocaleString(Qt.locale(), 'f', 6)
                     color: settings.color_text
-                    opacity: settings.gps_opacity
+                    opacity: bw_current_opacity
                     font.bold: true
                     font.family: settings.font_text
                     height: parent.height

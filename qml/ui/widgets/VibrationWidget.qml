@@ -46,8 +46,8 @@ BaseWidget {
             transform: Scale {
                 origin.x: 30
                 origin.y: 30
-                xScale: settings.vibration_size
-                yScale: settings.vibration_size
+                xScale: bw_current_scale
+                yScale: bw_current_scale
             }
 
             Item {
@@ -60,7 +60,7 @@ BaseWidget {
                 Shape {
                     id: x_outline
                     anchors.fill: parent
-                    opacity: settings.vibration_opacity
+                    opacity: bw_current_opacity
 
                     ShapePath {
                         strokeColor: settings.color_glow
@@ -119,7 +119,7 @@ BaseWidget {
                     id: x_text
 
                     color: settings.color_text
-                    opacity: settings.vibration_opacity
+                    opacity: bw_current_opacity
                     font.pixelSize: 10
                     font.family: settings.font_text
 
@@ -145,7 +145,7 @@ BaseWidget {
                 Shape {
                     id: y_outline
                     anchors.fill: parent
-                    opacity: settings.vibration_opacity
+                    opacity: bw_current_opacity
 
                     ShapePath {
                         strokeColor: settings.color_glow
@@ -203,7 +203,7 @@ BaseWidget {
                     id: y_text
 
                     color: settings.color_text
-                    opacity: settings.vibration_opacity
+                    opacity: bw_current_opacity
                     font.pixelSize: 10
                     font.family: settings.font_text
 
@@ -229,7 +229,7 @@ BaseWidget {
                 Shape {
                     id: z_outline
                     anchors.fill: parent
-                    opacity: settings.vibration_opacity
+                    opacity: bw_current_opacity
 
                     ShapePath {
                         strokeColor: settings.color_glow
@@ -287,7 +287,7 @@ BaseWidget {
                     id: z_text
 
                     color: settings.color_text
-                    opacity: settings.vibration_opacity
+                    opacity: bw_current_opacity
                     font.pixelSize: 10
                     font.family: settings.font_text
 
@@ -314,7 +314,7 @@ BaseWidget {
                     id: sixty_text
 
                     color: settings.color_text
-                    opacity: settings.vibration_opacity
+                    opacity: bw_current_opacity
                     font.pixelSize: 10
                     font.family: settings.font_text
 
@@ -334,7 +334,7 @@ BaseWidget {
                     id: thirty_text
 
                     color: settings.color_text
-                    opacity: settings.vibration_opacity
+                    opacity: bw_current_opacity
                     font.pixelSize: 10
                     font.family: settings.font_text
 

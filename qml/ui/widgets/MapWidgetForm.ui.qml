@@ -543,29 +543,4 @@ BaseWidget {
             }
         }
     }
-
-    /* This was related to making the map appear round
-    Item {
-            id: mask
-            anchors.fill: widgetInner
-            visible: true
-            z:0
-            Rectangle {
-                anchors.centerIn: parent
-                width: parent.width<parent.height?parent.width:parent.height
-                height: width
-                color: "red"
-                radius: width*0.5
-
-            }
-        }
-
-        OpacityMask {
-            anchors.fill: widgetInner
-            source: widgetInner
-            maskSource: mask
-            opacity: settings.map_shape_circle ? settings.map_opacity : 0
-            z:0
-        }
-        */
 }

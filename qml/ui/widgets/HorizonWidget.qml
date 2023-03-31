@@ -285,7 +285,7 @@ BaseWidget {
     Item {
         id: widgetInner
         anchors.fill: parent
-        opacity: settings.horizon_opacity
+        opacity: bw_current_opacity
 
         Item {
             id: horizonLadder
@@ -297,8 +297,8 @@ BaseWidget {
             transform: Scale {
                 origin.x: 0
                 origin.y: 0
-                xScale: settings.horizon_size
-                yScale: settings.horizon_size
+                xScale: bw_current_scale
+                yScale: bw_current_scale
             }
 
             HorizonLadder {

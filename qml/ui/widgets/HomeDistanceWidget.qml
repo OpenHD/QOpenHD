@@ -148,7 +148,8 @@ BaseWidget {
         id: widgetInner
 
         anchors.fill: parent
-        scale: settings.home_distance_size
+        scale: bw_current_scale
+        opacity: bw_current_opacity
 
         Text {
             id: home_icon
@@ -157,7 +158,6 @@ BaseWidget {
             width: 24
             height: 24
             color: settings.color_shape
-            opacity: settings.home_distance_opacity
             text: "\uf015"
             anchors.right: home_distance_text.left
             anchors.rightMargin: 6
@@ -174,8 +174,6 @@ BaseWidget {
             width: 64
             height: 24
             color: settings.color_text
-            opacity: settings.home_distance_opacity
-            // @disable-check M222
             text: {
                 var distance = _fcMavlinkSystem.home_distance
                 var unit = "m"

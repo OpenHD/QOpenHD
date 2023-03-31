@@ -39,7 +39,8 @@ BaseWidget {
         id: widgetInner
 
         anchors.fill: parent
-        scale: settings.flight_distance_size
+        scale: bw_current_scale
+        opacity: bw_current_opacity
 
         Text {
             id: home_icon
@@ -49,7 +50,6 @@ BaseWidget {
             height: 24
             clip: true
             color: settings.color_shape
-            opacity: settings.flight_distance_opacity
             text: "\uf018"
             anchors.right: flight_distance_text.left
             anchors.rightMargin: 6
@@ -68,7 +68,6 @@ BaseWidget {
             clip: true
 
             color: settings.color_text
-            opacity: settings.flight_distance_opacity
             // @disable-check M222
             text: {
                 var distance = _fcMavlinkSystem.flight_distance_m / 1000.0

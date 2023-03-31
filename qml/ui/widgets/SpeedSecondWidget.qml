@@ -61,12 +61,12 @@ BaseWidget {
         id: widgetInner
         anchors.fill: parent
 
-        scale: settings.speed_second_size
+        scale: bw_current_scale
 
         Text {
             id: second_alt_text
             color: settings.color_text
-            opacity: settings.speed_second_opacity
+            opacity: bw_current_opacity
             font.pixelSize: 14
             font.family: settings.font_text
             width: 40
@@ -87,7 +87,7 @@ BaseWidget {
             width: 40
             height: parent.height
             color: settings.color_shape
-            opacity: settings.speed_second_opacity
+            opacity: bw_current_opacity
             text: "\uf3fd"
             anchors.left: parent.left
             anchors.leftMargin: 0

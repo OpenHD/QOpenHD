@@ -223,8 +223,8 @@ BaseWidget {
         id: widgetInner
 
         anchors.fill: parent
-        opacity: settings.downlink_rssi_opacity
-        scale: settings.downlink_rssi_size
+        opacity: bw_current_opacity
+        scale: bw_current_scale
 
         Text {
             id: downlink_icon

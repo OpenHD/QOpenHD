@@ -62,14 +62,14 @@ BaseWidget {
         Item {
             anchors.fill: parent
             anchors.centerIn: parent
-            transform: Scale { origin.x: 32; origin.y: 12; xScale: settings.arrow_size ; yScale: settings.arrow_size}
+            transform: Scale { origin.x: 32; origin.y: 12; xScale: bw_current_scale ; yScale: bw_current_scale}
 
 
             Shape {
                 id: arrow
                 anchors.fill: parent
                 antialiasing: true
-                opacity: settings.arrow_opacity
+                opacity: bw_current_opacity
 
                 ShapePath {
                     capStyle: ShapePath.RoundCap

@@ -344,7 +344,7 @@ BaseWidget {
                 var level=get_highest_warning_level();
                 return warning_level_to_color(level)
             }
-            opacity: settings.ground_status_opacity
+            opacity: bw_current_opacity
             text: "\uF2DA"
             //text: "\uf2db"
             anchors.right: cpuload_gnd.left
@@ -369,7 +369,7 @@ BaseWidget {
                 var level=get_cpuload_warning_level();
                 return warning_level_to_color(level)
             }
-            opacity: settings.ground_status_opacity
+            opacity: bw_current_opacity
             text: Number(m_cpuload_perc).toLocaleString(Qt.locale(),
                                                             'f', 0) + "%"
             anchors.verticalCenter: parent.verticalCenter
@@ -394,7 +394,7 @@ BaseWidget {
                 var level=get_temperature_warning_level()
                 return warning_level_to_color(level)
             }
-            opacity: settings.ground_status_opacity
+            opacity: bw_current_opacity
             text: Number(m_soc_temperature_deg).toLocaleString(Qt.locale(),
                                                          'f', 0) + "°"
             anchors.verticalCenter: parent.verticalCenter
