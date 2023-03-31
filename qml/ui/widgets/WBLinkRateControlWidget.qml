@@ -19,6 +19,7 @@ BaseWidget {
     visible: settings.wb_link_rate_control_widget_show
 
     widgetIdentifier: "wb_link_rate_control_widget"
+    bw_verbose_name: "WB RATE CONTROL"
 
     defaultAlignment: 0
     defaultXOffset: 400
@@ -31,63 +32,12 @@ BaseWidget {
 
     widgetDetailComponent: ScrollView {
 
-        contentHeight: wbLinkRateSettingsColumn.height
+        contentHeight: idBaseWidgetDefaultUiControlElements.height
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
         clip: true
-        Column {
-            id: wbLinkRateSettingsColumn
-            width: parent.width
-            height:parent.height
-            Item {
-                width: parent.width
-                height: 42
-                Text {
-                    text: qsTr("WB Link rate")
-                    color: "white"
-                    height: parent.height - 10
-                    width: parent.width
-                    font.bold: true
-                    horizontalAlignment: Text.AlignHCenter
-                    font.pixelSize: detailPanelFontPixels
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Rectangle {
-                    y: 34
-                    width: parent.width
-                    height: 3
-                    color: "white"
-                    radius: 5
-                }
-            }
-            Item {
-                width: parent.width
-                height: 32
-                Text {
-                    text: qsTr("Size")
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Slider {
-                    id: mission_size_Slider
-                    orientation: Qt.Horizontal
-                    from: .5
-                    value: bw_current_scale
-                    to: 3
-                    stepSize: .1
-                    height: parent.height
-                    anchors.rightMargin: 0
-                    anchors.right: parent.right
-                    width: parent.width - 96
 
-                    onValueChanged: {
-                        bw_set_current_scale(mission_size_Slider.value)
-                    }
-                }
-            }
+        BaseWidgetDefaultUiControlElements{
+            id: idBaseWidgetDefaultUiControlElements
         }
     }
 

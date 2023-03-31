@@ -19,6 +19,7 @@ BaseWidget {
     visible: settings.show_downlink_rssi
 
     widgetIdentifier: "downlink_rssi_widget"
+    bw_verbose_name: "DOWNLINK RSSI"
 
     defaultAlignment: 0
     defaultXOffset: 80
@@ -50,137 +51,14 @@ BaseWidget {
 
     //----------------------------- DETAIL BELOW ----------------------------------
 
-    widgetDetailComponent: ScrollView{
+    widgetDetailComponent: ScrollView {
 
-        contentHeight: downrssiSettingsColumn.height
+        contentHeight: idBaseWidgetDefaultUiControlElements.height
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
         clip: true
-        Column {
-            id: downrssiSettingsColumn
 
-            Item {
-                width: parent.width
-                height: 32
-                Text {
-                    id: opacityTitle
-                    text: qsTr("Transparency")
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Slider {
-                    id: downlink_rssi_opacity_Slider
-                    orientation: Qt.Horizontal
-                    from: .1
-                    value: settings.downlink_rssi_opacity
-                    to: 1
-                    stepSize: .1
-                    height: parent.height
-                    anchors.rightMargin: 0
-                    anchors.right: parent.right
-                    width: parent.width - 96
-
-                    onValueChanged: {
-                        settings.downlink_rssi_opacity = downlink_rssi_opacity_Slider.value
-                    }
-                }
-            }
-            Item {
-                width: parent.width
-                height: 32
-                Text {
-                    text: qsTr("Size")
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Slider {
-                    id: downlink_rssi_size_Slider
-                    orientation: Qt.Horizontal
-                    from: .5
-                    value: settings.downlink_rssi_size
-                    to: 3
-                    stepSize: .1
-                    height: parent.height
-                    anchors.rightMargin: 0
-                    anchors.right: parent.right
-                    width: parent.width - 96
-
-                    onValueChanged: {
-                        settings.downlink_rssi_size = downlink_rssi_size_Slider.value
-                    }
-                }
-            }
-            Item {
-                width: 230
-                height: 32
-                Text {
-                    text: qsTr("Lock to Horizontal Center")
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Switch {
-                    width: 32
-                    height: parent.height
-                    anchors.rightMargin: 6
-                    anchors.right: parent.right
-                    checked: {
-                        // @disable-check M222
-                        var _hCenter = settings.value(hCenterIdentifier, defaultHCenter)
-                        // @disable-check M223
-                        if (_hCenter === "true" || _hCenter === 1 || _hCenter === true) {
-                            checked = true;
-                            // @disable-check M223
-                        } else {
-                            checked = false;
-                        }
-                    }
-
-                    onCheckedChanged: settings.setValue(hCenterIdentifier, checked)
-                }
-            }
-            Item {
-                width: 230
-                height: 32
-                Text {
-                    text: qsTr("Lock to Vertical Center")
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Switch {
-                    width: 32
-                    height: parent.height
-                    anchors.rightMargin: 6
-                    anchors.right: parent.right
-                    checked: {
-                        // @disable-check M222
-                        var _vCenter = settings.value(vCenterIdentifier, defaultVCenter)
-                        // @disable-check M223
-                        if (_vCenter === "true" || _vCenter === 1 || _vCenter === true) {
-                            checked = true;
-                            // @disable-check M223
-                        } else {
-                            checked = false;
-                        }
-                    }
-
-                    onCheckedChanged: settings.setValue(vCenterIdentifier, checked)
-                }
-            }
+        BaseWidgetDefaultUiControlElements{
+            id: idBaseWidgetDefaultUiControlElements
 
             Item {
                 width: parent.width
@@ -345,8 +223,8 @@ BaseWidget {
         id: widgetInner
 
         anchors.fill: parent
-        opacity: settings.downlink_rssi_opacity
-        scale: settings.downlink_rssi_size
+        opacity: bw_current_opacity
+        scale: bw_current_scale
 
         Text {
             id: downlink_icon

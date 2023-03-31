@@ -113,7 +113,6 @@ Rectangle {
     Popup {
         id: widgetAction
 
-
         width: widgetActionWidth
         height: widgetActionHeight
 

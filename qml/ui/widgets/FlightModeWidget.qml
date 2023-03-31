@@ -16,6 +16,7 @@ BaseWidget {
     visible: settings.show_flight_mode
 
     widgetIdentifier: "flight_mode_widget"
+    bw_verbose_name: "FLIGHT MODE"
 
     defaultAlignment: 3
     defaultHCenter: true
@@ -23,236 +24,18 @@ BaseWidget {
 
     hasWidgetDetail: true
     hasWidgetAction: true //--TURN TO TRUE TO SEE THE FLIGHT MODE ACTIONS
+
+    // Needs to be a lot bigger than default:
+    widgetActionHeight: 164+ 300
+
     widgetDetailComponent: ScrollView {
 
-        //contentHeight: horizonSettingsColumn.height
+        contentHeight: idBaseWidgetDefaultUiControlElements.height
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
         clip: true
 
-        ColumnLayout {
-            id: flightModeSettings
-            Item {
-                width: 230
-                height: 42
-                Text {
-                    id: flightModeSettingsTitle
-                    text: qsTr("FLIGHT MODE")
-                    color: "white"
-                    height: parent.height - 10
-                    width: parent.width
-                    font.bold: true
-                    horizontalAlignment: Text.AlignHCenter
-                    font.pixelSize: detailPanelFontPixels
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Rectangle {
-                    id: flightModeSettingsTitleUL
-                    y: 34
-                    width: parent.width
-                    height: 3
-                    color: "white"
-                    radius: 5
-                }
-            }
-            Item {
-                width: 230
-                height: 32
-                Text {
-                    id: opacityTitle
-                    text: qsTr("Transparency")
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Slider {
-                    id: flight_mode_opacity_Slider
-                    orientation: Qt.Horizontal
-                    from: .1
-                    value: settings.flight_mode_opacity
-                    to: 1
-                    stepSize: .1
-                    height: parent.height
-                    anchors.rightMargin: 0
-                    anchors.right: parent.right
-                    width: parent.width - 96
-
-                    onValueChanged: {
-                        settings.flight_mode_opacity = flight_mode_opacity_Slider.value
-                    }
-                }
-            }
-            Item {
-                width: 230
-                height: 32
-                Text {
-                    text: qsTr("Size")
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Slider {
-                    id: flight_mode_size_Slider
-                    orientation: Qt.Horizontal
-                    from: .5
-                    value: bw_current_scale
-                    to: 3
-                    stepSize: .1
-                    height: parent.height
-                    anchors.rightMargin: 0
-                    anchors.right: parent.right
-                    width: parent.width - 96
-
-                    onValueChanged: {
-                        bw_set_current_scale(flight_mode_size_Slider.value)
-                    }
-                }
-            }
-            Item {
-                width: 230
-                height: 32
-                Text {
-                    text: qsTr("Lock to Horizontal Center")
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Switch {
-                    width: 32
-                    height: parent.height
-                    anchors.rightMargin: 6
-                    anchors.right: parent.right
-                    checked: {
-                        // @disable-check M222
-                        var _hCenter = settings.value(hCenterIdentifier,
-                                                      defaultHCenter)
-                        // @disable-check M223
-                        if (_hCenter === "true" || _hCenter === 1
-                                || _hCenter === true) {
-                            checked = true
-                            // @disable-check M223
-                        } else {
-                            checked = false
-                        }
-                    }
-
-                    onCheckedChanged: settings.setValue(hCenterIdentifier,
-                                                        checked)
-                }
-            }
-            Item {
-                width: 230
-                height: 32
-                Text {
-                    text: qsTr("Lock to Vertical Center")
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Switch {
-                    width: 32
-                    height: parent.height
-                    anchors.rightMargin: 6
-                    anchors.right: parent.right
-                    checked: {
-                        // @disable-check M222
-                        var _vCenter = settings.value(vCenterIdentifier,
-                                                      defaultVCenter)
-                        // @disable-check M223
-                        if (_vCenter === "true" || _vCenter === 1
-                                || _vCenter === true) {
-                            checked = true
-                            // @disable-check M223
-                        } else {
-                            checked = false
-                        }
-                    }
-
-                    onCheckedChanged: settings.setValue(vCenterIdentifier,
-                                                        checked)
-                }
-            }
-            Item {
-                width: 230
-                height: 32
-                Text {
-                    text: qsTr("Lock to Horizontal Center")
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Switch {
-                    width: 32
-                    height: parent.height
-                    anchors.rightMargin: 6
-                    anchors.right: parent.right
-                    checked: {
-                        // @disable-check M222
-                        var _hCenter = settings.value(hCenterIdentifier,
-                                                      defaultHCenter)
-                        // @disable-check M223
-                        if (_hCenter === "true" || _hCenter === 1
-                                || _hCenter === true) {
-                            checked = true
-                            // @disable-check M223
-                        } else {
-                            checked = false
-                        }
-                    }
-
-                    onCheckedChanged: settings.setValue(hCenterIdentifier,
-                                                        checked)
-                }
-            }
-            Item {
-                width: 230
-                height: 32
-                Text {
-                    text: qsTr("Lock to Vertical Center")
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Switch {
-                    width: 32
-                    height: parent.height
-                    anchors.rightMargin: 6
-                    anchors.right: parent.right
-                    checked: {
-                        // @disable-check M222
-                        var _vCenter = settings.value(vCenterIdentifier,
-                                                      defaultVCenter)
-                        // @disable-check M223
-                        if (_vCenter === "true" || _vCenter === 1
-                                || _vCenter === true) {
-                            checked = true
-                            // @disable-check M223
-                        } else {
-                            checked = false
-                        }
-                    }
-
-                    onCheckedChanged: settings.setValue(vCenterIdentifier,
-                                                        checked)
-                }
-            }
+        BaseWidgetDefaultUiControlElements{
+            id: idBaseWidgetDefaultUiControlElements
         }
     }
 
@@ -261,6 +44,7 @@ BaseWidget {
 
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
         clip: true
+        contentHeight: flightModeCommandsColumn.height
 
         /*
         PLANE_MODE_MANUAL=0,
@@ -305,6 +89,7 @@ VTOL
        COPTER_MODE_SMART_RTL=21
 */
         Column {
+            id: flightModeCommandsColumn
             width: 200
             spacing: 2
             height: 600
@@ -610,7 +395,7 @@ VTOL
             width: 24
             height: 48
             color: _fcMavlinkSystem.armed ? "green" : settings.color_shape
-            opacity: settings.flight_mode_opacity
+            opacity: bw_current_opacity
             text: "\uf072"
             anchors.right: flight_mode_text.left
             anchors.rightMargin: 6
@@ -626,7 +411,7 @@ VTOL
             id: flight_mode_text
             height: 48
             color: settings.color_text
-            opacity: settings.flight_mode_opacity
+            opacity: bw_current_opacity
             text: _fcMavlinkSystem.flight_mode
             anchors.verticalCenter: parent.verticalCenter
             anchors.horizontalCenter: parent.horizontalCenter

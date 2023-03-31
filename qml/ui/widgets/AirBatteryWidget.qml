@@ -14,7 +14,7 @@ BaseWidget {
     visible: settings.show_air_battery
 
     widgetIdentifier: "air_battery_widget"
-    bw_verbose_name: "Air Battery (FC)"
+    bw_verbose_name: "AIR BATTERY (FC)"
 
     defaultAlignment: 3
     defaultXOffset: 0

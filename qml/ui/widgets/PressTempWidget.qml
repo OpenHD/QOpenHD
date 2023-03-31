@@ -25,163 +25,12 @@ BaseWidget {
 
     widgetDetailComponent: ScrollView {
 
-        contentHeight: presstempSettingsColumn.height
+        contentHeight: idBaseWidgetDefaultUiControlElements.height
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
         clip: true
-        Column {
-            id: presstempSettingsColumn
-            Item {
-                width: parent.width
-                height: 42
-                Text {
-                    id: presstempSettingsTitle
-                    text: qsTr("PRESSURE SENSOR TEMPERATURE")
-                    color: "white"
-                    height: parent.height - 10
-                    width: parent.width
-                    font.bold: true
-                    horizontalAlignment: Text.AlignHCenter
-                    font.pixelSize: detailPanelFontPixels
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Rectangle {
-                    id: presstempSettingsTitleUL
-                    y: 34
-                    width: parent.width
-                    height: 3
-                    color: "white"
-                    radius: 5
-                }
-            }
-            Item {
-                width: parent.width
-                height: 32
-                Text {
-                    id: opacityTitle
-                    text: qsTr("Transparency")
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Slider {
-                    id: press_temp_opacity_Slider
-                    orientation: Qt.Horizontal
-                    from: .1
-                    value: settings.press_temp_opacity
-                    to: 1
-                    stepSize: .1
-                    height: parent.height
-                    anchors.rightMargin: 0
-                    anchors.right: parent.right
-                    width: parent.width - 96
 
-                    onValueChanged: {
-                        settings.press_temp_opacity = press_temp_opacity_Slider.value
-                    }
-                }
-            }
-            Item {
-                width: parent.width
-                height: 32
-                Text {
-                    text: qsTr("Size")
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Slider {
-                    id: press_temp_size_Slider
-                    orientation: Qt.Horizontal
-                    from: .5
-                    value: settings.press_temp_size
-                    to: 3
-                    stepSize: .1
-                    height: parent.height
-                    anchors.rightMargin: 0
-                    anchors.right: parent.right
-                    width: parent.width - 96
-
-                    onValueChanged: {
-                        settings.press_temp_size = press_temp_size_Slider.value
-                    }
-                }
-            }
-            Item {
-                width: 230
-                height: 32
-                Text {
-                    text: qsTr("Lock to Horizontal Center")
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Switch {
-                    width: 32
-                    height: parent.height
-                    anchors.rightMargin: 6
-                    anchors.right: parent.right
-                    checked: {
-                        // @disable-check M222
-                        var _hCenter = settings.value(hCenterIdentifier,
-                                                      defaultHCenter)
-                        // @disable-check M223
-                        if (_hCenter === "true" || _hCenter === 1
-                                || _hCenter === true) {
-                            checked = true
-                            // @disable-check M223
-                        } else {
-                            checked = false
-                        }
-                    }
-
-                    onCheckedChanged: settings.setValue(hCenterIdentifier,
-                                                        checked)
-                }
-            }
-            Item {
-                width: 230
-                height: 32
-                Text {
-                    text: qsTr("Lock to Vertical Center")
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Switch {
-                    width: 32
-                    height: parent.height
-                    anchors.rightMargin: 6
-                    anchors.right: parent.right
-                    checked: {
-                        // @disable-check M222
-                        var _vCenter = settings.value(vCenterIdentifier,
-                                                      defaultVCenter)
-                        // @disable-check M223
-                        if (_vCenter === "true" || _vCenter === 1
-                                || _vCenter === true) {
-                            checked = true
-                            // @disable-check M223
-                        } else {
-                            checked = false
-                        }
-                    }
-
-                    onCheckedChanged: settings.setValue(vCenterIdentifier,
-                                                        checked)
-                }
-            }
+        BaseWidgetDefaultUiControlElements{
+            id: idBaseWidgetDefaultUiControlElements
             Item {
                 width: parent.width
                 height: 32
@@ -290,12 +139,12 @@ BaseWidget {
         id: widgetInner
 
         anchors.fill: parent
-        scale: settings.press_temp_size
+        scale: bw_current_scale
+        opacity: bw_current_opacity
 
         Text {
             id: temp_glyph
             color: _fcMavlinkSystem.preasure_sensor_temperature_degree >= settings.press_temp_caution ? (_fcMavlinkSystem.preasure_sensor_temperature_degree >= settings.press_temp_warn ? settings.color_warn : settings.color_caution) : settings.color_shape
-            opacity: settings.press_temp_opacity
             text: _fcMavlinkSystem.preasure_sensor_temperature_degree >= settings.press_temp_caution ? (_fcMavlinkSystem.preasure_sensor_temperature_degree >= settings.press_temp_warn ? "\uf2c7" : "\uf2c9") : "\uf2cb"
             anchors.left: parent.left
             anchors.bottom: parent.bottom
@@ -327,7 +176,6 @@ BaseWidget {
                     return settings.color_text
                 }
             }
-            opacity: settings.press_temp_opacity
             text: _fcMavlinkSystem.preasure_sensor_temperature_degree == 0 ? qsTr("N/A") : _fcMavlinkSystem.preasure_sensor_temperature_degree + "°"
             anchors.left: temp_glyph.right
             anchors.leftMargin: 2

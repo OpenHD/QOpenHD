@@ -17,6 +17,7 @@ BaseWidget {
     visible: settings.show_home_distance
 
     widgetIdentifier: "home_distance_widget"
+    bw_verbose_name: "HOME DISTANCE"
 
     defaultAlignment: 2
     defaultXOffset: 0
@@ -30,188 +31,12 @@ BaseWidget {
     //----------------------------- DETAIL BELOW ----------------------------------
     widgetDetailComponent: ScrollView {
 
-        contentHeight: homedistanceSettingsColumn.height
+        contentHeight: idBaseWidgetDefaultUiControlElements.height
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
         clip: true
-        Column {
-            id: homedistanceSettingsColumn
 
-
-            /*         Shape {
-                id: line
-                height: 32
-                width: parent.width
-
-                ShapePath {
-                    strokeColor: "white"
-                    strokeWidth: 2
-                    strokeStyle: ShapePath.SolidLine
-                    fillColor: "transparent"
-                    startX: 0
-                    startY: line.height / 2
-                    PathLine {
-                        x: 0
-                        y: line.height / 2
-                    }
-                    PathLine {
-                        x: line.width
-                        y: line.height / 2
-                    }
-                }
-            }
-*/
-            Item {
-                width: parent.width
-                height: 42
-                Text {
-                    id: homedistanceSettingsTitle
-                    text: qsTr("HOME DISTANCE")
-                    color: "white"
-                    height: parent.height - 10
-                    width: parent.width
-                    font.bold: true
-                    horizontalAlignment: Text.AlignHCenter
-                    font.pixelSize: detailPanelFontPixels
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Rectangle {
-                    id: homedistanceSettingsTitleUL
-                    y: 34
-                    width: parent.width
-                    height: 3
-                    color: "white"
-                    radius: 5
-                }
-            }
-            Item {
-                width: parent.width
-                height: 32
-                Text {
-                    id: opacityTitle
-                    text: qsTr("Transparency")
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Slider {
-                    id: home_distance_opacity_Slider
-                    orientation: Qt.Horizontal
-                    from: .1
-                    value: settings.home_distance_opacity
-                    to: 1
-                    stepSize: .1
-                    height: parent.height
-                    anchors.rightMargin: 0
-                    anchors.right: parent.right
-                    width: parent.width - 96
-
-                    onValueChanged: {
-                        settings.home_distance_opacity = home_distance_opacity_Slider.value
-                    }
-                }
-            }
-            Item {
-                width: parent.width
-                height: 32
-                Text {
-                    text: qsTr("Size")
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Slider {
-                    id: home_distance_size_Slider
-                    orientation: Qt.Horizontal
-                    from: .5
-                    value: settings.home_distance_size
-                    to: 3
-                    stepSize: .1
-                    height: parent.height
-                    anchors.rightMargin: 0
-                    anchors.right: parent.right
-                    width: parent.width - 96
-
-                    onValueChanged: {
-                        settings.home_distance_size = home_distance_size_Slider.value
-                    }
-                }
-            }
-            Item {
-                width: 230
-                height: 32
-                Text {
-                    text: qsTr("Lock to Horizontal Center")
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Switch {
-                    width: 32
-                    height: parent.height
-                    anchors.rightMargin: 6
-                    anchors.right: parent.right
-                    checked: {
-                        // @disable-check M222
-                        var _hCenter = settings.value(hCenterIdentifier,
-                                                      defaultHCenter)
-                        // @disable-check M223
-                        if (_hCenter === "true" || _hCenter === 1
-                                || _hCenter === true) {
-                            checked = true
-                            // @disable-check M223
-                        } else {
-                            checked = false
-                        }
-                    }
-
-                    onCheckedChanged: settings.setValue(hCenterIdentifier,
-                                                        checked)
-                }
-            }
-            Item {
-                width: 230
-                height: 32
-                Text {
-                    text: qsTr("Lock to Vertical Center")
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Switch {
-                    width: 32
-                    height: parent.height
-                    anchors.rightMargin: 6
-                    anchors.right: parent.right
-                    checked: {
-                        // @disable-check M222
-                        var _vCenter = settings.value(vCenterIdentifier,
-                                                      defaultVCenter)
-                        // @disable-check M223
-                        if (_vCenter === "true" || _vCenter === 1
-                                || _vCenter === true) {
-                            checked = true
-                            // @disable-check M223
-                        } else {
-                            checked = false
-                        }
-                    }
-
-                    onCheckedChanged: settings.setValue(vCenterIdentifier,
-                                                        checked)
-                }
-            }
+        BaseWidgetDefaultUiControlElements{
+            id: idBaseWidgetDefaultUiControlElements
         }
     }
 
@@ -223,7 +48,6 @@ BaseWidget {
 
         ColumnLayout {
             width: 200
-            spacing: 5
 
             Item {
                 width: parent.width
@@ -272,7 +96,7 @@ BaseWidget {
                 }
             }
 
-            Item {
+            /*Item {
                 height: 32
                 Text {
                     text: "Only For Ardupilot/PX4"
@@ -281,23 +105,22 @@ BaseWidget {
                     font.pixelSize: detailPanelFontPixels
                     anchors.left: parent.left
                 }
-            }
+            }*/
 
             ConfirmSlider {
                 visible: _fcMavlinkSystem.supports_basic_commands
 
                 text_off: qsTr("RTL")
                 msg_id: {
-                        if (_fcMavlinkSystem.mav_type == "ARDUCOPTER"){
-                            return 6;
-                        }
-                        else {
-                            return 11;
-                        }
+                    if (_fcMavlinkSystem.mav_type == "ARDUCOPTER"){
+                        return 6;
+                    }
+                    else {
+                        return 11;
+                    }
                 }
                 onCheckedChanged: {
                     if (checked == true) {
-
                         _fcMavlinkSystem.flight_mode_cmd(msg_id);
                     }
                 }
@@ -311,9 +134,16 @@ BaseWidget {
 
                 onCheckedChanged: {
                     if (checked == true) {
-
                         _fcMavlinkSystem.flight_mode_cmd(msg_id);
                     }
+                }
+            }
+
+            Button{
+                height:32
+                text: "Request Home"
+                onClicked: {
+                    _fcMavlinkSystem.request_home_position_from_fc()
                 }
             }
         }
@@ -323,7 +153,8 @@ BaseWidget {
         id: widgetInner
 
         anchors.fill: parent
-        scale: settings.home_distance_size
+        scale: bw_current_scale
+        opacity: bw_current_opacity
 
         Text {
             id: home_icon
@@ -332,7 +163,6 @@ BaseWidget {
             width: 24
             height: 24
             color: settings.color_shape
-            opacity: settings.home_distance_opacity
             text: "\uf015"
             anchors.right: home_distance_text.left
             anchors.rightMargin: 6
@@ -349,8 +179,6 @@ BaseWidget {
             width: 64
             height: 24
             color: settings.color_text
-            opacity: settings.home_distance_opacity
-            // @disable-check M222
             text: {
                 var distance = _fcMavlinkSystem.home_distance
                 var unit = "m"

@@ -435,24 +435,6 @@ static QString px4_mode_from_custom_mode(int custom_mode){
     return "Unknown";
 }
 
-static constexpr auto  X_PIf=3.14159265358979323846f;
-typedef struct pt1Filter_s {
-    float state;
-    float RC;
-    float dT;
-} pt1Filter_t;
-
-static float pt1FilterApply4(Telemetryutil::pt1Filter_t *filter, float input, float f_cut, float dT){
-    // Pre calculate and store RC
-    if (!filter->RC) {
-        filter->RC = 1.0f / ( 2.0f * X_PIf * f_cut );
-    }
-
-    filter->dT = dT;    // cache latest dT for possible use in pt1FilterApply
-    filter->state = filter->state + dT / (filter->RC + dT) * (input - filter->state);
-    return filter->state;
-}
-
 struct XLogMessage{
     std::string message;
     int level;
@@ -728,6 +710,14 @@ static int calculate_efficiency_in_mah_per_km(const double delta_mah,const doubl
     if(delta_km<=0)return 0;
     double ret=delta_mah/delta_km;
     return std::round(ret);
+}
+
+// Brings the given angle into the [0,360[ range
+static float normalize_degree(float degree){
+    degree = std::fmod(degree,360);
+    if (degree < 0) degree += 360;
+    if (degree >= 360) degree -=360;
+    return degree;
 }
 
 static QString bitrate_bps_to_qstring(int64_t bitrate_bits_per_second){

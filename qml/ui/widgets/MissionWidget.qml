@@ -19,6 +19,7 @@ BaseWidget {
     visible: settings.show_mission
 
     widgetIdentifier: "mission_widget"
+    bw_verbose_name: "MISSIONS"
 
     defaultAlignment: 2
     defaultXOffset: 50
@@ -29,165 +30,17 @@ BaseWidget {
     hasWidgetDetail: true
     hasWidgetAction: true
 
+    // Needs to be a bit bigger than default:
+    widgetActionHeight: 164+ 100
+
     widgetDetailComponent: ScrollView {
 
-        contentHeight: missionSettingsColumn.height
+        contentHeight: idBaseWidgetDefaultUiControlElements.height
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
         clip: true
-        Column {
-            id: missionSettingsColumn
-            Item {
-                width: parent.width
-                height: 42
-                Text {
-                    id: missionSettingsTitle
-                    text: qsTr("MISSIONS")
-                    color: "white"
-                    height: parent.height - 10
-                    width: parent.width
-                    font.bold: true
-                    horizontalAlignment: Text.AlignHCenter
-                    font.pixelSize: detailPanelFontPixels
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Rectangle {
-                    id: missionSettingsTitleUL
-                    y: 34
-                    width: parent.width
-                    height: 3
-                    color: "white"
-                    radius: 5
-                }
-            }
-            Item {
-                width: parent.width
-                height: 32
-                Text {
-                    id: opacityTitle
-                    text: qsTr("Transparency")
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Slider {
-                    id: mission_opacity_Slider
-                    orientation: Qt.Horizontal
-                    from: .1
-                    value: settings.mission_opacity
-                    to: 1
-                    stepSize: .1
-                    height: parent.height
-                    anchors.rightMargin: 0
-                    anchors.right: parent.right
-                    width: parent.width - 96
 
-                    onValueChanged: {
-                        settings.mission_opacity = mission_opacity_Slider.value
-                    }
-                }
-            }
-            Item {
-                width: parent.width
-                height: 32
-                Text {
-                    text: qsTr("Size")
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Slider {
-                    id: mission_size_Slider
-                    orientation: Qt.Horizontal
-                    from: .5
-                    value: settings.mission_size
-                    to: 3
-                    stepSize: .1
-                    height: parent.height
-                    anchors.rightMargin: 0
-                    anchors.right: parent.right
-                    width: parent.width - 96
-
-                    onValueChanged: {
-                        settings.mission_size = mission_size_Slider.value
-                    }
-                }
-            }
-            Item {
-                width: 230
-                height: 32
-                Text {
-                    text: qsTr("Lock to Horizontal Center")
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Switch {
-                    width: 32
-                    height: parent.height
-                    anchors.rightMargin: 6
-                    anchors.right: parent.right
-                    checked: {
-                        // @disable-check M222
-                        var _hCenter = settings.value(hCenterIdentifier,
-                                                      defaultHCenter)
-                        // @disable-check M223
-                        if (_hCenter === "true" || _hCenter === 1
-                                || _hCenter === true) {
-                            checked = true
-                            // @disable-check M223
-                        } else {
-                            checked = false
-                        }
-                    }
-
-                    onCheckedChanged: settings.setValue(hCenterIdentifier,
-                                                        checked)
-                }
-            }
-            Item {
-                width: 230
-                height: 32
-                Text {
-                    text: qsTr("Lock to Vertical Center")
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Switch {
-                    width: 32
-                    height: parent.height
-                    anchors.rightMargin: 6
-                    anchors.right: parent.right
-                    checked: {
-                        // @disable-check M222
-                        var _vCenter = settings.value(vCenterIdentifier,
-                                                      defaultVCenter)
-                        // @disable-check M223
-                        if (_vCenter === "true" || _vCenter === 1
-                                || _vCenter === true) {
-                            checked = true
-                            // @disable-check M223
-                        } else {
-                            checked = false
-                        }
-                    }
-
-                    onCheckedChanged: settings.setValue(vCenterIdentifier,
-                                                        checked)
-                }
-            }
+        BaseWidgetDefaultUiControlElements{
+            id: idBaseWidgetDefaultUiControlElements
         }
     }
 
@@ -211,21 +64,34 @@ BaseWidget {
                 }
             }
 
-            ConfirmSlider {
-
+            ConfirmSliderEnableDisable {
+                id: confirmSliderEnableUpdates
                 visible: _fcMavlinkSystem.supports_basic_commands
                 text_off: qsTr("Enable updates")
                 text_on: qsTr("Disable updates");
-                //timer_reset: false
 
                 onCheckedChanged: {
+                    if(error_last){
+                        error_last=false;
+                        return;
+                    }
+                    var res=false
                     if (checked == true) {
-                        _fcMavlinkSystem.enable_disable_mission_updates(true);
+                        res=_fcMavlinkSystem.enable_disable_mission_updates(true);
+                        if(res===false){
+                            error_last=true;
+                            checked = !checked;
+                        }
                     }else{
-                        _fcMavlinkSystem.enable_disable_mission_updates(false);
+                        res=_fcMavlinkSystem.enable_disable_mission_updates(false);
+                        if(res===false){
+                            error_last=true;
+                            checked = !checked;
+                        }
                     }
                 }
             }
+
             Item {
                 width: parent.width
                 height: 20
@@ -270,14 +136,34 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
             }
+            ConfirmSlider{
+                height: 33
+                text_off: "Enable mission1"
+                visible: settings.dev_show_mission_start_pause
+                onCheckedChanged: {
+                    if (checked == true) {
+                        _fcMavlinkSystem.start_pause_primary_mission_async(false)
+                    }
+                }
+            }
+            ConfirmSlider{
+                height: 33
+                text_off: "Pause mission1"
+                visible: settings.dev_show_mission_start_pause
+                onCheckedChanged: {
+                    if (checked == true) {
+                        _fcMavlinkSystem.start_pause_primary_mission_async(true)
+                    }
+                }
+            }
         }
     }
 
     Item {
         id: widgetInner
         anchors.fill: parent
-        opacity: settings.mission_opacity
-        scale: settings.mission_size
+        opacity: bw_current_opacity
+        scale: bw_current_scale
 
         Item {
             anchors.fill: parent

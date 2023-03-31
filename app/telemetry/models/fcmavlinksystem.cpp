@@ -541,6 +541,7 @@ void FCMavlinkSystem::calculate_home_distance() {
            home for free as a result of the calculation above.
         */
         set_home_distance(s12);
+        //qDebug()<<"XX"<<Telemetryutil::normalize_degree(azi1);
     } else {
         /*
          * If the system doesnt have home pos just show "0"
@@ -574,8 +575,10 @@ void FCMavlinkSystem::set_home_course(int home_course) {
     int rel_heading = home_course - m_hdg;
     if (rel_heading < 0) rel_heading += 360;
     if (rel_heading >= 360) rel_heading -=360;
-    m_home_course = rel_heading;
-    emit home_course_changed(home_course);
+    if(m_home_course != rel_heading){
+        m_home_course = rel_heading;
+        emit home_course_changed(home_course);
+    }
 }
 
 void FCMavlinkSystem::set_home_heading(int home_heading) {
@@ -583,8 +586,10 @@ void FCMavlinkSystem::set_home_heading(int home_heading) {
     home_heading=home_heading-180;
     if (home_heading < 0) home_heading += 360;
     if (home_heading >= 360) home_heading -=360;
-    m_home_heading = home_heading;
-    emit home_heading_changed(home_heading);
+    if(m_home_heading != home_heading){
+        m_home_heading = home_heading;
+        emit home_heading_changed(home_heading);
+    }
 }
 
 void FCMavlinkSystem::updateVehicleAngles(){
@@ -867,14 +872,38 @@ void FCMavlinkSystem::flight_mode_cmd(long cmd_msg) {
     }
 }
 
-void FCMavlinkSystem::enable_disable_mission_updates(bool enable)
+void FCMavlinkSystem::request_home_position_from_fc()
+{
+    if(!m_pass_thru){
+        HUDLogMessagesModel::instance().add_message_info("No FC");
+        qDebug()<<"No fc pass_thru module";
+        return;
+    }
+    mavsdk::MavlinkPassthrough::CommandLong cmd{};
+    cmd.command = MAV_CMD_REQUEST_MESSAGE;
+    cmd.target_sysid= m_pass_thru->get_target_sysid();
+    cmd.target_compid=m_pass_thru->get_target_compid();
+    cmd.param1=MAVLINK_MSG_ID_HOME_POSITION;
+    const auto res=m_pass_thru->send_command_long(cmd);
+    if(res==mavsdk::MavlinkPassthrough::Result::Success){
+        const auto msg="Request home Success!!";
+        qDebug()<<msg;
+        HUDLogMessagesModel::instance().add_message_info(msg);
+    }else {
+        const auto msg=mavsdk::helper::to_string2("Request home error:",res);
+        qDebug()<<msg.c_str();
+        HUDLogMessagesModel::instance().add_message_warning(msg.c_str());
+    }
+}
+
+bool FCMavlinkSystem::enable_disable_mission_updates(bool enable)
 {
     if(enable){
         // Enable mission updates via mavsdk
         // by instantiating the mavsdk mission instance, we now automatically get updates, but manually parse the mission updates in the main mavlink message callback.
         if(m_system==nullptr){
              HUDLogMessagesModel::instance().add_message_info("No FC");
-             return;
+             return false;
         }
         if(m_mission==nullptr){
             // must be manually enabled by the user to save resources
@@ -902,6 +931,7 @@ void FCMavlinkSystem::enable_disable_mission_updates(bool enable)
             HUDLogMessagesModel::instance().add_message_info("Mission updates already disabled");
         }
     }
+    return true;
     /*const auto [res,plan]=m_mission->download_mission();
     if(res!=mavsdk::Mission::Result::Success){
         HUDLogMessagesModel::instance().add_message_info("Mission download failure");
@@ -912,6 +942,27 @@ void FCMavlinkSystem::enable_disable_mission_updates(bool enable)
         //qDebug()<<"Mission progress: "<<mp.current<<":"<<mp.total;
     };
     m_mission->subscribe_mission_progress(cb);*/
+}
+
+void FCMavlinkSystem::start_pause_primary_mission_async(const bool pause)
+{
+    qDebug()<<"start_primary_mission_async()";
+    auto tmp_mission=m_mission;
+    if(tmp_mission==nullptr){
+        HUDLogMessagesModel::instance().add_message_info("Missions disabled");
+        return;
+    }
+    auto cb=[this,pause](mavsdk::Mission::Result res){
+        std::stringstream ss;
+        ss<<"Mission "<<(pause ? "pause" : "start")<<" "<<res;
+        qDebug()<<ss.str().c_str();
+        HUDLogMessagesModel::instance().add_message_info(ss.str().c_str());
+    };
+    if(pause){
+        tmp_mission->start_mission_async(cb);
+    }else{
+        tmp_mission->pause_mission_async(cb);
+    }
 }
 
 void FCMavlinkSystem::send_message_hud_connection(bool connected)

@@ -14,6 +14,7 @@ BaseWidget {
     visible: settings.show_horizon
 
     widgetIdentifier: "horizon_widget"
+    bw_verbose_name: "ARTIFICIAL HORIZON"
 
     defaultHCenter: true
     defaultVCenter: true
@@ -21,169 +22,16 @@ BaseWidget {
     hasWidgetDetail: true
     widgetDetailComponent: ScrollView {
 
-        contentHeight: horizonSettingsColumn.height
+        contentHeight: idBaseWidgetDefaultUiControlElements.height
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
         clip: true
 
-        ColumnLayout {
-            id: horizonSettingsColumn
-            x: 0
-            y: 0
-            width: 321
-            height: 522
-            spacing: 0
-            clip: true
-            Item {
-                width: 230
-                height: 42
-                Text {
-                    id: horizonSettingsTitle
-                    text: qsTr("HORIZON")
-                    color: "white"
-                    height: parent.height - 10
-                    width: parent.width
-                    font.bold: true
-                    horizontalAlignment: Text.AlignHCenter
-                    font.pixelSize: detailPanelFontPixels
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Rectangle {
-                    id: horizonSettingsTitleUL
-                    y: 34
-                    width: parent.width
-                    height: 3
-                    color: "white"
-                    radius: 5
-                }
-            }
-            Item {
-                width: 230
-                height: 32
-                Text {
-                    text: qsTr("Transparency")
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Slider {
-                    id: horizon_opacity_Slider
-                    orientation: Qt.Horizontal
-                    from: .1
-                    value: settings.horizon_opacity
-                    to: 1
-                    stepSize: .1
-                    height: parent.height
-                    anchors.rightMargin: 0
-                    anchors.right: parent.right
-                    width: parent.width - 96
+        BaseWidgetDefaultUiControlElements{
+            id: idBaseWidgetDefaultUiControlElements
 
-                    onValueChanged: {
-                        settings.horizon_opacity = horizon_opacity_Slider.value
-                    }
-                }
-            }
-            Item {
-                width: 230
-                height: 32
-                Text {
-                    text: qsTr("Size")
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Slider {
-                    id: horizon_size_Slider
-                    orientation: Qt.Horizontal
-                    from: .7
-                    value: settings.horizon_size
-                    to: 3
-                    stepSize: .1
-                    height: parent.height
-                    anchors.rightMargin: 0
-                    anchors.right: parent.right
-                    width: parent.width - 96
+            show_vertical_lock: true
+            show_horizontal_lock: true
 
-                    onValueChanged: {
-                        settings.horizon_size = horizon_size_Slider.value
-                    }
-                }
-            }
-            Item {
-                width: 230
-                height: 32
-                Text {
-                    text: qsTr("Lock to Horizontal Center")
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Switch {
-                    width: 32
-                    height: parent.height
-                    anchors.rightMargin: 6
-                    anchors.right: parent.right
-                    checked: {
-                        // @disable-check M222
-                        var _hCenter = settings.value(hCenterIdentifier,
-                                                      defaultHCenter)
-                        // @disable-check M223
-                        if (_hCenter === "true" || _hCenter === 1
-                                || _hCenter === true) {
-                            checked = true
-                            // @disable-check M223
-                        } else {
-                            checked = false
-                        }
-                    }
-
-                    onCheckedChanged: settings.setValue(hCenterIdentifier,
-                                                        checked)
-                }
-            }
-            Item {
-                width: 230
-                height: 32
-                Text {
-                    text: qsTr("Lock to Vertical Center")
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Switch {
-                    width: 32
-                    height: parent.height
-                    anchors.rightMargin: 6
-                    anchors.right: parent.right
-                    checked: {
-                        // @disable-check M222
-                        var _vCenter = settings.value(vCenterIdentifier,
-                                                      defaultVCenter)
-                        // @disable-check M223
-                        if (_vCenter === "true" || _vCenter === 1
-                                || _vCenter === true) {
-                            checked = true
-                            // @disable-check M223
-                        } else {
-                            checked = false
-                        }
-                    }
-
-                    onCheckedChanged: settings.setValue(vCenterIdentifier,
-                                                        checked)
-                }
-            }
             Item {
                 width: 230
                 height: 32
@@ -441,7 +289,7 @@ BaseWidget {
     Item {
         id: widgetInner
         anchors.fill: parent
-        opacity: settings.horizon_opacity
+        opacity: bw_current_opacity
 
         Item {
             id: horizonLadder
@@ -453,8 +301,8 @@ BaseWidget {
             transform: Scale {
                 origin.x: 0
                 origin.y: 0
-                xScale: settings.horizon_size
-                yScale: settings.horizon_size
+                xScale: bw_current_scale
+                yScale: bw_current_scale
             }
 
             HorizonLadder {
