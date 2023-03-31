@@ -261,6 +261,7 @@ BaseWidget {
 
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
         clip: true
+        contentHeight: flightModeCommandsColumn.height
 
         /*
         PLANE_MODE_MANUAL=0,
@@ -305,6 +306,7 @@ VTOL
        COPTER_MODE_SMART_RTL=21
 */
         Column {
+            id: flightModeCommandsColumn
             width: 200
             spacing: 2
             height: 600
