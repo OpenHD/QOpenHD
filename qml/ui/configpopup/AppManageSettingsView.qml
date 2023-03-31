@@ -263,21 +263,6 @@ ScrollView {
                     onCheckedChanged: settings.dev_set_swap_interval_zero = checked
                 }
             }
-            SettingBaseElement{
-                m_short_description: "dev_show_mission_start_pause"
-                m_long_description: "Show Controls to start / pause a mission. Untested, therefore disabled by default."
-
-                Switch {
-                    width: 32
-                    height: elementHeight
-                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    checked: settings.dev_show_mission_start_pause
-                    onCheckedChanged: settings.dev_show_mission_start_pause = checked
-                }
-            }
         }
         Card {
             id: simplePopupHack
