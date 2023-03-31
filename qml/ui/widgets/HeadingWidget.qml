@@ -25,7 +25,7 @@ BaseWidget {
     hasWidgetDetail: true
 
     // Bound extra, a bit complicated
-    property double m_extra_size: m_extra_size
+    property double m_extra_size: bw_current_scale
 
     widgetDetailComponent: ScrollView {
 
@@ -103,7 +103,7 @@ BaseWidget {
             HeadingLadder {
                 id: headingLadderC
                 anchors.centerIn: parent
-                width: settings.heading_width
+                width: 250
                 height: 50
                 clip: false
                 showHeadingLadderText: settings.heading_ladder_text

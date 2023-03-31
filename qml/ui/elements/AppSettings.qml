@@ -195,7 +195,6 @@ Settings {
     property bool heading_ladder_text: true //shared between heading and horizon
 
     property bool show_heading: true
-    property double heading_width: 250
     property bool show_heading_ladder: true
 
     // experimental
