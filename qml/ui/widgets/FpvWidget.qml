@@ -287,7 +287,7 @@ BaseWidget {
                 // referencing the horizon so that fpv moves accurately
                 horizonSpacing: settings.horizon_ladder_spacing
                 horizonWidth: settings.horizon_width
-                fpvSize: settings.fpv_size
+                fpvSize: bw_current_scale
 
                 verticalLimit: settings.fpv_vertical_limit
                 lateralLimit: settings.fpv_lateral_limit
