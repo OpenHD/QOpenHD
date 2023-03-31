@@ -70,8 +70,8 @@ BaseWidget {
             visible: true
             width: 400
             height: 300
-            border.width: 2
-            border.color: "green"
+            //border.width: 2
+            //border.color: "green"
             //color: "green"
             color: "transparent"
 

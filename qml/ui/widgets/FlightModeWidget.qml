@@ -26,7 +26,7 @@ BaseWidget {
     hasWidgetAction: true //--TURN TO TRUE TO SEE THE FLIGHT MODE ACTIONS
 
     // Needs to be a lot bigger than default:
-    widgetActionHeight: 164+ 300
+    widgetActionHeight: 164+ 400
 
     widgetDetailComponent: ScrollView {
 
