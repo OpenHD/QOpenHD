@@ -48,7 +48,6 @@ BaseWidget {
 
         ColumnLayout {
             width: 200
-            spacing: 5
 
             Item {
                 width: parent.width
@@ -97,7 +96,7 @@ BaseWidget {
                 }
             }
 
-            Item {
+            /*Item {
                 height: 32
                 Text {
                     text: "Only For Ardupilot/PX4"
@@ -106,23 +105,22 @@ BaseWidget {
                     font.pixelSize: detailPanelFontPixels
                     anchors.left: parent.left
                 }
-            }
+            }*/
 
             ConfirmSlider {
                 visible: _fcMavlinkSystem.supports_basic_commands
 
                 text_off: qsTr("RTL")
                 msg_id: {
-                        if (_fcMavlinkSystem.mav_type == "ARDUCOPTER"){
-                            return 6;
-                        }
-                        else {
-                            return 11;
-                        }
+                    if (_fcMavlinkSystem.mav_type == "ARDUCOPTER"){
+                        return 6;
+                    }
+                    else {
+                        return 11;
+                    }
                 }
                 onCheckedChanged: {
                     if (checked == true) {
-
                         _fcMavlinkSystem.flight_mode_cmd(msg_id);
                     }
                 }
@@ -136,9 +134,16 @@ BaseWidget {
 
                 onCheckedChanged: {
                     if (checked == true) {
-
                         _fcMavlinkSystem.flight_mode_cmd(msg_id);
                     }
+                }
+            }
+
+            Button{
+                height:32
+                text: "Request Home"
+                onClicked: {
+                    _fcMavlinkSystem.request_home_position_from_fc()
                 }
             }
         }

@@ -238,6 +238,8 @@ public:
     // TODO document me
     Q_INVOKABLE bool send_command_reboot(bool reboot);
     Q_INVOKABLE void flight_mode_cmd(long cmd_msg);
+    // Some FC stop sending home position when armed, re-request the home position
+    Q_INVOKABLE void request_home_position_from_fc();
     // -----------------------
 private:
     void send_message_hud_connection(bool connected);

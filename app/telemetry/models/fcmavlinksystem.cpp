@@ -872,6 +872,30 @@ void FCMavlinkSystem::flight_mode_cmd(long cmd_msg) {
     }
 }
 
+void FCMavlinkSystem::request_home_position_from_fc()
+{
+    if(!m_pass_thru){
+        HUDLogMessagesModel::instance().add_message_info("No FC");
+        qDebug()<<"No fc pass_thru module";
+        return;
+    }
+    mavsdk::MavlinkPassthrough::CommandLong cmd{};
+    cmd.command = MAV_CMD_REQUEST_MESSAGE;
+    cmd.target_sysid= m_pass_thru->get_target_sysid();
+    cmd.target_compid=m_pass_thru->get_target_compid();
+    cmd.param1=MAVLINK_MSG_ID_HOME_POSITION;
+    const auto res=m_pass_thru->send_command_long(cmd);
+    if(res==mavsdk::MavlinkPassthrough::Result::Success){
+        const auto msg="Request home Success!!";
+        qDebug()<<msg;
+        HUDLogMessagesModel::instance().add_message_info(msg);
+    }else {
+        const auto msg=mavsdk::helper::to_string2("Request home error:",res);
+        qDebug()<<msg.c_str();
+        HUDLogMessagesModel::instance().add_message_warning(msg.c_str());
+    }
+}
+
 bool FCMavlinkSystem::enable_disable_mission_updates(bool enable)
 {
     if(enable){
