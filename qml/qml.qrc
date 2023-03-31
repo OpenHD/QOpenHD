@@ -52,7 +52,6 @@
         <file>ui/widgets/BaseWidgetForm.ui.qml</file>
         <file>ui/widgets/FpvWidget.qml</file>
         <file>ui/widgets/HeadingWidget.qml</file>
-        <file>ui/widgets/HeadingWidgetForm.ui.qml</file>
         <file>ui/widgets/SpeedWidget.qml</file>
         <file>ui/widgets/AltitudeWidget.qml</file>
         <file>ui/widgets/AltitudeSecondWidget.qml</file>
@@ -66,7 +65,6 @@
         <file>ui/elements/ColoredCheckboxForm.ui.qml</file>
         <file>ui/elements/ColoredCheckbox.qml</file>
         <file>ui/widgets/GPIOWidget.qml</file>
-        <file>ui/widgets/GPIOWidgetForm.ui.qml</file>
         <file>ui/widgets/FlightDistanceWidget.qml</file>
         <file>ui/widgets/FlightMahWidget.qml</file>
         <file>ui/widgets/ControlWidget.qml</file>

@@ -17,6 +17,7 @@ BaseWidget {
     visible: settings.show_home_distance
 
     widgetIdentifier: "home_distance_widget"
+    bw_verbose_name: "HOME DISTANCE"
 
     defaultAlignment: 2
     defaultXOffset: 0

@@ -14,7 +14,7 @@ BaseWidget {
     visible: settings.show_flight_mah
 
     widgetIdentifier: "flight_mah_widget"
-    bw_verbose_name: "MAH XX"
+    bw_verbose_name: "MAH (FC CONSUMED)"
 
     defaultAlignment: 3
     defaultXOffset: 110
