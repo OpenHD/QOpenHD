@@ -292,11 +292,18 @@ BaseWidget {
         opacity: bw_current_opacity
 
         Item {
+        //Rectangle {
+            // debug
+            //color: "transparent"
+            //border.width: 2
+            //border.color: "green"
+            //width: horizonLadderC.width
+            //height: horizonLadderC.height
+            // debug
             id: horizonLadder
             visible: true
 
             anchors.centerIn: parent
-
 
             transform: Scale {
                 origin.x: 0
@@ -314,6 +321,8 @@ BaseWidget {
                 */
                 width: 1200
                 height: 800
+                //width: parent.width * 0.5
+                //height: parent.height
                 clip: false
                 color: settings.color_shape
                 glow: settings.color_glow
