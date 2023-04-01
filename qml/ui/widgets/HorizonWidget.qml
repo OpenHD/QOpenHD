@@ -292,7 +292,7 @@ BaseWidget {
         opacity: bw_current_opacity
 
         Item {
-        //Rectangle {
+        //Rectangle { //For debugging size
             // debug
             //color: "transparent"
             //border.width: 2
