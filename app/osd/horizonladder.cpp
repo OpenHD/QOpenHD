@@ -358,7 +358,7 @@ void HorizonLadder::paint(QPainter* painter) {
     //painter->drawPoint(QPoint(width()/2,height()/2));
 
     painter->restore();
-    const auto paint_delta=std::chrono::steady_clock::now()-before_paint;
+    //const auto paint_delta=std::chrono::steady_clock::now()-before_paint;
     //qDebug()<<"CPU time draw horizon:"<<MyTimeHelper::R(paint_delta).c_str();
 }
 
