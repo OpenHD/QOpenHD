@@ -53,11 +53,12 @@ void HorizonLadder::paint(QPainter* painter) {
     pitch = round(pitch);
 
     if(show_center_indicator){
-        // Line always drawn in the center to have some orientation where the center is
-        const auto line_w= 100*horizonWidth * 0.2;
         painter->setPen(m_color);
-        painter->drawLine(width()/2-(line_w/2),height()/2,width()/2+(line_w/2),height()/2);
-        //painter->drawEllipse(QPointF(width()/2,height()/2),100,100);
+        // Line always drawn in the center to have some orientation where the center is
+        //const auto line_w= 100*horizonWidth * 0.2;
+        const auto circle_r= 100*horizonWidth * 0.05;
+        //painter->drawLine(width()/2-(line_w/2),height()/2,width()/2+(line_w/2),height()/2);
+        painter->drawEllipse(QPointF(width()/2,height()/2),circle_r,circle_r);
     }
 
     painter->translate(width()/2,height()/2);
