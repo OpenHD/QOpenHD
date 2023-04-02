@@ -283,6 +283,29 @@ BaseWidget {
                     onCheckedChanged: settings.heading_ladder_text = checked
                 }
             }
+            Item {
+                width: 230
+                height: 32
+                Text {
+                    text: qsTr("Show center indicator")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    x: 190
+                    y: 0
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 8
+                    anchors.right: parent.right
+                    checked: settings.horizon_show_center_indicator
+                    onCheckedChanged: settings.horizon_show_center_indicator = checked
+                }
+            }
         }
     }
 
@@ -292,18 +315,14 @@ BaseWidget {
         opacity: bw_current_opacity
 
         Item {
-        //Rectangle { //For debugging size
-            // debug
-            //color: "transparent"
-            //border.width: 2
-            //border.color: "green"
-            //width: horizonLadderC.width
-            //height: horizonLadderC.height
-            // debug
             id: horizonLadder
             visible: true
 
             anchors.centerIn: parent
+            //width: parent.width * 0.3 * bw_current_scale
+            //height: parent.height * 0.5 * bw_current_scale
+            //width: 1200
+            //height: 800
 
             transform: Scale {
                 origin.x: 0
@@ -315,6 +334,7 @@ BaseWidget {
             HorizonLadder {
                 id: horizonLadderC
                 anchors.centerIn: parent
+                //anchors.fill: parent
 
                 /* could turn the width and height into settings and thereby clip the horizon
                   *even theough clipping is false it still clips
@@ -333,6 +353,7 @@ BaseWidget {
                 horizonShowLadder: settings.show_horizon_ladder
                 horizonRange: settings.horizon_range
                 horizonStep: settings.horizon_step
+                show_center_indicator: settings.horizon_show_center_indicator
 
                 Behavior on pitch {NumberAnimation { duration: settings.smoothing }}
                 pitch: _fcMavlinkSystem.pitch
@@ -348,6 +369,16 @@ BaseWidget {
                 showHorizonHeadingLadder: settings.show_horizon_heading_ladder
                 showHorizonHome: settings.show_horizon_home //you dont want a floating home icon
                 fontFamily: settings.font_text
+            }
+            Rectangle{ // For debugging the area where the horizon clips
+                // debug
+                color: "transparent"
+                border.width: 4
+                border.color: "green"
+                width: horizonLadderC.width
+                height: horizonLadderC.height
+                anchors.centerIn: parent
+                visible: dragging
             }
         }
     }

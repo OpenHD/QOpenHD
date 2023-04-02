@@ -12,6 +12,7 @@ HorizonLadder::HorizonLadder(QQuickItem *parent): QQuickPaintedItem(parent) {
     setRenderTarget(RenderTarget::FramebufferObject);
 
     m_font.setPixelSize(14);
+    //m_font.setPointSize(14);
 }
 
 void HorizonLadder::paint(QPainter* painter) {
@@ -32,6 +33,7 @@ void HorizonLadder::paint(QPainter* painter) {
     const bool horizonShowLadder = m_horizonShowLadder;
     const int horizonRange = m_horizonRange;
     const int horizonStep = m_horizonStep;
+    const bool show_center_indicator = m_show_center_indicator;
 
     auto roll = m_roll;
     auto pitch = m_pitch;
@@ -45,6 +47,14 @@ void HorizonLadder::paint(QPainter* painter) {
     //weird rounding issue where decimals make ladder dissappear
     roll = round(roll);
     pitch = round(pitch);
+
+    if(show_center_indicator){
+        //const auto line_w=width() * 0.5;
+        const auto line_w= 100*horizonWidth * 0.2;
+        painter->setPen(m_color);
+        painter->drawLine(width()/2-(line_w/2),height()/2,width()/2+(line_w/2),height()/2);
+        //painter->drawEllipse(QPointF(width()/2,height()/2),100,100);
+    }
 
     painter->translate(width()/2,height()/2);
     painter->rotate(roll*-1);
