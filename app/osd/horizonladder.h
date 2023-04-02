@@ -30,6 +30,8 @@ class HorizonLadder : public QQuickPaintedItem {
 
     // Indicates the center
     L_RW_PROP(bool,show_center_indicator, set_show_center_indicator, true)
+    // Adjust the stroke strength of the lines, in percent
+    //L_RW_PROP(double,line_stroke_strength_perc, set_line_stroke_strength_perc, 100)
 
 public:
     explicit HorizonLadder(QQuickItem* parent = nullptr);

@@ -36,6 +36,35 @@ BaseWidget {
                 width: 230
                 height: 32
                 Text {
+                    text: qsTr("Clip area")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Slider {
+                    orientation: Qt.Horizontal
+                    from: .3
+                    value: settings.horizon_clip_area_scale
+                    to: 2.0
+                    stepSize: .1
+                    height: parent.height
+                    anchors.rightMargin: 0
+                    anchors.right: parent.right
+                    width: parent.width - 96
+
+                    onValueChanged: {
+                        settings.horizon_clip_area_scale = value
+                    }
+                }
+            }
+
+            Item {
+                width: 230
+                height: 32
+                Text {
                     text: qsTr("Width")
                     color: "white"
                     height: parent.height
@@ -339,8 +368,8 @@ BaseWidget {
                 /* could turn the width and height into settings and thereby clip the horizon
                   *even theough clipping is false it still clips
                 */
-                width: 1200
-                height: 800
+                width: 1200 * settings.horizon_clip_area_scale
+                height: 800 * settings.horizon_clip_area_scale
                 //width: parent.width * 0.5
                 //height: parent.height
                 clip: false
@@ -354,6 +383,7 @@ BaseWidget {
                 horizonRange: settings.horizon_range
                 horizonStep: settings.horizon_step
                 show_center_indicator: settings.horizon_show_center_indicator
+                //line_stroke_strength_perc: settings.horizon_line_stroke_strength_perc
 
                 Behavior on pitch {NumberAnimation { duration: settings.smoothing }}
                 pitch: _fcMavlinkSystem.pitch
