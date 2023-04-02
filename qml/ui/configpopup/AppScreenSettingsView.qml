@@ -51,8 +51,10 @@ ScrollView {
                     font.pixelSize: 14
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    from : 0.8
+                    from : 0.5
                     to : 2.0
+                    // Important: Looks as without .1 steps, we can get rendering artfacts
+                    stepSize: .1
 
                     anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
                     value: settings.global_scale
