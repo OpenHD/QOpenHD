@@ -2,6 +2,7 @@
 
 #include <QSGFlatColorMaterial>
 #include <QMatrix>
+#include <math.h>
 #include <qtransform.h>
 
 PerformanceHorizonLadder::PerformanceHorizonLadder(QQuickItem *parent)
@@ -94,6 +95,21 @@ static void append_horizontal_line(std::vector<Vec2>& buff,float x,float y,float
     buff.push_back({x+width,y});
 }
 
+static std::vector<Vec2> make_circle(int segments,float center_x,float center_y,float radius){
+    std::vector<Vec2> vertices;
+    float step = 6.283185f/segments;
+    float angle = 0.0f;
+
+    vertices.reserve(segments + 1);
+    for (int i = 0; i < segments; ++i, angle+=step) {
+        float vertX = center_x + cosf(angle)*radius;
+        float vertY = center_y + sinf(angle)*radius;
+        vertices.push_back({vertX, vertY});
+    }
+    vertices.push_back({center_x+radius, center_y});
+    return vertices;
+}
+
 static QSGGeometry* qsggeometry_from_array(const std::vector<Vec2>& vec){
      QSGGeometry *geometry = new QSGGeometry(QSGGeometry::defaultAttributes_Point2D(), vec.size());
      for(int i=0;i<vec.size();i++){
@@ -158,11 +174,14 @@ QSGNode *PerformanceHorizonLadder::updatePaintNode(QSGNode *n, QQuickItem::Updat
             m_ladders_geom_node->setFlag(QSGNode::OwnsMaterial);
         }
         {
-            auto vertices=std::vector<Vec2>();
-            const auto center_line_width=width()/8;
-            append_horizontal_line(vertices,width()/2.0f-center_line_width/2.0f,height()/2,center_line_width);
+            //auto vertices=std::vector<Vec2>();
+            //const auto center_line_width=width()/8;
+            //append_horizontal_line(vertices,width()/2.0f-center_line_width/2.0f,height()/2,center_line_width);
+            const auto radius=width()/38;
+            auto vertices = make_circle(20,width()/2,height()/2,radius);
             auto geometry=qsggeometry_from_array(vertices);
-            geometry->setLineWidth(10);
+            geometry->setDrawingMode(GL_LINE_STRIP);
+            geometry->setLineWidth(1);
             m_center_indicator->setGeometry(geometry);
             m_center_indicator->setFlag(QSGNode::OwnsGeometry);
             m_center_indicator->setMaterial(m_flat_color_material);
