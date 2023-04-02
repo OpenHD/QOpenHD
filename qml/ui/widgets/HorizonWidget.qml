@@ -370,8 +370,8 @@ BaseWidget {
                 */
                 width: 1200 * settings.horizon_clip_area_scale
                 height: 800 * settings.horizon_clip_area_scale
-                //width: parent.width * 0.5
-                //height: parent.height
+                //width: applicationWindow.width *0.8 * settings.horizon_clip_area_scale
+                //height: applicationWindow.height *0.8 * settings.horizon_clip_area_scale
                 clip: false
                 color: settings.color_shape
                 glow: settings.color_glow
