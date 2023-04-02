@@ -25,13 +25,13 @@ void HorizonLadder::paint(QPainter* painter) {
 
     painter->setFont(m_font);
 
-    bool horizonInvertPitch = m_horizonInvertPitch;
-    bool horizonInvertRoll = m_horizonInvertRoll;
-    double horizonWidth = m_horizonWidth;
-    int horizonSpacing = m_horizonSpacing;
-    bool horizonShowLadder = m_horizonShowLadder;
-    int horizonRange = m_horizonRange;
-    int horizonStep = m_horizonStep;
+    const bool horizonInvertPitch = m_horizonInvertPitch;
+    const bool horizonInvertRoll = m_horizonInvertRoll;
+    const double horizonWidth = m_horizonWidth;
+    const int horizonSpacing = m_horizonSpacing;
+    const bool horizonShowLadder = m_horizonShowLadder;
+    const int horizonRange = m_horizonRange;
+    const int horizonStep = m_horizonStep;
 
     auto roll = m_roll;
     auto pitch = m_pitch;
