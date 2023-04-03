@@ -85,8 +85,8 @@ void CameraStreamModel::update_mavlink_openhd_stats_wb_video_air(const mavlink_o
                 Telemetryutil::min_max_avg_to_string(msg.curr_fec_block_size_min,msg.curr_fec_block_size_max,msg.curr_fec_block_size_avg));
     if(msg.curr_recommended_bitrate>1 && msg.curr_measured_encoder_bitrate>1 ){ //check for valid measured / set values
         const double recommended_kbits=static_cast<float>(msg.curr_recommended_bitrate);
-        // Measured and set encoder bitrate should match on a 15% basis
-        const double max_perc_allowed=0.15;
+        // Measured and set encoder bitrate should match on a 20% basis
+        const double max_perc_allowed=0.2;
         const auto max_kbit_okay=recommended_kbits * (1.0+max_perc_allowed);
         const auto min_kbit_okay=recommended_kbits * (1.0-max_perc_allowed);
         const double measured_kbits=msg.curr_measured_encoder_bitrate/1000.0;
