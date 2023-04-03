@@ -17,6 +17,11 @@ class LogMessagesModel : public QAbstractListModel
 {
     Q_OBJECT
 public:
+    // Instance for all OpenHD air / ground messages
+    static LogMessagesModel& instanceOHD();
+    // We have a seperate model for the FC log messages
+    static LogMessagesModel& instanceFC();
+
     struct LogMessageData{
         QString tag;
         QString message;
@@ -32,8 +37,6 @@ public:
 public:
     Q_INVOKABLE void add_message_debug(QString tag,QString message);
     Q_INVOKABLE void add_message_warn(QString tag,QString message);
-
-    static  LogMessagesModel& instance();
     enum Roles {
         TagRole = Qt::UserRole,
         MessageRole,
@@ -58,6 +61,8 @@ public slots:
     void addData(LogMessagesModel::LogMessageData logMessageData);
 private:
     QVector< LogMessageData > m_data;
+    // We delete log messages older than that
+    static constexpr int MAX_N_STORED_LOG_MESSAGES=30;
 public:
 signals:
     void signalAddLogMessage(QString tag,QString message,quint8 severity);
