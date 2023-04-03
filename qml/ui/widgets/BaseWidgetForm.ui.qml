@@ -83,7 +83,7 @@ Rectangle {
         // This centers the popup on the screen rather than positioning it
         // relative to the parent item. Otherwise, it might pop up partially or completely hidden.
         parent: Overlay.overlay
-        x: {
+        /*x: {
             var gridStepsX = 4;
             var gridLengthX = parent.width-width;
             var gridStepX = Math.round(gridLengthX/gridStepsX);
@@ -94,7 +94,7 @@ Rectangle {
             var gridLengthY = parent.height-height
             var gridStepY = Math.round(gridLengthY/gridStepsY);
             return Math.round((widgetBase.y-height/2)/gridStepY)*gridStepY;
-        }
+        }*/
 
         // The content it holds should be overridden by impl.
         contentItem: widgetDetailComponent

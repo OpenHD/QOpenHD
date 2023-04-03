@@ -58,6 +58,7 @@ SOURCES += \
     app/telemetry/MavlinkTelemetry.cpp \
     app/telemetry/settings/mavlinksettingsmodel.cpp \
     app/telemetry/models/fcmavlinksystem.cpp \
+    app/telemetry/models/fcmavlinkmissionitemsmodel.cpp \
 
 HEADERS += \
     app/telemetry/mavsdk_helper.hpp \
@@ -75,5 +76,6 @@ HEADERS += \
     app/telemetry/MavlinkTelemetry.h \
     app/telemetry/settings/mavlinksettingsmodel.h \
     app/telemetry/models/fcmavlinksystem.h \
+    app/telemetry/models/fcmavlinkmissionitemsmodel.h \
 
 DEFINES += QOPENHD_HAS_MAVSDK_MAVLINK_TELEMETRY
