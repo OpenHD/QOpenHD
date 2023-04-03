@@ -25,6 +25,9 @@ void HorizonLadder::paint(QPainter* painter) {
 
     painter->setRenderHint(QPainter::Antialiasing);
     //painter->setRenderHint(QPainter::TextAntialiasing);
+    // according to this: https://bugreports.qt.io/browse/QTBUG-93475, this should fix the weird artifacts on text - but it doesn't
+    // make a difference in my case
+    painter->setRenderHint(QPainter::SmoothPixmapTransform);
 
     painter->setFont(m_font);
 
