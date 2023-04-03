@@ -83,17 +83,24 @@ void CameraStreamModel::update_mavlink_openhd_stats_wb_video_air(const mavlink_o
                 Telemetryutil::us_min_max_avg_to_string(msg.curr_fec_encode_time_min_us,msg.curr_fec_encode_time_max_us,msg.curr_fec_encode_time_avg_us));
     set_curr_video0_fec_block_length_min_max_avg(
                 Telemetryutil::min_max_avg_to_string(msg.curr_fec_block_size_min,msg.curr_fec_block_size_max,msg.curr_fec_block_size_avg));
-    const auto delta_kbits=std::abs(msg.curr_recommended_bitrate-(msg.curr_measured_encoder_bitrate/1000));
-    if(delta_kbits>1*1000){
-        //qDebug()<<"Diff:"<<delta_kbits;
-        // Set and measured bitrate are more than 1MBit/s apart
-        set_curr_set_and_measured_bitrate_mismatch(true);
-        if(m_n_mismatch_has_been_logged<10){
-            LogMessagesModel::instanceOHD().add_message_warn("CAM","Set/ Measured encoder bitrate mismatch");
-            m_n_mismatch_has_been_logged++;
+    if(msg.curr_recommended_bitrate>1 && msg.curr_measured_encoder_bitrate>1 ){ //check for valid measured / set values
+        const double recommended_kbits=static_cast<float>(msg.curr_recommended_bitrate);
+        // Measured and set encoder bitrate should match on a 15% basis
+        const double max_perc_allowed=0.15;
+        const auto max_kbit_okay=recommended_kbits * (1.0+max_perc_allowed);
+        const auto min_kbit_okay=recommended_kbits * (1.0-max_perc_allowed);
+        const double measured_kbits=msg.curr_measured_encoder_bitrate/1000.0;
+        if(measured_kbits <= max_kbit_okay && measured_kbits >= min_kbit_okay){
+           set_curr_set_and_measured_bitrate_mismatch(false);
+        }else{
+           set_curr_set_and_measured_bitrate_mismatch(true);
+           if(m_n_mismatch_has_been_logged<10){
+               std::stringstream ss;
+               ss<<"Set/ Measured encoder bitrate mismatch >"<<max_perc_allowed<<"%";
+               LogMessagesModel::instanceOHD().add_message_warn("CAM",ss.str().c_str());
+               m_n_mismatch_has_been_logged++;
+           }
         }
-    }else{
-        set_curr_set_and_measured_bitrate_mismatch(false);
     }
 }
 
