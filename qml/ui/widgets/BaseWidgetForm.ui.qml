@@ -21,14 +21,15 @@ Rectangle {
     property alias widgetAction: widgetAction
     property alias alignmentType: choiceBox.currentIndex
 
-    /* intended to be overriden by widgets, anything in this item will show up inside the
-       detail popover
-    */
+    // intended to be overriden by widgets, anything in this item will show up inside the
+    // appropriate popup
+    // set as contentItem of widgetDetail
     property Item widgetDetailComponent: Item {}
     property bool hasWidgetDetail: false
     property int widgetDetailWidth: 300
     property int widgetDetailHeight: 250
 
+    // set as contentItem of widgetAction
     property Item widgetActionComponent: Item {}
     property bool hasWidgetAction: false
     property int widgetActionWidth: 256
@@ -63,6 +64,9 @@ Rectangle {
 
         closePolicy: Popup.CloseOnPressOutside | Popup.CloseOnEscape
 
+        //modal: true
+        //focus: true
+
         // @disable-check M223
         onAboutToHide: {
             dragging = false
@@ -76,27 +80,23 @@ Rectangle {
         }
 
 
-
-        /*
-         * This centers the popup on the screen rather than positioning it
-         * relative to the parent item
-         *
-         */
-
+        // This centers the popup on the screen rather than positioning it
+        // relative to the parent item. Otherwise, it might pop up partially or completely hidden.
         parent: Overlay.overlay
-        /*x: {
-            if (!widgetDetailComponent.visible){
-                if (widgetBase.x > Math.round((parent.width - width) / 2)) {
-                    return 24;
-                } else {
-                    return parent.width - width - 24;
-                }
-            }
+        x: {
+            var gridStepsX = 4;
+            var gridLengthX = parent.width-width;
+            var gridStepX = Math.round(gridLengthX/gridStepsX);
+            return Math.round((widgetBase.x-(width/2))/gridStepX)*gridStepX;
         }
         y: {
-            return parent.height - height - 64;
-        }*/
+            var gridStepsY = 2;
+            var gridLengthY = parent.height-height
+            var gridStepY = Math.round(gridLengthY/gridStepsY);
+            return Math.round((widgetBase.y-height/2)/gridStepY)*gridStepY;
+        }
 
+        // The content it holds should be overridden by impl.
         contentItem: widgetDetailComponent
 
         //this is an ugly adaptation.. So that there are no null returns on this model
@@ -125,11 +125,8 @@ Rectangle {
 
         closePolicy: Popup.CloseOnPressOutside | Popup.CloseOnEscape
 
-        /*
-         * This centers the popup on the screen rather than positioning it
-         * relative to the parent item
-         *
-         */
+        // This centers the popup on the screen rather than positioning it
+        // relative to the parent item. Otherwise, it might pop up partially or completely hidden.
         parent: Overlay.overlay
         x: {
             var gridStepsX = 4;
@@ -144,6 +141,7 @@ Rectangle {
             return Math.round((widgetBase.y-height/2)/gridStepY)*gridStepY;
         }
 
+        // The content it holds should be overridden by impl.
         contentItem: widgetActionComponent
 
 
