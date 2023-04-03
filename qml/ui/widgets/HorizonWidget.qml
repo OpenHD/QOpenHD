@@ -365,10 +365,9 @@ BaseWidget {
                 anchors.centerIn: parent
                 //anchors.fill: parent
 
-                /* could turn the width and height into settings and thereby clip the horizon
-                  *even theough clipping is false it still clips
-                */
-                width: 1200 * settings.horizon_clip_area_scale
+                // Note: By the width / height we also controll the clipping area (since the horizon is double draw, into a texture, then onto the screen).
+                // Ideally, we want to reduce the "overdraw" to save CPU resources, e.g. make this area as small as possible / as less pixels as possible.
+                width: 800 * settings.horizon_clip_area_scale
                 height: 800 * settings.horizon_clip_area_scale
                 //width: applicationWindow.width *0.8 * settings.horizon_clip_area_scale
                 //height: applicationWindow.height *0.8 * settings.horizon_clip_area_scale
