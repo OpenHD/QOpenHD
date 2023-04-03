@@ -36,6 +36,35 @@ BaseWidget {
                 width: 230
                 height: 32
                 Text {
+                    text: qsTr("Clip area")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Slider {
+                    orientation: Qt.Horizontal
+                    from: .3
+                    value: settings.horizon_clip_area_scale
+                    to: 2.0
+                    stepSize: .1
+                    height: parent.height
+                    anchors.rightMargin: 0
+                    anchors.right: parent.right
+                    width: parent.width - 96
+
+                    onValueChanged: {
+                        settings.horizon_clip_area_scale = value
+                    }
+                }
+            }
+
+            Item {
+                width: 230
+                height: 32
+                Text {
                     text: qsTr("Width")
                     color: "white"
                     height: parent.height
@@ -283,6 +312,29 @@ BaseWidget {
                     onCheckedChanged: settings.heading_ladder_text = checked
                 }
             }
+            Item {
+                width: 230
+                height: 32
+                Text {
+                    text: qsTr("Show center indicator")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    x: 190
+                    y: 0
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 8
+                    anchors.right: parent.right
+                    checked: settings.horizon_show_center_indicator
+                    onCheckedChanged: settings.horizon_show_center_indicator = checked
+                }
+            }
         }
     }
 
@@ -296,7 +348,10 @@ BaseWidget {
             visible: true
 
             anchors.centerIn: parent
-
+            //width: parent.width * 0.3 * bw_current_scale
+            //height: parent.height * 0.5 * bw_current_scale
+            //width: 1200
+            //height: 800
 
             transform: Scale {
                 origin.x: 0
@@ -308,12 +363,14 @@ BaseWidget {
             HorizonLadder {
                 id: horizonLadderC
                 anchors.centerIn: parent
+                //anchors.fill: parent
 
-                /* could turn the width and height into settings and thereby clip the horizon
-                  *even theough clipping is false it still clips
-                */
-                width: 1200
-                height: 800
+                // Note: By the width / height we also controll the clipping area (since the horizon is double drawn, into a texture, then onto the screen).
+                // Ideally, we want to reduce the "overdraw" to save GPU resources, e.g. make this area as small as possible / as less pixels as possible.
+                width: 800 * settings.horizon_clip_area_scale
+                height: 800 * settings.horizon_clip_area_scale
+                //width: applicationWindow.width *0.8 * settings.horizon_clip_area_scale
+                //height: applicationWindow.height *0.8 * settings.horizon_clip_area_scale
                 clip: false
                 color: settings.color_shape
                 glow: settings.color_glow
@@ -324,6 +381,8 @@ BaseWidget {
                 horizonShowLadder: settings.show_horizon_ladder
                 horizonRange: settings.horizon_range
                 horizonStep: settings.horizon_step
+                show_center_indicator: settings.horizon_show_center_indicator
+                //line_stroke_strength_perc: settings.horizon_line_stroke_strength_perc
 
                 Behavior on pitch {NumberAnimation { duration: settings.smoothing }}
                 pitch: _fcMavlinkSystem.pitch
@@ -339,6 +398,16 @@ BaseWidget {
                 showHorizonHeadingLadder: settings.show_horizon_heading_ladder
                 showHorizonHome: settings.show_horizon_home //you dont want a floating home icon
                 fontFamily: settings.font_text
+            }
+            Rectangle{ // For debugging the area where the horizon clips
+                // debug
+                color: "transparent"
+                border.width: 4
+                border.color: "green"
+                width: horizonLadderC.width
+                height: horizonLadderC.height
+                anchors.centerIn: parent
+                visible: dragging
             }
         }
     }

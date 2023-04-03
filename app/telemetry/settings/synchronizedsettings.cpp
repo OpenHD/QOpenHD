@@ -92,7 +92,7 @@ void SynchronizedSettings::change_param_air_only_mcs(int value,bool use_hud)
         if(var_bitrate_enabled.has_value() && var_bitrate_enabled!=((int)true)){
             const auto message="Variable bitrate is OFF !";
             HUDLogMessagesModel::instance().add_message_warning(message);
-            LogMessagesModel::instance().add_message_warn("MCS",message);
+            LogMessagesModel::instanceOHD().add_message_warn("MCS",message);
         }
     }
     const MavlinkSettingsModel::ExtraRetransmitParams extra_retransmit_params{std::chrono::milliseconds(100),10};

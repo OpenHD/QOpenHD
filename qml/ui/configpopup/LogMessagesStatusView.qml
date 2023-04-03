@@ -24,7 +24,10 @@ Item {
         id: selectItemInStackLayoutBar
         width: parent.width
         TabButton {
-            text: qsTr("LOG1")
+            text: qsTr("LOG OpenHD Air/Gnd")
+        }
+        TabButton {
+            text: qsTr("LOG FC")
         }
         //TabButton {
         //    text: qsTr("LOG OpenHD Ground")
@@ -46,7 +49,7 @@ Item {
                 id: logMessagesModelParentListView
                 width: parent.width
                 height: parent.height
-                model: _logMessagesModel
+                model: _ohdlogMessagesModel
                 delegate:
                     Rectangle {
                     color: Qt.rgba(0.3,0.3,0.3)
@@ -62,6 +65,32 @@ Item {
                     Text {
                         text: model.message
                         anchors { left:tagView.right; verticalCenter: tagView.verticalCenter; leftMargin: 5 }
+                    }
+                }
+            }
+        }
+        Pane {
+            // Uses the c++ logmessagemodel under app/logging/logmessagesmodel
+            ListView {
+                id: logMessagesModelFCParentListView
+                width: parent.width
+                height: parent.height
+                model: _fclogMessagesModel
+                delegate:
+                    Rectangle {
+                    color: Qt.rgba(0.3,0.3,0.3)
+                    height: childrenRect.height
+                    width: logMessagesModelFCParentListView.width //parent.width for some reason we cannot just use parent.width here
+
+                    Text {
+                        id: tagViewFC
+                        text: model.tag
+                        color: model.severity_color
+                        anchors { left:parent.left }
+                    }
+                    Text {
+                        text: model.message
+                        anchors { left:tagViewFC.right; verticalCenter: tagViewFC.verticalCenter; leftMargin: 5 }
                     }
                 }
             }

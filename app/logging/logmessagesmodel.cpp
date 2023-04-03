@@ -7,10 +7,16 @@
 
 #include "hudlogmessagesmodel.h"
 
-LogMessagesModel &LogMessagesModel::instance()
+LogMessagesModel &LogMessagesModel::instanceOHD()
 {
     static LogMessagesModel* instance=new LogMessagesModel();
     return *instance;
+}
+
+LogMessagesModel &LogMessagesModel::instanceFC()
+{
+    static LogMessagesModel* instance_fc=new LogMessagesModel();
+    return *instance_fc;
 }
 
 LogMessagesModel::LogMessagesModel(QObject *parent) :
@@ -108,7 +114,7 @@ void LogMessagesModel::addData(LogMessageData logMessageData)
     }
     //qDebug()<<"LogMessagesModel::addData"<<logMessageData.message;
     // We limit logging to X log messages here
-    if(m_data.size()>=30){
+    if(m_data.size()>=MAX_N_STORED_LOG_MESSAGES){
         // remove oldest one
         removeData(0);
     }

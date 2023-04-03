@@ -271,7 +271,8 @@ int main(int argc, char *argv[]) {
     engine.rootContext()->setContextProperty("_qrenderstats", &QRenderStats::instance());
 
     write_platform_context_properties(engine);
-    engine.rootContext()->setContextProperty("_logMessagesModel", &LogMessagesModel::instance());
+    engine.rootContext()->setContextProperty("_ohdlogMessagesModel", &LogMessagesModel::instanceOHD());
+    engine.rootContext()->setContextProperty("_fclogMessagesModel", &LogMessagesModel::instanceFC());
     engine.rootContext()->setContextProperty("_hudLogMessagesModel", &HUDLogMessagesModel::instance());
 
 #ifdef QOPENHD_HAS_MAVSDK_MAVLINK_TELEMETRY
@@ -385,7 +386,7 @@ int main(int argc, char *argv[]) {
 
     QRenderStats::instance().register_to_root_window(engine);
 
-    LogMessagesModel::instance().addLogMessage("QOpenHD","running");
+    LogMessagesModel::instanceOHD().addLogMessage("QOpenHD","running");
     const int retval = app.exec();
 
     return retval;

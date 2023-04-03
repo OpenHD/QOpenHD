@@ -243,57 +243,6 @@ ScrollView {
                 color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
 
                 Text {
-                    text: qsTr("Top/bottom bars")
-                    font.weight: Font.Bold
-                    font.pixelSize: 13
-                    anchors.leftMargin: 8
-                    verticalAlignment: Text.AlignVCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: 224
-                    height: elementHeight
-                    anchors.left: parent.left
-                }
-
-                ComboBox {
-                    height: elementHeight
-                    anchors.right: parent.right
-                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.horizontalCenter: parent.horizonatalCenter
-                    width: 320
-                    model: ListModel {
-                        id: bar_behavior
-                        ListElement { text: qsTr("Hide") ; behavior: "none" }
-                        ListElement { text: qsTr("Transparent black") ; behavior: "black" }
-                        ListElement { text: qsTr("Hide when drone armed") ; behavior: "disappear" }
-                        ListElement { text: qsTr("Turn red when drone armed") ; behavior: "red" }
-
-                    }
-                    textRole: "text"
-                    // @disable-check M223
-                    Component.onCompleted: {
-                        // @disable-check M223
-                        for (var i = 0; i < model.count; i++) {
-                            // @disable-check M222
-                            var choice = model.get(i);
-                            // @disable-check M223
-                            if (choice.behavior == settings.bar_behavior) {
-                                currentIndex = i;
-                            }
-                        }
-                    }
-                    onCurrentIndexChanged: {
-                        settings.bar_behavior = bar_behavior.get(currentIndex).behavior
-                    }
-                }
-            }
-
-            Rectangle {
-                width: parent.width
-                height: rowHeight
-                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                Text {
                     text: qsTr("Show Downlink RSSI")
                     font.weight: Font.Bold
                     font.pixelSize: 13

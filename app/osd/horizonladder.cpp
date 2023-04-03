@@ -5,49 +5,68 @@
 #include <QPainter>
 #include <math.h>
 
+#include "common/TimeHelper.hpp"
 #include "debug_overdraw.hpp"
 
 HorizonLadder::HorizonLadder(QQuickItem *parent): QQuickPaintedItem(parent) {
     qDebug() << "HorizonLadder::HorizonLadder()";
     setRenderTarget(RenderTarget::FramebufferObject);
 
-    m_font.setPixelSize(14);
+    //m_font.setPixelSize(14);
+    m_font.setPointSize(14);
 }
 
 void HorizonLadder::paint(QPainter* painter) {
     painter->save();
+    //const auto before_paint=std::chrono::steady_clock::now();
     if(ENABLE_DEBUG_OVERDRAW){
         setFillColor(QColor::fromRgb(0,255,0,200));
     }
 
     painter->setRenderHint(QPainter::Antialiasing);
-    painter->setRenderHint(QPainter::TextAntialiasing);
+    //painter->setRenderHint(QPainter::TextAntialiasing);
+    // according to this: https://bugreports.qt.io/browse/QTBUG-93475, this should fix the weird artifacts on text - but it doesn't
+    // make a difference in my case
+    painter->setRenderHint(QPainter::SmoothPixmapTransform);
 
     painter->setFont(m_font);
 
-    bool horizonInvertPitch = m_horizonInvertPitch;
-    bool horizonInvertRoll = m_horizonInvertRoll;
-    double horizonWidth = m_horizonWidth;
-    int horizonSpacing = m_horizonSpacing;
-    bool horizonShowLadder = m_horizonShowLadder;
-    int horizonRange = m_horizonRange;
-    int horizonStep = m_horizonStep;
+    const bool horizonInvertPitch = m_horizonInvertPitch;
+    const bool horizonInvertRoll = m_horizonInvertRoll;
+    const double horizonWidth = m_horizonWidth;
+    const int horizonSpacing = m_horizonSpacing;
+    const bool horizonShowLadder = m_horizonShowLadder;
+    const int horizonRange = m_horizonRange;
+    const int horizonStep = m_horizonStep;
+    const bool show_center_indicator = m_show_center_indicator;
+    // we use fillRect for the ladder lines, this adjust how big the linesize is (e.g. how strong the stroke)
+    const double ladder_stroke_faktor=1.0;
 
-    auto roll = m_roll;
-    auto pitch = m_pitch;
+    auto roll_degree = m_roll;
+    auto pitch_degree = m_pitch;
 
     if (horizonInvertRoll == true){
-        roll=roll*-1;
+        roll_degree=roll_degree*-1;
     }
     if (horizonInvertPitch == true){
-        pitch=pitch*-1;
+        pitch_degree=pitch_degree*-1;
     }
     //weird rounding issue where decimals make ladder dissappear
-    roll = round(roll);
-    pitch = round(pitch);
+    roll_degree = round(roll_degree);
+    pitch_degree = round(pitch_degree);
+    //qDebug()<<"Roll:"<<roll_degree<<" Pitch:"<<pitch_degree;
+
+    if(show_center_indicator){
+        painter->setPen(m_color);
+        // Line always drawn in the center to have some orientation where the center is
+        //const auto line_w= 100*horizonWidth * 0.2;
+        const auto circle_r= 100*horizonWidth * 0.05;
+        //painter->drawLine(width()/2-(line_w/2),height()/2,width()/2+(line_w/2),height()/2);
+        painter->drawEllipse(QPointF(width()/2,height()/2),circle_r,circle_r);
+    }
 
     painter->translate(width()/2,height()/2);
-    painter->rotate(roll*-1);
+    painter->rotate(roll_degree*-1);
     painter->translate((width()/2)*-1,(height()/2)*-1);
 
     const auto pos_x= width()/2;
@@ -68,8 +87,8 @@ void HorizonLadder::paint(QPainter* painter) {
     int n;
     int startH;
     int stopH;
-    startH = pitch - vrange/2;
-    stopH = pitch + vrange/2;
+    startH = pitch_degree - vrange/2;
+    stopH = pitch_degree + vrange/2;
     if (startH<-90) startH = -90;
     if (stopH>90) stopH = 90;
 
@@ -80,7 +99,7 @@ void HorizonLadder::paint(QPainter* painter) {
         if (i>0 && i*ratio<30 && m_showHorizonHeadingLadder ) i=i+ 30/ratio;
 
         k = i*step;
-        y = pos_y - (i - 1.0*pitch/step)*ratio;
+        y = pos_y - (i - 1.0*pitch_degree/step)*ratio;
         if (horizonShowLadder == true) {
             if (i != 0) {
 
@@ -103,87 +122,93 @@ void HorizonLadder::paint(QPainter* painter) {
 
                 if ((i > 0)) {
                     //Upper ladders
+                    // default to stroke strength of 2 (I think it is pixels)
+                    const auto stroke_s=2*ladder_stroke_faktor;
 
                     //left upper cap
                     painter->setPen(m_color);
-                    painter->fillRect(QRectF(px , y , 2 , width_ladder/24), m_color);
+                    painter->fillRect(QRectF(px , y , stroke_s , width_ladder/24), m_color);
                     painter->setPen(m_glow);
-                    painter->drawRect(QRectF(px , y , 2 , width_ladder/24));
+                    painter->drawRect(QRectF(px , y , stroke_s , width_ladder/24));
 
                     //left upper line
                     painter->setPen(m_color);
-                    painter->fillRect(QRectF(px , y , width_ladder/3 , 2), m_color);
+                    painter->fillRect(QRectF(px , y , width_ladder/3 , stroke_s), m_color);
                     painter->setPen(m_glow);
-                    painter->drawRect(QRectF(px , y , width_ladder/3 , 2));
+                    painter->drawRect(QRectF(px , y , width_ladder/3 , stroke_s));
 
                     //right upper cap
                     painter->setPen(m_color);
-                    painter->fillRect(QRectF(px+width_ladder-2 , y , 2 , width_ladder/24), m_color);
+                    painter->fillRect(QRectF(px+width_ladder-2 , y , stroke_s , width_ladder/24), m_color);
                     painter->setPen(m_glow);
-                    painter->drawRect(QRectF(px+width_ladder-2 , y , 2 , width_ladder/24));
+                    painter->drawRect(QRectF(px+width_ladder-2 , y , stroke_s , width_ladder/24));
 
                     //right upper line
                     painter->setPen(m_color);
-                    painter->fillRect(QRectF(px+width_ladder*2/3 , y , width_ladder/3 , 2), m_color);
+                    painter->fillRect(QRectF(px+width_ladder*2/3 , y , width_ladder/3 , stroke_s), m_color);
                     painter->setPen(m_glow);
-                    painter->drawRect(QRectF(px+width_ladder*2/3 , y , width_ladder/3 , 2));
+                    painter->drawRect(QRectF(px+width_ladder*2/3 , y , width_ladder/3 , stroke_s));
                     painter->setPen(m_color);
 
                 } else if (i < 0) {
                     // Lower ladders
+                    // default to stroke strength of 2 (I think it is pixels)
+                    const auto stroke_s=2*ladder_stroke_faktor;
 
                     //left to right
                     //left lower cap
                     painter->setPen(m_color);
-                    painter->fillRect(QRectF(px , y-(width_ladder/24)+2 , 2 , width_ladder/24), m_color);
+                    painter->fillRect(QRectF(px , y-(width_ladder/24)+2 , stroke_s , width_ladder/24), m_color);
                     painter->setPen(m_glow);
-                    painter->drawRect(QRectF(px , y-(width_ladder/24)+2 , 2 , width_ladder/24));
+                    painter->drawRect(QRectF(px , y-(width_ladder/24)+2 , stroke_s , width_ladder/24));
                     //1l
                     painter->setPen(m_color);
-                    painter->fillRect(QRectF(px , y , width_ladder/12 , 2), m_color);
+                    painter->fillRect(QRectF(px , y , width_ladder/12 , stroke_s), m_color);
                     painter->setPen(m_glow);
-                    painter->drawRect(QRectF(px , y , width_ladder/12 , 2));
+                    painter->drawRect(QRectF(px , y , width_ladder/12 , stroke_s));
                     //2l
                     painter->setPen(m_color);
-                    painter->fillRect(QRectF(px+(width_ladder/12)*1.5 , y , width_ladder/12 , 2), m_color);
+                    painter->fillRect(QRectF(px+(width_ladder/12)*1.5 , y , width_ladder/12 , stroke_s), m_color);
                     painter->setPen(m_glow);
-                    painter->drawRect(QRectF(px+(width_ladder/12)*1.5 , y , width_ladder/12 , 2));
+                    painter->drawRect(QRectF(px+(width_ladder/12)*1.5 , y , width_ladder/12 , stroke_s));
                     //3l
                     painter->setPen(m_color);
-                    painter->fillRect(QRectF(px+(width_ladder/12)*3 , y , width_ladder/12 , 2), m_color);
+                    painter->fillRect(QRectF(px+(width_ladder/12)*3 , y , width_ladder/12 , stroke_s), m_color);
                     painter->setPen(m_glow);
-                    painter->drawRect(QRectF(px+(width_ladder/12)*3 , y , width_ladder/12 , 2));
+                    painter->drawRect(QRectF(px+(width_ladder/12)*3 , y , width_ladder/12 , stroke_s));
 
                     //right lower cap
                     painter->setPen(m_color);
-                    painter->fillRect(QRectF(px+width_ladder-2 , y-(width_ladder/24)+2 , 2 , width_ladder/24), m_color);
+                    painter->fillRect(QRectF(px+width_ladder-2 , y-(width_ladder/24)+2 , stroke_s , width_ladder/24), m_color);
                     painter->setPen(m_glow);
-                    painter->drawRect(QRectF(px+width_ladder-2 , y-(width_ladder/24)+2 , 2 , width_ladder/24));
+                    painter->drawRect(QRectF(px+width_ladder-2 , y-(width_ladder/24)+2 , stroke_s , width_ladder/24));
                     //1r ///spacing on these might be a bit off
                     painter->setPen(m_color);
-                    painter->fillRect(QRectF(px+(width_ladder/12)*8 , y , width_ladder/12 , 2), m_color);
+                    painter->fillRect(QRectF(px+(width_ladder/12)*8 , y , width_ladder/12 , stroke_s), m_color);
                     painter->setPen(m_glow);
-                    painter->drawRect(QRectF(px+(width_ladder/12)*8 , y , width_ladder/12 , 2));
+                    painter->drawRect(QRectF(px+(width_ladder/12)*8 , y , width_ladder/12 , stroke_s));
                     //2r ///spacing on these might be a bit off
                     painter->setPen(m_color);
-                    painter->fillRect(QRectF(px+(width_ladder/12)*9.5 , y , width_ladder/12 , 2), m_color);
+                    painter->fillRect(QRectF(px+(width_ladder/12)*9.5 , y , width_ladder/12 , stroke_s), m_color);
                     painter->setPen(m_glow);
-                    painter->drawRect(QRectF(px+(width_ladder/12)*9.5 , y , width_ladder/12 , 2));
+                    painter->drawRect(QRectF(px+(width_ladder/12)*9.5 , y , width_ladder/12 , stroke_s));
                     //3r  ///spacing on these might be a bit off tried a decimal here
                     painter->setPen(m_color);
-                    painter->fillRect(QRectF(px+(width_ladder*.9166) , y , width_ladder/12 , 2), m_color);
+                    painter->fillRect(QRectF(px+(width_ladder*.9166) , y , width_ladder/12 , stroke_s), m_color);
                     painter->setPen(m_glow);
-                    painter->drawRect(QRectF(px+(width_ladder*.9166) , y , width_ladder/12 , 2));
+                    painter->drawRect(QRectF(px+(width_ladder*.9166) , y , width_ladder/12 , stroke_s));
                     painter->setPen(m_color);
 
 
                 }
             } else { // i==0
+                // default to stroke strength of 3 - a bit bigger than the non center lines
+                const auto stroke_s=3*ladder_stroke_faktor;
 
                 //Center line
-                painter->fillRect(QRectF(pos_x-width_ladder*2.5/2, y, width_ladder*2.5, 3), m_color);
+                painter->fillRect(QRectF(pos_x-width_ladder*2.5/2, y, width_ladder*2.5, stroke_s), m_color);
                 painter->setPen(m_glow);
-                painter->drawRect(QRectF(pos_x-width_ladder*2.5/2, y, width_ladder*2.5, 3));
+                painter->drawRect(QRectF(pos_x-width_ladder*2.5/2, y, width_ladder*2.5, stroke_s));
             }
         }
     }
@@ -193,7 +218,7 @@ void HorizonLadder::paint(QPainter* painter) {
 
 
     // ticks up/down position
-    y = pos_y + (1.0*pitch/step * ratio)-8;
+    y = pos_y + (1.0*pitch_degree/step * ratio)-8;
 
     // labels up/down position
     auto y_label = y - 4;
@@ -338,6 +363,8 @@ void HorizonLadder::paint(QPainter* painter) {
     //painter->drawPoint(QPoint(width()/2,height()/2));
 
     painter->restore();
+    //const auto paint_delta=std::chrono::steady_clock::now()-before_paint;
+    //qDebug()<<"CPU time draw horizon:"<<MyTimeHelper::R(paint_delta).c_str();
 }
 
 

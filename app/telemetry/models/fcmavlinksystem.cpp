@@ -394,7 +394,7 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         mavlink_statustext_t parsedMsg;
         mavlink_msg_statustext_decode(&msg,&parsedMsg);
         auto tmp=Telemetryutil::statustext_convert(parsedMsg);
-        LogMessagesModel::instance().addLogMessage("FC",tmp.message.c_str(),tmp.level);
+        LogMessagesModel::instanceFC().addLogMessage("FC",tmp.message.c_str(),tmp.level);
         if(get_SHOW_FC_MESSAGES_IN_HUD()){
             std::stringstream ss;
             ss<<"["<<tmp.message<<"]";

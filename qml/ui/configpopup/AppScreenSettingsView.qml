@@ -51,8 +51,10 @@ ScrollView {
                     font.pixelSize: 14
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    from : 0.8
+                    from : 0.5
                     to : 2.0
+                    // Important: Looks as without .1 steps, we can get rendering artfacts
+                    stepSize: .1
 
                     anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
                     value: settings.global_scale
@@ -130,6 +132,21 @@ ScrollView {
                     onCurrentIndexChanged: {
                         settings.screen_custom_font_dpi = font_dpi.get(currentIndex).value
                     }
+                }
+            }
+            SettingBaseElement{
+                m_short_description: "Force full screen"
+                m_long_description: "Force Full screen if QOpenHD is not already full screen"
+
+                Switch {
+                    width: 32
+                    height: elementHeight
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    checked: settings.dev_force_show_full_screen
+                    onCheckedChanged: settings.dev_force_show_full_screen = checked
                 }
             }
         }

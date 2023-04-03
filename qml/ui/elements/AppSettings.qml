@@ -77,9 +77,6 @@ Settings {
     // Note that low fps like on embedded devices also adds some latency - because of that, default to 100ms here
     property int smoothing: 100
 
-    property string bar_behavior: "red"
-
-
     property int log_level: 6
 
     property bool show_downlink_rssi: true
@@ -191,6 +188,8 @@ Settings {
     property bool show_horizon_ladder: true
     property bool show_horizon_heading_ladder: true
     property bool show_horizon_home: true
+    property bool horizon_show_center_indicator: true
+    property double horizon_clip_area_scale: 1.0
 
     property bool heading_ladder_text: true //shared between heading and horizon
 
@@ -325,5 +324,5 @@ Settings {
     property bool primary_video_scale_to_fit: false
 
     // HUD WB link rate control element settings
-    property bool wb_link_rate_control_widget_show: false
+    property bool wb_link_rate_control_widget_show: true
 }

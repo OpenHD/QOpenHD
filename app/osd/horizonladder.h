@@ -4,6 +4,7 @@
 #include <QQuickItem>
 #include <QQuickPaintedItem>
 #include <QPainter>
+#include "../../lib/lqtutils_master/lqtutils_prop.h"
 
 class HorizonLadder : public QQuickPaintedItem {
     Q_OBJECT
@@ -26,6 +27,11 @@ class HorizonLadder : public QQuickPaintedItem {
     Q_PROPERTY(bool showHorizonHome MEMBER m_showHorizonHome WRITE setShowHorizonHome NOTIFY showHorizonHomeChanged)
 
     Q_PROPERTY(QString fontFamily MEMBER m_fontFamily WRITE setFontFamily NOTIFY fontFamilyChanged)
+
+    // Indicates the center
+    L_RW_PROP(bool,show_center_indicator, set_show_center_indicator, true)
+    // Adjust the stroke strength of the lines, in percent
+    //L_RW_PROP(double,line_stroke_strength_perc, set_line_stroke_strength_perc, 100)
 
 public:
     explicit HorizonLadder(QQuickItem* parent = nullptr);
