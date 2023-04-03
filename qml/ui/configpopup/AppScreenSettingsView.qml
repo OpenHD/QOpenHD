@@ -134,6 +134,21 @@ ScrollView {
                     }
                 }
             }
+            SettingBaseElement{
+                m_short_description: "Force full screen"
+                m_long_description: "Force Full screen if QOpenHD is not already full screen"
+
+                Switch {
+                    width: 32
+                    height: elementHeight
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    checked: settings.dev_force_show_full_screen
+                    onCheckedChanged: settings.dev_force_show_full_screen = checked
+                }
+            }
         }
     }
 }

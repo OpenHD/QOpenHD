@@ -77,9 +77,6 @@ Settings {
     // Note that low fps like on embedded devices also adds some latency - because of that, default to 100ms here
     property int smoothing: 100
 
-    property string bar_behavior: "red"
-
-
     property int log_level: 6
 
     property bool show_downlink_rssi: true

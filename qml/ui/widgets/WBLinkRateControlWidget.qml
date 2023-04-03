@@ -3,6 +3,7 @@ import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
 import QtGraphicalEffects 1.12
 import QtQuick.Shapes 1.0
+import QtQuick.Controls.Material 2.12
 
 import Qt.labs.settings 1.0
 
@@ -53,13 +54,24 @@ BaseWidget {
 
             Item {
                 height: 32
+                width: parent.width
                 Text {
-                    text: "Control link & video bitrate"
+                    id: simpleDescription
+                    text: "Trade Range/Quality"
                     color: "white"
                     font.bold: true
                     font.pixelSize: detailPanelFontPixels
                     anchors.left: parent.left
                 }
+                /*Button{
+                    height: 32
+                    width: 32
+                    text: "\uf05a"
+                    anchors.left: simpleDescription.right
+                    anchors.top: simpleDescription.top
+                    Material.background:Material.LightBlue
+                    leftPadding: 5
+                }*/
             }
             Item{
                 width: parent.width
@@ -124,7 +136,7 @@ BaseWidget {
                 width: parent.width
                 height: 14
                 color: settings.color_text
-                text: qsTr("Exp(WBLink)")
+                text: qsTr("(WB)Link")
                 anchors.bottom: parent.bottom
                 anchors.bottomMargin: 0
                 verticalAlignment: Text.AlignBottom
