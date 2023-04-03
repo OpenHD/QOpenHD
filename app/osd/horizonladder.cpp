@@ -42,18 +42,19 @@ void HorizonLadder::paint(QPainter* painter) {
     // we use fillRect for the ladder lines, this adjust how big the linesize is (e.g. how strong the stroke)
     const double ladder_stroke_faktor=1.0;
 
-    auto roll = m_roll;
-    auto pitch = m_pitch;
+    auto roll_degree = m_roll;
+    auto pitch_degree = m_pitch;
 
     if (horizonInvertRoll == true){
-        roll=roll*-1;
+        roll_degree=roll_degree*-1;
     }
     if (horizonInvertPitch == true){
-        pitch=pitch*-1;
+        pitch_degree=pitch_degree*-1;
     }
     //weird rounding issue where decimals make ladder dissappear
-    roll = round(roll);
-    pitch = round(pitch);
+    roll_degree = round(roll_degree);
+    pitch_degree = round(pitch_degree);
+    //qDebug()<<"Roll:"<<roll_degree<<" Pitch:"<<pitch_degree;
 
     if(show_center_indicator){
         painter->setPen(m_color);
@@ -65,7 +66,7 @@ void HorizonLadder::paint(QPainter* painter) {
     }
 
     painter->translate(width()/2,height()/2);
-    painter->rotate(roll*-1);
+    painter->rotate(roll_degree*-1);
     painter->translate((width()/2)*-1,(height()/2)*-1);
 
     const auto pos_x= width()/2;
@@ -86,8 +87,8 @@ void HorizonLadder::paint(QPainter* painter) {
     int n;
     int startH;
     int stopH;
-    startH = pitch - vrange/2;
-    stopH = pitch + vrange/2;
+    startH = pitch_degree - vrange/2;
+    stopH = pitch_degree + vrange/2;
     if (startH<-90) startH = -90;
     if (stopH>90) stopH = 90;
 
@@ -98,7 +99,7 @@ void HorizonLadder::paint(QPainter* painter) {
         if (i>0 && i*ratio<30 && m_showHorizonHeadingLadder ) i=i+ 30/ratio;
 
         k = i*step;
-        y = pos_y - (i - 1.0*pitch/step)*ratio;
+        y = pos_y - (i - 1.0*pitch_degree/step)*ratio;
         if (horizonShowLadder == true) {
             if (i != 0) {
 
@@ -217,7 +218,7 @@ void HorizonLadder::paint(QPainter* painter) {
 
 
     // ticks up/down position
-    y = pos_y + (1.0*pitch/step * ratio)-8;
+    y = pos_y + (1.0*pitch_degree/step * ratio)-8;
 
     // labels up/down position
     auto y_label = y - 4;
