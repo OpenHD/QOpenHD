@@ -324,5 +324,5 @@ Settings {
     property bool primary_video_scale_to_fit: false
 
     // HUD WB link rate control element settings
-    property bool wb_link_rate_control_widget_show: false
+    property bool wb_link_rate_control_widget_show: true
 }
