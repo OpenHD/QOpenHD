@@ -5,7 +5,9 @@ import QtQuick.Window 2.14
 
 import "../elements";
 
-
+// The actual Map canvas is in map/MapComponent.qml
+// Here we just do integration with BaseWidget and stuff like resizing
+// Also the .qml file is loaded dynamically, to avoid compilation issues where we don't have the map dependencies
 MapWidgetForm {
     id: mapWidget
 
@@ -48,7 +50,7 @@ MapWidgetForm {
                 map.destroy()
             }
 
-            var component = Qt.createComponent("qrc:///ui/elements/MapComponent.qml");
+            var component = Qt.createComponent("qrc:///ui/widgets/map/MapComponent.qml");
             if (component.status === Component.Ready) {
                 map = component.createObject(parent, {"anchors.fill": parent});
                 map.plugin = plugin;

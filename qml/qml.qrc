@@ -171,7 +171,7 @@
         <file>ui/widgets/QRenderStatsWidget.qml</file>
         <file>ui/widgets/MapWidget.qml</file>
         <file>ui/widgets/MapWidgetForm.ui.qml</file>
-        <file>ui/elements/MapComponent.qml</file>
+        <file>ui/widgets/map/MapComponent.qml</file>
         <file>ui/configpopup/RcDebugScreenOpenHD.qml</file>
         <file>ui/configpopup/ConfigPopup.qml</file>
         <file>resources/master1.png</file>

@@ -6,6 +6,7 @@ import QtLocation 5.15
 import QtPositioning 5.15
 import OpenHD 1.0
 
+// This is the actual Map "canvas" file - the other 2 .qml files are just handling resizing and integration with BaseWidget
 Map {
     id: map
     copyrightsVisible: false
