@@ -29,6 +29,22 @@
 class FCMavlinkSystem : public QObject
 {
     Q_OBJECT
+public:
+    explicit FCMavlinkSystem(QObject *parent = nullptr);
+    // singleton for accessing the model from c++
+    static FCMavlinkSystem& instance();
+    // Process a new telemetry message coming from the FC mavlink system
+    // return true if we know what to do with this message type (aka this message type has been consumed)
+    bool process_message(const mavlink_message_t& msg);
+    // mavlink sys id of the FC. Pretty much always 1, but it is not a hard requirement that FC always use a sys id of 1.
+    // If the FC has not been discovered yet (mavsdk::system not yet set), return std::nullopt.
+    std::optional<uint8_t> get_fc_sys_id();
+    // Set the mavlink system reference, once discovered.
+    // If we can get a telemetry value (e.g. the altitude) by subscribing to a mavlink message this is preferred over
+    // manually parsing the message, and we register the callbacks to mavsdk when this is called (since we need the "system"
+    // reference for it)
+    void set_system(std::shared_ptr<mavsdk::System> system);
+public: // Stuff needs to be public for qt
     // These members can be written & read from c++, but are only readable from qml (which is a common recommendation for QT application(s)).
     // Aka we just set them in c++ by calling the setter declared from the macro, which then emits the changed signal if needed
     // and therefore updates the corresponding UI element in QT
@@ -137,24 +153,6 @@ class FCMavlinkSystem : public QObject
     L_RO_PROP(int,mission_waypoints_current,set_mission_waypoints_current,-1);
     // Current mission type, verbose as string for the user
     L_RO_PROP(QString,mission_current_type,set_mission_current_type,"Unknown");
-public:
-    explicit FCMavlinkSystem(QObject *parent = nullptr);
-    // singleton for accessing the model from c++
-    static FCMavlinkSystem& instance();
-    // Called in main.cpp to egister the models for qml
-    static void register_for_qml(QQmlContext* qml_context);
-public:
-    // Process a new telemetry message coming from the FC mavlink system
-    // return true if we know what to do with this message type (aka this message type has been consumed)
-    bool process_message(const mavlink_message_t& msg);
-    // mavlink sys id of the FC. Pretty much always 1, but it is not a hard requirement that FC always use a sys id of 1.
-    // If the FC has not been discovered yet (mavsdk::system not yet set), return std::nullopt.
-    std::optional<uint8_t> get_fc_sys_id();
-    // Set the mavlink system reference, once discovered.
-    // If we can get a telemetry value (e.g. the altitude) by subscribing to a mavlink message this is preferred over
-    // manually parsing the message, and we register the callbacks to mavsdk when this is called (since we need the "system"
-    // reference for it)
-    void set_system(std::shared_ptr<mavsdk::System> system);
 public:
     void telemetryStatusMessage(QString message, int level);
     void calculate_home_distance();

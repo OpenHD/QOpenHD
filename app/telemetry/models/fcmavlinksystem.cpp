@@ -29,10 +29,6 @@ FCMavlinkSystem& FCMavlinkSystem::instance() {
     return *instance;
 }
 
-void FCMavlinkSystem::register_for_qml(QQmlContext *qml_context)
-{
-    qml_context->setContextProperty("_fcMavlinkSystem", &FCMavlinkSystem::instance());
-}
 
 void FCMavlinkSystem::set_system(std::shared_ptr<mavsdk::System> system)
 {
