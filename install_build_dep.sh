@@ -44,7 +44,7 @@ bash build_install_mavsdk_static.sh || exit 1
  elif [[ "${PLATFORM}" == "rock5" ]] ; then
     install_rock_packages
  else
-    echo "platform not supported"
+    echo "platform not supported "
  fi
 
  if [[ "${QTTYPE}" == "custom" ]]; then
