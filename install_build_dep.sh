@@ -20,7 +20,7 @@ function install_x86_packages {
 PLATFORM_PACKAGES=""
 }
 function install_rock_packages {
-PLATFORM_PACKAGES=""
+PLATFORM_PACKAGES="qml-module-qt-labs-platform"
 }
 function install_mavsdk {
 bash build_install_mavsdk_static.sh || exit 1
