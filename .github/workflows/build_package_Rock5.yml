@@ -2,9 +2,7 @@ name: build_package_rock5
 
 on:
   push:
-    branches: [ "2.3-evo" ]
-  pull_request:
-    branches: [ "2.3-evo" ]
+
 
 jobs:
   build:
