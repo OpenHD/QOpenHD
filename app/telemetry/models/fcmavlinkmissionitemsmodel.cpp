@@ -6,17 +6,6 @@ FCMavlinkMissionItemsModel::FCMavlinkMissionItemsModel(QObject *parent)
     :  QAbstractListModel(parent)
 {
     connect(this, &FCMavlinkMissionItemsModel::signalAddElement, this, &FCMavlinkMissionItemsModel::do_not_call_me_add_element);
-    /*double lat=0;
-    for(int i=0;i<10;i++){
-        add_element({lat,0});
-        lat += 2;
-    }*/
-    for(int i=0;i<100;i++){
-        //test_add();
-    }
-    /*m_timer = new QTimer(this);
-    QObject::connect(m_timer, &QTimer::timeout, this, &FCMavlinkMissionItemsModel::timercb);
-    m_timer->start(1000);*/
 }
 
 FCMavlinkMissionItemsModel& FCMavlinkMissionItemsModel::instance()
@@ -32,18 +21,16 @@ void FCMavlinkMissionItemsModel::add_element(FCMavlinkMissionItemsModel::Element
 
 void FCMavlinkMissionItemsModel::hack_add_el_if_nonexisting(double lat, double lon,int mission_index)
 {
+    if(m_map.size()>=MAX_N_ELEMENTS){
+        qDebug()<<"More than "<<MAX_N_ELEMENTS<<" waypoints are not supported";
+        return;
+    }
     auto tmp=std::make_pair(lat,lon);
     if(m_map.find(tmp)==m_map.end()){
         add_element({lat,lon,mission_index});
         m_map[tmp]=nullptr;
     }
     //qDebug()<<"N mission items:"<<m_map.size();
-}
-
-void FCMavlinkMissionItemsModel::test_add()
-{
-    add_element({last,last});
-    last +=1;
 }
 
 int FCMavlinkMissionItemsModel::rowCount( const QModelIndex& parent) const
@@ -111,10 +98,5 @@ void FCMavlinkMissionItemsModel::addData(FCMavlinkMissionItemsModel::Element dat
     m_data.push_back(data);
     endInsertRows();
     //qDebug()<<"B Row count:"<<rowCount();
-}
-
-void FCMavlinkMissionItemsModel::timercb()
-{
-    test_add();
 }
 

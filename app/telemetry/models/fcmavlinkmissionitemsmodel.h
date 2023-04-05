@@ -27,7 +27,6 @@ public:
     Q_INVOKABLE void add_element(FCMavlinkMissionItemsModel::Element el);
     // To avoid duplicates, we keep a map of already added mission waypoints and only add them if they don't exist already
     void hack_add_el_if_nonexisting(double lat,double lon,int mission_index);
-    void test_add();
 private:
     enum Roles {
         LatitudeRole =Qt::UserRole,
@@ -49,9 +48,8 @@ signals:
     void signalAddElement(double lat,double lon,int mission_index);
 private:
     std::map<std::pair<double,double>,void*> m_map;
-    double last=0;
-    QTimer* m_timer = nullptr;
-    void timercb();
+    // Memory safety check
+    static constexpr int MAX_N_ELEMENTS=100;
 };
 
 #endif // FCMAVLINKMISSIONSMODEL_H
