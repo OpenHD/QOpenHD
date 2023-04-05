@@ -37,7 +37,7 @@ void FCMavlinkMissionItemsModel::hack_add_el_if_nonexisting(double lat, double l
         add_element({lat,lon,mission_index});
         m_map[tmp]=nullptr;
     }
-    qDebug()<<"N mission items:"<<m_map.size();
+    //qDebug()<<"N mission items:"<<m_map.size();
 }
 
 void FCMavlinkMissionItemsModel::test_add()
@@ -56,9 +56,9 @@ int FCMavlinkMissionItemsModel::rowCount( const QModelIndex& parent) const
 
 QVariant FCMavlinkMissionItemsModel::data(const QModelIndex &index, int role) const
 {
-    qDebug()<<"FCMavlinkMissionItemsModel::data at "<<index<<" Role:"<<role;
+    //qDebug()<<"FCMavlinkMissionItemsModel::data at "<<index<<" Role:"<<role;
     if ( !index.isValid() ){
-        qDebug()<<"invalid index";
+        //qDebug()<<"invalid index";
         return QVariant();
     }
 
