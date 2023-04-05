@@ -92,11 +92,9 @@ void FCMavlinkMissionItemsModel::removeData(int row)
 
 void FCMavlinkMissionItemsModel::addData(FCMavlinkMissionItemsModel::Element data)
 {
-    //qDebug()<<"FCMavlinkMissionItemsModel::addData"<<data.latitude<<","<<data.longitude;
-    //qDebug()<<"A Row count:"<<rowCount();
+    //qDebug()<<"FCMavlinkMissionItemsModel::addData"<<data.latitude<<","<<data.longitude<<","<<data.mission_index;
     beginInsertRows(QModelIndex(), rowCount(), rowCount());
     m_data.push_back(data);
     endInsertRows();
-    //qDebug()<<"B Row count:"<<rowCount();
 }
 
