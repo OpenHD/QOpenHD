@@ -19,7 +19,7 @@ Map {
     gesture.acceptedGestures: MapGestureArea.PanGesture | MapGestureArea.FlickGesture | MapGestureArea.PinchGesture | MapGestureArea.RotationGesture | MapGestureArea.TiltGesture
     gesture.flickDeceleration: 3000
 
-    bearing: settings.map_orientation ? OpenHD.hdg : 360
+    bearing: settings.map_orientation ? _fcMavlinkSystem.hdg : 360
 
     property double userLat: 0.0
     property double userLon: 0.0
@@ -454,4 +454,70 @@ Map {
             }
         }
     }
+
+    Repeater{
+        id: repeaterMissionItems
+        model: _fcMavlinkMissionItemsModel
+        MapItemGroup {
+            id: delegateGroup
+
+            MapQuickItem {
+                coordinate: QtPositioning.coordinate(model.latitude,model.longitude)
+                /*sourceItem: Rectangle{
+                    width: 24
+                    height: 24
+                    color: "red"
+                    opacity: .5
+                }*/
+                sourceItem: Shape {
+                    anchors.fill: parent
+
+                    ShapePath {
+                        strokeColor: "red"
+                        fillColor: "red"
+                        strokeWidth: 1
+                        strokeStyle: ShapePath.SolidLine
+
+                        capStyle: ShapePath.RoundCap
+
+                        PathAngleArc {
+                            centerX: 0; centerY: 0
+                            radiusX: 10; radiusY: 10
+                            startAngle: 0
+                            sweepAngle: 360
+                        }
+                    }
+                }
+            }
+            Component.onCompleted: map.addMapItemGroup(this)
+        }
+    }
+
+    /*MapQuickItem {
+        id: waypoint1
+        coordinate: QtPositioning.coordinate(0.0,0.0)
+
+        anchorPoint.x : 0
+        anchorPoint.y : 0
+
+        sourceItem: Shape {
+            anchors.fill: parent
+
+            ShapePath {
+                strokeColor: "red"
+                fillColor: "red"
+                strokeWidth: 1
+                strokeStyle: ShapePath.SolidLine
+
+                capStyle: ShapePath.RoundCap
+
+                PathAngleArc {
+                    centerX: 0; centerY: 0
+                    radiusX: 10; radiusY: 10
+                    startAngle: 0
+                    sweepAngle: 360
+                }
+            }
+        }
+    }*/
 }

@@ -14,6 +14,7 @@
 #include <logging/logmessagesmodel.h>
 #include <logging/hudlogmessagesmodel.h>
 #include "mavsdk_helper.hpp"
+#include "fcmavlinkmissionitemsmodel.h"
 
 FCMavlinkSystem::FCMavlinkSystem(QObject *parent): QObject(parent) {
     m_flight_time_timer = new QTimer(this);
@@ -188,8 +189,10 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
     case MAVLINK_MSG_ID_GLOBAL_POSITION_INT: {
         mavlink_global_position_int_t global_position_int;
         mavlink_msg_global_position_int_decode(&msg, &global_position_int);
-        set_lat((double)global_position_int.lat / 10000000.0);
-        set_lon((double)global_position_int.lon / 10000000.0);
+        const double lat=static_cast<double>(global_position_int.lat) / 10000000.0;
+        const double lon=static_cast<double>(global_position_int.lon) / 10000000.0;
+        set_lat(lat);
+        set_lon(lon);
         set_boot_time(global_position_int.time_boot_ms);
         set_alt_rel(global_position_int.relative_alt/1000.0);
         // qDebug() << "Altitude relative " << alt_rel;
@@ -251,9 +254,17 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         break;
     }
     case MAVLINK_MSG_ID_MISSION_ITEM_INT:{
-        //qDebug()<<"Got MAVLINK_MSG_ID_MISSION_ITEM_INT";
+        qDebug()<<"Got MAVLINK_MSG_ID_MISSION_ITEM_INT";
         mavlink_mission_item_int_t item;
         mavlink_msg_mission_item_int_decode(&msg, &item);
+        {
+           double lat=static_cast<double>(item.x)* 1e-7;
+           double lon=static_cast<double>(item.y)* 1e-7;
+           //qDebug()<<"Lat:"<<lat<<", Lon:"<<lon;
+           //FCMavlinkMissionItemsModel::instance().add_element({lat,lon});
+           FCMavlinkMissionItemsModel::instance().hack_add_el_if_nonexisting(lat,lon);
+           //FCMavlinkMissionItemsModel::instance().test_add();
+        }
         break;
     }
     case MAVLINK_MSG_ID_GPS_GLOBAL_ORIGIN:{
@@ -914,6 +925,7 @@ bool FCMavlinkSystem::enable_disable_mission_updates(bool enable)
                 ss<<"Mission "<<res;
                 HUDLogMessagesModel::instance().add_message_warning(ss.str().c_str());
             }
+            qDebug()<<"mission items:"<<plan.mission_items.size();
             HUDLogMessagesModel::instance().add_message_info("Mission updates enabled");
         }else{
             HUDLogMessagesModel::instance().add_message_info("Mission updates already enabled");
