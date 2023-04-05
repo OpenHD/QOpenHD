@@ -28,23 +28,7 @@ Map {
     property int track_count: 0;
     property int track_skip: 1;
     property int track_limit: 100; //max number of drone track points before it starts averaging
-/* TODO mission waypoints- needs factoring
-    Connections {
-        //this deletes the lines drawn between mission waypoints
-        target: MissionWaypointManager
-        function onMapDeleteWaypoints(){
-            console.log("Map component: onMapDeleteWaypoints from polyline");
 
-            var waypoint_track_count = waypointTrack.pathLength();
-
-            if (waypoint_track_count>0){
-                for (var i = 0; i < waypoint_track_count; ++i) {
-                    waypointTrack.removeCoordinate(i);
-                }
-            }
-        }
-    }
-*/
     center {
         latitude: _fcMavlinkSystem.lat == 0.0 ? userLat : followDrone ? _fcMavlinkSystem.lat : 9000
         longitude: _fcMavlinkSystem.lon == 0.0 ? userLon : followDrone ? _fcMavlinkSystem.lon : 9000
@@ -455,6 +439,7 @@ Map {
         }
     }
 
+    // Show Mission Waypoints on the map
     Repeater{
         id: repeaterMissionItems
         model: _fcMavlinkMissionItemsModel
@@ -463,6 +448,7 @@ Map {
 
             MapQuickItem {
                 coordinate: QtPositioning.coordinate(model.latitude,model.longitude)
+                visible: settings.map_show_mission_waypoints
                 //sourceItem: Rectangle{
                 //    width: 24
                 //    height: 24
@@ -510,6 +496,7 @@ Map {
                 center: QtPositioning.coordinate(model.lat, model.lon)
                 radius: 5
             }*/
+            // IMPORTANT - REPEATER IS BUGGED WITH MAP; WON'T WORK OTHERWISE
             Component.onCompleted: map.addMapItemGroup(this)
         }
     }

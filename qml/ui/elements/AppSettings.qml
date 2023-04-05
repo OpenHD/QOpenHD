@@ -234,8 +234,8 @@ Settings {
     property bool show_map: false
     property double map_opacity: 1
     property bool map_orientation: false
-    property bool map_shape_circle: false
     property bool map_drone_track: true
+    property bool map_show_mission_waypoints: true
 
     property int map_zoom: 18
     property double map_size: 1

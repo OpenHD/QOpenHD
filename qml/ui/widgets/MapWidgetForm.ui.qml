@@ -208,13 +208,11 @@ BaseWidget {
                     onCheckedChanged: settings.map_drone_track = checked
                 }
             }
-
-            /*
             Item {
-                width: parent.width
+                width: 230
                 height: 32
                 Text {
-                    text: qsTr("Map shape Square / Round")
+                    text: qsTr("Show Mission waypoints")
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -225,13 +223,12 @@ BaseWidget {
                 Switch {
                     width: 32
                     height: parent.height
-                    anchors.rightMargin: 12
+                    anchors.rightMargin: 6
                     anchors.right: parent.right
-                    checked: settings.map_shape_circle
-                    onCheckedChanged: settings.map_shape_circle = checked
+                    checked: settings.map_show_mission_waypoints
+                    onCheckedChanged: settings.map_show_mission_waypoints = checked
                 }
             }
-            */
         }
     }
 //--- widgetInner only used to have something to shake ---
@@ -257,7 +254,6 @@ BaseWidget {
     Item {
         id: widgetInnerMap
         anchors.fill: parent
-        //opacity: mapExpanded ? 100 : settings.map_shape_circle ? 0 : settings.map_opacity
         opacity: mapExpanded ? 100 : settings.map_opacity
 /*
         Behavior on width {
@@ -285,7 +281,7 @@ BaseWidget {
 
             flat: true
 
-            visible: true //!mapExpanded && settings.map_shape_circle
+            visible: true
 
             checkable: false
 
@@ -449,8 +445,6 @@ BaseWidget {
                         width: parent.width
 
                         textRole: "description"
-
-
                     }
 
                     Item {

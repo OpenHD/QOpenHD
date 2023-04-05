@@ -12,7 +12,7 @@
 // dynamically sized mission waypoints. ("Map stuff)
 // This model pretty much only exposes mission items (dynamic size) such that we can make use of them
 // (draw them in .qml) for the map.
-// each mission item is pretty much really easy to define - a lattitude and longitude
+// each mission item is pretty much really easy to define - a lattitude, longitude and mission index
 class FCMavlinkMissionItemsModel : public QAbstractListModel
 {
     Q_OBJECT
