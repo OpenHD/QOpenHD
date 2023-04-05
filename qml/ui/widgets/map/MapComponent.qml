@@ -316,6 +316,7 @@ Map {
         }
     }
 
+    // In development
     MapPolyline {
         id: waypointTrack
 
@@ -324,7 +325,7 @@ Map {
     }
     // Show Mission Waypoints on the map
     Repeater{
-        id: repeaterMissionItems
+        id: repeaterMissionWaypoints
         model: _fcMavlinkMissionItemsModel
         MapItemGroup {
             id: delegateGroup
