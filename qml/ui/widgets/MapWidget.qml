@@ -56,13 +56,11 @@ MapWidgetForm {
             break
         }
         }
-        if (map) {
-            variantDropdown.model = map.supportedMapTypes
-            variantDropdown.currentIndex = settings.selected_map_variant
-            map.activeMapType = map.supportedMapTypes[variantDropdown.currentIndex]
-        }
+        setup_map_variant()
     }
 
+    // To create the map, we know the provider.
+    // The map variant (aka street view, terrain view, ...) is set later
     function createMap(parent, provider) {
         console.log("createMap(" + provider + ")");
         var plugin
@@ -81,18 +79,6 @@ MapWidgetForm {
             if (component.status === Component.Ready) {
                 map = component.createObject(parent, {"anchors.fill": parent});
                 map.plugin = plugin;
-                console.log("Map variant index:"+settings.selected_map_variant);
-                var variant = map.supportedMapTypes[settings.selected_map_variant];
-                if (variant) {
-                    console.log("Select map variant:"+variant);
-                    map.activeMapType = map.supportedMapTypes[settings.selected_map_variant];
-                } else {
-                    console.log("Selected map variants not found");
-                    // variant wasn't found in this provider so we must reset the setting and load
-                    // the default variant
-                    settings.selected_map_variant = 0;
-                    map.activeMapType = map.supportedMapTypes[settings.selected_map_variant];
-                }
 
                 map.gesture.enabled = true;
 
@@ -104,6 +90,15 @@ MapWidgetForm {
             }
         }else{
             console.log("Plugin does not support mapping");
+        }
+    }
+
+    function setup_map_variant(){
+        if (map) {
+            variantDropdown.model = map.supportedMapTypes
+            variantDropdown.currentIndex = settings.selected_map_variant
+            console.log("Selected map variant stored:"+settings.selected_map_variant+" actual:"+variantDropdown.currentIndex);
+            map.activeMapType = map.supportedMapTypes[variantDropdown.currentIndex]
         }
     }
 
@@ -169,13 +164,9 @@ MapWidgetForm {
 
     // Changing the variant can happen dynamically
     variantDropdown.onActivated: {
-        console.log("Map variant index:"+index);
+        console.log("variantDropdown.onActivated:"+index);
         settings.selected_map_variant = index
-        variantDropdown.model = map.supportedMapTypes
-        variantDropdown.currentIndex = index
-        map.activeMapType = map.supportedMapTypes[index]
-        map.gesture.enabled = true
-        console.log("Selected map variant:"+map.supportedMapTypes[index]);
+        setup_map_variant();
     }
 
 
