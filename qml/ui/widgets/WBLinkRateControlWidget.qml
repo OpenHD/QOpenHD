@@ -20,7 +20,7 @@ BaseWidget {
     visible: settings.wb_link_rate_control_widget_show
 
     widgetIdentifier: "wb_link_rate_control_widget"
-    bw_verbose_name: "WB RATE CONTROL"
+    bw_verbose_name: "WB LIVE RATE CONTROL"
 
     defaultAlignment: 0
     defaultXOffset: 400

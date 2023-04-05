@@ -5,7 +5,10 @@ import QtQuick.Window 2.14
 
 import "../elements";
 
-
+// The actual Map canvas is in map/MapComponent.qml
+// Here we just do integration with BaseWidget and stuff like
+// managing the map pluging and resizing
+// Also the .qml file is loaded dynamically, to avoid compilation issues where we don't have the map dependencies
 MapWidgetForm {
     id: mapWidget
 
@@ -19,14 +22,13 @@ MapWidgetForm {
     property variant map
 
     Component.onCompleted: {
-  /* Getting rid of mapboxgl
-      if (!IsRaspPi) {
+        // TODO: Figure out how we can get better (terrain) maps
+        if(false){
             pluginModel.append({
                                    "name": "mapboxgl",
                                    "description": "MapboxGL"
                                })
         }
-  */
         // Consti10: This way we need a restart of QOpenHD when the map is enabled, but we
         // save some performance in case the map is not enabled
         if(settings.show_map){
@@ -34,6 +36,31 @@ MapWidgetForm {
         }
     }
 
+    function configure() {
+        if(settings.selected_map_provider>=pluginModel.count){
+            // Fixup possibly invalid index
+            settings.selected_map_provider=0;
+        }
+        var provider = pluginModel.get(settings.selected_map_provider)
+        switch (provider.name) {
+        case "mapboxgl":{
+            createMap(widgetInnerMap, "mapboxgl")
+            break
+        }
+        case "osm":{
+            createMap(widgetInnerMap, "osm")
+            break
+        }
+        default:{
+            createMap(widgetInnerMap, "osm")
+            break
+        }
+        }
+        setup_map_variant()
+    }
+
+    // To create the map, we know the provider.
+    // The map variant (aka street view, terrain view, ...) is set later
     function createMap(parent, provider) {
         console.log("createMap(" + provider + ")");
         var plugin
@@ -41,26 +68,17 @@ MapWidgetForm {
         console.log("Using plugin: " + plugin.name);
 
         if (plugin.supportsMapping()) {
+            // Store previous center for a more fluent transition
             var previousCenter;
-
+            // Completely delete any previously created map (the plugin cannot be changed dynamically)
             if (map) {
                 previousCenter = map.center;
                 map.destroy()
             }
-
-            var component = Qt.createComponent("qrc:///ui/elements/MapComponent.qml");
+            var component = Qt.createComponent("qrc:///ui/widgets/map/MapComponent.qml");
             if (component.status === Component.Ready) {
                 map = component.createObject(parent, {"anchors.fill": parent});
                 map.plugin = plugin;
-                var variant = map.supportedMapTypes[settings.selected_map_variant];
-                if (variant) {
-                        map.activeMapType = map.supportedMapTypes[settings.selected_map_variant];
-                } else {
-                    /* variant wasn't found in this provider so we must reset the setting and load
-                       the default variant */
-                    settings.selected_map_variant = 0;
-                    map.activeMapType = map.supportedMapTypes[settings.selected_map_variant];
-                }
 
                 map.gesture.enabled = true;
 
@@ -70,6 +88,17 @@ MapWidgetForm {
             } else {
                 console.log(component.errorString())
             }
+        }else{
+            console.log("Plugin does not support mapping");
+        }
+    }
+
+    function setup_map_variant(){
+        if (map) {
+            variantDropdown.model = map.supportedMapTypes
+            variantDropdown.currentIndex = settings.selected_map_variant
+            console.log("Selected map variant stored:"+settings.selected_map_variant+" actual:"+variantDropdown.currentIndex);
+            map.activeMapType = map.supportedMapTypes[variantDropdown.currentIndex]
         }
     }
 
@@ -127,57 +156,22 @@ MapWidgetForm {
         }
     }
 
-
+    // Changing the provider needs destroy and reconstruct
     providerDropdown.onActivated: {
         settings.selected_map_provider = index
         configure()
     }
 
-
-    function configure() {
-        var provider = pluginModel.get(settings.selected_map_provider)
-        switch (provider.name) {
-    /* getting rid of mapboxgl
-        case "mapboxgl":
-        {
-            createMap(widgetInnerMap, "mapboxgl")
-            break
-        }
-    */
-        case "osm":
-        {
-            createMap(widgetInnerMap, "osm")
-            break
-        }
-        default:
-        {
-            createMap(widgetInnerMap, "osm")
-            break
-        }
-        }
-
-        if (map) {
-            variantDropdown.model = map.supportedMapTypes
-            variantDropdown.currentIndex = settings.selected_map_variant
-            map.activeMapType = map.supportedMapTypes[variantDropdown.currentIndex]
-        }
-    }
-
-
-
-//    Component.onCompleted: currentIndex = settings.selected_map_variant
-
-    // @disable-check M223
-    //Component.onActivated: {
+    // Changing the variant can happen dynamically
     variantDropdown.onActivated: {
-        variantDropdown.model = map.supportedMapTypes
-        variantDropdown.currentIndex = index
-        map.activeMapType = map.supportedMapTypes[index]
-        map.gesture.enabled = true
+        console.log("variantDropdown.onActivated:"+index);
+        settings.selected_map_variant = index
+        setup_map_variant();
     }
 
 
     function configureLargeMap() {
+        console.log("configureLargeMap()")
         if (mapExpanded == false) {
             resetAnchors()
             setAlignment(0, 0, 48, false, false, true)
@@ -188,6 +182,7 @@ MapWidgetForm {
     }
 
     function configureSmallMap() {
+        console.log("configureSmallMap()")
         resetAnchors()
         mapWidget.width = 200*settings.map_size
         mapWidget.height = 135*settings.map_size

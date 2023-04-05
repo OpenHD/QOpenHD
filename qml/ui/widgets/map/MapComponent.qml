@@ -6,6 +6,7 @@ import QtLocation 5.15
 import QtPositioning 5.15
 import OpenHD 1.0
 
+// This is the actual Map "canvas" file - the other 2 .qml files are just handling resizing and integration with BaseWidget
 Map {
     id: map
     copyrightsVisible: false
@@ -18,7 +19,7 @@ Map {
     gesture.acceptedGestures: MapGestureArea.PanGesture | MapGestureArea.FlickGesture | MapGestureArea.PinchGesture | MapGestureArea.RotationGesture | MapGestureArea.TiltGesture
     gesture.flickDeceleration: 3000
 
-    bearing: settings.map_orientation ? OpenHD.hdg : 360
+    bearing: settings.map_orientation ? _fcMavlinkSystem.hdg : 360
 
     property double userLat: 0.0
     property double userLon: 0.0
@@ -27,31 +28,25 @@ Map {
     property int track_count: 0;
     property int track_skip: 1;
     property int track_limit: 100; //max number of drone track points before it starts averaging
-/* TODO mission waypoints- needs factoring
-    Connections {
-        //this deletes the lines drawn between mission waypoints
-        target: MissionWaypointManager
-        function onMapDeleteWaypoints(){
-            console.log("Map component: onMapDeleteWaypoints from polyline");
 
-            var waypoint_track_count = waypointTrack.pathLength();
-
-            if (waypoint_track_count>0){
-                for (var i = 0; i < waypoint_track_count; ++i) {
-                    waypointTrack.removeCoordinate(i);
-                }
-            }
-        }
-    }
-*/
     center {
         latitude: _fcMavlinkSystem.lat == 0.0 ? userLat : followDrone ? _fcMavlinkSystem.lat : 9000
         longitude: _fcMavlinkSystem.lon == 0.0 ? userLon : followDrone ? _fcMavlinkSystem.lon : 9000
     }
 
     onSupportedMapTypesChanged: {
-        console.log("Map component: supported map types has changed")
+        console.log("Map component: supported map types has changed"+map.supportedMapTypes.length)
+        for (var i = 0; i < map.supportedMapTypes.length; i++)  {
+            console.log("Map type "+i+" "+map.supportedMapTypes[i]+" "+map.supportedMapTypes[i].description)
+        }
         variantDropdown.model = map.supportedMapTypes
+        variantDropdown.currentIndex = settings.selected_map_variant
+        console.log("Selected map variant stored:"+settings.selected_map_variant+" actual:"+variantDropdown.currentIndex);
+        map.activeMapType = map.supportedMapTypes[variantDropdown.currentIndex]
+    }
+
+    onActiveMapTypeChanged: {
+        console.log("Active map type changed")
     }
 
     onMapReadyChanged: {
@@ -453,4 +448,94 @@ Map {
             }
         }
     }
+
+    // Show Mission Waypoints on the map
+    Repeater{
+        id: repeaterMissionItems
+        model: _fcMavlinkMissionItemsModel
+        MapItemGroup {
+            id: delegateGroup
+
+            MapQuickItem {
+                coordinate: QtPositioning.coordinate(model.latitude,model.longitude)
+                visible: settings.map_show_mission_waypoints
+                //sourceItem: Rectangle{
+                //    width: 24
+                //    height: 24
+                //    color: "red"
+                //    opacity: .5
+                //}
+                sourceItem: Item {
+                    anchors.fill: parent
+                    // Red circle indicating the wapoint
+                    Shape {
+                        anchors.fill: parent
+
+                        ShapePath {
+                            strokeColor: "red"
+                            fillColor: "red"
+                            strokeWidth: 1
+                            strokeStyle: ShapePath.SolidLine
+
+                            capStyle: ShapePath.RoundCap
+
+                            PathAngleArc {
+                                centerX: 0; centerY: 0
+                                radiusX: 10; radiusY: 10
+                                startAngle: 0
+                                sweepAngle: 360
+                            }
+                        }
+                    }
+                    // waypoint number
+                    Text{
+                        anchors.fill: parent
+                        anchors.centerIn: parent
+                        horizontalAlignment : Text.AlignHCenter
+                        verticalAlignment : Text.AlignVCenter
+                        //text: "X"+model.mission_index
+                        text: ""+model.mission_index
+                        color: "white"
+                    }
+                }
+            }
+            /*MapCircle {
+                id: innerCircle
+                border.color: "green"
+                border.width: 3
+                center: QtPositioning.coordinate(model.lat, model.lon)
+                radius: 5
+            }*/
+            // IMPORTANT - REPEATER IS BUGGED WITH MAP; WON'T WORK OTHERWISE
+            Component.onCompleted: map.addMapItemGroup(this)
+        }
+    }
+
+    /*MapQuickItem {
+        id: waypoint1
+        coordinate: QtPositioning.coordinate(0.0,0.0)
+
+        anchorPoint.x : 0
+        anchorPoint.y : 0
+
+        sourceItem: Shape {
+            anchors.fill: parent
+
+            ShapePath {
+                strokeColor: "red"
+                fillColor: "red"
+                strokeWidth: 1
+                strokeStyle: ShapePath.SolidLine
+
+                capStyle: ShapePath.RoundCap
+
+                PathAngleArc {
+                    centerX: 0; centerY: 0
+                    radiusX: 10; radiusY: 10
+                    startAngle: 0
+                    sweepAngle: 360
+                }
+            }
+        }
+    }*/
 }

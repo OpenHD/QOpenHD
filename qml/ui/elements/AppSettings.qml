@@ -234,8 +234,8 @@ Settings {
     property bool show_map: false
     property double map_opacity: 1
     property bool map_orientation: false
-    property bool map_shape_circle: false
     property bool map_drone_track: true
+    property bool map_show_mission_waypoints: true
 
     property int map_zoom: 18
     property double map_size: 1
@@ -325,4 +325,7 @@ Settings {
 
     // HUD WB link rate control element settings
     property bool wb_link_rate_control_widget_show: true
+
+    // really really dirty, i want to get rid of it as soon as possible
+    property bool dirty_enable_inav_hacks: false
 }

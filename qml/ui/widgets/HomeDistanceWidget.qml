@@ -28,6 +28,10 @@ BaseWidget {
     hasWidgetDetail: true
     hasWidgetAction: true
 
+    // Needs to be a bit bigger than default
+    widgetActionWidth: 256
+    widgetActionHeight: 164+30
+
     //----------------------------- DETAIL BELOW ----------------------------------
     widgetDetailComponent: ScrollView {
 
@@ -141,6 +145,7 @@ BaseWidget {
 
             Button{
                 height:32
+                id: requestHomeButton
                 text: "Request Home"
                 onClicked: {
                     _fcMavlinkSystem.request_home_position_from_fc()

@@ -24,6 +24,19 @@
 class AOHDSystem : public QObject
 {
     Q_OBJECT
+public:
+    explicit AOHDSystem(const bool is_air,QObject *parent = nullptr);
+    // Singletons for accessing the models from c++
+    static AOHDSystem& instanceAir();
+    static AOHDSystem& instanceGround();
+    // Called in main.cpp to egister the models for qml
+    static void register_for_qml(QQmlContext* qml_context);
+    //Process OpenHD custom flavour message(s) coming from either the OHD Air or Ground unit
+    // Returns true if the passed message was processed (known message id), false otherwise
+    bool process_message(const mavlink_message_t& msg);
+    // Set the mavlink system reference, once discovered
+    void set_system(std::shared_ptr<mavsdk::System> system);
+public: // public for QT
     // NOTE: I wrote this class before I knew about the lqutils macros, which is why they are used sparingly here
     //
     // WB / Monitor mode link statistics, generic for both air and ground (incoming / outgoing)
@@ -67,16 +80,6 @@ class AOHDSystem : public QObject
     //
     L_RO_PROP(int,wifi_rx_packets_count,wifi_rx_packets_count,-1)
     L_RO_PROP(int,wifi_tx_packets_count,wifi_tx_packets_count,-1)
-public:
-    explicit AOHDSystem(const bool is_air,QObject *parent = nullptr);
-    // Singletons for accessing the models from c++
-    static AOHDSystem& instanceAir();
-    static AOHDSystem& instanceGround();
-    // Called in main.cpp to egister the models for qml
-    static void register_for_qml(QQmlContext* qml_context);
-    //Process OpenHD custom flavour message(s) coming from either the OHD Air or Ground unit
-    // Returns true if the passed message was processed (known message id), false otherwise
-    bool process_message(const mavlink_message_t& msg);
 private:
      const bool _is_air; // either true (for air) or false (for ground)
      uint8_t get_own_sys_id()const{
@@ -110,8 +113,6 @@ private:
      std::shared_ptr<mavsdk::Action> _action=nullptr;
      bool send_command_long(mavsdk::Action::CommandLong command);
 public:
-     // Set the mavlink system reference, once discovered
-     void set_system(std::shared_ptr<mavsdk::System> system);
      Q_INVOKABLE bool send_command_reboot(bool reboot);
      //
      bool send_command_restart_interface();
