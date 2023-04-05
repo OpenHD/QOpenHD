@@ -27,14 +27,14 @@ FCMavlinkMissionItemsModel& FCMavlinkMissionItemsModel::instance()
 
 void FCMavlinkMissionItemsModel::add_element(FCMavlinkMissionItemsModel::Element el)
 {
-    emit signalAddElement(el.latitude,el.longitude);
+    emit signalAddElement(el.latitude,el.longitude,el.mission_index);
 }
 
-void FCMavlinkMissionItemsModel::hack_add_el_if_nonexisting(double lat, double lon)
+void FCMavlinkMissionItemsModel::hack_add_el_if_nonexisting(double lat, double lon,int mission_index)
 {
     auto tmp=std::make_pair(lat,lon);
     if(m_map.find(tmp)==m_map.end()){
-        add_element({lat,lon});
+        add_element({lat,lon,mission_index});
         m_map[tmp]=nullptr;
     }
     qDebug()<<"N mission items:"<<m_map.size();
@@ -67,6 +67,9 @@ QVariant FCMavlinkMissionItemsModel::data(const QModelIndex &index, int role) co
         return data.latitude;
     else if ( role == LongitudeRole )
         return data.longitude;
+    else if (role==MissionIndexRole){
+        return data.mission_index;
+    }
     else
         return QVariant();
 }
@@ -75,15 +78,17 @@ QHash<int, QByteArray> FCMavlinkMissionItemsModel::roleNames() const
 {
     static QHash<int, QByteArray> mapping {
         {LatitudeRole, "latitude"},
-        {LongitudeRole, "longitude"}
+        {LongitudeRole, "longitude"},
+        {MissionIndexRole, "mission_index"}
     };
     return mapping;
 }
 
-void FCMavlinkMissionItemsModel:: do_not_call_me_add_element(double lat,double lon){
+void FCMavlinkMissionItemsModel:: do_not_call_me_add_element(double lat,double lon,int mission_index){
     FCMavlinkMissionItemsModel::Element element{};
     element.latitude=lat;
     element.longitude=lon;
+    element.mission_index=mission_index;
     addData(element);
 }
 

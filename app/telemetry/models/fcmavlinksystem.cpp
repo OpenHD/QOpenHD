@@ -254,15 +254,16 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         break;
     }
     case MAVLINK_MSG_ID_MISSION_ITEM_INT:{
-        qDebug()<<"Got MAVLINK_MSG_ID_MISSION_ITEM_INT";
+        //qDebug()<<"Got MAVLINK_MSG_ID_MISSION_ITEM_INT";
         mavlink_mission_item_int_t item;
         mavlink_msg_mission_item_int_decode(&msg, &item);
         {
            double lat=static_cast<double>(item.x)* 1e-7;
            double lon=static_cast<double>(item.y)* 1e-7;
+           const int mission_index=item.seq;
            //qDebug()<<"Lat:"<<lat<<", Lon:"<<lon;
            //FCMavlinkMissionItemsModel::instance().add_element({lat,lon});
-           FCMavlinkMissionItemsModel::instance().hack_add_el_if_nonexisting(lat,lon);
+           FCMavlinkMissionItemsModel::instance().hack_add_el_if_nonexisting(lat,lon,mission_index);
            //FCMavlinkMissionItemsModel::instance().test_add();
         }
         break;

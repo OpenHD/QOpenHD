@@ -463,32 +463,53 @@ Map {
 
             MapQuickItem {
                 coordinate: QtPositioning.coordinate(model.latitude,model.longitude)
-                /*sourceItem: Rectangle{
-                    width: 24
-                    height: 24
-                    color: "red"
-                    opacity: .5
-                }*/
-                sourceItem: Shape {
+                //sourceItem: Rectangle{
+                //    width: 24
+                //    height: 24
+                //    color: "red"
+                //    opacity: .5
+                //}
+                sourceItem: Item {
                     anchors.fill: parent
+                    // Red circle indicating the wapoint
+                    Shape {
+                        anchors.fill: parent
 
-                    ShapePath {
-                        strokeColor: "red"
-                        fillColor: "red"
-                        strokeWidth: 1
-                        strokeStyle: ShapePath.SolidLine
+                        ShapePath {
+                            strokeColor: "red"
+                            fillColor: "red"
+                            strokeWidth: 1
+                            strokeStyle: ShapePath.SolidLine
 
-                        capStyle: ShapePath.RoundCap
+                            capStyle: ShapePath.RoundCap
 
-                        PathAngleArc {
-                            centerX: 0; centerY: 0
-                            radiusX: 10; radiusY: 10
-                            startAngle: 0
-                            sweepAngle: 360
+                            PathAngleArc {
+                                centerX: 0; centerY: 0
+                                radiusX: 10; radiusY: 10
+                                startAngle: 0
+                                sweepAngle: 360
+                            }
                         }
+                    }
+                    // waypoint number
+                    Text{
+                        anchors.fill: parent
+                        anchors.centerIn: parent
+                        horizontalAlignment : Text.AlignHCenter
+                        verticalAlignment : Text.AlignVCenter
+                        //text: "X"+model.mission_index
+                        text: ""+model.mission_index
+                        color: "white"
                     }
                 }
             }
+            /*MapCircle {
+                id: innerCircle
+                border.color: "green"
+                border.width: 3
+                center: QtPositioning.coordinate(model.lat, model.lon)
+                radius: 5
+            }*/
             Component.onCompleted: map.addMapItemGroup(this)
         }
     }
