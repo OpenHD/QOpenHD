@@ -115,7 +115,7 @@ Map {
         line.color: "red"
         line.width: 3
     }
-
+    // Visualizes the GPS hdop
     MapCircle {
         center {
             latitude: _fcMavlinkSystem.lat
@@ -125,7 +125,7 @@ Map {
         color: 'red'
         opacity: .3
     }
-
+    // Home marker
     MapQuickItem {
         id: homemarkerSmallMap
         anchorPoint.x: imageSmallMap.width / 2
@@ -140,7 +140,7 @@ Map {
             source: "qrc:/resources/homemarker.png"
         }
     }
-
+    // ? ADSB stuff ?
     MapRectangle {
         id: adsbSquare
         topLeft : AdsbVehicleManager.apiMapCenter.atDistanceAndAzimuth(settings.adsb_distance_limit, 315, 0.0)
@@ -153,10 +153,10 @@ Map {
         smooth: true
         opacity: .3
     }
-
+    // ? ADSB stuff ?
     MapItemView {
         id: markerMapView
-//TODO ADSB needs refactor
+    //TODO ADSB needs refactor
         model: AdsbVehicleManager.adsbVehicles
         delegate: markerComponentDelegate
         //visible: false
@@ -277,140 +277,7 @@ Map {
             configureLargeMap()
         }
     }
-
-
-    MapPolyline {
-        id: waypointTrack
-
-        line.color: "yellow"
-        line.width: 3
-    }
-
-
-    MapItemView {
-        id: waypointMapView
-// TODO missions refactor
-//        model: MissionWaypointManager.missionWaypoints
-        delegate: waypointComponent
-
-
-        Component {
-            id: waypointComponent
-
-            MapItemGroup {
-                id: waypointGroup
-
-                MapQuickItem {
-                    id: waypointMarker
-
-                    //   anchorPoint.x: seq_rect.width / 2
-                    //   anchorPoint.y: seq_rect.height
-
-
-                    sourceItem:
-
-                        Rectangle {
-                        id: seq_rect
-                        anchors.centerIn: parent
-
-                        width: {
-                            if (object.sequence === undefined) {
-                                return 22;
-                            }
-
-                            if (object.sequence === OpenHD.current_waypoint){
-                                return 30;
-                            }
-                            else{
-                                return 22;
-                            }
-                        }
-
-                        height: {
-                            if (object.sequence === undefined) {
-                                return 22;
-                            }
-                            if (object.sequence === OpenHD.current_waypoint){
-                                return 30;
-                            }
-                            else{
-                                return 22;
-                            }
-                        }
-                        color: {
-                            if (object.sequence === undefined) {
-                                return "green";
-                            }
-                            if (object.sequence === OpenHD.current_waypoint){
-                                return "red";
-                            }
-                            else if(object.sequence < OpenHD.current_waypoint){
-                                return "grey";
-                            }
-                            else{
-                                return "green";
-                            }
-                        }
-                        border.color: "black"
-                        border.width: 1
-                        radius: width*0.5
-
-                        Text{
-                            id:seq_text
-                            anchors.centerIn: parent
-                            color: "white"
-                            font.bold: true
-                            font.pixelSize: {
-                                if (object.sequence === undefined) {
-                                    return 15;
-                                }
-                                if (object.sequence === OpenHD.current_waypoint){
-                                    return 17;
-                                }
-                                else{
-                                    return 15;
-                                }
-                            }
-                            horizontalAlignment: Text.AlignHCenter
-                            text: {
-                                if (object.sequence === undefined) {
-                                    return "?";
-                                }
-                                else if (object.command === 22) {
-                                    return "T";
-                                }
-                                else if (object.command === 21) {
-                                    return "L";
-                                }
-                                else {
-                                    return object.sequence;
-                                }
-                            }
-                        }
-                    }
-
-
-
-
-                    coordinate: {
-                        // TODO "undefined" protection
-                        /*
-                        console.log("Map sequence="+object.sequence);
-                        console.log("Map command="+object.command);
-                        console.log("Map latitude="+object.lat);
-                        console.log("Map longitude="+object.lon);
-                        console.log("Map altitude="+object.altitude);
-*/
-                        waypointTrack.addCoordinate(object.coordinate);
-                        return object.coordinate;
-                    }
-
-                }
-            }
-        }
-    }
-
-
+    // Arrow indicating the drone position
     MapQuickItem {
         id: dronemarker
         coordinate: QtPositioning.coordinate(_fcMavlinkSystem.lat, _fcMavlinkSystem.lon)
@@ -449,6 +316,12 @@ Map {
         }
     }
 
+    MapPolyline {
+        id: waypointTrack
+
+        line.color: "yellow"
+        line.width: 3
+    }
     // Show Mission Waypoints on the map
     Repeater{
         id: repeaterMissionItems
@@ -468,13 +341,20 @@ Map {
                 sourceItem: Item {
                     anchors.fill: parent
                     // Red circle indicating the wapoint
+                    // NEAT :) https://cuteguide.wordpress.com/2016/11/16/how-to-make-a-circle-from-rectangle/ - ehm doesnt work
+                    /*Rectangle {
+                        //anchors.centerIn: parent
+                        anchors.fill: parent
+                        color: "red"
+                        radius: width / 2
+                    }*/
                     Shape {
                         anchors.fill: parent
 
                         ShapePath {
                             strokeColor: "red"
                             fillColor: "red"
-                            strokeWidth: 1
+                            strokeWidth: 0
                             strokeStyle: ShapePath.SolidLine
 
                             capStyle: ShapePath.RoundCap
@@ -498,6 +378,10 @@ Map {
                         color: "white"
                     }
                 }
+                Component.onCompleted: {
+                    // We cannot do waypoint track until we have proper sorting
+                    //waypointTrack.addCoordinate(coordinate);
+                }
             }
             /*MapCircle {
                 id: innerCircle
@@ -507,7 +391,12 @@ Map {
                 radius: 5
             }*/
             // IMPORTANT - REPEATER IS BUGGED WITH MAP; WON'T WORK OTHERWISE
-            Component.onCompleted: map.addMapItemGroup(this)
+            Component.onCompleted: {
+                map.addMapItemGroup(this)
+            }
+            Component.onDestruction: {
+                map.removeMapItemGroup(this)
+            }
         }
     }
 

@@ -696,6 +696,17 @@ static QString mavlink_mission_type_to_string(const uint8_t mission_type){
     return "MT_Unknown";
 }
 
+static QString mavlink_frame_to_string(const uint8_t frame){
+    switch(frame){
+    case MAV_FRAME_GLOBAL: return "FRAME_GLOBAL";
+    case MAV_FRAME_GLOBAL_RELATIVE_ALT: return "FRAME_GLOBAL_RELATIVE_ALT";
+    default: break;
+    }
+    std::stringstream ss;
+    ss<<"FRAME_UNKNOWN("<<(int)frame<<")";
+    return ss.str().c_str();
+}
+
 static bool get_arm_mode_from_heartbeat(const mavlink_heartbeat_t& heartbeat){
     const MAV_MODE_FLAG mode = (MAV_MODE_FLAG)heartbeat.base_mode;
     if (mode & MAV_MODE_FLAG_SAFETY_ARMED) {
