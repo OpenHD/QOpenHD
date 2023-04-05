@@ -207,6 +207,18 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
                                               static_cast<double>(0);
            set_hdg(heading_deg);
         }
+        // Really dirty, we want inav to fix that and get rid of it !
+        {
+           QSettings settings;
+           const bool dirty_enable_inav_hacks=settings.value("dirty_enable_inav_hacks",false).toBool();
+           if(dirty_enable_inav_hacks){
+               if(m_armed && m_home_latitude==0.0 && m_home_longitude==0.0){
+                   set_home_latitude(lat);
+                   set_home_longitude(lon);
+                   HUDLogMessagesModel::instance().add_message_warning("INAV HOME SET");
+               }
+           }
+        }
         calculate_home_distance();
         calculate_home_course();
         updateFlightDistance();

@@ -325,4 +325,7 @@ Settings {
 
     // HUD WB link rate control element settings
     property bool wb_link_rate_control_widget_show: true
+
+    // really really dirty, i want to get rid of it as soon as possible
+    property bool dirty_enable_inav_hacks: false
 }

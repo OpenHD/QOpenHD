@@ -248,6 +248,21 @@ ScrollView {
                     onCheckedChanged: settings.dev_set_swap_interval_zero = checked
                 }
             }
+            SettingBaseElement{
+                m_short_description: "dirty_enable_inav_hacks"
+                m_long_description: "NEVER ENABLE UNLESS YOU HAVE TO. INAV mavlink support is quirky in some ways to say the least."
+
+                Switch {
+                    width: 32
+                    height: elementHeight
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    checked: settings.dirty_enable_inav_hacks
+                    onCheckedChanged: settings.dirty_enable_inav_hacks = checked
+                }
+            }
         }
         Card {
             id: simplePopupHack
