@@ -140,7 +140,7 @@ Settings {
 
     property bool show_flight_mah: true
 
-    property bool show_flight_mah_km: false
+    property bool show_flight_mah_km: true
 
     property bool show_imu_temp: false
     property bool imu_temp_declutter: false
