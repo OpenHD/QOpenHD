@@ -2,7 +2,9 @@ name: build_package_rock5
 
 on:
   push:
-
+    branches: [ "2.3-evo" ]
+  pull_request:
+    branches: [ "2.3-evo" ]
 
 jobs:
   build:
@@ -25,7 +27,7 @@ jobs:
       - name: Build Package
         run: |
           git clone https://github.com/OpenHD/ChrootCompilationTest /opt/ChrootCompilationTest
-          git clone -b 2.3-evo-rockfix https://github.com/OpenHD/QOpenHD --recursive /opt/ChrootCompilationTest/additionalFiles
+          git clone -b 2.3-evo https://github.com/OpenHD/QOpenHD --recursive /opt/ChrootCompilationTest/additionalFiles
           echo $CLOUDSMITH_API_KEY > /opt/ChrootCompilationTest/additionalFiles/cloudsmith_api_key.txt
           cd /opt/ChrootCompilationTest/
           sudo bash install_dep.sh
