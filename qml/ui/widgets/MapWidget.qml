@@ -130,10 +130,6 @@ MapWidgetForm {
         mapWidget.width = 200*mini_sizeSlider.value
     }
 
-    mini_opacity_Slider.onValueChanged: {
-        settings.map_opacity = mini_opacity_Slider.value
-    }
-
     openclose_button.onClicked: {
         if (mapExpanded) {
             console.log("X button clicked")
