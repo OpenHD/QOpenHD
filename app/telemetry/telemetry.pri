@@ -22,6 +22,7 @@ QOPENHD_LINK_MAVSDK_SHARED {
     android {
         message(mavsdk static android)
         MAVSDK_PREBUILTS_PATH= $$PWD/../../lib/mavsdk_prebuilts
+        #MAVSDK_PATH= $$MAVSDK_PREBUILTS_PATH/mavsdk-android-android-arm/build/android-arm/install
         MAVSDK_PATH= $$MAVSDK_PREBUILTS_PATH/mavsdk-android-android-arm/build/android-arm/install
         message($$MAVSDK_PATH)
         INCLUDEPATH += $$MAVSDK_PATH/include

@@ -258,8 +258,8 @@ AndroidBuild {
     #CONFIG += EnableSpeech
     QT += androidextras
 
-    include(app/videostreaming/gstreamer/gst_video.pri)
-    include(app/videostreaming/android/videostreamingandroid.pri)
+    #include(app/videostreaming/gstreamer/gst_video.pri)
+    #include(app/videostreaming/android/videostreamingandroid.pri)
 }
 
 EnableSpeech {
