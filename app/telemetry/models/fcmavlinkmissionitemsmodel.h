@@ -51,6 +51,8 @@ private:
     std::map<std::pair<double,double>,void*> m_map;
     // Memory safety check
     static constexpr int MAX_N_ELEMENTS=100;
+    // save performance if map is not enabled
+    bool show_map=false;
 };
 
 #endif // FCMAVLINKMISSIONSMODEL_H

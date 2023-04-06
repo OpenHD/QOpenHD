@@ -283,7 +283,10 @@ Map {
         coordinate: QtPositioning.coordinate(_fcMavlinkSystem.lat, _fcMavlinkSystem.lon)
 
         onCoordinateChanged: {
-            addDroneTrack();
+            // skip what most likely are not valid coordinates
+            if(coordinate.latitude!=0.0 && coordinate.longitude!=0.0){
+                addDroneTrack();
+            }
         }
 
         anchorPoint.x : 0

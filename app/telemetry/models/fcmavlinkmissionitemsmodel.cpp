@@ -1,11 +1,15 @@
 #include "fcmavlinkmissionitemsmodel.h"
 #include "qdebug.h"
 
+#include <qsettings.h>
+
 
 FCMavlinkMissionItemsModel::FCMavlinkMissionItemsModel(QObject *parent)
     :  QAbstractListModel(parent)
 {
     connect(this, &FCMavlinkMissionItemsModel::signalAddElement, this, &FCMavlinkMissionItemsModel::do_not_call_me_add_element);
+    QSettings settings;
+    show_map=settings.value("show_map",false).toBool();
 }
 
 FCMavlinkMissionItemsModel& FCMavlinkMissionItemsModel::instance()
@@ -21,6 +25,9 @@ void FCMavlinkMissionItemsModel::add_element(FCMavlinkMissionItemsModel::Element
 
 void FCMavlinkMissionItemsModel::hack_add_el_if_nonexisting(double lat, double lon,int mission_index)
 {
+    // save performance if map is not enabled
+    if(!show_map)return;
+
     if(m_map.size()>=MAX_N_ELEMENTS){
         qDebug()<<"More than "<<MAX_N_ELEMENTS<<" waypoints are not supported";
         return;
