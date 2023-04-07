@@ -232,7 +232,8 @@ Settings {
     property bool arrow_invert: false
 
     property bool show_map: false
-    property double map_opacity: 1
+    property double map_opacity_minimized: 1
+    property double map_opacity_maximized: 1
     property bool map_orientation: false
     property bool map_drone_track: true
     property bool map_show_mission_waypoints: true

@@ -2,8 +2,8 @@
 
 #include <qdebug.h>
 
-#include "../common/StringHelper.hpp"
-#include "../common/openhd-util.hpp"
+#include "common/StringHelper.hpp"
+#include "common/openhd-util.hpp"
 
 #include "QOpenHDVideoHelper.hpp"
 #include "decodingstatistcs.h"

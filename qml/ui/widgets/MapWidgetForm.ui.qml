@@ -23,7 +23,6 @@ BaseWidget {
     property alias switch1: switch1
     property alias mini_zoomSlider: mini_zoomSlider
     property alias mini_sizeSlider: mini_sizeSlider
-    property alias mini_opacity_Slider: mini_opacity_Slider
     property alias openclose_button: openclose_button
     property alias providerDropdown: providerDropdown
     property alias variantDropdown: variantDropdown
@@ -145,7 +144,7 @@ BaseWidget {
                 height: 32
                 Text {
                     id: mini_opacityTitle
-                    text: qsTr("Transparency")
+                    text: qsTr("Transparency(S)") // Small / minimized transparency
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -154,16 +153,16 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Slider {
-                    id: mini_opacity_Slider
                     orientation: Qt.Horizontal
                     from: .1
-                    value: settings.map_opacity
+                    value: settings.map_opacity_minimized
                     to: 1
                     stepSize: .1
                     height: parent.height
                     anchors.rightMargin: 0
                     anchors.right: parent.right
                     width: parent.width - 96
+                    onValueChanged: settings.map_opacity_minimized = value
                 }
             }
             Item {
@@ -254,7 +253,7 @@ BaseWidget {
     Item {
         id: widgetInnerMap
         anchors.fill: parent
-        opacity: mapExpanded ? 100 : settings.map_opacity
+        opacity: mapExpanded ? settings.map_opacity_maximized : settings.map_opacity_minimized
 /*
         Behavior on width {
             NumberAnimation {
@@ -484,7 +483,7 @@ BaseWidget {
 
                         Text {
                             id: opacityTitle
-                            text: qsTr("Transparency")
+                            text: qsTr("Transparency(B)") // opacity big (maximized)
                             color: "white"
                             height: parent.height
                             font.bold: true
@@ -494,10 +493,9 @@ BaseWidget {
                         }
 
                         Slider {
-                            id: map_opacity_Slider
                             orientation: Qt.Horizontal
                             from: .1
-                            value: settings.map_opacity
+                            value: settings.map_opacity_maximized
                             to: 1
                             stepSize: .1
                             height: parent.height
@@ -505,7 +503,7 @@ BaseWidget {
                             anchors.right: parent.right
                             width: parent.width - 96
 
-                            onValueChanged: settings.map_opacity = map_opacity_Slider.value
+                            onValueChanged: settings.map_opacity_maximized = value
                         }
                     }
 
