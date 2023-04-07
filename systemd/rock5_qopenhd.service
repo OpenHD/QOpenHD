@@ -1,4 +1,4 @@
-Unit]
+[Unit]
 Description=QOpenHD
 After=multi-user.target
 
@@ -8,7 +8,7 @@ Environment="QT_QPA_EGLFS_KMS_ATOMIC=1"
 Environment="QT_QPA_EGLFS_DEBUG=1"
 Environment="QT_QPA_EGLFS_KMS_ZPOS=2"
 Environment="QT_QPA_EGLFS_FORCE888=1"
-Environment="QT_QPA_EGLFS_KMS_CONFIG=/usr/local/share/qopenhd/rpi_qt_eglfs_kms_config.json"
+Environment="QT_QPA_EGLFS_KMS_CONFIG=/usr/local/share/qopenhd/rock_qt_eglfs_kms_config.json"
 ExecStart=/usr/local/bin/QOpenHD -platform eglfs
 User=root
 Restart=always

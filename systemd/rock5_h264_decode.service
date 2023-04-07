@@ -1,5 +1,5 @@
 [Unit]
-Description=rpi_omx_h264_decode
+Description=rock_h264_decode
 
 [Service]
 User=root

@@ -63,20 +63,27 @@ fi
 
 cp release/QOpenHD /tmp/qopenhd/usr/local/bin/ || exit 1
 
-# copying qopenhd service
+# copying services
 if [[ "${PACKAGE_ARCH}" = "armhf" ]]; then
-cp systemd/* /tmp/qopenhd/etc/systemd/system/ || exit 1
-fi
-
-if [[ "${PACKAGE_ARCH}" = "arm64" ]]; then
+cp systemd/rpi_qopenhd.service /tmp/qopenhd/etc/systemd/system/qopenhd.service || exit 1
+cp systemd/rpi_h264_decode.service /tmp/qopenhd/etc/systemd/system/h264_decode.service || exit 1
+elif [[ "${PACKAGE_ARCH}" = "arm64" ]]; then
 cp systemd/qopenhd_rock.service /tmp/qopenhd/etc/systemd/system/qopenhd.service || exit 1
-cp systemd/rock5_h264_decode.service /tmp/qopenhd/etc/systemd/system/rock5_h264_decode.service || exit 1
+cp systemd/rock5_h264_decode.service /tmp/qopenhd/etc/systemd/system/h264_decode.service || exit 1
+cp systemd/rock5_h265_decode.service /tmp/qopenhd/etc/systemd/system/h265_decode.service || exit 1
+cp systemd/rock5_mjpeg_decode.service /tmp/qopenhd/etc/systemd/system/mjpeg_decode.service || exit 1
+else
+echo "X86 doesn't autostart the services"
 fi
 
-# The rpi_qt_eglfs_kms_config.json file makes sure that qopenhd runs at the res
+# The qt_eglfs_kms_config.json file makes sure that qopenhd runs at the res
 # specified in the config.txt if the user did so
 mkdir -p /tmp/qopenhd/usr/local/share/qopenhd/
+if [[ "${PACKAGE_ARCH}" = "armhf" ]]; then
 cp rpi_qt_eglfs_kms_config.json /tmp/qopenhd/usr/local/share/qopenhd/ || exit 1
+elif [[ "${PACKAGE_ARCH}" = "arm64" ]]; then
+cp rock_qt_eglfs_kms_config.json /tmp/qopenhd/usr/local/share/qopenhd/ || exit 1
+fi
 
 VERSION="2.3-evo-$(date '+%Y%m%d%H%M')-${VER2}"
 
