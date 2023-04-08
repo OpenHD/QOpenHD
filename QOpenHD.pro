@@ -114,6 +114,7 @@ SOURCES += \
     app/main.cpp \
 
 HEADERS += \
+    app/common/util_fs.h \
     app/logging/hudlogmessagesmodel.h \
     app/logging/loghelper.h \
     app/logging/logmessagesmodel.h \

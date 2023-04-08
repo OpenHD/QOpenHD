@@ -29,6 +29,11 @@ static VideoCodec intToVideoCodec(int videoCodec){
     qDebug() << "VideoCodec::intToVideoCodec::somethingWrong,using H264 as default";
     return VideoCodecH264;
 }
+static std::string video_codec_to_string(const VideoCodec& codec){
+    if(codec==VideoCodecH264)return "h264";
+    if(codec==VideoCodecH265)return "h265";
+    return "mjpeg";
+}
 
 enum class VideoTestMode{
     DISABLED, // disabled
@@ -70,6 +75,8 @@ struct VideoStreamConfig{
     bool dev_feed_incomplete_frames_to_decoder=false;
     // argh, is the only thing I say here
     bool dev_rpi_use_external_omx_decode_service=true;
+    // platforms other than RPI
+    bool dev_always_use_generic_external_decode_service=false;
     // On embedded devices, video is commonly rendered on a special surface, independent of QOpenHD
     // r.n only the rpi mmal impl. supports proper video rotation
     int extra_screen_rotation=0;
@@ -85,6 +92,7 @@ struct VideoStreamConfig{
                this->dev_feed_incomplete_frames_to_decoder == o.dev_feed_incomplete_frames_to_decoder &&
                this->udp_rtp_input_ip_address==o.udp_rtp_input_ip_address &&
                this->dev_rpi_use_external_omx_decode_service==o.dev_rpi_use_external_omx_decode_service &&
+               this->dev_always_use_generic_external_decode_service==o.dev_always_use_generic_external_decode_service &&
                this->extra_screen_rotation == o.extra_screen_rotation;
      }
     bool operator !=(const VideoStreamConfig &o) const {
@@ -123,6 +131,7 @@ static VideoStreamConfig read_from_settings(){
     _videoStreamConfig.dev_use_low_latency_parser_when_possible=settings.value("dev_use_low_latency_parser_when_possible",true).toBool();
     //
     _videoStreamConfig.dev_rpi_use_external_omx_decode_service=settings.value("dev_rpi_use_external_omx_decode_service", true).toBool();
+    _videoStreamConfig.dev_always_use_generic_external_decode_service=settings.value("dev_always_use_generic_external_decode_service", false).toBool();
     _videoStreamConfig.extra_screen_rotation=get_display_rotation();
     // QML text input sucks, so we read a file. Not ideal, but for testing only anyways
     {

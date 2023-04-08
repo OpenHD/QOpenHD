@@ -6,12 +6,14 @@
 
 #include "avcodec_helper.hpp"
 #include "../common/TimeHelper.hpp"
+#include "common/util_fs.h"
 
 #include "texturerenderer.h"
 #include "decodingstatistcs.h"
 #include "common/SchedulingHelper.hpp"
 #include "../util/WorkaroundMessageBox.h"
 #include "../logging/hudlogmessagesmodel.h"
+#include "../logging/logmessagesmodel.h"
 
 #ifdef HAVE_MMAL
 #include "mmal/rpimmaldecodedisplay.h"
@@ -124,33 +126,37 @@ void AVCodecDecoder::constant_decode()
          if(settings.video_codec==QOpenHDVideoHelper::VideoCodecMJPEG){
              // we got no support for mjpeg in our custom rtp parser
              do_custom_rtp=false;
-         }
-         if(settings.dev_test_video_mode!=QOpenHDVideoHelper::VideoTestMode::DISABLED){
-             // file playback always goes via non-custom rtp parser (since it is not rtp)
-             do_custom_rtp=false;
-         }
-         if(do_custom_rtp){
-#ifdef HAVE_MMAL
-             // When we have mmal at compile time, we can do the "even more optimized" path for h264 decode on pi
-             // (but only for h264 HW decode and rtp)
-             if(settings.dev_test_video_mode==QOpenHDVideoHelper::VideoTestMode::DISABLED
-                     && settings.enable_software_video_decoder==false
-                     && settings.video_codec==QOpenHDVideoHelper::VideoCodecH264){
-                 if(settings.dev_rpi_use_external_omx_decode_service){
-                     dirty_rpi_decode_via_external_decode_service();
-                 }else{
-                     open_and_decode_until_error_custom_rtp_and_mmal_direct(settings);
-                 }
-             }else{
-                 open_and_decode_until_error_custom_rtp(settings);
+        }
+        if(settings.dev_always_use_generic_external_decode_service){
+             dirty_generic_decode_via_external_decode_service(settings);
+        }else{
+             if(settings.dev_test_video_mode!=QOpenHDVideoHelper::VideoTestMode::DISABLED){
+                 // file playback always goes via non-custom rtp parser (since it is not rtp)
+                 do_custom_rtp=false;
              }
+             if(do_custom_rtp){
+#ifdef HAVE_MMAL
+                // When we have mmal at compile time, we can do the "even more optimized" path for h264 decode on pi
+                // (but only for h264 HW decode and rtp)
+                if(settings.dev_test_video_mode==QOpenHDVideoHelper::VideoTestMode::DISABLED
+                    && settings.enable_software_video_decoder==false
+                    && settings.video_codec==QOpenHDVideoHelper::VideoCodecH264){
+                    if(settings.dev_rpi_use_external_omx_decode_service){
+                        dirty_generic_decode_via_external_decode_service(settings);
+                    }else{
+                        open_and_decode_until_error_custom_rtp_and_mmal_direct(settings);
+                    }
+                }else{
+                     open_and_decode_until_error_custom_rtp(settings);
+                }
 #else
-             // Does h264 and h265 custom rtp parse, but uses avcodec for decode
-             open_and_decode_until_error_custom_rtp(settings);
+                // Does h264 and h265 custom rtp parse, but uses avcodec for decode
+                open_and_decode_until_error_custom_rtp(settings);
 #endif
-         }else{
-             open_and_decode_until_error(settings);
-         }
+            }else{
+                open_and_decode_until_error(settings);
+            }
+        }
         qDebug()<<"Decode stopped,restarting";
         std::this_thread::sleep_for(std::chrono::seconds(1));
     }
@@ -978,9 +984,8 @@ void AVCodecDecoder::timestamp_debug_valid(int64_t ts)
     }
 }
 
+// QOpenHD video decode "service" workaround
 #include "../common/openhd-util.hpp"
-
-static constexpr auto RPI_OMX_H264_DECODE_SERVICE="rpi_omx_h264_decode";
 
 static void write_service_rotation_file(int rotation){
     qDebug()<<"Writing "<<rotation<<"° to video service file";
@@ -993,19 +998,57 @@ static void write_service_rotation_file(int rotation){
     fclose(f);
 }
 
-void AVCodecDecoder::dirty_rpi_decode_via_external_decode_service()
+static constexpr auto GENERIC_H264_DECODE_SERVICE="h264_decode";
+static constexpr auto GENERIC_H265_DECODE_SERVICE="h265_decode";
+static constexpr auto GENERIC_MJPEG_DECODE_SERVICE="mjpeg_decode";
+static std::string get_service_name_for_codec(const QOpenHDVideoHelper::VideoCodec& codec){
+    if(codec==QOpenHDVideoHelper::VideoCodecH264)return GENERIC_H264_DECODE_SERVICE;
+    if(codec==QOpenHDVideoHelper::VideoCodecH264)return GENERIC_H265_DECODE_SERVICE;
+    return GENERIC_MJPEG_DECODE_SERVICE;
+}
+
+static void stop_service_if_exists(const std::string& name){
+    if(util::fs::service_file_exists(name)){
+        OHDUtil::run_command("systemctl stop",{name});
+    }
+}
+
+static void start_service_if_exists(const std::string& name){
+    if(util::fs::service_file_exists(name)){
+        OHDUtil::run_command("systemctl start",{name});
+    }else{
+        std::stringstream message;
+        message<<"Cannot start video decode service "<<name;
+        LogMessagesModel::instanceOHD().add_message_warn("QOpenHD",message.str().c_str());
+        qDebug()<<message.str().c_str();
+    }
+}
+
+static void stop_all_services(){
+    std::vector<std::string> services{GENERIC_H264_DECODE_SERVICE,GENERIC_H265_DECODE_SERVICE,GENERIC_MJPEG_DECODE_SERVICE};
+    for(const auto& service:services){
+        stop_service_if_exists(service);
+    }
+}
+
+void AVCodecDecoder::dirty_generic_decode_via_external_decode_service(const QOpenHDVideoHelper::VideoStreamConfig& settings)
 {
-    qDebug()<<"Decode via rpi external decode service begin";
-    // The service should already be stopped,but do it anyways just to be sure
-    OHDUtil::run_command("systemctl stop",{std::string(RPI_OMX_H264_DECODE_SERVICE)});
+    qDebug()<<"dirty_generic_decode_via_external_decode_service begin";
+    // Stop any still running service (just in case there is one)
+    stop_all_services();
     // QRS are not available with this implementation
     DecodingStatistcs::instance().reset_all_to_default();
-    DecodingStatistcs::instance().set_decoding_type("External OMX");
+    {
+        std::stringstream type;
+        type<<"External "<<QOpenHDVideoHelper::video_codec_to_string(settings.video_codec);
+        DecodingStatistcs::instance().set_decoding_type(type.str().c_str());
+    }
     // Dirty way we communicate with the service / executable
     const auto rotation=QOpenHDVideoHelper::get_display_rotation();
     write_service_rotation_file(rotation);
     // Start service
-    OHDUtil::run_command("systemctl start",{std::string(RPI_OMX_H264_DECODE_SERVICE)});
+    const auto service_name=get_service_name_for_codec(settings.video_codec);
+    start_service_if_exists(service_name);
     // We follow the same pattern here as the decode flows that don't use an "external service"
     while(true){
         if(request_restart){
@@ -1015,6 +1058,6 @@ void AVCodecDecoder::dirty_rpi_decode_via_external_decode_service()
         std::this_thread::sleep_for(std::chrono::seconds(1));
     }
     // Stop service
-    OHDUtil::run_command("systemctl stop",{std::string(RPI_OMX_H264_DECODE_SERVICE)});
-    qDebug()<<"Decode via rpi external decode service end";
+    OHDUtil::run_command("systemctl stop",{service_name});
+    qDebug()<<"dirty_generic_decode_via_external_decode_service end";
 }
