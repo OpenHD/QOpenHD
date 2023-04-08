@@ -116,7 +116,8 @@ private:
         qDebug()<<"ERROR Compile with mmal";
     }
 #endif
-    void dirty_rpi_decode_via_external_decode_service();
+    // On some platforms, it is easiest to just start and stop a service that does the video decode (QOpenHD is then transparently layered on top)
+    void dirty_generic_decode_via_external_decode_service(const QOpenHDVideoHelper::VideoStreamConfig& settings);
 };
 
 #endif // AVCODEC_DECODER_H

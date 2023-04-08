@@ -88,7 +88,6 @@ static std::string yes_or_no(bool yes){
 }
 
 
-
 }
 
 #endif

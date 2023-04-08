@@ -61,6 +61,7 @@ Settings {
 
     // dirty, perhaps temporary
     property bool dev_rpi_use_external_omx_decode_service: true;
+    property bool dev_always_use_generic_external_decode_service: false
 
     property bool enable_speech: true
     property bool enable_imperial: false

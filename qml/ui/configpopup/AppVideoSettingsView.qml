@@ -394,22 +394,9 @@ ScrollView {
                 }
             }
             // dirty
-            Rectangle {
-                width: parent.width
-                height: rowHeight
-                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                Text {
-                    text: qsTr("dev_rpi_use_external_omx_decode_service")
-                    font.weight: Font.Bold
-                    font.pixelSize: 13
-                    anchors.leftMargin: 8
-                    verticalAlignment: Text.AlignVCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: 224
-                    height: elementHeight
-                    anchors.left: parent.left
-                }
+            SettingBaseElement{
+                m_short_description: "dev_rpi_use_external_omx_decode_service"
+                //m_long_description: "On by default, RPI specific."
                 Switch {
                     width: 32
                     height: elementHeight
@@ -418,6 +405,19 @@ ScrollView {
                     anchors.verticalCenter: parent.verticalCenter
                     checked: settings.dev_rpi_use_external_omx_decode_service
                     onCheckedChanged: settings.dev_rpi_use_external_omx_decode_service = checked
+                }
+            }
+            SettingBaseElement{
+                m_short_description: "dev_always_use_generic_external_decode_service"
+                //m_long_description: "Video decode is not done via QOpenHD, but rather in an extra service (started and stopped by QOpenHD). For platforms other than rpi"
+                Switch {
+                    width: 32
+                    height: elementHeight
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    checked: settings.dev_always_use_generic_external_decode_service
+                    onCheckedChanged: settings.dev_always_use_generic_external_decode_service = checked
                 }
             }
         }
