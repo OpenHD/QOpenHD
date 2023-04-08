@@ -8,7 +8,7 @@
 namespace util::fs{
 
 static bool file_exists(const std::string& filename){
-    FILE* fp=fopen("sample.txt","r");
+    FILE* fp=fopen(filename.c_str(),"r");
     if(fp){
         fclose(fp);
         return true;
