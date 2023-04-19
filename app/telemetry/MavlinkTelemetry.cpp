@@ -56,7 +56,7 @@ MavlinkTelemetry::MavlinkTelemetry(QObject *parent):QObject(parent)
         m_tcp_connect_timer->start(3000);
         tcp_only_connect_if_not_connected();
     }else{
-        // default
+        // default, udp, passive (like QGC)
         mavsdk::ConnectionResult connection_result = mavsdk->add_udp_connection(QOPENHD_GROUND_CLIENT_UDP_PORT_IN);
         std::stringstream ss;
         ss<<"MAVSDK UDP connection: " << connection_result;
