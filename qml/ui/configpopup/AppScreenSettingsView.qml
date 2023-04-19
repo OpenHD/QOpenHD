@@ -149,6 +149,21 @@ ScrollView {
                     onCheckedChanged: settings.dev_force_show_full_screen = checked
                 }
             }
+            SettingBaseElement{
+                m_short_description: "Colored cursor"
+                m_long_description: "Use a colored cursor (doesn't work on all platforms)"
+
+                Switch {
+                    width: 32
+                    height: elementHeight
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    checked: settings.enable_colored_cursor
+                    onCheckedChanged: settings.enable_colored_cursor = checked
+                }
+            }
         }
     }
 }
