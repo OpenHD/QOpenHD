@@ -48,7 +48,7 @@ MavlinkTelemetry::MavlinkTelemetry(QObject *parent):QObject(parent)
     QSettings settings;
     dev_use_tcp = settings.value("dev_mavlink_via_tcp",false).toBool();
     if(dev_use_tcp){
-        dev_tcp_server_ip=settings.value("dev_mavlink_via_tcp","0.0.0.0").toString().toStdString();
+        dev_tcp_server_ip=settings.value("dev_mavlink_tcp_ip","0.0.0.0").toString().toStdString();
         qDebug()<<"TCP enabled with "<<dev_tcp_server_ip.c_str()<<" as ip";
         // start a timer that tries to connect via tcp until success
         m_tcp_connect_timer = new QTimer(this);
