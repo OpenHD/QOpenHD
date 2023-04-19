@@ -330,4 +330,6 @@ Settings {
 
     // really really dirty, i want to get rid of it as soon as possible
     property bool dirty_enable_inav_hacks: false
+
+    property bool enable_colored_cursor: false
 }

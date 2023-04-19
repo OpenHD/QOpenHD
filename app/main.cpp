@@ -225,6 +225,16 @@ int main(int argc, char *argv[]) {
 
     QApplication app(argc, argv);
     {
+        if(settings.value("enable_colored_cursor",false).toBool()){
+            qDebug()<<"Setting cursor color";
+            QCursor cursor(Qt::ArrowCursor);
+            QPixmap cursorPixmap = cursor.pixmap();
+            cursorPixmap.fill(Qt::green); // fill the pixmap with red color
+            cursor = QCursor(cursorPixmap);
+            QApplication::setOverrideCursor(cursor);
+        }
+    }
+    {
         QScreen* screen=app.primaryScreen();
         if(screen){
             QRenderStats::instance().set_display_width_height(screen->size().width(),screen->size().height());
