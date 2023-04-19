@@ -263,6 +263,21 @@ ScrollView {
                     onCheckedChanged: settings.dirty_enable_inav_hacks = checked
                 }
             }
+
+            SettingBaseElement{
+                m_short_description: "dev_mavlink_via_tcp"
+                m_long_description: "Requires restart. Connect via TCP instead of UDP. Requires matching server IP."
+                Switch {
+                    width: 32
+                    height: elementHeight
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    checked: settings.dev_mavlink_via_tcp
+                    onCheckedChanged: settings.dev_mavlink_via_tcp = checked
+                }
+            }
         }
         Card {
             id: simplePopupHack
