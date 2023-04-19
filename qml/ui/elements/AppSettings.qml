@@ -332,4 +332,8 @@ Settings {
     property bool dirty_enable_inav_hacks: false
 
     property bool enable_colored_cursor: false
+
+    // experimental - mavlink via TCP
+    property bool dev_mavlink_via_tcp: false
+    property string dev_mavlink_tcp_ip: "0.0.0.0"
 }

@@ -45,10 +45,23 @@ MavlinkTelemetry::MavlinkTelemetry(QObject *parent):QObject(parent)
         //auto system = this->mavsdk->systems().back();
         //this->onNewSystem(system);
     });
-    mavsdk::ConnectionResult connection_result = mavsdk->add_udp_connection(QOPENHD_GROUND_CLIENT_UDP_PORT_IN);
-    std::stringstream ss;
-    ss<<"MAVSDK connection: " << connection_result;
-    qDebug()<<ss.str().c_str();
+    QSettings settings;
+    dev_use_tcp = settings.value("dev_mavlink_via_tcp",false).toBool();
+    if(dev_use_tcp){
+        dev_tcp_server_ip=settings.value("dev_mavlink_via_tcp","0.0.0.0").toString().toStdString();
+        qDebug()<<"TCP enabled with "<<dev_tcp_server_ip.c_str()<<" as ip";
+        // start a timer that tries to connect via tcp until success
+        m_tcp_connect_timer = new QTimer(this);
+        QObject::connect(m_tcp_connect_timer, &QTimer::timeout, this, &MavlinkTelemetry::tcp_only_connect_if_not_connected);
+        m_tcp_connect_timer->start(3000);
+        tcp_only_connect_if_not_connected();
+    }else{
+        // default
+        mavsdk::ConnectionResult connection_result = mavsdk->add_udp_connection(QOPENHD_GROUND_CLIENT_UDP_PORT_IN);
+        std::stringstream ss;
+        ss<<"MAVSDK UDP connection: " << connection_result;
+        qDebug()<<ss.str().c_str();
+    }
 }
 
 MavlinkTelemetry &MavlinkTelemetry::instance()
@@ -217,7 +230,19 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg)
             request_openhd_version();
         }
     }*/
+}
 
+void MavlinkTelemetry::tcp_only_connect_if_not_connected()
+{
+    assert(dev_use_tcp);
+    mavsdk::ConnectionResult connection_result = mavsdk->add_tcp_connection(dev_tcp_server_ip,OHD_GROUND_SERVER_TCP_PORT);
+    std::stringstream ss;
+    ss<<"MAVSDK TCP connection: " << connection_result;
+    qDebug()<<ss.str().c_str();
+    if(connection_result==mavsdk::ConnectionResult::Success){
+        qDebug()<<"Stopping tcp connect timer";
+        m_tcp_connect_timer->stop();
+    }
 }
 
 void MavlinkTelemetry::ping_all_systems()

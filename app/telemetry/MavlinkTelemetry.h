@@ -42,6 +42,9 @@ private:
     // We follow the same practice as QGrouncontroll: Listen for incoming data on a specific UDP port,
     // -> as soon as we got the first packet, we know the address to send data to for bidirectional communication
     static constexpr auto QOPENHD_GROUND_CLIENT_UDP_PORT_IN=14550;
+    // change requires restart, udp is used by default (not tcp)
+    bool dev_use_tcp=false;
+    std::string dev_tcp_server_ip="0.0.0.0";
     // workaround systems discovery is not thread safe
     std::mutex systems_mutex;
     int mavsdk_already_known_systems=0;
@@ -59,6 +62,8 @@ private:
     // Called every time we get a mavlink message (from any system). Intended to be used for message types that don't
     // work with mavsdk / their subscription based pattern.
     void onProcessMavlinkMessage(mavlink_message_t msg);
+    void tcp_only_connect_if_not_connected();
+     QTimer* m_tcp_connect_timer = nullptr;
 public:
     // ping all the systems (using timesync, since "ping" is deprecated)
     Q_INVOKABLE void ping_all_systems();
