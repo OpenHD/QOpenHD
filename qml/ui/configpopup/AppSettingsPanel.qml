@@ -125,7 +125,7 @@ Item {
         AppVideoSettingsView{
             id: appVideoSettingsView
         }
-        AppManageSettingsView{
+        AppDevSettingsView{
             id: appManageSettingsView
         }
     }
