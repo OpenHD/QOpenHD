@@ -234,21 +234,6 @@ ScrollView {
                 }
             }
             SettingBaseElement{
-                m_short_description: "dev_set_swap_interval_zero"
-                m_long_description: "Can decrease latency on x86 / laptop. Requires restart."
-
-                Switch {
-                    width: 32
-                    height: elementHeight
-                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    checked: settings.dev_set_swap_interval_zero
-                    onCheckedChanged: settings.dev_set_swap_interval_zero = checked
-                }
-            }
-            SettingBaseElement{
                 m_short_description: "dirty_enable_inav_hacks"
                 m_long_description: "NEVER ENABLE UNLESS YOU HAVE TO. INAV mavlink support is quirky in some ways to say the least."
 
