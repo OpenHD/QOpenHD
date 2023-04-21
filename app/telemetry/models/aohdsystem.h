@@ -114,8 +114,6 @@ private:
      bool send_command_long(mavsdk::Action::CommandLong command);
 public:
      Q_INVOKABLE bool send_command_reboot(bool reboot);
-     //
-     bool send_command_restart_interface();
 private:
      int64_t x_last_dropped_packets=-1;
      void send_message_hud_connection(bool connected);
