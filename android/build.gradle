@@ -64,17 +64,3 @@ android {
         noCompress 'rcc'
     }
 }
-
-allprojects {
-    ext {
-        minSdkVersion = 21
-        compileSdkVersion = 31
-        targetSdkVersion = 31
-        appcompatVersion = '1.4.1'
-        materialVersion = '1.3.0-alpha02'
-        constraintlayoutVersion='2.1.3'
-        androidxpreferenceVersion='1.2.0'
-        mGvrVersion = '1.180.0'
-        myPrefsPlusVersion = '6.0'
-    }
-}
