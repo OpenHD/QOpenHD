@@ -35,15 +35,15 @@ QOPENHD_LINK_MAVSDK_SHARED {
         } else {
             message(Unknown ANDROID_TARGET_ARCH $$ANDROID_TARGET_ARCH)
         }
-
+        message(mavsdk path android)
         message($$MAVSDK_PATH)
         INCLUDEPATH += $$MAVSDK_PATH/include
         LIBS += -L$$MAVSDK_PATH/lib/ -lmavsdk
         #ANDROID_EXTRA_LIBS
-    } windows {
+    } else: windows {
         message(mavsdk static windows)
         message(todo hard code path to mavsdk)
-    }else{
+    }else {
         message(mavsdk static linux)
         # We use the installation path mavsdk uses when it is built and installed on the host system
         MAVSDK_INCLUDE_PATH= /usr/local/include/mavsdk
