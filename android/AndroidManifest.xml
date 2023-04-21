@@ -76,34 +76,6 @@
             <!-- extract android style -->
             <meta-data android:name="android.app.splash_screen_drawable" android:resource="@drawable/splashscreen"/>
             <meta-data android:name="android.app.splash_screen_sticky" android:value="true"/>
-            <meta-data android:name="android.app.splash_screen_drawable" android:resource="@drawable/splashscreen"/>
-            <meta-data android:name="android.app.splash_screen_sticky" android:value="true"/>
-            <meta-data android:name="android.app.splash_screen_drawable" android:resource="@drawable/splashscreen"/>
-            <meta-data android:name="android.app.splash_screen_sticky" android:value="true"/>
-            <meta-data android:name="android.app.splash_screen_drawable" android:resource="@drawable/splashscreen"/>
-            <meta-data android:name="android.app.splash_screen_sticky" android:value="true"/>
-            <meta-data android:name="android.app.splash_screen_drawable" android:resource="@drawable/splashscreen"/>
-            <meta-data android:name="android.app.splash_screen_sticky" android:value="true"/>
-            <meta-data android:name="android.app.splash_screen_drawable" android:resource="@drawable/splashscreen"/>
-            <meta-data android:name="android.app.splash_screen_sticky" android:value="true"/>
-            <meta-data android:name="android.app.splash_screen_drawable" android:resource="@drawable/splashscreen"/>
-            <meta-data android:name="android.app.splash_screen_sticky" android:value="true"/>
-            <meta-data android:name="android.app.splash_screen_drawable" android:resource="@drawable/splashscreen"/>
-            <meta-data android:name="android.app.splash_screen_sticky" android:value="true"/>
-            <meta-data android:name="android.app.splash_screen_drawable" android:resource="@drawable/splashscreen"/>
-            <meta-data android:name="android.app.splash_screen_sticky" android:value="true"/>
-            <meta-data android:name="android.app.splash_screen_drawable" android:resource="@drawable/splashscreen"/>
-            <meta-data android:name="android.app.splash_screen_sticky" android:value="true"/>
-            <meta-data android:name="android.app.splash_screen_drawable" android:resource="@drawable/splashscreen"/>
-            <meta-data android:name="android.app.splash_screen_sticky" android:value="true"/>
-            <meta-data android:name="android.app.splash_screen_drawable" android:resource="@drawable/splashscreen"/>
-            <meta-data android:name="android.app.splash_screen_sticky" android:value="true"/>
-            <meta-data android:name="android.app.splash_screen_drawable" android:resource="@drawable/splashscreen"/>
-            <meta-data android:name="android.app.splash_screen_sticky" android:value="true"/>
-            <meta-data android:name="android.app.splash_screen_drawable" android:resource="@drawable/splashscreen"/>
-            <meta-data android:name="android.app.splash_screen_sticky" android:value="true"/>
-            <meta-data android:name="android.app.splash_screen_drawable" android:resource="@drawable/splashscreen"/>
-            <meta-data android:name="android.app.splash_screen_sticky" android:value="true"/>
         </activity>
         <!-- For adding service(s) please check: https://wiki.qt.io/AndroidServices -->
     </application>
