@@ -24,6 +24,18 @@ QOPENHD_LINK_MAVSDK_SHARED {
         MAVSDK_PREBUILTS_PATH= $$PWD/../../lib/mavsdk_prebuilts
         MAVSDK_PATH= $$MAVSDK_PREBUILTS_PATH/mavsdk-android-android-arm/build/android-arm/install
         #MAVSDK_PATH= $$MAVSDK_PREBUILTS_PATH/mavsdk-android-android-arm64/build/android-arm64/install
+
+        # Set the right folder for the compile arch
+        contains(ANDROID_TARGET_ARCH, armeabi-v7a) {
+            MAVSDK_PATH= $$MAVSDK_PREBUILTS_PATH/mavsdk-android-android-arm/build/android-arm/install
+        } else:contains(ANDROID_TARGET_ARCH, arm64-v8a) {
+            MAVSDK_PATH= $$MAVSDK_PREBUILTS_PATH/mavsdk-android-android-arm64/build/android-arm64/install
+        } else:contains(ANDROID_TARGET_ARCH, x86_64) {
+            MAVSDK_PATH= $$MAVSDK_PREBUILTS_PATH/mavsdk-android-android-x86_64/build/android-x86_64/install
+        } else {
+            message(Unknown ANDROID_TARGET_ARCH $$ANDROID_TARGET_ARCH)
+        }
+
         message($$MAVSDK_PATH)
         INCLUDEPATH += $$MAVSDK_PATH/include
         LIBS += -L$$MAVSDK_PATH/lib/ -lmavsdk
