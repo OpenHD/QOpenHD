@@ -227,10 +227,13 @@ int main(int argc, char *argv[]) {
     {
         if(settings.value("enable_colored_cursor",false).toBool()){
             qDebug()<<"Setting cursor color";
-            QCursor cursor(Qt::ArrowCursor);
-            QPixmap cursorPixmap = cursor.pixmap();
-            cursorPixmap.fill(Qt::green); // fill the pixmap with color
-            cursor = QCursor(cursorPixmap);
+            //QCursor cursor(Qt::ArrowCursor);
+            QCursor cursor(Qt::PointingHandCursor);
+            auto cursorPixmap=cursor.pixmap();
+            qDebug()<<cursorPixmap;
+            //QPixmap cursorPixmap = cursor.pixmap();
+            //cursorPixmap.fill(Qt::green); // fill the pixmap with color
+            //cursor = QCursor(cursorPixmap);
             QApplication::setOverrideCursor(cursor);
         }
     }

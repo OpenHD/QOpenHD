@@ -230,8 +230,6 @@ MacBuild {
     DISTFILES += mac/Info.plist
     LIBS += -framework ApplicationServices
     LIBS += -framework VideoToolbox -framework CoreVideo -framework CoreMedia
-    #CONFIG += EnableGamepads
-    CONFIG += EnableJoysticks
     CONFIG += EnableSpeech
 }
 
@@ -252,7 +250,6 @@ WindowsBuild {
 
 AndroidBuild {
     message("AndroidBuild")
-    CONFIG += EnableJoysticks
     # Text to speech crashes on android for some weird reason
     #CONFIG += EnableSpeech
     QT += androidextras
