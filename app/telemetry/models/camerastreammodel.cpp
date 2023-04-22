@@ -51,7 +51,7 @@ void CameraStreamModel::dirty_set_curr_set_video_codec_for_cam(int cam_index, in
                 // video codec mismatch, update the QOpenHD settings
                 settings.setValue("selectedVideoCodecPrimary",video_codec_in_openhd);
                 qDebug()<<"Changed electedVideoCodecPrimary in QOpenHD to "<<video_codec_in_openhd;
-                workaround::makePopupMessage("Changed VideoCodec Primary in QOpenHD");
+                WorkaroundMessageBox::makePopupMessage("Changed VideoCodec Primary in QOpenHD");
             }
         }
     }else if(cam_index==1){
@@ -63,7 +63,7 @@ void CameraStreamModel::dirty_set_curr_set_video_codec_for_cam(int cam_index, in
                // video codec mismatch, update the QOpenHD settings
                settings.setValue("selectedVideoCodecSecondary",video_codec_in_openhd);
                qDebug()<<"Changed selectedVideoCodecSecondary in QOpenHD to "<<video_codec_in_openhd;
-               workaround::makePopupMessage("Changed VideoCodec Secondary in QOpenHD");
+               WorkaroundMessageBox::makePopupMessage("Changed VideoCodec Secondary in QOpenHD");
            }
        }
     }else{

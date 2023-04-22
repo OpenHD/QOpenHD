@@ -9,8 +9,10 @@
 #include <sstream>
 #include <memory>
 
+#ifdef __linux__
 #include <arpa/inet.h>
 #include <netinet/in.h>
+#endif // __linux__
 
 
 namespace OHDUtil {
