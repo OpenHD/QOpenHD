@@ -229,7 +229,7 @@ int main(int argc, char *argv[]) {
             qDebug()<<"Setting cursor color";
             QCursor cursor(Qt::ArrowCursor);
             QPixmap cursorPixmap = cursor.pixmap();
-            cursorPixmap.fill(Qt::green); // fill the pixmap with red color
+            cursorPixmap.fill(Qt::green); // fill the pixmap with color
             cursor = QCursor(cursorPixmap);
             QApplication::setOverrideCursor(cursor);
         }

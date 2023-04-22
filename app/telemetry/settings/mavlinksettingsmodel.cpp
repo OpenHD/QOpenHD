@@ -1019,5 +1019,11 @@ QString MavlinkSettingsModel::get_short_description(const QString param_id)const
     if(param_id=="WB_E_SHORT_GUARD"){
         return "!! Advanced users only !!. This param is not automatically synchronized between air/ground. A short guard intervall increases throughput, but increases packet collisions.";
     }
+    if(param_id=="RC_CHAN_MAP"){
+        return "Change which joystick element maps to which RC channel";
+    }
+    if(param_id=="RC_UPDATE_HZ"){
+        return "Specify the update rate of RC over wifibroadcast. A higher update rate gives lower RC latency, but takes more bandwidth away from the downlink.";
+    }
     return "TODO";
 }
