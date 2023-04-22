@@ -230,8 +230,6 @@ MacBuild {
     DISTFILES += mac/Info.plist
     LIBS += -framework ApplicationServices
     LIBS += -framework VideoToolbox -framework CoreVideo -framework CoreMedia
-    #CONFIG += EnableGamepads
-    CONFIG += EnableJoysticks
     CONFIG += EnableSpeech
 }
 
@@ -252,13 +250,14 @@ WindowsBuild {
 
 AndroidBuild {
     message("AndroidBuild")
-    CONFIG += EnableJoysticks
     # Text to speech crashes on android for some weird reason
     #CONFIG += EnableSpeech
     QT += androidextras
 
     include(app/videostreaming/gstreamer/gst_video.pri)
     include(app/videostreaming/android/videostreamingandroid.pri)
+    # needed to build android from windows, but not from linux
+    QMAKE_PROJECT_DEPTH = 0
 }
 
 EnableSpeech {

@@ -165,10 +165,10 @@ ScrollView {
                 }
             }
             SettingBaseElement{
-                m_short_description: "Colored cursor"
-                m_long_description: "Use a colored cursor (doesn't work on all platforms)"
+                m_short_description: "Custom cursor"
+                m_long_description: "Customize cursor for high visibility in the field"
 
-                Switch {
+                /*Switch {
                     width: 32
                     height: elementHeight
                     anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
@@ -177,6 +177,23 @@ ScrollView {
                     anchors.verticalCenter: parent.verticalCenter
                     checked: settings.enable_colored_cursor
                     onCheckedChanged: settings.enable_colored_cursor = checked
+                }*/
+                SpinBox {
+                    width: 210
+                    font.pixelSize: 14
+                    height: elementHeight
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    from: 0
+                    to: 7
+                    stepSize: 1
+                    value: settings.custom_cursor_type
+                    onValueChanged: {
+                        _qopenhd.customize_cursor(value)
+                        settings.custom_cursor_type = value
+                    }
                 }
             }
         }
