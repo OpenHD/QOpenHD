@@ -48,6 +48,9 @@ public:
     Q_INVOKABLE bool reset_settings();
     // only works on linux, dirty helper to get local IP address
     Q_INVOKABLE QString show_local_ip();
+    // high visibility cursor for people in the field
+    Q_INVOKABLE void customize_cursor(const int cursor_type);
+    Q_INVOKABLE void customize_cursor_from_settings();
 signals:
     void fontFamilyChanged(QString fontFamily);
 private:

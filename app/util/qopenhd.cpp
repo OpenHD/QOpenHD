@@ -1,4 +1,5 @@
 #include "qopenhd.h"
+#include "qpixmap.h"
 #include <QCoreApplication>
 #include <QSettings>
 #include <QDebug>
@@ -220,6 +221,32 @@ QString QOpenHD::show_local_ip()
     return QString("Only works on linux");
 #endif
 
+}
+
+void QOpenHD::customize_cursor(const int cursor_type)
+{
+    QApplication::restoreOverrideCursor();
+    // Default 0 - do not change
+    if(cursor_type==0)return;
+    qDebug()<<"Custom cursor type "<<cursor_type;
+    if(cursor_type==1){
+        QCursor cursor(Qt::PointingHandCursor);
+        QApplication::setOverrideCursor(cursor);
+    }else if(cursor_type==2){
+        QPixmap pixmap(32,32);
+        pixmap.fill(QColor("red"));
+        QCursor cursor(pixmap);
+        QApplication::setOverrideCursor(cursor);
+    }else{
+
+    }
+}
+
+void QOpenHD::customize_cursor_from_settings()
+{
+    QSettings settings;
+    const int cursor_type=settings.value("custom_cursor_type",0).toInt();
+    customize_cursor(cursor_type);
 }
 
 void QOpenHD::keep_screen_on(bool on)

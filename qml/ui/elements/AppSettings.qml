@@ -331,7 +331,7 @@ Settings {
     // really really dirty, i want to get rid of it as soon as possible
     property bool dirty_enable_inav_hacks: false
 
-    property bool enable_colored_cursor: false
+    property int custom_cursor_type: 0
 
     // experimental - mavlink via TCP
     property bool dev_mavlink_via_tcp: false
