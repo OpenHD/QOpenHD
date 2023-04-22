@@ -245,14 +245,7 @@ JetsonBuild {
     CONFIG += EnableSpeech
 }
 
-
 WindowsBuild {
-    DEFINES += GST_GL_HAVE_WINDOW_WIN32=1
-    DEFINES += GST_GL_HAVE_PLATFORM_WGL=1
-    DEFINES += HAVE_QT_WIN32
-
-    INCLUDEPATH += $$PWD/win/include
-
     # This aparently makes qt use absolute paths, otherwise we get problems with mavsdk
     QMAKE_PROJECT_DEPTH = 0
 }
