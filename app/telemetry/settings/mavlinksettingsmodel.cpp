@@ -284,12 +284,12 @@ static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string&
         {
             auto default_values=std::vector<ImprovedIntSetting::Item>{
                 {"2  (best recovery)",2},
+                {"3  (best recovery)",3},
                 {"5  (good recovery)",5},
                 {"8  (good recovery)",8},
                 {"10 (medium recovery)",10},
                 {"15 (medium recovery)",15},
                 {"20 (bad recovery)",20},
-                {"30 (bad recovery)",30},
             };
             map_improved_params["V_KEYFRAME_I"]=ImprovedIntSetting(0,100,default_values);
         }
