@@ -356,7 +356,7 @@ int main(int argc, char *argv[]) {
 
     engine.rootContext()->setContextProperty("_decodingStatistics",&DecodingStatistcs::instance());
     // dirty
-    engine.rootContext()->setContextProperty("_messageBoxInstance", &workaround::MessageBox::instance());
+    engine.rootContext()->setContextProperty("_messageBoxInstance", &WorkaroundMessageBox::instance());
     engine.rootContext()->setContextProperty("_restartqopenhdmessagebox", &RestartQOpenHDMessageBox::instance());
 
 #ifdef QOPENHD_ENABLE_ADSB_LIBRARY
