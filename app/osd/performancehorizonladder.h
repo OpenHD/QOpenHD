@@ -4,7 +4,8 @@
 #include <QQuickItem>
 #include <QSGGeometryNode>
 #include <qsgflatcolormaterial.h>
-#include "../../../lib/lqtutils_master/lqtutils_prop.h"
+//#include "../../../lib/lqtutils_master/lqtutils_prop.h"
+#include "lib/lqtutils_master/lqtutils_prop.h"
 
 #include "horizonladder.h"
 
