@@ -92,11 +92,11 @@ LinuxBuild {
     # However, this can be usefully for figuring out compiler issue(s) on different platform(s)
     # NOTE: QT Creator is quite bad at figuring out changes here, you might need a "full" rebuild or manualy delete
     # the build dir/cache, then rebuild
-    #include(app/videostreaming/avcodec/avcodec_video.pri)
+    include(app/videostreaming/avcodec/avcodec_video.pri)
 
     # Gstreamer / qmlglsink decode and display, all sources
     # r.n only used for secondary video and for primary video only on platforms we cannot do primary video via QSG / avcodec
-    #include(app/videostreaming/gstreamer/gst_video.pri)
+    include(app/videostreaming/gstreamer/gst_video.pri)
 }
 
 # adsb library
