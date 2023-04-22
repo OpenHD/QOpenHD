@@ -15,18 +15,19 @@
 // TODO: Really dirty, I quickly had to write it since we only noticed QMessagebox is not properly supported
 // When I was already using it.
 
-namespace workaround{
-
 // Don't forget to register this one in main.cpp
 // instance() is registered as _messageBoxInstance
-class MessageBox: public QObject{
+class WorkaroundMessageBox: public QObject{
     Q_OBJECT
 public:
-    explicit MessageBox(QObject *parent = nullptr);
-    static MessageBox& instance();
+    explicit WorkaroundMessageBox(QObject *parent = nullptr);
+    static WorkaroundMessageBox& instance();
     Q_INVOKABLE void set_text_and_show(QString text){
         // We might not be called from the UI thread, which is why we use the signal workaround
         emit signal_set_text_and_show(text);
+    }
+    static void makePopupMessage(QString text){
+        WorkaroundMessageBox::instance().set_text_and_show(text);
     }
 public:
     L_RO_PROP(QString,text,set_text,"NONE");
@@ -40,9 +41,5 @@ private:
     void do_not_call_me_set_text_and_show(QString text);
 };
 
-static void makePopupMessage(QString text){
-    MessageBox::instance().set_text_and_show(text);
-}
-}
 
 #endif // MESSAGEPOPUP_H

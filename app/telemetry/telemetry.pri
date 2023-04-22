@@ -42,7 +42,13 @@ QOPENHD_LINK_MAVSDK_SHARED {
         #ANDROID_EXTRA_LIBS
     } else: windows {
         message(mavsdk static windows)
-        message(todo hard code path to mavsdk)
+        MAVSDK_PREBUILT_PATH = $$PWD/../../lib/mavsdk_prebuilts/windows/mavsdk-windows-x64-release
+        message(mavsdk path:)
+        message($$MAVSDK_PREBUILT_PATH)
+        MAVSDK_INCLUDE_PATH= $$MAVSDK_PREBUILT_PATH/include
+        MAVSDK_LIB_PATH= $$MAVSDK_PREBUILT_PATH/lib
+        INCLUDEPATH +=  $$MAVSDK_INCLUDE_PATH
+        LIBS += -L$$MAVSDK_LIB_PATH -lmavsdk
     }else {
         message(mavsdk static linux)
         # We use the installation path mavsdk uses when it is built and installed on the host system

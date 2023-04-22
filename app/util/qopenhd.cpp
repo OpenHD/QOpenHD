@@ -207,6 +207,7 @@ bool QOpenHD::reset_settings()
     qDebug() << "Error: Failed to delete file" << QString::fromStdString(file_name);
     return false;
 #endif
+    return false;
 }
 
 

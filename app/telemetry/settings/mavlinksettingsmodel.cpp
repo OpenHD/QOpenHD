@@ -402,7 +402,7 @@ bool MavlinkSettingsModel::try_fetch_all_parameters()
     qDebug()<<"MavlinkSettingsModel::try_fetch_all_parameters()";
     if(param_client==nullptr){
         // not discovered yet
-        workaround::makePopupMessage("OHD System not found");
+        WorkaroundMessageBox::makePopupMessage("OHD System not found");
     }
     if(param_client){
         // first, remove anything the QT model has cached
@@ -677,7 +677,7 @@ static void hacky_set_n_cameras_in_qopenhd(const int comp_id,const MavlinkSettin
         if(value!=value_in_qopenhd && value_in_qopenhd==1){
             auto message="QopenHD is not configured for single cam usage, go to QOpenHD settings / General to configure your GCS to show secondary camera screen";
             qDebug()<<message;
-            workaround::makePopupMessage(message);
+            WorkaroundMessageBox::makePopupMessage(message);
         }
     }
 }
