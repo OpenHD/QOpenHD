@@ -259,6 +259,8 @@ AndroidBuild {
 
     include(app/videostreaming/gstreamer/gst_video.pri)
     include(app/videostreaming/android/videostreamingandroid.pri)
+    # needed to build android from windows, but not from linux
+    QMAKE_PROJECT_DEPTH = 0
 }
 
 EnableSpeech {
