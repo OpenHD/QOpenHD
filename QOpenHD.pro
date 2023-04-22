@@ -55,12 +55,14 @@ RCC_DIR      = $${OUT_PWD}/rcc
 #this can not be used in MSVC (windows)
 #NOTE: While disabling warnings is often discouraged, in the scope of QOpenHD, those warnings distract more from actual issues than help
 #However, if you feel so, re-enable and fix them ;)
-QMAKE_CXXFLAGS += -Wno-address-of-packed-member
-QMAKE_CXXFLAGS += -Wno-cast-align
-QMAKE_CXXFLAGS += -Wno-unused-function
-QMAKE_CXXFLAGS += -Wno-unused-variable
-QMAKE_CXXFLAGS += -Wno-unused-parameter
-QMAKE_CXXFLAGS += -Wno-sign-compare
+LinuxBuild {
+    QMAKE_CXXFLAGS += -Wno-address-of-packed-member
+    QMAKE_CXXFLAGS += -Wno-cast-align
+    QMAKE_CXXFLAGS += -Wno-unused-function
+    QMAKE_CXXFLAGS += -Wno-unused-variable
+    QMAKE_CXXFLAGS += -Wno-unused-parameter
+    QMAKE_CXXFLAGS += -Wno-sign-compare
+}
 
 # These are the QT libraries we always need when building QOpenHD - they are intentially kept as small in number as possible
 # (aka all these really should come with pretty much any qt install)
