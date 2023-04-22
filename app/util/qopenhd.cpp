@@ -238,7 +238,12 @@ void QOpenHD::customize_cursor(const int cursor_type)
         QCursor cursor(pixmap);
         QApplication::setOverrideCursor(cursor);
     }else{
-
+        /*QPixmap pixmap(32,32);
+        QCursor cursor(Qt::BitmapCursor);
+        //cursor.setShape(Qt::PointingHandCursor);
+        QPixmap pixmap = cursor.pixmap();
+        qDebug()<<"Cursor:"<<pixmap;
+        QApplication::setOverrideCursor(cursor);*/
     }
 }
 
