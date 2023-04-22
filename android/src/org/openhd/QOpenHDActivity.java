@@ -17,14 +17,14 @@ import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 // Custom video surface end
 
-public class OpenHDActivity extends QtActivity {
-    private static OpenHDActivity _instance = null;
+public class QOpenHDActivity extends QtActivity {
+    private static QOpenHDActivity _instance = null;
 
     private static native void nativeInit();
 
     private SurfaceView surfaceView=null;
 
-    public OpenHDActivity() {
+    public QOpenHDActivity() {
         _instance = this;
     }
 

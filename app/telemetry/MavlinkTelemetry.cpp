@@ -1,5 +1,6 @@
 #include "MavlinkTelemetry.h"
 
+#include "common/openhd-util.hpp"
 #include "qopenhdmavlinkhelper.hpp"
 #include "telemetry/openhd_defines.hpp"
 #include "models/aohdsystem.h"
@@ -49,12 +50,15 @@ MavlinkTelemetry::MavlinkTelemetry(QObject *parent):QObject(parent)
     dev_use_tcp = settings.value("dev_mavlink_via_tcp",false).toBool();
     if(dev_use_tcp){
         dev_tcp_server_ip=settings.value("dev_mavlink_tcp_ip","0.0.0.0").toString().toStdString();
-        qDebug()<<"TCP enabled with "<<dev_tcp_server_ip.c_str()<<" as ip";
+        if(!OHDUtil::is_valid_ip(dev_tcp_server_ip)){
+            qWarning("%s not a valid ip, using default",dev_tcp_server_ip.c_str());
+            dev_tcp_server_ip = "0.0.0.0";
+        }
+        //dev_tcp_server_ip = "0.0.0.0";
         // start a timer that tries to connect via tcp until success
         m_tcp_connect_timer = new QTimer(this);
         QObject::connect(m_tcp_connect_timer, &QTimer::timeout, this, &MavlinkTelemetry::tcp_only_connect_if_not_connected);
         m_tcp_connect_timer->start(3000);
-        tcp_only_connect_if_not_connected();
     }else{
         // default, udp, passive (like QGC)
         mavsdk::ConnectionResult connection_result = mavsdk->add_udp_connection(QOPENHD_GROUND_CLIENT_UDP_PORT_IN);
@@ -235,6 +239,12 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg)
 void MavlinkTelemetry::tcp_only_connect_if_not_connected()
 {
     assert(dev_use_tcp);
+    qWarning("tcp_only_connect_if_not_connected begin");
+    {
+        std::stringstream ss;
+        ss<<"TCP try connecting to ["<<dev_tcp_server_ip<<"]:"<<OHD_GROUND_SERVER_TCP_PORT;
+        qDebug()<<ss.str().c_str();
+    }
     mavsdk::ConnectionResult connection_result = mavsdk->add_tcp_connection(dev_tcp_server_ip,OHD_GROUND_SERVER_TCP_PORT);
     std::stringstream ss;
     ss<<"MAVSDK TCP connection: " << connection_result;
@@ -243,6 +253,7 @@ void MavlinkTelemetry::tcp_only_connect_if_not_connected()
         qDebug()<<"Stopping tcp connect timer";
         m_tcp_connect_timer->stop();
     }
+    qWarning("tcp_only_connect_if_not_connected end");
 }
 
 void MavlinkTelemetry::ping_all_systems()

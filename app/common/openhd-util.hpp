@@ -9,6 +9,9 @@
 #include <sstream>
 #include <memory>
 
+#include <arpa/inet.h>
+#include <netinet/in.h>
+
 
 namespace OHDUtil {
 
@@ -87,6 +90,17 @@ static std::string yes_or_no(bool yes){
   return (yes ? "Y" : "N");
 }
 
+static bool is_valid_ip(const std::string& ip) {
+#ifdef __linux__
+  unsigned char buf[sizeof(struct in6_addr)];
+  auto result = inet_pton(AF_INET, ip.c_str(), buf);
+  return result == 1;
+#else
+  // TODO find method
+  return true;
+#endif //#ifdef __linux__
+
+}
 
 }
 

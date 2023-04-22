@@ -24,14 +24,26 @@ QOPENHD_LINK_MAVSDK_SHARED {
         MAVSDK_PREBUILTS_PATH= $$PWD/../../lib/mavsdk_prebuilts
         MAVSDK_PATH= $$MAVSDK_PREBUILTS_PATH/mavsdk-android-android-arm/build/android-arm/install
         #MAVSDK_PATH= $$MAVSDK_PREBUILTS_PATH/mavsdk-android-android-arm64/build/android-arm64/install
+
+        # Set the right folder for the compile arch
+        contains(ANDROID_TARGET_ARCH, armeabi-v7a) {
+            MAVSDK_PATH= $$MAVSDK_PREBUILTS_PATH/mavsdk-android-android-arm/build/android-arm/install
+        } else:contains(ANDROID_TARGET_ARCH, arm64-v8a) {
+            MAVSDK_PATH= $$MAVSDK_PREBUILTS_PATH/mavsdk-android-android-arm64/build/android-arm64/install
+        } else:contains(ANDROID_TARGET_ARCH, x86_64) {
+            MAVSDK_PATH= $$MAVSDK_PREBUILTS_PATH/mavsdk-android-android-x86_64/build/android-x86_64/install
+        } else {
+            message(Unknown ANDROID_TARGET_ARCH $$ANDROID_TARGET_ARCH)
+        }
+        message(mavsdk path android)
         message($$MAVSDK_PATH)
         INCLUDEPATH += $$MAVSDK_PATH/include
         LIBS += -L$$MAVSDK_PATH/lib/ -lmavsdk
         #ANDROID_EXTRA_LIBS
-    } windows {
+    } else: windows {
         message(mavsdk static windows)
         message(todo hard code path to mavsdk)
-    }else{
+    }else {
         message(mavsdk static linux)
         # We use the installation path mavsdk uses when it is built and installed on the host system
         MAVSDK_INCLUDE_PATH= /usr/local/include/mavsdk

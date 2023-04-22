@@ -300,19 +300,6 @@ bool AOHDSystem::send_command_reboot(bool reboot)
     return send_command_long(command);
 }
 
-bool AOHDSystem::send_command_restart_interface()
-{
-     mavsdk::Action::CommandLong command{};
-     command.target_system_id= get_own_sys_id();
-     command.target_component_id=0; // unused r.n
-     command.command=MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN;
-     // dirty, we use component action
-     command.params.maybe_param1=0;
-     command.params.maybe_param2=0;
-     command.params.maybe_param3=1;
-     return send_command_long(command);
-}
-
 void AOHDSystem::send_message_hud_connection(bool connected){
     std::stringstream message;
     if(_is_air){

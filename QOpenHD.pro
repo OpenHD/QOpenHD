@@ -170,7 +170,7 @@ DISTFILES += \
     android/res/drawable-xxxhdpi/splashscreen.png \
     android/res/values/libs.xml \
     android/res/values/styles.xml \
-    android/src/OpenHDActivity.java \
+    android/src/QOpenHDActivity.java \
     android/src/SurfaceTextureListener.java \
     android/src/org/freedesktop/gstreamer/androidmedia/GstAhcCallback.java \
     android/src/org/freedesktop/gstreamer/androidmedia/GstAhsCallback.java \

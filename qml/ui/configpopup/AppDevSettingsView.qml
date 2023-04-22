@@ -14,7 +14,7 @@ import "../elements"
 
 
 ScrollView {
-    id: appManageSettingsView
+    id: appDevSettingsView
     width: parent.width
     height: parent.height
     contentHeight: manageColumn.height
@@ -234,21 +234,6 @@ ScrollView {
                 }
             }
             SettingBaseElement{
-                m_short_description: "dev_set_swap_interval_zero"
-                m_long_description: "Can decrease latency on x86 / laptop. Requires restart."
-
-                Switch {
-                    width: 32
-                    height: elementHeight
-                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    checked: settings.dev_set_swap_interval_zero
-                    onCheckedChanged: settings.dev_set_swap_interval_zero = checked
-                }
-            }
-            SettingBaseElement{
                 m_short_description: "dirty_enable_inav_hacks"
                 m_long_description: "NEVER ENABLE UNLESS YOU HAVE TO. INAV mavlink support is quirky in some ways to say the least."
 
@@ -266,16 +251,31 @@ ScrollView {
 
             SettingBaseElement{
                 m_short_description: "dev_mavlink_via_tcp"
-                m_long_description: "Requires restart. Connect via TCP instead of UDP. Requires matching server IP."
+                m_long_description: "Requires full restart. Connect via TCP instead of UDP. Requires matching server IP."
                 Switch {
                     width: 32
                     height: elementHeight
                     anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
                     checked: settings.dev_mavlink_via_tcp
                     onCheckedChanged: settings.dev_mavlink_via_tcp = checked
+                }
+            }
+            SettingBaseElement{
+                m_short_description: "dev_mavlink_tcp_ip"
+                m_long_description: "Requires full restart. IP of mavlink tcp server"
+                TextInput{
+                    id: ti_ip
+                    height: elementHeight
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    text: settings.dev_mavlink_tcp_ip
+                    cursorVisible: true
+                    inputMask: "999.999.999.999"
+                    onTextEdited: settings.dev_mavlink_tcp_ip = ti_ip.text
                 }
             }
         }
