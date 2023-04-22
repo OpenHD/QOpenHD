@@ -283,6 +283,7 @@ static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string&
         }
         {
             auto default_values=std::vector<ImprovedIntSetting::Item>{
+                {"2  (best recovery)",2},
                 {"5  (good recovery)",5},
                 {"8  (good recovery)",8},
                 {"10 (medium recovery)",10},
