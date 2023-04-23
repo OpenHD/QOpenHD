@@ -233,11 +233,27 @@ void QOpenHD::customize_cursor(const int cursor_type)
         QCursor cursor(Qt::PointingHandCursor);
         QApplication::setOverrideCursor(cursor);
     }else if(cursor_type==2){
-        QPixmap pixmap(32,32);
+        /*QPixmap pixmap(32,32);
         pixmap.fill(QColor("red"));
         QCursor cursor(pixmap);
+        QApplication::setOverrideCursor(cursor);*/
+        QCursor cursor(Qt::OpenHandCursor);
         QApplication::setOverrideCursor(cursor);
     }else{
+        int size_px= 16;
+        if(cursor_type==3){
+            size_px =16;
+        }else if(cursor_type==4){
+            size_px = 32;
+        }else{
+            size_px=64;
+        }
+        //QPixmap pixmap("://resources/cursors/pointing-up.png");
+        QPixmap pixmap("://resources/cursors/hand-pointer-solid.svg");
+        pixmap = pixmap.scaled(size_px,size_px);
+        qDebug()<<"Pixmap:"<<pixmap;
+        QCursor cursor(pixmap);
+        QApplication::setOverrideCursor(cursor);
         /*QPixmap pixmap(32,32);
         QCursor cursor(Qt::BitmapCursor);
         //cursor.setShape(Qt::PointingHandCursor);
