@@ -228,6 +228,7 @@
         <file>ui/widgets/BaseWidgetDefaultUiControlElements.qml</file>
         <file>ui/elements/ConfirmSliderEnableDisable.qml</file>
         <file>resources/cursors/hand-pointer-solid.svg</file>
+        <file>resources/cursors/left-green-fuchsia.png</file>
         <file>resources/cursors/pointing_up.png</file>
         <file>resources/cursors/pointing_up_inner_fill_white.png</file>
     </qresource>
