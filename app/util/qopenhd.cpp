@@ -252,7 +252,7 @@ void QOpenHD::customize_cursor(const int cursor_type)
         QPixmap pixmap("://resources/cursors/hand-pointer-solid.svg");
         pixmap = pixmap.scaled(size_px,size_px);
         qDebug()<<"Pixmap:"<<pixmap;
-        QCursor cursor(pixmap);
+        QCursor cursor(pixmap,pixmap.width()/3,pixmap.height()/3);
         QApplication::setOverrideCursor(cursor);
         /*QPixmap pixmap(32,32);
         QCursor cursor(Qt::BitmapCursor);
