@@ -248,7 +248,7 @@ void QOpenHD::customize_cursor(const int cursor_type)
         }else{
             size_px=64;
         }
-        QPixmap pixmap("://resources/cursors/pointing-up.png");
+        QPixmap pixmap("://resources/cursors/pointing_up_inner_fill_white.png");
         //QPixmap pixmap("://resources/cursors/hand-pointer-solid.svg");
         pixmap = pixmap.scaled(size_px,size_px);
         qDebug()<<"Pixmap:"<<pixmap;
