@@ -227,5 +227,7 @@
         <file>ui/widgets/WBLinkRateControlWidget.qml</file>
         <file>ui/widgets/BaseWidgetDefaultUiControlElements.qml</file>
         <file>ui/elements/ConfirmSliderEnableDisable.qml</file>
+        <file>resources/cursors/hand-pointer-solid.svg</file>
+        <file>resources/cursors/pointing-up.png</file>
     </qresource>
 </RCC>
