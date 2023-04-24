@@ -332,6 +332,7 @@ Settings {
     property bool dirty_enable_inav_hacks: false
 
     property int custom_cursor_type: 0
+    property int custom_cursor_scale: 1 // arbitrary scale values - higher == bigger,
 
     // experimental - mavlink via TCP
     property bool dev_mavlink_via_tcp: false
