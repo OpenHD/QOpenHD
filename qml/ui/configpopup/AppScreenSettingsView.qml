@@ -191,8 +191,30 @@ ScrollView {
                     stepSize: 1
                     value: settings.custom_cursor_type
                     onValueChanged: {
-                        _qopenhd.customize_cursor(value)
                         settings.custom_cursor_type = value
+                        _qopenhd.customize_cursor(settings.custom_cursor_type,settings.custom_cursor_scale)
+                    }
+                }
+            }
+            SettingBaseElement{
+                m_short_description: "Custom cursor scale"
+                m_long_description: "Scale of your custom cursor. NOTE: Only works if custom cursor is not 0 !"
+
+                SpinBox {
+                    width: 210
+                    font.pixelSize: 14
+                    height: elementHeight
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    from: 0
+                    to: 7
+                    stepSize: 1
+                    value: settings.custom_cursor_scale
+                    onValueChanged: {
+                        settings.custom_cursor_scale = value
+                        _qopenhd.customize_cursor(settings.custom_cursor_type,settings.custom_cursor_scale)
                     }
                 }
             }

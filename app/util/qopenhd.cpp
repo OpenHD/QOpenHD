@@ -223,51 +223,54 @@ QString QOpenHD::show_local_ip()
 
 }
 
-void QOpenHD::customize_cursor(const int cursor_type)
+void QOpenHD::customize_cursor(const int cursor_type,const int cursor_scale)
 {
     QApplication::restoreOverrideCursor();
     // Default 0 - do not change
     if(cursor_type==0)return;
-    qDebug()<<"Custom cursor type "<<cursor_type;
+    qDebug()<<"Custom cursor type:"<<cursor_type<<" scale:"<<cursor_scale;
+    // QCursor cursor(Qt::PointingHandCursor);
+    // QApplication::setOverrideCursor(cursor);
+    // NOTE: the "OS" cursors cannot be scaled easily
+    QPixmap pixmap;
     if(cursor_type==1){
-        QCursor cursor(Qt::PointingHandCursor);
-        QApplication::setOverrideCursor(cursor);
+        pixmap=QPixmap("://resources/cursors/arrow_512_transparent.png");
     }else if(cursor_type==2){
-        /*QPixmap pixmap(32,32);
-        pixmap.fill(QColor("red"));
-        QCursor cursor(pixmap);
-        QApplication::setOverrideCursor(cursor);*/
-        QCursor cursor(Qt::OpenHandCursor);
-        QApplication::setOverrideCursor(cursor);
+        pixmap=QPixmap("://resources/cursors/arrow_512_white.png");
+    }else if(cursor_type==3){
+        pixmap=QPixmap("://resources/cursors/arrow_512_green.png");
     }else{
-        int size_px= 16;
-        if(cursor_type==3){
-            size_px =16;
-        }else if(cursor_type==4){
-            size_px = 32;
-        }else{
-            size_px=64;
-        }
-        QPixmap pixmap("://resources/cursors/left-green-fuchsia.png");
-        //QPixmap pixmap("://resources/cursors/hand-pointer-solid.svg");
-        pixmap = pixmap.scaled(size_px,size_px);
-        qDebug()<<"Pixmap:"<<pixmap;
-        QCursor cursor(pixmap,pixmap.width()/3,pixmap.height()/4);
-        QApplication::setOverrideCursor(cursor);
-        /*QPixmap pixmap(32,32);
-        QCursor cursor(Qt::BitmapCursor);
-        //cursor.setShape(Qt::PointingHandCursor);
-        QPixmap pixmap = cursor.pixmap();
-        qDebug()<<"Cursor:"<<pixmap;
-        QApplication::setOverrideCursor(cursor);*/
+        pixmap=QPixmap("://resources/cursors/hand_white.png");
     }
+    int size_px= 16;
+    if(cursor_scale==0){
+       size_px =16;
+    }else if(cursor_scale==1){
+       size_px = 32;
+    }else if(cursor_scale==2){
+       size_px=64;
+    }else if(cursor_scale==3){
+       size_px= 128;
+    }
+    pixmap = pixmap.scaled(size_px,size_px);
+    // position is a bit of a mess
+    QCursor cursor;
+    // arrow - roughly
+    if(cursor_type==1 || cursor_type==2 || cursor_type==3){
+       cursor=QCursor(pixmap,pixmap.width()/16,pixmap.height()/16);
+    }else{
+       // The hand is a bit different
+       cursor=QCursor(pixmap,pixmap.width()/3,pixmap.height()/4);
+    }
+    QApplication::setOverrideCursor(cursor);
 }
 
 void QOpenHD::customize_cursor_from_settings()
 {
     QSettings settings;
-    const int cursor_type=settings.value("custom_cursor_type",0).toInt();
-    customize_cursor(cursor_type);
+    const int custom_cursor_type=settings.value("custom_cursor_type",0).toInt();
+    const int custom_cursor_scale=settings.value("custom_cursor_scale",1).toInt();
+    customize_cursor(custom_cursor_type,custom_cursor_scale);
 }
 
 void QOpenHD::keep_screen_on(bool on)
