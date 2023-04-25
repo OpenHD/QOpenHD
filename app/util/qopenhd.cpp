@@ -273,6 +273,14 @@ void QOpenHD::customize_cursor_from_settings()
     customize_cursor(custom_cursor_type,custom_cursor_scale);
 }
 
+bool QOpenHD::is_linux()
+{
+#ifdef __linux__
+    return true;
+#endif
+    return false;
+}
+
 void QOpenHD::keep_screen_on(bool on)
 {
 #if defined(__android__)
