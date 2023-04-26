@@ -454,6 +454,8 @@ Rectangle {
             Item {
                 height: 48
                 width: parent.width
+                // only show on android to not confuse users
+                visible: _qopenhd.is_android()
                 Button{
                     id: connectB
                     height: parent.height
