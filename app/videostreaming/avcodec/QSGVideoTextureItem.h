@@ -6,7 +6,6 @@
 
 #include <QtQuick/QQuickItem>
 #include <QtQuick/QQuickWindow>
-#include <QTimer>
 
 #include "texturerenderer.h"
 
