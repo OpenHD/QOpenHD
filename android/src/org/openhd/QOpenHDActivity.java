@@ -17,6 +17,8 @@ import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 // Custom video surface end
 
+import org.openhd.IsConnected;
+
 public class QOpenHDActivity extends QtActivity {
     private static QOpenHDActivity _instance = null;
 
@@ -37,6 +39,7 @@ public class QOpenHDActivity extends QtActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        IsConnected.m_stored_context= this;
 
         // Init surface
         /*surfaceView = new SurfaceView(this);

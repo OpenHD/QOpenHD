@@ -177,6 +177,7 @@ DISTFILES += \
     android/src/org/freedesktop/gstreamer/androidmedia/GstAhcCallback.java \
     android/src/org/freedesktop/gstreamer/androidmedia/GstAhsCallback.java \
     android/src/org/freedesktop/gstreamer/androidmedia/GstAmcOnFrameAvailableListener.java \
+    android/src/org/openhd/IsConnected.java \
     android/src/org/openhd/LiveVideoPlayerWrapper.java \
     app/adsb/adsb_lib.pri \
     app/logging/README.txt \

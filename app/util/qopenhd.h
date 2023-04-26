@@ -51,6 +51,12 @@ public:
     // high visibility cursor for people in the field
     Q_INVOKABLE void customize_cursor(const int cursor_type,const int cursor_scale);
     Q_INVOKABLE void customize_cursor_from_settings();
+    // returns true if the platform qopenhd is running on is linux (embedded or x86)
+    // some settings an stuff depend on that, called from .qml
+    // NOTE: android is not linux in this definition !
+    Q_INVOKABLE bool is_linux();
+    Q_INVOKABLE bool is_android();
+    Q_INVOKABLE void android_open_tethering_settings();
 signals:
     void fontFamilyChanged(QString fontFamily);
 private:

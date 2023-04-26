@@ -24,6 +24,7 @@
 #include <QtAndroid>
 #endif
 
+
 QOpenHD &QOpenHD::instance()
 {
     static QOpenHD instance=QOpenHD();
@@ -271,6 +272,38 @@ void QOpenHD::customize_cursor_from_settings()
     const int custom_cursor_type=settings.value("custom_cursor_type",0).toInt();
     const int custom_cursor_scale=settings.value("custom_cursor_scale",1).toInt();
     customize_cursor(custom_cursor_type,custom_cursor_scale);
+}
+
+bool QOpenHD::is_linux()
+{
+// weird - linux might be defined on android ?!
+#if defined(__android__)
+    //qDebug()<<"Is android";
+    return false;
+#elif defined(__linux__)
+    //qDebug()<<"Is linux";
+    return true;
+#endif
+    return false;
+}
+
+bool QOpenHD::is_android()
+{
+#if defined(__android__)
+    return true;
+#else
+    return false;
+#endif
+}
+
+void QOpenHD::android_open_tethering_settings()
+{
+#ifdef __android__
+    qDebug()<<"android_open_tethering_settings()";
+    QAndroidJniObject::callStaticMethod<void>("org/openhd/IsConnected",
+                                              "makeAlertDialogOpenTetherSettings2",
+                                              "()V");
+#endif
 }
 
 void QOpenHD::keep_screen_on(bool on)

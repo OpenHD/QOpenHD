@@ -119,6 +119,10 @@ bool AOHDSystem::process_message(const mavlink_message_t &msg)
              mavlink_msg_statustext_decode(&msg,&parsedMsg);
              auto tmp=Telemetryutil::statustext_convert(parsedMsg);
              LogMessagesModel::instanceOHD().addLogMessage(_is_air ? "OHD[A]":"OHD[G]",tmp.message.c_str(),tmp.level);
+             // Notify user in HUD of external device connect / disconnect events
+             if(tmp.message.find("External device") != std::string::npos){
+                HUDLogMessagesModel::instance().add_message(tmp.level,tmp.message.c_str());
+             }
              return true;
         }break;
         /*case MAVLINK_MSG_ID_OPENHD_LOG_MESSAGE:{

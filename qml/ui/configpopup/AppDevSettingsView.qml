@@ -31,22 +31,9 @@ ScrollView {
             anchors.left: parent.left
             anchors.right: parent.right
             //
-            Rectangle {
-                width: parent.width
-                height: rowHeight
-                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-                visible: true
-                Text {
-                    text: qsTr("DEV_SHOW_WHITELISTED_PARAMS")
-                    font.weight: Font.Bold
-                    font.pixelSize: 13
-                    anchors.leftMargin: 8
-                    verticalAlignment: Text.AlignVCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: 224
-                    height: elementHeight
-                    anchors.left: parent.left
-                }
+            SettingBaseElement{
+                m_short_description: "DEV_SHOW_WHITELISTED_PARAMS"
+                m_long_description: "Enabling this gives you full controll over the mavlink parameters set openhd exposes (both air and ground) BUT BE WARNED yu can easily break things!"
                 Switch {
                     width: 32
                     height: elementHeight
@@ -58,22 +45,9 @@ ScrollView {
                     onCheckedChanged: settings.dev_show_whitelisted_params = checked
                 }
             }
-            Rectangle {
-                width: parent.width
-                height: rowHeight
-                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-                visible: true
-                Text {
-                    text: qsTr("DEV_SHOW_ADVANCED_BUTTON")
-                    font.weight: Font.Bold
-                    font.pixelSize: 13
-                    anchors.leftMargin: 8
-                    verticalAlignment: Text.AlignVCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: 224
-                    height: elementHeight
-                    anchors.left: parent.left
-                }
+            SettingBaseElement{
+                m_short_description:"DEV_SHOW_ADVANCED_BUTTON"
+                m_long_description: "Allows more customization of the mavlink parameters set than what openhd exposes, BE WARNED you can easily break things this way !"
                 Switch {
                     width: 32
                     height: elementHeight
@@ -85,22 +59,9 @@ ScrollView {
                     onCheckedChanged: settings.dev_show_advanced_button = checked
                 }
             }
-            Rectangle {
-                width: parent.width
-                height: rowHeight
-                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-                visible: true
-                Text {
-                    text: qsTr("dev_allow_freq_change_when_armed")
-                    font.weight: Font.Bold
-                    font.pixelSize: 13
-                    anchors.leftMargin: 8
-                    verticalAlignment: Text.AlignVCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: 224
-                    height: elementHeight
-                    anchors.left: parent.left
-                }
+            SettingBaseElement{
+                m_short_description:"dev_allow_freq_change_when_armed"
+                m_long_description: "Allows changing the frequency and channel width while armed, THIS CAN BREAK YOUR LINK DURING FLIGHT !"
                 Switch {
                     width: 32
                     height: elementHeight
@@ -112,23 +73,9 @@ ScrollView {
                     onCheckedChanged: settings.dev_allow_freq_change_when_armed = checked
                 }
             }
-            Rectangle {
-                width: parent.width
-                height: rowHeight
-                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-                visible: !IsRaspPi
-
-                Text {
-                    text: qsTr("Save settings to file")
-                    font.weight: Font.Bold
-                    font.pixelSize: 13
-                    anchors.leftMargin: 8
-                    verticalAlignment: Text.AlignVCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: 224
-                    height: elementHeight
-                    anchors.left: parent.left
-                }
+            SettingBaseElement{
+                m_short_description: "Save Settings to file"
+                m_long_description: "Save your QOpenHD settings (e.g. OSD layout,..) to your SD card as a backup in between updates. Only works from/to linux."
 
                 Button {
                     id:save
@@ -147,25 +94,12 @@ ScrollView {
                             _messageBoxInstance.set_text_and_show("Couldn't backup settings")
                         }
                     }
+                    enabled: _qopenhd.is_linux()
                 }
             }
-            Rectangle {
-                width: parent.width
-                height: rowHeight
-                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-                visible: !IsRaspPi
-
-                Text {
-                    text: qsTr("Load Settings from File")
-                    font.weight: Font.Bold
-                    font.pixelSize: 13
-                    anchors.leftMargin: 8
-                    verticalAlignment: Text.AlignVCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: 224
-                    height: elementHeight
-                    anchors.left: parent.left
-                }
+            SettingBaseElement{
+                m_short_description: "Load Settings from file"
+                m_long_description: "Load a previosuly backed up QOpenHD settings file (e.g. OSD layout,..) from your SD card. Only works from/to linux."
 
                 Button {
                     id:load
@@ -184,25 +118,12 @@ ScrollView {
                             _messageBoxInstance.set_text_and_show("Couldn't load settings - make sure \"/boot/openhd/QOpenHD.conf\" (a previous pbackup) exists on your SD card")
                         }
                     }
+                    enabled: _qopenhd.is_linux()
                 }
             }
-            Rectangle {
-                width: parent.width
-                height: rowHeight
-                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-                visible: !IsRaspPi
-
-                Text {
-                    text: qsTr("Reset ALL QOpenHD Settings")
-                    font.weight: Font.Bold
-                    font.pixelSize: 13
-                    anchors.leftMargin: 8
-                    verticalAlignment: Text.AlignVCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: 224
-                    height: elementHeight
-                    anchors.left: parent.left
-                }
+            SettingBaseElement{
+                m_short_description: "Reset all QOpenHD Settings"
+                m_long_description: "Reset all QOpenHD Settings (e.g. OSD layout,...). Does not reset your openhd settings on the air or ground unit. Only works from/to linux."
 
                 Button {
                     id:reset
@@ -216,6 +137,7 @@ ScrollView {
                     onClicked: {
                         simplePopupHack.visible=true;
                     }
+                    enabled: _qopenhd.is_linux()
                 }
             }
             SettingBaseElement{
