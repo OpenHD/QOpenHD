@@ -12,6 +12,8 @@ Rectangle {
     id: settings_form
 
     property int eeInt : 0
+    // size of the elements in the left bar - e.g. what allows switching between all the tabs
+    property int left_sidebar_elements_height: 46
 
     function openSettings() {
         visible = true
@@ -108,7 +110,7 @@ Rectangle {
 
             // QOpenHD Settings - AppSettingsPanel
             Item {
-                height: 48
+                height: left_sidebar_elements_height
                 width: parent.width
 
                 Button{
@@ -156,7 +158,7 @@ Rectangle {
 
             // OpenHD Settings - MavlinkAllSettingsPanel
             Item {
-                height: 48
+                height: left_sidebar_elements_height
                 width: parent.width
                 Button{
                     id: openhdSettingsBtn
@@ -203,7 +205,7 @@ Rectangle {
 
             // Log
             Item {
-                height: 48
+                height: left_sidebar_elements_height
                 width: parent.width
                 visible: true
                 Button{
@@ -252,7 +254,7 @@ Rectangle {
 
             // Power
             Item {
-                height: 48
+                height: left_sidebar_elements_height
                 width: parent.width
                 Button{
                     id: powerSettingsBtn
@@ -300,7 +302,7 @@ Rectangle {
 
             // About
             Item {
-                height: 48
+                height: left_sidebar_elements_height
                 width: parent.width
                 Button{
                     id: aboutBtn
@@ -355,7 +357,7 @@ Rectangle {
 
             // RC
             Item {
-                height: 48
+                height: left_sidebar_elements_height
                 width: parent.width
                 Button{
                     id: rcSettingsBtn
@@ -404,7 +406,7 @@ Rectangle {
 
             // Developer stats
             Item {
-                height: 48
+                height: left_sidebar_elements_height
                 width: parent.width
                 Button{
                     id: devStatsBtn
@@ -452,7 +454,7 @@ Rectangle {
 
             // connect (on android)
             Item {
-                height: 48
+                height: left_sidebar_elements_height
                 width: parent.width
                 // only show on android to not confuse users
                 visible: _qopenhd.is_android()
@@ -503,7 +505,7 @@ Rectangle {
             Item {
                 id: eeItem
                 visible: false
-                height: 48
+                height: left_sidebar_elements_height
                 width: parent.width
                 Button{
                     id: eeBtn
