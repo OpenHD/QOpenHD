@@ -484,7 +484,7 @@ Rectangle {
                         font.pixelSize: 15
                         horizontalAlignment: Text.AlignLeft
                         verticalAlignment: Text.AlignVCenter
-                        color: mainStackLayout.currentIndex == 6 ? "#33aaff" : "#dde4ed"
+                        color: mainStackLayout.currentIndex == 7 ? "#33aaff" : "#dde4ed"
                     }
                     background: Rectangle {
                         opacity: .5

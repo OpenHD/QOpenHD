@@ -55,6 +55,7 @@ public:
     // some settings an stuff depend on that, called from .qml
     // NOTE: android is not linux in this definition !
     Q_INVOKABLE bool is_linux();
+    Q_INVOKABLE bool is_android();
     Q_INVOKABLE void android_open_tethering_settings();
 signals:
     void fontFamilyChanged(QString fontFamily);

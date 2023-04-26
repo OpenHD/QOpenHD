@@ -287,6 +287,15 @@ bool QOpenHD::is_linux()
     return false;
 }
 
+bool QOpenHD::is_android()
+{
+#if defined(__android__)
+    return true;
+#else
+    return false;
+#endif
+}
+
 void QOpenHD::android_open_tethering_settings()
 {
 #ifdef __android__

@@ -51,7 +51,7 @@ Item {
                 Layout.fillWidth: true
                 Layout.minimumHeight: 30
                 spacing: 6
-                TextArea{
+                Text{
                     width:parent.width
                     height: 300
                     text: "When running QOpenHD on an external device (e.g. android phone) you have to use one of the given choices to connect the device to the OpenHD ground station"
@@ -66,7 +66,7 @@ Item {
                 Layout.fillWidth: true
                 Layout.minimumHeight: 30
                 spacing: 6
-                TextArea{
+                Text{
                     text: "Connect your phone via high quality USB cable to your ground station and enable USB Tethering on your phone."
                 }
                 Button{
@@ -78,7 +78,7 @@ Item {
         Pane {
             width: parent.width
             height: parent.height
-            TextArea{
+            Text{
                 text: "TODO"
             }
         }
