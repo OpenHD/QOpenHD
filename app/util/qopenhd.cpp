@@ -24,6 +24,7 @@
 #include <QtAndroid>
 #endif
 
+
 QOpenHD &QOpenHD::instance()
 {
     static QOpenHD instance=QOpenHD();
@@ -275,9 +276,12 @@ void QOpenHD::customize_cursor_from_settings()
 
 bool QOpenHD::is_linux()
 {
-#ifdef defined(Q_OS_LINUX)
+// weird - linux might be defined on android ?!
+#if defined(__android__)
+    qDebug()<<"Is android";
     return false;
 #elif defined(__linux__)
+    qDebug()<<"Is linux";
     return true;
 #endif
     return false;
