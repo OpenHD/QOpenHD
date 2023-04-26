@@ -278,10 +278,10 @@ bool QOpenHD::is_linux()
 {
 // weird - linux might be defined on android ?!
 #if defined(__android__)
-    qDebug()<<"Is android";
+    //qDebug()<<"Is android";
     return false;
 #elif defined(__linux__)
-    qDebug()<<"Is linux";
+    //qDebug()<<"Is linux";
     return true;
 #endif
     return false;
