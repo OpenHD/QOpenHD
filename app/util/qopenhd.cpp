@@ -287,6 +287,16 @@ bool QOpenHD::is_linux()
     return false;
 }
 
+void QOpenHD::android_open_tethering_settings()
+{
+#ifdef __android__
+    qDebug()<<"android_open_tethering_settings()";
+    QAndroidJniObject::callStaticMethod<void>("org/openhd/IsConnected",
+                                              "makeAlertDialogOpenTetherSettings2",
+                                              "()V");
+#endif
+}
+
 void QOpenHD::keep_screen_on(bool on)
 {
 #if defined(__android__)

@@ -450,6 +450,54 @@ Rectangle {
                 }
             }
 
+            // connect (on android)
+            Item {
+                height: 48
+                width: parent.width
+                Button{
+                    id: connectB
+                    height: parent.height
+                    width: parent.width
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.horizontalCenter: parent.horizontalCenter
+
+                    Text {
+                        id: connectIcon
+                        text: "\uf6ff"
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                        font.family: "Font Awesome 5 Free"
+                        font.pixelSize: 18
+                        height: parent.height
+                        width: 24
+                        anchors.left: parent.left
+                        anchors.leftMargin: 12
+                        color: "#dde4ed"
+                    }
+
+                    Text {
+                        id: connectBX
+                        text: qsTr("Connect")
+                        height: parent.height
+                        anchors.left: connectIcon.right
+                        anchors.leftMargin: 6
+                        font.pixelSize: 15
+                        horizontalAlignment: Text.AlignLeft
+                        verticalAlignment: Text.AlignVCenter
+                        color: mainStackLayout.currentIndex == 6 ? "#33aaff" : "#dde4ed"
+                    }
+                    background: Rectangle {
+                        opacity: .5
+                        radius: 5
+                        //later this can be changed to focus
+                        color: connectB.hovered ? "grey" : "transparent" // I update background color by this
+                    }
+                    onClicked: {
+                        mainStackLayout.currentIndex = 7
+                    }
+                }
+            }
+
             Item {
                 id: eeItem
                 visible: false
@@ -496,7 +544,7 @@ Rectangle {
                         color: eeBtn.hovered ? "grey" : "transparent" // I update background color by this
                     }
                     onClicked: {
-                        mainStackLayout.currentIndex = 7
+                        mainStackLayout.currentIndex = 8
                     }
                 }
             }
@@ -542,6 +590,10 @@ Rectangle {
 
         AppDeveloperStatsPanel {
             id: appDeveloperStatsPanel
+        }
+
+        ConnectPanel{
+            id: connectPanel
         }
 
         EasterEggPanel {
