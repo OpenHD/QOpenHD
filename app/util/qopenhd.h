@@ -53,6 +53,7 @@ public:
     Q_INVOKABLE void customize_cursor_from_settings();
     // returns true if the platform qopenhd is running on is linux (embedded or x86)
     // some settings an stuff depend on that, called from .qml
+    // NOTE: android is not linux in this definition !
     Q_INVOKABLE bool is_linux();
 signals:
     void fontFamilyChanged(QString fontFamily);

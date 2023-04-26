@@ -94,8 +94,8 @@ ScrollView {
                             _messageBoxInstance.set_text_and_show("Couldn't backup settings")
                         }
                     }
+                    enabled: _qopenhd.is_linux()
                 }
-                enabled: _qopenhd.is_linux()
             }
             SettingBaseElement{
                 m_short_description: "Load Settings from file"

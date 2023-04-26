@@ -275,7 +275,9 @@ void QOpenHD::customize_cursor_from_settings()
 
 bool QOpenHD::is_linux()
 {
-#ifdef __linux__
+#ifdef defined(Q_OS_LINUX)
+    return false;
+#elif defined(__linux__)
     return true;
 #endif
     return false;
