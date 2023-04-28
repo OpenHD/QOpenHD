@@ -16,13 +16,13 @@ Rectangle {
 
     color: "#eaeaea"
 
-    function voltage_as_string(voltage){
-        if(voltage===0)return "N/A";
-        return voltage+" V"
+    function voltage_as_string(voltage_mv){
+        if(voltage_mv===0)return "N/A";
+        return voltage+" mV"
     }
-    function current_as_string(current){
-        if(current===0) return "N/A"
-        return current+" A"
+    function current_as_string(current_ma){
+        if(current_ma===0) return "N/A"
+        return current_ma+" mA"
     }
 
     Card {
@@ -86,7 +86,7 @@ Rectangle {
                     }
 
                     Text {
-                        text: voltage_as_string(_ohdSystemAir.ina219_voltage)
+                        text: voltage_as_string(_ohdSystemAir.ina219_voltage_millivolt)
                         height: 24
                         Layout.fillWidth: true
                         font.pixelSize: 14
@@ -110,7 +110,7 @@ Rectangle {
                     }
 
                     Text {
-                        text: current_as_string(_ohdSystemAir.ina219_current)
+                        text: current_as_string(_ohdSystemAir.ina219_current_milliamps)
                         height: 24
                         Layout.fillWidth: true
                         font.pixelSize: 14
@@ -188,7 +188,7 @@ Rectangle {
                     }
 
                     Text {
-                        text: voltage_as_string(_ohdSystemGround.ina219_voltage)
+                        text: voltage_as_string(_ohdSystemGround.ina219_voltage_millivolt)
                         height: 24
                         Layout.fillWidth: true
                         font.pixelSize: 14
@@ -212,7 +212,7 @@ Rectangle {
                     }
 
                     Text {
-                        text: current_as_string(_ohdSystemGround.ina219_current)
+                        text: current_as_string(_ohdSystemGround.ina219_current_milliamps)
                         height: 24
                         Layout.fillWidth: true
                         font.pixelSize: 14

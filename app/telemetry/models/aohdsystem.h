@@ -67,8 +67,8 @@ public: // public for QT
     L_RO_PROP(int,ram_usage_perc,set_ram_usage_perc,0)
     L_RO_PROP(int,ram_total,set_ram_total,0)
     // needs ina219 sensor
-    L_RO_PROP(int,ina219_voltage,set_ina219_voltage,0)
-    L_RO_PROP(int,ina219_current,set_ina219_current,0)
+    L_RO_PROP(int,ina219_voltage_millivolt,set_ina219_voltage_millivolt,0)
+    L_RO_PROP(int,ina219_current_milliamps,set_ina219_current_milliamps,0)
     //L_RO_PROP(int,,set_,0)
     // This basically only makes sense on the ground pi, it is not the battery percentage reported by the FC
     // but the battery percentage reported by the COmpanion computer running OpenHD (if it is supported, aka for future power hat o.ä)
