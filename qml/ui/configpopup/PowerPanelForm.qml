@@ -18,7 +18,7 @@ Rectangle {
 
     function voltage_as_string(voltage_mv){
         if(voltage_mv===0)return "N/A";
-        return voltage+" mV"
+        return voltage_mv+" mV"
     }
     function current_as_string(current_ma){
         if(current_ma===0) return "N/A"
