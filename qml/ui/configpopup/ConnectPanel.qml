@@ -31,7 +31,10 @@ Item {
             text: qsTr("USB Tether")
         }
         TabButton {
-            text: qsTr("Ethernet / USB to Ethernet")
+            text: qsTr("Ethernet (USB Eth) active")
+        }
+        TabButton {
+            text: qsTr("Ethernet (USB Eth) passive")
         }
     }
 
@@ -86,8 +89,24 @@ Item {
                 width:parent.width
                 height: 600
                 wrapMode: Text.WordWrap
-                text: "1) Enable ETHERNET-HOTSPOT on your openhd ground unit\n2) Connect your external device running QOpenHD to your ground station via ethernet\n(e.g. ethernet port on rpi 4).\n
- Video and telemetry forwarding should start automatically."
+                text: "1) Enable I_ETH_HOTSPOT_E on your openhd ground unit\n
+                2) Connect your external device running QOpenHD to your ground station via ethernet\n(e.g. ethernet port on rpi 4).\n
+                You might have to disable wifi and cellular on your phone.
+                Video and telemetry forwarding should start automatically."
+            }
+        }
+        Pane {
+            width: parent.width
+            height: parent.height
+            Text{
+                width:parent.width
+                height: 600
+                wrapMode: Text.WordWrap
+                text: "1) Make sure I_ETH_HOTSPOT_E is disabled\n
+                2) Enable I_ETH_PASSIVE_F on your openhd ground unit
+                3) Connect your external device running QOpenHD to your ground station via ethernet\n(e.g. ethernet port on rpi 4).\n
+                4) Make sure to select TODO when the android connection setup pops up
+                Video and telemetry forwarding should start automatically."
             }
         }
     }
