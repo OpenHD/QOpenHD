@@ -16,6 +16,15 @@ Rectangle {
 
     color: "#eaeaea"
 
+    function voltage_as_string(voltage){
+        if(voltage===0)return "N/A";
+        return voltage+" V"
+    }
+    function current_as_string(current){
+        if(current===0) return "N/A"
+        return current+" A"
+    }
+
     Card {
         id: infoPanel
         anchors.left: parent.left
@@ -61,11 +70,12 @@ Rectangle {
             Layout.fillWidth: true
             cardName: qsTr("Air")
             cardBody: ColumnLayout {
+
                 RowLayout {
                     Layout.fillWidth: true
 
                     Text {
-                        text: qsTr("Output Voltage:")
+                        text: qsTr("INA219 Voltage:")
                         height: 24
                         Layout.fillWidth: true
                         font.pixelSize: 14
@@ -76,7 +86,7 @@ Rectangle {
                     }
 
                     Text {
-                        text: _fcMavlinkSystem.air_vout >= 0 ? (_fcMavlinkSystem.air_vout / 1000.0).toFixed(2) + "V" : "N/A"
+                        text: voltage_as_string(_ohdSystemAir.ina219_voltage)
                         height: 24
                         Layout.fillWidth: true
                         font.pixelSize: 14
@@ -85,12 +95,11 @@ Rectangle {
                         rightPadding: 12
                     }
                 }
-
                 RowLayout {
                     Layout.fillWidth: true
 
                     Text {
-                        text: qsTr("Current:")
+                        text: qsTr("INA219 Current:")
                         height: 24
                         Layout.fillWidth: true
                         font.pixelSize: 14
@@ -101,7 +110,7 @@ Rectangle {
                     }
 
                     Text {
-                        text: _fcMavlinkSystem.air_iout >= 0 ? _fcMavlinkSystem.air_iout + "mA" : "N/A"
+                        text: current_as_string(_ohdSystemAir.ina219_current)
                         height: 24
                         Layout.fillWidth: true
                         font.pixelSize: 14
@@ -163,11 +172,12 @@ Rectangle {
             Layout.fillWidth: true
             cardName: qsTr("Ground")
             cardBody: ColumnLayout {
+
                 RowLayout {
                     Layout.fillWidth: true
 
                     Text {
-                        text: qsTr("Supply Voltage:")
+                        text: qsTr("INA219 Voltage:")
                         height: 24
                         Layout.fillWidth: true
                         font.pixelSize: 14
@@ -178,7 +188,7 @@ Rectangle {
                     }
 
                     Text {
-                        text: "TOD"//OpenHD.ground_vin >= 0 ? (OpenHD.ground_vin / 1000.0).toFixed(2) + "V": "N/A"
+                        text: voltage_as_string(_ohdSystemGround.ina219_voltage)
                         height: 24
                         Layout.fillWidth: true
                         font.pixelSize: 14
@@ -187,12 +197,11 @@ Rectangle {
                         rightPadding: 12
                     }
                 }
-
                 RowLayout {
                     Layout.fillWidth: true
 
                     Text {
-                        text: qsTr("Output Voltage:")
+                        text: qsTr("INA219 Current:")
                         height: 24
                         Layout.fillWidth: true
                         font.pixelSize: 14
@@ -203,57 +212,7 @@ Rectangle {
                     }
 
                     Text {
-                        text: "TOD"//OpenHD.ground_vout >= 0 ? (OpenHD.ground_vout / 1000.0).toFixed(2)  + "V" : "N/A"
-                        height: 24
-                        Layout.fillWidth: true
-                        font.pixelSize: 14
-                        verticalAlignment: Text.AlignVCenter
-                        horizontalAlignment: Text.AlignRight
-                        rightPadding: 12
-                    }
-                }
-
-                RowLayout {
-                    Layout.fillWidth: true
-
-                    Text {
-                        text: qsTr("Output Current:")
-                        height: 24
-                        Layout.fillWidth: true
-                        font.pixelSize: 14
-                        font.bold: true
-                        verticalAlignment: Text.AlignVCenter
-                        horizontalAlignment: Text.AlignLeft
-                        leftPadding: 12
-                    }
-
-                    Text {
-                        text: "TOD"//OpenHD.ground_iout >= 0 ? OpenHD.ground_iout + "mA" : "N/A"
-                        height: 24
-                        Layout.fillWidth: true
-                        font.pixelSize: 14
-                        verticalAlignment: Text.AlignVCenter
-                        horizontalAlignment: Text.AlignRight
-                        rightPadding: 12
-                    }
-                }
-
-                RowLayout {
-                    Layout.fillWidth: true
-
-                    Text {
-                        text: qsTr("Battery Voltage:")
-                        height: 24
-                        Layout.fillWidth: true
-                        font.pixelSize: 14
-                        font.bold: true
-                        verticalAlignment: Text.AlignVCenter
-                        horizontalAlignment: Text.AlignLeft
-                        leftPadding: 12
-                    }
-
-                    Text {
-                        text: "TOD"//OpenHD.ground_vbat >= 0 ? (OpenHD.ground_vbat / 1000.0).toFixed(2) + "V" : "N/A"
+                        text: current_as_string(_ohdSystemGround.ina219_current)
                         height: 24
                         Layout.fillWidth: true
                         font.pixelSize: 14
