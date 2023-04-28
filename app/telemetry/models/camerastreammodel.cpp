@@ -90,10 +90,17 @@ void CameraStreamModel::update_mavlink_openhd_stats_wb_video_air(const mavlink_o
         const auto max_kbit_okay=recommended_kbits * (1.0+max_perc_allowed);
         const auto min_kbit_okay=recommended_kbits * (1.0-max_perc_allowed);
         const double measured_kbits=msg.curr_measured_encoder_bitrate/1000.0;
-        if(measured_kbits <= max_kbit_okay && measured_kbits >= min_kbit_okay){
-           set_curr_set_and_measured_bitrate_mismatch(false);
+        bool mismatch=false;
+        if(measured_kbits <=min_kbit_okay){
+           set_curr_set_and_measured_bitrate_mismatch(1);
+           mismatch=true;
+        }else if(measured_kbits >=max_kbit_okay){
+           set_curr_set_and_measured_bitrate_mismatch(2);
+           mismatch = true;
         }else{
-           set_curr_set_and_measured_bitrate_mismatch(true);
+           set_curr_set_and_measured_bitrate_mismatch(0);
+        }
+        if(mismatch){
            if(m_n_mismatch_has_been_logged<10){
                std::stringstream ss;
                ss<<"Set/ Measured encoder bitrate mismatch >"<<max_perc_allowed<<"%";
