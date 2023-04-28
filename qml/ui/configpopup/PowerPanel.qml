@@ -156,11 +156,10 @@ PowerPanelForm {
                     if(result){
                         settings_panel.visible = false;
                         powerDialog.visible = false
-                        localMessage(messageForHUD, 6);
                     }else{
                         console.log("Reboot/Shutdown failed, no response.")
                         messageForHUD="Reboot/Shutdown failed, no response"
-                        localMessage(messageForHUD, 4);
+                        _hudLogMessagesModel.add_message_warning(messageForHUD)
                     }
                 }
             }
