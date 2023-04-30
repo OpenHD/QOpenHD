@@ -292,8 +292,8 @@ bool QOpenHD::is_android()
 #if defined(__android__)
     return true;
 #else
-    //return false;
-    return true;
+    return false;
+    //return true;
 #endif
 }
 
