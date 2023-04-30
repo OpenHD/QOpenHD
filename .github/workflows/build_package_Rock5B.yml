@@ -1,4 +1,4 @@
-name: build_package_rock5
+name: build_package_rock5B
 
 on:
   push:
@@ -30,5 +30,6 @@ jobs:
           git clone -b 2.3-evo https://github.com/OpenHD/QOpenHD --recursive /opt/ChrootCompilationTest/additionalFiles
           echo $CLOUDSMITH_API_KEY > /opt/ChrootCompilationTest/additionalFiles/cloudsmith_api_key.txt
           cd /opt/ChrootCompilationTest/
+          sudo apt update
           sudo bash install_dep.sh
           sudo bash build.sh rock5 $API_KEY
