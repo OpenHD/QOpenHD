@@ -224,7 +224,7 @@ static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string&
             map_improved_params["V_OS_CAM_CONFIG"]=ImprovedIntSetting::createEnum(cam_config_items);
         }
         map_improved_params["CONFIG_BOOT_AIR"]=ImprovedIntSetting::createEnumEnableDisable();
-        map_improved_params["I_WIFI_HOTSPOT_E"]=ImprovedIntSetting::createEnumEnableDisable();
+        map_improved_params["WIFI_HOTSPOT_E"]=ImprovedIntSetting::createEnumEnableDisable();
         // Measurements of @Marcel Essers:
         //19: 10-12 mW
         //25: 25-30 mW
@@ -296,7 +296,8 @@ static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string&
         map_improved_params["V_FORCE_SW_ENC"]=ImprovedIntSetting::createEnumEnableDisable();
         map_improved_params["V_SWITCH_CAM"]=ImprovedIntSetting::createEnumEnableDisable();
 
-        map_improved_params["I_ETH_HOTSPOT_E"]=ImprovedIntSetting::createEnumEnableDisable();
+        map_improved_params["ETH_HOTSPOT_E"]=ImprovedIntSetting::createEnumEnableDisable();
+        map_improved_params["ETH_PASSIVE_F"]=ImprovedIntSetting::createEnumEnableDisable();
         {
             auto values=std::vector<std::string>{"untouched","high","low"};
             map_improved_params["GPIO_2"]=ImprovedIntSetting::createEnum(values);
@@ -872,7 +873,7 @@ bool MavlinkSettingsModel::get_param_requires_manual_reboot(QString param_id)
     if(param_id=="ENABLE_JOY_RC"){
         return true;
     }
-    if(param_id=="I_ETH_HOTSPOT_E"){
+    if(param_id=="ETH_HOTSPOT_E"){
         return true;
     }
     if(param_id=="V_N_CAMERAS")return true;
@@ -967,13 +968,18 @@ QString MavlinkSettingsModel::get_short_description(const QString param_id)const
     if(param_id=="V_METERING_MODE"){
         return "Camera exposure metering mode to use. Default average.";
     }
-    if(param_id=="I_WIFI_HOTSPOT_E"){
+    if(param_id=="WIFI_HOTSPOT_E"){
         return "Enable/Disable WiFi hotspot such that you can connect to your air/ground unit via normal WiFi. Frequency is always the opposite of your WB link, e.g. "
                "2.4G if your wb link is 5.8G and opposite. However, disable hotspot during flight !";
     }
-    if(param_id=="I_ETH_HOTSPOT_E"){
+    if(param_id=="ETH_HOTSPOT_E"){
         return "Enable/Disable ethernet hotspot. When enabled, your rpi becomes a DHCPD server and starts forwarding video & telemetry if you connect a device via ethernet."
-               "Requires Reboot to be applied !";
+               "However, this doesn't allow you to share your other device(s) internet with the RPI (e.g android) and in general, it is recommended to use ETH_PASSIVE_F instead."
+               "Cannot be used simultanoeusly with ETH_PASSIVE_F. Requires reboot.";
+    }
+    if(param_id=="ETH_PASSIVE_F"){
+        return "Enable automatic video & telemetry forwarding via ethernet if EITH_HOTSPOT_E is false (Recommended)."
+               "Cannot be used simultaneously with ETH_HOTSPOT_E. Doesn't require reboot.";
     }
     if(param_id=="V_FORCE_SW_ENC"){
         return "Force SW encode for the given camera, only enable if your camera supports outputting an appropriate raw format.";

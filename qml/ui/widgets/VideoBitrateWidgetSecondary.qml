@@ -28,6 +28,14 @@ BaseWidget {
     hasWidgetDetail: true
     hasWidgetAction: true
 
+    function bitrate_color(curr_set_and_measured_bitrate_mismatch){
+        if(curr_set_and_measured_bitrate_mismatch===1){
+            return "yellow" // too low
+        }else if(curr_set_and_measured_bitrate_mismatch==2){
+            return "red" // too high
+        }
+        return settings.color_text // all ok
+    }
 
     //----------------------------- DETAIL BELOW ----------------------------------
 
@@ -172,7 +180,7 @@ BaseWidget {
             width: 84
             height: 32
             //color: settings.color_text
-            color: _cameraStreamModelSecondary.curr_set_and_measured_bitrate_mismatch ? "red" : settings.color_text
+            color: bitrate_color(_cameraStreamModelSecondary.curr_set_and_measured_bitrate_mismatch)
             text: _cameraStreamModelSecondary.curr_video0_received_bitrate_with_fec
             anchors.verticalCenterOffset: 0
             anchors.left: camera_icon.right

@@ -518,8 +518,10 @@ void FCMavlinkSystem::set_armed(bool armed) {
          * vehicle is disarmed, causing it to appear to stop in the UI.
          */
         flightTimeStart.start();
-        if (m_home_latitude == 0.0 && m_home_longitude == 0.0) {
+        if (m_home_latitude == 0.0 || m_home_longitude == 0.0) {
             //LocalMessage::instance()->showMessage("No Home Position in FCMavlinkSystem", 4);
+            HUDLogMessagesModel::instance().add_message_info("Requesting Home position");
+            request_home_position_from_fc();
         }
     }
     m_armed = armed;
