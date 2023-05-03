@@ -353,10 +353,11 @@ static std::optional<ImprovedStringSetting> get_improved_for_string(const std::s
     // Channel mapping presets for device(s)
     {
         auto values=std::vector<ImprovedStringSetting::Item>{
-            {"default","0,1,2,3,4,5,6,7"},
-            {"EX1","0,1,3,2,4,5,6,7"},
-            {"EX2","0,1,4,5,2,3,6,7"},
-            {"EX3","3,2,1,0,4,5,6,7"},
+            {"default"       ,"0,1,2,3,4,5,6,7"},
+            {"Steamdeck AETR","0,1,3,4,2,5,6,7"},
+            {"EX1",           "0,1,3,2,4,5,6,7"},
+            {"EX2",           "0,1,4,5,2,3,6,7"},
+            {"EX3",           "3,2,1,0,4,5,6,7"},
         };
         map_improved_params["RC_CHAN_MAP"]=ImprovedStringSetting{values};
     }

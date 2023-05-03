@@ -69,6 +69,17 @@ void RCChannelsModel::update_all_channels(const RC_CHANNELS &channels)
     m_last_update_ms=QOpenHDMavlinkHelper::getTimeMilliseconds();
 }
 
+void RCChannelsModel::set_channels_debug()
+{
+    int count=1000;
+    RCChannelsModel::RC_CHANNELS channels;
+    for(int i=0;i<18;i++){
+        channels[i]=count;
+        count+=20;
+    }
+    update_all_channels(channels);
+}
+
 void RCChannelsModel::update_alive()
 {
     if(m_last_update_ms==-1){

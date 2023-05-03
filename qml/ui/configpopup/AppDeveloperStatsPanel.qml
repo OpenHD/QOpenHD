@@ -95,5 +95,34 @@ Rectangle {
             id: test8
             text: qsTr("You're running on: "+Qt.platform.os)
         }
+        RowLayout{
+            width: parent.width
+            height: 200
+            visible: _qopenhd.is_linux()
+            Button{
+                text: "Sysctl start openhd"
+                onClicked: {
+                    _qopenhd.sysctl_openhd(0);
+                }
+            }
+            Button{
+                text: "Sysctl stop openhd"
+                onClicked: {
+                    _qopenhd.sysctl_openhd(1);
+                }
+            }
+            Button{
+                text: "Sysctl enable openhd"
+                onClicked: {
+                    _qopenhd.sysctl_openhd(2);
+                }
+            }
+            Button{
+                text: "Sysctl disable openhd"
+                onClicked: {
+                    _qopenhd.sysctl_openhd(3);
+                }
+            }
+        }
     }
 }
