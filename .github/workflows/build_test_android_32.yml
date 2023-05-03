@@ -10,12 +10,21 @@ defaults:
 env:
   SOURCE_DIR:   ${{ github.workspace }}
   QT_VERSION:   5.15.2
-  ARTIFACT:     QOpenHD_32.apk
   BUILD_TYPE:   ${{ fromJSON('["DailyBuild", "StableBuild"]')[ github.ref_type == 'tag' || contains(github.ref, 'Stable_' ) ] }}
 
 jobs:
   build:
     runs-on:  ubuntu-20.04
+
+    strategy:
+      matrix:
+        include:
+          - architecture: 32bits
+            eabi: armeabi-v7a
+            ARTIFACT: QOpenHD_32.apk.apk
+          - architecture: 64bits
+            eabi: arm64-v8a
+            ARTIFACT: QOpenHD_64.apk.apk
 
     steps:
       - name: Checkout repo
@@ -87,7 +96,7 @@ jobs:
           ANDROID_NDK_LATEST_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
           ANDROID_NDK: ${{ steps.setup-ndk.outputs.ndk-path }}
         run:  |
-          qmake ${SOURCE_DIR}/QOpenHD.pro ANDROID_ABIS="arm64-v8a" -spec android-clang CONFIG+=installer
+          qmake ${SOURCE_DIR}/QOpenHD.pro -spec android-clang CONFIG+=installer ANDROID_ABIS="${{ matrix.eabi }}"
           make -j$(($(nproc)/2)) qmake_all
           make -j12
           make install INSTALL_ROOT=android
@@ -102,6 +111,6 @@ jobs:
       - name: Save artifact
         uses: actions/upload-artifact@master
         with:
-          name: ${{ env.ARTIFACT }}
+          name: ${{ matrix.ARTIFACT }}
           path: ${{ runner.temp }}/shadow_build_dir/android/build/outputs/apk/debug/*.apk
 
