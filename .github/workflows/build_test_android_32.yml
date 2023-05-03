@@ -91,7 +91,7 @@ jobs:
           make -j$(($(nproc)/2)) qmake_all
           make -j12
           make install INSTALL_ROOT=android
-          cat Makefile
+          /home/runner/work/_temp/Qt/5.15.2/android/bin/androiddeployqt --output android --verbose --input android-QOpenHD-deployment-settings.json  --android-platform android-33 --gradle
           
           
           zip -r file.zip .
