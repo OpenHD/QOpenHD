@@ -103,4 +103,5 @@ jobs:
         uses: actions/upload-artifact@master
         with:
           name: ${{ env.ARTIFACT }}
-          path: ${{ runner.temp }}/shadow_build_dir/*.zip
+          path: ${{ runner.temp }}/shadow_build_dir/android/build/outputs/apk/debug/*.apk
+
