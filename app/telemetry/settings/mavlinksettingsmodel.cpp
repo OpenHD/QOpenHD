@@ -350,6 +350,16 @@ static std::optional<ImprovedStringSetting> get_improved_for_string(const std::s
         //same for ground uart out
         map_improved_params["TRACKER_UART_OUT"]=ImprovedStringSetting{fc_uart_conn_values};
     }
+    // Channel mapping presets for device(s)
+    {
+        auto values=std::vector<ImprovedStringSetting::Item>{
+            {"default","0,1,2,3,4,5,6,7"},
+            {"EX1","0,1,3,2,4,5,6,7"},
+            {"EX2","0,1,4,5,2,3,6,7"},
+            {"EX3","3,2,1,0,4,5,6,7"},
+        };
+        map_improved_params["RC_CHAN_MAP"]=ImprovedStringSetting{values};
+    }
     //
     if(map_improved_params.find(param_id)!=map_improved_params.end()){
         return map_improved_params[param_id];
