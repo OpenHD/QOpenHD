@@ -21,10 +21,10 @@ jobs:
         include:
           - architecture: armv7
             eabi: armeabi-v7a
-            ARTIFACT: QOpenHD_armv7.apk
+            ARTIFACT: QOpenHD_armv7.aab
           - architecture: armv8
             eabi: arm64-v8a
-            ARTIFACT: QOpenHD_armv8.apk
+            ARTIFACT: QOpenHD_armv8.aab
 
     steps:
       - name: Checkout repo
@@ -112,5 +112,5 @@ jobs:
         uses: actions/upload-artifact@master
         with:
           name: ${{ matrix.ARTIFACT }}
-          path: ${{ runner.temp }}/shadow_build_dir/*.zip
+          path: ${{ runner.temp }}/shadow_build_dir/android/build/outputs/bundle/release/*.aab
 
