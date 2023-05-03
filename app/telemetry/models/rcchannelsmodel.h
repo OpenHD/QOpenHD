@@ -36,6 +36,8 @@ public:
     QHash<int, QByteArray> roleNames() const override;
     using RC_CHANNELS=std::array<int,18>;
     void update_all_channels(const RC_CHANNELS& channels);
+    // Sets the first channel to 1000 and adds 20 to all the remaining channels (ascending)
+    void set_channels_debug();
 public slots:
     void updateData(int index,int value);
  private:

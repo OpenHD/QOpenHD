@@ -307,6 +307,25 @@ void QOpenHD::android_open_tethering_settings()
 #endif
 }
 
+void QOpenHD::sysctl_openhd(int task)
+{
+#ifdef __linux__
+    if(task==0){
+       OHDUtil::run_command("systemctl start openhd",{""},true);
+    }else if(task==1){
+       OHDUtil::run_command("systemctl stop openhd",{""},true);
+    }else if(task==2){
+       OHDUtil::run_command("systemctl enable openhd",{""},true);
+    }else if(task==3){
+       OHDUtil::run_command("systemctl disable openhd",{""},true);
+    }else{
+       qDebug()<<"Unknown task";
+    }
+    return;
+#endif
+    // not supported
+}
+
 void QOpenHD::keep_screen_on(bool on)
 {
 #if defined(__android__)
