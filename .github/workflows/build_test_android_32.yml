@@ -87,7 +87,7 @@ jobs:
           ANDROID_NDK_LATEST_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
           ANDROID_NDK: ${{ steps.setup-ndk.outputs.ndk-path }}
         run:  |
-          qmake ${SOURCE_DIR}/QOpenHD.pro ANDROID_ABIS="armeabi-v7a" -spec android-clang CONFIG+=debug CONFIG+=qml_debug
+          qmake ${SOURCE_DIR}/QOpenHD.pro ANDROID_ABIS="armeabi-v8a" -spec android-clang CONFIG+=debug CONFIG+=qml_debug
           make -j$(($(nproc)/2)) qmake_all
           zip -r file.zip .
 
