@@ -1,4 +1,4 @@
-name: Android 32-bit testing
+name: build_android_signed
 
 on: [push]
 
