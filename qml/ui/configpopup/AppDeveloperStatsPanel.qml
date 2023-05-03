@@ -98,6 +98,7 @@ Rectangle {
         RowLayout{
             width: parent.width
             height: 200
+            visible: _qopenhd.is_linux()
             Button{
                 text: "Sysctl start openhd"
                 onClicked: {
