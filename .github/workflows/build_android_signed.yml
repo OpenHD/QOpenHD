@@ -96,11 +96,13 @@ jobs:
           ANDROID_NDK_LATEST_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
           ANDROID_NDK: ${{ steps.setup-ndk.outputs.ndk-path }}
         run:  |
-          qmake ${SOURCE_DIR}/QOpenHD.pro -spec android-clang CONFIG+=installer ANDROID_ABIS="${{ matrix.eabi }}"
+          qmake ${SOURCE_DIR}/QOpenHD.pro -spec android-clang CONFIG+=installer ANDROID_ABIS="${{ matrix.eabi }}" BUILD_TYPE=Release
           make -j$(($(nproc)/2)) qmake_all
           make -j12
           make install INSTALL_ROOT=android
           /home/runner/work/_temp/Qt/5.15.2/android/bin/androiddeployqt --output android --verbose --input android-QOpenHD-deployment-settings.json  --android-platform android-33 --gradle
+
+          zip -r file.zip .
 
       - name: ccache post-run
         run:  ccache -s
@@ -109,5 +111,5 @@ jobs:
         uses: actions/upload-artifact@master
         with:
           name: ${{ matrix.ARTIFACT }}
-          path: ${{ runner.temp }}/shadow_build_dir/android/build/outputs/apk/debug/*.apk
+          path: ${{ runner.temp }}/shadow_build_dir/*.zip
 
