@@ -19,12 +19,12 @@ jobs:
     strategy:
       matrix:
         include:
-          - architecture: 32bits
+          - architecture: armv7
             eabi: armeabi-v7a
-            ARTIFACT: QOpenHD_32.apk.apk
-          - architecture: 64bits
+            ARTIFACT: QOpenHD_armv7.apk
+          - architecture: armv8
             eabi: arm64-v8a
-            ARTIFACT: QOpenHD_64.apk.apk
+            ARTIFACT: QOpenHD_armv8.apk
 
     steps:
       - name: Checkout repo
@@ -100,7 +100,7 @@ jobs:
           make -j$(($(nproc)/2)) qmake_all
           make -j12
           make install INSTALL_ROOT=android
-          /home/runner/work/_temp/Qt/5.15.2/android/bin/androiddeployqt --output android --verbose --input android-QOpenHD-deployment-settings.json  --android-platform android-33 --gradle --aab --release --sign ../QOpenHD/android/qopenhd_key.jks --storepass ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          androiddeployqt --output android --verbose --input android-QOpenHD-deployment-settings.json  --android-platform android-33 --gradle --aab --release --sign ../QOpenHD/android/qopenhd_key.jks --storepass ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
 
           zip -r file.zip .
 
