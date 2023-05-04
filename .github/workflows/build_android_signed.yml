@@ -89,7 +89,6 @@ jobs:
 
       - name: Build
         working-directory: ${{ runner.temp }}/shadow_build_dir
-        continue-on-error: true
         env:
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           ANDROID_NDK_ROOT: ${{ steps.setup-ndk.outputs.ndk-path }}
