@@ -53,7 +53,7 @@ fi
 #Here are the dependencies depending on the platform
 if [[ "${DISTRO}" == "bullseye" ]] && [[ "${OS}" == "raspbian" ]] ; then
 #Raspberry
-PLATFORM_PACKAGES="-d git -d openhd-userland -d libavcodec-dev -d libavformat-dev -d openhd-qt -d gst-plugins-good -d gst-openhd-plugins"
+PLATFORM_PACKAGES="-d git -d openhd-userland -d libavcodec-dev -d libavformat-dev -d openhd-qt -d gst-plugins-good -d gst-openhd-plugins -d gstreamer1.0-gl"
 elif [[ "${DISTRO}" == "jammy" ]] && [[ "${OS}" == "ubuntu" ]] && [[ "${PACKAGE_ARCH}" == "x86_64" ]]; then
 #X86
 PLATFORM_PACKAGES="-d git -d qtgstreamer-plugins-qt5 -d gstreamer1.0-qt5 -d libgstreamer-plugins-base1.0-dev -d gstreamer1.0-plugins-good -d libavcodec-dev -d libavformat-dev -d openhd-qt-x86-jammy"
