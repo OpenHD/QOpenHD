@@ -352,12 +352,19 @@ static std::optional<ImprovedStringSetting> get_improved_for_string(const std::s
     }
     // Channel mapping presets for device(s)
     {
-        auto values=std::vector<ImprovedStringSetting::Item>{
+        /*auto values=std::vector<ImprovedStringSetting::Item>{
             {"default"       ,"0,1,2,3,4,5,6,7"},
-            {"Steamdeck AETR","0,1,3,4,2,5,6,7"},
+            {"Steamdeck AETR","3,4,0,1,2,5,6,7"},
+            {"Steamdeck EXP","0,1,3,4,2,5,6,7"},
             {"EX1",           "0,1,3,2,4,5,6,7"},
             {"EX2",           "0,1,4,5,2,3,6,7"},
             {"EX3",           "3,2,1,0,4,5,6,7"},
+        };*/
+        auto values=std::vector<ImprovedStringSetting::Item>{ // 4,5,1,2,3
+           {"default"       ,"1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18"},
+           {"Steamdeck AETR","4,5,1,2,3,6,7,8,9,10,11,12,13,14,15,16,17,18"},
+           {"EX1"           ,"2,1,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18"},
+           {"EX2"           ,"2,1,4,3,5,6,7,8,9,10,11,12,13,14,15,16,17,18"},
         };
         map_improved_params["RC_CHAN_MAP"]=ImprovedStringSetting{values};
     }
@@ -881,9 +888,10 @@ QString MavlinkSettingsModel::get_warning_before_safe(const QString param_id)
 
 bool MavlinkSettingsModel::get_param_requires_manual_reboot(QString param_id)
 {
-    if(param_id=="ENABLE_JOY_RC"){
-        return true;
-    }
+    // No reboot needed anymore
+    //if(param_id=="ENABLE_JOY_RC"){
+    //    return true;
+    //}
     if(param_id=="ETH_HOTSPOT_E"){
         return true;
     }
@@ -909,8 +917,9 @@ QString MavlinkSettingsModel::get_short_description(const QString param_id)const
     if(param_id=="WB_TX_POWER_MW"){
         return "TX power in mW (milli Watt), changing this value might or might not have any effect, depending on your card & driver. 1000mW=1W";
     }
-    if(param_id=="RTL8812AU_PWR_I"){
-        return "Unitless power index for RTL8812AU. Leave at 0 to use WB_TX_POWER_MW instead, which doesn't give max power though.[0..58/63] REQUIRES REBOOT TO BE APPLIED";
+    if(param_id=="WB_TX_PWR_IDX_O"){
+        return "RTL8812AU TX power index (unitless). LOW:default,~25mW, legal in most countries."
+               " NOTE: Too high power settings can overload your RF circuits and create packet loss/ destroy your card. Read the Wiki before changing the TX Power";
     }
     if(param_id=="V_OS_CAM_CONFIG"){
         return "If your connected CSI camera is not detected (e.g. you see a dummy camera stream) you need to select the apropriate config here. Air will automatically reboot"
@@ -936,11 +945,8 @@ QString MavlinkSettingsModel::get_short_description(const QString param_id)const
         return "Active if video codec== mjpeg. MJPEG has no encoder bitrate, only an arbitratry quality parameter (0..100)";
     }
     if(param_id=="ENABLE_JOY_RC"){
-        return "Only enable joystick rc if you actually use it to save cpu / bandwidth. If enabled, you can connect a joystick to your ground station for RC. REQUIRES REBOOT!";
-    }
-    if(param_id=="WB_TX_PWR_IDX_O"){
-        return "RTL8812AU TX power index (unitless). LOW:default,~25mW, legal in most countries."
-               " NOTE: Too high power settings can overload your RF circuits and create packet loss/ destroy your card. Read the Wiki before changing the TX Power";
+        return "Only enable joystick rc if you actually use it to save cpu / bandwidth. If enabled, you can connect a joystick to your ground station for RC. After enabling,"
+               "a reboot is recommended, but not neccessary.";
     }
     if(param_id=="V_AIR_RECORDING"){
         return "Record video data locally on your air unit. You can find the files under /home/openhd/Videos";
@@ -1038,7 +1044,8 @@ QString MavlinkSettingsModel::get_short_description(const QString param_id)const
         return "!! Advanced users only !!. This param is not automatically synchronized between air/ground. A short guard intervall increases throughput, but increases packet collisions.";
     }
     if(param_id=="RC_CHAN_MAP"){
-        return "Change which joystick element maps to which RC channel";
+        return "Change which joystick 'channel' is taken for each RC channel. This is a list of numbers, where each number X at position N means take joystick input nr X for channel N."
+               " For example, 1,4,... means take channel number 1 for the first channel, and channel number 4 for the second channel. Needs to have ! all! 18 channel elements seperated by a ','";
     }
     if(param_id=="RC_UPDATE_HZ"){
         return "Specify the update rate of RC over wifibroadcast. A higher update rate gives lower RC latency, but takes more bandwidth away from the downlink.";
