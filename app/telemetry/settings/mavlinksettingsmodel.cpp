@@ -352,13 +352,19 @@ static std::optional<ImprovedStringSetting> get_improved_for_string(const std::s
     }
     // Channel mapping presets for device(s)
     {
-        auto values=std::vector<ImprovedStringSetting::Item>{
+        /*auto values=std::vector<ImprovedStringSetting::Item>{
             {"default"       ,"0,1,2,3,4,5,6,7"},
             {"Steamdeck AETR","3,4,0,1,2,5,6,7"},
             {"Steamdeck EXP","0,1,3,4,2,5,6,7"},
             {"EX1",           "0,1,3,2,4,5,6,7"},
             {"EX2",           "0,1,4,5,2,3,6,7"},
             {"EX3",           "3,2,1,0,4,5,6,7"},
+        };*/
+        auto values=std::vector<ImprovedStringSetting::Item>{ // 4,5,1,2,3
+           {"default"       ,"1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18"},
+           {"Steamdeck AETR","4,5,1,2,3,6,7,8,9,10,11,12,13,14,15,16,17,18"},
+           {"EX1"           ,"2,1,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18"},
+           {"EX2"           ,"2,1,4,3,5,6,7,8,9,10,11,12,13,14,15,16,17,18"},
         };
         map_improved_params["RC_CHAN_MAP"]=ImprovedStringSetting{values};
     }
@@ -1038,7 +1044,8 @@ QString MavlinkSettingsModel::get_short_description(const QString param_id)const
         return "!! Advanced users only !!. This param is not automatically synchronized between air/ground. A short guard intervall increases throughput, but increases packet collisions.";
     }
     if(param_id=="RC_CHAN_MAP"){
-        return "Change which joystick element maps to which RC channel";
+        return "Change which joystick 'channel' is taken for each RC channel. This is a list of numbers, where each number X at position N means take joystick input nr X for channel N."
+               " For example, 1,4,... means take channel number 1 for the first channel, and channel number 4 for the second channel. Needs to have 18 channel elements seperated by a ','";
     }
     if(param_id=="RC_UPDATE_HZ"){
         return "Specify the update rate of RC over wifibroadcast. A higher update rate gives lower RC latency, but takes more bandwidth away from the downlink.";
