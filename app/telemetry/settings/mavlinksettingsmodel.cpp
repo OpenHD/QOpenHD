@@ -1045,7 +1045,7 @@ QString MavlinkSettingsModel::get_short_description(const QString param_id)const
     }
     if(param_id=="RC_CHAN_MAP"){
         return "Change which joystick 'channel' is taken for each RC channel. This is a list of numbers, where each number X at position N means take joystick input nr X for channel N."
-               " For example, 1,4,... means take channel number 1 for the first channel, and channel number 4 for the second channel. Needs to have 18 channel elements seperated by a ','";
+               " For example, 1,4,... means take channel number 1 for the first channel, and channel number 4 for the second channel. Needs to have ! all! 18 channel elements seperated by a ','";
     }
     if(param_id=="RC_UPDATE_HZ"){
         return "Specify the update rate of RC over wifibroadcast. A higher update rate gives lower RC latency, but takes more bandwidth away from the downlink.";
