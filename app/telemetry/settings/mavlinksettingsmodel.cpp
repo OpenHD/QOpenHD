@@ -882,9 +882,10 @@ QString MavlinkSettingsModel::get_warning_before_safe(const QString param_id)
 
 bool MavlinkSettingsModel::get_param_requires_manual_reboot(QString param_id)
 {
-    if(param_id=="ENABLE_JOY_RC"){
-        return true;
-    }
+    // No reboot needed anymore
+    //if(param_id=="ENABLE_JOY_RC"){
+    //    return true;
+    //}
     if(param_id=="ETH_HOTSPOT_E"){
         return true;
     }
@@ -910,8 +911,9 @@ QString MavlinkSettingsModel::get_short_description(const QString param_id)const
     if(param_id=="WB_TX_POWER_MW"){
         return "TX power in mW (milli Watt), changing this value might or might not have any effect, depending on your card & driver. 1000mW=1W";
     }
-    if(param_id=="RTL8812AU_PWR_I"){
-        return "Unitless power index for RTL8812AU. Leave at 0 to use WB_TX_POWER_MW instead, which doesn't give max power though.[0..58/63] REQUIRES REBOOT TO BE APPLIED";
+    if(param_id=="WB_TX_PWR_IDX_O"){
+        return "RTL8812AU TX power index (unitless). LOW:default,~25mW, legal in most countries."
+               " NOTE: Too high power settings can overload your RF circuits and create packet loss/ destroy your card. Read the Wiki before changing the TX Power";
     }
     if(param_id=="V_OS_CAM_CONFIG"){
         return "If your connected CSI camera is not detected (e.g. you see a dummy camera stream) you need to select the apropriate config here. Air will automatically reboot"
@@ -937,11 +939,8 @@ QString MavlinkSettingsModel::get_short_description(const QString param_id)const
         return "Active if video codec== mjpeg. MJPEG has no encoder bitrate, only an arbitratry quality parameter (0..100)";
     }
     if(param_id=="ENABLE_JOY_RC"){
-        return "Only enable joystick rc if you actually use it to save cpu / bandwidth. If enabled, you can connect a joystick to your ground station for RC. REQUIRES REBOOT!";
-    }
-    if(param_id=="WB_TX_PWR_IDX_O"){
-        return "RTL8812AU TX power index (unitless). LOW:default,~25mW, legal in most countries."
-               " NOTE: Too high power settings can overload your RF circuits and create packet loss/ destroy your card. Read the Wiki before changing the TX Power";
+        return "Only enable joystick rc if you actually use it to save cpu / bandwidth. If enabled, you can connect a joystick to your ground station for RC. After enabling,"
+               "a reboot is recommended, but not neccessary.";
     }
     if(param_id=="V_AIR_RECORDING"){
         return "Record video data locally on your air unit. You can find the files under /home/openhd/Videos";
