@@ -37,7 +37,8 @@ Item {
             cardName: qsTr("About")
             cardBody:
                 Text {
-                text: qsTr("To enable RC over wifibroadcast go to OpenHD / Ground(TMP) and set ENABLE_JOY_RC=ENABLED,\nconnect a joystick (or a RC in joystick mode) and reboot.\n
+                text: qsTr("To enable RC over wifibroadcast go to OpenHD / Ground(TMP) and set ENABLE_JOY_RC=ENABLED,
+connect a joystick (or a RC in joystick mode) and (optionally) reboot.\n
 You can use the other screens to validate/debug your setup.\n
 INFO: Channel mapping is not intuitive, but it works when done correctly.
 If you cannot make it work, any proper RC controller (e.g. running EdgeTX / OpenTX)

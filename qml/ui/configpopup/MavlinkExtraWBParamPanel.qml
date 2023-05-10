@@ -331,7 +331,7 @@ Pane{
                             onClicked: {
                                 var text="Only supported on rtl8812au!\nThe MCS index controlls the available bandwidth. Higher MCS index - higher bandwidth, but less sensitivity/range."+
                                         "In contrast to the frequency / channel width, this param only needs to be set on the air unit. As long as your camera supports variable bitrate,"+
-                                        "you can even safely change this param during flight."
+                                        "you can even safely change this param without adjusting the camera bitrate / during flight."
                                 _messageBoxInstance.set_text_and_show(text)
                             }
                         }
