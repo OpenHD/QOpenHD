@@ -1048,7 +1048,8 @@ QString MavlinkSettingsModel::get_short_description(const QString param_id)const
                " For example, 1,4,... means take channel number 1 for the first channel, and channel number 4 for the second channel. Needs to have ! all! 18 channel elements seperated by a ','";
     }
     if(param_id=="RC_UPDATE_HZ"){
-        return "Specify the update rate of RC over wifibroadcast. A higher update rate gives lower RC latency, but takes more bandwidth away from the downlink.";
+        return "Specify the update rate of RC over wifibroadcast. A higher update rate gives lower RC latency, but takes more bandwidth away from the downlink."
+               "No effect if joy rc is disabled.";
     }
     return "TODO";
 }
