@@ -307,6 +307,7 @@ Settings {
 
     property bool show_example_widget: false
 
+    // Configure QOpenHD for dualcam usage (enable disable secondary video and its settings)
     property int dev_qopenhd_n_cameras:1
 
     // N of battery cells (generic) of the vehicle, used for the show voltage per cell setting

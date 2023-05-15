@@ -78,6 +78,8 @@ ScrollView {
             SettingBaseElement{
                 m_short_description: "Video codec secondary"
                 m_long_description: "Video codec of secondary stream (pip video). Automatically fetched from OpenHD."
+                // only show to dualcam users
+                visible: settings.dev_qopenhd_n_cameras==2
                 ComboBox {
                     id: selectVideoCodecSecondary
                     width: 320
@@ -104,6 +106,8 @@ ScrollView {
             SettingBaseElement{
                 m_short_description: "Secondary video force SW"
                 m_long_description: "Force SW decode for secondary video stream (unless it already defaulted to sw decode). Can fix bug(s) in rare hardware incompability cases."
+                // only show to dualcam users
+                visible: settings.dev_qopenhd_n_cameras==2
                 Switch {
                     width: 32
                     height: elementHeight
