@@ -1,13 +1,15 @@
-# bin/bash
+#!/bin/bash
 
-# convenient script to build this project with cmake
+# Convenient script to build this project with CMake
 
 rm -rf build
-
 mkdir build
-
 cd build
-
 qmake ..
 
-make -j$(($(nproc)/2))
+# Check if the OS is macOS
+if [[ "$(uname)" == "Darwin" ]]; then
+    make -j2
+else
+    make -j$(( $(nproc) / 2 ))
+fi
