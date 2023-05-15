@@ -2,9 +2,9 @@ name: iOS starter workflow
 
 on:
   push:
-    branches: [ $default-branch ]
+    branches: [ "2.3-evo" ]
   pull_request:
-    branches: [ $default-branch ]
+      branches: [ "2.3-evo" ]
 
 jobs:
   build:
