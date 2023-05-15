@@ -5,6 +5,7 @@
 #include <QtQuick>
 #include <chrono>
 #include <mutex>
+#include <thread>
 
 #include "mavsdk_include.h"
 
@@ -62,8 +63,10 @@ private:
     // Called every time we get a mavlink message (from any system). Intended to be used for message types that don't
     // work with mavsdk / their subscription based pattern.
     void onProcessMavlinkMessage(mavlink_message_t msg);
-    void tcp_only_connect_if_not_connected();
-     QTimer* m_tcp_connect_timer = nullptr;
+    // The mavsdk tcp connect does block, we therefore need to do it in its own thread
+    // (not block the UI thread)
+    void tcp_only_establish_connection();
+    std::unique_ptr<std::thread> m_tcp_connect_thread= nullptr;
 public:
     // ping all the systems (using timesync, since "ping" is deprecated)
     Q_INVOKABLE void ping_all_systems();
