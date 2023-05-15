@@ -244,6 +244,7 @@ void MavlinkTelemetry::tcp_only_establish_connection()
             ss<<"TCP try connecting to ["<<dev_tcp_server_ip<<"]:"<<OHD_GROUND_SERVER_TCP_PORT;
             qDebug()<<ss.str().c_str();
         }
+        // This might block, but that's not quaranteed (it won't if the host is there, but no server on the tcp port)
         mavsdk::ConnectionResult connection_result = mavsdk->add_tcp_connection(dev_tcp_server_ip,OHD_GROUND_SERVER_TCP_PORT);
         std::stringstream ss;
         ss<<"MAVSDK TCP connection result: " << connection_result;
@@ -252,6 +253,8 @@ void MavlinkTelemetry::tcp_only_establish_connection()
             qDebug()<<"TCP connection established";
             return;
         }
+        // wait a bit before trying again
+        std::this_thread::sleep_for(std::chrono::seconds(3));
     }
 }
 
