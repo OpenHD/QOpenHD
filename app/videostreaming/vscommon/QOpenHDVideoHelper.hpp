@@ -158,6 +158,8 @@ static VideoStreamConfig tmp_get_secondary_config(){
     videoStreamConfig.video_codec=QOpenHDVideoHelper::intToVideoCodec(tmp_video_codec);
     videoStreamConfig.udp_rtp_input_port=5601;
     videoStreamConfig.extra_screen_rotation=0;
+    // Apply force sw decode for both paths the same
+    videoStreamConfig.enable_software_video_decoder=settings.value("enable_software_video_decoder", 0).toBool();
     return videoStreamConfig;
 }
 
