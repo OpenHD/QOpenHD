@@ -36,8 +36,10 @@ Settings {
     // aka this setting only has an effect when running QOpenHD on a PC, and there also
     // pretty much only during development
     property bool app_explicit_window_fullscreen: false
-
-    property bool enable_software_video_decoder: false
+    // force sw decode on primary video
+    property bool primary_enable_software_video_decoder: false
+    // force sw decode on secondary video
+    property bool secondary_enable_software_video_decoder: false
     // enably a test video source instead of decoding actual video data, if supported by the platform
     // 0 = disabled
     // 1 = raw video
