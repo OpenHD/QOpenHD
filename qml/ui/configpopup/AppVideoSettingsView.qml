@@ -29,36 +29,6 @@ ScrollView {
             anchors.left: parent.left
             anchors.right: parent.right
 
-            Rectangle {
-                width: parent.width
-                height: rowHeight
-                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-                visible: true
-
-                Text {
-                    text: qsTr("Always use software video decoder")
-                    font.weight: Font.Bold
-                    font.pixelSize: 13
-                    anchors.leftMargin: 8
-                    verticalAlignment: Text.AlignVCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: 224
-                    height: elementHeight
-                    anchors.left: parent.left
-                }
-
-                Switch {
-                    width: 32
-                    height: elementHeight
-                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    checked: settings.enable_software_video_decoder
-                    onCheckedChanged: settings.enable_software_video_decoder = checked
-                }
-            }
-
             ListModel {
                 id: itemsVideoCodec
                 ListElement { text: "H264"; }
@@ -66,84 +36,90 @@ ScrollView {
                 ListElement { text: "MJPEG"; }
             }
 
-            Rectangle {
-                width: parent.width
-                height: rowHeight
-                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-                visible: true
-                Text {
-                    text: qsTr("Video Codec primary")
-                    font.weight: Font.Bold
-                    font.pixelSize: 13
-                    anchors.leftMargin: 8
-                    verticalAlignment: Text.AlignVCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: 224
-                    height: elementHeight
-                    anchors.left: parent.left
-                }
-
+            SettingBaseElement{
+                m_short_description: "Video codec primary"
+                m_long_description: "Video codec of primary stream (main video). Automatically fetched from OpenHD."
                 ComboBox {
-                  id: selectVideoCodecPrimary
-                  width: 320
-                  height: elementHeight
-                  anchors.right: parent.right
-                  anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-                  anchors.verticalCenter: parent.verticalCenter
-                  anchors.horizontalCenter: parent.horizonatalCenter
-                  model: itemsVideoCodec
-                  Component.onCompleted: {
-                      // out of bounds checking
-                      if(settings.selectedVideoCodecPrimary>2 || settings.selectedVideoCodecPrimary<0){
-                          settings.selectedVideoCodecPrimary=0;
-                      }
-                      currentIndex = settings.selectedVideoCodecPrimary;
-                  }
-                 onCurrentIndexChanged:{
-                     console.debug("VideoCodec:"+itemsVideoCodec.get(currentIndex).text + ", "+currentIndex)
-                     settings.selectedVideoCodecPrimary=currentIndex;
-                 }
+                    id: selectVideoCodecPrimary
+                    width: 320
+                    height: elementHeight
+                    anchors.right: parent.right
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.horizontalCenter: parent.horizonatalCenter
+                    model: itemsVideoCodec
+                    Component.onCompleted: {
+                        // out of bounds checking
+                        if(settings.selectedVideoCodecPrimary>2 || settings.selectedVideoCodecPrimary<0){
+                            settings.selectedVideoCodecPrimary=0;
+                        }
+                        currentIndex = settings.selectedVideoCodecPrimary;
+                    }
+                    onCurrentIndexChanged:{
+                        console.debug("VideoCodec:"+itemsVideoCodec.get(currentIndex).text + ", "+currentIndex)
+                        settings.selectedVideoCodecPrimary=currentIndex;
+                    }
                 }
             }
-            Rectangle {
-                width: parent.width
-                height: rowHeight
-                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-                visible: true
-                Text {
-                    text: qsTr("Video Codec Secondary")
-                    font.weight: Font.Bold
-                    font.pixelSize: 13
-                    anchors.leftMargin: 8
-                    verticalAlignment: Text.AlignVCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: 224
+            SettingBaseElement{
+                m_short_description: "Primary video force SW"
+                m_long_description: "Force SW decode for primary video stream (unless it already defaulted to sw decode). Can fix bug(s) in rare hardware incompability cases."
+                Switch {
+                    width: 32
                     height: elementHeight
-                    anchors.left: parent.left
-                }
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
 
-                ComboBox {
-                  id: selectVideoCodecSecondary
-                  width: 320
-                  height: elementHeight
-                  anchors.right: parent.right
-                  anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
-                  anchors.verticalCenter: parent.verticalCenter
-                  anchors.horizontalCenter: parent.horizonatalCenter
-                  model: itemsVideoCodec
-                  Component.onCompleted: {
-                      // out of bounds checking
-                      if(settings.selectedVideoCodecSecondary >2 || settings.selectedVideoCodecSecondary<0){
-                          settings.selectedVideoCodecSecondary=0;
-                      }
-                      currentIndex = settings.selectedVideoCodecSecondary;
-                  }
-                 onCurrentIndexChanged:{
-                     console.debug("VideoCodec:"+itemsVideoCodec.get(currentIndex).text + ", "+currentIndex)
-                     settings.selectedVideoCodecSecondary=currentIndex;
-                 }
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    checked: settings.primary_enable_software_video_decoder
+                    onCheckedChanged: settings.primary_enable_software_video_decoder = checked
                 }
             }
+            SettingBaseElement{
+                m_short_description: "Video codec secondary"
+                m_long_description: "Video codec of secondary stream (pip video). Automatically fetched from OpenHD."
+                // only show to dualcam users
+                visible: settings.dev_qopenhd_n_cameras==2
+                ComboBox {
+                    id: selectVideoCodecSecondary
+                    width: 320
+                    height: elementHeight
+                    anchors.right: parent.right
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.horizontalCenter: parent.horizonatalCenter
+                    model: itemsVideoCodec
+                    Component.onCompleted: {
+                        // out of bounds checking
+                        if(settings.selectedVideoCodecSecondary >2 || settings.selectedVideoCodecSecondary<0){
+                            settings.selectedVideoCodecSecondary=0;
+                        }
+                        currentIndex = settings.selectedVideoCodecSecondary;
+                    }
+                    onCurrentIndexChanged:{
+                        console.debug("VideoCodec:"+itemsVideoCodec.get(currentIndex).text + ", "+currentIndex)
+                        settings.selectedVideoCodecSecondary=currentIndex;
+                    }
+                }
+            }
+
+            SettingBaseElement{
+                m_short_description: "Secondary video force SW"
+                m_long_description: "Force SW decode for secondary video stream (unless it already defaulted to sw decode). Can fix bug(s) in rare hardware incompability cases."
+                // only show to dualcam users
+                visible: settings.dev_qopenhd_n_cameras==2
+                Switch {
+                    width: 32
+                    height: elementHeight
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    checked: settings.secondary_enable_software_video_decoder
+                    onCheckedChanged: settings.secondary_enable_software_video_decoder = checked
+                }
+            }
+
 
             SettingBaseElement{
                 m_short_description: "Backgrund transparent"

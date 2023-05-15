@@ -123,7 +123,7 @@ static VideoStreamConfig read_from_settings(){
 
     const int tmp_video_codec = settings.value("selectedVideoCodecPrimary", 0).toInt();
     _videoStreamConfig.video_codec=QOpenHDVideoHelper::intToVideoCodec(tmp_video_codec);
-    _videoStreamConfig.enable_software_video_decoder=settings.value("enable_software_video_decoder", 0).toBool();
+    _videoStreamConfig.enable_software_video_decoder=settings.value("primary_enable_software_video_decoder", 0).toBool();
     _videoStreamConfig.dev_jetson=settings.value("dev_jetson",false).toBool();
     //
     _videoStreamConfig.dev_enable_custom_pipeline=settings.value("dev_enable_custom_pipeline",false).toBool();
@@ -158,6 +158,8 @@ static VideoStreamConfig tmp_get_secondary_config(){
     videoStreamConfig.video_codec=QOpenHDVideoHelper::intToVideoCodec(tmp_video_codec);
     videoStreamConfig.udp_rtp_input_port=5601;
     videoStreamConfig.extra_screen_rotation=0;
+    // Apply force sw decode for both paths the same
+    videoStreamConfig.enable_software_video_decoder=settings.value("secondary_enable_software_video_decoder", 0).toBool();
     return videoStreamConfig;
 }
 

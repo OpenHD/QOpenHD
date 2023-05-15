@@ -62,6 +62,7 @@ static std::string gst_create_jeston_test(const QOpenHDVideoHelper::VideoCodec& 
 }
 
 static std::string gst_create_video_decoder(const QOpenHDVideoHelper::VideoCodec& videoCodec,bool force_sw,bool dev_jetson){
+   qDebug()<<"gst_create_video_decoder force_sw:"<<force_sw;
     if(dev_jetson){
         return gst_create_jeston_test(videoCodec);
     }

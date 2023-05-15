@@ -55,10 +55,8 @@ MavlinkTelemetry::MavlinkTelemetry(QObject *parent):QObject(parent)
             dev_tcp_server_ip = "0.0.0.0";
         }
         //dev_tcp_server_ip = "0.0.0.0";
-        // start a timer that tries to connect via tcp until success
-        m_tcp_connect_timer = new QTimer(this);
-        QObject::connect(m_tcp_connect_timer, &QTimer::timeout, this, &MavlinkTelemetry::tcp_only_connect_if_not_connected);
-        m_tcp_connect_timer->start(3000);
+        // We try connecting until success
+        m_tcp_connect_thread=std::make_unique<std::thread>(&MavlinkTelemetry::tcp_only_establish_connection,this);
     }else{
         // default, udp, passive (like QGC)
         mavsdk::ConnectionResult connection_result = mavsdk->add_udp_connection(QOPENHD_GROUND_CLIENT_UDP_PORT_IN);
@@ -236,24 +234,28 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg)
     }*/
 }
 
-void MavlinkTelemetry::tcp_only_connect_if_not_connected()
+void MavlinkTelemetry::tcp_only_establish_connection()
 {
     assert(dev_use_tcp);
-    qWarning("tcp_only_connect_if_not_connected begin");
-    {
+    qDebug()<<"tcp_only_establish_connection";
+    while(true){
+        {
+            std::stringstream ss;
+            ss<<"TCP try connecting to ["<<dev_tcp_server_ip<<"]:"<<OHD_GROUND_SERVER_TCP_PORT;
+            qDebug()<<ss.str().c_str();
+        }
+        // This might block, but that's not quaranteed (it won't if the host is there, but no server on the tcp port)
+        mavsdk::ConnectionResult connection_result = mavsdk->add_tcp_connection(dev_tcp_server_ip,OHD_GROUND_SERVER_TCP_PORT);
         std::stringstream ss;
-        ss<<"TCP try connecting to ["<<dev_tcp_server_ip<<"]:"<<OHD_GROUND_SERVER_TCP_PORT;
+        ss<<"MAVSDK TCP connection result: " << connection_result;
         qDebug()<<ss.str().c_str();
+        if(connection_result==mavsdk::ConnectionResult::Success){
+            qDebug()<<"TCP connection established";
+            return;
+        }
+        // wait a bit before trying again
+        std::this_thread::sleep_for(std::chrono::seconds(3));
     }
-    mavsdk::ConnectionResult connection_result = mavsdk->add_tcp_connection(dev_tcp_server_ip,OHD_GROUND_SERVER_TCP_PORT);
-    std::stringstream ss;
-    ss<<"MAVSDK TCP connection: " << connection_result;
-    qDebug()<<ss.str().c_str();
-    if(connection_result==mavsdk::ConnectionResult::Success){
-        qDebug()<<"Stopping tcp connect timer";
-        m_tcp_connect_timer->stop();
-    }
-    qWarning("tcp_only_connect_if_not_connected end");
 }
 
 void MavlinkTelemetry::ping_all_systems()
