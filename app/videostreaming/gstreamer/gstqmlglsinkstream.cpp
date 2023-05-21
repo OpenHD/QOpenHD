@@ -76,6 +76,7 @@ static std::string gst_create_video_decoder(const QOpenHDVideoHelper::VideoCodec
         ss<<"h264parse ! ";
         ss<<"decodebin ! ";
     }else if(videoCodec==QOpenHDVideoHelper::VideoCodecH265){
+        //ss<<"h265parse ! ";
         ss<<"decodebin ! ";
     }else{
        ss<<"decodebin ! ";
