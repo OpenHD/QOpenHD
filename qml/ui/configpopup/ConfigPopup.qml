@@ -404,7 +404,7 @@ Rectangle {
             }
 
             // FC Setup
-            Item {
+            /*Item {
                 id: fcSetup
                 height: left_sidebar_elements_height
                 width: parent.width
@@ -450,7 +450,7 @@ Rectangle {
                         mainStackLayout.currentIndex = 6
                     }
                 }
-            }
+            }*/
 
 
 
@@ -488,7 +488,7 @@ Rectangle {
                         font.pixelSize: 15
                         horizontalAlignment: Text.AlignLeft
                         verticalAlignment: Text.AlignVCenter
-                        color: mainStackLayout.currentIndex == 7 ? "#33aaff" : "#dde4ed"
+                        color: mainStackLayout.currentIndex == 6 ? "#33aaff" : "#dde4ed"
                     }
                     background: Rectangle {
                         opacity: .5
@@ -497,7 +497,7 @@ Rectangle {
                         color: devStatsBtn.hovered ? "grey" : "transparent" // I update background color by this
                     }
                     onClicked: {
-                        mainStackLayout.currentIndex = 7
+                        mainStackLayout.currentIndex = 6
                     }
                 }
             }
@@ -538,7 +538,7 @@ Rectangle {
                         font.pixelSize: 15
                         horizontalAlignment: Text.AlignLeft
                         verticalAlignment: Text.AlignVCenter
-                        color: mainStackLayout.currentIndex == 8 ? "#33aaff" : "#dde4ed"
+                        color: mainStackLayout.currentIndex == 7 ? "#33aaff" : "#dde4ed"
                     }
                     background: Rectangle {
                         opacity: .5
@@ -547,7 +547,7 @@ Rectangle {
                         color: connectB.hovered ? "grey" : "transparent" // I update background color by this
                     }
                     onClicked: {
-                        mainStackLayout.currentIndex = 8
+                        mainStackLayout.currentIndex = 7
                     }
                 }
             }
@@ -589,7 +589,7 @@ Rectangle {
                         font.pixelSize: 15
                         horizontalAlignment: Text.AlignLeft
                         verticalAlignment: Text.AlignVCenter
-                        color: mainStackLayout.currentIndex == 9 ? "#33aaff" : "#dde4ed"
+                        color: mainStackLayout.currentIndex == 8 ? "#33aaff" : "#dde4ed"
                     }
                     background: Rectangle {
                         opacity: .5
@@ -598,7 +598,7 @@ Rectangle {
                         color: eeBtn.hovered ? "grey" : "transparent" // I update background color by this
                     }
                     onClicked: {
-                        mainStackLayout.currentIndex = 9
+                        mainStackLayout.currentIndex = 8
                     }
                 }
             }
@@ -642,9 +642,9 @@ Rectangle {
             id: rcInfoPanel
         }
 
-        PanelFCSetup {
+        /*PanelFCSetup {
             id: fcSetupPanel
-        }
+        }*/
 
         AppDeveloperStatsPanel {
             id: appDeveloperStatsPanel
