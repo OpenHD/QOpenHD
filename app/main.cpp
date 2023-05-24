@@ -17,6 +17,7 @@ const QVector<QString> permissions({"android.permission.INTERNET",
 #ifdef QOPENHD_HAS_MAVSDK_MAVLINK_TELEMETRY
 #include "telemetry/models/fcmavlinksystem.h"
 #include "telemetry/models/fcmavlinkmissionitemsmodel.h"
+#include "telemetry/models/fcmavlinksettingsmodel.h"
 #include "telemetry/models/camerastreammodel.h"
 #include "telemetry/models/aohdsystem.h"
 #include "telemetry/models/wificard.h"
@@ -291,6 +292,7 @@ int main(int argc, char *argv[]) {
     engine.rootContext()->setContextProperty("_mavlinkTelemetry", &MavlinkTelemetry::instance());
     engine.rootContext()->setContextProperty("_fcMavlinkSystem", &FCMavlinkSystem::instance());
     engine.rootContext()->setContextProperty("_fcMavlinkMissionItemsModel", &FCMavlinkMissionItemsModel::instance());
+    engine.rootContext()->setContextProperty("_fcMavlinkkSettingsModel", &FCMavlinkSettingsModel::instance());
     engine.rootContext()->setContextProperty("_rcchannelsmodelground", &RCChannelsModel::instanceGround());
     engine.rootContext()->setContextProperty("_rcchannelsmodelfc", &RCChannelsModel::instanceFC());
     engine.rootContext()->setContextProperty("_ohdSystemAir", &AOHDSystem::instanceAir());

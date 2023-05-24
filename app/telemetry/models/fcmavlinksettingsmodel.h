@@ -7,6 +7,8 @@
 
 // For changing settings on the FC itself (not OpenHD !)
 // Works a bit different
+// ARGH - The prams I was initially after are int16_t (not int32_t) and therefore not supported in mavsdk param yet
+// -> stub for now
 class FCMavlinkSettingsModel: public QObject
 {
     Q_OBJECT

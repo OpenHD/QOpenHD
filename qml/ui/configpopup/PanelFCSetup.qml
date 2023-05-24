@@ -31,7 +31,7 @@ Rectangle {
             height: 24
             text: "Set Ardupilot Message rates"
             onClicked:{
-
+                _fcMavlinkkSettingsModel.set_ardupilot_message_rates()
             }
         }
     }
