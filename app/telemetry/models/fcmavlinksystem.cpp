@@ -1047,7 +1047,7 @@ void FCMavlinkSystem::test_set_data_stream_rates()
 bool FCMavlinkSystem::get_SHOW_FC_MESSAGES_IN_HUD()
 {
     QSettings settings;
-    return settings.value("show_fc_messages_in_hud", false).toBool();
+    return settings.value("show_fc_messages_in_hud", true).toBool();
 }
 
 void FCMavlinkSystem::recalculate_efficiency()
