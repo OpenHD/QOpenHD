@@ -15,6 +15,7 @@
 #include <logging/hudlogmessagesmodel.h>
 #include "mavsdk_helper.hpp"
 #include "fcmavlinkmissionitemsmodel.h"
+#include "fcmavlinksettingsmodel.h"
 
 FCMavlinkSystem::FCMavlinkSystem(QObject *parent): QObject(parent) {
     m_flight_time_timer = new QTimer(this);
@@ -46,6 +47,7 @@ void FCMavlinkSystem::set_system(std::shared_ptr<mavsdk::System> system)
     m_pass_thru=std::make_shared<mavsdk::MavlinkPassthrough>(system);
     // must be manually enabled by the user to save resources
     //m_mission=std::make_shared<mavsdk::Mission>(system);
+    FCMavlinkSettingsModel::instance().set_system(system);
 }
 
 bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)

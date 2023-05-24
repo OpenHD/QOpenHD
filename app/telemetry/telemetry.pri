@@ -68,6 +68,7 @@ QOPENHD_LINK_MAVSDK_SHARED {
 }
 
 SOURCES += \
+    $$PWD/models/fcmavlinksettingsmodel.cpp \
     app/telemetry/models/aohdsystem.cpp \
     app/telemetry/models/camerastreammodel.cpp \
     app/telemetry/models/rcchannelsmodel.cpp \
@@ -81,6 +82,7 @@ SOURCES += \
     app/telemetry/models/fcmavlinkmissionitemsmodel.cpp \
 
 HEADERS += \
+    $$PWD/models/fcmavlinksettingsmodel.h \
     app/telemetry/mavsdk_helper.hpp \
     app/telemetry/mavsdk_include.h \
     app/telemetry/models/aohdsystem.h \
