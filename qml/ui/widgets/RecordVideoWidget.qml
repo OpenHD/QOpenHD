@@ -30,9 +30,9 @@ BaseWidget {
     hasWidgetDetail: true
     hasWidgetAction: true
     widgetActionWidth: 150
-    widgetActionHeight: (settings.dev_qopenhd_n_cameras > 1) ? 180 : 115
+    widgetActionHeight: (settings.dev_qopenhd_n_cameras > 1) ? 200 : 115
     widgetDetailWidth:275
-    widgetDetailHeight:150
+    widgetDetailHeight:175
 
     Item {
         id:vars
@@ -324,7 +324,7 @@ BaseWidget {
         }
         Text {
             id:record_status_cam2_min
-            text: "\uf03d"
+            text: "  \uf03d"
             font.family: "Font Awesome 5 Free"
             color: (vars.rec2 == true) ? "red" : "white"
             anchors.fill: parent
