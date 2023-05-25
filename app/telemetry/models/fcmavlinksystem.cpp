@@ -274,7 +274,7 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         break;
     }
     case MAVLINK_MSG_ID_GPS_GLOBAL_ORIGIN:{
-        qDebug()<<"Got MAVLINK_MSG_ID_GPS_GLOBAL_ORIGIN";
+        //qDebug()<<"Got MAVLINK_MSG_ID_GPS_GLOBAL_ORIGIN";
         // inav for some reason publishes the home position via this message instead of the home position one (and doesn't want to change it)
         QSettings settings;
         const bool dirty_enable_inav_hacks=settings.value("dirty_enable_inav_hacks",false).toBool();
