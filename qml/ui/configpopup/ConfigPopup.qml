@@ -403,6 +403,56 @@ Rectangle {
                 }
             }
 
+            // FC Setup
+            /*Item {
+                id: fcSetup
+                height: left_sidebar_elements_height
+                width: parent.width
+                Button{
+                    id: fcSetupButton
+                    height: parent.height
+                    width: parent.width
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.horizontalCenter: parent.horizontalCenter
+
+                    Text {
+                        id: fcSetupIcon
+                        text: "\uf05a"
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                        font.family: "Font Awesome 5 Free"
+                        font.pixelSize: 18
+                        height: parent.height
+                        width: 24
+                        anchors.left: parent.left
+                        anchors.leftMargin: 12
+                        color: "#dde4ed"
+                    }
+
+                    Text {
+                        id: fcSetupButtonText
+                        text: qsTr("FC Setup")
+                        height: parent.height
+                        anchors.left: fcSetupIcon.right
+                        anchors.leftMargin: 6
+                        font.pixelSize: 15
+                        horizontalAlignment: Text.AlignLeft
+                        verticalAlignment: Text.AlignVCenter
+                        color: mainStackLayout.currentIndex == 6 ? "#33aaff" : "#dde4ed"
+                    }
+                    background: Rectangle {
+                        opacity: .5
+                        radius: 5
+                        //later this can be changed to focus
+                        color: fcSetupButton.hovered ? "grey" : "transparent" // I update background color by this
+                    }
+                    onClicked: {
+                        mainStackLayout.currentIndex = 6
+                    }
+                }
+            }*/
+
+
 
             // Developer stats
             Item {
@@ -539,7 +589,7 @@ Rectangle {
                         font.pixelSize: 15
                         horizontalAlignment: Text.AlignLeft
                         verticalAlignment: Text.AlignVCenter
-                        color: mainStackLayout.currentIndex == 7 ? "#33aaff" : "#dde4ed"
+                        color: mainStackLayout.currentIndex == 8 ? "#33aaff" : "#dde4ed"
                     }
                     background: Rectangle {
                         opacity: .5
@@ -591,6 +641,10 @@ Rectangle {
         RcInfoPanel {
             id: rcInfoPanel
         }
+
+        /*PanelFCSetup {
+            id: fcSetupPanel
+        }*/
 
         AppDeveloperStatsPanel {
             id: appDeveloperStatsPanel

@@ -933,7 +933,7 @@ QString MavlinkSettingsModel::get_short_description(const QString param_id)const
         return "RPI HW UART baud rate, needs to match the UART baud rate set on your FC";
     }
     if(param_id=="FC_UART_CONN"){
-        return "Enable / disable UART for telemetry from/to your FC. Make sure FC_UART_BAUD matches your FC. See the wiki for more info.";
+        return "Telemetry FC<->Air unit. Make sure FC_UART_BAUD matches your FC. For rpi users, select serial0 for GPIO serial. See the wiki for more info.";
     }
     if(param_id=="V_FORMAT"){
         return "Video WIDTHxHEIGHT@FPS. You can enter any value you want here, but if you select a video format that is not supported by your camera, the video stream will stop";

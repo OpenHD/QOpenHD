@@ -142,13 +142,24 @@ BaseWidget {
                     }
                 }
             }
-
-            Button{
-                height:32
-                id: requestHomeButton
-                text: "Request Home"
-                onClicked: {
-                    _fcMavlinkSystem.request_home_position_from_fc()
+            RowLayout{
+                width: parent.width
+                height: 32
+                Button{
+                    height:32
+                    id: requestHomeButton
+                    text: "Request Home"
+                    onClicked: {
+                        _fcMavlinkSystem.request_home_position_from_fc()
+                    }
+                }
+                Button{
+                    height:32
+                    id: overwriteHome
+                    text: "Overwrite"
+                    onClicked: {
+                        _fcMavlinkSystem.overwrite_home_to_current()
+                    }
                 }
             }
         }

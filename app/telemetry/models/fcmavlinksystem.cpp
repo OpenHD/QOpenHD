@@ -15,6 +15,7 @@
 #include <logging/hudlogmessagesmodel.h>
 #include "mavsdk_helper.hpp"
 #include "fcmavlinkmissionitemsmodel.h"
+#include "fcmavlinksettingsmodel.h"
 
 FCMavlinkSystem::FCMavlinkSystem(QObject *parent): QObject(parent) {
     m_flight_time_timer = new QTimer(this);
@@ -46,6 +47,7 @@ void FCMavlinkSystem::set_system(std::shared_ptr<mavsdk::System> system)
     m_pass_thru=std::make_shared<mavsdk::MavlinkPassthrough>(system);
     // must be manually enabled by the user to save resources
     //m_mission=std::make_shared<mavsdk::Mission>(system);
+    FCMavlinkSettingsModel::instance().set_system(system);
 }
 
 bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
@@ -207,18 +209,6 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
                                               static_cast<double>(0);
            set_hdg(heading_deg);
         }
-        // Really dirty, we want inav to fix that and get rid of it !
-        {
-           QSettings settings;
-           const bool dirty_enable_inav_hacks=settings.value("dirty_enable_inav_hacks",false).toBool();
-           if(dirty_enable_inav_hacks){
-               if(m_armed && m_home_latitude==0.0 && m_home_longitude==0.0){
-                   set_home_latitude(lat);
-                   set_home_longitude(lon);
-                   HUDLogMessagesModel::instance().add_message_warning("INAV HOME SET");
-               }
-           }
-        }
         calculate_home_distance();
         calculate_home_course();
         updateFlightDistance();
@@ -284,6 +274,21 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         break;
     }
     case MAVLINK_MSG_ID_GPS_GLOBAL_ORIGIN:{
+        //qDebug()<<"Got MAVLINK_MSG_ID_GPS_GLOBAL_ORIGIN";
+        // inav for some reason publishes the home position via this message instead of the home position one (and doesn't want to change it)
+        QSettings settings;
+        const bool dirty_enable_inav_hacks=settings.value("dirty_enable_inav_hacks",false).toBool();
+        if(dirty_enable_inav_hacks){
+           mavlink_gps_global_origin_t decoded;
+           mavlink_msg_gps_global_origin_decode(&msg, &decoded);
+           const double home_lat=(double)decoded.latitude / 10000000.0;
+           const double home_lon=(double)decoded.longitude / 10000000.0;
+           // inav reports 0 until it has home
+           if(home_lat!=0.0 && home_lon !=0.0){
+               set_home_latitude(home_lat);
+               set_home_longitude(home_lon);
+           }
+        }
         break;
     }
     case MAVLINK_MSG_ID_NAV_CONTROLLER_OUTPUT:{
@@ -921,6 +926,13 @@ void FCMavlinkSystem::request_home_position_from_fc()
     }
 }
 
+bool FCMavlinkSystem::overwrite_home_to_current()
+{
+    set_home_latitude(m_lat);
+    set_home_longitude(m_lon);
+    HUDLogMessagesModel::instance().add_message_warning("HOME POSITION OVERWRITTEN");
+}
+
 bool FCMavlinkSystem::enable_disable_mission_updates(bool enable)
 {
     if(enable){
@@ -1045,7 +1057,7 @@ void FCMavlinkSystem::test_set_data_stream_rates()
 bool FCMavlinkSystem::get_SHOW_FC_MESSAGES_IN_HUD()
 {
     QSettings settings;
-    return settings.value("show_fc_messages_in_hud", false).toBool();
+    return settings.value("show_fc_messages_in_hud", true).toBool();
 }
 
 void FCMavlinkSystem::recalculate_efficiency()
