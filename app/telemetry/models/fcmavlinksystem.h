@@ -239,6 +239,8 @@ public:
     Q_INVOKABLE void flight_mode_cmd(long cmd_msg);
     // Some FC stop sending home position when armed, re-request the home position
     Q_INVOKABLE void request_home_position_from_fc();
+    // This overwrites the current home lat / lon values with whatever the fc reported last as lat/lon
+    Q_INVOKABLE bool overwrite_home_to_current();
     // -----------------------
 private:
     void send_message_hud_connection(bool connected);
