@@ -7,6 +7,7 @@
 #include "../telemetry/mavsdk_include.h"
 #include "../common/TimeHelper.hpp"
 #include "../common/StringHelper.hpp"
+#include "mavlink_enum_to_string.h"
 
 // Various utility methods for telemetry that are static and take simple imputs.
 namespace Telemetryutil{
@@ -133,182 +134,6 @@ static QString battery_gauge_glyph_from_percentage(int percent){
     }
 }
 
-static QString sub_mode_from_enum(SUB_MODE mode){
-    switch (mode) {
-    case SUB_MODE_MANUAL:
-            return "Manual";
-       case SUB_MODE_ACRO:
-            return "Acro";
-       case SUB_MODE_AUTO:
-            return "Auto";
-       case SUB_MODE_GUIDED:
-            return "Guided";
-       case SUB_MODE_STABILIZE:
-            return "Stabilize";
-       case SUB_MODE_ALT_HOLD:
-            return "Alt Hold";
-       case SUB_MODE_CIRCLE:
-            return "Circle";
-       case SUB_MODE_SURFACE:
-            return "Surface";
-       case SUB_MODE_POSHOLD:
-            return "Position Hold";
-       case SUB_MODE_ENUM_END:
-       default:
-            break;
-    }
-    return "Unknown";
-}
-
-static QString rover_mode_from_enum(ROVER_MODE mode){
-    switch (mode) {
-       case ROVER_MODE_HOLD:
-            return "Hold";
-       case ROVER_MODE_MANUAL:
-            return "Manual";
-       case ROVER_MODE_STEERING:
-            return "Steering";
-       case ROVER_MODE_INITIALIZING:
-            return "Initializing";
-       case ROVER_MODE_SMART_RTL:
-            return "Smart RTL";
-       case ROVER_MODE_ACRO:
-            return "Acro";
-       case ROVER_MODE_AUTO:
-            return "Auto";
-       case ROVER_MODE_RTL:
-            return "RTL";
-       case ROVER_MODE_LOITER:
-            return "Loiter";
-       case ROVER_MODE_GUIDED:
-            return "Guided";
-        default:
-             break;
-    }
-    return "Unknown";
-}
-
-static QString copter_mode_from_enum(COPTER_MODE mode){
-    switch (mode) {
-        case COPTER_MODE_LAND:
-             return "Landing";
-       case COPTER_MODE_FLIP:
-            return "Flip";
-       case COPTER_MODE_BRAKE:
-            return "Brake";
-       case COPTER_MODE_DRIFT:
-            return "Drift";
-       case COPTER_MODE_SPORT:
-            return "Sport";
-       case COPTER_MODE_THROW:
-            return "Throw";
-       case COPTER_MODE_POSHOLD:
-            return "Position Hold";
-       case COPTER_MODE_ALT_HOLD:
-            return "Altitude Hold";
-       case COPTER_MODE_SMART_RTL:
-            return "Smart RTL";
-       case COPTER_MODE_GUIDED_NOGPS:
-            return "Guided (NOGPS)";
-       case COPTER_MODE_CIRCLE:
-            return "Circle";
-       case COPTER_MODE_STABILIZE:
-            return "Stabilize";
-       case COPTER_MODE_ACRO:
-            return "Acro";
-       case COPTER_MODE_AUTOTUNE:
-            return "Autotune";
-       case COPTER_MODE_AUTO:
-            return "Auto";
-       case COPTER_MODE_RTL:
-            return "RTL";
-       case COPTER_MODE_LOITER:
-            return "Loiter";
-       case COPTER_MODE_AVOID_ADSB:
-            return "Avoid ADSB";
-       case COPTER_MODE_GUIDED:
-            return "Guided";
-        default:
-             break;
-    }
-    return "Unknown";
-}
-
-static QString plane_mode_from_enum(PLANE_MODE mode){
-    switch (mode) {
-    case PLANE_MODE_MANUAL:
-            return "Manual";
-       case PLANE_MODE_CIRCLE:
-            return "Circle";
-       case PLANE_MODE_STABILIZE:
-            return "Stabilize";
-       case PLANE_MODE_TRAINING:
-            return "Training";
-       case PLANE_MODE_ACRO:
-            return "Acro";
-       case PLANE_MODE_FLY_BY_WIRE_A:
-            return "Fly By Wire A";
-       case PLANE_MODE_FLY_BY_WIRE_B:
-            return "Fly By Wire B";
-       case PLANE_MODE_CRUISE:
-            return "Cruise";
-       case PLANE_MODE_AUTOTUNE:
-            return "Autotune";
-       case PLANE_MODE_AUTO:
-            return "Auto";
-       case PLANE_MODE_RTL:
-            return "RTL";
-       case PLANE_MODE_LOITER:
-            return "Loiter";
-       case PLANE_MODE_TAKEOFF:
-            return "Takeoff";
-       case PLANE_MODE_AVOID_ADSB:
-            return "Avoid ADSB";
-       case PLANE_MODE_GUIDED:
-            return "Guided";
-       case PLANE_MODE_INITIALIZING:
-            return "Initializing";
-       case PLANE_MODE_QSTABILIZE:
-            return "QStabilize";
-       case PLANE_MODE_QHOVER:
-            return "QHover";
-       case PLANE_MODE_QLOITER:
-            return "QLoiter";
-       case PLANE_MODE_QLAND:
-            return "QLand";
-       case PLANE_MODE_QRTL:
-            return "QRTL";
-       case PLANE_MODE_QAUTOTUNE:
-            return "QAutotune";
-        case PLANE_MODE_QACRO:
-            return "QAcro";
-        case PLANE_MODE_THERMAL:
-            return "Thermal";
-        default:
-             break;
-    }
-    return "Unknown";
-}
-
-static QString tracker_mode_from_enum(TRACKER_MODE mode){
-    switch (mode) {
-       case TRACKER_MODE_MANUAL:
-            return "Manual";
-       case TRACKER_MODE_STOP:
-            return "Stop";
-       case TRACKER_MODE_SCAN:
-            return "Scan";
-       case TRACKER_MODE_SERVO_TEST:
-            return "Servo Test";
-       case TRACKER_MODE_AUTO:
-            return "Auto";
-       case TRACKER_MODE_INITIALIZING:
-            return "Initializing";
-       default:
-             break;
-    }
-    return "Unknown";
-}
 
 enum PX4_CUSTOM_MAIN_MODE {
     PX4_CUSTOM_MAIN_MODE_MANUAL = 1,
@@ -534,15 +359,18 @@ static int mavlink_rc_rssi_to_percent(uint8_t rssi){
 
 // Humungus switch case, mostly legacy code. Annoying, but at least broken out of fcmavlinksystem now.
 struct HeartBeatInfo{
+    QString autopilot;
     QString flight_mode;
     QString mav_type;
 };
 static std::optional<HeartBeatInfo> parse_heartbeat(const mavlink_heartbeat_t& heartbeat){
-    HeartBeatInfo info{"Unknown","Unknown"};
+    HeartBeatInfo info{"Unknown","Unknown","Unknown"};
     const auto custom_mode = heartbeat.custom_mode;
     const auto autopilot = (MAV_AUTOPILOT)heartbeat.autopilot;
     switch (autopilot) {
     case MAV_AUTOPILOT_PX4: {
+       info.autopilot="Pixhawk";
+       // Pixhawk does their own thing
         if (heartbeat.base_mode & MAV_MODE_FLAG_CUSTOM_MODE_ENABLED) {
             auto px4_mode = Telemetryutil::px4_mode_from_custom_mode(custom_mode);
             info.flight_mode=px4_mode;
@@ -550,111 +378,21 @@ static std::optional<HeartBeatInfo> parse_heartbeat(const mavlink_heartbeat_t& h
         info.mav_type=QString("PX4?");
         break;
     }
-    case MAV_AUTOPILOT_GENERIC:
-    case MAV_AUTOPILOT_ARDUPILOTMEGA: {
+    case MAV_AUTOPILOT_GENERIC: // inav for example
+        info.autopilot="Generic";
+    case MAV_AUTOPILOT_ARDUPILOTMEGA: // This is ardu - something regardless of the board (not only ardupilotmega)
+        info.autopilot="ARDU";
+    {
+        if(autopilot==MAV_AUTOPILOT_GENERIC){
+                info.autopilot="Generic";
+        }else{
+                info.autopilot="ARDU";
+        }
         if (heartbeat.base_mode & MAV_MODE_FLAG_CUSTOM_MODE_ENABLED) {
             auto uav_type = heartbeat.type;
-            switch (uav_type) {
-            case MAV_TYPE_GENERIC: {
-                break;
-            }
-            case MAV_TYPE_FIXED_WING: {
-                auto plane_mode = Telemetryutil::plane_mode_from_enum((PLANE_MODE)custom_mode);
-                info.flight_mode=plane_mode;
-                info.mav_type=QString("ARDUPLANE");
-                break;
-            }
-            case MAV_TYPE_GROUND_ROVER: {
-                auto rover_mode = Telemetryutil::rover_mode_from_enum((ROVER_MODE)custom_mode);
-                info.flight_mode=rover_mode;
-                break;
-            }
-            case MAV_TYPE_QUADROTOR: {
-                auto copter_mode = Telemetryutil::copter_mode_from_enum((COPTER_MODE)custom_mode);
-                info.flight_mode=copter_mode;
-                info.mav_type=QString("ARDUCOPTER");
-                break;
-            }
-            case MAV_TYPE_HELICOPTER: {
-                auto copter_mode = Telemetryutil::copter_mode_from_enum((COPTER_MODE)custom_mode);
-                info.flight_mode=copter_mode;
-                info.mav_type=QString("ARDUCOPTER");
-                break;
-            }
-            case MAV_TYPE_HEXAROTOR: {
-                auto copter_mode = Telemetryutil::copter_mode_from_enum((COPTER_MODE)custom_mode);
-                info.flight_mode=copter_mode;
-                info.mav_type=QString("ARDUCOPTER");
-                break;
-            }
-            case MAV_TYPE_OCTOROTOR: {
-                auto copter_mode = Telemetryutil::copter_mode_from_enum((COPTER_MODE)custom_mode);
-                info.flight_mode=copter_mode;
-                info.mav_type=QString("ARDUCOPTER");
-                break;
-            }
-            case MAV_TYPE_TRICOPTER: {
-                auto copter_mode = Telemetryutil::copter_mode_from_enum((COPTER_MODE)custom_mode);
-                info.flight_mode=copter_mode;
-                info.mav_type=QString("ARDUCOPTER");
-                break;
-            }
-            case MAV_TYPE_DECAROTOR: {
-                auto copter_mode = Telemetryutil::copter_mode_from_enum((COPTER_MODE)custom_mode);
-                info.flight_mode=copter_mode;
-                info.mav_type=QString("ARDUCOPTER");
-                break;
-            }
-            case MAV_TYPE_DODECAROTOR: {
-                auto copter_mode = Telemetryutil::copter_mode_from_enum((COPTER_MODE)custom_mode);
-                info.flight_mode=copter_mode;
-                info.mav_type=QString("ARDUCOPTER");
-                break;
-            }
-            case MAV_TYPE_VTOL_FIXEDROTOR: {
-                auto plane_mode = Telemetryutil::plane_mode_from_enum((PLANE_MODE)custom_mode);
-                info.flight_mode=plane_mode;
-                info.mav_type=QString("VTOL");
-                break;
-            }
-            case MAV_TYPE_VTOL_TAILSITTER: {
-                auto plane_mode = Telemetryutil::plane_mode_from_enum((PLANE_MODE)custom_mode);
-                info.flight_mode=plane_mode;
-                info.mav_type=QString("VTOL");
-                break;
-            }
-            case MAV_TYPE_VTOL_TILTROTOR: {
-                auto plane_mode = Telemetryutil::plane_mode_from_enum((PLANE_MODE)custom_mode);
-                info.flight_mode=plane_mode;
-                info.mav_type=QString("VTOL");
-                break;
-            }
-            case MAV_TYPE_VTOL_TAILSITTER_DUOROTOR: {
-                auto plane_mode = Telemetryutil::plane_mode_from_enum((PLANE_MODE)custom_mode);
-                info.flight_mode=plane_mode;
-                info.mav_type=QString("VTOL");
-                break;
-            }
-            case MAV_TYPE_VTOL_TAILSITTER_QUADROTOR: {
-                auto plane_mode = Telemetryutil::plane_mode_from_enum((PLANE_MODE)custom_mode);
-                info.flight_mode=plane_mode;
-                info.mav_type=QString("VTOL");
-                break;
-            }
-            case MAV_TYPE_SUBMARINE: {
-                auto sub_mode = Telemetryutil::sub_mode_from_enum((SUB_MODE)custom_mode);
-                info.flight_mode=sub_mode;
-                info.mav_type=QString("SUB");
-                break;
-            }
-            case MAV_TYPE_ANTENNA_TRACKER: {
-                qDebug()<<"Weird antenna tracker heartbeat from fc";
-                return std::nullopt;
-            }
-            default: {
-                return std::nullopt;
-            }
-            }
+            auto type_and_flight_mode=qopenhd::type_and_flight_mode_as_string((MAV_TYPE)uav_type,custom_mode);
+            info.flight_mode=type_and_flight_mode.flight_mode;
+            info.mav_type=type_and_flight_mode.mav_type;
         }
         break;
     }

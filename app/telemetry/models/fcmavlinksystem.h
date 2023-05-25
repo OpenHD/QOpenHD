@@ -134,6 +134,7 @@ public: // Stuff needs to be public for qt
     L_RO_PROP(float,aoa,set_aoa,0.0)
     //
     L_RO_PROP(QString,mav_type,set_mav_type,"UNKNOWN");
+    L_RO_PROP(QString,autopilot_type,set_autopilot_type,"UNKNOWN"); //R.n Generic (inav), ardu and pixhawk
     // Set to true if this FC supports basic commands, like return to home usw
     // R.N we only show those commands in the UI if this flag is set
     // and the flag is set if the FC is PX4 or Ardupilot

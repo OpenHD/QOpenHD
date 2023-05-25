@@ -83,6 +83,7 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
             const auto info=opt_info.value();
             set_flight_mode(info.flight_mode);
             set_mav_type(info.mav_type);
+            set_autopilot_type(info.autopilot);
             const bool armed=Telemetryutil::get_arm_mode_from_heartbeat(heartbeat);
             set_armed(armed);
         }else{
