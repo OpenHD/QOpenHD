@@ -271,7 +271,7 @@ Rectangle {
 
         Card {
             id: fcBox
-            visible: _fcMavlinkSystem.supports_basic_commands
+            visible: true
             enabled: _fcMavlinkSystem.is_alive
             height: 224
             Layout.fillWidth: true

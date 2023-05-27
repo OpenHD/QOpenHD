@@ -32,6 +32,12 @@ BaseWidget {
     widgetActionWidth: 256
     widgetActionHeight: 164+30
 
+    // The commands are a bit different depending on if the user is using arducopter or arduplane / ardu-vtol.
+    // QUITE ANNOYING FUCK !!!!
+    property bool m_is_arducopter : _fcMavlinkSystem.is_arducopter
+    property bool m_is_arduplane:_fcMavlinkSystem.is_arduplane
+    property bool m_is_arduvtol: _fcMavlinkSystem.is_arduvtol
+
     //----------------------------- DETAIL BELOW ----------------------------------
     widgetDetailComponent: ScrollView {
 
@@ -116,12 +122,13 @@ BaseWidget {
 
                 text_off: qsTr("RTL")
                 msg_id: {
-                    if (_fcMavlinkSystem.mav_type == "ARDUCOPTER"){
+                    if (m_is_arducopter){
                         return 6;
                     }
-                    else {
+                    if(m_is_arduplane || m_is_arduvtol){
                         return 11;
                     }
+                    return -1;
                 }
                 onCheckedChanged: {
                     if (checked == true) {

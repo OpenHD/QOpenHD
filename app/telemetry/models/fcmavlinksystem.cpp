@@ -83,6 +83,10 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
             const auto info=opt_info.value();
             set_flight_mode(info.flight_mode);
             set_mav_type(info.mav_type);
+            set_autopilot_type(info.autopilot);
+            set_is_arducopter(info.is_arducopter);
+            set_is_arduvtol(m_is_arduvtol);
+            set_is_arduplane(info.is_arduplane);
             const bool armed=Telemetryutil::get_arm_mode_from_heartbeat(heartbeat);
             set_armed(armed);
         }else{
@@ -806,6 +810,7 @@ void FCMavlinkSystem::arm_fc_async(bool arm)
 {
     if(!m_action){
         qDebug()<<"No fc action module";
+        HUDLogMessagesModel::instance().add_message_info("No FC");
         return;
     }
     qDebug()<<"FCMavlinkSystem::arm_fc_async "<<(arm ? "arm" : "disarm");
@@ -863,6 +868,13 @@ void FCMavlinkSystem::flight_mode_cmd(long cmd_msg) {
     if(!m_pass_thru){
         HUDLogMessagesModel::instance().add_message_info("No FC");
         qDebug()<<"No fc pass_thru module";
+        return;
+    }
+    if(cmd_msg<0){
+        // We get the flight mode command from qml, something is wrong with it
+        std::stringstream ss;
+        ss<<"Invalid FM "<<cmd_msg;
+        HUDLogMessagesModel::instance().add_message_info(ss.str().c_str());
         return;
     }
     /*

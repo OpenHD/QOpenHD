@@ -26,7 +26,13 @@ BaseWidget {
     hasWidgetAction: true //--TURN TO TRUE TO SEE THE FLIGHT MODE ACTIONS
 
     // Needs to be a lot bigger than default:
-    widgetActionHeight: 164+ 400
+    widgetActionHeight: 164+ 450
+
+    // The commands are a bit different depending on if the user is using arducopter or arduplane / ardu-vtol.
+    // QUITE ANNOYING FUCK !!!!
+    property bool m_is_arducopter : _fcMavlinkSystem.is_arducopter
+    property bool m_is_arduplane:_fcMavlinkSystem.is_arduplane
+    property bool m_is_arduvtol: _fcMavlinkSystem.is_arduvtol
 
     widgetDetailComponent: ScrollView {
 
@@ -99,7 +105,7 @@ VTOL
             Text {
                 height: 32
                 text: {
-                    return qsTr("Only For Ardupilot/PX4");
+                    return qsTr("Only For Ardupilot");
                 }
                 color: "white"
                 font.bold: true
@@ -112,12 +118,13 @@ VTOL
 
                 text_off: qsTr("RTL")
                 msg_id: {
-                    if (_fcMavlinkSystem.mav_type == "ARDUCOPTER"){
+                    if (m_is_arducopter){
                         return 6;
                     }
-                    if (_fcMavlinkSystem.mav_type == "ARDUPLANE" || "VTOL"){
+                    if (m_is_arduplane || "VTOL"){
                         return 11;
                     }
+                    return -1;
                 }
                 onCheckedChanged: {
                     if (checked == true) {
@@ -133,12 +140,13 @@ VTOL
 
                 text_off: qsTr("STABILIZE")
                 msg_id: {
-                    if (_fcMavlinkSystem.mav_type == "ARDUCOPTER"){
+                    if (m_is_arducopter){
                         return 0;
                     }
-                    if (_fcMavlinkSystem.mav_type == "ARDUPLANE" || "VTOL"){
+                    if (m_is_arduplane || "VTOL"){
                         return 2;
                     }
+                    return -1;
                 }
                 onCheckedChanged: {
                     if (checked == true) {
@@ -152,12 +160,13 @@ VTOL
 
                 text_off: qsTr("LOITER")
                 msg_id: {
-                    if (_fcMavlinkSystem.mav_type == "ARDUCOPTER"){
+                    if (m_is_arducopter){
                         return 5;
                     }
-                    if (_fcMavlinkSystem.mav_type == "ARDUPLANE" || "VTOL"){
+                    if (m_is_arduplane || "VTOL"){
                         return 12;
                     }
+                    return -1;
                 }
 
                 onCheckedChanged: {
@@ -172,12 +181,13 @@ VTOL
 
                 text_off: qsTr("CIRCLE")
                 msg_id: {
-                    if (_fcMavlinkSystem.mav_type == "ARDUCOPTER"){
+                    if (m_is_arducopter){
                         return 7;
                     }
-                    if (_fcMavlinkSystem.mav_type == "ARDUPLANE" || "VTOL"){
+                    if (m_is_arduplane || m_is_arduvtol){
                         return 1;
                     }
+                    return -1;
                 }
                 onCheckedChanged: {
                     if (checked == true) {
@@ -191,10 +201,10 @@ VTOL
 
                 text_off: qsTr("AUTO")
                 msg_id: {
-                    if (_fcMavlinkSystem.mav_type == "ARDUCOPTER"){
+                    if (m_is_arducopter){
                         return 3;
                     }
-                    if (_fcMavlinkSystem.mav_type == "ARDUPLANE" || "VTOL"){
+                    if (m_is_arduplane || m_is_arduvtol){
                         return 10;
                     }
                 }
@@ -211,10 +221,10 @@ VTOL
 
                 text_off: qsTr("AUTOTUNE")
                 msg_id: {
-                    if (_fcMavlinkSystem.mav_type == "ARDUCOPTER"){
+                    if (m_is_arducopter){
                         return 15;
                     }
-                    if (_fcMavlinkSystem.mav_type == "ARDUPLANE" || "VTOL"){
+                    if (m_is_arduplane ||  m_is_arduvtol){
                         return 8;
                     }
                 }
@@ -230,7 +240,7 @@ VTOL
 
             ConfirmSlider {
                 visible: {
-                    if (_fcMavlinkSystem.mav_type == "ARDUPLANE" || "VTOL"){
+                    if (m_is_arduplane ||  m_is_arduvtol){
                         return true;
                     } else {
                         return false;
@@ -248,7 +258,7 @@ VTOL
 
             ConfirmSlider {
                 visible: {
-                    if (_fcMavlinkSystem.mav_type == "ARDUPLANE" || "VTOL"){
+                    if (m_is_arduplane ||  m_is_arduvtol){
                         return true;
                     } else {
                         return false;
@@ -266,7 +276,7 @@ VTOL
 
             ConfirmSlider {
                 visible: {
-                    if (_fcMavlinkSystem.mav_type == "ARDUPLANE" || "VTOL"){
+                    if (m_is_arduplane ||  m_is_arduvtol){
                         return true;
                     } else {
                         return false;
@@ -284,7 +294,7 @@ VTOL
             }
 
             ConfirmSlider {
-                visible: _fcMavlinkSystem.mav_type == "VTOL"
+                visible: m_is_arduvtol
 
                 text_off: qsTr("QSTABILIZE")
                 msg_id: 17
@@ -297,7 +307,7 @@ VTOL
             }
 
             ConfirmSlider {
-                visible: _fcMavlinkSystem.mav_type == "VTOL"
+                visible: m_is_arduvtol
 
                 text_off: qsTr("QHOVER")
                 msg_id: 18
@@ -310,7 +320,7 @@ VTOL
             }
 
             ConfirmSlider {
-                visible: _fcMavlinkSystem.mav_type == "VTOL"
+                visible: m_is_arduvtol
 
                 text_off: qsTr("QLOITER")
                 msg_id: 19
@@ -323,7 +333,7 @@ VTOL
             }
 
             ConfirmSlider {
-                visible: _fcMavlinkSystem.mav_type == "VTOL"
+                visible: m_is_arduvtol
 
                 text_off: qsTr("QLAND")
                 msg_id: 20
@@ -336,7 +346,7 @@ VTOL
             }
 
             ConfirmSlider {
-                visible: _fcMavlinkSystem.mav_type == "VTOL"
+                visible: m_is_arduvtol
 
                 text_off: qsTr("QRTL")
                 msg_id: 21
@@ -349,7 +359,7 @@ VTOL
             }
 
             ConfirmSlider {
-                visible: _fcMavlinkSystem.mav_type == "ARDUCOPTER"
+                visible: m_is_arducopter
 
                 text_off: qsTr("ALT_HOLD")
                 msg_id: 2
@@ -361,7 +371,7 @@ VTOL
                 }
             }
             ConfirmSlider {
-                visible: _fcMavlinkSystem.mav_type == "ARDUCOPTER"
+                visible: m_is_arducopter
 
                 text_off: qsTr("POSHOLD")
                 msg_id: 16
@@ -373,7 +383,7 @@ VTOL
                 }
             }
             ConfirmSlider {
-                visible: _fcMavlinkSystem.mav_type == "ARDUCOPTER"
+                visible: m_is_arducopter
 
                 text_off: qsTr("ACRO")
                 msg_id: 1

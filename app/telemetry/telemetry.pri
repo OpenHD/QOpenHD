@@ -82,6 +82,7 @@ SOURCES += \
     app/telemetry/models/fcmavlinkmissionitemsmodel.cpp \
 
 HEADERS += \
+    $$PWD/mavlink_enum_to_string.h \
     $$PWD/models/fcmavlinksettingsmodel.h \
     app/telemetry/mavsdk_helper.hpp \
     app/telemetry/mavsdk_include.h \
