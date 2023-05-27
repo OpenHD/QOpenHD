@@ -26,7 +26,7 @@ BaseWidget {
     hasWidgetAction: true //--TURN TO TRUE TO SEE THE FLIGHT MODE ACTIONS
 
     // Needs to be a lot bigger than default:
-    widgetActionHeight: 164+ 400
+    widgetActionHeight: 164+ 450
 
     // The commands are a bit different depending on if the user is using arducopter or arduplane / ardu-vtol.
     // QUITE ANNOYING FUCK !!!!
