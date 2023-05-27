@@ -73,7 +73,7 @@ BaseWidget {
             Item {
                 height: 32
                 Text {
-                    text: "Only For Ardupilot/PX4"
+                    text: "Only For Ardupilot/PX4/inav"
                     color: "white"
                     font.bold: true
                     font.pixelSize: detailPanelFontPixels

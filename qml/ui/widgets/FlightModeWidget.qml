@@ -105,7 +105,7 @@ VTOL
             Text {
                 height: 32
                 text: {
-                    return qsTr("Only For Ardupilot/PX4");
+                    return qsTr("Only For Ardupilot");
                 }
                 color: "white"
                 font.bold: true
