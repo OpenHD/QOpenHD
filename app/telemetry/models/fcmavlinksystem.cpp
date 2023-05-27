@@ -810,6 +810,7 @@ void FCMavlinkSystem::arm_fc_async(bool arm)
 {
     if(!m_action){
         qDebug()<<"No fc action module";
+        HUDLogMessagesModel::instance().add_message_info("No FC");
         return;
     }
     qDebug()<<"FCMavlinkSystem::arm_fc_async "<<(arm ? "arm" : "disarm");

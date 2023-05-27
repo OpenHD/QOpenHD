@@ -59,7 +59,7 @@ BaseWidget {
                 height: 32
                 visible: settings.air_battery_show_voltage_current
                 Text {
-                    text: qsTr("Show single cell voltage")
+                    text: qsTr("Single Cell ("+settings.vehicle_battery_n_cells+"S)")
                     color: "white"
                     height: parent.height
                     font.bold: true
