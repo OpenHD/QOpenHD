@@ -280,12 +280,17 @@ static QString mav_type_to_string(MAV_TYPE type){
 }
 
 struct MavTypeAndFlightMode{
-    QString mav_type; // Copter, plane, rocket, whatever
-    QString flight_mode; // Flight mode for this uav
+    QString mav_type="Unknown"; // Copter, plane, rocket, whatever
+    QString flight_mode="Unknown"; // Flight mode for this uav
+    // These are for sending the right flight mode commands
+    // Weather it is any type of "copter,plane or vtol"
+    bool is_copter=false;
+    bool is_plane=false;
+    bool is_vtol=false;
 };
 
 static MavTypeAndFlightMode type_and_flight_mode_as_string(MAV_TYPE uav_type,uint32_t custom_mode){
-    MavTypeAndFlightMode ret;
+    MavTypeAndFlightMode ret{};
     ret.mav_type=qopenhd::mav_type_to_string(uav_type);
     // We need to know the uav type to infer the flight mode
     ret.flight_mode="Unknown";
@@ -296,11 +301,7 @@ static MavTypeAndFlightMode type_and_flight_mode_as_string(MAV_TYPE uav_type,uin
     case MAV_TYPE_FIXED_WING:{
         auto plane_mode = qopenhd::plane_mode_from_enum((PLANE_MODE)custom_mode);
         ret.flight_mode=plane_mode;
-        break;
-    }
-    case MAV_TYPE_GROUND_ROVER: {
-        auto rover_mode = qopenhd::rover_mode_from_enum((ROVER_MODE)custom_mode);
-        ret.flight_mode=rover_mode;
+        ret.is_plane=true;
         break;
     }
     case MAV_TYPE_QUADROTOR:
@@ -313,6 +314,7 @@ static MavTypeAndFlightMode type_and_flight_mode_as_string(MAV_TYPE uav_type,uin
     {
         auto copter_mode = qopenhd::copter_mode_from_enum((COPTER_MODE)custom_mode);
         ret.flight_mode=copter_mode;
+        ret.is_copter=true;
         break;
     }
     // VTOL support is lacking
@@ -324,11 +326,17 @@ static MavTypeAndFlightMode type_and_flight_mode_as_string(MAV_TYPE uav_type,uin
     {
         auto plane_mode = qopenhd::plane_mode_from_enum((PLANE_MODE)custom_mode);
         ret.flight_mode=plane_mode;
+        ret.is_vtol=true;
         break;
     }
     case MAV_TYPE_SUBMARINE: {
         auto sub_mode = qopenhd::sub_mode_from_enum((SUB_MODE)custom_mode);
         ret.flight_mode=sub_mode;
+        break;
+    }
+    case MAV_TYPE_GROUND_ROVER: {
+        auto rover_mode = qopenhd::rover_mode_from_enum((ROVER_MODE)custom_mode);
+        ret.flight_mode=rover_mode;
         break;
     }
     default:

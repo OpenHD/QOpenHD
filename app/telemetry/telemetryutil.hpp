@@ -359,47 +359,59 @@ static int mavlink_rc_rssi_to_percent(uint8_t rssi){
 
 // Humungus switch case, mostly legacy code. Annoying, but at least broken out of fcmavlinksystem now.
 struct HeartBeatInfo{
-    QString autopilot;
-    QString flight_mode;
-    QString mav_type;
+    QString autopilot="Unknown";
+    QString flight_mode="Unknown";
+    QString mav_type="Unknown";
+    // These are for sending the right flight mode commands
+    // Weather it is any type of "copter,plane or vtol"
+    bool is_arducopter=false;
+    bool is_arduplane=false;
+    bool is_arduvtol=false;
 };
 static std::optional<HeartBeatInfo> parse_heartbeat(const mavlink_heartbeat_t& heartbeat){
-    HeartBeatInfo info{"Unknown","Unknown","Unknown"};
+    HeartBeatInfo info{};
     const auto custom_mode = heartbeat.custom_mode;
     const auto autopilot = (MAV_AUTOPILOT)heartbeat.autopilot;
     switch (autopilot) {
     case MAV_AUTOPILOT_PX4: {
        info.autopilot="Pixhawk";
        // Pixhawk does their own thing
-        if (heartbeat.base_mode & MAV_MODE_FLAG_CUSTOM_MODE_ENABLED) {
-            auto px4_mode = Telemetryutil::px4_mode_from_custom_mode(custom_mode);
-            info.flight_mode=px4_mode;
-        }
-        info.mav_type=QString("PX4?");
-        break;
+       if (heartbeat.base_mode & MAV_MODE_FLAG_CUSTOM_MODE_ENABLED) {
+                    auto px4_mode = Telemetryutil::px4_mode_from_custom_mode(custom_mode);
+                    info.flight_mode=px4_mode;
+       }
+       info.mav_type=QString("PX4?");
+       break;
     }
     case MAV_AUTOPILOT_GENERIC: // inav for example
-        info.autopilot="Generic";
     case MAV_AUTOPILOT_ARDUPILOTMEGA: // This is ardu - something regardless of the board (not only ardupilotmega)
-        info.autopilot="ARDU";
     {
-        if(autopilot==MAV_AUTOPILOT_GENERIC){
-                info.autopilot="Generic";
-        }else{
-                info.autopilot="ARDU";
-        }
-        if (heartbeat.base_mode & MAV_MODE_FLAG_CUSTOM_MODE_ENABLED) {
+       if(autopilot==MAV_AUTOPILOT_GENERIC){
+            info.autopilot="Generic";
+       }else{
+            info.autopilot="ARDU";
+       }
+       if (heartbeat.base_mode & MAV_MODE_FLAG_CUSTOM_MODE_ENABLED) {
             auto uav_type = heartbeat.type;
             auto type_and_flight_mode=qopenhd::type_and_flight_mode_as_string((MAV_TYPE)uav_type,custom_mode);
             info.flight_mode=type_and_flight_mode.flight_mode;
             info.mav_type=type_and_flight_mode.mav_type;
-        }
-        break;
+            if(autopilot==MAV_AUTOPILOT_ARDUPILOTMEGA){
+                if(type_and_flight_mode.is_copter){
+                    info.is_arducopter=true;
+                }else if(type_and_flight_mode.is_plane){
+                    info.is_arduplane=true;
+                }else if(type_and_flight_mode.is_vtol){
+                    info.is_arduvtol=true;
+                }
+            }
+       }
+       break;
     }
     default: {
-        // this returns to prevent heartbeats from devices other than an autopilot from setting
-        // the armed/disarmed flag or resetting the last heartbeat timestamp
-        return std::nullopt;
+       // this returns to prevent heartbeats from devices other than an autopilot from setting
+       // the armed/disarmed flag or resetting the last heartbeat timestamp
+       return std::nullopt;
     }
     }
     return info;

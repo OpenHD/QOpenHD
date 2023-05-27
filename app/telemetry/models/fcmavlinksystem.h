@@ -140,8 +140,13 @@ public: // Stuff needs to be public for qt
     // and the flag is set if the FC is PX4 or Ardupilot
     // NOTE: this used to be done by .mav_type == "ARDUPLANE" ... in qml - please avoid that, just add another qt boolean here
     // (for example is_copter, is_plane or similar)
-    L_RO_PROP(QString, last_ping_result_flight_ctrl,set_last_ping_result_flight_ctrl,"NA")
     L_RO_PROP(bool,supports_basic_commands,set_supports_basic_commands,true)
+    // These are for sending the right flight mode commands
+    // Weather it is any type of ardu-"copter,plane or vtol"
+    L_RO_PROP(bool,is_arducopter,set_is_arducopter,false);
+    L_RO_PROP(bool,is_arduplane,set_is_arduplane,false);
+    L_RO_PROP(bool,is_arduvtol,set_is_arduvtol,false);
+    L_RO_PROP(QString, last_ping_result_flight_ctrl,set_last_ping_result_flight_ctrl,"NA")
     // update rate: here we keep track of how often we get the "MAVLINK_MSG_ID_ATTITUDE" messages.
     // (since it controlls the art. horizon). This is pretty much the only thing we perhaps need to manually set the update rate on
     L_RO_PROP(float,curr_update_rate_mavlink_message_attitude,set_curr_update_rate_mavlink_message_attitude,-1)
@@ -237,6 +242,9 @@ public:
 
     // TODO document me
     Q_INVOKABLE bool send_command_reboot(bool reboot);
+    // Sends a command to change the flight mode. Note that this is more complicated than it sounds at first,
+    // since copter and plane for example do have different flight mode enums.
+    // For RTL (which is really important) we have a extra impl. just to be sure
     Q_INVOKABLE void flight_mode_cmd(long cmd_msg);
     // Some FC stop sending home position when armed, re-request the home position
     Q_INVOKABLE void request_home_position_from_fc();
