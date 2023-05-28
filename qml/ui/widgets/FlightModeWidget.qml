@@ -406,7 +406,7 @@ VTOL
             id: flight_mode_icon
             width: 24
             height: 48
-            color: _fcMavlinkSystem.armed ? "green" : settings.color_shape
+            color: _fcMavlinkSystem.armed ? "red" : settings.color_shape
             opacity: bw_current_opacity
             text: "\uf072"
             anchors.right: flight_mode_text.left

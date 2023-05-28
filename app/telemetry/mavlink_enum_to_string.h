@@ -280,10 +280,10 @@ static QString mav_type_to_string(MAV_TYPE type){
 }
 
 struct MavTypeAndFlightMode{
-    QString mav_type="Unknown"; // Copter, plane, rocket, whatever
+    QString mav_type="Unknown"; // Copter, plane, rocket, whatever, specific, e.g. it says Hexacopter if the uav is a hexa (not copter)
     QString flight_mode="Unknown"; // Flight mode for this uav
     // These are for sending the right flight mode commands
-    // Weather it is any type of "copter,plane or vtol"
+    // Weather it is any generic type of "copter,plane or vtol"
     bool is_copter=false;
     bool is_plane=false;
     bool is_vtol=false;
@@ -310,7 +310,7 @@ static MavTypeAndFlightMode type_and_flight_mode_as_string(MAV_TYPE uav_type,uin
     case MAV_TYPE_TRICOPTER:
     case MAV_TYPE_DECAROTOR:
     case MAV_TYPE_DODECAROTOR:
-    case MAV_TYPE_HELICOPTER:
+    case MAV_TYPE_HELICOPTER: // Just have it with normal copters for now
     {
         auto copter_mode = qopenhd::copter_mode_from_enum((COPTER_MODE)custom_mode);
         ret.flight_mode=copter_mode;

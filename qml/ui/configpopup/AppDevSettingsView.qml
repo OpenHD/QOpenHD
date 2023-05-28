@@ -200,6 +200,19 @@ ScrollView {
                     onTextEdited: settings.dev_mavlink_tcp_ip = ti_ip.text
                 }
             }
+            SettingBaseElement{
+                m_short_description: "dev_wb_show_no_stbc_enabled_warning"
+                m_long_description: "Do not show the STBC recommended enabled message"
+                Switch {
+                    width: 32
+                    height: elementHeight
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    checked: settings.dev_wb_show_no_stbc_enabled_warning
+                    onCheckedChanged: settings.dev_wb_show_no_stbc_enabled_warning = checked
+                }
+            }
         }
         Card {
             id: simplePopupHack
