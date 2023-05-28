@@ -340,4 +340,7 @@ Settings {
     // experimental - mavlink via TCP
     property bool dev_mavlink_via_tcp: false
     property string dev_mavlink_tcp_ip: "0.0.0.0"
+
+    // message can be removed if needed.
+    property bool dev_wb_show_no_stbc_enabled_warning: false
 }
