@@ -24,6 +24,8 @@ BaseWidget {
     widgetIdentifier: "vsi_widget"
     bw_verbose_name: "VERTICAL SPEED"
 
+    property double m_vertical_speed_m_per_second: _fcMavlinkSystem.vertical_speed_indicator_mps
+
     hasWidgetDetail: true
 
     widgetDetailComponent: ScrollView {
@@ -133,7 +135,7 @@ BaseWidget {
                 maximumValue: settings.vsi_max
 
                 Behavior on value {NumberAnimation { duration: settings.smoothing }}
-                value: _fcMavlinkSystem.vsi
+                value: m_vertical_speed_m_per_second
 
                 style: CircularGaugeStyle {
                     labelInset: outerRadius * -.3
