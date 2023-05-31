@@ -201,6 +201,7 @@ static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string&
             //   LIBCAMERA_IMX477, // "normal" libcamera, explicitly set to imx477 detection only
             //   LIBCAMERA_ARDUCAM, // pivariety libcamera (arducam special)
             //   LIBCAMERA_IMX519, // Arducam imx519 without autofocus
+            //   LIBCAMERA_IMX708, // Arducam imx708 without autofocus
             //   VEYE_327, // Veye IMX290/IMX327 (older versions)
             //   VEYE_CSIMX307, // Veye IMX307
             //   VEYE_CSSC132, //Veye SC132
@@ -212,6 +213,7 @@ static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string&
                     "LIBCAMERA_IMX477",
                     "LIBCAMERA_ARDU",
                     "LIBCAMERA_IMX519",
+                    "LIBCAMERA_IMX708",
                     "LIBCAMERA_IMX290",
                     "LIBCAMERA_IMX327",
                     "LIBCAMERA_IMX462",
