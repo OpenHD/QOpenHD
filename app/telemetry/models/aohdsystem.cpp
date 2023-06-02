@@ -231,7 +231,15 @@ void AOHDSystem::process_x3(const mavlink_openhd_stats_wb_video_air_t &msg){
             set_tx_is_currently_dropping_packets(false);
         }
     }
+    const int curr_mcs_index=msg.unused0;
+    if(valid_mcs_packet_received_at_least_once && curr_mcs_index!=m_curr_mcs_index){
+        std::stringstream ss;
+        ss<<"MCS index changed to "<<m_curr_mcs_index;
+        HUDLogMessagesModel::instance().add_message_info(ss.str().c_str());
+    }
     set_curr_mcs_index(msg.unused0);
+    valid_mcs_packet_received_at_least_once=true;
+
 }
 
 void AOHDSystem::process_x4(const mavlink_openhd_stats_wb_video_ground_t &msg){

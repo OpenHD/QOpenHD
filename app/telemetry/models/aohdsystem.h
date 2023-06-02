@@ -85,6 +85,8 @@ public: // public for QT
     L_RO_PROP(int,wifi_tx_packets_count,wifi_tx_packets_count,-1)
     // The MCS index is a param, but also broadcasted in regular intervals, since it might change (during flight / link adjustments)
     L_RO_PROP(int,curr_mcs_index,set_curr_mcs_index,-1)
+    // for creating a message in the HUD every time MCS changes
+    bool valid_mcs_packet_received_at_least_once=false;
 private:
      const bool _is_air; // either true (for air) or false (for ground)
      uint8_t get_own_sys_id()const{
