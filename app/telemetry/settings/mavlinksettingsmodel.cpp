@@ -1033,7 +1033,7 @@ QString MavlinkSettingsModel::get_short_description(const QString param_id)const
     }
     if(param_id=="WIFI_HOTSPOT_E"){
         return "Enable/Disable WiFi hotspot such that you can connect to your air/ground unit via normal WiFi. Frequency is always the opposite of your WB link, e.g. "
-               "2.4G if your wb link is 5.8G and opposite. However, disable hotspot during flight !";
+               "2.4G if your wb link is 5.8G and opposite. Wifi hotspot is automatically disabled when you arm your FC (to avoid interference) !";
     }
     if(param_id=="ETH_HOTSPOT_E"){
         return "Enable/Disable ethernet hotspot. When enabled, your rpi becomes a DHCPD server and starts forwarding video & telemetry if you connect a device via ethernet."
