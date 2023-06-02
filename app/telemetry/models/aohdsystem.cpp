@@ -231,6 +231,7 @@ void AOHDSystem::process_x3(const mavlink_openhd_stats_wb_video_air_t &msg){
             set_tx_is_currently_dropping_packets(false);
         }
     }
+    set_curr_mcs_index(msg.unused0);
 }
 
 void AOHDSystem::process_x4(const mavlink_openhd_stats_wb_video_ground_t &msg){

@@ -55,8 +55,6 @@ public:
     Q_INVOKABLE int get_param_int_air_only_mcs();
 private:
     void log_result_message(const std::string& result_message,bool use_hud);
-public:
-    L_RO_PROP(int,dirty_curr_mcs_index,set_dirty_curr_mcs_index,-1)
 };
 
 #endif // SynchronizedSettings_H
