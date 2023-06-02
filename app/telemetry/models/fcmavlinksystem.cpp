@@ -308,7 +308,7 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         set_speed(speed);
         // qDebug() << "Speed- ground " << speed;
         auto vsi = vfr_hud.climb;
-        set_vsi(vsi);
+        set_vertical_speed_indicator_mps(vsi);
         // qDebug() << "VSI- " << vsi;
         //qint64 current_timestamp = QDateTime::currentMSecsSinceEpoch();
         //last_vfr_timestamp = current_timestamp;
@@ -678,7 +678,7 @@ void FCMavlinkSystem::updateVehicleAngles(){
 
 void FCMavlinkSystem::updateWind(){
 
-    if (m_vsi < 1 && m_vsi > -1){
+    if (m_vertical_speed_indicator_mps < 1 && m_vertical_speed_indicator_mps > -1){
         // we are level, so a 2d vector is possible
         QSettings settings;
         auto max_speed = settings.value("wind_max_quad_speed", QVariant(3)).toDouble();

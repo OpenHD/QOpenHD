@@ -130,8 +130,9 @@ public: // Stuff needs to be public for qt
     L_RO_PROP(float,clipping_x,set_clipping_x,0.0)
     L_RO_PROP(float,clipping_y,set_clipping_y,0.0)
     L_RO_PROP(float,clipping_z,set_clipping_z,0.0)
-    L_RO_PROP(float,vsi,set_vsi,0.0)
     L_RO_PROP(float,aoa,set_aoa,0.0)
+    // This is not calculated by qopenhd, it comes from the vfr hud message
+    L_RO_PROP(float,vertical_speed_indicator_mps,set_vertical_speed_indicator_mps,0) //m/s], positive is up
     //
     L_RO_PROP(QString,mav_type,set_mav_type,"UNKNOWN");
     L_RO_PROP(QString,autopilot_type,set_autopilot_type,"UNKNOWN"); //R.n Generic (inav), ardu and pixhawk

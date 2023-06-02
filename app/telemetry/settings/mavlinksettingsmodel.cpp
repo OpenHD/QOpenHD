@@ -132,9 +132,9 @@ static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string&
 
         map_improved_params["V_CAM_ROT_DEG"]=ImprovedIntSetting(0,270,{
            ImprovedIntSetting::Item{"0°(disable)",0},
-           ImprovedIntSetting::Item{"90°",90},
+           ImprovedIntSetting::Item{"90 (mmal only)°",90},
            ImprovedIntSetting::Item{"180°",180},
-           ImprovedIntSetting::Item{"270°",270}
+           ImprovedIntSetting::Item{"270°(mmal only)",270}
        });
         map_improved_params["V_INTRA_REFRESH"]=ImprovedIntSetting(-1,2130706433,{
            ImprovedIntSetting::Item{"NONE",-1},
@@ -173,6 +173,17 @@ static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string&
         };
         map_improved_params["V_AWB_MODE"]=ImprovedIntSetting::createEnum(gst_awb_modes);
         map_improved_params["V_EXP_MODE"]=ImprovedIntSetting::createEnum(gst_exposure_modes);
+        {
+            // libcamera only
+            auto denoise_modes=std::vector<std::string>{
+                "AUTO",
+                "OFF",
+                "CDN_OFF",
+                "CDN_FAST",
+                "CDN_HQ",
+            };
+            map_improved_params["V_DENOISE_INDEX"]=ImprovedIntSetting::createEnum(denoise_modes);
+        }
         {
             auto values_metering_mode=std::vector<std::string>{
                     "AVERAGE","SPOT","BACKLIST","MATRIX"
@@ -1005,8 +1016,11 @@ QString MavlinkSettingsModel::get_short_description(const QString param_id)const
     if(param_id=="V_EXP_MODE"){
         return "EXP Exposure mode";
     }
+    if(param_id=="V_DENOISE_INDEX"){
+        return "Setting this to off reduces latency by ~1 Frame on the cost of slightly reduced image quality in dark situations.";
+    }
     if(param_id=="V_BRIGHTNESS"){
-        return "Image capture brightness, [0..100], default 50, but recommended to tune AWB or EXP instead";
+        return "Image capture brightness, [0..100], default 50. Increase for a brighter Image. However, if available, it is recommended to tune AWB or EXP instead.";
     }
     if(param_id=="V_ISO"){
         return "ISO value to use (0 = Auto)";

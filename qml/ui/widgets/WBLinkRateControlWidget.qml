@@ -31,6 +31,8 @@ BaseWidget {
     hasWidgetDetail: true
     hasWidgetAction: true
 
+    property int m_curr_mcs_index: _ohdSystemAir.curr_mcs_index
+
     widgetDetailComponent: ScrollView {
 
         contentHeight: idBaseWidgetDefaultUiControlElements.height
@@ -86,30 +88,29 @@ BaseWidget {
                         text: "MCS0"
                         onClicked: {
                              _synchronizedSettings.change_param_air_only_mcs(0,true)
-                            console.log("XX"+_synchronizedSettings.dirty_curr_mcs_index)
                         }
-                        highlighted: _synchronizedSettings.dirty_curr_mcs_index==0
+                        highlighted: m_curr_mcs_index==0
                     }
                     Button{
                         text: "MCS1"
                         onClicked: {
                              _synchronizedSettings.change_param_air_only_mcs(1,true)
                         }
-                        highlighted: _synchronizedSettings.dirty_curr_mcs_index==1
+                        highlighted: m_curr_mcs_index==1
                     }
                     Button{
                         text: "MCS2"
                         onClicked: {
                              _synchronizedSettings.change_param_air_only_mcs(2,true)
                         }
-                        highlighted: _synchronizedSettings.dirty_curr_mcs_index==2
+                        highlighted: m_curr_mcs_index==2
                     }
                     Button{
                         text: "MCS3"
                         onClicked: {
                              _synchronizedSettings.change_param_air_only_mcs(3,true)
                         }
-                        highlighted: _synchronizedSettings.dirty_curr_mcs_index==3
+                        highlighted: m_curr_mcs_index==3
                     }
                     /*Button{
                         text: "MCS4"
