@@ -68,7 +68,7 @@ if [[ "${PACKAGE_ARCH}" = "armhf" ]]; then
 cp systemd/rpi_qopenhd.service /tmp/qopenhd/etc/systemd/system/qopenhd.service || exit 1
 cp systemd/rpi_h264_decode.service /tmp/qopenhd/etc/systemd/system/h264_decode.service || exit 1
 elif [[ "${PACKAGE_ARCH}" = "arm64" ]]; then
-cp systemd/qopenhd_rock.service /tmp/qopenhd/etc/systemd/system/qopenhd.service || exit 1
+cp systemd/rock5_qopenhd.service /tmp/qopenhd/etc/systemd/system/qopenhd.service || exit 1
 cp systemd/rock5_h264_decode.service /tmp/qopenhd/etc/systemd/system/h264_decode.service || exit 1
 cp systemd/rock5_h265_decode.service /tmp/qopenhd/etc/systemd/system/h265_decode.service || exit 1
 cp systemd/rock5_mjpeg_decode.service /tmp/qopenhd/etc/systemd/system/mjpeg_decode.service || exit 1
