@@ -1076,7 +1076,7 @@ void FCMavlinkSystem::recalculate_efficiency()
 {
     // We recalculate the efficiency in X second intervals
     const auto elapsed=std::chrono::steady_clock::now()-m_efficiency_last_update;
-    if(elapsed<std::chrono::seconds(10)){
+    if(elapsed<std::chrono::seconds(2)){
         return;
     }
     //qDebug()<<"FCMavlinkSystem::recalculate_efficiency()";
@@ -1084,7 +1084,7 @@ void FCMavlinkSystem::recalculate_efficiency()
     const double delta_distance_m=m_flight_distance_m-m_efficiency_last_distance_m;
     const double delta_distance_km=delta_distance_m / 1000.0;
     const int delta_charge_mah=m_battery_consumed_mah-m_efficiency_last_charge_consumed_mAh;
-    if(delta_distance_m>0 && delta_charge_mah>0){
+    if(delta_distance_m>0.0 && delta_charge_mah>0.0){
         //qDebug()<<"recalculate_efficiency: delta_distance_m:"<<delta_distance_m<<" delta_charge_mah:"<<delta_charge_mah;
         // recalculate and update efficiency
         const int efficiency_mah_per_km=Telemetryutil::calculate_efficiency_in_mah_per_km(delta_charge_mah,delta_distance_km);
