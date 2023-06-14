@@ -107,7 +107,7 @@ BaseWidget {
             id: battery_percent
             y: 0
             color: settings.color_text
-            text: qsTr("%L1%").arg(_ohdSystemGround.battery_percent)
+            text: "N/A"
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: batteryGauge.right
             anchors.leftMargin: 0
@@ -122,10 +122,9 @@ BaseWidget {
         }
         Text {
             id: battery_amp_text
-            visible: settings.ground_battery_show_voltage_current
-            text: Number(
-                      (_ohdSystemGround.ground_iout < 0 ? 0 : _ohdSystemGround.ground_iout) / 1000.0).toLocaleString(
-                      Qt.locale(), 'f', 1) + "A"
+            visible: true
+            y: 0
+            text: _ohdSystemGround.ina219_current_milliamps+"mA"
             color: settings.color_text
             anchors.bottom: battery_percent.top
             anchors.left: batteryGauge.right
@@ -141,11 +140,8 @@ BaseWidget {
         }
         Text {
             id: battery_volt_text
-            visible: settings.ground_battery_show_voltage_current
-            text: settings.ground_battery_show_single_cell ? Number(
-                                                                 ((_ohdSystemGround.ground_vbat < 0 ? 0 : _ohdSystemGround.ground_vbat / 1000.0)) / settings.ground_battery_cells).toLocaleString(Qt.locale(), 'f', 1) + "V" : Number((_ohdSystemGround.ground_vbat < 0 ? 0 : _ohdSystemGround.ground_vbat / 1000.0)).toLocaleString(
-                                                                 Qt.locale(),
-                                                                 'f', 1) + "V"
+            visible: true
+            text: _ohdSystemGround.ina219_voltage_millivolt+"mV"
             color: settings.color_text
             anchors.top: battery_percent.bottom
             anchors.left: batteryGauge.right
