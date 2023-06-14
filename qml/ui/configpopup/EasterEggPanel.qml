@@ -15,7 +15,6 @@ Rectangle {
     color: "#eaeaea"
 
     RowLayout {
-        anchors.top: infoPanel.bottom
         anchors.topMargin: 24
         anchors.left: parent.left
         anchors.leftMargin: 20
