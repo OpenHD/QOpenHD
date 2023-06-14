@@ -29,11 +29,16 @@ QAndroidMediaPlayer::QAndroidMediaPlayer(QObject *parent)
 
 QAndroidMediaPlayer::~QAndroidMediaPlayer()
 {
-    QAndroidJniEnvironment env;
-    /*m_mediaPlayer.callMethod<void>("stop");
+    /*QAndroidJniEnvironment env;
+    m_mediaPlayer.callMethod<void>("stop");
     m_mediaPlayer.callMethod<void>("reset");
     m_mediaPlayer.callMethod<void>("release");*/
     //m_mediaPlayer.callMethod<void>("releaseAll");
+
+    // first, we stop the rtp receiver
+    m_receiver->stop_receiving();
+    // Then we can safely clean up the decoder (and its surface)
+    m_low_lag_decoder->setOutputSurface(nullptr,nullptr);
 }
 
 QSurfaceTexture *QAndroidMediaPlayer::videoOut() const
