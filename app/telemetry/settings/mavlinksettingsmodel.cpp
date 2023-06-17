@@ -322,6 +322,10 @@ static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string&
             map_improved_params["WB_MCS_INDEX"]=ImprovedIntSetting::createEnum({"MCS0","MCS1","MCS2","MCS3","MCS4","MCS5","MCS6","MCS7"});
         }
         {
+            map_improved_params["MCS_VIA_RC"]=ImprovedIntSetting::createEnum({"Disable","Channel 1","CHannel 2","Channel 3","Channel 4","Channel 5",
+                                                                                  "Channel 6","Channel 7","Channel 8","Channel 9","Channel 10"});
+        }
+        {
             map_improved_params["V_N_CAMERAS"]=ImprovedIntSetting(1,2,{
                ImprovedIntSetting::Item{"SINGLE (default)",1},
                ImprovedIntSetting::Item{"DUALCAM",2}
@@ -1096,6 +1100,9 @@ QString MavlinkSettingsModel::get_short_description(const QString param_id)const
     if(param_id=="RC_UPDATE_HZ"){
         return "Specify the update rate of RC over wifibroadcast. A higher update rate gives lower RC latency, but takes more bandwidth away from the downlink."
                "No effect if joy rc is disabled.";
+    }
+    if(param_id=="MCS_VIA_RC"){
+        return "Dynamically change the MCS Index (Trade range <-> image quality (bitrate)) during flight using your RC and a specific channel (similar to how flight modes work).";
     }
     return "TODO";
 }
