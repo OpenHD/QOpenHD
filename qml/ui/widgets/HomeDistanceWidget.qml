@@ -164,6 +164,7 @@ BaseWidget {
                     height:32
                     id: overwriteHome
                     text: "Overwrite"
+                    visible: false
                     onClicked: {
                         _fcMavlinkSystem.overwrite_home_to_current()
                     }
