@@ -128,6 +128,7 @@ Settings {
     property int ground_battery_low: 35
     property int ground_battery_mid: 39
     property int ground_battery_full: 42
+    property int ground_voltage_in_percent: 0
 
 
     property bool show_gps: true

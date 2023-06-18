@@ -80,21 +80,18 @@ BaseWidget {
                                     settings.ground_battery_low = 35;
                                     settings.ground_battery_mid = 39;
                                     settings.ground_battery_full = 42;
-                                    console.debug("LiPo")
                                     break;
                                 case 1:
                                     settings.ground_battery_type = 1;
                                     settings.ground_battery_low = 31;
                                     settings.ground_battery_mid = 36;
                                     settings.ground_battery_full = 42;
-                                    console.debug("LiIon")
                                     break;
                                 case 2:
                                     settings.ground_battery_type = 2;
                                     settings.ground_battery_low = 30;
                                     settings.ground_battery_mid = 35;
                                     settings.ground_battery_full = 40;
-                                    console.debug("LiFe")
                                     break;
                             }
                 }   }
@@ -163,6 +160,11 @@ BaseWidget {
 
                 return Math.max(0, Math.min(100, percentage)); // Ensure the percentage is within [0, 100]
             }
+            Component.onCompleted: {
+                   var currentVoltage = _ohdSystemGround.ina219_voltage_millivolt;
+                   var percentage = calculateBatteryPercentage(currentVoltage);
+                   settings.ground_voltage_in_percent = percentage;
+               }
         }
         Text {
             id: battery_amp_text
@@ -187,9 +189,9 @@ BaseWidget {
             visible: true
             text: {
                 if (settings.ground_battery_show_single_cell) {
-                            return (_ohdSystemGround.ina219_voltage_millivolt / settings.ground_battery_cells) + "mVpC"
+                            return (_ohdSystemGround.ina219_voltage_millivolt / settings.ground_battery_cells /1000) + "mVpC"
                         } else {
-                         return _ohdSystemGround.ina219_voltage_millivolt + "mV"
+                         return _ohdSystemGround.ina219_voltage_millivolt /1000 + "mV"
                      }
                  }
             color: settings.color_text
@@ -212,7 +214,7 @@ BaseWidget {
             height: 48
             // @disable-check M223
             color: {
-                var percent = calculateBatteryPercentage(_ohdSystemGround.ina219_voltage_millivolt).toFixed(2)
+                var percent = settings.ground_voltage_in_percent
 
                 // 20% warning, 15% critical
                 return percent < 20 ? (percent < 15 ? "#ff0000" : "#fbfd15") : settings.color_shape
