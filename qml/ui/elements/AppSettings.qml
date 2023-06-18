@@ -124,6 +124,11 @@ Settings {
     property bool ground_battery_show_single_cell: false
     property bool ground_battery_show_fc_percent: false
     property int ground_battery_cells: 3
+    property int ground_battery_type: 1
+    property int ground_battery_low: 35
+    property int ground_battery_mid: 39
+    property int ground_battery_full: 42
+
 
     property bool show_gps: true
     property bool gps_show_all: false

@@ -1,5 +1,5 @@
 import QtQuick 2.12
-import QtQuick.Controls 2.12
+import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.12
 import QtGraphicalEffects 1.12
 import Qt.labs.settings 1.0
@@ -35,28 +35,6 @@ BaseWidget {
                 width: 230
                 height: 32
                 Text {
-                    text: qsTr("Show volts and amps")
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Switch {
-                    width: 32
-                    height: parent.height
-                    anchors.rightMargin: 6
-                    anchors.right: parent.right
-                    checked: settings.ground_battery_show_voltage_current
-                    onCheckedChanged: settings.ground_battery_show_voltage_current = checked
-                }
-            }
-            Item {
-                width: 230
-                height: 32
-                visible: settings.ground_battery_show_voltage_current
-                Text {
                     text: qsTr("Show single cell voltage")
                     color: "white"
                     height: parent.height
@@ -74,6 +52,54 @@ BaseWidget {
                     onCheckedChanged: settings.ground_battery_show_single_cell = checked
                 }
             }
+            Item {
+                width: 230
+                height: 32
+
+                Text {
+                    text: qsTr("Battery Type")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+
+                ComboBox {
+                    id: batteryComboBox
+                    width: 100
+                    height: parent.height
+                    anchors.rightMargin: 6
+                    anchors.right: parent.right
+                    model: ["Lipo", "LiIon", "LiFe"]
+                    onCurrentIndexChanged: {
+                            switch (batteryComboBox.currentIndex) {
+                                case 0:
+                                    settings.ground_battery_type = 0;
+                                    settings.ground_battery_low = 35;
+                                    settings.ground_battery_mid = 39;
+                                    settings.ground_battery_full = 42;
+                                    console.debug("LiPo")
+                                    break;
+                                case 1:
+                                    settings.ground_battery_type = 1;
+                                    settings.ground_battery_low = 31;
+                                    settings.ground_battery_mid = 36;
+                                    settings.ground_battery_full = 42;
+                                    console.debug("LiIon")
+                                    break;
+                                case 2:
+                                    settings.ground_battery_type = 2;
+                                    settings.ground_battery_low = 30;
+                                    settings.ground_battery_mid = 35;
+                                    settings.ground_battery_full = 40;
+                                    console.debug("LiFe")
+                                    break;
+                            }
+                }   }
+            }
+
         }
     }
 
@@ -102,12 +128,11 @@ BaseWidget {
             style: Text.Outline
             styleColor: settings.color_glow
         }
-
         Text {
             id: battery_percent
             y: 0
             color: settings.color_text
-            text: "N/A"
+            text: calculateBatteryPercentage(_ohdSystemGround.ina219_voltage_millivolt).toFixed(2) + "%"
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: batteryGauge.right
             anchors.leftMargin: 0
@@ -119,6 +144,25 @@ BaseWidget {
             font.family: settings.font_text
             style: Text.Outline
             styleColor: settings.color_glow
+
+            function calculateBatteryPercentage(currentVoltage) {
+                var fullVoltage = settings.ground_battery_full;
+                var midVoltage = settings.ground_battery_mid;
+                var emptyVoltage = settings.ground_battery_empty;
+
+                var percentage;
+                if (currentVoltage >= fullVoltage) {
+                    percentage = 100.0;
+                } else if (currentVoltage <= emptyVoltage) {
+                    percentage = 0.0;
+                } else if (currentVoltage >= midVoltage) {
+                    percentage = 50.0 + ((currentVoltage - midVoltage) / (fullVoltage - midVoltage)) * 50.0;
+                } else {
+                    percentage = ((currentVoltage - emptyVoltage) / (midVoltage - emptyVoltage)) * 50.0;
+                }
+
+                return Math.max(0, Math.min(100, percentage)); // Ensure the percentage is within [0, 100]
+            }
         }
         Text {
             id: battery_amp_text
@@ -141,7 +185,13 @@ BaseWidget {
         Text {
             id: battery_volt_text
             visible: true
-            text: _ohdSystemGround.ina219_voltage_millivolt+"mV"
+            text: {
+                if (settings.ground_battery_show_single_cell) {
+                            return (_ohdSystemGround.ina219_voltage_millivolt / settings.ground_battery_cells) + "mVpC"
+                        } else {
+                         return _ohdSystemGround.ina219_voltage_millivolt + "mV"
+                     }
+                 }
             color: settings.color_text
             anchors.top: battery_percent.bottom
             anchors.left: batteryGauge.right
@@ -162,7 +212,7 @@ BaseWidget {
             height: 48
             // @disable-check M223
             color: {
-                var percent = _ohdSystemGround.battery_percent
+                var percent = calculateBatteryPercentage(_ohdSystemGround.ina219_voltage_millivolt).toFixed(2)
 
                 // 20% warning, 15% critical
                 return percent < 20 ? (percent < 15 ? "#ff0000" : "#fbfd15") : settings.color_shape
