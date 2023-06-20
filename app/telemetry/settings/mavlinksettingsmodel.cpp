@@ -125,7 +125,7 @@ static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string&
     }
     {
         map_improved_params["VIDEO_CODEC"]=ImprovedIntSetting::createEnum( std::vector<std::string>{"h264","h265","mjpeg"});
-        map_improved_params["V_AIR_RECORDING"]=ImprovedIntSetting::createEnumEnableDisable();
+        map_improved_params["V_AIR_RECORDING"]=ImprovedIntSetting::createEnum( std::vector<std::string>{"DISABLE","ENABLE","AUTO(armed)"});
         map_improved_params["V_E_STREAMING"]=ImprovedIntSetting::createEnumEnableDisable();
         map_improved_params["V_HORIZ_FLIP"]=ImprovedIntSetting::createEnumEnableDisable();
         map_improved_params["V_VERT_FLIP"]=ImprovedIntSetting::createEnumEnableDisable();
@@ -996,7 +996,8 @@ QString MavlinkSettingsModel::get_short_description(const QString param_id)const
                "a reboot is recommended, but not neccessary.";
     }
     if(param_id=="V_AIR_RECORDING"){
-        return "Record video data locally on your air unit. You can find the files under /home/openhd/Videos";
+        return "Record video data locally on your air unit. You can find the files under /home/openhd/Videos on the SD card and/or download them via the web ui."
+               "When AUTO is set, air recording automatically starts (and stops) when you arm/disarm your drone (requires inav / ardupilot FC).";
     }
     if(param_id=="V_E_STREAMING"){
         return "Enable / disable streaming for this camera. Note that this setting is persistent at run time - once you disable streaming for a camera, you won't have video"
