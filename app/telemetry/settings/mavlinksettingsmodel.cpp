@@ -238,27 +238,43 @@ static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string&
         }
         map_improved_params["CONFIG_BOOT_AIR"]=ImprovedIntSetting::createEnumEnableDisable();
         map_improved_params["WIFI_HOTSPOT_E"]=ImprovedIntSetting::createEnumEnableDisable();
-        // Measurements of @Marcel Essers:
-        //19: 10-12 mW
-        //25: 25-30 mW
-        //30: 45-50 mW
-        //35: 70-80 mW
-        //37: 100-110 mW
-        //40: 120-140 mW
-        //45: 200-230 mW
-        //50: 280- 320 mW
-        //55: 380-400 mW
-        //58: 420-450 mW
-        auto values_WB_TX_PWR_LEVEL=std::vector<ImprovedIntSetting::Item>{
-            {"LOW(~25mW)[22]",22},
-            {"MEDIUM [37]",37},
-            {"HIGH [53]",53},
-            {"MAX1(!DANGER!)[58]",58},
-            // Intentionally disabled, since it creates unusably high packet loss
-            // (e.g. the rf circuit is over-amplified)
-            //{"MAX2(!DANGER!)[63]",63},
-        };
-        map_improved_params["WB_TX_PWR_IDX_O"]=ImprovedIntSetting(0,63,values_WB_TX_PWR_LEVEL);
+        {
+            // Measurements of @Marcel Essers:
+            //19: 10-12 mW
+            //25: 25-30 mW
+            //30: 45-50 mW
+            //35: 70-80 mW
+            //37: 100-110 mW
+            //40: 120-140 mW
+            //45: 200-230 mW
+            //50: 280- 320 mW
+            //55: 380-400 mW
+            //58: 420-450 mW
+            auto values_WB_TX_PWR_LEVEL=std::vector<ImprovedIntSetting::Item>{
+                                                                                {"LOW(~25mW)[22]",22},
+                                                                                {"MEDIUM [37]",37},
+                                                                                {"HIGH [53]",53},
+                                                                                {"MAX1(!DANGER!)[58]",58},
+                                                                                // Intentionally disabled, since it creates unusably high packet loss
+                                                                                // (e.g. the rf circuit is over-amplified)
+                                                                                //{"MAX2(!DANGER!)[63]",63},
+                                                                                };
+            map_improved_params["WB_TX_PWR_IDX_O"]=ImprovedIntSetting(0,63,values_WB_TX_PWR_LEVEL);
+        }
+        {
+            auto values_WB_TX_PWR_LEVEL_ARMED=std::vector<ImprovedIntSetting::Item>{
+                                                                                 {"Disabled[0]",0},
+                                                                                {"LOW(~25mW)[22]",22},
+                                                                                {"MEDIUM [37]",37},
+                                                                                {"HIGH [53]",53},
+                                                                                {"MAX1(!DANGER!)[58]",58},
+                                                                                // Intentionally disabled, since it creates unusably high packet loss
+                                                                                // (e.g. the rf circuit is over-amplified)
+                                                                                //{"MAX2(!DANGER!)[63]",63},
+                                                                                };
+            map_improved_params["TX_POWER_ARMED"]=ImprovedIntSetting(0,63,values_WB_TX_PWR_LEVEL_ARMED);
+        }
+
         {
             auto default_values=std::vector<ImprovedIntSetting::Item>{
                 {"AUTO (Default)",0},
@@ -966,7 +982,12 @@ QString MavlinkSettingsModel::get_short_description(const QString param_id)const
     }
     if(param_id=="WB_TX_PWR_IDX_O"){
         return "RTL8812AU TX power index (unitless). LOW:default,~25mW, legal in most countries."
-               " NOTE: Too high power settings can overload your RF circuits and create packet loss/ destroy your card. Read the Wiki before changing the TX Power";
+               " NOTE: Too high power settings can overload your RF circuits and create packet loss/ destroy your card. Read the Wiki before changing the TX Power."
+               " NOTE2: For high power cards, it is recommended to leave this param default and change TX_POWER_ARMED instead to avoid overheating on the bench.";
+    }
+    if(param_id=="TX_POWER_ARMED"){
+        return "TX Power (in override indices units) that is applied when the FC is armed. When the FC is not armed, WB_TX_PWR_IDX_O is applied."
+               " This helps to avoid overheating of the WIFI card while openhd is powered on the bench / without airflow on the cards.";
     }
     if(param_id=="V_OS_CAM_CONFIG"){
         return "If your connected CSI camera is not detected (e.g. you see a dummy camera stream) you need to select the apropriate config here. Air will automatically reboot"
