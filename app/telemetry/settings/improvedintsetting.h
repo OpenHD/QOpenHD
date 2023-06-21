@@ -22,8 +22,8 @@ public:
     // For normal enums, we default to increasing values starting at 0, but some parameters
     // (e.g. baud rate) require a type of enum where the first value is not 0, but (as an example) 9600baud
     struct Item{
-        const std::string name;
-        const int value;
+        std::string name;
+        int value;
     };
 
     ImprovedIntSetting(int min_value_int,int max_value_int,std::vector<Item> values_enum1);

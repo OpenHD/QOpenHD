@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include "../../../lib/lqtutils_master/lqtutils_prop.h"
+#include "param_names.h"
 
 // Helper for settings that MUST STAY IN SYNC on the ground and air pi, since otherwise the wifibroadcast link is lost
 // and the user needs to manually recover the link
@@ -17,9 +18,9 @@ public:
     explicit SynchronizedSettings(QObject *parent = nullptr);
 
     static SynchronizedSettings& instance();
-    static constexpr auto PARAM_ID_WB_FREQ="WB_FREQUENCY";
-    static constexpr auto PARAM_ID_WB_CHANNEL_WIDTH="WB_CHANNEL_W";
-    static constexpr auto PARAM_ID_WB_MCS_INDEX="WB_MCS_INDEX";
+    static constexpr auto PARAM_ID_WB_FREQ=openhd::WB_FREQUENCY;
+    static constexpr auto PARAM_ID_WB_CHANNEL_WIDTH=openhd::WB_CHANNEL_WIDTH;
+    static constexpr auto PARAM_ID_WB_MCS_INDEX=openhd::WB_MCS_INDEX;
 
     // Air and ground should always match, otherwise something weird has happenened.
     // Note that this would be "really" weird, since on not matching params there should be no connectivitiy.

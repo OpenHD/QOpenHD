@@ -14,8 +14,8 @@
 class ImprovedStringSetting{
 public:
     struct Item{
-        const std::string key;
-        const std::string value;
+        std::string key;
+        std::string value;
     };
     ImprovedStringSetting(std::vector<Item> values);
     ImprovedStringSetting()=default;
