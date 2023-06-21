@@ -184,7 +184,7 @@ static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string&
                 "CDN_FAST",
                 "CDN_HQ",
             };
-            map_improved_params["V_DENOISE_INDEX"]=ImprovedIntSetting::createEnum(denoise_modes);
+            map_improved_params["DENOISE_INDEX_LC"]=ImprovedIntSetting::createEnum(denoise_modes);
 
             map_improved_params["METERING_MODE_LC"]=ImprovedIntSetting::createEnum(std::vector<std::string>{
                 "centre", "spot", "average", "custom"
@@ -1061,9 +1061,6 @@ QString MavlinkSettingsModel::get_short_description(const QString param_id)const
     if(param_id=="V_EXP_MODE"){
         return "EXP Exposure mode";
     }
-    if(param_id=="V_DENOISE_INDEX"){
-        return "Setting this to off reduces latency by ~1 Frame on the cost of slightly reduced image quality in dark situations.";
-    }
     if(param_id=="V_BRIGHTNESS"){
         return "Image capture brightness, [0..100], default 50. Increase for a brighter Image. However, if available, it is recommended to tune AWB or EXP instead.";
     }
@@ -1077,6 +1074,9 @@ QString MavlinkSettingsModel::get_short_description(const QString param_id)const
         return "Camera exposure metering mode to use. Default average.";
     }
     // libcamera
+    if(param_id=="DENOISE_INDEX_LC"){
+        return "Setting this to off reduces latency by ~1 Frame on the cost of slightly reduced image quality in dark situations.";
+    }
     if(param_id=="AWB_MODE_LC"){
         return "Libcamera AWB mode.";
     }
