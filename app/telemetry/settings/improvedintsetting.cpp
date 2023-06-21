@@ -33,8 +33,7 @@ ImprovedIntSetting ImprovedIntSetting::createEnumEnableDisable(){
     return createEnum(values);
 }
 
-ImprovedIntSetting ImprovedIntSetting::createEnumSimple(std::vector<std::pair<std::string, int> > elements)
-{
+ImprovedIntSetting ImprovedIntSetting::createEnumSimple(std::vector<std::pair<std::string, int>> elements){
     std::vector<Item> items{};
     for(const auto& el:elements){
         items.push_back(Item{el.first,el.second});

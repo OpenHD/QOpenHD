@@ -84,6 +84,7 @@ SOURCES += \
 HEADERS += \
     $$PWD/mavlink_enum_to_string.h \
     $$PWD/models/fcmavlinksettingsmodel.h \
+    $$PWD/settings/documented_param.h \
     app/telemetry/mavsdk_helper.hpp \
     app/telemetry/mavsdk_include.h \
     app/telemetry/models/aohdsystem.h \
