@@ -278,7 +278,7 @@ static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string&
                                                                                 // (e.g. the rf circuit is over-amplified)
                                                                                 //{"MAX2(!DANGER!)[63]",63},
                                                                                 };
-            map_improved_params["WB_TX_PWR_IDX_O"]=ImprovedIntSetting(0,63,values_WB_TX_PWR_LEVEL);
+            map_improved_params["TX_POWER_I"]=ImprovedIntSetting(0,63,values_WB_TX_PWR_LEVEL);
         }
         {
             auto values_WB_TX_PWR_LEVEL_ARMED=std::vector<ImprovedIntSetting::Item>{
@@ -291,7 +291,7 @@ static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string&
                                                                                 // (e.g. the rf circuit is over-amplified)
                                                                                 //{"MAX2(!DANGER!)[63]",63},
                                                                                 };
-            map_improved_params["TX_POWER_ARMED"]=ImprovedIntSetting(0,63,values_WB_TX_PWR_LEVEL_ARMED);
+            map_improved_params["TX_POWER_I_ARMED"]=ImprovedIntSetting(0,63,values_WB_TX_PWR_LEVEL_ARMED);
         }
 
         {
@@ -996,16 +996,17 @@ QString MavlinkSettingsModel::get_short_description(const QString param_id)const
     if(param_id=="WB_V_FEC_BLK_L"){
         return "Default AUTO (Uses biggest block sizes possible while not adding any latency).Otherwise: WB Video FEC block length, previous FEC_K. Increasing this value can improve link stability for free, but can create additional latency.";
     }
-    if(param_id=="WB_TX_POWER_MW"){
+    if(param_id=="TX_POWER_MW"){
         return "TX power in mW (milli Watt), changing this value might or might not have any effect, depending on your card & driver. 1000mW=1W";
     }
-    if(param_id=="WB_TX_PWR_IDX_O"){
-        return "RTL8812AU TX power index (unitless). LOW:default,~25mW, legal in most countries."
+    if(param_id=="TX_POWER_I"){
+        return "NEW: Recommended to change TX_POWER_I_ARMED instead ! RTL8812AU TX power index (unitless). LOW:default,~25mW, legal in most countries."
                " NOTE: Too high power settings can overload your RF circuits and create packet loss/ destroy your card. Read the Wiki before changing the TX Power."
                " NOTE2: For high power cards, it is recommended to leave this param default and change TX_POWER_ARMED instead to avoid overheating on the bench.";
     }
-    if(param_id=="TX_POWER_ARMED"){
-        return "TX Power (in override indices units) that is applied when the FC is armed. When the FC is not armed, WB_TX_PWR_IDX_O is applied."
+    if(param_id=="TX_POWER_I_ARMED"){
+        return "TX Power (in override indices units) that is applied when the FC is armed. When the FC is not armed, TX_POWER_I is applied."
+               "When this param is disabled, TX_POWER_I is applied regardless if armed or not (default)."
                " This helps to avoid overheating of the WIFI card while openhd is powered on the bench / without airflow on the cards.";
     }
     if(param_id=="V_OS_CAM_CONFIG"){
