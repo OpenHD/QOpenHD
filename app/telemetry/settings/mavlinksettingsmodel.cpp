@@ -143,36 +143,38 @@ static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string&
            ImprovedIntSetting::Item{"BOTH",2},
            ImprovedIntSetting::Item{"CYCLIC_ROWS",2130706433}
        });
-        // rpicamsrc only for now
-        auto gst_awb_modes=std::vector<std::string>{
-                    "OFF",
-                    "AUTO",
-                    "SUNLIGHT",
-                    "CLOUDY",
-                    "SHADE",
-                    "TUNGSTEN",
-                    "FLUORESCENT",
-                    "INCANDESCENT",
-                    "FLASH",
-                    "HORIZON"
-        };
-        auto gst_exposure_modes=std::vector<std::string>{
-                     "OFF",
-                     "AUTO",
-                     "NIGHT",
-                     "NIGHTPREVIEW",
-                     "BACKLIGHT",
-                     "SPOTLIGHT",
-                     "SPORTS",
-                     "SNOW",
-                     "BEACH",
-                     "VERYLONG",
-                     "FIXEDFPS",
-                     "ANTISHAKE",
-                     "FIREWORKS",
-        };
-        map_improved_params["V_AWB_MODE"]=ImprovedIntSetting::createEnum(gst_awb_modes);
-        map_improved_params["V_EXP_MODE"]=ImprovedIntSetting::createEnum(gst_exposure_modes);
+        {
+            // rpicamsrc only for now
+            auto gst_awb_modes=std::vector<std::string>{
+                "OFF",
+                "AUTO",
+                "SUNLIGHT",
+                "CLOUDY",
+                "SHADE",
+                "TUNGSTEN",
+                "FLUORESCENT",
+                "INCANDESCENT",
+                "FLASH",
+                "HORIZON"
+            };
+            auto gst_exposure_modes=std::vector<std::string>{
+                "OFF",
+                "AUTO",
+                "NIGHT",
+                "NIGHTPREVIEW",
+                "BACKLIGHT",
+                "SPOTLIGHT",
+                "SPORTS",
+                "SNOW",
+                "BEACH",
+                "VERYLONG",
+                "FIXEDFPS",
+                "ANTISHAKE",
+                "FIREWORKS",
+            };
+            map_improved_params["V_AWB_MODE"]=ImprovedIntSetting::createEnum(gst_awb_modes);
+            map_improved_params["V_EXP_MODE"]=ImprovedIntSetting::createEnum(gst_exposure_modes);
+        }
         {
             // libcamera only
             auto denoise_modes=std::vector<std::string>{
@@ -182,7 +184,24 @@ static std::optional<ImprovedIntSetting> get_improved_for_int(const std::string&
                 "CDN_FAST",
                 "CDN_HQ",
             };
-            map_improved_params["V_DENOISE_INDEX"]=ImprovedIntSetting::createEnum(denoise_modes);
+            map_improved_params["DENOISE_INDEX_LC"]=ImprovedIntSetting::createEnum(denoise_modes);
+
+            map_improved_params["METERING_MODE_LC"]=ImprovedIntSetting::createEnum(std::vector<std::string>{
+                "centre", "spot", "average", "custom"
+            });
+            map_improved_params["AWB_MODE_LC"]=ImprovedIntSetting::createEnum(std::vector<std::string>{
+                "auto", "incandescent", "tungsten", "fluorescent", "indoor", "daylight",
+                "cloudy", "custom"
+            });
+            map_improved_params["EXPOSURE_MODE_LC"]=ImprovedIntSetting::createEnum(std::vector<std::string>{
+                "normal", "sport"
+            });
+            map_improved_params["SHUTTER_US_LC"]=ImprovedIntSetting::createEnumSimple(std::vector<std::pair<std::string,int>>{
+                {"auto",0},
+                {"example1 (1000)",1000},
+                {"example2 (2000)",2000},
+            });
+
         }
         {
             auto values_metering_mode=std::vector<std::string>{
@@ -1042,9 +1061,6 @@ QString MavlinkSettingsModel::get_short_description(const QString param_id)const
     if(param_id=="V_EXP_MODE"){
         return "EXP Exposure mode";
     }
-    if(param_id=="V_DENOISE_INDEX"){
-        return "Setting this to off reduces latency by ~1 Frame on the cost of slightly reduced image quality in dark situations.";
-    }
     if(param_id=="V_BRIGHTNESS"){
         return "Image capture brightness, [0..100], default 50. Increase for a brighter Image. However, if available, it is recommended to tune AWB or EXP instead.";
     }
@@ -1057,6 +1073,23 @@ QString MavlinkSettingsModel::get_short_description(const QString param_id)const
     if(param_id=="V_METERING_MODE"){
         return "Camera exposure metering mode to use. Default average.";
     }
+    // libcamera
+    if(param_id=="DENOISE_INDEX_LC"){
+        return "Setting this to off reduces latency by ~1 Frame on the cost of slightly reduced image quality in dark situations.";
+    }
+    if(param_id=="AWB_MODE_LC"){
+        return "Libcamera AWB mode.";
+    }
+    if(param_id=="METERING_MODE_LC"){
+        return "Libcamera metering mode.";
+    }
+    if(param_id=="EXPOSURE_MODE_LC"){
+        return "Libcamera exposure mode.";
+    }
+    if(param_id=="SHUTTER_US_LC"){
+        return "Libcamera exposure in microseconds.";
+    }
+    // libcamera end
     if(param_id=="WIFI_HOTSPOT_E"){
         return "Enable/Disable WiFi hotspot such that you can connect to your air/ground unit via normal WiFi. Frequency is always the opposite of your WB link, e.g. "
                "2.4G if your wb link is 5.8G and opposite. Wifi hotspot is automatically disabled when you arm your FC (to avoid interference) !";
