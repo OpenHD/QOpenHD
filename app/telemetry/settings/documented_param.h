@@ -181,6 +181,12 @@ static std::vector<XParam> get_parameters_list(){
                ImprovedIntSetting::createEnum({"MCS0","MCS1","MCS2","MCS3","MCS4","MCS5","MCS6","MCS7"}),
                "!!!Editing this param manually without care will result in a broken link!!!"
     );
+    append_int(ret,openhd::WB_MCS_INDEX_VIA_RC_CHANNEL,
+               ImprovedIntSetting::createEnum({"Disable","Channel 1","CHannel 2","Channel 3","Channel 4","Channel 5",
+                                               "Channel 6","Channel 7","Channel 8","Channel 9","Channel 10"}),
+               "Dynamically change the MCS Index (Trade range <-> image quality (bitrate)) during flight using your RC and a specific channel "
+               "(similar to how flight modes work)."
+               );
     append_only_documented(ret,openhd::WB_FREQUENCY,"!!!Editing this param manually without care will result in a broken link!!!");
     append_only_documented(ret,openhd::WB_MAX_FEC_BLOCK_SIZE_FOR_PLATFORM,"Developer only, FEC auto internal.");
     append_only_documented(ret,openhd::WB_TX_POWER_MILLI_WATT,
@@ -403,31 +409,33 @@ static std::vector<XParam> get_parameters_list(){
 
             append_int(ret,"METERING_MODE_LC",
                        ImprovedIntSetting::createEnum(std::vector<std::string>{
-                               "centre", "spot", "average", "custom"
+                               "centre (default)", "spot", "average", "custom"
                        }), "Libcamera Metering mode.")
                     ;
             append_int(ret,"AWB_MODE_LC",
                        ImprovedIntSetting::createEnum(std::vector<std::string>{
-                               "auto", "incandescent", "tungsten", "fluorescent", "indoor", "daylight",
+                               "auto (default)", "incandescent", "tungsten", "fluorescent", "indoor", "daylight",
                                "cloudy", "custom"
                        }), "Libcamera AWB mode.")
                     ;
             append_int(ret,"EXPOSURE_MODE_LC",
                        ImprovedIntSetting::createEnum(std::vector<std::string>{
-                               "normal", "sport"
+                               "normal (default)", "sport"
                        }), "Libcamera exposure mode.")
                     ;
             append_int(ret,"SHUTTER_US_LC",
                        ImprovedIntSetting::createEnumSimple(
                                std::vector<std::pair<std::string,int>>{
                                        {"auto",0},
-                                       {"example1 (1000)",1000},
-                                       {"example2 (2000)",2000},
-                               }),"Libcamera shutter in microseconds.");
+                                       {"example1 (1000us)",1000},
+                                       {"example2 (5000us)",5000},
+                                       {"example3 (16666us)",16666},
+                                       {"example4 (33333us)",33333},
+                               }),"Libcamera shutter in microseconds. Normally seleceted automatically, but you can overwrite this value for more control.");
         }
-        append_documented_read_only(ret,"V_CAM_TYPE","TODO");
-        append_documented_read_only(ret,"V_CAM_SENSOR","TODO");
-        append_documented_read_only(ret,"V_CAM_NAME","TODO");
+        append_documented_read_only(ret,"V_CAM_TYPE","Detected camera type");
+        append_documented_read_only(ret,"V_CAM_SENSOR","Detected camera sensor (might not work)");
+        append_documented_read_only(ret,"V_CAM_NAME","Detected camera name (might not work)");
     }
     // -------------------------------------------------------------------------------------------------------------------------------------------------------
     // Other stuff
