@@ -462,6 +462,16 @@ static std::vector<XParam> get_parameters_list(){
                                 {"lower (50)",50},
                                 }),
                        "Libcamera sharpness");
+            append_int(ret,"EXPOSURE_LC",
+                       ImprovedIntSetting::createEnumSimple(
+                           std::vector<std::pair<std::string,int>>{
+                                {"default(0)",0},
+                                {"higher (5)",5},
+                                {"higher (10)",10},
+                                {"lower(-5)",-5},
+                                {"lower (-10)",-10},
+                                }),
+                       "Libcamera exposure value, [-10,10]");
         }
         append_documented_read_only(ret,"V_CAM_TYPE","Detected camera type");
         append_documented_read_only(ret,"V_CAM_SENSOR","Detected camera sensor (might not work)");
