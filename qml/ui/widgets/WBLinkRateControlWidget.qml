@@ -137,7 +137,7 @@ BaseWidget {
                 width: parent.width
                 height: 14
                 color: settings.color_text
-                text: qsTr("MCS: ")+((m_curr_mcs_index==-1) ? "NA" : qStr(m_curr_mcs_index))
+                text: m_curr_mcs_index==-1 ? "MCS:NA" : "MCS: "+m_curr_mcs_index;
                 anchors.bottom: parent.bottom
                 anchors.bottomMargin: 0
                 verticalAlignment: Text.AlignBottom

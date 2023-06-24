@@ -409,7 +409,7 @@ static std::vector<XParam> get_parameters_list(){
 
             append_int(ret,"METERING_MODE_LC",
                        ImprovedIntSetting::createEnum(std::vector<std::string>{
-                               "centre (default)", "spot", "average", "custom"
+                               "centre (default)", "spot", "average", //crashes libcamera "custom"
                        }), "Libcamera Metering mode.")
                     ;
             append_int(ret,"AWB_MODE_LC",
@@ -432,6 +432,36 @@ static std::vector<XParam> get_parameters_list(){
                                        {"example3 (16666us)",16666},
                                        {"example4 (33333us)",33333},
                                }),"Libcamera shutter in microseconds. Normally seleceted automatically, but you can overwrite this value for more control.");
+            append_int(ret,"CONTRAST_LC",
+                       ImprovedIntSetting::createEnumSimple(
+                           std::vector<std::pair<std::string,int>>{
+                                {"default(100)",100},
+                                {"higher (120)",120},
+                                {"higher (150)",150},
+                                {"lower(80)",80},
+                                {"lower (50)",50},
+                                }),
+                       "Libcamera contrast");
+            append_int(ret,"SATURATION_LC",
+                       ImprovedIntSetting::createEnumSimple(
+                           std::vector<std::pair<std::string,int>>{
+                                {"default(100)",100},
+                                {"higher (120)",120},
+                                {"higher (150)",150},
+                                {"lower(80)",80},
+                                {"lower (50)",50},
+                                }),
+                       "Libcamera saturation");
+            append_int(ret,"SHARPNESS_LC",
+                       ImprovedIntSetting::createEnumSimple(
+                           std::vector<std::pair<std::string,int>>{
+                                {"default(100)",100},
+                                {"higher (120)",120},
+                                {"higher (150)",150},
+                                {"lower(80)",80},
+                                {"lower (50)",50},
+                                }),
+                       "Libcamera sharpness");
         }
         append_documented_read_only(ret,"V_CAM_TYPE","Detected camera type");
         append_documented_read_only(ret,"V_CAM_SENSOR","Detected camera sensor (might not work)");
