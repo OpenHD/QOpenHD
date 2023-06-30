@@ -521,6 +521,8 @@ static std::vector<XParam> get_parameters_list(){
             auto values=std::vector<std::string>{"untouched","high","low"};
             append_int(ret,"GPIO_2",ImprovedIntSetting::createEnum(values),
                        "Experimental, allows manually controlling a rpi gpio for special uses like a LED, landing gear, ...");
+            append_int(ret,"GPIO_26",ImprovedIntSetting::createEnum(values),
+                       "Experimental, allows manually controlling a rpi gpio for special uses like a LED, landing gear, ...");
         }
         //
         {
