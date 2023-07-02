@@ -231,11 +231,10 @@ static std::vector<XParam> get_parameters_list(){
             //   LIBCAMERA_IMX290, // "normal" libcamera, explicitly set to imx290 detection only 
             //   LIBCAMERA_AUTO, // standart libcamera with autodetect
             //   LIBCAMERA_ARDUCAM_AUTO, // pivariety libcamera (arducam special)NEEDS CUSTOM LIBCAMERA
-            //   VEYE_327, // Veye IMX290/IMX327 (older versions)
+            //   VEYE_2MP_CAMERAS // Veye IMX327 (never versions), VEYE series with 200W resolution
             //   VEYE_CSIMX307, // Veye IMX307
             //   VEYE_CSSC132, //Veye SC132
             //   VEYE_MVCAM, // Veye MV Cameras
-            //   VEYE_CAM2M // Veye IMX327 (never versions), VEYE series with 200W resolution
             auto cam_config_items=std::vector<std::string>{
                     "Legacy(MMAL)",
                     "IMX462 Low Light Mini",
@@ -248,11 +247,10 @@ static std::vector<XParam> get_parameters_list(){
                     "LIBCAMERA_IMX290",
                     "LIBCAMERA_AUTO",
                     "LIBCAMERA_ARDUCAM_AUTO",
-                    "VEYE_327",
+                    "VEYE_2MP_CAMERAS"
                     "VEYE_CSIMX307",
                     "VEYE_CSSC132",
                     "VEYE_MVCAM",
-                    "VEYE_CAM2M"
             };
             append_int(ret,"V_OS_CAM_CONFIG",
                        ImprovedIntSetting::createEnum(cam_config_items),
