@@ -221,11 +221,16 @@ static std::vector<XParam> get_parameters_list(){
         {
             // Needs to match OpenHD
             //   MMAL = 0, // raspivid / gst-rpicamsrc
-            //   LIBCAMERA, // "normal" libcamera (autodetect)
-            //   LIBCAMERA_IMX477, // "normal" libcamera, explicitly set to imx477 detection only
-            //   LIBCAMERA_ARDUCAM, // pivariety libcamera (arducam special)
-            //   LIBCAMERA_IMX519, // Arducam imx519 without autofocus
-            //   LIBCAMERA_IMX708, // Arducam imx708 without autofocus
+            //   IMX462 Low Light Mini, // "normal" libcamera, explicitly set to Arducam_piviarity detection only NEEDS CUSTOM LIBCAMERA
+            //   SkyMaster HDR, // "normal" libcamera, explicitly set to imx708 detection only
+            //   SkyVision Pro, // "normal" libcamera, explicitly set to imx519 detection only NEEDS CUSTOM LIBCAMERA
+            //   LIBCAMERA_IMX477M, // "normal" libcamera, explicitly set to imx477 detection only NEEDS CUSTOM TUNING FILE
+            //   LIBCAMERA_IMX477, // "normal" libcamera, explicitly set to imx477 detection only 
+            //   LIBCAMERA_IMX462, // "normal" libcamera, explicitly set to imx462 detection only 
+            //   LIBCAMERA_IMX327, // "normal" libcamera, explicitly set to imx327 detection only 
+            //   LIBCAMERA_IMX290, // "normal" libcamera, explicitly set to imx290 detection only 
+            //   LIBCAMERA_AUTO, // standart libcamera with autodetect
+            //   LIBCAMERA_ARDUCAM_AUTO, // pivariety libcamera (arducam special)NEEDS CUSTOM LIBCAMERA
             //   VEYE_327, // Veye IMX290/IMX327 (older versions)
             //   VEYE_CSIMX307, // Veye IMX307
             //   VEYE_CSSC132, //Veye SC132
@@ -233,14 +238,16 @@ static std::vector<XParam> get_parameters_list(){
             //   VEYE_CAM2M // Veye IMX327 (never versions), VEYE series with 200W resolution
             auto cam_config_items=std::vector<std::string>{
                     "Legacy(MMAL)",
-                    "LIBCAMERA",
+                    "IMX462 Low Light Mini",
+                    "SkyMaster HDR",
+                    "SkyVision Pro",
+                    "LIBCAMERA_IMX477M",
                     "LIBCAMERA_IMX477",
-                    "LIBCAMERA_ARDU",
-                    "LIBCAMERA_IMX519",
-                    "LIBCAMERA_IMX708",
-                    "LIBCAMERA_IMX290",
-                    "LIBCAMERA_IMX327",
                     "LIBCAMERA_IMX462",
+                    "LIBCAMERA_IMX327",
+                    "LIBCAMERA_IMX290",
+                    "LIBCAMERA_AUTO",
+                    "LIBCAMERA_ARDUCAM_AUTO",
                     "VEYE_327",
                     "VEYE_CSIMX307",
                     "VEYE_CSSC132",
