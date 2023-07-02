@@ -247,10 +247,10 @@ static std::vector<XParam> get_parameters_list(){
                     "LIBCAMERA_IMX290",
                     "LIBCAMERA_AUTO",
                     "LIBCAMERA_ARDUCAM_AUTO",
-                    "VEYE_2MP_CAMERAS"
+                    "VEYE_2MP_CAMERAS",
                     "VEYE_CSIMX307",
                     "VEYE_CSSC132",
-                    "VEYE_MVCAM",
+                    "VEYE_MVCAM"
             };
             append_int(ret,"V_OS_CAM_CONFIG",
                        ImprovedIntSetting::createEnum(cam_config_items),
