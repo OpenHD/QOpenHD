@@ -14,7 +14,7 @@ import "../elements"
 
 // Contains a list of all the settings on the left, and opens up a parameter editor instance on
 // the right if the user wants to edit any mavlink settings
-Pane {
+Rectangle {
     width: parent.width
     height: parent.height
     property int paramEditorWidth: 300
@@ -26,6 +26,10 @@ Pane {
     property var m_instanceCheckIsAvlie: _ohdSystemGround
 
     property string m_name: "undefined"
+
+    //color: "red"
+    //color: "transparent"
+    color: settings.screen_settings_openhd_parameters_transparent ? "transparent" : "white"
 
     // Refetch all button
     Button {
@@ -55,11 +59,21 @@ Pane {
             _messageBoxInstance.set_text_and_show(text)
         }
     }
+    Switch{
+        anchors.top: parent.top
+        anchors.left: fetchAllButtonInfoId.right
+        anchors.leftMargin: 20
+        checked: settings.screen_settings_openhd_parameters_transparent
+        onCheckedChanged: settings.screen_settings_openhd_parameters_transparent = checked
+    }
 
     Component {
         id: delegateMavlinkSettingsValue
+
         Rectangle{
-            color: (index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+            //color: (index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
+            //color: "transparent"
+            color: settings.screen_settings_openhd_parameters_transparent ? "transparent" : ((index % 2 == 0) ? "#8cbfd7f3" : "#00000000")
             //color: "green"
             //implicitHeight: elementsRow.implicitHeight
             //implicitWidth: elementsRow.implicitWidth
@@ -131,6 +145,8 @@ Pane {
         anchors.left: parent.left
         anchors.right: parent.right
         //color: "green"
+        //opacity: 0.5
+        color: settings.screen_settings_openhd_parameters_transparent ? "transparent" :  "white"
 
         ScrollView{
             width: parent.width

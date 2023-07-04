@@ -48,6 +48,19 @@ BaseWidget {
         return settings.color_shape;
     }
 
+    function text_for_card(card_idx){
+        var card=_wifi_card_gnd0;
+        if(card_idx==1)card=_wifi_card_gnd1;
+        if(card_idx==2)card=_wifi_card_gnd2;
+        if(card_idx==3)card=_wifi_card_gnd3;
+        // use uint16_t looping to not pollute the UI too much
+        var ret="["+(card_idx+1)+"] " + card.n_received_packets + " " + card.curr_rx_rssi_dbm + " dBm"+" "+card.packet_loss_perc+"%"
+        if(card.is_active_tx){
+            ret +=" TX"
+        }
+        return ret;
+    }
+
 
     //----------------------------- DETAIL BELOW ----------------------------------
 
@@ -331,7 +344,7 @@ BaseWidget {
             // dBm and packets for card index 0
             Text {
                 visible: settings.downlink_show_dbm_and_packets_per_card  && _wifi_card_gnd0.alive
-                text: "[1] " + _wifi_card_gnd0.n_received_packets + " " + _wifi_card_gnd0.curr_rx_rssi_dbm + " dBm"
+                text: text_for_card(0)
                 color: settings.color_text
                 verticalAlignment: Text.AlignVCenter
                 font.pixelSize: 12
@@ -345,7 +358,7 @@ BaseWidget {
             // dBm and packets for card index 1
             Text {
                 visible: settings.downlink_show_dbm_and_packets_per_card  && _wifi_card_gnd1.alive
-                text: "[2] "  + _wifi_card_gnd1.n_received_packets + " " + _wifi_card_gnd1.curr_rx_rssi_dbm + " dBm"
+                text: text_for_card(1)
                 color: settings.color_text
                 verticalAlignment: Text.AlignVCenter
                 font.pixelSize: 12
@@ -359,7 +372,7 @@ BaseWidget {
             // dBm and packets for card index 2
             Text {
                 visible: settings.downlink_show_dbm_and_packets_per_card && _wifi_card_gnd2.alive
-                text: "[3] " + _wifi_card_gnd2.n_received_packets + " " + _wifi_card_gnd2.curr_rx_rssi_dbm + " dBm"
+                text: text_for_card(2)
                 color: settings.color_text
                 verticalAlignment: Text.AlignVCenter
                 font.pixelSize: 12
@@ -373,7 +386,7 @@ BaseWidget {
             // dBm and packets for card index 3
             Text {
                 visible: settings.downlink_show_dbm_and_packets_per_card && _wifi_card_gnd3.alive
-                text: "[4] " + _wifi_card_gnd3.n_received_packets + " " + _wifi_card_gnd3.curr_rx_rssi_dbm + " dBm"
+                text: text_for_card(3)
                 color: settings.color_text
                 verticalAlignment: Text.AlignVCenter
                 font.pixelSize: 12

@@ -349,4 +349,7 @@ Settings {
 
     // message can be removed if needed.
     property bool dev_wb_show_no_stbc_enabled_warning: false
+
+    property int screen_settings_overlay_size_percent : 100
+    property bool screen_settings_openhd_parameters_transparent: false
 }

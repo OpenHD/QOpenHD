@@ -29,9 +29,14 @@ Rectangle {
         console.log("TEST show app settings:"+i);
     }
 
-    anchors.fill: parent
+    //anchors.fill: parent
+    width: parent.width * settings.screen_settings_overlay_size_percent / 100;
+    height: parent.height * settings.screen_settings_overlay_size_percent / 100;
 
     z: 4.0
+
+    color: "transparent"
+
 
     MouseArea {
         anchors.fill: parent

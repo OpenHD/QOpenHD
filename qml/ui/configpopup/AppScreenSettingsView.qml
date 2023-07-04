@@ -218,6 +218,44 @@ ScrollView {
                     }
                 }
             }
+
+            SettingBaseElement{
+                m_short_description: "Settings window size"
+                m_long_description: "Change the size of the settings window, such that you can view the live video while changing settings"
+
+                SpinBox {
+                    width: 210
+                    font.pixelSize: 14
+                    height: elementHeight
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    from: 50
+                    to: 100
+                    stepSize: 1
+                    value: settings.screen_settings_overlay_size_percent
+                    onValueChanged: {
+                        settings.screen_settings_overlay_size_percent = value
+                    }
+                }
+            }
+            SettingBaseElement{
+                m_short_description: "Settings window transparency"
+                m_long_description: "make the openhd parameters window semi-transparent"
+
+                Switch {
+                    width: 32
+                    height: elementHeight
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    checked: settings.screen_settings_openhd_parameters_transparent
+                    onCheckedChanged: settings.screen_settings_openhd_parameters_transparent = checked
+                }
+            }
+
         }
     }
 }

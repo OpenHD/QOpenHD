@@ -181,6 +181,7 @@ void AOHDSystem::process_x0(const mavlink_openhd_stats_monitor_mode_wifi_card_t 
         card.set_alive(true);
         card.set_curr_rx_rssi_dbm(msg.rx_rssi);
         card.set_n_received_packets(msg.count_p_received);
+        card.set_packet_loss_perc(msg.count_p_injected);
         set_current_rx_rssi(WiFiCard::helper_get_gnd_curr_best_rssi());
     }
 }
@@ -190,6 +191,16 @@ void AOHDSystem::process_x1(const mavlink_openhd_stats_monitor_mode_wifi_link_t 
     set_curr_rx_packet_loss_perc(msg.curr_rx_packet_loss_perc);
     set_count_tx_inj_error_hint(msg.count_tx_inj_error_hint);
     set_count_tx_dropped_packets(msg.count_tx_dropped_packets);
+    // only on ground
+    if(! _is_air){
+        for(int i=0;i<WiFiCard::N_CARDS;i++){
+            WiFiCard::instance_gnd(i).set_is_active_tx(false);
+        }
+        const auto active_tx_idx=msg.unused0;
+        if(active_tx_idx>=0 && active_tx_idx<WiFiCard::N_CARDS){
+            WiFiCard::instance_gnd(active_tx_idx).set_is_active_tx(true);
+        }
+    }
 }
 
 void AOHDSystem::process_x2(const mavlink_openhd_stats_telemetry_t &msg)

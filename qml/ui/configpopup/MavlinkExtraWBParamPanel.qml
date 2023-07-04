@@ -13,7 +13,14 @@ import OpenHD 1.0
 import "../../ui" as Ui
 import "../elements"
 
-Pane{
+Rectangle{
+    width: parent.width
+    height: parent.height
+
+    //color: "transparent"
+    //color: settings.screen_settings_openhd_parameters_transparent ? "transparent" : "white"
+    //opacity: settings.screen_settings_openhd_parameters_transparent ? 0.2 : 1
+
     // https://stackoverflow.com/questions/41991438/how-do-i-find-a-particular-listelement-inside-a-listmodel-in-qml
     // For the models above (model with value) try to find the index of the first  item where model[i].value===value
     function find_index(model,value){

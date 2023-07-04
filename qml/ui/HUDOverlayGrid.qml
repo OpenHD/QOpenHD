@@ -267,21 +267,6 @@ Item {
     WBLinkRateControlWidget{
         id: wBLinkRateControlWidget
     }
-
-    Text {
-        anchors.bottom: parent.bottom
-        anchors.horizontalCenter: parent.horizontalCenter
-        bottomPadding: 40
-        text: qsTr("Developer only. Not safe to fly.");
-        color: "red"
-        verticalAlignment: Text.AlignVCenter
-        horizontalAlignment: Text.AlignHCenter
-        font.family: settings.font_text
-        elide: Text.ElideNone
-        wrapMode: Text.NoWrap
-        font.pixelSize: 14
-        visible: false
-    }
 }
 
 
