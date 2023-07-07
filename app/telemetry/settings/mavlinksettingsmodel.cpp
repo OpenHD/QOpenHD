@@ -457,7 +457,7 @@ static void hacky_check_stbc(const int sys_id,const MavlinkSettingsModel::Settin
             QSettings settings;
             const auto dev_wb_show_no_stbc_enabled_warning =settings.value("dev_wb_show_no_stbc_enabled_warning", false).toBool();
             if(!dev_wb_show_no_stbc_enabled_warning){
-                WorkaroundMessageBox::makePopupMessage(message);
+                WorkaroundMessageBox::makePopupMessage(message,10);
             }
         }
     }
@@ -655,6 +655,20 @@ bool MavlinkSettingsModel::get_param_requires_manual_reboot(QString param_id)
     if(tmp.has_value()){
         return tmp.value().requires_reboot;
     }
+    return false;
+}
+
+bool MavlinkSettingsModel::set_param_keyframe_interval(int keyframe_interval)
+{
+    const auto ret=try_update_parameter_int("V_KEYFRAME_I",keyframe_interval);
+    if(ret=="")return true;
+    return false;
+}
+
+bool MavlinkSettingsModel::set_param_fec_percentage(int percent)
+{
+    const auto ret=try_update_parameter_int(openhd::WB_VIDEO_FEC_PERCENTAGE,percent);
+    if(ret=="")return true;
     return false;
 }
 

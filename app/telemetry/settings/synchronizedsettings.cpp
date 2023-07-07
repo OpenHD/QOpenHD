@@ -27,19 +27,19 @@ int SynchronizedSettings::get_param_int_air_and_ground_value(QString param_id)
 
     const auto value_ground_opt=MavlinkSettingsModel::instanceGround().try_get_param_int_impl(param_id);
     if(!value_ground_opt.has_value()){
-        WorkaroundMessageBox::instance().set_text_and_show("Cannot fetch param from ground");
+        WorkaroundMessageBox::makePopupMessage("Cannot fetch param from ground");
         return -1;
     }
     const auto value_ground=value_ground_opt.value();
     // Now that we have the value from the ground, fetch the value from the air
     const auto value_air_opt=MavlinkSettingsModel::instanceAir().try_get_param_int_impl(param_id);
     if(!value_air_opt.has_value()){
-        WorkaroundMessageBox::instance().set_text_and_show("Cannot fetch param from air");
+        WorkaroundMessageBox::makePopupMessage("Cannot fetch param from air");
         return value_ground;
     }
     const auto value_air=value_air_opt.value();
     if(value_air!=value_ground){
-         WorkaroundMessageBox::instance().set_text_and_show("Air and ground are out of sync - this can happen after a channel scan. Reboot Ground to Fix.");
+         WorkaroundMessageBox::makePopupMessage("Air and ground are out of sync - this can happen after a channel scan. Reboot Ground to Fix.");
          return value_ground;
     }
     return value_ground;
@@ -52,7 +52,7 @@ void SynchronizedSettings::change_param_air_and_ground(QString param_id,int valu
     // sanity checking
     const bool air_and_ground_alive=AOHDSystem::instanceAir().is_alive() && AOHDSystem::instanceGround().is_alive();
     if(!air_and_ground_alive){
-        WorkaroundMessageBox::instance().set_text_and_show("Precondition: Air and Ground running and alive not given. Change not possible.");
+        WorkaroundMessageBox::makePopupMessage("Precondition: Air and Ground running and alive not given. Change not possible.");
         return;
     }
     const MavlinkSettingsModel::ExtraRetransmitParams extra_retransmit_params{std::chrono::milliseconds(100),10};
@@ -62,7 +62,7 @@ void SynchronizedSettings::change_param_air_and_ground(QString param_id,int valu
     if(!(air_success==MavlinkSettingsModel::SetParamResult::SUCCESS)){
         std::stringstream ss;
         ss<<"Cannot change "<<param_id.toStdString()<<" to "<<value<<" -"<<MavlinkSettingsModel::set_param_result_as_string(air_success);
-        WorkaroundMessageBox::instance().set_text_and_show(ss.str().c_str());
+        WorkaroundMessageBox::makePopupMessage(ss.str().c_str());
         return;
     }
     // we have changed the value on air, now change the ground

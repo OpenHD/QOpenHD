@@ -22,7 +22,7 @@ void FCMavlinkSettingsModel::set_system(std::shared_ptr<mavsdk::System> system)
 bool FCMavlinkSettingsModel::set_ardupilot_message_rates()
 {
     if(param_client==nullptr){
-        WorkaroundMessageBox::instance().set_text_and_show("No FC");
+        WorkaroundMessageBox::makePopupMessage("No FC");
         return false;
     }
     bool res=false;

@@ -51,7 +51,7 @@ void CameraStreamModel::dirty_set_curr_set_video_codec_for_cam(int cam_index, in
                 // video codec mismatch, update the QOpenHD settings
                 settings.setValue("selectedVideoCodecPrimary",video_codec_in_openhd);
                 qDebug()<<"Changed electedVideoCodecPrimary in QOpenHD to "<<video_codec_in_openhd;
-                WorkaroundMessageBox::makePopupMessage("Changed VideoCodec Primary in QOpenHD");
+                WorkaroundMessageBox::makePopupMessage("Changed VideoCodec Primary in QOpenHD",5);
             }
         }
     }else if(cam_index==1){
@@ -63,7 +63,7 @@ void CameraStreamModel::dirty_set_curr_set_video_codec_for_cam(int cam_index, in
                // video codec mismatch, update the QOpenHD settings
                settings.setValue("selectedVideoCodecSecondary",video_codec_in_openhd);
                qDebug()<<"Changed selectedVideoCodecSecondary in QOpenHD to "<<video_codec_in_openhd;
-               WorkaroundMessageBox::makePopupMessage("Changed VideoCodec Secondary in QOpenHD");
+               WorkaroundMessageBox::makePopupMessage("Changed VideoCodec Secondary in QOpenHD",5);
            }
        }
     }else{
@@ -109,6 +109,8 @@ void CameraStreamModel::update_mavlink_openhd_stats_wb_video_air(const mavlink_o
            }
         }
     }
+    set_curr_curr_fec_percentage(msg.unused0);
+    set_curr_curr_keyframe_interval(msg.unused1);
 }
 
 void CameraStreamModel::update_mavlink_openhd_stats_wb_video_ground(const mavlink_openhd_stats_wb_video_ground_t &msg)

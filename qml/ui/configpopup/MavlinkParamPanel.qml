@@ -60,11 +60,32 @@ Rectangle {
         }
     }
     Switch{
+        id: screen_settings_openhd_parameters_transparentSwitch
         anchors.top: parent.top
         anchors.left: fetchAllButtonInfoId.right
         anchors.leftMargin: 20
         checked: settings.screen_settings_openhd_parameters_transparent
         onCheckedChanged: settings.screen_settings_openhd_parameters_transparent = checked
+    }
+    Button{
+        id: bUp
+        anchors.top: parent.top
+        anchors.left: screen_settings_openhd_parameters_transparentSwitch.right
+        anchors.leftMargin: 20
+        text:"DOWN"
+        onClicked: {
+            paramListScrollView.ScrollBar.vertical.position += 0.1
+        }
+    }
+    Button{
+        id: bDown
+        anchors.top: parent.top
+        anchors.left: bUp.right
+        anchors.leftMargin: 20
+        text:"UP"
+        onClicked: {
+            paramListScrollView.ScrollBar.vertical.position -= 0.1
+        }
     }
 
     Component {
@@ -87,19 +108,30 @@ Rectangle {
                 spacing: 5
                 //color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
                 height: 64
-                Label {
+                Text {
                     anchors.verticalCenter: parent.verticalCenter
                     //font.pixelSize: 20
                     width:150
                     text: model.unique_id
                     font.bold: true
+                    //color: settings.screen_settings_openhd_parameters_transparent ? "green" : "black"
+                    color: settings.screen_settings_openhd_parameters_transparent ? settings.color_text : "black"
+                    style:  settings.screen_settings_openhd_parameters_transparent ? Text.Outline : Text.Normal
+                    styleColor: settings.color_glow
                 }
-                Label {
+                Text {
                     width:150
                     //font.pixelSize: 20
                     text: model.extraValue
                     font.bold: true
                     anchors.verticalCenter: parent.verticalCenter
+                    color: settings.screen_settings_openhd_parameters_transparent ? settings.color_text : "black"
+                    //background: settings.screen_settings_openhd_parameters_transparent ? "white" : "transparent"
+                    //styleColor: settings.color_glow
+                    //background: "yellow"
+                    //opacity: 1.0
+                    style:  settings.screen_settings_openhd_parameters_transparent ? Text.Outline : Text.Normal
+                    styleColor: settings.color_glow
                 }
                 Button {
                     anchors.verticalCenter: parent.verticalCenter
@@ -149,6 +181,7 @@ Rectangle {
         color: settings.screen_settings_openhd_parameters_transparent ? "transparent" :  "white"
 
         ScrollView{
+            id: paramListScrollView
             width: parent.width
             height: parent.height
             clip: true

@@ -31,7 +31,50 @@ BaseWidget {
     hasWidgetDetail: true
     hasWidgetAction: true
 
+    property int m_widget_action_w:  256
+    property int m_widget_action_h: 300;
+    widgetActionWidth: m_widget_action_w
+    widgetActionHeight: m_widget_action_h
+
+
     property int m_curr_mcs_index: _ohdSystemAir.curr_mcs_index
+
+    property int m_curr_fec_perc: _cameraStreamModelPrimary.curr_fec_percentage
+    property int m_curr_keyframe_i: _cameraStreamModelPrimary.curr_keyframe_interval
+
+    function get_text_mcs(){
+        return m_curr_mcs_index==-1 ? "MCS: NA" : "MCS: "+m_curr_mcs_index;
+    }
+
+    function get_text_fec_keyframe(){
+        var ret=""
+        if(m_curr_fec_perc==-1){
+            ret+="N/A"
+        }else{
+            ret+=m_curr_fec_perc+"%"
+        }
+        ret+="-"
+        if(m_curr_keyframe_i==-1){
+            ret+="N/A"
+        }else{
+            ret+= m_curr_keyframe_i;
+        }
+        return ret;
+    }
+
+    function set_keyframe_interval(interval){
+        var success=_airCameraSettingsModel.set_param_keyframe_interval(interval)
+        if(success!==true){
+            return;
+        }
+        if(settings.dev_qopenhd_n_cameras==2){
+            _airCameraSettingsModel2.set_param_keyframe_interval(interval)
+        }
+    }
+    function set_fec_percentage(percentage){
+        var success=_airPiSettingsModel.set_param_fec_percentage(percentage)
+    }
+
 
     widgetDetailComponent: ScrollView {
 
@@ -49,77 +92,178 @@ BaseWidget {
 
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
         clip: true
+        width: parent.width
+        height: parent.height
 
         ColumnLayout {
             width: 200
+            height:  m_widget_action_h -30
             spacing: 10
 
-            Item {
-                height: 32
+            Rectangle{
+                id: areaMCS
                 width: parent.width
-                Text {
-                    id: simpleDescription
-                    text: "Trade Range/Quality"
-                    color: "white"
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                }
-                /*Button{
-                    height: 32
-                    width: 32
-                    text: "\uf05a"
-                    anchors.left: simpleDescription.right
-                    anchors.top: simpleDescription.top
-                    Material.background:Material.LightBlue
-                    leftPadding: 5
-                }*/
-            }
-            Item{
-                width: parent.width
-                height: parent.height - 32
-                //color: "green"
-                GridLayout{
+                height: parent.height /2;
+                //color: "red"
+                color: "black"
+                ColumnLayout{
                     width: parent.width
-                    height: parent.height
-                    rows: 2
-                    columns: 2
-                    Button{
-                        text: "MCS0"
-                        onClicked: {
-                             _synchronizedSettings.change_param_air_only_mcs(0,true)
+                    height:  parent.height
+                    spacing: 5
+                    Item {
+                        height: 32
+                        width: parent.width
+                        id: itemDescriptionMCS
+                        Text {
+                            id: simpleDescription
+                            text: "Trade Range/Quality"
+                            color: "white"
+                            font.bold: true
+                            font.pixelSize: detailPanelFontPixels
+                            anchors.left: parent.left
                         }
-                        highlighted: m_curr_mcs_index==0
+                        Button{
+                            height: 32
+                            width: 32
+                            text: "\uf05a"
+                            anchors.left: simpleDescription.right
+                            anchors.top: simpleDescription.top
+                            Material.background:Material.LightBlue
+                            anchors.leftMargin: 5
+                            onClicked: {
+                                _messageBoxInstance.set_text_and_show("
+By reducing the MCS (modulation and coding) index you increase range on the cost of less bitrate. You can change this
+value during flight, either using this widget or conveniently from your RC using the channel switcher (see wiki). If you exceed the max range at a given MCS,
+your loss quickly increases and the video stops - reduce the MCS to get more range and keep flying. NOTE:  Requires supported HW (see wiki).")
+                            }
+                        }
                     }
-                    Button{
-                        text: "MCS1"
-                        onClicked: {
-                             _synchronizedSettings.change_param_air_only_mcs(1,true)
+                    Item{
+                        width: parent.width
+                        height: parent.height -32;
+                        id: itemMcsChoices
+                        //color: "green"
+                        GridLayout{
+                            width: parent.width
+                            height: parent.height
+                            rows: 2
+                            columns: 2
+                            Button{
+                                text: "MCS0"
+                                onClicked: {
+                                    _synchronizedSettings.change_param_air_only_mcs(0,true)
+                                }
+                                highlighted: m_curr_mcs_index==0
+                            }
+                            Button{
+                                text: "MCS1"
+                                onClicked: {
+                                    _synchronizedSettings.change_param_air_only_mcs(1,true)
+                                }
+                                highlighted: m_curr_mcs_index==1
+                            }
+                            Button{
+                                text: "MCS2"
+                                onClicked: {
+                                    _synchronizedSettings.change_param_air_only_mcs(2,true)
+                                }
+                                highlighted: m_curr_mcs_index==2
+                            }
+                            Button{
+                                text: "MCS3"
+                                onClicked: {
+                                    _synchronizedSettings.change_param_air_only_mcs(3,true)
+                                }
+                                highlighted: m_curr_mcs_index==3
+                            }
                         }
-                        highlighted: m_curr_mcs_index==1
                     }
-                    Button{
-                        text: "MCS2"
-                        onClicked: {
-                             _synchronizedSettings.change_param_air_only_mcs(2,true)
-                        }
-                        highlighted: m_curr_mcs_index==2
-                    }
-                    Button{
-                        text: "MCS3"
-                        onClicked: {
-                             _synchronizedSettings.change_param_air_only_mcs(3,true)
-                        }
-                        highlighted: m_curr_mcs_index==3
-                    }
-                    /*Button{
-                        text: "MCS4"
-                        onClicked: {
-                             _synchronizedSettings.change_param_air_only_mcs(4,true)
-                        }
-                    }*/
                 }
             }
+            Rectangle{
+                id: areaKeyframe
+                width: parent.width
+                height: parent.height /2;
+                //color: "green"
+                color: "black"
+                ColumnLayout{
+                    width: parent.width
+                    height:  parent.height
+                    spacing: 5
+                    Item {
+                        height: 32
+                        width: parent.width
+                        id: itemDescriptionKeyframe
+                        //anchors.top: itemMcsChoices.bottom
+                        Text {
+                            id: simpleDescriptionKeyframe
+                            text: "Trade Quality/Stability"
+                            color: "white"
+                            font.bold: true
+                            font.pixelSize: detailPanelFontPixels
+                            anchors.left: parent.left
+                        }
+                        Button{
+                            height: 32
+                            width: 32
+                            text: "\uf05a"
+                            anchors.left: simpleDescriptionKeyframe.right
+                            anchors.top: simpleDescriptionKeyframe.top
+                            Material.background:Material.LightBlue
+                            anchors.leftMargin: 5
+                            onClicked: {
+                                _messageBoxInstance.set_text_and_show("
+Make the video more stable (less microfreezes) on the cost of less image quality.
+Internally, this changes the encode keyframe interval and/ or FEC overhead in percent.")
+                            }
+                        }
+                    }
+                    Item{
+                        width: parent.width
+                        height: parent.height -32;
+                        //color: "green"
+                        GridLayout{
+                            width: parent.width
+                            height: parent.height
+                            rows: 2
+                            columns: 2
+                            Button{
+                                text: "POLLUTED"
+                                onClicked: {
+                                    set_keyframe_interval(2)
+                                    set_fec_percentage(30)
+                                }
+                                highlighted:  m_curr_keyframe_i == 2 && m_curr_fec_perc==30
+                            }
+                            Button{
+                                text: "CITY"
+                                onClicked: {
+                                    set_keyframe_interval(3)
+                                    set_fec_percentage(30)
+                                }
+                                highlighted:  m_curr_keyframe_i == 3 && m_curr_fec_perc==30
+                            }
+                            Button{
+                                text: "DEFAULT"
+                                onClicked: {
+                                    set_keyframe_interval(5)
+                                    set_fec_percentage(20)
+                                }
+                                highlighted:  m_curr_keyframe_i == 5 && m_curr_fec_perc==20
+                            }
+                            /*Button{
+                                text: "MISSION"
+                                onClicked: {
+                                    set_keyframe_interval(10)
+                                    set_fec_percentage(10)
+                                }
+                                highlighted:  m_curr_keyframe_i == keyframe && m_curr_fec_perc==fec_p
+                            }*/
+                        }
+                    }
+                }
+            }
+
         }
     }
 
@@ -133,11 +277,12 @@ BaseWidget {
             anchors.centerIn: parent
 
             Text {
+                id: mcsText
                 y: 0
                 width: parent.width
                 height: 14
                 color: settings.color_text
-                text: m_curr_mcs_index==-1 ? "MCS: NA" : "MCS: "+m_curr_mcs_index;
+                text: get_text_mcs()
                 anchors.bottom: parent.bottom
                 anchors.bottomMargin: 0
                 verticalAlignment: Text.AlignBottom
@@ -147,6 +292,24 @@ BaseWidget {
                 style: Text.Outline
                 styleColor: settings.color_glow
             }
+            Text {
+                y: 0
+                width: parent.width
+                height: 14
+                color: settings.color_text
+                text: get_text_fec_keyframe()
+                //anchors.bottom: parent.bottom
+                //anchors.bottomMargin: 0
+                anchors.left: parent.left
+                anchors.top: mcsText.bottom
+                verticalAlignment: Text.AlignBottom
+                horizontalAlignment: Text.AlignHCenter
+                font.pixelSize: 14
+                font.family: settings.font_text
+                style: Text.Outline
+                styleColor: settings.color_glow
+            }
+
         }
     }
 }
