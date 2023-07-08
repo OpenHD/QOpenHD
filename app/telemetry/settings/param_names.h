@@ -13,6 +13,7 @@ static constexpr auto WB_CHANNEL_WIDTH="WB_CHANNEL_W";
 static constexpr auto WB_MCS_INDEX="WB_MCS_INDEX";
 static constexpr auto WB_VIDEO_FEC_BLOCK_LENGTH="WB_V_FEC_BLK_L";
 static constexpr auto WB_VIDEO_FEC_PERCENTAGE="WB_V_FEC_PERC";
+static constexpr auto WB_VIDEO_RATE_FOR_MCS_ADJUSTMENT_PERC="WB_V_RATE_PERC"; //wb_video_rate_for_mcs_adjustment_percent
 static constexpr auto WB_MAX_FEC_BLOCK_SIZE_FOR_PLATFORM="WB_MAX_D_BZ";
 static constexpr auto WB_TX_POWER_MILLI_WATT="TX_POWER_MW";
 // annoying 16 char settings limit

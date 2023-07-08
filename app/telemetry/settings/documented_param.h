@@ -155,6 +155,17 @@ static std::vector<XParam> get_parameters_list(){
     }
     {
         auto default_values=std::vector<ImprovedIntSetting::Item>{
+            {"DEFAULT",100},
+            {"90%",90},
+            {"80%",80},
+            {"70%",70},
+            };
+        append_int(ret,openhd::WB_VIDEO_RATE_FOR_MCS_ADJUSTMENT_PERC,
+                   ImprovedIntSetting(1,500,default_values),
+                   "Reduce used data rate per mcs index by fixed value (not needed in most cases)");
+    }
+    {
+        auto default_values=std::vector<ImprovedIntSetting::Item>{
                 {"10%",10},
                 {"20% (low interf)",20},
                 {"30%",30},
