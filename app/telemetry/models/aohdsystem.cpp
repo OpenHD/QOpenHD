@@ -88,10 +88,22 @@ bool AOHDSystem::process_message(const mavlink_message_t &msg)
             process_x3(parsedMsg);
             return true;
         }break;
+        case MAVLINK_MSG_ID_OPENHD_STATS_WB_VIDEO_AIR_FEC_PERFORMANCE:{
+            mavlink_openhd_stats_wb_video_air_fec_performance_t parsedMsg;
+            mavlink_msg_openhd_stats_wb_video_air_fec_performance_decode(&msg,&parsedMsg);
+            process_x3b(parsedMsg);
+            return true;
+        }break;
         case MAVLINK_MSG_ID_OPENHD_STATS_WB_VIDEO_GROUND:{
             mavlink_openhd_stats_wb_video_ground_t parsedMsg;
             mavlink_msg_openhd_stats_wb_video_ground_decode(&msg,&parsedMsg);
             process_x4(parsedMsg);
+            return true;
+        }break;
+        case MAVLINK_MSG_ID_OPENHD_STATS_WB_VIDEO_GROUND_FEC_PERFORMANCE:{
+            mavlink_openhd_stats_wb_video_ground_fec_performance_t parsedMsg;
+            mavlink_msg_openhd_stats_wb_video_ground_fec_performance_decode(&msg,&parsedMsg);
+            process_x4b(parsedMsg);
             return true;
         }break;
         case MAVLINK_MSG_ID_OPENHD_ONBOARD_COMPUTER_STATUS_EXTENSION:{
