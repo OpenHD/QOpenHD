@@ -34,6 +34,11 @@ BaseWidget {
     widgetDetailWidth:275
     widgetDetailHeight:175
 
+    // Set to true if the camera is currently doing recordng (the UI element(s) turn red in this case)
+    property bool m_camera1_is_currently_recording: false
+    property bool m_camera2_is_currently_recording: false
+
+
     Item {
         id:vars
         property bool ret: false
@@ -205,7 +210,7 @@ BaseWidget {
                 font.family: settings.font_text
                 style: Text.Outline
                 onTextChanged: {
-                if (vars.rec1 ==true || vars.rec2 ==true ) {
+                if (m_camera1_is_currently_recording || m_camera2_is_currently_recording ==true ) {
                     if (_ohdSystemAir.curr_space_left_mb < 500 && _ohdSystemAir.curr_space_left_mb > 200 && _ohdSystemAir.curr_space_left_mb % 10 == 0) {
                         _hudLogMessagesModel.signalAddLogMessage(4,"SD-Card getting full.")
                         }
@@ -238,7 +243,7 @@ BaseWidget {
         Text {
             id:record_status_cam1
             text: "CAM1"
-            color: (vars.rec1 == true) ? "green" : "red"
+            color: (m_camera1_is_currently_recording == true) ? "green" : "red"
             anchors.fill: parent
             anchors.leftMargin: 95*settings.recordTextSize/14
             anchors.topMargin: 5*settings.recordTextSize/12
@@ -254,7 +259,7 @@ BaseWidget {
         Text {
             id:record_status_cam2
             text: "CAM2"
-            color: (vars.rec2 == true) ? "green" : "red"
+            color: (m_camera2_is_currently_recording == true) ? "green" : "red"
             anchors.fill: parent
             anchors.leftMargin: 140*settings.recordTextSize/14
             anchors.topMargin: 5*settings.recordTextSize/12
@@ -295,7 +300,7 @@ BaseWidget {
             styleColor: settings.color_glow
             visible: true
             onTextChanged: {
-                if (vars.rec1 ==true || vars.rec2 ==true ) {
+                if (m_camera1_is_currently_recording ==true || m_camera2_is_currently_recording ==true ) {
                     if (_ohdSystemAir.curr_space_left_mb < 500 && _ohdSystemAir.curr_space_left_mb > 200 && _ohdSystemAir.curr_space_left_mb % 10 == 0) {
                         _hudLogMessagesModel.signalAddLogMessage(4,"SD-Card getting full.")
                     }
@@ -310,7 +315,7 @@ BaseWidget {
             id:record_status_cam1_min
             text: "\uf03d"
             font.family: "Font Awesome 5 Free"
-            color: (vars.rec1 == true) ? "red" : "white"
+            color: (m_camera1_is_currently_recording == true) ? "red" : "white"
             anchors.fill: parent
             anchors.leftMargin: 5*settings.recordTextSize/14
             anchors.topMargin: 5*settings.recordTextSize/12
@@ -326,7 +331,7 @@ BaseWidget {
             id:record_status_cam2_min
             text: "  \uf03d"
             font.family: "Font Awesome 5 Free"
-            color: (vars.rec2 == true) ? "red" : "white"
+            color: (m_camera2_is_currently_recording == true) ? "red" : "white"
             anchors.fill: parent
             anchors.leftMargin: 25*settings.recordTextSize/14
             anchors.topMargin: 5*settings.recordTextSize/12
@@ -354,7 +359,7 @@ BaseWidget {
             styleColor: settings.color_glow
             visible: !settings.show_minimal_record_widget
             onTextChanged: {
-                if (vars.rec1 ==true || vars.rec2 ==true ) {
+                if (m_camera1_is_currently_recording ==true || m_camera2_is_currently_recording ==true ) {
                     if (_ohdSystemAir.curr_space_left_mb < 500 && _ohdSystemAir.curr_space_left_mb > 200 && _ohdSystemAir.curr_space_left_mb % 10 == 0) {
                         _hudLogMessagesModel.signalAddLogMessage(4,"SD-Card getting full.")
                     }
