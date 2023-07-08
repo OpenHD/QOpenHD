@@ -35,8 +35,8 @@ BaseWidget {
     widgetDetailHeight:175
 
     // Set to true if the camera is currently doing recordng (the UI element(s) turn red in this case)
-    property bool m_camera1_is_currently_recording: false
-    property bool m_camera2_is_currently_recording: false
+    property bool m_camera1_is_currently_recording: _cameraStreamModelPrimary.air_recording_active
+    property bool m_camera2_is_currently_recording: _cameraStreamModelSecondary.air_recording_active
 
 
     Item {

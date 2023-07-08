@@ -107,6 +107,7 @@ void CameraStreamModel::update_mavlink_openhd_stats_wb_video_air(const mavlink_o
     }
     set_curr_curr_fec_percentage(msg.curr_fec_percentage);
     set_curr_curr_keyframe_interval(msg.curr_keyframe_interval);
+    set_air_recording_active(msg.recording_active);
 }
 
 void CameraStreamModel::update_mavlink_openhd_stats_wb_video_air_fec_performance(const mavlink_openhd_stats_wb_video_air_fec_performance_t &msg)
