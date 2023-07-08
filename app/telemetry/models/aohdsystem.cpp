@@ -252,6 +252,18 @@ void AOHDSystem::process_x3(const mavlink_openhd_stats_wb_video_air_t &msg){
     }
 }
 
+void AOHDSystem::process_x3b(const mavlink_openhd_stats_wb_video_air_fec_performance_t &msg)
+{
+    if(!_is_air){
+        qDebug()<<"warning got mavlink_openhd_stats_wb_video_air_fec_performance_t from ground";
+        return;
+    }
+    if(msg.link_index==0 || msg.link_index==1){
+        auto& cam=CameraStreamModel::instance(msg.link_index);
+        cam.update_mavlink_openhd_stats_wb_video_air_fec_performance(msg);
+    }
+}
+
 void AOHDSystem::process_x4(const mavlink_openhd_stats_wb_video_ground_t &msg){
     //qDebug()<<"Got mavlink_openhd_stats_wb_video_ground_t";
     if(_is_air){
@@ -261,6 +273,18 @@ void AOHDSystem::process_x4(const mavlink_openhd_stats_wb_video_ground_t &msg){
     if(msg.link_index==0 || msg.link_index==1){
         auto& cam=CameraStreamModel::instance(msg.link_index);
         cam.update_mavlink_openhd_stats_wb_video_ground(msg);
+    }
+}
+
+void AOHDSystem::process_x4b(const mavlink_openhd_stats_wb_video_ground_fec_performance_t &msg)
+{
+    if(_is_air){
+        qDebug()<<"warning got mavlink_openhd_stats_wb_video_ground_fec_performance_ from air";
+        return;
+    }
+    if(msg.link_index==0 || msg.link_index==1){
+        auto& cam=CameraStreamModel::instance(msg.link_index);
+        cam.update_mavlink_openhd_stats_wb_video_ground_fec_performance(msg);
     }
 }
 

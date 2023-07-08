@@ -100,7 +100,9 @@ private:
      void process_x1(const mavlink_openhd_stats_monitor_mode_wifi_link_t& msg);
      void process_x2(const mavlink_openhd_stats_telemetry_t& msg);
      void process_x3(const mavlink_openhd_stats_wb_video_air_t& msg);
+     void process_x3b(const mavlink_openhd_stats_wb_video_air_fec_performance_t& msg);
      void process_x4(const mavlink_openhd_stats_wb_video_ground_t& msg);
+     void process_x4b(const mavlink_openhd_stats_wb_video_ground_fec_performance_t& msg);
 private:
      std::atomic<int32_t> m_last_heartbeat_ms = -1;
      std::atomic<int32_t> m_last_message_ms= -1;

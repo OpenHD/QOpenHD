@@ -126,7 +126,7 @@ void CameraStreamModel::update_mavlink_openhd_stats_wb_video_ground(const mavlin
     set_video0_count_blocks_total(msg.count_blocks_total);
 }
 
-void CameraStreamModel::update_mavlink_openhd_stats_wb_video_groun_fec_performanced(const mavlink_openhd_stats_wb_video_ground_fec_performance_t &msg)
+void CameraStreamModel::update_mavlink_openhd_stats_wb_video_ground_fec_performance(const mavlink_openhd_stats_wb_video_ground_fec_performance_t &msg)
 {
     set_curr_video0_fec_decode_time_avg_min_max(
         Telemetryutil::us_min_max_avg_to_string(msg.curr_fec_decode_time_min_us,msg.curr_fec_decode_time_max_us,msg.curr_fec_decode_time_avg_us));
