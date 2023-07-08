@@ -79,10 +79,6 @@ void CameraStreamModel::update_mavlink_openhd_stats_wb_video_air(const mavlink_o
     set_curr_video_injected_bitrate(Telemetryutil::bitrate_bps_to_qstring(msg.curr_injected_bitrate));
     set_curr_video0_injected_pps(Telemetryutil::pps_to_string(msg.curr_injected_pps));
     set_curr_video0_dropped_packets(msg.curr_dropped_packets);
-    set_curr_video0_fec_encode_time_avg_min_max(
-                Telemetryutil::us_min_max_avg_to_string(msg.curr_fec_encode_time_min_us,msg.curr_fec_encode_time_max_us,msg.curr_fec_encode_time_avg_us));
-    set_curr_video0_fec_block_length_min_max_avg(
-                Telemetryutil::min_max_avg_to_string(msg.curr_fec_block_size_min,msg.curr_fec_block_size_max,msg.curr_fec_block_size_avg));
     if(msg.curr_recommended_bitrate>1 && msg.curr_measured_encoder_bitrate>1 ){ //check for valid measured / set values
         const double recommended_kbits=static_cast<float>(msg.curr_recommended_bitrate);
         // Measured and set encoder bitrate should match on a 20% basis
@@ -109,8 +105,16 @@ void CameraStreamModel::update_mavlink_openhd_stats_wb_video_air(const mavlink_o
            }
         }
     }
-    set_curr_curr_fec_percentage(msg.unused0);
-    set_curr_curr_keyframe_interval(msg.unused1);
+    set_curr_curr_fec_percentage(msg.curr_fec_percentage);
+    set_curr_curr_keyframe_interval(msg.curr_keyframe_interval);
+}
+
+void CameraStreamModel::update_mavlink_openhd_stats_wb_video_air_fec_performance(const mavlink_openhd_stats_wb_video_air_fec_performance_t &msg)
+{
+    set_curr_video0_fec_encode_time_avg_min_max(
+        Telemetryutil::us_min_max_avg_to_string(msg.curr_fec_encode_time_min_us,msg.curr_fec_encode_time_max_us,msg.curr_fec_encode_time_avg_us));
+    set_curr_video0_fec_block_length_min_max_avg(
+        Telemetryutil::min_max_avg_to_string(msg.curr_fec_block_size_min,msg.curr_fec_block_size_max,msg.curr_fec_block_size_avg));
 }
 
 void CameraStreamModel::update_mavlink_openhd_stats_wb_video_ground(const mavlink_openhd_stats_wb_video_ground_t &msg)
@@ -120,8 +124,12 @@ void CameraStreamModel::update_mavlink_openhd_stats_wb_video_ground(const mavlin
     set_video0_count_blocks_recovered(msg.count_blocks_recovered);
     set_video0_count_fragments_recovered(msg.count_fragments_recovered);
     set_video0_count_blocks_total(msg.count_blocks_total);
+}
+
+void CameraStreamModel::update_mavlink_openhd_stats_wb_video_groun_fec_performanced(const mavlink_openhd_stats_wb_video_ground_fec_performance_t &msg)
+{
     set_curr_video0_fec_decode_time_avg_min_max(
-                Telemetryutil::us_min_max_avg_to_string(msg.curr_fec_decode_time_min_us,msg.curr_fec_decode_time_max_us,msg.curr_fec_decode_time_avg_us));
+        Telemetryutil::us_min_max_avg_to_string(msg.curr_fec_decode_time_min_us,msg.curr_fec_decode_time_max_us,msg.curr_fec_decode_time_avg_us));
 }
 
 void CameraStreamModel::set_curr_recommended_bitrate_from_message(const int64_t curr_recommended_bitrate_kbits)

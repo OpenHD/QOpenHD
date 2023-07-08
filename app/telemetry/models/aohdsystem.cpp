@@ -169,9 +169,9 @@ void AOHDSystem::process_x0(const mavlink_openhd_stats_monitor_mode_wifi_card_t 
         }
         auto& card=WiFiCard::instance_air();
         card.set_alive(true);
-        card.set_curr_rx_rssi_dbm(msg.rx_rssi);
+        card.set_curr_rx_rssi_dbm(msg.rx_rssi_1);
         card.set_n_received_packets(msg.count_p_received);
-        set_current_rx_rssi(msg.rx_rssi);
+        set_current_rx_rssi(msg.rx_rssi_1);
     }else{
         if(msg.card_index<0 || msg.card_index>=4){
             qDebug()<<"Gnd invalid card index"<<msg.card_index;
@@ -179,7 +179,7 @@ void AOHDSystem::process_x0(const mavlink_openhd_stats_monitor_mode_wifi_card_t 
         }
         auto& card=WiFiCard::instance_gnd(msg.card_index);
         card.set_alive(true);
-        card.set_curr_rx_rssi_dbm(msg.rx_rssi);
+        card.set_curr_rx_rssi_dbm(msg.rx_rssi_1);
         card.set_n_received_packets(msg.count_p_received);
         card.set_packet_loss_perc(msg.count_p_injected);
         set_current_rx_rssi(WiFiCard::helper_get_gnd_curr_best_rssi());
@@ -196,12 +196,12 @@ void AOHDSystem::process_x1(const mavlink_openhd_stats_monitor_mode_wifi_link_t 
         for(int i=0;i<WiFiCard::N_CARDS;i++){
             WiFiCard::instance_gnd(i).set_is_active_tx(false);
         }
-        const auto active_tx_idx=msg.unused0;
+        const auto active_tx_idx=msg.curr_tx_card_idx;
         if(active_tx_idx>=0 && active_tx_idx<WiFiCard::N_CARDS){
             WiFiCard::instance_gnd(active_tx_idx).set_is_active_tx(true);
         }
     }
-    const int new_mcs_index=msg.unused1;
+    const int new_mcs_index=msg.curr_tx_mcs_index;
     if(valid_mcs_packet_received_at_least_once && new_mcs_index!=m_curr_mcs_index){
         std::stringstream ss;
         ss<<"MCS index changed to "<<new_mcs_index;

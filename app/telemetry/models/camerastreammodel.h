@@ -59,6 +59,9 @@ public:
 public:
     void update_mavlink_openhd_stats_wb_video_air(const mavlink_openhd_stats_wb_video_air_t &msg);
     void update_mavlink_openhd_stats_wb_video_ground(const mavlink_openhd_stats_wb_video_ground_t &msg);
+    //
+    void update_mavlink_openhd_stats_wb_video_air_fec_performance(const mavlink_openhd_stats_wb_video_air_fec_performance_t &msg);
+    void update_mavlink_openhd_stats_wb_video_groun_fec_performanced(const mavlink_openhd_stats_wb_video_ground_fec_performance_t &msg);
     // Calls the appropriate member setter(s)
     void set_curr_recommended_bitrate_from_message(int64_t curr_recommended_bitrate_kbits);
 private:
