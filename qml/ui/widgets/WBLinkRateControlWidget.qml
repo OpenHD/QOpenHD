@@ -14,8 +14,8 @@ import "../elements"
 BaseWidget {
 
     id: wblinkratewidget
-    width: 96
-    height: 25
+    width: 90
+    height: 40
 
     visible: settings.wb_link_rate_control_widget_show
 
@@ -283,7 +283,7 @@ Internally, this changes the encode keyframe interval and/ or FEC overhead in pe
                 height: 14
                 color: settings.color_text
                 text: get_text_mcs()
-                anchors.bottom: parent.bottom
+                anchors.top: parent.top
                 anchors.bottomMargin: 0
                 verticalAlignment: Text.AlignBottom
                 horizontalAlignment: Text.AlignHCenter
