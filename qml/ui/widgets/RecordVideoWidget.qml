@@ -59,7 +59,7 @@ BaseWidget {
             camString="CAM2"
         }
         if(mode===0){ //mode off
-            var result=_airCameraSettingsModel.try_update_parameter_int("V_AIR_RECORDING",0)===""
+            var result=camModel.try_update_parameter_int("V_AIR_RECORDING",0)===""
             if(result){
                 _hudLogMessagesModel.signalAddLogMessage(6,"recording "+camString+" disabled")
                 set_recording_mode_for_camera(camera_idx,0)
@@ -68,7 +68,7 @@ BaseWidget {
             }
         }
         if(mode===1){ //mode on
-            var result=_airCameraSettingsModel.try_update_parameter_int("V_AIR_RECORDING",1)===""
+            var result=camModel.try_update_parameter_int("V_AIR_RECORDING",1)===""
             if(result){
                 _hudLogMessagesModel.signalAddLogMessage(6,"recording "+camString+" enabled")
                 set_recording_mode_for_camera(camera_idx,1)
@@ -77,7 +77,7 @@ BaseWidget {
             }
         }
         if(mode==2){ //mode auto
-            var result=_airCameraSettingsModel.try_update_parameter_int("V_AIR_RECORDING",2)===""
+            var result=camModel.try_update_parameter_int("V_AIR_RECORDING",2)===""
             if(result){
                 _hudLogMessagesModel.signalAddLogMessage(6,"recording "+camString+" auto enabled")
                 set_recording_mode_for_camera(camera_idx,2)
