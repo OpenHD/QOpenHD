@@ -29,8 +29,8 @@ BaseWidget {
 
     hasWidgetDetail: true
     hasWidgetAction: true
-    widgetActionWidth: 150
-    widgetActionHeight: (settings.dev_qopenhd_n_cameras > 1) ? 200 : 115
+    widgetActionWidth: 250
+    widgetActionHeight: (settings.dev_qopenhd_n_cameras > 1) ? 220 : 130
     widgetDetailWidth:275
     widgetDetailHeight:175
 
@@ -38,15 +38,13 @@ BaseWidget {
     property bool m_camera1_is_currently_recording: _cameraStreamModelPrimary.air_recording_active
     property bool m_camera2_is_currently_recording: _cameraStreamModelSecondary.air_recording_active
 
+    // THIS IS A MAVLINK PARAM, SYNCHRONIZATION THEREFORE IS HARD AND HERE NOT WORTH IT
+    property int m_camera1_recording_mode: -1
+    property int m_camera2_recording_mode: -1
 
-    Item {
-        id:vars
-        property bool ret: false
-        property bool rec1: false
-        property bool rec2: false
-        property bool ret1: false
-        property bool ret2: false
-
+    function set_recording_mode_for_camera(cam_idx,mode){
+        if(cam_idx===1)m_camera1_recording_mode=mode
+        m_camera2_recording_mode=mode
     }
 
     function try_set_recording_mode(camera_idx,mode){
@@ -54,26 +52,29 @@ BaseWidget {
         if(camera_idx===2){
             camModel=_airCameraSettingsModel2;
         }
-        if(mode===0){
+        if(mode===0){ //mode off
             var result=_airCameraSettingsModel.try_update_parameter_int("V_AIR_RECORDING",0)===""
             if(result){
                 _hudLogMessagesModel.signalAddLogMessage(6,"recording camX disabled")
+                set_recording_mode_for_camera(camera_idx,0)
             }else{
                  _hudLogMessagesModel.signalAddLogMessage(6,"update failed")
             }
         }
-        if(mode===1){
+        if(mode===1){ //mode on
             var result=_airCameraSettingsModel.try_update_parameter_int("V_AIR_RECORDING",1)===""
             if(result){
                 _hudLogMessagesModel.signalAddLogMessage(6,"recording camX enabled")
+                set_recording_mode_for_camera(camera_idx,1)
             }else{
                  _hudLogMessagesModel.signalAddLogMessage(6,"update failed")
             }
         }
-        if(mode==2){
+        if(mode==2){ //mode auto
             var result=_airCameraSettingsModel.try_update_parameter_int("V_AIR_RECORDING",2)===""
             if(result){
                 _hudLogMessagesModel.signalAddLogMessage(6,"recording camX auto enabled")
+                set_recording_mode_for_camera(camera_idx,2)
             }else{
                  _hudLogMessagesModel.signalAddLogMessage(6,"update failed")
             }
@@ -132,15 +133,35 @@ BaseWidget {
         }
     }
 
-    widgetActionComponent: ScrollView{
+    widgetActionComponent: Item{
 
-        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
-        clip: true
-
+        //color:"red"
+        width: parent.width-30
+        height: parent.height
 
         ColumnLayout{
             id:recID
-            width: 400
+            width: parent.width
+            height: parent.height
+            //
+            Text {
+                visible:true
+                id:airVideoSpaceLeft_minimal
+                text: _ohdSystemAir.curr_space_left_mb+" MB"
+                color: (_ohdSystemAir.curr_space_left_mb < 500) ? "red" : "green"
+                elide: Text.ElideNone
+                wrapMode: Text.NoWrap
+                font.pixelSize: settings.recordTextSize
+                font.family: settings.font_text
+                style: Text.Outline
+                onTextChanged: {
+                    if (m_camera1_is_currently_recording || m_camera2_is_currently_recording ==true ) {
+                        if (_ohdSystemAir.curr_space_left_mb < 500 && _ohdSystemAir.curr_space_left_mb > 200 && _ohdSystemAir.curr_space_left_mb % 10 == 0) {
+                            _hudLogMessagesModel.signalAddLogMessage(4,"SD-Card getting full.")
+                        }
+                    }
+                }
+            }
             Text {
                 text: qsTr("Record Camera 1");
                 color: settings.color_text
@@ -153,69 +174,38 @@ BaseWidget {
                 styleColor: settings.color_glow
                 visible: true
             }
-            RowLayout{
-                width: 400
-                height: 30
-                //rows: 2
-                //columns: 4
-                Button{
-                    text: "OFF"
-                    width: parent.width/3
-                    onClicked: {
-                        try_set_recording_mode(1,0)
+            Rectangle{
+                width: parent.width
+                height: 50
+                color:"green"
+                GridLayout{
+                    width: parent.width
+                    height: parent.height
+                    rows: 1
+                    columns: 3
+                    Button{
+                        text: "OFF"
+                        onClicked: {
+                            try_set_recording_mode(1,0)
+                        }
+                        highlighted: m_camera1_recording_mode==0
                     }
-                    //highlighted: m_curr_mcs_index==0
-                }
-                Button{
-                    text: "ON"
-                    width: parent.width/3
-                    onClicked: {
-                        try_set_recording_mode(1,1)
+                    Button{
+                        text: "ON"
+                        onClicked: {
+                            try_set_recording_mode(1,1)
+                        }
+                        highlighted: m_camera1_recording_mode==1
                     }
-                    //highlighted: m_curr_mcs_index==1
-                }
-                Button{
-                    text: "AUTO"
-                    width: parent.width/3
-                    onClicked: {
-                        try_set_recording_mode(1,2)
+                    Button{
+                        text: "AUTO"
+                        onClicked: {
+                            try_set_recording_mode(1,2)
+                        }
+                        highlighted: m_camera1_recording_mode==2
                     }
-                    //highlighted: m_curr_mcs_index==2
                 }
             }
-
-            /*Switch {
-                id: switch_rec1
-                width: 32
-                height: 32
-                checked: vars.rec1
-                onToggled:{
-                    if (checked) {
-                        vars.ret=(_airCameraSettingsModel.try_update_parameter_int("V_AIR_RECORDING",1)==="")
-                        if (vars.ret==true){
-                            vars.rec1=true
-                            vars.ret=false
-                            _hudLogMessagesModel.signalAddLogMessage(6,"recording cam1 started")
-                        }
-                        else {
-                            _hudLogMessagesModel.signalAddLogMessage(4,"couldn't start recording cam1")
-                            switch_rec1.checked=false
-                        }
-                    }
-                    else{
-                        vars.ret=(_airCameraSettingsModel.try_update_parameter_int("V_AIR_RECORDING",0)==="")
-                        if (vars.ret==true){
-                            vars.rec1=false
-                            vars.ret=false
-                            _hudLogMessagesModel.signalAddLogMessage(6,"recording cam1 stopped")
-                        }
-                        else {
-                            _hudLogMessagesModel.signalAddLogMessage(4,"couldn't stop recording cam1")
-                            switch_rec1.checked=true
-                        }
-                    }
-                }
-            }*/
             Text {
                 text: qsTr("Record Camera 2");
                 color: settings.color_text
@@ -226,61 +216,43 @@ BaseWidget {
                 font.family: settings.font_text
                 style: Text.Outline
                 styleColor: settings.color_glow
-                visible: settings.dev_qopenhd_n_cameras > 1                            }
-            Switch {
-                id:switch_rec2
-                width: 32
-                height: 32
                 visible: settings.dev_qopenhd_n_cameras > 1
-                checked: vars.rec2
-                onToggled:{
-                    if (checked) {
-                        vars.ret=(_airCameraSettingsModel2.try_update_parameter_int("V_AIR_RECORDING",1)==="")
-                        if (vars.ret==true){
-                            vars.rec2=true
-                            vars.ret=false
-                            _hudLogMessagesModel.signalAddLogMessage(6,"recording cam2 started")
+            }
+            Rectangle{
+                width: parent.width
+                height: 50
+                color:"green"
+                visible: settings.dev_qopenhd_n_cameras > 1
+                GridLayout{
+                    width: parent.width
+                    height: parent.height
+                    rows: 1
+                    columns: 3
+                    Button{
+                        text: "OFF"
+                        onClicked: {
+                            try_set_recording_mode(2,0)
                         }
-                        else {
-                            _hudLogMessagesModel.signalAddLogMessage(4,"couldn't start recording cam2")
-                            switch_rec2.checked=false
-                        }
+                        highlighted: m_camera2_recording_mode==0
                     }
-                    else{
-                        vars.ret=(_airCameraSettingsModel2.try_update_parameter_int("V_AIR_RECORDING",0)==="")
-                        if (vars.ret==true){
-                            vars.rec2=false
-                            vars.ret=false
-                            _hudLogMessagesModel.signalAddLogMessage(6,"recording cam2 stopped")
+                    Button{
+                        text: "ON"
+                        onClicked: {
+                            try_set_recording_mode(2,1)
                         }
-                        else {
-                            _hudLogMessagesModel.signalAddLogMessage(4,"couldn't stop recording cam2")
-                            switch_rec2.checked=true
+                        highlighted: m_camera2_recording_mode==1
+                    }
+                    Button{
+                        text: "AUTO"
+                        onClicked: {
+                            try_set_recording_mode(2,2)
                         }
+                        highlighted: m_camera2_recording_mode==2
                     }
                 }
-
             }
-            Text {
-                visible:true
-                id:airVideoSpaceLeft_minimal
-                text: _ohdSystemAir.curr_space_left_mb+" MB"
-                color: (_ohdSystemAir.curr_space_left_mb < 500) ? "red" : "green"
-                elide: Text.ElideNone
-                wrapMode: Text.NoWrap
-                font.pixelSize: settings.recordTextSize
-                font.family: settings.font_text
-                style: Text.Outline
-                onTextChanged: {
-                if (m_camera1_is_currently_recording || m_camera2_is_currently_recording ==true ) {
-                    if (_ohdSystemAir.curr_space_left_mb < 500 && _ohdSystemAir.curr_space_left_mb > 200 && _ohdSystemAir.curr_space_left_mb % 10 == 0) {
-                        _hudLogMessagesModel.signalAddLogMessage(4,"SD-Card getting full.")
-                        }
-                }
-            }
-          }
         }
-       }
+    }
 
 
     Item {
@@ -427,6 +399,6 @@ BaseWidget {
                     }
                 }
             }
-        }       }
-
+        }
+    }
 }
