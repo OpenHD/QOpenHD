@@ -25,6 +25,9 @@ BaseWidget {
     hasWidgetDetail: true
     hasWidgetAction: true
 
+    // If openhd feature passive mode is enabled, show watermark instead
+    property bool m_passive_mode: _ohdSystemGround.tx_passive_mode
+
     widgetDetailComponent: ScrollView {
 
         contentHeight: idBaseWidgetDefaultUiControlElements.height
@@ -153,7 +156,7 @@ BaseWidget {
             spacing:0
             Text {
                 visible: true
-                text: "Loss: " + _ohdSystemAir.curr_rx_packet_loss_perc+"%"
+                text: m_passive_mode ? "LISTEN ONLY" : ("Loss: " + _ohdSystemAir.curr_rx_packet_loss_perc+"%")
                 color: settings.color_text
                 verticalAlignment: Text.AlignVCenter
                 font.pixelSize: 12

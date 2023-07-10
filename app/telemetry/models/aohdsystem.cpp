@@ -214,6 +214,7 @@ void AOHDSystem::process_x1(const mavlink_openhd_stats_monitor_mode_wifi_link_t 
         if(active_tx_idx>=0 && active_tx_idx<WiFiCard::N_CARDS){
             WiFiCard::instance_gnd(active_tx_idx).set_is_active_tx(true);
         }
+        set_tx_passive_mode(msg.dummy0==1);
     }
     const int new_mcs_index=msg.curr_tx_mcs_index;
     if(valid_mcs_packet_received_at_least_once && new_mcs_index!=m_curr_mcs_index){

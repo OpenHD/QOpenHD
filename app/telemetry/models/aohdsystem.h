@@ -90,6 +90,8 @@ public: // public for QT
     // simlar for channel / channel width
     L_RO_PROP(int,curr_channel_mhz,set_curr_channel_mhz,-1)
     L_RO_PROP(int,curr_channel_width_mhz,set_curr_channel_width_mhz,-1);
+    // We show a watermark if passive mode is enabled
+    L_RO_PROP(bool,tx_passive_mode,set_tx_passive_mode,false)
 private:
      const bool _is_air; // either true (for air) or false (for ground)
      uint8_t get_own_sys_id()const{
