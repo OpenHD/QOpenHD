@@ -223,6 +223,7 @@ void AOHDSystem::process_x1(const mavlink_openhd_stats_monitor_mode_wifi_link_t 
     }
     set_curr_mcs_index(new_mcs_index);
     valid_mcs_packet_received_at_least_once=true;
+    //set_curr_channel_mhz(msg.curr)
 }
 
 void AOHDSystem::process_x2(const mavlink_openhd_stats_telemetry_t &msg)
