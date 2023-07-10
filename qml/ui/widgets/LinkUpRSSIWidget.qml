@@ -14,7 +14,7 @@ BaseWidget {
     visible: settings.show_uplink_rssi
 
     widgetIdentifier: "uplink_rssi_widget"
-    bw_verbose_name: "UPLINK RSSI"
+    bw_verbose_name: "UPLINK/AIR RSSI"
 
     defaultAlignment: 1
     defaultXOffset: 0

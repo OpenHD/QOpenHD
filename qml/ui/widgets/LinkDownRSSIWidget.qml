@@ -19,7 +19,7 @@ BaseWidget {
     visible: settings.show_downlink_rssi
 
     widgetIdentifier: "downlink_rssi_widget"
-    bw_verbose_name: "DOWNLINK RSSI"
+    bw_verbose_name: "DOWNLINK/GND RSSI"
 
     defaultAlignment: 0
     defaultXOffset: 80

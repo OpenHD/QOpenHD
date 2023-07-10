@@ -25,6 +25,43 @@ BaseWidget {
     hasWidgetDetail: true
     hasWidgetAction: true
 
+    // Hides the stuff before decimal, aka returns
+    // X.1234...
+    function hide_before_decimals(number){
+        /*var truncated = number|0;
+        var decimals=number-truncated
+        const decimals_as_str=Number(decimals).toLocaleString(Qt.locale(), 'f', 6)
+        return "X."+decimals_as_str.slice(2)*/
+        var text=Number(number).toLocaleString(Qt.locale(), 'f', 6)
+        const myArray = text.split(".");
+        let before_decimal = myArray[0];
+        var hidden=""
+        for (let i = 0; i < before_decimal.length; i++) {
+            hidden=hidden+"-"
+        }
+        hidden+="."
+        let after_decimal = myArray[1];
+        //return before_decimal+"."+after_decimal
+        return hidden+after_decimal
+    }
+
+    // garbles the first decimals if wanted
+    function get_latitude(){
+        var number=_fcMavlinkSystem.lat
+        if(settings.gps_garble_lat_lon_first_decimals){
+            return hide_before_decimals(number)
+        }
+        return Number(number).toLocaleString(Qt.locale(), 'f', 6)
+    }
+    function get_longitude(){
+        var number=_fcMavlinkSystem.lon
+        if(settings.gps_garble_lat_lon_first_decimals){
+            return hide_before_decimals(number)
+        }
+        return Number(number).toLocaleString(Qt.locale(), 'f', 6)
+    }
+
+
     //----------------------------- DETAIL BELOW ----------------------------------
     widgetDetailComponent: ScrollView {
 
@@ -53,6 +90,27 @@ BaseWidget {
                     anchors.right: parent.right
                     checked: settings.gps_show_all
                     onCheckedChanged: settings.gps_show_all = checked
+                }
+            }
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("Hide identity")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 6
+                    anchors.right: parent.right
+                    checked: settings.gps_show_all
+                    onCheckedChanged: settings.gps_garble_lat_lon_first_decimals = checked
                 }
             }
             Item {
@@ -180,7 +238,7 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Text {
-                    text: Number(_fcMavlinkSystem.lat).toLocaleString(Qt.locale(), 'f', 6)
+                    text: get_latitude()
                     color: "white"
                     font.bold: true
                     height: parent.height
@@ -202,7 +260,7 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Text {
-                    text: Number(_fcMavlinkSystem.lon).toLocaleString(Qt.locale(), 'f', 6)
+                    text: get_longitude()
                     color: "white"
                     font.bold: true
                     height: parent.height
@@ -425,7 +483,7 @@ BaseWidget {
                 Text {
                     id: lat_onscreen
                     visible: settings.gps_show_all
-                    text: Number(_fcMavlinkSystem.lat).toLocaleString(Qt.locale(), 'f', 6)
+                    text: get_latitude()
                     color: settings.color_text
                     opacity: bw_current_opacity
                     font.bold: true
@@ -462,7 +520,7 @@ BaseWidget {
                 Text {
                     id: lon_onscreen
                     visible: settings.gps_show_all
-                    text: Number(_fcMavlinkSystem.lon).toLocaleString(Qt.locale(), 'f', 6)
+                    text: get_longitude()
                     color: settings.color_text
                     opacity: bw_current_opacity
                     font.bold: true

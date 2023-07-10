@@ -49,6 +49,37 @@ BaseWidget {
 
     }
 
+    function try_set_recording_mode(camera_idx,mode){
+        var camModel=_airCameraSettingsModel;
+        if(camera_idx===2){
+            camModel=_airCameraSettingsModel2;
+        }
+        if(mode===0){
+            var result=_airCameraSettingsModel.try_update_parameter_int("V_AIR_RECORDING",0)===""
+            if(result){
+                _hudLogMessagesModel.signalAddLogMessage(6,"recording camX disabled")
+            }else{
+                 _hudLogMessagesModel.signalAddLogMessage(6,"update failed")
+            }
+        }
+        if(mode===1){
+            var result=_airCameraSettingsModel.try_update_parameter_int("V_AIR_RECORDING",1)===""
+            if(result){
+                _hudLogMessagesModel.signalAddLogMessage(6,"recording camX enabled")
+            }else{
+                 _hudLogMessagesModel.signalAddLogMessage(6,"update failed")
+            }
+        }
+        if(mode==2){
+            var result=_airCameraSettingsModel.try_update_parameter_int("V_AIR_RECORDING",2)===""
+            if(result){
+                _hudLogMessagesModel.signalAddLogMessage(6,"recording camX auto enabled")
+            }else{
+                 _hudLogMessagesModel.signalAddLogMessage(6,"update failed")
+            }
+        }
+    }
+
     widgetDetailComponent: ScrollView {
 
         contentHeight: idBaseWidgetDefaultUiControlElements.height
@@ -122,7 +153,38 @@ BaseWidget {
                 styleColor: settings.color_glow
                 visible: true
             }
-            Switch {
+            RowLayout{
+                width: 400
+                height: 30
+                //rows: 2
+                //columns: 4
+                Button{
+                    text: "OFF"
+                    width: parent.width/3
+                    onClicked: {
+                        try_set_recording_mode(1,0)
+                    }
+                    //highlighted: m_curr_mcs_index==0
+                }
+                Button{
+                    text: "ON"
+                    width: parent.width/3
+                    onClicked: {
+                        try_set_recording_mode(1,1)
+                    }
+                    //highlighted: m_curr_mcs_index==1
+                }
+                Button{
+                    text: "AUTO"
+                    width: parent.width/3
+                    onClicked: {
+                        try_set_recording_mode(1,2)
+                    }
+                    //highlighted: m_curr_mcs_index==2
+                }
+            }
+
+            /*Switch {
                 id: switch_rec1
                 width: 32
                 height: 32
@@ -153,7 +215,7 @@ BaseWidget {
                         }
                     }
                 }
-            }
+            }*/
             Text {
                 text: qsTr("Record Camera 2");
                 color: settings.color_text
