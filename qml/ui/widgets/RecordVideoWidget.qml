@@ -30,7 +30,7 @@ BaseWidget {
     hasWidgetDetail: true
     hasWidgetAction: true
     widgetActionWidth: 250
-    widgetActionHeight: (settings.dev_qopenhd_n_cameras > 1) ? 220 : 130
+    widgetActionHeight: (settings.dev_qopenhd_n_cameras > 1) ? 230 : 130
     widgetDetailWidth:275
     widgetDetailHeight:175
 
@@ -53,34 +53,36 @@ BaseWidget {
     function try_set_recording_mode(camera_idx,mode){
         console.log("try_set_recording_mode "+camera_idx+" "+mode)
         var camModel=_airCameraSettingsModel;
+        var camString="CAM1"
         if(camera_idx===2){
             camModel=_airCameraSettingsModel2;
+            camString="CAM2"
         }
         if(mode===0){ //mode off
             var result=_airCameraSettingsModel.try_update_parameter_int("V_AIR_RECORDING",0)===""
             if(result){
-                _hudLogMessagesModel.signalAddLogMessage(6,"recording camX disabled")
+                _hudLogMessagesModel.signalAddLogMessage(6,"recording "+camString+" disabled")
                 set_recording_mode_for_camera(camera_idx,0)
             }else{
-                 _hudLogMessagesModel.signalAddLogMessage(6,"update failed")
+                 _hudLogMessagesModel.signalAddLogMessage(6,"update "+camString+" failed")
             }
         }
         if(mode===1){ //mode on
             var result=_airCameraSettingsModel.try_update_parameter_int("V_AIR_RECORDING",1)===""
             if(result){
-                _hudLogMessagesModel.signalAddLogMessage(6,"recording camX enabled")
+                _hudLogMessagesModel.signalAddLogMessage(6,"recording "+camString+" enabled")
                 set_recording_mode_for_camera(camera_idx,1)
             }else{
-                 _hudLogMessagesModel.signalAddLogMessage(6,"update failed")
+                 _hudLogMessagesModel.signalAddLogMessage(6,"update "+camString+" failed")
             }
         }
         if(mode==2){ //mode auto
             var result=_airCameraSettingsModel.try_update_parameter_int("V_AIR_RECORDING",2)===""
             if(result){
-                _hudLogMessagesModel.signalAddLogMessage(6,"recording camX auto enabled")
+                _hudLogMessagesModel.signalAddLogMessage(6,"recording "+camString+" auto enabled")
                 set_recording_mode_for_camera(camera_idx,2)
             }else{
-                 _hudLogMessagesModel.signalAddLogMessage(6,"update failed")
+                 _hudLogMessagesModel.signalAddLogMessage(6,"update "+camString+" failed")
             }
         }
     }
@@ -151,7 +153,7 @@ BaseWidget {
             Text {
                 visible:true
                 id:airVideoSpaceLeft_minimal
-                text: _ohdSystemAir.curr_space_left_mb+" MB"
+                text: "Free: "+_ohdSystemAir.curr_space_left_mb+" MB"
                 color: (_ohdSystemAir.curr_space_left_mb < 500) ? "red" : "green"
                 elide: Text.ElideNone
                 wrapMode: Text.NoWrap
@@ -225,7 +227,7 @@ BaseWidget {
             Rectangle{
                 width: parent.width
                 height: 50
-                color:"green"
+                //color:"green"
                 visible: settings.dev_qopenhd_n_cameras > 1
                 GridLayout{
                     width: parent.width
