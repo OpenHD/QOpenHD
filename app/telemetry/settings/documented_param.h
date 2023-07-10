@@ -91,6 +91,11 @@ static std::vector<XParam> get_parameters_list(){
                "!! Advanced users only !!. This param is not automatically synchronized between air/ground. A short guard intervall increases throughput, "
                "but increases packet collisions."
     );
+    append_int(ret,openhd::WB_PASSIVE_MODE,
+               ImprovedIntSetting::createEnumEnableDisable(),
+               "Enable passive mode if you want to use your GCS as a passive listener to an existing openhd air-ground link. E.g. if you want to tune into"
+               "someone elses openhd link (if encryption is enabled, you need his encryption key) but not interfere with any RC/MAVLINK control."
+               );
 
     {
         // Measurements of @Marcel Essers:
