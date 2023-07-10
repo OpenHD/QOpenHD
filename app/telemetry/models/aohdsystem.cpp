@@ -180,10 +180,7 @@ void AOHDSystem::process_x0(const mavlink_openhd_stats_monitor_mode_wifi_card_t 
             return;
         }
         auto& card=WiFiCard::instance_air();
-        card.set_alive(true);
-        card.set_curr_rx_rssi_dbm(msg.rx_rssi_1);
-        card.set_n_received_packets(msg.count_p_received);
-        card.set_packet_loss_perc(msg.curr_rx_packet_loss_perc);
+        card.process_mavlink(msg);
         set_current_rx_rssi(msg.rx_rssi_1);
     }else{
         if(msg.card_index<0 || msg.card_index>=4){
@@ -191,12 +188,8 @@ void AOHDSystem::process_x0(const mavlink_openhd_stats_monitor_mode_wifi_card_t 
             return;
         }
         auto& card=WiFiCard::instance_gnd(msg.card_index);
-        card.set_alive(true);
-        card.set_curr_rx_rssi_dbm(msg.rx_rssi_1);
-        card.set_n_received_packets(msg.count_p_received);
-        card.set_packet_loss_perc(msg.count_p_injected);
+        card.process_mavlink(msg);
         set_current_rx_rssi(WiFiCard::helper_get_gnd_curr_best_rssi());
-        card.set_packet_loss_perc(msg.curr_rx_packet_loss_perc);
     }
 }
 

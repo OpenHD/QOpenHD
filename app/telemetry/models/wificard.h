@@ -4,6 +4,8 @@
 #include <qobject.h>
 #include "../../../lib/lqtutils_master/lqtutils_prop.h"
 
+#include "../mavsdk_include.h"
+
 // Stats unique per each connected (wifibroadcast) wfi card
 // Air has only one card, ground can have one or more card(s)
 class WiFiCard : public QObject
@@ -22,7 +24,11 @@ public:
     // air always has only one rx
     static WiFiCard& instance_air();
     //
+    void process_mavlink(const mavlink_openhd_stats_monitor_mode_wifi_card_t &msg);
+
     static int helper_get_gnd_curr_best_rssi();
+
+
 };
 
 #endif // WIFICARD_H
