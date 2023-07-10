@@ -14,8 +14,24 @@ BaseWidget {
     //    width: 140*settings.recordTextSize/14
     //    height: 48
 
-    width:      settings.record_widget_width*settings.recordTextSize/12
-    height:     settings.record_widget_height
+    function get_width(){
+        if(settings.show_minimal_record_widget){
+            if(settings.dev_qopenhd_n_cameras>1){
+                return 35*2;
+            }
+            return 35;
+        }
+        return 150;
+    }
+    function get_height(){
+        if(settings.show_minimal_record_widget){
+            return 25;
+        }
+        return 48;
+    }
+
+    width:      get_width()
+    height:     get_height()
     visible:    settings.show_record_widget
 
     widgetIdentifier: "record_video_widget"
@@ -113,16 +129,13 @@ BaseWidget {
                     anchors.rightMargin: 0
                     anchors.right: parent.right
                     width: parent.width - 96
+                    checked: settings.show_minimal_record_widget
                     onCheckedChanged:{
                         if (checked) {
                             settings.show_minimal_record_widget = true
-                            settings.record_widget_height= 25
-                            settings.record_widget_width= 35
                         }
                         else{
                             settings.show_minimal_record_widget = false
-                            settings.record_widget_height= 48
-                            settings.record_widget_width= 140
                         }
 
                     }
@@ -180,10 +193,10 @@ BaseWidget {
                 styleColor: settings.color_glow
                 visible: true
             }
-            Rectangle{
+            Item{
                 width: parent.width
                 height: 50
-                color:"green"
+                //color:"green"
                 GridLayout{
                     width: parent.width
                     height: parent.height
@@ -224,7 +237,7 @@ BaseWidget {
                 styleColor: settings.color_glow
                 visible: settings.dev_qopenhd_n_cameras > 1
             }
-            Rectangle{
+            Item{
                 width: parent.width
                 height: 50
                 //color:"green"

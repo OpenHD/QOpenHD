@@ -296,8 +296,6 @@ Settings {
     property bool show_record_widget: true
     property double recordTextSize: 14
     property bool show_minimal_record_widget: true
-    property double record_widget_height: 48
-    property double record_widget_width: 140
 
     // The user can controll the width and height the secondary video has when in minimized state
     // (By that he also controlls the ratio).
