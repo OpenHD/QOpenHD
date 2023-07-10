@@ -85,14 +85,19 @@ BaseWidget {
     function set_keyframe_interval(interval){
         var success=_airCameraSettingsModel.set_param_keyframe_interval(interval)
         if(success!==true){
+             _hudLogMessagesModel.signalAddLogMessage(6,"cannot set cam1 keyframe interval")
             return;
         }
         if(settings.dev_qopenhd_n_cameras==2){
             _airCameraSettingsModel2.set_param_keyframe_interval(interval)
+             _hudLogMessagesModel.signalAddLogMessage(6,"cannot set cam2 keyframe interval")
         }
     }
     function set_fec_percentage(percentage){
         var success=_airPiSettingsModel.set_param_fec_percentage(percentage)
+        if(success!==true){
+             _hudLogMessagesModel.signalAddLogMessage(6,"cannot set fec percentage")
+        }
     }
 
 
