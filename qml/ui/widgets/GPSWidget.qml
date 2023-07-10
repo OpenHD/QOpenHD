@@ -109,7 +109,7 @@ BaseWidget {
                     height: parent.height
                     anchors.rightMargin: 6
                     anchors.right: parent.right
-                    checked: settings.gps_show_all
+                    checked: settings.gps_garble_lat_lon_first_decimals
                     onCheckedChanged: settings.gps_garble_lat_lon_first_decimals = checked
                 }
             }
