@@ -43,11 +43,15 @@ BaseWidget {
     property int m_camera2_recording_mode: -1
 
     function set_recording_mode_for_camera(cam_idx,mode){
-        if(cam_idx===1)m_camera1_recording_mode=mode
-        m_camera2_recording_mode=mode
+        if(cam_idx===1){
+            m_camera1_recording_mode=mode
+        }else{
+            m_camera2_recording_mode=mode
+        }
     }
 
     function try_set_recording_mode(camera_idx,mode){
+        console.log("try_set_recording_mode "+camera_idx+" "+mode)
         var camModel=_airCameraSettingsModel;
         if(camera_idx===2){
             camModel=_airCameraSettingsModel2;
