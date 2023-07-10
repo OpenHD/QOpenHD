@@ -42,6 +42,26 @@ BaseWidget {
     property int m_curr_fec_perc: _cameraStreamModelPrimary.curr_fec_percentage
     property int m_curr_keyframe_i: _cameraStreamModelPrimary.curr_keyframe_interval
 
+
+    function get_text_channel(){
+        if(!settings.wb_link_rate_control_widget_show_frequency){
+            return "";
+        }
+        var ret="";
+        var curr_channel_mhz = _ohdSystemGround.curr_channel_mhz;
+        if(curr_channel_mhz>10){
+            ret+=curr_channel_mhz;
+        }else{
+            ret+="N/A";
+        }
+        if(_ohdSystemGround.curr_channel_width_mhz==40){
+            ret+= "+";
+        }
+        //ret+=" Mhz";
+        return ret;
+    }
+
+
     function get_text_mcs(){
         return m_curr_mcs_index==-1 ? "MCS: NA" : "MCS: "+m_curr_mcs_index;
     }
@@ -84,6 +104,28 @@ BaseWidget {
 
         BaseWidgetDefaultUiControlElements{
             id: idBaseWidgetDefaultUiControlElements
+
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("Show frequency")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels;
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 6
+                    anchors.right: parent.right
+                    checked: settings.wb_link_rate_control_widget_show_frequency
+                    onCheckedChanged: settings.wb_link_rate_control_widget_show_frequency = checked
+                }
+            }
         }
     }
 
@@ -277,13 +319,30 @@ Internally, this changes the encode keyframe interval and/ or FEC overhead in pe
             anchors.centerIn: parent
 
             Text {
+                id: channelText
+                y: 0
+                width: parent.width
+                height: parent.height / 3
+                color: settings.color_text
+                text: get_text_channel()
+                anchors.top: parent.top
+                anchors.bottomMargin: 0
+                verticalAlignment: Text.AlignBottom
+                horizontalAlignment: Text.AlignHCenter
+                font.pixelSize: 14
+                font.family: settings.font_text
+                style: Text.Outline
+                styleColor: settings.color_glow
+            }
+
+            Text {
                 id: mcsText
                 y: 0
                 width: parent.width
                 height: 14
                 color: settings.color_text
                 text: get_text_mcs()
-                anchors.top: parent.top
+                anchors.top: channelText.bottom
                 anchors.bottomMargin: 0
                 verticalAlignment: Text.AlignBottom
                 horizontalAlignment: Text.AlignHCenter

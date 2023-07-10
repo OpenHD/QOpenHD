@@ -87,6 +87,9 @@ public: // public for QT
     L_RO_PROP(int,curr_mcs_index,set_curr_mcs_index,-1)
     // for creating a message in the HUD every time MCS changes
     bool valid_mcs_packet_received_at_least_once=false;
+    // simlar for channel / channel width
+    L_RO_PROP(int,curr_channel_mhz,set_curr_channel_mhz,-1)
+    L_RO_PROP(int,curr_channel_width_mhz,set_curr_channel_width_mhz,-1);
 private:
      const bool _is_air; // either true (for air) or false (for ground)
      uint8_t get_own_sys_id()const{
