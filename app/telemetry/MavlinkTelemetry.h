@@ -52,12 +52,12 @@ private:
     std::shared_ptr<mavsdk::Mavsdk> mavsdk=nullptr;
     std::shared_ptr<mavsdk::System> systemOhdGround=nullptr;
     std::shared_ptr<mavsdk::System> systemOhdAir=nullptr;
+    // MAVSDK is a bit stupid in this direction - passtrough(s) are for each system, but if there are multiple
+    // system(s) behind a connection, this pattern is completely broken.
+    // Normally, this passtrough is for the ground station - since we normally talk to both air and fc via the ground
+    // However, if there is no ground, we create the passtrough from the air or FC system too.
+    // This way one can also connect qopenhd to the FC without air / ground running and/or to the air unit without ground.
     std::shared_ptr<mavsdk::MavlinkPassthrough> passtroughOhdGround=nullptr;
-    // urgh, mavsdk is really annoying in this regard. In case of OpenHD, the telemetry from the drone
-    // always comes through via the OHD Ground unit, so we have the passtroughOhdGround. However, if there is no
-    // OpenHD running (e.g. only the SITL during development) we never get the OHD ground system, and therefore the ground passtrough
-    // is never created. hacky workaround that for now
-    std::shared_ptr<mavsdk::MavlinkPassthrough> passtroughFromFC=nullptr;
     // called by mavsdk whenever a new system is detected
     void onNewSystem(std::shared_ptr<mavsdk::System> system);
     // Called every time we get a mavlink message (from any system). Intended to be used for message types that don't

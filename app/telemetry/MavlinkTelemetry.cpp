@@ -109,6 +109,15 @@ void MavlinkTelemetry::onNewSystem(std::shared_ptr<mavsdk::System> system){
         MavlinkSettingsModel::instanceAirCamera().set_param_client(system);
         MavlinkSettingsModel::instanceAirCamera2().set_param_client(system);
         AOHDSystem::instanceAir().set_system(system);
+        // hacky, for connecting to the air unit directly
+        if(passtroughOhdGround==nullptr){
+            passtroughOhdGround=std::make_shared<mavsdk::MavlinkPassthrough>(system);
+            passtroughOhdGround->intercept_incoming_messages_async([this](mavlink_message_t& msg){
+                //qDebug()<<"Intercept:Got message"<<msg.msgid;
+                onProcessMavlinkMessage(msg);
+                return true;
+            });
+        }
     }
     // mavsdk doesn't report iNAV as being an "autopilot", so for now we just assume that if we have a mavlink system that has not one of the
     // pre-defined OpenHD sys id's it is the one FC system (connected on the air pi).
@@ -276,12 +285,6 @@ void MavlinkTelemetry::request_openhd_version()
     command.command=MAV_CMD_REQUEST_MESSAGE;
     command.param1=static_cast<float>(MAVLINK_MSG_ID_OPENHD_VERSION_MESSAGE);
     send_command_long_oneshot(command);
-    /*if(passtroughOhdGround){
-        mavsdk::MavlinkPassthrough::CommandLong cmd;
-        cmd.command=MAV_CMD_REQUEST_MESSAGE;
-        cmd.param1=static_cast<float>(MAVLINK_MSG_ID_OPENHD_VERSION_MESSAGE);
-        passtroughOhdGround->send_command_long(cmd);
-    }*/
 }
 
 bool MavlinkTelemetry::send_command_long_oneshot(const mavlink_command_long_t &command)
