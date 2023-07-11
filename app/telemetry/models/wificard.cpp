@@ -54,7 +54,7 @@ void WiFiCard::process_mavlink(const mavlink_openhd_stats_monitor_mode_wifi_card
         }
     }
     set_tx_power(msg.tx_power);
-    const bool disconnected=false;
+    const bool disconnected=msg.curr_status==1;
     if(disconnected){
         const auto elapsed=std::chrono::steady_clock::now()-m_last_disconnected_warning;
         if(elapsed>=CARD_DISCONNECTED_WARNING_INTERVAL){

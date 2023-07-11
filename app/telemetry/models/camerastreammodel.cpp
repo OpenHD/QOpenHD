@@ -78,7 +78,7 @@ void CameraStreamModel::update_mavlink_openhd_stats_wb_video_air(const mavlink_o
     set_curr_video_measured_encoder_bitrate(Telemetryutil::bitrate_bps_to_qstring(msg.curr_measured_encoder_bitrate));
     set_curr_video_injected_bitrate(Telemetryutil::bitrate_bps_to_qstring(msg.curr_injected_bitrate));
     set_curr_video0_injected_pps(Telemetryutil::pps_to_string(msg.curr_injected_pps));
-    set_curr_video0_dropped_packets(msg.curr_dropped_packets);
+    set_curr_video0_dropped_packets(msg.curr_dropped_frames);
     if(msg.curr_recommended_bitrate>1 && msg.curr_measured_encoder_bitrate>1 ){ //check for valid measured / set values
         const double recommended_kbits=static_cast<float>(msg.curr_recommended_bitrate);
         // Measured and set encoder bitrate should match on a 20% basis
