@@ -210,13 +210,12 @@ void AOHDSystem::process_x1(const mavlink_openhd_stats_monitor_mode_wifi_link_t 
         set_tx_passive_mode(msg.dummy0==1);
     }
     const int new_mcs_index=msg.curr_tx_mcs_index;
-    if(valid_mcs_packet_received_at_least_once && new_mcs_index!=m_curr_mcs_index){
+    if(m_curr_mcs_index!=-1 && new_mcs_index!=m_curr_mcs_index){
         std::stringstream ss;
         ss<<"MCS index changed to "<<new_mcs_index;
         HUDLogMessagesModel::instance().add_message_info(ss.str().c_str());
     }
     set_curr_mcs_index(new_mcs_index);
-    valid_mcs_packet_received_at_least_once=true;
     set_curr_channel_mhz(msg.curr_tx_channel_mhz);
     set_curr_channel_width_mhz(msg.curr_tx_channel_w_mhz);
 }
@@ -252,7 +251,7 @@ void AOHDSystem::process_x3(const mavlink_openhd_stats_wb_video_air_t &msg){
         if(delta>0){
             const auto elapsed_since_last=std::chrono::steady_clock::now()-m_last_tx_error_hud_message;
             if(elapsed_since_last>std::chrono::seconds(3)){
-                HUDLogMessagesModel::instance().add_message_warning("TX error,reduce bitrate");
+                HUDLogMessagesModel::instance().add_message_warning("TX dropped packets");
                 m_last_tx_error_hud_message=std::chrono::steady_clock::now();
             }
             set_tx_is_currently_dropping_packets(true);
