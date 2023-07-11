@@ -82,19 +82,19 @@ Rectangle{
                     //ListElement {title: "2397Mhz [X] (Atheros)"; value: 2397}
                     //ListElement {title: "2402Mhz [X] (Atheros)"; value: 2402}
                     //ListElement {title: "2407Mhz [X] (Atheros)"; value: 2407}
-                    ListElement {title: "2412Mhz [1] (Ralink/Atheros)"; value: 2412}
+                    ListElement {title: "2412Mhz [1] (Normal 2.4G)"; value: 2412}
                     //ListElement {title: "2417Mhz [2]  (Ralink/Atheros)"; value: 2417}
                     //ListElement {title: "2422Mhz [3]  (Ralink/Atheros)"; value: 2422}
                     //ListElement {title: "2427Mhz [4]  (Ralink/Atheros)"; value: 2427}
-                    ListElement {title: "2432Mhz [5]  (Ralink/Atheros)"; value: 2432}
+                    ListElement {title: "2432Mhz [5]  (Normal 2.4G)"; value: 2432}
                     //ListElement {title: "2437Mhz [6]  (Ralink/Atheros)"; value: 2437}
                     //ListElement {title: "2442Mhz [7]  (Ralink/Atheros)"; value: 2442}
                     //ListElement {title: "2447Mhz [8]  (Ralink/Atheros)"; value: 2447}
-                    ListElement {title: "2452Mhz [9]  (Ralink/Atheros)"; value: 2452}
+                    ListElement {title: "2452Mhz [9]  (Normal 2.4G)"; value: 2452}
                     //ListElement {title: "2457Mhz [10](Ralink/Atheros)"; value: 2457}
                     //ListElement {title: "2462Mhz [11](Ralink/Atheros)"; value: 2462}
                     //ListElement {title: "2467Mhz [12](Ralink/Atheros)"; value: 2467}
-                    ListElement {title: "2472Mhz [13](Ralink/Atheros)"; value: 2472}
+                    ListElement {title: "2472Mhz [13](Normal 2.4G)"; value: 2472}
                     //ListElement {title: "2484Mhz [14](Ralink/Atheros)"; value: 2484}
                     //ListElement {title: "2477Mhz [X] (Atheros)"; value: 2477}
                     //ListElement {title: "2482Mhz [X] (Atheros)"; value: 2482}

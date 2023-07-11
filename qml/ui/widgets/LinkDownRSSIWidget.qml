@@ -31,6 +31,8 @@ BaseWidget {
     hasWidgetDetail: true
     hasWidgetAction: true
 
+    widgetActionHeight: 164+50
+
     property int m_packet_loss_perc : _ohdSystemGround.curr_rx_packet_loss_perc
     function get_packet_loss_perc_warning_level(){
         if (m_packet_loss_perc>= settings.downlink_packet_loss_perc_warn) {
@@ -223,6 +225,15 @@ BaseWidget {
             Text {
                 //Layout.alignment: left
                 text: "Tx tele: "+_ohdSystemGround.curr_telemetry_tx_pps;
+                color: "white"
+                font.bold: true
+                height: parent.height
+                font.pixelSize: detailPanelFontPixels
+                verticalAlignment: Text.AlignVCenter
+            }
+            Text {
+                //Layout.alignment: left
+                text: "TX PWR Air: "+_wifi_card_air.tx_power;
                 color: "white"
                 font.bold: true
                 height: parent.height

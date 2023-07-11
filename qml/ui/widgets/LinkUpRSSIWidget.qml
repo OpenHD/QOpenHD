@@ -25,6 +25,8 @@ BaseWidget {
     hasWidgetDetail: true
     hasWidgetAction: true
 
+    widgetActionHeight: 164+50
+
     // If openhd feature passive mode is enabled, show watermark instead
     property bool m_passive_mode: _ohdSystemGround.tx_passive_mode
 
@@ -76,6 +78,15 @@ BaseWidget {
             Text {
                 //Layout.alignment: left
                 text: "Rx tele: "+_ohdSystemAir.curr_telemetry_rx_pps;
+                color: "white"
+                font.bold: true
+                height: parent.height
+                font.pixelSize: detailPanelFontPixels
+                verticalAlignment: Text.AlignVCenter
+            }
+            Text {
+                //Layout.alignment: left
+                text: "TX PWR Gnd: "+_wifi_card_gnd0.tx_power;
                 color: "white"
                 font.bold: true
                 height: parent.height

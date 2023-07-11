@@ -261,7 +261,8 @@ your loss quickly increases and the video stops - reduce the MCS to get more ran
                             onClicked: {
                                 _messageBoxInstance.set_text_and_show("
 Make the video more stable (less microfreezes) on the cost of less image quality.
-Internally, this changes the encode keyframe interval and/ or FEC overhead in percent.")
+Internally, this changes the encode keyframe interval and/ or FEC overhead in percent. DEFAULT is a good trade off regarding image quality and stability
+and works in most cases. Use CITY/POLLUTED on polluted channels, DESERT if you have a completely clean channel.")
                             }
                         }
                     }
@@ -297,6 +298,14 @@ Internally, this changes the encode keyframe interval and/ or FEC overhead in pe
                                     set_fec_percentage(20)
                                 }
                                 highlighted:  m_curr_keyframe_i == 5 && m_curr_fec_perc==20
+                            }
+                            Button{
+                                text: "DESERT"
+                                onClicked: {
+                                    set_keyframe_interval(8)
+                                    set_fec_percentage(10)
+                                }
+                                highlighted:  m_curr_keyframe_i == 8 && m_curr_fec_perc==10
                             }
                             /*Button{
                                 text: "MISSION"
