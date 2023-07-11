@@ -88,18 +88,15 @@ void MavlinkTelemetry::onNewSystem(std::shared_ptr<mavsdk::System> system){
         systemOhdGround=system;
         passtroughOhdGround=std::make_shared<mavsdk::MavlinkPassthrough>(system);
         qDebug()<<"XX:"<<passtroughOhdGround->get_target_sysid();
-        passtroughOhdGround->subscribe_message_async(MAVLINK_MSG_ID_ONBOARD_COMPUTER_STATUS,[](const mavlink_message_t& msg){
-            //qDebug()<<"Got MAVLINK_MSG_ID_ONBOARD_COMPUTER_STATUS";
-        });
         passtroughOhdGround->intercept_incoming_messages_async([this](mavlink_message_t& msg){
             //qDebug()<<"Intercept:Got message"<<msg.msgid;
             onProcessMavlinkMessage(msg);
             return true;
         });
-        passtroughOhdGround->intercept_outgoing_messages_async([](mavlink_message_t& msg){
-            //qDebug()<<"Intercept:send message"<<msg.msgid;
-            return true;
-        });
+        //passtroughOhdGround->intercept_outgoing_messages_async([](mavlink_message_t& msg){
+        //    //qDebug()<<"Intercept:send message"<<msg.msgid;
+        //    return true;
+        //});
         MavlinkSettingsModel::instanceGround().set_param_client(system);
         AOHDSystem::instanceGround().set_system(system);
     }else if(system->get_system_id()==OHD_SYS_ID_AIR){

@@ -456,6 +456,8 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         break;
     case MAVLINK_MSG_ID_AIRSPEED_AUTOCAL:
         break;
+    case MAVLINK_MSG_ID_GIMBAL_DEVICE_ATTITUDE_STATUS:
+        break;
     default: {
         //printf("MavlinkTelemetry received unmatched message with ID %d, sequence: %d from component %d of system %d\n", msg.msgid, msg.seq, msg.compid, msg.sysid);
         qDebug()<<"MavlinkTelemetry received unmatched message with ID "<<msg.msgid
