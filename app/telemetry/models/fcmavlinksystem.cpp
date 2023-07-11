@@ -945,6 +945,7 @@ bool FCMavlinkSystem::overwrite_home_to_current()
     set_home_latitude(m_lat);
     set_home_longitude(m_lon);
     HUDLogMessagesModel::instance().add_message_warning("HOME POSITION OVERWRITTEN");
+    return true;
 }
 
 bool FCMavlinkSystem::enable_disable_mission_updates(bool enable)

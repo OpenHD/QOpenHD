@@ -40,6 +40,7 @@ static bool set_all_message_update_rates(std::shared_ptr<mavsdk::MavlinkPassthro
 
     // location every 500ms
     set_message_update_rate(MAVLINK_MSG_ID_GLOBAL_POSITION_INT,std::chrono::milliseconds(500),pass_through);
+    return false;
 }
 
 }
