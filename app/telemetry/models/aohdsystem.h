@@ -86,6 +86,8 @@ public: // public for QT
     // The MCS index is a param, but also broadcasted in regular intervals, since it might change (during flight / link adjustments)
     // We also create a message in the HUD every time MCS changes
     L_RO_PROP(int,curr_mcs_index,set_curr_mcs_index,-1)
+    L_RO_PROP(int,curr_bitrate_kbits,set_curr_bitrate_kbits,-1)
+
     L_RO_PROP(int,curr_n_openhd_rate_adjustments,set_curr_n_openhd_rate_adjustments,-1)
     // similar for channel / channel width
     L_RO_PROP(int,curr_channel_mhz,set_curr_channel_mhz,-1)

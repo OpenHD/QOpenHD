@@ -207,7 +207,7 @@ void AOHDSystem::process_x1(const mavlink_openhd_stats_monitor_mode_wifi_link_t 
         if(active_tx_idx>=0 && active_tx_idx<WiFiCard::N_CARDS){
             WiFiCard::instance_gnd(active_tx_idx).set_is_active_tx(true);
         }
-        set_tx_passive_mode(msg.dummy0==1);
+        set_tx_passive_mode(msg.tx_passive_mode_is_enabled==1);
     }
     const int new_mcs_index=msg.curr_tx_mcs_index;
     if(m_is_air){
@@ -221,6 +221,7 @@ void AOHDSystem::process_x1(const mavlink_openhd_stats_monitor_mode_wifi_link_t 
     set_curr_mcs_index(new_mcs_index);
     set_curr_channel_mhz(msg.curr_tx_channel_mhz);
     set_curr_channel_width_mhz(msg.curr_tx_channel_w_mhz);
+    set_curr_bitrate_kbits(msg.dummy2);
 }
 
 void AOHDSystem::process_x2(const mavlink_openhd_stats_telemetry_t &msg)

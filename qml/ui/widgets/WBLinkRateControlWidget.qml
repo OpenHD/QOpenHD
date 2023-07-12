@@ -38,6 +38,7 @@ BaseWidget {
 
 
     property int m_curr_mcs_index: _ohdSystemAir.curr_mcs_index
+    property int m_curr_bitrate_kbits: _ohdSystemAir.curr_bitrate_kbits
 
     property int m_curr_fec_perc: _cameraStreamModelPrimary.curr_fec_percentage
     property int m_curr_keyframe_i: _cameraStreamModelPrimary.curr_keyframe_interval
@@ -52,7 +53,7 @@ BaseWidget {
         if(curr_channel_mhz>10){
             ret+=curr_channel_mhz;
         }else{
-            ret+="N/A";
+            ret+="Chan N/A";
         }
         if(_ohdSystemGround.curr_channel_width_mhz==40){
             ret+= "+";
@@ -62,8 +63,30 @@ BaseWidget {
     }
 
 
+    function bitrate_kbits_readable(kbits){
+        var mbits=kbits/1000.0;
+        if(mbits<10){
+            return Number(mbits).toLocaleString(Qt.locale(), 'f', 1)+"MBit/s"
+        }
+        return Number(mbits).toLocaleString(Qt.locale(), 'f', 0)+"MBit/s"
+    }
+
+    function get_text_bitrate_mcs(){
+        if(m_curr_bitrate_kbits==-1 || m_curr_mcs_index==-1){
+            return "RATE N/A";
+        }
+        return bitrate_kbits_readable(m_curr_bitrate_kbits)+" ["+m_curr_mcs_index+"]"
+    }
+
     function get_text_mcs(){
         return m_curr_mcs_index==-1 ? "MCS: NA" : "MCS: "+m_curr_mcs_index;
+    }
+
+    function get_text_mcs_or_bitrate_and_mcs(){
+        if(settings.wb_link_rate_control_widget_show_bitrate_instead_of_mcs){
+            return get_text_bitrate_mcs()
+        }
+        return get_text_mcs()
     }
 
     function get_text_fec_keyframe(){
@@ -129,6 +152,27 @@ BaseWidget {
                     anchors.right: parent.right
                     checked: settings.wb_link_rate_control_widget_show_frequency
                     onCheckedChanged: settings.wb_link_rate_control_widget_show_frequency = checked
+                }
+            }
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("Show bitrate instead of MCS")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels;
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 6
+                    anchors.right: parent.right
+                    checked: settings.wb_link_rate_control_widget_show_bitrate_instead_of_mcs
+                    onCheckedChanged: settings.wb_link_rate_control_widget_show_bitrate_instead_of_mcs = checked
                 }
             }
         }
@@ -279,9 +323,9 @@ and works in most cases. Use CITY/POLLUTED on polluted channels, DESERT if you h
                                 text: "POLLUTED"
                                 onClicked: {
                                     set_keyframe_interval(2)
-                                    set_fec_percentage(30)
+                                    set_fec_percentage(40)
                                 }
-                                highlighted:  m_curr_keyframe_i == 2 && m_curr_fec_perc==30
+                                highlighted:  m_curr_keyframe_i == 2 && m_curr_fec_perc==40
                             }
                             Button{
                                 text: "CITY"
@@ -355,7 +399,7 @@ and works in most cases. Use CITY/POLLUTED on polluted channels, DESERT if you h
                 width: parent.width
                 height: 14
                 color: settings.color_text
-                text: get_text_mcs()
+                text: get_text_mcs_or_bitrate_and_mcs()
                 anchors.top: channelText.bottom
                 anchors.bottomMargin: 0
                 verticalAlignment: Text.AlignBottom
