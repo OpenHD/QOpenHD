@@ -34,54 +34,6 @@ CameraStreamModel &CameraStreamModel::instance(int cam_index)
     assert(false);
 }
 
-void CameraStreamModel::dirty_set_curr_set_video_codec_int(int value)
-{
-    auto tmp=video_codec_to_string(value);
-    set_curr_set_video_codec(tmp.c_str());
-}
-
-void CameraStreamModel::dirty_set_curr_set_video_format(QString format)
-{
-    set_curr_set_video_format(format);
-}
-
-void CameraStreamModel::dirty_set_curr_set_video_codec_for_cam(int cam_index, int video_codec_in_openhd)
-{
-    if(cam_index==0){
-        CameraStreamModel::instance(0).dirty_set_curr_set_video_codec_int(video_codec_in_openhd);
-        if(video_codec_in_openhd==0 || video_codec_in_openhd==1 || video_codec_in_openhd==2){
-            QSettings settings;
-            const int tmp_video_codec = settings.value("selectedVideoCodecPrimary", 0).toInt();
-            if(tmp_video_codec!=video_codec_in_openhd){
-                // video codec mismatch, update the QOpenHD settings
-                settings.setValue("selectedVideoCodecPrimary",video_codec_in_openhd);
-                qDebug()<<"Changed electedVideoCodecPrimary in QOpenHD to "<<video_codec_in_openhd;
-                WorkaroundMessageBox::makePopupMessage("Changed VideoCodec Primary in QOpenHD",5);
-            }
-        }
-    }else if(cam_index==1){
-        CameraStreamModel::instance(1).dirty_set_curr_set_video_codec_int(video_codec_in_openhd);
-       if(video_codec_in_openhd==0 || video_codec_in_openhd==1 || video_codec_in_openhd==2){
-           QSettings settings;
-           const int tmp_video_codec = settings.value("selectedVideoCodecSecondary", 0).toInt();
-           if(tmp_video_codec!=video_codec_in_openhd){
-               // video codec mismatch, update the QOpenHD settings
-               settings.setValue("selectedVideoCodecSecondary",video_codec_in_openhd);
-               qDebug()<<"Changed selectedVideoCodecSecondary in QOpenHD to "<<video_codec_in_openhd;
-               WorkaroundMessageBox::makePopupMessage("Changed VideoCodec Secondary in QOpenHD",5);
-           }
-       }
-    }else{
-        qWarning("Invalid cam index");
-    }
-}
-void CameraStreamModel::dirty_set_curr_set_video_format_for_cam(int cam_index, QString value)
-{
-    if(cam_index==0 || cam_index==1){
-        CameraStreamModel::instance(cam_index).set_curr_set_video_format(value);
-    }
-}
-
 void CameraStreamModel::update_mavlink_openhd_stats_wb_video_air(const mavlink_openhd_stats_wb_video_air_t &msg)
 {
     const auto curr_recommended_bitrate_kbits=msg.curr_recommended_bitrate;
@@ -124,6 +76,11 @@ void CameraStreamModel::update_mavlink_openhd_camera_stats(const mavlink_openhd_
 {
     set_curr_curr_keyframe_interval(msg.encoding_keyframe_interval);
     set_air_recording_active(msg.air_recording_active);
+    std::stringstream ss;
+    ss<<(int)msg.stream_w<<"x"<<(int)msg.stream_h<<"@"<<msg.stream_fps;
+    set_curr_set_video_format(ss.str().c_str());
+    ss<<", "<<video_codec_to_string(msg.encoding_format);
+    set_lulu_curr_video_codec_and_format(ss.str().c_str());
 }
 
 void CameraStreamModel::update_mavlink_openhd_stats_wb_video_air_fec_performance(const mavlink_openhd_stats_wb_video_air_fec_performance_t &msg)

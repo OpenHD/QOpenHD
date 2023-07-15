@@ -30,7 +30,7 @@ BaseWidget {
 
     hasWidgetDetail: true
     hasWidgetAction: true
-    widgetActionHeight: 300
+    widgetActionHeight: 400
 
     property var m_camera_stream_model: m_is_for_primary_camera ? _cameraStreamModelPrimary : _cameraStreamModelSecondary
 
@@ -102,7 +102,7 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Text {
-                    text: m_camera_stream_model.curr_set_video_codec
+                    text: m_camera_stream_model.lulu_curr_video_codec_and_format
                     color: "white";
                     font.bold: true;
                     height: parent.height
@@ -181,12 +181,22 @@ BaseWidget {
                 width: parent.width
                 height: 32*4
                 GridLayout{
-                    rows: 2
-                    columns: 2
+                    rows: 3
+                    columns: 2 //
+                    Button{
+                        text: "480p60(16:9)"
+                        onClicked: set_camera_resolution("848x480@60")
+                        highlighted: m_curr_video_format=="848x480@60"
+                    }
+                    Button{
+                        text: "480p60(4:3)"
+                        onClicked: set_camera_resolution("640x480@60")
+                        highlighted: m_curr_video_format=="640x480@60"
+                    }
                     Button{
                         text: "720p49(16:9)"
-                        onClicked: set_camera_resolution("1280x720@60")
-                        highlighted: m_curr_video_format=="1280x720@60"
+                        onClicked: set_camera_resolution("1280x720@49")
+                        highlighted: m_curr_video_format=="1280x720@49"
                     }
                     Button{
                         text: "720p60(4:3)"

@@ -56,7 +56,7 @@ BaseWidget {
             ret+="Chan N/A";
         }
         if(_ohdSystemGround.curr_channel_width_mhz==40){
-            ret+= "+";
+            ret+= " 40Mhz";
         }
         //ret+=" Mhz";
         return ret;
