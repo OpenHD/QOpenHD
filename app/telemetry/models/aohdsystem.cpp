@@ -94,6 +94,16 @@ bool AOHDSystem::process_message(const mavlink_message_t &msg)
             process_x3b(parsedMsg);
             return true;
         }break;
+        case MAVLINK_MSG_ID_OPENHD_CAMERA_STATUS:{
+            mavlink_openhd_camera_status_t parsedMsg;
+            mavlink_msg_openhd_camera_status_decode(&msg,&parsedMsg);
+            if(parsedMsg.cam_index==0){
+                CameraStreamModel::instance(0).update_mavlink_openhd_camera_stats(parsedMsg);
+            }else if(parsedMsg.cam_index==1){
+                CameraStreamModel::instance(1).update_mavlink_openhd_camera_stats(parsedMsg);
+            }
+            return true;
+        }break;
         case MAVLINK_MSG_ID_OPENHD_STATS_WB_VIDEO_GROUND:{
             mavlink_openhd_stats_wb_video_ground_t parsedMsg;
             mavlink_msg_openhd_stats_wb_video_ground_decode(&msg,&parsedMsg);
