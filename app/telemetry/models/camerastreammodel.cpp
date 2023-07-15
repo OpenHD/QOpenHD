@@ -117,9 +117,13 @@ void CameraStreamModel::update_mavlink_openhd_stats_wb_video_air(const mavlink_o
         }
     }
     set_curr_curr_fec_percentage(msg.curr_fec_percentage);
-    set_curr_curr_keyframe_interval(msg.curr_keyframe_interval);
-    set_air_recording_active(msg.recording_active);
     set_air_tx_packets_per_second_and_bits_per_second(StringHelper::bitrate_and_pps_to_string(msg.curr_injected_bitrate,msg.curr_injected_pps).c_str());
+}
+
+void CameraStreamModel::update_mavlink_openhd_camera_stats(const mavlink_openhd_camera_status_t &msg)
+{
+    set_curr_curr_keyframe_interval(msg.encoding_keyframe_interval);
+    set_air_recording_active(msg.air_recording_active);
 }
 
 void CameraStreamModel::update_mavlink_openhd_stats_wb_video_air_fec_performance(const mavlink_openhd_stats_wb_video_air_fec_performance_t &msg)
