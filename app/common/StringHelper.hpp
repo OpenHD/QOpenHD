@@ -75,6 +75,12 @@ public:
       return std::to_string(bits_per_second)+" Bit/s";
     }
 
+    static std::string bitrate_and_pps_to_string(int64_t bps,int64_t pps){
+      std::stringstream ss;
+      ss<<""<<StringHelper::bitrate_to_string(bps)<<" "<<(int)pps<<" pps";
+      return ss.str();
+    }
+
     /*static std::string bitrate_readable(const int bits_per_second){
          std::stringstream ss;
          ss.precision(3);

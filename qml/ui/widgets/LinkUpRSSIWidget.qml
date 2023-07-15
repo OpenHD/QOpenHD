@@ -59,7 +59,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: "Tx video0: "+_cameraStreamModelPrimary.curr_video0_injected_pps
+                text: "GND TX: "+_ohdSystemGround.tx_packets_per_second_and_bits_per_second
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -68,16 +68,25 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: "Tx tele: "+_ohdSystemAir.curr_telemetry_tx_pps
+                text: "GND RX: "+_ohdSystemGround.rx_packets_per_second_and_bits_per_second
                 color: "white"
                 font.bold: true
                 height: parent.height
                 font.pixelSize: detailPanelFontPixels
                 verticalAlignment: Text.AlignVCenter
             }
+            /*Text {
+                //Layout.alignment: left
+                text: "GND RX vid0: "+_cameraStreamModelPrimary.
+                color: "white"
+                font.bold: true
+                height: parent.height
+                font.pixelSize: detailPanelFontPixels
+                verticalAlignment: Text.AlignVCenter
+            }*/
             Text {
                 //Layout.alignment: left
-                text: "Rx tele: "+_ohdSystemAir.curr_telemetry_rx_pps;
+                text: "GND RX tele: "+_ohdSystemAir.rx_tele_packets_per_second_and_bits_per_second
                 color: "white"
                 font.bold: true
                 height: parent.height

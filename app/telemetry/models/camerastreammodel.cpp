@@ -40,6 +40,11 @@ void CameraStreamModel::dirty_set_curr_set_video_codec_int(int value)
     set_curr_set_video_codec(tmp.c_str());
 }
 
+void CameraStreamModel::dirty_set_curr_set_video_format(QString format)
+{
+    set_curr_set_video_format(format);
+}
+
 void CameraStreamModel::dirty_set_curr_set_video_codec_for_cam(int cam_index, int video_codec_in_openhd)
 {
     if(cam_index==0){
@@ -68,6 +73,12 @@ void CameraStreamModel::dirty_set_curr_set_video_codec_for_cam(int cam_index, in
        }
     }else{
         qWarning("Invalid cam index");
+    }
+}
+void CameraStreamModel::dirty_set_curr_set_video_format_for_cam(int cam_index, QString value)
+{
+    if(cam_index==0 || cam_index==1){
+        CameraStreamModel::instance(cam_index).set_curr_set_video_format(value);
     }
 }
 
@@ -108,6 +119,7 @@ void CameraStreamModel::update_mavlink_openhd_stats_wb_video_air(const mavlink_o
     set_curr_curr_fec_percentage(msg.curr_fec_percentage);
     set_curr_curr_keyframe_interval(msg.curr_keyframe_interval);
     set_air_recording_active(msg.recording_active);
+    set_air_tx_packets_per_second_and_bits_per_second(StringHelper::bitrate_and_pps_to_string(msg.curr_injected_bitrate,msg.curr_injected_pps).c_str());
 }
 
 void CameraStreamModel::update_mavlink_openhd_stats_wb_video_air_fec_performance(const mavlink_openhd_stats_wb_video_air_fec_performance_t &msg)
@@ -125,6 +137,7 @@ void CameraStreamModel::update_mavlink_openhd_stats_wb_video_ground(const mavlin
     set_video0_count_blocks_recovered(msg.count_blocks_recovered);
     set_video0_count_fragments_recovered(msg.count_fragments_recovered);
     set_video0_count_blocks_total(msg.count_blocks_total);
+    //set_gnd_rx_packets_per_second_and_bits_per_second(StringHelper::bitrate_and_pps_to_string(msg.curr_incoming_bitrate,msg.cur_).c_str());
 }
 
 void CameraStreamModel::update_mavlink_openhd_stats_wb_video_ground_fec_performance(const mavlink_openhd_stats_wb_video_ground_fec_performance_t &msg)

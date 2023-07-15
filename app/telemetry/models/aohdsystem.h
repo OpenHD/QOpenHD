@@ -94,6 +94,11 @@ public: // public for QT
     L_RO_PROP(int,curr_channel_width_mhz,set_curr_channel_width_mhz,-1);
     // We show a watermark if passive mode is enabled
     L_RO_PROP(bool,tx_passive_mode,set_tx_passive_mode,false)
+    //
+    L_RO_PROP(QString,tx_packets_per_second_and_bits_per_second,set_tx_packets_per_second_and_bits_per_second,"N/A")
+    L_RO_PROP(QString,rx_packets_per_second_and_bits_per_second,set_rx_packets_per_second_and_bits_per_second,"N/A")
+    L_RO_PROP(QString,tx_tele_packets_per_second_and_bits_per_second,set_tx_tele_packets_per_second_and_bits_per_second,"N/A")
+    L_RO_PROP(QString,rx_tele_packets_per_second_and_bits_per_second,set_rx_tele_packets_per_second_and_bits_per_second,"N/A")
 private:
     const bool m_is_air; // either true (for air) or false (for ground)
      uint8_t get_own_sys_id()const{

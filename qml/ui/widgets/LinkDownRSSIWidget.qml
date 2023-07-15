@@ -203,10 +203,9 @@ BaseWidget {
                 font.pixelSize: detailPanelFontPixels
                 verticalAlignment: Text.AlignVCenter
             }
-
             Text {
                 //Layout.alignment: left
-                text: "Rx video0: "+_cameraStreamModelPrimary.curr_video0_received_bitrate_with_fec;
+                text: "AIR TX: "+_ohdSystemAir.tx_packets_per_second_and_bits_per_second
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -215,7 +214,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: "Rx tele: "+_ohdSystemGround.curr_telemetry_rx_bps;
+                text: "AIR TX tele: "+_ohdSystemAir.tx_tele_packets_per_second_and_bits_per_second;
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -224,7 +223,16 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: "Tx tele: "+_ohdSystemGround.curr_telemetry_tx_pps;
+                text: "AIR TX video0: "+_cameraStreamModelPrimary.air_tx_packets_per_second_and_bits_per_second;
+                color: "white"
+                font.bold: true
+                height: parent.height
+                font.pixelSize: detailPanelFontPixels
+                verticalAlignment: Text.AlignVCenter
+            }
+            Text {
+                //Layout.alignment: left
+                text: "AIR RX: "+_ohdSystemAir.rx_packets_per_second_and_bits_per_second
                 color: "white"
                 font.bold: true
                 height: parent.height

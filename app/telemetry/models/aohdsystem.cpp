@@ -222,6 +222,8 @@ void AOHDSystem::process_x1(const mavlink_openhd_stats_monitor_mode_wifi_link_t 
     set_curr_channel_mhz(msg.curr_tx_channel_mhz);
     set_curr_channel_width_mhz(msg.curr_tx_channel_w_mhz);
     set_curr_bitrate_kbits(msg.dummy2);
+    set_tx_packets_per_second_and_bits_per_second(StringHelper::bitrate_and_pps_to_string(msg.curr_tx_bps,msg.curr_tx_pps).c_str());
+    set_rx_packets_per_second_and_bits_per_second(StringHelper::bitrate_and_pps_to_string(msg.curr_rx_bps,msg.curr_rx_pps).c_str());
 }
 
 void AOHDSystem::process_x2(const mavlink_openhd_stats_telemetry_t &msg)
@@ -231,6 +233,8 @@ void AOHDSystem::process_x2(const mavlink_openhd_stats_telemetry_t &msg)
     set_curr_telemetry_tx_pps(Telemetryutil::pps_to_string(msg.curr_tx_pps));
     set_curr_telemetry_rx_bps(Telemetryutil::bitrate_bps_to_qstring(msg.curr_rx_bps));
     set_curr_telemetry_tx_bps(Telemetryutil::bitrate_bps_to_qstring(msg.curr_tx_bps));
+    set_tx_tele_packets_per_second_and_bits_per_second(StringHelper::bitrate_and_pps_to_string(msg.curr_tx_bps,msg.curr_tx_pps).c_str());
+    set_rx_tele_packets_per_second_and_bits_per_second(StringHelper::bitrate_and_pps_to_string(msg.curr_rx_bps,msg.curr_rx_pps).c_str());
 }
 
 void AOHDSystem::process_x3(const mavlink_openhd_stats_wb_video_air_t &msg){
