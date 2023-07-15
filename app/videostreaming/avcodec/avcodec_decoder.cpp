@@ -539,6 +539,7 @@ int AVCodecDecoder::open_and_decode_until_error(const QOpenHDVideoHelper::VideoS
             }
         }else{
             wanted_hw_pix_fmt = AV_PIX_FMT_YUV420P;
+            //wanted_hw_pix_fmt = AV_PIX_FMT_DRM_PRIME;
         }
     }
     else if(decoder->id==AV_CODEC_ID_H265){
