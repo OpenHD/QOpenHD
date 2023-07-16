@@ -191,7 +191,7 @@ BaseWidget {
                 if (settings.ground_battery_show_single_cell) {
                             return (_ohdSystemGround.ina219_voltage_millivolt / settings.ground_battery_cells /1000) + "mVpC"
                         } else {
-                         return _ohdSystemGround.ina219_voltage_millivolt /1000 + "mV"
+                         return (_ohdSystemGround.ina219_voltage_millivolt).toFixed(2) /1000 + "V"
                      }
                  }
             color: settings.color_text
