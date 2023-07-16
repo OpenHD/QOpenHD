@@ -239,7 +239,7 @@ BaseWidget {
                 return percent < 50 ? (percent < 10 ? "#ff0000" : "#fbfd15") : settings.color_shape;
             }
             opacity: bw_current_opacity
-            text: settings.ground_voltage_in_percent
+            text: _ohdSystemGround.battery_gauge
             anchors.left: parent.left
             anchors.leftMargin: 12
             fontSizeMode: Text.VerticalFit
