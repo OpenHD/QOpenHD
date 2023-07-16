@@ -107,15 +107,21 @@ BaseWidget {
             var emptyVoltage = settings.ground_battery_low;
             var percentage;
 
-            if (currentVoltage2 >= fullVoltage || currentVoltage2 >= midVoltage) {
+        if (currentVoltage2 >= fullVoltage) {
+            percentage = 100;
+        } else if (currentVoltage2 <= emptyVoltage) {
+            percentage = 0;
+        } else {
+            var voltageRange = fullVoltage - emptyVoltage;
+            var voltageProgress = currentVoltage2 - emptyVoltage;
+            percentage = (voltageProgress / voltageRange) * 100;
+
+            if (percentage >= 100) {
                 percentage = 100;
-            } else if (currentVoltage2 <= midVoltage) {
-                percentage = 50 ;
-            } else if (currentVoltage2 <= emptyVoltage) {
-                percentage = 10 ;
-            } else {
+            } else if (percentage <= 0) {
                 percentage = 0;
             }
+        }
             return percentage; // Ensure the percentage is within [0, 100]
 
         }
