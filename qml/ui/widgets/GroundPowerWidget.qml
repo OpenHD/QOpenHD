@@ -116,10 +116,6 @@ BaseWidget {
             } else {
                 percentage = 0;
             }
-            console.log('CurrentVoltage', currentVoltage);
-            console.log('CurrentVoltage2', currentVoltage2);
-            console.log('Return Value:', percentage);
-
             return percentage; // Ensure the percentage is within [0, 100]
 
         }
@@ -234,10 +230,10 @@ BaseWidget {
                 var percent = settings.ground_voltage_in_percent;
 
                 // 20% warning, 15% critical
-                return percent < 20 ? (percent < 15 ? "#ff0000" : "#fbfd15") : settings.color_shape;
+                return percent < 50 ? (percent < 10 ? "#ff0000" : "#fbfd15") : settings.color_shape;
             }
             opacity: bw_current_opacity
-            text: _ohdSystemGround.battery_gauge
+            text: settings.ground_voltage_in_percent
             anchors.left: parent.left
             anchors.leftMargin: 12
             fontSizeMode: Text.VerticalFit
