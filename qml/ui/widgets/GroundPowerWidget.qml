@@ -105,16 +105,23 @@ BaseWidget {
             var fullVoltage = settings.ground_battery_full;
             var midVoltage = settings.ground_battery_mid;
             var emptyVoltage = settings.ground_battery_low;
-
             var percentage;
-            if (currentVoltage2 >= fullVoltage) {
+
+            if (currentVoltage2 >= fullVoltage || currentVoltage2 >= midVoltage) {
                 percentage = 100;
-            } else if (currentVoltage2 >= midVoltage) {
+            } else if (currentVoltage2 <= midVoltage) {
                 percentage = 50 ;
+            } else if (currentVoltage2 <= emptyVoltage) {
+                percentage = 10 ;
             } else {
                 percentage = 0;
             }
-            return Math.max(0, Math.min(100, percentage)); // Ensure the percentage is within [0, 100]
+            console.log('CurrentVoltage', currentVoltage);
+            console.log('CurrentVoltage2', currentVoltage2);
+            console.log('Return Value:', percentage);
+
+            return percentage; // Ensure the percentage is within [0, 100]
+
         }
 
 
@@ -148,7 +155,7 @@ BaseWidget {
             id: battery_percent
             y: 0
             color: settings.color_text
-            text: calculateBatteryPercentage(settings.ground_voltage_in_percent).toFixed(2) + "%"
+            text: settings.ground_voltage_in_percent + "%"
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: batteryGauge.right
             anchors.leftMargin: 0
