@@ -101,7 +101,7 @@ BaseWidget {
     }
 
     function calculateBatteryPercentage(currentVoltage) {
-            var currentVoltage2 = (currentVoltage/settings.ground_battery_cells) / 100;
+            var currentVoltage2 = ((currentVoltage/settings.ground_battery_cells) / 100).toFixed(0);
             var fullVoltage = settings.ground_battery_full;
             var midVoltage = settings.ground_battery_mid;
             var emptyVoltage = settings.ground_battery_low;
