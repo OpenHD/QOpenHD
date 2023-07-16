@@ -115,7 +115,11 @@ BaseWidget {
             } else {
                 percentage = ((currentVoltage - emptyVoltage) / (midVoltage - emptyVoltage)) * 50.0;
             }
+            console.log('CurrentVoltage', currentVoltage);
+            console.log('MidVoltage', midVoltage);
+            console.log('EmthyVoltage', emptyVoltage);
             console.log('Return Value:', percentage);
+
             return Math.max(0, Math.min(100, percentage)); // Ensure the percentage is within [0, 100]
 
         }
