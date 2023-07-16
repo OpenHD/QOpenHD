@@ -108,22 +108,13 @@ BaseWidget {
 
             var percentage;
             if (currentVoltage2 >= fullVoltage) {
-                percentage = 100.0;
-            } else if (currentVoltage2 <= emptyVoltage) {
-                percentage = 0.0;
+                percentage = 100;
             } else if (currentVoltage2 >= midVoltage) {
-                percentage = 50.0 + ((currentVoltage2 - midVoltage) / (fullVoltage - midVoltage)) * 50.0;
+                percentage = 50 ;
             } else {
-                percentage = ((currentVoltage2 - emptyVoltage) / (midVoltage - emptyVoltage)) * 50.0;
+                percentage = 0;
             }
-            console.log('CurrentVoltage', currentVoltage);
-            console.log('CurrentVoltage2', currentVoltage2);
-            console.log('MidVoltage', midVoltage);
-            console.log('EmthyVoltage', emptyVoltage);
-            console.log('Return Value:', percentage);
-
             return Math.max(0, Math.min(100, percentage)); // Ensure the percentage is within [0, 100]
-
         }
 
 
