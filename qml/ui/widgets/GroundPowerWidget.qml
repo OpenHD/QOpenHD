@@ -104,7 +104,7 @@ BaseWidget {
             var currentVoltage2 = (currentVoltage/settings.ground_battery_cells) / 100;
             var fullVoltage = settings.ground_battery_full;
             var midVoltage = settings.ground_battery_mid;
-            var emptyVoltage = settings.ground_battery_empty;
+            var emptyVoltage = settings.ground_battery_low;
 
             var percentage;
             if (currentVoltage2 >= fullVoltage) {
