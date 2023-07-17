@@ -77,6 +77,7 @@ void CameraStreamModel::update_mavlink_openhd_camera_stats(const mavlink_openhd_
 {
     set_curr_curr_keyframe_interval(msg.encoding_keyframe_interval);
     set_air_recording_active(msg.air_recording_active);
+    set_camera_type(msg.cam_type);
     std::stringstream ss;
     ss<<(int)msg.stream_w<<"x"<<(int)msg.stream_h<<"@"<<msg.stream_fps;
     set_curr_set_video_format(ss.str().c_str());

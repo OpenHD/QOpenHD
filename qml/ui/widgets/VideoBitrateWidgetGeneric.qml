@@ -177,10 +177,18 @@ BaseWidget {
             }
             Item{
                 width: parent.width
-                height: 32*4
+                height: 150
+                //color: "green"
                 GridLayout{
+                    width: parent.width
+                    height: parent.height
                     rows: 3
                     columns: 2 //
+                    // 1 dummy sw
+                    // 2 mmal
+                    // 3 veye
+                    // 4 libcamera
+                    enabled: (m_camera_stream_model.camera_type==1 || m_camera_stream_model.camera_type==2 || m_camera_stream_model.camera_type==4)
                     Button{
                         text: "480p60(16:9)"
                         onClicked: set_camera_resolution("848x480@60")
@@ -213,6 +221,11 @@ BaseWidget {
                     }
                 }
             }
+            /*Item{
+                id: placeholder
+                width:parent.width
+                height: 10
+            }*/
             Item {
                 width: parent.width
                 height: 32
