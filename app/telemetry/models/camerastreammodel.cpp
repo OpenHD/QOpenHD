@@ -88,12 +88,14 @@ void CameraStreamModel::update_mavlink_openhd_camera_stats(const mavlink_openhd_
     const int codec_in_openhd=msg.encoding_format;
     qDebug()<<"Codec: "<<codec_in_openhd;
     if(codec_in_openhd==0 || codec_in_openhd==1 || codec_in_openhd==2){
-        if(codec_in_qopenhd!=codec_in_openhd && false){
-           //QOpenHDVideoHelper::set_qopenhd_camera_video_codec(secondary,codec_in_openhd);
+        if(codec_in_qopenhd!=codec_in_openhd){
+           QOpenHDVideoHelper::set_qopenhd_camera_video_codec(secondary,codec_in_openhd);
            std::stringstream log;
            log<<"QOpenHD- set "<<(secondary ? "CAM2" : "CAM1")<<" to "<<video_codec_to_string(msg.encoding_format);
            HUDLogMessagesModel::instance().add_message_info(log.str().c_str());
         }
+    }else{
+        qDebug()<<"Invalid video codec: "<<codec_in_openhd;
     }
 }
 
