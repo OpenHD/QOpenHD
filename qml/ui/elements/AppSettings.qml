@@ -16,8 +16,55 @@ Settings {
 
     property string locale: "en"
 
-    property int dev_stream0_udp_rtp_input_port: 5600
-    property string dev_stream0_udp_rtp_input_ip_address: "127.0.0.1"
+
+    // ----------------------------------------------------------------------------------
+    // All video (streaming) related settings local to qopenhd (nothing to do with openhd) begin
+    // ----------------------------------------------------------------------------------
+
+    // Configure QOpenHD for dualcam usage (enable disable secondary video and its settings)
+    property int dev_qopenhd_n_cameras:1
+
+    // Inside QOpenHD, swap primary and secondary camera - on platforms that only are capable of showing one video stream,
+    // this can be used to switch between 2 different video feeds
+    // When the app is started, this value is automatically reset to false
+    property bool qopenhd_switch_primary_secondary: false
+
+    // Video decode settings, per primary / secondary video
+    property int qopenhd_primary_video_rtp_input_port: 5600
+    property string qopenhd_primary_video_rtp_input_ip: "127.0.0.1"
+    // Video codec of the primary video stream (main window).
+    property int qopenhd_primary_video_codec: 0 //0==h264,1==h265,2==MJPEG, other (error) default to h264
+    property bool qopenhd_primary_video_force_sw: false
+
+    property int qopenhd_secondary_video_rtp_input_port: 5601
+    property string qopenhd_secondary_video_rtp_input_ip: "127.0.0.1"
+    property int qopenhd_secondary_video_codec: 0
+    property bool qopenhd_secondary_video_force_sw: false
+
+    // enably a test video source instead of decoding actual video data, if supported by the platform
+    // 0 = disabled
+    // 1 = raw video
+    // 2 = raw vide encode and then decode
+    property int dev_test_video_mode:0 // 0 is disabled
+    // When this one is set to true, we read a file (where you can then write your custom rx gstreamer pipeline
+    // that ends with qmlglsink )
+    property bool dev_enable_custom_pipeline: false
+    // only for ffmpeg
+    property int dev_limit_fps_on_test_file: -1
+    property bool dev_draw_alternating_rgb_dummy_frames: false;
+    // r.n only works on h264 / h265 and on select video stream(s)
+    // does not work on mjpeg, but as far as I can see, mjpeg doesn't suffer from the "one frame buffering" issue in avcodec
+    property bool dev_use_low_latency_parser_when_possible: true;
+    property bool dev_feed_incomplete_frames_to_decoder:false;
+
+    // dirty, perhaps temporary
+    property bool dev_rpi_use_external_omx_decode_service: true;
+    property bool dev_always_use_generic_external_decode_service: false
+
+    // ----------------------------------------------------------------------------------
+    // All video (streaming) related settings local to qopenhd (nothing to do with openhd) end
+    // ----------------------------------------------------------------------------------
+
 
     // Sys id QOpenHD uses itself
     property int qopenhd_mavlink_sysid: 255
@@ -36,34 +83,7 @@ Settings {
     // aka this setting only has an effect when running QOpenHD on a PC, and there also
     // pretty much only during development
     property bool app_explicit_window_fullscreen: false
-    // force sw decode on primary video
-    property bool primary_enable_software_video_decoder: false
-    // force sw decode on secondary video
-    property bool secondary_enable_software_video_decoder: false
-    // enably a test video source instead of decoding actual video data, if supported by the platform
-    // 0 = disabled
-    // 1 = raw video
-    // 2 = raw vide encode and then decode
-    property int dev_test_video_mode:0 // 0 is disabled
-    // Video codec of the primary video stream (main window).
-    property int selectedVideoCodecPrimary:0 //0==h264,1==h265,2==MJPEG, other (error) default to h264
-    property int selectedVideoCodecSecondary:0
 
-    property bool dev_jetson: false
-    // When this one is set to true, we read a file (where you can then write your custom rx gstreamer pipeline
-    // that ends with qmlglsink )
-    property bool dev_enable_custom_pipeline: false
-    // only for ffmpeg
-    property int dev_limit_fps_on_test_file: -1
-    property bool dev_draw_alternating_rgb_dummy_frames: false;
-    // r.n only works on h264 / h265 and on select video stream(s)
-    // does not work on mjpeg, but as far as I can see, mjpeg doesn't suffer from the "one frame buffering" issue in avcodec
-    property bool dev_use_low_latency_parser_when_possible: true;
-    property bool dev_feed_incomplete_frames_to_decoder:false;
-
-    // dirty, perhaps temporary
-    property bool dev_rpi_use_external_omx_decode_service: true;
-    property bool dev_always_use_generic_external_decode_service: false
 
     property bool enable_speech: true
     property bool enable_imperial: false
@@ -311,9 +331,6 @@ Settings {
     property double aoa_max: 20
 
     property bool show_example_widget: false
-
-    // Configure QOpenHD for dualcam usage (enable disable secondary video and its settings)
-    property int dev_qopenhd_n_cameras:1
 
     // N of battery cells (generic) of the vehicle, used for the show voltage per cell setting
     // Proper way would be to query / get that via mavlink, but this is more complicated than it seems at glance

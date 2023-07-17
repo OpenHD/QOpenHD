@@ -22,6 +22,10 @@ public:
     void setVideoOut(QSurfaceTexture *videoOut);
 
     //Q_INVOKABLE void playFile(const QString &file);
+    void switch_primary_secondary();
+private:
+    void setup_start_video_decoder_display();
+    void stop_cleanup_decoder_display();
 signals:
     void videoOutChanged();
 

@@ -101,6 +101,23 @@ ScrollView {
                     }
                 }
             }
+
+            SettingBaseElement{
+                m_short_description: "Backgrund transparent"
+                m_long_description: "Use a transparent surface, such that another application can play (hw composer accelerated) video behind the QOpenHD surface."
+
+                Switch {
+                    width: 32
+                    height: elementHeight
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    checked: settings.app_background_transparent
+                    onCheckedChanged: settings.app_background_transparent = checked
+                }
+            }
+
             SettingBaseElement{
                 m_short_description: "Font DPI"
                 m_long_description: "Scale the text / line size of the artifical horizon / ladders, requires restart of QOpenHD."

@@ -14,7 +14,8 @@ namespace QOpenHDVideoHelper{
 
 // Must be in sync with OpenHD
 static constexpr auto kDefault_udp_rtp_input_ip_address="127.0.0.1";
-static constexpr auto kDefault_udp_rtp_input_port=5600;
+static constexpr auto kDefault_udp_rtp_input_port_primary=5600;
+static constexpr auto kDefault_udp_rtp_input_port_secondary=5601;
 
 // OpenHD supported video codecs
 typedef enum VideoCodec {
@@ -47,23 +48,12 @@ static VideoTestMode videoTestModeFromInt(int value){
 }
 
 /**
- * No matter if the underlying decoding is done hw accelerated or on any platform, video is always
- * a constant stream of rtp data to a specific udp port. This is the only information to start a
- * QOpenHD video stream, except the output mechanism (can be int qt via GL, drm/kms, ...)
+ * Dirty - settings mostly for developing / handling differen platforms
+ * Not seperated for primary / secondary stream
  */
-struct VideoStreamConfig{
+struct GenericVideoSettings{
     // used for testing and development.
     VideoTestMode dev_test_video_mode = VideoTestMode::DISABLED;
-    // the ip address where we receive udp rtp video data from
-    std::string udp_rtp_input_ip_address=kDefault_udp_rtp_input_ip_address;
-    // the port where to receive udp rtp video data from
-    int udp_rtp_input_port = kDefault_udp_rtp_input_port;
-    // the video codec the received rtp data should be intepreted as.
-    VideoCodec video_codec=VideoCodecH264;
-    // force sw decoding (only makes a difference if on this platform/compile-time configuration a HW decoder is chosen by default)
-    bool enable_software_video_decoder=false;
-    // XX
-    bool dev_jetson=false;
     //
     bool dev_enable_custom_pipeline=false;
     std::string dev_custom_pipeline="";
@@ -80,25 +70,83 @@ struct VideoStreamConfig{
     // On embedded devices, video is commonly rendered on a special surface, independent of QOpenHD
     // r.n only the rpi mmal impl. supports proper video rotation
     int extra_screen_rotation=0;
+    bool qopenhd_switch_primary_secondary=false;
 
     // 2 configs are equal if all members are exactly the same.
-    bool operator==(const VideoStreamConfig &o) const {
-       return this->dev_test_video_mode == o.dev_test_video_mode && this->udp_rtp_input_port == o.udp_rtp_input_port && this->video_codec== o.video_codec
-               && this->enable_software_video_decoder==o.enable_software_video_decoder && this->dev_jetson==o.dev_jetson &&
+    bool operator==(const GenericVideoSettings &o) const {
+       return this->dev_test_video_mode == o.dev_test_video_mode &&
                this->dev_enable_custom_pipeline==o.dev_enable_custom_pipeline &&
                this->dev_custom_pipeline==o.dev_custom_pipeline &&
                this->dev_limit_fps_on_test_file == o.dev_limit_fps_on_test_file &&
                this->dev_use_low_latency_parser_when_possible == o.dev_use_low_latency_parser_when_possible &&
                this->dev_feed_incomplete_frames_to_decoder == o.dev_feed_incomplete_frames_to_decoder &&
-               this->udp_rtp_input_ip_address==o.udp_rtp_input_ip_address &&
                this->dev_rpi_use_external_omx_decode_service==o.dev_rpi_use_external_omx_decode_service &&
                this->dev_always_use_generic_external_decode_service==o.dev_always_use_generic_external_decode_service &&
-               this->extra_screen_rotation == o.extra_screen_rotation;
+               this->extra_screen_rotation == o.extra_screen_rotation &&
+               this->qopenhd_switch_primary_secondary == o.qopenhd_switch_primary_secondary;
      }
+    bool operator !=(const GenericVideoSettings &o) const {
+        return !(*this==o);
+    }
+};
+
+/**
+ * @brief Settings for the primary / secondary video stream
+ */
+struct VideoStreamConfigXX{
+    // the ip address where we receive udp rtp video data from
+    std::string udp_rtp_input_ip_address=kDefault_udp_rtp_input_ip_address;
+    // the port where to receive udp rtp video data from
+    int udp_rtp_input_port = kDefault_udp_rtp_input_port_primary;
+    // the video codec the received rtp data should be intepreted as.
+    VideoCodec video_codec=VideoCodecH264;
+    // force sw decoding (only makes a difference if on this platform/compile-time configuration a HW decoder is chosen by default)
+    bool enable_software_video_decoder=false;
+
+    // 2 configs are equal if all members are exactly the same.
+    bool operator==(const VideoStreamConfigXX &o) const {
+        return this->udp_rtp_input_port == o.udp_rtp_input_port && this->video_codec== o.video_codec
+               && this->enable_software_video_decoder==o.enable_software_video_decoder &&
+               this->udp_rtp_input_ip_address==o.udp_rtp_input_ip_address;
+    }
+    bool operator !=(const VideoStreamConfigXX &o) const {
+        return !(*this==o);
+    }
+};
+
+struct VideoStreamConfig{
+    GenericVideoSettings generic;
+    VideoStreamConfigXX primary_stream_config;
+    VideoStreamConfigXX secondary_stream_config;
+    bool operator==(const VideoStreamConfig &o) const {
+        return this->generic == o.generic &&
+               this->primary_stream_config==o.primary_stream_config &&
+               this->secondary_stream_config==o.secondary_stream_config;
+    }
     bool operator !=(const VideoStreamConfig &o) const {
         return !(*this==o);
     }
 };
+
+
+static VideoStreamConfigXX read_from_settingsXX(bool is_primary){
+    QSettings settings;
+    QOpenHDVideoHelper::VideoStreamConfigXX _videoStreamConfig;
+    if(is_primary){
+        _videoStreamConfig.udp_rtp_input_port=settings.value("qopenhd_primary_video_rtp_input_port", kDefault_udp_rtp_input_port_primary).toInt();
+        _videoStreamConfig.udp_rtp_input_ip_address=settings.value("qopenhd_primary_video_rtp_input_ip",kDefault_udp_rtp_input_ip_address).toString().toStdString();
+        const int tmp_video_codec = settings.value("qopenhd_primary_video_codec", 0).toInt();
+        _videoStreamConfig.video_codec=QOpenHDVideoHelper::intToVideoCodec(tmp_video_codec);
+        _videoStreamConfig.enable_software_video_decoder=settings.value(" qopenhd_primary_video_force_sw", 0).toBool();
+    }else{
+        _videoStreamConfig.udp_rtp_input_port=settings.value("qopenhd_secondary_video_rtp_input_port", kDefault_udp_rtp_input_port_secondary).toInt();
+        _videoStreamConfig.udp_rtp_input_ip_address=settings.value("qopenhd_secondary_video_rtp_input_ip",kDefault_udp_rtp_input_ip_address).toString().toStdString();
+        const int tmp_video_codec = settings.value("qopenhd_secondary_video_codec", 0).toInt();
+        _videoStreamConfig.video_codec=QOpenHDVideoHelper::intToVideoCodec(tmp_video_codec);
+        _videoStreamConfig.enable_software_video_decoder=settings.value(" qopenhd_secondary_video_force_sw", 0).toBool();
+    }
+    return _videoStreamConfig;
+}
 
 // Kinda UI, kinda video related
 static int get_display_rotation(){
@@ -113,25 +161,18 @@ static bool get_primary_video_scale_to_fit(){
     return settings.value("primary_video_scale_to_fit", false).toBool();
 }
 
-static VideoStreamConfig read_from_settings(){
+static GenericVideoSettings read_generic_from_settings(){
     QSettings settings;
-    QOpenHDVideoHelper::VideoStreamConfig _videoStreamConfig;
+    GenericVideoSettings _videoStreamConfig;
     _videoStreamConfig.dev_test_video_mode=QOpenHDVideoHelper::videoTestModeFromInt(settings.value("dev_test_video_mode", 0).toInt());
-    //
-    _videoStreamConfig.udp_rtp_input_port=settings.value("dev_stream0_udp_rtp_input_port", kDefault_udp_rtp_input_port).toInt();
-    _videoStreamConfig.udp_rtp_input_ip_address=settings.value("dev_stream0_udp_rtp_input_ip_address",kDefault_udp_rtp_input_ip_address).toString().toStdString();
 
-    const int tmp_video_codec = settings.value("selectedVideoCodecPrimary", 0).toInt();
-    _videoStreamConfig.video_codec=QOpenHDVideoHelper::intToVideoCodec(tmp_video_codec);
-    _videoStreamConfig.enable_software_video_decoder=settings.value("primary_enable_software_video_decoder", 0).toBool();
-    _videoStreamConfig.dev_jetson=settings.value("dev_jetson",false).toBool();
-    //
     _videoStreamConfig.dev_enable_custom_pipeline=settings.value("dev_enable_custom_pipeline",false).toBool();
     _videoStreamConfig.dev_limit_fps_on_test_file=settings.value("dev_limit_fps_on_test_file",-1).toInt();
     _videoStreamConfig.dev_use_low_latency_parser_when_possible=settings.value("dev_use_low_latency_parser_when_possible",true).toBool();
     //
     _videoStreamConfig.dev_rpi_use_external_omx_decode_service=settings.value("dev_rpi_use_external_omx_decode_service", true).toBool();
     _videoStreamConfig.dev_always_use_generic_external_decode_service=settings.value("dev_always_use_generic_external_decode_service", false).toBool();
+    _videoStreamConfig.qopenhd_switch_primary_secondary=settings.value("qopenhd_switch_primary_secondary", false).toBool();
     _videoStreamConfig.extra_screen_rotation=get_display_rotation();
     // QML text input sucks, so we read a file. Not ideal, but for testing only anyways
     {
@@ -150,26 +191,14 @@ static VideoStreamConfig read_from_settings(){
     //_videoStreamConfig.dev_custom_pipeline=settings.value("dev_custom_pipeline","").toString().toStdString();
     return _videoStreamConfig;
 }
-
-static VideoStreamConfig tmp_get_secondary_config(){
-    QOpenHDVideoHelper::VideoStreamConfig videoStreamConfig{};
-    QSettings settings{};
-    const int tmp_video_codec = settings.value("selectedVideoCodecSecondary", 0).toInt();
-    videoStreamConfig.video_codec=QOpenHDVideoHelper::intToVideoCodec(tmp_video_codec);
-    videoStreamConfig.udp_rtp_input_port=5601;
-    videoStreamConfig.extra_screen_rotation=0;
-    // Apply force sw decode for both paths the same
-    videoStreamConfig.enable_software_video_decoder=settings.value("secondary_enable_software_video_decoder", 0).toBool();
-    return videoStreamConfig;
+static VideoStreamConfig read_config_from_settings(){
+    VideoStreamConfig ret;
+    ret.generic=read_generic_from_settings();
+    ret.primary_stream_config=read_from_settingsXX(true);
+    ret.secondary_stream_config=read_from_settingsXX(false);
+    return ret;
 }
 
-static VideoStreamConfig read_from_settings2(bool is_primary){
-    if(is_primary){
-        // primary video (full screen)
-        return read_from_settings();
-    }
-    return tmp_get_secondary_config();
-}
 
 
 // For OpenHD images, these files are copied over by the image builder and therefore can
@@ -189,7 +218,7 @@ static std::string get_default_openhd_test_file(const VideoCodec video_codec){
 
 // FFMPEG needs a ".sdp" file to do rtp udp h264,h265 or mjpeg
 // For MJPEG we map mjpeg to 26 (mjpeg), for h264/5 we map h264/5 to 96 (general)
-static std::string create_udp_rtp_sdp_file(const VideoStreamConfig& video_stream_config){
+static std::string create_udp_rtp_sdp_file(const VideoStreamConfigXX& video_stream_config){
     std::stringstream ss;
     ss<<"c=IN IP4 "<<video_stream_config.udp_rtp_input_ip_address<<"\n";
     //ss<<"v=0\n";
@@ -217,10 +246,10 @@ static void write_file_to_tmp(const std::string filename,const std::string conte
 }
 static constexpr auto kRTP_FILENAME="/tmp/rtp_custom.sdp";
 
-static void write_udp_rtp_sdp_file_to_tmp(const VideoStreamConfig& video_stream_config){
+static void write_udp_rtp_sdp_file_to_tmp(const VideoStreamConfigXX& video_stream_config){
      write_file_to_tmp(kRTP_FILENAME,create_udp_rtp_sdp_file(video_stream_config));
 }
-static std::string get_udp_rtp_sdp_filename(const VideoStreamConfig& video_stream_config){
+static std::string get_udp_rtp_sdp_filename(const VideoStreamConfigXX& video_stream_config){
     write_udp_rtp_sdp_file_to_tmp(video_stream_config);
     return kRTP_FILENAME;
 }

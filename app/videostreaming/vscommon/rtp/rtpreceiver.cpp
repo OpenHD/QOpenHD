@@ -24,7 +24,7 @@ RTPReceiver::RTPReceiver(const int port,const std::string ip,bool is_h265,bool f
     if(ip!=std::string(QOpenHDVideoHelper::kDefault_udp_rtp_input_ip_address)){
         qWarning()<<"Using non-default dev_stream0_udp_rtp_input_ip_address";
     }
-    if(port!=QOpenHDVideoHelper::kDefault_udp_rtp_input_port){
+    if(port!=QOpenHDVideoHelper::kDefault_udp_rtp_input_port_primary){
         qWarning()<<"Using non-default udp_rtp_input_port";
     }
     if(false){
