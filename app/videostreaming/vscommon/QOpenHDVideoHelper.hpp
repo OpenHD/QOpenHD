@@ -279,6 +279,13 @@ static void set_qopenhd_camera_video_codec(bool secondary,int codec){
     }else{
         settings.setValue("qopenhd_primary_video_codec",(int)codec);
     }
+}
+// We set qopenhd switch primary and secondary to false when started -
+// This way, we avoid confusion where an user might have switched, then disabled dualcam,
+// and is now getting "no video" since there is no secondary camera
+static void reset_qopenhd_switch_primary_secondary(){
+    QSettings settings;
+    settings.setValue("qopenhd_switch_primary_secondary",false);
 
 }
 
