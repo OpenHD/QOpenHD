@@ -122,8 +122,13 @@ void AVCodecDecoder::constant_decode()
     while(!m_should_terminate){
         qDebug()<<"Start decode";
         const auto settings = QOpenHDVideoHelper::read_config_from_settings();
+        // this is always for primary video, unless switching is enabled
+        auto stream_config=settings.primary_stream_config;
+        if(settings.generic.qopenhd_switch_primary_secondary){
+            stream_config=settings.secondary_stream_config;
+        }
          bool do_custom_rtp=settings.generic.dev_use_low_latency_parser_when_possible;
-         if(settings.primary_stream_config.video_codec==QOpenHDVideoHelper::VideoCodecMJPEG){
+         if(stream_config.video_codec==QOpenHDVideoHelper::VideoCodecMJPEG){
              // we got no support for mjpeg in our custom rtp parser
              do_custom_rtp=false;
         }
@@ -399,9 +404,14 @@ void AVCodecDecoder::reset_before_decode_start()
 
 int AVCodecDecoder::open_and_decode_until_error(const QOpenHDVideoHelper::VideoStreamConfig settings)
 {
+    // this is always for primary video, unless switching is enabled
+    auto stream_config=settings.primary_stream_config;
+    if(settings.generic.qopenhd_switch_primary_secondary){
+        stream_config=settings.secondary_stream_config;
+    }
     std::string in_filename="";
     if(settings.generic.dev_test_video_mode==QOpenHDVideoHelper::VideoTestMode::DISABLED){
-        in_filename=QOpenHDVideoHelper::get_udp_rtp_sdp_filename(settings.primary_stream_config);
+        in_filename=QOpenHDVideoHelper::get_udp_rtp_sdp_filename(stream_config);
         //in_filename="rtp://192.168.0.1:5600";
     }else{
         if(settings.generic.dev_enable_custom_pipeline){
@@ -410,12 +420,12 @@ int AVCodecDecoder::open_and_decode_until_error(const QOpenHDVideoHelper::VideoS
             // For testing, I regulary change the filename(s) and recompile
             const bool consti_testing=false;
             if(consti_testing){
-                if(settings.primary_stream_config.video_codec==QOpenHDVideoHelper::VideoCodecH264){
+                if(stream_config.video_codec==QOpenHDVideoHelper::VideoCodecH264){
                      //in_filename="/tmp/x_raw_h264.h264";
                     in_filename="/home/consti10/Desktop/hello_drmprime/in/rpi_1080.h264";
                     //in_filename="/home/consti10/Desktop/hello_drmprime/in/rv_1280x720_green_white.h264";
                     //in_filename="/home/consti10/Desktop/hello_drmprime/in/Big_Buck_Bunny_1080_10s_1MB_h264.mp4";
-                }else if(settings.primary_stream_config.video_codec==QOpenHDVideoHelper::VideoCodecH265){
+                }else if(stream_config.video_codec==QOpenHDVideoHelper::VideoCodecH265){
                       //in_filename="/tmp/x_raw_h265.h265";
                     in_filename="/home/consti10/Desktop/hello_drmprime/in/jetson_test.h265";
                     //in_filename="/home/consti10/Desktop/hello_drmprime/in/Big_Buck_Bunny_1080_10s_1MB_h265.mp4";
@@ -424,7 +434,7 @@ int AVCodecDecoder::open_and_decode_until_error(const QOpenHDVideoHelper::VideoS
                    //in_filename="/home/consti10/Desktop/hello_drmprime/in/Big_Buck_Bunny_1080.mjpeg";
                 }
             }else{
-                in_filename=QOpenHDVideoHelper::get_default_openhd_test_file(settings.primary_stream_config.video_codec);
+                in_filename=QOpenHDVideoHelper::get_default_openhd_test_file(stream_config.video_codec);
             }
 
         }
@@ -523,7 +533,7 @@ int AVCodecDecoder::open_and_decode_until_error(const QOpenHDVideoHelper::VideoS
     if (decoder->id == AV_CODEC_ID_H264) {
         qDebug()<<"H264 decode";
         qDebug()<<all_hw_configs_for_this_codec(decoder).c_str();
-        if(!settings.primary_stream_config.enable_software_video_decoder){
+        if(!stream_config.enable_software_video_decoder){
             // weird workaround needed for pi + DRM_PRIME
             /*if ((decoder = avcodec_find_decoder_by_name("h264_v4l2m2m")) == NULL) {
                 fprintf(stderr, "Cannot find the h264 v4l2m2m decoder\n");
@@ -589,10 +599,10 @@ int AVCodecDecoder::open_and_decode_until_error(const QOpenHDVideoHelper::VideoS
     }
 
     std::string selected_decoding_type="?";
-    if(settings.primary_stream_config.enable_software_video_decoder ||
+    if(stream_config.enable_software_video_decoder ||
             // for mjpeg we always use sw decode r.n, since for some reason the "fallback" to sw decode doesn't work here
             // and also the PI cannot do HW mjpeg decode anyways at least no one bothered to fix ffmpeg for it.
-            settings.primary_stream_config.video_codec==QOpenHDVideoHelper::VideoCodecMJPEG
+            stream_config.video_codec==QOpenHDVideoHelper::VideoCodecMJPEG
             ){
         qDebug()<<"User wants SW decode / mjpeg";
         decoder_ctx->get_format  = get_sw_format;
@@ -697,13 +707,19 @@ int AVCodecDecoder::open_and_decode_until_error(const QOpenHDVideoHelper::VideoS
 // https://ffmpeg.org/doxygen/3.3/decode_video_8c-example.html
 void AVCodecDecoder::open_and_decode_until_error_custom_rtp(const QOpenHDVideoHelper::VideoStreamConfig settings)
 {
+    // this is always for primary video, unless switching is enabled
+    auto stream_config=settings.primary_stream_config;
+    if(settings.generic.qopenhd_switch_primary_secondary){
+        stream_config=settings.secondary_stream_config;
+    }
+
     // This thread pulls frame(s) from the rtp decoder and therefore should have high priority
     SchedulingHelper::setThreadParamsMaxRealtime();
     av_log_set_level(AV_LOG_TRACE);
-     assert(settings.primary_stream_config.video_codec==QOpenHDVideoHelper::VideoCodecH264 || settings.primary_stream_config.video_codec==QOpenHDVideoHelper::VideoCodecH265);
-     if(settings.primary_stream_config.video_codec==QOpenHDVideoHelper::VideoCodecH264){
+     assert(stream_config.video_codec==QOpenHDVideoHelper::VideoCodecH264 || stream_config.video_codec==QOpenHDVideoHelper::VideoCodecH265);
+     if(stream_config.video_codec==QOpenHDVideoHelper::VideoCodecH264){
          decoder = avcodec_find_decoder(AV_CODEC_ID_H264);
-     }else if(settings.primary_stream_config.video_codec==QOpenHDVideoHelper::VideoCodecH265){
+     }else if(stream_config.video_codec==QOpenHDVideoHelper::VideoCodecH265){
          decoder = avcodec_find_decoder(AV_CODEC_ID_H265);
      }
      if (!decoder) {
@@ -715,7 +731,7 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp(const QOpenHDVideoHe
      if (decoder->id == AV_CODEC_ID_H264) {
          qDebug()<<"H264 decode";
          qDebug()<<all_hw_configs_for_this_codec(decoder).c_str();
-         if(!settings.primary_stream_config.enable_software_video_decoder){
+         if(!stream_config.enable_software_video_decoder){
              auto tmp = avcodec_find_decoder_by_name("h264_mmal");
              if(tmp!=nullptr){
                  decoder = tmp;
@@ -729,7 +745,7 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp(const QOpenHDVideoHe
          }
      }else if(decoder->id==AV_CODEC_ID_H265){
          qDebug()<<"H265 decode";
-         if(!settings.primary_stream_config.enable_software_video_decoder){
+         if(!stream_config.enable_software_video_decoder){
              qDebug()<<all_hw_configs_for_this_codec(decoder).c_str();
              // HW format used by rpi h265 HW decoder
              wanted_hw_pix_fmt = AV_PIX_FMT_DRM_PRIME;
@@ -782,8 +798,7 @@ void AVCodecDecoder::open_and_decode_until_error_custom_rtp(const QOpenHDVideoHe
          return;
      }
      qDebug()<<"AVCodecDecoder::open_and_decode_until_error_custom_rtp()-begin loop";
-     const auto port=settings.generic.qopenhd_switch_primary_secondary ? 5601 : settings.primary_stream_config.udp_rtp_input_port;
-     m_rtp_receiver=std::make_unique<RTPReceiver>(port,settings.primary_stream_config.udp_rtp_input_ip_address,settings.primary_stream_config.video_codec==1,settings.generic.dev_feed_incomplete_frames_to_decoder);
+     m_rtp_receiver=std::make_unique<RTPReceiver>(stream_config.udp_rtp_input_port,stream_config.udp_rtp_input_ip_address,stream_config.video_codec==1,settings.generic.dev_feed_incomplete_frames_to_decoder);
 
      reset_before_decode_start();
      DecodingStatistcs::instance().set_decoding_type(selected_decoding_type.c_str());
@@ -1036,6 +1051,11 @@ static void stop_all_services(){
 void AVCodecDecoder::dirty_generic_decode_via_external_decode_service(const QOpenHDVideoHelper::VideoStreamConfig& settings)
 {
     qDebug()<<"dirty_generic_decode_via_external_decode_service begin";
+    // this is always for primary video, unless switching is enabled
+    auto stream_config=settings.primary_stream_config;
+    if(settings.generic.qopenhd_switch_primary_secondary){
+        stream_config=settings.secondary_stream_config;
+    }
     // Stop any still running service (just in case there is one)
     stop_all_services();
     // QRS are not available with this implementation
