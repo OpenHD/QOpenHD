@@ -25,7 +25,7 @@ Item {
           id: selectItemInStackLayoutBar
           width: parent.width
           TabButton {
-              text: qsTr("WB Link freq")
+              text: qsTr("WB Link")
           }
           TabButton {
               text: qsTr("Air Camera 1")
@@ -35,10 +35,10 @@ Item {
               enabled: settings.dev_qopenhd_n_cameras>1
           }
           TabButton {
-              text: qsTr("Air (TMP)")
+              text: qsTr("Air")
           }
           TabButton {
-              text: qsTr("Ground (TMP)")
+              text: qsTr("Ground")
           }
     }
 

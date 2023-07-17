@@ -23,13 +23,13 @@ BaseWidget {
     defaultVCenter: false
 
     hasWidgetDetail: true
-    widgetDetailComponent: ScrollView {
 
+    widgetDetailComponent: ScrollView {
         contentHeight: idBaseWidgetDefaultUiControlElements.height
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
         clip: true
 
-        BaseWidgetDefaultUiControlElements{
+        BaseWidgetDefaultUiControlElements {
             id: idBaseWidgetDefaultUiControlElements
             Item {
                 width: 230
@@ -74,31 +74,58 @@ BaseWidget {
                     anchors.right: parent.right
                     model: ["Lipo", "LiIon", "LiFe"]
                     onCurrentIndexChanged: {
-                            switch (batteryComboBox.currentIndex) {
-                                case 0:
-                                    settings.ground_battery_type = 0;
-                                    settings.ground_battery_low = 35;
-                                    settings.ground_battery_mid = 39;
-                                    settings.ground_battery_full = 42;
-                                    break;
-                                case 1:
-                                    settings.ground_battery_type = 1;
-                                    settings.ground_battery_low = 31;
-                                    settings.ground_battery_mid = 36;
-                                    settings.ground_battery_full = 42;
-                                    break;
-                                case 2:
-                                    settings.ground_battery_type = 2;
-                                    settings.ground_battery_low = 30;
-                                    settings.ground_battery_mid = 35;
-                                    settings.ground_battery_full = 40;
-                                    break;
-                            }
-                }   }
+                        switch (batteryComboBox.currentIndex) {
+                            case 0:
+                                settings.ground_battery_type = 0;
+                                settings.ground_battery_low = 35;
+                                settings.ground_battery_mid = 39;
+                                settings.ground_battery_full = 42;
+                                break;
+                            case 1:
+                                settings.ground_battery_type = 1;
+                                settings.ground_battery_low = 31;
+                                settings.ground_battery_mid = 36;
+                                settings.ground_battery_full = 42;
+                                break;
+                            case 2:
+                                settings.ground_battery_type = 2;
+                                settings.ground_battery_low = 30;
+                                settings.ground_battery_mid = 35;
+                                settings.ground_battery_full = 40;
+                                break;
+                        }
+                    }
+                }
             }
-
         }
     }
+
+    function calculateBatteryPercentage(currentVoltage) {
+            var currentVoltage2 = ((currentVoltage/settings.ground_battery_cells) / 100).toFixed(0);
+            var fullVoltage = settings.ground_battery_full;
+            var midVoltage = settings.ground_battery_mid;
+            var emptyVoltage = settings.ground_battery_low;
+            var percentage;
+
+        if (currentVoltage2 >= fullVoltage) {
+            percentage = 100;
+        } else if (currentVoltage2 <= emptyVoltage) {
+            percentage = 0;
+        } else {
+            var voltageRange = fullVoltage - emptyVoltage;
+            var voltageProgress = currentVoltage2 - emptyVoltage;
+            percentage = (voltageProgress / voltageRange) * 100;
+
+            if (percentage >= 100) {
+                percentage = 100;
+            } else if (percentage <= 0) {
+                percentage = 0;
+            }
+        }
+            return percentage; // Ensure the percentage is within [0, 100]
+
+        }
+
 
     Item {
         id: widgetInner
@@ -125,11 +152,12 @@ BaseWidget {
             style: Text.Outline
             styleColor: settings.color_glow
         }
+
         Text {
             id: battery_percent
             y: 0
             color: settings.color_text
-            text: calculateBatteryPercentage(_ohdSystemGround.ina219_voltage_millivolt).toFixed(2) + "%"
+            text: settings.ground_voltage_in_percent + "%"
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: batteryGauge.right
             anchors.leftMargin: 0
@@ -142,35 +170,24 @@ BaseWidget {
             style: Text.Outline
             styleColor: settings.color_glow
 
-            function calculateBatteryPercentage(currentVoltage) {
-                var fullVoltage = settings.ground_battery_full;
-                var midVoltage = settings.ground_battery_mid;
-                var emptyVoltage = settings.ground_battery_empty;
+            Timer {
+                interval: 1000 // Interval of 1000 milliseconds (1 second)
+                running: true // Start the timer immediately
+                repeat: true // Repeat the timer indefinitely
 
-                var percentage;
-                if (currentVoltage >= fullVoltage) {
-                    percentage = 100.0;
-                } else if (currentVoltage <= emptyVoltage) {
-                    percentage = 0.0;
-                } else if (currentVoltage >= midVoltage) {
-                    percentage = 50.0 + ((currentVoltage - midVoltage) / (fullVoltage - midVoltage)) * 50.0;
-                } else {
-                    percentage = ((currentVoltage - emptyVoltage) / (midVoltage - emptyVoltage)) * 50.0;
+                onTriggered: {
+                    var currentVoltage = _ohdSystemGround.ina219_voltage_millivolt;
+                    var percentage = calculateBatteryPercentage(currentVoltage);
+                    settings.ground_voltage_in_percent = percentage;
                 }
-
-                return Math.max(0, Math.min(100, percentage)); // Ensure the percentage is within [0, 100]
             }
-            Component.onCompleted: {
-                   var currentVoltage = _ohdSystemGround.ina219_voltage_millivolt;
-                   var percentage = calculateBatteryPercentage(currentVoltage);
-                   settings.ground_voltage_in_percent = percentage;
-               }
         }
+
         Text {
             id: battery_amp_text
             visible: true
             y: 0
-            text: _ohdSystemGround.ina219_current_milliamps+"mA"
+            text: _ohdSystemGround.ina219_current_milliamps + "mA"
             color: settings.color_text
             anchors.bottom: battery_percent.top
             anchors.left: batteryGauge.right
@@ -184,16 +201,17 @@ BaseWidget {
             style: Text.Outline
             styleColor: settings.color_glow
         }
+
         Text {
             id: battery_volt_text
             visible: true
             text: {
                 if (settings.ground_battery_show_single_cell) {
-                            return (_ohdSystemGround.ina219_voltage_millivolt / settings.ground_battery_cells /1000) + "mVpC"
-                        } else {
-                         return _ohdSystemGround.ina219_voltage_millivolt /1000 + "mV"
-                     }
-                 }
+                    return (_ohdSystemGround.ina219_voltage_millivolt / settings.ground_battery_cells / 1000) + "mVpC";
+                } else {
+                    return (_ohdSystemGround.ina219_voltage_millivolt / 1000).toFixed(2) + "V";
+                }
+            }
             color: settings.color_text
             anchors.top: battery_percent.bottom
             anchors.left: batteryGauge.right
@@ -207,6 +225,7 @@ BaseWidget {
             style: Text.Outline
             styleColor: settings.color_glow
         }
+
         Text {
             id: batteryGauge
             y: 8
@@ -214,13 +233,41 @@ BaseWidget {
             height: 48
             // @disable-check M223
             color: {
-                var percent = settings.ground_voltage_in_percent
+                var percent = settings.ground_voltage_in_percent;
 
                 // 20% warning, 15% critical
-                return percent < 20 ? (percent < 15 ? "#ff0000" : "#fbfd15") : settings.color_shape
+                return percent < 50 ? (percent < 20 ? "#ff0000" : "#fbfd15") : settings.color_shape;
             }
             opacity: bw_current_opacity
-            text: _ohdSystemGround.battery_gauge
+            text: {
+                    var percent = settings.ground_voltage_in_percent;
+
+                    // Define symbols based on battery level
+                    var symbol;
+                    if (percent < 10) {
+                        symbol = "\uf07a"; // Change the symbol for battery level below 10%
+                    } else if (percent < 20) {
+                        symbol = "\uf07b"; // Change the symbol for battery level below 20%
+                    } else if (percent < 30) {
+                        symbol = "\uf07c"; // Change the symbol for battery level below 30%
+                    } else if (percent < 40) {
+                        symbol = "\uf07d"; // Change the symbol for battery level below 40%
+                    } else if (percent < 50) {
+                        symbol = "\uf07e"; // Change the symbol for battery level below 50%
+                    } else if (percent < 60) {
+                        symbol = "\uf07f"; // Change the symbol for battery level below 60%
+                    } else if (percent < 70) {
+                        symbol = "\uf080"; // Change the symbol for battery level below 70%
+                    } else if (percent < 80) {
+                        symbol = "\uf081"; // Change the symbol for battery level below 80%
+                    } else if (percent < 90) {
+                        symbol = "\uf082"; // Change the symbol for battery level below 90%
+                    } else {
+                        symbol = "\uf079"; // Default symbol for battery level above or equal to 100%
+                    }
+
+                    return symbol;
+                }
             anchors.left: parent.left
             anchors.leftMargin: 12
             fontSizeMode: Text.VerticalFit
