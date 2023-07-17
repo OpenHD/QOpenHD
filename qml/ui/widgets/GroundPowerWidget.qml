@@ -236,11 +236,38 @@ BaseWidget {
                 var percent = settings.ground_voltage_in_percent;
 
                 // 20% warning, 15% critical
-                return percent < 50 ? (percent < 10 ? "#ff0000" : "#fbfd15") : settings.color_shape;
+                return percent < 50 ? (percent < 20 ? "#ff0000" : "#fbfd15") : settings.color_shape;
             }
             opacity: bw_current_opacity
-            text: _ohdSystemGround.battery_gauge
-            anchors.left: parent.left
+            text: {
+                    var percent = settings.ground_voltage_in_percent;
+
+                    // Define symbols based on battery level
+                    var symbol;
+                    if (percent < 10) {
+                        symbol = "\uf07a"; // Change the symbol for battery level below 10%
+                    } else if (percent < 20) {
+                        symbol = "\uf07b"; // Change the symbol for battery level below 20%
+                    } else if (percent < 30) {
+                        symbol = "\uf07c"; // Change the symbol for battery level below 30%
+                    } else if (percent < 40) {
+                        symbol = "\uf07d"; // Change the symbol for battery level below 40%
+                    } else if (percent < 50) {
+                        symbol = "\uf07e"; // Change the symbol for battery level below 50%
+                    } else if (percent < 60) {
+                        symbol = "\uf07f"; // Change the symbol for battery level below 60%
+                    } else if (percent < 70) {
+                        symbol = "\uf080"; // Change the symbol for battery level below 70%
+                    } else if (percent < 80) {
+                        symbol = "\uf081"; // Change the symbol for battery level below 80%
+                    } else if (percent < 90) {
+                        symbol = "\uf082"; // Change the symbol for battery level below 90%
+                    } else {
+                        symbol = "\uf079"; // Default symbol for battery level above or equal to 100%
+                    }
+
+                    return symbol;
+                }            anchors.left: parent.left
             anchors.leftMargin: 12
             fontSizeMode: Text.VerticalFit
             anchors.verticalCenter: parent.verticalCenter

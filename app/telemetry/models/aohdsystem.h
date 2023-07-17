@@ -73,7 +73,7 @@ public: // public for QT
     // This basically only makes sense on the ground pi, it is not the battery percentage reported by the FC
     // but the battery percentage reported by the COmpanion computer running OpenHD (if it is supported, aka for future power hat o.ä)
     L_RO_PROP(int,battery_percent,set_battery_percent,0)
-    L_RO_PROP(QString,battery_gauge,set_battery_gauge,"")
+    L_RO_PROP(QString,battery_gauge,set_battery_gauge,"\uf091")
     // needs to be queried explicitly (not continous fire and forget)
     L_RO_PROP(QString,openhd_version,set_openhd_version,"N/A")
     L_RO_PROP(QString,last_ping_result_openhd,set_last_ping_result_openhd,"N/A")
