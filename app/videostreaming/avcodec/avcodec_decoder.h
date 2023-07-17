@@ -27,6 +27,11 @@
 //exp
 //#include "drm_kms/drmprime_out.h"
 
+/**
+ * Decoding and display of primary video on all platforms except android
+ * NOTE: On rpi, we actually don't use avcodec, but the decode service workaround (mmal)
+ * since it is the only way to get (ish) low latency h264 video on rpi.
+ */
 class AVCodecDecoder : public QObject
 {
 public:
