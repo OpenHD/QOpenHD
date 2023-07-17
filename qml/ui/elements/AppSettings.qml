@@ -61,6 +61,13 @@ Settings {
     property bool dev_rpi_use_external_omx_decode_service: true;
     property bool dev_always_use_generic_external_decode_service: false
 
+    // The user can controll the width and height the secondary video has when in minimized state
+    // (By that he also controlls the ratio).
+    // And he can specify a factor by which the secondary video is maximized when clicked
+    property int secondary_video_minimized_width : 320
+    property int secondary_video_minimized_height : 240
+    property int secondary_video_maximize_factor_perc : 200
+
     // ----------------------------------------------------------------------------------
     // All video (streaming) related settings local to qopenhd (nothing to do with openhd) end
     // ----------------------------------------------------------------------------------
@@ -316,13 +323,6 @@ Settings {
     property bool show_record_widget: true
     property double recordTextSize: 14
     property bool show_minimal_record_widget: true
-
-    // The user can controll the width and height the secondary video has when in minimized state
-    // (By that he also controlls the ratio).
-    // And he can specify a factor by which the secondary video is maximized when clicked
-    property int secondary_video_minimized_width : 320
-    property int secondary_video_minimized_height : 240
-    property int secondary_video_maximize_factor_perc : 200
 
     property bool show_aoa: false
     property bool aoa_declutter: false

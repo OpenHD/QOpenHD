@@ -260,6 +260,28 @@ static int get_qopenhd_n_cameras(){
     return tmp;
 }
 
+// We autmatically (over) write the video codec once we get camera telemetry data
+static int get_qopenhd_camera_video_codec(bool secondary){
+    QSettings settings;
+    int codec_in_qopenhd=0;
+    if(secondary){
+        codec_in_qopenhd = settings.value("qopenhd_secondary_video_codec", 0).toInt();
+    }else{
+        codec_in_qopenhd = settings.value("qopenhd_primary_video_codec", 0).toInt();
+    }
+    return codec_in_qopenhd;
+}
+static void set_qopenhd_camera_video_codec(bool secondary,int codec){
+    QSettings settings;
+    int codec_in_qopenhd=0;
+    if(secondary){
+        settings.setValue("qopenhd_secondary_video_codec",(int)codec);
+    }else{
+        settings.setValue("qopenhd_secondary_video_codec",(int)codec);
+    }
+
+}
+
 }
 
 #endif // QOPENHDVIDEOHELPER_H

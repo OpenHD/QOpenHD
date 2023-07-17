@@ -2,6 +2,7 @@
 #include "qdebug.h"
 #include "telemetryutil.hpp"
 #include "util/WorkaroundMessageBox.h"
+#include "../videostreaming/vscommon/QOpenHDVideoHelper.hpp""
 
 #include <qsettings.h>
 
@@ -81,6 +82,19 @@ void CameraStreamModel::update_mavlink_openhd_camera_stats(const mavlink_openhd_
     set_curr_set_video_format(ss.str().c_str());
     ss<<", "<<video_codec_to_string(msg.encoding_format);
     set_lulu_curr_video_codec_and_format(ss.str().c_str());
+    // Feature - automatically set the right codec in qopenhd
+    const bool secondary=msg.cam_index==1;
+    const int codec_in_qopenhd=QOpenHDVideoHelper::get_qopenhd_camera_video_codec(secondary);
+    const int codec_in_openhd=msg.encoding_format;
+    qDebug()<<"Codec: "<<codec_in_openhd;
+    if(codec_in_openhd==0 || codec_in_openhd==1 || codec_in_openhd==2){
+        if(codec_in_qopenhd!=codec_in_openhd && false){
+           //QOpenHDVideoHelper::set_qopenhd_camera_video_codec(secondary,codec_in_openhd);
+           std::stringstream log;
+           log<<"QOpenHD- set "<<(secondary ? "CAM2" : "CAM1")<<" to "<<video_codec_to_string(msg.encoding_format);
+           HUDLogMessagesModel::instance().add_message_info(log.str().c_str());
+        }
+    }
 }
 
 void CameraStreamModel::update_mavlink_openhd_stats_wb_video_air_fec_performance(const mavlink_openhd_stats_wb_video_air_fec_performance_t &msg)
