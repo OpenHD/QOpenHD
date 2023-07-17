@@ -14,8 +14,6 @@ BaseWidget {
     width: 112
     height: 48
 
-    visible: settings.show_bitrate
-
     property bool m_is_for_primary_camera: true
 
     widgetIdentifier: m_is_for_primary_camera ? "bitrate_widget" : "bitrate_widget2"

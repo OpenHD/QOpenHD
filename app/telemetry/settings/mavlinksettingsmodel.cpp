@@ -402,22 +402,6 @@ void MavlinkSettingsModel::removeData(int row)
     endRemoveRows();
 }
 
-static void hacky_set_n_cameras_in_qopenhd(const int comp_id,const MavlinkSettingsModel::SettingData& data){
-    if(data.unique_id=="V_N_CAMERAS"){
-        if(!std::holds_alternative<int32_t>(data.value)){
-            qDebug()<<"ERROR N_CAMERAS messed up, fixme";
-            return;
-        }
-        const int value=std::get<int32_t>(data.value);
-        const int value_in_qopenhd=QOpenHDVideoHelper::get_qopenhd_n_cameras();
-        if(value!=value_in_qopenhd && value_in_qopenhd==1){
-            auto message="QopenHD is not configured for single cam usage, go to QOpenHD settings / General to configure your GCS to show secondary camera screen";
-            qDebug()<<message;
-            WorkaroundMessageBox::makePopupMessage(message);
-        }
-    }
-}
-
 static void hacky_check_stbc(const int sys_id,const MavlinkSettingsModel::SettingData& data){
     if(sys_id != OHD_SYS_ID_AIR){
         // Enabling on air unit is way more important
@@ -451,7 +435,6 @@ void MavlinkSettingsModel::updateData(std::optional<int> row_opt, SettingData ne
 {
     {
         // temporary, dirty
-        hacky_set_n_cameras_in_qopenhd(m_comp_id,new_data);
         hacky_check_stbc(m_sys_id,new_data);;
     }
     int row=-1;
@@ -483,7 +466,6 @@ void MavlinkSettingsModel::addData(MavlinkSettingsModel::SettingData data)
 {
     {
         // temporary, dirty
-        hacky_set_n_cameras_in_qopenhd(m_comp_id,data);
         hacky_check_stbc(m_sys_id,data);
     }
     if(is_param_whitelisted(data.unique_id.toStdString())){

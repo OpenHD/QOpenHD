@@ -4,6 +4,7 @@
 #include "../../common/StringHelper.hpp"
 #include "../../common/TimeHelper.hpp"
 #include "../telemetryutil.hpp"
+#include "QOpenHDVideoHelper.hpp"
 #include "wificard.h"
 #include "rcchannelsmodel.h"
 #include "camerastreammodel.h"
@@ -15,6 +16,8 @@
 #include <logging/hudlogmessagesmodel.h>
 
 #include "util/qopenhd.h"
+
+#include <../util/WorkaroundMessageBox.h>
 
 AOHDSystem::AOHDSystem(const bool is_air,QObject *parent)
     : QObject{parent},m_is_air(is_air)
@@ -101,6 +104,20 @@ bool AOHDSystem::process_message(const mavlink_message_t &msg)
                 CameraStreamModel::instance(0).update_mavlink_openhd_camera_stats(parsedMsg);
             }else if(parsedMsg.cam_index==1){
                 CameraStreamModel::instance(1).update_mavlink_openhd_camera_stats(parsedMsg);
+                // Feature - tell user to enable 2 cameras in qopenhd
+                set_n_openhd_cameras(2);
+                const int value_in_qopenhd=QOpenHDVideoHelper::get_qopenhd_n_cameras();
+                if(value_in_qopenhd!=2){
+                    const auto elapsed=std::chrono::steady_clock::now()-m_last_n_cameras_message;
+                    if(elapsed>std::chrono::seconds(10)){
+                        auto message="QOpenHD is not configured for dual cam usage, go to QOpenHD settings / General to configure your GCS to show secondary camera screen";
+                        qDebug()<<message;
+                        WorkaroundMessageBox::makePopupMessage(message,8);
+                        m_last_n_cameras_message=std::chrono::steady_clock::now();
+                    }
+                    HUDLogMessagesModel::instance().add_message_info("QOpenHD only shows 1 camera");
+                }
+
             }
             return true;
         }break;

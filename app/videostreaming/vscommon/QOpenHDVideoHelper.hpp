@@ -241,13 +241,13 @@ static std::string create_udp_rtp_sdp_file(const VideoStreamConfigXX& video_stre
 }
 static void write_file_to_tmp(const std::string filename,const std::string content){
     std::ofstream _t(filename);
-     _t << content;
-     _t.close();
+    _t << content;
+    _t.close();
 }
 static constexpr auto kRTP_FILENAME="/tmp/rtp_custom.sdp";
 
 static void write_udp_rtp_sdp_file_to_tmp(const VideoStreamConfigXX& video_stream_config){
-     write_file_to_tmp(kRTP_FILENAME,create_udp_rtp_sdp_file(video_stream_config));
+    write_file_to_tmp(kRTP_FILENAME,create_udp_rtp_sdp_file(video_stream_config));
 }
 static std::string get_udp_rtp_sdp_filename(const VideoStreamConfigXX& video_stream_config){
     write_udp_rtp_sdp_file_to_tmp(video_stream_config);
@@ -277,7 +277,7 @@ static void set_qopenhd_camera_video_codec(bool secondary,int codec){
     if(secondary){
         settings.setValue("qopenhd_secondary_video_codec",(int)codec);
     }else{
-        settings.setValue("qopenhd_secondary_video_codec",(int)codec);
+        settings.setValue("qopenhd_primary_video_codec",(int)codec);
     }
 
 }

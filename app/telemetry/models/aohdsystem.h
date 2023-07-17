@@ -99,6 +99,8 @@ public: // public for QT
     L_RO_PROP(QString,rx_packets_per_second_and_bits_per_second,set_rx_packets_per_second_and_bits_per_second,"N/A")
     L_RO_PROP(QString,tx_tele_packets_per_second_and_bits_per_second,set_tx_tele_packets_per_second_and_bits_per_second,"N/A")
     L_RO_PROP(QString,rx_tele_packets_per_second_and_bits_per_second,set_rx_tele_packets_per_second_and_bits_per_second,"N/A")
+    // Set to 2 as soon as we receve a broadcast message for secondary camera from qopenhd
+    L_RO_PROP(int,n_openhd_cameras,set_n_openhd_cameras,-1)
 private:
     const bool m_is_air; // either true (for air) or false (for ground)
      uint8_t get_own_sys_id()const{
@@ -146,7 +148,8 @@ private:
      int m_n_times_version_has_been_requested=0;
 private:
      // do not completely pollute the HUD with this error message
-     std::chrono::steady_clock::time_point m_last_tx_error_hud_message=std::chrono::steady_clock::now();
+    std::chrono::steady_clock::time_point m_last_tx_error_hud_message=std::chrono::steady_clock::now();
+    std::chrono::steady_clock::time_point m_last_n_cameras_message=std::chrono::steady_clock::now();
 };
 
 
