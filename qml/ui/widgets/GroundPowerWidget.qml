@@ -267,7 +267,8 @@ BaseWidget {
                     }
 
                     return symbol;
-                }            anchors.left: parent.left
+                }
+            anchors.left: parent.left
             anchors.leftMargin: 12
             fontSizeMode: Text.VerticalFit
             anchors.verticalCenter: parent.verticalCenter
