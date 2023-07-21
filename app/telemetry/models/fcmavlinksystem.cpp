@@ -358,9 +358,13 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         mavlink_battery_status_t battery_status;
         mavlink_msg_battery_status_decode(&msg, &battery_status);
         set_battery_consumed_mah(battery_status.current_consumed);
-        set_battery_percent(battery_status.battery_remaining);
-        const QString fc_battery_gauge_glyph = Telemetryutil::battery_gauge_glyph_from_percentage(battery_status.battery_remaining);
-        set_battery_percent_gauge(fc_battery_gauge_glyph);
+        QSettings settings;
+        const bool air_battery_use_batt_id_0_only=settings.value("air_battery_use_batt_id_0_only", false).toBool();
+        if(!air_battery_use_batt_id_0_only){
+           set_battery_percent(battery_status.battery_remaining);
+           const QString fc_battery_gauge_glyph = Telemetryutil::battery_gauge_glyph_from_percentage(battery_status.battery_remaining);
+           set_battery_percent_gauge(fc_battery_gauge_glyph);
+        }
         // we always use the first cell for the "single volt" value. However, not sure how many people have the HW on their air
         // battery to measure the voltage of a single cell (which is what this would be for)
         // January 22: doesn't work reliably, use the worse but working qopenhd local setting approach
