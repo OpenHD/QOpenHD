@@ -8,6 +8,7 @@
 #include "../common/TimeHelper.hpp"
 #include "../common/StringHelper.hpp"
 #include "mavlink_enum_to_string.h"
+#include <cstring>
 
 // Various utility methods for telemetry that are static and take simple imputs.
 namespace Telemetryutil{
@@ -504,6 +505,21 @@ static QString min_max_avg_to_string(int32_t min,int32_t max,int32_t avg){
     ss<<"max:"<<max<<", ";
     ss<<"avg:"<<avg;
     return QString(ss.str().c_str());
+}
+
+// OpenHD special
+// We pack those 3 into a single uint8_t in the mavlink msg
+struct StbcLpdcShortGuardBitfield {
+    unsigned int stbc:1;
+    unsigned int lpdc:1;
+    unsigned int short_guard:1;
+    unsigned int unused:5;
+}__attribute__ ((packed));
+static_assert(sizeof(StbcLpdcShortGuardBitfield)==1);
+static StbcLpdcShortGuardBitfield get_stbc_lpdc_shortguard_bitfield(uint8_t bitfield){
+    StbcLpdcShortGuardBitfield ret{};
+    std::memcpy((uint8_t*)&ret,&bitfield,1);
+    return ret;
 }
 
 }

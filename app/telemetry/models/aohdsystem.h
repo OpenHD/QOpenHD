@@ -94,6 +94,10 @@ public: // public for QT
     L_RO_PROP(int,curr_channel_width_mhz,set_curr_channel_width_mhz,-1);
     // We show a watermark if passive mode is enabled
     L_RO_PROP(bool,tx_passive_mode,set_tx_passive_mode,false)
+    // wifibroadcast options
+    L_RO_PROP(bool,wb_stbc_enabled,set_wb_stbc_enabled,false)
+    L_RO_PROP(bool,wb_lpdc_enabled,set_wb_lpdc_enabled,false)
+    L_RO_PROP(bool,wb_short_guard_enabled,set_wb_short_guard_enabled,false)
     //
     L_RO_PROP(QString,tx_packets_per_second_and_bits_per_second,set_tx_packets_per_second_and_bits_per_second,"N/A")
     L_RO_PROP(QString,rx_packets_per_second_and_bits_per_second,set_rx_packets_per_second_and_bits_per_second,"N/A")

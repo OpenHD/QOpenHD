@@ -102,6 +102,15 @@ BaseWidget {
                 font.pixelSize: detailPanelFontPixels
                 verticalAlignment: Text.AlignVCenter
             }
+            Text {
+                //Layout.alignment: left
+                text: "STBC/LPDC/SGI: "+_ohdSystemGround.wb_stbc_enabled+"/"+_ohdSystemGround.wb_lpdc_enabled+"/"+_ohdSystemGround.wb_short_guard_enabled
+                color: "white"
+                font.bold: true
+                height: parent.height
+                font.pixelSize: detailPanelFontPixels
+                verticalAlignment: Text.AlignVCenter
+            }
         }
     }
 
