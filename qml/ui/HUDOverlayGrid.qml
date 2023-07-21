@@ -267,6 +267,14 @@ Item {
     WBLinkRateControlWidget{
         id: wBLinkRateControlWidget
     }
+
+    DistanceSensorWidget{
+        id: distancesensorwidget
+    }
+
+    UAVTimeWiget{
+        id: uavtimewidget
+    }
 }
 
 

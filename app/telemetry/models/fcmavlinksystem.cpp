@@ -116,13 +116,20 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         set_battery_voltage_volt(battery_voltage_v);
         set_battery_voltage_single_cell(QOpenHDMavlinkHelper::calclate_voltage_per_cell(battery_voltage_v));
         set_battery_current_ampere((double)sys_status.current_battery/100.0);
-        // TODO XX
+        // TODO - should we use values from here or from the battery message ?
+        const auto battery_remaining_perc=sys_status.battery_remaining;
+        if(battery_remaining_perc != -1){
+            set_battery_percent(battery_remaining_perc);
+            const QString fc_battery_gauge_glyph = Telemetryutil::battery_gauge_glyph_from_percentage(battery_remaining_perc);
+            set_battery_percent_gauge(fc_battery_gauge_glyph);
+        }
         break;
     }
 
     case MAVLINK_MSG_ID_SYSTEM_TIME:{
         mavlink_system_time_t sys_time;
         mavlink_msg_system_time_decode(&msg, &sys_time);
+        set_sys_time_unix_usec(sys_time.time_unix_usec);
         uint32_t boot_time = sys_time.time_boot_ms;
         /*if (boot_time < m_last_boot || m_last_boot == 0) {
                 m_last_boot = boot_time;
@@ -458,6 +465,11 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         break;
     case MAVLINK_MSG_ID_GIMBAL_DEVICE_ATTITUDE_STATUS:
         break;
+    case MAVLINK_MSG_ID_DISTANCE_SENSOR:{
+        mavlink_distance_sensor_t decoded;
+        mavlink_msg_distance_sensor_decode(&msg,&decoded);
+        set_distance_sensor_distance_cm(decoded.current_distance);
+    };break;
     default: {
         //printf("MavlinkTelemetry received unmatched message with ID %d, sequence: %d from component %d of system %d\n", msg.msgid, msg.seq, msg.compid, msg.sysid);
         qDebug()<<"MavlinkTelemetry received unmatched message with ID "<<msg.msgid
@@ -1098,4 +1110,13 @@ void FCMavlinkSystem::recalculate_efficiency()
     }
     m_efficiency_last_distance_m=m_flight_distance_m;
     m_efficiency_last_charge_consumed_mAh=m_battery_consumed_mah;
+}
+
+
+void FCMavlinkSystem::set_update_rates()
+{
+    mavlink_command_long_t command;
+    command.target_system=1;
+    command.target_component=0;
+    command.command=511;
 }

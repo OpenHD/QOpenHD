@@ -1484,6 +1484,36 @@ ScrollView {
                     onCheckedChanged: settings.show_record_widget = checked
                 }
             }
+
+            SettingBaseElement{
+                m_short_description: "Show distance sensor widget"
+                m_long_description: "For UAVs with a distance sensor"
+                Switch {
+                    width: 32
+                    height: elementHeight
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    checked: settings.show_distance_sensor_widget
+                    onCheckedChanged: settings.show_distance_sensor_widget = checked
+                }
+            }
+
+            SettingBaseElement{
+                m_short_description: "Show (GPS) time widget"
+                m_long_description: "For UAVs with GPS, shows the time as reported by the UAV"
+                Switch {
+                    width: 32
+                    height: elementHeight
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    checked: settings.show_time_widget
+                    onCheckedChanged: settings.show_time_widget = checked
+                }
+            }
         }
     }
 }

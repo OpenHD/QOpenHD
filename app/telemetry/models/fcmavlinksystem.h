@@ -160,6 +160,8 @@ public: // Stuff needs to be public for qt
     L_RO_PROP(int,mission_waypoints_current,set_mission_waypoints_current,-1);
     // Current mission type, verbose as string for the user
     L_RO_PROP(QString,mission_current_type,set_mission_current_type,"Unknown");
+    L_RO_PROP(int,distance_sensor_distance_cm,set_distance_sensor_distance_cm,-1);
+    L_RO_PROP(quint64,sys_time_unix_usec,set_sys_time_unix_usec,0);
 public:
     void telemetryStatusMessage(QString message, int level);
     void calculate_home_distance();
@@ -268,6 +270,8 @@ private:
     double m_efficiency_last_distance_m=0;
     int m_efficiency_last_charge_consumed_mAh=0;
     std::chrono::steady_clock::time_point m_efficiency_last_update=std::chrono::steady_clock::now();
+private:
+    void set_update_rates();
 };
 
 

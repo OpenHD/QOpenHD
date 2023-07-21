@@ -332,6 +332,10 @@ Settings {
 
     property bool show_example_widget: false
 
+    property bool show_distance_sensor_widget: false
+    // (GPS) time
+    property bool show_time_widget: false
+
     // N of battery cells (generic) of the vehicle, used for the show voltage per cell setting
     // Proper way would be to query / get that via mavlink, but this is more complicated than it seems at glance
     property int vehicle_battery_n_cells: 3

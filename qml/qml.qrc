@@ -239,5 +239,7 @@
         <file>ui/configpopup/ConnectPanel.qml</file>
         <file>ui/configpopup/PanelFCSetup.qml</file>
         <file>ui/widgets/VideoBitrateWidgetPrimary.qml</file>
+        <file>ui/widgets/DistanceSensorWidget.qml</file>
+        <file>ui/widgets/UAVTimeWiget.qml</file>
     </qresource>
 </RCC>
