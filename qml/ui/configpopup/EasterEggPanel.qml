@@ -27,7 +27,7 @@ Rectangle {
             Card {
                 id: consti
                 height: 224
-                width: 224
+                width: 150
                 cardName: qsTr("Constantin")
                 cardBody: ColumnLayout {
                     RowLayout {
@@ -36,14 +36,13 @@ Rectangle {
                         Item {
                             width: parent.width
                             height: parent.height
-                            Layout.leftMargin: 20
 
                             Image {
                                 id: ee1
                                 visible: true
                                 source: "../../resources/master1.png"
-                                width: consti.height * 0.8
-                                height: consti.height * 0.8
+                                width: consti.height * 0.7
+                                height: consti.height * 0.7
                             }
                         }
                     }
@@ -52,10 +51,10 @@ Rectangle {
             }
 
             Card {
-                id: max
+                id: thomas
                 height: 224
-                width: 224
-                cardName: qsTr("Max")
+                width: 150
+                cardName: qsTr("Thomas")
                 cardBody: ColumnLayout {
                     RowLayout {
                         Layout.fillWidth: true
@@ -63,14 +62,70 @@ Rectangle {
                         Item {
                             width: parent.width
                             height: parent.height
-                            Layout.leftMargin: 20
 
                             Image {
                                 id: ee3
                                 visible: true
-                                source: "../../resources/master3.png"
-                                width: max.height * 0.8
-                                height: max.height * 0.8
+                                source: "../../resources/master4.png"
+                                width: max.height * 0.7
+                                height: max.height * 0.7
+                            }
+                        }
+                    }
+                }
+                hasFooter: false
+            }
+
+        }
+
+        ColumnLayout {
+            spacing: 6
+
+            Card {
+                id: rapha
+                height: 224
+                width: 150
+                cardName: qsTr("Raphael")
+                cardBody: ColumnLayout {
+                    RowLayout {
+                        Layout.fillWidth: true
+
+                        Item {
+                            width: parent.width
+                            height: parent.height
+
+                            Image {
+                                id: ee2
+                                visible: true
+                                source: "../../resources/master2.png"
+                                width: rapha.height * 0.7
+                                height: rapha.height * 0.7
+                            }
+                        }
+                    }
+                }
+                hasFooter: false
+            }
+
+            Card {
+                id: pete
+                height: 224
+                width: 150
+                cardName: qsTr("Pete")
+                cardBody: ColumnLayout {
+                    RowLayout {
+                        Layout.fillWidth: true
+
+                        Item {
+                            width: parent.width
+                            height: parent.height
+
+                            Image {
+                                id: ee4
+                                visible: true
+                                source: "../../resources/master5.png"
+                                width: thomas.height * 0.7
+                                height: thomas.height * 0.7
                             }
                         }
                     }
@@ -83,10 +138,10 @@ Rectangle {
             spacing: 6
 
             Card {
-                id: rapha
+                id: max
                 height: 224
-                width: 224
-                cardName: qsTr("Raphael")
+                width: 150
+                cardName: qsTr("Max")
                 cardBody: ColumnLayout {
                     RowLayout {
                         Layout.fillWidth: true
@@ -94,14 +149,13 @@ Rectangle {
                         Item {
                             width: parent.width
                             height: parent.height
-                            Layout.leftMargin: 20
 
                             Image {
-                                id: ee2
+                                id: ee5
                                 visible: true
-                                source: "../../resources/master2.png"
-                                width: rapha.height * 0.8
-                                height: rapha.height * 0.8
+                                source: "../../resources/master3.png"
+                                width: rapha.height * 0.7
+                                height: rapha.height * 0.7
                             }
                         }
                     }
@@ -110,10 +164,10 @@ Rectangle {
             }
 
             Card {
-                id: thomas
+                id: you
                 height: 224
-                width: 224
-                cardName: qsTr("Thomas")
+                width: 150
+                cardName: qsTr("")
                 cardBody: ColumnLayout {
                     RowLayout {
                         Layout.fillWidth: true
@@ -121,14 +175,13 @@ Rectangle {
                         Item {
                             width: parent.width
                             height: parent.height
-                            Layout.leftMargin: 20
 
                             Image {
-                                id: ee4
-                                visible: true
+                                id: ee6
+                                visible: false
                                 source: "../../resources/master4.png"
-                                width: thomas.height * 0.8
-                                height: thomas.height * 0.8
+                                width: thomas.height * 0.7
+                                height: thomas.height * 0.7
                             }
                         }
                     }
@@ -148,7 +201,6 @@ Rectangle {
                 cardBody: ColumnLayout {
                     Repeater {
                         model: [
-                            "petea",
                             "pilotnbr1",
                             "limitlessgreen",
                             "michell",
