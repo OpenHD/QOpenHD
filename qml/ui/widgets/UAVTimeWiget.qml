@@ -10,7 +10,7 @@ import OpenHD 1.0
 
 BaseWidget {
     id: distancesensorwidget
-    width: 40
+    width: 80
     height: 25
     defaultAlignment: 3
     defaultHCenter: false

@@ -37,7 +37,7 @@ FCMavlinkSystem& FCMavlinkSystem::instance() {
 void FCMavlinkSystem::set_system(std::shared_ptr<mavsdk::System> system)
 {
     // The system is set once when discovered, then should not change !!
-    if(system!=nullptr){
+    if(m_system!=nullptr){
         HUDLogMessagesModel::instance().add_message_warning("FC sys id conflict");
         return;
     }
@@ -137,7 +137,7 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         mavlink_msg_system_time_decode(&msg, &sys_time);
         set_sys_time_unix_usec(sys_time.time_unix_usec);
         QDateTime time;
-        time.setTime_t(sys_time.time_unix_usec/1000);
+        time.setTime_t(sys_time.time_unix_usec/1000/1000);
         set_sys_time_unix_as_str(time.toString());
 
         uint32_t boot_time = sys_time.time_boot_ms;

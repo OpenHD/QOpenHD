@@ -161,7 +161,7 @@ Settings {
 
     property bool show_gps: true
     property bool gps_show_all: false
-    property bool gps_garble_lat_lon_first_decimals: true
+    property bool gps_garble_lat_lon_first_decimals: false
     property bool gps_declutter: false
     property double gps_warn: 3
     property double gps_caution: 2

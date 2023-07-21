@@ -51,6 +51,15 @@ static bool any_comp_id_autopilot(const std::vector<uint8_t>& comp_ids){
     }
     return false;
 }
+static std::string comp_ids_to_string(const std::vector<uint8_t>& comp_ids){
+    std::stringstream ss;
+    ss<<"[";
+    for (auto compid : comp_ids){
+        ss<<(int)compid<<",";
+    }
+    ss<<"]";
+    return ss.str();
+}
 
 }
 
