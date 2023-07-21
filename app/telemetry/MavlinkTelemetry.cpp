@@ -1,6 +1,7 @@
 #include "MavlinkTelemetry.h"
 
 #include "common/openhd-util.hpp"
+#include "mavsdk_helper.hpp"
 #include "qopenhdmavlinkhelper.hpp"
 #include "telemetry/openhd_defines.hpp"
 #include "models/aohdsystem.h"
@@ -120,17 +121,23 @@ void MavlinkTelemetry::onNewSystem(std::shared_ptr<mavsdk::System> system){
     // pre-defined OpenHD sys id's it is the one FC system (connected on the air pi).
     //else if(system->has_autopilot()){
     else {
-        qDebug()<<"Found FC";
-        // we got the flight controller
-        FCMavlinkSystem::instance().set_system(system);
-        // hacky, for SITL testing
-        if(passtroughOhdGround==nullptr){
-            passtroughOhdGround=std::make_shared<mavsdk::MavlinkPassthrough>(system);
-            passtroughOhdGround->intercept_incoming_messages_async([this](mavlink_message_t& msg){
-                //qDebug()<<"Intercept:Got message"<<msg.msgid;
-                onProcessMavlinkMessage(msg);
-                return true;
-            });
+        const auto comp_ids=system->component_ids();
+        const bool is_fc=mavsdk::helper::any_comp_id_autopilot(comp_ids);
+        if(is_fc){
+            qDebug()<<"Found FC";
+            // we got the flight controller
+            FCMavlinkSystem::instance().set_system(system);
+            // hacky, for SITL testing
+            if(passtroughOhdGround==nullptr){
+                passtroughOhdGround=std::make_shared<mavsdk::MavlinkPassthrough>(system);
+                passtroughOhdGround->intercept_incoming_messages_async([this](mavlink_message_t& msg){
+                    //qDebug()<<"Intercept:Got message"<<msg.msgid;
+                    onProcessMavlinkMessage(msg);
+                    return true;
+                });
+            }
+        }else{
+            qDebug()<<"Got weird system:"<<(int)system->get_system_id();
         }
         //MavlinkSettingsModel::instanceFC().set_param_client(system);
     }

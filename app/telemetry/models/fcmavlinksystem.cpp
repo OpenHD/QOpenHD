@@ -37,6 +37,10 @@ FCMavlinkSystem& FCMavlinkSystem::instance() {
 void FCMavlinkSystem::set_system(std::shared_ptr<mavsdk::System> system)
 {
     // The system is set once when discovered, then should not change !!
+    if(system!=nullptr){
+        HUDLogMessagesModel::instance().add_message_warning("FC sys id conflict");
+        return;
+    }
     assert(m_system==nullptr);
     m_system=system;
     if(!m_system->has_autopilot()){

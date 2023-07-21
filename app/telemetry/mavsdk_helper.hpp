@@ -43,6 +43,15 @@ static bool set_all_message_update_rates(std::shared_ptr<mavsdk::MavlinkPassthro
     return false;
 }
 
+static bool any_comp_id_autopilot(const std::vector<uint8_t>& comp_ids){
+    for (auto compid : comp_ids){
+        if (compid == MAV_COMP_ID_AUTOPILOT1) {
+            return true;
+        }
+    }
+    return false;
+}
+
 }
 
 #endif // MAVSDK_HELPER_H
