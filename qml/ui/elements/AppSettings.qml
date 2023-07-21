@@ -362,6 +362,8 @@ Settings {
 
     // really really dirty, i want to get rid of it as soon as possible
     property bool dirty_enable_inav_hacks: false
+    // FC discovery - annoying mavsdk
+    property bool dirty_enable_mavlink_fc_sys_id_check: false
 
     property int custom_cursor_type: 0
     property int custom_cursor_scale: 1 // arbitrary scale values - higher == bigger,

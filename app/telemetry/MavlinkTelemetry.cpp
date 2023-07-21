@@ -121,8 +121,15 @@ void MavlinkTelemetry::onNewSystem(std::shared_ptr<mavsdk::System> system){
     // pre-defined OpenHD sys id's it is the one FC system (connected on the air pi).
     //else if(system->has_autopilot()){
     else {
-        const auto comp_ids=system->component_ids();
-        const bool is_fc=mavsdk::helper::any_comp_id_autopilot(comp_ids);
+        // By default, we assume there is one additional non-openhd system - the FC
+        bool is_fc=true;
+        QSettings settings;
+        const bool dirty_enable_mavlink_fc_sys_id_check=settings.value("dirty_enable_mavlink_fc_sys_id_check",false).toBool();
+        if(dirty_enable_mavlink_fc_sys_id_check){
+            // filtering, default off
+            const auto comp_ids=system->component_ids();
+            is_fc=mavsdk::helper::any_comp_id_autopilot(comp_ids);
+        }
         if(is_fc){
             qDebug()<<"Found FC";
             // we got the flight controller
