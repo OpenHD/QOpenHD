@@ -161,7 +161,9 @@ public: // Stuff needs to be public for qt
     // Current mission type, verbose as string for the user
     L_RO_PROP(QString,mission_current_type,set_mission_current_type,"Unknown");
     L_RO_PROP(int,distance_sensor_distance_cm,set_distance_sensor_distance_cm,-1);
+    // (GPS) reported time
     L_RO_PROP(quint64,sys_time_unix_usec,set_sys_time_unix_usec,0);
+    L_RO_PROP(QString,sys_time_unix_as_str,set_sys_time_unix_as_str,"N/A");
 public:
     void telemetryStatusMessage(QString message, int level);
     void calculate_home_distance();

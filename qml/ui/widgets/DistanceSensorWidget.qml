@@ -27,7 +27,14 @@ BaseWidget {
     // Number(
     //settings.enable_imperial ? (settings.speed_second_use_groundspeed ? _fcMavlinkSystem.speed * 0.621371 : _fcMavlinkSystem.airspeed * 0.621371) : (settings.speed_second_use_groundspeed ? _fcMavlinkSystem.speed : _fcMavlinkSystem.airspeed)).toLocaleString(
     //Qt.locale(), 'f', 0)
-    property string m_distance_m : ""+_fcMavlinkSystem.distance_sensor_distance_cm*0.01+"m"
+
+    function calc_distance(){
+        var distance_cm=_fcMavlinkSystem.distance_sensor_distance_cm
+        if(distance_cm===-1)return "N/A"
+        return ""+_fcMavlinkSystem.distance_sensor_distance_cm*0.01+"m"
+    }
+
+    property string m_distance_m : calc_distance()
 
     widgetDetailComponent: ScrollView {
 
@@ -58,17 +65,17 @@ BaseWidget {
             font.pixelSize: 14
             font.family: settings.font_text
             width: 40
-            anchors.right: parent.right
+            anchors.left: parent.left
             anchors.rightMargin: 0
-            anchors.verticalCenter: widgetGlyph.verticalCenter
+            anchors.verticalCenter: parent.verticalCenter
             text: m_distance_m
-            horizontalAlignment: Text.AlignRight
+            horizontalAlignment: Text.AlignLeft
             verticalAlignment: Text.AlignVCenter
             style: Text.Outline
             styleColor: settings.color_glow
         }
 
-        Text {
+        /*Text {
             id: widgetGlyph
             width: 40
             height: parent.height
@@ -83,7 +90,7 @@ BaseWidget {
             verticalAlignment: Text.AlignVCenter
             style: Text.Outline
             styleColor: settings.color_glow
-        }
+        }*/
 
         antialiasing: true
     }

@@ -17,6 +17,8 @@
 #include "fcmavlinkmissionitemsmodel.h"
 #include "fcmavlinksettingsmodel.h"
 
+#include <QDateTime>
+
 FCMavlinkSystem::FCMavlinkSystem(QObject *parent): QObject(parent) {
     m_flight_time_timer = new QTimer(this);
     QObject::connect(m_flight_time_timer, &QTimer::timeout, this, &FCMavlinkSystem::updateFlightTimer);
@@ -130,6 +132,10 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         mavlink_system_time_t sys_time;
         mavlink_msg_system_time_decode(&msg, &sys_time);
         set_sys_time_unix_usec(sys_time.time_unix_usec);
+        QDateTime time;
+        time.setTime_t(sys_time.time_unix_usec/1000);
+        set_sys_time_unix_as_str(time.toString());
+
         uint32_t boot_time = sys_time.time_boot_ms;
         /*if (boot_time < m_last_boot || m_last_boot == 0) {
                 m_last_boot = boot_time;

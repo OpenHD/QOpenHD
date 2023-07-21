@@ -4,6 +4,8 @@ import QtQuick.Layouts 1.12
 import QtGraphicalEffects 1.12
 import Qt.labs.settings 1.0
 
+import QtQml 2.15
+
 import OpenHD 1.0
 
 BaseWidget {
@@ -24,8 +26,19 @@ BaseWidget {
 
     hasWidgetDetail: true
 
+    /*function get_time(){
+        var unixTime=_fcMavlinkSystem.sys_time_unix_usec
+        if(unixTime<1){
+            return "Date N/A";
+        }
+        var timestamp=new QDateTime();
+        //QDateTime timestamp;
+        timestamp.setTime_t(unixTime);
+        //return "TODO";
+        return timestamp.toString(QSystemLocaleShortDate);
+    }*/
 
-    property string m_time: "TODO"
+    property string m_time: _fcMavlinkSystem.sys_time_unix_as_str //get_time()
 
     widgetDetailComponent: ScrollView {
 
@@ -50,23 +63,22 @@ BaseWidget {
         scale: bw_current_scale
 
         Text {
-            id: second_alt_text
             color: settings.color_text
             opacity: bw_current_opacity
             font.pixelSize: 14
             font.family: settings.font_text
             width: 40
-            anchors.right: parent.right
+            anchors.left: parent.left
             anchors.rightMargin: 0
-            anchors.verticalCenter: widgetGlyph.verticalCenter
+            anchors.verticalCenter: parent.verticalCenter
             text: m_time
-            horizontalAlignment: Text.AlignRight
+            horizontalAlignment: Text.AlignLeft
             verticalAlignment: Text.AlignVCenter
             style: Text.Outline
             styleColor: settings.color_glow
         }
 
-        Text {
+        /*Text {
             id: widgetGlyph
             width: 40
             height: parent.height
@@ -81,7 +93,7 @@ BaseWidget {
             verticalAlignment: Text.AlignVCenter
             style: Text.Outline
             styleColor: settings.color_glow
-        }
+        }*/
 
         antialiasing: true
     }
