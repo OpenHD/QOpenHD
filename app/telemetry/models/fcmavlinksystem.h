@@ -272,8 +272,6 @@ private:
     double m_efficiency_last_distance_m=0;
     int m_efficiency_last_charge_consumed_mAh=0;
     std::chrono::steady_clock::time_point m_efficiency_last_update=std::chrono::steady_clock::now();
-private:
-    void set_update_rates();
 };
 
 

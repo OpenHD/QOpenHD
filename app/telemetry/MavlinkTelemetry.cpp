@@ -313,3 +313,20 @@ bool MavlinkTelemetry::ohd_gnd_request_channel_scan(int freq_bands,int channel_w
     }
     return false;
 }
+
+static mavlink_command_long_t create_cmd_set_msg_interval(int msg_type,int interval_us){
+    mavlink_command_long_t command{};
+    command.target_system=1;
+    command.target_component=0;
+    command.command=511;
+    command.confirmation=0;
+    command.param1=msg_type;
+    command.param2=interval_us;
+    return command;
+}
+
+void MavlinkTelemetry::exp_set_data_rates()
+{
+    auto cmd=create_cmd_set_msg_interval(MAVLINK_MSG_ID_ATTITUDE,1000*33);
+    send_command_long_oneshot(cmd);
+}

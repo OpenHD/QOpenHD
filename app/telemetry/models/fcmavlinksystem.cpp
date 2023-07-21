@@ -1121,12 +1121,3 @@ void FCMavlinkSystem::recalculate_efficiency()
     m_efficiency_last_distance_m=m_flight_distance_m;
     m_efficiency_last_charge_consumed_mAh=m_battery_consumed_mah;
 }
-
-
-void FCMavlinkSystem::set_update_rates()
-{
-    mavlink_command_long_t command;
-    command.target_system=1;
-    command.target_component=0;
-    command.command=511;
-}
