@@ -374,6 +374,7 @@ void AVCodecDecoder::on_new_frame(AVFrame *frame)
         qDebug()<<"WARNING do not configure the decoder with mmal without the mmal renderer";
 #endif
     }
+    //qDebug()<<debug_frame(frame).c_str();
     TextureRenderer::instance().queue_new_frame_for_display(frame);
     if(last_frame_width==-1 || last_frame_height==-1){
         last_frame_width=frame->width;

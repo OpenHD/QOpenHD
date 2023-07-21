@@ -166,6 +166,14 @@ static bool is_AV_PIX_FMT_YUV42XP( int format){
     return is_AV_PIX_FMT_YUV420P(format) || is_AV_PIX_FMT_YUV422P(format);
 }
 
+static std::string debug_frame(const AVFrame* frame){
+    std::stringstream ss;
+    ss<<""<<frame->width<<"x"<<frame->height;
+    ss<<"crop bottom:"<<frame->crop_bottom<<" left:"<<frame->crop_left<<" top:"<<frame->crop_top<<" right:"<<frame->crop_right;
+    ss<<"linesize:"<<frame->linesize[0]<<","<<frame->linesize[1]<<","<<frame->linesize[2]<<","<<frame->linesize[3];
+    return ss.str();
+}
+
 /*struct XBestDecoder{
     const AVCodec *decoder;
     bool is_hw;
