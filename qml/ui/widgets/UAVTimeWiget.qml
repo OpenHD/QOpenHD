@@ -9,8 +9,8 @@ import QtQml 2.15
 import OpenHD 1.0
 
 BaseWidget {
-    id: distancesensorwidget
-    width: 80
+    id: uavtmewidget
+    width: 100
     height: 25
     defaultAlignment: 3
     defaultHCenter: false
