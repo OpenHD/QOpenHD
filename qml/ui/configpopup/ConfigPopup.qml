@@ -647,10 +647,6 @@ Rectangle {
             id: rcInfoPanel
         }
 
-        /*PanelFCSetup {
-            id: fcSetupPanel
-        }*/
-
         AppDeveloperStatsPanel {
             id: appDeveloperStatsPanel
         }
