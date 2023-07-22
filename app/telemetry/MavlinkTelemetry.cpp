@@ -242,7 +242,7 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg)
 
             }
         }else{
-             // we don't know the FC sys id yet.
+            // we don't know the FC sys id yet.
             qDebug()<<"MavlinkTelemetry received unmatched message (FC not yet known) "<<QOpenHDMavlinkHelper::debug_mavlink_message(msg);
         }
     }
