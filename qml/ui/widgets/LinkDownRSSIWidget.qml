@@ -31,7 +31,7 @@ BaseWidget {
     hasWidgetDetail: true
     hasWidgetAction: true
 
-    widgetActionHeight: 164+50
+    widgetActionHeight: 164+50+30
 
     property int m_packet_loss_perc : _ohdSystemGround.curr_rx_packet_loss_perc
     function get_packet_loss_perc_warning_level(){
