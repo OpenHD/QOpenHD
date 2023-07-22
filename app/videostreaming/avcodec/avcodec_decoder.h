@@ -17,13 +17,6 @@
 #include <queue>
 #include <atomic>
 
-//#define HAVE_MMAL
-
-#ifdef HAVE_MMAL
-#include "mmal/rpimmaldisplay.h"
-#include "mmal/rpimmaldecoder.h"
-//#include "mmal/rpimmaldecodedisplay.h"
-#endif
 //exp
 //#include "drm_kms/drmprime_out.h"
 
@@ -111,16 +104,6 @@ private:
     bool feed_rtp_frame_if_available();
 private:
     void reset_before_decode_start();
-//#define HAVE_MMAL
-#ifdef HAVE_MMAL
-    // Since this version of mmal decode (direct) does not use avcodec, we have a special impl. for it
-    // Note that the official specs for the rpi h264 decoder are level 4.0 - aka 1080p@30, 720p@68 and max 20Mbit/s bitrate
-    void open_and_decode_until_error_custom_rtp_and_mmal_direct(const QOpenHDVideoHelper::VideoStreamConfig settings);
-#else
-    void open_and_decode_until_error_custom_rtp_and_mmal_direct(const QOpenHDVideoHelper::VideoStreamConfig settings){
-        qDebug()<<"ERROR Compile with mmal";
-    }
-#endif
     // On some platforms, it is easiest to just start and stop a service that does the video decode (QOpenHD is then transparently layered on top)
     void dirty_generic_decode_via_external_decode_service(const QOpenHDVideoHelper::VideoStreamConfig& settings);
 };

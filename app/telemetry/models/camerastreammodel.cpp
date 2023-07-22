@@ -2,7 +2,7 @@
 #include "qdebug.h"
 #include "telemetryutil.hpp"
 #include "util/WorkaroundMessageBox.h"
-#include "../videostreaming/vscommon/QOpenHDVideoHelper.hpp""
+#include "../videostreaming/vscommon/QOpenHDVideoHelper.hpp"
 
 #include <qsettings.h>
 
