@@ -84,7 +84,7 @@ void CameraStreamModel::update_mavlink_openhd_camera_stats(const mavlink_openhd_
     ss<<", "<<video_codec_to_string(msg.encoding_format);
     set_lulu_curr_video_codec_and_format(ss.str().c_str());
     // Feature - automatically set the right codec in qopenhd
-    const bool secondary=msg.cam_index==1;
+    const bool secondary=m_camera_index==1;
     const int codec_in_qopenhd=QOpenHDVideoHelper::get_qopenhd_camera_video_codec(secondary);
     const int codec_in_openhd=msg.encoding_format;
     //qDebug()<<"Cam index:"<<(int)msg.cam_index<<" Codec: "<<codec_in_openhd;

@@ -100,9 +100,9 @@ bool AOHDSystem::process_message(const mavlink_message_t &msg)
         case MAVLINK_MSG_ID_OPENHD_CAMERA_STATUS:{
             mavlink_openhd_camera_status_t parsedMsg;
             mavlink_msg_openhd_camera_status_decode(&msg,&parsedMsg);
-            if(parsedMsg.cam_index==0){
+            if(msg.compid==OHD_COMP_ID_AIR_CAMERA_PRIMARY){
                 CameraStreamModel::instance(0).update_mavlink_openhd_camera_stats(parsedMsg);
-            }else if(parsedMsg.cam_index==1){
+            }else if(msg.compid==OHD_COMP_ID_AIR_CAMERA_SECONDARY){
                 CameraStreamModel::instance(1).update_mavlink_openhd_camera_stats(parsedMsg);
                 // Feature - tell user to enable 2 cameras in qopenhd
                 set_n_openhd_cameras(2);
