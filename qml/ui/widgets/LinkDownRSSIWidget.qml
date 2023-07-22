@@ -19,7 +19,7 @@ BaseWidget {
     visible: settings.show_downlink_rssi
 
     widgetIdentifier: "downlink_rssi_widget"
-    bw_verbose_name: "DOWNLINK RSSI"
+    bw_verbose_name: "DOWNLINK/GND RSSI"
 
     defaultAlignment: 0
     defaultXOffset: 80
@@ -30,6 +30,8 @@ BaseWidget {
 
     hasWidgetDetail: true
     hasWidgetAction: true
+
+    widgetActionHeight: 164+50+30
 
     property int m_packet_loss_perc : _ohdSystemGround.curr_rx_packet_loss_perc
     function get_packet_loss_perc_warning_level(){
@@ -46,6 +48,19 @@ BaseWidget {
         if(level===2)return settings.color_warn;
         if(level===1)return settings.color_caution;
         return settings.color_shape;
+    }
+
+    function text_for_card(card_idx){
+        var card=_wifi_card_gnd0;
+        if(card_idx==1)card=_wifi_card_gnd1;
+        if(card_idx==2)card=_wifi_card_gnd2;
+        if(card_idx==3)card=_wifi_card_gnd3;
+        // use uint16_t looping to not pollute the UI too much
+        var ret="["+(card_idx+1)+"] " + card.n_received_packets + " " + card.curr_rx_rssi_dbm + " dBm"+" "+card.packet_loss_perc+"%"
+        if(card.is_active_tx){
+            ret +=" TX"
+        }
+        return ret;
     }
 
 
@@ -188,10 +203,9 @@ BaseWidget {
                 font.pixelSize: detailPanelFontPixels
                 verticalAlignment: Text.AlignVCenter
             }
-
             Text {
                 //Layout.alignment: left
-                text: "Rx video0: "+_cameraStreamModelPrimary.curr_video0_received_bitrate_with_fec;
+                text: "AIR TX: "+_ohdSystemAir.tx_packets_per_second_and_bits_per_second
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -200,7 +214,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: "Rx tele: "+_ohdSystemGround.curr_telemetry_rx_bps;
+                text: "AIR TX tele: "+_ohdSystemAir.tx_tele_packets_per_second_and_bits_per_second;
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -209,7 +223,34 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: "Tx tele: "+_ohdSystemGround.curr_telemetry_tx_pps;
+                text: "AIR TX video0: "+_cameraStreamModelPrimary.air_tx_packets_per_second_and_bits_per_second;
+                color: "white"
+                font.bold: true
+                height: parent.height
+                font.pixelSize: detailPanelFontPixels
+                verticalAlignment: Text.AlignVCenter
+            }
+            Text {
+                //Layout.alignment: left
+                text: "AIR RX: "+_ohdSystemAir.rx_packets_per_second_and_bits_per_second
+                color: "white"
+                font.bold: true
+                height: parent.height
+                font.pixelSize: detailPanelFontPixels
+                verticalAlignment: Text.AlignVCenter
+            }
+            Text {
+                //Layout.alignment: left
+                text: "TX PWR Air: "+_wifi_card_air.tx_power;
+                color: "white"
+                font.bold: true
+                height: parent.height
+                font.pixelSize: detailPanelFontPixels
+                verticalAlignment: Text.AlignVCenter
+            }
+            Text {
+                //Layout.alignment: left
+                text: "STBC/LPDC/SGI: "+_ohdSystemAir.wb_stbc_enabled+"/"+_ohdSystemAir.wb_lpdc_enabled+"/"+_ohdSystemAir.wb_short_guard_enabled
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -331,7 +372,7 @@ BaseWidget {
             // dBm and packets for card index 0
             Text {
                 visible: settings.downlink_show_dbm_and_packets_per_card  && _wifi_card_gnd0.alive
-                text: "[1] " + _wifi_card_gnd0.n_received_packets + " " + _wifi_card_gnd0.curr_rx_rssi_dbm + " dBm"
+                text: text_for_card(0)
                 color: settings.color_text
                 verticalAlignment: Text.AlignVCenter
                 font.pixelSize: 12
@@ -345,7 +386,7 @@ BaseWidget {
             // dBm and packets for card index 1
             Text {
                 visible: settings.downlink_show_dbm_and_packets_per_card  && _wifi_card_gnd1.alive
-                text: "[2] "  + _wifi_card_gnd1.n_received_packets + " " + _wifi_card_gnd1.curr_rx_rssi_dbm + " dBm"
+                text: text_for_card(1)
                 color: settings.color_text
                 verticalAlignment: Text.AlignVCenter
                 font.pixelSize: 12
@@ -359,7 +400,7 @@ BaseWidget {
             // dBm and packets for card index 2
             Text {
                 visible: settings.downlink_show_dbm_and_packets_per_card && _wifi_card_gnd2.alive
-                text: "[3] " + _wifi_card_gnd2.n_received_packets + " " + _wifi_card_gnd2.curr_rx_rssi_dbm + " dBm"
+                text: text_for_card(2)
                 color: settings.color_text
                 verticalAlignment: Text.AlignVCenter
                 font.pixelSize: 12
@@ -373,7 +414,7 @@ BaseWidget {
             // dBm and packets for card index 3
             Text {
                 visible: settings.downlink_show_dbm_and_packets_per_card && _wifi_card_gnd3.alive
-                text: "[4] " + _wifi_card_gnd3.n_received_packets + " " + _wifi_card_gnd3.curr_rx_rssi_dbm + " dBm"
+                text: text_for_card(3)
                 color: settings.color_text
                 verticalAlignment: Text.AlignVCenter
                 font.pixelSize: 12

@@ -12,13 +12,19 @@ import "../../ui" as Ui
 import "../elements"
 
 // Parent panel for OpenHD Mavlink air and ground settings (!!!! NOT QOPENHD SETTINGS !!!)
-Item {
-    Layout.fillHeight: true
-    Layout.fillWidth: true
+Rectangle {
+    width: parent.width
+    height: parent.height
+
+    //Layout.fillHeight: true
+    //Layout.fillWidth: true
 
     property int rowHeight: 64
     property int elementHeight: 48
     property int elementComboBoxWidth: 300
+
+    //color: "green"
+    color: "transparent"
 
     // Tab bar for selecting items in stack layout
     TabBar {
@@ -50,6 +56,7 @@ Item {
           anchors.left: selectItemInStackLayoutBar.left
           anchors.bottom: parent.bottom
           currentIndex: selectItemInStackLayoutBar.currentIndex
+
           MavlinkExtraWBParamPanel{
               id: xX_WBLinkSettings
           }

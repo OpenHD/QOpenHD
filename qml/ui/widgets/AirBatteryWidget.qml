@@ -76,6 +76,27 @@ BaseWidget {
                     onCheckedChanged: settings.air_battery_show_single_cell = checked
                 }
             }
+            Item {
+                width: 230
+                height: 32
+                Text {
+                    text: qsTr("Use batt id 0 only")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 6
+                    anchors.right: parent.right
+                    checked: settings.air_battery_use_batt_id_0_only
+                    onCheckedChanged: settings.air_battery_use_batt_id_0_only = checked
+                }
+            }
 
         }
     }

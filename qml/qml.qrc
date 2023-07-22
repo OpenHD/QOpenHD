@@ -1,33 +1,34 @@
 <RCC>
-    <qresource lang="en" prefix="/translations">
+    <qresource prefix="/translations" lang="en">
         <file alias="QOpenHD.qm">../translations/QOpenHD_en.qm</file>
         <file>resources/cursors/arrow_512_green.png</file>
         <file>resources/cursors/arrow_512_transparent.png</file>
         <file>resources/cursors/arrow_512_white.png</file>
         <file>resources/cursors/hand_white.png</file>
+        <file>ui/widgets/VideoBitrateWidgetGeneric.qml</file>
     </qresource>
-    <qresource lang="de" prefix="/translations">
+    <qresource prefix="/translations" lang="de">
         <file alias="QOpenHD.qm">../translations/QOpenHD_de.qm</file>
     </qresource>
-    <qresource lang="ru" prefix="/translations">
+    <qresource prefix="/translations" lang="ru">
         <file alias="QOpenHD.qm">../translations/QOpenHD_ru.qm</file>
     </qresource>
-    <qresource lang="es" prefix="/translations">
+    <qresource prefix="/translations" lang="es">
         <file alias="QOpenHD.qm">../translations/QOpenHD_es.qm</file>
     </qresource>
-    <qresource lang="fr" prefix="/translations">
+    <qresource prefix="/translations" lang="fr">
         <file alias="QOpenHD.qm">../translations/QOpenHD_fr.qm</file>
     </qresource>
-    <qresource lang="nl" prefix="/translations">
+    <qresource prefix="/translations" lang="nl">
         <file alias="QOpenHD.qm">../translations/QOpenHD_nl.qm</file>
     </qresource>
-    <qresource lang="ro" prefix="/translations">
+    <qresource prefix="/translations" lang="ro">
         <file alias="QOpenHD.qm">../translations/QOpenHD_ro.qm</file>
     </qresource>
-    <qresource lang="it" prefix="/translations">
+    <qresource prefix="/translations" lang="it">
         <file alias="QOpenHD.qm">../translations/QOpenHD_it.qm</file>
     </qresource>
-    <qresource lang="zh" prefix="/translations">
+    <qresource prefix="/translations" lang="zh">
         <file alias="QOpenHD.qm">../translations/QOpenHD_zh.qm</file>
     </qresource>
     <qresource prefix="/">
@@ -41,7 +42,7 @@
         <file>ui/widgets/MessageHUD.qml</file>
         <file>LICENSE_UI.txt</file>
         <file>ui/widgets/LinkDownRSSIWidget.qml</file>
-        <file>ui/widgets/VideoBitrateWidgetPrimary.qml</file>
+        <file>ui/widgets/VideoBitrateWidgetGeneric.qml</file>
         <file>ui/widgets/LinkUpRSSIWidget.qml</file>
         <file>ui/widgets/SOCStatusWidgetGround.qml</file>
         <file>ui/widgets/SOCStatusWidgetAir.qml</file>
@@ -238,5 +239,8 @@
         <file>resources/cursors/hand_white.png</file>
         <file>ui/configpopup/ConnectPanel.qml</file>
         <file>ui/configpopup/PanelFCSetup.qml</file>
+        <file>ui/widgets/VideoBitrateWidgetPrimary.qml</file>
+        <file>ui/widgets/DistanceSensorWidget.qml</file>
+        <file>ui/widgets/UAVTimeWiget.qml</file>
     </qresource>
 </RCC>

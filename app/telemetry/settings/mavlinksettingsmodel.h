@@ -152,6 +152,12 @@ public:
 
     Q_INVOKABLE bool get_param_requires_manual_reboot(QString param_id);
 
+    // We have a special UI for changing the keyframe interval (a camera specific param)
+    // and for the fec percentage (a WB param)
+    Q_INVOKABLE bool set_param_keyframe_interval(int keyframe_interval);
+    Q_INVOKABLE bool set_param_fec_percentage(int percent);
+    Q_INVOKABLE bool set_param_video_resolution_framerate(QString res_str);
+
 private:
     QString get_short_description(QString param_id)const;
 

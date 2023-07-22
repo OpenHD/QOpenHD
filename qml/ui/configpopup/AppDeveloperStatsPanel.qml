@@ -59,6 +59,15 @@ Rectangle {
                 local_ip_button.text=text
             }
         }
+        Button{
+            id: exp_set_rates
+            height: 24
+            text: "Set Tele rates"
+            onClicked:{
+                _mavlinkTelemetry.exp_set_data_rates()
+            }
+        }
+
 
         Text {
             id: test1

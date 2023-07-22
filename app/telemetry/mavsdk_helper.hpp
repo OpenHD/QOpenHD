@@ -40,6 +40,25 @@ static bool set_all_message_update_rates(std::shared_ptr<mavsdk::MavlinkPassthro
 
     // location every 500ms
     set_message_update_rate(MAVLINK_MSG_ID_GLOBAL_POSITION_INT,std::chrono::milliseconds(500),pass_through);
+    return false;
+}
+
+static bool any_comp_id_autopilot(const std::vector<uint8_t>& comp_ids){
+    for (auto compid : comp_ids){
+        if (compid == MAV_COMP_ID_AUTOPILOT1) {
+            return true;
+        }
+    }
+    return false;
+}
+static std::string comp_ids_to_string(const std::vector<uint8_t>& comp_ids){
+    std::stringstream ss;
+    ss<<"[";
+    for (auto compid : comp_ids){
+        ss<<(int)compid<<",";
+    }
+    ss<<"]";
+    return ss.str();
 }
 
 }

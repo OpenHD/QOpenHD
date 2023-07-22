@@ -2,6 +2,7 @@
 #include "qdebug.h"
 #include "telemetryutil.hpp"
 #include "util/WorkaroundMessageBox.h"
+#include "../videostreaming/vscommon/QOpenHDVideoHelper.hpp"
 
 #include <qsettings.h>
 
@@ -34,43 +35,6 @@ CameraStreamModel &CameraStreamModel::instance(int cam_index)
     assert(false);
 }
 
-void CameraStreamModel::dirty_set_curr_set_video_codec_int(int value)
-{
-    auto tmp=video_codec_to_string(value);
-    set_curr_set_video_codec(tmp.c_str());
-}
-
-void CameraStreamModel::dirty_set_curr_set_video_codec_for_cam(int cam_index, int video_codec_in_openhd)
-{
-    if(cam_index==0){
-        CameraStreamModel::instance(0).dirty_set_curr_set_video_codec_int(video_codec_in_openhd);
-        if(video_codec_in_openhd==0 || video_codec_in_openhd==1 || video_codec_in_openhd==2){
-            QSettings settings;
-            const int tmp_video_codec = settings.value("selectedVideoCodecPrimary", 0).toInt();
-            if(tmp_video_codec!=video_codec_in_openhd){
-                // video codec mismatch, update the QOpenHD settings
-                settings.setValue("selectedVideoCodecPrimary",video_codec_in_openhd);
-                qDebug()<<"Changed electedVideoCodecPrimary in QOpenHD to "<<video_codec_in_openhd;
-                WorkaroundMessageBox::makePopupMessage("Changed VideoCodec Primary in QOpenHD");
-            }
-        }
-    }else if(cam_index==1){
-        CameraStreamModel::instance(1).dirty_set_curr_set_video_codec_int(video_codec_in_openhd);
-       if(video_codec_in_openhd==0 || video_codec_in_openhd==1 || video_codec_in_openhd==2){
-           QSettings settings;
-           const int tmp_video_codec = settings.value("selectedVideoCodecSecondary", 0).toInt();
-           if(tmp_video_codec!=video_codec_in_openhd){
-               // video codec mismatch, update the QOpenHD settings
-               settings.setValue("selectedVideoCodecSecondary",video_codec_in_openhd);
-               qDebug()<<"Changed selectedVideoCodecSecondary in QOpenHD to "<<video_codec_in_openhd;
-               WorkaroundMessageBox::makePopupMessage("Changed VideoCodec Secondary in QOpenHD");
-           }
-       }
-    }else{
-        qWarning("Invalid cam index");
-    }
-}
-
 void CameraStreamModel::update_mavlink_openhd_stats_wb_video_air(const mavlink_openhd_stats_wb_video_air_t &msg)
 {
     const auto curr_recommended_bitrate_kbits=msg.curr_recommended_bitrate;
@@ -78,11 +42,7 @@ void CameraStreamModel::update_mavlink_openhd_stats_wb_video_air(const mavlink_o
     set_curr_video_measured_encoder_bitrate(Telemetryutil::bitrate_bps_to_qstring(msg.curr_measured_encoder_bitrate));
     set_curr_video_injected_bitrate(Telemetryutil::bitrate_bps_to_qstring(msg.curr_injected_bitrate));
     set_curr_video0_injected_pps(Telemetryutil::pps_to_string(msg.curr_injected_pps));
-    set_curr_video0_dropped_packets(msg.curr_dropped_packets);
-    set_curr_video0_fec_encode_time_avg_min_max(
-                Telemetryutil::us_min_max_avg_to_string(msg.curr_fec_encode_time_min_us,msg.curr_fec_encode_time_max_us,msg.curr_fec_encode_time_avg_us));
-    set_curr_video0_fec_block_length_min_max_avg(
-                Telemetryutil::min_max_avg_to_string(msg.curr_fec_block_size_min,msg.curr_fec_block_size_max,msg.curr_fec_block_size_avg));
+    set_curr_video0_dropped_packets(msg.curr_dropped_frames);
     if(msg.curr_recommended_bitrate>1 && msg.curr_measured_encoder_bitrate>1 ){ //check for valid measured / set values
         const double recommended_kbits=static_cast<float>(msg.curr_recommended_bitrate);
         // Measured and set encoder bitrate should match on a 20% basis
@@ -109,6 +69,43 @@ void CameraStreamModel::update_mavlink_openhd_stats_wb_video_air(const mavlink_o
            }
         }
     }
+    set_curr_curr_fec_percentage(msg.curr_fec_percentage);
+    set_air_tx_packets_per_second_and_bits_per_second(StringHelper::bitrate_and_pps_to_string(msg.curr_injected_bitrate,msg.curr_injected_pps).c_str());
+}
+
+void CameraStreamModel::update_mavlink_openhd_camera_stats(const mavlink_openhd_camera_status_t &msg)
+{
+    set_curr_curr_keyframe_interval(msg.encoding_keyframe_interval);
+    set_air_recording_active(msg.air_recording_active);
+    set_camera_type(msg.cam_type);
+    std::stringstream ss;
+    ss<<(int)msg.stream_w<<"x"<<(int)msg.stream_h<<"@"<<msg.stream_fps;
+    set_curr_set_video_format(ss.str().c_str());
+    ss<<", "<<video_codec_to_string(msg.encoding_format);
+    set_lulu_curr_video_codec_and_format(ss.str().c_str());
+    // Feature - automatically set the right codec in qopenhd
+    const bool secondary=m_camera_index==1;
+    const int codec_in_qopenhd=QOpenHDVideoHelper::get_qopenhd_camera_video_codec(secondary);
+    const int codec_in_openhd=msg.encoding_format;
+    //qDebug()<<"Cam index:"<<(int)msg.cam_index<<" Codec: "<<codec_in_openhd;
+    if(codec_in_openhd==0 || codec_in_openhd==1 || codec_in_openhd==2){
+        if(codec_in_qopenhd!=codec_in_openhd){
+           QOpenHDVideoHelper::set_qopenhd_camera_video_codec(secondary,codec_in_openhd);
+           std::stringstream log;
+           log<<"QOpenHD- set "<<(secondary ? "CAM2" : "CAM1")<<" to "<<video_codec_to_string(msg.encoding_format);
+           HUDLogMessagesModel::instance().add_message_info(log.str().c_str());
+        }
+    }else{
+        qDebug()<<"Invalid video codec: "<<codec_in_openhd;
+    }
+}
+
+void CameraStreamModel::update_mavlink_openhd_stats_wb_video_air_fec_performance(const mavlink_openhd_stats_wb_video_air_fec_performance_t &msg)
+{
+    set_curr_video0_fec_encode_time_avg_min_max(
+        Telemetryutil::us_min_max_avg_to_string(msg.curr_fec_encode_time_min_us,msg.curr_fec_encode_time_max_us,msg.curr_fec_encode_time_avg_us));
+    set_curr_video0_fec_block_length_min_max_avg(
+        Telemetryutil::min_max_avg_to_string(msg.curr_fec_block_size_min,msg.curr_fec_block_size_max,msg.curr_fec_block_size_avg));
 }
 
 void CameraStreamModel::update_mavlink_openhd_stats_wb_video_ground(const mavlink_openhd_stats_wb_video_ground_t &msg)
@@ -118,8 +115,13 @@ void CameraStreamModel::update_mavlink_openhd_stats_wb_video_ground(const mavlin
     set_video0_count_blocks_recovered(msg.count_blocks_recovered);
     set_video0_count_fragments_recovered(msg.count_fragments_recovered);
     set_video0_count_blocks_total(msg.count_blocks_total);
+    //set_gnd_rx_packets_per_second_and_bits_per_second(StringHelper::bitrate_and_pps_to_string(msg.curr_incoming_bitrate,msg.cur_).c_str());
+}
+
+void CameraStreamModel::update_mavlink_openhd_stats_wb_video_ground_fec_performance(const mavlink_openhd_stats_wb_video_ground_fec_performance_t &msg)
+{
     set_curr_video0_fec_decode_time_avg_min_max(
-                Telemetryutil::us_min_max_avg_to_string(msg.curr_fec_decode_time_min_us,msg.curr_fec_decode_time_max_us,msg.curr_fec_decode_time_avg_us));
+        Telemetryutil::us_min_max_avg_to_string(msg.curr_fec_decode_time_min_us,msg.curr_fec_decode_time_max_us,msg.curr_fec_decode_time_avg_us));
 }
 
 void CameraStreamModel::set_curr_recommended_bitrate_from_message(const int64_t curr_recommended_bitrate_kbits)

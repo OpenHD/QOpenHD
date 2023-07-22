@@ -61,11 +61,8 @@ static std::string gst_create_jeston_test(const QOpenHDVideoHelper::VideoCodec& 
    return ss.str();
 }
 
-static std::string gst_create_video_decoder(const QOpenHDVideoHelper::VideoCodec& videoCodec,bool force_sw,bool dev_jetson){
+static std::string gst_create_video_decoder(const QOpenHDVideoHelper::VideoCodec& videoCodec,bool force_sw){
    qDebug()<<"gst_create_video_decoder force_sw:"<<force_sw;
-    if(dev_jetson){
-        return gst_create_jeston_test(videoCodec);
-    }
     if(force_sw){
         return gst_create_always_software_decoder(videoCodec);
     }
@@ -93,31 +90,25 @@ static std::string gst_create_video_decoder(const QOpenHDVideoHelper::VideoCodec
  * @return the built pipeline, as a string
  */
 static std::string constructGstreamerPipeline(const QOpenHDVideoHelper::VideoStreamConfig& config){
+    // QmlglSik is always for secondary video -
+    // unless the user switched them around
+
+    auto stream_config=config.secondary_stream_config;
+    if(config.generic.qopenhd_switch_primary_secondary){
+       stream_config=config.primary_stream_config;
+    }
     std::stringstream ss;
-    if(config.dev_enable_custom_pipeline){
-        qDebug()<<"Warning using custom pipeline, dev only";
-        return config.dev_custom_pipeline;
-    }
-    if(config.dev_test_video_mode==QOpenHDVideoHelper::VideoTestMode::RAW_VIDEO){
-        ss << "videotestsrc pattern=smpte ! ";
-        ss << "video/x-raw,format=RGBA,width=640,height=480 ! ";
-        ss << "queue ! ";
-        ss << "glupload ! glcolorconvert ! ";
-        ss << "qmlglsink name=qmlglsink sync=false";
-        return ss.str();
-    }else if(config.dev_test_video_mode==QOpenHDVideoHelper::VideoTestMode::RAW_VIDEO_ENCODE_DECODE){
-        ss<<create_debug_encoded_data_producer(config.video_codec);
-    }else{
-        ss<<"udpsrc port="<<config.udp_rtp_input_port<<" ";
-        ss<<pipeline::gst_create_rtp_caps(pipeline::conv_codec(config.video_codec))<<" ! ";
-    }
+
+    ss<<"udpsrc port="<<stream_config.udp_rtp_input_port<<" ";
+    ss<<pipeline::gst_create_rtp_caps(pipeline::conv_codec(stream_config.video_codec))<<" ! ";
+
     // add rtp decoder
-    ss<<pipeline::create_rtp_depacketize_for_codec(pipeline::conv_codec(config.video_codec));
+    ss<<pipeline::create_rtp_depacketize_for_codec(pipeline::conv_codec(stream_config.video_codec));
     // add video decoder
-    ss<<gst_create_video_decoder(config.video_codec,config.enable_software_video_decoder,config.dev_jetson);
+    ss<<gst_create_video_decoder(stream_config.video_codec,stream_config.enable_software_video_decoder);
 
     //ss<<" videoconvert n-threads=2 ! queue ! video/x-raw,format=RGBA !";
-    if(config.dev_jetson){
+    if(false){
         ss<<"nvvidconv ! glupload  ! qmlglsink name=qmlglsink sync=false";
     }else{
         ss << " queue ! ";
@@ -174,7 +165,7 @@ void GstQmlGlSinkStream::init(QQuickItem* videoOutputWindow) {
     assert(m_videoOutputWindow==nullptr);
     assert(videoOutputWindow);
     m_videoOutputWindow=videoOutputWindow;
-    m_videoStreamConfig=QOpenHDVideoHelper::read_from_settings2(m_isPrimaryStream);
+    m_videoStreamConfig=QOpenHDVideoHelper::read_config_from_settings();
     lastDataTimeout = QDateTime::currentMSecsSinceEpoch();
     QObject::connect(timer, &QTimer::timeout, this, &GstQmlGlSinkStream::timerCallback);
     timer->start(1000);
@@ -348,7 +339,7 @@ void GstQmlGlSinkStream::timerCallback() {
     }
     assert(m_videoOutputWindow!=nullptr);
     // read config from settings
-    const QOpenHDVideoHelper::VideoStreamConfig _videoStreamConfig=QOpenHDVideoHelper::read_from_settings2(m_isPrimaryStream);
+    const QOpenHDVideoHelper::VideoStreamConfig _videoStreamConfig=QOpenHDVideoHelper::read_config_from_settings();
     // check if settings have changed or we haven't started anything at all yet
     if((m_videoStreamConfig!=_videoStreamConfig) || m_pipeline == nullptr){
         m_videoStreamConfig=_videoStreamConfig;

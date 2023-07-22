@@ -17,6 +17,8 @@
 #include "fcmavlinkmissionitemsmodel.h"
 #include "fcmavlinksettingsmodel.h"
 
+#include <QDateTime>
+
 FCMavlinkSystem::FCMavlinkSystem(QObject *parent): QObject(parent) {
     m_flight_time_timer = new QTimer(this);
     QObject::connect(m_flight_time_timer, &QTimer::timeout, this, &FCMavlinkSystem::updateFlightTimer);
@@ -35,6 +37,10 @@ FCMavlinkSystem& FCMavlinkSystem::instance() {
 void FCMavlinkSystem::set_system(std::shared_ptr<mavsdk::System> system)
 {
     // The system is set once when discovered, then should not change !!
+    if(m_system!=nullptr){
+        HUDLogMessagesModel::instance().add_message_warning("FC sys id conflict");
+        return;
+    }
     assert(m_system==nullptr);
     m_system=system;
     if(!m_system->has_autopilot()){
@@ -116,13 +122,24 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         set_battery_voltage_volt(battery_voltage_v);
         set_battery_voltage_single_cell(QOpenHDMavlinkHelper::calclate_voltage_per_cell(battery_voltage_v));
         set_battery_current_ampere((double)sys_status.current_battery/100.0);
-        // TODO XX
+        // TODO - should we use values from here or from the battery message ?
+        const auto battery_remaining_perc=sys_status.battery_remaining;
+        if(battery_remaining_perc != -1){
+            set_battery_percent(battery_remaining_perc);
+            const QString fc_battery_gauge_glyph = Telemetryutil::battery_gauge_glyph_from_percentage(battery_remaining_perc);
+            set_battery_percent_gauge(fc_battery_gauge_glyph);
+        }
         break;
     }
 
     case MAVLINK_MSG_ID_SYSTEM_TIME:{
         mavlink_system_time_t sys_time;
         mavlink_msg_system_time_decode(&msg, &sys_time);
+        set_sys_time_unix_usec(sys_time.time_unix_usec);
+        QDateTime time;
+        time.setTime_t(sys_time.time_unix_usec/1000/1000);
+        set_sys_time_unix_as_str(time.toString());
+
         uint32_t boot_time = sys_time.time_boot_ms;
         /*if (boot_time < m_last_boot || m_last_boot == 0) {
                 m_last_boot = boot_time;
@@ -345,9 +362,13 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         mavlink_battery_status_t battery_status;
         mavlink_msg_battery_status_decode(&msg, &battery_status);
         set_battery_consumed_mah(battery_status.current_consumed);
-        set_battery_percent(battery_status.battery_remaining);
-        const QString fc_battery_gauge_glyph = Telemetryutil::battery_gauge_glyph_from_percentage(battery_status.battery_remaining);
-        set_battery_percent_gauge(fc_battery_gauge_glyph);
+        QSettings settings;
+        const bool air_battery_use_batt_id_0_only=settings.value("air_battery_use_batt_id_0_only", false).toBool();
+        if(!air_battery_use_batt_id_0_only){
+           set_battery_percent(battery_status.battery_remaining);
+           const QString fc_battery_gauge_glyph = Telemetryutil::battery_gauge_glyph_from_percentage(battery_status.battery_remaining);
+           set_battery_percent_gauge(fc_battery_gauge_glyph);
+        }
         // we always use the first cell for the "single volt" value. However, not sure how many people have the HW on their air
         // battery to measure the voltage of a single cell (which is what this would be for)
         // January 22: doesn't work reliably, use the worse but working qopenhd local setting approach
@@ -456,6 +477,13 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         break;
     case MAVLINK_MSG_ID_AIRSPEED_AUTOCAL:
         break;
+    case MAVLINK_MSG_ID_GIMBAL_DEVICE_ATTITUDE_STATUS:
+        break;
+    case MAVLINK_MSG_ID_DISTANCE_SENSOR:{
+        mavlink_distance_sensor_t decoded;
+        mavlink_msg_distance_sensor_decode(&msg,&decoded);
+        set_distance_sensor_distance_cm(decoded.current_distance);
+    };break;
     default: {
         //printf("MavlinkTelemetry received unmatched message with ID %d, sequence: %d from component %d of system %d\n", msg.msgid, msg.seq, msg.compid, msg.sysid);
         qDebug()<<"MavlinkTelemetry received unmatched message with ID "<<msg.msgid
@@ -943,6 +971,7 @@ bool FCMavlinkSystem::overwrite_home_to_current()
     set_home_latitude(m_lat);
     set_home_longitude(m_lon);
     HUDLogMessagesModel::instance().add_message_warning("HOME POSITION OVERWRITTEN");
+    return true;
 }
 
 bool FCMavlinkSystem::enable_disable_mission_updates(bool enable)

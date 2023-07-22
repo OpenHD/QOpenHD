@@ -38,6 +38,38 @@ BaseWidget {
     property bool m_is_arduplane:_fcMavlinkSystem.is_arduplane
     property bool m_is_arduvtol: _fcMavlinkSystem.is_arduvtol
 
+    // Hides the stuff before decimal, aka returns
+    // X.1234...
+    function hide_before_decimals(number){
+        var text=Number(number).toLocaleString(Qt.locale(), 'f', 6)
+        const myArray = text.split(".");
+        let before_decimal = myArray[0];
+        var hidden=""
+        for (let i = 0; i < before_decimal.length; i++) {
+            hidden=hidden+"-"
+        }
+        hidden+="."
+        let after_decimal = myArray[1];
+        //return before_decimal+"."+after_decimal
+        return hidden+after_decimal
+    }
+
+    // garbles the first decimals if wanted
+    function get_home_latitude(){
+        var number=_fcMavlinkSystem.home_latitude
+        if(settings.gps_garble_lat_lon_first_decimals){
+            return hide_before_decimals(number)
+        }
+        return Number(number).toLocaleString(Qt.locale(), 'f', 6)
+    }
+    function get_home_longitude(){
+        var number=_fcMavlinkSystem.home_longitude
+        if(settings.gps_garble_lat_lon_first_decimals){
+            return hide_before_decimals(number)
+        }
+        return Number(number).toLocaleString(Qt.locale(), 'f', 6)
+    }
+
     //----------------------------- DETAIL BELOW ----------------------------------
     widgetDetailComponent: ScrollView {
 
@@ -72,8 +104,7 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Text {
-                    text: Number(_fcMavlinkSystem.home_latitude).toLocaleString(Qt.locale(),
-                                                                'f', 6)
+                    text: get_home_latitude()
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -95,8 +126,7 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Text {
-                    text: Number(_fcMavlinkSystem.home_longitude).toLocaleString(Qt.locale(),
-                                                                'f', 6)
+                    text: get_home_longitude()
                     color: "white"
                     height: parent.height
                     font.bold: true

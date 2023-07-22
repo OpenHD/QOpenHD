@@ -402,39 +402,6 @@ void MavlinkSettingsModel::removeData(int row)
     endRemoveRows();
 }
 
-// hacky, temporary
-static void hacky_set_video_codec_in_qopenhd(const int comp_id,const MavlinkSettingsModel::SettingData& data){
-    if(data.unique_id=="VIDEO_CODEC"){
-        // Check if the param is still an int (should always be the case, but we don't want to crash in c++)
-        if(!std::holds_alternative<int32_t>(data.value)){
-            qDebug()<<"ERROR video codec setting messed up, fixme";
-            return;
-        }
-        const int video_codec_in_openhd=std::get<int32_t>(data.value);
-        if(comp_id==OHD_COMP_ID_AIR_CAMERA_PRIMARY){
-            CameraStreamModel::dirty_set_curr_set_video_codec_for_cam(0,video_codec_in_openhd);
-        }else if(comp_id==OHD_COMP_ID_AIR_CAMERA_SECONDARY){
-            CameraStreamModel::dirty_set_curr_set_video_codec_for_cam(1,video_codec_in_openhd);
-        }
-    }
-}
-
-static void hacky_set_n_cameras_in_qopenhd(const int comp_id,const MavlinkSettingsModel::SettingData& data){
-    if(data.unique_id=="V_N_CAMERAS"){
-        if(!std::holds_alternative<int32_t>(data.value)){
-            qDebug()<<"ERROR N_CAMERAS messed up, fixme";
-            return;
-        }
-        const int value=std::get<int32_t>(data.value);
-        const int value_in_qopenhd=QOpenHDVideoHelper::get_qopenhd_n_cameras();
-        if(value!=value_in_qopenhd && value_in_qopenhd==1){
-            auto message="QopenHD is not configured for single cam usage, go to QOpenHD settings / General to configure your GCS to show secondary camera screen";
-            qDebug()<<message;
-            WorkaroundMessageBox::makePopupMessage(message);
-        }
-    }
-}
-
 static void hacky_check_stbc(const int sys_id,const MavlinkSettingsModel::SettingData& data){
     if(sys_id != OHD_SYS_ID_AIR){
         // Enabling on air unit is way more important
@@ -457,7 +424,7 @@ static void hacky_check_stbc(const int sys_id,const MavlinkSettingsModel::Settin
             QSettings settings;
             const auto dev_wb_show_no_stbc_enabled_warning =settings.value("dev_wb_show_no_stbc_enabled_warning", false).toBool();
             if(!dev_wb_show_no_stbc_enabled_warning){
-                WorkaroundMessageBox::makePopupMessage(message);
+                WorkaroundMessageBox::makePopupMessage(message,10);
             }
         }
     }
@@ -468,9 +435,7 @@ void MavlinkSettingsModel::updateData(std::optional<int> row_opt, SettingData ne
 {
     {
         // temporary, dirty
-        hacky_set_n_cameras_in_qopenhd(m_comp_id,new_data);
-        hacky_set_video_codec_in_qopenhd(m_comp_id,new_data);
-        hacky_check_stbc(m_sys_id,new_data);
+        hacky_check_stbc(m_sys_id,new_data);;
     }
     int row=-1;
     if(row_opt.has_value()){
@@ -501,8 +466,6 @@ void MavlinkSettingsModel::addData(MavlinkSettingsModel::SettingData data)
 {
     {
         // temporary, dirty
-        hacky_set_n_cameras_in_qopenhd(m_comp_id,data);
-        hacky_set_video_codec_in_qopenhd(m_comp_id,data);
         hacky_check_stbc(m_sys_id,data);
     }
     if(is_param_whitelisted(data.unique_id.toStdString())){
@@ -655,6 +618,27 @@ bool MavlinkSettingsModel::get_param_requires_manual_reboot(QString param_id)
     if(tmp.has_value()){
         return tmp.value().requires_reboot;
     }
+    return false;
+}
+
+bool MavlinkSettingsModel::set_param_keyframe_interval(int keyframe_interval)
+{
+    const auto ret=try_update_parameter_int("V_KEYFRAME_I",keyframe_interval);
+    if(ret=="")return true;
+    return false;
+}
+
+bool MavlinkSettingsModel::set_param_fec_percentage(int percent)
+{
+    const auto ret=try_update_parameter_int(openhd::WB_VIDEO_FEC_PERCENTAGE,percent);
+    if(ret=="")return true;
+    return false;
+}
+
+bool MavlinkSettingsModel::set_param_video_resolution_framerate(QString res_str)
+{
+    const auto ret=try_update_parameter_string("V_FORMAT",res_str);
+    if(ret=="")return true;
     return false;
 }
 

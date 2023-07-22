@@ -84,13 +84,31 @@ public: // public for QT
     L_RO_PROP(int,wifi_rx_packets_count,wifi_rx_packets_count,-1)
     L_RO_PROP(int,wifi_tx_packets_count,wifi_tx_packets_count,-1)
     // The MCS index is a param, but also broadcasted in regular intervals, since it might change (during flight / link adjustments)
+    // We also create a message in the HUD every time MCS changes
     L_RO_PROP(int,curr_mcs_index,set_curr_mcs_index,-1)
-    // for creating a message in the HUD every time MCS changes
-    bool valid_mcs_packet_received_at_least_once=false;
+    L_RO_PROP(int,curr_bitrate_kbits,set_curr_bitrate_kbits,-1)
+
+    L_RO_PROP(int,curr_n_openhd_rate_adjustments,set_curr_n_openhd_rate_adjustments,-1)
+    // similar for channel / channel width
+    L_RO_PROP(int,curr_channel_mhz,set_curr_channel_mhz,-1)
+    L_RO_PROP(int,curr_channel_width_mhz,set_curr_channel_width_mhz,-1);
+    // We show a watermark if passive mode is enabled
+    L_RO_PROP(bool,tx_passive_mode,set_tx_passive_mode,false)
+    // wifibroadcast options
+    L_RO_PROP(bool,wb_stbc_enabled,set_wb_stbc_enabled,false)
+    L_RO_PROP(bool,wb_lpdc_enabled,set_wb_lpdc_enabled,false)
+    L_RO_PROP(bool,wb_short_guard_enabled,set_wb_short_guard_enabled,false)
+    //
+    L_RO_PROP(QString,tx_packets_per_second_and_bits_per_second,set_tx_packets_per_second_and_bits_per_second,"N/A")
+    L_RO_PROP(QString,rx_packets_per_second_and_bits_per_second,set_rx_packets_per_second_and_bits_per_second,"N/A")
+    L_RO_PROP(QString,tx_tele_packets_per_second_and_bits_per_second,set_tx_tele_packets_per_second_and_bits_per_second,"N/A")
+    L_RO_PROP(QString,rx_tele_packets_per_second_and_bits_per_second,set_rx_tele_packets_per_second_and_bits_per_second,"N/A")
+    // Set to 2 as soon as we receve a broadcast message for secondary camera from qopenhd
+    L_RO_PROP(int,n_openhd_cameras,set_n_openhd_cameras,-1)
 private:
-     const bool _is_air; // either true (for air) or false (for ground)
+    const bool m_is_air; // either true (for air) or false (for ground)
      uint8_t get_own_sys_id()const{
-         return _is_air ? OHD_SYS_ID_AIR : OHD_SYS_ID_GROUND;
+         return m_is_air ? OHD_SYS_ID_AIR : OHD_SYS_ID_GROUND;
      }
      // These are for handling the slight differences regarding air/ ground properly, if there are any
      // For examle, the onboard computer status is the same when coming from either air or ground,
@@ -100,7 +118,9 @@ private:
      void process_x1(const mavlink_openhd_stats_monitor_mode_wifi_link_t& msg);
      void process_x2(const mavlink_openhd_stats_telemetry_t& msg);
      void process_x3(const mavlink_openhd_stats_wb_video_air_t& msg);
+     void process_x3b(const mavlink_openhd_stats_wb_video_air_fec_performance_t& msg);
      void process_x4(const mavlink_openhd_stats_wb_video_ground_t& msg);
+     void process_x4b(const mavlink_openhd_stats_wb_video_ground_fec_performance_t& msg);
 private:
      std::atomic<int32_t> m_last_heartbeat_ms = -1;
      std::atomic<int32_t> m_last_message_ms= -1;
@@ -132,7 +152,8 @@ private:
      int m_n_times_version_has_been_requested=0;
 private:
      // do not completely pollute the HUD with this error message
-     std::chrono::steady_clock::time_point m_last_tx_error_hud_message=std::chrono::steady_clock::now();
+    std::chrono::steady_clock::time_point m_last_tx_error_hud_message=std::chrono::steady_clock::now();
+    std::chrono::steady_clock::time_point m_last_n_cameras_message=std::chrono::steady_clock::now();
 };
 
 

@@ -16,8 +16,62 @@ Settings {
 
     property string locale: "en"
 
-    property int dev_stream0_udp_rtp_input_port: 5600
-    property string dev_stream0_udp_rtp_input_ip_address: "127.0.0.1"
+
+    // ----------------------------------------------------------------------------------
+    // All video (streaming) related settings local to qopenhd (nothing to do with openhd) begin
+    // ----------------------------------------------------------------------------------
+
+    // Configure QOpenHD for dualcam usage (enable disable secondary video and its settings)
+    property int dev_qopenhd_n_cameras:1
+
+    // Inside QOpenHD, swap primary and secondary camera - on platforms that only are capable of showing one video stream,
+    // this can be used to switch between 2 different video feeds
+    // When the app is started, this value is automatically reset to false
+    property bool qopenhd_switch_primary_secondary: false
+
+    // Video decode settings, per primary / secondary video
+    property int qopenhd_primary_video_rtp_input_port: 5600
+    property string qopenhd_primary_video_rtp_input_ip: "127.0.0.1"
+    // Video codec of the primary video stream (main window).
+    property int qopenhd_primary_video_codec: 0 //0==h264,1==h265,2==MJPEG, other (error) default to h264
+    property bool qopenhd_primary_video_force_sw: false
+
+    property int qopenhd_secondary_video_rtp_input_port: 5601
+    property string qopenhd_secondary_video_rtp_input_ip: "127.0.0.1"
+    property int qopenhd_secondary_video_codec: 0
+    property bool qopenhd_secondary_video_force_sw: false
+
+    // enably a test video source instead of decoding actual video data, if supported by the platform
+    // 0 = disabled
+    // 1 = raw video
+    // 2 = raw vide encode and then decode
+    property int dev_test_video_mode:0 // 0 is disabled
+    // When this one is set to true, we read a file (where you can then write your custom rx gstreamer pipeline
+    // that ends with qmlglsink )
+    property bool dev_enable_custom_pipeline: false
+    // only for ffmpeg
+    property int dev_limit_fps_on_test_file: -1
+    property bool dev_draw_alternating_rgb_dummy_frames: false;
+    // r.n only works on h264 / h265 and on select video stream(s)
+    // does not work on mjpeg, but as far as I can see, mjpeg doesn't suffer from the "one frame buffering" issue in avcodec
+    property bool dev_use_low_latency_parser_when_possible: true;
+    property bool dev_feed_incomplete_frames_to_decoder:false;
+
+    // dirty, perhaps temporary
+    property bool dev_rpi_use_external_omx_decode_service: true;
+    property bool dev_always_use_generic_external_decode_service: false
+
+    // The user can controll the width and height the secondary video has when in minimized state
+    // (By that he also controlls the ratio).
+    // And he can specify a factor by which the secondary video is maximized when clicked
+    property int secondary_video_minimized_width : 320
+    property int secondary_video_minimized_height : 240
+    property int secondary_video_maximize_factor_perc : 200
+
+    // ----------------------------------------------------------------------------------
+    // All video (streaming) related settings local to qopenhd (nothing to do with openhd) end
+    // ----------------------------------------------------------------------------------
+
 
     // Sys id QOpenHD uses itself
     property int qopenhd_mavlink_sysid: 255
@@ -36,34 +90,7 @@ Settings {
     // aka this setting only has an effect when running QOpenHD on a PC, and there also
     // pretty much only during development
     property bool app_explicit_window_fullscreen: false
-    // force sw decode on primary video
-    property bool primary_enable_software_video_decoder: false
-    // force sw decode on secondary video
-    property bool secondary_enable_software_video_decoder: false
-    // enably a test video source instead of decoding actual video data, if supported by the platform
-    // 0 = disabled
-    // 1 = raw video
-    // 2 = raw vide encode and then decode
-    property int dev_test_video_mode:0 // 0 is disabled
-    // Video codec of the primary video stream (main window).
-    property int selectedVideoCodecPrimary:0 //0==h264,1==h265,2==MJPEG, other (error) default to h264
-    property int selectedVideoCodecSecondary:0
 
-    property bool dev_jetson: false
-    // When this one is set to true, we read a file (where you can then write your custom rx gstreamer pipeline
-    // that ends with qmlglsink )
-    property bool dev_enable_custom_pipeline: false
-    // only for ffmpeg
-    property int dev_limit_fps_on_test_file: -1
-    property bool dev_draw_alternating_rgb_dummy_frames: false;
-    // r.n only works on h264 / h265 and on select video stream(s)
-    // does not work on mjpeg, but as far as I can see, mjpeg doesn't suffer from the "one frame buffering" issue in avcodec
-    property bool dev_use_low_latency_parser_when_possible: true;
-    property bool dev_feed_incomplete_frames_to_decoder:false;
-
-    // dirty, perhaps temporary
-    property bool dev_rpi_use_external_omx_decode_service: true;
-    property bool dev_always_use_generic_external_decode_service: false
 
     property bool enable_speech: true
     property bool enable_imperial: false
@@ -118,6 +145,7 @@ Settings {
     property bool show_air_battery: true
     property bool air_battery_show_voltage_current: false
     property bool air_battery_show_single_cell: false
+    property bool air_battery_use_batt_id_0_only: false
 
     property bool show_ground_battery: false
     property bool ground_battery_show_voltage_current: false
@@ -133,6 +161,7 @@ Settings {
 
     property bool show_gps: true
     property bool gps_show_all: false
+    property bool gps_garble_lat_lon_first_decimals: false
     property bool gps_declutter: false
     property double gps_warn: 3
     property double gps_caution: 2
@@ -295,15 +324,6 @@ Settings {
     property bool show_record_widget: true
     property double recordTextSize: 14
     property bool show_minimal_record_widget: true
-    property double record_widget_height: 48
-    property double record_widget_width: 140
-
-    // The user can controll the width and height the secondary video has when in minimized state
-    // (By that he also controlls the ratio).
-    // And he can specify a factor by which the secondary video is maximized when clicked
-    property int secondary_video_minimized_width : 320
-    property int secondary_video_minimized_height : 240
-    property int secondary_video_maximize_factor_perc : 200
 
     property bool show_aoa: false
     property bool aoa_declutter: false
@@ -313,8 +333,9 @@ Settings {
 
     property bool show_example_widget: false
 
-    // Configure QOpenHD for dualcam usage (enable disable secondary video and its settings)
-    property int dev_qopenhd_n_cameras:1
+    property bool show_distance_sensor_widget: false
+    // (GPS) time
+    property bool show_time_widget: false
 
     // N of battery cells (generic) of the vehicle, used for the show voltage per cell setting
     // Proper way would be to query / get that via mavlink, but this is more complicated than it seems at glance
@@ -336,9 +357,13 @@ Settings {
 
     // HUD WB link rate control element settings
     property bool wb_link_rate_control_widget_show: true
+    property bool wb_link_rate_control_widget_show_frequency: true
+    property bool wb_link_rate_control_widget_show_bitrate_instead_of_mcs: false
 
     // really really dirty, i want to get rid of it as soon as possible
     property bool dirty_enable_inav_hacks: false
+    // FC discovery - annoying mavsdk
+    property bool dirty_enable_mavlink_fc_sys_id_check: false
 
     property int custom_cursor_type: 0
     property int custom_cursor_scale: 1 // arbitrary scale values - higher == bigger,
@@ -349,4 +374,7 @@ Settings {
 
     // message can be removed if needed.
     property bool dev_wb_show_no_stbc_enabled_warning: false
+
+    property int screen_settings_overlay_size_percent : 100
+    property bool screen_settings_openhd_parameters_transparent: false
 }

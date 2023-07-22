@@ -14,7 +14,7 @@ BaseWidget {
     visible: settings.show_uplink_rssi
 
     widgetIdentifier: "uplink_rssi_widget"
-    bw_verbose_name: "UPLINK RSSI"
+    bw_verbose_name: "UPLINK/AIR RSSI"
 
     defaultAlignment: 1
     defaultXOffset: 0
@@ -24,6 +24,11 @@ BaseWidget {
 
     hasWidgetDetail: true
     hasWidgetAction: true
+
+    widgetActionHeight: 164+50
+
+    // If openhd feature passive mode is enabled, show watermark instead
+    property bool m_passive_mode: _ohdSystemGround.tx_passive_mode
 
     widgetDetailComponent: ScrollView {
 
@@ -54,7 +59,7 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: "Tx video0: "+_cameraStreamModelPrimary.curr_video0_injected_pps
+                text: "GND TX: "+_ohdSystemGround.tx_packets_per_second_and_bits_per_second
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -63,7 +68,25 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: "Tx tele: "+_ohdSystemAir.curr_telemetry_tx_pps
+                text: "GND RX: "+_ohdSystemGround.rx_packets_per_second_and_bits_per_second
+                color: "white"
+                font.bold: true
+                height: parent.height
+                font.pixelSize: detailPanelFontPixels
+                verticalAlignment: Text.AlignVCenter
+            }
+            /*Text {
+                //Layout.alignment: left
+                text: "GND RX vid0: "+_cameraStreamModelPrimary.
+                color: "white"
+                font.bold: true
+                height: parent.height
+                font.pixelSize: detailPanelFontPixels
+                verticalAlignment: Text.AlignVCenter
+            }*/
+            Text {
+                //Layout.alignment: left
+                text: "GND RX tele: "+_ohdSystemAir.rx_tele_packets_per_second_and_bits_per_second
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -72,7 +95,16 @@ BaseWidget {
             }
             Text {
                 //Layout.alignment: left
-                text: "Rx tele: "+_ohdSystemAir.curr_telemetry_rx_pps;
+                text: "TX PWR Gnd: "+_wifi_card_gnd0.tx_power;
+                color: "white"
+                font.bold: true
+                height: parent.height
+                font.pixelSize: detailPanelFontPixels
+                verticalAlignment: Text.AlignVCenter
+            }
+            Text {
+                //Layout.alignment: left
+                text: "STBC/LPDC/SGI: "+_ohdSystemGround.wb_stbc_enabled+"/"+_ohdSystemGround.wb_lpdc_enabled+"/"+_ohdSystemGround.wb_short_guard_enabled
                 color: "white"
                 font.bold: true
                 height: parent.height
@@ -153,7 +185,7 @@ BaseWidget {
             spacing:0
             Text {
                 visible: true
-                text: "Loss: " + _ohdSystemAir.curr_rx_packet_loss_perc+"%"
+                text: m_passive_mode ? "LISTEN ONLY" : ("Loss: " + _ohdSystemAir.curr_rx_packet_loss_perc+"%")
                 color: settings.color_text
                 verticalAlignment: Text.AlignVCenter
                 font.pixelSize: 12

@@ -9,6 +9,14 @@ QAndroidMediaPlayer::QAndroidMediaPlayer(QObject *parent)
     : QObject(parent)
     //,m_mediaPlayer("org/openhd/LiveVideoPlayerWrapper")
 {
+    setup_start_video_decoder_display();
+}
+
+void QAndroidMediaPlayer::setup_start_video_decoder_display()
+{
+    // Everything should be cleaned up
+    assert(m_low_lag_decoder==nullptr);
+    assert(m_receiver==nullptr);
     m_low_lag_decoder=std::make_unique<LowLagDecoder>(nullptr);
     auto stats_cb=[](const DecodingInfo di){
         std::stringstream ss;
@@ -23,8 +31,20 @@ QAndroidMediaPlayer::QAndroidMediaPlayer(QObject *parent)
         }
     };
     m_low_lag_decoder->registerOnDecoderRatioChangedCallback(ratio_changed_cb);
+    const auto settings=QOpenHDVideoHelper::read_from_settings();
     auto codec=QOpenHDVideoHelper::read_from_settings().video_codec;
-    m_receiver=std::make_unique<GstRtpReceiver>(5600,codec);
+    const int port = settings.qopenhd_switch_primary_secondary ? 5601 : 5600;
+    m_receiver=std::make_unique<GstRtpReceiver>(port,codec);
+}
+
+void QAndroidMediaPlayer::stop_cleanup_decoder_display()
+{
+    // first, we stop the rtp receiver
+    m_receiver->stop_receiving();
+    m_receiver=nullptr;
+    // Then we can safely clean up the decoder (and its surface)
+    m_low_lag_decoder->setOutputSurface(nullptr,nullptr);
+    m_low_lag_decoder=nullptr;
 }
 
 QAndroidMediaPlayer::~QAndroidMediaPlayer()
@@ -35,10 +55,7 @@ QAndroidMediaPlayer::~QAndroidMediaPlayer()
     m_mediaPlayer.callMethod<void>("release");*/
     //m_mediaPlayer.callMethod<void>("releaseAll");
 
-    // first, we stop the rtp receiver
-    m_receiver->stop_receiving();
-    // Then we can safely clean up the decoder (and its surface)
-    m_low_lag_decoder->setOutputSurface(nullptr,nullptr);
+    stop_cleanup_decoder_display();
 }
 
 QSurfaceTexture *QAndroidMediaPlayer::videoOut() const
@@ -89,6 +106,15 @@ void QAndroidMediaPlayer::setVideoOut(QSurfaceTexture *videoOut)
         connect(m_videoOut.data(), &QSurfaceTexture::surfaceTextureChanged, this, setSurfaceTexture);
     }
     emit videoOutChanged();
+}
+
+void QAndroidMediaPlayer::switch_primary_secondary()
+{
+    // first, we stop the rtp receiver
+    m_receiver->stop_receiving();
+    // Then we can safely clean up the decoder (and its surface)
+    m_low_lag_decoder->setOutputSurface(nullptr,nullptr);
+    // and re-create it with the right video port as input
 }
 
 /*void QAndroidMediaPlayer::playFile(const QString &file)

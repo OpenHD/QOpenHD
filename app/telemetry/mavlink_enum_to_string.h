@@ -237,8 +237,8 @@ static QString mav_type_to_string(MAV_TYPE type){
         return "VTOL_FIXEDROTOR";
     case MAV_TYPE_VTOL_TAILSITTER:
         return "VTOL_TAILSITTER";
-    case MAV_TYPE_VTOL_RESERVED4:
-        return "VTOL_RESERVED4";
+    //case MAV_TYPE_VTOL_RESERVED4:
+    //    return "VTOL_RESERVED4";
     case MAV_TYPE_VTOL_RESERVED5:
         return "VTOL_RESERVED5";
     case MAV_TYPE_GIMBAL:
