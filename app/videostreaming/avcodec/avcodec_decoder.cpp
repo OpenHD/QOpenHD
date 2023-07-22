@@ -131,7 +131,7 @@ void AVCodecDecoder::constant_decode()
         // but by using a "decode service" that renders / composes the video into a plane behind qopenhd
         // on rpi, this is by far the most performant / low latency option
         bool use_external_decode_service=false;
-        // choice - enable regardless of platform
+        // choice - enable regardless of platform, usefull for development
         if(settings.generic.dev_always_use_generic_external_decode_service){
             use_external_decode_service=true;
         }
