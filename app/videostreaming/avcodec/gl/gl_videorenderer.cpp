@@ -97,6 +97,11 @@ void GL_VideoRenderer::update_texture_yuv420P_yuv422P(AVFrame* frame) {
 	  uv_height,
 	  uv_height
   };
+  // Better be safe than sorry with how annying QT can be
+  int gl_unpack_row_length_before=0;
+  glGetIntegerv(GL_UNPACK_ROW_LENGTH,&gl_unpack_row_length_before);
+  int gl_unpack_alignment_before=0;
+  glGetIntegerv(GL_UNPACK_ALIGNMENT,&gl_unpack_alignment_before);
   for(int i=0;i<3;i++){
 	if(yuv_420_p_sw_frame_texture.textures[i]==0){
 	  glGenTextures(1,&yuv_420_p_sw_frame_texture.textures[i]);
@@ -110,7 +115,8 @@ void GL_VideoRenderer::update_texture_yuv420P_yuv422P(AVFrame* frame) {
     glPixelStorei(GL_UNPACK_ROW_LENGTH,frame->linesize[i]);
 	glTexImage2D(test_texture_target, 0, GL_LUMINANCE, widths[i], heights[i], 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, frame->data[i]);
   }
-  glPixelStorei(GL_UNPACK_ROW_LENGTH,0);
+  glPixelStorei(GL_UNPACK_ROW_LENGTH,gl_unpack_row_length_before);
+  glPixelStorei(GL_UNPACK_ALIGNMENT, gl_unpack_alignment_before);
   glBindTexture(GL_TEXTURE_2D,0);
   GL_shaders::checkGlError("upload YUV420P");
   yuv_420_p_sw_frame_texture.has_valid_image= true;
