@@ -31,9 +31,9 @@ jobs:
 
       - name: clone QOpenHD
         run: |
-          git clone https://github.com/OpenHD/QOpenHD --recursive
-          apt install -y python3-pip python3-future python3-pyqt5 python3-pyqt5.qtopengl python3-pyqt5.qtsvg python3-pyqt5.qtwebkit python3-pyqtgraph
-
+          #git clone https://github.com/OpenHD/QOpenHD --recursive
+      - name: Print the local user's name
+        run: echo "The local user is $USER"
       - name: Install Dependencies
         run: |
           ls
