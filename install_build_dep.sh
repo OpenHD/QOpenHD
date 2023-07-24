@@ -7,7 +7,7 @@ QTTYPE="$2"
 
 BASE_PACKAGES="gnupg libjsoncpp-dev libtinyxml2-dev zlib1g libcurl4-gnutls-dev gnupg1 gnupg2 apt-transport-https apt-utils libgles2-mesa-dev libegl1-mesa-dev libgbm-dev libboost-dev libsdl2-dev libsdl1.2-dev"
 VIDEO_PACKAGES="libgstreamer-plugins-base1.0-dev gstreamer1.0-plugins-good libavcodec-dev libavformat-dev"
-BUILD_PACKAGES="ruby-dev meson build-essential cmake git ruby-dev python3-pip python3-future"
+BUILD_PACKAGES="meson build-essential cmake git"
 
 
 function install_jetson_packages {
