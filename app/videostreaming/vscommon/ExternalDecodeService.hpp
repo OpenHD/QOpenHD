@@ -44,6 +44,26 @@ static void stop_service_if_exists(const std::string& name){
     }
 }
 
+static void stop_service_if_exists_and_running(const std::string& name){
+    if(util::fs::service_file_exists(name)){
+        std::stringstream ss;
+        ss<<"systemctl status "<<name;
+        const auto running_opt=OHDUtil::run_command_out(ss.str().c_str());
+        bool is_running=false;
+        if(running_opt){
+            std::string tmp=running_opt.value();
+            if(tmp.find("active (running)") != std::string::npos) {
+                is_running=true;
+            }
+        }
+        if(is_running){
+            OHDUtil::run_command("systemctl stop",{name});
+        }
+    }
+}
+
+
+
 static void start_service_if_exists(const std::string& name){
     if(util::fs::service_file_exists(name)){
         OHDUtil::run_command("systemctl start",{name});
@@ -59,7 +79,7 @@ static void start_service_if_exists(const std::string& name){
 static void stop_all_services(){
     std::vector<std::string> services{GENERIC_H264_DECODE_SERVICE,GENERIC_H265_DECODE_SERVICE,GENERIC_MJPEG_DECODE_SERVICE};
     for(const auto& service:services){
-        stop_service_if_exists(service);
+        stop_service_if_exists_and_running(service);
     }
 }
 
