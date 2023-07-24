@@ -31,9 +31,8 @@ jobs:
 
       - name: clone QOpenHD
         run: |
-          git clone https://github.com/OpenHD/QOpenHD --recursive
-      - name: Print the local user's name
-        run: echo "The local user is $USER"
+          git clone https://github.com/OpenHD/QOpenHD --recursive -b 2.4-evo-lunar 
+
       - name: Install Dependencies
         run: |
           ls
