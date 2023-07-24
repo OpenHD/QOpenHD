@@ -65,7 +65,7 @@ bash build_install_mavsdk_static.sh || exit 1
  done
 
 # Installing python packages
-gem install fpm
+#gem install fpm
 
 # Building MAVSDK
 echo "now installing mavsdk"
