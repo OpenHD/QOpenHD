@@ -1,4 +1,4 @@
-name: build_package_x86_22.04
+name: build_package_x86_23.04
 
 on:
   push:
@@ -29,9 +29,10 @@ jobs:
           apt update
           apt install -y git sudo
 
-      - name: clone OpenHD
+      - name: clone QOpenHD
         run: |
           git clone https://github.com/OpenHD/QOpenHD --recursive
+          apt install -y python3-pip python3-future
 
       - name: Install Dependencies
         run: |
