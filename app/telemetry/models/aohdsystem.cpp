@@ -248,7 +248,7 @@ void AOHDSystem::process_x1(const mavlink_openhd_stats_monitor_mode_wifi_link_t 
     set_curr_mcs_index(new_mcs_index);
     set_curr_channel_mhz(msg.curr_tx_channel_mhz);
     set_curr_channel_width_mhz(msg.curr_tx_channel_w_mhz);
-    set_curr_bitrate_kbits(msg.dummy2);
+    set_curr_bitrate_kbits(msg.curr_rate_kbits);
     set_tx_packets_per_second_and_bits_per_second(StringHelper::bitrate_and_pps_to_string(msg.curr_tx_bps,msg.curr_tx_pps).c_str());
     set_rx_packets_per_second_and_bits_per_second(StringHelper::bitrate_and_pps_to_string(msg.curr_rx_bps,msg.curr_rx_pps).c_str());
     const auto stbc_lpdc_gi=Telemetryutil::get_stbc_lpdc_shortguard_bitfield(msg.dummy0);
