@@ -15,6 +15,8 @@
 #include "../logging/hudlogmessagesmodel.h"
 #include "../logging/logmessagesmodel.h"
 
+#include "ExternalDecodeService.hpp"
+
 static int hw_decoder_init(AVCodecContext *ctx, const enum AVHWDeviceType type){
     int err = 0;
     ctx->hw_frames_ctx = NULL;
@@ -848,85 +850,7 @@ void AVCodecDecoder::timestamp_debug_valid(int64_t ts)
     }
 }
 
-// QOpenHD video decode "service" workaround
-#include "../common/openhd-util.hpp"
-
-static void write_service_rotation_file(int rotation){
-    qDebug()<<"Writing "<<rotation<<"° to video service file";
-    FILE *f = fopen("/tmp/video_service_rotation.txt", "w");
-    if (f == NULL){
-        qDebug()<<"Error opening file!";
-        return;
-    }
-    fprintf(f, "%d",rotation);
-    fclose(f);
-}
-
-static constexpr auto GENERIC_H264_DECODE_SERVICE="h264_decode";
-static constexpr auto GENERIC_H265_DECODE_SERVICE="h265_decode";
-static constexpr auto GENERIC_MJPEG_DECODE_SERVICE="mjpeg_decode";
-static std::string get_service_name_for_codec(const QOpenHDVideoHelper::VideoCodec& codec){
-    if(codec==QOpenHDVideoHelper::VideoCodecH264)return GENERIC_H264_DECODE_SERVICE;
-    if(codec==QOpenHDVideoHelper::VideoCodecH264)return GENERIC_H265_DECODE_SERVICE;
-    return GENERIC_MJPEG_DECODE_SERVICE;
-}
-
-static void stop_service_if_exists(const std::string& name){
-    if(util::fs::service_file_exists(name)){
-        OHDUtil::run_command("systemctl stop",{name});
-    }
-}
-
-static void start_service_if_exists(const std::string& name){
-    if(util::fs::service_file_exists(name)){
-        OHDUtil::run_command("systemctl start",{name});
-    }else{
-        std::stringstream message;
-        message<<"Cannot start video decode service "<<name;
-        LogMessagesModel::instanceOHD().add_message_warn("QOpenHD",message.str().c_str());
-        qDebug()<<message.str().c_str();
-    }
-}
-
-static void stop_all_services(){
-    std::vector<std::string> services{GENERIC_H264_DECODE_SERVICE,GENERIC_H265_DECODE_SERVICE,GENERIC_MJPEG_DECODE_SERVICE};
-    for(const auto& service:services){
-        stop_service_if_exists(service);
-    }
-}
-
 void AVCodecDecoder::dirty_generic_decode_via_external_decode_service(const QOpenHDVideoHelper::VideoStreamConfig& settings)
 {
-    qDebug()<<"dirty_generic_decode_via_external_decode_service begin";
-    // this is always for primary video, unless switching is enabled
-    auto stream_config=settings.primary_stream_config;
-    if(settings.generic.qopenhd_switch_primary_secondary){
-        stream_config=settings.secondary_stream_config;
-    }
-    // Stop any still running service (just in case there is one)
-    stop_all_services();
-    // QRS are not available with this implementation
-    DecodingStatistcs::instance().reset_all_to_default();
-    {
-        std::stringstream type;
-        type<<"External "<<QOpenHDVideoHelper::video_codec_to_string(settings.primary_stream_config.video_codec);
-        DecodingStatistcs::instance().set_decoding_type(type.str().c_str());
-    }
-    // Dirty way we communicate with the service / executable
-    const auto rotation=QOpenHDVideoHelper::get_display_rotation();
-    write_service_rotation_file(rotation);
-    // Start service
-    const auto service_name=get_service_name_for_codec(settings.primary_stream_config.video_codec);
-    start_service_if_exists(service_name);
-    // We follow the same pattern here as the decode flows that don't use an "external service"
-    while(true){
-        if(request_restart){
-            request_restart=false;
-            break;
-        }
-        std::this_thread::sleep_for(std::chrono::seconds(1));
-    }
-    // Stop service
-    OHDUtil::run_command("systemctl stop",{service_name});
-    qDebug()<<"dirty_generic_decode_via_external_decode_service end";
+    qopenhd::decode::service::decode_via_external_decode_service(settings,request_restart);
 }

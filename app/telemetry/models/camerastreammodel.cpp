@@ -82,7 +82,21 @@ void CameraStreamModel::update_mavlink_openhd_camera_stats(const mavlink_openhd_
     ss<<(int)msg.stream_w<<"x"<<(int)msg.stream_h<<"@"<<msg.stream_fps;
     set_curr_set_video_format(ss.str().c_str());
     ss<<", "<<video_codec_to_string(msg.encoding_format);
-    set_lulu_curr_video_codec_and_format(ss.str().c_str());
+    set_curr_set_video_format_and_codec(ss.str().c_str());
+    auto new_res_fps=ResolutionFramerate{msg.stream_w,msg.stream_h,msg.stream_fps};
+    if(new_res_fps.is_any_invalid()){
+        qDebug()<<"Invalid data from air unit:"<<resolution_framerate_to_string(new_res_fps).c_str();
+    }else{
+        if(m_curr_res_framerate.is_any_invalid()){
+           // First time we ever got the current resolution / fps of the camera
+           m_curr_res_framerate=new_res_fps;
+        }else{
+           if(m_curr_res_framerate!=new_res_fps){
+               m_curr_res_framerate=new_res_fps;
+               qDebug()<<"Res/Framerate changed:"<<resolution_framerate_to_string(m_curr_res_framerate).c_str();
+           }
+        }
+    }
     // Feature - automatically set the right codec in qopenhd
     const bool secondary=m_camera_index==1;
     const int codec_in_qopenhd=QOpenHDVideoHelper::get_qopenhd_camera_video_codec(secondary);
@@ -139,4 +153,11 @@ void CameraStreamModel::set_curr_recommended_bitrate_from_message(const int64_t 
     }else{
         set_curr_recomended_video_bitrate_string("N/A");
     }
+}
+
+std::string CameraStreamModel::resolution_framerate_to_string(const ResolutionFramerate &data)
+{
+    std::stringstream ss;
+    ss<<(int)data.width<<"x"<<(int)data.height<<"@"<<data.framerate;
+    return ss.str();
 }

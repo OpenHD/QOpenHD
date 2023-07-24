@@ -103,7 +103,7 @@ ScrollView {
             }
 
             SettingBaseElement{
-                m_short_description: "Backgrund transparent"
+                m_short_description: "Background transparent"
                 m_long_description: "Use a transparent surface, such that another application can play (hw composer accelerated) video behind the QOpenHD surface."
 
                 Switch {

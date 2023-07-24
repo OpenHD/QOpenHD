@@ -100,7 +100,7 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Text {
-                    text: m_camera_stream_model.lulu_curr_video_codec_and_format
+                    text: m_camera_stream_model.curr_set_video_format_and_codec
                     color: "white";
                     font.bold: true;
                     height: parent.height
