@@ -68,5 +68,6 @@ bash build_install_mavsdk_static.sh || exit 1
 gem install fpm
 
 # Building MAVSDK
+echo "now installing mavsdk"
 install_mavsdk
 
