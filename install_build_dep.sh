@@ -7,7 +7,7 @@ QTTYPE="$2"
 
 BASE_PACKAGES="gnupg libjsoncpp-dev libtinyxml2-dev zlib1g libcurl4-gnutls-dev gnupg1 gnupg2 apt-transport-https apt-utils libgles2-mesa-dev libegl1-mesa-dev libgbm-dev libboost-dev libsdl2-dev libsdl1.2-dev"
 VIDEO_PACKAGES="libgstreamer-plugins-base1.0-dev gstreamer1.0-plugins-good libavcodec-dev libavformat-dev"
-BUILD_PACKAGES="meson build-essential cmake git"
+BUILD_PACKAGES="ruby-dev meson build-essential cmake git ruby-dev python3-pip"
 
 
 function install_jetson_packages {
@@ -64,7 +64,10 @@ bash build_install_mavsdk_static.sh || exit 1
      fi
  done
 
+# Installing python packages
+gem install fpm
+pip3 install future
+
 # Building MAVSDK
-echo "now installing mavsdk"
 install_mavsdk
 
