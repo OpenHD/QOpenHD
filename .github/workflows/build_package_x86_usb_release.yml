@@ -31,14 +31,14 @@ jobs:
 
       - name: clone QOpenHD
         run: |
-          #git clone https://github.com/OpenHD/QOpenHD --recursive
+          git clone https://github.com/OpenHD/QOpenHD --recursive
       - name: Print the local user's name
         run: echo "The local user is $USER"
       - name: Install Dependencies
         run: |
           ls
           cd QOpenHD
-          ./install_build_dep.sh ubuntu-x86
+          sudo -H ./install_build_dep.sh ubuntu-x86
 
       - name: Build with make
         run: |
