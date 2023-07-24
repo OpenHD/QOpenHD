@@ -32,7 +32,7 @@ jobs:
       - name: clone QOpenHD
         run: |
           git clone https://github.com/OpenHD/QOpenHD --recursive
-          apt install -y ruby-dev python3-pip python3-future python3-pyqt5 python3-pyqt5.qtopengl python3-pyqt5.qtsvg python3-pyqt5.qtwebkit python3-pyqtgraph
+          apt install -y python3-pip python3-future python3-pyqt5 python3-pyqt5.qtopengl python3-pyqt5.qtsvg python3-pyqt5.qtwebkit python3-pyqtgraph
 
       - name: Install Dependencies
         run: |
