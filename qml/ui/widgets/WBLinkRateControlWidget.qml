@@ -223,7 +223,7 @@ BaseWidget {
                 width: parent.width
                 height: 32
                 Text {
-                    text: qsTr("Show bitrate detailed")
+                    text: qsTr("Bitrate show detailed")
                     color: "white"
                     height: parent.height
                     font.bold: true

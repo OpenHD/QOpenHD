@@ -86,7 +86,14 @@ static void stop_all_services(){
 static bool qopenhd_is_background_transparent(){
     QSettings settings;
     return settings.value("app_background_transparent",true).toBool();
+}
 
+static void write_service_environment_file(const QOpenHDVideoHelper::VideoStreamConfigXX& config){
+    std::stringstream ss;
+    ss<<"ROTATION="<<0<<"\n";
+    ss<<"UDP_INPUT_PORT="<<config.udp_rtp_input_port<<"\n";
+    ss<<"SCALE_TO_FIT="<<0<<"\n";
+    util::fs::write_file("/tmp/decode_service_params.txt",ss.str());
 }
 
 void decode_via_external_decode_service(const QOpenHDVideoHelper::VideoStreamConfig& settings,std::atomic<bool>& request_restart){
@@ -98,6 +105,7 @@ void decode_via_external_decode_service(const QOpenHDVideoHelper::VideoStreamCon
     }
     // Stop any still running service (just in case there is one)
     stop_all_services();
+
     // QRS are not available with this implementation
     DecodingStatistcs::instance().reset_all_to_default();
     {
@@ -114,6 +122,9 @@ void decode_via_external_decode_service(const QOpenHDVideoHelper::VideoStreamCon
     // Dirty way we communicate with the service / executable
     const auto rotation=QOpenHDVideoHelper::get_display_rotation();
     write_service_rotation_file(rotation);
+    // this way we "communicate" with the service
+    write_service_environment_file(stream_config);
+
     // Start service
     const auto service_name=get_service_name_for_codec(settings.primary_stream_config.video_codec);
     start_service_if_exists(service_name);
