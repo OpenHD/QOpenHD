@@ -194,7 +194,9 @@ static std::vector<XParam> get_parameters_list(){
         );
     }
     append_int(ret,openhd::WB_MCS_INDEX,
-               ImprovedIntSetting::createEnum({"MCS0","MCS1","MCS2","MCS3","MCS4","MCS5","MCS6","MCS7"}),
+               ImprovedIntSetting::createEnum({"MCS0","MCS1","MCS2","MCS3","MCS4(not rec)","MCS5(not rec)","MCS6(not rec)","MCS7(not rec)",
+                                               "MCS8 (VHT0+2SS)", "MCS9 (VHT1+2SS)", "MCS10 (VHT2+2SS)", "MCS11 (VHT3+2SS)",
+                                               }),
                "!!!Editing this param manually without care will result in a broken link!!!"
     );
     append_int(ret,openhd::WB_MCS_INDEX_VIA_RC_CHANNEL,

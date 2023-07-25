@@ -72,6 +72,15 @@ public: // Stuff needs to be public for qt
     L_RO_PROP(int,battery_consumed_mah,set_battery_consumed_mah,0)
     // TODO this value is not calculated yet
     L_RO_PROP(int,battery_consumed_mah_per_km,set_battery_consumed_mah_per_km,0)
+    // Ardupilot might show the same battery as multiple batteries when more than one current sensor is used
+    // (Aparently a few peole do that)
+    L_RO_PROP(double, battery_id0_current_ampere, set_battery_id0_current_ampere, 0)
+    L_RO_PROP(double, battery_id0_voltage_volt, set_battery_id0_voltage_volt, 0)
+    L_RO_PROP(int,battery_id0_consumed_mah,set_battery_id0_consumed_mah,0)
+    L_RO_PROP(double, battery_id1_current_ampere, set_battery_id1_current_ampere, 0)
+    L_RO_PROP(double, battery_id1_voltage_volt, set_battery_id1_voltage_volt, 0)
+    L_RO_PROP(int,battery_id1_consumed_mah,set_battery_id1_consumed_mah,0)
+
     // roll, pitch and yaw
     L_RO_PROP(double, pitch, set_pitch, 0)
     L_RO_PROP(double, roll, set_roll, 0)

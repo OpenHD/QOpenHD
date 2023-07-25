@@ -358,7 +358,10 @@ Settings {
     // HUD WB link rate control element settings
     property bool wb_link_rate_control_widget_show: true
     property bool wb_link_rate_control_widget_show_frequency: true
-    property bool wb_link_rate_control_widget_show_bitrate_instead_of_mcs: false
+    property bool wb_link_rate_control_widget_show_bitrate: true
+    property bool wb_link_rate_control_widget_show_fec_and_keyframe: true
+
+    property bool wb_link_rate_control_widget_show_bitrate_detailed: true
 
     // really really dirty, i want to get rid of it as soon as possible
     property bool dirty_enable_inav_hacks: false

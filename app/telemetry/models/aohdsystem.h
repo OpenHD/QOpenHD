@@ -87,8 +87,8 @@ public: // public for QT
     // We also create a message in the HUD every time MCS changes
     L_RO_PROP(int,curr_mcs_index,set_curr_mcs_index,-1)
     L_RO_PROP(int,curr_bitrate_kbits,set_curr_bitrate_kbits,-1)
+    L_RO_PROP(int,curr_n_rate_adjustments,set_curr_n_rate_adjustments,-1)
 
-    L_RO_PROP(int,curr_n_openhd_rate_adjustments,set_curr_n_openhd_rate_adjustments,-1)
     // similar for channel / channel width
     L_RO_PROP(int,curr_channel_mhz,set_curr_channel_mhz,-1)
     L_RO_PROP(int,curr_channel_width_mhz,set_curr_channel_width_mhz,-1);

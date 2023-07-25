@@ -40,6 +40,8 @@ BaseWidget {
     property int m_curr_mcs_index: _ohdSystemAir.curr_mcs_index
     property int m_curr_bitrate_kbits: _ohdSystemAir.curr_bitrate_kbits
 
+    property int m_curr_fine_adjustments: _ohdSystemAir.curr_n_rate_adjustments
+
     property int m_curr_fec_perc: _cameraStreamModelPrimary.curr_fec_percentage
     property int m_curr_keyframe_i: _cameraStreamModelPrimary.curr_keyframe_interval
 
@@ -57,6 +59,10 @@ BaseWidget {
         }
         if(_ohdSystemGround.curr_channel_width_mhz==40){
             ret+= " 40Mhz";
+        }else if(_ohdSystemGround.curr_channel_width_mhz==20){
+            ret+=" 20Mhz";
+        }else{
+            ret +=" N/A";
         }
         //ret+=" Mhz";
         return ret;
@@ -82,12 +88,27 @@ BaseWidget {
         return m_curr_mcs_index==-1 ? "MCS: NA" : "MCS: "+m_curr_mcs_index;
     }
 
-    function get_text_mcs_or_bitrate_and_mcs(){
-        if(settings.wb_link_rate_control_widget_show_bitrate_instead_of_mcs){
-            return get_text_bitrate_mcs()
+    function get_text_detailed_bitrate(){
+        if(m_curr_bitrate_kbits<=0){
+            return "RATE N/A";
         }
-        return get_text_mcs()
+        var ret=bitrate_kbits_readable(m_curr_bitrate_kbits);
+        //if(m_curr_fine_adjustments>0){
+            var fine_readable="-"+m_curr_fine_adjustments;
+            ret+=fine_readable;
+        //}
+        ret += (" ["+m_curr_mcs_index+"]");
+        return ret;
     }
+
+    function get_text_bitrate(){
+        if(settings.wb_link_rate_control_widget_show_bitrate_detailed){
+            //return get_text_bitrate_mcs()
+            return get_text_detailed_bitrate()
+        }
+        return get_text_bitrate_mcs()
+    }
+
 
     function get_text_fec_keyframe(){
         var ret=""
@@ -158,7 +179,7 @@ BaseWidget {
                 width: parent.width
                 height: 32
                 Text {
-                    text: qsTr("Show bitrate instead of MCS")
+                    text: qsTr("Show bitrate")
                     color: "white"
                     height: parent.height
                     font.bold: true
@@ -171,8 +192,52 @@ BaseWidget {
                     height: parent.height
                     anchors.rightMargin: 6
                     anchors.right: parent.right
-                    checked: settings.wb_link_rate_control_widget_show_bitrate_instead_of_mcs
-                    onCheckedChanged: settings.wb_link_rate_control_widget_show_bitrate_instead_of_mcs = checked
+                    checked: settings.wb_link_rate_control_widget_show_bitrate
+                    onCheckedChanged: settings.wb_link_rate_control_widget_show_bitrate = checked
+                }
+            }
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("Show fec and keyframe")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels;
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 6
+                    anchors.right: parent.right
+                    checked: settings.wb_link_rate_control_widget_show_fec_and_keyframe
+                    onCheckedChanged: settings.wb_link_rate_control_widget_show_fec_and_keyframe = checked
+                }
+            }
+
+
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("Show bitrate detailed")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels;
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 6
+                    anchors.right: parent.right
+                    checked: settings.wb_link_rate_control_widget_show_bitrate_detailed
+                    onCheckedChanged: settings.wb_link_rate_control_widget_show_bitrate_detailed = checked
                 }
             }
         }
@@ -391,6 +456,7 @@ and works in most cases. Use CITY/POLLUTED on polluted channels, DESERT if you h
                 font.family: settings.font_text
                 style: Text.Outline
                 styleColor: settings.color_glow
+                visible: settings.wb_link_rate_control_widget_show_frequency
             }
 
             Text {
@@ -399,7 +465,7 @@ and works in most cases. Use CITY/POLLUTED on polluted channels, DESERT if you h
                 width: parent.width
                 height: 14
                 color: settings.color_text
-                text: get_text_mcs_or_bitrate_and_mcs()
+                text: get_text_bitrate()
                 anchors.top: channelText.bottom
                 anchors.bottomMargin: 0
                 verticalAlignment: Text.AlignBottom
@@ -408,6 +474,7 @@ and works in most cases. Use CITY/POLLUTED on polluted channels, DESERT if you h
                 font.family: settings.font_text
                 style: Text.Outline
                 styleColor: settings.color_glow
+                visible: settings.wb_link_rate_control_widget_show_bitrate
             }
             Text {
                 y: 0
@@ -425,6 +492,7 @@ and works in most cases. Use CITY/POLLUTED on polluted channels, DESERT if you h
                 font.family: settings.font_text
                 style: Text.Outline
                 styleColor: settings.color_glow
+                visible: settings.wb_link_rate_control_widget_show_fec_and_keyframe
             }
 
         }

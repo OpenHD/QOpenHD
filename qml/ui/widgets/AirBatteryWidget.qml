@@ -23,6 +23,21 @@ BaseWidget {
     defaultVCenter: false
 
     hasWidgetDetail: true
+    hasWidgetAction: true
+
+    function get_text_for_specific_battery(id){
+
+        var voltage_v= id===0 ? _fcMavlinkSystem.battery_id0_voltage_volt : _fcMavlinkSystem.battery_id1_voltage_volt;
+        var current_ampere= id===0 ? _fcMavlinkSystem.battery_id0_current_ampere : _fcMavlinkSystem.battery_id1_current_ampere;
+        var consumed_mah = id===0 ? _fcMavlinkSystem.battery_id0_consumed_mah : _fcMavlinkSystem.battery_id1_consumed_mah;
+
+        var ret=""
+        ret+=(Number(voltage_v).toLocaleString(Qt.locale(),'f', 1) + "V ")
+        ret+=(Number(current_ampere).toLocaleString( Qt.locale(), 'f', 1) + "A ")
+        ret+=(consumed_mah + "mAh")
+        return ret;
+    }
+
     widgetDetailComponent: ScrollView {
 
         contentHeight: idBaseWidgetDefaultUiControlElements.height
@@ -98,6 +113,60 @@ BaseWidget {
                 }
             }
 
+        }
+    }
+
+    widgetActionComponent: ScrollView {
+
+        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+        clip: true
+
+        ColumnLayout {
+            width: 200
+            Item {
+                width: parent.width
+                height: 20
+                Text {
+                    text: qsTr("Battery 1")
+                    color: "white"
+                    font.bold: true
+                    height: parent.height
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Text {
+                    text: get_text_for_specific_battery(0)
+                    color: "white"
+                    font.bold: true
+                    height: parent.height
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.right: parent.right
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
+            Item {
+                width: parent.width
+                height: 20
+                Text {
+                    text: qsTr("Battery 2")
+                    color: "white"
+                    font.bold: true
+                    height: parent.height
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Text {
+                    text:  get_text_for_specific_battery(0)
+                    color: "white"
+                    font.bold: true
+                    height: parent.height
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.right: parent.right
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
         }
     }
 
