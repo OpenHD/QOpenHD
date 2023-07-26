@@ -140,6 +140,7 @@ ScrollView {
             SettingBaseElement{
                 m_short_description: "Secondary video udp in port"
                 m_long_description: "UDP port where qopenhd listens for video data for the secondary video stream"
+                visible: settings.dev_qopenhd_n_cameras==2
                 SpinBox {
                     height: elementHeight
                     width: 210
