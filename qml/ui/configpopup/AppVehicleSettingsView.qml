@@ -63,6 +63,33 @@ ScrollView {
                     onCheckedChanged: settings.show_fc_messages_in_hud = checked
                 }
             }
+            SettingBaseElement{
+                m_short_description: "Set mavlink message rates"
+                m_long_description: "Set mavlink message rate(s) that should work for most users. NOTE: When disabling this feature, you have to manually set the mavlink message rate(s)
+ via mission planner for your autpilot running ardupilot/ PX4 !"
+                Switch {
+                    width: 32
+                    height: elementHeight
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    checked: settings.set_mavlink_message_rates
+                    onCheckedChanged: settings.set_mavlink_message_rates = checked
+                }
+            }
+            SettingBaseElement{
+                m_short_description: "Log quiet FC warning"
+                m_long_description: "Log a warning when we get heartbeats from the FC, but not proper data"
+                Switch {
+                    width: 32
+                    height: elementHeight
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    checked: settings.log_quiet_fc_warning_to_hud
+                    onCheckedChanged: settings.log_quiet_fc_warning_to_hud = checked
+                }
+            }
         }
     }
 }

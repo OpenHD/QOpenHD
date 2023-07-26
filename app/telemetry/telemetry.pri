@@ -84,6 +84,7 @@ SOURCES += \
 HEADERS += \
     $$PWD/mavlink_enum_to_string.h \
     $$PWD/models/fcmavlinksettingsmodel.h \
+    $$PWD/models/fcmessageintervalhelper.hpp \
     $$PWD/settings/documented_param.h \
     app/telemetry/mavsdk_helper.hpp \
     app/telemetry/mavsdk_include.h \
@@ -101,5 +102,6 @@ HEADERS += \
     app/telemetry/settings/mavlinksettingsmodel.h \
     app/telemetry/models/fcmavlinksystem.h \
     app/telemetry/models/fcmavlinkmissionitemsmodel.h \
+    app/telemetry/models/fcmessageintervalhelper.hpp \
 
 DEFINES += QOPENHD_HAS_MAVSDK_MAVLINK_TELEMETRY

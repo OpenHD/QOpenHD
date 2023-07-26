@@ -98,6 +98,18 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         }else{
             qDebug()<<"Weird heartbeat";
         }
+        m_n_heartbeats++;
+        if(m_n_heartbeats>10){
+            if(m_n_attitude_messages<=0){
+                QSettings settings;
+                const bool log_quiet_fc_warning_to_hud = settings.value("log_quiet_fc_warning_to_hud",true).toBool();
+                if(log_quiet_fc_warning_to_hud){
+                    HUDLogMessagesModel::instance().add_message_warning("Quiet FC, please check your mavlink message rate(s)");
+                }
+            }
+            m_n_attitude_messages=0;
+            m_n_heartbeats=0;
+        }
         break;
     }
     case MAVLINK_MSG_ID_AUTOPILOT_VERSION: {
@@ -204,6 +216,7 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         //const auto yaw_deg=Telemetryutil::angle_mavlink_rad_to_degree(attitude.yaw);
         //set_hdg(yaw_deg);
         //qDebug()<<"degree Roll:"<<roll_deg<<" Pitch:"<<pitch_deg<<" Yaw:"<<yaw_deg;
+        m_n_attitude_messages++;
         break;
     }
     case MAVLINK_MSG_ID_LOCAL_POSITION_NED:{

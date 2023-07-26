@@ -281,6 +281,13 @@ private:
     double m_efficiency_last_distance_m=0;
     int m_efficiency_last_charge_consumed_mAh=0;
     std::chrono::steady_clock::time_point m_efficiency_last_update=std::chrono::steady_clock::now();
+private:
+    // Feature: log warning if heartbeats are received, but no "attitude" messages -
+    // we use this as a hint that the telemetry rate(s) are messed up
+    // Every 10 heartbeats, check when we received the last "attitude" message - if we didn't receive an attiude message in this interval,
+    // log a warning
+    int m_n_heartbeats=0;
+    int m_n_attitude_messages=0;
 };
 
 

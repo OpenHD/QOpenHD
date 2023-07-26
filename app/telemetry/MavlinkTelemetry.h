@@ -8,6 +8,7 @@
 #include <thread>
 
 #include "mavsdk_include.h"
+#include "models/fcmessageintervalhelper.hpp"
 
 /**
  * Changed: Used to have custom UDP and TCP stuff, but now just uses MAVSDK - MAVSDK already has both TCP and UDP support.
@@ -89,6 +90,9 @@ public:
     Q_INVOKABLE bool ohd_gnd_request_channel_scan(int freq_bands,int channel_widths);
 public:
     Q_INVOKABLE void exp_set_data_rates();
+private:
+    std::unique_ptr<FCMessageIntervalHelper> m_msg_interval_helper=nullptr;
+    void process_check_for_data_rates(const mavlink_message_t &msg);
 };
 
 #endif // OHDMAVLINKCONNECTION_H

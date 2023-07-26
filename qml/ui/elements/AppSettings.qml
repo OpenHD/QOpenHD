@@ -344,6 +344,10 @@ Settings {
     // Show FC mavlink messages in the HUD
     property bool show_fc_messages_in_hud: true
 
+    // Set the mavlink message rate(s) via qopenhd
+    property bool set_mavlink_message_rates: true
+    property bool log_quiet_fc_warning_to_hud : true
+
     // only works on select platforms (on rpi, we are automatically already full screen)
     property bool dev_force_show_full_screen: false
 

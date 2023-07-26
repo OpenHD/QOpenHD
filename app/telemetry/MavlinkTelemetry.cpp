@@ -11,7 +11,8 @@
 #include "../logging/logmessagesmodel.h"
 
 MavlinkTelemetry::MavlinkTelemetry(QObject *parent):QObject(parent)
-{   
+{
+    m_msg_interval_helper=std::make_unique<FCMessageIntervalHelper>();
     mavsdk::Mavsdk::Configuration config{QOpenHDMavlinkHelper::get_own_sys_id(),QOpenHDMavlinkHelper::get_own_comp_id(),false};
     mavsdk=std::make_shared<mavsdk::Mavsdk>();
     mavsdk->set_configuration(config);
@@ -237,6 +238,14 @@ void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg)
         if(fc_sys_id.has_value()){
             if(msg.sysid==fc_sys_id.value()){
                 bool processed=FCMavlinkSystem::instance().process_message(msg);
+               if(m_msg_interval_helper){
+                    m_msg_interval_helper->check_acknowledgement(msg);
+                    auto opt_command=m_msg_interval_helper->create_command_if_needed();
+                   if(opt_command.has_value()){
+                       auto command=opt_command.value();
+                       send_command_long_oneshot(command);
+                   }
+                }
             }else{
                 qDebug()<<"MavlinkTelemetry received unmatched message "<<QOpenHDMavlinkHelper::debug_mavlink_message(msg);
 
@@ -333,7 +342,7 @@ static mavlink_command_long_t create_cmd_set_msg_interval(int msg_type,int inter
     mavlink_command_long_t command{};
     command.target_system=1;
     command.target_component=0;
-    command.command=511;
+    command.command=MAV_CMD_SET_MESSAGE_INTERVAL;
     command.confirmation=0;
     command.param1=msg_type;
     command.param2=interval_us;
@@ -344,4 +353,15 @@ void MavlinkTelemetry::exp_set_data_rates()
 {
     auto cmd=create_cmd_set_msg_interval(MAVLINK_MSG_ID_ATTITUDE,1000*33);
     send_command_long_oneshot(cmd);
+}
+
+void MavlinkTelemetry::process_check_for_data_rates(const mavlink_message_t &msg)
+{
+    if(msg.msgid==MAVLINK_MSG_ID_COMMAND_ACK){
+        mavlink_command_ack_t ack;
+        mavlink_msg_command_ack_decode(&msg,&ack);
+        if(ack.command==MAV_CMD_SET_MESSAGE_INTERVAL){
+            qDebug()<<"Message interval acknowledged";
+        }
+    }
 }
