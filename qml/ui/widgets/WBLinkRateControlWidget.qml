@@ -32,10 +32,11 @@ BaseWidget {
     hasWidgetAction: true
 
     property int m_widget_action_w:  256
-    property int m_widget_action_h: 300;
+    property int m_widget_action_h: 300+120;
     widgetActionWidth: m_widget_action_w
     widgetActionHeight: m_widget_action_h
 
+    property int m_curr_channel_width: _ohdSystemGround.curr_channel_width_mhz
 
     property int m_curr_mcs_index: _ohdSystemAir.curr_mcs_index
     property int m_curr_bitrate_kbits: _ohdSystemAir.curr_bitrate_kbits
@@ -44,6 +45,9 @@ BaseWidget {
 
     property int m_curr_fec_perc: _cameraStreamModelPrimary.curr_fec_percentage
     property int m_curr_keyframe_i: _cameraStreamModelPrimary.curr_keyframe_interval
+
+    //property bool m_is_armed: true
+    property bool m_is_armed: _fcMavlinkSystem.armed
 
 
     function get_text_channel(){
@@ -82,10 +86,6 @@ BaseWidget {
             return "RATE N/A";
         }
         return bitrate_kbits_readable(m_curr_bitrate_kbits)+" ["+m_curr_mcs_index+"]"
-    }
-
-    function get_text_mcs(){
-        return m_curr_mcs_index==-1 ? "MCS: NA" : "MCS: "+m_curr_mcs_index;
     }
 
     function get_text_detailed_bitrate(){
@@ -144,6 +144,20 @@ BaseWidget {
         }
     }
 
+    property string m_DESCRIPTION_CHANNEL_WIDTH: "
+A higher channel width (40Mhz) increases the bitrate significantly, but reduces the maximum range of the system.
+In cntrast to the MCS index (see below), it can only be changed while disarmed (not during flight),
+It is recommended to use a 40Mhz channel width if your hardware supports it,
+and controll the MCS index for fine adjustments."
+
+    property string m_DESCRIPTION_MCS: "
+The lower the MCS (Modulation and coding) index, the less signal (dBm) is required to pick up data. If you want to, you can change this value using the RC channel switcher -
+this allows you to quickly select a lower MCS index during flight (e.g. if you want to fly further or encounter issues like your plane going out of the corridor of your antenna tracker.)"
+
+    property string m_DESCRIPTION_STABILITY: "
+Make the video more stable (less microfreezes) on the cost of less image quality.
+Internally, this changes the encode keyframe interval and/ or FEC overhead in percent. DEFAULT is a good trade off regarding image quality and stability
+and works in most cases. Use CITY/POLLUTED on polluted channels, DESERT if you have a completely clean channel."
 
     widgetDetailComponent: ScrollView {
 
@@ -252,27 +266,93 @@ BaseWidget {
         height: parent.height
 
         ColumnLayout {
-            width: 200
-            height:  m_widget_action_h -30
+            width: m_widget_action_w -32
+            height:  m_widget_action_h-32
             spacing: 10
+
+
+            Rectangle {
+                height: 32
+                width: parent.width
+                id: itemDescriptionRangeQuality
+                //color: "green"
+                color: "black"
+                Text {
+                    id: simpleDescriptionRangeQuality
+                    text: "Trade range/image quality"
+                    color: "white"
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                }
+                Button{
+                    height: 32
+                    width: 32
+                    text: "\uf05a"
+                    anchors.left: simpleDescriptionRangeQuality.right
+                    anchors.top: simpleDescriptionRangeQuality.top
+                    Material.background:Material.LightBlue
+                    anchors.leftMargin: 5
+                    onClicked: {
+                        _messageBoxInstance.set_text_and_show(m_DESCRIPTION_CHANNEL_WIDTH)
+                    }
+                }
+            }
+            Rectangle{
+                width: parent.width
+                height: 50
+                Layout.fillWidth: true
+                //color: "#13142e"
+                //border.width: 5
+                //radius: 10
+                //color: "green"
+                color: "black"
+                Button{
+                    text: "20Mhz"
+                    anchors.left: parent.left
+                    onClicked: {
+                        _synchronizedSettings.change_param_air_and_ground_channel_width(20)
+                    }
+                    highlighted: m_curr_channel_width==20
+                    enabled: !m_is_armed
+                }
+                Button{
+                    text: "40Mhz"
+                    anchors.right: parent.right
+                    onClicked: {
+                        _synchronizedSettings.change_param_air_and_ground_channel_width(40)
+                    }
+                    highlighted:  m_curr_channel_width==40
+                    enabled: !m_is_armed
+                }
+                Text{
+                    text: "ARMED - not available"
+                    width: parent.width
+                    height: parent.height
+                    visible : m_is_armed
+                    color: "red"
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
 
             Rectangle{
                 id: areaMCS
                 width: parent.width
-                height: parent.height /2;
+                height: parent.height /3;
                 //color: "red"
                 color: "black"
                 ColumnLayout{
                     width: parent.width
                     height:  parent.height
-                    spacing: 5
+                    spacing: 1
                     Item {
                         height: 32
                         width: parent.width
                         id: itemDescriptionMCS
                         Text {
                             id: simpleDescription
-                            text: "Trade Range/Quality"
+                            text: "Trade range/image quality"
                             color: "white"
                             font.bold: true
                             font.pixelSize: detailPanelFontPixels
@@ -287,22 +367,21 @@ BaseWidget {
                             Material.background:Material.LightBlue
                             anchors.leftMargin: 5
                             onClicked: {
-                                _messageBoxInstance.set_text_and_show("
-By reducing the MCS (modulation and coding) index you increase range on the cost of less bitrate. You can change this
-value during flight, either using this widget or conveniently from your RC using the channel switcher (see wiki). If you exceed the max range at a given MCS,
-your loss quickly increases and the video stops - reduce the MCS to get more range and keep flying. NOTE:  Requires supported HW (see wiki).")
+                                _messageBoxInstance.set_text_and_show(m_DESCRIPTION_MCS)
                             }
                         }
                     }
-                    Item{
+
+                    Rectangle{
                         width: parent.width
-                        height: parent.height -32;
+                        height: 100;
                         id: itemMcsChoices
                         //color: "green"
+                        color: "black"
                         GridLayout{
                             width: parent.width
                             height: parent.height
-                            rows: 2
+                            rows: 3
                             columns: 2
                             Button{
                                 text: "MCS0"
@@ -339,7 +418,7 @@ your loss quickly increases and the video stops - reduce the MCS to get more ran
             Rectangle{
                 id: areaKeyframe
                 width: parent.width
-                height: parent.height /2;
+                height: parent.height /3;
                 //color: "green"
                 color: "black"
                 ColumnLayout{
@@ -368,10 +447,7 @@ your loss quickly increases and the video stops - reduce the MCS to get more ran
                             Material.background:Material.LightBlue
                             anchors.leftMargin: 5
                             onClicked: {
-                                _messageBoxInstance.set_text_and_show("
-Make the video more stable (less microfreezes) on the cost of less image quality.
-Internally, this changes the encode keyframe interval and/ or FEC overhead in percent. DEFAULT is a good trade off regarding image quality and stability
-and works in most cases. Use CITY/POLLUTED on polluted channels, DESERT if you have a completely clean channel.")
+                                _messageBoxInstance.set_text_and_show(m_DESCRIPTION_STABILITY)
                             }
                         }
                     }
@@ -416,14 +492,6 @@ and works in most cases. Use CITY/POLLUTED on polluted channels, DESERT if you h
                                 }
                                 highlighted:  m_curr_keyframe_i == 8 && m_curr_fec_perc==10
                             }
-                            /*Button{
-                                text: "MISSION"
-                                onClicked: {
-                                    set_keyframe_interval(10)
-                                    set_fec_percentage(10)
-                                }
-                                highlighted:  m_curr_keyframe_i == keyframe && m_curr_fec_perc==fec_p
-                            }*/
                         }
                     }
                 }
