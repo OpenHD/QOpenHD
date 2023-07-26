@@ -32,7 +32,7 @@ BaseWidget {
     hasWidgetAction: true
 
     property int m_widget_action_w:  256
-    property int m_widget_action_h: 300+120;
+    property int m_widget_action_h: 300+100;
     widgetActionWidth: m_widget_action_w
     widgetActionHeight: m_widget_action_h
 
@@ -268,36 +268,8 @@ and works in most cases. Use CITY/POLLUTED on polluted channels, DESERT if you h
         ColumnLayout {
             width: m_widget_action_w -32
             height:  m_widget_action_h-32
-            spacing: 10
+            spacing: 20
 
-
-            Rectangle {
-                height: 32
-                width: parent.width
-                id: itemDescriptionRangeQuality
-                //color: "green"
-                color: "black"
-                Text {
-                    id: simpleDescriptionRangeQuality
-                    text: "Trade range/image quality"
-                    color: "white"
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                }
-                Button{
-                    height: 32
-                    width: 32
-                    text: "\uf05a"
-                    anchors.left: simpleDescriptionRangeQuality.right
-                    anchors.top: simpleDescriptionRangeQuality.top
-                    Material.background:Material.LightBlue
-                    anchors.leftMargin: 5
-                    onClicked: {
-                        _messageBoxInstance.set_text_and_show(m_DESCRIPTION_CHANNEL_WIDTH)
-                    }
-                }
-            }
             Rectangle{
                 width: parent.width
                 height: 50
@@ -307,32 +279,72 @@ and works in most cases. Use CITY/POLLUTED on polluted channels, DESERT if you h
                 //radius: 10
                 //color: "green"
                 color: "black"
-                Button{
-                    text: "20Mhz"
-                    anchors.left: parent.left
-                    onClicked: {
-                        _synchronizedSettings.change_param_air_and_ground_channel_width(20)
-                    }
-                    highlighted: m_curr_channel_width==20
-                    enabled: !m_is_armed
-                }
-                Button{
-                    text: "40Mhz"
-                    anchors.right: parent.right
-                    onClicked: {
-                        _synchronizedSettings.change_param_air_and_ground_channel_width(40)
-                    }
-                    highlighted:  m_curr_channel_width==40
-                    enabled: !m_is_armed
-                }
-                Text{
-                    text: "ARMED - not available"
+                ColumnLayout{
                     width: parent.width
-                    height: parent.height
-                    visible : m_is_armed
-                    color: "red"
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
+                    height:  parent.height
+                    spacing: 1
+                    Rectangle {
+                        height: 32
+                        width: parent.width
+                        id: itemDescriptionRangeQuality
+                        //color: "green"
+                        color: "black"
+                        Text {
+                            id: simpleDescriptionRangeQuality
+                            text: "Trade range/image quality"
+                            color: "white"
+                            font.bold: true
+                            font.pixelSize: detailPanelFontPixels
+                            anchors.left: parent.left
+                        }
+                        Button{
+                            height: 32
+                            width: 32
+                            text: "\uf05a"
+                            anchors.left: simpleDescriptionRangeQuality.right
+                            anchors.top: simpleDescriptionRangeQuality.top
+                            Material.background:Material.LightBlue
+                            anchors.leftMargin: 5
+                            onClicked: {
+                                _messageBoxInstance.set_text_and_show(m_DESCRIPTION_CHANNEL_WIDTH)
+                            }
+                        }
+                    }
+                    Item{
+                        width: parent.width
+                        height: 20
+                        GridLayout{
+                            width: parent.width
+                            height: parent.height
+                            rows: 2
+                            columns: 2
+                            Button{
+                                text: "20Mhz"
+                                onClicked: {
+                                    _synchronizedSettings.change_param_air_and_ground_channel_width(20)
+                                }
+                                highlighted: m_curr_channel_width==20
+                                enabled: !m_is_armed
+                            }
+                            Button{
+                                text: "40Mhz"
+                                onClicked: {
+                                    _synchronizedSettings.change_param_air_and_ground_channel_width(40)
+                                }
+                                highlighted:  m_curr_channel_width==40
+                                enabled: !m_is_armed
+                            }
+                        }
+                        Text{
+                            text: "ARMED - not available"
+                            width: parent.width
+                            height: parent.height
+                            visible : m_is_armed
+                            color: "red"
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                        }
+                    }
                 }
             }
 

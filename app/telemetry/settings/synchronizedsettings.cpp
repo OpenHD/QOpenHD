@@ -62,7 +62,7 @@ void SynchronizedSettings::change_param_air_and_ground(QString param_id,int valu
     if(!(air_success==MavlinkSettingsModel::SetParamResult::SUCCESS)){
         std::stringstream ss;
         ss<<"Cannot change "<<param_id.toStdString()<<" to "<<value<<" -"<<MavlinkSettingsModel::set_param_result_as_string(air_success);
-        WorkaroundMessageBox::makePopupMessage(ss.str().c_str());
+        WorkaroundMessageBox::makePopupMessage(ss.str().c_str(),10);
         return;
     }
     // we have changed the value on air, now change the ground
@@ -72,12 +72,12 @@ void SynchronizedSettings::change_param_air_and_ground(QString param_id,int valu
         std::stringstream ss;
         ss<<"Cannot change "<<param_id.toStdString()<<" to "<<value<<" -"<<MavlinkSettingsModel::set_param_result_as_string(air_success);
         ss<<"\nAir and ground are out of sync";
-        WorkaroundMessageBox::makePopupMessage(ss.str().c_str());
+        WorkaroundMessageBox::makePopupMessage(ss.str().c_str(),10);
         return;
     }
     std::stringstream ss;
     ss<<"Successfully changed "<<param_id.toStdString()<<" to "<<value<<" ,might take up to 3 seconds until applied";
-    WorkaroundMessageBox:: makePopupMessage(ss.str().c_str());
+    WorkaroundMessageBox:: makePopupMessage(ss.str().c_str(),2);
 }
 
 void SynchronizedSettings::change_param_air_only_mcs(int value,bool use_hud)
