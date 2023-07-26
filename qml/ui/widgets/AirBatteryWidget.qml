@@ -31,7 +31,8 @@ BaseWidget {
         var current_ampere= id===0 ? _fcMavlinkSystem.battery_id0_current_ampere : _fcMavlinkSystem.battery_id1_current_ampere;
         var consumed_mah = id===0 ? _fcMavlinkSystem.battery_id0_consumed_mah : _fcMavlinkSystem.battery_id1_consumed_mah;
 
-        var ret=""
+        var ret="";
+        //Number().toLocaleString(Qt.locale(),'f', 1) + "V"
         ret+=(Number(voltage_v).toLocaleString(Qt.locale(),'f', 1) + "V ")
         ret+=(Number(current_ampere).toLocaleString( Qt.locale(), 'f', 1) + "A ")
         ret+=(consumed_mah + "mAh")
@@ -127,7 +128,7 @@ BaseWidget {
                 width: parent.width
                 height: 20
                 Text {
-                    text: qsTr("Battery 1")
+                    text: qsTr("Batt1:")
                     color: "white"
                     font.bold: true
                     height: parent.height
@@ -149,7 +150,7 @@ BaseWidget {
                 width: parent.width
                 height: 20
                 Text {
-                    text: qsTr("Battery 2")
+                    text: qsTr("Batt2:")
                     color: "white"
                     font.bold: true
                     height: parent.height
@@ -158,7 +159,7 @@ BaseWidget {
                     verticalAlignment: Text.AlignVCenter
                 }
                 Text {
-                    text:  get_text_for_specific_battery(0)
+                    text:  get_text_for_specific_battery(1)
                     color: "white"
                     font.bold: true
                     height: parent.height
