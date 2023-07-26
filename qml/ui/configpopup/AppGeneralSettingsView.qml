@@ -29,22 +29,9 @@ ScrollView {
             anchors.left: parent.left
             anchors.right: parent.right
 
-            Rectangle {
-                width: parent.width
-                height: rowHeight
-                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                Text {
-                    text: qsTr("Mavlink SysID")
-                    font.weight: Font.Bold
-                    font.pixelSize: 13
-                    anchors.leftMargin: 8
-                    verticalAlignment: Text.AlignVCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: 224
-                    height: elementHeight
-                    anchors.left: parent.left
-                }
+            SettingBaseElement{
+                m_short_description: "Mavlink sys id"
+                m_long_description: "Mavlink sys id of QOpenHD (this Ground control station application). Leave default (255) ! . Change requires restart."
 
                 SpinBox {
                     id: mavlinkSysIDSpinBox
@@ -69,23 +56,9 @@ ScrollView {
                 }
             }
 
-            Rectangle {
-                width: parent.width
-                height: rowHeight
-                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                //color: "#8cbfd7f3"
-                Text {
-                    text: qsTr("Enable Speech")
-                    font.weight: Font.Bold
-                    font.pixelSize: 13
-                    anchors.leftMargin: 8
-                    verticalAlignment: Text.AlignVCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: 224
-                    height: elementHeight
-                    anchors.left: parent.left
-                }
+            SettingBaseElement{
+                m_short_description: "Enable speech"
+                m_long_description: "Enable text to speech - events like flight mode change are given as audio messages"
 
                 Switch {
                     width: 32
@@ -95,40 +68,6 @@ ScrollView {
                     anchors.verticalCenter: parent.verticalCenter
                     checked: settings.enable_speech
                     onCheckedChanged: settings.enable_speech = checked
-                }
-            }
-
-            Rectangle {
-                width: parent.width
-                height: rowHeight
-                color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                Text {
-                    text: qsTr("Log Level")
-                    font.weight: Font.Bold
-                    font.pixelSize: 13
-                    anchors.leftMargin: 8
-                    verticalAlignment: Text.AlignVCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: 224
-                    height: elementHeight
-                    anchors.left: parent.left
-                }
-
-                SpinBox {
-                    id: logLevelspinBox
-                    height: elementHeight
-                    width: 210
-                    font.pixelSize: 14
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    from: 0
-                    to: 7
-                    stepSize: 1
-                    anchors.rightMargin: Qt.inputMethod.visible ? 78 : 18
-
-                    value: settings.log_level
-                    onValueChanged: settings.log_level = value
                 }
             }
 
