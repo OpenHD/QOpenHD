@@ -143,7 +143,7 @@ Settings {
 
 
     property bool show_air_battery: true
-    property bool air_battery_show_voltage_current: false
+    property bool air_battery_show_voltage_current: true
     property bool air_battery_show_single_cell: false
     property bool air_battery_use_batt_id_0_only: false
 
