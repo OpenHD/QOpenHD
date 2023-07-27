@@ -9,6 +9,8 @@
 
 #include "mavsdk_include.h"
 #include "models/fcmessageintervalhelper.hpp"
+#include "../../lib/lqtutils_master/lqtutils_prop.h"
+#include "../common/TimeHelper.hpp"
 
 /**
  * Changed: Used to have custom UDP and TCP stuff, but now just uses MAVSDK - MAVSDK already has both TCP and UDP support.
@@ -40,6 +42,9 @@ public:
      * @return true on success (this does not mean the message was received, but rather the message was sent out via the lossy connection)
      */
     bool sendMessage(mavlink_message_t msg);
+    // A couple of stats exposed as QT properties
+    L_RO_PROP(int,telemetry_pps_in,set_telemetry_pps_in,-1)
+    L_RO_PROP(int,telemetry_bps_in,set_telemetry_bps_in,-1)
 private:
     // We follow the same practice as QGrouncontroll: Listen for incoming data on a specific UDP port,
     // -> as soon as we got the first packet, we know the address to send data to for bidirectional communication
@@ -68,6 +73,10 @@ private:
     // (not block the UI thread)
     void tcp_only_establish_connection();
     std::unique_ptr<std::thread> m_tcp_connect_thread= nullptr;
+    int64_t m_tele_received_bytes=0;
+    int64_t m_tele_received_packets=0;
+    BitrateCalculator2 m_tele_bitrate_in;
+    PacketsPerSecondCalculator m_tele_pps_in;
 public:
     // ping all the systems (using timesync, since "ping" is deprecated)
     Q_INVOKABLE void ping_all_systems();

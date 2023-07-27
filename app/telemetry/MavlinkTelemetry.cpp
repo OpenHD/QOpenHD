@@ -181,8 +181,16 @@ bool MavlinkTelemetry::sendMessage(mavlink_message_t msg){
     return false;
 }
 
+static int get_message_size(const mavlink_message_t msg){
+    return sizeof(msg);
+}
+
 void MavlinkTelemetry::onProcessMavlinkMessage(mavlink_message_t msg)
 {
+    m_tele_received_packets++;
+    m_tele_received_bytes+=get_message_size(msg);
+    set_telemetry_pps_in(m_tele_pps_in.get_last_or_recalculate(m_tele_received_packets));
+    set_telemetry_bps_in(m_tele_bitrate_in.get_last_or_recalculate(m_tele_received_bytes));
     //qDebug()<<"MavlinkTelemetry::onProcessMavlinkMessage"<<msg.msgid;
     //if(pause_telemetry==true){
     //    return;

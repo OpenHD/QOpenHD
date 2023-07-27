@@ -73,6 +73,10 @@ Rectangle {
             id: test1
             text: qsTr("Art Horizon mavlink update rate:"+_fcMavlinkSystem.curr_update_rate_mavlink_message_attitude+" Hz")
         }
+        Text {
+            id: tele_in
+            text: qsTr("Tele in"+_mavlinkTelemetry.telemetry_pps_in+" pps")
+        }
         // air
         Text {
             id: test2
