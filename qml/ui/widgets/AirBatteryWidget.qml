@@ -33,7 +33,8 @@ BaseWidget {
 
         var ret="";
         //Number().toLocaleString(Qt.locale(),'f', 1) + "V"
-        ret+=(Number(voltage_v).toLocaleString(Qt.locale(),'f', 1) + "V ")
+        var voltage_str = Number(voltage_v).toLocaleString(Qt.locale(),'f', 1) + "V "
+        ret+=voltage_str
         ret+=(Number(current_ampere).toLocaleString( Qt.locale(), 'f', 1) + "A ")
         ret+=(consumed_mah + "mAh")
         return ret;

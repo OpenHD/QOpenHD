@@ -78,6 +78,19 @@ ScrollView {
                 }
             }
             SettingBaseElement{
+                m_short_description: "High mavlink message rates"
+                m_long_description: "Doubles the rates for all mavlink messages - this requires more telemetry bandwidth, but results in an even smoother OSD. REQUIRES RESTART OF QPENHD TO BE APPLIED !"
+                Switch {
+                    width: 32
+                    height: elementHeight
+                    anchors.rightMargin: Qt.inputMethod.visible ? 96 : 36
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    checked: settings.mavlink_message_rates_high_speed
+                    onCheckedChanged: settings.mavlink_message_rates_high_speed = checked
+                }
+            }
+            SettingBaseElement{
                 m_short_description: "Log quiet FC warning"
                 m_long_description: "Log a warning when we get heartbeats from the FC, but not proper data"
                 Switch {

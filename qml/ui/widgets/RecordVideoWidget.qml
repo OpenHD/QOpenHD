@@ -182,7 +182,7 @@ BaseWidget {
                 }
             }
             Text {
-                text: qsTr("Record Camera 1");
+                text: qsTr("(Air) Record Camera 1");
                 color: settings.color_text
                 elide: Text.ElideNone
                 wrapMode: Text.NoWrap
@@ -226,7 +226,7 @@ BaseWidget {
                 }
             }
             Text {
-                text: qsTr("Record Camera 2");
+                text: qsTr("(Air) Record Camera 2");
                 color: settings.color_text
                 elide: Text.ElideNone
                 wrapMode: Text.NoWrap

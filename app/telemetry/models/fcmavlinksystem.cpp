@@ -387,7 +387,7 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         // January 22: doesn't work reliably, use the worse but working qopenhd local setting approach
         //set_battery_voltage_single_cell((double)battery_status.voltages[0]/1000.0);
         if(battery_status.id==0){
-           set_battery_id0_voltage_volt(battery_status.voltages[0]);
+           set_battery_id0_voltage_volt(battery_status.voltages[0]/1000.0);
            set_battery_id0_current_ampere(battery_status.current_battery/100);
            set_battery_id0_consumed_mah(battery_status.current_consumed);
         }else if(battery_status.id==1){

@@ -344,6 +344,9 @@ Settings {
 
     // Set the mavlink message rate(s) via qopenhd
     property bool set_mavlink_message_rates: true
+    // Double the default rate(s) - for people who want more mavlink
+    property bool mavlink_message_rates_high_speed: false
+    // log a warning if fc is quiet - happened to a lot of people new to mavlink
     property bool log_quiet_fc_warning_to_hud : true
 
     // only works on select platforms (on rpi, we are automatically already full screen)
