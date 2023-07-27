@@ -457,6 +457,12 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
     case MAVLINK_MSG_ID_SCALED_PRESSURE2:{
         break;
     }
+    case MAVLINK_MSG_ID_HIL_GPS:{
+        break;
+    }
+    case MAVLINK_MSG_ID_TERRAIN_REQUEST:{
+        break;
+    }
     case MAVLINK_MSG_ID_HOME_POSITION:{
         mavlink_home_position_t home_position;
         mavlink_msg_home_position_decode(&msg, &home_position);

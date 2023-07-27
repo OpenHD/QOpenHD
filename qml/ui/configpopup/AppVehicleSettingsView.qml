@@ -66,7 +66,7 @@ ScrollView {
             SettingBaseElement{
                 m_short_description: "Set mavlink message rates"
                 m_long_description: "Set mavlink message rate(s) that should work for most users. NOTE: When disabling this feature, you have to manually set the mavlink message rate(s)
- via mission planner for your autpilot running ardupilot/ PX4 !"
+ via mission planner for your autpilot running ardupilot/ PX4 ! After disabling, a reboot of the FC is required."
                 Switch {
                     width: 32
                     height: elementHeight
@@ -79,7 +79,7 @@ ScrollView {
             }
             SettingBaseElement{
                 m_short_description: "High mavlink message rates"
-                m_long_description: "Doubles the rates for all mavlink messages - this requires more telemetry bandwidth, but results in an even smoother OSD. REQUIRES RESTART OF QPENHD TO BE APPLIED !"
+                m_long_description: "Doubles the rates for all mavlink messages - this requires more telemetry bandwidth, but results in an even smoother OSD."
                 Switch {
                     width: 32
                     height: elementHeight
@@ -87,7 +87,12 @@ ScrollView {
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
                     checked: settings.mavlink_message_rates_high_speed
-                    onCheckedChanged: settings.mavlink_message_rates_high_speed = checked
+                    onCheckedChanged: {
+                        if(settings.mavlink_message_rates_high_speed != checked){
+                            _mavlinkTelemetry.re_apply_rates()
+                        }
+                        settings.mavlink_message_rates_high_speed = checked
+                    }
                 }
             }
             SettingBaseElement{
