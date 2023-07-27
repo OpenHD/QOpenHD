@@ -105,7 +105,7 @@ Settings {
 
     // animation smoothing value, in ms
     // Note that low fps like on embedded devices also adds some latency - because of that, default to 100ms here
-    property int smoothing: 100
+    property int smoothing: 33
 
     property bool show_downlink_rssi: true
     //Const10
