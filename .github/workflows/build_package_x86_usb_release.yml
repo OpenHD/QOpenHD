@@ -31,7 +31,7 @@ jobs:
 
       - name: clone QOpenHD
         run: |
-          git clone https://github.com/OpenHD/QOpenHD --recursive -b 2.4-evo-lunar 
+          git clone https://github.com/OpenHD/QOpenHD --recursive
 
       - name: Install Dependencies
         run: |
