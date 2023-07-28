@@ -108,6 +108,34 @@ BaseWidget {
             Item {
                 width: 230
                 height: 32
+                visible: settings.air_battery_show_voltage_current
+                Text {
+                    text: qsTr("N cells: "+settings.vehicle_battery_n_cells)
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                SpinBox {
+                    width: 32*3
+                    height: parent.height
+                    anchors.rightMargin: 6
+                    anchors.right: parent.right
+                    from: 1
+                    to: 32
+                    stepSize: 1
+                    value: settings.vehicle_battery_n_cells
+                    onValueChanged: {
+                        settings.vehicle_battery_n_cells=value
+                    }
+                    editable: false
+                }
+            }
+            Item {
+                width: 230
+                height: 32
                 Text {
                     text: qsTr("Use batt id 0 only")
                     color: "white"

@@ -216,9 +216,11 @@ Item {
         id: vibrationWidget
     }
 
-    // + 6% cpu
-    VsiWidget {
-        id: vsiWidget
+    VerticalSpeedSimpleWidget{
+        id: vssimpleWidget
+    }
+    VerticalSpeedGaugeWidget{
+        id: vsgaugewidget
     }
 
     // + 0% cpu

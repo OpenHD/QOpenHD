@@ -293,12 +293,14 @@ Settings {
 
     property bool show_vibration: false
 
-    // Disabled by default, since it has a quite big impact on draw call performance on embedded devices
-    // like rpi
-    property bool show_vsi: false
-    property int vsi_max: 20
-    property bool vertical_speed_indicator_simple: false
-    property bool vertical_speed_indicator_show_unit: true
+    // Simple is on by default, gauge is off by default
+    // simple / minimal
+    property bool show_vertical_speed_simple_widget: true
+    property bool vertical_speed_simple_widget_show_unit: true
+    // gauge
+    property bool show_vertical_speed_gauge_widget: false
+    property int vertical_speed_gauge_widget_max: 20
+
 
     property bool show_wind: false
     property bool wind_plane_copter: false //should default to plane

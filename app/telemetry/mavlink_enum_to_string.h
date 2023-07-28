@@ -361,6 +361,22 @@ static std::string battery_type_to_string(uint8_t batt_type){
     return "N/A";
 }
 
+static std::string detailed_battery_voltages_to_string(const uint16_t voltages[10]){
+    std::stringstream ss;
+    ss<<"Voltages[";
+    for(int i=0;i<10;i++){
+        const auto voltage=voltages[i];
+        if(voltage!=UINT16_MAX){
+            if(i!=0){
+                ss<<",";
+            }
+            ss<<(int)voltage;
+        }
+    }
+    ss<<"]";
+    return ss.str();
+}
+
 }
 
 #endif // MAVLINK_ENUM_TO_STRING_H

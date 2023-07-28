@@ -24,6 +24,7 @@ BaseWidgetForm {
     // Show a "hand" icon to let the user know where to touch to drag the widget around.
     // Only used by "MAP" right now (to my knowledge)
     property bool useDragHandle: false
+    // I think you can set this one to 2 for example if you want to align from the lower right corner
     property int defaultAlignment: 0
     property int defaultXOffset: 0
     property int defaultYOffset: 0

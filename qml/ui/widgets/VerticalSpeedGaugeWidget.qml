@@ -11,7 +11,7 @@ import Qt.labs.settings 1.0
 import OpenHD 1.0
 
 BaseWidget {
-    id: vsiWidget
+    id: vsGaugeWidget
     width: 50
     height: 50
     defaultAlignment: 1
@@ -20,26 +20,13 @@ BaseWidget {
     defaultHCenter: false
     defaultVCenter: true
 
-    visible: settings.show_vsi
+    visible: settings.show_vertical_speed_gauge_widget
 
-    widgetIdentifier: "vsi_widget"
+    widgetIdentifier: "vertical_speed_gauge_widget"
     bw_verbose_name: "VERTICAL SPEED (CLIMB)"
 
     property double m_vertical_speed_m_per_second: _fcMavlinkSystem.vertical_speed_indicator_mps
 
-    function get_text_vertical_speed(){
-        var vertical_speed_m_per_second=_fcMavlinkSystem.vertical_speed_indicator_mps
-        var vs_as_str=Number(vertical_speed_m_per_second).toLocaleString(Qt.locale(), 'f', 1);
-        if(settings.vertical_speed_indicator_show_unit){
-            vs_as_str+=" m/s";
-        }
-        if(vertical_speed_m_per_second>0.01){
-            return "+"+vs_as_str;
-        }else if(vertical_speed_m_per_second<-0.01){
-            return vs_as_str;
-        }
-        return vs_as_str;
-    }
 
     hasWidgetDetail: true
 
@@ -70,7 +57,7 @@ BaseWidget {
                     id: vsi_max_Slider
                     orientation: Qt.Horizontal
                     from: 5
-                    value: settings.vsi_max
+                    value: settings.vertical_speed_gauge_widget_max
                     to: 50
                     stepSize: 5
                     height: parent.height
@@ -78,52 +65,8 @@ BaseWidget {
                     anchors.right: parent.right
                     width: parent.width - 96
                     onValueChanged: {
-                        settings.vsi_max = vsi_max_Slider.value
+                        settings.vertical_speed_gauge_widget_max = vsi_max_Slider.value
                     }
-                }
-            }
-            Item {
-                width: parent.width
-                height: 32
-                Text {
-                    text: qsTr("Simple view")
-                    horizontalAlignment: Text.AlignRight
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Switch {
-                    width: 32
-                    height: parent.height
-                    anchors.rightMargin: 6
-                    anchors.right: parent.right
-                    checked: settings.vertical_speed_indicator_simple
-                    onCheckedChanged: settings.vertical_speed_indicator_simple = checked
-                }
-            }
-            Item {
-                width: parent.width
-                height: 32
-                Text {
-                    text: qsTr("Show unit")
-                    horizontalAlignment: Text.AlignRight
-                    color: "white"
-                    height: parent.height
-                    font.bold: true
-                    font.pixelSize: detailPanelFontPixels
-                    anchors.left: parent.left
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Switch {
-                    width: 32
-                    height: parent.height
-                    anchors.rightMargin: 6
-                    anchors.right: parent.right
-                    checked: settings.vertical_speed_indicator_show_unit
-                    onCheckedChanged: settings.vertical_speed_indicator_show_unit = checked
                 }
             }
         }
@@ -133,26 +76,6 @@ BaseWidget {
         id: widgetInner
         anchors.fill: parent
         opacity: bw_current_opacity
-
-        Text {
-            anchors.fill: parent
-            anchors.centerIn: parent
-            color: settings.color_text
-            font.pixelSize: 14
-            font.family: settings.font_text
-            transform: Scale {
-                origin.x: 12
-                origin.y: 12
-                xScale: bw_current_scale
-                yScale: bw_current_scale
-            }
-            text: get_text_vertical_speed()
-            horizontalAlignment: Text.AlignHCenter
-            verticalAlignment: Text.AlignVCenter
-            style: Text.Outline
-            styleColor: settings.color_glow
-            visible: settings.vertical_speed_indicator_simple
-        }
 
         Item {
             anchors.fill: parent
@@ -213,8 +136,8 @@ BaseWidget {
 
                 rotation: 270
 
-                minimumValue: settings.vsi_max * -1
-                maximumValue: settings.vsi_max
+                minimumValue: settings.vertical_speed_gauge_widget_max * -1
+                maximumValue: settings.vertical_speed_gauge_widget_max
 
                 Behavior on value {NumberAnimation { duration: settings.smoothing }}
                 value: m_vertical_speed_m_per_second
@@ -223,11 +146,11 @@ BaseWidget {
                     labelInset: outerRadius * -.3
                     minorTickmarkCount: 0
                     tickmarkStepSize: {
-                        settings.vsi_max / 5
+                        settings.vertical_speed_gauge_widget_max / 5
                     }
                     // @disable-check M223
                     labelStepSize: {
-                        settings.vsi_max / 5
+                        settings.vertical_speed_gauge_widget_max / 5
                     }
                     maximumValueAngle: 135
                     minimumValueAngle: -135

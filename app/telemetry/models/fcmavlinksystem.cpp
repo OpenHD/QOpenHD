@@ -399,6 +399,7 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
            set_battery_id1_type(qopenhd::battery_type_to_string(battery_status.type).c_str());
            set_battery_id1_remaining_time_s(battery_status.time_remaining);
         }
+        //qDebug()<<qopenhd::detailed_battery_voltages_to_string(battery_status.voltages).c_str();
         break;
     }
     case MAVLINK_MSG_ID_SENSOR_OFFSETS: {
