@@ -16,15 +16,30 @@ BaseWidget {
     height: 50
     defaultAlignment: 1
     defaultXOffset: -20
+
     defaultHCenter: false
     defaultVCenter: true
 
     visible: settings.show_vsi
 
     widgetIdentifier: "vsi_widget"
-    bw_verbose_name: "VERTICAL SPEED"
+    bw_verbose_name: "VERTICAL SPEED (CLIMB)"
 
     property double m_vertical_speed_m_per_second: _fcMavlinkSystem.vertical_speed_indicator_mps
+
+    function get_text_vertical_speed(){
+        var vertical_speed_m_per_second=_fcMavlinkSystem.vertical_speed_indicator_mps
+        var vs_as_str=Number(vertical_speed_m_per_second).toLocaleString(Qt.locale(), 'f', 1);
+        if(settings.vertical_speed_indicator_show_unit){
+            vs_as_str+=" m/s";
+        }
+        if(vertical_speed_m_per_second>0.01){
+            return "+"+vs_as_str;
+        }else if(vertical_speed_m_per_second<-0.01){
+            return vs_as_str;
+        }
+        return vs_as_str;
+    }
 
     hasWidgetDetail: true
 
@@ -36,6 +51,9 @@ BaseWidget {
 
         BaseWidgetDefaultUiControlElements{
             id: idBaseWidgetDefaultUiControlElements
+
+            show_vertical_lock: true
+
             Item {
                 width: parent.width
                 height: 32
@@ -59,10 +77,53 @@ BaseWidget {
                     anchors.rightMargin: 0
                     anchors.right: parent.right
                     width: parent.width - 96
-                    // @disable-check M223
                     onValueChanged: {
                         settings.vsi_max = vsi_max_Slider.value
                     }
+                }
+            }
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("Simple view")
+                    horizontalAlignment: Text.AlignRight
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 6
+                    anchors.right: parent.right
+                    checked: settings.vertical_speed_indicator_simple
+                    onCheckedChanged: settings.vertical_speed_indicator_simple = checked
+                }
+            }
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("Show unit")
+                    horizontalAlignment: Text.AlignRight
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 6
+                    anchors.right: parent.right
+                    checked: settings.vertical_speed_indicator_show_unit
+                    onCheckedChanged: settings.vertical_speed_indicator_show_unit = checked
                 }
             }
         }
@@ -73,9 +134,30 @@ BaseWidget {
         anchors.fill: parent
         opacity: bw_current_opacity
 
+        Text {
+            anchors.fill: parent
+            anchors.centerIn: parent
+            color: settings.color_text
+            font.pixelSize: 14
+            font.family: settings.font_text
+            transform: Scale {
+                origin.x: 12
+                origin.y: 12
+                xScale: bw_current_scale
+                yScale: bw_current_scale
+            }
+            text: get_text_vertical_speed()
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+            style: Text.Outline
+            styleColor: settings.color_glow
+            visible: settings.vertical_speed_indicator_simple
+        }
+
         Item {
             anchors.fill: parent
             anchors.centerIn: parent
+            visible: !settings.vertical_speed_indicator_simple
             transform: Scale {
                 origin.x: 25
                 origin.y: 25

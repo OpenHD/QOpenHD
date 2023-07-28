@@ -26,6 +26,34 @@ BaseWidget {
 
     defaultHCenter: false
 
+    function get_text_altitude(){
+        var altitude_m_or_foot = settings.altitude_rel_msl ? _fcMavlinkSystem.alt_msl : _fcMavlinkSystem.alt_rel;
+        if(settings.enable_imperial){
+            altitude_m_or_foot *= 3.28;
+        }
+        var alt_str=Number(altitude_m_or_foot).toLocaleString(Qt.locale(), 'f', 0);
+        if(settings.altitude_ladder_show_unit && altitude_m_or_foot<999 ){
+            if(settings.enable_imperial){
+                alt_str+=" ft";
+            }else{
+                alt_str+=" m";
+            }
+        }
+        return alt_str;
+    }
+    function get_text_vertical_speed(){
+        var vertical_speed_m_per_second=_fcMavlinkSystem.vertical_speed_indicator_mps
+        var vs_as_str=Number(vertical_speed_m_per_second).toLocaleString(Qt.locale(), 'f', 1)+" m/s";
+        if(vertical_speed_m_per_second>0.01){
+            return "+"+vs_as_str;
+            //return "\uf062"+vs_as_str;
+        }else if(vertical_speed_m_per_second<-0.01){
+            return vs_as_str;
+            //return "\uf063"+(-1*vs_as_str)
+        }
+        return vs_as_str;
+    }
+
     hasWidgetDetail: true
     widgetDetailComponent: ScrollView {
 
@@ -79,6 +107,27 @@ BaseWidget {
                     anchors.right: parent.right
                     checked: settings.show_altitude_ladder
                     onCheckedChanged: settings.show_altitude_ladder = checked
+                }
+            }
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("Show unit")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 6
+                    anchors.right: parent.right
+                    checked: settings.altitude_ladder_show_unit
+                    onCheckedChanged: settings.altitude_ladder_show_unit = checked
                 }
             }
             Item {
@@ -170,9 +219,7 @@ BaseWidget {
                     xScale: bw_current_scale
                     yScale: bw_current_scale
                 }
-                text: Number(// @disable-check M222
-                             settings.enable_imperial ? (settings.altitude_rel_msl ? (_fcMavlinkSystem.alt_msl * 3.28) : (_fcMavlinkSystem.alt_rel * 3.28)) : (settings.altitude_rel_msl ? _fcMavlinkSystem.alt_msl : _fcMavlinkSystem.alt_rel)).toLocaleString(
-                          Qt.locale(), 'f', 0) // @disable-check M222
+                text: get_text_altitude()
                 anchors.fill: parent
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter

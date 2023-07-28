@@ -250,6 +250,7 @@ Settings {
     property bool show_speed: true
     property bool speed_use_groundspeed: true
     property bool show_speed_ladder: true
+    property bool speed_ladder_show_unit: true
     property int speed_range: 100
     property int speed_minimum: 0
 
@@ -260,6 +261,7 @@ Settings {
     property bool altitude_rel_msl: false
     property bool show_altitude_ladder: true
     property int altitude_range: 100
+    property bool altitude_ladder_show_unit: true
 
     property bool show_altitude_second: true
     property bool altitude_second_msl_rel: true
@@ -295,6 +297,8 @@ Settings {
     // like rpi
     property bool show_vsi: false
     property int vsi_max: 20
+    property bool vertical_speed_indicator_simple: false
+    property bool vertical_speed_indicator_show_unit: true
 
     property bool show_wind: false
     property bool wind_plane_copter: false //should default to plane

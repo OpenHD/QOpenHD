@@ -25,6 +25,20 @@ BaseWidget {
 
     hasWidgetDetail: true
 
+    function get_text_speed(){
+        var speed_m_per_second=settings.speed_use_groundspeed ? _fcMavlinkSystem.speed : _fcMavlinkSystem.airspeed;
+        var speed = settings.enable_imperial ? speed_m_per_second*0.621371 : speed_m_per_second;
+        var ret=Number(speed).toLocaleString( Qt.locale(), 'f', 0)
+        if(settings.speed_ladder_show_unit && speed <100){
+            if(settings.enable_imperial){
+                ret +=" knts";
+            }else{
+                ret +=" m/s";
+            }
+        }
+        return ret;
+    }
+
     widgetDetailComponent: ScrollView {
 
         contentHeight: idBaseWidgetDefaultUiControlElements.height
@@ -78,6 +92,27 @@ BaseWidget {
                     anchors.right: parent.right
                     checked: settings.show_speed_ladder
                     onCheckedChanged: settings.show_speed_ladder = checked
+                }
+            }
+            Item {
+                width: parent.width
+                height: 32
+                Text {
+                    text: qsTr("Show unit")
+                    color: "white"
+                    height: parent.height
+                    font.bold: true
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left: parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Switch {
+                    width: 32
+                    height: parent.height
+                    anchors.rightMargin: 6
+                    anchors.right: parent.right
+                    checked: settings.speed_ladder_show_unit
+                    onCheckedChanged: settings.speed_ladder_show_unit = checked
                 }
             }
             Item {
@@ -197,9 +232,7 @@ BaseWidget {
                 xScale: bw_current_scale
                 yScale: bw_current_scale
             }
-            text: Number(
-                      settings.enable_imperial ? (settings.speed_use_groundspeed ? _fcMavlinkSystem.speed * 0.621371 : _fcMavlinkSystem.airspeed * 0.621371) : (settings.speed_use_groundspeed ? _fcMavlinkSystem.speed : _fcMavlinkSystem.airspeed)).toLocaleString(
-                      Qt.locale(), 'f', 0)
+            text: get_text_speed()
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             style: Text.Outline

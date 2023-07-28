@@ -345,6 +345,22 @@ static MavTypeAndFlightMode type_and_flight_mode_as_string(MAV_TYPE uav_type,uin
     return ret;
 }
 
+static std::string battery_type_to_string(uint8_t batt_type){
+    switch(batt_type){
+    case MAV_BATTERY_TYPE_LIPO:
+        return "LiPo";
+    case MAV_BATTERY_TYPE_LIFE:
+        return "LiFe";
+    case  MAV_BATTERY_TYPE_LION:
+        return "LiIo";
+    case MAV_BATTERY_TYPE_NIMH:
+        return "NiMh";
+    default:
+        break;
+    }
+    return "N/A";
+}
+
 }
 
 #endif // MAVLINK_ENUM_TO_STRING_H

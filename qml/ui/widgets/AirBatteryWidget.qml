@@ -40,6 +40,18 @@ BaseWidget {
         return ret;
     }
 
+    function get_more_text_for_specific_battery(id){
+        var type=id===0 ? _fcMavlinkSystem.battery_id0_type : _fcMavlinkSystem.battery_id1_type;
+        var remaining=id===0 ? _fcMavlinkSystem.battery_id0_remaining_time_s : _fcMavlinkSystem.battery_id1_remaining_time_s;
+        var remaining_s=" Remaining: ";
+        if(remaining<=0){
+            remaining_s+="N/A s";
+        }else{
+            remaining_s+=(remaining+"s");
+        }
+        return "Type: "+type+remaining_s
+    }
+
     widgetDetailComponent: ScrollView {
 
         contentHeight: idBaseWidgetDefaultUiControlElements.height
@@ -151,6 +163,19 @@ BaseWidget {
                 width: parent.width
                 height: 20
                 Text {
+                    text: get_more_text_for_specific_battery(0)
+                    color: "white"
+                    font.bold: true
+                    height: parent.height
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left:parent.left
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
+            Item {
+                width: parent.width
+                height: 20
+                Text {
                     text: qsTr("Batt2:")
                     color: "white"
                     font.bold: true
@@ -166,6 +191,19 @@ BaseWidget {
                     height: parent.height
                     font.pixelSize: detailPanelFontPixels
                     anchors.right: parent.right
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
+            Item {
+                width: parent.width
+                height: 20
+                Text {
+                    text: get_more_text_for_specific_battery(1)
+                    color: "white"
+                    font.bold: true
+                    height: parent.height
+                    font.pixelSize: detailPanelFontPixels
+                    anchors.left:parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
             }

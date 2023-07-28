@@ -390,10 +390,14 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
            set_battery_id0_voltage_volt(battery_status.voltages[0]/1000.0);
            set_battery_id0_current_ampere(battery_status.current_battery/100);
            set_battery_id0_consumed_mah(battery_status.current_consumed);
+           set_battery_id0_type(qopenhd::battery_type_to_string(battery_status.type).c_str());
+           set_battery_id0_remaining_time_s(battery_status.time_remaining);
         }else if(battery_status.id==1){
            set_battery_id1_voltage_volt(battery_status.voltages[0]);
            set_battery_id1_current_ampere(battery_status.current_battery/100);
            set_battery_id1_consumed_mah(battery_status.current_consumed);
+           set_battery_id1_type(qopenhd::battery_type_to_string(battery_status.type).c_str());
+           set_battery_id1_remaining_time_s(battery_status.time_remaining);
         }
         break;
     }

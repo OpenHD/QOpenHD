@@ -77,9 +77,13 @@ public: // Stuff needs to be public for qt
     L_RO_PROP(double, battery_id0_current_ampere, set_battery_id0_current_ampere, 0)
     L_RO_PROP(double, battery_id0_voltage_volt, set_battery_id0_voltage_volt, 0)
     L_RO_PROP(int,    battery_id0_consumed_mah,set_battery_id0_consumed_mah,0)
+    L_RO_PROP(QString,battery_id0_type,set_battery_id0_type,"N/A")
+    L_RO_PROP(int,    battery_id0_remaining_time_s,set_battery_id0_remaining_time_s,-1)
     L_RO_PROP(double, battery_id1_current_ampere, set_battery_id1_current_ampere, 0)
     L_RO_PROP(double, battery_id1_voltage_volt, set_battery_id1_voltage_volt, 0)
     L_RO_PROP(int,    battery_id1_consumed_mah,set_battery_id1_consumed_mah,0)
+    L_RO_PROP(QString,battery_id1_type,set_battery_id1_type,"N/A")
+    L_RO_PROP(int,    battery_id1_remaining_time_s,set_battery_id1_remaining_time_s,-1)
 
     // roll, pitch and yaw
     L_RO_PROP(double, pitch, set_pitch, 0)

@@ -70,6 +70,7 @@ public:
             const auto interval_us=1000*1000/interval_hz;
             auto command=create_cmd_set_msg_interval(interval.msg_id,interval_us);
             m_n_times_already_sent++;
+            qDebug()<<"Requesting rate "<<(int)interval.msg_id;
             return command;
         }else{
             if(!logged_once_success){
@@ -109,15 +110,15 @@ private:
     static constexpr int RATE_MEDIUM=5; // 5 times per second
     // Intervals are in Hertz
     std::vector<MessageInterval> m_intervals={
-        MessageInterval{MAVLINK_MSG_ID_SYS_STATUS,3}, // battery and more
+        MessageInterval{MAVLINK_MSG_ID_SYS_STATUS,2}, // battery and more
         MessageInterval{MAVLINK_MSG_ID_SYSTEM_TIME,1},
         MessageInterval{MAVLINK_MSG_ID_GPS_RAW_INT,1}, // we get hdop, vdop, usw from this - not lat /long though (they are from global position int,aka fused)
         MessageInterval{MAVLINK_MSG_ID_ATTITUDE,30},
-        MessageInterval{MAVLINK_MSG_ID_GLOBAL_POSITION_INT,3},
-        MessageInterval{MAVLINK_MSG_ID_RC_CHANNELS,3},
+        MessageInterval{MAVLINK_MSG_ID_GLOBAL_POSITION_INT,2},
+        MessageInterval{MAVLINK_MSG_ID_RC_CHANNELS,2},
         //MessageInterval{MAVLINK_MSG_ID_GPS_GLOBAL_ORIGIN,0},
         MessageInterval{MAVLINK_MSG_ID_VFR_HUD,2}, //(air) speed, climb, ...
-        MessageInterval{MAVLINK_MSG_ID_BATTERY_STATUS,2},
+        MessageInterval{MAVLINK_MSG_ID_BATTERY_STATUS,1},
         MessageInterval{MAVLINK_MSG_ID_HOME_POSITION,1},
         MessageInterval{ MAVLINK_MSG_ID_WIND,1},
         MessageInterval{MAVLINK_MSG_ID_MISSION_CURRENT,1},
