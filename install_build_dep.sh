@@ -66,7 +66,7 @@ bash build_install_mavsdk_static.sh || exit 1
 
 # Installing python packages
 gem install fpm
-pip3 install future --break-system-packages
+pip3 install future
 
 # Building MAVSDK
 install_mavsdk
