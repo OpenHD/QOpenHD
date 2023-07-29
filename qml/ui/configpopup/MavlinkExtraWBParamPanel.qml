@@ -47,6 +47,13 @@ Rectangle{
         settings.qopenhd_allow_changing_ground_unit_frequency_no_sync=false
     }
 
+    property string m_text_warning_nosync_frequency: "WARNING: THIS CHANGES YOUR GROUND UNIT FREQUENCY WITHOUT CHANGING YOUR AIR UNIT FREQUENCY !
+Only enable if you want to quickly change your ground unit's frequency to the already set frequency of a running air unit (And know both frequency and channel width on top of your head)";
+
+    property string m_text_warning_nosync_chanel_width: "WARNING: THIS CHANGES YOUR GROUND UNIT CHANNEL WIDTH WITHOUT CHANGING YOUR AIR UNIT CHANNEL WIDTH !
+Only enable if you want to quickly change your ground unit's channel width to the already set channel width of a running air unit (And know both frequency and channel width on top of your head)"
+
+
     ScrollView {
         id:mavlinkExtraWBParamPanel
         width: parent.width
@@ -258,12 +265,11 @@ If you changed the frequency of your air unit and are using a different Ground u
                             }
                         }
                         Switch{
-                            text: "no sync"
+                            text: "gnd only"
                             checked: settings.qopenhd_allow_changing_ground_unit_frequency_no_sync
                             onCheckedChanged: {
                                 if(settings.qopenhd_allow_changing_ground_unit_frequency_no_sync != checked && checked){
-                                    _messageBoxInstance.set_text_and_show("WARNING: Only change your ground unit frequency manually if you remember frequencies in your head
-and want to select the frequency one of your air units is running on. NOTE: You might have to do the same for channel width !",10)
+                                    _messageBoxInstance.set_text_and_show(m_text_warning_nosync_frequency,10)
                                 }
                                 settings.qopenhd_allow_changing_ground_unit_frequency_no_sync = checked
                             }
@@ -320,12 +326,11 @@ and want to select the frequency one of your air units is running on. NOTE: You 
                             }
                         }
                         Switch{
-                            text: "no sync"
+                            text: "gnd only"
                             checked: settings.qopenhd_allow_changing_ground_unit_channel_width_no_sync
                             onCheckedChanged: {
                                 if(settings.qopenhd_allow_changing_ground_unit_channel_width_no_sync != checked && checked){
-                                    _messageBoxInstance.set_text_and_show("WARNING: Only change your ground unit channel width manually if you remember frequencies in your head
-and want to select the channel width that one of your air units is running on.",10)
+                                    _messageBoxInstance.set_text_and_show(m_text_warning_nosync_chanel_width,10)
                                 }
                                 settings.qopenhd_allow_changing_ground_unit_channel_width_no_sync = checked
                             }
