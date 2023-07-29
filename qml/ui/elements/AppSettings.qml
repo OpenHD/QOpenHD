@@ -391,4 +391,8 @@ Settings {
 
     property int screen_settings_overlay_size_percent : 100
     property bool screen_settings_openhd_parameters_transparent: false
+
+    // dangerous, but neccessary
+    property bool qopenhd_allow_changing_ground_unit_frequency_no_sync: false
+    property bool qopenhd_allow_changing_ground_unit_channel_width_no_sync: false
 }

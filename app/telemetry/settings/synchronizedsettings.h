@@ -2,6 +2,7 @@
 #define SynchronizedSettings_H
 
 #include <QObject>
+#include <qsettings.h>
 #include "../../../lib/lqtutils_master/lqtutils_prop.h"
 #include "param_names.h"
 
@@ -28,26 +29,22 @@ public:
     Q_INVOKABLE int get_param_int_air_and_ground_value_freq(){
         return get_param_int_air_and_ground_value(PARAM_ID_WB_FREQ);
     }
-    Q_INVOKABLE int get_param_int_air_and_ground_value_mcs(){
-        return get_param_int_air_and_ground_value(PARAM_ID_WB_MCS_INDEX);
-    }
     Q_INVOKABLE int get_param_int_air_and_ground_value_channel_width(){
         return get_param_int_air_and_ground_value(PARAM_ID_WB_CHANNEL_WIDTH);
     }
 
-    Q_INVOKABLE void change_param_air_and_ground(QString param_id,int value);
+    void change_param_air_and_ground(QString param_id,int value,bool allow_changing_without_connected_air_unit);
 
     Q_INVOKABLE void change_param_air_and_ground_frequency(int value){
-        change_param_air_and_ground(PARAM_ID_WB_FREQ,value);
+        QSettings settings;
+        const bool qopenhd_allow_changing_ground_unit_frequency_no_sync = settings.value("qopenhd_allow_changing_ground_unit_frequency_no_sync",false).toBool();
+        change_param_air_and_ground(PARAM_ID_WB_FREQ,value,qopenhd_allow_changing_ground_unit_frequency_no_sync);
     }
 
     Q_INVOKABLE void change_param_air_and_ground_channel_width(int value){
-        change_param_air_and_ground(PARAM_ID_WB_CHANNEL_WIDTH,value);
-    }
-
-    // R.n I am quite certain MCS index does not need to match on air and ground
-    Q_INVOKABLE void change_param_air_and_ground_mcs(int value){
-        change_param_air_and_ground(PARAM_ID_WB_MCS_INDEX,value);
+        QSettings settings;
+        const bool qopenhd_allow_changing_ground_unit_channel_width_no_sync = settings.value("qopenhd_allow_changing_ground_unit_channel_width_no_sync",false).toBool();
+        change_param_air_and_ground(PARAM_ID_WB_CHANNEL_WIDTH,value,qopenhd_allow_changing_ground_unit_channel_width_no_sync);
     }
     // MCS index does not need to match - 2.3.3 and upwards uses the lowest mcs index possible for uplink, and
     // allows changing the MCS index of the downlink (e.g. the mcs index used for injecting packets on the air unit)

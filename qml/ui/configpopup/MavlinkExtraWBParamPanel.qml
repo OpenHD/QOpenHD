@@ -13,6 +13,8 @@ import OpenHD 1.0
 import "../../ui" as Ui
 import "../elements"
 
+// This is an extra screen for changing the frequency / channel width -
+// They both need to match !
 Rectangle{
     width: parent.width
     height: parent.height
@@ -37,6 +39,12 @@ Rectangle{
 
     function fc_is_armed(){
         return _fcMavlinkSystem.armed
+    }
+
+    // Re-set the "disable sync" on init
+    Component.onCompleted: {
+        settings.qopenhd_allow_changing_ground_unit_channel_width_no_sync=false
+        settings.qopenhd_allow_changing_ground_unit_frequency_no_sync=false
     }
 
     ScrollView {
@@ -163,7 +171,16 @@ Rectangle{
                     ListElement {title: "20MHz (default)"; value: 20}
                     ListElement {title: "40MHz (experimental)"; value: 40}
                 }
-
+                Text{
+                    width: parent.width
+                    height: rowHeight
+                    elide: Text.ElideLeft
+                    wrapMode: Text.WordWrap
+                    text:{
+                        "NOTE: Frequency and channel width of air and ground unit both need to match. After flashing,openhd uses the same default frequency, and your air and ground unit automatically connects.
+If you changed the frequency of your air unit and are using a different Ground unit, use the channel scan feature to switch to the same frequency your air unit is running on."
+                    }
+                }
                 Rectangle {
                     width: parent.width
                     height: rowHeight
@@ -189,7 +206,6 @@ Rectangle{
                         }
                     }
                 }
-
                 // Changing the wifi frequency, r.n only 5G
                 Rectangle {
                     width: parent.width
@@ -239,6 +255,17 @@ Rectangle{
                                 var text="Frequency in Mhz and channel number. [X] - Not a legal wifi frequency, AR9271 does them anyways. (DFS-RADAR) - also used by commercial plane(s) weather radar. "+
 "It is your responsibility to only change the frequency to values allowed in your country. You can use a frequency analyzer on your phone or the packet loss to find the best channel for your environemnt."
                                 _messageBoxInstance.set_text_and_show(text)
+                            }
+                        }
+                        Switch{
+                            text: "no sync"
+                            checked: settings.qopenhd_allow_changing_ground_unit_frequency_no_sync
+                            onCheckedChanged: {
+                                if(settings.qopenhd_allow_changing_ground_unit_frequency_no_sync != checked && checked){
+                                    _messageBoxInstance.set_text_and_show("WARNING: Only change your ground unit frequency manually if you remember frequencies in your head
+and want to select the frequency one of your air units is running on. NOTE: You might have to do the same for channel width !",10)
+                                }
+                                settings.qopenhd_allow_changing_ground_unit_frequency_no_sync = checked
                             }
                         }
                     }
@@ -292,66 +319,17 @@ Rectangle{
                                 _messageBoxInstance.set_text_and_show(text)
                             }
                         }
-                    }
-                }
-                Rectangle {
-                    width: parent.width
-                    height: rowHeight
-                    color: (Positioner.index % 2 == 0) ? "#8cbfd7f3" : "#00000000"
-
-                    RowLayout{
-                        anchors.verticalCenter: parent.verticalCenter
-                        Button{
-                            text: "Fetch"
-                            onClicked: {
-                                //var _res=_synchronizedSettings.get_param_int_air_and_ground_value_mcs()
-                                var _res=_synchronizedSettings.get_param_int_air_only_mcs()
-                                if(_res>=0){
-                                    buttonSwitchMCS.enabled=true
+                        Switch{
+                            text: "no sync"
+                            checked: settings.qopenhd_allow_changing_ground_unit_channel_width_no_sync
+                            onCheckedChanged: {
+                                if(settings.qopenhd_allow_changing_ground_unit_channel_width_no_sync != checked && checked){
+                                    _messageBoxInstance.set_text_and_show("WARNING: Only change your ground unit channel width manually if you remember frequencies in your head
+and want to select the channel width that one of your air units is running on.",10)
                                 }
-                                //console.log("Got ",_res)
-                                update_combobox(comboBoxMcsIndex,_res);
+                                settings.qopenhd_allow_changing_ground_unit_channel_width_no_sync = checked
                             }
                         }
-                        ComboBox {
-                            id: comboBoxMcsIndex
-                            model: mcsIndexModel
-                            textRole: "title"
-                            implicitWidth:  elementComboBoxWidth
-                            // openhd defaults to MCS 3
-                            currentIndex: 3
-                        }
-                        Button{
-                            text: "Change MCS"
-                            id: buttonSwitchMCS
-                            enabled: false
-                            onClicked: {
-                                var selectedValue=mcsIndexModel.get(comboBoxMcsIndex.currentIndex).value
-                                //_synchronizedSettings.change_param_air_and_ground_mcs(selectedValue)
-                                _synchronizedSettings.change_param_air_only_mcs(selectedValue,false)
-                            }
-                            //Material.foreground: fc_is_armed() ? Material.Green : Material.Dark;
-                        }
-                        Button{
-                            text: "INFO"
-                            Material.background:Material.LightBlue
-                            onClicked: {
-                                var text="Only supported on rtl8812au!\nThe MCS index controlls the available bandwidth. Higher MCS index - higher bandwidth, but less sensitivity/range."+
-                                        "In contrast to the frequency / channel width, this param only needs to be set on the air unit. As long as your camera supports variable bitrate,"+
-                                        "you can even safely change this param without adjusting the camera bitrate / during flight."
-                                _messageBoxInstance.set_text_and_show(text)
-                            }
-                        }
-                    }
-                }
-                Text{
-                    width: parent.width
-                    elide: Text.ElideLeft
-                    wrapMode: Text.WordWrap
-                    text:{
-                        "Changing the frequency / channel width requires synchronisation between your air and ground unit. It can fail and is therefore only safe to change in disarmed state. "+
-                        "You can use the channel scan feature to recover a failed synchronisation.\n"+
-                        "Changing the MCS index only requires changing the value on the air unit, and is therefore safe to do during flight - as long as your camera supports variable bitrate."
                     }
                 }
             }
