@@ -23,6 +23,7 @@ public:
     // These are also in aohdsystem, their usage (and correct setting of them) is required here, too
     L_RO_PROP(int,curr_channel_mhz,set_curr_channel_mhz,-1)
     L_RO_PROP(int,curr_channel_width_mhz,set_curr_channel_width_mhz,-1);
+
 public:
     void validate_and_set_channel_mhz(int channel);
     void validate_and_set_channel_width_mhz(int channel_width_mhz);

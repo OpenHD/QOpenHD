@@ -170,13 +170,22 @@ Only enable if you want to quickly change your ground unit's channel width to th
                 }
                 Text{
                     width: parent.width
-                    height: rowHeight
+                    height: rowHeight / 2
                     elide: Text.ElideLeft
                     wrapMode: Text.WordWrap
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
                     text:{
-                        "NOTE: Frequency and channel width of air and ground unit BOTH need to match.
-After flashing,openhd uses the same default frequency, and your air and ground unit automatically connects.
-If you changed the frequency of your air unit and are using a different Ground unit, use the channel FIND AIR UNIT feature (channel scan) to switch to the same frequency your air unit is running on."
+                        "NOTE: Frequency and channel width of air and ground unit BOTH need to match."
+                    }
+                }
+                Button{
+                    text: "MORE INFO"
+                    Material.background:Material.LightBlue
+                    onClicked: {
+                        var text="After flashing,openhd uses the same default frequency, and your air and ground unit automatically connects.
+If you changed the frequency of your air unit and are using a different Ground unit, use the FIND AIR UNIT feature (channel scan) to switch to the same frequency your air unit is running on."
+                        _messageBoxInstance.set_text_and_show(text)
                     }
                 }
                 Rectangle {
@@ -212,7 +221,7 @@ If you changed the frequency of your air unit and are using a different Ground u
 
                     RowLayout{
                         anchors.verticalCenter: parent.verticalCenter
-                        /*Button{
+                        Button{
                             text: "Fetch"
                             onClicked: {
                                 var _res=_synchronizedSettings.get_param_int_air_and_ground_value_freq()
@@ -222,7 +231,7 @@ If you changed the frequency of your air unit and are using a different Ground u
                                 //console.log("Got ",_res)
                                 update_combobox(comboBoxFreq,_res);
                             }
-                        }*/
+                        }
                         ComboBox {
                             id: comboBoxFreq
                             model: frequenciesModel
@@ -276,7 +285,7 @@ If you changed the frequency of your air unit and are using a different Ground u
 
                     RowLayout{
                         anchors.verticalCenter: parent.verticalCenter
-                        /*Button{
+                        Button{
                             text: "Fetch"
                             onClicked: {
                                 var _res=_synchronizedSettings.get_param_int_air_and_ground_value_channel_width()
@@ -286,7 +295,7 @@ If you changed the frequency of your air unit and are using a different Ground u
                                 //console.log("Got ",_res)
                                 update_combobox(comboBoxChannelWidth,_res);
                             }
-                        }*/
+                        }
                         ComboBox {
                             id: comboBoxChannelWidth
                             model: channelWidthModel
