@@ -22,6 +22,24 @@ SynchronizedSettings& SynchronizedSettings::instance()
     return tmp;
 }
 
+void SynchronizedSettings::validate_and_set_channel_mhz(int channel_mhz)
+{
+    if(channel_mhz<=1000){
+        set_curr_channel_mhz(-1);
+    }else{
+        set_curr_channel_mhz(channel_mhz);
+    }
+}
+
+void SynchronizedSettings::validate_and_set_channel_width_mhz(int channel_width_mhz)
+{
+    if(channel_width_mhz==20 || channel_width_mhz==40){
+        set_curr_channel_width_mhz(channel_width_mhz);
+    }else{
+        set_curr_channel_width_mhz(-1);
+    }
+}
+
 int SynchronizedSettings::get_param_int_air_and_ground_value(QString param_id)
 {
     qDebug()<<"get_param_air_and_ground_value "<<param_id;

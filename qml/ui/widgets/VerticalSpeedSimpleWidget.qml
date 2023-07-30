@@ -45,6 +45,16 @@ BaseWidget {
         return vs_as_str;
     }
 
+    function get_text_icon_vertical_speed(){
+        var vertical_speed_m_per_second=_fcMavlinkSystem.vertical_speed_indicator_mps
+        if(vertical_speed_m_per_second>=0.01){
+            return "\uf062";
+        }else if(vertical_speed_m_per_second<=0.01){
+            return "\uf063";
+        }
+        return "";
+    }
+
     hasWidgetDetail: true
 
     widgetDetailComponent: ScrollView {
@@ -89,6 +99,7 @@ BaseWidget {
         opacity: bw_current_opacity
 
         Text {
+            id: speedtext
             anchors.fill: parent
             anchors.centerIn: parent
             color: settings.color_text
@@ -101,6 +112,23 @@ BaseWidget {
                 yScale: bw_current_scale
             }
             text: get_text_vertical_speed()
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+            style: Text.Outline
+            styleColor: settings.color_glow
+        }
+        Text{
+            anchors.right: speedtext.left
+            color: settings.color_text
+            font.pixelSize: 14
+            font.family: settings.font_text
+            transform: Scale {
+                origin.x: 12
+                origin.y: 12
+                xScale: bw_current_scale
+                yScale: bw_current_scale
+            }
+            text: get_text_icon_vertical_speed()
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             style: Text.Outline

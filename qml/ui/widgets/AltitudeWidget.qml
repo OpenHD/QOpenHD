@@ -41,18 +41,6 @@ BaseWidget {
         }
         return alt_str;
     }
-    function get_text_vertical_speed(){
-        var vertical_speed_m_per_second=_fcMavlinkSystem.vertical_speed_indicator_mps
-        var vs_as_str=Number(vertical_speed_m_per_second).toLocaleString(Qt.locale(), 'f', 1)+" m/s";
-        if(vertical_speed_m_per_second>0.01){
-            return "+"+vs_as_str;
-            //return "\uf062"+vs_as_str;
-        }else if(vertical_speed_m_per_second<-0.01){
-            return vs_as_str;
-            //return "\uf063"+(-1*vs_as_str)
-        }
-        return vs_as_str;
-    }
 
     hasWidgetDetail: true
     widgetDetailComponent: ScrollView {

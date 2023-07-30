@@ -18,6 +18,7 @@
 #include "util/qopenhd.h"
 
 #include <../util/WorkaroundMessageBox.h>
+#include "../settings/synchronizedsettings.h"
 
 AOHDSystem::AOHDSystem(const bool is_air,QObject *parent)
     : QObject{parent},m_is_air(is_air)
@@ -248,6 +249,10 @@ void AOHDSystem::process_x1(const mavlink_openhd_stats_monitor_mode_wifi_link_t 
     set_curr_mcs_index(new_mcs_index);
     set_curr_channel_mhz(msg.curr_tx_channel_mhz);
     set_curr_channel_width_mhz(msg.curr_tx_channel_w_mhz);
+    if(!m_is_air){
+        SynchronizedSettings::instance().validate_and_set_channel_mhz(msg.curr_tx_channel_mhz);
+        SynchronizedSettings::instance().validate_and_set_channel_width_mhz(msg.curr_tx_channel_w_mhz);
+    }
     set_curr_bitrate_kbits(msg.curr_rate_kbits);
     set_curr_n_rate_adjustments(msg.curr_n_rate_adjustments);
     set_tx_packets_per_second_and_bits_per_second(StringHelper::bitrate_and_pps_to_string(msg.curr_tx_bps,msg.curr_tx_pps).c_str());

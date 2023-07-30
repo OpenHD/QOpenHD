@@ -29,9 +29,9 @@ BaseWidget {
         var speed_m_per_second=settings.speed_use_groundspeed ? _fcMavlinkSystem.speed : _fcMavlinkSystem.airspeed;
         var speed = settings.enable_imperial ? speed_m_per_second*0.621371 : speed_m_per_second;
         var ret=Number(speed).toLocaleString( Qt.locale(), 'f', 0)
-        if(settings.speed_ladder_show_unit && speed <100){
+        if(settings.speed_ladder_show_unit && speed <999){
             if(settings.enable_imperial){
-                ret +=" knts";
+                ret +=" mph";
             }else{
                 ret +=" m/s";
             }

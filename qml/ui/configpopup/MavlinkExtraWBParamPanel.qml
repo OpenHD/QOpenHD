@@ -77,6 +77,7 @@ Only enable if you want to quickly change your ground unit's channel width to th
                 // (Even though they overlap, and therefore are not really usable
                 ListModel{
                     id: frequenciesModel
+                    ListElement {title: "Unknown"; value: -1}
                     ListElement {title: "2312Mhz [X] (Atheros)"; value: 2312}
                     //ListElement {title: "2317Mhz [X] (Atheros)"; value: 2317}
                     //ListElement {title: "2322Mhz [X] (Atheros)"; value: 2322}
@@ -162,21 +163,10 @@ Only enable if you want to quickly change your ground unit's channel width to th
                 }
 
                 ListModel{
-                    id: mcsIndexModel
-                    ListElement {title: "~4.5 Mbps  (MCS0)"; value: 0}
-                    ListElement {title: "~6.5 Mbps  (MCS1)"; value: 1}
-                    ListElement {title: "~8.5 Mbps (long range) (MCS2)"; value: 2}
-                    ListElement {title: "~12  Mbps (default) (MCS3)"; value: 3}
-                    ListElement {title: "~17  Mbps (EXP)(MCS4)"; value: 4}
-                    ListElement {title: "~20+ Mbps (EXP) (MCS5)"; value: 5}
-                    ListElement {title: "~20+ Mbps (EXP) (MCS6)"; value: 6}
-                    ListElement {title: "~20+ Mbps (EXP) (MCS7)"; value: 7}
-                }
-
-                ListModel{
                     id: channelWidthModel
+                    ListElement {title: "Unknown"; value: -1}
                     ListElement {title: "20MHz (default)"; value: 20}
-                    ListElement {title: "40MHz (experimental)"; value: 40}
+                    ListElement {title: "40MHz (rtl8812au only)"; value: 40}
                 }
                 Text{
                     width: parent.width
@@ -184,8 +174,9 @@ Only enable if you want to quickly change your ground unit's channel width to th
                     elide: Text.ElideLeft
                     wrapMode: Text.WordWrap
                     text:{
-                        "NOTE: Frequency and channel width of air and ground unit both need to match. After flashing,openhd uses the same default frequency, and your air and ground unit automatically connects.
-If you changed the frequency of your air unit and are using a different Ground unit, use the channel scan feature to switch to the same frequency your air unit is running on."
+                        "NOTE: Frequency and channel width of air and ground unit BOTH need to match.
+After flashing,openhd uses the same default frequency, and your air and ground unit automatically connects.
+If you changed the frequency of your air unit and are using a different Ground unit, use the channel FIND AIR UNIT feature (channel scan) to switch to the same frequency your air unit is running on."
                     }
                 }
                 Rectangle {
@@ -221,7 +212,7 @@ If you changed the frequency of your air unit and are using a different Ground u
 
                     RowLayout{
                         anchors.verticalCenter: parent.verticalCenter
-                        Button{
+                        /*Button{
                             text: "Fetch"
                             onClicked: {
                                 var _res=_synchronizedSettings.get_param_int_air_and_ground_value_freq()
@@ -231,7 +222,7 @@ If you changed the frequency of your air unit and are using a different Ground u
                                 //console.log("Got ",_res)
                                 update_combobox(comboBoxFreq,_res);
                             }
-                        }
+                        }*/
                         ComboBox {
                             id: comboBoxFreq
                             model: frequenciesModel
@@ -239,6 +230,7 @@ If you changed the frequency of your air unit and are using a different Ground u
                             implicitWidth:  elementComboBoxWidth
                             // 5.8G is generally recommended and much more commonly used than 2.4G. Default to it when unknown, just like openhd does
                             currentIndex: 30
+
                         }
                         Button{
                             text: "Switch Frequency"
@@ -259,7 +251,8 @@ If you changed the frequency of your air unit and are using a different Ground u
                             text: "INFO"
                             Material.background:Material.LightBlue
                             onClicked: {
-                                var text="Frequency in Mhz and channel number. [X] - Not a legal wifi frequency, AR9271 does them anyways. (DFS-RADAR) - also used by commercial plane(s) weather radar. "+
+                                var text="Frequency in Mhz and channel number. (DFS-RADAR) - also used by commercial plane(s) weather radar (most likely illegal). "+
+                                        "[X] - Not a legal wifi frequency, AR9271 does them anyways."+
 "It is your responsibility to only change the frequency to values allowed in your country. You can use a frequency analyzer on your phone or the packet loss to find the best channel for your environemnt."
                                 _messageBoxInstance.set_text_and_show(text)
                             }
@@ -283,7 +276,7 @@ If you changed the frequency of your air unit and are using a different Ground u
 
                     RowLayout{
                         anchors.verticalCenter: parent.verticalCenter
-                        Button{
+                        /*Button{
                             text: "Fetch"
                             onClicked: {
                                 var _res=_synchronizedSettings.get_param_int_air_and_ground_value_channel_width()
@@ -293,7 +286,7 @@ If you changed the frequency of your air unit and are using a different Ground u
                                 //console.log("Got ",_res)
                                 update_combobox(comboBoxChannelWidth,_res);
                             }
-                        }
+                        }*/
                         ComboBox {
                             id: comboBoxChannelWidth
                             model: channelWidthModel
