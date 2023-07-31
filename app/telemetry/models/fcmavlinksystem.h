@@ -71,7 +71,7 @@ public: // Stuff needs to be public for qt
     // not directly battery, but similar
     L_RO_PROP(int,battery_consumed_mah,set_battery_consumed_mah,0)
     // TODO this value is not calculated yet
-    L_RO_PROP(int,battery_consumed_mah_per_km,set_battery_consumed_mah_per_km,0)
+    L_RO_PROP(int,battery_consumed_mah_per_km,set_battery_consumed_mah_per_km,-1)
     // Ardupilot might show the same battery as multiple batteries when more than one current sensor is used
     // (Aparently a few peole do that)
     L_RO_PROP(double, battery_id0_current_ampere, set_battery_id0_current_ampere, 0)
@@ -181,11 +181,17 @@ public:
     void telemetryStatusMessage(QString message, int level);
     void calculate_home_distance();
     void calculate_home_course();
-
+    // Updates the flight time by increasing the time when armed
     void updateFlightTimer();
-    void updateFlightDistance();
+    // Calculates the flght distance (dirty) by taking time delta and current speed into account
+    // replaced by using distance between lat,lon point(s) (this is a bit more accurate)
+    //void updateFlightDistance();
+    // Something something luke
     void updateVehicleAngles();
+    // Something somethng luke
     void updateWind();
+    //
+    void update_flight_distance(double prev_lat,double prev_lon,double new_lat,double new_lon);
 
     Q_PROPERTY(int home_course MEMBER m_home_course WRITE set_home_course NOTIFY home_course_changed)
     void set_home_course(int home_course);
@@ -226,7 +232,7 @@ private:
 
     double speed_last_time = 0.0;
 
-    qint64 flightDistanceLastTime= 0;
+    qint64 m_flight_distance_last_time_us= 0;
     long total_dist= 0;
 
     QElapsedTimer totalTime;

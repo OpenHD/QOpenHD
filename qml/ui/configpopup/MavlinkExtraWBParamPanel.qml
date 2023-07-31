@@ -81,7 +81,6 @@ Only enable if you want to quickly change your ground unit's channel width to th
                 // (Even though they overlap, and therefore are not really usable
                 ListModel{
                     id: frequenciesModel
-                    ListElement {title: "Unknown"; value: -1}
                     ListElement {title: "2312Mhz [X] (Atheros)"; value: 2312}
                     //ListElement {title: "2317Mhz [X] (Atheros)"; value: 2317}
                     //ListElement {title: "2322Mhz [X] (Atheros)"; value: 2322}
@@ -134,6 +133,8 @@ Only enable if you want to quickly change your ground unit's channel width to th
                     ListElement {title: "2672Mhz [X] (Atheros)"; value: 2672}
                     ListElement {title: "2692Mhz [X] (Atheros)"; value: 2692}
                     ListElement {title: "2712Mhz [X] (Atheros)"; value: 2712}
+                    //
+                    ListElement {title: "Unknown"; value: -1}
                     // 5G begin
                     ListElement {title: "5180Mhz [36] (DEFAULT)"; value: 5180}
                     ListElement {title: "5200Mhz [40]"; value: 5200}
@@ -240,7 +241,7 @@ Only enable if you want to quickly change your ground unit's channel width to th
                             textRole: "title"
                             implicitWidth:  elementComboBoxWidth
                             // 5.8G is generally recommended and much more commonly used than 2.4G. Default to it when unknown, just like openhd does
-                            currentIndex: 30
+                            currentIndex: 21
 
                         }
                         Button{
@@ -254,6 +255,10 @@ Only enable if you want to quickly change your ground unit's channel width to th
                                     return;
                                 }
                                 var selectedValue=frequenciesModel.get(comboBoxFreq.currentIndex).value
+                                if(selectedValue<=100){
+                                    _messageBoxInstance.set_text_and_show("Please select a valid frequency",5);
+                                    return;
+                                }
                                 _synchronizedSettings.change_param_air_and_ground_frequency(selectedValue);
                             }
                             //Material.background: fc_is_armed() ? Material.Red : Material.Normal;
@@ -315,6 +320,10 @@ Only enable if you want to quickly change your ground unit's channel width to th
                                     return;
                                 }
                                 var selectedValue=channelWidthModel.get(comboBoxChannelWidth.currentIndex).value
+                                if(!(selectedValue===10 || selectedValue===20 || selectedValue===40 || selectedValue===80)){
+                                    _messageBoxInstance.set_text_and_show("Please select a valid channel width",5);
+                                    return;
+                                }
                                 _synchronizedSettings.change_param_air_and_ground_channel_width(selectedValue)
                             }
                             //Material.background: fc_is_armed() ? Material.Red : Material.Normal;

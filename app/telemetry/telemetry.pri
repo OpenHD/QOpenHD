@@ -83,6 +83,7 @@ SOURCES += \
     app/telemetry/models/fcmavlinkmissionitemsmodel.cpp \
 
 HEADERS += \
+    $$PWD/geodesi_helper.h \
     $$PWD/mavlink_enum_to_string.h \
     $$PWD/models/fcmapmodel.h \
     $$PWD/models/fcmavlinksettingsmodel.h \

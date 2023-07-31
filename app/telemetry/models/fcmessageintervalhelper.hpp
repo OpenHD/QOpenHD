@@ -40,7 +40,7 @@ public:
         // Can be disabled by the user
         QSettings settings;
         const bool set_mavlink_message_rates = settings.value("set_mavlink_message_rates",true).toBool();
-        const bool mavlink_message_rates_high_speed=settings.value("mavlink_message_rates_high_speed",true).toBool();
+        const bool mavlink_message_rates_high_speed=settings.value("mavlink_message_rates_high_speed",false).toBool();
         const bool mavlink_message_rates_high_speed_rc_channels=settings.value("mavlink_message_rates_high_speed_rc_channels",false).toBool();
         if(!set_mavlink_message_rates){
             return std::nullopt;

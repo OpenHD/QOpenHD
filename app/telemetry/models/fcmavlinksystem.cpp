@@ -8,6 +8,7 @@
 #include "../telemetryutil.hpp"
 
 #include <geographiclib-c-2.0/src/geodesic.h>
+#include "../geodesi_helper.h"
 
 #include <QDateTime>
 
@@ -227,6 +228,12 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         mavlink_msg_global_position_int_decode(&msg, &global_position_int);
         const double lat=static_cast<double>(global_position_int.lat) / 10000000.0;
         const double lon=static_cast<double>(global_position_int.lon) / 10000000.0;
+        if(m_lat!=0.0 && m_lon!=0.0 && m_gps_hdop<20){
+            const auto added_distance_m=distance_between(m_lat,m_lon,lat,lon);
+            total_dist = total_dist + added_distance_m;
+            //qDebug() << "total distance" << total_dist;
+            set_flight_distance_m( total_dist);
+        }
         set_lat(lat);
         set_lon(lon);
         set_boot_time(global_position_int.time_boot_ms);
@@ -245,7 +252,7 @@ bool FCMavlinkSystem::process_message(const mavlink_message_t &msg)
         }
         calculate_home_distance();
         calculate_home_course();
-        updateFlightDistance();
+        //updateFlightDistance();
         updateVehicleAngles();
         updateWind();
         break;
@@ -564,7 +571,7 @@ void FCMavlinkSystem::updateFlightTimer() {
     }
 }
 
-void FCMavlinkSystem::updateFlightDistance() {
+/*void FCMavlinkSystem::updateFlightDistance() {
     if (m_gps_hdop > 20 || m_lat == 0.0){
         //do not pollute distance if we have bad data
         return;
@@ -572,15 +579,15 @@ void FCMavlinkSystem::updateFlightDistance() {
     if (m_armed==true){
         const auto elapsed = flightTimeStart.elapsed();
         const auto time = elapsed / 3600;
-        const auto time_diff = time - flightDistanceLastTime;
-        flightDistanceLastTime = time;
+        const auto time_diff = time - m_flight_distance_last_time_us;
+        m_flight_distance_last_time_us = time;
         const auto added_distance =  m_speed * time_diff;
         //qDebug() << "added distance" << added_distance;
         total_dist = total_dist + added_distance;
         //qDebug() << "total distance" << total_dist;
         set_flight_distance_m( total_dist);
     }
-}
+}*/
 
 
 void FCMavlinkSystem::set_armed(bool armed) {
@@ -628,25 +635,10 @@ void FCMavlinkSystem::set_flight_mode(QString flight_mode) {
 void FCMavlinkSystem::calculate_home_distance() {
     // if home lat/long are zero the calculation will be wrong so we skip it
     if (m_home_latitude != 0.0 && m_home_longitude != 0.0) {
-        double s12;
-        double azi1;
-        double azi2;
-
-        geod_geodesic geod{};
-        // from https://manpages.ubuntu.com/manpages/bionic/man3/geodesic.3.html
-        const double a = 6378137, f = 1/298.257223563; /* WGS84 */
-        geod_init(&geod,a,f);
-        geod_inverse(&geod,m_home_latitude,m_home_longitude,m_lat,m_lon,&s12,&azi1,&azi2);
-
-        /* todo: this could be easily extended to save the azimuth as well, which gives us the direction
-           home for free as a result of the calculation above.
-        */
-        set_home_distance(s12);
-        //qDebug()<<"XX"<<Telemetryutil::normalize_degree(azi1);
+        const auto home_distance=distance_between(m_home_latitude,m_home_longitude,m_lat,m_lon);
+        set_home_distance(home_distance);
     } else {
-        /*
-         * If the system doesnt have home pos just show "0"
-         */
+        // If the system doesnt have home pos just show "0"
         set_home_distance(0.0);
     }
 }
@@ -871,6 +863,11 @@ void FCMavlinkSystem::updateWind(){
             speed_last_time=actual_speed;
         }
     }
+}
+
+void FCMavlinkSystem::update_flight_distance(double prev_lat, double prev_lon, double new_lat, double new_lon)
+{
+
 }
 
 void FCMavlinkSystem::arm_fc_async(bool arm)
@@ -1150,17 +1147,26 @@ void FCMavlinkSystem::recalculate_efficiency()
     //qDebug()<<"FCMavlinkSystem::recalculate_efficiency()";
     m_efficiency_last_update=std::chrono::steady_clock::now();
     const double delta_distance_m=m_flight_distance_m-m_efficiency_last_distance_m;
-    const double delta_distance_km=delta_distance_m / 1000.0;
     const int delta_charge_mah=m_battery_consumed_mah-m_efficiency_last_charge_consumed_mAh;
-    if(delta_distance_m>0.0 && delta_charge_mah>0.0){
-        //qDebug()<<"recalculate_efficiency: delta_distance_m:"<<delta_distance_m<<" delta_charge_mah:"<<delta_charge_mah;
+    if(delta_distance_m<0){
+        qDebug()<<"Invalid distance delta,resetting:"<<delta_distance_m;
+        m_efficiency_last_distance_m=m_flight_distance_m;
+        return;
+    }
+    if(delta_charge_mah<0){
+        qDebug()<<"Invalid charge delta,resetting"<<delta_charge_mah;
+        m_efficiency_last_charge_consumed_mAh=m_battery_consumed_mah;
+        return;
+    }
+    if(delta_distance_m>1.0 && delta_charge_mah > 10){
+        const double delta_distance_km=delta_distance_m / 1000.0;
         // recalculate and update efficiency
         const int efficiency_mah_per_km=Telemetryutil::calculate_efficiency_in_mah_per_km(delta_charge_mah,delta_distance_km);
         set_battery_consumed_mah_per_km(efficiency_mah_per_km);
-        //qDebug()<<"FCMavlinkSystem::recalculate_efficiency:"<<efficiency_mah_per_km;
+        qDebug()<<"FCMavlinkSystem::recalculate_efficiency:"<<efficiency_mah_per_km;
+        m_efficiency_last_distance_m=m_flight_distance_m;
+        m_efficiency_last_charge_consumed_mAh=m_battery_consumed_mah;
     }else{
-        //qDebug()<<"FCMavlinkSystem::recalculate_efficiency - cannot";
+        qDebug()<<"Not enough difference, recalculating later: "<<delta_distance_m<<"m, "<<delta_charge_mah<<"mAh";
     }
-    m_efficiency_last_distance_m=m_flight_distance_m;
-    m_efficiency_last_charge_consumed_mAh=m_battery_consumed_mah;
 }

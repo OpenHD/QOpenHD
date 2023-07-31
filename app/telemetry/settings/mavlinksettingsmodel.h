@@ -5,6 +5,8 @@
 #include <QAbstractListModel>
 #include <map>
 #include <optional>
+#include <thread>
+#include <mutex>
 
 #include "../mavsdk_include.h"
 
@@ -58,7 +60,6 @@ public:
     Q_INVOKABLE bool try_fetch_all_parameters();
 
     Q_INVOKABLE bool try_fetch_all_parameters_long_running();
-
 
     // re-fetch a specific parameter from the server, Updates the parameter set accordingly.
     Q_INVOKABLE bool try_refetch_parameter_int(QString param_id);
@@ -164,6 +165,8 @@ public:
 
 private:
     QString get_short_description(QString param_id)const;
+    std::mutex m_update_all_async_mutex;
+    std::unique_ptr<std::thread> m_update_all_async_thread=nullptr;
 
 };
 
